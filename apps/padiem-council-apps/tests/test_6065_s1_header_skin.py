@@ -85,9 +85,12 @@ def test_the_cinematic_assets_are_the_designs_own_files_and_no_others():
     names = sorted(p.name for p in (APP_ROOT / "static").iterdir())
     # B10/A4: the app also ships its own browser photo resizer. 2026-11-01:
     # and its own document exporter (한글/HWPX·워드/DOCX result downloads).
+    # 2026-11-02: and its own tus uploader + project-file lane adapter — 문서
+    # 참고 글(축사·SNS 내 PC에서 예전 글 가져오기)이 초안 저장과 같은 tus 경로를 쓴다.
     assert names == ["assets", "council-app.css", "council-app.js",
                      "document-export.js", "index.html", "pc-file-exchange.css",
-                     "pc-file-exchange.js", "photo-resize.js"], names
+                     "pc-file-exchange.js", "photo-resize.js",
+                     "project-file-upload.js", "tus-upload.js"], names
     staged = sorted(p.name for p in (APP_ROOT / "static" / "assets").rglob("*") if p.is_file())
     assert sum(1 for n in staged if n.endswith(".jpg")) == 7, staged
     assert sum(1 for n in staged if n.endswith(".woff2")) == 7, staged

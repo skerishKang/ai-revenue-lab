@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, timedelta, timezone
 import json
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -39,6 +40,7 @@ from app.calendar_contracts import (
     CalendarWorkLog,
     EXTERNAL_CALENDAR_REQUIRED,
     LONG_TERM_MEMORY,
+    MAX_REMINDER_MINUTES,
     MEMORY_AUTO_PROMOTION,
     PADIEM_CALENDAR_CANONICAL_PRODUCT,
     SERVER_LOCAL_TIMEZONE_INFERENCE,
@@ -1424,4 +1426,92 @@ async def test_blocker_3_timezone_item_date_parity() -> None:
     )
     for item in p_midnight["items"]:
         assert item["date"] == "2026-09-21"
+
+
+# #5882 A-12: the reminder window bound, measured at the edges it actually has.
+def test_reminder_window_edges_are_answered_without_a_server_error(
+    test_app_and_client: tuple[Any, TestClient, str],
+) -> None:
+    """An oversized or oddly typed reminder is the caller's mistake, never a 500.
+
+    Every value below goes through the real route. The bound stays because the
+    durable table refuses a larger row, so what is fixed here is that the edge
+    answers 400 in the owner's language instead of reaching storage.
+    """
+    _, client, _ = test_app_and_client
+
+    def post(reminder_minutes: Any):
+        return client.post("/api/calendar/appointments", json={
+            "appointment_type": "date_only",
+            "title": "리마인더 상한 확인",
+            "date": "2026-12-01",
+            "reminder_minutes": reminder_minutes,
+        })
+
+    for value in (None, 0, MAX_REMINDER_MINUTES - 1, MAX_REMINDER_MINUTES):
+        response = post(value)
+        assert response.status_code == 201, (value, response.text)
+
+    for value in (MAX_REMINDER_MINUTES + 1, 525_600, 10**12, 2**63):
+        response = post(value)
+        assert response.status_code == 400, (value, response.text)
+        error = response.json()["error"]
+        assert error["code"] == "invalid_reminder_minutes"
+        assert error["message"] == "알림은 최대 28일 전까지 설정할 수 있어요."
+    for value in (-1, -MAX_REMINDER_MINUTES, "30", "abc", 20.0, [20], {"minutes": 20}, True, False):
+        response = post(value)
+        assert response.status_code == 400, (value, response.text)
+        error = response.json()["error"]
+        assert error["code"] == "invalid_reminder_minutes"
+        assert error["message"] == "알림은 몇 분 전에 울릴지 나타내는 0 이상의 정수여야 합니다."
+
+
+def test_reminder_minutes_type_rules_are_closed_at_the_contract() -> None:
+    """A boolean is not a minute count: it is refused, not read as 1 or 0."""
+
+    def build(value: Any) -> CalendarAppointment:
+        return CalendarAppointment.create(
+            workspace_id="ws_reminder", owner_id="owner_reminder",
+            appointment_type="date_only", title="리마인더", date_val="2026-12-01",
+            reminder_minutes=value,
+        )
+
+    assert build(20).reminder_minutes == 20
+    assert build(None).reminder_minutes is None
+    for value in (True, False, "20", 20.0, [20], -1):
+        with pytest.raises(CalendarContractError) as caught:
+            build(value)
+        assert caught.value.code == "invalid_reminder_minutes"
+    for value in (MAX_REMINDER_MINUTES + 1, 10**12):
+        with pytest.raises(CalendarContractError) as caught:
+            build(value)
+        assert caught.value.code == "invalid_reminder_minutes"
+
+
+def test_the_reminder_bound_stays_the_number_storage_already_promised() -> None:
+    """Four layers name one bound; a lone edit of any of them breaks the caller.
+
+    The app refuses what the applied D1 CHECK cannot store, the release schema
+    guard calls a different DDL drift, and the screen mirror must not offer a
+    value the server would reject. Together they are why 4 weeks stays.
+    """
+    chat_root = Path(__file__).resolve().parents[1]
+    migration = " ".join(
+        (chat_root / "migrations" / "013_padiem_calendar.sql")
+        .read_text(encoding="utf-8").split()
+    )
+    assert (
+        "CHECK (reminder_minutes IS NULL OR (reminder_minutes >= 0 AND "
+        "reminder_minutes <= %d))" % MAX_REMINDER_MINUTES
+    ) in migration
+
+    guard_path = (chat_root.parents[1] / ".github" / "scripts"
+                  / "b62_d1_migration_013_schema.py")
+    guard = guard_path.read_text(encoding="utf-8")
+    assert "EXPECTED_REMINDER_BOUNDS = (0, %d)" % MAX_REMINDER_MINUTES in guard
+
+    screen = (chat_root / "static" / "calendar.js").read_text(encoding="utf-8")
+    assert "const MAX_REMINDER_MINUTES = %d;" % MAX_REMINDER_MINUTES in screen
+
+
 

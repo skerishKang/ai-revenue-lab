@@ -76,6 +76,26 @@ def _generation(name: str, value: int) -> int:
     return value
 
 
+#: The Connector's self-reported version grammar — the same
+#: ``MAJOR.MINOR.PATCH(-rcN)`` rule ``kagent.connector_version_compat`` judges.
+#: Restated here because the control plane never imports the Agent's display
+#: module. An out-of-shape value normalizes to ``None`` ("version unknown") —
+#: the same drop-don't-fail rule the redeem route applies.
+_CLIENT_VERSION_RE = re.compile(r"^\d{1,9}\.\d{1,9}\.\d{1,9}(?:-rc\d{1,9})?$")
+_CLIENT_VERSION_MAX_CHARS = 32
+
+
+def _client_version_or_none(value: str) -> str | None:
+    if not isinstance(value, str):
+        return None
+    trimmed = value.strip()
+    if not trimmed or len(trimmed) > _CLIENT_VERSION_MAX_CHARS:
+        return None
+    if _CLIENT_VERSION_RE.fullmatch(trimmed) is None:
+        return None
+    return trimmed
+
+
 MAX_BOUNDED_EXIT_CODE = 2_147_483_647
 MIN_BOUNDED_EXIT_CODE = -2_147_483_647
 
@@ -120,6 +140,10 @@ class BrokerDeviceBinding:
     issued_at: datetime
     credential_expires_at: datetime
     state: BrokerBindingState = BrokerBindingState.ACTIVE
+    # The Connector's self-reported product version (0.3.0-rc1 shape), captured
+    # at registration time. ``None`` means the Connector never reported one —
+    # the same "version unknown" the device directory shows.
+    client_version: str | None = None
 
     def __post_init__(self) -> None:
         for name in ("binding_ref", "device_id", "account_ref", "workspace_ref"):
@@ -134,9 +158,11 @@ class BrokerDeviceBinding:
         object.__setattr__(self, "credential_expires_at", expires)
         if not isinstance(self.state, BrokerBindingState):
             raise ControlPlaneContractError("invalid_device_binding", "state must be BrokerBindingState")
+        if self.client_version is not None:
+            object.__setattr__(self, "client_version", _client_version_or_none(self.client_version))
 
     def safe_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "binding_ref": self.binding_ref,
             "device_id": self.device_id,
             "account_ref": self.account_ref,
@@ -148,6 +174,9 @@ class BrokerDeviceBinding:
             "credential_digest_exposed": False,
             "raw_device_credential": False,
         }
+        if self.client_version is not None:
+            payload["client_version"] = self.client_version
+        return payload
 
 
 @dataclass(frozen=True, slots=True)
@@ -373,6 +402,7 @@ class InMemoryLocalAgentBrokerAuthority:
         credential: bytes,
         now: datetime,
         credential_ttl_seconds: int = 2_592_000,
+        client_version: str | None = None,
     ) -> BrokerDeviceBinding:
         binding_ref = _ref("binding_ref", binding_ref)
         device_id = _ref("device_id", device_id)
@@ -393,6 +423,7 @@ class InMemoryLocalAgentBrokerAuthority:
             credential_digest=self._credential_digest(credential),
             issued_at=now,
             credential_expires_at=now + timedelta(seconds=ttl),
+            client_version=client_version,
         )
         self._bindings[binding_ref] = binding
         return binding

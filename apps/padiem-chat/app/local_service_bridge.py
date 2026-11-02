@@ -169,10 +169,45 @@ class HttpRpcBinding:
         self._origin = _require_https_origin(origin, name="RPC origin")
         self._secret = _require_secret(secret, name="RPC service secret")
         self._client = client
+        # An injected client belongs to the caller; one built here is closed by
+        # :meth:`aclose` at host shutdown (#6613).
+        self._owns_client = client is None
         self._timeout = timeout_seconds
         # A target without a replay memory refuses every v2 request, so a
         # caller bound to one keeps the v1 proof until that target has a guard.
         self._sign_request_id = bool(sign_request_id)
+
+    def _shared_client(self) -> httpx.AsyncClient:
+        """The one client this binding keeps (#6613).
+
+        Every RPC used to build its own ``httpx.AsyncClient``, so a password
+        login paid six TCP+TLS handshakes to the identity origin on top of the
+        six calls themselves (6,721 ms / 6 ≈ 1.1 s each in the 11-02 journal).
+        The client is created on first use, inside the running loop, and then
+        kept: same origin, same proof, same timeout, same retry rule — only the
+        handshake is no longer repeated. httpx pools and reopens a dropped
+        connection by itself.
+        """
+        client = self._client
+        if client is None:
+            # #6460 4-1: httpx drops an idle pooled connection after 5s by
+            # default, so the first RPC after the 30s scope-cache window paid a
+            # fresh TCP+TLS handshake (the measured ~2s call). 75s keeps the
+            # connection across that reuse window with margin, stays bounded —
+            # never unlimited — and must not exceed the identity service's own
+            # keep-alive timeout (the identity unit templates carry the same 75).
+            client = httpx.AsyncClient(
+                timeout=self._timeout, follow_redirects=False,
+                limits=httpx.Limits(keepalive_expiry=75.0),
+            )
+            self._client = client
+        return client
+
+    async def aclose(self) -> None:
+        """Close the pooled client this binding created (host shutdown)."""
+        client, self._client = self._client, None
+        if client is not None and self._owns_client:
+            await client.aclose()
 
     def __getattr__(self, method: str):
         if method.startswith("_") or not _METHOD_RE.fullmatch(method):
@@ -183,7 +218,7 @@ class HttpRpcBinding:
                 raise TypeError("RPC payload must be an object")
             body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
             path = _RPC_PATH_PREFIX + method
-            client = self._client
+            client = self._shared_client()
             response = None
             attempts = RPC_MAX_ATTEMPTS if self._sign_request_id else 1
             for _ in range(attempts):
@@ -196,15 +231,9 @@ class HttpRpcBinding:
                     self._secret, method="POST", path=path, body=body,
                     service_id=new_service_id() if self._sign_request_id else None,
                 ))
-                if client is None:
-                    async with httpx.AsyncClient(timeout=self._timeout, follow_redirects=False) as fresh:
-                        response = await fresh.post(
-                            self._origin + path, content=body, headers=headers
-                        )
-                else:
-                    response = await client.post(
-                        self._origin + path, content=body, headers=headers
-                    )
+                response = await client.post(
+                    self._origin + path, content=body, headers=headers
+                )
                 if response.status_code != RPC_REPLAY_STATUS:
                     break
             # A target that keeps refusing the id means this side is sending the

@@ -93,6 +93,12 @@ class N {
     }
   }
   focus() {}
+  // The module scrolls the panel it just opened; recording the call is how the
+  // 390px entry is proven without a layout engine.
+  scrollIntoView(options) {
+    this.scrolledIntoView = options || null;
+    this.scrollCalls = (this.scrollCalls || 0) + 1;
+  }
   click() { return this.dispatch("click"); }
   querySelector(sel) { return this.findAll(sel)[0] || null; }
   querySelectorAll(sel) { return this.findAll(sel); }
@@ -172,7 +178,14 @@ let authStatusQueue = null;
 // these to walk the import/save/photo path through the shared dialog contract.
 let pcLinks = [];
 let pcReferenceText = "예전 축사 원고입니다. 문체를 참고하세요.";
+let pcReferenceName = "예전 축사.txt";
 let pcReferenceCode = "";
+// 참고 글 문서 경로(tus 재사용) 시나리오 조작반: 디스패치별 원본 바이트와,
+// 서버가 소유자 범위 404로 거절할(다른 계정의) 디스패치.
+let pcFileBytes = null;
+let pcFileRefusals = null;
+let pcUploadFails = false;
+let pcExtractedText = "";
 let pcUploads = [];
 const pcSaves = [];
 const pcReferenceReads = [];
@@ -248,18 +261,29 @@ async function fetch(url, init) {
   if (String(url) === "/api/pc/pairings") {
     return json({ links: pcLinks });
   }
+  if (method === "POST" && String(url) === "/api/pc/save") {
+    pcSavesPosted.push(body);
+    if (pcSaveFails) return json({ error: { code: "pc_exchange_save_failed" } }, 502);
+    return json({ ok: true, saved: { name: String((body && body.path) || "").split("/").pop() } });
+  }
   if (method === "POST" && String(url) === "/api/pc/reference") {
     pcReferenceReads.push(body);
     if (pcReferenceCode) return json({ error: { code: pcReferenceCode } }, 422);
-    return json({ ok: true, name: "예전 축사.hwp", text: pcReferenceText });
+    return json({ ok: true, name: pcReferenceName, text: pcReferenceText });
   }
   if (String(url).indexOf("/api/pc/file") === 0) {
     const dispatch = new URLSearchParams(String(url).split("?")[1] || "").get("dispatch_id");
     pcDispatches.push(dispatch);
+    // 다른 계정(또는 이미 사라진) 디스패치는 소유자 범위 404로 거절된다 — 외래 id는
+    // 모르는 id와 구분되지 않는다. 화면이 볼 것도 그 404뿐이다.
+    if (pcFileRefusals && pcFileRefusals[dispatch]) {
+      return json({ error: { code: "pc_dispatch_not_found" } }, 404);
+    }
+    const bytes = (pcFileBytes && pcFileBytes[dispatch]) || PC_PHOTO_BYTES;
     return {
       ok: true,
       status: 200,
-      blob: async () => ({ arrayBuffer: async () => PC_PHOTO_BYTES.buffer.slice(0) }),
+      blob: async () => ({ arrayBuffer: async () => bytes.buffer.slice(0) }),
     };
   }
   if (String(url) === "/api/auth/status") {
@@ -305,8 +329,18 @@ async function fetch(url, init) {
         const rawName = decodeURIComponent(headers["X-Padiem-Filename"] || "photo");
         const mediaType = headers["X-Padiem-Media-Type"] || "application/octet-stream";
         const uploaded = init && init.body;
-        const bytes = uploaded && uploaded.__bytes !== undefined ? uploaded.__bytes : "binary-bytes";
-        const file = stored(rawName, "", mediaType, bytes);
+        const bytes = uploaded && uploaded.__bytes !== undefined ? uploaded.__bytes
+          : (uploaded && typeof uploaded.byteLength === "number" ? uploaded : "binary-bytes");
+        if (uploaded && typeof uploaded.byteLength === "number") {
+          // 2026-11-02: the document export tests read the uploaded payload,
+          // its declared media type and the result kind (doc_kind header).
+          binaryUploads.push({
+            name: rawName, mediaType: mediaType,
+            docKind: headers["X-Padiem-Doc-Kind"] || "", bytes: uploaded,
+          });
+        }
+        if (binaryUploadFail) return json({ error: { code: "unavailable" } }, 503);
+        const file = stored(rawName, "", mediaType, bytes, "", headers["X-Padiem-Doc-Kind"] || "");
         return json({ file });
       }
       if (saveFailureOverride) {
@@ -359,6 +393,10 @@ const pageErrors = [];
 const alerts = [];
 const downloads = [];
 const downloadDetails = [];
+const binaryUploads = [];
+const pcSavesPosted = [];
+let binaryUploadFail = false;
+let pcSaveFails = false;
 
 // ── one council-app.js execution against a fresh fake DOM ──────────────────
 class FakeFormData {
@@ -381,7 +419,10 @@ class FakeFile extends FakeBlob {
     this.name = String(name || "file");
     this.type = (options && options.type) || "";
     const first = Array.isArray(parts) ? parts[0] : parts;
-    this.__bytes = first instanceof Uint8Array ? first : new Uint8Array(0);
+    // council-app.js runs in a vm context, so its Uint8Array is another realm's;
+    // anything array-like is copied so a scenario can read the file's bytes.
+    this.__bytes = first instanceof Uint8Array ? first
+      : (first && typeof first.length === "number" ? Uint8Array.from(first) : new Uint8Array(0));
   }
 }
 
@@ -577,6 +618,9 @@ function spawnSession(windowState = {}) {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const text = (value) => String((value && value.textContent) || "");
+// A button built from <span> children has no own text in this stub.
+const deepText = (node) => String((node && node.textContent) || "")
+  + (((node && node.children) || []).map(deepText).join(""));
 
 function find(session, id) {
   const found = session.root._descendants().find((n) => n.id === id);
@@ -896,7 +940,7 @@ const SCENARIOS = {
       const arc = find(s, "councilMeetingArchive");
       return arc ? arc.querySelectorAll(".council-archive-item").map((li) => {
         const button = li.querySelector("button");
-        return button ? String(button.textContent).trim().replace(/ \(.*/, "") : "";
+        return button ? deepText(button).trim().replace(/ \(.*/, "") : "";
       }) : [];
     };
     const saveSpeech = async (eventName) => {
@@ -1037,6 +1081,68 @@ const SCENARIOS = {
     return { status, selected, payload, generated,
       reopened: find(reopened, "councilBookOutput").value,
       endpoints: endpointSet(), alerts, pageErrors };
+  },
+  async meeting_archive() {
+    // #6446: a meeting record is stored as <회의명>.txt with doc_kind="meeting". The
+    // archive must read BOTH rules — the recorded kind, and the name rule that files
+    // stored before kinds existed still carry — and a reopen must bring back the
+    // body, the meeting time AND the meeting name that names the export.
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    stored("예전 회의 기록.txt", "옛 회의 본문입니다.", "text/plain");
+
+    const A = spawnSession();
+    await A.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    const openMeeting = async (session) => {
+      const card = session.root.querySelectorAll(".council-card-select")
+        .find((b) => b.dataset.tool === "meeting");
+      await card.dispatch("click");
+      await sleep(40);
+    };
+    await openMeeting(A);
+    const formA = find(A, "councilMeetingForm");
+    formA.querySelector("[name=title]").value = "11월 민원 회의";
+    formA.querySelector("[name=when]").value = "2026-11-01T14:00";
+    formA.querySelector("[name=content]").value = "항구 도로 보수 일정을 논의했습니다.";
+    await formA.dispatch("submit");
+    await sleep(30);
+    const draft = find(A, "councilMeetingOutput").value;
+    await find(A, "councilMeetingSave").dispatch("click");
+    await sleep(60);
+    const labelsA = find(A, "councilMeetingArchive").querySelectorAll("li button")
+      .map(deepText).filter((label) => label.indexOf("자)") >= 0);
+    // Re-entry: a fresh session of the same account, the stored list rebuilt.
+    const B = spawnSession();
+    await B.ctx.window.PadiemCouncilApps.init();
+    await sleep(60);
+    await openMeeting(B);
+    const archiveB = find(B, "councilMeetingArchive");
+    const labelsB = archiveB.querySelectorAll("li button")
+      .map(deepText).filter((label) => label.indexOf("자)") >= 0);
+    const row = archiveB.querySelectorAll("li button")
+      .find((b) => deepText(b).indexOf("11월 민원 회의") === 0);
+    if (!row) throw new Error("saved meeting row missing: " + JSON.stringify(labelsB));
+    await row.dispatch("click");
+    await sleep(40);
+
+    const bodyB = find(B, "councilMeetingBody");
+    const sectionB = find(B, "council-meeting");
+    const formB = find(B, "councilMeetingForm");
+    return {
+      draft,
+      labelsA,
+      labelsB,
+      storedKinds: storedFiles.map((f) => [f.name, f.doc_kind || ""]),
+      reopened: find(B, "councilMeetingOutput").value,
+      reopenedTitle: formB.querySelector("[name=title]").value,
+      reopenedWhen: formB.querySelector("[name=when]").value,
+      exportArmed: !find(B, "councilMeetingDownloadHwpx").disabled,
+      bodyScrolled: bodyB.scrolledIntoView !== undefined,
+      sectionScrolled: sectionB.scrolledIntoView !== undefined,
+      endpoints: endpointSet(),
+      alerts,
+      pageErrors,
+    };
   },
   async book() {
     // #5942: the book is a product, so it must survive a page refresh. One
@@ -1226,7 +1332,7 @@ const SCENARIOS = {
     // the archive lists the stored record; reopen it into the editor
     const archiveButton = find(session, "councilMeetingArchive")
       .querySelectorAll("li button")
-      .find((b) => b.textContent.includes("10월 주민 민원 회의"));
+      .find((b) => deepText(b).includes("10월 주민 민원 회의"));
     if (!archiveButton) throw new Error("archive record button missing");
     find(session, "councilMeetingOutput").value = "";
     await archiveButton.dispatch("click");
@@ -1750,7 +1856,7 @@ const SCENARIOS = {
           options.onSelect({ fileId: "pc-photo-1", name: "현장사진.png" });
           return;
         }
-        options.onSelect({ fileId: "pc-doc-1", name: "예전 축사.hwp" });
+        options.onSelect({ fileId: "pc-doc-1", name: "예전 축사.txt" });
       },
     };
     const state = { PadiemPcFileExchange: exchange };
@@ -1807,6 +1913,18 @@ const SCENARIOS = {
     const outputB = find(B, "councilSpeechOutput").value;
     await find(B, "councilSpeechPcSave").dispatch("click");
     await sleep(30);
+    // 2026-11-02: a document save first asks which format to write. The
+    // 텍스트 choice keeps the original text flow, so the dated-name contract
+    // below is still exercised through the shipped chooser.
+    const saveChooserLine = find(B, "councilSpeechNotice");
+    const saveChooser = {
+      text: text(saveChooserLine),
+      choices: saveChooserLine.querySelectorAll("button").map((b) => text(b)),
+    };
+    const textChoice = saveChooserLine.querySelectorAll("button")
+      .find((b) => text(b) === "텍스트");
+    await textChoice.dispatch("click");
+    await sleep(30);
     const saveNoticeB = text(find(B, "councilSpeechNotice"));
     const savedB = pcSaves.length ? pcSaves[pcSaves.length - 1] : null;
     const storedNameB = storedFiles.map((f) => f.name);
@@ -1833,12 +1951,13 @@ const SCENARIOS = {
     return {
       noPc, importedB,
       speechPrompt: promptB && promptB.messages && promptB.messages[0] ? promptB.messages[0].content : "",
-      outputB, saveNoticeB, savedB,
+      outputB, saveChooser, saveNoticeB, savedB,
       savedIsNewName: savedB ? !storedNameB.includes(savedB.fileName) : false,
       pcDispatch: pcDispatches.slice(),
       photoCount, photoNames, photoUpload,
       snsPrompt: snsPromptB && snsPromptB.messages && snsPromptB.messages[0] ? snsPromptB.messages[0].content : "",
       openedModes: opened.map((o) => o.mode || "import"),
+      accepts: opened.map((o) => o.accept || null),
       endpoints: endpointSet(), alerts, pageErrors,
     };
   },
@@ -1891,7 +2010,7 @@ const SCENARIOS = {
     const rows = () => archive.querySelectorAll(".council-archive-item");
     const names = () => rows().map((li) => {
       const buttons = li.querySelectorAll("button");
-      return buttons.length ? text(buttons[0]) : "";
+      return buttons.length ? deepText(buttons[0]) : "";
     });
     const before = names();
     const secondUp = rows()[1].querySelectorAll(".council-record-move")[0];
@@ -2076,6 +2195,274 @@ const SCENARIOS = {
     out.speech.docx = toB64(out.speech.docx);
     out.book.hwpx = toB64(out.book.hwpx);
     out.book.docx = toB64(out.book.docx);
+    return out;
+  },
+  async pc_save_binary() {
+    // 2026-11-02: 한글/워드 '내 PC에 저장' — 버튼 → 형식 선택(기본 한글) →
+    // 프로젝트 이진 업로드(바이트·형식·파일명·doc_kind) → pc/save(file_id) →
+    // 폴더가 이름으로 들어간 완료 문장. 실패 경로(업로드 실패·PC 없음)도 함께.
+    downloads.length = 0;
+    downloadDetails.length = 0;
+    binaryUploads.length = 0;
+    pcSavesPosted.length = 0;
+    binaryUploadFail = false;
+    pcSaveFails = false;
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    pcLinks = [{
+      link_id: "pclink_" + "1".repeat(32), label: "내 PC", state: "active",
+      mesh_node_id: "node/meshdomain1/qa-pc",
+      roots: [{ state: "active", path: "C:/Users/qa" }],
+    }];
+    const exchange = {
+      open(options) {
+        // the real dialog posts the file_id save, then completes with the folder
+        void fetch("/api/pc/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: "문서/2026", file_id: options.fileId }),
+        }).then(async (res) => {
+          const body = await res.json();
+          // The real dialog completes only on ok — a refused save never calls
+          // onSave, so the notice line can never claim a success that did not
+          // happen (the same contract chat's pc_file_exchange_harness pins).
+          if (body.ok !== true) return;
+          if (options.onSave) options.onSave(body.saved || {}, "문서");
+        });
+      },
+    };
+    const A = spawnSession({ PadiemPcFileExchange: exchange });
+    await A.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    const formA = find(A, "councilSpeechForm");
+    formA.querySelector("[name=event]").value = "주민 감사의 밤";
+    formA.querySelector("[name=date]").value = "2026-11-02";
+    find(A, "councilSpeechOutput").value = "존경하는 시민 여러분,\n감사합니다.";
+
+    await find(A, "councilSpeechPcSave").dispatch("click");
+    await sleep(20);
+    const chooser = find(A, "councilSpeechNotice");
+    const choices = chooser.querySelectorAll("button").map((b) => text(b));
+    await chooser.querySelectorAll("button")[0].dispatch("click");
+    await sleep(60);
+    const out = {
+      choices,
+      upload: binaryUploads[0] ? {
+        name: binaryUploads[0].name,
+        mediaType: binaryUploads[0].mediaType,
+        docKind: binaryUploads[0].docKind,
+        bytes: Buffer.from(binaryUploads[0].bytes).toString("base64"),
+      } : null,
+      save: pcSavesPosted[0] || null,
+      notice: text(chooser),
+    };
+
+    // 업로드 실패 → 한국어 안내 + 다시 시도 버튼.
+    binaryUploadFail = true;
+    await find(A, "councilSpeechPcSave").dispatch("click");
+    await sleep(20);
+    const retryChooser = find(A, "councilSpeechNotice");
+    await retryChooser.querySelectorAll("button")
+      .find((b) => text(b) === "한글").dispatch("click");
+    await sleep(40);
+    out.uploadFail = {
+      notice: text(retryChooser),
+      hasRetry: retryChooser.querySelectorAll("button").some((b) => text(b) === "다시 시도"),
+    };
+
+    // pc/save 실패 → 실제 대화상자의 계약(실패 시 onSave 없음)에 따라 성공
+    // 문장이 오지 않는다. 대화상자 자체의 실패 문구는 chat 쪽
+    // test_5895_pc_file_exchange_component가 같은 계약으로 고정하므로, 여기선
+    // 의원 앱 알림이 거짓 성공하지 않는 것만 고정한다.
+    binaryUploadFail = false;
+    pcSaveFails = true;
+    await find(A, "councilSpeechPcSave").dispatch("click");
+    await sleep(20);
+    const failChooser = find(A, "councilSpeechNotice");
+    await failChooser.querySelectorAll("button")
+      .find((b) => text(b) === "한글").dispatch("click");
+    await sleep(60);
+    out.saveFail = {
+      notice: text(failChooser),
+      savesAfter: pcSavesPosted.length,
+    };
+    pcSaveFails = false;
+
+    // PC 연결 없음 → 기존 '컴퓨터 연결하기' 안내(업로드 없이).
+    binaryUploadFail = false;
+    pcLinks = [];
+    await find(A, "councilSpeechPcSave").dispatch("click");
+    await sleep(20);
+    out.noPc = {
+      notice: text(find(A, "councilSpeechNotice")),
+      uploadsAfter: binaryUploads.length,
+      savesAfter: pcSavesPosted.length,
+    };
+
+    // 워드(DOCX)도 같은 흐름이다 — SNS 게시글은 결과 종류(sns)로 묶인다.
+    pcLinks = [{
+      link_id: "pclink_" + "1".repeat(32), label: "내 PC", state: "active",
+      mesh_node_id: "node/meshdomain1/qa-pc",
+      roots: [{ state: "active", path: "C:/Users/qa" }],
+    }];
+    const uploadsBeforeDocx = binaryUploads.length;
+    const savesBeforeDocx = pcSavesPosted.length;
+    await A.ctx.window.PadiemCouncilApps.select("sns", false);
+    await sleep(40);
+    find(A, "councilSnsOutput").value = "오늘 주민 감사의 밤을 함께했습니다.";
+    await find(A, "councilSnsPcSave").dispatch("click");
+    await sleep(20);
+    const snsChooser = find(A, "councilSnsNotice");
+    await snsChooser.querySelectorAll("button")
+      .find((b) => text(b) === "워드").dispatch("click");
+    await sleep(60);
+    out.docx = {
+      upload: binaryUploads[uploadsBeforeDocx] ? {
+        name: binaryUploads[uploadsBeforeDocx].name,
+        mediaType: binaryUploads[uploadsBeforeDocx].mediaType,
+        docKind: binaryUploads[uploadsBeforeDocx].docKind,
+      } : null,
+      savePosted: pcSavesPosted.length === savesBeforeDocx + 1,
+      notice: text(snsChooser),
+    };
+    return out;
+  },
+
+  async pc_import() {
+    // 2026-11-02: 축사·SNS 참고 글의 "내 PC에서 가져오기"가 문서까지 잡는다.
+    // 텍스트(.txt·.md)는 기존 /api/pc/reference 읽기, 문서(.hwpx·.docx·.pdf)는
+    // /api/pc/file 원본 바이트 → #6584 tus 프로젝트 파일 경로 → Chat 추출 결과
+    // (GET …/files/{id}의 file.content). 구형 .hwp는 #6598 사유 코드 문장으로
+    // 거절하고, 다른 계정의 PC 파일은 서버 404 뒤 조용한 안내로 끝난다.
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    pcLinks = [{ state: "active" }];
+    pcReferenceText = "예전 인사말 원고입니다. 문체를 참고하세요.";
+    pcReferenceName = "예전 인사말.md";
+    pcReferenceReads.length = 0;
+    pcDispatches.length = 0;
+    storedFiles.length = 0;
+    pcFileBytes = { "pc-doc-hwpx": new Uint8Array([0x50, 0x4b, 0x03, 0x04, 0x2d, 0x00]) };
+    pcFileRefusals = { "pc-file-other-account": true };
+    pcExtractedText = "문서에서 추출한 예전 축사 본문입니다.";
+    const opened = [];
+    const uploads = [];
+    let pick = null;
+    const exchange = {
+      open(options) {
+        opened.push({ accept: options.accept || null, mode: options.mode || "import" });
+        if (options.onSelect && pick) {
+          const chosen = pick;
+          pick = null;
+          options.onSelect(chosen);
+        }
+      },
+    };
+    const uploader = {
+      upload(options) {
+        if (pcUploadFails) return Promise.reject(new Error("project-upload-unavailable"));
+        const file = options.file || {};
+        uploads.push({
+          name: file.name, projectId: options.projectId,
+          mediaType: options.mediaType, byteCount: file.__bytes ? file.__bytes.length : 0,
+        });
+        const storedFile = stored("예전 축사.hwpx", pcExtractedText, options.mediaType);
+        return Promise.resolve({ file: { id: storedFile.id, name: storedFile.name } });
+      },
+    };
+    const state = { PadiemPcFileExchange: exchange, PadiemProjectFileUpload: uploader };
+    const A = spawnSession(state);
+    await A.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    await A.root.querySelectorAll(".council-card-select")[0].dispatch("click");
+    await sleep(40);
+    const form = find(A, "councilSpeechForm");
+    const pickBtn = form.querySelector(".council-pc-ref-pick");
+    const status = () => text(form.querySelector(".council-pc-ref-status"));
+    const previews = () => form.querySelectorAll(".council-pc-ref-preview").map((n) => text(n));
+
+    // 문서(.hwpx): 원본 바이트 → tus 프로젝트 파일 → Chat 추출 본문이 참고 글로.
+    pick = { fileId: "pc-doc-hwpx", name: "예전 축사.hwpx" };
+    await pickBtn.dispatch("click");
+    await sleep(80);
+    const doc = {
+      accept: opened[0] ? opened[0].accept : null,
+      dispatches: pcDispatches.slice(),
+      upload: uploads[0] || null,
+      preview: previews()[0] || "",
+    };
+
+    // 구형 .hwp: 어떤 읽기도 부르지 않고 #6598 사유 코드의 문장으로 거절한다.
+    pick = { fileId: "pc-doc-hwp", name: "옛날 축사.hwp" };
+    await pickBtn.dispatch("click");
+    await sleep(40);
+    const hwp = {
+      status: status(),
+      dispatchesAfter: pcDispatches.length,
+      uploadsAfter: uploads.length,
+      referenceReadsAfter: pcReferenceReads.length,
+    };
+
+    // 텍스트(.md): 기존 /api/pc/reference 읽기 그대로.
+    pick = { fileId: "pc-doc-md", name: "예전 인사말.md" };
+    await pickBtn.dispatch("click");
+    await sleep(40);
+    const textMd = {
+      reads: pcReferenceReads.slice(),
+      previews: previews(),
+      status: status(),
+    };
+
+    // 다른 계정의 PC 파일: 서버가 소유자 범위 404로 거절 — 조용한 안내, 업로드 없음.
+    pick = { fileId: "pc-file-other-account", name: "남의 문서.hwpx" };
+    await pickBtn.dispatch("click");
+    await sleep(40);
+    const foreign = {
+      status: status(),
+      dispatchesAfter: pcDispatches.length,
+      uploadsAfter: uploads.length,
+    };
+
+    // tus 업로드 실패: 기존 '프로젝트에 올리지 못했습니다' 안내.
+    pcUploadFails = true;
+    pick = { fileId: "pc-doc-hwpx", name: "예전 축사.hwpx" };
+    await pickBtn.dispatch("click");
+    await sleep(40);
+    const uploadFail = { status: status(), uploadsAfter: uploads.length };
+    pcUploadFails = false;
+
+    // 추출 본문이 비면(서버가 빈 content를 답함) 참고 글로 넣지 않는다.
+    pcExtractedText = "";
+    pick = { fileId: "pc-doc-hwpx", name: "예전 축사.hwpx" };
+    await pickBtn.dispatch("click");
+    await sleep(60);
+    const emptyDoc = { status: status() };
+    pcExtractedText = "문서에서 추출한 예전 축사 본문입니다.";
+
+    // SNS 참고 글도 같은 형식 필터를 건다.
+    await A.ctx.window.PadiemCouncilApps.select("sns", false);
+    await sleep(40);
+    await find(A, "councilSnsForm").querySelector(".council-pc-ref-pick").dispatch("click");
+    await sleep(40);
+    const snsAccept = opened[opened.length - 1] ? opened[opened.length - 1].accept : null;
+
+    // 두 참고 글이 모두 프롬프트로 간다.
+    await A.ctx.window.PadiemCouncilApps.select("speech", false);
+    await sleep(40);
+    const speech = find(A, "councilSpeechForm");
+    speech.querySelector("[name=event]").value = "문서 참고 검증";
+    await speech.dispatch("submit");
+    await sleep(40);
+    const prompt = chatPayloads[chatPayloads.length - 1];
+    const out = {
+      doc, hwp, textMd, foreign, uploadFail, emptyDoc, snsAccept,
+      speechPrompt: prompt && prompt.messages && prompt.messages[0] ? prompt.messages[0].content : "",
+      endpoints: endpointSet(),
+      alerts, pageErrors,
+    };
+    pcLinks = [];
+    pcFileBytes = null;
+    pcFileRefusals = null;
+    pcReferenceText = "예전 축사 원고입니다. 문체를 참고하세요.";
+    pcReferenceName = "예전 축사.txt";
     return out;
   },
 };

@@ -1217,3 +1217,103 @@ def test_unverified_owner_and_unconfigured_source_fail_closed():
     ))
     assert unconfigured.status == "unconfigured"
     assert "확인하지 못했습니다" in render_pc_work_context(unconfigured)
+
+
+def test_connector_scope_runs_the_two_session_reads_in_parallel():
+    """#6460 4-1: the B62 and B54 session reads are two independent identity
+    RPCs over the same owner id, so they overlap; the connector-scope port
+    waits for the B54 session id and the verdict is unchanged."""
+    from app.pc_work_context import resolve_pc_connector_scope
+
+    identity = Identity()
+    inflight = {"now": 0, "peak": 0}
+    b62 = SimpleNamespace(
+        session_id="sess-b62", tenant_id=WORKSPACE,
+        subject=SimpleNamespace(subject_id="sub-shared-owner"),
+    )
+    b54 = SimpleNamespace(
+        session_id="sess-b54", tenant_id=WORKSPACE,
+        subject=SimpleNamespace(subject_id="sub-shared-owner"),
+    )
+
+    def tracked(body):
+        async def run():
+            inflight["now"] += 1
+            inflight["peak"] = max(inflight["peak"], inflight["now"])
+            await asyncio.sleep(0.05)
+            value = body()
+            inflight["now"] -= 1
+            return value
+        return run()
+
+    async def owner_session(_request, _owner_id):
+        return await tracked(lambda: (WORKSPACE, b62))
+
+    async def b54_bridge(_identity, _user_id):
+        return await tracked(lambda: SimpleNamespace(auth_session=b54))
+
+    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+        control_plane_identity_authority=identity,
+        identity_shadow_store=SimpleNamespace(),
+    )))
+
+    with (
+        patch("app.pc_work_context._resolve_owner_session", side_effect=owner_session),
+        patch(
+            "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
+            side_effect=b54_bridge,
+        ),
+    ):
+        result = asyncio.run(resolve_pc_connector_scope(
+            request, owner_id=OWNER, workspace_id=WORKSPACE,
+        ))
+    assert result.ready is True
+    assert result.session_id == "sess-b54"
+    assert result.account_ref == CONNECTOR_ACCOUNT
+    assert inflight["peak"] == 2, inflight
+    assert identity.calls == ["sess-b54"]
+
+
+def test_connector_scope_refusal_is_identical_when_either_read_fails():
+    """One failed read is still the same owner-unavailable refusal, whichever
+    of the two parallel reads fails."""
+    from app.pc_work_context import resolve_pc_connector_scope
+
+    for broken in ("b62", "b54"):
+        identity = Identity()
+        b62 = SimpleNamespace(
+            session_id="sess-b62", tenant_id=WORKSPACE,
+            subject=SimpleNamespace(subject_id="sub-shared-owner"),
+        )
+        b54 = SimpleNamespace(
+            session_id="sess-b54", tenant_id=WORKSPACE,
+            subject=SimpleNamespace(subject_id="sub-shared-owner"),
+        )
+
+        async def owner_session(_request, _owner_id):
+            if broken == "b62":
+                raise RuntimeError("SECRET_B62_PATH")
+            return WORKSPACE, b62
+
+        async def b54_bridge(_identity, _user_id):
+            if broken == "b54":
+                raise RuntimeError("SECRET_B54_PATH")
+            return SimpleNamespace(auth_session=b54)
+
+        request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+            control_plane_identity_authority=identity,
+            identity_shadow_store=SimpleNamespace(),
+        )))
+
+        with (
+            patch("app.pc_work_context._resolve_owner_session", side_effect=owner_session),
+            patch(
+                "padiem_control_plane.b54_identity_bridge.resolve_current_b54_canonical_session",
+                side_effect=b54_bridge,
+            ),
+        ):
+            result = asyncio.run(resolve_pc_connector_scope(
+                request, owner_id=OWNER, workspace_id=WORKSPACE,
+            ))
+        assert result.ready is False, broken
+        assert identity.calls == [], broken  # the scope port is never reached

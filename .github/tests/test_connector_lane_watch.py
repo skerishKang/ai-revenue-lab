@@ -254,6 +254,14 @@ class TestTheCom2Branch(unittest.TestCase):
              chat=(200, 1102 and None)):
         from unittest import mock
 
+        # NOW pins the fixture timestamps at import time, but watch.run() reads
+        # the real clock (connector_lane_watch.py `now = time.time()`). A full
+        # suite reaches this test minutes later, so the fresh beat aged past
+        # BEAT_STALL_SECONDS and the run that must be ok turned into a stall.
+        # Refresh it per execution; every assertion stays consistent with it.
+        global NOW
+        NOW = time.time()
+
         calls = {"lane": 0, "queue_health": 0}
 
         def lane_stub(origin, secret, devices):

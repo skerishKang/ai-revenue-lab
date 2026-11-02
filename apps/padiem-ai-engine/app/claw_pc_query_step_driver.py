@@ -1479,15 +1479,20 @@ def _build_pc_query_binding(*, service, request_factory, secret, runtime: ToolRu
             first_chunk=(chunk_handler if tool_id == PC_READ_FILE_TOOL_ID else None),
         ), tool_id=tool_id)
         runtime.register(spec(), handlers[tool_id])
-    runtime.register(pc_read_chunk_tool_spec(), _pc_observing_handler(
-        chunk_handler, tool_id=PC_READ_CHUNK_TOOL_ID))
+    handlers[PC_READ_CHUNK_TOOL_ID] = _pc_observing_handler(
+        chunk_handler, tool_id=PC_READ_CHUNK_TOOL_ID)
+    runtime.register(pc_read_chunk_tool_spec(), handlers[PC_READ_CHUNK_TOOL_ID])
     for tool_id, spec, search_mode in (
         (PC_SEARCH_FILES_TOOL_ID, pc_search_files_tool_spec, "name"),
         (PC_SEARCH_CONTENT_TOOL_ID, pc_search_content_tool_spec, "content"),
     ):
-        runtime.register(spec(), _pc_observing_handler(_make_pc_search_handler(
+        # The batch executor runs the very same handler the standalone tool runs,
+        # so a step inside a batch passes the same owner check, path isolation
+        # and argument validation as the same step asked for on its own.
+        handlers[tool_id] = _pc_observing_handler(_make_pc_search_handler(
             tool_id=tool_id, search_mode=search_mode, service=service,
-            request_factory=request_factory, secret=secret), tool_id=tool_id))
+            request_factory=request_factory, secret=secret), tool_id=tool_id)
+        runtime.register(spec(), handlers[tool_id])
     from kagent.pc_remote_tools import remote_tool_specs
     from app.pc_remote_tools import make_remote_handler
     for spec in remote_tool_specs():
@@ -1928,7 +1933,7 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
             "- claw.pc.start_job {\"operation\":{\"op\":\"list|read|write|move|delete\",\"path\":\"<approved path>\"}}: start the existing file action in background and return job_id; status is not completion.\n"
             "- claw.pc.job_status {\"job_id\":\"<receipt>\"}: inspect progress.\n"
             "- claw.pc.job_output {\"job_id\":\"<receipt>\",\"offset\":0,\"length\":65536}: read verified job output.\n"
-            "- claw.pc.batch {\"operations\":[{\"op\":\"list\",\"path\":\".\"}],\"stop_on_error\":true}: execute existing file operations after all actions pass the same evidence/delegation checks.\n"
+            "- claw.pc.batch {\"operations\":[{\"op\":\"search_name\",\"query\":\"...\",\"path\":\".\"},{\"op\":\"list\",\"path\":\"reports\"},{\"op\":\"read_chunk\",\"path\":\"a.md\",\"offset\":0}],\"stop_on_error\":true}: run several existing PC steps in one call. Use it instead of asking one turn at a time when the next step does not depend on the previous answer — search, list, read and read_chunk are the read family. write/move/delete stay one action per call so the backup and verification of a single change stay visible. Every step passes the same evidence/delegation checks.\n"
             "- claw.pc.recall_context {\"handle\":\"<archive>\",\"source_id\":\"<source>\",\"offset\":0,\"length\":4096}: retrieve original role-preserved material referenced by a context summary.\n"
             "Stored output head/tail is a preview, never the entire file. Read/search the handle for omitted evidence. A background receipt means pending work, not success.\n"
             + scope_instruction

@@ -543,6 +543,14 @@ _STUB_SLEEP = """#!/usr/bin/env bash
 exit 0
 """
 
+# The workflow steps invoke `python3` for the canonical resolver and the
+# mutation-evidence primitive. On a Windows host `python3` resolves to the
+# Microsoft Store alias stub (exit 49), so the harness pins it to the
+# interpreter running this test suite: same script, real execution.
+_STUB_PYTHON3 = """#!/usr/bin/env bash
+exec "%s" "$@"
+""" % _native(sys.executable)
+
 # The step runs with working-directory apps/korean-ai-platform, so the harness
 # reproduces that cwd instead of running from the workspace root.
 #
@@ -553,10 +561,10 @@ exit 0
 # negative assertions would pass for the wrong reason.
 _DRIVER = """#!/usr/bin/env bash
 set -uo pipefail
-chmod +x "${STUB_DIR}/curl" "${STUB_DIR}/npx" "${STUB_DIR}/sleep"
+chmod +x "${STUB_DIR}/curl" "${STUB_DIR}/npx" "${STUB_DIR}/sleep" "${STUB_DIR}/python3"
 STUB_NATIVE="$(cd "${STUB_DIR}" && pwd)"
 export PATH="${STUB_NATIVE}:${PATH}"
-for stubbed in curl npx sleep; do
+for stubbed in curl npx sleep python3; do
   resolved="$(command -v "${stubbed}" || true)"
   if [ "${resolved}" != "${STUB_NATIVE}/${stubbed}" ]; then
     printf 'HARNESS_ABORT=%s=%s\\n' "${stubbed}" "${resolved}"
@@ -641,7 +649,8 @@ def _run_rollback_step(tmp_path, *, bodies, target=TARGET_VERSION, **flags) -> _
     runner_temp = root / "runner-temp"
     stub.mkdir(parents=True, exist_ok=True)
     runner_temp.mkdir(parents=True, exist_ok=True)
-    for name, body in (("curl", _STUB_CURL), ("npx", _STUB_NPX), ("sleep", _STUB_SLEEP)):
+    for name, body in (("curl", _STUB_CURL), ("npx", _STUB_NPX), ("sleep", _STUB_SLEEP),
+                       ("python3", _STUB_PYTHON3)):
         (stub / name).write_text(body, encoding="utf-8", newline="\n")
     step = root / "step.sh"
     step.write_text(_rollback_run(), encoding="utf-8", newline="\n")
@@ -654,6 +663,9 @@ def _run_rollback_step(tmp_path, *, bodies, target=TARGET_VERSION, **flags) -> _
         "RUNNER_TEMP": _native(runner_temp),
         "STEP_SCRIPT": _native(step),
         "ROLLBACK_TARGET": target,
+        # The workflow step appends its bounded evidence to the job summary;
+        # under `set -u` an unset name would kill the step after the real work.
+        "GITHUB_STEP_SUMMARY": _native(runner_temp / "step-summary.txt"),
         "B14_SERVED_VERSION_SCRIPTS": _native(SCRIPTS_DIR),
         "CLOUDFLARE_API_TOKEN": "stub-token-must-not-be-echoed",
         "CLOUDFLARE_ACCOUNT_ID": "stub-account-must-not-be-echoed",
@@ -1138,12 +1150,12 @@ exit 0
 # from an assumption into an observed consequence.
 _DEPLOY_DRIVER = """#!/usr/bin/env bash
 set -uo pipefail
-for stubbed in curl npx sleep git; do
+for stubbed in curl npx sleep git python3; do
   chmod +x "${STUB_DIR}/${stubbed}"
 done
 STUB_NATIVE="$(cd "${STUB_DIR}" && pwd)"
 export PATH="${STUB_NATIVE}:${PATH}"
-for stubbed in curl npx sleep git; do
+for stubbed in curl npx sleep git python3; do
   resolved="$(command -v "${stubbed}" || true)"
   if [ "${resolved}" != "${STUB_NATIVE}/${stubbed}" ]; then
     printf 'HARNESS_ABORT=%s=%s\\n' "${stubbed}" "${resolved}"
@@ -1216,6 +1228,7 @@ def _run_deploy_chain(
         ("npx", _STUB_NPX),
         ("sleep", _STUB_SLEEP),
         ("git", _STUB_GIT),
+        ("python3", _STUB_PYTHON3),
     ):
         (stub / name).write_text(text, encoding="utf-8", newline="\n")
     app = workspace / "apps" / "korean-ai-platform"
@@ -1248,6 +1261,7 @@ def _run_deploy_chain(
         "STEPS_DIR": _native(steps_dir),
         "RUNNER_TEMP": _native(runner_temp),
         "GITHUB_WORKSPACE": _native(workspace),
+        "GITHUB_STEP_SUMMARY": _native(runner_temp / "step-summary.txt"),
         "B14_SERVED_VERSION_SCRIPTS": _native(SCRIPTS_DIR),
         "B14_TARGET_SHA": TARGET_SHA,
         "GIT_HEAD_SHA": TARGET_SHA,

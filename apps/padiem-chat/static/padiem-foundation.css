@@ -185,6 +185,18 @@ a:focus-visible {
   transform: translateX(2px);
 }
 
+/* #5882: 목록 끝 "더 보기" — 손가락 기준 44px, 읽는 글씨 14px. */
+:is(.project-more, .output-more, .memory-more) {
+  min-height: 44px;
+  font-size: 14px;
+  justify-content: center;
+  text-align: center;
+}
+.project-more:disabled {
+  opacity: .55;
+  cursor: default;
+}
+
 .side-icon {
   color: rgba(255, 255, 255, .68);
 }

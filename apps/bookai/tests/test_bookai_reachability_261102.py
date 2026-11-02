@@ -105,6 +105,15 @@ MENU_ROWS = """() => Array.from(document.querySelectorAll('#smalOverflowMenu .sm
 # screen text, so the static source check below only pins the visible strings.
 BANNED_COPY = re.compile(r"데모|demo|프로토타입|prototype|preview", re.I)
 
+# Markup text only: comments, <script> bodies and attribute values are not screen
+# copy, and the app legitimately keeps identifiers such as 'bible-demo' or
+# `Object.prototype`. What a reader sees before the scripts run is the text between
+# tags, so the static pass strips everything else -- the point is screen text, not
+# developer comments.
+_MARKUP = re.sub(r"<!--.*?-->", " ", INDEX, flags=re.S)
+_MARKUP = re.sub(r"<(script|style)\b.*?</\1>", " ", _MARKUP, flags=re.S | re.I)
+MARKUP_TEXT = re.sub(r"<[^>]+>", " ", _MARKUP)
+
 SCREEN_COPY = """() => {
   const banned = new RegExp(%r, 'i');
   const hits = [];
@@ -357,7 +366,7 @@ def test_no_demo_or_prototype_copy_reaches_the_screen(base_url, width, height):
             browser.close()
     assert not any(found.values()), "demo/prototype wording is still on screen: %s" % found
     for leaked in ("데모", "프로토타입", "DEMO PREVIEW", "NO FALSE TEXT"):
-        assert leaked.lower() not in INDEX.lower(), "index.html still carries %r" % leaked
+        assert leaked.lower() not in MARKUP_TEXT.lower(), "index.html markup still carries %r" % leaked
 
 
 def test_the_cloud_sheet_describes_login_as_it_is(base_url):

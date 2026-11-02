@@ -11,9 +11,14 @@ from __future__ import annotations
 import asyncio
 import inspect
 import json
+import re
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
+from kagent.connector_version_compat import (
+    connector_version_thresholds,
+    derive_device_compatibility,
+)
 from kagent.local_agent_pairing import DeviceLifecycle
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 from starlette.requests import Request
@@ -57,6 +62,43 @@ class UnconfiguredDeviceDirectorySource:
     async def list_devices(self, *, owner_id: str, workspace_id: str, now: datetime) -> Any:
         del owner_id, workspace_id, now
         return None
+
+
+# Connector self-reported version (``clientVersion``), when a trusted source
+# ever carries one. No wire in the repo sends it today, so every row simply
+# omits it and the compatibility judgment below never fires — today's exact
+# presentation, unchanged.
+_SAFE_CLIENT_VERSION = re.compile(r"^[0-9A-Za-z][0-9A-Za-z.+\-]{0,31}$")
+_NOTICE_WORTHY_COMPATIBILITY = frozenset({"update_available", "update_required"})
+
+
+def _client_version(value: Any) -> str | None:
+    """One bounded, shape-checked client version, or ``None`` (drop, not fail)."""
+
+    if not isinstance(value, str):
+        return None
+    trimmed = value.strip()
+    if not trimmed or len(trimmed) > 32 or _SAFE_CLIENT_VERSION.fullmatch(trimmed) is None:
+        return None
+    return trimmed
+
+
+def _row_compatibility(client_version: str | None) -> str | None:
+    """The display judgment for one row, or ``None`` when there is nothing to show.
+
+    Pure presentation: the kagent judgment runs with the deployment env
+    (``PADIEM_CONNECTOR_LATEST_VERSION`` / ``PADIEM_CONNECTOR_MIN_VERSION``)
+    and only the two update notices are worth a row field. Unknown or current
+    stays silent, so no row ever looks blocked by a version it never reported.
+    """
+
+    if client_version is None:
+        return None
+    latest, minimum = connector_version_thresholds()
+    compatibility = derive_device_compatibility(
+        client_version, latest_version=latest, minimum_version=minimum,
+    )
+    return compatibility.value if compatibility.value in _NOTICE_WORTHY_COMPATIBILITY else None
 
 
 def _response(payload: Mapping[str, Any], status: int = 200) -> JSONResponse:
@@ -153,6 +195,7 @@ class BrokerDeviceDirectorySource:
             online = state is DeviceLifecycle.ONLINE
             revoked = state is DeviceLifecycle.REVOKED
             expired = state is DeviceLifecycle.CREDENTIAL_EXPIRED
+            client_version = _client_version(facts.get("client_version"))
             items.append({
                 "deviceId": device_id,
                 "deviceName": None,
@@ -161,6 +204,7 @@ class BrokerDeviceDirectorySource:
                 "usable": online,
                 "revoked": revoked,
                 "expired": expired,
+                **({"clientVersion": client_version} if client_version else {}),
                 **({"usagePaused": paused} if paused is not None else {}),
             })
         if callable(self._android_profiles) and items and binding_refs:
@@ -330,9 +374,11 @@ async def _read_device_directory(
         if (device_name is not None and (not isinstance(device_name, str) or len(device_name) > 80)
             or platform is not None and (not isinstance(platform, str) or len(platform) > 40)):
             return _response({"ok": True, "available": False, "reason": "device_directory_read_failed"})
+        compatibility = _row_compatibility(_client_version(row.get("clientVersion")))
         entry = {
             "deviceId": ident, "deviceName": device_name, "platform": platform,
             "state": state, "usable": usable, "revoked": revoked, "expired": expired,
+            **({"compatibility": compatibility} if compatibility else {}),
         }
         if platform == "android":
             # #5080: only the one capability this adapter implements, and only

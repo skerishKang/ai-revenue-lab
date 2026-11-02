@@ -26,6 +26,7 @@ from starlette.responses import JSONResponse
 from .approved_memory import (
     ApprovedMemoryError,
     MAX_APPROVED_MEMORIES,
+    ListCursorError,
     canonicalize_proposal,
     validate_memory_id,
 )
@@ -202,18 +203,39 @@ async def claw_memory_list(request: Request) -> JSONResponse:
         return _error(400, "invalid_limit", "limit 는 정수여야 합니다.")
     if limit < 1:
         return _error(400, "invalid_limit", "limit 는 1 이상이어야 합니다.")
+    # #5882: 목록은 페이지로 이어진다. 커서 없는 호출은 예전 그대로 첫 페이지(30건)를
+    # 받고, 추가 키 next_cursor 는 모르는 클라이언트가 그냥 무시한다.
+    raw_cursor = request.query_params.get("cursor")
+    cursor = raw_cursor.strip() if isinstance(raw_cursor, str) else None
+    if not cursor:
+        cursor = None
     workspace_id = await _resolve_memory_workspace(request, uid)
     if workspace_id is None:
         return _error(503, "approved_memory_authority_unavailable", "메모리 작업 권한을 확인할 수 없습니다.")
+    page_fn = getattr(store, "list_approved_memories_page", None)
+    next_cursor = None
     try:
-        memories = list_fn(user_id=uid, workspace_id=workspace_id, limit=limit)
-        if inspect.isawaitable(memories):
-            memories = await memories
+        if callable(page_fn):
+            paged = page_fn(
+                user_id=uid, workspace_id=workspace_id, limit=limit, cursor=cursor,
+            )
+            if inspect.isawaitable(paged):
+                paged = await paged
+            memories, next_cursor = paged
+        else:
+            memories = list_fn(user_id=uid, workspace_id=workspace_id, limit=limit)
+            if inspect.isawaitable(memories):
+                memories = await memories
+    except ListCursorError:
+        return _error(400, "invalid_cursor", "목록을 이어 볼 위치가 올바르지 않습니다. 처음부터 다시 열어 주세요.")
     except Exception:
         return _error(503, "approved_memory_read_failed", "승인 메모리 읽기에 실패했습니다.")
     if not isinstance(memories, list):
         return _error(503, "approved_memory_read_failed", "승인 메모리 읽기에 실패했습니다.")
-    return JSONResponse({"ok": True, "memories": memories}, status_code=200, headers=_NO_STORE_HEADERS)
+    return JSONResponse(
+        {"ok": True, "memories": memories, "next_cursor": next_cursor},
+        status_code=200, headers=_NO_STORE_HEADERS,
+    )
 
 
 async def claw_memory_detail(request: Request) -> JSONResponse:

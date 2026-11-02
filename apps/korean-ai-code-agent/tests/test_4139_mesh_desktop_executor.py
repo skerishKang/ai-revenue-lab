@@ -51,7 +51,7 @@ class _StubDesktopPort:
         return self.outcome
 
 
-def _desktop_dispatch(command_text="desktop:capture"):
+def _desktop_dispatch(command_text="desktop:capture", desktop_text=None):
     return OracleMeshDispatch(
         dispatch_id="dsp_" + "a" * 28,
         nonce="n" * 32,
@@ -61,6 +61,7 @@ def _desktop_dispatch(command_text="desktop:capture"):
         run_id="run_test",
         kind="desktop",
         command_text=command_text,
+        desktop_text=desktop_text,
     )
 
 
@@ -96,7 +97,9 @@ class DesktopExecuteTests(unittest.TestCase):
     def test_type_arg_reaches_the_port_verbatim(self):
         outcome = MeshCentralDesktopOutcome(termination="acted", note="typed 4 characters")
         port = _StubDesktopPort(outcome=outcome)
-        self._executor(port).execute(_desktop_dispatch("desktop:type\nAb12"))
+        # #6460 step 2: the typed value arrives with the claim, never in the row.
+        self._executor(port).execute(_desktop_dispatch(
+            "desktop:type\n#4:abc12345:" + "c" * 32, desktop_text="Ab12"))
         self.assertEqual(port.calls[0][1:3], ("type", "Ab12"))
 
     def test_unknown_op_never_reaches_the_port(self):

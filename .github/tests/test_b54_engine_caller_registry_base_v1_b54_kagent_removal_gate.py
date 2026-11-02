@@ -34,6 +34,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import unittest
 import time
 import types
 from datetime import datetime, timedelta, timezone
@@ -933,6 +934,12 @@ def _harness_outputs(out: str) -> dict[str, str]:
     return captured
 
 
+@unittest.skipUnless(
+    os.name == "posix",
+    "the reconfirm step re-reads a curl_log its bash job rewrites in /tmp; "
+    "Git Bash's temp handling makes that second job's log unreadable on "
+    "Windows and the Linux CI runner passes (same scoping as the #3989 setsid probes)",
+)
 def test_toctou_behavioral_regression_under_bash() -> None:
     """readonly sees version A, apply sees version B, Git main unchanged.
 

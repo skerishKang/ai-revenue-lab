@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from .pc_correlation import run_hash as _pc_run_hash
 
+import base64
 import hashlib
 import json
 import re
@@ -27,6 +28,7 @@ from typing import Any, Callable, Optional
 
 from .contracts import ContractError
 from .local_agent_meshcentral_private_reader import MeshCentralReadTooLarge
+from .reparse_guard import walk_hits_reparse_point
 
 #: Same path the Chat worker mounts. Executor and server must agree exactly.
 POLL_PATH = "/api/claw/connector/mesh-reads/poll"
@@ -144,13 +146,23 @@ PRODUCT_USER_AGENT = "PadiemClaw/1.0 (kagent; oracle-mesh-executor)"
 #: bytes keep their own limits. A server-authorized PC read still names its own
 #: requested amount (the dispatch max_bytes, else the legacy default below).
 MAX_COMMAND_BYTES: int | None = None
-MAX_READ_BYTES_ENVELOPE = 20_000_000
+#: #6606 report follow-up: the read envelope joins the same decision. The
+#: server computes each dispatch's read bound per row and pages a bigger file
+#: through the #6541 first-range + read_file_chunk flow, so a large read
+#: arrives as per-call bounded requests. This executor keeps only the shape
+#: checks — a read bound is a positive integer, and an oversize result is
+#: still refused whole, never truncated — and leaves the one-answer size to
+#: the platform that carries the bytes.
+MAX_READ_BYTES_ENVELOPE: int | None = None
 MAX_READ_BYTES = 6_000_000
 #: Existing PC-file error markers the Engine already maps. A read failure is a
 #: truthful body, not an empty success: the executor reports the marker so the
 #: verified result lane can deliver the same outcome the model lane expects.
 PC_FILE_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
 PC_FILE_TOO_LARGE_MARKER = PC_FILE_ERROR_PREFIX + "too_large"
+#: #5994 D3 후속 — a junction/symlink below the granted root refuses the
+#: whole read before the download starts (the PC-side ReparsePoint walk).
+PC_FILE_LINK_REFUSED_MARKER = PC_FILE_ERROR_PREFIX + "link_refused"
 PC_FILE_READ_FAILED_MARKER = PC_FILE_ERROR_PREFIX + "read_failed"
 #: How much of a refusal's own message reaches the trace. The reason is what a
 #: silent read_failed cost on 2026-10-30; the bound keeps one line one line.
@@ -227,6 +239,13 @@ class OracleMeshDispatch:
     #: #5015: server-computed read bound. Only the poll response may set it;
     #: a missing value keeps the shared 6 MB read envelope for older servers.
     max_bytes: int | None = None
+    #: #6460 step 2: the typed value, delivered once by the poll that
+    #: claimed this dispatch. Kept off every persisted record here.
+    desktop_text: str | None = None
+    #: #5994 D3 후속: the granted root the poll response names for this read,
+    #: used only by the pre-download reparse walk. A missing value keeps the
+    #: read exactly as before — the guard runs only when the server named it.
+    granted_root: str | None = None
     # Only the authenticated queue projection may set these fields.
     background: bool = False
     owner_ref: str | None = None
@@ -269,6 +288,11 @@ def _safe_error_text(exc: BaseException) -> str:
     return f"{name}:{text}" if text else name
 
 
+def _ps_literal_for_root(value: str) -> str:
+    """One single-quoted PowerShell literal for a path."""
+    return "'" + value.replace("'", "''") + "'"
+
+
 def _step_timeout_seconds(env: dict[str, str]) -> int:
     """The deployment's own PC-step deadline, in seconds.
 
@@ -290,6 +314,24 @@ def _step_timeout_seconds(env: dict[str, str]) -> int:
             "ORACLE_MESH_READ_TIMEOUT_SECONDS must be a positive integer"
         )
     return value
+
+
+def _desktop_dispatch_text(dispatch: "OracleMeshDispatch") -> str | None:
+    """The typed value for a type op, and only from the claim that carried it.
+
+    A missing value is None: the caller refuses the op rather than typing the
+    marker or a value remembered from an earlier dispatch.
+    """
+    try:
+        from .local_agent_meshcentral_desktop_port import parse_desktop_op
+
+        op, _arg = parse_desktop_op(dispatch.command_text or "")
+    except Exception:
+        return None
+    if op != "type":
+        return None
+    text = dispatch.desktop_text
+    return text if isinstance(text, str) and text else None
 
 
 class OracleMeshExecutor:
@@ -661,18 +703,29 @@ class OracleMeshExecutor:
         if kind == "read":
             supplied = dispatch.get("max_bytes")
             if supplied is not None:
-                # The server decides the bound. A value outside the shared
-                # envelope is malformed, and the executor never lets a caller
-                # raise its own limit.
+                # The server decides the bound; the executor checks the shape
+                # only. A read bound is a positive integer — no bool, no zero,
+                # no negative — and the executor never invents one of its own.
                 if (
                     isinstance(supplied, bool)
                     or not isinstance(supplied, int)
-                    or not 0 < supplied <= MAX_READ_BYTES_ENVELOPE
+                    or supplied < 1
                 ):
                     raise OracleMeshChannelRefused(
                         "chat channel returned an unbounded read limit", leg=leg,
                     )
                 max_bytes = supplied
+        desktop_text = None
+        if kind == "desktop":
+            supplied_text = dispatch.get("desktop_text")
+            if supplied_text is not None:
+                if (not isinstance(supplied_text, str) or not supplied_text
+                        or len(supplied_text) > 20000
+                        or "\x00" in supplied_text or "\r" in supplied_text):
+                    raise OracleMeshChannelRefused(
+                        "chat channel returned an unusable typed value", leg=leg,
+                    )
+                desktop_text = supplied_text
         background = dispatch.get("background", False)
         if type(background) is not bool or (background and kind not in ("read", "command")):
             raise OracleMeshChannelRefused("invalid background dispatch", leg=leg)
@@ -684,6 +737,9 @@ class OracleMeshExecutor:
         request_id = dispatch.get("request_id")
         if request_id is not None:
             request_id = _require_text(request_id, "request_id")
+        granted_root = dispatch.get("granted_root")
+        if granted_root is not None:
+            granted_root = _require_text(granted_root, "granted_root")
         return OracleMeshDispatch(
             dispatch_id=_require_text(dispatch.get("dispatch_id"), "dispatch_id"),
             nonce=_require_text(dispatch.get("nonce"), "nonce"),
@@ -694,7 +750,9 @@ class OracleMeshExecutor:
             request_id=request_id,
             kind=kind,
             command_text=command_text,
+            desktop_text=desktop_text,
             max_bytes=max_bytes,
+            granted_root=granted_root,
             background=background,
             owner_ref=owner_ref,
         )
@@ -720,10 +778,41 @@ class OracleMeshExecutor:
         so that body cannot cross it. A failed read is never collapsed into an
         empty success.
         """
+        # #5994 D3 후속: before the download, every folder from the granted
+        # root down to the file — and the file itself — is checked for a
+        # ReparsePoint crossing. The executor's own filesystem answers first
+        # (the connector executor runs on the user's PC); where that cannot
+        # see — the COM2 relay executor — the same walk runs ON THE PC through
+        # the MeshCentral command channel. A hit (or a PC check that cannot
+        # complete) refuses the read with the ``link_refused`` marker so not
+        # one byte of an outside file crosses the relay. A server that names
+        # no root keeps the read exactly as it was before this guard.
+        if dispatch.granted_root:
+            if walk_hits_reparse_point(dispatch.granted_root, dispatch.file_path):
+                self._trace_read(dispatch, "link_refused", time.monotonic(),
+                                 error="reparse point below the granted root")
+                return OracleMeshExecutionOutcome(
+                    termination="exited", exit_code=1,
+                    body=PC_FILE_LINK_REFUSED_MARKER.encode("utf-8"),
+                )
+            if self._command_port is not None:
+                hit = self._pc_reparse_check(
+                    granted_root=dispatch.granted_root,
+                    file_path=dispatch.file_path,
+                    node_ref=dispatch.node_ref,
+                )
+                if hit:
+                    self._trace_read(dispatch, "link_refused", time.monotonic(),
+                                     error="reparse point below the granted root")
+                    return OracleMeshExecutionOutcome(
+                        termination="exited", exit_code=1,
+                        body=PC_FILE_LINK_REFUSED_MARKER.encode("utf-8"),
+                    )
         read_bound = dispatch.max_bytes
         if read_bound is None:
             read_bound = MAX_READ_BYTES
-        read_bound = max(1, min(read_bound, MAX_READ_BYTES_ENVELOPE))
+        if MAX_READ_BYTES_ENVELOPE is not None:
+            read_bound = max(1, min(read_bound, MAX_READ_BYTES_ENVELOPE))
         call: dict[str, Any] = {
             "node_ref": dispatch.node_ref,
             "file_path": dispatch.file_path,
@@ -818,6 +907,64 @@ class OracleMeshExecutor:
         except Exception:
             # Instrumentation is best-effort; the command outcome is authoritative.
             pass
+
+    def _pc_reparse_check(
+        self, *, granted_root: str, file_path: str, node_ref: str,
+    ) -> bool:
+        """Run a ReparsePoint walk ON THE PC through the MeshCentral command channel.
+
+        The walk checks every folder from the granted root down to the file -
+        and the file itself - for the ReparsePoint attribute. A hit (or a check
+        that cannot be completed) means the read is refused before the download
+        starts, so not one byte of an outside file crosses the relay.
+
+        Returns True when the PC reports a reparse-point crossing (or the check
+        itself failed — fail closed).
+        """
+        if self._command_port is None:
+            return True  # 명령 채널이 없으면 검사 자체가 불가능 — fail closed
+        script = (
+            "$ErrorActionPreference = 'Stop';"
+            "$root = " + _ps_literal_for_root(granted_root) + ";"
+            "$target = " + _ps_literal_for_root(file_path) + ";"
+            "$walk = $root;"
+            "$hit = $false;"
+            "try {"
+            " $rest = $target.Substring($root.Length).Replace('/', '\');"
+            " foreach ($seg in ($rest -split '\')) {"
+            "  if (-not $seg) { continue };"
+            "  $walk = Join-Path $walk $seg;"
+            "  if (-not (Test-Path -LiteralPath $walk)) { break };"
+            "  $item = Get-Item -LiteralPath $walk -Force -ErrorAction SilentlyContinue;"
+            "  if ($item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0))"
+            "  { $hit = $true; break } };"
+            "} catch { $hit = $true };"
+            "$account = [ordered]@{hit=[bool]$hit};"
+            "$json = ConvertTo-Json -InputObject $account -Compress;"
+            "$encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json));"
+            "Write-Output ('PADIEM_PC_REPARSE=' + $encoded);"
+        )
+        try:
+            outcome = self._command_port.run_command(
+                node_ref=node_ref, command=script, timeout_seconds=30,
+            )
+            body = outcome.body if isinstance(outcome.body, bytes) else (
+                (outcome.body or "").encode("utf-8")
+            )
+            text = body.decode("utf-8", errors="replace")
+            for line in text.splitlines():
+                if line.startswith("PADIEM_PC_REPARSE="):
+                    parsed = json.loads(
+                        base64.b64decode(line[len("PADIEM_PC_REPARSE="):]))
+                    hit = parsed.get("hit") if isinstance(parsed, dict) else None
+                    # A marker that does not carry an explicit boolean verdict
+                    # is a check that cannot report — refuse closed.
+                    if type(hit) is not bool:
+                        return True
+                    return hit
+            return True  # account line 없음 — 검사 실패 → fail closed
+        except Exception:
+            return True  # 검사 실패 → fail closed
 
     def _trace_read(
         self, dispatch: OracleMeshDispatch, phase: str, started: float,
@@ -1021,6 +1168,17 @@ class OracleMeshExecutor:
                 termination="not_executed", exit_code=None, body=b"",
                 note="the desktop op was refused before the PC was asked",
             )
+        if op == "type":
+            # The row names the value, never carries it. A claim without the
+            # one-shot delivery is refused: typing a marker or a stale string
+            # would be worse than not acting.
+            text = _desktop_dispatch_text(dispatch)
+            if text is None:
+                return OracleMeshExecutionOutcome(
+                    termination="not_executed", exit_code=None, body=b"",
+                    note="the typed text was not delivered",
+                )
+            arg = text
         try:
             desktop_timeout: dict[str, Any] = {}
             if self._timeout is not None:
@@ -1394,7 +1552,7 @@ class OracleMeshExecutor:
                 dispatch.kind != "read"
                 or isinstance(dispatch.max_bytes, bool)
                 or not isinstance(dispatch.max_bytes, int)
-                or not 0 < dispatch.max_bytes <= MAX_READ_BYTES_ENVELOPE
+                or dispatch.max_bytes < 1
             ):
                 raise ValueError("pending read limit is unbounded")
             if dispatch.kind in ("command", "desktop") and (
