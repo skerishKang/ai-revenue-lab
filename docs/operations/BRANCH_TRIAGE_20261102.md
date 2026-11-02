@@ -43,6 +43,14 @@
 
 StoryMemory 1.1 10개 브랜치는 한 스택이다. `feat/b61-v11-integration-261101`을 정본으로 삼고, 그 위에 백업·기억·모바일·읽기 설정·문구 변경을 합쳐 올린다. `fix/b61-memory-relevance-261101`와 `fix/b61-memory-current-main-261101`, `fix/b61-reading-settings-261101`와 `fix/b61-reader-settings-main-261101`는 각각 같은 변경의 다른 베이스이므로 최신 베이스 하나만 채택한다.
 
+### StoryMemory 1.1 통합 완료 — #6703
+
+최신 main(`01990c73e`)에서 `feat/b61-v11-261103`을 만들어 위 8개 브랜치를 차례로 합치고 #6703으로 squash 머지했다(머지 SHA `3c4bf4e65`). 아래 10개 브랜치는 이 통합에 모두 반영되어 원격에서 삭제했다.
+
+`feat/b61-v11-integration-261101`, `feat/b61-v11-backup-261101`, `feat/b61-shared-auth-sync-261101`, `feat/b61-verse-lookup-261101`, `fix/b61-memory-current-main-261101`, `fix/b61-memory-relevance-261101`, `fix/b61-mobile-qa-261101`, `fix/b61-reader-settings-main-261101`, `fix/b61-reading-settings-261101`, `fix/b61-service-copy-261101`
+
+통합 확인: StoryMemory 단위·브라우저 시험 전체와 390·1440 백업·복원·익명 동기화·읽기 설정·페이지 넘김, 복원 할당량 실패 롤백 시험을 통과했다. 배포는 하지 않았다.
+
 ## C — 버릴 것
 
 | 브랜치 | 이유 |
