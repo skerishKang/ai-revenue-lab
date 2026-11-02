@@ -1147,12 +1147,7 @@
         </form>
         <form class="composer" id="composerForm">
           <div class="attachment-tray" id="attachmentTray" hidden>
-            <div class="attachment-preview">
-              <img id="attachmentThumb" data-locale-alt="attachment-preview-alt" alt="선택한 사진 미리보기" hidden />
-              <span class="document-attachment-icon" id="attachmentKind" aria-hidden="true" hidden>DOC</span>
-              <div class="attachment-copy"><strong id="attachmentName"></strong><small id="attachmentSize"></small></div>
-              <button id="removeAttachment" class="attachment-remove" type="button" data-locale-aria-label="attachment-remove" aria-label="첨부 파일 제거">×</button>
-            </div>
+            <ul class="attachment-chip-list" id="attachmentChipList"></ul>
           </div>
           <label for="clawVerifiedModelSelect" class="claw-model-choice">
             <span>AI 모델 선택</span>
@@ -1173,7 +1168,7 @@
           <div class="composer-actions">
             <div class="composer-tools">
               <button class="model-pill composer-tier-trigger" type="button" data-locale-aria-label="tier" aria-label="AI 등급" data-locale-title="model-select-tooltip" data-padiem-tooltip="모델 선택"><span class="status-spark" aria-hidden="true">✦</span><span>Padiem Plus</span></button>
-              <input id="attachmentFileInput" type="file" hidden />
+              <input id="attachmentFileInput" type="file" multiple hidden />
               <button type="button" class="tool-button" id="attachmentButton" data-padiem-tooltip="파일 첨부" aria-label="파일 첨부"><span aria-hidden="true">＋</span><span>파일</span></button>
               <button type="button" class="tool-button" disabled id="webSearchButton" aria-disabled="true" aria-label="웹 검색" aria-pressed="false" data-padiem-tooltip="웹 검색" hidden><span aria-hidden="true">⌕</span><span>웹 검색</span></button>
               <button type="button" class="tool-button" disabled id="deepResearchButton" aria-disabled="true" aria-pressed="false" data-padiem-tooltip="심층 리서치" hidden><span aria-hidden="true">✦</span><span>심층 리서치</span></button>

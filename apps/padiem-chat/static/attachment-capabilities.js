@@ -40,6 +40,9 @@
   // formats whose configured file lane has not yet been confirmed.
   let binaryEnabled = false;
   let fileLaneEnabled = false;
+  // #261102: the server stays the authority for the per-message attachment
+  // count; this cached copy only lets the picker pre-cap the selection.
+  let maxPerMessage = null;
 
   function activeDocuments() {
     return binaryEnabled || fileLaneEnabled ? allDocuments : textDocuments;
@@ -79,8 +82,10 @@
     return Object.freeze({
       imageFormats: imageLabels,
       documentFormats: documentLabels,
-      idleNote: `사진(${imageLabels}) 또는 문서(${documentLabels}) 한 개를 첨부할 수 있습니다.`,
-      fileButtonTitle: `사진(${imageLabels}) 또는 문서(${documentDetail}) 한 개를 첨부합니다.`,
+      // #261102: the composer no longer promises "one at a time" — the count
+      // is the server's per-message cap, surfaced only when a pick exceeds it.
+      idleNote: `사진(${imageLabels}) 또는 문서(${documentLabels})를 첨부할 수 있습니다.`,
+      fileButtonTitle: `사진(${imageLabels}) 또는 문서(${documentDetail})를 첨부합니다.`,
       unsupportedFormat: `지원 첨부 형식: ${imageLabels}·${documentLabels}.`,
     });
   }
@@ -98,6 +103,8 @@
     },
     get fileLaneSupported() { return fileLaneEnabled; },
     setFileLaneSupport(value) { fileLaneEnabled = value === true; },
+    get maxPerMessage() { return maxPerMessage; },
+    setMaxPerMessage(value) { maxPerMessage = Number.isSafeInteger(Number(value)) && Number(value) >= 1 ? Number(value) : null; },
     setBinarySupport(value) {
       binaryEnabled = value !== false;
     },

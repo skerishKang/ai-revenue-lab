@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import binascii
+import os
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -22,6 +23,61 @@ ALLOWED_IMAGE_MEDIA_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
 
 class AttachmentValidationError(ValueError):
     pass
+
+
+# #261102 다중 첨부: 한 메시지가 운반하는 첨부 항목 개수. 기본 5, 상한 10.
+# 1로 두면 기존 단일 첨부 계약과 정확히 같게 동작한다(같은 안내 문구 포함).
+DEFAULT_MAX_ATTACHMENTS_PER_MESSAGE = 5
+MAX_ATTACHMENTS_PER_MESSAGE_CEILING = 10
+MAX_ATTACHMENTS_PER_MESSAGE_ENV = "PADIEM_CHAT_MAX_ATTACHMENTS_PER_MESSAGE"
+SINGLE_ATTACHMENT_LIMIT_MESSAGE = "현재는 파일을 한 번에 하나만 첨부할 수 있습니다."
+
+
+def max_attachments_per_message() -> int:
+    """The configured per-message attachment count, clamped to [1, 10].
+
+    The environment is read at parse time so tests and deployments can change
+    the contract without a second configuration surface. An absent, blank or
+    unparsable value keeps the default; a value outside the range is clamped,
+    never refused, so a misconfiguration cannot disable attachments entirely.
+    """
+
+    raw = os.environ.get(MAX_ATTACHMENTS_PER_MESSAGE_ENV)
+    if raw is None or not str(raw).strip():
+        return DEFAULT_MAX_ATTACHMENTS_PER_MESSAGE
+    try:
+        value = int(str(raw).strip())
+    except ValueError:
+        return DEFAULT_MAX_ATTACHMENTS_PER_MESSAGE
+    return max(1, min(MAX_ATTACHMENTS_PER_MESSAGE_CEILING, value))
+
+
+def _attachment_items(raw: Any) -> list[dict[str, Any]]:
+    """Validate the attachment wire shape and return its items.
+
+    The count contract lives here and nowhere else: exactly one item is today's
+    behaviour and keeps the historical wording, more than the configured limit
+    is refused for the whole message (never silently truncated), and every
+    element must be an object.
+    """
+
+    if raw is None:
+        return []
+    if not isinstance(raw, list):
+        raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
+    if len(raw) == 0:
+        return []
+    limit = max_attachments_per_message()
+    if len(raw) > limit:
+        if limit == 1:
+            raise AttachmentValidationError(SINGLE_ATTACHMENT_LIMIT_MESSAGE)
+        raise AttachmentValidationError(
+            f"메시지 하나에는 파일을 최대 {limit}개까지 첨부할 수 있습니다."
+        )
+    for item in raw:
+        if not isinstance(item, dict):
+            raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
+    return raw
 
 
 def _matches_magic(media_type: str, data: bytes) -> bool:
@@ -115,15 +171,16 @@ def _parse_document(item: dict[str, Any]) -> DocumentAttachment:
 
 
 def parse_attachments(raw: Any) -> tuple[ImageAttachment | DocumentAttachment, ...]:
-    item = _single_attachment_item(raw)
-    if item is None:
-        return ()
-    item_type = item.get("type")
-    if item_type == "image":
-        return (_parse_image(item),)
-    if item_type == "document":
-        return (_parse_document(item),)
-    raise AttachmentValidationError("현재는 사진과 TXT, Markdown, CSV, JSON, PDF, DOCX, PPTX, XLSX 문서만 첨부할 수 있습니다.")
+    parsed: list[ImageAttachment | DocumentAttachment] = []
+    for item in _attachment_items(raw):
+        item_type = item.get("type")
+        if item_type == "image":
+            parsed.append(_parse_image(item))
+        elif item_type == "document":
+            parsed.append(_parse_document(item))
+        else:
+            raise AttachmentValidationError("현재는 사진과 TXT, Markdown, CSV, JSON, PDF, DOCX, PPTX, XLSX 문서만 첨부할 수 있습니다.")
+    return tuple(parsed)
 
 
 async def parse_attachments_async(
@@ -136,44 +193,46 @@ async def parse_attachments_async(
     blocking the Worker isolate on a synchronous service call.
     """
 
-    item = _single_attachment_item(raw)
-    if item is None:
-        return ()
-    item_type = item.get("type")
-    if item_type == "file":
-        if file_resolver is None:
-            raise AttachmentValidationError("파일 참조를 현재 읽을 수 없습니다.")
-        return (await file_resolver(item),)
-    if item_type == "image":
-        return (_parse_image(item),)
-    if item_type == "document":
-        has_text = "text" in item
-        has_base64 = "base64" in item
-        has_raw = "raw_bytes" in item
-        if sum((has_text, has_base64, has_raw)) != 1:
-            raise AttachmentValidationError("문서는 텍스트 또는 바이너리 데이터 중 하나만 보낼 수 있습니다.")
-        if has_text:
-            try:
-                return (parse_document_item(item),)
-            except DocumentValidationError as exc:
-                raise AttachmentValidationError(str(exc)) from exc
-        try:
-            return (await parse_binary_document_item_async(item),)
-        except BinaryDocumentValidationError as exc:
-            raise AttachmentValidationError(str(exc)) from exc
-    raise AttachmentValidationError("현재는 사진과 TXT, Markdown, CSV, JSON, PDF, DOCX, PPTX, XLSX 문서만 첨부할 수 있습니다.")
+    parsed: list[ImageAttachment | DocumentAttachment] = []
+    for item in _attachment_items(raw):
+        item_type = item.get("type")
+        if item_type == "file":
+            if file_resolver is None:
+                raise AttachmentValidationError("파일 참조를 현재 읽을 수 없습니다.")
+            # Each reference resolves through the one existing extraction path
+            # (local resumable store, then the COM2 lane). Any single failure —
+            # including another account's id — refuses the whole message here,
+            # exactly like the single-attachment contract did.
+            parsed.append(await file_resolver(item))
+        elif item_type == "image":
+            parsed.append(_parse_image(item))
+        elif item_type == "document":
+            has_text = "text" in item
+            has_base64 = "base64" in item
+            has_raw = "raw_bytes" in item
+            if sum((has_text, has_base64, has_raw)) != 1:
+                raise AttachmentValidationError("문서는 텍스트 또는 바이너리 데이터 중 하나만 보낼 수 있습니다.")
+            if has_text:
+                try:
+                    parsed.append(parse_document_item(item))
+                except DocumentValidationError as exc:
+                    raise AttachmentValidationError(str(exc)) from exc
+            else:
+                try:
+                    parsed.append(await parse_binary_document_item_async(item))
+                except BinaryDocumentValidationError as exc:
+                    raise AttachmentValidationError(str(exc)) from exc
+        else:
+            raise AttachmentValidationError("현재는 사진과 TXT, Markdown, CSV, JSON, PDF, DOCX, PPTX, XLSX 문서만 첨부할 수 있습니다.")
+    return tuple(parsed)
 
 
 def _single_attachment_item(raw: Any) -> dict[str, Any] | None:
-    if raw is None:
-        return None
-    if not isinstance(raw, list):
-        raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
-    if len(raw) == 0:
-        return None
-    if len(raw) > 1:
-        raise AttachmentValidationError("현재는 파일을 한 번에 하나만 첨부할 수 있습니다.")
-    item = raw[0]
-    if not isinstance(item, dict):
-        raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
-    return item
+    """Retained single-item view over the multi-item grammar.
+
+    Kept as a module-level helper because callers and tests read it directly;
+    the count contract itself moved to ``_attachment_items``.
+    """
+
+    items = _attachment_items(raw)
+    return items[0] if items else None

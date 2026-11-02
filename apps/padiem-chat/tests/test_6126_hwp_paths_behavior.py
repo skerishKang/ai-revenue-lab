@@ -101,7 +101,7 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
 [
   "emptyState","messageList","composerForm","messageInput","sendButton","cancelStreamButton","newChatButton",
   "mobileMenu","mobileClose","sidebarScrim","settingsButton","settingsDialog","settingsCloseButton",
-  "attachmentFileInput","attachmentButton","attachmentTray","attachmentThumb","attachmentKind","attachmentName",
+  "attachmentFileInput","attachmentButton","attachmentTray","attachmentChipList","attachmentThumb","attachmentKind","attachmentName",
   "attachmentSize","removeAttachment","documentStarterButton","runtimeNote","loginButton","accountName",
   "historySection","historyList","historyEmpty","projectsNavButton","projectsBadge","projectsSection",
   "projectsList","projectsEmpty","projectCreateButton","projectBanner","activeProjectName","activeProjectFiles",
@@ -309,6 +309,16 @@ function findButtonByClass(root, className) {
   }
   return null;
 }
+function flattenTexts(root) {
+  const out = [];
+  const stack = [root];
+  while (stack.length) {
+    const el = stack.shift();
+    if (el && el.textContent != null) out.push(String(el.textContent));
+    (el.children || []).forEach((c) => stack.push(c));
+  }
+  return out;
+}
 function pickChatAttachment(file) {
   byId.attachmentFileInput.files = [file];
   (byId.attachmentFileInput.listeners.change || []).forEach((fn) => fn({ target: byId.attachmentFileInput }));
@@ -330,20 +340,26 @@ function laneCalls() { return requests.filter((r) => r.url.includes("/api/files/
   const tick = (ms) => new Promise((r) => setTimeout(r, ms));
   await tick(60);
 
-  // 1) Chat attachment, OLE2 .hwp: ordinary guidance note, no error state,
-  //    picker cleared, zero network.
+  // 1) Chat attachment, OLE2 .hwp: multi-attachment (#261102) refuses the
+  //    legacy file as its own invalid chip that carries the guidance; the
+  //    composer note stays the ordinary idle capability copy (normal state),
+  //    the picker is cleared and zero network calls are made. The note moved
+  //    from the composer line to the per-file chip — that is the new screen
+  //    contract, so this pin follows it instead of deleting the check.
   pickChatAttachment(makeFile("작년 축사.hwp", "", OLE_BYTES, null));
   await tick(80);
   const chatOle = {
     note: byId.runtimeNote.textContent,
     noteState: byId.runtimeNote.dataset.state,
     trayHidden: byId.attachmentTray.hidden,
+    guidanceOnChip: flattenTexts(byId.attachmentChipList).some((t) => t.includes("hwp-legacy-guidance")),
     cleared: byId.attachmentFileInput.value === "",
     laneCalls: laneCalls().length,
   };
-  if (chatOle.note !== "hwp-legacy-guidance\nhwp-legacy-steps") fail("CHAT_OLE_NOTE:" + JSON.stringify(chatOle.note));
+  if (chatOle.note !== sandbox.PadiemAttachmentCapabilities.copy(sandbox.document.documentElement.lang).idleNote) fail("CHAT_OLE_NOTE:" + JSON.stringify(chatOle.note));
   if (chatOle.noteState !== "normal") fail("CHAT_OLE_NOTE_STATE:" + chatOle.noteState);
-  if (chatOle.trayHidden !== true) fail("CHAT_OLE_TRAY_VISIBLE");
+  if (chatOle.trayHidden !== false) fail("CHAT_OLE_TRAY_HIDDEN");
+  if (chatOle.guidanceOnChip !== true) fail("CHAT_OLE_GUIDANCE_NOT_ON_CHIP");
   if (chatOle.cleared !== true) fail("CHAT_OLE_INPUT_NOT_CLEARED");
   if (chatOle.laneCalls !== 0) fail("CHAT_OLE_MADE_NETWORK_CALLS");
 
@@ -352,7 +368,7 @@ function laneCalls() { return requests.filter((r) => r.url.includes("/api/files/
   await tick(80);
   const chatZip = {
     trayHidden: byId.attachmentTray.hidden,
-    name: byId.attachmentName.textContent,
+    name: flattenTexts(byId.attachmentChipList).some((t) => t.includes("보고서.hwp")) ? "보고서.hwp" : "",
     note: byId.runtimeNote.textContent,
   };
   if (chatZip.trayHidden !== false) fail("CHAT_ZIP_NOT_ATTACHED");
@@ -439,9 +455,13 @@ def test_behavioral_harness_passes() -> None:
 def test_chat_attachment_paths_match_the_decision() -> None:
     payload = _run_harness()
     assert payload.get("ok") is True, payload
-    assert payload["chatOle"]["note"] == "hwp-legacy-guidance\nhwp-legacy-steps"
+    # #261102: the guidance for a refused legacy .hwp now rides the invalid
+    # chip (per-file refusal), not the composer note; the note stays the
+    # ordinary idle capability copy. The harness's own ok check enforced the
+    # strings, so the pins mirror that contract here.
+    assert payload["chatOle"]["guidanceOnChip"] is True
     assert payload["chatOle"]["noteState"] == "normal"
-    assert payload["chatOle"]["trayHidden"] is True
+    assert payload["chatOle"]["trayHidden"] is False
     assert payload["chatOle"]["laneCalls"] == 0
     assert payload["chatZip"]["trayHidden"] is False
     assert payload["chatZip"]["name"] == "보고서.hwp"

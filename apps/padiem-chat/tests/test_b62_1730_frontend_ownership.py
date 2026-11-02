@@ -77,7 +77,8 @@ def test_conversation_request_state_has_one_authority() -> None:
 
 
 def test_attachment_state_remains_single_owned_by_app_controller() -> None:
-    assert "let selectedAttachment = null;" in APP
+    # #261102: the single slot became a chip list, still owned only here.
+    assert "let selectedAttachments = [];" in APP
     assert "selectedAttachment" not in TRANSPORT
     assert "selectedAttachment" not in LIFECYCLE
     assert "selectedAttachment" not in RICH

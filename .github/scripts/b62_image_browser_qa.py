@@ -112,20 +112,18 @@ async def _run_view(
 
     tray = page.locator("#attachmentTray")
     await tray.wait_for(state="visible", timeout=5_000)
-    attachment_name = (await page.locator("#attachmentName").inner_text()).strip()
-    attachment_size = (await page.locator("#attachmentSize").inner_text()).strip()
+    chip = page.locator("#attachmentChipList .attachment-chip").last
+    attachment_name = (await chip.locator(".attachment-chip-copy strong").inner_text()).strip()
+    attachment_size = (await chip.locator(".attachment-chip-copy small").inner_text()).strip()
+    attachment_kind = (await chip.locator(".attachment-chip-icon").inner_text()).strip()
     note = (await page.locator("#runtimeNote").inner_text()).strip()
-    thumb = page.locator("#attachmentThumb")
 
     if attachment_name != IMAGE_NAME:
         raise AssertionError(f"wrong attachment filename shown: {attachment_name!r}")
     if not attachment_size:
         raise AssertionError("image byte size must be visible")
-    if not await thumb.is_visible():
-        raise AssertionError("image thumbnail must be visible after selection")
-    thumb_src = await thumb.get_attribute("src")
-    if not thumb_src or not thumb_src.startswith("blob:"):
-        raise AssertionError(f"thumbnail must use a local blob preview: {thumb_src!r}")
+    if attachment_kind != "IMG":
+        raise AssertionError(f"image chip must show its IMG type marker: {attachment_kind!r}")
     if "한 번만 전송" not in note:
         raise AssertionError(f"image one-request note is unclear: {note!r}")
 
@@ -229,7 +227,7 @@ async def _run_view(
         },
         "attachment_tray": "PASS",
         "attachment_name": attachment_name,
-        "thumbnail_visible": True,
+        "attachment_type_marker_visible": True,
         "attachment_size_visible": True,
         "one_request_note": "PASS",
         "chat_post_count": len(chat_posts),

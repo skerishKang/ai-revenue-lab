@@ -178,10 +178,13 @@ const assert = require("node:assert/strict");
     result = subprocess.run(["node", "-e", script], text=True, capture_output=True)
     assert result.returncode == 0, result.stderr
     app = (static / "app.js").read_text()
-    assert 'if (attachment.fileId) return [{ type: "file", file_id: attachment.fileId }];' in app
+    # #261102: the payload builder maps every pending chip to its item; a
+    # file-lane attachment still becomes exactly { type: "file", file_id }.
+    assert 'if (item.fileId) return { type: "file", file_id: item.fileId };' in app
     # #6579 3단계 adds a progress callback after the signal; the guarded
-    # contract (the same lane upload, same abort signal) is unchanged.
-    assert 'await window.PadiemFileLane.upload(attachment.file, controller.signal,' in app
+    # contract (the same lane upload, same abort signal) is unchanged, now
+    # applied per attachment in the multi-attach loop.
+    assert 'window.PadiemFileLane.upload(current.file, controller.signal,' in app
 
 
 def test_worker_config_never_borrows_a_process_secret(monkeypatch):

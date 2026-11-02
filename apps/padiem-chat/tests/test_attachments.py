@@ -171,7 +171,10 @@ async def test_invalid_attachment_contract_fails_before_b14():
         [{"type": "image", "name": "x.gif", "media_type": "image/gif", "base64": "R0lGODlh"}],
         [{"type": "image", "name": "x.png", "media_type": "image/png", "base64": "not base64!!"}],
         [attachment("image/jpeg", PNG, "fake.jpg")],
-        [attachment(), attachment(name="second.png")],
+        # #261102: several items are now allowed, so the case pins the
+        # multi-item property it always meant: one invalid item among several
+        # still fails the whole message before any model call.
+        [attachment(), {"type": "image", "name": "second.png", "media_type": "image/png"}],
         [{**attachment(), "url": "https://example.com/x.png"}],
     ]
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
@@ -254,7 +257,9 @@ def test_frontend_exposes_generic_file_control_without_losing_image_support():
     assert "URL.createObjectURL" in js
     assert "URL.revokeObjectURL" in js
     assert "innerHTML" not in js
-    assert "selectedAttachment === retryAttachment" in js
+    # #261102: the selection is now a chip list; the pin keeps its intent —
+    # the retry clears the composer only for its own unchanged snapshot.
+    assert "selectedAttachments === retryAttachment" in js
     assert "clearAttachment();" in js
 
 

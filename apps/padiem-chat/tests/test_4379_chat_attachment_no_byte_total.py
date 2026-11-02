@@ -61,7 +61,7 @@ def test_the_real_image_and_document_controls_are_untouched() -> None:
         ("not in ALLOWED_IMAGE_MEDIA_TYPES:", 2),
         ("not _matches_magic(media_type, data)", 1),
         ("not _matches_magic(media_type, decoded)", 1),
-        ("if len(raw) > 1:", 1),
+        ("if len(raw) > limit:", 1),
     ):
         assert attachments.count(marker) >= minimum, marker
     for marker in (

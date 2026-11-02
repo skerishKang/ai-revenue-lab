@@ -21,7 +21,12 @@
   async function available() {
     try {
       const response = await fetch("/api/files/capabilities", {credentials: "same-origin", cache: "no-store"});
-      return response.ok && (await response.json()).ready === true;
+      if (!response.ok) return false;
+      const data = await response.json();
+      // #261102: one capability read also carries the per-message attachment
+      // count so the picker can pre-cap the selection. The server re-checks.
+      window.PadiemAttachmentCapabilities?.setMaxPerMessage?.(data?.max_per_message);
+      return data?.ready === true;
     } catch (_) { return false; }
   }
   function isBinary(file) { return BINARY.has(extension(file)); }

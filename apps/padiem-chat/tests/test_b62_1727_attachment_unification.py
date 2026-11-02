@@ -50,15 +50,20 @@ def test_app_owns_binary_attachment_in_selected_attachment_state():
     assert "const binaryDocuments = window.PadiemBinaryDocuments;" in APP_JS
     assert "binaryDocuments.canRead(file)" in APP_JS
     assert "next = await binaryDocuments.read(file);" in APP_JS
-    assert "selectedAttachment = next;" in APP_JS
-    assert "renderSelectedAttachment();" in APP_JS
+    # #261102: the chip list replaced the single attachment slot; the app
+    # controller still owns the binary attachment state and re-renders the
+    # chips after every intake.
+    assert "selectedAttachments.push({ ...next, key: `att-${attachmentKeyCounter}` });" in APP_JS
+    assert "renderAttachmentChips();" in APP_JS
 
 
 def test_binary_attachment_payload_uses_existing_completed_chat_path():
     # #5380 replaced the Base64 attachment body with a binary file intake, so
     # the payload carries the file itself. The completed-chat dispatch path
     # this test protects is unchanged.
-    assert 'media_type: attachment.mediaType, file: attachment.file' in APP_JS
+    # #261102: the payload is built per chip; a file-carrying chip still
+    # carries the file itself through the completed-chat path.
+    assert 'media_type: item.mediaType, file: item.file' in APP_JS
     assert "const attachments = attachmentPayload(attachment);" in APP_JS
     assert "if (attachments) payload.attachments = attachments;" in APP_JS
     # #2505: the Chat completed-attachment path is unchanged for Chat; the same

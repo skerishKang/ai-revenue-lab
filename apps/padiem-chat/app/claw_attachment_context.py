@@ -32,7 +32,7 @@ from .attachments import (
     parse_attachments,
     parse_attachments_async,
 )
-from .documents import DocumentAttachment, build_document_context
+from .documents import DocumentAttachment, build_documents_context
 
 #: The Claw lane cannot hand image bytes to its model yet.
 CLAW_IMAGE_ATTACHMENT_UNSUPPORTED = (
@@ -43,11 +43,12 @@ CLAW_IMAGE_ATTACHMENT_UNSUPPORTED = (
 def _project_attachments(
     attachments: tuple[ImageAttachment | DocumentAttachment, ...],
 ) -> tuple[str | None, tuple[ImageAttachment, ...]]:
-    document = next(
-        (item for item in attachments if isinstance(item, DocumentAttachment)), None
-    )
+    # #261102: the Claw turn keeps the one Chat attachment boundary — every
+    # attached document rides the same per-file context builder, so no file
+    # is silently dropped when several are attached.
+    documents = tuple(item for item in attachments if isinstance(item, DocumentAttachment))
     images = tuple(item for item in attachments if isinstance(item, ImageAttachment))
-    context = build_document_context(document) if document is not None else None
+    context = build_documents_context(documents)
     return context, images
 
 

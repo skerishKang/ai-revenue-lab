@@ -30,7 +30,7 @@ from .config import Settings
 from .conversation_routes import _history_unavailable
 from .documents import (
     DocumentAttachment,
-    build_document_context,
+    build_documents_context,
     build_project_files_context,
     combine_reference_context,
 )
@@ -1013,8 +1013,10 @@ async def api_chat(request: Request) -> JSONResponse:
             project_files_context, project_files_used = build_project_files_context(project_files)
 
     image_attachments = tuple(item for item in attachments if isinstance(item, ImageAttachment))
-    document_attachment = next((item for item in attachments if isinstance(item, DocumentAttachment)), None)
-    document_context = build_document_context(document_attachment) if document_attachment is not None else None
+    # #261102: every attached document reaches the model, each one introduced
+    # by its own name through the shared multi-document builder.
+    document_attachments = tuple(item for item in attachments if isinstance(item, DocumentAttachment))
+    document_context = build_documents_context(document_attachments)
     reference_context = combine_reference_context(project_context, project_files_context, document_context)
 
     # PADIEM Custom: owner key -> explicitly selected provider model. The B14
@@ -1215,8 +1217,8 @@ async def api_chat(request: Request) -> JSONResponse:
              "retrieved_at": src["retrieved_at"], "source_type": "google_drive"}
             for i, src in enumerate(drive_sources, 1)
         ]
-    if document_attachment is not None:
-        result["attachments"] = [document_attachment.public_dict()]
+    if document_attachments:
+        result["attachments"] = [item.public_dict() for item in document_attachments]
     if project_files_used:
         result["project_files_used"] = project_files_used
 

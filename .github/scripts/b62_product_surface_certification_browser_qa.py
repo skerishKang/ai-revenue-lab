@@ -310,7 +310,7 @@ async def _exercise_view(page: Page, *, theme: str, viewport_name: str, query: s
     await page.wait_for_function(
         "() => document.querySelector('#composerForm')?.dataset.interactionPhase === 'idle'"
     )
-    await page.locator("#removeAttachment").click()
+    await page.locator("#attachmentChipList .attachment-chip .attachment-remove").last.click()
     await page.locator("#attachmentTray").wait_for(state="hidden")
 
     await page.locator("#messageInput").fill(QUESTION)
