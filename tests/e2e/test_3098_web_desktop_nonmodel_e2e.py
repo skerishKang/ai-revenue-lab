@@ -942,12 +942,12 @@ console.log(JSON.stringify({
     result = json.loads(completed.stdout.strip())
 
     assert result["chat"] == {
-        "code": "연결 오류 (upstream_auth_error)",
+        "code": "error-code-reference: upstream_auth_error",
         "runtime": "연결 오류",
         "lifecycle": "failed",
     }
-    assert result["timeout"] == "시간 초과 (upstream_timeout)"
-    assert result["stream"] == "연결 오류 (upstream_server_error)"
+    assert result["timeout"] == "error-code-reference: upstream_timeout"
+    assert result["stream"] == "error-code-reference: upstream_server_error"
     assert result["claw"] is None
     assert result["unsafe"] is None
     assert result["missing"] is None
