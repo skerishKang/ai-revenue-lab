@@ -49,7 +49,7 @@ async def test_chat_stages_share_safe_hash(monkeypatch, caplog):
     app, bridge, _ = h._wire(monkeypatch)
     async with h._client(app) as client:
         response = await client.post("/api/orchestration", headers={"Origin": h.ORIGIN},
-           json={"messages": [{"role": "user", "content": MARKER}], "skill":"auto", "pc_run_id": RUN})
+           json={"messages": [{"role": "user", "content": "내 PC의 파일 목록 보여줘 " + MARKER}], "skill":"auto", "pc_run_id": RUN})
         assert response.status_code == 200
     for stage in ("request_received", "contract_accepted", "stream_started", "stream_ended"):
         assert "stage=" + stage + " run_hash=" + run_hash(RUN) in caplog.text
@@ -86,7 +86,7 @@ async def test_missing_browser_run_id_is_assigned_once(monkeypatch, caplog):
     app, bridge, _ = h._wire(monkeypatch)
     async with h._client(app) as client:
         response = await client.post("/api/orchestration", headers={"Origin": h.ORIGIN},
-           json={"messages": [{"role": "user", "content": "synthetic"}], "skill": "auto"})
+           json={"messages": [{"role": "user", "content": "브라우저로 example.com 열어서 제목 알려 줘"}], "skill": "auto"})
         assert response.status_code == 200
     token = run_hash(bridge.requests[0]["session_id"])
     assert token

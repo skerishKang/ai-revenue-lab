@@ -45,7 +45,7 @@ async def test_native_browser_scope_needs_device_grant_but_no_folder(monkeypatch
             raise RuntimeError("file root is unavailable")
         return None, object()
     monkeypatch.setattr("app.oracle_mesh_read_return_routes._engine_pc_files_target", files_target)
-    response = await boundary._post(app, "example.com 열어서 제목 알려 줘", pc_run_id=boundary.PC_RUN)
+    response = await boundary._post(app, "브라우저로 example.com 열어서 제목 알려 줘", pc_run_id=boundary.PC_RUN)
     assert response.status_code == 200, response.text
     assert bridge.requests[0]["pc_tools"] == {
         "device_id": boundary.DEVICE, "allowed_scopes": ["query_drives", "browser"],

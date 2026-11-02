@@ -1050,10 +1050,11 @@ def test_general_turn_keeps_ordinary_route_without_pc_work(
 ) -> None:
     """An ordinary question never stages a PC run, on any lane.
 
-    The PC tools are *offered* to the model on both Chat lanes whenever this
-    account has a verified PC and the route declares the capability, and an
-    answer in text means no PC execution. Where the capability or the verified
-    target is missing, the same turn simply keeps the lane it had before.
+    #6694: the orchestration lane attaches the PC tool set only to a turn that
+    itself names PC work, so this question keeps the plain Engine call (no
+    pc_tools, no session_id, no staged run). The plain Chat stream lane still
+    offers the declared PC tools on the same turn and answers in text without
+    executing.
     """
 
     async def flow():
@@ -1078,16 +1079,18 @@ def test_general_turn_keeps_ordinary_route_without_pc_work(
         assert not _has_call(step, "POST", "/api/chat/stream")
         assert len(harness.bridge.requests) == 1
         call = harness.bridge.requests[0]
+        assert "pc_tools" not in call and "session_id" not in call
         assert "agent_plan" not in call and "tool_arguments" not in call
-        assert call["session_id"] == step["pc_run_id"]
+        assert harness.b14.calls == []  # the plain lane never reaches the model seam
+        assert step["events"] == ["delta", "done"]
     else:
         assert _has_call(step, "POST", "/api/chat/stream")
         assert harness.bridge.requests == []
-    assert len(harness.b14.calls) == 1  # one answer call; no classification
-    assert step["events"] == ["delta", "delta", "done"]
-    call = harness.b14.calls[0]
-    assert call["messages"][-1]["content"] == GENERAL_5574_TEXT
-    assert call["tools"] == (["query_drives", "files_list", "files", "browser"] if tools_declared else [])
+        assert len(harness.b14.calls) == 1  # one answer call; no classification
+        call = harness.b14.calls[0]
+        assert call["messages"][-1]["content"] == GENERAL_5574_TEXT
+        assert call["tools"] == (["query_drives", "files_list", "files", "browser"] if tools_declared else [])
+        assert step["events"] == ["delta", "delta", "done"]
 
 
 def test_followup_reuses_conversation_and_leaves_more_prior_turns_in_the_call() -> None:
