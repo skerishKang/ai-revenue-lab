@@ -425,6 +425,15 @@ def build_app():
         quote_model_resolver = B66ExplicitQuoteModelResolver(completion_transport)
         app.state.b66_quote_model_resolver = quote_model_resolver
         app.state.b14_model_choice_resolver = quote_model_resolver
+        # The owner credential board uses the same B14 origin and proof secret
+        # as the completion lane; an absent secret fails closed in the source.
+        if settings.b14_base_url:
+            from .b14_slot_status_source import HttpsSlotStatusSource
+
+            app.state.b14_slot_status_source = HttpsSlotStatusSource(
+                settings.b14_base_url,
+                os.getenv("PADIEM_B14_SERVICE_PROOF_SECRET"),
+            )
 
     edge_required = os.getenv("PADIEM_COM2_EDGE_PROOF_REQUIRED", "").strip().lower() in {"1", "true"}
     connector_enabled = os.getenv("PADIEM_COM2_CONNECTOR_GATEWAY_ENABLED", "").strip().lower() in {"1", "true"}

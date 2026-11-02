@@ -21,7 +21,7 @@ here for a caller to overwrite into those positions.
 from __future__ import annotations
 
 from contextvars import ContextVar, Token
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 import json
 from typing import Any
 
@@ -238,6 +238,45 @@ class CallLedgerStore:
             "ORDER BY calls DESC LIMIT ?"
         )
         return await self._all(sql, *params, bounded)
+
+    async def slot_activity(
+        self, provider_ids: "Sequence[str]", *, since: str,
+        error_limit: int = 10,
+    ) -> dict[str, Any]:
+        """What the ledger last recorded for the Providers behind one slot.
+
+        ``last_success`` is the newest success this slot's Providers ever
+        produced; the error counts are bounded to ``since`` so a long-dead
+        route cannot dominate a live one. No row, prompt or credential is
+        selected — only a timestamp and error-code tallies.
+        """
+        ids = [p for p in provider_ids if isinstance(p, str) and p][:32]
+        if not ids:
+            return {"last_success_at": None, "errors": []}
+        placeholders = ", ".join("?" for _ in ids)
+        row = await self._first(
+            "SELECT MAX(CASE WHEN outcome = 'success' "
+            "THEN COALESCE(finished_at, started_at) END) AS last_success_at "
+            f"FROM {CALL_TABLE} WHERE selected_provider IN ({placeholders})",
+            *ids,
+        )
+        bounded = max(1, min(int(error_limit), MAX_PAGE_LIMIT))
+        rows = await self._all(
+            "SELECT error_code AS code, COUNT(*) AS calls "
+            f"FROM {CALL_TABLE} WHERE selected_provider IN ({placeholders}) "
+            "AND outcome = 'error' AND started_at >= ? "
+            "AND error_code IS NOT NULL AND error_code <> '' "
+            "GROUP BY error_code ORDER BY calls DESC, error_code ASC LIMIT ?",
+            *ids, since, bounded,
+        )
+        last = row.get("last_success_at") if row else None
+        return {
+            "last_success_at": str(last) if last else None,
+            "errors": [
+                {"code": str(item["code"]), "count": int(item["calls"])}
+                for item in rows
+            ],
+        }
 
     async def annotate_pc_work_metrics(
         self, *, product: str, subject_ref: str, session_ref: str,

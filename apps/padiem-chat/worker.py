@@ -1546,6 +1546,14 @@ class Default(WorkerEntrypoint):
             worker_app.state.web_provider,
         )
         worker_app.state.b14_service_bound = b14_binding is not None
+        # The owner credential board reads B14 slot metadata over the same
+        # Service Binding and proof the completion lane already uses.
+        if b14_binding is not None:
+            from app.b14_slot_status_source import ServiceBindingSlotStatusSource
+
+            worker_app.state.b14_slot_status_source = ServiceBindingSlotStatusSource(
+                b14_binding, b14_proof_secret,
+            )
         worker_app.state.identity_authority_service_bound = identity_binding is not None
         worker_app.state.google_oauth_workspace_truth = google_oauth_workspace_truth
         worker_app.state.google_oauth_service_bound = google_oauth_binding is not None
