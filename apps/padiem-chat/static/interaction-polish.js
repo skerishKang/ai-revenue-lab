@@ -10,7 +10,7 @@
   const documentStarter = document.getElementById("documentStarterButton");
   const removeAttachment = document.getElementById("removeAttachment");
   const attachmentTray = document.getElementById("attachmentTray");
-  const attachmentName = document.getElementById("attachmentName");
+  const attachmentChipList = document.getElementById("attachmentChipList");
   const runtimeNote = document.getElementById("runtimeNote");
   const messageList = document.getElementById("messageList");
   const composerWrap = form ? form.closest(".composer-wrap") : null;
@@ -264,10 +264,12 @@
 
   function maybeFinishAttachment() {
     if (!attachmentLoading) return;
-    const failed = runtimeNote.dataset.state === "error";
-    const selected = !attachmentTray.hidden && Boolean(attachmentName && attachmentName.textContent.trim());
+    const chips = attachmentChipList ? attachmentChipList.querySelectorAll(".attachment-chip") : [];
+    const lastChip = chips.length ? chips[chips.length - 1] : null;
+    const failed = runtimeNote.dataset.state === "error"
+      || Boolean(lastChip && lastChip.classList.contains("attachment-chip-invalid"));
     if (failed) finishAttachment(false);
-    else if (selected) finishAttachment(true);
+    else if (lastChip) finishAttachment(true);
   }
 
   attachmentInput.addEventListener("change", () => {
@@ -323,7 +325,7 @@
   const attachmentObserver = new MutationObserver(() => queueMicrotask(maybeFinishAttachment));
   attachmentObserver.observe(runtimeNote, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-state"] });
   attachmentObserver.observe(attachmentTray, { attributes: true, attributeFilter: ["hidden"] });
-  if (attachmentName) attachmentObserver.observe(attachmentName, { childList: true, subtree: true });
+  if (attachmentChipList) attachmentObserver.observe(attachmentChipList, { childList: true });
 
   if (composerWrap && typeof ResizeObserver === "function") {
     const composerObserver = new ResizeObserver(() => syncComposerClearance());

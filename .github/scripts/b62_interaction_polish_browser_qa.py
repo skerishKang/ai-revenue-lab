@@ -225,13 +225,15 @@ async def _run(page: Page, *, label: str) -> dict[str, Any]:
     await page.wait_for_function("() => document.activeElement?.id === 'messageInput'", timeout=5_000)
 
     # Attachment error and success both expose bounded attachment-loading state.
+    # #261102 multi-attachment: a refused file keeps its own chip marked invalid
+    # instead of moving the shared composer note into an error state.
     await page.locator("#attachmentFileInput").set_input_files({
         "name": "unsupported.exe",
         "mimeType": "application/octet-stream",
         "buffer": b"not-a-supported-document",
     })
     await page.wait_for_function(
-        "() => document.querySelector('#runtimeNote')?.dataset.state === 'error'",
+        "() => Boolean(document.querySelector('#attachmentChipList .attachment-chip-invalid'))",
         timeout=5_000,
     )
     await _wait_phase(page, "idle")
@@ -244,7 +246,10 @@ async def _run(page: Page, *, label: str) -> dict[str, Any]:
         "mimeType": "text/plain",
         "buffer": "간단한 참고 문서".encode("utf-8"),
     })
-    await page.locator("#attachmentTray").wait_for(state="visible", timeout=5_000)
+    await page.wait_for_function(
+        "() => { const chips = document.querySelectorAll('#attachmentChipList .attachment-chip'); return chips.length >= 2 && !chips[chips.length - 1].classList.contains('attachment-chip-invalid'); }",
+        timeout=5_000,
+    )
     await _wait_phase(page, "idle")
     if await _focus_id(page) != "messageInput":
         raise AssertionError(f"attachment success focus did not recover to composer at {label}")

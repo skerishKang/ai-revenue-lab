@@ -84,25 +84,31 @@ async def _verify_binary_picker_states(page: Page, file_input, tray) -> list[str
             {"name": filename, "mimeType": media_type, "buffer": marker}
         )
         await tray.wait_for(state="visible", timeout=5_000)
-        shown_name = (await page.locator("#attachmentName").inner_text()).strip()
-        shown_kind = (await page.locator("#attachmentKind").inner_text()).strip()
+        # #261102: picker state lives on the per-file chip now. The shared input
+        # value is cleared after each pick, so the old pendingMeta() hook (which
+        # reads input.files[0]) is empty by design; the chip carries the name,
+        # kind and byte size that the old preview element used to show.
+        chip = page.locator("#attachmentChipList .attachment-chip").last
+        shown_name = (await chip.locator(".attachment-chip-copy strong").inner_text()).strip()
+        shown_kind = (await chip.locator(".attachment-chip-icon").inner_text()).strip()
         if shown_name != filename or shown_kind != expected_kind:
             raise AssertionError(
                 f"binary picker display mismatch for {expected_kind}: name={shown_name!r}, kind={shown_kind!r}"
             )
-        pending_meta = await page.evaluate("window.__padiemBinaryDocuments?.pendingMeta()")
-        if not isinstance(pending_meta, dict):
-            raise AssertionError(f"binary picker metadata missing for {expected_kind}")
-        if pending_meta.get("name") != filename or pending_meta.get("mediaType") != media_type:
-            raise AssertionError(f"binary picker metadata mismatch for {expected_kind}: {pending_meta!r}")
-        if pending_meta.get("byteSize") != len(marker):
-            raise AssertionError(f"binary picker size mismatch for {expected_kind}: {pending_meta!r}")
-        if "base64" in pending_meta or "text" in pending_meta:
-            raise AssertionError(f"binary picker QA hook exposed content for {expected_kind}: {pending_meta!r}")
+        if "attachment-chip-invalid" in (await chip.get_attribute("class") or ""):
+            raise AssertionError(f"binary picker refused a supported {expected_kind} file")
+        shown_size = (await chip.locator(".attachment-chip-copy small").inner_text()).strip()
+        if shown_size != f"{len(marker)} B":
+            raise AssertionError(
+                f"binary picker size mismatch for {expected_kind}: {shown_size!r} != {len(marker)} B"
+            )
+        chip_text = (await chip.inner_text()).strip()
+        if marker.decode("ascii") in chip_text:
+            raise AssertionError(f"binary picker chip exposed content for {expected_kind}")
         verified.append(expected_kind)
-        await page.locator("#removeAttachment").evaluate("(el) => el.click()")
+        await page.locator("#attachmentChipList .attachment-chip .attachment-remove").last.evaluate("(el) => el.click()")
         await page.wait_for_function(
-            "() => document.getElementById('attachmentTray')?.hidden === true && window.__padiemBinaryDocuments?.pendingMeta() === null",
+            "() => document.getElementById('attachmentTray')?.hidden === true && document.querySelectorAll('#attachmentChipList .attachment-chip').length === 0",
             timeout=5_000,
         )
     return verified
@@ -276,9 +282,10 @@ async def _run_view(
     )
 
     await tray.wait_for(state="visible", timeout=5_000)
-    attachment_name = (await page.locator("#attachmentName").inner_text()).strip()
-    attachment_kind = (await page.locator("#attachmentKind").inner_text()).strip()
-    attachment_size = (await page.locator("#attachmentSize").inner_text()).strip()
+    chip = page.locator("#attachmentChipList .attachment-chip").last
+    attachment_name = (await chip.locator(".attachment-chip-copy strong").inner_text()).strip()
+    attachment_kind = (await chip.locator(".attachment-chip-icon").inner_text()).strip()
+    attachment_size = (await chip.locator(".attachment-chip-copy small").inner_text()).strip()
     note = (await page.locator("#runtimeNote").inner_text()).strip()
 
     if attachment_name != DOC_NAME:
@@ -311,7 +318,7 @@ async def _run_view(
         raise AssertionError("raw document marker leaked into visible chat text")
 
     await page.wait_for_function(
-        "() => document.getElementById('attachmentTray')?.hidden === true",
+        "() => document.getElementById('attachmentTray')?.hidden === true && document.querySelectorAll('#attachmentChipList .attachment-chip').length === 0",
         timeout=5_000,
     )
 
@@ -335,21 +342,23 @@ async def _run_view(
         {"name": BINARY_NAME, "mimeType": BINARY_MIME, "buffer": binary_payload}
     )
     await tray.wait_for(state="visible", timeout=5_000)
-    if (await page.locator("#attachmentName").inner_text()).strip() != BINARY_NAME:
+    binary_chip = page.locator("#attachmentChipList .attachment-chip").last
+    if (await binary_chip.locator(".attachment-chip-copy strong").inner_text()).strip() != BINARY_NAME:
         raise AssertionError("binary attachment filename not shown")
-    if (await page.locator("#attachmentKind").inner_text()).strip() != "DOCX":
+    if (await binary_chip.locator(".attachment-chip-icon").inner_text()).strip() != "DOCX":
         raise AssertionError("binary attachment kind must show DOCX")
     binary_note = (await page.locator("#runtimeNote").inner_text()).strip()
     if "참고 자료" not in binary_note or "저장되지 않습니다" not in binary_note:
         raise AssertionError(f"binary document privacy note missing: {binary_note!r}")
 
-    pending_meta = await page.evaluate("window.__padiemBinaryDocuments?.pendingMeta()")
-    if not isinstance(pending_meta, dict):
-        raise AssertionError("binary bridge must expose bounded metadata-only QA hook")
-    if pending_meta.get("name") != BINARY_NAME or pending_meta.get("byteSize") != len(binary_payload):
-        raise AssertionError(f"binary pending metadata mismatch: {pending_meta!r}")
-    if "base64" in pending_meta or "text" in pending_meta:
-        raise AssertionError(f"binary QA hook must not expose content: {pending_meta!r}")
+    # #261102: the chip carries the same bounded metadata the pendingMeta() QA
+    # hook used to expose — name, kind and byte size — without the file value.
+    binary_size = (await binary_chip.locator(".attachment-chip-copy small").inner_text()).strip()
+    if binary_size != f"{len(binary_payload)} B":
+        raise AssertionError(f"binary attachment size mismatch: {binary_size!r} != {len(binary_payload)} B")
+    binary_chip_text = (await binary_chip.inner_text()).strip()
+    if BINARY_MARKER in binary_chip_text:
+        raise AssertionError("binary chip exposed document content")
 
     await page.locator("#messageInput").fill(BINARY_QUESTION)
     await page.locator("#sendButton").click()
@@ -363,7 +372,7 @@ async def _run_view(
         raise AssertionError("extracted binary document marker leaked into visible chat text")
 
     await page.wait_for_function(
-        "() => document.getElementById('attachmentTray')?.hidden === true && window.__padiemBinaryDocuments?.pendingMeta() === null",
+        "() => document.getElementById('attachmentTray')?.hidden === true && document.querySelectorAll('#attachmentChipList .attachment-chip').length === 0",
         timeout=5_000,
     )
 
