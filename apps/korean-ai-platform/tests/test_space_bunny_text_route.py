@@ -5,11 +5,11 @@ no product execution, no manual execution, no auto route, no fallback. These
 tests pin that end state without any live provider call:
 
 - the historical identity constants survive as metadata only;
-- the lane is absent from KILO_FREE_ROUTES, from the catalog, and from the
-  fixed b14/auto chain, and is declared in RETIRED_KILO_FREE_MODEL_IDS;
+- the lane is absent from KILO_FREE_ROUTES and from the catalog, and is
+  declared in RETIRED_KILO_FREE_MODEL_IDS;
 - manual resolution fails closed (model_not_in_catalog);
 - the model-scoped auth special-case is gone from the platform adapter;
-- the global b14/auto chain and its fallback set stay unchanged;
+- the retired automatic chain and its fallback set stay unchanged;
 - Business 66 browser sources still carry no model/provider identity.
 """
 

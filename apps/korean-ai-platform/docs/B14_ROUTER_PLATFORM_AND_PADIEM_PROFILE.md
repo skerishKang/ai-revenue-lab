@@ -58,7 +58,7 @@ They are not contradictory.
 
 Padiem v1 currently requests explicit routes, so user-visible Auto, omitted-model auto selection, and silent fallback are out of scope for that profile.
 
-The gateway's own `b14/auto` resolution (`app/pilot/routing_policy.py`, `fixed_chain_v1`) is an internal compatibility path, not a product selector. Older Poolside second-position data is HISTORICAL, not owner approval; the OWNER excluded Kilo Poolside Laguna. Padiem Chat has no `/poolside` selector (#2814), and no B66 selection rule may infer an excluded route.
+`b14/auto` was deleted on 2026-11-02 together with the gateway-side `fixed_chain_v1` resolution (`app/pilot/routing_policy.py` is gone); a request naming it is an unknown model. Older Poolside second-position data is HISTORICAL, not owner approval; the OWNER excluded Kilo Poolside Laguna. Padiem Chat has no `/poolside` selector (#2814), and no B66 selection rule may infer an excluded route.
 
 B14 itself may later support automatic provider/model choice, cost-aware routing, latency-aware routing, capability-aware routing, availability-aware routing, and bounded multi-provider fallback as generic Router Platform features.
 
@@ -116,7 +116,7 @@ For Padiem Profile v1:
 - Pro and Max resolve to HOLD sentinels and fail closed before Provider dispatch;
 - Max remains HOLD until separately evidenced/approved;
 - product code must not substitute a different route because the chosen route failed;
-- product code must not synthesize `b14/auto` because a model field was omitted;
+- product code must not synthesize an automatic route because a model field was omitted (`b14/auto` was deleted 2026-11-02);
 - raw provider keys never enter browser/product route state.
 
 ## 6. Retired routes
@@ -219,7 +219,7 @@ No issue/document/PR merge alone proves deployment.
 #2085 = B14/Padiem current product objective
 #2099 = Padiem profile source of truth (completed)
 #2100 = Chat/Claw shared Padiem profile consumption
-#2101 = remove implicit b14/auto defaults from Padiem-facing contracts
+#2101 = remove implicit automatic-route defaults from Padiem-facing contracts (completed; old id deleted 2026-11-02)
 #2102 = Padiem Max evidence/selection
 #2103 = generic B14 BYOK/credential policy + profile boundary
 #2104 = Padiem Pro Nemotron evidence backfill (closed; Pro has been HOLD since #2601)

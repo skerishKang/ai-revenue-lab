@@ -21,8 +21,8 @@ from app.ai.padiem_core import PadiemCoreProvider
 from app.config import Settings
 from app.factory import create_provider
 
-# #5002: a synthetic exact model id for the provider plumbing tests. The
-# suspended ``b14/auto`` route is not a default and is not named here.
+# #5002: a synthetic exact model id for the provider plumbing tests. No
+# automatic route is a default and none is named here.
 EXACT_MODEL_ID = "fixture/exact-model-id"
 
 
@@ -119,8 +119,8 @@ def test_request_policy_keeps_living_learning_as_retry_authority() -> None:
     runtime = FakeRuntime(
         result=execution_result('{"title":"함수","items":["def"]}')
     )
-    # #5002: a synthetic exact model id. The suspended ``b14/auto`` route is
-    # not a default and is not named by the provider any more.
+    # #5002: a synthetic exact model id. No automatic route is a default and
+    # none is named by the provider any more.
     provider = PadiemCoreProvider(runtime=runtime, model=EXACT_MODEL_ID)
 
     call(provider)
@@ -317,11 +317,11 @@ def test_living_learning_settings_default_uses_600s_model_idle() -> None:
     assert Settings.model_fields["padiem_core_timeout_seconds"].default == 600.0
 
 def test_the_core_provider_requires_an_explicit_model() -> None:
-    """#5002: the suspended ``b14/auto`` route is never a default.
+    """#5002: an unnamed model is never a default.
 
-    The Core provider used to default to the suspended auto route, so an
-    unnamed model reached B14 and always answered 422 auto_routing_deferred.
-    An unnamed model now fails closed at configuration time.
+    The Core provider used to default to an automatic route, so an unnamed
+    model reached B14 and always failed. An unnamed model now fails closed at
+    configuration time.
     """
     runtime = FakeRuntime(result=execution_result('{"title":"x","items":["y"]}'))
 

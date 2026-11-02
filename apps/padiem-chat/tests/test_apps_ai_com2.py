@@ -144,7 +144,7 @@ async def test_invalid_or_rebound_signature_never_calls_p01(mode):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("change,status,code", [
     ("model", 403, "model_not_allowed"),
-    ("auto", 403, "model_not_allowed"),
+    ("unknown", 403, "model_not_allowed"),
     ("retry", 422, "model_retries_not_allowed"),
     ("extra_policy", 422, "invalid_model_policy"),
     ("tokens", 422, "app_token_limit_exceeded"),
@@ -154,7 +154,7 @@ async def test_invalid_or_rebound_signature_never_calls_p01(mode):
 async def test_model_policy_and_app_limits_are_server_owned(change, status, code):
     data = payload()
     if change == "model": data["agent"]["model_policy"]["model"] = "google/not-authorized"
-    elif change == "auto": data["agent"]["model_policy"]["model"] = "b14/auto"
+    elif change == "unknown": data["agent"]["model_policy"]["model"] = "unknown/model"
     elif change == "retry": data["agent"]["model_policy"]["max_retries"] = 1
     elif change == "extra_policy": data["agent"]["model_policy"]["temperature"] = 0.5
     elif change == "tokens": data["agent"]["max_tokens"] = 901
@@ -214,13 +214,6 @@ async def test_transport_stays_on_existing_loopback_target_and_no_redirects():
 ])
 def test_thought_removal(text, expected):
     assert strip_thought_blocks(text) == expected
-
-
-def test_a_retired_auto_id_policy_is_opaque_configuration():
-    """B7: the per-app lane does not special-case the retired id — it is
-    accepted as opaque configuration and Business 14 owns the refusal."""
-    policies = policies_from_env({POLICY_ENV: '{"storymemory":{"allowed_models":["b14/auto"]}}'})
-    assert policies["sub_app_storymemory"].allowed_models == ("b14/auto",)
 
 
 @pytest.mark.asyncio

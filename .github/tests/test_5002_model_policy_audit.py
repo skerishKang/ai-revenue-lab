@@ -77,37 +77,3 @@ def test_the_chat_live_execution_path_names_no_owner_excluded_model() -> None:
         provider, _, tail = model.partition("/")
         if provider == "opencode-go" and tail.endswith("-free"):
             raise AssertionError(f"live Chat execution path names an excluded model: {model}")
-
-
-def test_the_core_provider_never_defaults_to_the_suspended_auto_route() -> None:
-    """#5002: ``b14/auto`` is suspended and must not be a product default.
-
-    The auto route answers 422 auto_routing_deferred, so an unnamed model
-    that defaults to it reaches B14 and always fails. The Core provider now
-    requires an explicit exact model instead.  The check reads the parsed
-    defaults, not the prose, so an explanatory comment may still name the
-    suspended route.
-    """
-
-    import ast
-
-    for relative in (
-        "apps/living-learning/app/config.py",
-        "apps/living-learning/app/factory.py",
-        "apps/living-learning/app/ai/padiem_core.py",
-    ):
-        tree = ast.parse((ROOT / relative).read_text(encoding="utf-8"))
-        for node in ast.walk(tree):
-            default = None
-            if isinstance(node, ast.keyword) and node.arg in {"model", "padiem_core_model"}:
-                default = node.value
-            elif isinstance(node, ast.Assign):
-                targets = [t.id for t in node.targets if isinstance(t, ast.Name)]
-                if "padiem_core_model" in targets:
-                    default = node.value
-            elif isinstance(node, ast.AnnAssign):
-                # A class-level setting default (annotated assignment).
-                if isinstance(node.target, ast.Name) and node.target.id == "padiem_core_model":
-                    default = node.value
-            if isinstance(default, ast.Constant) and default.value == "b14/auto":
-                raise AssertionError(f"{relative} still defaults to b14/auto")

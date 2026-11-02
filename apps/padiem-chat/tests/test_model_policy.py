@@ -132,7 +132,7 @@ def test_historical_hold_sentinels_claim_no_executable_capabilities() -> None:
     # retired ids themselves must still claim no capability if an old client sends them.
     for gone in ("AUTO_B14_MODEL_ID", "KILO_B14_MODEL_ID", "UNASSIGNED_B14_MODEL_ID"):
         assert not hasattr(model_policy_module, gone)
-    for model_id in (CONTRACT_PLUS_HOLD_MODEL_ID,CONTRACT_PRO_HOLD_MODEL_ID,CONTRACT_MAX_HOLD_MODEL_ID,"b14/auto","padiem-profile/medium-unassigned"):
+    for model_id in (CONTRACT_PLUS_HOLD_MODEL_ID,CONTRACT_PRO_HOLD_MODEL_ID,CONTRACT_MAX_HOLD_MODEL_ID,"padiem-profile/medium-unassigned"):
         assert model_supports(model_id,"chat") is False
         assert model_supports(model_id,"image") is False
         assert model_policy_is_executable(model_id) is False
@@ -156,7 +156,7 @@ def test_model_id_is_not_an_identity_for_four_distinct_product_grades() -> None:
     for profile in ("low","medium","high"):
         assert PROFILE_MODEL_IDS[profile]==TEST_PHASE_PRIMARY_B14_MODEL_ID
         assert model_policy_is_executable(PROFILE_MODEL_IDS[profile])
-    for model_id in ("b14/auto","padiem-profile/medium-unassigned"):
+    for model_id in ("padiem-profile/medium-unassigned",):
         assert not model_profile_is_assigned(model_id)
         assert not model_policy_is_executable(model_id)
 

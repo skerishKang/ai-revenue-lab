@@ -168,24 +168,6 @@ async def test_actual_core_manual_stream_client_uses_manual_binding_path() -> No
 
 
 @pytest.mark.asyncio
-async def test_auto_stream_preview_path_is_no_longer_a_client_surface() -> None:
-    """B7: the Core auto stream client is gone with the b14/auto lane."""
-    response = FakeResponse(
-        chunks=_sse_chunks(),
-        content_type="text/event-stream",
-    )
-    transport, binding, factory = transport_for(response=response)
-    client = B14StreamingClient(
-        B14ExecutionConfig(base_url=B14_INTERNAL_ORIGIN),
-        transport=transport,
-    )
-
-    assert not hasattr(client, "stream_auto")
-    assert binding.calls == []
-    assert factory.calls == []
-
-
-@pytest.mark.asyncio
 async def test_core_stream_response_ceiling_remains_authoritative() -> None:
     response = FakeResponse(
         chunks=[_chunk("x" * 300), b"data: [DONE]\n\n"],

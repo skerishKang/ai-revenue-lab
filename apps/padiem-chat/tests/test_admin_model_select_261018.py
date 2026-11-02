@@ -3,8 +3,8 @@
 The Padiem 관리자 popup entry is visible only to the server-verified global
 model admin, and the Chat route dispatches exactly the shared Control Plane
 ADMIN route model for it (#5685 interim: the Free Google route; the Muse hold
-model applies only while that route is absent). Free/Plus/Pro/Max policy,
-their executability set, and ``b14/auto`` behavior stay unchanged.
+model applies only while that route is absent). Free/Plus/Pro/Max policy and
+their executability set stay unchanged.
 """
 from __future__ import annotations
 

@@ -26,7 +26,7 @@ credential_binding = AGNES_API_KEY
 base_url = fixed https://apihub.agnes-ai.com/v1
 ```
 
-`b14/auto` and explicit model selection must both remain supported.
+Explicit exact model selection is the only supported route. `b14/auto` was deleted on 2026-11-02 and is refused as an unknown model.
 
 ## Security boundary
 

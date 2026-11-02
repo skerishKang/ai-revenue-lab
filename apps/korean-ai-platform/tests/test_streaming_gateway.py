@@ -406,13 +406,12 @@ def test_a_caller_cannot_narrow_the_tier_fallback_with_an_attempt_count(monkeypa
     assert frames[0]["business14"]["fallback_allowed"] is True
 
 
-def test_canonical_stream_true_does_not_promote_auto_route():
+def test_canonical_stream_true_does_not_promote_a_non_catalog_model():
     client = _client()
-    response = client.post(CHAT_URL, json=_payload(model="b14/auto"))
+    response = client.post(CHAT_URL, json=_payload(model="unknown/model"))
 
-    # B7: the retired id has no special case anywhere — a non-catalog model
-    # never enters the stream opt-in and the canonical validator refuses
-    # stream=true as always.
+    # A non-catalog model never enters the stream opt-in and the canonical
+    # validator refuses stream=true as always.
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "stream_not_supported"
 
@@ -427,13 +426,7 @@ def test_preview_requires_stream_true():
     assert response.json()["error"]["code"] == "invalid_request"
 
 
-@pytest.mark.parametrize(
-    "payload_update",
-    [
-        {"model": "b14/auto"},
-    ],
-)
-def test_auto_or_external_fallback_streaming_is_rejected_before_network(payload_update):
+def test_streaming_is_rejected_before_network_for_a_non_catalog_model():
     calls = 0
 
     async def handler(request: httpx.Request) -> httpx.Response:
@@ -444,10 +437,9 @@ def test_auto_or_external_fallback_streaming_is_rejected_before_network(payload_
     rcfg.provider_mode = "live"
     rcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
-    response = client.post(STREAM_URL, json=_payload(**payload_update))
+    response = client.post(STREAM_URL, json=_payload(model="unknown/model"))
 
-    # B7: the retired auto id is an unknown model now — the stream surface
-    # refuses it before any network call.
+    # The stream surface refuses a non-catalog model before any network call.
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "unsupported_model"
     assert calls == 0

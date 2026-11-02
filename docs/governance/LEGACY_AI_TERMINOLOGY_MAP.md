@@ -31,7 +31,7 @@ B53         = Padiem Sidecar commercial product
 | `LOW / MEDIUM / HIGH` B62 profiles | historical Chat model-profile vocabulary | not current Plus/Pro/Max route authority |
 | `MEDIUM -> Laguna` | historical intermediate assignment | superseded by current Padiem Plus/Pro/Max declaration |
 | `LOW/HIGH UNASSIGNED` | historical B62 state | superseded for current product routing documentation |
-| `b14/auto` as ordinary product default | compatibility/history concept | current Padiem Profile v1 must not silently use it |
+| `b14/auto` | deleted 2026-11-02 | removed from all executable code; a request naming it is refused as an unknown model |
 | MiniMax M3 / Tencent HY3 in current Padiem tier lists | retired historical lanes | must not re-enter current executable product tiers through stale docs |
 | Phase 0/1/2/3 Provider/model lists | dated phase evidence | do not treat as current B14 catalog truth |
 | `Sidecar` used ambiguously | must distinguish B53 vs IP-SIDECAR | B53 is commercial product; IP-SIDECAR is reusable embedded runtime candidate |

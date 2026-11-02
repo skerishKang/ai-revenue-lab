@@ -16,11 +16,6 @@ from app.pilot.b14_runtime_config import runtime_config
 
 
 @pytest.fixture(autouse=True)
-def _enable_archived_auto_route_tests(monkeypatch):
-    """Archived fixed-chain tests explicitly opt in; live default stays deferred."""
-
-
-@pytest.fixture(autouse=True)
 def _restore_runtime_config():
     saved_mode = runtime_config.provider_mode
     yield
@@ -81,25 +76,10 @@ def test_unknown_price_model_is_never_implicitly_classified_free():
 
 
 
-def test_gateway_rejects_the_retired_auto_id_and_drops_scorer_options(
-    client, monkeypatch
-):
-    """B7: b14/auto is refused outright. B4 grace: the scorer-era names are
-    accepted, logged, and dropped — they never reach routing."""
+def test_gateway_drops_scorer_options(client, monkeypatch):
+    """B4 grace: the scorer-era names are accepted, logged, and dropped —
+    they never reach routing."""
     monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-test-agnes-route-0123456789")
-    resp_default = client.post(
-        "/api/pilot/router/resolve",
-        json={
-            "model": "b14/auto",
-            "messages": [{"role": "user", "content": "hi"}],
-            "business14": {"task_type": "coding"},
-        },
-    )
-    # B7: the retired id is an unknown model now (the scorer-era fields are
-    # dropped in grace either way).
-    assert resp_default.status_code == 400
-    assert resp_default.json()["error"]["code"] == "unsupported_model"
-
     # B4 grace: the retired names are accepted, logged, and dropped.
     resp_opt_in = client.post(
         "/api/pilot/router/resolve",

@@ -90,7 +90,7 @@ class CanaryContractTests(unittest.TestCase):
             module.selected_model_id("agnes-ai/agnes-3.0-flash", allowed),
             "agnes-ai/agnes-3.0-flash",
         )
-        for bad in (None, "", "b14/auto", "padiem-profile/free", "google/gemma-4-31b-it"):
+        for bad in (None, "", "unknown/model", "padiem-profile/free", "google/gemma-4-31b-it"):
             with self.subTest(bad=bad), self.assertRaises(ValueError):
                 module.selected_model_id(bad, allowed)
         with self.assertRaises(ValueError):

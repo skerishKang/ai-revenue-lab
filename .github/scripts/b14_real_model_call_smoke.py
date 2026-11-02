@@ -2,17 +2,17 @@
 
 Two invocations share the verdict table but not the wire.
 
-* The deploy gate runs this script with no arguments. That call keeps its
-  original contract: it names the declared ``b14/auto`` route, carries no
-  credential of its own, and prints one ``REAL_MODEL_CALL=`` line.
+* The deploy gate runs this script with no arguments. That call names the
+  Free grade's exact declared model, carries no credential of its own, and
+  prints one ``REAL_MODEL_CALL=`` line.
 * The nightly grade smoke runs it with ``--tier``. That call reads the tier's
   executable model id from the shared declaration contract
-  (``packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py``),
-  names that exact id, and never asks ``b14/auto``. It signs the request with
-  the existing B14 service proof, ``HMAC-SHA256(secret, "<unix time>.<body>")``.
-  The secret is referenced by its existing deployment binding name
-  (``PADIEM_B14_SERVICE_PROOF_SECRET``); when it is absent no proof header is
-  sent, B14 refuses the dispatch, and the check fails closed.
+  (``packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py``)
+  and signs the request with the existing B14 service proof,
+  ``HMAC-SHA256(secret, "<unix time>.<body>")``. The secret is referenced by
+  its existing deployment binding name (``PADIEM_B14_SERVICE_PROOF_SECRET``);
+  when it is absent no proof header is sent, B14 refuses the dispatch, and the
+  check fails closed.
 
 The script never prints provider text, response bytes, the secret, or any
 fragment of them.
@@ -46,9 +46,8 @@ from typing import Any, Callable
 SERVED_ORIGIN = "https://ai-revenue-korean-ai-platform.charliekant.workers.dev"
 COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
 USER_AGENT = "b14-gate/1.0"
-# The deploy gate's single call owns this route. The nightly grade smoke never
-# uses it: ``--tier`` resolves the tier's exact declared model instead.
-REQUESTED_ROUTE = "b14/auto"
+# Both invocations name a grade's exact declared model; neither keeps a
+# second model list of its own.
 PRODUCT_TIER = "free"
 PRODUCT_TIERS = ("free", "plus", "pro", "max")
 # CLI token -> the label the shared product-tier declaration defines.
@@ -126,7 +125,7 @@ def proof_headers(
     return {PROOF_HEADER: proof, PROOF_TIME_HEADER: timestamp}
 
 
-def request_body(*, model: str = REQUESTED_ROUTE, max_tokens: int = MAX_TOKENS,
+def request_body(*, model: str, max_tokens: int = MAX_TOKENS,
                  product_tier: str = PRODUCT_TIER) -> bytes:
     """The one bounded completion request."""
     return json.dumps(
@@ -166,7 +165,7 @@ def urlopen_transport(user_agent: str = USER_AGENT) -> Transport:
     return call
 
 
-def resolved_model(payload: Any, fallback: str = REQUESTED_ROUTE) -> str:
+def resolved_model(payload: Any, fallback: str = "") -> str:
     """The model the route answered with, or the requested model when unnamed.
 
     Only a safe identifier is returned, so the verdict line can never carry a
@@ -219,7 +218,7 @@ def error_code(payload: Any) -> str:
 
 
 def decide(status: int, raw: bytes,
-           fallback: str = REQUESTED_ROUTE) -> tuple[str, str]:
+           fallback: str = "") -> tuple[str, str]:
     """Return ``(verdict, model)``. A non-pass verdict is a gate failure."""
     payload = _payload(raw)
     if error_code(payload) in ENTITLEMENT_DENIAL_CODES:
@@ -239,20 +238,19 @@ def run(*, base_url: str, transport: Transport, tier: str | None = None,
         max_tokens: int = MAX_TOKENS, product_tier: str | None = None,
         report: dict[str, Any] | None = None) -> tuple[str, str]:
     """Make one call. ``tier`` selects the exact declared grade route."""
-    if tier is None:
-        model = REQUESTED_ROUTE
-        body = request_body(max_tokens=max_tokens,
-                            product_tier=product_tier or PRODUCT_TIER)
-        headers: dict[str, str] = {}
-    else:
-        model = declared_tier_model(tier)
-        if not model:
-            if report is not None:
-                report.update(status=0, error_code="tier_route_unavailable")
-            return "FAIL", tier
-        body = request_body(model=model, max_tokens=max_tokens,
-                            product_tier=product_tier or tier)
-        headers = proof_headers(service_proof_secret, body)
+    effective_tier = tier or PRODUCT_TIER
+    model = declared_tier_model(effective_tier)
+    if not model:
+        if report is not None:
+            report.update(status=0, error_code="tier_route_unavailable")
+        return "FAIL", effective_tier
+    body = request_body(model=model, max_tokens=max_tokens,
+                        product_tier=product_tier or effective_tier)
+    # Only the nightly numbered-grade invocation signs; the deploy gate's
+    # default call still carries no credential of its own.
+    headers: dict[str, str] = (
+        proof_headers(service_proof_secret, body) if tier is not None else {}
+    )
     try:
         status, raw = transport(
             base_url.rstrip("/") + COMPLETIONS_PATH, body, headers, timeout
@@ -284,7 +282,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     tier = args.tier
     effective_tier = tier or PRODUCT_TIER
-    requested = declared_tier_model(tier) if tier else REQUESTED_ROUTE
+    requested = declared_tier_model(effective_tier)
     detail: dict[str, Any] = {"status": 0, "error_code": "origin_not_https"}
     if not args.base_url.startswith("https://"):
         print(f"REAL_MODEL_CALL=FAIL model={requested or effective_tier}")

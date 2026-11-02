@@ -69,9 +69,6 @@ MAX_PROVIDER_CALLS = 1
 RETRY = 0
 FALLBACK = 0
 
-# The AUTO lane must never back a Gemini live acceptance.
-AUTO_MODEL_ID = "b14/auto"
-
 # Output discipline markers pinned by the workflow source contract.
 DEFAULT_LIVE_EXECUTION = "BLOCKED"
 PRIVATE_PAYLOAD_OUTPUT = 0
@@ -143,12 +140,10 @@ GEMINI_EXCLUDED_MODEL_IDS: tuple[str, ...] = (
 def resolve_gemini(model_id: str) -> GeminiSpec:
     """Resolve one of the two exact Gemini ids or fail closed.
 
-    An unknown id, an excluded id, or the AUTO lane marker raises
-    ``ValueError``. There is no implicit default model.
+    An unknown or excluded id raises ``ValueError``. There is no implicit
+    default model.
     """
 
-    if model_id == AUTO_MODEL_ID:
-        raise ValueError("auto_route_not_permitted")
     if model_id in GEMINI_EXCLUDED_MODEL_IDS:
         raise ValueError("model_out_of_scope")
     spec = GEMINI_REGISTRY.get(model_id)

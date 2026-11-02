@@ -43,7 +43,6 @@ def test_b14_get_models_matches_json_exact():
     for row in data["catalog"]:
         assert row["name"]==expected[row["id"]]["display_name"]
     assert data["model_groups"]==reg["groups"]==group_model_ids()
-    assert "b14/auto" not in expected
 
 def test_only_json_providers_are_registered():
     # Another legacy test can deliberately reset the mutable provider singleton.
@@ -74,7 +73,7 @@ def test_only_json_providers_are_registered():
     lambda d:d["groups"].update({"plus":[d["models"][0]["id"]],"pro":[d["models"][0]["id"]]}),
     lambda d:d["providers"][next(iter(d["providers"]))].update({"base_origin":"http://127.0.0.1"}),
     lambda d:d["models"][0].update({"capabilities":["chat","free"]}),
-    lambda d:d["models"][0].update({"id":"b14/auto"}),
+    lambda d:d["models"][0].update({"id":"unknown/model"}),
     lambda d:d["models"][0].update({"enabled":"false"}),
     lambda d:d["models"][0].update({"secret":"value"}),
 ])

@@ -105,7 +105,7 @@ USER_VISIBLE_AUTO_LABEL = NO
 SILENT_FALLBACK = NO
 ```
 
-Historical `b14/auto` compatibility identifiers must not silently become the ordinary Padiem product route. Retired MiniMax M3 and Tencent HY3 lanes must not re-enter an executable product tier through stale documentation or fallback.
+`b14/auto` was deleted on 2026-11-02 and is refused as an unknown model. No historical compatibility identifier may silently become the ordinary Padiem product route. Retired MiniMax M3 and Tencent HY3 lanes must not re-enter an executable product tier through stale documentation or fallback.
 
 For exact current IDs and hold/retirement state, current `product_tier_routes.py`, B62 `model_policy.py`, and B14 catalog/source are stronger authority than an old issue or phase document.
 
@@ -182,7 +182,7 @@ Attachment/document bytes are untrusted reference data. They must not select a P
 
 Image-bearing model execution is normalized through Core's `MultimodalExecutionRequest` and `MultimodalExecutionRuntime` boundary. Product UX owns attachment validation/presentation; Core owns shared execution semantics; B14 owns Provider/model execution.
 
-When downstream runtime/provider readiness is unavailable, live image completion still fails closed before Business 14/provider dispatch. B62 does **not** currently use Business 14 `b14/auto` as an active routing decision. The historical `stream_text_auto` method name is a compatibility entrypoint, not evidence that current Padiem profile routing is automatic.
+When downstream runtime/provider readiness is unavailable, live image completion still fails closed before Business 14/provider dispatch. B62 does **not** use a Business 14 automatic route as an active routing decision (`b14/auto` was deleted 2026-11-02). The historical `stream_text_auto` method name is a compatibility entrypoint, not evidence that current Padiem profile routing is automatic.
 
 ## Streaming and completed transport
 

@@ -163,7 +163,7 @@ Historical documents may contain:
 ```text
 P01                -> legacy shared Core identifier; current = IP-CORE
 LOW/MEDIUM/HIGH    -> historical B62 profile terminology; not current route authority
-b14/auto            -> historical/compatibility identifier; not ordinary Padiem Profile v1 route
+b14/auto            -> deleted 2026-11-02; an unknown model, not a route
 ```
 
 The exact pre-unification 2026-09-01 registry remains immutable in Git history at:

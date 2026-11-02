@@ -169,13 +169,6 @@ def test_bai_qwen_is_excluded() -> None:
     )
 
 
-def test_auto_route_is_not_permitted() -> None:
-    with pytest.raises(ValueError, match="auto_route_not_permitted"):
-        smoke.resolve_candidate(smoke.AUTO_MODEL_ID)
-    assert smoke.AUTO_ROUTE_USED is False
-    assert smoke.AUTO_MODEL_ID not in {s.model_id for s in smoke.CANDIDATE_REGISTRY.values()}
-
-
 def test_unknown_candidate_fails_closed() -> None:
     with pytest.raises(ValueError, match="candidate_not_allowlisted"):
         smoke.resolve_candidate("does-not-exist")
@@ -186,7 +179,6 @@ def test_every_candidate_carries_exact_identity_and_binding_name() -> None:
         assert spec.candidate_id == cid
         assert spec.provider_id and spec.provider_name
         assert spec.model_id and spec.upstream_model
-        assert spec.model_id != smoke.AUTO_MODEL_ID
         assert spec.credential_binding == spec.expected_binding
         assert spec.credential_binding.isupper()
 
@@ -238,11 +230,10 @@ def test_success_uses_two_gets_and_exactly_one_chat_post(candidate_id: str) -> N
 
 
 @pytest.mark.parametrize("candidate_id", sorted(smoke.CANDIDATE_REGISTRY))
-def test_chat_body_pins_exact_manual_model_never_auto(candidate_id: str) -> None:
+def test_chat_body_pins_the_exact_manual_model(candidate_id: str) -> None:
     spec_obj = smoke.CANDIDATE_REGISTRY[candidate_id]
     body = smoke.canonical_chat_body(spec_obj)
     assert body["model"] == spec_obj.model_id
-    assert body["model"] != smoke.AUTO_MODEL_ID
 
 
 def test_expected_binding_name_is_emitted_without_any_secret_value() -> None:
@@ -490,8 +481,7 @@ def test_common_contract_and_agnes_gate_agree_on_agnes_identity() -> None:
 def test_neutral_module_does_not_duplicate_agnes_only_literals_as_globals() -> None:
     source = SCRIPT.read_text(encoding="utf-8")
     # The neutral module must not redefine the legacy Agnes-only globals as
-    # module-level names. Match a declaration at column 0 only, so that
-    # `AUTO_MODEL_ID = ...` is not mistaken for `MODEL_ID = ...`.
+    # module-level names. Match a declaration at column 0 only.
     lines = source.splitlines()
     assert not any(line.startswith("MODEL_ID = ") for line in lines)
     assert not any(line.startswith("PROVIDER_ID = ") for line in lines)

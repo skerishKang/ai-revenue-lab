@@ -56,7 +56,6 @@ def test_fixture_is_shared_synthetic_six_case_corpus() -> None:
 def test_only_five_manual_pin_candidates_are_in_scope() -> None:
     assert harness.EVALUATION_CANDIDATE_IDS == ("agnes", "motif", "mercury", "atria", "luna")
     assert all(cid in harness.CANDIDATE_REGISTRY for cid in harness.EVALUATION_CANDIDATE_IDS)
-    assert "b14/auto" not in {harness.CANDIDATE_REGISTRY[cid].model_id for cid in harness.EVALUATION_CANDIDATE_IDS}
 
 
 def test_default_cli_is_inert_and_reports_zero_live_calls(capsys) -> None:
@@ -102,7 +101,7 @@ def test_unknown_candidate_fails_closed() -> None:
     with pytest.raises(ValueError, match="candidate_not_manual_pin"):
         harness.evaluate_candidate("poolside", _transport([], "poolside/laguna-s-2.1"))
     with pytest.raises(ValueError, match="candidate_not_manual_pin"):
-        harness.evaluate_candidate("b14/auto", _transport([], "b14/auto"))
+        harness.evaluate_candidate("not-a-candidate", _transport([], "not-a-candidate"))
 
 
 def test_duplicate_or_unknown_fixture_case_is_rejected(tmp_path: Path) -> None:

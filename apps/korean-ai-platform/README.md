@@ -89,7 +89,7 @@ B14's general platform remains free to evolve beyond the current Padiem profile.
 - operator/admin route management;
 - additional Korean/domestic/local/self-hosted model access where commercially and technically justified.
 
-Future auto-routing must be explicit, versioned, observable, policy-bounded, and distinguishable from profile-specific explicit routing. An omitted product model must not silently become `b14/auto`.
+Future auto-routing must be explicit, versioned, observable, policy-bounded, and distinguishable from profile-specific explicit routing. `b14/auto` was deleted (2026-11-02); an omitted product model is refused, never silently routed.
 
 ## Korean-first product policy
 
@@ -227,7 +227,7 @@ A B14 Production release must use the repository-owned exact-SHA deployment gate
 - #2085 — canonical B14/Padiem product objective and current profile
 - #2099 — Padiem routing-profile source of truth (completed)
 - #2100 — shared Padiem tier declaration consumption by Chat/Claw
-- #2101 — remove implicit `b14/auto` defaults from Padiem-facing execution contracts while preserving future generic autorouter capability
+- #2101 — remove implicit automatic-route defaults from Padiem-facing execution contracts while preserving future generic autorouter capability (completed; the old id was deleted 2026-11-02)
 - #2102 — Padiem Max route evidence/selection
 - #2103 — generic B14 BYOK/credential policy + Padiem boundary
 - #2104 — evidence backfill for the then-current Padiem Pro Nemotron route (closed; Pro moved to HOLD by owner decision #2601)

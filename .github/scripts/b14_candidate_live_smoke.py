@@ -70,8 +70,7 @@ MAX_PROVIDER_CALLS = 1
 RETRY = 0
 FALLBACK = 0
 
-# The AUTO lane must never back a candidate live acceptance.
-AUTO_MODEL_ID = "b14/auto"
+# A candidate live acceptance only ever names one explicit allowlisted route.
 AUTO_ROUTE_USED = False
 
 HttpTransport = Callable[[str, str, "dict[str, Any] | None"], tuple[int, bytes]]
@@ -233,18 +232,16 @@ def candidate_ids() -> tuple[str, ...]:
 def resolve_candidate(candidate_id: str) -> CandidateSpec:
     """Resolve an allowlisted candidate or fail closed.
 
-    An unknown id, an excluded id, or the AUTO lane marker raises
-    ``ValueError``. There is no implicit default candidate.
+    An unknown or excluded id raises ``ValueError``. There is no implicit
+    default candidate.
     """
 
     if candidate_id in EXCLUDED_CANDIDATE_IDS:
         raise ValueError("candidate_excluded")
-    if candidate_id == AUTO_MODEL_ID:
-        raise ValueError("auto_route_not_permitted")
     spec = CANDIDATE_REGISTRY.get(candidate_id)
     if spec is None:
         raise ValueError("candidate_not_allowlisted")
-    if spec.model_id == AUTO_MODEL_ID or spec.model_id in _EXCLUDED_MODEL_IDS:
+    if spec.model_id in _EXCLUDED_MODEL_IDS:
         raise ValueError("candidate_model_not_permitted")
     return spec
 

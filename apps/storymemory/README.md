@@ -16,6 +16,6 @@ AI now uses `public/_worker.js` → `https://chat.padiem.net/api/apps/ai` → CO
 
 StoryMemory 1.0 retains the old ingress as fallback on missing COM2 credentials, connection/timeout errors, HTTP 401/404, server failures, and only the P01 service-auth HTTP 403 codes `service_app_not_authorized` / `service_authentication_failed`. Other HTTP 403 responses remain refusals. Preserve `PADIEM_INGRESS_CLIENT_SECRET` for this fallback. Model/policy refusals and quota/validation errors do not trigger fallback. COM2 and fallback each have an independent 60-second request budget; no model retry is added. Keys and deployment are managed by CTO.
 
-`STORYMEMORY_MODEL` optionally overrides the app's explicit model route; its default is defined in `public/_worker.js`. Do not use `b14/auto`.
+`STORYMEMORY_MODEL` optionally overrides the app's explicit model route; its default is defined in `public/_worker.js`. `b14/auto` was deleted on 2026-11-02; use an explicit model id.
 
 `DB_MIGRATIONS/`, patch notes, and the original manifest are preserved for reference. The original manifest uses original paths and is not a manifest of the imported directory. The original project had no separately available functions/ or Wrangler configuration at its root.

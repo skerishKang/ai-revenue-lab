@@ -70,9 +70,9 @@ def test_single_candidate_is_exactly_six_posts() -> None:
     assert result["reports"][0]["candidate_id"] == "mercury"
 
 
-def test_unknown_and_auto_selectors_fail_closed() -> None:
+def test_unknown_selectors_fail_closed() -> None:
     with pytest.raises(ValueError, match="candidate_selector_not_allowlisted"):
-        module.select_candidates("b14/auto")
+        module.select_candidates("not-a-selector")
     with pytest.raises(ValueError, match="candidate_selector_not_allowlisted"):
         module.select_candidates("poolside")
 
