@@ -189,7 +189,8 @@ def test_start_uses_engine_owned_client_and_persists_exact_server_request() -> N
     request = client.orchestrate_request
     assert request["subject_id"] == "usr_0123456789abcdef0123456789abcdef"
     assert request["agent"]["model_policy"] == {
-        "model": "kilo/minimax-minimax-m3-free"
+        "model": "kilo/minimax-minimax-m3-free",
+        "max_retries": 1,
     }
     assert request["messages"] == [{"role": "user", "content": "질문"}]
     assert request["execution_context"] == {"trace_id": request["trace_id"]}
@@ -477,7 +478,7 @@ def test_pc_context_omitted_or_none_keeps_legacy_request_bytes(monkeypatch):
     expected = {
         "agent": {"id": "b62_auto", "title": "Padiem Chat", "description": "Padiem Chat request",
                   "system_instruction": None, "task_type": "general", "optimize_for": "balanced",
-                  "max_tokens": None, "model_policy": {"model": "route/pinned"}},
+                  "max_tokens": None, "model_policy": {"model": "route/pinned", "max_retries": 1}},
         "messages": [{"role": "user", "content": "hello"}],
         "trace_id": "b62_orch_" + "a" * 24,
         "execution_context": {"trace_id": "b62_orch_" + "a" * 24},
@@ -513,7 +514,7 @@ async def test_verified_pc_bridge_uses_one_progress_opt_in_stream():
     assert flag is True and "pc_progress" not in request  # opt-in is a client header
     assert request["pc_tools"] == {"device_id": "node/meshdomain1/pc-1", "allowed_scopes": ["files_list"]}
     assert "agent_plan" not in request and "declared_plan" not in request
-    assert request["agent"]["model_policy"] == {"model": "route/pinned"}
+    assert request["agent"]["model_policy"] == {"model": "route/pinned", "max_retries": 1}
     assert records[-1]["result"].answer == "final"
 
 
