@@ -646,7 +646,7 @@ jobs:
   grade-live-smoke:
     name: Grade live smoke (${{ matrix.tier }})
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, padiem-com2-ci]
     environment: grade-smoke
     timeout-minutes: 10
     strategy:
@@ -657,10 +657,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: One real call through the declared grade route
+      - name: One real call through the declared grade route (COM2 B14)
         env:
           PADIEM_B14_SERVICE_PROOF_SECRET: ${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}
-        run: python .github/scripts/b14_real_model_call_smoke.py --tier "${{ matrix.tier }}" --report
+        run: python3 .github/scripts/b14_real_model_call_smoke.py --tier "${{ matrix.tier }}" --base-url http://127.0.0.1:8789 --report
