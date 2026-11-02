@@ -304,6 +304,32 @@ _PC_WRITE_INTENT = re.compile(
     re.IGNORECASE,
 )
 
+#: #6686: an EXPLICIT PC request names the work — a linked device, a chosen
+#: device in the composer, or words about PC operations. A general question
+#: ("안녕", "요약해 줘") must never attach the PC lane, because the PC lane's
+#: Engine admission can fail the whole turn (503 entitlement_unavailable) when
+#: the deployment's Control Plane admission authority is unavailable. Reusing
+#: this one matcher keeps the PC lane for the turns that asked for it.
+_PC_EXPLICIT_REQUEST = re.compile(
+    r"(드라이브|파일|폴더|바탕화면|문서|다운로드|브라우저|PC\s*(조회|확인|검색)?"
+    r"|\b(drive|files?|folder|desktop|browser|pc)\b)",
+    re.IGNORECASE,
+)
+
+
+def pc_explicit_request(user_text: Any, *, named_device: bool, requested_device: bool) -> bool:
+    """True only when this turn itself asked for PC work.
+
+    A linked/chosen device id or PC-operation words are the signals; a general
+    question carries none of them and keeps the plain stream (no PC tools, no
+    PC-lane Engine admission).
+    """
+    if named_device or requested_device:
+        return True
+    return isinstance(user_text, str) and bool(
+        _PC_EXPLICIT_REQUEST.search(user_text) or _PC_WRITE_INTENT.search(user_text)
+    )
+
 
 def pc_write_intent(user_text: Any) -> bool:
     """True only when this turn's own words asked for a change."""
@@ -582,6 +608,18 @@ async def resolve_chat_pc_stream_context(
             links = await linked_pc_targets(request, uid)
             if links:
                 named_device_id = link_named_in(user_text, links)
+        # #6686: only a turn that itself asks for PC work attaches the PC
+        # lane. The lane's Engine admission can fail the whole turn with 503
+        # entitlement_unavailable when the deployment's Control Plane
+        # admission authority is unavailable, so a general question must keep
+        # its plain stream; a PC refusal notice is for the turns that named
+        # the PC and were refused, never for unrelated questions.
+        if not pc_explicit_request(
+            user_text,
+            named_device=named_device_id is not None,
+            requested_device=requested_device_id is not None,
+        ):
+            return None
         if named_device_id is not None:
             selected = named_device_id
         context = await resolve_pc_work_context(
