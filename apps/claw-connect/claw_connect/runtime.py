@@ -29,6 +29,7 @@ from .connection import ConnectionController, ConnectionState
 from .enrollment import ConnectorEnrollment
 from .menu_model import (
     ACTION_DISCONNECT,
+    ACTION_UNINSTALL,
     ACTION_LOGIN,
     ACTION_OPEN_WEB,
     ACTION_VIEW_STATUS,
@@ -422,6 +423,59 @@ class ConnectApp:
         self._supervisor.stop()
         self._refresh_tray()
 
+    def uninstall(self) -> None:
+        """Run the installed Padiem PC 연결 uninstaller with administrator approval.
+
+        The program that owns this action is the installed copy beside the
+        Mesh Agent (the installer puts it there for the Windows app list). The
+        uninstaller removes the service, the PADIEM folder and the app-list key;
+        the server-side link is revoked from the web because that API needs the
+        owner's signed-in session, which this tray does not hold.
+        """
+        import ctypes
+        import os
+        from pathlib import Path
+
+        message = (
+            "Padiem PC 연결을 제거합니다.\n\n"
+            "Windows 관리자 승인(UAC) 창이 나타나면 [예]를 눌러 주세요.\n"
+            "서버 쪽 연결은 웹의 '내 PC 연결'에서도 연결 해제해 주세요.\n\n"
+            "계속할까요?"
+        )
+        # MB_YESNO | MB_ICONWARNING; IDYES=6.
+        if ctypes.windll.user32.MessageBoxW(
+            0, message, CONNECT_PRODUCT, 0x4 | 0x30
+        ) != 6:
+            return
+        target = (
+            Path(os.environ.get("ProgramFiles", r"C:\Program Files"))
+            / "PADIEM"
+            / "PadiemPcConnect.exe"
+        )
+        if not target.is_file():
+            ctypes.windll.user32.MessageBoxW(
+                0,
+                "제거 프로그램을 찾지 못했습니다. Windows 설정 > 앱에서 "
+                "'Padiem PC 연결'을 제거해 주세요.",
+                CONNECT_PRODUCT,
+                0x10,
+            )
+            return
+        # ShellExecuteW "runas" is the UAC boundary this action promises.
+        result = ctypes.windll.shell32.ShellExecuteW(
+            None, "runas", str(target), "-Uninstall", None, 1
+        )
+        # ERROR_CANCELLED (1223) is the person declining the UAC prompt, not an
+        # error worth another dialog.
+        if result <= 32 and result != 1223:
+            ctypes.windll.user32.MessageBoxW(
+                0,
+                "제거 프로그램을 시작하지 못했습니다. Windows 설정 > 앱에서 다시 "
+                "시도해 주세요.",
+                CONNECT_PRODUCT,
+                0x10,
+            )
+
     def quit(self) -> None:
         """Graceful shutdown: stop the Resident, release the single instance."""
         self._quit.set()
@@ -651,6 +705,7 @@ class ConnectApp:
             ACTION_AUTOSTART_ON: self.turn_autostart_on,
             ACTION_AUTOSTART_OFF: self.turn_autostart_off,
             ACTION_DISCONNECT: self.disconnect,
+            ACTION_UNINSTALL: self.uninstall,
             ACTION_QUIT: self.quit,
         }
 

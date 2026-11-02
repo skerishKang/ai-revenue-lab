@@ -56,8 +56,9 @@
         <strong>끄기·일시중지·연결 해제</strong>는 언제든 할 수 있습니다. 연결 목록의
         <strong>잠시 멈춤</strong>과 <strong>연결 끊기</strong>가 웹에 있고, Padiem Connector
         트레이를 설치한 PC에서는 트레이에서도 같은 제어를 합니다.
-        <strong>프로그램 제거</strong>는 트레이와 웹에 버튼이 없어, 아래
-        <a href="#installRemove">제거</a> 순서로 합니다.
+        <strong>프로그램 제거</strong>는 Windows 설정 &gt; 앱의 <strong>Padiem PC 연결</strong>에서
+        하거나, 트레이 메뉴의 <strong>Padiem PC 연결 제거</strong>로 합니다(관리자 승인 필요).
+        자세한 순서는 아래 <a href="#installRemove">제거</a>에 있습니다.
       </p>
       <p>
         덮어쓰기·이동·삭제 앞에서는 원본을 먼저 백업하고, 메일·메시지 보내기는 보내기 전에 한 번
@@ -168,8 +169,11 @@
     <section class="chat-help-section" id="installLeft" aria-labelledby="installLeftTitle">
       <h2 id="installLeftTitle">PC에 남는 것</h2>
       <ul class="chat-help-list">
-        <li><strong>연결 프로그램 파일 하나</strong> — <code>%ProgramFiles%\PADIEM\MeshAgent.exe</code>와
-          이를 실행하는 <strong>Mesh Agent</strong> Windows 서비스입니다.</li>
+        <li><strong>연결 프로그램과 제거 프로그램</strong> — <code>%ProgramFiles%\PADIEM\MeshAgent.exe</code>,
+          같은 폴더의 <code>PadiemPcConnect.exe</code>(Windows 앱 목록의 제거 프로그램),
+          그리고 이를 실행하는 <strong>Mesh Agent</strong> Windows 서비스입니다.</li>
+        <li>Windows 설정 &gt; 앱 목록에 <strong>Padiem PC 연결</strong>이 등록됩니다. 제거할 때
+          이 항목을 사용합니다.</li>
         <li>내려받는 데 쓴 임시 파일은 실행 직후 삭제됩니다. 연결 표식과 설치 주소는 실행 중인
           프로그램 안에만 있고, PC의 파일이나 레지스트리에 코드로 저장되지 않습니다.</li>
         <li><strong>PC 작업의 백업</strong> — PC의 파일을 덮어쓰기·이동·삭제할 때 원본을
@@ -197,12 +201,13 @@
         연결 상태와 버전, <strong>Padiem Chat 열기</strong>, <strong>상태 보기</strong>,
         <strong>로그 폴더 열기</strong>, <strong>일시중지 / 다시 시작</strong>,
         <strong>다시 연결</strong>, <strong>Windows 자동 시작 켜기 / 끄기</strong>,
-        <strong>연결 해제</strong>, <strong>종료</strong>. 등록이 끝나면 Windows 자동 시작이
+        <strong>연결 해제</strong>, <strong>Padiem PC 연결 제거 (관리자 승인)</strong>,
+        <strong>종료</strong>. 등록이 끝나면 Windows 자동 시작이
         기본으로 켜지고, 트레이에서 끄면 다시 켜지 않는 한 유지됩니다.
       </p>
       <p class="chat-help-caution">
-        주의: 트레이에는 <strong>제거</strong> 항목이 없습니다. Padiem Connector의 설치·등록은
-        아직 정식 공개 전이며, 제거는 아래 <a href="#installRemove">제거</a> 절차로 합니다.
+        제거는 관리자 승인(UAC)이 필요한 한 번의 확인으로 진행됩니다. 아래
+        <a href="#installRemove">제거</a> 절에 Windows 설정 &gt; 앱 경로도 함께 적었습니다.
       </p>
     </section>
 
@@ -254,39 +259,55 @@
     <section class="chat-help-section" id="installRemove" aria-labelledby="installRemoveTitle">
       <h2 id="installRemoveTitle">제거</h2>
       <p class="chat-help-desc">
-        제거는 두 단계입니다. 먼저 웹에서 이 계정과의 연결을 끊고, 다음으로 PC에서 프로그램을
-        지웁니다. 웹의 <strong>연결 끊기</strong>만으로는 PC에 설치된 프로그램 파일이 남습니다.
+        Windows 설정 &gt; 앱 &gt; 설치된 앱에서 <strong>Padiem PC 연결</strong>을 찾아
+        <strong>제거</strong>를 누릅니다. 관리자 승인(UAC) 창에서 [예]를 누르면 제거 프로그램이
+        <strong>Mesh Agent</strong> 서비스를 내리고, <code>%ProgramFiles%\PADIEM</code> 폴더와
+        Windows 앱 목록 등록을 지웁니다.
       </p>
       <ol class="chat-help-steps">
         <li class="chat-help-step">
-          <h3>1. 웹에서 연결 끊기</h3>
+          <h3>1. Windows 설정 &gt; 앱에서 제거</h3>
           <p>
-            내 컴퓨터 목록에서 그 PC의 <strong>더 보기 → 연결 끊기</strong>를 누릅니다.
-            서버 쪽 연결 권한과 폴더 범위가 사라집니다.
+            설정 &gt; 앱 &gt; 설치된 앱에서 게시자 <strong>Padiem</strong>의
+            <strong>Padiem PC 연결</strong>을 찾아 <strong>제거</strong>합니다. 관리자 승인 창에서
+            [예]를 누르세요.
           </p>
         </li>
         <li class="chat-help-step">
-          <h3>2. PC에서 프로그램 제거</h3>
+          <h3>2. 또는 트레이 메뉴에서</h3>
           <p>
-            그 PC에서 관리자 권한 PowerShell을 열고 아래 두 줄을 실행합니다.
+            Padiem Connector 트레이 메뉴의 <strong>Padiem PC 연결 제거 (관리자 승인)</strong>를
+            눌러도 같은 제거 프로그램이 실행됩니다. 확인 창에서 관리자 승인 필요 여부와 웹 연결
+            해제 안내를 확인하세요.
           </p>
-          <pre class="chat-help-command"><code>&amp; "$env:ProgramFiles\PADIEM\MeshAgent.exe" -uninstall
+        </li>
+        <li class="chat-help-step">
+          <h3>3. 웹에서 연결 해제</h3>
+          <p>
+            내 컴퓨터 목록에서 그 PC의 <strong>더 보기 → 연결 끊기</strong>를 누릅니다.
+            서버 쪽 연결 권한과 폴더 범위가 사라집니다. 제거 프로그램은 웹 로그인 세션을 갖고
+            있지 않으므로 이 단계는 웹에서 직접 합니다.
+          </p>
+        </li>
+        <li class="chat-help-step">
+          <h3>예전에 명령으로만 설치한 PC</h3>
+          <p>
+            앱 목록에 등록되지 않은 예전 설치라면 관리자 권한 PowerShell에서 아래 두 줄을
+            실행한 뒤, 서비스 기록이 다른 폴더를 가리키는지 확인합니다.
+          </p>
+          <pre class="chat-help-command"><code>&amp; "$env:ProgramFiles\PADIEM\MeshAgent.exe" -fulluninstall
 Remove-Item -LiteralPath "$env:ProgramFiles\PADIEM" -Recurse -Force</code></pre>
           <p class="chat-help-detail">
-            예전에 다른 방법으로 설치한 PC라면 서비스 기록이 다른 폴더를 가리킬 수 있습니다.
             <code>Get-CimInstance Win32_Service -Filter "Name='Mesh Agent'" | Select-Object -ExpandProperty PathName</code>
             으로 실제 파일 위치를 확인한 뒤 그 폴더를 지웁니다.
           </p>
         </li>
-        <li class="chat-help-step">
-          <h3>Padiem Connector를 설치한 경우</h3>
-          <p>
-            Connector는 설치에 쓴 파일을 <code>-Uninstall</code> 옵션으로 다시 실행해 제거합니다.
-            Windows 설정의 앱 목록에는 등록되지 않습니다. 제거해도 등록 정보와 사용자가 직접 끈
-            자동 시작 설정은 지워지지 않습니다.
-          </p>
-        </li>
       </ol>
+      <p class="chat-help-detail">
+        Padiem Connector(트레이 프로그램) 자체를 제거하려면 설치에 쓴 파일을
+        <code>-Uninstall</code> 옵션으로 다시 실행합니다. Connector는 Windows 앱 목록에
+        등록되지 않으며, 제거해도 사용자가 직접 끈 자동 시작 설정은 지워지지 않습니다.
+      </p>
       <p class="chat-help-caution">
         주의: <code>.padiem-backup</code> 폴더는 PC 작업이 만든 백업이라 제거와 함께 지우지
         않습니다. 지우기 전에 필요한 원본이 없는지 확인하세요.

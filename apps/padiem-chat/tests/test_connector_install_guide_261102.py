@@ -49,8 +49,10 @@ GROUNDED = {
     "PADIEM PC 연결": "scripts/pc_pairing/connect-exe/PadiemPcConnect.cs",
     "Mesh Agent": "scripts/pc_pairing/connect-exe/PadiemPcConnect.cs",
     "%ProgramFiles%\\PADIEM\\MeshAgent.exe": "docs/operations/PC_CONNECT_EXE_20261028.md",
-    "-uninstall": "docs/operations/PC_CONNECT_EXE_20261028.md",
+    "-fulluninstall": "docs/operations/PC_CONNECT_EXE_20261028.md",
     "Win32_Service": "docs/operations/PC_CONNECT_EXE_20261028.md",
+    "Windows 앱 목록": "scripts/pc_pairing/connect-exe/PadiemPcConnect.cs",
+    "Padiem PC 연결 제거 (관리자 승인)": "apps/claw-connect/claw_connect/menu_model.py",
     ".padiem-backup": "apps/padiem-chat/app/oracle_mesh_read_return_routes.py",
     "로그 폴더 열기": "apps/claw-connect/claw_connect/menu_model.py",
     "다시 연결": "apps/claw-connect/claw_connect/menu_model.py",
@@ -154,10 +156,12 @@ def test_every_claimed_step_exists_in_the_code_that_does_it():
 
 
 def test_the_page_names_only_the_controls_that_exist():
-    # The tray's own order: status, web, state, logs, login, pause, reconnect,
-    # autostart, disconnect, quit. It has no uninstall item, and the page says so.
-    assert "제거</strong> 항목이 없습니다" in INSTALL
-    assert "트레이에는" in INSTALL
+    # The tray menu now offers the uninstall entry with administrator approval,
+    # and the page names both the Windows app list and the tray path.
+    assert "Padiem PC 연결 제거" in INSTALL
+    assert "관리자 승인" in INSTALL
+    assert "Windows 설정 &gt; 앱" in INSTALL
+    assert "Windows 앱 목록" in INSTALL
     assert "연결 해제" in INSTALL
     # The web card's own actions, from the card copy.
     for action in ("이름 바꾸기", "잠시 멈춤", "연결 끊기"):
