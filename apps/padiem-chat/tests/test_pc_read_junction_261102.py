@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
+import uuid
 from pathlib import Path
 
 import pytest
@@ -17,22 +19,25 @@ from app.claw_pc_read_command import pc_read_chunk_command
 SANDBOX = Path(r"E:\pc-write-sandbox-261102")
 WORK = SANDBOX / "read-work"
 OUTSIDE = SANDBOX / "read-outside-sim"
-import tempfile
+
+# The fixtures are real Windows junctions driven by real PowerShell: the Linux
+# runner has no powershell/cmd, so the machine-level tests run on Windows only.
+pytestmark = pytest.mark.skipif(sys.platform != "win32",
+                                reason="real Windows junction + PowerShell run")
 
 POWERSHELL = ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File"]
 
 
 def run_ps(script: str, timeout: int = 120) -> dict:
     # 청크 읽기 레인은 임시 .ps1을 -File 로 실행한다(다중 줄·return 계약).
-    with tempfile.NamedTemporaryFile("w", suffix=".ps1", delete=False,
-                                     encoding="utf-8-sig") as handle:
-        handle.write(script)
-        path = handle.name
+    # 임시 파일도 지정 샌드박스 안에만 만든다.
+    path = SANDBOX / f"read-{uuid.uuid4().hex}.ps1"
+    path.write_text(script, encoding="utf-8-sig")
     try:
-        raw = subprocess.run(POWERSHELL + [path], capture_output=True,
+        raw = subprocess.run(POWERSHELL + [str(path)], capture_output=True,
                              timeout=timeout)
     finally:
-        Path(path).unlink(missing_ok=True)
+        path.unlink(missing_ok=True)
     text = raw.stdout.decode("utf-8", errors="replace").strip()
     assert text, f"empty answer: rc={raw.returncode} err={raw.stderr[:200]!r}"
     # 첫 비어있지 않은 JSON 줄을 답으로 파싱한다(가드 거부는 단일 문서다).

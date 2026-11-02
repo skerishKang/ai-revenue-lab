@@ -2008,6 +2008,16 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             "request_fingerprint": pending["request_fingerprint"],
             "kind": pending.get("kind") or "read",
             "command_text": pending.get("command_text"),
+            # #5994 D3 후속: the granted root rides with the claim so the
+            # executor can walk root→file and refuse a reparse-point crossing
+            # (junction/symlink) before it reads one byte.
+            "granted_root": (
+                pending["file_path"][: len(pending["file_path"])
+                                      - len(pending.get("path_relative") or "") - 1]
+                if pending.get("path_relative")
+                and str(pending["file_path"]).endswith("/" + pending["path_relative"])
+                else None
+            ),
             **({"desktop_text": desktop_text} if desktop_text is not None else {}),
             "max_bytes": _oracle_mesh_poll_max_bytes(pending),
             **({"background": True, "owner_ref": pending["user_id"]}

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import shutil
+import sys
 import subprocess
 from pathlib import Path
 
@@ -130,7 +131,8 @@ def _utf8_sample(size: int) -> bytes:
     return (block * (size // len(block) + 1))[:size]
 
 
-@pytest.mark.skipif(not POWERSHELL, reason="the range script runs on the PC's PowerShell")
+@pytest.mark.skipif(sys.platform != "win32" or not POWERSHELL,
+            reason="the range script runs on the PC's own Windows PowerShell")
 def test_a_small_file_reads_end_to_end_on_character_boundaries(tmp_path):
     data = ("가" * 20 + "abc" + "나" * 20).encode("utf-8")
     (tmp_path / "sample.txt").write_bytes(data)
@@ -158,7 +160,8 @@ def test_a_small_file_reads_end_to_end_on_character_boundaries(tmp_path):
     assert offset == len(data)
 
 
-@pytest.mark.skipif(not POWERSHELL, reason="the range script runs on the PC's PowerShell")
+@pytest.mark.skipif(sys.platform != "win32" or not POWERSHELL,
+            reason="the range script runs on the PC's own Windows PowerShell")
 def test_a_hundred_megabyte_file_reads_head_middle_and_tail(tmp_path):
     path = tmp_path / "huge.txt"
     block = _utf8_sample(1024 * 1024)
