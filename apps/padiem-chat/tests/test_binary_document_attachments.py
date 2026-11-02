@@ -200,7 +200,11 @@ def test_encrypted_and_scanned_only_pdf_fail_with_safe_specific_messages() -> No
         parse_attachments([_binary_item("scan.pdf", PDF_MIME, _blank_pdf())])
 
 
-def test_binary_document_still_obeys_single_attachment_limit() -> None:
+def test_binary_document_still_obeys_single_attachment_limit(monkeypatch) -> None:
+    # #261102: the per-message count is configurable (default 5). This pin
+    # keeps the limit enforced: with the env at 1 the historical single-item
+    # contract and its exact wording still hold.
+    monkeypatch.setenv("PADIEM_CHAT_MAX_ATTACHMENTS_PER_MESSAGE", "1")
     pdf = _binary_item("a.pdf", PDF_MIME, _minimal_text_pdf("a"))
     docx = _binary_item("b.docx", DOCX_MIME, _zip_bytes({"word/document.xml": _docx_xml("b")}))
     with pytest.raises(AttachmentValidationError, match="한 번에 하나"):

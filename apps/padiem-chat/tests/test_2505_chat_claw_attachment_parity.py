@@ -169,8 +169,10 @@ def test_the_claw_turn_reads_a_document_with_the_chat_parser():
 def test_the_claw_turn_keeps_the_chat_attachment_refusals():
     for bad in (
         [{"type": "document", "name": "a.exe", "media_type": "application/x-msdownload", "text": "x"}],
+        # #261102: several valid documents now parse; the case keeps pinning
+        # that one invalid item among several still refuses the whole turn.
         [{"type": "document", "name": "a.txt", "media_type": "text/plain", "text": "x"},
-         {"type": "document", "name": "b.txt", "media_type": "text/plain", "text": "y"}],
+         {"type": "document", "name": "b.exe", "media_type": "application/x-msdownload", "text": "y"}],
         "not-a-list",
     ):
         with pytest.raises(AttachmentValidationError):
@@ -341,7 +343,8 @@ def test_the_two_lanes_share_one_attachment_request_body():
 def test_the_browser_refuses_a_claw_image_before_upload():
     assert "claw-image-attachment-unsupported" in LOCALE_JS
     assert "Claw는 아직 사진 첨부를 모델에 전달할 수 없습니다" in LOCALE_JS
-    select = APP_JS[APP_JS.index("async function selectAttachment("):]
+    # #261102: the selection entry point is now the multi-file addAttachmentFiles.
+    select = APP_JS[APP_JS.index("async function addAttachmentFiles("):]
     select = select[: select.index("\n  }")]
     assert "conversationProduct === PRODUCT_CLAW" in select
     assert 'uiT("claw-image-attachment-unsupported")' in select

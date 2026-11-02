@@ -78,3 +78,87 @@
 .composer-note[data-state="error"] {
   color: #a23434;
 }
+
+
+/* #261102 다중 첨부 칩 목록: 한 줄에 여러 칩, 칩별 제거와 오류 상태. */
+.attachment-chip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.attachment-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(100%, 320px);
+  padding: 6px 8px;
+  border: 1px solid rgba(18, 31, 51, 0.12);
+  border-radius: 12px;
+  background: rgba(248, 250, 252, 0.92);
+}
+
+.attachment-chip-icon {
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 5px 6px;
+  border-radius: 8px;
+  background: #eef1f5;
+  color: #2b3a52;
+}
+
+.attachment-chip-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.attachment-chip-copy strong,
+.attachment-chip-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachment-chip-copy strong {
+  font-size: 13px;
+  font-weight: 650;
+  color: #16233a;
+}
+
+.attachment-chip-copy small {
+  font-size: 11px;
+  color: #5b6b80;
+}
+
+.attachment-chip-invalid {
+  border-color: rgba(178, 34, 34, 0.45);
+  background: rgba(255, 241, 241, 0.95);
+}
+
+.attachment-chip-invalid .attachment-chip-copy small {
+  color: #8c1d1d;
+}
+
+.attachment-chip .attachment-remove {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #42526e;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.attachment-chip .attachment-remove:hover:not(:disabled) {
+  background: rgba(18, 31, 51, 0.08);
+}
+
