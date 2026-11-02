@@ -51,6 +51,15 @@ StoryMemory 1.1 10개 브랜치는 한 스택이다. `feat/b61-v11-integration-2
 
 통합 확인: StoryMemory 단위·브라우저 시험 전체와 390·1440 백업·복원·익명 동기화·읽기 설정·페이지 넘김, 복원 할당량 실패 롤백 시험을 통과했다. 배포는 하지 않았다.
 
+### astra4 인증 브랜치 2개 처리 완료 — #6705 · #6706
+
+B 목록의 astra4 두 브랜치를 최신 main 기준으로 다시 올려 머지했고, 원본 브랜치는 원격에서 삭제했다.
+
+- `astra4/auth-bootstrap-error-reporting-20261029`: 배포 도구 stderr 보존과 비밀 마스킹(`redactDiagnostics`)을 `apps/padiem-auth/bootstrap-deploy.mjs`에 다시 올렸다. 생성 비밀값(원문·JSON 이스케이프·URI 인코딩·개인키 `d`)과 `CLOUDFLARE_API_TOKEN`·`CLOUDFLARE_ACCOUNT_ID`가 진단 출력에 남지 않는 시험을 포함했다. #6705 머지 SHA `83651e73b`.
+- `astra4/identity-notifier-stage-later-20261029`: `identity_account_block_notifier` 모듈과 시험을 올렸다. 현재 main의 계정 차단 경로는 `apps/padiem-auth/worker.mjs:73-85`와 `apps/padiem-auth/state.mjs:52-58`이고, 알림은 그 경로로 전달하는 호출자 쪽에 연결했다. 연결 지점은 `packages/padiem-control-plane/identity_authority_worker.py:9`의 named entrypoint 하나이며 기본 RPC 표면은 바꾸지 않았다. #6706 머지 SHA `66227244d`.
+
+두 PR 모두 배포는 하지 않았다.
+
 ## C — 버릴 것
 
 | 브랜치 | 이유 |
