@@ -2828,9 +2828,19 @@
         // The server reports a display-only hint; cookies remain HttpOnly.
         if (data.shared_login_enabled === true && data.ready === true && !data.authenticated &&
             (data.session_state === "guest" || data.session_state === "expired") && data.shared_session_present === true) {
-          const renewed = await fetch("/auth/shared/refresh", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
-          if (!renewed.ok) throw new Error("shared session unavailable");
-          data = await fetchAuthStatusOnce();
+          // #6679: a stale shared-session cookie makes the refresh endpooint
+          // answer 503/401 while /api/auth/status still answers definitively.
+          // A refresh failure is not "unreachable": the status above is a real
+          // server answer naming this browser a guest, and the login entry
+          // must act on it instead of hiding behind a failed renewal. The
+          // server clears a rejected shared cookie itself (401 path), so the
+          // next status read converges on a plain guest.
+          try {
+            const renewed = await fetch("/auth/shared/refresh", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
+            if (renewed.ok) {
+              data = await fetchAuthStatusOnce();
+            }
+          } catch (_) { /* keep the definitive guest status; never mask it as unreachable */ }
         }
         break;
       } catch (_) {
