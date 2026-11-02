@@ -32,7 +32,10 @@ OWNER = desktop.OWNER
 RUN = desktop.RUN
 DEVICE = desktop.DEVICE
 SECRET = "s" * 32
-TYPED = "2026-11-02"
+# A date-shaped value that can never collide with a real timestamp: the row
+# legitimately stores expires_at with today's calendar date, so a real date
+# here would make the no-leak assertion fail on that one day (seen 2026-11-02).
+TYPED = "2026-13-45"
 
 
 # ── the task intent ─────────────────────────────────────────────────────────
