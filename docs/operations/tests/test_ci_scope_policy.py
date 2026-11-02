@@ -339,3 +339,34 @@ def test_b62_chat_ci_main_runs_all_paths_while_pr_keeps_intended_scope(event: st
     if event == "push":
         for path in (*included, *excluded):
             assert not _b62_chat_ci_path_triggers(path, event, "feature"), path
+
+
+NIGHTLY_MAIN = WORKFLOWS / "nightly-main-full-suite.yml"
+NIGHTLY_ISSUE = WORKFLOWS / "nightly-qa-failure-issue.yml"
+
+
+def test_chat_regression_is_not_duplicated_in_the_0430_nightly() -> None:
+    """CTO 2026-11-02: the 03:00 B62 run owns apps/padiem-chat.
+
+    Removing the duplicate must not remove any other app suite, and the
+    failure-issue gate must stop waiting on the removed job.
+    """
+    text = NIGHTLY_MAIN.read_text(encoding="utf-8")
+    jobs = yaml.safe_load(text)["jobs"]
+    assert "app-padiem-chat" not in jobs
+    assert "app-padiem-chat" not in jobs["nightly-failure-issue"]["needs"]
+    assert "working-directory: apps/padiem-chat\n" not in text
+    for job in ("app-b64-ai-reward-router", "app-padiem-chat-react",
+                "app-padiem-desktop-shell", "app-claw-connect",
+                "app-padiem-ai-engine", "app-korean-ai-platform",
+                "app-padiem-ai-core", "app-padiem-control-plane",
+                "app-korean-ai-code-agent", "app-living-fiction"):
+        assert job in jobs, job
+
+
+def test_nightly_failure_issue_names_the_per_tier_smoke_results() -> None:
+    text = NIGHTLY_ISSUE.read_text(encoding="utf-8")
+    assert "RUN_ID: ${{ github.event.workflow_run.id }}" in text
+    assert "--log-failed" in text
+    assert "GRADE_SMOKE tier=" in text
+    assert "error_code=" in text

@@ -182,3 +182,56 @@ def test_the_served_origin_is_the_production_worker_route() -> None:
     assert smoke.SERVED_ORIGIN.startswith("https://")
     assert smoke.COMPLETIONS_PATH == "/api/pilot/v1/chat/completions"
     assert smoke.USER_AGENT == "b14-gate/1.0"
+
+
+@pytest.mark.parametrize("code", sorted(smoke.ENTITLEMENT_DENIAL_CODES))
+@pytest.mark.parametrize("status", (403, 429, 503))
+def test_an_entitlement_refusal_is_a_fail_not_a_provider_limit(code, status) -> None:
+    # A product that will not spend on the request cannot be excused as an
+    # upstream rate limit; the nightly must turn red and file the issue.
+    raw = json.dumps({"error": {"code": code, "message": "denied"}}).encode()
+    assert smoke.decide(status, raw)[0] == "FAIL"
+
+
+def test_a_503_without_a_known_refusal_code_keeps_the_provider_limit_marker() -> None:
+    for payload in ({"error": {"code": "rate_limited"}}, {}, {"error": "boom"}):
+        raw = json.dumps(payload).encode()
+        assert smoke.decide(503, raw)[0] == "PASS_PROVIDER_LIMIT"
+
+
+def test_an_unsafe_error_code_is_replaced_instead_of_logged() -> None:
+    raw = json.dumps({"error": {"code": "leak" + chr(10) + "x" * 200}}).encode()
+    assert smoke.error_code(smoke._payload(raw)) == "-"
+
+
+def test_report_prints_one_bounded_grade_line_with_status_and_error_code(
+    monkeypatch, capsys
+) -> None:
+    raw = json.dumps({"error": {"code": "entitlement_unavailable"}}).encode()
+    monkeypatch.setattr(smoke, "urlopen_transport", lambda *a, **k: _transport(503, raw))
+    assert smoke.main(["--base-url", "https://b14.example.test",
+                       "--tier", "pro", "--report"]) == 1
+    lines = capsys.readouterr().out.strip().splitlines()
+    assert lines[0].startswith("REAL_MODEL_CALL=FAIL model=")
+    assert lines[1] == (
+        "GRADE_SMOKE tier=pro status=503 error_code=entitlement_unavailable verdict=FAIL")
+
+
+def test_report_names_a_transport_failure_without_inventing_a_status() -> None:
+    def call(url, body, timeout):
+        raise urllib.error.URLError("connection reset")
+
+    detail = {}
+    verdict, _ = smoke.run(base_url="https://b14.example.test", transport=call,
+                           report=detail)
+    assert verdict == "FAIL"
+    assert detail == {"status": 0, "error_code": "transport_error"}
+
+
+def test_the_default_output_keeps_exactly_one_line(monkeypatch, capsys) -> None:
+    status, raw = _ok()
+    monkeypatch.setattr(smoke, "urlopen_transport", lambda *a, **k: _transport(status, raw))
+    assert smoke.main(["--base-url", "https://b14.example.test"]) == 0
+    out = capsys.readouterr().out
+    assert len(out.strip().splitlines()) == 1
+    assert "GRADE_SMOKE" not in out

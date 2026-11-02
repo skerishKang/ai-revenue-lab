@@ -658,4 +658,4 @@ jobs:
         with:
           python-version: "3.12"
       - name: One real call through the declared grade route
-        run: python .github/scripts/b14_real_model_call_smoke.py --tier "${{ matrix.tier }}"
+        run: python .github/scripts/b14_real_model_call_smoke.py --tier "${{ matrix.tier }}" --report

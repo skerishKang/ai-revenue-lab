@@ -14,6 +14,10 @@
 #   b03-living-fiction-cloudflare-m0-ci); suites without a prior CI workflow
 #   use the app's own documented uv/pytest invocation.
 # - A failing suite opens or updates exactly one tracking issue.
+#
+# CTO 2026-11-02: apps/padiem-chat is no longer duplicated here. Its complete
+# Chat/Core regression is the 03:00 KST B62 night run (b62-padiem-chat-ci.yml),
+# which also proves the lock, the shared Core import and the Worker contract.
 
 name: Nightly Main Full Suite
 
@@ -114,25 +118,6 @@ jobs:
       - name: Run contract tests
         working-directory: apps/claw-connect
         run: python -m pytest -q tests
-
-  app-padiem-chat:
-    name: tests — padiem-chat
-    runs-on: ubuntu-24.04
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
-        with:
-          version: '0.13.5'
-      - name: uv sync
-        working-directory: apps/padiem-chat
-        run: uv sync --extra dev --frozen
-      - name: pytest
-        working-directory: apps/padiem-chat
-        run: uv run --frozen pytest -q
 
   app-padiem-ai-engine:
     name: tests — padiem-ai-engine
@@ -260,7 +245,6 @@ jobs:
       - app-padiem-chat-react
       - app-padiem-desktop-shell
       - app-claw-connect
-      - app-padiem-chat
       - app-padiem-ai-engine
       - app-korean-ai-platform
       - app-padiem-ai-core

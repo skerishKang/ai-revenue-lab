@@ -32,16 +32,32 @@ jobs:
           GH_REPO: ${{ github.repository }}
           WF: ${{ github.event.workflow_run.name }}
           RUN_URL: ${{ github.event.workflow_run.html_url }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
           SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           set -euo pipefail
           title="nightly QA 실패: ${WF}"
+          # The grade smoke prints one bounded line per declared tier. Read it
+          # from the failed jobs' logs so the issue names the status code and
+          # error_code instead of only linking the run. No provider text.
+          grades=""
+          if [ "${WF}" = "B62 Padiem Chat CI" ]; then
+            grades=$(gh run view "${RUN_ID}" --log-failed 2>/dev/null \
+              | grep -o 'GRADE_SMOKE tier=[a-z]* status=[^ ]* error_code=[^ ]* verdict=[A-Z_]*' \
+              | sort -u | head -8 || true)
+          fi
+          if [ -z "${grades}" ]; then
+            grades="- 등급 스모크 결과 없음"
+          fi
           body=$(printf '%s\n' \
             "야간 검사가 실패했습니다." \
             "" \
             "- 워크플로: ${WF}" \
             "- 실행: ${RUN_URL}" \
             "- 커밋: ${SHA}" \
+            "" \
+            "등급별 결과:" \
+            "${grades}" \
             "" \
             "원인을 고친 뒤 이 이슈를 닫아 주세요.")
           number=$(TITLE="$title" gh issue list --state open --limit 200 \
