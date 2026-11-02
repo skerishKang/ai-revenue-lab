@@ -85,7 +85,12 @@ def _seed(monkeypatch, tmp_path: Path) -> Path:
     monkeypatch.setenv("PADIEM_B14_CREDENTIAL_10", MODEL_SCOPE)
     secrets = tmp_path / "secrets"
     secrets.mkdir(mode=0o700)
-    (secrets / "PADIEM_B14_CREDENTIAL_05").write_text(GOOGLE, encoding="utf-8")
+    slot_file = secrets / "PADIEM_B14_CREDENTIAL_05"
+    slot_file.write_text(GOOGLE, encoding="utf-8")
+    if os.name == "posix":
+        # The reader refuses a group/world-readable file; CI's umask otherwise
+        # creates 0o644 and the slot correctly reports unresolved.
+        os.chmod(slot_file, 0o600)
     monkeypatch.setenv("B14_SECRET_DIR", str(secrets))
     return secrets
 
