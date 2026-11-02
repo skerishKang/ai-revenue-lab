@@ -262,16 +262,27 @@ async def test_a_pc_capable_turn_uses_one_engine_stream_with_server_context(monk
 
 
 async def test_no_wording_decides_the_engine_pc_tools_offer(monkeypatch):
-    for text in (PC_TEXT, LIST_ONLY, PLAIN_TEXT):
-        app, bridge, store = _wire(monkeypatch)
-        response = await _post(app, text, pc_run_id=PC_RUN)
-        assert response.status_code == 200, response.text
-        assert response.headers["content-type"].startswith("text/event-stream")
-        assert len(bridge.requests) == 1
-        assert bridge.requests[0]["pc_tools"]["device_id"] == DEVICE
-        # A user turn receipt is not a PC run. Only an actual signed tool
-        # callback can promote one; an ordinary text answer stages none.
-        assert store.staged == []
+    """#6686: only a turn that names PC work attaches the PC lane.
+
+    A PC sentence carries its tools; an ordinary question keeps the plain
+    Engine turn (no tools, no PC-lane Engine admission), so a general question
+    can never fail on the PC boundary.
+    """
+    app, bridge, store = _wire(monkeypatch)
+    response = await _post(app, PC_TEXT, pc_run_id=PC_RUN)
+    assert response.status_code == 200, response.text
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert len(bridge.requests) == 1
+    assert bridge.requests[0]["pc_tools"]["device_id"] == DEVICE
+    # A user turn receipt is not a PC run. Only an actual signed tool
+    # callback can promote one; an ordinary text answer stages none.
+    assert store.staged == []
+
+    plain_app, plain_bridge, _plain_store = _wire(monkeypatch)
+    response = await _post(plain_app, PLAIN_TEXT, pc_run_id=PC_RUN)
+    assert response.status_code == 200, response.text
+    assert len(plain_bridge.requests) == 1
+    assert "pc_tools" not in plain_bridge.requests[0]
 
 
 async def test_route_capability_is_left_to_the_engine_without_a_classifier_call(monkeypatch):
@@ -282,10 +293,14 @@ async def test_route_capability_is_left_to_the_engine_without_a_classifier_call(
         raise AssertionError("No Chat classification/model request permitted")
     monkeypatch.setattr(lane, "chat_pc_route_declares_tools", forbidden)
     monkeypatch.setattr(lane, "execute_chat_pc_drive_lane", forbidden)
-    response = await _post(app, PLAIN_TEXT, pc_run_id=PC_RUN)
+    # The turn names PC work; the entry check (route declares tools) belongs
+    # to the Chat lane and stays unconsulted here — the Engine stream carries
+    # the server-authored context with no Chat classification call.
+    response = await _post(app, PC_TEXT, pc_run_id=PC_RUN)
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/event-stream")
     assert len(bridge.requests) == 1 and calls == []
+    assert bridge.requests[0]["pc_tools"]["device_id"] == DEVICE
     assert store.staged == []
 
 
@@ -599,7 +614,9 @@ async def test_stream_user_turn_store_failure_preserves_only_the_existing_redact
     async def fail(**fields):
         raise RuntimeError("database locked token=synthetic-private-token")
     store.begin_chat_stream_turn = fail
-    response = await _post(app, PLAIN_TEXT, pc_run_id=PC_RUN)
+    # The staged-turn machinery is PC-branch behavior; an explicit PC turn
+    # reaches it (a general question never enters this branch since #6686).
+    response = await _post(app, PC_TEXT, pc_run_id=PC_RUN)
     assert response.status_code == 503, response.text
     error = response.json()["error"]
     assert error["code"] == "chat_pc_store_unavailable"
@@ -622,7 +639,7 @@ async def test_orchestration_terminal_error_marks_its_owner_pc_run_failed(monkey
     bridge.start_stream = failed_stream
     async with _client(app) as client:
         response = await client.post("/api/orchestration", json={
-            "messages": [{"role": "user", "content": PLAIN_TEXT}],
+            "messages": [{"role": "user", "content": PC_TEXT}],
             "tier": "free", "pc_run_id": PC_RUN,
         })
     assert response.status_code == 200

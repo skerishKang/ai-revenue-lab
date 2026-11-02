@@ -15,6 +15,7 @@ what this entry point is for.
 """
 from __future__ import annotations
 
+import asyncio
 import os
 import secrets
 import sqlite3
@@ -270,6 +271,31 @@ def build_app():
         from .cpython_shared_login import create_host_shared_login_flow
         shared_login_flow = create_host_shared_login_flow(os.environ, identity_authority, settings.public_base_url)
 
+    # #4139 Oracle management-host return leg, composed from the SAME env
+    # bindings the Worker root composes (worker.py build_oracle_mesh_return_source_from_env).
+    # On this host the bindings are plain environment variables, and a secret
+    # lives only in the operator's EnvironmentFile. Absent or invalid material
+    # keeps the fail-closed unconfigured source, and the builder's own fixed
+    # reason line (oracle_mesh_source_unconfigured=<reason>) is the startup
+    # log trail; without this wiring the CPython host could never compose the
+    # Mesh lane at all, and every verified PC owner's turn was refused before
+    # the Engine ever saw it.
+    from .oracle_mesh_read_return_routes import (
+        build_oracle_mesh_return_source_from_env,
+        legacy_map_lane_enabled,
+    )
+    oracle_mesh_return_source = asyncio.run(
+        build_oracle_mesh_return_source_from_env(os.environ)
+    )
+    if oracle_mesh_return_source is None:
+        # The builder logs the fixed reason (oracle_mesh_source_unconfigured=<reason>
+        # through app.oracle_mesh_read_return_routes logging); this extra
+        # single-line host marker keeps one explicit startup line on the
+        # CPython entry even if the builder's logging path changes later.
+        print("[local] oracle_mesh_source_unconfigured=env_binding_unavailable")
+    else:
+        print("[local] oracle_mesh_return_source=mesh_env_configured")
+
     app = create_app(
         shared_login_flow=shared_login_flow,
         settings=settings,
@@ -286,6 +312,8 @@ def build_app():
         control_plane_identity_authority=identity_authority,
         identity_shadow_store=identity_shadow_store,
         b66_pdf_renderer_client=pdf_renderer,
+        oracle_mesh_return_source=oracle_mesh_return_source,
+        oracle_mesh_legacy_map_lane=legacy_map_lane_enabled(os.environ),
     )
     app.router.on_shutdown.append(db.close_readers)
     if identity_binding is not None:
