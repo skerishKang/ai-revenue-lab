@@ -182,6 +182,7 @@ def test_admin_tier_reaches_the_engine_request(monkeypatch) -> None:
     assert len(bridge.requests) == 1
     assert bridge.requests[0]["agent"]["model_policy"] == {
         "model": ADMIN_B14_MODEL_ID,
+        "max_retries": 1,
     }
     # No browser-supplied PC plan or target rides this surface's request.
     assert "agent_plan" not in bridge.requests[0]
@@ -233,7 +234,9 @@ def test_plus_tier_reaches_the_engine_request(monkeypatch) -> None:
 
     assert response.status_code == 200
     assert len(bridge.requests) == 1
-    assert bridge.requests[0]["agent"]["model_policy"] == {"model": expected}
+    assert bridge.requests[0]["agent"]["model_policy"] == {
+        "model": expected, "max_retries": 1,
+    }
     assert bridge.requests[0]["agent"]["model_policy"]["model"] != (
         active_route_for(ProductTierLabel.FREE).model_id
     )
@@ -253,7 +256,9 @@ def test_slash_text_without_tier_keeps_the_default_model_and_prompt(
     ))
 
     assert response.status_code == 200
-    assert bridge.requests[0]["agent"]["model_policy"] == {"model": expected}
+    assert bridge.requests[0]["agent"]["model_policy"] == {
+        "model": expected, "max_retries": 1,
+    }
     # Slash-prefixed text is ordinary prompt text and is never rewritten.
     assert bridge.requests[0]["messages"][0]["content"] == ALIASED_TEXT
     assert history.exchanged[0]["user_text"] == ALIASED_TEXT
@@ -269,6 +274,7 @@ def test_admin_tier_keeps_slash_text_in_the_engine_prompt(monkeypatch) -> None:
     assert response.status_code == 200
     assert bridge.requests[0]["agent"]["model_policy"] == {
         "model": ADMIN_B14_MODEL_ID,
+        "max_retries": 1,
     }
     # Slash-prefixed text is ordinary prompt text and is never rewritten.
     assert bridge.requests[0]["messages"][0]["content"] == ALIASED_TEXT
