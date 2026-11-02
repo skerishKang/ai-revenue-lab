@@ -160,6 +160,51 @@
 .chat-help-list li { margin: 0 0 8px; }
 .chat-help-list li:last-child { margin-bottom: 0; }
 
+/* #6659 2 — the install guide's numbered steps. The number lives in the step
+   title (not a CSS counter) so a screen reader reads "1. ..." with the heading.
+   A command block wraps instead of scrolling sideways at 390px. */
+.chat-help-steps { margin: 0; padding: 0; list-style: none; }
+.chat-help-step { margin: 0 0 18px; }
+.chat-help-step:last-child { margin-bottom: 0; }
+.chat-help-step h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  color: var(--accent-strong, #5546d6);
+}
+.chat-help-command {
+  margin: 12px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 10px;
+  background: var(--bg, #f8f8fb);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.chat-help-command code {
+  padding: 0;
+  background: transparent;
+  font-size: 14px;
+}
+.chat-install-body .chat-help-policy a {
+  color: var(--accent-strong, #5546d6);
+  font-weight: 600;
+}
+/* An inline link inside prose still has to be a 44px press target. inline-flex
+   keeps it in the sentence while giving it the same floor as every chip, and a
+   short label ("제거") gets the same width floor rather than a thin strip. */
+.chat-help-install-link,
+.chat-install-body .chat-help-policy a,
+.chat-install-body .chat-help-section p a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 2px;
+}
+.chat-install-body .chat-help-toc a { min-width: 44px; }
+
 .chat-help-faq h3 { color: var(--accent-strong, #5546d6); }
 
 .chat-help-foot {
