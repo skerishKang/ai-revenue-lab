@@ -31,6 +31,74 @@ _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$")
 _BINDING = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
 _GROUPS = ("plus", "pro", "max")
 
+# A Provider row may declare static extra request headers (for example a
+# vendor-required version marker). The fixed auth header is built by the adapter,
+# so a row can never replace it, and a row can never carry a key value: these are
+# non-secret metadata only.
+_REQUIRED_PROVIDER_KEYS = {
+    "base_origin", "allowed_hosts", "credential_source",
+    "credential_binding_name", "enabled",
+}
+_OPTIONAL_PROVIDER_KEYS = {"extra_headers"}
+_REQUIRED_ROOT_KEYS = {"schema_version", "comment", "providers", "models", "groups"}
+_OPTIONAL_ROOT_KEYS = {"retired_models"}
+_HEADER_NAME = re.compile(r"^[!#$%&'*+\-.^_`|~0-9A-Za-z]{1,64}$")
+_HEADER_VALUE = re.compile(r"^[\x20-\x7e]{0,512}$")
+_RESERVED_HEADERS = frozenset({
+    "authorization",
+    "proxy-authorization",
+    "cookie",
+    "set-cookie",
+    "host",
+    "content-length",
+    "transfer-encoding",
+    "connection",
+    "content-type",
+})
+# A bare long token is how a key value usually looks. Refuse it here instead of
+# relying on a reviewer to notice a credential pasted into the registry.
+_BARE_CREDENTIAL = re.compile(r"^[A-Za-z0-9_\-+/=.]{32,}$")
+_CREDENTIAL_PREFIX = re.compile(r"^(?:bearer|basic|token)\s+", re.IGNORECASE)
+
+
+def _validated_headers(raw: object) -> dict[str, str]:
+    if raw is None:
+        return {}
+    if not isinstance(raw, dict) or len(raw) > 16:
+        raise ModelRegistryError("provider extra_headers must be a small mapping")
+    headers: dict[str, str] = {}
+    lowered: set[str] = set()
+    for name, value in raw.items():
+        if not isinstance(name, str) or not _HEADER_NAME.fullmatch(name):
+            raise ModelRegistryError("invalid extra header name")
+        folded = name.casefold()
+        if folded in _RESERVED_HEADERS or folded in lowered:
+            raise ModelRegistryError("extra header may not replace a fixed header")
+        if not isinstance(value, str) or not _HEADER_VALUE.fullmatch(value):
+            raise ModelRegistryError("invalid extra header value")
+        if _CREDENTIAL_PREFIX.match(value) or _BARE_CREDENTIAL.fullmatch(value.strip()):
+            raise ModelRegistryError("extra header value looks like a credential")
+        lowered.add(folded)
+        headers[name] = value
+    return headers
+
+
+def _validated_retired(raw: object, registered: set[str]) -> frozenset[str]:
+    if raw is None:
+        return frozenset()
+    if not isinstance(raw, list) or len(raw) > 512:
+        raise ModelRegistryError("retired_models must be a bounded list")
+    retired: set[str] = set()
+    for model_id in raw:
+        if not isinstance(model_id, str) or not _ID.fullmatch(model_id):
+            raise ModelRegistryError("invalid retired model identity")
+        if model_id in retired:
+            raise ModelRegistryError("duplicate retired model identity")
+        if model_id in registered:
+            raise ModelRegistryError("retired model must not be registered")
+        retired.add(model_id)
+    return frozenset(retired)
+
 # The capability vocabulary the registry may use. A capability that is not
 # listed here is a typo, and a typo in the tool capability would silently
 # disable tool calling for that model instead of failing loudly.
@@ -85,7 +153,11 @@ def write_registry(data: dict, path: Path | None = None) -> None:
 
 def validate_registry(data: dict) -> dict:
     """Validate any trusted source before modifying the active catalog."""
-    _strict_keys(data,{"schema_version","comment","providers","models","groups"},"root")
+    if not isinstance(data, dict):
+        raise ModelRegistryError("root: unexpected/missing keys")
+    root_keys = set(data)
+    if not _REQUIRED_ROOT_KEYS <= root_keys or root_keys - _REQUIRED_ROOT_KEYS - _OPTIONAL_ROOT_KEYS:
+        raise ModelRegistryError("root: unexpected/missing keys")
     if data["schema_version"] != 1 or not isinstance(data["comment"],str):
         raise ModelRegistryError("unsupported B14 registry schema")
     if not isinstance(data["providers"],dict) or not data["providers"]:
@@ -95,7 +167,12 @@ def validate_registry(data: dict) -> dict:
     if not isinstance(data["groups"],dict) or set(data["groups"]) != set(_GROUPS):
         raise ModelRegistryError("groups must be plus/pro/max")
     for pid, entry in data["providers"].items():
-        _strict_keys(entry,{"base_origin","allowed_hosts","credential_source","credential_binding_name","enabled"},"provider")
+        if not isinstance(entry, dict):
+            raise ModelRegistryError("provider: unexpected/missing keys")
+        keys = set(entry)
+        if not _REQUIRED_PROVIDER_KEYS <= keys or keys - _REQUIRED_PROVIDER_KEYS - _OPTIONAL_PROVIDER_KEYS:
+            raise ModelRegistryError("provider: unexpected/missing keys")
+        _validated_headers(entry.get("extra_headers"))
         if not isinstance(pid,str) or not _ID.fullmatch(pid) or type(entry["enabled"]) is not bool:
             raise ModelRegistryError("invalid or disabled provider")
         if not isinstance(entry["allowed_hosts"],list) or not entry["allowed_hosts"] or not all(isinstance(x,str) and x for x in entry["allowed_hosts"]):
@@ -147,6 +224,7 @@ def validate_registry(data: dict) -> dict:
             raise ModelRegistryError("free tag requires evidenced zero price")
         if not all(isinstance(m[f],str) and m[f].strip() for f in ("source","source_checked_at")):
             raise ModelRegistryError("invalid provenance")
+    _validated_retired(data.get("retired_models"), found)
     seen=set()
     for group in _GROUPS:
         items=data["groups"][group]
@@ -162,6 +240,20 @@ def group_model_ids() -> dict[str,list[str]]:
 
 def installed_model_ids() -> frozenset[str]:
     return frozenset(m["id"] for m in read_registry()["models"])
+
+def retired_model_ids(path: Path | None = None) -> frozenset[str]:
+    """Exact model identities the Owner retired, read from the same registry.
+
+    Every retirement surface (route tests, the evaluation gate, the dispatcher)
+    derives from this list instead of keeping a second hand-maintained copy that
+    a new registration could silently fall out of sync with.
+    """
+    return frozenset(read_registry(path).get("retired_models", []))
+
+def provider_extra_headers(provider_id: str, path: Path | None = None) -> dict[str, str]:
+    """Static request headers a Provider row declares (names only, no values)."""
+    entry = read_registry(path)["providers"].get(provider_id)
+    return dict(entry.get("extra_headers", {})) if entry else {}
 
 def credential_binding_names(path: Path | None = None) -> frozenset[str]:
     """Every platform credential NAME the registry declares, enabled or not.
@@ -194,6 +286,7 @@ def install_models(data:dict|None=None) -> None:
             base_origin=raw["base_origin"],
             allowed_hosts=tuple(raw["allowed_hosts"]),
             enabled=raw["enabled"],
+            extra_headers=tuple(raw.get("extra_headers", {}).items()),
         ))
     for index, raw in enumerate(data["models"]):
         parsed.append(CatalogModel(
