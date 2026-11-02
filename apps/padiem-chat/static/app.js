@@ -3758,7 +3758,7 @@
       // reports it as still processing and never ends the retry turn; when the
       // server refuses it, no stored result can exist. Either way a failed
       // retry ends here, in its own failure card with its own retry action,
-      // instead of sitting at "답변 준비 중" with a running clock.
+      // instead of sitting in the streaming state with a running clock.
       if (!clawGeneralRequest && contextSnapshot?.pcRunId && !error?.terminalRecord
           && !error?.submissionRejected && !explicitRetry) {
         try {
