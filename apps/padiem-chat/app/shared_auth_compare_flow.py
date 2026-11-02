@@ -46,24 +46,34 @@ async def exchange_with_httpx(url, data):
         raise ValueError('invalid_token_endpoint')
     from . import httpx_compat as httpx
     from .auth import MAX_AUTH_RESPONSE_BYTES
-    async with httpx.AsyncClient(follow_redirects=False) as client:
-        # An explicit product User-Agent: auth.padiem.net sits behind Cloudflare's
-        # browser-integrity check, which refuses default library agents (error 1010).
-        async with client.stream('POST', TOKEN_URL, data=data, headers=SERVER_HEADERS) as response:
-            if response.status_code != 200:
-                # Status only: the body may carry token material.
-                print(f"[shared_login] token exchange status={response.status_code}", flush=True)
-                raise ValueError('exchange_failed')
-            body = bytearray()
-            async for chunk in response.aiter_bytes():
-                body.extend(chunk)
-                # Use the established Chat authentication response limit.
-                if len(body) > MAX_AUTH_RESPONSE_BYTES:
-                    raise ValueError('exchange_response_too_large')
-            value = json.loads(body)
-            if not isinstance(value, dict):
-                raise ValueError('exchange_invalid_response')
-            return value
+    try:
+        async with httpx.AsyncClient(follow_redirects=False) as client:
+            # An explicit product User-Agent: auth.padiem.net sits behind Cloudflare's
+            # browser-integrity check, which refuses default library agents (error 1010).
+            async with client.stream('POST', TOKEN_URL, data=data, headers=SERVER_HEADERS) as response:
+                if response.status_code in (400, 401):
+                    # A closed authority rejection of this grant. Status only: the
+                    # body may carry token material.
+                    print(f"[shared_login] token exchange status={response.status_code}", flush=True)
+                    raise ValueError('exchange_rejected')
+                if response.status_code != 200:
+                    # 5xx and unexpected statuses stay retryable (never a 401).
+                    print(f"[shared_login] token exchange status={response.status_code}", flush=True)
+                    raise ValueError('exchange_unavailable')
+                body = bytearray()
+                async for chunk in response.aiter_bytes():
+                    body.extend(chunk)
+                    # Use the established Chat authentication response limit.
+                    if len(body) > MAX_AUTH_RESPONSE_BYTES:
+                        raise ValueError('exchange_response_too_large')
+                value = json.loads(body)
+                if not isinstance(value, dict):
+                    raise ValueError('exchange_invalid_response')
+                return value
+    except ValueError:
+        raise
+    except (httpx.HTTPError, OSError) as exc:
+        raise ValueError('exchange_unavailable') from exc
 
 
 class WorkerJwksVerifier:

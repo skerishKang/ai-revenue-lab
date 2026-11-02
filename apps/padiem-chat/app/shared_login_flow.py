@@ -60,7 +60,7 @@ _FINISH_FAILURE_CODES = frozenset({
 _REFRESH_REJECTION_CODES = frozenset({
     'invalid_grant', 'invalid_token', 'invalid_client', 'unauthorized_client',
     'invalid_exchange', 'unknown_account', 'invalid_shared_credential',
-    'invalid_verified_claims', 'invalid_token_endpoint',
+    'invalid_verified_claims', 'invalid_token_endpoint', 'exchange_rejected',
 })
 
 
@@ -252,9 +252,11 @@ class SharedLoginFlow(ComparisonFlow):
             access, refresh = tokens.get('access_token'), tokens.get('refresh_token')
             if not isinstance(access, str) or not access or not isinstance(refresh, str) or not refresh:
                 raise ValueError('invalid_exchange')
+            stage = 'refresh_account'
             user = await _await(self.resolve_account(request, access))
             if not isinstance(user, str) or not user:
                 raise ValueError('unknown_account')
+            stage = 'refresh_issue'
             return issue_shared_cookies(JSONResponse({'ok': True}, headers=headers), access, refresh)
         except Exception as exc:
             # #6679: a stale shared-session cookie must not wedge the browser.
@@ -265,11 +267,11 @@ class SharedLoginFlow(ComparisonFlow):
             # (this host cannot reach the authority, etc.) stay 503 so the
             # client keeps its retry semantics. The logged line is closed:
             # stage and code only, never a token or body.
-            stage = 'refresh_exchange'
             code = _refresh_failure_code(exc)
+            detail = code or ('exchange_unavailable' if stage == 'refresh_exchange' else 'unavailable')
             print('shared_refresh_result outcome=%s stage=%s code=%s' % (
                 'rejected' if code is not None else 'unavailable',
-                stage, code or 'exchange_unavailable'), flush=True)
+                stage, detail), flush=True)
             if code is not None:
                 response = JSONResponse({'error': 'authentication_expired'}, status_code=401, headers=headers)
                 return clear_shared_cookies(response)
