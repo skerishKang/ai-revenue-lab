@@ -41,6 +41,23 @@ def test_no_unrelated_navigation_theme_changes() -> None:
 # comments are deliberately out of scope.
 BRAND_BEARING = ("eyebrow", "-kicker", "model-pill", "brand")
 
+# 설치 경로/설치 프로그램 소유 문자열 — exact original lines, no wildcards.
+# %ProgramFiles%\PADIEM\MeshAgent.exe is the real install path and
+# "PADIEM PC 연결" is the installer window title, so neither may be retitled.
+INSTALL_PATH_OWNED_LINES = (
+    '            <strong>PADIEM PC 연결</strong>이 표시됩니다.',
+    r'            <code>%ProgramFiles%\PADIEM\MeshAgent.exe</code>에 놓고,',
+    r'        <li><strong>연결 프로그램 파일 하나</strong> — <code>%ProgramFiles%\PADIEM\MeshAgent.exe</code>와',
+    r'          <pre class="chat-help-command"><code>&amp; "$env:ProgramFiles\PADIEM\MeshAgent.exe" -uninstall',
+    r'Remove-Item -LiteralPath "$env:ProgramFiles\PADIEM" -Recurse -Force</code></pre>',
+)
+
+
+def test_install_path_owned_lines_are_listed_verbatim_once() -> None:
+    lines = (ROOT / "static" / "install.html").read_text(encoding="utf-8").splitlines()
+    for owned in INSTALL_PATH_OWNED_LINES:
+        assert lines.count(owned) == 1, owned
+
 
 def _visible_lines(path):
     for line in path.read_text(encoding="utf-8").splitlines():
@@ -55,6 +72,8 @@ def test_no_visible_all_caps_brand_string_left_in_the_ui():
     offenders = []
     for path in sorted(root.glob("*.html")) + sorted(root.glob("*.js")):
         for line in _visible_lines(path):
+            if path.name == "install.html" and line in INSTALL_PATH_OWNED_LINES:
+                continue
             if "PADIEM" in line:
                 offenders.append(f"{path.name}: {line.strip()[:70]}")
     assert not offenders, offenders
