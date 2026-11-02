@@ -792,11 +792,19 @@ jobs:
           exit 1
       - name: Desktop and mobile error retry QA
         run: uv run python ../../.github/scripts/b62_error_retry_browser_qa.py
+      - name: Retry terminal contract QA
+        run: uv run python ../../.github/scripts/b62_retry_terminal_browser_qa.py
+        env:
+          B62_RETRY_TERMINAL_QA_BASE_URL: http://127.0.0.1:8773
+          B62_RETRY_TERMINAL_QA_OUT_DIR: ../../.tmp/b62-error-retry-browser-qa/retry-terminal
       - name: Print QA report
         if: always()
         run: |
           if [ -f ../../.tmp/b62-error-retry-browser-qa/report.json ]; then
             cat ../../.tmp/b62-error-retry-browser-qa/report.json
+          fi
+          if [ -f ../../.tmp/b62-error-retry-browser-qa/retry-terminal/report.json ]; then
+            cat ../../.tmp/b62-error-retry-browser-qa/retry-terminal/report.json
           fi
       - name: Upload browser evidence
         if: always()

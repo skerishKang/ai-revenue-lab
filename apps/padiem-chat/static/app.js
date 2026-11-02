@@ -763,7 +763,7 @@
       conversationState.setConversationId(retryContext.conversationId);
       activeProject = retryContext.project;
       renderProjectState();
-      const success = await requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest);
+      const success = await requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, true);
       if (success && selectedAttachments === retryAttachment) clearAttachment();
     }, { once: true });
     box.append(strong, p, retry);
@@ -3632,7 +3632,7 @@
     }
   }
 
-  async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest) {
+  async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest, explicitRetry = false) {
     if (inFlight) return false;
     inFlight = true;
     activeRequestCancelReason = null;
@@ -3753,8 +3753,14 @@
       }
       if (requestEpoch !== conversationEpoch) return false;
       handleCustomRequestFailure(error);
+      // An explicit retry replays the failed turn with that turn's own run
+      // handle. When the server accepts it, reading the inherited handle back
+      // reports it as still processing and never ends the retry turn; when the
+      // server refuses it, no stored result can exist. Either way a failed
+      // retry ends here, in its own failure card with its own retry action,
+      // instead of sitting in the streaming state with a running clock.
       if (!clawGeneralRequest && contextSnapshot?.pcRunId && !error?.terminalRecord
-          && !error?.submissionRejected) {
+          && !error?.submissionRejected && !explicitRetry) {
         try {
           const recovered = await recoverStoredPcResult(
             article, contextSnapshot, outboundMessages, skill, controller.signal,
