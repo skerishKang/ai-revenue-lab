@@ -41,7 +41,7 @@ Latest owner B14 model-selection reference: `docs/operations/B14_OWNER_MODEL_DEC
 - Padiem AI work in this repository uses the Cloudflare account `Charliekant`, including Chat/Engine Worker deployment, diagnostics and log reading. The separate Cloudflare account named `Padiem` belongs to other businesses and is outside this scope; the product or domain name never selects the account.
 - Before Cloudflare work, read [Cloudflare Credential Operations §0](docs/operations/CLOUDFLARE_CREDENTIAL_OPERATIONS.md). Resolve the account ID and authentication from the existing authorized sources for `Charliekant`. If a local or workflow configuration resolves to `Padiem`, report the scope mismatch; do not guess from account-list order or silently rewrite live credentials.
 
-## Non-public company governance (read before business decisions)
+## Non-public company governance (read before any work)
 
 This repository contains **public development and engineering policy**, not the authoritative text of PADIEM's internal business policy. Business instructions are local-only on the authorized **Padiem-Command-Center** PC:
 
@@ -59,7 +59,7 @@ This repository contains **public development and engineering policy**, not the 
 
 ## Every session: evidence-based blocker resolution
 
-- **Session entry:** On a new repository-aware agent/CTO session, read this `AGENTS.md` and the relevant current local private Governance documents through the authorized COM1 connection before making business/product decisions. Record what was actually read; if the private source is unavailable, state `NOT_READ` and the specific access limitation. A fresh general ChatGPT conversation does **not** automatically import this file; mirror this minimal rule in ChatGPT Project Instructions. Do not claim automatic loading or a completed read without evidence.
+- **Session entry:** On a new repository-aware agent/CTO session, read this `AGENTS.md` and the relevant current local private Governance documents through the authorized COM1 connection before making business/product decisions. This applies to every task, not only business decisions. Record what was actually read; if the private source is unavailable, state `NOT_READ` and the specific access limitation. A fresh general ChatGPT conversation does **not** automatically import this file; mirror this minimal rule in ChatGPT Project Instructions. Do not claim automatic loading or a completed read without evidence.
 - **No bare refusal or indefinite HOLD:** If a task is blocked, report `observed failure point + verified cause (or clearly marked unknown) + practical fix + alternative + next action + exact Owner decision needed (if any)`. Explore the smallest authorized repair/reuse path and continue independent permitted work. Do not invent approvals, policies or external technical barriers.
 - **Legal/compliance issues:** Present the specific issue, relevant verifiable law/license/terms, factual assumptions and lawful choices for the Owner's informed decision. Avoid condescending lectures or unsupported definitive legal conclusions; ask a concise question when material facts are missing. Never hide an actual prohibition, bypass security/authorization constraints or implement unlawful behavior.
 - **Owner decision respect:** Do not unilaterally impose new customer-facing restrictions or multiple logins/approval gates; check the private policy and ask the Owner if a real business decision remains unresolved. Avoid repeating irrelevant tests or document churn in place of the requested working outcome.
