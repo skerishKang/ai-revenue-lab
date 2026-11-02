@@ -1,7 +1,13 @@
 from types import SimpleNamespace
 import sys
 from claw_connect.connection import ConnectionState
-from claw_connect.menu_model import ACTION_OPEN_LOGS, ACTION_VIEW_STATUS, ACTION_RECONNECT, build_menu
+from claw_connect.menu_model import (
+    ACTION_OPEN_LOGS,
+    ACTION_UNINSTALL,
+    ACTION_VIEW_STATUS,
+    ACTION_RECONNECT,
+    build_menu,
+)
 from claw_connect.tray import ConnectTray, NIM_MODIFY
 from claw_connect.runtime import ConnectApp
 
@@ -35,5 +41,9 @@ def test_menu_callbacks_status_and_log_folder(monkeypatch, tmp_path):
     actions[ACTION_OPEN_LOGS]()
     assert shown[0][1] == "연결됨"
     assert opened == [str(tmp_path / "Padiem" / "ClawConnect")]
-    for action in (ACTION_VIEW_STATUS, ACTION_OPEN_LOGS, ACTION_RECONNECT):
+    for action in (ACTION_VIEW_STATUS, ACTION_OPEN_LOGS, ACTION_RECONNECT, ACTION_UNINSTALL):
         assert action in [item.id for item in build_menu(ConnectionState.OFFLINE) if item.enabled]
+    assert ACTION_UNINSTALL in actions
+    label = [item.label for item in build_menu(ConnectionState.OFFLINE)
+             if item.id == ACTION_UNINSTALL][0]
+    assert "제거" in label and "관리자" in label

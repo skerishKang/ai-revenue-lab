@@ -15,6 +15,7 @@ from claw_connect.connection import ConnectionState
 from claw_connect.enrollment import ConnectorEnrollment
 from claw_connect.menu_model import (
     ACTION_DISCONNECT,
+    ACTION_UNINSTALL,
     ACTION_LOGIN,
     ACTION_OPEN_WEB,
     ACTION_VIEW_STATUS,
@@ -72,11 +73,18 @@ def test_quit_is_always_selectable_and_disconnect_only_when_busy():
 def test_every_selectable_action_is_one_of_the_known_callbacks():
     known = {
         ACTION_OPEN_WEB, ACTION_VIEW_STATUS, ACTION_OPEN_LOGS, ACTION_LOGIN, ACTION_TOGGLE_PAUSE, ACTION_RECONNECT,
-        ACTION_DISCONNECT, ACTION_QUIT,
+        ACTION_DISCONNECT, ACTION_UNINSTALL, ACTION_QUIT,
         ACTION_AUTOSTART_ON, ACTION_AUTOSTART_OFF,
     }
     for state in ALL_STATES:
         assert set(selectable_ids(state)) <= known
+
+
+@pytest.mark.parametrize("state", ALL_STATES)
+def test_uninstall_is_always_offered_with_admin_guidance(state):
+    labels = [item.label for item in build_menu(state) if item.id == ACTION_UNINSTALL]
+    assert labels and "제거" in labels[0] and "관리자" in labels[0]
+    assert ACTION_UNINSTALL in selectable_ids(state)
 
 
 def test_login_is_offered_only_when_the_device_is_not_registered():

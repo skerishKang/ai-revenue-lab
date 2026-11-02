@@ -47,8 +47,9 @@ BRAND_BEARING = ("eyebrow", "-kicker", "model-pill", "brand")
 INSTALL_PATH_OWNED_LINES = (
     '            <strong>PADIEM PC 연결</strong>이 표시됩니다.',
     r'            <code>%ProgramFiles%\PADIEM\MeshAgent.exe</code>에 놓고,',
-    r'        <li><strong>연결 프로그램 파일 하나</strong> — <code>%ProgramFiles%\PADIEM\MeshAgent.exe</code>와',
-    r'          <pre class="chat-help-command"><code>&amp; "$env:ProgramFiles\PADIEM\MeshAgent.exe" -uninstall',
+    r'        <li><strong>연결 프로그램과 제거 프로그램</strong> — <code>%ProgramFiles%\PADIEM\MeshAgent.exe</code>,',
+    r'        <strong>Mesh Agent</strong> 서비스를 내리고, <code>%ProgramFiles%\PADIEM</code> 폴더와',
+    r'          <pre class="chat-help-command"><code>&amp; "$env:ProgramFiles\PADIEM\MeshAgent.exe" -fulluninstall',
     r'Remove-Item -LiteralPath "$env:ProgramFiles\PADIEM" -Recurse -Force</code></pre>',
 )
 

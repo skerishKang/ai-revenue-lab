@@ -11,7 +11,8 @@ Required items, in order:
 3. pause / resume
 4. reconnect
 5. disconnect
-6. quit
+6. uninstall (administrator approval)
+7. quit
 """
 
 from __future__ import annotations
@@ -30,6 +31,9 @@ ACTION_OPEN_LOGS = "open_logs"
 ACTION_TOGGLE_PAUSE = "toggle_pause"
 ACTION_RECONNECT = "reconnect"
 ACTION_DISCONNECT = "disconnect"
+#: Removes the installed Padiem PC 연결 program through its registered
+#: uninstaller. The Windows UAC prompt is the administrator approval.
+ACTION_UNINSTALL = "uninstall"
 ACTION_QUIT = "quit"
 #: Starts the reviewed PADIEM login / PC-registration consent flow. Offered only
 #: when the device has no usable enrollment, so a registered PC never sees it.
@@ -101,6 +105,8 @@ def build_menu(
         ),
         MenuItem(ACTION_DISCONNECT, "연결 해제", enabled=busy),
         MenuItem("sep3", "", separator=True),
+        MenuItem(ACTION_UNINSTALL, "Padiem PC 연결 제거 (관리자 승인)…"),
+        MenuItem("sep5", "", separator=True),
         MenuItem(ACTION_QUIT, "종료"),
     )
 

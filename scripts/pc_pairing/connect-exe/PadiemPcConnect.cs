@@ -71,6 +71,11 @@ namespace Padiem.Connect
             "SYSTEM\\CurrentControlSet\\Services\\Mesh Agent";
         const string AgentFileName = "MeshAgent.exe";
         const string DurableFolder = "PADIEM";
+        const string InstalledExeName = "PadiemPcConnect.exe";
+        const string UninstallSubKey =
+            "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\PADIEM-PC-Connect";
+        const string UninstallDisplayName = "Padiem PC 연결";
+        const string UninstallPublisher = "Padiem";
         const int InstallerTimeoutMilliseconds = 180000;
         const int HandoffTimeoutMilliseconds = 30000;
         const int MaximumRedirects = 4;
@@ -125,8 +130,14 @@ namespace Padiem.Connect
                 }
                 if (!options.DryRun && !IsAdministrator())
                 {
-                    Say("관리자 권한 승인 창이 나타나면 [예]를 눌러 주세요. 설치 프로그램은 관리자 권한으로만 동작합니다.");
+                    Say(options.Uninstall
+                        ? "제거를 계속하려면 관리자 권한 승인 창에서 [예]를 눌러 주세요."
+                        : "관리자 권한 승인 창이 나타나면 [예]를 눌러 주세요. 설치 프로그램은 관리자 권한으로만 동작합니다.");
                     return RelaunchElevated(arguments);
+                }
+                if (options.Uninstall)
+                {
+                    return Uninstall();
                 }
                 return Connect(options);
             }
@@ -251,6 +262,11 @@ namespace Padiem.Connect
                 try { File.Delete(temp); }
                 catch (Exception) { }
             }
+            if (!RegisterUninstaller())
+            {
+                Say("Windows 앱 목록에 제거 항목을 등록하지 못했습니다. 설치를 다시 실행해 주세요.");
+                return ExitInstallerFailed;
+            }
             Say("연결 진행 중 - 서버가 이 PC를 확인하면 PADIEM의 '내 PC 연결'에 자동으로 나타납니다.");
             Say("연결 표식 " + tag);
             Say("에이전트 " + durable);
@@ -264,6 +280,151 @@ namespace Padiem.Connect
             // cannot start after the file is cleaned up.
             return Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.ProgramFiles), DurableFolder, AgentFileName);
+        }
+
+        static string InstalledConnectExePath()
+        {
+            return Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.ProgramFiles), DurableFolder, InstalledExeName);
+        }
+
+        static string ProductVersion()
+        {
+            try
+            {
+                return typeof(PadiemPcConnect).Assembly.GetName().Version.ToString();
+            }
+            catch (Exception)
+            {
+                return "1.0.0.0";
+            }
+        }
+
+        static bool RegisterUninstaller()
+        {
+            // The Windows app list needs an uninstaller that stays on this PC. The
+            // downloaded file is not a stable location, so keep one copy of this
+            // exact program beside the agent and register that copy.
+            try
+            {
+                string source = OwnPath();
+                if (source == null)
+                {
+                    return false;
+                }
+                string target = InstalledConnectExePath();
+                string folder = Path.GetDirectoryName(target);
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+                if (!string.Equals(Path.GetFullPath(source), Path.GetFullPath(target),
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    File.Copy(source, target, true);
+                }
+                using (Microsoft.Win32.RegistryKey baseKey =
+                    Microsoft.Win32.RegistryKey.OpenBaseKey(
+                        Microsoft.Win32.RegistryHive.LocalMachine,
+                        Microsoft.Win32.RegistryView.Registry64))
+                using (Microsoft.Win32.RegistryKey key = baseKey.CreateSubKey(UninstallSubKey))
+                {
+                    if (key == null)
+                    {
+                        return false;
+                    }
+                    key.SetValue("DisplayName", UninstallDisplayName,
+                        Microsoft.Win32.RegistryValueKind.String);
+                    key.SetValue("Publisher", UninstallPublisher,
+                        Microsoft.Win32.RegistryValueKind.String);
+                    key.SetValue("DisplayVersion", ProductVersion(),
+                        Microsoft.Win32.RegistryValueKind.String);
+                    key.SetValue("UninstallString",
+                        "\"" + target + "\" -Uninstall",
+                        Microsoft.Win32.RegistryValueKind.String);
+                    key.SetValue("InstallLocation", folder,
+                        Microsoft.Win32.RegistryValueKind.String);
+                    key.SetValue("NoModify", 1, Microsoft.Win32.RegistryValueKind.DWord);
+                    key.SetValue("NoRepair", 1, Microsoft.Win32.RegistryValueKind.DWord);
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        static int Uninstall()
+        {
+            string folder = Path.GetDirectoryName(DurableAgentPath());
+            string agent = DurableAgentPath();
+            if (!File.Exists(agent))
+            {
+                string registered = RegisteredAgentPath();
+                if (registered != null)
+                {
+                    agent = registered;
+                }
+            }
+            // -fulluninstall is the agent's own removal switch: it stops the
+            // service, unregisters it and removes the files it placed.
+            if (File.Exists(agent))
+            {
+                RunQuiet(agent, "-fulluninstall");
+            }
+            // A service that survived an interrupted removal is still not this
+            // program's to leave behind. sc.exe is the OS's own fallback.
+            if (ServiceExists(AgentServiceName))
+            {
+                string sc = Path.Combine(Environment.GetFolderPath(
+                    Environment.SpecialFolder.System), "sc.exe");
+                if (File.Exists(sc))
+                {
+                    RunQuiet(sc, "stop \"" + AgentServiceName + "\"");
+                    RunQuiet(sc, "delete \"" + AgentServiceName + "\"");
+                }
+            }
+            DeleteUninstallRegistration();
+            // This executable itself lives in the folder it must remove. Delete
+            // the folder from outside the install directory after this process
+            // has exited; running rmdir from inside it leaves the folder behind.
+            ScheduleFolderRemoval(folder);
+            Say("Padiem PC 연결을 제거했습니다. Windows 앱 목록에서도 사라집니다.");
+            Say("웹의 '내 PC 연결'에서 연결 해제도 확인해 주세요.");
+            return ExitOk;
+        }
+
+        static void DeleteUninstallRegistration()
+        {
+            try
+            {
+                using (Microsoft.Win32.RegistryKey baseKey =
+                    Microsoft.Win32.RegistryKey.OpenBaseKey(
+                        Microsoft.Win32.RegistryHive.LocalMachine,
+                        Microsoft.Win32.RegistryView.Registry64))
+                {
+                    baseKey.DeleteSubKeyTree(UninstallSubKey, false);
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        static void ScheduleFolderRemoval(string folder)
+        {
+            try
+            {
+                ProcessStartInfo start = new ProcessStartInfo("cmd.exe",
+                    "/c ping 127.0.0.1 -n 3 > nul & rmdir /s /q \"" + folder + "\"");
+                start.UseShellExecute = false;
+                start.CreateNoWindow = true;
+                Process.Start(start);
+            }
+            catch (Exception)
+            {
+            }
         }
 
         static string RegisteredAgentPath()
@@ -1065,6 +1226,7 @@ namespace Padiem.Connect
             Say("  --dry-run                      실행할 내용만 보여 주고 멈춥니다.");
             Say("  --origin https://host         연결 코드만 입력받은 경우에 한할 PADIEM 주소.");
             Say("  --code XXXXXXXXXXXX           자동 점검 전용. 실제 실행에서는 입력하지 않습니다.");
+            Say("  -Uninstall                     Windows 앱 목록에서 Padiem PC 연결을 제거합니다.");
             Say("  --help                         이 정보를 표시합니다.");
             Say("종료 코드: 0 성공, 2 사용법, 3 서버 준비 중, 4 코드 거부, 5 권한 거부, 6 설치 실행 실패,");
             Say("           7 연결 정보 없음, 8 설치 프로그램 내려받기 실패, 9 알 수 없는 오류");
@@ -1120,6 +1282,7 @@ namespace Padiem.Connect
         public bool Paused = true;
         public string Origin = "";
         public string Code = "";
+        public bool Uninstall;
 
         public static string Parse(string[] arguments, out Options options)
         {
@@ -1144,6 +1307,12 @@ namespace Padiem.Connect
                 }
                 else if (argument == "--no-pause")
                 {
+                    options.Paused = false;
+                }
+                else if (argument.Equals("-Uninstall", StringComparison.OrdinalIgnoreCase)
+                      || argument.Equals("--uninstall", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.Uninstall = true;
                     options.Paused = false;
                 }
                 else if (argument == "--origin" || argument == "--code")

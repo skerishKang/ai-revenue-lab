@@ -7,8 +7,8 @@ ISSUE=#5573
 CODE_SIGNING=NONE (대표 결정: 무서명으로 진행)
 AGENT_INSTALL_OPTION=-install (measured on the tagged Windows agent, 2026-10-28)
 AGENT_FOLDER=%ProgramFiles%\PADIEM
-CONNECT_EXE_SHA256=cfcae9206a7bf46f6c9405d1edb74a7508972370197b33af08eed17f12bd7509
-CONNECT_EXE_BYTES=23552
+CONNECT_EXE_SHA256=c302ff6dd46531dd3a874caff4a5cddac7a312cdc3ea32ce7a46ee4823f76abc
+CONNECT_EXE_BYTES=26624
 BUILD=scripts/pc_pairing/build-connect-exe.ps1
 ```
 
@@ -35,8 +35,10 @@ BUILD=scripts/pc_pairing/build-connect-exe.ps1
   기록의 ImagePath에 적힌 기존 바이너리로 `-stop`을 요구하고, 새 에이전트를 durable
   폴더에 놓은 뒤 같은 이름으로 `-install`·`-start`한다. 서비스는 `Mesh Agent` 하나이며
   중복 서비스는 만들지 않는다.
-- 설치물에 남는 것은 에이전트 한 파일(`%ProgramFiles%\PADIEM\MeshAgent.exe`)뿐이다: tag와
-  설치 링크는 프로세스 안에서만 살고, 내려받은 임시 파일은 실행 직후 삭제된다.
+- 설치물이 남기는 것은 에이전트(`%ProgramFiles%\PADIEM\MeshAgent.exe`)와 제거 프로그램
+  (`%ProgramFiles%\PADIEM\PadiemPcConnect.exe`), 그리고 Windows 앱 목록의
+  `Padiem PC 연결` 등록이다. tag와 설치 링크는 프로세스 안에서만 살고, 내려받은
+  임시 파일은 실행 직후 삭제된다.
 
 ## 2. 흐름
 
@@ -50,6 +52,7 @@ exe                   →  관리자 권한 요청 (거절하면 아무것도 �
                      →  https로만 에이전트 설치 프로그램 내려받기 (최소 TLS 1.2, redirect 재검사, MZ 확인)
                      →  %ProgramFiles%\PADIEM\MeshAgent.exe 로 복사
                      →  MeshAgent.exe -install --agentName="<tag> [C D] <PCNAME>", 이어서 -start
+                     →  PadiemPcConnect.exe 복사 + Windows 앱 목록(PADIEM-PC-Connect) 등록
 서버                  →  관찰된 이름에서 tag와 드라이버를 읽고 링크를 active로 만든다
 ```
 
@@ -79,7 +82,7 @@ Worker로 돌고, 코드와 함께 가는 바이트만이 반드시 서비스된
 
 ```text
 CONNECT_EXE_REPRODUCIBLE=1   # 두 번의 빌드가 같은 바이트
-CONNECT_EXE_SEED=96a5455aa8a3efb2cf1462b4c0fa2be5db3c898b7773a9a6fc5633237319d40e
+CONNECT_EXE_SEED=9890add7442b6acffcb5aa6ddbbb63036e8c1b8eb41e768a6188a6358ed2b8be
 ```
 
 `SEED`는 `PadiemPcConnect.cs`·`app.manifest`·`win32_reproducible.py` 세 파일의 해시에서
@@ -121,17 +124,23 @@ Windows가 '알 수 없는 게시자' 경고를 띄우면
 
 ## 5. 제거 방법
 
-PC 쪽은 Windows 표준 경로로 끝낸다. 웹에서 연결을 해제하면 서버 쪽 권한이 사라지고,
-PC에서 서비스를 지우면 에이전트가 사라진다.
+PC 쪽은 Windows 설정의 앱 목록에서 끝낸다. 설치는 `HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\PADIEM-PC-Connect`에 표시 이름 `Padiem PC 연결`, 게시자 `Padiem`, 버전, 제거 명령을 등록하고, 그 제거 명령이 실행할 프로그램을 `%ProgramFiles%\PADIEM\PadiemPcConnect.exe`로 복사한다.
+
+```text
+1) Windows 설정 > 앱 > 설치된 앱에서 "Padiem PC 연결" [제거]  (UAC 승인)
+2) 또는 Padiem Connector 트레이 메뉴의 "Padiem PC 연결 제거 (관리자 승인)"
+3) 제거 프로그램: MeshAgent.exe -fulluninstall (서비스 중지·등록 해제)
+   → %ProgramFiles%\PADIEM 폴더 삭제 (프로세스 종료 후 cmd.exe가 수행)
+   → HKLM ...\Uninstall\PADIEM-PC-Connect 등록 삭제
+4) 서버 쪽 연결 해제는 웹 '내 PC 연결'의 [연결 끊기]로 한다.
+   제거 프로그램은 웹 로그인 세션을 갖고 있지 않아 서버 해제를 대신 호출하지 않는다.
+```
+
+예전에 명령으로만 설치한 PC(앱 목록 미등록)는 관리자 권한 PowerShell에서:
 
 ```powershell
-# 1) PADIEM 웹 '내 PC 연결'에서 해당 PC [연결 해제]  (폴더 승인도 함께 사라진다)
-# 2) PC에서 에이전트 제거 (이 설치물이 놓은 자리)
-& "$env:ProgramFiles\PADIEM\MeshAgent.exe" -uninstall
+& "$env:ProgramFiles\PADIEM\MeshAgent.exe" -fulluninstall
 Remove-Item -LiteralPath "$env:ProgramFiles\PADIEM" -Recurse -Force
-
-# 2') 예전에 수동으로 설치된 PC는 서비스 기록이 다른 폴더를 가리킬 수 있다.
-#     어떤 파일로 등록됐는지는 여기서 본다:
 Get-CimInstance Win32_Service -Filter "Name='Mesh Agent'" | Select-Object -ExpandProperty PathName
 ```
 
@@ -144,7 +153,7 @@ Get-CimInstance Win32_Service -Filter "Name='Mesh Agent'" | Select-Object -Expan
 
 | 경로 | 역 |
 |---|---|
-| `scripts/pc_pairing/connect-exe/PadiemPcConnect.cs` | 프로그램 자체. 꼬리말 읽기, 권한 상승, 드라이버 수집, 기존 서비스 감지와 `-stop`, https 전용 내려받기, `%ProgramFiles%\PADIEM` 복사, `-install`·`-start` |
+| `scripts/pc_pairing/connect-exe/PadiemPcConnect.cs` | 프로그램 자체. 꼬리말 읽기, 권한 상승, 드라이버 수집, 기존 서비스 감지와 `-stop`, https 전용 내려받기, `%ProgramFiles%\PADIEM` 복사, `-install`·`-start`, 제거 프로그램 복사·Windows 앱 목록 등록·`-Uninstall` 제거 |
 | `scripts/pc_pairing/connect-exe/app.manifest` | asInvoker + supportedOS (TLS 1.3 판단이 이 버전 인식을 읽는다) |
 | `scripts/pc_pairing/connect-exe/win32_reproducible.py` | 재현 가능한 바이트와 PADIEM 버전 리소스를 손으로 쓰는 곳 |
 | `scripts/pc_pairing/build-connect-exe.ps1` | 빌드·두 번 비교·지문 출력·자산 모듈 생성 |
