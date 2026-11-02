@@ -1,6 +1,6 @@
 const {chromium}=require('playwright');const assert=require('node:assert/strict');
 (async()=>{let b=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'});try{for(const width of [390,1440]){let p=await b.newPage({viewport:{width,height:900}});let errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto('http://127.0.0.1:18783/',{waitUntil:'load'});await p.waitForTimeout(1200);
-assert.equal(await p.title(),'StoryMemory · 읽은 것을 기억으로');
+assert.equal(await p.title(),'StoryMemory · 읽기와 기억의 서재');
 assert.equal(await p.locator('[data-mobile=memory]').textContent(),'기억');
 await p.evaluate(()=>openStoredMemoryContext('사도행전 9장'));
 await p.waitForFunction(()=>document.querySelector('#readerPageBody')?.innerText.includes('사울'),null,{timeout:15000});
