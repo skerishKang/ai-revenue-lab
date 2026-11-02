@@ -142,7 +142,12 @@ class TestsOnlyCIRoutingContract(unittest.TestCase):
         self.assertIn("B62_CHAT_PYTEST=PASS", host)
         self.assertIn("name: b62-test", flow)
         self.assertIn('test "$WORKER_RESULT" = success', flow)
-        self.assertIn('test "$FULL_RESULT" = success', flow)
+        # CTO 2026-11-02: the full regression is nightly/manual only, so the
+        # required status asks for success exactly on those events and for a
+        # skipped lane on a tests_only PR or a main push.
+        self.assertIn('test "$FULL_RESULT" = "$EXPECTED_FOCUSED_FULL"', flow)
+        self.assertIn("EXPECTED_FOCUSED_FULL=success", flow)
+        self.assertIn("github.event_name == 'schedule'", flow)
         self.assertIn('test "$MM_RESULT" = success', flow)
 
     def test_worker_sources_are_not_touched_by_this_test_module(self):

@@ -1,8 +1,9 @@
 name: Nightly QA failure issue
 
 # CTO 2026-11-02: a failed nightly QA run must leave a tracked issue instead of
-# only a red run. This reacts to the scheduled runs of the moved checks and
-# opens one issue per failing workflow, commenting on the existing open one.
+# only a red run. This reacts to the nightly runs of the moved checks (schedule,
+# and a manual dispatch of the same night path) and opens one issue per failing
+# workflow, commenting on the existing open one.
 on:
   workflow_run:
     workflows:
@@ -22,7 +23,7 @@ concurrency:
 
 jobs:
   file:
-    if: ${{ github.event.workflow_run.event == 'schedule' && github.event.workflow_run.conclusion == 'failure' }}
+    if: ${{ (github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'workflow_dispatch') && github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -38,11 +39,16 @@ jobs:
           set -euo pipefail
           title="nightly QA 실패: ${WF}"
           # The grade smoke prints one bounded line per declared tier. Read it
-          # from the failed jobs' logs so the issue names the status code and
-          # error_code instead of only linking the run. No provider text.
+          # from every failed job of the run (all attempts, so a partial rerun
+          # cannot erase earlier attempts' lines). No provider text.
           grades=""
           if [ "${WF}" = "B62 Padiem Chat CI" ]; then
-            grades=$(gh run view "${RUN_ID}" --log-failed 2>/dev/null \
+            grades=$(gh api \
+              "repos/${GH_REPO}/actions/runs/${RUN_ID}/jobs?filter=all&per_page=100" \
+              --jq '.jobs[] | select(.conclusion == "failure") | .id' 2>/dev/null \
+              | while read -r job; do
+                  gh run view --job "${job}" --log 2>/dev/null || true
+                done \
               | grep -o 'GRADE_SMOKE tier=[a-z]* status=[^ ]* error_code=[^ ]* verdict=[A-Z_]*' \
               | sort -u | head -8 || true)
           fi

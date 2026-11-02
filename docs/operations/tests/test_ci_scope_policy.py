@@ -367,6 +367,11 @@ def test_chat_regression_is_not_duplicated_in_the_0430_nightly() -> None:
 def test_nightly_failure_issue_names_the_per_tier_smoke_results() -> None:
     text = NIGHTLY_ISSUE.read_text(encoding="utf-8")
     assert "RUN_ID: ${{ github.event.workflow_run.id }}" in text
-    assert "--log-failed" in text
+    assert "filter=all" in text
     assert "GRADE_SMOKE tier=" in text
     assert "error_code=" in text
+    # A manual dispatch of the same night path must file the issue as well; the
+    # first manual verification run produced no issue while the gate was
+    # schedule-only.
+    assert "github.event.workflow_run.event == 'schedule'" in text
+    assert "github.event.workflow_run.event == 'workflow_dispatch'" in text
