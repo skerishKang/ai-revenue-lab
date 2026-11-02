@@ -3754,11 +3754,11 @@
       if (requestEpoch !== conversationEpoch) return false;
       handleCustomRequestFailure(error);
       // An explicit retry replays the failed turn with that turn's own run
-      // handle, and the server refuses to rewrite an existing run, so no
-      // stored result can ever belong to the retry. Reading the reused handle
-      // back only reported the failed run as "still processing" and kept the
-      // retried turn in its streaming lifecycle forever; a retry that fails
-      // ends here, in its own failure card with its own retry action.
+      // handle. When the server accepts it, reading the inherited handle back
+      // reports it as still processing and never ends the retry turn; when the
+      // server refuses it, no stored result can exist. Either way a failed
+      // retry ends here, in its own failure card with its own retry action,
+      // instead of sitting at "답변 준비 중" with a running clock.
       if (!clawGeneralRequest && contextSnapshot?.pcRunId && !error?.terminalRecord
           && !error?.submissionRejected && !explicitRetry) {
         try {

@@ -17,8 +17,9 @@ Three retry shapes are driven against the same first attempt (an
 
 In every shape the owner-scoped pending-result endpoint answers 200 with a run
 that is still ``running``. A retry that is refused or cut must still terminate
-locally; it must issue no pending-result reads at all, because it reuses the
-failed turn's run handle and that handle can never be re-executed.
+locally; it must issue no pending-result reads at all, because the retry
+inherits the failed turn's run handle and that read-back never ends the retry
+turn -- it sat at "답변 준비 중" with a running clock for minutes instead.
 """
 from __future__ import annotations
 
