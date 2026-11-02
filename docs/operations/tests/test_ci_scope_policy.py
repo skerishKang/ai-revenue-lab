@@ -375,3 +375,25 @@ def test_nightly_failure_issue_names_the_per_tier_smoke_results() -> None:
     # schedule-only.
     assert "github.event.workflow_run.event == 'schedule'" in text
     assert "github.event.workflow_run.event == 'workflow_dispatch'" in text
+
+
+CI_CONTRACT_TESTS = WORKFLOWS / "ci-contract-tests.yml"
+
+
+def test_workflow_and_script_changes_run_the_ci_contract_tests() -> None:
+    """CTO 2026-11-02: a .github/ change can rewrite CI while moving no app path.
+
+    The Chat tests-only scope contract and this repository CI scope policy must
+    therefore be triggered by that surface explicitly.
+    """
+    document = yaml.safe_load(CI_CONTRACT_TESTS.read_text(encoding="utf-8"))
+    events = document.get("on", document.get(True))
+    assert set(events) == {"pull_request", "workflow_dispatch"}
+    assert events["pull_request"]["paths"] == [
+        ".github/workflows/**",
+        ".github/scripts/**",
+    ]
+    steps = document["jobs"]["ci-contract-tests"]["steps"]
+    runs = "\n".join(str(step.get("run", "")) for step in steps)
+    assert "apps/padiem-chat/tests/test_*ci*contract*.py" in runs
+    assert "docs/operations/tests/test_ci_scope_policy.py" in runs
