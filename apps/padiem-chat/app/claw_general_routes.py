@@ -1092,6 +1092,56 @@ def _requested_desktop_control(user_text: str) -> tuple[bool, str | None]:
     return False, None
 
 
+#: #6460 step 3 — a task whose next action depends on what the screen shows is
+#: run by the model-driven loop. A desktop application name plus a task verb,
+#: or the cursor/on-screen position plus an action verb, selects that lane. The
+#: matcher decides only that the task belongs to that lane; every action is
+#: chosen by the model after a fresh capture, and the four exception families
+#: are asked once before the loop starts.
+_DESKTOP_TASK_APPS = (
+    "메모장", "계산기", "그림판", "엑셀", "워드", "파워포인트",
+    "크롬", "엣지", "카카오톡",
+)
+_DESKTOP_TASK_VERBS = (
+    "열어", "적어", "적고", "써", "쓰고", "입력", "클릭", "눌러",
+    "저장", "실행", "선택", "이동", "바꿔",
+)
+
+
+def _requested_desktop_task(user_text: str) -> bool:
+    """Plain-language PC task that needs the screen to decide each step.
+
+    The other PC lanes keep their own requests: files, drives, TXT paths, the
+    browser and an explicit quoted value never enter this lane, and anything
+    the sentence does not clearly make a PC task falls through to the model
+    exactly as before.
+    """
+    if not isinstance(user_text, str) or not user_text:
+        return False
+    if "`" in user_text:
+        return False
+    lowered = user_text.lower()
+    compact = "".join(lowered.split())
+    if not any(word in lowered for word in _DESKTOP_TASK_VERBS):
+        return False
+    if "브라우저" in lowered or re.search(r"\bbrowser\b", lowered):
+        return False
+    if any(word in lowered for word in ("파일", "폴더", "드라이브", "디스크")):
+        return False
+    if _requested_natural_pc_files(user_text) or _requested_local_txt_path(user_text)[0]:
+        return False
+    if _requested_natural_pc_query(user_text)[0]:
+        return False
+    from .pc_browser_intent import requested_pc_browser
+    if requested_pc_browser(user_text):
+        return False
+    if any(app in lowered for app in _DESKTOP_TASK_APPS):
+        return True
+    if "커서" in lowered or "마우스" in lowered or "화면" in lowered:
+        return True
+    return any(marker in compact for marker in _NATURAL_PC_QUERY_MARKERS)
+
+
 def _requested_local_desktop(user_text: str) -> tuple[bool, str | None]:
     """Explicit, delimited desktop op for the verified owner PC.
 
@@ -1178,7 +1228,8 @@ def _redact_typed_value(user_text: str) -> str:
 
 def _typed_text_marker(text: str) -> str:
     """Length plus eight hex digits of the digest: no way back to the text."""
-    return "%d:%s" % (len(text), hashlib.sha256(text.encode("utf-8")).hexdigest()[:8])
+    from .desktop_typed_text import text_marker
+    return text_marker(text)
 
 
 async def _deposit_typed_text(request: Request, text: str) -> str | None:
@@ -1188,21 +1239,11 @@ async def _deposit_typed_text(request: Request, text: str) -> str | None:
     not create a dispatch at all: a typed value that would have to sit in the
     audit row is refused rather than recorded.
     """
-    if (not isinstance(text, str) or not text or len(text) > _MAX_TYPED_CHARS
-            or "\x00" in text or "\r" in text):
-        return None
-    client = getattr(request.app.state, "queue_client", None)
-    call = getattr(client, "call", None)
-    if not callable(call):
-        return None
-    ref = secrets.token_hex(16)
-    try:
-        deposited = await call("deposit_desktop_text", ref=ref, text=text)
-    except Exception:
-        return None
-    if deposited is not True:
-        return None
-    return "desktop:type\n#" + _typed_text_marker(text) + ":" + ref
+    from .desktop_typed_text import deposit_typed_text, type_marker_op
+    ref = await deposit_typed_text(
+        getattr(request.app.state, "queue_client", None), text,
+    )
+    return None if ref is None else type_marker_op(text, ref)
 
 
 async def _dispatch_user_desktop_request(
@@ -1647,6 +1688,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         if (
             _requested_local_desktop(user_text)[0]
             or _requested_read_only_screen_view(user_text)
+            or _requested_desktop_task(user_text)
             or _requested_local_command(user_text)[0]
             or _requested_natural_pc_files(user_text)
             or _requested_natural_pc_query(user_text)[0]
@@ -1722,6 +1764,21 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         r"(?:캡처|찍|보여|봐|capture|observe)",
         user_text, re.I,
     ))
+    # #6460 step 3: a task whose next action depends on the screen runs the
+    # same Engine lane, which captures, lets the trusted model choose one
+    # action, executes it and captures again until the model finishes or the
+    # owner presses 그만. Pre-delegated: no per-action confirmation exists.
+    desktop_task_requested = not initial_pc_capture and _requested_desktop_task(user_text)
+    if desktop_task_requested:
+        if attachment_conflict is not None:
+            return attachment_conflict
+        question = _desktop_exception_question(user_text)
+        if question is not None:
+            conversation_id, denial = await _resolve_intake_session_reference(request, data)
+            if denial is not None:
+                return denial
+            return _claw_general_sse(question, conversation_id=conversation_id)
+        initial_pc_capture = True
     if initial_pc_capture and attachment_conflict is not None:
         return attachment_conflict
     # A selected PC is shape-checked once here and then bound to the two PC
@@ -2317,7 +2374,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 user_id=stage_uid, run_id=run.run_id,
                 workspace_id=stage_workspace, user_text=user_text,
                 conversation_id=conversation_id,
-                **({"action": "pc_browser_query"} if pc_browser_requested else {}),
+                **({"action": "pc_browser_query"} if pc_browser_requested else
+                   {"action": "desktop_task"} if desktop_task_requested else {}),
             )
         except Exception:
             await _refund_active_reservation()
@@ -2552,6 +2610,9 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         staged_conversation_id=staged_conversation_id,
     )
     _claw_stage(CLAW_STAGE_PERSIST, persist_started)
+    # #6460 step 3: the owner's stop control uses the run id the live SSE
+    # response already carries; the non-live terminal surface keeps its
+    # byte-identical response and evidence headers stay opt-in as before.
     return _claw_general_sse(
         outcome.answer,
         _claw_evidence_response_headers(run.run_id, outcome) if evidence_requested else None,

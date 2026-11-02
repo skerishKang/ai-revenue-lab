@@ -71,6 +71,12 @@ from .claw_pc_search_command import (
 )
 from .claw_local_task_result_projection import result_message_id
 from .control_plane_identity import IdentityBridgeError
+from .desktop_typed_text import (
+    MAX_TYPED_CHARS as _MAX_TYPED_TEXT_CHARS,
+    deposit_typed_text,
+    text_is_deliverable,
+    type_marker_op,
+)
 from .history import (
     HistoryError,
     HistoryForbidden,
@@ -162,6 +168,12 @@ _DISPATCH_TTL = timedelta(seconds=600)
 #: path' by the caller that receives the platform refusal.
 _MAX_RESULT_BODY_BYTES: int | None = None
 _MAX_BODY_BYTES = 6_000_000
+#: #6460 step 3 — the signed desktop lane's proof envelope. A typed value is
+#: bounded at 20000 characters by the one-shot store; worst-case JSON escaping
+#: is six bytes per BMP character and twelve per astral character, so 256 KB
+#: holds the largest allowed value. Every field is parsed and bounded again
+#: after the proof check.
+_MAX_DESKTOP_ENGINE_BODY_BYTES = 256_000
 #: One stored conversation message. Reuses the existing product bound
 #: (``history.MAX_HISTORY_MESSAGE_CHARS``); a larger output is split across
 #: several messages, never truncated.
@@ -1493,6 +1505,52 @@ async def dispatch_oracle_mesh_file_read_intent(
     })
 
 
+#: #6460 step 2 — the combo vocabulary the executor also enforces. What is
+#: closed is the *names*: one reviewed key name with up to three distinct
+#: modifiers, and never the secure attention sequence. The executor re-checks
+#: before the PC acts and stays the authority.
+_DESKTOP_KEY_NAMES = frozenset({
+    "enter", "esc", "escape", "tab", "backspace", "delete", "space",
+    "insert", "home", "end", "pageup", "pagedown", "left", "up", "right", "down",
+    "win", "meta",
+}) | frozenset(chr(code) for code in range(ord("a"), ord("z") + 1)) \
+  | frozenset(str(digit) for digit in range(10)) \
+  | frozenset("f%d" % n for n in range(1, 13))
+_DESKTOP_KEY_MODIFIER_CODES = {
+    "ctrl": 17, "control": 17, "alt": 18, "shift": 16, "win": 91, "meta": 91,
+}
+_DESKTOP_RESERVED_KEY_COMBOS = frozenset({
+    "ctrl+alt+del", "ctrl+alt+delete",
+})
+
+
+def _desktop_key_combo_is_valid(arg: str) -> bool:
+    if not isinstance(arg, str) or not arg or len(arg) > 64:
+        return False
+    parts = [part.strip().lower() for part in arg.split("+")]
+    if any(not part for part in parts) or len(parts) > 4:
+        return False
+    key, modifiers = parts[-1], parts[:-1]
+    if key not in _DESKTOP_KEY_NAMES:
+        return False
+    if key in ("win", "meta") and modifiers:
+        # A lone Win key is a real press; as a combo member it is a modifier.
+        return False
+    canonical_modifiers: list[str] = []
+    seen: set[int] = set()
+    for modifier in modifiers:
+        code = _DESKTOP_KEY_MODIFIER_CODES.get(modifier)
+        if code is None or code in seen:
+            return False
+        seen.add(code)
+        canonical_modifiers.append(
+            "ctrl" if modifier in ("ctrl", "control")
+            else "win" if modifier in ("win", "meta") else modifier
+        )
+    canonical = "+".join(canonical_modifiers + [key])
+    return canonical not in _DESKTOP_RESERVED_KEY_COMBOS
+
+
 def _parse_desktop_op_text(value: Any) -> tuple[str, str | None] | None:
     """Split one ``desktop:`` op body into (op, arg), or None when malformed.
 
@@ -1523,10 +1581,7 @@ def _parse_desktop_op_text(value: Any) -> tuple[str, str | None] | None:
             return None
         return op, arg
     if op == "keys":
-        if arg.strip().lower() not in (
-            "enter", "esc", "tab", "backspace", "delete",
-            "ctrl+s", "ctrl+c", "ctrl+v", "ctrl+a", "alt+f4", "win+r", "win",
-        ):
+        if not _desktop_key_combo_is_valid(arg):
             return None
         return op, arg.strip().lower()
     match = re.fullmatch(r"(\d{1,5}),(\d{1,5})", arg)
@@ -1540,6 +1595,7 @@ def _parse_desktop_op_text(value: Any) -> tuple[str, str | None] | None:
 async def dispatch_oracle_mesh_desktop_intent(
     request: Request, *, desktop_op: str, wire: dict[str, Any],
     trusted_owner: tuple[Any, str, str] | None = None,
+    tool_call_ref: str | None = None,
 ) -> JSONResponse:
     """Owner intent for ONE desktop observation or input on the pinned PC.
 
@@ -1554,6 +1610,11 @@ async def dispatch_oracle_mesh_desktop_intent(
       retarget the read lane's file authority;
     * the op grammar is closed (capture/type/keys/click): anything else is
       refused here, and the executor re-verifies before the PC acts.
+
+    ``tool_call_ref`` is the per-call dispatch scope the model-driven loop
+    needs: one run holds one dispatch per step instead of one dispatch in
+    total, and a re-sent step still correlates to its own row and is refused
+    rather than executed a second time.
     """
     if trusted_owner is None:
         session, denial = await _verified_owner_request(request)
@@ -1619,6 +1680,10 @@ async def dispatch_oracle_mesh_desktop_intent(
         or not run_row["conversation_id"]
     ):
         return _error(404, "oracle_mesh_run_unavailable")
+    # #6460 step 3 — an owner's 그만 is authoritative: no new PC action is
+    # dispatched for a run that was stopped, however late the request arrives.
+    if run_row.get("status") == "cancelled":
+        return _error(409, "oracle_mesh_run_stopped")
 
     target = mesh_source.command_target(account_ref=account_ref, device_id=selected)
     if target is None:
@@ -1645,7 +1710,9 @@ async def dispatch_oracle_mesh_desktop_intent(
     else:
         suffix = uuid.uuid4().hex
         cmd_id = "oracle_mesh_cmd_" + suffix
-        tool_request_ref = "oracle_mesh_tool_" + suffix
+        # A loop step's own call reference is its correlation: the same step
+        # re-sent finds its row instead of staging a second execution.
+        tool_request_ref = tool_call_ref or ("oracle_mesh_tool_" + suffix)
         request_id = "oracle_mesh_req_" + suffix
         revision_ref = "oracle_mesh_rev_" + suffix
         evidence_ref = None
@@ -1677,6 +1744,7 @@ async def dispatch_oracle_mesh_desktop_intent(
             expires_at=(now + _DISPATCH_TTL).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
             kind="desktop",
             command_text=canonical_op,
+            tool_call_ref=tool_call_ref,
         )
     except HistoryForbidden:
         return _error(404, "oracle_mesh_run_unavailable")
@@ -3297,11 +3365,32 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     command_scope = None
     if is_multi_command_action((run_row or {}).get("action")):
         command_scope = dispatch.get("command_id")
+    # #6460 step 3: a model-driven desktop loop stages one dispatch per step.
+    # Each step's message is evidence of that step alone, so it never writes
+    # the run's terminal result; the verified final answer owns that.
+    step_message_only = (
+        command_scope is None
+        and dispatch.get("kind") == "desktop"
+        and isinstance(dispatch.get("tool_call_ref"), str)
+        and bool(dispatch["tool_call_ref"])
+        and len(messages) == 1
+    )
+    append_step = getattr(history_store, "append_step_result_message", None)
+    if step_message_only and not callable(append_step):
+        step_message_only = False
     try:
         for index, part in enumerate(messages):
             message_id = base_message_id if len(messages) == 1 else (
                 base_message_id + "_p" + str(index)
             )
+            if step_message_only:
+                appended = await append_step(
+                    user_id=dispatch["user_id"],
+                    run_id=dispatch["run_id"],
+                    message_id=message_id,
+                    content=part,
+                ) or appended
+                continue
             appended = await history_store.append_local_task_result(
                 user_id=dispatch["user_id"],
                 run_id=dispatch["run_id"],
@@ -4916,7 +5005,10 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
     Control Plane must resolve the current session independently before the
     existing owner-scoped desktop dispatch may run.
     """
-    raw, proof_error = await _verify_engine_proof(request)
+    # #6460 step 3: a loop step may carry a typed value up to the one-shot
+    # store's bound, so this lane's proof envelope is sized for it; every
+    # field is still parsed and bounded below.
+    raw, proof_error = await _verify_engine_proof(request, max_body_bytes=_MAX_DESKTOP_ENGINE_BODY_BYTES)
     if proof_error is not None or raw is None:
         return proof_error if proof_error is not None else _error(401, "claw_engine_proof_required")
     try:
@@ -4924,14 +5016,22 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
     except (ValueError, TypeError):
         return _error(400, "claw_engine_desktop_invalid_body")
     status_query = isinstance(payload, dict) and payload.get("mode") in ("status", "image", "result", "command_status")
+    run_query = isinstance(payload, dict) and payload.get("mode") == "run_status"
     command_dispatch = isinstance(payload, dict) and payload.get("mode") == "dispatch"
+    desktop_dispatch = not status_query and not run_query and not command_dispatch
     expected_keys = (
         {"subject_id", "run_id", "dispatch_id", "mode"} if status_query
+        else {"subject_id", "run_id", "mode"} if run_query
         else {"subject_id", "run_id", "device_id", "command", "mode"} if command_dispatch
         else {"subject_id", "run_id", "device_id", "desktop_op"}
     )
+    # A loop step adds its own dispatch scope, and an Engine-chosen typed value
+    # travels beside the op so it never enters the row. Both are optional, so
+    # the single-action body stays byte-for-byte what it was.
+    optional_keys = (frozenset({"call_ref", "desktop_text"})
+                     if desktop_dispatch else frozenset())
     if (not isinstance(payload, dict)
-        or set(payload) != expected_keys
+        or not (expected_keys <= set(payload) <= expected_keys | optional_keys)
         or not all(
             isinstance(payload[k], str) and 0 < len(payload[k]) <= 512
             for k in ("subject_id", "run_id")
@@ -4943,12 +5043,19 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
             or not isinstance(payload.get("command"), str)
             or payload.get("command") != "Get-PSDrive -PSProvider FileSystem | Select-Object Name,Root,Used,Free | ConvertTo-Json"
         ))
-        or (not status_query and not command_dispatch and (
+        or (desktop_dispatch and (
             not isinstance(payload["desktop_op"], str)
             or not 0 < len(payload["desktop_op"]) <= 512
             or (payload["device_id"] is not None and (
                 not isinstance(payload["device_id"], str)
-                or not 0 < len(payload["device_id"]) <= 128))))):
+                or not 0 < len(payload["device_id"]) <= 128))
+            or ("call_ref" in payload and (
+                not isinstance(payload["call_ref"], str)
+                or not 0 < len(payload["call_ref"]) <= 120
+                or any(ord(ch) < 33 or ord(ch) > 126 for ch in payload["call_ref"])))
+            or ("desktop_text" in payload and (
+                not isinstance(payload["desktop_text"], str)
+                or not 0 < len(payload["desktop_text"]) <= _MAX_TYPED_TEXT_CHARS))))):
         return _error(400, "claw_engine_desktop_invalid_body")
     identity = getattr(request.app.state, "control_plane_identity_authority", None)
     if not callable(getattr(identity, "resolve_product_user_for_subject", None)):
@@ -4991,6 +5098,28 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
         print("claw_engine_bridge_mismatch", flush=True)
         return _error(401, "canonical_session_required")
     session = bridged.auth_session
+    if run_query:
+        # #6460 step 3 — the loop asks one question between steps: did the
+        # owner stop this run? Only the owner's own run row answers, and the
+        # read writes nothing.
+        history_store = getattr(request.app.state, "history_store", None)
+        reader = getattr(history_store, "get_claw_run", None)
+        if not callable(reader):
+            return _error(503, "oracle_mesh_unconfigured")
+        try:
+            run = await reader(uid, payload["run_id"])
+        except Exception:
+            return _error(503, "oracle_mesh_run_unavailable")
+        if not isinstance(run, dict) or run.get("run_id") != payload["run_id"]:
+            return _error(404, "oracle_mesh_run_unavailable")
+        return _response({
+            "ok": True,
+            "run": {
+                "run_id": run["run_id"],
+                "state": run.get("status"),
+                "updated_at": run.get("updated_at"),
+            },
+        })
     if status_query:
         history_store = getattr(request.app.state, "history_store", None)
         reader = getattr(history_store, "get_oracle_mesh_dispatch_for_owner", None)
@@ -5129,10 +5258,26 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
             wire={"run_id": payload["run_id"], "device_id": payload["device_id"], "confirmed": True},
             trusted_owner=(session, uid, command_workspace),
         )
+    desktop_op = payload["desktop_op"]
+    if "desktop_text" in payload:
+        # #6460 step 3 — the model-driven loop types a value it chose from the
+        # screen. The value goes to the one-shot store and the row names it only
+        # by length, digest prefix and reference; the value itself is never
+        # written into any dispatch row of this run.
+        if desktop_op != "desktop:type" or not text_is_deliverable(payload["desktop_text"]):
+            return _error(422, "oracle_mesh_desktop_op_invalid")
+        text_ref = await deposit_typed_text(
+            getattr(request.app.state, "queue_client", None),
+            payload["desktop_text"],
+        )
+        if text_ref is None:
+            return _error(503, "desktop_text_unavailable")
+        desktop_op = type_marker_op(payload["desktop_text"], text_ref)
     return await dispatch_oracle_mesh_desktop_intent(
-        request, desktop_op=payload["desktop_op"],
+        request, desktop_op=desktop_op,
         wire={"run_id": payload["run_id"], "device_id": payload["device_id"], "confirmed": True},
         trusted_owner=(session, uid, session.tenant_id),
+        tool_call_ref=payload.get("call_ref"),
     )
 
 

@@ -338,6 +338,7 @@ class HistoryStore(Protocol):
     async def record_claw_run(self, user_id: str, run_id: str, channel: str, action: str, title: str, status: str, result_summary: str | None = None, artifact_document_id: str | None = None, artifact_filename: str | None = None, artifact_media_type: str | None = None, conversation_id: str | None = None, workspace_id: str | None = None) -> None: ...
     async def list_recent_claw_runs(self, user_id: str, limit: int = MAX_CLAW_RUNS, workspace_id: str | None = None) -> list[dict[str, Any]]: ...
     async def update_claw_run_status(self, user_id: str, run_id: str, status: str, result_summary: str | None = None) -> bool: ...
+    async def append_step_result_message(self, *, user_id: str, run_id: str, message_id: str, content: str) -> bool: ...
     async def record_claw_approval_handoff(self, user_id: str, run_id: str, continuation_ref: str, pause_id: str, pause_expires_at: str, trusted_request: dict[str, Any], workspace_id: str | None = None, conversation_id: str | None = None, p01_run_id: str | None = None) -> None: ...
     async def load_claw_approval_handoff(self, user_id: str, run_id: str, workspace_id: str | None = None) -> dict[str, Any] | None: ...
     async def consume_claw_approval_handoff(self, user_id: str, run_id: str, workspace_id: str | None = None) -> bool: ...
@@ -1623,7 +1624,7 @@ class D1HistoryStore:
         The verified Broker result alone is allowed to insert the assistant
         message later. This uses the existing conversation/messages/run tables.
         """
-        if not isinstance(action, str) or action not in {"txt_read", "pc_browser_query"}:
+        if not isinstance(action, str) or action not in {"txt_read", "pc_browser_query", "desktop_task"}:
             raise HistoryError("unsupported pending PC action")
         workspace = _safe_identifier("workspace_id", workspace_id)
         content = _bounded_text(user_text, "user_text")
@@ -2735,6 +2736,69 @@ class D1HistoryStore:
         )
         return True
 
+    async def append_step_result_message(
+        self, *, user_id: str, run_id: str, message_id: str, content: str,
+    ) -> bool:
+        """#6460 — one step's message of a model-driven PC loop.
+
+        A loop step is evidence of what happened on the PC, not the run's
+        overall outcome: it lands in the originating conversation and touches
+        only the run's ``updated_at``. The run row's terminal stays the
+        verified final answer, so an earlier step can neither seal the run nor
+        refuse that answer as a contradictory result.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(run_id, str) or not run_id:
+            raise HistoryError("run_id is required")
+        if not isinstance(message_id, str) or not message_id or len(message_id) > 128:
+            raise HistoryError("message_id must be a bounded safe reference")
+        body = _bounded_text(content, "local_task_result")
+        if len(body) > MAX_HISTORY_MESSAGE_CHARS:
+            raise HistoryError("local_task_result is not bounded")
+        owned = await self._first(
+            "SELECT id, conversation_id FROM claw_run_history WHERE run_id=? AND user_id=?",
+            run_id, user_id,
+        )
+        if owned is None:
+            raise HistoryForbidden("claw run is not owned by current user")
+        conversation_id = owned.get("conversation_id")
+        if not isinstance(conversation_id, str) or not conversation_id:
+            raise HistoryError("claw run has no originating conversation")
+        already = await self._first(
+            "SELECT id, content FROM messages WHERE id=? AND conversation_id=?",
+            message_id, conversation_id,
+        )
+        if already is not None:
+            if str(already.get("content") or "") != body:
+                raise HistoryError(
+                    "claw run step already carries a different result"
+                )
+            return False
+        now = _now_iso()
+        statements = [
+            self.db.prepare(
+                "INSERT OR IGNORE INTO messages (id, conversation_id, sequence_number, role, content, created_at) "
+                "SELECT ?, c.id, "
+                "(SELECT COALESCE(MAX(sequence_number), -1) + 1 FROM messages WHERE conversation_id = c.id), "
+                "'assistant', ?, ? FROM conversations c "
+                "WHERE c.id = ? AND c.user_id = ?"
+            ).bind(message_id, body, now, conversation_id, user_id),
+            self.db.prepare(
+                "UPDATE claw_run_history SET updated_at=? "
+                "WHERE id=? AND user_id=? AND status!='completed'"
+            ).bind(now, str(owned.get("id")), user_id),
+        ]
+        results = await self.db.batch(statements)
+        appended = _batch_returned_row(results, 0) is not None
+        if not appended:
+            return False
+        await self._run(
+            "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
+            now, conversation_id, user_id,
+        )
+        return True
+
     async def record_local_task_correlation(
         self,
         *,
@@ -3099,7 +3163,7 @@ class D1HistoryStore:
             "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
             "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
-            "file_path, nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "
+            "file_path, nonce_sha256, state, expires_at, tool_call_ref FROM oracle_mesh_dispatch "
             "WHERE state=? AND expires_at>? "
             "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?)) "
             "ORDER BY created_at ASC LIMIT 1",
@@ -3364,7 +3428,7 @@ class D1HistoryStore:
             "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
             "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
-            "file_path, nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "
+            "file_path, nonce_sha256, state, expires_at, tool_call_ref FROM oracle_mesh_dispatch "
             "WHERE dispatch_id=?",
             dispatch_id,
         )
@@ -3408,7 +3472,7 @@ class D1HistoryStore:
             "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
             "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
-            "file_path, nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "
+            "file_path, nonce_sha256, state, expires_at, tool_call_ref FROM oracle_mesh_dispatch "
             "WHERE dispatch_id=?",
             dispatch_id,
         )

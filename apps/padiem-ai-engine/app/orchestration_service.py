@@ -1389,6 +1389,7 @@ class OrchestrationEngineService:
                 agent_step_driver=self._desktop_step_driver_factory(
                     model_id, exec_req.agent.model_policy,
                     exec_req.agent.task_type, exec_req.agent.optimize_for,
+                    tool_arguments=orch_req.tool_arguments,
                 ),
             )
         attached = self._attach_pc_query_step_driver(

@@ -17,6 +17,24 @@ class DesktopStepContractError(ValueError):
     pass
 
 
+#: #6460 step 3 — the owner's 그만 is a first-class end of the loop, stated in
+#: the conversation rather than raised as an error.
+DESKTOP_STOP_ANSWER = (
+    "그만하기로 하셔서 PC에서 다음 동작을 더 보내지 않고 멈췄습니다. "
+    "멈춘 시간은 실행 기록에 남겼습니다."
+)
+#: The same screen after the same action is not progress, so the loop stops
+#: instead of repeating an input with no observed effect.
+DESKTOP_NO_PROGRESS_ANSWER = (
+    "화면이 바뀌지 않아 같은 동작을 반복하지 않고 멈췄습니다. "
+    "다른 방법으로 다시 요청해 주세요."
+)
+#: The three input tools one step may choose. ``capture`` observes only.
+DESKTOP_INPUT_TOOL_IDS = frozenset({
+    "claw.desktop.click", "claw.desktop.type", "claw.desktop.keys",
+})
+
+
 class StructuredDesktopStepDriver:
     """Core AgentStepDriver backed by a trusted structured model response."""
 
@@ -26,6 +44,7 @@ class StructuredDesktopStepDriver:
         select_step: Callable[..., Awaitable[Mapping[str, Any]]],
         read_capture: Callable[..., Awaitable[bytes | None]],
         allowed_tool_ids: frozenset[str],
+        is_stopped: Callable[..., Awaitable[Mapping[str, Any] | None]] | None = None,
     ) -> None:
         if not callable(select_step) or not callable(read_capture):
             raise DesktopStepContractError("step selector and capture reader are required")
@@ -34,6 +53,11 @@ class StructuredDesktopStepDriver:
         self._select_step = select_step
         self._read_capture = read_capture
         self._allowed_tool_ids = allowed_tool_ids
+        self._is_stopped = is_stopped
+        # The last input this run chose. A repeated input on an unchanged
+        # screen is the no-progress stop, so the memory is the full action,
+        # not just its tool id.
+        self._last_input: tuple[str, str] | None = None
 
     async def next_step(self, context: AgentStepContext, compiled_profile: Any) -> AgentStepDecision:
         observations = []
@@ -63,6 +87,11 @@ class StructuredDesktopStepDriver:
                 "output": {k: v for k, v in output.items() if k != "capture_receipt"},
                 "image_jpeg": image,
             })
+        # The owner's stop can also arrive as the answer to an input that was
+        # already sent: the executor reports the row as cancelled, and the loop
+        # ends without sending anything else.
+        if observations and observations[-1]["output"].get("stopped_by_owner") is True:
+            return AgentStepDecision.complete(DESKTOP_STOP_ANSWER)
         decision = await self._select_step(
             context=context, compiled_profile=compiled_profile,
             observations=tuple(observations),
@@ -80,9 +109,38 @@ class StructuredDesktopStepDriver:
         arguments = decision.get("arguments")
         if tool_id not in self._allowed_tool_ids or not isinstance(arguments, Mapping):
             raise DesktopStepContractError("model tool selection is not authorized")
+        # Checked right before the dispatch, so a stop that arrived while the
+        # model was choosing is still honoured; the dispatch route re-checks.
+        if self._is_stopped is not None:
+            stopped = await self._is_stopped(context=context)
+            if stopped:
+                return AgentStepDecision.complete(DESKTOP_STOP_ANSWER)
+        if tool_id in DESKTOP_INPUT_TOOL_IDS:
+            signature = (str(tool_id), _action_signature(arguments))
+            capture_digests = [
+                observation["output"].get("result_sha256")
+                for observation in observations
+                if observation["tool_id"] == "claw.desktop.capture"
+                and isinstance(observation["output"].get("result_sha256"), str)
+            ]
+            screen_unchanged = (
+                len(capture_digests) >= 2
+                and capture_digests[-1] == capture_digests[-2]
+            )
+            if screen_unchanged and signature == self._last_input:
+                return AgentStepDecision.complete(DESKTOP_NO_PROGRESS_ANSWER)
+            self._last_input = signature
         return AgentStepDecision.use_tool(
             ToolInvocation(tool_id=tool_id, arguments=dict(arguments))
         )
+
+
+def _action_signature(arguments: Mapping[str, Any]) -> str:
+    """The action itself, without the per-step dispatch reference."""
+    return json.dumps(
+        {key: value for key, value in arguments.items() if key != "call_ref"},
+        sort_keys=True, ensure_ascii=True, default=str,
+    )
 
 
 # Existing Core ToolRuntime binding; no second tool execution framework.
@@ -103,6 +161,10 @@ import hmac
 import json
 import time
 
+#: The wait between two status reads of one signed dispatch. Short enough that
+#: a step follows the PC closely; tests replace it so the loop suite stays fast.
+DESKTOP_RESULT_POLL_SECONDS = 2.0
+
 CLAW_APP_ID = "b54-padiem-claw"
 DESKTOP_AGENT_ID = "agent:padiem:claw-desktop@1"
 DESKTOP_CANONICAL_CAPTURE = "tool:padiem:claw-desktop-capture@1"
@@ -111,13 +173,23 @@ DESKTOP_CAPTURE_SCOPE = "claw.desktop.capture"
 _ENGINE_DESKTOP_OWNER = ContextVar("claw_engine_desktop_owner", default=None)
 
 
-async def _signed_desktop_capture(*, service, request_factory, secret, subject_id, run_id, device_id, desktop_op="desktop:capture"):
+async def _signed_desktop_capture(*, service, request_factory, secret, subject_id, run_id, device_id,
+                                  desktop_op="desktop:capture", call_ref=None, desktop_text=None):
     if not isinstance(secret, str) or len(secret) < 32:
         raise ToolHandlerError("desktop_secret_missing", "Engine desktop authorization unavailable")
-    body = json.dumps({
+    fields = {
         "subject_id": subject_id, "run_id": run_id,
         "device_id": device_id, "desktop_op": desktop_op,
-    }, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    }
+    # The loop's own per-step dispatch scope, and a typed value that travels
+    # beside the op so it is never written into the dispatch row.
+    if call_ref is not None:
+        fields["call_ref"] = call_ref
+    if desktop_text is not None:
+        fields["desktop_text"] = desktop_text
+    body = json.dumps(
+        fields, ensure_ascii=True, sort_keys=True, separators=(",", ":"),
+    ).encode("utf-8")
     timestamp = str(int(time.time()))
     proof = hmac.new(
         secret.encode("utf-8"), timestamp.encode("ascii") + b"." + body,
@@ -143,6 +215,11 @@ async def _signed_desktop_capture(*, service, request_factory, secret, subject_i
             "desktop_transport_unavailable",
             "Authenticated Chat desktop transport unavailable; no automatic replay",
         ) from exc
+    if status == 409 and isinstance(data, dict) and (
+        (data.get("error") or {}).get("code") == "oracle_mesh_run_stopped"
+    ):
+        # The owner's stop won the race: nothing was dispatched for this step.
+        return _stopped_desktop_result(run_id=run_id)
     if status != 200 or not isinstance(data, dict) or data.get("ok") is not True:
         raise ToolHandlerError(
             "desktop_chat_denied",
@@ -162,7 +239,7 @@ async def _signed_desktop_capture(*, service, request_factory, secret, subject_i
     import asyncio
     dispatch_id = dispatch["dispatch_id"]
     while True:
-        await asyncio.sleep(2)
+        await asyncio.sleep(DESKTOP_RESULT_POLL_SECONDS)
         status_payload = json.dumps({
             "subject_id": subject_id, "run_id": run_id,
             "dispatch_id": dispatch_id, "mode": "status",
@@ -208,6 +285,11 @@ async def _signed_desktop_capture(*, service, request_factory, secret, subject_i
                 "Desktop result correlation failed; do not replay the PC action",
             )
         state = observed.get("state")
+        if observed.get("termination") == "cancelled":
+            # The owner pressed 그만 while this action was in flight. The row
+            # keeps its claim so the executor lands what actually happened,
+            # and the loop ends now without sending anything else.
+            return _stopped_desktop_result(run_id=run_id, dispatch_id=dispatch_id)
         if state == "done":
             digest = observed.get("result_sha256")
             if not isinstance(digest, str) or len(digest) != 64:
@@ -230,6 +312,56 @@ async def _signed_desktop_capture(*, service, request_factory, secret, subject_i
             )
 
 
+def _stopped_desktop_result(*, run_id, dispatch_id=None):
+    """The owner's stop, as a normal step outcome the loop can end on."""
+    return {
+        "dispatch_id": dispatch_id, "run_id": run_id, "state": "cancelled",
+        "capture_receipt": None, "result_sha256": None,
+        "execution_confirmed": False, "stopped_by_owner": True,
+    }
+
+
+async def _signed_run_status(*, service, request_factory, secret, subject_id, run_id):
+    """One owner-scoped read of the run: did the owner stop it?
+
+    A failed read is reported as ``None`` (unknown), never as a stop: an
+    unreachable Chat store must not make the loop claim the owner stopped it.
+    """
+    if not isinstance(secret, str) or len(secret) < 32:
+        return None
+    body = json.dumps(
+        {"subject_id": subject_id, "run_id": run_id, "mode": "run_status"},
+        ensure_ascii=True, sort_keys=True, separators=(",", ":"),
+    ).encode("utf-8")
+    timestamp = str(int(time.time()))
+    proof = hmac.new(
+        secret.encode("utf-8"), timestamp.encode("ascii") + b"." + body,
+        hashlib.sha256,
+    ).hexdigest()
+    request = request_factory(
+        "https://padiem-chat.internal/internal/claw/engine-desktop",
+        method="POST",
+        headers={
+            "Content-Type": "application/json",
+            "X-Claw-Engine-Time": timestamp,
+            "X-Claw-Engine-Proof": proof,
+        },
+        body=body.decode("utf-8"),
+    )
+    try:
+        response = await service.fetch(request.js_object)
+        if int(response.status) != 200:
+            return None
+        data = json.loads(await response.text())
+    except Exception:
+        return None
+    run = data.get("run") if isinstance(data, dict) else None
+    if (not isinstance(run, dict) or run.get("run_id") != run_id
+            or not isinstance(run.get("state"), str)):
+        return None
+    return run
+
+
 def build_claw_desktop_tool_binding(*, service, request_factory, secret):
     """Bind capture only to an admitted Claw run and Chat-verified device owner."""
     spec = ToolSpec(
@@ -241,7 +373,8 @@ def build_claw_desktop_tool_binding(*, service, request_factory, secret):
         input_schema={"type": "object", "properties": {
             "device_id": {"type": "string", "minLength": 1, "maxLength": 128},
             "use_pinned_device": {"type": "boolean", "enum": [True]},
-        }, "additionalProperties": False},
+            "call_ref": {"type": "string", "minLength": 1, "maxLength": 120},
+        }, "required": ["call_ref"], "additionalProperties": False},
         output_contract={"type": "object"}, timeout_seconds=None,
     )
     runtime = ToolRuntime()
@@ -258,6 +391,7 @@ def build_claw_desktop_tool_binding(*, service, request_factory, secret):
             service=service, request_factory=request_factory, secret=secret,
             subject_id=owner[0], run_id=owner[1],
             device_id=arguments.get("device_id"),
+            call_ref=arguments.get("call_ref"),
         )
 
     runtime.register(spec, capture)
@@ -267,22 +401,24 @@ def build_claw_desktop_tool_binding(*, service, request_factory, secret):
     for name, schema in (
         ("click", {"x": {"type": "integer", "minimum": 0, "maximum": 65535},
                    "y": {"type": "integer", "minimum": 0, "maximum": 65535}}),
-        ("type", {"text": {"type": "string", "minLength": 1, "maxLength": 4096}}),
-        ("keys", {"combo": {"type": "string", "enum": [
-            "enter", "esc", "tab", "backspace", "delete",
-            "ctrl+s", "ctrl+c", "ctrl+v", "ctrl+a", "alt+f4",
-            "win+r", "win",
-        ]}}),
+        # Free text and any reviewed key combo: the executor checks the value
+        # and the key-name grammar before the PC is asked. A typed value rides
+        # the one-shot channel, never this row.
+        ("type", {"text": {"type": "string", "minLength": 1, "maxLength": 20000}}),
+        ("keys", {"combo": {"type": "string", "minLength": 1, "maxLength": 64}}),
     ):
         required = ["x", "y"] if name == "click" else ["text" if name == "type" else "combo"]
+        properties = dict(schema)
+        properties["call_ref"] = {"type": "string", "minLength": 1, "maxLength": 120}
         input_specs[name] = ToolSpec(
             id="claw.desktop." + name, title="Owner PC " + name,
             description="Run one owner-authorized desktop " + name + " operation",
             owner="core", side_effect=ToolSideEffect.WRITE,
             approval_policy=ApprovalPolicy.EXTERNAL_AUTHORIZATION,
             auth_scope=(DESKTOP_CAPTURE_SCOPE,),
-            input_schema={"type": "object", "properties": schema,
-                          "required": required, "additionalProperties": False},
+            input_schema={"type": "object", "properties": properties,
+                          "required": required + ["call_ref"],
+                          "additionalProperties": False},
             output_contract={"type": "object"}, timeout_seconds=None,
         )
     for name, input_spec in input_specs.items():
@@ -291,16 +427,19 @@ def build_claw_desktop_tool_binding(*, service, request_factory, secret):
             if (not isinstance(owner, tuple) or len(owner) != 2
                 or not all(isinstance(v, str) and v for v in owner)):
                 raise ToolHandlerError("desktop_admission_required", "Verified run required")
+            typed_text = None
             if _name == "click":
                 op = f"desktop:click\n{arguments['x']},{arguments['y']}"
             elif _name == "type":
-                op = "desktop:type\n" + arguments["text"]
+                op = "desktop:type"
+                typed_text = arguments["text"]
             else:
                 op = "desktop:keys\n" + arguments["combo"]
             return await _signed_desktop_capture(
                 service=service, request_factory=request_factory, secret=secret,
                 subject_id=owner[0], run_id=owner[1], device_id=None,
-                desktop_op=op,
+                desktop_op=op, call_ref=arguments.get("call_ref"),
+                desktop_text=typed_text,
             )
         runtime.register(input_spec, perform)
     canonical_input_ids = tuple(
@@ -363,7 +502,8 @@ def build_claw_desktop_tool_binding(*, service, request_factory, secret):
 
 def build_live_desktop_driver(*, b14_client, chat_service, request_factory,
                               secret, model_id, model_policy=None,
-                              task_type=None, optimize_for=None):
+                              task_type=None, optimize_for=None,
+                              capture_device_id=None):
     """Server-composed Core driver; model chooses GUI actions from JPEG."""
     import base64
 
@@ -399,12 +539,46 @@ def build_live_desktop_driver(*, b14_client, chat_service, request_factory,
             raise DesktopStepContractError("JPEG digest or format mismatch")
         return image
 
+    def with_dispatch_ref(decision, step_index):
+        """Stamp the step's own dispatch scope on the tool decision.
+
+        Chat stages one dispatch per step so the loop is not one dispatch per
+        run; the reference is server-derived here and a repeated step still
+        correlates to its own row instead of executing twice.
+        """
+        if (isinstance(decision, dict) and decision.get("action") == "tool"
+                and isinstance(decision.get("arguments"), dict)):
+            arguments = dict(decision["arguments"])
+            arguments["call_ref"] = "desktop-step-%d" % step_index
+            return {**decision, "arguments": arguments}
+        return decision
+
+    async def run_stopped(*, context):
+        owner = _ENGINE_DESKTOP_OWNER.get()
+        if (not isinstance(owner, tuple) or len(owner) != 2
+                or not all(isinstance(v, str) and v for v in owner)):
+            return None
+        run = await _signed_run_status(
+            service=chat_service, request_factory=request_factory, secret=secret,
+            subject_id=owner[0], run_id=owner[1],
+        )
+        if run is None or run.get("state") != "cancelled":
+            return None
+        return run
+
     async def select_step(*, context, compiled_profile, observations):
         if not observations or observations[-1]["tool_id"] != DESKTOP_CAPTURE_ID:
             # After a PC input, get a fresh independent screenshot before any
             # further model-selected input. Never reuse stale screenshot pixels.
-            return {"action": "tool", "tool_id": DESKTOP_CAPTURE_ID,
-                    "arguments": {"use_pinned_device": True}}
+            capture_arguments = (
+                {"device_id": capture_device_id}
+                if isinstance(capture_device_id, str) and capture_device_id
+                else {"use_pinned_device": True}
+            )
+            return with_dispatch_ref({
+                "action": "tool", "tool_id": DESKTOP_CAPTURE_ID,
+                "arguments": capture_arguments,
+            }, context.step_index)
         from padiem_ai_core.b14_multimodal import B14MultimodalChatRequest
         from padiem_ai_core.b14_execution import B14RoutingOptions
         parts = [{
@@ -417,6 +591,9 @@ def build_live_desktop_driver(*, b14_client, chat_service, request_factory,
                 'Tool format: {"action":"tool","tool_id":"...","arguments":{}}. '
                 'Completion format: {"action":"complete","answer":"..."}. '
                 "Examine the screenshot and prior outcomes, do not guess coordinates. "
+                "Never enter credentials, change an account or permission, delete "
+                "something irreversibly, or send anything outside the PC; if the task "
+                "would need one, complete with a question instead of acting. "
                 "Task: " + context.input_text
                 + "\nPrior verified results: " + json.dumps(
                     [{"tool_id": o["tool_id"], "output": o["output"]}
@@ -446,9 +623,10 @@ def build_live_desktop_driver(*, b14_client, chat_service, request_factory,
         )
         response = await b14_client.execute(request)
         try:
-            return json.loads(response.answer.strip())
+            decision = json.loads(response.answer.strip())
         except (TypeError, ValueError) as exc:
             raise DesktopStepContractError("Model step is not valid JSON") from exc
+        return with_dispatch_ref(decision, context.step_index)
 
     return StructuredDesktopStepDriver(
         select_step=select_step, read_capture=read_capture,
@@ -456,4 +634,5 @@ def build_live_desktop_driver(*, b14_client, chat_service, request_factory,
             "claw.desktop.capture", "claw.desktop.click",
             "claw.desktop.type", "claw.desktop.keys",
         }),
+        is_stopped=run_stopped,
     )

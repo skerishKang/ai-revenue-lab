@@ -15,7 +15,7 @@ from app.pc_tools_turn import CatalogToolCapabilities
 import asyncio
 import inspect
 
-from typing import Any
+from typing import Any, Mapping
 from urllib.parse import urlparse
 
 from padiem_ai_core import (
@@ -255,6 +255,25 @@ def _continuation_store_for_env(
         return CloudflareD1IdentityBoundContinuationStore(binding)
     except (TypeError, ValueError):
         return None
+
+
+def _capture_device_id(tool_arguments: Any) -> str | None:
+    """The owner-selected PC the Chat route already verified, if one was chosen.
+
+    The custom desktop step driver decides every action itself, so the plan's
+    ``tool_arguments`` never reach it; only the first capture's target pin is
+    carried here. Chat re-verifies the account actually owns that device on
+    every dispatch, so this value is a hint, not an authority.
+    """
+    if not isinstance(tool_arguments, Mapping):
+        return None
+    capture = tool_arguments.get("capture")
+    if not isinstance(capture, Mapping):
+        return None
+    device_id = capture.get("device_id")
+    if not isinstance(device_id, str) or not 0 < len(device_id) <= 128:
+        return None
+    return device_id
 
 
 def _image_byte_store_for_env(env: Any) -> ScopedImageByteStore | None:
@@ -1286,12 +1305,14 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             tool_binding_resolver=tool_binding_resolver,
             admission_adapter=admission_adapter,
             desktop_step_driver_factory=(
-                (lambda model_id, model_policy, task_type, optimize_for:
+                (lambda model_id, model_policy, task_type, optimize_for,
+                        tool_arguments=None:
                     build_live_desktop_driver(
                         b14_client=b14_client, chat_service=chat_service,
                         request_factory=Request, secret=desktop_secret,
                         model_id=model_id, model_policy=model_policy,
                         task_type=task_type, optimize_for=optimize_for,
+                        capture_device_id=_capture_device_id(tool_arguments),
                     ))
                 if chat_service is not None
                 and isinstance(desktop_secret, str)
