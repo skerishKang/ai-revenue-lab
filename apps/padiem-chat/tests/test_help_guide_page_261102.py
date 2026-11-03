@@ -218,7 +218,7 @@ def test_the_page_carries_no_script_no_network_and_no_shout():
         if url not in allowed_product_urls
         and not (
             urlsplit(url).scheme == "https"
-            and urlsplit(url).netloc == "media.padiem.net"
+            and urlsplit(url).netloc == "tutorial-media.padiem.net"
             and urlsplit(url).path.startswith("/tutorials/")
         )
     }
@@ -277,11 +277,13 @@ def test_the_bookai_section_tells_the_device_then_account_save_rule():
     assert "다른 기기" in body
 
 
-def test_account_deletion_help_explains_anonymous_replay_records():
+def test_account_deletion_help_explains_replay_record_retention():
     section = re.search(
         r'<section class="chat-help-section" id="account".*?</section>', HELP, re.S)
     assert section, "the guide must keep its account section"
-    assert "명령 중복 실행 방지 기록은 누구의 것인지 알 수 없게 처리한 뒤 남습니다" in section.group(0)
+    body = section.group(0)
+    assert "탈퇴 기록에는 해시와 시각만 1년 남습니다." in body
+    assert "명령 중복 실행 방지 기록은 계정 식별 정보를 제거한 뒤 남습니다." in body
 
 
 def test_the_guide_holds_its_phone_floor_in_plain_css():

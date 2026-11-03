@@ -44,7 +44,7 @@ python tools/tutorial/capture_guest_scenes.py --out ../out
 
 - 도움말 화면과 같은 `styles.css`·`help.css`를 씁니다. 색·글자·44px 누름 영역을 새로 정하지 않습니다.
 - 단계 화면은 촬영 PNG를 webp로 줄여 `assets/<문서>/step-NN.webp`로 저장소에 넣습니다(장당 150KB 이하, 현재 7장 약 640KB).
-- 영상·자막은 저장소에 넣지 않습니다. 게스트 촬영이 끝난 01·02·04는 `PADIEM_TUTORIAL_MEDIA_BASE_URL=https://media.padiem.net`의 버전 주소를 사용하고 `<video controls preload="none" crossorigin="anonymous">`와 한국어 자막 트랙을 보여 줍니다. R2 CORS는 `https://chat.padiem.net` 출처와 GET/HEAD, Range 헤더만 허용합니다. 촬영되지 않은 튜토리얼은 "영상 준비 중"으로 남습니다.
+- 영상·자막은 저장소에 넣지 않습니다. 게스트 촬영이 끝난 01·02·04는 `PADIEM_TUTORIAL_MEDIA_BASE_URL=https://tutorial-media.padiem.net`의 버전 주소를 사용하고 `<video controls preload="none" crossorigin="anonymous">`와 한국어 자막 트랙을 보여 줍니다. R2 CORS는 `https://chat.padiem.net` 출처와 GET/HEAD, Range 헤더만 허용합니다. 촬영되지 않은 튜토리얼은 "영상 준비 중"으로 남습니다.
 - R2 업로드는 `tutorials/<문서>/video.v20261103.webm`와 `captions.v20261103.vtt`를 사용합니다. 버전이 바뀌면 `tools/tutorial/build_tutorials.py`의 `MEDIA_VERSION`도 함께 올립니다.
 - 사용 안내(`help.html`) 목차에서 `./help-tutorials/index.html`로 한 번 이어집니다.
 - 이미지를 다시 만들려면 Pillow가 필요합니다(`python -m pip install pillow`). `--check`와 단위 시험은 커밋된 webp를 이름·크기로만 보므로 Pillow 없이 돕니다.

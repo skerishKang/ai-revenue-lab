@@ -237,11 +237,11 @@ class CommittedPages(unittest.TestCase):
             self.assertIn('<track kind="captions"', page, key)
             self.assertRegex(
                 page,
-                rf"https://media\.padiem\.net/tutorials/{re.escape(key)}/video\.v\d{{8}}\.webm",
+                rf"https://tutorial-media\.padiem\.net/tutorials/{re.escape(key)}/video\.v\d{{8}}\.webm",
             )
             self.assertRegex(
                 page,
-                rf"https://media\.padiem\.net/tutorials/{re.escape(key)}/captions\.v\d{{8}}\.vtt",
+                rf"https://tutorial-media\.padiem\.net/tutorials/{re.escape(key)}/captions\.v\d{{8}}\.vtt",
             )
             self.assertNotIn("영상 준비 중", page, key)
 
@@ -257,13 +257,14 @@ class CommittedPages(unittest.TestCase):
 
     def test_media_base_url_is_pinned_to_the_custom_domain(self):
         document = generator.load_scenarios()[0]
-        with patch.dict("os.environ", {generator.VIDEO_KEY_ENV: "https://media.padiem.net"}):
-            self.assertTrue(all(url.startswith("https://media.padiem.net/") for url in generator.media_urls(document)))
+        with patch.dict("os.environ", {generator.VIDEO_KEY_ENV: "https://tutorial-media.padiem.net"}):
+            self.assertTrue(all(url.startswith("https://tutorial-media.padiem.net/") for url in generator.media_urls(document)))
         for unsafe in (
-            "http://media.padiem.net",
+            "https://media.padiem.net",
+            "http://tutorial-media.padiem.net",
             "https://evil.example",
-            "https://media.padiem.net.evil.example",
-            "https://media.padiem.net:8443",
+            "https://tutorial-media.padiem.net.evil.example",
+            "https://tutorial-media.padiem.net:8443",
         ):
             with patch.dict("os.environ", {generator.VIDEO_KEY_ENV: unsafe}):
                 with self.assertRaises(ValueError, msg=unsafe):

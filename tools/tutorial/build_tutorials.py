@@ -40,7 +40,7 @@ MAX_IMAGE_BYTES = 150 * 1024
 #: Videos and captions stay outside the repository; pages embed versioned
 #: URLs from this process environment setting.
 VIDEO_KEY_ENV = "PADIEM_TUTORIAL_MEDIA_BASE_URL"
-DEFAULT_MEDIA_BASE_URL = "https://media.padiem.net"
+DEFAULT_MEDIA_BASE_URL = "https://tutorial-media.padiem.net"
 MEDIA_VERSION = "v20261103"
 MEDIA_SCENES = frozenset(
     {"01-first-visit", "02-pc-connection", "04-bookai"}
@@ -262,12 +262,12 @@ def media_base_url() -> str:
     parsed = urlsplit(value)
     if (
         parsed.scheme != "https"
-        or parsed.netloc.lower() != "media.padiem.net"
+        or parsed.netloc.lower() != "tutorial-media.padiem.net"
         or parsed.path not in {"", "/"}
         or parsed.query
         or parsed.fragment
     ):
-        raise ValueError(f"{VIDEO_KEY_ENV} must use https://media.padiem.net")
+        raise ValueError(f"{VIDEO_KEY_ENV} must use https://tutorial-media.padiem.net")
     return DEFAULT_MEDIA_BASE_URL
 
 
@@ -522,7 +522,7 @@ def render_readme(documents: list[dict]) -> str:
             "``./help-tutorials/index.html``로 이어집니다.",
             "",
             f"영상과 자막은 저장소에 넣지 않습니다. 게스트로 촬영한 01·02·04 페이지에는 "
-            f"``{VIDEO_KEY_ENV}``로 지정한 ``https://media.padiem.net``의 버전 주소를 붙이고, "
+            f"``{VIDEO_KEY_ENV}``로 지정한 ``https://tutorial-media.padiem.net``의 버전 주소를 붙이고, "
             "촬영되지 않은 튜토리얼은 \"영상 준비 중\"으로 남깁니다.",
             "",
             "영상은 익명 CORS 모드로 자막을 불러옵니다. R2 CORS는 ``https://chat.padiem.net`` 출처와 GET/HEAD, Range 헤더만 허용합니다.",
@@ -631,7 +631,7 @@ def render_page(document: dict) -> str:
         '  <link rel="stylesheet" href="./tutorial.css" />',
         '  <!-- tools/tutorial/build_tutorials.py가 docs/qa/scenarios/',
         f'{document["file"]}에서 만든 페이지입니다. 대본을 고치고 다시 생성하세요.',
-        f'       영상·자막 주소는 {VIDEO_KEY_ENV}의 media.padiem.net 버전 경로에서 읽습니다. -->',
+        f'       영상·자막 주소는 {VIDEO_KEY_ENV}의 tutorial-media.padiem.net 버전 경로에서 읽습니다. -->',
         '</head>',
         '<body class="chat-help-body">',
         '  <a class="chat-help-skip" href="#tutorialMain">본문으로 건너뛰기</a>',

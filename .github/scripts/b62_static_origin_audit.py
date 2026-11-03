@@ -78,16 +78,16 @@ def tutorial_help_navigation_url_allowed(relative: str, url: str) -> bool:
 # matching tutorial pages. This is an exact URL and file scoped exception.
 TUTORIAL_MEDIA_URLS = {
     "apps/padiem-chat/static/help-tutorials/01-first-visit.html": frozenset({
-        "https://media.padiem.net/tutorials/01-first-visit/video.v20261103.webm",
-        "https://media.padiem.net/tutorials/01-first-visit/captions.v20261103.vtt",
+        "https://tutorial-media.padiem.net/tutorials/01-first-visit/video.v20261103.webm",
+        "https://tutorial-media.padiem.net/tutorials/01-first-visit/captions.v20261103.vtt",
     }),
     "apps/padiem-chat/static/help-tutorials/02-pc-connection.html": frozenset({
-        "https://media.padiem.net/tutorials/02-pc-connection/video.v20261103.webm",
-        "https://media.padiem.net/tutorials/02-pc-connection/captions.v20261103.vtt",
+        "https://tutorial-media.padiem.net/tutorials/02-pc-connection/video.v20261103.webm",
+        "https://tutorial-media.padiem.net/tutorials/02-pc-connection/captions.v20261103.vtt",
     }),
     "apps/padiem-chat/static/help-tutorials/04-bookai.html": frozenset({
-        "https://media.padiem.net/tutorials/04-bookai/video.v20261103.webm",
-        "https://media.padiem.net/tutorials/04-bookai/captions.v20261103.vtt",
+        "https://tutorial-media.padiem.net/tutorials/04-bookai/video.v20261103.webm",
+        "https://tutorial-media.padiem.net/tutorials/04-bookai/captions.v20261103.vtt",
     }),
 }
 
