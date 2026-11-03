@@ -36,6 +36,7 @@ from .cpython_aes_gcm import CPythonAesGcmPort
 from .control_plane_identity import IdentityBridgeError, PADIEM_CHAT_PRODUCT_ID
 from .control_plane_identity_shadow import D1IdentityShadowStore
 from .control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
+from . import sqlite_settings as sqlite_policy
 from .d1_sqlite import SqliteD1
 from .dispatch_quota import DispatchAwareB14Client
 from .history import D1HistoryStore
@@ -232,8 +233,9 @@ def build_app():
         str(data_dir / "chat.sqlite3"), isolation_level=None, check_same_thread=False
     )
     connection.row_factory = sqlite3.Row
-    connection.execute("PRAGMA journal_mode = WAL")
-    connection.execute("PRAGMA busy_timeout = 5000")
+    # One policy for every SQLite connection on this host (WAL, NORMAL,
+    # busy_timeout, cache, autocheckpoint): app/sqlite_settings.py.
+    sqlite_policy.configure_writer(connection)
 
     applied = apply_migrations(connection)
     if applied:
@@ -347,6 +349,35 @@ def build_app():
         print("[local] oracle_mesh_return_source=mesh_env_configured")
 
     app.router.on_startup.append(_compose_oracle_mesh_return_source_on_startup)
+
+    async def _bound_wal_on_startup(app=app):
+        """Keep the WAL file small: truncate it only while the database is idle."""
+
+        async def _loop():
+            while True:
+                await asyncio.sleep(sqlite_policy.IDLE_QUIET_SECONDS)
+                try:
+                    report = await db.checkpoint_if_idle()
+                except Exception as exc:  # a checkpoint must never take the app down
+                    print(f"[local] wal_checkpoint=failed reason={type(exc).__name__}")
+                    continue
+                if not report.get("skipped"):
+                    print("[local] wal_checkpoint busy=%s log=%s checkpointed=%s" % (
+                        report.get("busy"), report.get("log"), report.get("checkpointed")))
+
+        task = asyncio.create_task(_loop())
+        app.state.wal_checkpoint_task = task
+
+        async def _stop_bound_wal():
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
+
+        app.router.on_shutdown.append(_stop_bound_wal)
+
+    app.router.on_startup.append(_bound_wal_on_startup)
     app.router.on_shutdown.append(db.close_readers)
     if identity_binding is not None:
         # #6613: the identity RPC client is pooled for the life of the host, so
