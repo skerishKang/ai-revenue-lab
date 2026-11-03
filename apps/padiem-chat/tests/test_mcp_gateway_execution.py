@@ -44,6 +44,7 @@ def harness(monkeypatch, *, matching=True):
     async def context(request, **kwargs):
         calls.append(("context", kwargs))
         return SimpleNamespace(selected_confirmed=matching, tool_available=True,
+            selection_offline=False, selected_device_id=DEVICE,
             execution_device_id=DEVICE if matching else "dev_" + "d" * 32)
     async def grant(request, session, **kwargs):
         calls.append(("grant", kwargs))
@@ -120,3 +121,64 @@ def test_client_authority_arguments_rejected(monkeypatch, field):
     with pytest.raises(ValueError):
         asyncio.run(execution.execute_mcp_pc_tool(request, PRINCIPAL, "pc_delete", {"path": "notes.txt", field: "fake"}))
     assert not transport.calls
+
+class _B54Authority:
+    """The Control Plane authority the b54 bridge re-resolves the session from."""
+
+    async def resolve_current_auth_session(self, *, product_id, product_user_id):
+        assert product_id == "b54-padiem-claw"
+        from padiem_control_plane.auth_sessions import (
+            AuthSessionSnapshot, AuthSessionState,
+        )
+        from padiem_control_plane.contracts import (
+            CanonicalSubjectRef, SubjectType,
+        )
+        from datetime import datetime, timedelta, timezone
+        now = datetime.now(timezone.utc)
+        return AuthSessionSnapshot(
+            session_id="session.b54." + product_user_id[-6:],
+            product_id="b54-padiem-claw",
+            subject=CanonicalSubjectRef(
+                subject_id=product_user_id, subject_type=SubjectType.USER),
+            issued_at=now - timedelta(days=1), expires_at=now + timedelta(days=30),
+            state=AuthSessionState.ACTIVE, tenant_id="tenant_fixture",
+        )
+
+
+def test_pc_shell_dispatch_resolves_the_b54_bridge_session(monkeypatch):
+    request, transport, history, calls = harness(monkeypatch)
+    request.app.state.settings = SimpleNamespace(mcp_pc_shell_enabled=True)
+    request.app.state.control_plane_identity_authority = _B54Authority()
+    captured: dict = {}
+
+    async def fake_shell(request, *, session, **kwargs):
+        captured["session_id"] = session.session_id
+        captured["tenant_id"] = session.tenant_id
+        return {"status": "running", "answer": "시작됨"}
+
+    monkeypatch.setattr(execution, "execute_pc_shell", fake_shell)
+    result = asyncio.run(execution.execute_mcp_pc_tool(
+        request, PRINCIPAL, "pc_shell", {"command": "echo ok"}))
+    assert result["status"] == "running"
+    # The dispatch session is the bridge-resolved b54 canonical session, not
+    # the connector's chat session (whose product the owner policy refuses).
+    assert captured["session_id"].startswith("session.b54.")
+    assert captured["tenant_id"] == "tenant_fixture"
+
+
+def test_pc_shell_without_a_b54_session_fails_loudly(monkeypatch):
+    request, transport, history, calls = harness(monkeypatch)
+    request.app.state.settings = SimpleNamespace(mcp_pc_shell_enabled=True)
+    request.app.state.control_plane_identity_authority = None
+
+    async def must_not_run(*args, **kwargs):
+        raise AssertionError("an unsigned dispatch must never start")
+
+    monkeypatch.setattr(execution, "execute_pc_shell", must_not_run)
+    with pytest.raises(execution.ChatPCDriveError) as caught:
+        asyncio.run(execution.execute_mcp_pc_tool(
+            request, PRINCIPAL, "pc_shell", {"command": "echo ok"}))
+    assert caught.value.code == "chat_pc_b54_session_unavailable"
+    # The run record precedes the loud failure; no engine dispatch ever starts.
+    assert not transport.calls and len(history.runs) == 1
+
