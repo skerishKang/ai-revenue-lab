@@ -26,10 +26,11 @@ HEALTH_TTL_MS = "10000"
 UPSTREAM_TIMEOUT_MS = "8000"
 # Normal API reads can wait through COM2 load without affecting host health.
 API_READ_TIMEOUT_MS = "30000"
-# Measurement window only (#6460 4-2): the orchestration answer is one buffered
-# JSON document whose model pipeline can run past the generic write window.
-# The final ceiling is the CTO's call once the timing lines are in.
-ORCHESTRATION_TIMEOUT_MS = "120000"
+# Fixed ceiling (#6460 4-2, set 2026-11-03 from the live measurement): the
+# slowest normal orchestration answer on the server was 11.2s (median 10.9s,
+# zero 504s). 60s leaves room for one Free-tier retry of that work while still
+# failing a genuinely stuck turn.
+ORCHESTRATION_TIMEOUT_MS = "60000"
 
 # Read-path fallback target. Declared here so the binding exists in both modes;
 # static mode simply never calls it.

@@ -271,8 +271,10 @@ test("static assets stay on Cloudflare and dynamic requests use real signing", a
 });
 
 test("front vars match the verified non-secret production contract", () => {
-  // Snapshot of production version b45fb8f5-7cad-4c0c-9a3b-ef5ae55e18cf,
-  // verified 2026-11-01. Secrets are deliberately excluded.
+  // Snapshot of the non-secret production vars; secrets are deliberately
+  // excluded. ORCHESTRATION_TIMEOUT_MS is the CTO's 2026-11-03 fixed ceiling
+  // (server measured 11.2s max / 10.9s median, zero 504s) and ships with this
+  // change.
   const expected = {
     FRONT_ORIGIN: "https://chat-com2.padiem.net",
     FALLBACK_MODE: "static",
@@ -280,8 +282,9 @@ test("front vars match the verified non-secret production contract", () => {
     HEALTH_TTL_MS: "10000",
     UPSTREAM_TIMEOUT_MS: "8000",
     API_READ_TIMEOUT_MS: "30000",
-    // Measurement window value (#6460 4-2); the CTO sets the final ceiling.
-    ORCHESTRATION_TIMEOUT_MS: "120000",
+    // Measured 11.2s worst case plus one Free-tier retry, with a stuck turn
+    // still failing inside a minute (#6460 4-2).
+    ORCHESTRATION_TIMEOUT_MS: "60000",
   };
   const config = readFileSync(join(HERE, "..", "wrangler.toml"), "utf8");
   const sections = config.split(/^\[vars\]\s*$/m);
