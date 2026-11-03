@@ -53,22 +53,23 @@ JSON 요청/응답뿐이므로 기존 ASGI 앱에 작은 wire 어댑터를 연�
 | `pc_write` | `path`, `content` | `claw.pc.write_file` |
 | `pc_move` | `path`, `destination` | `claw.pc.move_file` |
 | `pc_delete` | `path` | `claw.pc.delete_file` |
-| `pc_shell` (2026-11-03 추가) | `command`, `cwd?`, `shell?`, `timeout_seconds?` | Chat oracle_mesh 명령 레인 — 사전 위임된 PC에서 한 번 실행 |
+| `pc_shell` | `command`, `cwd?`, `shell?`, `wait_seconds?` | Claw 공통 background dispatch — 응답 대기 후 같은 작업 ID 반환 |
+| `pc_shell_start` | `command`, `cwd?`, `shell?` | Claw 공통 작업 즉시 시작 |
+| `pc_shell_read` | `job_id`, `offset?`, `length?` | 공통 상태와 OutputStore 핸들의 범위 읽기 |
+| `pc_shell_stop` | `job_id` | 공통 dispatch 취소 |
 
 기기·사용자·위임·승인 여부를 도구 인자로 받지 않는다. 경로는 기존 PC root
 해석과 grants를 그대로 따른다. 검색은 재귀 전체 디스크 검색이 아니다.
 SEND/임의 shell 실행은 2026-11-01 당시 노출 도구에 없었다. 2026-11-03에
-`pc_shell`을 추가했고, 실행 전 확인이 필요한 명령을 서버가 자동 분류하지
-않는다. 사전 위임된 PC에서만 실행하며, 위험 작업은 도구 설명과 PADIEM 대화로
-확인한다. 상세는
+네 가지 PC shell 작업 도구를 추가했다. 명령은 기존 위임·기기 경계를 따르며,
+실행 전 승인 영수증을 새로 요구하지 않는다. 상세는
 `docs/architecture/PADIEM_MCP_DESKTOP_COMMANDER_REPLACEMENT_20261103.md`다.
 
-실행은 `mcp_gateway_transport` → `mcp_gateway_dispatch` →
+일반 PC 파일·브라우저 실행은 `mcp_gateway_transport` → `mcp_gateway_dispatch` →
 `mcp_gateway_execution.execute_mcp_pc_tool` → 기존 canonical identity / PC
-context / Mesh grant / history run 등록 → 기존 Chat→P01 인증 client →
-`ActionGuardedPCQueryStepDriver` → 기존 서명된 Engine→Chat PC callback →
-Connector/Mesh로 이어진다. MCP의 정확한 도구를 결정적으로 호출하므로 도구
-선택을 위한 추가 B14 모델 호출은 없다. 기존 P01 admission은 그대로 적용된다.
+context / Mesh grant → P01/Engine 경로를 따른다. 네 shell 도구는 같은 adapter
+검증 뒤 Chat의 Claw 공통 background dispatch로 이어진다. MCP의 정확한 도구를
+결정적으로 호출하므로 도구 선택을 위한 추가 B14 모델 호출은 없다.
 
 외부 요청은 사용자 발화로 바꾸지 않으며 `pc_action_context=[]`다. 서버가
 검증한 `pc_gateway` 출처를 같은 공통 PC 실행 단계까지 전달한다. 읽기는
@@ -140,16 +141,33 @@ Python client, 해당 시험 및 이 문서가 범위다. `d1_sqlite.py`와
 
 ## 추가: pc_shell (2026-11-03)
 
-`pc_shell`은 기존 MCP token/PC/세션 확인과 audit·승인 경로를 재사용하되,
-Engine 계획 대신 Chat의 `dispatch_oracle_mesh_command_intent` 명령 레인을
-직접 사용한다. 인자는 `command`(필수), `cwd`, `shell`(powershell·cmd·bash),
-`timeout_seconds`(기본 120·최대 600)다. 출력은 스트림별 12,000바이트
-앞·뒤 절단, 시간 초과 시 프로세스 트리 종료, 종료 코드 보존을 적용한다.
-감사에는 종료 코드·소요 시간·출력 크기·절단 여부만 남고 명령·출력은 남지
-않는다. 배포 전 migration 094를 적용해야 한다. OAuth 2.1, 장시간 프로세스,
-대용량 전송은 다음 단계다. OAuth 2.1 웹 커넥터는 같은 날 아래 절에 추가됐다. 상세 설계와 검증은
-`docs/architecture/PADIEM_MCP_DESKTOP_COMMANDER_REPLACEMENT_20261103.md`에
-있다.
+`pc_shell`과 start/read/stop은 MCP token·계정·기기 검증을 adapter에서 한 뒤
+Chat `dispatch_oracle_mesh_command_intent(background=True)`로 실행한다. 작업 ID는
+Claw `oracle_mesh_dispatch`의 실제 `dsp_<32hex>`이며 RemoteBackgroundJobs가 공통
+상태와 취소를 맡는다. 완료된 원본은 공통 dispatch의 SHA-256·크기를 확인한 뒤
+Claw `OutputStore`에 저장하고, `pc_shell_read`는 핸들을 소유자·subject·run·device로
+묶어 바이트 범위로 읽는다.
+
+MCP 전용 작업 테이블이나 `%LOCALAPPDATA%\\padiem-mcp-jobs` 파일은 만들지 않는다.
+Migration **098_mcp_common_job_receipts.sql**은 기존 `padiem_mcp_audit`에
+`job_receipt_sha256`만 추가한다. 원시 job ID·명령·출력은 MCP 감사 DB에 남지 않는다.
+계정 삭제는 기존 `padiem_mcp_audit` 사용자 행을 지우고, Queue의
+`delete_account_pc_data`는 공통 `oracle_mesh_dispatch` identity를 정리한다.
+
+`PADIEM_MCP_PC_SHELL_ENABLED` 하나가 네 도구를 모두 제어한다. off면 모두
+`tools/list`에서 빠지고 직접 호출은 `tool_not_enabled`다. 이미 시작된 해당 토큰의
+작업은 stop만 계속 허용한다. `pc_shell.wait_seconds`는 응답 대기값(기본 120·최대
+150초)이며 만료되어도 PC 프로세스는 계속 실행된다.
+
+Edge `/api/mcp` 응답 제한은 `MCP_TIMEOUT_MS` 기본 180초다. OAuth API 읽기 30초와
+orchestration·답변 생성 60초는 별도 분기 그대로 유지한다. COM2 SQLite
+`mesh_device_presence`의 Mesh receipt가 180초보다 오래되면 선택 PC를 offline으로
+판정하고 시작을 거부하며 `선택한 PC가 꺼져 있음`으로 답한다. token에 묶인 PC를
+다른 online 기기로 자동 변경하지 않는다.
+
+검증은 `test_mcp_pc_shell_261103.py`, `test_mcp_gateway_transport.py`,
+`test_mcp_gateway_account.py`, account deletion 및 Mesh presence freshness 시험,
+`apps/padiem-chat-front/test/mcp-background-timeout.test.mjs`에 기록한다.
 
 ## 추가: MCP OAuth 2.1 웹 커넥터 (2026-11-03)
 

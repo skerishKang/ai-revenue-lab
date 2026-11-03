@@ -14,7 +14,7 @@ from app import claw_device_directory_routes as directory
 from app.claw_local_access_source import mesh_presence_online, CanonicalClawLocalAccessTruthSource, mesh_presence_facts
 from app.mesh_device_presence_store import D1MeshDevicePresenceStore, MeshDevicePresenceStoreError
 from app.oracle_mesh_read_return_routes import OracleMeshReturnSource, EXECUTION_MODE_MESH
-from app.pc_work_context import PcConnectorScope
+from app.pc_work_context import PcConnectorScope, _mesh_presence_online
 import test_5553_mesh_online_projection_261024 as existing
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -82,6 +82,23 @@ def test_mesh_freshness_is_exactly_180_seconds(age, connected, expected):
            "source": "mesh", "received_at": (now-timedelta(seconds=age)).isoformat()}
     assert mesh_presence_online(row, device_id="pc@mesh+1", now=now) is expected
     assert not mesh_presence_online(row, device_id="foreign", now=now)
+
+
+def test_pc_context_reads_stale_mesh_receipt_from_local_sqlite_as_offline():
+    now = datetime.now(timezone.utc)
+    device_id = "pc@mesh+stale"
+    store = D1MeshDevicePresenceStore(D1())
+    assert asyncio.run(store.upsert(
+        device_id=device_id, connected=True,
+        received_at=now - timedelta(seconds=181),
+        credential_generation=None, source="mesh",
+    ))
+    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+        mesh_device_presence_store=store,
+    )))
+    assert asyncio.run(_mesh_presence_online(
+        request, device_id=device_id, now=now,
+    )) is False
 
 
 @pytest.mark.parametrize("blocked", ["revoked", "credential_expired"])
