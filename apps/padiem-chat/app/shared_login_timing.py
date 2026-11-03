@@ -3,12 +3,15 @@ from __future__ import annotations
 
 from contextvars import ContextVar
 import math
+import time
 
 _TIMING_ORDER = (
     "assertion_build", "assertion_sign", "assertion_key_refresh",
     "exchange_headers", "exchange_body", "exchange_total",
     "portal_client_auth", "portal_code_exchange", "portal_token_sign", "portal_total",
-    "account_token_verify", "identity_rpc",
+    "account_token_verify", "identity_rpc", "shared_session_result_lookup",
+    "shared_account_link_lookup", "session_revocation_authority",
+    "shared_identity_lookup", "session_revocation_check",
     "sqlite_auth_session_read", "sqlite_auth_link_read", "sqlite_auth_revision_read",
     "sqlite_auth_session_expired_delete", "sqlite_auth_link_expired_delete",
     "sqlite_auth_session_upsert", "sqlite_auth_link_upsert",
@@ -53,5 +56,20 @@ def format_login_timing_fields(stats: dict[str, tuple[int, float]]) -> list[str]
         count, total = stats.get(name, (0, 0.0))
         if count:
             fields.append(f"{name}_ms={int(round(total))}")
-            fields.append(f"{name}_n={count}")
     return fields
+
+
+def emit_identity_timing(request_id: str | None, started: float,
+                         stats: dict[str, tuple[int, float]]) -> None:
+    """Emit bounded identity timings; request material and exception text never enter."""
+    from .request_telemetry import is_safe_request_id
+
+    safe_id = request_id if is_safe_request_id(request_id) else "none"
+    elapsed_ms = max(0, int(round((time.perf_counter() - started) * 1000)))
+    details = []
+    for name in _TIMING_ORDER:
+        count, total = stats.get(name, (0, 0.0))
+        if count:
+            details.append(f"{name}_ms={int(round(total))}")
+    suffix = " " + " ".join(details) if details else ""
+    print(f"chat_identity_timing request_id={safe_id} total_ms={elapsed_ms}{suffix}", flush=True)

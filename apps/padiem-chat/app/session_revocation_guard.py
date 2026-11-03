@@ -37,6 +37,7 @@ guard, the product/tenant separation and the admin-role lookup are untouched.
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Awaitable, Callable, MutableMapping
@@ -213,52 +214,83 @@ class SessionRevocationGuardMiddleware:
             # a session the server itself issued.
             return None
         cache = getattr(state, 'auth_validation_cache', None)
+        return await self._resolve_canonical_session(
+            claims, canonical_session_id, resolve, cache)
+
+    async def _resolve_canonical_session(self, claims, canonical_session_id, resolve, cache):
+        from .request_telemetry import current_request_id
+        from .shared_login_timing import (
+            begin_login_timings, emit_identity_timing, end_login_timings,
+            record_login_timing,
+        )
+
+        token_context, details = begin_login_timings()
+        started = time.perf_counter()
+        request_id = current_request_id()
         try:
-            if cache is not None:
-                async def load_active_session():
-                    session = await resolve(session_id=canonical_session_id)
-                    if not _is_effective_active(session, now=datetime.now(timezone.utc)):
-                        raise _InactiveCachedSession()
-                    return claims.user_id, session.expires_at.timestamp()
-                cached_user = await cache.get_or_load(
-                    'legacy', claims.user_id, canonical_session_id, load_active_session)
-                active = cached_user == claims.user_id
-            else:
-                session = await resolve(session_id=canonical_session_id)
-                active = _is_effective_active(session, now=datetime.now(timezone.utc))
-        except Exception as exc:
-            code = getattr(exc, "code", "")
-            if (isinstance(exc, _InactiveCachedSession) or code in _TERMINAL_SESSION_CODES
-                    or getattr(exc, "status_code", None) == 401):
-                # The canonical session is gone or no longer active.
+            try:
+                if cache is not None:
+                    async def load_active_session():
+                        authority_started = time.perf_counter()
+                        try:
+                            session = await resolve(session_id=canonical_session_id)
+                        finally:
+                            record_login_timing(
+                                'session_revocation_authority',
+                                (time.perf_counter() - authority_started) * 1000)
+                        if not _is_effective_active(session, now=datetime.now(timezone.utc)):
+                            raise _InactiveCachedSession()
+                        return claims.user_id, session.expires_at.timestamp()
+                    cached_user = await cache.get_or_load(
+                        'legacy', claims.user_id, canonical_session_id, load_active_session)
+                    active = cached_user == claims.user_id
+                else:
+                    authority_started = time.perf_counter()
+                    try:
+                        session = await resolve(session_id=canonical_session_id)
+                    finally:
+                        record_login_timing(
+                            'session_revocation_authority',
+                            (time.perf_counter() - authority_started) * 1000)
+                    active = _is_effective_active(session, now=datetime.now(timezone.utc))
+            except Exception as exc:
+                code = getattr(exc, "code", "")
+                if (isinstance(exc, _InactiveCachedSession) or code in _TERMINAL_SESSION_CODES
+                        or getattr(exc, "status_code", None) == 401):
+                    # The canonical session is gone or no longer active.
+                    return SessionVerdict(
+                        authenticated=False,
+                        user_id=claims.user_id,
+                        canonical_session_id=canonical_session_id,
+                        reason="revoked",
+                    )
+                # The authority itself is unavailable. The verdict is unknown, so
+                # the request is refused with a retryable error rather than being
+                # accepted or silently reclassified as signed out.
+                return SessionVerdict(
+                    authenticated=False,
+                    user_id=claims.user_id,
+                    canonical_session_id=canonical_session_id,
+                    reason="unavailable",
+                )
+            if not active:
                 return SessionVerdict(
                     authenticated=False,
                     user_id=claims.user_id,
                     canonical_session_id=canonical_session_id,
                     reason="revoked",
                 )
-            # The authority itself is unavailable. The verdict is unknown, so
-            # the request is refused with a retryable error rather than being
-            # accepted or silently reclassified as signed out.
             return SessionVerdict(
-                authenticated=False,
+                authenticated=True,
                 user_id=claims.user_id,
                 canonical_session_id=canonical_session_id,
-                reason="unavailable",
+                reason="active",
             )
-        if not active:
-            return SessionVerdict(
-                authenticated=False,
-                user_id=claims.user_id,
-                canonical_session_id=canonical_session_id,
-                reason="revoked",
-            )
-        return SessionVerdict(
-            authenticated=True,
-            user_id=claims.user_id,
-            canonical_session_id=canonical_session_id,
-            reason="active",
-        )
+        finally:
+            record_login_timing('session_revocation_check',
+                                (time.perf_counter() - started) * 1000)
+            emit_identity_timing(request_id, started, details)
+            end_login_timings(token_context)
 
     async def __call__(
         self,
