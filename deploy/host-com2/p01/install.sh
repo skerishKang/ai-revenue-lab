@@ -81,6 +81,22 @@ if [[ ! -e "$app/env/p01.env" ]]; then
 fi
 install -o root -g root -m 0644 "$here/padiem-p01.service.example" "$unit_target"
 
+# The desktop lane's edge material: Chat's ingress middleware refuses every
+# P01→Chat call that does not carry x-padiem-edge-* headers signed with the
+# secret file named here. A missing file is the operator's to provision later
+# (the lane starts loudly disabled); a file that IS present but readable by
+# group or others is an active credential exposure and refuses this install.
+edge_file=$(grep -E '^PADIEM_COM2_EDGE_SECRET_FILE=' "$app/env/p01.env" 2>/dev/null \
+  | head -1 | cut -d= -f2- | tr -d '"' || true)
+if [[ -n "$edge_file" ]]; then
+  [[ -e "$edge_file" ]] || echo 'P01_COM2_EDGE_SECRET_FILE=MISSING (desktop lane stays off until provisioned)' >&2
+  if [[ -e "$edge_file" ]] && ! [[ $(stat -c '%a' "$edge_file") =~ 00$ ]]; then
+    fail EDGE_SECRET_FILE_TOO_OPEN
+  fi
+else
+  echo 'P01_COM2_EDGE_SECRET_FILE=UNSET (desktop lane stays off until provisioned)' >&2
+fi
+
 if (( reload )); then
   systemctl daemon-reload
 fi

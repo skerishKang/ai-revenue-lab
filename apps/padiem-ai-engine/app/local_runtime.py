@@ -65,6 +65,17 @@ B14_PROOF_TIME_HEADER = "x-padiem-b14-time"
 # publishes it under the same binding name the unchanged Worker code reads.
 CHAT_SERVICE_ENV = "PADIEM_ENGINE_LOCAL_CHAT_ORIGIN"
 CHAT_SERVICE_BINDING_NAME = "PADIEM_CHAT_SERVICE"
+# The COM2 edge middleware (Chat host, ``com2_edge_middleware.py``) refuses
+# every non-health request that does not carry the four ``x-padiem-edge-*``
+# headers signed with the same secret file the Chat host reads. The binding
+# below signs each forwarded call with exactly that material; without it the
+# desktop lane stays off instead of shipping calls that die at the edge.
+CHAT_EDGE_SECRET_FILE_ENV = "PADIEM_COM2_EDGE_SECRET_FILE"
+# A loopback hop carries no TLS, and the edge verifier accepts exactly these
+# two labels; TLSv1.3 is the strongest the scheme admits. What protects this
+# hop is the HMAC proof, the one-time request id and the loopback-only binding
+# — not transport encryption.
+_EDGE_TLS_VERSION = "TLSv1.3"
 logger = logging.getLogger(__name__)
 DB_PATH_ENV = "PADIEM_ENGINE_LOCAL_DB"
 DEFAULT_HOST = "127.0.0.1"
@@ -214,17 +225,43 @@ class LocalServiceResponse:
         return _PyBuffer(self._payload)
 
 
+def _chat_edge_secret_from_file(path: str) -> str:
+    """The COM2 edge proof secret from the same file the Chat host reads.
+
+    Regular file only, group/world bits refused on POSIX, and anything shorter
+    than the verifier's 32-byte floor counts as absent.
+    """
+    if not path:
+        return ""
+    try:
+        st = os.stat(path)
+    except OSError:
+        return ""
+    if not stat.S_ISREG(st.st_mode):
+        return ""
+    if os.name == "posix" and st.st_mode & 0o077:
+        return ""
+    try:
+        secret = Path(path).read_text(encoding="utf-8").strip()
+    except (OSError, UnicodeError):
+        return ""
+    return secret if len(secret) >= 32 else ""
+
+
 class LocalChatServiceBinding:
     """The host stand-in for the Chat Service Binding (loopback only).
 
     The Engine's signed desktop and PC-query drivers call ``fetch`` with a
-    request they already signed; this forwards that request unchanged to the
-    local Chat origin. A non-loopback origin is refused, so this binding can
-    never carry a proof secret off the host.
+    request they already signed; this forwards it to the local Chat origin and
+    adds the four ``x-padiem-edge-*`` headers Chat's edge middleware requires
+    (signed with the shared ``PADIEM_COM2_EDGE_SECRET_FILE`` material, one
+    fresh request id per call). A non-loopback origin is refused, so this
+    binding can never carry a proof secret off the host.
     """
 
     def __init__(
         self, origin: str, *, timeout: float = 60.0, client: Any = None,
+        values: Mapping[str, str] | None = None,
     ) -> None:
         parsed = urlsplit(origin)
         if (
@@ -241,13 +278,52 @@ class LocalChatServiceBinding:
         self._origin = f"{parsed.scheme}://{parsed.netloc}"
         self._timeout = timeout
         self._client = client
+        source = os.environ if values is None else values
+        self._edge_file = str(
+            source.get(CHAT_EDGE_SECRET_FILE_ENV, "") or ""
+        ).strip()
+
+    def _edge_secret(self) -> str:
+        """Fresh read per call so an operator rotation lands without a restart."""
+        return _chat_edge_secret_from_file(self._edge_file)
+
+    @staticmethod
+    def _edge_headers(method: str, path: str, secret: str) -> dict[str, str]:
+        """The four headers Chat's edge verifier expects, one fresh id per call.
+
+        The proof signs ``v1\\n{method}\\n{path}\\n{at}\\n{id}\\n{tls}`` — the
+        same composition ``EdgeProofVerifier.verify`` checks. A retry of the
+        same engine request calls ``fetch`` again and therefore signs with a
+        new request id, so Chat's durable replay store never sees a repeat.
+        """
+        at = str(int(time.time()))
+        request_id = os.urandom(32).hex()
+        signed = "\n".join(
+            ("v1", method, path, at, request_id, _EDGE_TLS_VERSION),
+        ).encode("utf-8")
+        proof = "v1=" + hmac.new(
+            secret.encode("utf-8"), signed, hashlib.sha256,
+        ).hexdigest()
+        return {
+            "x-padiem-edge-at": at,
+            "x-padiem-edge-id": request_id,
+            "x-padiem-edge-tls": _EDGE_TLS_VERSION,
+            "x-padiem-edge-proof": proof,
+        }
 
     async def fetch(self, request: Any) -> LocalServiceResponse:
         parsed = urlsplit(str(request.url))
-        path = parsed.path + (f"?{parsed.query}" if parsed.query else "")
+        forward_path = parsed.path + (f"?{parsed.query}" if parsed.query else "")
         raw_headers = getattr(request, "headers", None)
         items = getattr(raw_headers, "items", None)
         headers = dict(items()) if callable(items) else dict(raw_headers or {})
+        edge = self._edge_secret()
+        if len(edge) < 32:
+            # An unsigned forward would die at Chat's edge middleware with a
+            # bare 403; refusing here keeps the failure loud and local.
+            raise LocalRuntimeError("p01_local_chat_edge_unconfigured")
+        method = str(getattr(request, "method", "POST") or "POST").upper()
+        headers = {**headers, **self._edge_headers(method, parsed.path, edge)}
         body = getattr(request, "body", b"")
         if not isinstance(body, (bytes, bytearray)):
             body = bytes(body)
@@ -257,8 +333,8 @@ class LocalChatServiceBinding:
         )
         try:
             response = await client.request(
-                getattr(request, "method", "POST"),
-                self._origin + path,
+                method,
+                self._origin + forward_path,
                 headers=headers,
                 content=bytes(body),
             )
@@ -622,17 +698,25 @@ def _local_bindings(values: Mapping[str, str]) -> dict[str, Any]:
         _B14_BINDINGS.append(binding)
         bindings["B14_SERVICE"] = binding
     chat_origin = str(values.get(CHAT_SERVICE_ENV, "")).strip()
-    if chat_origin:
+    if not chat_origin:
+        logger.info("p01_local_chat_service=unconfigured")
+    elif len(_chat_edge_secret_from_file(
+            str(values.get(CHAT_EDGE_SECRET_FILE_ENV, "") or "").strip())) < 32:
+        # Loud disable: without the edge material every forwarded call dies at
+        # Chat's edge middleware, so the desktop tools stay off instead of
+        # publishing a binding that can only produce rejections.
+        logger.warning("p01_local_chat_edge_unconfigured")
+    else:
         try:
-            bindings[CHAT_SERVICE_BINDING_NAME] = LocalChatServiceBinding(chat_origin)
+            bindings[CHAT_SERVICE_BINDING_NAME] = LocalChatServiceBinding(
+                chat_origin, values=values,
+            )
         except LocalRuntimeError:
             # A foreign or malformed origin leaves the binding absent: the
             # desktop tools stay off instead of forwarding a proof off-host.
             logger.warning("p01_local_chat_origin_invalid")
         else:
             logger.info("p01_local_chat_service=configured")
-    else:
-        logger.info("p01_local_chat_service=unconfigured")
     path = str(values.get(DB_PATH_ENV, "")).strip()
     if path:
         bindings["ENGINE_IDEMPOTENCY"] = _local_database(path)

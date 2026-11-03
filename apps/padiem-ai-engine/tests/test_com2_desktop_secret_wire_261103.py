@@ -20,7 +20,25 @@ import pytest
 from app import local_runtime as rt
 
 SECRET = "s" * 48
+EDGE_SECRET = "e" * 48
 BODY = b'{"subject_id":"sub_1","run_id":"run_1","mode":"run_status"}'
+
+#: 2026-11-04 — Chat's edge middleware refuses every forwarded call that does
+#: not carry the four ``x-padiem-edge-*`` headers, so the binding now publishes
+#: only when this file exists (see ``LocalChatServiceBinding``). The fixture
+#: below writes one and hands the path to every env built here.
+_EDGE_SECRET_FILE = ""
+
+
+@pytest.fixture(autouse=True)
+def _edge_secret_file(tmp_path, monkeypatch):
+    global _EDGE_SECRET_FILE
+    f = tmp_path / "com2-edge-secret"
+    f.write_text(EDGE_SECRET + "\n", encoding="utf-8")
+    f.chmod(0o600)
+    _EDGE_SECRET_FILE = str(f)
+    monkeypatch.setattr(sys.modules[__name__], "_EDGE_SECRET_FILE", str(f))
+    yield str(f)
 
 
 class _FakeResponse:
@@ -55,10 +73,12 @@ def _request() -> rt.LocalRequest:
 
 
 def test_a_loopback_origin_becomes_the_chat_service_binding():
-    bindings = rt._local_bindings({rt.CHAT_SERVICE_ENV: "http://127.0.0.1:8798"})
+    values = {rt.CHAT_SERVICE_ENV: "http://127.0.0.1:8798",
+              rt.CHAT_EDGE_SECRET_FILE_ENV: _EDGE_SECRET_FILE}
+    bindings = rt._local_bindings(values)
     assert isinstance(bindings[rt.CHAT_SERVICE_BINDING_NAME], rt.LocalChatServiceBinding)
     # The unchanged Worker code reads this exact name off its env view.
-    env = rt._env_view({rt.CHAT_SERVICE_ENV: "http://127.0.0.1:8798"})
+    env = rt._env_view(values)
     assert getattr(env, rt.CHAT_SERVICE_BINDING_NAME) is not None
 
 
@@ -72,7 +92,7 @@ def test_a_foreign_or_malformed_origin_leaves_the_binding_absent(origin):
     with pytest.raises(rt.LocalRuntimeError):
         rt.LocalChatServiceBinding(origin)
     assert rt.CHAT_SERVICE_BINDING_NAME not in rt._local_bindings(
-        {rt.CHAT_SERVICE_ENV: origin}
+        {rt.CHAT_SERVICE_ENV: origin, rt.CHAT_EDGE_SECRET_FILE_ENV: _EDGE_SECRET_FILE}
     )
 
 
@@ -81,7 +101,8 @@ async def test_fetch_forwards_the_signed_request_unchanged():
     record: dict = {}
     payload = b'{"ok":true}'
     binding = rt.LocalChatServiceBinding(
-        "http://127.0.0.1:8798", client=_FakeClient(record, payload)
+        "http://127.0.0.1:8798", client=_FakeClient(record, payload),
+        values={rt.CHAT_EDGE_SECRET_FILE_ENV: _EDGE_SECRET_FILE},
     )
 
     response = await binding.fetch(_request())
@@ -91,6 +112,12 @@ async def test_fetch_forwards_the_signed_request_unchanged():
         "http://127.0.0.1:8798/internal/claw/engine-desktop?probe=1"
     )
     assert record["headers"]["x-claw-engine-proof"] == "a" * 64
+    # 2026-11-04: the edge middleware on the Chat host refuses unsigned
+    # forwards, so the binding adds the four edge headers on top of the
+    # Engine-signed headers it forwards.
+    for name in ("x-padiem-edge-at", "x-padiem-edge-id",
+                 "x-padiem-edge-tls", "x-padiem-edge-proof"):
+        assert name in record["headers"], name
     assert record["content"] == BODY
     assert response.status == 200
     assert await response.text() == '{"ok":true}'
@@ -104,7 +131,8 @@ async def test_an_unreachable_chat_raises_one_bounded_reason(monkeypatch):
             raise rt.httpx.ConnectError("down")
 
     binding = rt.LocalChatServiceBinding(
-        "http://127.0.0.1:8798", client=_FailingClient()
+        "http://127.0.0.1:8798", client=_FailingClient(),
+        values={rt.CHAT_EDGE_SECRET_FILE_ENV: _EDGE_SECRET_FILE},
     )
     with pytest.raises(rt.LocalRuntimeError) as caught:
         await binding.fetch(_request())
@@ -136,6 +164,7 @@ def _host_env(**overrides) -> dict[str, str]:
         rt.B14_ORIGIN_ENV: "http://127.0.0.1:8789",
         rt.B14_PROOF_SECRET_ENV: "b" * 48,
         rt.CHAT_SERVICE_ENV: "http://127.0.0.1:8798",
+        rt.CHAT_EDGE_SECRET_FILE_ENV: _EDGE_SECRET_FILE,
         "CLAW_ENGINE_DESKTOP_SECRET": SECRET,
     }
     values.update(overrides)
@@ -160,7 +189,8 @@ def test_env_alone_registers_the_desktop_and_pc_query_tools():
 
 @pytest.mark.parametrize(
     "missing",
-    ["CLAW_ENGINE_DESKTOP_SECRET", rt.CHAT_SERVICE_ENV],
+    ["CLAW_ENGINE_DESKTOP_SECRET", rt.CHAT_SERVICE_ENV,
+     rt.CHAT_EDGE_SECRET_FILE_ENV],
 )
 def test_a_missing_half_leaves_the_tools_unregistered(missing):
     values = _host_env()
