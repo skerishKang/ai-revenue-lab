@@ -30,6 +30,8 @@ from .pc_pairing_connect_exe_asset import connect_exe_bytes
 from .pc_pairing_agent_install import render_agent_install_block
 from .pc_scope_cache import invalidate_owner_scope
 from .pc_device_pairing_store import (
+    INSTALL_TOKEN_HEX_CHARS,
+    INSTALL_TOKEN_PREFIX,
     PcPairingError,
     drive_root,
     normalize_root_label,
@@ -70,6 +72,10 @@ PC_PAIRING_LABEL_PATH = "/api/pc/pairings/{link_id}/label"
 #: revoke stays the only path that drops the folder approvals.
 PC_PAIRING_PAUSE_PATH = "/api/pc/pairings/{link_id}/pause"
 PC_PAIRING_RESUME_PATH = "/api/pc/pairings/{link_id}/resume"
+#: #6695 PR-4: the owner's two answers to an install they handed out - cancel it,
+#: or replace it with a fresh code and token.
+PC_PAIRING_TOKEN_REVOKE_PATH = "/api/pc/pairings/{code_id}/token/revoke"
+PC_PAIRING_TOKEN_REISSUE_PATH = "/api/pc/pairings/{code_id}/token/reissue"
 
 #: What one adoption call may carry. `device_id` names the PC; `target` names the
 #: account it belongs to (omitted: the caller's own); `drives` reports the PC's
@@ -122,6 +128,11 @@ _MESSAGES = {
     #: The link row exists under another account. This is a permission answer,
     # not a missing row, and it names no value either way.
     "pc_pairing_link_forbidden": "이 PC 연결을 바꿀 권한이 없습니다.",
+    #: #6695 PR-4: the install itself, not the code, is the thing that failed.
+    #: Each sentence says which half of the proof was refused without showing it.
+    "pc_pairing_token_invalid": "이 설치 파일의 계정 정보를 확인할 수 없습니다. 새 설치 파일을 받아 주세요.",
+    "pc_pairing_token_revoked": "취소된 설치입니다. 새 설치 파일을 받아 주세요.",
+    "pc_pairing_token_expired": "설치 유효 시간이 지났습니다. 새 설치 파일을 받아 주세요.",
 }
 
 #: Store reason -> route code. The store deliberately never names a value.
@@ -132,6 +143,11 @@ _REASONS = {
     "pairing code invalid": "pc_pairing_code_unknown",
     "pairing code id invalid": "pc_pairing_code_unknown",
     "pairing code not stored": "pc_pairing_unavailable",
+    "pairing code not yours": "pc_pairing_link_forbidden",
+    "install token invalid": "pc_pairing_token_invalid",
+    "install token revoked": "pc_pairing_token_revoked",
+    "install token expired": "pc_pairing_token_expired",
+    "install token not stored": "pc_pairing_unavailable",
     "mesh node identity invalid": "pc_pairing_node_invalid",
     "root path invalid": "pc_pairing_root_invalid",
     "root reference invalid": "pc_pairing_root_invalid",
@@ -167,6 +183,9 @@ def _refused(exc: PcPairingError) -> JSONResponse:
     # rest are the request's own defect. Nothing here describes a value it
     # refused, so the status carries no extra disclosure.
     if code.startswith("pc_pairing_code"):
+        status = 403
+    elif code.startswith("pc_pairing_token"):
+        # A failed possession proof, exactly like a bad code: 403, never 404.
         status = 403
     elif code == "unauthorized":
         status = 401
@@ -233,6 +252,26 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def _issued_pairing(request: Request, issued: dict[str, Any]) -> dict[str, Any]:
+    """One issued (or reissued) install, as the browser may see it.
+
+    #6695 PR-4: the account-specific install URL carries this code's token as
+    its own argument, beside whatever MeshCentral parameters the deployment
+    configured. A deployment that has not configured the link still issues a
+    code (the typed-code path needs one) and answers `null` here.
+    """
+    return {
+        "code_id": issued["code_id"],
+        "code": issued["code"],
+        "install_tag": issued["install_tag"],
+        "install_url": personalized_install_url(
+            agent_url=getattr(request.app.state, "pc_pairing_install_url", None),
+            install_token=issued.get("install_token"),
+        ),
+        "expires_at": issued["expires_at"],
+    }
+
+
 async def pc_pairing_issue(request: Request) -> JSONResponse:
     """Issue a 10-minute one-time code for this account's next PC link (R2)."""
     user_id = current_user_id(request)
@@ -247,15 +286,7 @@ async def pc_pairing_issue(request: Request) -> JSONResponse:
     issued, refused = await _await_store(store.issue_code, user_id=user_id, issued_at=_now())
     if refused is not None:
         return refused
-    return _json({
-        "ok": True,
-        "pairing": {
-            "code_id": issued["code_id"],
-            "code": issued["code"],
-            "install_tag": issued["install_tag"],
-            "expires_at": issued["expires_at"],
-        },
-    }, 201)
+    return _json({"ok": True, "pairing": _issued_pairing(request, issued)}, 201)
 
 
 def _parse_iso(value: Any) -> datetime | None:
@@ -394,6 +425,51 @@ async def pc_pairing_resume(request: Request) -> JSONResponse:
     return _json({"ok": True, "link": link}, 200)
 
 
+async def pc_pairing_token_revoke(request: Request) -> JSONResponse:
+    """Cancel one install this account handed out (#6695 PR-4).
+
+    The token is stamped and its still-pending code is cancelled, so neither
+    the file in the owner's Downloads folder nor the code inside it pairs a PC
+    afterwards. Revoking an install that already built a link only retires the
+    token: the link is the owner's PC, and unlinking it is the DELETE below.
+    """
+    user_id = current_user_id(request)
+    if not user_id:
+        return _error(401, "unauthorized")
+    store = _store(request)
+    if store is None:
+        return _error(503, "pc_pairing_unavailable")
+    cancelled, refused = await _await_store(
+        store.revoke_install_token, user_id=user_id,
+        code_id=request.path_params.get("code_id"), now=_now(),
+    )
+    if refused is not None:
+        return refused
+    return _json({"ok": True, "install": cancelled}, 200)
+
+
+async def pc_pairing_token_reissue(request: Request) -> JSONResponse:
+    """Replace an install with a fresh code and token (#6695 PR-4).
+
+    Same response shape as issuing a new code, because it *is* a new code: the
+    browser downloads the file for it through the install endpoints naming this
+    code, so exactly one pending install exists at a time.
+    """
+    user_id = current_user_id(request)
+    if not user_id:
+        return _error(401, "unauthorized")
+    store = _store(request)
+    if store is None:
+        return _error(503, "pc_pairing_unavailable")
+    issued, refused = await _await_store(
+        store.reissue_install_token, user_id=user_id,
+        code_id=request.path_params.get("code_id"), now=_now(),
+    )
+    if refused is not None:
+        return refused
+    return _json({"ok": True, "pairing": _issued_pairing(request, issued)}, 201)
+
+
 async def pc_pairing_label(request: Request) -> JSONResponse:
     """Name one linked PC, in the words this account will use for it.
 
@@ -448,6 +524,32 @@ def install_url_from_config(value: Any) -> str | None:
     if not re.fullmatch(r"[A-Za-z0-9.-]+(:[0-9]{1,5})?", host):
         return None
     return text
+
+
+#: The install token the store mints: `pt_` and 32 lowercase hex characters.
+#: The route re-checks the shape before it writes one into a file it hands out.
+_INSTALL_TOKEN_RE = re.compile(
+    r"^" + re.escape(INSTALL_TOKEN_PREFIX) + r"[0-9a-f]{%d}$" % INSTALL_TOKEN_HEX_CHARS
+)
+
+
+def personalized_install_url(*, agent_url: Any, install_token: Any) -> str | None:
+    """The deployment's install link with this account's token beside its own args.
+
+    #6695 PR-4: the URL an account is given has to name the account, and the
+    MeshCentral parameters already in the configured link (the mesh id, the
+    install flags) are not ours to reuse for that. So the token travels as its
+    own parameter, appended after whatever the deployment configured, and the
+    existing query - if any - is left exactly as it was. A token that is not the
+    shape this deployment mints is refused rather than pasted in.
+    """
+    url = install_url_from_config(agent_url)
+    if url is None:
+        return None
+    if not isinstance(install_token, str) or _INSTALL_TOKEN_RE.fullmatch(install_token) is None:
+        return None
+    separator = "&" if "?" in url else "?"
+    return url + separator + "padiem_install_token=" + install_token
 
 
 async def pc_pairing_handoff(request: Request) -> JSONResponse:
@@ -510,7 +612,9 @@ def _script_quote(value: str) -> str:
     return "'" + value.replace("'", "''") + "'"
 
 
-def render_install_script(*, install_tag: Any, agent_url: Any) -> str | None:
+def render_install_script(
+    *, install_tag: Any, agent_url: Any, install_token: Any = None,
+) -> str | None:
     """The Windows install file one click hands out, or ``None`` when it cannot.
 
     What makes it one click: the account's pairing tag is already inside the
@@ -519,6 +623,12 @@ def render_install_script(*, install_tag: Any, agent_url: Any) -> str | None:
     chose. The PC reports its fixed drives next to the tag in the name the agent
     gives the server, which is how the link arrives with whole drives granted
     instead of empty.
+
+    #6695 PR-4: when the issue response also gave this install a token, the
+    file carries it the same way - inside the agent name, right after the tag -
+    so the server can check that the token presented is the one minted for this
+    code and this account. A file for a code minted before tokens existed
+    carries none, and pairs exactly as it did.
 
     Refused rather than improvised when either value is unusable: an installer
     with a guessed host, or with no tag, is a file that connects a PC to the
@@ -533,7 +643,20 @@ def render_install_script(*, install_tag: Any, agent_url: Any) -> str | None:
     quoted_url = _script_quote(url)
     if quoted_tag is None or quoted_url is None:
         return None
-    return _INSTALL_SCRIPT_TEMPLATE % {"tag": quoted_tag, "url": quoted_url}
+    if install_token is None:
+        quoted_token = "''"
+    else:
+        if (
+            not isinstance(install_token, str)
+            or _INSTALL_TOKEN_RE.fullmatch(install_token) is None
+        ):
+            return None
+        quoted_token = _script_quote(install_token)
+        if quoted_token is None:
+            return None
+    return _INSTALL_SCRIPT_TEMPLATE % {
+        "tag": quoted_tag, "url": quoted_url, "token": quoted_token,
+    }
 
 
 def connect_exe_trailer(*, install_tag: Any, agent_url: Any) -> bytes | None:
@@ -588,6 +711,9 @@ _INSTALL_SCRIPT_TEMPLATE = (
     "# 실행: 파일에서 우클릭 -> PowerShell로 실행. 관리자 권한을 물으면 예라고 답하세요.\n"
     "$ErrorActionPreference = \"Stop\"\n"
     "$PairingTag = %(tag)s\n"
+    # Empty for an install without a token (a code minted before 093), which
+    # leaves the reported name exactly as it was.
+    "$PadiemInstallToken = %(token)s\n"
     "$AgentInstallerUrl = %(url)s\n"
     "\n"
     "function Get-PadiemDriveLetters {\n"
@@ -639,11 +765,15 @@ _INSTALL_SCRIPT_TEMPLATE = (
     "  # 15-character NetBIOS form and would store a truncated name.\n"
     "  $machine = try { [System.Net.Dns]::GetHostName() } catch { $env:COMPUTERNAME }\n"
     "  if (-not $machine) { $machine = $env:COMPUTERNAME }\n"
-    "  $reported = $PairingTag + \" \" + $machine\n"
+    "  $reported = $PairingTag\n"
+    "  # The token, when this install has one, rides between the tag and the\n"
+    "  # drives: the server reads the same three parts in the same order.\n"
+    "  if ($PadiemInstallToken) { $reported = $reported + \" \" + $PadiemInstallToken }\n"
     "  $letters = @(Get-PadiemDriveLetters)\n"
     "  if ($letters.Count -gt 0) {\n"
-    "    $reported = $PairingTag + \" [\" + ($letters -join \" \") + \"] \" + $machine\n"
+    "    $reported = $reported + \" [\" + ($letters -join \" \") + \"]\"\n"
     "  }\n"
+    "  $reported = $reported + \" \" + $machine\n"
     "  if (-not (Install-PadiemAgentService -SourceExe $agent -AgentName $reported)) {\n"
     "    Write-Host \"에이전트 설치를 마치지 못했습니다. 잠시 후 다시 시도해 주세요.\"\n"
     "    exit 6\n"
@@ -659,6 +789,67 @@ _INSTALL_SCRIPT_TEMPLATE = (
 )
 
 
+#: The shapes a download may carry. Empty is "mint a fresh install"; naming a
+#: code is "hand me the file for this install I already have" - the reissue lane
+#: (#6695 PR-4), which must not leave a second pending code behind.
+_INSTALL_BODY_KEYS = (frozenset(), frozenset({"code"}), frozenset({"code", "install_token"}))
+
+
+async def _install_artifact(
+    request: Request, *, store: Any, user_id: str,
+) -> tuple[dict[str, Any], JSONResponse] | None:
+    """The code, tag and token one download should embed, or the refusal.
+
+    Returns ``None`` and writes nothing when the body is not one of the accepted
+    shapes; otherwise the tuple carries either the freshly minted install or the
+    peeked facts of an existing pending code. The body's `install_token` is only
+    ever the value the browser just received from issue/reissue - the store
+    validates it again at claim time, so a wrong value here costs the owner a
+    refused claim, never a link.
+    """
+    body = await _body(request)
+    if body is None or frozenset(body) not in _INSTALL_BODY_KEYS:
+        return None
+    if not body:
+        issued, refused = await _await_store(
+            store.issue_code, user_id=user_id, issued_at=_now(),
+        )
+        if refused is not None:
+            return issued, refused
+        return {
+            "code_id": issued["code_id"],
+            "install_tag": issued["install_tag"],
+            "install_token": issued["install_token"],
+        }, None
+    code = body.get("code")
+    if not isinstance(code, str) or not code:
+        return None
+    peeked, refused = await _await_store(store.peek_pairing_code, code=code, now=_now())
+    if refused is not None:
+        return peeked, refused
+    token = body.get("install_token")
+    if token is not None and (
+        not isinstance(token, str) or _INSTALL_TOKEN_RE.fullmatch(token) is None
+    ):
+        return None
+    return {
+        "code_id": peeked["code_id"],
+        "install_tag": peeked["install_tag"],
+        "install_token": token,
+    }, None
+
+
+def _install_headers(filename: str, code_id: str) -> dict[str, str]:
+    # The browser needs to know which install it just downloaded so the owner
+    # can cancel or replace exactly that one. A code id is not a possession
+    # proof; the code and token themselves never ride in a header.
+    return {
+        **_NO_STORE,
+        "Content-Disposition": f'attachment; filename="{filename}"',
+        "X-PC-Pairing-Code-Id": code_id,
+    }
+
+
 async def pc_pairing_install_file(request: Request) -> Response:
     """One click: the install file that binds this PC to the signed-in account.
 
@@ -668,6 +859,10 @@ async def pc_pairing_install_file(request: Request) -> Response:
     leaves the server - only the tag derived from it, which is what the agent
     name carries back for the claim to complete. Nothing here consumes the code,
     so a download that dies halfway can be clicked again.
+
+    #6695 PR-4: the same endpoint renders the file for an install the owner
+    already has, when the body names its code. That is the reissue lane's
+    second half, and it keeps one install - one code, one token - per download.
     """
     user_id = current_user_id(request)
     if not user_id:
@@ -683,22 +878,26 @@ async def pc_pairing_install_file(request: Request) -> Response:
     )
     if agent_url is None:
         return _error(503, "pc_pairing_install_url_missing")
-    body = await _body(request)
-    if body is None or set(body) != set():
+    facts = await _install_artifact(request, store=store, user_id=user_id)
+    if facts is None:
         return _error(400, "pc_pairing_body_invalid")
-    issued, refused = await _await_store(store.issue_code, user_id=user_id, issued_at=_now())
+    issued, refused = facts
     if refused is not None:
         return refused
-    script = render_install_script(install_tag=issued["install_tag"], agent_url=agent_url)
+    token = issued.get("install_token")
+    rendered_url = (
+        personalized_install_url(agent_url=agent_url, install_token=token)
+        if token is not None else agent_url
+    )
+    script = render_install_script(
+        install_tag=issued["install_tag"], agent_url=rendered_url, install_token=token,
+    )
     if script is None:
         return _error(503, "pc_pairing_install_url_missing")
     return Response(
         content=script,
         media_type="text/plain; charset=utf-8",
-        headers={
-            **_NO_STORE,
-            "Content-Disposition": f'attachment; filename="{PC_PAIRING_INSTALL_FILENAME}"',
-        },
+        headers=_install_headers(PC_PAIRING_INSTALL_FILENAME, issued["code_id"]),
     )
 
 
@@ -726,28 +925,33 @@ async def pc_pairing_install_exe(request: Request) -> Response:
     )
     if agent_url is None:
         return _error(503, "pc_pairing_install_url_missing")
-    body = await _body(request)
-    if body is None or set(body) != set():
-        return _error(400, "pc_pairing_body_invalid")
     # Read the artifact before minting anything: a click on a build that cannot
     # hand out the program must not leave a code behind that nothing can redeem.
     try:
         connect_exe_bytes()
     except ValueError:
         return _error(503, "pc_pairing_connect_exe_unavailable")
-    issued, refused = await _await_store(store.issue_code, user_id=user_id, issued_at=_now())
+    facts = await _install_artifact(request, store=store, user_id=user_id)
+    if facts is None:
+        return _error(400, "pc_pairing_body_invalid")
+    issued, refused = facts
     if refused is not None:
         return refused
-    program = render_install_exe(install_tag=issued["install_tag"], agent_url=agent_url)
+    # The reviewed program stamps only the tag into the agent name, so the
+    # token rides in the URL it downloads from: same account-specific link the
+    # issue response hands out, with the MeshCentral arguments left intact.
+    token = issued.get("install_token")
+    rendered_url = (
+        personalized_install_url(agent_url=agent_url, install_token=token)
+        if token is not None else agent_url
+    )
+    program = render_install_exe(install_tag=issued["install_tag"], agent_url=rendered_url)
     if program is None:
         return _error(503, "pc_pairing_connect_exe_unavailable")
     return Response(
         content=program,
         media_type="application/octet-stream",
-        headers={
-            **_NO_STORE,
-            "Content-Disposition": f'attachment; filename="{PC_PAIRING_INSTALL_EXE_FILENAME}"',
-        },
+        headers=_install_headers(PC_PAIRING_INSTALL_EXE_FILENAME, issued["code_id"]),
     )
 
 
@@ -768,9 +972,13 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
     if store is None:
         return _error(503, "pc_pairing_unavailable")
     body = await _body(request)
-    shapes = ({"code", "mesh_node_id"}, {"code", "mesh_node_id", "label"},
-              {"code", "mesh_node_id", "drives"}, {"code", "mesh_node_id", "label", "drives"})
-    if body is None or set(body) not in shapes:
+    # #6695 PR-4 adds one optional member to the same claim: `install_token`,
+    # the value the install URL carried. It is checked against the code's own
+    # binding in the store; a claim without it keeps working for an install
+    # whose token still stands, including codes minted before tokens existed.
+    required = {"code", "mesh_node_id"}
+    allowed = required | {"label", "drives", "install_token"}
+    if body is None or not required <= set(body) or not set(body) <= allowed:
         return _error(400, "pc_pairing_body_invalid")
     code = body.get("code")
     mesh_node_id = body.get("mesh_node_id")
@@ -778,6 +986,9 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
     if not isinstance(code, str) or not code or not isinstance(mesh_node_id, str):
         return _error(400, "pc_pairing_body_invalid")
     if label is not None and not isinstance(label, str):
+        return _error(400, "pc_pairing_body_invalid")
+    install_token = body.get("install_token")
+    if install_token is not None and not isinstance(install_token, str):
         return _error(400, "pc_pairing_body_invalid")
     reported = body.get("drives")
     drives: list[str] = []
@@ -802,7 +1013,7 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
             verified = False
     link, refused = await _await_store(
         store.redeem_code, code=code, mesh_node_id=mesh_node_id, label=label,
-        now=_now(), verified=verified, drives=drives,
+        now=_now(), verified=verified, drives=drives, install_token=install_token,
     )
     if refused is not None:
         return refused

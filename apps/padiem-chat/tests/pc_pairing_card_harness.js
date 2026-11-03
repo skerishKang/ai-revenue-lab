@@ -93,6 +93,11 @@ function makeDom(responses) {
     return {
       ok: reply.status >= 200 && reply.status < 300,
       status: reply.status,
+      // A real Response always carries headers; the install download names the
+      // code it minted in one, so the stand-in has to answer like one.
+      headers: {
+        get: (name) => (reply.headers || {})[String(name).toLowerCase()] ?? null,
+      },
       arrayBuffer: async () => encoded.buffer.slice(encoded.byteOffset,
         encoded.byteOffset + encoded.byteLength),
       json: async () => {
@@ -120,15 +125,16 @@ function makeDom(responses) {
     confirm: () => confirmState.value,
   };
   let objectUrls = 0;
+  const { URL: NodeURL } = require("node:url");
   const sandbox = {
     document, window, fetch: fetchImpl, calls,
     AbortController, TextDecoder, TextEncoder,
     setTimeout, clearTimeout, setInterval, clearInterval,
     Blob: class { constructor(parts) { this.parts = parts; } },
-    URL: {
+    URL: Object.assign(NodeURL, {
       createObjectURL: (blob) => { objectUrls += 1; (globalThis.blobs ||= {})[`blob:${objectUrls}`] = blob; return `blob:${objectUrls}`; },
       revokeObjectURL: () => {},
-    },
+    }),
     MutationObserver: class { observe() {} },
     console, JSON, Object, Array, Promise, String, Number, Math, encodeURIComponent,
   };
@@ -210,7 +216,8 @@ async function main() {
       code_id: "pcpair_abc", code: "K7QM2XTR9F4B", install_tag: "pd-1234abcd",
       expires_at: "2026-10-27T01:10:00Z" } } },
     "POST /api/pc/pairings/install-file": { status: 200, text: scriptText },
-    "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes },
+    "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes,
+      headers: { "x-pc-pairing-code-id": "pcpair_exe01" } },
   });
   await settle();
   const section = first.card.ids().find((n) => n.attrs.id === "pcPairingSection");
@@ -265,6 +272,62 @@ async function main() {
   check("the fresh PC is drawn into the list",
     section.allText().includes("집 PC") && section.allText().includes("연결됨"),
     section.allText());
+
+  // -- #6695 PR-4: cancel or replace exactly the install just handed out -----
+  const TOKEN = "pt_" + "a".repeat(32);
+  const managed = makeDom({
+    "GET *": { status: 200, body: { ok: true, links: [], codes: [] } },
+    "POST /api/pc/pairings/install-file": { status: 200, text: scriptText,
+      headers: { "x-pc-pairing-code-id": "pcpair_file01" } },
+    "POST /api/pc/pairings/install-exe": { status: 200, bytes: programBytes,
+      headers: { "x-pc-pairing-code-id": "pcpair_exe01" } },
+    "POST /api/pc/pairings/pcpair_exe01/token/revoke": { status: 200,
+      body: { ok: true, install: { code_id: "pcpair_exe01",
+        revoked_at: "2026-11-03T00:00:00Z", code_state: "cancelled" } } },
+    "POST /api/pc/pairings/pcpair_exe01/token/reissue": { status: 201,
+      body: { ok: true, pairing: { code_id: "pcpair_new02", code: "K7QM2XTR9F5C",
+        install_tag: "pd-1234abcd",
+        install_url: "https://mesh.example.net/meshagents?id=101"
+          + "&padiem_install_token=" + TOKEN,
+        expires_at: "2026-11-03T01:10:00Z" } } },
+  });
+  await settle();
+  const managedSection = managed.card.ids().find((n) => n.attrs.id === "pcPairingSection");
+  const installTools = managedSection.ids().find(
+    (n) => (n.className || "") === "pc-pairing-install-tools");
+  const cancelInstall = managedSection.ids().find(
+    (n) => n.matchesClass("pc-pairing-install-cancel"));
+  const reprepareInstall = managedSection.ids().find(
+    (n) => n.matchesClass("pc-pairing-install-reprepare"));
+  check("the install controls appear only after a download",
+    installTools.hidden === true && await managed.sandbox.window.padiemPcPairing.connect() === true
+    && installTools.hidden === false,
+    JSON.stringify({ hidden: installTools.hidden }));
+
+  cancelInstall.click();
+  await settle();
+  check("cancel posts the token revoke route and says the file is dead",
+    managed.calls.some((call) => call.method === "POST"
+      && call.url === "/api/pc/pairings/pcpair_exe01/token/revoke")
+    && installTools.hidden === true
+    && managedSection.ids().find((n) => (n.className || "") === "pc-pairing-status")
+      .allText().includes("취소했습니다"),
+    JSON.stringify(managed.calls));
+
+  await managed.sandbox.window.padiemPcPairing.connect();
+  const downloadsBefore = managed.downloads.length;
+  reprepareInstall.click();
+  await settle();
+  check("reprepare reissues, re-downloads and names that install again",
+    managed.calls.some((call) => call.method === "POST"
+      && call.url === "/api/pc/pairings/pcpair_exe01/token/reissue")
+    && managed.calls.some((call) => call.method === "POST"
+      && call.url === "/api/pc/pairings/install-exe"
+      && JSON.parse(call.body).install_token === TOKEN)
+    && managed.downloads.length === downloadsBefore + 1
+    && managedSection.ids().find((n) => (n.className || "") === "pc-pairing-status")
+      .allText().includes("새 설치 파일을 준비했습니다"),
+    JSON.stringify(managed.calls));
 
   // -- the list: two PCs, one row menu each, and what stays off the screen ---
   const listed = makeDom({
