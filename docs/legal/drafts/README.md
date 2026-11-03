@@ -136,7 +136,7 @@
 | R2 외부 백업 | 일일 7세대·주간 4세대, 삭제 사본 최대 28일 | COM2 설정 파일에서 일일 7·주간 4를 확인했습니다. | 순환 작업이 삭제된 데이터까지 포함해 28일 내 제거하는지 정기 확인합니다. |
 | Chat·B14 journald 로그 | 미확인 설정은 90일 | 유효 journald 설정에서 명시적 `MaxRetentionSec` 값을 확인하지 못했습니다. 저장소 밖 systemd 기본값·디스크 제한 상태는 별도 확인이 필요합니다. | 실제 보관 기간을 확인하고 90일 이내가 되도록 설정합니다. |
 | B14 구조 로그 파일 | 일일 회전 7세대(최대 7일) | COM2의 `/etc/logrotate.d/padiem-b14`에서 `daily`, `rotate 7`, `maxsize 50M`을 확인했습니다. | 파일 로그 연결 상태와 회전 결과를 확인합니다. |
-| B14 모델 호출 원장 | 90일 | SQLite 원장에 정리·삭제 코드가 없습니다. | 90일 만료·삭제 작업을 구현합니다. |
+| B14 모델 호출 원장 | 주제 참조(≤128자)·모델 id·토큰 수·비용. 프롬프트·응답·헤더·쿠키·IP는 기록하지 않음. `/opt/padiem/b14/ledger/b14-call-ledger.db` | 저장소에 90일 정리 코드 추가; 컴2 timer 연결은 배포 때 적용 | `apps/korean-ai-platform/migrations/0001_b14_model_call_ledger.sql:13,17-57`, `apps/korean-ai-platform/app/pilot/call_ledger_retention.py` |
 | Chat 화면 캡처·`expires_at` 데이터 | 화면 캡처 90일, 임시 데이터는 만료 시각 뒤 지체 없이 삭제 | 서비스 기록·만료 속성은 확인했지만 실제 자동 정리 경로는 확인하지 못했습니다. | 만료 작업과 삭제 결과를 검증합니다. |
 | 북AI 계정 기록 | 삭제 요청 시 서비스 이용 즉시 차단, 원본 지체 없이 삭제 | 현재 계정 기록은 삭제 표시 방식이며 실제 원본 파기 시점은 확인되지 않았습니다. | 원본 파기 경로와 백업 순환을 연결합니다. |
 | 공통 계정·러브트리 삭제 | 계정·이용자 콘텐츠는 지체 없이 파기 | 공통 Chat 계정 전체 탈퇴와 러브트리 워크스페이스·계정 삭제 경로가 코드에서 확인되지 않았습니다. CGI에는 계정 삭제 경로가 있으나 법정보관 거래자료 분리 여부는 운영 점검이 필요합니다. | 서비스별 삭제 경로와 법정 보관 자료 분리를 구현·확인합니다. |
@@ -206,7 +206,7 @@ HTML에 그런 스크립트가 없는지 브라우저로 확인해야 합니다.
 |---|---|---|---|
 | Chat 접속 기록(uvicorn access) | 쿼리 제거된 요청 경로만 기록. 1회용 인증 코드는 제외하고 IP·사용자 식별자·본문은 기록하지 않음. journald로 출력 | 저장소 밖 journald 만료 설정은 명시적으로 확인하지 못함. 법정 로그 범주가 아닌 오류·접근 이벤트에는 90일 정책 기준 적용 | `apps/padiem-chat/app/access_log.py:1-25`, `deploy/host-com2/chat/padiem-chat-com2.service:28-29`; 운영 반영 필요 표 |
 | B14 서비스 구조 로그 | stdout, journald 및 `/opt/padiem/b14/logs` 파일 | COM2 `/etc/logrotate.d/padiem-b14`: 일일 회전, 7세대, 50M 상한. journald의 명시적 만료 설정은 확인되지 않음 | COM2 읽기 전용 확인. 파일 보관 정책 7일, journald는 90일 정책 기준 적용 |
-| B14 모델 호출 원장 | 주제 참조(≤128자)·모델 id·토큰 수·비용. 프롬프트·응답·헤더·쿠키·IP는 기록하지 않음. `/opt/padiem/b14/ledger/b14-call-ledger.db` | SQLite 정리·삭제 코드 없음. 정책 기준 90일 | `apps/korean-ai-platform/migrations/0001_b14_model_call_ledger.sql:13,17-57`, `apps/korean-ai-platform/app/pilot/call_ledger_store.py`(삭제 코드 0건) |
+| B14 모델 호출 원장 | 주제 참조(≤128자)·모델 id·토큰 수·비용. 프롬프트·응답·헤더·쿠키·IP는 기록하지 않음. `/opt/padiem/b14/ledger/b14-call-ledger.db` | 저장소에 90일 정리 코드 추가; 컴2 timer 연결은 배포 때 적용 | `apps/korean-ai-platform/migrations/0001_b14_model_call_ledger.sql:13,17-57`, `apps/korean-ai-platform/app/pilot/call_ledger_retention.py` |
 | 앱 실행 결과 출력(OutputStore) | 작업 결과 바이트·미리보기, 서버 임시 디렉터리 | 기본 7일, 만료분 자동 삭제 | `packages/padiem-ai-core/padiem_ai_core/output_store.py:7-8,33,50-63` |
 | Chat 로컬 백업 | COM2 로컬 스냅샷 | 코드 기본 7일치. 실제 Chat 타이머 설치 상태는 확인되지 않음 | `deploy/host-com2/chat/padiem-chat-com2-backup.service`, `backup.py` 및 타이머 파일 |
 | 큐 로컬 백업 | COM2 로컬 스냅샷 | 기본·실제 환경 해석값 7일치. `MESH_QUEUE_BACKUP_KEEP` 별도 값은 현재 환경 파일에서 확인되지 않음 | `apps/padiem-mesh-queue/deploy/backup.sh`, `docs/operations/COM2_EXECUTOR_QUEUE_SWITCH_20261030.md`; COM2 읽기 전용 확인 |
