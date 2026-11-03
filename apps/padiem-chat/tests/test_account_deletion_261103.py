@@ -29,13 +29,14 @@ import httpx
 import pytest
 
 from app.account_deletion import (
-    _INTENTIONALLY_PRESERVED_USER_KEYED_TABLES,
+    _IDENTITY_SCRUBBED_USER_KEYED_TABLES,
     _USER_KEYED_TABLES,
 )
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.history import D1HistoryStore, _password_user_id, _user_id
 from app.main import create_app
+from app.pc_device_pairing_store import D1PcPairingStore
 
 from test_6446_account_isolation_sweep import apply_all_migrations
 
@@ -291,21 +292,24 @@ def seed_db():
                 )
             except sqlite3.Error as exc:
                 raise AssertionError(f"seeding {table} failed: {exc}; columns={names}") from exc
-    # Migration 047 explicitly retains dispatch rows for replay prevention.
-    # Seed one for each account so the deletion test proves that retention.
+    # Migration 047 explicitly retains dispatch rows for replay prevention,
+    # and the deletion now keeps the row while removing the account from it.
+    # Seed one for each account so the tests prove both halves.
     for name, user in (("deleter", accounts["deleter"]), ("other", accounts["other"])):
         suffix = name
         db.conn.execute(
             "INSERT INTO oracle_mesh_dispatch (dispatch_id, user_id, run_id, command_id, "
             "tool_request_ref, request_id, revision_ref, request_fingerprint, account_ref, "
-            "workspace_ref, device_id, node_ref, root_ref, path_relative, file_path, state, "
-            "expires_at, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "workspace_ref, device_id, node_ref, root_ref, path_relative, file_path, kind, "
+            "command_text, state, expires_at, created_at) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 "dispatch-" + suffix, user, "run-" + suffix, "command-" + suffix,
                 "tool-" + suffix, "request-" + suffix, "revision-" + suffix,
                 _sha("fingerprint-" + suffix)(user), "account-" + suffix, "workspace-" + suffix,
                 "device-" + suffix, "node-" + suffix, "root-" + suffix, "file.txt",
-                "C:/file.txt", "consumed", "2026-11-04T00:00:00Z", now,
+                "C:/file.txt", "command", "echo hello",
+                "consumed", "2026-11-04T00:00:00Z", now,
             ),
         )
     return db, accounts
@@ -397,9 +401,9 @@ def test_the_route_never_names_a_table_the_schema_does_not_have():
     assert "user_id" not in {
         column["name"] for column in db.conn.execute("PRAGMA table_info(mesh_device_drives)").fetchall()
     }
-    assert ("oracle_mesh_dispatch", "user_id = ?") in _INTENTIONALLY_PRESERVED_USER_KEYED_TABLES
+    assert ("oracle_mesh_dispatch", "user_id = ?") in _IDENTITY_SCRUBBED_USER_KEYED_TABLES
     assert ("oracle_mesh_dispatch", "user_id = ?") not in _USER_KEYED_TABLES
-    for table, where in (*_USER_KEYED_TABLES, *_INTENTIONALLY_PRESERVED_USER_KEYED_TABLES):
+    for table, where in (*_USER_KEYED_TABLES, *_IDENTITY_SCRUBBED_USER_KEYED_TABLES):
         assert table in tables, table
         key = _where_column(table, where)
         if key is None:
@@ -431,8 +435,22 @@ def test_successful_deletion_clears_every_surveyed_table_and_keeps_the_other_use
         assert user_count(db, table, where, other) == before["other"][(table, where)], table
     remaining = sorted(row["id"] for row in db.conn.execute("SELECT id FROM users").fetchall())
     assert uid not in remaining
-    assert user_count(db, "oracle_mesh_dispatch", "user_id = ?", uid) == 1
-    assert user_count(db, "oracle_mesh_dispatch", "user_id = ?", other) == 1
+    # Replay-prevention rows stay — one per account — but the deleting
+    # account's row no longer names the account or the PC work behind it.
+    assert user_count(db, "oracle_mesh_dispatch", "user_id = ?", uid) == 0
+    assert db.conn.execute(
+        "SELECT COUNT(*) AS n FROM oracle_mesh_dispatch"
+    ).fetchone()["n"] == 2
+    _assert_dispatch_scrubbed(
+        _dispatch(db, "dispatch-deleter"),
+        run_id="run-deleter",
+        fingerprint=_sha("fingerprint-deleter")(uid),
+        state="consumed",
+    )
+    other_dispatch = _dispatch(db, "dispatch-other")
+    assert other_dispatch["user_id"] == other
+    assert other_dispatch["account_ref"] == "account-other"
+    assert other_dispatch["command_text"] == "echo hello"
     assert set(remaining) == {other, accounts["central"], accounts["role"]}
     # The audit line keeps the time and the id hash only — never the email.
     audit = db.conn.execute("SELECT * FROM account_deletion_audit").fetchall()
@@ -443,6 +461,128 @@ def test_successful_deletion_clears_every_surveyed_table_and_keeps_the_other_use
     serialized = repr(row)
     assert DELETER_EMAIL not in serialized and "@" not in serialized
 
+
+
+# ---------------------------------------------------------------------------
+# (j) Replay-prevention dispatch rows stay, without the account in them.
+# ---------------------------------------------------------------------------
+
+
+def _dispatch(db, dispatch_id):
+    row = db.conn.execute(
+        "SELECT * FROM oracle_mesh_dispatch WHERE dispatch_id = ?", (dispatch_id,)
+    ).fetchone()
+    return dict(row) if row is not None else None
+
+
+def _assert_dispatch_scrubbed(row, *, run_id, fingerprint, state):
+    """One random token replaces every identifier; paths and body are gone."""
+    assert row is not None
+    assert row["user_id"].startswith("deleted:")
+    assert row["account_ref"] == row["user_id"]
+    assert row["workspace_ref"] == row["user_id"]
+    assert row["device_id"] == row["user_id"]
+    assert row["node_ref"] == row["user_id"]
+    assert row["root_ref"] == row["user_id"]
+    assert row["binding_ref"] == row["user_id"]
+    assert row["path_relative"] == "deleted"
+    assert row["file_path"] == "deleted"
+    assert row["evidence_ref"] is None
+    assert row["command_text"] is None
+    # The replay-prevention keys are byte-for-byte untouched.
+    assert row["run_id"] == run_id
+    assert row["request_fingerprint"] == fingerprint
+    assert row["state"] == state
+
+
+_PENDING_DISPATCH_INSERT = (
+    "INSERT INTO oracle_mesh_dispatch (dispatch_id, user_id, run_id, command_id, "
+    "tool_request_ref, request_id, revision_ref, request_fingerprint, account_ref, "
+    "workspace_ref, device_id, node_ref, root_ref, path_relative, file_path, kind, "
+    "command_text, nonce_sha256, state, expires_at, created_at) "
+    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+)
+
+
+def _seed_pending_dispatch(db, user, *, dispatch_id, run_id, nonce=None):
+    db.conn.execute(
+        _PENDING_DISPATCH_INSERT,
+        (
+            dispatch_id, user, run_id, "command-" + run_id, "tool-" + run_id,
+            "request-" + run_id, "revision-" + run_id, _sha(run_id)(user),
+            "account:seed", "workspace:seed", "device:seed", "node:seed",
+            "root:seed", "notes.md", "C:/Users/seed/notes.md", "command",
+            "dir C:/Users/seed", nonce, "pending", "2026-11-05T00:00:00Z",
+            "2026-11-03T00:00:00Z",
+        ),
+    )
+
+
+def test_the_queue_cleanup_makes_dispatch_rows_anonymous_and_keeps_replay_prevention():
+    db, accounts = seed_db()
+    uid = accounts["deleter"]
+    assert asyncio.run(
+        D1PcPairingStore(db).delete_account_pc_data(user_id=uid)
+    ) is True
+    row = _dispatch(db, "dispatch-deleter")
+    _assert_dispatch_scrubbed(
+        row,
+        run_id="run-deleter",
+        fingerprint=_sha("fingerprint-deleter")(uid),
+        state="consumed",
+    )
+    # The other account's row is untouched, command body included.
+    other_row = _dispatch(db, "dispatch-other")
+    assert other_row["user_id"] == accounts["other"]
+    assert other_row["account_ref"] == "account-other"
+    assert other_row["command_text"] == "echo hello"
+    assert other_row["file_path"] == "C:/file.txt"
+    # Replay prevention survives: the same run cannot be staged again under the
+    # scrubbed identity, because 047's run-scope index still holds the row.
+    with pytest.raises(sqlite3.IntegrityError):
+        _seed_pending_dispatch(
+            db, row["user_id"], dispatch_id="dispatch-replay", run_id="run-deleter"
+        )
+
+
+def test_a_deleted_accounts_queued_command_never_runs_and_a_claimed_one_still_lands():
+    db, accounts = seed_db()
+    uid = accounts["deleter"]
+    _seed_pending_dispatch(db, uid, dispatch_id="dispatch-queued", run_id="run-queued")
+    _seed_pending_dispatch(
+        db, uid, dispatch_id="dispatch-claimed", run_id="run-claimed", nonce="a" * 64
+    )
+    assert asyncio.run(
+        D1PcPairingStore(db).delete_account_pc_data(user_id=uid)
+    ) is True
+
+    queued = _dispatch(db, "dispatch-queued")
+    # Never seen by an executor: it must not be handed out for an account that
+    # no longer exists, so it leaves the pending set entirely.
+    assert queued["state"] == "failed"
+    assert queued["termination"] == "cancelled"
+    _assert_dispatch_scrubbed(
+        queued,
+        run_id="run-queued",
+        fingerprint=_sha("run-queued")(uid),
+        state="failed",
+    )
+
+    claimed = _dispatch(db, "dispatch-claimed")
+    # Already handed out: the result can still land through the existing nonce
+    # gate, so the state stays pending and only the termination says stop.
+    assert claimed["state"] == "pending"
+    assert claimed["termination"] == "cancelled"
+    assert claimed["nonce_sha256"] == "a" * 64
+    _assert_dispatch_scrubbed(
+        claimed,
+        run_id="run-claimed",
+        fingerprint=_sha("run-claimed")(uid),
+        state="pending",
+    )
+    assert db.conn.execute(
+        "SELECT COUNT(*) AS n FROM oracle_mesh_dispatch WHERE state = 'pending'"
+    ).fetchone()["n"] == 1
 
 
 def test_com2_queue_cleanup_runs_before_chat_batch_and_skips_pc_tables():
@@ -483,6 +623,8 @@ def test_com2_queue_cleanup_runs_before_chat_batch_and_skips_pc_tables():
         assert db.conn.execute(
             f"SELECT COUNT(*) AS n FROM {table} WHERE user_id = ?", (uid,)
         ).fetchone()["n"] == 1
+    # Dispatch rows belong to the queue DB on COM2, so the Chat batch leaves
+    # them to the queue cleanup; this row still names the account here.
     assert user_count(db, "oracle_mesh_dispatch", "user_id = ?", uid) == 1
 
 

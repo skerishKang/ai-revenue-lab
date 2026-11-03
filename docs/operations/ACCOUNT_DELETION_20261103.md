@@ -24,14 +24,15 @@ Cloudflare D1 경로에서는 아래 PC 테이블이 Chat D1 안에 있다. COM2
 | 로컬 D1 에뮬레이터(`d1_sqlite.py`) | 켬 | `apps/padiem-chat/app/d1_sqlite.py:39` |
 | 마이그레이션 001 | 스크립트 안에 `PRAGMA foreign_keys = ON` 포함(연결 상태를 바꿈) | `migrations/001_auth_history.sql:5` |
 
-결론: ON DELETE CASCADE 선언은 문서일 뿐 실행 보장이 없으므로, 보존 대상으로
-분류한 oracle_mesh_dispatch 외 사용자 테이블을 명시 삭제한다. D1은 PC 테이블과
+결론: ON DELETE CASCADE 선언은 문서일 뿐 실행 보장이 없으므로, 재생 방지
+기록인 oracle_mesh_dispatch를 뺀 사용자 테이블을 명시 삭제한다. dispatch 행은
+지우지 않고 계정을 가리키는 칸만 덮어쓴다(2.4절). D1은 PC 테이블과
 presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한 뒤 Chat batch를
 실행한다. 각 DB 안에서는 자식→부모 순서이며 users 행은 Chat batch의 마지막이다.
 
 ## 2. 사용자 데이터 테이블 전수 조사 (migrations 001~093)
 
-총 106개 테이블 중 사용자 키를 가진 살아있는 테이블은 63개다. 그중 62개는 경로가 지우고, oracle_mesh_dispatch는 재생 방지 기록으로 의도적으로 보존한다.
+총 106개 테이블 중 사용자 키를 가진 살아있는 테이블은 63개다. 그중 62개는 경로가 지우고, oracle_mesh_dispatch는 재생 방지에 필요한 행만 남기고 계정 식별 칸은 지운다(2.4절).
 조사 방법: 93개 마이그레이션 전체에서 `CREATE TABLE` 본문의 사용자 키 컬럼
 (`user_id`·`member_id`·`owner_id`·`product_user_id`)을 추출. `_next`·
 `_rebuilt_*` 그림자 테이블은 각 마이그레이션이 끝나기 전에 rename/drop되므로
@@ -116,7 +117,29 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 |---|---|
 | users | `DELETE FROM users WHERE id = ?` — 배치의 마지막 문 |
 | account_deletion_audit | 마이그레이션 092. 같은 배치에서 `INSERT` 1행(시각 + 사용자 id SHA-256 해시) |
+| oracle_mesh_dispatch | 행은 남긴다. 같은 배치에서 먼저 `state`/`termination`을 정리하고, `user_id`·`account_ref`·`workspace_ref`·`device_id`·`binding_ref`·`node_ref`·`root_ref`를 삭제 1회용 무작위 `deleted:<32hex>` 토큰으로, `path_relative`·`file_path`를 `deleted`로 덮고 `evidence_ref`·`command_text`를 NULL로 만든다(2.4절) |
 | bookai_records | 공통 로그인 subject로 지운다. 배치 전에 `users.provider_subject`(공유 로그인 계정은 `'shared:'+subject`, `history.upsert_shared_user`)와 계정 링크 캐시(`auth_account_link_cache.owner_id`)를 읽어 `DELETE FROM bookai_records WHERE subject = ?`를 같은 배치에 넣는다 |
+
+### 2.4 탈퇴 뒤 남는 oracle_mesh_dispatch 행의 칸 분류 (2026-11-03 CTO 결정)
+
+행은 남기되 사람을 가리키는 값은 되돌릴 수 없게 지운다. 구현은
+`pc_device_pairing_store.oracle_mesh_dispatch_identity_cleanup_statements`이며,
+D1 경로는 Chat batch 안에서, COM2 경로는 큐 DB 정리
+(`D1PcPairingStore.delete_account_pc_data`)에서 같은 문장을 실행한다.
+
+| 분류 | 칸 | 탈퇴 시 처리 |
+|---|---|---|
+| 재생 방지에 필요 | `dispatch_id`, `run_id`, `tool_request_ref`, `tool_call_ref`, `request_fingerprint`, `nonce_sha256`, `claimed_until`, `state`, `result_sha256`, `result_bytes`, `termination`, `exit_code`, `created_at`, `expires_at` | 그대로 둔다. 047·063의 고유 인덱스가 같은 run·같은 도구 호출의 재등록을 계속 거부한다 |
+| 사람을 가리킴 | `user_id`, `account_ref`, `workspace_ref`, `device_id`, `binding_ref`, `node_ref`, `root_ref` | 삭제 1회당 무작위 128비트 `deleted:<hex>` 토큰 하나로 덮는다. 원래 id로 재계산할 수 없고 다른 계정과 겹치지 않는다 |
+| 명령·경로 본문 | `command_text`, `evidence_ref` | NULL |
+| 경로(NOT NULL) | `path_relative`, `file_path` | `deleted` 고정값 |
+| 실행 상관 참조 | `command_id`, `request_id`, `revision_ref` | 그대로 둔다(계정을 가리키지 않는 상관값) |
+
+아직 실행되지 않은 `pending` 행은 실행 대상에서 뺀다. executor가 한 번도 받지
+않은 행(`nonce_sha256 IS NULL`)은 `state='failed'`, `termination='cancelled'`로
+바꿔 poll이 건네지 않게 하고, 이미 받아 간 행(`nonce_sha256` 있음)은
+`state='pending'`을 유지한 채 `termination='cancelled'`만 써서 결과 제출이 기존
+nonce 검사로 정상 착지하게 한다(#5895 취소와 같은 규칙).
 
 ## 3. 이번에 지우지 않은 것과 다음 단계 제안
 
@@ -131,7 +154,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | R2 파일 객체(대화 첨부·프로젝트 원본·생성문서) | Chat DB의 참조 행은 지움. R2 객체 자체는 남음 | 객체 TTL·즉시 삭제 정책 결정(`workspace_storage.py`의 생성문서 30일 TTL은 참조 행 기준) |
 | 외부 백업(Cloudflare R2 offsite, 매일 암호화 전체 백업) | 탈퇴 사용자 데이터가 최근 백업에 남음 | 백업 보관 기간 정책을 대표 결정으로 확정(`deploy/host-com2/offsite-backup/`) |
 | 이용자 PC의 `.padiem-backup` | 이용자 PC에 남음(경로가 닿지 않는 영역) | 탈퇴 안내 문구로 이용자가 직접 지우도록 안내(이미 화면 설명에 포함) |
-| oracle_mesh_dispatch | 의도적 보존 — 마이그레이션 047의 재생 방지 기록. 보관 기간은 대표 결정(개인정보처리방침 보관 기간) |
+| oracle_mesh_dispatch | **해결됨 (2026-11-03)** — 행은 재생 방지(047)를 위해 남기고, `user_id`·`account_ref`·기기·경로·명령 본문 등 사람을 가리키는 칸은 지운다(2.4절). 남은 행으로는 누구의 것인지 알 수 없다 | 보관 기간은 대표 결정(개인정보처리방침). 지금은 만료 행도 지우지 않는다 |
 | bookai_records(082) | **해결됨 (2026-11-03)** — 매핑은 이미 있었다: 공유 로그인으로 만든 Chat 계정은 `provider_subject='shared:'+subject`로 저장된다(`history.upsert_shared_user`). 1단계가 이 매핑을 못 본 이유는 세션 해제가 링크 캐시 행을 먼저 지우기 때문이며, 이제 배치 전에 읽는다. 매핑이 없는 계정(구글 단독 로그인)은 지울 subject가 없어 그대로 남는다 | 남은 것: 기기에만 저장된 북AI 기록(브라우저 저장소)은 서버가 지울 수 없다 — 탈퇴 안내 문구로 이용자가 지운다 |
 | MeshCentral 장치·에이전트 | Chat/COM2 큐 DB의 사용자 연결 행은 지워짐. presence는 탈퇴 사용자만 제거하고 남은 소유자가 없으면 행 삭제 | 운영 영역: 장치 문서·에이전트 제거는 별도 절차 |
 
@@ -142,11 +165,12 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 못했습니다" — 는 이 경로가 채운다. 법률 문서 레인에서 다음 문구로 갱신해야
 한다: "계정 탈퇴는 설정 > 계정 탈퇴에서 본인 이메일을 다시 입력해 실행할 수
 있으며, Chat DB의 사용자 데이터와 계정에 저장된 북AI 기록은 즉시 삭제된다. 기기에만 저장된 북AI 기록, 공통 로그인 계정·외부
-백업·이용자 PC 백업은 남는다(보관 기간은 대표 결정)."
+백업·이용자 PC 백업은 남는다(보관 기간은 대표 결정). PC 명령 중복 실행 방지
+기록은 누구의 것인지 알 수 없게 처리한 뒤 남는다."
 
 ## 5. 시험
 
-apps/padiem-chat/tests/test_account_deletion_261103.py — 11건:
+apps/padiem-chat/tests/test_account_deletion_261103.py — 18건:
 
 - (a) 정상 탈퇴: 표의 모든 테이블에서 그 사용자 행 0, 다른 사용자 행은 삭제 전 스냅샷과 동일. 사용자 1명당 표의 모든 테이블에 1행을 넣고 시작한다(platform_admin_roles는 권한 표식이라 제외).
 - (b) 이메일 불일치 → 400, 아무것도 지워지지 않음
@@ -157,7 +181,7 @@ apps/padiem-chat/tests/test_account_deletion_261103.py — 11건:
 - (g) 마이그레이션 092 재적용(멱등)
 - (h) Mesh 기기 소유자 목록에서 탈퇴자만 제거하고 다른 계정 참조 보존
 - (i) COM2에서는 큐 정리 후 Chat batch가 실행되고 큐 실패 시 Chat DB 데이터는 유지
-- (j) oracle_mesh_dispatch 재생 방지 행은 탈퇴 뒤에도 보존
+- (j) oracle_mesh_dispatch 재생 방지 행은 탈퇴 뒤에도 남고, 원래 `user_id`·`account_ref`·기기·경로·명령 본문은 0건이다. 같은 run 재등록은 고유 인덱스가 계속 거부하고, 미실행 pending 행은 쌓이지 않으며, 이미 넘겨진 행의 결과 제출은 nonce로 착지한다
 
 스키마 드리프트 방지 시험이 포함되어 있다: 경로가 지우는 표의 테이블·키 컬럼이
 실제 스키마에 존재하지 않으면 수집 시점에 실패한다. `pc_install_tokens`도 사용자

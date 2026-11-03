@@ -14,7 +14,8 @@ WHY EVERY DELETE IS EXPLICIT
     declared ``ON DELETE CASCADE`` is documentation, not enforcement here.
     Each database is cleaned with one atomic batch. D1 has one Chat batch;
     COM2 cleans its PC queue batch before the Chat batch. Replay-prevention
-    rows in oracle_mesh_dispatch are intentionally retained.
+    rows in oracle_mesh_dispatch are retained without the account in them: the
+    row stays, every column that names the person is overwritten.
 
 THE ONE CONFIRMATION
     Deleting an account is irreversible destruction, so the route requires the
@@ -41,7 +42,10 @@ from .auth_routes import (
     current_user_id,
 )
 from .history import _row_to_dict
-from .pc_device_pairing_store import mesh_presence_account_cleanup_statements
+from .pc_device_pairing_store import (
+    mesh_presence_account_cleanup_statements,
+    oracle_mesh_dispatch_identity_cleanup_statements,
+)
 
 #: A shared-login Chat account stores its common-login subject as
 #: ``provider_subject = 'shared:' + subject`` (``history.upsert_shared_user``).
@@ -171,8 +175,11 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("auth_account_link_cache", "product_user_id = ?"),
 )
 
-# Replay-prevention history is intentionally retained even though its schema has user_id.
-_INTENTIONALLY_PRESERVED_USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
+#: Replay-prevention history keeps its rows and loses the person: the batch
+#: overwrites every identifying column instead of deleting the dispatch, because
+#: that row's presence is what refuses a replayed run or tool call (047·063).
+#: ``user_id = ?`` here is the selector the cleanup statements use.
+_IDENTITY_SCRUBBED_USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("oracle_mesh_dispatch", "user_id = ?"),
 )
 _PC_QUEUE_USER_TABLES = frozenset({
@@ -204,8 +211,13 @@ def _delete_batch(
         db.prepare("DELETE FROM bookai_records WHERE subject = ?").bind(subject)
         for subject in bookai_subjects
     )
-    # Presence lives with the PC queue on COM2 and stays in this batch on D1.
+    # Presence and the dispatch rows live with the PC queue on COM2 and stay in
+    # this batch on D1. Dispatch rows are not deleted: they are made anonymous,
+    # because their presence is the replay protection itself.
     if include_pc_queue_data:
+        statements.extend(
+            oracle_mesh_dispatch_identity_cleanup_statements(db, user_id)
+        )
         statements.extend(mesh_presence_account_cleanup_statements(db, user_id))
     deleted_at = datetime.now(timezone.utc).isoformat()
     user_id_hash = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
