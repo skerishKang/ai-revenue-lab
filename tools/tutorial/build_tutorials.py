@@ -43,7 +43,14 @@ VIDEO_KEY_ENV = "PADIEM_TUTORIAL_MEDIA_BASE_URL"
 DEFAULT_MEDIA_BASE_URL = "https://tutorial-media.padiem.net"
 MEDIA_VERSION = "v20261103"
 MEDIA_SCENES = frozenset(
-    {"01-first-visit", "02-pc-connection", "04-bookai"}
+    {
+        "01-first-visit",
+        "02-pc-connection",
+        "03-document-work",
+        "04-bookai",
+        "05-account-deletion",
+        "07-external-ai-connect",
+    }
 )
 
 SCENARIOS = (
@@ -429,6 +436,15 @@ def render(document: dict) -> str:
         if account:
             lines.append(f"- 계정 {account}단계는 {PLACEHOLDER}로 두고 같은 키에 이어 찍습니다.")
         lines.append("")
+    elif document["key"] in MEDIA_SCENES:
+        lines.extend(
+            [
+                f"- 영상: `asset://{MEDIA_KEY_ROOT}/{document['key']}/video.webm`",
+                f"- 자막: `asset://{MEDIA_KEY_ROOT}/{document['key']}/captions.vtt`",
+                "- 촬영 범위: 시험 계정으로 계정 단계 전체.",
+                "",
+            ]
+        )
     else:
         lines.extend(
             [
@@ -697,7 +713,7 @@ def render_page(document: dict) -> str:
                 f'        <p class="chat-help-detail">계정 {_format_numbers(document["account"])}단계는 '
                 f'{escape(PLACEHOLDER)}로 두고 같은 자리에 이어 붙입니다.</p>'
             )
-    else:
+    elif media is None:
         lines.append(
             '        <p class="chat-help-detail">아직 촬영하지 않았습니다 — 이 시나리오는 계정 '
             '단계로만 이루어져 있습니다.</p>'
