@@ -334,3 +334,18 @@ def test_non_owner_tenant_member_cannot_grant_or_revoke_pc_consent():
     ).withdrawn_at is None
 
 
+
+
+def test_resolve_connector_owner_scope_names_only_the_session_owner():
+    # 2026-11-04: the scope response carries the calling session's own
+    # canonical subject id so the Chat side can join the ownership map on the
+    # usr_… axis. A foreign session id resolves nothing, so no other user's
+    # subject can ever appear in this response.
+    fake, records, canonical, storage = harness()
+    result = call("resolve_connector_owner_scope", fake, {"session_id": SESSION_ID})
+    assert result["ok"] is True
+    scope = result["scope"]
+    assert scope["owner_subject_id"] == SUBJECT
+    # Backward compatible: the established fields keep their reviewed values.
+    assert scope["account_ref"] == "account.shared.test"
+    assert scope["workspace_ref"] == "workspace.shared.test"

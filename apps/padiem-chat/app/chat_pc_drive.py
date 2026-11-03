@@ -537,12 +537,19 @@ async def _check_mesh_grant(
     account_ref = scope.get("account_ref") if isinstance(scope, dict) else None
     if not isinstance(account_ref, str) or not account_ref:
         return _mesh_grant_denied("owner_scope_account_unavailable")
+    # 2026-11-04: the scope carries the session owner's own canonical subject
+    # id — the usr_… axis the ownership map rows name. Prefer it for the map
+    # lookup; an older authority response without it keeps the account_ref
+    # first and the verified token-owner fallback below.
+    owner_subject_id = scope.get("owner_subject_id") if isinstance(scope, dict) else None
+    map_ref = (owner_subject_id if isinstance(owner_subject_id, str) and owner_subject_id
+               else account_ref)
     target = None
     try:
-        target = mesh_source.command_target(account_ref=account_ref, device_id=device_id)
+        target = mesh_source.command_target(account_ref=map_ref, device_id=device_id)
     except Exception:
         return _mesh_grant_denied("mesh_command_target_lookup_failed", denied_reason)
-    if target is None and owner_ref and owner_ref != account_ref:
+    if target is None and owner_ref and owner_ref != map_ref:
         # The connector token's owner is the identity the map rows name in the
         # product vocabulary; the scope read may carry a different ref form.
         try:
@@ -557,8 +564,8 @@ async def _check_mesh_grant(
         reason = "mesh_command_target_lookup_failed"
         if callable(matches_fn):
             try:
-                matches = matches_fn(account_ref=account_ref, device_id=device_id)
-                if not matches and owner_ref and owner_ref != account_ref:
+                matches = matches_fn(account_ref=map_ref, device_id=device_id)
+                if not matches and owner_ref and owner_ref != map_ref:
                     matches = matches_fn(account_ref=owner_ref, device_id=device_id)
                 reason = ("mesh_command_target_not_found" if not matches
                           else "mesh_command_target_not_unique")

@@ -97,6 +97,11 @@ class CanonicalIdentityEnrollmentConsentRPC:
             ).resolve_scope(subject_id=session.subject.subject_id, tenant_ref=session.tenant_id, now=now)
             return {"ok": True, "scope": {
                 "account_ref": scope.account_ref, "workspace_ref": scope.workspace_ref,
+                # 2026-11-04: the session owner's own canonical subject id (the
+                # usr_… axis the ownership maps key on). The caller supplies a
+                # session_id and the authority resolves that session, so only
+                # the session owner's subject can ever appear here.
+                "owner_subject_id": session.subject.subject_id,
             }}
         except ControlPlaneContractError as exc:
             return _enrollment_safe_error(exc)
