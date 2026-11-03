@@ -98,6 +98,7 @@ class GeneratedTutorials(unittest.TestCase):
             "storage-state",
             "레인",
             "세션",
+            "채트",
         )
         for name, text in self.text.items():
             for pattern in forbidden:
@@ -230,6 +231,17 @@ class CommittedPages(unittest.TestCase):
         self.assertIn("image:04-bookai/step-01.webp", stale)
         self.assertIn("orphan_image:99-extra/step-01.webp", stale)
         self.assertIn("orphan_page:99-extra.html", stale)
+
+    def test_the_published_pages_never_say_채트(self):
+        texts = {
+            path.name: path.read_text(encoding="utf-8")
+            for path in sorted(PAGES.glob("*.html"))
+        }
+        texts["README.md"] = (
+            REPO / "docs" / "help" / "tutorials" / "README.md"
+        ).read_text(encoding="utf-8")
+        for name, text in texts.items():
+            self.assertNotIn("채트", text, name)
 
     def test_the_external_ai_tutorial_keeps_the_pending_marker(self):
         help_text = HELP.read_text(encoding="utf-8")

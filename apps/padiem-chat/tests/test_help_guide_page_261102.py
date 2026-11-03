@@ -214,6 +214,18 @@ def test_the_page_carries_no_script_no_network_and_no_shout():
     assert '<link rel="stylesheet" href="./help.css" />' in HELP
 
 
+def test_the_chat_is_called_채팅_wherever_a_person_reads_it():
+    """One word for one thing: "채트" was the typo the audit found in the guide."""
+
+    for name, text in (
+        ("help.html", HELP),
+        ("locale.js", LOCALE),
+        ("index.html", INDEX),
+        ("install.html", (STATIC / "install.html").read_text(encoding="utf-8")),
+    ):
+        assert "채트" not in text, name
+
+
 def test_the_external_ai_section_matches_the_consent_screen():
     """The connect steps must name the screen and buttons the server serves."""
 
