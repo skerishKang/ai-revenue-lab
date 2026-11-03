@@ -37,6 +37,7 @@ from app.pilot.errors import (
 from app.pilot.redaction import redact_sensitive
 from app.pilot.call_ledger import (
     LedgerDraft,
+    declared_membership_tier,
     new_log_id,
     origin_from_headers,
     utc_now_iso,
@@ -887,12 +888,20 @@ async def _handle_alpha_chat(
     # no provider call, so it produces no execution record at all.
     ledger = None
     try:
+        origin = origin_from_headers(origin_headers)
+        # Record the grade the routing actually applied: the validated body
+        # tier, else the header fallback, else the Free default that
+        # ``ensure_route_secrets`` and ``resolve_route`` applied for an
+        # undeclared grade. Record and routing must not disagree.
+        origin["membership_tier"] = (
+            declared_membership_tier(origin, b14_opts) or "free"
+        )
         ledger = LedgerDraft(
             log_id=new_log_id(), request_id=request_id,
             endpoint="/api/pilot/v1/chat/completions",
             protocol=_protocol_for(decision.platform_provider_id, candidate.upstream_model),
             streaming=False, requested_model_id=model_id, started_at=utc_now_iso(),
-            origin=origin_from_headers(origin_headers),
+            origin=origin,
         )
     except Exception as ledger_exc:
         skipped(request_id, ledger_exc)
@@ -1381,11 +1390,18 @@ async def _handle_user_credential_chat(
 
     ledger: LedgerDraft | None = None
     try:
+        origin = origin_from_headers(origin_headers)
+        # This lane applies no grade of its own: no routing, no roster. The
+        # declared tier is recorded when one arrived, and the row stays unset
+        # when none did — there is no server-applied default to observe here.
+        origin["membership_tier"] = declared_membership_tier(
+            origin, body.get("business14")
+        )
         ledger = LedgerDraft(
             log_id=new_log_id(), request_id=request_id,
             endpoint=request.url.path, protocol="chat/completions",
             streaming=False, requested_model_id=model_id, started_at=utc_now_iso(),
-            origin=origin_from_headers(origin_headers),
+            origin=origin,
         )
     except Exception as ledger_exc:
         skipped(request_id, ledger_exc)

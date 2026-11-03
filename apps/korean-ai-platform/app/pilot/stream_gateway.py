@@ -28,6 +28,7 @@ from app.pilot.call_ledger import (
     OUTCOME_ABORTED,
     OUTCOME_ERROR,
     OUTCOME_SUCCESS,
+    declared_membership_tier,
     new_log_id,
     origin_from_headers,
     utc_now_iso,
@@ -619,10 +620,17 @@ async def _user_credential_stream_preview(
 
     ledger: LedgerDraft | None = None
     try:
+        origin = origin_from_headers(request.headers)
+        # This lane applies no grade of its own: no routing, no roster. The
+        # declared tier is recorded when one arrived, and the row stays unset
+        # when none did — there is no server-applied default to observe here.
+        origin["membership_tier"] = declared_membership_tier(
+            origin, body.get("business14")
+        )
         ledger = LedgerDraft(
             log_id=new_log_id(), request_id=request_id, endpoint=request.url.path,
             protocol=protocol, streaming=True, requested_model_id=body["model"],
-            started_at=utc_now_iso(), origin=origin_from_headers(request.headers),
+            started_at=utc_now_iso(), origin=origin,
         )
     except Exception as ledger_exc:
         skipped(request_id, ledger_exc)
@@ -778,13 +786,20 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
         # draft stays open across candidates so both survive into one record.
         ledger = None
         try:
+            origin = origin_from_headers(request.headers)
+            # Record the grade the routing actually applied: the validated
+            # body tier, else the header fallback, else the Free default
+            # ``resolve_route`` applied for an undeclared grade.
+            origin["membership_tier"] = (
+                declared_membership_tier(origin, body.get("business14")) or "free"
+            )
             ledger = LedgerDraft(
                 log_id=new_log_id(), request_id=request_id, endpoint=request.url.path,
                 protocol=_protocol_for(decision.platform_provider_id,
                                        decision.selected_upstream_model,
                                        tools_declared=tools_declared),
                 streaming=True, requested_model_id=body["model"],
-                started_at=utc_now_iso(), origin=origin_from_headers(request.headers),
+                started_at=utc_now_iso(), origin=origin,
             )
         except Exception as ledger_exc:
             skipped(request_id, ledger_exc)

@@ -34,6 +34,7 @@ a credential is which side of that boundary it came from: ``pool`` or ``user``.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import re
@@ -617,6 +618,36 @@ def origin_from_headers(headers: Any) -> dict[str, str | None]:
         "client_version": get("x-padiem-client-version"),
         "session_ref": get("x-padiem-session-ref"),
     }
+
+
+# The closed product-grade vocabulary the request contract carries. The
+# gateway validator and Core's ``B14RoutingOptions`` already bound the body
+# value to it; the header fallback gets the same check here, so a tier
+# aggregate can only ever group the four grades or NULL.
+_PRODUCT_TIERS = frozenset({"free", "plus", "pro", "max"})
+
+
+def declared_membership_tier(
+    origin: Mapping[str, str | None], body_options: Any
+) -> str | None:
+    """The grade this request declared: the body's validated tier, else the header's.
+
+    ``business14.product_tier`` is the live sender — the calling product
+    resolves the server-authorized grade and Core carries it in the request
+    body. The ``x-padiem-tier`` header (``origin_from_headers``) remains the
+    fallback sender. A value outside the grade vocabulary is not recorded:
+    a malformed claim must not enter a column the tier aggregates group by.
+    """
+    tier = None
+    if isinstance(body_options, Mapping):
+        candidate = body_options.get("product_tier")
+        if isinstance(candidate, str) and candidate in _PRODUCT_TIERS:
+            tier = candidate
+    if tier is None:
+        candidate = (origin or {}).get("membership_tier")
+        if isinstance(candidate, str) and candidate in _PRODUCT_TIERS:
+            tier = candidate
+    return tier
 
 
 @dataclass
