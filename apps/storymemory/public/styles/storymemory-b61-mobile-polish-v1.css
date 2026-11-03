@@ -282,3 +282,38 @@ body.smr-theme-dark .memory-rail .sheet-close:hover { color: #fffdf8 !important;
     touch-action: manipulation;
   }
 }
+
+/* 2026-11-04: 떠 있는 책·자료·＋ 버튼과 아래 정보 줄의 겹침 정리.
+   버튼 높이(≈54px)+여유만큼 아래 정보 블록이 버튼 띠 아래로 내려가고,
+   한글 줄바꿈은 단어 단위로만 허용하며, 진행 줄(텍스트+막대)은 버튼 왼편
+  까지로 폭을 제한해 글자가 쪼개지거나 버튼에 가리지 않게 한다. */
+@media (max-width: 720px) {
+  #library .lib-bottom {
+    grid-template-columns: 1fr !important;
+    transform: translateY(40px);
+  }
+  #library .sel-progress {
+    flex-wrap: wrap;
+    row-gap: 5px;
+    margin-right: 168px;
+  }
+  #library #libProgressText {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    word-break: keep-all;
+  }
+  #library .sel-progress i { width: 64px; }
+  #library .sel-note {
+    word-break: keep-all;
+    max-width: 148px !important;
+  }
+  #library .library-reading-summary { word-break: keep-all; }
+}
+
+/* 2026-11-04: 360px 등 좁은 폭에서는 같은 콘텐츠가 위로 짧아져 버튼 띠와
+   다시 닿는다 — 하단 여백을 버튼 높이+간격만큼 더 늘리고, 자료 소개 줄을
+   버튼 왼편까지로 좁힌다. */
+@media (max-width: 374px) {
+  #library .lib-bottom { transform: translateY(96px); }
+  #library .sel-note { max-width: 110px !important; }
+}
