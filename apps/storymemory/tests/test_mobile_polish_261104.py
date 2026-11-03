@@ -125,6 +125,12 @@ def test_mobile_theme_touch_targets_and_dark_memory_contrast(base_url):
 
             page.locator("#openBook").click()
             page.locator("#index.active").wait_for()
+            entry_targets = _visible_button_boxes(
+                page,
+                "#index .back-btn, #index #resume, #index .testament-tab, #chapterDots button, "
+                "#prevChapter, #openChapter, #nextChapter",
+            )
+            assert all(box["width"] >= 44 and box["height"] >= 44 for box in entry_targets)
             page.locator("#index .volume").filter(has_text="사도행전").click()
             page.wait_for_function("!document.querySelector('#index').classList.contains('volume-transitioning')")
             for _ in range(8):
