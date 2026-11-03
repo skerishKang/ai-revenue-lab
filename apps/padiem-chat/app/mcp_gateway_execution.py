@@ -162,10 +162,13 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         if context.selection_offline or context.selected_device_id != device_id:
             return {"status": "unavailable", "code": "pc_offline",
                     "answer": "선택한 PC가 꺼져 있음"}
+        denial: list[str] = []
         if (not context.selected_confirmed or not context.tool_available
                 or context.execution_device_id != device_id
-                or not await _check_mesh_grant(request, session, device_id=device_id)):
-            raise ChatPCDriveError("chat_pc_target_unavailable", "이 토큰의 PC에 접근할 수 없습니다.", 403)
+                or not await _check_mesh_grant(request, session, device_id=device_id,
+                                               owner_ref=uid, denied_reason=denial)):
+            raise ChatPCDriveError("chat_pc_target_unavailable", "이 토큰의 PC에 접근할 수 없습니다.", 403,
+                                   cause=denial[0] if denial else None)
         run_id = _new_lane_run_id()
         label = "외부 AI 도구 요청: " + tool_name
         conversation_id = await store.record_chat_pc_drive_run(user_id=uid, run_id=run_id,
@@ -190,10 +193,13 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         return result
     context = await resolve_pc_work_context(request, owner_id=uid, workspace_id=workspace_id,
         session_id=session.session_id, selected_device_id=device_id)
+    denial: list[str] = []
     if (not context.selected_confirmed or not context.tool_available
             or context.execution_device_id != device_id
-            or not await _check_mesh_grant(request, session, device_id=device_id)):
-        raise ChatPCDriveError("chat_pc_target_unavailable", "이 토큰의 PC에 접근할 수 없습니다.", 403)
+            or not await _check_mesh_grant(request, session, device_id=device_id,
+                                           owner_ref=uid, denied_reason=denial)):
+        raise ChatPCDriveError("chat_pc_target_unavailable", "이 토큰의 PC에 접근할 수 없습니다.", 403,
+                               cause=denial[0] if denial else None)
     if not isinstance(bridge, B62EngineOrchestrationBridge) or not bridge.ready:
         raise ChatPCDriveError("chat_pc_files_unavailable", "PC 파일 도구를 현재 사용할 수 없습니다.")
     browser_context = None

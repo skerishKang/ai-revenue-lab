@@ -721,10 +721,14 @@ stage_queue_code() {
   [[ -d $source ]] || { say "QUEUE_SOURCE_MISSING PATH=$source"; return 1; }
   [[ -d $queue_root ]] || { say "QUEUE_ROOT_MISSING PATH=$queue_root"; return 1; }
   command -v -- rsync >/dev/null 2>&1 || { say 'QUEUE_RSYNC_MISSING'; return 1; }
+    # The installer owns backup.sh, health_check.sh and provision_service_secret.sh
+    # at the queue root (deploy/ in the tree). Excluding them keeps a code mirror
+    # from deleting the files the backup and health units execute.
   rsync -a --delete \
     --exclude /src --exclude /pc-outputs --exclude venv --exclude '__pycache__' \
     --exclude '*.sqlite3*' --exclude 'queue.env' --exclude 'service-secret.txt' \
     --exclude 'ownership-map.json' --exclude 'watch-read-secret.txt' \
+    --exclude /backup.sh --exclude /health_check.sh --exclude /provision_service_secret.sh \
     "$source/" "$queue_root/" || return 1
   # The rules the queue shares with Chat have one implementation: the modules are
   # linked into the mirror, never copied, exactly as the queue's installer does.

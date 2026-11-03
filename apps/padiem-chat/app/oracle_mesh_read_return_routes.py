@@ -410,6 +410,27 @@ class OracleMeshReturnSource:
         ]
         return dict(matches[0]) if len(matches) == 1 else None
 
+    def command_target_matches(
+        self, *, account_ref: str, device_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """Every command-capable row this account and optional pin select.
+
+        command_target collapses this to the single-row verdict, so a
+        refusal cannot say whether the grant row was missing or ambiguous.
+        The count is exactly that difference, and a diagnostic code needs it.
+        """
+        return [
+            row for row in self._rows
+            if row["command_exec"] is True
+            and row["account_ref"] == account_ref
+            and (
+                device_id is None
+                or row.get("device_id") == device_id
+                or row.get("device_id") is None
+                or row["node_ref"] == device_id
+            )
+        ]
+
     def command_target(
         self, *, account_ref: str, device_id: str | None = None,
     ) -> dict[str, Any] | None:
@@ -421,17 +442,7 @@ class OracleMeshReturnSource:
         is therefore never a command grant, and two competing rows stay a
         refusal rather than an arbitrary pick.
         """
-        matches = [
-            row for row in self._rows
-            if row["command_exec"] is True
-            and row["account_ref"] == account_ref
-            and (
-                device_id is None
-                or row.get("device_id") == device_id
-                or row.get("device_id") is None
-                or row["node_ref"] == device_id
-            )
-        ]
+        matches = self.command_target_matches(account_ref=account_ref, device_id=device_id)
         return dict(matches[0]) if len(matches) == 1 else None
 
     def device_hint_for(
