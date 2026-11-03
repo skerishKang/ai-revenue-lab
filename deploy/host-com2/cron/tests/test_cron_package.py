@@ -82,6 +82,30 @@ def render(profile, schedule=SCHEDULE):
     )
 
 
+def render_units(profile, schedule=SCHEDULE):
+    """Render one profile and return every unit file separately, keyed by name."""
+    work = f".cron-render-units-{os.getpid()}"
+    shutil.rmtree(HERE / work, ignore_errors=True)
+    script = "\n".join([
+        "set -euo pipefail",
+        "bash install-cron.sh --profile %s --schedule '%s' "
+        '--render-dir "%s/units" --app-root "%s/app" --apply' % (profile, schedule, work, work),
+        'for unit in "%s/units/"*.service "%s/units/"*.timer; do' % (work, work),
+        '  echo "===FILE:$(basename "$unit")==="',
+        '  cat "$unit"',
+        "done",
+    ])
+    result = bash_script(script)
+    units, current = {}, None
+    for line in result.stdout.splitlines():
+        if line.startswith("===FILE:") and line.endswith("==="):
+            current = line[len("===FILE:"):-len("===")]
+            units[current] = []
+        elif current:
+            units[current].append(line)
+    shutil.rmtree(HERE / work, ignore_errors=True)
+    return result, {name: "\n".join(lines) for name, lines in units.items()}
+
 class ShellPackaging(unittest.TestCase):
     def test_scripts_are_syntax_valid(self):
         for script in ("run-cron.sh", "install-cron.sh", "status-cron.sh"):
@@ -147,6 +171,38 @@ class ShellPackaging(unittest.TestCase):
         self.assertIn("Environment=CRON_PROFILE=production", service)
         self.assertNotIn("chat-staging", service)
         self.assertIn("Unit=padiem-chat-cron-com2.service", timer)
+
+    def test_the_purge_timer_triggers_the_purge_oneshot(self):
+        # 11-03: the purge timer template named @UNIT_NAME@ -- the automation
+        # tick -- so enabling it would have run app.local_cron every day and
+        # never purged an expired row.
+        result, units = render_units("production")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        purge = units["padiem-chat-expired-purge-com2.timer"]
+        self.assertIn("Requires=padiem-chat-expired-purge-com2.service", purge)
+        self.assertIn("Unit=padiem-chat-expired-purge-com2.service", purge)
+        directives = [
+            line for line in purge.splitlines()
+            if line.startswith(("Unit=", "Requires=", "Wants="))
+        ]
+        for line in directives:
+            self.assertNotIn("padiem-chat-cron-com2", line)
+        # The other direction stays intact: the tick timer never pulls the purge.
+        tick = units["padiem-chat-cron-com2.timer"]
+        self.assertIn("Unit=padiem-chat-cron-com2.service", tick)
+        self.assertNotIn("padiem-chat-expired-purge", tick)
+
+    def test_the_purge_units_follow_their_own_profile(self):
+        result, units = render_units("staging")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        service = units["padiem-chat-expired-purge-staging.service"]
+        self.assertIn("Environment=CRON_PROFILE=staging", service)
+        self.assertIn("run-expired-purge.sh", service)
+        self.assertIn(
+            "Unit=padiem-chat-expired-purge-staging.service",
+            units["padiem-chat-expired-purge-staging.timer"],
+        )
+        self.assertNotIn("chat-com2", service)
 
     def test_status_script_is_read_only(self):
         source = (HERE / "status-cron.sh").read_text(encoding="utf-8")

@@ -57,6 +57,7 @@ render() {
   local template=$1 destination=$2
   sed \
     -e "s|@PROFILE@|$PROFILE|g" \
+    -e "s|@PURGE_UNIT_NAME@|$PURGE_UNIT_NAME|g" \
     -e "s|@UNIT_NAME@|$UNIT_NAME|g" \
     -e "s|@APP_ROOT@|$app_root|g" \
     -e "s|@DATA_ROOT@|$DATA_ROOT|g" \

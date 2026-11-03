@@ -1,6 +1,6 @@
 [Unit]
 Description=PADIEM COM2 Chat expired-row purge timer (@PROFILE@)
-Requires=@UNIT_NAME@.service
+Requires=@PURGE_UNIT_NAME@.service
 
 [Timer]
 # Rendered from CRON_SCHEDULE at install time. This job has no Cloudflare side:
@@ -15,7 +15,8 @@ RandomizedDelaySec=0
 # A missed purge is not replayed: the next tick sheds another batch, so a
 # catch-up burst would only repeat a bounded pass.
 Persistent=false
-Unit=@UNIT_NAME@.service
+# The automation tick owns @UNIT_NAME@; this timer triggers its own oneshot.
+Unit=@PURGE_UNIT_NAME@.service
 
 [Install]
 WantedBy=timers.target
