@@ -118,6 +118,13 @@ async def _run_view(page: Page, *, name: str, width: int, height: int) -> dict[s
     await page.route("**/*", route_handler)
     await page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
     await page.locator("#messageInput").wait_for(state="visible")
+    # 대표 결정 11-03: 수동 검색 버튼 제거. 구조화 답변은 검색 버튼 없이도 같은 결과를 낸다.
+    present = await page.evaluate(
+        """(ids) => ids.filter((id) => document.getElementById(id) !== null)""",
+        ["webSearchButton", "deepResearchButton", "webSearchStarterButton"],
+    )
+    if present:
+        raise AssertionError(f"manual search controls must not exist: {present}")
     await _assert_no_horizontal_overflow(page, f"{name}-empty")
 
     await page.locator("#messageInput").fill("주말 계획을 표와 코드 예시로 정리해줘")
@@ -135,6 +142,8 @@ async def _run_view(page: Page, *, name: str, width: int, height: int) -> dict[s
     payload = chat_posts[0]["payload"]
     if isinstance(payload, dict) and any(key in payload for key in ("model", "provider", "route", "business14")):
         raise AssertionError(f"browser payload contains routing identity: {payload!r}")
+    if isinstance(payload, dict) and payload.get("tool") is not None:
+        raise AssertionError(f"structured answer must not depend on a manual tool marker: {payload!r}")
 
     raw_source = article.locator(".assistant-content > p.rich-response-source")
     if await raw_source.count() != 1:

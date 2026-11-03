@@ -208,11 +208,17 @@ def test_stream_error_guard_and_completed_paths_remain_present() -> None:
 
 
 def test_slice21_tool_transport_contract_is_not_reimplemented_here() -> None:
+    # 대표 결정 11-03: 수동 검색 버튼 제거. 검색/리서치는 서버가 자동 선택하고
+    # search-sources.js는 완료 응답의 evidence만 렌더링한다(요청 변조 없음).
     rich = _source(RICH_PATH)
     search = _source(SEARCH_PATH)
+    html = _source(ROOT / "static" / "index.html")
 
     assert "fetch(" not in rich
     assert "PadiemChatToolBridge" not in rich
-    assert 'payload.tool = toolId' in search
-    assert '"/api/chat/stream"' in search
-    assert '"/api/chat"' in search
+    for identifier in ("webSearchButton", "deepResearchButton", "webSearchStarterButton"):
+        assert f'id="{identifier}"' not in html
+    assert "payload.tool" not in search
+    assert '"/api/chat/stream"' not in search
+    assert '"/api/chat"' not in search
+    assert "window.PadiemSearchSources = Object.freeze({ render: renderSources });" in search
