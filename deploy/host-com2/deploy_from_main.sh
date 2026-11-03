@@ -721,9 +721,18 @@ rollback_queue() {
 # application applies them on start anyway, so the script now does what the operator
 # did: one consistent backup beside the database, then exactly the files that were
 # pending, as the database owner, with the same ledger the app writes.
+#
+# The two halves are deliberately split by who may read what. The object store of
+# the operator checkout belongs to the account that fetched it, and this script runs
+# under `umask 077`: on 2026-11-03 a pack index written that way left the database
+# owner unable to read a single git object, and git reported the migration file as
+# missing (`safe.directory` cannot help an unreadable object). So the SQL is read
+# here, by the account that fetched it, and only the bytes of one migration are
+# handed to the process that writes the database — which still runs as the database
+# owner, so the ledger and the file ownership stay exactly as the app leaves them.
 apply_pending_chat_migrations() {
-  local pending=$1 backup stamp
-  local -a as_user=()
+  local pending=$1 backup stamp name sql
+  local -a as_user=() applied=()
   stamp=$(date +%Y%m%dT%H%M%S)
   backup="$chat_db.pre-deploy-$stamp"
   if [[ -e $backup ]]; then
@@ -733,47 +742,62 @@ apply_pending_chat_migrations() {
   if [[ -n $chat_db_user && ${EUID} -eq 0 ]] && getent passwd -- "$chat_db_user" >/dev/null 2>&1; then
     as_user=(runuser -u "$chat_db_user" --)
   fi
-  # shellcheck disable=SC2086  # the pending names arrive newline-separated
-  "${as_user[@]}" "$python_bin" - "$ops_checkout" "$resolved" "$chat_db" "$backup" "$git_bin" $pending <<'PY'
+  if ! "${as_user[@]}" "$python_bin" - "$chat_db" "$backup" <<'PY'
 import sqlite3
-import subprocess
 import sys
-from datetime import datetime, timezone
 
-checkout, sha, db, backup, git = sys.argv[1:6]
-names = sys.argv[6:]
-if not names:
-    print("COM2_DEPLOY_CHAT_MIGRATION=NONE")
-    sys.exit(1)
+db, backup = sys.argv[1:3]
 con = sqlite3.connect(db, isolation_level=None)
 dst = sqlite3.connect(backup)
 con.backup(dst)
 dst.close()
 integrity = con.execute("PRAGMA integrity_check").fetchone()
+con.close()
 if not integrity or integrity[0] != "ok":
     print("COM2_DEPLOY_CHAT_MIGRATION_BACKUP=INTEGRITY_FAIL")
     sys.exit(1)
 print("COM2_DEPLOY_CHAT_MIGRATION_BACKUP=%s" % backup)
-applied = []
-for name in names:
-    # This process runs as the database owner (a service user, not root), and
-    # that account has no safe.directory for the operator checkout. The
-    # exemption is scoped to this one command instead of the host git config:
-    # 11-03 the first COM2 redeploy read no migration because of exactly this.
-    sql = subprocess.run(
-        [git, "-c", "safe.directory=%s" % checkout,
-         "-C", checkout, "show", "%s:apps/padiem-chat/migrations/%s" % (sha, name)],
-        capture_output=True, text=True, check=True,
-    ).stdout
-    con.executescript(sql)
-    con.execute(
-        "INSERT OR REPLACE INTO padiem_local_migration_ledger (name, applied_at) VALUES (?, ?)",
-        (name, datetime.now(timezone.utc).isoformat()),
-    )
-    applied.append(name)
-con.close()
-print("COM2_DEPLOY_CHAT_MIGRATION_APPLIED=%s" % ",".join(applied))
 PY
+  then
+    return 1
+  fi
+  # shellcheck disable=SC2086  # the pending names arrive newline-separated
+  for name in $pending; do
+    if ! sql=$("$git_bin" -C "$ops_checkout" show \
+        "$resolved:apps/padiem-chat/migrations/$name"); then
+      say "CHAT_MIGRATION_READ_FAILED NAME=$name"
+      return 1
+    fi
+    if ! printf '%s\n' "$sql" | "${as_user[@]}" "$python_bin" -c '
+import sqlite3
+import sys
+from datetime import datetime, timezone
+
+db, name = sys.argv[1], sys.argv[2]
+sql = sys.stdin.read()
+if not sql.strip():
+    print("COM2_DEPLOY_CHAT_MIGRATION=EMPTY NAME=%s" % name)
+    raise SystemExit(1)
+con = sqlite3.connect(db, isolation_level=None)
+con.executescript(sql)
+con.execute(
+    "INSERT OR REPLACE INTO padiem_local_migration_ledger (name, applied_at) VALUES (?, ?)",
+    (name, datetime.now(timezone.utc).isoformat()),
+)
+con.close()
+print("COM2_DEPLOY_CHAT_MIGRATION_APPLIED_ONE=%s" % name)
+' "$chat_db" "$name"; then
+      say "CHAT_MIGRATION_APPLY_FAILED NAME=$name"
+      return 1
+    fi
+    applied+=("$name")
+  done
+  if (( ${#applied[@]} == 0 )); then
+    printf 'COM2_DEPLOY_CHAT_MIGRATION=NONE\n'
+    return 1
+  fi
+  printf 'COM2_DEPLOY_CHAT_MIGRATION_APPLIED=%s\n' "$(IFS=,; printf '%s' "${applied[*]}")"
+  return 0
 }
 
 # The installers restart a unit only when it was active before the install. A unit

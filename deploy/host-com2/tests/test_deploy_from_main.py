@@ -950,13 +950,16 @@ class MeshQueueScenarioTest(DeployHarness):
 
 
 class MigrationServiceUserGitTest(DeployHarness):
-    """The pending-migration read runs as the database owner, not as root.
+    """The pending-migration read belongs to the account that fetched the tree.
 
-    11-03 the first COM2 redeploy failed here: the service user had no
-    ``safe.directory`` for the production checkout, so ``git show`` refused the
-    migration file and that run only passed with PADIEM_COM2_CHAT_DB_USER=root.
-    The host-wide git config stays untouched, so the exemption belongs to the
-    one command line that reads the checkout on the service user's behalf.
+    11-03 the first COM2 redeploy failed twice on the same seam. First the
+    database owner had no ``safe.directory`` for the production checkout; that
+    was scoped away, and the run then still could not read the object store,
+    because the script fetches under ``umask 077`` and the pack index it wrote
+    was unreadable to the service user — git reported the migration file as
+    missing. A permission the writer cannot have is not fixed by trusting it
+    more, so the read moved out of the database leg entirely: the fetching
+    account reads one file, and the database owner receives only its bytes.
     """
 
     scenario = "migration"
@@ -977,7 +980,7 @@ class MigrationServiceUserGitTest(DeployHarness):
         wrapper.chmod(0o755)
         return directory
 
-    def test_the_migration_read_scopes_the_allow_list_to_one_command(self) -> None:
+    def test_the_migration_read_happens_once_in_the_script_and_none_in_the_writer(self) -> None:
         wrapper_dir = self._git_logging_bin()
         self.env = {
             **self.env,
@@ -993,17 +996,17 @@ class MigrationServiceUserGitTest(DeployHarness):
             if line
         ]
         shows = [line for line in calls if " show " in " " + line + " "]
-        self.assertTrue(shows, calls)
-        checkout = self.ops.resolve().as_posix()
-        for line in shows:
-            tokens = line.split()
-            # `git -c safe.directory=<checkout> -C <checkout> show <sha>:<path>`
-            self.assertIn("-c", tokens)
-            self.assertIn("safe.directory=" + checkout, tokens)
-            self.assertLess(tokens.index("-c"), tokens.index("-C"))
-            self.assertLess(tokens.index("-c"), tokens.index("show"))
-        # The operator's global config is never the mechanism.
-        self.assertNotIn("config --global", SCRIPT.read_text(encoding="utf-8"))
+        # Exactly one read of the pending file, and it carries no per-command
+        # trust exemption: the reading account already owns the object store.
+        self.assertEqual(len(shows), 1, calls)
+        self.assertNotIn("safe.directory", shows[0])
+        # The operator's global config is never the mechanism, and the leg that
+        # writes the database never reaches for git at all.
+        script = SCRIPT.read_text(encoding="utf-8")
+        self.assertNotIn("config --global", script)
+        function = script.split("apply_pending_chat_migrations() {", 1)[1].split("\n}\n", 1)[0]
+        self.assertNotIn("subprocess", function)
+        self.assertIn("sql = sys.stdin.read()", function)
 
 
 class ScriptBoundaryTest(unittest.TestCase):
