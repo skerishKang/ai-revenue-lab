@@ -16,6 +16,7 @@
 | `services/padiem_chat_claw_ko.md` | Chat·Claw 부속 — PC 작업·컴퓨터 사용 권한 원칙, 화면 캡처, 쓰기 전 백업, 서비스 수집 항목·보관 기간 |
 | `services/bookai_ko.md` | 북AI·StoryMemory 부속 — 기기 저장 + 계정 저장 규칙, 원격 동기화, 삭제 |
 | `services/lovetree_ko.md` | 러브트리 부속 — 점검에서 확인된 사실만 |
+| `services/cgi_shop_ko.md` | CGI 쇼핑몰 부속 — 상품 판매, 주문·배송, 청약철회·환불, 견적 접수, 결제·ERP 위탁, 판매자 정보 |
 
 새 서비스는 부속 문서 하나(`services/<이름>_ko.md`)를 추가하는 것으로 이 체계에 들어옵니다.
 공통 문서는 서비스 이름을 나열하지 않고 "공통 계정으로 이용하는 서비스"로 정의합니다.
@@ -41,6 +42,7 @@
 11. 서버 접속 기록·B14 호출 원장·B14 서비스 로그의 보관 기간(점검 B 결과 참조)
 12. 러브트리 워크스페이스 문서·계정 삭제 절차
 13. 북AI·StoryMemory의 서비스 단위(별도 운영 여부)와 계정 기록 삭제 기능·기간
+14. CGI 쇼핑몰의 배송 기준, 거래 기록 보관 기간, 사용 결제 대행사·계약 상태, 견적 상담 창구·기한, 공통 계정 연동 여부
 
 ## 서비스별 근거 표 (항목 → 코드 근거)
 
@@ -98,6 +100,21 @@
 | 워크스페이스 삭제·계정 탈퇴 라우트 없음 | `server/workspace-service.js`(DELETE 0건), 전수 검색 0건 |
 | 영상 임베드(이용자가 넣은 YouTube) | `src/media.js:14,96`, `public/v41/views/track58-pinboard.html:379` |
 | 기기 저장 1키(디자인 뷰 한정) | `public/v41/design/views/src064-orbit.html:193` |
+
+### CGI 쇼핑몰
+
+| 항목 | 근거(쇼핑몰 저장소 `kbs261022`) |
+|---|---|
+| 독자 계정(이메일+비밀번호·쿠키 세션·CSRF)과 비밀번호 재설정 | `backend/worker.js:22-49` |
+| 구글 로그인(openid email profile) | `backend/lib/google-oauth.mjs:130,176-178` |
+| 비회원 주문·견적(공개 경로) | `backend/worker.js:5,9-10,2153` |
+| 수집 항목(주문자·수령인·주소·회사) | `backend/schema.sql:27-29,64-66,100-102,224-229` |
+| 결제 어댑터(Toss·Nicepay) | `backend/worker.js:46,69-73`, `backend/schema.sql:79-81` |
+| 이카운트 ERP 판매전표(상품·수량·단가+주문자 정보) | `backend/worker.js:17,74`, `backend/lib/erp.mjs:55-66` |
+| 메일 발송(Resend 어댑터), 문자 없음 | `backend/lib/mail.mjs:13-23,75` |
+| 계정 삭제(DELETE /api/me)·주소 삭제 | `backend/worker.js:33,2028-2043,2139-2140` |
+| 세션 쿠키 `cgi_member`(30일)·`cgi_oauth_state` | `backend/worker.js:1317-1318,1520-1530,1605,1642`, `backend/lib/auth.mjs:30` |
+| 저장 위치(Cloudflare D1) | `backend/wrangler.toml:6`, `backend/schema.sql:1-13` |
 
 ## 코드에서 확인 못 한 사실 (초안이 단정하지 않은 것)
 
