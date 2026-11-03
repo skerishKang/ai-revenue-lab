@@ -269,33 +269,6 @@ export function Composer({
               <span aria-hidden="true">＋</span>
               <span>{t("file")}</span>
             </button>
-            <button
-              type="button"
-              className="tool-button"
-              disabled
-              id="webSearchButton"
-              aria-disabled="true"
-              aria-label="웹 검색"
-              aria-pressed="false"
-              data-padiem-tooltip="웹 검색"
-              hidden
-            >
-              <span aria-hidden="true">⌕</span>
-              <span>웹 검색</span>
-            </button>
-            <button
-              type="button"
-              className="tool-button"
-              disabled
-              id="deepResearchButton"
-              aria-disabled="true"
-              aria-pressed="false"
-              data-padiem-tooltip="심층 리서치"
-              hidden
-            >
-              <span aria-hidden="true">✦</span>
-              <span>심층 리서치</span>
-            </button>
           </div>
           <button
             id="voiceMicButton"

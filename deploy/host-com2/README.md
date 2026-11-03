@@ -48,6 +48,25 @@ sudo env PADIEM_COM2_OPS_CHECKOUT=/mnt/d/work/ai-revenue-lab-ops \
 - 체크아웃에 추적 파일 변경이 있으면 `--apply`가 `CHECKOUT_DIRTY`로 멈춘다.
 - 새 마이그레이션이 있으면 아래 3)에서 멈춘다.
 
+#### 서비스 변경 판정
+
+경로 매핑은 다음과 같다: Chat은 `apps/padiem-chat/`, `apps/padiem-council-apps/static/`,
+`packages/`, `deploy/host-com2/chat/`; P01은 `apps/padiem-ai-engine/`,
+`deploy/host-com2/p01/`와 P01에 설치되는 Core·Control Plane·KAgent 소스;
+B14는 `apps/korean-ai-platform/`·`deploy/host-com2/b14/`; 큐는
+`apps/padiem-mesh-queue/`다. 공용 `deploy/host-com2/restart-policy/` 설정은 네 서비스 모두를
+선택한다. P01 실행 코드가 실제 대상과 일치하는지 확인하는 별도 비교는 그대로 유지한다.
+
+테스트 디렉터리(`test/`, `tests/`), `test_*.py`, `*_test.py`, `conftest.py`,
+`pytest.ini`, `*.test.mjs`, `docs/`, 모든 `*.md`, `.env.example`,
+`.gitignore`, `progress.md`는 재배포 사유에서 제외한다. `.env` 등 나머지 설정,
+실행 코드, 마이그레이션, 요구사항·잠금 파일, systemd·deploy 파일은 해당 서비스
+경로에 매핑되면 재배포 사유가 된다. 경로가 어떤 서비스에도 매핑되지 않으면 건너뛴다.
+
+계획 출력에는 `DECISION_CHAT/P01/B14/QUEUE=REDEPLOY|SKIP`와 서비스별
+`reason_files` 수, 제외 범주별 파일 수가 나온다. 마이그레이션이 미적용이면
+기존대로 `MIGRATION_FIRST`에서 멈춘다. 전체 강제 재배포 스위치는 없다.
+
 ### 3) 새 마이그레이션이 있으면 먼저 적용한다
 
 `apps/padiem-chat/migrations/`의 파일 중 운영 DB의 `padiem_local_migration_ledger`에 없는 것이

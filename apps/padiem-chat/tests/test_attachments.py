@@ -266,11 +266,9 @@ def test_frontend_exposes_generic_file_control_without_losing_image_support():
 def test_phase1_styles_remain_byte_equal_and_attachment_css_is_additive():
     root = Path(__file__).resolve().parents[1]
     repo = root.parents[1]
-    from style_contract import assert_phase1_styles_match
-    assert_phase1_styles_match(
-        root / "static/styles.css",
-        repo / "reference/business-62-padiem-chat-v1/styles.css",
-    )
+    assert (root / "static/styles.css").read_bytes() == (
+        repo / "reference/business-62-padiem-chat-v1/styles.css"
+    ).read_bytes()
     assert (root / "static/attachments.css").is_file()
     assert (root / "static/documents.css").is_file()
     html = (root / "static/index.html").read_text(encoding="utf-8")
