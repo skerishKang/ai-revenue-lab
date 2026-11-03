@@ -5,6 +5,7 @@ import json
 import logging
 import re
 
+from .chat_pc_drive import ChatPCDriveError
 from .mcp_gateway_store import mcp_request_digest
 from .mcp_gateway_shell import PC_SHELL_TOOL_NAMES
 from .same_origin_guard import expected_browser_origin
@@ -19,7 +20,8 @@ def _log_operation(audit, status, *, outcome=None):
     event = {"event": "mcp_operation", "status": status,
              "request_digest": mcp_request_digest(audit["tool_name"], audit["arguments"])}
     for key, value in (("tool", audit["tool_name"]), ("approval_id", audit.get("approval_id")),
-                       ("run_id", (outcome or {}).get("run_id"))):
+                       ("run_id", (outcome or {}).get("run_id")),
+                       ("deny_reason", (outcome or {}).get("deny_reason"))):
         if isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9_.:-]{1,96}", value):
             event[key] = value
     metadata = (outcome or {}).get("audit")
@@ -104,6 +106,11 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
             "running", "queued", "cancelled", "denied", "tool_not_enabled",
         }:
             raise ValueError("Invalid PC result")
+    except ChatPCDriveError as exc:
+        # A refusal with a fixed internal code keeps the owner's generic
+        # wording but names the branch in the audit event.
+        outcome = {"status": "unavailable", "answer": exc.user_message,
+                   "deny_reason": exc.cause or exc.code}
     except Exception:
         outcome = {"status": "unavailable", "answer": "PC 작업의 실제 결과를 확인하지 못했습니다. PADIEM에서 작업 상태를 확인해 주세요."}
     if outcome["status"] == "confirmation_required":

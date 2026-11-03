@@ -495,20 +495,26 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
 _MESH_GRANT_LOG = logging.getLogger(__name__)
 
 
-def _mesh_grant_denied(reason: str) -> bool:
+def _mesh_grant_denied(reason: str, denied_reason: list[str] | None = None) -> bool:
     """Log a fixed internal reason only; never include owner, session, or grant data."""
     _MESH_GRANT_LOG.warning("chat_pc_mesh_grant_denied=%s", reason)
+    if denied_reason is not None:
+        # The caller may carry the same fixed code into its own audit event, so
+        # an unavailable outcome names the branch that refused it.
+        denied_reason.append(reason)
     return False
 
 
 async def _check_mesh_grant(
     request: Request, session: Any, *, device_id: str | None = None,
+    denied_reason: list[str] | None = None,
 ) -> bool:
     """Check the existing shared deployment grant without changing its semantics.
 
     Each denial logs only a fixed diagnostic code. The user sees the same
     generic refusal, so account existence, mapping, and authorization remain
-    private.
+    private. When denied_reason is given, the same fixed code is appended
+    there for the caller's audit event.
     """
     from .oracle_mesh_read_return_routes import EXECUTION_MODE_MESH
 
@@ -532,9 +538,21 @@ async def _check_mesh_grant(
     try:
         target = mesh_source.command_target(account_ref=account_ref, device_id=device_id)
     except Exception:
-        return _mesh_grant_denied("mesh_command_target_lookup_failed")
+        return _mesh_grant_denied("mesh_command_target_lookup_failed", denied_reason)
     if target is None:
-        return _mesh_grant_denied("mesh_command_target_not_unique")
+        # None covers two different facts: no grant row for this account at
+        # all, and two competing rows. Name them apart in the diagnostic.
+        matches_fn = getattr(mesh_source, "command_target_matches", None)
+        if callable(matches_fn):
+            try:
+                matches = matches_fn(account_ref=account_ref, device_id=device_id)
+                reason = ("mesh_command_target_not_found" if not matches
+                          else "mesh_command_target_not_unique")
+            except Exception:
+                reason = "mesh_command_target_lookup_failed"
+        else:
+            reason = "mesh_command_target_lookup_failed"
+        return _mesh_grant_denied(reason, denied_reason)
     return True
 
 
