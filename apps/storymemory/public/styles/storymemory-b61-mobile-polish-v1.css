@@ -229,8 +229,8 @@ body.smr-theme-dark .memory-rail .sheet-close:hover { color: #fffdf8 !important;
   #index .testament-tab,
   #index .chapter-nav button {
     box-sizing: border-box !important;
-    min-width: 44px !important;
-    min-height: 44px !important;
+    min-width: 46px !important;
+    min-height: 46px !important;
   }
   #index .chapter-dots {
     left: 12px !important;
@@ -249,11 +249,11 @@ body.smr-theme-dark .memory-rail .sheet-close:hover { color: #fffdf8 !important;
   #index .chapter-dots::-webkit-scrollbar { display: none; }
   #index .chapter-dot {
     position: relative !important;
-    flex: 0 0 44px !important;
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
+    flex: 0 0 46px !important;
+    width: 46px !important;
+    min-width: 46px !important;
+    height: 46px !important;
+    min-height: 46px !important;
     padding: 0 !important;
     border: 0 !important;
     border-radius: 0 !important;
