@@ -147,6 +147,19 @@ Engine 계획 대신 Chat의 `dispatch_oracle_mesh_command_intent` 명령 레인
 앞·뒤 절단, 시간 초과 시 프로세스 트리 종료, 종료 코드 보존을 적용한다.
 감사에는 종료 코드·소요 시간·출력 크기·절단 여부만 남고 명령·출력은 남지
 않는다. 배포 전 migration 094를 적용해야 한다. OAuth 2.1, 장시간 프로세스,
-대용량 전송은 2단계다. 상세 설계와 검증은
+대용량 전송은 다음 단계다. OAuth 2.1 웹 커넥터는 같은 날 아래 절에 추가됐다. 상세 설계와 검증은
 `docs/architecture/PADIEM_MCP_DESKTOP_COMMANDER_REPLACEMENT_20261103.md`에
 있다.
+
+## 추가: MCP OAuth 2.1 웹 커넥터 (2026-11-03)
+
+claude.ai·ChatGPT 웹 사용자 지정 커넥터가 공통 로그인으로 연결되도록 MCP 전용 OAuth 2.1 인가 엔드포인트를 Chat에 추가했다. 사용자 로그인은 기존 공통 로그인 세션 하나만 쓰며 padiem-auth 클라이언트·키는 바꾸지 않는다.
+
+- 메타데이터: `/.well-known/oauth-protected-resource`(+`/api/mcp`), `/.well-known/oauth-authorization-server`
+- 인가: `GET/POST /oauth/authorize`, `GET /oauth/authorize/info` (PKCE S256 필수, 동의 화면은 ko/en locale 키)
+- 토큰: `POST /oauth/token` (authorization_code·refresh_token 회전), `POST /oauth/revoke`
+- 등록: `POST /oauth/register` (DCR public/confidential). CIMD는 이번 범위가 아니며 metadata `client_id_metadata_document_supported=false`로 알린다.
+- 401 `WWW-Authenticate`에 `resource_metadata`와 `scope="mcp:pc"`를 넣는다.
+- 저장: migration **095_mcp_oauth.sql**. 기존 `padiem_mcp_tokens` 행을 OAuth grant로 확장하고 clients/codes 테이블을 추가한다. 액세스 1시간, 갱신 30일, 코드 10분·1회, 해시만 저장.
+- 설정의 '발급한 연결'에서 OAuth 연결을 보고 폐기할 수 있다. 계정 삭제는 코드·토큰을 지우고 만료 코드는 정리 회차가 지운다.
+- 배포 전 migration 095와 공통 로그인 활성화, HTTPS public base URL을 확인한다. 상세는 `docs/architecture/PADIEM_MCP_DESKTOP_COMMANDER_REPLACEMENT_20261103.md` 11절.
