@@ -74,7 +74,10 @@ def checks(base, db_path, *, ai_status, ai_code="none", opener=None,
            chat_cgroup_procs=Path("/sys/fs/cgroup/system.slice")
                              / DEFAULT_CHAT_UNIT / "cgroup.procs"):
     opener = opener or build_opener()
-    result = [("AI 답변", ai_status, ai_code if ai_status == "FAIL" else "-")]
+    # SKIP carries the reason too: a check that was never attempted has to read
+    # as "not measured", not as a bare blank row next to a PASS-looking status.
+    ai_detail = ai_code if ai_status in ("FAIL", "SKIP") and ai_code != "none" else "-"
+    result = [("AI 답변", ai_status, ai_detail)]
     # 2026-11-01: /councillor/ is a redirect to the council app; the opener
     # follows it, so a 200 here means the alias still lands on the product.
     for name, route in (("의원 화면", "/apps/council/"), ("의원 화면 별칭(→ /apps/council/)", "/councillor/")):

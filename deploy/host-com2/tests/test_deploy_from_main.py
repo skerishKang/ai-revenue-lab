@@ -564,6 +564,46 @@ class ChatScenarioTest(DeployHarness):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("ai:PASS", result.stdout)
 
+    def test_ai_credential_missing_warn_reports_skip_not_fail(self) -> None:
+        # The QA identity the check signs in with lives in GitHub's grade-smoke
+        # environment, never on COM2, so a warn run routinely measures nothing.
+        # 11-03: that ended APPLY_EXIT=0 while the line said ai:FAIL, which reads
+        # as a broken answer lane. An unattempted check says SKIP with its reason.
+        self.env["FAKE_AI_CODE"] = "qa_credential_missing"
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("ai:SKIP reason=qa_credential_missing", result.stdout)
+        self.assertNotIn("ai:FAIL", result.stdout)
+        self.assertEqual(len([x for x in self._calls() if x.startswith("install chat")]), 1)
+
+    def test_ai_refused_origin_warn_reports_skip(self) -> None:
+        # Same class: the canary declines before sending, so nothing was measured.
+        self.env["FAKE_AI_CODE"] = "invalid_chat_origin"
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("ai:SKIP reason=invalid_chat_origin", result.stdout)
+
+    def test_ai_credential_missing_required_still_fails_and_rolls_back(self) -> None:
+        # --ai-check=required asks for the guarantee, so an unattempted check is
+        # a failed deploy: exit 1 and the services go back.
+        self.env["FAKE_AI_CODE"] = "qa_credential_missing"
+        self.env["FAKE_AI_MODE"] = "required"
+        self.env["B66_CGI_ALPHA_USERNAME"] = "qa-fixture"
+        self.env["B66_CGI_ALPHA_PASSWORD"] = "qa-fixture"
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("ai:FAIL error_code=qa_credential_missing", result.stdout)
+        self.assertIn("chat:ROLLBACK", result.stdout)
+
+    def test_ai_unattempted_but_broken_check_stays_fail(self) -> None:
+        # A check that ran and could not produce a verdict is a broken check,
+        # not a missing capability, so warn must not launder it into SKIP.
+        self.env["FAKE_AI_CODE"] = "ai_check_unavailable"
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("ai:FAIL error_code=ai_check_unavailable", result.stdout)
+        self.assertNotIn("ai:SKIP", result.stdout)
+
     def test_a_failed_health_check_rolls_the_service_back(self) -> None:
         # The new release never becomes healthy inside the deadline, so the
         # run rolls back; the rollback start is the second start of the unit,
