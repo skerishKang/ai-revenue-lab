@@ -666,6 +666,35 @@ async def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturn
         return _mesh_source_unconfigured("source_validation_failed")
     return source
 
+def valid_claw_engine_desktop_secret(value: Any) -> str | None:
+    """The one rule every Engine desktop gate shares: a 32+ character string.
+
+    The Worker resolves the binding, the CPython host reads a plain env value;
+    both hand their result here so the length rule exists exactly once, and a
+    value that does not meet it is always the same fail-closed ``None``.
+    """
+    return value if isinstance(value, str) and len(value) >= 32 else None
+
+
+def host_engine_lane_mount_marker(env: Any) -> UnconfiguredOracleMeshReturnSource | None:
+    """The CPython host's mount-time answer for the Engine lanes.
+
+    ``create_app`` mounts the Engine lanes only when the deployment hands it a
+    return source, and the host cannot await the async builder inside uvicorn's
+    running factory loop. This marker says "this deployment names the mesh lane,
+    compose it at startup": the routes exist, every handler still reads
+    ``app.state`` per request, and the startup hook swaps in the composed source
+    before the first request is served. A host that does not name the lane gets
+    ``None`` and the routes stay unmounted, exactly like the default app.
+    """
+    from .worker_config import binding_value
+
+    secret = binding_value(env, ORACLE_MESH_CHANNEL_SECRET_ENV)
+    if isinstance(secret, str) and secret.strip():
+        return UnconfiguredOracleMeshReturnSource()
+    return None
+
+
 async def resolve_oracle_mesh_execution(
     request: Request, *, path_relative: str, selected_device_id: str | None = None,
 ) -> tuple[dict[str, Any] | None, JSONResponse | None]:
@@ -3560,8 +3589,10 @@ async def _verify_engine_proof(
     import hashlib
     import time
 
-    secret = getattr(request.app.state, "claw_engine_desktop_secret", None)
-    if not isinstance(secret, str) or len(secret) < 32:
+    secret = valid_claw_engine_desktop_secret(
+        getattr(request.app.state, "claw_engine_desktop_secret", None)
+    )
+    if secret is None:
         return None, _error(503, "claw_engine_desktop_unconfigured")
     raw = await request.body()
     if max_body_bytes is not None and len(raw) > max_body_bytes:

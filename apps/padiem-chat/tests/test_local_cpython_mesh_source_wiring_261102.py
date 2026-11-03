@@ -26,7 +26,11 @@ def test_the_host_entry_uses_the_worker_env_builder():
     assert "await build_oracle_mesh_return_source_from_env(os.environ)" in source
     assert "app.router.on_startup.append(_compose_oracle_mesh_return_source_on_startup)" in source
     assert "async def _compose_oracle_mesh_return_source_on_startup(app=app):" in source
-    assert "oracle_mesh_return_source=None" in source
+    # The host cannot await the builder at factory time, but create_app gates the
+    # internal Engine lanes on this argument, so the entry hands the mount-time
+    # marker (fail-closed until the startup hook composes the real source).
+    assert "oracle_mesh_return_source = host_engine_lane_mount_marker(os.environ)" in source
+    assert "oracle_mesh_return_source=oracle_mesh_return_source," in source
     assert "oracle_mesh_legacy_map_lane=legacy_map_lane_enabled(os.environ)" in source
     assert "asyncio.run(build_oracle_mesh_return_source_from_env" not in source
 
