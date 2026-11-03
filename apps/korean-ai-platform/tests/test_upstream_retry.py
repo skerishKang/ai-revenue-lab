@@ -140,6 +140,22 @@ def test_504_timeout_retries_then_succeeds(client, monkeypatch, no_sleep):
     assert evidence[1]["retry_index"] == 1
 
 
+def test_provider_deadline_timeout_skips_same_model_retry(client, monkeypatch):
+    """A classified attempt timeout advances once, without a same-model retry."""
+    calls = _install_seq(
+        monkeypatch,
+        [UpstreamTimeout(timeout_reason="first_byte"), _ok_response],
+    )
+
+    response = _post(client, business14={"max_retries": 2})
+
+    assert response.status_code == 504
+    assert len(calls) == 1
+    error = response.json()["error"]
+    assert error["attempt_count"] == 1
+    assert error["attempt_evidence"][0]["timeout_reason"] == "first_byte"
+
+
 def test_502_server_error_retries_then_succeeds(client, monkeypatch, no_sleep):
     calls = _install_seq(monkeypatch, [UpstreamServerError(), _ok_response])
 
@@ -294,8 +310,8 @@ def test_budget_deadline_caps_subsequent_retry(client, monkeypatch):
     assert elapsed < 1.0
 
 
-def test_manual_first_model_attempt_survives_retry_deadline(client, monkeypatch):
-    """Do not interrupt healthy initial model inference at retry-chain deadline."""
+def test_manual_first_model_attempt_is_bounded_by_chain_deadline(client, monkeypatch):
+    """A B14 model attempt cannot outlive the cumulative chain deadline."""
     monkeypatch.setattr(gw, "_UPSTREAM_RETRY_BUDGET_SECONDS", 0.02)
     calls = []
 
@@ -307,9 +323,9 @@ def test_manual_first_model_attempt_survives_retry_deadline(client, monkeypatch)
     monkeypatch.setattr(plat, "call_platform_chat_completions", fake)
     resp = _post(client, business14={"max_retries": 0})
 
-    assert resp.status_code == 200
+    assert resp.status_code == 504
     assert len(calls) == 1
-    assert resp.json()["business14"]["attempt_count"] == 1
+    assert resp.json()["error"]["attempt_evidence"][0]["timeout_reason"] == "chain_budget"
 
 
 def test_manual_slow_failure_exhausts_retry_budget_without_second_call(client, monkeypatch):
@@ -356,8 +372,8 @@ async def test_manual_initial_request_propagates_parent_cancellation(monkeypatch
     assert seen_cancel.is_set()
 
 
-def test_auto_initial_attempt_is_not_force_stopped(client, monkeypatch):
-    """Automatic selection must not cut off its first healthy model either."""
+def test_auto_initial_attempt_is_bounded_by_chain_deadline(client, monkeypatch):
+    """Automatic selection uses the same cumulative provider-attempt window."""
     from dataclasses import replace
 
     original_resolve_route = gw.rcore.resolve_route
@@ -377,8 +393,9 @@ def test_auto_initial_attempt_is_not_force_stopped(client, monkeypatch):
 
     monkeypatch.setattr(plat, "call_platform_chat_completions", fake)
     resp = _post(client, business14={"max_retries": 0})
-    assert resp.status_code == 200
+    assert resp.status_code == 504
     assert len(calls) == 1
+    assert resp.json()["error"]["attempt_evidence"][0]["timeout_reason"] == "chain_budget"
 
 
 def test_budget_constants_fit_engine_60s_window():
@@ -389,10 +406,10 @@ def test_budget_constants_fit_engine_60s_window():
     Legacy worst-case arithmetic:
     3 attempts x 30s adapter read timeout + 0.5s + 1.0s backoff = 91.5s
     The historical 45s retry budget caused premature exhaustion.
-    Retries now share a 600s provider-aligned window, with caller cancellation
-    continuing to govern overall orchestration.
+    B14 candidate attempts share a 55s chain budget. Retryable non-timeout
+    server failures can still retry on the same explicit route within that window.
     """
-    assert gw._UPSTREAM_RETRY_BUDGET_SECONDS == 600.0
+    assert gw._UPSTREAM_RETRY_BUDGET_SECONDS == 55.0
     assert gw._UPSTREAM_RETRY_MAX_RETRIES == 2
     assert sum(gw._UPSTREAM_RETRY_BACKOFF_SECONDS) <= 2.0
     # Typical Kilo case: 3 x ~10s (gateway 504) + 1.5s backoff = 31.5s

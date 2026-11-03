@@ -52,7 +52,11 @@ from app.pilot.tool_channel import (
     validate_tools,
 )
 from app.pilot.provider_timeout_diagnostics import log_gateway_deadline
-from app.pilot.b14_timeout_policy import GATEWAY_WALL_SECONDS
+from app.pilot.b14_timeout_policy import (
+    DEFAULT_CHAIN_BUDGET_SECONDS,
+    GATEWAY_WALL_SECONDS,
+    get_timeout_policy,
+)
 from app.pilot.registry import get_registry
 from app.pilot.routing import (
     PilotConfigurationState,
@@ -80,18 +84,9 @@ from app.pilot.owner_model_exclusions import excluded_from_owner_customer_select
 from app.pilot.model_registry_file import group_model_ids
 
 # ---------------------------------------------------------------------------
-# Bounded same-route retry for retryable upstream failures (#1982)
-#
-# Measured defect: the direct Kilo free route intermittently returns 504
-# (Kilo Gateway's own ~10s limit on free models). Direct/manual routes used
-# to attempt once and give up despite the failure being retryable.
-#
-# The provider-aligned retry budget limits *additional* retry/fallback
-# dispatches, not the initial model inference. For both manual and auto routes the initial
-# attempt is governed by model idle detection and caller cancellation.
-# After it completes, additional physical requests are allowed only when
-# the shared retry window has remaining budget. The old 60s Engine ceiling
-# is an independent caller contract, not a B14 model-generation deadline.
+# Provider attempts and eligible fallbacks share B14's cumulative window.
+# Each attempt has first-byte and total-attempt deadlines, while stream reads
+# have a post-byte idle limit. A timeout advances without retrying that model.
 # ---------------------------------------------------------------------------
 _UPSTREAM_RETRY_MAX_RETRIES = 2
 _UPSTREAM_RETRY_BACKOFF_SECONDS = (0.5, 1.0)
@@ -875,7 +870,15 @@ async def _handle_alpha_chat(
     same_route_retry_limit = b14_opts.get("max_retries", 0)
 
     start_time = time.monotonic()
-    deadline = start_time + _UPSTREAM_RETRY_BUDGET_SECONDS
+    timeout_policy = get_timeout_policy()
+    # Preserve the test seam used by focused retry tests while reading a
+    # deployment override dynamically from Worker env bindings.
+    chain_budget_seconds = (
+        _UPSTREAM_RETRY_BUDGET_SECONDS
+        if _UPSTREAM_RETRY_BUDGET_SECONDS != DEFAULT_CHAIN_BUDGET_SECONDS
+        else timeout_policy.chain_budget_seconds
+    )
+    deadline = start_time + chain_budget_seconds
     attempt_count = 0
     fallback_used = False
     last_error: PilotError | None = None
@@ -1023,8 +1026,42 @@ async def _handle_alpha_chat(
             remaining = deadline - time.monotonic()
             if remaining <= 0:
                 budget_exhausted = True
-                if last_error is None:
-                    last_error = UpstreamTimeout()
+                last_error = UpstreamTimeout(timeout_reason="chain_budget")
+                # A candidate stopped by the chain budget was not dispatched,
+                # yet the ledger must retain why no further provider call ran.
+                attempt_evidence.append({
+                    "attempt": attempt_count + 1,
+                    "model_id": current["model_id"],
+                    "upstream_model": current["upstream_model"],
+                    "provider": current["provider"],
+                    "route_id": current["route_id"],
+                    "outcome": "error",
+                    "error_code": last_error.code,
+                    "retry_index": 0,
+                    "actual_response_model": None,
+                    "timeout_reason": "chain_budget",
+                    "dispatched": False,
+                })
+                if ledger is not None:
+                    try:
+                        ledger.record_attempt(
+                            provider=current["provider"],
+                            model_id=current["model_id"],
+                            upstream_model=current["upstream_model"],
+                            route_id=current["route_id"],
+                            outcome="error",
+                            error_code=last_error.code,
+                            timeout_reason="chain_budget",
+                            dispatched=False,
+                            protocol=_protocol_for(
+                                current.get("platform_provider_id")
+                                or decision.platform_provider_id,
+                                current["upstream_model"],
+                            ),
+                        )
+                    except Exception as ledger_exc:
+                        ledger = None
+                        skipped(request_id, ledger_exc)
                 break
 
             attempt_count += 1
@@ -1033,19 +1070,24 @@ async def _handle_alpha_chat(
             # covers the asyncio timeout too, where the adapter's coroutine is
             # cancelled and never reports a duration.
             attempt_started = time.perf_counter()
-            # The first physical model attempt (manual OR auto) has no
-            # arbitrary 45s wall cap. Later attempts retain retry budget.
-            attempt_timeout = None if attempt_count == 1 else remaining
+            attempt_timeout = min(timeout_policy.attempt_seconds, remaining)
+            chain_is_limiting_attempt = remaining <= timeout_policy.attempt_seconds
             try:
                 async with asyncio.timeout(attempt_timeout):
                     response_data = await _invoke_upstream(current)
             except TimeoutError as exc:
-                # asyncio.timeout hard ceiling fired (adapter timeout did not).
-                # Fixed allowlisted metadata only; never log content or credentials.
+                # Provider helpers mark first-byte/stream-idle timeouts. The
+                # gateway supplies the fixed attempt-total or chain-budget
+                # reason when its own wall expires.
+                timeout_reason = (
+                    getattr(exc, "timeout_reason", None)
+                    or getattr(exc, "reason", None)
+                    or ("chain_budget" if chain_is_limiting_attempt else "attempt_total")
+                )
                 log_gateway_deadline(
                     logger, current.get("platform_provider_id") or decision.platform_provider_id,
                 )
-                timeout_error = UpstreamTimeout()
+                timeout_error = UpstreamTimeout(timeout_reason=timeout_reason)
                 timeout_error.__cause__ = exc
                 error: PilotError = timeout_error
             except PilotError as exc:
@@ -1144,7 +1186,7 @@ async def _handle_alpha_chat(
             assert error is not None
 
             last_error = error
-            attempt_evidence.append({
+            failed_evidence = {
                 "attempt": attempt_count,
                 "model_id": current["model_id"],
                 "upstream_model": current["upstream_model"],
@@ -1154,13 +1196,18 @@ async def _handle_alpha_chat(
                 "error_code": error.code,
                 "retry_index": retry_index,
                 "actual_response_model": None,
-            })
+            }
+            timeout_reason = getattr(error, "timeout_reason", None)
+            if timeout_reason is not None:
+                failed_evidence["timeout_reason"] = timeout_reason
+            attempt_evidence.append(failed_evidence)
             if ledger is not None:
                 try:
                     ledger.record_attempt(
                         provider=current["provider"], model_id=current["model_id"],
                         upstream_model=current["upstream_model"], route_id=current["route_id"],
                         outcome="error", error_code=error.code, retry_index=retry_index,
+                        timeout_reason=getattr(error, "timeout_reason", None),
                         elapsed_ms=int((time.perf_counter() - attempt_started) * 1000),
                         protocol=_protocol_for(
                             current.get("platform_provider_id") or decision.platform_provider_id,
@@ -1182,6 +1229,7 @@ async def _handle_alpha_chat(
                 decision.route_mode != "auto"
                 and
                 error.code in _SAME_ROUTE_RETRYABLE_CODES
+                and not getattr(error, "timeout_reason", None)
                 and retry_index < same_route_retry_limit
             ):
                 backoff = _UPSTREAM_RETRY_BACKOFF_SECONDS[

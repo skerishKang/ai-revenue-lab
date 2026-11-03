@@ -140,7 +140,10 @@ class UpstreamBusyRateLimited(PilotError):
 
 
 class UpstreamTimeout(PilotError):
-    def __init__(self) -> None:
+    def __init__(self, timeout_reason: str | None = None) -> None:
+        if timeout_reason not in (None, "first_byte", "attempt_total", "chain_budget"):
+            raise ValueError("unknown provider timeout reason")
+        self.timeout_reason = timeout_reason
         super().__init__(
             code="upstream_timeout",
             message="Provider 요청 시간이 초과되었습니다. 나중에 다시 시도하십시오.",

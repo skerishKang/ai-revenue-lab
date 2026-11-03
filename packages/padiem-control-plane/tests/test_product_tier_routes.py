@@ -73,7 +73,7 @@ def test_current_tiers_contain_only_active_models() -> None:
     assert routes[ProductTierLabel.FREE].model_id == FREE_PRIMARY_B14_MODEL_ID
     assert routes[ProductTierLabel.FREE].route_id == "free.gemini-3.1-flash-lite.v1"
     assert routes[ProductTierLabel.FREE].provider_id == "google"
-    assert TIER_FALLBACK_B14_MODELS["free"] == ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it")
+    assert TIER_FALLBACK_B14_MODELS["free"] == ("google/gemma-4-31b-it", "google/gemini-3.5-flash-lite")
     for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX, ProductTierLabel.ADMIN):
         assert routes[label].model_id == TEST_PHASE_PRIMARY_B14_MODEL_ID
     assert [len(tier.routes) for tier in PRODUCT_TIER_ROUTES] == [1, 2, 2, 2, 2]

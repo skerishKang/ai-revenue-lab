@@ -189,7 +189,8 @@ async def test_one_record_writes_one_parent_and_every_attempt() -> None:
                         protocol="chat/completions", streaming=False,
                         requested_model_id=MODEL_ID, started_at=utc_now_iso())
     draft.record_attempt(provider="Agnes AI", model_id=MODEL_ID, outcome="error",
-                         error_code="upstream_timeout", elapsed_ms=12)
+                         error_code="upstream_timeout", timeout_reason="first_byte",
+                         elapsed_ms=12)
     draft.record_attempt(provider="Agnes AI", model_id=MODEL_ID, outcome="success",
                          elapsed_ms=40, usage={"prompt_tokens": 5,
                          "completion_tokens": 7, "total_tokens": 12},
@@ -209,6 +210,7 @@ async def test_one_record_writes_one_parent_and_every_attempt() -> None:
     attempts = [call for call in binding.calls if "b14_model_call_attempt" in call[1]]
     assert len(attempts) == 2
     assert "error" in attempts[0][2] and "success" in attempts[1][2]
+    assert "timeout_reason" in attempts[0][1] and "first_byte" in attempts[0][2]
 
 
 @pytest.mark.asyncio

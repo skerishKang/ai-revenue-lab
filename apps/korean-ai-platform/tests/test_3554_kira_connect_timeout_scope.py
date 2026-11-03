@@ -1,8 +1,7 @@
 """#3554 historical Kira transport regression under Owner's later #4442 policy.
 
-The old 30s first-response cap was not a safe per-model inference deadline on
-Cloudflare Fetch. Check all providers now share the 600s first-response idle
-watchdog without new retries or altered routing.
+The historical provider-specific connect cap is replaced by B14's shared
+15s first-byte and 20s stream-idle limits, with unchanged routing.
 """
 import httpx
 import pytest
@@ -14,7 +13,7 @@ from app.pilot.errors import UpstreamTimeout
 def test_connect_timeout_provider_scope_is_exact_and_bounded():
     timeout = plat.build_provider_http_timeout()
     assert (timeout.connect, timeout.read, timeout.write, timeout.pool) == (
-        600.0, 600.0, 120.0, 60.0
+        15.0, 20.0, 120.0, 60.0
     )
     # No Provider-specific exception or implicit fallback is installed.
 
@@ -22,8 +21,8 @@ def test_connect_timeout_provider_scope_is_exact_and_bounded():
 @pytest.mark.asyncio
 @pytest.mark.parametrize("stream", [False, True])
 @pytest.mark.parametrize("provider,model,upstream,expected", [
-    ("sensenova", "sensenova/sensenova-6.8-flash-lite", "sensenova-6.8-flash-lite", 600.0),
-    ("inception", "inception/mercury-2.5", "mercury-2.5", 600.0),
+    ("sensenova", "sensenova/sensenova-6.8-flash-lite", "sensenova-6.8-flash-lite", 15.0),
+    ("inception", "inception/mercury-2.5", "mercury-2.5", 15.0),
 ])
 async def test_exact_live_adapter_uses_provider_connect_timeout_once(
         monkeypatch, caplog, stream, provider, model, upstream, expected):
@@ -60,7 +59,7 @@ async def test_exact_live_adapter_uses_provider_connect_timeout_once(
                     pass
             else:
                 await plat.call_platform_chat_completions(**params)
-    assert captured == [(expected, 600.0, 120.0, 60.0)]
+    assert captured == [(expected, 20.0, 120.0, 60.0)]
     assert len(requests) == 1
-    assert f"b14_safe_timeout provider={provider} phase=connect mode={'stream' if stream else 'completed'}" in caplog.text
+    assert f"b14_provider_attempt_timeout provider={provider} reason=first_byte mode={'stream' if stream else 'completed'}" in caplog.text
     assert "SYNTHETIC_ONLY_NO_CREDENTIAL_OR_EGRESS" not in caplog.text

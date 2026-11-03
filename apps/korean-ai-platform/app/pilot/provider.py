@@ -7,6 +7,8 @@ Supports RouteTarget-based multi-provider calling (Phase 2).
 
 from __future__ import annotations
 
+from contextlib import aclosing
+
 import json
 import logging
 import uuid
@@ -14,6 +16,11 @@ from typing import Any
 
 import httpx
 
+from app.pilot.b14_timeout_policy import (
+    ProviderAttemptTimeout,
+    build_provider_http_timeout,
+    send_provider_request,
+)
 from app.pilot.errors import (
     MalformedUpstreamResponse,
     PilotNotConfigured,
@@ -140,7 +147,9 @@ async def call_chat_completions(
     # Determine configuration source
     resolved_url = base_url or pilot_settings.pilot_base_url
     resolved_upstream = upstream_model or pilot_settings.pilot_upstream_model or pilot_settings.pilot_model_id
-    resolved_timeout = timeout_seconds or pilot_settings.pilot_timeout_seconds
+    # This argument remains accepted for compatibility. B14's shared phase
+    # policy now owns provider inference deadlines across every route.
+    del timeout_seconds
     resolved_model_id = response_model or pilot_settings.pilot_model_id
 
     if not resolved_url:
@@ -163,21 +172,17 @@ async def call_chat_completions(
     }
 
     client_kwargs: dict[str, Any] = {
-        "timeout": httpx.Timeout(None, connect=resolved_timeout, read=resolved_timeout,
-                                 write=min(resolved_timeout, 20), pool=min(resolved_timeout, 10)),
+        "timeout": build_provider_http_timeout(resolved_model_id),
     }
     if transport:
         client_kwargs["transport"] = transport
 
     async with httpx.AsyncClient(**client_kwargs) as client:
         try:
-            async with client.stream(
-                "POST",
-                chat_url,
-                headers=headers,
-                json=request_body,
-                follow_redirects=False,
-            ) as response:
+            response, request_started = await send_provider_request(
+                client, "POST", chat_url, headers=headers, json=request_body,
+            )
+            async with aclosing(response):
                 if response.status_code < 200 or response.status_code >= 300:
                     if response.status_code in (401, 403):
                         raise UpstreamAuthFailed()
@@ -189,9 +194,14 @@ async def call_chat_completions(
                 # Pre-decode byte cap (#4379): never fully buffer an
                 # unbounded upstream body into worker RAM before checking it.
                 from app.pilot.platform import MAX_COMPLETED_RESPONSE_BYTES, _read_bounded_body
-                body_bytes = await _read_bounded_body(response, cap=MAX_COMPLETED_RESPONSE_BYTES)
+                body_bytes = await _read_bounded_body(
+                    response, cap=MAX_COMPLETED_RESPONSE_BYTES,
+                    started_at=request_started,
+                )
+        except ProviderAttemptTimeout as exc:
+            raise UpstreamTimeout(timeout_reason=exc.reason) from exc
         except httpx.TimeoutException:
-            raise UpstreamTimeout()
+            raise UpstreamTimeout(timeout_reason="attempt_total")
         except httpx.RequestError as e:
             logger.error(
                 "upstream_request_error request_id=%s error=%s",

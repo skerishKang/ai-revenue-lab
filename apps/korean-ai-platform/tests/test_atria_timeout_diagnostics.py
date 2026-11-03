@@ -58,8 +58,9 @@ async def test_real_adapter_preserves_timeout_contract_without_leaking(monkeypat
                     pass
             else:
                 await plt.call_platform_chat_completions(**kw)
-    assert f"phase={phase}" in caplog.text
-    assert ("mode=stream" if stream else "mode=completed") in caplog.text
+    # #6788: the per-attempt first-byte deadline replaced the phase vocabulary.
+    assert ("b14_provider_attempt_timeout provider=atria reason=first_byte "
+            f"mode={'stream' if stream else 'completed'}") in caplog.text
     assert "PRIVATE_" not in caplog.text
 
 

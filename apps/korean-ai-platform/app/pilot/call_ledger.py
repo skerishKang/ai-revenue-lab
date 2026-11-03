@@ -266,6 +266,7 @@ class AttemptRecord:
     route_id: str | None = None
     outcome: str = OUTCOME_SUCCESS
     error_code: str | None = None
+    timeout_reason: str | None = None
     retry_index: int = 0
     actual_response_model: str | None = None
     finish_reason: str | None = None
@@ -333,6 +334,9 @@ class AttemptRecord:
         object.__setattr__(self, "upstream_model", _clean_id("upstream_model", self.upstream_model))
         object.__setattr__(self, "route_id", _clean_id("route_id", self.route_id))
         object.__setattr__(self, "error_code", _clean_text("error_code", self.error_code, 64))
+        if self.timeout_reason not in (None, "first_byte", "attempt_total", "chain_budget"):
+            raise CallLedgerError("timeout_reason is not a known timeout reason")
+        object.__setattr__(self, "timeout_reason", _clean_text("timeout_reason", self.timeout_reason, 32))
         object.__setattr__(self, "actual_response_model", _clean_id("actual_response_model", self.actual_response_model))
         object.__setattr__(self, "finish_reason", _clean_text("finish_reason", self.finish_reason, 48))
         object.__setattr__(self, "provider_request_id", _clean_id("provider_request_id", self.provider_request_id))
@@ -363,6 +367,7 @@ class AttemptRecord:
             "route_id": self.route_id,
             "outcome": self.outcome,
             "error_code": self.error_code,
+            "timeout_reason": self.timeout_reason,
             "retry_index": self.retry_index,
             "actual_response_model": self.actual_response_model,
             "finish_reason": self.finish_reason,
@@ -682,6 +687,7 @@ class LedgerDraft:
         self, *, provider: str | None, model_id: str | None,
         upstream_model: str | None = None, route_id: str | None = None,
         outcome: str = OUTCOME_SUCCESS, error_code: str | None = None,
+        timeout_reason: str | None = None,
         retry_index: int = 0, elapsed_ms: int | None = None,
         usage: Any = None, actual_response_model: str | None = None,
         finish_reason: str | None = None, provider_request_id: str | None = None,
@@ -706,6 +712,7 @@ class LedgerDraft:
             log_id=self.log_id, attempt_index=self.attempt_count,
             provider=provider, model_id=model_id, upstream_model=upstream_model,
             route_id=route_id, outcome=outcome, error_code=error_code,
+            timeout_reason=timeout_reason,
             retry_index=retry_index, actual_response_model=actual_response_model,
             finish_reason=finish_reason, provider_request_id=provider_request_id,
             started_at=started_at, finished_at=finished_at,

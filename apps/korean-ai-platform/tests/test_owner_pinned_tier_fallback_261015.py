@@ -20,9 +20,8 @@ def test_google_free_grade_has_exact_owner_backups(monkeypatch):
     assert TIER_DEFAULT_B14_MODEL == "google/gemini-3.1-flash-lite"
     backups = TIER_FALLBACK_B14_MODELS["free"]
     assert backups == (
-        "google/gemma-4-26b-a4b-it",
-        "google/gemini-3.5-flash-lite",
         "google/gemma-4-31b-it",
+        "google/gemini-3.5-flash-lite",
     )
     decision = router_core.resolve_manual_route(
         TIER_DEFAULT_B14_MODEL, product_tier="free",

@@ -67,7 +67,7 @@ _CALL_COLUMNS = (
 
 _ATTEMPT_COLUMNS = (
     "log_id", "attempt_index", "provider", "model_id", "upstream_model", "route_id",
-    "outcome", "error_code", "retry_index", "actual_response_model", "finish_reason",
+    "outcome", "error_code", "timeout_reason", "retry_index", "actual_response_model", "finish_reason",
     "provider_request_id", "started_at", "finished_at", "elapsed_ms", "latency_source",
     "prompt_tokens", "completion_tokens", "total_tokens", "reasoning_tokens",
     "token_source", "estimated_usd", "estimated_krw", "cost_basis", "endpoint",

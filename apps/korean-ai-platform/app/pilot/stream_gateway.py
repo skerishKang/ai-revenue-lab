@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator
 from dataclasses import replace
+import asyncio
 import json
 import logging
 import time
@@ -42,6 +43,7 @@ from app.pilot.errors import (
     PilotError,
     StreamNotSupported,
     ToolsNotSupported,
+    UpstreamTimeout,
     UnsupportedModel,
 )
 from app.pilot.gateway import (
@@ -50,6 +52,7 @@ from app.pilot.gateway import (
     _validate_body,
 )
 from app.pilot.b14_runtime_config import runtime_config
+from app.pilot.b14_timeout_policy import get_timeout_policy
 from app.pilot.stream_types import (
     StreamEvent,
     StreamUsage,
@@ -357,6 +360,22 @@ async def _close_iterator(iterator: AsyncIterator[StreamEvent]) -> None:
         await close()
 
 
+async def _next_before_chain_deadline(
+    iterator: AsyncIterator[StreamEvent], deadline: float | None,
+) -> StreamEvent:
+    """Get one stream event while preserving the cumulative chain deadline."""
+    if deadline is None:
+        return await anext(iterator)
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise UpstreamTimeout(timeout_reason="chain_budget")
+    try:
+        async with asyncio.timeout(remaining):
+            return await anext(iterator)
+    except TimeoutError as exc:
+        raise UpstreamTimeout(timeout_reason="chain_budget") from exc
+
+
 def _enqueue_ledger(record) -> None:
     async def write() -> None:
         status = await record_call(record)
@@ -397,6 +416,7 @@ async def _finalize_stream_ledger(
     finish_reason: str | None, response_model: str | None,
     attempt_started: float | None, ttft_ms: int | None, fallback_used: bool,
     tools_declared: bool,
+    timeout_reason: str | None,
 ) -> None:
     """Close one streamed attempt and append its ledger row.
 
@@ -418,7 +438,7 @@ async def _finalize_stream_ledger(
         upstream_model=candidate.get("upstream_model"), route_id=candidate.get("route_id"),
         outcome=outcome, error_code=error_code, elapsed_ms=elapsed, usage=usage,
         finish_reason=finish_reason, actual_response_model=response_model,
-        protocol=protocol,
+        timeout_reason=timeout_reason, protocol=protocol,
     )
     # The gate is the mode the platform adapter dispatched with, not the config
     # singleton read on its own: an explicit B14_PROVIDER_MODE wins at runtime,
@@ -460,6 +480,7 @@ async def _stream_body(
     candidate: dict[str, str] | None = None,
     attempt_started: float | None = None,
     tools_declared: bool = False,
+    chain_deadline: float | None = None,
 ) -> AsyncIterator[bytes]:
     """Emit the primed events; after the first visible event, never switch routes."""
     # #5318: the stream lane is where TTFT is observable at all. First visible
@@ -467,6 +488,7 @@ async def _stream_body(
     # not the first frame the transport happened to send.
     outcome = OUTCOME_ABORTED
     error_code: str | None = None
+    timeout_reason: str | None = None
     reported_usage: dict[str, Any] | None = None
     finish_reason: str | None = None
     response_model: str | None = None
@@ -488,6 +510,8 @@ async def _stream_body(
 
     try:
         for event in initial_events:
+            if chain_deadline is not None and time.monotonic() >= chain_deadline:
+                raise UpstreamTimeout(timeout_reason="chain_budget")
             _observe(event)
             yield _encode_event(
                 event, request_id=request_id, decision=decision,
@@ -497,7 +521,11 @@ async def _stream_body(
                 outcome = OUTCOME_SUCCESS
                 return
 
-        async for event in iterator:
+        while True:
+            try:
+                event = await _next_before_chain_deadline(iterator, chain_deadline)
+            except StopAsyncIteration:
+                break
             _observe(event)
             yield _encode_event(
                 event, request_id=request_id, decision=decision,
@@ -509,6 +537,7 @@ async def _stream_body(
     except PilotError as exc:
         outcome = OUTCOME_ERROR
         error_code = exc.code
+        timeout_reason = getattr(exc, "timeout_reason", None)
         logger.warning(
             "stream_preview_post_start_error request_id=%s code=%s attempt=%d",
             request_id,
@@ -546,6 +575,7 @@ async def _stream_body(
                     finish_reason=finish_reason, response_model=response_model,
                     attempt_started=attempt_started, ttft_ms=ttft_ms,
                     fallback_used=fallback_used, tools_declared=tools_declared,
+                    timeout_reason=timeout_reason,
                 )
             except Exception as ledger_exc:
                 skipped(request_id, ledger_exc)
@@ -635,7 +665,9 @@ async def _user_credential_stream_preview(
     except Exception as ledger_exc:
         skipped(request_id, ledger_exc)
 
-    def _record_failure(error_code: str, *, dispatched: bool) -> None:
+    def _record_failure(
+        error_code: str, *, dispatched: bool, timeout_reason: str | None = None,
+    ) -> None:
         """Close the row for an attempt that produced nothing the caller saw."""
         if ledger is None:
             return
@@ -645,7 +677,8 @@ async def _user_credential_stream_preview(
                 provider=credential.provider_id, model_id=body["model"],
                 upstream_model=credential.upstream_model,
                 route_id=candidate["route_id"], outcome=OUTCOME_ERROR,
-                error_code=error_code, dispatched=dispatched,
+                error_code=error_code, timeout_reason=timeout_reason,
+                dispatched=dispatched,
                 elapsed_ms=int((time.perf_counter() - attempt_started) * 1000),
                 protocol=protocol,
             )
@@ -671,14 +704,18 @@ async def _user_credential_stream_preview(
     )
     initial_events: list[StreamEvent] = []
     attempt_started = time.perf_counter()
+    chain_deadline = time.monotonic() + get_timeout_policy().chain_budget_seconds
     dispatched = False
     try:
         while True:
             dispatched = True
             try:
-                event = await anext(iterator)
+                async with asyncio.timeout(max(0.001, chain_deadline - time.monotonic())):
+                    event = await anext(iterator)
             except StopAsyncIteration as exc:
                 raise MalformedUpstreamResponse() from exc
+            except TimeoutError as exc:
+                raise UpstreamTimeout(timeout_reason="chain_budget") from exc
             initial_events.append(event)
             if event.done or event.tool_call is not None or (
                 isinstance(event.delta_content, str)
@@ -686,7 +723,10 @@ async def _user_credential_stream_preview(
             ):
                 break
     except PilotError as exc:
-        _record_failure(exc.code, dispatched=dispatched)
+        _record_failure(
+            exc.code, dispatched=dispatched,
+            timeout_reason=getattr(exc, "timeout_reason", None),
+        )
         await _close_iterator(iterator)
         raise
     except Exception:
@@ -706,6 +746,7 @@ async def _user_credential_stream_preview(
             candidate=candidate,
             attempt_started=attempt_started,
             tools_declared=False,
+            chain_deadline=chain_deadline,
         ),
         status_code=200,
         media_type="text/event-stream",
@@ -772,8 +813,8 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
             raise InvalidRequest("Invalid streaming transport configuration.")
 
         fallback_candidates = list(decision.eligible_fallback)
-        # #4317: every candidate the declared product grade allows is tried,
-        # in order. There is no attempt ceiling to apply here.
+        # #4317: candidates remain in declared order. Their physical calls
+        # share B14's cumulative chain deadline below.
         attempt_candidates: list[dict[str, str] | None] = [
             None,
             *fallback_candidates,
@@ -785,6 +826,8 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
         # it is also where a pre-token fallback can hide a failed provider. The
         # draft stays open across candidates so both survive into one record.
         ledger = None
+        timeout_policy = get_timeout_policy()
+        chain_deadline = time.monotonic() + timeout_policy.chain_budget_seconds
         try:
             origin = origin_from_headers(request.headers)
             # Record the grade the routing actually applied: the validated
@@ -835,6 +878,26 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
             }
             dispatched = False
             attempt_started = time.perf_counter()
+            remaining_chain = chain_deadline - time.monotonic()
+            if remaining_chain <= 0:
+                timeout_error = UpstreamTimeout(timeout_reason="chain_budget")
+                if ledger is not None:
+                    try:
+                        ledger.record_attempt(
+                            provider=provider, model_id=selected_model,
+                            upstream_model=upstream_model,
+                            route_id=attempt_candidate["route_id"],
+                            outcome=OUTCOME_ERROR, error_code=timeout_error.code,
+                            timeout_reason="chain_budget", dispatched=False,
+                            protocol=_protocol_for(platform_provider_id, upstream_model,
+                                                   tools_declared=tools_declared),
+                        )
+                    except Exception as ledger_exc:
+                        ledger = None
+                        skipped(request_id, ledger_exc)
+                raise timeout_error
+            attempt_timeout = min(timeout_policy.attempt_seconds, remaining_chain)
+            chain_limits_attempt = remaining_chain <= timeout_policy.attempt_seconds
 
             if tools_declared:
                 # #4727: a fallback candidate is a different provider wire, so
@@ -882,17 +945,24 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                 # before the first nonblank token may try the next owner-tier
                 # candidate. Once a visible token is selected, this route is final.
                 dispatched = True
-                while True:
-                    try:
-                        event = await anext(iterator)
-                    except StopAsyncIteration as exc:
-                        raise MalformedUpstreamResponse() from exc
-                    initial_events.append(event)
-                    if event.done or event.tool_call is not None or (
-                        isinstance(event.delta_content, str)
-                        and bool(event.delta_content.strip())
-                    ):
-                        break
+                try:
+                    async with asyncio.timeout(attempt_timeout):
+                        while True:
+                            try:
+                                event = await anext(iterator)
+                            except StopAsyncIteration as exc:
+                                raise MalformedUpstreamResponse() from exc
+                            initial_events.append(event)
+                            if event.done or event.tool_call is not None or (
+                                isinstance(event.delta_content, str)
+                                and bool(event.delta_content.strip())
+                            ):
+                                break
+                except TimeoutError as exc:
+                    timeout_reason = (
+                        "chain_budget" if chain_limits_attempt else "attempt_total"
+                    )
+                    raise UpstreamTimeout(timeout_reason=timeout_reason) from exc
             except PilotError as exc:
                 from .opencode_go_wire import log_go_vendor_error
                 log_go_vendor_error(
@@ -910,6 +980,7 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                             upstream_model=upstream_model,
                             route_id=attempt_candidate["route_id"], outcome="error",
                             error_code=exc.code,
+                            timeout_reason=getattr(exc, "timeout_reason", None),
                             elapsed_ms=int((time.perf_counter() - attempt_started) * 1000),
                             usage=next((_usage_dict(event.usage)
                                         for event in reversed(initial_events)
@@ -950,6 +1021,7 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                     candidate=attempt_candidate,
                     attempt_started=attempt_started,
                     tools_declared=tools_declared,
+                    chain_deadline=chain_deadline,
                 ),
                 status_code=200,
                 media_type="text/event-stream",

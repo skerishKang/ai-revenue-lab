@@ -1,8 +1,7 @@
 """#4176 historical ModelScope timeout probe, updated for common model idle policy.
 
-The old 30s HTTPX connect stage was a potential early first-response cutoff.
-All model providers now share a 600s header wait, while read/write/pool and
-one-shot/no-fallback behavior remain bounded. All tests are MockTransport only.
+The historical ModelScope connect setting is replaced by B14's shared
+15s first-byte and 20s stream-idle bounds. Tests are MockTransport only.
 """
 import httpx
 import pytest
@@ -14,7 +13,7 @@ from app.pilot.errors import UpstreamTimeout
 def test_only_modelscope_and_previously_approved_kira_have_30s_connect():
     timeout = plat.build_provider_http_timeout()
     assert (timeout.connect, timeout.read, timeout.write, timeout.pool) == (
-        600.0, 600.0, 120.0, 60.0
+        15.0, 20.0, 120.0, 60.0
     )
     # The prior per-Provider exceptions were superseded by one shared limit.
 
@@ -23,8 +22,8 @@ def test_only_modelscope_and_previously_approved_kira_have_30s_connect():
 @pytest.mark.parametrize("stream", [False, True])
 @pytest.mark.parametrize("provider,model,upstream,expected", [
     ("sensenova", "sensenova/sensenova-6.8-flash-lite",
-     "sensenova-6.8-flash-lite", 600.0),
-    ("inception", "inception/mercury-2.5", "mercury-2.5", 600.0),
+     "sensenova-6.8-flash-lite", 15.0),
+    ("inception", "inception/mercury-2.5", "mercury-2.5", 15.0),
 ])
 async def test_completed_stream_timeout_phase_safe_and_one_mock_call(
         monkeypatch, caplog, stream, provider, model, upstream, expected):
@@ -59,8 +58,8 @@ async def test_completed_stream_timeout_phase_safe_and_one_mock_call(
                     pass
             else:
                 await plat.call_platform_chat_completions(**args)
-    assert timeouts == [(expected, 600.0, 120.0, 60.0)]
+    assert timeouts == [(expected, 20.0, 120.0, 60.0)]
     assert len(requests) == 1
-    assert (f"b14_safe_timeout provider={provider} phase=connect "
+    assert (f"b14_provider_attempt_timeout provider={provider} reason=first_byte "
             f"mode={'stream' if stream else 'completed'}") in caplog.text
     assert "PRIVATE_MODEL_KEY_OR_PROMPT_SHOULD_NOT_LOG" not in caplog.text
