@@ -157,7 +157,7 @@ def test_one_conversation_survives_every_screen_switch() -> None:
     }}));
     """
     completed = subprocess.run(
-        ["node", "-e", script], check=True, capture_output=True, text=True
+        ["node", "-e", script], check=True, capture_output=True, text=True, encoding="utf-8"
     )
     data = json.loads(completed.stdout)
     # One id crosses the switch in both directions.
@@ -495,7 +495,7 @@ def _run_harness() -> dict:
         completed = subprocess.run(
             ["node", str(harness), str(APP_JS), str(STATE_JS), str(transport)],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
         )
     assert completed.returncode == 0, completed.stdout + completed.stderr
     return json.loads(completed.stdout)

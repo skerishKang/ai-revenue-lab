@@ -94,7 +94,7 @@ def test_mixed_journal_prefix_json_message_and_top_sort():
 
 def test_cli_emits_parseable_summary_from_stdin_without_product_dependencies():
     process = subprocess.run([sys.executable, '-I', str(SCRIPT), '--top', '5'],
-                             input=event(13), text=True, capture_output=True, check=True)
+                             input=event(13), text=True, encoding="utf-8", capture_output=True, check=True)
     result = json.loads(process.stdout)
     assert result['top'][0]['route'] == ROUTE
     assert result['top'][0]['stages_ms']['auth']['mean'] is None

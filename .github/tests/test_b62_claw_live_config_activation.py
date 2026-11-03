@@ -842,7 +842,7 @@ def _run_cli(args: list[str], *, credential: str | None = None):
     return subprocess.run(
         [sys.executable, str(HELPER), *args],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         env=env,
         check=False,
     )
@@ -1695,7 +1695,7 @@ def test_oracle_mesh_mode_cli_plan_and_verify_round_trip() -> None:
                 "--settings", str(before), "--mode", "mesh",
                 "--target-sha", "b" * 40, "--output", str(patch),
             ],
-            capture_output=True, text=True, check=False,
+            capture_output=True, text=True, encoding="utf-8", check=False,
         )
         assert planned.returncode == 0, planned.stderr
         assert "B62_CLAW_ORACLE_MESH_MODE_PLAN=PASS" in planned.stdout
@@ -1709,7 +1709,7 @@ def test_oracle_mesh_mode_cli_plan_and_verify_round_trip() -> None:
                 sys.executable, str(HELPER), "verify-oracle-mesh-mode",
                 "--settings", str(after), "--mode", "mesh", "--pre-settings", str(before),
             ],
-            capture_output=True, text=True, check=False,
+            capture_output=True, text=True, encoding="utf-8", check=False,
         )
         assert verified.returncode == 0, verified.stderr
         assert "B62_CLAW_ORACLE_MESH_MODE_VERIFY=EXACT" in verified.stdout
@@ -1720,7 +1720,7 @@ def test_oracle_mesh_mode_cli_plan_and_verify_round_trip() -> None:
                 "--settings", str(before), "--mode", "native",
                 "--target-sha", "b" * 40, "--output", str(tmp_path / "nope.json"),
             ],
-            capture_output=True, text=True, check=False,
+            capture_output=True, text=True, encoding="utf-8", check=False,
         )
         assert refused.returncode == 2
         assert not (tmp_path / "nope.json").exists()

@@ -144,7 +144,7 @@ const projected=window.PadiemClawLocalHandoff.deriveDeviceDirectory(raw);
 console.log(window.PadiemComputerConnectionState.classify({...projected,readCompleted:true,statusCode:'ok'}));
 '''
     static = ROOT / "apps/padiem-chat/static"
-    result = subprocess.run(["node", "-e", script, str(static/"claw-local-handoff.js"), str(static/"claw-connection-state.js")], input=json.dumps(payload), text=True, capture_output=True, check=True)
+    result = subprocess.run(["node", "-e", script, str(static/"claw-local-handoff.js"), str(static/"claw-connection-state.js")], input=json.dumps(payload), text=True, encoding="utf-8", capture_output=True, check=True)
     assert result.stdout.strip() == expected
     async def no_scope(*args, **kwargs):
         return PcConnectorScope(status="owner_unavailable")

@@ -237,7 +237,7 @@ def test_every_step_script_is_shell_valid(workflow: dict) -> None:
                 script = Path(handle.name)
             try:
                 result = subprocess.run(
-                    [bash, "-n", str(script)], capture_output=True, text=True, timeout=30
+                    [bash, "-n", str(script)], capture_output=True, text=True, encoding="utf-8", timeout=30
                 )
             finally:
                 script.unlink(missing_ok=True)

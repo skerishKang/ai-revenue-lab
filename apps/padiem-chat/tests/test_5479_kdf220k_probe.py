@@ -124,7 +124,7 @@ def test_h1_py314_local_ok_is_never_an_edge_pass():
             prelude + "KDF220K_BODY='" + body + "'\n" + "# H1 (#5743)" + shell_gate
         )
         result = subprocess.run(
-            ["bash", "-c", script], capture_output=True, text=True
+            ["bash", "-c", script], capture_output=True, text=True, encoding="utf-8"
         )
         output = result.stdout + result.stderr
         assert result.returncode == expected_code, (minor, state, output)

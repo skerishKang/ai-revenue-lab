@@ -48,7 +48,7 @@ def run(action, src, dst, out, sql):
     return subprocess.run(
         [sys.executable, str(TOOL), action, "--queue", str(src), "--d1-schema", str(dst),
          "--json", str(out), "--sql", str(sql)],
-        capture_output=True, text=True, timeout=10,
+        capture_output=True, text=True, encoding="utf-8", timeout=10,
     )
 
 

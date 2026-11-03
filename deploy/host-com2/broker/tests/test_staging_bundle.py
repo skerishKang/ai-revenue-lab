@@ -31,7 +31,7 @@ def test_templates_loopback_default_dry_run_and_scripts(kind, port):
         path = directory / f"{name}-staging.sh"
         assert b"\r" not in path.read_bytes()
         subprocess.run([BASH, "-n", str(path)], check=True)
-    result = subprocess.run([BASH, str(directory / "install-staging.sh")], check=True, capture_output=True, text=True)
+    result = subprocess.run([BASH, str(directory / "install-staging.sh")], check=True, capture_output=True, text=True, encoding="utf-8")
     assert "_STAGING_INSTALL=DRY_RUN" in result.stdout
     assert "START_SERVICE=NO" in result.stdout
     assert "ENABLE_SERVICE=NO" in result.stdout

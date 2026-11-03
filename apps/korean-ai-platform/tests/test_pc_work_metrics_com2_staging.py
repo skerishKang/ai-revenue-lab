@@ -63,7 +63,7 @@ def staged_installer(tmp_path):
            "PADIEM_B14_SERVICE_PROOF_SECRET": "synthetic_staging_value_never_logged"}
     def run(*args):
         return subprocess.run(["bash", str(script), *args], env=env,
-                              capture_output=True, text=True, timeout=15)
+                              capture_output=True, text=True, encoding="utf-8", timeout=15)
     return run, app_root, source, tmp_path
 
 

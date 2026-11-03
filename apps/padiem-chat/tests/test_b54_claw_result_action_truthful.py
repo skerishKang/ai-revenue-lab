@@ -580,7 +580,7 @@ def _run_harness() -> dict:
                 SECOND_ARTIFACT_ID,
             ],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             timeout=120,
         )
     finally:

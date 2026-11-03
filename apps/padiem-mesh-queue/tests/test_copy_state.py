@@ -142,7 +142,7 @@ def test_the_command_line_the_runbook_types_actually_runs(tmp_path):
     completed = subprocess.run(
         [sys.executable, str(QUEUE / "copy_state.py"), "copy",
          "--source", missing, "--target", target],
-        capture_output=True, text=True, timeout=120,
+        capture_output=True, text=True, encoding="utf-8", timeout=120,
     )
     shouted = completed.stdout + completed.stderr
     assert "invalid choice" not in shouted, "argparse ate the script path again"
@@ -154,7 +154,7 @@ def test_the_diff_shape_parses_from_the_command_line_too(tmp_path):
     target = _file(tmp_path, "queue.sqlite")
     completed = subprocess.run(
         [sys.executable, str(QUEUE / "copy_state.py"), "diff", "--target", target],
-        capture_output=True, text=True, timeout=120,
+        capture_output=True, text=True, encoding="utf-8", timeout=120,
     )
     assert "invalid choice" not in completed.stdout + completed.stderr
     assert completed.returncode in (0, 1), completed.returncode

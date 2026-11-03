@@ -77,7 +77,7 @@ try {
     encoded = base64.b64encode(script.encode("utf-16le")).decode("ascii")
     result = subprocess.run(
         ["powershell", "-NoProfile", "-NonInteractive", "-EncodedCommand", encoded],
-        capture_output=True, text=True, timeout=40, check=False,
+        capture_output=True, text=True, encoding="utf-8", timeout=40, check=False,
     )
     assert result.returncode == 0, result.stderr + result.stdout
     assert "SCRATCH_REGISTRY_OWNERSHIP=PASS" in result.stdout

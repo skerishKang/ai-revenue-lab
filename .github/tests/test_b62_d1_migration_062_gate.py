@@ -310,7 +310,7 @@ def test_workflow_shell_blocks_parse() -> None:
                 result = subprocess.run(
                     [bash, "-n", path.name],
                     capture_output=True,
-                    text=True,
+                    text=True, encoding="utf-8",
                     cwd=str(path.parent),
                 )
                 assert result.returncode == 0, (

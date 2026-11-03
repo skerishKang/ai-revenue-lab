@@ -198,7 +198,7 @@ def test_claw_hold_copy_network_free_browser_behavior():
     result = subprocess.run(
         ["node", "-e", NODE, str(STATIC)],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         timeout=20,
         check=False,
     )
@@ -363,7 +363,7 @@ def test_actual_renderer_projects_hold_as_model_copy_with_node_vm():
     result = subprocess.run(
         ["node", "-e", NODE_RENDERER, str(STATIC)],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         timeout=25,
         check=False,
     )

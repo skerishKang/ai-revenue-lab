@@ -120,7 +120,7 @@ def test_every_refusal_prints_one_cause_line_and_no_response_content() -> None:
                 "--metadata-status", metadata_status, "--metadata-body", str(paths["m"]),
                 "--workers-status", "200", "--workers-body", str(paths["w"]),
                 "--custom-status", "200", "--custom-body", str(paths["c"]),
-            ], capture_output=True, text=True, check=False)
+            ], capture_output=True, text=True, encoding="utf-8", check=False)
             return done.returncode, done.stdout
 
         rc, out = run(METADATA)
@@ -162,7 +162,7 @@ def test_every_refusal_prints_one_cause_line_and_no_response_content() -> None:
             "--metadata-status", "200", "--metadata-body", str(root / "m.json"),
             "--workers-status", "200", "--workers-body", str(missing),
             "--custom-status", "200", "--custom-body", str(root / "c.json"),
-        ], capture_output=True, text=True, check=False)
+        ], capture_output=True, text=True, encoding="utf-8", check=False)
         assert done.returncode == 1
         assert "B62_PUBLIC_ORIGIN_PROOF_CAUSE=GUARD_INPUT_UNREADABLE_WORKERS_DEV" in done.stdout
 

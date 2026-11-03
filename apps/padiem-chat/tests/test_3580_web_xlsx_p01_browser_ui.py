@@ -40,7 +40,7 @@ def test_browser_real_xlsx_approval_ui_one_shot_and_server_only_state():
     if shutil.which("node") is None:
         pytest.skip("Node unavailable locally; required B62 Linux CI browser test")
     result = subprocess.run(
-        ["node", str(SCRIPT)], capture_output=True, text=True,
+        ["node", str(SCRIPT)], capture_output=True, text=True, encoding="utf-8",
         timeout=20, check=False,
     )
     assert result.returncode == 0, result.stdout + result.stderr

@@ -422,7 +422,7 @@ def test_3748_credential_preflight_real_argparse_parity() -> None:
             return subprocess.run(
                 [*prefix, *args, *suffix],
                 capture_output=True,
-                text=True,
+                text=True, encoding="utf-8",
                 timeout=15,
                 check=False,
             )

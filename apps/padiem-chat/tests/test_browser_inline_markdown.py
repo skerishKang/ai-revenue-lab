@@ -20,7 +20,7 @@ def _run_node(script: str) -> dict:
     result = subprocess.run(
         ["node", "-e", script],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         check=True,
     )
     return json.loads(result.stdout.strip())

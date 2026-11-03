@@ -104,7 +104,7 @@ def test_official_cli_doctor_never_mints_an_identity_or_runs_agent(tmp_path):
     env["PADIEM_AGENT_SRC"] = str(tmp_path / "not-an-agent")
     call = subprocess.run(
         [sys.executable, "-m", "padiem_connector", "doctor"],
-        cwd=ROOT, env=env, capture_output=True, text=True, check=False, timeout=20,
+        cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", check=False, timeout=20,
     )
     assert call.returncode == 1, call.stderr
     parsed = json.loads(call.stdout)
@@ -151,7 +151,7 @@ def test_installer_powershell_syntax_without_running_or_modifying_pc():
     )
     outcome = subprocess.run(
         ["powershell", "-NoProfile", "-NonInteractive", "-Command", cmd],
-        env=env, capture_output=True, text=True, check=False, timeout=25,
+        env=env, capture_output=True, text=True, encoding="utf-8", check=False, timeout=25,
     )
     assert outcome.returncode == 0, outcome.stdout + outcome.stderr
 
@@ -220,7 +220,7 @@ def test_windows_powershell_encoding_constructor_writes_bomless_json(tmp_path):
     )
     out = subprocess.run(
         ["powershell", "-NoProfile", "-NonInteractive", "-Command", expression],
-        env=env, capture_output=True, text=True, check=False, timeout=20,
+        env=env, capture_output=True, text=True, encoding="utf-8", check=False, timeout=20,
     )
     assert out.returncode == 0, out.stdout + out.stderr
     raw = target.read_bytes()

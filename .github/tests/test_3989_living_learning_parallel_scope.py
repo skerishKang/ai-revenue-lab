@@ -93,7 +93,7 @@ class ParallelSuiteContract(unittest.TestCase):
                          'bash "$WRAPPER"'],
                         env={**env, "FAKE_BIN_DIR": str(p / "bin"),
                              "WRAPPER": str(p / ".github/scripts/living_learning_core_parallel_3989.sh")},
-                        text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                        text=True, encoding="utf-8", stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                         timeout=15, check=False,
                     )
                     self.assertIn("FAKE_LIVING_LEARNING_EXECUTED", result.stdout)

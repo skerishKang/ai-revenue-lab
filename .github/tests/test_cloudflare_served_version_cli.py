@@ -45,7 +45,7 @@ def _run(tmp_path: Path, payload: object) -> subprocess.CompletedProcess[str]:
             str(path),
         ],
         cwd=ROOT,
-        text=True,
+        text=True, encoding="utf-8",
         capture_output=True,
         check=False,
     )
@@ -131,7 +131,7 @@ def test_cli_unreadable_or_invalid_json_is_input_error_without_payload_echo(
             str(path),
         ],
         cwd=ROOT,
-        text=True,
+        text=True, encoding="utf-8",
         capture_output=True,
         check=False,
     )
@@ -176,7 +176,7 @@ def _validate(version_id: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, str(CLI), "validate-version-id", f"--version-id={version_id}"],
         cwd=ROOT,
-        text=True,
+        text=True, encoding="utf-8",
         capture_output=True,
         check=False,
     )
@@ -187,7 +187,7 @@ def _validate_space_form(version_id: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, str(CLI), "validate-version-id", "--version-id", version_id],
         cwd=ROOT,
-        text=True,
+        text=True, encoding="utf-8",
         capture_output=True,
         check=False,
     )

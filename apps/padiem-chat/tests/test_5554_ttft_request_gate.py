@@ -35,7 +35,7 @@ def harness_result() -> dict:
         [node, str(HARNESS)],
         cwd=str(ROOT),
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         timeout=120,
     )
     assert completed.stdout, completed.stderr

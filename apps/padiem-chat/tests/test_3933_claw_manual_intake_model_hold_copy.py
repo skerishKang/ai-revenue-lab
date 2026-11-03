@@ -257,7 +257,7 @@ def test_manual_intake_hold_copy_network_free_browser_behavior() -> None:
     result = subprocess.run(
         ["node", "-e", NODE, str(STATIC)],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         timeout=20,
         check=False,
     )

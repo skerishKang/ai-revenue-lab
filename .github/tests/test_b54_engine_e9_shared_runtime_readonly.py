@@ -192,7 +192,7 @@ def test_e9_real_cli_accepts_canonical_leading_hyphen_id_and_rejects_drift() -> 
         accepted = subprocess.run(
             [*base, f"--active-version={version_id}", *flags],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             timeout=10,
             check=False,
         )
@@ -206,7 +206,7 @@ def test_e9_real_cli_accepts_canonical_leading_hyphen_id_and_rejects_drift() -> 
         mismatch = subprocess.run(
             [*base, "--active-version=-different-safe-version", *flags],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             timeout=10,
             check=False,
         )
@@ -216,7 +216,7 @@ def test_e9_real_cli_accepts_canonical_leading_hyphen_id_and_rejects_drift() -> 
         ambiguous = subprocess.run(
             [*base, "--active-version", version_id, *flags],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             timeout=10,
             check=False,
         )

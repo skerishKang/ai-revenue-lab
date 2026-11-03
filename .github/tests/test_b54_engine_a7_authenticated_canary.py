@@ -255,7 +255,7 @@ def _run_a7_guard(*version_args: str, admission: str = "good"):
                 *version_args,
                 "--inspect-engine-admission-binding",
             ],
-            text=True,
+            text=True, encoding="utf-8",
             capture_output=True,
             timeout=15,
             check=False,

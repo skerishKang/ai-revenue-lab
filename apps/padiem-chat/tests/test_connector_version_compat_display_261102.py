@@ -124,7 +124,7 @@ def _get(source: ProjectionSource) -> dict[str, Any]:
 
 def _run_node(script: str) -> str:
     completed = subprocess.run(
-        ["node"], input=script, check=True, capture_output=True, text=True,
+        ["node"], input=script, check=True, capture_output=True, text=True, encoding="utf-8",
     )
     return completed.stdout.strip()
 

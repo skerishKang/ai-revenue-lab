@@ -568,7 +568,7 @@ def _run_deploy_chain(
         [_bash(), _native(driver)],
         cwd=_native(ROOT),
         env=env,
-        text=True,
+        text=True, encoding="utf-8",
         capture_output=True,
         check=False,
     )

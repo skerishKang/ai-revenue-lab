@@ -229,7 +229,7 @@ def _run_version_check(tmp_path, payload, expected: str) -> subprocess.Completed
     return subprocess.run(
         [sys.executable, "-c", script, expected],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         env={
             **os.environ,
             "B14_DEPLOYMENTS_JSON": str(json_file),
@@ -691,7 +691,7 @@ def _run_rollback_step(tmp_path, *, bodies, target=TARGET_VERSION, **flags) -> _
         [_bash(), _native(driver)],
         cwd=_native(ROOT),
         env=env,
-        text=True,
+        text=True, encoding="utf-8",
         capture_output=True,
         check=False,
     )
@@ -1289,7 +1289,7 @@ def _run_deploy_chain(
         [_bash(), _native(driver)],
         cwd=_native(ROOT),
         env=env,
-        text=True,
+        text=True, encoding="utf-8",
         capture_output=True,
         check=False,
     )

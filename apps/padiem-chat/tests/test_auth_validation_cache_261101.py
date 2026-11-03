@@ -230,7 +230,7 @@ connection.close()
 print('shared_cache=pass')
 '''
     result = subprocess.run([sys.executable, '-c', script, path, str(clock[0])],
-                            capture_output=True, text=True, check=False)
+                            capture_output=True, text=True, encoding="utf-8", check=False)
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == 'shared_cache=pass'
 
