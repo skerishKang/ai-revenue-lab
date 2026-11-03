@@ -19,6 +19,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="./styles/storymemory-b61-typography-authority-v1.css">
+<style id="bookai-remote-pack-surfaces-disabled">
+#packMarketplaceLaunch,#autoPackLaunch,#packEntitlementLaunch,#packVerificationLaunch,
+#packMarketplacePanel,#autoPackPanel,#packEntitlementPanel,#packVerificationPanel,#packLifecycleSheet{display:none!important}
+</style>
 </head>
 <body><a class="skip-reader-link" href="#paper">본문으로 바로가기</a>
 <div class="transition-curtain" id="curtain"></div>
@@ -110,7 +114,7 @@
     <div class="today-wordmark">북AI</div>
     <div class="today-top-actions">
       <button type="button" class="today-cloud-button" id="todayCloudButton"><span>●</span><b id="todayCloudLabel">클라우드</b></button>
-      <span class="today-data-status" id="todayDataStatus" role="status" aria-live="polite" title="Local-first · NeonJS production adapter ready">LOCAL · SAVED</span>
+      <span class="today-data-status" id="todayDataStatus" role="status" aria-live="polite" title="기기 저장 · 계정 기록 동기화">LOCAL · SAVED</span>
       <button type="button" class="today-memory-link" id="todayOpenGlobal">전체 기억</button>
     </div>
   </header>
@@ -2381,20 +2385,17 @@ function wireSystemMemoryTimeline(){
 
 
 
-/* ===== StoryMemory v3.3.6 Production Authenticated Runtime Adapter =====
-   No database password or service key is embedded.
-   The app supplies a short-lived Neon Auth JWT through setTokenProvider().
+/* ===== StoryMemory local + COM2 storage adapter =====
+   Owner decision: user data lives on COM2. This remote data lane is disabled.
+   The existing API shape remains for legacy callers; it cannot make a request.
+   Local records and bookai-sync.js → /api/bookai/records remain active.
 */
-const STORYMEMORY_REMOTE_CONFIG = Object.freeze({
-  dataApiBase: 'https://ep-odd-surf-avfp55rv.apirest.c-11.us-east-1.aws.neon.tech/neondb/rest/v1',
-  authBase: 'https://ep-odd-surf-avfp55rv.neonauth.c-11.us-east-1.aws.neon.tech/neondb/auth',
-  schema: 'storymemory'
-});
+const STORYMEMORY_REMOTE_CONFIG = Object.freeze({enabled:false});
 const STORYMEMORY_RUNTIME_CONTRACT = Object.freeze({
   version:'1.0.0',
   staticBodyMode:'authoritative',
-  remoteMetadataMode:'authenticated',
-  remoteUserStateMode:'authenticated',
+  remoteMetadataMode:'disabled',
+  remoteUserStateMode:'disabled',
   legacyDbBodyRemote:false,
   canonicalIdentity:'canonical_locator',
   expectedMainRegistry:Object.freeze({activeContentVersions:6,contentUnitIndex:185}),
@@ -2410,10 +2411,11 @@ function createStoryMemoryRemoteAdapter({
   legacyDbBodyRemote = STORYMEMORY_RUNTIME_CONTRACT.legacyDbBodyRemote
 } = {}) {
   const runtimeContract=Object.freeze({...STORYMEMORY_RUNTIME_CONTRACT,legacyDbBodyRemote:!!legacyDbBodyRemote});
+  const remoteEnabled = false;
   let getToken = tokenProvider;
 
-  function setTokenProvider(fn){
-    getToken = typeof fn === 'function' ? fn : async()=>null;
+  function setTokenProvider(){
+    getToken = async()=>null;
   }
 
   async function authHeaders({write=false,prefer='return=representation'}={}){
@@ -2443,6 +2445,9 @@ function createStoryMemoryRemoteAdapter({
   }
 
   async function request(table,{method='GET',query={},body,prefer}={}){
+    // The disabled pin is checked BEFORE credentials and BEFORE fetch: no
+    // token, URL or request body can reach the network from this lane.
+    if(!remoteEnabled) throw new Error('REMOTE_DISABLED');
     const write = method !== 'GET' && method !== 'HEAD';
     const headers = await authHeaders({write,prefer});
     const res = await fetchImpl(`${config.dataApiBase}/${table}${qs(query)}`,{
@@ -2504,6 +2509,9 @@ function createStoryMemoryRemoteAdapter({
     return request('content_unit_index',{query});
   }
   async function runtimeStatus(){
+    // The disabled pin answers locally: the contract stays truthful, the
+    // registry read is not attempted, and no caller sees a thrown error.
+    if(!remoteEnabled) return {...runtimeContract, remote:'disabled'};
     const [versions,units]=await Promise.all([listContentVersions({status:'active',limit:200}),listContentUnitIndex({limit:500})]);
     return {
       ...runtimeContract,
@@ -2720,6 +2728,7 @@ function createStoryMemoryRemoteAdapter({
   }
 
   async function ping(){
+    if(!remoteEnabled) return {ok:false,reason:'REMOTE_DISABLED',runtimeContract};
     const sources=await listSources();
     return {ok:true,sources:Array.isArray(sources)?sources.length:0,runtimeContract};
   }
@@ -2727,6 +2736,7 @@ function createStoryMemoryRemoteAdapter({
   return {
     config,
     runtimeContract,
+    remoteEnabled,
     setTokenProvider,
     request,
     listSources,
@@ -2769,48 +2779,27 @@ window.STORYMEMORY_RUNTIME_CONTRACT=STORYMEMORY_RUNTIME_CONTRACT;
 window.storyMemoryRuntimeStatus=async()=>{
   const base={...STORYMEMORY_RUNTIME_CONTRACT,authenticated:!!__smAuthBridge?.authenticated,remoteReady:!!__smRemoteReady};
   if(!__smAuthBridge?.authenticated)return {...base,registryStatus:'AUTH_REQUIRED'};
-  try{return {...base,...await storyMemoryRemote.runtimeStatus(),registryStatus:'VERIFIED'}}catch(error){return {...base,registryStatus:'ERROR',error:String(error?.message||error)}}
+  try{
+    const status=await storyMemoryRemote.runtimeStatus();
+    return {...base,...status,registryStatus:status.remote==='disabled'?'REMOTE_DISABLED':'VERIFIED'};
+  }catch(error){return {...base,registryStatus:'ERROR',error:String(error?.message||error)}}
 };
-function installStoryMemoryRemoteAdapter(adapter){
-  if(!adapter || typeof adapter.listMemories!=='function' || typeof adapter.upsertMemoryByClientId!=='function'){
-    throw new Error('INVALID_REMOTE_ADAPTER');
-  }
-  if(typeof adapter.setTokenProvider!=='function')adapter.setTokenProvider=()=>{};
-  storyMemoryRemote=adapter;
-  window.storyMemoryRemote=adapter;
-  return adapter;
+function installStoryMemoryRemoteAdapter(){
+  return storyMemoryRemote;
 }
 window.installStoryMemoryRemoteAdapter=installStoryMemoryRemoteAdapter;
 
-// Production shell integration:
-// auth/login code should call:
-//   storyMemoryRemote.setTokenProvider(async () => currentAccessToken)
-//
-// Prototype fallback remains local-first until a token provider exists.
+// Account records sync through BookAISync; no separate content provider is installed.
 let __smRemoteReady = false;
 let __smRemoteLastError = null;
 
-async function storyMemoryEnableRemote(tokenProvider){
-  storyMemoryRemote.setTokenProvider(tokenProvider);
-  setDataStatus('saving');
-  try{
-    const status=await storyMemoryRemote.ping();
-    __smRemoteReady=true;
-    __smRemoteLastError=null;
-    const el=document.getElementById('todayDataStatus');
-    if(el){el.classList.remove('saving','error');el.textContent='REMOTE · READY';}
-    return status;
-  }catch(err){
-    __smRemoteReady=false;
-    __smRemoteLastError=err;
-    if(String(err?.message||'')==='AUTH_REQUIRED'){
-      setDataStatus('saved');
-    }else{
-      const el=document.getElementById('todayDataStatus');
-      if(el){el.classList.remove('saving');el.classList.add('error');el.textContent='REMOTE · ERROR';}
-    }
-    throw err;
-  }
+async function storyMemoryEnableRemote(){
+  // The remote data lane is off. Never retain or request the login token here.
+  storyMemoryRemote.setTokenProvider(null);
+  __smRemoteReady=false;
+  __smRemoteLastError=null;
+  setDataStatus('saved');
+  return {ok:true,remote:'disabled',runtimeContract:storyMemoryRemote.runtimeContract};
 }
 window.storyMemoryEnableRemote = storyMemoryEnableRemote;
 
@@ -2818,88 +2807,6 @@ window.storyMemoryEnableRemote = storyMemoryEnableRemote;
 
 
 
-/* ===== StoryMemory v3.0.5 Auth E2E Harness =====
-   Runs only after a real authenticated production shell has installed the
-   Auth Bridge and NeonJS remote adapter. It creates one temporary Memory,
-   verifies idempotent remote sync, then deletes it and verifies cleanup.
-*/
-const STORYMEMORY_E2E_PREFIX='__SM_E2E__';
-
-async function storyMemoryRunAuthE2E({adapter=storyMemoryRemote}={}){
-  if(!__smAuthBridge?.authenticated)throw new Error('AUTH_REQUIRED');
-  if(!adapter || typeof adapter.listMemories!=='function')throw new Error('REMOTE_ADAPTER_REQUIRED');
-
-  const marker=`${STORYMEMORY_E2E_PREFIX}${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
-  const context=__smCurrentReaderLabel||'고린도전서 3장';
-  const item=createUserMemory({
-    kind:'note',
-    context,
-    page:Number(readerPageIndex||0),
-    source:`${context} · E2E`,
-    title:'StoryMemory E2E',
-    body:marker
-  });
-  if(!item)throw new Error('E2E_LOCAL_CREATE_FAILED');
-
-  let firstRemoteCount=0;
-  let secondRemoteCount=0;
-  let cleanupRemoteCount=-1;
-  let firstSync=null;
-  let secondSync=null;
-  let cleanupSync=null;
-
-  try{
-    firstSync=await storyMemorySyncNow({adapter});
-    const rows1=await adapter.listMemories({limit:500});
-    firstRemoteCount=(rows1||[]).filter(r=>r.client_record_id===item.clientRecordId && r.body===marker).length;
-    if(firstRemoteCount!==1)throw new Error(`E2E_FIRST_REMOTE_COUNT_${firstRemoteCount}`);
-
-    secondSync=await storyMemorySyncNow({adapter});
-    const rows2=await adapter.listMemories({limit:500});
-    secondRemoteCount=(rows2||[]).filter(r=>r.client_record_id===item.clientRecordId && r.body===marker).length;
-    if(secondRemoteCount!==1)throw new Error(`E2E_IDEMPOTENCY_COUNT_${secondRemoteCount}`);
-
-    deleteUserMemory(item.id);
-    cleanupSync=await storyMemorySyncNow({adapter});
-    const rows3=await adapter.listMemories({limit:500});
-    cleanupRemoteCount=(rows3||[]).filter(r=>r.client_record_id===item.clientRecordId).length;
-    if(cleanupRemoteCount!==0)throw new Error(`E2E_CLEANUP_COUNT_${cleanupRemoteCount}`);
-
-    return {
-      pass:true,
-      marker,
-      clientRecordId:item.clientRecordId,
-      context,
-      firstRemoteCount,
-      secondRemoteCount,
-      cleanupRemoteCount,
-      firstSync,
-      secondSync,
-      cleanupSync,
-      testedAt:new Date().toISOString()
-    };
-  }catch(err){
-    // Best-effort cleanup: keep the user's real data intact and remove only the
-    // synthetic E2E record if it is still present locally.
-    const local=__smUserMemories.find(m=>m.id===item.id);
-    if(local){
-      try{deleteUserMemory(item.id)}catch(_){}
-      try{await storyMemorySyncNow({adapter})}catch(_){}
-    }
-    return {
-      pass:false,
-      marker,
-      clientRecordId:item.clientRecordId,
-      context,
-      firstRemoteCount,
-      secondRemoteCount,
-      cleanupRemoteCount,
-      error:String(err?.message||err),
-      testedAt:new Date().toISOString()
-    };
-  }
-}
-window.storyMemoryRunAuthE2E=storyMemoryRunAuthE2E;
 
 
 /* ===== StoryMemory v3.0.3 Auth Bridge ===== */
@@ -3307,6 +3214,19 @@ function setSyncUI(state,label){
 }
 async function storyMemorySyncNow({adapter=storyMemoryRemote}={}){
   if(__smSyncRunning)return __smSyncLastResult;
+  // Legacy remote sync is disabled. Hand the requested sync to the existing
+  // account-record path; local persistence remains independent of its result.
+  if(!adapter || adapter.remoteEnabled !== true){
+    let accountSync={state:'local'};
+    try{
+      if(typeof window.BookAISync?.syncNow==='function') accountSync=await window.BookAISync.syncNow();
+    }catch(_){accountSync={state:'queued',reason:'sync_unavailable'};}
+    setSyncUI('saved','LOCAL · SAVED');
+    __smSyncLastResult={state:'local',remote:'disabled',accountSync,
+      schema:STORYMEMORY_SYNC_SCHEMA,installationId:storyMemoryInstallationId(),
+      lastSyncAt:loadSyncState()?.lastSyncAt||null};
+    return __smSyncLastResult;
+  }
   __smSyncRunning=true;setSyncUI('syncing','REMOTE · SYNCING');
   try{
     ensureLocalSyncIdentities();
@@ -5688,7 +5608,7 @@ function storyMemoryAdapterForContent(input){const c=storyMemoryResolveContent(i
 
 /* ===== StoryMemory v3.3.3 — Static Content Adapter =====
    Canonical book bodies are served from versioned static JSON assets.
-   Neon remains available for relationship/user-state data and legacy remote-content fallback.
+   User records sync through the account records API; no remote content lane is used.
 */
 const STORYMEMORY_STATIC_CONTENT_CONFIG=Object.freeze({
   basePath:'content',
@@ -5815,8 +5735,7 @@ function storyMemoryIsAuthoritativeReaderMode(mode=__smDynamicReaderState?.mode)
 window.storyMemoryIsAuthoritativeReaderMode=storyMemoryIsAuthoritativeReaderMode;
 
 /* ===== StoryMemory v3.2.2 — Remote Content Repository Foundation =====
-   Content tables remain opt-in until the authoritative Neon migration/content import gate.
-   The existing prototype reader is the fallback; no production DB mutation occurs here.
+   Remote content tables are disabled. The local static catalog is authoritative.
 */
 function storyMemoryDbWorkKey(input){
   let content=storyMemoryResolveContent(input);

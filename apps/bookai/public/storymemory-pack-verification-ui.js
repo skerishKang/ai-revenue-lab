@@ -3,12 +3,6 @@
   if(!root.document||!root.storyMemoryPackVerification)return;
   const d=root.document,verify=root.storyMemoryPackVerification,market=root.storyMemoryPackMarketplace,rt=root.storyMemoryUniversalSource;
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  function storedUserId(){try{return JSON.parse(root.BookAIStorage?.getItem('storymemory.authBridgeState.v1')||'null')?.user?.id||null}catch(_){return null}}
-  root.storyMemoryEnableNeonPackVerification=async function(){
-    if(!root.storyMemoryRemote||!root.createStoryMemoryNeonPackVerificationProvider)return false;
-    const provider=root.createStoryMemoryNeonPackVerificationProvider({remoteAdapter:root.storyMemoryRemote});verify.setRegistryProvider(provider);
-    try{await verify.refresh();return true}catch(error){console.warn('StoryMemory Pack verification program unavailable',error);return false}
-  };
   async function currentSource(){let sid=rt?.status?.().activeSourceId||null;if(!sid&&root.storyMemoryUniversalEnsureCurrentBookSource){try{sid=(await root.storyMemoryUniversalEnsureCurrentBookSource())?.source?.sourceId||null}catch(_){}}return sid?rt.getSource(sid):null}
   function formatStatus(s){if(!s?.trusted)return '<span class="pack-verification-chip">UNVERIFIED</span>';const tier=String(s.effectiveTrustTier||'').toUpperCase();return `<span class="pack-verification-chip ok">${esc(tier)} VERIFIED</span>`}
   async function render(){const host=d.getElementById('packVerificationList');if(!host)return;const source=await currentSource();let packs=[];try{packs=source?rt.listAttachedPacks(source.sourceId):[]}catch(_){}if(!packs.length){host.innerHTML='<div class="pack-verification-empty">연결된 지식 팩이 없습니다.</div>';return;}host.innerHTML=packs.map(p=>{const s=verify.getStatus(p.id,p.version,source);return `<article class="pack-verification-card"><div><strong>${esc(p.name)}</strong> <small>${esc(p.version)}</small></div>${formatStatus(s)}<p>${s.trusted?`검증자: ${esc(s.verifiedBy||'')}`:'평점·설치수·자기선언만으로 VERIFIED가 되지 않습니다.'}</p>${s.trusted?`<small>범위 ${esc(s.verificationScope||'{}')} · 만료 ${esc(s.expiresAt||'')}</small>`:''}</article>`}).join('')}
@@ -16,6 +10,5 @@
       panel.querySelector('.pack-verification-head strong').textContent='검증 정보';
       panel.querySelector('.pack-verification-head small').textContent='연결된 지식 팩의 검증 상태를 확인합니다.';
       panel.querySelector('.pack-verification-note').textContent='검증은 해당 팩의 버전과 유효기간에 적용됩니다. 새 버전은 별도 확인이 필요합니다.';
-    }host.appendChild(panel);btn.addEventListener('click',async()=>{panel.hidden=!panel.hidden;if(!panel.hidden)await render()});root.storyMemoryRefreshPackVerification=render;Promise.resolve().then(async()=>{try{if(storedUserId())await root.storyMemoryEnableNeonPackVerification()}catch(_){}})}
   if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })(typeof globalThis!=='undefined'?globalThis:this);

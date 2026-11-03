@@ -4,7 +4,6 @@
   if(root){
     root.STORYMEMORY_PACK_VERIFICATION_CONTRACT=api.STORYMEMORY_PACK_VERIFICATION_CONTRACT;
     root.createStoryMemoryPackVerificationRuntime=api.createStoryMemoryPackVerificationRuntime;
-    root.createStoryMemoryNeonPackVerificationProvider=api.createStoryMemoryNeonPackVerificationProvider;
     root.storyMemoryPackVerification=root.storyMemoryPackVerification||api.createStoryMemoryPackVerificationRuntime({
       universalRuntime:root.storyMemoryUniversalSource||null,
       marketplaceRuntime:root.storyMemoryPackMarketplace||null
@@ -45,24 +44,6 @@
       requestStatus:lower(input.requestStatus||input.request_status||'approved'),artifactFingerprint:String(input.artifactFingerprint||input.artifact_fingerprint||''),
       metadata:clone(input.metadata||{})
     };
-  }
-
-  function createStoryMemoryNeonPackVerificationProvider({remoteAdapter}={}){
-    if(!remoteAdapter||typeof remoteAdapter.request!=='function')throw new Error('STORYMEMORY_REMOTE_ADAPTER_REQUIRED');
-    async function listProgram(){
-      const rows=await remoteAdapter.request('pack_verification_public_state',{query:{select:'attestation_id,pack_id,version,tier,source_fingerprint,verification_scope,attestation_status,issued_at,expires_at,revoked_at,verifier_id,verifier_display_name,verifier_kind,verifier_status,verifier_organization,credential_id,credential_type,credential_issuer,credential_status,credential_valid_from,credential_valid_until,credential_authority_scope,request_id,request_status,artifact_fingerprint',limit:500}});
-      return Array.isArray(rows)?rows:[];
-    }
-    async function listRequests(){
-      const rows=await remoteAdapter.request('pack_verification_requests',{query:{select:'request_id,pack_id,version,requester_id,requested_tier,source_fingerprint,verification_scope,request_status,assigned_verifier_id,created_at,updated_at',order:'updated_at.desc',limit:200}});
-      return Array.isArray(rows)?rows:[];
-    }
-    async function submitRequest(input={}){
-      const body={pack_id:String(input.packId||''),version:String(input.version||''),requester_id:String(input.requesterId||''),requested_tier:lower(input.requestedTier),source_fingerprint:String(input.sourceFingerprint||''),verification_scope:clone(input.verificationScope||{}),request_status:'submitted'};
-      if(!body.pack_id||!body.version||!body.requester_id||!CONTRACT.programTiers.includes(body.requested_tier)||!body.source_fingerprint||!nonEmptyObject(body.verification_scope))throw new Error('VERIFICATION_REQUEST_INVALID');
-      const rows=await remoteAdapter.request('pack_verification_requests',{method:'POST',body,prefer:'return=representation'});return Array.isArray(rows)?rows[0]||body:body;
-    }
-    return Object.freeze({listProgram,listRequests,submitRequest});
   }
 
   function createStoryMemoryPackVerificationRuntime({universalRuntime=null,marketplaceRuntime=null,registryProvider=null,now=null}={}){
@@ -130,5 +111,5 @@
     wireVerifier();
     return Object.freeze({contract:CONTRACT,replaceProgram,listProgram,refresh,evaluateProgramRow,getStatus,verifier,wireVerifier,requestVerification,setUniversalRuntime,setMarketplaceRuntime,setRegistryProvider,onChange,status});
   }
-  return {STORYMEMORY_PACK_VERIFICATION_CONTRACT:CONTRACT,createStoryMemoryPackVerificationRuntime,createStoryMemoryNeonPackVerificationProvider};
+  return {STORYMEMORY_PACK_VERIFICATION_CONTRACT:CONTRACT,createStoryMemoryPackVerificationRuntime};
 });

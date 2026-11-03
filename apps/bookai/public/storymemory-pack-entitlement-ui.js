@@ -3,12 +3,6 @@
   if(!root.document||!root.storyMemoryPackEntitlements||!root.storyMemoryPackMarketplace)return;
   const d=root.document,ent=root.storyMemoryPackEntitlements,market=root.storyMemoryPackMarketplace;
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  function storedUserId(){try{return JSON.parse(root.BookAIStorage?.getItem('storymemory.authBridgeState.v1')||'null')?.user?.id||null}catch(_){return null}}
-  root.storyMemoryEnableNeonPackEntitlements=async function(options={}){
-    if(!root.storyMemoryRemote||!root.createStoryMemoryNeonPackEntitlementProvider)return false;
-    const provider=root.createStoryMemoryNeonPackEntitlementProvider({remoteAdapter:root.storyMemoryRemote,getUserId:()=>options.userId||storedUserId()});
-    ent.setProvider(provider);try{await ent.refreshOffers();await ent.refreshEntitlements();return true}catch(error){console.warn('StoryMemory entitlement provider read bridge unavailable',error);return false}
-  };
   function money(offer){if(!offer)return '가격 정보 없음';return `${offer.currency} ${(offer.amountMinor/100).toFixed(2)}`}
   async function render(){const list=d.getElementById('packEntitlementList');if(!list)return;let rows=market.listCatalog?.()||[];try{await ent.refreshOffers()}catch(_){};try{await ent.refreshEntitlements()}catch(_){};if(!rows.length){list.innerHTML='<div class="pack-entitlement-status">Pack catalog가 비어 있습니다.</div>';return}
     const html=[];for(const row of rows){let access;try{access=await ent.checkAccess(row.packId)}catch(_){access={allowed:false,reason:'ACCESS_CHECK_FAILED'}}const offer=ent.listOffers(row.packId)[0];const paid=row.pricingMode==='paid';html.push(`<article class="pack-entitlement-row" data-pack-id="${esc(row.packId)}"><strong>${esc(row.name)}</strong><div class="pack-entitlement-meta"><span class="pack-entitlement-chip ${access.allowed?'ok':''}">${paid?'PAID':'FREE'}</span><span class="pack-entitlement-chip">${esc(paid?money(offer):'바로 사용')}</span><span class="pack-entitlement-chip ${access.allowed?'ok':''}">${esc(access.allowed?'ACCESS OK':'ENTITLEMENT REQUIRED')}</span></div><div class="pack-entitlement-actions">${paid&&!access.allowed?'<button type="button" data-ent-action="intent">구매 연결 준비</button>':''}${paid?'<button type="button" data-ent-action="restore">구매 복원</button>':''}</div></article>`)}list.innerHTML=html.join('');
@@ -21,6 +15,5 @@
       panel.querySelector('.pack-entitlement-head strong').textContent='이용 권한';
       panel.querySelector('.pack-entitlement-head small').textContent='지식 팩의 사용 가능 여부를 확인합니다.';
       panel.querySelector('#packEntitlementStatus').textContent='이 미리보기에는 결제가 연결되어 있지 않습니다.';
-    }host.appendChild(panel);launch.addEventListener('click',async()=>{panel.hidden=!panel.hidden;if(!panel.hidden)await render()});panel.addEventListener('click',e=>{const b=e.target.closest('button[data-ent-action]');if(b)act(b)});root.storyMemoryOpenPackEntitlements=async()=>{panel.hidden=false;await render();return true};root.storyMemoryRefreshPackEntitlements=render;Promise.resolve().then(async()=>{try{const s=await root.storyMemoryRuntimeStatus?.();if(s?.authenticated)await root.storyMemoryEnableNeonPackEntitlements?.()}catch(_){};});}
   if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })(typeof globalThis!=='undefined'?globalThis:this);

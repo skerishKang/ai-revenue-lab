@@ -4,7 +4,6 @@
   if(root){
     root.STORYMEMORY_PACK_REGISTRY_CONTRACT=api.STORYMEMORY_PACK_REGISTRY_CONTRACT;
     root.createStoryMemoryPackMarketplaceRuntime=api.createStoryMemoryPackMarketplaceRuntime;
-    root.createStoryMemoryNeonPackRegistryProvider=api.createStoryMemoryNeonPackRegistryProvider;
     root.storyMemoryPackMarketplace=root.storyMemoryPackMarketplace||api.createStoryMemoryPackMarketplaceRuntime({
       universalRuntime:root.storyMemoryUniversalSource||null,
       storage:root.BookAIStorage||null
@@ -77,27 +76,6 @@
       upsert:async row=>{const rows=read();const i=rows.findIndex(x=>x.packId===row.packId&&x.sourceIdentity===row.sourceIdentity);if(i>=0)rows[i]={...rows[i],...clone(row),updatedAt:nowIso()};else rows.push({...clone(row),updatedAt:nowIso()});write(rows);return clone(i>=0?rows[i]:rows[rows.length-1])},
       remove:async(packId,sourceIdentity)=>{const rows=read().filter(x=>!(x.packId===packId&&x.sourceIdentity===sourceIdentity));write(rows);return true}
     };
-  }
-
-  function createStoryMemoryNeonPackRegistryProvider({remoteAdapter,getUserId}={}){
-    if(!remoteAdapter||typeof remoteAdapter.request!=='function')throw new Error('STORYMEMORY_REMOTE_ADAPTER_REQUIRED');
-    const eq=v=>`eq.${v}`;
-    const userId=async()=>{const value=typeof getUserId==='function'?await getUserId():getUserId;if(!value)throw new Error('PACK_INSTALL_USER_ID_REQUIRED');return String(value)};
-    async function list(){
-      const [registry,versions,attestations]=await Promise.all([
-        remoteAdapter.request('pack_registry',{query:{select:'pack_id,name,pack_type,creator_id,publisher_name,summary,visibility,pricing_mode,publication_status,latest_version,source_text_included,rights_declaration,compatibility_summary,permissions,processing_disclosure,listing_metadata,created_at,updated_at',publication_status:eq('published'),visibility:eq('public'),order:'updated_at.desc',limit:200}}),
-        remoteAdapter.request('pack_versions',{query:{select:'pack_id,version,schema_version,artifact_uri,artifact_fingerprint,declared_trust_tier,source_match_mode,compatibility,rights,changelog,parent_version,created_at',limit:500}}),
-        remoteAdapter.request('pack_attestations',{query:{select:'id,pack_id,version,verifier_id,verifier_kind,tier,verification_scope,source_fingerprint,status,issued_at,expires_at,revoked_at,metadata',status:eq('valid'),limit:500}})
-      ]);
-      const vs=Array.isArray(versions)?versions:[],ats=Array.isArray(attestations)?attestations:[];
-      return (Array.isArray(registry)?registry:[]).map(r=>({...r,versions:vs.filter(v=>v.pack_id===r.pack_id),attestations:ats.filter(a=>a.pack_id===r.pack_id).map(a=>({...a,trusted:true}))}));
-    }
-    const installProvider={
-      async list(){return remoteAdapter.request('pack_installs',{query:{select:'pack_id,version,source_identity,source_fingerprint,workspace_key,install_status,auto_update,settings,attached_at,detached_at,updated_at',order:'updated_at.desc',limit:200}})},
-      async upsert(row){const uid=await userId();const body={user_id:uid,pack_id:row.packId,version:row.version||'1.0.0',source_identity:row.sourceIdentity,source_fingerprint:row.sourceFingerprint||null,workspace_key:row.workspaceKey||null,install_status:row.installStatus||'installed',auto_update:row.autoUpdate===true,settings:row.settings||{},detached_at:row.detachedAt||null,updated_at:row.updatedAt||nowIso()};const rows=await remoteAdapter.request('pack_installs',{method:'POST',query:{on_conflict:'user_id,pack_id,source_identity'},body,prefer:'resolution=merge-duplicates,return=representation'});return Array.isArray(rows)?rows[0]||body:body},
-      async remove(packId,sourceIdentity){await userId();await remoteAdapter.request('pack_installs',{method:'DELETE',query:{pack_id:eq(packId),source_identity:eq(sourceIdentity)},prefer:'return=minimal'});return true}
-    };
-    return Object.freeze({list,installProvider});
   }
 
   function createStoryMemoryPackMarketplaceRuntime({universalRuntime=null,storage=null,artifactLoader=null,registryProvider=null,installProvider=null}={}){
@@ -200,5 +178,5 @@
     return Object.freeze({contract:CONTRACT,replaceCatalog,mergeCatalog,listCatalog,refresh,getListing,search,sourceCompatible,validatePublication,install,detach,uninstall,listInstalls,restoreInstalls,setUniversalRuntime,setArtifactLoader,setRegistryProvider,setInstallProvider,onChange,status,normalizeListing});
   }
 
-  return {STORYMEMORY_PACK_REGISTRY_CONTRACT:CONTRACT,createStoryMemoryPackMarketplaceRuntime,createStoryMemoryNeonPackRegistryProvider};
+  return {STORYMEMORY_PACK_REGISTRY_CONTRACT:CONTRACT,createStoryMemoryPackMarketplaceRuntime};
 });
