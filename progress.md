@@ -48,3 +48,15 @@
 - observability: added engine_timing (run_hash, trace_id, admission/core/b14/receipt/total ms, bounded outcome) to the JSON orchestration lane and a host-visible stderr handler; Core exposes the last B14 duration in request context.
 - verify: engine suite 4082 passed, 1 skipped; Core runtime/orchestration 101 passed; local Chat->P01 roundtrip 200 with engine_timing total_ms=12.8; COM2 pooled fetch probe 4.13s cold then 0.81/0.79/1.80s versus 2.85/2.59/2.04s per fresh client.
 - PR: ai-revenue-lab #6774.
+
+### 2026-11-03 · Chat model-first (#4651)
+- setup: created isolated worktree E:\PADIEM\model-first-261103 from origin/main a8eff99 on feat/model-first-4651-261103.
+- design: `PADIEM_CHAT_MODEL_FIRST` 기본 off. 켜지면 기존 `/api/orchestration` 검증·등급·usage gate·PC 문맥·grounding 뒤에 같은 B14 답변 모델로 질문+서버 도구 목록을 한 번에 보내고, tool_calls가 없으면 직행 저장, 있으면 기존 `execute_chat_pc_drive_lane`(P01)으로 넘긴다. 별도 분류 호출 없음.
+- authority: 도구 목록은 `pc_context.pc_tools.allowed_scopes` 교집합, 쓰기 도구는 변경 요청일 때만. 모델이 제안하지 않은 도구 호출은 403. 소유자·Mesh grant·target·scope 재확인은 기존 lane 그대로. 꺼진 PC는 도구를 비우고 `pc_work_context` 안내를 모델 문맥에 넣는다. Gemma 등 tool 미지원 route는 엔진 경로 유지.
+- usage: 기존 `UsageGate.authorize`와 `create_guard_from_request`/`apply_guard_to_client`(B14 원장)를 직행 경로에도 그대로 통과. 등급/모델/공급자 변경 없음.
+- streaming: tool_calls 없는 답은 NDJSON meta/delta/done으로 흐른다. `stream` 표시는 라우트 검증에서 분리해 프론트의 `{"stream":1}`을 받는다. 화면 코드는 건드리지 않았다.
+- timing: `orchestration_timing_com2`에 `path=engine|model_first_direct|model_first_tool` 추가.
+- tests: model-first 14 passed (off 동일, 안녕 직행 엔진 0, PC tool lane, 웹 evidence, usage 거부, 꺼진 PC, Gemma, scope 교집합, 미제안 tool, 쓰기 규칙, guard, NDJSON). 기존 orchestration/PC/bridge/tier/identity subset 248 passed.
+- local A/B (fake B14 0.84s + P01 고정비 9.96s 모사): engine 9973ms → model-first 867ms, engine calls 1→0.
+- docs: docs/operations/CHAT_MODEL_FIRST_20261103.md, deploy/host-com2/chat/.env.example.
+- PR: pending.
