@@ -26,6 +26,9 @@ import { errorPageHtml, wantsHtml } from "./error-copy.mjs";
 const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const DEFAULT_HEALTH_TTL_MS = 10000;
 const DEFAULT_TIMEOUT_MS = 8000;
+// A tool call can wait while a common Claw background command is running. The
+// MCP response ceiling is separate from the PC process lifetime.
+const DEFAULT_MCP_TIMEOUT_MS = 180000;
 // #6735: the orchestration answer is one buffered JSON document, so its deadline
 // covers the whole model pipeline. The generic 8s write window is far too short
 // for it; 60s is the CTO's fixed ceiling, and a configured ORCHESTRATION_TIMEOUT_MS
@@ -235,6 +238,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     const canonicalWrites = String(env.COM2_CANONICAL || "off").trim().toLowerCase() === "writes";
     // App AI needs time for a completed model response; records stay on COM2.
     const appsAI = request.method === "POST" && url.pathname === "/api/apps/ai";
+    const mcpRequest = request.method === "POST" && url.pathname === "/api/mcp";
     const bookAIRecords = url.pathname === "/api/bookai/records";
     const authCallback = READ_METHODS.has(request.method) && url.pathname === "/auth/shared/callback";
     const tusWrite = (request.method === "PATCH" || request.method === "POST") &&
@@ -254,6 +258,8 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
       ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS)
       : answerRequest
       ? numeric(env.ORCHESTRATION_TIMEOUT_MS, DEFAULT_ORCHESTRATION_TIMEOUT_MS)
+      : mcpRequest
+      ? numeric(env.MCP_TIMEOUT_MS, DEFAULT_MCP_TIMEOUT_MS)
       : appsAI
       ? numeric(env.APPS_AI_TIMEOUT_MS, 65000)
       : apiRead ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS)
