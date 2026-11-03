@@ -229,7 +229,7 @@ html[data-theme="padiem-glass"] .library-item {
 
 #filesNavButton {
   position: relative;
-  min-height: 40px;
+  min-height: 44px;
 }
 
 #filesNavButton[aria-current="page"] {

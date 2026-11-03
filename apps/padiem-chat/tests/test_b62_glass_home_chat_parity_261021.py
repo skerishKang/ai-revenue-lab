@@ -150,7 +150,7 @@ def test_the_first_screen_origin_is_declared_once() -> None:
     """One token holds the row the brand line and the hero start on."""
     frame = FRAME.read_text(encoding="utf-8")
     assert frame.count(f"{ORIGIN_TOKEN}:") == 1, "the token has two definitions"
-    assert "max(12px, calc((100dvh - 747px) / 3))" in frame
+    assert "max(12px, calc((100dvh - 620px) / 3))" in frame  # 11-03: re-measured for the two-line greeting
     # The Claw hero block is 89px taller than Chat's (565px against 476px). The
     # old second constant let that content difference move the shared origin,
     # which is what the owner saw. The second expression is gone from both files.

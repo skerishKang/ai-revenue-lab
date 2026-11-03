@@ -331,6 +331,7 @@
     const hasMessages = Boolean(messageList && !messageList.hidden && messageList.childElementCount > 0);
     shell.dataset.state = hasMessages ? "chat" : "home";
     syncVisibility();
+    window.PadiemChatRouting?.syncRouteHash?.();
   }
 
   function openLibrary() {
@@ -340,6 +341,9 @@
     syncVisibility();
     closeSidebar();
     filesPanel.focus();
+    // The fragment table belongs to app.js; this screen asks it to publish the
+    // destination the state above just chose.
+    window.PadiemChatRouting?.syncRouteHash?.();
     if (activeTab === "files" && outcome !== "ready" && !loading) loadFiles();
   }
 
@@ -499,6 +503,12 @@
   filesTab.addEventListener("click", () => selectTab("files"));
   imagesTab.addEventListener("click", () => selectTab("images"));
   navButton.addEventListener("click", openLibrary);
+  // 11-03 audit: a shared #padiem-library link opens this screen. app.js owns
+  // the fragment table and publishes the request; the entry and its open path
+  // stay in this module.
+  window.addEventListener("padiem:route-restore", (event) => {
+    if (event && event.detail && event.detail.hash === "#padiem-library") navButton.click();
+  });
   closeButton.addEventListener("click", leaveLibrary);
 
   window.addEventListener("padiem:capabilitychange", (event) => {
