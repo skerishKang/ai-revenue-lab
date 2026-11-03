@@ -386,6 +386,18 @@ async def _job_snapshot(request, *, identity, subject_id, job_id, offset, length
                       "output_truncated": ref["truncated"]}}
 
 
+def _dispatch_refusal_code(payload) -> str | None:
+    """The intent route's fixed refusal code, if the payload names one."""
+    if not isinstance(payload, dict):
+        return None
+    error = payload.get("error")
+    if isinstance(error, dict):
+        code = error.get("code")
+        if isinstance(code, str) and re.fullmatch(r"[a-z][a-z0-9_]{2,63}", code):
+            return code
+    return None
+
+
 async def execute_pc_shell_start(request, *, uid, workspace_id, device_id, run_id,
                                  session, conversation_id, arguments):
     command = build_pc_shell_command(arguments)
@@ -402,7 +414,11 @@ async def execute_pc_shell_start(request, *, uid, workspace_id, device_id, run_i
         # The dispatch could have been created even if a malformed projection
         # came back. Cancel only this run, which contains one MCP command.
         await _cancel_run(request, uid=uid, run_id=run_id)
-        return {"status": "unavailable", "answer": "PC 작업을 시작하지 못했습니다."}
+        # The refusal branch must reach the audit event: the intent route's
+        # fixed code (oracle_mesh_* — why the dispatch did not stage) rides
+        # beside the generic owner wording.
+        return {"status": "unavailable", "answer": "PC 작업을 시작하지 못했습니다.",
+                "deny_reason": _dispatch_refusal_code(payload) or "pc_shell_start_refused"}
     return {"status": "running", "answer": "PC 작업을 시작했습니다.", "job_id": job_id,
             "_job_receipt": job_id}
 

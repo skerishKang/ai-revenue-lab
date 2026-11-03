@@ -253,3 +253,64 @@ def test_single_pc_account_still_resolves_as_before():
     ok = asyncio.run(execution._check_mesh_grant(
         request, session, device_id=NODE, owner_ref=UID))
     assert ok is True
+
+
+def test_shell_start_refusal_carries_the_intent_code(monkeypatch):
+    # 큐 투입이 503으로 거절된 경우(예: oracle_mesh_device_directory_unavailable),
+    # 소유자 문안은 그대로 두고 분기 코드만 이벤트에 실린다.
+    from starlette.responses import JSONResponse
+
+    from app import oracle_mesh_read_return_routes as mesh_routes
+
+    calls: list[str] = []
+
+    async def fake_intent(request, **kwargs):
+        calls.append("intent")
+        return JSONResponse({"ok": False, "error": {"code": "oracle_mesh_device_directory_unavailable",
+            "message": "메시 장치 디렉터리를 사용할 수 없습니다."}}, status_code=503)
+
+    monkeypatch.setattr(mesh_routes, "dispatch_oracle_mesh_command_intent", fake_intent)
+
+    class _Store:
+        async def audit(self, **kwargs):
+            return True
+
+        async def consume_matching_approval(self, **kwargs):
+            return None
+
+        async def cancel_oracle_mesh_dispatches_for_run(self, **kwargs):
+            return 0
+
+        async def record_chat_pc_drive_run(self, **kwargs):
+            return "conv_fixture"
+
+    async def executor(request, principal, tool_name, arguments, *, approval=None):
+        session = SimpleNamespace(session_id="session_fixture")
+        return await execution.execute_pc_shell_start(
+            request, uid=principal["owner_id"], workspace_id="workspace_fixture",
+            device_id=principal["device_id"], run_id="chat_pcq_fixture",
+            session=session, conversation_id=None, arguments=arguments)
+
+    class _State:
+        mcp_gateway_store = _Store()
+        mcp_gateway_executor = staticmethod(executor)
+        oracle_mesh_return_source = SimpleNamespace(
+            configured=True, execution_mode="mesh",
+            command_target=lambda **kwargs: {"account_ref": UID, "command_exec": True},
+            command_target_matches=lambda **kwargs: [_row()],
+        )
+        control_plane_identity_authority = SimpleNamespace(
+            resolve_connector_owner_scope=lambda **kwargs: {"account_ref": UID})
+        pc_device_pairing_store = SimpleNamespace(
+            links_for_owner=lambda **kwargs: [{"mesh_node_id": NODE, "state": "active"}])
+        history_store = _Store()
+        orchestration_bridge = "unused-in-this-branch"
+
+    request = SimpleNamespace(app=SimpleNamespace(state=_State()))
+    principal = {"owner_id": UID, "device_id": NODE, "token_id": "mcp_token_fixture"}
+    outcome = asyncio.run(dispatch.dispatch_mcp_tool(
+        request, principal, "pc_shell_start", {"command": "hostname", "cwd": "D:\\"}))
+    assert calls == ["intent"]
+    assert outcome["status"] == "unavailable"
+    assert outcome["answer"] == "PC 작업을 시작하지 못했습니다."
+    assert outcome["deny_reason"] == "oracle_mesh_device_directory_unavailable"
