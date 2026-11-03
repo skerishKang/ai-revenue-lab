@@ -99,6 +99,10 @@
       },
       name: "PC 이름",
       renamed: "PC 이름을 저장했습니다.",
+      installCancel: "설치 취소",
+      installReprepare: "설치 다시 준비",
+      installCancelled: "이 설치를 취소했습니다. 이미 내려받은 파일로는 연결되지 않습니다.",
+      installReprepared: "새 설치 파일을 준비했습니다. 내려받은 파일을 실행해 주세요.",
     },
     en: {
       heading: "PCs connected to this account",
@@ -151,12 +155,45 @@
       },
       name: "PC name",
       renamed: "PC name saved.",
+      installCancel: "Cancel install",
+      installReprepare: "Prepare new install",
+      installCancelled: "This install was cancelled. A file already downloaded will not connect.",
+      installReprepared: "A new install file is ready. Please run the downloaded file.",
     },
   });
 
+  // #6695 PR-4: the install-management strings are owned by locale.js, so the
+  // page's language switch reaches them like every other shared string. The
+  // local COPY stays the fallback for a page that loads this card alone.
+  const SHARED_KEYS = Object.freeze({
+    installCancel: "pc-pairing-install-cancel",
+    installReprepare: "pc-pairing-install-reprepare",
+    installCancelled: "pc-pairing-install-cancelled",
+    installReprepared: "pc-pairing-install-reprepared",
+  });
+  let localeCache = { signature: "", copy: null };
+
   function locale() {
     const lang = (document.documentElement.lang || "ko").toLowerCase();
-    return COPY[lang.startsWith("en") ? "en" : "ko"];
+    const code = lang.startsWith("en") ? "en" : "ko";
+    const base = COPY[code];
+    const shared = window.__padiemLocale;
+    const overrides = {};
+    let signature = code;
+    const sharedLang = typeof shared?.getCurrent === "function" ? shared.getCurrent() : code;
+    if (sharedLang === code && typeof shared?.text === "function") {
+      for (const [name, key] of Object.entries(SHARED_KEYS)) {
+        const value = shared.text(key);
+        if (typeof value === "string" && value && value !== key) {
+          overrides[name] = value;
+          signature += "|" + value;
+        }
+      }
+    }
+    if (localeCache.signature === signature && localeCache.copy) return localeCache.copy;
+    const copy = Object.keys(overrides).length ? { ...base, ...overrides } : base;
+    localeCache = { signature, copy };
+    return copy;
   }
 
   function element(tag, className, text) {
@@ -186,7 +223,7 @@
           raw += new TextDecoder().decode(done.value, { stream: true });
           if (raw.length > MAX_RESPONSE_BYTES) {
             await reader.cancel();
-            return { ok: false, code: "pc_pairing_too_large", status: 0, body: null };
+            return { ok: false, code: "pc_pairing_too_large", status: 0, body: null, codeId: null };
           }
         }
       }
@@ -205,9 +242,12 @@
         // The install file is not JSON: the text is what the owner downloads,
         // so it is carried as-is rather than dropped by the parse above.
         text: raw,
+        // Which install this download minted, so the owner can cancel or
+        // replace exactly this one. A code id is not a possession proof.
+        codeId: response.headers.get("X-PC-Pairing-Code-Id"),
       };
     } catch (networkError) {
-      return { ok: false, code: null, status: 0, body: null, text: "" };
+      return { ok: false, code: null, status: 0, body: null, text: "", codeId: null };
     } finally {
       clearTimeout(timer);
     }
@@ -232,7 +272,7 @@
     URL.revokeObjectURL(url);
   }
 
-  async function downloadProgram(url, name) {
+  async function downloadProgram(url, name, payload) {
     // The program is bytes, not text. Reading it through the text path above would
     // rewrite every byte that is not valid UTF-8, and the PC would be handed a file
     // that does not run - so the download the person double-clicks has its own
@@ -245,7 +285,7 @@
         credentials: "same-origin",
         signal: controller.signal,
         headers: { "Content-Type": "application/json", Accept: "application/octet-stream" },
-        body: "{}",
+        body: JSON.stringify(payload || {}),
       });
       if (!response.ok) {
         let code = null;
@@ -269,9 +309,16 @@
       link.download = name;
       link.click();
       URL.revokeObjectURL(objectUrl);
-      return { ok: true, status: response.status, code: null };
+      return {
+        ok: true,
+        status: response.status,
+        code: null,
+        // Which install this download minted, so the owner can cancel or
+        // replace exactly this one. A code id is not a possession proof.
+        codeId: response.headers.get("X-PC-Pairing-Code-Id"),
+      };
     } catch (networkError) {
-      return { ok: false, status: 0, code: null };
+      return { ok: false, status: 0, code: null, codeId: null };
     } finally {
       clearTimeout(timer);
     }
@@ -296,7 +343,19 @@
     stepsList.append(step1, step2, step3);
     const wait = element("p", "pc-pairing-wait", t.wait);
     wait.hidden = true;
-    steps.append(stepsTitle, stepsList, wait);
+    // #6695 PR-4: an install this account handed out can still be cancelled or
+    // replaced. The two controls appear only after a download landed, and the
+    // token they act on never appears here - it lives inside the file itself.
+    const installTools = element("div", "pc-pairing-install-tools");
+    installTools.hidden = true;
+    const cancelInstallButton = element(
+      "button", "pc-pairing-install-cancel connector-retry", t.installCancel);
+    cancelInstallButton.type = "button";
+    const reprepareInstallButton = element(
+      "button", "pc-pairing-install-reprepare connector-retry", t.installReprepare);
+    reprepareInstallButton.type = "button";
+    installTools.append(cancelInstallButton, reprepareInstallButton);
+    steps.append(stepsTitle, stepsList, wait, installTools);
     // The script lane is the same pairing for a PC where policy blocks the
     // program; it is one disclosure away instead of a second offer.
     const alternate = element("details", "pc-pairing-alternate");
@@ -318,7 +377,8 @@
     card.append(section);
     return {
       section, heading, help, connectButton, steps, stepsTitle, wait, status, list,
-      scriptButton, issueButton, alternate,
+      scriptButton, issueButton, alternate, installTools,
+      cancelInstallButton, reprepareInstallButton,
     };
   }
 
@@ -427,6 +487,21 @@
     const view = install(card, t);
     let lastLinks = [];
     let poll = null;
+    // The install this card handed out most recently: a code id and the lane it
+    // was downloaded through (program or script). The token itself is inside
+    // the file and never held or rendered here.
+    let activeInstall = null;
+
+    function rememberInstall(codeId, lane) {
+      if (typeof codeId !== "string" || !codeId) return;
+      activeInstall = { codeId, lane };
+      view.installTools.hidden = false;
+    }
+
+    function forgetInstall() {
+      activeInstall = null;
+      view.installTools.hidden = true;
+    }
 
     const say = (ok, text, code) => {
       view.status.textContent = text || "";
@@ -478,6 +553,9 @@
           && link.state !== "replaced");
         if (fresh) {
           stopPoll();
+          // The install has done its job, so its cancel/replace controls go
+          // away with it: the link is now unlinked through the row menu.
+          forgetInstall();
           const label = fresh.label || "";
           say(true, label ? `${t.connectedDone} (${label})` : t.connectedDone);
           return;
@@ -527,8 +605,9 @@
         stopPoll();
         closeMenus();
         say(true, t.connecting);
-        const program = await downloadProgram(INSTALL_EXE, INSTALL_EXE_FILENAME);
+        const program = await downloadProgram(INSTALL_EXE, INSTALL_EXE_FILENAME, {});
         if (program.ok) {
+          rememberInstall(program.codeId, "exe");
           view.steps.hidden = false;
           await load(true);
           say(true, t.connected);
@@ -559,11 +638,87 @@
           return false;
         }
         saveFile(INSTALL_FILENAME, result.text);
+        rememberInstall(result.codeId, "script");
         view.steps.hidden = false;
         await load(true);
         say(true, t.connected);
         startPoll();
         return true;
+      },
+      // Cancel one install this account handed out: the token is stamped and
+      // its still-pending code is cancelled, so a file already downloaded no
+      // longer pairs a PC. An install that already built a link only retires
+      // the token; the PC itself is unlinked from its row menu.
+      async cancelInstall() {
+        if (!activeInstall) return;
+        stopPoll();
+        say(true, t.connecting);
+        const result = await request(
+          `${PAIRINGS}/${encodeURIComponent(activeInstall.codeId)}/token/revoke`,
+          { method: "POST" },
+        );
+        if (!result.ok) {
+          say(false, messageFor(result, t), result.code || undefined);
+          return;
+        }
+        forgetInstall();
+        view.steps.hidden = true;
+        await load(true);
+        say(true, t.installCancelled);
+      },
+      // Replace the install with a fresh code and token, then re-download
+      // through the same lane so exactly one pending install exists and the
+      // owner once again holds a file that works.
+      async reprepareInstall() {
+        if (!activeInstall) return;
+        say(true, t.connecting);
+        const reused = activeInstall.lane;
+        const result = await request(
+          `${PAIRINGS}/${encodeURIComponent(activeInstall.codeId)}/token/reissue`,
+          { method: "POST" },
+        );
+        if (!result.ok) {
+          say(false, messageFor(result, t), result.code || undefined);
+          return;
+        }
+        const pairing = result.body?.pairing;
+        const code = pairing && typeof pairing.code === "string" ? pairing.code : null;
+        let token = null;
+        try {
+          token = new URL(String(pairing?.install_url), window.location?.origin)
+            .searchParams.get("padiem_install_token");
+        } catch (badUrl) {
+          token = null;
+        }
+        if (!code || !token) {
+          say(false, t.failed);
+          return;
+        }
+        const payload = { code, install_token: token };
+        if (reused === "script") {
+          const file = await request(INSTALL_FILE, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "text/plain" },
+            body: JSON.stringify(payload),
+          });
+          if (!file.ok || !file.text) {
+            say(false, messageFor(file, t), file.code || undefined);
+            return;
+          }
+          saveFile(INSTALL_FILENAME, file.text);
+          rememberInstall(file.codeId, "script");
+        } else {
+          const program = await downloadProgram(INSTALL_EXE, INSTALL_EXE_FILENAME, payload);
+          if (!program.ok) {
+            say(false, messageFor(program, t), program.code || undefined);
+            return;
+          }
+          rememberInstall(program.codeId, "exe");
+        }
+        view.steps.hidden = false;
+        await load(true);
+        say(true, t.installReprepared);
+        startPoll();
       },
       async issue() {
         say(true, t.issuing);
@@ -678,6 +833,8 @@
 
     view.connectButton.addEventListener("click", () => { void actions.connect(); });
     view.scriptButton.addEventListener("click", () => { void actions.connectScript(); });
+    view.cancelInstallButton.addEventListener("click", () => { void actions.cancelInstall(); });
+    view.reprepareInstallButton.addEventListener("click", () => { void actions.reprepareInstall(); });
     view.issueButton.addEventListener("click", () => { void actions.issue(); });
     window.addEventListener("padiem:auth-state", () => { void load(true); });
     window.addEventListener("pageshow", () => { void load(); });
@@ -695,6 +852,8 @@
       view.wait.textContent = t.wait;
       view.scriptButton.textContent = t.connectScript;
       view.issueButton.textContent = t.issue;
+      view.cancelInstallButton.textContent = t.installCancel;
+      view.reprepareInstallButton.textContent = t.installReprepare;
       draw();
     }).observe(document.documentElement, {
       attributes: true, attributeFilter: ["lang"],

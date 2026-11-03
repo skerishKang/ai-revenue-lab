@@ -348,6 +348,8 @@ from .pc_device_pairing_routes import (
     PC_PAIRING_PATH,
     PC_PAIRING_ROOT_PATH,
     PC_PAIRING_ROOTS_PATH,
+    PC_PAIRING_TOKEN_REISSUE_PATH,
+    PC_PAIRING_TOKEN_REVOKE_PATH,
     pc_pairing_approve_root,
     pc_pairing_adopt,
     pc_pairing_claim,
@@ -361,6 +363,8 @@ from .pc_device_pairing_routes import (
     pc_pairing_resume,
     pc_pairing_revoke,
     pc_pairing_revoke_root,
+    pc_pairing_token_reissue,
+    pc_pairing_token_revoke,
 )
 from .pc_file_exchange_routes import (
     PC_BROWSE_PATH,
@@ -1026,6 +1030,10 @@ def create_app(
         Route(PC_PAIRING_LABEL_PATH, pc_pairing_label, methods=["POST"]),
         Route(PC_PAIRING_PAUSE_PATH, pc_pairing_pause, methods=["POST"]),
         Route(PC_PAIRING_RESUME_PATH, pc_pairing_resume, methods=["POST"]),
+        # #6695 PR-4: the owner cancels an install, or replaces it with a fresh
+        # code and token. Both are owner-scoped and refuse 503 without a store.
+        Route(PC_PAIRING_TOKEN_REVOKE_PATH, pc_pairing_token_revoke, methods=["POST"]),
+        Route(PC_PAIRING_TOKEN_REISSUE_PATH, pc_pairing_token_reissue, methods=["POST"]),
         Route(PC_PAIRING_ROOTS_PATH, pc_pairing_approve_root, methods=["POST"]),
         Route(PC_PAIRING_ROOT_PATH, pc_pairing_revoke_root, methods=["DELETE"]),
         # #5895: the shared "from my PC / to my PC" part the menus will use. The

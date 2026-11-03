@@ -3,7 +3,8 @@
 Only the migrations that own the tables the queue is responsible for are applied here:
 `oracle_mesh_dispatch` (047·048·049·063·074), `mesh_device_presence` (067·070·091) and the
 pairing directory `pc_pairing_codes` + `pc_device_links` (072·073), and the latest
-drive inventory `mesh_device_drives` (086). Conversation rows —
+drive inventory `mesh_device_drives` (086), and the per-account install token
+`pc_install_tokens` (093). Conversation rows —
 runs, messages, tool calls, the preferred-PC selection — stay in Cloudflare D1, which is
 the split the design was approved on.
 
@@ -90,6 +91,10 @@ QUEUE_MIGRATIONS = (
     # #6695 PR-2: the presence receipt's owner-account list. The store's load()
     # reads the column, so a queue database without it cannot serve either.
     "091_mesh_device_presence_accounts.sql",
+    # #6695 PR-4: the per-account install token a pairing code is minted with.
+    # issue_code writes the row and the claim path reads it, so a queue
+    # database without the table cannot serve either.
+    "093_pc_install_tokens.sql",
 )
 
 QUEUE_TABLES = (
@@ -98,6 +103,7 @@ QUEUE_TABLES = (
     "pc_pairing_codes",
     "pc_device_links",
     "mesh_device_drives",
+    "pc_install_tokens",
 )
 
 #: The ledger itself, plus the columns the queue's own SQL reads. A database that lacks any
@@ -122,6 +128,7 @@ REQUIRED_COLUMNS = {
         "link_id", "state", "roots_json", "paused_at", "superseded_at", "superseded_by",
     ),
     "mesh_device_drives": ("device_id", "drives_json", "received_at"),
+    "pc_install_tokens": ("token_id", "token_sha256", "code_id", "user_id", "expires_at", "revoked_at"),
 }
 
 __all__ = [

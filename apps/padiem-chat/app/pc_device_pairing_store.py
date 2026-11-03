@@ -1,12 +1,17 @@
 """#5573 PC pairing store: who owns which PC, and which folders that link allows.
 
-Two tables from migration 072 and nothing else. The rules this module owns are
-narrow on purpose:
+The tables from migration 072 (plus 089's supersede columns and 093's install
+tokens). The rules this module owns are narrow on purpose:
 
 * A pairing code is a **possession proof**, never an identity. Only its SHA-256
   and the SHA-256 of the install tag derived from it are stored; the plaintext
   code exists only in the response that hands it to the browser and the install
   link built from it. A code is single use and short lived.
+* #6695 PR-4: each code is minted with one **install token**, also stored only
+  as its SHA-256. The token is what an install URL carries, so a claim that
+  presents a token minted for another account - or one the owner has revoked -
+  is refused before any link is written. A code minted before this table
+  existed has no token and pairs exactly as it did.
 * A link is `(user_id, mesh_node_id)` — many accounts to many PCs (R1). The
   identity is validated by the same Core grammar the dispatch and presence
   lanes already use, in either canonical form, so a link can never name a
@@ -46,6 +51,11 @@ PAIRING_CODE_CHARS = 12
 #: derived from the code, so the PC needs nothing but the code to reproduce it.
 PAIRING_TAG_PREFIX = "pd-"
 PAIRING_TAG_CHARS = 8
+#: #6695 PR-4: the per-account install token that travels beside the code. Only
+#: its SHA-256 is stored, exactly like the code: the plaintext exists in the
+#: issue response and the URL built from it, and nowhere else.
+INSTALL_TOKEN_PREFIX = "pt_"
+INSTALL_TOKEN_HEX_CHARS = 32
 MAX_ROOTS_JSON_CHARS = 8192
 MAX_ROOT_PATH_CHARS = 512
 MAX_ROOT_LABEL_CHARS = 64
@@ -61,6 +71,19 @@ _CODE_ID_RE = re.compile(r"^pcpair_[0-9a-f]{32}$")
 #: found inside them rather than assumed to be them.
 _AGENT_TAG_RE = re.compile(
     r"(?<![0-9A-Za-z])" + re.escape(PAIRING_TAG_PREFIX) + r"[0-9a-f]{8}(?![0-9A-Za-z])",
+    re.IGNORECASE,
+)
+#: The install token as the install file stamps it into the agent name, right
+#: after the tag. Matched the same careful way the tag is, so a longer word that
+#: merely contains the shape is never mistaken for a presented token.
+_INSTALL_TOKEN_RE = re.compile(
+    r"^" + re.escape(INSTALL_TOKEN_PREFIX) + r"[0-9a-f]{%d}$" % INSTALL_TOKEN_HEX_CHARS
+)
+_AGENT_TOKEN_RE = re.compile(
+    r"(?<![0-9A-Za-z])"
+    + re.escape(INSTALL_TOKEN_PREFIX)
+    + r"[0-9a-f]{%d}" % INSTALL_TOKEN_HEX_CHARS
+    + r"(?![0-9A-Za-z])",
     re.IGNORECASE,
 )
 #: A link carries up to two names of one machine in one bounded sentence: the
@@ -91,6 +114,15 @@ class PcPairingStore(Protocol):
     async def redeem_code(
         self, *, code: str, mesh_node_id: str, label: str | None, now: datetime,
         verified: bool = False, drives: list[str] | None = None,
+        install_token: str | None = None,
+    ) -> dict[str, Any]: ...
+
+    async def revoke_install_token(
+        self, *, user_id: str, code_id: str, now: datetime,
+    ) -> dict[str, Any]: ...
+
+    async def reissue_install_token(
+        self, *, user_id: str, code_id: str, now: datetime,
     ) -> dict[str, Any]: ...
 
     async def list_links(self, *, user_id: str) -> list[dict[str, Any]]: ...
@@ -368,6 +400,23 @@ def tag_from_agent_name(value: Any) -> str | None:
     return found[0]
 
 
+def install_token_from_agent_name(value: Any) -> str | None:
+    """The one install token inside an observed agent name, or ``None``.
+
+    The install file writes `<tag> <token> [drives] <machine>`, so the token and
+    the tag arrive on the same channel. Exactly one match is required, the same
+    rule the tag follows: a name carrying two tokens is not a claim and is not
+    guessed at. A name the double-click program built carries no token, and
+    answers ``None`` - that lane is held to the token's binding instead.
+    """
+    if not isinstance(value, str) or not 1 <= len(value) <= 256:
+        return None
+    found = [match.group(0).lower() for match in _AGENT_TOKEN_RE.finditer(value)]
+    if len(found) != 1:
+        return None
+    return found[0]
+
+
 #: One Windows computer name, as the install lane reports it: a single word of
 #: letters, digits, dots, underscores or hyphens. An owner's alias ("집 PC",
 #: "my office") is not a machine name and never decides sameness.
@@ -524,6 +573,10 @@ class D1PcPairingStore:
         # misread into another account's pending pairing.
         code = "".join(secrets.choice(PAIRING_CODE_ALPHABET) for _ in range(PAIRING_CODE_CHARS))
         code_id = "pcpair_" + secrets.token_hex(16)
+        # #6695 PR-4: the token is minted with the code and lives exactly as long,
+        # so there is one possession proof to cancel, not two clocks to reconcile.
+        install_token = INSTALL_TOKEN_PREFIX + secrets.token_hex(INSTALL_TOKEN_HEX_CHARS // 2)
+        token_id = "pctok_" + secrets.token_hex(16)
         await self._run(
             "INSERT INTO pc_pairing_codes "
             "(code_id, code_sha256, tag_sha256, user_id, state, mesh_node_id, "
@@ -531,16 +584,33 @@ class D1PcPairingStore:
             "VALUES (?, ?, ?, ?, 'pending', NULL, ?, ?, NULL)",
             code_id, _hash(code), _hash(derive_install_tag(code)), owner, issued, expires,
         )
+        await self._run(
+            "INSERT INTO pc_install_tokens "
+            "(token_id, token_sha256, code_id, user_id, issued_at, expires_at, revoked_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, NULL)",
+            token_id, _hash(install_token), code_id, owner, issued, expires,
+        )
         stored = await self._first(
             "SELECT code_id, user_id, state, expires_at FROM pc_pairing_codes WHERE code_id=?",
             code_id,
         )
         if not stored or stored.get("user_id") != owner or stored.get("state") != "pending":
             raise PcPairingError("pairing code not stored")
+        token_row = await self._first(
+            "SELECT token_id, user_id FROM pc_install_tokens WHERE code_id=?", code_id,
+        )
+        if (
+            not isinstance(token_row, dict)
+            or token_row.get("token_id") != token_id
+            or token_row.get("user_id") != owner
+        ):
+            raise PcPairingError("install token not stored")
         return {
             "code_id": code_id,
             "code": code,
             "install_tag": derive_install_tag(code),
+            "install_token": install_token,
+            "token_id": token_id,
             "issued_at": issued,
             "expires_at": expires,
         }
@@ -573,32 +643,170 @@ class D1PcPairingStore:
             "expires_at": row["expires_at"],
         }
 
+    async def _owned_code(self, owner: str, code_id: Any) -> dict[str, Any]:
+        if not isinstance(code_id, str) or _CODE_ID_RE.fullmatch(code_id) is None:
+            raise PcPairingError("pairing code id invalid")
+        code = await self._first(
+            "SELECT code_id, user_id, state FROM pc_pairing_codes WHERE code_id=?",
+            code_id,
+        )
+        if not isinstance(code, dict) or not code.get("code_id"):
+            raise PcPairingError("pairing code unknown")
+        if code.get("user_id") != owner:
+            raise PcPairingError("pairing code not yours")
+        return code
+
+    async def revoke_install_token(
+        self, *, user_id: str, code_id: str, now: datetime,
+    ) -> dict[str, Any]:
+        """Cancel one pending install: the token and its code stop pairing.
+
+        Cancelling is the owner's answer to a file they handed out and no longer
+        want used. The token is stamped (never deleted, so a refused claim can
+        say why) and a still-pending code is cancelled with it - leaving the
+        code alive would let the same install pair through the typed-code path
+        with the token's half already withdrawn.
+        """
+        owner = _user_id(user_id)
+        code = await self._owned_code(owner, code_id)
+        moment = _stamp(now)
+        await self._run(
+            "UPDATE pc_install_tokens SET revoked_at=? "
+            "WHERE code_id=? AND revoked_at IS NULL",
+            moment, code["code_id"],
+        )
+        if code.get("state") == "pending":
+            await self._run(
+                "UPDATE pc_pairing_codes SET state='cancelled' "
+                "WHERE code_id=? AND state='pending'",
+                code["code_id"],
+            )
+        token = await self._first(
+            "SELECT revoked_at FROM pc_install_tokens WHERE code_id=?", code["code_id"],
+        )
+        stored = await self._first(
+            "SELECT state FROM pc_pairing_codes WHERE code_id=?", code["code_id"],
+        )
+        return {
+            "code_id": code["code_id"],
+            "revoked_at": (
+                token.get("revoked_at") if isinstance(token, dict) else None
+            ),
+            "code_state": (
+                stored.get("state") if isinstance(stored, dict) else code.get("state")
+            ),
+        }
+
+    async def reissue_install_token(
+        self, *, user_id: str, code_id: str, now: datetime,
+    ) -> dict[str, Any]:
+        """Replace a cancelled or expired install with a fresh code and token.
+
+        Reissue is revoke plus a new mint, in that order: the old pair is
+        retired first, so a failure between the two steps leaves nothing usable
+        behind rather than two live installs. A code that already built a link
+        is not reissued - re-pairing that PC is a new install, not a repair of
+        the old one.
+        """
+        owner = _user_id(user_id)
+        code = await self._owned_code(owner, code_id)
+        if code.get("state") == "claimed":
+            raise PcPairingError("pairing code used")
+        await self.revoke_install_token(user_id=owner, code_id=code["code_id"], now=now)
+        return await self.issue_code(user_id=owner, issued_at=now)
+
     async def list_codes(self, *, user_id: str, now: datetime) -> list[dict[str, Any]]:
         owner = _user_id(user_id)
         moment = _stamp(now)
         rows = await self._all(
-            "SELECT code_id, state, mesh_node_id, issued_at, expires_at, claimed_at "
-            "FROM pc_pairing_codes WHERE user_id=? ORDER BY issued_at DESC LIMIT 20",
+            "SELECT c.code_id, c.state, c.mesh_node_id, c.issued_at, c.expires_at, "
+            "c.claimed_at, t.expires_at AS token_expires_at, "
+            "t.revoked_at AS token_revoked_at "
+            "FROM pc_pairing_codes c LEFT JOIN pc_install_tokens t ON t.code_id=c.code_id "
+            "WHERE c.user_id=? ORDER BY c.issued_at DESC LIMIT 20",
             owner,
         )
-        return [
-            {
+        listed: list[dict[str, Any]] = []
+        for row in rows:
+            if not isinstance(row, dict) or not row.get("code_id"):
+                continue
+            # #6695 PR-4: the owner's list can say whether this code's install
+            # token still stands, so a cancelled install is visible without
+            # reading back the token itself (which cannot be read back at all).
+            token_state: str | None = None
+            if row.get("token_expires_at"):
+                if row.get("token_revoked_at"):
+                    token_state = "revoked"
+                elif str(row["token_expires_at"]) <= moment:
+                    token_state = "expired"
+                else:
+                    token_state = "active"
+            listed.append({
                 "code_id": row["code_id"],
                 "state": (
                     "expired"
                     if row["state"] == "pending" and str(row["expires_at"]) <= moment
                     else row["state"]
                 ),
+                "install_token_state": token_state,
                 "issued_at": row["issued_at"],
                 "expires_at": row["expires_at"],
-            }
-            for row in rows
-            if isinstance(row, dict) and row.get("code_id")
-        ]
+            })
+        return listed
+
+    async def _install_token_gate(
+        self, *, code_id: str, owner: str, presented: Any, moment: str,
+    ) -> None:
+        """Refuse a *new* pairing whose install token no longer stands.
+
+        Two answers, one rule. A presented token must be the one minted for this
+        code and this account - a valid token from another account is exactly
+        the case #6695 PR-4 exists to refuse. A claim that presents nothing is
+        held to the binding instead: if the code was minted with a token and
+        that token has been revoked or has expired, the claim is refused, and a
+        code minted before this table existed has no binding and is claimed the
+        way it always was.
+        """
+        if presented is not None:
+            token = presented if isinstance(presented, str) else ""
+            if _INSTALL_TOKEN_RE.fullmatch(token) is None:
+                raise PcPairingError("install token invalid")
+            row = await self._first(
+                "SELECT token_sha256, code_id, user_id, expires_at, revoked_at "
+                "FROM pc_install_tokens WHERE token_sha256=?",
+                _hash(token),
+            )
+            if not isinstance(row, dict) or not row.get("token_sha256"):
+                raise PcPairingError("install token invalid")
+            if row.get("code_id") != code_id or row.get("user_id") != owner:
+                raise PcPairingError("install token invalid")
+            if row.get("revoked_at"):
+                raise PcPairingError("install token revoked")
+            if str(row.get("expires_at") or "") <= moment:
+                raise PcPairingError("install token expired")
+            return
+        row = await self._first(
+            "SELECT expires_at, revoked_at FROM pc_install_tokens WHERE code_id=?",
+            code_id,
+        )
+        if not isinstance(row, dict) or not row.get("expires_at"):
+            return
+        if row.get("revoked_at"):
+            raise PcPairingError("install token revoked")
+        if str(row.get("expires_at") or "") <= moment:
+            raise PcPairingError("install token expired")
+
+    async def _link_exists(self, owner: str, node: str) -> bool:
+        row = await self._first(
+            "SELECT link_id FROM pc_device_links WHERE user_id=? AND mesh_node_id=?",
+            owner, node,
+        )
+        return isinstance(row, dict) and bool(row.get("link_id"))
 
     async def redeem_code(
         self, *, code: str, mesh_node_id: str, label: str | None, now: datetime,
         verified: bool = False, drives: list[str] | None = None,
+        install_token: str | None = None,
     ) -> dict[str, Any]:
         """Consume one code and create or refresh the (user, node) link.
 
@@ -625,7 +833,11 @@ class D1PcPairingStore:
         if not isinstance(row, dict) or not row.get("code_id"):
             raise PcPairingError("pairing code unknown")
         owner = _user_id(row.get("user_id"))
-        if row.get("state") != "pending":
+        # A `cancelled` row still reaches the token gate below: the owner who
+        # cancelled an install deserves to hear that the install was cancelled,
+        # and a presented token from another account should never be called
+        # "already used" on its way to being refused.
+        if row.get("state") not in ("pending", "cancelled"):
             raise PcPairingError("pairing code used")
         if str(row.get("expires_at") or "") <= moment:
             await self._run(
@@ -634,6 +846,15 @@ class D1PcPairingStore:
                 row["code_id"],
             )
             raise PcPairingError("pairing code expired")
+        # #6695 PR-4: a link that already exists is untouched by this rule - a
+        # PC that paired before tokens existed keeps pairing the way it did.
+        if not await self._link_exists(owner, node):
+            await self._install_token_gate(
+                code_id=row["code_id"], owner=owner,
+                presented=install_token, moment=moment,
+            )
+        if row.get("state") != "pending":
+            raise PcPairingError("pairing code used")
         # Single use, decided by the database: two installers racing on one code
         # must not both build a link, so the loser of the UPDATE sees a non-
         # pending row and is refused rather than guessing.
@@ -817,7 +1038,7 @@ class D1PcPairingStore:
         if not isinstance(row, dict) or not row.get("code_id"):
             raise PcPairingError("pairing tag unknown")
         owner = _user_id(row.get("user_id"))
-        if row.get("state") != "pending":
+        if row.get("state") not in ("pending", "cancelled"):
             # The tag is exactly as single-use as the code it came from.
             raise PcPairingError("pairing code used")
         if str(row.get("expires_at") or "") <= moment:
@@ -827,6 +1048,17 @@ class D1PcPairingStore:
                 row["code_id"],
             )
             raise PcPairingError("pairing code expired")
+        # #6695 PR-4: the install file stamps its token into the same name the
+        # tag rides in, so a token minted for another account is refused here
+        # even though the tag alone would have matched. A name with no token is
+        # held to the binding; an existing link is not re-checked at all.
+        if not await self._link_exists(owner, node):
+            await self._install_token_gate(
+                code_id=row["code_id"], owner=owner,
+                presented=install_token_from_agent_name(agent_name), moment=moment,
+            )
+        if row.get("state") != "pending":
+            raise PcPairingError("pairing code used")
         await self._run(
             "UPDATE pc_pairing_codes SET state='claimed', mesh_node_id=?, claimed_at=? "
             "WHERE code_id=? AND state='pending'",
@@ -1304,15 +1536,17 @@ def pc_name_from_agent_name(value: Any) -> str | None:
     """The Windows machine name inside an observed agent name, or ``None``.
 
     An agent reports its own machine name, and the pairing lane decorates that
-    name on the way in: the tag that decides the owner, and the drive letters
-    the PC declares. Removing both decorations leaves the name Windows chose,
-    which is the label a linked PC gets before the owner ever renames it. A name
-    that is nothing but decoration has no machine name, and is answered as
-    ``None`` rather than with the decoration.
+    name on the way in: the tag that decides the owner, the install token the
+    install file presents, and the drive letters the PC declares. Removing all
+    three decorations leaves the name Windows chose, which is the label a
+    linked PC gets before the owner ever renames it. A name that is nothing but
+    decoration has no machine name, and is answered as ``None`` rather than
+    with the decoration.
     """
     if not isinstance(value, str):
         return None
     residue = _NAME_DRIVES_RE.sub(" ", value)
+    residue = _AGENT_TOKEN_RE.sub(" ", residue)
     residue = _AGENT_TAG_RE.sub(" ", residue)
     # A Windows machine names itself in one word, so the first remaining word is
     # the name and anything a person appended after it is annotation, not name.
@@ -1403,6 +1637,8 @@ def link_named_in(text: Any, links: Any) -> str | None:
 
 __all__ = [
     "D1PcPairingStore",
+    "INSTALL_TOKEN_HEX_CHARS",
+    "INSTALL_TOKEN_PREFIX",
     "MAX_ROOTS_JSON_CHARS",
     "MAX_ROOT_LABEL_CHARS",
     "MAX_ROOT_PATH_CHARS",
@@ -1415,6 +1651,7 @@ __all__ = [
     "derive_install_tag",
     "drive_root",
     "drives_from_agent_name",
+    "install_token_from_agent_name",
     "canonical_label",
     "label_machine_key",
     "link_named_in",
