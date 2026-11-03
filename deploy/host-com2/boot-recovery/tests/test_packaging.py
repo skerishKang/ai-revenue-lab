@@ -99,7 +99,7 @@ class PowerShellSyntax(unittest.TestCase):
                 "if ($errors.Count -gt 0) { $errors | ForEach-Object { Write-Error $_ }; exit 1 } exit 0"
             )
             result = subprocess.run([executable, "-NoProfile", "-Command", script],
-                                    capture_output=True, text=True)
+                                    capture_output=True, text=True, encoding="utf-8")
             self.assertEqual(result.returncode, 0, f"{name}: {result.stderr or result.stdout}")
 
 

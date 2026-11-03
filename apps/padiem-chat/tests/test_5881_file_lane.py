@@ -175,7 +175,7 @@ const assert = require("node:assert/strict");
   console.log("PASS");
 })().catch(e=>{console.error(e);process.exit(1)});
 '''
-    result = subprocess.run(["node", "-e", script], text=True, capture_output=True)
+    result = subprocess.run(["node", "-e", script], text=True, encoding="utf-8", capture_output=True)
     assert result.returncode == 0, result.stderr
     app = (static / "app.js").read_text()
     # #261102: the payload builder maps every pending chip to its item; a
@@ -211,7 +211,7 @@ assert(caps.copy('ko').documentFormats.includes('PDF'));
 caps.setFileLaneSupport(false);
 assert(!caps.accept.includes('.pdf'));
 """
-    result=subprocess.run(["node","-e",script],capture_output=True,text=True)
+    result=subprocess.run(["node","-e",script],capture_output=True,text=True, encoding="utf-8")
     assert result.returncode==0,result.stderr
 
 

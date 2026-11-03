@@ -173,12 +173,12 @@ def test_no_app_side_duplicate_of_the_platform_authorities() -> None:
 
 def test_the_checker_runs_as_a_plain_script() -> None:
     done = subprocess.run([sys.executable, str(CONTRACT), "check"],
-                          capture_output=True, text=True, check=False)
+                          capture_output=True, text=True, encoding="utf-8", check=False)
     assert done.returncode == 0, done.stdout + done.stderr
     assert "PADIEM_APPS_CONTRACT=EXACT" in done.stdout
     assert "PRODUCTION_MUTATION=0" in done.stdout
     payload = json.loads(subprocess.run([sys.executable, str(CONTRACT), "describe"],
-                                        capture_output=True, text=True, check=False).stdout)
+                                        capture_output=True, text=True, encoding="utf-8", check=False).stdout)
     assert payload["work_scopes"] == ["meeting", "sns", "speech"]
     assert payload["max_stored_body_bytes"] == 2_359_296
     assert payload["max_stored_text_bytes"] == 2_097_152

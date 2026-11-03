@@ -333,7 +333,7 @@ authState.authenticated = false;
 const signedOutUnverified = connectorWorkspaceKey("unverified");
 console.log(JSON.stringify({{ signedIn, signedOutUnverified }}));
 """
-    result = subprocess.run([node, "-e", script], capture_output=True, text=True, timeout=30)
+    result = subprocess.run([node, "-e", script], capture_output=True, text=True, encoding="utf-8", timeout=30)
     assert result.returncode == 0, result.stderr
     payload = json.loads(result.stdout.strip().splitlines()[-1])
     assert payload["signedIn"]["support"] == [

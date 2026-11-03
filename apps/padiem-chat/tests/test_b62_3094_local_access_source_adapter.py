@@ -539,7 +539,7 @@ def _node(script: str) -> str:
     completed = subprocess.run(
         [node, "-e", script],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
     )
     assert completed.returncode == 0, completed.stderr.strip()[:2000]
     return completed.stdout.strip()
@@ -1123,7 +1123,7 @@ def test_the_shipped_script_joins_the_existing_syntax_gate_and_nothing_else() ->
     node = shutil.which("node")
     if node is None:
         pytest.skip("Node.js is required to parse the Web adapter")
-    checked = subprocess.run([node, "--check", str(ADAPTER_PATH)], capture_output=True, text=True)
+    checked = subprocess.run([node, "--check", str(ADAPTER_PATH)], capture_output=True, text=True, encoding="utf-8")
     assert checked.returncode == 0, checked.stderr.strip()[:500]
 
 

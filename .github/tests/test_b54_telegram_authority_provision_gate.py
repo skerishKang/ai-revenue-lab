@@ -254,7 +254,7 @@ def test_provision_bash_blocks_parse() -> None:
         result = subprocess.run(
             [bash, "-n"],
             input=script,
-            text=True,
+            text=True, encoding="utf-8",
             capture_output=True,
             check=False,
         )

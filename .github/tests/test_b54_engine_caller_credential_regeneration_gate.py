@@ -246,7 +246,7 @@ def test_credential_generation_format() -> None:
     value = subprocess.run(
         [sys.executable, "-c", 'import secrets; print(secrets.token_urlsafe(48), end="")'],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         check=True,
     ).stdout
     assert re.fullmatch(r"[A-Za-z0-9_-]{64}", value)
@@ -458,7 +458,7 @@ def _run_3748_regen_guard(*argv: str, detail_id: str = "-canonical-regen-v1",
         return subprocess.run([
             sys.executable, str(ROOT / ".github/scripts/b54_engine_served_version_guard.py"),
             "verify", "--version-settings", str(fixture), *argv, "--expect-overlay",
-        ], capture_output=True, text=True, check=False, timeout=15)
+        ], capture_output=True, text=True, encoding="utf-8", check=False, timeout=15)
 
 
 def test_3748_regen_argv_both_sites_equals_form_and_source_only_pr() -> None:

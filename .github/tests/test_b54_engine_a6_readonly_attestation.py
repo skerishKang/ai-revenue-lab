@@ -86,7 +86,7 @@ def _run_live_schema_read(names, *, rows=None, envelope=True) -> tuple[str, int]
         proc = subprocess.run(
             [sys.executable, "-c", _live_schema_script()],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             env=env,
             cwd=tmp,
         )

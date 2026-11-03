@@ -22,10 +22,14 @@ ROOT = Path(__file__).resolve().parents[3]
 
 @pytest.mark.parametrize("scenario", ["connected", "reverted_chat_wiring", "bad_identity_proof", "no_cookie"])
 def test_chat_p01_identity_roundtrip(scenario):
+    child_env = {**os.environ, "PYTHONPATH": ""}
+    if os.name == "nt":
+        # Match the UTF-8 reader even when the child's Windows locale is CP949.
+        child_env["PYTHONIOENCODING"] = "utf-8"
     result = subprocess.run(
         [sys.executable, str(Path(__file__).resolve()), scenario],
-        cwd=ROOT, env={**os.environ, "PYTHONPATH": ""},
-        capture_output=True, text=True, timeout=60,
+        cwd=ROOT, env=child_env,
+        capture_output=True, text=True, encoding="utf-8", timeout=60,
     )
     assert result.returncode == 0, result.stdout + result.stderr
     report = json.loads(result.stdout.strip().splitlines()[-1])

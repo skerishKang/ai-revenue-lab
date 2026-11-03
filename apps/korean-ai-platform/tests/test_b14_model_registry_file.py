@@ -68,7 +68,7 @@ def test_only_json_providers_are_registered():
     # sys.path. Pinning the working directory keeps the fresh-process check
     # valid whether the suite runs from this app or from the repository root.
     app_root = str(Path(__file__).resolve().parents[1])
-    result=subprocess.run([sys.executable,"-c",child],capture_output=True,text=True,check=False,cwd=app_root)
+    result=subprocess.run([sys.executable,"-c",child],capture_output=True,text=True, encoding="utf-8",check=False,cwd=app_root)
     assert result.returncode == 0, result.stderr
 
 @pytest.mark.parametrize("mutate",[

@@ -305,7 +305,7 @@ def test_calendar_ui_pure_helpers_behave_as_contracted() -> None:
         ["node", "-e", script],
         check=True,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
     )
     data = json.loads(completed.stdout)
     assert data["todayRoute"] == "/api/calendar/today"

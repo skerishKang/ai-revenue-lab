@@ -88,7 +88,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
                 self.assertIn("if [ \"$READY\" -ne 1 ]; then", script)
                 self.assertIn("if [ \"$HTTP_CODE\" != \"200\" ]; then", script)
                 syntax = subprocess.run(["bash", "-n", source_path.as_posix()],
-                                        capture_output=True, text=True, timeout=5,
+                                        capture_output=True, text=True, encoding="utf-8", timeout=5,
                                         check=False)
                 self.assertEqual(syntax.returncode, 0, syntax.stderr)
 
@@ -110,7 +110,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
                 self.assertIn('rm -rf -- "$PERSIST_DIR"', script)
                 syntax = subprocess.run(
                     ["bash", "-n", (SCRIPTS / f"b62_worker_probe_{name}.sh").as_posix()],
-                    capture_output=True, text=True, timeout=5, check=False,
+                    capture_output=True, text=True, encoding="utf-8", timeout=5, check=False,
                 )
                 self.assertEqual(syntax.returncode, 0, syntax.stderr)
 
@@ -123,7 +123,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
 
         proc = subprocess.Popen(
             ["setsid", "bash", "-c", 'sleep 30 & echo "$BASHPID $!"; wait'],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8",
         )
         try:
             assert proc.stdout is not None
@@ -138,7 +138,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
             # descendant would be a resource leak after Wrangler exits.
             status = subprocess.run(
                 ["ps", "-o", "stat=", "-p", str(child)],
-                capture_output=True, text=True, timeout=3, check=False,
+                capture_output=True, text=True, encoding="utf-8", timeout=3, check=False,
             )
             self.assertTrue(
                 status.returncode != 0 or status.stdout.strip().startswith("Z"),
@@ -180,7 +180,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
             env.pop("B62_WORKER_NPX_PREWARMED", None)
             env["PATH"] = str(temp) + os.pathsep + env.get("PATH", "")
             result = subprocess.run(
-                ["bash", RUNNER.as_posix()], capture_output=True, text=True,
+                ["bash", RUNNER.as_posix()], capture_output=True, text=True, encoding="utf-8",
                 cwd=temp, env=env, timeout=12, check=False,
             )
             self.assertNotEqual(result.returncode, 0)
@@ -207,7 +207,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
                 )
                 scripts.append(str(script))
             failure = subprocess.run(
-                ["bash", RUNNER.as_posix(), *[arg.as_posix() for arg in map(Path, scripts)]], capture_output=True, text=True,
+                ["bash", RUNNER.as_posix(), *[arg.as_posix() for arg in map(Path, scripts)]], capture_output=True, text=True, encoding="utf-8",
                 cwd=temp, timeout=15, check=False,
             )
             self.assertNotEqual(failure.returncode, 0)
@@ -221,7 +221,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
             for script in scripts:
                 Path(script).write_text("exit 0\n", encoding="utf-8")
             passed = subprocess.run(
-                ["bash", RUNNER.as_posix(), *[arg.as_posix() for arg in map(Path, scripts)]], capture_output=True, text=True,
+                ["bash", RUNNER.as_posix(), *[arg.as_posix() for arg in map(Path, scripts)]], capture_output=True, text=True, encoding="utf-8",
                 cwd=temp, timeout=15, check=False,
             )
             self.assertEqual(passed.returncode, 0, passed.stderr)
@@ -237,7 +237,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
             with self.subTest(args=args):
                 result = subprocess.run(
                     ["bash", RUNNER.as_posix(), *args], capture_output=True,
-                    text=True, timeout=10, check=False,
+                    text=True, encoding="utf-8", timeout=10, check=False,
                 )
                 self.assertNotEqual(result.returncode, 0)
 
@@ -275,7 +275,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
             env["GITHUB_ENV"] = str(envfile)
             env.pop("B62_WORKER_NPX_PREWARMED", None)
             proc = subprocess.run(
-                ["bash", str(PREWARM)], capture_output=True, text=True,
+                ["bash", str(PREWARM)], capture_output=True, text=True, encoding="utf-8",
                 env=env, cwd=temp, timeout=12, check=False,
             )
             return proc, marker.read_text(encoding="utf-8").splitlines(), (

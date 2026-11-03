@@ -15,7 +15,7 @@ failures = []
 
 
 def run(cmd):
-    return subprocess.run(cmd, capture_output=True, text=True, check=False)
+    return subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", check=False)
 
 
 def paths_from_status():

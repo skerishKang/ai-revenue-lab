@@ -126,7 +126,7 @@ def _run_child() -> dict:
     result = subprocess.run(
         [sys.executable, "-c", code],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         timeout=120,
         cwd=str(CHAT_ROOT),
     )

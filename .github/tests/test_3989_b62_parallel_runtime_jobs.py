@@ -349,7 +349,7 @@ class ParallelB62JobsContract(unittest.TestCase):
                 for result in ("success", "failure", "skipped", "cancelled"):
                     with self.subTest(nightly=nightly, lane=lane, scope=scope, result=result):
                         proc = subprocess.run(["bash", "-c", script], env=dict(env, FULL_RESULT=result),
-                                              capture_output=True, text=True, timeout=10)
+                                              capture_output=True, text=True, encoding="utf-8", timeout=10)
                         self.assertEqual(proc.returncode == 0, result == expected_full, proc.stderr)
                 # The nightly exception cannot waive an unrelated required lane failure.
                 required_results = ("PLAN_RESULT", *selected)
@@ -360,7 +360,7 @@ class ParallelB62JobsContract(unittest.TestCase):
                     proc = subprocess.run(
                         ["bash", "-c", script],
                         env=dict(env, FULL_RESULT=expected_full, **{required: "failure"}),
-                        capture_output=True, text=True, timeout=10,
+                        capture_output=True, text=True, encoding="utf-8", timeout=10,
                     )
                     self.assertNotEqual(proc.returncode, 0, required)
 
@@ -404,7 +404,7 @@ class ParallelB62JobsContract(unittest.TestCase):
                  'chmod +x "$FAKE_BIN/uv" 2>/dev/null || true\n'
                  'export PATH="$FAKE_BIN:$PATH"\n'
                  'bash "$OVERLAP_SCRIPT"'],
-                capture_output=True, text=True,
+                capture_output=True, text=True, encoding="utf-8",
                 env=env, timeout=15, check=False,
             )
             return result, marker.read_text(encoding="utf-8").splitlines()

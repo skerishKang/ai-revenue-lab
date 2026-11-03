@@ -274,7 +274,7 @@ print("OFFLINE_RESULT=" + json.dumps(asyncio.run(run())))
 '''
     paths = [repo / "apps/korean-ai-platform", repo / "packages/padiem-ai-core"]
     result = subprocess.run(
-        [sys.executable, "-c", script], input=json.dumps(payload), text=True,
+        [sys.executable, "-c", script], input=json.dumps(payload), text=True, encoding="utf-8",
         capture_output=True, check=True, timeout=30, cwd=repo,
         env={**os.environ, "PYTHONPATH": os.pathsep.join(map(str, paths)), "PYTHONDONTWRITEBYTECODE": "1"},
     )

@@ -140,7 +140,7 @@ def test_native_browser_launch_script_has_real_javascript_syntax_if_node_availab
     if shutil.which("node") is None:
         pytest.skip("Node not present; script syntax checked in Node-enabled CI")
     process = subprocess.run(
-        ["node", "--check"], input=setup._SCRIPT, text=True,
+        ["node", "--check"], input=setup._SCRIPT, text=True, encoding="utf-8",
         capture_output=True, timeout=15, check=False,
     )
     assert process.returncode == 0, process.stderr
@@ -193,7 +193,7 @@ assert.equal(forwarded.length,1,"invalid offer ref is never forwarded");
 assert.equal(posts,0);
 """
     outcome = subprocess.run(["node", "-e", script], input=setup._SCRIPT,
-                             capture_output=True, text=True, timeout=15, check=False)
+                             capture_output=True, text=True, encoding="utf-8", timeout=15, check=False)
     assert outcome.returncode == 0, outcome.stderr
 
 
@@ -283,7 +283,7 @@ eval(source);
 })().catch(e=>{process.stderr.write(String(e.stack));process.exitCode=1});
 """
     result = subprocess.run(["node", "-e", script], input=source, capture_output=True,
-                            text=True, timeout=15, check=False)
+                            text=True, encoding="utf-8", timeout=15, check=False)
     assert result.returncode == 0, result.stderr
 
 
@@ -369,5 +369,5 @@ for(const tc of tests) {
 })().catch(e=>{process.stderr.write(String(e.stack));process.exitCode=1});
 """
     proc = subprocess.run(["node", "-e", script], input=source, capture_output=True,
-                          text=True, check=False, timeout=15)
+                          text=True, encoding="utf-8", check=False, timeout=15)
     assert proc.returncode == 0, proc.stderr

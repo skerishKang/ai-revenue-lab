@@ -14,7 +14,7 @@ HOST = Path(__file__).resolve().parents[1] / "app" / "local_cpython.py"
 FIELD_ORDER = (
     "validate_ms=", "policy_ms=", "conversation_ms=", "usage_ms=",
     "pc_context_ms=", "grounding_ms=", "engine_ms=", "save_ms=",
-    "first_token_ms=", "total_ms=", "retried=",
+    "first_token_ms=", "total_ms=", "path=", "retried=",
 )
 
 
@@ -33,7 +33,8 @@ def test_one_line_carries_every_stage_in_order():
     for stage, _begin, _end in STAGES:
         assert re.search(rf"\b{stage}_ms=\d+\.\d", line), (stage, line)
     assert line.endswith("retried=unknown"), line
-    assert len(line.split()) == 1 + len(STAGES) + 3, line
+    assert " path=engine " in line
+    assert len(line.split()) == 1 + len(STAGES) + 4, line
 
 
 def test_unmeasured_stages_are_marked_not_guessed():
@@ -75,10 +76,13 @@ def test_the_route_marks_only_stage_names_and_always_emits():
     assert "finally:" in source
     assert "timing.emit()" in source
     marks = re.findall(r"timing\.mark\(([^)]*)\)", source)
-    assert marks == [
+    allowed = {
         '"validated"', '"policy"', '"conversation"', '"usage"',
-        '"pc_context"', '"grounding"', '"engine"', '"save"',
-    ], marks
+        '"pc_context"', '"grounding"', '"engine"', '"save"', '"first_token"',
+    }
+    assert set(marks) <= allowed, marks
+    for required in allowed - {'"first_token"'}:
+        assert required in marks, (required, marks)
 
 
 def _cleared_logging():

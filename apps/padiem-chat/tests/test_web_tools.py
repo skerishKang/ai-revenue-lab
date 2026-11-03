@@ -245,16 +245,17 @@ async def test_firecrawl_timeout_and_malformed_json_are_normalized():
     assert malformed_info.value.code == "web_malformed"
 
 
-def test_web_search_ui_remains_disabled_and_css_unchanged():
+def test_manual_search_controls_are_removed_and_shared_css_is_unchanged():
     from pathlib import Path
 
     root = Path(__file__).resolve().parents[1]
     repo = root.parents[1]
     html = (root / "static/index.html").read_text(encoding="utf-8")
-    assert "웹 검색 · 준비 중" in html
-    assert "웹 검색" in html
-    assert "심층 리서치" in html
-    assert 'class="tool-button" disabled' in html
+    for identifier in ("webSearchButton", "deepResearchButton", "webSearchStarterButton"):
+        assert f'id="{identifier}"' not in html
+    assert "웹 검색 · 준비 중" not in html
+    assert "심층 리서치" not in html
+    assert 'id="attachmentButton"' in html
     assert (root / "static/styles.css").read_bytes() == (
         repo / "reference/business-62-padiem-chat-v1/styles.css"
     ).read_bytes()

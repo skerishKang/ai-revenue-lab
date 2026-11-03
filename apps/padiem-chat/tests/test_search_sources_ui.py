@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import shutil
 import subprocess
 from pathlib import Path
@@ -15,12 +14,6 @@ def sources():
         (root / "static/search-sources.css").read_text(encoding="utf-8"),
         (root / "static/app.js").read_text(encoding="utf-8"),
     )
-
-
-def compatibility_helpers(js: str) -> str:
-    start = js.index("  function requestPath(inputValue) {")
-    end = js.index("  function currentAssistantArticle() {")
-    return js[start:end]
 
 
 def test_search_assets_are_additive_and_ordered():
@@ -85,12 +78,56 @@ def test_search_renderer_is_a_read_only_result_surface():
     assert 'addEventListener("click"' not in js
     assert "window.fetch =" not in js
 
-def test_image_attachment_remains_available_without_manual_search_modes():
-    _, html, js, _, app = sources()
+def test_model_selected_search_evidence_uses_the_existing_result_renderer():
+    # #6776 chooses tools on the server. Keep its browser result contract while
+    # removing the former client-side button and request-selection path.
+    _, _, js, _, app = sources()
+    assert "function renderSources(article, evidence, research = null)" in js
+    assert "window.PadiemSearchSources = Object.freeze({ render: renderSources });" in js
+    assert "window.PadiemSearchSources?.render?.(article, data.evidence);" in app
+    assert 'if (Array.isArray(data.evidence) && data.evidence.length)' in app
+    assert 'data.tool.id === "web_search"' in app
+    assert "payload.web_search" not in app
+
+
+def test_streaming_chat_is_not_rewritten_by_the_removed_search_modes():
+    _, _, js, _, app = sources()
+    assert "window.fetch =" not in js
+    assert "nativeFetch" not in js
+    assert "streamingChatRequest" not in js
+    assert "completedJsonAsPublicSse" not in js
+    assert "payload.web_search" not in app
+
+
+def test_photo_and_search_tool_exclusion_stays_in_server_validation():
+    import base64
+
+    from app.request_contract import BrowserRequestError, _validate_payload
+
+    raw = {
+        "messages": [{"role": "user", "content": "찾아봐"}],
+        "tool": "web_search",
+        "attachments": [{
+            "type": "image",
+            "name": "photo.png",
+            "media_type": "image/png",
+            "base64": base64.b64encode(b"\x89PNG\r\n\x1a\nphase8").decode("ascii"),
+        }],
+    }
+    try:
+        _validate_payload(raw)
+    except BrowserRequestError:
+        pass
+    else:
+        raise AssertionError("the server must keep rejecting explicit search plus image requests")
+
+    root, html, js, _, app = sources()
     assert 'id="attachmentButton"' in html
     assert 'id="attachmentFileInput"' in html
     assert "activeTool" not in js
+    assert "imageSelected" not in js
     assert "payload.web_search" not in app
+
 
 
 def test_visible_sources_are_text_only_numbered_and_public_http_links():
@@ -146,7 +183,7 @@ def test_search_sources_javascript_syntax():
     result = subprocess.run(
         [node, "--check", str(root / "static/search-sources.js")],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         check=False,
     )
     assert result.returncode == 0, result.stderr

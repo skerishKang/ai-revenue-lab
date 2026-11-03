@@ -122,7 +122,7 @@ def test_the_parked_skip_link_is_excluded_in_both_detectors_and_nowhere_else():
 def test_the_attribution_names_a_commit_only_when_all_three_assets_match():
     ref = tool.source_ref()
     head = subprocess.run(["git", "rev-parse", ref], capture_output=True, cwd=REPO_ROOT,
-                          text=True, check=True).stdout.strip()
+                          text=True, encoding="utf-8", check=True).stdout.strip()
     blobs = {served: tool.git_blob(_source(served)) for served, _ in tool.ASSETS}
     assert tool.serving_commit(blobs) == head, "the newest commit matching main's own bytes is main"
     stale = dict(blobs)

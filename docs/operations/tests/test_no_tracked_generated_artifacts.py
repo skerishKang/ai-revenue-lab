@@ -81,7 +81,7 @@ def _ignore_source(relative: str) -> str | None:
     result = subprocess.run(
         ["git", "check-ignore", "--no-index", "-v", relative],
         cwd=ROOT,
-        text=True,
+        text=True, encoding="utf-8",
         capture_output=True,
     )
     if result.returncode != 0:

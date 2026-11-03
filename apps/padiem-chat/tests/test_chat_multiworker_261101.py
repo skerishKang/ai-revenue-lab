@@ -236,7 +236,7 @@ def test_three_process_startup_applies_each_migration_once(tmp_path):
     ready = [tmp_path / f"ready-{index}" for index in range(3)]
     processes = [subprocess.Popen(
         [sys.executable, str(FIXTURE), str(database), str(migrations), str(marker), str(start)],
-        env=_environment(), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+        env=_environment(), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8",
     ) for marker in ready]
     try:
         _wait_until(lambda: all(marker.exists() for marker in ready))
@@ -275,7 +275,7 @@ def test_workers_share_sqlite_and_serve_requests_while_sse_waits(tmp_path, worke
         sys.executable, "-m", "uvicorn", "chat_multiworker_app_261101:create_app", "--factory",
         "--host", "127.0.0.1", "--port", str(port), "--workers", str(workers),
         "--no-access-log", "--log-level", "error",
-    ], env=environment, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
+    ], env=environment, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True, encoding="utf-8")
     base = f"http://127.0.0.1:{port}"
     started = threading.Event()
     frames, errors = [], []

@@ -35,7 +35,7 @@ LEAK_SENTINELS = ("usr_web_xlsx_owner", "cross-app-harness-credential")
 def test_real_b62_route_and_real_engine_agree_on_the_p01_completion(cross_app_source_paths):
     result = subprocess.run(
         [sys.executable, str(HARNESS)],
-        capture_output=True, text=True, timeout=120, check=False,
+        capture_output=True, text=True, encoding="utf-8", timeout=120, check=False,
         cwd=str(HERE),
     )
     output = result.stdout + result.stderr

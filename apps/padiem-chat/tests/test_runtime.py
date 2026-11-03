@@ -380,7 +380,9 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     for label in ["TXT", "Markdown", "CSV", "JSON", "PDF", "DOCX", "PPTX", "XLSX"]:
         assert f'label: "{label}"' in capabilities
     assert "PDF·Office 문서는 아직 지원하지 않습니다" not in html
-    assert "웹 검색 · 준비 중" in html
+    assert "웹 검색 · 준비 중" not in html
+    for identifier in ("webSearchButton", "deepResearchButton", "webSearchStarterButton"):
+        assert f'id="{identifier}"' not in html
     assert 'uiT("mock-response")' in js
     assert '"mock-response": "모의 응답 · 실제 모델 호출 없음"' in locale
     assert "chatTransport.requestCompleted(payload, signal)" in js

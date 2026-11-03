@@ -100,9 +100,9 @@ class StaticHandler(http.server.SimpleHTTPRequestHandler):
         pass
 
     def do_GET(self):  # noqa: N802 - the composer tools are capability-gated
-        # The web-search and deep-research controls stay hidden until /health
-        # says they are ready, so the collision check has to answer that the
-        # way the mock runtime does. Everything else is the static screen.
+        # Keep /health available for capability projection; the retired
+        # search controls are absent independently of its readiness flags.
+        # Everything else is the static screen.
         if self.path.split("?")[0] == "/health":
             body = json.dumps({
                 "runtime": "mock", "live_enabled": False,

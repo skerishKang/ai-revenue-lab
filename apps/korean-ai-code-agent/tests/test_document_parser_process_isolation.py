@@ -802,7 +802,7 @@ class ChildAuthorityTests(unittest.TestCase):
         completed = subprocess.run(
             [sys.executable, "-P", "-c", probe],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             env=isolation._child_environment(),
             timeout=120,
         )

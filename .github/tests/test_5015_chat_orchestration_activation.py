@@ -311,7 +311,7 @@ def test_the_latest_served_cli_runs_without_the_settings_argument():
                 "--deployments", str(deployments_path),
                 "--versions", str(versions_path),
             ],
-            capture_output=True, text=True, timeout=60,
+            capture_output=True, text=True, encoding="utf-8", timeout=60,
         )
     assert completed.returncode == 0, completed.stdout + completed.stderr
     assert "B62_CLAW_LATEST_SERVED=PASS" in completed.stdout

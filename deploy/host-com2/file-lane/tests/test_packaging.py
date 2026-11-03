@@ -29,7 +29,7 @@ class Packaging(unittest.TestCase):
     def test_installer_is_read_only_by_default_and_bash_syntax_valid(self):
         subprocess.run(["bash", "-n", str(HERE / "install.sh")], check=True)
         for arguments in [[], ["--dry-run"]]:
-            result = subprocess.run(["bash", str(HERE / "install.sh"), *arguments], check=True, text=True, capture_output=True)
+            result = subprocess.run(["bash", str(HERE / "install.sh"), *arguments], check=True, text=True, encoding="utf-8", capture_output=True)
             self.assertIn("FILE_LANE_INSTALL=DRY_RUN", result.stdout)
             self.assertIn("START_SERVICE=NO", result.stdout)
             self.assertIn("ENABLE_SERVICE=NO", result.stdout)
@@ -69,7 +69,7 @@ class Packaging(unittest.TestCase):
             # Verify actual unit directives. Only substitute the interpreter
             # path so verify can find an executable on a non-COM2 CI runner.
             unit.write_text((HERE / unit.name).read_text().replace("/opt/padiem/file-lane/venv/bin/python", sys.executable))
-            result = subprocess.run([binary, "verify", "--man=no", str(unit)], text=True, capture_output=True)
+            result = subprocess.run([binary, "verify", "--man=no", str(unit)], text=True, encoding="utf-8", capture_output=True)
             self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_environment_example_has_only_names_and_no_values(self):
@@ -117,7 +117,7 @@ class Packaging(unittest.TestCase):
             cases = [(200, b'{"ok":true}', True), (200, private.encode(), False), (302, private.encode(), False)]
             for index, (status, body, expected) in enumerate(cases, 1):
                 server.response_status, server.response_body = status, body
-                result = subprocess.run([sys.executable, str(HERE / "health.py"), "--url", target], capture_output=True, text=True)
+                result = subprocess.run([sys.executable, str(HERE / "health.py"), "--url", target], capture_output=True, text=True, encoding="utf-8")
                 self.assertEqual(result.returncode, 0 if expected else 1)
                 self.assertEqual(json.loads(result.stdout), {"health_ok": expected, "status_code": status})
                 self.assertEqual(requests, ["/health"] * index)  # no retry/redirect
@@ -137,7 +137,7 @@ class Packaging(unittest.TestCase):
 
     def test_runtime_requirements_match_the_committed_service_lock(self):
         result = subprocess.run(["uv", "export", "--project", "apps/padiem-file-lane", "--frozen", "--no-dev", "--no-emit-project", "--no-emit-package", "padiem-ai-core", "--no-header"],
-                                cwd=ROOT, check=True, capture_output=True, text=True)
+                                cwd=ROOT, check=True, capture_output=True, text=True, encoding="utf-8")
         self.assertEqual((HERE / "requirements.txt").read_text(), result.stdout)
 
 

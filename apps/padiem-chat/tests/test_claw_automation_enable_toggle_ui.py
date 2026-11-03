@@ -469,7 +469,7 @@ def _run_harness() -> dict:
         result = subprocess.run(
             [node, str(harness_path), str(APP_JS)],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             timeout=120,
         )
     finally:

@@ -34,7 +34,7 @@ def test_sparse_checkout_contains_every_tracked_workflow() -> None:
     root = Path(__file__).resolve().parents[2]
     paths = subprocess.check_output(
         ["git", "ls-tree", "-r", "--name-only", "HEAD", ".github/workflows"],
-        cwd=root, text=True,
+        cwd=root, text=True, encoding="utf-8",
     ).splitlines()
     workflows = [
         p for p in paths

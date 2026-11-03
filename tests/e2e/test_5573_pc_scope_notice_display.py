@@ -124,7 +124,7 @@ def test_the_scope_notice_is_a_separate_line_above_the_answer(tmp_path):
         [node, str(checker), str(NOTICE_JS), notice],
         cwd=str(REPO_ROOT),
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         timeout=60,
     )
     assert completed.returncode == 0, completed.stdout + completed.stderr

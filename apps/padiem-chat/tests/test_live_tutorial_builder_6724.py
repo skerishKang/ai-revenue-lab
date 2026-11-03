@@ -62,7 +62,7 @@ def test_tutorial_builder_links_step_images_and_video_timeline(tmp_path):
     completed = subprocess.run(
         [sys.executable, str(script), str(result), "--output", str(output)],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         check=False,
     )
     assert completed.returncode == 0, completed.stderr

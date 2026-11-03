@@ -326,7 +326,7 @@ class P01CodeStage(unittest.TestCase):
             self.assertEqual(len(snapshots), 1)
             self.assertEqual(snapshots[0].read_text(encoding="utf-8"), "revision = 1\n")
             (source / "asgi.py").unlink()
-            result = subprocess.run(command, capture_output=True, text=True)
+            result = subprocess.run(command, capture_output=True, text=True, encoding="utf-8")
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("ASGI_ENTRY_MISSING", result.stderr)
             self.assertEqual(installed.read_text(encoding="utf-8"), "revision = 2\n")
@@ -399,7 +399,7 @@ class P01CodeStage(unittest.TestCase):
             target.mkdir()
             result = subprocess.run(
                 ["bash", str(HERE / "stage_code.sh"), str(checkout), str(target)],
-                capture_output=True, text=True, preexec_fn=lambda: os.umask(0o077),
+                capture_output=True, text=True, encoding="utf-8", preexec_fn=lambda: os.umask(0o077),
             )
             self.assertEqual(result.returncode, 0, result.stderr)
             release = (target / "app").resolve()
@@ -424,7 +424,7 @@ class P01CodeStage(unittest.TestCase):
             target.mkdir()
             result = subprocess.run(
                 ["bash", str(HERE / "stage_code.sh"), str(REPO), str(target)],
-                capture_output=True, text=True, preexec_fn=lambda: os.umask(0o077),
+                capture_output=True, text=True, encoding="utf-8", preexec_fn=lambda: os.umask(0o077),
             )
             self.assertEqual(result.returncode, 0, result.stderr)
             release = (target / "app").resolve()
@@ -446,6 +446,6 @@ class P01CodeStage(unittest.TestCase):
                  "root=os.path.realpath(os.getcwd()); "
                  "assert all(os.path.realpath(m.__file__).startswith(root+os.sep) "
                  "for m in (asgi,padiem_ai_core,padiem_control_plane,kagent))"],
-                cwd=release, env=env, preexec_fn=drop, capture_output=True, text=True,
+                cwd=release, env=env, preexec_fn=drop, capture_output=True, text=True, encoding="utf-8",
             )
             self.assertEqual(probe.returncode, 0, probe.stderr)
