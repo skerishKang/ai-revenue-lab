@@ -4,7 +4,6 @@
   if(root){
     root.STORYMEMORY_AUTO_PACK_CONTRACT=api.STORYMEMORY_AUTO_PACK_CONTRACT;
     root.createStoryMemoryAutoPackRuntime=api.createStoryMemoryAutoPackRuntime;
-    root.createStoryMemoryNeonAutoPackRegistryWriter=api.createStoryMemoryNeonAutoPackRegistryWriter;
     root.storyMemoryAutoPack=root.storyMemoryAutoPack||api.createStoryMemoryAutoPackRuntime({
       universalRuntime:root.storyMemoryUniversalSource||null,
       marketplaceRuntime:root.storyMemoryPackMarketplace||null,
@@ -114,24 +113,6 @@
     return {list:()=>clone(read()),get:id=>clone(read().find(x=>x.pack?.id===id)||null),save:record=>{const rows=read();const i=rows.findIndex(x=>x.pack?.id===record.pack?.id);if(i>=0)rows[i]=clone(record);else rows.unshift(clone(record));write(rows.slice(0,50));return clone(record)},remove:id=>{const rows=read().filter(x=>x.pack?.id!==id);write(rows);return true}};
   }
 
-  function createStoryMemoryNeonAutoPackRegistryWriter({remoteAdapter,getUserId}={}){
-    if(!remoteAdapter||typeof remoteAdapter.request!=='function')throw new Error('STORYMEMORY_REMOTE_ADAPTER_REQUIRED');
-    const uid=async()=>{const v=typeof getUserId==='function'?await getUserId():getUserId;if(!v)throw new Error('AUTO_PACK_REGISTRY_USER_ID_REQUIRED');return String(v)};
-    return Object.freeze({
-      async saveDraft({listing,version}){
-        const userId=await uid();if(!listing||!version)throw new Error('AUTO_PACK_DRAFT_METADATA_REQUIRED');
-        if(listing.visibility!=='private'||listing.publicationStatus!=='draft')throw new Error('AUTO_PACK_DRAFT_MUST_BE_PRIVATE');
-        if(!version.artifactUri)throw new Error('AUTO_PACK_DURABLE_ARTIFACT_URI_REQUIRED');
-        if(listing.sourceTextIncluded===true)throw new Error('AUTO_PACK_SOURCE_BODY_FORBIDDEN');
-        const reg={pack_id:listing.packId,name:listing.name,pack_type:listing.packType,creator_id:userId,publisher_name:listing.publisherName||'',summary:listing.summary||'',visibility:'private',pricing_mode:'free',publication_status:'draft',latest_version:version.version,source_text_included:false,rights_declaration:listing.rightsDeclaration||{},compatibility_summary:listing.compatibilitySummary||{},permissions:listing.permissions||{},processing_disclosure:listing.processingDisclosure||{},listing_metadata:listing.listingMetadata||{}};
-        const ver={pack_id:listing.packId,version:version.version,schema_version:CONTRACT.packSchema,artifact_uri:version.artifactUri,artifact_fingerprint:version.artifactFingerprint,declared_trust_tier:'auto-generated',source_match_mode:version.sourceMatchMode||'exact-fingerprint',compatibility:version.compatibility||{},rights:version.rights||{},changelog:version.changelog||'Auto-generated private draft',parent_version:null};
-        await remoteAdapter.request('pack_registry',{method:'POST',query:{on_conflict:'pack_id'},body:reg,prefer:'resolution=merge-duplicates,return=minimal'});
-        await remoteAdapter.request('pack_versions',{method:'POST',query:{on_conflict:'pack_id,version'},body:ver,prefer:'resolution=merge-duplicates,return=minimal'});
-        return {packId:listing.packId,version:version.version,visibility:'private',publicationStatus:'draft',payloadStoredInDb:false};
-      }
-    });
-  }
-
   function createStoryMemoryAutoPackRuntime({universalRuntime=null,marketplaceRuntime=null,storage=null,generatorProvider=null,registryWriter=null,clock=nowIso}={}){
     let rt=universalRuntime||root.storyMemoryUniversalSource||null;
     let market=marketplaceRuntime||root.storyMemoryPackMarketplace||null;
@@ -215,5 +196,5 @@
     return Object.freeze({contract:CONTRACT,setUniversalRuntime,setMarketplaceRuntime,setGeneratorProvider,setRegistryWriter,onChange,recordSignal,evaluateNeed,analyzeBaseline,generate,persistDraft,preparePublicReview,detach,discard,listGenerated:()=>artifacts.list(),getGenerated:id=>artifacts.get(String(id)),status,packArtifactFingerprint,sanitizeProposal,qualityMetrics,improvement});
   }
 
-  return {STORYMEMORY_AUTO_PACK_CONTRACT:CONTRACT,createStoryMemoryAutoPackRuntime,createStoryMemoryNeonAutoPackRegistryWriter};
+  return {STORYMEMORY_AUTO_PACK_CONTRACT:CONTRACT,createStoryMemoryAutoPackRuntime};
 });

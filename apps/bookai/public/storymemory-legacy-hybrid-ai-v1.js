@@ -1,7 +1,7 @@
 /* StoryMemory R6 private refactor: legacy Hybrid AI router quarantine.
    Behavior-preserving extraction only. NOT AUTHORIZED for #1129 live provider execution. */
 /* ===== StoryMemory v3.3.6 — Hybrid AI Context Retrieval =====
-   Static corpus is authoritative text. Neon contributes bounded metadata/knowledge/user Memory only.
+   Static corpus is authoritative text. Remote Memory and answer-card reads are disabled.
    No full-book body is sent to an AI provider. */
 const STORYMEMORY_HYBRID_AI_CONTRACT=Object.freeze({
   version:'1.0.0',
@@ -16,7 +16,6 @@ const STORYMEMORY_HYBRID_AI_CONTRACT=Object.freeze({
 });
 
 function createStoryMemoryHybridAIAdapter({
-  remoteAdapter=(typeof storyMemoryRemote!=='undefined'?storyMemoryRemote:null),
   staticAdapter=(typeof storyMemoryStatic!=='undefined'?storyMemoryStatic:null),
   contentResolver=(typeof storyMemoryResolveContent==='function'?storyMemoryResolveContent:(x=>x)),
   dbWorkKeyResolver=(typeof storyMemoryDbWorkKey==='function'?storyMemoryDbWorkKey:(x=>x?.workKey||x?.work_key||null)),
@@ -54,44 +53,8 @@ function createStoryMemoryHybridAIAdapter({
     }
     return ids;
   }
-  async function remoteSnapshot({workKey,question,currentSequence,canonicalLocator}={}){
-    if(!remoteAdapter||!workKey||typeof remoteAdapter.getWorkByKey!=='function'||typeof remoteAdapter.request!=='function')return {mode:'unavailable',work:null,entities:[],aliases:[],mentions:[],relationships:[],answerCards:[],answerCardSources:[],memories:[]};
-    try{
-      const work=await remoteAdapter.getWorkByKey(workKey);
-      if(!work)return {mode:'unavailable',work:null,entities:[],aliases:[],mentions:[],relationships:[],answerCards:[],answerCardSources:[],memories:[]};
-      const req=(table,select,extra={})=>remoteAdapter.request(table,{query:{select,work_id:eq(work.id),...extra}});
-      const [entities0,aliases0,mentions0,relationships0,cards0,memories0]=await Promise.all([
-        req('entities','id,work_id,entity_type,canonical_name,normalized_key,metadata',{order:'canonical_name.asc',limit:500}),
-        req('entity_aliases','id,work_id,entity_id,alias,normalized_alias,locale,metadata',{order:'normalized_alias.asc',limit:1000}),
-        req('entity_mentions','id,work_id,entity_id,source_passage_id,canonical_locator,source_sequence,source_text_hash,surface_text,start_offset,end_offset,confidence,metadata',{limit:1500}),
-        req('entity_relationships','id,work_id,from_entity_id,to_entity_id,relationship_type,source_passage_id,evidence_canonical_locator,evidence_sequence,evidence_text_hash,first_visible_locator,first_visible_sequence,metadata',{order:'first_visible_sequence.asc',limit:1000}),
-        req('answer_cards','id,work_id,entity_id,card_key,question_key,route_class,answer_body,first_visible_locator,first_visible_sequence,metadata,enabled',{enabled:eq('true'),order:'first_visible_sequence.asc',limit:500}),
-        req('memories','id,work_id,source_passage_id,canonical_locator,source_sequence,unit_key,semantic_page,content_version_key,source_preview,memory_type,title,body,quote,metadata,created_at,updated_at',{order:'created_at.desc',limit:100})
-      ]);
-      const entities=Array.isArray(entities0)?entities0:[],aliases=Array.isArray(aliases0)?aliases0:[];
-      const mentions=(Array.isArray(mentions0)?mentions0:[]).filter(x=>safeSeq(x,currentSequence));
-      const targetIds=selectedEntityIds(question,entities,aliases,mentions,canonicalLocator);
-      const ts=terms(question);
-      const relationships=(Array.isArray(relationships0)?relationships0:[]).filter(x=>safeSeq(x,currentSequence)).filter(x=>
-        !targetIds.size||targetIds.has(x.from_entity_id)||targetIds.has(x.to_entity_id)||x.evidence_canonical_locator===canonicalLocator
-      ).slice(0,contract.maxRelationships);
-      let answerCards=(Array.isArray(cards0)?cards0:[]).filter(x=>safeSeq(x,currentSequence,['first_visible_sequence']));
-      answerCards=answerCards.map(x=>({...x,__score:(targetIds.has(x.entity_id)?8:0)+scoreText(`${x.card_key} ${x.question_key} ${x.answer_body}`,ts)+(x.first_visible_locator===canonicalLocator?4:0)}))
-        .filter(x=>x.__score>0||(!ts.length&&x.first_visible_locator===canonicalLocator)).sort((a,b)=>b.__score-a.__score).slice(0,contract.maxAnswerCards);
-      let answerCardSources=[];
-      const cardIds=answerCards.map(x=>x.id).filter(Boolean);
-      if(cardIds.length){
-        const rows=await remoteAdapter.request('answer_card_sources',{query:{select:'answer_card_id,source_passage_id,canonical_locator,source_sequence,source_text_hash,citation_order,citation_role',answer_card_id:inList(cardIds),order:'citation_order.asc',limit:100}});
-        answerCardSources=(Array.isArray(rows)?rows:[]).filter(x=>safeSeq(x,currentSequence));
-      }
-      const entityNames=entities.filter(e=>targetIds.has(e.id)).map(e=>norm(e.canonical_name).toLowerCase()).filter(Boolean);
-      let memories=(Array.isArray(memories0)?memories0:[]).filter(x=>safeSeq(x,currentSequence));
-      memories=memories.map(x=>({...x,__score:(x.canonical_locator===canonicalLocator?8:0)+scoreText(`${x.title} ${x.body} ${x.quote} ${x.source_preview}`,ts)+entityNames.reduce((n,name)=>n+(String(`${x.title} ${x.body} ${x.quote}`).toLowerCase().includes(name)?2:0),0)}))
-        .filter(x=>x.__score>0).sort((a,b)=>b.__score-a.__score).slice(0,contract.maxMemories);
-      return {mode:'remote',work,entities:entities.filter(e=>targetIds.has(e.id)).slice(0,contract.maxEntities),aliases:aliases.filter(a=>targetIds.has(a.entity_id)).slice(0,20),mentions:mentions.filter(m=>targetIds.has(m.entity_id)||m.canonical_locator===canonicalLocator).slice(0,20),relationships,answerCards,answerCardSources,memories};
-    }catch(error){
-      return {mode:'unavailable',work:null,entities:[],aliases:[],mentions:[],relationships:[],answerCards:[],answerCardSources:[],memories:[],error:String(error?.message||error||'REMOTE_CONTEXT_ERROR')};
-    }
+  async function remoteSnapshot(){
+    return {mode:'disabled',work:null,entities:[],aliases:[],mentions:[],relationships:[],answerCards:[],answerCardSources:[],memories:[]};
   }
   async function staticEvidence({staticWorkKey,question,canonicalLocator,currentSequence,unitOrdinal,remote}={}){
     if(!staticAdapter||!staticWorkKey||typeof staticAdapter.loadUnit!=='function')return {mode:'unavailable',passages:[],loadedUnits:[],error:'STATIC_ADAPTER_UNAVAILABLE'};
@@ -171,7 +134,7 @@ function createStoryMemoryHybridAIAdapter({
     if(cards.length){
       const body=cards.slice(0,2).map(x=>clip(x.answer_body,700)).filter(Boolean).join(' ');
       const locators=[...new Set((context.knowledge.answerCardSources||[]).map(x=>x.canonical_locator).filter(Boolean))].slice(0,4);
-      return {route:'KNOWN_FACT',title:'검증된 Memory',body:body||'현재 읽은 범위의 검증된 answer card를 찾았습니다.',source:locators.join(' · ')||context.position.canonical_locator||'Neon answer card',spoilerBlocked:false};
+      return {route:'KNOWN_FACT',title:'검증된 Memory',body:body||'현재 읽은 범위의 검증된 answer card를 찾았습니다.',source:locators.join(' · ')||context.position.canonical_locator||'검증된 기억 카드',spoilerBlocked:false};
     }
     if(evidence.length){
       const first=evidence[0];

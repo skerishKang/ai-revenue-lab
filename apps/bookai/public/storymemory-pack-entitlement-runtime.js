@@ -4,7 +4,6 @@
   if(root){
     root.STORYMEMORY_PACK_ENTITLEMENT_CONTRACT=api.STORYMEMORY_PACK_ENTITLEMENT_CONTRACT;
     root.createStoryMemoryPackEntitlementRuntime=api.createStoryMemoryPackEntitlementRuntime;
-    root.createStoryMemoryNeonPackEntitlementProvider=api.createStoryMemoryNeonPackEntitlementProvider;
     root.storyMemoryPackEntitlements=root.storyMemoryPackEntitlements||api.createStoryMemoryPackEntitlementRuntime({
       marketplaceRuntime:root.storyMemoryPackMarketplace||null,
       storage:root.BookAIStorage||null
@@ -49,19 +48,6 @@
     if(e.expiresAt&&new Date(e.expiresAt).getTime()<=at.getTime())return false;
     if(e.startsAt&&new Date(e.startsAt).getTime()>at.getTime())return false;
     return true;
-  }
-  function createStoryMemoryNeonPackEntitlementProvider({remoteAdapter,getUserId}={}){
-    if(!remoteAdapter||typeof remoteAdapter.request!=='function')throw new Error('STORYMEMORY_REMOTE_ADAPTER_REQUIRED');
-    const eq=v=>`eq.${v}`;const uid=async()=>{const x=typeof getUserId==='function'?await getUserId():getUserId;if(!x)throw new Error('PACK_ENTITLEMENT_USER_ID_REQUIRED');return String(x)};
-    return Object.freeze({
-      async listOffers(packId=null){const q={select:'offer_id,pack_id,currency,amount_minor,offer_status,access_scope,version,license,refund_policy,metadata,created_at,updated_at',offer_status:eq('active'),order:'updated_at.desc',limit:200};if(packId)q.pack_id=eq(packId);return remoteAdapter.request('pack_offers',{query:q})},
-      async listEntitlements(packId=null){await uid();const q={select:'entitlement_id,user_id,pack_id,version,access_scope,entitlement_status,starts_at,expires_at,revoked_at,source_purchase_id,reason,metadata,created_at,updated_at',order:'updated_at.desc',limit:200};if(packId)q.pack_id=eq(packId);return remoteAdapter.request('pack_entitlements',{query:q})},
-      async listPurchases(packId=null){await uid();const q={select:'purchase_id,user_id,pack_id,offer_id,version,provider,provider_transaction_id,currency,amount_minor,purchase_status,receipt_reference,initiated_at,verified_at,updated_at,metadata',order:'updated_at.desc',limit:200};if(packId)q.pack_id=eq(packId);return remoteAdapter.request('pack_purchase_transactions',{query:q})},
-      async createPurchaseIntent(){throw new Error('LIVE_PAYMENT_PROVIDER_NOT_CONNECTED')},
-      async verifyPaymentEvent(){throw new Error('SERVER_PAYMENT_VERIFIER_REQUIRED')},
-      async verifySettlementEvent(){throw new Error('SERVER_SETTLEMENT_VERIFIER_REQUIRED')},
-      async restoreEntitlements(){return this.listEntitlements()}
-    });
   }
   function createStoryMemoryPackEntitlementRuntime({marketplaceRuntime=null,storage=null,provider=null,clock=nowIso}={}){
     let market=marketplaceRuntime||root.storyMemoryPackMarketplace||null;
@@ -134,5 +120,5 @@
     function status(){return {schema:CONTRACT.schema,version:CONTRACT.version,marketplaceInstalled:Boolean(market),providerInstalled:Boolean(remote),offers:listOffers().length,entitlements:localEntitlements().length,purchases:purchaseStore.list().length,settlements:settlementStore.list().length,livePaymentCollectionImplemented:false,directClientGrantAllowed:false,sourceKnowledgeMutationRequired:false}}
     return Object.freeze({contract:CONTRACT,setMarketplace,setProvider,onChange,normalizeOffer,mergeOffers,listOffers,refreshOffers,localEntitlements,refreshEntitlements,checkAccess,createPurchaseIntent,reconcilePaymentEvent,restoreEntitlements,settlementPreview,reconcileSettlementEvent,status,activeEntitlement});
   }
-  return {STORYMEMORY_PACK_ENTITLEMENT_CONTRACT:CONTRACT,createStoryMemoryPackEntitlementRuntime,createStoryMemoryNeonPackEntitlementProvider};
+  return {STORYMEMORY_PACK_ENTITLEMENT_CONTRACT:CONTRACT,createStoryMemoryPackEntitlementRuntime};
 });

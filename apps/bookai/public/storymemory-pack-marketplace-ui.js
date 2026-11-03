@@ -4,13 +4,6 @@
   const d=root.document,market=root.storyMemoryPackMarketplace,rt=root.storyMemoryUniversalSource;
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   let catalogReady=false;
-  function storedUserId(){try{return JSON.parse(root.BookAIStorage?.getItem('storymemory.authBridgeState.v1')||'null')?.user?.id||null}catch(_){return null}}
-  root.storyMemoryEnableNeonPackRegistry=async function(options={}){
-    if(!root.storyMemoryRemote||!root.createStoryMemoryNeonPackRegistryProvider)return false;
-    const bridge=root.createStoryMemoryNeonPackRegistryProvider({remoteAdapter:root.storyMemoryRemote,getUserId:()=>options.userId||storedUserId()});
-    market.setRegistryProvider(bridge);market.setInstallProvider(bridge.installProvider);
-    try{await market.refresh();catalogReady=true;return true}catch(error){console.warn('StoryMemory Neon Pack registry unavailable; static catalog retained',error);return false}
-  };
   async function ensureCatalog(){if(catalogReady)return;try{await market.refresh({url:'packs/marketplace-catalog-v1.json'});catalogReady=true}catch(error){console.warn('StoryMemory Pack catalog unavailable',error)}}
   async function ensureSource(){let sid=rt?.status?.().activeSourceId||rt?.getPosition?.()?.sourceId||null;if(!sid&&typeof root.storyMemoryUniversalEnsureCurrentBookSource==='function'){try{const x=await root.storyMemoryUniversalEnsureCurrentBookSource();sid=x?.source?.sourceId||null}catch(_){}}return sid?rt.getSource(sid):null}
   function updatePackIndicators(sourceId){if(!sourceId||!rt)return;let packs=[];try{packs=rt.listAttachedPacks(sourceId)}catch(_){}const state=d.getElementById('sourcePackState');if(state)state.textContent=packs.length?packs.map(p=>`${p.name} ${p.version}`).join(' · '):'Pack 없음 · 기본 Harness';const badge=d.getElementById('nativeSourcePack');if(badge)badge.textContent=`PACK · ${packs.length}`}
@@ -28,7 +21,6 @@
     }host.appendChild(panel);
     launch.addEventListener('click',async()=>{panel.hidden=!panel.hidden;if(!panel.hidden)await render()});panel.addEventListener('input',()=>render());panel.addEventListener('change',()=>render());panel.addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(b)action(b)});
     root.storyMemoryOpenPackMarketplace=async()=>{panel.hidden=false;await render();return true};root.storyMemoryRefreshPackMarketplace=render;
-    Promise.resolve().then(async()=>{try{const status=await root.storyMemoryRuntimeStatus?.();if(status?.authenticated)await root.storyMemoryEnableNeonPackRegistry?.()}catch(_){}});
   }
   if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })(typeof globalThis!=='undefined'?globalThis:this);
