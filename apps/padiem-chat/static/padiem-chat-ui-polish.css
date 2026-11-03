@@ -288,6 +288,44 @@ a.settings-action {
   cursor: progress;
 }
 
+/* #6659 3번 1단계: 계정 탈퇴 확인 칸. 위험 동작 버튼과 되돌릴 수 없음을
+   알리는 설명·이메일 확인 입력을 설정 섹션 안에 그대로 둔다. */
+.settings-action-danger {
+  border-color: color-mix(in srgb, var(--danger, #b3261e) 38%, transparent);
+  color: var(--danger, #b3261e);
+}
+
+.settings-delete-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.settings-delete-confirm .settings-delete-description {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: #5b4a44;
+  white-space: pre-line;
+}
+
+.settings-delete-confirm .settings-delete-input {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(62, 76, 88, .22);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .8);
+  color: #33424e;
+  font: inherit;
+  font-size: 13px;
+}
+
+.settings-delete-confirm .auth-error {
+  margin: 0;
+}
+
+
 .settings-action:hover {
   background: rgba(255, 255, 255, .86);
   border-color: rgba(42, 57, 69, .24);

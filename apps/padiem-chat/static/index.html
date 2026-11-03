@@ -351,6 +351,15 @@
             <div class="settings-actions" id="accountPasswordActions" hidden>
               <button class="settings-action" id="passwordChangeOpen" type="button" data-locale-key="password-change-open">비밀번호 변경</button>
             </div>
+            <div class="settings-actions" id="accountDeleteActions" hidden>
+              <button class="settings-action settings-action-danger" id="accountDeleteOpen" type="button" data-locale-key="account-delete-open">계정 탈퇴</button>
+            </div>
+            <div class="settings-actions settings-delete-confirm" id="accountDeleteConfirm" hidden>
+              <p class="settings-delete-description" data-locale-key="account-delete-description"></p>
+              <input class="settings-delete-input" id="accountDeleteConfirmEmail" type="email" autocomplete="off" spellcheck="false" data-locale-placeholder="account-delete-confirm-placeholder">
+              <button class="settings-action settings-action-danger" id="accountDeleteButton" type="button" data-locale-key="account-delete-button" disabled>영구 탈퇴</button>
+              <p class="auth-error" id="accountDeleteError" role="alert" hidden></p>
+            </div>
             <div class="settings-actions">
               <button class="settings-action" id="settingsLogoutButton" type="button" data-locale-key="logout">로그아웃</button>
             </div>

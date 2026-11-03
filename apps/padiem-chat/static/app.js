@@ -29,6 +29,14 @@
   const settingsCloseButton = document.getElementById("settingsCloseButton");
   const accountSettingsSection = document.getElementById("accountSettingsSection");
   const accountPasswordActions = document.getElementById("accountPasswordActions");
+  // #6659 3번 1단계: account self-deletion. The server owns the authority and
+  // the exact-email confirm; the browser only mirrors the same gate.
+  const accountDeleteActions = document.getElementById("accountDeleteActions");
+  const accountDeleteOpen = document.getElementById("accountDeleteOpen");
+  const accountDeleteConfirm = document.getElementById("accountDeleteConfirm");
+  const accountDeleteConfirmEmail = document.getElementById("accountDeleteConfirmEmail");
+  const accountDeleteButton = document.getElementById("accountDeleteButton");
+  const accountDeleteError = document.getElementById("accountDeleteError");
   const settingsLogoutButton = document.getElementById("settingsLogoutButton");
   const passwordChangeOpen = document.getElementById("passwordChangeOpen");
   const passwordChangeDialog = document.getElementById("passwordChangeDialog");
@@ -1732,6 +1740,15 @@
     if (accountPasswordActions) {
       accountPasswordActions.hidden = !(authenticated && authState.account_method === "password");
     }
+    // The deletion entry follows the account section itself (every signed-in
+    // account); the confirm block always resets when the auth state moves.
+    if (accountDeleteActions) {
+      accountDeleteActions.hidden = !authenticated;
+    }
+    if (accountDeleteConfirm) {
+      accountDeleteConfirm.hidden = true;
+      resetAccountDeleteConfirm();
+    }
     const inboxNavButtons = [
       document.getElementById("tasksNavButton"),
       document.getElementById("alertsNavButton"),
@@ -2590,6 +2607,56 @@
       );
     } finally {
       passwordChangeSubmit.disabled = false;
+    }
+  }
+
+  // #6659 3번 1단계: account self-deletion. The screen explains what is
+  // deleted and what stays, and the delete button only arms once the typed
+  // email matches the signed-in account email exactly. The server re-checks
+  // everything: the session, the origin guard, the exact email, the admin
+  // refusal and the one-transaction deletion.
+  function resetAccountDeleteConfirm() {
+    if (accountDeleteConfirmEmail) accountDeleteConfirmEmail.value = "";
+    if (accountDeleteButton) accountDeleteButton.disabled = true;
+    setAuthFormError(accountDeleteError);
+  }
+
+  function openAccountDeleteConfirm() {
+    if (!accountDeleteConfirm) return;
+    resetAccountDeleteConfirm();
+    accountDeleteConfirm.hidden = false;
+    accountDeleteConfirmEmail?.focus();
+  }
+
+  function syncAccountDeleteButton() {
+    if (!accountDeleteButton) return;
+    const typed = accountDeleteConfirmEmail?.value ?? "";
+    const email = authState.user && typeof authState.user.email === "string"
+      ? authState.user.email : "";
+    accountDeleteButton.disabled = !email || typed !== email;
+  }
+
+  async function submitAccountDelete() {
+    if (!accountDeleteButton || accountDeleteButton.disabled) return;
+    setAuthFormError(accountDeleteError);
+    const typed = accountDeleteConfirmEmail?.value || "";
+    accountDeleteButton.disabled = true;
+    try {
+      await passwordAuthRequest("/api/account/delete", { confirm: typed });
+      // The server ended every session for this account and cleared the
+      // cookie: land back on the signed-out first screen.
+      resetAccountDeleteConfirm();
+      if (accountDeleteConfirm) accountDeleteConfirm.hidden = true;
+      closeSettings();
+      await loadAuthStatus();
+      if (authDialog && !authDialog.open) openAuthDialog();
+      setAuthFormError(passwordLoginError, uiT("account-delete-done"));
+    } catch (error) {
+      setAuthFormError(
+        accountDeleteError,
+        error instanceof Error ? error.message : uiT("auth-error-generic"),
+      );
+      accountDeleteButton.disabled = false;
     }
   }
 
@@ -4180,6 +4247,11 @@
   }
   if (passwordChangeForm) passwordChangeForm.addEventListener("submit", submitPasswordChange);
   if (passwordChangeOpen) passwordChangeOpen.addEventListener("click", openPasswordChangeDialog);
+  if (accountDeleteOpen) accountDeleteOpen.addEventListener("click", openAccountDeleteConfirm);
+  if (accountDeleteConfirmEmail) {
+    accountDeleteConfirmEmail.addEventListener("input", syncAccountDeleteButton);
+  }
+  if (accountDeleteButton) accountDeleteButton.addEventListener("click", submitAccountDelete);
   if (passwordChangeDialogClose) passwordChangeDialogClose.addEventListener("click", closePasswordChangeDialog);
   if (passwordChangeDialog) {
     passwordChangeDialog.addEventListener("cancel", (event) => {
