@@ -1,0 +1,63 @@
+name: PADIEM Chat Contract Tests
+
+# #6742: Chat 계약 시험은 pytest만으로는 Node 하네스를 실행하지 않는다.
+# PR마다 이 3개 모듈과 tests/*.mjs(Node)를 돌린다. 실행 시간 약 60초.
+#
+# 별도 워크플로로 분리한 이유: `b62-browser-qa-unified.yml`의 잡 집합과 브라우저
+# 설치 범위는 `.github/tests/test_3989_b62_headless_shell_install.py`가 "16개 QA 잡은
+# 모두 pinned Playwright 1.55.0 headless-shell + OS 의존성을 설치한다"로 고정하고 있다.
+# 브라우저가 필요 없는 이 계약 잡을 그 집합에 섞으면 잡 개수 계약과 설치 계약이
+# 동시에 깨진다(PR #6747에서 실제로 실패). 그래서 형식은 같은 파일의 다른 product-scoped
+# 워크플로를 따르고 path 필터만 `apps/padiem-chat/**`로 좁힌다.
+
+on:
+  pull_request:
+    paths:
+      - "apps/padiem-chat/**"
+      # Reverse-dependency rule (test_ci_reverse_dependency_paths): Chat imports
+      # packages/padiem-ai-core, so a Core edit must re-run this lane too.
+      - "packages/padiem-ai-core/**"
+      - ".github/workflows/padiem-chat-contract-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: padiem-chat-contract-tests-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  chat-contract-tests:
+    name: Chat browser contract, stale client and Node harness (offline)
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.13.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Locked dependencies
+        run: uv sync --locked --extra dev
+      - name: Browser contract, stale-client and BookAI bridge integration
+        run: >-
+          uv run --locked python -m pytest -q
+          tests/test_browser_orchestration_lifecycle_contract.py
+          tests/test_stale_chat_client.py
+          tests/test_bookai_records_app_integration.py
+      - name: Node harness tests (bounded)
+        run: timeout 240 node --test tests/*.mjs

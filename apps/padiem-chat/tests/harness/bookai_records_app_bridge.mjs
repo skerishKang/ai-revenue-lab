@@ -1,9 +1,12 @@
+// JSON-lines bridge driven by tests/test_bookai_records_app_integration.py.
+// It is not a node:test file: it waits on stdin, so it lives outside the
+// tests/*.mjs glob that the test runner would otherwise wait on forever.
 // Test-only JSON bridge: the real BookAI authenticated proxy and sync client.
 // Synthetic signing keys exist only in this process; stdout never includes JWTs.
 import readline from 'node:readline';
 import vm from 'node:vm';
 import {readFile} from 'node:fs/promises';
-import {createBookAIAuth} from '../../bookai/public/bookai-auth.mjs';
+import {createBookAIAuth} from '../../../bookai/public/bookai-auth.mjs';
 const enc=new TextEncoder(), pending=new Map();
 let serial=0;
 const b64=value=>Buffer.from(value).toString('base64url');
@@ -76,7 +79,7 @@ async function run(input){
     addEventListener(){}
   };
   context.window=context;
-  const source=await readFile(new URL('../../bookai/public/bookai-sync.js',import.meta.url),'utf8');
+  const source=await readFile(new URL('../../../bookai/public/bookai-sync.js',import.meta.url),'utf8');
   vm.runInNewContext(source,context,{filename:'bookai-sync.js'});
   try{
     await Promise.resolve();await Promise.resolve();
