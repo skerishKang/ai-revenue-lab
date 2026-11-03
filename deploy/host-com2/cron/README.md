@@ -108,9 +108,30 @@ sudo bash deploy/host-com2/cron/install-cron.sh --profile staging \
 `daemon-reload`. It never starts, never enables, never touches Cloudflare, and never edits the env
 file it references.
 
+## The expired_purge job (COM2-only, not installed)
+
+`expired_purge` is a second job in `cron_parity.json` with `"com2_only": true`: it has no Cloudflare
+side at all — `worker.py` declares no scheduled handler and no cron for it, so the 1:1 Worker-lane
+checks skip it on purpose. Its unit name comes from the profile's own `PURGE_UNIT_NAME`
+(`padiem-chat-expired-purge-staging` / `padiem-chat-expired-purge-com2`), rendered from the same
+templates and the same UTC `CRON_SCHEDULE` rule as the automation tick.
+
+| Piece | Source |
+| --- | --- |
+| The pass itself | `python -m app.expired_purge --once` (`apps/padiem-chat/app/expired_purge.py`) |
+| Entry gate | the same CPython-host contract as `app.local_cron` (`PADIEM_CHAT_CPYTHON_HOST=1`, or `PADIEM_LOCAL_DEV=1` for a dev host) |
+| What it sheds | one bounded batch (default 1000 rows, `PADIEM_CHAT_EXPIRED_PURGE_BATCH`) of expired one-shot rows per target table, past a grace period (default 7 days, `PADIEM_CHAT_EXPIRED_PURGE_GRACE_DAYS`) |
+| Output | `CHAT_EXPIRED_PURGE=ok|dry_run detail={<table>: <rows>}` — table names and row counts only, never row content or identifiers |
+
+**Status: not installed.** The templates, the `run-expired-purge.sh` lock wrapper and the installer
+render lines exist so the COM2 lane can later install them; nothing here has been applied, started
+or enabled on any host. See `docs/operations/EXPIRED_PURGE_20261103.md` for the survey behind the
+target list and the install order.
+
 ## Not done here
 
 - No install, no start, no enable on any host.
 - No Cloudflare change (the trigger and the Worker flag are read-only facts for this package).
 - No engine bridge: the tick keeps reporting `NOT_CONFIGURED` until the P01 transport exists.
 - No new scheduler logic: the timer only calls the existing `app.local_cron` entry.
+- The expired_purge timer is not enabled either: the job is packaged for the COM2 lane to install.

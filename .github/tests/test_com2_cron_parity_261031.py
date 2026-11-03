@@ -72,8 +72,20 @@ def test_every_source_declared_worker_cron_maps_to_a_timer():
 
 
 def test_the_scheduled_handler_dispatches_only_mapped_jobs():
-    handlers = {job["worker_handler"] for job in JOBS}
+    # A COM2-only job (expired_purge) declares no worker handler at all; the
+    # Worker-lane 1:1 stays intact for every job that has one.
+    handlers = {job["worker_handler"] for job in JOBS if job["worker_handler"]}
     assert scheduled_calls() == handlers
+
+
+def test_a_com2_only_job_has_no_cloudflare_side():
+    com2_only = [job for job in JOBS if job.get("com2_only")]
+    assert com2_only, "the manifest must mark the COM2-only job explicitly"
+    for job in com2_only:
+        assert job["worker_handler"] is None
+        assert job["worker_cron"] is None
+        # A COM2-only job must never silently grow a Cloudflare dispatch.
+        assert job["worker_handler"] not in scheduled_calls()
 
 
 def test_the_timer_reads_the_expression_as_utc():
@@ -108,8 +120,35 @@ def test_the_service_runs_the_same_local_entry():
     runner = (CRON / "run-cron.sh").read_text(encoding="utf-8")
     assert "-m app.local_cron --once" in runner
     for job in JOBS:
+        if job.get("com2_only"):
+            continue
         assert job["local_entry"] == "app.local_cron"
         assert job["local_entry"] in job["command"]
+
+
+def test_the_com2_only_job_runs_its_own_local_entry():
+    purge = next(job for job in JOBS if job.get("com2_only"))
+    assert purge["local_entry"] == "app.expired_purge"
+    assert purge["local_entry"] in purge["command"]
+    assert purge["command"] == "python -m app.expired_purge --once"
+
+    source = (CHAT / "app" / "expired_purge.py").read_text(encoding="utf-8")
+    assert "def run_once" in source and "def main(" in source
+    # The purge carries its own target list; it must not infer it.
+    assert "PURGE_TARGETS" in source
+
+    runner = (CRON / "run-expired-purge.sh").read_text(encoding="utf-8")
+    assert "-m app.expired_purge --once" in runner
+    assert "-m app.local_cron" not in runner
+
+    installer = (CRON / "install-cron.sh").read_text(encoding="utf-8")
+    assert "run-expired-purge.sh" in installer
+    assert "padiem-chat-expired-purge.service.template" in installer
+    assert "padiem-chat-expired-purge.timer.template" in installer
+
+    readme = (CRON / "README.md").read_text(encoding="utf-8")
+    assert "expired_purge" in readme
+    assert "not installed" in readme.lower()
 
 
 def test_the_package_states_the_utc_rule():

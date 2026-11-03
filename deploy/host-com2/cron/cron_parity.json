@@ -12,6 +12,17 @@
       "timer_template": "padiem-chat-cron.timer.template",
       "local_entry": "app.local_cron",
       "command": "python -m app.local_cron --once"
+    },
+    {
+      "id": "expired_purge",
+      "com2_only": true,
+      "worker_handler": null,
+      "worker_cron": null,
+      "unit_prefix": "padiem-chat-expired-purge",
+      "service_template": "padiem-chat-expired-purge.service.template",
+      "timer_template": "padiem-chat-expired-purge.timer.template",
+      "local_entry": "app.expired_purge",
+      "command": "python -m app.expired_purge --once"
     }
   ]
 }

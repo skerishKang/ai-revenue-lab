@@ -39,7 +39,7 @@ if [[ ! -f "$conf" ]]; then
 fi
 
 # shellcheck disable=SC1090
-PROFILE=""; UNIT_NAME=""; APP_ROOT=""; DATA_ROOT=""; ENV_FILE=""; SERVICE_USER=""; QUEUE_ORIGIN=""; START_TIMEOUT=""; CRON_SCHEDULE=""
+PROFILE=""; UNIT_NAME=""; PURGE_UNIT_NAME=""; APP_ROOT=""; DATA_ROOT=""; ENV_FILE=""; SERVICE_USER=""; QUEUE_ORIGIN=""; START_TIMEOUT=""; CRON_SCHEDULE=""
 source "$conf"
 
 [[ -n "$schedule" ]] || schedule=$CRON_SCHEDULE
@@ -70,6 +70,7 @@ render() {
 
 echo "CRON_INSTALL_PROFILE=$PROFILE"
 echo "CRON_INSTALL_UNIT=$UNIT_NAME"
+echo "CRON_INSTALL_PURGE_UNIT=$PURGE_UNIT_NAME"
 echo "CRON_INSTALL_SCHEDULE=$schedule"
 echo "CRON_INSTALL_APP_ROOT=$app_root"
 echo "CRON_INSTALL_DATA_ROOT=$DATA_ROOT"
@@ -89,12 +90,18 @@ fi
 
 mkdir -p "$render_dir" "$app_root"
 install -m 0755 "$here/run-cron.sh" "$app_root/run-cron.sh"
+install -m 0755 "$here/run-expired-purge.sh" "$app_root/run-expired-purge.sh"
 install -m 0755 "$here/status-cron.sh" "$app_root/status-cron.sh"
 install -m 0644 "$here/check_config_cron.py" "$app_root/check_config_cron.py"
 install -m 0644 "$here/README.md" "$app_root/README-cron.md"
 render "$here/padiem-chat-cron.service.template" "$render_dir/$UNIT_NAME.service"
 render "$here/padiem-chat-cron.timer.template" "$render_dir/$UNIT_NAME.timer"
 chmod 0644 "$render_dir/$UNIT_NAME.service" "$render_dir/$UNIT_NAME.timer"
+# The expired-row purge has no Cloudflare side; its unit name comes from the
+# profile's own PURGE_UNIT_NAME, still rendered from the same UTC schedule.
+render "$here/padiem-chat-expired-purge.service.template" "$render_dir/$PURGE_UNIT_NAME.service"
+render "$here/padiem-chat-expired-purge.timer.template" "$render_dir/$PURGE_UNIT_NAME.timer"
+chmod 0644 "$render_dir/$PURGE_UNIT_NAME.service" "$render_dir/$PURGE_UNIT_NAME.timer"
 
 if [[ "$render_dir" == "/etc/systemd/system" ]] && command -v systemctl >/dev/null 2>&1; then
   systemctl daemon-reload

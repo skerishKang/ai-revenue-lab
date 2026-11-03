@@ -13,6 +13,9 @@ for _p in (
     str(_repo_root / "apps" / "korean-ai-code-agent" / "src"),
     str(_repo_root / "packages" / "padiem-ai-core"),
     str(_repo_root / "packages" / "padiem-control-plane"),
+    # kagent·app이 import하는 엔진 클라이언트도 editable 설치본 없는 전역
+    # Python 환경에서는 이 저장소의 소스를 쓴다 (CI와 동일 내용).
+    str(_repo_root / "apps" / "padiem-ai-engine" / "clients" / "python"),
 ):
     if _p not in _sys.path:
         _sys.path.insert(0, _p)
