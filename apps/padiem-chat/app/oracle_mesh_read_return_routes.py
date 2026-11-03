@@ -4335,6 +4335,16 @@ async def _engine_pc_files_target(
     # account has no linked PC" a 403, and an ordinary chat turn that only asked
     # what tools exist then read as a failure. Context answers 200 with no roots
     # and no PC tools; only a call that actually needs a PC refuses.
+    # #6695 PR-3: this transitional fallback ends with the same operating
+    # switch that retires the TXT map lane. ``ORACLE_MESH_LEGACY_MAP_LANE=off``
+    # leaves the ownership link as the only authority here — a directory answer
+    # of "no usable link" then refuses instead of falling to the map, and a
+    # directory that could not answer at all fails closed. Default (unset)
+    # keeps today's behaviour: the two production PCs still run link-less.
+    if not getattr(request.app.state, "oracle_mesh_legacy_map_lane", True):
+        if kind == _DIRECTORY_UNUSABLE:
+            return None, _error(503, "oracle_mesh_device_directory_unavailable")
+        return None, None
     try:
         target = source.command_target(
             account_ref=account_ref, device_id=selected_device_id,
@@ -4348,10 +4358,9 @@ async def _engine_pc_files_target(
     roots = _pc_files_roots_of_map_row(target.get("file_path"))
     if not roots:
         return None, _error(503, "oracle_mesh_file_root_unavailable")
-    # TODO(#5573): transitional only. Until the Owner claims their two PCs
-    # through the pairing flow (Astra3, after 072), a linked-less account falls
-    # back to the deployment ownership map so production keeps its existing
-    # devices working. Delete this fallback once those links exist.
+    # #5573: transitional fallback — the map answers only while the lane
+    # switch above still allows it, and it retires with that switch once the
+    # production devices carry their ownership links.
     return {
         "authorized": True,
         "target": target,

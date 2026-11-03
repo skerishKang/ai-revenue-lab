@@ -1,5 +1,22 @@
 from __future__ import annotations
 
+import sys as _sys
+
+# 로컬 venv에는 pytest가 없어 전역 Python의 pytest로 돌고, 그 환경에는 다른
+# 작업대의 padiem-chat·korean-ai-code-agent가 editable로 설치되어 `app`과
+# `kagent`가 남의 트리에서 읽힌다. 아래 어떤 import보다 먼저 이 저장소의
+# 패키지들을 sys.path 맨 앞에 고정한다 — CI(올바른 venv)에서는 같은 내용이므로
+# 동작이 바뀌지 않는다.
+_repo_root = __import__("pathlib").Path(__file__).resolve().parents[3]
+for _p in (
+    str(_repo_root / "apps" / "padiem-chat"),
+    str(_repo_root / "apps" / "korean-ai-code-agent" / "src"),
+    str(_repo_root / "packages" / "padiem-ai-core"),
+    str(_repo_root / "packages" / "padiem-control-plane"),
+):
+    if _p not in _sys.path:
+        _sys.path.insert(0, _p)
+
 import importlib
 import json
 import os
