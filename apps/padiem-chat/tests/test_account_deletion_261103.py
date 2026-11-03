@@ -1173,6 +1173,60 @@ def test_failure_before_chat_deletion_keeps_all_service_links_and_chat_rows():
     assert len(app.state.control_plane_identity_authority.links) == 2
 
 
+def test_chat_failure_after_lovetree_success_keeps_common_account_and_can_retry():
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    user_id = accounts["deleter"]
+    _, authority = _bind_shared_links(db, app, user_id, include_lovetree=True)
+    rpc_paths = []
+    original_batch = db.batch
+
+    async def fail_once(statements):
+        db.batch = original_batch
+        raise RuntimeError("synthetic Chat deletion failure")
+
+    db.batch = fail_once
+
+    async def transport(**kwargs):
+        path = kwargs["path"]
+        rpc_paths.append(path)
+        if path == "/internal/account/delete":
+            # LoveTree confirms its own deletion and detaches its product link.
+            authority.links = [link for link in authority.links if link["product_id"] != "lovetree-4-0"]
+            payload = {"ok": True, "deleted": True}
+        elif path == "/internal/account-delete/prepare":
+            payload = {"ok": True, "prepared": True, "revoked_sessions": 2}
+        elif path == "/internal/account-delete/complete":
+            payload = {"ok": True, "deleted": True}
+        else:
+            raise AssertionError(f"unexpected account deletion path: {path}")
+        return SimpleNamespace(status_code=200, json=lambda: payload)
+
+    app.state.account_delete_rpc_transport = transport
+    first = call(
+        app, settings, "POST", "/api/account/shared-delete",
+        token=token_for(settings, user_id), body={"confirm": DELETER_EMAIL}, origin=BASE,
+    )
+    assert first.status_code == 503
+    assert first.json()["error"]["code"] == "account_delete_failed"
+    assert db.conn.execute("SELECT id FROM users WHERE id=?", (user_id,)).fetchone() is not None
+    assert [link["product_id"] for link in authority.links] == ["b62"]
+    assert rpc_paths == ["/internal/account/delete"]
+
+    retry = call(
+        app, settings, "POST", "/api/account/shared-delete",
+        token=token_for(settings, user_id), body={"confirm": DELETER_EMAIL}, origin=BASE,
+    )
+    assert retry.status_code == 200
+    assert retry.json()["common_account_deleted"] is True
+    assert authority.links == []
+    assert rpc_paths == [
+        "/internal/account/delete",
+        "/internal/account-delete/prepare",
+        "/internal/account-delete/complete",
+    ]
+
+
 def test_cp_unlink_failure_keeps_common_account_link_after_local_chat_data_deletion():
     db, accounts = seed_db()
     app, settings = build_app(db)
@@ -1225,6 +1279,9 @@ def test_account_help_describes_both_deletion_paths_and_keeps_brand_wording_guar
     section = help_text.split('id="account"', 1)[1].split('id="faq"', 1)[0]
     html = (app_root / "static" / "index.html").read_text(encoding="utf-8")
     script = (app_root / "static" / "app.js").read_text(encoding="utf-8")
+    repo_root = app_root.parents[1]
+    common_terms = (repo_root / "docs" / "legal" / "drafts" / "terms_common_ko.md").read_text(encoding="utf-8")
+    lovetree_terms = (repo_root / "docs" / "legal" / "drafts" / "services" / "lovetree_ko.md").read_text(encoding="utf-8")
 
     assert "이 서비스에서 탈퇴" in section
     assert "모든 서비스에서 탈퇴" in section
@@ -1235,3 +1292,8 @@ def test_account_help_describes_both_deletion_paths_and_keeps_brand_wording_guar
     assert 'id="accountSharedDeleteOpen"' in html
     assert 'id="accountSharedDeleteConfirm"' in html
     assert '"/api/account/shared-delete"' in script
+    assert "다른 서비스 연결이 남아 있으면 공통 계정은 유지합니다." in common_terms
+    assert "마지막 연결이 삭제되면 공통 계정과 로그인 세션을 폐기합니다." in common_terms
+    assert "연결 서비스 처리에 실패하면 공통 계정을 유지하고 재시도할 수 있습니다." in common_terms
+    assert "CGI 쇼핑몰은 공통 계정과 연결되지 않은 별도 계정" in common_terms
+    assert "이 요청은 러브트리 데이터와 러브트리의 공통 계정 연결만 삭제합니다." in lovetree_terms
