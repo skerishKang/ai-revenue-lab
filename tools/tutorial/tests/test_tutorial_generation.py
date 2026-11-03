@@ -10,6 +10,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 TOOL_DIR = Path(__file__).resolve().parents[1]
 REPO = TOOL_DIR.parents[1]
@@ -228,13 +229,45 @@ class CommittedPages(unittest.TestCase):
         self.assertNotIn("/step-", page)
         self.assertIn("아직 촬영하지 않았습니다", page)
 
-    def test_video_slot_names_the_base_url_variable(self):
-        page = (PAGES / "04-bookai.html").read_text(encoding="utf-8")
-        self.assertIn("영상 준비 중", page)
-        self.assertIn(generator.VIDEO_KEY_ENV, page)
-        # No empty player: the recordings are not in the repository.
-        self.assertNotIn("<video", page)
-        self.assertNotIn(".webm\"", page)
+    def test_recorded_scenes_embed_versioned_video_and_captions(self):
+        for key in sorted(generator.MEDIA_SCENES):
+            number, slug = key.split("-", 1)
+            page = (PAGES / f"{number}-{slug}.html").read_text(encoding="utf-8")
+            self.assertIn('<video controls preload="none" crossorigin="anonymous">', page, key)
+            self.assertIn('<track kind="captions"', page, key)
+            self.assertRegex(
+                page,
+                rf"https://media\.padiem\.net/tutorials/{re.escape(key)}/video\.v\d{{8}}\.webm",
+            )
+            self.assertRegex(
+                page,
+                rf"https://media\.padiem\.net/tutorials/{re.escape(key)}/captions\.v\d{{8}}\.vtt",
+            )
+            self.assertNotIn("영상 준비 중", page, key)
+
+    def test_unrecorded_scenes_keep_the_video_placeholder(self):
+        for document in generator.load_scenarios():
+            if document["key"] in generator.MEDIA_SCENES:
+                continue
+            page = (PAGES / f"{document['number']}-{document['slug']}.html").read_text(
+                encoding="utf-8"
+            )
+            self.assertIn("영상 준비 중", page, document["key"])
+            self.assertNotIn("<video", page, document["key"])
+
+    def test_media_base_url_is_pinned_to_the_custom_domain(self):
+        document = generator.load_scenarios()[0]
+        with patch.dict("os.environ", {generator.VIDEO_KEY_ENV: "https://media.padiem.net"}):
+            self.assertTrue(all(url.startswith("https://media.padiem.net/") for url in generator.media_urls(document)))
+        for unsafe in (
+            "http://media.padiem.net",
+            "https://evil.example",
+            "https://media.padiem.net.evil.example",
+            "https://media.padiem.net:8443",
+        ):
+            with patch.dict("os.environ", {generator.VIDEO_KEY_ENV: unsafe}):
+                with self.assertRaises(ValueError, msg=unsafe):
+                    generator.media_urls(document)
 
     def test_check_flags_page_and_image_drift(self):
         docs, pages = self.root / "docs", self.root / "pages"
@@ -247,7 +280,10 @@ class CommittedPages(unittest.TestCase):
 
         page = pages / "04-bookai.html"
         page.write_text(
-            page.read_text(encoding="utf-8").replace("영상 준비 중", "영상"), encoding="utf-8"
+            page.read_text(encoding="utf-8").replace(
+                '<video controls preload="none" crossorigin="anonymous">', '<video controls>'
+            ),
+            encoding="utf-8",
         )
         (pages / "assets" / "04-bookai" / "step-01.webp").unlink()
         (pages / "assets" / "99-extra").mkdir()
@@ -317,6 +353,21 @@ class RecorderPlan(unittest.TestCase):
         self.assertIn("00:00:00.000 --> 00:00:07.500", vtt)
         self.assertIn("00:00:07.500 --> 00:00:12.500", vtt)
         self.assertIn("게스트 상태를 확인해요.", vtt)
+
+    def test_vtt_last_cue_never_exceeds_measured_video_duration(self):
+        vtt = capture.build_vtt(
+            [
+                {"offset_ms": 0, "caption": "첫 화면"},
+                {"offset_ms": 7_500, "caption": "마지막 화면"},
+            ],
+            duration_ms=9_000,
+        )
+        self.assertIn("00:00:07.500 --> 00:00:09.000", vtt)
+        with self.assertRaises(ValueError):
+            capture.build_vtt(
+                [{"offset_ms": 9_000, "caption": "마지막 화면"}],
+                duration_ms=9_000,
+            )
 
     def test_dry_run_lists_steps_without_a_browser(self):
         done = subprocess.run(

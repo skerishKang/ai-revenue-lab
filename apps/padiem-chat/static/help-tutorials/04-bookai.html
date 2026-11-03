@@ -12,8 +12,7 @@
   <link rel="stylesheet" href="./tutorial.css" />
   <!-- tools/tutorial/build_tutorials.py가 docs/qa/scenarios/
 04-bookai.md에서 만든 페이지입니다. 대본을 고치고 다시 생성하세요.
-       영상·자막 주소는 PADIEM_TUTORIAL_MEDIA_BASE_URL/
-chat-tutorial/04-bookai/video.webm 로 나중에 붙입니다. -->
+       영상·자막 주소는 PADIEM_TUTORIAL_MEDIA_BASE_URL의 media.padiem.net 버전 경로에서 읽습니다. -->
 </head>
 <body class="chat-help-body">
   <a class="chat-help-skip" href="#tutorialMain">본문으로 건너뛰기</a>
@@ -76,7 +75,10 @@ chat-tutorial/04-bookai/video.webm 로 나중에 붙입니다. -->
       </section>
       <section class="chat-help-section" id="media" aria-labelledby="mediaTitle">
         <h2 id="mediaTitle">영상과 자막</h2>
-        <p class="chat-help-video-slot">영상 준비 중 — 녹화와 자막은 아직 이 화면에 올리지 않았습니다.</p>
+        <video controls preload="none" crossorigin="anonymous">
+          <source src="https://media.padiem.net/tutorials/04-bookai/video.v20261103.webm" type="video/webm" />
+          <track kind="captions" src="https://media.padiem.net/tutorials/04-bookai/captions.v20261103.vtt" srclang="ko" label="한국어" default />
+        </video>
         <p class="chat-help-detail">촬영 범위: 게스트 1, 3단계.</p>
         <p class="chat-help-detail">계정 2, 4단계는 [화면 준비 중 — 시험 계정 확정 후 촬영]로 두고 같은 자리에 이어 붙입니다.</p>
       </section>

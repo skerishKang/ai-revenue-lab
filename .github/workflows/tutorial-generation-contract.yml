@@ -35,6 +35,8 @@ permissions:
 jobs:
   tutorial-generation:
     name: Tutorial generation
+    env:
+      PADIEM_TUTORIAL_MEDIA_BASE_URL: https://media.padiem.net
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:

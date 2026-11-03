@@ -21,7 +21,7 @@ import json
 import re
 from pathlib import Path
 import threading
-from urllib.parse import unquote
+from urllib.parse import unquote, urlsplit
 
 import pytest
 
@@ -197,13 +197,32 @@ def test_an_example_links_with_its_own_words():
 
 def test_the_page_carries_no_script_no_network_and_no_shout():
     assert "<script" not in HELP
-    # One product-owned endpoint is the documented exception: the external-AI
-    # section has to show the address a person pastes into a connector. Every
-    # other URL stays banned, so the page still points at nothing it does not own.
-    allowed_urls = {"https://chat.padiem.net/api/mcp"}
-    found_urls = set(re.findall(r"https?://[^\s\"'<>]+", HELP))
-    assert found_urls <= allowed_urls, f"an external URL in the guide: {found_urls - allowed_urls}"
-    assert allowed_urls <= found_urls, "the external-AI section must show the connector address"
+    # The guide lists the product MCP endpoint. Tutorial pages add only the
+    # approved media origin for the versioned guest recordings.
+    media_pages = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in sorted((STATIC / "help-tutorials").glob("*.html"))
+    )
+    scanned = HELP + "\n" + media_pages
+    found_urls = set(re.findall(r"https?://[^\s\"'<>]+", scanned))
+    api_url = "https://chat.padiem.net/api/mcp"
+    allowed_product_urls = {
+        api_url,
+        "https://chat.padiem.net/",
+        "https://bookai.padiem.net/",
+    }
+    assert api_url in set(re.findall(r"https?://[^\s\"'<>]+", HELP))
+    unexpected = {
+        url
+        for url in found_urls
+        if url not in allowed_product_urls
+        and not (
+            urlsplit(url).scheme == "https"
+            and urlsplit(url).netloc == "media.padiem.net"
+            and urlsplit(url).path.startswith("/tutorials/")
+        )
+    }
+    assert not unexpected, f"unapproved remote URL: {unexpected}"
     assert "PADIEM" not in HELP
     assert 'lang="ko"' in HELP
     assert 'name="viewport" content="width=device-width, initial-scale=1"' in HELP
