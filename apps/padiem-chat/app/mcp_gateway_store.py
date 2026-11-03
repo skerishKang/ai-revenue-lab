@@ -29,6 +29,12 @@ _TOKEN = re.compile(r"mcp_[0-9a-f]{32}\Z")
 _APPROVAL = re.compile(r"mcpa_[0-9a-f]{32}\Z")
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 _TOKEN_COLUMNS = "id,name,device_id,created_at,last_used_at,revoked_at"
+_SHELL_JOB = re.compile(r"mcpjob_[0-9a-f]{32}\Z")
+_SHELL_REF = re.compile(r"[A-Za-z0-9_.:-]{1,128}\Z")
+_SHELL_NAME = re.compile(r"[a-z]{1,16}\Z")
+_SHELL_JOB_STATES = ("queued", "running", "exited", "cancelled", "lost")
+_SHELL_JOB_COLUMNS = ("id,user_id,token_id,device_id,run_id,dispatch_id,command_sha256,shell,"
+                      "state,exit_code,created_at,updated_at,finished_at")
 
 
 class McpGatewayStoreError(ValueError):
@@ -211,3 +217,69 @@ class D1McpGatewayStore:
                         exit_code, duration_ms, output_bytes,
                         None if output_truncated is None else int(output_truncated))
         return event_id
+
+    async def create_shell_job(self, *, identity: dict, job_id: str, run_id: str,
+                               command_sha256: str, shell: str, now=None) -> dict:
+        """Stage one background PC job before its command can be dispatched.
+
+        The row is written first so a job always has an owner record: a dispatch
+        that dies mid-flight leaves a job the user can still see and stop, never
+        an untracked process. Only a digest of the command is kept.
+        """
+        owner = _owner(identity["user_id"])
+        if not isinstance(job_id, str) or not _SHELL_JOB.fullmatch(job_id):
+            raise McpGatewayStoreError("Invalid shell job")
+        if (not is_pc_device_id(identity["device_id"])
+                or not isinstance(identity["token_id"], str) or not _TOKEN.fullmatch(identity["token_id"])):
+            raise McpGatewayStoreError("Invalid shell job owner")
+        if (not isinstance(run_id, str) or not _SHELL_REF.fullmatch(run_id)
+                or not isinstance(command_sha256, str) or not _DIGEST.fullmatch(command_sha256)
+                or not isinstance(shell, str) or not _SHELL_NAME.fullmatch(shell)):
+            raise McpGatewayStoreError("Invalid shell job material")
+        stamp = _stamp(now)
+        await self._run("INSERT INTO padiem_mcp_shell_jobs "
+                        "(id,user_id,token_id,device_id,run_id,dispatch_id,command_sha256,shell,"
+                        "state,exit_code,created_at,updated_at,finished_at) "
+                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                        job_id, owner, identity["token_id"], identity["device_id"], run_id, None,
+                        command_sha256, shell, "queued", None, stamp, stamp, None)
+        job = await self.get_shell_job(user_id=owner, job_id=job_id)
+        if job is None:
+            raise McpGatewayStoreError("Shell job is unavailable")
+        return job
+
+    async def get_shell_job(self, *, user_id: str, job_id: str) -> dict | None:
+        """One job row for its owning account only; a foreign id reads as absent."""
+        owner = _owner(user_id)
+        if not isinstance(job_id, str) or not _SHELL_JOB.fullmatch(job_id):
+            return None
+        return await self._first("SELECT " + _SHELL_JOB_COLUMNS +
+                                 " FROM padiem_mcp_shell_jobs WHERE id=? AND user_id=?", job_id, owner)
+
+    async def attach_shell_job_dispatch(self, *, user_id: str, job_id: str,
+                                        dispatch_id: str, now=None) -> bool:
+        """Pin the staged dispatch once, so a retry can never retarget the job."""
+        owner = _owner(user_id)
+        if not isinstance(dispatch_id, str) or not _SHELL_REF.fullmatch(dispatch_id):
+            raise McpGatewayStoreError("Invalid shell job dispatch")
+        row = await self._first("UPDATE padiem_mcp_shell_jobs SET dispatch_id=?, updated_at=? "
+                                "WHERE id=? AND user_id=? AND dispatch_id IS NULL RETURNING id",
+                                dispatch_id, _stamp(now), job_id, owner)
+        return row is not None
+
+    async def finish_shell_job(self, *, user_id: str, job_id: str, state: str,
+                               exit_code: int | None = None, now=None) -> dict | None:
+        """Move a job to an observed end state; a terminal row is never reopened."""
+        owner = _owner(user_id)
+        if state not in _SHELL_JOB_STATES or state == "queued":
+            raise McpGatewayStoreError("Invalid shell job state")
+        if exit_code is not None and (isinstance(exit_code, bool) or not isinstance(exit_code, int)):
+            raise McpGatewayStoreError("Invalid shell job exit code")
+        row = await self._first("UPDATE padiem_mcp_shell_jobs "
+                                "SET state=?, exit_code=?, updated_at=?, finished_at=? "
+                                "WHERE id=? AND user_id=? AND state NOT IN ('exited','cancelled','lost') "
+                                "RETURNING " + _SHELL_JOB_COLUMNS,
+                                state, exit_code, _stamp(now), _stamp(now), job_id, owner)
+        if row is not None:
+            return row
+        return await self.get_shell_job(user_id=owner, job_id=job_id)

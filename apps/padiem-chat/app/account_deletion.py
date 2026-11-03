@@ -106,6 +106,7 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("pc_install_tokens", "user_id = ?"),
     ("pc_device_links", "user_id = ?"),
     ("padiem_pc_delegations", "user_id = ?"),
+    ("padiem_mcp_shell_jobs", "user_id = ?"),
     ("padiem_mcp_tokens", "user_id = ?"),
     ("padiem_mcp_approvals", "user_id = ?"),
     ("padiem_mcp_audit", "user_id = ?"),

@@ -15,7 +15,10 @@ import re
 from starlette.responses import JSONResponse, Response
 
 from .mcp_gateway_dispatch import APPROVAL_META_KEY, dispatch_mcp_tool
-from .mcp_gateway_shell import PC_SHELL_PROPERTIES
+from .mcp_gateway_shell import (
+    PC_SHELL_PROPERTIES, PC_SHELL_READ_PROPERTIES, PC_SHELL_START_PROPERTIES,
+    PC_SHELL_STOP_PROPERTIES, validate_shell_tool_arguments,
+)
 from .same_origin_guard import expected_browser_origin
 
 
@@ -85,10 +88,27 @@ _TOOL_LIST = sorted([
           {"path": _PATH, "query": {"type": "string", "minLength": 1}}),
     _tool("pc_read", "파일 읽기", "연결 PC의 파일을 읽습니다.", {"path": _PATH}),
     _tool("pc_shell", "PC 명령 실행",
-          "연결된 내 PC에서 명령을 한 번 실행하고 stdout·stderr·종료 코드를 돌려줍니다. "
-          "사전 위임된 PC에서만 실행하며, 비밀번호 입력·계정 권한 변경·되돌릴 수 없는 삭제·"
-          "외부 발송은 실행 전에 PADIEM 대화에서 확인합니다. 출력은 제한 크기로 잘릴 수 있습니다.",
+          "연결된 내 PC에서 명령을 실행하고 wait_seconds까지 stdout·stderr·종료 코드를"
+          " 돌려줍니다. 실행 시간 제한은 없습니다. 기다린 시간이 지나면 명령은 PC에서"
+          " 계속 실행되고 작업 번호가 돌려주니, pc_shell_read로 이어서 읽고"
+          " pc_shell_stop으로 중지할 수 있습니다. 사전 위임된 PC에서만 실행하며, "
+          "비밀번호 입력·계정 권한 변경·되돌릴 수 없는 삭제·외부 발송은 실행 전에 "
+          "PADIEM 대화에서 확인합니다. 한 번에 돌려주는 출력은 제한 크기로 잘릴 수 "
+          "있습니다.",
           PC_SHELL_PROPERTIES, mutates=True, required=["command"]),
+    _tool("pc_shell_start", "PC 명령 백그라운드 시작",
+          "연결된 내 PC에서 명령을 백그라운드로 시작하고 작업 번호를 바로 돌려줍니다."
+          " 기다림은 없고 실행 시간 제한도 없습니다. 출력은 pc_shell_read로 읽고"
+          " pc_shell_stop으로 중지합니다. PC가 지금 꺼져 있어도 대기 순으로 남습니다.",
+          PC_SHELL_START_PROPERTIES, mutates=True, required=["command"]),
+    _tool("pc_shell_read", "PC 작업 이어 읽기",
+          "작업 번호와 offset으로 그 뒤의 출력·상태(실행 중/종료·종료 코드)·경과 시간을"
+          " 돌려줍니다. 다음 위치는 next_offset입니다.",
+          PC_SHELL_READ_PROPERTIES, mutates=False, required=["job_id"]),
+    _tool("pc_shell_stop", "PC 작업 중지",
+          "작업 번호의 프로세스 트리 전체를 중지합니다. 아직 PC에 도착하지 않은 대기"
+          " 작업이면 취소합니다.",
+          PC_SHELL_STOP_PROPERTIES, mutates=True, required=["job_id"]),
     _tool("pc_write", "파일 쓰기", "내용을 파일에 씁니다. 사전 위임 밖이면 PADIEM에서 확인합니다.",
           {"path": _PATH, "content": {"type": "string"}}, mutates=True),
     _tool("pc_move", "파일 이동", "파일을 다른 경로로 옮깁니다. 사전 위임 밖이면 PADIEM에서 확인합니다.",
@@ -109,9 +129,8 @@ def validate_tool_arguments(name, arguments):
     tool = _TOOLS.get(name) if isinstance(name, str) else None
     if tool is None or not isinstance(arguments, dict):
         return False
-    if name == "pc_shell":
-        from .mcp_gateway_shell import validate_pc_shell_arguments
-        return validate_pc_shell_arguments(arguments)
+    if name.startswith("pc_shell"):
+        return validate_shell_tool_arguments(name, arguments)
     properties = tool["inputSchema"]["properties"]
     if (not set(tool["inputSchema"]["required"]) <= set(arguments)
             or not set(arguments) <= set(properties)):

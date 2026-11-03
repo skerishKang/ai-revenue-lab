@@ -168,6 +168,7 @@ _OVERRIDES = {
     ("claw_web_xlsx_quote_edit_receipts", "state"): "dispatching",
     ("claw_web_xlsx_quote_write_decisions", "state"): "dispatching",
     ("padiem_calendar_appointment", "appointment_type"): "timed",
+    ("padiem_mcp_shell_jobs", "state"): "queued",
     ("b66_saved_quote_skill", "skill_version"): 1,
     ("b66_saved_quote_skill", "status"): "approved",
     ("b66_quote_asset", "asset_kind"): "logo",

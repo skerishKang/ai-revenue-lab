@@ -21,6 +21,7 @@ from test_5222_account_model_selection import BASE, build_app, client_for, seed_
 
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "085_mcp_gateway.sql"
 SHELL_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "094_mcp_shell_audit.sql"
+JOBS_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "096_mcp_shell_jobs.sql"
 NOW = datetime(2026, 11, 1, tzinfo=timezone.utc)
 DEVICE = "node//test-owner-pc"
 FAKE_SECRET = "fixed-test-material-not-a-live-credential"
@@ -38,8 +39,9 @@ class Pairing:
 
 def setup():
     db, owner, other, _ = seed_db()
-    db.conn.executescript(MIGRATION.read_text())
-    db.conn.executescript(SHELL_MIGRATION.read_text())
+    db.conn.executescript(MIGRATION.read_text(encoding="utf-8"))
+    db.conn.executescript(SHELL_MIGRATION.read_text(encoding="utf-8"))
+    db.conn.executescript(JOBS_MIGRATION.read_text(encoding="utf-8"))
     store = D1McpGatewayStore(db, secret_factory=lambda: FAKE_SECRET)
     return db, owner, other, store
 

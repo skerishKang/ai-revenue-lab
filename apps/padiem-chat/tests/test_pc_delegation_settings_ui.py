@@ -12,7 +12,7 @@ NODE = shutil.which("node")
 
 
 def test_settings_are_in_the_shared_chat_claw_dialog_with_accessible_localized_controls():
-    html = (STATIC / "index.html").read_text()
+    html = (STATIC / "index.html").read_text(encoding="utf-8")
     section = html[html.index('id="pcDelegationSettings"'):html.index('id="adminSettingsSection"')]
     assert 'aria-labelledby="pcDelegationTitle"' in section
     assert 'role="status" aria-live="polite"' in section
@@ -25,12 +25,12 @@ def test_settings_are_in_the_shared_chat_claw_dialog_with_accessible_localized_c
 
 
 def test_every_delegation_copy_key_has_both_locales_and_send_is_not_an_action():
-    locale = (STATIC / "locale.js").read_text()
+    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
     ko, en = locale.split('    en: {', 1)
     keys = set(re.findall(r'"(pc-delegation-[^"]+)":', ko))
     assert len(keys) >= 30
     assert keys <= set(re.findall(r'"(pc-delegation-[^"]+)":', en))
-    source = (STATIC / "pc-delegation-settings.js").read_text()
+    source = (STATIC / "pc-delegation-settings.js").read_text(encoding="utf-8")
     assert 'const ACTIONS = ["write", "move", "delete"]' in source
     assert set(re.findall(r'copy\("(pc-delegation-[^"]+)"\)', source)) <= keys
 

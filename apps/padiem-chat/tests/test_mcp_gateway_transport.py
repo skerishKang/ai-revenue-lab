@@ -121,19 +121,25 @@ def test_modern_discovery_and_legacy_initialization_are_sessionless(gateway):
 
 
 @pytest.mark.parametrize("version", [MODERN, LEGACY])
-def test_eleven_sorted_tools_use_closed_schemas_and_token_bound_device(gateway, version):
+def test_sorted_tools_use_closed_schemas_and_token_bound_device(gateway, version):
     response = post(gateway, version=version)
     tools = response.json()["result"]["tools"]
-    assert [tool["name"] for tool in tools] == ["pc_browser_act", "pc_browser_open", "pc_browser_read", "pc_browser_screenshot", "pc_delete", "pc_list", "pc_move", "pc_read", "pc_search", "pc_shell", "pc_write"]
+    assert [tool["name"] for tool in tools] == ["pc_browser_act", "pc_browser_open", "pc_browser_read", "pc_browser_screenshot", "pc_delete", "pc_list", "pc_move", "pc_read", "pc_search", "pc_shell", "pc_shell_read", "pc_shell_start", "pc_shell_stop", "pc_write"]
     for tool in tools:
         assert tool["inputSchema"]["additionalProperties"] is False
         assert "device_id" not in tool["inputSchema"]["properties"]
     shell = next(tool for tool in tools if tool["name"] == "pc_shell")
     assert shell["inputSchema"]["required"] == ["command"]
-    assert set(shell["inputSchema"]["properties"]) == {"command", "cwd", "shell", "timeout_seconds"}
+    assert set(shell["inputSchema"]["properties"]) == {"command", "cwd", "shell", "wait_seconds"}
     assert shell["inputSchema"]["properties"]["shell"]["enum"] == ["powershell", "cmd", "bash"]
-    timeout = shell["inputSchema"]["properties"]["timeout_seconds"]
+    timeout = shell["inputSchema"]["properties"]["wait_seconds"]
     assert timeout["type"] == "integer" and timeout["minimum"] == 1 and timeout["maximum"] == 600
+    read = next(tool for tool in tools if tool["name"] == "pc_shell_read")
+    assert read["inputSchema"]["required"] == ["job_id"]
+    assert set(read["inputSchema"]["properties"]) == {"job_id", "offset", "length", "stream"}
+    assert read["annotations"]["readOnlyHint"] is True
+    for name in ("pc_shell", "pc_shell_start", "pc_shell_stop"):
+        assert next(tool for tool in tools if tool["name"] == name)["annotations"]["destructiveHint"] is True
     assert gateway.calls == []
 
 
@@ -141,9 +147,10 @@ def test_eleven_sorted_tools_use_closed_schemas_and_token_bound_device(gateway, 
     {},
     {"command": ""},
     {"command": "echo ok", "shell": "zsh"},
-    {"command": "echo ok", "timeout_seconds": 0},
-    {"command": "echo ok", "timeout_seconds": 601},
-    {"command": "echo ok", "timeout_seconds": True},
+    {"command": "echo ok", "wait_seconds": 0},
+    {"command": "echo ok", "wait_seconds": 601},
+    {"command": "echo ok", "wait_seconds": True},
+    {"command": "echo ok", "timeout_seconds": 60},
     {"command": "echo ok", "cwd": "bad\x01path"},
     {"command": "echo ok", "device_id": DEVICE},
     {"command": "echo ok", "extra": "value"},
@@ -152,6 +159,35 @@ def test_pc_shell_rejects_invalid_or_unknown_arguments_before_executor(gateway, 
     response = post(gateway, "tools/call", params={"name": "pc_shell", "arguments": arguments})
     assert response.status_code == 400 and response.json()["error"]["code"] == -32602
     assert gateway.calls == [] and gateway.store.records == []
+
+
+@pytest.mark.parametrize("name,arguments", [
+    ("pc_shell_start", {"command": "echo ok", "wait_seconds": 5}),
+    ("pc_shell_start", {"cwd": "C:/work"}),
+    ("pc_shell_read", {}),
+    ("pc_shell_read", {"job_id": "mcpjob_short"}),
+    ("pc_shell_read", {"job_id": "mcpjob_" + "a" * 32, "offset": -1}),
+    ("pc_shell_read", {"job_id": "mcpjob_" + "a" * 32, "length": 0}),
+    ("pc_shell_read", {"job_id": "mcpjob_" + "a" * 32, "length": 65_537}),
+    ("pc_shell_read", {"job_id": "mcpjob_" + "a" * 32, "stream": "both"}),
+    ("pc_shell_read", {"job_id": "mcpjob_" + "a" * 32, "device_id": DEVICE}),
+    ("pc_shell_stop", {"job_id": "mcpjob_" + "b" * 31 + "Z"}),
+    ("pc_shell_stop", {"job_id": "mcpjob_" + "a" * 32, "force": True}),
+])
+def test_shell_job_tools_reject_invalid_arguments_before_executor(gateway, name, arguments):
+    response = post(gateway, "tools/call", params={"name": name, "arguments": arguments})
+    assert response.status_code == 400 and response.json()["error"]["code"] == -32602
+    assert gateway.calls == [] and gateway.store.records == []
+
+
+def test_shell_job_tools_accept_closed_arguments(gateway):
+    for name, arguments in (("pc_shell_start", {"command": "long build", "shell": "cmd"}),
+                            ("pc_shell_read", {"job_id": "mcpjob_" + "a" * 32, "offset": 4096,
+                                               "length": 8192, "stream": "stderr"}),
+                            ("pc_shell_stop", {"job_id": "mcpjob_" + "b" * 32})):
+        response = post(gateway, "tools/call", params={"name": name, "arguments": arguments})
+        # Accepted by the schema: the answer comes from the adapter, not a -32602.
+        assert "error" not in response.json() or response.json()["error"]["code"] != -32602
 
 
 @pytest.mark.parametrize("name,args", [

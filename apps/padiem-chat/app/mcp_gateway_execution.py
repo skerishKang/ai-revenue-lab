@@ -12,7 +12,11 @@ from padiem_ai_core.pc_device_identity import is_pc_device_id
 
 from .orchestration_bridge import B62EngineOrchestrationBridge
 from .mcp_gateway_shell import (
-    execute_pc_shell, normalize_pc_shell_arguments, validate_pc_shell_arguments,
+    PC_SHELL_READ_TOOL_NAME, PC_SHELL_START_TOOL_NAME, PC_SHELL_STOP_TOOL_NAME,
+    PC_SHELL_TOOL_NAME, execute_pc_shell, execute_pc_shell_read,
+    execute_pc_shell_start, execute_pc_shell_stop, normalize_pc_shell_arguments,
+    normalize_pc_shell_read_arguments, normalize_pc_shell_start_arguments,
+    normalize_pc_shell_stop_arguments, validate_shell_tool_arguments,
 )
 from .pc_delegation_routes import load_pc_delegation
 from .pc_work_context import resolve_pc_work_context
@@ -49,6 +53,17 @@ _TOOLS = {
     "pc_browser_act": ("browser", "claw.pc.browser_act", {"action", "text", "role", "name", "value"}),
 }
 
+# Each shell tool is (normalizer name, executor name). They share the owner,
+# device and grant checks above and the oracle_mesh command lane below, and none
+# of them goes through the Engine: the tool is already decided by the caller.
+# Names, not objects, so a patched module attribute is what actually runs.
+_SHELL_TOOLS = {
+    PC_SHELL_TOOL_NAME: ("normalize_pc_shell_arguments", "execute_pc_shell"),
+    PC_SHELL_START_TOOL_NAME: ("normalize_pc_shell_start_arguments", "execute_pc_shell_start"),
+    PC_SHELL_READ_TOOL_NAME: ("normalize_pc_shell_read_arguments", "execute_pc_shell_read"),
+    PC_SHELL_STOP_TOOL_NAME: ("normalize_pc_shell_stop_arguments", "execute_pc_shell_stop"),
+}
+
 
 async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, approval=None):
     """Called only after PAT verification; an approval is an atomic-store result.
@@ -82,13 +97,13 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     if not isinstance(uid, str) or not uid or not is_pc_device_id(device_id) or not isinstance(token_id, str):
         raise ValueError("Invalid MCP principal")
     if (not isinstance(arguments, Mapping)
-            or (tool_name not in _TOOLS and tool_name != "pc_shell")):
+            or (tool_name not in _TOOLS and tool_name not in _SHELL_TOOLS)):
         raise ValueError("Unsupported MCP PC tool")
-    shell = tool_name == "pc_shell"
+    shell = tool_name in _SHELL_TOOLS
     if shell:
-        if not validate_pc_shell_arguments(arguments):
+        if not validate_shell_tool_arguments(tool_name, arguments):
             raise ValueError("Invalid MCP PC arguments")
-        arguments = normalize_pc_shell_arguments(arguments)
+        arguments = globals()[_SHELL_TOOLS[tool_name][0]](arguments)
         scope, tool_id, keys = None, None, set()
         browser = False
     else:
@@ -128,18 +143,21 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         raise ChatPCDriveError("chat_pc_files_unavailable", "PC 파일 도구를 현재 사용할 수 없습니다.")
     if shell:
         run_id = _new_lane_run_id()
-        label = "외부 AI 도구 요청: pc_shell"
+        label = "외부 AI 도구 요청: " + tool_name
         conversation_id = await store.record_chat_pc_drive_run(user_id=uid, run_id=run_id,
             workspace_id=workspace_id, user_text=label, conversation_id=None,
             action="pc_files_query", title_prefix="외부 AI PC 작업: ")
-        result = await execute_pc_shell(
+        result = await globals()[_SHELL_TOOLS[tool_name][1]](
             request, session=session, uid=uid, workspace_id=workspace_id,
-            device_id=device_id, run_id=run_id, conversation_id=conversation_id,
-            arguments=arguments,
+            device_id=device_id, token_id=token_id, run_id=run_id,
+            conversation_id=conversation_id, arguments=arguments,
         )
-        await _append_lane_notice(request, store, uid=uid, run_id=run_id,
-            content=str(result.get("answer", "")),
-            status="completed" if result.get("status") == "completed" else "failed")
+        # A read is a cursor poll on a job the user already started: it answers
+        # without adding another notice to the same conversation every time.
+        if tool_name != PC_SHELL_READ_TOOL_NAME:
+            await _append_lane_notice(request, store, uid=uid, run_id=run_id,
+                content=str(result.get("answer", "")),
+                status="completed" if result.get("status") == "completed" else "failed")
         return {**result, "run_id": run_id}
     if not isinstance(bridge, B62EngineOrchestrationBridge) or not bridge.ready:
         raise ChatPCDriveError("chat_pc_files_unavailable", "PC 파일 도구를 현재 사용할 수 없습니다.")
