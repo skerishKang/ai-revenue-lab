@@ -32,3 +32,7 @@
 - Claw executor 전달·출력 통합: 21 passed.
 - 최신 main 재기반 후 Queue/Claw/OutputStore, executor, Chat 계정 탈퇴 회귀: 845 passed, 3 skipped, 1 failed. 유일한 실패는 로컬 `websockets` 17.4와 기존 시험의 고정 요구값 17.2 차이다. 시험과 의존성 조건은 바꾸지 않았다.
 - 7일 전후 경계, 실행 중 보존, 사용자 격리, 정리 오류 종료 코드 및 Queue RPC 탈퇴 연결을 시험했다.
+
+## Push 확인
+- 최신 `origin/main` 165269e70c2fb4ed4f8b3276cb22bf82f35d7afc 위로 재기반했고, 원격 브랜치가 이전에 본 작업에서 push한 SHA 그대로인지 lease로 확인해 갱신했다.
+- 구현 커밋 81133954d0463809415f780e8d08e1781ec8fe2b의 `git ls-remote` 결과가 로컬 SHA와 일치했다. PR·merge·배포는 하지 않았다.
