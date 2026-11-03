@@ -20,11 +20,14 @@ skip when it is not installed.
 from __future__ import annotations
 
 import http.server
+import json
 import re
 import threading
 from pathlib import Path
 
 import pytest
+
+from app.orchestration_stream import ProgressFrameBuilder
 
 try:  # pragma: no cover - environment dependent
     from playwright.sync_api import sync_playwright
@@ -716,6 +719,59 @@ def test_the_turn_carries_the_status_card_from_the_first_moment(browser, server)
     assert state["stages"] == 1, state
     # The card starts closed: the reader opens the real steps on request.
     assert state["open"] is False, state
+    assert not errors, errors
+    page.close()
+
+
+@requires_browser
+def test_engine_progress_ndjson_frames_render_in_status_order(browser, server):
+    builder = ProgressFrameBuilder(clock=lambda: 10.0)
+    frames = [
+        builder.frame("run_started"),
+        builder.frame("context_prepared"),
+        builder.frame("tool_started", tool_name="web_search"),
+        builder.frame("pc_progress", stage="executing", elapsed_ms=1200),
+        builder.frame("heartbeat", elapsed_ms=5000),
+        builder.frame("tool_completed", tool_name="pc_tool"),
+    ]
+    wire = "\n".join(json.dumps(frame, ensure_ascii=False) for frame in frames if frame) + "\n"
+    page = browser.new_page(viewport={"width": 1440, "height": 900})
+    errors: list[str] = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(server, wait_until="domcontentloaded")
+    page.wait_for_timeout(300)
+    rendered = page.evaluate(
+        """async wire => {
+          const lifecycle = window.PadiemChatLifecycle;
+          const article = document.createElement('article');
+          article.className = 'assistant-message';
+          article.innerHTML = '<div class="assistant-meta">'
+            + '<span data-assistant-product>Padiem Chat</span>'
+            + '<span data-runtime-label></span>'
+            + '</div><div class="assistant-body"><div class="assistant-content"></div></div>';
+          document.body.appendChild(article);
+          lifecycle.set(article, 'streaming');
+          lifecycle.renderTaskStatus(article);
+          const response = new Response(wire, {
+            headers: { 'content-type': 'application/x-ndjson; charset=utf-8' },
+          });
+          await window.PadiemChatTransport.readSseEvents(response, frame => {
+            if (frame.event === 'progress') {
+              lifecycle.recordProgressFrame(article, JSON.parse(frame.data));
+            }
+            return false;
+          });
+          const card = article.querySelector('.capability-kit');
+          const labels = Array.from(card.querySelectorAll('.capability-stage'))
+            .map(row => row.children[1].textContent.trim());
+          article.remove();
+          return labels;
+        }""",
+        wire,
+    )
+    assert rendered == [
+        "질문 확인 중", "질문 확인 중", "웹 확인 중", "PC 작업 중", "작업 진행 중", "PC 작업 완료",
+    ]
     assert not errors, errors
     page.close()
 

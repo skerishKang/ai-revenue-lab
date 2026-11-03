@@ -3627,6 +3627,12 @@
           window.PadiemChatLifecycle?.recordTaskEvent?.(article, "request_accepted");
           return false;
         }
+        if (frame.event === "progress") {
+          let value;
+          try { value = JSON.parse(frame.data); } catch (_) { return false; }
+          if (window.PadiemChatLifecycle?.recordProgressFrame?.(article, value)) revealStreamStatus();
+          return false;
+        }
         if (frame.event === "thought_summary") {
           let value;
           try { value = JSON.parse(frame.data); } catch (_) { return false; }

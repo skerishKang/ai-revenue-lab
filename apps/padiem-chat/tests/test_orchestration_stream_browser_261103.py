@@ -15,7 +15,14 @@ def test_browser_stream_requests_ndjson_by_default_and_has_runtime_off_switch():
 def test_progress_projection_uses_closed_labels_and_never_renders_event_payloads():
     app = (STATIC / "app.js").read_text(encoding="utf-8")
     lifecycle = (STATIC / "message-lifecycle.js").read_text(encoding="utf-8")
+    server = (STATIC.parent / "app" / "orchestration_stream.py").read_text(encoding="utf-8")
     assert 'frame.event === "orchestration_event"' in app
+    assert 'frame.event === "progress"' in app
+    assert 'recordProgressFrame?.(article, value)' in app
+    assert 'value.type !== "progress"' in lifecycle
+    assert 'type: "progress", sequence: value.sequence, label: value.label' in lifecycle
+    assert '"run_started"' in server
+    assert '"pc_progress", "heartbeat"' in server
     assert 'const stage = stageForOrchestrationKind[kind];' in app
     assert 'event.message' not in app
     assert 'question_checked: Object.freeze' in lifecycle
