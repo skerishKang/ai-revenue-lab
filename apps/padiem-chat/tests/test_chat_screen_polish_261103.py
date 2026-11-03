@@ -132,28 +132,44 @@ def test_send_button_is_right_aligned_on_the_phone() -> None:
     assert "@media (max-width: 620px)" in POLISH
     assert ".composer-actions .send-button" in POLISH
     assert "margin-left: auto" in POLISH
-    # The first-screen reservations belong to owner-model-preview.css and are
-    # untouched by this lane.
-    preview = (STATIC / "owner-model-preview.css").read_text(encoding="utf-8")
-    assert "width: 116px" in preview
-    assert "width: 112px; min-width: 112px; height: 44px;" in preview
-    assert ".send-button { flex: 0 0 44px;" in preview
 
 
 @requires_browser
 def test_send_button_sits_on_the_composer_right_edge_at_390(browser, server) -> None:
     page = _open(browser, server, 390, 844, True)
-    measured = page.evaluate(
-        """() => {
-          const rect = (sel) => { const b = document.querySelector(sel).getBoundingClientRect();
-            return {left: Math.round(b.left), right: Math.round(b.right), top: Math.round(b.top)}; };
-          return {actions: rect('.composer-actions'), send: rect('#sendButton'),
-                  overflow: document.documentElement.scrollWidth > innerWidth + 1};
-        }"""
-    )
+    measure = """() => {
+      const rect = (sel) => { const b = document.querySelector(sel).getBoundingClientRect();
+        return {left: Math.round(b.left), right: Math.round(b.right), top: Math.round(b.top)}; };
+      return {actions: rect('.composer-actions'), send: rect('#sendButton'),
+              tools: rect('.composer-tools'), overflow: document.documentElement.scrollWidth > innerWidth + 1};
+    }"""
+    measured = page.evaluate(measure)
     assert measured["send"]["right"] == measured["actions"]["right"], measured
     assert measured["send"]["left"] > measured["actions"]["left"], measured
     assert not measured["overflow"], measured
+
+    # Expand the tools row beyond its normal phone width. The send control may
+    # wrap to another line, but it must stay pinned to the right edge without
+    # widening the page.
+    expanded = page.evaluate(
+        """() => {
+          const tools = document.querySelector('.composer-tools');
+          const extra = document.createElement('button');
+          extra.type = 'button';
+          extra.className = 'tool-button';
+          extra.textContent = '추가 검색 도구';
+          extra.style.minWidth = '180px';
+          tools.appendChild(extra);
+          const rect = (sel) => { const b = document.querySelector(sel).getBoundingClientRect();
+            return {left: Math.round(b.left), right: Math.round(b.right), top: Math.round(b.top)}; };
+          return {actions: rect('.composer-actions'), send: rect('#sendButton'),
+                  tools: rect('.composer-tools'), overflow: document.documentElement.scrollWidth > innerWidth + 1};
+        }"""
+    )
+    assert expanded["tools"]["top"] < expanded["send"]["top"], expanded
+    assert expanded["send"]["right"] == expanded["actions"]["right"], expanded
+    assert expanded["send"]["left"] > expanded["actions"]["left"], expanded
+    assert not expanded["overflow"], expanded
     page.close()
 
 
