@@ -1137,13 +1137,17 @@ class D1PcPairingStore:
         drives it has, it may not name folders through this channel.
 
         Returns ``None`` when the name carries no pairing tag: ordinary devices
-        keep reporting presence untouched. A name that does carry one is a
-        claim attempt, and a failed attempt is refused rather than ignored,
-        because silently dropping it would leave an owner staring at a card that
-        never resolves. What is kept from the name is the single word the machine
-        called itself, and only as this account's own label for the link; the
-        tag - the proof - is never written down, and neither is a name the owner
-        has already replaced with their own.
+        keep reporting presence untouched. It also returns ``None`` when the
+        tag is the one this very node already claimed: the install wrapper
+        leaves the tag inside the agent name it stamped, so a paired PC repeats
+        it on every presence beat, the code has already granted everything it
+        had, and the repeat adds nothing. A name that does carry one is
+        otherwise a claim attempt, and a failed attempt is refused rather than
+        ignored, because silently dropping it would leave an owner staring at a
+        card that never resolves. What is kept from the name is the single word
+        the machine called itself, and only as this account's own label for the
+        link; the tag - the proof - is never written down, and neither is a name
+        the owner has already replaced with their own.
         """
         tag = tag_from_agent_name(agent_name)
         if tag is None:
@@ -1151,7 +1155,7 @@ class D1PcPairingStore:
         node = _mesh_node_id(mesh_node_id)
         moment = _stamp(now)
         row = await self._first(
-            "SELECT code_id, user_id, state, expires_at FROM pc_pairing_codes "
+            "SELECT code_id, user_id, state, expires_at, mesh_node_id FROM pc_pairing_codes "
             "WHERE tag_sha256=?",
             _hash(tag),
         )
@@ -1159,7 +1163,17 @@ class D1PcPairingStore:
             raise PcPairingError("pairing tag unknown")
         owner = _user_id(row.get("user_id"))
         if row.get("state") not in ("pending", "cancelled"):
-            # The tag is exactly as single-use as the code it came from.
+            # The tag is exactly as single-use as the code it came from. One
+            # repeat is not a replay, though: the claim stamps the claiming
+            # node into the code row and the install name keeps the tag, so
+            # the very PC this link belongs to re-reports its own tag on every
+            # presence beat. That repeat grants nothing and creates nothing,
+            # so it ends quietly instead of refusing the owner's own fleet
+            # thousands of times a day; a different node naming this spent
+            # tag is still refused exactly as before.
+            claimed = row.get("mesh_node_id")
+            if isinstance(claimed, str) and claimed == node:
+                return None
             raise PcPairingError("pairing code used")
         if str(row.get("expires_at") or "") <= moment:
             await self._run(
