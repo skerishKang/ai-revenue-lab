@@ -216,6 +216,12 @@ def build_app():
     data_dir.mkdir(parents=True, exist_ok=True)
     _ensure_session_secret(data_dir)
 
+    # This process is the one that serves, and it is the one with no logging config:
+    # bind the stage-time line to stderr here so the COM2 journal actually gets it.
+    from .orchestration_timing import ensure_host_visible
+
+    ensure_host_visible()
+
     settings = Settings.from_env()
     if local_flag and not settings.local_dev:
         raise ConfigError("PADIEM_LOCAL_DEV did not reach Settings — from_env regression")
