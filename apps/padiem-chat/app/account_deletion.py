@@ -24,6 +24,7 @@ THE ONE CONFIRMATION
 from __future__ import annotations
 
 import hashlib
+import re
 import uuid
 from datetime import datetime, timezone
 
@@ -42,12 +43,66 @@ from .auth_routes import (
 from .history import _row_to_dict
 from .pc_device_pairing_store import mesh_presence_account_cleanup_statements
 
+#: A shared-login Chat account stores its common-login subject as
+#: ``provider_subject = 'shared:' + subject`` (``history.upsert_shared_user``).
+#: That row is the durable mapping to BookAI's ``subject`` column, so BookAI
+#: records can be deleted with the account instead of waiting for a later step.
+#: The second mapping source, ``auth_account_link_cache``, is transient and is
+#: itself deleted by this batch, so it is read before the batch runs.
+_SHARED_SUBJECT_PREFIX = "shared:"
+_SUBJECT_RE = re.compile(r"sub_[A-Za-z0-9_-]{1,128}")
+
+
+def bookai_subjects(provider_subject: str | None, link_owner_ids=()) -> tuple[str, ...]:
+    """BookAI subjects that belong to this account, in a stable order.
+
+    Two sources are accepted: the durable ``provider_subject`` marker written by
+    the shared-login profile upsert, and the account-link cache row. Nothing is
+    guessed from the email. A subject is only taken when it matches the canonical
+    grammar the records API itself enforces (``bookai_records._SUBJECT``).
+    """
+    found: list[str] = []
+    if isinstance(provider_subject, str) and provider_subject.startswith(_SHARED_SUBJECT_PREFIX):
+        candidate = provider_subject[len(_SHARED_SUBJECT_PREFIX):]
+        if _SUBJECT_RE.fullmatch(candidate):
+            found.append(candidate)
+    for owner in link_owner_ids:
+        if isinstance(owner, str) and _SUBJECT_RE.fullmatch(owner) and owner not in found:
+            found.append(owner)
+    return tuple(found)
+
+
+async def _account_link_subjects(db, user_id: str) -> list[str]:
+    """Common-login subjects the account-link cache names for this account.
+
+    This binding exposes ``first()`` and ``run()`` only, so the rows are
+    flattened into one value instead of read with ``all()``. A host that has not
+    applied migration 088 simply has no link table and therefore no link
+    subjects; any other read failure is raised, never reported as "no records",
+    because that would delete the account while its BookAI records survive.
+    """
+    exists = await db.prepare(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='auth_account_link_cache'"
+    ).first()
+    if exists is None:
+        return []
+    row = await db.prepare(
+        "SELECT group_concat(owner_id, '|') AS owners FROM auth_account_link_cache"
+        " WHERE product_user_id = ?"
+    ).bind(user_id).first()
+    joined = (row or {}).get("owners") if isinstance(row, dict) else None
+    if not isinstance(joined, str) or not joined:
+        return []
+    return [part for part in joined.split("|") if part]
+
+
+
 #: Tables deleted with ``WHERE <key> = ?`` bound to the account id, in
 #: child-before-parent order. Every entry was verified against the migration
 #: survey in ``docs/operations/ACCOUNT_DELETION_20261103.md``. ``bookai_records``
-#: is deliberately absent: its ``subject`` key is a client-issued opaque value
-#: with no mapping to ``users.id`` in this database, so a user-scoped delete is
-#: impossible here and stays a recorded later step.
+#: is absent here because its key is not ``users.id``: it is keyed by the
+#: common-login subject, and ``bookai_subjects`` below turns the account into
+#: that subject so the records are deleted with the account.
 _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     # Children that only the parent row ties to the account.
     ("messages", "conversation_id IN (SELECT id FROM conversations WHERE user_id = ?)"),
@@ -126,14 +181,29 @@ _PC_QUEUE_USER_TABLES = frozenset({
 
 
 def _delete_batch(
-    db, user_id: str, *, include_pc_queue_data: bool = True
+    db,
+    user_id: str,
+    *,
+    include_pc_queue_data: bool = True,
+    bookai_subjects: tuple[str, ...] = (),
 ) -> list:
-    """Build the Chat DB batch; COM2 PC rows are deleted by the queue first."""
+    """Build the Chat DB batch; COM2 PC rows are deleted by the queue first.
+
+    ``bookai_subjects`` carries the subjects resolved before the batch (see
+    ``bookai_subjects`` above). They are deleted here, in the same transaction as
+    the account, because BookAI rows reference the account only by subject.
+    """
     statements = [
         db.prepare(f"DELETE FROM {table} WHERE {where}").bind(user_id)
         for table, where in _USER_KEYED_TABLES
         if include_pc_queue_data or table not in _PC_QUEUE_USER_TABLES
     ]
+    # BookAI records: one statement per subject, before the account-link cache
+    # rows that name the mapping are removed later in this same batch.
+    statements.extend(
+        db.prepare("DELETE FROM bookai_records WHERE subject = ?").bind(subject)
+        for subject in bookai_subjects
+    )
     # Presence lives with the PC queue on COM2 and stays in this batch on D1.
     if include_pc_queue_data:
         statements.extend(mesh_presence_account_cleanup_statements(db, user_id))
@@ -165,7 +235,9 @@ async def account_delete(request) -> JSONResponse:
         )
 
     row = _row_to_dict(
-        await db.prepare("SELECT email FROM users WHERE id = ?").bind(user_id).first()
+        await db.prepare(
+            "SELECT email, provider_subject FROM users WHERE id = ?"
+        ).bind(user_id).first()
     )
     email = row.get("email") if row else None
     if not isinstance(email, str) or not email:
@@ -209,6 +281,21 @@ async def account_delete(request) -> JSONResponse:
             "관리자 권한이 있는 계정은 이 화면에서 탈퇴할 수 없습니다.",
         )
 
+    # Resolve the BookAI subjects before anything is revoked: the session
+    # revocation drops the account-link cache row that carries the second
+    # mapping, so reading it afterwards would silently delete nothing.
+    try:
+        link_subjects = await _account_link_subjects(db, user_id)
+    except Exception:
+        # Fail closed: deleting the account while its BookAI records would
+        # survive is worse than asking the user to retry.
+        return _auth_error(
+            503,
+            "account_delete_unavailable",
+            "지금 계정 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+        )
+    subjects = bookai_subjects((row or {}).get("provider_subject"), link_subjects)
+
     # End this session first: a session that cannot be ended leaves every row
     # untouched, so the user can simply retry (same order as password change).
     failure = await _revoke_canonical_session(request)
@@ -236,7 +323,12 @@ async def account_delete(request) -> JSONResponse:
 
     try:
         await db.batch(
-            _delete_batch(db, user_id, include_pc_queue_data=include_pc_queue_data)
+            _delete_batch(
+                db,
+                user_id,
+                include_pc_queue_data=include_pc_queue_data,
+                bookai_subjects=subjects,
+            )
         )
     except Exception:
         # The Chat batch is atomic, so its account and data remain if it fails.

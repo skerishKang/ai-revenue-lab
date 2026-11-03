@@ -693,3 +693,147 @@ def test_the_central_admin_and_stored_platform_roles_are_refused():
     assert db.conn.execute(
         "SELECT COUNT(*) AS n FROM platform_admin_roles"
     ).fetchone()["n"] == 1
+
+
+# ---------------------------------------------------------------------------
+# (k) BookAI records follow the account (2026-11-03). The mapping is the
+# common-login subject: durable in users.provider_subject for shared logins,
+# transient in auth_account_link_cache for a session that resolved it.
+# ---------------------------------------------------------------------------
+
+BOOKAI_SUBJECT = "sub_" + "a" * 32
+OTHER_BOOKAI_SUBJECT = "sub_" + "b" * 32
+
+
+def _seed_bookai(db, subject, record_id):
+    db.conn.execute(
+        "INSERT INTO bookai_records (subject, record_id, book_id, locator, kind,"
+        " payload, updated_at, deleted) VALUES (?,?,?,?,?,?,?,?)",
+        (subject, record_id, "book-1", "loc:1", "progress", '{"chapter":1}', 1762000000000, 0),
+    )
+
+
+def _bookai_rows(db, subject):
+    return db.conn.execute(
+        "SELECT COUNT(*) AS n FROM bookai_records WHERE subject = ?", (subject,)
+    ).fetchone()["n"]
+
+
+def test_a_shared_login_account_takes_its_bookai_records_with_it():
+    db, accounts = seed_db()
+    uid = accounts["deleter"]
+    db.conn.execute(
+        "UPDATE users SET provider_subject = ? WHERE id = ?",
+        ("shared:" + BOOKAI_SUBJECT, uid),
+    )
+    _seed_bookai(db, BOOKAI_SUBJECT, "rec-1")
+    _seed_bookai(db, BOOKAI_SUBJECT, "rec-2")
+    _seed_bookai(db, OTHER_BOOKAI_SUBJECT, "rec-other")
+    app, settings = build_app(db)
+
+    response = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, uid),
+        body={"confirm": DELETER_EMAIL},
+        origin=BASE,
+    )
+
+    assert response.status_code == 200, response.text
+    assert _bookai_rows(db, BOOKAI_SUBJECT) == 0
+    assert _bookai_rows(db, OTHER_BOOKAI_SUBJECT) == 1
+    assert db.conn.execute(
+        "SELECT COUNT(*) AS n FROM users WHERE id = ?", (uid,)
+    ).fetchone()["n"] == 0
+
+
+def test_the_link_cache_mapping_is_read_before_revocation():
+    db, accounts = seed_db()
+    uid = accounts["deleter"]
+    # No shared marker on the users row: only the transient link cache names the
+    # subject, and the session revocation is what deletes that row.
+    db.conn.execute(
+        "INSERT INTO auth_account_link_cache (owner_id, product_user_id, valid_until)"
+        " VALUES (?,?,?)",
+        (BOOKAI_SUBJECT, uid, 4102444800.0),
+    )
+    _seed_bookai(db, BOOKAI_SUBJECT, "rec-cache")
+    app, settings = build_app(db)
+
+    response = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, uid),
+        body={"confirm": DELETER_EMAIL},
+        origin=BASE,
+    )
+
+    assert response.status_code == 200, response.text
+    assert _bookai_rows(db, BOOKAI_SUBJECT) == 0
+    assert db.conn.execute(
+        "SELECT COUNT(*) AS n FROM auth_account_link_cache WHERE product_user_id = ?", (uid,)
+    ).fetchone()["n"] == 0
+
+
+def test_a_google_only_account_leaves_unattributable_bookai_records():
+    db, accounts = seed_db()
+    uid = accounts["deleter"]
+    _seed_bookai(db, BOOKAI_SUBJECT, "rec-unmapped")
+    app, settings = build_app(db)
+
+    response = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, uid),
+        body={"confirm": DELETER_EMAIL},
+        origin=BASE,
+    )
+
+    assert response.status_code == 200, response.text
+    # Nothing ties this subject to the account, so it is not deleted on a guess.
+    assert _bookai_rows(db, BOOKAI_SUBJECT) == 1
+
+
+def test_bookai_subjects_accept_only_canonical_subjects():
+    from app.account_deletion import bookai_subjects
+
+    assert bookai_subjects("shared:" + BOOKAI_SUBJECT) == (BOOKAI_SUBJECT,)
+    assert bookai_subjects("google-abc123") == ()
+    assert bookai_subjects(None) == ()
+    assert bookai_subjects("shared:not-a-subject") == ()
+    assert bookai_subjects(None, ["not-a-subject", "", BOOKAI_SUBJECT]) == (BOOKAI_SUBJECT,)
+    assert bookai_subjects("shared:" + BOOKAI_SUBJECT, [BOOKAI_SUBJECT]) == (BOOKAI_SUBJECT,)
+
+def test_the_link_read_reports_absence_but_never_swallows_a_failure():
+    import asyncio
+
+    from app.account_deletion import _account_link_subjects, bookai_subjects
+
+    db, accounts = seed_db()
+    uid = accounts["deleter"]
+    db.conn.execute(
+        "INSERT INTO auth_account_link_cache (owner_id, product_user_id, valid_until)"
+        " VALUES (?,?,?)",
+        (BOOKAI_SUBJECT, uid, 4102444800.0),
+    )
+    owners = asyncio.run(_account_link_subjects(db, uid))
+    assert BOOKAI_SUBJECT in owners
+    # The shared seeder also writes a generic owner id for this table. The
+    # subject filter drops it, so it can never become a delete target.
+    assert bookai_subjects(None, owners) == (BOOKAI_SUBJECT,)
+
+    # A host behind on migration 088 has no link table: that is absence.
+    db.conn.execute("DROP TABLE auth_account_link_cache")
+    assert asyncio.run(_account_link_subjects(db, uid)) == []
+
+    class Broken:
+        def prepare(self, _sql):
+            raise RuntimeError("storage fault")
+
+        async def read(self):
+            return await _account_link_subjects(self, uid)
+
+    # Anything else is a real failure and must reach the caller.
+    try:
+        asyncio.run(Broken().read())
+    except RuntimeError:
+        pass
+    else:  # pragma: no cover - the failure path is the point
+        raise AssertionError("a storage fault was reported as an absence")

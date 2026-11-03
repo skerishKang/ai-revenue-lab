@@ -116,7 +116,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 |---|---|
 | users | `DELETE FROM users WHERE id = ?` — 배치의 마지막 문 |
 | account_deletion_audit | 마이그레이션 092. 같은 배치에서 `INSERT` 1행(시각 + 사용자 id SHA-256 해시) |
-| bookai_records | **이번 단계에서 지우지 않는다** — 아래 3번 참조 |
+| bookai_records | 공통 로그인 subject로 지운다. 배치 전에 `users.provider_subject`(공유 로그인 계정은 `'shared:'+subject`, `history.upsert_shared_user`)와 계정 링크 캐시(`auth_account_link_cache.owner_id`)를 읽어 `DELETE FROM bookai_records WHERE subject = ?`를 같은 배치에 넣는다 |
 
 ## 3. 이번에 지우지 않은 것과 다음 단계 제안
 
@@ -132,7 +132,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | 외부 백업(Cloudflare R2 offsite, 매일 암호화 전체 백업) | 탈퇴 사용자 데이터가 최근 백업에 남음 | 백업 보관 기간 정책을 대표 결정으로 확정(`deploy/host-com2/offsite-backup/`) |
 | 이용자 PC의 `.padiem-backup` | 이용자 PC에 남음(경로가 닿지 않는 영역) | 탈퇴 안내 문구로 이용자가 직접 지우도록 안내(이미 화면 설명에 포함) |
 | oracle_mesh_dispatch | 의도적 보존 — 마이그레이션 047의 재생 방지 기록. 보관 기간은 대표 결정(개인정보처리방침 보관 기간) |
-| bookai_records(082) | `subject` 키는 클라이언트가 발행한 불투명 값이고 Chat DB에 subject↔users.id 매핑이 없다(`bookai_records.py`는 단일 공유 시크릿 서명만 검증). 사용자별 삭제가 불가능하므로 이번에 지우지 않았다 | subject와 사용자의 매핑을 만들거나, 북AI 데이터 보관 기간을 대표 결정으로 정한 뒤 별도 경로로 지운다 |
+| bookai_records(082) | **해결됨 (2026-11-03)** — 매핑은 이미 있었다: 공유 로그인으로 만든 Chat 계정은 `provider_subject='shared:'+subject`로 저장된다(`history.upsert_shared_user`). 1단계가 이 매핑을 못 본 이유는 세션 해제가 링크 캐시 행을 먼저 지우기 때문이며, 이제 배치 전에 읽는다. 매핑이 없는 계정(구글 단독 로그인)은 지울 subject가 없어 그대로 남는다 | 남은 것: 기기에만 저장된 북AI 기록(브라우저 저장소)은 서버가 지울 수 없다 — 탈퇴 안내 문구로 이용자가 지운다 |
 | MeshCentral 장치·에이전트 | Chat/COM2 큐 DB의 사용자 연결 행은 지워짐. presence는 탈퇴 사용자만 제거하고 남은 소유자가 없으면 행 삭제 | 운영 영역: 장치 문서·에이전트 제거는 별도 절차 |
 
 ## 4. 개인정보처리방침 초안 갱신 메모
@@ -141,7 +141,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 "코드에서 확인 못 한 사실" 2번 — "계정 전체 탈퇴(계정 삭제) 라우트 — 확인하지
 못했습니다" — 는 이 경로가 채운다. 법률 문서 레인에서 다음 문구로 갱신해야
 한다: "계정 탈퇴는 설정 > 계정 탈퇴에서 본인 이메일을 다시 입력해 실행할 수
-있으며, Chat DB의 사용자 데이터는 즉시 삭제된다. 공통 로그인 계정·외부
+있으며, Chat DB의 사용자 데이터와 계정에 저장된 북AI 기록은 즉시 삭제된다. 기기에만 저장된 북AI 기록, 공통 로그인 계정·외부
 백업·이용자 PC 백업은 남는다(보관 기간은 대표 결정)."
 
 ## 5. 시험
