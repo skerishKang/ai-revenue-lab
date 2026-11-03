@@ -12,12 +12,7 @@ from padiem_ai_core.pc_device_identity import is_pc_device_id
 
 from .orchestration_bridge import B62EngineOrchestrationBridge
 from .mcp_gateway_shell import (
-    PC_SHELL_READ_TOOL_NAME, PC_SHELL_START_TOOL_NAME, PC_SHELL_STOP_TOOL_NAME,
-    PC_SHELL_TOOL_NAME, PC_SHELL_TOOL_NAMES, execute_pc_shell,
-    execute_pc_shell_read, execute_pc_shell_start, execute_pc_shell_stop,
-    normalize_pc_shell_arguments, normalize_pc_shell_read_arguments,
-    normalize_pc_shell_start_arguments, normalize_pc_shell_stop_arguments,
-    validate_shell_tool_arguments,
+    execute_pc_shell, normalize_pc_shell_arguments, validate_pc_shell_arguments,
 )
 from .pc_delegation_routes import load_pc_delegation
 from .pc_work_context import resolve_pc_work_context
@@ -54,13 +49,6 @@ _TOOLS = {
     "pc_browser_act": ("browser", "claw.pc.browser_act", {"action", "text", "role", "name", "value"}),
 }
 
-_SHELL_TOOLS = {
-    PC_SHELL_TOOL_NAME: normalize_pc_shell_arguments,
-    PC_SHELL_START_TOOL_NAME: normalize_pc_shell_start_arguments,
-    PC_SHELL_READ_TOOL_NAME: normalize_pc_shell_read_arguments,
-    PC_SHELL_STOP_TOOL_NAME: normalize_pc_shell_stop_arguments,
-}
-
 
 async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, approval=None):
     """Called only after PAT verification; an approval is an atomic-store result.
@@ -94,14 +82,13 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     if not isinstance(uid, str) or not uid or not is_pc_device_id(device_id) or not isinstance(token_id, str):
         raise ValueError("Invalid MCP principal")
     if (not isinstance(arguments, Mapping)
-            or (tool_name not in _TOOLS and tool_name not in PC_SHELL_TOOL_NAMES)):
+            or (tool_name not in _TOOLS and tool_name != "pc_shell")):
         raise ValueError("Unsupported MCP PC tool")
-    shell = tool_name in PC_SHELL_TOOL_NAMES
-    raw_arguments = dict(arguments) if shell else None
+    shell = tool_name == "pc_shell"
     if shell:
-        if not validate_shell_tool_arguments(tool_name, arguments):
+        if not validate_pc_shell_arguments(arguments):
             raise ValueError("Invalid MCP PC arguments")
-        arguments = _SHELL_TOOLS[tool_name](arguments)
+        arguments = normalize_pc_shell_arguments(arguments)
         scope, tool_id, keys = None, None, set()
         browser = False
     else:
@@ -121,79 +108,39 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             raise ValueError("Browser confirmation must use ordinary first-party conversation")
         from .mcp_gateway_store import mcp_request_digest
         if (not isinstance(approval, Mapping) or set(approval) != {"approval_id", "request_digest"}
-                or approval["request_digest"] != mcp_request_digest(
-                    tool_name, raw_arguments if shell else arguments)
+                or approval["request_digest"] != mcp_request_digest(tool_name, arguments)
                 or not isinstance(approval["approval_id"], str)):
             raise ValueError("MCP approval does not match this request")
         approval_id = approval["approval_id"]
 
-    settings = getattr(request.app.state, "settings", None)
-    shell_enabled = bool(getattr(settings, "mcp_pc_shell_enabled", False))
-    identity = {"user_id": uid, "device_id": device_id, "token_id": token_id}
-    if shell and not shell_enabled:
-        if tool_name != PC_SHELL_STOP_TOOL_NAME:
-            return {"status": "tool_not_enabled", "answer": "이 도구는 현재 배포에서 꺼져 있습니다."}
-        return await execute_pc_shell_stop(
-            request, identity=identity, job_id=arguments["job_id"],
-        )
-
     session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
     if session is None or not subject_id:
         raise ChatPCDriveError("chat_pc_identity_unavailable", "사용자 정보를 확인하지 못했습니다.")
-    bridge = getattr(request.app.state, "orchestration_bridge", None)
-    store = getattr(request.app.state, "history_store", None)
-    if store is None:
-        raise ChatPCDriveError("chat_pc_files_unavailable", "PC 파일 도구를 현재 사용할 수 없습니다.")
-    if shell and tool_name in {PC_SHELL_READ_TOOL_NAME, PC_SHELL_STOP_TOOL_NAME}:
-        if tool_name == PC_SHELL_READ_TOOL_NAME:
-            result = await execute_pc_shell_read(
-                request, identity=identity, subject_id=subject_id, arguments=arguments,
-            )
-        else:
-            result = await execute_pc_shell_stop(
-                request, identity=identity, job_id=arguments["job_id"],
-            )
-        return result
-    if shell:
-        context = await resolve_pc_work_context(
-            request, owner_id=uid, workspace_id=workspace_id,
-            session_id=session.session_id, selected_device_id=device_id,
-        )
-        if context.selection_offline or context.selected_device_id != device_id:
-            return {"status": "unavailable", "code": "pc_offline",
-                    "answer": "선택한 PC가 꺼져 있음"}
-        if (not context.selected_confirmed or not context.tool_available
-                or context.execution_device_id != device_id
-                or not await _check_mesh_grant(request, session, device_id=device_id)):
-            raise ChatPCDriveError("chat_pc_target_unavailable", "이 토큰의 PC에 접근할 수 없습니다.", 403)
-        run_id = _new_lane_run_id()
-        label = "외부 AI 도구 요청: " + tool_name
-        conversation_id = await store.record_chat_pc_drive_run(user_id=uid, run_id=run_id,
-            workspace_id=workspace_id, user_text=label, conversation_id=None,
-            action="pc_files_query", title_prefix="외부 AI PC 작업: ")
-        if tool_name == PC_SHELL_TOOL_NAME:
-            result = await execute_pc_shell(
-                request, session=session, uid=uid, subject_id=subject_id,
-                workspace_id=workspace_id, device_id=device_id, token_id=token_id,
-                run_id=run_id, conversation_id=conversation_id, arguments=arguments,
-            )
-        else:
-            result = await execute_pc_shell_start(
-                request, session=session, uid=uid, workspace_id=workspace_id,
-                device_id=device_id, run_id=run_id, conversation_id=conversation_id,
-                arguments=arguments,
-            )
-        result = {**result, "run_id": run_id}
-        if result.get("status") not in {"running", "queued", "completed"}:
-            await _append_lane_notice(request, store, uid=uid, run_id=run_id,
-                content=str(result.get("answer", "")), status="failed")
-        return result
     context = await resolve_pc_work_context(request, owner_id=uid, workspace_id=workspace_id,
         session_id=session.session_id, selected_device_id=device_id)
     if (not context.selected_confirmed or not context.tool_available
             or context.execution_device_id != device_id
             or not await _check_mesh_grant(request, session, device_id=device_id)):
         raise ChatPCDriveError("chat_pc_target_unavailable", "이 토큰의 PC에 접근할 수 없습니다.", 403)
+    bridge = getattr(request.app.state, "orchestration_bridge", None)
+    store = getattr(request.app.state, "history_store", None)
+    if store is None:
+        raise ChatPCDriveError("chat_pc_files_unavailable", "PC 파일 도구를 현재 사용할 수 없습니다.")
+    if shell:
+        run_id = _new_lane_run_id()
+        label = "외부 AI 도구 요청: pc_shell"
+        conversation_id = await store.record_chat_pc_drive_run(user_id=uid, run_id=run_id,
+            workspace_id=workspace_id, user_text=label, conversation_id=None,
+            action="pc_files_query", title_prefix="외부 AI PC 작업: ")
+        result = await execute_pc_shell(
+            request, session=session, uid=uid, workspace_id=workspace_id,
+            device_id=device_id, run_id=run_id, conversation_id=conversation_id,
+            arguments=arguments,
+        )
+        await _append_lane_notice(request, store, uid=uid, run_id=run_id,
+            content=str(result.get("answer", "")),
+            status="completed" if result.get("status") == "completed" else "failed")
+        return {**result, "run_id": run_id}
     if not isinstance(bridge, B62EngineOrchestrationBridge) or not bridge.ready:
         raise ChatPCDriveError("chat_pc_files_unavailable", "PC 파일 도구를 현재 사용할 수 없습니다.")
     browser_context = None

@@ -30,7 +30,6 @@ writing the conversation rows stay in the Chat Worker; this service owns only th
 
 Configuration is files and environment, mirroring the executor's own unit:
     MESH_QUEUE_DB_PATH              default /opt/padiem/mesh-queue/queue.sqlite3
-    ORACLE_MESH_WORK_DIR             the executor's shared work directory; queue deletes background-jobs beneath it
     MESH_QUEUE_CHANNEL_SECRET_FILE   mode-0600 file, same secret the Worker holds
     MESH_QUEUE_OWNERSHIP_MAP_FILE    the deployment Mesh target map (JSON)
     MESH_QUEUE_EXECUTION_MODE        default mesh
@@ -94,7 +93,7 @@ from app.oracle_mesh_read_return_routes import (
     oracle_mesh_read_cancel_check, oracle_mesh_read_lane_status,
     oracle_mesh_read_poll,
 )
-from pc_account_data_cleanup import QueuePcAccountDataStore
+from app.pc_device_pairing_store import D1PcPairingStore
 
 from internal_store import (
     DESKTOP_TEXT_METHODS, DISPATCH_METHODS, DRIVE_METHODS, INTERNAL_STORE_PATH,
@@ -186,8 +185,7 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
                ownership_map: str | None = None, mode: str = "mesh",
                service_secret: str | None = None, watch_secret: str | None = None,
                connection: Any = None, legacy_map_lane: bool = True,
-               request_log: str = "off", output_directory: str | None = None,
-               background_jobs_directory: str | None = None) -> Starlette:
+               request_log: str = "off", output_directory: str | None = None) -> Starlette:
     """Assemble the queue app on the real route functions, with the store on SQLite."""
 
     if not isinstance(channel_secret, str) or not 16 <= len(channel_secret) <= 256:
@@ -257,18 +255,11 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
     app.state.history_store = QueueHistoryStore(database, run_ownership=_forwarded_run_ownership)
     app.state.mesh_device_presence_store = D1MeshDevicePresenceStore(database)
     app.state.mesh_device_drive_store = D1MeshDeviceDriveStore(database)
+    app.state.pc_device_pairing_store = D1PcPairingStore(database)
     app.state.queue_database = database
     output_root = output_directory or os.environ.get("PADIEM_OUTPUT_STORE_DIR") or str(
         pathlib.Path(db_path or DEFAULT_DB_PATH).parent / "pc-outputs")
     app.state.pc_output_store = PcOutputStore(output_root, history_store=app.state.history_store)
-    if background_jobs_directory is None:
-        work_dir = os.environ.get("ORACLE_MESH_WORK_DIR", "").strip()
-        if work_dir:
-            background_jobs_directory = str(pathlib.Path(work_dir) / "background-jobs")
-    app.state.pc_device_pairing_store = QueuePcAccountDataStore(
-        database, background_jobs_directory=background_jobs_directory,
-        pc_output_store=app.state.pc_output_store,
-    )
     # #6460 step 2: typed text lives only here, until the executor takes it
     # once; it is never written to the queue database.
     app.state.desktop_text_store = DesktopTextStore()

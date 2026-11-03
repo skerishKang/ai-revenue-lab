@@ -29,7 +29,7 @@
   const settingsCloseButton = document.getElementById("settingsCloseButton");
   const accountSettingsSection = document.getElementById("accountSettingsSection");
   const accountPasswordActions = document.getElementById("accountPasswordActions");
-  // #6659: account self-deletion. The server owns the authority and
+  // #6659 3번 1단계: account self-deletion. The server owns the authority and
   // the exact-email confirm; the browser only mirrors the same gate.
   const accountDeleteActions = document.getElementById("accountDeleteActions");
   const accountDeleteOpen = document.getElementById("accountDeleteOpen");
@@ -3520,9 +3520,81 @@
     // envelope the canonical projection accepted is collected, and the card
     // validates the list again before it renders anything.
     const liveOrchestrationEvents = [];
+    const stageForOrchestrationKind = Object.freeze({
+      run_started: "request_accepted",
+      context_prepared: "question_checked",
+      memory_read: "reference_context",
+      plan_created: "planning",
+      skill_resolved: "planning",
+      tool_resolution: "tool_check",
+      tool_started: "tool_started",
+      tool_completed: "tool_completed",
+      tool_failed: "tool_failed",
+      evidence_attached: "evidence",
+      verification_completed: "evidence",
+      run_resumed: "question_checked",
+      recovery_started: "tool_started",
+      recovery_decided: "tool_check",
+      retry_started: "tool_started",
+      retry_completed: "tool_completed",
+    });
+    let streamStatusOpened = false;
+    function revealStreamStatus() {
+      if (streamStatusOpened) return;
+      const disclosure = article.querySelector(".capability-kit-disclosure");
+      if (!disclosure) return;
+      disclosure.open = true;
+      streamStatusOpened = true;
+    }
+    function safeThoughtSummary(value) {
+      if (typeof value !== "string") return "";
+      let summary = value.trim().slice(0, 2000);
+      const userPrompts = Array.isArray(payload?.messages)
+        ? payload.messages.filter((item) => item?.role === "user" && typeof item.content === "string")
+            .map((item) => item.content.trim()).filter(Boolean).sort((left, right) => right.length - left.length)
+        : [];
+      for (const prompt of userPrompts) {
+        if (prompt.length <= 3 && summary.includes(prompt)) return "";
+        summary = summary.replaceAll(prompt, "[user prompt omitted]");
+      }
+      return summary
+        .replace(/\bBearer\s+[A-Za-z0-9._~+\/-]{8,}/gi, "Bearer [secret redacted]")
+        .replace(/\b(?:sk-[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9_]{12,}|xox[baprs]-[A-Za-z0-9-]{12,}|AIza[A-Za-z0-9_-]{20,})\b/g, "[secret redacted]")
+        .replace(/\b(api[_ -]?key|access[_ -]?token|token|password|secret)\s*[:=]\s*["']?[^,\s"'`]+/gi, "$1: [redacted]")
+        .replace(/\b([A-Za-z][A-Za-z0-9_-]*_id)\s*[:=]\s*["']?[A-Za-z0-9_.:-]+/gi, "$1: [internal ID redacted]")
+        .replace(/\b(?:run|trace|dsp|pcr|evt|event|dispatch|pc|conversation|request|tenant|user|session|continuation|message|turn|chat|app)_[A-Za-z0-9][A-Za-z0-9_.:-]*\b/gi, "[internal ID redacted]")
+        .replace(/\b[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\b/gi, "[internal ID redacted]")
+        .replace(/\b[0-9a-f]{16,}\b/gi, "[internal ID redacted]")
+        .replace(/(https?:\/\/[^\s"'`<>?#]+)\?[^\s"'`<>#]*/gi, "$1?[query redacted]")
+        .replace(/\b[A-Za-z]:[\\/][^\s"'`<>?#]*/g, "[file path redacted]")
+        .replace(/\\\\[^\\/\s]+[\\/][^\s"'`<>?#]*/g, "[file path redacted]")
+        .replace(/(^|[\s("'`=,:;])~\/[^\s"'`<>?#]*/gm, "$1[file path redacted]")
+        .replace(/(^|[\s("'`=,:;])\/(?!\/)[^\s"'`<>?#]*/gm, "$1[file path redacted]");
+    }
+    function renderThoughtSummary(value) {
+      const summaryText = safeThoughtSummary(value);
+      if (!summaryText) return;
+      const body = article.querySelector(".assistant-body");
+      const content = article.querySelector(".assistant-content");
+      if (!body || !content) return;
+      let details = body.querySelector(".orchestration-thought-summary");
+      if (!details) {
+        details = document.createElement("details");
+        details.className = "orchestration-thought-summary";
+        const label = document.createElement("summary");
+        label.textContent = uiT("orchestration-thought-summary-label");
+        const paragraph = document.createElement("p");
+        details.append(label, paragraph);
+        body.insertBefore(details, content);
+      }
+      const paragraph = details.querySelector("p");
+      if (paragraph) paragraph.textContent = summaryText;
+    }
     const response = clawGeneralRequest
       ? await chatTransport.requestClawGeneral(payload, signal)
       : await chatTransport.requestStreaming(payload, signal);
+    const responseContentType = response.headers?.get?.("content-type") || "";
+    const shouldFollowStream = !/\bapplication\/json\b/i.test(responseContentType);
     const pcProgressRunId = window.PadiemPcBrowserSurface?.runIdForProgress?.(
       response, payload, clawGeneralRequest
     ) ?? (clawGeneralRequest ? null : payload.pc_run_id);
@@ -3531,6 +3603,8 @@
 
     let answer = "";
     let paragraph = null;
+    let answerTextNode = null;
+    let streamScrollTrackingStarted = false;
     let done = false;
     let terminalError = false;
     // #3935: terminal P01 events outrank a later transport done/connection
@@ -3557,11 +3631,60 @@
     }
     try {
       await chatTransport.readSseEvents(response, async (frame) => {
+        if (frame.event === "meta") {
+          revealStreamStatus();
+          window.PadiemChatLifecycle?.recordTaskEvent?.(article, "request_accepted");
+          return false;
+        }
+        if (frame.event === "progress") {
+          let value;
+          try { value = JSON.parse(frame.data); } catch (_) { return false; }
+          if (window.PadiemChatLifecycle?.recordProgressFrame?.(article, value)) revealStreamStatus();
+          return false;
+        }
+        if (frame.event === "thought_summary") {
+          let value;
+          try { value = JSON.parse(frame.data); } catch (_) { return false; }
+          renderThoughtSummary(value && value.summary);
+          return false;
+        }
+        if (frame.event === "orchestration_event") {
+          revealStreamStatus();
+          let value;
+          try { value = JSON.parse(frame.data); } catch (_) { return false; }
+          const kind = value && typeof value.kind === "string" ? value.kind : "";
+          const metadata = value && value.metadata && typeof value.metadata === "object" ? value.metadata : {};
+          const toolId = metadata.tool_id === "web_search" || metadata.tool_id === "pc_tool"
+            ? metadata.tool_id : "";
+          if (kind === "thought_summary") renderThoughtSummary(value.summary);
+          if (toolId === "web_search") window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");
+          if (toolId === "pc_tool") window.PadiemChatLifecycle?.recordTaskEvent?.(article, "pc_work");
+          const stage = stageForOrchestrationKind[kind];
+          if (stage) window.PadiemChatLifecycle?.recordTaskEvent?.(article, stage);
+          return false;
+        }
+        if (frame.event === "tool") {
+          revealStreamStatus();
+          let value;
+          try { value = JSON.parse(frame.data); } catch (_) { return false; }
+          if (value && (value.id === "web_search" || value.tool_id === "web_search")) {
+            window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");
+          } else if (value && (value.id === "pc_tool" || value.tool_id === "pc_tool")) {
+            window.PadiemChatLifecycle?.recordTaskEvent?.(article, "pc_work");
+          }
+          const stage = value && value.status === "completed" ? "tool_completed"
+            : value && value.status === "failed" ? "tool_failed" : "tool_started";
+          window.PadiemChatLifecycle?.recordTaskEvent?.(article, stage);
+          return false;
+        }
         if (["pc_progress", "heartbeat", "scope_notice"].includes(frame.event)) {
           let value;
           try { value = JSON.parse(frame.data); } catch (_) { return false; }
           if (frame.event === "pc_progress") {
-            window.PadiemChatLifecycle?.recordPcProgress?.(article, value, pcProgressRunId);
+            if (window.PadiemChatLifecycle?.recordPcProgress?.(article, value, pcProgressRunId)) {
+              revealStreamStatus();
+              window.PadiemChatLifecycle?.recordTaskEvent?.(article, "pc_work");
+            }
           } else if (frame.event === "heartbeat") {
             window.PadiemChatLifecycle?.recordPcHeartbeat?.(article, value);
           } else {
@@ -3618,10 +3741,33 @@
           if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) return false;
           if (!data || typeof data.delta !== "string") throw new Error(uiT("stream-format-invalid"));
           if (!data.delta) return false;
+          let streamScrollIntent = null;
+          if (shouldFollowStream) {
+            try {
+              streamScrollIntent = window.__padiemConversationMotion?.beforeStreamingDelta?.() ?? null;
+              if (typeof streamScrollIntent === "boolean") streamScrollTrackingStarted = true;
+            } catch (_) {
+              // Scrolling is presentation-only; it must never interrupt a reply.
+            }
+          }
           if (!paragraph) {
             const content = article.querySelector(".assistant-content");
             content.replaceChildren();
             paragraph = document.createElement("p");
+            if (typeof document.createTextNode === "function") {
+              answerTextNode = document.createTextNode("");
+            } else {
+              // Minimal fallback for older DOM shims. Browsers take the native
+              // Text.appendData path, while test hosts keep the legacy text view.
+              answerTextNode = {
+                data: "",
+                appendData(value) {
+                  this.data += value;
+                  paragraph.textContent = this.data;
+                },
+              };
+            }
+            paragraph.appendChild(answerTextNode);
             content.appendChild(paragraph);
             // #5559: the first token is a real fact. The status moves from
             // "preparing" to "generating" and the step is recorded.
@@ -3629,7 +3775,16 @@
             window.PadiemChatLifecycle?.recordTaskEvent?.(article, "answer_started");
           }
           answer += data.delta;
-          paragraph.textContent = answer;
+          if (!window.PadiemChatLifecycle?.appendStreamDelta?.(answerTextNode, data.delta)) {
+            answerTextNode.appendData(data.delta);
+          }
+          if (typeof streamScrollIntent === "boolean") {
+            try {
+              window.__padiemConversationMotion?.afterStreamingDelta?.(streamScrollIntent);
+            } catch (_) {
+              // Scrolling is presentation-only; it must never interrupt a reply.
+            }
+          }
           return false;
         }
         if (frame.event === "error") {
@@ -3732,6 +3887,14 @@
         return false;
       }
       throw error;
+    } finally {
+      if (streamScrollTrackingStarted) {
+        try {
+          window.__padiemConversationMotion?.endStreaming?.();
+        } catch (_) {
+          // Keep stream cleanup independent from the scroll presentation.
+        }
+      }
     }
   }
 

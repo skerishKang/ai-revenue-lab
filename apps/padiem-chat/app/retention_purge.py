@@ -10,8 +10,6 @@ legal drafts lane; summarized in ``docs/operations/RETENTION_ENFORCE_20261103.md
   after a withdrawal, so it must outlive the withdrawal by the decided year and
   no longer. It holds only a user-id hash and a timestamp.
 * ``padiem_mcp_audit`` — 90 days (service logs / audit records).
-* ``claw_task_alert`` — 90 days for dismissed alert rows only. User-created
-  tasks and active alerts share this table and are never selected for deletion.
 
 Deliberately absent, and the reason each stays absent:
 
@@ -65,21 +63,11 @@ class RetentionTarget:
     table: str
     column: str
     retention_days: int
-    # Fixed, code-owned predicate for a mixed-purpose table. This is never
-    # caller input; it narrows the retention target without changing the age
-    # column or batch behavior.
-    predicate: str | None = None
 
 
 RETENTION_TARGETS: tuple[RetentionTarget, ...] = (
     RetentionTarget("account_deletion_audit", "deleted_at", 365),
     RetentionTarget("padiem_mcp_audit", "created_at", 90),
-    RetentionTarget(
-        "claw_task_alert",
-        "created_at",
-        90,
-        predicate="kind = 'alert' AND status = 'dismissed'",
-    ),
 )
 
 
@@ -138,8 +126,6 @@ async def purge_expired_by_retention(
             f"{target.column} IS NOT NULL AND {target.column} >= '1000-01-01'"
             f" AND {target.column} < ?"
         )
-        if target.predicate:
-            where += f" AND ({target.predicate})"
         if dry_run:
             row = await binding.prepare(
                 f"SELECT COUNT(*) AS n FROM {target.table} WHERE {where}"

@@ -40,9 +40,8 @@
 
 ## 영상과 자막
 
-- 영상: `asset://chat-tutorial/03-document-work/video.webm`
-- 자막: `asset://chat-tutorial/03-document-work/captions.vtt`
-- 촬영 범위: 시험 계정으로 계정 단계 전체.
+아직 촬영하지 않았습니다 — 이 시나리오는 계정 단계로만 이루어져 있습니다.
+시험 계정이 확정되면 `asset://chat-tutorial/03-document-work/video.webm`과 `captions.vtt`로 촬영합니다.
 
 ---
 

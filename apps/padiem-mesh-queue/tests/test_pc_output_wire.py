@@ -133,5 +133,5 @@ def test_expired_uploads_of_an_abandoned_run_are_removed(tmp_path):
         os.utime(path, (1, 1))
     (old / "fresh.part").write_text("active")
     store = PcOutputStore(tmp_path)
-    store._directory(store._owner(**OWNER), user_id=OWNER["user_id"])
+    store._directory(store._owner(**OWNER))
     assert sorted(p.name for p in old.iterdir()) == ["fresh.part"]

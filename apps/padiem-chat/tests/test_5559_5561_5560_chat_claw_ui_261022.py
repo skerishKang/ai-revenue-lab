@@ -20,11 +20,15 @@ skip when it is not installed.
 from __future__ import annotations
 
 import http.server
+import json
 import re
+import secrets
 import threading
 from pathlib import Path
 
 import pytest
+
+from app.orchestration_stream import ProgressFrameBuilder
 
 try:  # pragma: no cover - environment dependent
     from playwright.sync_api import sync_playwright
@@ -57,7 +61,20 @@ class Server(http.server.ThreadingHTTPServer):
 
 @pytest.fixture(scope="module")
 def server():
-    with Server(("127.0.0.1", 0), Handler) as web:
+    web = None
+    # Chromium blocks a small set of well-known ports. The OS ephemeral range
+    # on this machine includes those ports, so reserve a high unprivileged port
+    # explicitly to keep the browser contract tests independent of that draw.
+    for _ in range(64):
+        port = 49152 + secrets.randbelow(16384)
+        try:
+            web = Server(("127.0.0.1", port), Handler)
+            break
+        except OSError:
+            continue
+    if web is None:
+        raise OSError("no safe ephemeral test port was available")
+    with web:
         thread = threading.Thread(target=web.serve_forever, daemon=True)
         thread.start()
         yield f"http://127.0.0.1:{web.server_address[1]}/index.html"
@@ -149,11 +166,11 @@ def test_no_stage_is_invented() -> None:
     assert 'preparing: Object.freeze({ state: "active"' in lifecycle
     assert 'generating: Object.freeze({ state: "active"' in lifecycle
     assert 'searching: Object.freeze({ state: "active"' in lifecycle
-    # The web-search label is only reachable through a real server tool.
-    sources = _read("search-sources.js")
-    assert 'window.PadiemChatLifecycle?.setTaskHint?.(article, "searching");' in sources
-    assert 'window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");' in sources
-    assert "data.tool.id === \"web_search\"" in sources
+    # The web-search label is only reachable through a real server tool/evidence
+    # marker in the completed answer contract.
+    app = _read("app.js")
+    assert 'window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");' in app
+    assert 'data.tool.id === "web_search"' in app
 
 
 # ── #4816 / Owner 2026-10-31: two persistent icons (A안) ───────────────────
@@ -716,6 +733,230 @@ def test_the_turn_carries_the_status_card_from_the_first_moment(browser, server)
     assert state["stages"] == 1, state
     # The card starts closed: the reader opens the real steps on request.
     assert state["open"] is False, state
+    assert not errors, errors
+    page.close()
+
+
+@requires_browser
+def test_engine_progress_ndjson_frames_render_in_status_order(browser, server):
+    builder = ProgressFrameBuilder(clock=lambda: 10.0)
+    frames = [
+        builder.frame("run_started"),
+        builder.frame("context_prepared"),
+        builder.frame("tool_started", tool_name="web_search"),
+        builder.frame("pc_progress", stage="executing", elapsed_ms=1200),
+        builder.frame("heartbeat", elapsed_ms=5000),
+        builder.frame("tool_completed", tool_name="pc_tool"),
+    ]
+    wire = "\n".join(json.dumps(frame, ensure_ascii=False) for frame in frames if frame) + "\n"
+    page = browser.new_page(viewport={"width": 1440, "height": 900})
+    errors: list[str] = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(server, wait_until="domcontentloaded")
+    page.wait_for_timeout(300)
+    rendered = page.evaluate(
+        """async wire => {
+          const lifecycle = window.PadiemChatLifecycle;
+          const article = document.createElement('article');
+          article.className = 'assistant-message';
+          article.innerHTML = '<div class="assistant-meta">'
+            + '<span data-assistant-product>Padiem Chat</span>'
+            + '<span data-runtime-label></span>'
+            + '</div><div class="assistant-body"><div class="assistant-content"></div></div>';
+          document.body.appendChild(article);
+          lifecycle.set(article, 'streaming');
+          lifecycle.renderTaskStatus(article);
+          const response = new Response(wire, {
+            headers: { 'content-type': 'application/x-ndjson; charset=utf-8' },
+          });
+          await window.PadiemChatTransport.readSseEvents(response, frame => {
+            if (frame.event === 'progress') {
+              lifecycle.recordProgressFrame(article, JSON.parse(frame.data));
+            }
+            return false;
+          });
+          const card = article.querySelector('.capability-kit');
+          const labels = Array.from(card.querySelectorAll('.capability-stage'))
+            .map(row => row.children[1].textContent.trim());
+          article.remove();
+          return labels;
+        }""",
+        wire,
+    )
+    assert rendered == [
+        "질문 확인 중", "질문 확인 중", "웹 확인 중", "PC 작업 중", "작업 진행 중", "PC 작업 완료",
+    ]
+    assert not errors, errors
+    page.close()
+
+
+@requires_browser
+def test_long_stream_appends_2500_deltas_without_pulling_reader_down(browser, server):
+    page = browser.new_page(viewport={"width": 390, "height": 844})
+    errors: list[str] = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(server, wait_until="domcontentloaded")
+    page.wait_for_timeout(300)
+    result = page.evaluate(
+        """() => {
+          const lifecycle = window.PadiemChatLifecycle;
+          const host = document.createElement('div');
+          host.style.cssText = 'width:160px;height:48px;overflow:auto;position:absolute;top:0';
+          const paragraph = document.createElement('p');
+          const node = document.createTextNode('');
+          paragraph.appendChild(node);
+          host.appendChild(paragraph);
+          document.body.appendChild(host);
+          host.scrollTop = 0;
+          const piece = '답변 조각 ';
+          for (let index = 0; index < 2500; index += 1) {
+            if (!lifecycle.appendStreamDelta(node, piece)) throw new Error('delta append rejected');
+          }
+          const state = {
+            chunks: 2500,
+            childNodes: paragraph.childNodes.length,
+            textLength: node.data.length,
+            expectedLength: piece.length * 2500,
+            scrollTop: host.scrollTop,
+            hasOverflow: host.scrollHeight > host.clientHeight,
+          };
+          host.remove();
+          return state;
+        }"""
+    )
+    assert result == {
+        "chunks": 2500,
+        "childNodes": 1,
+        "textLength": result["expectedLength"],
+        "expectedLength": len("답변 조각 ") * 2500,
+        "scrollTop": 0,
+        "hasOverflow": True,
+    }, result
+    assert not errors, errors
+    page.close()
+
+
+@requires_browser
+def test_stream_scroll_follows_pauses_resumes_and_keeps_2500_delta_reader_position(browser, server):
+    page = browser.new_page(viewport={"width": 1440, "height": 900})
+    errors: list[str] = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(server, wait_until="domcontentloaded")
+    page.wait_for_function("window.__padiemConversationMotion")
+    result = page.evaluate(
+        """async () => {
+          const motion = window.__padiemConversationMotion;
+          const shell = document.querySelector('.app-shell');
+          const conversation = document.querySelector('.conversation');
+          const list = document.getElementById('messageList');
+          const empty = document.getElementById('emptyState');
+          document.documentElement.setAttribute('data-theme', 'padiem-glass');
+          shell.dataset.state = 'chat';
+          list.hidden = false;
+          if (empty) empty.hidden = true;
+          conversation.style.setProperty('height', '160px', 'important');
+          conversation.style.setProperty('max-height', '160px', 'important');
+          conversation.style.setProperty('overflow-y', 'auto', 'important');
+          const article = document.createElement('article');
+          article.className = 'message assistant-message';
+          const paragraph = document.createElement('p');
+          paragraph.style.cssText = 'font-size:16px;line-height:20px;overflow-wrap:anywhere';
+          const node = document.createTextNode('older answer '.repeat(12000));
+          paragraph.appendChild(node);
+          article.appendChild(paragraph);
+          list.replaceChildren(article);
+          const frame = () => new Promise(resolve => requestAnimationFrame(() => resolve()));
+          const settle = async () => { await frame(); await frame(); };
+          await frame();
+          motion.reset();
+          conversation.scrollTop = conversation.scrollHeight;
+          conversation.dispatchEvent(new Event('scroll'));
+          await frame();
+          const gapBeforeStream = conversation.scrollHeight
+            - conversation.scrollTop - conversation.clientHeight;
+
+          function append(piece) {
+            const shouldFollow = motion.beforeStreamingDelta();
+            node.appendData(piece);
+            motion.afterStreamingDelta(shouldFollow);
+            return shouldFollow;
+          }
+
+          const followedFromBottom = append('first stream piece ');
+          await settle();
+          const bottomGapAfterFollow = conversation.scrollHeight
+            - conversation.scrollTop - conversation.clientHeight;
+          const followedAtBottom = followedFromBottom === true && bottomGapAfterFollow <= 1;
+
+          conversation.scrollTop = 0;
+          conversation.dispatchEvent(new Event('scroll'));
+          await frame();
+          const stoppedFollowingOnUpScroll = motion.isFollowingLatest() === false;
+          const pausedIntent = append('reader is reviewing earlier text ');
+          await frame();
+          const jumpButton = document.getElementById('conversationJumpButton');
+          const existingButtonShown = Boolean(jumpButton && !jumpButton.hidden);
+          const pausedTop = conversation.scrollTop;
+
+          if (jumpButton) jumpButton.remove();
+          const piece = 'long answer delta ';
+          for (let index = 0; index < 2500; index += 1) append(piece);
+          await Promise.resolve();
+          await frame();
+          const longAnswerPreservedPosition = conversation.scrollTop === pausedTop;
+          const noButtonCreated = !document.getElementById('conversationJumpButton');
+          const chunkCount = 2500;
+          const singleTextNode = paragraph.childNodes.length === 1;
+          const expectedLength = ('older answer '.repeat(12000)).length
+            + 'first stream piece '.length
+            + 'reader is reviewing earlier text '.length
+            + piece.length * chunkCount;
+
+          conversation.scrollTop = conversation.scrollHeight;
+          conversation.dispatchEvent(new Event('scroll'));
+          window.dispatchEvent(new WheelEvent('wheel', { deltaY: 120 }));
+          await frame();
+          const followingAfterReturn = motion.isFollowingLatest();
+          const resumedIntent = append('follow resumed ');
+          await settle();
+          const finalBottomGap = conversation.scrollHeight
+            - conversation.scrollTop - conversation.clientHeight;
+          motion.endStreaming();
+          return {
+            followedFromBottom,
+            gapBeforeStream,
+            bottomGapAfterFollow,
+            followedAtBottom,
+            stoppedFollowingOnUpScroll,
+            pausedIntent,
+            existingButtonShown,
+            longAnswerPreservedPosition,
+            noButtonCreated,
+            chunks: chunkCount,
+            textLength: node.data.length,
+            expectedLength: expectedLength + 'follow resumed '.length,
+            singleTextNode,
+            followingAfterReturn,
+            resumedIntent,
+            finalBottomGap,
+          };
+        }"""
+    )
+    assert result["gapBeforeStream"] <= 80, result
+    assert result["followedFromBottom"] is True, result
+    assert result["bottomGapAfterFollow"] <= 1, result
+    assert result["followedAtBottom"] is True, result
+    assert result["stoppedFollowingOnUpScroll"] is True, result
+    assert result["pausedIntent"] is False, result
+    assert result["existingButtonShown"] is True, result
+    assert result["longAnswerPreservedPosition"] is True, result
+    assert result["noButtonCreated"] is True, result
+    assert result["chunks"] == 2500, result
+    assert result["textLength"] == result["expectedLength"], result
+    assert result["singleTextNode"] is True, result
+    assert result["followingAfterReturn"] is True, result
+    assert result["resumedIntent"] is True, result
+    assert result["finalBottomGap"] <= 1, result
     assert not errors, errors
     page.close()
 

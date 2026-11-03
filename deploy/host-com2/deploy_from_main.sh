@@ -179,60 +179,14 @@ main() {
   run_deploy "$requested"
 }
 
-# Test, documentation and sample-environment changes do not justify a
-# service restart. Return a stable reason so the deploy plan can account for
-# every excluded path without weakening runtime/configuration changes.
-deploy_path_exclusion() {
-  local path=$1 base
-  base=${path##*/}
-  case "/$path/" in
-    */tests/*|*/test/*) printf 'TEST_DIRECTORY'; return 0 ;;
-  esac
-  case "$base" in
-    test_*.py|*_test.py|conftest.py|pytest.ini|*.test.mjs)
-      printf 'TEST_FILE'; return 0 ;;
-    .env.example)
-      printf 'EXAMPLE_CONFIG'; return 0 ;;
-    .gitignore|progress.md)
-      printf 'REPO_META'; return 0 ;;
-  esac
-  case "/$path/" in
-    */docs/*) printf 'DOCUMENTATION'; return 0 ;;
-  esac
-  case "$path" in
-    *.md) printf 'DOCUMENTATION'; return 0 ;;
-  esac
-  return 1
-}
-
-# Service path rules. Shared packages are Chat inputs; packages installed into
-# the P01 release also select P01. p01_matches_target remains an independent
-# fail-safe for live code that is missing or cannot be verified.
+# Which services a changed path belongs to. Shared P01 dependencies are also
+# checked against its live release by p01_matches_target below.
 service_for_path() {
   case "$1" in
-    apps/padiem-chat/*|apps/padiem-council-apps/static/*|packages/*|deploy/host-com2/chat/*)
-      printf '%s\n' chat ;;
-    *) : ;;
-  esac
-  case "$1" in
-    apps/padiem-ai-engine/*|deploy/host-com2/p01/*|packages/padiem-ai-core/*|packages/padiem-control-plane/*|apps/korean-ai-code-agent/src/kagent/*)
-      printf '%s\n' p01 ;;
-    deploy/host-com2/restart-policy/*)
-      printf '%s\n' chat
-      printf '%s\n' p01
-      printf '%s\n' b14
-      printf '%s\n' queue ;;
-    *) : ;;
-  esac
-  case "$1" in
-    apps/korean-ai-platform/*|deploy/host-com2/b14/*)
-      printf '%s\n' b14 ;;
-    *) : ;;
-  esac
-  case "$1" in
-    apps/padiem-mesh-queue/*)
-      printf '%s\n' queue ;;
-    *) : ;;
+    apps/padiem-chat/*|apps/padiem-council-apps/static/*|packages/*|deploy/host-com2/chat/*) echo chat ;;
+    apps/padiem-ai-engine/*|deploy/host-com2/p01/*) echo p01 ;;
+    apps/korean-ai-platform/*|deploy/host-com2/b14/*) echo b14 ;;
+    apps/padiem-mesh-queue/*) echo queue ;;
   esac
 }
 
@@ -903,10 +857,7 @@ ensure_target_units_ready() {
 run_deploy() {
 
   local sha=$1 origin changed='' services='' pending='' line status=0
-  local mapped='' service='' reason='' state=''
-  local p01_mismatch=0 excluded_test=0 excluded_docs=0 excluded_example=0 excluded_meta=0 excluded_unmapped=0
   declare -A wanted=([chat]=0 [p01]=0 [b14]=0 [queue]=0)
-  declare -A reason_files=([chat]=0 [p01]=0 [b14]=0 [queue]=0)
   declare -A result=([chat]=SKIP [p01]=SKIP [b14]=SKIP [queue]=SKIP)
 
   "$git_bin" -C "$ops_checkout" fetch --quiet origin main || fail GIT_FETCH_FAILED
@@ -936,7 +887,11 @@ run_deploy() {
   else
     say 'P01_RUNNING_CODE=DIFF_OR_UNVERIFIABLE'
     wanted[p01]=1
-    p01_mismatch=1
+  fi
+  if [[ $old == "$resolved" ]] && (( ! wanted[p01] )); then
+    say 'NOOP=YES'
+    say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP'
+    return 0
   fi
 
   changed=$("$git_bin" -C "$ops_checkout" diff --name-only "$old" "$resolved") \
@@ -944,59 +899,17 @@ run_deploy() {
   while IFS= read -r line; do
     [[ -n $line ]] || continue
     say "CHANGED=$line"
-    if reason=$(deploy_path_exclusion "$line"); then
-      case "$reason" in
-        TEST_DIRECTORY|TEST_FILE) excluded_test=$((excluded_test + 1)) ;;
-        DOCUMENTATION) excluded_docs=$((excluded_docs + 1)) ;;
-        EXAMPLE_CONFIG) excluded_example=$((excluded_example + 1)) ;;
-        REPO_META) excluded_meta=$((excluded_meta + 1)) ;;
-      esac
-      say "EXCLUDED=$line reason=$reason"
-      continue
-    fi
-    mapped=$(service_for_path "$line")
-    if [[ -z $mapped ]]; then
-      excluded_unmapped=$((excluded_unmapped + 1))
-      say "EXCLUDED=$line reason=NO_SERVICE_MAPPING"
-      continue
-    fi
-    for service in $mapped; do
-      case "$service" in
-        chat|p01|b14|queue)
-          wanted[$service]=1
-          reason_files[$service]=$((reason_files[$service] + 1))
-          ;;
-        *) fail INVALID_SERVICE_PATH_MAPPING ;;
-      esac
-    done
+    case "$(service_for_path "$line")" in
+      chat) wanted[chat]=1 ;;
+      p01) wanted[p01]=1 ;;
+      b14) wanted[b14]=1 ;;
+      queue) wanted[queue]=1 ;;
+    esac
   done <<<"$changed"
-
-  say "EXCLUDED_COUNTS=tests:$excluded_test docs:$excluded_docs env_example:$excluded_example repo_meta:$excluded_meta unmapped:$excluded_unmapped"
   for line in chat p01 b14 queue; do
-    if (( wanted[$line] )); then
-      services+="${services:+,}$line"
-    fi
-    state=SKIP
-    reason=NO_DEPLOY_PATHS
-    if (( wanted[$line] )); then
-      state=REDEPLOY
-      reason=CHANGED_PATHS
-    fi
-    if [[ $line == p01 ]] && (( p01_mismatch )); then
-      if (( reason_files[$line] )); then
-        reason=CHANGED_PATHS+RUNNING_CODE_MISMATCH
-      else
-        reason=RUNNING_CODE_MISMATCH
-      fi
-    fi
-    say "DECISION_${line^^}=$state reason_files=${reason_files[$line]} reason=$reason"
+    if (( wanted[$line] )); then services+="${services:+,}$line"; fi
   done
   say "SERVICES=${services:-none}"
-  if [[ $old == "$resolved" ]] && [[ -z $services ]]; then
-    say 'NOOP=YES'
-    say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP'
-    return 0
-  fi
 
   status=0
   pending=$(pending_migrations) || status=$?
@@ -1022,14 +935,6 @@ run_deploy() {
     fi
   else
     say 'PENDING_MIGRATIONS=none'
-  fi
-
-  # Test/docs-only and unrelated changes must not move the production checkout
-  # or mirrored source tree when no service was selected.
-  if [[ -z $services ]]; then
-    say 'NO_SERVICE_CHANGES=YES'
-    say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP'
-    return 0
   fi
 
   # Check the required QA capability before touching the checkout or services.
