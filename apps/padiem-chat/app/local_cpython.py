@@ -282,18 +282,29 @@ def build_app():
     # explicit host marker line.
     from .oracle_mesh_read_return_routes import (
         build_oracle_mesh_return_source_from_env,
+        host_engine_lane_mount_marker,
         legacy_map_lane_enabled,
+        valid_claw_engine_desktop_secret,
     )
 
     # The Engine signs its desktop/PC-query calls with this shared secret. A
     # missing or too-short value keeps the existing fail-closed 503 answer; the
     # marker names the state only, never the value or its length.
-    claw_engine_desktop_secret = os.getenv("CLAW_ENGINE_DESKTOP_SECRET", "").strip()
-    if len(claw_engine_desktop_secret) < 32:
-        claw_engine_desktop_secret = None
+    claw_engine_desktop_secret = valid_claw_engine_desktop_secret(
+        os.getenv("CLAW_ENGINE_DESKTOP_SECRET", "").strip()
+    )
     print(
         "[local] claw_engine_desktop_secret="
         + ("configured" if claw_engine_desktop_secret else "unconfigured")
+    )
+    # create_app gates the internal Engine lanes on the return source, and the
+    # host cannot await the async builder inside uvicorn's factory loop: the
+    # marker says "this deployment names the mesh lane", and the startup hook
+    # below swaps in the composed source before the first request is served.
+    oracle_mesh_return_source = host_engine_lane_mount_marker(os.environ)
+    print(
+        "[local] engine_lanes="
+        + ("mounted_pending_source" if oracle_mesh_return_source is not None else "unmounted")
     )
 
     app = create_app(
@@ -315,7 +326,7 @@ def build_app():
         central_model_admin_google_email=os.getenv(
             "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL", ""
         ).strip(),
-        oracle_mesh_return_source=None,
+        oracle_mesh_return_source=oracle_mesh_return_source,
         oracle_mesh_legacy_map_lane=legacy_map_lane_enabled(os.environ),
         claw_engine_desktop_secret=claw_engine_desktop_secret,
     )
@@ -547,6 +558,19 @@ def build_app():
             await gateway(websocket.scope, websocket.receive, websocket.send)
 
         app.router.routes.insert(0, WebSocketRoute(CONNECTOR_GATEWAY_WSS_PATH, connector_gateway))
+    else:
+        # A websocket scope must never reach the static catch-all: Starlette's
+        # StaticFiles asserts an http scope, so the 2026-11-03 11:23:40 connector
+        # attempt surfaced as a 500 AssertionError traceback. With the gateway
+        # switched off, the connector's own path is refused explicitly instead —
+        # closed before accept, no traceback, no half-open socket.
+        from starlette.routing import WebSocketRoute
+        from .canonical_connector_gateway_source_composition import CONNECTOR_GATEWAY_WSS_PATH
+
+        async def refuse_connector_gateway(websocket):
+            await websocket.close(code=4403)
+
+        app.router.routes.insert(0, WebSocketRoute(CONNECTOR_GATEWAY_WSS_PATH, refuse_connector_gateway))
 
     # The Worker's orchestration bridge, over this host's loopback Engine
     # transport (#5115 step ②). Off unless the same three server-owned switches
