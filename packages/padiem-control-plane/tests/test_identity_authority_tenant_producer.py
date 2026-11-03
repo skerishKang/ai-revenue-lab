@@ -365,7 +365,7 @@ def test_migration_idempotent_or_restart_safe() -> None:
         "2",
     )
     store._apply_migrations()
-    assert store._schema_version() == 3
+    assert store._schema_version() == 4
 
 
 def test_legacy_membership_schema_adds_nullable_role_without_backfill() -> None:
@@ -411,7 +411,7 @@ def test_legacy_membership_schema_adds_nullable_role_without_backfill() -> None:
         )
     )[0]
     assert row["role"] is None
-    assert migrated._schema_version() == 3
+    assert migrated._schema_version() == 4
 
 
 def test_existing_session_contract_compatibility() -> None:
