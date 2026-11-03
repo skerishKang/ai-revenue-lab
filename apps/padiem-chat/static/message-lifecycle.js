@@ -158,6 +158,15 @@
   // happened, so the card can never show a step that did not occur.
   const taskEventCatalog = Object.freeze({
     request_sent: Object.freeze({ ko: "요청을 전달했어요.", en: "Your request was sent." }),
+    request_accepted: Object.freeze({ ko: "요청을 접수했어요.", en: "Request accepted." }),
+    question_checked: Object.freeze({ ko: "질문을 확인했어요.", en: "Question checked." }),
+    reference_context: Object.freeze({ ko: "참고 정보를 확인했어요.", en: "Reference context checked." }),
+    planning: Object.freeze({ ko: "응답 방향을 정리했어요.", en: "Response plan prepared." }),
+    tool_check: Object.freeze({ ko: "도구를 확인했어요.", en: "Tool availability checked." }),
+    tool_started: Object.freeze({ ko: "도구 작업을 시작했어요.", en: "Tool work started." }),
+    tool_completed: Object.freeze({ ko: "도구 작업을 마쳤어요.", en: "Tool work completed." }),
+    tool_failed: Object.freeze({ ko: "도구 작업을 확인해야 해요.", en: "Tool work needs attention." }),
+    pc_work: Object.freeze({ ko: "PC 작업을 진행했어요.", en: "PC work started." }),
     answer_started: Object.freeze({ ko: "답변을 만들기 시작했어요.", en: "Started building the answer." }),
     web_search: Object.freeze({ ko: "웹 검색을 사용했어요.", en: "Used web search." }),
     deep_research: Object.freeze({ ko: "심층 리서치를 사용했어요.", en: "Used deep research." }),

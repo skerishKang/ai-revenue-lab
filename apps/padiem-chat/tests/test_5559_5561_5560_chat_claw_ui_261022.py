@@ -149,11 +149,11 @@ def test_no_stage_is_invented() -> None:
     assert 'preparing: Object.freeze({ state: "active"' in lifecycle
     assert 'generating: Object.freeze({ state: "active"' in lifecycle
     assert 'searching: Object.freeze({ state: "active"' in lifecycle
-    # The web-search label is only reachable through a real server tool.
-    sources = _read("search-sources.js")
-    assert 'window.PadiemChatLifecycle?.setTaskHint?.(article, "searching");' in sources
-    assert 'window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");' in sources
-    assert "data.tool.id === \"web_search\"" in sources
+    # The web-search label is only reachable through a real server tool/evidence
+    # marker in the completed answer contract.
+    app = _read("app.js")
+    assert 'window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");' in app
+    assert 'data.tool.id === "web_search"' in app
 
 
 # ── #4816 / Owner 2026-10-31: two persistent icons (A안) ───────────────────

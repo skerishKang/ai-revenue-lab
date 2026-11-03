@@ -3520,6 +3520,71 @@
     // envelope the canonical projection accepted is collected, and the card
     // validates the list again before it renders anything.
     const liveOrchestrationEvents = [];
+    const stageForOrchestrationKind = Object.freeze({
+      run_started: "request_accepted",
+      context_prepared: "question_checked",
+      memory_read: "reference_context",
+      plan_created: "planning",
+      skill_resolved: "planning",
+      tool_resolution: "tool_check",
+      tool_started: "tool_started",
+      tool_completed: "tool_completed",
+      tool_failed: "tool_failed",
+      evidence_attached: "evidence",
+      verification_completed: "evidence",
+      run_resumed: "question_checked",
+      recovery_started: "tool_started",
+      recovery_decided: "tool_check",
+      retry_started: "tool_started",
+      retry_completed: "tool_completed",
+    });
+    let streamStatusOpened = false;
+    function revealStreamStatus() {
+      if (streamStatusOpened) return;
+      const disclosure = article.querySelector(".capability-kit-disclosure");
+      if (!disclosure) return;
+      disclosure.open = true;
+      streamStatusOpened = true;
+    }
+    function safeThoughtSummary(value) {
+      if (typeof value !== "string") return "";
+      let summary = value.trim().slice(0, 2000);
+      const userPrompts = Array.isArray(payload?.messages)
+        ? payload.messages.filter((item) => item?.role === "user" && typeof item.content === "string")
+            .map((item) => item.content.trim()).filter(Boolean).sort((left, right) => right.length - left.length)
+        : [];
+      for (const prompt of userPrompts) {
+        if (prompt.length <= 3 && summary.includes(prompt)) return "";
+        summary = summary.replaceAll(prompt, "[질문 내용 생략]");
+      }
+      return summary
+        .replace(/\bBearer\s+[A-Za-z0-9._~+\/-]{8,}/gi, "Bearer [비밀 값 숨김]")
+        .replace(/\b(?:sk-[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9_]{12,}|xox[baprs]-[A-Za-z0-9-]{12,}|AIza[A-Za-z0-9_-]{20,})\b/g, "[비밀 값 숨김]")
+        .replace(/\b(api[_ -]?key|access[_ -]?token|token|password|secret)\s*[:=]\s*["']?[^,\s"'`]+/gi, "$1: [숨김]")
+        .replace(/\b(?:run|event|trace|dispatch|conversation|request|tenant|user|session|continuation|message)[ _-]?(?:id|identifier)\s*[:=#]?\s*["']?[A-Za-z0-9_.:-]+/gi, "[내부 ID 숨김]")
+        .replace(/\b[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\b/gi, "[내부 ID 숨김]")
+        .replace(/(?:[A-Za-z]:\\|\\\\[^\\\s]+\\|\/(?:Users|home|mnt|tmp|var|workspace|workspaces|opt|private|Volumes|srv|root)\/)[^\s"'`<>]*/gi, "[파일 경로 숨김]");
+    }
+    function renderThoughtSummary(value) {
+      const summaryText = safeThoughtSummary(value);
+      if (!summaryText) return;
+      const body = article.querySelector(".assistant-body");
+      const content = article.querySelector(".assistant-content");
+      if (!body || !content) return;
+      let details = body.querySelector(".orchestration-thought-summary");
+      if (!details) {
+        details = document.createElement("details");
+        details.className = "orchestration-thought-summary";
+        const label = document.createElement("summary");
+        label.textContent = (document.documentElement.lang || "ko").toLowerCase().startsWith("en")
+          ? "Thought summary" : "생각 요약";
+        const paragraph = document.createElement("p");
+        details.append(label, paragraph);
+        body.insertBefore(details, content);
+      }
+      const paragraph = details.querySelector("p");
+      if (paragraph) paragraph.textContent = summaryText;
+    }
     const response = clawGeneralRequest
       ? await chatTransport.requestClawGeneral(payload, signal)
       : await chatTransport.requestStreaming(payload, signal);
@@ -3557,11 +3622,54 @@
     }
     try {
       await chatTransport.readSseEvents(response, async (frame) => {
+        if (frame.event === "meta") {
+          revealStreamStatus();
+          window.PadiemChatLifecycle?.recordTaskEvent?.(article, "request_accepted");
+          return false;
+        }
+        if (frame.event === "thought_summary") {
+          let value;
+          try { value = JSON.parse(frame.data); } catch (_) { return false; }
+          renderThoughtSummary(value && value.summary);
+          return false;
+        }
+        if (frame.event === "orchestration_event") {
+          revealStreamStatus();
+          let value;
+          try { value = JSON.parse(frame.data); } catch (_) { return false; }
+          const kind = value && typeof value.kind === "string" ? value.kind : "";
+          const metadata = value && value.metadata && typeof value.metadata === "object" ? value.metadata : {};
+          const toolId = metadata.tool_id === "web_search" || metadata.tool_id === "pc_tool"
+            ? metadata.tool_id : "";
+          if (kind === "thought_summary") renderThoughtSummary(value.summary);
+          if (toolId === "web_search") window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");
+          if (toolId === "pc_tool") window.PadiemChatLifecycle?.recordTaskEvent?.(article, "pc_work");
+          const stage = stageForOrchestrationKind[kind];
+          if (stage) window.PadiemChatLifecycle?.recordTaskEvent?.(article, stage);
+          return false;
+        }
+        if (frame.event === "tool") {
+          revealStreamStatus();
+          let value;
+          try { value = JSON.parse(frame.data); } catch (_) { return false; }
+          if (value && (value.id === "web_search" || value.tool_id === "web_search")) {
+            window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");
+          } else if (value && (value.id === "pc_tool" || value.tool_id === "pc_tool")) {
+            window.PadiemChatLifecycle?.recordTaskEvent?.(article, "pc_work");
+          }
+          const stage = value && value.status === "completed" ? "tool_completed"
+            : value && value.status === "failed" ? "tool_failed" : "tool_started";
+          window.PadiemChatLifecycle?.recordTaskEvent?.(article, stage);
+          return false;
+        }
         if (["pc_progress", "heartbeat", "scope_notice"].includes(frame.event)) {
           let value;
           try { value = JSON.parse(frame.data); } catch (_) { return false; }
           if (frame.event === "pc_progress") {
-            window.PadiemChatLifecycle?.recordPcProgress?.(article, value, pcProgressRunId);
+            if (window.PadiemChatLifecycle?.recordPcProgress?.(article, value, pcProgressRunId)) {
+              revealStreamStatus();
+              window.PadiemChatLifecycle?.recordTaskEvent?.(article, "pc_work");
+            }
           } else if (frame.event === "heartbeat") {
             window.PadiemChatLifecycle?.recordPcHeartbeat?.(article, value);
           } else {

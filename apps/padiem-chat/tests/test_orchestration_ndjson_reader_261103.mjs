@@ -57,7 +57,7 @@ test("a trailing line without a newline is still delivered", async () => {
   assert.equal(frames[0].done, true);
 });
 
-test("requestOrchestrationStream asks for NDJSON and returns null when the server answers JSON", async () => {
+test("requestOrchestrationStream asks for NDJSON and adapts a JSON fallback to the old SSE answer", async () => {
   transport.invalidateOrchestrationReady();
   const calls = [];
   globalThis.fetch = async (url, options = {}) => {
@@ -76,8 +76,152 @@ test("requestOrchestrationStream asks for NDJSON and returns null when the serve
     };
   };
   const streamed = await transport.requestOrchestrationStream({ messages: [] }, null);
-  assert.equal(streamed, null, "플래그가 꺼진 서버는 기존 JSON 경로를 쓴다");
+  assert.equal(streamed.headers.get("content-type").startsWith("text/event-stream"), true);
+  const frames = [];
+  await transport.readSseEvents(streamed, (frame) => { frames.push(frame); return false; });
+  assert.deepEqual(frames.map((frame) => frame.event), ["delta", "done"]);
+  assert.equal(JSON.parse(frames[0].data).delta, "완성");
   const post = calls.find((call) => call.url.endsWith("/api/orchestration"));
   assert.equal(post.headers.Accept, "application/x-ndjson");
   assert.equal(JSON.parse(post.body).stream, 1);
+});
+
+test("the browser switch off keeps the legacy JSON request shape", async () => {
+  transport.invalidateOrchestrationReady();
+  globalThis.PADIEM_CHAT_ORCHESTRATION_STREAM = false;
+  const calls = [];
+  globalThis.fetch = async (url, options = {}) => {
+    calls.push({ url: String(url), headers: options.headers || {}, body: options.body });
+    if (String(url).endsWith("/api/orchestration/status")) {
+      return { ok: true, status: 200, json: async () => ({ orchestration_ready: true, authenticated: true }), headers: { get: () => "application/json" } };
+    }
+    return { ok: true, status: 200, json: async () => ({ answer: "기존 응답" }), headers: { get: () => "application/json" } };
+  };
+  try {
+    const response = await transport.requestStreaming({ messages: [] }, null);
+    assert.equal(response.headers.get("content-type").startsWith("text/event-stream"), true);
+    const post = calls.find((call) => call.url.endsWith("/api/orchestration"));
+    assert.equal(post.headers.Accept, "application/json");
+    assert.equal(Object.hasOwn(JSON.parse(post.body), "stream"), false);
+  } finally {
+    delete globalThis.PADIEM_CHAT_ORCHESTRATION_STREAM;
+  }
+});
+
+function streamResponse(records, contentType = "application/x-ndjson", signal = null) {
+  const encoder = new TextEncoder();
+  let index = 0;
+  let cancelCount = 0;
+  const chunks = records.map((record) => encoder.encode(record));
+  return {
+    ok: true,
+    status: 200,
+    headers: { get: () => contentType },
+    body: {
+      getReader() {
+        return {
+          async read() {
+            if (index < chunks.length) return { done: false, value: chunks[index++] };
+            if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+            return { done: true, value: undefined };
+          },
+          async cancel() { cancelCount += 1; },
+          releaseLock() {},
+          get cancelCount() { return cancelCount; },
+        };
+      },
+    },
+  };
+}
+
+function jsonReply(body) {
+  return { ok: true, status: 200, headers: { get: () => "application/json" }, json: async () => body };
+}
+
+test("fake NDJSON server streams each delta and maps status, tool and completion records", async () => {
+  transport.invalidateOrchestrationReady();
+  const calls = [];
+  const server = streamResponse([
+    '{"type":"meta","stream":true}\n',
+    '{"type":"event","event":{"kind":"tool_started","event_id":"private-1"}}\n',
+    '{"type":"tool","tool":{"id":"web_search","name":"private tool name"}}\n',
+    '{"type":"thought_summary","summary":"safe summary"}\n',
+    '{"type":"delta","text":"길게 "}\n',
+    '{"type":"delta","text":"도착"}\n',
+    '{"type":"done","done":true,"conversation_id":"chat_1"}\n',
+  ]);
+  globalThis.fetch = async (url, options = {}) => {
+    calls.push({ url: String(url), headers: options.headers || {}, body: options.body });
+    if (String(url).endsWith("/api/orchestration/status")) return jsonReply({ orchestration_ready: true, authenticated: true });
+    return server;
+  };
+  const response = await transport.requestStreaming({ messages: [] }, null);
+  const seen = [];
+  let answer = "";
+  await transport.readSseEvents(response, (frame) => {
+    seen.push(frame.event);
+    if (frame.event === "delta") answer += JSON.parse(frame.data).delta;
+    return false;
+  });
+  assert.equal(answer, "길게 도착");
+  assert.deepEqual(seen, ["meta", "orchestration_event", "tool", "thought_summary", "delta", "delta", "done"]);
+  const post = calls.find((call) => call.url.endsWith("/api/orchestration"));
+  assert.equal(post.headers.Accept, "application/x-ndjson");
+  assert.equal(JSON.parse(post.body).stream, 1);
+});
+
+test("a mid-stream error maps to the existing error event", async () => {
+  const response = streamResponse([
+    '{"type":"delta","text":"일부"}\n',
+    '{"type":"error","code":"invalid_engine_stream"}\n',
+  ]);
+  const events = [];
+  await transport.readSseEvents(response, (frame) => { events.push(frame); return false; });
+  assert.deepEqual(events.map((frame) => frame.event), ["delta", "error"]);
+  assert.equal(JSON.parse(events[1].data).error.code, "invalid_engine_stream");
+});
+
+test("abort stops reading and leaves the received partial answer available", async () => {
+  const controller = new AbortController();
+  let cancelled = false;
+  const response = streamResponse([
+    '{"type":"delta","text":"남길 부분"}\n',
+  ], "application/x-ndjson", controller.signal);
+  const originalReader = response.body.getReader;
+  response.body.getReader = () => {
+    const reader = originalReader();
+    return { ...reader, async read() {
+      const item = await reader.read();
+      if (!item.done && controller.signal.aborted) throw new DOMException("Aborted", "AbortError");
+      return item;
+    }, async cancel() { cancelled = true; } };
+  };
+  let answer = "";
+  await assert.rejects(() => transport.readSseEvents(response, (frame) => {
+    if (frame.event === "delta") {
+      answer += JSON.parse(frame.data).delta;
+      controller.abort();
+    }
+    return false;
+  }), (error) => error.name === "AbortError");
+  assert.equal(answer, "남길 부분");
+  assert.equal(cancelled, true);
+});
+
+test("long answers are accumulated without truncating NDJSON deltas", async () => {
+  const part = "가나다라마바사".repeat(12000);
+  const expected = part + part + part;
+  const response = streamResponse([
+    JSON.stringify({ type: "delta", text: part }) + "\n",
+    JSON.stringify({ type: "delta", text: part }) + "\n",
+    JSON.stringify({ type: "delta", text: part }) + "\n",
+    '{"type":"done","done":true}\n',
+  ]);
+  let answer = "";
+  await transport.readSseEvents(response, (frame) => {
+    if (frame.event === "delta") answer += JSON.parse(frame.data).delta;
+    return false;
+  });
+  assert.equal(answer.length, expected.length);
+  assert.equal(answer, expected);
 });

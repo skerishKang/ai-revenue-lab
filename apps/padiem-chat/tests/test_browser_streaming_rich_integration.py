@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RICH_PATH = ROOT / "static" / "rich-response.js"
 APP_PATH = ROOT / "static" / "app.js"
 SEARCH_PATH = ROOT / "static" / "search-sources.js"
+TRANSPORT_PATH = ROOT / "static" / "chat-transport.js"
 
 
 def _source(path: Path) -> str:
@@ -207,12 +208,13 @@ def test_stream_error_guard_and_completed_paths_remain_present() -> None:
     assert 'paragraph.textContent = text;' in app
 
 
-def test_slice21_tool_transport_contract_is_not_reimplemented_here() -> None:
+def test_chat_transport_stays_out_of_response_renderers() -> None:
     rich = _source(RICH_PATH)
     search = _source(SEARCH_PATH)
+    transport = _source(TRANSPORT_PATH)
 
     assert "fetch(" not in rich
     assert "PadiemChatToolBridge" not in rich
-    assert 'payload.tool = toolId' in search
-    assert '"/api/chat/stream"' in search
-    assert '"/api/chat"' in search
+    assert "fetch(" not in search
+    assert '"/api/chat/stream"' in transport
+    assert '"/api/chat"' in transport
