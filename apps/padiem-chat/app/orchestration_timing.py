@@ -47,14 +47,21 @@ STAGES = (
 class OrchestrationTiming:
     """요청 하나의 구간 시계. 인자는 받지 않는다 — 남길 수 있는 것은 시간뿐이다."""
 
-    __slots__ = ("_marks", "_started")
+    __slots__ = ("_marks", "_started", "_path")
 
     def __init__(self) -> None:
         self._started = perf_counter()
         self._marks: dict[str, float] = {"start": self._started}
+        self._path = "engine"
 
     def mark(self, name: str) -> None:
         self._marks[name] = perf_counter()
+
+    def set_path(self, value: str) -> None:
+        """Answer path label only; the value is a closed server-owned enum."""
+
+        if value in {"engine", "model_first_direct", "model_first_tool"}:
+            self._path = value
 
     def line(self) -> str:
         fields = []
@@ -67,7 +74,11 @@ class OrchestrationTiming:
         first_ms = -1.0 if first is None else max(0.0, (first - self._started) * 1000.0)
         fields.append(f"first_token_ms={first_ms:.1f}")
         total = max(0.0, (perf_counter() - self._started) * 1000.0)
-        return "orchestration_timing_com2 " + " ".join(fields) + f" total_ms={total:.1f} retried=unknown"
+        return (
+            "orchestration_timing_com2 "
+            + " ".join(fields)
+            + f" total_ms={total:.1f} path={self._path} retried=unknown"
+        )
 
     def emit(self) -> None:
         LOG.info(self.line())
