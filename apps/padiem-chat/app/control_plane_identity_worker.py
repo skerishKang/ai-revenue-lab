@@ -424,6 +424,67 @@ class CloudflareControlPlaneIdentityAuthority:
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity link is invalid.")
         return product_user_id
 
+    async def list_active_product_links_for_subject(
+        self, *, canonical_subject_id: str
+    ) -> list[dict[str, str]]:
+        if not isinstance(canonical_subject_id, str) or not canonical_subject_id:
+            raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
+        result = await self._rpc_envelope(
+            "list_active_product_links_for_subject",
+            {"canonical_subject_id": canonical_subject_id},
+        )
+        if set(result) != {"ok", "links"} or not isinstance(result.get("links"), list):
+            raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
+        links: list[dict[str, str]] = []
+        seen: set[tuple[str, str]] = set()
+        for raw in result["links"]:
+            item = _dict(raw)
+            if item is None or set(item) != {"product_id", "product_user_id", "state"}:
+                raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
+            product_id = item.get("product_id")
+            product_user_id = item.get("product_user_id")
+            state = item.get("state")
+            if not all(isinstance(value, str) and value for value in (product_id, product_user_id)) or state != "active":
+                raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
+            pair = (product_id, product_user_id)
+            if pair in seen:
+                raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
+            seen.add(pair)
+            links.append({"product_id": product_id, "product_user_id": product_user_id, "state": state})
+        return links
+
+    async def remove_product_link(
+        self, *, product_id: str, product_user_id: str, canonical_subject_id: str,
+        account_deletion_operation_id: str | None = None,
+    ) -> dict[str, Any]:
+        if not all(isinstance(value, str) and value for value in (product_id, product_user_id, canonical_subject_id)):
+            raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
+        result = await self._rpc_envelope(
+            "remove_product_link",
+            {
+                "product_id": product_id,
+                "product_user_id": product_user_id,
+                "canonical_subject_id": canonical_subject_id,
+                "account_deletion_operation_id": account_deletion_operation_id,
+            },
+        )
+        keys = {"ok", "removed", "remaining_links", "common_account_deleted", "revoked_sessions", "already_deleted"}
+        if set(result) != keys:
+            raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
+        if (
+            not isinstance(result.get("removed"), bool)
+            or not isinstance(result.get("common_account_deleted"), bool)
+            or not isinstance(result.get("already_deleted"), bool)
+            or isinstance(result.get("remaining_links"), bool)
+            or not isinstance(result.get("remaining_links"), int)
+            or result["remaining_links"] < 0
+            or isinstance(result.get("revoked_sessions"), bool)
+            or not isinstance(result.get("revoked_sessions"), int)
+            or result["revoked_sessions"] < 0
+        ):
+            raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
+        return {key: result[key] for key in keys if key != "ok"}
+
     async def resolve_connector_owner_scope(self, *, session_id: str) -> dict[str, str]:
         """Identity verified scope; no account or workspace supplied by Claw."""
         if not isinstance(session_id, str) or not session_id:

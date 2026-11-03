@@ -293,6 +293,7 @@ def test_reverse_read_is_strictly_read_only() -> None:
         "canonical_tenant",
         "canonical_tenant_membership",
         "identity_authority_schema",
+        "canonical_account_deletion_audit",
     }
 
 

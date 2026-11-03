@@ -23,8 +23,13 @@ main = "worker.py"
 compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
+
 base_dir = ".b66-worker-src"
 preview_urls = true
+
+# Daily expiry pass for hash-and-time account deletion audit rows.
+[triggers]
+crons = ["17 3 * * *"]
 
 [[routes]]
 pattern = "chat.padiem.net"
@@ -194,7 +199,7 @@ PADIEM_CHAT_FILE_LANE_ORIGIN = ""
 PADIEM_CHAT_RUNTIME_MODE = "mock"
 PADIEM_CHAT_TIMEOUT_SECONDS = "600"
 PADIEM_CHAT_LIVE_ENABLED = "false"
-# Default remains false; no new runtime variable/cron activation in this change.
+# The daily cron above also runs only the account-audit expiry pass while this remains false.
 # PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"
 # #4469 Claw public research: owner-approved opt-in. The Worker requires
 # live B14 + canonical identity/Engine client + a durable D1 quota in addition

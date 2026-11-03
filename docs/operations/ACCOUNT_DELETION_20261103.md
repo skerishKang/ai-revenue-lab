@@ -1,10 +1,10 @@
-# Chat 계정 탈퇴 1단계 설계·근거 (2026-11-03, #6659 3번)
+# 공통 로그인 계정 탈퇴 구현·운영 반영 메모 (2026-11-03)
 
-범위: 로그인한 이용자가 자기 PADIEM Chat 계정과 Chat DB 안의 자기 데이터를
-스스로 지우는 경로. 구현: `POST /api/account/delete`
-(`apps/padiem-chat/app/account_deletion.py`), 화면: 설정 > 계정 탈퇴.
+이 문서는 기존 Chat 서비스 데이터 삭제 전수표와 공통 로그인 계정 삭제 연결을 함께 기록한다.
+Chat의 서비스별 탈퇴와 전체 서비스 탈퇴는 설정 > 계정에서 제공하며,
+`apps/padiem-chat/app/account_deletion.py`가 요청을 조정한다.
 
-## 0. 경로 계약
+## 0. Chat 서비스 데이터 삭제 경로 계약
 
 - 로그인 세션 필수. SameOriginGuardMiddleware(#3476)가 쿠키 붙은 POST의 출처를 검사한다.
 - 본문 `{"confirm": "<본인 이메일>"}`가 저장된 계정 이메일과 정확히(대소문자까지) 일치할 때만 실행된다. 이것이 "복구 불가 파괴는 실행 전 한 번 확인"이다.
@@ -14,6 +14,15 @@
 - 남기는 기록은 최소: `account_deletion_audit`(마이그레이션 092)에 탈퇴 시각과 사용자 id의 SHA-256 해시 1행. 이메일·이름·subject 저장 금지(시험이 응답·행에 `@` 부재를 단정).
 
 Cloudflare D1 경로에서는 아래 PC 테이블이 Chat D1 안에 있다. COM2 호스트에서는 같은 접근이 queue_store_proxy를 거쳐 padiem-mesh-queue의 PC 큐 DB로 전달된다. 탈퇴 경로도 저장 위치에 맞춰 정리한다.
+
+## 0.1 공통 로그인 연결 해제
+
+- 서비스별 탈퇴: 해당 서비스의 데이터를 먼저 삭제한 뒤 Control Plane Identity에서 그 제품 연결만 해제한다. 다른 활성 연결이 남으면 공통 계정은 유지된다.
+- 마지막 연결: Auth의 서명 검증된 prepare가 계정별 refresh 세션 색인을 이용해 모든 세션을 폐기하고 5분 잠금을 건다. Control Plane은 직렬화된 연결 상태를 다시 읽어 Auth 준비 식별자가 없으면 마지막 연결을 해제하지 않는다. 준비가 확인되면 연결 해제 트랜잭션이 마지막 subject·제품 링크를 파기하고 해시·시각 감사 행을 남긴 뒤, Auth complete가 Google 계정 매핑을 제거한다. 연결 해제가 실패하면 Auth abort로 잠금을 풀어 매핑을 보존하고 다시 시도할 수 있다.
+- 전체 탈퇴: Chat 설정 > 계정에서 요청한다. LoveTree에 서명된 삭제 RPC를 보내고, Chat·Claw 및 계정에 저장된 북AI 데이터를 삭제한 뒤 LoveTree 연결과 Chat 연결을 정리한다. CGI 쇼핑몰은 별도 계정으로 이 경로에서 제외된다.
+- 보안 경계: Chat 중앙 관리자 이메일·`platform_admin_roles`와 LoveTree 제품 관리자 역할을 차단한다. 서비스 RPC는 HMAC 서명·요청 시각·UUID 재생 방지·엄격한 계약 검증을 사용한다.
+- 이력: Chat·Auth·Control Plane·LoveTree에 사용자 식별자 원문 없이 SHA-256 해시와 시각만 남기며 1년 뒤 제거한다.
+
 
 ## 1. 왜 CASCADE에 기대지 않는가 (foreign_keys 확인 결과)
 
@@ -141,36 +150,31 @@ D1 경로는 Chat batch 안에서, COM2 경로는 큐 DB 정리
 `state='pending'`을 유지한 채 `termination='cancelled'`만 써서 결과 제출이 기존
 nonce 검사로 정상 착지하게 한다(#5895 취소와 같은 규칙).
 
-## 3. 이번에 지우지 않은 것과 다음 단계 제안
+## 3. 이번에 지우지 않은 것과 별도 운영 항목
 
 | 대상 | 상태 | 다음 단계 제안 |
 |---|---|---|
 | mesh_device_drives | 사용자 키가 없는 PC 단위 드라이브 목록. PC를 공유할 수 있어 계정 탈퇴에서 특정 사용자 행만 안전하게 고를 수 없음 | 장치 제거 때 함께 정리할지 별도 결정 |
-
-| 대상 | 상태 | 다음 단계 제안 |
-|---|---|---|
-| 공통 로그인 계정(Control Plane identity, 타 앱 공유) | Chat 세션은 전부 무효화됨. CP 계정·다른 앱 세션은 남음 | 2단계: CP identity 계정 삭제·연결 해제 경로(별도 설계) |
+| 공통 로그인 계정(Control Plane identity, 타 앱 공유) | 구현됨: 서비스 연결을 개별 해제하고 마지막 연결이면 Auth 세션·CP subject·Google 계정 매핑을 파기한다. 전체 탈퇴는 러브트리 삭제 요청 후 Chat·북AI 데이터와 연결을 정리한다. | 배포 전 운영 반영 필요: CP DO schema v4, Auth/Chat Worker, LoveTree API·PostgreSQL schema 및 비밀 설정 |
 | B14 원장 | 미포함 | B14 원장의 사용자 식별자 조사 후 별도 단계 |
 | R2 파일 객체(대화 첨부·프로젝트 원본·생성문서) | Chat DB의 참조 행은 지움. R2 객체 자체는 남음 | 객체 TTL·즉시 삭제 정책 결정(`workspace_storage.py`의 생성문서 30일 TTL은 참조 행 기준) |
-| 외부 백업(Cloudflare R2 offsite, 매일 암호화 전체 백업) | 탈퇴 사용자 데이터가 최근 백업에 남음 | 백업 보관 기간 정책을 대표 결정으로 확정(`deploy/host-com2/offsite-backup/`) |
+| 서버 백업(COM2 로컬 Chat·큐, Cloudflare R2 offsite) | Chat·큐 로컬 스냅샷은 코드 기준 일일 7세대, 설치 상태는 미확인. R2 외부 백업은 일일 7세대·주간 4세대이며 원본 삭제 뒤 백업 사본은 최대 28일 안에 순환 삭제됨 | 보존 기간은 공통 방침에 정함. 운영 반영 필요: 로컬 백업 작업 설치 상태와 실제 R2 설정 확인(`deploy/host-com2/offsite-backup/`) |
 | 이용자 PC의 `.padiem-backup` | 이용자 PC에 남음(경로가 닿지 않는 영역) | 탈퇴 안내 문구로 이용자가 직접 지우도록 안내(이미 화면 설명에 포함) |
-| oracle_mesh_dispatch | **해결됨 (2026-11-03)** — 행은 재생 방지(047)를 위해 남기고, `user_id`·`account_ref`·기기·경로·명령 본문 등 사람을 가리키는 칸은 지운다(2.4절). 남은 행으로는 누구의 것인지 알 수 없다 | 보관 기간은 대표 결정(개인정보처리방침). 지금은 만료 행도 지우지 않는다 |
+| oracle_mesh_dispatch | **해결됨 (2026-11-03)** — 행은 재생 방지(047)를 위해 남기고, `user_id`·`account_ref`·기기·경로·명령 본문 등 사람을 가리키는 칸은 지운다(2.4절). 남은 행으로는 누구의 것인지 알 수 없다 | 공통 방침의 서비스 오류·감사 로그 90일 상한과 실제 분류를 대조해야 한다. 현재 `expired_purge.py`는 이 표를 제외해 만료 행이 삭제되지 않으므로 정리 경로 반영이 필요하다. 이번 변경에서 운영은 바꾸지 않았다. |
 | bookai_records(082) | **해결됨 (2026-11-03)** — 매핑은 이미 있었다: 공유 로그인으로 만든 Chat 계정은 `provider_subject='shared:'+subject`로 저장된다(`history.upsert_shared_user`). 1단계가 이 매핑을 못 본 이유는 세션 해제가 링크 캐시 행을 먼저 지우기 때문이며, 이제 배치 전에 읽는다. 매핑이 없는 계정(구글 단독 로그인)은 지울 subject가 없어 그대로 남는다 | 남은 것: 기기에만 저장된 북AI 기록(브라우저 저장소)은 서버가 지울 수 없다 — 탈퇴 안내 문구로 이용자가 지운다 |
 | MeshCentral 장치·에이전트 | Chat/COM2 큐 DB의 사용자 연결 행은 지워짐. presence는 탈퇴 사용자만 제거하고 남은 소유자가 없으면 행 삭제 | 운영 영역: 장치 문서·에이전트 제거는 별도 절차 |
 
-## 4. 개인정보처리방침 초안 갱신 메모
+## 4. 법률 초안 갱신 결과
 
-`docs/legal/drafts/`(브랜치 `docs/legal-drafts-261103`)의 README
-"코드에서 확인 못 한 사실" 2번 — "계정 전체 탈퇴(계정 삭제) 라우트 — 확인하지
-못했습니다" — 는 이 경로가 채운다. 법률 문서 레인에서 다음 문구로 갱신해야
-한다: "계정 탈퇴는 설정 > 계정 탈퇴에서 본인 이메일을 다시 입력해 실행할 수
-있으며, Chat DB의 사용자 데이터와 계정에 저장된 북AI 기록은 즉시 삭제된다. 기기에만 저장된 북AI 기록, 공통 로그인 계정·외부
-백업·이용자 PC 백업은 남는다(보관 기간은 대표 결정). PC 명령 중복 실행 방지
-기록은 누구의 것인지 알 수 없게 처리한 뒤 남는다."
+`docs/legal/drafts/`의 공통 약관·개인정보처리방침과 Chat/Claw·북AI·러브트리·CGI 부록을
+이 브랜치에서 실제 구현에 맞춰 수정했다. 공통 로그인 계정은 Chat 설정 > 계정의 전체 서비스
+탈퇴 경로에서 삭제 요청할 수 있고, 서비스별 탈퇴는 해당 서비스 연결만 해제한다. 마지막
+연결 해제 때 공통 계정과 세션을 파기한다. CGI 쇼핑몰은 공통 계정과 연결되지 않으며 별도
+탈퇴 경로를 따른다. 보존 기록은 사용자 식별자의 SHA-256 해시와 시각만 1년이다.
 
 ## 5. 시험
 
-apps/padiem-chat/tests/test_account_deletion_261103.py — 18건:
+apps/padiem-chat/tests/test_account_deletion_261103.py — 23건:
 
 - (a) 정상 탈퇴: 표의 모든 테이블에서 그 사용자 행 0, 다른 사용자 행은 삭제 전 스냅샷과 동일. 사용자 1명당 표의 모든 테이블에 1행을 넣고 시작한다(platform_admin_roles는 권한 표식이라 제외).
 - (b) 이메일 불일치 → 400, 아무것도 지워지지 않음
@@ -182,6 +186,13 @@ apps/padiem-chat/tests/test_account_deletion_261103.py — 18건:
 - (h) Mesh 기기 소유자 목록에서 탈퇴자만 제거하고 다른 계정 참조 보존
 - (i) COM2에서는 큐 정리 후 Chat batch가 실행되고 큐 실패 시 Chat DB 데이터는 유지
 - (j) oracle_mesh_dispatch 재생 방지 행은 탈퇴 뒤에도 남고, 원래 `user_id`·`account_ref`·기기·경로·명령 본문은 0건이다. 같은 run 재등록은 고유 인덱스가 계속 거부하고, 미실행 pending 행은 쌓이지 않으며, 이미 넘겨진 행의 결과 제출은 nonce로 착지한다
+- (k) Chat 연결 해제는 LoveTree 연결을 유지하고 Auth 준비를 시작하지 않는다.
+- (l) 마지막 Chat 연결 해제는 Auth 세션 폐기 → CP 연결·subject 파기 → Auth 매핑 삭제 순으로 진행한다.
+- (m) 전체 탈퇴는 서명된 LoveTree 삭제 요청을 먼저 보내고 마지막 연결을 정리한다.
+- (n) LoveTree RPC 실패 때 Chat 행과 두 공통 연결은 유지한다.
+- (o) CP 해제 실패 때 공통 연결을 보존하고 Auth 잠금을 해제해 재시도할 수 있다.
+- (p) 탈퇴 감사 기록은 해시·시각 두 열만 남기며 365일이 지난 행을 제거한다.
+- (q) 설정·도움말에 서비스별·전체 서비스 탈퇴 경로가 있고 Help의 브랜드 표기 제한을 유지한다.
 
 스키마 드리프트 방지 시험이 포함되어 있다: 경로가 지우는 표의 테이블·키 컬럼이
 실제 스키마에 존재하지 않으면 수집 시점에 실패한다. `pc_install_tokens`도 사용자
@@ -200,3 +211,20 @@ PYTHONPATH="../../packages/padiem-control-plane;../../packages/padiem-ai-core;..
     tests/test_6446_account_isolation_sweep.py -q
 # 69 passed
 ```
+
+
+## 6. 운영 반영 목록
+
+이 브랜치에서는 운영 DB·Worker에 적용하지 않는다. 승인된 배포 작업에서 다음 항목을 반영한다.
+
+| 대상 | 배포·스키마 |
+|---|---|
+| Control Plane Identity | `padiem-control-plane-identity`, Identity Durable Object schema v4, ingress secret 이름 `PADIEM_IDENTITY_RPC_INGRESS_SECRET` |
+| 공통 Auth | `padiem-auth` Worker와 `AuthStateObject`, secret 이름 `PADIEM_ACCOUNT_DELETE_RPC_SECRET` |
+| Chat | Chat Worker, D1 migration 097, `PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET`, URL 변수 `PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL` |
+| LoveTree | COM2 LoveTree API, PostgreSQL의 `lovetree_account_deletions` 및 `lovetree_account_delete_rpc_requests`; 호스트 변수 이름 `LOVETREE_ACCOUNT_DELETE_RPC_SECRET`, `LOVETREE_IDENTITY_RPC_URL`, `LOVETREE_IDENTITY_RPC_SECRET` |
+
+비밀 값은 저장소나 PR에 넣지 않고 배포 비밀 관리 절차로 주입한다. 순서는 PostgreSQL schema 준비,
+Identity/Auth 배포와 내부 경로 확인, LoveTree 수신기 배포, Chat D1 migration 097 및 Chat Worker
+배포로 잡는다. 배포 후 비운영 계정에서 다른 연결 유지·마지막 연결 파기·전체 탈퇴·관리자 차단·
+실패 뒤 재시도를 확인한다.
