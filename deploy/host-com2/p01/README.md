@@ -41,6 +41,22 @@ P01 identity 설정 추가만으로 Chat의 제품 내부 사용자 ID가 canoni
 - `8811`은 사용 중인 `8788`·`8789`·`8790`·`8797`·`8798`·`8801`·`8830`과 겹치지 않는다.
 - 공개 노출 없음. Tunnel 매핑·DNS·Cloudflare 변경은 이 꾸러미의 권한 밖이다.
 
+## Chat 컴퓨터 사용·PC 조회 연결 (경고만, 시작은 막지 않음)
+
+Claw 데스크톱·PC 조회 도구는 P01이 Chat에 서명된 요청을 보낼 때만 켜진다. 두 호스트의
+env에 **같은 값**이 필요하다.
+
+| 호스트 | 이름 | 값 |
+| --- | --- | --- |
+| Chat (`/opt/padiem/chat-com2/.env`) | `CLAW_ENGINE_DESKTOP_SECRET` | 32자 이상 공유 비밀 |
+| P01 (`/opt/padiem/p01/env/p01.env`) | `CLAW_ENGINE_DESKTOP_SECRET` | 위와 같은 값 |
+| P01 (`/opt/padiem/p01/env/p01.env`) | `PADIEM_ENGINE_LOCAL_CHAT_ORIGIN` | `http://127.0.0.1:8798` |
+
+호스트의 `_local_bindings`가 이 루프백 주소를 Cloudflare의 `PADIEM_CHAT_SERVICE` 바인딩과
+같은 이름의 객체로 감싼다. 값이 없거나 32자 미만이면 시작은 그대로 진행되고 컴퓨터 사용·PC
+조회 도구만 꺼진다(`check_config.py`가 `P01_CONFIG_WARNING desktop_tools=off` 한 줄을 남긴다).
+Cloudflare Secrets Store의 같은 이름 값은 별개이며 이 경로에서 쓰지 않는다.
+
 ## 테스트
 
 ```bash

@@ -132,6 +132,22 @@ class CheckConfig(unittest.TestCase):
                 with unittest.mock.patch.dict(os.environ, environment, clear=True):
                     self.assertFalse(module.ready(), broken)
 
+    def test_desktop_tools_warning_is_fixed_and_never_blocks_readiness(self):
+        module = load("check_config")
+        with tempfile.TemporaryDirectory() as tmp:
+            data = Path(tmp)
+            module.DATA = data
+            environment = self._full_env(data)
+            environment["CLAW_ENGINE_DESKTOP_SECRET"] = "s" * 48
+            with unittest.mock.patch.dict(os.environ, environment, clear=True):
+                self.assertIsNone(module.desktop_tools_warning())
+                self.assertTrue(module.ready())
+            environment.pop("CLAW_ENGINE_DESKTOP_SECRET")
+            with unittest.mock.patch.dict(os.environ, environment, clear=True):
+                self.assertIsNotNone(module.desktop_tools_warning())
+                # Warning only: the launch contract itself still passes.
+                self.assertTrue(module.ready())
+
     def test_linux_data_location_is_allowed_and_other_locations_are_refused(self):
         module = load("check_config")
         with tempfile.TemporaryDirectory() as tmp:

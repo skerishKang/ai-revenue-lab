@@ -60,6 +60,11 @@ B14_PROOF_SECRET_ENV = "PADIEM_B14_SERVICE_PROOF_SECRET"
 B14_SECRET_DIR_ENV = "B14_SECRET_DIR"
 B14_PROOF_HEADER = "x-padiem-b14-proof"
 B14_PROOF_TIME_HEADER = "x-padiem-b14-time"
+# The Cloudflare entry receives ``PADIEM_CHAT_SERVICE`` as a Service Binding
+# object. The host names the loopback Chat origin instead and this module
+# publishes it under the same binding name the unchanged Worker code reads.
+CHAT_SERVICE_ENV = "PADIEM_ENGINE_LOCAL_CHAT_ORIGIN"
+CHAT_SERVICE_BINDING_NAME = "PADIEM_CHAT_SERVICE"
 logger = logging.getLogger(__name__)
 DB_PATH_ENV = "PADIEM_ENGINE_LOCAL_DB"
 DEFAULT_HOST = "127.0.0.1"
@@ -180,6 +185,93 @@ class LocalResponse:
         self.body = bytes(body)
         self.status = int(status)
         self.headers = dict(headers or {})
+
+
+class _PyBuffer:
+    """``ArrayBuffer`` stand-in; ``to_py()`` is the Pyodide bridge in use."""
+
+    def __init__(self, payload: bytes) -> None:
+        self._payload = bytes(payload)
+
+    def to_py(self) -> bytes:
+        return self._payload
+
+
+class LocalServiceResponse:
+    """Service Binding response with the Worker read methods the drivers call."""
+
+    def __init__(
+        self, payload: bytes, *, status: int, headers: Mapping[str, str] | None = None,
+    ) -> None:
+        self._payload = bytes(payload)
+        self.status = int(status)
+        self.headers = dict(headers or {})
+
+    async def text(self) -> str:
+        return self._payload.decode("utf-8", errors="replace")
+
+    async def arrayBuffer(self) -> _PyBuffer:
+        return _PyBuffer(self._payload)
+
+
+class LocalChatServiceBinding:
+    """The host stand-in for the Chat Service Binding (loopback only).
+
+    The Engine's signed desktop and PC-query drivers call ``fetch`` with a
+    request they already signed; this forwards that request unchanged to the
+    local Chat origin. A non-loopback origin is refused, so this binding can
+    never carry a proof secret off the host.
+    """
+
+    def __init__(
+        self, origin: str, *, timeout: float = 60.0, client: Any = None,
+    ) -> None:
+        parsed = urlsplit(origin)
+        if (
+            parsed.scheme not in {"http", "https"}
+            or parsed.hostname not in LOOPBACK_HOSTS
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.path not in ("", "/")
+            or parsed.query
+            or parsed.fragment
+            or not parsed.port
+        ):
+            raise LocalRuntimeError("p01_local_chat_origin_invalid")
+        self._origin = f"{parsed.scheme}://{parsed.netloc}"
+        self._timeout = timeout
+        self._client = client
+
+    async def fetch(self, request: Any) -> LocalServiceResponse:
+        parsed = urlsplit(str(request.url))
+        path = parsed.path + (f"?{parsed.query}" if parsed.query else "")
+        raw_headers = getattr(request, "headers", None)
+        items = getattr(raw_headers, "items", None)
+        headers = dict(items()) if callable(items) else dict(raw_headers or {})
+        body = getattr(request, "body", b"")
+        if not isinstance(body, (bytes, bytearray)):
+            body = bytes(body)
+        client = (
+            self._client
+            or httpx.AsyncClient(follow_redirects=False, timeout=self._timeout)
+        )
+        try:
+            response = await client.request(
+                getattr(request, "method", "POST"),
+                self._origin + path,
+                headers=headers,
+                content=bytes(body),
+            )
+        except httpx.HTTPError:
+            raise LocalRuntimeError("p01_local_chat_unreachable") from None
+        finally:
+            if self._client is None:
+                await client.aclose()
+        return LocalServiceResponse(
+            response.content,
+            status=response.status_code,
+            headers={"content-type": response.headers.get("content-type", "application/json")},
+        )
 
 
 class WorkerEntrypoint:
@@ -529,6 +621,18 @@ def _local_bindings(values: Mapping[str, str]) -> dict[str, Any]:
             logger.warning("p01_local_b14_proof_unconfigured")
         _B14_BINDINGS.append(binding)
         bindings["B14_SERVICE"] = binding
+    chat_origin = str(values.get(CHAT_SERVICE_ENV, "")).strip()
+    if chat_origin:
+        try:
+            bindings[CHAT_SERVICE_BINDING_NAME] = LocalChatServiceBinding(chat_origin)
+        except LocalRuntimeError:
+            # A foreign or malformed origin leaves the binding absent: the
+            # desktop tools stay off instead of forwarding a proof off-host.
+            logger.warning("p01_local_chat_origin_invalid")
+        else:
+            logger.info("p01_local_chat_service=configured")
+    else:
+        logger.info("p01_local_chat_service=unconfigured")
     path = str(values.get(DB_PATH_ENV, "")).strip()
     if path:
         bindings["ENGINE_IDEMPOTENCY"] = _local_database(path)
@@ -755,10 +859,12 @@ __all__ = [
     "LOOPBACK_HOSTS",
     "DB_PATH_ENV",
     "LocalB14Binding",
+    "LocalChatServiceBinding",
     "LocalEngineApp",
     "LocalReadableStream",
     "LocalRequest",
     "LocalResponse",
+    "LocalServiceResponse",
     "LocalRuntimeError",
     "MAX_ASGI_REQUEST_BYTES",
     "bind_address",

@@ -285,6 +285,17 @@ def build_app():
         legacy_map_lane_enabled,
     )
 
+    # The Engine signs its desktop/PC-query calls with this shared secret. A
+    # missing or too-short value keeps the existing fail-closed 503 answer; the
+    # marker names the state only, never the value or its length.
+    claw_engine_desktop_secret = os.getenv("CLAW_ENGINE_DESKTOP_SECRET", "").strip()
+    if len(claw_engine_desktop_secret) < 32:
+        claw_engine_desktop_secret = None
+    print(
+        "[local] claw_engine_desktop_secret="
+        + ("configured" if claw_engine_desktop_secret else "unconfigured")
+    )
+
     app = create_app(
         shared_login_flow=shared_login_flow,
         settings=settings,
@@ -306,6 +317,7 @@ def build_app():
         ).strip(),
         oracle_mesh_return_source=None,
         oracle_mesh_legacy_map_lane=legacy_map_lane_enabled(os.environ),
+        claw_engine_desktop_secret=claw_engine_desktop_secret,
     )
 
     # apply_write_freeze below rebinds ``app`` to the ASGI wrapper; bind the

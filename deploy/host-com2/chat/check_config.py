@@ -14,6 +14,14 @@ MULTI_WORKER_REASON = (
     "프로세스 1개 전제 잠금: edge·tus·replay — 교차 프로세스화 전에는 1만 허용"
 )
 
+#: Warning only: the computer-use / PC-query lane is disabled while either
+#: side lacks the shared value, and that must not stop Chat from starting.
+DESKTOP_SECRET_ENV = "CLAW_ENGINE_DESKTOP_SECRET"
+DESKTOP_WARNING = (
+    "CLAW_ENGINE_DESKTOP_SECRET 없음/32자 미만: 컴퓨터 사용·PC 조회 꺼짐 "
+    "(Chat env와 P01 env에 같은 값 필요)"
+)
+
 
 def _flag(name: str, default: str = "false") -> bool:
     return os.environ.get(name, default).strip().lower() in {"1", "true", "yes", "on"}
@@ -87,6 +95,14 @@ def _pairs_consistent(origin_name: str, secret_name: str) -> bool:
     return origin.startswith("https://") and len(secret) >= 32
 
 
+def desktop_tools_warning() -> str | None:
+    """A fixed warning line when the shared desktop secret is absent/short."""
+    secret = os.environ.get(DESKTOP_SECRET_ENV, "")
+    if isinstance(secret, str) and len(secret) >= 32:
+        return None
+    return DESKTOP_WARNING
+
+
 if __name__ == "__main__":
     if _workers_at_least_two() and not _multi_worker_escape():
         # ExecCondition exit 2: the launch contract itself is violated, not
@@ -95,4 +111,7 @@ if __name__ == "__main__":
         raise SystemExit(2)
     valid = ready()
     print("CHAT_COM2_CONFIG_READY=" + ("1" if valid else "0"))
+    warning = desktop_tools_warning()
+    if warning is not None:
+        print("CHAT_COM2_CONFIG_WARNING: " + warning)
     raise SystemExit(0 if valid else 1)
