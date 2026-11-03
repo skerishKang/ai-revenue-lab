@@ -357,7 +357,24 @@
     });
   }
 
+  // A signed-out session can never be ready for orchestration (the status
+  // answer requires authenticated === true). When the page has already read
+  // the session as a guest, asking the endpoint again would serialize one
+  // extra round trip before every answer request of a guest, including the
+  // request that ends in an immediate refusal. Skip the probe then.
+  function sessionDefinitelyNotOrchestratable() {
+    try {
+      const state = window.PadiemProductCapabilities?.get?.();
+      const auth = state && state.auth;
+      return Boolean(auth && auth.loaded === true && auth.ready === true
+        && auth.authenticated !== true);
+    } catch (_) {
+      return false;
+    }
+  }
+
   async function tryOrchestration(payload, signal, required = false) {
+    if (!required && sessionDefinitelyNotOrchestratable()) return null;
     if (!await orchestrationReady(signal)) {
       if (required) throw errorFor({error: {code: "orchestration_unavailable", message: "AI 작업 연결을 현재 사용할 수 없습니다."}});
       return null;
