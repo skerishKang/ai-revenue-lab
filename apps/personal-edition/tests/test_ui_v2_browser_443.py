@@ -182,7 +182,7 @@ def _pr_head_sha() -> str:
         ["git", "rev-parse", "HEAD"],
         cwd=BASE_DIR,
         capture_output=True,
-        text=True, encoding="utf-8",
+        text=True,
         check=True,
     ).stdout.strip()
 

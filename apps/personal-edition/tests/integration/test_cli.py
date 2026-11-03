@@ -38,7 +38,7 @@ class TestProvisionParticipant:
                 "--database", initialized_db,
             ],
             capture_output=True,
-            text=True, encoding="utf-8",
+            text=True,
             cwd=str(Path(__file__).parent.parent.parent),
         )
         assert result.returncode == 0
@@ -54,7 +54,7 @@ class TestProvisionParticipant:
                 "--database", initialized_db,
             ],
             capture_output=True,
-            text=True, encoding="utf-8",
+            text=True,
             cwd=str(Path(__file__).parent.parent.parent),
         )
         assert result.returncode == 0
@@ -68,7 +68,7 @@ class TestProvisionParticipant:
                 "--database", initialized_db,
             ],
             capture_output=True,
-            text=True, encoding="utf-8",
+            text=True,
             cwd=str(Path(__file__).parent.parent.parent),
         )
         result = subprocess.run(
@@ -78,7 +78,7 @@ class TestProvisionParticipant:
                 "--database", initialized_db,
             ],
             capture_output=True,
-            text=True, encoding="utf-8",
+            text=True,
             cwd=str(Path(__file__).parent.parent.parent),
         )
         assert result.returncode == 1
@@ -91,7 +91,7 @@ class TestProvisionParticipant:
                 "--database", initialized_db,
             ],
             capture_output=True,
-            text=True, encoding="utf-8",
+            text=True,
             cwd=str(Path(__file__).parent.parent.parent),
         )
         assert result.returncode == 0
@@ -131,7 +131,7 @@ class TestDeleteParticipant:
                 "--database", initialized_db,
             ],
             capture_output=True,
-            text=True, encoding="utf-8",
+            text=True,
             cwd=str(Path(__file__).parent.parent.parent),
         )
         assert result.returncode == 0
@@ -145,7 +145,7 @@ class TestDeleteParticipant:
                 "--database", initialized_db,
             ],
             capture_output=True,
-            text=True, encoding="utf-8",
+            text=True,
             cwd=str(Path(__file__).parent.parent.parent),
         )
         assert result.returncode == 1
@@ -166,7 +166,7 @@ class TestDeleteParticipant:
                 "--database", initialized_db,
             ],
             capture_output=True,
-            text=True, encoding="utf-8",
+            text=True,
             cwd=str(Path(__file__).parent.parent.parent),
         )
 
@@ -195,7 +195,7 @@ class TestInspectRecords:
                 "--database", initialized_db,
             ],
             capture_output=True,
-            text=True, encoding="utf-8",
+            text=True,
             cwd=str(Path(__file__).parent.parent.parent),
         )
         assert result.returncode == 0
@@ -219,7 +219,7 @@ class TestInspectRecords:
                 "--database", initialized_db,
             ],
             capture_output=True,
-            text=True, encoding="utf-8",
+            text=True,
             cwd=str(Path(__file__).parent.parent.parent),
         )
         assert result.returncode == 0
@@ -236,7 +236,7 @@ class TestInspectRecords:
                 "--database", initialized_db,
             ],
             capture_output=True,
-            text=True, encoding="utf-8",
+            text=True,
             cwd=str(Path(__file__).parent.parent.parent),
         )
         assert result.returncode == 1
