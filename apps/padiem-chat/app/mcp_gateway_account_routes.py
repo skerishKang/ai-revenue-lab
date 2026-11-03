@@ -7,6 +7,7 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import current_user_id
 from .mcp_gateway_store import McpGatewayStoreError
+from .mcp_oauth_metadata import MCP_OAUTH_SCOPE, canonical_resource
 from .same_origin_guard import expected_browser_origin
 
 
@@ -70,6 +71,11 @@ async def authenticate_mcp_request(request) -> dict | None:
         identity = await _store(request).authenticate(parts[1])
         if identity is None or not await _paired_device(request, identity["user_id"], identity["device_id"]):
             return None
+        if identity.get("kind") == "oauth":
+            expected_resource = canonical_resource(getattr(request.app.state, "settings", None))
+            if (not expected_resource or identity.get("resource") != expected_resource
+                    or identity.get("scope") != MCP_OAUTH_SCOPE):
+                return None
     except Exception as exc:
         raise McpGatewayUnavailable("MCP authentication unavailable") from exc
     return {"owner_id": identity["user_id"], "device_id": identity["device_id"],

@@ -16,6 +16,7 @@ from starlette.responses import JSONResponse, Response
 
 from .mcp_gateway_dispatch import APPROVAL_META_KEY, dispatch_mcp_tool
 from .mcp_gateway_shell import PC_SHELL_PROPERTIES, PC_SHELL_TOOL_NAME
+from .mcp_oauth_metadata import authorization_challenge
 from .same_origin_guard import expected_browser_origin
 
 
@@ -217,7 +218,12 @@ async def mcp_gateway_endpoint(request):
     except McpGatewayUnavailable:
         return _error(-32603, "MCP authentication is temporarily unavailable", status=503)
     if principal is None:
-        return _error(-32600, "Bearer token required", status=401, headers={"WWW-Authenticate": 'Bearer realm="padiem-mcp"'})
+        challenge = authorization_challenge(
+            getattr(request.app.state, "settings", None),
+            invalid_token=bool(request.headers.get("authorization")),
+        ) or 'Bearer realm="padiem-mcp"'
+        return _error(-32600, "Bearer token required", status=401,
+                      headers={"WWW-Authenticate": challenge})
     if request.method != "POST":
         return Response(status_code=405, headers={**_NO_STORE, "Allow": "POST"})
     if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":

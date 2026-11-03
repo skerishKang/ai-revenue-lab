@@ -94,6 +94,7 @@ PURGE_TARGETS: tuple[PurgeTarget, ...] = (
     PurgeTarget("orchestration_continuations", "expires_at", "text"),
     PurgeTarget("padiem_android_auth_handoffs", "expires_at", "text"),
     PurgeTarget("padiem_mcp_approvals", "expires_at", "text"),
+    PurgeTarget("padiem_mcp_oauth_codes", "expires_at", "text"),
     PurgeTarget("password_reset_tokens", "expires_at", "text"),
     PurgeTarget("pc_pairing_codes", "expires_at", "text"),
 )

@@ -5,8 +5,8 @@ import tomllib
 
 def test_compare_bindings_match_gate_baseline_and_default_off():
     root = Path(__file__).resolve().parents[3]
-    manifest = tomllib.loads((root / 'apps/padiem-chat/wrangler.toml').read_text())
-    baseline = json.loads((root / '.github/binding_baselines/padiem-chat.json').read_text())
+    manifest = tomllib.loads((root / 'apps/padiem-chat/wrangler.toml').read_text(encoding='utf-8'))
+    baseline = json.loads((root / '.github/binding_baselines/padiem-chat.json').read_text(encoding='utf-8'))
     names = {entry['name']:entry['type'] for entry in baseline['bindings']}
     bindings = {entry['binding']:entry for entry in manifest['secrets_store_secrets']}
     for name in ('PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK',

@@ -1,0 +1,127 @@
+:root {
+  --mcp-oauth-bg: #f7f4ee;
+  --mcp-oauth-card: #fffdf8;
+  --mcp-oauth-ink: #26231f;
+  --mcp-oauth-muted: #6d665e;
+  --mcp-oauth-line: #ded6c9;
+  --mcp-oauth-accent: #2f5d50;
+  --mcp-oauth-danger: #a43d32;
+}
+
+* { box-sizing: border-box; }
+
+body.mcp-oauth-body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(212, 173, 104, 0.16), transparent 34rem),
+    var(--mcp-oauth-bg);
+  color: var(--mcp-oauth-ink);
+  font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans KR", sans-serif;
+}
+
+.mcp-oauth-card {
+  width: min(560px, 100%);
+  padding: 32px;
+  border: 1px solid var(--mcp-oauth-line);
+  border-radius: 18px;
+  background: var(--mcp-oauth-card);
+  box-shadow: 0 18px 50px rgba(38, 35, 31, 0.10);
+}
+
+h1 {
+  margin: 0 0 10px;
+  font-size: 24px;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.mcp-oauth-loading,
+.mcp-oauth-help,
+.mcp-oauth-intro,
+.mcp-oauth-login-required {
+  color: var(--mcp-oauth-muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.mcp-oauth-intro { margin: 0 0 18px; font-size: 15px; }
+.mcp-oauth-intro strong { color: var(--mcp-oauth-ink); }
+
+.mcp-oauth-facts {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--mcp-oauth-line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.mcp-oauth-facts div + div { margin-top: 10px; }
+.mcp-oauth-facts dt { font-size: 12px; color: var(--mcp-oauth-muted); }
+.mcp-oauth-facts dd { margin: 2px 0 0; font-size: 14px; word-break: break-all; }
+
+.mcp-oauth-capability {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--mcp-oauth-accent);
+  background: rgba(47, 93, 80, 0.07);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.mcp-oauth-label { display: block; margin-bottom: 4px; font-size: 13px; font-weight: 700; }
+.mcp-oauth-select {
+  width: 100%;
+  min-height: 44px;
+  margin: 8px 0 16px;
+  padding: 8px 12px;
+  border: 1px solid var(--mcp-oauth-line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--mcp-oauth-ink);
+  font: inherit;
+}
+
+.mcp-oauth-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.mcp-oauth-primary,
+.mcp-oauth-secondary {
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mcp-oauth-primary {
+  border: 1px solid transparent;
+  background: var(--mcp-oauth-accent);
+  color: #fff;
+}
+
+.mcp-oauth-secondary {
+  border: 1px solid var(--mcp-oauth-line);
+  background: transparent;
+  color: var(--mcp-oauth-ink);
+}
+
+.mcp-oauth-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.mcp-oauth-error { color: var(--mcp-oauth-danger); font-size: 14px; line-height: 1.6; }
+[hidden] { display: none !important; }
+
+@media (max-width: 480px) {
+  .mcp-oauth-card { padding: 22px 18px; border-radius: 14px; }
+  h1 { font-size: 21px; }
+  .mcp-oauth-actions { flex-direction: column; }
+  .mcp-oauth-primary, .mcp-oauth-secondary { width: 100%; }
+}

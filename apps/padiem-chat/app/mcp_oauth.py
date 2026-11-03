@@ -1,0 +1,544 @@
+"""MCP OAuth 2.1 authorization server hosted by Chat.
+
+The user authentication remains the existing Chat common login session. This
+module adds only the MCP-wide authorization endpoints, short-lived access
+tokens and rotating refresh tokens; it does not create a second Google login
+or touch padiem-auth keys.
+"""
+from __future__ import annotations
+
+import base64
+import hashlib
+import hmac
+import json
+import re
+import time
+from pathlib import Path
+from urllib.parse import parse_qsl, urlencode, unquote_plus, urlsplit, urlunsplit
+
+from padiem_ai_core.pc_device_identity import is_pc_device_id
+from starlette.responses import FileResponse, JSONResponse, RedirectResponse
+from starlette.routing import Route
+
+from .auth_routes import current_user_id
+from .mcp_gateway_store import McpGatewayStoreError
+from .mcp_oauth_metadata import (
+    AUTHORIZATION_SERVER_METADATA_PATH, AUTHORIZE_INFO_PATH, AUTHORIZE_PATH,
+    MCP_OAUTH_SCOPE, PROTECTED_RESOURCE_METADATA_PATH, REGISTER_PATH,
+    REVOKE_PATH, TOKEN_PATH, authorization_server_metadata as _as_metadata_document,
+    canonical_resource, issuer, normalize_resource,
+    protected_resource_metadata as _prm_document,
+)
+from .same_origin_guard import expected_browser_origin
+
+
+STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
+_CONSENT_FILE = STATIC_DIR / "mcp-oauth-consent.html"
+_NO_STORE = {
+    "Cache-Control": "no-store, max-age=0",
+    "Pragma": "no-cache",
+    "Referrer-Policy": "no-referrer",
+    "X-Content-Type-Options": "nosniff",
+}
+_PKCE_CHALLENGE = re.compile(r"[A-Za-z0-9_-]{43,128}\Z")
+_PKCE_VERIFIER = re.compile(r"[A-Za-z0-9._~-]{43,128}\Z")
+_CLIENT_ID = re.compile(r"mcpc_[0-9a-f]{32}\Z")
+_ALLOWED_AUTH_METHODS = {"none", "client_secret_post", "client_secret_basic"}
+_ALLOWED_GRANTS = {"authorization_code", "refresh_token"}
+_MAX_BODY = 16_384
+_MAX_REDIRECT_URI = 2_048
+_MAX_STATE = 1_024
+_MAX_CLIENT_NAME = 100
+
+
+def _json(body, status=200, headers=None):
+    return JSONResponse(body, status_code=status, headers={**_NO_STORE, **(headers or {})})
+
+
+def _oauth_error(status, code, description=None, headers=None):
+    body = {"error": code}
+    if description:
+        body["error_description"] = description
+    return _json(body, status, headers)
+
+
+def _settings(request):
+    return getattr(request.app.state, "settings", None)
+
+
+def _store(request):
+    return getattr(request.app.state, "mcp_gateway_store", None)
+
+
+def _origin_ok(request):
+    expected = expected_browser_origin(_settings(request))
+    if expected is None:
+        return False
+    return request.headers.get("origin", "").strip() == expected
+
+
+async def _read_json(request):
+    if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
+        return None
+    raw = await request.body()
+    if len(raw) > _MAX_BODY:
+        return None
+    try:
+        value = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError):
+        return None
+    return value if isinstance(value, dict) else None
+
+
+async def _read_form(request):
+    if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/x-www-form-urlencoded":
+        return None
+    raw = await request.body()
+    if len(raw) > _MAX_BODY:
+        return None
+    try:
+        pairs = parse_qsl(raw.decode("utf-8"), keep_blank_values=True, strict_parsing=False)
+    except (UnicodeDecodeError, ValueError):
+        return None
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            return None
+        result[key] = value
+    return result
+
+
+def _safe_client_name(value):
+    if value is None:
+        return "MCP OAuth Client"
+    if not isinstance(value, str):
+        return None
+    value = value.strip()
+    if (not value or len(value) > _MAX_CLIENT_NAME
+            or any(ord(char) < 32 for char in value)
+            or any(0x202A <= ord(char) <= 0x202E or 0x2066 <= ord(char) <= 0x2069
+                   or ord(char) in {0x200B, 0x200C, 0x200D, 0xFEFF} for char in value)):
+        return None
+    return value
+
+
+def _valid_redirect_uri(value):
+    if not isinstance(value, str) or not value or len(value) > _MAX_REDIRECT_URI:
+        return False
+    if any(ord(char) < 32 for char in value):
+        return False
+    try:
+        parsed = urlsplit(value)
+    except ValueError:
+        return False
+    if parsed.fragment or parsed.username is not None or parsed.password is not None:
+        return False
+    if parsed.scheme.lower() not in {"https", "http"} or not parsed.hostname:
+        return False
+    if parsed.scheme.lower() == "http" and parsed.hostname not in {"localhost", "127.0.0.1", "::1"}:
+        return False
+    try:
+        _ = parsed.port
+    except ValueError:
+        return False
+    return True
+
+
+def _normalize_scope(value):
+    if value is None or (isinstance(value, str) and not value.strip()):
+        return MCP_OAUTH_SCOPE, None
+    if not isinstance(value, str) or len(value) > 200 or any(ord(char) < 32 for char in value):
+        return None, _oauth_error(400, "invalid_scope")
+    parts = list(dict.fromkeys(value.split()))
+    if not parts or any(part != MCP_OAUTH_SCOPE for part in parts):
+        return None, _oauth_error(400, "invalid_scope")
+    return " ".join(parts), None
+
+
+def _normalize_state(value):
+    if value is None or value == "":
+        return ""
+    if (not isinstance(value, str) or len(value) > _MAX_STATE
+            or any(ord(char) < 32 for char in value)):
+        return None
+    return value
+
+
+def _register_error(code):
+    return _oauth_error(400, "invalid_client_metadata", code)
+
+
+async def _client_auth(request, form):
+    """Authenticate a registered OAuth client from Basic or form credentials."""
+    client_id = form.get("client_id")
+    client_secret = form.get("client_secret")
+    header = request.headers.get("authorization", "")
+    if header.lower().startswith("basic "):
+        try:
+            decoded = base64.b64decode(header[6:].strip(), validate=True).decode("utf-8")
+        except (ValueError, UnicodeDecodeError):
+            return None, _oauth_error(401, "invalid_client")
+        basic_id, separator, basic_secret = decoded.partition(":")
+        if not separator:
+            return None, _oauth_error(401, "invalid_client")
+        basic_id, basic_secret = unquote_plus(basic_id), unquote_plus(basic_secret)
+        if client_id and client_id != basic_id:
+            return None, _oauth_error(401, "invalid_client")
+        client_id, client_secret = basic_id, basic_secret
+    if not isinstance(client_id, str) or not _CLIENT_ID.fullmatch(client_id):
+        return None, _oauth_error(401, "invalid_client")
+    store = _store(request)
+    if store is None:
+        return None, _oauth_error(503, "temporarily_unavailable")
+    client = await store.get_oauth_client(client_id)
+    if client is None:
+        return None, _oauth_error(401, "invalid_client")
+    method = client.get("token_endpoint_auth_method")
+    if method not in _ALLOWED_AUTH_METHODS:
+        return None, _oauth_error(401, "invalid_client")
+    if method != "none":
+        expected = client.get("client_secret_sha256")
+        if (not isinstance(client_secret, str) or not client_secret
+                or not isinstance(expected, str)
+                or not hmac.compare_digest(expected, hashlib.sha256(client_secret.encode()).hexdigest())):
+            return None, _oauth_error(401, "invalid_client")
+    try:
+        await store.touch_oauth_client(client_id)
+    except Exception:
+        pass
+    return client, None
+
+
+async def _authorize_request(request, values):
+    """Validate one authorization request before any redirect is trusted."""
+    settings = _settings(request)
+    if (issuer(settings) is None or canonical_resource(settings) is None):
+        return None, _oauth_error(503, "temporarily_unavailable")
+    client_id = values.get("client_id")
+    if not isinstance(client_id, str) or not _CLIENT_ID.fullmatch(client_id):
+        return None, _oauth_error(400, "invalid_request", "client_id is invalid")
+    store = _store(request)
+    if store is None:
+        return None, _oauth_error(503, "temporarily_unavailable")
+    client = await store.get_oauth_client(client_id)
+    if client is None:
+        return None, _oauth_error(400, "invalid_client", "unknown client")
+    if values.get("response_type") != "code":
+        return None, _oauth_error(400, "unsupported_response_type")
+    redirect_uri = values.get("redirect_uri")
+    if not isinstance(redirect_uri, str) or redirect_uri not in client["redirect_uris"]:
+        return None, _oauth_error(400, "invalid_request", "redirect_uri is not registered")
+    challenge = values.get("code_challenge")
+    if (not isinstance(challenge, str) or not _PKCE_CHALLENGE.fullmatch(challenge)
+            or values.get("code_challenge_method") != "S256"):
+        return None, _oauth_error(400, "invalid_request", "PKCE S256 is required")
+    resource = normalize_resource(values.get("resource"), settings)
+    if resource is None:
+        return None, _oauth_error(400, "invalid_target", "resource is invalid")
+    scope, scope_error = _normalize_scope(values.get("scope"))
+    if scope_error is not None:
+        return None, scope_error
+    state = _normalize_state(values.get("state"))
+    if state is None:
+        return None, _oauth_error(400, "invalid_request", "state is invalid")
+    return {
+        "client": client, "client_id": client_id, "redirect_uri": redirect_uri,
+        "code_challenge": challenge, "resource": resource, "scope": scope, "state": state,
+    }, None
+
+
+def _redirect_with(redirect_uri, **params):
+    parsed = urlsplit(redirect_uri)
+    query = parse_qsl(parsed.query, keep_blank_values=True)
+    query.extend((key, str(value)) for key, value in params.items() if value is not None)
+    return urlunsplit((parsed.scheme, parsed.netloc, parsed.path, urlencode(query), ""))
+
+
+def _authorize_url(request):
+    path = AUTHORIZE_PATH if request.url.path == AUTHORIZE_INFO_PATH else request.url.path
+    query = request.url.query
+    return path + (("?" + query) if query else "")
+
+
+def _consent_page():
+    return FileResponse(str(_CONSENT_FILE), media_type="text/html; charset=utf-8", headers=_NO_STORE)
+
+
+async def protected_resource_metadata(request):
+    settings = _settings(request)
+    document = _prm_document(settings)
+    if not document.get("resource") or not document.get("authorization_servers"):
+        return _oauth_error(503, "temporarily_unavailable")
+    return _json(document)
+
+
+async def authorization_server_metadata(request):
+    settings = _settings(request)
+    document = _as_metadata_document(settings)
+    if not document.get("issuer"):
+        return _oauth_error(503, "temporarily_unavailable")
+    return _json(document)
+
+
+async def authorize_get(request):
+    values = {key: request.query_params.get(key) for key in (
+        "response_type", "client_id", "redirect_uri", "code_challenge",
+        "code_challenge_method", "resource", "scope", "state",
+    )}
+    validated, error = await _authorize_request(request, values)
+    if error is not None:
+        return error
+    user_id = current_user_id(request)
+    if not user_id:
+        if getattr(request.app.state, "shared_login_flow", None) is not None:
+            from .shared_login_flow import set_login_return_cookie
+            response = RedirectResponse("/auth/shared/start", status_code=302, headers=_NO_STORE)
+            set_login_return_cookie(response, _authorize_url(request))
+            return response
+    return _consent_page()
+
+
+async def authorize_info(request):
+    values = {key: request.query_params.get(key) for key in (
+        "response_type", "client_id", "redirect_uri", "code_challenge",
+        "code_challenge_method", "resource", "scope", "state",
+    )}
+    validated, error = await _authorize_request(request, values)
+    if error is not None:
+        return error
+    user_id = current_user_id(request)
+    if not user_id:
+        return _oauth_error(401, "login_required", headers={
+            "X-MCP-Login-Url": _authorize_url(request) if getattr(
+                request.app.state, "shared_login_flow", None) is not None else "/",
+        })
+    pairing = getattr(request.app.state, "pc_device_pairing_store", None)
+    links = []
+    if callable(getattr(pairing, "links_for_owner", None)):
+        try:
+            links = await pairing.links_for_owner(user_id=user_id)
+        except Exception:
+            links = []
+    devices = []
+    for link in links if isinstance(links, list) else []:
+        if not isinstance(link, dict):
+            continue
+        device_id = link.get("mesh_node_id")
+        if not is_pc_device_id(device_id) or any(item["device_id"] == device_id for item in devices):
+            continue
+        label = link.get("label")
+        devices.append({"device_id": device_id,
+                        "label": label.strip() if isinstance(label, str) and label.strip() else device_id})
+        if len(devices) >= 20:
+            break
+    return _json({
+        "client_name": validated["client"]["client_name"],
+        "redirect_uri": validated["redirect_uri"],
+        "scope": validated["scope"], "resource": validated["resource"],
+        "issuer": issuer(_settings(request)), "pcs": devices,
+    })
+
+
+async def authorize_post(request):
+    if not _origin_ok(request):
+        return _oauth_error(403, "origin_rejected")
+    values = await _read_json(request)
+    if values is None:
+        return _oauth_error(400, "invalid_request")
+    validated, error = await _authorize_request(request, values)
+    if error is not None:
+        return error
+    user_id = current_user_id(request)
+    if not user_id:
+        return _oauth_error(401, "login_required")
+    decision = values.get("decision")
+    if decision not in {"approve", "deny"}:
+        return _oauth_error(400, "invalid_request", "decision is invalid")
+    settings = _settings(request)
+    if decision == "deny":
+        return _json({"redirect_url": _redirect_with(
+            validated["redirect_uri"], error="access_denied",
+            state=validated["state"] or None, iss=issuer(settings))})
+    device_id = values.get("device_id")
+    if not is_pc_device_id(device_id):
+        return _oauth_error(403, "pc_device_unavailable")
+    pairing = getattr(request.app.state, "pc_device_pairing_store", None)
+    if not callable(getattr(pairing, "links_for_owner", None)):
+        return _oauth_error(503, "temporarily_unavailable")
+    try:
+        links = await pairing.links_for_owner(user_id=user_id)
+    except Exception:
+        return _oauth_error(503, "temporarily_unavailable")
+    if not any(isinstance(link, dict) and link.get("mesh_node_id") == device_id
+               for link in links if isinstance(links, list)):
+        return _oauth_error(403, "pc_device_unavailable")
+    store = _store(request)
+    try:
+        code = await store.create_oauth_code(
+            client_id=validated["client_id"], user_id=user_id, device_id=device_id,
+            redirect_uri=validated["redirect_uri"], code_challenge=validated["code_challenge"],
+            scope=validated["scope"], resource=validated["resource"])
+    except McpGatewayStoreError:
+        return _oauth_error(400, "invalid_request")
+    except Exception:
+        return _oauth_error(503, "temporarily_unavailable")
+    return _json({"redirect_url": _redirect_with(
+        validated["redirect_uri"], code=code,
+        state=validated["state"] or None, iss=issuer(settings))})
+
+
+async def register_client(request):
+    values = await _read_json(request)
+    if values is None:
+        return _oauth_error(400, "invalid_client_metadata")
+    redirect_uris = values.get("redirect_uris")
+    if (not isinstance(redirect_uris, list) or not 1 <= len(redirect_uris) <= 10
+            or not all(_valid_redirect_uri(uri) for uri in redirect_uris)):
+        return _register_error("redirect_uris are invalid")
+    client_name = _safe_client_name(values.get("client_name"))
+    if client_name is None:
+        return _register_error("client_name is invalid")
+    method = values.get("token_endpoint_auth_method", "none")
+    if method not in _ALLOWED_AUTH_METHODS:
+        return _register_error("token_endpoint_auth_method is unsupported")
+    grant_types = values.get("grant_types", ["authorization_code", "refresh_token"])
+    if (not isinstance(grant_types, list) or not grant_types
+            or not set(grant_types) <= _ALLOWED_GRANTS
+            or "authorization_code" not in grant_types):
+        return _register_error("grant_types are unsupported")
+    response_types = values.get("response_types", ["code"])
+    if not isinstance(response_types, list) or response_types != ["code"]:
+        return _register_error("response_types are unsupported")
+    scope, scope_error = _normalize_scope(values.get("scope"))
+    if scope_error is not None:
+        return _register_error("scope is unsupported")
+    store = _store(request)
+    if store is None:
+        return _oauth_error(503, "temporarily_unavailable")
+    try:
+        registered = await store.register_oauth_client(
+            client_name=client_name, redirect_uris=redirect_uris,
+            token_endpoint_auth_method=method)
+    except McpGatewayStoreError:
+        return _register_error("client metadata is invalid")
+    except Exception:
+        return _oauth_error(503, "temporarily_unavailable")
+    response = {
+        "client_id": registered["client_id"],
+        "client_name": registered["client_name"],
+        "redirect_uris": registered["redirect_uris"],
+        "token_endpoint_auth_method": registered["token_endpoint_auth_method"],
+        "grant_types": grant_types,
+        "response_types": response_types,
+        "scope": scope,
+        "client_id_issued_at": int(time.time()),
+    }
+    if registered.get("client_secret") is not None:
+        response["client_secret"] = registered["client_secret"]
+        response["client_secret_expires_at"] = 0
+    return _json(response, 201)
+
+
+def _pkce_matches(verifier, challenge):
+    digest = hashlib.sha256(verifier.encode("ascii")).digest()
+    computed = base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
+    return hmac.compare_digest(computed, challenge)
+
+
+async def token(request):
+    form = await _read_form(request)
+    if form is None:
+        return _oauth_error(400, "invalid_request")
+    client, error = await _client_auth(request, form)
+    if error is not None:
+        return error
+    grant_type = form.get("grant_type")
+    store = _store(request)
+    if store is None:
+        return _oauth_error(503, "temporarily_unavailable")
+    if grant_type == "authorization_code":
+        code = form.get("code")
+        redirect_uri = form.get("redirect_uri")
+        verifier = form.get("code_verifier")
+        if (not isinstance(code, str) or not code
+                or not isinstance(redirect_uri, str) or not redirect_uri
+                or not isinstance(verifier, str) or not _PKCE_VERIFIER.fullmatch(verifier)):
+            return _oauth_error(400, "invalid_request")
+        try:
+            consumed = await store.consume_oauth_code(
+                code=code, client_id=client["client_id"], redirect_uri=redirect_uri)
+        except Exception:
+            return _oauth_error(503, "temporarily_unavailable")
+        if consumed is None:
+            return _oauth_error(400, "invalid_grant")
+        if (consumed.get("code_challenge_method") != "S256"
+                or not _pkce_matches(verifier, consumed.get("code_challenge") or "")):
+            return _oauth_error(400, "invalid_grant")
+        requested_resource = form.get("resource")
+        if requested_resource:
+            normalized = normalize_resource(requested_resource, _settings(request))
+            if normalized is None or normalized != consumed.get("resource"):
+                return _oauth_error(400, "invalid_target")
+        try:
+            issued = await store.issue_oauth_tokens(
+                client_name=client["client_name"], client_id=client["client_id"],
+                user_id=consumed["user_id"], device_id=consumed["device_id"],
+                scope=consumed["scope"], resource=consumed["resource"])
+        except Exception:
+            return _oauth_error(503, "temporarily_unavailable")
+        return _json(issued)
+    if grant_type == "refresh_token":
+        refresh_token = form.get("refresh_token")
+        if not isinstance(refresh_token, str) or not refresh_token:
+            return _oauth_error(400, "invalid_request")
+        try:
+            issued = await store.refresh_oauth_tokens(
+                refresh_token=refresh_token, client_id=client["client_id"])
+        except Exception:
+            return _oauth_error(503, "temporarily_unavailable")
+        if issued is None:
+            return _oauth_error(400, "invalid_grant")
+        return _json(issued)
+    return _oauth_error(400, "unsupported_grant_type")
+
+
+async def revoke(request):
+    form = await _read_form(request)
+    if form is None:
+        return _oauth_error(400, "invalid_request")
+    client, error = await _client_auth(request, form)
+    if error is not None:
+        return error
+    token_value = form.get("token")
+    if not isinstance(token_value, str) or not token_value:
+        return _oauth_error(400, "invalid_request")
+    store = _store(request)
+    if store is None:
+        return _oauth_error(503, "temporarily_unavailable")
+    try:
+        await store.revoke_oauth_token(token=token_value, client_id=client["client_id"])
+    except Exception:
+        return _oauth_error(503, "temporarily_unavailable")
+    return _json({})
+
+
+def mcp_oauth_routes():
+    return [
+        Route(PROTECTED_RESOURCE_METADATA_PATH, protected_resource_metadata, methods=["GET"]),
+        Route(PROTECTED_RESOURCE_METADATA_PATH + "/api/mcp", protected_resource_metadata, methods=["GET"]),
+        Route(AUTHORIZATION_SERVER_METADATA_PATH, authorization_server_metadata, methods=["GET"]),
+        Route(AUTHORIZE_INFO_PATH, authorize_info, methods=["GET"]),
+        Route(AUTHORIZE_PATH, authorize_get, methods=["GET"]),
+        Route(AUTHORIZE_PATH, authorize_post, methods=["POST"]),
+        Route(TOKEN_PATH, token, methods=["POST"]),
+        Route(REGISTER_PATH, register_client, methods=["POST"]),
+        Route(REVOKE_PATH, revoke, methods=["POST"]),
+    ]
+
+
+__all__ = [
+    "AUTHORIZATION_SERVER_METADATA_PATH", "AUTHORIZE_INFO_PATH", "AUTHORIZE_PATH",
+    "PROTECTED_RESOURCE_METADATA_PATH", "REGISTER_PATH", "REVOKE_PATH", "TOKEN_PATH",
+    "authorize_get", "authorize_info", "authorize_post", "mcp_oauth_routes",
+    "protected_resource_metadata", "register_client", "revoke", "token",
+]

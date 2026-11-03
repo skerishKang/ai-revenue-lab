@@ -32,6 +32,7 @@ from .mcp_gateway_account_routes import (
 from .mcp_gateway_store import D1McpGatewayStore
 from .mcp_gateway_transport import MCP_GATEWAY_PATH, mcp_gateway_endpoint
 from .mcp_gateway_execution import execute_mcp_pc_tool
+from .mcp_oauth import mcp_oauth_routes
 from .android_auth_store import D1AndroidAuthHandoffStore
 from .lovetree_auth_routes import lovetree_handoff_start
 from .lovetree_auth_store import D1LoveTreeLoginHandoffStore
@@ -790,6 +791,7 @@ def create_app(
         Route(MCP_APPROVALS_PATH, mcp_approvals_get, methods=["GET"]),
         Route(MCP_APPROVAL_PATH, mcp_approval_post, methods=["POST"]),
         Route(MCP_GATEWAY_PATH, mcp_gateway_endpoint, methods=["POST", "GET", "DELETE", "OPTIONS"]),
+        *mcp_oauth_routes(),
         Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"]),
         Route(B66_PC_DIRECTORY_PATH, b66_pc_directory, methods=["GET"]),
         Route(B66_PC_TXT_READ_PATH, b66_pc_txt_read_request, methods=["POST"]),

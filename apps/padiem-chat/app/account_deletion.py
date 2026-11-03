@@ -109,6 +109,7 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("padiem_mcp_tokens", "user_id = ?"),
     ("padiem_mcp_approvals", "user_id = ?"),
     ("padiem_mcp_audit", "user_id = ?"),
+    ("padiem_mcp_oauth_codes", "user_id = ?"),
     ("claw_artifact_delivery_receipts", "user_id = ?"),
     # Identity-result caches name the product user; clear every session's row.
     ("auth_validation_cache", "product_user_id = ?"),

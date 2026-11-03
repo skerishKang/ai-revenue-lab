@@ -12,7 +12,10 @@ from starlette.responses import RedirectResponse
 from .auth_routes import current_user_id
 from .shared_auth_adapter import SharedChatAuth
 from .shared_auth_compare_flow import _un64, exchange_with_httpx
-from .shared_login_flow import SharedLoginFlow, issue_shared_cookies, revoke_with_httpx
+from .shared_login_flow import (
+    SharedLoginFlow, clear_login_return_cookie, issue_shared_cookies,
+    login_return_target, revoke_with_httpx,
+)
 
 
 class NativeES256Signer:
@@ -91,7 +94,9 @@ def create_host_shared_login_flow(env, authority, public_base_url):
             await provision_shared_profile(request, user, access, tokens, verifier=verifier,
                 store=store, legacy_user=current_user_id, notify=deliver_after_signup)
         async def issue(request, user, access, refresh):
-            return issue_shared_cookies(RedirectResponse('/', status_code=302), access, refresh)
+            response = RedirectResponse(login_return_target(request), status_code=302)
+            issue_shared_cookies(response, access, refresh)
+            return clear_login_return_cookie(response)
         flow = SharedLoginFlow(state_key=_un64(state), client_id=client_id,
             public_base_url=public_base_url, client_jwk=json.loads(private), kid=str(kid),
             operator_guard=lambda request: False, legacy_user=current_user_id,
