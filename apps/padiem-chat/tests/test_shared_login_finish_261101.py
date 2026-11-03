@@ -85,25 +85,18 @@ TIMING = re.compile(
     r"(?: [a-z0-9_]+=\d+)*$"
 )
 TIMING_LABELS = {
-    'validate_flow', 'client_assertion', 'exchange', 'resolve_account',
-    'provision_profile', 'issue_session',
-    'assertion_build_ms', 'assertion_build_n', 'assertion_sign_ms', 'assertion_sign_n',
-    'assertion_key_refresh_ms', 'assertion_key_refresh_n',
-    'exchange_headers_ms', 'exchange_headers_n', 'exchange_body_ms', 'exchange_body_n',
-    'exchange_total_ms', 'exchange_total_n',
-    'portal_client_auth_ms', 'portal_client_auth_n', 'portal_code_exchange_ms', 'portal_code_exchange_n',
-    'portal_token_sign_ms', 'portal_token_sign_n', 'portal_total_ms', 'portal_total_n',
-    'account_token_verify_ms', 'account_token_verify_n', 'identity_rpc_ms', 'identity_rpc_n',
-    'sqlite_auth_session_read_ms', 'sqlite_auth_session_read_n',
-    'sqlite_auth_link_read_ms', 'sqlite_auth_link_read_n',
-    'sqlite_auth_revision_read_ms', 'sqlite_auth_revision_read_n',
-    'sqlite_auth_session_expired_delete_ms', 'sqlite_auth_session_expired_delete_n',
-    'sqlite_auth_link_expired_delete_ms', 'sqlite_auth_link_expired_delete_n',
-    'sqlite_auth_session_upsert_ms', 'sqlite_auth_session_upsert_n',
-    'sqlite_auth_link_upsert_ms', 'sqlite_auth_link_upsert_n',
-    'profile_token_verify_ms', 'profile_token_verify_n',
-    'profile_user_upsert_ms', 'profile_user_upsert_n',
-    'profile_notification_ms', 'profile_notification_n',
+    'validate_flow_ms', 'client_assertion_ms', 'exchange_ms', 'resolve_account_ms',
+    'provision_profile_ms', 'issue_session_ms',
+    'assertion_build_ms', 'assertion_sign_ms', 'assertion_key_refresh_ms',
+    'exchange_headers_ms', 'exchange_body_ms', 'exchange_total_ms',
+    'portal_client_auth_ms', 'portal_code_exchange_ms', 'portal_token_sign_ms', 'portal_total_ms',
+    'account_token_verify_ms', 'identity_rpc_ms',
+    'sqlite_auth_session_read_ms', 'sqlite_auth_link_read_ms',
+    'sqlite_auth_revision_read_ms', 'sqlite_auth_session_expired_delete_ms',
+    'sqlite_auth_link_expired_delete_ms', 'sqlite_auth_session_upsert_ms',
+    'sqlite_auth_link_upsert_ms', 'profile_token_verify_ms', 'profile_user_upsert_ms',
+    'profile_notification_ms', 'shared_account_link_lookup_ms',
+    'shared_session_result_lookup_ms',
 }
 
 
@@ -373,8 +366,8 @@ async def test_a_successful_callback_reports_its_stages_without_the_code(capsys)
     ), line
     fields = dict(item.split('=', 1) for item in line.split()[1:])
     assert fields['request_id'] == 'synthetic-callback-req'
-    assert {'validate_flow', 'client_assertion', 'exchange', 'resolve_account',
-            'issue_session', 'assertion_build_ms', 'assertion_sign_ms'} <= set(fields), fields
+    assert {'validate_flow_ms', 'client_assertion_ms', 'exchange_ms', 'resolve_account_ms',
+            'issue_session_ms', 'assertion_build_ms', 'assertion_sign_ms'} <= set(fields), fields
     assert set(fields) - {'outcome', 'total_ms', 'request_id'} <= TIMING_LABELS, fields
     for private in (CODE, ACCESS, REFRESH, ACCOUNT, GOOGLE_SUBJECT, PROFILE["email"]):
         assert private not in out

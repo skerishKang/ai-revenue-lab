@@ -102,8 +102,8 @@ async def test_a_stated_account_that_differs_is_still_a_mismatch():
 
 @pytest.mark.asyncio
 async def test_a_client_that_opted_out_of_profile_writes_nothing_and_still_signs_in(caplog):
-    # apps/padiem-auth only discloses profile fields to clients that list
-    # profile_claims; the production Chat client does not, so the body is bare.
+    # apps/padiem-auth discloses profile fields only to clients that list
+    # profile_claims; an opted-out client receives a bare token body.
     store, notified = Recorded(), []
     private_key = 'person@example.invalid'
     caplog.set_level(logging.INFO, logger='app.shared_profile_provision')

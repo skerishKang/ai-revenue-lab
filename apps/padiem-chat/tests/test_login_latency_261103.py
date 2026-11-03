@@ -102,9 +102,9 @@ async def test_reusable_exchange_reuses_client_and_records_only_safe_timing():
     assert all(request.headers['x-request-id'] == 'synthetic-request-42' for request in requests)
     assert all(request.headers['user-agent'].startswith('PADIEM-Chat/1.0') for request in requests)
     values = dict(item.split('=', 1) for item in fields)
-    assert values['exchange_headers_n'] == '2'
-    assert values['exchange_body_n'] == '2'
-    assert values['exchange_total_n'] == '2'
+    assert values['exchange_headers_ms'].isdigit()
+    assert values['exchange_body_ms'].isdigit()
+    assert values['exchange_total_ms'].isdigit()
     assert values['portal_code_exchange_ms'] == '7'
     assert values['portal_total_ms'] == '16'
     assert all('synthetic-code' not in item and 'synthetic-access' not in item for item in fields)

@@ -21,6 +21,7 @@ from app.config import Settings
 from app.d1_sqlite import SqliteD1, connect
 from app.session_revocation_guard import SessionRevocationGuardMiddleware
 from app.shared_auth_adapter import SharedAuthUnavailable, SharedChatAuth
+from app.request_telemetry import _CURRENT_REQUEST_ID
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
 
@@ -96,6 +97,30 @@ async def test_guard_reuses_same_session_across_two_worker_connections(caches):
     verdict = await guard.resolve_verdict(request(second, authority).scope)
     assert not verdict.authenticated and verdict.reason == 'unavailable'
     assert authority.calls == 2
+
+
+@pytest.mark.asyncio
+async def test_session_revocation_timing_has_request_id_and_safe_stages(caches, capsys):
+    first, _, _, _ = caches
+    authority, guard = Authority(), SessionRevocationGuardMiddleware(None)
+    request_token = _CURRENT_REQUEST_ID.set('synthetic-session-check-request')
+    try:
+        assert (await guard.resolve_verdict(request(first, authority).scope)).authenticated
+    finally:
+        _CURRENT_REQUEST_ID.reset(request_token)
+    line = next(item for item in capsys.readouterr().out.splitlines()
+                if item.startswith('chat_identity_timing '))
+    fields = dict(item.split('=', 1) for item in line.split()[1:])
+    assert fields['request_id'] == 'synthetic-session-check-request'
+    assert fields['session_revocation_authority_ms'].isdigit()
+    assert fields['session_revocation_check_ms'].isdigit()
+    assert fields['sqlite_auth_session_read_ms'].isdigit()
+    assert set(fields) == {'request_id', 'total_ms', 'session_revocation_authority_ms',
+                           'session_revocation_check_ms', 'sqlite_auth_session_read_ms',
+                           'sqlite_auth_revision_read_ms',
+                           'sqlite_auth_session_expired_delete_ms',
+                           'sqlite_auth_session_upsert_ms'}
+    assert UID not in line and SID not in line
 
 
 @pytest.mark.asyncio

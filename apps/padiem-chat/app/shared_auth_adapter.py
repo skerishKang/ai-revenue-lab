@@ -82,20 +82,44 @@ class SharedChatAuth:
                     # re-asked which account this subject is even though the link
                     # it answers with had not changed.
                     if cache is None:
-                        return await load_mapping()
-                    user_id = await cache.get_or_load_account_link(account_id, load_mapping)
+                        link_started = time.perf_counter()
+                        try:
+                            return await load_mapping()
+                        finally:
+                            record_login_timing('shared_account_link_lookup',
+                                                (time.perf_counter() - link_started) * 1000)
+                    link_started = time.perf_counter()
+                    try:
+                        user_id = await cache.get_or_load_account_link(account_id, load_mapping)
+                    finally:
+                        record_login_timing('shared_account_link_lookup',
+                                            (time.perf_counter() - link_started) * 1000)
                     return user_id, expires
                 session_id = verified.get('sessionId')
                 if cache is not None and isinstance(session_id, str) and session_id:
-                    return await cache.get_or_load('shared', account_id, session_id, load_link)
+                    lookup_started = time.perf_counter()
+                    try:
+                        return await cache.get_or_load('shared', account_id, session_id, load_link)
+                    finally:
+                        record_login_timing('shared_session_result_lookup',
+                                            (time.perf_counter() - lookup_started) * 1000)
                 # Disabled caching and verifier contracts without a signed
                 # session ID fall back to the subject's own cache, or to a fresh
                 # authority lookup when even that is switched off.
                 return (await load_link())[0]
+            link_started = time.perf_counter()
             cached = self._mapping.get(account_id)
             if cached and cached[1] > self._clock():
+                record_login_timing('shared_account_link_lookup',
+                                    (time.perf_counter() - link_started) * 1000)
                 return cached[0]
-            user_id = await self._authority.resolve_product_user_for_subject(product_id='b62', canonical_subject_id=account_id)
+            link_started = time.perf_counter()
+            try:
+                user_id = await self._authority.resolve_product_user_for_subject(
+                    product_id='b62', canonical_subject_id=account_id)
+            finally:
+                record_login_timing('shared_account_link_lookup',
+                                    (time.perf_counter() - link_started) * 1000)
             if not isinstance(user_id, str) or not user_id:
                 raise ValueError('missing_product_link')
             self._mapping[account_id] = (user_id, min(expires, self._clock() + self._cache_seconds))

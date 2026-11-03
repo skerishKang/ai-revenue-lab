@@ -77,6 +77,7 @@ class LegalRetentionGuardTest(unittest.TestCase):
         self.assertIn("- 사업자등록번호: 410-86-46283", text)
         # 대표가 판매자 정보에서 확인한 신고번호를 고정한다. 보호책임자 실명은 별도 확인 전이다.
         self.assertIn("- 통신판매업 신고번호: 2025-전남장성-94", text)
+        self.assertNotIn("- 개인정보보호책임자:", text)
         self.assertNotIn("법령 이름과 시행일은 확인되지 않아", text)
 
 

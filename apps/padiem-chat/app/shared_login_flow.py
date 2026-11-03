@@ -209,7 +209,7 @@ class SharedLoginFlow(ComparisonFlow):
         def mark(name):
             nonlocal last_mark
             now = time.monotonic()
-            marks.append(f'{name}={int((now - last_mark) * 1000)}')
+            marks.append(f'{name}_ms={int((now - last_mark) * 1000)}')
             last_mark = now
 
         try:
