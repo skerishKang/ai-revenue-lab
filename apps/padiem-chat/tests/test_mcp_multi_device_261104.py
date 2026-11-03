@@ -26,6 +26,7 @@ import pytest
 
 from app.mcp_gateway_dispatch import dispatch_mcp_tool
 from app.mcp_gateway_execution import execute_mcp_pc_tool
+from app.mcp_device_selection import McpDeviceRefusal
 
 from test_mcp_gateway_account import DEVICE as DEVICE_A, setup, client_for, session
 from test_5222_account_model_selection import BASE, build_app
@@ -87,11 +88,11 @@ def app_with(owner, store, *, devices=None, online=()):
 
 
 
-def _issue_token(store, owner, device_id=DEVICE_A, *, scope=None, scope_json=None):
+def _issue_token(store, db, owner, device_id=DEVICE_A, *, scope=None, scope_json=None):
     """실제 토큰 행을 발급한다 — 감사 FK가 토큰 행을 요구한다."""
     token = asyncio.run(store.issue_token(user_id=owner, device_id=device_id, name="시험 AI"))
     if scope is not None:
-        asyncio.run(store.db.prepare(
+        asyncio.run(db.prepare(
             "UPDATE padiem_mcp_tokens SET device_scope=?, device_scope_json=? WHERE id=?"
         ).bind(scope, scope_json, token["id"]).run())
     return token["id"]
@@ -134,7 +135,7 @@ def run_dispatch(app, principal, name, arguments, *, executor=None):
 def test_pc_devices_lists_linked_pcs_with_online_and_default_flags():
     db, owner, _other, store = setup()
     app, _ = app_with(owner, store, online=[DEVICE_B])
-    principal = principal_for(owner, DEVICE_A, _issue_token(store, owner), scope="all")
+    principal = principal_for(owner, DEVICE_A, _issue_token(store, db, owner), scope="all")
     outcome = asyncio.run(execute_mcp_pc_tool(
         request_for(app), principal, "pc_devices", {}))
     assert outcome["status"] == "completed"
@@ -154,7 +155,7 @@ def test_pc_devices_lists_linked_pcs_with_online_and_default_flags():
 def test_omitted_device_keeps_the_token_default_pc():
     db, owner, _other, store = setup()
     app, _ = app_with(owner, store)
-    principal = principal_for(owner, DEVICE_A, _issue_token(store, owner))
+    principal = principal_for(owner, DEVICE_A, _issue_token(store, db, owner))
     outcome, executor = run_dispatch(app, principal, "pc_list", {"path": "docs"})
     assert outcome["status"] == "completed"
     assert executor.calls[0]["principal"]["device_id"] == DEVICE_A
@@ -166,7 +167,7 @@ def test_omitted_device_keeps_the_token_default_pc():
 def test_a_chosen_linked_pc_replaces_the_target(picker):
     db, owner, _other, store = setup()
     app, _ = app_with(owner, store, online=[DEVICE_B])
-    principal = principal_for(owner, DEVICE_A, _issue_token(store, owner), scope="all")
+    principal = principal_for(owner, DEVICE_A, _issue_token(store, db, owner), scope="all")
     picker_value = LABEL_B if picker == "label" else "second"
     outcome, executor = run_dispatch(app, principal, "pc_list",
                                      {"path": "docs", "device": picker_value})
@@ -179,7 +180,7 @@ def test_a_chosen_linked_pc_replaces_the_target(picker):
 def test_an_unlinked_device_is_refused_as_not_linked():
     db, owner, _other, store = setup()
     app, _ = app_with(owner, store)
-    principal = principal_for(owner, DEVICE_A, _issue_token(store, owner), scope="all")
+    principal = principal_for(owner, DEVICE_A, _issue_token(store, db, owner), scope="all")
     outcome, executor = run_dispatch(app, principal, "pc_list",
                                      {"path": "docs", "device": "node//not-mine"})
     assert outcome["status"] == "denied"
@@ -193,7 +194,7 @@ def test_an_ambiguous_identifier_is_refused_not_guessed():
         (DEVICE_A, LABEL_A), (DEVICE_B, LABEL_B),
         ("node//studio-third", "third-pc-1"), ("node//studio-fourth", "third-pc-1"),
     ])
-    principal = principal_for(owner, DEVICE_A, _issue_token(store, owner), scope="all")
+    principal = principal_for(owner, DEVICE_A, _issue_token(store, db, owner), scope="all")
     outcome, executor = run_dispatch(app, principal, "pc_list",
                                      {"path": "docs", "device": "third-pc-1"})
     assert outcome["status"] == "denied"
@@ -240,7 +241,7 @@ def test_a_chosen_offline_pc_refuses_with_device_offline(monkeypatch):
     app, _ = app_with(owner, store)
     app.state.settings = SimpleNamespace(mcp_pc_shell_enabled=True)
     app.state.history_store = SimpleNamespace()
-    principal = principal_for(owner, DEVICE_A, _issue_token(store, owner), scope="all")
+    principal = principal_for(owner, DEVICE_A, _issue_token(store, db, owner), scope="all")
     _patch_lane(monkeypatch, offline=True, selected_device_id=DEVICE_B)
     outcome = asyncio.run(execute_mcp_pc_tool(
         request_for(app), principal, "pc_shell",
@@ -253,7 +254,7 @@ def test_the_default_path_keeps_the_main_lane_offline_refusal(monkeypatch):
     app, _ = app_with(owner, store)
     app.state.settings = SimpleNamespace(mcp_pc_shell_enabled=True)
     app.state.history_store = SimpleNamespace()
-    principal = principal_for(owner, DEVICE_A, _issue_token(store, owner))
+    principal = principal_for(owner, DEVICE_A, _issue_token(store, db, owner))
     _patch_lane(monkeypatch, offline=True, selected_device_id=DEVICE_A)
     outcome = asyncio.run(execute_mcp_pc_tool(
         request_for(app), principal, "pc_shell", {"command": "Get-Date"}))
@@ -267,7 +268,7 @@ def test_the_default_path_keeps_the_main_lane_offline_refusal(monkeypatch):
 def test_out_of_scope_device_is_refused_for_a_selected_scope_token():
     db, owner, _other, store = setup()
     app, _ = app_with(owner, store)
-    token_id = _issue_token(store, owner)
+    token_id = _issue_token(store, db, owner)
     principal = principal_for(owner, DEVICE_A, token_id, scope="selected",
                               scope_json=json.dumps([DEVICE_A]))
     outcome, executor = run_dispatch(app, principal, "pc_list",
@@ -281,7 +282,7 @@ def test_a_legacy_single_pc_token_stays_bound_to_its_own_pc():
     db, owner, _other, store = setup()
     app, _ = app_with(owner, store)
     # device_scope NULL(레거시): 기본 PC는 통과, 다른 연결 PC는 범위 밖 거절.
-    principal = principal_for(owner, DEVICE_A, _issue_token(store, owner))
+    principal = principal_for(owner, DEVICE_A, _issue_token(store, db, owner))
     outcome, executor = run_dispatch(app, principal, "pc_list", {"path": "docs"})
     assert outcome["status"] == "completed"
     assert executor.calls[0]["principal"]["device_id"] == DEVICE_A
@@ -301,7 +302,7 @@ def test_the_operation_log_names_the_target_pc_by_its_last_six(caplog, monkeypat
     from app.mcp_gateway_dispatch import _LOGGER
     db, owner, _other, store = setup()
     app, _ = app_with(owner, store)
-    principal = principal_for(owner, DEVICE_A, _issue_token(store, owner), scope="all")
+    principal = principal_for(owner, DEVICE_A, _issue_token(store, db, owner), scope="all")
     executor = RecordingExecutor()
     # 앱이 이 로거의 전파를 꺼 두었다 — 시험에서만 되연해 레코드를 읽는다.
     monkeypatch.setattr(_LOGGER, "propagate", True)
@@ -420,3 +421,148 @@ def test_migration_100_is_idempotent_and_additive():
     except sqlite3.OperationalError:
         reapplied = False
     assert reapplied is False, "재적용이 조용히 통과하면 레저 이중 기록과 충돌한다"
+
+
+# ── DC #586: 명시한 device로만 실행한다 — 조용한 폴백 금지 ────────────────────
+
+def test_an_offline_chosen_pc_fails_even_when_the_default_pc_is_online(monkeypatch):
+    """Desktop Commander #586: deviceId를 줬는데 다른 온라인 PC에서 실행된 사고.
+    기본 PC가 온라인인 상태에서 선택 PC가 꺼져 있으면 device_offline으로
+    명시 실패한다 — 기본 PC로 조용히 넘어가지 않는다."""
+    db, owner, _other, store = setup()
+    # 기본 PC(A)는 온라인, 선택 PC(B)는 오프라인 — 폴백의 조건이 완비된 상태.
+    app, _ = app_with(owner, store, online=[DEVICE_A])
+    app.state.settings = SimpleNamespace(mcp_pc_shell_enabled=True)
+    app.state.history_store = SimpleNamespace()
+    principal = principal_for(owner, DEVICE_A, _issue_token(store, db, owner), scope="all")
+    _patch_lane(monkeypatch, offline=True, selected_device_id=DEVICE_B)
+    outcome = asyncio.run(execute_mcp_pc_tool(
+        request_for(app), principal, "pc_shell",
+        {"command": "Get-Date", "device": "second"}))
+    assert outcome["status"] == "unavailable" and outcome["code"] == "device_offline"
+
+
+def test_an_out_of_scope_choice_fails_without_falling_back(monkeypatch):
+    """범위 밖 PC를 고르면 device_not_in_token_scope로 거절한다 — 기본 PC가
+    온라인이어도 실행 대상을 바꾸지 않는다(실행기 자체에 도달하지 않는다)."""
+    db, owner, _other, store = setup()
+    app, _ = app_with(owner, store, online=[DEVICE_A, DEVICE_B])
+    app.state.settings = SimpleNamespace(mcp_pc_shell_enabled=True)
+    app.state.history_store = SimpleNamespace()
+    token_id = _issue_token(store, db, owner, scope="selected",
+                            scope_json=json.dumps([DEVICE_A]))
+    principal = principal_for(owner, DEVICE_A, token_id, scope="selected",
+                              scope_json=json.dumps([DEVICE_A]))
+    outcome, executor = run_dispatch(app, principal, "pc_list",
+                                     {"path": "docs", "device": "second"})
+    assert outcome["status"] == "denied"
+    assert outcome["code"] == "device_not_in_token_scope"
+    assert executor.calls == [], "범위 밖 요청은 실행기에 도달해서는 안 된다"
+
+
+# ── DC #599: 작업 ID 후속 호출은 그 작업을 만든 PC로 간다 ─────────────────────
+
+SHELL_JOB_ID = "dsp_" + "b" * 32
+SHELL_RUN_ID = "run_fixture"
+SHELL_SUBJECT = "sub_" + "7" * 32
+SHELL_TOKEN = "mcp_" + "f" * 32
+
+
+class ShellJobHistory:
+    """pc_shell_start가 PC-B(device 인자)에서 시작한 작업 행."""
+
+    def __init__(self, owner):
+        self.owner = owner
+
+    def _row(self):
+        raw = b"hello world"
+        return {"dispatch_id": SHELL_JOB_ID, "user_id": self.owner,
+                "device_id": DEVICE_B, "run_id": SHELL_RUN_ID,
+                "kind": "command", "state": "pending", "claimed": True,
+                "termination": None, "exit_code": None,
+                "command_id": "oracle_mesh_cmd_" + "1" * 32,
+                "revision_ref": "rev_1",
+                "result_sha256": hashlib.sha256(raw).hexdigest(),
+                "result_bytes": len(raw)}
+
+    async def get_oracle_mesh_dispatch_for_owner(self, *, user_id, dispatch_id):
+        return self._row() if dispatch_id == SHELL_JOB_ID else None
+
+    async def get_pc_output_dispatch_for_owner(self, *, user_id, dispatch_id):
+        return await self.get_oracle_mesh_dispatch_for_owner(
+            user_id=user_id, dispatch_id=dispatch_id)
+
+    async def get_claw_run(self, user_id, run_id):
+        return {"run_id": SHELL_RUN_ID, "conversation_id": "conv_fixture"}
+
+    async def store_pc_output(self, **kwargs):
+        assert kwargs["device_id"] == DEVICE_B, "출력은 작업의 PC에 귀속된다"
+        return {"handle": "a" * 64, "size": len(kwargs["content"].encode("utf-8")),
+                "truncated": False}
+
+    async def read_pc_output(self, **kwargs):
+        assert kwargs["device_id"] == DEVICE_B, "읽기도 작업의 PC로 간다"
+        return {"handle": kwargs["handle"], "content": "hello world"}
+
+    async def cancel_oracle_mesh_dispatches_for_run(self, *, user_id, run_id):
+        assert (user_id, run_id) == (self.owner, SHELL_RUN_ID)
+        return 1
+
+
+class StartReceiptStore:
+    """시작 호출(기본 PC가 아닌 PC-B)의 영수증만 소유로 인정한다."""
+
+    def __init__(self, identity):
+        self.identity = identity
+
+    async def owns_job_receipt(self, *, identity, job_id):
+        return (identity["user_id"] == self.identity["user_id"]
+                and identity["token_id"] == self.identity["token_id"]
+                and identity["device_id"] == self.identity["device_id"])
+
+
+def _shell_request(app, receipts, owner):
+    state = SimpleNamespace(history_store=ShellJobHistory(owner),
+                            mcp_gateway_store=receipts)
+    return SimpleNamespace(app=SimpleNamespace(state=state))
+
+
+def test_a_job_started_on_another_pc_is_read_and_stopped_by_its_id():
+    """Desktop Commander #599: pc_shell_start를 기본이 아닌 PC(B)에서 시작하면,
+    그 작업 ID의 pc_shell_read·pc_shell_stop은 B의 작업에 도달한다 — 호출의
+    device 인자(기본 PC A)가 달라도 작업이 PC를 정한다."""
+    from app.mcp_gateway_shell import execute_pc_shell_read, execute_pc_shell_stop
+
+    db, owner, _other, store = setup()
+    app, _ = app_with(owner, store)
+    start_identity = {"user_id": owner, "device_id": DEVICE_B, "token_id": SHELL_TOKEN}
+    request = _shell_request(app, StartReceiptStore(start_identity), owner)
+    # 호출자의 identity.device는 토큰 기본 PC(A) — 작업은 B에서 시작했다.
+    read_identity = {"user_id": owner, "device_id": DEVICE_A, "token_id": SHELL_TOKEN}
+    read = asyncio.run(execute_pc_shell_read(
+        request, identity=read_identity, subject_id=SHELL_SUBJECT,
+        arguments={"job_id": SHELL_JOB_ID, "device": LABEL_A}))
+    assert read["status"] != "denied", read
+    stop = asyncio.run(execute_pc_shell_stop(request, identity=read_identity,
+                                             job_id=SHELL_JOB_ID))
+    assert stop["status"] == "cancelled", stop
+
+
+def test_a_foreign_token_or_user_job_id_is_refused_with_ownership_error():
+    from app.mcp_gateway_shell import execute_pc_shell_read, execute_pc_shell_stop
+
+    db, owner, _other, store = setup()
+    app, _ = app_with(owner, store)
+    start_identity = {"user_id": owner, "device_id": DEVICE_B, "token_id": SHELL_TOKEN}
+    request = _shell_request(app, StartReceiptStore(start_identity), owner)
+    for identity in (
+            {"user_id": "usr_" + "d" * 32, "device_id": DEVICE_B, "token_id": SHELL_TOKEN},
+            {"user_id": owner, "device_id": DEVICE_B, "token_id": "mcp_" + "0" * 32}):
+        read = asyncio.run(execute_pc_shell_read(
+            request, identity=identity, subject_id=SHELL_SUBJECT,
+            arguments={"job_id": SHELL_JOB_ID}))
+        stop = asyncio.run(execute_pc_shell_stop(request, identity=identity,
+                                                 job_id=SHELL_JOB_ID))
+        assert read["status"] == "denied" and stop["status"] == "denied"
+        assert read["answer"] == "이 작업을 확인할 수 없습니다."
+        assert stop["answer"] == "이 작업을 중지할 수 없습니다."

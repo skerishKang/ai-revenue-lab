@@ -188,3 +188,24 @@ claude.ai·ChatGPT 웹 사용자 지정 커넥터가 공통 로그인으로 연�
 - 저장: migration **095_mcp_oauth.sql**. 기존 `padiem_mcp_tokens` 행을 OAuth grant로 확장하고 clients/codes 테이블을 추가한다. 액세스 1시간, 갱신 30일, 코드 10분·1회, 해시만 저장.
 - 설정의 '발급한 연결'에서 OAuth 연결을 보고 폐기할 수 있다. 계정 삭제는 코드·토큰을 지우고 만료 코드는 정리 회차가 지운다.
 - 배포 전 migration 095와 공통 로그인 활성화, HTTPS public base URL을 확인한다. 상세는 `docs/architecture/PADIEM_MCP_DESKTOP_COMMANDER_REPLACEMENT_20261103.md` 11절.
+
+## 추가: 여러 PC 선택 (2026-11-04, PR #6793 — 컴2로컬1의 실행 컨텍스트 수정과 함께 배포)
+
+한 MCP 연결(토큰)에서 연결된 PC 여러 대를 고를 수 있다. 실행 대상은 **토큰에 묶인 기본 PC 또는 호출마다 고른 PC**이며, Chat 화면에 저장된 PC 선택 preference와는 무관하다(저장 선택은 화면 기본값일 뿐 실행 권한이 아니다 — 컴2로컬1의 실행 컨텍스트 수정 이후 기준).
+
+### 도구
+
+- **`pc_devices`** — 토큰 소유 계정의 연결 PC 목록. 항목: 표시 이름, 기기 ID 끝 6자(id6), 온라인 여부(mesh_device_presence 180초 규칙), 기본 PC 여부. 전체 기기 ID·메시 노드 ID는 응답에 내려가지 않는다.
+- **모든 pc_* 도구** — 선택 인자 `device`(표시 이름 또는 id6). 비우면 토큰의 기본 PC(기존 동작 그대로).
+
+### 토큰 기기 범위
+
+OAuth 동의 화면에서 "내 PC 전부"(기본) 또는 "고른 PC만"을 고른다. 결정은 migration **100_mcp_token_device_scope.sql**의 `padiem_mcp_tokens.device_scope`·`device_scope_json`에 기록된다. NULL은 이전에 발급된 단일 PC 토큰 — 토큰의 PC만 허용하며 기존 연결은 무중단이다.
+
+### 안전 규칙 (Desktop Commander 원격 다중 PC 사고 #586·#599 대응)
+
+1. **명시한 device로만 실행한다.** `device`를 명시했는데 그 PC가 꺼져 있으면 `device_offline`, 토큰 범위 밖이면 `device_not_in_token_scope`로 거절한다. 다른 온라인 PC나 기본 PC로 조용히 넘어가지 않는다 — 기본 PC가 온라인인 상태에서도 선택 PC가 오프라인이면 실행하지 않는다. 같은 id6·이름이 여러 대면 `device_ambiguous`로 거절한다.
+2. **작업 ID 후속 호출은 그 작업을 만든 PC로 간다.** `pc_shell_start`를 기본이 아닌 PC에서 시작해도, 그 작업 ID의 `pc_shell_read`·`pc_shell_stop`은 그 PC의 작업에 도달한다(호출의 `device`가 달라도 작업 행의 PC가 우선). 다른 사용자·다른 토큰의 작업 ID는 소유권 오류(`이 작업을 확인할 수 없습니다`/`이 작업을 중지할 수 없습니다`)로 거절한다.
+3. **거절은 이유 코드와 감사로 남긴다.** `mcp_operation` 로그와 `padiem_mcp_audit` 행에 대상 PC 끝 6자를 남긴다(명령 원문은 기존 digest 규칙 유지).
+
+시험: `tests/test_mcp_multi_device_261104.py` (목록·온라인·기본 PC, 조용한 폴백 금지, 범위 밖 거절, 레거시 단일 PC 토큰, 작업 ID 소유권, 동의 범위 저장, migration 100 멱등).

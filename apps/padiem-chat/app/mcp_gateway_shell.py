@@ -14,6 +14,8 @@ import re
 import time
 from collections.abc import Mapping
 
+from padiem_ai_core.pc_device_identity import is_pc_device_id
+
 PC_SHELL_TOOL_NAME = "pc_shell"
 PC_SHELL_START_TOOL_NAME = "pc_shell_start"
 PC_SHELL_READ_TOOL_NAME = "pc_shell_read"
@@ -278,7 +280,20 @@ async def _read_original(request, *, uid, dispatch, run_row):
 
 
 async def _authorize_job(request, *, identity, job_id, require_receipt=True):
+    """Bind a job to (user, token, the PC the job itself names).
+
+    2026-11-04 multi-device: one token can start jobs on several PCs, so the
+    job row - not the token's default PC - decides which PC a follow-up read
+    or stop touches (the Desktop Commander #599 shape: a job id must reach the
+    machine that ran it). The receipt still binds the exact start call:
+    (user, token, the PC the job was started on), read from the row.
+    """
     if not _valid_job_id(job_id):
+        return None
+    row = await _private_dispatch_row(request, uid=identity["user_id"], dispatch_id=job_id)
+    if (not isinstance(row, dict) or row.get("dispatch_id") != job_id
+            or row.get("kind") != "command" or row.get("user_id") != identity["user_id"]
+            or not is_pc_device_id(row.get("device_id"))):
         return None
     if require_receipt:
         mcp_store = getattr(request.app.state, "mcp_gateway_store", None)
@@ -286,15 +301,11 @@ async def _authorize_job(request, *, identity, job_id, require_receipt=True):
         if not callable(owns):
             return None
         try:
-            if not await owns(identity=identity, job_id=job_id):
+            if not await owns(identity={**identity, "device_id": row["device_id"]},
+                              job_id=job_id):
                 return None
         except Exception:
             return None
-    row = await _private_dispatch_row(request, uid=identity["user_id"], dispatch_id=job_id)
-    if (not isinstance(row, dict) or row.get("dispatch_id") != job_id
-            or row.get("kind") != "command" or row.get("device_id") != identity["device_id"]
-            or row.get("user_id") != identity["user_id"]):
-        return None
     return row
 
 
@@ -333,7 +344,7 @@ async def _output_reference(request, *, identity, subject_id, dispatch, private,
     try:
         ref = await writer(
             user_id=uid, subject_id=subject_id, run_id=run_id,
-            device_id=identity["device_id"], dispatch_id=dispatch["dispatch_id"],
+            device_id=private["device_id"], dispatch_id=dispatch["dispatch_id"],
             source="mcp_shell", content=output,
         )
     except Exception:
@@ -381,7 +392,7 @@ async def _job_snapshot(request, *, identity, subject_id, job_id, offset, length
     bounded_offset = min(offset, ref["size"])
     try:
         page = await reader(user_id=identity["user_id"], subject_id=subject_id,
-                            run_id=dispatch["run_id"], device_id=identity["device_id"],
+                            run_id=dispatch["run_id"], device_id=private["device_id"],
                             handle=ref["handle"], offset=bounded_offset, length=length)
     except Exception:
         return {"status": "unavailable", "answer": "PC 작업 출력을 읽지 못했습니다."}
