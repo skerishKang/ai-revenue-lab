@@ -150,3 +150,34 @@ Engine 계획 대신 Chat의 `dispatch_oracle_mesh_command_intent` 명령 레인
 대용량 전송은 2단계다. 상세 설계와 검증은
 `docs/architecture/PADIEM_MCP_DESKTOP_COMMANDER_REPLACEMENT_20261103.md`에
 있다.
+
+## 추가: pc_shell 3단계 — 시간 제한 없는 작업 (2026-11-03)
+
+위 문단의 `timeout_seconds`와 "시간 초과 시 프로세스 트리 종료"는 3단계에서
+바뀌었다. PC 도구에는 실행 시한을 두지 않는다(대표 결정 2026-10-24). 인자는
+`wait_seconds`(기본 120·최대 600, **응답을 기다리는** 시간)로 바뀌고, 기다림이
+지나면 명령을 죽이지 않고 작업 번호(`mcpjob_<32hex>`)와 지금까지의 출력을 돌려준다.
+새 도구 `pc_shell_start`(바로 작업 번호), `pc_shell_read`(offset 이어 읽기·상태·
+경과), `pc_shell_stop`(프로세스 트리 종료, 대기 중이면 디스패치 취소)을 추가했다.
+
+- 작업 소유권은 새 내구 행 `padiem_mcp_shell_jobs`(migration **096**)이 가진다.
+  명령을 보내기 전에 쓰고, 계정·token·PC를 묶어 다른 계정이나 다른 PC의 작업
+  번호로는 읽고 중지할 수 없다. 명령 본문은 digest만 저장하고 출력은 저장하지
+  않는다. PC에는 `%LOCALAPPDATA%\padiem-mcp-jobs`에 작업 파일을 쌓고 30일 뒤
+  정리한다.
+- 머지 순서는 094(이 브랜치) → 095(OAuth 브랜치 `feat/mcp-oauth-261103`) → 096.
+  배포 전 순서대로 적용해야 셸 도구가 동작한다.
+- 앞단 `apps/padiem-chat-front` 재배포가 필요하다. `POST /api/mcp`에 180초
+  기본 마감(`MCP_TIMEOUT_MS`)을 추가해, 앞단이 정상 실행 중인 PC 도구 호출을 504로
+  자르거나 외부 클라이언트가 504를 보고 재시도해 명령이 두 번 도는 일을 막았다.
+  커넥터 게이트웨이 WebSocket은 앞단이 이미 그대로 컴2로 넘긴다(101 응답을
+  fetch가 만든 객체 그대로 반환).
+- 커넥터 게이트웨이(`/api/claw/connector/gateway/session`,
+  `PADIEM_COM2_CONNECTOR_GATEWAY_ENABLED`)는 조사한 결과 **등록 전용**이고 명령
+  프레임·라이브 소켓 레지스트리·커넥터 프로덕션 다이얼러가 없으며 플래그도 기본
+  off다. 그래서 MCP 명령은 기존 디스패치 큐를 쓰고, 늘 연결 여부는 D1
+  `mesh_device_presence`(180초)로 판정한다: PC가 없으면 `pc_shell`은 실행하지
+  않고 정직하게 거부하고, `pc_shell_start`는 큐로 남긴다(디스패치 TTL 1시간).
+  게이트웨이 명령 레인이 붙을 분기점은
+  `dispatch_oracle_mesh_command_intent`의 target 해석 직후 한 곳이며, 켜는 순서는
+  설계 메모 11.5·11.7에 적었다.
