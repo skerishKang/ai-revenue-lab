@@ -11,15 +11,17 @@ from urllib.parse import parse_qs, urlsplit
 
 import pytest
 from starlette.responses import Response
-
-from app.mcp_oauth_metadata import authorization_challenge, canonical_resource
-from app.shared_login_flow import (
-    LOGIN_RETURN_COOKIE, clear_login_return_cookie, login_return_target,
-    safe_login_return, set_login_return_cookie,
-)
 from test_5222_account_model_selection import BASE, client_for, session
 from test_mcp_gateway_account import DEVICE, Pairing, account_app, setup
 
+from app.mcp_oauth_metadata import authorization_challenge, canonical_resource
+from app.shared_login_flow import (
+    LOGIN_RETURN_COOKIE,
+    clear_login_return_cookie,
+    login_return_target,
+    safe_login_return,
+    set_login_return_cookie,
+)
 
 RESOURCE = BASE + "/api/mcp"
 REDIRECT = "https://claude.test/callback"
@@ -141,6 +143,79 @@ async def test_metadata_documents_and_401_challenge(app_ctx):
         assert 'error="invalid_token"' in invalid.headers["www-authenticate"]
     assert canonical_resource(app.state.settings) == RESOURCE
     assert 'resource_metadata="' + BASE + '/.well-known/oauth-protected-resource"' in authorization_challenge(app.state.settings)
+
+
+@pytest.mark.asyncio
+async def test_oauth_browser_cors_is_narrow_and_uncacheable(app_ctx):
+    app, _owner, _other, _store = app_ctx
+    allowed_origins = ("https://chatgpt.com", "https://claude.ai")
+    async with client_for(app) as client:
+        for origin in allowed_origins:
+            for path in (
+                "/.well-known/oauth-protected-resource",
+                "/.well-known/oauth-authorization-server",
+            ):
+                response = await client.get(path, headers={"Origin": origin})
+                assert response.status_code == 200
+                assert response.headers["access-control-allow-origin"] == origin
+                assert "origin" in response.headers["vary"].lower()
+                assert "no-store" in response.headers["cache-control"]
+
+            for path, requested_headers in (
+                ("/oauth/register", "content-type"),
+                ("/oauth/token", "authorization, content-type"),
+            ):
+                response = await client.options(path, headers={
+                    "Origin": origin,
+                    "Access-Control-Request-Method": "POST",
+                    "Access-Control-Request-Headers": requested_headers,
+                })
+                assert response.status_code == 204
+                assert response.headers["access-control-allow-origin"] == origin
+                assert "POST" in response.headers["access-control-allow-methods"]
+                assert "OPTIONS" in response.headers["access-control-allow-methods"]
+                assert "no-store" in response.headers["cache-control"]
+
+            registered = await client.post("/oauth/register", headers={"Origin": origin}, json={
+                "client_name": "CORS contract",
+                "redirect_uris": ["https://client.example/callback"],
+                "token_endpoint_auth_method": "none",
+                "grant_types": ["authorization_code", "refresh_token"],
+                "response_types": ["code"],
+                "scope": "mcp:pc",
+            })
+            assert registered.status_code == 201
+            assert registered.headers["access-control-allow-origin"] == origin
+            assert "no-store" in registered.headers["cache-control"]
+
+            token_response = await client.post("/oauth/token", headers={"Origin": origin}, data={
+                "grant_type": "unsupported",
+                "client_id": "invalid-client",
+            })
+            assert token_response.status_code == 401
+            assert token_response.headers["access-control-allow-origin"] == origin
+            assert "no-store" in token_response.headers["cache-control"]
+
+        rejected = await client.get(
+            "/.well-known/oauth-authorization-server",
+            headers={"Origin": "https://untrusted.example"},
+        )
+        assert rejected.status_code == 200
+        assert "access-control-allow-origin" not in rejected.headers
+        rejected_preflight = await client.options("/oauth/register", headers={
+            "Origin": "https://untrusted.example",
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "content-type",
+        })
+        assert rejected_preflight.status_code == 403
+        assert "access-control-allow-origin" not in rejected_preflight.headers
+        rejected_header = await client.options("/oauth/register", headers={
+            "Origin": allowed_origins[0],
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "x-unapproved",
+        })
+        assert rejected_header.status_code == 403
+        assert "access-control-allow-origin" not in rejected_header.headers
 
 
 @pytest.mark.asyncio

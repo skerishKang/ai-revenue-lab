@@ -23,6 +23,7 @@ from urllib.parse import urlparse
 import httpx
 from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
 from app.maintenance_mode import apply_write_freeze
+from app.account_deletion import prune_expired_account_deletion_audit
 from app.b14_upstream_composition import (
     compose_b14_transports,
     request_correlation_headers,
@@ -119,6 +120,7 @@ from app.claw_local_task_result_composition import (
     build_local_task_result_source_with_diagnostic,
 )
 from app.main import create_app
+from app.model_first import model_first_enabled
 from app.orchestration_routes import install_orchestration_routes
 from app.orchestration_stream import orchestration_stream_enabled
 from app.project_files import D1ProjectFileStore
@@ -1046,9 +1048,20 @@ def _log_fetch_exception_safe(stage: str, exc: Exception, worker: Any, request: 
         pass
 
 
+async def run_account_deletion_audit_retention(env: Any, *, now: datetime | None = None) -> int:
+    """Prune one-year hash-only account deletion records from the Chat D1 store."""
+    db_binding = binding_value(env, D1_BINDING_NAME)
+    return await prune_expired_account_deletion_audit(db_binding, now=now)
+
+
 class Default(WorkerEntrypoint):
     async def scheduled(self, event: Any, env: Any, ctx: Any) -> None:
         del event, ctx
+        try:
+            await run_account_deletion_audit_retention(env)
+        except Exception:
+            # Retention cleanup errors do not stop the existing scheduler; the next daily tick retries.
+            pass
         await run_scheduled_automation_source(env)
 
     async def _build_worker_app(self) -> Any:
@@ -1765,6 +1778,7 @@ class Default(WorkerEntrypoint):
                 canonical_subject_resolver=canonical_subject_resolver,
             ),
             stream_enabled=orchestration_stream_enabled(self.env),
+            model_first_enabled=model_first_enabled(self.env),
         )
         # The cutover write window (#5115 step ③) applies to this entry too:
         # the Worker has no filesystem, so only the environment switch can open

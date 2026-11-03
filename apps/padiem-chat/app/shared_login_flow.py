@@ -185,6 +185,19 @@ class SharedLoginFlow(ComparisonFlow):
         return response
 
     async def finish_login(self, request):
+        from .request_telemetry import current_request_id, is_safe_request_id
+        from .shared_login_timing import begin_login_timings, end_login_timings
+
+        request_id = current_request_id()
+        if not is_safe_request_id(request_id):
+            request_id = 'none'
+        token, timing_details = begin_login_timings()
+        try:
+            return await self._finish_login_timed(request, request_id, timing_details)
+        finally:
+            end_login_timings(token)
+
+    async def _finish_login_timed(self, request, request_id, timing_details):
         headers = {'cache-control': 'no-store', 'referrer-policy': 'no-referrer'}
         stage = 'validate_flow'
         # A callback can hold three outbound calls before a session exists. Which
@@ -249,15 +262,19 @@ class SharedLoginFlow(ComparisonFlow):
             # This module's logger has no handler in the host, so INFO never
             # reaches the journal and a successful login left no stage record.
             # The line is the one ops reads, in the failed line's own shape.
-            print('shared_login_timing outcome=ok total_ms=%d%s' % (
-                int((time.monotonic() - started) * 1000),
-                ' ' + ' '.join(marks) if marks else ''), flush=True)
+            from .shared_login_timing import format_login_timing_fields
+            detail_fields = marks + format_login_timing_fields(timing_details)
+            print('shared_login_timing outcome=ok total_ms=%d request_id=%s%s' % (
+                int((time.monotonic() - started) * 1000), request_id,
+                ' ' + ' '.join(detail_fields) if detail_fields else ''), flush=True)
         except Exception as exc:
             logger.warning('shared_login_finish_failed stage=%s code=%s',
                            stage, _finish_failure_code(exc, stage))
-            logger.warning('shared_login_timing outcome=failed stage=%s total_ms=%d%s',
-                           stage, int((time.monotonic() - started) * 1000),
-                           ' ' + ' '.join(marks) if marks else '')
+            from .shared_login_timing import format_login_timing_fields
+            detail_fields = marks + format_login_timing_fields(timing_details)
+            logger.warning('shared_login_timing outcome=failed stage=%s total_ms=%d request_id=%s%s',
+                           stage, int((time.monotonic() - started) * 1000), request_id,
+                           ' ' + ' '.join(detail_fields) if detail_fields else '')
             response = JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
         response.delete_cookie(STATE_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
         return response

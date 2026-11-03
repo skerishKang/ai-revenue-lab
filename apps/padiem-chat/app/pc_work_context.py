@@ -137,6 +137,8 @@ class PcWorkContext:
     mapping: str = _MAPPING_UNKNOWN
     selected_device_id: str | None = None
     saved_selection_status: str = SAVED_SELECTION_NONE
+    selection_offline: bool = False
+    selection_auto_switched: bool = False
 
     @property
     def verified(self) -> bool:
@@ -170,6 +172,7 @@ class PcWorkContext:
         return (
             self.execution.ready
             and self.saved_selection_status != SAVED_SELECTION_UNAVAILABLE
+            and not self.selection_offline
             and self.broker_status != _PAUSED
             and self.mapping in (
                 _MAPPING_CONFIRMED, _MAPPING_UNMAPPED, _MAPPING_IDENTITY_UNCONFIRMED,
@@ -496,13 +499,11 @@ async def linked_pc_targets(request: Any, owner_id: str) -> list[dict[str, Any]]
     return links if isinstance(links, list) else None
 
 
-def _link_devices(links: list[dict[str, Any]]) -> list[PcWorkDevice]:
-    """Directory rows for linked PCs, named the way the owner named them.
-
-    The name is what the answer and the browser call the machine by, so a link
-    contributes a row even before anything has proved it online - it is simply
-    not usable, which is the honest reading of "linked, not yet seen".
-    """
+def _link_devices(
+    links: list[dict[str, Any]], *, online_ids: set[str] | None = None,
+) -> list[PcWorkDevice]:
+    """Directory rows for owner-linked PCs, with only verified liveness."""
+    online_ids = online_ids or set()
     devices: list[PcWorkDevice] = []
     for link in links:
         if not isinstance(link, Mapping):
@@ -511,12 +512,58 @@ def _link_devices(links: list[dict[str, Any]]) -> list[PcWorkDevice]:
         if not is_pc_device_id(node_ref):
             continue
         label = link.get("label")
+        online = node_ref in online_ids
         devices.append(PcWorkDevice(
             device_id=node_ref,
             name=label if isinstance(label, str) and label else None,
-            state="OFFLINE", usable=False,
+            state="CONNECTED" if online else "OFFLINE",
+            usable=online,
         ))
     return devices
+
+
+async def _mesh_presence_online(
+    request: Any, *, device_id: str, now: datetime,
+) -> bool | None:
+    """Read liveness only for an already owner-scoped device identity."""
+    state = getattr(getattr(request, "app", None), "state", None)
+    store = getattr(state, "mesh_device_presence_store", None)
+    loader = getattr(store, "load", None)
+    if not callable(loader):
+        return None
+    try:
+        receipt = loader(device_id=device_id)
+        if inspect.isawaitable(receipt):
+            receipt = await receipt
+    except Exception:
+        return None
+    if not isinstance(receipt, Mapping) or receipt.get("device_id") != device_id:
+        return None
+    from .claw_local_access_source import mesh_presence_online
+
+    return mesh_presence_online(receipt, device_id=device_id, now=now)
+
+
+async def _link_devices_with_presence(
+    request: Any, links: list[dict[str, Any]], *, now: datetime,
+) -> list[PcWorkDevice] | None:
+    """Resolve liveness for the bounded owner-linked set when a selection is offline."""
+    if len(links) > _DEVICE_LIMIT:
+        return None
+    node_ids = [
+        link.get("mesh_node_id") for link in links
+        if isinstance(link, Mapping) and is_pc_device_id(link.get("mesh_node_id"))
+    ]
+    if len(node_ids) != len(set(node_ids)):
+        return None
+    values = await asyncio.gather(*(
+        _mesh_presence_online(request, device_id=node_id, now=now)
+        for node_id in node_ids
+    ))
+    online_ids = {
+        node_id for node_id, online in zip(node_ids, values) if online is True
+    }
+    return _link_devices(links, online_ids=online_ids)
 
 
 def _link_execution_target(
@@ -621,16 +668,98 @@ async def resolve_pc_work_context(
         devices.extend(
             device for device in _link_devices(links) if device.device_id not in known
         )
-    execution = await _resolve_execution_target(
-        request,
-        session_id=connector.session_id if connector.ready else session,
-        selected_device_id=selected_device_id,
-        account_ref=connector.account_ref if connector.ready else None,
-    )
-    if links:
-        linked = _link_execution_target(links, selected_device_id)
-        if linked is not None:
-            execution = linked
+
+    selection_offline = False
+    selection_auto_switched = False
+    if selected_device_id is not None:
+        selected_row = next(
+            (device for device in devices if device.device_id == selected_device_id),
+            None,
+        )
+        moment = datetime.now(timezone.utc)
+        presence_online = await _mesh_presence_online(
+            request, device_id=selected_device_id, now=moment,
+        )
+        selected_is_offline = (
+            (selected_row is None or selected_row.state != "REVOKED")
+            and (
+                presence_online is False
+                or (
+                    presence_online is not True
+                    and selected_row is not None
+                    and selected_row.state == "OFFLINE"
+                )
+            )
+        )
+        if selected_is_offline:
+            # Only Mesh-confirmed, owner-linked PCs can replace an offline target.
+            linked_devices: list[PcWorkDevice] = []
+            if links:
+                enriched = await _link_devices_with_presence(
+                    request, links, now=moment,
+                )
+                if enriched is not None:
+                    linked_devices = enriched
+                    by_id = {device.device_id: index for index, device in enumerate(devices)}
+                    for linked_device in enriched:
+                        index = by_id.get(linked_device.device_id)
+                        if index is None:
+                            devices.append(linked_device)
+                            by_id[linked_device.device_id] = len(devices) - 1
+                        elif devices[index].state != "REVOKED":
+                            devices[index] = linked_device
+                    selected_link = next(
+                        (device for device in enriched
+                         if device.device_id == selected_device_id),
+                        None,
+                    )
+                    if (
+                        presence_online is not True
+                        and selected_link is not None
+                        and selected_link.usable
+                    ):
+                        selected_is_offline = False
+            if selected_is_offline and paused_values != {True}:
+                online_ids = {
+                    device.device_id for device in linked_devices
+                    if device.device_id != selected_device_id
+                    and device.state == "CONNECTED" and device.usable
+                }
+                if len(online_ids) == 1:
+                    replacement = next(iter(online_ids))
+                    selection_store = getattr(
+                        state, "claw_pc_device_selection_store", None,
+                    )
+                    saver = getattr(selection_store, "save", None)
+                    if callable(saver):
+                        try:
+                            saved = saver(
+                                owner_id=owner, workspace_id=workspace,
+                                device_id=replacement, now=moment,
+                            )
+                            if inspect.isawaitable(saved):
+                                saved = await saved
+                        except Exception:
+                            saved = False
+                        if saved is True:
+                            selected_device_id = replacement
+                            selection_auto_switched = True
+                            selected_is_offline = False
+            selection_offline = selected_is_offline
+
+    if selection_offline:
+        execution = PcExecutionTarget(status=_EXEC_NO_TARGET)
+    else:
+        execution = await _resolve_execution_target(
+            request,
+            session_id=connector.session_id if connector.ready else session,
+            selected_device_id=selected_device_id,
+            account_ref=connector.account_ref if connector.ready else None,
+        )
+        if links:
+            linked = _link_execution_target(links, selected_device_id)
+            if linked is not None:
+                execution = linked
     usable = [device for device in devices if device.usable]
     # A paused owner has no execution target even though a PC is online.
     broker_target = (
@@ -645,6 +774,8 @@ async def resolve_pc_work_context(
         execution=execution,
         mapping=_mapping_for(devices, execution, selected_device_id),
         selected_device_id=selected_device_id,
+        selection_offline=selection_offline,
+        selection_auto_switched=selection_auto_switched,
     )
 
 
@@ -678,6 +809,12 @@ def _broker_lines(context: PcWorkContext) -> list[str]:
 
 
 def _execution_lines(context: PcWorkContext) -> list[str]:
+    if context.selection_offline:
+        return [
+            "선택한 PC가 꺼져 있거나 연결이 끊겨 있습니다. PC 작업을 실행하지 마세요. "
+            "연결을 확인하거나 연결된 PC를 선택하도록 안내하세요. 이를 계정의 접근 권한 "
+            "문제로 설명하지 마세요."
+        ]
     if context.saved_selection_status == SAVED_SELECTION_UNAVAILABLE:
         return ["저장된 PC 작업 대상의 복원 상태를 확인하지 못했습니다. 다른 PC를 기본 대상으로 추측하거나 PC 작업을 실행 가능하다고 안내하지 마세요."]
     execution = context.execution
@@ -747,6 +884,10 @@ def render_pc_work_context(context: PcWorkContext) -> str:
         "확인은 도구 실행 시 서버가 다시 수행합니다.",
     ]
     lines.extend(_broker_lines(context))
+    if context.selection_auto_switched:
+        lines.append(
+            "저장된 PC가 오프라인이라 유일하게 연결된 PC를 이번 작업 대상으로 선택했습니다."
+        )
     lines.extend(_execution_lines(context))
     lines.append(
         "Google Drive와 로컬 PC 드라이브는 서로 다른 대상입니다. 실제 도구 결과 없이 "

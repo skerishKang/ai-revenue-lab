@@ -27,6 +27,42 @@ from typing import Any
 from . import sqlite_settings as sqlite_policy
 from .request_timing import record_duration
 
+
+def _sql_operation_label(sql: str) -> str:
+    """Return only a bounded statement/table label; never SQL text or parameters."""
+    text = str(sql)
+    operation = re.search(r'\b(SELECT|INSERT|UPDATE|DELETE|REPLACE)\b', text, re.IGNORECASE)
+    if operation is None:
+        return 'other'
+    verb = operation.group(1).lower()
+    table_pattern = {
+        'select': r'\b(?:FROM|JOIN)\s+["`\[]?([A-Za-z_][A-Za-z0-9_]*)',
+        'insert': r'\bINTO\s+["`\[]?([A-Za-z_][A-Za-z0-9_]*)',
+        'replace': r'\bINTO\s+["`\[]?([A-Za-z_][A-Za-z0-9_]*)',
+        'update': r'\bUPDATE\s+["`\[]?([A-Za-z_][A-Za-z0-9_]*)',
+        'delete': r'\bFROM\s+["`\[]?([A-Za-z_][A-Za-z0-9_]*)',
+    }[verb]
+    table = re.search(table_pattern, text, re.IGNORECASE)
+    if table is None:
+        return verb
+    return f'{verb}_{table.group(1).lower()}'
+
+
+def _log_slow_sql(sql: str | None, duration_ms: float, *, query_ms: float | None = None,
+                   reader_setup_ms: float | None = None) -> None:
+    if duration_ms < 50 or not sql:
+        return
+    from .request_telemetry import current_request_id, is_safe_request_id
+    request_id = current_request_id()
+    if not is_safe_request_id(request_id):
+        return
+    components = ''
+    if query_ms is not None and reader_setup_ms is not None:
+        components = ' query_ms=%d reader_setup_ms=%d' % (
+            int(round(query_ms)), int(round(reader_setup_ms)))
+    print('sqlite_slow_execute request_id=%s operation=%s duration_ms=%d%s' % (
+        request_id, _sql_operation_label(sql), int(round(duration_ms)), components), flush=True)
+
 __all__ = ["SqliteD1", "connect"]
 
 
@@ -223,13 +259,16 @@ class SqliteD1:
         def timed(invoke):
             started = perf_counter()
             # Includes executor scheduling and writer-lock contention.
-            # Only aggregate durations leave this facade; never SQL/data.
+            # Slow diagnostics expose only the statement verb and table label; never SQL/data.
             record_duration("sqlite_wait", (started - submitted) * 1000)
             try:
                 return invoke()
             finally:
-                self._last_statement = perf_counter()
-                record_duration("sqlite_execute", (perf_counter() - started) * 1000)
+                finished = perf_counter()
+                self._last_statement = finished
+                duration_ms = (finished - started) * 1000
+                record_duration("sqlite_execute", duration_ms)
+                _log_slow_sql(sql, duration_ms)
 
         def locked():
             with self._lock:
@@ -238,9 +277,26 @@ class SqliteD1:
             # A dedicated executor avoids filling the writer/default executor
             # with readers waiting for a pool slot. Each thread owns one RO
             # connection. Copy request context just as asyncio.to_thread does.
+            def read_call():
+                worker_started = perf_counter()
+                record_duration("sqlite_wait", (worker_started - submitted) * 1000)
+                setup_started = perf_counter()
+                connection = self._read_connection()
+                reader_setup_ms = (perf_counter() - setup_started) * 1000
+                execute_started = perf_counter()
+                try:
+                    return function(connection)
+                finally:
+                    finished = perf_counter()
+                    self._last_statement = finished
+                    query_ms = (finished - execute_started) * 1000
+                    duration_ms = reader_setup_ms + query_ms
+                    record_duration("sqlite_execute", duration_ms)
+                    _log_slow_sql(sql, duration_ms, query_ms=query_ms,
+                                  reader_setup_ms=reader_setup_ms)
             context = copy_context()
             return await asyncio.get_running_loop().run_in_executor(
-                self._read_executor, context.run, lambda: timed(lambda: function(self._read_connection())))
+                self._read_executor, context.run, read_call)
         if self._threaded:
             return await asyncio.to_thread(locked)
         return locked()

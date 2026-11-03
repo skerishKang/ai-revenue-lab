@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timedelta, timezone
 
 from padiem_ai_core import (
@@ -214,3 +215,53 @@ async def test_material_execution_change_changes_server_admission_request_identi
     assert runtime.call_count == 2
     assert len(adapter.calls) == 2
     assert adapter.calls[0].request_fingerprint != adapter.calls[1].request_fingerprint
+
+
+async def test_admitted_run_emits_bounded_stage_timing(caplog) -> None:
+    caplog.set_level(logging.INFO, logger="padiem_ai_engine.engine_timing")
+    service, runtime = _service(AllowingAdapter())
+
+    response = await service.orchestrate_payload(_payload())
+
+    assert response.status_code == 200
+    assert runtime.call_count == 1
+    lines = [
+        record.getMessage()
+        for record in caplog.records
+        if record.getMessage().startswith("engine_timing ")
+    ]
+    assert len(lines) == 1
+    line = lines[0]
+    for field in (
+        "run_hash=",
+        "trace_id=tr_admission_run",
+        "admission_ms=",
+        "core_ms=",
+        "b14_ms=",
+        "receipt_ms=",
+        "total_ms=",
+        "outcome=ok",
+    ):
+        assert field in line
+    assert "Run admitted work" not in line
+
+
+async def test_refused_run_emits_zero_core_timing_without_request_content(caplog) -> None:
+    caplog.set_level(logging.INFO, logger="padiem_ai_engine.engine_timing")
+    service, runtime = _service(DenyingAdapter())
+
+    response = await service.orchestrate_payload(_payload())
+
+    assert response.status_code == 403
+    assert runtime.call_count == 0
+    lines = [
+        record.getMessage()
+        for record in caplog.records
+        if record.getMessage().startswith("engine_timing ")
+    ]
+    assert len(lines) == 1
+    line = lines[0]
+    assert "admission_ms=-1.0" not in line
+    assert "core_ms=-1.0" in line
+    assert "outcome=refused" in line
+    assert "Run admitted work" not in line

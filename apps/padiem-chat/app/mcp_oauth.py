@@ -14,23 +14,34 @@ import json
 import re
 import time
 from pathlib import Path
-from urllib.parse import parse_qsl, urlencode, unquote_plus, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, unquote_plus, urlencode, urlsplit, urlunsplit
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
-from starlette.responses import FileResponse, JSONResponse, RedirectResponse
+from starlette.responses import FileResponse, JSONResponse, RedirectResponse, Response
 from starlette.routing import Route
 
 from .auth_routes import current_user_id
 from .mcp_gateway_store import McpGatewayStoreError
 from .mcp_oauth_metadata import (
-    AUTHORIZATION_SERVER_METADATA_PATH, AUTHORIZE_INFO_PATH, AUTHORIZE_PATH,
-    MCP_OAUTH_SCOPE, PROTECTED_RESOURCE_METADATA_PATH, REGISTER_PATH,
-    REVOKE_PATH, TOKEN_PATH, authorization_server_metadata as _as_metadata_document,
-    canonical_resource, issuer, normalize_resource,
+    AUTHORIZATION_SERVER_METADATA_PATH,
+    AUTHORIZE_INFO_PATH,
+    AUTHORIZE_PATH,
+    MCP_OAUTH_SCOPE,
+    PROTECTED_RESOURCE_METADATA_PATH,
+    REGISTER_PATH,
+    REVOKE_PATH,
+    TOKEN_PATH,
+    canonical_resource,
+    issuer,
+    normalize_resource,
+)
+from .mcp_oauth_metadata import (
+    authorization_server_metadata as _as_metadata_document,
+)
+from .mcp_oauth_metadata import (
     protected_resource_metadata as _prm_document,
 )
 from .same_origin_guard import expected_browser_origin
-
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 _CONSENT_FILE = STATIC_DIR / "mcp-oauth-consent.html"
@@ -49,6 +60,50 @@ _MAX_BODY = 16_384
 _MAX_REDIRECT_URI = 2_048
 _MAX_STATE = 1_024
 _MAX_CLIENT_NAME = 100
+_OAUTH_CORS_ORIGINS = frozenset({
+    "https://chatgpt.com",
+    "https://claude.ai",
+})
+_OAUTH_CORS_HEADERS = frozenset({"authorization", "content-type"})
+
+
+def _cors_origin_header(request, *, methods, preflight=False):
+    origin = request.headers.get("origin", "").strip()
+    if origin not in _OAUTH_CORS_ORIGINS:
+        return None
+    headers = {
+        "Access-Control-Allow-Origin": origin,
+        "Vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+        if preflight else "Origin",
+    }
+    if preflight:
+        requested_method = request.headers.get("access-control-request-method", "").upper()
+        requested_headers = {
+            value.strip().lower()
+            for value in request.headers.get("access-control-request-headers", "").split(",")
+            if value.strip()
+        }
+        if requested_method not in methods or not requested_headers <= _OAUTH_CORS_HEADERS:
+            return None
+        headers["Access-Control-Allow-Methods"] = ", ".join((*sorted(methods), "OPTIONS"))
+        if requested_headers:
+            headers["Access-Control-Allow-Headers"] = ", ".join(sorted(requested_headers))
+    return headers
+
+
+def _cors_endpoint(handler, *, methods):
+    async def endpoint(request):
+        if request.method == "OPTIONS":
+            headers = _cors_origin_header(request, methods=methods, preflight=True)
+            if headers is None:
+                return Response(status_code=403, headers=_NO_STORE)
+            return Response(status_code=204, headers={**_NO_STORE, **headers})
+        response = await handler(request)
+        headers = _cors_origin_header(request, methods=methods)
+        if headers is not None:
+            response.headers.update(headers)
+        return response
+    return endpoint
 
 
 def _json(body, status=200, headers=None):
@@ -523,16 +578,21 @@ async def revoke(request):
 
 
 def mcp_oauth_routes():
+    metadata = _cors_endpoint(protected_resource_metadata, methods={"GET"})
+    server_metadata = _cors_endpoint(authorization_server_metadata, methods={"GET"})
+    token_endpoint = _cors_endpoint(token, methods={"POST"})
+    register_endpoint = _cors_endpoint(register_client, methods={"POST"})
+    revoke_endpoint = _cors_endpoint(revoke, methods={"POST"})
     return [
-        Route(PROTECTED_RESOURCE_METADATA_PATH, protected_resource_metadata, methods=["GET"]),
-        Route(PROTECTED_RESOURCE_METADATA_PATH + "/api/mcp", protected_resource_metadata, methods=["GET"]),
-        Route(AUTHORIZATION_SERVER_METADATA_PATH, authorization_server_metadata, methods=["GET"]),
+        Route(PROTECTED_RESOURCE_METADATA_PATH, metadata, methods=["GET", "OPTIONS"]),
+        Route(PROTECTED_RESOURCE_METADATA_PATH + "/api/mcp", metadata, methods=["GET", "OPTIONS"]),
+        Route(AUTHORIZATION_SERVER_METADATA_PATH, server_metadata, methods=["GET", "OPTIONS"]),
         Route(AUTHORIZE_INFO_PATH, authorize_info, methods=["GET"]),
         Route(AUTHORIZE_PATH, authorize_get, methods=["GET"]),
         Route(AUTHORIZE_PATH, authorize_post, methods=["POST"]),
-        Route(TOKEN_PATH, token, methods=["POST"]),
-        Route(REGISTER_PATH, register_client, methods=["POST"]),
-        Route(REVOKE_PATH, revoke, methods=["POST"]),
+        Route(TOKEN_PATH, token_endpoint, methods=["POST", "OPTIONS"]),
+        Route(REGISTER_PATH, register_endpoint, methods=["POST", "OPTIONS"]),
+        Route(REVOKE_PATH, revoke_endpoint, methods=["POST", "OPTIONS"]),
     ]
 
 

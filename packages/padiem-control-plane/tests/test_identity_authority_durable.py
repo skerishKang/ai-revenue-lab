@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 from datetime import datetime, timedelta, timezone
 import sqlite3
 
@@ -412,3 +413,149 @@ def test_expected_subject_mismatch_does_not_create_subject_or_product_link():
         expected_canonical_subject_id=first.canonical_subject_id,
     )
     assert same.canonical_subject_id == first.canonical_subject_id
+
+
+def _link_product(store, *, product_id: str, user: str, provider_subject: str = PROVIDER_SUBJECT):
+    return store.resolve_or_create_product_link(
+        product_id=product_id,
+        product_user_id=user,
+        auth_provider="google",
+        provider_subject=provider_subject,
+        now=NOW,
+    )
+
+
+def _session(store, product_id: str, subject_id: str):
+    return store.establish_auth_session(
+        product_id=product_id,
+        subject=CanonicalSubjectRef(SubjectType.USER, subject_id),
+        authenticated_at=NOW,
+        not_after=NOW + timedelta(days=2),
+        now=NOW,
+    )
+
+
+def test_unlinking_one_product_keeps_shared_subject_and_other_sessions_active():
+    store, storage = fixture(
+        allowed_product_ids=frozenset({"b62", "lovetree-4-0"})
+    )
+    chat = _link_product(store, product_id="b62", user="usr_chat")
+    tree = _link_product(store, product_id="lovetree-4-0", user="usr_tree")
+    chat_session = _session(store, "b62", chat.canonical_subject_id)
+    tree_session = _session(store, "lovetree-4-0", tree.canonical_subject_id)
+
+    result = store.remove_product_link(
+        product_id="b62",
+        product_user_id="usr_chat",
+        canonical_subject_id=chat.canonical_subject_id,
+        now=NOW + timedelta(seconds=1),
+    )
+
+    assert result["removed"] is True
+    assert result["remaining_links"] == 1
+    assert result["common_account_deleted"] is False
+    assert store.list_active_product_links_for_subject(
+        canonical_subject_id=chat.canonical_subject_id
+    ) == [{
+        "product_id": "lovetree-4-0",
+        "product_user_id": "usr_tree",
+        "state": "active",
+    }]
+    assert store.resolve_auth_session(session_id=chat_session.session_id).state is AuthSessionState.REVOKED
+    assert store.resolve_auth_session(session_id=tree_session.session_id).state is AuthSessionState.ACTIVE
+    assert storage.count("canonical_identity_subject") == 1
+    assert storage.count("canonical_account_deletion_audit") == 0
+
+
+def test_last_unlink_revokes_every_session_and_keeps_only_hash_and_time_for_one_year():
+    store, storage = fixture()
+    account = link(store, user="usr_last")
+    session = _session(store, "b62", account.canonical_subject_id)
+
+    result = store.remove_product_link(
+        product_id="b62",
+        product_user_id="usr_last",
+        canonical_subject_id=account.canonical_subject_id,
+        account_deletion_operation_id="00000000-0000-4000-8000-000000000001",
+        now=NOW + timedelta(seconds=1),
+    )
+
+    assert result["common_account_deleted"] is True
+    assert result["remaining_links"] == 0
+    assert result["revoked_sessions"] == 1
+    assert store.resolve_auth_session(session_id=session.session_id).state is AuthSessionState.REVOKED
+    assert storage.count("canonical_identity_subject") == 0
+    assert storage.count("canonical_product_identity_link") == 0
+    assert storage.count("canonical_account_deletion_audit") == 1
+    columns = [row[1] for row in storage.connection.execute(
+        "PRAGMA table_info(canonical_account_deletion_audit)"
+    )]
+    assert columns == ["user_id_hash", "deleted_at"]
+    audit = storage.connection.execute(
+        "SELECT user_id_hash, deleted_at FROM canonical_account_deletion_audit"
+    ).fetchone()
+    assert audit[0] == hashlib.sha256(account.canonical_subject_id.encode()).hexdigest()
+    assert account.canonical_subject_id not in str(audit)
+    assert datetime.fromisoformat(audit[1]) == NOW + timedelta(seconds=1)
+
+    retry = store.remove_product_link(
+        product_id="b62",
+        product_user_id="usr_last",
+        canonical_subject_id=account.canonical_subject_id,
+        now=NOW + timedelta(seconds=2),
+    )
+    assert retry["already_deleted"] is True
+    assert storage.count("canonical_account_deletion_audit") == 1
+
+    store.prune_expired_deletion_audits(now=NOW + timedelta(days=366))
+    assert storage.count("canonical_account_deletion_audit") == 0
+
+
+def test_last_link_requires_auth_preparation_before_any_identity_mutation():
+    store, storage = fixture()
+    account = link(store, user="usr_unprepared")
+    session = _session(store, "b62", account.canonical_subject_id)
+
+    with pytest.raises(ControlPlaneContractError) as exc:
+        store.remove_product_link(
+            product_id="b62",
+            product_user_id="usr_unprepared",
+            canonical_subject_id=account.canonical_subject_id,
+            now=NOW + timedelta(seconds=1),
+        )
+
+    assert exc.value.code == "account_deletion_unprepared"
+    assert storage.count("canonical_identity_subject") == 1
+    assert storage.count("canonical_product_identity_link") == 1
+    assert storage.count("canonical_account_deletion_audit") == 0
+    assert store.list_active_product_links_for_subject(
+        canonical_subject_id=account.canonical_subject_id
+    ) == [{
+        "product_id": "b62",
+        "product_user_id": "usr_unprepared",
+        "state": "active",
+    }]
+    assert store.resolve_auth_session(session_id=session.session_id).state is AuthSessionState.ACTIVE
+
+
+def test_product_link_removal_rejects_a_different_subject_without_mutation():
+    store, storage = fixture(
+        allowed_product_ids=frozenset({"b62", "lovetree-4-0"})
+    )
+    first = _link_product(store, product_id="b62", user="usr_one")
+    second = _link_product(store, product_id="lovetree-4-0", user="usr_two", provider_subject="other-provider-subject")
+
+    with pytest.raises(ControlPlaneContractError) as exc:
+        store.remove_product_link(
+            product_id="b62",
+            product_user_id="usr_one",
+            canonical_subject_id=second.canonical_subject_id,
+            now=NOW + timedelta(seconds=1),
+        )
+
+    assert exc.value.code == "identity_rebind_forbidden"
+    assert storage.count("canonical_identity_subject") == 2
+    assert storage.count("canonical_product_identity_link") == 2
+    assert store.list_active_product_links_for_subject(
+        canonical_subject_id=first.canonical_subject_id
+    )[0]["product_id"] == "b62"

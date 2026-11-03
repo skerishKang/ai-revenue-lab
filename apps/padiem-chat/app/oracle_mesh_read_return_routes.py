@@ -1995,9 +1995,24 @@ async def _record_mesh_presence(
                 )
             else:
                 if completed is not None:
+                    from .claw_pc_device_selection_store import sync_superseded_device_selections
+
+                    selection_store = getattr(
+                        request.app.state, "claw_pc_device_selection_store", None,
+                    )
+                    try:
+                        selection_synced = await sync_superseded_device_selections(
+                            selection_store, link=completed, now=received_at,
+                        )
+                    except Exception as selection_exc:
+                        selection_synced = False
+                        logging.getLogger(__name__).warning(
+                            "oracle_mesh_pairing_selection=failed reason=%s",
+                            type(selection_exc).__name__,
+                        )
                     logging.getLogger(__name__).info(
-                        "oracle_mesh_pairing_claim=completed link_id=%s",
-                        completed.get("link_id"),
+                        "oracle_mesh_pairing_claim=completed link_id=%s selection_synced=%s",
+                        completed.get("link_id"), selection_synced,
                     )
         # R4: the link directory answers first. A beat naming a PC somebody has
         # paired is recorded under the server's own composed node identity, so

@@ -17,6 +17,7 @@ from app.d1_sqlite import SqliteD1, connect
 from app.history import D1HistoryStore, _user_id
 from app.local_service_bridge import HttpRpcBinding
 from app.shared_auth_adapter import SharedChatAuth
+from app.request_telemetry import _CURRENT_REQUEST_ID
 from app.shared_auth_compare_flow import _b64, _encoded
 from app.shared_login_flow import ACCESS_COOKIE, STATE_COOKIE, SharedLoginFlow
 from app.shared_profile_provision import provision_shared_profile
@@ -49,7 +50,7 @@ class Verifier:
         return {"accountId": ACCOUNT, "expiresAt": 2000}
 
 
-async def exchange(*args):
+async def exchange(*args, **kwargs):
     return {"access_token": ACCESS, "refresh_token": REFRESH,
             "account_id": ACCOUNT, "profile": dict(PROFILE)}
 
@@ -80,9 +81,30 @@ async def callback_request(flow):
 # an identifier, a token, or the exception's own text.
 TIMING = re.compile(
     r"^shared_login_timing outcome=failed stage=[a-z_]+ total_ms=\d+"
-    r"(?: (?:validate_flow|client_assertion|exchange|resolve_account|provision_profile"
-    r"|issue_session)=\d+)*$"
+    r" request_id=(?:none|[A-Za-z0-9][A-Za-z0-9._:@-]{0,127})"
+    r"(?: [a-z0-9_]+=\d+)*$"
 )
+TIMING_LABELS = {
+    'validate_flow', 'client_assertion', 'exchange', 'resolve_account',
+    'provision_profile', 'issue_session',
+    'assertion_build_ms', 'assertion_build_n', 'assertion_sign_ms', 'assertion_sign_n',
+    'assertion_key_refresh_ms', 'assertion_key_refresh_n',
+    'exchange_headers_ms', 'exchange_headers_n', 'exchange_body_ms', 'exchange_body_n',
+    'exchange_total_ms', 'exchange_total_n',
+    'portal_client_auth_ms', 'portal_client_auth_n', 'portal_code_exchange_ms', 'portal_code_exchange_n',
+    'portal_token_sign_ms', 'portal_token_sign_n', 'portal_total_ms', 'portal_total_n',
+    'account_token_verify_ms', 'account_token_verify_n', 'identity_rpc_ms', 'identity_rpc_n',
+    'sqlite_auth_session_read_ms', 'sqlite_auth_session_read_n',
+    'sqlite_auth_link_read_ms', 'sqlite_auth_link_read_n',
+    'sqlite_auth_revision_read_ms', 'sqlite_auth_revision_read_n',
+    'sqlite_auth_session_expired_delete_ms', 'sqlite_auth_session_expired_delete_n',
+    'sqlite_auth_link_expired_delete_ms', 'sqlite_auth_link_expired_delete_n',
+    'sqlite_auth_session_upsert_ms', 'sqlite_auth_session_upsert_n',
+    'sqlite_auth_link_upsert_ms', 'sqlite_auth_link_upsert_n',
+    'profile_token_verify_ms', 'profile_token_verify_n',
+    'profile_user_upsert_ms', 'profile_user_upsert_n',
+    'profile_notification_ms', 'profile_notification_n',
+}
 
 
 def assert_reason_only(caplog, stage, code):
@@ -91,6 +113,9 @@ def assert_reason_only(caplog, stage, code):
     assert messages[0] == f"shared_login_finish_failed stage={stage} code={code}", messages
     assert any(TIMING.match(message) for message in messages), messages
     assert all(message == messages[0] or TIMING.match(message) for message in messages), messages
+    for message in messages[1:]:
+        fields = dict(item.split('=', 1) for item in message.split()[1:])
+        assert set(fields) - {'outcome', 'stage', 'total_ms', 'request_id'} <= TIMING_LABELS, fields
     assert all(record.exc_info is None for record in records)
     for private in (ACCOUNT, GOOGLE_SUBJECT, _user_id(GOOGLE_SUBJECT), ACCESS, REFRESH,
                     CODE, PRIVATE, PROFILE["email"], PROFILE["name"]):
@@ -195,6 +220,8 @@ async def host_roundtrip(history, *, authority_error=None, obsolete_user_agent=F
                 assert any(cookie.startswith(ACCESS_COOKIE + "=" + ACCESS + ";")
                            for cookie in response.headers.getlist("set-cookie"))
                 issued.append(await auth.user_id(callback, ACCESS))
+        if host_factory:
+            await flow.exchange.aclose()
     return results, calls, notified, issued
 
 
@@ -331,11 +358,23 @@ async def test_profile_and_authority_reasons_use_closed_codes(failure, caplog):
 async def test_a_successful_callback_reports_its_stages_without_the_code(capsys):
     flow = make_flow()
     callback = await callback_request(flow)
-    assert (await flow.finish_login(callback)).status_code == 302
+    request_token = _CURRENT_REQUEST_ID.set('synthetic-callback-req')
+    try:
+        assert (await flow.finish_login(callback)).status_code == 302
+    finally:
+        _CURRENT_REQUEST_ID.reset(request_token)
     out = capsys.readouterr().out
-    assert re.search(
-        r"^shared_login_timing outcome=ok total_ms=\d+"
-        r"(?: (?:validate_flow|client_assertion|exchange|resolve_account"
-        r"|provision_profile|issue_session)=\d+)+$", out, re.M), out
+    matches = re.findall(r"^shared_login_timing outcome=ok.*$", out, re.M)
+    assert len(matches) == 1, out
+    line = matches[0]
+    assert re.match(
+        r"^shared_login_timing outcome=ok total_ms=\d+ request_id=(?:none|[A-Za-z0-9][A-Za-z0-9._:@-]{0,127})",
+        line,
+    ), line
+    fields = dict(item.split('=', 1) for item in line.split()[1:])
+    assert fields['request_id'] == 'synthetic-callback-req'
+    assert {'validate_flow', 'client_assertion', 'exchange', 'resolve_account',
+            'issue_session', 'assertion_build_ms', 'assertion_sign_ms'} <= set(fields), fields
+    assert set(fields) - {'outcome', 'total_ms', 'request_id'} <= TIMING_LABELS, fields
     for private in (CODE, ACCESS, REFRESH, ACCOUNT, GOOGLE_SUBJECT, PROFILE["email"]):
         assert private not in out

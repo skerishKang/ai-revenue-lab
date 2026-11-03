@@ -19,25 +19,32 @@ from __future__ import annotations
 
 import argparse
 import io
+import os
 import re
 import sys
 from html import escape
 from pathlib import Path
+from urllib.parse import urlsplit
 
 REPO = Path(__file__).resolve().parents[2]
 SCENARIO_DIR = REPO / "docs" / "qa" / "scenarios"
 OUTPUT_DIR = REPO / "docs" / "help" / "tutorials"
-#: The pages live next to help.html, so they inherit its stylesheets and the
-#: same static-asset deployment. Nothing new is served from a second origin.
+#: The pages live beside help.html and inherit its stylesheets. Versioned
+#: recordings and captions load from the approved R2 custom domain.
 PAGE_DIR = REPO / "apps" / "padiem-chat" / "static" / "help-tutorials"
 #: Recording output (outside the repository, see capture_guest_scenes.py).
 DEFAULT_SHOTS = REPO.parent / "out"
 #: One phone-sized step image must stay small enough to send without a CDN
 #: transform; the recorder's PNGs are ~1 MB each.
 MAX_IMAGE_BYTES = 150 * 1024
-#: The videos and captions are not in the repository. The pages name the base
-#: URL variable they will read, and nothing else.
+#: Videos and captions stay outside the repository; pages embed versioned
+#: URLs from this process environment setting.
 VIDEO_KEY_ENV = "PADIEM_TUTORIAL_MEDIA_BASE_URL"
+DEFAULT_MEDIA_BASE_URL = "https://tutorial-media.padiem.net"
+MEDIA_VERSION = "v20261103"
+MEDIA_SCENES = frozenset(
+    {"01-first-visit", "02-pc-connection", "04-bookai"}
+)
 
 SCENARIOS = (
     ("01", "first-visit"),
@@ -175,6 +182,14 @@ TUTORIAL_CSS = """/* #6724 2 — tutorial pages. Layout only: colour, type and t
 }
 .tutorial-shot figcaption { margin-top: 6px; color: var(--muted, #6f7079); font-size: 14px; }
 
+#media video {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 12px;
+  background: #111;
+}
+
 .chat-help-video-slot {
   margin: 0;
   padding: 12px 14px;
@@ -238,6 +253,34 @@ def _scope(text: str) -> tuple[list[int], list[int]]:
         elif label.startswith("로그인"):
             account = numbers
     return guest, account
+
+
+def media_base_url() -> str:
+    """Accept only the approved public media origin."""
+
+    value = os.environ.get(VIDEO_KEY_ENV, DEFAULT_MEDIA_BASE_URL).strip()
+    parsed = urlsplit(value)
+    if (
+        parsed.scheme != "https"
+        or parsed.netloc.lower() != "tutorial-media.padiem.net"
+        or parsed.path not in {"", "/"}
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise ValueError(f"{VIDEO_KEY_ENV} must use https://tutorial-media.padiem.net")
+    return DEFAULT_MEDIA_BASE_URL
+
+
+def media_urls(document: dict) -> tuple[str, str] | None:
+    """The guest scenes with R2 recordings and their versioned public URLs."""
+
+    if document["key"] not in MEDIA_SCENES:
+        return None
+    root = f"{media_base_url()}/tutorials/{document['key']}"
+    return (
+        f"{root}/video.{MEDIA_VERSION}.webm",
+        f"{root}/captions.{MEDIA_VERSION}.vtt",
+    )
 
 
 def _steps(lines) -> list[dict]:
@@ -452,6 +495,10 @@ def render_readme(documents: list[dict]) -> str:
             f"`asset://{MEDIA_KEY_ROOT}/01-first-visit/captions.vtt` |",
             "",
             "촬영 원본은 저장소에 넣지 않습니다(`tools/tutorial/capture_guest_scenes.py --out <폴더>`).",
+            (
+                f"공개 영상은 `tutorials/<문서>/video.{MEDIA_VERSION}.webm`, "
+                f"`captions.{MEDIA_VERSION}.vtt`로 R2에 올립니다."
+            ),
             "",
             "## 도움말 화면과의 관계",
             "",
@@ -474,8 +521,11 @@ def render_readme(documents: list[dict]) -> str:
             f"저장소에 넣었습니다(장당 {MAX_IMAGE_BYTES // 1024}KB 이하). 사용 안내(``help.html``) 목차에서 "
             "``./help-tutorials/index.html``로 이어집니다.",
             "",
-            f"영상과 자막은 저장소에 넣지 않습니다. 페이지에는 \"영상 준비 중\" 자리만 두고, 나중에 고정 주소를 "
-            f"넣을 설정 키는 ``{VIDEO_KEY_ENV}``입니다(예: ``{VIDEO_KEY_ENV}/<문서>/video.webm``).",
+            f"영상과 자막은 저장소에 넣지 않습니다. 게스트로 촬영한 01·02·04 페이지에는 "
+            f"``{VIDEO_KEY_ENV}``로 지정한 ``https://tutorial-media.padiem.net``의 버전 주소를 붙이고, "
+            "촬영되지 않은 튜토리얼은 \"영상 준비 중\"으로 남깁니다.",
+            "",
+            "영상은 익명 CORS 모드로 자막을 불러옵니다. R2 CORS는 ``https://chat.padiem.net`` 출처와 GET/HEAD, Range 헤더만 허용합니다.",
             "",
             "## 도움말 문안 대조(반영됨)",
             "",
@@ -581,8 +631,7 @@ def render_page(document: dict) -> str:
         '  <link rel="stylesheet" href="./tutorial.css" />',
         '  <!-- tools/tutorial/build_tutorials.py가 docs/qa/scenarios/',
         f'{document["file"]}에서 만든 페이지입니다. 대본을 고치고 다시 생성하세요.',
-        f'       영상·자막 주소는 {VIDEO_KEY_ENV}/',
-        f'{MEDIA_KEY_ROOT}/{document["key"]}/video.webm 로 나중에 붙입니다. -->',
+        f'       영상·자막 주소는 {VIDEO_KEY_ENV}의 tutorial-media.padiem.net 버전 경로에서 읽습니다. -->',
         '</head>',
         '<body class="chat-help-body">',
         '  <a class="chat-help-skip" href="#tutorialMain">본문으로 건너뛰기</a>',
@@ -617,12 +666,27 @@ def render_page(document: dict) -> str:
         [
             '      <section class="chat-help-section" id="media" aria-labelledby="mediaTitle">',
             '        <h2 id="mediaTitle">영상과 자막</h2>',
-            (
-                '        <p class="chat-help-video-slot">영상 준비 중 — 녹화와 자막은 아직 '
-                '이 화면에 올리지 않았습니다.</p>'
-            ),
         ]
     )
+    media = media_urls(document)
+    if media:
+        video_url, captions_url = media
+        lines.extend(
+            [
+                '        <video controls preload="none" crossorigin="anonymous">',
+                f'          <source src="{escape(video_url)}" type="video/webm" />',
+                (
+                    '          <track kind="captions" '
+                    f'src="{escape(captions_url)}" srclang="ko" label="한국어" default />'
+                ),
+                '        </video>',
+            ]
+        )
+    else:
+        lines.append(
+            '        <p class="chat-help-video-slot">영상 준비 중 — 녹화와 자막은 아직 '
+            '이 화면에 올리지 않았습니다.</p>'
+        )
     if document["guest"]:
         lines.append(
             f'        <p class="chat-help-detail">촬영 범위: 게스트 '
