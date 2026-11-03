@@ -39,6 +39,7 @@ EXPECTED = [
     "03-document-work.md",
     "04-bookai.md",
     "05-account-deletion.md",
+    "07-external-ai-connect.md",
     "README.md",
 ]
 
@@ -230,6 +231,16 @@ class CommittedPages(unittest.TestCase):
         self.assertIn("orphan_image:99-extra/step-01.webp", stale)
         self.assertIn("orphan_page:99-extra.html", stale)
 
+    def test_the_external_ai_tutorial_keeps_the_pending_marker(self):
+        help_text = HELP.read_text(encoding="utf-8")
+        self.assertIn(f"<!-- {generator.PENDING_MARK}", help_text)
+        readme = (REPO / "docs" / "help" / "tutorials" / "README.md").read_text(encoding="utf-8")
+        self.assertIn(generator.PENDING_MARK, readme)
+        page = (PAGES / "07-external-ai-connect.html").read_text(encoding="utf-8")
+        self.assertIn(generator.PLACEHOLDER, page)
+        self.assertNotIn("/step-", page)
+        self.assertIn('href="../help.html#external-ai"', page)
+
     def test_the_account_tutorial_points_at_the_help_section(self):
         page = (PAGES / "05-account-deletion.html").read_text(encoding="utf-8")
         self.assertIn('href="../help.html#account"', page)
@@ -286,6 +297,7 @@ class RecorderPlan(unittest.TestCase):
                 "03-document-work",
                 "04-bookai",
                 "05-account-deletion",
+                "07-external-ai-connect",
             ],
         )
         self.assertEqual(by_slug["01-first-visit"]["guest_steps"], [1, 2, 3])
@@ -298,6 +310,9 @@ class RecorderPlan(unittest.TestCase):
         )
         self.assertEqual(by_slug["03-document-work"]["capture"], [])
         self.assertEqual(by_slug["05-account-deletion"]["capture"], [])
+        # The external-AI connection has only signed-in steps, so it is never
+        # recorded as a guest scene.
+        self.assertEqual(by_slug["07-external-ai-connect"]["capture"], [])
         # The recorder must only promise scenes it actually drives.
         for entry in plan["scenes"]:
             guest = set(entry["guest_steps"])

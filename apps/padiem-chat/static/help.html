@@ -55,6 +55,7 @@
         로그인이 필요한 화면은 열기 전에 로그인 안내로 막습니다.
         로그인·결제·게시·발송처럼 되돌리기 어려운 동작은 실행하기 전에 묻고,
         비밀번호·쿠키 같은 비밀 정보는 입력할 수 없습니다.
+        외부 AI에 연결한 PC의 명령 실행은 예외로, 배포에서 켜 둔 경우에만 실행 전 확인 없이 진행됩니다.
         좁히거나 숨기는 범위는 사용자가 고르는 선택입니다 — 설정에서 연결을 해제하면
         그 PC의 작업은 바로 멈춥니다.
       </p>
@@ -71,6 +72,7 @@
         <li><a href="#attach">첨부·프로젝트·더 보기</a></li>
         <li><a href="#byok">내 API 키(BYOK)</a></li>
         <li><a href="#mcp">외부 AI 도구 연결(MCP)</a></li>
+        <li><a href="#external-ai">외부 AI에 연결하기</a></li>
         <li><a href="#util">유틸</a></li>
         <li><a href="#bookai">북AI</a></li>
         <li><a href="#account">계정 탈퇴</a></li>
@@ -215,26 +217,53 @@
     <section class="chat-help-section" id="mcp" aria-labelledby="mcpTitle">
       <h2 id="mcpTitle">외부 AI 도구 연결(MCP)</h2>
       <p class="chat-help-desc">
-        설정의 <strong>외부 AI 연결</strong>에서 연결 이름과 내 PC를 고르고 개인 토큰을 발급합니다.
-        표시되는 MCP 연결 주소와 토큰을 Claude Code·Codex처럼 Bearer 토큰을 지원하는 도구에 넣으면,
-        그 도구가 내가 맡긴 PC 작업을 대신 실행합니다.
+        연결한 AI가 내 PC에서 쓸 수 있는 도구는 폴더 목록, 이름 검색, 파일 읽기·쓰기·이동·삭제,
+        브라우저 열기·읽기·캡처·조작입니다. PC 명령 실행은 배포에서 켜 둔 경우에만 도구 목록에 나타납니다.
+        설정의 <strong>외부 AI 연결</strong>에서 연결 이름과 PC를 고르고 개인 토큰을 발급하면
+        Claude Code·Codex처럼 Bearer 토큰을 쓰는 도구에 바로 연결할 수 있습니다.
       </p>
       <p class="chat-help-detail">
-        <strong>Claude 웹</strong>에서는 설정의 커넥터에서 사용자 지정 커넥터를 추가하고 이름과 MCP 연결 주소를 넣은 뒤
-        로그인 방식을 OAuth로 고르고 클라이언트 등록은 자동 등록을 선택합니다. <strong>ChatGPT 웹</strong>에서는
-        개발자 모드의 커넥터 추가에서 같은 주소를 넣고 OAuth 로그인을 선택합니다. 두 경우 모두 이 채트의 로그인 화면으로
-        이동하며, 로그인 뒤 승인 화면에서 연결할 PC를 고르고 승인하면 연결됩니다. 승인 화면에는 연결을 요청한 AI 이름과
-        “이 AI가 내 PC에서 파일·명령·브라우저 작업을 할 수 있습니다”라는 범위가 표시됩니다.
+        실행 전 확인은 도구마다 다릅니다. 파일 쓰기·이동·삭제가 PC에서 허용한 폴더 밖이면 설정에서 승인한 뒤
+        같은 요청을 다시 보내야 한 번 실행됩니다. 브라우저 작업은 미리 맡긴 범위에서 실행되고,
+        브라우저의 로그인·결제·게시·발송은 채트 대화에서 묻습니다.
+        PC 명령 실행은 확인 영수증 없이 실행되므로 배포 스위치로만 켜고 끕니다.
       </p>
       <p class="chat-help-detail">
-        OAuth 연결은 짧은 수명의 액세스 토큰과 갱신 토큰을 쓰며, 설정의 발급한 연결에서 언제든 폐기할 수 있습니다.
-        파일 목록·읽기·쓰기·이동·삭제, PC 브라우저 작업, git·테스트 같은 PC 명령 실행을 맡길 수 있습니다.
-        비밀번호 입력·계정 권한 변경·되돌릴 수 없는 삭제·외부 발송은 실행 전에 채트 대화에서 확인합니다.
+        작업 기록에는 쓴 도구, 승인 번호, 걸린 시간, 종료 코드, 출력 크기, 출력이 잘렸는지만 남습니다.
+        명령 본문과 출력 내용은 저장하지 않고, 요청 내용은 되돌릴 수 없는 식별용 요약값으로만 기록합니다.
       </p>
       <p class="chat-help-caution">
-        연결 해제와 토큰 폐기는 언제든 할 수 있습니다. 토큰은 발급할 때 한 번만 표시되므로 주소·명령 인자·소스·로그에
-        넣지 마세요. claude.ai·ChatGPT 웹 커넥터의 OAuth 연결은 승인 화면까지 이 페이지의 안내를 따릅니다.
+        주의: 한 번 연결하면 그 AI는 연결한 PC에서 위 작업을 할 수 있습니다. 필요 없으면 설정의
+        <strong>외부 AI 연결</strong>에서 그 연결을 폐기하면 바로 멈춥니다.
+        개인 토큰은 발급할 때 한 번만 표시되므로 주소·명령 인자·소스·로그에 넣지 마세요.
       </p>
+    </section>
+
+    <section class="chat-help-section" id="external-ai" aria-labelledby="externalAiTitle">
+      <h2 id="externalAiTitle">외부 AI에 연결하기</h2>
+      <p class="chat-help-desc">
+        ChatGPT·Claude 같은 AI 앱에 이 채트의 연결 주소를 넣으면, 그 앱이 내가 고른 PC의 작업을 대신합니다.
+        연결 주소는 <code>https://chat.padiem.net/api/mcp</code>입니다.
+      </p>
+      <p class="chat-help-detail">
+        <strong>1. 커넥터 추가</strong> — 그 AI 앱의 설정에서 커넥터 메뉴를 찾아 새 커넥터를 만들고 이름과 위 주소를 넣습니다.
+        메뉴 이름과 화면은 앱마다 다릅니다. ChatGPT는 개발자 모드 커넥터에서 주소를 넣고 로그인 방식을 OAuth로 고릅니다.
+        Claude는 사용자 지정 커넥터에서 주소를 넣고 클라이언트 등록은 자동 등록을 고릅니다.
+      </p>
+      <p class="chat-help-detail">
+        <strong>2. 로그인</strong> — 연결을 시작하면 이 채트의 로그인 화면으로 이동합니다.
+        이미 로그인해 있다면 바로 다음 화면으로 갑니다.
+      </p>
+      <p class="chat-help-detail">
+        <strong>3. 승인</strong> — <strong>외부 AI 연결 승인</strong> 화면에서 연결을 요청한 AI 이름,
+        연결이 끝나 돌아갈 곳, 허용 범위(<strong>내 PC의 파일·명령·브라우저 작업</strong>), 연결할 PC를 확인하고
+        <strong>승인하고 연결</strong>을 누릅니다. 연결할 PC가 없으면 설정에서 내 PC를 먼저 연결합니다.
+      </p>
+      <p class="chat-help-detail">
+        <strong>4. 확인</strong> — AI 앱으로 돌아와 도구가 보이면 연결이 끝난 것입니다.
+        연결을 끊으려면 설정의 <strong>외부 AI 연결</strong>에서 발급한 연결을 폐기합니다.
+      </p>
+      <!-- [실제 연결 확인 전] COM2 배포 뒤 실제 연결 시험을 마치면 이 주석을 지웁니다. -->
     </section>
 
     <section class="chat-help-section" id="util" aria-labelledby="utilTitle">

@@ -197,7 +197,13 @@ def test_an_example_links_with_its_own_words():
 
 def test_the_page_carries_no_script_no_network_and_no_shout():
     assert "<script" not in HELP
-    assert not re.search(r"https?://", HELP), "an external URL in the guide"
+    # One product-owned endpoint is the documented exception: the external-AI
+    # section has to show the address a person pastes into a connector. Every
+    # other URL stays banned, so the page still points at nothing it does not own.
+    allowed_urls = {"https://chat.padiem.net/api/mcp"}
+    found_urls = set(re.findall(r"https?://[^\s\"'<>]+", HELP))
+    assert found_urls <= allowed_urls, f"an external URL in the guide: {found_urls - allowed_urls}"
+    assert allowed_urls <= found_urls, "the external-AI section must show the connector address"
     assert "PADIEM" not in HELP
     assert 'lang="ko"' in HELP
     assert 'name="viewport" content="width=device-width, initial-scale=1"' in HELP
@@ -206,6 +212,23 @@ def test_the_page_carries_no_script_no_network_and_no_shout():
     # standalone page in this static tree links.
     assert '<link rel="stylesheet" href="./styles.css" />' in HELP
     assert '<link rel="stylesheet" href="./help.css" />' in HELP
+
+
+def test_the_external_ai_section_matches_the_consent_screen():
+    """The connect steps must name the screen and buttons the server serves."""
+
+    section = re.search(
+        r'<section class="chat-help-section" id="external-ai".*?</section>', HELP, re.S
+    )
+    assert section, "the guide must explain how to connect an external AI"
+    body = section.group(0)
+    consent = (STATIC / "mcp-oauth-consent.html").read_text(encoding="utf-8")
+    # Consent-page wording, so the guide cannot describe a screen that is not there.
+    for phrase in ("외부 AI 연결 승인", "승인하고 연결", "내 PC의 파일·명령·브라우저 작업"):
+        assert phrase in consent, phrase
+        assert phrase in body, phrase
+    assert "https://chat.padiem.net/api/mcp" in body
+    assert "폐기" in body
 
 
 def test_the_bookai_section_tells_the_device_then_account_save_rule():

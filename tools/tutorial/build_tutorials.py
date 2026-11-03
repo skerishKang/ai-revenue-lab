@@ -45,6 +45,9 @@ SCENARIOS = (
     ("03", "document-work"),
     ("04", "bookai"),
     ("05", "account-deletion"),
+    # 06 is the disaster-recovery runbook; the external-AI connection keeps the
+    # screenplay numbering instead of renumbering the operations document.
+    ("07", "external-ai-connect"),
 )
 EXCLUDED = {"06": "장애 복구는 운영 문서라 사용자 도움말에 넣지 않습니다."}
 
@@ -55,6 +58,10 @@ ACCOUNT_ENV = "PADIEM_LIVE_STORAGE_STATE"
 #: to R2 or the Worker's static assets.
 MEDIA_KEY_ROOT = "chat-tutorial"
 PLACEHOLDER = "[화면 준비 중 — 시험 계정 확정 후 촬영]"
+#: help.html carries this marker as an HTML comment until the real connector
+#: flow has been exercised on the deployed host. The unit test ties the two
+#: files together so neither side can drop it alone.
+PENDING_MARK = "[실제 연결 확인 전]"
 
 #: Developer vocabulary → what a person sees. Longest phrases first: "GET 상태"
 #: must not be reduced to "화면 열기 상태", and "세션 파일" must be handled
@@ -125,6 +132,7 @@ HELP_COMPARISON = (
 #: documents stay free of media paths.
 HELP_ANCHORS = {
     "05": ("account", "계정 탈퇴"),
+    "07": ("external-ai", "외부 AI에 연결하기"),
 }
 
 #: Applied in this branch: the help page now says what the code does. The rows
@@ -418,6 +426,10 @@ def render_readme(documents: list[dict]) -> str:
         [
             "",
             "06 장애 복구는 운영 문서라 여기서 만들지 않습니다.",
+            (
+                f"⑦ 외부 AI 연결은 대본만 있고, ``help.html``에 {PENDING_MARK} 표시가 남아 있는 동안은 "
+                "화면을 촬영하지 않습니다."
+            ),
             "",
             "## 이미지·영상 키",
             "",

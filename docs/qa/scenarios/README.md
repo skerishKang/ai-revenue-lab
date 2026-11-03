@@ -16,6 +16,7 @@
 | 04-bookai.md | 읽기 기록과 다른 기기 이어 보기 | 기기 저장 게스트 가능, 계정 동기화는 로그인 |
 | 05-account-deletion.md | 계정 탈퇴 안전 확인 | 기능 머지 뒤 실행 |
 | 06-disaster-recovery.md | 임시 폴더 백업 복원 | 컴2 레인·로컬 백업·키 환경 변수 |
+| 07-external-ai-connect.md | 외부 AI 커넥터 연결 | 로그인·연결된 PC·외부 AI 앱 |
 
 각 실행은 단계별 캡처, ms, HTTP 상태, 504 여부를 JSON에 기록합니다. 시나리오별 WebM 녹화와 튜토리얼 Markdown은 같은 산출 폴더에 생성합니다. 장애 복구 스크립트는 임시 데이터 폴더만 대상으로 하며 이 실행에서는 돌리지 않습니다.
 
@@ -23,6 +24,6 @@
 
 튜토리얼 생성: python apps/padiem-chat/scripts/build_live_tutorial.py <result.json> --output <tutorial.md>. 결과 JSON의 캡션으로 단계 캡처를 연결하며 영상 목록과 단계 시각표를 남깁니다. 편집·자막 합성은 하지 않습니다.
 
-사용자 튜토리얼 생성: python tools/tutorial/build_tutorials.py 가 01~05 대본을 docs/help/tutorials/로 바꾸고, python tools/tutorial/capture_guest_scenes.py 가 게스트 장면만 촬영합니다. 계정이 필요한 단계는 자리 표시로 남습니다(도구 설명: tools/tutorial/README.md).
+사용자 튜토리얼 생성: python tools/tutorial/build_tutorials.py 가 01~05·07 대본을 docs/help/tutorials/로 바꾸고, python tools/tutorial/capture_guest_scenes.py 가 게스트 장면만 촬영합니다. 계정이 필요한 단계는 자리 표시로 남습니다(도구 설명: tools/tutorial/README.md).
 
 장애 복구: deploy/host-com2/offsite-backup/run_live_chat_restore.sh 는 백업을 임시 디렉터리에 복원하고 PADIEM_CHAT_LOCAL_DATA_DIR을 임시 데이터 폴더로 지정해 Chat을 띄운 뒤 GET /와 GET /health만 확인합니다. COM2_OFFSITE_KEY_FILE과 COM2_OFFSITE_KEY_ID는 환경 변수로만 읽습니다. 운영 호스트에서 실행하지 않습니다.

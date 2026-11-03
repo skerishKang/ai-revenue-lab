@@ -19,6 +19,7 @@
 | 03 문서 작업 | 1–3 | 로그인, 민감정보 없는 합성 문서 | 자리 표시 |
 | 04 북AI | 2, 4 | 로그인, 북AI 세션, 두 번째 기기(빈 프로필) | 자리 표시 |
 | 05 계정 탈퇴 | 1–3 | 기능 병합·활성화, 시험 계정 | 자리 표시(촬영하지 않음) |
+| 07 외부 AI 연결 | 1–4 | 로그인, 연결된 PC, 외부 AI 앱 커넥터 | 자리 표시(호스트 배포 뒤 촬영) |
 
 세션 파일 이름은 `PADIEM_LIVE_STORAGE_STATE` 하나로 정했습니다. 값은 아직 없고, 파일은 저장소·GitHub Secrets에 넣지 않습니다. 계정이 확정되면 촬영 스크립트가 이 파일로 컨텍스트를 열어 계정 단계를 같은 키(`asset://chat-tutorial/<문서>/…`)에 이어 찍습니다.
 
@@ -43,6 +44,10 @@
 3. 이미지는 `./assets/<문서>/step-NN.webp` 고정 경로, 영상은 `PADIEM_TUTORIAL_MEDIA_BASE_URL` 키로 붙입니다. 호스팅을 바꿔도 페이지를 다시 만들 필요가 없습니다.
 4. help.html과 다른 문구 2건은 `docs/help/tutorials/README.md`의 문안 제안 표에 있습니다. `help.html` 반영은 Chat 화면 담당이 합니다.
 5. 대본·문서·페이지·이미지가 어긋나는 PR은 `.github/workflows/tutorial-generation-contract.yml`이 막습니다.
+
+## 확인 대기 표시
+
+`apps/padiem-chat/static/help.html`의 외부 AI 절 끝에 `<!-- [실제 연결 확인 전] … -->` 주석이 있습니다. 호스트에 배포되고 실제 커넥터 연결 시험을 한 번 마치면 그 주석을 지우고, 생성기 `PENDING_MARK`·단위 시험·`docs/help/tutorials/README.md`의 안내 문구를 함께 고칩니다. 한쪽만 지우면 시험이 먼저 깨집니다.
 
 ## 확인 명령
 
