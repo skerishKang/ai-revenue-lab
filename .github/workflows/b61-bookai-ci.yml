@@ -1,7 +1,7 @@
 name: B61 BookAI CI
 
 # 북AI(apps/bookai)는 이 파일이 생기기 전까지 GitHub에서 아무 검사도 받지 않았다.
-# #6736(네온 원격 연결 제거)은 화면 코드 13개 파일을 고치고도 로컬 `node --test`로만
+# #6736(북AI 원격 연결 경로 정리)은 화면 코드 13개 파일을 고치고도 로컬 `node --test`로만
 # 확인하고 머지됐고, apps/bookai/tests에는 이미 25개의 시험 파일이 있었다.
 #
 # Offline and read-only: no network, no provider, no deploy, no production probe.

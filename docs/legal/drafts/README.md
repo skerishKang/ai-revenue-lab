@@ -80,9 +80,8 @@
 | 항목 | 근거 |
 |---|---|
 | 기기 저장(읽기 기록·Memory가 이 기기에 저장) | `apps/bookai/public/index.html:179`(authGateCopy), `apps/bookai/public/bookai-login-ui.js:16-17` |
-| 계정 저장(로그인 시 계정에도 저장, 다른 기기에서 이어짐) | `apps/bookai/public/index.html:179`, `apps/bookai/public/bookai-sync.js:5,26`(`endpoint='/api/bookai/records'`) |
+| 북AI 계정 기록 동기화(로그인한 기기 간 읽기 기록·메모·어노테이션·저장한 AI 대화) | `apps/bookai/public/bookai-sync.js:5,26`(`/api/bookai/records`), `apps/bookai/public/bookai-records.js:4-35` |
 | 기기 로컬 DB(IndexedDB `bookai-local-v1`) | `apps/bookai/public/bookai-local-db.js:6,14` |
-| 로그인한 세션의 원격 동기화(Neon, `sources`·`annotations`) | `apps/bookai/public/index.html:2385-2390,2448,2626-2664` |
 | 기록 백업 내보내기·복원 | `apps/bookai/public/index.html:189-194` |
 | StoryMemory 로컬 키(`storymemory.*`) | `apps/storymemory/public` 키 전수 목록(점검 결과 절) |
 
