@@ -6,7 +6,14 @@ import test from 'node:test';
 
 const appRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const publicRoot = path.join(appRoot, 'public');
-const codeExtensions = new Set(['.js', '.mjs', '.cjs', '.html', '.css', '.json', '.sql']);
+const codeExtensions = new Set([
+  '.js', '.mjs', '.cjs', '.html', '.css', '.json', '.sql',
+  '.yml', '.yaml', '.toml', '.py', '.ts', '.tsx', '.jsx', '.sh'
+]);
+const configFiles = new Set([
+  'package.json', 'package-lock.json', 'pnpm-lock.yaml', 'yarn.lock',
+  'bun.lock', 'bun.lockb', '.env.example'
+]);
 
 function sourceFiles(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
@@ -15,20 +22,24 @@ function sourceFiles(dir) {
       if (['.git', 'node_modules', 'tests'].includes(entry.name)) return [];
       return sourceFiles(full);
     }
-    return codeExtensions.has(path.extname(entry.name).toLowerCase()) ? [full] : [];
+    // This copied StoryMemory package checksum is archival metadata, not BookAI runtime/config.
+    if (entry.name === 'MANIFEST_SHA256.json') return [];
+    return codeExtensions.has(path.extname(entry.name).toLowerCase()) ||
+      configFiles.has(entry.name) ? [full] : [];
   });
 }
 
 function assertHas(source, pattern, file, claim) {
-  assert.ok(pattern.test(source), `${path.relative(appRoot, file)}: ${claim}`);
+  assert.ok(pattern.test(source), path.relative(appRoot, file) + ': ' + claim);
 }
 
-test('BookAI runtime source has no Neon endpoint or adapter configuration', () => {
-  const forbidden = /\bneon\b|neon[.]tech|neonauth|us-east-1|createStoryMemoryNeon|storyMemoryEnableNeon/i;
+test('BookAI code has no Neon connection or provider configuration', () => {
+  const connectionMarkers =
+    /\bneon(?:js)?\b|@neondatabase|neon[.]tech|neonauth|\bDATABASE_URL\b|\b[A-Z0-9_]*NEON[A-Z0-9_]*\b|createStoryMemoryNeon|storyMemoryEnableNeon/i;
   for (const file of sourceFiles(appRoot)) {
     const source = fs.readFileSync(file, 'utf8');
-    assert.ok(!forbidden.test(source),
-      `${path.relative(appRoot, file)} contains a removed remote provider marker`);
+    assert.ok(!connectionMarkers.test(source),
+      path.relative(appRoot, file) + ' contains a removed remote provider marker');
   }
 });
 
@@ -41,11 +52,11 @@ test('both reader pages keep the legacy remote lane disabled before fetch', () =
     assertHas(source, /const remoteEnabled = false;/, page, 'remote lane must stay disabled');
     assertHas(source, /bookai-remote-pack-surfaces-disabled/, page, 'remote pack surfaces are hidden');
     const requestStart = source.indexOf('async function request(table');
-    assert.notEqual(requestStart, -1, `${path.relative(appRoot, page)}: request method is present`);
+    assert.notEqual(requestStart, -1, path.relative(appRoot, page) + ': request method is present');
     const disabledGuard = source.indexOf('if(!remoteEnabled)', requestStart);
     const networkCall = source.indexOf('fetchImpl(', requestStart);
     assert.ok(disabledGuard >= 0 && networkCall > disabledGuard,
-      `${path.relative(appRoot, page)} must reject before fetch`);
+      path.relative(appRoot, page) + ' must reject before fetch');
     assertHas(source, /remote:'disabled'/, page, 'status remains local');
     assertHas(source, /reason:'REMOTE_DISABLED'/, page, 'ping remains local');
     assertHas(source, /async function storyMemoryEnableRemote\(\)[\s\S]*?return \{ok:true,remote:'disabled'/,
