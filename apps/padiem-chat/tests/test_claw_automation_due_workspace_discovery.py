@@ -14,8 +14,8 @@ LAYER B — the discovery+trigger boundary against a SYNCHRONOUS durable store.
   therefore uses the kernel's own durable ``SqliteClawAutomationStore`` and proves
   the discovery pass composes with the EXISTING tick / dedup / claim path.
 
-Nothing here activates a scheduler, registers cron, calls a provider or mutates
-Production.
+Nothing here activates a live scheduler, calls a provider or mutates Production.
+The config assertion allows only the already-reviewed retention cron.
 """
 
 from __future__ import annotations
@@ -24,6 +24,7 @@ import asyncio
 from dataclasses import replace
 import sqlite3
 import sys
+import tomllib
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -1120,8 +1121,9 @@ def test_discovery_module_registers_cron_source_and_scheduled_handler() -> None:
     assert "compose_scheduled_automation_execution" in worker_source
     assert "D1ClawTaskAlertStore" in worker_source
     assert "ClawAutomationOwnerResolver" in worker_source
-    assert "[triggers]" not in wrangler_source
-    assert "crons" not in wrangler_source.lower()
+    assert tomllib.loads(wrangler_source).get("triggers") == {
+        "crons": ["17 3 * * *"]
+    }
     assert 'PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"' in wrangler_source
     assert "WORKER_SCHEDULED_HANDLER = True" in discovery_source
     assert "CRON_SOURCE_DECLARATION = False" in discovery_source

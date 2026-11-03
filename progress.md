@@ -112,3 +112,9 @@
 - test-environment: 기존 Claw run-history UI의 locale guard가 앱 주석의 한국어를 거부해 주석을 영어로 정리했다. Node 출력 재시험에는 `PYTHONUTF8=1`을 지정했다.
 - docs: `docs/operations/RETENTION_ENFORCE_20261103.md`에 Claw (a)/(b) 분류와 배포 시 migration 적용 항목을 추가했다.
 - delivery: 운영 스키마에는 migration 098 적용이 필요하다. PR·병합·배포는 수행하지 않고 지정 브랜치에 commit/push만 한다.
+
+## 2026-11-03 · scheduler cron allowlist 시험 정합화
+- baseline: detached `origin/main` `d5caa3354`에서 기존 scheduler 시험 2개를 실행해 둘 다 실패함을 재현했다. 두 실패 모두 checked-in `wrangler.toml`의 `17 3 * * *` retention cron을 “cron 미등록”으로 단정하던 기대값 때문이다.
+- merge: 최신 `origin/main` `d5caa3354`를 `feat/claw-jobs-retention-261103`에 merge했다.
+- fix: scheduler 시험 두 곳에서 TOML을 파싱해 `triggers`가 `crons=["17 3 * * *"]` 하나만 포함할 때만 통과하도록 allowlist로 바꿨다. 추가/변경 cron은 실패한다. 기능과 cron 설정은 바꾸지 않았다.
+- verify: 두 대상 시험 2 passed. 최신 main merge 후 전체 Chat Python Claw + retention 2,039 passed.
