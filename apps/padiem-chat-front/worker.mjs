@@ -37,6 +37,11 @@ const DEFAULT_TUS_TIMEOUT_MS = 180000;
 // the browser saw upstream_timeout while the host was still finishing the login, so
 // this one path gets its own allowance; every other /auth/* keeps the short one.
 const DEFAULT_AUTH_CALLBACK_TIMEOUT_MS = 30000;
+// POST /api/mcp is a PC tool call, not a database write: COM2 holds the request
+// while the PC runs the command inside the caller's wait window (120s default).
+// The plain write deadline would answer 504 for a command that is running fine,
+// and an external client that retries on 504 would run it twice.
+const DEFAULT_MCP_TIMEOUT_MS = 180000;
 const TIMED_OUT = Symbol("timed_out");
 const CONNECTION_REFUSED = Symbol("connection_refused");
 const TRANSPORT_FAILED = Symbol("transport_failed");
@@ -225,8 +230,15 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     // on 2026-11-03). 120s for the measurement window; the final ceiling is
     // the CTO's call once the numbers are in.
     const orchestration = request.method === "POST" && url.pathname === "/api/orchestration";
+    // A PC tool call is answered when the PC answers: pc_shell waits inside its
+    // own window (120s default) and hands a longer command back as a job, so the
+    // generic write deadline would cut a healthy call off mid-flight and the
+    // caller would retry a command that is already running.
+    const mcpToolCall = request.method === "POST" && url.pathname === "/api/mcp";
     const timeoutMs = orchestration
       ? numeric(env.ORCHESTRATION_TIMEOUT_MS, DEFAULT_TIMEOUT_MS)
+      : mcpToolCall
+      ? numeric(env.MCP_TIMEOUT_MS, DEFAULT_MCP_TIMEOUT_MS)
       : appsAI
       ? numeric(env.APPS_AI_TIMEOUT_MS, 65000)
       : apiRead ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS)
