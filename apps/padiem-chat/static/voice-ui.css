@@ -72,11 +72,6 @@
     min-width: 0;
     max-width: 132px;
   }
-  /* The spark is decorative (aria-hidden); at this width its pixels are the
-     difference between the tier word fitting and being clipped. */
-  #composerForm .composer-actions > .composer-tools .model-pill .status-spark {
-    display: none;
-  }
   #composerForm .composer-actions > .composer-tools .model-pill > span:last-child {
     min-width: 0;
     overflow: hidden;

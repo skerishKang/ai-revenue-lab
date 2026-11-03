@@ -172,7 +172,6 @@ button:disabled { opacity: .55; cursor: not-allowed; }
   font-size: 14px;
   font-weight: 650;
 }
-.status-spark { color: var(--accent); }
 .login-button {
   margin-left: auto;
   min-height: 42px;
@@ -281,6 +280,7 @@ button:disabled { opacity: .55; cursor: not-allowed; }
   font-weight: 700;
 }
 .assistant-content { color: #2f3037; font-family: inherit; font-size: 16px; }
+.assistant-content { color: #2f3037; font-size: 16px; }
 .assistant-content p { margin: 0 0 12px; }
 .assistant-content p:last-child { margin-bottom: 0; }
 .source-list { display: grid; gap: 8px; margin-top: 16px; }
