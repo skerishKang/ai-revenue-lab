@@ -155,9 +155,15 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             )
         return result
     if shell:
+        # #6717 후속: MCP는 토큰에 묶인 PC를 실행 대상으로 확정한다 — 저장된
+        # 선택(다른 PC)과 토큰 device가 달라도 이 요청의 PC는 토큰이 증명한
+        # 것이다. pc_work_context의 일반 핀 인자(#6793이 호출마다 고른 PC를
+        # 넘길 때도 사용). 소유자 활성 링크·온라인·도구 가능·mesh grant는
+        # 아래와 pc_work_context 내부에서 그대로 검사된다.
         context = await resolve_pc_work_context(
             request, owner_id=uid, workspace_id=workspace_id,
             session_id=session.session_id, selected_device_id=device_id,
+            execution_device_id=device_id,
         )
         if context.selection_offline or context.selected_device_id != device_id:
             return {"status": "unavailable", "code": "pc_offline",
@@ -197,7 +203,8 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
                 content=str(result.get("answer", "")), status="failed")
         return result
     context = await resolve_pc_work_context(request, owner_id=uid, workspace_id=workspace_id,
-        session_id=session.session_id, selected_device_id=device_id)
+        session_id=session.session_id, selected_device_id=device_id,
+        execution_device_id=device_id)
     denial: list[str] = []
     if (not context.selected_confirmed or not context.tool_available
             or context.execution_device_id != device_id
