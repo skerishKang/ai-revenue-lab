@@ -102,6 +102,13 @@ _MESHCTRL_STDIN_BOOTSTRAP = (
     "require(process.argv[1]);"
 )
 
+#: The same flush barrier for a login that carries the server login-key file:
+#: the client reads the key from that file, so nothing is substituted on argv.
+_MESHCTRL_LOGINKEY_BOOTSTRAP = (
+    _MESHCTRL_FLUSH_BARRIER
+    + "require(process.argv[1]);"
+)
+
 #: The same credential hand-off for a client that keeps using standard input after
 #: the password — ``meshctrl shell`` pipes the terminal in from there. Reading the
 #: secret one byte at a time and stopping at its newline leaves the rest of the
