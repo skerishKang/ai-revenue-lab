@@ -55,6 +55,25 @@ def license_notice_url_allowed(relative: str, url: str) -> bool:
     return relative == LICENSE_NOTICE_PATH and url in LICENSE_NOTICE_URLS
 
 
+# #6724 product navigation destinations in help content. These exact URLs are
+# scoped to the three reviewed files; they do not expand the global host allowlist.
+TUTORIAL_HELP_NAVIGATION_URLS = {
+    "apps/padiem-chat/static/help-tutorials/01-first-visit.html": frozenset({
+        "https://chat.padiem.net/",
+    }),
+    "apps/padiem-chat/static/help-tutorials/04-bookai.html": frozenset({
+        "https://bookai.padiem.net/",
+    }),
+    "apps/padiem-chat/static/help.html": frozenset({
+        "https://chat.padiem.net/api/mcp",
+    }),
+}
+
+
+def tutorial_help_navigation_url_allowed(relative: str, url: str) -> bool:
+    return url in TUTORIAL_HELP_NAVIGATION_URLS.get(relative, frozenset())
+
+
 URL_RE = re.compile(r"https?://[^\s\"'<>)}]+", re.IGNORECASE)
 
 
@@ -98,7 +117,8 @@ def main() -> None:
             feature_hosts |= ADMIN_HUB_NAVIGATION_HOSTS.get(relative.as_posix(), frozenset())
             feature_hosts |= DRIVE_REVOKE_NAVIGATION_HOSTS.get(relative.as_posix(), frozenset())
             if (host not in ALLOWED_LITERAL_HTTP_HOSTS and host not in feature_hosts
-                    and not license_notice_url_allowed(relative.as_posix(), url)):
+                    and not license_notice_url_allowed(relative.as_posix(), url)
+                    and not tutorial_help_navigation_url_allowed(relative.as_posix(), url)):
                 violations.append(f"{relative}: unapproved external host {host}: {url}")
 
     if violations:

@@ -31,6 +31,21 @@ const DEFAULT_TIMEOUT_MS = 8000;
 // for it; 60s is the CTO's fixed ceiling, and a configured ORCHESTRATION_TIMEOUT_MS
 // still takes precedence.
 const DEFAULT_ORCHESTRATION_TIMEOUT_MS = 60000;
+// #6460: every path whose answer is produced by a model call behind COM2 needs the
+// same first-byte deadline as /api/orchestration — what is slow is the answer, not
+// the write (guest /api/chat/stream measured 504 at 9.9s against the 8s window while
+// the same answer completes in ~10-11s). Ordinary writes — saves, settings, files,
+// account, connectors — deliberately stay on the 8s window.
+const ANSWER_GENERATION_PATHS = new Set([
+  "/api/orchestration",
+  "/api/orchestration/resume",
+  "/api/chat",
+  "/api/chat/stream",
+  "/api/claw/general",
+  "/api/claw/manual-intake/execute",
+  "/api/claw/manual-intake/preview",
+  "/api/b66/ai/chat",
+]);
 const DEFAULT_API_READ_TIMEOUT_MS = 30000;
 // Resumable chunked uploads (tus, /api/projects/*/files/tus) hold the request
 // open while a ≤90MB chunk drains to COM2 — a healthy upload must not die on
@@ -120,16 +135,16 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     unhealthySince.set(origin, now());
   }
 
-  function withOrchestrationTotal(response, started, status) {
+  function withOrchestrationTotal(response, started, status, path = "/api/orchestration") {
     // The total covers exactly the upstream answer: the log line prints when
     // the upstream body has fully streamed through. The bytes pass through
     // untouched — lengths only, never the body, never cookies, never identity.
     const ttfb = Math.round(now() - started);
     const { readable, writable } = new TransformStream();
     response.body.pipeTo(writable).then(() => {
-      console.log(`orchestration_timing path=/api/orchestration status=${status} ttfb_ms=${ttfb} total_ms=${Math.round(now() - started)}`);
+      console.log(`orchestration_timing path=${path} status=${status} ttfb_ms=${ttfb} total_ms=${Math.round(now() - started)}`);
     }).catch(() => {
-      console.log(`orchestration_timing path=/api/orchestration status=${status} ttfb_ms=${ttfb} total_ms=stream_aborted`);
+      console.log(`orchestration_timing path=${path} status=${status} ttfb_ms=${ttfb} total_ms=stream_aborted`);
     });
     return new Response(readable, {
       status: response.status, statusText: response.statusText, headers: response.headers,
@@ -234,10 +249,10 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     // legitimately run past the generic write window (measured 504 at ~13.5s and
     // 11.2s worst case on 2026-11-03). The default is the CTO's 60s ceiling; a
     // configured ORCHESTRATION_TIMEOUT_MS still wins.
-    const orchestration = request.method === "POST" && url.pathname === "/api/orchestration";
+    const answerRequest = request.method === "POST" && ANSWER_GENERATION_PATHS.has(url.pathname);
     const timeoutMs = oauthRequest
       ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS)
-      : orchestration
+      : answerRequest
       ? numeric(env.ORCHESTRATION_TIMEOUT_MS, DEFAULT_ORCHESTRATION_TIMEOUT_MS)
       : appsAI
       ? numeric(env.APPS_AI_TIMEOUT_MS, 65000)
@@ -249,9 +264,9 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     if (isWrite) {
       const started = now();
       const response = await forward(request, target, env, timeoutMs);
-      if (orchestration) {
-        // One line per orchestration request: path, status, time to first
-        // byte, total time. Never the body, never cookies, never identity.
+      if (answerRequest) {
+        // One line per answer request: path, status, time to first byte, total time.
+        // Never the body, never cookies, never identity.
         if (response instanceof Response) {
           const ttfb = Math.round(now() - started);
           const headers = new Headers(response.headers);
@@ -264,15 +279,19 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
           const timed = new Response(response.body, {
             status: response.status, statusText: response.statusText, headers,
           });
-          return withOrchestrationTotal(timed, started, response.status);
+          return withOrchestrationTotal(timed, started, response.status, url.pathname);
         }
-        console.log(`orchestration_timing path=/api/orchestration status=upstream_${response.description ?? String(response)} ttfb_ms=${Math.round(now() - started)} total_ms=${Math.round(now() - started)}`);
+        console.log(`orchestration_timing path=${url.pathname} status=upstream_${response.description ?? String(response)} ttfb_ms=${Math.round(now() - started)} total_ms=${Math.round(now() - started)}`);
       }
       if (response === SIGNING_FAILED) return maintenanceResponse("write_refused");
       if (response === TIMED_OUT) return requestFailure(request, 504, "upstream_timeout");
       if (response === TRANSPORT_FAILED) return requestFailure(request, 502, "upstream_transport_failed");
       if (response !== CONNECTION_REFUSED) return response;
       markFailure(origin.toString());
+      // An answer is never handed to a second upstream: a refused connection could
+      // have arrived after the model already started, and re-sending would run the
+      // same question twice. Report it instead; the client decides.
+      if (answerRequest) return requestFailure(request, 503, "upstream_refused");
       if (canonicalWrites || appsAI || bookAIRecords) return maintenanceResponse("write_com2_canonical_refused");
       return fallback(request, env, true);
     }

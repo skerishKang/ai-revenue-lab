@@ -24,6 +24,7 @@ import threading
 from time import perf_counter
 from typing import Any
 
+from . import sqlite_settings as sqlite_policy
 from .request_timing import record_duration
 
 
@@ -70,8 +71,9 @@ def connect(path: str) -> sqlite3.Connection:
 
     connection = sqlite3.connect(path, isolation_level=None, check_same_thread=False)
     connection.row_factory = sqlite3.Row
-    connection.execute("PRAGMA journal_mode = WAL")
-    connection.execute("PRAGMA busy_timeout = 5000")
+    # WAL + synchronous=NORMAL + a small autocheckpoint, decided once for every
+    # connection this process opens (see app/sqlite_settings.py).
+    sqlite_policy.configure_writer(connection)
     connection.execute("PRAGMA foreign_keys = ON")
     return connection
 
@@ -176,6 +178,9 @@ class SqliteD1:
         self._reader_lock = threading.Lock()
         self._read_executor = None
         self.read_workers = read_workers
+        # Wall-clock free timestamps (perf_counter) for the idle checkpoint.
+        self._last_statement = perf_counter()
+        self._last_checkpoint = 0.0
         if read_workers:
             path = next((row[2] for row in connection.execute("PRAGMA database_list") if row[1] == "main"), "")
             if not path or connection.execute("PRAGMA journal_mode").fetchone()[0].lower() != "wal":
@@ -184,16 +189,33 @@ class SqliteD1:
             self._read_executor = ThreadPoolExecutor(max_workers=read_workers, thread_name_prefix="chat-sqlite-read")
 
     def _read_connection(self):
-        connection = getattr(self._read_local, "connection", None)
-        if connection is None:
+        """This thread's read-only connection, reopened if it sat idle.
+
+        A pooled reader closes itself after ``READER_IDLE_SECONDS`` unused and
+        the next read opens a fresh one. Closing happens on the owning thread,
+        so no connection is ever closed from under a running statement.
+        """
+
+        entry = getattr(self._read_local, "entry", None)
+        if entry is not None and perf_counter() - entry[1] > sqlite_policy.READER_IDLE_SECONDS:
+            entry[0].close()
+            with self._reader_lock:
+                try:
+                    self._reader_connections.remove(entry[0])
+                except ValueError:
+                    pass
+            entry = None
+        if entry is None:
             connection = sqlite3.connect(self._read_uri, uri=True, isolation_level=None, check_same_thread=False)
             connection.row_factory = sqlite3.Row
-            connection.execute("PRAGMA query_only=ON")
-            connection.execute("PRAGMA busy_timeout=5000")
+            sqlite_policy.configure_reader(connection)
+            entry = [connection, perf_counter()]
+            self._read_local.entry = entry
             self._read_local.connection = connection
             with self._reader_lock:
                 self._reader_connections.append(connection)
-        return connection
+        entry[1] = perf_counter()
+        return entry[0]
 
     async def close_readers(self):
         """Drain this facade's readers; the caller still owns the writer."""
@@ -204,6 +226,32 @@ class SqliteD1:
         for connection in self._reader_connections:
             connection.close()
         self._reader_connections.clear()
+
+    async def checkpoint_if_idle(self, *, quiet_seconds: float = sqlite_policy.IDLE_QUIET_SECONDS,
+                                 min_interval: float = sqlite_policy.IDLE_CHECKPOINT_SECONDS):
+        """Truncate the WAL while the database is quiet.
+
+        The WAL file only shrinks when a checkpoint runs with no reader holding
+        an older snapshot, so this runs on a timer and never during traffic.
+        A skipped run reports why; it never blocks a request.
+        """
+
+        def run():
+            now = perf_counter()
+            if now - self._last_statement < quiet_seconds:
+                return {"skipped": "recent_activity"}
+            if now - self._last_checkpoint < min_interval:
+                return {"skipped": "checked_recently"}
+            self._last_checkpoint = now
+
+            with self._lock:
+                busy, log, checkpointed = self.connection.execute(
+                    "PRAGMA wal_checkpoint(TRUNCATE)").fetchone()
+            return {"busy": busy, "log": log, "checkpointed": checkpointed}
+
+        if self._threaded:
+            return await asyncio.to_thread(run)
+        return run()
 
     async def _invoke(self, function, *, sql=None):
         submitted = perf_counter()
@@ -216,7 +264,9 @@ class SqliteD1:
             try:
                 return invoke()
             finally:
-                duration_ms = (perf_counter() - started) * 1000
+                finished = perf_counter()
+                self._last_statement = finished
+                duration_ms = (finished - started) * 1000
                 record_duration("sqlite_execute", duration_ms)
                 _log_slow_sql(sql, duration_ms)
 
@@ -237,7 +287,9 @@ class SqliteD1:
                 try:
                     return function(connection)
                 finally:
-                    query_ms = (perf_counter() - execute_started) * 1000
+                    finished = perf_counter()
+                    self._last_statement = finished
+                    query_ms = (finished - execute_started) * 1000
                     duration_ms = reader_setup_ms + query_ms
                     record_duration("sqlite_execute", duration_ms)
                     _log_slow_sql(sql, duration_ms, query_ms=query_ms,

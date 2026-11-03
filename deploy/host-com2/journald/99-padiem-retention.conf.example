@@ -1,0 +1,29 @@
+# journald retention for COM2 — matches the decided periods (2026-11-03).
+#
+# NOT INSTALLED BY THIS REPOSITORY. This is a template for the operator to
+# review and install; nothing here changes a host by itself.
+#
+# What the privacy policy now promises (docs/legal/drafts/privacy_common_ko.md,
+# 5조): access records 3 months, service error/audit logs 90 days. Neither
+# value can hold while journald keeps everything until the disk fills, which is
+# what the 11-03 survey found (no SystemMaxUse, no MaxRetentionSec).
+#
+# The binding number is the *longest* promised period (90 days). Access log
+# lines that only need 3 months are rotated by the same window; a shorter
+# access-specific rule would need a separate file sink, which this template
+# does not invent.
+#
+# Install (operator, after review; the host change is outside this repository):
+#   sudo install -m 0644 99-padiem-retention.conf /etc/systemd/journald.conf.d/
+#   sudo systemctl restart systemd-journald
+#   journalctl --disk-usage          # confirm the cap is in effect
+#
+# Rolling back is removing the file and restarting systemd-journald; journald
+# keeps existing files until its own cleanup next runs.
+
+[Journal]
+# A hard ceiling so one chatty day cannot outrun the disk, and a time ceiling
+# so the promised 90 days is an upper bound rather than "until we notice".
+SystemMaxUse=2G
+SystemMaxFileSize=128M
+MaxRetentionSec=90d
