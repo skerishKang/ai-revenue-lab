@@ -13,12 +13,14 @@ Claims verified here:
 (d) a mid-batch failure rolls the whole deletion back;
 (e) a stored cookie stops authenticating right after the deletion;
 (f) the central administrator and stored platform-admin roles are refused;
-(g) migration 091 applies twice without error.
+(g) migration 092 applies twice without error;
+(h) account deletion removes only its own Mesh presence owner reference.
 """
 from __future__ import annotations
 
 import asyncio
 import hashlib
+import json
 import sqlite3
 from pathlib import Path
 from types import SimpleNamespace
@@ -189,6 +191,9 @@ _OVERRIDES = {
     ("pc_pairing_codes", "state"): "pending",
     ("pc_pairing_codes", "code_sha256"): _sha("code"),
     ("pc_pairing_codes", "tag_sha256"): _sha("tag"),
+    ("pc_install_tokens", "token_sha256"): _sha("install-token"),
+    ("pc_install_tokens", "issued_at"): "2026-11-03T00:00:00Z",
+    ("pc_install_tokens", "expires_at"): "2026-11-04T00:00:00Z",
     ("pc_device_links", "state"): "active",
     ("password_reset_audit", "event"): "requested",
     ("padiem_mcp_approvals", "arguments_json"): "{}",
@@ -340,11 +345,11 @@ def user_count(db, table, where, uid):
     ).fetchone()["n"]
 
 
-def test_migration_091_applies_twice_and_lands_the_audit_table():
+def test_migration_092_applies_twice_and_lands_the_audit_table():
     db, _ = seed_db()
     # The whole migration set is not re-runnable by design (ALTER TABLE steps
-    # cannot re-apply); migration 091 itself must be, because it is additive.
-    audit_sql = (ROOT / "migrations" / "091_account_deletion_audit.sql").read_text(
+    # cannot re-apply); migration 092 itself must be, because it is additive.
+    audit_sql = (ROOT / "migrations" / "092_account_deletion_audit.sql").read_text(
         encoding="utf-8"
     )
     db.conn.executescript(audit_sql)  # second pass: idempotent
@@ -366,6 +371,9 @@ def test_the_route_never_names_a_table_the_schema_does_not_have():
             "SELECT name FROM sqlite_master WHERE type='table'"
         ).fetchall()
     }
+    # This explicit expectation makes the schema omission guard fail if a
+    # new user-keyed table is present in the schema but absent from deletion.
+    assert ("pc_install_tokens", "user_id = ?") in _USER_KEYED_TABLES
     for table, where in _USER_KEYED_TABLES:
         assert table in tables, table
         key = _where_column(table, where)
@@ -407,6 +415,43 @@ def test_successful_deletion_clears_every_surveyed_table_and_keeps_the_other_use
     assert row["deleted_at"]
     serialized = repr(row)
     assert DELETER_EMAIL not in serialized and "@" not in serialized
+
+
+def test_account_delete_removes_only_deleted_owner_from_mesh_presence():
+    db, accounts = seed_db()
+    uid = accounts["deleter"]
+    other = accounts["other"]
+    now = "2026-11-03T00:00:00Z"
+    for device_id, refs in (
+        ("mesh-shared-device", [uid, other]),
+        ("mesh-deleter-only", [uid]),
+    ):
+        db.conn.execute(
+            "INSERT INTO mesh_device_presence "
+            "(device_id, connected, received_at, credential_generation, source, "
+            " last_connected_at, account_refs_json) VALUES (?,?,?,?,?,?,?)",
+            (device_id, 1, now, 1, "broker", now, json.dumps(refs)),
+        )
+
+    app, settings = build_app(db)
+    response = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, uid),
+        body={"confirm": DELETER_EMAIL},
+        origin=BASE,
+    )
+    assert response.status_code == 200, response.text
+    shared = db.conn.execute(
+        "SELECT account_refs_json FROM mesh_device_presence "
+        "WHERE device_id = ?",
+        ("mesh-shared-device",),
+    ).fetchone()
+    assert shared is not None
+    assert json.loads(shared["account_refs_json"]) == [other]
+    assert db.conn.execute(
+        "SELECT COUNT(*) AS n FROM mesh_device_presence WHERE device_id = ?",
+        ("mesh-deleter-only",),
+    ).fetchone()["n"] == 0
 
 
 def test_a_mismatched_confirm_email_deletes_nothing():

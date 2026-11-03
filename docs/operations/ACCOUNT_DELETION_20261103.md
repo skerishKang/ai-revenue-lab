@@ -11,7 +11,7 @@
 - 삭제는 **한 번의 `db.batch()` 트랜잭션**이다. 중간에 실패하면 전부 되돌려진다(시험 `test_a_mid_batch_failure_rolls_the_whole_deletion_back`).
 - 실행 순서: 출처 검사 → 본문 확인 → 이메일 일치 → 관리자 차단 → 현재 세션 종료(`_revoke_canonical_session`, 실패 시 아무것도 지우지 않음) → 배치 삭제 → 계정 전체 canonical 세션 해제(#5441 헬퍼, best-effort) → 검증 캐시·PC 스코프 캐시 무효화 → `private, no-store` 응답 + 세션 쿠키 삭제.
 - 관리자 차단: 세션 이메일이 중앙 관리자 이메일(`PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL`, `app_factory`가 state에 넣은 값)과 일치하거나 `platform_admin_roles` 행을 가진 계정은 403 `account_delete_admin_blocked`.
-- 남기는 기록은 최소: `account_deletion_audit`(마이그레이션 091)에 탈퇴 시각과 사용자 id의 SHA-256 해시 1행. 이메일·이름·subject 저장 금지(시험이 응답·행에 `@` 부재를 단정).
+- 남기는 기록은 최소: `account_deletion_audit`(마이그레이션 092)에 탈퇴 시각과 사용자 id의 SHA-256 해시 1행. 이메일·이름·subject 저장 금지(시험이 응답·행에 `@` 부재를 단정).
 
 ## 1. 왜 CASCADE에 기대지 않는가 (foreign_keys 확인 결과)
 
@@ -26,16 +26,16 @@
 모든 테이블을 **이름을 걸어 명시 삭제**한다. 자식→부모 순서로 나열하고 users
 행은 마지막에 지운다.
 
-## 2. 사용자 데이터 테이블 전수 조사 (migrations 001~090)
+## 2. 사용자 데이터 테이블 전수 조사 (migrations 001~093)
 
-총 105개 테이블 중 사용자 키를 가진 **살아있는 테이블 62개**를 경로가 지운다.
-조사 방법: 90개 마이그레이션 전체에서 `CREATE TABLE` 본문의 사용자 키 컬럼
+총 106개 테이블 중 사용자 키를 가진 **살아있는 테이블 63개**를 경로가 지운다.
+조사 방법: 93개 마이그레이션 전체에서 `CREATE TABLE` 본문의 사용자 키 컬럼
 (`user_id`·`member_id`·`owner_id`·`product_user_id`)을 추출. `_next`·
 `_rebuilt_*` 그림자 테이블은 각 마이그레이션이 끝나기 전에 rename/drop되므로
 살아있는 이름만 표에 넣었다(060·061·063·068·069·077·081·083 끝의
 `ALTER TABLE ... RENAME` 확인).
 
-### 2.1 `user_id = ?`로 지우는 표 (55)
+### 2.1 `user_id = ?`로 지우는 표 (56)
 
 | 테이블 | 마이그레이션 | 지우는 방식 |
 |---|---|---|
@@ -89,6 +89,7 @@
 | document_convert_jobs | 066 | FK CASCADE 선언, 명시 삭제 |
 | document_convert_items | 066 | FK CASCADE 선언, 명시 삭제 |
 | pc_pairing_codes | 072 | FK 없음 → 명시 삭제 |
+| pc_install_tokens | 093 | 토큰 해시와 user_id만 저장 → 명시 삭제 |
 | pc_device_links | 072 | FK 없음 → 명시 삭제 |
 | padiem_pc_delegations | 084 | FK CASCADE 선언, 명시 삭제 |
 | padiem_mcp_tokens | 085 | FK CASCADE 선언, 명시 삭제 |
@@ -112,7 +113,7 @@
 | 대상 | 방식 |
 |---|---|
 | users | `DELETE FROM users WHERE id = ?` — 배치의 마지막 문 |
-| account_deletion_audit | 마이그레이션 091. 같은 배치에서 `INSERT` 1행(시각 + 사용자 id SHA-256 해시) |
+| account_deletion_audit | 마이그레이션 092. 같은 배치에서 `INSERT` 1행(시각 + 사용자 id SHA-256 해시) |
 | bookai_records | **이번 단계에서 지우지 않는다** — 아래 3번 참조 |
 
 ## 3. 이번에 지우지 않은 것과 다음 단계 제안
@@ -138,7 +139,7 @@
 
 ## 5. 시험
 
-`apps/padiem-chat/tests/test_account_deletion_261103.py` — 8건:
+`apps/padiem-chat/tests/test_account_deletion_261103.py` — 9건:
 
 - (a) 정상 탈퇴: 표의 모든 테이블에서 그 사용자 행 0, 다른 사용자 행은 삭제 전 스냅샷과 동일. 사용자 1명당 표의 모든 테이블에 1행을 넣고 시작한다(platform_admin_roles는 권한 표식이라 제외).
 - (b) 이메일 불일치 → 400, 아무것도 지워지지 않음
@@ -146,10 +147,12 @@
 - (d) 중간 실패(테이블 1개 제거) → 503 + 전체 롤백(스냅샷 대비 동일)
 - (e) 탈퇴 뒤 옛 쿠키 → 401, /api/auth/status 미인증
 - (f) 중앙 관리자 이메일·platform_admin_roles 보유 계정 → 403
-- (g) 마이그레이션 091 재적용(멱등)
+- (g) 마이그레이션 092 재적용(멱등)
+- (h) Mesh 기기 소유자 목록에서 탈퇴자만 제거하고 다른 계정 참조 보존
 
 스키마 드리프트 방지 시험이 포함되어 있다: 경로가 지우는 표의 테이블·키 컬럼이
-실제 스키마에 존재하지 않으면 수집 시점에 실패한다.
+실제 스키마에 존재하지 않으면 수집 시점에 실패한다. `pc_install_tokens`도 사용자
+키 목록에 명시되었는지 단언하므로 이 표의 삭제 누락도 실패한다.
 
 실행(이 저장소에서 확인한 명령):
 
@@ -160,5 +163,5 @@ PYTHONPATH="../../packages/padiem-control-plane;../../packages/padiem-ai-core;..
     tests/test_5225_logout_session_revocation.py tests/test_5434_password_change.py \
     tests/test_5441_password_reset.py tests/test_5441_password_reset_mail_credential.py \
     tests/test_6446_account_isolation_sweep.py -q
-# 66 passed
+# 67 passed
 ```

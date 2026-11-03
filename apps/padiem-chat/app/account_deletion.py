@@ -101,6 +101,7 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("document_convert_items", "user_id = ?"),
     ("claw_push_subscription", "member_id = ?"),
     ("pc_pairing_codes", "user_id = ?"),
+    ("pc_install_tokens", "user_id = ?"),
     ("pc_device_links", "user_id = ?"),
     ("padiem_pc_delegations", "user_id = ?"),
     ("padiem_mcp_tokens", "user_id = ?"),
@@ -119,6 +120,40 @@ def _delete_batch(db, user_id: str) -> list:
         db.prepare(f"DELETE FROM {table} WHERE {where}").bind(user_id)
         for table, where in _USER_KEYED_TABLES
     ]
+    # Presence rows can be shared by accounts. Remove this account from a
+    # shared owner list, and discard a row that would have no owner left.
+    refs_json = (
+        "CASE WHEN json_valid(account_refs_json) "
+        "THEN account_refs_json ELSE '[]' END"
+    )
+    statements.extend(
+        [
+            db.prepare(
+                "UPDATE mesh_device_presence SET account_refs_json = ("
+                " SELECT json_group_array(ref.value) FROM json_each("
+                f"{refs_json}) AS ref "
+                " WHERE ref.type <> 'text' OR ref.value <> ?"
+                ") "
+                f"WHERE json_type({refs_json}) = 'array' "
+                "AND EXISTS (SELECT 1 FROM json_each("
+                f"{refs_json}) AS target "
+                "WHERE target.type = 'text' AND target.value = ?) "
+                "AND EXISTS (SELECT 1 FROM json_each("
+                f"{refs_json}) AS other "
+                "WHERE other.type = 'text' AND other.value <> ?)"
+            ).bind(user_id, user_id, user_id),
+            db.prepare(
+                "DELETE FROM mesh_device_presence "
+                f"WHERE json_type({refs_json}) = 'array' "
+                "AND EXISTS (SELECT 1 FROM json_each("
+                f"{refs_json}) AS target "
+                "WHERE target.type = 'text' AND target.value = ?) "
+                "AND NOT EXISTS (SELECT 1 FROM json_each("
+                f"{refs_json}) AS other "
+                "WHERE other.type = 'text' AND other.value <> ?)"
+            ).bind(user_id, user_id),
+        ]
+    )
     deleted_at = datetime.now(timezone.utc).isoformat()
     user_id_hash = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
     statements.append(
