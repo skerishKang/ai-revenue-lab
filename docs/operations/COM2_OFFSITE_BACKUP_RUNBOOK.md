@@ -95,6 +95,24 @@ OFFSITE_RUN=<PASS|FAIL|UNKNOWN> UPLOADED=<n> FAILED=<names|->
 
 ## 5. 복구 절차
 
+0. 격리 시험으로 그 세대를 읽을 수 있는지 먼저 확인한다(운영 파일 교체 없음, 수 분).
+   `deploy/host-com2/offsite-backup/run_live_chat_restore.sh`는 복원본을 임시 폴더의
+   `chat.sqlite3`로 풀고, 시험 Chat을 고정 `127.0.0.1:18798`에 띄워 `/`·`/health`만 확인한 뒤
+   스스로 끄고 포트가 닫혔는지 확인한다. 상류(큐 18797, P01 18811, B14 18789)는 닫힌 루프백
+   포트로 치환하고 cloudflared는 띄우지 않는다. 운영 데이터 경로를 인자로 주면 거부한다.
+
+   ```bash
+   # 값은 파일로만 넘긴다. 스크립트는 source하지 않고 읽기만 하며, 값은 어떤 경우에도 출력하지 않는다.
+   systemd-run --quiet --wait --pipe --property=EnvironmentFile=/etc/padiem/offsite-backup.env \
+     /opt/padiem/offsite-backup/run_live_chat_restore.sh
+   ```
+
+   `systemd-run`을 쓸 수 없으면 `PADIEM_RESTORE_ENV_FILE=/etc/padiem/offsite-backup.env`로
+   넘긴다. env에 `$`가 든 값이 있어도 그대로 전달되고 오류 메시지에도 나오지 않는다.
+
+   예상 소요: 복원 수 초(스냅샷 크기 비례) + 시험 Chat 기동·확인 10~30초. 배포·터널 전환은
+   이 시간에 포함되지 않는다.
+
 1. 서비스 **정지**: 예 `systemctl stop padiem-chat-com2.service` (broker/queue 동일). 라이브 파일을 열어둔 채 덮어쓰지 않는다.
 2. 대상 확인: `offsite.py list --service chat` (날짜/크기만). 주간 세대는 `2026-W44` 표기.
 3. 복구(스크립트가 해시 검증 → 복호화 → integrity_check → 교체):
@@ -103,6 +121,8 @@ OFFSITE_RUN=<PASS|FAIL|UNKNOWN> UPLOADED=<n> FAILED=<names|->
      --service chat --date 20261102 --target /mnt/d/padiem/chat-com2/chat.sqlite3 --replace
    ```
    `OFFSITE_RESTORE=PASS … tables=N rows=M replaced=True`가 아니면 중단. 기존 파일은 `<name>.pre-restore-<ts>`로 옆에 보존된다.
+   `--target`은 **파일 경로**다(디렉터리를 넘기면 `IsADirectoryError`로 실패한다). Chat이 여는 파일은
+   `<데이터 폴더>/chat.sqlite3` 하나이므로, 격리 시험도 그 파일 이름으로 받는다.
    `--replace` 없이 실행하면 검증만 하고 staging 파일(`state/restore/...`)을 남긴다 — D1 세대는
    이렇게 **별도 파일로** 꺼내는 것이 기본이다(아래 5).
 4. 기동: `systemctl start padiem-chat-com2.service` → 로컬 `/health` PASS → 대표 시나리오(로그인·목록·mock 채팅 1회).
