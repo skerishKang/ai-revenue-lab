@@ -187,12 +187,27 @@ class D1McpGatewayStore:
         return await self.consume_approval(identity=identity, approval_id=row["id"],
                                            tool_name=tool_name, arguments=arguments, now=now)
 
-    async def audit(self, *, identity: dict, tool_name: str, arguments: dict, status: str, approval_id: str | None = None, now=None) -> str:
+    async def audit(self, *, identity: dict, tool_name: str, arguments: dict, status: str,
+                    approval_id: str | None = None, now=None,
+                    exit_code: int | None = None, duration_ms: int | None = None,
+                    output_bytes: int | None = None,
+                    output_truncated: bool | None = None) -> str:
         """Record metadata, never credential material or file contents/results."""
         if not isinstance(status, str) or not re.fullmatch(r"[a-z_]{1,64}", status):
             raise McpGatewayStoreError("Invalid audit status")
+        if exit_code is not None and (
+                not isinstance(exit_code, int) or isinstance(exit_code, bool)):
+            raise McpGatewayStoreError("Invalid audit metadata")
+        for value in (duration_ms, output_bytes):
+            if value is not None and (
+                    not isinstance(value, int) or isinstance(value, bool) or value < 0):
+                raise McpGatewayStoreError("Invalid audit metadata")
+        if output_truncated is not None and not isinstance(output_truncated, bool):
+            raise McpGatewayStoreError("Invalid audit metadata")
         event_id = "mcpe_" + uuid4().hex
-        await self._run("INSERT INTO padiem_mcp_audit (id,user_id,token_id,device_id,tool_name,request_digest,status,approval_id,created_at) VALUES (?,?,?,?,?,?,?,?,?)",
+        await self._run("INSERT INTO padiem_mcp_audit (id,user_id,token_id,device_id,tool_name,request_digest,status,approval_id,created_at,exit_code,duration_ms,output_bytes,output_truncated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
                         event_id, _owner(identity["user_id"]), identity["token_id"], identity["device_id"], tool_name,
-                        mcp_request_digest(tool_name, arguments), status, approval_id, _stamp(now))
+                        mcp_request_digest(tool_name, arguments), status, approval_id, _stamp(now),
+                        exit_code, duration_ms, output_bytes,
+                        None if output_truncated is None else int(output_truncated))
         return event_id

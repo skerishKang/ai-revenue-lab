@@ -12,7 +12,7 @@ NODE = shutil.which("node")
 
 
 def test_mcp_settings_use_the_shared_dialog_and_accessible_controls():
-    html = (STATIC / "index.html").read_text()
+    html = (STATIC / "index.html").read_text(encoding="utf-8")
     section = html[html.index('id="mcpGatewaySettings"'):html.index('id="adminSettingsSection"')]
     assert 'aria-labelledby="mcpGatewayTitle"' in section
     assert 'role="status" aria-live="polite"' in section
@@ -26,13 +26,13 @@ def test_mcp_settings_use_the_shared_dialog_and_accessible_controls():
 
 
 def test_all_mcp_settings_copy_and_exact_operation_labels_are_localized():
-    locale = (STATIC / "locale.js").read_text()
+    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
     ko, en = locale.split('    en: {', 1)
     keys = set(re.findall(r'"(mcp-settings-[^"]+)":', ko))
     assert keys == set(re.findall(r'"(mcp-settings-[^"]+)":', en))
-    source = (STATIC / "mcp-gateway-settings.js").read_text()
-    css = (STATIC / "mcp-gateway-settings.css").read_text()
-    html = (STATIC / "index.html").read_text()
+    source = (STATIC / "mcp-gateway-settings.js").read_text(encoding="utf-8")
+    css = (STATIC / "mcp-gateway-settings.css").read_text(encoding="utf-8")
+    html = (STATIC / "index.html").read_text(encoding="utf-8")
     used = set(re.findall(r'"(mcp-settings-[a-z-]+)"', source))
     used |= set(re.findall(r'data-locale-[\w-]+="(mcp-settings-[^"]+)"', html))
     classes = set(re.findall(r'\.(mcp-settings-[a-z-]+)', css))

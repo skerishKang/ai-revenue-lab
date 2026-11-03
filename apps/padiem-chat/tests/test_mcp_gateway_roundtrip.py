@@ -55,6 +55,7 @@ class EngineProcessTransport:
         assert method == "POST" and url.endswith("/internal/v1/orchestrate")
         self.calls.append(json.loads(body))
         env = dict(os.environ)
+        env["PYTHONIOENCODING"] = "utf-8"
         env["PYTHONPATH"] = os.pathsep.join(map(str, (
             ENGINE, ENGINE / "clients" / "python",
             REPO / "packages" / "padiem-ai-core",

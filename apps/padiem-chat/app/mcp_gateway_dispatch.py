@@ -21,6 +21,17 @@ def _log_operation(audit, status, *, outcome=None):
                        ("run_id", (outcome or {}).get("run_id"))):
         if isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9_.:-]{1,96}", value):
             event[key] = value
+    metadata = (outcome or {}).get("audit")
+    if isinstance(metadata, dict):
+        exit_code = metadata.get("exit_code")
+        if isinstance(exit_code, int) and not isinstance(exit_code, bool):
+            event["exit_code"] = exit_code
+        for key in ("duration_ms", "output_bytes"):
+            value = metadata.get(key)
+            if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+                event[key] = value
+        if isinstance(metadata.get("output_truncated"), bool):
+            event["output_truncated"] = metadata["output_truncated"]
     if (outcome or {}).get("audit_status") == "unavailable":
         event["audit_status"] = "unavailable"
     _LOGGER.info(json.dumps(event, separators=(",", ":")))
@@ -106,8 +117,13 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
 
 
 async def _record_outcome(store, audit, outcome):
+    metadata = outcome.get("audit") if isinstance(outcome.get("audit"), dict) else {}
     try:
-        await store.audit(**audit, status=outcome["status"])
+        await store.audit(**audit, status=outcome["status"],
+                          exit_code=metadata.get("exit_code"),
+                          duration_ms=metadata.get("duration_ms"),
+                          output_bytes=metadata.get("output_bytes"),
+                          output_truncated=metadata.get("output_truncated"))
     except Exception:
         # An execution may already have happened: preserve its truthful result,
         # mark the missing final audit explicitly, and never retry the action.
