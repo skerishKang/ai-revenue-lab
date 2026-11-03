@@ -14,7 +14,11 @@ from starlette.responses import JSONResponse, StreamingResponse
 from starlette.routing import Route
 
 from .auth_routes import auth_ready, current_user_id
-from .b14_client import PADIEM_IDENTITY_INSTRUCTION, _chat_product_identity_instruction
+from .b14_client import (
+    PADIEM_IDENTITY_INSTRUCTION,
+    ChatRuntimeError,
+    _chat_product_identity_instruction,
+)
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .central_model_route_runtime import chat_request_tier_context
 from .grounding import GroundingError, grounding_fallback_fields
@@ -27,9 +31,20 @@ from .model_policy import (
     resolve_model_policy,
     resolve_request_model_policy,
 )
+from .final_dispatch_guard_wiring import apply_guard_to_client, create_guard_from_request
+from .model_first import (
+    PATH_DIRECT,
+    PATH_TOOL,
+    execute_model_first_tool,
+    model_first_context,
+    model_first_enabled,
+    model_supports_pc_tools,
+    pc_context_is_relevant,
+    pc_tools_for_context,
+)
 from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 from .orchestration_timing import OrchestrationTiming
-from .orchestration_stream import NDJSON_MEDIA_TYPE, ndjson_answer, wants_ndjson
+from .orchestration_stream import NDJSON_MEDIA_TYPE, line, ndjson_answer, wants_ndjson
 from .public_chat import public_chat_result
 from .request_contract import BrowserRequestError, _validate_payload_async
 from .pc_correlation import run_hash
@@ -205,7 +220,17 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             trace_run_id = _new_lane_run_id()
         trace_run = run_hash(trace_run_id)
         _PC_TRACE_LOG.info("pc_chat stage=request_received run_hash=%s dispatch_id=none", trace_run or "none")
-        messages, skill, tool_request, attachments, conversation_id, project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
+        # ``stream`` is a presentation choice, not a chat payload field. On the
+        # model-first lane it is kept out of the browser contract validator while
+        # the route still uses it to select the NDJSON response shape. With the
+        # switch off the request stays byte-for-byte on the old contract.
+        model_first_on = getattr(request.app.state, "model_first_enabled", False)
+        validation_raw = (
+            {key: value for key, value in raw.items() if key != "stream"}
+            if model_first_on and isinstance(raw, dict) and "stream" in raw
+            else raw
+        )
+        messages, skill, tool_request, attachments, conversation_id, project_id, custom = await _validate_payload_async(validation_raw, file_resolver=file_resolver(request))
         _PC_TRACE_LOG.info("pc_chat stage=contract_accepted run_hash=%s dispatch_id=none", trace_run or "none")
         timing.mark("validated")
         user_credential_ref = None
@@ -333,6 +358,29 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             grounded_evidence = public_grounding_evidence(prepared.evidence)
 
     timing.mark("grounding")
+    if model_first_on and user_credential_ref is None:
+        model_first_response = await _answer_model_first(
+            request,
+            timing=timing,
+            uid=uid,
+            raw=raw,
+            messages=messages,
+            skill=skill,
+            policy=policy,
+            pc_context=pc_context,
+            grounding_context=grounding_context,
+            grounding_notice=grounding_notice,
+            grounded_evidence=grounded_evidence,
+            conversation_id=conversation_id,
+            user_text=user_text,
+            store=store,
+            wants_stream=(
+                getattr(request.app.state, "orchestration_stream_enabled", False)
+                and wants_ndjson(raw, request.headers.get("accept"))
+            ),
+        )
+        if model_first_response is not None:
+            return model_first_response
     if pc_context is not None or user_credential_ref is not None:
         if pc_context is None:
             # A text-only BYOK turn stages message history, never a PC run.
@@ -496,6 +544,433 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
         payload["conversation_id"] = saved_id
     return JSONResponse(payload)
 
+
+def _model_first_payload(
+    answer: str,
+    saved_id: str | None,
+    grounding_notice: dict[str, Any],
+    grounded_evidence: list[dict[str, Any]],
+) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "orchestration": {
+            "events": [],
+            "approval_pause": None,
+            "continuation_ref": None,
+            "answer": answer,
+        },
+        "answer": answer,
+        "decision_status": None,
+    }
+    payload.update(grounding_notice)
+    if grounded_evidence:
+        payload.update(
+            answer_status="answered_with_evidence",
+            evidence=grounded_evidence,
+            tool={"id": "web_search", "title": "웹 검색"},
+        )
+    if saved_id is not None:
+        payload["conversation_id"] = saved_id
+    return payload
+
+
+def _model_first_done_fields(
+    saved_id: str | None,
+    grounding_notice: dict[str, Any],
+    grounded_evidence: list[dict[str, Any]],
+) -> dict[str, Any]:
+    fields: dict[str, Any] = dict(grounding_notice)
+    if grounded_evidence:
+        fields.update(
+            answer_status="answered_with_evidence",
+            evidence=grounded_evidence,
+            tool={"id": "web_search", "title": "웹 검색"},
+        )
+    fields["usage"] = None
+    if saved_id is not None:
+        fields["conversation_id"] = saved_id
+        fields["message_id"] = saved_id
+    return fields
+
+
+def _model_first_error_response(exc: BaseException):
+    from .chat_pc_drive import ChatPCDriveError
+
+    if isinstance(exc, (ChatRuntimeError, ChatPCDriveError)):
+        code = exc.code if isinstance(exc.code, str) and re.fullmatch(r"[a-z][a-z0-9_]{0,63}", exc.code) else "model_first_failed"
+        status = exc.status_code if isinstance(exc.status_code, int) else 502
+        return _error(code, exc.user_message, status)
+    return _error(
+        "model_first_failed",
+        "답변을 불러오지 못했습니다. 다시 시도해 주세요.",
+        502,
+    )
+
+
+def _model_first_error_code(exc: BaseException) -> str:
+    from .chat_pc_drive import ChatPCDriveError
+
+    if isinstance(exc, (ChatRuntimeError, ChatPCDriveError)):
+        code = exc.code
+        if isinstance(code, str) and re.fullmatch(r"[a-z][a-z0-9_]{0,63}", code):
+            return code
+    return "model_first_failed"
+
+
+async def _close_model_first_stream(stream: Any) -> None:
+    closer = getattr(stream, "aclose", None)
+    if not callable(closer):
+        return
+    try:
+        await closer()
+    except Exception:
+        pass
+
+
+async def _first_model_first_event(stream: Any):
+    async for event in stream:
+        if getattr(event, "tool_call", None) is not None:
+            return event
+        if getattr(event, "delta_content", None):
+            return event
+        if getattr(event, "done", False):
+            return event
+    return None
+
+
+async def _model_first_open_stream(
+    request: Request,
+    *,
+    raw: dict[str, Any],
+    messages: list[dict[str, str]],
+    skill: Any,
+    policy: ResolvedModelPolicy,
+    context: str | None,
+    tools: tuple[Any, ...],
+):
+    guard = await create_guard_from_request(
+        request,
+        policy.model_id,
+        getattr(request.app.state, "central_model_policy_store", None),
+        getattr(request.app.state, "b14_catalog_source", None),
+    )
+    client = apply_guard_to_client(request.app.state.b14_client, guard)
+    if tools:
+        return client.stream_text_auto(
+            messages,
+            skill=skill,
+            additional_system_context=context,
+            tools=tools,
+            tool_choice="auto",
+        )
+    return client.stream_text_auto(
+        messages, skill=skill, additional_system_context=context
+    )
+
+
+async def _answer_model_first(
+    request: Request,
+    *,
+    timing: OrchestrationTiming,
+    uid: str,
+    raw: dict[str, Any],
+    messages: list[dict[str, str]],
+    skill: Any,
+    policy: ResolvedModelPolicy,
+    pc_context: dict[str, Any] | None,
+    grounding_context: str | None,
+    grounding_notice: dict[str, Any],
+    grounded_evidence: list[dict[str, Any]],
+    conversation_id: str | None,
+    user_text: str,
+    store: HistoryStore | None,
+    wants_stream: bool,
+):
+    if pc_context is not None:
+        if not model_supports_pc_tools(policy.model_id):
+            return None
+        from .chat_pc_drive import chat_pc_route_declares_tools
+
+        if not await chat_pc_route_declares_tools(request, policy.model_id):
+            return None
+    if getattr(request.app.state, "b14_client", None) is None:
+        return None
+    tools = pc_tools_for_context(pc_context, user_text)
+    context = grounding_context
+    if pc_context is not None or pc_context_is_relevant(
+        user_text, requested_device=bool(raw.get("device_id"))
+    ):
+        context = await model_first_context(
+            request, owner_id=uid, grounding_context=grounding_context
+        )
+    common = dict(
+        timing=timing,
+        raw=raw,
+        messages=messages,
+        skill=skill,
+        policy=policy,
+        context=context,
+        tools=tools,
+        uid=uid,
+        user_text=user_text,
+        conversation_id=conversation_id,
+        store=store,
+        grounding_notice=grounding_notice,
+        grounded_evidence=grounded_evidence,
+        grounding_context=grounding_context,
+    )
+    if wants_stream:
+        timing.set_path(PATH_DIRECT)
+        return StreamingResponse(
+            _model_first_ndjson(request, **common),
+            media_type=NDJSON_MEDIA_TYPE,
+            headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
+        )
+    return await _model_first_json(request, **common)
+
+
+async def _model_first_json(
+    request: Request,
+    *,
+    timing: OrchestrationTiming,
+    raw: dict[str, Any],
+    messages: list[dict[str, str]],
+    skill: Any,
+    policy: ResolvedModelPolicy,
+    context: str | None,
+    tools: tuple[Any, ...],
+    uid: str,
+    user_text: str,
+    conversation_id: str | None,
+    store: HistoryStore | None,
+    grounding_notice: dict[str, Any],
+    grounded_evidence: list[dict[str, Any]],
+    grounding_context: str | None,
+):
+    tool_call = None
+    parts: list[str] = []
+    try:
+        async with chat_request_tier_context(request, raw.get("tier", "free")):
+            stream = await _model_first_open_stream(
+                request,
+                raw=raw,
+                messages=messages,
+                skill=skill,
+                policy=policy,
+                context=context,
+                tools=tools,
+            )
+            try:
+                first = await _first_model_first_event(stream)
+                if first is None or (
+                    first.delta_content is None and first.tool_call is None
+                ):
+                    return _error(
+                        "model_first_empty",
+                        "AI가 표시할 답변을 만들지 못했습니다.",
+                        502,
+                    )
+                if first.tool_call is not None:
+                    tool_call = first.tool_call
+                else:
+                    parts.append(first.delta_content)
+                    timing.mark("first_token")
+                    async for event in stream:
+                        if event.delta_content:
+                            parts.append(event.delta_content)
+                        if event.done:
+                            break
+            finally:
+                await _close_model_first_stream(stream)
+    except Exception as exc:
+        return _model_first_error_response(exc)
+
+    if tool_call is not None:
+        offered = {tool.name for tool in tools}
+        if tool_call.name not in offered:
+            return _error(
+                "model_first_tool_not_allowed",
+                "요청한 도구를 실행할 수 없습니다.",
+                403,
+            )
+        timing.set_path(PATH_TOOL)
+        try:
+            outcome = await execute_model_first_tool(
+                request,
+                tool_name=tool_call.name,
+                policy=policy,
+                messages=messages,
+                skill=skill,
+                raw=raw,
+                user_text=user_text,
+                conversation_id=conversation_id,
+                store=store,
+                grounding_context=grounding_context,
+            )
+        except Exception as exc:
+            return _model_first_error_response(exc)
+        if outcome is None:
+            return _error(
+                "model_first_tool_unavailable",
+                "PC 작업을 시작하지 못했습니다. 다시 시도해 주세요.",
+                502,
+            )
+        answer, saved_id = outcome
+        timing.mark("engine")
+        timing.mark("save")
+        return JSONResponse(
+            _model_first_payload(
+                answer, saved_id, grounding_notice, grounded_evidence
+            )
+        )
+
+    timing.set_path(PATH_DIRECT)
+    answer = "".join(parts).strip()
+    if not answer:
+        return _error(
+            "model_first_empty", "AI가 표시할 답변을 만들지 못했습니다.", 502
+        )
+    timing.mark("engine")
+    saved_id = await _save_terminal_history(
+        request,
+        user_id=uid,
+        conversation_id=conversation_id,
+        user_text=user_text,
+        answer=answer,
+    )
+    timing.mark("save")
+    return JSONResponse(
+        _model_first_payload(answer, saved_id, grounding_notice, grounded_evidence)
+    )
+
+
+async def _model_first_ndjson(
+    request: Request,
+    *,
+    timing: OrchestrationTiming,
+    raw: dict[str, Any],
+    messages: list[dict[str, str]],
+    skill: Any,
+    policy: ResolvedModelPolicy,
+    context: str | None,
+    tools: tuple[Any, ...],
+    uid: str,
+    user_text: str,
+    conversation_id: str | None,
+    store: HistoryStore | None,
+    grounding_notice: dict[str, Any],
+    grounded_evidence: list[dict[str, Any]],
+    grounding_context: str | None,
+):
+    tool_call = None
+    parts: list[str] = []
+    try:
+        yield line({"type": "meta", "stream": True})
+        async with chat_request_tier_context(request, raw.get("tier", "free")):
+            stream = await _model_first_open_stream(
+                request,
+                raw=raw,
+                messages=messages,
+                skill=skill,
+                policy=policy,
+                context=context,
+                tools=tools,
+            )
+            try:
+                first = await _first_model_first_event(stream)
+                if first is None or (
+                    first.delta_content is None and first.tool_call is None
+                ):
+                    yield line({"type": "error", "code": "model_first_empty"})
+                    return
+                if first.tool_call is not None:
+                    tool_call = first.tool_call
+                else:
+                    timing.mark("first_token")
+                    parts.append(first.delta_content)
+                    yield line({"type": "delta", "text": first.delta_content})
+                    async for event in stream:
+                        if event.delta_content:
+                            parts.append(event.delta_content)
+                            yield line({"type": "delta", "text": event.delta_content})
+                        if event.done:
+                            break
+            finally:
+                await _close_model_first_stream(stream)
+
+        if tool_call is not None:
+            if tool_call.name not in {tool.name for tool in tools}:
+                yield line(
+                    {"type": "error", "code": "model_first_tool_not_allowed"}
+                )
+                return
+            timing.set_path(PATH_TOOL)
+            try:
+                outcome = await execute_model_first_tool(
+                    request,
+                    tool_name=tool_call.name,
+                    policy=policy,
+                    messages=messages,
+                    skill=skill,
+                    raw=raw,
+                    user_text=user_text,
+                    conversation_id=conversation_id,
+                    store=store,
+                    grounding_context=grounding_context,
+                )
+            except Exception as exc:
+                yield line(
+                    {"type": "error", "code": _model_first_error_code(exc)}
+                )
+                return
+            if outcome is None:
+                yield line(
+                    {"type": "error", "code": "model_first_tool_unavailable"}
+                )
+                return
+            answer, saved_id = outcome
+            timing.mark("engine")
+            timing.mark("save")
+            yield line({"type": "delta", "text": answer})
+            yield line(
+                {
+                    "type": "done",
+                    "done": True,
+                    **_model_first_done_fields(
+                        saved_id, grounding_notice, grounded_evidence
+                    ),
+                }
+            )
+            return
+
+        timing.set_path(PATH_DIRECT)
+        answer = "".join(parts).strip()
+        if not answer:
+            yield line({"type": "error", "code": "model_first_empty"})
+            return
+        timing.mark("engine")
+        saved_id = await _save_terminal_history(
+            request,
+            user_id=uid,
+            conversation_id=conversation_id,
+            user_text=user_text,
+            answer=answer,
+        )
+        timing.mark("save")
+        yield line(
+            {
+                "type": "done",
+                "done": True,
+                **_model_first_done_fields(
+                    saved_id, grounding_notice, grounded_evidence
+                ),
+            }
+        )
+    except Exception as exc:
+        yield line({"type": "error", "code": _model_first_error_code(exc)})
+    finally:
+        timing.emit()
+
+
 def _resume_skill():
     try:
         from .task_modes import get_task_mode
@@ -614,11 +1089,16 @@ async def api_orchestration_cancel(request: Request) -> JSONResponse:
 
 
 def install_orchestration_routes(
-    app: Any, bridge: B62EngineOrchestrationBridge | None, *, stream_enabled: bool = False,
+    app: Any,
+    bridge: B62EngineOrchestrationBridge | None,
+    *,
+    stream_enabled: bool = False,
+    model_first_enabled: bool = False,
 ) -> None:
     """Install routes ahead of the catch-all static Mount without changing app_factory."""
     app.state.orchestration_bridge = bridge
     app.state.orchestration_stream_enabled = stream_enabled
+    app.state.model_first_enabled = model_first_enabled
     routes = [
         Route("/api/orchestration/status", orchestration_status, methods=["GET"]),
         Route("/api/orchestration", api_orchestration, methods=["POST"]),

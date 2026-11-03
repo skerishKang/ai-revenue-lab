@@ -49,15 +49,14 @@
 - verify: engine suite 4082 passed, 1 skipped; Core runtime/orchestration 101 passed; local Chat->P01 roundtrip 200 with engine_timing total_ms=12.8; COM2 pooled fetch probe 4.13s cold then 0.81/0.79/1.80s versus 2.85/2.59/2.04s per fresh client.
 - PR: ai-revenue-lab #6774.
 
-### 2026-11-03 — shared login callback and identity latency
-- Contract: `skerishKang/ai-revenue-lab`, base `a8eff99d125215fa0f113488af54573a2e2ca894`, branch `perf/login-callback-261103`, worktree `D:\PADIEM\login-identity-261103`.
-- Allowed paths: Chat shared-login/auth adapter, WorkerES256 key import cache, session revocation guard, timing helpers, focused auth tests, and this progress log. Forbidden paths: Engine/P01, unrelated products, secrets/bindings, deployment and production data.
-- Acceptance: preserve state/signature/PKCE/session-revocation checks; cache session identity for at most 30–60s with logout/revoke invalidation; pool reusable host HTTP clients; log request id and safe stage durations; run focused auth/security tests; push branch only.
-- Private Governance: NOT_READ from CGI-1 per multi-machine policy; scope is the supplied technical work order. No production access or deployment.
-- 지도: `/auth/shared/callback` → `SharedLoginFlow.finish_login` → assertion → Auth `/token` exchange → signed token verification + Control Plane `resolve_product_user_for_subject` → `provision_shared_profile` verifies the token and checks/stores the opted-in profile in Chat SQLite → cookie issue. B62's current config opts into profile claims.
-- 지도: ordinary shared-cookie requests pass `SharedSessionMiddleware` (signature/expiry + account link) and legacy canonical-session requests pass `SessionRevocationGuardMiddleware` (`resolve_auth_session`). Host identity RPC uses the 75s `HttpRpcBinding` pool; host token exchange uses one 75s HTTPX pool; host signer retains the prepared key and re-derives on JWK material change. Worker assertion signing now retains one non-extractable WebCrypto `CryptoKey`, keyed by the full JWK digest and refreshed when the JWK changes. Worker portal HTTP uses runtime `fetch`; Control Plane calls use the Service Binding.
-- 원인/수정: callback 단계명을 `*_ms`로 맞추고, shared token identity와 canonical session 폐기 확인마다 요청 ID·단계 ms 로그를 추가했다. 출력은 안전한 요청 ID와 고정 단계 이름·시간만 포함한다. 같은 세션 결과 30초 캐시, cache revision fence, logout/revoke 무효화 경로는 그대로 유지한다.
-- 계정 링크 캐시는 migration 088의 `owner_id` primary-key 인덱스를 사용하고, user-id/expiry 인덱스도 이미 있다. latest migration is 097; no migration added.
-- Fake portal (localhost HTTP, no TLS): 12 sequential exchanges used 12 connections / 1829.1ms with one client per exchange; pooled client used 1 connection / 166.1ms. This demonstrates local connection reuse only; it does not model TLS or remote Worker startup.
-- Verify: import paths pinned to this worktree's Chat, Control Plane and AI Core; `pytest --basetemp C:\pt\a4` on focused login, auth, cache, revocation, WebCrypto and host-composition suites: 175 passed, 7 existing deprecation warnings. Earlier common pytest temp path failed with WinError 5; the short local basetemp resolved it.
-- 배포 뒤 확인할 것: compare callback `assertion_sign_ms`, `exchange_total_ms`, `identity_rpc_ms`, `sqlite_auth_*_ms`, and identity `session_revocation_authority_ms` by request ID; verify the 30s result-cache hit/expiry and immediate cross-worker logout/revoke invalidation; confirm the Worker token exchange and Control Plane calls reuse connections. No deployment performed in this task.
+### 2026-11-03 · Chat model-first (#4651)
+- setup: created isolated worktree E:\PADIEM\model-first-261103 from origin/main a8eff99 on feat/model-first-4651-261103.
+- design: `PADIEM_CHAT_MODEL_FIRST` 기본 off. 켜지면 기존 `/api/orchestration` 검증·등급·usage gate·PC 문맥·grounding 뒤에 같은 B14 답변 모델로 질문+서버 도구 목록을 한 번에 보내고, tool_calls가 없으면 직행 저장, 있으면 기존 `execute_chat_pc_drive_lane`(P01)으로 넘긴다. 별도 분류 호출 없음.
+- authority: 도구 목록은 `pc_context.pc_tools.allowed_scopes` 교집합, 쓰기 도구는 변경 요청일 때만. 모델이 제안하지 않은 도구 호출은 403. 소유자·Mesh grant·target·scope 재확인은 기존 lane 그대로. 꺼진 PC는 도구를 비우고 `pc_work_context` 안내를 모델 문맥에 넣는다. Gemma 등 tool 미지원 route는 엔진 경로 유지.
+- usage: 기존 `UsageGate.authorize`와 `create_guard_from_request`/`apply_guard_to_client`(B14 원장)를 직행 경로에도 그대로 통과. 등급/모델/공급자 변경 없음.
+- streaming: tool_calls 없는 답은 NDJSON meta/delta/done으로 흐른다. `stream` 표시는 라우트 검증에서 분리해 프론트의 `{"stream":1}`을 받는다. 화면 코드는 건드리지 않았다.
+- timing: `orchestration_timing_com2`에 `path=engine|model_first_direct|model_first_tool` 추가.
+- tests: model-first 14 passed (off 동일, 안녕 직행 엔진 0, PC tool lane, 웹 evidence, usage 거부, 꺼진 PC, Gemma, scope 교집합, 미제안 tool, 쓰기 규칙, guard, NDJSON). 기존 orchestration/PC/bridge/tier/identity subset 248 passed.
+- local A/B (fake B14 0.84s + P01 고정비 9.96s 모사): engine 9973ms → model-first 867ms, engine calls 1→0.
+- docs: docs/operations/CHAT_MODEL_FIRST_20261103.md, deploy/host-com2/chat/.env.example.
+- PR: pending.

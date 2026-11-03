@@ -120,6 +120,7 @@ from app.claw_local_task_result_composition import (
     build_local_task_result_source_with_diagnostic,
 )
 from app.main import create_app
+from app.model_first import model_first_enabled
 from app.orchestration_routes import install_orchestration_routes
 from app.orchestration_stream import orchestration_stream_enabled
 from app.project_files import D1ProjectFileStore
@@ -1777,6 +1778,7 @@ class Default(WorkerEntrypoint):
                 canonical_subject_resolver=canonical_subject_resolver,
             ),
             stream_enabled=orchestration_stream_enabled(self.env),
+            model_first_enabled=model_first_enabled(self.env),
         )
         # The cutover write window (#5115 step ③) applies to this entry too:
         # the Worker has no filesystem, so only the environment switch can open
