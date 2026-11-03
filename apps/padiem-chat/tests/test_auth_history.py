@@ -458,4 +458,5 @@ def test_auth_history_frontend_contract_and_phase1_css_unchanged():
     assert "access_token" not in js
     assert "GOOGLE_CLIENT" not in html and "GOOGLE_CLIENT" not in js
     repo = root.parents[1]
-    assert (root / "static/styles.css").read_bytes() == (repo / "reference/business-62-padiem-chat-v1/styles.css").read_bytes()
+    from style_contract import assert_phase1_styles_match
+    assert_phase1_styles_match(root / "static/styles.css", repo / "reference/business-62-padiem-chat-v1/styles.css")

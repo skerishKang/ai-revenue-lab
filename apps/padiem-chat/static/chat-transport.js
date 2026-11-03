@@ -9,6 +9,11 @@
   // 실패·401·가용성 신호를 받으면 즉시 버려 다음 턴에 다시 묻는다.
   const ORCHESTRATION_STATUS_TTL_MS = 5 * 60 * 1000;
   let orchestrationReadyAt = 0;
+  // Console/debug override. Streaming is on by default; setting this global to
+  // false restores the pre-NDJSON orchestration request path for this tab.
+  function orchestrationStreamingEnabled() {
+    return window.PADIEM_CHAT_ORCHESTRATION_STREAM !== false;
+  }
   function invalidateOrchestrationReady() { orchestrationReadyAt = 0; }
   function orchestrationReadyCached() {
     return orchestrationReadyAt > 0 && Date.now() - orchestrationReadyAt < ORCHESTRATION_STATUS_TTL_MS;
@@ -146,6 +151,45 @@
         if (!ndjson) return parseSseFrame(text);
         if (!text.trim()) return null;
         const data = JSON.parse(text);
+        // Public Chat frames use type/text records; selected Engine progress
+        // records use ok + event/text_delta/pc_progress/heartbeat/error.
+        // Normalize them without forwarding private messages or IDs.
+        if (typeof data.type === "string") {
+          if (data.type === "delta" && typeof data.text === "string") {
+            return { event: "delta", data: JSON.stringify({ delta: data.text }) };
+          }
+          if (data.type === "error") {
+            return { event: "error", data: JSON.stringify({ error: { code: data.code } }) };
+          }
+          if (data.type === "event") {
+            return { event: "orchestration_event", data: JSON.stringify(data.event || {}) };
+          }
+          if (data.type === "tool") {
+            return { event: "tool", data: JSON.stringify(data.tool || {}) };
+          }
+          if (data.type === "thought_summary") {
+            return { event: "thought_summary", data: JSON.stringify({ summary: data.summary }) };
+          }
+          if (data.type === "pc_progress") {
+            return { event: "pc_progress", data: JSON.stringify(data.pc_progress || data.progress || {}) };
+          }
+          if (data.type === "heartbeat") {
+            return { event: "heartbeat", data: JSON.stringify(data.heartbeat || data) };
+          }
+          return normalizeStreamFrame({ event: data.type, data: text });
+        }
+        if (data.text_delta && typeof data.text_delta.delta === "string") {
+          return { event: "delta", data: JSON.stringify({ delta: data.text_delta.delta }) };
+        }
+        if (data.event && typeof data.event === "object") {
+          return { event: "orchestration_event", data: JSON.stringify(data.event) };
+        }
+        if (data.pc_progress && typeof data.pc_progress === "object") {
+          return { event: "pc_progress", data: JSON.stringify(data.pc_progress) };
+        }
+        if (data.heartbeat && typeof data.heartbeat === "object") {
+          return { event: "heartbeat", data: JSON.stringify(data.heartbeat) };
+        }
         const event = data.event || (data.done === true ? "done" : typeof data.delta === "string" ? "delta" : "message");
         return normalizeStreamFrame({ event, data: text });
       }
@@ -441,8 +485,12 @@
     const wire = withDeviceSelection(payload);
     // The server-owned opt-in defaults off; the legacy custom path stays exact.
     const byokViaB14 = payload && payload.custom && window.PadiemCustomSelection?.viaEngine?.() === true;
+    const orchestrationPayload = byokViaB14 ? wire : payload;
     const orchestrated = payload && payload.custom && !byokViaB14
-      ? null : await tryOrchestration(byokViaB14 ? wire : payload, signal, byokViaB14);
+      ? null
+      : orchestrationStreamingEnabled()
+        ? await requestOrchestrationStream(orchestrationPayload, signal, byokViaB14)
+        : await tryOrchestration(orchestrationPayload, signal, byokViaB14);
     if (orchestrated) return orchestrated;
 
     const response = await fetch("/api/chat/stream", {
@@ -459,8 +507,7 @@
     return response;
   }
 
-  // #6742: 서버 NDJSON 한 줄 = 프레임 하나. app.js는 아직 이 함수를 부르지 않는다
-  // (다음 단계에서 호출 경로를 바꾼다).
+  // #6742: server NDJSON line reader kept as a small testable transport helper.
   async function readOrchestrationNdjson(response, onFrame) {
     if (!response || !response.body || typeof response.body.getReader !== "function") {
       throw new Error("스트림 응답을 읽을 수 없습니다.");
@@ -469,10 +516,11 @@
     const decoder = new TextDecoder();
     let buffer = "";
     let stopped = false;
+    let completed = false;
     try {
       while (!stopped) {
         const { done, value } = await reader.read();
-        if (done) break;
+        if (done) { completed = true; break; }
         buffer += decoder.decode(value, { stream: true });
         let index;
         while ((index = buffer.indexOf("\n")) >= 0) {
@@ -491,16 +539,23 @@
         await onFrame(frame);
       }
     } finally {
+      if (!completed) {
+        try { await reader.cancel?.(); } catch { /* reader is already closed */ }
+      }
       try { reader.releaseLock(); } catch { /* 이미 닫힌 리더 */ }
     }
   }
 
-  async function requestOrchestrationStream(payload, signal) {
-    if (!await orchestrationReady(signal)) return null;
+  async function requestOrchestrationStream(payload, signal, required = false) {
+    if (!orchestrationStreamingEnabled()) return tryOrchestration(payload, signal, required);
+    if (!await orchestrationReady(signal)) {
+      if (required) throw errorFor({ error: { code: "orchestration_unavailable" } });
+      return null;
+    }
     const response = await fetch("/api/orchestration", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/x-ndjson" },
-      body: JSON.stringify({ ...(payload || {}), stream: 1 }),
+      body: JSON.stringify(payload || {}),
       signal,
     });
     if (!response.ok) {
@@ -510,8 +565,28 @@
     }
     // 플래그가 꺼져 있으면 서버는 지금과 같은 JSON을 준다: 호출자는 기존 경로를 쓴다.
     const contentType = (response.headers.get("content-type") || "").toLowerCase();
-    if (!contentType.includes("application/x-ndjson")) return null;
-    return response;
+    if (response.ok && (contentType.includes("application/x-ndjson") || contentType.includes("application/ndjson"))) {
+      return response;
+    }
+    if (response.ok && contentType.startsWith("text/event-stream")) {
+      orchestrationRequests.set(response, payload);
+      return response;
+    }
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !data || data.ok === false || data.error) {
+      if (data?.error?.code === "orchestration_not_applicable") return null;
+      throw errorFor(data, streamErrorMessage(data), response.status);
+    }
+    if (data.orchestration && data.orchestration.approval_pause) {
+      notifyOrchestrationPause(data.orchestration, payload);
+      const paused = new Error("approval paused");
+      paused.name = "AbortError";
+      throw paused;
+    }
+    if (typeof data.answer !== "string" || !data.answer) {
+      throw new Error("AI 작업 응답을 확인할 수 없습니다.");
+    }
+    return syntheticSseResponse(data);
   }
 
   window.PadiemChatTransport = Object.freeze({
@@ -526,6 +601,7 @@
     requestClawGeneral,
     requestStreaming,
     orchestrationReady,
+    orchestrationStreamingEnabled,
     invalidateOrchestrationReady,
     requestOrchestrationStream,
     readOrchestrationNdjson,
