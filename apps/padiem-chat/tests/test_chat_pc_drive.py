@@ -911,6 +911,11 @@ def test_5015_mesh_grant_internal_diagnostics_are_fixed_codes_only(caplog):
                 raise RuntimeError("SENSITIVE_LOOKUP_FAILURE_DO_NOT_LOG")
             return self.result
 
+        def command_target_matches(self, *, account_ref, device_id):
+            assert account_ref == private_account and device_id is None
+            # Two competing rows is what the not_unique diagnostic names.
+            return [{"node_ref": "node.a"}, {"node_ref": "node.b"}]
+
     def check(reason, *, sess=session, source=None, identity=None):
         state = SimpleNamespace(
             oracle_mesh_return_source=source,
