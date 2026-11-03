@@ -68,6 +68,7 @@
         <li><a href="#browser">브라우저 사용</a></li>
         <li><a href="#attach">첨부·프로젝트·더 보기</a></li>
         <li><a href="#byok">내 API 키(BYOK)</a></li>
+        <li><a href="#mcp">외부 AI 도구 연결(MCP)</a></li>
         <li><a href="#util">유틸</a></li>
         <li><a href="#bookai">북AI</a></li>
         <li><a href="#faq">자주 묻는 질문</a></li>
@@ -205,6 +206,26 @@
       <p class="chat-help-caution">
         주의: Padiem이 공급하는 등급과 내 키로 직접 호출하는 경로는 따로 계산됩니다. 내 키로 부른 호출은
         그 공급사의 청구로 돌아갑니다.
+      </p>
+    </section>
+
+    <section class="chat-help-section" id="mcp" aria-labelledby="mcpTitle">
+      <h2 id="mcpTitle">외부 AI 도구 연결(MCP)</h2>
+      <p class="chat-help-desc">
+        설정의 <strong>외부 AI 연결</strong>에서 연결 이름과 내 PC를 고른 뒤 개인 토큰(Bearer)을 발급합니다.
+        화면에 표시되는 MCP 연결 주소와 토큰을 Claude Code·Codex처럼 Bearer 토큰을 지원하는 도구에 넣으면,
+        그 도구가 내가 맡긴 PC 작업을 대신 실행합니다.
+      </p>
+      <p class="chat-help-detail">
+        파일 목록·읽기·쓰기·이동·삭제와 PC 브라우저 작업, 그리고 git·테스트 같은 PC 명령 실행을 맡길 수 있습니다.
+        PC 명령은 사전에 맡긴 PC에서만 실행되고, 출력은 제한 크기로 잘릴 수 있으며, 끝나면 종료 코드와
+        표준 출력·오류 출력이 함께 돌아옵니다. 비밀번호 입력·계정 권한 변경·되돌릴 수 없는 삭제·외부 발송은
+        실행 전에 채트 대화에서 확인합니다.
+      </p>
+      <p class="chat-help-caution">
+        연결 해제와 토큰 폐기는 언제든 할 수 있습니다. 토큰은 발급할 때 한 번만 표시되므로 URL·명령 인자·소스·로그에
+        넣지 마세요. claude.ai·ChatGPT 웹 커넥터의 OAuth 로그인 연결은 아직 준비 중이며, 지금은 Bearer 토큰을
+        지원하는 도구로 연결합니다.
       </p>
     </section>
 

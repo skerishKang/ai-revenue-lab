@@ -53,10 +53,15 @@ JSON 요청/응답뿐이므로 기존 ASGI 앱에 작은 wire 어댑터를 연�
 | `pc_write` | `path`, `content` | `claw.pc.write_file` |
 | `pc_move` | `path`, `destination` | `claw.pc.move_file` |
 | `pc_delete` | `path` | `claw.pc.delete_file` |
+| `pc_shell` (2026-11-03 추가) | `command`, `cwd?`, `shell?`, `timeout_seconds?` | Chat oracle_mesh 명령 레인 — 사전 위임된 PC에서 한 번 실행 |
 
 기기·사용자·위임·승인 여부를 도구 인자로 받지 않는다. 경로는 기존 PC root
 해석과 grants를 그대로 따른다. 검색은 재귀 전체 디스크 검색이 아니다.
-SEND/임의 shell 실행은 노출 도구에 없다.
+SEND/임의 shell 실행은 2026-11-01 당시 노출 도구에 없었다. 2026-11-03에
+`pc_shell`을 추가했고, 실행 전 확인이 필요한 명령을 서버가 자동 분류하지
+않는다. 사전 위임된 PC에서만 실행하며, 위험 작업은 도구 설명과 PADIEM 대화로
+확인한다. 상세는
+`docs/architecture/PADIEM_MCP_DESKTOP_COMMANDER_REPLACEMENT_20261103.md`다.
 
 실행은 `mcp_gateway_transport` → `mcp_gateway_dispatch` →
 `mcp_gateway_execution.execute_mcp_pc_tool` → 기존 canonical identity / PC
@@ -98,7 +103,9 @@ Connector/Mesh로 이어진다. MCP의 정확한 도구를 결정적으로 호�
 `/api/account/mcp/approvals`(GET), `/{approval_id}`(POST)다.
 저장 위치는 기존 `PADIEM_CHAT_DB`/컴2 SQLite이며,
 `085_mcp_gateway.sql`이 credentials/확인 receipt/감사 메타데이터 테이블을
-추가한다. 기존 PC history run과 `padiem_chat.request`의 `mcp_operation` 로그도 사용한다. 토큰 ID·도구·결과·요청 digest를
+추가한다. `094_mcp_shell_audit.sql`(2026-11-03)은 감사 행에 종료 코드·소요
+시간·출력 크기·절단 여부만 추가하며 명령 본문과 출력은 저장하지 않는다.
+기존 PC history run과 `padiem_chat.request`의 `mcp_operation` 로그도 사용한다. 토큰 ID·도구·결과·요청 digest를
 기록하고 토큰 원문·파일 본문은 로그에 넣지 않는다.
 
 ## 반영 및 검증 범위
@@ -130,3 +137,16 @@ python -m pytest -q apps/padiem-ai-engine/tests/test_mcp_gateway_pc_execution.py
 Engine 공통 driver와 wire·identity/fingerprint, 공유 provenance parser와
 Python client, 해당 시험 및 이 문서가 범위다. `d1_sqlite.py`와
 `local_cpython.py`는 수정하지 않는다.
+
+## 추가: pc_shell (2026-11-03)
+
+`pc_shell`은 기존 MCP token/PC/세션 확인과 audit·승인 경로를 재사용하되,
+Engine 계획 대신 Chat의 `dispatch_oracle_mesh_command_intent` 명령 레인을
+직접 사용한다. 인자는 `command`(필수), `cwd`, `shell`(powershell·cmd·bash),
+`timeout_seconds`(기본 120·최대 600)다. 출력은 스트림별 12,000바이트
+앞·뒤 절단, 시간 초과 시 프로세스 트리 종료, 종료 코드 보존을 적용한다.
+감사에는 종료 코드·소요 시간·출력 크기·절단 여부만 남고 명령·출력은 남지
+않는다. 배포 전 migration 094를 적용해야 한다. OAuth 2.1, 장시간 프로세스,
+대용량 전송은 2단계다. 상세 설계와 검증은
+`docs/architecture/PADIEM_MCP_DESKTOP_COMMANDER_REPLACEMENT_20261103.md`에
+있다.
