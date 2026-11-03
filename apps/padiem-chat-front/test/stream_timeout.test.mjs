@@ -177,12 +177,21 @@ test("timed-out POST never poisons health or sends a canonical write to fallback
   const env = baseEnv({ UPSTREAM_TIMEOUT_MS: "10", API_READ_TIMEOUT_MS: "30",
     COM2_CANONICAL: "writes", FALLBACK_MODE: "service",
     CHAT_WORKER: { fetch: async () => { fallbacks++; return new Response("fallback"); } } });
-  const response = await handle(new Request("https://chat.padiem.net/api/chat/stream", {
+  // An ordinary write POST: the generic UPSTREAM_TIMEOUT_MS still owns it.
+  const response = await handle(new Request("https://chat.padiem.net/api/projects", {
     method: "POST", body: "{}",
   }), env);
   assert.equal(response.status, 504);
   assert.equal(fallbacks, 0);
   assert.equal((await handle(new Request("https://chat.padiem.net/api/auth/status"), env)).status, 200);
+
+  // #6460: an answer POST is on its own window, and a timed-out answer is still
+  // never handed to the fallback. Lower that window instead of waiting 60s.
+  const answer = await handle(new Request("https://chat.padiem.net/api/chat/stream", {
+    method: "POST", body: "{}",
+  }), { ...env, ORCHESTRATION_TIMEOUT_MS: "10" });
+  assert.equal(answer.status, 504);
+  assert.equal(fallbacks, 0, "a timed-out answer must not reach the Python Worker either");
 });
 
 test("API read timeout is configurable separately from the existing POST deadline", async () => {
@@ -193,7 +202,9 @@ test("API read timeout is configurable separately from the existing POST deadlin
   } });
   const env = baseEnv({ UPSTREAM_TIMEOUT_MS: "10", API_READ_TIMEOUT_MS: "80" });
   assert.equal((await handle(new Request("https://chat.padiem.net/api/conversations"), env)).status, 200);
-  assert.equal((await handle(new Request("https://chat.padiem.net/api/chat/stream", {
+  // The write example is an ordinary POST; /api/chat/stream moved to the answer
+  // window (#6460) and is covered by the test above.
+  assert.equal((await handle(new Request("https://chat.padiem.net/api/projects", {
     method: "POST", body: "{}",
   }), env)).status, 504);
 });
