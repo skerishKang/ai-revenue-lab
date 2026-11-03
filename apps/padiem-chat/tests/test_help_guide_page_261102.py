@@ -208,6 +208,21 @@ def test_the_page_carries_no_script_no_network_and_no_shout():
     assert '<link rel="stylesheet" href="./help.css" />' in HELP
 
 
+def test_the_bookai_section_tells_the_device_then_account_save_rule():
+    """The BookAI paragraph must match the app's own copy (bookai index.html
+    authGateCopy): records save on this device without a sign-in, and a
+    PADIEM account sign-in also saves them to the account so another device
+    continues. The old browser-only sentence must stay gone."""
+    section = re.search(
+        r'<section class="chat-help-section" id="bookai".*?</section>', HELP, re.S)
+    assert section, "the guide must keep its BookAI section"
+    body = section.group(0)
+    assert "로그인 없이 쓰며 기록은 그 브라우저에 저장" not in body
+    assert "이 기기에 저장" in body
+    assert "계정에도 저장" in body
+    assert "다른 기기" in body
+
+
 def test_the_guide_holds_its_phone_floor_in_plain_css():
     # The browser check below measures it; this one keeps the rule written down
     # where an editor can see it before running anything.
