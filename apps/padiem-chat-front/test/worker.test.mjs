@@ -206,7 +206,9 @@ test("failed /health probe opens the short cache and later retries", async () =>
 });
 
 test("writes before canonical may fall back; after canonical they never reach Python", async () => {
-  const writeRequest = () => new Request("https://chat.padiem.net/api/chat/stream", {
+  // #6460 moved /api/chat/stream into the answer class (its own window, and it is
+  // never re-dispatched). This test is about an ordinary write, so it uses one.
+  const writeRequest = () => new Request("https://chat.padiem.net/api/projects", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: "{}",
@@ -234,7 +236,7 @@ test("a canonical write returns the upstream 5xx unchanged", async () => {
   const upstream = new Response('{"error":"unavailable"}', { status: 500 });
   const chatWorker = { calls: 0, async fetch() { this.calls += 1; return new Response("python"); } };
   const handle = createFront({ fetchImpl: recordingFetch(() => upstream) });
-  const response = await handle(new Request("https://chat.padiem.net/api/chat/stream", {
+  const response = await handle(new Request("https://chat.padiem.net/api/projects", {
     method: "POST", body: "{}",
   }), baseEnv({ COM2_CANONICAL: "writes", FALLBACK_MODE: "service", CHAT_WORKER: chatWorker }));
   assert.equal(response, upstream);
