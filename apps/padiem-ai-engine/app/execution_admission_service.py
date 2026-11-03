@@ -18,9 +18,11 @@ import asyncio
 import hashlib
 import inspect
 import json
+import re
 import secrets
 from collections.abc import Mapping
 from contextvars import ContextVar, Token
+from time import perf_counter
 from typing import Any
 
 from padiem_ai_core import (
@@ -29,6 +31,10 @@ from padiem_ai_core import (
     OrchestrationRequest,
     OrchestrationResumeRequest,
     OrchestrationRunner,
+)
+from padiem_ai_core.execution_runtime import (
+    last_b14_duration_ms,
+    reset_b14_duration_ms,
 )
 from padiem_ai_core.dispatch_evidence import (
     ExecutionDispatchEvidence,
@@ -41,6 +47,7 @@ from app.continuation_identity import (
     build_continuation_execution_identity,
     continuation_identity_matches,
 )
+from app.engine_timing import EngineTiming
 from app.execution_admission import ExecutionAdmissionError, ExecutionAdmissionRequest
 from app.execution_admission_gate import resolve_and_require_trusted_admission
 from app.execution_admission_resume import (
@@ -90,6 +97,34 @@ _ACTIVE_TERMINAL_RESULT: ContextVar[Any | None] = ContextVar(
     "padiem_engine_active_terminal_result",
     default=None,
 )
+
+
+_SAFE_TIMING_TRACE = re.compile(r"^[A-Za-z0-9_.:-]{1,125}$")
+
+
+def _timing_tokens(payload: Any) -> tuple[str, str]:
+    """Bounded correlation tokens for the stage line; never request content."""
+
+    if not isinstance(payload, Mapping):
+        return "none", "none"
+    session_id = payload.get("session_id")
+    run_token = (
+        hashlib.sha256(session_id.encode("utf-8")).hexdigest()[:16]
+        if isinstance(session_id, str) and session_id
+        else "none"
+    )
+    trace = payload.get("trace_id")
+    if trace is None:
+        context = payload.get("execution_context")
+        if isinstance(context, Mapping):
+            trace = context.get("trace_id")
+    if (
+        not isinstance(trace, str)
+        or not _SAFE_TIMING_TRACE.fullmatch(trace)
+        or "chat_pcq_" in trace
+    ):
+        trace = "none"
+    return run_token, trace
 
 
 def _usage_reservation_identity(*, app_id: str, idempotency_key: str | None) -> str:
@@ -260,6 +295,22 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
         if inspect.isawaitable(pending):
             await pending
 
+    async def _timed_record_terminal_usage(
+        self,
+        timing: EngineTiming,
+        original: OriginalAdmissionBinding,
+        *,
+        outcome: str,
+        result: Any | None = None,
+    ) -> None:
+        started_at = perf_counter()
+        try:
+            await self._record_terminal_usage(
+                original, outcome=outcome, result=result
+            )
+        finally:
+            timing.add_receipt_since(started_at)
+
     @staticmethod
     def _receipt_error(exc: ExecutionAdmissionError):
         return _service_error(
@@ -364,101 +415,132 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
                 )
             return await super().orchestrate_payload(payload)
 
+        run_token, trace_token = _timing_tokens(payload)
+        timing = EngineTiming()
+        reset_b14_duration_ms()
+        outcome = "error"
         try:
-            admission = await resolve_and_require_trusted_admission(
-                adapter=self._admission_adapter,
-                request=admission_request,
-            )
-            # The generic admission contract allows an unbound decision for less
-            # sensitive capabilities. Engine orchestration does not: admission
-            # must explicitly bind the canonical server-derived logical request.
-            if (
-                admission_request.request_fingerprint is None
-                or admission.request_fingerprint != admission_request.request_fingerprint
-            ):
-                raise ExecutionAdmissionError(
-                    "entitlement_request_mismatch",
-                    "Trusted execution admission is not bound to this orchestration request.",
-                    status_code=403,
-                )
+            timing.mark("admission_start")
             try:
-                binding = OriginalAdmissionBinding.from_run_admission(admission)
-            except ExecutionAdmissionError as exc:
-                raise exc
-        except ExecutionAdmissionError as exc:
-            return _service_error(
-                exc.code,
-                exc.safe_message,
-                status_code=exc.status_code,
-                retryable=exc.status_code >= 500,
-            )
-
-        # Subject is trusted Control Plane admission, run id belongs to its
-        # admission-bound logical request. Neither comes from model arguments.
-        from app.claw_desktop_step_driver import CLAW_APP_ID, _ENGINE_DESKTOP_OWNER
-        from app.claw_pc_query_step_driver import CHAT_APP_ID, _PC_QUERY_OWNER
-        from kagent.pc_query_adapter import PC_QUERY_RUN_SCOPE
-        desktop_owner = None
-        pc_query_owner = None
-        if binding.app_id in (CLAW_APP_ID, CHAT_APP_ID) and binding.subject_id is not None:
-            run_id = payload.get("session_id") if isinstance(payload, dict) else None
-            if isinstance(run_id, str) and run_id:
-                desktop_owner = (binding.subject_id, run_id)
-                # The drive plan keys the target by query_drives; the file plan
-                # uses the shared files hint. Both carry one device, taken from
-                # the same closed validation the tool projection consumes.
-                pc_target = _validated_pc_tool_arguments(payload)
-                pc_query_owner = (
-                    binding.subject_id, run_id, binding.app_id,
-                    _pc_query_selected_device(pc_target),
+                admission = await resolve_and_require_trusted_admission(
+                    adapter=self._admission_adapter,
+                    request=admission_request,
                 )
-        desktop_scope_token = _ENGINE_DESKTOP_OWNER.set(desktop_owner)
-        pc_query_scope_token = _PC_QUERY_OWNER.set(pc_query_owner)
-        pc_run_scope_token = PC_QUERY_RUN_SCOPE.set({} if pc_query_owner else None)
-        original_token: Token[OriginalAdmissionBinding | None] = _ACTIVE_ORIGINAL_ADMISSION.set(binding)
-        result_token = _ACTIVE_TERMINAL_RESULT.set(None)
-        dispatch_evidence = ExecutionDispatchEvidence()
-        dispatch_token = activate_execution_dispatch_evidence(dispatch_evidence)
-        try:
-            try:
-                response = await super().orchestrate_payload(payload)
-            except asyncio.CancelledError:
-                if dispatch_evidence.dispatched:
-                    try:
-                        await self._record_terminal_usage(binding, outcome="cancelled")
-                    except ExecutionAdmissionError as exc:
-                        return self._receipt_error(exc)
-                raise
-            except Exception:
-                if dispatch_evidence.dispatched:
-                    await self._record_terminal_usage(binding, outcome="failed")
-                raise
-
-            terminal_result = _ACTIVE_TERMINAL_RESULT.get()
-            if terminal_result is not None and (
-                dispatch_evidence.dispatched or is_idempotency_replay(terminal_result)
-            ):
-                try:
-                    await self._record_terminal_usage(
-                        binding,
-                        outcome="succeeded",
-                        result=terminal_result,
+                # The generic admission contract allows an unbound decision for less
+                # sensitive capabilities. Engine orchestration does not: admission
+                # must explicitly bind the canonical server-derived logical request.
+                if (
+                    admission_request.request_fingerprint is None
+                    or admission.request_fingerprint != admission_request.request_fingerprint
+                ):
+                    raise ExecutionAdmissionError(
+                        "entitlement_request_mismatch",
+                        "Trusted execution admission is not bound to this orchestration request.",
+                        status_code=403,
                     )
-                except ExecutionAdmissionError as exc:
-                    return self._receipt_error(exc)
-            elif response.status_code != 200 and dispatch_evidence.dispatched:
                 try:
-                    await self._record_terminal_usage(binding, outcome="failed")
+                    binding = OriginalAdmissionBinding.from_run_admission(admission)
                 except ExecutionAdmissionError as exc:
-                    return self._receipt_error(exc)
-            return response
+                    raise exc
+            except ExecutionAdmissionError as exc:
+                outcome = "refused"
+                return _service_error(
+                    exc.code,
+                    exc.safe_message,
+                    status_code=exc.status_code,
+                    retryable=exc.status_code >= 500,
+                )
+            finally:
+                timing.mark("admission_end")
+
+            # Subject is trusted Control Plane admission, run id belongs to its
+            # admission-bound logical request. Neither comes from model arguments.
+            from app.claw_desktop_step_driver import CLAW_APP_ID, _ENGINE_DESKTOP_OWNER
+            from app.claw_pc_query_step_driver import CHAT_APP_ID, _PC_QUERY_OWNER
+            from kagent.pc_query_adapter import PC_QUERY_RUN_SCOPE
+            desktop_owner = None
+            pc_query_owner = None
+            if binding.app_id in (CLAW_APP_ID, CHAT_APP_ID) and binding.subject_id is not None:
+                run_id = payload.get("session_id") if isinstance(payload, dict) else None
+                if isinstance(run_id, str) and run_id:
+                    desktop_owner = (binding.subject_id, run_id)
+                    # The drive plan keys the target by query_drives; the file plan
+                    # uses the shared files hint. Both carry one device, taken from
+                    # the same closed validation the tool projection consumes.
+                    pc_target = _validated_pc_tool_arguments(payload)
+                    pc_query_owner = (
+                        binding.subject_id, run_id, binding.app_id,
+                        _pc_query_selected_device(pc_target),
+                    )
+            desktop_scope_token = _ENGINE_DESKTOP_OWNER.set(desktop_owner)
+            pc_query_scope_token = _PC_QUERY_OWNER.set(pc_query_owner)
+            pc_run_scope_token = PC_QUERY_RUN_SCOPE.set({} if pc_query_owner else None)
+            original_token: Token[OriginalAdmissionBinding | None] = _ACTIVE_ORIGINAL_ADMISSION.set(binding)
+            result_token = _ACTIVE_TERMINAL_RESULT.set(None)
+            dispatch_evidence = ExecutionDispatchEvidence()
+            dispatch_token = activate_execution_dispatch_evidence(dispatch_evidence)
+            try:
+                timing.mark("core_start")
+                try:
+                    response = await super().orchestrate_payload(payload)
+                except asyncio.CancelledError:
+                    outcome = "cancelled"
+                    if dispatch_evidence.dispatched:
+                        try:
+                            await self._timed_record_terminal_usage(
+                                timing, binding, outcome="cancelled"
+                            )
+                        except ExecutionAdmissionError as exc:
+                            outcome = "refused"
+                            return self._receipt_error(exc)
+                    raise
+                except Exception:
+                    if dispatch_evidence.dispatched:
+                        await self._timed_record_terminal_usage(
+                            timing, binding, outcome="failed"
+                        )
+                    raise
+                finally:
+                    timing.mark("core_end")
+
+                terminal_result = _ACTIVE_TERMINAL_RESULT.get()
+                if terminal_result is not None and (
+                    dispatch_evidence.dispatched or is_idempotency_replay(terminal_result)
+                ):
+                    try:
+                        await self._timed_record_terminal_usage(
+                            timing,
+                            binding,
+                            outcome="succeeded",
+                            result=terminal_result,
+                        )
+                    except ExecutionAdmissionError as exc:
+                        outcome = "refused"
+                        return self._receipt_error(exc)
+                elif response.status_code != 200 and dispatch_evidence.dispatched:
+                    try:
+                        await self._timed_record_terminal_usage(
+                            timing, binding, outcome="failed"
+                        )
+                    except ExecutionAdmissionError as exc:
+                        outcome = "refused"
+                        return self._receipt_error(exc)
+                outcome = "ok" if response.status_code == 200 else "refused"
+                return response
+            finally:
+                reset_execution_dispatch_evidence(dispatch_token)
+                _ACTIVE_TERMINAL_RESULT.reset(result_token)
+                _ACTIVE_ORIGINAL_ADMISSION.reset(original_token)
+                _ENGINE_DESKTOP_OWNER.reset(desktop_scope_token)
+                _PC_QUERY_OWNER.reset(pc_query_scope_token)
+                PC_QUERY_RUN_SCOPE.reset(pc_run_scope_token)
         finally:
-            reset_execution_dispatch_evidence(dispatch_token)
-            _ACTIVE_TERMINAL_RESULT.reset(result_token)
-            _ACTIVE_ORIGINAL_ADMISSION.reset(original_token)
-            _ENGINE_DESKTOP_OWNER.reset(desktop_scope_token)
-            _PC_QUERY_OWNER.reset(pc_query_scope_token)
-            PC_QUERY_RUN_SCOPE.reset(pc_run_scope_token)
+            timing.emit(
+                run_hash=run_token,
+                trace_id=trace_token,
+                b14_ms=last_b14_duration_ms(),
+                outcome=outcome,
+            )
 
 
     async def prepare_stream(self, **options):
