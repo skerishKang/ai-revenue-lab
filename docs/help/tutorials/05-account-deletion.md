@@ -30,20 +30,21 @@
 
 ![삭제 전에 안내 내용을 꼼꼼히 읽어요.](asset://chat-tutorial/05-account-deletion/step-02.png)
 
-### 3단계 · 이번 확인에서는 탈퇴를 실행하지 않아요.
+### 3단계 · 탈퇴를 실행해요.
 
 > [화면 준비 중 — 시험 계정 확정 후 촬영]
 
-**이렇게 해요:** 탈퇴는 실행하지 않고 취소하기
+**이렇게 해요:** 탈퇴를 실행해요
 
-**이렇게 보여요:** 시험 계정 유지
+**이렇게 보여요:** 탈퇴 완료 화면 표시
 
-**화면에서 확인하는 것:** 탈퇴 요청 0건
+**화면에서 확인하는 것:** 탈퇴 요청·재로그인 거부
 
 ## 영상과 자막
 
-아직 촬영하지 않았습니다 — 이 시나리오는 계정 단계로만 이루어져 있습니다.
-시험 계정이 확정되면 `asset://chat-tutorial/05-account-deletion/video.webm`과 `captions.vtt`로 촬영합니다.
+- 영상: `asset://chat-tutorial/05-account-deletion/video.webm`
+- 자막: `asset://chat-tutorial/05-account-deletion/captions.vtt`
+- 촬영 범위: 시험 계정으로 계정 단계 전체.
 
 ---
 
