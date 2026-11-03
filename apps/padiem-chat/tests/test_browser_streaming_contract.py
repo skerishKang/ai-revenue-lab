@@ -26,7 +26,7 @@ def _run_node(script: str, *args: str) -> str:
         ["node", "-e", script, *args],
         check=True,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
     )
     return completed.stdout.strip()
 
@@ -380,6 +380,6 @@ def test_plain_korean_error_display_and_reference_code() -> None:
         ["node", str(ROOT / "tests" / "test_plain_korean_error_display.cjs")],
         check=True,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
     )
     assert "three error cases" in completed.stdout

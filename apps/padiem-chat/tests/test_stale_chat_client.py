@@ -71,5 +71,5 @@ global.fetch = async (url) => {
 """
     script = tmp_path / "transport.js"
     script.write_text(js, encoding="utf-8")
-    result = subprocess.run(["node", str(script)], capture_output=True, text=True, check=True)
+    result = subprocess.run(["node", str(script)], capture_output=True, text=True, encoding="utf-8", check=True)
     assert result.stdout == "PASS"

@@ -20,7 +20,7 @@ USER_A = "sub_integration_alpha"
 USER_B = "sub_integration_beta"
 PATH = "/api/bookai/records"
 ROOT = Path(__file__).resolve().parents[3]
-BRIDGE = Path(__file__).with_name("bookai_records_app_bridge.mjs")
+BRIDGE = Path(__file__).with_name("harness") / "bookai_records_app_bridge.mjs"
 
 
 @pytest.fixture
