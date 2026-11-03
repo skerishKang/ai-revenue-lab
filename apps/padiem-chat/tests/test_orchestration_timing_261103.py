@@ -3,11 +3,13 @@ from __future__ import annotations
 
 import logging
 import re
+import sys
 from pathlib import Path
 
-from app.orchestration_timing import STAGES, OrchestrationTiming
+from app.orchestration_timing import STAGES, OrchestrationTiming, ensure_host_visible
 
 ROUTES = Path(__file__).resolve().parents[1] / "app" / "orchestration_routes.py"
+HOST = Path(__file__).resolve().parents[1] / "app" / "local_cpython.py"
 
 FIELD_ORDER = (
     "validate_ms=", "policy_ms=", "conversation_ms=", "usage_ms=",
@@ -77,3 +79,78 @@ def test_the_route_marks_only_stage_names_and_always_emits():
         '"validated"', '"policy"', '"conversation"', '"usage"',
         '"pc_context"', '"grounding"', '"engine"', '"save"',
     ], marks
+
+
+def _cleared_logging():
+    """Detach every handler, as the COM2 host has them: uvicorn configures its own
+    loggers only, so the root logger ends up with none and logging's fallback handler
+    keeps WARNING and above."""
+    root = logging.getLogger()
+    timing = logging.getLogger("padiem_chat.orchestration_timing")
+    saved = (root.handlers[:], timing.handlers[:], timing.propagate)
+    for handler in list(root.handlers):
+        root.removeHandler(handler)
+    for handler in list(timing.handlers):
+        timing.removeHandler(handler)
+    timing.propagate = True
+    return saved
+
+
+def _restore_logging(saved):
+    root, handlers, propagate = saved
+    root.handlers[:] = handlers
+    timing = logging.getLogger("padiem_chat.orchestration_timing")
+    for handler in list(timing.handlers):
+        timing.removeHandler(handler)
+    timing.propagate = propagate
+
+
+def test_the_line_reaches_stderr_when_the_host_configured_no_logging(capsys):
+    saved = _cleared_logging()
+    try:
+        ensure_host_visible()
+        _marked().emit()
+    finally:
+        captured = capsys.readouterr()
+        _restore_logging(saved)
+    assert "orchestration_timing_com2 " in captured.err, captured.err
+    assert captured.err.strip().endswith("retried=unknown"), captured.err
+
+
+def test_the_hook_never_writes_the_line_twice(capsys):
+    saved = _cleared_logging()
+    try:
+        ensure_host_visible()
+        ensure_host_visible()
+        timing = logging.getLogger("padiem_chat.orchestration_timing")
+        assert len(timing.handlers) == 1, timing.handlers
+        assert timing.propagate is False
+        _marked().emit()
+    finally:
+        captured = capsys.readouterr()
+        _restore_logging(saved)
+    assert captured.err.count("orchestration_timing_com2 ") == 1, captured.err
+
+
+def test_the_hook_stands_aside_when_the_host_configures_logging(capsys):
+    saved = _cleared_logging()
+    watcher = logging.StreamHandler(sys.stderr)
+    try:
+        logging.getLogger().addHandler(watcher)
+        ensure_host_visible()
+        timing = logging.getLogger("padiem_chat.orchestration_timing")
+        assert timing.handlers == [], timing.handlers
+        assert timing.propagate is True
+        _marked().emit()
+    finally:
+        captured = capsys.readouterr()
+        logging.getLogger().removeHandler(watcher)
+        _restore_logging(saved)
+    assert "orchestration_timing_com2 " in captured.err, captured.err
+
+
+def test_the_cpython_host_installs_the_hook():
+    # The line is only useful if the process that serves registers it: this host has
+    # no logging configuration of its own, and nothing else calls the hook.
+    source = HOST.read_text(encoding="utf-8")
+    assert "ensure_host_visible" in source
