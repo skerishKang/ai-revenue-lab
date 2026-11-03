@@ -102,3 +102,13 @@
 ## Push 확인
 - 최신 `origin/main` 165269e70c2fb4ed4f8b3276cb22bf82f35d7afc 위로 재기반했고, 원격 브랜치가 이전에 본 작업에서 push한 SHA 그대로인지 lease로 확인해 갱신했다.
 - 구현 커밋 81133954d0463809415f780e8d08e1781ec8fe2b의 `git ls-remote` 결과가 로컬 SHA와 일치했다. PR·merge·배포는 하지 않았다.
+
+## 2026-11-03 · Chat Claw 작업 보관기간 적용
+- setup: 기존 원격 `feat/claw-jobs-retention-261103`의 두 커밋을 보존하고 최신 `origin/main` (`b0b869994`)을 merge commit `344b3db72`로 통합했다. `progress.md` 충돌은 main 기록과 기존 Claw Queue 기록을 함께 보존해 해결했다.
+- map: Chat migrations에서 Claw runtime 표와 작업·run·결과 연결을 조사했다. 별도 Claw event/step log 표는 없고, `claw_task_alert`만 사용자 task 및 알림 상태가 섞여 있다. 사용자 정의·결과·권한·중복 방지 자료는 docs 표대로 분류했다.
+- retention: 90일 지난 dismissed alert만 `claw_task_alert.created_at` 기준으로 표당 최대 1배치 정리한다. task 행과 active alert, PENDING/RUNNING `claw_runs`, 사용자 run history·artifact 링크는 보존한다. 출력에는 표 이름과 건수만 남긴다.
+- migration: 098 `idx_claw_task_alert_retention(kind,status,created_at)`을 추가했다. 기존 inbox 인덱스는 전역 만료 범위 검색에 맞지 않는다.
+- tests: retention 전용 18 passed. 전체 Chat Python Claw + retention 2,039건 중 2,037 passed, 2 failed. 실패 2건은 두 기존 scheduler source test가 `wrangler.toml`에 이미 있는 `17 3 * * *` trigger를 미등록으로 기대한다. `padiem_ai_engine_client` 경로를 추가해 worker composition test 포함 회귀를 재실행했다. 경계·active/task·PENDING/RUNNING·완료 결과·run history/artifact FK child·missing table·batch·inbox 조회·098 인덱스 적용을 확인했다.
+- test-environment: 기존 Claw run-history UI의 locale guard가 앱 주석의 한국어를 거부해 주석을 영어로 정리했다. Node 출력 재시험에는 `PYTHONUTF8=1`을 지정했다.
+- docs: `docs/operations/RETENTION_ENFORCE_20261103.md`에 Claw (a)/(b) 분류와 배포 시 migration 적용 항목을 추가했다.
+- delivery: 운영 스키마에는 migration 098 적용이 필요하다. PR·병합·배포는 수행하지 않고 지정 브랜치에 commit/push만 한다.
