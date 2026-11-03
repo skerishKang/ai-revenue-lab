@@ -115,6 +115,22 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     unhealthySince.set(origin, now());
   }
 
+  function withOrchestrationTotal(response, started, status) {
+    // The total covers exactly the upstream answer: the log line prints when
+    // the upstream body has fully streamed through. The bytes pass through
+    // untouched — lengths only, never the body, never cookies, never identity.
+    const ttfb = Math.round(now() - started);
+    const { readable, writable } = new TransformStream();
+    response.body.pipeTo(writable).then(() => {
+      console.log(`orchestration_timing path=/api/orchestration status=${status} ttfb_ms=${ttfb} total_ms=${Math.round(now() - started)}`);
+    }).catch(() => {
+      console.log(`orchestration_timing path=/api/orchestration status=${status} ttfb_ms=${ttfb} total_ms=stream_aborted`);
+    });
+    return new Response(readable, {
+      status: response.status, statusText: response.statusText, headers: response.headers,
+    });
+  }
+
   async function forward(request, target, env, timeoutMs) {
     let headers;
     try {
@@ -203,7 +219,15 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     const streaming = /text\/event-stream/i.test(request.headers.get("accept") || "") ||
       (request.headers.get("upgrade") || "").toLowerCase() === "websocket";
     const apiRead = !isWrite && url.pathname.startsWith("/api/") && !streaming;
-    const timeoutMs = appsAI
+    // #6460 4-2: the orchestration answer is one buffered JSON document, so
+    // this deadline is the WHOLE request — the model pipeline behind it can
+    // legitimately run past the generic write window (measured 504 at ~13.5s
+    // on 2026-11-03). 120s for the measurement window; the final ceiling is
+    // the CTO's call once the numbers are in.
+    const orchestration = request.method === "POST" && url.pathname === "/api/orchestration";
+    const timeoutMs = orchestration
+      ? numeric(env.ORCHESTRATION_TIMEOUT_MS, DEFAULT_TIMEOUT_MS)
+      : appsAI
       ? numeric(env.APPS_AI_TIMEOUT_MS, 65000)
       : apiRead ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS)
       : authCallback ? numeric(env.AUTH_CALLBACK_TIMEOUT_MS, DEFAULT_AUTH_CALLBACK_TIMEOUT_MS)
@@ -211,7 +235,22 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
         : upstreamTimeout;
 
     if (isWrite) {
+      const started = now();
       const response = await forward(request, target, env, timeoutMs);
+      if (orchestration) {
+        // One line per orchestration request: path, status, time to first
+        // byte, total time. Never the body, never cookies, never identity.
+        if (response instanceof Response) {
+          const ttfb = Math.round(now() - started);
+          const headers = new Headers(response.headers);
+          headers.set("x-padiem-orchestration-ttfb-ms", String(ttfb));
+          const timed = new Response(response.body, {
+            status: response.status, statusText: response.statusText, headers,
+          });
+          return withOrchestrationTotal(timed, started, response.status);
+        }
+        console.log(`orchestration_timing path=/api/orchestration status=upstream_${response.description ?? String(response)} ttfb_ms=${Math.round(now() - started)} total_ms=${Math.round(now() - started)}`);
+      }
       if (response === SIGNING_FAILED) return maintenanceResponse("write_refused");
       if (response === TIMED_OUT) return requestFailure(request, 504, "upstream_timeout");
       if (response === TRANSPORT_FAILED) return requestFailure(request, 502, "upstream_transport_failed");

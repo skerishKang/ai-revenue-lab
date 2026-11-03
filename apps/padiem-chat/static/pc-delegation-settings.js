@@ -16,11 +16,19 @@
     return node;
   }
   async function request(url, method = "GET", payload) {
-    const response = await root.fetch(url, {
+    const init = {
       method, credentials: "same-origin", cache: "no-store",
       headers: { Accept: "application/json", ...(payload ? { "Content-Type": "application/json" } : {}) },
       ...(payload ? { body: JSON.stringify(payload) } : {}),
-    });
+    };
+    let response = await root.fetch(url, init);
+    // #6460 4-2: one silent shared-session refresh and one retry when the
+    // 15-minute access cookie expired under the screen's 14-minute tick.
+    if (response.status === 401 && window.PadiemSharedSession) {
+      if (await window.PadiemSharedSession.refreshOnce()) {
+        response = await root.fetch(url, init);
+      }
+    }
     return { status: response.status, body: await response.json().catch(() => null) };
   }
   function validRules(body) { return body?.ok === true && body.version === 1 && Array.isArray(body.rules); }

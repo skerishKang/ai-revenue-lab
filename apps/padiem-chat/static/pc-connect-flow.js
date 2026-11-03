@@ -126,12 +126,25 @@
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     try {
-      const response = await fetch(url, {
+      let response = await fetch(url, {
         credentials: "same-origin",
         signal: controller.signal,
         headers: { Accept: "application/json" },
         ...options,
       });
+      // #6460 4-2: a 401 here is usually the short-lived shared access cookie
+      // expiring before the screen's refresh tick. One silent refresh, one
+      // retry — the pairing session itself is untouched.
+      if (response.status === 401 && window.PadiemSharedSession) {
+        if (await window.PadiemSharedSession.refreshOnce()) {
+          response = await fetch(url, {
+            credentials: "same-origin",
+            signal: controller.signal,
+            headers: { Accept: "application/json" },
+            ...options,
+          });
+        }
+      }
       const reader = response.body?.getReader?.();
       let raw = "";
       if (reader) {
