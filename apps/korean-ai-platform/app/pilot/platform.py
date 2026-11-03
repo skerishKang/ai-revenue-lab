@@ -23,6 +23,8 @@ contract applies to both.
 
 from __future__ import annotations
 
+from contextlib import aclosing
+
 import json
 import os
 import logging
@@ -49,7 +51,12 @@ from app.pilot.errors import (
 )
 from app.pilot.sensenova_provider import is_transient_busy_429
 from app.pilot.provider_timeout_diagnostics import log_provider_timeout
-from app.pilot.b14_timeout_policy import build_provider_http_timeout
+from app.pilot.b14_timeout_policy import (
+    ProviderAttemptTimeout,
+    build_provider_http_timeout,
+    iter_provider_response_bytes,
+    send_provider_request,
+)
 from app.pilot.agnes_429_diagnostics import log_agnes_429
 from app.pilot.exlab_429_diagnostics import log_exlab_429
 from app.pilot.b14_runtime_config import runtime_config
@@ -347,7 +354,12 @@ def _require_free_candidate_excluded(
         )
 
 
-async def _read_bounded_body(response: httpx.Response, *, cap: int | None = MAX_RESPONSE_BYTES) -> bytes:
+async def _read_bounded_body(
+    response: httpx.Response,
+    *,
+    cap: int | None = MAX_RESPONSE_BYTES,
+    started_at: float | None = None,
+) -> bytes:
     """Collect a completed response body with a pre-decode byte cap (#4379).
 
     Byte resource guard, not a model output ceiling: healthy answers under the
@@ -365,7 +377,9 @@ async def _read_bounded_body(response: httpx.Response, *, cap: int | None = MAX_
         except ValueError:
             pass  # untrusted header; enforce on actual bytes instead
     buf = bytearray()
-    async for chunk in response.aiter_bytes():
+    async for chunk in iter_provider_response_bytes(
+        response, started_at=started_at if started_at is not None else time.monotonic(),
+    ):
         if cap is not None and len(chunk) > cap - len(buf):
             raise UpstreamResponseTooLarge(cap)
         buf += chunk
@@ -577,15 +591,14 @@ async def call_platform_chat_completions(
     start = time.monotonic()
     try:
         async with httpx.AsyncClient(**client_kwargs) as client:
-            async with client.stream(
-                "POST",
-                chat_url,
-                headers=headers,
-                json=body,
-                follow_redirects=False,
-            ) as response:
+            response, request_started = await send_provider_request(
+                client, "POST", chat_url, headers=headers, json=body,
+            )
+            async with aclosing(response):
                 if response.status_code < 200 or response.status_code >= 300:
-                    error_bytes = await _read_bounded_body(response)
+                    error_bytes = await _read_bounded_body(
+                        response, started_at=request_started,
+                    )
                     if platform_provider_id == "tokenharbor":
                         _log_tokenharbor_rejection(response, headers, error_bytes)
                     error_body = error_bytes.decode("utf-8", "replace")
@@ -602,10 +615,18 @@ async def call_platform_chat_completions(
                     _raise_upstream_error(
                         response.status_code, platform_provider_id, error_body, model_id=model_id
                     )
-                body_bytes = await _read_bounded_body(response, cap=_completed_response_cap())
+                body_bytes = await _read_bounded_body(
+                    response, cap=_completed_response_cap(), started_at=request_started,
+                )
+    except ProviderAttemptTimeout as exc:
+        logger.warning(
+            "b14_provider_attempt_timeout provider=%s reason=%s mode=completed",
+            platform_provider_id, exc.reason,
+        )
+        raise UpstreamTimeout(timeout_reason=exc.reason) from exc
     except httpx.TimeoutException as exc:
         log_provider_timeout(logger, platform_provider_id, exc, "completed")
-        raise UpstreamTimeout() from exc
+        raise UpstreamTimeout(timeout_reason="first_byte") from exc
     except httpx.RequestError as e:
         logger.error(
             "platform_request_error provider=%s error=%s",
@@ -798,17 +819,16 @@ async def stream_platform_chat_completions(
     buffer = b""
     try:
         async with httpx.AsyncClient(**client_kwargs) as client:
-            async with client.stream(
-                "POST",
-                chat_url,
-                headers=headers,
-                json=body,
-                follow_redirects=False,
-            ) as response:
+            response, request_started = await send_provider_request(
+                client, "POST", chat_url, headers=headers, json=body,
+            )
+            async with aclosing(response):
                 if response.status_code < 200 or response.status_code >= 300:
                     # Bound error-body bytes before inspecting provider-specific
                     # 429 diagnostics; untrusted upstream errors can be huge.
-                    error_bytes = await _read_bounded_body(response)
+                    error_bytes = await _read_bounded_body(
+                        response, started_at=request_started,
+                    )
                     if platform_provider_id == "tokenharbor":
                         _log_tokenharbor_rejection(response, headers, error_bytes)
                     error_body = error_bytes.decode("utf-8", "replace")
@@ -828,7 +848,9 @@ async def stream_platform_chat_completions(
 
                 # Bound our accumulator per frame without delaying first-token
                 # delivery by reading ahead to fill a fixed-size HTTP chunk.
-                async for chunk in _iter_sse_bounded_slices(response):
+                async for chunk in _iter_sse_bounded_slices(
+                    response, started_at=request_started,
+                ):
                     buffer += chunk
                     frames, buffer = _pop_sse_frames(buffer)
                     # Bound a single unfinished event for Worker memory safety,
@@ -865,9 +887,15 @@ async def stream_platform_chat_completions(
                                 raise UpstreamEmptyAnswer(last_finish_reason, streamed=True)
                             saw_done = True
                         yield event
+    except ProviderAttemptTimeout as exc:
+        logger.warning(
+            "b14_provider_attempt_timeout provider=%s reason=%s mode=stream",
+            platform_provider_id, exc.reason,
+        )
+        raise UpstreamTimeout(timeout_reason=exc.reason) from exc
     except httpx.TimeoutException as exc:
         log_provider_timeout(logger, platform_provider_id, exc, "stream")
-        raise UpstreamTimeout() from exc
+        raise UpstreamTimeout(timeout_reason="first_byte") from exc
     except httpx.RequestError as exc:
         logger.error(
             "platform_stream_error provider=%s error=%s",
@@ -881,7 +909,9 @@ async def stream_platform_chat_completions(
 
 
 
-async def _iter_sse_bounded_slices(response: httpx.Response):
+async def _iter_sse_bounded_slices(
+    response: httpx.Response, *, started_at: float | None = None,
+):
     """Yield pieces of each received HTTP block immediately, without read-ahead.
 
     aiter_bytes(chunk_size=N) waits to fill N bytes, delaying first tokens
@@ -890,7 +920,9 @@ async def _iter_sse_bounded_slices(response: httpx.Response):
     each received block to keep our incomplete-frame accumulator bounded.
     This cannot constrain allocations inside HTTPX network decoder itself.
     """
-    async for block in response.aiter_bytes():
+    async for block in iter_provider_response_bytes(
+        response, started_at=started_at if started_at is not None else time.monotonic(),
+    ):
         for offset in range(0, len(block), 64 * 1024):
             yield block[offset:offset + 64 * 1024]
 
@@ -971,27 +1003,36 @@ async def call_user_credential_chat_completions(
     start = time.monotonic()
     try:
         async with httpx.AsyncClient(**client_kwargs) as client:
-            async with client.stream(
+            response, request_started = await send_provider_request(
+                client,
                 "POST",
                 credential.chat_completions_url,
                 headers=_user_credential_headers(credential),
                 json=_user_credential_request_shape(
                     credential, messages, temperature, max_tokens, streaming=False
                 ),
-                follow_redirects=False,
-            ) as response:
+            )
+            async with aclosing(response):
                 if response.status_code < 200 or response.status_code >= 300:
-                    error_bytes = await _read_bounded_body(response)
+                    error_bytes = await _read_bounded_body(
+                        response, started_at=request_started,
+                    )
                     _raise_upstream_error(
                         response.status_code, credential.provider_id,
                         error_bytes.decode("utf-8", "replace"), model_id=model_id,
                     )
                 body_bytes = await _read_bounded_body(
-                    response, cap=_completed_response_cap()
+                    response, cap=_completed_response_cap(), started_at=request_started,
                 )
+    except ProviderAttemptTimeout as exc:
+        logger.warning(
+            "b14_provider_attempt_timeout provider=%s reason=%s mode=completed",
+            credential.provider_id, exc.reason,
+        )
+        raise UpstreamTimeout(timeout_reason=exc.reason) from exc
     except httpx.TimeoutException as exc:
         log_provider_timeout(logger, credential.provider_id, exc, "completed")
-        raise UpstreamTimeout() from exc
+        raise UpstreamTimeout(timeout_reason="first_byte") from exc
     except httpx.RequestError as exc:
         logger.error(
             "user_credential_request_error provider=%s error=%s",
@@ -1109,22 +1150,27 @@ async def stream_user_credential_chat_completions(
     buffer = b""
     try:
         async with httpx.AsyncClient(**client_kwargs) as client:
-            async with client.stream(
+            response, request_started = await send_provider_request(
+                client,
                 "POST",
                 credential.chat_completions_url,
                 headers=_user_credential_headers(credential),
                 json=_user_credential_request_shape(
                     credential, messages, temperature, max_tokens, streaming=True
                 ),
-                follow_redirects=False,
-            ) as response:
+            )
+            async with aclosing(response):
                 if response.status_code < 200 or response.status_code >= 300:
-                    error_bytes = await _read_bounded_body(response)
+                    error_bytes = await _read_bounded_body(
+                        response, started_at=request_started,
+                    )
                     _raise_upstream_error(
                         response.status_code, credential.provider_id,
                         error_bytes.decode("utf-8", "replace"), model_id=model_id,
                     )
-                async for chunk in _iter_sse_bounded_slices(response):
+                async for chunk in _iter_sse_bounded_slices(
+                    response, started_at=request_started,
+                ):
                     buffer += chunk
                     frames, buffer = _pop_sse_frames(buffer)
                     if len(buffer) > MAX_RESPONSE_BYTES:
@@ -1163,9 +1209,15 @@ async def stream_user_credential_chat_completions(
                                 raise UpstreamEmptyAnswer(last_finish_reason, streamed=True)
                             saw_done = True
                         yield event
+    except ProviderAttemptTimeout as exc:
+        logger.warning(
+            "b14_provider_attempt_timeout provider=%s reason=%s mode=stream",
+            credential.provider_id, exc.reason,
+        )
+        raise UpstreamTimeout(timeout_reason=exc.reason) from exc
     except httpx.TimeoutException as exc:
         log_provider_timeout(logger, credential.provider_id, exc, "stream")
-        raise UpstreamTimeout() from exc
+        raise UpstreamTimeout(timeout_reason="first_byte") from exc
     except httpx.RequestError as exc:
         logger.error(
             "user_credential_stream_error provider=%s error=%s",

@@ -54,13 +54,15 @@ def test_gateway_deadline_classification_is_distinct_and_safe(caplog):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("exception,phase", [
-    (httpx.ConnectTimeout("PRIVATE_VENDOR_SECRET"), "connect"),
-    (httpx.ReadTimeout("PRIVATE_QUOTE_CONTENT"), "read"),
+@pytest.mark.parametrize("exception,reason", [
+    (httpx.ConnectTimeout("PRIVATE_VENDOR_SECRET"), "first_byte"),
+    # Before response headers/body arrive, a read timeout is still a first-byte
+    # failure; post-byte read gaps are classified separately by the body guard.
+    (httpx.ReadTimeout("PRIVATE_QUOTE_CONTENT"), "first_byte"),
 ])
 @pytest.mark.parametrize("stream", [False, True])
 async def test_real_platform_adapter_classifies_kira_without_real_provider(
-        monkeypatch, caplog, exception, phase, stream):
+        monkeypatch, caplog, exception, reason, stream):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setattr(plt, "_request_headers",
                         lambda spec, model_id="": {"Content-Type": "application/json"})
@@ -81,7 +83,8 @@ async def test_real_platform_adapter_classifies_kira_without_real_provider(
                     pass
             else:
                 await plt.call_platform_chat_completions(**args)
-    assert f"b14_safe_timeout provider=kira phase={phase} mode={'stream' if stream else 'completed'}" in caplog.text
+    assert (f"b14_provider_attempt_timeout provider=kira reason={reason} "
+            f"mode={'stream' if stream else 'completed'}") in caplog.text
     assert "PRIVATE_" not in caplog.text
 
 

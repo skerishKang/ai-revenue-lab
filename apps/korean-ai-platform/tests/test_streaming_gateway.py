@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 
 import httpx
@@ -31,6 +32,17 @@ class _ChunkStream(httpx.AsyncByteStream):
 
     async def aclose(self) -> None:
         self.closed = True
+
+
+class _DelayedChunkStream(httpx.AsyncByteStream):
+    def __init__(self, chunks: list[tuple[float, bytes]]):
+        self.chunks = chunks
+
+    async def __aiter__(self):
+        for delay, chunk in self.chunks:
+            if delay:
+                await asyncio.sleep(delay)
+            yield chunk
 
 
 @pytest.fixture(autouse=True)
@@ -476,10 +488,11 @@ async def test_external_fallback_value_on_stream_preview_is_dropped_in_grace():
 
 
 
-def test_owner_tier_fallback_is_tried_before_first_visible_token(monkeypatch):
+@pytest.mark.parametrize("timeout_case", ["first_byte", "attempt_total", "chain_budget"])
+def test_owner_tier_fallback_is_tried_before_first_visible_token(monkeypatch, timeout_case):
     from dataclasses import replace
     from app.pilot import stream_gateway
-    from app.pilot.errors import PilotError
+    from app.pilot.errors import UpstreamTimeout
     from app.pilot.stream_types import StreamEvent
 
     fallback = {
@@ -515,12 +528,22 @@ def test_owner_tier_fallback_is_tried_before_first_visible_token(monkeypatch):
     monkeypatch.setattr(stream_gateway.rcore, "_credential_status_for",
         lambda cm: (True, "key_available", "platform_secret", "test-fixture")
         if cm.model_id == fallback["model_id"] else original_credential(cm))
+    monkeypatch.setenv("BUSINESS14_FIRST_BYTE_TIMEOUT_SECONDS", "0.02")
+    monkeypatch.setenv("BUSINESS14_ATTEMPT_TIMEOUT_SECONDS", "0.08")
+    monkeypatch.setenv("BUSINESS14_STREAM_IDLE_TIMEOUT_SECONDS", "0.03")
+    monkeypatch.setenv("BUSINESS14_CHAIN_BUDGET_SECONDS",
+                       "0.02" if timeout_case == "chain_budget" else "0.3")
     attempts = []
+    records = []
+    monkeypatch.setattr(stream_gateway, "_enqueue_ledger", records.append)
 
     async def fake_stream(**kwargs):
         attempts.append(kwargs["model_id"])
         if kwargs["model_id"] == MODEL:
-            raise PilotError("upstream_server_error", "temporary upstream failure", 502)
+            if timeout_case == "chain_budget":
+                await asyncio.sleep(0.06)
+                raise AssertionError("chain timeout should cancel before the first event")
+            raise UpstreamTimeout(timeout_reason=timeout_case)
         yield StreamEvent(delta_content="backup token", model=kwargs["upstream_model"])
         yield StreamEvent(done=True)
 
@@ -531,6 +554,15 @@ def test_owner_tier_fallback_is_tried_before_first_visible_token(monkeypatch):
         json=_payload(),
     )
 
+    if timeout_case == "chain_budget":
+        assert response.status_code == 504, response.text
+        assert response.json()["error"]["code"] == "upstream_timeout"
+        assert attempts == [MODEL]
+        assert records and any(
+            item.timeout_reason == "chain_budget" for item in records[-1].attempts
+        )
+        return
+
     assert response.status_code == 200, response.text
     frames = _json_data_frames(response.text)
     assert frames[0]["choices"][0]["delta"]["content"] == "backup token"
@@ -540,6 +572,100 @@ def test_owner_tier_fallback_is_tried_before_first_visible_token(monkeypatch):
     assert metadata["fallback_used"] is True
     assert metadata["fallback_allowed"] is False
     assert attempts == [MODEL, fallback["model_id"]]
+    assert records
+    assert records[-1].attempts[0].timeout_reason == timeout_case
+    assert "data: [DONE]" in response.text
+
+
+@pytest.mark.parametrize(
+    "timeout_phase,first,attempt,idle,expected_reason",
+    [
+        ("first_byte", 0.02, 0.20, 0.05, "first_byte"),
+        ("stream_idle", 0.10, 0.20, 0.02, "attempt_total"),
+    ],
+)
+def test_slow_provider_stream_falls_back_before_visible_token(
+    monkeypatch, timeout_phase, first, attempt, idle, expected_reason,
+):
+    from dataclasses import replace
+    import json
+    from app.pilot import stream_gateway
+
+    fallback = {
+        "model_id": "test-fixture/fallback",
+        "upstream_model": "test-fixture/fallback-upstream",
+        "provider": "Fixture Backup Provider",
+        "platform_provider_id": "test-fixture",
+        "route_id": "platform:test-fixture/fallback",
+        "reason": "owner_selected_tier_fallback",
+    }
+    original = stream_gateway.rcore.resolve_route
+    def resolve_with_tier_pair(model_id, opts):
+        base = original(model_id, opts)
+        return replace(base, reason_codes=[*base.reason_codes,
+            "owner_selected_tier_fallback:free"], fallback_allowed=True,
+            eligible_fallback=[fallback])
+    monkeypatch.setattr(stream_gateway.rcore, "resolve_route", resolve_with_tier_pair)
+
+    from types import SimpleNamespace
+    original_catalog = stream_gateway.get_catalog_by_id
+    def fixture_catalog(model_id):
+        if model_id == fallback["model_id"]:
+            return SimpleNamespace(model_id=fallback["model_id"], enabled=True,
+                provider=fallback["provider"], upstream_model=fallback["upstream_model"],
+                platform_provider_id=fallback["platform_provider_id"])
+        return original_catalog(model_id)
+    monkeypatch.setattr(stream_gateway, "get_catalog_by_id", fixture_catalog)
+    original_credential = stream_gateway.rcore._credential_status_for
+    monkeypatch.setattr(stream_gateway.rcore, "_credential_status_for",
+        lambda cm: (True, "key_available", "platform_secret", "test-fixture")
+        if cm.model_id == fallback["model_id"] else original_credential(cm))
+
+    monkeypatch.setenv("B14_PROVIDER_MODE", "live")
+    monkeypatch.setenv("BUSINESS14_FIRST_BYTE_TIMEOUT_SECONDS", str(first))
+    monkeypatch.setenv("BUSINESS14_ATTEMPT_TIMEOUT_SECONDS", str(attempt))
+    monkeypatch.setenv("BUSINESS14_STREAM_IDLE_TIMEOUT_SECONDS", str(idle))
+    monkeypatch.setenv("BUSINESS14_CHAIN_BUDGET_SECONDS", "0.5")
+    rcfg.provider_mode = "live"
+    requests = []
+    records = []
+    monkeypatch.setattr(stream_gateway, "_enqueue_ledger", records.append)
+
+    def sse(model, content):
+        frames = [
+            {"model": model, "choices": [{"delta": {"content": content},
+                                            "finish_reason": None}]},
+            {"model": model, "choices": [{"delta": {}, "finish_reason": "stop"}]},
+        ]
+        return b"".join(
+            ("data: " + json.dumps(frame) + "\n\n").encode()
+            for frame in frames
+        ) + b"data: [DONE]\n\n"
+
+    async def responder(request):
+        body = json.loads(request.content)
+        model = body["model"]
+        requests.append(model)
+        if model == MODEL_UPSTREAM:
+            if timeout_phase == "first_byte":
+                stream = _DelayedChunkStream([(0.06, sse(model, "late primary"))])
+            else:
+                stream = _DelayedChunkStream([
+                    (0.0, b": heartbeat\n\n"),
+                    (0.06, sse(model, "late primary")),
+                ])
+            return httpx.Response(200, stream=stream)
+        return httpx.Response(
+            200, stream=_DelayedChunkStream([(0.0, sse(fallback["upstream_model"], "backup token"))]),
+        )
+
+    response = _client(httpx.MockTransport(responder)).post(STREAM_URL, json=_payload())
+    assert response.status_code == 200, response.text
+    frames = _json_data_frames(response.text)
+    assert frames[0]["choices"][0]["delta"]["content"] == "backup token"
+    assert frames[0]["business14"]["selected_model"] == fallback["model_id"]
+    assert requests == [MODEL_UPSTREAM, fallback["upstream_model"]]
+    assert records and records[-1].attempts[0].timeout_reason == expected_reason
     assert "data: [DONE]" in response.text
 
 

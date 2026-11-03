@@ -7,6 +7,8 @@ by the canonical model/provider enabled flags. Never log secret values.
 """
 from __future__ import annotations
 
+from contextlib import aclosing
+
 import json
 import math
 import re
@@ -16,7 +18,12 @@ from typing import Any, AsyncIterator
 
 import httpx
 
-from .b14_timeout_policy import build_provider_http_timeout
+from .b14_timeout_policy import (
+    ProviderAttemptTimeout,
+    build_provider_http_timeout,
+    iter_provider_response_bytes,
+    send_provider_request,
+)
 from .errors import PilotError, InvalidRequest, MalformedUpstreamResponse, PilotNotConfigured, UpstreamResponseTooLarge, UpstreamServerError, UpstreamTimeout
 from .stream_types import StreamEvent, StreamToolCall, StreamUsage
 from .tool_channel import (
@@ -516,21 +523,22 @@ def _mask_vendor_body(text: str, headers: dict[str, str]) -> str:
 
 async def _go_vendor_diagnostic(
     response: httpx.Response, *, upstream_model: str, session_id: str | None,
-    wire: str, headers: dict[str, str],
+    wire: str, headers: dict[str, str], started_at: float | None = None,
 ) -> dict[str, Any]:
     """Read a bounded error prefix for server logs; never alter the public error."""
     raw = bytearray()
     try:
-        iterator = response.aiter_bytes(chunk_size=_VENDOR_BODY_BYTES)
-        try:
-            async for block in iterator:
-                raw.extend(block[:_VENDOR_BODY_BYTES - len(raw)])
-                if len(raw) == _VENDOR_BODY_BYTES:
-                    break
-        finally:
-            await iterator.aclose()
+        async for block in iter_provider_response_bytes(
+            response,
+            started_at=started_at if started_at is not None else time.monotonic(),
+        ):
+            raw.extend(block[:_VENDOR_BODY_BYTES - len(raw)])
+            if len(raw) == _VENDOR_BODY_BYTES:
+                break
         message = _mask_vendor_body(
             raw.decode("utf-8", errors="replace"), headers)
+    except ProviderAttemptTimeout:
+        raise
     except Exception:
         # An unreadable error body must still map to the original HTTP error.
         message = "[vendor body unavailable]"
@@ -547,12 +555,12 @@ async def _go_vendor_diagnostic(
 
 async def _raise_go_vendor_error(
     response: httpx.Response, *, upstream_model: str, session_id: str | None,
-    wire: str, headers: dict[str, str],
+    wire: str, headers: dict[str, str], started_at: float | None = None,
 ) -> None:
     from .platform import _raise_upstream_error
     diagnostic = await _go_vendor_diagnostic(
         response, upstream_model=upstream_model, session_id=session_id,
-        wire=wire, headers=headers,
+        wire=wire, headers=headers, started_at=started_at,
     )
     try:
         _raise_upstream_error(response.status_code, "opencode-go")
@@ -602,19 +610,26 @@ async def call_go_model(*, model_id: str, upstream_model: str,
     vendor_status = 0
     try:
         async with httpx.AsyncClient(timeout=build_provider_http_timeout(), transport=transport) as client:
-            async with client.stream("POST", _go_url(wire), headers=headers, json=body, follow_redirects=False) as resp:
+            resp, request_started = await send_provider_request(
+                client, "POST", _go_url(wire), headers=headers, json=body,
+            )
+            async with aclosing(resp):
                 vendor_status = resp.status_code
                 if not 200 <= resp.status_code < 300:
                     await _raise_go_vendor_error(
                         resp, upstream_model=upstream_model, session_id=session_id,
-                        wire=wire, headers=headers,
+                        wire=wire, headers=headers, started_at=request_started,
                     )
                 # Pre-decode byte cap (#4379): the post-buffer len() check could
                 # only fire after the whole body was already in RAM.
                 from .platform import MAX_COMPLETED_RESPONSE_BYTES, _read_bounded_body
-                raw = await _read_bounded_body(resp, cap=MAX_COMPLETED_RESPONSE_BYTES)
+                raw = await _read_bounded_body(
+                    resp, cap=MAX_COMPLETED_RESPONSE_BYTES, started_at=request_started,
+                )
+    except ProviderAttemptTimeout as exc:
+        raise UpstreamTimeout(timeout_reason=exc.reason) from exc
     except httpx.TimeoutException as e:
-        raise UpstreamTimeout() from e
+        raise UpstreamTimeout(timeout_reason="first_byte") from e
     except httpx.RequestError as e:
         raise UpstreamServerError() from e
 
@@ -899,16 +914,21 @@ async def stream_go_model(*, model_id: str, upstream_model: str,
     last_reason = None
     try:
         async with httpx.AsyncClient(timeout=build_provider_http_timeout(), transport=transport) as client:
-            async with client.stream("POST", _go_url(wire), headers=headers, json=body, follow_redirects=False) as resp:
+            resp, request_started = await send_provider_request(
+                client, "POST", _go_url(wire), headers=headers, json=body,
+            )
+            async with aclosing(resp):
                 if not 200 <= resp.status_code < 300:
                     await _raise_go_vendor_error(
                         resp, upstream_model=upstream_model, session_id=session_id,
-                        wire=wire, headers=headers,
+                        wire=wire, headers=headers, started_at=request_started,
                     )
                 # One HTTP block may contain many valid events. Slice each
                 # incoming block immediately (no read-ahead) and bound only
                 # incomplete/individual SSE frames, never cumulative output.
-                async for block in _iter_sse_bounded_slices(resp):
+                async for block in _iter_sse_bounded_slices(
+                    resp, started_at=request_started,
+                ):
                     buffer += block
                     frames, buffer = _pop_sse_frames(buffer)
                     if len(buffer) > MAX_RESPONSE_BYTES:
@@ -973,8 +993,10 @@ async def stream_go_model(*, model_id: str, upstream_model: str,
                             saw_end = True
                             yield StreamEvent(done=True)
                             return
+    except ProviderAttemptTimeout as exc:
+        raise UpstreamTimeout(timeout_reason=exc.reason) from exc
     except httpx.TimeoutException as e:
-        raise UpstreamTimeout() from e
+        raise UpstreamTimeout(timeout_reason="first_byte") from e
     except httpx.RequestError as e:
         raise UpstreamServerError() from e
     if not saw_end:

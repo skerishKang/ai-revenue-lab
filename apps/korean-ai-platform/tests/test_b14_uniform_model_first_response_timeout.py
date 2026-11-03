@@ -1,7 +1,6 @@
-"""B14 model first-response wait matches the 600s model idle policy (offline).
+"""B14 model first-byte, stream-idle and attempt bounds are shared (offline).
 
-The Workers Fetch HTTPX 'connect' phase can encompass waiting for the first
-response headers. No 30/55-second model-specific early cut is allowed.
+First-byte, full-attempt, and post-byte stream-idle clocks apply uniformly.
 """
 from __future__ import annotations
 
@@ -25,10 +24,10 @@ from app.pilot.b14_timeout_policy import (
     "opencode-go/step-5-preview-free",
 ])
 def test_uniform_wait_all_model_ids(model_id):
-    assert CONNECT_SECONDS == READ_SECONDS == 600.0
+    assert CONNECT_SECONDS == 15.0 and READ_SECONDS == 20.0
     timeout = build_provider_http_timeout(model_id)
     assert (timeout.connect, timeout.read, timeout.write, timeout.pool) == (
-        600.0, 600.0, WRITE_SECONDS, POOL_SECONDS
+        15.0, 20.0, WRITE_SECONDS, POOL_SECONDS
     )
 
 
@@ -81,4 +80,4 @@ async def test_completed_and_stream_adapter_transport_no_early_cut(
     else:
         result = await plat.call_platform_chat_completions(**arguments)
         assert result["choices"][0]["message"]["content"] == "OK"
-    assert observed == [(600.0, 600.0, 120.0, 60.0)]
+    assert observed == [(15.0, 20.0, 120.0, 60.0)]

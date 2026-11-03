@@ -23,8 +23,7 @@ fixture at each provider's documented defaults:
 * gemma-4-31b-it         text 7/7 facts 49.0s; image blocked by provider capacity
 
 Gemma 4 31B is registered as text-only because its image capability was not
-measurable, and its 49.0s latency exceeds the B14 20.0s default dispatch
-budget. Registration states exactly that rather than a capability nobody proved.
+measurable, and its 49.0s latency exceeds the B14 40.0s default attempt budget. Registration states exactly that rather than a capability nobody proved.
 
 #6460-5 (2026-11-01 owner decision): Gemma 4 31B also declares the ``tools``
 capability. Google documents native function calling for Gemma models on the
@@ -43,6 +42,8 @@ API returns no dollar field, so no measured-cost claim is made here.
 """
 
 from __future__ import annotations
+
+from contextlib import aclosing
 
 from app.pilot.catalog import CATALOG_BY_ID, CatalogModel
 from app.pilot.platform_secrets import (
@@ -491,11 +492,18 @@ async def stream_google_tool_calls(*, model_id, upstream_model, spec, messages, 
     buffer = b""
     try:
         async with httpx.AsyncClient(**kwargs) as client:
-            async with client.stream("POST", url, headers=headers, json=body, follow_redirects=False) as response:
+            response, request_started = await plat.send_provider_request(
+                client, "POST", url, headers=headers, json=body,
+            )
+            async with aclosing(response):
                 if not 200 <= response.status_code < 300:
-                    error = await plat._read_bounded_body(response)
+                    error = await plat._read_bounded_body(
+                        response, started_at=request_started,
+                    )
                     plat._raise_upstream_error(response.status_code, GOOGLE_PROVIDER_ID, error.decode("utf-8", "replace"), model_id=model_id)
-                async for chunk in plat._iter_sse_bounded_slices(response):
+                async for chunk in plat._iter_sse_bounded_slices(
+                    response, started_at=request_started,
+                ):
                     frames, buffer = _pop_sse_frames(buffer + chunk)
                     if len(buffer) > plat.MAX_RESPONSE_BYTES:
                         raise UpstreamResponseTooLarge(plat.MAX_RESPONSE_BYTES)
@@ -507,9 +515,15 @@ async def stream_google_tool_calls(*, model_id, upstream_model, spec, messages, 
                 if buffer.strip():
                     for event in decoder.decode(buffer):
                         yield event
+    except plat.ProviderAttemptTimeout as exc:
+        plat.logger.warning(
+            "b14_provider_attempt_timeout provider=%s reason=%s mode=stream",
+            GOOGLE_PROVIDER_ID, exc.reason,
+        )
+        raise UpstreamTimeout(timeout_reason=exc.reason) from exc
     except httpx.TimeoutException as exc:
         plat.log_provider_timeout(plat.logger, GOOGLE_PROVIDER_ID, exc, "stream")
-        raise UpstreamTimeout() from exc
+        raise UpstreamTimeout(timeout_reason="first_byte") from exc
     except httpx.RequestError as exc:
         raise UpstreamServerError() from exc
     if decoder.finish_reason is None:

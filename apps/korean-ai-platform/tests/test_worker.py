@@ -174,7 +174,11 @@ class TestEnvBridge:
                   "BUSINESS14_PILOT_MODEL_ID",
                   "BUSINESS14_PILOT_PROVIDER_ID",
                   "BUSINESS14_PILOT_UPSTREAM_MODEL",
-                  "BUSINESS14_PILOT_TIMEOUT_SECONDS"):
+                  "BUSINESS14_PILOT_TIMEOUT_SECONDS",
+                  "BUSINESS14_FIRST_BYTE_TIMEOUT_SECONDS",
+                  "BUSINESS14_ATTEMPT_TIMEOUT_SECONDS",
+                  "BUSINESS14_STREAM_IDLE_TIMEOUT_SECONDS",
+                  "BUSINESS14_CHAIN_BUDGET_SECONDS"):
             assert k in src
 
     def test_applied_once_flag_in_source(self):

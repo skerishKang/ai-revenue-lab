@@ -15,6 +15,7 @@ import httpx
 import pytest
 
 from app.pilot import platform as plat
+from app.pilot.b14_timeout_policy import ProviderAttemptTimeout
 from app.pilot import provider as byok
 from app.pilot import opencode_go_wire as go
 from app.pilot.b14_runtime_config import runtime_config as rcfg
@@ -542,8 +543,9 @@ async def test_helper_timeout_propagates_not_swallowed():
         headers = {}
         aiter_bytes = lambda self: stalled()  # noqa: E731
 
-    with pytest.raises(httpx.TimeoutException):
+    with pytest.raises(ProviderAttemptTimeout) as raised:
         await plat._read_bounded_body(_Stalled())
+    assert raised.value.reason == "attempt_total"
 
 
 @pytest.mark.asyncio

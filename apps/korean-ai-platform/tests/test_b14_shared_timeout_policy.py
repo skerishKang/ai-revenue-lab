@@ -1,8 +1,7 @@
-"""B14 shared timeout policy: only offline SenseNova/Inception mock requests.
+"""B14 phase and cumulative timeout policy across offline provider adapters.
 
-Explicitly excludes Kira and ModelScope as the Owner requested. The Cloudflare
-Python Fetch/HTTPX patch is *not* simulated here. Tests check effective B14
-configuration, response wrappers, SSE path and deadline ordering only.
+The Cloudflare Python Fetch/HTTPX patch is not simulated here. Tests check
+shared B14 configuration and mock-only request behavior.
 """
 import asyncio
 import logging
@@ -14,13 +13,13 @@ from app.pilot import platform as plat
 from app.pilot import gateway as gw
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.b14_timeout_policy import (
-    CONNECT_SECONDS, READ_SECONDS, WRITE_SECONDS, POOL_SECONDS,
+    CONNECT_SECONDS, READ_SECONDS, ATTEMPT_SECONDS, WRITE_SECONDS, POOL_SECONDS,
     GATEWAY_WALL_SECONDS, ENGINE_MAX_WALL_SECONDS,
     build_provider_http_timeout,
 )
 from app.pilot.errors import UpstreamTimeout
 
-FIXED = (600.0, 600.0, 120.0, 60.0)
+FIXED = (15.0, 20.0, 120.0, 60.0)
 
 
 def values(timeout):
@@ -31,11 +30,12 @@ def test_single_source_all_surfaces_and_engine_budget_remain_bounded():
     assert (CONNECT_SECONDS, READ_SECONDS, WRITE_SECONDS, POOL_SECONDS) == FIXED
     assert values(build_provider_http_timeout()) == FIXED
     assert values(runtime_config.build_http_timeout()) == FIXED
-    assert gw._UPSTREAM_RETRY_BUDGET_SECONDS == GATEWAY_WALL_SECONDS == 600.0
+    assert gw._UPSTREAM_RETRY_BUDGET_SECONDS == GATEWAY_WALL_SECONDS == 55.0
+    assert ATTEMPT_SECONDS == 40.0
     assert ENGINE_MAX_WALL_SECONDS == 60.0
     assert 0 < min(FIXED)
-    assert READ_SECONDS == GATEWAY_WALL_SECONDS
-    assert CONNECT_SECONDS == READ_SECONDS == GATEWAY_WALL_SECONDS
+    assert CONNECT_SECONDS == 15.0
+    assert READ_SECONDS == 20.0
     assert gw._UPSTREAM_RETRY_MAX_RETRIES == 2
     assert values(build_provider_http_timeout()) == values(build_provider_http_timeout())
 
@@ -127,5 +127,5 @@ async def test_sensenova_timeout_is_logged_without_exception_secrets(
             else:
                 await plat.call_platform_chat_completions(**kwargs)
     assert len(calls)==1
-    assert f"b14_safe_timeout provider=sensenova phase=connect mode={'stream' if stream else 'completed'}" in caplog.text
+    assert f"b14_provider_attempt_timeout provider=sensenova reason=first_byte mode={'stream' if stream else 'completed'}" in caplog.text
     assert "PRIVATE_TOKEN_AND_MODEL_OUTPUT" not in caplog.text

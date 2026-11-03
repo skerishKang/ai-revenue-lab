@@ -1052,7 +1052,7 @@ class TestResponseLimits:
         timeout = rcfg.build_http_timeout()
         # Same single source as the live B14 completed and SSE adapters.
         assert (timeout.connect, timeout.read, timeout.write, timeout.pool) == (
-            600.0, 600.0, 120.0, 60.0
+            15.0, 20.0, 120.0, 60.0
         )
 
 

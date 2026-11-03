@@ -49,19 +49,20 @@ class ProductTierRoutesError(ValueError):
     """Raised when the contract violates the #2085/#2099 policy (fail closed)."""
 
 FREE_PRIMARY_B14_MODEL_ID = "google/gemini-3.1-flash-lite"
-FREE_FALLBACK_B14_MODEL_ID = "google/gemma-4-26b-a4b-it"
+FREE_FALLBACK_B14_MODEL_ID = "google/gemma-4-31b-it"
 # #5009: the existing Muse identities are retained as data-only routes.
 # Owner decision 2026-10-25: the test-phase paid/admin primary is Google.
+# Owner instruction 2026-11-04 aligns Free's Gemma backup with the 31B ledger choice.
 TEST_PHASE_PRIMARY_B14_MODEL_ID = "google/gemini-3.5-flash-lite"
 MUSE_B14_MODEL_ID = "opencode-go/muse-spark-1.3-contributor"
 MUSE_B14_UPSTREAM_MODEL = "muse-spark-1.3-contributor"
 # Owner decision 2026-10-25: test-phase Google recovery order for the
-# Plus/Pro/Max/admin lanes. Free's existing roster remains unchanged.
+# Plus/Pro/Max/admin lanes. Free keeps its ordered non-Gemma recovery candidate.
 TIER_FALLBACK_B14_MODELS = {
     "max": ("google/gemini-3.1-flash-lite", "google/gemma-4-31b-it"),
     "pro": ("google/gemini-3.1-flash-lite", "google/gemma-4-31b-it"),
     "plus": ("google/gemini-3.1-flash-lite", "google/gemma-4-31b-it"),
-    "free": ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
+    "free": ("google/gemma-4-31b-it", "google/gemini-3.5-flash-lite"),
     "admin": ("google/gemini-3.1-flash-lite", "google/gemma-4-31b-it"),
 }
 
