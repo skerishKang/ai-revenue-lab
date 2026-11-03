@@ -68,6 +68,17 @@ def cache_configured_for_request(request: Any) -> bool:
 
 async def invalidate_auth_cache(request: Any, *, user_id: str,
                                 session_id: str | None = None) -> None:
+    from .identity_call_cache import CachedIdentityAuthority
+
+    # The wrapped per-turn identity reads (chat owner, PC owner scope) share
+    # the same invalidation events: logout, deletion, permission change and
+    # session revocation must not leave a cached answer standing.
+    authority = getattr(_state_for_request(request),
+                        'control_plane_identity_authority', None)
+    if isinstance(authority, CachedIdentityAuthority):
+        authority.invalidate_user(user_id)
+        if session_id:
+            authority.invalidate_session(session_id)
     cache = cache_for_request(request)
     if cache is None:
         return

@@ -23,6 +23,7 @@ from starlette.testclient import TestClient
 from app.config import ConfigError, Settings
 from app.control_plane_identity_shadow import D1IdentityShadowStore
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
+from app.identity_call_cache import CachedIdentityAuthority
 from app.local_cpython import _ensure_session_secret, apply_migrations, build_app
 from app.local_r2 import LocalDiskR2
 from app.local_service_bridge import HttpRpcBinding, LocalB66PdfRendererClient
@@ -233,7 +234,12 @@ def test_service_stand_ins_bind_only_when_their_pair_is_configured(local_env, mo
     monkeypatch.setenv("PADIEM_CHAT_LOCAL_B66_PDF_ORIGIN", "https://pdf.example")
     monkeypatch.setenv("PADIEM_CHAT_LOCAL_B66_PDF_SECRET", "local-service-secret-0123456789abcd")
     app = build_app()
-    assert isinstance(app.state.control_plane_identity_authority, CloudflareControlPlaneIdentityAuthority)
+    # 261104: the composed authority is the per-turn identity cache wrapping
+    # the real Control Plane adapter; the binding stays one delegation away.
+    assert isinstance(app.state.control_plane_identity_authority, CachedIdentityAuthority)
+    assert isinstance(
+        app.state.control_plane_identity_authority._inner,
+        CloudflareControlPlaneIdentityAuthority)
     assert isinstance(app.state.control_plane_identity_authority._binding, HttpRpcBinding)
     assert isinstance(app.state.identity_shadow_store, D1IdentityShadowStore)
     assert isinstance(app.state.b66_pdf_renderer_client, LocalB66PdfRendererClient)

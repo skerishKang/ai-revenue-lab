@@ -277,6 +277,15 @@ def build_app():
         CloudflareControlPlaneIdentityAuthority(identity_binding)
         if identity_binding is not None else None
     )
+    # 261104: the two per-turn identity reads (chat owner + PC owner scope)
+    # are pure functions of a verified credential and cost 0.6-1.0 s of
+    # trans-Pacific Worker RTT from this host. Successful answers are cached
+    # for at most 60 s, keyed by a hash of the credential or session id;
+    # rejections are never cached, and logout, deletion, permission changes
+    # and session revocation invalidate through invalidate_auth_cache.
+    if identity_authority is not None:
+        from .identity_call_cache import CachedIdentityAuthority
+        identity_authority = CachedIdentityAuthority(identity_authority)
     identity_shadow_store = D1IdentityShadowStore(db)
     pdf_renderer = (
         LocalB66PdfRendererClient(pdf_origin, pdf_secret) if pdf_origin else None
