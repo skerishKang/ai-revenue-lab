@@ -34,6 +34,36 @@ from test_mcp_oauth_261103 import (
     RESOURCE, REDIRECT, _approve, _code_from, _exchange, _params, _register,
 )
 
+from app import mcp_gateway_execution as execution_module
+
+
+class RecordingTransport:
+    """Engine SDK 전송 대역 — 완료 응답을 고정으로 돌려준다."""
+
+    def __init__(self):
+        self.calls = []
+
+    async def request(self, **kwargs):
+        self.calls.append(kwargs)
+        body = json.dumps({"ok": True,
+            "orchestration": {"events": [{"event_id": "event_fixture",
+                "run_id": "run_fixture", "trace_id": "trace_fixture",
+                "app_id": "padiem-chat", "kind": "run_completed", "sequence": 1}],
+                "execution": {"answer": json.dumps(
+                    {"status": "completed", "answer": "확인했습니다.",
+                     "output": {"value": "fixture result"}})}}}).encode()
+        from padiem_ai_engine_client import EngineTransportResponse
+        return EngineTransportResponse(status=200, headers={}, body=body)
+
+
+class RecordingHistory:
+    def __init__(self):
+        self.runs = []
+
+    async def record_chat_pc_drive_run(self, **kwargs):
+        self.runs.append(kwargs)
+        return "conv_fixture"
+
 DEVICE_B = "node//studio-second"
 LABEL_A = "사무실 PC"
 LABEL_B = "작업실 PC"
@@ -566,3 +596,65 @@ def test_a_foreign_token_or_user_job_id_is_refused_with_ownership_error():
         assert read["status"] == "denied" and stop["status"] == "denied"
         assert read["answer"] == "이 작업을 확인할 수 없습니다."
         assert stop["answer"] == "이 작업을 중지할 수 없습니다."
+
+
+# ── #6801 핀: 저장된 Chat 선택과 무관하게 device가 실행 대상을 정한다 ──────────
+
+def test_the_saved_screen_selection_does_not_block_a_chosen_device(monkeypatch):
+    """저장된 Chat 선택이 컴1(A)이어도 device로 컴2(B)를 고르면 그 PC가 실행
+    대상이 된다(#6801의 execution_device_id 핀 계약) — 저장 선택은 화면
+    기본값일 뿐이다. 범위·링크·온라인·grant 검사는 그대로 통과해야 한다."""
+    from app.orchestration_bridge import B62EngineOrchestrationBridge
+    from padiem_ai_engine_client import PadiemAiEngineClient
+
+    db, owner, _other, store = setup()
+    app, _ = app_with(owner, store, online=[DEVICE_A, DEVICE_B])
+    token_id = _issue_token(store, db, owner, scope="all")
+    principal = principal_for(owner, DEVICE_A, token_id, scope="all")
+
+    captured = []
+
+    async def fake_context(request, **kwargs):
+        captured.append(dict(kwargs))
+        saved_selection = DEVICE_A  # Chat 화면에 저장된 선택(컴1)
+        pin = kwargs.get("execution_device_id")
+        return SimpleNamespace(
+            selected_confirmed=True, tool_available=True,
+            selection_offline=False,
+            selected_device_id=saved_selection,
+            execution_device_id=pin or saved_selection)
+
+    async def owner(request, uid):
+        return SimpleNamespace(session_id="sess_6801"), "sub_" + "6" * 32, "ws_6801"
+
+    async def grant(request, session, **kwargs):
+        return True
+
+    async def delegation(request, uid):
+        return {"version": 1, "rules": []}
+
+    async def notice(*args, **kwargs):
+        return True
+
+    monkeypatch.setattr(execution_module, "_resolve_chat_owner", owner)
+    monkeypatch.setattr(execution_module, "resolve_pc_work_context", fake_context)
+    monkeypatch.setattr(execution_module, "_check_mesh_grant", grant)
+    monkeypatch.setattr(execution_module, "load_pc_delegation", delegation)
+    monkeypatch.setattr(execution_module, "_append_lane_notice", notice)
+    transport = RecordingTransport()
+    bridge = B62EngineOrchestrationBridge(client=PadiemAiEngineClient(
+        transport=transport, app_id="padiem-chat", caller_id="padiem-chat",
+        credential="fixture" * 8), store=object())
+    app.state.orchestration_bridge = bridge
+    app.state.history_store = RecordingHistory()
+
+    # 실제 흐름대로 dispatch가 device를 해석해 principal.device_id를 바꾸고
+    # execute에 넘긴다 — execute 단독 호출이면 해석이 생략된다.
+    app.state.mcp_gateway_executor = execute_mcp_pc_tool
+    outcome = asyncio.run(dispatch_mcp_tool(
+        request_for(app), principal, "pc_list",
+        {"path": "docs", "device": "second"}))
+    assert outcome["status"] == "completed", outcome
+    # 핀 인자에 선택 PC(컴2)가 전달됐고, 저장 선택(컴1)이 실행을 막지 않았다.
+    assert captured[0]["execution_device_id"] == DEVICE_B
+    assert captured[0]["selected_device_id"] == DEVICE_B
