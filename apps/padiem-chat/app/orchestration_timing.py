@@ -7,10 +7,29 @@
 from __future__ import annotations
 
 import logging
+import sys
 from time import perf_counter
 
 LOG = logging.getLogger("padiem_chat.orchestration_timing")
 LOG.setLevel(logging.INFO)
+
+
+def ensure_host_visible() -> None:
+    """Make the stage line reach the journal on a host that configured no logging.
+
+    Uvicorn configures only its own loggers, so on the COM2 host the root logger has
+    no handler and Python's fallback handler carries WARNING and above: an application
+    INFO record is created and then dropped, which is why #6732's stage times never
+    appeared in the service journal. Propagation stops once this handler exists, so a
+    root handler configured later cannot write the same line twice.
+    """
+    if LOG.handlers or logging.getLogger().handlers:
+        return
+    handler = logging.StreamHandler(sys.stderr)
+    handler.setFormatter(logging.Formatter("%(message)s"))
+    LOG.addHandler(handler)
+    LOG.propagate = False
+
 
 # (필드 이름, 시작 표식, 끝 표식). 표식 사이의 실제 시간만 구간 값이 된다.
 STAGES = (
