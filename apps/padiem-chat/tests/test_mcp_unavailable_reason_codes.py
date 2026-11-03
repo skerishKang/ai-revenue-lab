@@ -19,12 +19,16 @@ import json
 import logging
 from types import SimpleNamespace
 
+import json
+
 import pytest
+from padiem_ai_engine_client import EngineTransportResponse, PadiemAiEngineClient
 
 from app import mcp_gateway_dispatch as dispatch
 from app import mcp_gateway_execution as execution
 from app.chat_pc_drive import ChatPCDriveError
 from app.oracle_mesh_read_return_routes import OracleMeshReturnSource
+from app.orchestration_bridge import B62EngineOrchestrationBridge
 
 UID = "usr_" + "a" * 32
 NODE = "k0pVCZx5VqYn8P9FW23CaqTNZWHGSlLASVKF1tqJTPRjRGBOhcTfgZbmfi$D62t1"
@@ -83,10 +87,25 @@ def _grant_harness(*, matches=None, scope_ref=UID, links=None, source=None):
             command_target_matches=lambda **kwargs: list(matches or []),
         )
 
+    class _RecordingTransport:
+        async def request(self, **kwargs):
+            return EngineTransportResponse(status=200, headers={}, body=json.dumps(
+                {"ok": True, "orchestration": {"events": [], "execution": {"answer": "확인"}}},
+            ).encode())
+
+    class _History:
+        async def record_chat_pc_drive_run(self, **kwargs):
+            return "conv_fixture"
+
     class _State:
         oracle_mesh_return_source = mesh
         control_plane_identity_authority = _Identity()
         pc_device_pairing_store = _Pairing()
+        history_store = _History()
+        orchestration_bridge = B62EngineOrchestrationBridge(
+            client=PadiemAiEngineClient(transport=_RecordingTransport(),
+                app_id="padiem-chat", caller_id="padiem-chat", credential="fixture" * 8),
+            store=object())
 
     class _App:
         state = _State()
