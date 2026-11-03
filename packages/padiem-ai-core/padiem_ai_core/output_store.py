@@ -10,17 +10,56 @@ OutputStore with an explicit directory and retention period.
 from __future__ import annotations
 
 import codecs
+from contextlib import contextmanager
 import hashlib
 import json
 import os
 from pathlib import Path
 import re
 import secrets
+import shutil
 import tempfile
 import time
 
 _HANDLE = re.compile(r"^[0-9a-f]{64}$")
 HEAD_RATIO = 0.4  # Hermes tools/tool_output_truncate.py, MIT.
+DEFAULT_RETENTION_SECONDS = 7 * 24 * 60 * 60
+RETENTION_SECONDS_ENV = "PADIEM_OUTPUT_STORE_RETENTION_SECONDS"
+
+
+def configured_retention_seconds() -> float:
+    """Shared retention setting for output files and their durable receipts."""
+    raw = os.environ.get(RETENTION_SECONDS_ENV)
+    return DEFAULT_RETENTION_SECONDS if raw is None else float(raw)
+
+
+@contextmanager
+def exclusive_file_lock(path):
+    """Cross-process exclusive lock for data shared by queue and executor."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    fd = os.open(str(path), os.O_CREAT | os.O_RDWR, 0o600)
+    with os.fdopen(fd, "a+b") as stream:
+        stream.seek(0, os.SEEK_END)
+        if stream.tell() == 0:
+            stream.write(b"\0")
+            stream.flush()
+        if os.name == "nt":
+            import msvcrt
+            stream.seek(0)
+            msvcrt.locking(stream.fileno(), msvcrt.LK_LOCK, 1)
+            try:
+                yield
+            finally:
+                stream.seek(0)
+                msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(stream.fileno(), fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
 
 
 def head_tail_split(budget: int) -> tuple[int, int]:
@@ -30,7 +69,7 @@ def head_tail_split(budget: int) -> tuple[int, int]:
 
 
 class OutputStore:
-    def __init__(self, directory, *, retention_seconds=7 * 24 * 60 * 60,
+    def __init__(self, directory, *, retention_seconds=DEFAULT_RETENTION_SECONDS,
                  preview_chars=4096, clock=time.time):
         if retention_seconds <= 0 or preview_chars < 2:
             raise ValueError("retention must be positive and preview_chars at least 2")
@@ -49,6 +88,16 @@ class OutputStore:
         if not isinstance(handle, str) or not _HANDLE.fullmatch(handle):
             raise ValueError("invalid output handle")
         return self.directory / self._owner_key(owner) / (handle + ".bin")
+
+    def delete_owner_hash(self, owner_hash: str) -> None:
+        """Remove one validated owner directory and propagate filesystem errors."""
+        if not isinstance(owner_hash, str) or not _HANDLE.fullmatch(owner_hash):
+            raise ValueError("invalid output owner hash")
+        path = self.directory / owner_hash
+        if path.is_symlink():
+            path.unlink()
+        elif path.exists():
+            shutil.rmtree(path)
 
     def cleanup(self):
         """Remove expired output and metadata. Runs automatically on operations."""
@@ -138,8 +187,7 @@ def _default_store():
     directory = os.environ.get("PADIEM_OUTPUT_STORE_DIR") or str(
         Path(tempfile.gettempdir()) / "padiem-output-store"
     )
-    retention = float(os.environ.get("PADIEM_OUTPUT_STORE_RETENTION_SECONDS", 7 * 24 * 60 * 60))
-    return OutputStore(directory, retention_seconds=retention)
+    return OutputStore(directory, retention_seconds=configured_retention_seconds())
 
 
 def store(output: bytes | str, *, owner: str, source: str):

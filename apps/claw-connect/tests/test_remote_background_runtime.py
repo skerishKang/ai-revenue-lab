@@ -1,4 +1,5 @@
 """Actual Mesh executor scheduling, with only the PC/network ports substituted."""
+import json
 import threading
 import time
 from types import SimpleNamespace
@@ -6,6 +7,7 @@ from types import SimpleNamespace
 import pytest
 
 from claw_connect.background_jobs import RemoteBackgroundJobs
+import padiem_ai_core.pc_background as pc_background
 from kagent.local_agent_oracle_mesh_executor import (
     CANCEL_PATH, LEASE_RENEW_PATH, POLL_PATH, RESULT_PATH,
     OracleMeshChannelRefused, OracleMeshExecutor,
@@ -170,6 +172,7 @@ def test_remote_receipts_are_owner_scoped_and_restart_never_replays(tmp_path):
     manager.start(dispatch(), owner=owner)
     ready(manager)
     assert manager.output("dispatch-1", 0, 100, owner=owner) == "기록"
+    assert manager.list(owner)[0]["job_id"] == "dispatch-1"
     assert manager.list(other) == []
     for read in [
         lambda: manager.status("dispatch-1", owner=other),
@@ -218,3 +221,103 @@ def test_local_job_kill_requests_existing_remote_cancellation_probe(tmp_path):
     assert manager.kill("dispatch-1", owner="owner") is True
     assert ready(manager)[0][0]["state"] == "killed"
     assert manager.kill("dispatch-1", owner="owner") is False
+
+
+def test_receipt_retention_uses_seven_day_boundary_and_keeps_running(tmp_path):
+    now = 2_000_000_000.0
+    retention = 7 * 24 * 60 * 60
+    manager = RemoteBackgroundJobs(
+        tmp_path, runner=lambda *_args, **_kwargs: {}, retention_seconds=retention,
+        clock=lambda: now,
+    )
+    assert manager.retention_seconds == retention
+
+    def receipt(job_id, *, state, finished_at, owner):
+        row = {
+            "job_id": job_id, "owner": owner, "dispatch": {"dispatch_id": job_id},
+            "state": state, "started_at": now - retention - 100,
+            "finished_at": finished_at, "termination": "exited", "exit_code": 0,
+            "delivered": True, "output_size": 4, "cancel_requested": False,
+        }
+        manager._atomic(manager._path(job_id, owner, ".log"), b"data")
+        manager._save(row)
+        return manager._path(job_id, owner, ".json")
+
+    expired = receipt("expired", state="done", finished_at=now - retention - 1,
+                      owner='["alice","node","run"]')
+    boundary = receipt("boundary", state="failed", finished_at=now - retention,
+                       owner='["alice","node","run"]')
+    fresh = receipt("fresh", state="done", finished_at=now - retention + 1,
+                    owner='["alice","node","run"]')
+    running = receipt("running", state="running", finished_at=now - retention - 10,
+                      owner='["alice","node","run"]')
+
+    assert manager.cleanup_expired(now=now) == 4
+    assert not expired.exists()
+    assert not boundary.exists()
+    assert fresh.exists() and manager._path("fresh", '["alice","node","run"]', ".log").exists()
+    assert running.exists() and manager._path("running", '["alice","node","run"]', ".log").exists()
+
+
+def test_account_deletion_removes_running_jobs_for_one_owner_only(tmp_path):
+    release = threading.Event()
+    started = {
+        "dispatch-1": threading.Event(),
+        "dispatch-2": threading.Event(),
+    }
+
+    def run(payload, *, cancel_probe):
+        started[payload["dispatch_id"]].set()
+        release.wait(2)
+        return {"termination": "exited", "exit_code": 0, "body": b"private output"}
+
+    manager = RemoteBackgroundJobs(tmp_path, runner=run)
+    alice = '["alice","node-a","run-a"]'
+    bob = '["bob","node-b","run-b"]'
+    manager.start(dispatch(1), owner=alice)
+    manager.start(dispatch(2, owner="sub_bob"), owner=bob)
+    assert started["dispatch-1"].wait(1)
+    assert started["dispatch-2"].wait(1)
+
+    assert pc_background.delete_account_background_jobs(tmp_path, "alice") == 1
+    assert manager._path("dispatch-1", alice, ".json").exists() is False
+    assert manager._path("dispatch-1", alice, ".log").exists() is False
+    assert manager._path("dispatch-2", bob, ".json").exists()
+    assert manager._path("dispatch-2", bob, ".log").exists()
+
+    release.set()
+    end = time.monotonic() + 2
+    while manager.active and time.monotonic() < end:
+        time.sleep(.005)
+    assert manager._path("dispatch-1", alice, ".json").exists() is False
+    assert manager._path("dispatch-2", bob, ".json").exists()
+
+
+def test_cleanup_cli_reports_count_and_returns_nonzero_on_error(tmp_path, monkeypatch, capsys):
+    assert pc_background.cleanup_expired_main(["--directory", str(tmp_path)]) == 0
+    assert capsys.readouterr().out.strip() == "claw_background_cleanup_files_removed=0"
+
+    def fail(*_args, **_kwargs):
+        raise OSError("filesystem details are not part of the cleanup report")
+
+    monkeypatch.setattr(pc_background, "cleanup_expired_background_jobs", fail)
+    assert pc_background.cleanup_expired_main(["--directory", str(tmp_path)]) == 1
+    assert capsys.readouterr().out == ""
+
+
+def test_deleted_account_tombstone_blocks_future_background_jobs(tmp_path):
+    manager = RemoteBackgroundJobs(
+        tmp_path, runner=lambda *_args, **_kwargs: {
+            "termination": "exited", "exit_code": 0, "body": b""
+        },
+    )
+    assert pc_background.delete_account_background_jobs(tmp_path, "alice") == 0
+    with pytest.raises(ValueError, match="deleted"):
+        manager.start(dispatch(), owner='["alice","node-a","run-a"]')
+
+
+def test_background_receipts_follow_the_shared_output_retention_setting(tmp_path, monkeypatch):
+    monkeypatch.setenv("PADIEM_OUTPUT_STORE_RETENTION_SECONDS", "3600")
+    manager = RemoteBackgroundJobs(tmp_path / "jobs", runner=lambda *_args, **_kwargs: {})
+    assert manager.retention_seconds == 3600
+    assert pc_background.configured_retention_seconds() == manager.retention_seconds
