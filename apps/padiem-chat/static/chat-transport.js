@@ -516,10 +516,11 @@
     const decoder = new TextDecoder();
     let buffer = "";
     let stopped = false;
+    let completed = false;
     try {
       while (!stopped) {
         const { done, value } = await reader.read();
-        if (done) break;
+        if (done) { completed = true; break; }
         buffer += decoder.decode(value, { stream: true });
         let index;
         while ((index = buffer.indexOf("\n")) >= 0) {
@@ -538,6 +539,9 @@
         await onFrame(frame);
       }
     } finally {
+      if (!completed) {
+        try { await reader.cancel?.(); } catch { /* reader is already closed */ }
+      }
       try { reader.releaseLock(); } catch { /* 이미 닫힌 리더 */ }
     }
   }

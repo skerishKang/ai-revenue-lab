@@ -218,3 +218,47 @@ def test_chat_transport_stays_out_of_response_renderers() -> None:
     assert "fetch(" not in search
     assert '"/api/chat/stream"' in transport
     assert '"/api/chat"' in transport
+
+
+def test_thought_summary_redacts_identifiers_paths_and_url_queries() -> None:
+    app = _source(APP_PATH)
+    start = app.index("    function safeThoughtSummary(value) {")
+    end = app.index("\n    function renderThoughtSummary", start)
+    sanitizer = app[start:end]
+    raw = (
+        "run_id=run_123 trace_ID=trace_ABC dsp_456 pcr_789 evt_ABC "
+        "UUID 123e4567-e89b-12d3-a456-426614174000 "
+        "hex abcdef0123456789abcdef0123456789 "
+        "/app/work/job.txt C:\\private\\job.txt ~/private/job.txt "
+        "https://example.test/path?token=secret%2Fvalue&key=hidden"
+    )
+    script = (
+        "const app = " + json.dumps(sanitizer, ensure_ascii=True) + ";\n"
+        "const raw = " + json.dumps(raw, ensure_ascii=True) + ";\n"
+        "const safe = new Function('payload', app + '\\nreturn safeThoughtSummary;')({messages: []});\n"
+        "process.stdout.write(safe(raw));"
+    )
+    rendered = _run_node(script)
+
+    for secret in (
+        "run_123", "trace_ABC", "dsp_456", "pcr_789", "evt_ABC",
+        "123e4567-e89b-12d3-a456-426614174000", "abcdef0123456789abcdef0123456789",
+        "/app/work/job.txt", "C:\\private\\job.txt", "~/private/job.txt",
+        "token=secret", "key=hidden",
+    ):
+        assert secret not in rendered
+    assert "[내부 ID 숨김]" in rendered
+    assert rendered.count("[파일 경로 숨김]") == 3
+    assert "[URL 쿼리 숨김]" in rendered
+
+
+def test_streaming_delta_uses_incremental_text_node_updates() -> None:
+    app = _source(APP_PATH)
+    lifecycle = _source(ROOT / "static" / "message-lifecycle.js")
+    stream_start = app.index("  async function requestStreamingAnswer(")
+    stream_end = app.index("  async function requestAnswer(", stream_start)
+    stream = app[stream_start:stream_end]
+
+    assert "appendStreamDelta?.(answerTextNode, data.delta)" in stream
+    assert "paragraph.textContent = answer;" not in stream
+    assert "function appendStreamDelta(textNode, delta)" in lifecycle

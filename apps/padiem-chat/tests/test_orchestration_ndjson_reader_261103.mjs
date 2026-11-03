@@ -117,6 +117,7 @@ function streamResponse(records, contentType = "application/x-ndjson", signal = 
     ok: true,
     status: 200,
     headers: { get: () => contentType },
+    get cancelCount() { return cancelCount; },
     body: {
       getReader() {
         return {
@@ -181,6 +182,15 @@ test("a mid-stream error maps to the existing error event", async () => {
   assert.equal(JSON.parse(events[1].data).error.code, "invalid_engine_stream");
 });
 
+test("a malformed NDJSON line rejects and cancels the reader", async () => {
+  const response = streamResponse(["not-json\n"]);
+  await assert.rejects(
+    () => transport.readSseEvents(response, () => false),
+    SyntaxError,
+  );
+  assert.equal(response.cancelCount, 1);
+});
+
 test("abort stops reading and leaves the received partial answer available", async () => {
   const controller = new AbortController();
   let cancelled = false;
@@ -206,6 +216,46 @@ test("abort stops reading and leaves the received partial answer available", asy
   }), (error) => error.name === "AbortError");
   assert.equal(answer, "남길 부분");
   assert.equal(cancelled, true);
+});
+
+test("an immediate resend after cancellation completes as a second request", async () => {
+  transport.invalidateOrchestrationReady();
+  let postCount = 0;
+  globalThis.fetch = async (url, options = {}) => {
+    if (String(url).endsWith("/api/orchestration/status")) return jsonReply({ orchestration_ready: true, authenticated: true });
+    postCount += 1;
+    if (postCount === 1) {
+      return streamResponse(['{"type":"delta","text":"partial"}\n'], "application/x-ndjson", options.signal);
+    }
+    return streamResponse([
+      '{"type":"delta","text":"second answer"}\n',
+      '{"type":"done","done":true}\n',
+    ], "application/x-ndjson", options.signal);
+  };
+
+  const firstController = new AbortController();
+  const firstResponse = await transport.requestStreaming({ messages: [] }, firstController.signal);
+  let partial = "";
+  await assert.rejects(() => transport.readSseEvents(firstResponse, (frame) => {
+    if (frame.event === "delta") {
+      partial += JSON.parse(frame.data).delta;
+      firstController.abort();
+    }
+    return false;
+  }), (error) => error.name === "AbortError");
+  assert.equal(partial, "partial");
+
+  const secondResponse = await transport.requestStreaming({ messages: [] }, new AbortController().signal);
+  const secondEvents = [];
+  let secondAnswer = "";
+  await transport.readSseEvents(secondResponse, (frame) => {
+    secondEvents.push(frame.event);
+    if (frame.event === "delta") secondAnswer += JSON.parse(frame.data).delta;
+    return false;
+  });
+  assert.equal(postCount, 2);
+  assert.equal(secondAnswer, "second answer");
+  assert.deepEqual(secondEvents, ["delta", "done"]);
 });
 
 test("long answers are accumulated without truncating NDJSON deltas", async () => {

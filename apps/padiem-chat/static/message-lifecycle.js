@@ -347,6 +347,12 @@
     return true;
   }
 
+  function appendStreamDelta(textNode, delta) {
+    if (!textNode || typeof textNode.appendData !== "function" || typeof delta !== "string") return false;
+    textNode.appendData(delta);
+    return true;
+  }
+
   function setTaskHint(article, key) {
     if (!article) return;
     const next = key && taskStatusCatalog[key] ? key : "";
@@ -425,6 +431,7 @@
     renderTaskStatus,
     recordTaskEvent,
     recordProgressFrame,
+    appendStreamDelta,
     setTaskHint,
     recordPcProgress,
     recordPcHeartbeat,

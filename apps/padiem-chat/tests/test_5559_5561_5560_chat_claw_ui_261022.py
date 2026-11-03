@@ -777,6 +777,52 @@ def test_engine_progress_ndjson_frames_render_in_status_order(browser, server):
 
 
 @requires_browser
+def test_long_stream_appends_2500_deltas_without_pulling_reader_down(browser, server):
+    page = browser.new_page(viewport={"width": 390, "height": 844})
+    errors: list[str] = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(server, wait_until="domcontentloaded")
+    page.wait_for_timeout(300)
+    result = page.evaluate(
+        """() => {
+          const lifecycle = window.PadiemChatLifecycle;
+          const host = document.createElement('div');
+          host.style.cssText = 'width:160px;height:48px;overflow:auto;position:absolute;top:0';
+          const paragraph = document.createElement('p');
+          const node = document.createTextNode('');
+          paragraph.appendChild(node);
+          host.appendChild(paragraph);
+          document.body.appendChild(host);
+          host.scrollTop = 0;
+          const piece = '답변 조각 ';
+          for (let index = 0; index < 2500; index += 1) {
+            if (!lifecycle.appendStreamDelta(node, piece)) throw new Error('delta append rejected');
+          }
+          const state = {
+            chunks: 2500,
+            childNodes: paragraph.childNodes.length,
+            textLength: node.data.length,
+            expectedLength: piece.length * 2500,
+            scrollTop: host.scrollTop,
+            hasOverflow: host.scrollHeight > host.clientHeight,
+          };
+          host.remove();
+          return state;
+        }"""
+    )
+    assert result == {
+        "chunks": 2500,
+        "childNodes": 1,
+        "textLength": result["expectedLength"],
+        "expectedLength": len("답변 조각 ") * 2500,
+        "scrollTop": 0,
+        "hasOverflow": True,
+    }, result
+    assert not errors, errors
+    page.close()
+
+
+@requires_browser
 def test_the_terminal_outcome_stays_in_the_badge(browser, server):
     """A finished turn keeps its own outcome wording, once."""
     page = browser.new_page(viewport={"width": 1440, "height": 900})
