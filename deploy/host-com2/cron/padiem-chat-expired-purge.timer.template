@@ -1,0 +1,21 @@
+[Unit]
+Description=PADIEM COM2 Chat expired-row purge timer (@PROFILE@)
+Requires=@UNIT_NAME@.service
+
+[Timer]
+# Rendered from CRON_SCHEDULE at install time. This job has no Cloudflare side:
+# the Worker declares no cron for it, so the operator copies the agreed daily
+# UTC expression here at install.
+OnCalendar=@CRON_SCHEDULE@
+# systemd reads OnCalendar in the host's local time (KST, +9h) unless the UTC
+# rule is stated here, which would shift a daily purge nine hours.
+Timezone=UTC
+AccuracySec=30s
+RandomizedDelaySec=0
+# A missed purge is not replayed: the next tick sheds another batch, so a
+# catch-up burst would only repeat a bounded pass.
+Persistent=false
+Unit=@UNIT_NAME@.service
+
+[Install]
+WantedBy=timers.target

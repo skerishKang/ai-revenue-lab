@@ -1,0 +1,36 @@
+[Unit]
+Description=PADIEM COM2 Chat expired-row purge (@PROFILE@) — one bounded pass
+Documentation=file:@APP_ROOT@/README-cron.md
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=@DATA_ROOT@
+ConditionPathIsMountPoint=/mnt/d
+ConditionPathExists=@ENV_FILE@
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+User=@SERVICE_USER@
+Group=@SERVICE_USER@
+WorkingDirectory=@APP_ROOT@
+EnvironmentFile=@ENV_FILE@
+Environment=CRON_PROFILE=@PROFILE@
+Environment=CRON_EXPECTED_DATA_ROOT=@DATA_ROOT@
+Environment=CRON_LOCK_FILE=/run/padiem-chat-expired-purge/@PROFILE@.lock
+RuntimeDirectory=padiem-chat-expired-purge
+RuntimeDirectoryMode=0750
+ExecStart=@APP_ROOT@/run-expired-purge.sh
+TimeoutStartSec=@START_TIMEOUT@
+TimeoutStopSec=60
+KillMode=control-group
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=@DATA_ROOT@ /run/padiem-chat-expired-purge
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
