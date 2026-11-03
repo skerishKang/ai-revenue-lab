@@ -7,7 +7,7 @@ not an Engine continuation or a reusable permission.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import hashlib
 import hmac
 import json
@@ -24,11 +24,15 @@ from .history import _row_to_dict, _rows_from_result
 
 
 MCP_APPROVAL_TTL_SECONDS = int(MAX_APPROVAL_WINDOW.total_seconds())
+MCP_OAUTH_ACCESS_SECONDS = 3600
+MCP_OAUTH_REFRESH_SECONDS = 30 * 24 * 60 * 60
+MCP_OAUTH_CODE_SECONDS = 600
 _OWNER = re.compile(r"usr_[0-9a-f]{32}\Z")
 _TOKEN = re.compile(r"mcp_[0-9a-f]{32}\Z")
+_CLIENT = re.compile(r"mcpc_[0-9a-f]{32}\Z")
 _APPROVAL = re.compile(r"mcpa_[0-9a-f]{32}\Z")
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
-_TOKEN_COLUMNS = "id,name,device_id,created_at,last_used_at,revoked_at"
+_TOKEN_COLUMNS = "id,name,device_id,created_at,last_used_at,revoked_at,kind,expires_at"
 
 
 class McpGatewayStoreError(ValueError):
@@ -82,7 +86,7 @@ class D1McpGatewayStore:
         token_id = "mcp_" + uuid4().hex
         token = token_id + "." + self._secret_factory()
         moment = _stamp(now)
-        await self._run("INSERT INTO padiem_mcp_tokens (id,user_id,device_id,name,token_sha256,created_at) VALUES (?,?,?,?,?,?)",
+        await self._run("INSERT INTO padiem_mcp_tokens (id,user_id,device_id,name,token_sha256,created_at,kind) VALUES (?,?,?,?,?,?,'pat')",
                         token_id, owner, device_id, name.strip(), hashlib.sha256(token.encode()).hexdigest(), moment)
         # The only return containing the credential. Neither list nor audit uses it.
         return {"id": token_id, "name": name.strip(), "device_id": device_id, "created_at": moment,
@@ -97,13 +101,25 @@ class D1McpGatewayStore:
         token_id, _ = token.split(".", 1)
         if not _TOKEN.fullmatch(token_id):
             return None
-        row = await self._first("SELECT id,user_id,device_id,name,token_sha256 FROM padiem_mcp_tokens WHERE id=? AND revoked_at IS NULL", token_id)
+        moment = now or datetime.now(timezone.utc)
+        stamp = _stamp(moment)
+        row = await self._first("SELECT id,user_id,device_id,name,token_sha256,kind,expires_at,resource,scope "
+                                "FROM padiem_mcp_tokens WHERE id=? AND revoked_at IS NULL", token_id)
         if not row or not hmac.compare_digest(row["token_sha256"], hashlib.sha256(token.encode()).hexdigest()):
             return None
-        active = await self._first("UPDATE padiem_mcp_tokens SET last_used_at=? WHERE id=? AND revoked_at IS NULL RETURNING id", _stamp(now), token_id)
+        expires_at = row.get("expires_at")
+        if row.get("kind") == "oauth" and (
+                not isinstance(expires_at, str) or expires_at <= stamp):
+            return None
+        active = await self._first(
+            "UPDATE padiem_mcp_tokens SET last_used_at=? WHERE id=? AND revoked_at IS NULL "
+            "AND (expires_at IS NULL OR expires_at>?) RETURNING id",
+            stamp, token_id, stamp)
         if active is None:
             return None
-        return {"token_id": row["id"], "user_id": row["user_id"], "device_id": row["device_id"], "name": row["name"]}
+        return {"token_id": row["id"], "user_id": row["user_id"], "device_id": row["device_id"],
+                "name": row["name"], "kind": row.get("kind") or "pat",
+                "resource": row.get("resource"), "scope": row.get("scope")}
 
     async def revoke_token(self, *, user_id: str, token_id: str, now=None) -> bool:
         owner = _owner(user_id)
@@ -113,6 +129,177 @@ class D1McpGatewayStore:
         if not row:
             return False
         await self._run("UPDATE padiem_mcp_tokens SET revoked_at=COALESCE(revoked_at,?) WHERE id=? AND user_id=?", _stamp(now), token_id, owner)
+        return True
+
+    # --- OAuth 2.1 clients, authorization codes and refreshable grants -----
+
+    @staticmethod
+    def _split_oauth_token(token):
+        if not isinstance(token, str) or len(token) > 256 or "." not in token:
+            return None
+        token_id, secret = token.split(".", 1)
+        if not _TOKEN.fullmatch(token_id) or not secret:
+            return None
+        return token_id, secret
+
+    async def register_oauth_client(self, *, client_name: str, redirect_uris: list[str],
+                                    token_endpoint_auth_method: str, now=None) -> dict:
+        if (not isinstance(client_name, str) or not client_name.strip()
+                or not isinstance(redirect_uris, list) or not redirect_uris
+                or token_endpoint_auth_method not in {"none", "client_secret_post", "client_secret_basic"}):
+            raise McpGatewayStoreError("Invalid OAuth client")
+        client_id = "mcpc_" + uuid4().hex
+        secret = None if token_endpoint_auth_method == "none" else "mcs_" + secrets.token_urlsafe(32)
+        moment = _stamp(now or datetime.now(timezone.utc))
+        await self._run(
+            "INSERT INTO padiem_mcp_oauth_clients (client_id,client_secret_sha256,client_name,"
+            "redirect_uris_json,token_endpoint_auth_method,created_at) VALUES (?,?,?,?,?,?)",
+            client_id, None if secret is None else hashlib.sha256(secret.encode()).hexdigest(),
+            client_name.strip(), json.dumps(redirect_uris, ensure_ascii=False, separators=(",", ":")),
+            token_endpoint_auth_method, moment)
+        return {"client_id": client_id, "client_secret": secret, "client_name": client_name.strip(),
+                "redirect_uris": list(redirect_uris),
+                "token_endpoint_auth_method": token_endpoint_auth_method,
+                "client_id_issued_at": moment}
+
+    async def get_oauth_client(self, client_id: str) -> dict | None:
+        if not isinstance(client_id, str) or not _CLIENT.fullmatch(client_id):
+            return None
+        row = await self._first(
+            "SELECT client_id,client_secret_sha256,client_name,redirect_uris_json,"
+            "token_endpoint_auth_method,created_at,last_used_at "
+            "FROM padiem_mcp_oauth_clients WHERE client_id=?", client_id)
+        if row is None:
+            return None
+        try:
+            redirect_uris = json.loads(row["redirect_uris_json"])
+        except (TypeError, ValueError):
+            return None
+        if not isinstance(redirect_uris, list) or not all(isinstance(value, str) for value in redirect_uris):
+            return None
+        return {**row, "redirect_uris": redirect_uris}
+
+    async def touch_oauth_client(self, client_id: str, *, now=None) -> None:
+        if not isinstance(client_id, str) or not _CLIENT.fullmatch(client_id):
+            return
+        await self._run("UPDATE padiem_mcp_oauth_clients SET last_used_at=? WHERE client_id=?",
+                        _stamp(now), client_id)
+
+    async def create_oauth_code(self, *, client_id: str, user_id: str, device_id: str,
+                                redirect_uri: str, code_challenge: str, scope: str,
+                                resource: str, now=None) -> str:
+        owner = _owner(user_id)
+        if not isinstance(client_id, str) or not _CLIENT.fullmatch(client_id):
+            raise McpGatewayStoreError("Invalid OAuth client")
+        moment = now or datetime.now(timezone.utc)
+        code = "mca_" + secrets.token_urlsafe(32)
+        await self._run(
+            "INSERT INTO padiem_mcp_oauth_codes (code_sha256,client_id,user_id,device_id,redirect_uri,"
+            "code_challenge,code_challenge_method,scope,resource,created_at,expires_at) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+            hashlib.sha256(code.encode()).hexdigest(), client_id, owner, device_id, redirect_uri,
+            code_challenge, "S256", scope, resource, _stamp(moment),
+            _stamp(moment + timedelta(seconds=MCP_OAUTH_CODE_SECONDS)))
+        return code
+
+    async def consume_oauth_code(self, *, code: str, client_id: str, redirect_uri: str,
+                                 now=None) -> dict | None:
+        if (not isinstance(code, str) or not code or len(code) > 256
+                or not isinstance(client_id, str) or not _CLIENT.fullmatch(client_id)):
+            return None
+        moment = now or datetime.now(timezone.utc)
+        stamp = _stamp(moment)
+        row = await self._first(
+            "UPDATE padiem_mcp_oauth_codes SET consumed_at=? WHERE code_sha256=? AND client_id=? "
+            "AND redirect_uri=? AND consumed_at IS NULL AND expires_at>? "
+            "RETURNING user_id,device_id,code_challenge,code_challenge_method,scope,resource",
+            stamp, hashlib.sha256(code.encode()).hexdigest(), client_id, redirect_uri, stamp)
+        return _row_to_dict(row) if row else None
+
+    async def issue_oauth_tokens(self, *, client_name: str, client_id: str, user_id: str,
+                                 device_id: str, scope: str, resource: str, now=None) -> dict:
+        owner = _owner(user_id)
+        if not isinstance(client_id, str) or not _CLIENT.fullmatch(client_id):
+            raise McpGatewayStoreError("Invalid OAuth client")
+        if not is_pc_device_id(device_id):
+            raise McpGatewayStoreError("Invalid OAuth device")
+        moment = now or datetime.now(timezone.utc)
+        token_id = "mcp_" + uuid4().hex
+        access_secret = secrets.token_urlsafe(32)
+        refresh_secret = secrets.token_urlsafe(32)
+        name = ((client_name.strip()[:96] if isinstance(client_name, str) and client_name.strip()
+                 else "MCP OAuth") + " (OAuth)")
+        access_token = token_id + "." + access_secret
+        refresh_token = token_id + "." + refresh_secret
+        access_expires = moment + timedelta(seconds=MCP_OAUTH_ACCESS_SECONDS)
+        refresh_expires = moment + timedelta(seconds=MCP_OAUTH_REFRESH_SECONDS)
+        await self._run(
+            "INSERT INTO padiem_mcp_tokens (id,user_id,device_id,name,token_sha256,created_at,kind,"
+            "expires_at,refresh_token_sha256,refresh_expires_at,client_id,scope,resource) "
+            "VALUES (?,?,?,?,?,?,'oauth',?,?,?,?,?,?)",
+            token_id, owner, device_id, name,
+            hashlib.sha256(access_token.encode()).hexdigest(), _stamp(moment),
+            _stamp(access_expires), hashlib.sha256(refresh_token.encode()).hexdigest(),
+            _stamp(refresh_expires), client_id, scope, resource)
+        return {"access_token": access_token, "refresh_token": refresh_token,
+                "token_type": "Bearer", "expires_in": MCP_OAUTH_ACCESS_SECONDS,
+                "scope": scope, "resource": resource}
+
+    async def refresh_oauth_tokens(self, *, refresh_token: str, client_id: str, now=None) -> dict | None:
+        split = self._split_oauth_token(refresh_token)
+        if split is None or not isinstance(client_id, str) or not _CLIENT.fullmatch(client_id):
+            return None
+        token_id, provided = split
+        moment = now or datetime.now(timezone.utc)
+        stamp = _stamp(moment)
+        row = await self._first(
+            "SELECT id,user_id,device_id,name,refresh_token_sha256,refresh_expires_at,client_id,"
+            "scope,resource,revoked_at,kind FROM padiem_mcp_tokens WHERE id=? AND client_id=? AND kind='oauth'",
+            token_id, client_id)
+        if (row is None or row.get("revoked_at") is not None
+                or not isinstance(row.get("refresh_token_sha256"), str)
+                or not hmac.compare_digest(row["refresh_token_sha256"], hashlib.sha256(refresh_token.encode()).hexdigest())
+                or not isinstance(row.get("refresh_expires_at"), str)
+                or row["refresh_expires_at"] <= stamp):
+            return None
+        access_secret = secrets.token_urlsafe(32)
+        refresh_secret = secrets.token_urlsafe(32)
+        access_token = token_id + "." + access_secret
+        new_refresh = token_id + "." + refresh_secret
+        access_expires = _stamp(moment + timedelta(seconds=MCP_OAUTH_ACCESS_SECONDS))
+        refresh_expires = _stamp(moment + timedelta(seconds=MCP_OAUTH_REFRESH_SECONDS))
+        rotated = await self._first(
+            "UPDATE padiem_mcp_tokens SET token_sha256=?,refresh_token_sha256=?,expires_at=?,"
+            "refresh_expires_at=?,last_used_at=? WHERE id=? AND client_id=? AND kind='oauth' "
+            "AND refresh_token_sha256=? AND revoked_at IS NULL AND refresh_expires_at>? RETURNING id",
+            hashlib.sha256(access_token.encode()).hexdigest(),
+            hashlib.sha256(new_refresh.encode()).hexdigest(), access_expires,
+            refresh_expires, stamp, token_id, client_id, row["refresh_token_sha256"], stamp)
+        if rotated is None:
+            return None
+        return {"access_token": access_token, "refresh_token": new_refresh,
+                "token_type": "Bearer", "expires_in": MCP_OAUTH_ACCESS_SECONDS,
+                "scope": row.get("scope"), "resource": row.get("resource")}
+
+    async def revoke_oauth_token(self, *, token: str, client_id: str, now=None) -> bool:
+        split = self._split_oauth_token(token)
+        if split is None or not isinstance(client_id, str) or not _CLIENT.fullmatch(client_id):
+            return False
+        token_id, _ = split
+        row = await self._first(
+            "SELECT id,token_sha256,refresh_token_sha256 FROM padiem_mcp_tokens "
+            "WHERE id=? AND client_id=? AND kind='oauth'", token_id, client_id)
+        if row is None:
+            return False
+        digest = hashlib.sha256(token.encode()).hexdigest()
+        matches = (isinstance(row.get("token_sha256"), str)
+                   and hmac.compare_digest(row["token_sha256"], digest)) or (
+                   isinstance(row.get("refresh_token_sha256"), str)
+                   and hmac.compare_digest(row["refresh_token_sha256"], digest))
+        if not matches:
+            return False
+        await self._run("UPDATE padiem_mcp_tokens SET revoked_at=COALESCE(revoked_at,?) WHERE id=?",
+                        _stamp(now), token_id)
         return True
 
     async def create_approval(self, *, identity: dict, tool_name: str, arguments: dict, now=None) -> dict:

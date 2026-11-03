@@ -1,8 +1,8 @@
-# PADIEM MCP로 Desktop Commander 대체 — 1단계 PC 명령 실행
+# PADIEM MCP로 Desktop Commander 대체 — 1·2단계
 
 작업일: 2026-11-03  
-범위: `pc_shell` 1종, 기존 MCP 게이트웨이·승인·PC 명령 전달 재사용, 시험·문서.  
-비범위: OAuth 2.1 웹 커넥터 로그인, 장시간 프로세스 도구, 대용량 파일 전송.
+범위: `pc_shell` 1종, 기존 MCP 게이트웨이·승인·PC 명령 전달 재사용, OAuth 2.1 웹 커넥터, 시험·문서.  
+비범위: 장시간 프로세스 도구, 대용량 파일 전송, CIMD·OIDC ID 토큰.
 
 ## 1. 지금 있는 도구
 
@@ -40,7 +40,7 @@
 
 - **`pc_shell` 실행 전 승인 영수증** — 넣지 않는다. 대표 방침은 위임·제한을 두지 않는 것이며, 서버가 어떤 명령이 위험한지 자동 분류하면 오탐으로 정상 작업이 멈춘다. `pc_write`·`pc_move`·`pc_delete`의 기존 승인 receipt 경로는 그대로 두고 `pc_shell`만 위임된 PC에서 바로 실행한다.
 - **도구 단위 토큰 권한(scope)** — 넣지 않는다. `padiem_mcp_tokens`는 계정·PC·토큰만 바인딩하고 모든 토큰이 같은 도구 집합을 본다. 도구별 scope를 추가하면 폐기·재발급과 감사에 새 정본이 필요해지므로, 필요 시 별도 결정으로 도입한다.
-- **대신 배포 단위의 기능 스위치를 둔다** — `PADIEM_MCP_PC_SHELL_ENABLED`(기본 off, `true`/`1`에서만 켜짐, 그 외 값은 기동 실패). off면 `tools/list`에 `pc_shell`이 노출되지 않고, 이름으로 직접 호출해도 `-32020 tool_not_enabled`로 거부되어 디스패치도 감사 행도 남지 않는다.
+- **대신 배포 단위의 기능 스위치를 둔다** — `PADIEM_MCP_PC_SHELL_ENABLED`(기본 off, `true`/`1`에서만 켜짐, 그 외 값은 기동 실패). off면 `tools/list`에 `pc_shell`이 노출되지 않고, 이름으로 직접 호출해도 `-32020 tool_not_enabled`로 거부되어 디스패치도 감사 행도 남지 않는다. 게이트는 `mcp_gateway_transport`에 있어 개인 토큰(PAT) 연결과 11절의 OAuth 웹 커넥터 연결이 **같은 스위치**를 지킨다.
 
 ## 4. 감사
 
@@ -68,16 +68,16 @@ DesktopCommanderMCP(MIT, https://github.com/wonderwhy-er/DesktopCommanderMCP)의
 
 이번 1단계에서는 `pc_shell_start/read/stop`을 구현하지 않았다. 이유는 우리 Mesh 명령 레인이 **한 번 실행**이고, 서버가 자식 프로세스의 stdin·출력 핸들을 다음 도구 호출까지 유지할 수 없기 때문이다. PID/작업 소유권을 안전하게 묶을 durable job 저장소도 새로 필요하다. 2단계 설계는 기존 `oracle_mesh_dispatch` 행을 job 소유권으로 쓰고, PC에 `%TEMP%\padiem-shell-jobs\<dispatch_id>\` 로그 파일을 두어 offset/길이로 읽으며, stop은 그 행의 PID 파일을 `taskkill /T /F`로 끝내는 방식이 적합하다. `interact_with_process`는 PC에 상주형 브로커가 생기기 전까지 제공하지 않는다.
 
-## 7. OAuth 2.1 설계 메모 (2단계)
+## 7. OAuth 2.1 설계 메모 (1단계 당시)
 
-지금은 개인 Bearer 토큰(PAT)이다. claude.ai·ChatGPT 웹 커넥터가 MCP 인증 사양대로 붙으려면 다음이 필요하다.
+1단계 당시에는 개인 Bearer 토큰(PAT)만 있었다. 웹 커넥터에 필요한 항목은 다음과 같았고, 2단계 구현은 11절에 있다.
 
 - Protected Resource Metadata로 `resource`와 authorization server를 알린다.
 - Authorization Code + PKCE, 동적 클라이언트 등록(또는 사전 등록), `resource` 파라미터와 audience 바인딩.
 - 승인 화면에서 사용자·PC·범위를 확인하고, 발급 토큰은 기존 `padiem_mcp_tokens`/scope 검증에 연결한다.
 - 토큰 회전·폐기·감사는 기존 경로를 재사용한다.
 
-이번 범위는 아니다. Claude Code·Codex처럼 Bearer 헤더를 설정할 수 있는 MCP 클라이언트는 지금 연결할 수 있다.
+Claude Code·Codex처럼 Bearer 헤더를 설정할 수 있는 MCP 클라이언트는 1단계 방식으로 지금도 연결할 수 있다.
 
 ## 8. 연결 방법
 
@@ -85,13 +85,14 @@ DesktopCommanderMCP(MIT, https://github.com/wonderwhy-er/DesktopCommanderMCP)의
 2. 개인 토큰을 발급한다. 토큰은 한 번만 표시된다.
 3. 클라이언트의 MCP HTTP 설정에 표시된 `/api/mcp` 주소와 `Authorization: Bearer <토큰>`을 넣는다. 토큰을 URL·인자·소스·로그에 남기지 않는다.
 4. PC가 연결·승인 상태이고 선택된 실행 PC가 토큰의 PC와 같아야 도구가 실행된다.
+5. Claude·ChatGPT 웹 커넥터는 같은 `/api/mcp` 주소를 넣고 OAuth 로그인을 선택한다. 승인 화면에서 PC를 하나 고른다(11절).
 
 ## 9. 남은 것
 
-- OAuth 2.1 authorization server + 웹 커넥터 로그인.
 - 장시간 프로세스 `pc_shell_start/read/stop`(위 설계).
 - 대용량 출력·파일의 청크/스트리밍 전송.
 - Windows·macOS·Linux 셸별 실기기 검증(이번 PC worker 시험은 Windows PowerShell·cmd·Git Bash에서 수행).
+- OAuth 클라이언트 관리·DCR rate limit, CIMD, OIDC ID 토큰/워크스페이스 이메일 제한.
 
 ## 10. 검증
 
@@ -100,3 +101,96 @@ DesktopCommanderMCP(MIT, https://github.com/wonderwhy-er/DesktopCommanderMCP)의
 - Windows 기본 인코딩(cp949) 때문에 실패하던 기존 MCP 설정/왕복 시험은 파일 읽기와 자식 `PYTHONIOENCODING`을 UTF-8로 고정해 통과시켰다. 제품 코드 변경이 아니라 시험 환경 수정이다.
 
 참고: DesktopCommanderMCP(MIT). 이 저장소에는 그 소스 코드를 복사하지 않았고, 위에 적은 실행 형태(대기 상한, 출력 상한·절단, 프로세스 트리 종료)만 새 Python/PowerShell 코드로 구현했다. 따라서 `static/third-party-licenses.html`에는 새 항목을 추가하지 않았다. 런타임 의존성도 추가하지 않았다.
+
+## 11. OAuth 2.1 웹 커넥터 (2단계, 2026-11-03)
+
+### 11.1 사양 판과 근거
+
+- MCP Authorization 사양 **2026-07-28**을 기준으로 했다. 이 판은 OAuth 2.1 draft-ietf-oauth-v2-1-13, RFC 6750(Bearer), RFC 8414(AS Metadata), RFC 7591(DCR), RFC 8707(Resource Indicators), RFC 9728(Protected Resource Metadata), RFC 9207(issuer identification)을 참조한다.
+  - https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization (2026-11-03 확인)
+- OpenAI의 ChatGPT/Codex 커넥터 인증 안내는 보호 리소스 메타데이터, AS 메타데이터(S256, `iss`, `resource`), DCR/CIMD, `resource` 에코를 요구한다.
+  - https://developers.openai.com/plugins/build/auth (2026-11-03 확인)
+- Claude의 사용자 지정 커넥터는 OAuth 로그인에서 'Claude의 공개 identity(CIMD)', '자동 등록(DCR)', '직접 만든 OAuth 클라이언트'를 선택할 수 있다.
+  - https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp (2026-11-03 확인)
+
+### 11.2 (a) Chat 인가 엔드포인트 vs (b) padiem-auth 클라이언트
+
+| 기준 | (a) Chat이 MCP 전용 인가 엔드포인트를 둔다 | (b) padiem-auth에 MCP 클라이언트를 추가한다 |
+| --- | --- | --- |
+| 사용자 로그인 | 기존 Chat 공통 로그인 세션을 그대로 사용 | padiem-auth 로그인은 같지만 MCP 클라이언트·scope·제품 매핑을 새로 등록 |
+| padiem-auth 변경 | 없음 | 코드·허용 목록·배포 변경 필요, 키 재생성 금지 제약과 배포 위험 |
+| 토큰 범위 | 기존 MCP 토큰과 같은 owner/PC/scope를 Chat DB에서 바로 발급 | padiem-auth 토큰을 Chat MCP 토큰/PC와 연결하는 교환·매핑이 추가로 필요 |
+| 표준 적합성 | AS와 resource server가 같은 origin이어도 허용됨(사양 Roles) | AS 분리는 표준적이나 구현·검증 범위가 큼 |
+| 구현 크기 | 작음(기존 token 테이블·PC authority 재사용) | 큼(공통 로그인 권위와 MCP 데이터 권위의 경계 확장) |
+
+**(a)를 선택했다.** 로그인 자체는 계속 padiem-auth 공통 로그인 하나이고, Chat은 그 세션을 확인해 MCP 전용 OAuth 코드·토큰만 발급한다. padiem-auth의 키·클라이언트 설정은 건드리지 않는다. AS와 MCP resource server는 `https://chat.padiem.net` 같은 origin에 있다.
+
+### 11.3 엔드포인트
+
+| 경로 | 역할 |
+| --- | --- |
+| `GET /.well-known/oauth-protected-resource` | RFC 9728 보호 리소스 메타데이터. `resource=https://chat.padiem.net/api/mcp`, `authorization_servers=[issuer]`, `scopes_supported=[mcp:pc]` |
+| `GET /.well-known/oauth-protected-resource/api/mcp` | 위 문서의 경로별 별칭 |
+| `GET /.well-known/oauth-authorization-server` | RFC 8414 AS 메타데이터. issuer, authorize/token/register/revocation endpoint, S256, `iss` 지원, client auth methods |
+| `GET /oauth/authorize` | 동의 화면. 요청·client·redirect URI·PKCE를 먼저 검증하고, 로그인 전이면 공통 로그인으로 보낸다 |
+| `GET /oauth/authorize/info` | 동의 화면용 JSON(클라이언트 이름, redirect host, scope, 내 PC 목록). 세션 쿠키 전용 |
+| `POST /oauth/authorize` | 동의 승인/거절. JSON + 같은 origin. 코드 또는 `access_denied` redirect를 돌려준다 |
+| `POST /oauth/register` | RFC 7591 DCR. public(`none`)·confidential(`client_secret_post`/`basic`) 클라이언트 등록 |
+| `POST /oauth/token` | authorization_code + PKCE S256 교환, refresh rotation |
+| `POST /oauth/revoke` | RFC 7009 액세스/갱신 토큰 폐기 |
+| `POST /api/mcp` | 기존 MCP. PAT와 OAuth 액세스 토큰을 모두 받는다 |
+
+401 응답은 다음 challenge를 포함한다.
+
+```
+WWW-Authenticate: Bearer realm="padiem-mcp",
+  resource_metadata="https://chat.padiem.net/.well-known/oauth-protected-resource",
+  scope="mcp:pc"
+```
+
+이미 Bearer가 있었는데 거부된 경우 `error="invalid_token"`을 덧붙인다. OAuth 토큰은 `resource`가 이 MCP 서버의 정규 URI와 일치하고 scope가 `mcp:pc`일 때만 `authenticate_mcp_request`를 통과한다. PAT 행은 resource가 NULL이라 기존과 동일하게 동작한다.
+
+### 11.4 클라이언트 등록과 CIMD
+
+- DCR을 구현했다. `redirect_uris`는 정확한 HTTPS URI(로컬 개발은 loopback HTTP)만 받고, fragment·userinfo·비loopback HTTP를 거부한다. `client_name`은 1~100자, `token_endpoint_auth_method`는 `none`·`client_secret_post`·`client_secret_basic`만 받는다. confidential secret은 SHA-256만 저장하고 발급 응답에서 한 번만 돌려준다.
+- AS 메타데이터는 `client_id_metadata_document_supported: false`를 명시한다. **CIMD는 이번에 구현하지 않았다.** Claude의 '자동 등록'(DCR)과 ChatGPT의 DCR 경로를 사용한다. Claude의 'Claude의 공개 identity'를 쓰려면 CIMD URL 문서 fetch·검증(SSRF 경계 포함)이 추가로 필요하다.
+- DCR은 인증 없이 열려 있다. rate limit·클라이언트 관리 화면은 이번 범위가 아니다. 동의 화면은 클라이언트 이름과 함께 **돌아갈 redirect host**를 보여 주어 사용자가 대상을 확인하게 한다.
+
+### 11.5 로그인 복귀와 동의 화면
+
+- 공통 로그인은 padiem-auth 하나만 쓴다. `/oauth/authorize`가 세션 없는 브라우저를 `/auth/shared/start`로 보낼 때 `__Host-padiem-login-return` 쿠키에 같은 origin의 authorize URL을 넣는다. 공통 로그인 callback의 `issue_session`이 그 쿠키를 읽어 원래 authorize URL로 돌아가고 쿠키를 지운다. 외부 URL·`//`·역슬래시·제어 문자는 `/`로 떨어뜨린다.
+- 공통 로그인 흐름이 꺼진 배포에서는 authorize 화면이 로그인 안내와 채트 이동 링크를 보여 준다.
+- 동의 화면은 `static/mcp-oauth-consent.html`·`.js`·`.css`이며 문구는 `locale.js`의 ko/en 키를 쓴다. 클라이언트 이름, redirect host, "이 AI가 내 PC에서 파일·명령·브라우저 작업을 할 수 있습니다.", PC 선택, 승인/취소, PC 없음/로그인 필요 상태를 표시한다.
+- 승인 POST는 JSON + 정확한 Origin이며, 서버가 client/redirect/PKCE/resource/scope와 선택한 PC가 그 사용자의 것인지 다시 확인한다. 다른 사용자의 PC는 코드를 만들지 않는다.
+
+### 11.6 토큰 저장
+
+- migration **095_mcp_oauth.sql**:
+  - `padiem_mcp_tokens`에 `kind(pat|oauth)`, `expires_at`, `refresh_token_sha256`, `refresh_expires_at`, `client_id`, `scope`, `resource` 추가.
+  - `padiem_mcp_oauth_clients`(client id/secret hash/name/redirect URIs/auth method) 추가.
+  - `padiem_mcp_oauth_codes`(code hash, client, user, device, redirect, PKCE challenge, scope, resource, 만료/소비 시각) 추가.
+- 액세스 토큰 1시간, 갱신 토큰 30일. 갱신할 때 액세스·갱신 해시를 같은 행에서 원자적으로 회전하고, 이전 갱신·이전 액세스는 즉시 거부한다. 코드는 10분·1회 소비(조건부 UPDATE)다.
+- OAuth 행은 기존 설정의 '발급한 연결'에 `클라이언트 이름 (OAuth)`으로 보이고, 같은 `revoke_token`으로 폐기된다. 계정 삭제는 코드·토큰 행을 지우고, 만료 코드는 정리 회차가 지운다.
+- 토큰·코드·secret 원문은 저장·로그에 남기지 않는다. 요청 텔레메트리는 경로·상태만 남긴다.
+
+### 11.7 운영 반영 때 할 일
+
+1. migration 095를 적용한다. 095 전에는 `authenticate`/토큰 발급/갱신 SQL이 실패하므로 MCP 도구가 동작하지 않는다.
+2. `PADIEM_CHAT_PUBLIC_BASE_URL`이 실제 HTTPS origin(예: `https://chat.padiem.net`)인지 확인한다. issuer·resource·redirect 검증이 이 값에 묶인다.
+3. 공통 로그인(`PADIEM_CHAT_SHARED_LOGIN_ENABLED=true`)이 켜져 있는지 확인한다. padiem-auth 재배포·키 재생성은 하지 않는다.
+4. Claude 웹: 사용자 지정 커넥터에서 `/api/mcp` 주소를 넣고 OAuth 로그인을 선택한다. '자동 등록'(DCR)을 사용한다. ChatGPT 웹: 개발자 모드 커넥터에서 같은 주소와 OAuth를 선택한다.
+5. 배포 뒤 메타데이터·401 challenge·DCR·승인·토큰·갱신·폐기를 실제 커넥터로 한 번 확인한다. 이 레인은 배포·운영 접속을 하지 않았다.
+6. 앞단 `apps/padiem-chat-front`(Cloudflare Worker)를 재배포한다. `chat.padiem.net`의 실제 진입점이 이 Worker다. OAuth 경로는 원래도 컴2로 넘어갔지만(정적 분기는 최상위 단일 파일과 `/static/`만 잡는다) 기본 8초 마감만 썼고, worker.mjs의 새 판정에서 정적 분기를 명시적으로 피해 `API_READ_TIMEOUT_MS`(30초)를 쓴다. 앞단을 재배포하지 않으면 토큰 발급·인가 호출이 운영에서 여전히 8초에 잘린다.
+
+### 11.8 검증
+
+- OAuth 시험 12건: 메타데이터·401 challenge, DCR 검증/secret, 동의 화면·PC 목록, 전체 PKCE 코드·토큰·갱신 회전·폐기·PAT 회귀, 코드 재사용/오류 verifier/잘못된 redirect, confidential secret, 타 사용자 PC 거부, 만료·다른 resource 거부, 로그인 복귀, ko/en 문구.
+- MCP·로그인·삭제·정리·도움말 묶음 **223 passed**(이 기계 최종 광범위 실행).
+- 앞단 회귀: `node --test apps/padiem-chat-front/test/*.test.mjs` **65 passed**(OAuth 경로 통과·no-store·TIMEOUT 예산을 다루는 새 시험 7건 포함).
+- padiem-auth 코드·키·클라이언트 설정 변경 없음. 운영 서버 접속·배포·PR 없음.
+
+### 11.9 남은 것
+
+- CIMD 클라이언트 ID 문서, OIDC ID 토큰/JWKS, 워크스페이스 이메일 도메인 제한.
+- DCR 클라이언트 관리·rate limit, OAuth 동의 이력 화면.
+- 장시간 프로세스와 대용량 전송(1단계 메모의 남은 항목).

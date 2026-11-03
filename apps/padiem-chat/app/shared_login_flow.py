@@ -23,6 +23,8 @@ STATE_COOKIE = '__Host-padiem-shared-state'
 ACCESS_COOKIE = '__Host-padiem-shared-access'
 REFRESH_COOKIE = 'padiem_shared_refresh'
 MARKER_COOKIE = '__Host-padiem-shared-marker'
+LOGIN_RETURN_COOKIE = '__Host-padiem-login-return'
+LOGIN_RETURN_MAX_CHARS = 3000
 REFRESH_PATH = '/auth/shared'
 ACCESS_SECONDS = 15 * 60
 REFRESH_SECONDS = 30 * 24 * 60 * 60
@@ -116,6 +118,33 @@ def clear_shared_cookies(response):
     response.delete_cookie(ACCESS_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
     response.delete_cookie(REFRESH_COOKIE, path=REFRESH_PATH, secure=True, httponly=True, samesite='lax')
     response.delete_cookie(MARKER_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
+    return response
+
+
+def safe_login_return(value):
+    """Only a same-origin absolute path may become the post-login Location."""
+    if not isinstance(value, str):
+        return '/'
+    value = value.strip()
+    if (not value or len(value) > LOGIN_RETURN_MAX_CHARS
+            or not value.startswith('/') or value.startswith('//')
+            or '\\' in value or any(ord(char) < 32 or ord(char) == 127 for char in value)):
+        return '/'
+    return value
+
+
+def set_login_return_cookie(response, target):
+    response.set_cookie(LOGIN_RETURN_COOKIE, safe_login_return(target),
+                        secure=True, httponly=True, samesite='lax', path='/', max_age=600)
+    return response
+
+
+def login_return_target(request):
+    return safe_login_return(request.cookies.get(LOGIN_RETURN_COOKIE))
+
+
+def clear_login_return_cookie(response):
+    response.delete_cookie(LOGIN_RETURN_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
     return response
 
 
@@ -372,7 +401,9 @@ async def create_worker_shared_login_flow(env, authority):
                 store=store, legacy_user=current_user_id, notify=deliver_after_signup)
 
         async def issue(request, user, access, refresh):
-            return issue_shared_cookies(RedirectResponse('/', status_code=302), access, refresh)
+            response = RedirectResponse(login_return_target(request), status_code=302)
+            issue_shared_cookies(response, access, refresh)
+            return clear_login_return_cookie(response)
 
         flow = SharedLoginFlow(state_key=_un64(state), client_id=client_id, public_base_url=public_base_url, client_jwk=json.loads(private),
             kid=str(kid), operator_guard=lambda request: False, legacy_user=current_user_id,

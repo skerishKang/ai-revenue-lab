@@ -21,6 +21,7 @@ from test_5222_account_model_selection import BASE, build_app, client_for, seed_
 
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "085_mcp_gateway.sql"
 SHELL_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "094_mcp_shell_audit.sql"
+OAUTH_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "095_mcp_oauth.sql"
 NOW = datetime(2026, 11, 1, tzinfo=timezone.utc)
 DEVICE = "node//test-owner-pc"
 FAKE_SECRET = "fixed-test-material-not-a-live-credential"
@@ -35,11 +36,18 @@ class Pairing:
             return {"mesh_node_id": DEVICE, "roots": [{"path": "C:/Documents"}]}
         return None
 
+    async def links_for_owner(self, *, user_id):
+        if self.active and user_id == self.owner:
+            return [{"mesh_node_id": DEVICE, "label": "Owner PC",
+                     "roots": [{"path": "C:/Documents"}]}]
+        return []
+
 
 def setup():
     db, owner, other, _ = seed_db()
-    db.conn.executescript(MIGRATION.read_text())
-    db.conn.executescript(SHELL_MIGRATION.read_text())
+    for path in (MIGRATION, SHELL_MIGRATION, OAUTH_MIGRATION):
+        if path.exists():
+            db.conn.executescript(path.read_text(encoding="utf-8"))
     store = D1McpGatewayStore(db, secret_factory=lambda: FAKE_SECRET)
     return db, owner, other, store
 

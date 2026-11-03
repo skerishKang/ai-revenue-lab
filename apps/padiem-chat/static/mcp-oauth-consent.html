@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="robots" content="noindex" />
+  <title>외부 AI 연결 승인</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/mcp-oauth-consent.css" />
+</head>
+<body class="mcp-oauth-body">
+  <main class="mcp-oauth-card" id="mcpOauthCard" aria-busy="true">
+    <h1 data-locale-key="mcp-oauth-title">외부 AI 연결 승인</h1>
+    <p class="mcp-oauth-loading" data-locale-key="mcp-oauth-loading">연결 요청을 확인하고 있습니다.</p>
+
+    <section id="mcpOauthContent" hidden>
+      <p class="mcp-oauth-intro" id="mcpOauthIntro"></p>
+      <dl class="mcp-oauth-facts">
+        <div>
+          <dt data-locale-key="mcp-oauth-client">연결을 요청한 AI</dt>
+          <dd id="mcpOauthClientName"></dd>
+        </div>
+        <div>
+          <dt data-locale-key="mcp-oauth-redirect">연결이 끝나 돌아갈 곳</dt>
+          <dd id="mcpOauthRedirectHost"></dd>
+        </div>
+        <div>
+          <dt data-locale-key="mcp-oauth-scope">허용 범위</dt>
+          <dd data-locale-key="mcp-oauth-scope-pc">내 PC의 파일·명령·브라우저 작업</dd>
+        </div>
+      </dl>
+      <p class="mcp-oauth-capability" data-locale-key="mcp-oauth-capability">이 AI가 내 PC에서 파일·명령·브라우저 작업을 할 수 있습니다.</p>
+      <label class="mcp-oauth-label" for="mcpOauthPc" data-locale-key="mcp-oauth-pc">연결할 PC</label>
+      <p class="mcp-oauth-help" data-locale-key="mcp-oauth-pc-help">이 AI가 사용할 PC를 하나 고르세요.</p>
+      <select id="mcpOauthPc" class="mcp-oauth-select"></select>
+      <p id="mcpOauthNoPc" class="mcp-oauth-error" data-locale-key="mcp-oauth-no-pc" hidden>연결할 PC가 없습니다. 설정에서 내 PC를 먼저 연결해 주세요.</p>
+      <div class="mcp-oauth-actions">
+        <button type="button" id="mcpOauthApprove" class="mcp-oauth-primary" data-locale-key="mcp-oauth-approve">승인하고 연결</button>
+        <button type="button" id="mcpOauthDeny" class="mcp-oauth-secondary" data-locale-key="mcp-oauth-deny">취소</button>
+      </div>
+    </section>
+
+    <section id="mcpOauthLogin" hidden>
+      <p data-locale-key="mcp-oauth-login-required">로그인이 필요합니다. 채트에 로그인한 뒤 이 연결을 다시 시작해 주세요.</p>
+      <a id="mcpOauthLoginLink" class="mcp-oauth-primary mcp-oauth-link" href="/" data-locale-key="mcp-oauth-login">로그인하고 계속</a>
+    </section>
+
+    <p id="mcpOauthStatus" class="mcp-oauth-error" role="status" hidden></p>
+  </main>
+  <script src="/locale.js"></script>
+  <script src="/mcp-oauth-consent.js"></script>
+</body>
+</html>
