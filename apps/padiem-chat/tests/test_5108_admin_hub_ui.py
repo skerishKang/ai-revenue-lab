@@ -163,3 +163,48 @@ def test_license_navigation_is_exact_url_and_file_scoped():
         assert not audit.license_notice_url_allowed(notice, url)
     assert "github.com" not in audit.ALLOWED_LITERAL_HTTP_HOSTS
     assert "www.gnu.org" not in audit.ALLOWED_LITERAL_HTTP_HOSTS
+
+
+def test_tutorial_media_origins_are_exact_scene_scoped_urls():
+    import importlib.util
+
+    path = REPO / ".github" / "scripts" / "b62_static_origin_audit.py"
+    spec = importlib.util.spec_from_file_location("static_origin_audit_media", path)
+    audit = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(audit)
+
+    expected = {
+        "apps/padiem-chat/static/help-tutorials/01-first-visit.html": {
+            "https://media.padiem.net/tutorials/01-first-visit/video.v20261103.webm",
+            "https://media.padiem.net/tutorials/01-first-visit/captions.v20261103.vtt",
+        },
+        "apps/padiem-chat/static/help-tutorials/02-pc-connection.html": {
+            "https://media.padiem.net/tutorials/02-pc-connection/video.v20261103.webm",
+            "https://media.padiem.net/tutorials/02-pc-connection/captions.v20261103.vtt",
+        },
+        "apps/padiem-chat/static/help-tutorials/04-bookai.html": {
+            "https://media.padiem.net/tutorials/04-bookai/video.v20261103.webm",
+            "https://media.padiem.net/tutorials/04-bookai/captions.v20261103.vtt",
+        },
+    }
+    assert audit.TUTORIAL_MEDIA_URLS == {
+        relative: frozenset(urls) for relative, urls in expected.items()
+    }
+    assert "media.padiem.net" not in audit.ALLOWED_LITERAL_HTTP_HOSTS
+
+    for relative, urls in expected.items():
+        for url in urls:
+            assert audit.tutorial_media_url_allowed(relative, url)
+            assert not audit.tutorial_media_url_allowed(
+                "apps/padiem-chat/static/index.html", url
+            )
+
+    first_visit = "apps/padiem-chat/static/help-tutorials/01-first-visit.html"
+    for url in (
+        "https://media.padiem.net/tutorials/01-first-visit/video.webm",
+        "https://media.padiem.net/tutorials/01-first-visit/video.v20261104.webm",
+        "https://media.padiem.net/tutorials/02-pc-connection/video.v20261103.webm",
+        "https://media.padiem.net/tutorials/01-first-visit/video.v20261103.webm?download=1",
+        "https://media.padiem.net.evil.invalid/tutorials/01-first-visit/video.v20261103.webm",
+    ):
+        assert not audit.tutorial_media_url_allowed(first_visit, url)
