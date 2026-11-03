@@ -5,6 +5,8 @@
 ## 지금 되는 것
 
 - `python tools/tutorial/build_tutorials.py`가 01~05 대본을 튜토리얼 md로 만듭니다. 개발 용어는 표로 바뀌고, 계정 단계는 자리 표시로 남습니다.
+- 같은 명령이 도움말 화면 옆 정적 페이지(`apps/padiem-chat/static/help-tutorials/`, 목차 1장 + 튜토리얼 5장)를 만들고, 촬영 PNG를 webp로 줄여 저장소에 넣습니다.
+- `help.html` 목차 첫 항목에서 `./help-tutorials/index.html`로 이어집니다.
 - `python tools/tutorial/capture_guest_scenes.py`가 게스트 장면을 촬영해 PNG·WebM·VTT·manifest를 저장소 밖 `out/`에 남깁니다. GET/HEAD 외 요청은 브라우저에서 막습니다.
 - `--check`와 단위 시험이 대본과 문서의 어긋남을 잡습니다.
 
@@ -28,18 +30,19 @@
 | 앞단 정적 자산(`apps/padiem-chat/static`) | 배포가 단순하고 같은 출처 | 저장소 크기, 배포마다 늘어나는 바이너리, 캐시 무효화 |
 | 문서 저장소 안에 두지 않음 | 저장소 비대화 방지 | 링크가 깨지지 않게 키→URL 매핑을 한 곳에서 관리 |
 
-권장: 지금은 키만 쓰고, 실제 파일은 R2에 두는 쪽이 저장소·배포 크기를 건드리지 않습니다. 앞단 정적 자산은 짧은 홍보 영상 1~2개로 제한합니다.
+확정: 이미지는 앞단 정적 자산입니다. 촬영 PNG(장당 약 1MB)를 webp로 줄여 `apps/padiem-chat/static/help-tutorials/assets/<문서>/step-NN.webp`로 넣고, 장당 150KB·합계 약 640KB를 유지합니다. 생성 단계에서 크기를 넘으면 `--check`가 `image_too_large`로 멈춥니다.
+
+영상·자막은 저장소에 넣지 않습니다. 페이지에는 "영상 준비 중" 자리만 있고, 나중에 고정 주소를 넣을 설정 키는 `PADIEM_TUTORIAL_MEDIA_BASE_URL` 하나입니다(예: `<키>/chat-tutorial/01-first-visit/video.webm`). 호스팅을 R2로 정하면 이 키 값만 채우면 되고 페이지는 다시 만들 필요가 없습니다.
 
 ## 도움말 화면 연결
 
-`apps/padiem-chat/static/help.html`은 지금 문장 예시 모음입니다. 튜토리얼을 붙이려면:
+`apps/padiem-chat/static/help.html`은 지금 문장 예시 모음입니다. 연결은 이렇게 마쳤습니다.
 
-1. help.html 목차에 "단계별로 따라 하기" 항목을 추가하고 01~05로 링크합니다.
-2. 링크 대상은 배포 산출물에 포함된 경로여야 합니다. 지금 `docs/help/tutorials`는 배포되지 않으므로, 다음 중 하나가 필요합니다.
-   - Worker 라우트가 `docs/help/tutorials/*.md`를 읽어 HTML로 제공
-   - 생성 단계에서 md를 `apps/padiem-chat/static/help/tutorials/`로 복사하는 스크립트 추가(정적 사이트 그대로 유지)
-3. 이미지·영상은 키(`asset://chat-tutorial/…`)를 실제 URL로 바꾸는 매핑을 한 파일에 두고, 호스팅을 바꿔도 문서를 고치지 않게 합니다.
-4. help.html의 "북AI" 절과 튜토리얼 04의 문구 차이는 `docs/help/tutorials/README.md` 표에 적었습니다. 화면 문구 통일은 별도 작업입니다.
+1. 목차 첫 항목 `단계별 튜토리얼` → `./help-tutorials/index.html` 한 곳. 본문 문구는 건드리지 않았습니다.
+2. 페이지는 생성 단계에서 `apps/padiem-chat/static/`에 직접 만듭니다. 별도 복사 스크립트나 Worker 라우트가 필요 없고 정적 사이트 그대로입니다. `docs/help/tutorials`의 md는 사람이 읽는 사본, 화면은 같은 대본에서 나온 html입니다.
+3. 이미지는 `./assets/<문서>/step-NN.webp` 고정 경로, 영상은 `PADIEM_TUTORIAL_MEDIA_BASE_URL` 키로 붙입니다. 호스팅을 바꿔도 페이지를 다시 만들 필요가 없습니다.
+4. help.html과 다른 문구 2건은 `docs/help/tutorials/README.md`의 문안 제안 표에 있습니다. `help.html` 반영은 Chat 화면 담당이 합니다.
+5. 대본·문서·페이지·이미지가 어긋나는 PR은 `.github/workflows/tutorial-generation-contract.yml`이 막습니다.
 
 ## 확인 명령
 

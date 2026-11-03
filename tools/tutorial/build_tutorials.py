@@ -9,17 +9,35 @@ inventing their screens. 06 is an operations runbook and stays out of the help.
 
 The output is deterministic: the same screenplays produce byte-identical files,
 with no run ids and no dates, so any diff means the source changed.
+
+The same screenplays also produce the static pages that sit next to help.html
+(``apps/padiem-chat/static/help-tutorials``) and the step images shrunk from the
+recordings, so the help screen and the tutorials cannot describe different
+steps.
 """
 from __future__ import annotations
 
 import argparse
+import io
 import re
 import sys
+from html import escape
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 SCENARIO_DIR = REPO / "docs" / "qa" / "scenarios"
 OUTPUT_DIR = REPO / "docs" / "help" / "tutorials"
+#: The pages live next to help.html, so they inherit its stylesheets and the
+#: same static-asset deployment. Nothing new is served from a second origin.
+PAGE_DIR = REPO / "apps" / "padiem-chat" / "static" / "help-tutorials"
+#: Recording output (outside the repository, see capture_guest_scenes.py).
+DEFAULT_SHOTS = REPO.parent / "out"
+#: One phone-sized step image must stay small enough to send without a CDN
+#: transform; the recorder's PNGs are ~1 MB each.
+MAX_IMAGE_BYTES = 150 * 1024
+#: The videos and captions are not in the repository. The pages name the base
+#: URL variable they will read, and nothing else.
+VIDEO_KEY_ENV = "PADIEM_TUTORIAL_MEDIA_BASE_URL"
 
 SCENARIOS = (
     ("01", "first-visit"),
@@ -101,6 +119,65 @@ HELP_COMPARISON = (
         "다름 — help.html에 탈퇴 항목이 아직 없습니다.",
     ),
 )
+
+#: Wording this lane cannot change (help.html belongs to the Chat UI lane). The
+#: proposals sit next to the comparison so the two pages stop disagreeing in the
+#: same change that adds the tutorials.
+HELP_COPY_PROPOSALS = (
+    (
+        "help.html · 권한 안내(#policyTitle) 둘째 문단",
+        "되돌리기 어려운 동작으로 보일 때는 실행하기 전에 묻고,",
+        "로그인이 필요한 화면은 열기 전에 로그인 안내로 막고, 로그인·결제·게시·발송처럼 "
+        "되돌리기 어려운 동작은 실행하기 전에 묻습니다.",
+        "튜토리얼은 로그인 장면을 목록 접근 차단으로 설명하는데, 도움말은 실행 전 확인만 말합니다.",
+    ),
+    (
+        "help.html · 목차와 새 절(#account)",
+        "(항목 없음)",
+        "계정 탈퇴 — 설정의 계정 메뉴에서 탈퇴할 수 있어요. 확인을 위해 계정 이메일이나 정해진 "
+        "확인 문구를 입력하고, 내 문서·대화 기록·첨부는 지워지며 공통 로그인 계정은 남습니다.",
+        "튜토리얼 ⑤가 다루는 내용이 도움말에 없습니다. 탈퇴 기능이 병합된 뒤에 넣습니다.",
+    ),
+)
+
+#: Layout only. Colour, type, the 44px floor and the light theme come from
+#: styles.css + help.css, so these pages look like the help page they sit beside.
+TUTORIAL_CSS = """/* #6724 2 — tutorial pages. Layout only: colour, type and the 44px floor come
+   from styles.css and help.css, so the help page's theme reaches these too. */
+
+.chat-help-nav { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.tutorial-shot { margin: 14px 0 0; }
+.tutorial-shot img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 12px;
+  background: var(--panel, #fff);
+}
+.tutorial-shot figcaption { margin-top: 6px; color: var(--muted, #6f7079); font-size: 14px; }
+
+.chat-help-video-slot {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px dashed var(--line, #e3e3e9);
+  border-radius: 12px;
+  color: var(--muted, #6f7079);
+}
+
+.tutorial-index { margin: 0; padding: 0; list-style: none; }
+.tutorial-index li { margin: 0 0 14px; }
+.tutorial-index a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 650;
+  color: var(--accent-strong, #5546d6);
+}
+.tutorial-index p { margin: 4px 0 0; color: var(--muted, #6f7079); }
+"""
 
 
 def user_words(text: str) -> str:
@@ -355,6 +432,30 @@ def render_readme(documents: list[dict]) -> str:
     lines.extend(
         [
             "",
+            "## 화면 페이지",
+            "",
+            f"``apps/padiem-chat/static/help-tutorials``에 같은 대본으로 6장(목차 1장 + 튜토리얼 5장)을 만듭니다. "
+            "도움말 화면과 같은 ``styles.css``·``help.css``를 쓰고, 단계 화면은 ``assets/<문서>/step-NN.webp``로 "
+            f"저장소에 넣었습니다(장당 {MAX_IMAGE_BYTES // 1024}KB 이하). 사용 안내(``help.html``) 목차에서 "
+            "``./help-tutorials/index.html``로 이어집니다.",
+            "",
+            f"영상과 자막은 저장소에 넣지 않습니다. 페이지에는 \"영상 준비 중\" 자리만 두고, 나중에 고정 주소를 "
+            f"넣을 설정 키는 ``{VIDEO_KEY_ENV}``입니다(예: ``{VIDEO_KEY_ENV}/<문서>/video.webm``).",
+            "",
+            "## 도움말 문안 제안",
+            "",
+            "``apps/padiem-chat/static/help.html``은 이 선에서 고치지 않습니다. 아래 두 곳은 내용이 다르므로 "
+            "Chat 화면 담당이 반영합니다.",
+            "",
+            "| 위치 | 지금 문구 | 제안 문구 | 이유 |",
+            "|---|---|---|---|",
+        ]
+    )
+    for where, current, proposal, why in HELP_COPY_PROPOSALS:
+        lines.append(f"| {where} | “{current}” | {proposal} | {why} |")
+    lines.extend(
+        [
+            "",
             "## 다시 만들기",
             "",
             "```bash",
@@ -369,7 +470,272 @@ def render_readme(documents: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def build(output_dir: Path = OUTPUT_DIR) -> list[Path]:
+def _step_section(document: dict, step: dict) -> list[str]:
+    guest = step["number"] in document["guest"]
+    anchor = f"step-{step['number']}"
+    lines = [
+        f'      <section class="chat-help-section" id="{anchor}" aria-labelledby="{anchor}Title">',
+        (
+            f'        <h2 id="{anchor}Title">{step["number"]}단계 · '
+            f'{escape(step["caption"])}</h2>'
+        ),
+    ]
+    if not guest:
+        lines.append(f'        <p class="chat-help-caution">{escape(PLACEHOLDER)}</p>')
+    lines.extend(
+        [
+            f'        <p class="chat-help-desc"><strong>이렇게 해요:</strong> {escape(step["action"])}</p>',
+            (
+                '        <p class="chat-help-desc"><strong>이렇게 보여요:</strong> '
+                f'{escape(step["expected"])}</p>'
+            ),
+        ]
+    )
+    if step["checked"]:
+        lines.append(
+            '        <p class="chat-help-detail"><strong>화면에서 확인하는 것:</strong> '
+            f'{escape(step["checked"])}</p>'
+        )
+    if guest:
+        image = f"./assets/{document['key']}/step-{step['number']:02d}.webp"
+        lines.extend(
+            [
+                '        <figure class="tutorial-shot">',
+                (
+                    f'          <img src="{image}" alt="{escape(step["caption"])} 화면"'
+                    ' width="1280" height="900" decoding="async" />'
+                ),
+                f'          <figcaption>{escape(step["caption"])}</figcaption>',
+                '        </figure>',
+            ]
+        )
+    lines.append('      </section>')
+    return lines
+
+
+def render_page(document: dict) -> str:
+    """One tutorial as a static page beside help.html."""
+
+    lines = [
+        '<!doctype html>',
+        '<html lang="ko">',
+        '<head>',
+        '  <meta charset="utf-8" />',
+        '  <meta name="viewport" content="width=device-width, initial-scale=1" />',
+        '  <meta name="color-scheme" content="light" />',
+        '  <meta name="robots" content="noindex" />',
+        f'  <title>{escape(document["title"])} — Padiem Chat 튜토리얼</title>',
+        '  <link rel="icon" href="data:," />',
+        '  <link rel="stylesheet" href="../styles.css" />',
+        '  <link rel="stylesheet" href="../help.css" />',
+        '  <link rel="stylesheet" href="./tutorial.css" />',
+        '  <!-- tools/tutorial/build_tutorials.py가 docs/qa/scenarios/',
+        f'{document["file"]}에서 만든 페이지입니다. 대본을 고치고 다시 생성하세요.',
+        f'       영상·자막 주소는 {VIDEO_KEY_ENV}/',
+        f'{MEDIA_KEY_ROOT}/{document["key"]}/video.webm 로 나중에 붙입니다. -->',
+        '</head>',
+        '<body class="chat-help-body">',
+        '  <a class="chat-help-skip" href="#tutorialMain">본문으로 건너뛰기</a>',
+        '  <header class="chat-help-header">',
+        '    <div class="chat-help-brand">',
+        '      <span class="chat-help-brand-mark" aria-hidden="true">P</span>',
+        f'      <span class="chat-help-brand-name">{escape(document["title"])}</span>',
+        '    </div>',
+        '    <nav class="chat-help-nav" aria-label="이동">',
+        '      <a class="chat-help-back" href="./index.html">튜토리얼 목록</a>',
+        '      <a class="chat-help-back" href="../help.html">사용 안내</a>',
+        '    </nav>',
+        '  </header>',
+        '  <main id="tutorialMain" class="chat-help-main">',
+        f'    <h1>{escape(document["title"])}</h1>',
+        f'    <p class="chat-help-lede">{escape(document["purpose"])}</p>',
+        f'    <p class="chat-help-detail"><strong>준비물:</strong> {escape(_preparation(document))}</p>',
+        '    <nav class="chat-help-toc" aria-label="이 튜토리얼의 단계">',
+        '      <ul>',
+    ]
+    for step in document["steps"]:
+        lines.append(
+            f'        <li><a href="#step-{step["number"]}">'
+            f'{step["number"]}단계 · {escape(step["caption"])}</a></li>'
+        )
+    lines.extend(['      </ul>', '    </nav>'])
+    for step in document["steps"]:
+        lines.extend(_step_section(document, step))
+
+    lines.extend(
+        [
+            '      <section class="chat-help-section" id="media" aria-labelledby="mediaTitle">',
+            '        <h2 id="mediaTitle">영상과 자막</h2>',
+            (
+                '        <p class="chat-help-video-slot">영상 준비 중 — 녹화와 자막은 아직 '
+                '이 화면에 올리지 않았습니다.</p>'
+            ),
+        ]
+    )
+    if document["guest"]:
+        lines.append(
+            f'        <p class="chat-help-detail">촬영 범위: 게스트 '
+            f'{_format_numbers(document["guest"])}단계.</p>'
+        )
+        if document["account"]:
+            lines.append(
+                f'        <p class="chat-help-detail">계정 {_format_numbers(document["account"])}단계는 '
+                f'{escape(PLACEHOLDER)}로 두고 같은 자리에 이어 붙입니다.</p>'
+            )
+    else:
+        lines.append(
+            '        <p class="chat-help-detail">아직 촬영하지 않았습니다 — 이 시나리오는 계정 '
+            '단계로만 이루어져 있습니다.</p>'
+        )
+    lines.extend(
+        [
+            '      </section>',
+            '    <p class="chat-help-foot">',
+            '      이 안내는 대본에서 자동으로 만들어집니다.',
+            '      <a href="./index.html">튜토리얼 목록</a>',
+            '      <a href="../help.html">사용 안내</a>',
+            '    </p>',
+            '  </main>',
+            '</body>',
+            '</html>',
+        ]
+    )
+    return "\n".join(lines) + "\n"
+
+
+def render_index(documents: list[dict]) -> str:
+    items: list[str] = []
+    for document in documents:
+        guest = _format_numbers(document["guest"])
+        account = _format_numbers(document["account"])
+        if guest and account:
+            scope = f"로그인 없이 {guest}단계, {account}단계는 화면 준비 중"
+        elif guest:
+            scope = f"로그인 없이 {guest}단계"
+        else:
+            scope = "계정 준비 중 — 화면 자리만 있습니다"
+        items.extend(
+            [
+                '        <li>',
+                (
+                    f'          <a href="./{document["number"]}-{document["slug"]}.html">'
+                    f'{escape(document["title"])}</a>'
+                ),
+                f'          <p>{escape(document["purpose"])} · {scope}</p>',
+                '        </li>',
+            ]
+        )
+    lines = [
+        '<!doctype html>',
+        '<html lang="ko">',
+        '<head>',
+        '  <meta charset="utf-8" />',
+        '  <meta name="viewport" content="width=device-width, initial-scale=1" />',
+        '  <meta name="color-scheme" content="light" />',
+        '  <meta name="robots" content="noindex" />',
+        '  <title>단계별 튜토리얼 — Padiem Chat</title>',
+        '  <link rel="icon" href="data:," />',
+        '  <link rel="stylesheet" href="../styles.css" />',
+        '  <link rel="stylesheet" href="../help.css" />',
+        '  <link rel="stylesheet" href="./tutorial.css" />',
+        '  <!-- tools/tutorial/build_tutorials.py가 docs/qa/scenarios에서 만든 목록입니다. -->',
+        '</head>',
+        '<body class="chat-help-body">',
+        '  <a class="chat-help-skip" href="#tutorialMain">본문으로 건너뛰기</a>',
+        '  <header class="chat-help-header">',
+        '    <div class="chat-help-brand">',
+        '      <span class="chat-help-brand-mark" aria-hidden="true">P</span>',
+        '      <span class="chat-help-brand-name">단계별 튜토리얼</span>',
+        '    </div>',
+        '    <nav class="chat-help-nav" aria-label="이동">',
+        '      <a class="chat-help-back" href="../help.html">사용 안내</a>',
+        '      <a class="chat-help-back" href="../">채트로 돌아가기</a>',
+        '    </nav>',
+        '  </header>',
+        '  <main id="tutorialMain" class="chat-help-main">',
+        '    <h1>단계별 튜토리얼</h1>',
+        '    <p class="chat-help-lede">화면을 따라가며 익히는 안내입니다. 모든 문서는 시나리오 '
+        '대본에서 자동으로 만들어지고, 로그인이 필요한 단계는 화면 자리만 비워 두었습니다.</p>',
+        '    <ul class="tutorial-index">',
+    ]
+    lines.extend(items)
+    lines.extend(
+        [
+            '    </ul>',
+            '    <p class="chat-help-foot">',
+            '      기능 설명은 <a href="../help.html">사용 안내</a>에 있습니다.',
+            '    </p>',
+            '  </main>',
+            '</body>',
+            '</html>',
+        ]
+    )
+    return "\n".join(lines) + "\n"
+
+
+def expected_pages(documents: list[dict]) -> dict[str, str]:
+    pages = {"index.html": render_index(documents), "tutorial.css": TUTORIAL_CSS}
+    for document in documents:
+        pages[f"{document['number']}-{document['slug']}.html"] = render_page(document)
+    return pages
+
+
+def expected_assets(documents: list[dict]) -> set[str]:
+    return {
+        f"{document['key']}/step-{number:02d}.webp"
+        for document in documents
+        for number in document["guest"]
+    }
+
+
+def _shrink_webp(image_module, source: Path) -> bytes:
+    """The largest scale that still fits MAX_IMAGE_BYTES, as one webp."""
+
+    with image_module.open(source) as opened:
+        picture = opened.convert("RGB")
+    smallest = b""
+    for scale in (1.0, 0.85, 0.7, 0.55, 0.45):
+        width = max(320, int(picture.width * scale))
+        height = max(200, round(picture.height * width / picture.width))
+        frame = picture if scale == 1.0 else picture.resize((width, height), image_module.LANCZOS)
+        for quality in (82, 74, 66):
+            buffer = io.BytesIO()
+            frame.save(buffer, format="WEBP", quality=quality, method=6)
+            data = buffer.getvalue()
+            if len(data) <= MAX_IMAGE_BYTES:
+                return data
+            smallest = data
+    return smallest
+
+
+def convert_shots(shots: Path, asset_dir: Path, documents: list[dict] | None = None) -> list[Path]:
+    """Recorder PNGs -> one small webp per guest step, inside the page assets."""
+
+    try:
+        from PIL import Image
+    except ImportError:  # pragma: no cover - the tool documents the extra
+        raise SystemExit(
+            "screenshots need Pillow: python -m pip install pillow"
+        ) from None
+    documents = documents if documents is not None else load_scenarios()
+    written: list[Path] = []
+    for document in documents:
+        for number in sorted(document["guest"]):
+            source = shots / document["key"] / f"step-{number:02d}.png"
+            if not source.is_file():
+                raise SystemExit(f"missing screenshot: {source}")
+            target = asset_dir / document["key"] / f"step-{number:02d}.webp"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(_shrink_webp(Image, source))
+            written.append(target)
+    return written
+
+
+def build(
+    output_dir: Path = OUTPUT_DIR,
+    page_dir: Path = PAGE_DIR,
+    shots: Path | None = DEFAULT_SHOTS,
+) -> list[Path]:
     documents = load_scenarios()
     output_dir.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
@@ -380,11 +746,24 @@ def build(output_dir: Path = OUTPUT_DIR) -> list[Path]:
     readme = output_dir / "README.md"
     readme.write_text(render_readme(documents), encoding="utf-8")
     written.append(readme)
+
+    page_dir.mkdir(parents=True, exist_ok=True)
+    for name, text in expected_pages(documents).items():
+        path = page_dir / name
+        path.write_text(text, encoding="utf-8")
+        written.append(path)
+    if shots is not None and Path(shots).is_dir():
+        written.extend(convert_shots(Path(shots), page_dir / "assets", documents))
     return written
 
 
-def check(output_dir: Path = OUTPUT_DIR) -> list[str]:
-    """Files whose content differs from what the screenplays produce now."""
+def check(output_dir: Path = OUTPUT_DIR, page_dir: Path = PAGE_DIR) -> list[str]:
+    """Everything that no longer matches what the screenplays produce now.
+
+    The image comparison is by name and size, not by bytes: webp output depends
+    on the encoder version, while a missing, orphaned or oversized step image is
+    the drift a reviewer has to see.
+    """
 
     documents = load_scenarios()
     stale: list[str] = []
@@ -394,23 +773,52 @@ def check(output_dir: Path = OUTPUT_DIR) -> list[str]:
         path = output_dir / name
         if not path.is_file() or path.read_text(encoding="utf-8") != text:
             stale.append(name)
+
+    pages = expected_pages(documents)
+    for name, text in pages.items():
+        path = page_dir / name
+        if not path.is_file() or path.read_text(encoding="utf-8") != text:
+            stale.append(f"page:{name}")
+    for path in sorted(page_dir.glob("*.html")):
+        if path.name not in pages:
+            stale.append(f"orphan_page:{path.name}")
+
+    assets_dir = page_dir / "assets"
+    present = {
+        path.relative_to(assets_dir).as_posix() for path in assets_dir.rglob("*.webp")
+    } if assets_dir.is_dir() else set()
+    wanted = expected_assets(documents)
+    stale.extend(f"image:{name}" for name in sorted(wanted - present))
+    stale.extend(f"orphan_image:{name}" for name in sorted(present - wanted))
+    for name in sorted(wanted & present):
+        if (assets_dir / name).stat().st_size > MAX_IMAGE_BYTES:
+            stale.append(f"image_too_large:{name}")
     return stale
 
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--output", type=Path, default=OUTPUT_DIR)
+    parser.add_argument("--pages", type=Path, default=PAGE_DIR)
+    parser.add_argument("--shots", type=Path, default=DEFAULT_SHOTS)
+    parser.add_argument(
+        "--no-images",
+        action="store_true",
+        help="write documents and pages only (no recording folder needed)",
+    )
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
     if args.check:
-        stale = check(args.output)
+        stale = check(args.output, args.pages)
         if stale:
             print("tutorials_stale=" + ",".join(sorted(stale)))
             return 1
         print("tutorials_up_to_date")
         return 0
-    written = build(args.output)
-    print(f"tutorials_written={len(written)} output={args.output}")
+    written = build(
+        args.output, args.pages, None if args.no_images else args.shots
+    )
+    print(f"tutorials_written={len(written)} output={args.output} pages={args.pages}")
     return 0
 
 

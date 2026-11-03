@@ -4,6 +4,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -15,6 +16,8 @@ REPO = TOOL_DIR.parents[1]
 GENERATOR = TOOL_DIR / "build_tutorials.py"
 CAPTURE = TOOL_DIR / "capture_guest_scenes.py"
 HELP = REPO / "apps" / "padiem-chat" / "static" / "help.html"
+PAGES = REPO / "apps" / "padiem-chat" / "static" / "help-tutorials"
+HELP_LINK = 'href="./help-tutorials/index.html"'
 
 sys.path.insert(0, str(TOOL_DIR))
 
@@ -57,7 +60,10 @@ class GeneratedTutorials(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
-        self.files = generator.build(self.root / "docs")
+        # ``shots=None``: these tests never need the 1 MB recordings, only the
+        # text the screenplays and the pages share.
+        self.pages = self.root / "pages"
+        self.files = generator.build(self.root / "docs", self.pages, None)
         self.text = {
             path.name: path.read_text(encoding="utf-8")
             for path in self.files
@@ -68,8 +74,9 @@ class GeneratedTutorials(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_every_scenario_becomes_a_deterministic_document(self):
-        self.assertEqual(sorted(path.name for path in self.files), EXPECTED)
-        again = generator.build(self.root / "again")
+        documents = sorted(path.name for path in self.files if path.suffix == ".md")
+        self.assertEqual(documents, EXPECTED)
+        again = generator.build(self.root / "again", self.root / "again-pages", None)
         self.assertEqual(
             {path.name: path.read_bytes() for path in self.files},
             {path.name: path.read_bytes() for path in again},
@@ -135,6 +142,106 @@ class GeneratedTutorials(unittest.TestCase):
             self.assertTrue(tutorial_phrase and verdict)
             if quote is not None:
                 self.assertIn(_normalize(quote), help_text, tutorial_phrase)
+
+
+class CommittedPages(unittest.TestCase):
+    """What the repository ships, checked against the screenplays."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_committed_pages_match_the_screenplays(self):
+        pages = self.root / "pages"
+        generator.build(self.root / "docs", pages, None)
+        for name in sorted(generator.expected_pages(generator.load_scenarios())):
+            self.assertEqual((pages / name).read_bytes(), (PAGES / name).read_bytes(), name)
+
+    def test_every_guest_step_has_one_image_within_the_size_budget(self):
+        documents = generator.load_scenarios()
+        assets = PAGES / "assets"
+        present = {path.relative_to(assets).as_posix() for path in assets.rglob("*.webp")}
+        self.assertEqual(present, generator.expected_assets(documents))
+        self.assertGreater(len(present), 0)
+        for name in sorted(present):
+            size = (assets / name).stat().st_size
+            self.assertGreater(size, 0, name)
+            self.assertLessEqual(size, generator.MAX_IMAGE_BYTES, name)
+
+    def test_pages_reference_their_images_and_the_help_page(self):
+        for document in generator.load_scenarios():
+            page = (PAGES / f"{document['number']}-{document['slug']}.html").read_text(
+                encoding="utf-8"
+            )
+            self.assertIn('href="../help.html"', page, document["key"])
+            self.assertIn('href="./index.html"', page, document["key"])
+            # Same stylesheets as help.html: one theme, one place to change it.
+            self.assertIn('href="../styles.css"', page, document["key"])
+            self.assertIn('href="../help.css"', page, document["key"])
+            self.assertIn('href="./tutorial.css"', page, document["key"])
+            self.assertIn(
+                'name="viewport" content="width=device-width, initial-scale=1"',
+                page,
+                document["key"],
+            )
+            self.assertNotIn("<script", page, document["key"])
+            for number in document["guest"]:
+                source = f"./assets/{document['key']}/step-{number:02d}.webp"
+                self.assertIn(source, page, document["key"])
+                self.assertTrue((PAGES / source[2:]).is_file(), source)
+
+    def test_account_steps_keep_the_placeholder_on_the_page(self):
+        page = (PAGES / "03-document-work.html").read_text(encoding="utf-8")
+        self.assertIn(generator.PLACEHOLDER, page)
+        self.assertNotIn("/step-", page)
+        self.assertIn("아직 촬영하지 않았습니다", page)
+
+    def test_video_slot_names_the_base_url_variable(self):
+        page = (PAGES / "04-bookai.html").read_text(encoding="utf-8")
+        self.assertIn("영상 준비 중", page)
+        self.assertIn(generator.VIDEO_KEY_ENV, page)
+        # No empty player: the recordings are not in the repository.
+        self.assertNotIn("<video", page)
+        self.assertNotIn(".webm\"", page)
+
+    def test_check_flags_page_and_image_drift(self):
+        docs, pages = self.root / "docs", self.root / "pages"
+        generator.build(docs, pages, None)
+        self.assertTrue(
+            any(name.startswith("image:") for name in generator.check(docs, pages))
+        )
+        shutil.copytree(PAGES / "assets", pages / "assets")
+        self.assertEqual(generator.check(docs, pages), [])
+
+        page = pages / "04-bookai.html"
+        page.write_text(
+            page.read_text(encoding="utf-8").replace("영상 준비 중", "영상"), encoding="utf-8"
+        )
+        (pages / "assets" / "04-bookai" / "step-01.webp").unlink()
+        (pages / "assets" / "99-extra").mkdir()
+        (pages / "assets" / "99-extra" / "step-01.webp").write_bytes(b"not-an-image")
+        (pages / "99-extra.html").write_text("x", encoding="utf-8")
+        stale = generator.check(docs, pages)
+        self.assertIn("page:04-bookai.html", stale)
+        self.assertIn("image:04-bookai/step-01.webp", stale)
+        self.assertIn("orphan_image:99-extra/step-01.webp", stale)
+        self.assertIn("orphan_page:99-extra.html", stale)
+
+    def test_the_help_page_links_to_the_tutorials_once(self):
+        self.assertEqual(HELP.read_text(encoding="utf-8").count(HELP_LINK), 1)
+        self.assertTrue((PAGES / "index.html").is_file())
+
+    def test_the_ci_gate_commands_pass(self):
+        # The workflow runs exactly these; a failure here is a red PR gate.
+        done = subprocess.run(
+            [sys.executable, str(GENERATOR), "--check"],
+            cwd=str(REPO), capture_output=True, text=True, timeout=120,
+        )
+        self.assertEqual(done.returncode, 0, done.stdout + done.stderr)
+        self.assertIn("tutorials_up_to_date", done.stdout)
 
 
 class RecorderPlan(unittest.TestCase):

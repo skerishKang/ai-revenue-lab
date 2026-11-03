@@ -26,10 +26,30 @@ python tools/tutorial/capture_guest_scenes.py --out ../out
 - 산출물은 저장소 밖(기본 `<repo>/../out`)에만 둡니다: 장면 PNG, `video.webm`, `captions.vtt`, `manifest.json`.
 - 계정 세션 파일 이름은 `PADIEM_LIVE_STORAGE_STATE`로 정해 두었고 지금은 값이 없습니다. 파일은 절대 저장소에 넣지 않습니다.
 
+## 화면 페이지
+
+같은 대본이 도움말 화면 옆 정적 페이지도 만듭니다: `apps/padiem-chat/static/help-tutorials/`에 목차 1장 + 튜토리얼 5장 + `tutorial.css`.
+
+- 도움말 화면과 같은 `styles.css`·`help.css`를 씁니다. 색·글자·44px 누름 영역을 새로 정하지 않습니다.
+- 단계 화면은 촬영 PNG를 webp로 줄여 `assets/<문서>/step-NN.webp`로 저장소에 넣습니다(장당 150KB 이하, 현재 7장 약 640KB).
+- 영상·자막은 저장소에 넣지 않습니다. 페이지에는 "영상 준비 중" 자리만 있고, 나중에 고정 주소를 넣을 설정 키는 `PADIEM_TUTORIAL_MEDIA_BASE_URL`입니다(예: `<키>/chat-tutorial/01-first-visit/video.webm`).
+- 사용 안내(`help.html`) 목차에서 `./help-tutorials/index.html`로 한 번 이어집니다.
+- 이미지를 다시 만들려면 Pillow가 필요합니다(`python -m pip install pillow`). `--check`와 단위 시험은 커밋된 webp를 이름·크기로만 보므로 Pillow 없이 돕니다.
+
+```bash
+python tools/tutorial/build_tutorials.py --shots ../out     # 문서 + 페이지 + 이미지
+python tools/tutorial/build_tutorials.py --no-images         # 문서 + 페이지만
+```
+
 ## 시험
 
 ```bash
 python -m unittest discover -s tools/tutorial/tests -t tools/tutorial -v
+python tools/tutorial/build_tutorials.py --check
 ```
 
-생성 문서의 결정성·용어 치환·자리 표시·이미지 키, VTT 형식, 촬영 `--dry-run` 계획을 확인합니다.
+생성 문서의 결정성·용어 치환·자리 표시·이미지 키, 커밋된 페이지·이미지 목록과 크기, `--check`가 잡는 어긋남(페이지 문구·이미지 누락·고아 파일), 도움말 링크 1곳, VTT 형식, 촬영 `--dry-run` 계획을 확인합니다.
+
+## CI
+
+`.github/workflows/tutorial-generation-contract.yml`이 대본·문서·페이지·이미지가 바뀌는 PR에서 `--check`, 단위 시험, `--dry-run`을 돕니다. 브라우저·서비스·네트워크가 필요 없어 `b62-browser-qa-unified.yml`(잡 수 고정)에는 넣지 않았습니다.
