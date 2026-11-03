@@ -26,7 +26,7 @@ checks['animationend']="addEventListener('animationend'" in js and "animationNam
 checks['no_timeout']='setTimeout' not in js and 'setInterval' not in js
 checks['persistent']=all(x in html for x in ['TIMING DRIFT','RELEASE EXCEPTION','SYNTHETIC VOICE — AUTHORIZED'])
 checks['timing']='690ms' in css and '90ms' in css
-node=subprocess.run(['node','--check',str(root/'scripts/review.js')],capture_output=True,text=True)
+node=subprocess.run(['node','--check',str(root/'scripts/review.js')],capture_output=True,text=True, encoding="utf-8")
 checks['javascript_syntax']=node.returncode==0
 bad=[k for k,v in checks.items() if not v]
 result={'result':'STATIC_SELF_CHECK_PASS' if not bad else 'STATIC_SELF_CHECK_FAIL','checks':len(checks),'failed':bad,'javascript_syntax':'PASS' if node.returncode==0 else node.stderr}

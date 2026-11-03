@@ -1018,7 +1018,7 @@ def _run_3748_base_v1_cli(command: str, *arguments: str,
             args.extend(["--legacy-pre-state", pre_state])
         else:
             assert command == "classify"
-        return subprocess.run(args, capture_output=True, text=True,
+        return subprocess.run(args, capture_output=True, text=True, encoding="utf-8",
                               check=False, timeout=20)
 
 

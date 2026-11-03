@@ -181,7 +181,7 @@ def _run_3748_a7_cp_guard(*version_args: str, detail_id: str = "-safe-a7-cp-v1",
             [sys.executable, str(script), "verify",
              "--version-settings", str(fixture), *version_args,
              "--inspect-engine-admission-binding"],
-            text=True, capture_output=True, check=False, timeout=15,
+            text=True, encoding="utf-8", capture_output=True, check=False, timeout=15,
         )
 
 

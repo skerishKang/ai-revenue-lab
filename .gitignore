@@ -1,4 +1,7 @@
 # Repository-wide generated Python artifacts
+# Windows lanes: pytest's session temp root lives inside the checkout
+# because the fleet's %LOCALAPPDATA%\Temp is not writable there.
+.pytest-tmp/
 __pycache__/
 *.py[cod]
 apps/padiem-chat/.b66-worker-src/

@@ -744,7 +744,7 @@ def _run_harness(mode: str, auth: dict, sessions: dict, options: dict | None = N
         proc = subprocess.run(
             [node, str(harness_path), str(APP_JS), str(LIBRARY_JS), str(CAPABILITIES_JS), str(DOCUMENT_BINARY_JS), fixture],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             timeout=60,
             cwd=str(ROOT),
         )

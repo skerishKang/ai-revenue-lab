@@ -94,7 +94,7 @@ class WindowsLocalExecutor1704ReparseTests(unittest.TestCase):
                 ["cmd.exe", "/d", "/c", "mklink", "/J", str(junction), str(outside)],
                 check=False,
                 capture_output=True,
-                text=True,
+                text=True, encoding="utf-8",
                 shell=False,
             )
             self.assertEqual(

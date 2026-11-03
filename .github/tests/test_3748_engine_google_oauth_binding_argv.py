@@ -109,7 +109,7 @@ def _run_guard_subprocess(settings_path: str, version_arg: str) -> subprocess.Co
             "--require-drive-runtime-bindings",
         ],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         timeout=120,
     )
 

@@ -156,7 +156,7 @@ def built_dist(tmp_path_factory) -> Path:
     out = tmp_path_factory.mktemp("build") / "dist"
     result = subprocess.run(
         [sys.executable, str(BUILD_SCRIPT), "--out", str(out)],
-        cwd=str(APP_ROOT), capture_output=True, text=True, timeout=300,
+        cwd=str(APP_ROOT), capture_output=True, text=True, encoding="utf-8", timeout=300,
     )
     assert result.returncode == 0, result.stdout + result.stderr
     return out

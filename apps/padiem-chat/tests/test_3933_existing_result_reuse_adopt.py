@@ -431,7 +431,7 @@ class AdoptBoundarySourceTests(unittest.TestCase):
         result = subprocess.run(
             ["node", str(Path(__file__).resolve().parent
                         / "existing_result_reuse_node.js")],
-            capture_output=True, text=True, timeout=30, check=False,
+            capture_output=True, text=True, encoding="utf-8", timeout=30, check=False,
         )
         assert result.returncode == 0, result.stdout + result.stderr
         for marker in (

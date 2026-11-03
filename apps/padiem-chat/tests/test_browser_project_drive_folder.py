@@ -41,7 +41,7 @@ def _run(scenario: str) -> dict:
     result = subprocess.run(
         ["node", "-e", driver, module, scenario],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         check=False,
     )
     if result.returncode != 0:

@@ -106,7 +106,7 @@ def test_range_helpers_use_plain_calendar_dates_and_are_dst_independent() -> Non
     process.stdout.write(JSON.stringify(result));
     """
     completed = subprocess.run(
-        ["node", "-e", script], check=True, capture_output=True, text=True
+        ["node", "-e", script], check=True, capture_output=True, text=True, encoding="utf-8"
     )
     result = json.loads(completed.stdout)
     assert result["day"] == {"start_date": "2026-09-23", "end_date": "2026-09-23"}
@@ -242,7 +242,7 @@ def test_real_calendar_module_drives_range_navigation_states_and_bounded_month_g
       process.stdout.write(JSON.stringify({{ monthLoads, loadingVisible, dayReady, previousLoad, unauthorized, unavailable, monthGrouped }}));
     }})();
     """
-    completed = subprocess.run(["node", "-e", harness], capture_output=True, text=True)
+    completed = subprocess.run(["node", "-e", harness], capture_output=True, text=True, encoding="utf-8")
     assert completed.returncode == 0, completed.stderr
     result = json.loads(completed.stdout)
     assert result["monthLoads"] is True

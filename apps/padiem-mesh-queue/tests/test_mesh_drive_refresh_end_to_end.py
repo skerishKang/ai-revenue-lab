@@ -121,7 +121,7 @@ def test_changed_drives_travel_from_mesh_reporter_to_queue_owner_api_and_real_se
 
     rendered = subprocess.run(
         ["node", str(CHAT_TESTS / "pc_drive_inventory_ui_harness.cjs")],
-        input=json.dumps({"responses": responses}), text=True,
+        input=json.dumps({"responses": responses}), text=True, encoding="utf-8",
         capture_output=True, check=True,
     )
     assert json.loads(rendered.stdout) == {"ok": True, "reads": 13}

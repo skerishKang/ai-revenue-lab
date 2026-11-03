@@ -116,7 +116,7 @@ def test_uninstalled_browser_protocol_launcher_from_foreign_working_directory(tm
     response = subprocess.run(
         [sys.executable, str(installed / "launch_protocol.py"),
          "padiem-connector://start?owner=fake"],
-        cwd=unrelated, env=env, capture_output=True, text=True, timeout=15,
+        cwd=unrelated, env=env, capture_output=True, text=True, encoding="utf-8", timeout=15,
     )
     assert response.returncode == 2
     assert "untrusted browser launch URI" in response.stdout

@@ -923,7 +923,7 @@ assert.equal(caseOf('completed', '정상 답변', false, 2), false);
 """
         completed = subprocess.run(
             ["node", "-e", js, module.CLAW_ASSISTANT_COMPLETED_JS],
-            capture_output=True, text=True, check=False, timeout=10,
+            capture_output=True, text=True, encoding="utf-8", check=False, timeout=10,
         )
         self.assertEqual(completed.returncode, 0, completed.stderr)
 

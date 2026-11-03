@@ -315,7 +315,7 @@ class BoundaryTests(unittest.TestCase):
             completed = subprocess.run(
                 [sys.executable, "-S", "-c", source],
                 capture_output=True,
-                text=True,
+                text=True, encoding="utf-8",
                 env={
                     key: value
                     for key, value in os.environ.items()
@@ -665,7 +665,7 @@ class VerifierSubprocessTests(unittest.TestCase):
         return subprocess.run(
             [sys.executable, str(VERIFIER)],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             env=environment,
             timeout=180,
         )
@@ -862,7 +862,7 @@ class VerifierSubprocessTests(unittest.TestCase):
             completed = subprocess.run(
                 [sys.executable, "-S", "-c", probe],
                 capture_output=True,
-                text=True,
+                text=True, encoding="utf-8",
                 env=environment,
                 timeout=180,
             )
@@ -898,7 +898,7 @@ class VerifierSubprocessTests(unittest.TestCase):
             verdict = subprocess.run(
                 [sys.executable, "-S", "-c", verdict_probe],
                 capture_output=True,
-                text=True,
+                text=True, encoding="utf-8",
                 env=environment,
                 cwd=str(tmp),
                 timeout=180,
@@ -1075,7 +1075,7 @@ class SiblingFreshnessTests(unittest.TestCase):
                 "print(json.dumps({'file': getattr(m, '__file__', None)}))",
             ],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             env=environment,
             timeout=180,
         )

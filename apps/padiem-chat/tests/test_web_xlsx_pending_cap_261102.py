@@ -118,5 +118,5 @@ def subprocess_run_node(node):
     import subprocess
     return subprocess.run(
         [node, str(ROOT / "tests" / "test_web_xlsx_pending_cap_copy_261102.cjs")],
-        cwd=ROOT, capture_output=True, text=True, timeout=60,
+        cwd=ROOT, capture_output=True, text=True, encoding="utf-8", timeout=60,
     )

@@ -767,7 +767,7 @@ def test_b66_level_reaches_the_real_provider_request_json():
                 [sys.executable, str(driver), json.dumps(emitted)],
                 cwd=platform,
                 capture_output=True,
-                text=True,
+                text=True, encoding="utf-8",
                 timeout=120,
             )
         except (OSError, subprocess.SubprocessError) as exc:  # pragma: no cover

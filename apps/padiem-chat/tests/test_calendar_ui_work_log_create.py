@@ -525,7 +525,7 @@ def _run_harness() -> dict:
         completed = subprocess.run(
             [node, str(harness_path), str(CALENDAR_JS_PATH), str(INDEX_PATH)],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             timeout=180,
         )
     finally:
@@ -600,7 +600,7 @@ def test_pure_work_log_helpers_fail_closed() -> None:
         ["node", "-e", script],
         check=True,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
     )
     data = json.loads(completed.stdout)
     assert data["route"] == WORK_LOG_ROUTE

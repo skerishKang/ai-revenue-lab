@@ -393,7 +393,7 @@ def _run_scene(scene: str) -> dict:
     try:
         result = subprocess.run(
             [node, str(harness_path), str(SOURCES_JS), str(STATIC / "tus-upload.js"), scene],
-            capture_output=True, text=True, timeout=60,
+            capture_output=True, text=True, encoding="utf-8", timeout=60,
         )
     finally:
         harness_path.unlink(missing_ok=True)

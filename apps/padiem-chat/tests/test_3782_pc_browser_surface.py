@@ -46,7 +46,7 @@ process.stdout.write(JSON.stringify([
  api.runIdForProgress(response(null),payload,true),
  api.runIdForProgress(response(valid),payload,false)]));
 """
-    result = subprocess.run([node, "-e", script, str(SOURCE)], capture_output=True, text=True, check=True)
+    result = subprocess.run([node, "-e", script, str(SOURCE)], capture_output=True, text=True, encoding="utf-8", check=True)
     assert json.loads(result.stdout) == ["run_" + "a" * 24, None, None, "chat_pcq_" + "b" * 32]
     app = (STATIC / "app.js").read_text(encoding="utf-8")
     assert 'recordPcProgress?.(article, value, pcProgressRunId)' in app

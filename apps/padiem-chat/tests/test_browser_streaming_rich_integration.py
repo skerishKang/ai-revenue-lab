@@ -26,7 +26,7 @@ def _run_node(script: str) -> str:
     result = subprocess.run(
         ["node", "-e", script],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         check=True,
     )
     return result.stdout.strip()
@@ -37,7 +37,7 @@ def test_browser_response_scripts_parse_with_node() -> None:
         subprocess.run(
             ["node", "--check", str(path)],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             check=True,
         )
 

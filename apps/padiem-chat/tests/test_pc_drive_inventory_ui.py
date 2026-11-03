@@ -26,6 +26,6 @@ def test_owner_api_inventory_reaches_real_selector_dom_through_add_remove_empty_
         responses.append(response.json())
     result = subprocess.run(
         ["node", str(Path(__file__).with_name("pc_drive_inventory_ui_harness.cjs"))],
-        input=json.dumps({"responses": responses}), capture_output=True, text=True, check=True,
+        input=json.dumps({"responses": responses}), capture_output=True, text=True, encoding="utf-8", check=True,
     )
     assert json.loads(result.stdout) == {"ok": True, "reads": 13}

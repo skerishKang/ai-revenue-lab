@@ -36,7 +36,7 @@ PY = sys.executable
 
 
 def run(*args):
-    r = subprocess.run([PY, *args], capture_output=True, text=True)
+    r = subprocess.run([PY, *args], capture_output=True, text=True, encoding="utf-8")
     assert r.returncode == 0, f"{args}\nSTDOUT:{r.stdout}\nSTDERR:{r.stderr}"
     return r.stdout
 

@@ -58,6 +58,6 @@ def test_runtime_adoption_is_exact_and_ci_scoped():
         [sys.executable, str(receipt_path), "Linux"],
         check=True,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
     )
     assert "PILLOW_WHEEL_SHA256=" in completed.stdout

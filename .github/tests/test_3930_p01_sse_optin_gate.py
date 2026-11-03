@@ -513,7 +513,7 @@ def test_cloudflare_error_code_filter_ignores_secret_bearing_error_messages():
         {"code": "10057", "message": "must not print"},
     ]}
     result = subprocess.run(["jq", "-r", expression],
-                            input=json.dumps(payload), text=True, capture_output=True,
+                            input=json.dumps(payload), text=True, encoding="utf-8", capture_output=True,
                             check=True)
     assert result.stdout.strip() == "10013"
     assert PRIVATE not in result.stdout
@@ -689,7 +689,7 @@ def _exercise_mocked_rollback_response(response_kind: str):
              'STUB_BIN="$(cd "$STUB_DIR" && pwd)" || exit 9\n'
              'chmod +x "$STUB_BIN/curl" 2>/dev/null || true\n'
              'export PATH="$STUB_BIN:$PATH"\n' + _rollback_patch_step_script()],
-            env=env, capture_output=True, text=True, check=False)
+            env=env, capture_output=True, text=True, encoding="utf-8", check=False)
         return result, trace.read_text().splitlines()
 
 

@@ -35,7 +35,7 @@ def webcrypto(mode, data):
     enc = lambda b: base64.b64encode(b).decode("ascii")
     payload = dict(mode=mode, key=enc(KEY), iv=enc(IV), aad=enc(AAD), input=enc(data))
     result = subprocess.run(
-        ["node", "-e", NODE_WEBCRYPTO], input=json.dumps(payload), text=True,
+        ["node", "-e", NODE_WEBCRYPTO], input=json.dumps(payload), text=True, encoding="utf-8",
         capture_output=True, check=True,
     )
     return base64.b64decode(result.stdout)

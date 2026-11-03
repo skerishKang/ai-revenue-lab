@@ -44,7 +44,7 @@ def test_all_mcp_settings_copy_and_exact_operation_labels_are_localized():
 def test_personal_tokens_and_exact_request_approvals_in_the_settings_module():
     result = subprocess.run(
         [NODE, str(HERE / "mcp_gateway_settings_harness.js"), str(STATIC / "mcp-gateway-settings.js")],
-        text=True, capture_output=True, timeout=30,
+        text=True, encoding="utf-8", capture_output=True, timeout=30,
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "MCP_GATEWAY_SETTINGS=PASS" in result.stdout

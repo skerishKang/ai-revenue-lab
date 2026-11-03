@@ -292,7 +292,7 @@ def test_deploy_scripts_parse_as_bash_and_are_lf_only():
         if bash is None:
             continue
         result = subprocess.run([bash, "-n", str(script)],
-                                capture_output=True, text=True)
+                                capture_output=True, text=True, encoding="utf-8")
         assert result.returncode == 0, "%s: %s" % (script.name, result.stderr.strip())
         assert result.stderr.strip() == "", "%s: %s" % (script.name, result.stderr.strip())
 

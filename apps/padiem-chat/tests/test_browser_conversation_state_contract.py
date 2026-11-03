@@ -79,7 +79,7 @@ def test_conversation_state_preserves_all_model_turns_and_id_skill_contract() ->
         ["node", "-e", script],
         check=True,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
     )
     data = json.loads(completed.stdout)
     assert data == {

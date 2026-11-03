@@ -95,7 +95,7 @@ def test_documented_owner_startup_loads_dotenv_end_to_end(tmp_path: Path) -> Non
         env=env,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        text=True,
+        text=True, encoding="utf-8",
     )
 
     output = ""

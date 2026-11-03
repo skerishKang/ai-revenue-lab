@@ -23,7 +23,7 @@ def _run_node(script: str) -> dict:
             ["node", path],
             check=True,
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
         )
     finally:
         os.unlink(path)
