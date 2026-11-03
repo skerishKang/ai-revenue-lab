@@ -188,11 +188,20 @@ def test_expired_or_revoked_login_cannot_list_account_devices():
         assert result["devices"] == []
 
 
-@pytest.mark.parametrize("product", ["b62", "b66-padiem-quote", "padiem-engine"])
+@pytest.mark.parametrize("product", ["b66-padiem-quote", "padiem-engine"])
 def test_unreviewed_product_login_does_not_bypass_identity_bridge(product):
     result = account_view(session=replace(signed_owner(), product_id=product))
     assert result["ok"] is False
     assert result["devices"] == []
+
+
+def test_reviewed_b62_login_reads_the_account_devices():
+    # 2026-11-04 브리지 리뷰: B62/Chat 로그인 세션도 같은 canonical 소유자의
+    # 세션이면 계정 장치 조회가 허용된다
+    # (docs/operations/CONNECTOR_ENROLLMENT_CHAT_SESSION_BRIDGE_REVIEW_261104.md).
+    result = account_view(session=replace(signed_owner(), product_id=CHAT))
+    assert result["ok"] is True
+    assert isinstance(result["devices"], list)
 
 
 def test_subject_swap_cannot_see_another_users_directory():
