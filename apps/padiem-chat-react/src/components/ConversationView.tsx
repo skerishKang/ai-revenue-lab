@@ -137,23 +137,6 @@ export function ConversationView({
               <small>{t(WRITING_STARTER.copyKey)}</small>
             </span>
           </button>
-          <button
-            type="button"
-            className="starter"
-            id="webSearchStarterButton"
-            disabled
-            aria-disabled="true"
-            aria-pressed="false"
-            hidden
-          >
-            <span className="starter-icon" aria-hidden="true">
-              ⌕
-            </span>
-            <span>
-              <strong>{t("web-starter-title")}</strong>
-              <small>{t("web-starter-copy")}</small>
-            </span>
-          </button>
           <ClawHomeCards connectors={connectors} onOpenConnector={onOpenConnector} />
         </div>
         <button

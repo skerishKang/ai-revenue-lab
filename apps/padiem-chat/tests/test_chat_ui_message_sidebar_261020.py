@@ -106,8 +106,6 @@ def test_hover_hints_use_the_shared_chip_tooltip_not_the_native_title():
 def test_static_reference_mirror_stays_byte_pinned():
     """static/styles.css is pinned to the product reference mirror."""
     repo = STATIC.parents[2]
-    from style_contract import assert_phase1_styles_match
-    assert_phase1_styles_match(
-        STATIC / "styles.css",
-        repo / "reference/business-62-padiem-chat-v1/styles.css",
-    )
+    assert (STATIC / "styles.css").read_bytes() == (
+        repo / "reference/business-62-padiem-chat-v1/styles.css"
+    ).read_bytes()

@@ -362,8 +362,6 @@ def test_frontend_contract_distinguishes_binary_composer_from_text_only_project_
     assert "CREATE TABLE IF NOT EXISTS project_files" in migration
     assert "content_chars <= 40000" in migration
     repo = root.parents[1]
-    from style_contract import assert_phase1_styles_match
-    assert_phase1_styles_match(
-        root / "static/styles.css",
-        repo / "reference/business-62-padiem-chat-v1/styles.css",
-    )
+    assert (root / "static/styles.css").read_bytes() == (
+        repo / "reference/business-62-padiem-chat-v1/styles.css"
+    ).read_bytes()

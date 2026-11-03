@@ -431,11 +431,9 @@ def test_saved_outputs_ui_is_additive_and_truthful():
     ):
         assert required_arg in worker
 
-    from style_contract import assert_phase1_styles_match
-    assert_phase1_styles_match(
-        root / "static/styles.css",
-        repo / "reference/business-62-padiem-chat-v1/styles.css",
-    )
+    assert (root / "static/styles.css").read_bytes() == (
+        repo / "reference/business-62-padiem-chat-v1/styles.css"
+    ).read_bytes()
     assert (root / "static/outputs.css").is_file()
 
 

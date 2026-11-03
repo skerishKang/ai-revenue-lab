@@ -13,28 +13,6 @@
   box-shadow: 0 8px 24px color-mix(in srgb, var(--text) 7%, transparent);
 }
 
-.orchestration-thought-summary {
-  margin-top: 4px;
-  padding: 10px 12px;
-  border: 1px solid var(--capability-line, var(--line));
-  border-radius: 11px;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.orchestration-thought-summary > summary {
-  color: var(--text);
-  cursor: pointer;
-  font-weight: 700;
-}
-
-.orchestration-thought-summary > p {
-  margin: 8px 0 0;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
 /* #5221: the work card is a disclosure. The summary always names the real
  * current state, and the stages behind it stay one click away. */
 .capability-kit-disclosure {
