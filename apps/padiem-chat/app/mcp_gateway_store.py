@@ -32,6 +32,7 @@ _TOKEN = re.compile(r"mcp_[0-9a-f]{32}\Z")
 _CLIENT = re.compile(r"mcpc_[0-9a-f]{32}\Z")
 _APPROVAL = re.compile(r"mcpa_[0-9a-f]{32}\Z")
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
+_JOB_RECEIPT = re.compile(r"dsp_[0-9a-f]{32}\Z")
 _TOKEN_COLUMNS = "id,name,device_id,created_at,last_used_at,revoked_at,kind,expires_at"
 
 
@@ -378,7 +379,8 @@ class D1McpGatewayStore:
                     approval_id: str | None = None, now=None,
                     exit_code: int | None = None, duration_ms: int | None = None,
                     output_bytes: int | None = None,
-                    output_truncated: bool | None = None) -> str:
+                    output_truncated: bool | None = None,
+                    job_receipt_id: str | None = None) -> str:
         """Record metadata, never credential material or file contents/results."""
         if not isinstance(status, str) or not re.fullmatch(r"[a-z_]{1,64}", status):
             raise McpGatewayStoreError("Invalid audit status")
@@ -391,10 +393,43 @@ class D1McpGatewayStore:
                 raise McpGatewayStoreError("Invalid audit metadata")
         if output_truncated is not None and not isinstance(output_truncated, bool):
             raise McpGatewayStoreError("Invalid audit metadata")
+        if job_receipt_id is not None and (
+                not isinstance(job_receipt_id, str) or not _JOB_RECEIPT.fullmatch(job_receipt_id)
+                or tool_name not in {"pc_shell", "pc_shell_start", "pc_shell_read", "pc_shell_stop"}):
+            raise McpGatewayStoreError("Invalid job receipt")
+        receipt_sha256 = (hashlib.sha256(job_receipt_id.encode("ascii")).hexdigest()
+                          if job_receipt_id is not None else None)
         event_id = "mcpe_" + uuid4().hex
-        await self._run("INSERT INTO padiem_mcp_audit (id,user_id,token_id,device_id,tool_name,request_digest,status,approval_id,created_at,exit_code,duration_ms,output_bytes,output_truncated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        await self._run("INSERT INTO padiem_mcp_audit (id,user_id,token_id,device_id,tool_name,request_digest,status,approval_id,created_at,exit_code,duration_ms,output_bytes,output_truncated,job_receipt_sha256) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                         event_id, _owner(identity["user_id"]), identity["token_id"], identity["device_id"], tool_name,
                         mcp_request_digest(tool_name, arguments), status, approval_id, _stamp(now),
                         exit_code, duration_ms, output_bytes,
-                        None if output_truncated is None else int(output_truncated))
+                        None if output_truncated is None else int(output_truncated), receipt_sha256)
         return event_id
+
+    async def owns_job_receipt(self, *, identity: dict, job_id: str) -> bool:
+        """Bind a public common dispatch ID to the exact MCP token and device.
+
+        Only the receipt hash is retained in the MCP database. The canonical
+        Claw dispatch remains the source of job state, run, PC and output.
+        """
+        if (not isinstance(identity, dict) or not isinstance(job_id, str)
+                or not _JOB_RECEIPT.fullmatch(job_id)
+                or not isinstance(identity.get("token_id"), str)
+                or not _TOKEN.fullmatch(identity["token_id"])
+                or not is_pc_device_id(identity.get("device_id"))):
+            return False
+        try:
+            owner = _owner(identity.get("user_id"))
+        except McpGatewayStoreError:
+            return False
+        digest = hashlib.sha256(job_id.encode("ascii")).hexdigest()
+        row = await self._first(
+            "SELECT 1 AS owned FROM padiem_mcp_audit a JOIN padiem_mcp_tokens t "
+            "ON t.id=a.token_id AND t.user_id=a.user_id "
+            "WHERE a.user_id=? AND a.token_id=? AND a.device_id=? "
+            "AND a.job_receipt_sha256=? AND a.tool_name IN ('pc_shell','pc_shell_start') "
+            "AND t.revoked_at IS NULL LIMIT 1",
+            owner, identity["token_id"], identity["device_id"], digest,
+        )
+        return isinstance(row, dict) and row.get("owned") == 1
