@@ -5,6 +5,15 @@
   const orchestrationRequests = new WeakMap();
   const calendarTurnIdsByRequest = new WeakMap();
 
+  // #6732: 탭(세션) 안에서 상태 확인 결과를 재사용한다. 성공만 캐시하고,
+  // 실패·401·가용성 신호를 받으면 즉시 버려 다음 턴에 다시 묻는다.
+  const ORCHESTRATION_STATUS_TTL_MS = 5 * 60 * 1000;
+  let orchestrationReadyAt = 0;
+  function invalidateOrchestrationReady() { orchestrationReadyAt = 0; }
+  function orchestrationReadyCached() {
+    return orchestrationReadyAt > 0 && Date.now() - orchestrationReadyAt < ORCHESTRATION_STATUS_TTL_MS;
+  }
+
   function errorFor(data, fallback, status) {
     // Keep server text out of the screen; retain the code for recovery and the reference note.
     const message = streamErrorMessage(data, status);
@@ -263,6 +272,7 @@
   }
 
   async function orchestrationReady(signal) {
+    if (orchestrationReadyCached()) return true;
     try {
       const response = await fetch("/api/orchestration/status", {
         method: "GET",
@@ -270,11 +280,15 @@
         cache: "no-store",
         signal,
       });
-      if (!response.ok) return false;
+      if (!response.ok) { invalidateOrchestrationReady(); return false; }
       const data = await response.json().catch(() => null);
-      return Boolean(data && data.orchestration_ready === true && data.authenticated === true);
+      const ready = Boolean(data && data.orchestration_ready === true && data.authenticated === true);
+      // 준비되지 않았거나 로그인이 아니면 캐시하지 않는다: 레인이 바뀌면 바로 따라간다.
+      if (ready) orchestrationReadyAt = Date.now(); else invalidateOrchestrationReady();
+      return ready;
     } catch (error) {
       if (error && error.name === "AbortError") throw error;
+      invalidateOrchestrationReady();
       return false;
     }
   }
@@ -286,6 +300,8 @@
       body: JSON.stringify(payload),
       signal,
     });
+    // 401·503은 로그인이나 가용성이 바뀌었다는 신호다. 캐시를 버리고 다음 턴에 다시 묻는다.
+    if (response.status === 401 || response.status === 503) invalidateOrchestrationReady();
     if (response.ok && isStreamResponse(response)) {
       orchestrationRequests.set(response, payload);
       return response;
@@ -455,6 +471,7 @@
     requestClawGeneral,
     requestStreaming,
     orchestrationReady,
+    invalidateOrchestrationReady,
     resumeOrchestration,
     cancelOrchestration,
     setOrchestrationPauseHandler,

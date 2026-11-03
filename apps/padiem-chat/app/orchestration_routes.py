@@ -28,6 +28,7 @@ from .model_policy import (
     resolve_request_model_policy,
 )
 from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
+from .orchestration_timing import OrchestrationTiming
 from .public_chat import public_chat_result
 from .request_contract import BrowserRequestError, _validate_payload_async
 from .pc_correlation import run_hash
@@ -174,6 +175,15 @@ def public_grounding_evidence(items: Any) -> list[dict[str, Any]]:
 
 
 async def api_orchestration(request: Request) -> JSONResponse:
+    # #6732: 구간 시간만 남긴다. 실패·예외 경로에서도 그때까지 잠긴 구간을 남긴다.
+    timing = OrchestrationTiming()
+    try:
+        return await _answer_orchestration(request, timing)
+    finally:
+        timing.emit()
+
+
+async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -> JSONResponse:
     bridge = _bridge(request)
     if bridge is None:
         return _error("orchestration_unavailable", "작업 진행 상태 기능을 현재 사용할 수 없습니다.", 503)
@@ -192,6 +202,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
         _PC_TRACE_LOG.info("pc_chat stage=request_received run_hash=%s dispatch_id=none", trace_run or "none")
         messages, skill, tool_request, attachments, conversation_id, project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
         _PC_TRACE_LOG.info("pc_chat stage=contract_accepted run_hash=%s dispatch_id=none", trace_run or "none")
+        timing.mark("validated")
         user_credential_ref = None
         if custom is not None:
             from .byok_bridge import resolve_reference
@@ -243,6 +254,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
     except B62OrchestrationError as exc:
         return _error(exc.code, exc.user_message, exc.status_code)
 
+    timing.mark("policy")
     store: HistoryStore | None = request.app.state.history_store
     if conversation_id is not None and store is not None:
         try:
@@ -251,6 +263,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
             return _error("history_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
         if existing is None:
             return _error("conversation_not_found", "대화를 찾을 수 없습니다.", 404)
+    timing.mark("conversation")
 
     if getattr(request.app.state, "usage_gate_enforced", False):
         usage_gate: UsageGate = request.app.state.usage_gate
@@ -266,6 +279,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
                 headers=headers,
             )
 
+    timing.mark("usage")
     user_text = _latest_user(messages)
     # The server verification chooses only whether PC tools may be offered.
     # Model interpretation stays inside the same Engine turn.
@@ -274,6 +288,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
         request, uid=uid, requested_device_id=raw.get("device_id"),
         user_text=user_text,
     )
+    timing.mark("pc_context")
     # #4469: in production the PADIEM Chat composer is answered by THIS lane
     # (the browser tries the orchestration route first), so the shared public
     # web search has to run here as well. The existing Core search decision,
@@ -312,6 +327,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
             grounding_context = prepared.context
             grounded_evidence = public_grounding_evidence(prepared.evidence)
 
+    timing.mark("grounding")
     if pc_context is not None or user_credential_ref is not None:
         if pc_context is None:
             # A text-only BYOK turn stages message history, never a PC run.
@@ -412,6 +428,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
     except B62OrchestrationError as exc:
         return _error(exc.code, exc.user_message, exc.status_code)
 
+    timing.mark("engine")
     saved_id = await _save_terminal_history(
         request,
         user_id=uid,
@@ -419,6 +436,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
         user_text=result.user_text,
         answer=result.answer,
     )
+    timing.mark("save")
     payload: dict[str, Any] = {
         "orchestration": dict(result.orchestration),
         "answer": result.answer,
