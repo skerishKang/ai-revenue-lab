@@ -14,6 +14,7 @@ const b64 = (a) => btoa(String.fromCharCode(...a)).replaceAll('+', '-').replaceA
 const un64 = (s) => Uint8Array.from(atob(s.replaceAll('-', '+').replaceAll('_', '/').padEnd(Math.ceil(s.length / 4) * 4, '=')), c => c.charCodeAt(0));
 const random = () => b64(crypto.getRandomValues(new Uint8Array(32)));
 const digest = async (s) => b64(new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(s))));
+const digestHex = async (s) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(s)))].map(x => x.toString(16).padStart(2, '0')).join('');
 export async function identityFingerprint(key, subject) {
   if (!key || key.algorithm?.name !== 'HMAC') throw new Error('identity key unavailable');
   return b64(new Uint8Array(await crypto.subtle.sign('HMAC', key, encoder.encode(`padiem-auth:google:v1\0${subject}`))));
@@ -89,8 +90,47 @@ async function diagnosed(stage, operation) {
     }
 }
 
+async function verifyAccountDeletionRpc(request, secret, current) {
+  if (typeof secret !== 'string' || secret.length < 32) return null;
+  const path = new URL(request.url).pathname;
+  const atText = request.headers.get('x-padiem-service-at') || '';
+  const serviceId = request.headers.get('x-padiem-service-id') || '';
+  const presented = request.headers.get('x-padiem-service-proof') || '';
+  if (!new Set(['/internal/account-delete/prepare', '/internal/account-delete/complete', '/internal/account-delete/abort']).has(path) ||
+      request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json' ||
+      !/^(0|[1-9][0-9]{0,10})$/.test(atText) ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(serviceId) ||
+      !/^v2=[a-f0-9]{64}$/.test(presented)) return null;
+  const at = Number(atText);
+  if (!Number.isSafeInteger(at) || Math.abs(current - at) > 300) return null;
+  const length = Number(request.headers.get('content-length') || '0');
+  if (length > 512) return null;
+  const body = new Uint8Array(await request.arrayBuffer());
+  if (!body.length || body.length > 512 || (length && length !== body.length)) return null;
+  const signed = new Uint8Array([
+    ...encoder.encode('v2\nPOST\n'),
+    ...encoder.encode(path),
+    10,
+    ...encoder.encode(atText),
+    10,
+    ...encoder.encode(serviceId),
+    10,
+    ...body,
+  ]);
+  const key = await crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const mac = [...new Uint8Array(await crypto.subtle.sign('HMAC', key, signed))].map(x => x.toString(16).padStart(2, '0')).join('');
+  const expected = 'v2=' + mac;
+  if (presented.length !== expected.length) return null;
+  let mismatch = 0;
+  for (let i = 0; i < expected.length; i++) mismatch |= expected.charCodeAt(i) ^ presented.charCodeAt(i);
+  if (mismatch) return null;
+  let payload;
+  try { payload = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(body)); } catch { return null; }
+  return { serviceId, payload, at };
+}
+
 // An adapter is injected in tests; the deployed entry point below only uses DO bindings.
-export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch }) {
+export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch }) {
   async function verifyClient(params, client, current) {
     const assertion = one(params, 'client_assertion');
     if (one(params, 'client_assertion_type') !== 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer') throw new Error('bad client authentication');
@@ -104,6 +144,58 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       : null;
     const traceId = request.headers.get('x-request-id') || '';
     if (tokenTiming && SAFE_REQUEST_ID.test(traceId)) tokenTiming.requestId = traceId;
+    if (['/internal/account-delete/prepare', '/internal/account-delete/complete', '/internal/account-delete/abort'].includes(url.pathname) && request.method === 'POST') {
+      if (!accountDeleteRpcSecret) return json(404, { error: 'not_found' });
+      const verified = await verifyAccountDeletionRpc(request, accountDeleteRpcSecret, current);
+      if (!verified) return json(401, { error: 'unauthorized' });
+      const payload = verified.payload;
+      const operationId = payload?.operation_id;
+      if (!payload || typeof payload !== 'object' || Array.isArray(payload) ||
+          Object.keys(payload).length !== 2 ||
+          !/^sub_[A-Za-z0-9_-]{1,128}$/.test(payload.account_id ?? '') ||
+          !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(operationId ?? '')) {
+        return json(400, { error: 'invalid_request' });
+      }
+      const registry = stateFor('google-account-registry');
+      const claimed = await registry.claimAssertion({
+        key: `account-delete-rpc:${verified.serviceId}`,
+        expires: verified.at + 600,
+        now: current,
+      });
+      if (claimed !== true) return json(409, { error: 'request_replayed' });
+      const accountId = payload.account_id;
+      const lockToken = operationId;
+      if (url.pathname === '/internal/account-delete/abort') {
+        const aborted = await registry.releaseAccountDeletion({ accountId, lockToken });
+        return aborted === true
+          ? json(200, { ok: true, aborted: true })
+          : json(409, { error: 'account_deletion_lock_missing' });
+      }
+      if (url.pathname === '/internal/account-delete/complete') {
+        const accountIdHash = await digestHex(accountId);
+        const completed = await registry.finalizeAccountDeletion({ accountId, accountIdHash, lockToken, now: current });
+        return completed === true
+          ? json(200, { ok: true, deleted: true })
+          : json(409, { error: 'account_deletion_lock_missing' });
+      }
+      const locked = await registry.beginAccountDeletion({ accountId, lockToken, now: current, leaseSeconds: 300 });
+      if (locked !== true) return json(409, { error: 'account_deletion_busy' });
+      try {
+        const sessions = await registry.indexedAccountSessions({ accountId });
+        if (!Array.isArray(sessions)) throw new Error('session_index_unavailable');
+        let revokedSessions = 0;
+        for (const row of sessions) {
+          if (!row || !opaque.test(row.object_id ?? '') || !opaque.test(row.session_id ?? '')) throw new Error('invalid_session_index');
+          const revoked = await stateFor(row.object_id).forceRevokeForAccountDeletion({ id: row.session_id });
+          if (revoked !== true) throw new Error('session_revoke_failed');
+          revokedSessions++;
+        }
+        return json(200, { ok: true, prepared: true, revoked_sessions: revokedSessions });
+      } catch {
+        try { await registry.releaseAccountDeletion({ accountId, lockToken }); } catch { /* the lease expires */ }
+        return json(503, { error: 'account_deletion_unavailable' });
+      }
+    }
     if (url.pathname === '/internal/account-block' && request.method === 'POST') {
       if (!adminSecret) return json(404, { error: 'not_found' });
       const presented = request.headers.get('authorization') || '';
@@ -157,7 +249,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const account = await diagnosed('identity_lookup_failed', async () => {
         const userId = await googleProductUserId(identity.sub);
         const fingerprint = await identityFingerprint(identityKey, identity.sub);
-        const result = await stateFor('google-account-registry').resolveAccount({ fingerprint, productId: pending.client, userId, subject: identity.sub });
+        const result = await stateFor('google-account-registry').resolveAccount({ fingerprint, productId: pending.client, userId, subject: identity.sub, now: current });
         if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
         return result;
       });
@@ -196,6 +288,15 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         subject = result.subject;
         accountId = result.accountId;
         const profileStarted = performance.now();
+        try {
+          const indexed = await stateFor('google-account-registry').indexAccountSession({
+            accountId, objectId: object, sessionId, expires: current + 30 * 24 * 3600, now: current,
+          });
+          if (indexed !== true) throw new Error('session_index_failed');
+        } catch (error) {
+          try { await stateFor(object).forceRevokeForAccountDeletion({ id: sessionId }); } catch { /* fail closed */ }
+          throw error;
+        }
         const fields = profileClaimAllowlist(client);
         if (fields.length) {
           if (typeof result.encryptedProfile !== 'string') throw new Error('profile unavailable');
@@ -244,15 +345,29 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'resolveAccount', 'accountById', 'setAccountStatus']);
+const methods = new Set(['createLogin', 'consumeLogin', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'setAccountStatus']);
 export class AuthStateObject extends AuthState {
   constructor(state, env) { super(state); this.state = state; this.env = env; }
   async createCode(input) {
     if (input.encryptedProfile) await this.storage.setAlarm(input.expires * 1000);
     return super.createCode(input);
   }
-  async alarm() { this.clearExpiredProfiles(Math.floor(Date.now() / 1000)); }
-  async resolveAccount({ fingerprint, productId, userId, subject }) {
+  async alarm() {
+    const now = Math.floor(Date.now() / 1000);
+    this.clearExpiredProfiles(now);
+    this.pruneAccountDeletionAudit({ now });
+    const next = this.nextAccountDeletionAuditExpiry();
+    if (next && typeof this.storage.setAlarm === 'function') await this.storage.setAlarm(Math.max(Date.now() + 1000, next * 1000));
+  }
+  async finalizeAccountDeletion(input) {
+    const finalized = super.finalizeAccountDeletion(input);
+    if (finalized) {
+      const next = this.nextAccountDeletionAuditExpiry();
+      if (next && typeof this.storage.setAlarm === 'function') await this.storage.setAlarm(Math.max(Date.now() + 1000, next * 1000));
+    }
+    return finalized;
+  }
+  async resolveAccount({ fingerprint, productId, userId, subject, now = Math.floor(Date.now() / 1000) }) {
     // DO serialization prevents two concurrent first logins from issuing two
     // authority calls or binding one fingerprint to different accounts.
     return this.state.blockConcurrencyWhile(async () => {
@@ -273,7 +388,7 @@ export class AuthStateObject extends AuthState {
         return result;
       });
       if (current && current.account_id !== linked.link.canonical_subject_id) throw new Error('identity_conflict');
-      return diagnosed('account_mapping_storage_failed', async () => this.putAccount({ fingerprint, accountId: linked.link.canonical_subject_id }));
+      return diagnosed('account_mapping_storage_failed', async () => this.putAccount({ fingerprint, accountId: linked.link.canonical_subject_id, now }));
     });
   }
   async fetch(request) {
@@ -310,7 +425,7 @@ export default {
         if (!response.ok) throw new Error('state failed');
         return (await response.json()).value;
       }; } });
-      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor }).fetch(request);
+      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, accountDeleteRpcSecret: env.PADIEM_ACCOUNT_DELETE_RPC_SECRET, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor }).fetch(request);
     } catch { return json(503, { error: 'authentication_unavailable' }); }
   }
 };

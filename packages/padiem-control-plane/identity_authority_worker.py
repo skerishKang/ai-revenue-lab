@@ -49,6 +49,8 @@ IDENTITY_RPC_INGRESS_METHODS: frozenset[str] = frozenset({
     "revoke_auth_session",
     "revoke_all_auth_sessions",
     "resolve_product_user_for_subject",
+    "list_active_product_links_for_subject",
+    "remove_product_link",
     "resolve_connector_workspace",
     "resolve_connector_context",
     # Source-evidenced COM2 Chat callers; existing per-method authority gates
@@ -92,6 +94,8 @@ _REVOKE_ALL_SESSIONS_KEYS = frozenset({"product_id", "product_user_id"})
 # provider, provider_subject, owner_ref or clock, so a caller can neither pick
 # a link nor smuggle identity material through this read-only path.
 _REVERSE_PRODUCT_USER_KEYS = frozenset({"product_id", "canonical_subject_id"})
+_PRODUCT_LINK_LIST_KEYS = frozenset({"canonical_subject_id"})
+_REMOVE_PRODUCT_LINK_KEYS = frozenset({"product_id", "product_user_id", "canonical_subject_id", "account_deletion_operation_id"})
 _CONNECT_KEYS = frozenset({"session_id", "connector_id"})
 _CONNECTOR_WORKSPACE_KEYS = frozenset({"session_id"})
 _CONNECTOR_CONTEXT_KEYS = frozenset({"session_id"})
@@ -233,6 +237,18 @@ class CanonicalIdentityDurableObject(CanonicalIdentityEnrollmentConsentRPC, Dura
         # #6417: signed-request replay memory, in this DO's own SQLite so it
         # survives isolates. One row per id, pruned after its window.
         self._service_ids = SqliteServiceIdReplayStore(ctx.storage)
+
+    async def _schedule_deletion_audit_expiry(self) -> None:
+        expiry = self._store.next_deletion_audit_expiry()
+        if expiry is None:
+            await self._storage.deleteAlarm()
+            return
+        await self._storage.setAlarm(max(expiry.timestamp() * 1000, datetime.now().timestamp() * 1000 + 1000))
+
+    async def alarm(self) -> None:
+        now = datetime.now().astimezone()
+        self._store.prune_expired_deletion_audits(now=now)
+        await self._schedule_deletion_audit_expiry()
 
     async def resolve_or_create_product_link(self, payload: dict) -> dict:
         try:
@@ -383,6 +399,31 @@ class CanonicalIdentityDurableObject(CanonicalIdentityEnrollmentConsentRPC, Dura
                 canonical_subject_id=wire["canonical_subject_id"],
             )
             return {"ok": True, "product_user_id": product_user_id}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
+    async def list_active_product_links_for_subject(self, payload: dict) -> dict:
+        try:
+            wire = _closed(payload, _PRODUCT_LINK_LIST_KEYS, "product-link list RPC")
+            links = self._store.list_active_product_links_for_subject(
+                canonical_subject_id=wire["canonical_subject_id"],
+            )
+            return {"ok": True, "links": links}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
+    async def remove_product_link(self, payload: dict) -> dict:
+        try:
+            wire = _closed(payload, _REMOVE_PRODUCT_LINK_KEYS, "product-link removal RPC")
+            result = self._store.remove_product_link(
+                product_id=wire["product_id"],
+                product_user_id=wire["product_user_id"],
+                canonical_subject_id=wire["canonical_subject_id"],
+                account_deletion_operation_id=wire["account_deletion_operation_id"],
+                now=datetime.now().astimezone(),
+            )
+            await self._schedule_deletion_audit_expiry()
+            return {"ok": True, **result}
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
@@ -591,6 +632,12 @@ class Default(WorkerEntrypoint):
 
     async def resolve_product_user_for_subject(self, payload: dict) -> dict:
         return await self._stub().resolve_product_user_for_subject(payload)
+
+    async def list_active_product_links_for_subject(self, payload: dict) -> dict:
+        return await self._stub().list_active_product_links_for_subject(payload)
+
+    async def remove_product_link(self, payload: dict) -> dict:
+        return await self._stub().remove_product_link(payload)
 
     async def issue_google_connect_ticket(self, payload: dict) -> dict:
         return await self._stub().issue_google_connect_ticket(payload)

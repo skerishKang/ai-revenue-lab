@@ -357,12 +357,19 @@
             </div>
             <div class="settings-actions" id="accountDeleteActions" hidden>
               <button class="settings-action settings-action-danger" id="accountDeleteOpen" type="button" data-locale-key="account-delete-open">계정 탈퇴</button>
+              <button class="settings-action settings-action-danger" id="accountSharedDeleteOpen" type="button" data-locale-key="account-shared-delete-open">모든 서비스에서 탈퇴</button>
             </div>
             <div class="settings-actions settings-delete-confirm" id="accountDeleteConfirm" hidden>
               <p class="settings-delete-description" data-locale-key="account-delete-description"></p>
               <input class="settings-delete-input" id="accountDeleteConfirmEmail" type="email" autocomplete="off" spellcheck="false" data-locale-placeholder="account-delete-confirm-placeholder">
               <button class="settings-action settings-action-danger" id="accountDeleteButton" type="button" data-locale-key="account-delete-button" disabled>영구 탈퇴</button>
               <p class="auth-error" id="accountDeleteError" role="alert" hidden></p>
+            </div>
+            <div class="settings-actions settings-delete-confirm" id="accountSharedDeleteConfirm" hidden>
+              <p class="settings-delete-description" data-locale-key="account-shared-delete-description"></p>
+              <input class="settings-delete-input" id="accountSharedDeleteConfirmEmail" type="email" autocomplete="off" spellcheck="false" data-locale-placeholder="account-delete-confirm-placeholder">
+              <button class="settings-action settings-action-danger" id="accountSharedDeleteButton" type="button" data-locale-key="account-shared-delete-button" disabled>모든 서비스 탈퇴</button>
+              <p class="auth-error" id="accountSharedDeleteError" role="alert" hidden></p>
             </div>
             <div class="settings-actions">
               <button class="settings-action" id="settingsLogoutButton" type="button" data-locale-key="logout">로그아웃</button>

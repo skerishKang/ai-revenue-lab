@@ -137,7 +137,7 @@ from .b66_saved_skill_candidate_store import (
     SavedQuoteSkillCandidateStore,
 )
 from .home_product_access_routes import ACCESS_PATH, home_product_access
-from .account_deletion import account_delete
+from .account_deletion import account_delete, shared_account_delete
 from .auth_routes import (
     auth_status,
     google_callback,
@@ -605,6 +605,7 @@ def create_app(
     shared_auth_comparison_flow=None,
     shared_login_flow=None,
     custom_credential_cipher=None,
+    account_delete_rpc_transport=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -661,6 +662,7 @@ def create_app(
         # #6659 3번 1단계: signed-in account self-deletion over its own Chat DB
         # rows only, behind the same-origin guard and the exact-email confirm.
         Route("/api/account/delete", account_delete, methods=["POST"]),
+        Route("/api/account/shared-delete", shared_account_delete, methods=["POST"]),
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
         Route(MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session, methods=["POST"]),
         Route(MEETINGS_PATH, claw_meetings, methods=["GET", "POST"]),
@@ -1199,6 +1201,7 @@ def create_app(
     )
     app.state.request_telemetry_enabled = True
     app.state.settings = resolved
+    app.state.account_delete_rpc_transport = account_delete_rpc_transport
     app.state.file_lane_client = file_lane_client or FileLaneClient(
         resolved.file_lane_origin, resolved.file_lane_ticket_secret, transport=web_transport)
     app.state.github_oauth_store = github_oauth_store

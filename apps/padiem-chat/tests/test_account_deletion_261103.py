@@ -22,6 +22,7 @@ import asyncio
 import hashlib
 import json
 import sqlite3
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -31,6 +32,7 @@ import pytest
 from app.account_deletion import (
     _IDENTITY_SCRUBBED_USER_KEYED_TABLES,
     _USER_KEYED_TABLES,
+    prune_expired_account_deletion_audit,
 )
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
@@ -105,8 +107,38 @@ class SqliteD1:
 
 
 class CanonicalAuthority:
+    def __init__(self):
+        self.links = []
+        self.removed = []
+        self.revoked = []
+        self.fail_remove = False
+
     async def revoke_auth_session(self, *, product_id, session_id):
+        self.revoked.append((product_id, session_id))
         return None
+
+    async def list_active_product_links_for_subject(self, *, canonical_subject_id):
+        return [dict(link) for link in self.links]
+
+    async def remove_product_link(
+        self, *, product_id, product_user_id, canonical_subject_id,
+        account_deletion_operation_id=None,
+    ):
+        if self.fail_remove:
+            raise RuntimeError('synthetic authority failure')
+        match = next((link for link in self.links
+                      if link['product_id'] == product_id and link['product_user_id'] == product_user_id), None)
+        if match is None:
+            return {'removed': False, 'common_account_deleted': not self.links}
+        self.links.remove(match)
+        self.removed.append((product_id, product_user_id, canonical_subject_id))
+        return {
+            'removed': True,
+            'remaining_links': len(self.links),
+            'common_account_deleted': len(self.links) == 0,
+            'revoked_sessions': 1,
+            'already_deleted': False,
+        }
 
 
 def _generic_value(user: str, table: str, name: str, declared: str | None):
@@ -315,20 +347,28 @@ def seed_db():
     return db, accounts
 
 
-def build_app(db):
+def build_app(db, *, authority=None, rpc_transport=None):
     settings = Settings.from_values(
         runtime_mode="mock",
         auth_mode="password",
         public_base_url=BASE,
         session_secret=SESSION_SECRET,
         session_max_age_seconds=3600,
+        lovetree_account_delete_url="https://lovetree.example/internal/account/delete",
+        account_delete_rpc_secret="chat-test-shared-account-delete-secret-value-000",
     )
+    async def default_rpc_transport(**kwargs):
+        payload = {"ok": True, "deleted": True}
+        if kwargs["path"] == "/internal/account-delete/prepare":
+            payload = {"ok": True, "prepared": True, "revoked_sessions": 2}
+        return SimpleNamespace(status_code=200, json=lambda: payload)
     app = create_app(
         settings=settings,
         d1_binding=db,
         history_store=D1HistoryStore(db),
-        control_plane_identity_authority=CanonicalAuthority(),
+        control_plane_identity_authority=authority or CanonicalAuthority(),
         central_model_admin_google_email=CENTRAL_ADMIN_EMAIL,
+        account_delete_rpc_transport=rpc_transport or default_rpc_transport,
     )
     return app, settings
 
@@ -384,6 +424,20 @@ def test_migration_092_applies_twice_and_lands_the_audit_table():
         ).fetchall()
     }
     assert "account_deletion_audit" in tables
+    compact_sql = (ROOT / "migrations" / "097_account_deletion_audit_hash_time_only.sql").read_text(
+        encoding="utf-8"
+    )
+    db.conn.executescript(compact_sql)
+    columns = [
+        row["name"]
+        for row in db.conn.execute("PRAGMA table_info(account_deletion_audit)").fetchall()
+    ]
+    assert columns == ["user_id_hash", "deleted_at"]
+    db.conn.executescript(compact_sql)
+    assert [
+        row["name"]
+        for row in db.conn.execute("PRAGMA table_info(account_deletion_audit)").fetchall()
+    ] == ["user_id_hash", "deleted_at"]
 
 
 def test_the_route_never_names_a_table_the_schema_does_not_have():
@@ -455,6 +509,8 @@ def test_successful_deletion_clears_every_surveyed_table_and_keeps_the_other_use
     # The audit line keeps the time and the id hash only — never the email.
     audit = db.conn.execute("SELECT * FROM account_deletion_audit").fetchall()
     assert len(audit) == 1
+    columns = [item["name"] for item in db.conn.execute("PRAGMA table_info(account_deletion_audit)").fetchall()]
+    assert columns == ["user_id_hash", "deleted_at"]
     row = dict(audit[0])
     assert row["user_id_hash"] == hashlib.sha256(uid.encode("utf-8")).hexdigest()
     assert row["deleted_at"]
@@ -872,6 +928,9 @@ def test_a_shared_login_account_takes_its_bookai_records_with_it():
     _seed_bookai(db, BOOKAI_SUBJECT, "rec-2")
     _seed_bookai(db, OTHER_BOOKAI_SUBJECT, "rec-other")
     app, settings = build_app(db)
+    app.state.control_plane_identity_authority.links = [
+        {"product_id": "b62", "product_user_id": uid, "state": "active"}
+    ]
 
     response = call(
         app, settings, "POST", "/api/account/delete",
@@ -979,3 +1038,183 @@ def test_the_link_read_reports_absence_but_never_swallows_a_failure():
         pass
     else:  # pragma: no cover - the failure path is the point
         raise AssertionError("a storage fault was reported as an absence")
+
+
+def _bind_shared_links(db, app, user_id, *, include_lovetree):
+    subject = "sub_shared_delete"
+    db.conn.execute("UPDATE users SET provider_subject=? WHERE id=?", ("shared:" + subject, user_id))
+    authority = app.state.control_plane_identity_authority
+    authority.links = [
+        {"product_id": "b62", "product_user_id": user_id, "state": "active"}
+    ]
+    if include_lovetree:
+        authority.links.append({
+            "product_id": "lovetree-4-0",
+            "product_user_id": "usr_lovetree_shared",
+            "state": "active",
+        })
+    return subject, authority
+
+
+def test_shared_chat_unlink_keeps_lovetree_and_does_not_prepare_auth_while_another_link_remains():
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    user_id = accounts["deleter"]
+    _, authority = _bind_shared_links(db, app, user_id, include_lovetree=True)
+    rpc_paths = []
+    async def transport(**kwargs):
+        rpc_paths.append(kwargs["path"])
+        return SimpleNamespace(status_code=200, json=lambda: {"ok": True, "prepared": True, "revoked_sessions": 0})
+
+    app.state.account_delete_rpc_transport = transport
+    response = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, user_id), body={"confirm": DELETER_EMAIL}, origin=BASE,
+    )
+    assert response.status_code == 200
+    assert response.json()["common_account_deleted"] is False
+    assert [link["product_id"] for link in authority.links] == ["lovetree-4-0"]
+    assert rpc_paths == []
+
+
+def test_last_chat_link_prepares_auth_then_deletes_common_account_and_hash_only_audit():
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    user_id = accounts["deleter"]
+    subject, authority = _bind_shared_links(db, app, user_id, include_lovetree=False)
+    rpc_paths = []
+    async def transport(**kwargs):
+        rpc_paths.append(kwargs["path"])
+        payload = (
+            {"ok": True, "prepared": True, "revoked_sessions": 2}
+            if kwargs["path"] == "/internal/account-delete/prepare"
+            else {"ok": True, "deleted": True}
+        )
+        return SimpleNamespace(status_code=200, json=lambda: payload)
+
+    app.state.account_delete_rpc_transport = transport
+    response = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, user_id), body={"confirm": DELETER_EMAIL}, origin=BASE,
+    )
+    assert response.status_code == 200
+    assert response.json()["common_account_deleted"] is True
+    assert authority.links == []
+    assert rpc_paths == ["/internal/account-delete/prepare", "/internal/account-delete/complete"]
+    assert authority.removed == [("b62", user_id, subject)]
+    columns = [row["name"] for row in db.conn.execute("PRAGMA table_info(account_deletion_audit)").fetchall()]
+    assert columns == ["user_id_hash", "deleted_at"]
+    audit = db.conn.execute("SELECT user_id_hash,deleted_at FROM account_deletion_audit").fetchone()
+    assert audit["user_id_hash"] == hashlib.sha256(user_id.encode("utf-8")).hexdigest()
+    assert audit["deleted_at"]
+
+
+def test_full_shared_delete_calls_lovetree_before_chat_and_auth_before_the_last_link():
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    user_id = accounts["deleter"]
+    _, authority = _bind_shared_links(db, app, user_id, include_lovetree=True)
+    rpc_paths = []
+    async def transport(**kwargs):
+        rpc_paths.append(kwargs["path"])
+        payload = {"ok": True, "deleted": True}
+        if kwargs["path"] == "/internal/account-delete/prepare":
+            payload = {"ok": True, "prepared": True, "revoked_sessions": 2}
+        return SimpleNamespace(status_code=200, json=lambda: payload)
+
+    app.state.account_delete_rpc_transport = transport
+    response = call(
+        app, settings, "POST", "/api/account/shared-delete",
+        token=token_for(settings, user_id), body={"confirm": DELETER_EMAIL}, origin=BASE,
+    )
+    assert response.status_code == 200
+    assert response.json()["common_account_deleted"] is True
+    assert authority.links == []
+    assert rpc_paths == [
+        "/internal/account/delete",
+        "/internal/account-delete/prepare",
+        "/internal/account-delete/complete",
+    ]
+
+
+def test_failure_before_chat_deletion_keeps_all_service_links_and_chat_rows():
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    user_id = accounts["deleter"]
+    _bind_shared_links(db, app, user_id, include_lovetree=True)
+    async def transport(**kwargs):
+        return SimpleNamespace(status_code=503, json=lambda: {"ok": False})
+
+    app.state.account_delete_rpc_transport = transport
+    response = call(
+        app, settings, "POST", "/api/account/shared-delete",
+        token=token_for(settings, user_id), body={"confirm": DELETER_EMAIL}, origin=BASE,
+    )
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "shared_account_service_unavailable"
+    assert db.conn.execute("SELECT id FROM users WHERE id=?", (user_id,)).fetchone() is not None
+    assert len(app.state.control_plane_identity_authority.links) == 2
+
+
+def test_cp_unlink_failure_keeps_common_account_link_after_local_chat_data_deletion():
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    user_id = accounts["deleter"]
+    _, authority = _bind_shared_links(db, app, user_id, include_lovetree=False)
+    authority.fail_remove = True
+    rpc_paths = []
+    async def transport(**kwargs):
+        rpc_paths.append(kwargs["path"])
+        if kwargs["path"] == "/internal/account-delete/prepare":
+            payload = {"ok": True, "prepared": True, "revoked_sessions": 1}
+        else:
+            payload = {"ok": True, "aborted": True}
+        return SimpleNamespace(status_code=200, json=lambda: payload)
+
+    app.state.account_delete_rpc_transport = transport
+    response = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, user_id), body={"confirm": DELETER_EMAIL}, origin=BASE,
+    )
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "shared_account_unlink_failed"
+    assert len(authority.links) == 1
+    assert rpc_paths == ["/internal/account-delete/prepare", "/internal/account-delete/abort"]
+    assert db.conn.execute("SELECT id FROM users WHERE id=?", (user_id,)).fetchone() is None
+
+
+def test_account_deletion_audit_retention_prunes_after_365_days():
+    db = SqliteD1()
+    db.conn.execute(
+        "CREATE TABLE account_deletion_audit (user_id_hash TEXT PRIMARY KEY, deleted_at TEXT NOT NULL)"
+    )
+    now = datetime(2026, 11, 3, 12, 0, tzinfo=timezone.utc)
+    expired = (now - timedelta(days=365)).isoformat()
+    recent = (now - timedelta(days=364)).isoformat()
+    db.conn.execute("INSERT INTO account_deletion_audit VALUES (?,?)", ("a" * 64, expired))
+    db.conn.execute("INSERT INTO account_deletion_audit VALUES (?,?)", ("b" * 64, recent))
+
+    removed = asyncio.run(prune_expired_account_deletion_audit(db, now=now))
+
+    assert removed == 1
+    rows = db.conn.execute("SELECT user_id_hash,deleted_at FROM account_deletion_audit").fetchall()
+    assert len(rows) == 1
+    assert rows[0]["user_id_hash"] == "b" * 64
+
+
+def test_account_help_describes_both_deletion_paths_and_keeps_brand_wording_guard():
+    app_root = Path(__file__).resolve().parents[1]
+    help_text = (app_root / "static" / "help.html").read_text(encoding="utf-8")
+    section = help_text.split('id="account"', 1)[1].split('id="faq"', 1)[0]
+    html = (app_root / "static" / "index.html").read_text(encoding="utf-8")
+    script = (app_root / "static" / "app.js").read_text(encoding="utf-8")
+
+    assert "이 서비스에서 탈퇴" in section
+    assert "모든 서비스에서 탈퇴" in section
+    assert "마지막 연결" in section
+    assert "세션" in section
+    assert "CGI 쇼핑몰" in section
+    assert "PADIEM" not in help_text
+    assert 'id="accountSharedDeleteOpen"' in html
+    assert 'id="accountSharedDeleteConfirm"' in html
+    assert '"/api/account/shared-delete"' in script
