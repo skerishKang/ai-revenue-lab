@@ -948,6 +948,64 @@ class MeshQueueScenarioTest(DeployHarness):
         self.assertEqual(self._started("padiem-mesh-queue.service"), 2, self._calls())
 
 
+
+class MigrationServiceUserGitTest(DeployHarness):
+    """The pending-migration read runs as the database owner, not as root.
+
+    11-03 the first COM2 redeploy failed here: the service user had no
+    ``safe.directory`` for the production checkout, so ``git show`` refused the
+    migration file and that run only passed with PADIEM_COM2_CHAT_DB_USER=root.
+    The host-wide git config stays untouched, so the exemption belongs to the
+    one command line that reads the checkout on the service user's behalf.
+    """
+
+    scenario = "migration"
+
+    def _git_logging_bin(self) -> Path:
+        """A `git` that records its argv, then runs the real git."""
+        directory = self.tmp / "git-bin"
+        directory.mkdir()
+        log = self.tmp / "git-argv.log"
+        real = shutil.which("git") or "/usr/bin/git"
+        wrapper = directory / "git"
+        wrapper.write_text(
+            "#!/usr/bin/env bash\n"
+            'printf "%s\n" "$*" >> "' + log.as_posix() + '"\n'
+            'exec "' + real + '" "$@"\n',
+            encoding="utf-8",
+        )
+        wrapper.chmod(0o755)
+        return directory
+
+    def test_the_migration_read_scopes_the_allow_list_to_one_command(self) -> None:
+        wrapper_dir = self._git_logging_bin()
+        self.env = {
+            **self.env,
+            "PATH": wrapper_dir.as_posix() + os.pathsep + os.environ.get("PATH", ""),
+        }
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("COM2_DEPLOY_CHAT_MIGRATION_APPLIED=002_new_owner.sql", result.stdout)
+
+        calls = [
+            line
+            for line in (self.tmp / "git-argv.log").read_text(encoding="utf-8").splitlines()
+            if line
+        ]
+        shows = [line for line in calls if " show " in " " + line + " "]
+        self.assertTrue(shows, calls)
+        checkout = self.ops.resolve().as_posix()
+        for line in shows:
+            tokens = line.split()
+            # `git -c safe.directory=<checkout> -C <checkout> show <sha>:<path>`
+            self.assertIn("-c", tokens)
+            self.assertIn("safe.directory=" + checkout, tokens)
+            self.assertLess(tokens.index("-c"), tokens.index("-C"))
+            self.assertLess(tokens.index("-c"), tokens.index("show"))
+        # The operator's global config is never the mechanism.
+        self.assertNotIn("config --global", SCRIPT.read_text(encoding="utf-8"))
+
+
 class ScriptBoundaryTest(unittest.TestCase):
     def test_start_probes_are_given_ninety_seconds_by_default(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
