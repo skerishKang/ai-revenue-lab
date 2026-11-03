@@ -34,6 +34,12 @@ CALLER_ID_ENV = "PADIEM_ENGINE_CALLER_ID"
 CALLER_SECRET_ENV = "PADIEM_ENGINE_CALLER_SECRET"
 MIN_SECRET_BYTES = 32
 MAX_SECRET_BYTES = 512
+DESKTOP_SECRET_ENV = "CLAW_ENGINE_DESKTOP_SECRET"
+CHAT_SERVICE_ENV = "PADIEM_ENGINE_LOCAL_CHAT_ORIGIN"
+DESKTOP_WARNING = (
+    "P01_CONFIG_WARNING desktop_tools=off need=CLAW_ENGINE_DESKTOP_SECRET(32+)"
+    "+PADIEM_ENGINE_LOCAL_CHAT_ORIGIN (Chat env와 같은 값, 없으면 시작은 계속)"
+)
 
 REFUSED = (
     "p01_bind_not_loopback",
@@ -78,6 +84,17 @@ def check(env: dict[str, str], app_root: Path) -> str | None:
     return None
 
 
+def desktop_tools_warning(env: dict[str, str]) -> str | None:
+    """Warning only: tools are off while the pair is absent; startup continues."""
+    secret = _text(env, DESKTOP_SECRET_ENV)
+    origin = _text(env, CHAT_SERVICE_ENV)
+    if len(secret.encode("utf-8")) >= MIN_SECRET_BYTES and origin.startswith(
+        "http://127.0.0.1:"
+    ):
+        return None
+    return DESKTOP_WARNING
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--app-root", default="/opt/padiem/p01")
@@ -91,6 +108,9 @@ def main(argv: list[str] | None = None) -> int:
         f"P01_CONFIG=READY kind={KIND} host=loopback "
         f"port={EXPECTED_PORT} asgi_entry=present"
     )
+    warning = desktop_tools_warning(env)
+    if warning is not None:
+        print(warning)
     return 0
 
 

@@ -132,6 +132,8 @@ class P01Packaging(unittest.TestCase):
                 "PADIEM_ENGINE_LOCAL_IDENTITY_SECRET",
                 "PADIEM_ENGINE_LOCAL_ADMISSION_ORIGIN",
                 "PADIEM_ENGINE_LOCAL_ADMISSION_SECRET",
+                "PADIEM_ENGINE_LOCAL_CHAT_ORIGIN",
+                "CLAW_ENGINE_DESKTOP_SECRET",
             })
             if name not in {"P01_HOST", "P01_PORT"}:
                 self.assertEqual(value, "", name)
@@ -147,6 +149,29 @@ class P01Packaging(unittest.TestCase):
     def test_ready_configuration_passes(self):
         with _TempRoot() as root:
             self.assertIsNone(check_config.check(_env(), _app_root(root)))
+
+    def test_desktop_tools_warning_never_refuses_startup(self):
+        with _TempRoot() as root:
+            _app_root(root)
+            configured = _env(
+                CLAW_ENGINE_DESKTOP_SECRET="s" * 48,
+                PADIEM_ENGINE_LOCAL_CHAT_ORIGIN="http://127.0.0.1:8798",
+            )
+            self.assertIsNone(check_config.desktop_tools_warning(configured))
+            for missing in (
+                _env(PADIEM_ENGINE_LOCAL_CHAT_ORIGIN="http://127.0.0.1:8798"),
+                _env(CLAW_ENGINE_DESKTOP_SECRET="s" * 31,
+                     PADIEM_ENGINE_LOCAL_CHAT_ORIGIN="http://127.0.0.1:8798"),
+                _env(CLAW_ENGINE_DESKTOP_SECRET="s" * 48),
+            ):
+                self.assertIsNotNone(check_config.desktop_tools_warning(missing))
+            stdout = io.StringIO()
+            with unittest.mock.patch.dict(os.environ, _env(), clear=True):
+                with contextlib.redirect_stdout(stdout):
+                    self.assertEqual(check_config.main(["--app-root", str(root)]), 0)
+            self.assertIn(
+                "P01_CONFIG_WARNING desktop_tools=off", stdout.getvalue()
+            )
 
     def test_a_routable_bind_is_refused(self):
         with _TempRoot() as root:
