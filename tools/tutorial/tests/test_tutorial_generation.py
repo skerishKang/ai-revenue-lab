@@ -230,6 +230,17 @@ class CommittedPages(unittest.TestCase):
         self.assertIn("orphan_image:99-extra/step-01.webp", stale)
         self.assertIn("orphan_page:99-extra.html", stale)
 
+    def test_the_account_tutorial_points_at_the_help_section(self):
+        page = (PAGES / "05-account-deletion.html").read_text(encoding="utf-8")
+        self.assertIn('href="../help.html#account"', page)
+        document = (
+            REPO / "docs" / "help" / "tutorials" / "05-account-deletion.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("#account", document)
+        help_text = HELP.read_text(encoding="utf-8")
+        self.assertIn('id="account"', help_text)
+        self.assertIn('href="#account"', help_text)
+
     def test_the_help_page_links_to_the_tutorials_once(self):
         self.assertEqual(HELP.read_text(encoding="utf-8").count(HELP_LINK), 1)
         self.assertTrue((PAGES / "index.html").is_file())

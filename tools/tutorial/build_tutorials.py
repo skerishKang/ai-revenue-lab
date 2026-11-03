@@ -110,33 +110,41 @@ HELP_COMPARISON = (
     ),
     (
         "로그인이 필요한 항목은 로그인 안내로 안전하게 막아요.",
-        "되돌리기 어려운 동작으로 보일 때는 실행하기 전에 묻고",
-        "다름 — 도움말은 실행 전 확인, 튜토리얼 장면은 목록 접근 차단입니다. 문구 통일은 후속 과제입니다.",
+        "로그인이 필요한 화면은 열기 전에 로그인 안내로 막습니다.",
+        "같음 — 도움말이 로그인 차단과 실행 전 확인을 함께 말합니다.",
     ),
     (
         "계정 탈퇴",
-        None,
-        "다름 — help.html에 탈퇴 항목이 아직 없습니다.",
+        "입력이 계정 이메일과 다르면 아무것도 지워지지 않습니다.",
+        "같음 — 도움말 #account 절이 이메일 재입력 확인과 같은 범위를 적습니다.",
     ),
 )
 
-#: Wording this lane cannot change (help.html belongs to the Chat UI lane). The
-#: proposals sit next to the comparison so the two pages stop disagreeing in the
-#: same change that adds the tutorials.
+#: Tutorials that describe the same screen as a help page section. The page links
+#: to it; the Markdown copy names it without link syntax so the account-only
+#: documents stay free of media paths.
+HELP_ANCHORS = {
+    "05": ("account", "계정 탈퇴"),
+}
+
+#: Applied in this branch: the help page now says what the code does. The rows
+#: stay so the next copy change finds the evidence beside the wording.
 HELP_COPY_PROPOSALS = (
     (
         "help.html · 권한 안내(#policyTitle) 둘째 문단",
         "되돌리기 어려운 동작으로 보일 때는 실행하기 전에 묻고,",
-        "로그인이 필요한 화면은 열기 전에 로그인 안내로 막고, 로그인·결제·게시·발송처럼 "
-        "되돌리기 어려운 동작은 실행하기 전에 묻습니다.",
-        "튜토리얼은 로그인 장면을 목록 접근 차단으로 설명하는데, 도움말은 실행 전 확인만 말합니다.",
+        "로그인이 필요한 화면은 열기 전에 로그인 안내로 막습니다. "
+        "로그인·결제·게시·발송처럼 되돌리기 어려운 동작은 실행하기 전에 묻습니다.",
+        "반영됨 — 비로그인 요청은 401 로그인 안내(시나리오 01 3단계), 되돌리기 어려운 동작은 실행 전 확인.",
     ),
     (
         "help.html · 목차와 새 절(#account)",
         "(항목 없음)",
-        "계정 탈퇴 — 설정의 계정 메뉴에서 탈퇴할 수 있어요. 확인을 위해 계정 이메일이나 정해진 "
-        "확인 문구를 입력하고, 내 문서·대화 기록·첨부는 지워지며 공통 로그인 계정은 남습니다.",
-        "튜토리얼 ⑤가 다루는 내용이 도움말에 없습니다. 탈퇴 기능이 병합된 뒤에 넣습니다.",
+        "설정 > 계정 > 계정 탈퇴 → 이메일을 다시 입력해 영구 탈퇴 버튼이 켜질 때만 실행. "
+        "지워지는 것: 대화·프로젝트 파일·첨부·일정·PC 연결 설정. "
+        "남는 것: 공통 로그인 계정·외부 백업·PC 백업 폴더.",
+        "반영됨 — POST /api/account/delete의 정확한 이메일 대조, locale.js account-delete-*, "
+        "ACCOUNT_DELETION_20261103.md 표.",
     ),
 )
 
@@ -312,9 +320,17 @@ def render(document: dict) -> str:
         "",
         f"**준비물:** {_preparation(document)}",
         "",
-        "## 단계",
-        "",
     ]
+    anchor = HELP_ANCHORS.get(document["number"])
+    if anchor:
+        slug, title = anchor
+        lines.extend(
+            [
+                f"**도움말 함께 보기:** 사용 안내(help.html)의 {title} 절(#{slug})과 같은 내용입니다.",
+                "",
+            ]
+        )
+    lines.extend(["## 단계", ""])
     for step in document["steps"]:
         guest = step["number"] in document["guest"]
         lines.extend([f"### {step['number']}단계 · {step['caption']}", ""])
@@ -442,12 +458,12 @@ def render_readme(documents: list[dict]) -> str:
             f"영상과 자막은 저장소에 넣지 않습니다. 페이지에는 \"영상 준비 중\" 자리만 두고, 나중에 고정 주소를 "
             f"넣을 설정 키는 ``{VIDEO_KEY_ENV}``입니다(예: ``{VIDEO_KEY_ENV}/<문서>/video.webm``).",
             "",
-            "## 도움말 문안 제안",
+            "## 도움말 문안 대조(반영됨)",
             "",
-            "``apps/padiem-chat/static/help.html``은 이 선에서 고치지 않습니다. 아래 두 곳은 내용이 다르므로 "
-            "Chat 화면 담당이 반영합니다.",
+            "``apps/padiem-chat/static/help.html``에 아래 두 문안을 반영했습니다. 다음에 문구를 바꿀 때 "
+            "근거를 볼 수 있게 표로 남깁니다.",
             "",
-            "| 위치 | 지금 문구 | 제안 문구 | 이유 |",
+            "| 위치 | 이전 문구 | 지금 문구 | 근거 |",
             "|---|---|---|---|",
         ]
     )
@@ -513,6 +529,19 @@ def _step_section(document: dict, step: dict) -> list[str]:
     return lines
 
 
+def _anchor_link(document: dict) -> str:
+    """A link to the matching help page section, or an empty line when none."""
+
+    anchor = HELP_ANCHORS.get(document["number"])
+    if not anchor:
+        return ""
+    slug, title = anchor
+    return (
+        '    <p class="chat-help-detail"><strong>도움말 함께 보기:</strong> '
+        f'<a href="../help.html#{slug}">{escape(title)}</a></p>'
+    )
+
+
 def render_page(document: dict) -> str:
     """One tutorial as a static page beside help.html."""
 
@@ -550,6 +579,7 @@ def render_page(document: dict) -> str:
         f'    <h1>{escape(document["title"])}</h1>',
         f'    <p class="chat-help-lede">{escape(document["purpose"])}</p>',
         f'    <p class="chat-help-detail"><strong>준비물:</strong> {escape(_preparation(document))}</p>',
+        _anchor_link(document),
         '    <nav class="chat-help-toc" aria-label="이 튜토리얼의 단계">',
         '      <ul>',
     ]
@@ -649,7 +679,7 @@ def render_index(documents: list[dict]) -> str:
         '    </div>',
         '    <nav class="chat-help-nav" aria-label="이동">',
         '      <a class="chat-help-back" href="../help.html">사용 안내</a>',
-        '      <a class="chat-help-back" href="../">채트로 돌아가기</a>',
+        '      <a class="chat-help-back" href="../">채팅으로 돌아가기</a>',
         '    </nav>',
         '  </header>',
         '  <main id="tutorialMain" class="chat-help-main">',
