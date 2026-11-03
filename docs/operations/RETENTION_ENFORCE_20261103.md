@@ -31,12 +31,13 @@
 ### 2.1 `apps/padiem-chat/app/retention_purge.py` (새 파일)
 
 `app.expired_purge`의 1단계(기한이 지나면 의미가 없어지는 일회성 행)에 이어,
-**기간이 확정된 기록**을 지우는 2단계다. 대상은 코드에 명시된 2개 표뿐이다.
+**기간이 확정된 기록**을 지우는 2단계다. 대상은 코드에 명시된 3개 표뿐이다.
 
 | 표 | 컬럼 | 기간 | 왜 여기인가 |
 |---|---|---|---|
 | `account_deletion_audit` | `deleted_at` | 365일 | 탈퇴 기록은 옛 세션을 거부하는 근거라 확정된 1년을 채워야 하고, 그 뒤에는 남길 이유가 없다. 저장값은 사용자 id 해시·시각뿐 |
 | `padiem_mcp_audit` | `created_at` | 90일 | 확정된 "서비스 로그(오류·감사) 90일" |
+| `claw_task_alert` | `created_at` | 90일 | 혼합 표에서 `kind='alert' AND status='dismissed'`인 행만 만료한다. 사용자 작업과 활성 알림은 보존 |
 
 지우지 않는 것과 이유:
 
@@ -112,3 +113,37 @@ B14 호출 원장(`/opt/padiem/b14/ledger/b14-call-ledger.db`, SQLite)에서 90�
 | `apps/korean-ai-platform/tests/test_b14_call_ledger_retention.py` | 90일 경계, 시도가 부모와 함께만 삭제, 시각 없는 호출 보존, dry-run, 반복 실행 멱등, DB 없음 SKIPPED, 상태 줄에 식별자 없음 |
 
 두 시험 모두 임시 SQLite 파일만 사용한다. 운영 DB·호스트에 접속하지 않는다.
+
+## 6. Claw 작업 표 분류와 90일 적용
+
+Chat migrations와 앱 실행 코드의 DDL을 확인했다. Claw 전용 `CREATE TABLE`은 migration에서 관리하며 Chat 앱 실행 중 Claw 표를 동적으로 만들지 않는다. 별도 Claw `*_events`나 `*_steps` 표는 없다. migration 081의 `_next`/backup 테이블은 마이그레이션 중 재구성용 객체라 런타임 표 목록에서 제외했다. `claw_task_alert`만 작업 정의와 알림 상태 기록이 함께 있는 혼합 표다.
+
+### (a) 사용자 내용·결과·권한 자료: 보관
+
+아래 표는 사용자가 만든 정의·결과·대화·파일, 또는 이를 안전하게 조회·승인·중복 방지하는 권한 자료다. 이 정리 작업에서 지우지 않는다.
+
+| 표 | 분류 근거 |
+|---|---|
+| `claw_document_metadata` | 사용자가 보관하는 문서의 저장·소유 메타데이터. 문서 삭제와 기존 파일 정리 수명주기를 따른다. |
+| `claw_run_history` | 사용자 실행 이력과 결과 요약·대화 연결·산출물 이름을 제공한다. 결과 보존 대상이며 `claw_conversation_artifact_index`의 참조 부모다. |
+| `claw_task_alert` (`kind='task'`) | 사용자가 만든 작업 정의와 상태다. open/done/cancelled를 포함해 사용자 삭제까지 보관한다. |
+| `claw_task_alert` (`kind='alert' AND status='active'`) | 아직 사용자가 닫지 않은 알림이다. 기간이 지나도 삭제하지 않는다. |
+| `claw_approved_memory`, `claw_rules`, `claw_proposals` | 승인된 사용자 메모, 자동화 작업 정의, 사용자 검토가 필요한 제안이다. |
+| `claw_runs` | 스케줄 실행의 canonical 결과·오류·상태가 한 행에 함께 있다. 사용자 결과를 잃지 않도록 표 전체를 지우지 않는다. `started_at`만 있고 공통 `created_at`은 없어 이번 purge 기준에도 맞지 않는다. |
+| `claw_occurrences`, `claw_local_task_correlation` | 실행 dedup 권위와 사용자 결과/로컬 작업 연결 참조다. 지우면 재실행 방지 또는 결과 조회가 깨질 수 있다. |
+| `claw_conversation_artifact_index` | 대화에서 결과 파일을 다시 여는 참조다. `claw_run_history`의 실행 이력과 함께 보존한다. |
+| `claw_approval_handoff` | 사용자 승인 전달과 소비 상태를 묶는 보안·재생 방지 자료다. |
+| `claw_web_xlsx_selections`, `claw_web_xlsx_p01_requests`, `claw_web_xlsx_p01_decision_receipts`, `claw_web_xlsx_quote_edit_receipts`, `claw_web_xlsx_quote_write_decisions`, `claw_web_xlsx_quote_write_pauses` | 사용자 파일 선택과 승인·쓰기 흐름에 필요한 연결 및 중복 방지 자료다. |
+| `claw_artifact_delivery_receipts` | 외부 산출물 전송의 중복 발송을 막는 unique receipt다. 삭제하면 같은 전송을 다시 시도할 수 있어 보존한다. |
+| `claw_coding_conversation_grant` | 대화 접근 권한 자료다. |
+| `claw_github_oauth_states`, `claw_github_connections`, `claw_pc_device_selection`, `claw_push_subscription` | OAuth·기기 선택·알림 구독 등 접근 및 설정 자료다. 사용자 파일·실행 로그 90일 정리 대상과 역할이 다르다. |
+| `claw_meetings`, `claw_meeting_artifacts`, `claw_meeting_actions` | 사용자가 보관하는 회의 내용·산출물·후속 조치다. |
+| `document_convert_jobs`, `document_convert_items` | 일반 문서 변환의 상태·파일 키·검증 결과다. Claw 전용 표는 아니며 사용자 파일 결과를 가리키므로 계정 삭제 cascade 경로에 맡긴다. |
+
+### (b) 실행 상태 기록: 90일 뒤 삭제
+
+`claw_task_alert`에서 `kind='alert' AND status='dismissed'`인 행만 `created_at < now - 90 days`일 때 삭제한다. 이 범위는 사용자가 닫은 알림 상태 기록이다. alert가 active이면 나이와 관계없이 남고, 같은 표의 `kind='task'`는 어떤 상태든 남는다. `claw_runs`의 PENDING/RUNNING 기록도 target 목록에 없으므로 삭제되지 않는다.
+
+Claw 결과 이력과 알림 목록은 서로 다른 저장소 표면이다. purge가 `claw_task_alert`에서 만료된 dismissed 행만 지우며, run history, result artifact index, task 정의를 건드리지 않는다. `claw_task_alert`에는 해당 표의 부모를 cascade 삭제하는 외래 키가 없고 다른 migration에도 이를 참조하는 외래 키가 없다. 회귀 시험은 purge 뒤 실제 `D1ClawTaskAlertStore`의 task/alert 조회와 PENDING/RUNNING 행 보존을 확인한다.
+
+90일 만료 조회는 workspace 전체에서 `kind`, `status`, `created_at` 범위로 실행된다. 기존 inbox 인덱스는 workspace로 시작해 이 조회를 지원하지 않으므로 migration `098_claw_task_alert_retention_index.sql`에서 `(kind, status, created_at)` 인덱스를 추가했다. 매 실행은 표당 최대 한 배치만 지우고, 표가 없으면 0으로 보고하며, 결과 줄에는 표 이름과 건수만 남긴다.
