@@ -1,5 +1,6 @@
 """Attach only a verified common-session identity; the legacy guard still runs."""
 import logging
+import time
 
 from starlette.requests import Request
 
@@ -17,11 +18,26 @@ class SharedSessionMiddleware:
             request = Request(scope)
             token = request.cookies.get(ACCESS_COOKIE)
             if token:
+                from .request_telemetry import current_request_id
+                from .shared_login_timing import (
+                    begin_login_timings, emit_identity_timing, end_login_timings,
+                    record_login_timing,
+                )
+                token_context, details = begin_login_timings()
+                started = time.perf_counter()
+                request_id = current_request_id()
                 try:
-                    with measure('auth'):
-                        user = await self.flow.auth.user_id(request, token)
-                    if isinstance(user, str) and user:
-                        scope.setdefault('state', {})['padiem_shared_user_id'] = user
-                except SharedAuthUnavailable:
-                    logging.getLogger(__name__).warning("shared_session_verification_or_identity_lookup_failed")
+                    try:
+                        with measure('auth'):
+                            user = await self.flow.auth.user_id(request, token)
+                        if isinstance(user, str) and user:
+                            scope.setdefault('state', {})['padiem_shared_user_id'] = user
+                    except SharedAuthUnavailable:
+                        logging.getLogger(__name__).warning(
+                            "shared_session_verification_or_identity_lookup_failed")
+                finally:
+                    record_login_timing('shared_identity_lookup',
+                                        (time.perf_counter() - started) * 1000)
+                    emit_identity_timing(request_id, started, details)
+                    end_login_timings(token_context)
         await self.app(scope, receive, send)

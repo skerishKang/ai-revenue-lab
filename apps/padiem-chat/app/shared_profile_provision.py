@@ -66,10 +66,9 @@ async def provision_shared_profile(request, user_id, access_token, tokens, *, ve
         raise ValueError('legacy_account_conflict')
     profile = tokens.get('profile')
     if profile is None:
-        # Profile disclosure is opt-in per client, and the production Chat client
-        # (b62) has not opted in: the authority then sends a token and nothing else.
-        # The verified subject and its existing Chat link are enough to log in, and
-        # there is nothing here that Chat may write, so nothing is written.
+        # Profile disclosure is opt-in per client. When omitted, the verified
+        # subject and its existing Chat link still identify the account, and
+        # there is no profile data for this client to write.
         logger.info('shared_login_profile_omitted reason=client_opt_out body_field_count=%d', len(tokens))
         return
     if (not isinstance(profile, dict) or not profile or not set(profile) <= PROFILE_FIELDS
