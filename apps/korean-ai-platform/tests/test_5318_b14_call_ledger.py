@@ -341,6 +341,134 @@ async def test_a_real_call_appends_one_parent_with_the_answered_model(live_lane,
     assert record.origin_request_id == "corr-12345678"
 
 
+def test_the_declared_tier_only_accepts_the_grade_vocabulary() -> None:
+    from app.pilot.call_ledger import declared_membership_tier
+
+    assert declared_membership_tier({}, {"product_tier": "pro"}) == "pro"
+    # A malformed claim never enters a column the tier aggregates group by.
+    assert declared_membership_tier({}, {"product_tier": "gold"}) is None
+    assert declared_membership_tier({"membership_tier": "gold"}, None) is None
+    # The x-padiem-tier header stays a real fallback when it carries a grade.
+    assert declared_membership_tier({"membership_tier": "max"}, {}) == "max"
+    # The validated body value wins over the header when both declare one.
+    assert (
+        declared_membership_tier({"membership_tier": "max"}, {"product_tier": "plus"})
+        == "plus"
+    )
+
+
+@pytest.mark.asyncio
+async def test_the_platform_lane_records_the_grade_it_routed_with(
+    live_lane, monkeypatch
+):
+    written = []
+
+    async def capture(record):
+        written.append(record)
+        return "written"
+
+    async def answered(**_kwargs):
+        return _ok()
+
+    monkeypatch.setattr(gw, "record_call", capture)
+    monkeypatch.setattr(plat, "call_platform_chat_completions", answered)
+
+    # The declared grade rides the validated body, and that is the value the
+    # ledger records: record and routing must not disagree.
+    response = await gw._handle_alpha_chat(
+        "b14req_ledger31",
+        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}],
+         "business14": {"product_tier": "pro"}},
+        origin_headers={"x-padiem-product": "chat"},
+    )
+    await drain()
+    assert response.status_code == 200
+    assert written[-1].membership_tier == "pro"
+
+    # An undeclared grade means the routing default: the Free roster is what
+    # ensure_route_secrets and resolve_route applied.
+    response = await gw._handle_alpha_chat(
+        "b14req_ledger32",
+        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
+        origin_headers={"x-padiem-product": "chat"},
+    )
+    await drain()
+    assert response.status_code == 200
+    assert written[-1].membership_tier == "free"
+
+    # A header value outside the grade vocabulary is not recorded: the row
+    # keeps the grade the routing actually applied, which is Free.
+    response = await gw._handle_alpha_chat(
+        "b14req_ledger33",
+        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
+        origin_headers={"x-padiem-product": "chat", "x-padiem-tier": "gold"},
+    )
+    await drain()
+    assert response.status_code == 200
+    assert written[-1].membership_tier == "free"
+
+    # The header fallback survives for a header-only sender carrying a grade.
+    response = await gw._handle_alpha_chat(
+        "b14req_ledger34",
+        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
+        origin_headers={"x-padiem-product": "chat", "x-padiem-tier": "max"},
+    )
+    await drain()
+    assert response.status_code == 200
+    assert written[-1].membership_tier == "max"
+
+
+@pytest.mark.asyncio
+async def test_a_byok_call_records_the_declared_tier_or_nothing(
+    live_lane, monkeypatch
+):
+    from types import SimpleNamespace
+
+    from app.pilot.user_credential import UserCredential
+
+    written = []
+
+    async def capture(record):
+        written.append(record)
+        return "written"
+
+    async def answered(**_kwargs):
+        return _ok()
+
+    monkeypatch.setattr(gw, "record_call", capture)
+    monkeypatch.setattr(plat, "call_user_credential_chat_completions", answered)
+
+    credential = UserCredential(
+        provider_id="openai", upstream_model="gpt-fixture",
+        origin="https://api.openai.example/v1",
+        allowed_hosts=("api.openai.example",), wire="chat/completions",
+        key="sk-fixture-not-a-secret",
+    )
+    request = SimpleNamespace(
+        url=SimpleNamespace(path="/api/pilot/v1/chat/completions"),
+        app=SimpleNamespace(state=SimpleNamespace(stream_transport=None)),
+    )
+
+    # This lane applies no grade of its own: no declared tier, no recorded one.
+    body = {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}],
+            "business14": {}, "user_credential": credential}
+    response = await gw._handle_user_credential_chat(
+        request, "b14req_ledger41", dict(body), origin_headers={},
+    )
+    await drain()
+    assert response.status_code == 200
+    assert written[-1].membership_tier is None
+
+    # A declared tier from the validated body is recorded as delivered.
+    body["business14"] = {"product_tier": "plus"}
+    response = await gw._handle_user_credential_chat(
+        request, "b14req_ledger42", dict(body), origin_headers={},
+    )
+    await drain()
+    assert response.status_code == 200
+    assert written[-1].membership_tier == "plus"
+
+
 @pytest.mark.asyncio
 async def test_a_retry_keeps_the_failed_attempt_visible(live_lane, monkeypatch):
     from app.pilot.errors import UpstreamServerError
@@ -684,6 +812,57 @@ async def test_the_stream_lane_records_ttft_and_the_usage_the_provider_reported(
     assert record.token_source == "measured"
     assert record.actual_response_model == "gemini-3.1-flash-lite"
     assert record.selected_model_id == "google/gemini-3.1-flash-lite"
+
+
+@pytest.mark.asyncio
+async def test_the_stream_lane_records_the_grade_it_routed_with(monkeypatch):
+    import httpx
+
+    from app.pilot import stream_gateway as sg
+    from app.pilot.b14_runtime_config import runtime_config
+
+    written = []
+
+    async def capture(record):
+        written.append(record)
+        return "written"
+
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
+    monkeypatch.setattr(runtime_config, "provider_mode", "live")
+    monkeypatch.setattr(sg, "record_call", capture)
+
+    def frame(payload):
+        return f"data: {json.dumps(payload)}\n\n".encode()
+
+    sse = [
+        frame({"id": "up_1", "model": "gemini-3.1-flash-lite", "choices": [
+            {"index": 0, "delta": {"content": "답"}, "finish_reason": None}]}),
+        frame({"id": "up_1", "model": "gemini-3.1-flash-lite", "choices": [
+            {"index": 0, "delta": {}, "finish_reason": "stop"}],
+            "usage": {"prompt_tokens": 4, "completion_tokens": 6, "total_tokens": 10}}),
+        b"data: [DONE]\n\n",
+    ]
+    app = create_app()
+    app.state.stream_transport = httpx.MockTransport(
+        lambda request: httpx.Response(
+            200, content=b"".join(sse), headers={"Content-Type": "text/event-stream"}
+        )
+    )
+    from starlette.testclient import TestClient
+
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/pilot/v1/chat/completions/stream-preview",
+            json={"model": "google/gemini-3.1-flash-lite", "stream": True,
+                  "business14": {"product_tier": "pro"},
+                  "messages": [{"role": "user", "content": "한 마디만"}]},
+        )
+        assert response.status_code == 200, response.text
+
+    await drain()
+    assert len(written) == 1
+    assert written[0].membership_tier == "pro"
 
 
 @pytest.mark.asyncio
