@@ -10,7 +10,7 @@ import re
 from typing import Any
 
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, StreamingResponse
 from starlette.routing import Route
 
 from .auth_routes import auth_ready, current_user_id
@@ -29,6 +29,7 @@ from .model_policy import (
 )
 from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 from .orchestration_timing import OrchestrationTiming
+from .orchestration_stream import NDJSON_MEDIA_TYPE, ndjson_answer, wants_ndjson
 from .public_chat import public_chat_result
 from .request_contract import BrowserRequestError, _validate_payload_async
 from .pc_correlation import run_hash
@@ -177,10 +178,14 @@ def public_grounding_evidence(items: Any) -> list[dict[str, Any]]:
 async def api_orchestration(request: Request) -> JSONResponse:
     # #6732: 구간 시간만 남긴다. 실패·예외 경로에서도 그때까지 잠긴 구간을 남긴다.
     timing = OrchestrationTiming()
+    response = None
     try:
-        return await _answer_orchestration(request, timing)
+        response = await _answer_orchestration(request, timing)
+        return response
     finally:
-        timing.emit()
+        # NDJSON은 응답이 끝날 때 생성기가 직접 남긴다(engine_ms·save_ms 포함).
+        if getattr(response, "media_type", None) != NDJSON_MEDIA_TYPE:
+            timing.emit()
 
 
 async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -> JSONResponse:
@@ -414,6 +419,44 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             pending_fields={"run_id": pc_run_id, "conversation_id": saved_id},
         )
 
+    if getattr(request.app.state, "orchestration_stream_enabled", False) and wants_ndjson(
+        raw, request.headers.get("accept")
+    ):
+        # #6742: 일반 답변도 엔진 토큰이 오는 대로 흘려보낸다. 게이트·등급·PC 순서는 그대로다.
+        base_kwargs = dict(
+            user_id=uid, messages=policy.messages, skill=skill, model_id=policy.model_id,
+            user_text=user_text, conversation_id=conversation_id,
+            additional_system_context=grounding_context, product_identity=product_identity,
+        )
+
+        async def completed_stream(result):
+            saved = await _save_terminal_history(
+                request, user_id=uid, conversation_id=result.conversation_id,
+                user_text=result.user_text, answer=result.answer,
+            )
+            fields = {
+                "conversation_id": saved or result.conversation_id,
+                "message_id": saved or result.conversation_id,
+                "usage": None,
+            }
+            fields.update(grounding_notice)
+            if grounded_evidence:
+                fields.update(answer_status="answered_with_evidence",
+                              evidence=grounded_evidence, tool={"id": "web_search", "title": "웹 검색"})
+            return fields
+
+        return StreamingResponse(
+            ndjson_answer(
+                bridge=bridge,
+                stream_kwargs={**base_kwargs, "pc_tools": None, "subject_id": None, "session_id": None},
+                buffered_kwargs=base_kwargs,
+                timing=timing,
+                on_completed=completed_stream,
+            ),
+            media_type=NDJSON_MEDIA_TYPE,
+            headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
+        )
+
     try:
         result = await bridge.start(
             user_id=uid,
@@ -570,9 +613,12 @@ async def api_orchestration_cancel(request: Request) -> JSONResponse:
     )
 
 
-def install_orchestration_routes(app: Any, bridge: B62EngineOrchestrationBridge | None) -> None:
+def install_orchestration_routes(
+    app: Any, bridge: B62EngineOrchestrationBridge | None, *, stream_enabled: bool = False,
+) -> None:
     """Install routes ahead of the catch-all static Mount without changing app_factory."""
     app.state.orchestration_bridge = bridge
+    app.state.orchestration_stream_enabled = stream_enabled
     routes = [
         Route("/api/orchestration/status", orchestration_status, methods=["GET"]),
         Route("/api/orchestration", api_orchestration, methods=["POST"]),
