@@ -160,6 +160,7 @@
 
 /* Keep backup controls reachable on short mobile screens. */
 .auth-gate-sheet { max-height: calc(100dvh - 24px); overflow-y: auto; }
+.auth-gate-primary[hidden] { display: none !important; }
 .auth-gate-backup { display: grid; gap: 8px; margin-top: 14px; }
 .auth-gate-backup button { min-height: 44px; }
 .auth-gate-backup small { line-height: 1.5; }

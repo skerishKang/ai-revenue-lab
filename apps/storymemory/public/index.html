@@ -109,8 +109,8 @@
     <button type="button" class="today-back" id="todayBack">← Library</button>
     <div class="today-wordmark">StoryMemory</div>
     <div class="today-top-actions">
-      <button type="button" class="today-cloud-button" id="todayCloudButton"><span>●</span><b id="todayCloudLabel">클라우드</b></button>
-      <span class="today-data-status" id="todayDataStatus" role="status" aria-live="polite" title="Local-first · NeonJS production adapter ready">LOCAL · SAVED</span>
+      <button type="button" class="today-cloud-button" id="todayCloudButton"><span>●</span><b id="todayCloudLabel">계정</b></button>
+      <span class="today-data-status" id="todayDataStatus" role="status" aria-live="polite" title="이 기기에 저장 중">LOCAL · SAVED</span>
       <button type="button" class="today-memory-link" id="todayOpenGlobal">전체 기억</button>
     </div>
   </header>
@@ -173,15 +173,15 @@
   <div class="auth-gate-scrim" id="authGateScrim"></div>
   <aside class="auth-gate-sheet" id="authGateSheet" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="authGateTitle" aria-describedby="authGateCopy">
     <div class="auth-gate-handle"></div>
-    <button type="button" class="auth-gate-close" id="authGateClose" aria-label="클라우드 설정 닫기">×</button>
-    <span class="auth-gate-kicker">CLOUD MEMORY</span>
-    <h2 id="authGateTitle">기억을 기기 밖에도<br>이어두시겠어요?</h2>
-    <p id="authGateCopy">읽기 기록과 Memory는 현재 기기에 저장됩니다. 로그인과 기기 간 동기화는 준비 중입니다.</p>
+    <button type="button" class="auth-gate-close" id="authGateClose" aria-label="계정 설정 닫기">×</button>
+    <span class="auth-gate-kicker">ACCOUNT</span>
+    <h2 id="authGateTitle">기억은 이 기기에 저장됩니다.</h2>
+    <p id="authGateCopy">공통 로그인은 준비 중입니다. 읽기 기록과 Memory는 이 기기에 저장됩니다.</p>
     <div class="auth-gate-state" id="authGateState">
       <i></i>
       <div><b>LOCAL FIRST</b><span>지금은 이 기기에만 저장 중</span></div>
     </div>
-    <button type="button" class="auth-gate-primary" id="authGatePrimary">로그인 안내</button>
+    <button type="button" class="auth-gate-primary" id="authGatePrimary" hidden>공통 계정으로 로그인</button>
     <button type="button" class="auth-gate-secondary" id="authGateSecondary">지금은 로컬로 계속</button>
     <div class="auth-gate-backup" aria-label="기기 기록 백업">
       <button type="button" id="smBackupExport" class="auth-gate-secondary">기록 백업하기</button>
@@ -2766,8 +2766,8 @@ let storyMemoryRemote = createStoryMemoryRemoteAdapter();
 window.storyMemoryRemote = storyMemoryRemote;
 window.STORYMEMORY_RUNTIME_CONTRACT=STORYMEMORY_RUNTIME_CONTRACT;
 window.storyMemoryRuntimeStatus=async()=>{
-  const base={...STORYMEMORY_RUNTIME_CONTRACT,authenticated:!!__smAuthBridge?.authenticated,remoteReady:!!__smRemoteReady};
-  if(!__smAuthBridge?.authenticated)return {...base,registryStatus:'AUTH_REQUIRED'};
+  const base={...STORYMEMORY_RUNTIME_CONTRACT,authenticated:false,loginAuthenticated:!!__smAuthBridge?.authenticated,remoteReady:!!__smRemoteReady};
+  if(!__smAuthBridge?.syncEnabled)return {...base,registryStatus:'AUTH_REQUIRED'};
   try{return {...base,...await storyMemoryRemote.runtimeStatus(),registryStatus:'VERIFIED'}}catch(error){return {...base,registryStatus:'ERROR',error:String(error?.message||error)}}
 };
 function installStoryMemoryRemoteAdapter(adapter){
@@ -2781,15 +2781,12 @@ function installStoryMemoryRemoteAdapter(adapter){
 }
 window.installStoryMemoryRemoteAdapter=installStoryMemoryRemoteAdapter;
 
-// Production shell integration:
-// auth/login code should call:
-//   storyMemoryRemote.setTokenProvider(async () => currentAccessToken)
-//
-// Prototype fallback remains local-first until a token provider exists.
+// Remote sync stays disabled until its separate identity and data-access gate is approved.
 let __smRemoteReady = false;
 let __smRemoteLastError = null;
 
 async function storyMemoryEnableRemote(tokenProvider){
+  if(!__smAuthBridge?.syncEnabled)throw new Error('REMOTE_SYNC_NOT_ENABLED');
   storyMemoryRemote.setTokenProvider(tokenProvider);
   setDataStatus('saving');
   try{
@@ -2818,14 +2815,13 @@ window.storyMemoryEnableRemote = storyMemoryEnableRemote;
 
 
 /* ===== StoryMemory v3.0.5 Auth E2E Harness =====
-   Runs only after a real authenticated production shell has installed the
-   Auth Bridge and NeonJS remote adapter. It creates one temporary Memory,
-   verifies idempotent remote sync, then deletes it and verifies cleanup.
+   Requires a separately enabled remote-sync bridge. Common login alone does
+   not enable this harness or send any local records.
 */
 const STORYMEMORY_E2E_PREFIX='__SM_E2E__';
 
 async function storyMemoryRunAuthE2E({adapter=storyMemoryRemote}={}){
-  if(!__smAuthBridge?.authenticated)throw new Error('AUTH_REQUIRED');
+  if(!__smAuthBridge?.authenticated||!__smAuthBridge?.syncEnabled)throw new Error('REMOTE_SYNC_NOT_ENABLED');
   if(!adapter || typeof adapter.listMemories!=='function')throw new Error('REMOTE_ADAPTER_REQUIRED');
 
   const marker=`${STORYMEMORY_E2E_PREFIX}${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
@@ -2905,57 +2901,42 @@ window.storyMemoryRunAuthE2E=storyMemoryRunAuthE2E;
 const STORYMEMORY_AUTH_STATE_KEY='storymemory.authBridgeState.v1';
 let __smAuthBridge={
   installed:false,
+  configured:false,
   authenticated:false,
   user:null,
-  getToken:async()=>null,
+  syncEnabled:false,
   openSignIn:async()=>{throw new Error('AUTH_UI_NOT_INSTALLED')},
   signOut:async()=>{}
 };
 
-function saveAuthBridgeUIState(){
-  try{
-    localStorage.setItem(STORYMEMORY_AUTH_STATE_KEY,JSON.stringify({
-      authenticated:!!__smAuthBridge.authenticated,
-      user:__smAuthBridge.user?{
-        id:__smAuthBridge.user.id||null,
-        email:__smAuthBridge.user.email||null,
-        name:__smAuthBridge.user.name||null
-      }:null,
-      updatedAt:Date.now()
-    }));
-  }catch(_){}
+function clearAuthBridgeUIState(){
+  try{localStorage.removeItem(STORYMEMORY_AUTH_STATE_KEY)}catch(_){}
 }
+clearAuthBridgeUIState();
 function installStoryMemoryAuthBridge(bridge={}){
   __smAuthBridge={
     ...__smAuthBridge,
     ...bridge,
-    installed:true,
-    authenticated:!!bridge.authenticated
+    installed:bridge.configured===true,
+    configured:bridge.configured===true,
+    authenticated:bridge.configured===true&&bridge.authenticated===true,
+    user:null,
+    syncEnabled:false
   };
+  storyMemoryRemote.setTokenProvider(async()=>null);
+  __smRemoteReady=false;
   updateAuthGateUI();
-  saveAuthBridgeUIState();
-  if(__smAuthBridge.authenticated){
-    const tokenProvider=async()=>__smAuthBridge.getToken?.();
-    storyMemoryRemote.setTokenProvider(tokenProvider);
-    Promise.resolve().then(()=>storyMemoryEnableRemote(tokenProvider)).catch(()=>{});
-  }
+  clearAuthBridgeUIState();
   return __smAuthBridge;
 }
-function setStoryMemoryAuthSession({authenticated,user,getToken}={}){
+function setStoryMemoryAuthSession({authenticated}={}){
   __smAuthBridge.authenticated=!!authenticated;
-  __smAuthBridge.user=user||null;
-  if(typeof getToken==='function')__smAuthBridge.getToken=getToken;
-  if(__smAuthBridge.authenticated){
-    const tokenProvider=async()=>__smAuthBridge.getToken?.();
-    storyMemoryRemote.setTokenProvider(tokenProvider);
-    Promise.resolve().then(()=>storyMemoryEnableRemote(tokenProvider)).catch(()=>{});
-  }else{
-    storyMemoryRemote.setTokenProvider(async()=>null);
-    __smRemoteReady=false;
-    __smRemoteLastError=null;
-  }
+  __smAuthBridge.user=null;
+  storyMemoryRemote.setTokenProvider(async()=>null);
+  __smRemoteReady=false;
+  __smRemoteLastError=null;
   updateAuthGateUI();
-  saveAuthBridgeUIState();
+  clearAuthBridgeUIState();
 }
 function openAuthGate(){
   updateAuthGateUI();
@@ -2967,7 +2948,7 @@ function closeAuthGate(){
   document.body.classList.remove('auth-gate-open');
   document.getElementById('authGateSheet')?.setAttribute('aria-hidden','true');
 }
-function updateAuthGateUI({syncing=false,error=false}={}){
+function updateAuthGateUI({error=false,logoutError=false}={}){
   const cloud=document.getElementById('todayCloudButton');
   const label=document.getElementById('todayCloudLabel');
   const state=document.getElementById('authGateState');
@@ -2978,74 +2959,51 @@ function updateAuthGateUI({syncing=false,error=false}={}){
   if(!cloud||!state)return;
 
   cloud.classList.toggle('authenticated',!!__smAuthBridge.authenticated);
-  cloud.classList.toggle('syncing',!!syncing);
-  state.className='auth-gate-state'+(error?' error':syncing?' syncing':__smAuthBridge.authenticated?' authenticated':'');
+  cloud.classList.remove('syncing');
+  state.className='auth-gate-state'+(error?' error':__smAuthBridge.authenticated?' authenticated':'');
 
   if(error){
-    label.textContent='동기화 오류';
-    state.querySelector('b').textContent='SYNC ERROR';
-    state.querySelector('span').textContent='로컬 데이터는 안전하게 남아 있습니다.';
-    title.innerHTML='클라우드 연결을<br>다시 확인해주세요.';
-    copy.textContent='동기화에 실패해도 현재 기기의 Reading과 Memory는 삭제되지 않습니다.';
-    primary.textContent='다시 동기화';
-    secondary.textContent='로컬로 계속';
+    label.textContent='계정';
+    state.querySelector('b').textContent=logoutError?'LOGOUT ERROR':'LOGIN ERROR';
+    state.querySelector('span').textContent=logoutError?'로그아웃 서버 응답을 확인하지 못했습니다.':'공통 로그인을 완료하지 못했습니다.';
+    title.innerHTML=logoutError?'로그아웃을<br>완료하지 못했습니다.':'로그인을<br>완료하지 못했습니다.';
+    copy.textContent=logoutError?'로그인 상태를 서버에서 확인하지 못했습니다. 읽기 기록과 Memory는 이 기기에 남아 있습니다. 다시 시도해 주세요.':'읽기 기록과 Memory는 이 기기에 그대로 저장되어 있습니다. 잠시 후 다시 시도해 주세요.';
+    primary.textContent='다시 로그인';
+    primary.hidden=logoutError||!__smAuthBridge.installed||__smAuthBridge.authenticated;
+    secondary.textContent=logoutError?'로그아웃 재시도':'닫기';
     return;
   }
-  if(syncing){
-    label.textContent='동기화 중';
-    state.querySelector('b').textContent='SYNCING';
-    state.querySelector('span').textContent='로컬과 클라우드 Memory를 맞추는 중';
-    primary.textContent='동기화 중…';
-    primary.disabled=true;
-    return;
-  }
-
   primary.disabled=false;
   if(__smAuthBridge.authenticated){
-    const who=__smAuthBridge.user?.email||__smAuthBridge.user?.name||'로그인됨';
-    label.textContent='연결됨';
-    state.querySelector('b').textContent='CLOUD CONNECTED';
-    state.querySelector('span').textContent=who;
-    title.innerHTML='이 기기의 기억을<br>클라우드와 이어갑니다.';
-    copy.textContent='같은 계정으로 다른 기기에서도 Reading, Memory와 Recall을 이어갈 수 있습니다.';
-    primary.textContent='지금 동기화';
+    label.textContent='계정';
+    state.querySelector('b').textContent='SHARED LOGIN';
+    state.querySelector('span').textContent='공통 계정으로 로그인됨';
+    title.innerHTML='공통 계정으로<br>로그인되었습니다.';
+    copy.textContent='이번 단계에서는 읽기 기록과 Memory가 이 기기에 저장됩니다. 기기 간 동기화는 아직 연결되지 않았습니다.';
+    primary.hidden=true;
     secondary.textContent='로그아웃';
   }else{
-    label.textContent='클라우드';
+    label.textContent='계정';
     state.querySelector('b').textContent='LOCAL FIRST';
     state.querySelector('span').textContent='지금은 이 기기에만 저장 중';
-    title.innerHTML=__smAuthBridge.installed?'기억을 기기 밖에도<br>이어두시겠어요?':'기억은 지금<br>이 기기에 저장됩니다.';
-    copy.textContent=__smAuthBridge.installed?'로그인 전에도 읽기 기록과 Memory는 이 기기에 저장됩니다. 로그인하면 다른 기기에서도 이어갈 수 있습니다.':'읽기 기록과 Memory는 현재 기기에 저장됩니다. 로그인과 기기 간 동기화는 준비 중입니다.';
-    primary.textContent=__smAuthBridge.installed?'로그인하고 동기화':'로그인 안내';
+    title.innerHTML='기억은 지금<br>이 기기에 저장됩니다.';
+    copy.textContent=__smAuthBridge.installed?'공통 계정에 로그인할 수 있습니다. 이번 단계에서는 로그인해도 기기 간 동기화가 시작되지 않습니다.':'공통 로그인은 준비 중입니다. 읽기 기록과 Memory는 이 기기에 저장됩니다.';
+    primary.textContent='공통 계정으로 로그인';
+    primary.hidden=!__smAuthBridge.installed;
     secondary.textContent='지금은 로컬로 계속';
   }
 }
 async function authGatePrimaryAction(){
-  if(!__smAuthBridge.authenticated){
-    if(!__smAuthBridge.installed){
-      const copy=document.getElementById('authGateCopy');
-      if(copy)copy.textContent='로그인과 기기 간 동기화는 아직 준비 중입니다. 읽기 기록과 Memory는 현재 기기에 저장됩니다.';
-      return;
-    }
-    try{
-      await __smAuthBridge.openSignIn?.();
-    }catch(_){
-      updateAuthGateUI({error:true});
-    }
-    return;
-  }
-  updateAuthGateUI({syncing:true});
-  try{
-    await storyMemorySyncNow();
-    updateAuthGateUI();
-  }catch(_){
-    updateAuthGateUI({error:true});
-  }
+  if(__smAuthBridge.authenticated||!__smAuthBridge.installed)return;
+  try{await __smAuthBridge.openSignIn?.()}
+  catch(_){updateAuthGateUI({error:true})}
 }
 async function authGateSecondaryAction(){
   if(__smAuthBridge.authenticated){
-    try{await __smAuthBridge.signOut?.()}catch(_){}
-    setStoryMemoryAuthSession({authenticated:false,user:null});
+    try{
+      await __smAuthBridge.signOut?.();
+      setStoryMemoryAuthSession({authenticated:false});
+    }catch(_){updateAuthGateUI({error:true,logoutError:true});}
     return;
   }
   closeAuthGate();
@@ -3059,6 +3017,7 @@ document.getElementById('authGateSecondary').onclick=authGateSecondaryAction;
 window.installStoryMemoryAuthBridge=installStoryMemoryAuthBridge;
 window.setStoryMemoryAuthSession=setStoryMemoryAuthSession;
 window.openStoryMemoryAuth=openAuthGate;
+window.showStoryMemoryAuthError=()=>{openAuthGate();updateAuthGateUI({error:true})};
 
 
 /* ===== StoryMemory v3.0.2 Offline-first Sync Engine ===== */
@@ -3305,6 +3264,7 @@ function setSyncUI(state,label){
   el.classList.toggle('saving',state==='syncing');el.classList.toggle('error',state==='error');el.textContent=label;
 }
 async function storyMemorySyncNow({adapter=storyMemoryRemote}={}){
+  if(!__smAuthBridge?.syncEnabled)throw new Error('REMOTE_SYNC_NOT_ENABLED');
   if(__smSyncRunning)return __smSyncLastResult;
   __smSyncRunning=true;setSyncUI('syncing','REMOTE · SYNCING');
   try{
@@ -8417,5 +8377,6 @@ window.__smV1823EvidenceUXV1={
   });
 })();
 </script>
+<script type="module" src="storymemory-shared-auth-ui.mjs"></script>
 </body>
 </html>
