@@ -1,0 +1,129 @@
+{
+  "schema_version": "storymemory-bible-search-index-1",
+  "work_key": "bible-web",
+  "source_manifest_sha256": "0a31e7cdbc300850bcac17cf66680109a6089a6daeabc4af8f03c7acef55245b",
+  "source_unit_count": 1189,
+  "passage_count": 31098,
+  "shards": [
+    {
+      "path": "shard-01.json",
+      "unit_count": 86,
+      "passage_count": 2605,
+      "first_locator": "bible:web:GEN:1:1",
+      "last_locator": "bible:web:EXO:36:38",
+      "bytes": 741152,
+      "gzip_bytes": 229350,
+      "brotli_bytes": 178600
+    },
+    {
+      "path": "shard-02.json",
+      "unit_count": 77,
+      "passage_count": 2604,
+      "first_locator": "bible:web:EXO:37:1",
+      "last_locator": "bible:web:DEU:10:22",
+      "bytes": 753021,
+      "gzip_bytes": 203453,
+      "brotli_bytes": 156922
+    },
+    {
+      "path": "shard-03.json",
+      "unit_count": 95,
+      "passage_count": 2602,
+      "first_locator": "bible:web:DEU:11:1",
+      "last_locator": "bible:web:1SA:22:23",
+      "bytes": 865288,
+      "gzip_bytes": 265421,
+      "brotli_bytes": 203989
+    },
+    {
+      "path": "shard-04.json",
+      "unit_count": 84,
+      "passage_count": 2618,
+      "first_locator": "bible:web:1SA:23:1",
+      "last_locator": "bible:web:1CH:4:43",
+      "bytes": 868989,
+      "gzip_bytes": 273223,
+      "brotli_bytes": 208809
+    },
+    {
+      "path": "shard-05.json",
+      "unit_count": 101,
+      "passage_count": 2601,
+      "first_locator": "bible:web:1CH:5:1",
+      "last_locator": "bible:web:JOB:7:21",
+      "bytes": 802169,
+      "gzip_bytes": 256986,
+      "brotli_bytes": 193742
+    },
+    {
+      "path": "shard-06.json",
+      "unit_count": 140,
+      "passage_count": 2622,
+      "first_locator": "bible:web:JOB:8:1",
+      "last_locator": "bible:web:PSA:105:45",
+      "bytes": 557526,
+      "gzip_bytes": 193814,
+      "brotli_bytes": 149762
+    },
+    {
+      "path": "shard-07.json",
+      "unit_count": 126,
+      "passage_count": 2599,
+      "first_locator": "bible:web:PSA:106:1",
+      "last_locator": "bible:web:ISA:30:33",
+      "bytes": 616142,
+      "gzip_bytes": 208912,
+      "brotli_bytes": 164507
+    },
+    {
+      "path": "shard-08.json",
+      "unit_count": 110,
+      "passage_count": 2599,
+      "first_locator": "bible:web:ISA:31:1",
+      "last_locator": "bible:web:EZK:17:24",
+      "bytes": 895188,
+      "gzip_bytes": 290061,
+      "brotli_bytes": 217916
+    },
+    {
+      "path": "shard-09.json",
+      "unit_count": 120,
+      "passage_count": 2610,
+      "first_locator": "bible:web:EZK:18:1",
+      "last_locator": "bible:web:MAT:10:42",
+      "bytes": 863623,
+      "gzip_bytes": 275610,
+      "brotli_bytes": 213929
+    },
+    {
+      "path": "shard-10.json",
+      "unit_count": 59,
+      "passage_count": 2635,
+      "first_locator": "bible:web:MAT:11:1",
+      "last_locator": "bible:web:JHN:1:51",
+      "bytes": 672618,
+      "gzip_bytes": 227300,
+      "brotli_bytes": 159012
+    },
+    {
+      "path": "shard-11.json",
+      "unit_count": 78,
+      "passage_count": 2620,
+      "first_locator": "bible:web:JHN:2:1",
+      "last_locator": "bible:web:1CO:14:40",
+      "bytes": 711068,
+      "gzip_bytes": 233462,
+      "brotli_bytes": 182596
+    },
+    {
+      "path": "shard-12.json",
+      "unit_count": 113,
+      "passage_count": 2383,
+      "first_locator": "bible:web:1CO:15:1",
+      "last_locator": "bible:web:REV:22:21",
+      "bytes": 672593,
+      "gzip_bytes": 223351,
+      "brotli_bytes": 174036
+    }
+  ]
+}
