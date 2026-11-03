@@ -10,6 +10,13 @@ The list below denotes product logins whose current-user-to-canonical-session
 bridge has actually been reviewed for enrollment. Adding a web UI, choosing a
 B14 model or knowing a product ID is NOT authorization to extend it.
 
+B62/Chat's same-user bridge review was completed 2026-11-04
+(docs/operations/CONNECTOR_ENROLLMENT_CHAT_SESSION_BRIDGE_REVIEW_261104.md);
+B66/Quote and Engine still need their OWN authenticated
+same-user-to-Identity-DO bridge review before their login can initiate a
+shared PC registration. Do not infer authorization from plan tiers, model
+access, email, or arbitrary product IDs.
+
 SOURCE ONLY. Registration, migrations, product routes and credential handoff
 remain OFF unless separately enabled in the existing canonical authorities.
 """
@@ -21,11 +28,12 @@ from .auth_sessions import AuthSessionSnapshot
 from .contracts import ControlPlaneContractError, SubjectType
 from .tenants import TenantMembershipRole
 
-# Initial reviewed canonical session bridge only. B62/Chat, B66/Quote and
-# Engine need their OWN authenticated same-user-to-Identity-DO bridge review
-# before their login can initiate a shared PC registration. Do not infer
+# Reviewed canonical session bridges: the Claw engine session (the original
+# reviewed bridge) and the B62/Chat login session (the same-user bridge review
+# completed 2026-11-04, see docs/operations/
+# CONNECTOR_ENROLLMENT_CHAT_SESSION_BRIDGE_REVIEW_261104.md). Do not infer
 # authorization from plan tiers, model access, email, or arbitrary product IDs.
-REVIEWED_CONNECTOR_ENROLLMENT_LOGIN_PRODUCTS = frozenset({"b54-padiem-claw"})
+REVIEWED_CONNECTOR_ENROLLMENT_LOGIN_PRODUCTS = frozenset({"b54-padiem-claw", "b62"})
 CONNECTOR_REGISTRATION_PRODUCT_NEUTRAL_AUTHORITY = True
 CONNECTOR_REGISTRATION_MINTS_PRODUCT_ACCESS = False
 CONNECTOR_REGISTRATION_GRANTS_P01_READ = False

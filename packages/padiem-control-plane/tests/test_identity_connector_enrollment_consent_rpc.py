@@ -211,6 +211,17 @@ def test_invalid_or_inactive_canonical_session_never_grants():
     assert records.current_for_device(owner_subject_id=SUBJECT, device_id=DEVICE, now=NOW) is None
 
 
+def test_b62_owner_scope_resolution_admits_the_chat_session():
+    # 2026-11-04 브리지 리뷰: product_id="b62" 세션도 소유자 세션이면
+    # owner-scope 조회가 성공한다(같은 canonical subject·tenant).
+    fake, _, canonical, _ = harness()
+    canonical.session = replace(canonical.session, product_id="b62")
+    result = call("resolve_connector_owner_scope", fake, {"session_id": SESSION_ID})
+    assert result["ok"] is True
+    assert result["scope"]["account_ref"] == "account.shared.test"
+    assert result["scope"]["owner_subject_id"] == SUBJECT
+
+
 def test_no_shared_scope_row_never_mints_a_scope_or_consent():
     fake, records, _, storage = harness()
     storage.sql.db.execute("DELETE FROM canonical_connector_context")
@@ -302,7 +313,7 @@ def test_current_consent_and_authorization_rpc_reject_extra_or_cross_owner_field
 
 
 @pytest.mark.parametrize("source_product", [
-    "b62", "b66", "b66-padiem-quote", "padiem-engine",
+    "b66", "b66-padiem-quote", "padiem-engine",
 ])
 def test_product_session_cannot_bypass_canonical_shared_pc_owner_guard(source_product):
     fake, records, canonical, _ = harness()

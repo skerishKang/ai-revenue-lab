@@ -174,33 +174,20 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         conversation_id = await store.record_chat_pc_drive_run(user_id=uid, run_id=run_id,
             workspace_id=workspace_id, user_text=label, conversation_id=None,
             action="pc_files_query", title_prefix="외부 AI PC 작업: ")
-        # 2026-11-04: the ownership-map lanes' identity RPC admits only reviewed
-        # b54-padiem-claw sessions (connector_enrollment_owner_policy.py), so the
-        # shell dispatches resolve the owner's CURRENT b54 canonical session
-        # through the reviewed bridge instead of forwarding this connector's
-        # chat session (whose product the policy refuses).
-        from padiem_control_plane.b54_identity_bridge import (
-            B54IdentityBridgeError, resolve_current_b54_canonical_session,
-        )
-        try:
-            bridged = await resolve_current_b54_canonical_session(
-                request.app.state.control_plane_identity_authority, uid)
-        except B54IdentityBridgeError as exc:
-            raise ChatPCDriveError(
-                "chat_pc_b54_session_unavailable",
-                "PC 명령 권한 세션을 확인하지 못했습니다.", 403,
-                cause=getattr(exc, "code", None) or None,
-            ) from exc
-        dispatch_session = bridged.auth_session
+        # 2026-11-04: the dispatch session is the connector's own Chat login
+        # session (product b62) — the ownership-map lanes' identity RPC admits
+        # it after the reviewed same-user bridge
+        # (docs/operations/CONNECTOR_ENROLLMENT_CHAT_SESSION_BRIDGE_REVIEW_261104.md),
+        # so the earlier b54-session requirement is no longer needed here.
         if tool_name == PC_SHELL_TOOL_NAME:
             result = await execute_pc_shell(
-                request, session=dispatch_session, uid=uid, subject_id=subject_id,
+                request, session=session, uid=uid, subject_id=subject_id,
                 workspace_id=workspace_id, device_id=device_id, token_id=token_id,
                 run_id=run_id, conversation_id=conversation_id, arguments=arguments,
             )
         else:
             result = await execute_pc_shell_start(
-                request, session=dispatch_session, uid=uid, workspace_id=workspace_id,
+                request, session=session, uid=uid, workspace_id=workspace_id,
                 device_id=device_id, run_id=run_id, conversation_id=conversation_id,
                 arguments=arguments,
             )

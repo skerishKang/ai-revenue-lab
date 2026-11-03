@@ -46,17 +46,25 @@ def admitted(session: AuthSessionSnapshot, role=TenantMembershipRole.OWNER):
 def test_existing_verified_b54_bridge_preserves_canonical_owner_admission():
     session = canonical()
     assert admitted(session) is session
-    assert REVIEWED_CONNECTOR_ENROLLMENT_LOGIN_PRODUCTS == frozenset({"b54-padiem-claw"})
+    assert REVIEWED_CONNECTOR_ENROLLMENT_LOGIN_PRODUCTS == frozenset({"b54-padiem-claw", "b62"})
 
 
 @pytest.mark.parametrize("product", [
-    "b62", "b66", "b66-padiem-quote", "padiem-chat", "padiem-engine",
+    "b66", "b66-padiem-quote", "padiem-chat", "padiem-engine",
     "B14", "claw", "unknown-product",
 ])
 def test_new_product_id_never_authorizes_shared_pc_enrollment(product):
     with pytest.raises(ControlPlaneContractError) as caught:
         admitted(canonical(product))
     assert caught.value.code == "connector_enrollment_consent_session_denied"
+
+
+def test_reviewed_chat_login_session_is_admitted_as_the_same_owner():
+    # 2026-11-04 브리지 리뷰: B62/Chat 로그인 세션도 같은 canonical 소유자의
+    # 세션이면 커넥터 enrollment 동의 게이트를 통과한다
+    # (docs/operations/CONNECTOR_ENROLLMENT_CHAT_SESSION_BRIDGE_REVIEW_261104.md).
+    session = canonical("b62")
+    assert admitted(session) is session
 
 
 @pytest.mark.parametrize("role", [
