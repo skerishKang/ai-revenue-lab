@@ -21,7 +21,9 @@ sys.path.insert(0, str(QUEUE))
 
 from app.pc_device_pairing_store import D1PcPairingStore  # noqa: E402
 from schema import apply  # noqa: E402
-from internal_store import INTERNAL_STORE_PATH, QUEUE_SERVICE_SECRET_HEADER  # noqa: E402
+from internal_store import (
+    INTERNAL_STORE_PATH, PAIRING_METHODS, QUEUE_SERVICE_SECRET_HEADER,
+)  # noqa: E402
 
 
 def _load_queue_service():
@@ -172,3 +174,105 @@ def test_the_body_gate_admits_exactly_the_limit_and_refuses_one_byte_more():
     refused = asyncio.run(_handler(app)(refused_request))
     assert refused.status_code == 413
     assert _body(refused)["error"]["code"] == "queue_body_too_large"
+
+
+def test_delete_account_pc_data_rpc_is_idempotent_and_preserves_shared_history():
+    app = _app()
+    connection = app.state.queue_database.connection
+    assert "delete_account_pc_data" in PAIRING_METHODS
+
+    owner, other = "account-one", "account-two"
+    now = "2026-11-03T00:00:00Z"
+    later = "2026-11-04T00:00:00Z"
+    for suffix, user, digest in (("one", owner, "a"), ("two", other, "b")):
+        code_id = "code-" + suffix
+        connection.execute(
+            "INSERT INTO pc_pairing_codes "
+            "(code_id, code_sha256, tag_sha256, user_id, state, issued_at, expires_at) "
+            "VALUES (?,?,?,?,?,?,?)",
+            (code_id, digest * 64, ("c" if suffix == "one" else "d") * 64,
+             user, "pending", now, later),
+        )
+        connection.execute(
+            "INSERT INTO pc_install_tokens "
+            "(token_id, token_sha256, code_id, user_id, issued_at, expires_at) "
+            "VALUES (?,?,?,?,?,?)",
+            ("token-" + suffix, ("e" if suffix == "one" else "f") * 64,
+             code_id, user, now, later),
+        )
+        connection.execute(
+            "INSERT INTO pc_device_links "
+            "(link_id, user_id, mesh_node_id, state, created_at, updated_at) "
+            "VALUES (?,?,?,?,?,?)",
+            ("link-" + suffix, user, "node/demo/pc-" + suffix, "active", now, now),
+        )
+        connection.execute(
+            "INSERT INTO oracle_mesh_dispatch "
+            "(dispatch_id, user_id, run_id, command_id, tool_request_ref, request_id, "
+            "revision_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
+            "node_ref, root_ref, path_relative, file_path, state, expires_at, created_at) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                "dispatch-" + suffix, user, "run-" + suffix, "command-" + suffix,
+                "tool-" + suffix, "request-" + suffix, "revision-" + suffix,
+                ("1" if suffix == "one" else "2") * 64, "account-" + suffix,
+                "workspace-" + suffix, "device-" + suffix, "node-" + suffix,
+                "root-" + suffix, "file.txt", "C:/file.txt", "consumed", later, now,
+            ),
+        )
+    for device, refs in (("shared-device", [owner, other]), ("owner-device", [owner])):
+        connection.execute(
+            "INSERT INTO mesh_device_presence "
+            "(device_id, connected, received_at, credential_generation, source, "
+            "last_connected_at, account_refs_json) VALUES (?,?,?,?,?,?,?)",
+            (device, 1, now, 1, "broker", now, json.dumps(refs)),
+        )
+    connection.execute(
+        "INSERT INTO mesh_device_drives (device_id, drives_json, received_at) VALUES (?,?,?)",
+        ("shared-device", json.dumps(["C:"]), now),
+    )
+
+    for _ in range(2):
+        response = _call(app, {
+            "method": "delete_account_pc_data",
+            "arguments": {"user_id": owner},
+        })
+        assert response.status_code == 200, response.body
+        assert _body(response) == {"ok": True, "result": True}
+
+    for table in ("pc_pairing_codes", "pc_install_tokens", "pc_device_links"):
+        assert connection.execute(
+            f"SELECT COUNT(*) AS n FROM {table} WHERE user_id = ?", (owner,)
+        ).fetchone()["n"] == 0
+        assert connection.execute(
+            f"SELECT COUNT(*) AS n FROM {table} WHERE user_id = ?", (other,)
+        ).fetchone()["n"] == 1
+
+    shared = connection.execute(
+        "SELECT account_refs_json FROM mesh_device_presence WHERE device_id = ?",
+        ("shared-device",),
+    ).fetchone()
+    assert shared is not None
+    assert json.loads(shared["account_refs_json"]) == [other]
+    assert connection.execute(
+        "SELECT COUNT(*) AS n FROM mesh_device_presence WHERE device_id = ?",
+        ("owner-device",),
+    ).fetchone()["n"] == 0
+
+    # Replay-prevention history and device-wide drive inventory are retained.
+    assert connection.execute(
+        "SELECT COUNT(*) AS n FROM oracle_mesh_dispatch WHERE user_id = ?", (owner,)
+    ).fetchone()["n"] == 1
+    assert connection.execute(
+        "SELECT COUNT(*) AS n FROM oracle_mesh_dispatch WHERE user_id = ?", (other,)
+    ).fetchone()["n"] == 1
+    drive_columns = {
+        row["name"] for row in connection.execute(
+            "PRAGMA table_info(mesh_device_drives)"
+        ).fetchall()
+    }
+    assert "user_id" not in drive_columns
+    assert connection.execute(
+        "SELECT COUNT(*) AS n FROM mesh_device_drives WHERE device_id = ?",
+        ("shared-device",),
+    ).fetchone()["n"] == 1

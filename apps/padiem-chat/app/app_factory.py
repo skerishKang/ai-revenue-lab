@@ -136,6 +136,7 @@ from .b66_saved_skill_candidate_store import (
     SavedQuoteSkillCandidateStore,
 )
 from .home_product_access_routes import ACCESS_PATH, home_product_access
+from .account_deletion import account_delete
 from .auth_routes import (
     auth_status,
     google_callback,
@@ -656,6 +657,9 @@ def create_app(
         Route("/api/auth/password/reset/request", password_reset_request, methods=["POST"]),
         Route("/api/auth/password/reset/confirm", password_reset_confirm, methods=["POST"]),
         Route("/api/auth/logout", logout, methods=["POST"]),
+        # #6659 3번 1단계: signed-in account self-deletion over its own Chat DB
+        # rows only, behind the same-origin guard and the exact-email confirm.
+        Route("/api/account/delete", account_delete, methods=["POST"]),
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
         Route(MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session, methods=["POST"]),
         Route(MEETINGS_PATH, claw_meetings, methods=["GET", "POST"]),
@@ -1218,6 +1222,13 @@ def create_app(
         timeout_seconds=min(600.0, resolved.completed_timeout_seconds)
     )
     app.state.history_store = history_store
+    # #6659 3번 1단계: the account self-deletion route deletes rows through the
+    # same canonical Chat D1 binding the stores were built on. It stays None on
+    # a host that supplies no D1, and the route answers 503 there.
+    app.state.account_data_db = d1_binding
+    # The host-supplied trusted central administrator email (never read from a
+    # request). The deletion route refuses to delete this account.
+    app.state.central_admin_google_email = central_model_admin_google_email
     # Android 1.0.0 launches Google sign-in in the external browser, whose
     # cookies never reach the WebView. The one-time handoff store bridges that
     # gap inside the canonical Chat D1; it does not mint another identity or a
