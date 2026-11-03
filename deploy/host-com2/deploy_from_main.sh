@@ -1029,6 +1029,19 @@ PY
     elif [[ $ai_output =~ ^ai:FAIL\ error_code=([a-z][a-z0-9_]{0,80})$ ]]; then
       ai_code=${BASH_REMATCH[1]}
     fi
+    # Two codes are raised before the check sends its request: no QA identity on
+    # this host, or a base URL the canary refuses to sign in against. Nothing was
+    # measured, so under --ai-check=warn the line says SKIP with the reason. On
+    # 11-03 the run ended APPLY_EXIT=0 with "ai:FAIL error_code=qa_credential_missing",
+    # which reads as a broken answer lane when the answer was never tried. Any code
+    # from a check that did run (empty_answer, entitlement_unavailable,
+    # qa_login_refused, ...) stays FAIL, and --ai-check=required keeps failing on
+    # every code — there the operator asked for the guarantee, not the warning.
+    if [[ $ai_status == FAIL && $ai_check == warn ]]; then
+      case $ai_code in
+        qa_credential_missing|invalid_chat_origin) ai_status=SKIP ;;
+      esac
+    fi
     if [[ $ai_status == FAIL && $ai_check == required ]]; then
       failed=1
       for line in queue b14 p01 chat; do
@@ -1043,11 +1056,13 @@ PY
       done
     fi
   fi
+  local ai_word="ai:$ai_status"
   if [[ $ai_status == FAIL ]]; then
-    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} ai:FAIL error_code=$ai_code"
-  else
-    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} ai:$ai_status"
+    ai_word="ai:FAIL error_code=$ai_code"
+  elif [[ $ai_status == SKIP && $ai_code != none ]]; then
+    ai_word="ai:SKIP reason=$ai_code"
   fi
+  say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} $ai_word"
   if (( extended_smoke )); then
     "$python_bin" "$staged/deploy/host-com2/post_deploy_smoke.py" \
       --base-url "$ai_base_url" --chat-db "$chat_db" \
