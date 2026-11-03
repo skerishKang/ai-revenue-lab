@@ -3,7 +3,7 @@
 Run against a locally served padiem-chat instance:
 
     PADIEM_CHAT_RUNTIME_MODE=mock PADIEM_CHAT_WEB_PROVIDER=mock \
-      python -m uvicorn app.main:app --host 127.0.0.1 --port 8080
+      python -m app.local_server --host 127.0.0.1 --port 8080
     python scripts/b62_ui_verify.py http://127.0.0.1:8080 <output-dir>
 
 Checks (maps to the B62 split-search task tests 1-5):

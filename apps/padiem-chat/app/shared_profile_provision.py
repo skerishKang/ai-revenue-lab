@@ -64,16 +64,13 @@ async def provision_shared_profile(request, user_id, access_token, tokens, *, ve
         # (b62) has not opted in: the authority then sends a token and nothing else.
         # The verified subject and its existing Chat link are enough to log in, and
         # there is nothing here that Chat may write, so nothing is written.
-        logger.info('shared_login_profile_omitted reason=client_opt_out body_fields=%s',
-                    ','.join(sorted(key for key in tokens if isinstance(key, str))))
+        logger.info('shared_login_profile_omitted reason=client_opt_out body_field_count=%d', len(tokens))
         return
     if (not isinstance(profile, dict) or not profile or not set(profile) <= PROFILE_FIELDS
             or 'email' not in profile):
         # Field names are protocol, values are not.
-        logger.warning('shared_login_profile_rejected condition=shape fields=%s body_fields=%s',
-                       ','.join(sorted(key for key in profile if isinstance(key, str)))
-                       if isinstance(profile, dict) else _shape(profile),
-                       ','.join(sorted(key for key in tokens if isinstance(key, str))))
+        logger.warning('shared_login_profile_rejected condition=shape profile_field_count=%s body_field_count=%d',
+                       len(profile) if isinstance(profile, dict) else _shape(profile), len(tokens))
         raise ValueError('invalid_profile')
     email, name, picture = profile['email'], profile.get('name', ''), profile.get('picture', '')
     if (not isinstance(email, str) or not email.strip() or len(email) > 320
@@ -83,8 +80,7 @@ async def provision_shared_profile(request, user_id, access_token, tokens, *, ve
         # The verification flag is only required when the client asked for it: the
         # authority sets it once Google's ID token has been checked, and drops it
         # with every other field the client does not list.
-        logger.warning('shared_login_profile_rejected condition=values fields=%s',
-                       ','.join(sorted(key for key in profile if isinstance(key, str))))
+        logger.warning('shared_login_profile_rejected condition=values profile_field_count=%d', len(profile))
         raise ValueError('invalid_profile')
     try:
         await store.upsert_shared_user(user_id, account_id, email, name, picture)

@@ -16,6 +16,9 @@
 # offline. Never overwrite a config you did not generate, and stop on a hostname
 # conflict rather than reassigning it.
 
+# Keep request URLs and headers out of routine tunnel logs.
+loglevel: error
+
 ingress:
   # File lane (already proposed in docs/operations/COM2_TUNNEL_RUNBOOK.md, #5881/#5892).
   - hostname: files.padiem.net

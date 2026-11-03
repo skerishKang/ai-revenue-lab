@@ -46,6 +46,12 @@ def _bounded_engine_failure() -> dict[str, str]:
     return {"code": "engine_execution_failed", "message": "Engine 실행에 실패했습니다."}
 
 
+def _adapter_failure_log_line(terminal_class: str) -> str:
+    if terminal_class not in ("proven_not_dispatched", "verified_failure"):
+        terminal_class = "unknown"
+    return f"claw_live_adapter_failure terminal={terminal_class}"
+
+
 def _public_failure(exc: P01AdapterError) -> dict[str, str]:
     # A #3568 model HOLD never reached Engine/B14 and already refunded quota, so
     # it is the general route's bounded `tier_unavailable` product state. The
@@ -162,14 +168,8 @@ def live_claw_sse(
                     terminal_class = "proven_not_dispatched"
                 else:
                     terminal_class = "verified_failure"
-                # #5015: bounded identifiers only — the adapter code and the
-                # reviewed failure detail, never Engine text or attributes.
-                print(
-                    "claw_live_adapter_failure"
-                    f" code={exc.code} detail={exc.failure_detail}"
-                    f" dispatch={exc.dispatch_class}",
-                    flush=True,
-                )
+                # #5015: keep the host event to a fixed terminal class, not adapter details.
+                print(_adapter_failure_log_line(terminal_class), flush=True)
                 await queue.put(("error", (_public_failure(exc), terminal_class)))
             except asyncio.CancelledError:
                 _clear_reservation()

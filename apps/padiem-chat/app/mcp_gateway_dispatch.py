@@ -17,8 +17,7 @@ def _log_operation(audit, status, *, outcome=None):
     """Use the existing request event stream with a closed metadata projection."""
     event = {"event": "mcp_operation", "status": status,
              "request_digest": mcp_request_digest(audit["tool_name"], audit["arguments"])}
-    for key, value in (("token_id", audit["identity"]["token_id"]),
-                       ("tool", audit["tool_name"]), ("approval_id", audit.get("approval_id")),
+    for key, value in (("tool", audit["tool_name"]), ("approval_id", audit.get("approval_id")),
                        ("run_id", (outcome or {}).get("run_id"))):
         if isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9_.:-]{1,96}", value):
             event[key] = value

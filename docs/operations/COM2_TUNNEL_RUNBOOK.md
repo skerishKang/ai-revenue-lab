@@ -2,6 +2,10 @@
 
 Scope: COM2 Ubuntu 24.04 WSL2, Cloudflare account **Charliekant**. Related: #5881, #5891. Prepared 2026-10-26 KST; **not started, not enabled, no login/token/DNS action**.
 
+## Chat request-log privacy follow-up (2026-11-03)
+
+The Chat and B14 Cloudflared examples set loglevel: error. This source change does not modify the installed COM2 tunnel configuration or restart its service. The COM2 lane must apply this setting and verify the effective service loglevel, including any command-line override.
+
 ## Prepared state and verification
 
 | Item | State |

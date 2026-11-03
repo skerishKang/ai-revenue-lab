@@ -86,6 +86,13 @@ from .history import (
 )
 from .request_telemetry import emit_stage_event
 
+
+def _identity_bridge_failure_log_line(stage: str) -> str:
+    if stage not in ("product_user", "b54_session"):
+        stage = "unknown"
+    return f"claw_engine_bridge_stage stage={stage} result=failed"
+
+
 ORACLE_MESH_READ_REQUEST_PATH = "/api/claw/connector/mesh-reads/request"
 ORACLE_MESH_READ_POLL_PATH = "/api/claw/connector/mesh-reads/poll"
 ORACLE_MESH_READ_RESULT_PATH = "/api/claw/connector/mesh-reads/result"
@@ -5089,22 +5096,12 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
         )
     except Exception as exc:
         # #5015: bounded stage identifiers only, never identity values.
-        print(
-            "claw_engine_bridge_stage stage=product_user"
-            f" code={getattr(exc, 'code', 'unknown')}"
-            f" type={type(exc).__name__}",
-            flush=True,
-        )
+        print(_identity_bridge_failure_log_line("product_user"), flush=True)
         return _error(401, "canonical_session_required")
     try:
         bridged = await resolve_b54_session(identity, uid)
     except Exception as exc:
-        print(
-            "claw_engine_bridge_stage stage=b54_session"
-            f" code={getattr(exc, 'code', 'unknown')}"
-            f" type={type(exc).__name__}",
-            flush=True,
-        )
+        print(_identity_bridge_failure_log_line("b54_session"), flush=True)
         return _error(401, "canonical_session_required")
     if (bridged is None
         or bridged.auth_session.subject.subject_id != payload["subject_id"]
