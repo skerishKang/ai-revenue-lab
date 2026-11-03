@@ -1,0 +1,23 @@
+== pre-deploy record (6695 PR-2/PR-3) ==
+time: 2026-11-03T09:34:43+09:00
+target main: 31fa10752e17665f6b6dd3074872f34eb5c7a69e
+--- services ---
+padiem-chat-com2 active=active NRestarts=0
+padiem-mesh-queue active=active NRestarts=0
+padiem-b14 active=active NRestarts=0
+chat health: 200
+queue health: PASS
+b14 health: 200
+--- dbs ---
+chat db: /opt/padiem/chat-com2/data/chat.sqlite3 ledger_last=090_mesh_device_presence_last_connected.sql ledger_count=90
+queue db: /opt/padiem/mesh-queue/queue.sqlite3 ledger=047_oracle_mesh_dispatch.sql,048_oracle_mesh_command.sql,049_oracle_mesh_command_result_meta.sql,063_oracle_mesh_dispatch_tool_call_scope.sql,067_mesh_device_presence.sql,070_mesh_device_presence_source.sql,072_pc_device_pairing.sql,073_pc_device_link_pause.sql,074_oracle_mesh_dispatch_claim_lease.sql,086_mesh_device_drives.sql
+presence rows: chat_db=0 queue_db=4
+queue devices online (latest receipts): 3
+integrity /opt/padiem/com2-deploy/com2local1-backup-20261103-6695/chat-pre-6695-20261103T093443Z.sqlite3: ok
+integrity /opt/padiem/com2-deploy/com2local1-backup-20261103-6695/queue-pre-6695-20261103T093443Z.sqlite3: ok
+total 5128
+drwxr-xr-x 2 root root    4096 Nov  3 09:34 .
+drwxr-xr-x 6 root root    4096 Nov  3 09:34 ..
+-rw-r--r-- 1 root root 5107712 Nov  3 09:34 chat-pre-6695-20261103T093443Z.sqlite3
+-rw-r--r-- 1 root root    1134 Nov  3 09:34 pre-record.txt
+-rw-r--r-- 1 root root  131072 Nov  3 09:34 queue-pre-6695-20261103T093443Z.sqlite3
