@@ -6,7 +6,7 @@ import hmac
 import re
 import secrets
 from collections.abc import Callable
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from padiem_control_plane.auth_sessions import (
@@ -37,7 +37,7 @@ MAX_PRODUCT_USER_ID_CHARS = 256
 _KEY_RE = re.compile(r"^[A-Za-z0-9_-]{43}$")
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _ALLOWED_PROVIDERS = frozenset({"google", "password"})
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 
 def _utc(value: datetime, field_name: str) -> datetime:
@@ -241,6 +241,10 @@ class CloudflareCanonicalIdentityAuthorityStore:
             "ON canonical_tenant_membership(canonical_subject_id)"
         )
         self._sql.exec(
+            "CREATE TABLE IF NOT EXISTS canonical_account_deletion_audit ("
+            "user_id_hash TEXT PRIMARY KEY, deleted_at TEXT NOT NULL)"
+        )
+        self._sql.exec(
             "CREATE TABLE IF NOT EXISTS identity_authority_schema ("
             "key TEXT PRIMARY KEY, value TEXT NOT NULL)"
         )
@@ -265,10 +269,11 @@ class CloudflareCanonicalIdentityAuthorityStore:
     def _apply_migrations(self) -> None:
         """Explicit additive migration path for already-deployed stores.
 
-        Version 3 adds nullable ``canonical_tenant_membership.role``. Legacy
+        Version 3 adds nullable ``canonical_tenant_membership.role``. Version 4
+        creates the hash-and-time common-account deletion audit table. Legacy
         rows remain roleless; no default or backfill value is fabricated. The
-        same migration also preserves the version-2 auth-session tenant column
-        for stores that predate it.
+        migration also preserves the version-2 auth-session tenant column for
+        stores that predate it.
         """
         current_version = self._schema_version()
         if current_version > SCHEMA_VERSION:
@@ -1311,6 +1316,262 @@ class CloudflareCanonicalIdentityAuthorityStore:
                 "canonical product identity link is not active",
             )
         return active_users[0]
+
+    def list_active_product_links_for_subject(
+        self, *, canonical_subject_id: str
+    ) -> list[dict[str, str]]:
+        """Return the server-owned active product links for one canonical subject."""
+        subject_ref = self._require_subject_id(canonical_subject_id)
+        rows = _rows(
+            self._sql.exec(
+                "SELECT product_id, product_user_id, state "
+                "FROM canonical_product_identity_link WHERE canonical_subject_id=?",
+                subject_ref,
+            )
+        )
+        links: list[dict[str, str]] = []
+        seen: set[str] = set()
+        for row in rows:
+            try:
+                product = self._require_product(row.get("product_id"))
+                product_user_id = _product_user_id(row.get("product_user_id"))
+                state = IdentityLinkState(str(row["state"]))
+            except (ControlPlaneContractError, KeyError, TypeError, ValueError) as exc:
+                raise ControlPlaneContractError(
+                    "identity_authority_storage_error",
+                    "canonical product identity link row is invalid",
+                ) from exc
+            if product in seen and state is IdentityLinkState.ACTIVE:
+                raise ControlPlaneContractError(
+                    "identity_authority_storage_error",
+                    "canonical product identity link is ambiguous",
+                )
+            if state is IdentityLinkState.ACTIVE:
+                seen.add(product)
+                links.append({
+                    "product_id": product,
+                    "product_user_id": product_user_id,
+                    "state": state.value,
+                })
+        links.sort(key=lambda item: (item["product_id"], item["product_user_id"]))
+        return links
+
+    def _revoke_subject_sessions(
+        self, *, subject_id: str, now: datetime, product_id: str | None = None
+    ) -> int:
+        query = (
+            "SELECT session_id, product_id, subject_type, subject_id, issued_at, "
+            "expires_at, state, revision, tenant_id FROM canonical_auth_session "
+            "WHERE subject_type=? AND subject_id=?"
+        )
+        args: tuple[Any, ...] = (SubjectType.USER.value, subject_id)
+        if product_id is not None:
+            query += " AND product_id=?"
+            args += (product_id,)
+        rows = _rows(self._sql.exec(query, *args))
+        revoked = 0
+        for row in rows:
+            snapshot = self._session_from_row(row)
+            if snapshot.state is not AuthSessionState.ACTIVE:
+                continue
+            self._revoke_snapshot(snapshot, now=now, reason_code="account_deletion")
+            revoked += 1
+        return revoked
+
+    def remove_product_link(
+        self,
+        *,
+        product_id: str,
+        product_user_id: str,
+        canonical_subject_id: str,
+        account_deletion_operation_id: str | None = None,
+        now: datetime,
+    ) -> dict[str, Any]:
+        """Unlink after product data deletion; destroy the subject on its last link.
+
+        The local service must finish its own deletion before calling this
+        method. Link removal and last-link finalization are one SQLite
+        transaction, so retries cannot leave a half-removed Control Plane
+        identity. The deletion audit stores only a subject hash and timestamp.
+        """
+        product = self._require_product(product_id)
+        user_ref = _product_user_id(product_user_id)
+        subject_ref = self._require_subject_id(canonical_subject_id)
+        if account_deletion_operation_id is not None and (
+            not isinstance(account_deletion_operation_id, str)
+            or re.fullmatch(
+                r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}",
+                account_deletion_operation_id,
+            ) is None
+        ):
+            raise ControlPlaneContractError(
+                "invalid_identity_authority",
+                "account deletion operation identifier is invalid",
+            )
+        observed_at = _utc(now, "now")
+        audit_hash = hashlib.sha256(subject_ref.encode("utf-8")).hexdigest()
+
+        def operation() -> dict[str, Any]:
+            self._sql.exec(
+                "DELETE FROM canonical_account_deletion_audit WHERE deleted_at < ?",
+                _iso(observed_at - timedelta(days=365)),
+            )
+            subject_rows = _rows(
+                self._sql.exec(
+                    "SELECT canonical_subject_id FROM canonical_identity_subject "
+                    "WHERE canonical_subject_id=?",
+                    subject_ref,
+                )
+            )
+            if not subject_rows:
+                audit_rows = _rows(
+                    self._sql.exec(
+                        "SELECT user_id_hash, deleted_at FROM canonical_account_deletion_audit "
+                        "WHERE user_id_hash=?",
+                        audit_hash,
+                    )
+                )
+                if len(audit_rows) == 1:
+                    return {
+                        "removed": False,
+                        "remaining_links": 0,
+                        "common_account_deleted": True,
+                        "revoked_sessions": 0,
+                        "already_deleted": True,
+                    }
+                raise ControlPlaneContractError(
+                    "canonical_subject_not_found",
+                    "canonical subject was not found",
+                )
+
+            link_rows = _rows(
+                self._sql.exec(
+                    "SELECT canonical_subject_id, state FROM canonical_product_identity_link "
+                    "WHERE product_id=? AND product_user_id=?",
+                    product,
+                    user_ref,
+                )
+            )
+            if len(link_rows) > 1:
+                raise ControlPlaneContractError(
+                    "identity_authority_storage_error",
+                    "canonical product identity link is ambiguous",
+                )
+            active_before_rows = _rows(
+                self._sql.exec(
+                    "SELECT product_id, product_user_id FROM canonical_product_identity_link "
+                    "WHERE canonical_subject_id=? AND state=?",
+                    subject_ref,
+                    IdentityLinkState.ACTIVE.value,
+                )
+            )
+            state = None
+            linked_subject = None
+            if link_rows:
+                linked_subject = self._require_subject_id(
+                    str(link_rows[0].get("canonical_subject_id", ""))
+                )
+                try:
+                    state = IdentityLinkState(str(link_rows[0]["state"]))
+                except (KeyError, TypeError, ValueError) as exc:
+                    raise ControlPlaneContractError(
+                        "identity_authority_storage_error",
+                        "canonical product identity link state is invalid",
+                    ) from exc
+                if linked_subject != subject_ref:
+                    raise ControlPlaneContractError(
+                        "identity_rebind_forbidden",
+                        "product link belongs to a different canonical subject",
+                    )
+
+            remaining_after_unlink = len(active_before_rows) - int(
+                bool(link_rows) and state is IdentityLinkState.ACTIVE
+            )
+            if remaining_after_unlink <= 0 and account_deletion_operation_id is None:
+                raise ControlPlaneContractError(
+                    "account_deletion_unprepared",
+                    "last product link requires prepared Auth session revocation",
+                )
+
+            revoked_sessions = 0
+            if link_rows:
+                if state is IdentityLinkState.ACTIVE:
+                    revoked_sessions = self._revoke_subject_sessions(
+                        subject_id=subject_ref, now=observed_at, product_id=product
+                    )
+                self._sql.exec(
+                    "DELETE FROM canonical_product_identity_link "
+                    "WHERE product_id=? AND product_user_id=? AND canonical_subject_id=?",
+                    product,
+                    user_ref,
+                    subject_ref,
+                )
+
+            active_rows = _rows(
+                self._sql.exec(
+                    "SELECT product_id, product_user_id FROM canonical_product_identity_link "
+                    "WHERE canonical_subject_id=? AND state=?",
+                    subject_ref,
+                    IdentityLinkState.ACTIVE.value,
+                )
+            )
+            if active_rows:
+                return {
+                    "removed": bool(link_rows),
+                    "remaining_links": len(active_rows),
+                    "common_account_deleted": False,
+                    "revoked_sessions": revoked_sessions,
+                    "already_deleted": False,
+                }
+
+            revoked_sessions += self._revoke_subject_sessions(
+                subject_id=subject_ref, now=observed_at
+            )
+            self._sql.exec(
+                "DELETE FROM canonical_tenant_membership WHERE canonical_subject_id=?",
+                subject_ref,
+            )
+            self._sql.exec(
+                "DELETE FROM canonical_identity_subject WHERE canonical_subject_id=?",
+                subject_ref,
+            )
+            self._sql.exec(
+                "DELETE FROM canonical_product_identity_link WHERE canonical_subject_id=?",
+                subject_ref,
+            )
+            self._sql.exec(
+                "INSERT INTO canonical_account_deletion_audit (user_id_hash, deleted_at) "
+                "VALUES (?, ?) ON CONFLICT(user_id_hash) DO UPDATE SET deleted_at=excluded.deleted_at",
+                audit_hash,
+                _iso(observed_at),
+            )
+            return {
+                "removed": bool(link_rows),
+                "remaining_links": 0,
+                "common_account_deleted": True,
+                "revoked_sessions": revoked_sessions,
+                "already_deleted": False,
+            }
+
+        return self._storage.transactionSync(operation)
+
+    def prune_expired_deletion_audits(self, *, now: datetime) -> None:
+        observed_at = _utc(now, "now")
+        self._sql.exec(
+            "DELETE FROM canonical_account_deletion_audit WHERE deleted_at < ?",
+            _iso(observed_at - timedelta(days=365)),
+        )
+
+    def next_deletion_audit_expiry(self) -> datetime | None:
+        rows = _rows(
+            self._sql.exec(
+                "SELECT MIN(deleted_at) AS first_deleted_at FROM canonical_account_deletion_audit"
+            )
+        )
+        value = rows[0].get("first_deleted_at") if rows else None
+        if not isinstance(value, str) or not value:
+            return None
+        return _parse_iso(value, "deleted_at") + timedelta(days=365)
 
     def safe_dict(self) -> dict[str, Any]:
         return {

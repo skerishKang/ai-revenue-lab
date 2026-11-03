@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createHmac, randomUUID } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { AuthState } from '../state.mjs';
 import { createApp, AuthStateObject, identityFingerprint } from '../worker.mjs';
@@ -9,6 +10,31 @@ const b64 = x => Buffer.from(x).toString('base64url');
 const j64 = x => b64(JSON.stringify(x));
 const sum = async x => b64(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(x)));
 const rand = () => b64(crypto.getRandomValues(new Uint8Array(32)));
+const DELETE_RPC_SECRET = 'synthetic-account-delete-secret-32chars';
+function signedDeletionRequest(accountId, {
+  at = 1000,
+  serviceId = randomUUID(),
+  operationId = randomUUID(),
+  path = '/internal/account-delete/prepare',
+  secret = DELETE_RPC_SECRET
+} = {}) {
+  const body = Buffer.from(JSON.stringify({ account_id: accountId, operation_id: operationId }));
+  const canonical = Buffer.concat([
+    Buffer.from(`v2\nPOST\n${path}\n${at}\n${serviceId}\n`, 'utf8'),
+    body
+  ]);
+  const proof = 'v2=' + createHmac('sha256', secret).update(canonical).digest('hex');
+  return new Request(`${url}${path}`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-padiem-service-at': String(at),
+      'x-padiem-service-id': serviceId,
+      'x-padiem-service-proof': proof
+    },
+    body
+  });
+}
 function storage() {
   const db = new DatabaseSync(':memory:');
   return { sql: { exec(q, ...p) { const stmt = db.prepare(q); if (stmt.columns().length) { const rows = stmt.all(...p); return { toArray: () => rows }; } stmt.run(...p); return { toArray: () => [] }; } },
@@ -26,7 +52,7 @@ async function setup({ advanceDuringExchange = false, clientId = 'lovetree', pro
   let nonce = ''; let linked = null; let authorityCalls = 0; let t = 1000;
   const authority = { async resolve_or_create_product_link(v) { authorityCalls++; linked = v; return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_existing' } }; } };
   const objects = new Map(); const stateFor = id => { if (!objects.has(id)) { let queue = Promise.resolve(); const state = { storage: storage(), blockConcurrencyWhile(fn) { const next = queue.then(fn); queue = next.catch(() => {}); return next; } }; objects.set(id, id === 'google-account-registry' ? new AuthStateObject(state, { IDENTITY_AUTHORITY: authority }) : new AuthState(state)); } return objects.get(id); };
-  const app = createApp({ clients: { [clientId]: { id: clientId, ...(profile ? {profile_claims: ['email','email_verified','name','picture']} : {}), redirect_uris: ['https://lovetree.example/auth/callback'], jwks: { keys: [publicClient] } } }, googleClientId: 'google-client', googleClientSecret: 'synthetic', identityKey, refreshKey, adminSecret: 'synthetic-admin-secret', signingKey: signing.privateKey, signingKid: 'auth', jwks: { keys: [publicSigning] }, stateFor, now: () => t,
+  const app = createApp({ clients: { [clientId]: { id: clientId, ...(profile ? {profile_claims: ['email','email_verified','name','picture']} : {}), redirect_uris: ['https://lovetree.example/auth/callback'], jwks: { keys: [publicClient] } } }, googleClientId: 'google-client', googleClientSecret: 'synthetic', identityKey, refreshKey, adminSecret: 'synthetic-admin-secret', accountDeleteRpcSecret: DELETE_RPC_SECRET, signingKey: signing.privateKey, signingKid: 'auth', jwks: { keys: [publicSigning] }, stateFor, now: () => t,
     async fetcher(address, options) { assert.equal(options.redirect, 'manual'); if (address.includes('/certs')) return Response.json({ keys: [googleJwk] });
       if (advanceDuringExchange) t += 1;
       const h = j64({ alg: 'RS256', kid: 'google' }), p = j64({ iss: 'https://accounts.google.com', aud: 'google-client', sub: 'google-sub', email: 'test@example.invalid', email_verified: true, name: 'Test User', picture: '', nonce, iat: advanceDuringExchange ? t : 999, exp: 1100 });
@@ -240,4 +266,98 @@ test('code profile schedules durable expiry and alarm deletes ciphertext', async
   assert.equal(store.sql.exec('SELECT * FROM code_profiles').toArray().length, 1);
   await object.alarm();
   assert.equal(store.sql.exec('SELECT * FROM code_profiles').toArray().length, 0);
+});
+
+
+test('signed account preparation revokes every indexed refresh session and completion stores only hash and time', async () => {
+  const f = await setup();
+  const login = await f.login();
+  const minted = await (await f.post('/token', {
+    grant_type: 'authorization_code', code: login.code,
+    code_verifier: login.verifier, redirect_uri: login.redirectUri
+  })).json();
+  const [objectId, sessionId] = minted.refresh_token.split('.');
+  const registry = f.stateFor('google-account-registry');
+  assert.equal(registry.indexedAccountSessions({ accountId: 'sub_existing' }).length, 1);
+
+  const operationId = randomUUID();
+  const response = await f.app.fetch(signedDeletionRequest('sub_existing', { operationId }));
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true, prepared: true, revoked_sessions: 1 });
+  assert.ok(registry.accountById('sub_existing'));
+  assert.equal(registry.sql.exec('SELECT * FROM account_deletion_audit').toArray().length, 0);
+  assert.equal(f.stateFor(objectId).sql.exec('SELECT revoked FROM sessions WHERE id=?', sessionId).toArray()[0].revoked, 1);
+  assert.equal((await f.post('/token', { grant_type: 'refresh_token', refresh_token: minted.refresh_token })).status, 400);
+
+  const completed = await f.app.fetch(signedDeletionRequest('sub_existing', {
+    operationId,
+    path: '/internal/account-delete/complete'
+  }));
+  assert.equal(completed.status, 200);
+  assert.deepEqual(await completed.json(), { ok: true, deleted: true });
+  assert.equal(registry.accountById('sub_existing'), null);
+
+  const columns = registry.sql.exec('PRAGMA table_info(account_deletion_audit)').toArray().map(row => row.name).sort();
+  assert.deepEqual(columns, ['account_id_hash', 'deleted_at']);
+  const audit = registry.sql.exec('SELECT account_id_hash,deleted_at FROM account_deletion_audit').toArray();
+  const expectedHash = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('sub_existing')))]
+    .map(x => x.toString(16).padStart(2, '0')).join('');
+  assert.equal(audit.length, 1);
+  assert.equal(audit[0].account_id_hash, expectedHash);
+  assert.equal(audit[0].deleted_at, 1000);
+});
+
+test('account-delete RPC rejects invalid signatures, stale timestamps, and replayed service IDs', async () => {
+  const f = await setup();
+  await f.login();
+  assert.equal((await f.app.fetch(signedDeletionRequest('sub_existing', { secret: 'wrong-secret-but-still-long-enough-000' }))).status, 401);
+  assert.equal((await f.app.fetch(signedDeletionRequest('sub_existing', { at: 699 }))).status, 401);
+
+  const serviceId = randomUUID();
+  assert.equal((await f.app.fetch(signedDeletionRequest('sub_existing', { serviceId }))).status, 200);
+  assert.equal((await f.app.fetch(signedDeletionRequest('sub_existing', { serviceId }))).status, 409);
+});
+
+test('session revocation failure keeps the account mapped and the service can retry then complete', async () => {
+  const f = await setup();
+  const login = await f.login();
+  const minted = await (await f.post('/token', {
+    grant_type: 'authorization_code', code: login.code,
+    code_verifier: login.verifier, redirect_uri: login.redirectUri
+  })).json();
+  const [objectId] = minted.refresh_token.split('.');
+  const sessionStore = f.stateFor(objectId);
+  const original = sessionStore.forceRevokeForAccountDeletion;
+  sessionStore.forceRevokeForAccountDeletion = () => { throw new Error('synthetic failure'); };
+
+  const failed = await f.app.fetch(signedDeletionRequest('sub_existing'));
+  assert.equal(failed.status, 503);
+  assert.ok(f.stateFor('google-account-registry').accountById('sub_existing'));
+  sessionStore.forceRevokeForAccountDeletion = (...args) => original.apply(sessionStore, args);
+
+  const operationId = randomUUID();
+  const retried = await f.app.fetch(signedDeletionRequest('sub_existing', { operationId }));
+  assert.equal(retried.status, 200);
+  assert.ok(f.stateFor('google-account-registry').accountById('sub_existing'));
+  const completed = await f.app.fetch(signedDeletionRequest('sub_existing', {
+    operationId,
+    path: '/internal/account-delete/complete'
+  }));
+  assert.equal(completed.status, 200);
+  assert.equal(f.stateFor('google-account-registry').accountById('sub_existing'), null);
+});
+
+test('signed abort releases the pending lock while preserving common login', async () => {
+  const f = await setup();
+  await f.login();
+  const operationId = randomUUID();
+  assert.equal((await f.app.fetch(signedDeletionRequest('sub_existing', { operationId }))).status, 200);
+  const aborted = await f.app.fetch(signedDeletionRequest('sub_existing', {
+    operationId,
+    path: '/internal/account-delete/abort'
+  }));
+  assert.equal(aborted.status, 200);
+  assert.deepEqual(await aborted.json(), { ok: true, aborted: true });
+  assert.ok(f.stateFor('google-account-registry').accountById('sub_existing'));
+  assert.equal(f.stateFor('google-account-registry').sql.exec('SELECT * FROM account_deletion_locks').toArray().length, 0);
 });
