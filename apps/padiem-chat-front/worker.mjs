@@ -256,6 +256,11 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
           const ttfb = Math.round(now() - started);
           const headers = new Headers(response.headers);
           headers.set("x-padiem-orchestration-ttfb-ms", String(ttfb));
+          // #6742: an NDJSON answer streams through untouched. The deadline above
+          // covered the first byte only — it was cleared when the headers arrived.
+          if ((response.headers.get("content-type") || "").toLowerCase().includes("application/x-ndjson")) {
+            headers.set("cache-control", "no-store");
+          }
           const timed = new Response(response.body, {
             status: response.status, statusText: response.statusText, headers,
           });

@@ -12,7 +12,7 @@ ROUTES = Path(__file__).resolve().parents[1] / "app" / "orchestration_routes.py"
 FIELD_ORDER = (
     "validate_ms=", "policy_ms=", "conversation_ms=", "usage_ms=",
     "pc_context_ms=", "grounding_ms=", "engine_ms=", "save_ms=",
-    "total_ms=", "retried=",
+    "first_token_ms=", "total_ms=", "retried=",
 )
 
 
@@ -31,7 +31,7 @@ def test_one_line_carries_every_stage_in_order():
     for stage, _begin, _end in STAGES:
         assert re.search(rf"\b{stage}_ms=\d+\.\d", line), (stage, line)
     assert line.endswith("retried=unknown"), line
-    assert len(line.split()) == 1 + len(STAGES) + 2, line
+    assert len(line.split()) == 1 + len(STAGES) + 3, line
 
 
 def test_unmeasured_stages_are_marked_not_guessed():
@@ -68,7 +68,8 @@ def test_the_route_marks_only_stage_names_and_always_emits():
     source = ROUTES.read_text(encoding="utf-8")
     # 실패·예외 경로 포함: finally에서 한 번 남긴다.
     assert "timing = OrchestrationTiming()" in source
-    assert "return await _answer_orchestration(request, timing)" in source
+    assert "response = await _answer_orchestration(request, timing)" in source
+    assert "return response" in source
     assert "finally:" in source
     assert "timing.emit()" in source
     marks = re.findall(r"timing\.mark\(([^)]*)\)", source)

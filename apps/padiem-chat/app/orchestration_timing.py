@@ -43,6 +43,10 @@ class OrchestrationTiming:
             first, second = self._marks.get(begin), self._marks.get(end)
             value = -1.0 if first is None or second is None else max(0.0, (second - first) * 1000.0)
             fields.append(f"{stage}_ms={value:.1f}")
+        # #6742: 첫 토큰까지의 시간. 스트림이 없으면 -1.
+        first = self._marks.get("first_token")
+        first_ms = -1.0 if first is None else max(0.0, (first - self._started) * 1000.0)
+        fields.append(f"first_token_ms={first_ms:.1f}")
         total = max(0.0, (perf_counter() - self._started) * 1000.0)
         return "orchestration_timing_com2 " + " ".join(fields) + f" total_ms={total:.1f} retried=unknown"
 

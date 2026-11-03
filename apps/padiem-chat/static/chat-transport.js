@@ -459,6 +459,61 @@
     return response;
   }
 
+  // #6742: 서버 NDJSON 한 줄 = 프레임 하나. app.js는 아직 이 함수를 부르지 않는다
+  // (다음 단계에서 호출 경로를 바꾼다).
+  async function readOrchestrationNdjson(response, onFrame) {
+    if (!response || !response.body || typeof response.body.getReader !== "function") {
+      throw new Error("스트림 응답을 읽을 수 없습니다.");
+    }
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let stopped = false;
+    try {
+      while (!stopped) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let index;
+        while ((index = buffer.indexOf("\n")) >= 0) {
+          const raw = buffer.slice(0, index).trim();
+          buffer = buffer.slice(index + 1);
+          if (!raw) continue;
+          let frame;
+          try { frame = JSON.parse(raw); } catch { throw new Error("스트림 형식을 확인할 수 없습니다."); }
+          if (await onFrame(frame) === true) { stopped = true; break; }
+        }
+      }
+      const tail = buffer.trim();
+      if (!stopped && tail) {
+        let frame;
+        try { frame = JSON.parse(tail); } catch { throw new Error("스트림 형식을 확인할 수 없습니다."); }
+        await onFrame(frame);
+      }
+    } finally {
+      try { reader.releaseLock(); } catch { /* 이미 닫힌 리더 */ }
+    }
+  }
+
+  async function requestOrchestrationStream(payload, signal) {
+    if (!await orchestrationReady(signal)) return null;
+    const response = await fetch("/api/orchestration", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/x-ndjson" },
+      body: JSON.stringify({ ...(payload || {}), stream: 1 }),
+      signal,
+    });
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 503) invalidateOrchestrationReady();
+      const data = await response.json().catch(() => null);
+      throw errorFor(data, streamErrorMessage(data), response.status);
+    }
+    // 플래그가 꺼져 있으면 서버는 지금과 같은 JSON을 준다: 호출자는 기존 경로를 쓴다.
+    const contentType = (response.headers.get("content-type") || "").toLowerCase();
+    if (!contentType.includes("application/x-ndjson")) return null;
+    return response;
+  }
+
   window.PadiemChatTransport = Object.freeze({
     createCalendarTurnId,
     createChatPcRunId,
@@ -472,6 +527,8 @@
     requestStreaming,
     orchestrationReady,
     invalidateOrchestrationReady,
+    requestOrchestrationStream,
+    readOrchestrationNdjson,
     resumeOrchestration,
     cancelOrchestration,
     setOrchestrationPauseHandler,
