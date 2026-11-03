@@ -37,9 +37,34 @@ status=0
 if [[ -x "$python" ]]; then
   "$python" -m app.expired_purge --once
   status=$?
+  # Stage 2: rows whose *retention period* the owner decided (withdrawal record
+  # one year, MCP audit 90 days). A failure here must not be hidden by stage 1
+  # succeeding, and must not stop the ledger pass below.
+  "$python" -m app.retention_purge --once
+  retention=$?
+  if [[ $retention -ne 0 && $status -eq 0 ]]; then
+    status=$retention
+  fi
 else
   echo "CHAT_EXPIRED_PURGE_RUN=FAILED reason=python_missing path=$python" >&2
   status=1
+fi
+
+# Stage 3: B14 call-ledger retention (90 days). Runs only where the operator
+# pointed this job at the ledger: the ledger lives in the B14 app root with its
+# own interpreter, so guessing either would either purge the wrong file or
+# report a false success.
+ledger_python=${B14_LEDGER_PYTHON:-}
+ledger_root=${B14_LEDGER_APP_ROOT:-}
+ledger_db=${B14_LEDGER_DB:-}
+if [[ -n "$ledger_python" && -n "$ledger_root" && -n "$ledger_db" && -x "$ledger_python" ]]; then
+  ( cd "$ledger_root" && "$ledger_python" -m app.pilot.call_ledger_retention --db "$ledger_db" --once )
+  ledger_status=$?
+  if [[ $ledger_status -ne 0 && $status -eq 0 ]]; then
+    status=$ledger_status
+  fi
+else
+  echo "B14_LEDGER_RETENTION=SKIPPED reason=not_configured"
 fi
 
 echo "CHAT_EXPIRED_PURGE_RUN=END profile=$profile status=$status at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
