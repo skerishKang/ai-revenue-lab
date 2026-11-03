@@ -48,3 +48,45 @@
 - observability: added engine_timing (run_hash, trace_id, admission/core/b14/receipt/total ms, bounded outcome) to the JSON orchestration lane and a host-visible stderr handler; Core exposes the last B14 duration in request context.
 - verify: engine suite 4082 passed, 1 skipped; Core runtime/orchestration 101 passed; local Chat->P01 roundtrip 200 with engine_timing total_ms=12.8; COM2 pooled fetch probe 4.13s cold then 0.81/0.79/1.80s versus 2.85/2.59/2.04s per fresh client.
 - PR: ai-revenue-lab #6774.
+
+# 공통 로그인 계정 탈퇴 — 진행 기록
+
+## 범위와 기준
+
+- `ai-revenue-lab`: `feat/shared-account-delete-261103`, 기준 `origin/main` `a8eff99d1`.
+- `lovetree-4.0`: `feat/shared-account-delete-receiver-261103`, 기준 `origin/main` `d60a1fa`.
+- 두 요청 브랜치는 원격에 없어 최신 `origin/main`에서 만들었다. 운영 접속·배포와 실제 계정 삭제는 하지 않았다.
+- 최신 main에 공통 계정 삭제 구현이 이미 포함되어 있어 이 브랜치에서는 기존 경로를 보존하고, 실패 후 재시도 및 서명 만료 회귀시험과 Lovetree Pages 진입 경로를 보강했다.
+
+## 코드 지도
+
+1. **공통 계정과 세션 — Auth**: `apps/padiem-auth/worker.mjs`가 `google-account-registry`를 통해 canonical 계정 상태를 관리하고, `AuthStateObject`가 세션을 관리한다. 서명된 `/internal/account-delete/prepare`는 계정 삭제 lease를 잡고 연결된 모든 세션을 폐기한다. `/complete`는 삭제를 확정하고 해시와 시각만 남긴다. 실패하면 `/abort`로 lease를 풀며, 연결이 복구되지 않아도 5분 lease 만료 뒤 재시도할 수 있다.
+2. **서비스 연결 — Control Plane Identity**: `packages/padiem-control-plane/identity_authority_durable.py`의 schema v4가 canonical subject와 `(product_id, product_user_id)` 연결을 관리한다. Chat은 `list_active_product_links_for_subject`와 `remove_product_link`를 호출한다. 마지막 연결 삭제에는 Auth 삭제 operation ID가 필요하며, 다른 제품 연결이 남으면 공통 계정은 유지된다.
+3. **Chat 및 북AI**: `apps/padiem-chat/app/account_deletion.py`가 `/api/account/delete`와 `/api/account/shared-delete`를 처리한다. Chat 데이터는 D1 batch로 지우고, 서비스별 탈퇴는 Chat 연결만 해제한다. `users.provider_subject`와 `auth_account_link_cache`를 통해 공통 subject를 찾으며, 북AI subject를 세션/연결 캐시 해제 전에 읽는 #6767 경로를 유지한다. 북AI 전용 수신기는 만들지 않았다.
+4. **LoveTree**: `server/index.js`가 서명된 `/internal/account/delete`를 받는다. `server/shared-account-deletion.js`가 HMAC v2, 300초 timestamp, UUID, body 서명, replay claim을 검증하고 `server/account-service.js`의 기존 `deleteTrustedSubject`로 위임한다. 기존 12개 표 트랜잭션·탈퇴 감사·미디어 폴더 정리를 재사용한다. `server/db/schema.sql`은 해시·시각 감사 표와 만료되는 요청 ID 표를 정의한다. 공개 `/api/account/delete`는 Pages allowlist에 추가했다.
+5. **CGI 쇼핑몰**: `kbs261022` main의 `backend/migrations/0002_customer_auth_schema.sql`은 자체 `members`, `auth_tokens` 및 로그인 제한 표를 만들고, `0004_google_oauth.sql`은 자체 회원 표에 Google ID를 추가한다. `/auth/shared`나 PADIEM Auth 경로 사용은 확인되지 않아 공통 계정 탈퇴에서 제외한다.
+
+## 정책 및 문구 대조
+
+- 서비스별 탈퇴는 해당 서비스 데이터만 지우고 해당 제품 연결만 해제한다. 다른 연결이 남으면 공통 계정을 유지하고, 마지막 연결이면 Auth에서 세션을 모두 폐기한 뒤 공통 계정을 파기한다.
+- 모든 서비스 탈퇴는 Chat이 연결 서비스 삭제를 요청한다. LoveTree 응답과 Chat의 트랜잭션이 모두 성공해야 마지막 연결을 제거한다. 중간 실패에는 공통 계정을 보존한다. 일부 제품 데이터가 이미 지워졌어도 남은 연결로 로그인해 재시도할 수 있다.
+- 중앙 관리자 설정, Chat `platform_admin_roles`, LoveTree 제품 관리자 확인이 탈퇴 전에 실행된다. BookAI 서버 기록은 Chat 계정 트랜잭션에서 처리하며 CGI 쇼핑몰은 별도 회원 계정이다.
+- Chat D1 탈퇴 기록은 `user_id_hash`, `deleted_at`만 1년 보관한다. LoveTree 기록은 subject hash와 시각만 저장한다. 서비스 요청 replay 표에는 만료되는 service ID만 기록한다.
+- 도움말 `#account`, 공통 약관, LoveTree 약관의 현재 문구가 위 동작과 일치함을 확인했다. 도움말의 `PADIEM` 금지 검사는 그대로 유지했다.
+
+## 변경 및 시험
+
+- Chat 회귀시험: LoveTree 삭제와 연결 해제가 성공한 뒤 Chat batch가 실패해도 Chat 연결 및 공통 계정이 남고, 새 세션으로 재시도하면 마지막 연결·공통 계정 삭제가 완료되는 경우를 추가했다. 약관 문구 일치 검사도 추가했다.
+- LoveTree 회귀시험: 수신 서명이 맞아도 300초 창을 벗어난 요청은 거부하고 replay ID를 점유하지 않는지 추가했다. 원격 `fix/lovetree-account-delete-pages-proxy-261103`의 `/api/account` GET 및 `/api/account/delete` POST allowlist 변경을 반영했다.
+- Chat + Control Plane targeted suite: `45 passed`. `PYTHONPATH`는 이 worktree의 Chat, Control Plane, AI Core로 제한했고 `--basetemp C:\pt\a4`를 사용했다.
+- Auth Node suite: `42 passed`; 잘못된 서명·만료·replay, 세션 폐기 실패 뒤 계정 연결 보존 및 재시도를 포함한다.
+- LoveTree 전체 Node suite: `278 passed`, `0 failed`, `35 skipped`. PostgreSQL 테스트 DB와 relay worker 설정이 없는 환경에 의존하는 시험만 실행 불가로 보고됐다. 계정 탈퇴 및 Pages 프록시 시험은 통과했다.
+- 새 migration은 필요하지 않다. `ai-revenue-lab` 최신 번호는 097이며, `097_account_deletion_audit_hash_time_only.sql`이 탈퇴 감사 형식을 정의한다. 098은 만들지 않았다. Identity schema는 v4이며 LoveTree Postgres의 탈퇴/replay 표는 기존 `schema.sql`에 있다.
+
+## 배포 뒤 확인할 것
+
+1. Cloudflare의 `padiem-auth`, `padiem-control-plane-identity`, `padiem-chat` Worker/service binding을 같은 릴리스 기준으로 검토한다. Identity Authority Durable Object schema v4가 준비돼 있어야 한다.
+2. Chat D1 `padiem-chat-db`에서 migration 기록을 확인하고, 097이 아직 적용되지 않은 환경에만 `apps/padiem-chat/migrations/097_account_deletion_audit_hash_time_only.sql`을 적용한다. 이 작업에서 새 098 migration은 없다.
+3. 환경 변수 이름과 secret 연결을 확인한다. Auth: `PADIEM_ACCOUNT_DELETE_RPC_SECRET`; Chat: `PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET`, `PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL`; LoveTree API: `LOVETREE_ACCOUNT_DELETE_RPC_SECRET`, `LOVETREE_IDENTITY_RPC_URL`, `LOVETREE_IDENTITY_RPC_SECRET`. Account-delete secret 값은 Auth·Chat·LoveTree 사이에서 일치해야 한다. 값은 문서·로그에 기록하지 않는다.
+4. LoveTree의 `server/db/schema.sql`을 확인하고 COM2 `lovetree-api.service`를 재배포한다. Cloudflare Pages의 Lovetree 사이트도 재배포해 `/api/account/delete` 프록시 allowlist를 반영한다.
+5. 비운영 계정으로 Chat 단독 탈퇴, LoveTree 단독 탈퇴, 모든 서비스 탈퇴, 중간 서비스 오류 후 재시도, 관리자 차단, 모든 세션 폐기, hash/time 감사값을 확인한다. 실제 계정으로 시험하지 않는다.
