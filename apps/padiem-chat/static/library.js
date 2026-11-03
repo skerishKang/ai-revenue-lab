@@ -331,6 +331,7 @@
     const hasMessages = Boolean(messageList && !messageList.hidden && messageList.childElementCount > 0);
     shell.dataset.state = hasMessages ? "chat" : "home";
     syncVisibility();
+    window.PadiemChatRouting?.syncRouteHash?.();
   }
 
   function openLibrary() {
@@ -340,6 +341,9 @@
     syncVisibility();
     closeSidebar();
     filesPanel.focus();
+    // The fragment table belongs to app.js; this screen asks it to publish the
+    // destination the state above just chose.
+    window.PadiemChatRouting?.syncRouteHash?.();
     if (activeTab === "files" && outcome !== "ready" && !loading) loadFiles();
   }
 

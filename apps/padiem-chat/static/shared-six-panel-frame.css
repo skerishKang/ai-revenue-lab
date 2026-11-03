@@ -28,8 +28,15 @@ html[data-theme="padiem-glass"] body .app-shell {
    * Claw, because the Claw hero block measures 565px against Chat's 476px) made a
    * content difference move the shared origin, so the Claw brand line landed
    * 29.7px below the Chat one on the same screen. A taller product block now changes
-   * only the space under it. Every consumer reads this one value. */
-  --padiem-first-screen-inset: max(12px, calc((100dvh - 747px) / 3));
+   * only the space under it. Every consumer reads this one value.
+   *
+   * 11-03 audit: the constant names the block this origin was composed around,
+   * and that block got shorter when the greeting stopped breaking into three
+   * lines (476px -> 330px at 1440x900). Left at 747px the block sat 146px too
+   * high and the #5634 top : bottom split fell out of its band, so the value
+   * was re-measured: 620px holds the split inside 1 : 2 at both #5634 windows
+   * (0.45 at 1440x900, 0.56 at 820x1180). */
+  --padiem-first-screen-inset: max(12px, calc((100dvh - 620px) / 3));
 }
 
 /* The first screen is one surface. A page opts into it with the layout variant

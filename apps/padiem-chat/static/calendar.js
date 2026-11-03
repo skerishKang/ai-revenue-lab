@@ -1463,6 +1463,9 @@
       syncVisibility();
       if (alreadyActive) load();
       closeSidebar();
+      // The fragment table belongs to app.js; this screen asks it to publish
+      // the destination the state above just chose.
+      window.PadiemChatRouting?.syncRouteHash?.();
     });
     // 11-03 audit: a shared #padiem-calendar link opens this screen. app.js
     // owns the fragment table and publishes the request; the entry and its

@@ -353,15 +353,12 @@
   const CALENDAR_ROUTE_HASH = "#padiem-calendar";
   const LIBRARY_ROUTE_HASH = "#padiem-library";
   const MEETING_ROUTE_HASH = "#padiem-meeting";
-  const ROUTE_HASH_BY_STATE = Object.freeze({
-    automation: AUTOMATION_ROUTE_HASH,
-    claw: CLAW_ROUTE_HASH,
-    connectors: CONNECTORS_ROUTE_HASH,
+  const PANEL_ROUTE_HASH_BY_STATE = Object.freeze({
     calendar: CALENDAR_ROUTE_HASH,
     library: LIBRARY_ROUTE_HASH,
     meeting: MEETING_ROUTE_HASH,
   });
-  const OWNED_ROUTE_HASHES = new Set(Object.values(ROUTE_HASH_BY_STATE));
+  const OWNED_PANEL_HASHES = new Set(Object.values(PANEL_ROUTE_HASH_BY_STATE));
   let automationDestinationReady = false;
   // One page contract for every shell screen. This table is the only place a
   // screen names itself, says which dedicated panel it owns, lists the
@@ -389,30 +386,50 @@
     return PAGE_VIEW_BY_ID[state] || PAGE_VIEW_BY_ID.home;
   }
   function syncRouteHash() {
-    // The URL fragment is the destination bookmark; no browser persistence.
+    // 11-03 audit: every panel screen names itself in the URL. Calendar and
+    // Library change the shell state from their own modules, so they ask for
+    // this instead of repeating the fragment: the table below stays the only
+    // place a screen names its own destination. A fragment this shell does not
+    // own is left alone, exactly like the three routes above.
     if (!automationDestinationReady || !window.history || !window.location) return;
     const state = shell.dataset.state;
-    const desired = ROUTE_HASH_BY_STATE[state] || "";
+    const desired = PANEL_ROUTE_HASH_BY_STATE[state] || "";
     const currentHash = String(window.location.hash || "");
     if (currentHash === desired) return;
     const basePath = window.location.pathname + window.location.search;
     if (desired) {
       window.history.replaceState(window.history.state, "", basePath + desired);
-    } else if (OWNED_ROUTE_HASHES.has(currentHash)) {
+    } else if (OWNED_PANEL_HASHES.has(currentHash)) {
       window.history.replaceState(window.history.state, "", basePath);
     }
   }
-  // Calendar and Library change `data-state` from their own modules, so the
-  // fragment follows the shell instead of every caller having to remember it.
-  if (typeof MutationObserver === "function") {
-    new MutationObserver(syncRouteHash).observe(shell, {
-      attributes: true,
-      attributeFilter: ["data-state"],
-    });
-  }
+  window.PadiemChatRouting = Object.freeze({ syncRouteHash });
   function setNavActive() {
     const state = shell.dataset.state;
     const page = pageViewFor(state);
+    // The URL fragment is the destination bookmark; no browser persistence.
+    if (automationDestinationReady && window.history && window.location) {
+      const currentHash = String(window.location.hash || "");
+      const isAutomationRoute = currentHash === AUTOMATION_ROUTE_HASH;
+      const isClawRoute = currentHash === CLAW_ROUTE_HASH;
+      const isConnectorsRoute = currentHash === CONNECTORS_ROUTE_HASH;
+      const basePath = window.location.pathname + window.location.search;
+      if (state === "automation" && !isAutomationRoute) {
+        window.history.replaceState(window.history.state, "", basePath + AUTOMATION_ROUTE_HASH);
+      } else if (state === "claw" && !isClawRoute) {
+        window.history.replaceState(window.history.state, "", basePath + CLAW_ROUTE_HASH);
+      } else if (state === "connectors" && !isConnectorsRoute) {
+        window.history.replaceState(window.history.state, "", basePath + CONNECTORS_ROUTE_HASH);
+      } else if (state !== "automation" && isAutomationRoute) {
+        window.history.replaceState(window.history.state, "", basePath);
+      } else if (state !== "claw" && isClawRoute) {
+        window.history.replaceState(window.history.state, "", basePath);
+      } else if (state !== "connectors" && isConnectorsRoute) {
+        window.history.replaceState(window.history.state, "", basePath);
+      }
+    }
+    // The three panel screens above own their fragment through the same rule,
+    // so this runs after them and only touches the fragments it names.
     syncRouteHash();
     const workspace = document.getElementById("clawWorkspace");
     const view = workspace ? String(workspace.dataset.view || "") : "";
@@ -446,9 +463,11 @@
     // New Chat no longer shows a mode hint: the redundant label was removed
     // when the sidebar actions row was rearranged (B62 split-search task).
     if (clawNav) clawNav.dataset.modeHint = uiT("nav-claw-hint");
-    // 11-03 audit: Calendar and Library own their menu row now. The entry used
-    // to stay selected for them as well, so two rows read as current at once.
-    if (chatNav) chatNav.setAttribute("aria-current", (state === "claw" || state === "connectors" || state === "automation" || state === "meeting" || state === "util" || state === "calendar" || state === "library") ? "false" : "page");
+    // 11-03 audit: Calendar and Library own their menu row now, so the entry
+    // stops claiming those two screens as well — otherwise two rows read as
+    // current at once.
+    if (chatNav) chatNav.setAttribute("aria-current", (state === "claw" || state === "connectors" || state === "automation" || state === "meeting" || state === "util") ? "false" : "page");
+    if (chatNav && (state === "calendar" || state === "library")) chatNav.setAttribute("aria-current", "false");
     if (clawNav) clawNav.setAttribute("aria-current", state === "claw" && !inboxKind ? "page" : "false");
     const utilNav = document.getElementById("utilNavButton");
     if (utilNav) utilNav.setAttribute("aria-current", state === "util" ? "page" : "false");

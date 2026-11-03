@@ -317,7 +317,11 @@ def test_the_first_screen_split_is_one_to_two():
     # the layout variant, so a new page inherits the composition by declaring the
     # variant instead of adding a sheet. This file now documents the decision.
     frame = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
-    assert "max(12px, calc((100dvh - 747px) / 3))" in frame
+    # 11-03 audit: the greeting stopped breaking into three lines, so the Chat
+    # block this origin was composed around measured 330px instead of 476px at
+    # 1440x900. The constant moved with the measured block; the expression and
+    # the single-token rule are unchanged.
+    assert "max(12px, calc((100dvh - 620px) / 3))" in frame
     assert "@media (min-width: 641px)" in frame
     assert 'var(--padiem-first-screen-inset)' in frame
     assert '.app-shell[data-layout-variant="conversation"]' in frame

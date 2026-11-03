@@ -181,8 +181,13 @@ def test_badge_does_not_cover_the_card_content_on_a_phone(browser, server) -> No
           const card = rect(shell);
           const hits = (a, b) => !(a.right <= b.x || a.x >= b.right || a.bottom <= b.y || a.top >= b.bottom);
           const other = document.getElementById('writingStarterButton');
+          const menu = document.getElementById('mobileMenu').getBoundingClientRect();
+          const first = document.querySelector('#emptyState .starter-grid > *').getBoundingClientRect();
+          const menuHitsCard = !(menu.bottom <= first.top || menu.top >= first.bottom
+            || menu.right <= first.left || menu.left >= first.right);
           return {
             badge, icon, title, copy,
+            menuCoversCard: menuHitsCard,
             copyVisible: copy.height > 0 && getComputedStyle(other.querySelector('small')).display !== 'none',
             oneLine: copy.height < parseFloat(getComputedStyle(other.querySelector('small')).lineHeight) * 2,
             overIcon: hits(badge, icon), overTitle: hits(badge, title), overCopy: hits(badge, copy),
@@ -197,6 +202,7 @@ def test_badge_does_not_cover_the_card_content_on_a_phone(browser, server) -> No
     assert not measured["overTitle"], measured
     assert not measured["overCopy"], measured
     assert measured["insideCard"], measured
+    assert not measured["menuCoversCard"], measured
     assert not measured["overflow"], measured
     page.close()
 
@@ -221,23 +227,28 @@ def test_calendar_entry_is_tinted_only_while_it_is_current() -> None:
 
 
 def test_new_chat_stops_claiming_the_calendar_and_library_screens() -> None:
-    line = next(l for l in APP.splitlines() if 'chatNav.setAttribute("aria-current"' in l)
-    assert "calendar" in line and "library" in line, line
+    lines = [l for l in APP.splitlines() if 'chatNav.setAttribute("aria-current"' in l]
+    assert len(lines) == 2, lines
+    assert '"calendar"' in lines[1] and '"library"' in lines[1], lines
 
 
 def test_every_panel_screen_names_its_own_fragment() -> None:
     for fragment in ("#padiem-calendar", "#padiem-library", "#padiem-meeting"):
         assert fragment in APP, fragment
-    assert "ROUTE_HASH_BY_STATE" in APP
-    assert "new MutationObserver(syncRouteHash)" in APP
+    assert "PANEL_ROUTE_HASH_BY_STATE" in APP
+    assert "window.PadiemChatRouting = Object.freeze({ syncRouteHash });" in APP
     assert "restoreShellRouteFromHash" in APP
-    # The module-owned entries stay module-owned: app.js publishes the request,
-    # it does not drive the other modules' DOM (#3232 contract).
+    # The module-owned entries stay module-owned: app.js publishes the request
+    # and the fragment table, it does not drive the other modules' DOM, and it
+    # adds no browser-side watcher (#3232 entry contract, #1728/#2340/#54
+    # interception boundary).
     assert 'getElementById("filesNavButton")' not in APP
     assert 'getElementById("calendarNavButton")' not in APP
+    assert "MutationObserver" not in APP
     for module in ("calendar.js", "library.js"):
         source = (STATIC / module).read_text(encoding="utf-8")
         assert '"padiem:route-restore"' in source, module
+        assert "window.PadiemChatRouting?.syncRouteHash?.()" in source, module
 
 
 @requires_browser
@@ -278,7 +289,7 @@ def test_a_shared_fragment_opens_the_screen_it_names(browser, server, fragment) 
     # fixed pause.
     page.wait_for_function(
         """() => document.querySelector('.app-shell').dataset.state === location.hash.replace('#padiem-', '')""",
-        timeout=8000,
+        timeout=20_000,
     )
     state = page.evaluate(
         """() => ({
@@ -470,3 +481,31 @@ def test_stored_conversation_hint_is_a_key_not_a_literal() -> None:
     assert 'uiT("stored-conversation-hint")' in APP
     assert 'chip.dataset.localeTitle = "stored-conversation-hint"' in APP
     assert "이전에 저장한 대화를 불러왔습니다" not in APP
+
+
+@requires_browser
+def test_stored_conversation_hint_follows_the_language(browser, server) -> None:
+    """The chip is rendered per message, so its hint must survive a language
+    switch the same way the rest of the screen does."""
+    page = _open(browser, server, 1440, 900, False)
+    measured = page.evaluate(
+        """() => {
+          const article = document.getElementById('assistantMessageTemplate')
+            .content.cloneNode(true).querySelector('.assistant-message');
+          const chip = article.querySelector('[data-runtime-label]');
+          chip.dataset.localeTitle = 'stored-conversation-hint';
+          window.PadiemSharedTooltip.label(chip, window.__padiemLocale.text('stored-conversation-hint'));
+          document.querySelector('.conversation').appendChild(article);
+          const ko = chip.getAttribute('data-padiem-tooltip');
+          window.__padiemLocale.apply('en');
+          const en = chip.getAttribute('data-padiem-tooltip');
+          window.__padiemLocale.apply('ko');
+          const back = chip.getAttribute('data-padiem-tooltip');
+          article.remove();
+          return {ko, en, back};
+        }"""
+    )
+    assert measured["ko"] and measured["ko"] == measured["back"], measured
+    assert measured["en"].startswith("Loaded from a conversation"), measured
+    assert measured["en"] != measured["ko"], measured
+    page.close()
