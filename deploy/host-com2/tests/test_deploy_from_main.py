@@ -293,7 +293,7 @@ class DeployHarness(unittest.TestCase):
 
     def _git(self, cwd: str, *args: str) -> str:
         result = subprocess.run(
-            ["git", *args], cwd=cwd, capture_output=True, text=True, check=True
+            ["git", *args], cwd=cwd, capture_output=True, text=True, encoding="utf-8", check=True
         )
         return result.stdout.strip()
 
@@ -349,7 +349,7 @@ sys.exit(0 if code == "none" else 1)
     def _run_main(self, *args: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             [BASH_BIN, (self.ops / "deploy/host-com2/deploy_from_main.sh").as_posix(), *args],
-            capture_output=True, text=True, errors="replace", env=self.env, check=False,
+            capture_output=True, text=True, encoding="utf-8", errors="replace", env=self.env, check=False,
         )
 
     def _run_apply(self) -> subprocess.CompletedProcess[str]:
@@ -367,7 +367,7 @@ sys.exit(0 if code == "none" else 1)
         return subprocess.run(
             [BASH_BIN, "-c", APPLY_WRAPPER, "bash",
              (self.ops / "deploy/host-com2/deploy_from_main.sh").as_posix(), self.second],
-            capture_output=True, text=True, errors="replace", env=env, check=False,
+            capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, check=False,
         )
 
     def _calls(self) -> list[str]:
@@ -526,7 +526,7 @@ class ChatScenarioTest(DeployHarness):
                 [sys.executable, "-I", "-c",
                  "import sys; sys.path.insert(0, sys.argv[1]); import app.chat_marker",
                  str(self.ops / "apps/padiem-chat")],
-                preexec_fn=drop, capture_output=True, text=True,
+                preexec_fn=drop, capture_output=True, text=True, encoding="utf-8",
             )
             self.assertEqual(probe.returncode, 0, probe.stderr)
 
@@ -660,7 +660,7 @@ class ChatScenarioTest(DeployHarness):
                 [sys.executable, "-I", "-c",
                  "import sys; sys.path.insert(0, sys.argv[1]); import app.chat_marker",
                  str(previous / "apps/padiem-chat")],
-                preexec_fn=drop_privileges, capture_output=True, text=True,
+                preexec_fn=drop_privileges, capture_output=True, text=True, encoding="utf-8",
             )
             self.assertEqual(probe.returncode, 0, probe.stderr)
 

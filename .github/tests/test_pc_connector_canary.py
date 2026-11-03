@@ -248,7 +248,7 @@ class PcConnectorCanaryVerdictTests(unittest.TestCase):
     def test_self_test_agrees_with_these_expectations(self) -> None:
         completed = subprocess.run(
             [sys.executable, str(SCRIPT_PATH), "--self-test"],
-            cwd=ROOT, capture_output=True, text=True, timeout=120,
+            cwd=ROOT, capture_output=True, text=True, encoding="utf-8", timeout=120,
         )
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
         self.assertIn("PC_CONNECTOR_CANARY_SELF_TEST=PASS", completed.stdout)

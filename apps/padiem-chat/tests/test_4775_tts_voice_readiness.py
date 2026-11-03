@@ -56,7 +56,7 @@ console.log(JSON.stringify({starts,speaks,cancels,queuedListeners:handlers.size,
 """
     result = subprocess.run(
         ["node", "-e", javascript, str(STATIC / "outputs.js")],
-        text=True, capture_output=True, timeout=12, check=False,
+        text=True, encoding="utf-8", capture_output=True, timeout=12, check=False,
     )
     assert result.returncode == 0, result.stderr + result.stdout
     observed = json.loads(result.stdout.strip().splitlines()[-1])

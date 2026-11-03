@@ -122,7 +122,7 @@ def _run_backup(db_path: Path, dest: Path, keep: int = 7):
     return subprocess.run(
         [sys.executable, str(BACKUP), "--db", str(db_path), "--dest", str(dest),
          "--keep", str(keep)],
-        text=True, capture_output=True,
+        text=True, encoding="utf-8", capture_output=True,
     )
 
 
@@ -188,7 +188,7 @@ def test_backup_skips_cleanly_when_the_database_is_absent(tmp_path):
     result = subprocess.run(
         [sys.executable, str(BACKUP), "--db", str(tmp_path / "missing.sqlite3"),
          "--dest", str(tmp_path / "backups")],
-        text=True, capture_output=True,
+        text=True, encoding="utf-8", capture_output=True,
     )
     assert result.returncode == 0, result.stderr
     assert "CHAT_COM2_BACKUP=SKIPPED reason=database_absent" in result.stdout

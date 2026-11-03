@@ -130,7 +130,7 @@ def test_the_bake_cli_is_idempotent():
 
         def run_cli(*extra):
             return subprocess.run(script + list(extra), cwd=str(APP_ROOT),
-                                  capture_output=True, text=True, check=False)
+                                  capture_output=True, text=True, encoding="utf-8", check=False)
         first = run_cli("--write")
         assert first.returncode == 0, first.stdout + first.stderr
         baked = (target / "index.html").read_text(encoding="utf-8")

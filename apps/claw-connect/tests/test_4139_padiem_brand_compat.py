@@ -14,7 +14,7 @@ def test_official_and_legacy_python_commands_share_product_and_device(tmp_path):
     def run(module: str, *args: str):
         return subprocess.run(
             [sys.executable, "-m", module, *args], cwd=ROOT, env=env,
-            capture_output=True, text=True, timeout=25, check=False,
+            capture_output=True, text=True, encoding="utf-8", timeout=25, check=False,
         )
     old = run("claw_connect", "--version")
     new = run("padiem_connector", "--version")

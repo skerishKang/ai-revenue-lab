@@ -94,7 +94,7 @@ def run_guard_cli(argv: list[str]) -> subprocess.CompletedProcess:
     return subprocess.run(
         [sys.executable, str(SERVED_VERSION_GUARD_PATH), *argv],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
     )
 
 

@@ -578,7 +578,7 @@ def _run_harness() -> dict:
             [node, str(harness_path), str(APP_JS), str(CAPABILITIES_JS), str(DOCUMENT_BINARY_JS),
              str(TUS_UPLOAD_JS), str(TUS_MODULE_JS)],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             timeout=60,
         )
     finally:

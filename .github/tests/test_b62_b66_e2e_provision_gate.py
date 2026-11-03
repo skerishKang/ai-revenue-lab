@@ -35,7 +35,7 @@ def _d1(rows, *, changes=0):
 
 def _artifact(tmp_path: Path):
     path = tmp_path / "skill.json"
-    subprocess.run(["node", str(FIXTURE), str(path)], check=True, capture_output=True, text=True)
+    subprocess.run(["node", str(FIXTURE), str(path)], check=True, capture_output=True, text=True, encoding="utf-8")
     return path
 
 

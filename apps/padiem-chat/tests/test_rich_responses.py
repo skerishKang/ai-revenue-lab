@@ -105,7 +105,7 @@ def test_rich_response_javascript_syntax():
     result = subprocess.run(
         [node, "--check", str(root / "static/rich-response.js")],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         check=False,
     )
     assert result.returncode == 0, result.stderr

@@ -878,7 +878,7 @@ def _run_harness() -> dict:
         completed = subprocess.run(
             [node, str(harness_path), str(CALENDAR_JS_PATH), str(INDEX_PATH)],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             timeout=180,
         )
     finally:
@@ -1025,7 +1025,7 @@ def test_appointment_helpers_build_the_contract_payload_or_fail_closed() -> None
         ["node", "-e", script],
         check=True,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
     )
     data = json.loads(completed.stdout)
 
@@ -1181,7 +1181,7 @@ def _client_payloads() -> dict:
         ["node", "-e", script],
         check=True,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
     )
     return json.loads(completed.stdout)
 

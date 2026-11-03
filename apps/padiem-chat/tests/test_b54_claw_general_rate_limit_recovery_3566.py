@@ -158,7 +158,7 @@ def test_claw_general_rate_limit_network_free_browser_behavior():
     result = subprocess.run(
         ["node", "-e", NODE, str(STATIC)],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         timeout=20,
         check=False,
     )

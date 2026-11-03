@@ -911,7 +911,7 @@ def _run_harness() -> dict:
     result = subprocess.run(
         [node, str(harness), str(ADAPTER_JS), str(COMPOSER_JS), str(copy_path)],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         timeout=120,
     )
     assert result.returncode == 0, f"harness exited {result.returncode}: {result.stderr[:4000]}"

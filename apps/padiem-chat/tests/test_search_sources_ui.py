@@ -114,7 +114,7 @@ const direct = adaptToolRequest("/api/chat", init, "deep_research");
     result = subprocess.run(
         ["node", "-e", script],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         check=False,
     )
     assert result.returncode == 0, result.stderr
@@ -146,7 +146,7 @@ console.log(JSON.stringify({
     result = subprocess.run(
         ["node", "-e", script],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         check=False,
     )
     assert result.returncode == 0, result.stderr
@@ -214,7 +214,7 @@ def test_search_sources_javascript_syntax():
     result = subprocess.run(
         [node, "--check", str(root / "static/search-sources.js")],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         check=False,
     )
     assert result.returncode == 0, result.stderr

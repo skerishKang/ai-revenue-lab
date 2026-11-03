@@ -126,7 +126,7 @@ def test_b66_navigation_origin_is_single_sourced_and_passes_the_origin_audit():
         [sys.executable, str(REPO / ".github" / "scripts" / "b62_static_origin_audit.py")],
         cwd=REPO,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
     )
     assert completed.returncode == 0, completed.stdout + completed.stderr
 

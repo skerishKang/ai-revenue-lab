@@ -74,7 +74,7 @@ def _run_harness() -> dict:
         ["node", "-e", NODE_HARNESS],
         input=STATE_JS,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         timeout=20,
         check=False,
     )

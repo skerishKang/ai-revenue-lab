@@ -15,7 +15,7 @@ def test_owner_production_build_is_v7_without_preview_chrome() -> None:
         cwd=APP_DIR,
         check=True,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
     )
 
     root = (OUT_DIR / "index.html").read_text(encoding="utf-8")

@@ -691,7 +691,7 @@ class ModuleEntryPointTests(unittest.TestCase):
         completed = subprocess.run(
             [sys.executable, "-m", "kagent.local_agent_mesh_failover"],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             timeout=60,
             env=env,
         )

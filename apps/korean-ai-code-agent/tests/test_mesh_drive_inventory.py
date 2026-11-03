@@ -108,7 +108,7 @@ function setup(options) {
 }
 """
         completed = subprocess.run(["node", "-e", harness + test_body],
-                                   input=json.dumps(_AGENT_WATCHER_JS), text=True,
+                                   input=json.dumps(_AGENT_WATCHER_JS), text=True, encoding="utf-8",
                                    capture_output=True, timeout=10)
         self.assertEqual(completed.returncode, 0, completed.stderr)
 
@@ -225,7 +225,7 @@ module.exports = class FakeSocket extends EventEmitter {
                        "device_ids": ["pc-1", "node//pc-2", "failed", "node/foreign/pc-3"],
                        "agent_source": _AGENT_WATCHER_JS}
             completed = subprocess.run(["node", "-e", _NODE_BRIDGE_JS],
-                                       input=json.dumps(request), text=True,
+                                       input=json.dumps(request), text=True, encoding="utf-8",
                                        capture_output=True, timeout=5)
         self.assertEqual(completed.returncode, 0, completed.stderr)
         rows = json.loads(completed.stdout)

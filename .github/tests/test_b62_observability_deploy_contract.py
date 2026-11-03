@@ -92,7 +92,7 @@ def test_observability_readonly_reports_live_state_without_mutation_or_secret_va
     snapshot.write_text(json.dumps(settings))
     before = snapshot.read_bytes()
     result = subprocess.run([_git_bash(), "-eu", "-o", "pipefail", "-c", 'settings="$1"; ' + command, "audit", str(snapshot)],
-                            capture_output=True, text=True, check=True,
+                            capture_output=True, text=True, encoding="utf-8", check=True,
                             env={**os.environ, "PATH": os.environ["PATH"]})
     label, value = result.stdout.strip().split("=", 1)
     assert label == "B62_LIVE_OBSERVABILITY"

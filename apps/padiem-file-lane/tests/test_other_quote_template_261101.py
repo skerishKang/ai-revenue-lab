@@ -96,7 +96,7 @@ def pdf_from_xlsx(path, target):
     run = subprocess.run(
         [exe, "-env:UserInstallation=" + profile, "--headless", "--convert-to",
          "pdf:calc_pdf_Export", "--outdir", str(target), str(path)],
-        capture_output=True, text=True, timeout=90,
+        capture_output=True, text=True, encoding="utf-8", timeout=90,
     )
     assert run.returncode == 0, run.stderr
     output = target / (path.stem + ".pdf")

@@ -128,7 +128,7 @@ class InitialMockRequiresManualConsent(unittest.TestCase):
                     env=env,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
-                    text=True,
+                    text=True, encoding="utf-8",
                     timeout=10,
                 )
                 self.assertEqual(proc.returncode == 0, allowed, proc.stderr)

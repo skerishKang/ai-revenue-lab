@@ -46,7 +46,7 @@ def head_sha() -> str:
             sha = json.loads(Path(event).read_text(encoding="utf-8")).get("pull_request",{}).get("head",{}).get("sha")
             if sha: return str(sha)
         except (OSError,json.JSONDecodeError): pass
-    return subprocess.run(["git","rev-parse","HEAD"],cwd=BASE_DIR,capture_output=True,text=True,check=True).stdout.strip()
+    return subprocess.run(["git","rev-parse","HEAD"],cwd=BASE_DIR,capture_output=True,text=True, encoding="utf-8",check=True).stdout.strip()
 
 def sha256(path: Path) -> str:
     h=hashlib.sha256(); h.update(path.read_bytes()); return h.hexdigest()

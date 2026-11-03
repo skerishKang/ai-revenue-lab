@@ -29,7 +29,7 @@ def project(directory, selected=None):
         script_path = Path(work_dir) / "projection.cjs"
         script_path.write_text(script, encoding="utf-8")
         result = subprocess.run(
-            ["node", str(script_path)], capture_output=True, text=True, check=True,
+            ["node", str(script_path)], capture_output=True, text=True, encoding="utf-8", check=True,
         )
     return json.loads(result.stdout)
 

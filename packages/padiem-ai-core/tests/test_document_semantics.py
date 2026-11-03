@@ -425,7 +425,7 @@ def test_core_base_and_semantic_imports_require_no_document_extras() -> None:
         [sys.executable, "-c", probe],
         cwd=str(CORE_PACKAGE_DIR.parent),
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         timeout=120,
     )
     assert result.returncode == 0, result.stderr

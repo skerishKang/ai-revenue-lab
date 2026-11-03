@@ -52,7 +52,7 @@ class TestMigrationCliSqlite:
                 "--dry-run",
             ],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             cwd=str(BASE_DIR),
             env=env,
         )
@@ -73,7 +73,7 @@ class TestMigrationCliSqlite:
                 "--dry-run",
             ],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             cwd=str(BASE_DIR),
             env=env,
         )
@@ -92,7 +92,7 @@ class TestMigrationCliSqlite:
                 "--database", db_path,
             ],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             cwd=str(BASE_DIR),
             env=env,
         )
@@ -117,7 +117,7 @@ class TestMigrationCliPostgresql:
                 "--dry-run",
             ],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             cwd=str(BASE_DIR),
             env=env,
         )
@@ -136,7 +136,7 @@ class TestMigrationCliPostgresql:
                 "--dry-run",
             ],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             cwd=str(BASE_DIR),
             env=env,
         )
@@ -162,7 +162,7 @@ class TestMigrationCliPostgresql:
                 "--dry-run",
             ],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             cwd=str(BASE_DIR),
             env=env,
         )
@@ -185,7 +185,7 @@ class TestMigrationCliSecretRedaction:
                 "--dry-run",
             ],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             cwd=str(BASE_DIR),
             env=env,
         )
@@ -208,7 +208,7 @@ class TestMigrationCliSecretRedaction:
                 "--dry-run",
             ],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             cwd=str(BASE_DIR),
             env=env,
         )
@@ -287,7 +287,7 @@ class TestMigrationCliDriverError:
                 "--url", "postgresql://nobody:secret@127.0.0.1:1/db",
             ],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             cwd=str(BASE_DIR),
             env=env,
         )

@@ -212,7 +212,7 @@ def test_production_runtime_does_not_import_tests():
         [sys.executable, "-c", script],
         cwd=str(root),
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         timeout=120,
     )
     assert result.returncode == 0, result.stderr

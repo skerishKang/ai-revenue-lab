@@ -929,7 +929,7 @@ def _run_3748_smoke_only_guard(*argv: str, detail_id: str = "-safe-smoke-version
                 "verify", "--version-settings", str(path),
                 *argv, "--expect-overlay", "--inspect-engine-admission-binding",
             ],
-            capture_output=True, text=True, timeout=15, check=False,
+            capture_output=True, text=True, encoding="utf-8", timeout=15, check=False,
         )
 
 

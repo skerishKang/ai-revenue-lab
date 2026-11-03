@@ -31,7 +31,7 @@ class KeyPreservation(unittest.TestCase):
             guard.deploy_command("apps/padiem-auth/wrangler.toml", keep_vars=False)
         # The executable entry point must refuse before invoking wrangler.
         result = subprocess.run([sys.executable, str(PATH), "deploy"], capture_output=True,
-                                text=True, timeout=5)
+                                text=True, encoding="utf-8", timeout=5)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("guard refused", result.stderr)
 

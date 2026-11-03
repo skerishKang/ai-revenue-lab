@@ -81,7 +81,7 @@ def _git(*args: str, cwd: Path) -> subprocess.CompletedProcess[str]:
         cwd=str(cwd),
         check=True,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
     )
 
 
