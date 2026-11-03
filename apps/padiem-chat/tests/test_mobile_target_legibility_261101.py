@@ -357,8 +357,17 @@ def test_the_desktop_keeps_its_own_metrics(static_url):
             value = page.evaluate(MEASURE, {"floor": TARGET_FLOOR, "textFloor": TEXT_FLOOR})
             nav = page.evaluate(
                 """() => {
-                  const el = document.getElementById('filesNavButton');
-                  return el ? Math.round(el.getBoundingClientRect().height) : null;
+                  const height = (id) => {
+                    const el = document.getElementById(id);
+                    return el ? Math.round(el.getBoundingClientRect().height) : null;
+                  };
+                  const formats = document.getElementById('documentFormatsToggle');
+                  return {
+                    files: height('filesNavButton'),
+                    automation: height('automationNavButton'),
+                    formats: formats ? Math.round(formats.getBoundingClientRect().height) : null,
+                    formatsMin: formats ? getComputedStyle(formats).minHeight : null,
+                  };
                 }"""
             )
         finally:
@@ -366,7 +375,16 @@ def test_the_desktop_keeps_its_own_metrics(static_url):
     assert value["overflowPx"] <= 1
     assert value["portraitContent"] != "none", "the phone rule reached the desktop portrait"
     assert value["shellPortrait"] != "none", "the phone rule reached the desktop shell portrait"
-    assert nav is not None and nav < TARGET_FLOOR, "the phone press floor leaked into the desktop sidebar"
+    # 11-03 audit: every sidebar row is one height on the desktop. The Library
+    # row used to sit 4px under its siblings, which is why it was the old
+    # leakage canary; the badge below is the canary now.
+    assert nav["files"] is not None and nav["files"] == nav["automation"], nav
+    # The phone floor is 44px. The desktop format badge is 32px, so a phone rule
+    # that leaked into the desktop would read 44 here.
+    assert nav["formats"] is not None and nav["formats"] < TARGET_FLOOR, (
+        "the phone press floor leaked into the desktop composer: %s" % nav
+    )
+    assert nav["formatsMin"] == "32px", nav
 
 
 def test_the_phone_sheet_is_last_and_stays_inside_its_media_query() -> None:

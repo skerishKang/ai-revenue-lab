@@ -1,0 +1,103 @@
+/* Chat screen polish — 2026-11-03 UX audit lane (컴1로컬3).
+ *
+ * Every rule here answers one measured finding from the audit captures in
+ * docs/operations and the 11-03 Tabbit screenshots. The sheet is loaded AFTER
+ * the theme and interaction sheets but BEFORE mobile-target-legibility.css, so
+ * the phone press floor (44px) still wins over the desktop sizes set here.
+ * Nothing below changes which control exists or what it does; only geometry,
+ * contrast, and which nav row reads as selected.
+ */
+
+/* ── 1. Phone composer: the send button keeps the input's right edge ──────
+ * At 390px the action row is 344px wide and the tools row plus the two voice
+ * controls plus send need 394px, so send wrapped to the second line and was
+ * painted at the LEFT edge. The reservations in owner-model-preview.css stay
+ * exactly as they are (the first-screen contract depends on them); the row is
+ * allowed to wrap, and send is pinned to the right end of whichever line it
+ * lands on. #sendButton's margin-left reservation for a missing mic is not
+ * needed once the button is right-aligned, so it is released here. */
+@media (max-width: 620px) {
+  .composer-actions .send-button {
+    margin-left: auto;
+  }
+}
+
+/* ── 2. Phone home cards: one description line, badge clear of the content ─
+ * The landing hid every card description on a phone, so a reader could not
+ * tell what a card does. The description returns as a single clipped line.
+ * With it back, the "지원 형식" badge shared the card's top band with the
+ * title, so the file card now reserves that band for the badge: the badge
+ * keeps its place at the top right and the icon, title and description sit
+ * below it inside the same 145px card. */
+@media (max-width: 620px) {
+  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter small {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter-grid .document-starter-shell > .starter {
+    align-items: flex-start;
+    /* interaction-polish.css pins the phone card padding with an id-scoped
+     * !important; the reserved badge band has to out-specify it or the content
+     * stays under the badge. */
+    padding-top: 60px !important;
+  }
+}
+
+/* ── 4. Answer actions: a 40px hit area on the desktop Glass theme ────────
+ * Glass drew the five answer buttons as bare 26px icons. The drawn glyph and
+ * the chrome-free look stay; only the press box grows. The phone floor of
+ * 44px (mobile-target-legibility.css, loaded after this sheet) is untouched. */
+html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-action {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+}
+html[data-theme="padiem-glass"] .answer-more-menu .answer-action {
+  min-height: 40px;
+}
+
+/* ── 5. "글쓰기 도움" icon: the plate is no longer white on white ──────────
+ * padiem-surfaces.css paints every even-positioned starter icon white on a
+ * white plate. The plan card was already fixed that way; the writing card was
+ * the remaining invisible glyph, so it gets the same visible Glass plate and
+ * glyph colour as the computer and file cards. */
+html[data-theme="padiem-glass"] body #writingStarterButton .starter-icon {
+  background: rgba(34, 46, 57, .10);
+  border-color: rgba(255, 255, 255, .42);
+  color: #2d4557;
+}
+
+/* ── 6. Desktop greeting: two lines instead of three ──────────────────────
+ * At 1440 the hero resolved to 88px inside a 542px column, so
+ * "무엇을 도와드릴까요?" broke after "무엇을" and the greeting pushed the
+ * cards and the composer down. 4.1vw keeps the phrase on one line across the
+ * desktop band (measured: 462px of text in 542px at 1440, 323px in 351px at
+ * 1024) while staying display type. */
+@media (min-width: 621px) {
+  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) h1 {
+    font-size: clamp(36px, 4.1vw, 60px);
+  }
+}
+
+/* ── 7. Small controls: the 32px floor and the dim search icon ────────────
+ * The audit measured the project "+" at 28px, the "지원 형식" badge at 24px
+ * and the PC status cell at 26px. They rise to the 32px floor. The disabled
+ * search icon sat at .5 opacity next to a bright "새 채팅" and read as
+ * broken; its contrast goes up without enabling the control. */
+.sidebar .section-add-button {
+  width: 32px;
+  height: 32px;
+}
+.starter-grid .document-formats-toggle {
+  min-height: 32px;
+}
+.composer-pc-status-face {
+  height: 32px;
+}
+.sidebar .sidebar-actions-row.sidebar-unified-row > .sidebar-search-item:disabled {
+  opacity: .78;
+}

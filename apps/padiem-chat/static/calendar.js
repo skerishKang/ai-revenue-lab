@@ -1464,6 +1464,12 @@
       if (alreadyActive) load();
       closeSidebar();
     });
+    // 11-03 audit: a shared #padiem-calendar link opens this screen. app.js
+    // owns the fragment table and publishes the request; the entry and its
+    // open path stay in this module.
+    window.addEventListener("padiem:route-restore", (event) => {
+      if (event && event.detail && event.detail.hash === "#padiem-calendar") navButton.click();
+    });
     if (tabs) {
       tabs.addEventListener("click", (event) => {
         const button = event.target.closest("[data-calendar-tab]");

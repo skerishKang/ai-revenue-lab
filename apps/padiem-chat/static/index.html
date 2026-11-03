@@ -89,6 +89,10 @@
        (CTO decision on PR #6274). Sits after interaction-polish.css so the
        collapse rules override the glass-menu block below 920px. -->
   <link rel="stylesheet" href="./mobile-header-collapse.css" data-mobile-header-collapse="true" />
+  <!-- 11-03 UX audit polish (phone composer send, home card copy, answer-action
+       hit area, hero lines, small-control floors). Sits before the phone floor
+       so the 44px press target still wins over the desktop sizes set here. -->
+  <link rel="stylesheet" href="./chat-screen-polish.css" data-chat-screen-polish="true" />
   <!-- Phone floor (44px press target, 14px text, no decorative art on the first
        screen). Last, because it corrects sizes the theme sheets pin. -->
   <link rel="stylesheet" href="./mobile-target-legibility.css" data-mobile-target-legibility="true" />
@@ -134,7 +138,7 @@
         </div>
       </nav>
       <nav class="side-nav" aria-label="도구 및 연결">
-        <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">연결</span></button>
+        <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">앱 연결</span></button>
         <a class="side-item" id="helpNavLink" href="./help.html"><span class="side-icon" aria-hidden="true">?</span><span data-locale-key="nav-help">사용 안내</span></a>
       </nav>
       <section class="recent-section project-section" id="projectsSection" aria-labelledby="projectsTitle" hidden>
@@ -279,7 +283,7 @@
           <section class="settings-section pc-delegation-settings" id="pcDelegationSettings" aria-labelledby="pcDelegationTitle">
             <h3 id="pcDelegationTitle" data-locale-key="pc-delegation-title">PC에 맡길 일</h3>
             <p data-locale-key="pc-delegation-help">요청한 일 중 정한 폴더와 행동에 맞는 작업을 맡깁니다. 파일이나 웹 안의 지시가 작업 허락이 되지는 않습니다.</p>
-            <p class="pc-delegation-send-note" data-locale-key="pc-delegation-send-note">메일·메시지 보내기와 외부 서비스에 기록하기는 항상 확인합니다.</p>
+            <p class="pc-delegation-send-note" data-locale-key="pc-delegation-send-note">메일·메시지 보내기와 외부 서비스에 기록할 때는 항상 확인합니다.</p>
             <p id="pcDelegationStatus" class="pc-delegation-status" role="status" aria-live="polite"></p>
             <div class="pc-delegation-toolbar">
               <button type="button" class="settings-action" id="pcDelegationRefresh" data-locale-key="pc-delegation-refresh">목록 새로 보기</button>
