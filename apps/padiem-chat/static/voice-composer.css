@@ -188,17 +188,11 @@
   white-space: nowrap;
   border: 0;
 }
-/* +, web search, PADIEM FREE: ordering is visual only. */
+/* Attachment and model controls share the normal tools-row gap. */
 #composerForm .composer-tools #attachmentButton { order: 1; }
-#composerForm .composer-tools #webSearchButton { order: 2; }
-#composerForm .composer-tools .composer-tier-trigger { order: 3; }
-#composerForm .composer-tools #deepResearchButton { order: 4; }
-/* #4647 touch-target contract: both browser QA suites require >= 44px for a
-   visible composer control (b62_mobile_touch_target_qa.py floor 44,
-   b62_product_surface_certification_browser_qa.py floor 40). The icon buttons
-   were 36px, so both lanes were red on main. */
-#composerForm .composer-tools #attachmentButton,
-#composerForm .composer-tools #webSearchButton {
+#composerForm .composer-tools .composer-tier-trigger { order: 2; }
+/* #4647 touch-target contract: the attachment control stays at least 44px. */
+#composerForm .composer-tools #attachmentButton {
   width: 44px;
   min-width: 44px;
   height: 44px;
@@ -207,10 +201,8 @@
   display: inline-grid;
   place-items: center;
 }
-#composerForm .composer-tools #attachmentButton span:last-child,
-#composerForm .composer-tools #webSearchButton span:last-child { display: none; }
-#composerForm .composer-tools #attachmentButton span:first-child,
-#composerForm .composer-tools #webSearchButton span:first-child {
+#composerForm .composer-tools #attachmentButton span:last-child { display: none; }
+#composerForm .composer-tools #attachmentButton span:first-child {
   font-size: 21px;
   line-height: 1;
 }

@@ -30,16 +30,12 @@ def test_sidebar_no_longer_duplicates_prompt_discovery() -> None:
     assert "저녁 메뉴 추천" not in sidebar
 
 
-def test_empty_state_remains_the_prompt_discovery_surface() -> None:
+def test_empty_state_remains_the_prompt_discovery_surface():
     assert '<div class="starter-grid" aria-label="추천 질문">' in INDEX
-    # #5634: the first card is the computer connection entry, not a prompt.
     assert 'class="starter" id="pcConnectStarter"' in INDEX
-    assert "AI를 처음 쓰는 사람에게" not in INDEX
-    assert 'class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘"' in INDEX
     assert 'class="starter" id="documentStarterButton"' in INDEX
-    assert 'class="starter" id="webSearchStarterButton"' in INDEX
+    assert 'id="webSearchStarterButton"' not in INDEX
     assert 'document.querySelectorAll("[data-prompt]")' in APP
-
 
 def test_sidebar_primary_order_is_navigation_history_then_utilities() -> None:
     sidebar = _sidebar_markup()

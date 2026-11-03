@@ -46,11 +46,6 @@
 .starter-grid .starter strong { font-size: 13px; }
 .starter-grid .starter small { font-size: 12px; line-height: 1.45; }
 
-/* Keep the fourth fallback starter only while Web Search is genuinely disabled.
- * Never surface an unavailable Web Search control or a fifth active starter. */
-.starter-grid:has(#webSearchStarterButton:not([hidden]):not(:disabled)) #writingStarterButton {
-  display: none !important;
-}
 
 /* #5634: the greeting plus the four entry cards sit in the upper part of the
  * first screen instead of its middle, so the top : bottom spacing of the screen

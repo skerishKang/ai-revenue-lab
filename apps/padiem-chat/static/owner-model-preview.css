@@ -92,54 +92,24 @@
   outline-offset: 2px;
 }
 
-/* B62 #3790 mobile composer containment: optional web/deep tools wrap, never push send off-screen. */
+/* B62 #3790 mobile composer containment: composer tools wrap without pushing send off-screen. */
 @media (max-width: 620px) {
   .composer-actions { align-items: flex-end; min-width: 0; }
   .composer-tools { flex: 1 1 0; min-width: 0; flex-wrap: wrap; }
   .send-button { flex: 0 0 44px; align-self: flex-end; }
 }
 
-/* B62 #5297 first screen: the composer action row is not complete at the first
- * paint, and every late arrival used to move it.
- *
- * The tools row is the free space of the composer action row, so on a phone it
- * is 182px wide and it wraps. Three things land after the first paint:
- *
- *   - the two voice controls, mounted into the action row by voice-composer.js
- *     and voice-ui-menu.js, which makes the tools row 108px narrower,
- *   - the tier pill, released when product-capabilities.js installs the tier
- *     control (padiem-first-use.css hides `.model-pill` until then), and
- *   - the web-search control, revealed when the deployment capability arrives.
- *
- * The narrower row is the row the other two have to fit into, so whichever of
- * them crosses 182px first re-wraps the row into a second line. The composer
- * grows by a whole tool row and the settled first screen jumps. The web-search
- * control also slides the tier pill at every width, because it is ordered
- * before the pill.
- *
- * All three reserve their space, so the action row already has its settled
- * geometry at the first paint and nothing moves afterwards. The reserved
- * boxes carry their own size, because the tier pill and the web-search control
- * are sized by stylesheets that arrive later (mode-presentation.css is
- * injected at run time) and a reserved box that still followed them would move
- * the row while the stylesheets load.
- *
- * The controls keep their own semantics meanwhile: they stay invisible,
- * unfocusable and unclickable, and the deployment capability still decides
- * whether the web-search control is shown at all. Every reservation is given
- * back as soon as the thing it reserves is there, so the settled composer is
- * laid out exactly as it is today.
- */
+/* B62 #5297 first screen: keep the tier pill's reserved slot so installing its
+ * model control does not move the composer. The voice affordance is also
+ * reserved until mounted. Search controls are model-selected and no longer
+ * occupy a placeholder or change the composer geometry. */
 #composerForm .composer-tools .model-pill {
   /* padiem-first-use.css owns `.model-pill { display: none !important; }`,
      and the tier control is installed a frame before its own stylesheet is
      applied. The pill keeps its slot through both. */
   display: inline-flex !important;
   visibility: hidden;
-  /* The standard tier pill's own width, so the reserved slot is the slot the
-   * released pill takes. A tier label of its own length may end wider; the
-   * pill is the last item of the row and sits alone on its own line, so its
-   * start position does not move. */
+  /* Keep the first-screen tier slot stable until the model selector is ready. */
   width: 116px;
   min-width: 116px;
 }
@@ -149,30 +119,19 @@
   width: auto;
   min-width: 0;
 }
-#composerForm .composer-tools #webSearchButton[hidden] {
-  /* padiem-shared-ui.css owns a global `[hidden] { display: none !important; }`. */
-  display: inline-grid !important;
-  visibility: hidden;
-  /* The touch-target size the released control has (voice-composer.css). */
-  width: 44px;
-  min-width: 44px;
-  height: 44px;
-  min-height: 44px;
-}
 @media (max-width: 720px) {
-  /* The tier pill's own height and width on a phone (mode-presentation.css).
-   * They are kept because the pill is the only item on the row's second line,
-   * so its height is the height of that line. */
+  /* Keep the tier control's established phone footprint while it is shown. */
   #composerForm .composer-tools .model-pill { width: 112px; min-width: 112px; height: 44px; }
+  /* The voice module's first resize settles the one-line input at 50px. */
+  #composerForm > #messageInput { min-height: 50px; }
 }
 @media (max-width: 620px) {
   /* The voice control is mounted into the action row after the first
    * paint. Until it is there the tools row is the whole free space, and it
    * becomes 54px narrower (one 44px control and one 10px gap) when it
-   * arrives. That narrower row is the row the tier pill and the web-search
-   * control have to fit into, so the space they take is reserved here: the
-   * tools row keeps the width it will have in the settled composer, and its
-   * content never re-wraps.
+   * arrives. That narrower row is the row the tier pill has to fit into, so
+   * the tools row keeps the width it will have in the settled composer, and
+   * its content never re-wraps.
    *
    * The reservation is given back as soon as the control is mounted, so the
    * settled composer is laid out exactly as it is today.

@@ -288,7 +288,6 @@ MEASURE = """() => {
     formHeight: form ? form.getBoundingClientRect().height : null,
     send: rect(document.getElementById('sendButton')),
     attachment: rect(document.getElementById('attachmentButton')),
-    search: rect(document.getElementById('webSearchButton')),
     model: rect(document.querySelector('.composer-tier-trigger')),
     mic: rect(document.getElementById('voiceMicButton')),
     horizontalOverflow:
@@ -450,9 +449,9 @@ def test_the_control_covers_neither_the_text_nor_the_other_controls(browser, ser
     assert button is not None
     # The message text stops before the control.
     assert measured["textRight"] <= button["left"] + 1, measured
-    # The control never sits on the send, file, search, model or microphone
-    # controls.
-    for key in ("send", "attachment", "search", "model", "mic"):
+    # The control never sits on the send, file, model or microphone controls.
+    # The retired search control has no composer slot or measurement.
+    for key in ("send", "attachment", "model", "mic"):
         assert not _overlaps(button, measured[key]), (key, measured)
     assert not measured["horizontalOverflow"], measured
     assert not errors, errors

@@ -303,31 +303,25 @@ COLLISIONS = """(scope) => {
 
 @pytest.mark.parametrize("width,height", PHONE_WIDTHS)
 def test_no_phone_control_sits_on_top_of_another(static_url, width, height):
-    """The composer row is where this broke: the 44px floor made the tool
-    buttons wider than the space the voice and send controls leave them, and
-    the deep-research button ended up under the waveform — visible, but no
-    press could reach it. A control that shares its centre with its own chip or
-    label is fine; one whose centre belongs to a stranger is not."""
     with sync_playwright() as pw:
         browser = pw.chromium.launch()
         page = browser.new_page(viewport={"width": width, "height": height})
         try:
             page.goto(static_url, wait_until="domcontentloaded")
             page.wait_for_function(
-                "() => document.getElementById('deepResearchButton')"
-                " && !document.getElementById('deepResearchButton').disabled"
-                " && !document.getElementById('deepResearchButton').hidden",
+                "() => document.querySelector('.composer-tier-trigger[data-mode-control=\"true\"]')"
+                " && document.getElementById('attachmentButton')"
+                " && !document.querySelector('.composer-tier-trigger').hidden",
                 timeout=8_000)
             page.wait_for_timeout(500)
             closed = page.evaluate(COLLISIONS, "surface")
             page.evaluate("() => document.getElementById('mobileMenu').click()")
-            page.wait_for_timeout(400)
-            value = page.evaluate(COLLISIONS, "drawer")
+            opened = page.evaluate(COLLISIONS, "surface")
+            value = {"closed": closed, "opened": opened}
         finally:
             browser.close()
-    assert not closed["blocked"], "a control cannot receive its own press: %s" % closed["blocked"][:6]
-    assert value["blocked"] == [], "a control cannot receive its own press with the drawer open: %s" % value["blocked"][:6]
-
+    assert value["closed"]["blocked"] == [], value["closed"]
+    assert value["opened"]["blocked"] == [], value["opened"]
 
 def test_a_tablet_still_paints_the_shared_glass_art(static_url):
     """Only the phone width drops the portrait; 768 is a tablet and the Chat

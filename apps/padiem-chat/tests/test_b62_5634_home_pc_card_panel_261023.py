@@ -211,9 +211,8 @@ def test_the_card_opens_the_one_connect_flow():
 def test_the_starter_grid_keeps_four_cards_without_a_duplicate_prompt():
     assert 'id="documentStarterButton"' in INDEX
     assert 'id="writingStarterButton"' in INDEX
-    assert 'id="webSearchStarterButton"' in INDEX
+    assert 'id="webSearchStarterButton"' not in INDEX
     assert 'data-skill="explain"' not in INDEX
-
 
 def test_the_locale_covers_the_new_card_in_both_languages():
     assert '"pc-connect-title": "내 컴퓨터"' in LOCALE_JS
@@ -348,7 +347,8 @@ MEASURE = """() => {
     const panel = document.getElementById('clawDeviceManagerPanel');
     const card = document.getElementById('pcConnectStarter');
     const composer = document.querySelector('.composer');
-    const web = document.getElementById('webSearchButton');
+    const attachment = document.getElementById('attachmentButton');
+    const tier = document.querySelector('.composer-tier-trigger');
     return {
         card: box(card),
         cardExpanded: card ? card.getAttribute('aria-expanded') : null,
@@ -361,9 +361,8 @@ MEASURE = """() => {
         composer: box(composer),
         composerWrap: box(document.querySelector('.composer-wrap')),
         input: box(document.querySelector('.composer textarea') || document.querySelector('.composer input')),
-        web: box(web),
-        webHidden: web ? web.hidden : null,
-        webPressed: web ? web.getAttribute('aria-pressed') : null,
+        attachment: box(attachment),
+        tier: box(tier),
         cardLabels: Array.from(document.querySelectorAll('.starter-grid > *')).map(el => ({
             visible: el.getBoundingClientRect().height > 2,
             strong: (el.querySelector('strong') || {}).textContent || null,
@@ -534,28 +533,20 @@ def test_the_panel_closes_and_the_composer_controls_stay_clickable(static_url, w
             page.wait_for_function("() => document.getElementById('clawDeviceManagerPanel').hidden")
             assert _measure(page)["panelOpen"] is False
 
-            # The composer controls below the panel stay uncovered and clickable.
-            _open_panel(page)
+            # The remaining attachment and model controls stay uncovered by the panel.
             below = _measure(page)
-            assert below["webHidden"] is False
-            assert below["web"]["height"] > 2
-            assert not _intersects(below["web"], below["panel"])
-            uncovered = page.eval_on_selector(
-                "#webSearchButton",
-                """el => {
-                    const b = el.getBoundingClientRect();
-                    const top = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
-                    return !top || top === el || el.contains(top);
-                }""",
-            )
-            assert uncovered is True
-            page.click("#webSearchButton")
+            assert below["attachment"]["height"] >= 44
+            assert below["tier"]["height"] > 2
+            assert not _intersects(below["tier"], below["panel"])
+            page.evaluate("""() => {
+                window.__tierClickReached = false;
+                document.addEventListener('click', event => {
+                    if (event.target.closest('.composer-tier-trigger')) window.__tierClickReached = true;
+                }, {once: true, capture: true});
+            }""")
+            page.click(".composer-tier-trigger")
+            assert page.evaluate("() => window.__tierClickReached") is True
             clicked = _measure(page)
-            # The click reached the composer control: the panel did not swallow
-            # it. (The panel may dismiss on the outside click, as a popover
-            # should, but it never eats the click.)
-            assert below["webPressed"] != "true"
-            assert clicked["webPressed"] == "true"
             assert clicked["scrollWidth"] == clicked["clientWidth"]
         finally:
             browser.close()
