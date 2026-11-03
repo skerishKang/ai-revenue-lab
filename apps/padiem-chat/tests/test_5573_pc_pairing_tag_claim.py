@@ -74,9 +74,17 @@ def test_a_second_observation_of_the_same_tag_creates_no_second_link() -> None:
     first = RUN(store.complete_claim_from_observation(
         agent_name=tag, mesh_node_id=NODE, now=pairing._now(),
     ))
+    # The claim stamped this very node into the code row, and the install name
+    # keeps the tag - so the paired PC repeats it on every presence beat. That
+    # repeat ends quietly: nothing granted, nothing created, nothing refused.
+    assert RUN(store.complete_claim_from_observation(
+        agent_name=tag, mesh_node_id=NODE, now=pairing._now(),
+    )) is None
+
+    # A different node naming the spent tag is still exactly as refused.
     with pytest.raises(PcPairingError) as again:
         RUN(store.complete_claim_from_observation(
-            agent_name=tag, mesh_node_id=NODE, now=pairing._now(),
+            agent_name=tag, mesh_node_id=pairing.OTHER_NODE, now=pairing._now(),
         ))
     assert str(again.value) == "pairing code used"
 

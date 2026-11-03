@@ -184,11 +184,13 @@ def test_the_observed_name_seeds_the_whole_drives_the_pc_named() -> None:
     assert [root["path"] for root in link["roots"]] == ["C:", "D:", "E:"]
     assert [root["label"] for root in link["roots"]] == ["C:", "D:", "E:"]
     # A second beat for the same tag is not a second claim, and it must not be a
-    # way to widen what the first one granted.
-    with pytest.raises(PcPairingError):
-        RUN(store.complete_claim_from_observation(
-            agent_name=f"{tag} [C D E F]", mesh_node_id=NODE, now=pairing._now(),
-        ))
+    # way to widen what the first one granted: the paired PC's own repeat ends
+    # quietly and touches nothing, so the widened name grants no new root.
+    assert RUN(store.complete_claim_from_observation(
+        agent_name=f"{tag} [C D E F]", mesh_node_id=NODE, now=pairing._now(),
+    )) is None
+    live = RUN(store.link_for(user_id=lane.OWNER, mesh_node_id=NODE))
+    assert [root["path"] for root in live["roots"]] == ["C:", "D:", "E:"]
 
 
 def test_a_name_that_says_nothing_about_drives_grants_nothing() -> None:

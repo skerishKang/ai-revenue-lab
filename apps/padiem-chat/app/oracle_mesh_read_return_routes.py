@@ -44,14 +44,17 @@ import json
 import logging
 import re
 import secrets
+import time
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Callable
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
+
+from .pc_device_pairing_store import PcPairingError
 
 from .auth_routes import current_user_id
 from .claw_connector_enrollment_routes import _verified_owner_request
@@ -1976,6 +1979,63 @@ async def _read_presence(request: Request) -> list[dict[str, Any]] | None:
     return parsed
 
 
+class _PairingRefusalLog:
+    """One warning per (node, reason) per hour; the window's repeats counted.
+
+    A paired PC keeps the pairing tag its install stamped into the agent name,
+    so an ordinary fleet re-reports a spent tag once per presence beat and the
+    refusal line would repeat thousands of times an hour for links that are
+    perfectly fine. The first refusal in a window is warned with the refusal
+    reason and the node's last six characters; the repeats are only counted,
+    and the next window opens by summarizing what was swallowed.
+    """
+
+    _WINDOW_SECONDS = 3600
+
+    def __init__(self, now_func: Callable[[], float] | None = None) -> None:
+        self._now = time.monotonic if now_func is None else now_func
+        self._windows: dict[tuple[str, str], tuple[float, int]] = {}
+
+    def record(self, logger: logging.Logger, node_last6: str, reason: str) -> None:
+        key = (node_last6, reason)
+        moment = self._now()
+        window = self._windows.get(key)
+        if window is not None and moment - window[0] < self._WINDOW_SECONDS:
+            self._windows[key] = (window[0], window[1] + 1)
+            return
+        if window is not None and window[1] > 0:
+            logger.info(
+                "oracle_mesh_pairing_claim=refused_suppressed node=%s count=%d",
+                node_last6, window[1],
+            )
+        logger.warning(
+            "oracle_mesh_pairing_claim=refused reason=%s node=%s",
+            reason, node_last6,
+        )
+        self._windows[key] = (moment, 0)
+
+
+def _refusal_reason(exc: Exception) -> str:
+    """The bounded refusal text a log line may carry.
+
+    ``PcPairingError`` messages are fixed refusal phrases by design - the class
+    never carries a code, node or path value - so its message is the reason.
+    Any other exception type says only its own name: its message could quote
+    request material the log must not keep.
+    """
+    if isinstance(exc, PcPairingError):
+        return str(exc) or type(exc).__name__
+    return type(exc).__name__
+
+
+def _pairing_refusal_log(request: Request) -> _PairingRefusalLog:
+    tracker = getattr(request.app.state, "pairing_refusal_log", None)
+    if not isinstance(tracker, _PairingRefusalLog):
+        tracker = _PairingRefusalLog()
+        request.app.state.pairing_refusal_log = tracker
+    return tracker
+
+
 async def _record_mesh_presence(
     request: Request, source: "OracleMeshReturnSource", entries: list[dict[str, Any]],
 ) -> None:
@@ -1989,8 +2049,13 @@ async def _record_mesh_presence(
     for entry in entries:
         reported = entry["device_id"]
         # A name carrying this deployment's pairing tag is a claim attempt, and
-        # it is settled before anything else: the node has no link yet, which is
-        # exactly why the directory and map lookups below would refuse it.
+        # it is settled before anything else: an unlinked node is exactly what
+        # the directory and map lookups below would refuse, so the claim has to
+        # resolve first. Most tagged beats come from PCs that are already
+        # paired - the install name keeps its tag after the claim - and the
+        # store ends those idempotent repeats quietly; a genuinely failed
+        # attempt raises and its refusal lines are summarized by
+        # _PairingRefusalLog.
         agent_name = entry.get("agent_name")
         if isinstance(agent_name, str) and callable(
             getattr(pairing, "complete_claim_from_observation", None)
@@ -2000,9 +2065,10 @@ async def _record_mesh_presence(
                     agent_name=agent_name, mesh_node_id=reported, now=received_at,
                 )
             except Exception as exc:
-                logging.getLogger(__name__).warning(
-                    "oracle_mesh_pairing_claim=refused reason=%s",
-                    type(exc).__name__,
+                _pairing_refusal_log(request).record(
+                    logging.getLogger(__name__),
+                    str(reported)[-6:],
+                    _refusal_reason(exc),
                 )
             else:
                 if completed is not None:
