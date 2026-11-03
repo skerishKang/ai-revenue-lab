@@ -367,10 +367,10 @@ function resolve(input){
 
 // Expose
 if(typeof window!=='undefined'){
-  window.__smLocatorResolverV1={resolve:resolve, resolveBible:resolveBible, resolveSixWork:resolveSixWork, parseBibleTokens:parseBibleTokens, passageExists:passageExists, chapterExists:chapterExists, ORPHANS:ORPHANS, BIBLE_USFM:BIBLE_USFM};
+  window.__smLocatorResolverV1={resolve:resolve, resolveBible:resolveBible, resolveSixWork:resolveSixWork, parseBibleTokens:parseBibleTokens, passageExists:passageExists, chapterExists:chapterExists, ORPHANS:ORPHANS, BIBLE_USFM:BIBLE_USFM, bookAliases:ALIAS_MAP, chapterCounts:USFM_CHAPTERS};
 } 
 if(typeof module!=='undefined' && module.exports){
-  module.exports={resolve:resolve, resolveBible:resolveBible, resolveSixWork:resolveSixWork, passageExists:passageExists, chapterExists:chapterExists, ORPHANS:ORPHANS};
+  module.exports={resolve:resolve, resolveBible:resolveBible, resolveSixWork:resolveSixWork, passageExists:passageExists, chapterExists:chapterExists, ORPHANS:ORPHANS, bookAliases:ALIAS_MAP, chapterCounts:USFM_CHAPTERS};
 }
 
 })();
