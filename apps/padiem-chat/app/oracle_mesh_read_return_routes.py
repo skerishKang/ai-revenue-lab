@@ -2004,6 +2004,11 @@ async def _record_mesh_presence(
                 received_at=received_at,
                 credential_generation=generation,
                 source="mesh" if generation is None else "broker",
+                # #6695 PR-2: the receipt binds the accounts the directory
+                # answered with (the map's single ref on a legacy row) at
+                # record time, so the row itself is owner-attributed and a
+                # later reader never has to trust read-time discipline alone.
+                account_refs=accounts,
             )
         except Exception:
             logging.getLogger(__name__).warning("oracle_mesh_presence=store_failed")

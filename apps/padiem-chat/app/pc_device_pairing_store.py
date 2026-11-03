@@ -133,7 +133,9 @@ class PcPairingStore(Protocol):
 
     async def resolve_account_ref(self, *, target: str) -> str | None: ...
 
-    async def drive_roots_for_node(self, *, mesh_node_id: str) -> list[str]: ...
+    async def drive_roots_for_node(
+        self, *, mesh_node_id: str, owner_user_id: str | None = None,
+    ) -> list[str]: ...
 
     async def revoke_root(
         self, *, user_id: str, link_id: str, root_ref: str, now: datetime,
@@ -1001,19 +1003,34 @@ class D1PcPairingStore:
             return None
         return _user_id(row["id"])
 
-    async def drive_roots_for_node(self, *, mesh_node_id: str) -> list[str]:
-        """The whole-drive roots another link already records for this PC.
+    async def drive_roots_for_node(
+        self, *, mesh_node_id: str, owner_user_id: str | None = None,
+    ) -> list[str]:
+        """The whole-drive roots links already record for this PC.
 
         A claiming PC reports its own fixed drives, and #5981 made those drives
         the default scope. Adoption puts a second account on the same machine, so
         it takes the letters the PC itself reported instead of a folder list
         somebody typed: one authority for what a PC's drives are.
+
+        #6695 PR-2: this is a node-global read. The admin adopt route is the
+        only caller allowed to omit ``owner_user_id``; a caller acting for a
+        signed-in account must pass that account's id, and the answer then
+        covers only the links that account owns — another owner's drive layout
+        for the same machine never crosses this seam.
         """
         node = _mesh_node_id(mesh_node_id)
-        rows = await self._all(
-            "SELECT roots_json FROM pc_device_links WHERE mesh_node_id=? LIMIT 100",
-            node,
-        )
+        if owner_user_id is None:
+            rows = await self._all(
+                "SELECT roots_json FROM pc_device_links WHERE mesh_node_id=? LIMIT 100",
+                node,
+            )
+        else:
+            rows = await self._all(
+                "SELECT roots_json FROM pc_device_links "
+                "WHERE mesh_node_id=? AND user_id=? LIMIT 100",
+                node, _user_id(owner_user_id),
+            )
         drives: list[str] = []
         for row in rows:
             if not isinstance(row, dict):
