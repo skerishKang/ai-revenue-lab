@@ -33,10 +33,15 @@
   // the exact-email confirm; the browser only mirrors the same gate.
   const accountDeleteActions = document.getElementById("accountDeleteActions");
   const accountDeleteOpen = document.getElementById("accountDeleteOpen");
+  const accountSharedDeleteOpen = document.getElementById("accountSharedDeleteOpen");
   const accountDeleteConfirm = document.getElementById("accountDeleteConfirm");
   const accountDeleteConfirmEmail = document.getElementById("accountDeleteConfirmEmail");
   const accountDeleteButton = document.getElementById("accountDeleteButton");
   const accountDeleteError = document.getElementById("accountDeleteError");
+  const accountSharedDeleteConfirm = document.getElementById("accountSharedDeleteConfirm");
+  const accountSharedDeleteConfirmEmail = document.getElementById("accountSharedDeleteConfirmEmail");
+  const accountSharedDeleteButton = document.getElementById("accountSharedDeleteButton");
+  const accountSharedDeleteError = document.getElementById("accountSharedDeleteError");
   const settingsLogoutButton = document.getElementById("settingsLogoutButton");
   const passwordChangeOpen = document.getElementById("passwordChangeOpen");
   const passwordChangeDialog = document.getElementById("passwordChangeDialog");
@@ -2658,53 +2663,83 @@
     }
   }
 
-  // #6659 3번 1단계: account self-deletion. The screen explains what is
-  // deleted and what stays, and the delete button only arms once the typed
-  // email matches the signed-in account email exactly. The server re-checks
-  // everything: the session, the origin guard, the exact email, the admin
-  // refusal and the one-transaction deletion.
+  // Service-only and all-service deletion both require the exact account email
+  // in the UI; the server repeats every session, origin, identity and admin check.
   function resetAccountDeleteConfirm() {
     if (accountDeleteConfirmEmail) accountDeleteConfirmEmail.value = "";
     if (accountDeleteButton) accountDeleteButton.disabled = true;
     setAuthFormError(accountDeleteError);
   }
 
+  function resetAccountSharedDeleteConfirm() {
+    if (accountSharedDeleteConfirmEmail) accountSharedDeleteConfirmEmail.value = "";
+    if (accountSharedDeleteButton) accountSharedDeleteButton.disabled = true;
+    setAuthFormError(accountSharedDeleteError);
+  }
+
   function openAccountDeleteConfirm() {
     if (!accountDeleteConfirm) return;
     resetAccountDeleteConfirm();
+    resetAccountSharedDeleteConfirm();
+    if (accountSharedDeleteConfirm) accountSharedDeleteConfirm.hidden = true;
     accountDeleteConfirm.hidden = false;
     accountDeleteConfirmEmail?.focus();
   }
 
-  function syncAccountDeleteButton() {
-    if (!accountDeleteButton) return;
-    const typed = accountDeleteConfirmEmail?.value ?? "";
-    const email = authState.user && typeof authState.user.email === "string"
-      ? authState.user.email : "";
-    accountDeleteButton.disabled = !email || typed !== email;
+  function openAccountSharedDeleteConfirm() {
+    if (!accountSharedDeleteConfirm) return;
+    resetAccountDeleteConfirm();
+    resetAccountSharedDeleteConfirm();
+    if (accountDeleteConfirm) accountDeleteConfirm.hidden = true;
+    accountSharedDeleteConfirm.hidden = false;
+    accountSharedDeleteConfirmEmail?.focus();
   }
 
-  async function submitAccountDelete() {
-    if (!accountDeleteButton || accountDeleteButton.disabled) return;
-    setAuthFormError(accountDeleteError);
-    const typed = accountDeleteConfirmEmail?.value || "";
-    accountDeleteButton.disabled = true;
+  function syncDeleteButton(button, inputElement) {
+    if (!button) return;
+    const typed = inputElement?.value ?? "";
+    const email = authState.user && typeof authState.user.email === "string"
+      ? authState.user.email : "";
+    button.disabled = !email || typed !== email;
+  }
+
+  function syncAccountDeleteButton() {
+    syncDeleteButton(accountDeleteButton, accountDeleteConfirmEmail);
+  }
+
+  function syncAccountSharedDeleteButton() {
+    syncDeleteButton(accountSharedDeleteButton, accountSharedDeleteConfirmEmail);
+  }
+
+  async function submitAccountDelete(deleteAllServices = false) {
+    const button = deleteAllServices ? accountSharedDeleteButton : accountDeleteButton;
+    const inputElement = deleteAllServices ? accountSharedDeleteConfirmEmail : accountDeleteConfirmEmail;
+    const errorElement = deleteAllServices ? accountSharedDeleteError : accountDeleteError;
+    if (!button || button.disabled) return;
+    setAuthFormError(errorElement);
+    const typed = inputElement?.value || "";
+    button.disabled = true;
     try {
-      await passwordAuthRequest("/api/account/delete", { confirm: typed });
-      // The server ended every session for this account and cleared the
-      // cookie: land back on the signed-out first screen.
+      const endpoint = deleteAllServices ? "/api/account/shared-delete" : "/api/account/delete";
+      await passwordAuthRequest(endpoint, { confirm: typed });
       resetAccountDeleteConfirm();
+      resetAccountSharedDeleteConfirm();
       if (accountDeleteConfirm) accountDeleteConfirm.hidden = true;
+      if (accountSharedDeleteConfirm) accountSharedDeleteConfirm.hidden = true;
+      // Successful deletion revokes this service session and clears its cookie.
       closeSettings();
       await loadAuthStatus();
       if (authDialog && !authDialog.open) openAuthDialog();
-      setAuthFormError(passwordLoginError, uiT("account-delete-done"));
+      setAuthFormError(
+        passwordLoginError,
+        uiT(deleteAllServices ? "account-shared-delete-done" : "account-delete-done"),
+      );
     } catch (error) {
       setAuthFormError(
-        accountDeleteError,
+        errorElement,
         error instanceof Error ? error.message : uiT("auth-error-generic"),
       );
-      accountDeleteButton.disabled = false;
+      button.disabled = false;
     }
   }
 
@@ -4296,10 +4331,21 @@
   if (passwordChangeForm) passwordChangeForm.addEventListener("submit", submitPasswordChange);
   if (passwordChangeOpen) passwordChangeOpen.addEventListener("click", openPasswordChangeDialog);
   if (accountDeleteOpen) accountDeleteOpen.addEventListener("click", openAccountDeleteConfirm);
+  if (accountSharedDeleteOpen) {
+    accountSharedDeleteOpen.addEventListener("click", openAccountSharedDeleteConfirm);
+  }
   if (accountDeleteConfirmEmail) {
     accountDeleteConfirmEmail.addEventListener("input", syncAccountDeleteButton);
   }
-  if (accountDeleteButton) accountDeleteButton.addEventListener("click", submitAccountDelete);
+  if (accountDeleteButton) {
+    accountDeleteButton.addEventListener("click", () => submitAccountDelete(false));
+  }
+  if (accountSharedDeleteConfirmEmail) {
+    accountSharedDeleteConfirmEmail.addEventListener("input", syncAccountSharedDeleteButton);
+  }
+  if (accountSharedDeleteButton) {
+    accountSharedDeleteButton.addEventListener("click", () => submitAccountDelete(true));
+  }
   if (passwordChangeDialogClose) passwordChangeDialogClose.addEventListener("click", closePasswordChangeDialog);
   if (passwordChangeDialog) {
     passwordChangeDialog.addEventListener("cancel", (event) => {

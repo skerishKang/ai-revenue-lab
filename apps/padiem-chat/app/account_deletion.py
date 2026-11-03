@@ -25,10 +25,14 @@ THE ONE CONFIRMATION
 from __future__ import annotations
 
 import hashlib
+import hmac
+import json
 import re
+import time
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
+import httpx
 from starlette.responses import JSONResponse
 
 from .auth import SESSION_COOKIE
@@ -55,6 +59,151 @@ from .pc_device_pairing_store import (
 #: itself deleted by this batch, so it is read before the batch runs.
 _SHARED_SUBJECT_PREFIX = "shared:"
 _SUBJECT_RE = re.compile(r"sub_[A-Za-z0-9_-]{1,128}")
+_CHAT_PRODUCTS = frozenset({"b62", "b54-padiem-claw"})
+_LOVETREE_PRODUCT = "lovetree-4-0"
+_AUTH_ACCOUNT_DELETE_URL = "https://auth.padiem.net/internal/account-delete/prepare"
+_SERVICE_AT = "x-padiem-service-at"
+_SERVICE_ID = "x-padiem-service-id"
+_SERVICE_PROOF = "x-padiem-service-proof"
+
+
+class AccountDeleteRpcError(RuntimeError):
+    """Closed transport failure. It never retains URL, body, signature or secret."""
+
+
+async def prune_expired_account_deletion_audit(db, *, now: datetime | None = None) -> int:
+    """Remove hash-only deletion audit rows after one year; scheduled worker owns cadence."""
+    if db is None or not callable(getattr(db, "prepare", None)):
+        return 0
+    current = now or datetime.now(timezone.utc)
+    cutoff = (current - timedelta(days=365)).isoformat()
+    result = await db.prepare(
+        "DELETE FROM account_deletion_audit WHERE datetime(deleted_at) <= datetime(?)"
+    ).bind(cutoff).run()
+    meta = getattr(result, "meta", None)
+    changes = meta.get("changes") if isinstance(meta, dict) else None
+    return changes if isinstance(changes, int) and changes >= 0 else 0
+
+
+def _service_proof(secret: str, *, path: str, at: int, service_id: str, body: bytes) -> str:
+    signed = b"\n".join(
+        (
+            b"v2",
+            b"POST",
+            path.encode("utf-8"),
+            str(at).encode("ascii"),
+            service_id.encode("utf-8"),
+            body,
+        )
+    )
+    return "v2=" + hmac.new(secret.encode("utf-8"), signed, hashlib.sha256).hexdigest()
+
+
+async def _signed_rpc_post(request, *, url: str, path: str, payload: dict) -> dict:
+    settings = request.app.state.settings
+    secret = getattr(settings, "account_delete_rpc_secret", None)
+    if not isinstance(secret, str) or len(secret) < 32:
+        raise AccountDeleteRpcError("account_delete_rpc_unavailable")
+    try:
+        parsed = httpx.URL(url)
+        if parsed.scheme != "https" or parsed.path != path or parsed.query or parsed.fragment:
+            raise ValueError("rpc url mismatch")
+        body = json.dumps(payload, separators=(",", ":"), sort_keys=True, ensure_ascii=False).encode("utf-8")
+        at = int(time.time())
+        service_id = str(uuid.uuid4())
+        headers = {
+            "content-type": "application/json",
+            "accept": "application/json",
+            _SERVICE_AT: str(at),
+            _SERVICE_ID: service_id,
+            _SERVICE_PROOF: _service_proof(secret, path=path, at=at, service_id=service_id, body=body),
+        }
+        transport = getattr(request.app.state, "account_delete_rpc_transport", None)
+        if callable(transport):
+            response = await transport(url=url, method="POST", path=path, body=body, headers=headers)
+        else:
+            async with httpx.AsyncClient(timeout=5.0, follow_redirects=False) as client:
+                response = await client.post(url, content=body, headers=headers)
+        status = getattr(response, "status_code", None)
+        data = response.json() if status == 200 else None
+        if status != 200 or not isinstance(data, dict) or data.get("ok") is not True:
+            raise AccountDeleteRpcError("account_delete_rpc_failed")
+        return data
+    except AccountDeleteRpcError:
+        raise
+    except Exception as exc:
+        raise AccountDeleteRpcError("account_delete_rpc_failed") from exc
+
+
+def _shared_subject(provider_subject: object) -> str | None:
+    if not isinstance(provider_subject, str) or not provider_subject.startswith(_SHARED_SUBJECT_PREFIX):
+        return None
+    subject = provider_subject[len(_SHARED_SUBJECT_PREFIX):]
+    return subject if _SUBJECT_RE.fullmatch(subject) else None
+
+
+async def _active_product_links(request, subject_id: str) -> list[dict[str, str]]:
+    authority = getattr(request.app.state, "control_plane_identity_authority", None)
+    list_links = getattr(authority, "list_active_product_links_for_subject", None)
+    if not callable(list_links):
+        raise AccountDeleteRpcError("control_plane_identity_unavailable")
+    return await list_links(canonical_subject_id=subject_id)
+
+
+async def _remove_product_link(
+    request,
+    link: dict[str, str],
+    subject_id: str,
+    account_deletion_operation_id: str | None,
+) -> dict:
+    authority = getattr(request.app.state, "control_plane_identity_authority", None)
+    remove_link = getattr(authority, "remove_product_link", None)
+    if not callable(remove_link):
+        raise AccountDeleteRpcError("control_plane_identity_unavailable")
+    return await remove_link(
+        product_id=link["product_id"],
+        product_user_id=link["product_user_id"],
+        canonical_subject_id=subject_id,
+        account_deletion_operation_id=account_deletion_operation_id,
+    )
+
+
+async def _prepare_auth_account_deletion(request, subject_id: str) -> str:
+    operation_id = str(uuid.uuid4())
+    result = await _signed_rpc_post(
+        request,
+        url=_AUTH_ACCOUNT_DELETE_URL,
+        path="/internal/account-delete/prepare",
+        payload={"account_id": subject_id, "operation_id": operation_id},
+    )
+    if set(result) != {"ok", "prepared", "revoked_sessions"} or result.get("prepared") is not True:
+        raise AccountDeleteRpcError("auth_account_delete_unavailable")
+    count = result.get("revoked_sessions")
+    if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+        raise AccountDeleteRpcError("auth_account_delete_unavailable")
+    return operation_id
+
+
+async def _finish_auth_account_deletion(request, subject_id: str, operation_id: str) -> None:
+    result = await _signed_rpc_post(
+        request,
+        url="https://auth.padiem.net/internal/account-delete/complete",
+        path="/internal/account-delete/complete",
+        payload={"account_id": subject_id, "operation_id": operation_id},
+    )
+    if result != {"ok": True, "deleted": True}:
+        raise AccountDeleteRpcError("auth_account_delete_unavailable")
+
+
+async def _abort_auth_account_deletion(request, subject_id: str, operation_id: str) -> None:
+    result = await _signed_rpc_post(
+        request,
+        url="https://auth.padiem.net/internal/account-delete/abort",
+        path="/internal/account-delete/abort",
+        payload={"account_id": subject_id, "operation_id": operation_id},
+    )
+    if result != {"ok": True, "aborted": True}:
+        raise AccountDeleteRpcError("auth_account_delete_unavailable")
 
 
 def bookai_subjects(provider_subject: str | None, link_owner_ids=()) -> tuple[str, ...]:
@@ -223,16 +372,17 @@ def _delete_batch(
     user_id_hash = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
     statements.append(
         db.prepare(
-            "INSERT INTO account_deletion_audit (id, user_id_hash, deleted_at) VALUES (?,?,?)"
-        ).bind(str(uuid.uuid4()), user_id_hash, deleted_at)
+            "INSERT INTO account_deletion_audit (user_id_hash, deleted_at) VALUES (?,?) "
+            "ON CONFLICT(user_id_hash) DO UPDATE SET deleted_at=excluded.deleted_at"
+        ).bind(user_id_hash, deleted_at)
     )
     # The account row itself goes last, after every row that references it.
     statements.append(db.prepare("DELETE FROM users WHERE id = ?").bind(user_id))
     return statements
 
 
-async def account_delete(request) -> JSONResponse:
-    """Delete the signed-in account's Chat data after the exact-email confirmation."""
+async def _account_delete(request, *, delete_all_services: bool) -> JSONResponse:
+    """Delete Chat data, then unlink the completed product deletion from the authority."""
     if not auth_ready(request):
         return _unavailable()
     user_id = current_user_id(request)
@@ -240,28 +390,17 @@ async def account_delete(request) -> JSONResponse:
         return _auth_error(401, "authentication_required", "로그인이 필요합니다.")
     db = getattr(request.app.state, "account_data_db", None)
     if db is None or not callable(getattr(db, "prepare", None)) or not callable(getattr(db, "batch", None)):
-        return _auth_error(
-            503,
-            "account_delete_unavailable",
-            "지금 계정 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.",
-        )
+        return _auth_error(503, "account_delete_unavailable", "지금 계정 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.")
 
     row = _row_to_dict(
-        await db.prepare(
-            "SELECT email, provider_subject FROM users WHERE id = ?"
-        ).bind(user_id).first()
+        await db.prepare("SELECT email, provider_subject FROM users WHERE id = ?").bind(user_id).first()
     )
     email = row.get("email") if row else None
     if not isinstance(email, str) or not email:
         return _auth_error(401, "authentication_required", "로그인이 필요합니다.")
-
     data = await _json_body(request)
     if data is None or set(data) != {"confirm"} or not isinstance(data.get("confirm"), str):
-        return _auth_error(
-            400, "invalid_request", "탈퇴 확인 문구를 확인해 주세요. 아무것도 지워지지 않았습니다."
-        )
-    # The exact-match retyped email IS the "confirm once before irreversible
-    # destruction" gate. Everything else deletes nothing.
+        return _auth_error(400, "invalid_request", "탈퇴 확인 문구를 확인해 주세요. 아무것도 지워지지 않았습니다.")
     if data["confirm"] != email:
         return _auth_error(
             400,
@@ -271,53 +410,64 @@ async def account_delete(request) -> JSONResponse:
 
     admin_email = str(getattr(request.app.state, "central_admin_google_email", "") or "")
     if admin_email.strip().lower() and email.strip().lower() == admin_email.strip().lower():
-        return _auth_error(
-            403,
-            "account_delete_admin_blocked",
-            "중앙 관리자 계정은 이 화면에서 탈퇴할 수 없습니다.",
-        )
+        return _auth_error(403, "account_delete_admin_blocked", "중앙 관리자 계정은 이 화면에서 탈퇴할 수 없습니다.")
     try:
         admin_role = await db.prepare(
             "SELECT user_id FROM platform_admin_roles WHERE user_id = ? LIMIT 1"
         ).bind(user_id).first()
     except Exception:
-        return _auth_error(
-            503,
-            "account_delete_unavailable",
-            "지금 계정 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.",
-        )
+        return _auth_error(503, "account_delete_unavailable", "지금 계정 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.")
     if admin_role is not None:
-        return _auth_error(
-            403,
-            "account_delete_admin_blocked",
-            "관리자 권한이 있는 계정은 이 화면에서 탈퇴할 수 없습니다.",
-        )
+        return _auth_error(403, "account_delete_admin_blocked", "관리자 권한이 있는 계정은 이 화면에서 탈퇴할 수 없습니다.")
 
-    # Resolve the BookAI subjects before anything is revoked: the session
-    # revocation drops the account-link cache row that carries the second
-    # mapping, so reading it afterwards would silently delete nothing.
+    subject_id = _shared_subject((row or {}).get("provider_subject"))
+    links: list[dict[str, str]] = []
+    links_to_remove: list[dict[str, str]] = []
+    if delete_all_services and subject_id is None:
+        return _auth_error(400, "shared_account_required", "공통 로그인 계정으로 로그인한 뒤 요청해 주세요.")
+    if subject_id is not None:
+        try:
+            links = await _active_product_links(request, subject_id)
+        except Exception:
+            return _auth_error(503, "shared_account_unavailable", "공통 계정 연결을 확인할 수 없습니다. 다시 시도해 주세요.")
+        if not links or not any(item["product_id"] in _CHAT_PRODUCTS for item in links):
+            return _auth_error(503, "shared_account_unavailable", "공통 계정 연결을 확인할 수 없습니다. 다시 시도해 주세요.")
+        known = _CHAT_PRODUCTS | {_LOVETREE_PRODUCT}
+        if delete_all_services and any(item["product_id"] not in known for item in links):
+            return _auth_error(503, "shared_account_service_unavailable", "연결된 서비스 삭제를 완료할 수 없습니다. 데이터는 유지됩니다.")
+        links_to_remove = (
+            sorted(links, key=lambda item: 1 if item["product_id"] in _CHAT_PRODUCTS else 0)
+            if delete_all_services
+            else [item for item in links if item["product_id"] in _CHAT_PRODUCTS]
+        )
+        if delete_all_services and any(item["product_id"] == _LOVETREE_PRODUCT for item in links):
+            settings = request.app.state.settings
+            endpoint = getattr(settings, "lovetree_account_delete_url", None)
+            if not isinstance(endpoint, str) or not endpoint:
+                return _auth_error(503, "shared_account_service_unavailable", "러브트리 삭제 연결이 준비되지 않았습니다. 데이터는 유지됩니다.")
+            try:
+                result = await _signed_rpc_post(
+                    request,
+                    url=endpoint,
+                    path="/internal/account/delete",
+                    payload={"canonical_subject_id": subject_id, "product_id": _LOVETREE_PRODUCT},
+                )
+                if set(result) != {"ok", "deleted"} or result.get("deleted") is not True:
+                    raise AccountDeleteRpcError("lovetree_account_delete_unavailable")
+            except Exception:
+                return _auth_error(503, "shared_account_service_unavailable", "러브트리 데이터 삭제를 완료하지 못했습니다. 다시 시도해 주세요.")
+
+    # Resolve BookAI subjects before revocation removes the transient link cache.
     try:
         link_subjects = await _account_link_subjects(db, user_id)
     except Exception:
-        # Fail closed: deleting the account while its BookAI records would
-        # survive is worse than asking the user to retry.
-        return _auth_error(
-            503,
-            "account_delete_unavailable",
-            "지금 계정 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.",
-        )
+        return _auth_error(503, "account_delete_unavailable", "지금 계정 탈퇴를 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.")
     subjects = bookai_subjects((row or {}).get("provider_subject"), link_subjects)
 
-    # End this session first: a session that cannot be ended leaves every row
-    # untouched, so the user can simply retry (same order as password change).
     failure = await _revoke_canonical_session(request)
     if failure is not None:
         return _auth_error(503, failure, "세션을 종료하지 못했습니다. 다시 시도해 주세요.")
 
-    # COM2 owns the PC tables in the queue DB. Clean those rows after the
-    # session is revoked and before the Chat DB batch. On queue failure, leave
-    # Chat data untouched; a later retry is safe because queue deletes are
-    # idempotent. D1 keeps these tables in its own Chat DB batch.
     queue_client = getattr(request.app.state, "queue_client", None)
     include_pc_queue_data = queue_client is None
     if queue_client is not None:
@@ -330,7 +480,7 @@ async def account_delete(request) -> JSONResponse:
             return _auth_error(
                 503,
                 "account_delete_queue_unavailable",
-                "PC account data cleanup failed; retry account deletion.",
+                "PC account data 정리를 완료하지 못했습니다. 다시 로그인해 요청해 주세요.",
             )
 
     try:
@@ -343,33 +493,82 @@ async def account_delete(request) -> JSONResponse:
             )
         )
     except Exception:
-        # The Chat batch is atomic, so its account and data remain if it fails.
-        # A COM2 queue batch may already have committed; it is idempotent, so a
-        # new session can retry and finish the Chat batch.
         return _auth_error(
             503,
             "account_delete_failed",
-            "계정 탈퇴 처리에 실패했습니다. 데이터는 그대로 남습니다. 다시 로그인한 뒤 다시 시도해 주세요.",
+            "계정 데이터 삭제를 완료하지 못했습니다. 저장된 데이터는 유지됩니다. 다시 로그인해 요청해 주세요.",
         )
 
-    # Best-effort account-wide canonical revocation (#5441 helper) plus the
-    # in-memory derived caches. The deleted user row already refuses every
-    # cookie this account ever minted; these clear the leftovers.
+    # Keep the existing cache cleanup and best-effort account-wide revocation.
     await _revoke_all_canonical_sessions(request, user_id=user_id, strict=False)
     try:
         from .auth_validation_cache import invalidate_auth_cache
-
         await invalidate_auth_cache(request, user_id=user_id)
     except Exception:
         pass
     try:
         from .pc_scope_cache import invalidate_owner_scope
-
         invalidate_owner_scope(user_id)
     except Exception:
         pass
 
-    response = JSONResponse({"ok": True})
+    common_account_deleted = False
+    if subject_id is not None:
+        auth_prepared = False
+        auth_operation_id: str | None = None
+        for link in links_to_remove:
+            try:
+                active = await _active_product_links(request, subject_id)
+                is_last = (
+                    len(active) == 1
+                    and active[0]["product_id"] == link["product_id"]
+                    and active[0]["product_user_id"] == link["product_user_id"]
+                )
+                if is_last and not auth_prepared:
+                    auth_operation_id = await _prepare_auth_account_deletion(request, subject_id)
+                    auth_prepared = True
+                result = await _remove_product_link(
+                    request, link, subject_id, auth_operation_id
+                )
+                common_account_deleted = bool(result.get("common_account_deleted"))
+                if common_account_deleted:
+                    if auth_operation_id is None:
+                        raise AccountDeleteRpcError("auth_account_delete_unprepared")
+                    await _finish_auth_account_deletion(request, subject_id, auth_operation_id)
+                    auth_operation_id = None
+            except Exception:
+                if auth_operation_id is not None:
+                    try:
+                        await _abort_auth_account_deletion(request, subject_id, auth_operation_id)
+                    except Exception:
+                        # Auth's five-minute lease expires even if this compensating RPC is unavailable.
+                        pass
+                return _auth_error(
+                    503,
+                    "shared_account_unlink_failed",
+                    "서비스 데이터 삭제 뒤 공통 계정 정리를 끝내지 못했습니다. 다시 로그인해 요청해 주세요.",
+                )
+        if auth_operation_id is not None:
+            try:
+                await _abort_auth_account_deletion(request, subject_id, auth_operation_id)
+            except Exception:
+                pass
+        if delete_all_services and not common_account_deleted:
+            return _auth_error(
+                503,
+                "shared_account_delete_incomplete",
+                "모든 서비스 연결을 정리하지 못했습니다. 다시 로그인해 요청해 주세요.",
+            )
+
+    response = JSONResponse({"ok": True, "common_account_deleted": common_account_deleted})
     response.headers["cache-control"] = "private, no-store"
     response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
     return response
+
+
+async def account_delete(request) -> JSONResponse:
+    return await _account_delete(request, delete_all_services=False)
+
+
+async def shared_account_delete(request) -> JSONResponse:
+    return await _account_delete(request, delete_all_services=True)

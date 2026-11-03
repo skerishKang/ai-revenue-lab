@@ -29,6 +29,16 @@ export class AuthState {
       digest TEXT PRIMARY KEY, session_id TEXT NOT NULL, used INTEGER NOT NULL DEFAULT 0,
       grace_until INTEGER, grace_result TEXT, successor TEXT
     )`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS auth_session_index (
+      account_id TEXT NOT NULL, object_id TEXT NOT NULL, session_id TEXT NOT NULL,
+      expires INTEGER NOT NULL, PRIMARY KEY(account_id, object_id, session_id)
+    )`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS account_deletion_locks (
+      account_id TEXT PRIMARY KEY, lock_token TEXT NOT NULL, expires INTEGER NOT NULL
+    )`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS account_deletion_audit (
+      account_id_hash TEXT PRIMARY KEY, deleted_at INTEGER NOT NULL
+    )`);
   }
 
   accountByFingerprint(fingerprint) {
@@ -39,8 +49,9 @@ export class AuthState {
     return this.sql.exec('SELECT account_id,state FROM google_accounts WHERE account_id=?', accountId).toArray()[0] || null;
   }
 
-  putAccount({ fingerprint, accountId }) {
+  putAccount({ fingerprint, accountId, now = Math.floor(Date.now() / 1000) }) {
     return this.storage.transactionSync(() => {
+      if (this.sql.exec('SELECT account_id FROM account_deletion_locks WHERE account_id=? AND expires>?', accountId, now).toArray().length) throw new Error('account_deletion_in_progress');
       if (this.sql.exec('SELECT account_id FROM blocked_accounts WHERE account_id=?', accountId).toArray().length) throw new Error('account_blocked');
       this.sql.exec("INSERT INTO google_accounts(fingerprint,account_id,state) VALUES(?,?,'active') ON CONFLICT(fingerprint) DO NOTHING", fingerprint, accountId);
       const record = this.accountByFingerprint(fingerprint);
@@ -145,6 +156,84 @@ export class AuthState {
       this.sql.exec('INSERT INTO refresh_tokens(digest,session_id) VALUES(?,?)', replacement, id);
       return { ok: true, encryptedResult, accountId: session.account_id };
     });
+  }
+
+  forceRevokeForAccountDeletion({ id }) {
+    return this.storage.transactionSync(() => {
+      const rows = this.sql.exec('UPDATE sessions SET revoked=1 WHERE id=? AND revoked=0 RETURNING id', id).toArray();
+      if (rows.length === 1) return true;
+      return this.sql.exec('SELECT id FROM sessions WHERE id=? AND revoked=1', id).toArray().length === 1;
+    });
+  }
+
+  indexAccountSession({ accountId, objectId, sessionId, expires, now }) {
+    return this.storage.transactionSync(() => {
+      const account = this.accountById(accountId);
+      if (!account || account.state !== 'active') return false;
+      if (this.sql.exec('SELECT account_id FROM account_deletion_locks WHERE account_id=? AND expires>?', accountId, now).toArray().length) return false;
+      const rows = this.sql.exec(
+        'INSERT INTO auth_session_index(account_id,object_id,session_id,expires) VALUES(?,?,?,?) ON CONFLICT DO NOTHING RETURNING session_id',
+        accountId, objectId, sessionId, expires
+      ).toArray();
+      return rows.length === 1;
+    });
+  }
+
+  beginAccountDeletion({ accountId, lockToken, now, leaseSeconds = 300 }) {
+    return this.storage.transactionSync(() => {
+      this.sql.exec('DELETE FROM account_deletion_locks WHERE expires<=?', now);
+      const blocked = this.sql.exec('SELECT account_id FROM blocked_accounts WHERE account_id=?', accountId).toArray().length > 0;
+      if (blocked) return false;
+      const current = this.sql.exec(
+        'SELECT lock_token FROM account_deletion_locks WHERE account_id=? AND expires>?',
+        accountId, now
+      ).toArray();
+      if (current.length) return current.length === 1 && current[0].lock_token === lockToken;
+      const rows = this.sql.exec(
+        'INSERT INTO account_deletion_locks(account_id,lock_token,expires) VALUES(?,?,?) ON CONFLICT(account_id) DO UPDATE SET lock_token=excluded.lock_token,expires=excluded.expires WHERE account_deletion_locks.expires<=? RETURNING account_id',
+        accountId, lockToken, now + leaseSeconds, now
+      ).toArray();
+      return rows.length === 1;
+    });
+  }
+
+  indexedAccountSessions({ accountId }) {
+    return this.sql.exec(
+      'SELECT object_id,session_id FROM auth_session_index WHERE account_id=? ORDER BY object_id,session_id',
+      accountId
+    ).toArray();
+  }
+
+  releaseAccountDeletion({ accountId, lockToken }) {
+    return this.sql.exec('DELETE FROM account_deletion_locks WHERE account_id=? AND lock_token=? RETURNING account_id', accountId, lockToken).toArray().length === 1;
+  }
+
+  finalizeAccountDeletion({ accountId, accountIdHash, lockToken, now }) {
+    return this.storage.transactionSync(() => {
+      const lock = this.sql.exec(
+        'SELECT account_id FROM account_deletion_locks WHERE account_id=? AND lock_token=? AND expires>?',
+        accountId, lockToken, now
+      ).toArray();
+      if (lock.length !== 1 || !/^[a-f0-9]{64}$/.test(accountIdHash ?? '')) return false;
+      this.sql.exec('DELETE FROM google_accounts WHERE account_id=?', accountId);
+      this.sql.exec('DELETE FROM auth_session_index WHERE account_id=?', accountId);
+      this.sql.exec(
+        'INSERT INTO account_deletion_audit(account_id_hash,deleted_at) VALUES(?,?) ON CONFLICT(account_id_hash) DO UPDATE SET deleted_at=excluded.deleted_at',
+        accountIdHash, now
+      );
+      this.sql.exec('DELETE FROM account_deletion_locks WHERE account_id=? AND lock_token=?', accountId, lockToken);
+      this.pruneAccountDeletionAudit({ now });
+      return true;
+    });
+  }
+
+  pruneAccountDeletionAudit({ now }) {
+    return this.sql.exec('DELETE FROM account_deletion_audit WHERE deleted_at<=? RETURNING account_id_hash', now - 365 * 24 * 60 * 60).toArray().length;
+  }
+
+  nextAccountDeletionAuditExpiry() {
+    const row = this.sql.exec('SELECT MIN(deleted_at) AS deleted_at FROM account_deletion_audit').toArray()[0];
+    return Number.isInteger(row?.deleted_at) ? row.deleted_at + 365 * 24 * 60 * 60 : null;
   }
 
   revoke({ id, client, digest, now }) {
