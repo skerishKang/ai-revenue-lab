@@ -48,6 +48,11 @@ class PcDeviceSelectionStore(Protocol):
         self, *, owner_id: str, workspace_id: str, device_id: str, now: datetime,
     ) -> bool: ...
 
+    async def replace_superseded_devices(
+        self, *, owner_id: str, superseded_device_ids: list[str],
+        device_id: str, now: datetime,
+    ) -> bool: ...
+
 
 class D1PcDeviceSelectionStore:
     """Cloudflare D1 adapter. Every value is a prepared-statement bind."""
@@ -99,9 +104,64 @@ class D1PcDeviceSelectionStore:
         )
         return await self.load(owner_id=owner, workspace_id=workspace) == device
 
+    async def replace_superseded_devices(
+        self, *, owner_id: str, superseded_device_ids: list[str],
+        device_id: str, now: datetime,
+    ) -> bool:
+        """Move only this owner's saved preferences off links just superseded."""
+        owner = _text(owner_id, "owner_id", _MAX_OWNER_CHARS)
+        device = _device_id(device_id)
+        if not isinstance(now, datetime) or now.tzinfo is None:
+            raise PcDeviceSelectionStoreError("trusted aware time required")
+        if not isinstance(superseded_device_ids, list) or len(superseded_device_ids) > 100:
+            raise PcDeviceSelectionStoreError("superseded_device_ids must be a bounded list")
+        old_devices = list(dict.fromkeys(
+            _device_id(value) for value in superseded_device_ids
+        ))
+        if not old_devices:
+            return True
+        if device in old_devices:
+            raise PcDeviceSelectionStoreError("replacement cannot be superseded")
+        stamp = now.isoformat().replace("+00:00", "Z")
+        placeholders = ",".join("?" for _ in old_devices)
+        await self._run(
+            "UPDATE claw_pc_device_selection SET device_id=?, updated_at=? "
+            f"WHERE user_id=? AND device_id IN ({placeholders})",
+            device, stamp, owner, *old_devices,
+        )
+        remaining = await self._first(
+            "SELECT COUNT(*) AS remaining FROM claw_pc_device_selection "
+            f"WHERE user_id=? AND device_id IN ({placeholders})",
+            owner, *old_devices,
+        )
+        return isinstance(remaining, dict) and remaining.get("remaining") == 0
+
+
+async def sync_superseded_device_selections(
+    store: Any, *, link: dict[str, Any], now: datetime,
+) -> bool:
+    """Carry queue-confirmed same-machine replacements into Chat preferences."""
+    old_devices = link.get("_superseded_mesh_node_ids")
+    if not isinstance(old_devices, list) or not old_devices:
+        return True
+    owner = link.get("user_id")
+    new_device = link.get("mesh_node_id")
+    if not isinstance(owner, str) or not isinstance(new_device, str):
+        raise PcDeviceSelectionStoreError("replacement link identity is missing")
+    updater = getattr(store, "replace_superseded_devices", None)
+    if not callable(updater):
+        return False
+    return await updater(
+        owner_id=owner,
+        superseded_device_ids=old_devices,
+        device_id=new_device,
+        now=now,
+    )
+
 
 __all__ = [
     "D1PcDeviceSelectionStore",
     "PcDeviceSelectionStore",
     "PcDeviceSelectionStoreError",
+    "sync_superseded_device_selections",
 ]

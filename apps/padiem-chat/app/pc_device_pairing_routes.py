@@ -17,6 +17,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import inspect
 import json
+import logging
 import re
 from typing import Any
 
@@ -1018,6 +1019,26 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
     if refused is not None:
         return refused
     # #6460: the account just gained a PC; its cached connector scope is stale.
+    if link.get("_superseded_mesh_node_ids"):
+        from .claw_pc_device_selection_store import sync_superseded_device_selections
+
+        selection_store = getattr(
+            request.app.state, "claw_pc_device_selection_store", None,
+        )
+        try:
+            selection_synced = await sync_superseded_device_selections(
+                selection_store, link=link, now=_now(),
+            )
+        except Exception as selection_exc:
+            selection_synced = False
+            logging.getLogger(__name__).warning(
+                "pc_pairing_selection=failed reason=%s",
+                type(selection_exc).__name__,
+            )
+        if not selection_synced:
+            logging.getLogger(__name__).warning(
+                "pc_pairing_selection=replacement_not_confirmed",
+            )
     invalidate_owner_scope(link.get("user_id"))
     granted = [root for root in link["roots"] if root["state"] == "active"]
     return _json({

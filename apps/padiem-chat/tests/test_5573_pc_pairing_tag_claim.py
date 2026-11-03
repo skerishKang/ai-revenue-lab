@@ -23,6 +23,7 @@ import test_5015_pc_read_dispatch as lane                # noqa: E402
 
 from app import oracle_mesh_read_return_routes as routes  # noqa: E402
 from app.mesh_device_presence_store import D1MeshDevicePresenceStore  # noqa: E402
+from app.claw_pc_device_selection_store import D1PcDeviceSelectionStore  # noqa: E402
 from app.pc_device_pairing_store import (                # noqa: E402
     PcPairingError,
     derive_install_tag,
@@ -186,3 +187,60 @@ def test_a_presence_beat_with_the_tag_completes_the_claim(monkeypatch) -> None:
     assert [row["mesh_node_id"] for row in RUN(
         other.links_for_owner(user_id=lane.OWNER)
     )] == [MESHCTRL_NODE]
+
+
+def test_a_reinstall_claim_moves_the_saved_selection_to_the_new_mesh_node(monkeypatch):
+    state = lane._state(monkeypatch)
+    store = pairing.store()
+    old_code = RUN(store.issue_code(
+        user_id=lane.OWNER,
+        issued_at=pairing._now(),
+    ))
+    old_node = "node/meshdomain/old-com1"
+    store.db.conn.execute(
+        "INSERT INTO users (id, auth_provider, provider_subject, email, created_at, updated_at) "
+        "VALUES (?, 'google', ?, ?, ?, ?)",
+        (lane.OWNER, "subject-stale-selection", "stale-selection@example.test",
+         pairing._now().isoformat(), pairing._now().isoformat()),
+    )
+    RUN(store.redeem_code(
+        code=old_code["code"],
+        mesh_node_id=old_node,
+        label="PADIEM-COMMAND-CENTER",
+        now=pairing._now(),
+        verified=True,
+        drives=["C:"],
+    ))
+    selection = D1PcDeviceSelectionStore(pairing.RealSQLiteD1(store.db.conn))
+    assert RUN(selection.save(
+        owner_id=lane.OWNER,
+        workspace_id=lane.WORKSPACE,
+        device_id=old_node,
+        now=pairing._now(),
+    )) is True
+
+    state.pc_device_pairing_store = store
+    state.claw_pc_device_selection_store = selection
+    state.mesh_device_presence_store = D1MeshDevicePresenceStore(
+        pairing.RealSQLiteD1(store.db.conn)
+    )
+    request = type("R", (), {"app": type("A", (), {"state": state})()})()
+    new_issued, new_tag = _issued(store)
+    new_node = "node/meshdomain/new-com1"
+    RUN(routes._record_mesh_presence(
+        request,
+        state.oracle_mesh_return_source,
+        [{
+            "device_id": new_node,
+            "connected": True,
+            "agent_name": f"{new_tag} [C D] PADIEM-COMMAND-CENTER",
+        }],
+    ))
+
+    assert RUN(selection.load(
+        owner_id=lane.OWNER,
+        workspace_id=lane.WORKSPACE,
+    )) == new_node
+    live = RUN(store.links_for_owner(user_id=lane.OWNER))
+    assert [row["mesh_node_id"] for row in live] == [new_node]
+    assert new_issued["code_id"] != old_code["code_id"]
