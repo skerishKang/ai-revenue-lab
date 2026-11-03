@@ -814,6 +814,161 @@ async def test_the_stream_lane_records_ttft_and_the_usage_the_provider_reported(
     assert record.selected_model_id == "google/gemini-3.1-flash-lite"
 
 
+# ---------------------------------------------------------------------------
+# The attempt row sits on the request's timeline. The 2026-11-03 host check
+# found every attempt row with a NULL started_at while its parent call carried
+# one: the draft recorded attempts with started_at=None. A measured attempt
+# recovers its start from the elapsed the lane reported; an unmeasured one
+# (refused before dispatch) stays honestly null.
+# ---------------------------------------------------------------------------
+
+
+def _assert_attempt_timeline(record) -> None:
+    assert record.started_at is not None
+    assert record.attempts, "the executed call must carry its attempt rows"
+    for attempt in record.attempts:
+        if attempt.elapsed_ms is None:
+            assert attempt.started_at is None
+            continue
+        assert attempt.started_at is not None, "a measured attempt must not be NULL"
+        assert attempt.started_at >= record.started_at
+        assert attempt.started_at <= attempt.finished_at
+
+
+@pytest.mark.asyncio
+async def test_a_platform_attempt_carries_a_start_time_on_the_request_timeline(
+    live_lane, monkeypatch,
+):
+    written = []
+
+    async def capture(record):
+        written.append(record)
+        return "written"
+
+    monkeypatch.setattr(gw, "record_call", capture)
+
+    async def answered(**_kwargs):
+        return _ok()
+
+    monkeypatch.setattr(plat, "call_platform_chat_completions", answered)
+
+    response = await gw._handle_alpha_chat(
+        "b14req_ledgerst1",
+        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
+        origin_headers={"x-padiem-product": "engine", "x-request-id": "corr-2a111111"},
+    )
+    await drain()
+
+    assert response.status_code == 200
+    assert len(written) == 1
+    record = written[0]
+    assert record.attempt_count == 1
+    assert record.attempts[0].elapsed_ms is not None
+    _assert_attempt_timeline(record)
+
+
+@pytest.mark.asyncio
+async def test_a_user_credential_attempt_carries_a_start_time_on_the_timeline(
+    live_lane, monkeypatch,
+):
+    import httpx
+
+    written = []
+
+    async def capture(record):
+        written.append(record)
+        return "written"
+
+    monkeypatch.setattr(gw, "record_call", capture)
+
+    def responder(_request):
+        return httpx.Response(
+            200, headers={"content-type": "application/json"},
+            content=json.dumps({
+                "id": "chatcmpl-synthetic", "object": "chat.completion",
+                "model": "gpt-4.1-mini",
+                "choices": [{"index": 0, "message": {"role": "assistant", "content": "답"},
+                             "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 3, "completion_tokens": 4, "total_tokens": 7},
+            }),
+        )
+
+    app = create_app()
+    app.state.stream_transport = httpx.MockTransport(responder)
+    credential = {"provider": "openai", "endpoint": "https://api.openai.com/v1",
+                  "model": "gpt-4.1-mini", "key": "sk-b14-synthetic-0123456789abcdef"}
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/pilot/v1/chat/completions",
+            json={"model": "openai/gpt-4.1-mini",
+                  "messages": [{"role": "user", "content": "한 마디만"}],
+                  "user_credential_ref": json.dumps(
+                      credential, ensure_ascii=False, separators=(",", ":"))},
+        )
+    await drain()
+
+    assert response.status_code == 200, response.text
+    assert len(written) == 1
+    record = written[0]
+    assert record.credential_source == "user"
+    assert record.attempts[0].elapsed_ms is not None
+    _assert_attempt_timeline(record)
+
+
+@pytest.mark.asyncio
+async def test_a_stream_attempt_carries_a_start_time_on_the_request_timeline(
+    monkeypatch,
+):
+    import httpx
+
+    from app.pilot import stream_gateway as sg
+    from app.pilot.b14_runtime_config import runtime_config
+
+    written = []
+
+    async def capture(record):
+        written.append(record)
+        return "written"
+
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
+    monkeypatch.setattr(runtime_config, "provider_mode", "live")
+    monkeypatch.setattr(sg, "record_call", capture)
+
+    def frame(payload):
+        return f"data: {json.dumps(payload)}\n\n".encode()
+
+    sse = [
+        frame({"id": "up_1", "model": "gemini-3.1-flash-lite", "choices": [
+            {"index": 0, "delta": {"content": "답"}, "finish_reason": None}]}),
+        frame({"id": "up_1", "model": "gemini-3.1-flash-lite", "choices": [
+            {"index": 0, "delta": {}, "finish_reason": "stop"}],
+            "usage": {"prompt_tokens": 4, "completion_tokens": 6, "total_tokens": 10}}),
+        b"data: [DONE]\n\n",
+    ]
+    app = create_app()
+    app.state.stream_transport = httpx.MockTransport(
+        lambda request: httpx.Response(
+            200, content=b"".join(sse), headers={"Content-Type": "text/event-stream"}
+        )
+    )
+
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/pilot/v1/chat/completions/stream-preview",
+            json={"model": "google/gemini-3.1-flash-lite", "stream": True,
+                  "messages": [{"role": "user", "content": "한 마디만"}]},
+        )
+    await drain()
+
+    assert response.status_code == 200, response.text
+    assert len(written) == 1
+    record = written[0]
+    assert record.streaming is True
+    assert record.attempts[0].dispatched is True
+    _assert_attempt_timeline(record)
+
+
 @pytest.mark.asyncio
 async def test_the_stream_lane_records_the_grade_it_routed_with(monkeypatch):
     import httpx

@@ -36,7 +36,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import re
 from typing import Any
 
@@ -691,13 +691,24 @@ class LedgerDraft:
         estimated_usd, estimated_krw, basis = cost_estimate(
             actual_response_model or model_id, prompt, completion
         )
+        finished_at = utc_now_iso()
+        # The attempt row sits on the request's timeline: a measured window
+        # recovers its start from the same elapsed_ms the lane reported, so
+        # started_at is never a fabricated instant. An unmeasured attempt
+        # (never dispatched, or a lane without timing) stays honestly null.
+        started_at = None
+        if elapsed_ms is not None:
+            started_at = (
+                datetime.fromisoformat(finished_at.replace("Z", "+00:00"))
+                - timedelta(milliseconds=elapsed_ms)
+            ).strftime("%Y-%m-%dT%H:%M:%SZ")
         attempt = AttemptRecord(
             log_id=self.log_id, attempt_index=self.attempt_count,
             provider=provider, model_id=model_id, upstream_model=upstream_model,
             route_id=route_id, outcome=outcome, error_code=error_code,
             retry_index=retry_index, actual_response_model=actual_response_model,
             finish_reason=finish_reason, provider_request_id=provider_request_id,
-            started_at=None, finished_at=utc_now_iso(),
+            started_at=started_at, finished_at=finished_at,
             elapsed_ms=elapsed_ms,
             latency_source=LATENCY_MEASURED if elapsed_ms is not None else LATENCY_UNKNOWN,
             prompt_tokens=prompt, completion_tokens=completion, total_tokens=total,
