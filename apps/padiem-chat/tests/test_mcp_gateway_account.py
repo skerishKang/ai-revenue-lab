@@ -24,6 +24,7 @@ MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "085_mcp_gatewa
 SHELL_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "094_mcp_shell_audit.sql"
 OAUTH_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "095_mcp_oauth.sql"
 COMMON_JOB_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "099_mcp_common_job_receipts.sql"
+SCOPE_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "100_mcp_token_device_scope.sql"
 NOW = datetime(2026, 11, 1, tzinfo=timezone.utc)
 DEVICE = "node//test-owner-pc"
 FAKE_SECRET = "fixed-test-material-not-a-live-credential"
@@ -67,7 +68,8 @@ class Pairing:
 
 def setup():
     db, owner, other, _ = seed_db()
-    for path in (MIGRATION, SHELL_MIGRATION, OAUTH_MIGRATION, COMMON_JOB_MIGRATION):
+    for path in (MIGRATION, SHELL_MIGRATION, OAUTH_MIGRATION, COMMON_JOB_MIGRATION,
+                 SCOPE_MIGRATION):
         if path.exists():
             db.conn.executescript(path.read_text(encoding="utf-8"))
     store = D1McpGatewayStore(db, secret_factory=lambda: FAKE_SECRET)
@@ -123,7 +125,8 @@ async def test_bearer_cannot_borrow_session_or_other_account_pc_and_pause_revoke
     token, _ = await issued(store, owner)
     request = SimpleNamespace(app=app, headers={"authorization": "Bearer " + token["token"]})
     principal = await authenticate_mcp_request(request)
-    assert principal == {"owner_id": owner, "device_id": DEVICE, "token_id": token["id"], "name": "Local test"}
+    assert principal == {"owner_id": owner, "device_id": DEVICE, "token_id": token["id"], "name": "Local test",
+                         "device_scope": None, "device_scope_json": None}
     app.state.pc_device_pairing_store.active = False
     assert await authenticate_mcp_request(request) is None
     app.state.pc_device_pairing_store.active = True

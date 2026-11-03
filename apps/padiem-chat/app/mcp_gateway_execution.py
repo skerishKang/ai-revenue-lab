@@ -23,6 +23,9 @@ from .pc_delegation_routes import load_pc_delegation
 from .pc_work_context import resolve_pc_work_context
 
 
+PC_DEVICES_TOOL_NAME = "pc_devices"
+
+
 # The interactive PC lane is resolved on first use (PEP 562), so importing
 # this module — and the app factory that owns it — never pulls that lane or its
 # browser-facing modules into the Worker import graph. The names stay module
@@ -94,10 +97,24 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     if not isinstance(uid, str) or not uid or not is_pc_device_id(device_id) or not isinstance(token_id, str):
         raise ValueError("Invalid MCP principal")
     if (not isinstance(arguments, Mapping)
-            or (tool_name not in _TOOLS and tool_name not in PC_SHELL_TOOL_NAMES)):
+            or (tool_name not in _TOOLS and tool_name not in PC_SHELL_TOOL_NAMES
+                and tool_name != PC_DEVICES_TOOL_NAME)):
         raise ValueError("Unsupported MCP PC tool")
+    if tool_name == PC_DEVICES_TOOL_NAME:
+        # The one tool that answers for every linked PC instead of one target.
+        # The caller chose nothing here; device selection happens per call.
+        from .mcp_device_selection import list_owner_devices
+        devices = await list_owner_devices(request, owner_id=uid, principal=principal)
+        return {"status": "completed", "devices": devices,
+                "answer": "연결된 PC 목록입니다. 다른 pc_* 도구의 device 인자에 표시 이름이나 id6를 넣어 PC를 고를 수 있습니다."}
     shell = tool_name in PC_SHELL_TOOL_NAMES
     raw_arguments = dict(arguments) if shell else None
+    original_arguments = dict(arguments)
+    # `device` was resolved to principal.device_id in dispatch before the first
+    # audit write. Here it only has to leave the wire arguments: the plan, the
+    # shell command and the browser call all take their PC from the principal.
+    chosen_device = arguments.get("device") if isinstance(arguments, Mapping) else None
+    device_chosen = isinstance(chosen_device, str) and bool(chosen_device.strip())
     if shell:
         if not validate_shell_tool_arguments(tool_name, arguments):
             raise ValueError("Invalid MCP PC arguments")
@@ -108,6 +125,7 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         scope, tool_id, keys = _TOOLS[tool_name]
         browser = scope == "browser"
         arguments = dict(arguments)
+        arguments.pop("device", None)
         if tool_name == "pc_search" and "path" not in arguments:
             arguments["path"] = "."
         if browser:
@@ -122,7 +140,7 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         from .mcp_gateway_store import mcp_request_digest
         if (not isinstance(approval, Mapping) or set(approval) != {"approval_id", "request_digest"}
                 or approval["request_digest"] != mcp_request_digest(
-                    tool_name, raw_arguments if shell else arguments)
+                    tool_name, raw_arguments if shell else original_arguments)
                 or not isinstance(approval["approval_id"], str)):
             raise ValueError("MCP approval does not match this request")
         approval_id = approval["approval_id"]
@@ -166,7 +184,8 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             execution_device_id=device_id,
         )
         if context.selection_offline or context.selected_device_id != device_id:
-            return {"status": "unavailable", "code": "pc_offline",
+            return {"status": "unavailable",
+                    "code": "device_offline" if device_chosen else "pc_offline",
                     "answer": "선택한 PC가 꺼져 있음"}
         denial: list[str] = []
         if (not context.selected_confirmed or not context.tool_available
@@ -206,6 +225,9 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         session_id=session.session_id, selected_device_id=device_id,
         execution_device_id=device_id)
     denial: list[str] = []
+    if device_chosen and context.selection_offline:
+        return {"status": "unavailable", "code": "device_offline",
+                "answer": "선택한 PC가 꺼져 있음"}
     if (not context.selected_confirmed or not context.tool_available
             or context.execution_device_id != device_id
             or not await _check_mesh_grant(request, session, device_id=device_id,

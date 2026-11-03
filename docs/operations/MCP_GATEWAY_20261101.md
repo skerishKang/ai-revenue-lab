@@ -47,18 +47,22 @@ JSON 요청/응답뿐이므로 기존 ASGI 앱에 작은 wire 어댑터를 연�
 
 | MCP 도구 | 인자 | 기존 PC 실행 |
 | --- | --- | --- |
-| `pc_list` | `path` | `claw.pc.list_files` |
-| `pc_search` | `path`, `query` | 같은 목록 도구로 지정 폴더 바로 아래 이름을 문자 검색 |
-| `pc_read` | `path` | `claw.pc.read_file` — 기존 UTF-8 텍스트 읽기 |
-| `pc_write` | `path`, `content` | `claw.pc.write_file` |
-| `pc_move` | `path`, `destination` | `claw.pc.move_file` |
-| `pc_delete` | `path` | `claw.pc.delete_file` |
-| `pc_shell` | `command`, `cwd?`, `shell?`, `wait_seconds?` | Claw 공통 background dispatch — 응답 대기 후 같은 작업 ID 반환 |
-| `pc_shell_start` | `command`, `cwd?`, `shell?` | Claw 공통 작업 즉시 시작 |
-| `pc_shell_read` | `job_id`, `offset?`, `length?` | 공통 상태와 OutputStore 핸들의 범위 읽기 |
-| `pc_shell_stop` | `job_id` | 공통 dispatch 취소 |
+| `pc_devices` | (인자 없음) | 소유자의 연결 PC 목록 — 표시 이름·id6·온라인·기본 PC(2026-11-04) |
+| `pc_list` | `path`, `device?` | `claw.pc.list_files` |
+| `pc_search` | `path`, `query`, `device?` | 같은 목록 도구로 지정 폴더 바로 아래 이름을 문자 검색 |
+| `pc_read` | `path`, `device?` | `claw.pc.read_file` — 기존 UTF-8 텍스트 읽기 |
+| `pc_write` | `path`, `content`, `device?` | `claw.pc.write_file` |
+| `pc_move` | `path`, `destination`, `device?` | `claw.pc.move_file` |
+| `pc_delete` | `path`, `device?` | `claw.pc.delete_file` |
+| `pc_shell` | `command`, `cwd?`, `shell?`, `wait_seconds?`, `device?` | Claw 공통 background dispatch — 응답 대기 후 같은 작업 ID 반환 |
+| `pc_shell_start` | `command`, `cwd?`, `shell?`, `device?` | Claw 공통 작업 즉시 시작 |
+| `pc_shell_read` | `job_id`, `offset?`, `length?` (`device?`는 무시) | 공통 상태와 OutputStore 핸들의 범위 읽기 |
+| `pc_shell_stop` | `job_id` (`device?`는 무시) | 공통 dispatch 취소 |
 
-기기·사용자·위임·승인 여부를 도구 인자로 받지 않는다. 경로는 기존 PC root
+사용자·위임·승인 여부를 도구 인자로 받지 않는다(2026-11-04부터 `device` 예외 —
+대상 PC 선택만 받으며, 소유 링크·토큰 범위·온라인을 서버가 다시 검증한다).
+기기 선택 근거는 `pc_device_links` 단일 원천이고 전체 기기 ID·메시 노드 ID는
+응답·로그에 내려가지 않는다(끝 6자 id6만). 경로는 기존 PC root
 해석과 grants를 그대로 따른다. 검색은 재귀 전체 디스크 검색이 아니다.
 SEND/임의 shell 실행은 2026-11-01 당시 노출 도구에 없었다. 2026-11-03에
 네 가지 PC shell 작업 도구를 추가했다. 명령은 기존 위임·기기 경계를 따르며,
@@ -106,8 +110,11 @@ context / Mesh grant → P01/Engine 경로를 따른다. 네 shell 도구는 같
 `085_mcp_gateway.sql`이 credentials/확인 receipt/감사 메타데이터 테이블을
 추가한다. `094_mcp_shell_audit.sql`(2026-11-03)은 감사 행에 종료 코드·소요
 시간·출력 크기·절단 여부만 추가하며 명령 본문과 출력은 저장하지 않는다.
-기존 PC history run과 `padiem_chat.request`의 `mcp_operation` 로그도 사용한다. 토큰 ID·도구·결과·요청 digest를
-기록하고 토큰 원문·파일 본문은 로그에 넣지 않는다.
+`100_mcp_token_device_scope.sql`(2026-11-04)은 토큰·승인 코드 행에 기기 범위
+(`device_scope`·`device_scope_json`)를 추가한다 — 동의 화면의 "내 PC 전부" 또는
+"고른 PC만" 결정이 저장되는 곳이며, NULL은 기존 단일 PC 토큰이다.
+기존 PC history run과 `padiem_chat.request`의 `mcp_operation` 로그도 사용한다. 토큰 ID·도구·결과·요청 digest·대상 PC 끝 6자(`device`)를
+기록하고 토큰 원문·파일 본문·전체 기기 ID는 로그에 넣지 않는다.
 
 ## 반영 및 검증 범위
 

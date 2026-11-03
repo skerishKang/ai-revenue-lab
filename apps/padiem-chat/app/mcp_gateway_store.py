@@ -104,7 +104,8 @@ class D1McpGatewayStore:
             return None
         moment = now or datetime.now(timezone.utc)
         stamp = _stamp(moment)
-        row = await self._first("SELECT id,user_id,device_id,name,token_sha256,kind,expires_at,resource,scope "
+        row = await self._first("SELECT id,user_id,device_id,name,token_sha256,kind,expires_at,resource,scope,"
+                                "device_scope,device_scope_json "
                                 "FROM padiem_mcp_tokens WHERE id=? AND revoked_at IS NULL", token_id)
         if not row or not hmac.compare_digest(row["token_sha256"], hashlib.sha256(token.encode()).hexdigest()):
             return None
@@ -120,7 +121,11 @@ class D1McpGatewayStore:
             return None
         return {"token_id": row["id"], "user_id": row["user_id"], "device_id": row["device_id"],
                 "name": row["name"], "kind": row.get("kind") or "pat",
-                "resource": row.get("resource"), "scope": row.get("scope")}
+                "resource": row.get("resource"), "scope": row.get("scope"),
+                # 2026-11-04: the consent's device scope. NULL is a pre-existing
+                # single-PC token and means exactly the bound device.
+                "device_scope": row.get("device_scope"),
+                "device_scope_json": row.get("device_scope_json")}
 
     async def revoke_token(self, *, user_id: str, token_id: str, now=None) -> bool:
         owner = _owner(user_id)
@@ -188,19 +193,24 @@ class D1McpGatewayStore:
 
     async def create_oauth_code(self, *, client_id: str, user_id: str, device_id: str,
                                 redirect_uri: str, code_challenge: str, scope: str,
-                                resource: str, now=None) -> str:
+                                resource: str, now=None,
+                                device_scope: str | None = None,
+                                device_scope_json: str | None = None) -> str:
         owner = _owner(user_id)
         if not isinstance(client_id, str) or not _CLIENT.fullmatch(client_id):
             raise McpGatewayStoreError("Invalid OAuth client")
+        if device_scope not in (None, "all", "selected"):
+            raise McpGatewayStoreError("Invalid OAuth device scope")
         moment = now or datetime.now(timezone.utc)
         code = "mca_" + secrets.token_urlsafe(32)
         await self._run(
             "INSERT INTO padiem_mcp_oauth_codes (code_sha256,client_id,user_id,device_id,redirect_uri,"
-            "code_challenge,code_challenge_method,scope,resource,created_at,expires_at) "
-            "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+            "code_challenge,code_challenge_method,scope,resource,created_at,expires_at,"
+            "device_scope,device_scope_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
             hashlib.sha256(code.encode()).hexdigest(), client_id, owner, device_id, redirect_uri,
             code_challenge, "S256", scope, resource, _stamp(moment),
-            _stamp(moment + timedelta(seconds=MCP_OAUTH_CODE_SECONDS)))
+            _stamp(moment + timedelta(seconds=MCP_OAUTH_CODE_SECONDS)),
+            device_scope, device_scope_json)
         return code
 
     async def consume_oauth_code(self, *, code: str, client_id: str, redirect_uri: str,
@@ -213,17 +223,22 @@ class D1McpGatewayStore:
         row = await self._first(
             "UPDATE padiem_mcp_oauth_codes SET consumed_at=? WHERE code_sha256=? AND client_id=? "
             "AND redirect_uri=? AND consumed_at IS NULL AND expires_at>? "
-            "RETURNING user_id,device_id,code_challenge,code_challenge_method,scope,resource",
+            "RETURNING user_id,device_id,code_challenge,code_challenge_method,scope,resource,"
+            "device_scope,device_scope_json",
             stamp, hashlib.sha256(code.encode()).hexdigest(), client_id, redirect_uri, stamp)
         return _row_to_dict(row) if row else None
 
     async def issue_oauth_tokens(self, *, client_name: str, client_id: str, user_id: str,
-                                 device_id: str, scope: str, resource: str, now=None) -> dict:
+                                 device_id: str, scope: str, resource: str, now=None,
+                                 device_scope: str | None = None,
+                                 device_scope_json: str | None = None) -> dict:
         owner = _owner(user_id)
         if not isinstance(client_id, str) or not _CLIENT.fullmatch(client_id):
             raise McpGatewayStoreError("Invalid OAuth client")
         if not is_pc_device_id(device_id):
             raise McpGatewayStoreError("Invalid OAuth device")
+        if device_scope not in (None, "all", "selected"):
+            raise McpGatewayStoreError("Invalid OAuth device scope")
         moment = now or datetime.now(timezone.utc)
         token_id = "mcp_" + uuid4().hex
         access_secret = secrets.token_urlsafe(32)
@@ -236,12 +251,12 @@ class D1McpGatewayStore:
         refresh_expires = moment + timedelta(seconds=MCP_OAUTH_REFRESH_SECONDS)
         await self._run(
             "INSERT INTO padiem_mcp_tokens (id,user_id,device_id,name,token_sha256,created_at,kind,"
-            "expires_at,refresh_token_sha256,refresh_expires_at,client_id,scope,resource) "
-            "VALUES (?,?,?,?,?,?,'oauth',?,?,?,?,?,?)",
+            "expires_at,refresh_token_sha256,refresh_expires_at,client_id,scope,resource,"
+            "device_scope,device_scope_json) VALUES (?,?,?,?,?,?,'oauth',?,?,?,?,?,?,?,?)",
             token_id, owner, device_id, name,
             hashlib.sha256(access_token.encode()).hexdigest(), _stamp(moment),
             _stamp(access_expires), hashlib.sha256(refresh_token.encode()).hexdigest(),
-            _stamp(refresh_expires), client_id, scope, resource)
+            _stamp(refresh_expires), client_id, scope, resource, device_scope, device_scope_json)
         return {"access_token": access_token, "refresh_token": refresh_token,
                 "token_type": "Bearer", "expires_in": MCP_OAUTH_ACCESS_SECONDS,
                 "scope": scope, "resource": resource}

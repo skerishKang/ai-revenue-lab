@@ -37,7 +37,12 @@ _DISPATCH_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 _OUTPUT_HANDLE = re.compile(r"[0-9a-f]{64}\Z")
 _NOW = time.monotonic
 
+PC_SHELL_DEVICE_PROPERTY = {
+    "type": "string", "maxLength": 128,
+    "description": "대상 PC입니다. pc_devices가 알려 준 표시 이름이나 id6를 씁니다. 비우면 연결의 기본 PC를 씁니다.",
+}
 PC_SHELL_PROPERTIES = {
+    "device": dict(PC_SHELL_DEVICE_PROPERTY),
     "command": {
         "type": "string", "minLength": 1, "maxLength": PC_SHELL_MAX_COMMAND_CHARS,
         "description": "연결된 PC에서 실행할 명령입니다. 실행 시간 제한은 없습니다.",
@@ -66,7 +71,14 @@ PC_SHELL_READ_PROPERTIES = {
     "length": {"type": "integer", "minimum": 1, "maximum": PC_SHELL_READ_MAX_BYTES,
                "description": "읽을 최대 바이트입니다."},
 }
-PC_SHELL_STOP_PROPERTIES = {"job_id": dict(PC_SHELL_READ_PROPERTIES["job_id"])}
+PC_SHELL_STOP_PROPERTIES = {
+    "job_id": dict(PC_SHELL_READ_PROPERTIES["job_id"]),
+    "device": dict(PC_SHELL_DEVICE_PROPERTY),
+}
+# 2026-11-04: 선택 대상 PC. pc_shell·pc_shell_start는 실행 대상을 고르고,
+# pc_shell_read·stop은 작업 ID가 PC를 정하므로 받아도 무시한다.
+PC_SHELL_START_PROPERTIES["device"] = dict(PC_SHELL_DEVICE_PROPERTY)
+PC_SHELL_READ_PROPERTIES["device"] = dict(PC_SHELL_DEVICE_PROPERTY)
 
 
 def _command_material(arguments: Mapping) -> bool:

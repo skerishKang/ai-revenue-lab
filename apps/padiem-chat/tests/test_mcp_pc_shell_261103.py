@@ -212,8 +212,9 @@ def test_one_receipt_starts_reads_output_store_range_and_cancels_common_run(monk
 
 
 @pytest.mark.parametrize("identity", [
+    # 2026-11-04: 같은 토큰이 다른 PC에서 시작한 자기 작업은 읽고 중지할 수
+    # 있다(멀티디바이스 계약). 다른 계정·다른 토큰은 거절 유지.
     {"user_id": OTHER_UID, "device_id": DEVICE, "token_id": TOKEN},
-    {"user_id": UID, "device_id": OTHER_DEVICE, "token_id": TOKEN},
     {"user_id": UID, "device_id": DEVICE, "token_id": "mcp_" + "0" * 32},
 ])
 def test_other_account_pc_or_token_cannot_read_or_stop_receipt(identity):

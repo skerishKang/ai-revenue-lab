@@ -32,8 +32,17 @@
         </div>
       </dl>
       <p class="mcp-oauth-capability" data-locale-key="mcp-oauth-capability">이 AI가 내 PC에서 파일·명령·브라우저 작업을 할 수 있습니다.</p>
-      <label class="mcp-oauth-label" for="mcpOauthPc" data-locale-key="mcp-oauth-pc">연결할 PC</label>
-      <p class="mcp-oauth-help" data-locale-key="mcp-oauth-pc-help">이 AI가 사용할 PC를 하나 고르세요.</p>
+      <fieldset class="mcp-oauth-scope" id="mcpOauthScope">
+        <legend data-locale-key="mcp-oauth-device-scope">이 AI가 쓸 수 있는 PC</legend>
+        <label class="mcp-oauth-radio"><input type="radio" name="mcpOauthDeviceScope" value="all" checked>
+          <span data-locale-key="mcp-oauth-scope-all">내 PC 전부</span></label>
+        <label class="mcp-oauth-radio"><input type="radio" name="mcpOauthDeviceScope" value="selected">
+          <span data-locale-key="mcp-oauth-scope-selected">고른 PC만</span></label>
+        <div id="mcpOauthPcList" class="mcp-oauth-pc-list" hidden></div>
+        <p id="mcpOauthScopeSelectedHelp" class="mcp-oauth-help" data-locale-key="mcp-oauth-scope-selected-help" hidden>이 AI가 쓸 PC에 체크하세요. 기본 PC는 항상 포함됩니다.</p>
+      </fieldset>
+      <label class="mcp-oauth-label" for="mcpOauthPc" data-locale-key="mcp-oauth-pc">기본 PC</label>
+      <p class="mcp-oauth-help" data-locale-key="mcp-oauth-pc-help">이 AI가 기본으로 쓸 PC를 하나 고르세요. 도구에서 device로 다른 PC도 고를 수 있습니다.</p>
       <select id="mcpOauthPc" class="mcp-oauth-select"></select>
       <p id="mcpOauthNoPc" class="mcp-oauth-error" data-locale-key="mcp-oauth-no-pc" hidden>연결할 PC가 없습니다. 설정에서 내 PC를 먼저 연결해 주세요.</p>
       <div class="mcp-oauth-actions">

@@ -31,7 +31,11 @@ SUPPORTED_PROTOCOL_VERSIONS = (MODERN_PROTOCOL_VERSION, LEGACY_PROTOCOL_VERSION)
 _META_PREFIX = "io.modelcontextprotocol/"
 _SERVER_INFO = {"name": "padiem-pc-gateway", "version": "1.0.0"}
 _NO_STORE = {"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"}
+_DEVICE = {"type": "string", "maxLength": 128,
+           "description": "대상 PC입니다. pc_devices가 알려 준 표시 이름이나 id6를 씁니다. 비우면 연결의 기본 PC를 씁니다."}
 _INSTRUCTIONS = (
+    "pc_devices로 연결된 PC 목록을 볼 수 있고, pc_* 도구의 device 인자에 표시 이름이나 id6를 넣어 대상 PC를 고를 수 있습니다. "
+    "device를 비우면 연결의 기본 PC를 씁니다. "
     "토큰에 연결된 PC의 기존 권한과 사전 위임 설정을 따릅니다. "
     "파일 변경 확인은 기존 PADIEM 승인 절차를 따릅니다. "
     "PC 명령은 토큰에 연결된 PC에서 실행하며 별도의 실행 전 승인 영수증을 요구하지 않습니다. "
@@ -66,15 +70,19 @@ def _browser_tool_definitions():
     """Closed browser vocabulary; registered only with the tested execution lane."""
     definitions = [
         _tool("pc_browser_open", "PC 브라우저 열기", "작업용 브라우저에서 공개 웹페이지를 엽니다.",
-              {"url": {"type": "string", "minLength": 1}}, mutates=True),
-        _tool("pc_browser_read", "PC 웹페이지 읽기", "서버가 기억한 현재 페이지의 제목과 내용을 읽습니다.", {}),
-        _tool("pc_browser_screenshot", "PC 웹페이지 캡처", "서버가 기억한 현재 페이지를 한 장 캡처합니다.", {}),
+              {"url": {"type": "string", "minLength": 1}, "device": _DEVICE},
+              mutates=True, required=["url"]),
+        _tool("pc_browser_read", "PC 웹페이지 읽기", "서버가 기억한 현재 페이지의 제목과 내용을 읽습니다.",
+              {"device": _DEVICE}, required=[]),
+        _tool("pc_browser_screenshot", "PC 웹페이지 캡처", "서버가 기억한 현재 페이지를 한 장 캡처합니다.",
+              {"device": _DEVICE}, required=[]),
         _tool("pc_browser_act", "PC 웹페이지 조작", "보이는 글자 또는 역할·이름으로 클릭하거나 글을 입력합니다. 로그인·결제·게시·발송은 PADIEM 대화에서 먼저 확인합니다.",
               {"action": {"type": "string", "enum": ["click", "type"]},
                "text": {"type": "string", "minLength": 1},
                "role": {"type": "string", "minLength": 1},
                "name": {"type": "string", "minLength": 1},
-               "value": {"type": "string"}}, mutates=True),
+               "value": {"type": "string"},
+               "device": _DEVICE}, mutates=True),
     ]
     definitions[-1]["inputSchema"]["required"] = ["action"]
     definitions[-1]["inputSchema"]["anyOf"] = [{"required": ["text"]}, {"required": ["name"]}]
@@ -85,10 +93,14 @@ def _browser_tool_definitions():
 
 _TOOL_LIST = sorted([
     *_browser_tool_definitions(),
-    _tool("pc_list", "폴더 목록", "지정 폴더 안의 파일과 폴더를 봅니다.", {"path": _PATH}),
+    _tool("pc_devices", "PC 목록", "이 연결(토큰)에서 고를 수 있는 PC 목록을 봅니다. 각 항목은 표시 이름·기기 ID 끝 6자(id6)·온라인 여부·기본 PC 여부를 담습니다.", {}),
+    _tool("pc_list", "폴더 목록", "지정 폴더 안의 파일과 폴더를 봅니다.",
+          {"path": _PATH, "device": _DEVICE}, required=["path"]),
     _tool("pc_search", "폴더 안 이름 검색", "지정 폴더 바로 아래 이름에서 검색어를 찾습니다. 하위 폴더 전체 검색은 아닙니다.",
-          {"path": _PATH, "query": {"type": "string", "minLength": 1}}),
-    _tool("pc_read", "파일 읽기", "연결 PC의 파일을 읽습니다.", {"path": _PATH}),
+          {"path": _PATH, "query": {"type": "string", "minLength": 1}, "device": _DEVICE},
+          required=["path", "query"]),
+    _tool("pc_read", "파일 읽기", "연결 PC의 파일을 읽습니다.",
+          {"path": _PATH, "device": _DEVICE}, required=["path"]),
     _tool("pc_shell", "PC 명령 실행",
           "연결 PC에서 명령을 실행합니다. 응답 대기 시간이 끝나도 PC 작업은 계속 실행되며, 돌려준 작업 ID로 상태와 출력을 읽거나 중지할 수 있습니다.",
           PC_SHELL_PROPERTIES, mutates=True, required=["command"]),
@@ -102,11 +114,13 @@ _TOOL_LIST = sorted([
           "진행 중인 연결 PC 명령을 중지하도록 요청합니다.",
           PC_SHELL_STOP_PROPERTIES, mutates=True, required=["job_id"]),
     _tool("pc_write", "파일 쓰기", "내용을 파일에 씁니다. 사전 위임 밖이면 PADIEM에서 확인합니다.",
-          {"path": _PATH, "content": {"type": "string"}}, mutates=True),
+          {"path": _PATH, "content": {"type": "string"}, "device": _DEVICE},
+          mutates=True, required=["path", "content"]),
     _tool("pc_move", "파일 이동", "파일을 다른 경로로 옮깁니다. 사전 위임 밖이면 PADIEM에서 확인합니다.",
-          {"path": _PATH, "destination": _PATH}, mutates=True),
+          {"path": _PATH, "destination": _PATH, "device": _DEVICE},
+          mutates=True, required=["path", "destination"]),
     _tool("pc_delete", "파일 삭제", "기존 백업 절차를 거쳐 파일을 지웁니다. 사전 위임 밖이면 PADIEM에서 확인합니다.",
-          {"path": _PATH}, mutates=True),
+          {"path": _PATH, "device": _DEVICE}, mutates=True, required=["path"]),
 ], key=lambda item: item["name"])
 _TOOLS = {tool["name"]: tool for tool in _TOOL_LIST}
 

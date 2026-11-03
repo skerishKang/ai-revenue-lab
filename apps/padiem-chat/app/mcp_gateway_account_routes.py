@@ -79,7 +79,12 @@ async def authenticate_mcp_request(request) -> dict | None:
     except Exception as exc:
         raise McpGatewayUnavailable("MCP authentication unavailable") from exc
     return {"owner_id": identity["user_id"], "device_id": identity["device_id"],
-            "token_id": identity["token_id"], "name": identity["name"]}
+            "token_id": identity["token_id"], "name": identity["name"],
+            # 2026-11-04: the consent's device scope rides with the principal
+            # so device selection can refuse out-of-scope PCs without another
+            # store round trip. NULL keeps a legacy token single-PC.
+            "device_scope": identity.get("device_scope"),
+            "device_scope_json": identity.get("device_scope_json")}
 
 
 async def _json(request):

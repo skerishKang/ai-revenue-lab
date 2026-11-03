@@ -127,15 +127,19 @@ def test_fourteen_sorted_tools_use_closed_schemas_and_token_bound_device(gateway
     tools = response.json()["result"]["tools"]
     assert [tool["name"] for tool in tools] == [
         "pc_browser_act", "pc_browser_open", "pc_browser_read", "pc_browser_screenshot",
-        "pc_delete", "pc_list", "pc_move", "pc_read", "pc_search", "pc_shell",
-        "pc_shell_read", "pc_shell_start", "pc_shell_stop", "pc_write",
+        "pc_delete", "pc_devices", "pc_list", "pc_move", "pc_read", "pc_search",
+        "pc_shell", "pc_shell_read", "pc_shell_start", "pc_shell_stop", "pc_write",
     ]
     for tool in tools:
         assert tool["inputSchema"]["additionalProperties"] is False
         assert "device_id" not in tool["inputSchema"]["properties"]
+    pc_tools = [tool for tool in tools if tool["name"] != "pc_devices"]
+    for tool in pc_tools:
+        assert "device" in tool["inputSchema"]["properties"], tool["name"]
+    assert "device" not in next(tool for tool in tools if tool["name"] == "pc_devices")["inputSchema"]["properties"]
     shell = next(tool for tool in tools if tool["name"] == "pc_shell")
     assert shell["inputSchema"]["required"] == ["command"]
-    assert set(shell["inputSchema"]["properties"]) == {"command", "cwd", "shell", "wait_seconds"}
+    assert set(shell["inputSchema"]["properties"]) == {"command", "cwd", "shell", "wait_seconds", "device"}
     assert shell["inputSchema"]["properties"]["shell"]["enum"] == ["powershell", "cmd", "bash"]
     wait = shell["inputSchema"]["properties"]["wait_seconds"]
     assert wait["type"] == "integer" and wait["minimum"] == 1 and wait["maximum"] == 150
@@ -187,7 +191,7 @@ def test_pc_shell_is_hidden_and_refused_when_the_flag_is_off(gateway):
     tools = post(gateway, "tools/list").json()["result"]["tools"]
     assert [tool["name"] for tool in tools] == [
         "pc_browser_act", "pc_browser_open", "pc_browser_read", "pc_browser_screenshot",
-        "pc_delete", "pc_list", "pc_move", "pc_read", "pc_search", "pc_write",
+        "pc_delete", "pc_devices", "pc_list", "pc_move", "pc_read", "pc_search", "pc_write",
     ]
     off_calls = [
         ("pc_shell", {"command": "Get-Date"}),
