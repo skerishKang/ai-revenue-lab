@@ -24,7 +24,7 @@ def _node(script: str) -> str:
     result = subprocess.run(
         [sys.executable and "node", "-e", script],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         timeout=60,
         cwd=str(ROOT),
     )

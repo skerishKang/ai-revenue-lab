@@ -423,7 +423,7 @@ def _run(mode: str, *, auth: dict, rules: list, fail_first: bool = False, rules_
         result = subprocess.run(
             [node, str(harness_path), str(APP_JS), str(CAPABILITIES_JS), fixture],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             timeout=60,
             cwd=str(ROOT),
         )

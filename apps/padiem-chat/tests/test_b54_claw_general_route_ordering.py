@@ -182,7 +182,7 @@ def _run_harness() -> dict:
             ["node", str(script)],
             check=True,
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
         )
     return json.loads(completed.stdout)
 

@@ -679,7 +679,7 @@ def _run_3748_version_adapter(adapter: str, *argv: str,
         args = [sys.executable, str(script), *cmd, str(detail), *argv]
         if adapter == "served":
             args.append("--expect-overlay")
-        return subprocess.run(args, text=True, capture_output=True, timeout=15, check=False)
+        return subprocess.run(args, text=True, encoding="utf-8", capture_output=True, timeout=15, check=False)
 
 
 def test_3748_same_process_argv_both_workflow_sites_equals_form() -> None:

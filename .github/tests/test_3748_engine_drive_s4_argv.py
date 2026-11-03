@@ -60,7 +60,7 @@ def _cli(*active_version_flags: str) -> subprocess.CompletedProcess[str]:
                 "--expect-overlay",
             ],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             timeout=15,
             check=False,
         )

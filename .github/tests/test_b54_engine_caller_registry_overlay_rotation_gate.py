@@ -1363,7 +1363,7 @@ def _run_3748_overlay_cli(command: str, *argv: str, version: str = "-safe-overla
             args.extend(["--legacy-pre-state", legacy])
         else:
             assert command == "classify"
-        return subprocess.run(args, text=True, capture_output=True, check=False, timeout=20)
+        return subprocess.run(args, text=True, encoding="utf-8", capture_output=True, check=False, timeout=20)
 
 
 def test_3748_overlay_argv_three_sites_and_pr_source_isolation() -> None:

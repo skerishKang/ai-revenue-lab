@@ -389,7 +389,7 @@ class MultiProcessRedemptionRaceTests(unittest.TestCase):
                 stderr=subprocess.PIPE,
                 cwd=str(APP_DIR),
                 env=env,
-                text=True,
+                text=True, encoding="utf-8",
             )
             for _ in range(2)
         ]

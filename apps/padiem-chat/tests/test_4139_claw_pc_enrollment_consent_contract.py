@@ -134,7 +134,7 @@ def _node() -> str:
 def test_pure_consent_contract_core():
     result = subprocess.run(
         [_node(), "-e", NODE, str(STATIC)],
-        capture_output=True, text=True, timeout=60,
+        capture_output=True, text=True, encoding="utf-8", timeout=60,
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert result.stdout.strip() == "OK"

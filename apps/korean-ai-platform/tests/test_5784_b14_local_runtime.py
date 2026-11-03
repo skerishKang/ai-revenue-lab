@@ -516,7 +516,7 @@ def test_entrypoint_imports_without_the_workers_runtime() -> None:
         [sys.executable, "-c", "import asgi, sys; print('workers' in sys.modules)"],
         cwd=str(APP_ROOT),
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
     )
     assert result.returncode == 0, result.stderr[-800:]
     assert result.stdout.strip() == "False"

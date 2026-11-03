@@ -39,7 +39,7 @@ def test_every_delegation_copy_key_has_both_locales_and_send_is_not_an_action():
 def test_account_settings_flow():
     result = subprocess.run(
         [NODE, str(HERE / "pc_delegation_settings_harness.js"), str(STATIC / "pc-delegation-settings.js")],
-        text=True, capture_output=True, timeout=30,
+        text=True, encoding="utf-8", capture_output=True, timeout=30,
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "PC_DELEGATION_SETTINGS=PASS" in result.stdout

@@ -79,7 +79,7 @@ def _probe(
         env.pop("PIN_PRELOAD_FOREIGN", None)
     result = subprocess.run(
         [sys.executable, "-c", _RUN],
-        cwd=state, env=env, text=True, capture_output=True, timeout=15,
+        cwd=state, env=env, text=True, encoding="utf-8", capture_output=True, timeout=15,
         check=True,
     )
     return result.stdout.strip()

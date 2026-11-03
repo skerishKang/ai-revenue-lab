@@ -836,7 +836,7 @@ def _parity_probe(archives=()):
     proc = subprocess.run(
         [sys.executable, "-S", "-c", _PROBE, str(REPO_ROOT), json.dumps(payload)],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         env=env,
         cwd=str(REPO_ROOT),
     )
@@ -977,7 +977,7 @@ def test_cli_refuses_with_a_code_and_writes_no_evidence(tmp_path):
         [sys.executable, str(TOOLS / "analyze.py"), "--xlsx", str(bad), "--pdf", str(pdf),
          "--outdir", str(out)],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
     )
     assert proc.returncode == 1
     assert "REFUSED ooxml_unsafe_path" in proc.stderr

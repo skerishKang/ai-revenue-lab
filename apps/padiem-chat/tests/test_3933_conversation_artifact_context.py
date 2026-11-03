@@ -32,7 +32,7 @@ def test_completed_file_context_runs_the_shipped_module_network_free():
         pytest.skip("Node unavailable locally; required B62 Linux CI harness")
     result = subprocess.run(
         ["node", str(TEST_DIR / "conversation_artifact_context_node.js")],
-        capture_output=True, text=True, timeout=30, check=False,
+        capture_output=True, text=True, encoding="utf-8", timeout=30, check=False,
     )
     assert result.returncode == 0, result.stdout + result.stderr
     for marker in (

@@ -47,12 +47,12 @@ def test_exact_file_is_created_without_secrets_or_overwrite():
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / "rollback.json"
         args = [sys.executable, str(SCRIPT), "--version-id", VERSION, "--output", str(out)]
-        first = subprocess.run(args, capture_output=True, text=True, check=False)
+        first = subprocess.run(args, capture_output=True, text=True, encoding="utf-8", check=False)
         assert first.returncode == 0, first.stderr
         assert "B62_ROLLBACK_REQUEST=VALIDATED" in first.stdout
         assert VERSION not in first.stdout
         assert json.loads(out.read_text(encoding="utf-8")) == module.make_payload(VERSION)
-        second = subprocess.run(args, capture_output=True, text=True, check=False)
+        second = subprocess.run(args, capture_output=True, text=True, encoding="utf-8", check=False)
         assert second.returncode != 0
         assert "B62_ROLLBACK_REQUEST=BLOCKED" in second.stdout
         assert json.loads(out.read_text(encoding="utf-8")) == module.make_payload(VERSION)
@@ -63,7 +63,7 @@ def test_invalid_uuid_never_creates_body():
         out = Path(tmp) / "rollback.json"
         result = subprocess.run(
             [sys.executable, str(SCRIPT), "--version-id", "invalid", "--output", str(out)],
-            capture_output=True, text=True, check=False,
+            capture_output=True, text=True, encoding="utf-8", check=False,
         )
         assert result.returncode != 0
         assert not out.exists()

@@ -34,14 +34,14 @@ pytestmark = pytest.mark.skipif(
 def _run_uv(args: list[str], cwd: Path) -> subprocess.CompletedProcess:
     return subprocess.run(
         [sys.executable, "-m", "uv", *args], cwd=cwd,
-        capture_output=True, text=True, timeout=600,
+        capture_output=True, text=True, encoding="utf-8", timeout=600,
     )
 
 
 def _run_checker(args: list[str], cwd: Path) -> dict:
     completed = subprocess.run(
         [sys.executable, str(CHECKER), "--repo-root", str(cwd), "--json", *args],
-        capture_output=True, text=True, timeout=600,
+        capture_output=True, text=True, encoding="utf-8", timeout=600,
     )
     assert completed.stdout.strip(), completed.stderr
     return {"exit": completed.returncode, "report": json.loads(completed.stdout)}

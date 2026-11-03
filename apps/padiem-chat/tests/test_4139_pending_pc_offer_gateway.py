@@ -76,7 +76,7 @@ def _node_crypto(*, operation: str, transcript: bytes,
     }
     result = subprocess.run(
         ["node", "-e", _NODE], input=json.dumps(data),
-        capture_output=True, text=True, timeout=8, check=False,
+        capture_output=True, text=True, encoding="utf-8", timeout=8, check=False,
     )
     assert result.returncode == 0, result.stderr
     return (base64.b64decode(result.stdout, validate=True)

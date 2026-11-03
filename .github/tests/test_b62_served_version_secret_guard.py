@@ -399,7 +399,7 @@ def _run_3748_b62_production_lineage(*argv: str):
     import sys
     return subprocess.run(
         [sys.executable, str(LINEAGE_CLI), *argv],
-        capture_output=True, text=True, check=False, timeout=15,
+        capture_output=True, text=True, encoding="utf-8", check=False, timeout=15,
     )
 
 

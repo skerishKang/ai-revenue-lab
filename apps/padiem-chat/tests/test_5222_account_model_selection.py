@@ -877,7 +877,7 @@ def runner():
         result = subprocess.run(
             [node, str(runner_path), str(harness_path), json.dumps(fixture), scenario],
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8",
             timeout=120,
             env={
                 "PATH": __import__("os").environ.get("PATH", ""),

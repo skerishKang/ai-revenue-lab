@@ -76,7 +76,7 @@ class RestoreScriptContract(unittest.TestCase):
         env.update(extra_env or {})
         return subprocess.run(
             [BASH, "-c", "source " + shlex.quote(str(SCRIPT)) + "\n" + body],
-            cwd=str(REPO), env=env, capture_output=True, text=True, timeout=120,
+            cwd=str(REPO), env=env, capture_output=True, text=True, encoding="utf-8", timeout=120,
         )
 
     def _prepare_backup(self) -> dict[str, str]:
@@ -103,7 +103,7 @@ class RestoreScriptContract(unittest.TestCase):
     # --- checks --------------------------------------------------------------
 
     def test_script_parses(self):
-        parsed = subprocess.run([BASH, "-n", str(SCRIPT)], capture_output=True, text=True)
+        parsed = subprocess.run([BASH, "-n", str(SCRIPT)], capture_output=True, text=True, encoding="utf-8")
         self.assertEqual(parsed.returncode, 0, parsed.stderr)
 
     def test_restore_target_name_is_chat_sqlite3(self):
@@ -119,7 +119,7 @@ class RestoreScriptContract(unittest.TestCase):
         shell_dir = str(data_dir)
         if os.name == "nt" and shutil.which("cygpath"):
             shell_dir = subprocess.run(
-                ["cygpath", "-u", str(data_dir)], capture_output=True, text=True
+                ["cygpath", "-u", str(data_dir)], capture_output=True, text=True, encoding="utf-8"
             ).stdout.strip()
         body = (
             "repo_root=" + shlex.quote(str(REPO)) + "\n"

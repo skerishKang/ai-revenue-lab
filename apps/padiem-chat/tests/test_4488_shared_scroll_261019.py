@@ -36,7 +36,7 @@ def test_scroll_sync_check_passes():
     proc = subprocess.run(
         [sys.executable, str(ROOT / "scripts/sync_shared_conversation_scroll.py"), "--check"],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         cwd=str(ROOT),
     )
     assert proc.returncode == 0, proc.stderr or proc.stdout

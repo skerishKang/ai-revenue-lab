@@ -98,7 +98,7 @@ def test_core_suite_runs_when_the_tree_is_pinned(tmp_path: Path) -> None:
         [sys.executable, "-m", "pytest", "-q", "--collect-only", str(CORE_TESTS),
          "-p", "no:cacheprovider", "-o", "addopts="],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         cwd=ROOT,
         env=env,
     )
@@ -161,7 +161,7 @@ def test_core_conftest_refuses_a_foreign_import_before_collecting(tmp_path: Path
         [sys.executable, "-m", "pytest", "-q", "--collect-only", str(CORE_TESTS),
          "-p", "no:cacheprovider", "-o", "addopts="],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         cwd=ROOT,
         env=env,
     )

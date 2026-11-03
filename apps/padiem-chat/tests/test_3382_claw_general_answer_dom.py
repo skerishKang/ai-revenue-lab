@@ -533,7 +533,7 @@ def _run_client(cases: list[dict]) -> list[dict]:
     result = subprocess.run(
         [node, str(harness), str(STATIC / "app.js"), str(STATIC / "chat-transport.js"), str(cases_path)],
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8",
         timeout=180,
     )
     assert result.returncode == 0, f"harness exited {result.returncode}: {result.stderr[:4000]}"

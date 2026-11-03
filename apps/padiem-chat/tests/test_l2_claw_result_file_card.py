@@ -329,7 +329,7 @@ def _run_harness() -> dict:
     try:
         result = subprocess.run(
             [node, str(harness_path), str(APP_JS)],
-            capture_output=True, text=True, timeout=60,
+            capture_output=True, text=True, encoding="utf-8", timeout=60,
         )
     finally:
         harness_path.unlink(missing_ok=True)
