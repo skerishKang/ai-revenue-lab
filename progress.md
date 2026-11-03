@@ -29,6 +29,15 @@
 2026-11-03 front-change: added an oauthRequest predicate (/oauth/ and /.well-known/oauth- prefixes) that bypasses the static/cache branch and reuses API_READ_TIMEOUT_MS (30s); other /.well-known paths and consent static assets unchanged; no new wrangler vars.
 2026-11-03 front-tests: new test/mcp-oauth-paths.test.mjs (7 tests: per-path COM2 target, no-store, POST body, 302 + login-return cookie pass-through, OPTIONS, timeout budget, jwks not broadened, consent asset still cached); full front suite 65 passed. Memo section 11.7/11.8 updated with the front redeploy item.
 
+### 2026-11-04 · B61 #6471 독서 기록 동기화 2단계
+- setup: `feat/b61-6471-sync-261104` from remote `feat/b61-6471-shared-login-261104` at `dae563697e10e2371f636f8d323e6e7f82f5b9a6`; D1 is migration-only in this work.
+- scope: progress, annotations, user-authored `kind=note` records, and bookmarks; AI Memory and Recall remain out of scope.
+- implementation: `_worker.js` `/api/sync/*` routes require a JWKS-verified padiem-auth session; requests are scoped by verified subject. Missing `STORYMEMORY_DB` returns 503 and leaves browser records local. Browser migration asks for per-device scopes, shows progress/cancel/retry, keeps ID-only offline queue metadata, and preserves local data on logout.
+- persistence: `apps/storymemory/migrations/0001_storymemory_reading_sync.sql` defines sync records, per-account/device scope consent, and HMAC account-delete receipts. The delete receiver verifies the #6773 v2 signature and deletes B61 sync data idempotently. No remote migration, binding, secret, switch, or deploy performed.
+- conflict: record revision detects stale edits; differing note/annotation/bookmark versions are retained as conflict copies and `(client_updated_at, device_id)` selects the main version. Reading position retains the furthest chapter/page and chooses resume by the same ordering.
+- documentation: `apps/storymemory/SHARED_LOGIN_SYNC_DESIGN_20261104.md` now lists the active phase scope and enable order: D1 create → migration apply → Pages binding → RPC secret → feature switch.
+- verification: focused `reading-sync.test.mjs` + `shared-login.test.mjs`: 27 passed; syntax checks for the changed worker, sync modules, and exact-annotation bridge passed; `git diff --check` passed. No full suite, remote D1 apply, binding/secret setup, or deployment was run.
+
 
 ### 2026-11-03 · 공통 로그인 계정 삭제 경로
 - 최초 작업 기준은 `origin/main` 7f22f99 이후였다. 원격 중복 브랜치는 없었다. 재개 시 `origin/main`이 18a0e4de까지 진행되어 최신 기준으로 재기반했고, BookAI subject 삭제는 upstream #6767에 이미 들어가 있어 중복 수정 커밋 87a95a19를 제외했다. 기능 구현 커밋은 2a8582fd다.

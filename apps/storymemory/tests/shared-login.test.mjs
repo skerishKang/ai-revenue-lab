@@ -69,6 +69,16 @@ test("disabled shared auth keeps the local-only status and does not contact padi
   assert.equal(networkCalls, 0);
 });
 
+test("shared auth exposes only a verified account subject to the server sync handler", async () => {
+  const fixture = await configuredFixture();
+  const handle = createStoryMemorySharedAuth({ fetcher: fixture.fetcher, now: () => now });
+  const authenticated = await handle.authenticate(new Request("https://storymemory-padiem.pages.dev/api/sync/status", {
+    headers: { cookie: "__Host-storymemory-access=" + fixture.accessToken }
+  }), fixture.env);
+  assert.deepEqual(authenticated, { subject: "sub_test-account" });
+  assert.equal(await handle.authenticate(new Request("https://storymemory-padiem.pages.dev/api/sync/status"), fixture.env), null);
+});
+
 test("login state uses padiem-auth, callback sets host-only HttpOnly cookies, status reveals no token, logout revokes", async () => {
   const fixture = await configuredFixture();
   const handle = createStoryMemorySharedAuth({ fetcher: fixture.fetcher, now: () => now });
@@ -195,18 +205,22 @@ test("unconfigured UI hides common login and keeps auth data out of local storag
   const uiSource = await readFile(new URL("../public/storymemory-shared-auth-ui.mjs", import.meta.url), "utf8");
   const authSource = await readFile(new URL("../public/storymemory-shared-auth.mjs", import.meta.url), "utf8");
   const worker = await readFile(new URL("../public/_worker.js", import.meta.url), "utf8");
+  const syncUi = await readFile(new URL("../public/storymemory-sync-ui.mjs", import.meta.url), "utf8");
   const index = await readFile(new URL("../public/index.html", import.meta.url), "utf8");
   const readback = await readFile(new URL("../public/readback_index.html/index.html", import.meta.url), "utf8");
   for (const html of [index, readback]) {
     assert.match(html, /id="authGatePrimary" hidden/);
     assert.match(html, /기기 간 동기화는 아직 연결되지 않았습니다/);
     assert.match(html, /REMOTE_SYNC_NOT_ENABLED/);
+    assert.match(html, /id="storyMemorySyncWorkspace" hidden/);
     assert.doesNotMatch(html, /localStorage\.setItem\(STORYMEMORY_AUTH_STATE_KEY/);
   }
   assert.doesNotMatch(uiSource, /localStorage|console\.(?:log|info|warn|error)/);
   assert.doesNotMatch(authSource, /localStorage|console\.(?:log|info|warn|error)/);
   assert.match(worker, /createStoryMemorySharedAuth/);
   assert.match(worker, /handleStoryMemorySharedAuth\(request, env\)/);
+  assert.match(worker, /createStoryMemorySync/);
+  assert.doesNotMatch(syncUi, /syncEnabled\s*:\s*true/);
 });
 
 test("configured UI redirects to common login and logs out through same-origin POST without sync", async () => {
@@ -247,6 +261,6 @@ test("configured UI redirects to common login and logs out through same-origin P
   });
   await installs[1].signOut();
   assert.ok(calls.some((call) => call.url === "/auth/logout" && call.options.method === "POST" && call.options.credentials === "same-origin"));
-  assert.deepEqual(calls.at(-1), { session: { authenticated: false } });
+  assert.deepEqual(calls.at(-1), { session: { authenticated: false, serverSyncEnabled: false, loggedOut: true } });
   assert.equal(installs[1].syncEnabled, false);
 });

@@ -181,6 +181,17 @@
       <i></i>
       <div><b>LOCAL FIRST</b><span>지금은 이 기기에만 저장 중</span></div>
     </div>
+    <div id="storyMemorySyncWorkspace" hidden style="margin:18px 0;padding:16px;border:1px solid rgba(120,96,72,.22);border-radius:16px;text-align:left">
+      <p style="margin:0 0 10px;font-weight:700">이 기기의 기록을 계정에 옮길까요?</p>
+      <label style="display:block;margin:8px 0"><input type="checkbox" data-sync-scope="progress" checked> 독서 위치</label>
+      <label style="display:block;margin:8px 0"><input type="checkbox" data-sync-scope="annotations" checked> 주석·일반 메모</label>
+      <label style="display:block;margin:8px 0"><input type="checkbox" data-sync-scope="bookmarks" checked> 책갈피</label>
+      <p id="storyMemorySyncStatus" role="status" aria-live="polite" style="min-height:1.4em">이 기기의 기록은 아직 계정에 옮기지 않았습니다.</p>
+      <button type="button" id="storyMemorySyncStart" class="auth-gate-primary">선택한 기록 옮기기</button>
+      <button type="button" id="storyMemorySyncRetry" class="auth-gate-secondary" hidden>다시 시도</button>
+      <button type="button" id="storyMemorySyncCancel" class="auth-gate-secondary" hidden>취소</button>
+      <button type="button" id="storyMemorySyncLater" class="auth-gate-secondary">나중에</button>
+    </div>
     <button type="button" class="auth-gate-primary" id="authGatePrimary" hidden>공통 계정으로 로그인</button>
     <button type="button" class="auth-gate-secondary" id="authGateSecondary">지금은 로컬로 계속</button>
     <div class="auth-gate-backup" aria-label="기기 기록 백업">
@@ -2905,6 +2916,8 @@ let __smAuthBridge={
   authenticated:false,
   user:null,
   syncEnabled:false,
+  serverSyncEnabled:false,
+  syncStatus:null,
   openSignIn:async()=>{throw new Error('AUTH_UI_NOT_INSTALLED')},
   signOut:async()=>{}
 };
@@ -2913,6 +2926,9 @@ function clearAuthBridgeUIState(){
   try{localStorage.removeItem(STORYMEMORY_AUTH_STATE_KEY)}catch(_){}
 }
 clearAuthBridgeUIState();
+function emitStoryMemoryAuthState(loggedOut=false){
+  try{window.dispatchEvent(new CustomEvent('storymemory-auth-state',{detail:{authenticated:!!__smAuthBridge.authenticated,serverSyncEnabled:__smAuthBridge.serverSyncEnabled===true,syncStatus:__smAuthBridge.syncStatus||null,loggedOut}}))}catch(_){}
+}
 function installStoryMemoryAuthBridge(bridge={}){
   __smAuthBridge={
     ...__smAuthBridge,
@@ -2920,6 +2936,8 @@ function installStoryMemoryAuthBridge(bridge={}){
     installed:bridge.configured===true,
     configured:bridge.configured===true,
     authenticated:bridge.configured===true&&bridge.authenticated===true,
+    serverSyncEnabled:bridge.configured===true&&bridge.authenticated===true&&bridge.serverSyncEnabled===true,
+    syncStatus:bridge.syncStatus||null,
     user:null,
     syncEnabled:false
   };
@@ -2927,22 +2945,27 @@ function installStoryMemoryAuthBridge(bridge={}){
   __smRemoteReady=false;
   updateAuthGateUI();
   clearAuthBridgeUIState();
+  emitStoryMemoryAuthState();
   return __smAuthBridge;
 }
-function setStoryMemoryAuthSession({authenticated}={}){
+function setStoryMemoryAuthSession({authenticated,serverSyncEnabled=false,syncStatus=null,loggedOut=false}={}){
   __smAuthBridge.authenticated=!!authenticated;
+  __smAuthBridge.serverSyncEnabled=!!authenticated&&serverSyncEnabled===true;
+  __smAuthBridge.syncStatus=syncStatus;
   __smAuthBridge.user=null;
   storyMemoryRemote.setTokenProvider(async()=>null);
   __smRemoteReady=false;
   __smRemoteLastError=null;
   updateAuthGateUI();
   clearAuthBridgeUIState();
+  emitStoryMemoryAuthState(loggedOut);
 }
 function openAuthGate(){
   updateAuthGateUI();
   document.body.classList.add('auth-gate-open');
   document.getElementById('authGateSheet')?.setAttribute('aria-hidden','false');
-  requestAnimationFrame(()=>document.getElementById('authGatePrimary')?.focus());
+  window.dispatchEvent(new Event('storymemory-auth-gate-open'));
+  requestAnimationFrame(()=>{const target=__smAuthBridge.serverSyncEnabled?document.querySelector('#storyMemorySyncWorkspace input[data-sync-scope]'):document.getElementById('authGatePrimary');target?.focus()});
 }
 function closeAuthGate(){
   document.body.classList.remove('auth-gate-open');
@@ -2956,6 +2979,8 @@ function updateAuthGateUI({error=false,logoutError=false}={}){
   const copy=document.getElementById('authGateCopy');
   const primary=document.getElementById('authGatePrimary');
   const secondary=document.getElementById('authGateSecondary');
+  const syncWorkspace=document.getElementById('storyMemorySyncWorkspace');
+  if(syncWorkspace)syncWorkspace.hidden=!(__smAuthBridge.authenticated&&__smAuthBridge.serverSyncEnabled);
   if(!cloud||!state)return;
 
   cloud.classList.toggle('authenticated',!!__smAuthBridge.authenticated);
@@ -2979,7 +3004,7 @@ function updateAuthGateUI({error=false,logoutError=false}={}){
     state.querySelector('b').textContent='SHARED LOGIN';
     state.querySelector('span').textContent='공통 계정으로 로그인됨';
     title.innerHTML='공통 계정으로<br>로그인되었습니다.';
-    copy.textContent='이번 단계에서는 읽기 기록과 Memory가 이 기기에 저장됩니다. 기기 간 동기화는 아직 연결되지 않았습니다.';
+    copy.textContent=__smAuthBridge.serverSyncEnabled?(__smAuthBridge.syncStatus?.ready===true?'읽기 위치와 선택한 주석·메모·책갈피를 이 계정과 동기화할 수 있습니다.':'서버 저장소가 준비될 때까지 이 기기에 기록을 저장합니다.'):'이번 단계에서는 읽기 기록과 Memory가 이 기기에 저장됩니다. 기기 간 동기화는 아직 연결되지 않았습니다.';
     primary.hidden=true;
     secondary.textContent='로그아웃';
   }else{
@@ -3016,6 +3041,7 @@ document.getElementById('authGatePrimary').onclick=authGatePrimaryAction;
 document.getElementById('authGateSecondary').onclick=authGateSecondaryAction;
 window.installStoryMemoryAuthBridge=installStoryMemoryAuthBridge;
 window.setStoryMemoryAuthSession=setStoryMemoryAuthSession;
+window.getStoryMemoryAuthState=()=>({authenticated:!!__smAuthBridge.authenticated,serverSyncEnabled:__smAuthBridge.serverSyncEnabled===true,syncStatus:__smAuthBridge.syncStatus||null});
 window.openStoryMemoryAuth=openAuthGate;
 window.showStoryMemoryAuthError=()=>{openAuthGate();updateAuthGateUI({error:true})};
 
@@ -3024,6 +3050,7 @@ window.showStoryMemoryAuthError=()=>{openAuthGate();updateAuthGateUI({error:true
 const STORYMEMORY_INSTALLATION_KEY='storymemory.installationId.v1';
 const STORYMEMORY_SYNC_STATE_KEY='storymemory.syncState.v1';
 const STORYMEMORY_TOMBSTONE_KEY='storymemory.syncTombstones.v1';
+const STORYMEMORY_SYNC_RECORD_ID_MAP_KEY='storymemory.syncRecordIds.v1';
 const STORYMEMORY_SYNC_SCHEMA='v3.0.2-client-record-id';
 let __smSyncRunning=false;
 let __smSyncLastResult=null;
@@ -3035,7 +3062,21 @@ function storyMemoryInstallationId(){
   try{localStorage.setItem(STORYMEMORY_INSTALLATION_KEY,id)}catch(_){}
   return id;
 }
-function clientRecordId(kind,localId){return `${storyMemoryInstallationId()}:${kind}:${String(localId)}`}
+function loadSyncRecordIdMap(){try{const x=JSON.parse(localStorage.getItem(STORYMEMORY_SYNC_RECORD_ID_MAP_KEY)||'{}');return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}catch(_){return {}}}
+function syncRecordMapKey(kind,localId){return `${kind}:${String(localId)}`}
+function storyMemorySyncRecordMeta(kind,localId,create=true){
+  const map=loadSyncRecordIdMap(),key=syncRecordMapKey(kind,localId);let row=map[key];
+  if(!row&&create){row={recordId:'rec-'+(crypto?.randomUUID?.()||`${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`),updatedAt:Date.now()};map[key]=row;try{localStorage.setItem(STORYMEMORY_SYNC_RECORD_ID_MAP_KEY,JSON.stringify(map))}catch(_){}}
+  return row||null;
+}
+function clientRecordId(kind,localId){return storyMemorySyncRecordMeta(kind,localId)?.recordId||`rec-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`}
+function setStoryMemorySyncRecordMeta(kind,localId,recordId,updatedAt){const map=loadSyncRecordIdMap();map[syncRecordMapKey(kind,localId)]={recordId:String(recordId),updatedAt:Number(updatedAt)||Date.now()};try{localStorage.setItem(STORYMEMORY_SYNC_RECORD_ID_MAP_KEY,JSON.stringify(map))}catch(_){}}
+function localStoryMemorySyncIdForRecord(kind,recordId){const map=loadSyncRecordIdMap();for(const [key,row] of Object.entries(map)){if(key.startsWith(kind+':')&&row?.recordId===recordId)return key.slice(kind.length+1)}return null}
+function touchStoryMemorySyncRecord(kind,localId){const row=storyMemorySyncRecordMeta(kind,localId);if(row){row.updatedAt=Date.now();const map=loadSyncRecordIdMap();map[syncRecordMapKey(kind,localId)]=row;try{localStorage.setItem(STORYMEMORY_SYNC_RECORD_ID_MAP_KEY,JSON.stringify(map))}catch(_){}}return row}
+window.storyMemorySyncRecordMeta=storyMemorySyncRecordMeta;
+window.setStoryMemorySyncRecordMeta=setStoryMemorySyncRecordMeta;
+window.localStoryMemorySyncIdForRecord=localStoryMemorySyncIdForRecord;
+window.touchStoryMemorySyncRecord=touchStoryMemorySyncRecord;
 function loadSyncState(){try{const x=JSON.parse(localStorage.getItem(STORYMEMORY_SYNC_STATE_KEY)||'{}');return x&&typeof x==='object'?x:{}}catch(_){return {}}}
 function saveSyncState(state){try{localStorage.setItem(STORYMEMORY_SYNC_STATE_KEY,JSON.stringify(state))}catch(_){}}
 function loadSyncTombstones(){try{const x=JSON.parse(localStorage.getItem(STORYMEMORY_TOMBSTONE_KEY)||'[]');return Array.isArray(x)?x:[]}catch(_){return []}}
@@ -3052,7 +3093,7 @@ function markMemoryClientUpdated(m){
 }
 function markAnnotationClientUpdated(a){
   if(!a)return;
-  if(!a.clientRecordId)a.clientRecordId=clientRecordId('annotation',a.id);
+  if(!a.clientRecordId)a.clientRecordId=clientRecordId(a.type==='bookmark'?'bookmark':'annotation',a.id);
   a.clientUpdatedAt=Date.now();
 }
 function ensureLocalSyncIdentities(){
@@ -3062,7 +3103,7 @@ function ensureLocalSyncIdentities(){
     if(!m.clientUpdatedAt){m.clientUpdatedAt=Number(m.updatedAt||m.createdAt||now);changedMem=true}
   });
   __smAnnotations.forEach(a=>{
-    if(!a.clientRecordId){a.clientRecordId=clientRecordId('annotation',a.id);changedAnn=true}
+    if(!a.clientRecordId){a.clientRecordId=clientRecordId(a.type==='bookmark'?'bookmark':'annotation',a.id);changedAnn=true}
     if(!a.clientUpdatedAt){const stamp=Number(String(a.id||'').split('-')[1]||0);a.clientUpdatedAt=stamp||now;changedAnn=true}
   });
   if(changedMem)saveUserMemories();
@@ -3561,7 +3602,7 @@ function deleteUserMemory(id){
   const existing=__smUserMemories.find(x=>x.id===id);
   if(existing){
     if(!existing.clientRecordId)markMemoryClientUpdated(existing);
-    addSyncTombstone('memory',existing.clientRecordId);
+    addSyncTombstone(existing.kind==='note'?'note':'memory',existing.clientRecordId);
   }
   __smUserMemories=__smUserMemories.filter(x=>x.id!==id);
   saveUserMemories();
@@ -3813,6 +3854,7 @@ document.getElementById('paper').addEventListener('mouseup',()=>setTimeout(captu
 document.getElementById('paper').addEventListener('touchend',()=>setTimeout(captureSel,70));
 
 function annotationTypeLabel(cls){
+ if(cls==='bookmark')return '북마크';
  if(cls.startsWith('hl-'))return '형광펜';
  if(cls==='annot-line')return '밑줄';
  if(cls==='blocked')return '블록';
@@ -3899,7 +3941,7 @@ function deleteAnnotation(id){
  const existing=__smAnnotations.find(a=>a.id===id);
  if(existing){
    if(!existing.clientRecordId)markAnnotationClientUpdated(existing);
-   addSyncTombstone('annotation',existing.clientRecordId);
+   addSyncTombstone(existing.type==='bookmark'?'bookmark':'annotation',existing.clientRecordId);
  }
  const beforeFlowRatio=readerViewMode==='flow'
    ?Math.max(0,Math.min(1,document.querySelector('.paper-inner').scrollTop/Math.max(1,document.querySelector('.paper-inner').scrollHeight-document.querySelector('.paper-inner').clientHeight)))
@@ -8377,6 +8419,8 @@ window.__smV1823EvidenceUXV1={
   });
 })();
 </script>
+<script src="storymemory-sync-bridge.js"></script>
 <script type="module" src="storymemory-shared-auth-ui.mjs"></script>
+<script type="module" src="storymemory-sync-ui.mjs"></script>
 </body>
 </html>

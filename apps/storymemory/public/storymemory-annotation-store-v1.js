@@ -23,6 +23,7 @@ function sanitizeItem(raw){
     if(raw.kind==='highlight')it.color=COLORS[raw.color]?raw.color:'yellow';
     if(raw.kind==='memo')it.note=typeof raw.note==='string'?raw.note.slice(0,MAX_NOTE):'';
   }
+  if(typeof raw.conflictOf==='string'&&raw.conflictOf)it.conflictOf=raw.conflictOf.slice(0,512);
   return it;
 }
 function save(list){try{localStorage.setItem(KEY,JSON.stringify({version:1,items:list}));}catch(_){}}

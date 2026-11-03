@@ -184,6 +184,19 @@ export function createStoryMemorySharedAuth({ fetcher = fetch, now = () => Math.
   let jwksCache = null;
   let jwksExpires = 0;
 
+  async function authenticate(request, env) {
+    if (!isConfigured(env)) return null;
+    const access = cookies(request)[ACCESS_COOKIE];
+    if (!access) return null;
+    try {
+      const current = now();
+      await verifyAccess(access, current);
+      return { subject: parseToken(access).payload.sub };
+    } catch {
+      return null;
+    }
+  }
+
   async function verifyAccess(token, current) {
     const parsed = parseToken(token);
     if (!validAccessClaims(parsed.payload, current) || parsed.signature.byteLength !== 64) throw new Error("invalid_access_token");
@@ -232,7 +245,7 @@ export function createStoryMemorySharedAuth({ fetcher = fetch, now = () => Math.
     }
   }
 
-  return async function handleStoryMemorySharedAuth(request, env) {
+  async function handleStoryMemorySharedAuth(request, env) {
     const url = new URL(request.url);
     if (!url.pathname.startsWith("/auth/")) return null;
     const jar = cookies(request);
@@ -309,5 +322,8 @@ export function createStoryMemorySharedAuth({ fetcher = fetch, now = () => Math.
     }
 
     return json({ error: "not_found" }, 404);
-  };
+  }
+
+  handleStoryMemorySharedAuth.authenticate = authenticate;
+  return handleStoryMemorySharedAuth;
 }

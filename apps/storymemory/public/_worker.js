@@ -1,5 +1,6 @@
 import {COM2_AI_URL, executeAppAI, com2CredentialConfigured, ingressCredential, upstreamErrorCode} from './app-ai-transport.mjs';
 import {createStoryMemorySharedAuth} from './storymemory-shared-auth.mjs';
+import {createStoryMemorySync} from './storymemory-sync.mjs';
 const APP_AI_CALLER = 'storymemory';
 const AI_PATH = "/api/storymemory-ai";
 const AI_HEALTH_PATH = "/api/storymemory-ai/health";
@@ -18,6 +19,7 @@ function storyMemoryModel(env) {
 const MAX_REFERENCE_CHARS = 12000;
 const MAX_ENGINE_CONTEXT = 8;
 const handleStoryMemorySharedAuth = createStoryMemorySharedAuth();
+const handleStoryMemorySync = createStoryMemorySync({auth: handleStoryMemorySharedAuth});
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -196,6 +198,8 @@ export default {
     const url = new URL(request.url);
     const authResponse = await handleStoryMemorySharedAuth(request, env);
     if (authResponse) return authResponse;
+    const syncResponse = await handleStoryMemorySync(request, env);
+    if (syncResponse) return syncResponse;
     if (url.pathname === AI_HEALTH_PATH) {
       if (request.method !== "GET") return json({ ok: false, error: "method_not_allowed" }, 405);
       return json({

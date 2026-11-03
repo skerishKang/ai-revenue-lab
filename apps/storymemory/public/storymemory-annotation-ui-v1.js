@@ -150,7 +150,7 @@ function syncAnnotationPanel(){
   current.slice().reverse().forEach(function(it){
     var wrap=document.createElement('div');wrap.className='annotation-memory-entry-wrap smal-memory-entry';
     var entry=document.createElement('div');entry.className='annotation-memory-entry';
-    var kind=document.createElement('b');kind.textContent=it.kind==='highlight'?'형광펜':'밑줄';
+    var kind=document.createElement('b');kind.textContent=(it.kind==='highlight'?'형광펜':'밑줄')+(it.conflictOf?' · 충돌 사본':'');
     var quote=document.createElement('span');quote.textContent=it.text;
     var ref=document.createElement('small');var book=(document.getElementById('readerVolumeTitle')||{}).textContent||'';var chapter=(document.getElementById('readerChapterTitle')||{}).textContent||'';var verse=it.locator.indexOf('bible:')===0?it.locator.split(':').pop()+'절':'';ref.textContent=[book,chapter,verse].filter(Boolean).join(' · ');
     entry.append(kind,quote,ref);

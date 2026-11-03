@@ -21,11 +21,28 @@ export async function initializeStoryMemorySharedAuth({
   }
 
   const configured = status?.configured === true;
-  const authenticated = configured && status?.authenticated === true;
+  let authenticated = configured && status?.authenticated === true;
+  let syncStatus = { enabled: false, ready: false, consentedScopes: [] };
+  if (authenticated) {
+    try {
+      const deviceId = bridge.storyMemoryInstallationId?.();
+      const response = await fetcher("/api/sync/status", {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: { accept: "application/json", "x-storymemory-device-id": deviceId || "b61-browser" }
+      });
+      const body = await response.json();
+      if (body && typeof body === "object" && !Array.isArray(body)) syncStatus = body;
+      if (response.status === 401) authenticated = false;
+    } catch { syncStatus = { enabled: false, ready: false, consentedScopes: [] }; }
+  }
   bridge.installStoryMemoryAuthBridge({
     configured,
     authenticated,
     syncEnabled: false,
+    serverSyncEnabled: authenticated && syncStatus.enabled === true,
+    syncStatus,
     openSignIn: async () => {
       if (!configured || !location || typeof location.assign !== "function") throw new Error("AUTH_NOT_CONFIGURED");
       location.assign("/auth/login?next=%2F");
@@ -38,7 +55,7 @@ export async function initializeStoryMemorySharedAuth({
         headers: { accept: "application/json" }
       });
       if (!response.ok) throw new Error("LOGOUT_FAILED");
-      bridge.setStoryMemoryAuthSession({ authenticated: false });
+      bridge.setStoryMemoryAuthSession({ authenticated: false, serverSyncEnabled: false, loggedOut: true });
     }
   });
   try {
@@ -49,7 +66,7 @@ export async function initializeStoryMemorySharedAuth({
       globalThis.history?.replaceState?.(null, "", currentUrl.pathname + currentUrl.search + currentUrl.hash);
     }
   } catch { /* a URL parsing failure does not alter local reading data */ }
-  return { configured, authenticated, syncEnabled: false };
+  return { configured, authenticated, syncEnabled: false, serverSyncEnabled: authenticated && syncStatus.enabled === true, syncStatus };
 }
 
 if (typeof window !== "undefined" && typeof window.installStoryMemoryAuthBridge === "function") {

@@ -1,7 +1,7 @@
 # B61 공통 로그인 및 동기화 설계
 
 작성일: 2026-11-04
-범위: 로그인·로그아웃 연결과 동기화 설계. 이 문서만으로 원격 동기화가 켜지지 않는다.
+범위: 로그인·로그아웃과 독서 기록 동기화 계약. 동기화는 `STORYMEMORY_SYNC_ENABLED=true`와 D1 준비가 함께 완료되기 전까지 켜지지 않는다.
 
 ## 로그인 연결
 
@@ -31,43 +31,49 @@
 
 현재 기록은 브라우저 localStorage가 원본이다. `storymemory.store.v1`은 progress·annotations·memories·recall·entity ledger의 통합 스냅샷이며, 호환/세부 저장 키도 함께 사용한다.
 
-| 데이터 | 현재 로컬 위치 | 향후 동기화 범위와 위치 |
+| 데이터 | 현재 로컬 위치 | 2단계 동기화 범위와 위치 |
 |---|---|---|
-| 독서 위치·이어 읽기 | `storymemory.readerProgress.*`, `storymemory.readerResume.*`, 통합 스냅샷의 `progress` | B61 서비스 저장소의 `reader_progress`. 작품·판본·canonical locator·이어 읽기 위치를 사용자별로 저장 |
-| 하이라이트·밑줄·메모·책갈피 | `storymemory.annotations.v2` (legacy `v1`도 읽음), 통합 스냅샷의 `annotations` | B61 서비스 저장소의 `annotations`. 원문 전체 대신 현재 계약상 필요한 locator, 범위, 발췌 길이 제한값, 사용자 메모를 기록 |
-| 사용자 Memory·AI Memory·북마크 Memory | `storymemory.userMemories.v1`, 통합 스냅샷의 `memories` | B61 서비스 저장소의 `memories`; stable client record ID와 소유자별 unique key 사용 |
-| 복습 시각/Recall 상태 | `storymemory.recallState.v1`, `storymemory.contextEntityLedger.v1`, 통합 스냅샷 | 사용자가 만든 복습 상태만 관련 Memory와 묶어 `recall_items`에 동기화. entity ledger는 검색용 파생 상태라 별도 원본으로 동기화하지 않고 서버/클라이언트에서 재구성 |
-| 고정 항목 | `storymemory.pinnedEntities.v1` | 사용자가 고정한 항목 중 대상 Memory ID가 안정적으로 연결되는 값만 Memory의 사용자 설정으로 저장 |
+| 독서 위치·이어 읽기 | `storymemory.readerProgress.*`, `storymemory.readerResume.*`, 통합 스냅샷의 `progress` | D1 `storymemory_sync_records`의 `progress` 항목. 작품·책·장·페이지·시각·이어 읽기를 사용자별로 저장 |
+| 하이라이트·밑줄·주석 | 정확 locator 저장소 `storymemory.annotations.v1`, 호환 주석 `storymemory.annotations.v2` | 같은 D1 표의 `annotation` 항목. 위치, 선택 구간, 사용자가 표시한 문구와 표시 메모를 저장 |
+| 사용자가 직접 작성한 일반 메모 | `storymemory.userMemories.v1` 중 `kind=note` | 같은 D1 표의 `note` 항목. 메모 본문은 계정 간 격리하며 로그에 넣지 않음 |
+| 책갈피 | 정확 locator 저장소 `storymemory.annotations.v1`의 `kind=bookmark` | 같은 D1 표의 `bookmark` 항목. 로컬 북마크 메모 복제본은 별도 메모로 중복 전송하지 않음 |
+| 사용자 Memory·AI Memory, Recall·고정 항목 | `storymemory.userMemories.v1`, `storymemory.recallState.v1`, `storymemory.contextEntityLedger.v1`, `storymemory.pinnedEntities.v1` | 이번 2단계에서 제외. 후속 범위로 남기며 별도 `memories`·`recall_items` 저장은 하지 않음 |
 
-대상 B61 저장소는 기존 `storymemory` Neon 스키마와 `reader_progress`, `annotations`, `memories`, `recall_items` 계약을 우선 검토한다. 현재 브라우저 adapter는 Neon Auth JWT를 전제로 하므로 padiem-auth 표를 그대로 Neon REST에 전달하지 않는다. 동기화 구현 전에 B61 서버 측 경로가 ES256/JWKS로 표를 검증하고 `sub` 소유권을 강제하도록 연결한다. 기존 Neon 사용자 ID와 공통 계정 `sub`의 소유권 대조 및 RLS/마이그레이션 검증이 끝나기 전에는 쓰기를 허용하지 않는다. 서비스 데이터는 padiem-auth에 저장하지 않는다.
+이번 구현은 Pages `_worker.js`의 `/api/sync/*`를 거쳐 D1 바인딩 `STORYMEMORY_DB`를 사용한다. 브라우저는 access token을 보내지 않으며 서버가 HttpOnly 세션 쿠키의 padiem-auth ES256 표를 JWKS로 확인하고, 검증된 `sub`로 모든 쿼리를 제한한다. Neon REST와 기존 Neon 소유자 표는 이 경로에서 사용하지 않는다. D1 스키마는 `apps/storymemory/migrations/0001_storymemory_reading_sync.sql`에만 추가했으며 원격 D1에 적용하지 않았다.
 
-동기화에서 제외할 값: 인증 쿠키/표, 이메일, 설치 ID, 화면 위치·필터 같은 임시 UI 설정, 콘텐츠 본문 캐시, sync cursor/state, 기기 로컬 로그. AI 대화 전문은 Memory로 명시적으로 저장한 항목 이외에는 동기화하지 않는다.
+동기화에서 제외할 값: 인증 쿠키/표, 이메일, 화면 위치·필터 같은 임시 UI 설정, 콘텐츠 본문 캐시, 동기화 본문을 담은 로컬 대기열, 기기 로컬 로그. 기존 설치 ID는 충돌 판정용 `device_id` 헤더로만 보내며, 신규 안정 레코드 ID는 불투명한 난수로 만든다. 이미 로컬에 남은 설치 ID 접두 레코드 ID는 동의 이전에서 불투명 ID로 교체한다. AI 대화와 AI Memory·Recall은 이번 범위에서 동기화하지 않는다.
 
 ## 첫 로그인 때 로컬 데이터 이전
 
-첫 로그인은 인증만 수행한다. 별도 동기화 단계에서 사용자가 로컬 레코드 수와 전송 범위를 확인하고 명시적으로 시작한 뒤 이전한다.
+첫 로그인은 인증만 수행한다. 동기화 기능이 켜져 있으면 “이 기기의 기록을 계정에 옮길까요?” 화면에서 독서 위치, 주석·일반 메모, 책갈피 범위를 고르고 명시적으로 시작한다. 동기화 동의는 계정과 기기 조합으로 D1에 저장해 다른 계정의 브라우저 기록이 자동 업로드되지 않게 한다.
 
 1. 현재 기기 백업을 만들 수 있게 하고 원본 localStorage를 읽기 전용으로 보존한다.
 2. 로그인한 공통 계정 `sub`로 B61 서비스 저장소에 접근을 제한한다. 이메일이나 표시 이름으로 기존 Neon 계정을 병합하지 않는다.
-3. 해당 사용자의 원격 상태가 비어 있으면 확인한 로컬 레코드를 stable client ID 기준으로 일괄 업로드한다. 각 레코드와 진행 위치는 재시도해도 중복 생성되지 않게 한다.
-4. 원격 데이터가 있으면 양쪽 레코드 ID·수정 시각·revision을 비교한다. 동기화 완료 응답과 복구 가능한 백업을 확인하기 전에는 로컬 원본을 지우지 않는다.
-5. 브라우저 저장량·네트워크 제한 때문에 전체 이전이 끝나지 않으면 미완료 상태를 사용자에게 표시하고 다음 로그인에서 이어간다.
+3. 로컬 원본은 읽기 전용으로 유지하고 stable client record ID 기준으로 전송한다. 중단·네트워크 실패 시 본문은 로컬 원본에서 다시 읽고, 대기열에는 레코드 ID와 revision만 저장한다.
+4. D1이 없거나 준비되지 않았으면 503 `동기화 준비 중`으로 응답하고 로컬 기능은 계속 작동한다. 일부 전송 뒤 취소·실패해도 로컬 원본을 지우지 않으며 재시도는 멱등으로 처리한다.
+5. 전송 완료 후 서버 스냅샷을 내려받아 적용하고, 이후 해당 기기에서 선택한 범위만 조용히 동기화한다. 오프라인 변경은 레코드 ID 대기열에 두고 연결 복구 시 다시 읽어 전송한다.
 
 ## 여러 기기 충돌
 
 - 레코드 ID와 소유자 ID가 같고 내용이 같으면 중복으로 취급한다.
 - 독서 위치는 같은 작품·판본 안에서 가장 먼 읽기 위치를 knowledge ceiling으로 유지한다. 이어 읽기 위치는 그 작품의 마지막 변경 시각을 기준으로 별도로 선택한다. 작품·판본이 다르면 병합하지 않는다.
-- 메모·Memory·하이라이트가 한 기기에서만 바뀌었으면 변경된 쪽을 적용한다. 두 기기에서 같은 레코드의 본문/선택 구간을 서로 다르게 바꾸면 자동 덮어쓰기 대신 충돌 사본을 남기고 선택을 사용자에게 맡긴다.
+- 주석·일반 메모·책갈피는 서버 revision으로 stale edit를 찾는다. 서로 다른 기기의 같은 항목 내용이 달라졌으면 timestamp와 device ID로 대표본을 고르고 다른 쪽은 `conflictOf`가 있는 충돌 사본으로 남긴다. 사용자는 충돌 사본을 일반 기록처럼 확인·편집·삭제할 수 있다.
 - 삭제는 동기화 tombstone으로 전파해 오프라인 기기가 오래된 값을 되살리지 않게 한다. 삭제 시각과 revision을 보존하고 보존 기간이 정해지기 전 tombstone을 제거하지 않는다.
-- client timestamp만 신뢰하지 않는다. 서버 수정 시각과 revision을 기준으로 비교하고, 시계 차이/동시 변경은 충돌로 처리한다.
+- client timestamp만 신뢰하지 않는다. 서버 revision으로 stale edit를 판별하고, 충돌이 확인된 경우 `(client_updated_at, device_id)` 순서로 대표본을 정한다. 독서 위치는 같은 항목의 furthest chapter/page를 되돌리지 않으며 이어 읽기 위치는 이 순서로 결정한다.
 
 ## 로그아웃 및 계정 탈퇴
 
-- 로그아웃은 현재 공통 로그인 세션만 폐기한다. localStorage의 독서 위치·메모·Memory·북마크는 삭제하거나 다른 계정에 이동하지 않는다. 다음 로그인에서도 소유권 확인 전 기존 로컬 데이터를 자동 업로드하지 않는다.
+- 로그아웃은 현재 공통 로그인 세션만 폐기한다. localStorage의 독서 위치·메모·Memory·북마크는 삭제하거나 다른 계정에 이동하지 않는다. 브라우저 동기화 대기열의 ID·hash·revision은 비우고, 다른 계정은 그 계정·기기 조합의 전송 범위 확인 전 로컬 기록을 업로드하지 않는다.
 - #6773의 공통 탈퇴 흐름은 서비스별 연결 해제와 데이터 삭제 확인을 순서대로 처리한다. 현재 B61은 #6773 수신 대상이 아니며 이번 단계에서는 탈퇴 RPC를 추가하지 않는다.
-- B61 원격 동기화를 구현할 때 #6773 서비스 목록에 B61 삭제 수신기를 추가한다. 해당 계정의 `reader_progress`, `annotations`, `memories`, `recall_items`를 삭제 완료한 뒤에만 서비스 삭제 확인을 반환한다. 실패 시 계정 파기를 진행하지 않고 재시도를 허용한다.
+- B61 삭제 수신기는 `POST /internal/account-delete`에서 `STORYMEMORY_ACCOUNT_DELETE_RPC_SECRET`로 #6773 v2 HMAC, 요청 시각, service UUID, operation UUID, 엄격한 JSON 계약을 검증한다. 처리 완료 영수증에는 service/operation UUID, 계정 ID의 SHA-256, 상태·시각만 남긴다. 해당 계정의 D1 동기화 레코드와 기기별 동기화 설정을 원자적으로 삭제하고, 반복 요청은 새 데이터를 다시 지우지 않도록 멱등 처리한다.
 - 공통 탈퇴는 브라우저가 오프라인인 기기의 localStorage와 사용자가 내려받은 백업 파일을 원격으로 지울 수 없다. 탈퇴 화면에서 이 한계를 알리고, 세션이 남아 있는 기기에서는 로컬 데이터 정리 선택을 제공한다. 원격 탈퇴 성공을 모든 기기·백업의 삭제로 표시하지 않는다.
 
-## 검증 전제
+## 동기화를 켜는 순서
 
-동기화를 켜기 전 별도 승인 단계에서 Neon 기존 소유권 대조, B61 저장소의 공통 `sub` 검증, 레코드별 RLS, 재시도/충돌/tombstone, 계정 탈퇴 삭제 수신기, 데이터 내보내기·복원, 다중 기기 E2E를 확인한다. 이 커밋은 해당 원격 동작을 호출하거나 설정하지 않는다.
+1. Cloudflare Pages에 D1 데이터베이스를 만든다.
+2. `apps/storymemory/migrations/0001_storymemory_reading_sync.sql`을 D1 migration으로 적용한다.
+3. Pages 프로젝트 `storymemory-padiem`에 `STORYMEMORY_DB` 바인딩을 추가한다.
+4. Pages secret `STORYMEMORY_ACCOUNT_DELETE_RPC_SECRET`을 공통 탈퇴 RPC 서명 설정과 맞춰 넣는다. padiem-auth 등록/클라이언트 키는 로그인 표준의 별도 설정값을 사용한다.
+5. 관련 계약·다중 기기·탈퇴 수신 시험이 통과한 뒤 Pages 변수 `STORYMEMORY_SYNC_ENABLED=true`로 켠다. 기본값은 off다.
+
+이 변경은 원격 D1 적용, 바인딩, secret 설정, 스위치 변경, 배포를 수행하지 않는다. Memory·Recall 동기화는 후속 단계다.
