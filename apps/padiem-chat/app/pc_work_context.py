@@ -600,8 +600,15 @@ async def resolve_pc_work_context(
     workspace_id: str | None,
     session_id: str | None = None,
     selected_device_id: str | None = None,
+    execution_device_id: str | None = None,
 ) -> PcWorkContext:
-    """Read both authorities once and keep their answers separate."""
+    """Read both authorities once and keep their answers separate.
+
+    ``execution_device_id`` pins the command target to one exact PC when the
+    caller already knows it (the MCP token's own device today, the per-call
+    choice tomorrow) — the saved preference keeps scoping the Chat screen, and
+    every safety condition below still applies to the pinned id.
+    """
     owner = owner_id if isinstance(owner_id, str) and owner_id else None
     workspace = workspace_id if isinstance(workspace_id, str) and workspace_id else None
     session = session_id if isinstance(session_id, str) and session_id else None
@@ -747,8 +754,26 @@ async def resolve_pc_work_context(
                             selected_is_offline = False
             selection_offline = selected_is_offline
 
-    if selection_offline:
+    pinned_device = execution_device_id if (
+        isinstance(execution_device_id, str) and execution_device_id
+    ) else None
+    if selection_offline and pinned_device is None:
         execution = PcExecutionTarget(status=_EXEC_NO_TARGET)
+    elif pinned_device is not None:
+        # The caller already knows the PC (the MCP token's device today, the
+        # per-call choice tomorrow): resolve the command target for exactly
+        # that id. The ownership-map lookup still has to admit it, and the
+        # grant below still checks the owner's own active links.
+        execution = await _resolve_execution_target(
+            request,
+            session_id=connector.session_id if connector.ready else session,
+            selected_device_id=pinned_device,
+            account_ref=connector.account_ref if connector.ready else None,
+        )
+        if links:
+            linked = _link_execution_target(links, pinned_device)
+            if linked is not None:
+                execution = linked
     else:
         execution = await _resolve_execution_target(
             request,
@@ -767,6 +792,10 @@ async def resolve_pc_work_context(
         if len(usable) == 1 and paused_values != {True}
         else None
     )
+    if pinned_device is not None:
+        selected_device_id = pinned_device
+        selection_offline = False
+        selection_auto_switched = False
     return PcWorkContext(
         broker_status=broker_status,
         devices=tuple(devices),

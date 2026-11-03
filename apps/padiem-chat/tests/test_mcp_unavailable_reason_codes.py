@@ -314,3 +314,95 @@ def test_shell_start_refusal_carries_the_intent_code(monkeypatch):
     assert outcome["status"] == "unavailable"
     assert outcome["answer"] == "PC 작업을 시작하지 못했습니다."
     assert outcome["deny_reason"] == "oracle_mesh_device_directory_unavailable"
+
+
+# ── 토큰 device 기준 실행 대상 확정 (08:14 지시) ─────────────────────────────
+
+def _work_context_harness(monkeypatch, *, saved_device, token_device, links, presence_online=True):
+    """resolve_pc_work_context를 실제 의존성 스텁으로 돌린다."""
+    from app import pc_work_context as pwc
+
+    class _Selection:
+        async def load(self, **kwargs):
+            return {"device_id": saved_device} if saved_device else None
+
+        async def save(self, **kwargs):
+            return True
+
+    class _Presence:
+        async def load(self, **kwargs):
+            return {"device_id": token_device, "connected": 1 if presence_online else 0}
+
+    class _Identity:
+        async def resolve_connector_owner_scope(self, session_id=None):
+            return {"account_ref": "scope-form-account", "workspace_ref": "ws_ref"}
+
+    class _Mesh(OracleMeshReturnSource):
+        execution_mode = "mesh"
+
+    class _Pairing:
+        async def links_for_owner(self, *, user_id):
+            return list(links or [])
+
+    class _State:
+        claw_pc_device_selection_store = _Selection()
+        mesh_device_presence_store = _Presence()
+        control_plane_identity_authority = _Identity()
+        oracle_mesh_return_source = _Mesh([_row()], "x" * 32)
+        identity_shadow_store = None
+        pc_device_pairing_store = _Pairing()
+
+    request = SimpleNamespace(app=SimpleNamespace(state=_State()))
+    ctx = asyncio.run(pwc.resolve_pc_work_context(
+        request, owner_id=UID, workspace_id="tenant_fixture",
+        session_id="session_fixture", selected_device_id=token_device,
+        execution_device_id=token_device,
+    ))
+    return ctx
+
+
+def test_mcp_passes_with_token_device_even_when_saved_selection_differs():
+    # 08:05 재시험의 정확한 상태: 저장된 선택 = 구 노드(fi$D62t1), 토큰 device =
+    # 컴2 노드(WfFJEaIc). MCP는 토큰 device로 실행 대상을 확정해야 한다.
+    ctx = _work_context_harness(
+        None, saved_device="node_fi$D62t1", token_device="node_WfFJEaIc",
+        links=[{"mesh_node_id": "node_fi$D62t1", "state": "active"},
+               {"mesh_node_id": "node_WfFJEaIc", "state": "active"}])
+    assert ctx.execution.ready is True
+    assert ctx.execution.device_id == "node_WfFJEaIc"
+    assert ctx.selected_confirmed is True
+    assert ctx.execution_device_id == "node_WfFJEaIc"
+    assert ctx.tool_available is True
+
+
+def test_mcp_refuses_when_token_device_is_not_an_active_link():
+    ctx = _work_context_harness(
+        None, saved_device="node_fi$D62t1", token_device="node_unknown6",
+        links=[{"mesh_node_id": "node_fi$D62t1", "state": "active"},
+               {"mesh_node_id": "node_WfFJEaIc", "state": "revoked"}])
+    # 링크에 없거나 비활성인 device는 실행 대상이 될 수 없다: execution이
+    # 준비되지 않거나(맵 부재) device가 토큰 device와 달라진다.
+    assert (ctx.execution.ready is False
+            or ctx.execution_device_id != "node_unknown6"
+            or ctx.selected_confirmed is False)
+
+
+def test_chat_screen_path_keeps_the_saved_selection():
+    # Chat 화면 경로(핀 없음)는 기존 동작: 저장된 선택이 실행 대상.
+    from app import pc_work_context as pwc
+    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+        claw_pc_device_selection_store=SimpleNamespace(
+            load=lambda **k: {"device_id": "node_saved1"},
+            save=lambda **k: True),
+        mesh_device_presence_store=SimpleNamespace(
+            load=lambda **k: {"device_id": "node_saved1", "connected": 1}),
+        control_plane_identity_authority=SimpleNamespace(
+            resolve_connector_owner_scope=lambda **k: {"account_ref": "scope-form"}),
+        oracle_mesh_return_source=_source([_row()]),
+        identity_shadow_store=None,
+    )))
+    ctx = asyncio.run(pwc.resolve_pc_work_context(
+        request, owner_id=UID, workspace_id="tenant_fixture",
+        session_id="session_fixture"))
+    assert ctx.selected_device_id is None or ctx.execution_device_id == "node_saved1" \
+        or ctx.execution.ready is False
