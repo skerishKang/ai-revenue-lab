@@ -377,9 +377,15 @@ def test_shared_login_host_switch_and_real_configuration(staging_host_env, monke
     monkeypatch.setenv('PADIEM_CHAT_LOCAL_IDENTITY_RPC_SECRET', 'synthetic-identity-secret-0123456789')
     monkeypatch.setenv('PADIEM_CHAT_SHARED_AUTH_CLIENT_ID', 'b62-staging')
     monkeypatch.setenv('PADIEM_CHAT_SHARED_AUTH_CLIENT_KID', 'synthetic')
+    from cryptography.hazmat.primitives.asymmetric import ec
+    numbers = ec.generate_private_key(ec.SECP256R1()).private_numbers()
+    def b64int(value):
+        return base64.urlsafe_b64encode(value.to_bytes(32, 'big')).rstrip(b'=').decode('ascii')
+    jwk = {'kty': 'EC', 'crv': 'P-256', 'd': b64int(numbers.private_value),
+           'x': b64int(numbers.public_numbers.x), 'y': b64int(numbers.public_numbers.y)}
     key = staging_host_env / 'jwk.json'
     state = staging_host_env / 'state.txt'
-    key.write_text(json.dumps({'kty':'EC','crv':'P-256','x':'x','y':'y','d':'d'}), encoding='utf-8')
+    key.write_text(json.dumps(jwk), encoding='utf-8')
     state.write_text(base64.urlsafe_b64encode(b'x'*32).rstrip(b'=').decode(), encoding='utf-8')
     monkeypatch.setenv('PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK_FILE', str(key))
     monkeypatch.setenv('PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY_FILE', str(state))

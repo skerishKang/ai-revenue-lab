@@ -59,6 +59,7 @@ if not _IN_WORKERS:
     _real_httpx = _il.import_module("ht" + "tpx")  # type: ignore
 
     AsyncClient = _real_httpx.AsyncClient
+    Limits = _real_httpx.Limits
     AsyncBaseTransport = _real_httpx.AsyncBaseTransport
     Request = _real_httpx.Request
     Response = _real_httpx.Response

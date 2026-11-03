@@ -26,6 +26,35 @@ export async function googleProductUserId(subject) {
 const epoch = () => Math.floor(Date.now() / 1000);
 const headers = { 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' };
 const json = (status, value) => new Response(JSON.stringify(value), { status, headers: { ...headers, 'content-type': 'application/json' } });
+
+const SAFE_REQUEST_ID = /^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$/;
+
+function finishTokenTiming(response, timing, clientId) {
+  if (!timing || clientId !== 'b62') return response;
+  const values = {
+    auth_client: timing.clientAuthMs || 0,
+    auth_code: timing.codeExchangeMs || 0,
+    auth_sign: timing.tokenSignMs || 0,
+    auth_total: performance.now() - timing.started,
+  };
+  const serverTiming = Object.entries(values)
+    .map(([name, duration]) => `${name};dur=${Math.max(0, duration).toFixed(2)}`)
+    .join(', ');
+  response.headers.set('server-timing', serverTiming);
+  if (timing.requestId) {
+    console.log(JSON.stringify({
+      auth_stage: 'token_timing',
+      request_id: timing.requestId,
+      body_parse_ms: Number(timing.bodyParseMs.toFixed(2)),
+      client_auth_ms: Number(values.auth_client.toFixed(2)),
+      code_exchange_ms: Number(values.auth_code.toFixed(2)),
+      token_sign_ms: Number(values.auth_sign.toFixed(2)),
+      total_ms: Number(values.auth_total.toFixed(2)),
+    }));
+  }
+  return response;
+}
+
 const redirect = (location, extra = {}) => new Response(null, { status: 302, headers: { ...headers, location, ...extra } });
 const split = (token) => {
   if (typeof token !== 'string') return null;
@@ -70,6 +99,11 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   }
   async function app(request) {
     const url = new URL(request.url), current = now();
+    const tokenTiming = url.pathname === '/token' && request.method === 'POST'
+      ? { started: performance.now(), requestId: '', bodyParseMs: 0, clientAuthMs: 0, codeExchangeMs: 0, tokenSignMs: 0 }
+      : null;
+    const traceId = request.headers.get('x-request-id') || '';
+    if (tokenTiming && SAFE_REQUEST_ID.test(traceId)) tokenTiming.requestId = traceId;
     if (url.pathname === '/internal/account-block' && request.method === 'POST') {
       if (!adminSecret) return json(404, { error: 'not_found' });
       const presented = request.headers.get('authorization') || '';
@@ -142,19 +176,26 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       return redirect(target.href, { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' });
     }
     if ((url.pathname === '/token' || url.pathname === '/logout') && request.method === 'POST') {
+      const bodyStarted = performance.now();
       const params = new URLSearchParams(await request.text());
       const id = one(params, 'client_id'), client = clients[id];
+      if (tokenTiming) tokenTiming.bodyParseMs = performance.now() - bodyStarted;
       if (!client || client.id !== id) return json(401, { error: 'invalid_client' });
+      const clientAuthStarted = performance.now();
       try { await verifyClient(params, client, current); } catch { return json(401, { error: 'invalid_client' }); }
+      finally { if (tokenTiming) tokenTiming.clientAuthMs = performance.now() - clientAuthStarted; }
       let subject, accountId, object, sessionId, profile, nextSecret = random();
       if (url.pathname === '/token' && one(params, 'grant_type') === 'authorization_code') {
         const code = split(one(params, 'code')), verifier = one(params, 'code_verifier'), returnTo = one(params, 'redirect_uri');
         if (!code || !opaque.test(verifier) || !client.redirect_uris.includes(returnTo)) return json(400, { error: 'invalid_grant' });
         object = code[0]; sessionId = random();
+        const codeExchangeStarted = performance.now();
         const result = await diagnosed('session_storage_failed', async () => stateFor(object).exchangeCode({ codeDigest: await digest(code[1]), client: id, redirect: returnTo, challenge: await digest(verifier), now: current, id: sessionId, expires: current + 30 * 24 * 3600, refreshDigest: await digest(nextSecret) }));
+        if (tokenTiming) tokenTiming.codeExchangeMs = performance.now() - codeExchangeStarted;
         if (!result) return json(400, { error: 'invalid_grant' });
         subject = result.subject;
         accountId = result.accountId;
+        const profileStarted = performance.now();
         const fields = profileClaimAllowlist(client);
         if (fields.length) {
           if (typeof result.encryptedProfile !== 'string') throw new Error('profile unavailable');
@@ -164,6 +205,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
           const plain = await crypto.subtle.decrypt({name:'AES-GCM',iv:un64(iv),additionalData:aad}, refreshKey, un64(cipher));
           profile = verifiedProfile(JSON.parse(new TextDecoder().decode(plain)), fields);
         }
+        if (tokenTiming) tokenTiming.profileMs = performance.now() - profileStarted;
       } else {
         const token = one(params, 'refresh_token').split('.');
         if (token.length !== 3 || !token.every(x => opaque.test(x))) return json(400, { error: 'invalid_grant' });
@@ -190,10 +232,12 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: un64(storedIv), additionalData: aad }, refreshKey, un64(storedCipher));
         return json(200, JSON.parse(new TextDecoder().decode(plain)));
       }
+      const tokenSignStarted = performance.now();
       const access = await issueAccessToken({ key: signingKey, kid: signingKid, issuer: ORIGIN, audience: id, subject, accountId, sessionId, now: current });
+      if (tokenTiming) tokenTiming.tokenSignMs = performance.now() - tokenSignStarted;
       const response = { access_token: access, token_type: 'Bearer', expires_in: 900, refresh_token: `${object}.${sessionId}.${nextSecret}` };
       if (profile) { response.account_id = accountId; response.profile = profile; }
-      return json(200, response);
+      return finishTokenTiming(json(200, response), tokenTiming, id);
     }
     return json(404, { error: 'not_found' });
   }

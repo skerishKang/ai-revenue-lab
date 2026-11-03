@@ -352,6 +352,10 @@ def build_app():
         # #6613: the identity RPC client is pooled for the life of the host, so
         # the same shutdown hook that stops the SQLite readers closes it.
         app.router.on_shutdown.append(identity_binding.aclose)
+    if shared_login_flow is not None:
+        exchange_close = getattr(getattr(shared_login_flow, 'exchange', None), 'aclose', None)
+        if callable(exchange_close):
+            app.router.on_shutdown.append(exchange_close)
     # Optional short-lived validation results; roles/entitlements stay live.
     from .auth_validation_cache import SqliteAuthValidationCache
     cache_seconds = _nonnegative_env('PADIEM_CHAT_AUTH_CACHE_SECONDS', 30)
