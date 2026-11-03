@@ -1,0 +1,109 @@
+name: B61 BookAI CI
+
+# 북AI(apps/bookai)는 이 파일이 생기기 전까지 GitHub에서 아무 검사도 받지 않았다.
+# #6736(네온 원격 연결 제거)은 화면 코드 13개 파일을 고치고도 로컬 `node --test`로만
+# 확인하고 머지됐고, apps/bookai/tests에는 이미 25개의 시험 파일이 있었다.
+#
+# Offline and read-only: no network, no provider, no deploy, no production probe.
+# The node lane needs no install step at all — the pure tests import only the
+# standard library and the app's own files.
+#
+# The `*.browser.cjs` suites are deliberately NOT run here: they attach to a
+# fixture server that another lane must start on 127.0.0.1:18782 and read
+# B61_CHROME_PATH, so they belong to the browser QA lane, not to this job. The
+# one keyboard-focus contract this app owns gets its own job below, because that
+# one boots its own static server and needs nothing from a neighbour.
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/bookai/**'
+      - '.github/workflows/b61-bookai-ci.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/bookai/**'
+      - '.github/workflows/b61-bookai-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b61-bookai-ci-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  node-tests:
+    name: BookAI node tests and thought filter (offline)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run the tests that need no browser
+        run: |
+          set -euo pipefail
+          # Any *.test.* file that imports playwright is a browser suite and is
+          # excluded above; everything else runs, including tests added later.
+          mapfile -t PURE < <(grep -L -E "require\('playwright'\)|from 'playwright'" \
+            apps/bookai/tests/*.test.cjs apps/bookai/tests/*.test.mjs 2>/dev/null || true)
+          if [ "${#PURE[@]}" -eq 0 ]; then
+            echo "no BookAI node tests collected" >&2
+            exit 1
+          fi
+          printf 'NODE_TEST=%s\n' "${PURE[@]}"
+          node --test "${PURE[@]}"
+          node apps/bookai/test_thought_filter.cjs
+          echo 'BOOKAI_NODE_TESTS=PASS'
+          echo 'BROWSER_CJS_SUITES=NOT_RUN (need the fixture server on 127.0.0.1:18782 owned by another lane)'
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'NETWORK_CALLS=0'
+
+  keyboard-focus:
+    name: BookAI TODAY button keyboard focus (Chromium)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact event head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pytest and the pinned Playwright
+        run: python -m pip install --quiet --disable-pip-version-check 'pytest==8.4.2' 'playwright==1.55.0'
+
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b61-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
+
+      - name: Install Chromium runtime
+        run: python -m playwright install --with-deps --only-shell chromium
+
+      - name: TODAY button reveals under keyboard focus and Enter activates it
+        run: |
+          set -euo pipefail
+          python -m pytest -q apps/bookai/tests/test_today_button_keyboard_261103.py
+          echo 'BOOKAI_TODAY_KEYBOARD=PASS'
+          echo 'PRODUCTION_MUTATION=0'

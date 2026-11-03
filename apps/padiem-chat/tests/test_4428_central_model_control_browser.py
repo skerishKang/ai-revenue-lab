@@ -231,7 +231,11 @@ def test_admin_brand_and_icons_match_chat_glass_without_ui_regressions(width):
             page.get_by_role("heading", name="모델과 사용 위치").wait_for()
             page.locator("#modelCount").get_attribute("id")
             assert page.locator(".brand-symbol").inner_text() == "P"
-            assert page.locator(".nav-link .nav-icon svg").count() == 3
+            # 4 nav links, not the 3 this file was written against: #6682 (bbfb26f87,
+            # 2026-11-02) added the read-only 키 슬롯 상태 board with its own screen
+            # (credential-slots.html) and this same line-icon style, so the entry is
+            # an intentional admin destination rather than a stray control.
+            assert page.locator(".nav-link .nav-icon svg").count() == 4
             assert page.locator(".route-icon svg").count() == 3
             assert page.locator(".target-grid .product-icon").count() == 5
             assert page.locator("#helpBtn svg, #refreshBtn svg").count() == 2

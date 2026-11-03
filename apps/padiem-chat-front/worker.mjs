@@ -26,6 +26,11 @@ import { errorPageHtml, wantsHtml } from "./error-copy.mjs";
 const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const DEFAULT_HEALTH_TTL_MS = 10000;
 const DEFAULT_TIMEOUT_MS = 8000;
+// #6735: the orchestration answer is one buffered JSON document, so its deadline
+// covers the whole model pipeline. The generic 8s write window is far too short
+// for it; 60s is the CTO's fixed ceiling, and a configured ORCHESTRATION_TIMEOUT_MS
+// still takes precedence.
+const DEFAULT_ORCHESTRATION_TIMEOUT_MS = 60000;
 const DEFAULT_API_READ_TIMEOUT_MS = 30000;
 // Resumable chunked uploads (tus, /api/projects/*/files/tus) hold the request
 // open while a ≤90MB chunk drains to COM2 — a healthy upload must not die on
@@ -219,14 +224,14 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     const streaming = /text\/event-stream/i.test(request.headers.get("accept") || "") ||
       (request.headers.get("upgrade") || "").toLowerCase() === "websocket";
     const apiRead = !isWrite && url.pathname.startsWith("/api/") && !streaming;
-    // #6460 4-2: the orchestration answer is one buffered JSON document, so
-    // this deadline is the WHOLE request — the model pipeline behind it can
-    // legitimately run past the generic write window (measured 504 at ~13.5s
-    // on 2026-11-03). 120s for the measurement window; the final ceiling is
-    // the CTO's call once the numbers are in.
+    // #6460 4-2 / #6735: the orchestration answer is one buffered JSON document,
+    // so this deadline is the WHOLE request — the model pipeline behind it can
+    // legitimately run past the generic write window (measured 504 at ~13.5s and
+    // 11.2s worst case on 2026-11-03). The default is the CTO's 60s ceiling; a
+    // configured ORCHESTRATION_TIMEOUT_MS still wins.
     const orchestration = request.method === "POST" && url.pathname === "/api/orchestration";
     const timeoutMs = orchestration
-      ? numeric(env.ORCHESTRATION_TIMEOUT_MS, DEFAULT_TIMEOUT_MS)
+      ? numeric(env.ORCHESTRATION_TIMEOUT_MS, DEFAULT_ORCHESTRATION_TIMEOUT_MS)
       : appsAI
       ? numeric(env.APPS_AI_TIMEOUT_MS, 65000)
       : apiRead ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS)

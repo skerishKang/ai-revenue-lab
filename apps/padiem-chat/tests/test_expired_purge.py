@@ -17,11 +17,14 @@ from datetime import datetime, timezone
 
 import pytest
 
+import app.expired_purge as expired_purge
+
 from app.d1_sqlite import SqliteD1, connect
 from app.expired_purge import (
     DEFAULT_BATCH,
     DEFAULT_GRACE_DAYS,
     STATUS_PREFIX,
+    main,
     purge_expired_rows,
     run_once,
 )
@@ -57,6 +60,13 @@ CREATE TABLE claw_web_xlsx_selections (
     selection_ref TEXT PRIMARY KEY, expires_at TEXT NOT NULL);
 CREATE TABLE claw_web_xlsx_p01_requests (
     request_ref TEXT PRIMARY KEY, pause_expires_at TEXT);
+-- Receipts cite their parent with NO ACTION: the purge must leave that pair.
+CREATE TABLE claw_web_xlsx_p01_decision_receipts (
+    request_ref TEXT PRIMARY KEY,
+    FOREIGN KEY (request_ref) REFERENCES claw_web_xlsx_p01_requests(request_ref));
+CREATE TABLE claw_web_xlsx_quote_edit_receipts (
+    selection_ref TEXT PRIMARY KEY,
+    FOREIGN KEY (selection_ref) REFERENCES claw_web_xlsx_selections(selection_ref));
 CREATE TABLE claw_web_xlsx_quote_write_pauses (
     selection_ref TEXT PRIMARY KEY, pause_expires_at TEXT);
 CREATE TABLE lovetree_login_handoffs (
@@ -298,3 +308,69 @@ def test_the_default_batch_is_bounded():
 # This module is storage-only and platform-independent: the SQLite facade it
 # reuses behaves identically on Windows and POSIX, so no platform skip marker
 # applies. (Windows-only tests elsewhere skip on sys.platform != "win32".)
+
+# ---------------------------------------------------------------------------
+# (g) A surviving receipt keeps its parent: NO ACTION foreign keys stay valid.
+# ---------------------------------------------------------------------------
+
+
+async def test_rows_a_surviving_receipt_cites_are_left_alone(binding):
+    # 11-03 the real pass stopped here: deleting an expired parent that a
+    # receipt still cites raised FOREIGN KEY constraint failed, and every table
+    # after it in the run was skipped.
+    for ref in ("cited", "free"):
+        await binding.prepare(
+            "INSERT INTO claw_web_xlsx_selections (selection_ref, expires_at) "
+            "VALUES (?, ?)"
+        ).bind(ref, EXPIRED_PAST_GRACE).run()
+        await binding.prepare(
+            "INSERT INTO claw_web_xlsx_p01_requests (request_ref, pause_expires_at) "
+            "VALUES (?, ?)"
+        ).bind(ref, EXPIRED_PAST_GRACE).run()
+    await binding.prepare(
+        "INSERT INTO claw_web_xlsx_quote_edit_receipts (selection_ref) VALUES (?)"
+    ).bind("cited").run()
+    await binding.prepare(
+        "INSERT INTO claw_web_xlsx_p01_decision_receipts (request_ref) VALUES (?)"
+    ).bind("cited").run()
+
+    counts = await purge_expired_rows(binding, grace_days=DEFAULT_GRACE_DAYS, now=NOW)
+
+    assert counts["claw_web_xlsx_selections"] == 1
+    assert counts["claw_web_xlsx_p01_requests"] == 1
+    assert await _count(binding, "claw_web_xlsx_selections") == 1
+    assert await _count(binding, "claw_web_xlsx_p01_requests") == 1
+    assert await _count(binding, "claw_web_xlsx_quote_edit_receipts") == 1
+
+    # The guard is in the counting mode too: nothing cited is promised away.
+    counted = await purge_expired_rows(
+        binding, grace_days=DEFAULT_GRACE_DAYS, dry_run=True, now=NOW
+    )
+    assert counted["claw_web_xlsx_selections"] == 0
+    assert counted["claw_web_xlsx_p01_requests"] == 0
+
+
+# ---------------------------------------------------------------------------
+# (h) A failed pass tells systemd so instead of exiting 0.
+# ---------------------------------------------------------------------------
+
+
+def test_a_refused_pass_exits_non_zero(tmp_path, monkeypatch):
+    monkeypatch.delenv("PADIEM_CHAT_CPYTHON_HOST", raising=False)
+    monkeypatch.delenv("PADIEM_LOCAL_DEV", raising=False)
+    monkeypatch.setenv("PADIEM_CHAT_LOCAL_DATA_DIR", str(tmp_path / "data"))
+    assert main(["--once"]) == 2
+
+
+def test_the_exit_status_matches_the_reported_state(monkeypatch):
+    # A failed pass must not report success to systemd, and a good one must not
+    # report failure. The state line is injected: the host's own empty-database
+    # path is a separate matter.
+    for status_line, expected in (
+        (STATUS_PREFIX + "ok detail={}", 0),
+        (STATUS_PREFIX + "dry_run detail={}", 0),
+        (STATUS_PREFIX + "ERROR reason=purge_failed", 1),
+        (STATUS_PREFIX + "STORAGE_ERROR reason=database_unavailable", 1),
+    ):
+        monkeypatch.setattr(expired_purge, "run_once", lambda **_kw: status_line)
+        assert main(["--once"]) == expected, status_line
