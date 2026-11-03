@@ -1,0 +1,25 @@
+name: PADIEM live scenario simulation
+
+on:
+  workflow_dispatch:
+
+# 시험용 계정 준비 뒤 켬. 자동 일정은 현재 비활성 상태로 둔다.
+# on:
+#   schedule:
+#     - cron: "0 19 * * *"
+
+jobs:
+  live-scenarios:
+    runs-on: [self-hosted, linux, x64, padiem-com2-ci]
+    timeout-minutes: 30
+    env:
+      PADIEM_LIVE_BASE_URL: https://chat.padiem.net
+      # PADIEM_LIVE_STORAGE_STATE is inherited from the runner's local environment.
+      # Never put the file or its contents in the repository or GitHub Secrets.
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run opted-in browser scenarios
+        run: python -m pytest -c pyproject.toml tests/live_scenarios -m live -q
