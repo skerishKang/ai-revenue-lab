@@ -39,6 +39,7 @@ import re
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any, Callable
@@ -284,7 +285,15 @@ def main(argv: list[str] | None = None) -> int:
     effective_tier = tier or PRODUCT_TIER
     requested = declared_tier_model(effective_tier)
     detail: dict[str, Any] = {"status": 0, "error_code": "origin_not_https"}
-    if not args.base_url.startswith("https://"):
+    # Loopback http://127.0.0.1[:port] is allowed for the COM2 self-hosted
+    # runner, which shares a host with the COM2 B14 service. Everything else
+    # must still be HTTPS.
+    parsed = urllib.parse.urlsplit(args.base_url)
+    is_loopback = (
+        parsed.scheme == "http"
+        and parsed.hostname in ("127.0.0.1", "localhost", "::1")
+    )
+    if not args.base_url.startswith("https://") and not is_loopback:
         print(f"REAL_MODEL_CALL=FAIL model={requested or effective_tier}")
         if args.report:
             print(f"GRADE_SMOKE tier={effective_tier} status=0 "
