@@ -81,6 +81,12 @@
 .library:hover .today-entry,.library.active:hover .today-entry{opacity:1;pointer-events:auto}
 .motion-control{opacity:0;pointer-events:none;transition:opacity .2s}
 .library:hover .motion-control,.library.active:hover .motion-control{opacity:1;pointer-events:auto}
+/* A keyboard user never hovers, so the hover-only reveal left these controls
+   focusable but invisible: Tab reached them and Enter fired a button nobody could
+   see. Focus reveals them exactly the way hover does. Scoped to the control, so an
+   unrelated tab stop elsewhere on the shelf cannot light up the whole group. */
+.today-entry:focus-within,.today-entry:focus-visible{opacity:1;pointer-events:auto}
+.motion-control:focus-within,.motion-control:focus-visible{opacity:1;pointer-events:auto}
 .shelf-label{display:none}
 
 /* --- Top-right: compact control group --- */
