@@ -128,8 +128,9 @@ class GeneratedTutorials(unittest.TestCase):
         self.assertIn(generator.PLACEHOLDER, text)
         self.assertNotIn("/step-", text)
         self.assertNotIn("](", text)
-        self.assertIn("아직 촬영하지 않았습니다", text)
-        # 05 steps 1-2 are recorded; step 3 (취소) is still a slot.
+        self.assertNotIn("아직 촬영하지 않았습니다", text)
+        self.assertIn("asset://chat-tutorial/03-document-work/video.webm", text)
+        # 05 steps 1-2 ship images; step 3 (탈퇴 실행) is covered by the video.
         five = self.text["05-account-deletion.md"]
         self.assertIn("step-01.png", five)
         self.assertIn("step-02.png", five)
@@ -227,7 +228,7 @@ class CommittedPages(unittest.TestCase):
         page = (PAGES / "03-document-work.html").read_text(encoding="utf-8")
         self.assertIn(generator.PLACEHOLDER, page)
         self.assertNotIn("/step-", page)
-        self.assertIn("아직 촬영하지 않았습니다", page)
+        self.assertNotIn("아직 촬영하지 않았습니다", page)
 
     def test_recorded_scenes_embed_versioned_video_and_captions(self):
         for key in sorted(generator.MEDIA_SCENES):
