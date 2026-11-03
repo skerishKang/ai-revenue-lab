@@ -281,6 +281,16 @@ body.smr-theme-dark .memory-rail .sheet-close:hover { color: #fffdf8 !important;
     min-height: 44px !important;
     touch-action: manipulation;
   }
+  /* 2026-11-04: the sheet-close measured 43.999969px in the touch-target
+     audit — a sub-pixel layout rounding under the rail's fractional height.
+     Pin its own box to the full 44px so the audit passes without rounding. */
+  .memory-rail .sheet-close {
+    box-sizing: border-box !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
 }
 
 /* 2026-11-04: 떠 있는 책·자료·＋ 버튼과 아래 정보 줄의 겹침 정리.
