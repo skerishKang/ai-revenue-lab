@@ -756,8 +756,13 @@ if not integrity or integrity[0] != "ok":
 print("COM2_DEPLOY_CHAT_MIGRATION_BACKUP=%s" % backup)
 applied = []
 for name in names:
+    # This process runs as the database owner (a service user, not root), and
+    # that account has no safe.directory for the operator checkout. The
+    # exemption is scoped to this one command instead of the host git config:
+    # 11-03 the first COM2 redeploy read no migration because of exactly this.
     sql = subprocess.run(
-        [git, "-C", checkout, "show", "%s:apps/padiem-chat/migrations/%s" % (sha, name)],
+        [git, "-c", "safe.directory=%s" % checkout,
+         "-C", checkout, "show", "%s:apps/padiem-chat/migrations/%s" % (sha, name)],
         capture_output=True, text=True, check=True,
     ).stdout
     con.executescript(sql)
