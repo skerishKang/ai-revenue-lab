@@ -426,7 +426,12 @@ def test_a_read_bound_above_the_old_envelope_reaches_the_port_unchanged():
 def test_pending_restart_keeps_a_bound_above_the_old_envelope(tmp_path):
     raw = b"b" * 64
     port = _ReadPort(result=raw)
-    executor = _executor(port, pending_dir=str(tmp_path))
+    # The submit below must not reach the real Chat origin: a live 403 would
+    # take the quarantine path and the point of this test is the held result.
+    executor = _executor(
+        port, pending_dir=str(tmp_path),
+        transport=lambda *_: (503, {"ok": False}),
+    )
     dispatch = _dispatch(max_bytes=64_000_000)
     outcome = executor.execute(dispatch)
     assert outcome.body == raw
