@@ -54,6 +54,7 @@ from .local_agent_mesh_connection_route import (
     oracle_route,
 )
 from .local_agent_meshcentral_private_reader import (
+    _MESHCTRL_LOGINKEY_BOOTSTRAP,
     _MESHCTRL_STDIN_BOOTSTRAP,
     _PASSWORD_MARKER,
 )
@@ -404,6 +405,9 @@ class MeshCentralDevicePresence:
         mesh_url: str,
         login_user: str,
         password_provider: Callable[[], str],
+        # A deployment may hand this probe the server login-key file; with 2FA on
+        # the account a password is refused, and the key needs none.
+        login_key_file: str | None = None,
         command_runner: Optional[Callable[..., Any]] = None,
         node_executable: str = "node",
         timeout_seconds: int = 30,
@@ -416,12 +420,17 @@ class MeshCentralDevicePresence:
             raise ContractError("the MeshCentral operator account is required")
         if not callable(password_provider):
             raise ContractError("the password provider must be callable")
+        if login_key_file is not None and (
+            not isinstance(login_key_file, str) or not login_key_file.strip()
+        ):
+            raise ContractError("the MeshCentral login-key file must be a path")
         if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, int):
             raise ContractError("timeout_seconds must be an integer")
         self._meshctrl_js = meshctrl_js
         self._mesh_url = mesh_url
         self._login_user = login_user
         self._password_provider = password_provider
+        self._login_key_file = login_key_file
         self._command_runner = command_runner
         self._node_executable = node_executable
         self._timeout_seconds = timeout_seconds
@@ -441,32 +450,42 @@ class MeshCentralDevicePresence:
                     timeout=timeout,
                 )
 
+        bootstrap = (
+            _MESHCTRL_LOGINKEY_BOOTSTRAP
+            if self._login_key_file
+            else _MESHCTRL_STDIN_BOOTSTRAP
+        )
         argv = [
             self._node_executable,
             "-e",
-            _MESHCTRL_STDIN_BOOTSTRAP,
+            bootstrap,
             self._meshctrl_js,
             "listdevices",
             "--url",
             self._mesh_url,
             "--loginuser",
             self._login_user,
-            "--loginpass",
-            _PASSWORD_MARKER,
         ]
-        password = self._password_provider()
-        if (
-            not isinstance(password, str)
-            or not password
-            or "\n" in password
-            or "\r" in password
-        ):
-            raise ContractError(
-                "the protected MeshCentral operator credential is invalid"
+        if self._login_key_file:
+            # 2FA stays on: the client signs in with the server login key, and
+            # no secret is substituted on argv or written to standard input.
+            argv.extend(["--loginkeyfile", self._login_key_file])
+            completed = runner(argv, input=None, timeout=self._timeout_seconds)
+        else:
+            argv.extend(["--loginpass", _PASSWORD_MARKER])
+            password = self._password_provider()
+            if (
+                not isinstance(password, str)
+                or not password
+                or "\n" in password
+                or "\r" in password
+            ):
+                raise ContractError(
+                    "the protected MeshCentral operator credential is invalid"
+                )
+            completed = runner(
+                argv, input=password + "\n", timeout=self._timeout_seconds
             )
-        completed = runner(
-            argv, input=password + "\n", timeout=self._timeout_seconds
-        )
         stdout = getattr(completed, "stdout", "") or ""
         stderr = getattr(completed, "stderr", "") or ""
         return stdout if isinstance(stdout, str) else str(stdout) + (

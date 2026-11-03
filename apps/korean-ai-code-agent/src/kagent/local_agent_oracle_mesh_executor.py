@@ -2325,6 +2325,9 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
       ORACLE_MESH_MESHCTRL_JS       path to the official meshctrl.js
       ORACLE_MESH_LOGIN_USER        MeshCentral operator account
       ORACLE_MESH_PASSWORD_FILE     mode-0600 file holding the operator password
+      ORACLE_MESH_LOGIN_KEY_FILE    optional mode-0600 file holding the MeshCentral
+                                    server login key; when set, presence signs in with
+                                    it instead of the password (2FA stays on)
       ORACLE_MESH_URL               optional, default wss://127.0.0.1:4443
       ORACLE_MESH_WORK_DIR          optional scratch directory
       ORACLE_MESH_POLL_SECONDS      optional interval after a refused channel, default 5
@@ -2375,6 +2378,11 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
                 mesh_url=mesh_url,
                 login_user=need("ORACLE_MESH_LOGIN_USER"),
                 password_provider=password_provider,
+                # 2FA stays on the operator account: when the deployment names a
+                # login-key file, presence signs in with it instead of a password.
+                login_key_file=(
+                    env.get("ORACLE_MESH_LOGIN_KEY_FILE", "").strip() or None
+                ),
             )
             beat = _PresenceBeat(presence, IDLE_POLL_BASE_SECONDS)
 
