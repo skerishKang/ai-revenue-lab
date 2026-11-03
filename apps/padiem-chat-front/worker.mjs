@@ -204,7 +204,12 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
 
   return async function handle(request, env) {
     const url = new URL(request.url);
-    const staticPath = request.method === "GET" || request.method === "HEAD";
+    // MCP OAuth endpoints and metadata are dynamic, no-store responses. Keep
+    // them out of the static asset/cache branch and give them the API-read
+    // budget (DB + redirect work) instead of the generic proxy deadline.
+    const oauthRequest = url.pathname.startsWith("/oauth/") ||
+      url.pathname.startsWith("/.well-known/oauth-");
+    const staticPath = (request.method === "GET" || request.method === "HEAD") && !oauthRequest;
     if (staticPath && env.ASSETS && (url.pathname === "/" || /^\/[^/]+\.(?:js|css|png|jpg|jpeg|svg|ico|webp|woff2?)$/i.test(url.pathname) || url.pathname.startsWith("/static/"))) {
       const asset = await env.ASSETS.fetch(request);
       if (asset.status !== 404) return withStaticCache(asset);
@@ -230,7 +235,9 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     // 11.2s worst case on 2026-11-03). The default is the CTO's 60s ceiling; a
     // configured ORCHESTRATION_TIMEOUT_MS still wins.
     const orchestration = request.method === "POST" && url.pathname === "/api/orchestration";
-    const timeoutMs = orchestration
+    const timeoutMs = oauthRequest
+      ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS)
+      : orchestration
       ? numeric(env.ORCHESTRATION_TIMEOUT_MS, DEFAULT_ORCHESTRATION_TIMEOUT_MS)
       : appsAI
       ? numeric(env.APPS_AI_TIMEOUT_MS, 65000)

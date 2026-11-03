@@ -180,11 +180,13 @@ WWW-Authenticate: Bearer realm="padiem-mcp",
 3. 공통 로그인(`PADIEM_CHAT_SHARED_LOGIN_ENABLED=true`)이 켜져 있는지 확인한다. padiem-auth 재배포·키 재생성은 하지 않는다.
 4. Claude 웹: 사용자 지정 커넥터에서 `/api/mcp` 주소를 넣고 OAuth 로그인을 선택한다. '자동 등록'(DCR)을 사용한다. ChatGPT 웹: 개발자 모드 커넥터에서 같은 주소와 OAuth를 선택한다.
 5. 배포 뒤 메타데이터·401 challenge·DCR·승인·토큰·갱신·폐기를 실제 커넥터로 한 번 확인한다. 이 레인은 배포·운영 접속을 하지 않았다.
+6. 앞단 `apps/padiem-chat-front`(Cloudflare Worker)를 재배포한다. `chat.padiem.net`의 실제 진입점이 이 Worker다. OAuth 경로는 원래도 컴2로 넘어갔지만(정적 분기는 최상위 단일 파일과 `/static/`만 잡는다) 기본 8초 마감만 썼고, worker.mjs의 새 판정에서 정적 분기를 명시적으로 피해 `API_READ_TIMEOUT_MS`(30초)를 쓴다. 앞단을 재배포하지 않으면 토큰 발급·인가 호출이 운영에서 여전히 8초에 잘린다.
 
 ### 11.8 검증
 
 - OAuth 시험 12건: 메타데이터·401 challenge, DCR 검증/secret, 동의 화면·PC 목록, 전체 PKCE 코드·토큰·갱신 회전·폐기·PAT 회귀, 코드 재사용/오류 verifier/잘못된 redirect, confidential secret, 타 사용자 PC 거부, 만료·다른 resource 거부, 로그인 복귀, ko/en 문구.
 - MCP·로그인·삭제·정리·도움말 묶음 **223 passed**(이 기계 최종 광범위 실행).
+- 앞단 회귀: `node --test apps/padiem-chat-front/test/*.test.mjs` **65 passed**(OAuth 경로 통과·no-store·TIMEOUT 예산을 다루는 새 시험 7건 포함).
 - padiem-auth 코드·키·클라이언트 설정 변경 없음. 운영 서버 접속·배포·PR 없음.
 
 ### 11.9 남은 것
