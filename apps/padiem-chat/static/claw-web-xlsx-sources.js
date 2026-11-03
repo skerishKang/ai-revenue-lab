@@ -107,9 +107,18 @@
     // PDF·MD와 같은 판정: 서버의 pairings 기록만이 연결을 말할 수 있다.
     if (window.PadiemAuthGate?.authenticated() === false) return null;
     try {
-      const response = await fetch(PC_PAIRINGS, {
+      let response = await fetch(PC_PAIRINGS, {
         credentials: "same-origin", cache: "no-store", headers: { Accept: "application/json" },
       });
+      // #6460 4-2: the shared access cookie can expire under the screen's
+      // refresh tick; one silent refresh and one retry, never a loop.
+      if (response.status === 401 && window.PadiemSharedSession) {
+        if (await window.PadiemSharedSession.refreshOnce()) {
+          response = await fetch(PC_PAIRINGS, {
+            credentials: "same-origin", cache: "no-store", headers: { Accept: "application/json" },
+          });
+        }
+      }
       if (!response.ok) return null;
       const body = await response.json().catch(() => null);
       const links = body && Array.isArray(body.links) ? body.links : [];

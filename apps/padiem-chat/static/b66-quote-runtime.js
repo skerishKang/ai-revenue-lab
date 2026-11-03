@@ -292,7 +292,14 @@
   async function pcLinkedNow() {
     if (window.PadiemAuthGate?.authenticated() === false) return null;
     try {
-      const response = await nativeFetch(PC_PAIRINGS_PATH, { credentials: "same-origin", cache: "no-store", headers: { "Accept": "application/json" } });
+      let response = await nativeFetch(PC_PAIRINGS_PATH, { credentials: "same-origin", cache: "no-store", headers: { "Accept": "application/json" } });
+      // #6460 4-2: the shared access cookie can expire under the screen's
+      // refresh tick; one silent refresh and one retry, never a loop.
+      if (response.status === 401 && window.PadiemSharedSession) {
+        if (await window.PadiemSharedSession.refreshOnce()) {
+          response = await nativeFetch(PC_PAIRINGS_PATH, { credentials: "same-origin", cache: "no-store", headers: { "Accept": "application/json" } });
+        }
+      }
       if (!response.ok) return null;
       const body = await response.json().catch(() => null);
       const links = body && Array.isArray(body.links) ? body.links : [];

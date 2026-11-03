@@ -280,6 +280,8 @@ test("front vars match the verified non-secret production contract", () => {
     HEALTH_TTL_MS: "10000",
     UPSTREAM_TIMEOUT_MS: "8000",
     API_READ_TIMEOUT_MS: "30000",
+    // Measurement window value (#6460 4-2); the CTO sets the final ceiling.
+    ORCHESTRATION_TIMEOUT_MS: "120000",
   };
   const config = readFileSync(join(HERE, "..", "wrangler.toml"), "utf8");
   const sections = config.split(/^\[vars\]\s*$/m);
