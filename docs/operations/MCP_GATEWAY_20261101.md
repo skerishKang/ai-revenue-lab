@@ -149,7 +149,7 @@ Claw `OutputStore`에 저장하고, `pc_shell_read`는 핸들을 소유자·subj
 묶어 바이트 범위로 읽는다.
 
 MCP 전용 작업 테이블이나 `%LOCALAPPDATA%\\padiem-mcp-jobs` 파일은 만들지 않는다.
-Migration **098_mcp_common_job_receipts.sql**은 기존 `padiem_mcp_audit`에
+Migration **099_mcp_common_job_receipts.sql**은 기존 `padiem_mcp_audit`에
 `job_receipt_sha256`만 추가한다. 원시 job ID·명령·출력은 MCP 감사 DB에 남지 않는다.
 계정 삭제는 기존 `padiem_mcp_audit` 사용자 행을 지우고, Queue의
 `delete_account_pc_data`는 공통 `oracle_mesh_dispatch` identity를 정리한다.

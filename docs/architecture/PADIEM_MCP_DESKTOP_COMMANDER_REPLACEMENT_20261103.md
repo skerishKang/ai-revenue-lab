@@ -46,9 +46,9 @@
 
 - 기존 `padiem_mcp_audit` 행에 도구 이름·요청 digest·상태·승인 ID를 남긴다.
 - `094_mcp_shell_audit.sql`이 `exit_code`, `duration_ms`, `output_bytes`, `output_truncated` nullable 컬럼을 추가한다. 명령 본문과 출력 내용은 저장하지 않는다.
-- `098_mcp_common_job_receipts.sql`은 `padiem_mcp_audit.job_receipt_sha256`과 소유자 인덱스만 추가한다. 원시 Claw job ID·명령·출력은 MCP 감사 DB에 넣지 않는다. 계정 삭제의 기존 `padiem_mcp_audit` 정리와 Queue `delete_account_pc_data`의 공통 dispatch 정리를 재사용한다.
+- `099_mcp_common_job_receipts.sql`은 `padiem_mcp_audit.job_receipt_sha256`과 소유자 인덱스만 추가한다. 원시 Claw job ID·명령·출력은 MCP 감사 DB에 넣지 않는다. 계정 삭제의 기존 `padiem_mcp_audit` 정리와 Queue `delete_account_pc_data`의 공통 dispatch 정리를 재사용한다.
 - `padiem_chat.request`의 `mcp_operation` 로그에도 같은 숫자 필드만 넣는다. `request_digest`는 해시다. 명령·출력은 로그에 없다.
-- 배포 전에 migration 094·098을 적용해야 한다. 요청 감사가 실패하면 실행하지 않으며, 완료 audit에서 receipt를 저장하지 못하면 해당 run의 cancel을 요청한다.
+- 배포 전에 migration 094·099를 적용해야 한다. 요청 감사가 실패하면 실행하지 않으며, 완료 audit에서 receipt를 저장하지 못하면 해당 run의 cancel을 요청한다.
 
 ## 5. PC 실행 수단 판정
 
@@ -196,7 +196,7 @@ WWW-Authenticate: Bearer realm="padiem-mcp",
 
 - 네 도구(`pc_shell`, `pc_shell_start/read/stop`)가 기존 MCP token·계정·기기 adapter 검증 뒤 Claw `RemoteBackgroundJobs`와 공통 `oracle_mesh_dispatch`를 사용한다. 반환되는 `job_id`는 동일한 `dsp_<32hex>` dispatch ID다.
 - 완료 출력은 공통 dispatch 원본의 SHA-256·바이트 수를 확인하고 Claw `OutputStore`에 저장한다. 이후 offset/length 읽기는 동일한 소유자·subject·run·device 범위 핸들을 사용한다. 취소는 공통 run 취소 API를 쓴다.
-- MCP 작업 테이블·PC별 MCP 작업 파일은 없다. migration **098**은 기존 `padiem_mcp_audit`에 토큰/기기 묶음 `job_receipt_sha256`만 추가한다. 이 행은 기존 account deletion 목록에서 지워지고 common dispatch는 Queue의 `delete_account_pc_data`가 정리한다.
+- MCP 작업 테이블·PC별 MCP 작업 파일은 없다. migration **099**은 기존 `padiem_mcp_audit`에 토큰/기기 묶음 `job_receipt_sha256`만 추가한다. 이 행은 기존 account deletion 목록에서 지워지고 common dispatch는 Queue의 `delete_account_pc_data`가 정리한다.
 - `PADIEM_MCP_PC_SHELL_ENABLED` off면 네 도구가 모두 숨고 직접 호출은 `tool_not_enabled`다. 단, 이미 시작한 소유 작업의 stop만 허용한다. 사전 실행 확인 영수증은 추가하지 않는다.
 - Edge `/api/mcp`는 `MCP_TIMEOUT_MS` 기본 180초이며 OAuth 30초와 orchestration/답변 60초와 분리된다. `pc_shell.wait_seconds` 기본 120·최대 150초는 응답 대기만 제한한다. 실행 프로세스에는 MCP 대기 시간 제한을 전달하지 않는다.
 - COM2 SQLite `mesh_device_presence`의 Mesh receipt가 180초를 넘으면 선택 PC를 offline으로 보고 시작을 거부해 `선택한 PC가 꺼져 있음`을 반환한다. MCP token에 묶인 PC 대신 다른 PC를 고르지 않는다.

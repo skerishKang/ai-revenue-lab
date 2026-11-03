@@ -5,6 +5,7 @@ import asyncio
 from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
+import sqlite3
 from types import SimpleNamespace
 
 import pytest
@@ -22,10 +23,30 @@ from test_5222_account_model_selection import BASE, build_app, client_for, seed_
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "085_mcp_gateway.sql"
 SHELL_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "094_mcp_shell_audit.sql"
 OAUTH_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "095_mcp_oauth.sql"
-COMMON_JOB_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "098_mcp_common_job_receipts.sql"
+COMMON_JOB_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "099_mcp_common_job_receipts.sql"
 NOW = datetime(2026, 11, 1, tzinfo=timezone.utc)
 DEVICE = "node//test-owner-pc"
 FAKE_SECRET = "fixed-test-material-not-a-live-credential"
+
+
+def test_099_receipt_migration_runs_after_097_without_intermediate_file(tmp_path):
+    from app.local_cpython import LOCAL_LEDGER_TABLE, apply_migrations
+
+    migrations = tmp_path / "migrations"
+    migrations.mkdir()
+    (migrations / "097_seed.sql").write_text(
+        "CREATE TABLE padiem_mcp_audit (user_id TEXT, token_id TEXT, device_id TEXT);\n",
+        encoding="utf-8",
+    )
+    (migrations / COMMON_JOB_MIGRATION.name).write_text(
+        COMMON_JOB_MIGRATION.read_text(encoding="utf-8"), encoding="utf-8",
+    )
+    db = sqlite3.connect(":memory:")
+    assert apply_migrations(db, migrations) == 2
+    columns = {row[1] for row in db.execute("PRAGMA table_info(padiem_mcp_audit)")}
+    applied = {row[0] for row in db.execute(f"SELECT name FROM {LOCAL_LEDGER_TABLE}")}
+    assert "job_receipt_sha256" in columns
+    assert applied == {"097_seed.sql", "099_mcp_common_job_receipts.sql"}
 
 
 class Pairing:
