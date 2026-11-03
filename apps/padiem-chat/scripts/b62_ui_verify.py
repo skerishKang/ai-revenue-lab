@@ -9,7 +9,8 @@ Run against a locally served padiem-chat instance:
 Checks (maps to the B62 split-search task tests 1-5):
   1. Collapse button sits at the right end of the brand row; collapse/expand works.
   2. New Chat + Search share the second row; no redundant mode hint text.
-  3. The removed manual web-search/deep-research controls are absent from the DOM.
+  3. A left search click does NOT change the center web card's status text.
+  4. The composer web-search button still toggles the center card; card still exists.
   5. Narrow viewport keeps the layout intact (no overlap / horizontal scroll).
 """
 from __future__ import annotations
@@ -85,15 +86,37 @@ async def main() -> None:
         await page.wait_for_timeout(350)
         results["expand_restores_sidebar"] = await page.locator("#sidebar").is_visible()
 
-        # ---- 대표 결정 11-03: 수동 검색 버튼 제거 -------------------------
-        # 이전 카드/토글 검증은 제거된 UI를 대상으로 하므로, 세 컨트롤이 DOM에
-        # 없음을 확인하는 의도로 바꾼다.
-        for identifier in (
-            "webSearchStarterButton",
-            "webSearchButton",
-            "deepResearchButton",
-        ):
-            results[f"{identifier}_absent"] = await page.locator(f"#{identifier}").count() == 0
+        # ---- Fix 3/4: center web card decoupling --------------------------
+        starter = page.locator("#webSearchStarterButton")
+        results["center_card_exists"] = await starter.count() == 1
+        card_visible = await starter.is_visible()
+        results["center_card_visible"] = card_visible
+        card_status = starter.locator("small")
+        if card_visible:
+            before = (await card_status.inner_text()).strip()
+            # The button is disabled by design; dispatch a synthetic click to
+            # prove no handler changes the card either.
+            await search.dispatch_event("click")
+            await page.wait_for_timeout(300)
+            after_search_click = (await card_status.inner_text()).strip()
+            results["card_text_unchanged_after_search_click"] = before == after_search_click
+            results["card_text_before"] = before
+            # composer web search still toggles it
+            web_toggle = page.locator("#webSearchButton")
+            await web_toggle.click()
+            await page.wait_for_timeout(300)
+            after_web_click = (await card_status.inner_text()).strip()
+            results["card_text_after_web_toggle"] = after_web_click
+            results["web_toggle_still_works"] = after_web_click != before
+            # left search click again still inert while web mode active
+            await search.dispatch_event("click")
+            await page.wait_for_timeout(300)
+            results["card_text_stable_second_search_click"] = (
+                (await card_status.inner_text()).strip() == after_web_click
+            )
+            # toggle web mode back off for a clean final state
+            await web_toggle.click()
+            await page.wait_for_timeout(200)
 
         # ---- Screenshot 1: desktop, sidebar + center card ------------------
         await page.screenshot(path=f"{OUT_DIR}/b62_desktop_sidebar.png", full_page=False)

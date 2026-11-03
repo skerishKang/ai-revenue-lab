@@ -158,11 +158,34 @@
   // happened, so the card can never show a step that did not occur.
   const taskEventCatalog = Object.freeze({
     request_sent: Object.freeze({ ko: "요청을 전달했어요.", en: "Your request was sent." }),
+    request_accepted: Object.freeze({ ko: "요청을 접수했어요.", en: "Request accepted." }),
+    question_checked: Object.freeze({ ko: "질문을 확인했어요.", en: "Question checked." }),
+    reference_context: Object.freeze({ ko: "참고 정보를 확인했어요.", en: "Reference context checked." }),
+    planning: Object.freeze({ ko: "응답 방향을 정리했어요.", en: "Response plan prepared." }),
+    tool_check: Object.freeze({ ko: "도구를 확인했어요.", en: "Tool availability checked." }),
+    tool_started: Object.freeze({ ko: "도구 작업을 시작했어요.", en: "Tool work started." }),
+    tool_completed: Object.freeze({ ko: "도구 작업을 마쳤어요.", en: "Tool work completed." }),
+    tool_failed: Object.freeze({ ko: "도구 작업을 확인해야 해요.", en: "Tool work needs attention." }),
+    pc_work: Object.freeze({ ko: "PC 작업을 진행했어요.", en: "PC work started." }),
     answer_started: Object.freeze({ ko: "답변을 만들기 시작했어요.", en: "Started building the answer." }),
     web_search: Object.freeze({ ko: "웹 검색을 사용했어요.", en: "Used web search." }),
     deep_research: Object.freeze({ ko: "심층 리서치를 사용했어요.", en: "Used deep research." }),
     evidence: Object.freeze({ ko: "출처와 근거를 확인했어요.", en: "Checked the sources and evidence." }),
   });
+
+  const progressLabelCatalog = Object.freeze({
+    run_started: ["질문 확인 중"],
+    context_prepared: ["질문 확인 중"],
+    plan_created: ["답변 방향 확인"],
+    tool_started: ["웹 확인 중", "PC 작업 중", "도구 작업 중"],
+    tool_completed: ["웹 확인 완료", "PC 작업 완료", "도구 작업 완료"],
+    tool_failed: ["웹 확인이 필요해요", "PC 작업 확인이 필요해요", "도구 작업 확인이 필요해요"],
+    pc_progress: ["PC 요청 접수", "PC 작업 인계", "PC 작업 중", "PC 결과 확인 중"],
+    heartbeat: ["작업 진행 중"],
+  });
+  const progressKindSet = new Set(Object.keys(progressLabelCatalog));
+  const progressStageSet = new Set(["accepted", "picked_up", "executing", "result"]);
+  const TASK_TIMELINE_LIMIT = 32;
 
   function taskEvents(article) {
     const raw = article && article.dataset ? article.dataset.taskEvents : "";
@@ -174,6 +197,33 @@
     } catch (_) {
       return [];
     }
+  }
+
+  function taskTimeline(article) {
+    const raw = article && article.dataset ? article.dataset.taskTimeline : "";
+    const fallback = () => taskEvents(article).map((key) => ({ type: "event", key }));
+    if (!raw) return fallback();
+    try {
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return fallback();
+      return parsed.filter((item) => {
+        if (item && item.type === "event") return typeof item.key === "string" && taskEventCatalog[item.key];
+        if (item && item.type === "progress") {
+          return typeof item.label === "string"
+            && Object.values(progressLabelCatalog).some((labels) => labels.includes(item.label))
+            && Number.isSafeInteger(item.sequence) && item.sequence > 0;
+        }
+        return false;
+      });
+    } catch (_) {
+      return fallback();
+    }
+  }
+
+  function recordTimelineEntry(article, entry) {
+    const timeline = taskTimeline(article);
+    timeline.push(entry);
+    article.dataset.taskTimeline = JSON.stringify(timeline.slice(-TASK_TIMELINE_LIMIT));
   }
 
   // The real live status of this turn. The Claw lane already has a recorded
@@ -250,12 +300,14 @@
   }
 
   function taskStages(article) {
-    return taskEvents(article).map((key, index) => {
-      const item = taskEventCatalog[key];
+    return taskTimeline(article).map((entry, index) => {
+      const label = entry.type === "progress"
+        ? entry.label
+        : text(taskEventCatalog[entry.key].ko, taskEventCatalog[entry.key].en);
       return Object.freeze({
         group: "agent",
         state: "ready",
-        label: text(item.ko, item.en),
+        label,
         sequence: index + 1,
       });
     });
@@ -264,9 +316,41 @@
   function recordTaskEvent(article, key) {
     if (!article || !taskEventCatalog[key]) return;
     const events = taskEvents(article);
-    if (!events.includes(key)) events.push(key);
+    if (!events.includes(key)) {
+      events.push(key);
+      recordTimelineEntry(article, { type: "event", key });
+    }
     article.dataset.taskEvents = JSON.stringify(events);
     refreshTaskStatus(article);
+  }
+
+  function recordProgressFrame(article, value) {
+    if (!article || !value || typeof value !== "object" || Array.isArray(value)
+        || value.type !== "progress" || typeof value.kind !== "string" || !progressKindSet.has(value.kind)
+        || !Number.isSafeInteger(value.sequence) || value.sequence < 1
+        || typeof value.label !== "string") return false;
+    const keys = Object.keys(value);
+    if (keys.some((key) => !["type", "kind", "stage", "sequence", "elapsed_ms", "label"].includes(key))) return false;
+    if (Object.hasOwn(value, "elapsed_ms")
+        && (!Number.isSafeInteger(value.elapsed_ms) || value.elapsed_ms < 0)) return false;
+    if (value.kind === "pc_progress") {
+      if (typeof value.stage !== "string" || !progressStageSet.has(value.stage)) return false;
+    } else if (Object.hasOwn(value, "stage")) return false;
+    if (!progressLabelCatalog[value.kind].includes(value.label)) return false;
+    const timeline = taskTimeline(article);
+    const previous = timeline.filter((entry) => entry.type === "progress").at(-1);
+    if (previous && value.sequence <= previous.sequence) return false;
+    const safeEntry = { type: "progress", sequence: value.sequence, label: value.label };
+    if (value.kind === "pc_progress") safeEntry.stage = value.stage;
+    recordTimelineEntry(article, safeEntry);
+    refreshTaskStatus(article);
+    return true;
+  }
+
+  function appendStreamDelta(textNode, delta) {
+    if (!textNode || typeof textNode.appendData !== "function" || typeof delta !== "string") return false;
+    textNode.appendData(delta);
+    return true;
   }
 
   function setTaskHint(article, key) {
@@ -346,6 +430,8 @@
     // card renders them; nothing else shows a second copy of the status.
     renderTaskStatus,
     recordTaskEvent,
+    recordProgressFrame,
+    appendStreamDelta,
     setTaskHint,
     recordPcProgress,
     recordPcHeartbeat,

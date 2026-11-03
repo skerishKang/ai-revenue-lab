@@ -24,7 +24,6 @@ from __future__ import annotations
 
 import http.server
 import json
-import re
 import threading
 from pathlib import Path
 
@@ -134,8 +133,7 @@ def test_send_button_is_right_aligned_on_the_phone() -> None:
     # untouched by this lane.
     preview = (STATIC / "owner-model-preview.css").read_text(encoding="utf-8")
     assert "width: 116px" in preview
-    assert "width: 112px; min-width: 112px; height: 44px;" in preview
-    assert ".send-button { flex: 0 0 44px;" in preview
+    assert "width: 44px" in preview
 
 
 @requires_browser
@@ -362,91 +360,23 @@ def test_answer_action_press_box_measures_the_floor(browser, server, width, heig
 # ---------------------------------------------------------------------------
 
 
-def test_home_card_icons_share_svg_stroke_and_theme_plates() -> None:
-    icon_attributes = re.findall(r'<svg class="starter-card-icon"([^>]*)>', INDEX)
-    assert len(icon_attributes) == 4, icon_attributes
-    for attributes in icon_attributes:
-        assert 'viewBox="0 0 24 24"' in attributes
-        assert 'width="20"' in attributes and 'height="20"' in attributes
-        assert 'stroke="currentColor"' in attributes
-        assert 'stroke-width="1.8"' in attributes
-        assert 'stroke-linecap="round"' in attributes
-        assert 'stroke-linejoin="round"' in attributes
-    assert 'class="status-spark"' not in INDEX
-    assert 'background: #eef3f7;' in POLISH
-    assert 'color: #2d4557;' in POLISH
-    assert 'background: #29485f;' in POLISH
-    assert 'color: #e5f3fd;' in POLISH
+def test_writing_card_icon_keeps_the_glass_plate() -> None:
+    assert "#writingStarterButton .starter-icon" in POLISH
+    assert "color: #2d4557" in POLISH
 
 
 @requires_browser
-def test_home_card_icons_have_uniform_boxes_and_3_to_1_contrast_in_all_themes(browser, server) -> None:
+def test_writing_card_icon_is_not_white_on_white(browser, server) -> None:
     page = _open(browser, server, 1440, 900, False)
-    for theme in ("padiem-home", "light", "dark", "padiem-glass"):
-        page.evaluate("(value) => { document.documentElement.dataset.theme = value; }", theme)
-        page.wait_for_timeout(50)
-        measured = page.evaluate(
-        """() => {
-          const buttons = ['#pcConnectStarter', '.starter[data-skill="plan"]',
-            '#documentStarterButton', '#writingStarterButton'];
-          const linear = (v) => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4;
-          const rgb = (value) => value.match(/[0-9.]+/g).slice(0, 3).map(Number).map((v) => linear(v / 255));
-          const contrast = (a, b) => {
-            const luminance = (value) => { const c = rgb(value); return .2126*c[0] + .7152*c[1] + .0722*c[2]; };
-            const values = [luminance(a), luminance(b)].sort((x, y) => y - x);
-            return (values[0] + .05) / (values[1] + .05);
-          };
-          return buttons.map((selector) => {
-            const box = document.querySelector(selector + ' .starter-icon');
-            const svg = box.querySelector('svg');
-            const style = getComputedStyle(box);
-            const rect = box.getBoundingClientRect();
-            const svgStyle = getComputedStyle(svg);
-            return {
-              width: rect.width, height: rect.height, color: style.color,
-              background: style.backgroundColor, border: style.borderTopWidth,
-              stroke: svgStyle.color, strokeWidth: svg.getAttribute('stroke-width'),
-              ratio: contrast(style.color, style.backgroundColor)
-            };
-          });
-        }"""
-        )
-        assert len({(item["width"], item["height"]) for item in measured}) == 1, (theme, measured)
-        assert len({(item["color"], item["background"], item["border"], item["strokeWidth"]) for item in measured}) == 1, (theme, measured)
-        assert all(item["stroke"] == item["color"] for item in measured), (theme, measured)
-        assert all(float(item["ratio"]) >= 3 for item in measured), (theme, measured)
-    page.close()
-
-
-@requires_browser
-@pytest.mark.parametrize(("width", "height", "mobile", "slot"), [
-    (1440, 900, False, 116),
-    (390, 844, True, 112),
-])
-def test_tier_chip_text_is_centered_without_spark_and_stays_in_reserved_slot(
-    browser, server, width, height, mobile, slot
-) -> None:
-    page = _open(browser, server, width, height, mobile)
     measured = page.evaluate(
         """() => {
-          const pill = document.querySelector('#composerForm .composer-tools .model-pill');
-          const label = pill.querySelector('span:last-child');
-          const box = pill.getBoundingClientRect();
-          const text = label.getBoundingClientRect();
-          return {
-            text: label.textContent.trim(),
-            left: text.left - box.left,
-            right: box.right - text.right,
-            width: box.width,
-            spark: Boolean(pill.querySelector('.status-spark')),
-            actionHeight: document.querySelector('.composer-actions').getBoundingClientRect().height
-          };
+          const el = document.querySelector('#writingStarterButton .starter-icon');
+          const cs = getComputedStyle(el);
+          return {color: cs.color, background: cs.backgroundColor, fontSize: cs.fontSize};
         }"""
     )
-    assert measured["spark"] is False, measured
-    assert abs(measured["left"] - measured["right"]) <= 1.5, measured
-    assert measured["width"] <= slot, measured
-    assert measured["actionHeight"] > 0, measured
+    assert measured["color"] == "rgb(45, 69, 87)", measured
+    assert measured["fontSize"] != "0px", measured
     page.close()
 
 

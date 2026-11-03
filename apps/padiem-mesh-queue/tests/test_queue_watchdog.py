@@ -377,13 +377,3 @@ def test_an_installed_secret_file_is_owner_readable_and_no_wider(tmp_path):
     script = (DEPLOY / "provision_service_secret.sh").read_text(encoding="utf-8")
     assert "umask 077" in script and 'chmod 600 "$TARGET"' in script
     assert 'echo "$value"' not in script and "cat \"$TARGET\"" not in script
-
-def test_installer_preserves_shared_executor_work_dir_for_account_cleanup():
-    installer = (DEPLOY / "install.sh").read_text(encoding="utf-8")
-    service_source = (QUEUE / "service.py").read_text(encoding="utf-8")
-    runbook = (DOCS / "CLAW_BACKGROUND_RETENTION_20261103.md").read_text(encoding="utf-8")
-    assert "BACKGROUND_WORK_DIR=$(grep -s '^ORACLE_MESH_WORK_DIR='" in installer
-    assert "ORACLE_MESH_WORK_DIR=$BACKGROUND_WORK_DIR" in installer
-    assert 'os.environ.get("ORACLE_MESH_WORK_DIR", "").strip()' in service_source
-    assert "Queue와 executor 서비스의" in runbook
-    assert "반드시 같은 로컬 경로" in runbook

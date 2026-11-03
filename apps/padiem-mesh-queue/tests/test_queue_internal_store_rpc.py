@@ -7,16 +7,12 @@ path, and the store's own exception text is not ours to publish.
 from __future__ import annotations
 
 import asyncio
-import base64
-import hashlib
 import importlib.util
 import json
 import pathlib
 import sqlite3
 import pytest
 import sys
-
-import pytest
 from types import SimpleNamespace
 
 QUEUE = pathlib.Path(__file__).resolve().parents[1]
@@ -181,9 +177,8 @@ def test_the_body_gate_admits_exactly_the_limit_and_refuses_one_byte_more():
     assert _body(refused)["error"]["code"] == "queue_body_too_large"
 
 
-def test_delete_account_pc_data_rpc_is_idempotent_and_preserves_shared_history(tmp_path):
-    app = _app(output_directory=str(tmp_path / "pc-outputs"),
-               background_jobs_directory=str(tmp_path / "background-jobs"))
+def test_delete_account_pc_data_rpc_is_idempotent_and_preserves_shared_history():
+    app = _app()
     connection = app.state.queue_database.connection
     assert "delete_account_pc_data" in PAIRING_METHODS
 
@@ -315,88 +310,3 @@ def test_delete_account_pc_data_rpc_is_idempotent_and_preserves_shared_history(t
         "SELECT COUNT(*) AS n FROM mesh_device_drives WHERE device_id = ?",
         ("shared-device",),
     ).fetchone()["n"] == 1
-
-
-def test_queue_account_cleanup_removes_only_target_job_and_output_files(tmp_path):
-    background = tmp_path / "executor" / "background-jobs"
-    app = _app(output_directory=str(tmp_path / "pc-outputs"),
-               background_jobs_directory=str(background))
-    store = app.state.pc_output_store
-    users = ("account-one", "account-two")
-
-    async def write_output(user):
-        fields = dict(user_id=user, subject_id="subject-" + user,
-                      run_id="run-" + user, device_id="device-" + user)
-        content = ("output-" + user).encode()
-        begin = await store.begin_pc_output(
-            **fields, source="test", size=len(content),
-            sha256=hashlib.sha256(content).hexdigest())
-        await store.append_pc_output(
-            **fields, upload_id=begin["upload_id"], offset=0,
-            data=base64.b64encode(content).decode())
-        ref = await store.finish_pc_output(**fields, upload_id=begin["upload_id"])
-        owner = store._owner(**fields)
-        scope = hashlib.sha256(owner.encode()).hexdigest()
-        return fields, ref, scope, content
-
-    first, second = asyncio.run(write_output(users[0])), asyncio.run(write_output(users[1]))
-    background.mkdir(parents=True)
-    job_paths = {}
-    for user in users:
-        owner = json.dumps([user, "node-" + user, "run-" + user],
-                           separators=(",", ":"))
-        job_id = "job-" + user
-        name = hashlib.sha256(json.dumps([owner, job_id], separators=(",", ":")).encode()).hexdigest()
-        receipt = background / (name + ".json")
-        receipt.write_text(json.dumps({"job_id": job_id, "owner": owner, "state": "done"}))
-        (background / (name + ".log")).write_bytes(("job-" + user).encode())
-        job_paths[user] = receipt
-
-    response = _call(app, {
-        "method": "delete_account_pc_data",
-        "arguments": {"user_id": users[0]},
-    })
-    assert response.status_code == 200, response.body
-    assert _body(response) == {"ok": True, "result": True}
-    assert not job_paths[users[0]].exists()
-    assert job_paths[users[1]].exists()
-    assert not (background / (job_paths[users[0]].stem + ".log")).exists()
-    assert (background / (job_paths[users[1]].stem + ".log")).exists()
-    assert not (tmp_path / "pc-outputs" / "outputs" / first[2]).exists()
-    assert not (tmp_path / "pc-outputs" / "uploads" / first[2]).exists()
-    assert (tmp_path / "pc-outputs" / "outputs" / second[2]).exists()
-    assert (tmp_path / "pc-outputs" / "uploads" / second[2]).exists()
-    assert asyncio.run(store.read_pc_output(
-        **second[0], handle=second[1]["handle"], offset=0, length=len(second[3])
-    ))["content"] == second[3].decode()
-    with pytest.raises(ValueError, match="deleted"):
-        asyncio.run(store.read_pc_output(
-            **first[0], handle=first[1]["handle"], offset=0, length=len(first[3])
-        ))
-
-    replay = _call(app, {
-        "method": "delete_account_pc_data",
-        "arguments": {"user_id": users[0]},
-    })
-    assert replay.status_code == 200, replay.body
-    assert job_paths[users[1]].exists()
-    assert (tmp_path / "pc-outputs" / "outputs" / second[2]).exists()
-
-
-def test_account_delete_fails_closed_without_shared_executor_work_dir(tmp_path, monkeypatch):
-    monkeypatch.delenv("ORACLE_MESH_WORK_DIR", raising=False)
-    app = _app(output_directory=str(tmp_path / "pc-outputs"),
-               background_jobs_directory=None)
-    response = _call(app, {
-        "method": "delete_account_pc_data",
-        "arguments": {"user_id": "account-one"},
-    })
-    assert response.status_code == 502
-    assert _body(response)["error"]["code"] == "queue_store_failed"
-
-def test_queue_uses_the_executor_work_directory_for_receipt_deletion(tmp_path, monkeypatch):
-    work_dir = tmp_path / "executor-work"
-    monkeypatch.setenv("ORACLE_MESH_WORK_DIR", str(work_dir))
-    app = _app(output_directory=str(tmp_path / "pc-outputs"),
-               background_jobs_directory=None)
-    assert app.state.pc_device_pairing_store.background_jobs_directory == work_dir / "background-jobs"

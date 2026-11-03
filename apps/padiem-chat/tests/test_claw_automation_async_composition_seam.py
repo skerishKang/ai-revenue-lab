@@ -10,8 +10,7 @@ background execution composition -- proving the async seam itself, not a stub.
 Also pins this child's decision-gate outcome:
 ``WORKER_SCHEDULED_HANDLER_SOURCE=READY_GATED`` -- the canonical sessionless
 membership composition feeds #2987/#2995, ``worker.py`` exposes a gated
-``scheduled()`` handler, and the live Worker config keeps the reviewed retention
-cron as its only schedule while the automation feature flag stays off.
+``scheduled()`` handler, and the live Worker config declares no Cron trigger.
 """
 
 from __future__ import annotations
@@ -19,7 +18,6 @@ from __future__ import annotations
 import importlib.util
 import sys
 import types
-import tomllib
 from datetime import timedelta
 from pathlib import Path
 from types import SimpleNamespace
@@ -940,9 +938,8 @@ def test_worker_handler_and_cron_source_are_present_but_not_activated():
     assert "PRODUCTION_MUTATION = False" in worker_source
 
     wrangler_source = (_CHAT / "wrangler.toml").read_text(encoding="utf-8")
-    assert tomllib.loads(wrangler_source).get("triggers") == {
-        "crons": ["17 3 * * *"]
-    }
+    assert "[triggers]" not in wrangler_source
+    assert "crons" not in wrangler_source.lower()
     assert 'PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"' in wrangler_source
 
     discovery_source = (

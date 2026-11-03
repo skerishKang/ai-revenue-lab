@@ -1,407 +1,240 @@
-"""MCP shell reuses Claw dispatch state, cancellation and OutputStore handles."""
+"""pc_shell contract, execution adapter and Windows worker tests."""
 from __future__ import annotations
 
 import asyncio
-import base64
 import hashlib
 import json
 import logging
+import os
+import shutil
+import subprocess
+import sys
 from types import SimpleNamespace
 
 import pytest
 
+from app import mcp_gateway_execution as execution
 from app import mcp_gateway_shell as shell
+from app.mcp_gateway_dispatch import _log_operation
+
 
 UID = "usr_" + "a" * 32
-OTHER_UID = "usr_" + "d" * 32
 DEVICE = "dev_" + "c" * 32
-OTHER_DEVICE = "dev_" + "e" * 32
-TOKEN = "mcp_" + "f" * 32
-JOB_ID = "dsp_" + "b" * 32
-RUN_ID = "run_fixture"
-SUBJECT = "sub_" + "7" * 32
+PRINCIPAL = {"owner_id": UID, "device_id": DEVICE, "token_id": "mcp_token_fixture"}
+DISPATCH_ID = "oracle_mesh_cmd_" + "b" * 32
+
+
+def _envelope(**overrides):
+    data = {
+        "exit_code": 0,
+        "timed_out": False,
+        "stdout": "ok\n",
+        "stderr": "",
+        "stdout_bytes": 3,
+        "stderr_bytes": 0,
+        "stdout_truncated": False,
+        "stderr_truncated": False,
+        "duration_ms": 25,
+    }
+    data.update(overrides)
+    return data
 
 
 def _response(payload, status=200):
-    return SimpleNamespace(status_code=status, body=json.dumps(payload).encode("utf-8"))
+    return SimpleNamespace(status_code=status, body=json.dumps(payload).encode())
 
 
-class ReceiptStore:
-    def __init__(self):
-        self.job_id = None
-        self.identity = None
-
-    async def owns_job_receipt(self, *, identity, job_id):
-        return job_id == self.job_id and identity == self.identity
-
-
-class CommonHistory:
-    def __init__(self):
-        self.state = "pending"
-        self.claimed = True
-        self.termination = None
-        self.exit_code = None
-        self.output = "hello world"
-        self.output_ref = None
-        self.read_calls = []
-        self.cancelled_runs = []
-
-    def _row(self):
-        raw = self.output.encode("utf-8")
-        return {
-            "dispatch_id": JOB_ID, "user_id": UID, "device_id": DEVICE,
-            "run_id": RUN_ID, "kind": "command", "state": self.state,
-            "claimed": self.claimed, "termination": self.termination,
-            "exit_code": self.exit_code, "command_id": "oracle_mesh_cmd_" + "1" * 32,
-            "revision_ref": "rev_1", "result_sha256": hashlib.sha256(raw).hexdigest(),
-            "result_bytes": len(raw),
-        }
-
-    async def get_oracle_mesh_dispatch_for_owner(self, *, user_id, dispatch_id):
-        if user_id == UID and dispatch_id == JOB_ID:
-            return self._row()
-        return None
-
-    async def get_pc_output_dispatch_for_owner(self, *, user_id, dispatch_id):
-        return await self.get_oracle_mesh_dispatch_for_owner(user_id=user_id, dispatch_id=dispatch_id)
-
-    async def get_claw_run(self, user_id, run_id):
-        if user_id == UID and run_id == RUN_ID:
-            return {"run_id": RUN_ID, "conversation_id": "conv_fixture"}
-        return None
-
-    async def store_pc_output(self, **kwargs):
-        assert kwargs["user_id"] == UID and kwargs["device_id"] == DEVICE
-        assert kwargs["run_id"] == RUN_ID and kwargs["dispatch_id"] == JOB_ID
-        assert kwargs["source"] == "mcp_shell"
-        self.output_ref = {"handle": "a" * 64, "size": len(kwargs["content"].encode("utf-8")),
-                           "truncated": False}
-        self.output = kwargs["content"]
-        return self.output_ref
-
-    async def read_pc_output(self, **kwargs):
-        self.read_calls.append(dict(kwargs))
-        raw = self.output.encode("utf-8")
-        data = raw[kwargs["offset"]:kwargs["offset"] + kwargs["length"]]
-        return {"handle": kwargs["handle"], "content": data.decode("utf-8")}
-
-    async def cancel_oracle_mesh_dispatches_for_run(self, *, user_id, run_id):
-        self.cancelled_runs.append((user_id, run_id))
-        if user_id != UID or run_id != RUN_ID or self.state != "pending":
-            return 0
-        self.state, self.termination = "failed", "cancelled"
-        return 1
-
-
-def _request(history=None, receipts=None):
-    state = SimpleNamespace(
-        history_store=history or CommonHistory(),
-        mcp_gateway_store=receipts or ReceiptStore(),
-    )
-    return SimpleNamespace(app=SimpleNamespace(state=state))
-
-
-def test_closed_schemas_accept_only_the_common_dispatch_id_and_bounded_ranges():
-    assert shell.validate_pc_shell_arguments({"command": "git status"})
-    assert shell.normalize_pc_shell_arguments({"command": "git status"}) == {
-        "command": "git status", "cwd": None, "shell": "powershell", "wait_seconds": 120,
-    }
-    assert shell.validate_pc_shell_start_arguments({"command": "sleep"})
-    assert shell.validate_pc_shell_read_arguments({"job_id": JOB_ID, "offset": 10, "length": 4})
-    assert shell.validate_pc_shell_stop_arguments({"job_id": JOB_ID})
-    assert not shell.validate_pc_shell_read_arguments({"job_id": "oracle_mesh_cmd_" + "b" * 32})
-    for bad in (
-        {"command": "x", "timeout_seconds": 10}, {"command": "x", "wait_seconds": 0},
-        {"command": "x", "wait_seconds": 151}, {"command": "x", "wait_seconds": True},
-        {"command": "x", "shell": "zsh"}, {"command": "x", "unknown": 1},
-        {"job_id": JOB_ID, "offset": -1}, {"job_id": JOB_ID, "length": 65_537},
-        {"job_id": JOB_ID, "device_id": DEVICE},
-    ):
-        if "command" in bad:
-            assert not (shell.validate_pc_shell_start_arguments(bad)
-                        if "wait_seconds" not in bad and "timeout_seconds" not in bad
-                        else shell.validate_pc_shell_arguments(bad))
-        else:
-            assert not shell.validate_pc_shell_read_arguments(bad)
-
-
-def test_command_is_encoded_and_uses_the_common_executor_without_mcp_files_or_deadline():
-    secret = "Write-Output 'private-command-material'; Start-Sleep 999"
-    command = shell.build_pc_shell_command({"command": secret, "cwd": r"C:\work"})
-    assert "\n" not in command and "\r" not in command
-    assert secret not in command and "private-command-material" not in command
-    assert "PADIEM_MCP_COMMAND_B64" in command and "PADIEM_MCP_CWD_B64" in command
-    assert "padiem-mcp-jobs" not in command.lower()
-    assert "timeout" not in command.lower() and "taskkill" not in command.lower()
-    script_b64 = command.rsplit("-EncodedCommand ", 1)[1]
-    script = base64.b64decode(script_b64).decode("utf-16-le")
-    assert "$inner=[Convert]::ToBase64String" in script
-    assert "-EncodedCommand $inner" in script and "& $file @args" in script
-    assert "Start-Process" not in script
-    assert len(shell.build_pc_shell_command({"command": "x" * shell.PC_SHELL_MAX_COMMAND_CHARS})) < 120_000
-
-
-def test_common_dispatch_is_background_with_actual_dsp_receipt_format(monkeypatch):
-    from app import oracle_mesh_read_return_routes as routes
-
-    seen = {}
+def _install_fakes(monkeypatch, *, envelope, state="done", cancellation=None):
+    seen = {"commands": [], "cancel": 0}
 
     async def dispatch(request, **kwargs):
-        seen.update(kwargs)
-        return _response({"dispatch": {"dispatch_id": JOB_ID}})
+        seen["commands"].append(kwargs)
+        return _response({"ok": True, "dispatch": {"dispatch_id": DISPATCH_ID}})
 
-    monkeypatch.setattr(routes, "dispatch_oracle_mesh_command_intent", dispatch)
-    response = asyncio.run(shell._dispatch_command(
-        object(), command="encoded", run_id=RUN_ID, device_id=DEVICE,
-        trusted_owner=(SimpleNamespace(tenant_id="tenant"), UID, "workspace"),
-    ))
-    assert response.status_code == 200
-    assert seen["background"] is True
-    assert seen["ttl_seconds"] == 3600
-    assert seen["wire"] == {"run_id": RUN_ID, "device_id": DEVICE, "confirmed": True}
-    assert shell._valid_job_id(JOB_ID)
-    assert not shell._valid_job_id("oracle_mesh_cmd_" + "b" * 32)
+    async def row(request, **kwargs):
+        return {"state": state, "termination": "exited", "command_id": "cmd_1",
+                "revision_ref": "rev_1", "result_sha256": "0" * 64, "result_bytes": 1}
 
+    raw = json.dumps(envelope, ensure_ascii=False).encode()
 
-def test_one_receipt_starts_reads_output_store_range_and_cancels_common_run(monkeypatch):
-    history, receipts = CommonHistory(), ReceiptStore()
-    request = _request(history, receipts)
-    receipts.job_id = JOB_ID
-    receipts.identity = {"user_id": UID, "device_id": DEVICE, "token_id": TOKEN}
-    async def dispatch(_request, **kwargs):
-        assert kwargs["run_id"] == RUN_ID and kwargs["device_id"] == DEVICE
-        return _response({"dispatch": {"dispatch_id": JOB_ID, "run_id": RUN_ID,
-                                        "device_id": DEVICE}})
-    async def original(_request, *, uid, dispatch, run_row):
-        assert uid == UID and dispatch["dispatch_id"] == JOB_ID
-        return history.output
+    async def original(request, **kwargs):
+        return raw, hashlib.sha256(raw).hexdigest()
+
+    async def cancel(request, **kwargs):
+        seen["cancel"] += 1
+        return 1
+
     monkeypatch.setattr(shell, "_dispatch_command", dispatch)
+    monkeypatch.setattr(shell, "_dispatch_row", row)
     monkeypatch.setattr(shell, "_read_original", original)
-    started = asyncio.run(shell.execute_pc_shell_start(
-        request, uid=UID, workspace_id="workspace", device_id=DEVICE, run_id=RUN_ID,
-        session=SimpleNamespace(), conversation_id="conv_fixture",
-        arguments={"command": "sleep", "shell": "powershell"},
+    monkeypatch.setattr(shell, "_cancel_run", cancel)
+    return seen
+
+
+def _execute(arguments):
+    return asyncio.run(shell.execute_pc_shell(
+        object(), session=SimpleNamespace(), uid=UID, workspace_id="workspace_fixture",
+        device_id=DEVICE, run_id="run_fixture", conversation_id="chat_fixture",
+        arguments=arguments,
     ))
-    assert started["status"] == "running" and started["job_id"] == JOB_ID
-    assert started["_job_receipt"] == JOB_ID
 
-    identity = {"user_id": UID, "device_id": DEVICE, "token_id": TOKEN}
-    running = asyncio.run(shell.execute_pc_shell_read(
-        request, identity=identity, subject_id=SUBJECT,
-        arguments={"job_id": JOB_ID, "offset": 0, "length": 5},
+
+def test_schema_accepts_only_bounded_known_values():
+    assert shell.validate_pc_shell_arguments({"command": "git status"})
+    assert shell.normalize_pc_shell_arguments({"command": "git status"}) == {
+        "command": "git status", "cwd": None, "shell": "powershell", "timeout_seconds": 120,
+    }
+    assert shell.normalize_pc_shell_arguments({
+        "command": "git status", "cwd": "C:/work", "shell": "cmd", "timeout_seconds": 600,
+    })["timeout_seconds"] == 600
+    for bad in (
+        {}, {"command": ""}, {"command": "x", "shell": "zsh"},
+        {"command": "x", "timeout_seconds": 0}, {"command": "x", "timeout_seconds": 601},
+        {"command": "x", "timeout_seconds": True}, {"command": "x", "cwd": "bad\x01path"},
+        {"command": "x", "device_id": DEVICE}, {"command": "x", "extra": "value"},
+        {"command": "x" * (shell.PC_SHELL_MAX_COMMAND_CHARS + 1)},
+    ):
+        assert not shell.validate_pc_shell_arguments(bad)
+
+
+def test_dispatch_command_is_one_line_and_never_carries_raw_command():
+    command = "Write-Output 'secret-value'; exit 0"
+    built = shell.build_pc_shell_command({
+        "command": command, "cwd": r"C:\work", "shell": "powershell", "timeout_seconds": 30,
+    })
+    assert "\n" not in built and "\r" not in built
+    assert "secret-value" not in built
+    assert "PADIEM_PC_SHELL_COMMAND_B64" in built
+    assert "PADIEM_PC_SHELL_CWD_B64" in built
+    longest = shell.build_pc_shell_command({"command": "x" * shell.PC_SHELL_MAX_COMMAND_CHARS})
+    assert len(longest) < 120_000
+
+
+def test_result_parser_accepts_bounded_worker_json_only():
+    assert shell.parse_pc_shell_result(json.dumps(_envelope()))["stdout"] == "ok\n"
+    for bad in (
+        {}, {"exit_code": True}, {"timed_out": "no"}, {"stdout": 1},
+        _envelope(stdout_bytes=-1), _envelope(stdout_truncated="no"),
+        _envelope(error="not_a_worker_code"),
+    ):
+        with pytest.raises((ValueError, TypeError)):
+            shell.parse_pc_shell_result(json.dumps(bad))
+
+
+def test_completed_result_returns_streams_exit_code_and_numeric_audit(monkeypatch):
+    seen = _install_fakes(monkeypatch, envelope=_envelope(exit_code=7, stderr="warn\n",
+                                                          stderr_bytes=5))
+    result = _execute({"command": "echo ok"})
+    assert result["status"] == "completed"
+    assert result["exit_code"] == 7 and result["timed_out"] is False
+    assert result["stdout"] == "ok\n" and result["stderr"] == "warn\n"
+    assert result["audit"] == {"exit_code": 7, "duration_ms": result["audit"]["duration_ms"],
+                               "output_bytes": 8, "output_truncated": False}
+    assert "command" not in result["audit"] and "stdout" not in result["audit"]
+    command = seen["commands"][0]["command"]
+    assert "echo ok" not in command and "PADIEM_PC_SHELL_COMMAND_B64" in command
+    assert seen["commands"][0]["ttl_seconds"] == 180
+
+
+def test_truncated_result_is_reported_without_changing_the_exit_code(monkeypatch):
+    _install_fakes(monkeypatch, envelope=_envelope(
+        stdout="head\n...[중간 생략]...\ntail\n", stdout_bytes=30_000, stdout_truncated=True,
     ))
-    assert running["status"] == "running" and running["output"] == ""
-
-    history.state, history.exit_code, history.termination = "done", 0, "exited"
-    read = asyncio.run(shell.execute_pc_shell_read(
-        request, identity=identity, subject_id=SUBJECT,
-        arguments={"job_id": JOB_ID, "offset": 0, "length": 5},
-    ))
-    assert read["status"] == "completed" and read["job_id"] == JOB_ID
-    assert read["output"] == "hello" and read["next_offset"] == 5
-    assert read["output_ref"] == {"handle": "a" * 64, "size": 11, "truncated": False}
-    assert read["audit"] == {"exit_code": 0, "output_bytes": 11, "output_truncated": False}
-    assert history.read_calls[0]["handle"] == "a" * 64
-    assert history.read_calls[0]["run_id"] == RUN_ID
-
-    history.state = "pending"
-    stopped = asyncio.run(shell.execute_pc_shell_stop(request, identity=identity, job_id=JOB_ID))
-    assert stopped["status"] == "cancelled" and stopped["job_id"] == JOB_ID
-    assert history.cancelled_runs == [(UID, RUN_ID)]
-    assert history.state == "failed" and history.termination == "cancelled"
+    result = _execute({"command": "big"})
+    assert result["status"] == "completed" and result["exit_code"] == 0
+    assert result["truncated"] is True
+    assert result["audit"]["output_truncated"] is True
+    assert result["audit"]["output_bytes"] == 30_000
 
 
-@pytest.mark.parametrize("identity", [
-    {"user_id": OTHER_UID, "device_id": DEVICE, "token_id": TOKEN},
-    {"user_id": UID, "device_id": OTHER_DEVICE, "token_id": TOKEN},
-    {"user_id": UID, "device_id": DEVICE, "token_id": "mcp_" + "0" * 32},
-])
-def test_other_account_pc_or_token_cannot_read_or_stop_receipt(identity):
-    history, receipts = CommonHistory(), ReceiptStore()
-    receipts.job_id = JOB_ID
-    receipts.identity = {"user_id": UID, "device_id": DEVICE, "token_id": TOKEN}
-    request = _request(history, receipts)
-    read = asyncio.run(shell.execute_pc_shell_read(
-        request, identity=identity, subject_id=SUBJECT,
-        arguments={"job_id": JOB_ID},
-    ))
-    stop = asyncio.run(shell.execute_pc_shell_stop(request, identity=identity, job_id=JOB_ID))
-    assert read["status"] == "denied" and stop["status"] == "denied"
-    assert history.cancelled_runs == []
+def test_worker_error_is_a_failed_result_with_its_code(monkeypatch):
+    _install_fakes(monkeypatch, envelope=_envelope(exit_code=None, error="cwd_invalid"))
+    result = _execute({"command": "echo ok", "cwd": "C:/missing"})
+    assert result["status"] == "failed" and result["code"] == "pc_shell_cwd_invalid"
+    assert result["audit"]["exit_code"] is None
 
 
-def test_wait_window_returns_same_running_job_without_cancelling_it(monkeypatch):
-    history, receipts = CommonHistory(), ReceiptStore()
-    request = _request(history, receipts)
-    receipts.job_id = JOB_ID
-    receipts.identity = {"user_id": UID, "device_id": DEVICE, "token_id": TOKEN}
-    async def dispatch(_request, **kwargs):
-        return _response({"dispatch": {"dispatch_id": JOB_ID, "run_id": RUN_ID,
-                                        "device_id": DEVICE}})
+def test_dispatch_poll_timeout_cancels_the_run(monkeypatch):
+    seen = _install_fakes(monkeypatch, envelope=_envelope(), state="pending")
     ticks = [0.0]
-    def now():
-        ticks[0] += 60
+
+    def fake_now():
+        ticks[0] += 10.0
         return ticks[0]
-    monkeypatch.setattr(shell, "_dispatch_command", dispatch)
-    monkeypatch.setattr(shell, "_NOW", now)
+
+    monkeypatch.setattr(shell, "_NOW", fake_now)
     monkeypatch.setattr(shell, "PC_SHELL_POLL_SECONDS", 0)
-    result = asyncio.run(shell.execute_pc_shell(
-        request, uid=UID, subject_id=SUBJECT, workspace_id="workspace", device_id=DEVICE,
-        token_id=TOKEN, run_id=RUN_ID, session=SimpleNamespace(), conversation_id="conv_fixture",
-        arguments={"command": "sleep", "cwd": None, "shell": "powershell", "wait_seconds": 1},
-    ))
-    assert result["status"] == "running" and result["job_id"] == JOB_ID
-    assert history.state == "pending" and history.cancelled_runs == []
+    result = _execute({"command": "sleep", "timeout_seconds": 1})
+    assert result["status"] == "failed" and result["code"] == "pc_shell_timeout"
+    assert seen["cancel"] == 1
 
 
-def test_terminal_output_is_verified_against_the_common_dispatch_hash():
-    content = "공통 Claw 출력"
-    raw = content.encode("utf-8")
-    seen = []
-
-    class OriginalStore:
-        async def read_oracle_mesh_original(self, **kwargs):
-            seen.append(kwargs)
-            return raw, hashlib.sha256(raw).hexdigest()
-
-    request = _request(OriginalStore())
-    dispatch = {"dispatch_id": JOB_ID, "command_id": "oracle_mesh_cmd_" + "1" * 32,
-                "revision_ref": "rev_1", "result_sha256": hashlib.sha256(raw).hexdigest(),
-                "result_bytes": len(raw)}
-    run = {"conversation_id": "chat_" + "7" * 32}
-    result = asyncio.run(shell._read_original(request, uid=UID, dispatch=dispatch, run_row=run))
-    assert result == content
-    assert seen[0]["dispatch_id"] == JOB_ID and seen[0]["user_id"] == UID
-    assert not any("command" in key or "output" in key for key in seen[0])
-    tampered = {**dispatch, "result_sha256": "0" * 64}
-    assert asyncio.run(shell._read_original(request, uid=UID, dispatch=tampered, run_row=run)) is None
-
-
-def test_stale_selected_pc_returns_offline_answer_without_creating_a_run(monkeypatch):
-    from app import mcp_gateway_execution as execution
-    from test_mcp_gateway_execution import harness
-
-    request, _transport, history, _calls = harness(monkeypatch)
-    request.app.state.settings = SimpleNamespace(mcp_pc_shell_enabled=True)
-
-    async def offline(*args, **kwargs):
-        return SimpleNamespace(selection_offline=True, selected_device_id=DEVICE,
-                               selected_confirmed=False, tool_available=False,
-                               execution_device_id=None)
-
-    monkeypatch.setattr(execution, "resolve_pc_work_context", offline)
-    result = asyncio.run(execution.execute_mcp_pc_tool(
-        request, {"owner_id": UID, "device_id": DEVICE, "token_id": TOKEN},
-        "pc_shell_start", {"command": "Get-Date"},
-    ))
-    assert result == {"status": "unavailable", "code": "pc_offline",
-                      "answer": "선택한 PC가 꺼져 있음"}
-    assert history.runs == []
-
-
-@pytest.mark.parametrize("denial", ["selection", "grant", "tool"])
-def test_unavailable_or_undelegated_pc_never_creates_a_common_dispatch(monkeypatch, denial):
-    from app import mcp_gateway_execution as execution
-    from test_mcp_gateway_execution import harness
-
-    request, transport, history, _calls = harness(monkeypatch)
-    request.app.state.settings = SimpleNamespace(mcp_pc_shell_enabled=True)
-    if denial == "selection":
-        context = SimpleNamespace(selection_offline=False, selected_device_id=OTHER_DEVICE,
-                                  selected_confirmed=True, tool_available=True,
-                                  execution_device_id=DEVICE)
-    elif denial == "tool":
-        context = SimpleNamespace(selection_offline=False, selected_device_id=DEVICE,
-                                  selected_confirmed=True, tool_available=False,
-                                  execution_device_id=DEVICE)
-    else:
-        context = SimpleNamespace(selection_offline=False, selected_device_id=DEVICE,
-                                  selected_confirmed=True, tool_available=True,
-                                  execution_device_id=DEVICE)
-
-    async def selected_context(*args, **kwargs):
-        return context
-
-    async def grant(*args, **kwargs):
-        return denial != "grant"
-
-    dispatches = []
-
-    async def dispatch(_request, **kwargs):
-        dispatches.append(kwargs)
-        return _response({"dispatch": {"dispatch_id": JOB_ID,
-                                        "run_id": kwargs["run_id"],
-                                        "device_id": DEVICE}})
-
-    monkeypatch.setattr(execution, "resolve_pc_work_context", selected_context)
-    monkeypatch.setattr(execution, "_check_mesh_grant", grant)
-    monkeypatch.setattr(shell, "_dispatch_command", dispatch)
-    principal = {"owner_id": UID, "device_id": DEVICE, "token_id": TOKEN}
-    if denial == "selection":
-        result = asyncio.run(execution.execute_mcp_pc_tool(
-            request, principal, "pc_shell_start", {"command": "Get-Date"},
-        ))
-        assert result == {"status": "unavailable", "code": "pc_offline",
-                          "answer": "선택한 PC가 꺼져 있음"}
-    else:
-        with pytest.raises(execution.ChatPCDriveError) as caught:
-            asyncio.run(execution.execute_mcp_pc_tool(
-                request, principal, "pc_shell_start", {"command": "Get-Date"},
-            ))
-        assert caught.value.code == "chat_pc_target_unavailable"
-    assert not dispatches and not history.runs and not transport.calls
-
-
-def test_shell_execution_uses_existing_owner_gates_and_bypasses_engine(monkeypatch):
-    from app import mcp_gateway_execution as execution
+def test_shell_bypasses_engine_and_records_existing_pc_run(monkeypatch):
     from test_mcp_gateway_execution import harness
 
     request, transport, history, calls = harness(monkeypatch)
-    request.app.state.settings = SimpleNamespace(mcp_pc_shell_enabled=True)
-    context = SimpleNamespace(selection_offline=False, selected_device_id=DEVICE,
-                              selected_confirmed=True, tool_available=True,
-                              execution_device_id=DEVICE)
-    context_calls = []
-    async def selected_context(*args, **kwargs):
-        context_calls.append(kwargs)
-        return context
-    dispatches = []
-    async def dispatch(_request, **kwargs):
-        dispatches.append(kwargs)
-        return _response({"dispatch": {"dispatch_id": JOB_ID,
-                                        "run_id": kwargs["run_id"],
-                                        "device_id": DEVICE}})
-    monkeypatch.setattr(execution, "resolve_pc_work_context", selected_context)
-    monkeypatch.setattr(shell, "_dispatch_command", dispatch)
+    captured = {}
+
+    async def fake_shell(request, **kwargs):
+        captured.update(kwargs)
+        return {"status": "completed", "answer": "PC 명령이 끝났습니다.", "exit_code": 0,
+                "stdout": "ok\n", "audit": {"exit_code": 0, "duration_ms": 1,
+                                             "output_bytes": 3, "output_truncated": False}}
+
+    monkeypatch.setattr(execution, "execute_pc_shell", fake_shell)
     result = asyncio.run(execution.execute_mcp_pc_tool(
-        request, {"owner_id": UID, "device_id": DEVICE, "token_id": TOKEN},
-        "pc_shell_start", {"command": "private-command-material"},
+        request, PRINCIPAL, "pc_shell", {"command": "echo ok"},
     ))
-    assert result["status"] == "running" and result["job_id"] == JOB_ID
-    assert result["_job_receipt"] == JOB_ID
-    assert [call[0] for call in calls] == ["identity", "grant"]
-    assert len(context_calls) == 1 and context_calls[0]["selected_device_id"] == DEVICE
+    assert result["status"] == "completed"
+    assert result["exit_code"] == 0 and result["stdout"] == "ok\n"
+    assert transport.calls == []
     assert history.runs[0]["action"] == "pc_files_query"
-    assert history.runs[0]["user_text"] == "외부 AI 도구 요청: pc_shell_start"
-    assert len(dispatches) == 1 and dispatches[0]["device_id"] == DEVICE
-    assert dispatches[0]["trusted_owner"][1] == UID
-    assert "private-command-material" not in dispatches[0]["command"]
-    assert not transport.calls
+    assert history.runs[0]["user_text"] == "외부 AI 도구 요청: pc_shell"
+    assert captured["arguments"] == {"command": "echo ok", "cwd": None,
+                                     "shell": "powershell", "timeout_seconds": 120}
+    assert captured["device_id"] == DEVICE
 
 
-def test_audit_log_carries_numeric_metadata_without_command_or_output():
-    from app.mcp_gateway_dispatch import _log_operation
+@pytest.mark.parametrize("denial", ["matching", "grant", "tool"])
+def test_unavailable_or_undelegated_pc_never_dispatches(monkeypatch, denial):
+    from test_mcp_gateway_execution import harness
 
+    request, transport, history, _ = harness(monkeypatch, matching=denial != "matching")
+    if denial == "grant":
+        async def deny(request, session, **kwargs):
+            return False
+        monkeypatch.setattr(execution, "_check_mesh_grant", deny)
+    if denial == "tool":
+        async def unavailable(request, **kwargs):
+            return SimpleNamespace(selected_confirmed=True, tool_available=False,
+                                   execution_device_id=DEVICE)
+        monkeypatch.setattr(execution, "resolve_pc_work_context", unavailable)
+    called = []
+    async def fake_shell(request, **kwargs):
+        called.append(True)
+        return {"status": "completed"}
+    monkeypatch.setattr(execution, "execute_pc_shell", fake_shell)
+    with pytest.raises(execution.ChatPCDriveError) as caught:
+        asyncio.run(execution.execute_mcp_pc_tool(
+            request, PRINCIPAL, "pc_shell", {"command": "echo ok"},
+        ))
+    assert caught.value.code == "chat_pc_target_unavailable"
+    assert called == [] and history.runs == [] and transport.calls == []
+
+
+def test_audit_log_carries_numbers_not_command_or_output():
     audit = {"tool_name": "pc_shell", "arguments": {"command": "secret-command"},
              "approval_id": None}
     outcome = {"run_id": "run_fixture", "status": "completed",
-               "output": "secret-output", "audit": {
+               "stdout": "secret-output", "audit": {
                    "exit_code": 0, "duration_ms": 12, "output_bytes": 3,
                    "output_truncated": False}}
     messages = []
+
     class Capture(logging.Handler):
         def emit(self, record):
             messages.append(record.getMessage())
+
     logger = logging.getLogger("padiem_chat.request")
     handler = Capture()
     logger.addHandler(handler)
@@ -418,38 +251,70 @@ def test_audit_log_carries_numeric_metadata_without_command_or_output():
     assert '"output_truncated":false' in logged
 
 
-def test_shell_ignores_approval_receipts_and_never_creates_one():
-    from app.mcp_gateway_dispatch import dispatch_mcp_tool
+def test_database_audit_stores_only_numeric_metadata():
+    from test_mcp_gateway_account import DEVICE as MCP_DEVICE, issued, setup
 
-    class AuditStore:
-        def __init__(self):
-            self.records = []
-        async def audit(self, **kwargs):
-            self.records.append(kwargs)
-        async def consume_approval(self, **kwargs):
-            raise AssertionError("shell must not consume an approval")
-        async def consume_matching_approval(self, **kwargs):
-            raise AssertionError("shell must not look up an approval")
-        async def create_approval(self, **kwargs):
-            raise AssertionError("shell must not create an approval")
+    db, owner, _other, store = setup()
 
-    store = AuditStore()
-    async def executor(_request, _principal, _tool_name, _arguments, *, approval):
-        assert approval is None
-        return {"status": "running", "run_id": RUN_ID,
-                "job_id": JOB_ID, "_job_receipt": JOB_ID}
+    async def scenario():
+        token, _identity = await issued(store, owner)
+        return await store.audit(
+            identity={"user_id": owner, "device_id": MCP_DEVICE, "token_id": token["id"]},
+            tool_name="pc_shell", arguments={"command": "secret-command"},
+            status="completed", exit_code=0, duration_ms=12, output_bytes=5,
+            output_truncated=False,
+        )
 
-    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
-        mcp_gateway_store=store, mcp_gateway_executor=executor,
-        history_store=CommonHistory(),
-    )))
-    result = asyncio.run(dispatch_mcp_tool(
-        request,
-        {"owner_id": UID, "device_id": DEVICE, "token_id": TOKEN},
-        "pc_shell_start", {"command": "private-command"},
-        approval_id="mcpa_" + "a" * 32,
-    ))
-    assert result["status"] == "running" and result["job_id"] == JOB_ID
-    assert [record["status"] for record in store.records] == ["requested", "running"]
-    assert all(record["approval_id"] is None for record in store.records)
-    assert store.records[-1]["job_receipt_id"] == JOB_ID
+    asyncio.run(scenario())
+    row = dict(db.conn.execute("SELECT * FROM padiem_mcp_audit").fetchone())
+    assert "secret-command" not in json.dumps(row, ensure_ascii=False)
+    assert row["exit_code"] == 0 and row["duration_ms"] == 12
+    assert row["output_bytes"] == 5 and row["output_truncated"] == 0
+    assert len(row["request_digest"]) == 64
+
+
+def _run_worker(arguments, timeout=45):
+    outer = shell.build_pc_shell_command(arguments)
+    wrapped = "[Console]::OutputEncoding=[Text.Encoding]::UTF8; & { " + outer + " } 2>&1 | Out-String"
+    completed = subprocess.run(
+        ["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+         "-Command", wrapped],
+        capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout,
+    )
+    text = completed.stdout
+    start, end = text.find("{"), text.rfind("}")
+    assert start >= 0 and end > start, completed.stderr
+    return json.loads(text[start:end + 1])
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows worker test")
+def test_windows_worker_returns_exit_code_streams_cwd_and_truncation():
+    result = _run_worker({"command": "Write-Output 'hello'; Write-Error 'bad'; exit 3"})
+    assert result["exit_code"] == 3 and result["timed_out"] is False
+    assert "hello" in result["stdout"] and "bad" in result["stderr"]
+    windir = os.environ.get("WINDIR", r"C:\Windows")
+    cwd = _run_worker({"command": "(Get-Location).Path", "cwd": windir})
+    # Windows paths are case-insensitive and the registry value casing varies
+    # (C:\windows, C:\WINDOWS), so compare the path itself, not its spelling.
+    assert cwd["stdout"].strip().rstrip("\\").lower() == windir.strip().rstrip("\\").lower(), cwd
+    big = _run_worker({"command": "$s = 'a' * 20000; Write-Output $s"})
+    assert big["stdout_truncated"] is True and big["stdout_bytes"] >= 20_000
+    assert shell.PC_SHELL_TRUNCATION_MARKER.strip() in big["stdout"]
+    bad = _run_worker({"command": "Write-Output x", "cwd": r"C:\does-not-exist-261103"})
+    assert bad["error"] == "cwd_invalid"
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows worker test")
+def test_windows_worker_timeout_and_cmd_shell():
+    timed = _run_worker({"command": "Start-Sleep -Seconds 5; Write-Output done", "timeout_seconds": 1})
+    assert timed["timed_out"] is True and timed["exit_code"] is None
+    if shutil.which("cmd.exe"):
+        cmd = _run_worker({"command": "echo hello & echo bad 1>&2 & exit /b 2", "shell": "cmd"})
+        assert cmd["exit_code"] == 2 and "hello" in cmd["stdout"] and "bad" in cmd["stderr"]
+
+
+@pytest.mark.skipif(sys.platform != "win32" or not shutil.which("bash.exe"),
+                    reason="bash worker test")
+def test_windows_worker_bash_shell():
+    bash = _run_worker({"command": "echo hello; echo bad >&2; exit 4", "shell": "bash"})
+    assert bash["exit_code"] == 4 and "hello" in bash["stdout"] and "bad" in bash["stderr"]

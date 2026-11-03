@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 from typing import Any, AsyncIterator
 
 from .orchestration_timing import OrchestrationTiming
@@ -26,6 +27,138 @@ STREAM_FLAG_ENV = "PADIEM_CHAT_ORCHESTRATION_STREAM"
 NDJSON_MEDIA_TYPE = "application/x-ndjson"
 
 _LOG = logging.getLogger("padiem_chat.orchestration_stream")
+
+PROGRESS_EVENT_KINDS = frozenset({
+    "run_started",
+    "context_prepared",
+    "plan_created",
+    "tool_started",
+    "tool_completed",
+    "tool_failed",
+})
+PC_PROGRESS_STAGES = frozenset({"accepted", "picked_up", "executing", "result"})
+PROGRESS_KINDS = PROGRESS_EVENT_KINDS | {"pc_progress", "heartbeat"}
+HEARTBEAT_MIN_INTERVAL_SECONDS = 5.0
+
+_WEB_TOOL_IDS = frozenset({"web_search", "search_web"})
+_PC_TOOL_IDS = frozenset({
+    "pc_tool", "query_drives", "files_list", "files", "files_write", "browser",
+    "claw.pc.query_drives", "claw.pc.list_files", "claw.pc.read_file", "claw.pc.write_file",
+    "claw.pc.browser_open", "claw.pc.browser_read", "claw.pc.browser_screenshot", "claw.pc.browser_act",
+})
+
+
+def _elapsed_ms(value: Any) -> int | None:
+    if type(value) is int and value >= 0:
+        return value
+    return None
+
+
+def _progress_label(kind: str, *, stage: str | None = None, tool_name: Any = None) -> str:
+    tool_id = tool_name if isinstance(tool_name, str) else ""
+    if kind == "tool_started":
+        if tool_id in _WEB_TOOL_IDS:
+            return "웹 확인 중"
+        if tool_id in _PC_TOOL_IDS:
+            return "PC 작업 중"
+        return "도구 작업 중"
+    if kind == "tool_completed":
+        if tool_id in _WEB_TOOL_IDS:
+            return "웹 확인 완료"
+        if tool_id in _PC_TOOL_IDS:
+            return "PC 작업 완료"
+        return "도구 작업 완료"
+    if kind == "tool_failed":
+        if tool_id in _WEB_TOOL_IDS:
+            return "웹 확인이 필요해요"
+        if tool_id in _PC_TOOL_IDS:
+            return "PC 작업 확인이 필요해요"
+        return "도구 작업 확인이 필요해요"
+    if kind == "run_started":
+        return "질문 확인 중"
+    if kind == "context_prepared":
+        return "질문 확인 중"
+    if kind == "plan_created":
+        return "답변 방향 확인"
+    if kind == "pc_progress":
+        return {
+            "accepted": "PC 요청 접수",
+            "picked_up": "PC 작업 인계",
+            "executing": "PC 작업 중",
+            "result": "PC 결과 확인 중",
+        }[stage or ""]
+    return "작업 진행 중"
+
+
+class ProgressFrameBuilder:
+    """Project Engine progress records to a small, public-safe Chat frame."""
+
+    def __init__(self, *, clock=None) -> None:
+        self._clock = clock or time.monotonic
+        self._sequence = 0
+        self._last_heartbeat_at: float | None = None
+
+    def frame(
+        self,
+        kind: str,
+        *,
+        stage: str | None = None,
+        elapsed_ms: Any = None,
+        tool_name: Any = None,
+    ) -> dict[str, Any] | None:
+        if not isinstance(kind, str) or kind not in PROGRESS_KINDS:
+            return None
+        if kind == "pc_progress":
+            if not isinstance(stage, str) or stage not in PC_PROGRESS_STAGES:
+                return None
+        elif stage is not None:
+            return None
+        self._sequence += 1
+        frame: dict[str, Any] = {
+            "type": "progress",
+            "kind": kind,
+            "sequence": self._sequence,
+            "label": _progress_label(kind, stage=stage, tool_name=tool_name),
+        }
+        if stage is not None:
+            frame["stage"] = stage
+        safe_elapsed = _elapsed_ms(elapsed_ms)
+        if safe_elapsed is not None:
+            frame["elapsed_ms"] = safe_elapsed
+        return frame
+
+    def from_engine_record(self, record: Any) -> dict[str, Any] | None:
+        if not isinstance(record, dict):
+            return None
+        event = record.get("event")
+        if isinstance(event, dict):
+            kind = event.get("kind")
+            if not isinstance(kind, str) or kind not in PROGRESS_EVENT_KINDS:
+                return None
+            metadata = event.get("metadata")
+            metadata = metadata if isinstance(metadata, dict) else {}
+            tool_name = metadata.get("tool_id") or metadata.get("tool_name")
+            return self.frame(kind, tool_name=tool_name)
+
+        pc_progress = record.get("pc_progress")
+        if isinstance(pc_progress, dict):
+            return self.frame(
+                "pc_progress",
+                stage=pc_progress.get("stage"),
+                elapsed_ms=pc_progress.get("elapsed_ms"),
+            )
+
+        heartbeat = record.get("heartbeat")
+        if isinstance(heartbeat, dict):
+            now = self._clock()
+            if (
+                self._last_heartbeat_at is not None
+                and now - self._last_heartbeat_at < HEARTBEAT_MIN_INTERVAL_SECONDS
+            ):
+                return None
+            self._last_heartbeat_at = now
+            return self.frame("heartbeat", elapsed_ms=heartbeat.get("elapsed_ms"))
+        return None
 
 
 def orchestration_stream_enabled(source: Any) -> bool:
@@ -65,6 +198,7 @@ async def ndjson_answer(
     """
     text_seen = False
     result = None
+    progress = ProgressFrameBuilder()
     try:
         yield line({"type": "meta", "stream": True})
         try:
@@ -79,10 +213,14 @@ async def ndjson_answer(
                         text_seen = True
                         yield line({"type": "delta", "text": delta})
                     continue
+                progress_frame = progress.from_engine_record(record)
+                if progress_frame is not None:
+                    yield line(progress_frame)
+                if any(key in record for key in ("event", "pc_progress", "heartbeat")):
+                    continue
                 if "result" in record:
                     result = record["result"]
                     break
-                # heartbeat·event·pc_progress는 일반 답변 화면에 쓰지 않는다.
         except Exception:
             if text_seen:
                 yield line({"type": "error", "code": "invalid_engine_stream"})
@@ -110,7 +248,12 @@ async def ndjson_answer(
 
 
 __all__ = [
+    "HEARTBEAT_MIN_INTERVAL_SECONDS",
     "NDJSON_MEDIA_TYPE",
+    "PC_PROGRESS_STAGES",
+    "PROGRESS_EVENT_KINDS",
+    "PROGRESS_KINDS",
+    "ProgressFrameBuilder",
     "STREAM_FLAG_ENV",
     "line",
     "ndjson_answer",

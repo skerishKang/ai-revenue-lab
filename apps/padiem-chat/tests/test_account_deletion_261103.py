@@ -452,9 +452,6 @@ def test_the_route_never_names_a_table_the_schema_does_not_have():
     # This explicit expectation makes the schema omission guard fail if a
     # new user-keyed table is present in the schema but absent from deletion.
     assert ("pc_install_tokens", "user_id = ?") in _USER_KEYED_TABLES
-    # The MCP job receipt is a hash column on the existing audit table, so the
-    # established account-keyed deletion removes it with the rest of the audit.
-    assert ("padiem_mcp_audit", "user_id = ?") in _USER_KEYED_TABLES
     assert "user_id" not in {
         column["name"] for column in db.conn.execute("PRAGMA table_info(mesh_device_drives)").fetchall()
     }
@@ -477,17 +474,6 @@ def test_successful_deletion_clears_every_surveyed_table_and_keeps_the_other_use
     app, settings = build_app(db)
     uid = accounts["deleter"]
     other = accounts["other"]
-    audit_columns = {
-        row["name"] for row in db.conn.execute("PRAGMA table_info(padiem_mcp_audit)").fetchall()
-    }
-    assert "job_receipt_sha256" in audit_columns
-    db.conn.execute(
-        "INSERT INTO padiem_mcp_audit "
-        "(id,user_id,token_id,device_id,tool_name,request_digest,status,created_at,job_receipt_sha256) "
-        "VALUES (?,?,?,?,?,?,?,?,?)",
-        ("mcp-event-job-receipt", uid, "mcp-token-hash", "device-hash",
-         "pc_shell_start", "a" * 64, "running", "2026-11-03T00:00:00Z", "b" * 64),
-    )
     response = call(
         app, settings, "POST", "/api/account/delete",
         token=token_for(settings, uid),
@@ -501,9 +487,6 @@ def test_successful_deletion_clears_every_surveyed_table_and_keeps_the_other_use
     for table, where in _USER_KEYED_TABLES:
         assert user_count(db, table, where, uid) == 0, table
         assert user_count(db, table, where, other) == before["other"][(table, where)], table
-    assert db.conn.execute(
-        "SELECT COUNT(*) AS n FROM padiem_mcp_audit WHERE user_id = ?", (uid,)
-    ).fetchone()["n"] == 0
     remaining = sorted(row["id"] for row in db.conn.execute("SELECT id FROM users").fetchall())
     assert uid not in remaining
     # Replay-prevention rows stay — one per account — but the deleting

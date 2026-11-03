@@ -5,7 +5,6 @@ import asyncio
 from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
-import sqlite3
 from types import SimpleNamespace
 
 import pytest
@@ -23,30 +22,9 @@ from test_5222_account_model_selection import BASE, build_app, client_for, seed_
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "085_mcp_gateway.sql"
 SHELL_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "094_mcp_shell_audit.sql"
 OAUTH_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "095_mcp_oauth.sql"
-COMMON_JOB_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "099_mcp_common_job_receipts.sql"
 NOW = datetime(2026, 11, 1, tzinfo=timezone.utc)
 DEVICE = "node//test-owner-pc"
 FAKE_SECRET = "fixed-test-material-not-a-live-credential"
-
-
-def test_099_receipt_migration_runs_after_097_without_intermediate_file(tmp_path):
-    from app.local_cpython import LOCAL_LEDGER_TABLE, apply_migrations
-
-    migrations = tmp_path / "migrations"
-    migrations.mkdir()
-    (migrations / "097_seed.sql").write_text(
-        "CREATE TABLE padiem_mcp_audit (user_id TEXT, token_id TEXT, device_id TEXT);\n",
-        encoding="utf-8",
-    )
-    (migrations / COMMON_JOB_MIGRATION.name).write_text(
-        COMMON_JOB_MIGRATION.read_text(encoding="utf-8"), encoding="utf-8",
-    )
-    db = sqlite3.connect(":memory:")
-    assert apply_migrations(db, migrations) == 2
-    columns = {row[1] for row in db.execute("PRAGMA table_info(padiem_mcp_audit)")}
-    applied = {row[0] for row in db.execute(f"SELECT name FROM {LOCAL_LEDGER_TABLE}")}
-    assert "job_receipt_sha256" in columns
-    assert applied == {"097_seed.sql", "099_mcp_common_job_receipts.sql"}
 
 
 class Pairing:
@@ -67,7 +45,7 @@ class Pairing:
 
 def setup():
     db, owner, other, _ = seed_db()
-    for path in (MIGRATION, SHELL_MIGRATION, OAUTH_MIGRATION, COMMON_JOB_MIGRATION):
+    for path in (MIGRATION, SHELL_MIGRATION, OAUTH_MIGRATION):
         if path.exists():
             db.conn.executescript(path.read_text(encoding="utf-8"))
     store = D1McpGatewayStore(db, secret_factory=lambda: FAKE_SECRET)
@@ -202,33 +180,6 @@ async def test_audit_records_exact_metadata_without_secret_or_file_content():
     assert row["token_id"] == token["id"] and row["tool_name"] == "pc_write" and row["status"] == "completed"
     assert len(row["request_digest"]) == 64
     assert "private-file-body" not in json.dumps(row) and FAKE_SECRET not in json.dumps(row)
-
-
-@pytest.mark.asyncio
-async def test_common_job_receipt_is_hashed_and_bound_to_token_account_and_pc():
-    db, owner, other, store = setup()
-    token, identity = await issued(store, owner)
-    job_id = "dsp_" + "a" * 32
-    await store.audit(
-        identity=identity, tool_name="pc_shell_start", arguments={"command": "private-command"},
-        status="running", exit_code=0, duration_ms=12, output_bytes=5,
-        output_truncated=False, job_receipt_id=job_id, now=NOW,
-    )
-    row = dict(db.conn.execute("SELECT * FROM padiem_mcp_audit").fetchone())
-    assert row["job_receipt_sha256"] == __import__("hashlib").sha256(job_id.encode("ascii")).hexdigest()
-    assert row["status"] == "running" and row["exit_code"] == 0 and row["duration_ms"] == 12
-    assert row["output_bytes"] == 5 and row["output_truncated"] == 0
-    assert job_id not in json.dumps(row) and "private-command" not in json.dumps(row)
-    assert await store.owns_job_receipt(identity=identity, job_id=job_id)
-
-    _other_token, other_identity = await issued(store, other)
-    assert not await store.owns_job_receipt(identity=other_identity, job_id=job_id)
-    _, other_pc_identity = await issued(store, owner)
-    other_pc_identity = {**other_pc_identity, "device_id": "node//other-owner-pc"}
-    assert not await store.owns_job_receipt(identity=other_pc_identity, job_id=job_id)
-    assert not await store.owns_job_receipt(identity=identity, job_id="oracle_mesh_cmd_" + "a" * 32)
-    assert await store.revoke_token(user_id=owner, token_id=token["id"], now=NOW)
-    assert not await store.owns_job_receipt(identity=identity, job_id=job_id)
 
 
 @pytest.mark.asyncio

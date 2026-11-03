@@ -213,76 +213,6 @@ CHANGES = {
 }
 
 
-CHANGES.update({
-    "tests_only": ("apps/padiem-chat/tests/test_added.py", "test fixture\n"),
-    "code_and_test": ("apps/padiem-chat/app/chat_marker.py", "CHAT = 2\n"),
-    "docs_only": ("docs/ops/deploy-note.md", "documentation\n"),
-    "runtime_config": ("apps/padiem-chat/.env", "SAMPLE_SETTING=changed\n"),
-    "common_unit_policy": (
-        "deploy/host-com2/restart-policy/10-padiem-restart.conf",
-        "[Service] changed\\n",
-    ),
-    "shared_runtime": (
-        "packages/padiem-ai-core/padiem_ai_core/pc_work_metrics.py",
-        "# shared runtime changed\\n",
-    ),
-    "historical_test_paths": (
-        "apps/korean-ai-platform/tests/test_5784_b14_local_runtime.py",
-        "test fixture\n",
-    ),
-})
-
-
-EXTRA_CHANGES = {
-    "tests_only": [
-        ("apps/padiem-ai-engine/test_engine.py", "assert True\\n"),
-        ("apps/korean-ai-platform/test_registry.py", "assert True\\n"),
-        ("apps/padiem-mesh-queue/conftest.py", "# fixture\\n"),
-        ("deploy/host-com2/p01/tests/test_p01_packaging.py", "# fixture\\n"),
-        ("apps/padiem-chat/static/interaction.test.mjs", "test fixture\\n"),
-        ("apps/padiem-chat/scripts/check_test.py", "test fixture\\n"),
-        ("apps/padiem-chat/pytest.ini", "[pytest]\\n"),
-        ("apps/padiem-chat/.env.example", "SAMPLE_SETTING=example\\n"),
-        ("docs/operations/plan.md", "documentation\\n"),
-        (".gitignore", "artifact\\n"),
-        ("progress.md", "checkpoint\\n"),
-    ],
-    "code_and_test": [
-        ("apps/padiem-chat/tests/test_chat_marker.py", "assert True\\n"),
-    ],
-    "docs_only": [
-        ("README.md", "documentation\\n"),
-    ],
-    "runtime_config": [
-        ("apps/padiem-ai-engine/uv.lock", "# lock\\n"),
-        ("apps/korean-ai-platform/requirements.txt", "# requirements\\n"),
-        ("apps/padiem-mesh-queue/deploy/padiem-mesh-queue.service", "[Service]\\n"),
-        ("deploy/host-com2/chat/padiem-chat-com2.service", "[Service]\\n"),
-        ("apps/padiem-chat/.env.example", "SAMPLE_SETTING=example\\n"),
-    ],
-    "historical_test_paths": [
-        ("apps/korean-ai-platform/tests/test_b14_model_registry_file.py", "test fixture\\n"),
-        ("apps/korean-ai-platform/tests/test_owner_startup_command.py", "test fixture\\n"),
-        ("apps/korean-ai-platform/tests/test_pc_work_metrics_com2_staging.py", "test fixture\\n"),
-        ("apps/padiem-mesh-queue/conftest.py", "# fixture\\n"),
-        ("apps/padiem-mesh-queue/tests/test_copy_state.py", "test fixture\\n"),
-        ("apps/padiem-mesh-queue/tests/test_mesh_drive_refresh_end_to_end.py", "test fixture\\n"),
-        ("apps/padiem-mesh-queue/tests/test_queue_to_d1.py", "test fixture\\n"),
-        ("apps/padiem-mesh-queue/tests/test_queue_watchdog.py", "test fixture\\n"),
-        ("deploy/host-com2/p01/tests/test_p01_packaging.py", "test fixture\\n"),
-        ("apps/padiem-chat/app/local_cpython.py", "CHAT_RUNTIME = changed\\n"),
-        ("apps/padiem-chat/conftest.py", "# fixture\\n"),
-        ("apps/padiem-chat/tests/test_2505_chat_claw_conversation_continuity.py", "test fixture\\n"),
-        ("deploy/host-com2/tests/test_deploy_from_main.py", "test fixture\\n"),
-        ("packages/padiem-ai-core/tests/test_pillow_wheel_receipts.py", "test fixture\\n"),
-        ("deploy/host-com2/chat/.env.example", "EXAMPLE_SETTING=changed\\n"),
-        ("docs/operations/CHAT_MODEL_FIRST_20261103.md", "documentation\\n"),
-        (".gitignore", "generated\\n"),
-        ("progress.md", "checkpoint\\n"),
-    ],
-}
-
-
 class DeployHarness(unittest.TestCase):
     """A throwaway origin + production checkout; no test methods of its own."""
 
@@ -302,8 +232,8 @@ class DeployHarness(unittest.TestCase):
         self.first = self._commit("base")
         self._git(str(self.ops), "remote", "add", "origin", str(self.origin))
         self._git(str(self.ops), "push", "-q", "-u", "origin", "HEAD:main")
-        for relative, text in [CHANGES[self.scenario], *EXTRA_CHANGES.get(self.scenario, [])]:
-            self._write(relative, text)
+        relative, text = CHANGES[self.scenario]
+        self._write(relative, text)
         self.second = self._commit("change")
         self._git(str(self.ops), "push", "-q", "origin", "HEAD:main")
         # The host is still on the previous release; origin/main is ahead.
@@ -776,20 +706,6 @@ class CouncilAssetScenarioTest(DeployHarness):
 class MigrationScenarioTest(DeployHarness):
     scenario = "migration"
 
-    def test_a_pending_migration_selects_chat_and_requires_migration_first(self) -> None:
-        result = self._run_main(
-            self.second, "--ops-checkout", self.ops.as_posix(),
-            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
-        )
-        output = result.stdout + result.stderr
-        self.assertEqual(result.returncode, 3, output)
-        self.assertIn(
-            "COM2_DEPLOY_DECISION_CHAT=REDEPLOY reason_files=1 reason=CHANGED_PATHS",
-            output,
-        )
-        self.assertIn("COM2_DEPLOY_MIGRATION_FIRST=YES", output)
-        self.assertIn("COM2_DEPLOY_REASON=MIGRATION_FIRST", output)
-
     def test_a_new_migration_is_applied_after_a_backup_then_the_run_continues(self) -> None:
         result = self._run_apply()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -809,112 +725,6 @@ class MigrationScenarioTest(DeployHarness):
         self.assertNotIn("002_new_owner.sql", ledger_names(backups[0]))
         self.assertIn("002_new_owner.sql", ledger_names(self.db))
         self.assertIn("systemctl is-enabled", self.log.read_text(encoding="utf-8"))
-
-
-class DeployScopeScenarioTest(DeployHarness):
-    """Test files and docs do not select services; runtime inputs still do."""
-
-    scenario = "tests_only"
-
-    def setUp(self) -> None:
-        scenarios = {
-            "test_code_plus_test_redeploys_and_counts_only_code": "code_and_test",
-            "test_documentation_only_skips": "docs_only",
-            "test_runtime_config_lock_requirements_and_units_select_services": "runtime_config",
-            "test_a_common_systemd_policy_change_selects_all_services": "common_unit_policy",
-            "test_a_shared_core_change_selects_chat_and_p01": "shared_runtime",
-            "test_a8eff99_to_a1fdec4_actual_test_path_manifest_skips_queue_p01_b14": "historical_test_paths",
-        }
-        self.scenario = scenarios.get(self._testMethodName, "tests_only")
-        super().setUp()
-
-    def _dry_run(self) -> str:
-        result = self._run_main(
-            self.second, "--ops-checkout", self.ops.as_posix(),
-            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
-        )
-        output = result.stdout + result.stderr
-        self.assertEqual(result.returncode, 0, output)
-        return output
-
-    def test_test_config_example_docs_and_repo_metadata_only_skip(self) -> None:
-        output = self._dry_run()
-        self.assertIn(
-            "COM2_DEPLOY_EXCLUDED_COUNTS=tests:8 docs:1 env_example:1 repo_meta:2 unmapped:0",
-            output,
-        )
-        for service in ("CHAT", "P01", "B14", "QUEUE"):
-            self.assertIn(
-                f"COM2_DEPLOY_DECISION_{service}=SKIP reason_files=0 reason=NO_DEPLOY_PATHS",
-                output,
-            )
-        self.assertIn("COM2_DEPLOY_NO_SERVICE_CHANGES=YES", output)
-        self.assertIn(
-            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP",
-            output,
-        )
-
-    def test_code_plus_test_redeploys_and_counts_only_code(self) -> None:
-        output = self._dry_run()
-        self.assertIn(
-            "COM2_DEPLOY_DECISION_CHAT=REDEPLOY reason_files=1 reason=CHANGED_PATHS",
-            output,
-        )
-        self.assertIn(
-            "COM2_DEPLOY_EXCLUDED_COUNTS=tests:1 docs:0 env_example:0 repo_meta:0 unmapped:0",
-            output,
-        )
-        self.assertIn("COM2_DEPLOY_SUMMARY=chat:WOULD_DEPLOY", output)
-
-    def test_documentation_only_skips(self) -> None:
-        output = self._dry_run()
-        self.assertIn("COM2_DEPLOY_EXCLUDED_COUNTS=tests:0 docs:2", output)
-        self.assertIn("COM2_DEPLOY_DECISION_CHAT=SKIP reason_files=0", output)
-        self.assertIn("COM2_DEPLOY_NO_SERVICE_CHANGES=YES", output)
-
-    def test_runtime_config_lock_requirements_and_units_select_services(self) -> None:
-        output = self._dry_run()
-        for service, count in (("CHAT", 2), ("P01", 1), ("B14", 1), ("QUEUE", 1)):
-            self.assertIn(
-                f"COM2_DEPLOY_DECISION_{service}=REDEPLOY reason_files={count}",
-                output,
-            )
-        self.assertIn("COM2_DEPLOY_EXCLUDED_COUNTS=tests:0 docs:0 env_example:1", output)
-
-    def test_a_common_systemd_policy_change_selects_all_services(self) -> None:
-        output = self._dry_run()
-        for service in ("CHAT", "P01", "B14", "QUEUE"):
-            self.assertIn(
-                f"COM2_DEPLOY_DECISION_{service}=REDEPLOY reason_files=1",
-                output,
-            )
-
-    def test_a_shared_core_change_selects_chat_and_p01(self) -> None:
-        output = self._dry_run()
-        self.assertIn(
-            "COM2_DEPLOY_DECISION_CHAT=REDEPLOY reason_files=1 reason=CHANGED_PATHS",
-            output,
-        )
-        self.assertIn(
-            "COM2_DEPLOY_DECISION_P01=REDEPLOY reason_files=1 reason=CHANGED_PATHS+RUNNING_CODE_MISMATCH",
-            output,
-        )
-
-    def test_a8eff99_to_a1fdec4_actual_test_path_manifest_skips_queue_p01_b14(self) -> None:
-        output = self._dry_run()
-        self.assertIn(
-            "COM2_DEPLOY_EXCLUDED_COUNTS=tests:14 docs:1 env_example:1 repo_meta:2 unmapped:0",
-            output,
-        )
-        self.assertIn(
-            "COM2_DEPLOY_DECISION_CHAT=REDEPLOY reason_files=1 reason=CHANGED_PATHS",
-            output,
-        )
-        for service in ("P01", "B14", "QUEUE"):
-            self.assertIn(
-                f"COM2_DEPLOY_DECISION_{service}=SKIP reason_files=0",
-                output,
-            )
 
 
 class P01ScenarioTest(DeployHarness):

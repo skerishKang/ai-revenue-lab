@@ -61,11 +61,6 @@ _SCRIPT_CAPTIONS = {
     ("test_bookai_reading_screen_with_prepared_account", "bookai-with-session"): ("04-bookai.md", 1),
     ("test_bookai_reading_screen_with_prepared_account", "open-reading-screen"): ("04-bookai.md", 2),
     ("test_bookai_reading_screen_with_prepared_account", "resume-reading-on-second-device"): ("04-bookai.md", 4),
-    ("test_tutorial_account_deletion_flow", "open-account-settings"): ("05-account-deletion.md", 1),
-    ("test_tutorial_account_deletion_flow", "open-delete-confirm"): ("05-account-deletion.md", 2),
-    ("test_tutorial_account_deletion_flow", "delete-account"): ("05-account-deletion.md", 3),
-    ("test_tutorial_external_ai_connect_flow", "open-connect-settings"): ("07-external-ai-connect.md", 1),
-    ("test_tutorial_external_ai_connect_flow", "open-connection-guide"): ("07-external-ai-connect.md", 2),
 }
 
 

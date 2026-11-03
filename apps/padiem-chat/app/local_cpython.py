@@ -69,7 +69,7 @@ MIGRATIONS_DIR = Path(__file__).resolve().parents[1] / "migrations"
 
 #: Own ledger instead of wrangler's `d1_migrations`: the local file must never
 #: look "already migrated" to a future wrangler run and must never rewrite the
-#: production ledger shape. Available filenames define order; numeric gaps are allowed.
+#: production ledger shape. Same order guarantee — filenames sort 001…076.
 LOCAL_LEDGER_TABLE = "padiem_local_migration_ledger"
 
 

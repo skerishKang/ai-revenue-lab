@@ -60,22 +60,15 @@ html[data-theme="padiem-glass"] .answer-more-menu .answer-action {
   min-height: 40px;
 }
 
-/* ── 5. Home starter icons: consistent SVG marks and accessible plates ───────
- * The nth-child icon rule in padiem-surfaces.css has higher specificity than
- * the light/home theme colors and paints alternating icons white on white.
- * Use the same opaque plate and foreground for every Chat home-card icon. */
-html:is([data-theme="light"], [data-theme="padiem-home"], [data-theme="padiem-glass"])
-body .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden])
-.starter-grid .starter:not(.claw-workspace-starter) .starter-icon {
-  background: #eef3f7;
-  border: 1px solid #9cafbf;
+/* ── 5. "글쓰기 도움" icon: the plate is no longer white on white ──────────
+ * padiem-surfaces.css paints every even-positioned starter icon white on a
+ * white plate. The plan card was already fixed that way; the writing card was
+ * the remaining invisible glyph, so it gets the same visible Glass plate and
+ * glyph colour as the computer and file cards. */
+html[data-theme="padiem-glass"] body #writingStarterButton .starter-icon {
+  background: rgba(34, 46, 57, .10);
+  border-color: rgba(255, 255, 255, .42);
   color: #2d4557;
-}
-html[data-theme="dark"] body .app-shell[data-layout-variant="conversation"]
-#emptyState:not([hidden]) .starter-grid .starter:not(.claw-workspace-starter) .starter-icon {
-  background: #29485f;
-  border: 1px solid #7893a6;
-  color: #e5f3fd;
 }
 
 /* ── 6. Desktop greeting: two lines instead of three ──────────────────────

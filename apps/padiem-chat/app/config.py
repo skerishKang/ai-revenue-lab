@@ -150,9 +150,10 @@ class Settings:
     # loopback HTTP for the public base URL and the same-origin expectation.
     # Default False — every production deployment keeps the https-only rules.
     local_dev: bool = False
-    # MCP's four arbitrary PC shell tools share one deployment switch. They
-    # ship dark; Off hides them and refuses calls, except stop for an owned
-    # active job. A deployment opts in with PADIEM_MCP_PC_SHELL_ENABLED=true.
+    # MCP `pc_shell` runs an arbitrary command on the owner's connected PC, so it
+    # ships dark. Off: the tool is not advertised in `tools/list` and a call is
+    # refused with `tool_not_enabled`. A deployment opts in with
+    # PADIEM_MCP_PC_SHELL_ENABLED=true.
     mcp_pc_shell_enabled: bool = False
     lovetree_account_delete_url: str | None = None
     account_delete_rpc_secret: str | None = field(default=None, repr=False)

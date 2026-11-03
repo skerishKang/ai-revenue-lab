@@ -122,23 +122,19 @@ def test_modern_discovery_and_legacy_initialization_are_sessionless(gateway):
 
 
 @pytest.mark.parametrize("version", [MODERN, LEGACY])
-def test_fourteen_sorted_tools_use_closed_schemas_and_token_bound_device(gateway, version):
+def test_eleven_sorted_tools_use_closed_schemas_and_token_bound_device(gateway, version):
     response = post(gateway, version=version)
     tools = response.json()["result"]["tools"]
-    assert [tool["name"] for tool in tools] == [
-        "pc_browser_act", "pc_browser_open", "pc_browser_read", "pc_browser_screenshot",
-        "pc_delete", "pc_list", "pc_move", "pc_read", "pc_search", "pc_shell",
-        "pc_shell_read", "pc_shell_start", "pc_shell_stop", "pc_write",
-    ]
+    assert [tool["name"] for tool in tools] == ["pc_browser_act", "pc_browser_open", "pc_browser_read", "pc_browser_screenshot", "pc_delete", "pc_list", "pc_move", "pc_read", "pc_search", "pc_shell", "pc_write"]
     for tool in tools:
         assert tool["inputSchema"]["additionalProperties"] is False
         assert "device_id" not in tool["inputSchema"]["properties"]
     shell = next(tool for tool in tools if tool["name"] == "pc_shell")
     assert shell["inputSchema"]["required"] == ["command"]
-    assert set(shell["inputSchema"]["properties"]) == {"command", "cwd", "shell", "wait_seconds"}
+    assert set(shell["inputSchema"]["properties"]) == {"command", "cwd", "shell", "timeout_seconds"}
     assert shell["inputSchema"]["properties"]["shell"]["enum"] == ["powershell", "cmd", "bash"]
-    wait = shell["inputSchema"]["properties"]["wait_seconds"]
-    assert wait["type"] == "integer" and wait["minimum"] == 1 and wait["maximum"] == 150
+    timeout = shell["inputSchema"]["properties"]["timeout_seconds"]
+    assert timeout["type"] == "integer" and timeout["minimum"] == 1 and timeout["maximum"] == 600
     assert gateway.calls == []
 
 
@@ -189,23 +185,12 @@ def test_pc_shell_is_hidden_and_refused_when_the_flag_is_off(gateway):
         "pc_browser_act", "pc_browser_open", "pc_browser_read", "pc_browser_screenshot",
         "pc_delete", "pc_list", "pc_move", "pc_read", "pc_search", "pc_write",
     ]
-    off_calls = [
-        ("pc_shell", {"command": "Get-Date"}),
-        ("pc_shell_start", {"command": "Get-Date"}),
-        ("pc_shell_read", {"job_id": "dsp_" + "a" * 32}),
-        ("pc_shell_stop", {"job_id": "dsp_" + "a" * 32}),
-    ]
-    for name, arguments in off_calls:
-        refused = post(gateway, "tools/call", params={"name": name, "arguments": arguments})
-        assert refused.status_code == 400
-        error = refused.json()["error"]
-        assert error["code"] == -32020
-        assert "tool_not_enabled" in error["message"]
-        assert error["data"] == {"code": "tool_not_enabled", "tool": name}
-    malformed = post(gateway, "tools/call", params={"name": "pc_shell", "arguments": {}})
-    assert malformed.json()["error"]["data"] == {
-        "code": "tool_not_enabled", "tool": "pc_shell",
-    }
+    refused = post(gateway, "tools/call", params={"name": "pc_shell", "arguments": {"command": "Get-Date"}})
+    assert refused.status_code == 400
+    error = refused.json()["error"]
+    assert error["code"] == -32020
+    assert "tool_not_enabled" in error["message"]
+    assert error["data"] == {"code": "tool_not_enabled", "tool": "pc_shell"}
     # Nothing reached the executor and nothing was written to the audit trail.
     assert gateway.calls == [] and gateway.store.records == []
     # The rest of the gateway keeps working while pc_shell stays dark.
@@ -213,29 +198,13 @@ def test_pc_shell_is_hidden_and_refused_when_the_flag_is_off(gateway):
     assert read.json()["result"]["structuredContent"]["status"] == "completed"
 
 
-def test_active_owned_stop_still_reaches_executor_when_switch_is_off(gateway, monkeypatch):
-    from app import mcp_gateway_shell
-
-    gateway.app.state.settings.mcp_pc_shell_enabled = False
-    async def active(request, *, identity, job_id):
-        assert identity == {"user_id": OWNER, "device_id": DEVICE, "token_id": "mcp_fixture"}
-        assert job_id == "dsp_" + "a" * 32
-        return True
-    monkeypatch.setattr(mcp_gateway_shell, "is_active_job_for_identity", active)
-    response = post(gateway, "tools/call", params={
-        "name": "pc_shell_stop", "arguments": {"job_id": "dsp_" + "a" * 32},
-    })
-    assert response.status_code == 200
-    assert gateway.calls[0][1] == "pc_shell_stop"
-
-
 @pytest.mark.parametrize("arguments", [
     {},
     {"command": ""},
     {"command": "echo ok", "shell": "zsh"},
-    {"command": "echo ok", "wait_seconds": 0},
-    {"command": "echo ok", "wait_seconds": 151},
-    {"command": "echo ok", "wait_seconds": True},
+    {"command": "echo ok", "timeout_seconds": 0},
+    {"command": "echo ok", "timeout_seconds": 601},
+    {"command": "echo ok", "timeout_seconds": True},
     {"command": "echo ok", "cwd": "bad\x01path"},
     {"command": "echo ok", "device_id": DEVICE},
     {"command": "echo ok", "extra": "value"},

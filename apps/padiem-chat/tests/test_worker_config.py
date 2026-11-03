@@ -269,9 +269,11 @@ def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
 def test_phase1_css_blob_content_remains_byte_equal():
     root = Path(__file__).resolve().parents[1]
     repo = root.parents[1]
-    assert (root / "static/styles.css").read_bytes() == (
-        repo / "reference/business-62-padiem-chat-v1/styles.css"
-    ).read_bytes()
+    from style_contract import assert_phase1_styles_match
+    assert_phase1_styles_match(
+        root / "static/styles.css",
+        repo / "reference/business-62-padiem-chat-v1/styles.css",
+    )
 
 
 def test_b66_pdf_renderer_binding_is_fixed_server_authority():
