@@ -17,6 +17,9 @@
 # arrive the body stream (SSE/NDJSON) is not aborted.
 #
 # Copy under /etc/cloudflared/ and add `--config` to that tunnel's unit.
+# Keep request URLs and headers out of routine tunnel logs.
+loglevel: error
+
 tunnel: CHAT_COM2_TUNNEL_UUID
 credentials-file: /etc/cloudflared/CHAT_COM2_TUNNEL_UUID.json
 

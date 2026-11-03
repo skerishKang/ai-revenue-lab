@@ -211,6 +211,8 @@ def test_late_installed_orchestration_route_is_covered_by_telemetry(
         (b'{"error":{"code":"has spaces"}}', None),
         (b'{"error":{"code":"x\\nfoo"}}', None),
         (b'{"error":{"code":"valid_code"}}' + b" " * 2048, None),
+        (b'{"error":{"code":"person@example.invalid"}}', None),
+        (b'{"error":{"code":"sk-proj-synthetic-marker"}}', None),
         (b"not-json", None),
     ],
 )
@@ -382,6 +384,57 @@ def test_build_request_event_is_json_serialisable_and_bounded():
     assert set(event) == EXPECTED_EVENT_KEYS
     assert json.loads(json.dumps(event))["route"] == "/health"
     assert event["ts"].endswith("Z")
+
+
+@pytest.mark.asyncio
+async def test_default_emitter_omits_sensitive_request_and_response_material(caplog):
+    prompt = "private-prompt-marker"
+    file_content = "private-file-marker"
+    token = "synthetic-token-marker"
+    cookie = "synthetic-cookie-marker"
+    email = "person@example.invalid"
+    authorization = "Bearer synthetic-authorization-marker"
+    request_body = json.dumps({"messages": [{"role": "user", "content": prompt}],
+                               "file_content": file_content}).encode()
+    response_body = json.dumps({"error": {"code": email,
+                                          "message": "private-response-marker"}}).encode()
+    outgoing = []
+
+    async def app(scope, receive, send):
+        message = await receive()
+        assert prompt.encode() in message["body"]
+        await send({"type": "http.response.start", "status": 503, "headers": []})
+        await send({"type": "http.response.body", "body": response_body,
+                    "more_body": False})
+
+    async def receive():
+        return {"type": "http.request", "body": request_body, "more_body": False}
+
+    async def send(message):
+        outgoing.append(message)
+
+    scope = {
+        "type": "http", "method": "POST", "path": "/api/chat",
+        "query_string": f"email={email}&token={token}".encode(),
+        "headers": [(b"authorization", authorization.encode()),
+                    (b"cookie", f"session={cookie}".encode())],
+    }
+    logger = logging.getLogger("padiem_chat.request")
+    logger.addHandler(caplog.handler)
+    try:
+        with caplog.at_level(logging.INFO, logger="padiem_chat.request"):
+            await RequestTelemetryMiddleware(app)(scope, receive, send)
+    finally:
+        logger.removeHandler(caplog.handler)
+
+    assert outgoing[-1]["body"] == response_body
+    assert all(value not in caplog.text for value in (
+        prompt, file_content, token, cookie, email, authorization,
+        "private-response-marker",
+    ))
+    event = json.loads(caplog.records[-1].getMessage())
+    assert event["status"] == 503
+    assert "error_code" not in event
 
 
 # --------------------------------------------------------------------------

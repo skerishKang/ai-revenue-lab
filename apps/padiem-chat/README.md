@@ -123,7 +123,7 @@ The browser does not mint approval evidence, canonical subject identity, provide
 
 ```bash
 PADIEM_CHAT_RUNTIME_MODE=mock \
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8080
+python -m app.local_server --host 127.0.0.1 --port 8080
 ```
 
 Mock mode is deterministic and makes zero upstream model calls.
@@ -133,7 +133,7 @@ Mock mode is deterministic and makes zero upstream model calls.
 ```bash
 PADIEM_CHAT_RUNTIME_MODE=b14 \
 PADIEM_CHAT_B14_BASE_URL=https://<approved-b14-host> \
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8080
+python -m app.local_server --host 127.0.0.1 --port 8080
 ```
 
 The browser does not supply Provider keys or arbitrary upstream origins. Ordinary text requests are adapted to product-neutral Core execution inputs; B14 performs the actual Provider/model execution beneath the shared boundary.

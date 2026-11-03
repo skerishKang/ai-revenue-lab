@@ -101,12 +101,20 @@ async def test_a_stated_account_that_differs_is_still_a_mismatch():
 
 
 @pytest.mark.asyncio
-async def test_a_client_that_opted_out_of_profile_writes_nothing_and_still_signs_in():
+async def test_a_client_that_opted_out_of_profile_writes_nothing_and_still_signs_in(caplog):
     # apps/padiem-auth only discloses profile fields to clients that list
     # profile_claims; the production Chat client does not, so the body is bare.
     store, notified = Recorded(), []
-    await provide(store, notified, {'token_type': 'Bearer', 'expires_in': 900})
+    private_key = 'person@example.invalid'
+    caplog.set_level(logging.INFO, logger='app.shared_profile_provision')
+    await provide(store, notified, {'token_type': 'Bearer', 'expires_in': 900,
+                                    'access_token': 'synthetic-oauth-token',
+                                    private_key: 'private-response-value'})
     assert store.calls == [] and notified == []
+    assert 'body_field_count=4' in caplog.text
+    assert private_key not in caplog.text
+    assert 'synthetic-oauth-token' not in caplog.text
+    assert 'private-response-value' not in caplog.text
 
 
 @pytest.mark.asyncio
@@ -140,10 +148,16 @@ async def test_the_rejected_condition_is_named_without_printing_any_value(caplog
     assert 'user@example.invalid' not in caplog.text
 
     caplog.clear()
+    private_key = 'private@example.invalid'
     with pytest.raises(ValueError):
-        await provide(Recorded(), [], {'profile': {'email': 'x@example.invalid', 'phone': 'x'}})
+        await provide(Recorded(), [], {'profile': {'email': 'x@example.invalid',
+                                                    private_key: 'synthetic-token-marker'}})
     assert 'condition=shape' in caplog.text
+    assert 'profile_field_count=2' in caplog.text
+    assert 'body_field_count=1' in caplog.text
     assert 'x@example.invalid' not in caplog.text
+    assert private_key not in caplog.text
+    assert 'synthetic-token-marker' not in caplog.text
 
     caplog.clear()
     with pytest.raises(ValueError):

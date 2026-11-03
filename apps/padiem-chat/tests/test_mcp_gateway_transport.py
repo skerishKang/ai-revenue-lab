@@ -330,7 +330,7 @@ def test_existing_request_log_contains_only_bounded_operation_metadata(gateway, 
         _LOGGER.removeHandler(caplog.handler)
     events = [json.loads(record.getMessage()) for record in caplog.records if record.name == "padiem_chat.request"]
     assert [event["status"] for event in events] == ["requested", "confirmation_required"]
-    assert events[-1]["token_id"] == "mcp_fixture" and events[-1]["tool"] == "pc_write"
+    assert "token_id" not in events[-1] and events[-1]["tool"] == "pc_write"
     assert events[-1]["approval_id"] == APPROVAL and len(events[-1]["request_digest"]) == 64
     for excluded in (TOKEN, OWNER, DEVICE, "private-file", "private document content"):
         assert excluded not in caplog.text

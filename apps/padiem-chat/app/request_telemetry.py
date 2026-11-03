@@ -79,7 +79,7 @@ _REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9._:-]{8,64}$")
 # 503 can be attributed without re-running the turn. The body itself is never
 # kept: it is read once, capped, and discarded before the event is built.
 _REFUSAL_BODY_MAX_BYTES = 2048
-_REFUSAL_CODE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,63}$")
+_REFUSAL_CODE_RE = re.compile(r"^[a-z][a-z0-9_]{0,63}$")
 
 LoggerEmitter = Callable[[dict[str, object]], None]
 
