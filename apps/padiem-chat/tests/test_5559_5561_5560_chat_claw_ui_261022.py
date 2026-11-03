@@ -22,6 +22,7 @@ from __future__ import annotations
 import http.server
 import json
 import re
+import secrets
 import threading
 from pathlib import Path
 
@@ -60,7 +61,20 @@ class Server(http.server.ThreadingHTTPServer):
 
 @pytest.fixture(scope="module")
 def server():
-    with Server(("127.0.0.1", 0), Handler) as web:
+    web = None
+    # Chromium blocks a small set of well-known ports. The OS ephemeral range
+    # on this machine includes those ports, so reserve a high unprivileged port
+    # explicitly to keep the browser contract tests independent of that draw.
+    for _ in range(64):
+        port = 49152 + secrets.randbelow(16384)
+        try:
+            web = Server(("127.0.0.1", port), Handler)
+            break
+        except OSError:
+            continue
+    if web is None:
+        raise OSError("no safe ephemeral test port was available")
+    with web:
         thread = threading.Thread(target=web.serve_forever, daemon=True)
         thread.start()
         yield f"http://127.0.0.1:{web.server_address[1]}/index.html"
