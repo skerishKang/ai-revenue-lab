@@ -34,7 +34,7 @@
       "mcp-oauth-approve": "승인하고 연결",
       "mcp-oauth-deny": "취소",
       "mcp-oauth-login": "로그인하고 계속",
-      "mcp-oauth-login-required": "로그인이 필요합니다. 채트에 로그인한 뒤 이 연결을 다시 시작해 주세요.",
+      "mcp-oauth-login-required": "로그인이 필요합니다. 채팅에 로그인한 뒤 이 연결을 다시 시작해 주세요.",
       "mcp-oauth-no-pc": "연결할 PC가 없습니다. 설정에서 내 PC를 먼저 연결해 주세요.",
       "mcp-oauth-error": "연결 요청을 확인하지 못했습니다. 연결을 다시 시작해 주세요.",
       "mcp-settings-refresh": "목록 새로 보기",

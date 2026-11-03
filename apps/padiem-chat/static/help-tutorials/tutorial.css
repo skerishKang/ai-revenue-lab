@@ -1,0 +1,35 @@
+/* #6724 2 — tutorial pages. Layout only: colour, type and the 44px floor come
+   from styles.css and help.css, so the help page's theme reaches these too. */
+
+.chat-help-nav { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.tutorial-shot { margin: 14px 0 0; }
+.tutorial-shot img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 12px;
+  background: var(--panel, #fff);
+}
+.tutorial-shot figcaption { margin-top: 6px; color: var(--muted, #6f7079); font-size: 14px; }
+
+.chat-help-video-slot {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px dashed var(--line, #e3e3e9);
+  border-radius: 12px;
+  color: var(--muted, #6f7079);
+}
+
+.tutorial-index { margin: 0; padding: 0; list-style: none; }
+.tutorial-index li { margin: 0 0 14px; }
+.tutorial-index a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 650;
+  color: var(--accent-strong, #5546d6);
+}
+.tutorial-index p { margin: 4px 0 0; color: var(--muted, #6f7079); }

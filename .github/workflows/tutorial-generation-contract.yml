@@ -1,0 +1,52 @@
+name: Tutorial generation contract
+
+# #6724 2 — the user tutorials are generated, not written: the scenario
+# screenplays produce docs/help/tutorials (Markdown), the static pages beside
+# help.html, and the step images. A PR that edits one of the four without the
+# others is the only failure mode this gate has to catch, so it runs the same
+# commands the tool README documents.
+#
+# It is deliberately not part of b62-browser-qa-unified.yml: that file's job
+# count is fixed, and this check needs no browser, no service and no network.
+
+on:
+  pull_request:
+    paths:
+      - "docs/qa/scenarios/**"
+      - "docs/help/tutorials/**"
+      - "tools/tutorial/**"
+      - "apps/padiem-chat/static/help.html"
+      - "apps/padiem-chat/static/help-tutorials/**"
+      - ".github/workflows/tutorial-generation-contract.yml"
+  push:
+    branches: [main]
+    paths:
+      - "docs/qa/scenarios/**"
+      - "docs/help/tutorials/**"
+      - "tools/tutorial/**"
+      - "apps/padiem-chat/static/help.html"
+      - "apps/padiem-chat/static/help-tutorials/**"
+      - ".github/workflows/tutorial-generation-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tutorial-generation:
+    name: Tutorial generation
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Screenplays, documents, pages and images agree
+        # Reads the committed webp files by name and size; no encoder needed,
+        # so this step cannot drift with a Pillow version.
+        run: python tools/tutorial/build_tutorials.py --check
+      - name: Generator and recorder unit tests
+        run: python -m unittest discover -s tools/tutorial/tests -t tools/tutorial -v
+      - name: Recorder plan (no browser, no network)
+        run: python tools/tutorial/capture_guest_scenes.py --dry-run > /dev/null
