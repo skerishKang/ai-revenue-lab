@@ -112,21 +112,6 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer:foc
     0 0 0 1px rgba(255, 255, 255, .34) !important;
 }
 
-/* The house glyph used for the planning starter was visually disappearing on
- * the bright Glass card. Keep the same action and replace only its visible
- * mark with a higher-contrast planning/check symbol. */
-html[data-theme="padiem-glass"] body .starter[data-skill="plan"] .starter-icon {
-  font-size: 0 !important;
-  color: #5d6a74 !important;
-}
-
-html[data-theme="padiem-glass"] body .starter[data-skill="plan"] .starter-icon::before {
-  content: "✓";
-  font-size: 17px;
-  font-weight: 800;
-  line-height: 1;
-}
-
 /* Live conversation motion polish (#1376) ---------------------------------
  * Keep the accepted home composition, but make the active chat behave like a
  * modern fixed-composer conversation: the newest turn has a readable anchor,
