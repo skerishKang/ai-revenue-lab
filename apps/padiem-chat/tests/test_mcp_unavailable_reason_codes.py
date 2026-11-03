@@ -56,19 +56,37 @@ def test_command_target_matches_distinguishes_zero_one_and_two():
     assert ambiguous.command_target(account_ref=UID, device_id=NODE) is None
 
 
-def _grant_harness(monkeypatch, *, matches):
-    """A request whose every gate passes except the command-target lookup."""
+def _grant_harness(*, matches=None, scope_ref=UID, links=None, source=None):
+    """A request whose every gate passes except the command-target lookup.
+
+    ``matches`` fixes what the source's command_target_matches answers (the
+    real source derives it from the map rows); ``links`` is the owner's
+    pc_device_links as the pairing store answers them.
+    """
+
     class _Identity:
         async def resolve_connector_owner_scope(self, session_id=None):
-            return {"account_ref": UID}
+            return {"account_ref": scope_ref, "workspace_ref": "workspace_fixture"}
 
-    class _State:
-        oracle_mesh_return_source = SimpleNamespace(
+    class _Pairing:
+        async def links_for_owner(self, *, user_id):
+            return list(links or [])
+
+    if source is not None:
+        class _Mesh(OracleMeshReturnSource):
+            execution_mode = "mesh"
+        mesh = _Mesh(source._rows, "x" * 32)
+    else:
+        mesh = SimpleNamespace(
             configured=True, execution_mode="mesh",
             command_target=lambda **kwargs: None,
-            command_target_matches=lambda **kwargs: list(matches),
+            command_target_matches=lambda **kwargs: list(matches or []),
         )
+
+    class _State:
+        oracle_mesh_return_source = mesh
         control_plane_identity_authority = _Identity()
+        pc_device_pairing_store = _Pairing()
 
     class _App:
         state = _State()
@@ -84,7 +102,7 @@ def _grant_harness(monkeypatch, *, matches):
     ([_row(), _row(path="b.txt")], "mesh_command_target_not_unique"),
 ])
 def test_check_mesh_grant_names_the_zero_and_ambiguous_cases(monkeypatch, matches, expected):
-    request, session, captured = _grant_harness(monkeypatch, matches=matches)
+    request, session, captured = _grant_harness(matches=matches)
     ok = asyncio.run(execution._check_mesh_grant(request, session, device_id=NODE,
                                                  denied_reason=captured))
     assert ok is False
@@ -92,7 +110,7 @@ def test_check_mesh_grant_names_the_zero_and_ambiguous_cases(monkeypatch, matche
 
 
 def test_execute_carries_the_denial_reason_on_the_error(monkeypatch):
-    request, session, captured = _grant_harness(monkeypatch, matches=[])
+    request, session, captured = _grant_harness(matches=[])
     async def owner(request, uid):
         return session, "sub_" + "a" * 32, "workspace_fixture"
     async def context(request, **kwargs):
@@ -144,3 +162,75 @@ def test_dispatch_logs_deny_reason_in_the_operation_event(caplog):
     mine = [e for e in events if e.get("event") == "mcp_operation"
             and e.get("status") == "unavailable" and e.get("tool") == "pc_shell"]
     assert mine and mine[-1].get("deny_reason") == "mesh_command_target_not_found"
+
+
+# ── #6717 재시험 실패의 PC 단위 확정 (a안) ────────────────────────────────────
+#
+# 대표 계정에 연결 PC가 3대다. 계정 단위 맵 행은 PC를 정하지 못하므로, 요청의
+# device(커넥터 토큰에 묶인 PC)가 소유자의 활성 pc_device_links 중 정확히 하나일
+# 때 그 PC로 확정하고, 링크에 없는 device는 거절한다. 다른 계정은 계속 거절.
+
+OWNER_LINKS = [
+    {"mesh_node_id": NODE, "state": "active", "label": "컴2"},
+    {"mesh_node_id": "node_O4VslOUq", "state": "active", "label": "컴1"},
+    {"mesh_node_id": "node_7P4oTs4h", "state": "active", "label": "CGI-1"},
+    {"mesh_node_id": "node_wYx8HR9O", "state": "revoked", "label": "낡은 PC"},
+]
+
+
+def test_token_device_among_three_pcs_resolves_to_that_pc():
+    # 대표 계정에 연결 PC 3대(활성 링크 3). 계정 단위 명령 행이 PC 3대에
+    # 걸리는 모양(미지정 행 3)이어도, 요청 device가 소유자 활성 링크 중
+    # 정확히 하나면 그 PC로 확정해 통과한다.
+    src = _source([_row(path="a.txt"), _row(path="b.txt"), _row(path="c.txt")])
+    assert src.command_target(account_ref=UID, device_id=NODE) is None
+    assert len(src.command_target_matches(account_ref=UID, device_id=NODE)) == 3
+
+    request, session, _c = _grant_harness(
+        source=src, links=OWNER_LINKS, scope_ref="scope-form-" + "x" * 8)
+    ok = asyncio.run(execution._check_mesh_grant(
+        request, session, device_id=NODE, owner_ref=UID))
+    assert ok is True
+
+    # 현재 운영 형태(미지정 행 하나)도 같은 경로로 통과한다.
+    request2, session2, _c2 = _grant_harness(
+        source=_source([_row()]), links=OWNER_LINKS, scope_ref="scope-form-" + "x" * 8)
+    assert asyncio.run(execution._check_mesh_grant(
+        request2, session2, device_id=NODE, owner_ref=UID)) is True
+
+
+def test_token_device_not_in_the_owner_links_is_refused():
+    request, session, captured = _grant_harness(
+        source=_source([_row()]), links=[
+            {"mesh_node_id": "node_other_pc", "state": "active", "label": "다른 PC"}],
+        scope_ref="scope-form-" + "x" * 8)
+    ok = asyncio.run(execution._check_mesh_grant(
+        request, session, device_id=NODE, owner_ref=UID, denied_reason=captured))
+    assert ok is False
+    assert captured == ["mesh_command_target_device_not_linked"]
+
+
+def test_another_owners_rows_never_serve_this_token():
+    rows = [_row(account_ref="usr_" + "b" * 32, path="a.txt")]
+    src = _source(rows)
+    assert src.command_target(account_ref=UID, device_id=NODE) is None
+    assert src.command_target_matches(account_ref=UID, device_id=NODE) == []
+
+    request, session, captured = _grant_harness(
+        source=_source(rows), links=OWNER_LINKS,
+        scope_ref="scope-form-" + "x" * 8)
+    ok = asyncio.run(execution._check_mesh_grant(
+        request, session, device_id=NODE, owner_ref=UID, denied_reason=captured))
+    assert ok is False
+    assert captured == ["mesh_command_target_not_found"]
+
+
+def test_single_pc_account_still_resolves_as_before():
+    rows = [_row()]
+    src = _source(rows)
+    assert src.command_target(account_ref=UID, device_id=NODE) is not None
+
+    request, session, _c = _grant_harness(source=src, links=OWNER_LINKS)
+    ok = asyncio.run(execution._check_mesh_grant(
+        request, session, device_id=NODE, owner_ref=UID))
+    assert ok is True

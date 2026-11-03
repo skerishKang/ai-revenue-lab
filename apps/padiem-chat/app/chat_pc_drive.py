@@ -507,14 +507,16 @@ def _mesh_grant_denied(reason: str, denied_reason: list[str] | None = None) -> b
 
 async def _check_mesh_grant(
     request: Request, session: Any, *, device_id: str | None = None,
-    denied_reason: list[str] | None = None,
+    owner_ref: str | None = None, denied_reason: list[str] | None = None,
 ) -> bool:
     """Check the existing shared deployment grant without changing its semantics.
 
     Each denial logs only a fixed diagnostic code. The user sees the same
     generic refusal, so account existence, mapping, and authorization remain
     private. When denied_reason is given, the same fixed code is appended
-    there for the caller's audit event.
+    there for the caller's audit event. ``owner_ref`` is the verified MCP
+    token owner: the connector lane's rows are keyed by that identity, and
+    the PC itself is decided from the owner's own active links.
     """
     from .oracle_mesh_read_return_routes import EXECUTION_MODE_MESH
 
@@ -535,25 +537,64 @@ async def _check_mesh_grant(
     account_ref = scope.get("account_ref") if isinstance(scope, dict) else None
     if not isinstance(account_ref, str) or not account_ref:
         return _mesh_grant_denied("owner_scope_account_unavailable")
+    target = None
     try:
         target = mesh_source.command_target(account_ref=account_ref, device_id=device_id)
     except Exception:
         return _mesh_grant_denied("mesh_command_target_lookup_failed", denied_reason)
+    if target is None and owner_ref and owner_ref != account_ref:
+        # The connector token's owner is the identity the map rows name in the
+        # product vocabulary; the scope read may carry a different ref form.
+        try:
+            target = mesh_source.command_target(account_ref=owner_ref, device_id=device_id)
+        except Exception:
+            return _mesh_grant_denied("mesh_command_target_lookup_failed", denied_reason)
     if target is None:
         # None covers two different facts: no grant row for this account at
         # all, and two competing rows. Name them apart in the diagnostic.
         matches_fn = getattr(mesh_source, "command_target_matches", None)
+        matches: list[dict[str, Any]] = []
+        reason = "mesh_command_target_lookup_failed"
         if callable(matches_fn):
             try:
                 matches = matches_fn(account_ref=account_ref, device_id=device_id)
+                if not matches and owner_ref and owner_ref != account_ref:
+                    matches = matches_fn(account_ref=owner_ref, device_id=device_id)
                 reason = ("mesh_command_target_not_found" if not matches
                           else "mesh_command_target_not_unique")
             except Exception:
                 reason = "mesh_command_target_lookup_failed"
-        else:
-            reason = "mesh_command_target_lookup_failed"
+        # An account-level grant alone cannot name the PC when several rows or
+        # an unpinned row face a multi-PC owner. The request's own device
+        # does: it must be an ACTIVE link of the very owner the rows describe,
+        # so a matched-but-ambiguous grant still resolves to that PC, and a
+        # device the owner never paired stays refused.
+        if matches and owner_ref and device_id is not None:
+            if await _owner_links_active(request, owner_ref, device_id):
+                return True
         return _mesh_grant_denied(reason, denied_reason)
+    if device_id is not None and owner_ref:
+        # The PC is the request's own device, and only that: exactly one of
+        # the owner's ACTIVE links. A device the owner never paired stays
+        # refused even when a command row exists for the account.
+        if not await _owner_links_active(request, owner_ref, device_id):
+            return _mesh_grant_denied("mesh_command_target_device_not_linked", denied_reason)
     return True
+
+
+async def _owner_links_active(request: Request, owner_ref: str, device_id: str) -> bool:
+    """Whether the request's device is one active link of this owner."""
+    pairing = getattr(request.app.state, "pc_device_pairing_store", None)
+    if not callable(getattr(pairing, "links_for_owner", None)):
+        return False
+    try:
+        links = await pairing.links_for_owner(user_id=owner_ref)
+    except Exception:
+        return False
+    for link in links if isinstance(links, list) else []:
+        if isinstance(link, dict) and link.get("mesh_node_id") == device_id                 and link.get("state") == "active":
+            return True
+    return False
 
 
 async def chat_pc_tools_available(request: Request, *, uid: str | None) -> bool:
