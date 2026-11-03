@@ -280,6 +280,12 @@ def load_scenario(number: str, slug: str) -> dict:
     missing = [step["number"] for step in steps if step["number"] not in guest + account]
     if missing:
         raise ValueError(f"step without a tutorial scope ({path.name}): {missing}")
+    #: Steps that were actually recorded with the owner's signed-in session.
+    #: Their images are committed; every other account step keeps the placeholder.
+    captured = _numbers(_field(lines, "**촬영한 단계:**"))
+    outside = [number for number in captured if number not in guest + account]
+    if outside:
+        raise ValueError(f"captured step outside the screenplay ({path.name}): {outside}")
     return {
         "number": number,
         "slug": slug,
@@ -291,6 +297,7 @@ def load_scenario(number: str, slug: str) -> dict:
         "precondition": _field(lines, "**사전 조건:**"),
         "guest": guest,
         "account": account,
+        "captured": captured,
         "steps": steps,
     }
 
@@ -340,9 +347,9 @@ def render(document: dict) -> str:
         )
     lines.extend(["## 단계", ""])
     for step in document["steps"]:
-        guest = step["number"] in document["guest"]
+        shown = step["number"] in document["guest"] or step["number"] in document["captured"]
         lines.extend([f"### {step['number']}단계 · {step['caption']}", ""])
-        if not guest:
+        if not shown:
             lines.extend([f"> {PLACEHOLDER}", ""])
         lines.extend(
             [
@@ -354,7 +361,7 @@ def render(document: dict) -> str:
         )
         if step["checked"]:
             lines.extend([f"**화면에서 확인하는 것:** {step['checked']}", ""])
-        if guest:
+        if shown:
             lines.extend(
                 [
                     (
@@ -499,7 +506,9 @@ def render_readme(documents: list[dict]) -> str:
 
 
 def _step_section(document: dict, step: dict) -> list[str]:
-    guest = step["number"] in document["guest"]
+    guest = (
+        step["number"] in document["guest"] or step["number"] in document["captured"]
+    )
     anchor = f"step-{step['number']}"
     lines = [
         f'      <section class="chat-help-section" id="{anchor}" aria-labelledby="{anchor}Title">',
@@ -726,7 +735,7 @@ def expected_assets(documents: list[dict]) -> set[str]:
     return {
         f"{document['key']}/step-{number:02d}.webp"
         for document in documents
-        for number in document["guest"]
+        for number in sorted(set(document["guest"]) | set(document["captured"]))
     }
 
 
@@ -762,7 +771,7 @@ def convert_shots(shots: Path, asset_dir: Path, documents: list[dict] | None = N
     documents = documents if documents is not None else load_scenarios()
     written: list[Path] = []
     for document in documents:
-        for number in sorted(document["guest"]):
+        for number in sorted(set(document["guest"]) | set(document["captured"])):
             source = shots / document["key"] / f"step-{number:02d}.png"
             if not source.is_file():
                 raise SystemExit(f"missing screenshot: {source}")

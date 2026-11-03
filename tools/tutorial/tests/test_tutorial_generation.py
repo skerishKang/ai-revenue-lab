@@ -113,18 +113,45 @@ class GeneratedTutorials(unittest.TestCase):
         self.assertIn(
             "asset://chat-tutorial/01-first-visit/step-01.png", step_one
         )
-        for number in ("4단계", "5단계", "6단계"):
+        # Step 4 was recorded with the owner's signed-in session; 5-6 stay slots.
+        fourth = _section(document, "### 4단계")
+        self.assertIn("step-04.png", fourth)
+        self.assertNotIn(generator.PLACEHOLDER, fourth)
+        for number in ("5단계", "6단계"):
             section = _section(document, f"### {number}")
             self.assertIn(generator.PLACEHOLDER, section)
             self.assertNotIn("/step-", section)
 
     def test_account_only_scenarios_keep_the_screen_slot(self):
-        for name in ("03-document-work.md", "05-account-deletion.md"):
-            text = self.text[name]
-            self.assertIn(generator.PLACEHOLDER, text)
-            self.assertNotIn("/step-", text)
-            self.assertNotIn("](", text)
-            self.assertIn("아직 촬영하지 않았습니다", text)
+        text = self.text["03-document-work.md"]
+        self.assertIn(generator.PLACEHOLDER, text)
+        self.assertNotIn("/step-", text)
+        self.assertNotIn("](", text)
+        self.assertIn("아직 촬영하지 않았습니다", text)
+        # 05 steps 1-2 are recorded; step 3 (취소) is still a slot.
+        five = self.text["05-account-deletion.md"]
+        self.assertIn("step-01.png", five)
+        self.assertIn("step-02.png", five)
+        self.assertIn(generator.PLACEHOLDER, _section(five, "### 3단계"))
+
+    def test_every_captured_step_ships_its_image(self):
+        documents = generator.load_scenarios()
+        assets = PAGES / "assets"
+        present = (
+            {path.relative_to(assets).as_posix() for path in assets.rglob("*.webp")}
+            if assets.is_dir()
+            else set()
+        )
+        self.assertTrue(generator.expected_assets(documents) <= present)
+        for document in documents:
+            page = (PAGES / f"{document['number']}-{document['slug']}.html").read_text(
+                encoding="utf-8"
+            )
+            for step in document["steps"]:
+                if step["number"] not in document["captured"]:
+                    continue
+                self.assertIn(f"step-{step['number']:02d}.webp", page, document["key"])
+                self.assertNotIn(step["number"], document["guest"])
 
     def test_media_is_referenced_by_key_not_by_relative_path(self):
         document = self.text["04-bookai.md"]

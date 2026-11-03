@@ -26,6 +26,16 @@ python tools/tutorial/capture_guest_scenes.py --out ../out
 - 산출물은 저장소 밖(기본 `<repo>/../out`)에만 둡니다: 장면 PNG, `video.webm`, `captions.vtt`, `manifest.json`.
 - 계정 세션 파일 이름은 `PADIEM_LIVE_STORAGE_STATE`로 정해 두었고 지금은 값이 없습니다. 파일은 절대 저장소에 넣지 않습니다.
 
+## 계정 장면 촬영(대표 세션)
+
+로그인 화면은 저장 상태 파일을 만들지 않고 Tabbit의 대표 세션으로 촬영합니다.
+
+- **프레임**: 사이드바(폭 252px)를 빼고 `clip {x:252, y:0, width:1028, height:900}`로 본문만 찍습니다. 대화 제목·프로젝트명·계정 이름이 프레임에 들어오지 않습니다.
+- **클릭**: `locator.click()`은 숨김 요소에서 타임아웃되므로 `page.evaluate(() => el.click())`로 실행합니다.
+- **스크린샷**: PNG만 지원합니다. `timeout: 25000`으로 찍고 실패하면 `backdrop-filter`를 끄고 재시도합니다(계산 스타일 기준 backdrop-filter 55개·filter 21개).
+- **대본 연결**: 촬영한 단계는 대본에 `**촬영한 단계:** 1, 2`로 적습니다. 그 단계만 이미지로 바뀌고 나머지 계정 단계는 자리 표시로 남습니다.
+- **저장**: 원본 PNG는 저장소 밖 `out/`, 저장소에는 webp(장당 150KB 이하)만 넣습니다. 저장 전에 직접 열어 개인 정보 0건을 확인합니다.
+
 ## 화면 페이지
 
 같은 대본이 도움말 화면 옆 정적 페이지도 만듭니다: `apps/padiem-chat/static/help-tutorials/`에 목차 1장 + 튜토리얼 5장 + `tutorial.css`.
