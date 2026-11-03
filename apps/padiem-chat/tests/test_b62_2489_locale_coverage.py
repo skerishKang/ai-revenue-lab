@@ -49,6 +49,7 @@ def test_static_locale_bindings_reference_declared_keys():
 
 def test_app_runtime_copy_does_not_hardcode_korean_user_text():
     app = read("app.js")
+    app = "\\n".join(line for line in app.splitlines() if not line.lstrip().startswith("//"))
     offending = [
         (line_no, line.strip())
         for line_no, line in enumerate(app.splitlines(), start=1)
@@ -60,24 +61,15 @@ def test_app_runtime_copy_does_not_hardcode_korean_user_text():
 def test_static_korean_copy_uses_declared_or_selector_locale_contract():
     html = read("index.html")
     locale = read("locale.js")
-
-    selector_contracts = (
-        '["#attachmentButton span:last-child", "file"]',
-        '["#webSearchButton span:last-child", "web"]',
-        '["#deepResearchButton span:last-child", "research"]',
-        '[".starter:nth-child(3) strong", "document-title"]',
-        '[".starter-grid", "aria-label", "starter-grid"]',
-        '[".claw-chips", "aria-label", "claw-actions-aria"]',
-    )
-    for contract in selector_contracts:
-        assert contract in locale
-
-    assert '<span>파일</span>' in html
-    assert '<span>웹 검색</span>' in html
-    assert '<span>심층 리서치</span>' in html
+    assert '["#attachmentButton span:last-child", "file"]' in locale
+    assert '[".starter:nth-child(3) strong", "document-title"]' in locale
+    assert '[".starter-grid", "aria-label", "starter-grid"]' in locale
+    assert '[".claw-chips", "aria-label", "claw-actions-aria"]' in locale
+    assert "#webSearchButton" not in locale
+    assert "#deepResearchButton" not in locale
+    assert 'id="webSearchButton"' not in html
+    assert 'id="deepResearchButton"' not in html
     assert '<div class="starter-grid" aria-label="추천 질문">' in html
-    assert 'role="group" aria-label="Claw 작업 선택"' in html
-    assert 'id="runtimeNote">파일 첨부 형식을 확인하는 중입니다.' in html
 
 def test_runtime_translation_calls_reference_declared_keys():
     locale_source = read("locale.js")

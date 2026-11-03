@@ -350,3 +350,23 @@ html[data-theme="padiem-glass"] .brand-row {
   flex-direction: column;
   gap: 8px;
 }
+
+/* Keep the help anchor visually identical to the adjacent button rows. */
+a.side-item,
+a.side-item:visited,
+a.side-item:hover,
+a.side-item:focus,
+a.side-item:focus-visible {
+  text-decoration: none;
+}
+
+/* The avatar face stays readable on the dark sidebar and on bright themes.
+ * An opaque white face makes initials pass 4.5:1 in every supported theme. */
+.sidebar-account .account-avatar {
+  color: #17324a !important;
+  background-color: #ffffff !important;
+  border-color: #52677a !important;
+}
+.sidebar-account[data-account-state="expired"] .account-avatar {
+  color: #7f1d1d !important;
+}

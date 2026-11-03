@@ -3814,9 +3814,6 @@
       // for this account yet.
       await window.PadiemTierSelection?.ready?.();
       const payload = { messages: outboundMessages, tier: selectedProductTier(), skill };
-      if (window.PadiemSearchSources && typeof window.PadiemSearchSources.isActive === "function" && window.PadiemSearchSources.isActive()) {
-        payload.web_search = true;
-      }
       // #4745: retain the exact user-turn claim for a manual retry. A new
       // submitPrompt receives a new contextSnapshot, so a separate identical
       // request obtains a distinct key; explicit retry reuses this snapshot.

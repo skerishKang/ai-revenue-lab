@@ -5,8 +5,7 @@
   //
   // Scope contract (do not widen):
   //   - Owns #sidebarSearchButton behavior only.
-  //   - Never reads or toggles #webSearchButton / #webSearchStarterButton /
-  //     #deepResearchButton, and never changes the center "웹에서 찾아줘" card.
+  //   - Never changes the composer tools or the model-selected search path.
   //   - Fail-closed: the entry stays disabled until the canonical capability
   //     projection reports a signed-in owner with a ready history store. No
   //     browser storage API, cookie, or credential token is read here.

@@ -32,29 +32,15 @@ def _buttons() -> dict[str, dict[str, str | None]]:
     return parser.buttons
 
 
-def test_deployment_conditional_primary_controls_fail_closed_hidden() -> None:
+def test_only_login_is_a_deployment_conditional_primary_control():
     buttons = _buttons()
-    conditional = {
-        "loginButton",
-        "webSearchStarterButton",
-        "webSearchButton",
-        "deepResearchButton",
-    }
-    assert conditional <= buttons.keys()
-    for identifier in conditional:
-        assert "hidden" in buttons[identifier], identifier
-        assert "disabled" in buttons[identifier], identifier
-        assert buttons[identifier].get("aria-disabled") == "true", identifier
-    # #4462: the duplicate sidebar Projects button is removed; the project
-    # surface is the lower projects section + create button only.
-    assert "projectsNavButton" not in buttons
-
+    assert "loginButton" in buttons
+    assert "hidden" in buttons["loginButton"]
+    assert "disabled" in buttons["loginButton"]
+    assert buttons["loginButton"].get("aria-disabled") == "true"
+    assert not ({"webSearchStarterButton", "webSearchButton", "deepResearchButton"} & buttons.keys())
     html = INDEX.read_text(encoding="utf-8")
-    assert "<span class=\"mini-badge\">준비 중</span>" not in html
-    assert "웹 검색은 준비 중입니다" not in html
-    assert 'script src="./product-capabilities.js"' in html
-    assert html.index('script src="./product-capabilities.js"') < html.index('script src="./search-sources.js"')
-
+    assert "projectsNavButton" not in html
 
 def test_browser_capability_projection_is_bounded_visibility_not_execution_authority() -> None:
     source = CAPABILITIES.read_text(encoding="utf-8")
@@ -84,23 +70,17 @@ def test_browser_capability_projection_is_bounded_visibility_not_execution_autho
     assert "document.cookie" not in source
 
 
-def test_search_and_research_visibility_separates_deployment_unavailable_from_busy() -> None:
-    source = SEARCH.read_text(encoding="utf-8")
-    assert 'document.getElementById("webSearchButton")' in source
-    assert 'document.getElementById("webSearchStarterButton")' in source
-    assert 'document.getElementById("deepResearchButton")' in source
-    assert 'textContent.includes("웹 검색")' not in source
-    assert 'textContent.includes("웹에서 찾아줘")' not in source
-
-    assert "webSearchButton.hidden = !webReady;" in source
-    assert "webSearchStarter.hidden = !webReady;" in source
-    assert "deepResearchButton.hidden = !researchReady;" in source
-    assert "const webBusy = webReady && busy;" in source
-    assert "const researchBusy = researchReady && busy;" in source
-    assert "webSearchButton.disabled = webBusy;" in source
-    assert "deepResearchButton.disabled = researchBusy;" in source
-    assert 'window.addEventListener("padiem:capabilitychange"' in source
-
+def test_search_capabilities_remain_server_projected_without_composer_controls():
+    source = CAPABILITIES.read_text(encoding="utf-8")
+    search = SEARCH.read_text(encoding="utf-8")
+    html = INDEX.read_text(encoding="utf-8")
+    for identifier in ("webSearchButton", "webSearchStarterButton", "deepResearchButton"):
+        assert identifier not in html
+        assert identifier not in source
+        assert identifier not in search
+    for flag in ("web_tools_ready", "deep_research_ready"):
+        assert flag in source
+    assert "window.PadiemSearchSources" in search
 
 def test_sidebar_search_is_an_independent_fail_closed_conversation_search_entry() -> None:
     html = INDEX.read_text(encoding="utf-8")
@@ -117,35 +97,20 @@ def test_sidebar_search_is_an_independent_fail_closed_conversation_search_entry(
     assert 'script src="./conversation-search.js" defer' in html
 
 
-def test_sidebar_search_never_touches_web_search_state_or_center_card() -> None:
+def test_sidebar_search_is_separate_from_result_rendering():
     source = CAPABILITIES.read_text(encoding="utf-8")
-    # The web-search capability projection never reads the sidebar search entry.
     assert 'getElementById("sidebarSearchButton")' not in source
     assert "syncSidebarSearch" not in source
-    assert "webSearchButton.click" not in source
-    assert 'attributeFilter: ["disabled", "aria-pressed", "hidden"]' not in source
-
-    # #4471: the conversation-search module owns the sidebar entry and must
-    # never touch web-search controls or the center web card.
     conversation_search_raw = (STATIC / "conversation-search.js").read_text(encoding="utf-8")
-    # Guard executable code, not the documentation comments that name these
-    # controls to explain the boundary. Strip full-line // comments first.
     conversation_search = "\n".join(
         line for line in conversation_search_raw.splitlines() if not line.lstrip().startswith("//")
     )
     assert 'getElementById("sidebarSearchButton")' in conversation_search
-    for forbidden in ("webSearchButton", "webSearchStarterButton", "deepResearchButton", "웹에서 찾아줘"):
-        assert forbidden not in conversation_search, forbidden
-    assert "localStorage" not in conversation_search
-    assert "sessionStorage" not in conversation_search
-    assert "document.cookie" not in conversation_search
-
-    # The center web card's status text is only driven by the composer's own
-    # web-search control — never by the sidebar search entry.
+    for forbidden in ("webSearchButton", "webSearchStarterButton", "deepResearchButton"):
+        assert forbidden not in conversation_search
     search_js = SEARCH.read_text(encoding="utf-8")
     assert "sidebarSearchButton" not in search_js
-    assert 'starterStatus.textContent = webActive ? "다음 질문에서 사용" : "최신 정보 · 출처와 함께"' in search_js
-
+    assert "window.PadiemSearchSources = Object.freeze({ render: renderSources });" in search_js
 
 def test_auth_status_controls_account_session_visibility_while_health_controls_code_capability() -> None:
     source = CAPABILITIES.read_text(encoding="utf-8")

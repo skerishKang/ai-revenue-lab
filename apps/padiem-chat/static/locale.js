@@ -891,9 +891,9 @@
     const textBindings = [
       ["#newChatButton span:last-child", "new-chat"], ["#sidebarSearchButton span:last-child", "search"], ["#projectsNavButton span:nth-child(2)", "projects"], ["#outputsNavButton span:nth-child(2)", "saved"],
       [".empty-copy", "copy"], ["#pcConnectStarter strong", "pc-connect-title"], [".starter:nth-child(2) strong", "life-title"], [".starter:nth-child(2) small", "life-copy"],
-      [".starter:nth-child(3) strong", "document-title"], ["#attachmentButton span:last-child", "file"], ["#webSearchButton span:last-child", "web"], ["#deepResearchButton span:last-child", "research"], [".sidebar-footer span:last-child", "footer"],
+      [".starter:nth-child(3) strong", "document-title"], ["#attachmentButton span:last-child", "file"], [".sidebar-footer span:last-child", "footer"],
       ["#projectsTitle", "projects"], ["#projectsEmpty", "projects-empty"], ["#historyTitle", "history-title"], ["#historyEmpty", "history-empty"], ["#outputsTitle", "saved"], ["#outputsEmpty", "outputs-empty"],
-      ["#writingStarterButton strong", "writing-starter-title"], ["#writingStarterButton small", "writing-starter-copy"], ["#webSearchStarterButton strong", "web-starter-title"], ["#webSearchStarterButton small", "web-starter-copy"], [".project-banner-copy > span", "project-banner"], ["#editProjectButton", "project-edit"], ["#exitProjectButton", "project-exit"],
+      ["#writingStarterButton strong", "writing-starter-title"], ["#writingStarterButton small", "writing-starter-copy"], [".project-banner-copy > span", "project-banner"], ["#editProjectButton", "project-edit"], ["#exitProjectButton", "project-exit"],
       ["#projectDialogTitle", "project-new"], ["label[for='projectNameInput']", "project-name"], ["#projectFilesTitle", "project-files"], [".project-files-heading small", "project-files-limit"], [".project-file-add", "project-file-add"],
       ["#projectFilesEmpty", "project-files-empty"], [".project-files-note", "project-files-note"], ["#projectDialogCancel", "cancel"], ["#projectSaveButton", "save"],
       ["#savedOutputDialogTitle", "saved-output-title"], ["label[for='savedOutputTitleInput']", "title"], ["#savedOutputCopy", "copy-action"], ["#savedOutputDownload", "download"], ["#savedOutputRename", "save-title"], ["#savedOutputDelete", "delete"], ["#cancelStreamButton", "cancel"]
@@ -953,7 +953,7 @@
       ["#sidebar", "aria-label", "main-menu"], ["#mobileClose", "aria-label", "close-menu"], [".brand", "aria-label", "home-aria"], [".home-link", "aria-label", "home-open"], [".side-nav", "aria-label", "chat-menu"], ["#workspaceNav", "aria-label", "workspace-menu"],
       ["#projectCreateButton", "aria-label", "create-project-aria"], [".sidebar-bottom", "aria-label", "account-settings"], ["#mobileMenu", "aria-label", "open-menu"], [".model-pill", "aria-label", "tier"], ["#settingsCloseButton", "aria-label", "settings-close"],
       ["#themePicker", "aria-label", "theme-picker"], ["#languagePicker", "aria-label", "language-picker"], [".starter-grid", "aria-label", "starter-grid"], [".composer-wrap", "aria-label", "composer"], ["#attachmentThumb", "alt", "attachment-preview-alt"],
-      ["#removeAttachment", "aria-label", "attachment-remove"], [".composer-tools .tool-button:nth-of-type(2)", "title", "web-unavailable-title"], ["#deepResearchButton", "title", "research-unavailable-title"], ["#cancelStreamButton", "aria-label", "cancel-answer"], ["#sendButton", "aria-label", "send"],
+      ["#removeAttachment", "aria-label", "attachment-remove"], ["#cancelStreamButton", "aria-label", "cancel-answer"], ["#sendButton", "aria-label", "send"],
       ["#projectDialogClose", "aria-label", "project-close"], ["#savedOutputClose", "aria-label", "saved-output-close"], ["#savedOutputContent", "aria-label", "saved-output-content"],
       ["#clawManualForm", "aria-label", "claw-form-aria"], [".claw-chips", "aria-label", "claw-actions-aria"], ["#connectorsDialog .capability-grid, #connectorsViewBody .capability-grid", "aria-label", "connectors-grid-aria"]
     ].forEach(([selector, attribute, key]) => setAttribute(selector, attribute, key, lang));

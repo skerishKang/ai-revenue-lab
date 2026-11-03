@@ -1,19 +1,11 @@
 """#5297 first screen: the composer does not move while the first screen settles.
 
-The composer action row is not complete at the first paint. Three things land
-later and each of them used to move the composer:
-
-  - the two voice controls, mounted into the action row by voice-composer.js
-    and voice-ui-menu.js, which makes the tools row 108px narrower,
-  - the tier pill, released when product-capabilities.js installs the tier
-    control, and
-  - the web-search control, revealed when the deployment capability arrives.
+The composer action row is not complete at the first paint. The voice
+affordance and model selector arrive later and must not move the composer.
 
 The tools row is the free space of the action row, so on a phone it is 182px
-wide and it wraps. Whichever of the late arrivals crosses 182px first re-wraps
-the row into a second line, the composer grows by a whole tool row, and the
-settled first screen jumps. The web-search control also slides the tier pill
-at every width, because it is ordered before the pill.
+wide and can wrap. The voice control narrows that row when it mounts; the tier
+pill keeps its reserved first-screen slot until the selector is ready.
 
 These regressions assert (a) the composer reserves the space of everything that
 lands after the first paint, (b) the first screen does not shift while it
@@ -173,22 +165,12 @@ def test_the_tier_pill_keeps_its_slot_before_the_tier_control_is_installed():
     assert "width: 116px" in body
 
 
-def test_the_web_search_control_keeps_its_slot_before_the_capability_arrives():
-    """The capability reveals the control; its slot is reserved until then."""
+def test_web_search_slot_is_removed_while_the_tier_slot_remains():
     css = preview_rules()
-    rule = re.search(
-        r"#composerForm \.composer-tools #webSearchButton\[hidden\]\s*\{(?P<body>[^}]*)\}",
-        css,
-    )
-    assert rule is not None, "the web-search reservation is missing"
-    body = rule.group("body")
-    # The shared rule hides every hidden element; the reservation keeps the box.
-    assert "display: inline-grid !important" in body
-    assert "visibility: hidden" in body
-    # The touch-target size the released control has.
-    assert "width: 44px" in body
-    assert "height: 44px" in body
-
+    assert "webSearchButton" not in css
+    assert "#composerForm .composer-tools .model-pill" in css
+    assert "width: 116px" in css
+    assert 'id="webSearchButton"' not in (STATIC / "index.html").read_text(encoding="utf-8")
 
 def test_the_voice_controls_space_is_reserved_and_given_back():
     """The voice control is mounted after the first paint.
@@ -212,14 +194,13 @@ def test_the_voice_controls_space_is_reserved_and_given_back():
 def test_no_control_is_hidden_from_the_user_by_the_reservations():
     """A reservation is not a removal.
 
-    The controls are hidden by the product's own rules, not by this change:
-    the tier control is installed by product-capabilities.js and the
-    web-search control is revealed by the deployment capability. No rule here
-    may remove a control the product shows.
+    The tier pill stays hidden until product-capabilities.js installs its
+    model control. No reservation rule may remove a control the product shows;
+    the search and research controls are absent by product decision.
     """
     css = preview_rules()
     assert "display: none" not in css, "a reservation may not remove a control"
-    # The pill is shown again as soon as the tier control exists.
+    # The pill is shown again as soon as the model control exists.
     shown = re.search(
         r"#composerForm \.composer-tools \.model-pill\[data-mode-control=\"true\"\]\s*"
         r"\{(?P<body>[^}]*)\}",
@@ -238,7 +219,6 @@ FIRST_SCREEN = r"""
   window.__b = {cls: 0, entries: [], composer: [], tools: [], form: []};
   const isComposer = (node) => Boolean(node) && (
     node.id === 'composerForm' || node.id === 'messageInput' ||
-    node.id === 'webSearchButton' ||
     node.classList && (node.className || '').toString().split(' ').some(
       (name) => ['composer-wrap', 'composer-tools', 'model-pill'].includes(name)));
   new PerformanceObserver((list) => {
@@ -334,15 +314,13 @@ def test_the_settled_composer_is_the_composer_of_today(browser, server):
             return [Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)];
           };
           const pill = document.querySelector('.composer-tools .model-pill');
-          const web = document.getElementById('webSearchButton');
           return {
             tools: rect('.composer-tools'),
             form: rect('#composerForm'),
             send: rect('#sendButton'),
             pillVisible: Boolean(pill) && getComputedStyle(pill).visibility === 'visible',
             pillModeControl: pill ? pill.getAttribute('data-mode-control') : null,
-            webVisible: Boolean(web) && getComputedStyle(web).visibility === 'visible',
-            webHidden: web ? web.hasAttribute('hidden') : null,
+            webControlsAbsent: !document.getElementById('webSearchButton') && !document.getElementById('deepResearchButton'),
             micMounted: Boolean(document.getElementById('voiceMicButton')),
             waveMounted: Boolean(document.querySelector('#sendButton .send-waveform-icon')),
           };
@@ -351,9 +329,8 @@ def test_the_settled_composer_is_the_composer_of_today(browser, server):
     # The tier control is installed and the tier pill is shown.
     assert state["pillModeControl"] == "true", state
     assert state["pillVisible"] is True, state
-    # The capability arrived and the web-search control is shown.
-    assert state["webHidden"] is False, state
-    assert state["webVisible"] is True, state
+    # Search controls remain absent; the tier control still occupies its reserved slot.
+    assert state["webControlsAbsent"] is True, state
     # The voice controls are mounted and the composer is laid out. #5561: the
     # waveform shares the send button's slot, so the slot carries the icon.
     assert state["micMounted"] is True, state
@@ -368,3 +345,117 @@ def test_the_settled_composer_is_the_composer_of_today(browser, server):
     assert state["tools"][0] + state["tools"][2] <= state["form"][0] + state["form"][2], state
     assert not errors, errors
     page.close()
+
+
+@requires_browser
+@pytest.mark.parametrize("theme", ("padiem-home", "light", "dark", "padiem-glass"))
+@pytest.mark.parametrize("account_state", ("guest", "signed_in", "expired"))
+def test_sidebar_avatar_text_contrast_is_at_least_4_5(browser, server, theme, account_state):
+    page = browser.new_page(viewport={"width": 1440, "height": 900})
+    errors = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    try:
+        page.goto(server, wait_until="domcontentloaded")
+        page.wait_for_timeout(int(CAPABILITY_DELAY_SECONDS * 1000) + 150)
+        page.evaluate(
+            """({theme, state}) => {
+                document.documentElement.dataset.theme = theme;
+                const account = document.querySelector('.sidebar-account');
+                const avatar = document.getElementById('accountAvatar');
+                account.hidden = false;
+                account.dataset.accountState = state;
+                avatar.textContent = '게';
+                avatar.hidden = false;
+            }""",
+            {"theme": theme, "state": account_state},
+        )
+        page.wait_for_timeout(100)
+        value = page.evaluate(
+            """() => {
+                const avatar = document.getElementById('accountAvatar');
+                const style = getComputedStyle(avatar);
+                const rgb = value => value.match(/[\\d.]+/g).slice(0, 3).map(Number);
+                const luminance = color => {
+                    const channels = rgb(color).map(v => v / 255).map(v =>
+                        v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+                    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+                };
+                const fg = luminance(style.color);
+                const bg = luminance(style.backgroundColor);
+                return {color: style.color, background: style.backgroundColor,
+                    contrast: (Math.max(fg, bg) + 0.05) / (Math.min(fg, bg) + 0.05)};
+            }"""
+        )
+        assert value["contrast"] >= 4.5, (theme, account_state, value)
+        assert not errors, errors
+    finally:
+        page.close()
+
+
+@requires_browser
+def test_help_anchor_has_no_underline_and_keeps_keyboard_focus(browser, server):
+    page = browser.new_page(viewport={"width": 1440, "height": 900})
+    try:
+        page.goto(server, wait_until="domcontentloaded")
+        page.wait_for_timeout(int(CAPABILITY_DELAY_SECONDS * 1000) + 150)
+        link = page.locator("#helpNavLink")
+        link.hover()
+        assert page.eval_on_selector("#helpNavLink", "el => getComputedStyle(el).textDecorationLine") == "none"
+        page.evaluate(
+            """() => {
+                const link = document.getElementById('helpNavLink');
+                const items = [...document.querySelectorAll('a[href],button:not(:disabled)')]
+                    .filter(el => el.getClientRects().length);
+                const index = items.indexOf(link);
+                if (index <= 0) throw new Error('help link has no preceding keyboard target');
+                items[index - 1].focus();
+            }"""
+        )
+        page.keyboard.press("Tab")
+        value = page.evaluate(
+            """() => {
+                const link = document.getElementById('helpNavLink');
+                const style = getComputedStyle(link);
+                return {active: document.activeElement === link,
+                    focusVisible: link.matches(':focus-visible'),
+                    outline: style.outlineStyle,
+                    boxShadow: style.boxShadow,
+                    decoration: style.textDecorationLine};
+            }"""
+        )
+        assert value["active"] and value["focusVisible"], value
+        assert value["decoration"] == "none", value
+        assert value["outline"] != "none" or value["boxShadow"] != "none", value
+    finally:
+        page.close()
+
+
+@requires_browser
+@pytest.mark.parametrize("width,height", WINDOWS)
+def test_attachment_to_model_pill_uses_the_standard_composer_gap(browser, server, width, height):
+    page = browser.new_page(viewport={"width": width, "height": height})
+    try:
+        page.goto(server, wait_until="domcontentloaded")
+        page.wait_for_function(
+            """() => {
+                const pill = document.querySelector('.composer-tier-trigger[data-mode-control="true"]');
+                return pill && document.getElementById('attachmentButton');
+            }""",
+            timeout=10_000,
+        )
+        value = page.evaluate(
+            """() => {
+                const tools = document.querySelector('.composer-tools');
+                const attachment = document.getElementById('attachmentButton').getBoundingClientRect();
+                const model = document.querySelector('.composer-tier-trigger').getBoundingClientRect();
+                const style = getComputedStyle(tools);
+                return {gap: parseFloat(style.columnGap), distance: model.left - attachment.right,
+                    sameRow: Math.abs((model.top + model.height / 2) - (attachment.top + attachment.height / 2)) < 4,
+                    overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1};
+            }"""
+        )
+        assert value["sameRow"], value
+        assert abs(value["distance"] - value["gap"]) <= 1.5, value
+        assert not value["overflow"], value
+    finally:
+        page.close()

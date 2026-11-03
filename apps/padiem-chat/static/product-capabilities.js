@@ -4,9 +4,6 @@
   const nativeFetch = window.fetch.bind(window);
   // #sidebarSearchButton (conversation search) intentionally has no script
   // wiring here: it must never toggle web-search mode or the center web card.
-  const webSearchButton = document.getElementById("webSearchButton");
-  const webSearchStarter = document.getElementById("webSearchStarterButton");
-  const deepResearchButton = document.getElementById("deepResearchButton");
   const loginButton = document.getElementById("loginButton");
   const accountName = document.getElementById("accountName");
   const accountContainer = document.querySelector(".sidebar-account");
@@ -384,13 +381,6 @@
     if (element) element.hidden = Boolean(hidden);
   }
 
-  function syncDeploymentVisibility() {
-    const webAvailable = deployment.loaded && deployment.webSearch;
-    const researchAvailable = deployment.loaded && deployment.deepResearch;
-    setHidden(webSearchButton, !webAvailable);
-    setHidden(webSearchStarter, !webAvailable);
-    setHidden(deepResearchButton, !researchAvailable);
-  }
 
   function currentAccountCopy() {
     return ACCOUNT_COPY[document.documentElement.lang === "en" ? "en" : "ko"];
@@ -545,7 +535,6 @@
   }
 
   function syncAll() {
-    syncDeploymentVisibility();
     syncAccountVisibility();
     dispatch();
   }

@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+# 대표 결정 11-03: 수동 검색 버튼 제거.
+# 심층 리서치도 사용자가 버튼을 누르는 방식이 아니라 모델/서버가 스스로 판단하며,
+# 브라우저는 버튼 없이 완료 응답의 evidence(자동 grounding 결과)만 렌더링한다.
+# 이 시험은 (1) 세 수동 컨트롤의 부재, (2) 리서치형 질문에서 가짜 서버 응답의
+# 근거가 최대 10개까지 표시되는지를 검증한다. 이전 시험의 "버튼 선택/상호배제"
+# 검증은 제거된 UI에 대한 것이므로 통째로 지우지 않고 의도만 바꿔 유지한다.
+
 import asyncio
 import json
 import os
@@ -14,6 +21,23 @@ BASE_URL = os.environ.get("B62_DEEP_RESEARCH_QA_BASE_URL", "http://127.0.0.1:877
 OUT_DIR = Path(os.environ.get("B62_DEEP_RESEARCH_QA_OUT_DIR", ".tmp/b62-deep-research-browser-qa"))
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
+GROUNDED_EVIDENCE = [
+    {
+        "id": f"source-{index}",
+        "title": f"심층 자료 {index}",
+        "url": f"https://example{index}.com/research/{index}",
+        "snippet": f"자동 리서치 근거 {index} 요약",
+        "retrieved_at": f"2026-11-03T09:{index:02d}:00Z",
+    }
+    for index in range(1, 13)
+]
+
+REMOVED_CONTROLS = (
+    "webSearchButton",
+    "deepResearchButton",
+    "webSearchStarterButton",
+)
+
 
 async def _assert_no_horizontal_overflow(page: Page, name: str) -> None:
     scroll_width = await page.evaluate("document.documentElement.scrollWidth")
@@ -24,40 +48,13 @@ async def _assert_no_horizontal_overflow(page: Page, name: str) -> None:
         )
 
 
-def _research_payload(status: str) -> dict[str, Any]:
-    evidence = [
-        {
-            "id": f"source-{index}",
-            "title": f"공개 자료 {index}",
-            "url": f"https://example{index}.com/research/{index}",
-            "snippet": f"검증용 공개 자료 {index} 요약",
-        }
-        for index in range(1, 12)
-    ]
-    return {
-        "answer": "여러 공개 자료를 비교해 핵심 차이와 공통점을 정리했습니다.",
-        "answer_status": "deep_research_answered",
-        "tool": {"id": "deep_research", "title": "심층 리서치"},
-        "evidence": evidence,
-        "research": {
-            "status": status,
-            "searches_completed": 3,
-            "source_count": 10,
-        },
-        # Deliberately include internal-looking fixture fields. The product UI must
-        # ignore them rather than expose route/model/provider identity.
-        "selected_provider": "fixture-provider-not-for-ui",
-        "selected_model": "fixture-model-not-for-ui",
-    }
-
-
 async def _run_view(
     page: Page,
     *,
     name: str,
     width: int,
     height: int,
-    research_status: str,
+    mobile: bool,
 ) -> dict[str, Any]:
     await page.set_viewport_size({"width": width, "height": height})
 
@@ -91,18 +88,37 @@ async def _run_view(
                     payload = request.post_data
             chat_posts.append({"path": parsed.path, "payload": payload})
 
+            answer = "여러 자료를 비교한 자동 grounding 결과를 근거와 함께 정리했습니다."
             if parsed.path == "/api/chat":
                 await route.fulfill(
                     status=200,
                     content_type="application/json",
-                    body=json.dumps(_research_payload(research_status), ensure_ascii=False),
+                    body=json.dumps(
+                        {
+                            "answer": answer,
+                            "answer_status": "thorough_research_answered",
+                            "evidence": GROUNDED_EVIDENCE,
+                            "tool": {"id": "deep_research", "title": "심층 리서치"},
+                        },
+                        ensure_ascii=False,
+                    ),
                 )
                 return
 
             body = "".join(
                 [
-                    f"event: delta\ndata: {json.dumps({'delta': '일반 대화로 돌아왔습니다.'}, ensure_ascii=False)}\n\n",
-                    f"event: done\ndata: {json.dumps({'done': True}, ensure_ascii=False)}\n\n",
+                    f"event: delta\ndata: {json.dumps({'delta': answer}, ensure_ascii=False)}\n\n",
+                    "event: done\ndata: "
+                    + json.dumps(
+                        {
+                            "done": True,
+                            "answer_status": "thorough_research_answered",
+                            "evidence": GROUNDED_EVIDENCE,
+                            "tool": {"id": "deep_research", "title": "심층 리서치"},
+                        },
+                        ensure_ascii=False,
+                    )
+                    + "\n\n",
                 ]
             )
             await route.fulfill(
@@ -120,61 +136,46 @@ async def _run_view(
     await page.route("**/*", route_handler)
     await page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
     await page.locator("#messageInput").wait_for(state="visible")
-    await page.wait_for_function(
-        "() => document.getElementById('deepResearchButton') && !document.getElementById('deepResearchButton').disabled",
-        timeout=10_000,
+
+    health = await page.evaluate(
+        "async () => { const r = await fetch('/health'); return await r.json(); }"
     )
+    if health.get("runtime") != "mock":
+        raise AssertionError(f"browser QA must run in mock runtime: {health}")
+    if health.get("live_enabled") is not False:
+        raise AssertionError(f"live model execution must remain disabled: {health}")
 
-    deep_button = page.locator("#deepResearchButton")
-    web_button = page.locator("#webSearchButton")
+    # 대표 결정 11-03: 수동 검색/리서치 컨트롤은 화면에 없다.
+    present = await page.evaluate(
+        """(ids) => ids.filter((id) => document.getElementById(id) !== null)""",
+        list(REMOVED_CONTROLS),
+    )
+    if present:
+        raise AssertionError(f"manual search controls must not exist: {present}")
 
-    if not await deep_button.is_visible() or await deep_button.is_disabled():
-        raise AssertionError("deep-research control must be visible and health-enabled")
-    if not await web_button.is_visible() or await web_button.is_disabled():
-        raise AssertionError("web-search control must remain available when health-ready")
+    if mobile and not await page.locator("#mobileMenu").is_visible():
+        raise AssertionError("mobile menu must remain visible on mobile viewport")
 
     await _assert_no_horizontal_overflow(page, f"{name}-ready")
     await page.screenshot(path=str(OUT_DIR / f"{name}-deep-ready.png"), full_page=True)
 
-    # Prove mutual exclusion before submitting the research request.
-    await web_button.click()
-    if await web_button.get_attribute("aria-pressed") != "true":
-        raise AssertionError("web search did not enter selected state")
-    await deep_button.click()
-    if await deep_button.get_attribute("aria-pressed") != "true":
-        raise AssertionError("deep research did not enter selected state")
-    if await web_button.get_attribute("aria-pressed") != "false":
-        raise AssertionError("web search and deep research must be mutually exclusive")
-
-    note = (await page.locator("#runtimeNote").inner_text()).strip()
-    if "심층 리서치" not in note or "여러 웹 자료" not in note:
-        raise AssertionError(f"deep-research selected-state note is unclear: {note!r}")
-
-    await page.screenshot(path=str(OUT_DIR / f"{name}-deep-selected.png"), full_page=True)
-
-    question = "여러 공개 자료를 비교해서 핵심 차이를 정리해줘"
+    question = "여러 자료를 비교해서 최신 AI 정책 동향을 심층 분석해줘"
     await page.locator("#messageInput").fill(question)
     if await page.locator("#sendButton").is_disabled():
         raise AssertionError("send button stayed disabled after entering a research question")
     await page.locator("#sendButton").click()
 
-    summary = page.locator("#messageList .assistant-message .research-summary").last
-    await summary.wait_for(state="visible", timeout=15_000)
-    summary_text = (await summary.inner_text()).strip()
-    if "심층 리서치" not in summary_text or "검색 3회" not in summary_text or "출처 10개" not in summary_text:
-        raise AssertionError(f"research summary is incomplete: {summary_text!r}")
-    partial_copy = "일부 자료는 가져오지 못했습니다"
-    if research_status == "partial" and partial_copy not in summary_text:
-        raise AssertionError(f"partial research state is not truthfully rendered: {summary_text!r}")
-    if research_status == "complete" and partial_copy in summary_text:
-        raise AssertionError(f"complete research result must not claim partial failure: {summary_text!r}")
-
     sources = page.locator("#messageList .assistant-message .answer-sources").last
-    await sources.wait_for(state="visible", timeout=10_000)
+    await sources.wait_for(state="visible", timeout=15_000)
+    answer = page.locator("#messageList .assistant-message .assistant-content").last
+    answer_text = (await answer.inner_text()).strip()
+    if not answer_text:
+        raise AssertionError("research answer must be visibly rendered")
+
     links = sources.locator("a.answer-source-link")
     link_count = await links.count()
     if link_count != 10:
-        raise AssertionError(f"deep-research source rendering must be capped at 10, saw {link_count}")
+        raise AssertionError(f"research evidence rendering must be capped at 10, saw {link_count}")
 
     source_rows: list[dict[str, str]] = []
     for index in range(link_count):
@@ -194,36 +195,16 @@ async def _run_view(
 
     if len(chat_posts) != 1:
         raise AssertionError(f"expected one research chat POST, saw {chat_posts!r}")
-    research_post = chat_posts[0]
-    if research_post["path"] != "/api/chat":
-        raise AssertionError(f"deep research must use completed /api/chat transport: {research_post!r}")
-    research_payload = research_post["payload"]
-    if not isinstance(research_payload, dict) or research_payload.get("tool") != "deep_research":
-        raise AssertionError(f"deep_research tool marker missing: {research_payload!r}")
-    if any(key in research_payload for key in ("model", "provider", "route", "business14")):
-        raise AssertionError(f"browser payload must not select provider/model routing: {research_payload!r}")
-
-    await page.wait_for_function(
-        "() => document.getElementById('deepResearchButton')?.getAttribute('aria-pressed') === 'false'",
-        timeout=5_000,
-    )
-
-    # A subsequent ordinary question must go back to streaming with no tool marker.
-    await page.locator("#messageInput").fill("이제 일반 대화로 한 문장만 답해줘")
-    await page.locator("#sendButton").click()
-    await page.wait_for_function(
-        "() => Array.from(document.querySelectorAll('#messageList .assistant-message .assistant-content')).some((el) => el.textContent.includes('일반 대화로 돌아왔습니다.'))",
-        timeout=10_000,
-    )
-
-    if len(chat_posts) != 2:
-        raise AssertionError(f"expected research + one ordinary request, saw {chat_posts!r}")
-    ordinary_post = chat_posts[1]
-    if ordinary_post["path"] != "/api/chat/stream":
-        raise AssertionError(f"ordinary request must return to stream transport: {ordinary_post!r}")
-    ordinary_payload = ordinary_post["payload"]
-    if isinstance(ordinary_payload, dict) and ordinary_payload.get("tool") is not None:
-        raise AssertionError(f"one-request Deep Research state leaked into next request: {ordinary_payload!r}")
+    post = chat_posts[0]
+    if post["path"] != "/api/chat/stream":
+        raise AssertionError(f"ordinary research question must use the streaming path once: {post!r}")
+    payload = post["payload"]
+    if not isinstance(payload, dict):
+        raise AssertionError(f"browser payload must be JSON: {payload!r}")
+    if payload.get("tool") is not None:
+        raise AssertionError(f"the browser must not select a research tool manually: {payload!r}")
+    if any(key in payload for key in ("model", "provider", "route", "business14")):
+        raise AssertionError(f"browser payload must not select provider/model routing: {payload!r}")
 
     body_text = await page.locator("body").inner_text()
     forbidden_identity = (
@@ -245,17 +226,18 @@ async def _run_view(
 
     return {
         "viewport": {"width": width, "height": height},
-        "research_status": research_status,
-        "mutual_exclusion": "PASS",
-        "selected_state": "PASS",
-        "research_post_path": research_post["path"],
-        "research_tool": research_payload.get("tool"),
-        "summary": summary_text,
+        "health": {
+            "runtime": health.get("runtime"),
+            "live_enabled": health.get("live_enabled"),
+        },
+        "manual_controls_absent": "PASS",
+        "automatic_grounding_evidence": "PASS",
+        "chat_post_count": len(chat_posts),
+        "research_post_path": post["path"],
+        "request_tool_marker": None,
         "source_count": link_count,
         "source_links": source_rows,
-        "one_request_reset": "PASS",
-        "next_request_path": ordinary_post["path"],
-        "next_request_tool": ordinary_payload.get("tool") if isinstance(ordinary_payload, dict) else None,
+        "visible_answer": "PASS",
         "concrete_model_provider_leak": [],
         "horizontal_overflow": False,
     }
@@ -265,6 +247,7 @@ async def main() -> None:
     report: dict[str, Any] = {
         "base_url": BASE_URL,
         "fixture_only": True,
+        "decision": "2026-11-03: manual search controls removed; server-side automatic grounding",
         "real_web_provider_calls_expected": 0,
         "real_model_provider_calls_expected": 0,
         "views": {},
@@ -279,7 +262,7 @@ async def main() -> None:
                 name="desktop",
                 width=1440,
                 height=1000,
-                research_status="complete",
+                mobile=False,
             )
             await desktop.close()
 
@@ -289,7 +272,7 @@ async def main() -> None:
                 name="mobile",
                 width=390,
                 height=844,
-                research_status="partial",
+                mobile=True,
             )
             await mobile.close()
         finally:

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import shutil
 import subprocess
 from pathlib import Path
@@ -17,12 +16,6 @@ def sources():
     )
 
 
-def compatibility_helpers(js: str) -> str:
-    start = js.index("  function requestPath(inputValue) {")
-    end = js.index("  function currentAssistantArticle() {")
-    return js[start:end]
-
-
 def test_search_assets_are_additive_and_ordered():
     _, html, _, _, _ = sources()
     assert '<link rel="stylesheet" href="./search-sources.css" />' in html
@@ -34,138 +27,113 @@ def test_search_assets_are_additive_and_ordered():
     assert app_index < capability_index < search_index < rich_index < outputs_index
 
 
-def test_web_and_research_start_hidden_and_are_capability_gated():
-    _, html, js, _, _ = sources()
-    assert 'id="webSearchStarterButton"' in html and 'id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden' in html
-    assert 'id="webSearchButton"' in html and 'hidden><span aria-hidden="true">⌕</span><span>웹 검색</span>' in html
-    assert 'id="deepResearchButton"' in html and 'hidden><span aria-hidden="true">✦</span><span>심층 리서치</span>' in html
-    assert 'document.getElementById("webSearchButton")' in js
-    assert 'document.getElementById("webSearchStarterButton")' in js
-    assert 'textContent.includes("웹 검색")' not in js
-    assert 'textContent.includes("웹에서 찾아줘")' not in js
-    assert 'webSearchButton.hidden = !webReady;' in js
-    assert 'webSearchStarter.hidden = !webReady;' in js
-    assert 'deepResearchButton.hidden = !researchReady;' in js
-    assert 'const webBusy = webReady && busy;' in js
-    assert 'const researchBusy = researchReady && busy;' in js
-    assert 'webSearchButton.disabled = webBusy;' in js
-    assert 'deepResearchButton.disabled = researchBusy;' in js
-    assert 'window.addEventListener("padiem:capabilitychange"' in js
-    assert 'setAttribute("aria-pressed"' in js
-    assert 'setActiveTool("web_search"' in js
-    assert 'setActiveTool("deep_research"' in js
-    assert "activeTool = next ? toolId : null" in js
+def test_search_and_research_controls_are_removed_from_the_ui():
+    root, html, js, _, app = sources()
+    capabilities = (root / "static/product-capabilities.js").read_text(encoding="utf-8")
+    preview = (root / "static/owner-model-preview.css").read_text(encoding="utf-8")
+    voice = (root / "static/voice-composer.css").read_text(encoding="utf-8")
+    for identifier in ("webSearchButton", "deepResearchButton", "webSearchStarterButton"):
+        assert f'id="{identifier}"' not in html
+        assert identifier not in js
+        assert identifier not in capabilities
+        assert identifier not in voice
+    assert "#composerForm .composer-tools #webSearchButton[hidden]" not in preview
+    assert "width: 116px" in preview
+    assert "payload.web_search" not in app
+    assert "window.fetch =" not in js
+    assert "payload.tool =" not in js
+    assert "setActiveTool" not in js
+    assert "aria-pressed" not in js
 
 
-def test_tools_are_one_request_only_mutually_exclusive_and_retryable():
+def test_manual_search_tool_controls_and_request_interception_are_absent():
+    root, html, js, _, app = sources()
+    capabilities = (root / "static/product-capabilities.js").read_text(encoding="utf-8")
+    for identifier in ("webSearchButton", "deepResearchButton", "webSearchStarterButton"):
+        assert identifier not in html
+        assert identifier not in js
+        assert identifier not in capabilities
+    assert "window.fetch =" not in js
+    assert "activeTool" not in js
+    assert "payload.web_search" not in app
+    assert "payload.tool =" not in js
+    assert "window.PadiemSearchSources = Object.freeze({ render: renderSources });" in js
+    assert "function renderSources(article, evidence, research = null)" in js
+
+def test_search_sources_does_not_intercept_chat_streaming():
+    _, _, js, _, app = sources()
+    assert "streamingChatRequest" not in js
+    assert "completedJsonAsPublicSse" not in js
+    assert "nativeFetch" not in js
+    assert "window.fetch =" not in js
+    assert 'fetch("/api/chat/stream"' not in js
+    assert "payload.web_search" not in app
+
+def test_search_renderer_is_a_read_only_result_surface():
     _, _, js, _, _ = sources()
-    assert "payload.tool = toolId" in js
-    assert "const requestedTool = isChat ? activeTool : null" in js
-    assert "activeTool = null" in js
-    assert "toolInFlight = requestedTool" in js
-    assert 'closest(".retry-button")' in js
-    assert "activeTool = retryTool" in js
-    assert "retryOverride = true" in js
-    assert 'toolId === "web_search"' in js
-    assert 'toolId === "deep_research"' in js
+    assert "function renderSources(article, evidence, research = null)" in js
+    assert "function renderResearchSummary(content, research)" in js
+    assert "function publicSourceUrl(value)" in js
+    assert 'setAttribute("aria-pressed"' not in js
+    assert 'addEventListener("click"' not in js
+    assert "window.fetch =" not in js
+
+def test_model_selected_search_evidence_uses_the_existing_result_renderer():
+    # #6776 chooses tools on the server. Keep its browser result contract while
+    # removing the former client-side button and request-selection path.
+    _, _, js, _, app = sources()
+    assert "function renderSources(article, evidence, research = null)" in js
+    assert "window.PadiemSearchSources = Object.freeze({ render: renderSources });" in js
+    assert "window.PadiemSearchSources?.render?.(article, data.evidence);" in app
+    assert 'if (Array.isArray(data.evidence) && data.evidence.length)' in app
+    assert 'data.tool.id === "web_search"' in app
+    assert "payload.web_search" not in app
 
 
-def test_streaming_chat_with_active_tool_is_adapted_to_completed_json_once():
-    _, _, js, _, _ = sources()
-    assert 'streamingChatRequest(inputValue)' in js
-    assert 'const isChat = chatRequest(inputValue) || streamingChatRequest(inputValue);' in js
-    assert 'inputValue: "/api/chat"' in js
-    assert 'headers.set("Accept", "application/json")' in js
-    assert 'const response = await nativeFetch(nextInput, nextInit);' in js
-    assert 'completedJsonAsPublicSse(data)' in js
-    assert 'nativeFetch("/api/chat/stream"' not in js
-
-    helpers = compatibility_helpers(js)
-    script = helpers + r'''
-global.window = { location: { href: "https://chat.example.test/" } };
-const init = {
-  method: "POST",
-  headers: { "Content-Type": "application/json", "Accept": "text/event-stream" },
-  body: JSON.stringify({ messages: [{ role: "user", content: "질문" }], skill: "auto" }),
-};
-const adapted = adaptToolRequest("/api/chat/stream", init, "web_search");
-const direct = adaptToolRequest("/api/chat", init, "deep_research");
-(async () => {
-  const facade = completedJsonAsPublicSse({
-    answer: "검색 결과입니다.",
-    conversation_id: "conv-1",
-    project_id: "project-1",
-    project: { id: "project-1", name: "프로젝트" },
-    project_files_used: 2,
-  });
-  console.log(JSON.stringify({
-    adaptedInput: adapted.inputValue,
-    adaptedAccept: adapted.init.headers.get("Accept"),
-    adaptedPayload: JSON.parse(adapted.init.body),
-    adaptedFromStream: adapted.adaptedFromStream,
-    directInput: direct.inputValue,
-    directPayload: JSON.parse(direct.init.body),
-    directFromStream: direct.adaptedFromStream,
-    facadeType: facade.headers.get("content-type"),
-    facadeBody: await facade.text(),
-  }));
-})().catch((error) => { console.error(error); process.exit(1); });
-'''
-    result = subprocess.run(
-        ["node", "-e", script],
-        capture_output=True,
-        text=True, encoding="utf-8",
-        check=False,
-    )
-    assert result.returncode == 0, result.stderr
-    data = json.loads(result.stdout)
-
-    assert data["adaptedInput"] == "/api/chat"
-    assert data["adaptedAccept"] == "application/json"
-    assert data["adaptedPayload"]["tool"] == "web_search"
-    assert data["adaptedFromStream"] is True
-    assert data["directInput"] == "/api/chat"
-    assert data["directPayload"]["tool"] == "deep_research"
-    assert data["directFromStream"] is False
-    assert data["facadeType"].startswith("text/event-stream")
-    assert 'event: delta\ndata: {"delta":"검색 결과입니다."}' in data["facadeBody"]
-    assert 'event: done\ndata: {"done":true,"conversation_id":"conv-1","project_id":"project-1"' in data["facadeBody"]
-    assert '"project_files_used":2' in data["facadeBody"]
+def test_streaming_chat_is_not_rewritten_by_the_removed_search_modes():
+    _, _, js, _, app = sources()
+    assert "window.fetch =" not in js
+    assert "nativeFetch" not in js
+    assert "streamingChatRequest" not in js
+    assert "completedJsonAsPublicSse" not in js
+    assert "payload.web_search" not in app
 
 
-def test_completed_json_facade_rejects_missing_answer_instead_of_fabricating_success():
-    _, _, js, _, _ = sources()
-    helpers = compatibility_helpers(js)
-    script = helpers + r'''
-global.window = { location: { href: "https://chat.example.test/" } };
-console.log(JSON.stringify({
-  missing: completedJsonAsPublicSse({ done: true }) === null,
-  empty: completedJsonAsPublicSse({ answer: "" }) === null,
-}));
-'''
-    result = subprocess.run(
-        ["node", "-e", script],
-        capture_output=True,
-        text=True, encoding="utf-8",
-        check=False,
-    )
-    assert result.returncode == 0, result.stderr
-    assert json.loads(result.stdout) == {"missing": True, "empty": True}
+def test_photo_and_search_tool_exclusion_stays_in_server_validation():
+    import base64
 
+    from app.request_contract import BrowserRequestError, _validate_payload
 
-def test_photo_plus_web_tools_are_blocked_in_browser_too():
-    _, _, js, _, _ = sources()
-    assert "imageSelected()" in js
-    assert "사진 첨부와 웹 검색·심층 리서치는 한 질문에서 함께 사용할 수 없습니다." in js
-    assert 'attributeFilter: ["hidden", "src"]' in js
+    raw = {
+        "messages": [{"role": "user", "content": "찾아봐"}],
+        "tool": "web_search",
+        "attachments": [{
+            "type": "image",
+            "name": "photo.png",
+            "media_type": "image/png",
+            "base64": base64.b64encode(b"\x89PNG\r\n\x1a\nphase8").decode("ascii"),
+        }],
+    }
+    try:
+        _validate_payload(raw)
+    except BrowserRequestError:
+        pass
+    else:
+        raise AssertionError("the server must keep rejecting explicit search plus image requests")
+
+    root, html, js, _, app = sources()
+    assert 'id="attachmentButton"' in html
+    assert 'id="attachmentFileInput"' in html
+    assert "activeTool" not in js
+    assert "imageSelected" not in js
+    assert "payload.web_search" not in app
+
 
 
 def test_visible_sources_are_text_only_numbered_and_public_http_links():
     _, _, js, css, _ = sources()
-    assert 'data.answer_status === "answered_with_evidence"' in js
-    assert 'data.tool.id === "web_search"' in js
-    assert 'data.answer_status === "deep_research_answered"' in js
-    assert 'data.tool.id === "deep_research"' in js
+    assert "Array.isArray(evidence)" in js
+    assert "item && entry.url" in js
     assert ".slice(0, 10)" in js
     assert 'url.protocol !== "http:" && url.protocol !== "https:"' in js
     assert 'document.createElement("section")' in js
@@ -199,9 +167,10 @@ def test_research_summary_is_compact_and_does_not_render_planner_or_provider_met
 def test_existing_app_and_phase1_style_contracts_remain_separate():
     root, _, js, _, app_js = sources()
     repo = root.parents[1]
-    assert "payload.tool = toolId" in js
+    assert "payload.tool =" not in js
     assert 'payload.tool = "web_search"' not in app_js
     assert 'payload.tool = "deep_research"' not in app_js
+    assert "window.fetch =" not in js
     assert (root / "static/styles.css").read_bytes() == (
         repo / "reference/business-62-padiem-chat-v1/styles.css"
     ).read_bytes()
