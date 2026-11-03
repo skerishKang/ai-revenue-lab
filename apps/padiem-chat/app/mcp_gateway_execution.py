@@ -1,4 +1,8 @@
-"""MCP-to-existing Chat/Engine PC adapter; no alternate PC execution path."""
+"""MCP-to-existing Chat/Engine PC adapter; no new PC authority or transport.
+
+pc_shell uses the existing Chat oracle_mesh command lane instead of adding a
+model-driven Engine tool; its owner/device/grant checks still run here first.
+"""
 from collections.abc import Mapping
 import base64
 import json
@@ -7,6 +11,9 @@ import uuid
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 
 from .orchestration_bridge import B62EngineOrchestrationBridge
+from .mcp_gateway_shell import (
+    execute_pc_shell, normalize_pc_shell_arguments, validate_pc_shell_arguments,
+)
 from .pc_delegation_routes import load_pc_delegation
 from .pc_work_context import resolve_pc_work_context
 
@@ -74,18 +81,27 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     uid, device_id, token_id = (principal.get(key) for key in ("owner_id", "device_id", "token_id"))
     if not isinstance(uid, str) or not uid or not is_pc_device_id(device_id) or not isinstance(token_id, str):
         raise ValueError("Invalid MCP principal")
-    if tool_name not in _TOOLS or not isinstance(arguments, Mapping):
+    if (not isinstance(arguments, Mapping)
+            or (tool_name not in _TOOLS and tool_name != "pc_shell")):
         raise ValueError("Unsupported MCP PC tool")
-    scope, tool_id, keys = _TOOLS[tool_name]
-    browser = scope == "browser"
-    arguments = dict(arguments)
-    if tool_name == "pc_search" and "path" not in arguments:
-        arguments["path"] = "."
-    if browser:
-        from .claw_pc_browser_command import browser_arguments
-        arguments = browser_arguments(tool_id.removeprefix("claw.pc."), arguments)
-    elif set(arguments) != keys or any(not isinstance(value, str) for value in arguments.values()):
-        raise ValueError("Invalid MCP PC arguments")
+    shell = tool_name == "pc_shell"
+    if shell:
+        if not validate_pc_shell_arguments(arguments):
+            raise ValueError("Invalid MCP PC arguments")
+        arguments = normalize_pc_shell_arguments(arguments)
+        scope, tool_id, keys = None, None, set()
+        browser = False
+    else:
+        scope, tool_id, keys = _TOOLS[tool_name]
+        browser = scope == "browser"
+        arguments = dict(arguments)
+        if tool_name == "pc_search" and "path" not in arguments:
+            arguments["path"] = "."
+        if browser:
+            from .claw_pc_browser_command import browser_arguments
+            arguments = browser_arguments(tool_id.removeprefix("claw.pc."), arguments)
+        elif set(arguments) != keys or any(not isinstance(value, str) for value in arguments.values()):
+            raise ValueError("Invalid MCP PC arguments")
     approval_id = None
     if approval is not None:
         if browser:
@@ -108,7 +124,24 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         raise ChatPCDriveError("chat_pc_target_unavailable", "이 토큰의 PC에 접근할 수 없습니다.", 403)
     bridge = getattr(request.app.state, "orchestration_bridge", None)
     store = getattr(request.app.state, "history_store", None)
-    if not isinstance(bridge, B62EngineOrchestrationBridge) or not bridge.ready or store is None:
+    if store is None:
+        raise ChatPCDriveError("chat_pc_files_unavailable", "PC 파일 도구를 현재 사용할 수 없습니다.")
+    if shell:
+        run_id = _new_lane_run_id()
+        label = "외부 AI 도구 요청: pc_shell"
+        conversation_id = await store.record_chat_pc_drive_run(user_id=uid, run_id=run_id,
+            workspace_id=workspace_id, user_text=label, conversation_id=None,
+            action="pc_files_query", title_prefix="외부 AI PC 작업: ")
+        result = await execute_pc_shell(
+            request, session=session, uid=uid, workspace_id=workspace_id,
+            device_id=device_id, run_id=run_id, conversation_id=conversation_id,
+            arguments=arguments,
+        )
+        await _append_lane_notice(request, store, uid=uid, run_id=run_id,
+            content=str(result.get("answer", "")),
+            status="completed" if result.get("status") == "completed" else "failed")
+        return {**result, "run_id": run_id}
+    if not isinstance(bridge, B62EngineOrchestrationBridge) or not bridge.ready:
         raise ChatPCDriveError("chat_pc_files_unavailable", "PC 파일 도구를 현재 사용할 수 없습니다.")
     browser_context = None
     if browser:

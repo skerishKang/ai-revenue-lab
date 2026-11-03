@@ -150,6 +150,11 @@ class Settings:
     # loopback HTTP for the public base URL and the same-origin expectation.
     # Default False — every production deployment keeps the https-only rules.
     local_dev: bool = False
+    # MCP `pc_shell` runs an arbitrary command on the owner's connected PC, so it
+    # ships dark. Off: the tool is not advertised in `tools/list` and a call is
+    # refused with `tool_not_enabled`. A deployment opts in with
+    # PADIEM_MCP_PC_SHELL_ENABLED=true.
+    mcp_pc_shell_enabled: bool = False
 
     @classmethod
     def from_values(
@@ -189,6 +194,8 @@ class Settings:
         b14_upstream_url: object = None,
         # #5573 stage 2: also appended last — the local-run opt-in.
         local_dev: object = None,
+        # MCP pc_shell ships dark; appended last for the same positional safety.
+        mcp_pc_shell_enabled: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -204,6 +211,17 @@ class Settings:
             local = True
         else:
             raise ConfigError("PADIEM_LOCAL_DEV must be 1 or 0")
+
+        # Same narrow rule as PADIEM_LOCAL_DEV: unset/0/false disable, 1/true
+        # enable, anything else raises — so a misspelled value can never decide
+        # whether the arbitrary-command tool is live.
+        raw_shell_flag = "" if mcp_pc_shell_enabled is None else str(mcp_pc_shell_enabled).strip().lower()
+        if raw_shell_flag in {"", "0", "false"}:
+            shell_enabled = False
+        elif raw_shell_flag in {"1", "true"}:
+            shell_enabled = True
+        else:
+            raise ConfigError("PADIEM_MCP_PC_SHELL_ENABLED must be true or false")
 
         raw_base = "" if b14_base_url is None else str(b14_base_url).strip()
         base = _normalize_base_url(raw_base) if raw_base else None
@@ -406,6 +424,7 @@ class Settings:
             user_daily_limit=signed_daily,
             global_daily_limit=global_daily,
             local_dev=local,
+            mcp_pc_shell_enabled=shell_enabled,
         )
 
     @classmethod
@@ -460,4 +479,5 @@ class Settings:
             user_daily_limit=os.getenv("PADIEM_CHAT_USER_DAILY_LIMIT", "100"),
             global_daily_limit=os.getenv("PADIEM_CHAT_GLOBAL_DAILY_LIMIT", "1000"),
             local_dev=os.getenv("PADIEM_LOCAL_DEV"),
+            mcp_pc_shell_enabled=os.getenv("PADIEM_MCP_PC_SHELL_ENABLED"),
         )

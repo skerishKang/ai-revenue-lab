@@ -1187,6 +1187,7 @@ async def dispatch_oracle_mesh_command_intent(
     files_target: dict[str, Any] | None = None,
     background: bool = False,
     job_operation: dict[str, Any] | None = None,
+    ttl_seconds: int | None = None,
 ) -> JSONResponse:
     """Owner intent for ONE terminal command on the pinned management PC.
 
@@ -1240,6 +1241,10 @@ async def dispatch_oracle_mesh_command_intent(
         return _error(422, "oracle_mesh_device_invalid")
     if not isinstance(command, str) or not command.strip():
         return _error(422, "oracle_mesh_command_invalid")
+    if ttl_seconds is not None and (
+            not isinstance(ttl_seconds, int) or isinstance(ttl_seconds, bool)
+            or not 1 <= ttl_seconds <= 3600):
+        return _error(422, "oracle_mesh_ttl_invalid")
 
     try:
         scope = await identity.resolve_connector_owner_scope(session_id=session.session_id)
@@ -1340,7 +1345,8 @@ async def dispatch_oracle_mesh_command_intent(
             root_ref=_COMMAND_ROOT_REF,
             path_relative=_COMMAND_PATH_RELATIVE,
             file_path=_COMMAND_FILE_SENTINEL,
-            expires_at=(now + _DISPATCH_TTL).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
+            expires_at=(now + (_DISPATCH_TTL if ttl_seconds is None
+                               else timedelta(seconds=ttl_seconds))).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
             kind="command",
             command_text=command,
             tool_call_ref=tool_call_ref,
