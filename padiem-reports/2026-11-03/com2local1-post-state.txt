@@ -1,0 +1,13 @@
+== post state ==
+2026-11-03T09:09:13+09:00
+chat app -> /opt/padiem/com2-deploy/src/6a24faf139f0e9a787e1fc1a2398f2f945bc63eb/apps/padiem-chat/app
+b14 app -> /opt/padiem/com2-deploy/src/6a24faf139f0e9a787e1fc1a2398f2f945bc63eb/apps/korean-ai-platform
+chat: active 200
+b14: active 200
+chat restarts: 0 b14 restarts: 0
+b14 model-ops env names present:
+b14 effective ReadWritePaths: /opt/padiem/b14/ledger /opt/padiem/b14/logs /opt/padiem/b14/env /opt/padiem/b14/data
+other units untouched:
+active
+active
+active
