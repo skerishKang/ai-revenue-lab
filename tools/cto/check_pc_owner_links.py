@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 
@@ -67,7 +68,10 @@ def _fetch_rows(args) -> list[dict]:
         rows = [dict(row) for row in conn.execute(_LINKS_SQL)]
         conn.close()
         return rows
-    command = ["wrangler", "d1", "execute", args.binding,
+    # Windows npm 셈은 wrangler.cmd라 CreateProcess가 이름만으로는 못 찾는다 —
+    # shutil.which가 PATH에서 실제 실행 파일(.cmd 포함)을 찾아 준다.
+    wrangler = shutil.which("wrangler") or "wrangler"
+    command = [wrangler, "d1", "execute", args.binding,
                "--remote", "--json", "--command", _LINKS_SQL]
     done = subprocess.run(command, capture_output=True, text=True)
     if done.returncode != 0:
