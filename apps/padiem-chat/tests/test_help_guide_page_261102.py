@@ -258,6 +258,13 @@ def test_the_bookai_section_tells_the_device_then_account_save_rule():
     assert "다른 기기" in body
 
 
+def test_account_deletion_help_explains_anonymous_replay_records():
+    section = re.search(
+        r'<section class="chat-help-section" id="account".*?</section>', HELP, re.S)
+    assert section, "the guide must keep its account section"
+    assert "명령 중복 실행 방지 기록은 누구의 것인지 알 수 없게 처리한 뒤 남습니다" in section.group(0)
+
+
 def test_the_guide_holds_its_phone_floor_in_plain_css():
     # The browser check below measures it; this one keeps the rule written down
     # where an editor can see it before running anything.
