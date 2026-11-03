@@ -48,6 +48,12 @@ state. 대화·메시지·첨부·프로젝트 파일·북AI 기록·PC 작업 �
 - **`oracle_mesh_dispatch` — 대상 제외.** 만료 행의 존재가 재생 방지의
   일부이고, 마이그레이션 047이 애플리케이션 삭제를 금지한다. 이 정책을
   바꾸는 것은 이번 단계의 권한 밖이다.
+- **`claw_web_xlsx_p01_requests`·`claw_web_xlsx_selections` — 영수증이
+  가리키는 행은 남긴다.** 두 테이블은 각각 `claw_web_xlsx_p01_decision_receipts`·
+  `claw_web_xlsx_quote_edit_receipts`가 `NO ACTION` 외래 키로 참조한다. 만료된
+  부모 행을 영수증이 아직 인용하고 있으면 삭제가 외래 키 위반으로 실패해 그 회차의
+  남은 테이블까지 멈춘다(11-03 운영 첫 실행에서 확인). 그래서 영수증이 가리키지
+  않는 만료 행만 지우고, 인용된 쌍은 영수증 보관 기간이 정해질 때 함께 다룬다.
 - **`claw_coding_conversation_grant` — 중복 방지로 제외.** 자기 스토어가
   이미 상한 있는 정리를 한다. 두 경로가 같은 행을 지우면 "누가 지웠는가"가
   흐려진다.

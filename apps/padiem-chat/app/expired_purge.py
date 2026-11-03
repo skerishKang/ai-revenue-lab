@@ -63,6 +63,12 @@ class PurgeTarget:
     table: str
     column: str
     column_kind: str  # "text" | "epoch_seconds"
+    # A surviving receipt may still cite the row. Those receipts are audit
+    # shaped and their foreign keys are NO ACTION, so shedding a cited parent
+    # either fails the statement or orphans evidence: the pair is left alone
+    # until the receipt's own retention is decided.
+    key_column: str | None = None
+    referenced_by: tuple[tuple[str, str], ...] = ()
 
 
 # Stage-1 survey (docs/operations/EXPIRED_PURGE_20261103.md): one-shot data
@@ -73,9 +79,17 @@ class PurgeTarget:
 PURGE_TARGETS: tuple[PurgeTarget, ...] = (
     PurgeTarget("claw_approval_handoff", "pause_expires_at", "text"),
     PurgeTarget("claw_github_oauth_states", "expires_at", "epoch_seconds"),
-    PurgeTarget("claw_web_xlsx_p01_requests", "pause_expires_at", "text"),
+    PurgeTarget(
+        "claw_web_xlsx_p01_requests", "pause_expires_at", "text",
+        key_column="request_ref",
+        referenced_by=(("claw_web_xlsx_p01_decision_receipts", "request_ref"),),
+    ),
     PurgeTarget("claw_web_xlsx_quote_write_pauses", "pause_expires_at", "text"),
-    PurgeTarget("claw_web_xlsx_selections", "expires_at", "text"),
+    PurgeTarget(
+        "claw_web_xlsx_selections", "expires_at", "text",
+        key_column="selection_ref",
+        referenced_by=(("claw_web_xlsx_quote_edit_receipts", "selection_ref"),),
+    ),
     PurgeTarget("lovetree_login_handoffs", "expires_at", "text"),
     PurgeTarget("orchestration_continuations", "expires_at", "text"),
     PurgeTarget("padiem_android_auth_handoffs", "expires_at", "text"),
@@ -151,10 +165,22 @@ async def purge_expired_rows(
             result[target.table] = 0
             continue
         cutoff = cutoffs[target.column_kind]
+        # A receipt that still cites the row keeps it: the guard runs in both
+        # modes, so a dry run counts exactly what a real pass would shed.
+        source = f"{target.table} AS s" if target.referenced_by else target.table
+        qualifier = "s" if target.referenced_by else target.table
+        guard = "".join(
+            f" AND NOT EXISTS (SELECT 1 FROM {child} AS c"
+            f" WHERE c.{child_column} = s.{target.key_column})"
+            for child, child_column in target.referenced_by
+        )
+        where = (
+            f"{qualifier}.{target.column} IS NOT NULL"
+            f" AND {qualifier}.{target.column} < ?{guard}"
+        )
         if dry_run:
             row = await binding.prepare(
-                f"SELECT COUNT(*) AS n FROM {target.table} "
-                f"WHERE {target.column} IS NOT NULL AND {target.column} < ?"
+                f"SELECT COUNT(*) AS n FROM {source} WHERE {where}"
             ).bind(cutoff).first()
             result[target.table] = int(row["n"]) if row and row.get("n") is not None else 0
             continue
@@ -162,8 +188,7 @@ async def purge_expired_rows(
         # so the writer lock is held for a bounded number of rows, not a backlog.
         outcome = await binding.prepare(
             f"DELETE FROM {target.table} WHERE rowid IN ("
-            f"SELECT rowid FROM {target.table} "
-            f"WHERE {target.column} IS NOT NULL AND {target.column} < ? LIMIT ?)"
+            f"SELECT rowid FROM {source} WHERE {where} LIMIT ?)"
         ).bind(cutoff, batch_size).run()
         changes = (outcome.get("meta") or {}).get("changes") if isinstance(outcome, dict) else None
         result[target.table] = int(changes) if changes is not None else 0
@@ -227,8 +252,19 @@ def main(argv: list[str] | None = None) -> int:
     if remaining not in ([], ["--once"]):
         print(STATUS_PREFIX + "INVALID_ARGUMENT", flush=True)
         return 2
-    print(run_once(dry_run=dry_run), flush=True)
-    return 0
+    status = run_once(dry_run=dry_run)
+    print(status, flush=True)
+    # The timer reads the exit status, not the line: 11-03 a pass that failed
+    # left the oneshot Result=success because this always returned 0.
+    if status.startswith(STATUS_PREFIX + "ok ") or status.startswith(
+        STATUS_PREFIX + "dry_run "
+    ):
+        return 0
+    if status.startswith(STATUS_PREFIX + "ERROR") or status.startswith(
+        STATUS_PREFIX + "STORAGE_ERROR"
+    ):
+        return 1
+    return 2
 
 
 if __name__ == "__main__":
