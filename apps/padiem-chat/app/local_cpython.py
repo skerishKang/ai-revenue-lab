@@ -358,8 +358,15 @@ def build_app():
 
     app.router.on_startup.append(_compose_oracle_mesh_return_source_on_startup)
 
+    wal_checkpoint_tasks = {}
+
     async def _bound_wal_on_startup(app=app):
         """Keep the WAL file small: truncate it only while the database is idle."""
+        loop = asyncio.get_running_loop()
+        current = wal_checkpoint_tasks.get(loop)
+        if current is not None and not current.done():
+            app.state.wal_checkpoint_task = current
+            return
 
         async def _loop():
             while True:
@@ -373,24 +380,33 @@ def build_app():
                     print("[local] wal_checkpoint busy=%s log=%s checkpointed=%s" % (
                         report.get("busy"), report.get("log"), report.get("checkpointed")))
 
-        task = asyncio.create_task(_loop())
+        task = loop.create_task(_loop())
+        wal_checkpoint_tasks[loop] = task
         app.state.wal_checkpoint_task = task
 
-        async def _stop_bound_wal():
-            task.cancel()
-            try:
-                await task
-            except asyncio.CancelledError:
-                pass
-
-        app.router.on_shutdown.append(_stop_bound_wal)
+    async def _stop_bound_wal(app=app):
+        task = wal_checkpoint_tasks.pop(asyncio.get_running_loop(), None)
+        if task is None:
+            return
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
+        if getattr(app.state, "wal_checkpoint_task", None) is task:
+            app.state.wal_checkpoint_task = None
 
     app.router.on_startup.append(_bound_wal_on_startup)
+    app.router.on_shutdown.append(_stop_bound_wal)
     app.router.on_shutdown.append(db.close_readers)
     if identity_binding is not None:
         # #6613: the identity RPC client is pooled for the life of the host, so
         # the same shutdown hook that stops the SQLite readers closes it.
         app.router.on_shutdown.append(identity_binding.aclose)
+    if shared_login_flow is not None:
+        exchange_close = getattr(getattr(shared_login_flow, 'exchange', None), 'aclose', None)
+        if callable(exchange_close):
+            app.router.on_shutdown.append(exchange_close)
     # Optional short-lived validation results; roles/entitlements stay live.
     from .auth_validation_cache import SqliteAuthValidationCache
     cache_seconds = _nonnegative_env('PADIEM_CHAT_AUTH_CACHE_SECONDS', 30)

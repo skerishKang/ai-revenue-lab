@@ -34,7 +34,7 @@ async function setup({ advanceDuringExchange = false, clientId = 'lovetree', pro
       return Response.json({ id_token: `${input}.${b64(sig)}` }); } });
   async function assertion() { const h = j64({ alg: 'ES256', kid: 'client' }), p = j64({ iss: clientId, sub: clientId, aud: `${url}/token`, iat: 1000, exp: 1100, jti: rand() });
     const input = `${h}.${p}`, sig = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, client.privateKey, new TextEncoder().encode(input)); return `${input}.${b64(sig)}`; }
-  async function post(path, fields) { const params = new URLSearchParams({ client_id: clientId, client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer', client_assertion: await assertion(), ...fields }); return app.fetch(new Request(`${url}${path}`, { method: 'POST', body: params })); }
+  async function post(path, fields, extraHeaders = {}) { const params = new URLSearchParams({ client_id: clientId, client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer', client_assertion: await assertion(), ...fields }); return app.fetch(new Request(`${url}${path}`, { method: 'POST', headers: extraHeaders, body: params })); }
   async function login() { const verifier = rand(), state = rand(), redirectUri = 'https://lovetree.example/auth/callback';
     const start = new URL(`${url}/login`); for (const [k,v] of Object.entries({ client_id: clientId, redirect_uri: redirectUri, state, code_challenge: await sum(verifier), code_challenge_method: 'S256' })) start.searchParams.set(k,v);
     const begun = await app.fetch(new Request(start)); assert.equal(begun.status, 302); const googleURL = new URL(begun.headers.get('location')); nonce = googleURL.searchParams.get('nonce');
@@ -72,6 +72,33 @@ test('synthetic Google login, code exchange, refresh, replay revocation and JWKS
   assert.equal((await f.post('/token', { grant_type: 'refresh_token', refresh_token: minted.refresh_token })).status, 400);
   assert.equal((await f.post('/token', { grant_type: 'refresh_token', refresh_token: firstResult.refresh_token })).status, 400);
   assert.equal((await f.app.fetch(new Request(`${url}/.well-known/jwks.json`))).status, 200);
+});
+
+test('B62 token exchange returns bounded correlated server timing', async () => {
+  const f = await setup({ clientId: 'b62' }), l = await f.login();
+  const fields = { grant_type: 'authorization_code', code: l.code, code_verifier: l.verifier, redirect_uri: l.redirectUri };
+  const output = [];
+  const originalLog = console.log;
+  console.log = line => output.push(String(line));
+  let response;
+  try {
+    response = await f.post('/token', fields, { 'x-request-id': 'synthetic-request-42' });
+  } finally {
+    console.log = originalLog;
+  }
+  assert.equal(response.status, 200);
+  const timing = response.headers.get('server-timing');
+  assert.match(timing, /^auth_client;dur=\d+\.\d{2}, auth_code;dur=\d+\.\d{2}, auth_sign;dur=\d+\.\d{2}, auth_total;dur=\d+\.\d{2}$/);
+  assert.equal(output.length, 1);
+  const event = JSON.parse(output[0]);
+  assert.deepEqual(Object.keys(event).sort(), [
+    'auth_stage', 'body_parse_ms', 'client_auth_ms', 'code_exchange_ms',
+    'request_id', 'token_sign_ms', 'total_ms',
+  ]);
+  assert.equal(event.auth_stage, 'token_timing');
+  assert.equal(event.request_id, 'synthetic-request-42');
+  assert.equal(timing.includes(l.code), false);
+  assert.equal(output[0].includes('google-sub'), false);
 });
 
 test('rejects non-allowlisted callback', async () => {

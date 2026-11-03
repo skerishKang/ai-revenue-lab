@@ -16,6 +16,33 @@ import time
 from typing import Any
 
 from .history import _row_to_dict
+from .shared_login_timing import record_login_timing
+
+
+def _sql_timing_operation(sql: str) -> str | None:
+    normalized = ' '.join(str(sql).lower().split())
+    if normalized.startswith('select product_user_id from auth_validation_cache '):
+        return 'session_read'
+    if normalized.startswith('select product_user_id from auth_account_link_cache '):
+        return 'link_read'
+    if normalized.startswith('select revision from auth_validation_cache_revision '):
+        return 'revision_read'
+    if normalized.startswith('insert into auth_validation_cache '):
+        return 'session_upsert'
+    if normalized.startswith('insert into auth_account_link_cache '):
+        return 'link_upsert'
+    if normalized.startswith('delete from auth_validation_cache '):
+        return 'session_expired_delete'
+    if normalized.startswith('delete from auth_account_link_cache '):
+        return 'link_expired_delete'
+    return None
+
+
+def _record_cache_sql(operation: str | None, started: float) -> None:
+    if operation is None:
+        return
+    duration_ms = (time.perf_counter() - started) * 1000
+    record_login_timing('sqlite_auth_' + operation, duration_ms)
 
 
 class AuthValidationInvalidated(RuntimeError):
@@ -70,7 +97,23 @@ class SqliteAuthValidationCache:
         return kind, owner_id, digest
 
     async def _first(self, sql, *values):
-        return _row_to_dict(await self.db.prepare(sql).bind(*values).first())
+        operation = _sql_timing_operation(sql)
+        started = time.perf_counter()
+        try:
+            return _row_to_dict(await self.db.prepare(sql).bind(*values).first())
+        finally:
+            _record_cache_sql(operation, started)
+
+    async def _run(self, sql, *values):
+        operation = _sql_timing_operation(sql)
+        started = time.perf_counter()
+        try:
+            statement = self.db.prepare(sql)
+            if values:
+                statement = statement.bind(*values)
+            return await statement.run()
+        finally:
+            _record_cache_sql(operation, started)
 
     async def _get(self, key):
         row = await self._first(
@@ -147,7 +190,7 @@ class SqliteAuthValidationCache:
             raise ValueError('invalid_auth_cache_result')
         now = self.clock()
         expiry = min(float(authority_expiry), now + self.link_ttl_seconds)
-        await self.db.prepare('DELETE FROM auth_account_link_cache WHERE valid_until<=?').bind(now).run()
+        await self._run('DELETE FROM auth_account_link_cache WHERE valid_until<=?', now)
         row = await self._first(
             'INSERT INTO auth_account_link_cache (owner_id, product_user_id, valid_until) '
             'SELECT ?, ?, ? WHERE ?=(SELECT revision FROM auth_validation_cache_revision WHERE id=1) '
@@ -173,7 +216,7 @@ class SqliteAuthValidationCache:
         expiry = min(float(authority_expiry), now + self.ttl_seconds)
         if expiry <= now:
             raise ValueError('expired_auth_cache_result')
-        await self.db.prepare('DELETE FROM auth_validation_cache WHERE valid_until<=?').bind(now).run()
+        await self._run('DELETE FROM auth_validation_cache WHERE valid_until<=?', now)
         row = await self._first(
             'INSERT INTO auth_validation_cache '
             '(kind, owner_id, session_hash, product_user_id, valid_until) '

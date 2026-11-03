@@ -3,8 +3,10 @@ from __future__ import annotations
 
 import logging
 import re
+import time
 
 from .history import HistoryConflict
+from .shared_login_timing import record_login_timing
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +31,11 @@ PROFILE_FIELDS = frozenset({'email', 'email_verified', 'name', 'picture'})
 async def provision_shared_profile(request, user_id, access_token, tokens, *, verifier, store, legacy_user, notify):
     if not isinstance(tokens, dict) or not isinstance(user_id, str):
         raise ValueError('invalid_profile_response')
-    verified = await verifier.verify(access_token)
+    verify_started = time.perf_counter()
+    try:
+        verified = await verifier.verify(access_token)
+    finally:
+        record_login_timing('profile_token_verify', (time.perf_counter() - verify_started) * 1000)
     account_id = verified.get('accountId') if isinstance(verified, dict) else None
     # Three different things failed under one code. The verified access token — not
     # the exchange body — is the authority for which account this login is, and a
@@ -82,9 +88,16 @@ async def provision_shared_profile(request, user_id, access_token, tokens, *, ve
         # with every other field the client does not list.
         logger.warning('shared_login_profile_rejected condition=values profile_field_count=%d', len(profile))
         raise ValueError('invalid_profile')
+    store_started = time.perf_counter()
     try:
         await store.upsert_shared_user(user_id, account_id, email, name, picture)
     except HistoryConflict:
         logger.warning('shared_profile_identity_conflict')
         raise
-    await notify(request, user_id)
+    finally:
+        record_login_timing('profile_user_upsert', (time.perf_counter() - store_started) * 1000)
+    notify_started = time.perf_counter()
+    try:
+        await notify(request, user_id)
+    finally:
+        record_login_timing('profile_notification', (time.perf_counter() - notify_started) * 1000)

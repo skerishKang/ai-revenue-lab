@@ -12,6 +12,7 @@ import time
 from urllib.parse import urlencode
 
 from .shared_auth_compare_webcrypto import WorkerES256
+from .shared_login_timing import record_login_timing
 from starlette.responses import JSONResponse, RedirectResponse
 from starlette.routing import Route
 
@@ -40,40 +41,75 @@ async def _await(value):
 SERVER_HEADERS = {'User-Agent': 'PADIEM-Chat/1.0 (+https://chat.padiem.net)', 'Accept': 'application/json'}
 
 
-async def exchange_with_httpx(url, data):
-    """Fixed-origin server-side exchange; never log the request or response."""
+def _record_portal_server_timing(header):
+    if not isinstance(header, str) or len(header) > 512:
+        return
+    labels = {
+        'auth_client': 'portal_client_auth',
+        'auth_code': 'portal_code_exchange',
+        'auth_sign': 'portal_token_sign',
+        'auth_total': 'portal_total',
+    }
+    for item in header.split(','):
+        match = re.fullmatch(r'\s*(auth_client|auth_code|auth_sign|auth_total);dur=(\d{1,7}(?:\.\d{1,2})?)\s*', item)
+        if match:
+            record_login_timing(labels[match.group(1)], float(match.group(2)))
+
+
+async def exchange_with_httpx(url, data, *, client=None):
+    """Fixed-origin exchange; a host may supply its pooled HTTPX client."""
     if url != TOKEN_URL:
         raise ValueError('invalid_token_endpoint')
     from . import httpx_compat as httpx
     from .auth import MAX_AUTH_RESPONSE_BYTES
-    try:
-        async with httpx.AsyncClient(follow_redirects=False) as client:
-            # An explicit product User-Agent: auth.padiem.net sits behind Cloudflare's
-            # browser-integrity check, which refuses default library agents (error 1010).
-            async with client.stream('POST', TOKEN_URL, data=data, headers=SERVER_HEADERS) as response:
+
+    headers = dict(SERVER_HEADERS)
+    from .request_telemetry import current_request_id, is_safe_request_id
+    request_id = current_request_id()
+    if is_safe_request_id(request_id):
+        headers['x-request-id'] = request_id
+
+    async def perform(active_client):
+        try:
+            headers_started = time.perf_counter()
+            async with active_client.stream('POST', TOKEN_URL, data=data, headers=headers) as response:
+                record_login_timing('exchange_headers', (time.perf_counter() - headers_started) * 1000)
+                response_headers = getattr(response, 'headers', {})
+                _record_portal_server_timing(response_headers.get('server-timing') if hasattr(response_headers, 'get') else None)
                 if response.status_code in (400, 401):
-                    # A closed authority rejection of this grant. Status only: the
-                    # body may carry token material.
+                    # A closed authority rejection. Status only; the body may carry token material.
                     print(f"[shared_login] token exchange status={response.status_code}", flush=True)
                     raise ValueError('exchange_rejected')
                 if response.status_code != 200:
                     # 5xx and unexpected statuses stay retryable (never a 401).
                     print(f"[shared_login] token exchange status={response.status_code}", flush=True)
                     raise ValueError('exchange_unavailable')
-                body = bytearray()
-                async for chunk in response.aiter_bytes():
-                    body.extend(chunk)
-                    # Use the established Chat authentication response limit.
-                    if len(body) > MAX_AUTH_RESPONSE_BYTES:
-                        raise ValueError('exchange_response_too_large')
-                value = json.loads(body)
-                if not isinstance(value, dict):
-                    raise ValueError('exchange_invalid_response')
-                return value
-    except ValueError:
-        raise
-    except (httpx.HTTPError, OSError) as exc:
-        raise ValueError('exchange_unavailable') from exc
+                body_started = time.perf_counter()
+                try:
+                    body = bytearray()
+                    async for chunk in response.aiter_bytes():
+                        body.extend(chunk)
+                        if len(body) > MAX_AUTH_RESPONSE_BYTES:
+                            raise ValueError('exchange_response_too_large')
+                    value = json.loads(body)
+                    if not isinstance(value, dict):
+                        raise ValueError('exchange_invalid_response')
+                    return value
+                finally:
+                    record_login_timing('exchange_body', (time.perf_counter() - body_started) * 1000)
+        except ValueError:
+            raise
+        except (httpx.HTTPError, OSError) as exc:
+            raise ValueError('exchange_unavailable') from exc
+
+    started = time.perf_counter()
+    try:
+        if client is None:
+            async with httpx.AsyncClient(follow_redirects=False) as active_client:
+                return await perform(active_client)
+        return await perform(client)
+    finally:
+        record_login_timing('exchange_total', (time.perf_counter() - started) * 1000)
 
 
 class WorkerJwksVerifier:
@@ -161,11 +197,17 @@ class ComparisonFlow:
         return hmac.new(self.state_key, purpose + b'\0' + message, hashlib.sha256).digest()
 
     async def _assertion(self, now):
+        build_started = time.perf_counter()
         head = _encoded({'alg':'ES256', 'kid':self.kid})
         payload = _encoded({'iss':self.client_id, 'sub':self.client_id, 'aud':TOKEN_URL,
                             'iat':now, 'exp':now + 120, 'jti':secrets.token_urlsafe(32)})
         signed = (head + '.' + payload).encode('ascii')
-        signature = await self.crypto.sign(self.key, signed)
+        record_login_timing('assertion_build', (time.perf_counter() - build_started) * 1000)
+        sign_started = time.perf_counter()
+        try:
+            signature = await self.crypto.sign(self.key, signed)
+        finally:
+            record_login_timing('assertion_sign', (time.perf_counter() - sign_started) * 1000)
         if not isinstance(signature, bytes) or len(signature) != 64:
             raise ValueError('invalid_es256_signature')
         return signed.decode('ascii') + '.' + _b64(signature)

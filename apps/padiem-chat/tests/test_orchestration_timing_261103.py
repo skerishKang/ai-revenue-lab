@@ -97,8 +97,8 @@ def _cleared_logging():
 
 
 def _restore_logging(saved):
-    root, handlers, propagate = saved
-    root.handlers[:] = handlers
+    root_handlers, handlers, propagate = saved
+    logging.getLogger().handlers[:] = root_handlers
     timing = logging.getLogger("padiem_chat.orchestration_timing")
     for handler in list(timing.handlers):
         timing.removeHandler(handler)
