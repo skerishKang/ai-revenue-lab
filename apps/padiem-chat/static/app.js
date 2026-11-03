@@ -3555,21 +3555,21 @@
         : [];
       for (const prompt of userPrompts) {
         if (prompt.length <= 3 && summary.includes(prompt)) return "";
-        summary = summary.replaceAll(prompt, "[질문 내용 생략]");
+        summary = summary.replaceAll(prompt, "[user prompt omitted]");
       }
       return summary
-        .replace(/\bBearer\s+[A-Za-z0-9._~+\/-]{8,}/gi, "Bearer [비밀 값 숨김]")
-        .replace(/\b(?:sk-[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9_]{12,}|xox[baprs]-[A-Za-z0-9-]{12,}|AIza[A-Za-z0-9_-]{20,})\b/g, "[비밀 값 숨김]")
-        .replace(/\b(api[_ -]?key|access[_ -]?token|token|password|secret)\s*[:=]\s*["']?[^,\s"'`]+/gi, "$1: [숨김]")
-        .replace(/\b([A-Za-z][A-Za-z0-9_-]*_id)\s*[:=]\s*["']?[A-Za-z0-9_.:-]+/gi, "$1: [내부 ID 숨김]")
-        .replace(/\b(?:run|trace|dsp|pcr|evt|event|dispatch|pc|conversation|request|tenant|user|session|continuation|message|turn|chat|app)_[A-Za-z0-9][A-Za-z0-9_.:-]*\b/gi, "[내부 ID 숨김]")
-        .replace(/\b[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\b/gi, "[내부 ID 숨김]")
-        .replace(/\b[0-9a-f]{16,}\b/gi, "[내부 ID 숨김]")
-        .replace(/(https?:\/\/[^\s"'`<>?#]+)\?[^\s"'`<>#]*/gi, "$1?[URL 쿼리 숨김]")
-        .replace(/\b[A-Za-z]:[\\/][^\s"'`<>?#]*/g, "[파일 경로 숨김]")
-        .replace(/\\\\[^\\/\s]+[\\/][^\s"'`<>?#]*/g, "[파일 경로 숨김]")
-        .replace(/(^|[\s("'`=,:;])~\/[^\s"'`<>?#]*/gm, "$1[파일 경로 숨김]")
-        .replace(/(^|[\s("'`=,:;])\/(?!\/)[^\s"'`<>?#]*/gm, "$1[파일 경로 숨김]");
+        .replace(/\bBearer\s+[A-Za-z0-9._~+\/-]{8,}/gi, "Bearer [secret redacted]")
+        .replace(/\b(?:sk-[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9_]{12,}|xox[baprs]-[A-Za-z0-9-]{12,}|AIza[A-Za-z0-9_-]{20,})\b/g, "[secret redacted]")
+        .replace(/\b(api[_ -]?key|access[_ -]?token|token|password|secret)\s*[:=]\s*["']?[^,\s"'`]+/gi, "$1: [redacted]")
+        .replace(/\b([A-Za-z][A-Za-z0-9_-]*_id)\s*[:=]\s*["']?[A-Za-z0-9_.:-]+/gi, "$1: [internal ID redacted]")
+        .replace(/\b(?:run|trace|dsp|pcr|evt|event|dispatch|pc|conversation|request|tenant|user|session|continuation|message|turn|chat|app)_[A-Za-z0-9][A-Za-z0-9_.:-]*\b/gi, "[internal ID redacted]")
+        .replace(/\b[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\b/gi, "[internal ID redacted]")
+        .replace(/\b[0-9a-f]{16,}\b/gi, "[internal ID redacted]")
+        .replace(/(https?:\/\/[^\s"'`<>?#]+)\?[^\s"'`<>#]*/gi, "$1?[query redacted]")
+        .replace(/\b[A-Za-z]:[\\/][^\s"'`<>?#]*/g, "[file path redacted]")
+        .replace(/\\\\[^\\/\s]+[\\/][^\s"'`<>?#]*/g, "[file path redacted]")
+        .replace(/(^|[\s("'`=,:;])~\/[^\s"'`<>?#]*/gm, "$1[file path redacted]")
+        .replace(/(^|[\s("'`=,:;])\/(?!\/)[^\s"'`<>?#]*/gm, "$1[file path redacted]");
     }
     function renderThoughtSummary(value) {
       const summaryText = safeThoughtSummary(value);
@@ -3582,8 +3582,7 @@
         details = document.createElement("details");
         details.className = "orchestration-thought-summary";
         const label = document.createElement("summary");
-        label.textContent = (document.documentElement.lang || "ko").toLowerCase().startsWith("en")
-          ? "Thought summary" : "생각 요약";
+        label.textContent = uiT("orchestration-thought-summary-label");
         const paragraph = document.createElement("p");
         details.append(label, paragraph);
         body.insertBefore(details, content);
@@ -3743,7 +3742,19 @@
             const content = article.querySelector(".assistant-content");
             content.replaceChildren();
             paragraph = document.createElement("p");
-            answerTextNode = document.createTextNode("");
+            if (typeof document.createTextNode === "function") {
+              answerTextNode = document.createTextNode("");
+            } else {
+              // Minimal fallback for older DOM shims. Browsers take the native
+              // Text.appendData path, while test hosts keep the legacy text view.
+              answerTextNode = {
+                data: "",
+                appendData(value) {
+                  this.data += value;
+                  paragraph.textContent = this.data;
+                },
+              };
+            }
             paragraph.appendChild(answerTextNode);
             content.appendChild(paragraph);
             // #5559: the first token is a real fact. The status moves from

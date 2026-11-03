@@ -555,7 +555,7 @@
     const response = await fetch("/api/orchestration", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/x-ndjson" },
-      body: JSON.stringify({ ...(payload || {}), stream: 1 }),
+      body: JSON.stringify(payload || {}),
       signal,
     });
     if (!response.ok) {

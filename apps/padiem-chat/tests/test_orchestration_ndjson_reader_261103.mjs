@@ -83,7 +83,7 @@ test("requestOrchestrationStream asks for NDJSON and adapts a JSON fallback to t
   assert.equal(JSON.parse(frames[0].data).delta, "완성");
   const post = calls.find((call) => call.url.endsWith("/api/orchestration"));
   assert.equal(post.headers.Accept, "application/x-ndjson");
-  assert.equal(JSON.parse(post.body).stream, 1);
+  assert.equal(Object.hasOwn(JSON.parse(post.body), "stream"), false);
 });
 
 test("the browser switch off keeps the legacy JSON request shape", async () => {
@@ -168,7 +168,7 @@ test("fake NDJSON server streams each delta and maps status, tool and completion
   assert.deepEqual(seen, ["meta", "orchestration_event", "tool", "thought_summary", "delta", "delta", "done"]);
   const post = calls.find((call) => call.url.endsWith("/api/orchestration"));
   assert.equal(post.headers.Accept, "application/x-ndjson");
-  assert.equal(JSON.parse(post.body).stream, 1);
+  assert.equal(Object.hasOwn(JSON.parse(post.body), "stream"), false);
 });
 
 test("a mid-stream error maps to the existing error event", async () => {

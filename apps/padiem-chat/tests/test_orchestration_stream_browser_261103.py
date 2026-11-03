@@ -8,7 +8,8 @@ def test_browser_stream_requests_ndjson_by_default_and_has_runtime_off_switch():
     transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
     assert 'return window.PADIEM_CHAT_ORCHESTRATION_STREAM !== false;' in transport
     assert '"Accept": "application/x-ndjson"' in transport
-    assert 'JSON.stringify({ ...(payload || {}), stream: 1 })' in transport
+    assert 'body: JSON.stringify(payload || {})' in transport
+    assert 'stream: 1' not in transport
     assert 'orchestrationStreamingEnabled()\n        ? await requestOrchestrationStream' in transport
 
 
@@ -36,12 +37,13 @@ def test_thought_summary_is_collapsible_and_sensitive_content_is_projected():
     assert 'details.className = "orchestration-thought-summary"' in app
     assert 'paragraph.textContent = summaryText' in app
     assert r"[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}" in app
-    assert "workspaces|opt|private|Volumes|srv|root" in app
-    assert "[질문 내용 생략]" in app
+    assert "A-Za-z]:[\\\\/]" in app
+    assert "replace(/(^|" in app
+    assert "[user prompt omitted]" in app
     assert "token|password|secret" in app
-    assert "[비밀 값 숨김]" in app
-    assert "[내부 ID 숨김]" in app
-    assert "[파일 경로 숨김]" in app
+    assert "[secret redacted]" in app
+    assert "[internal ID redacted]" in app
+    assert "[file path redacted]" in app
     assert ".orchestration-thought-summary > summary" in css
 
 

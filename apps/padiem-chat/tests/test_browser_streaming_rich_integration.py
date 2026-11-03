@@ -247,9 +247,9 @@ def test_thought_summary_redacts_identifiers_paths_and_url_queries() -> None:
         "token=secret", "key=hidden",
     ):
         assert secret not in rendered
-    assert "[내부 ID 숨김]" in rendered
-    assert rendered.count("[파일 경로 숨김]") == 3
-    assert "[URL 쿼리 숨김]" in rendered
+    assert "[internal ID redacted]" in rendered
+    assert rendered.count("[file path redacted]") == 3
+    assert "[query redacted]" in rendered
 
 
 def test_streaming_delta_uses_incremental_text_node_updates() -> None:
