@@ -1,7 +1,7 @@
 """#5881 follow-on — the schema of the 컴2 PC queue database.
 
 Only the migrations that own the tables the queue is responsible for are applied here:
-`oracle_mesh_dispatch` (047·048·049·063·074), `mesh_device_presence` (067·070) and the
+`oracle_mesh_dispatch` (047·048·049·063·074), `mesh_device_presence` (067·070·091) and the
 pairing directory `pc_pairing_codes` + `pc_device_links` (072·073), and the latest
 drive inventory `mesh_device_drives` (086). Conversation rows —
 runs, messages, tool calls, the preferred-PC selection — stay in Cloudflare D1, which is
@@ -87,6 +87,9 @@ QUEUE_MIGRATIONS = (
     # the stores SELECT them, so a queue database without them cannot serve.
     "089_pc_device_link_supersede.sql",
     "090_mesh_device_presence_last_connected.sql",
+    # #6695 PR-2: the presence receipt's owner-account list. The store's load()
+    # reads the column, so a queue database without it cannot serve either.
+    "091_mesh_device_presence_accounts.sql",
 )
 
 QUEUE_TABLES = (
@@ -112,6 +115,7 @@ REQUIRED_COLUMNS = {
     ),
     "mesh_device_presence": (
         "device_id", "connected", "received_at", "source", "last_connected_at",
+        "account_refs_json",
     ),
     "pc_pairing_codes": ("code_id", "state", "mesh_node_id", "expires_at"),
     "pc_device_links": (
