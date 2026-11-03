@@ -76,7 +76,8 @@ def gateway():
         return {"status": "completed", "answer": "확인했습니다.", "output": {"value": "fixture result"}}
 
     app = Starlette(routes=[Route(MCP_GATEWAY_PATH, mcp_gateway_endpoint, methods=["POST", "GET", "DELETE", "OPTIONS"])])
-    app.state.settings = SimpleNamespace(public_base_url="https://chat.example.test")
+    app.state.settings = SimpleNamespace(public_base_url="https://chat.example.test",
+                                         mcp_pc_shell_enabled=True)
     app.state.mcp_gateway_store = store
     app.state.pc_device_pairing_store = SimpleNamespace(link_for=paired)
     app.state.mcp_gateway_executor = execute
@@ -135,6 +136,66 @@ def test_eleven_sorted_tools_use_closed_schemas_and_token_bound_device(gateway, 
     timeout = shell["inputSchema"]["properties"]["timeout_seconds"]
     assert timeout["type"] == "integer" and timeout["minimum"] == 1 and timeout["maximum"] == 600
     assert gateway.calls == []
+
+
+@pytest.mark.parametrize("value", ["false", "0", "", None, "FALSE ", " False"])
+def test_pc_shell_flag_off_values_do_not_enable_the_tool(value):
+    # Unset and false-ish values keep the arbitrary-command tool dark.
+    from app.config import Settings
+    assert Settings.from_values(mcp_pc_shell_enabled=value).mcp_pc_shell_enabled is False
+
+
+@pytest.mark.parametrize("value", ["true", "TRUE", " True "])
+def test_pc_shell_flag_true_values_enable_it(value):
+    from app.config import Settings
+    assert Settings.from_values(mcp_pc_shell_enabled=value).mcp_pc_shell_enabled is True
+
+
+def test_pc_shell_flag_rejects_a_typo_instead_of_guessing():
+    # A deployment that misspells the value must not silently decide whether the
+    # command tool is live.
+    from app.config import ConfigError, Settings
+    with pytest.raises(ConfigError):
+        Settings.from_values(mcp_pc_shell_enabled="yes")
+
+
+def test_unset_deployment_flag_leaves_pc_shell_off(monkeypatch):
+    from app.config import Settings
+    monkeypatch.delenv("PADIEM_MCP_PC_SHELL_ENABLED", raising=False)
+    assert Settings.from_env().mcp_pc_shell_enabled is False
+    monkeypatch.setenv("PADIEM_MCP_PC_SHELL_ENABLED", "true")
+    assert Settings.from_env().mcp_pc_shell_enabled is True
+    monkeypatch.setenv("PADIEM_MCP_PC_SHELL_ENABLED", "yes")
+    with pytest.raises(Exception) as raised:
+        Settings.from_env()
+    assert "PADIEM_MCP_PC_SHELL_ENABLED" in str(raised.value)
+
+
+def test_a_bare_settings_object_leaves_pc_shell_off():
+    # Anything built without the deployment environment must not advertise the
+    # command tool either.
+    from app.config import Settings
+    assert Settings().mcp_pc_shell_enabled is False
+
+
+def test_pc_shell_is_hidden_and_refused_when_the_flag_is_off(gateway):
+    gateway.app.state.settings.mcp_pc_shell_enabled = False
+    tools = post(gateway, "tools/list").json()["result"]["tools"]
+    assert [tool["name"] for tool in tools] == [
+        "pc_browser_act", "pc_browser_open", "pc_browser_read", "pc_browser_screenshot",
+        "pc_delete", "pc_list", "pc_move", "pc_read", "pc_search", "pc_write",
+    ]
+    refused = post(gateway, "tools/call", params={"name": "pc_shell", "arguments": {"command": "Get-Date"}})
+    assert refused.status_code == 400
+    error = refused.json()["error"]
+    assert error["code"] == -32020
+    assert "tool_not_enabled" in error["message"]
+    assert error["data"] == {"code": "tool_not_enabled", "tool": "pc_shell"}
+    # Nothing reached the executor and nothing was written to the audit trail.
+    assert gateway.calls == [] and gateway.store.records == []
+    # The rest of the gateway keeps working while pc_shell stays dark.
+    read = post(gateway, "tools/call", params={"name": "pc_read", "arguments": {"path": "docs/a.txt"}})
+    assert read.json()["result"]["structuredContent"]["status"] == "completed"
 
 
 @pytest.mark.parametrize("arguments", [

@@ -15,7 +15,7 @@ import re
 from starlette.responses import JSONResponse, Response
 
 from .mcp_gateway_dispatch import APPROVAL_META_KEY, dispatch_mcp_tool
-from .mcp_gateway_shell import PC_SHELL_PROPERTIES
+from .mcp_gateway_shell import PC_SHELL_PROPERTIES, PC_SHELL_TOOL_NAME
 from .same_origin_guard import expected_browser_origin
 
 
@@ -97,6 +97,17 @@ _TOOL_LIST = sorted([
           {"path": _PATH}, mutates=True),
 ], key=lambda item: item["name"])
 _TOOLS = {tool["name"]: tool for tool in _TOOL_LIST}
+
+
+def _pc_shell_enabled(request) -> bool:
+    """The one switch for the arbitrary-command tool. Off unless the deployment says true."""
+    return bool(getattr(getattr(request.app.state, "settings", None), "mcp_pc_shell_enabled", False))
+
+
+def _visible_tools(request) -> list:
+    if _pc_shell_enabled(request):
+        return _TOOL_LIST
+    return [tool for tool in _TOOL_LIST if tool["name"] != PC_SHELL_TOOL_NAME]
 
 
 def validate_tool_arguments(name, arguments):
@@ -255,11 +266,16 @@ async def mcp_gateway_endpoint(request):
     if method == "tools/list":
         if params.get("cursor") is not None:
             return _error(-32602, "Unknown cursor", request_id)
-        return _result(request_id, {"tools": _TOOL_LIST}, version)
+        return _result(request_id, {"tools": _visible_tools(request)}, version)
     if method == "tools/call":
         name, arguments = params.get("name"), params.get("arguments", {})
         if not validate_tool_arguments(name, arguments):
             return _error(-32602, "Unknown tool or invalid arguments", request_id)
+        if name == PC_SHELL_TOOL_NAME and not _pc_shell_enabled(request):
+            # Not advertised, and refused even when a client calls it by name.
+            # Nothing is dispatched and nothing is written to the PC queue.
+            return _error(-32020, "tool_not_enabled: 이 도구는 현재 배포에서 꺼져 있습니다.",
+                          request_id, data={"code": "tool_not_enabled", "tool": name})
         call_meta = params.get("_meta", {})
         if not isinstance(call_meta, dict) or (APPROVAL_META_KEY in call_meta and (not isinstance(call_meta[APPROVAL_META_KEY], str) or not re.fullmatch(r"mcpa_[0-9a-f]{32}", call_meta[APPROVAL_META_KEY]))):
             return _error(-32602, "Invalid approval metadata", request_id)

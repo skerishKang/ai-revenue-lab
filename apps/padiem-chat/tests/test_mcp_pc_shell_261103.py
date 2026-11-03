@@ -292,8 +292,11 @@ def test_windows_worker_returns_exit_code_streams_cwd_and_truncation():
     result = _run_worker({"command": "Write-Output 'hello'; Write-Error 'bad'; exit 3"})
     assert result["exit_code"] == 3 and result["timed_out"] is False
     assert "hello" in result["stdout"] and "bad" in result["stderr"]
-    cwd = _run_worker({"command": "(Get-Location).Path", "cwd": os.environ.get("WINDIR", r"C:\Windows")})
-    assert "Windows" in cwd["stdout"]
+    windir = os.environ.get("WINDIR", r"C:\Windows")
+    cwd = _run_worker({"command": "(Get-Location).Path", "cwd": windir})
+    # Windows paths are case-insensitive and the registry value casing varies
+    # (C:\windows, C:\WINDOWS), so compare the path itself, not its spelling.
+    assert cwd["stdout"].strip().rstrip("\\").lower() == windir.strip().rstrip("\\").lower(), cwd
     big = _run_worker({"command": "$s = 'a' * 20000; Write-Output $s"})
     assert big["stdout_truncated"] is True and big["stdout_bytes"] >= 20_000
     assert shell.PC_SHELL_TRUNCATION_MARKER.strip() in big["stdout"]
