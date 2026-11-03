@@ -11,6 +11,7 @@ import importlib.util
 import json
 import pathlib
 import sqlite3
+import pytest
 import sys
 from types import SimpleNamespace
 
@@ -259,13 +260,46 @@ def test_delete_account_pc_data_rpc_is_idempotent_and_preserves_shared_history()
         ("owner-device",),
     ).fetchone()["n"] == 0
 
-    # Replay-prevention history and device-wide drive inventory are retained.
+    # Replay-prevention history is retained, without the account in it; the
+    # device-wide drive inventory stays untouched.
     assert connection.execute(
         "SELECT COUNT(*) AS n FROM oracle_mesh_dispatch WHERE user_id = ?", (owner,)
-    ).fetchone()["n"] == 1
-    assert connection.execute(
-        "SELECT COUNT(*) AS n FROM oracle_mesh_dispatch WHERE user_id = ?", (other,)
-    ).fetchone()["n"] == 1
+    ).fetchone()["n"] == 0
+    scrubbed = connection.execute(
+        "SELECT * FROM oracle_mesh_dispatch WHERE dispatch_id = ?", ("dispatch-one",)
+    ).fetchone()
+    assert scrubbed is not None
+    assert scrubbed["user_id"].startswith("deleted:")
+    for column in ("account_ref", "workspace_ref", "device_id", "node_ref", "root_ref"):
+        assert scrubbed[column] == scrubbed["user_id"], column
+    assert scrubbed["path_relative"] == "deleted"
+    assert scrubbed["file_path"] == "deleted"
+    assert scrubbed["command_text"] is None
+    # Replay keys are unchanged, and the second idempotent call above did not
+    # mint a second token for the same row.
+    assert scrubbed["run_id"] == "run-one"
+    assert scrubbed["request_fingerprint"] == "1" * 64
+    other_dispatch = connection.execute(
+        "SELECT * FROM oracle_mesh_dispatch WHERE dispatch_id = ?", ("dispatch-two",)
+    ).fetchone()
+    assert other_dispatch["user_id"] == other
+    assert other_dispatch["account_ref"] == "account-two"
+    assert other_dispatch["file_path"] == "C:/file.txt"
+    # The scrubbed row still refuses the same run: replay prevention survives.
+    with pytest.raises(sqlite3.IntegrityError):
+        connection.execute(
+            "INSERT INTO oracle_mesh_dispatch "
+            "(dispatch_id, user_id, run_id, command_id, tool_request_ref, request_id, "
+            "revision_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
+            "node_ref, root_ref, path_relative, file_path, state, expires_at, created_at) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                "dispatch-replay", scrubbed["user_id"], "run-one", "command-r",
+                "tool-r", "request-r", "revision-r", "3" * 64, "account-r",
+                "workspace-r", "device-r", "node-r", "root-r", "file.txt",
+                "C:/file.txt", "pending", later, now,
+            ),
+        )
     drive_columns = {
         row["name"] for row in connection.execute(
             "PRAGMA table_info(mesh_device_drives)"

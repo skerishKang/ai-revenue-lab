@@ -487,3 +487,15 @@ def test_unclosed_thought_is_not_returned_as_answer():
     runtime = ExecutionRuntime(app_id="test-app", b14_client=FakeExecutor(result=B14ExecutionResult(answer="<thought>private")))
     with pytest.raises(ValueError):
         run(runtime.run(request()))
+
+
+def test_run_records_the_model_call_duration_in_request_context() -> None:
+    from padiem_ai_core.execution_runtime import last_b14_duration_ms
+
+    async def measured():
+        runtime = ExecutionRuntime(app_id="test-app", b14_client=FakeExecutor())
+        await runtime.run(request())
+        return last_b14_duration_ms()
+
+    assert last_b14_duration_ms() == -1
+    assert run(measured()) >= 0

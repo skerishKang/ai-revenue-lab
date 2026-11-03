@@ -1078,6 +1078,23 @@ class ScriptBoundaryTest(unittest.TestCase):
         for required in ("--apply", "MIGRATION_FIRST", "ROLLBACK", "CHAT_DB_UNREADABLE"):
             self.assertIn(required, text)
 
+    def test_the_readable_probe_does_not_depend_on_where_the_script_was_launched(self) -> None:
+        # 11-03: three deploys stopped on SOURCE_PERMISSIONS_PREVIOUS with FILES=1
+        # DIRS=1 for both trees. Neither tree was unreadable — the script had been
+        # launched from /root (and state_dir is 0700 too), so the service account's
+        # find could not restore its initial working directory, exited non-zero, and
+        # the helpers' `|| files=1` fallback reported that as unreadable source.
+        text = SCRIPT.read_text(encoding="utf-8")
+        helper = text[text.index("probe_as_user() {"):text.index("read_check_method() {")]
+        self.assertIn('( cd / && runuser -u "$user" -- "$@" )', helper)
+        # Nothing else drops to the check account with a bare runuser.
+        self.assertEqual(text.count('runuser -u "$user" --'), 1)
+        for name in ("read_check_method", "unreadable_files", "unreachable_dirs"):
+            block = text[text.index(f"{name}() " + "{"):]
+            block = block[:block.index("\n}\n")]
+            self.assertIn("probe_as_user", block, name)
+            self.assertNotIn("runuser", block, name)
+
 
 if __name__ == "__main__":
     unittest.main()

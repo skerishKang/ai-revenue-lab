@@ -573,6 +573,57 @@ def mesh_presence_account_cleanup_statements(db: Any, user_id: str) -> list[Any]
     ]
 
 
+def oracle_mesh_dispatch_identity_cleanup_statements(db: Any, user_id: str) -> list[Any]:
+    """Keep the replay-prevention dispatch row, drop the account out of it.
+
+    Migration 047 says an expired or consumed dispatch is never deleted: its
+    presence is what refuses a replay. Keeping the row must not keep the person
+    in it, so each row is first stopped and then overwritten in one
+    irreversible pass.
+
+    * ``user_id``, ``account_ref``, ``workspace_ref``, ``device_id``,
+      ``binding_ref``, ``node_ref`` and ``root_ref`` become one random
+      ``deleted:<hex>`` token minted for this deletion. It is not a hash of the
+      old id, so it cannot be recomputed, and 128 random bits cannot collide
+      with another account.
+    * ``path_relative`` and ``file_path`` (NOT NULL) become the fixed
+      ``deleted`` sentinel, and ``evidence_ref`` and the command body
+      ``command_text`` become NULL, so no PC path or typed command survives.
+
+    The replay keys stay byte-for-byte: ``dispatch_id``, ``run_id``,
+    ``tool_request_ref``, ``tool_call_ref``, ``request_fingerprint``, the
+    nonce, the state and the result digest. The unique indexes of 047 and 063
+    still refuse the same run or the same tool call, and a late executor
+    submission is still matched by its nonce.
+
+    A row still ``pending`` is handled like the owner's own cancel (#5895): one
+    no executor has ever claimed is marked ``failed`` so the poll can never hand
+    it out for an account that no longer exists, and one already claimed keeps
+    ``pending`` and is told ``termination='cancelled'`` so its result can still
+    land through the nonce gate instead of being resent until quarantined.
+    """
+    token = "deleted:" + secrets.token_hex(16)
+    return [
+        db.prepare(
+            "UPDATE oracle_mesh_dispatch SET state=?, termination=? "
+            "WHERE user_id=? AND state=? AND nonce_sha256 IS NULL"
+        ).bind("failed", "cancelled", user_id, "pending"),
+        db.prepare(
+            "UPDATE oracle_mesh_dispatch SET termination=? "
+            "WHERE user_id=? AND state=? AND nonce_sha256 IS NOT NULL"
+        ).bind("cancelled", user_id, "pending"),
+        db.prepare(
+            "UPDATE oracle_mesh_dispatch SET user_id=?, account_ref=?, "
+            "workspace_ref=?, device_id=?, binding_ref=?, node_ref=?, root_ref=?, "
+            "path_relative=?, file_path=?, evidence_ref=NULL, command_text=NULL "
+            "WHERE user_id=?"
+        ).bind(
+            token, token, token, token, token, token, token,
+            "deleted", "deleted", user_id,
+        ),
+    ]
+
+
 class D1PcPairingStore:
     """Cloudflare D1 adapter over `pc_pairing_codes` + `pc_device_links` (072)."""
 
@@ -603,8 +654,9 @@ class D1PcPairingStore:
         """Remove one account's queue-owned PC rows in a single idempotent batch.
 
         mesh_device_drives has no user key and can describe a shared PC, so it
-        is intentionally left untouched. oracle_mesh_dispatch is replay
-        prevention history and is intentionally preserved.
+        is intentionally left untouched. oracle_mesh_dispatch keeps its
+        replay-prevention rows, but every column that names this account or
+        carries its PC work is overwritten in the same batch.
         """
         owner = _user_id(user_id)
         statements = [
@@ -612,6 +664,9 @@ class D1PcPairingStore:
             self.db.prepare("DELETE FROM pc_device_links WHERE user_id = ?").bind(owner),
             self.db.prepare("DELETE FROM pc_pairing_codes WHERE user_id = ?").bind(owner),
         ]
+        statements.extend(
+            oracle_mesh_dispatch_identity_cleanup_statements(self.db, owner)
+        )
         statements.extend(mesh_presence_account_cleanup_statements(self.db, owner))
         await self.db.batch(statements)
         return True
@@ -1012,16 +1067,22 @@ class D1PcPairingStore:
             stored = await self._read_link(owner, link_id)
         if stored is None:
             raise PcPairingError("pairing link not stored")
+        superseded_mesh_node_ids: list[str] = []
         if machine is not None and (not isinstance(existing, dict) or not existing.get("link_id")):
             # A brand-new link for a computer the owner already had rows for:
             # the older rows become `replaced`, never deleted.
-            await self._supersede_same_machine(owner=owner, keep=stored, machine=machine, moment=moment)
+            superseded_mesh_node_ids = await self._supersede_same_machine(
+                owner=owner, keep=stored, machine=machine, moment=moment,
+            )
             stored = await self._read_link(owner, stored["link_id"]) or stored
+        # Internal handoff to Chat's separate preference store. API routes
+        # project a closed response and never expose these prior node ids.
+        stored["_superseded_mesh_node_ids"] = superseded_mesh_node_ids
         return stored
 
     async def _supersede_same_machine(
         self, *, owner: str, keep: dict[str, Any], machine: Any, moment: str,
-    ) -> None:
+    ) -> list[str]:
         """Mark the owner's older links for this same computer as replaced.
 
         The sameness criterion is the Windows computer name, folded the way
@@ -1035,12 +1096,13 @@ class D1PcPairingStore:
         """
         key = machine_key(machine)
         if key is None:
-            return
+            return []
         rows = await self._all(
             "SELECT link_id, mesh_node_id, label FROM pc_device_links "
             "WHERE user_id=? AND state IN (?, ?) LIMIT 100",
             owner, _STATE_ACTIVE, _STATE_PENDING_VERIFICATION,
         )
+        superseded: list[str] = []
         for row in rows:
             if not isinstance(row, dict) or not row.get("link_id"):
                 continue
@@ -1054,6 +1116,10 @@ class D1PcPairingStore:
                 _STATE_REVOKED, moment, keep["link_id"], moment, row["link_id"],
                 _STATE_ACTIVE, _STATE_PENDING_VERIFICATION,
             )
+            mesh_node_id = row.get("mesh_node_id")
+            if isinstance(mesh_node_id, str) and mesh_node_id:
+                superseded.append(mesh_node_id)
+        return superseded
 
     async def complete_claim_from_observation(
         self, *, agent_name: Any, mesh_node_id: Any, now: datetime,
@@ -1138,7 +1204,9 @@ class D1PcPairingStore:
         )
         # A PC that named itself keeps that name; an owner who already renamed
         # it is never overwritten, and a name that was only decoration is no
-        # name at all.
+        # name at all. Preserve the internal replacement handoff across the
+        # refreshes below; it is not part of any public response.
+        superseded_mesh_node_ids = link.get("_superseded_mesh_node_ids")
         machine = pc_name_from_agent_name(agent_name)
         if machine and not link.get("label"):
             await self._run(
@@ -1150,11 +1218,18 @@ class D1PcPairingStore:
             stored = await self._read_link(owner, link["link_id"])
             if stored is not None:
                 link = stored
-        return await self._seed_drives(
+        seeded = await self._seed_drives(
             owner=owner, link=link,
             drives=drives_from_agent_name(agent_name),
             moment=moment,
         )
+        if (
+            isinstance(seeded, dict)
+            and isinstance(superseded_mesh_node_ids, list)
+            and superseded_mesh_node_ids
+        ):
+            seeded["_superseded_mesh_node_ids"] = superseded_mesh_node_ids
+        return seeded
 
     async def set_link_label(
         self, *, user_id: str, link_id: str, label: Any, now: datetime,

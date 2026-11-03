@@ -12,6 +12,7 @@ import time
 from typing import Any, Callable
 
 from .auth_validation_cache import cache_for_request, cache_configured_for_request
+from .shared_login_timing import record_login_timing
 
 
 class SharedAuthUnavailable(Exception):
@@ -51,9 +52,13 @@ class SharedChatAuth:
         if not isinstance(shared_token, str) or not shared_token:
             raise SharedAuthUnavailable('invalid_shared_credential')
         try:
-            verified = self._verifier.verify(shared_token)
-            if inspect.isawaitable(verified):
-                verified = await verified
+            verify_started = time.perf_counter()
+            try:
+                verified = self._verifier.verify(shared_token)
+                if inspect.isawaitable(verified):
+                    verified = await verified
+            finally:
+                record_login_timing('account_token_verify', (time.perf_counter() - verify_started) * 1000)
             account_id, expires = verified['accountId'], verified['expiresAt']
             if not isinstance(account_id, str) or not account_id.startswith('sub_') or type(expires) is not int or expires <= self._clock():
                 raise ValueError('invalid_verified_claims')
@@ -63,8 +68,12 @@ class SharedChatAuth:
                 # back to the old process-local mapping on a different worker.
                 self._mapping.clear()
                 async def load_mapping():
-                    user_id = await self._authority.resolve_product_user_for_subject(
-                        product_id='b62', canonical_subject_id=account_id)
+                    identity_started = time.perf_counter()
+                    try:
+                        user_id = await self._authority.resolve_product_user_for_subject(
+                            product_id='b62', canonical_subject_id=account_id)
+                    finally:
+                        record_login_timing('identity_rpc', (time.perf_counter() - identity_started) * 1000)
                     if not isinstance(user_id, str) or not user_id:
                         raise ValueError('missing_product_link')
                     return user_id, expires

@@ -27,6 +27,7 @@
 | 자막 | `asset://chat-tutorial/<문서>/captions.vtt` | `asset://chat-tutorial/01-first-visit/captions.vtt` |
 
 촬영 원본은 저장소에 넣지 않습니다(`tools/tutorial/capture_guest_scenes.py --out <폴더>`).
+공개 영상은 `tutorials/<문서>/video.v20261103.webm`, `captions.v20261103.vtt`로 R2에 올립니다.
 
 ## 도움말 화면과의 관계
 
@@ -45,7 +46,9 @@
 
 ``apps/padiem-chat/static/help-tutorials``에 같은 대본으로 6장(목차 1장 + 튜토리얼 5장)을 만듭니다. 도움말 화면과 같은 ``styles.css``·``help.css``를 쓰고, 단계 화면은 ``assets/<문서>/step-NN.webp``로 저장소에 넣었습니다(장당 150KB 이하). 사용 안내(``help.html``) 목차에서 ``./help-tutorials/index.html``로 이어집니다.
 
-영상과 자막은 저장소에 넣지 않습니다. 페이지에는 "영상 준비 중" 자리만 두고, 나중에 고정 주소를 넣을 설정 키는 ``PADIEM_TUTORIAL_MEDIA_BASE_URL``입니다(예: ``PADIEM_TUTORIAL_MEDIA_BASE_URL/<문서>/video.webm``).
+영상과 자막은 저장소에 넣지 않습니다. 게스트로 촬영한 01·02·04 페이지에는 ``PADIEM_TUTORIAL_MEDIA_BASE_URL``로 지정한 ``https://tutorial-media.padiem.net``의 버전 주소를 붙이고, 촬영되지 않은 튜토리얼은 "영상 준비 중"으로 남깁니다.
+
+영상은 익명 CORS 모드로 자막을 불러옵니다. R2 CORS는 ``https://chat.padiem.net`` 출처와 GET/HEAD, Range 헤더만 허용합니다.
 
 ## 도움말 문안 대조(반영됨)
 

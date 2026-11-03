@@ -396,17 +396,30 @@ SOURCE_PATHS=(
 # 9p mount, where Windows ACLs can refuse a read that the mode bits promise.
 # Where the caller cannot even reach the directory as that user (a private parent
 # in a test run) the probe would report the ancestor, so fall back to mode bits.
+probe_as_user() {
+  # $1 is the account, the rest is the command. The probe runs from / because the
+  # launcher's own directory is usually one the service account cannot enter —
+  # root's home is 0700, and state_dir is 0700 too. Dropped into that account, find
+  # cannot restore its initial working directory and exits non-zero; under
+  # `set -euo pipefail` the caller then reads the "|| files=1" fallback as unreadable
+  # source. Three runs on 11-03 stopped on SOURCE_PERMISSIONS_PREVIOUS that way
+  # while both trees were in fact readable by the service account.
+  local user=$1
+  shift
+  ( cd / && runuser -u "$user" -- "$@" )
+}
+
 read_check_method() {
   local path=$1 user=$2
   [[ ${EUID} -eq 0 ]] || { printf 'mode'; return; }
   getent passwd -- "$user" >/dev/null 2>&1 || { printf 'mode'; return; }
-  if runuser -u "$user" -- test -x "$path" 2>/dev/null; then printf 'access'; else printf 'mode'; fi
+  if probe_as_user "$user" test -x "$path" 2>/dev/null; then printf 'access'; else printf 'mode'; fi
 }
 
 unreadable_files() {
   local path=$1 user=$2
   if [[ $(read_check_method "$path" "$user") == access ]]; then
-    runuser -u "$user" -- find "$path" -type f ! -readable -print 2>/dev/null | wc -l
+    probe_as_user "$user" find "$path" -type f ! -readable -print 2>/dev/null | wc -l
     return
   fi
   find "$path" -type f ! -perm -0444 -print 2>/dev/null | wc -l
@@ -415,7 +428,7 @@ unreadable_files() {
 unreachable_dirs() {
   local path=$1 user=$2
   if [[ $(read_check_method "$path" "$user") == access ]]; then
-    runuser -u "$user" -- find "$path" -type d ! -readable -print 2>/dev/null | wc -l
+    probe_as_user "$user" find "$path" -type d ! -readable -print 2>/dev/null | wc -l
     return
   fi
   find "$path" -type d ! -perm -0555 -print 2>/dev/null | wc -l

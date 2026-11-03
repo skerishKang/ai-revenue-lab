@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
+from contextvars import ContextVar
 from dataclasses import dataclass
 import re
 import time
@@ -45,6 +46,26 @@ from .dispatch_preinstruction import (
 )
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+
+# One request's model-call duration, readable by the host that logs stage
+# times. It carries a duration only, never a request, prompt or answer.
+_LAST_B14_DURATION_MS: ContextVar[int] = ContextVar(
+    "last_b14_duration_ms", default=-1
+)
+
+
+def last_b14_duration_ms() -> int:
+    """The most recent B14 call duration in this request context, or -1."""
+
+    return _LAST_B14_DURATION_MS.get()
+
+
+def reset_b14_duration_ms() -> None:
+    """Start a new request scope so a replay never reports an older call."""
+
+    _LAST_B14_DURATION_MS.set(-1)
+
+
 _MESSAGE_ROLES = frozenset({"user", "assistant", "tool"})
 _MODEL_POLICY_FIELDS = frozenset(
     {
@@ -629,6 +650,9 @@ class ExecutionRuntime:
                 metadata=metadata,
             ) from None
 
+        # Observability uses the wall clock so an injected request clock keeps
+        # its exact existing call count and semantics.
+        b14_started_at = time.monotonic()
         try:
             result = await self._b14_client.execute(b14_request)
         except B14ExecutionError as exc:
@@ -666,6 +690,10 @@ class ExecutionRuntime:
                 "Model execution failed.",
                 metadata=metadata,
             ) from None
+        finally:
+            _LAST_B14_DURATION_MS.set(
+                max(0, int(round((time.monotonic() - b14_started_at) * 1000)))
+            )
 
         if not isinstance(result, B14ExecutionResult):
             metadata = self._metadata(

@@ -15,6 +15,7 @@ from __future__ import annotations
 import asyncio
 import json
 from contextlib import contextmanager
+from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -1317,3 +1318,125 @@ def test_connector_scope_refusal_is_identical_when_either_read_fails():
             ))
         assert result.ready is False, broken
         assert identity.calls == [], broken  # the scope port is never reached
+
+
+# --- stale selected Mesh device --------------------------------------------
+
+class _SelectionPresence:
+    def __init__(self, online_ids):
+        self.online_ids = set(online_ids)
+
+    async def load(self, *, device_id):
+        return {
+            "device_id": device_id,
+            "connected": device_id in self.online_ids,
+            "received_at": (datetime.now(timezone.utc) - timedelta(seconds=5)).isoformat().replace("+00:00", "Z"),
+            "credential_generation": None,
+            "source": "mesh",
+        }
+
+
+class _OwnedLinks:
+    def __init__(self, node_ids):
+        self.node_ids = list(node_ids)
+
+    async def links_for_owner(self, *, user_id):
+        assert user_id == OWNER
+        return [
+            {"mesh_node_id": node_id, "label": node_id}
+            for node_id in self.node_ids
+        ]
+
+
+class _WritableSelection(SavedSelection):
+    async def save(self, *, owner_id, workspace_id, device_id, now):
+        self.calls.append({
+            "owner_id": owner_id,
+            "workspace_id": workspace_id,
+            "device_id": device_id,
+        })
+        if self.raises:
+            raise RuntimeError("SECRET_SELECTION_PATH")
+        self.value = device_id
+        return True
+
+
+def _resolve_with_selection(*, selected, directory_rows, link_ids, online_ids, mesh_rows):
+    request = request_for(
+        Directory(directory_rows),
+        mesh=Mesh(mesh_rows),
+        identity=Identity(),
+        owner_state={
+            "pc_device_pairing_store": _OwnedLinks(link_ids),
+            "mesh_device_presence_store": _SelectionPresence(online_ids),
+            "claw_pc_device_selection_store": _WritableSelection(selected),
+        },
+    )
+    selection = request.app.state.claw_pc_device_selection_store
+    context = asyncio.run(resolve_pc_work_context(
+        request,
+        owner_id=OWNER,
+        workspace_id=WORKSPACE,
+        session_id=SESSION,
+        selected_device_id=selected,
+    ))
+    return context, selection
+
+
+def test_stale_mesh_selection_switches_only_to_one_mesh_online_owned_pc():
+    old, current = "node/meshdomain/old-node-AAAA", "node/meshdomain/current-node-BBBB"
+    context, selection = _resolve_with_selection(
+        selected=old,
+        directory_rows=[device(old, name="Old COM1")],
+        link_ids=[current],
+        online_ids={current},
+        mesh_rows=[mesh_row(current, node_ref="node-current")],
+    )
+    assert selection.calls == [{
+        "owner_id": OWNER,
+        "workspace_id": WORKSPACE,
+        "device_id": current,
+    }]
+    assert selection.value == current
+    assert context.selected_device_id == current
+    assert context.selection_auto_switched is True
+    assert context.selection_offline is False
+    assert context.execution_device_id == current
+    assert context.tool_available is True
+    assert "유일하게 연결된 PC" in render_pc_work_context(context)
+
+
+def test_offline_selection_with_no_connected_owned_pc_is_explained_and_blocked():
+    old = "old-mesh-node"
+    context, selection = _resolve_with_selection(
+        selected=old,
+        directory_rows=[device(old, name="Old COM1")],
+        link_ids=[],
+        online_ids=set(),
+        mesh_rows=[mesh_row(old, node_ref="node-old")],
+    )
+    rendered = render_pc_work_context(context)
+    assert context.selection_offline is True
+    assert context.execution.ready is False
+    assert context.tool_available is False
+    assert selection.calls == []
+    assert "선택한 PC가 꺼져 있거나 연결이 끊겨 있습니다" in rendered
+    assert "이를 계정의 접근 권한 문제로 설명하지 마세요" in rendered
+
+
+def test_offline_selection_does_not_guess_between_multiple_connected_owned_pcs():
+    old, first, second = "old-mesh-node", "first-mesh-node", "second-mesh-node"
+    context, selection = _resolve_with_selection(
+        selected=old,
+        directory_rows=[device(old, name="Old COM1")],
+        link_ids=[first, second],
+        online_ids={first, second},
+        mesh_rows=[mesh_row(first, node_ref="node-first")],
+    )
+    rendered = render_pc_work_context(context)
+    assert context.selection_offline is True
+    assert context.tool_available is False
+    assert selection.value == old
+    assert selection.calls == []
+    assert "선택한 PC가 꺼져 있거나 연결이 끊겨 있습니다" in rendered
+    assert "유일하게 연결된 PC" not in rendered

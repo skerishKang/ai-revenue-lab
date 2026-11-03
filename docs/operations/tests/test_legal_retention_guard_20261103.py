@@ -75,8 +75,8 @@ class LegalRetentionGuardTest(unittest.TestCase):
         self.assertIn("- 상호: (주)시지아이", text)
         self.assertIn("- 대표자: 김범신·백정아(각자대표)", text)
         self.assertIn("- 사업자등록번호: 410-86-46283", text)
-        # 통신판매업 신고번호·보호책임자 실명은 확정 전이므로 값을 만들지 않는다.
-        self.assertIn("- 통신판매업 신고번호: [대표 결정: 통신판매업 신고번호]", text)
+        # 대표가 판매자 정보에서 확인한 신고번호를 고정한다. 보호책임자 실명은 별도 확인 전이다.
+        self.assertIn("- 통신판매업 신고번호: 2025-전남장성-94", text)
         self.assertNotIn("법령 이름과 시행일은 확인되지 않아", text)
 
 

@@ -8,10 +8,11 @@ placeholder and the future session file is named here, empty today.
 
 Artifacts stay outside the repository (default: ``<repo>/../out``):
 
-    out/<scenario>/step-NN.png   full-page screenshot per captured step
-    out/<scenario>/video.webm    one recording per scene
-    out/<scenario>/captions.vtt  one cue per captured step, from real offsets
-    out/<scenario>/manifest.json keys, outcomes, timings (no request bodies)
+    out/<scenario>/step-NN.png        full-page screenshot per captured step
+    out/<scenario>/video-step-NN.png  viewport frame used in the short scene video
+    out/<scenario>/video.webm         one five-second-per-step WebM
+    out/<scenario>/captions.vtt       one cue per step, bounded by WebM duration
+    out/<scenario>/manifest.json      keys, outcomes, timings (no request bodies)
 
 ``--dry-run`` prints the plan without starting a browser; the unit test reads it.
 """
@@ -22,8 +23,8 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
-import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -39,6 +40,8 @@ ACCOUNT_ENV = build_tutorials.ACCOUNT_ENV
 CHAT_ORIGIN = "https://chat.padiem.net"
 BOOKAI_ORIGIN = "https://bookai.padiem.net"
 VIEWPORT = {"width": 1280, "height": 900}
+#: Each actual guest screen remains visible for five seconds in the scene video.
+VIDEO_STEP_MS = 5_000
 
 
 @dataclass(frozen=True)
@@ -113,8 +116,8 @@ def _timestamp(milliseconds: int) -> str:
     return f"{hours:02d}:{minutes:02d}:{seconds:02d}.{millis:03d}"
 
 
-def build_vtt(records: list[dict]) -> str:
-    """One cue per captured step, ending where the next cue starts."""
+def build_vtt(records: list[dict], duration_ms: int | None = None) -> str:
+    """One cue per captured step, bounded by the next cue and the clip duration."""
 
     lines = ["WEBVTT", ""]
     for index, record in enumerate(records):
@@ -122,14 +125,90 @@ def build_vtt(records: list[dict]) -> str:
         end = (
             int(records[index + 1]["offset_ms"])
             if index + 1 < len(records)
-            else start + 5_000
+            else start + VIDEO_STEP_MS
         )
+        if duration_ms is not None:
+            end = min(end, int(duration_ms))
         if end <= start:
-            end = start + 2_000
+            raise ValueError(f"caption cue does not fit video duration at offset {start}ms")
         lines.extend(
             [str(index + 1), f"{_timestamp(start)} --> {_timestamp(end)}", record["caption"], ""]
         )
     return "\n".join(lines).rstrip() + "\n"
+
+
+def _video_duration_ms(path: Path) -> int | None:
+    """Read the finished clip duration with ffprobe when it is available."""
+
+    ffprobe = shutil.which("ffprobe")
+    if not ffprobe or not path.is_file():
+        return None
+    result = subprocess.run(
+        [
+            ffprobe,
+            "-v",
+            "error",
+            "-show_entries",
+            "format=duration",
+            "-of",
+            "default=noprint_wrappers=1:nokey=1",
+            str(path),
+        ],
+        capture_output=True,
+        check=True,
+        text=True,
+        timeout=30,
+    )
+    return round(float(result.stdout.strip()) * 1_000)
+
+
+def _encode_video(frame_paths: list[Path], output: Path) -> None:
+    """Encode real guest viewport frames as a compact, timed WebM sequence."""
+
+    ffmpeg = shutil.which("ffmpeg")
+    if not ffmpeg:
+        raise RuntimeError("ffmpeg_required_for_tutorial_video")
+    arguments = [ffmpeg, "-hide_banner", "-loglevel", "error", "-y"]
+    for frame in frame_paths:
+        arguments.extend(
+            ["-loop", "1", "-framerate", "25", "-t", f"{VIDEO_STEP_MS / 1000:.3f}", "-i", str(frame)]
+        )
+    filters: list[str] = []
+    labels: list[str] = []
+    for index in range(len(frame_paths)):
+        label = f"v{index}"
+        labels.append(f"[{label}]")
+        filters.append(
+            f"[{index}:v]setpts=PTS-STARTPTS,scale={VIEWPORT['width']}:{VIEWPORT['height']}:"
+            "force_original_aspect_ratio=decrease,"
+            f"pad={VIEWPORT['width']}:{VIEWPORT['height']}:(ow-iw)/2:(oh-ih)/2,"
+            "setsar=1,fps=25,format=yuv420p"
+            f"[{label}]"
+        )
+    filters.append("".join(labels) + f"concat=n={len(frame_paths)}:v=1:a=0[outv]")
+    arguments.extend(
+        [
+            "-filter_complex",
+            ";".join(filters),
+            "-map",
+            "[outv]",
+            "-an",
+            "-c:v",
+            "libvpx",
+            "-deadline",
+            "good",
+            "-cpu-used",
+            "4",
+            "-b:v",
+            "0",
+            "-crf",
+            "32",
+            "-pix_fmt",
+            "yuv420p",
+            str(output),
+        ]
+    )
+    subprocess.run(arguments, check=True, capture_output=True, text=True, timeout=120)
 
 
 def plan_document(only: set[str] | None = None) -> dict:
@@ -181,15 +260,16 @@ def _assert_expectations(page, step: Step) -> None:
 
 def _capture_scene(browser, scene: Scene, directory: Path, document: dict) -> dict:
     directory.mkdir(parents=True, exist_ok=True)
-    raw_video = directory / "video-raw"
-    if raw_video.exists():
-        shutil.rmtree(raw_video)
-    raw_video.mkdir()
-    context = browser.new_context(
-        record_video_dir=str(raw_video),
-        record_video_size=VIEWPORT,
-        viewport=VIEWPORT,
-    )
+    for previous in (
+        directory / "video.webm",
+        directory / "captions.vtt",
+        directory / "manifest.json",
+        *directory.glob("step-*.png"),
+        *directory.glob("video-step-*.png"),
+    ):
+        if previous.is_file():
+            previous.unlink()
+    context = browser.new_context(viewport=VIEWPORT)
     page = context.new_page()
     blocked: list[str] = []
 
@@ -203,9 +283,7 @@ def _capture_scene(browser, scene: Scene, directory: Path, document: dict) -> di
             route.abort("blockedbyclient")
 
     page.route("**/*", guard)
-    video = page.video
     records: list[dict] = []
-    started = time.perf_counter()
     try:
         for step in scene.steps:
             caption = next(
@@ -238,25 +316,36 @@ def _capture_scene(browser, scene: Scene, directory: Path, document: dict) -> di
                     full_page=True,
                     animations="disabled",
                 )
+                page.screenshot(
+                    path=str(directory / f"video-step-{step.number:02d}.png"),
+                    full_page=False,
+                    animations="disabled",
+                )
                 entry["outcome"] = "captured"
             except Exception as error:  # recorded, never hidden
                 entry["outcome"] = "failed"
                 entry["reason"] = str(error)[:200]
-            entry["offset_ms"] = round((time.perf_counter() - started) * 1000)
             records.append(entry)
     finally:
         page.close()
         context.close()
 
-    if video is not None:
-        try:
-            shutil.move(video.path(), directory / "video.webm")
-        except OSError:
-            pass
-    shutil.rmtree(raw_video, ignore_errors=True)
-
     captured = [record for record in records if record["outcome"] == "captured"]
-    (directory / "captions.vtt").write_text(build_vtt(captured), encoding="utf-8")
+    for index, record in enumerate(captured):
+        record["offset_ms"] = index * VIDEO_STEP_MS
+    video_path = directory / "video.webm"
+    duration_ms = None
+    if captured:
+        _encode_video(
+            [directory / f"video-step-{record['number']:02d}.png" for record in captured],
+            video_path,
+        )
+        duration_ms = _video_duration_ms(video_path)
+        if duration_ms is None:
+            raise RuntimeError("ffprobe_required_for_tutorial_video")
+    (directory / "captions.vtt").write_text(
+        build_vtt(captured, duration_ms=duration_ms), encoding="utf-8"
+    )
     manifest = {
         "schema_version": 1,
         "scenario": scene.slug,
@@ -265,8 +354,10 @@ def _capture_scene(browser, scene: Scene, directory: Path, document: dict) -> di
         "blocked_requests": len(blocked),
         "skipped_account_steps": document["account"],
         "media": {
-            "video": f"{build_tutorials.MEDIA_KEY_ROOT}/{scene.slug}/video.webm",
-            "captions": f"{build_tutorials.MEDIA_KEY_ROOT}/{scene.slug}/captions.vtt",
+            "video": f"tutorials/{scene.slug}/video.{build_tutorials.MEDIA_VERSION}.webm",
+            "captions": f"tutorials/{scene.slug}/captions.{build_tutorials.MEDIA_VERSION}.vtt",
+            "duration_ms": duration_ms,
+            "video_step_ms": VIDEO_STEP_MS,
             "images": {
                 f"step-{record['number']:02d}": (
                     f"{build_tutorials.MEDIA_KEY_ROOT}/{scene.slug}/step-{record['number']:02d}.png"

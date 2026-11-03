@@ -155,6 +155,8 @@ class Settings:
     # refused with `tool_not_enabled`. A deployment opts in with
     # PADIEM_MCP_PC_SHELL_ENABLED=true.
     mcp_pc_shell_enabled: bool = False
+    lovetree_account_delete_url: str | None = None
+    account_delete_rpc_secret: str | None = field(default=None, repr=False)
 
     @classmethod
     def from_values(
@@ -196,6 +198,9 @@ class Settings:
         local_dev: object = None,
         # MCP pc_shell ships dark; appended last for the same positional safety.
         mcp_pc_shell_enabled: object = None,
+        # Shared account deletion RPC uses the existing v2 service HMAC envelope.
+        lovetree_account_delete_url: object = None,
+        account_delete_rpc_secret: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -425,6 +430,13 @@ class Settings:
             global_daily_limit=global_daily,
             local_dev=local,
             mcp_pc_shell_enabled=shell_enabled,
+            lovetree_account_delete_url=(
+                _normalize_base_url(str(lovetree_account_delete_url), https_only=True)
+                if lovetree_account_delete_url else None
+            ),
+            account_delete_rpc_secret=_optional_secret(
+                account_delete_rpc_secret, name="PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET"
+            ),
         )
 
     @classmethod
@@ -480,4 +492,6 @@ class Settings:
             global_daily_limit=os.getenv("PADIEM_CHAT_GLOBAL_DAILY_LIMIT", "1000"),
             local_dev=os.getenv("PADIEM_LOCAL_DEV"),
             mcp_pc_shell_enabled=os.getenv("PADIEM_MCP_PC_SHELL_ENABLED"),
+            lovetree_account_delete_url=os.getenv("PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL"),
+            account_delete_rpc_secret=os.getenv("PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET"),
         )

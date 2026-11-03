@@ -23,7 +23,8 @@ python tools/tutorial/capture_guest_scenes.py --out ../out
 ```
 
 - 게스트 장면만 찍습니다. 라우터가 GET/HEAD 외 요청을 브라우저에서 막고, 로그인·입력·제출을 하지 않습니다.
-- 산출물은 저장소 밖(기본 `<repo>/../out`)에만 둡니다: 장면 PNG, `video.webm`, `captions.vtt`, `manifest.json`.
+- 산출물은 저장소 밖(기본 `<repo>/../out`)에만 둡니다: 단계 PNG, 뷰포트 프레임, 5초 장면 WebM, `captions.vtt`, `manifest.json`.
+- 장면 영상은 촬영된 게스트 화면 프레임을 순서대로 5초씩 보여 줍니다. `ffmpeg`와 `ffprobe`가 필요합니다.
 - 계정 세션 파일 이름은 `PADIEM_LIVE_STORAGE_STATE`로 정해 두었고 지금은 값이 없습니다. 파일은 절대 저장소에 넣지 않습니다.
 
 ## 계정 장면 촬영(대표 세션)
@@ -43,7 +44,8 @@ python tools/tutorial/capture_guest_scenes.py --out ../out
 
 - 도움말 화면과 같은 `styles.css`·`help.css`를 씁니다. 색·글자·44px 누름 영역을 새로 정하지 않습니다.
 - 단계 화면은 촬영 PNG를 webp로 줄여 `assets/<문서>/step-NN.webp`로 저장소에 넣습니다(장당 150KB 이하, 현재 7장 약 640KB).
-- 영상·자막은 저장소에 넣지 않습니다. 페이지에는 "영상 준비 중" 자리만 있고, 나중에 고정 주소를 넣을 설정 키는 `PADIEM_TUTORIAL_MEDIA_BASE_URL`입니다(예: `<키>/chat-tutorial/01-first-visit/video.webm`).
+- 영상·자막은 저장소에 넣지 않습니다. 게스트 촬영이 끝난 01·02·04는 `PADIEM_TUTORIAL_MEDIA_BASE_URL=https://tutorial-media.padiem.net`의 버전 주소를 사용하고 `<video controls preload="none" crossorigin="anonymous">`와 한국어 자막 트랙을 보여 줍니다. R2 CORS는 `https://chat.padiem.net` 출처와 GET/HEAD, Range 헤더만 허용합니다. 촬영되지 않은 튜토리얼은 "영상 준비 중"으로 남습니다.
+- R2 업로드는 `tutorials/<문서>/video.v20261103.webm`와 `captions.v20261103.vtt`를 사용합니다. 버전이 바뀌면 `tools/tutorial/build_tutorials.py`의 `MEDIA_VERSION`도 함께 올립니다.
 - 사용 안내(`help.html`) 목차에서 `./help-tutorials/index.html`로 한 번 이어집니다.
 - 이미지를 다시 만들려면 Pillow가 필요합니다(`python -m pip install pillow`). `--check`와 단위 시험은 커밋된 webp를 이름·크기로만 보므로 Pillow 없이 돕니다.
 
@@ -59,7 +61,7 @@ python -m unittest discover -s tools/tutorial/tests -t tools/tutorial -v
 python tools/tutorial/build_tutorials.py --check
 ```
 
-생성 문서의 결정성·용어 치환·자리 표시·이미지 키, 커밋된 페이지·이미지 목록과 크기, `--check`가 잡는 어긋남(페이지 문구·이미지 누락·고아 파일), 도움말 링크 1곳, VTT 형식, 촬영 `--dry-run` 계획을 확인합니다.
+생성 문서의 결정성·용어 치환·자리 표시·이미지 키, 커밋된 페이지·이미지 목록과 크기, 미디어 도메인 제한·버전 경로, `--check`가 잡는 어긋남(페이지 문구·이미지 누락·고아 파일), 도움말 링크 1곳, VTT 형식과 영상 길이 경계, 촬영 `--dry-run` 계획을 확인합니다.
 
 ## CI
 
