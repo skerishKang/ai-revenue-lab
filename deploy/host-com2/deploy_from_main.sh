@@ -56,6 +56,9 @@
 #   COM2_CHAT_HEALTH_URL / COM2_P01_HEALTH_URL / COM2_B14_HEALTH_URL
 set -euo pipefail
 umask 077
+# Root-run import checks must not leave __pycache__ in the staged tree; the
+# service user cannot read a root-owned bytecode directory.
+export PYTHONDONTWRITEBYTECODE=1
 
 ops_checkout=${PADIEM_COM2_OPS_CHECKOUT:-}
 staging_checkout=${PADIEM_COM2_STAGING_CHECKOUT:-/mnt/d/work/ai-revenue-lab-staging-chat}

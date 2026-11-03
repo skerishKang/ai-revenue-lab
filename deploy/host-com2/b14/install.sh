@@ -17,6 +17,9 @@
 set -euo pipefail
 set +x
 umask 077
+# The root import check below must not leave __pycache__ that padiem-b14
+# cannot read.
+export PYTHONDONTWRITEBYTECODE=1
 
 SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 APP_ROOT=/opt/padiem/b14
