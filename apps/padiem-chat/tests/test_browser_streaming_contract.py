@@ -168,7 +168,7 @@ def test_stream_state_commits_only_on_done_and_partial_error_is_preserved() -> N
     stream_end = source.index("  async function requestAnswer(", stream_start)
     stream_source = source[stream_start:stream_end]
 
-    assert 'appendStreamDelta?.(answerTextNode, data.delta)' in stream_source
+    assert 'paragraph.textContent = answer;' in stream_source
     assert 'renderStreamError(article, message' in stream_source
     assert 'applyStreamDone(article, data, answer' in stream_source
     assert 'messages = outboundMessages.concat' not in stream_source

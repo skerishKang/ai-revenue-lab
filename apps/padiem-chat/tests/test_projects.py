@@ -495,5 +495,4 @@ def test_project_frontend_and_migration_contract_keep_phase1_css_unchanged():
     assert len(declared) == 1 and declared[0]["binding"] == "PADIEM_CHAT_DB"
     assert str(UUID(declared[0]["database_id"])) == declared[0]["database_id"]
     repo = root.parents[1]
-    from style_contract import assert_phase1_styles_match
-    assert_phase1_styles_match(root / "static/styles.css", repo / "reference/business-62-padiem-chat-v1/styles.css")
+    assert (root / "static/styles.css").read_bytes() == (repo / "reference/business-62-padiem-chat-v1/styles.css").read_bytes()

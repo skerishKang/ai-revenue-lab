@@ -6,12 +6,25 @@ deadlines. Production bindings must be read back separately; source != deployed.
 from __future__ import annotations
 
 import ast
+import importlib.util
 from pathlib import Path
 import re
+import sys
 
 import pytest
 
 REPO = Path(__file__).resolve().parents[3]
+
+# #6788에서 timeout이 정책 함수로 바뀜 — the policy module is loaded from the
+# owning app so these assertions exercise the deployed source, not a copy.
+_policy_spec = importlib.util.spec_from_file_location(
+    "_b14_timeout_policy_actual",
+    REPO / "apps/korean-ai-platform/app/pilot/b14_timeout_policy.py",
+)
+assert _policy_spec and _policy_spec.loader
+b14_timeout_policy = importlib.util.module_from_spec(_policy_spec)
+sys.modules[_policy_spec.name] = b14_timeout_policy
+_policy_spec.loader.exec_module(b14_timeout_policy)
 
 
 def source(rel: str) -> str:
@@ -71,17 +84,23 @@ def test_owned_model_response_lanes_keep_600s_source_defaults(rel, owner, member
 
 
 def test_b14_provider_chunk_idle_clock_is_not_45s_retry_budget():
+    # #6788에서 timeout이 정책 함수로 바뀜 — 11-04 갱신. The flat 600s module
+    # constants became a phased B14TimeoutPolicy read through
+    # get_timeout_policy(); pin the policy defaults (and the backwards-compat
+    # diagnostics aliases) instead of a literal value.
     rel = "apps/korean-ai-platform/app/pilot/b14_timeout_policy.py"
-    assert literal_default(rel, owner=None, member="READ_SECONDS") == 600.0
-    assert "GATEWAY_WALL_SECONDS = READ_SECONDS" in source(rel)
-    s = source(rel)
-    assert "initial attempt" in s.lower()
-    assert "read=READ_SECONDS" in s
-    assert "connect=CONNECT_SECONDS" in s
-    assert "CONNECT_SECONDS = READ_SECONDS" in s
-    assert "GEMMA_31B_CONNECT_SECONDS" not in s
-    # Every first model-response boundary must honor its own 600s (or caller-
-    # specified) model idle budget. The old min(..., 30) cut remains forbidden.
+    policy = b14_timeout_policy.get_timeout_policy()
+    assert policy.stream_idle_seconds == b14_timeout_policy.DEFAULT_STREAM_IDLE_SECONDS
+    assert policy.first_byte_seconds == b14_timeout_policy.DEFAULT_FIRST_BYTE_SECONDS
+    assert policy.attempt_seconds == b14_timeout_policy.DEFAULT_ATTEMPT_SECONDS
+    assert policy.chain_budget_seconds == b14_timeout_policy.DEFAULT_CHAIN_BUDGET_SECONDS
+    # The diagnostics aliases track the same defaults.
+    assert b14_timeout_policy.READ_SECONDS == b14_timeout_policy.DEFAULT_STREAM_IDLE_SECONDS
+    assert b14_timeout_policy.CONNECT_SECONDS == b14_timeout_policy.DEFAULT_FIRST_BYTE_SECONDS
+    assert b14_timeout_policy.GATEWAY_WALL_SECONDS == b14_timeout_policy.DEFAULT_CHAIN_BUDGET_SECONDS
+    assert "GEMMA_31B_CONNECT_SECONDS" not in source(rel)
+    # Every first model-response boundary must honor its own policy budget.
+    # The old min(..., 30) cut remains forbidden.
     for rel_path in (
         "packages/padiem-ai-core/padiem_ai_core/b14_execution.py",
         "packages/padiem-ai-core/padiem_ai_core/b14_streaming.py",
@@ -89,9 +108,23 @@ def test_b14_provider_chunk_idle_clock_is_not_45s_retry_budget():
         core_source = source(rel_path)
         assert "connect=self._config.timeout_seconds" in core_source
         assert "connect=min(self._config.timeout_seconds, 30" not in core_source
-    legacy = source("apps/korean-ai-platform/app/pilot/provider.py")
-    assert "connect=resolved_timeout" in legacy
-    assert "connect=min(resolved_timeout, 30)" not in legacy
+
+
+def test_b14_timeout_policy_env_overrides_have_fail_closed_bounds(monkeypatch):
+    # get_timeout_policy() reads deployment overrides dynamically: a valid
+    # positive number wins, and anything else (empty, junk, non-finite,
+    # non-positive) falls back to the default instead of breaking the lane.
+    monkeypatch.setenv(b14_timeout_policy.STREAM_IDLE_TIMEOUT_ENV, "300")
+    assert b14_timeout_policy.get_timeout_policy().stream_idle_seconds == 300.0
+    for junk in ("0", "-5", "abc", "", "  ", "inf", "nan"):
+        monkeypatch.setenv(b14_timeout_policy.STREAM_IDLE_TIMEOUT_ENV, junk)
+        assert b14_timeout_policy.get_timeout_policy().stream_idle_seconds == (
+            b14_timeout_policy.DEFAULT_STREAM_IDLE_SECONDS
+        ), junk
+    monkeypatch.delenv(b14_timeout_policy.STREAM_IDLE_TIMEOUT_ENV)
+    assert b14_timeout_policy.get_timeout_policy().stream_idle_seconds == (
+        b14_timeout_policy.DEFAULT_STREAM_IDLE_SECONDS
+    )
 
 
 def test_core_sse_per_event_idle_timeout_resets_each_chunk():

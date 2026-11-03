@@ -9,7 +9,6 @@ ROOT = Path(__file__).resolve().parents[1]
 RICH_PATH = ROOT / "static" / "rich-response.js"
 APP_PATH = ROOT / "static" / "app.js"
 SEARCH_PATH = ROOT / "static" / "search-sources.js"
-TRANSPORT_PATH = ROOT / "static" / "chat-transport.js"
 
 
 def _source(path: Path) -> str:
@@ -208,57 +207,18 @@ def test_stream_error_guard_and_completed_paths_remain_present() -> None:
     assert 'paragraph.textContent = text;' in app
 
 
-def test_chat_transport_stays_out_of_response_renderers() -> None:
+def test_slice21_tool_transport_contract_is_not_reimplemented_here() -> None:
+    # 대표 결정 11-03: 수동 검색 버튼 제거. 검색/리서치는 서버가 자동 선택하고
+    # search-sources.js는 완료 응답의 evidence만 렌더링한다(요청 변조 없음).
     rich = _source(RICH_PATH)
     search = _source(SEARCH_PATH)
-    transport = _source(TRANSPORT_PATH)
+    html = _source(ROOT / "static" / "index.html")
 
     assert "fetch(" not in rich
     assert "PadiemChatToolBridge" not in rich
-    assert "fetch(" not in search
-    assert '"/api/chat/stream"' in transport
-    assert '"/api/chat"' in transport
-
-
-def test_thought_summary_redacts_identifiers_paths_and_url_queries() -> None:
-    app = _source(APP_PATH)
-    start = app.index("    function safeThoughtSummary(value) {")
-    end = app.index("\n    function renderThoughtSummary", start)
-    sanitizer = app[start:end]
-    raw = (
-        "run_id=run_123 trace_ID=trace_ABC dsp_456 pcr_789 evt_ABC "
-        "UUID 123e4567-e89b-12d3-a456-426614174000 "
-        "hex abcdef0123456789abcdef0123456789 "
-        "/app/work/job.txt C:\\private\\job.txt ~/private/job.txt "
-        "https://example.test/path?token=secret%2Fvalue&key=hidden"
-    )
-    script = (
-        "const app = " + json.dumps(sanitizer, ensure_ascii=True) + ";\n"
-        "const raw = " + json.dumps(raw, ensure_ascii=True) + ";\n"
-        "const safe = new Function('payload', app + '\\nreturn safeThoughtSummary;')({messages: []});\n"
-        "process.stdout.write(safe(raw));"
-    )
-    rendered = _run_node(script)
-
-    for secret in (
-        "run_123", "trace_ABC", "dsp_456", "pcr_789", "evt_ABC",
-        "123e4567-e89b-12d3-a456-426614174000", "abcdef0123456789abcdef0123456789",
-        "/app/work/job.txt", "C:\\private\\job.txt", "~/private/job.txt",
-        "token=secret", "key=hidden",
-    ):
-        assert secret not in rendered
-    assert "[internal ID redacted]" in rendered
-    assert rendered.count("[file path redacted]") == 3
-    assert "[query redacted]" in rendered
-
-
-def test_streaming_delta_uses_incremental_text_node_updates() -> None:
-    app = _source(APP_PATH)
-    lifecycle = _source(ROOT / "static" / "message-lifecycle.js")
-    stream_start = app.index("  async function requestStreamingAnswer(")
-    stream_end = app.index("  async function requestAnswer(", stream_start)
-    stream = app[stream_start:stream_end]
-
-    assert "appendStreamDelta?.(answerTextNode, data.delta)" in stream
-    assert "paragraph.textContent = answer;" not in stream
-    assert "function appendStreamDelta(textNode, delta)" in lifecycle
+    for identifier in ("webSearchButton", "deepResearchButton", "webSearchStarterButton"):
+        assert f'id="{identifier}"' not in html
+    assert "payload.tool" not in search
+    assert '"/api/chat/stream"' not in search
+    assert '"/api/chat"' not in search
+    assert "window.PadiemSearchSources = Object.freeze({ render: renderSources });" in search

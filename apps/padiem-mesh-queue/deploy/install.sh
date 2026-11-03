@@ -63,6 +63,15 @@ LEGACY_MAP_LANE=${LEGACY_MAP_LANE:-on}
 # someone switched on for a cutover window. Absence is today's behaviour ("off").
 REQUEST_LOG=$(grep -s '^MESH_QUEUE_REQUEST_LOG=' "$ROOT/queue.env" 2>/dev/null | cut -d= -f2)
 REQUEST_LOG=${REQUEST_LOG:-off}
+# Account deletion needs the executor's exact work root; keep a prior queue.env value.
+BACKGROUND_WORK_DIR=$(grep -s '^ORACLE_MESH_WORK_DIR=' "$ROOT/queue.env" 2>/dev/null | cut -d= -f2-)
+BACKGROUND_WORK_DIR=${ORACLE_MESH_WORK_DIR:-$BACKGROUND_WORK_DIR}
+BACKGROUND_WORK_LINE=""
+if [ -n "$BACKGROUND_WORK_DIR" ]; then
+  BACKGROUND_WORK_LINE="ORACLE_MESH_WORK_DIR=$BACKGROUND_WORK_DIR"
+else
+  echo "MESH_QUEUE_STEP=background_work_dir_missing"
+fi
 WATCH_LINE=""
 if [ -s "$ROOT/watch-read-secret.txt" ]; then
   WATCH_LINE="MESH_QUEUE_WATCH_READ_SECRET_FILE=$ROOT/watch-read-secret.txt"
@@ -77,6 +86,7 @@ MESH_QUEUE_OWNERSHIP_MAP_FILE=$ROOT/ownership-map.json
 MESH_QUEUE_SERVICE_SECRET_FILE=$ROOT/service-secret.txt
 MESH_QUEUE_LEGACY_MAP_LANE=$LEGACY_MAP_LANE
 MESH_QUEUE_REQUEST_LOG=$REQUEST_LOG
+$BACKGROUND_WORK_LINE
 $WATCH_LINE
 MESH_QUEUE_EXECUTION_MODE=mesh
 PYTHONPATH=$ROOT
