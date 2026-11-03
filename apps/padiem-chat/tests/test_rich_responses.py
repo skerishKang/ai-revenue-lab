@@ -93,11 +93,9 @@ def test_inline_markdown_is_supported_without_unsafe_html_or_links():
 def test_phase1_styles_remain_byte_identical():
     root, _, _, _, _, _ = sources()
     repo = root.parents[1]
-    from style_contract import assert_phase1_styles_match
-    assert_phase1_styles_match(
-        root / "static/styles.css",
-        repo / "reference/business-62-padiem-chat-v1/styles.css",
-    )
+    assert (root / "static/styles.css").read_bytes() == (
+        repo / "reference/business-62-padiem-chat-v1/styles.css"
+    ).read_bytes()
 
 
 def test_rich_response_javascript_syntax():

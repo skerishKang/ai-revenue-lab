@@ -238,7 +238,6 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     const canonicalWrites = String(env.COM2_CANONICAL || "off").trim().toLowerCase() === "writes";
     // App AI needs time for a completed model response; records stay on COM2.
     const appsAI = request.method === "POST" && url.pathname === "/api/apps/ai";
-    const mcpRequest = request.method === "POST" && url.pathname === "/api/mcp";
     const bookAIRecords = url.pathname === "/api/bookai/records";
     const authCallback = READ_METHODS.has(request.method) && url.pathname === "/auth/shared/callback";
     const tusWrite = (request.method === "PATCH" || request.method === "POST") &&
@@ -254,6 +253,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     // 11.2s worst case on 2026-11-03). The default is the CTO's 60s ceiling; a
     // configured ORCHESTRATION_TIMEOUT_MS still wins.
     const answerRequest = request.method === "POST" && ANSWER_GENERATION_PATHS.has(url.pathname);
+    const mcpRequest = request.method === "POST" && url.pathname === "/api/mcp";
     const timeoutMs = oauthRequest
       ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS)
       : answerRequest

@@ -256,8 +256,6 @@ def test_manual_search_controls_are_removed_and_shared_css_is_unchanged():
     assert "웹 검색 · 준비 중" not in html
     assert "심층 리서치" not in html
     assert 'id="attachmentButton"' in html
-    from style_contract import assert_phase1_styles_match
-    assert_phase1_styles_match(
-        root / "static/styles.css",
-        repo / "reference/business-62-padiem-chat-v1/styles.css",
-    )
+    assert (root / "static/styles.css").read_bytes() == (
+        repo / "reference/business-62-padiem-chat-v1/styles.css"
+    ).read_bytes()
