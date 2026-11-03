@@ -4,12 +4,21 @@
 사이트 게시·링크 연결은 이 README와 각 문서의 경고 문구가 제거되고, 아래
 대표 결정 칸이 모두 채워지고, 법률 전문가의 확인을 거친 뒤에만 진행합니다.
 
-## 파일
+## 구조 (공통 1벌 + 서비스별 부속)
+
+법률 문서는 공통 계정을 쓰는 모든 서비스에 적용합니다. 같은 조항을 서비스마다 반복하지
+않도록 공통 문서 1벌 + 서비스별 부속 문서로 나눕니다.
 
 | 파일 | 내용 |
 |---|---|
-| `terms_of_service_ko.md` | 이용약관 초안 |
-| `privacy_policy_ko.md` | 개인정보처리방침 초안 |
+| `terms_common_ko.md` | 공통 이용약관 — 운영자, 공통 계정, 계정 책임, 탈퇴, 이용 제한, 유료 서비스 자리, 면책, 분쟁, 약관 변경 |
+| `privacy_common_ko.md` | 공통 개인정보처리방침 — 운영자·보호책임자, 공통 계정 정보, 위탁·국외 이전, 이용자 권리, 파기 원칙, 쿠키 원칙, 안전성 확보 |
+| `services/padiem_chat_claw_ko.md` | Chat·Claw 부속 — PC 작업·컴퓨터 사용 권한 원칙, 화면 캡처, 쓰기 전 백업, 서비스 수집 항목·보관 기간 |
+| `services/bookai_ko.md` | 북AI·StoryMemory 부속 — 기기 저장 + 계정 저장 규칙, 원격 동기화, 삭제 |
+| `services/lovetree_ko.md` | 러브트리 부속 — 점검에서 확인된 사실만 |
+
+새 서비스는 부속 문서 하나(`services/<이름>_ko.md`)를 추가하는 것으로 이 체계에 들어옵니다.
+공통 문서는 서비스 이름을 나열하지 않고 "공통 계정으로 이용하는 서비스"로 정의합니다.
 
 작성 규칙: 한국어, 서비스명·브랜드는 PADIEM. 비공개 사업방침 본문은 저장소에
 옮기지 않고, 공개 가능한 권한 원칙 문장만 실었습니다. 확인하지 않은 사실은
@@ -21,18 +30,25 @@
 
 1. 판매 주체 상호·대표자·사업자등록번호·통신판매업 신고번호·주소·연락처
 2. 개인정보 보호책임자(성명·연락처)
-3. 시행일(양 문서)
+3. 시행일(공통·부속 문서)
 4. 요금·결제 수단·환불 기준 (유료 서비스 자리만 확보한 상태)
 5. 이용 제한 기준, 면책 범위, 준거법, 관할 법원
 6. 공지 방식·기간, 문의 창구, 권리 행사 창구·처리 기한
 7. PC 작업 기록·PC 화면 캡처·백업의 보관 기간
 8. 자동 삭제 경로가 확인되지 않은 데이터의 파기 시점·절차
-9. 국외 이전: 외부 AI 모델 공급사 위치, Cloudflare 리전, 메일 발송 서비스(Resend) 위치
+9. 국외 이전: 외부 AI 모델 공급사 위치, Cloudflare 리전, 메일 발송 서비스(Resend) 위치, 데이터베이스 서비스(Neon) 계약상 위치
+10. 계정 탈퇴 절차·기한과 탈퇴 후 남는 데이터(공통 약관 4조 — 계정 삭제 라우트가 확인되지 않은 서비스 포함)
+11. 서버 접속 기록·B14 호출 원장·B14 서비스 로그의 보관 기간(점검 B 결과 참조)
+12. 러브트리 워크스페이스 문서·계정 삭제 절차
+13. 북AI·StoryMemory의 서비스 단위(별도 운영 여부)와 계정 기록 삭제 기능·기간
 
-## 근거 표 (항목 → 코드 근거)
+## 서비스별 근거 표 (항목 → 코드 근거)
 
 초안에 쓴 기술 사실의 근거입니다. 기준 커밋: `docs/legal/drafts` 초안이 만들어진
 브랜치 `docs/legal-drafts-261103`의 최상위 커밋(원본 `origin/main` `2caee3fed`).
+러브트리는 그 저장소의 2026-11-03 점검 시점 최상위 커밋 기준입니다.
+
+### PADIEM Chat·Claw
 
 | 항목 | 근거 |
 |---|---|
@@ -44,7 +60,7 @@
 | PC 작업 기록(내용 없는 카운터만) | `packages/padiem-ai-core/padiem_ai_core/pc_work_metrics.py:1-5`, `apps/padiem-chat/app/pc_work_context.py:1-6` |
 | PC 화면 캡처(1장, PC 저장, 소유자 세션만 조회) | `apps/korean-ai-code-agent/src/kagent/pc_browser_tools.py:10`, `apps/padiem-chat/app/claw_pc_browser_routes.py:19,197-207` |
 | 컴퓨터 사용 입력 1회성·재사용 금지, 실행 전 확인(스텝업) 분류 | `docs/operations/PC_BROWSER_USE_20261101.md:36,78`, `apps/korean-ai-code-agent/src/kagent/browser_control_actions.py:10-19` |
-| 북AI 기록(운영 서버 SQLite) | `apps/padiem-chat/app/bookai_records.py:1,19` |
+| 북AI 계정 기록(운영 서버 저장소, 공개 경로 본인 주제만 접근) | `apps/padiem-chat/app/bookai_records.py:1,19`, `deploy/host-com2/chat/BOOKAI_RECORDS.md`(API·소유권) |
 | BYOK 키 암호화 봉인(AES-GCM)·끝 4자리만 표시 | `apps/padiem-chat/app/byok_credentials.py:3-11`, `apps/padiem-chat/app/byok_client.py:858,905`, `apps/korean-ai-platform/app/pilot/credential_slots_admin.py:183` |
 | 알림 채널(메일·텔레그램·디스코드), 고객 내용 미포함 | `apps/padiem-chat/app/b66_signup_notifications.py:5,40-56`, `docs/operations/NOTIFY_CHANNELS_20261102.md` |
 | 메일 발송 서비스(Resend) | `apps/padiem-chat/app/password_reset_delivery.py:62` |
@@ -56,6 +72,32 @@
 | 로그인 확인 캐시(최대 30초) | `apps/padiem-chat/app/auth_validation_cache.py:54-58` |
 | 1회용 인증 코드의 접속 기록 미저장 | `apps/padiem-chat/app/access_log.py:1-5` |
 | 세션 쿠키 | `apps/padiem-chat/app/tus_chat_attachment.py:9` |
+
+### 북AI·StoryMemory
+
+| 항목 | 근거 |
+|---|---|
+| 기기 저장(읽기 기록·Memory가 이 기기에 저장) | `apps/bookai/public/index.html:179`(authGateCopy), `apps/bookai/public/bookai-login-ui.js:16-17` |
+| 계정 저장(로그인 시 계정에도 저장, 다른 기기에서 이어짐) | `apps/bookai/public/index.html:179`, `apps/bookai/public/bookai-sync.js:5,26`(`endpoint='/api/bookai/records'`) |
+| 기기 로컬 DB(IndexedDB `bookai-local-v1`) | `apps/bookai/public/bookai-local-db.js:6,14` |
+| 로그인한 세션의 원격 동기화(Neon, `sources`·`annotations`) | `apps/bookai/public/index.html:2385-2390,2448,2626-2664` |
+| 기록 백업 내보내기·복원 | `apps/bookai/public/index.html:189-194` |
+| StoryMemory 로컬 키(`storymemory.*`) | `apps/storymemory/public` 키 전수 목록(점검 결과 절) |
+
+### 러브트리
+
+| 항목 | 근거(러브트리 저장소 `lovetree-4.0`) |
+|---|---|
+| 공통 계정 로그인(`auth.padiem.net`) | `functions/_lib/shared-auth.mjs:2`, `functions/_lib/padiem-access-verify.mjs:1` |
+| 로그인 관련 쿠키 4종(15분·30일·600초) | `functions/_lib/shared-auth.mjs:55-59,73`, `server/credentials/lovetree-session.js:91` |
+| 워크스페이스 문서(주제 ID별 문서 JSON) | `server/db/schema.sql:5-12` |
+| 로그인 state의 해시 보관·만료 | `server/db/schema.sql:28-33` |
+| 공유(공개·비공개, 취소 즉시 반영) | `server/db/schema.sql:61-79` |
+| 커뮤니티(댓글 1,000자·신고 500자 이내) | `server/db/schema.sql:83-131` |
+| 댓글·즐겨찾기·감정·공유·개인 미디어 삭제 | `server/community-service.js:79,81`, `server/share-service.js:132-137`, `server/private-media.js:70-84` |
+| 워크스페이스 삭제·계정 탈퇴 라우트 없음 | `server/workspace-service.js`(DELETE 0건), 전수 검색 0건 |
+| 영상 임베드(이용자가 넣은 YouTube) | `src/media.js:14,96`, `public/v41/views/track58-pinboard.html:379` |
+| 기기 저장 1키(디자인 뷰 한정) | `public/v41/design/views/src064-orbit.html:193` |
 
 ## 코드에서 확인 못 한 사실 (초안이 단정하지 않은 것)
 
@@ -152,5 +194,5 @@ logrotate 예시는 "template; not installed by this repo"라고 스스로 밝�
 
 ## AI 생성 결과 고지
 
-두 초안 모두 "AI 생성 결과는 이용자가 검토한 뒤 사용해야 하며 전문가의 확인을
-대체하지 않는다"는 고지 문단을 포함합니다.
+공통 이용약관과 공통 개인정보처리방침(그리고 이를 받는 부속 문서)은 모두 "AI 생성 결과는
+이용자가 검토한 뒤 사용해야 하며 전문가의 확인을 대체하지 않는다"는 고지 문단을 포함합니다.
