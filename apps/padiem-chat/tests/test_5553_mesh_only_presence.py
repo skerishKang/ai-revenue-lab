@@ -28,6 +28,7 @@ class D1:
             "067_mesh_device_presence.sql",
             "070_mesh_device_presence_source.sql",
             "090_mesh_device_presence_last_connected.sql",
+            "091_mesh_device_presence_accounts.sql",
         ):
             self.db.executescript((ROOT / "apps/padiem-chat/migrations" / name).read_text())
 
