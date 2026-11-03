@@ -71,8 +71,6 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
     def do_GET(self):
         path = self.path.split("?", 1)[0].split("#", 1)[0]
-        if path == "/health":
-            return self._json({"binary_document_attachment_ready": False, "voice_stt_available": False})
         if path == "/api/auth/status":
             return self._json(AUTH)
         if path.startswith("/api/") or path.startswith("/auth/"):
