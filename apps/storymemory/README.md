@@ -19,3 +19,13 @@ StoryMemory 1.0 retains the old ingress as fallback on missing COM2 credentials,
 `STORYMEMORY_MODEL` optionally overrides the app's explicit model route; its default is defined in `public/_worker.js`. `b14/auto` was deleted on 2026-11-02; use an explicit model id.
 
 `DB_MIGRATIONS/`, patch notes, and the original manifest are preserved for reference. The original manifest uses original paths and is not a manifest of the imported directory. The original project had no separately available functions/ or Wrangler configuration at its root.
+
+## Rebuild the Bible search index
+
+The Bible body search uses the generated files under `public/content/bible-web/search-index/` and loads them only for text searches. After updating the shipped Bible chapter JSON or its manifest, rebuild the index from those files:
+
+```sh
+node apps/storymemory/scripts/build-bible-search-index.cjs
+```
+
+The generator writes the search-index manifest and 12 JSON shards beside the existing Bible content. Commit the generated files with the source-data update so static Pages deployments serve the matching index.
