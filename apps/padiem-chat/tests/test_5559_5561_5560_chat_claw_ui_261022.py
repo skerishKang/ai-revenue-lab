@@ -837,6 +837,131 @@ def test_long_stream_appends_2500_deltas_without_pulling_reader_down(browser, se
 
 
 @requires_browser
+def test_stream_scroll_follows_pauses_resumes_and_keeps_2500_delta_reader_position(browser, server):
+    page = browser.new_page(viewport={"width": 1440, "height": 900})
+    errors: list[str] = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(server, wait_until="domcontentloaded")
+    page.wait_for_function("window.__padiemConversationMotion")
+    result = page.evaluate(
+        """async () => {
+          const motion = window.__padiemConversationMotion;
+          const shell = document.querySelector('.app-shell');
+          const conversation = document.querySelector('.conversation');
+          const list = document.getElementById('messageList');
+          const empty = document.getElementById('emptyState');
+          document.documentElement.setAttribute('data-theme', 'padiem-glass');
+          shell.dataset.state = 'chat';
+          list.hidden = false;
+          if (empty) empty.hidden = true;
+          conversation.style.setProperty('height', '160px', 'important');
+          conversation.style.setProperty('max-height', '160px', 'important');
+          conversation.style.setProperty('overflow-y', 'auto', 'important');
+          const article = document.createElement('article');
+          article.className = 'message assistant-message';
+          const paragraph = document.createElement('p');
+          paragraph.style.cssText = 'font-size:16px;line-height:20px;overflow-wrap:anywhere';
+          const node = document.createTextNode('older answer '.repeat(12000));
+          paragraph.appendChild(node);
+          article.appendChild(paragraph);
+          list.replaceChildren(article);
+          const frame = () => new Promise(resolve => requestAnimationFrame(() => resolve()));
+          const settle = async () => { await frame(); await frame(); };
+          await frame();
+          motion.reset();
+          conversation.scrollTop = conversation.scrollHeight;
+          conversation.dispatchEvent(new Event('scroll'));
+          await frame();
+          const gapBeforeStream = conversation.scrollHeight
+            - conversation.scrollTop - conversation.clientHeight;
+
+          function append(piece) {
+            const shouldFollow = motion.beforeStreamingDelta();
+            node.appendData(piece);
+            motion.afterStreamingDelta(shouldFollow);
+            return shouldFollow;
+          }
+
+          const followedFromBottom = append('first stream piece ');
+          await settle();
+          const bottomGapAfterFollow = conversation.scrollHeight
+            - conversation.scrollTop - conversation.clientHeight;
+          const followedAtBottom = followedFromBottom === true && bottomGapAfterFollow <= 1;
+
+          conversation.scrollTop = 0;
+          conversation.dispatchEvent(new Event('scroll'));
+          await frame();
+          const stoppedFollowingOnUpScroll = motion.isFollowingLatest() === false;
+          const pausedIntent = append('reader is reviewing earlier text ');
+          await frame();
+          const jumpButton = document.getElementById('conversationJumpButton');
+          const existingButtonShown = Boolean(jumpButton && !jumpButton.hidden);
+          const pausedTop = conversation.scrollTop;
+
+          if (jumpButton) jumpButton.remove();
+          const piece = 'long answer delta ';
+          for (let index = 0; index < 2500; index += 1) append(piece);
+          await Promise.resolve();
+          await frame();
+          const longAnswerPreservedPosition = conversation.scrollTop === pausedTop;
+          const noButtonCreated = !document.getElementById('conversationJumpButton');
+          const chunkCount = 2500;
+          const singleTextNode = paragraph.childNodes.length === 1;
+          const expectedLength = ('older answer '.repeat(12000)).length
+            + 'first stream piece '.length
+            + 'reader is reviewing earlier text '.length
+            + piece.length * chunkCount;
+
+          conversation.scrollTop = conversation.scrollHeight;
+          conversation.dispatchEvent(new Event('scroll'));
+          window.dispatchEvent(new WheelEvent('wheel', { deltaY: 120 }));
+          await frame();
+          const followingAfterReturn = motion.isFollowingLatest();
+          const resumedIntent = append('follow resumed ');
+          await settle();
+          const finalBottomGap = conversation.scrollHeight
+            - conversation.scrollTop - conversation.clientHeight;
+          motion.endStreaming();
+          return {
+            followedFromBottom,
+            gapBeforeStream,
+            bottomGapAfterFollow,
+            followedAtBottom,
+            stoppedFollowingOnUpScroll,
+            pausedIntent,
+            existingButtonShown,
+            longAnswerPreservedPosition,
+            noButtonCreated,
+            chunks: chunkCount,
+            textLength: node.data.length,
+            expectedLength: expectedLength + 'follow resumed '.length,
+            singleTextNode,
+            followingAfterReturn,
+            resumedIntent,
+            finalBottomGap,
+          };
+        }"""
+    )
+    assert result["gapBeforeStream"] <= 80, result
+    assert result["followedFromBottom"] is True, result
+    assert result["bottomGapAfterFollow"] <= 1, result
+    assert result["followedAtBottom"] is True, result
+    assert result["stoppedFollowingOnUpScroll"] is True, result
+    assert result["pausedIntent"] is False, result
+    assert result["existingButtonShown"] is True, result
+    assert result["longAnswerPreservedPosition"] is True, result
+    assert result["noButtonCreated"] is True, result
+    assert result["chunks"] == 2500, result
+    assert result["textLength"] == result["expectedLength"], result
+    assert result["singleTextNode"] is True, result
+    assert result["followingAfterReturn"] is True, result
+    assert result["resumedIntent"] is True, result
+    assert result["finalBottomGap"] <= 1, result
+    assert not errors, errors
+    page.close()
+
+
+@requires_browser
 def test_the_terminal_outcome_stays_in_the_badge(browser, server):
     """A finished turn keeps its own outcome wording, once."""
     page = browser.new_page(viewport={"width": 1440, "height": 900})

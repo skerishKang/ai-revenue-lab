@@ -3593,6 +3593,8 @@
     const response = clawGeneralRequest
       ? await chatTransport.requestClawGeneral(payload, signal)
       : await chatTransport.requestStreaming(payload, signal);
+    const responseContentType = response.headers?.get?.("content-type") || "";
+    const shouldFollowStream = !/\bapplication\/json\b/i.test(responseContentType);
     const pcProgressRunId = window.PadiemPcBrowserSurface?.runIdForProgress?.(
       response, payload, clawGeneralRequest
     ) ?? (clawGeneralRequest ? null : payload.pc_run_id);
@@ -3602,6 +3604,7 @@
     let answer = "";
     let paragraph = null;
     let answerTextNode = null;
+    let streamScrollTrackingStarted = false;
     let done = false;
     let terminalError = false;
     // #3935: terminal P01 events outrank a later transport done/connection
@@ -3738,6 +3741,15 @@
           if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) return false;
           if (!data || typeof data.delta !== "string") throw new Error(uiT("stream-format-invalid"));
           if (!data.delta) return false;
+          let streamScrollIntent = null;
+          if (shouldFollowStream) {
+            try {
+              streamScrollIntent = window.__padiemConversationMotion?.beforeStreamingDelta?.() ?? null;
+              if (typeof streamScrollIntent === "boolean") streamScrollTrackingStarted = true;
+            } catch (_) {
+              // Scrolling is presentation-only; it must never interrupt a reply.
+            }
+          }
           if (!paragraph) {
             const content = article.querySelector(".assistant-content");
             content.replaceChildren();
@@ -3765,6 +3777,13 @@
           answer += data.delta;
           if (!window.PadiemChatLifecycle?.appendStreamDelta?.(answerTextNode, data.delta)) {
             answerTextNode.appendData(data.delta);
+          }
+          if (typeof streamScrollIntent === "boolean") {
+            try {
+              window.__padiemConversationMotion?.afterStreamingDelta?.(streamScrollIntent);
+            } catch (_) {
+              // Scrolling is presentation-only; it must never interrupt a reply.
+            }
           }
           return false;
         }
@@ -3868,6 +3887,14 @@
         return false;
       }
       throw error;
+    } finally {
+      if (streamScrollTrackingStarted) {
+        try {
+          window.__padiemConversationMotion?.endStreaming?.();
+        } catch (_) {
+          // Keep stream cleanup independent from the scroll presentation.
+        }
+      }
     }
   }
 
