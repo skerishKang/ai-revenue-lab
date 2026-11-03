@@ -5,6 +5,8 @@ var panel=document.getElementById('bibleSearchPanel');
 var form=document.getElementById('bibleSearchForm');
 var input=document.getElementById('bibleSearchInput');
 var submit=document.getElementById('bibleSearchSubmit');
+var cancelButton=document.getElementById('bibleSearchCancel');
+var retryButton=document.getElementById('bibleSearchRetry');
 var status=document.getElementById('bibleSearchStatus');
 var results=document.getElementById('bibleSearchResults');
 var returnButton=document.getElementById('bibleSearchReturn');
@@ -14,12 +16,15 @@ var resolver=window.__smLocatorResolverV1;
 var parser=window.storyMemoryBibleReferenceV1;
 var bookAliases=resolver.bookAliases||{};
 var chapterCounts=resolver.chapterCounts||{};
-var bibleBlocksPromise=null;
+var indexManifestPromise=null;
+var loadedIndexShards=Object.create(null);
+var searchController=null;
 var previewActive=false;
 var returnSnapshot=null;
 var originalSaveReaderProgress=null;
 var originalSyncVisibleProgress=null;
 var originalSchedulePersist=null;
+var originalPrefetchNeighbors=null;
 
 function bookNameForCode(code){
   var map=window.storyMemoryBibleUsfmCodes||{};
@@ -31,6 +36,11 @@ function syncPanelVisibility(){panel.hidden=!isBibleReader()}
 function setStatus(text){status.textContent=String(text||'')}
 function clearResults(){results.replaceChildren()}
 function escapeLabel(code,chapter,verse){return bookNameForCode(code)+' '+chapter+'장'+(verse==null?'':' '+verse+'절')}
+function resultLabel(row){
+  var parts=String(row&&row.canonical_locator||'').split(':');
+  if(parts[0]==='bible'&&parts.length>=5)return escapeLabel(parts[2],Number(parts[3]),Number(parts[4]));
+  return row&&((row.display_title||row.title)||'본문 검색 결과')||'본문 검색 결과';
+}
 function referenceLike(value){return /\d|장|절|:/.test(String(value||''))}
 function chapterPath(code,chapter){return './content/bible-web/book-'+code+'-chapter-'+String(chapter).padStart(3,'0')+'.json'}
 async function fetchChapter(code,chapter){
@@ -63,59 +73,71 @@ async function showReference(parsed){
   appendResult(label,String(passage.ko||passage.en||'').trim(),passage.canonical_locator,parsed.verse==null?'이 장으로 이동':'이 구절로 이동');
   setStatus(parsed.verse==null?'장 본문을 확인했어요. 결과를 누르면 이 장으로 이동합니다.':'구절을 찾았어요. 결과를 누르면 해당 본문으로 이동합니다.');
 }
-function compactBlocksFromUnit(unit,manifestUnit){
-  var rows=unit.passages||[];var out=[];var code=String(unit.unit_key||manifestUnit.unit_key||'').split(':')[1]||'';
-  var chapter=Number(String(unit.unit_key||manifestUnit.unit_key||'').split(':').pop())||0;
-  rows.forEach(function(row){
-    if(!row||!row.canonical_locator)return;
-    var parts=String(row.canonical_locator).split(':');var ch=Number(parts[3])||chapter;var verse=Number(parts[4])||null;
-    var ko=String(row.ko||'');var en=String(row.en||'');
-    out.push({canonical_locator:String(row.canonical_locator),work_key:'bible-web',unit_key:String(unit.unit_key||manifestUnit.unit_key||''),unit_ordinal:Number(unit.unit_ordinal||manifestUnit.unit_ordinal)||0,sequence:Number(row.sequence)||0,ordinal:Number(row.sequence)||0,title:escapeLabel(code,ch,verse),text:ko||en,sourceText:en||ko,ko:ko,en:en});
+function blocksFromShard(shard){
+  if(!shard||shard.schema_version!==1||!Array.isArray(shard.units))throw new Error('BIBLE_SEARCH_SHARD_INVALID');
+  var blocks=[];
+  shard.units.forEach(function(unit){
+    if(!Array.isArray(unit)||unit.length<6)return;
+    var code=String(unit[0]||'');var chapter=Number(unit[1])||0;var unitOrdinal=Number(unit[2])||0;var unitLabel=String(unit[3]||'');var firstSequence=Number(unit[4])||0;
+    var unitKey='book:'+code+':chapter:'+String(chapter).padStart(3,'0');
+    (unit[5]||[]).forEach(function(row,index){
+      if(!Array.isArray(row)||row.length<4)return;
+      var verse=Number(row[0])||0;var sequence=firstSequence+index;var ko=String(row[2]||'');var en=String(row[3]||'');
+      var locator='bible:web:'+code+':'+chapter+':'+verse;
+      var title=String(((row[1]||'')+' '+unitLabel+' bible-web').trim());
+      var extra=row[4]||null;
+      blocks.push({canonical_locator:locator,work_key:'bible-web',unit_key:unitKey,unit_ordinal:unitOrdinal,sequence:sequence,ordinal:sequence,locator:locator,title:title,text:ko||en,sourceText:en||ko,ko:ko,en:en,raw_texts:extra?extra[0]:[ko],raw_locator:extra?extra[1]:[{book:code,chapter:chapter,verse:verse}],mapping_type:extra?extra[2]:'normal',mapping_note:extra?extra[3]:null});
+    });
   });
-  return out;
+  return blocks;
 }
-async function loadBibleBlocks(onProgress){
-  if(bibleBlocksPromise)return bibleBlocksPromise;
-  bibleBlocksPromise=(async function(){
-    var response=await fetch('./content/bible-web/manifest.json',{credentials:'same-origin'});
-    if(!response.ok)throw new Error('BIBLE_MANIFEST_UNAVAILABLE');
-    var manifest=await response.json();var units=Array.isArray(manifest.units)?manifest.units:[];
-    if(!units.length)throw new Error('BIBLE_MANIFEST_EMPTY');
-    var blocks=[];var next=0;var finished=0;var failure=null;
-    async function worker(){
-      while(next<units.length&&!failure){
-        var index=next++;var entry=units[index];
-        try{
-          var unitResponse=await fetch('./content/bible-web/'+entry.path,{credentials:'same-origin'});
-          if(!unitResponse.ok)throw new Error('BIBLE_UNIT_UNAVAILABLE');
-          var unit=await unitResponse.json();blocks.push.apply(blocks,compactBlocksFromUnit(unit,entry));
-        }catch(error){failure=error;break}
-        finished++;
-        if(onProgress&&(finished%60===0||finished===units.length))onProgress(finished,units.length);
-      }
+function getIndexManifest(signal){
+  if(!indexManifestPromise){
+    indexManifestPromise=fetch('./content/bible-web/search-index/manifest.json',{credentials:'same-origin',signal:signal}).then(function(response){if(!response.ok)throw new Error('BIBLE_SEARCH_MANIFEST_UNAVAILABLE');return response.json()}).then(function(manifest){if(manifest.schema_version!=='storymemory-bible-search-index-1'||!Array.isArray(manifest.shards))throw new Error('BIBLE_SEARCH_MANIFEST_INVALID');return manifest}).catch(function(error){indexManifestPromise=null;throw error});
+  }
+  return indexManifestPromise;
+}
+async function loadBibleBlocks(onProgress,signal){
+  var manifest=await getIndexManifest(signal);var shards=manifest.shards;
+  if(!shards.length)throw new Error('BIBLE_SEARCH_INDEX_EMPTY');
+  var completed=shards.reduce(function(n,shard){return n+(loadedIndexShards[shard.path]?1:0)},0);
+  if(onProgress)onProgress(completed,shards.length);
+  var next=0;var failure=null;
+  async function worker(){
+    while(next<shards.length&&!failure&&!signal?.aborted){
+      var shard=shards[next++];if(loadedIndexShards[shard.path])continue;
+      try{
+        var response=await fetch('./content/bible-web/search-index/'+shard.path,{credentials:'same-origin',signal:signal});
+        if(!response.ok)throw new Error('BIBLE_SEARCH_SHARD_UNAVAILABLE');
+        loadedIndexShards[shard.path]=blocksFromShard(await response.json());completed++;
+        if(onProgress)onProgress(completed,shards.length);
+      }catch(error){failure=error;break}
     }
-    await Promise.all(Array.from({length:10},worker));
-    if(failure)throw failure;
-    return blocks;
-  })().catch(function(error){bibleBlocksPromise=null;throw error});
-  return bibleBlocksPromise;
+  }
+  await worker();
+  if(signal?.aborted)throw new DOMException('Search cancelled','AbortError');
+  if(failure)throw failure;
+  if(completed!==shards.length)throw new Error('BIBLE_SEARCH_INDEX_INCOMPLETE');
+  return shards.flatMap(function(shard){return loadedIndexShards[shard.path]||[]});
 }
 async function showTextResults(query){
   if(!window.__smStaticKeywordSearchV1||typeof window.__smStaticKeywordSearchV1.staticKeywordSearch!=='function'){
     setStatus('본문 검색을 시작할 수 없어요. 화면을 새로고침해 주세요.');return;
   }
-  submit.disabled=true;input.disabled=true;
+  searchController=new AbortController();submit.disabled=true;input.disabled=true;cancelButton.hidden=false;retryButton.hidden=true;
   try{
-    var blocks=await loadBibleBlocks(function(done,total){setStatus('성경 본문을 불러오는 중이에요 ('+done.toLocaleString()+' / '+total.toLocaleString()+')')});
+    var blocks=await loadBibleBlocks(function(done,total){setStatus('성경 검색 색인을 불러오는 중이에요 ('+done+' / '+total+' 묶음)')},searchController.signal);
     setStatus('성경 본문 '+blocks.length.toLocaleString()+'개 구절에서 검색하고 있어요.');
     var result=window.__smStaticKeywordSearchV1.staticKeywordSearch(query,{workKey:'bible-web',blocks:blocks,limit:8});
     clearResults();
     if(!result.results||!result.results.length){setStatus('검색 결과가 없어요. 다른 단어로 다시 찾아보세요.');return}
-    result.results.forEach(function(row){appendResult(row.display_title||row.title,row.snippet||row.ko||row.en,row.canonical_locator,'본문 결과 열기')});
+    result.results.forEach(function(row){appendResult(resultLabel(row),row.snippet||row.ko||row.en,row.canonical_locator,'본문 결과 열기')});
     setStatus(result.total.toLocaleString()+'개 결과 중 '+result.results.length+'개를 표시합니다. 결과를 누르면 해당 구절로 이동합니다.');
   }catch(error){
-    setStatus('성경 본문을 검색하지 못했어요. 연결을 확인하고 다시 시도해 주세요.');
+    if(error&&error.name==='AbortError')setStatus('색인 불러오기를 취소했어요. 다시 검색하면 이어서 불러옵니다.');
+    else{setStatus('성경 검색 색인을 불러오지 못했어요. 연결을 확인한 뒤 다시 시도해 주세요.');retryButton.hidden=false}
   }finally{submit.disabled=false;input.disabled=false}
+  cancelButton.hidden=true;searchController=null;
 }
 function captureReturnSnapshot(){
   if(!isBibleReader())return null;
@@ -126,6 +148,10 @@ function captureReturnSnapshot(){
   return {context:{kind:'bible',book:'성경',volume:volume,chapter:chapter,chapterCount:(typeof VOLUME_CHAPTERS!=='undefined'&&VOLUME_CHAPTERS[volume])||chapterCounts[(window.storyMemoryBibleUsfmCodes||{})[volume]]||16},page:typeof readerPageIndex==='number'?readerPageIndex:0,mode:typeof readerViewMode==='string'?readerViewMode:'page',scrollTop:inner?inner.scrollTop:0};
 }
 function suppressProgressWrites(){
+  if(typeof storyMemoryPrefetchReaderNeighbors==='function'&&!originalPrefetchNeighbors){
+    originalPrefetchNeighbors=storyMemoryPrefetchReaderNeighbors;
+    storyMemoryPrefetchReaderNeighbors=function(){if(previewActive)return Promise.resolve({applied:false,reason:'TEMP_SEARCH_PREVIEW'});return originalPrefetchNeighbors.apply(this,arguments)};
+  }
   if(typeof saveReaderProgress==='function'&&!originalSaveReaderProgress){
     originalSaveReaderProgress=saveReaderProgress;
     saveReaderProgress=function(){if(previewActive)return;return originalSaveReaderProgress.apply(this,arguments)};
@@ -196,6 +222,7 @@ async function returnToReadingPosition(){
   }catch(_){setStatus('원래 읽던 위치를 복원하지 못했어요. 현재 장을 다시 열어 주세요.')}
   previewActive=false;returnSnapshot=null;returnButton.hidden=true;returnButton.disabled=false;
   if(originalSchedulePersist)originalSchedulePersist(0);
+  if(originalPrefetchNeighbors)Promise.resolve().then(function(){return originalPrefetchNeighbors()}).catch(function(){});
   setStatus('원래 읽던 위치로 돌아왔어요.');
 }
 form.addEventListener('submit',async function(event){
@@ -209,6 +236,8 @@ form.addEventListener('submit',async function(event){
   await showTextResults(query);
 });
 returnButton.addEventListener('click',returnToReadingPosition);
+cancelButton.addEventListener('click',function(){if(searchController)searchController.abort()});
+retryButton.addEventListener('click',function(){retryButton.hidden=true;form.requestSubmit()});
 if(typeof setReaderContext==='function'){
   var originalSetReaderContext=setReaderContext;
   setReaderContext=function(){var result=originalSetReaderContext.apply(this,arguments);syncPanelVisibility();return result};

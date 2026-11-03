@@ -14,8 +14,15 @@ fs.mkdirSync(path.dirname(screenshotPath),{recursive:true});
   const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
   page.setDefaultTimeout(20000);
   const browserErrors=[];
+  const indexRequests=[];
+  let expectedIndex503=0;
   page.on('pageerror',error=>browserErrors.push(error.message));
-  page.on('console',message=>{if(message.type()==='error')browserErrors.push(message.text())});
+  page.on('console',message=>{
+    if(message.type()!=='error')return;
+    if(expectedIndex503>0&&message.text().includes('503 (Service Unavailable)')){expectedIndex503--;return}
+    browserErrors.push(message.text());
+  });
+  page.on('request',request=>{if(request.url().includes('/content/bible-web/search-index/'))indexRequests.push(request.url())});
   try{
     await page.goto(baseUrl,{waitUntil:'load'});
     await page.locator('#library.active').waitFor();
@@ -85,21 +92,72 @@ fs.mkdirSync(path.dirname(screenshotPath),{recursive:true});
       assert.equal(await page.locator('#readerVolumeTitle').innerText(),before.title);
     }
 
+    assert.equal(indexRequests.length,0,'direct verse lookup must not request the full-text index');
+    const searchChapterRequests=[];
+    const trackSearchChapter=request=>{if(request.url().includes('/content/bible-web/book-'))searchChapterRequests.push(request.url())};
+    page.on('request',trackSearchChapter);
     await openSearchPanel();
     await page.locator('#bibleSearchInput').fill('태초에');
+    let markShardStarted;
+    const shardStarted=new Promise(resolve=>{markShardStarted=resolve});
+    const observeShard=request=>{if(request.url().endsWith('/search-index/shard-01.json'))markShardStarted()};
+    page.on('request',observeShard);
+    const indexPattern='**/content/bible-web/search-index/shard-*.json';
+    const slowShard=async route=>{
+      if(route.request().url().endsWith('/search-index/shard-01.json')){
+        await new Promise(resolve=>setTimeout(resolve,2500));
+        try{await route.continue()}catch(_){}
+      }else await route.continue();
+    };
+    await page.route(indexPattern,slowShard);
     await page.locator('#bibleSearchForm').press('Enter');
+    await shardStarted;
+    await page.waitForFunction(()=>/묶음/.test(document.querySelector('#bibleSearchStatus')?.textContent||''));
+    assert.equal(await page.locator('#bibleSearchCancel').isVisible(),true);
+    await page.locator('#bibleSearchCancel').click();
+    await page.getByRole('status').filter({hasText:'취소했어요'}).waitFor();
+    assert.equal(await page.locator('#bibleSearchInput').isDisabled(),false);
+    await page.unroute(indexPattern,slowShard);
+    page.off('request',observeShard);
+
+    let failFirstShard=true;
+    const failOnce=async route=>{
+      if(failFirstShard&&route.request().url().endsWith('/search-index/shard-12.json')){
+        failFirstShard=false;
+        expectedIndex503++;
+        await route.fulfill({status:503,contentType:'text/plain',body:'temporary index error'});
+      }else await route.continue();
+    };
+    await page.route(indexPattern,failOnce);
+    await page.locator('#bibleSearchInput').fill('태초에');
+    await page.locator('#bibleSearchForm').press('Enter');
+    try{await page.locator('#bibleSearchRetry').waitFor({state:'visible'})}catch(error){throw new Error('retry control missing; status='+await page.locator('#bibleSearchStatus').innerText()+'; failFirstShard='+failFirstShard+'; requests='+JSON.stringify(indexRequests)+'; '+error.message)}
+    assert.match(await page.locator('#bibleSearchStatus').innerText(),/다시 시도해 주세요/);
+    await page.unroute(indexPattern,failOnce);
+    await page.locator('#bibleSearchRetry').click();
     await page.waitForFunction(()=>/개 결과 중/.test(document.querySelector('#bibleSearchStatus')?.textContent||''),null,{timeout:180000});
     assert.match(await page.locator('#bibleSearchResults .bible-search-result').first().locator('strong').innerText(),/창세기 1장 1절/);
+    const uniqueShards=new Set(indexRequests.filter(url=>/\/shard-\d+\.json$/.test(url)).map(url=>url.match(/shard-\d+\.json$/)[0]));
+    assert.equal(uniqueShards.size,12,'a complete text search must load the 12 generated index shards');
+    assert.ok(indexRequests.length<20,'search must fetch index shards, not the 1,189 chapter files');
+    assert.deepEqual(searchChapterRequests,[],'finding text results must not load any chapter bodies');
+    page.off('request',trackSearchChapter);
     const overflow=await page.evaluate(()=>({width:innerWidth,document:document.documentElement.scrollWidth,body:document.body.scrollWidth}));
     assert.ok(overflow.document<=390&&overflow.body<=390,'390px view overflows horizontally: '+JSON.stringify(overflow));
     await page.screenshot({path:screenshotPath,fullPage:false});
+    const previewChapterRequests=[];
+    const trackPreviewChapter=request=>{if(request.url().includes('/content/bible-web/book-'))previewChapterRequests.push(new URL(request.url()).pathname.split('/').pop())};
+    page.on('request',trackPreviewChapter);
     await page.locator('#bibleSearchResults .bible-search-result').first().click();
     await page.waitForFunction(()=>!!document.querySelector('#readerPageBody [data-source-locator="bible:web:GEN:1:1"]'),null,{timeout:30000});
+    await page.waitForTimeout(200);
+    assert.deepEqual([...new Set(previewChapterRequests)],['book-GEN-chapter-001.json'],'opening a text result should load only its chapter file');
+    page.off('request',trackPreviewChapter);
     await page.locator('#bibleSearchReturn').click();
     await page.waitForFunction(title=>document.getElementById('readerVolumeTitle').textContent.trim()===title&&document.getElementById('bibleSearchReturn').hidden,before.title,{timeout:30000});
 
     if(browserErrors.length)throw new Error('browser console/page errors: '+browserErrors.join(' | '));
-    console.log('PASS: 390px reference formats, repository alias, chapter-only jump, invalid/missing/typo guidance, full Bible text search, result navigation and return');
+    console.log('PASS: 390px references, full-text search, cancel, failure retry, one-chapter preview and return');
     console.log('SCREENSHOT '+screenshotPath);
     console.log('PASS: browser console/page errors = 0');
   }finally{await browser.close()}
