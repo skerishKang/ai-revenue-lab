@@ -825,6 +825,9 @@ async def _lifespan(receive: Any, send: Any) -> None:
                     await binding.aclose()
                 except Exception:  # noqa: BLE001 - shutdown never masks the exit
                     logger.warning("p01_local_b14_client_close_failed")
+            from app.local_admission_binding import close_pooled_clients
+
+            await close_pooled_clients()
             await send({"type": "lifespan.shutdown.complete"})
             return
 
@@ -836,6 +839,11 @@ def create_local_app(values: Mapping[str, str] | None = None) -> LocalEngineApp:
     entry_requirements(source)
     bind_address(source)
     install_worker_shims()
+    # The host configures no application logging; bind the stage-time line to
+    # stderr so the COM2 journal receives it. Worker deployments keep theirs.
+    from app.engine_timing import ensure_host_visible
+
+    ensure_host_visible()
     # The deployed Worker's entry is ``worker_identity.py`` (wrangler.toml
     # ``main``). The host must dispatch through the same canonical composition —
     # the legacy ``worker.Default`` carries the narrower preview bundle, and a

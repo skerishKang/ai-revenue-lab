@@ -35,6 +35,7 @@ from app.local_admission_binding import (
     HttpsAdmissionBinding,
     RPC_MAX_ATTEMPTS,
     admission_binding_for,
+    close_pooled_clients,
 )
 from app.tenant_auth import ControlPlaneTenantAdmissionAdapter
 
@@ -324,3 +325,32 @@ def test_host_runtime_env_carries_the_binding_only_when_configured() -> None:
         {ADMISSION_ORIGIN_ENV: ORIGIN, ADMISSION_SECRET_ENV: SECRET}
     )
     assert isinstance(configured["CONTROL_PLANE_ENGINE_ADMISSION"], HttpsAdmissionBinding)
+
+
+def test_host_authority_calls_reuse_one_pooled_client(monkeypatch) -> None:
+    ingress = _ControlPlaneIngress()
+    created = []
+    real_client = httpx.AsyncClient
+
+    def factory(*args, **kwargs):
+        kwargs.setdefault("transport", httpx.MockTransport(ingress))
+        client = real_client(*args, **kwargs)
+        created.append(client)
+        return client
+
+    monkeypatch.setattr(httpx, "AsyncClient", factory)
+    binding = HttpsAdmissionBinding(ORIGIN, SECRET)
+    subject = {"subject_type": "user", "subject_id": SUBJECT}
+
+    async def calls():
+        await close_pooled_clients()
+        await binding.fetch_entitlement_snapshot(
+            {"product_id": PRODUCT, "subject": subject}
+        )
+        await binding.reserve_usage({"reservation": {"idempotency_key": "res-1"}})
+        assert len(created) == 1
+        assert ingress.calls == ["fetch_entitlement_snapshot", "reserve_usage"]
+        await close_pooled_clients()
+        assert created[0].is_closed
+
+    asyncio.run(calls())

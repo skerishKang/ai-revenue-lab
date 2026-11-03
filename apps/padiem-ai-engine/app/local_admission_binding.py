@@ -39,6 +39,7 @@ malformed pair is treated the same way — absent, never permissive.
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import hmac
 import json
@@ -130,6 +131,50 @@ def _require_secret(value: str | None) -> str:
     return raw
 
 
+_POOLED_CLIENTS: dict[int, tuple[asyncio.AbstractEventLoop, httpx.AsyncClient]] = {}
+
+
+def _pooled_client() -> httpx.AsyncClient:
+    """One keep-alive client per running loop for every host authority call.
+
+    A fresh ``AsyncClient`` per RPC pays a new TCP+TLS handshake and can land
+    on another, cold Worker isolate; the admission path makes several calls per
+    turn. The client carries no authority of its own: every call still builds a
+    fresh signed proof with a new service id.
+    """
+
+    loop = asyncio.get_running_loop()
+    loop_key = id(loop)
+    for key in [k for k, (owner, _) in _POOLED_CLIENTS.items() if owner.is_closed()]:
+        del _POOLED_CLIENTS[key]
+    entry = _POOLED_CLIENTS.get(loop_key)
+    if entry is not None and entry[0] is loop:
+        return entry[1]
+    client = httpx.AsyncClient(
+        timeout=DEFAULT_TIMEOUT_SECONDS,
+        follow_redirects=False,
+        limits=httpx.Limits(
+            max_connections=8,
+            max_keepalive_connections=8,
+            keepalive_expiry=60.0,
+        ),
+    )
+    _POOLED_CLIENTS[loop_key] = (loop, client)
+    return client
+
+
+async def close_pooled_clients() -> None:
+    """Close the host's shared authority clients (lifespan shutdown only)."""
+
+    global _POOLED_CLIENTS
+    clients, _POOLED_CLIENTS = _POOLED_CLIENTS, {}
+    for _owner, client in clients.values():
+        try:
+            await client.aclose()
+        except Exception:  # noqa: BLE001 - shutdown never masks the exit
+            pass
+
+
 class HttpsAdmissionBinding:
     """``CONTROL_PLANE_ENGINE_ADMISSION`` over HTTPS with the service proof.
 
@@ -171,12 +216,12 @@ class HttpsAdmissionBinding:
             }
             try:
                 if self._client is None:
-                    async with httpx.AsyncClient(
-                        timeout=self._timeout, follow_redirects=False
-                    ) as fresh:
-                        response = await fresh.post(
-                            self._origin + path, content=body, headers=headers
-                        )
+                    response = await _pooled_client().post(
+                        self._origin + path,
+                        content=body,
+                        headers=headers,
+                        timeout=self._timeout,
+                    )
                 else:
                     response = await self._client.post(
                         self._origin + path, content=body, headers=headers
