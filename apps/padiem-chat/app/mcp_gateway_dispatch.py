@@ -6,6 +6,7 @@ import logging
 import re
 
 from .mcp_gateway_store import mcp_request_digest
+from .mcp_gateway_shell import PC_SHELL_TOOL_NAMES
 from .same_origin_guard import expected_browser_origin
 
 
@@ -50,8 +51,11 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
         return {"status": "unavailable", "answer": "PC 작업 연결을 지금 사용할 수 없습니다."}
     identity = {"user_id": principal["owner_id"], "device_id": principal["device_id"],
                 "token_id": principal["token_id"]}
+    shell_tool = tool_name in PC_SHELL_TOOL_NAMES
+    # PC shell is predelegated by the selected PC, token binding and the one
+    # deployment switch. Ignore approval metadata for this family entirely.
     audit = {"identity": identity, "tool_name": tool_name, "arguments": arguments,
-             "approval_id": approval_id}
+             "approval_id": None if shell_tool else approval_id}
     try:
         await store.audit(**audit, status="requested")
     except Exception:
@@ -62,11 +66,14 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
     if browser and approval_id is not None:
         outcome = {"status": "confirmation_required", "answer": "이 브라우저 작업은 PADIEM 대화에서 확인해 주세요.",
                    "confirmation_kind": "conversation"}
-        await _record_outcome(store, audit, outcome)
+        await _record_outcome(request, store, audit, outcome)
         return outcome
     if browser:
         # Browser use is predelegated; sensitive actions ask in ordinary chat.
         # Never reinterpret an old approval button receipt as browser consent.
+        pass
+    elif shell_tool:
+        # No per-command approval receipt is part of the MCP shell contract.
         pass
     elif approval_id is not None:
         try:
@@ -77,7 +84,7 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
         if approval is None:
             outcome = {"status": "confirmation_required", "answer": "승인을 아직 받지 못했거나 이미 사용한 확인입니다. PADIEM에서 확인해 주세요.",
                        "approval_id": approval_id, "approval_status": "unavailable"}
-            await _record_outcome(store, audit, outcome)
+            await _record_outcome(request, store, audit, outcome)
             return outcome
     else:
         try:
@@ -92,7 +99,10 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
         audit["approval_id"] = approval["approval_id"]
     try:
         outcome = await executor(request, principal, tool_name, arguments, approval=approval)
-        if not isinstance(outcome, dict) or outcome.get("status") not in {"completed", "confirmation_required", "failed", "unavailable"}:
+        if not isinstance(outcome, dict) or outcome.get("status") not in {
+            "completed", "confirmation_required", "failed", "unavailable",
+            "running", "queued", "cancelled", "denied", "tool_not_enabled",
+        }:
             raise ValueError("Invalid PC result")
     except Exception:
         outcome = {"status": "unavailable", "answer": "PC 작업의 실제 결과를 확인하지 못했습니다. PADIEM에서 작업 상태를 확인해 주세요."}
@@ -112,20 +122,35 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
                 audit["approval_id"] = pending["id"]
             except Exception:
                 outcome = {"status": "unavailable", "answer": "확인할 작업을 저장하지 못해 실행하지 않았습니다. 잠시 뒤 다시 시도해 주세요."}
-    await _record_outcome(store, audit, outcome)
+    await _record_outcome(request, store, audit, outcome)
     return outcome
 
 
-async def _record_outcome(store, audit, outcome):
+async def _record_outcome(request, store, audit, outcome):
     metadata = outcome.get("audit") if isinstance(outcome.get("audit"), dict) else {}
+    job_receipt = outcome.pop("_job_receipt", None)
     try:
         await store.audit(**audit, status=outcome["status"],
                           exit_code=metadata.get("exit_code"),
                           duration_ms=metadata.get("duration_ms"),
                           output_bytes=metadata.get("output_bytes"),
-                          output_truncated=metadata.get("output_truncated"))
+                          output_truncated=metadata.get("output_truncated"),
+                          job_receipt_id=job_receipt)
     except Exception:
         # An execution may already have happened: preserve its truthful result,
         # mark the missing final audit explicitly, and never retry the action.
         outcome["audit_status"] = "unavailable"
+        if isinstance(job_receipt, str) and isinstance(outcome.get("run_id"), str):
+            history = getattr(request.app.state, "history_store", None)
+            cancel = getattr(history, "cancel_oracle_mesh_dispatches_for_run", None)
+            if callable(cancel):
+                try:
+                    await cancel(user_id=audit["identity"]["user_id"],
+                                 run_id=outcome["run_id"])
+                except Exception:
+                    pass
+            outcome.update({"status": "unavailable",
+                            "answer": "작업 기록을 저장하지 못해 PC 작업 중지를 요청했습니다."})
+            for key in ("job_id", "output", "output_ref", "next_offset"):
+                outcome.pop(key, None)
     _log_operation(audit, outcome["status"], outcome=outcome)

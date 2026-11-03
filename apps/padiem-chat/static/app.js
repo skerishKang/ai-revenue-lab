@@ -29,7 +29,7 @@
   const settingsCloseButton = document.getElementById("settingsCloseButton");
   const accountSettingsSection = document.getElementById("accountSettingsSection");
   const accountPasswordActions = document.getElementById("accountPasswordActions");
-  // #6659 3번 1단계: account self-deletion. The server owns the authority and
+  // #6659: account self-deletion. The server owns the authority and
   // the exact-email confirm; the browser only mirrors the same gate.
   const accountDeleteActions = document.getElementById("accountDeleteActions");
   const accountDeleteOpen = document.getElementById("accountDeleteOpen");

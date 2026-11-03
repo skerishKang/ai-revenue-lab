@@ -172,7 +172,6 @@ button:disabled { opacity: .55; cursor: not-allowed; }
   font-size: 14px;
   font-weight: 650;
 }
-.status-spark { color: var(--accent); }
 .login-button {
   margin-left: auto;
   min-height: 42px;

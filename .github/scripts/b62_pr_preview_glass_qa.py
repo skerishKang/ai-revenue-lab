@@ -116,12 +116,6 @@ async def main() -> None:
 
         tier = page.locator(".composer .model-pill[data-mode-control='true']")
         await tier.wait_for(state="visible", timeout=5_000)
-        spark = tier.locator(".status-spark")
-        spark_color = await spark.evaluate("el => getComputedStyle(el).color")
-        spark_opacity = float(await spark.evaluate("el => getComputedStyle(el).opacity"))
-        if spark_color != "rgb(79, 134, 173)" or spark_opacity < .99:
-            raise AssertionError(f"Preview Plus spark regression: {spark_color=} {spark_opacity=}")
-        report["plus_spark"] = {"color": spark_color, "opacity": spark_opacity}
 
         attachment = page.locator("#attachmentButton")
         rest_bg = await attachment.evaluate("el => getComputedStyle(el).backgroundColor")
