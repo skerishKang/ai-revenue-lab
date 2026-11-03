@@ -52,7 +52,9 @@ markers = [
     "b14_managed: product -> B14 managed route/selection/fallback boundary",
     "no_model: no model or engine execution boundary",
     "mock: model or engine response substituted; logic contract only, not live E2E",
+    "live: explicitly selected live browser scenarios; excluded by default",
+    "live_storage: requires an externally prepared Playwright storage-state file",
 ]
 #4070: Report the slowest pytest phases in CI without changing test selection.
-# The complete existing suite still runs; no hard-coded test count.
-addopts = "--durations=50 --durations-min=0.2"
+# The complete existing suite still runs; live scenarios require explicit -m live.
+addopts = "--durations=50 --durations-min=0.2 -m 'not live'"

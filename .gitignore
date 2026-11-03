@@ -73,3 +73,6 @@ apps/padiem-chat/local_dev_data/
 # onefile setup lands in apps/claw-connect - both stay out of source.
 padiem-connector-standalone-*/
 apps/claw-connect/PADIEM-Connector-Setup-*.exe
+
+# #6724: live browser screenshots, recordings and run summaries contain local test output.
+live-artifacts/

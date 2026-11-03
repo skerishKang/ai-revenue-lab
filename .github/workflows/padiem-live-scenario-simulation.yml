@@ -1,0 +1,46 @@
+name: PADIEM live scenario simulation
+
+on:
+  workflow_dispatch:
+
+# 시험용 계정 준비 뒤 켬. 자동 일정은 현재 비활성 상태로 둔다.
+# on:
+#   schedule:
+#     - cron: "0 19 * * *"
+
+jobs:
+  live-scenarios:
+    runs-on: [self-hosted, linux, x64, padiem-com2-ci]
+    timeout-minutes: 30
+    env:
+      PADIEM_LIVE_BASE_URL: https://chat.padiem.net
+      # PADIEM_LIVE_STORAGE_STATE is inherited from the runner's local environment.
+      # Never put the file or its contents in the repository or GitHub Secrets.
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.13.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      # The target is inside apps/padiem-chat/tests, so pytest auto-loads that
+      # lane's conftest.py, which imports starlette and padiem_control_plane at
+      # collection time. A bare `python -m pytest` here died before the first test
+      # ran; this is the canonical Chat bootstrap the B62 lanes already use.
+      - name: Resolve the Chat app environment
+        run: uv sync --extra dev
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # The COM2 runner already carries the Chromium system libraries (the B62
+      # canaries drive Chromium there); only the pinned binary is fetched here.
+      - name: Install Chromium headless shell
+        run: uv run playwright install --only-shell chromium
+      - name: Run opted-in browser scenarios
+        run: uv run pytest -c pyproject.toml tests/live_scenarios -m live -q
