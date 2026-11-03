@@ -50,7 +50,13 @@ from .orchestration_bridge import (
     B62OrchestrationError,
 )
 from .orchestration_timing import OrchestrationTiming
-from .orchestration_stream import NDJSON_MEDIA_TYPE, line, ndjson_answer, wants_ndjson
+from .orchestration_stream import (
+    NDJSON_MEDIA_TYPE,
+    ProgressFrameBuilder,
+    line,
+    ndjson_answer,
+    wants_ndjson,
+)
 from .public_chat import public_chat_result
 from .request_contract import BrowserRequestError, _validate_payload_async
 from .pc_correlation import run_hash
@@ -943,6 +949,10 @@ async def _model_first_ndjson(
                 )
                 return
             timing.set_path(PATH_TOOL)
+            progress = ProgressFrameBuilder()
+            started = progress.frame("tool_started", tool_name=tool_call.name)
+            if started is not None:
+                yield line(started)
             try:
                 outcome = await execute_model_first_tool(
                     request,
@@ -957,11 +967,17 @@ async def _model_first_ndjson(
                     grounding_context=grounding_context,
                 )
             except Exception as exc:
+                failed = progress.frame("tool_failed", tool_name=tool_call.name)
+                if failed is not None:
+                    yield line(failed)
                 yield line(
                     {"type": "error", "code": _model_first_error_code(exc)}
                 )
                 return
             if outcome is None:
+                failed = progress.frame("tool_failed", tool_name=tool_call.name)
+                if failed is not None:
+                    yield line(failed)
                 yield line(
                     {"type": "error", "code": "model_first_tool_unavailable"}
                 )
@@ -969,6 +985,9 @@ async def _model_first_ndjson(
             answer, saved_id = outcome
             timing.mark("engine")
             timing.mark("save")
+            completed = progress.frame("tool_completed", tool_name=tool_call.name)
+            if completed is not None:
+                yield line(completed)
             yield line({"type": "delta", "text": answer})
             yield line(
                 {

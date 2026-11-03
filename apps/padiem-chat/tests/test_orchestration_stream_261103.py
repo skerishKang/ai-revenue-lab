@@ -7,6 +7,11 @@ import logging
 from types import SimpleNamespace
 
 from app.orchestration_stream import (
+    HEARTBEAT_MIN_INTERVAL_SECONDS,
+    PC_PROGRESS_STAGES,
+    PROGRESS_EVENT_KINDS,
+    PROGRESS_KINDS,
+    ProgressFrameBuilder,
     line,
     ndjson_answer,
     orchestration_stream_enabled,
@@ -78,6 +83,109 @@ def test_lines_are_one_json_object_each():
     encoded = line({"type": "delta", "text": "안"})
     assert encoded.endswith(b"\n")
     assert json.loads(encoded.decode("utf-8")) == {"type": "delta", "text": "안"}
+
+
+def test_progress_projection_is_allowlisted_and_drops_private_engine_fields():
+    builder = ProgressFrameBuilder(clock=lambda: 0.0)
+    records = [
+        {"event": {"event_id": "event-secret", "run_id": "run-secret", "trace_id": "trace-secret",
+                    "app_id": "internal-app", "kind": "run_started", "sequence": 1,
+                    "timestamp_iso": "2026-11-04T00:00:00Z", "message": "raw prompt secret",
+                    "metadata": {"path": "C:\\secret\\file.txt"}}},
+        {"event": {"kind": "context_prepared", "message": "raw prompt"}},
+        {"event": {"kind": "plan_created", "metadata": {"tenant_id": "tenant-secret"}}},
+        {"event": {"kind": "tool_started", "message": "raw message",
+                    "metadata": {"tool_id": "web_search", "secret": "hidden"}}},
+        {"event": {"kind": "tool_completed", "metadata": {"tool_id": "claw.pc.read_file"}}},
+        {"event": {"kind": "tool_failed", "metadata": {"tool_id": "unknown-tool-name"}}},
+        {"pc_progress": {"pc_run_id": "pc-secret", "dispatch_id": "dispatch-secret",
+                          "kind": "read", "stage": "executing", "sequence": 9, "elapsed_ms": 1200}},
+        {"heartbeat": {"run_id": "run-secret", "trace_id": "trace-secret", "elapsed_ms": 5000}},
+        {"event": {"kind": "memory_read", "message": "not in allowlist"}},
+        {"pc_progress": {"stage": "untrusted-stage", "elapsed_ms": 1}},
+    ]
+    frames = [frame for record in records if (frame := builder.from_engine_record(record))]
+
+    assert PROGRESS_EVENT_KINDS == {
+        "run_started", "context_prepared", "plan_created", "tool_started", "tool_completed", "tool_failed",
+    }
+    assert PROGRESS_KINDS == PROGRESS_EVENT_KINDS | {"pc_progress", "heartbeat"}
+    assert PC_PROGRESS_STAGES == {"accepted", "picked_up", "executing", "result"}
+    assert HEARTBEAT_MIN_INTERVAL_SECONDS == 5.0
+    assert [frame["kind"] for frame in frames] == [
+        "run_started", "context_prepared", "plan_created", "tool_started", "tool_completed",
+        "tool_failed", "pc_progress", "heartbeat",
+    ]
+    assert frames[0] == {
+        "type": "progress", "kind": "run_started", "sequence": 1, "label": "질문 확인 중",
+    }
+    assert frames[3]["label"] == "웹 확인 중"
+    assert frames[4]["label"] == "PC 작업 완료"
+    assert frames[5]["label"] == "도구 작업 확인이 필요해요"
+    assert frames[6] == {
+        "type": "progress", "kind": "pc_progress", "sequence": 7, "label": "PC 작업 중",
+        "stage": "executing", "elapsed_ms": 1200,
+    }
+    assert all(set(frame) <= {"type", "kind", "stage", "sequence", "elapsed_ms", "label"} for frame in frames)
+    serialized = json.dumps(frames, ensure_ascii=False)
+    for private_value in (
+        "event-secret", "run-secret", "trace-secret", "internal-app", "tenant-secret",
+        "pc-secret", "dispatch-secret", "raw prompt", "raw message", "unknown-tool-name",
+    ):
+        assert private_value not in serialized
+
+
+def test_heartbeat_projection_is_rate_limited_to_five_seconds():
+    ticks = iter([10.0, 14.99, 15.0])
+    builder = ProgressFrameBuilder(clock=lambda: next(ticks))
+    heartbeat = {"heartbeat": {"run_id": "private", "trace_id": "private", "elapsed_ms": 10000}}
+
+    first = builder.from_engine_record(heartbeat)
+    suppressed = builder.from_engine_record(heartbeat)
+    second = builder.from_engine_record(heartbeat)
+
+    assert first == {"type": "progress", "kind": "heartbeat", "sequence": 1,
+                    "label": "작업 진행 중", "elapsed_ms": 10000}
+    assert suppressed is None
+    assert second["sequence"] == 2
+
+
+def test_ndjson_answer_forwards_sanitized_progress_before_deltas_and_done():
+    bridge = _Bridge(records=[
+        {"event": {"kind": "run_started", "message": "raw prompt", "run_id": "private-run"}},
+        {"event": {"kind": "context_prepared", "metadata": {"trace_id": "private-trace"}}},
+        {"event": {"kind": "plan_created"}},
+        {"event": {"kind": "tool_started", "metadata": {"tool_id": "web_search"}}},
+        {"pc_progress": {"pc_run_id": "private-pc", "dispatch_id": "private-dispatch",
+                          "kind": "read", "stage": "accepted", "sequence": 1, "elapsed_ms": 12}},
+        {"pc_progress": {"pc_run_id": "private-pc", "dispatch_id": "private-dispatch",
+                          "kind": "read", "stage": "executing", "sequence": 2, "elapsed_ms": 98}},
+        {"heartbeat": {"run_id": "private-run", "trace_id": "private-trace", "elapsed_ms": 5000}},
+        {"event": {"kind": "tool_completed", "metadata": {"tool_id": "web_search"}}},
+        {"event": {"kind": "run_completed", "message": "excluded terminal event"}},
+        {"text_delta": {"delta": "final answer"}},
+        {"result": _Result("final answer")},
+    ])
+
+    frames, _ = asyncio.run(_collect(bridge))
+
+    assert [frame["type"] for frame in frames] == [
+        "meta", "progress", "progress", "progress", "progress", "progress", "progress", "progress",
+        "progress", "delta", "done",
+    ]
+    progress = [frame for frame in frames if frame["type"] == "progress"]
+    assert [frame["kind"] for frame in progress] == [
+        "run_started", "context_prepared", "plan_created", "tool_started", "pc_progress", "pc_progress",
+        "heartbeat", "tool_completed",
+    ]
+    assert [frame["label"] for frame in progress] == [
+        "질문 확인 중", "질문 확인 중", "답변 방향 확인", "웹 확인 중", "PC 요청 접수",
+        "PC 작업 중", "작업 진행 중", "웹 확인 완료",
+    ]
+    serialized = json.dumps(frames, ensure_ascii=False)
+    for private_value in ("raw prompt", "private-run", "private-trace", "private-pc", "private-dispatch"):
+        assert private_value not in serialized
+    assert bridge.saved == 1
 
 
 def test_streamed_answer_is_meta_deltas_then_one_done_and_saves_once():
