@@ -100,7 +100,10 @@ async def _device(request, session, selected):
     try:
         owner = await request.app.state.control_plane_identity_authority.resolve_connector_owner_scope(
             session_id=session.session_id)
-        account = owner.get("account_ref")
+        # 2026-11-04: prefer the session owner's own canonical subject id (the
+        # usr_… axis the ownership map rows name); an older authority response
+        # without it keeps the account_ref fallback.
+        account = owner.get("owner_subject_id") or owner.get("account_ref")
         if not isinstance(account, str) or not account:
             raise ValueError("owner unavailable")
         target = source.command_target(account_ref=account, device_id=selected)

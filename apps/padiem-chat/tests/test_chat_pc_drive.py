@@ -945,3 +945,55 @@ def test_5015_mesh_grant_internal_diagnostics_are_fixed_codes_only(caplog):
         SimpleNamespace(app=SimpleNamespace(state=ok_state)), session,
     )) is True
     assert caplog.messages == []
+
+
+def test_map_lookup_prefers_the_scope_owner_subject_id():
+    # 2026-11-04: the authority scope now carries the session owner's own
+    # canonical subject id — the usr_… axis the ownership map rows name — so
+    # the map lookup prefers it over the b62-context account_ref. An older
+    # authority response without it keeps the account_ref first, and the
+    # verified token-owner fallback stays as the last resort.
+    import app.chat_pc_drive as lane
+
+    seen: dict = {}
+
+    class Identity:
+        async def resolve_connector_owner_scope(self, *, session_id):
+            return {"account_ref": "account.b62.context", "workspace_ref": "ws",
+                    "owner_subject_id": "usr_2966owner"}
+
+    class Source:
+        execution_mode = "mesh"
+        configured = True
+
+        def command_target(self, *, account_ref, device_id):
+            seen["account_ref"] = account_ref
+            return {"device_id": "device.windows.owner"}
+
+    state = SimpleNamespace(
+        oracle_mesh_return_source=Source(),
+        control_plane_identity_authority=Identity(),
+    )
+    assert asyncio.run(lane._check_mesh_grant(
+        SimpleNamespace(app=SimpleNamespace(state=state)),
+        SimpleNamespace(session_id="session.b54-padiem-claw"),
+    )) is True
+    assert seen["account_ref"] == "usr_2966owner"
+
+    # An older authority response without owner_subject_id keeps the
+    # account_ref lookup (backward compatible).
+    seen.clear()
+
+    class LegacyIdentity:
+        async def resolve_connector_owner_scope(self, *, session_id):
+            return {"account_ref": "account.b62.context", "workspace_ref": "ws"}
+
+    legacy_state = SimpleNamespace(
+        oracle_mesh_return_source=Source(),
+        control_plane_identity_authority=LegacyIdentity(),
+    )
+    assert asyncio.run(lane._check_mesh_grant(
+        SimpleNamespace(app=SimpleNamespace(state=legacy_state)),
+        SimpleNamespace(session_id="session.b54-padiem-claw"),
+    )) is True
+    assert seen["account_ref"] == "account.b62.context"

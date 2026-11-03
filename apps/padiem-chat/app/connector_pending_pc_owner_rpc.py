@@ -93,7 +93,11 @@ class CanonicalBrokerOwnerPendingPcPort:
                 session_id=self._owner.session_id,
             )
             if (
-                type(scope) is not dict or set(scope) != {"account_ref", "workspace_ref"}
+                type(scope) is not dict
+                # 2026-11-04: the authority may add owner_subject_id (the
+                # session owner's own canonical subject id); require the two
+                # established keys and accept the additive key.
+                or not {"account_ref", "workspace_ref"} <= set(scope)
                 or any(type(v) is not str or _DEVICE.fullmatch(v) is None for v in scope.values())
             ):
                 raise OwnerPcPrivateRpcDenied("pending_pc_identity_scope_invalid")
