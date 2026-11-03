@@ -74,6 +74,7 @@ QUEUE_PAIRING_METHODS = frozenset({
     "approve_root",
     "claim",
     "complete_claim_from_observation",
+    "delete_account_pc_data",
     "consume",
     "device_scope",
     "drive_roots_for_node",

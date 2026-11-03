@@ -28,7 +28,10 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-from app.account_deletion import _USER_KEYED_TABLES
+from app.account_deletion import (
+    _INTENTIONALLY_PRESERVED_USER_KEYED_TABLES,
+    _USER_KEYED_TABLES,
+)
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.history import D1HistoryStore, _password_user_id, _user_id
@@ -288,6 +291,23 @@ def seed_db():
                 )
             except sqlite3.Error as exc:
                 raise AssertionError(f"seeding {table} failed: {exc}; columns={names}") from exc
+    # Migration 047 explicitly retains dispatch rows for replay prevention.
+    # Seed one for each account so the deletion test proves that retention.
+    for name, user in (("deleter", accounts["deleter"]), ("other", accounts["other"])):
+        suffix = name
+        db.conn.execute(
+            "INSERT INTO oracle_mesh_dispatch (dispatch_id, user_id, run_id, command_id, "
+            "tool_request_ref, request_id, revision_ref, request_fingerprint, account_ref, "
+            "workspace_ref, device_id, node_ref, root_ref, path_relative, file_path, state, "
+            "expires_at, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                "dispatch-" + suffix, user, "run-" + suffix, "command-" + suffix,
+                "tool-" + suffix, "request-" + suffix, "revision-" + suffix,
+                _sha("fingerprint-" + suffix)(user), "account-" + suffix, "workspace-" + suffix,
+                "device-" + suffix, "node-" + suffix, "root-" + suffix, "file.txt",
+                "C:/file.txt", "consumed", "2026-11-04T00:00:00Z", now,
+            ),
+        )
     return db, accounts
 
 
@@ -374,7 +394,12 @@ def test_the_route_never_names_a_table_the_schema_does_not_have():
     # This explicit expectation makes the schema omission guard fail if a
     # new user-keyed table is present in the schema but absent from deletion.
     assert ("pc_install_tokens", "user_id = ?") in _USER_KEYED_TABLES
-    for table, where in _USER_KEYED_TABLES:
+    assert "user_id" not in {
+        column["name"] for column in db.conn.execute("PRAGMA table_info(mesh_device_drives)").fetchall()
+    }
+    assert ("oracle_mesh_dispatch", "user_id = ?") in _INTENTIONALLY_PRESERVED_USER_KEYED_TABLES
+    assert ("oracle_mesh_dispatch", "user_id = ?") not in _USER_KEYED_TABLES
+    for table, where in (*_USER_KEYED_TABLES, *_INTENTIONALLY_PRESERVED_USER_KEYED_TABLES):
         assert table in tables, table
         key = _where_column(table, where)
         if key is None:
@@ -406,6 +431,8 @@ def test_successful_deletion_clears_every_surveyed_table_and_keeps_the_other_use
         assert user_count(db, table, where, other) == before["other"][(table, where)], table
     remaining = sorted(row["id"] for row in db.conn.execute("SELECT id FROM users").fetchall())
     assert uid not in remaining
+    assert user_count(db, "oracle_mesh_dispatch", "user_id = ?", uid) == 1
+    assert user_count(db, "oracle_mesh_dispatch", "user_id = ?", other) == 1
     assert set(remaining) == {other, accounts["central"], accounts["role"]}
     # The audit line keeps the time and the id hash only — never the email.
     audit = db.conn.execute("SELECT * FROM account_deletion_audit").fetchall()
@@ -415,6 +442,83 @@ def test_successful_deletion_clears_every_surveyed_table_and_keeps_the_other_use
     assert row["deleted_at"]
     serialized = repr(row)
     assert DELETER_EMAIL not in serialized and "@" not in serialized
+
+
+
+def test_com2_queue_cleanup_runs_before_chat_batch_and_skips_pc_tables():
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    uid = accounts["deleter"]
+    events = []
+
+    class QueueCleanup:
+        async def delete_account_pc_data(self, *, user_id):
+            events.append(("queue", user_id))
+            return True
+
+    app.state.queue_client = object()
+    app.state.pc_device_pairing_store = QueueCleanup()
+    original_batch = db.batch
+
+    async def tracked_batch(statements):
+        events.append(("chat_batch", None))
+        sql = [statement.sql for statement in statements]
+        assert not any("pc_pairing_codes" in statement for statement in sql)
+        assert not any("pc_install_tokens" in statement for statement in sql)
+        assert not any("pc_device_links" in statement for statement in sql)
+        assert not any("mesh_device_presence" in statement for statement in sql)
+        return await original_batch(statements)
+
+    db.batch = tracked_batch
+    response = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, uid),
+        body={"confirm": DELETER_EMAIL},
+        origin=BASE,
+    )
+    assert response.status_code == 200, response.text
+    assert events == [("queue", uid), ("chat_batch", None)]
+    # These rows remain in Chat's test DB because the COM2 queue owns them.
+    for table in ("pc_pairing_codes", "pc_install_tokens", "pc_device_links"):
+        assert db.conn.execute(
+            f"SELECT COUNT(*) AS n FROM {table} WHERE user_id = ?", (uid,)
+        ).fetchone()["n"] == 1
+    assert user_count(db, "oracle_mesh_dispatch", "user_id = ?", uid) == 1
+
+
+def test_com2_queue_failure_keeps_chat_data_and_returns_queue_unavailable():
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    uid = accounts["deleter"]
+    before = snapshot(db, accounts)
+    batch_calls = []
+    original_batch = db.batch
+
+    async def tracked_batch(statements):
+        batch_calls.append(len(statements))
+        return await original_batch(statements)
+
+    class QueueFailure:
+        async def delete_account_pc_data(self, *, user_id):
+            raise OSError("queue unavailable")
+
+    app.state.queue_client = object()
+    app.state.pc_device_pairing_store = QueueFailure()
+    db.batch = tracked_batch
+    response = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, uid),
+        body={"confirm": DELETER_EMAIL},
+        origin=BASE,
+    )
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "account_delete_queue_unavailable"
+    assert batch_calls == []
+    assert snapshot(db, accounts) == before
+    assert db.conn.execute(
+        "SELECT COUNT(*) AS n FROM account_deletion_audit"
+    ).fetchone()["n"] == 0
+
 
 
 def test_account_delete_removes_only_deleted_owner_from_mesh_presence():

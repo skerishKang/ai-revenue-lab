@@ -1,7 +1,8 @@
-"""Self-service Chat account deletion — one signed-in user, Chat DB only (#6659 3).
+"""Self-service Chat account deletion — Chat DB and COM2 PC queue data (#6659 3).
 
 SCOPE
-    The signed-in account's own rows inside the Chat database. This route never
+    The signed-in account's own Chat DB rows and, on COM2, PC queue rows. D1
+    keeps the same PC tables inside the Chat DB. This route never
     touches the shared Control Plane login account, B14 ledgers, R2 file
     objects, offsite backups or the user-PC ``.padiem-backup`` copies; those
     stay and are recorded as later steps in
@@ -11,8 +12,9 @@ WHY EVERY DELETE IS EXPLICIT
     Production D1 does not enforce ``PRAGMA foreign_keys`` and the local
     CPython host deliberately mirrors that (see ``local_cpython.py``), so a
     declared ``ON DELETE CASCADE`` is documentation, not enforcement here.
-    Every user-keyed table from the migration survey is deleted by name, in
-    one atomic ``db.batch()``; a failure anywhere rolls the whole batch back.
+    Each database is cleaned with one atomic batch. D1 has one Chat batch;
+    COM2 cleans its PC queue batch before the Chat batch. Replay-prevention
+    rows in oracle_mesh_dispatch are intentionally retained.
 
 THE ONE CONFIRMATION
     Deleting an account is irreversible destruction, so the route requires the
@@ -38,6 +40,7 @@ from .auth_routes import (
     current_user_id,
 )
 from .history import _row_to_dict
+from .pc_device_pairing_store import mesh_presence_account_cleanup_statements
 
 #: Tables deleted with ``WHERE <key> = ?`` bound to the account id, in
 #: child-before-parent order. Every entry was verified against the migration
@@ -87,7 +90,6 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("claw_github_oauth_states", "user_id = ?"),
     ("claw_github_connections", "user_id = ?"),
     ("claw_coding_conversation_grant", "user_id = ?"),
-    ("oracle_mesh_dispatch", "user_id = ?"),
     ("platform_admin_roles", "user_id = ?"),
     ("chat_custom_provider_credentials", "user_id = ?"),
     ("claw_pc_device_selection", "user_id = ?"),
@@ -113,47 +115,27 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("auth_account_link_cache", "product_user_id = ?"),
 )
 
+# Replay-prevention history is intentionally retained even though its schema has user_id.
+_INTENTIONALLY_PRESERVED_USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
+    ("oracle_mesh_dispatch", "user_id = ?"),
+)
+_PC_QUEUE_USER_TABLES = frozenset({
+    "pc_pairing_codes", "pc_install_tokens", "pc_device_links",
+})
 
-def _delete_batch(db, user_id: str) -> list:
-    """The full atomic deletion: every user row, the minimal audit line, the user."""
+
+def _delete_batch(
+    db, user_id: str, *, include_pc_queue_data: bool = True
+) -> list:
+    """Build the Chat DB batch; COM2 PC rows are deleted by the queue first."""
     statements = [
         db.prepare(f"DELETE FROM {table} WHERE {where}").bind(user_id)
         for table, where in _USER_KEYED_TABLES
+        if include_pc_queue_data or table not in _PC_QUEUE_USER_TABLES
     ]
-    # Presence rows can be shared by accounts. Remove this account from a
-    # shared owner list, and discard a row that would have no owner left.
-    refs_json = (
-        "CASE WHEN json_valid(account_refs_json) "
-        "THEN account_refs_json ELSE '[]' END"
-    )
-    statements.extend(
-        [
-            db.prepare(
-                "UPDATE mesh_device_presence SET account_refs_json = ("
-                " SELECT json_group_array(ref.value) FROM json_each("
-                f"{refs_json}) AS ref "
-                " WHERE ref.type <> 'text' OR ref.value <> ?"
-                ") "
-                f"WHERE json_type({refs_json}) = 'array' "
-                "AND EXISTS (SELECT 1 FROM json_each("
-                f"{refs_json}) AS target "
-                "WHERE target.type = 'text' AND target.value = ?) "
-                "AND EXISTS (SELECT 1 FROM json_each("
-                f"{refs_json}) AS other "
-                "WHERE other.type = 'text' AND other.value <> ?)"
-            ).bind(user_id, user_id, user_id),
-            db.prepare(
-                "DELETE FROM mesh_device_presence "
-                f"WHERE json_type({refs_json}) = 'array' "
-                "AND EXISTS (SELECT 1 FROM json_each("
-                f"{refs_json}) AS target "
-                "WHERE target.type = 'text' AND target.value = ?) "
-                "AND NOT EXISTS (SELECT 1 FROM json_each("
-                f"{refs_json}) AS other "
-                "WHERE other.type = 'text' AND other.value <> ?)"
-            ).bind(user_id, user_id),
-        ]
-    )
+    # Presence lives with the PC queue on COM2 and stays in this batch on D1.
+    if include_pc_queue_data:
+        statements.extend(mesh_presence_account_cleanup_statements(db, user_id))
     deleted_at = datetime.now(timezone.utc).isoformat()
     user_id_hash = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
     statements.append(
@@ -232,12 +214,33 @@ async def account_delete(request) -> JSONResponse:
     if failure is not None:
         return _auth_error(503, failure, "세션을 종료하지 못했습니다. 다시 시도해 주세요.")
 
+    # COM2 owns the PC tables in the queue DB. Clean those rows after the
+    # session is revoked and before the Chat DB batch. On queue failure, leave
+    # Chat data untouched; a later retry is safe because queue deletes are
+    # idempotent. D1 keeps these tables in its own Chat DB batch.
+    queue_client = getattr(request.app.state, "queue_client", None)
+    include_pc_queue_data = queue_client is None
+    if queue_client is not None:
+        pairing_store = getattr(request.app.state, "pc_device_pairing_store", None)
+        cleanup = getattr(pairing_store, "delete_account_pc_data", None)
+        try:
+            if not callable(cleanup) or await cleanup(user_id=user_id) is not True:
+                raise RuntimeError("queue account cleanup unavailable")
+        except Exception:
+            return _auth_error(
+                503,
+                "account_delete_queue_unavailable",
+                "PC account data cleanup failed; retry account deletion.",
+            )
+
     try:
-        await db.batch(_delete_batch(db, user_id))
+        await db.batch(
+            _delete_batch(db, user_id, include_pc_queue_data=include_pc_queue_data)
+        )
     except Exception:
-        # The batch is atomic: a failure anywhere leaves the account and every
-        # row exactly as they were. The stored cookie was already revoked, so
-        # the browser signs in again and retries.
+        # The Chat batch is atomic, so its account and data remain if it fails.
+        # A COM2 queue batch may already have committed; it is idempotent, so a
+        # new session can retry and finish the Chat batch.
         return _auth_error(
             503,
             "account_delete_failed",

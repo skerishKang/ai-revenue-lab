@@ -158,6 +158,8 @@ class PcPairingStore(Protocol):
 
     async def device_scope(self, *, device_id: Any) -> dict[str, Any] | None: ...
 
+    async def delete_account_pc_data(self, *, user_id: str) -> bool: ...
+
     async def adopt_link(
         self, *, user_id: str, mesh_node_id: str, root_paths: list[str],
         now: datetime, label: str | None = None, drives: list[str] | None = None,
@@ -536,6 +538,41 @@ def _public_link(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+
+def mesh_presence_account_cleanup_statements(db: Any, user_id: str) -> list[Any]:
+    """Build the shared-owner cleanup statements used by both storage paths."""
+    refs_json = (
+        "CASE WHEN json_valid(account_refs_json) "
+        "THEN account_refs_json ELSE '[]' END"
+    )
+    return [
+        db.prepare(
+            "UPDATE mesh_device_presence SET account_refs_json = ("
+            " SELECT json_group_array(ref.value) FROM json_each("
+            f"{refs_json}) AS ref "
+            " WHERE ref.type <> 'text' OR ref.value <> ?"
+            ") "
+            f"WHERE json_type({refs_json}) = 'array' "
+            "AND EXISTS (SELECT 1 FROM json_each("
+            f"{refs_json}) AS target "
+            "WHERE target.type = 'text' AND target.value = ?) "
+            "AND EXISTS (SELECT 1 FROM json_each("
+            f"{refs_json}) AS other "
+            "WHERE other.type = 'text' AND other.value <> ?)"
+        ).bind(user_id, user_id, user_id),
+        db.prepare(
+            "DELETE FROM mesh_device_presence "
+            f"WHERE json_type({refs_json}) = 'array' "
+            "AND EXISTS (SELECT 1 FROM json_each("
+            f"{refs_json}) AS target "
+            "WHERE target.type = 'text' AND target.value = ?) "
+            "AND NOT EXISTS (SELECT 1 FROM json_each("
+            f"{refs_json}) AS other "
+            "WHERE other.type = 'text' AND other.value <> ?)"
+        ).bind(user_id, user_id),
+    ]
+
+
 class D1PcPairingStore:
     """Cloudflare D1 adapter over `pc_pairing_codes` + `pc_device_links` (072)."""
 
@@ -561,6 +598,23 @@ class D1PcPairingStore:
         if values:
             statement = statement.bind(*values)
         return await statement.run()
+
+    async def delete_account_pc_data(self, *, user_id: str) -> bool:
+        """Remove one account's queue-owned PC rows in a single idempotent batch.
+
+        mesh_device_drives has no user key and can describe a shared PC, so it
+        is intentionally left untouched. oracle_mesh_dispatch is replay
+        prevention history and is intentionally preserved.
+        """
+        owner = _user_id(user_id)
+        statements = [
+            self.db.prepare("DELETE FROM pc_install_tokens WHERE user_id = ?").bind(owner),
+            self.db.prepare("DELETE FROM pc_device_links WHERE user_id = ?").bind(owner),
+            self.db.prepare("DELETE FROM pc_pairing_codes WHERE user_id = ?").bind(owner),
+        ]
+        statements.extend(mesh_presence_account_cleanup_statements(self.db, owner))
+        await self.db.batch(statements)
+        return True
 
     # -- pairing codes ------------------------------------------------------
 
