@@ -3,9 +3,9 @@
 실측 위치 (source truth, 2026-10-29):
 
 - 트리거: Cloudflare Cron Trigger → `worker.py` 의 `Default.scheduled(event, env, ctx)`.
-  `wrangler.toml` 에는 `[triggers] crons` 가 **없다** — 운영 크론 등록은 아직 꺼져 있고
-  `PRODUCTION_CRON_ACTIVATION = False`,
-  `PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"` 다.
+  `wrangler.toml` 의 `[triggers] crons` 는 계정 삭제 감사 만료 정리 전용(#6773)이고,
+  자동화 레인은 여전히 `PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED` 스위치 뒤에 있다
+  (`PRODUCTION_CRON_ACTIVATION = False`).
 - 실행: `worker.run_scheduled_automation_source(env)` → 워크스페이스 발견
   (`ClawAutomationDueWorkspaceDiscovery`) → 트리거 경계(`ClawAutomationTriggerBoundary`)
   → `compose_scheduled_automation_execution` (D1 클레임 → 실행 → 이력/Task-Alert 투영).
@@ -332,7 +332,16 @@ def test_the_cron_entrypoint_calls_the_automation_lane() -> None:
     assert "run_scheduled_automation_source(env)" in scheduled_body
     assert "await" in scheduled_body
 
-    # The platform trigger is not registered in this repository's configuration.
+    # #6773: the platform registers one daily cron, but only for the
+    # account-deletion audit expiry pass. The automation lane still runs only
+    # behind its explicit switch, so the registered cron did not activate it.
     wrangler = (_CHAT / "wrangler.toml").read_text(encoding="utf-8")
-    assert "[triggers]" not in wrangler
-    assert "crons" not in wrangler.lower()
+    assert wrangler.count("[triggers]") == 1
+    assert 'crons = ["17 3 * * *"]' in wrangler
+    assert "Daily expiry pass for hash-and-time account deletion audit rows." in wrangler
+    assert "run_account_deletion_audit_retention(env)" in scheduled_body
+    assert scheduled_body.index("run_account_deletion_audit_retention(env)") < scheduled_body.index(
+        "run_scheduled_automation_source(env)"
+    )
+    assert "if not _automation_source_enabled(env):" in source
+    assert "PRODUCTION_CRON_ACTIVATION = False" in source

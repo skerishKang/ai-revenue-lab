@@ -56,6 +56,7 @@
     "test_b66_registered_model_boundary.py": "B14_MANAGED",
     "test_core_text_execution_boundary.py": "B14_MANAGED",
     "test_local_cpython.py": "B14_MANAGED",
+    "test_model_first_4651.py": "B14_MANAGED",
     "test_neutral_mock_copy.py": "B14_MANAGED",
     "test_owner_tier_fallback_dispatch_261015.py": "B14_MANAGED",
     "test_private_auto_stream_client.py": "B14_MANAGED",
