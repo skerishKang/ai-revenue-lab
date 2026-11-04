@@ -41,6 +41,10 @@ class Binding:
         self.calls.append(("authorize_redeem", payload))
         return self.response
 
+    async def resolve_connector_owner_scope(self, payload):
+        self.calls.append(("owner_scope", payload))
+        return self.response
+
 
 def good_consent(*, revoked=False):
     return {
@@ -237,5 +241,57 @@ def test_reverse_product_user_lookup_rejects_a_nested_shape():
     with pytest.raises(IdentityBridgeError) as exc:
         asyncio.run(client.resolve_product_user_for_subject(
             product_id="b62", canonical_subject_id="sub_test_1",
+        ))
+    assert exc.value.code == "control_plane_rpc_invalid"
+
+
+def test_owner_scope_accepts_the_additive_owner_subject_id():
+    # #6802: the authority now answers with the session owner's canonical
+    # subject id beside account_ref/workspace_ref. The client must accept it so
+    # the PC lane can read owner_subject_id instead of refusing the whole scope.
+    binding = Binding()
+    binding.response = envelope("scope", {
+        "account_ref": "usr.account.1",
+        "workspace_ref": "workspace.1",
+        "owner_subject_id": "usr.subject.1",
+    })
+    client = CloudflareControlPlaneIdentityAuthority(binding)
+    scope = asyncio.run(client.resolve_connector_owner_scope(
+        session_id="session.canonical.1",
+    ))
+    assert scope == {
+        "account_ref": "usr.account.1",
+        "workspace_ref": "workspace.1",
+        "owner_subject_id": "usr.subject.1",
+    }
+    assert binding.calls == [("owner_scope", {"session_id": "session.canonical.1"})]
+
+
+def test_owner_scope_keeps_the_legacy_two_key_shape():
+    binding = Binding()
+    binding.response = envelope("scope", {
+        "account_ref": "usr.account.1", "workspace_ref": "workspace.1",
+    })
+    client = CloudflareControlPlaneIdentityAuthority(binding)
+    scope = asyncio.run(client.resolve_connector_owner_scope(
+        session_id="session.canonical.1",
+    ))
+    assert scope == {"account_ref": "usr.account.1", "workspace_ref": "workspace.1"}
+
+
+@pytest.mark.parametrize("scope", [
+    {"account_ref": "usr.account.1"},
+    {"workspace_ref": "workspace.1"},
+    {"account_ref": "usr.account.1", "workspace_ref": "workspace.1", "tenant_id": "t.1"},
+    {"account_ref": "usr.account.1", "workspace_ref": ""},
+    {"account_ref": "usr.account.1", "workspace_ref": 7},
+])
+def test_owner_scope_rejects_missing_unknown_or_malformed_fields(scope):
+    binding = Binding()
+    binding.response = envelope("scope", scope)
+    client = CloudflareControlPlaneIdentityAuthority(binding)
+    with pytest.raises(IdentityBridgeError) as exc:
+        asyncio.run(client.resolve_connector_owner_scope(
+            session_id="session.canonical.1",
         ))
     assert exc.value.code == "control_plane_rpc_invalid"
