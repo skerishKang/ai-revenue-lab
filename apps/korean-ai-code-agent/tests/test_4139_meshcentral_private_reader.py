@@ -38,6 +38,7 @@ from kagent.local_agent_meshcentral_private_reader import (  # noqa: E402
 )
 from kagent.local_agent_meshcentral_private_reader import (  # noqa: E402
     MeshCentralFileReadRequest,
+    MeshCentralReadRequestRefused,
 )
 from kagent.local_agent_secure_transport import (  # noqa: E402
     OutboundBrokerEndpoint,
@@ -401,6 +402,13 @@ class MeshCentralNodeRefAlphabetTest(unittest.TestCase):
             file_path="D:/PADIEM/glm2-bid-ui-261105/scripts/build_data.py",
         )
         self.assertEqual(request.node_ref, self.NODE)
+
+    def test_a_local_validation_refusal_has_its_own_class(self):
+        # #261105: the executor reports this class as a request refused here,
+        # apart from a PC-side download failure that still reads read_failed.
+        with self.assertRaises(MeshCentralReadRequestRefused) as caught:
+            MeshCentralFileReadRequest(node_ref="bad node!", file_path="notes.txt")
+        assert isinstance(caught.exception, MeshCentralReadRefused)
 
     def test_a_space_or_control_ref_is_still_refused(self):
         for bad in ("bad node!", "noderef", "", "x" * 300):

@@ -333,6 +333,27 @@ def test_executor_read_maps_download_failure_to_read_failed():
     assert outcome.body == PC_FILE_READ_FAILED_MARKER.encode("utf-8")
 
 
+def test_executor_read_reports_a_locally_refused_request_apart_from_a_pc_failure():
+    # #261105: a validation refusal never reached the PC, so it must not share
+    # the body a PC-side download failure leaves.
+    from kagent.local_agent_meshcentral_private_reader import (
+        MeshCentralReadRequestRefused,
+    )
+    from kagent.local_agent_oracle_mesh_executor import PC_FILE_READ_REFUSED_MARKER
+
+    refused = _ReadPort(error=MeshCentralReadRequestRefused(
+        "node_ref must be a bounded safe reference"))
+    outcome = _executor(refused).execute(_dispatch(max_bytes=1_000_000))
+    assert outcome.termination == "exited"
+    assert outcome.exit_code == 1
+    assert outcome.body == PC_FILE_READ_REFUSED_MARKER.encode("utf-8")
+
+    failed = _ReadPort(error=MeshCentralReadRefused("download refused"))
+    outcome = _executor(failed).execute(_dispatch(max_bytes=1_000_000))
+    assert outcome.body == PC_FILE_READ_FAILED_MARKER.encode("utf-8")
+    assert PC_FILE_READ_REFUSED_MARKER != PC_FILE_READ_FAILED_MARKER
+
+
 def test_executor_read_maps_invalid_utf8_to_read_failed_not_empty():
     port = _ReadPort(result=b"\xff\xfe\x00not-utf8")
     outcome = _executor(port).execute(_dispatch(max_bytes=1_000_000))
