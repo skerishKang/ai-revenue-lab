@@ -46,6 +46,7 @@ from .control_plane_identity_worker import CloudflareControlPlaneIdentityAuthori
 from . import sqlite_settings as sqlite_policy
 from .d1_sqlite import SqliteD1
 from .dispatch_quota import DispatchAwareB14Client, _refund_active_reservation
+from .push_http_transport import build_host_push_transport
 from .grounding import GroundedChatService
 from .history import D1HistoryStore
 from .local_r2 import ThreadedLocalDiskR2
@@ -361,6 +362,14 @@ def build_app():
         oracle_mesh_return_source=oracle_mesh_return_source,
         oracle_mesh_legacy_map_lane=legacy_map_lane_enabled(os.environ),
         claw_engine_desktop_secret=claw_engine_desktop_secret,
+        # #5034 Web Push: the same adapter the Worker composes, over this
+        # runtime's own HTTPX transport. Without VAPID material the factory
+        # leaves the sender unset and the capability route keeps answering
+        # not_configured — an idle transport never becomes a delivery claim.
+        claw_push_vapid_private_key=os.getenv("PADIEM_PUSH_VAPID_PRIVATE_KEY"),
+        claw_push_vapid_public_key=os.getenv("PADIEM_PUSH_VAPID_PUBLIC_KEY"),
+        claw_push_vapid_subject=os.getenv("PADIEM_PUSH_VAPID_SUBJECT"),
+        claw_push_transport=build_host_push_transport(),
     )
 
     # apply_write_freeze below rebinds ``app`` to the ASGI wrapper; bind the
