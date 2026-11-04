@@ -113,6 +113,28 @@ def _has_static_change(files: object) -> bool:
     )
 
 
+def chat_source_changed(files: object) -> bool:
+    """True when a change touches the shipped Chat Python surface.
+
+    #6801: chat_only PRs used to run no Chat pytest module at all. The full
+    suite is the load-bearing lane for these changes. A malformed/ambiguous
+    file listing returns True at the caller so the lane fails closed.
+    """
+    if not isinstance(files, list):
+        return False
+    for row in files:
+        if not isinstance(row, dict):
+            continue
+        path = row.get("filename")
+        if not isinstance(path, str):
+            continue
+        if path == "apps/padiem-chat/worker.py" or (
+            path.startswith("apps/padiem-chat/app/") and path.endswith(".py")
+        ):
+            return True
+    return False
+
+
 def ui_mixed_test_modules(files: object) -> tuple[str, ...]:
     """Safe relative pytest arguments, only for strictly proven static+tests."""
     if not isinstance(files,list) or not 2 <= len(files) <= UI_MIXED_MAX_FILES:
@@ -361,6 +383,7 @@ def main() -> None:
 
     scope = FULL
     static_changed = False
+    chat_source = False
     ui_contract: tuple[str, ...] = ()
     ui_tests: tuple[str, ...] = ()
     tests_only_tests: tuple[str, ...] = ()
@@ -368,6 +391,8 @@ def main() -> None:
     core_modules: tuple[str, ...] = ()
     try:
         event, event_name, files = _load_event_files()
+        # An unprovable change set runs the full Chat suite (fail closed).
+        chat_source = True if files is None else chat_source_changed(files)
         scope = impact_scope(files)
         static_changed = _has_static_change(files)
         if static_changed:
@@ -400,12 +425,15 @@ def main() -> None:
                 core_modules = tuple(plan.get("modules") or ())
     except (OSError, ValueError, KeyError, TypeError, TimeoutError):
         scope = FULL
+        chat_source = True
     except Exception:
         # Network/API ambiguity must never silently shrink a CI test lane.
         scope = FULL
+        chat_source = True
     with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as out:
         out.write(f"scope={scope}\n")
         out.write(f"static_changed={'true' if static_changed else 'false'}\n")
+        out.write(f"chat_source_changed={'true' if chat_source else 'false'}\n")
         out.write(f"ui_contract={' '.join(ui_contract)}\n")
         out.write(f"ui_tests={' '.join(ui_tests)}\n")
         out.write(f"tests_only_tests={' '.join(tests_only_tests if scope == TESTS_ONLY else ())}\n")
