@@ -218,16 +218,57 @@ class History:
         return True
 
 
-def _state(command_exec: bool = True):
+def _state_with(mapping, *, pairing=None):
     source = routes.build_oracle_mesh_return_source(
-        _mapping(command_exec), SECRET, routes.EXECUTION_MODE_MESH)
+        mapping, SECRET, routes.EXECUTION_MODE_MESH)
     assert source is not None
     return SimpleNamespace(
         oracle_mesh_return_source=source,
         control_plane_identity_authority=Identity(),
         history_store=History(),
         connector_txt_read_source=None,
+        pc_device_pairing_store=pairing,
     )
+
+
+def _state(command_exec: bool = True):
+    return _state_with(_mapping(command_exec))
+
+
+class Links:
+    def __init__(self, links):
+        self.links = links
+
+    async def links_for_owner(self, *, user_id):
+        return list(self.links) if user_id == OWNER else []
+
+
+def _owner_keyed_map(*, command_exec=True, device_id=None):
+    """The deployment map keyed on the verified product user id (the token owner).
+
+    The connector scope answers a different account-ref axis, so this map can
+    only be found through the same owner fallback the grant lane uses.
+    """
+    row = {
+        "account_ref": OWNER,
+        "node_ref": "padiem-command-target",
+        "root_ref": "meshcentral_private_trial",
+        "path_relative": "meshcentral-padiem-trial.txt",
+        "file_path": FILE_PATH,
+    }
+    if device_id is not None:
+        row["device_id"] = device_id
+    if command_exec:
+        row["command_exec"] = True
+    return [row]
+
+
+def _dispatch_to(state, device):
+    wire = {"run_id": RUN, "device_id": device, "confirmed": True}
+    response = asyncio.run(routes.dispatch_oracle_mesh_command_intent(
+        Request(wire, state), command=COMMAND, wire=wire,
+    ))
+    return response.status_code, json.loads(response.body), response.headers
 
 
 def _dispatch(state, command: str = COMMAND):
@@ -648,3 +689,47 @@ def test_duplicate_over_budget_submit_appends_nothing(monkeypatch):
 
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))
+
+
+def test_command_intent_falls_back_to_the_verified_owner_and_pins_the_active_link(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state_with(_owner_keyed_map(), pairing=Links([
+        {"mesh_node_id": NODE, "state": "active"},
+    ]))
+    status, body, _ = _dispatch_to(state, NODE)
+    assert status == 200, body
+    row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
+    # The unpinned map row authorizes the command; the owner's own active link
+    # names the PC, so the placeholder node never reaches the executor.
+    assert row["device_id"] == NODE
+    assert row["node_ref"] == NODE
+
+
+def test_command_intent_keeps_requiring_the_map_command_grant(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state_with(_owner_keyed_map(command_exec=False), pairing=Links([
+        {"mesh_node_id": NODE, "state": "active"},
+    ]))
+    status, body, _ = _dispatch_to(state, NODE)
+    assert status == 403
+    assert body["error"]["code"] == "oracle_mesh_command_unverified"
+    assert state.history_store.rows == {}
+
+
+def test_command_intent_refuses_when_the_map_pins_another_pc(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state_with(_owner_keyed_map(device_id=DEVICE), pairing=Links([
+        {"mesh_node_id": NODE, "state": "active"},
+    ]))
+    status, body, _ = _dispatch_to(state, NODE)
+    assert status == 403
+    assert body["error"]["code"] == "oracle_mesh_command_unverified"
+
+
+def test_command_intent_owner_fallback_without_a_link_keeps_the_map_node(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state_with(_owner_keyed_map())
+    status, body, _ = _dispatch_to(state, NODE)
+    assert status == 200, body
+    row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
+    assert row["node_ref"] == "padiem-command-target"
