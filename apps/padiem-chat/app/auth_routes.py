@@ -332,6 +332,11 @@ def _bridge_origin(request: Request) -> str | None:
 
 
 async def google_start(request: Request) -> Response:
+    # A pending LoveTree handoff carries its signed state as the OAuth state and
+    # must be handled before the shared-login migration branch can take over.
+    if request.query_params.get("handoff"):
+        from .lovetree_auth_routes import lovetree_google_entry
+        return await lovetree_google_entry(request)
     shared_flow = getattr(request.app.state, 'shared_login_flow', None)
     # Preserve existing handoffs and explicit return targets during migration.
     if shared_flow is not None and not request.query_params:

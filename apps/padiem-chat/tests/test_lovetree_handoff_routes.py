@@ -32,6 +32,7 @@ from app.auth import (
     SESSION_COOKIE,
     GoogleOAuthClient,
     create_lovetree_handoff_state,
+    create_session_token,
     verify_lovetree_handoff_state,
 )
 from app.config import Settings
@@ -494,3 +495,259 @@ async def test_password_handoff_refusals_and_unchanged_login(shadowless) -> None
         "identifier": IDENTIFIER, "password": PASSWORD, "handoff": signed
     }))
     assert "handoff_return" not in payload(replay), "한 번 쓰인 표는 다시 견착되지 않는다"
+
+
+SESSION_USER_ID = "usr_verified_session_user"
+GOOGLE_SUBJECT = "99887766554433221100"
+
+
+class _SessionCredentialRow:
+    def __init__(self, username: str) -> None:
+        self.username = username
+
+
+class _ProfileRow:
+    def __init__(self, auth_provider: str | None, provider_subject: str | None) -> None:
+        self.auth_provider = auth_provider
+        self.provider_subject = provider_subject
+
+
+class _SessionHistory:
+    """Only the two lookups the session-skip path may use."""
+
+    def __init__(self, *, password_username: str | None = None, profile: _ProfileRow | None = None) -> None:
+        self.password_username = password_username
+        self.profile = profile
+        self.lookups: list[tuple[str, str]] = []
+
+    async def find_password_credential_by_user_id(self, user_id: str):
+        self.lookups.append(("credential", user_id))
+        return _SessionCredentialRow(self.password_username) if self.password_username else None
+
+    async def get_user(self, user_id: str):
+        self.lookups.append(("user", user_id))
+        return self.profile
+
+
+def _hybrid_settings() -> Settings:
+    return Settings(
+        runtime_mode="test",
+        auth_mode="hybrid",
+        public_base_url=CHAT_ORIGIN,
+        google_client_id="client-id",
+        google_client_secret="client-secret",
+        session_secret=SECRET,
+    )
+
+
+def _signed_session(settings: Settings) -> dict[str, str]:
+    return {SESSION_COOKIE: create_session_token(settings, SESSION_USER_ID)}
+
+
+async def _start_with_session(app, settings: Settings):
+    return await lovetree_handoff_start(
+        _request(
+            app,
+            "/auth/lovetree/start",
+            {"state": LOGIN_REQUEST, "return_origin": LOVETREE_ORIGIN},
+            cookies=_signed_session(settings),
+        )
+    )
+
+
+@pytest.mark.asyncio
+async def test_an_existing_password_session_returns_to_lovetree_without_google(shadowless) -> None:
+    settings = _hybrid_settings()
+    store = InMemoryLoveTreeLoginHandoffStore()
+    calls: list[str] = []
+    app = _app(
+        store=store,
+        oauth=GoogleOAuthClient(settings, transport=_transport(calls)),
+        settings=settings,
+        history=_SessionHistory(password_username="owner@example.test"),
+    )
+
+    response = await _start_with_session(app, settings)
+
+    assert response.status_code == 302
+    location = urlparse(response.headers["location"])
+    assert f"{location.scheme}://{location.netloc}" == LOVETREE_ORIGIN
+    assert location.path == LOVETREE_HANDOFF_CALLBACK_PATH
+    ticket = list(store.records)[0]
+    assert parse_qs(location.query) == {"code": [ticket], "state": [LOGIN_REQUEST]}
+    assert calls == [], "유효한 세션은 Google 왕복 없이 끝난다"
+    assert "set-cookie" not in response.headers
+    record = await store.get(ticket)
+    assert record.status == HANDOFF_STATUS_READY
+    assert (record.auth_provider, record.pending_user_id, record.provider_subject) == (
+        "password", SESSION_USER_ID, "owner@example.test"
+    )
+
+
+@pytest.mark.asyncio
+async def test_an_existing_google_session_skips_google_even_in_google_mode(shadowless) -> None:
+    settings = _settings()
+    store = InMemoryLoveTreeLoginHandoffStore()
+    calls: list[str] = []
+    app = _app(
+        store=store,
+        oauth=GoogleOAuthClient(settings, transport=_transport(calls)),
+        settings=settings,
+        history=_SessionHistory(profile=_ProfileRow("google", GOOGLE_SUBJECT)),
+    )
+
+    response = await _start_with_session(app, settings)
+
+    assert response.status_code == 302
+    location = urlparse(response.headers["location"])
+    assert f"{location.scheme}://{location.netloc}" == LOVETREE_ORIGIN
+    ticket = list(store.records)[0]
+    assert parse_qs(location.query) == {"code": [ticket], "state": [LOGIN_REQUEST]}
+    assert calls == [], "두 번째 Google 왕복을 만들지 않는다"
+    record = await store.get(ticket)
+    assert record.status == HANDOFF_STATUS_READY
+    assert (record.auth_provider, record.pending_user_id, record.provider_subject) == (
+        "google", SESSION_USER_ID, GOOGLE_SUBJECT
+    )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "profile",
+    [
+        _ProfileRow("google", "shared:tenant-marker"),
+        _ProfileRow("google", "password:legacy-marker"),
+        _ProfileRow("password", None),
+    ],
+)
+async def test_a_session_without_a_real_provider_subject_uses_the_login_entry(shadowless, profile) -> None:
+    settings = _hybrid_settings()
+    store = InMemoryLoveTreeLoginHandoffStore()
+    app = _app(
+        store=store,
+        oauth=GoogleOAuthClient(settings, transport=_transport([])),
+        settings=settings,
+        history=_SessionHistory(profile=profile),
+    )
+
+    response = await _start_with_session(app, settings)
+
+    assert response.status_code == 302
+    target = urlparse(response.headers["location"])
+    # hybrid의 기존 로그인 화면으로만 보낸다. Google로 곧장 가지 않는다.
+    assert f"{target.scheme}://{target.netloc}" == CHAT_ORIGIN and target.path == "/"
+    assert parse_qs(target.query)["handoff"]
+    record = await store.get(list(store.records)[0])
+    assert record.status == HANDOFF_STATUS_AWAITING_LOGIN
+    assert record.pending_user_id is None
+
+
+@pytest.mark.asyncio
+async def test_hybrid_without_a_session_shows_the_dialog_and_password_login_finishes(shadowless) -> None:
+    settings = _hybrid_settings()
+    store = InMemoryLoveTreeLoginHandoffStore()
+    app = _password_app(store, settings=settings)
+
+    status, headers, _ = await _start(app)
+    assert status == 302
+    target = urlparse(headers["location"])
+    assert f"{target.scheme}://{target.netloc}" == CHAT_ORIGIN and target.path == "/"
+    signed = parse_qs(target.query)["handoff"][0]
+    ticket = list(store.records)[0]
+    assert (await store.get(ticket)).status == HANDOFF_STATUS_AWAITING_LOGIN
+
+    back = await auth_routes.password_login(_post(app, "/api/auth/password/login", {
+        "identifier": IDENTIFIER, "password": PASSWORD, "handoff": signed
+    }))
+
+    assert back.status_code == 200
+    body = payload(back)
+    location = urlparse(body["handoff_return"])
+    assert f"{location.scheme}://{location.netloc}" == LOVETREE_ORIGIN
+    assert parse_qs(location.query) == {"code": [ticket], "state": [LOGIN_REQUEST]}
+    record = await store.get(ticket)
+    assert record.status == HANDOFF_STATUS_READY
+    assert (record.auth_provider, record.pending_user_id, record.provider_subject) == (
+        "password", PROFILE_ID, normalize_email(IDENTIFIER)
+    )
+
+
+@pytest.mark.asyncio
+async def test_hybrid_dialog_google_button_resumes_the_same_handoff(shadowless) -> None:
+    settings = _hybrid_settings()
+    store = InMemoryLoveTreeLoginHandoffStore()
+    calls: list[str] = []
+    app = _app(
+        store=store,
+        oauth=GoogleOAuthClient(settings, transport=_transport(calls)),
+        settings=settings,
+        history=_HistoryStore(),
+    )
+    _, headers, _ = await _start(app)
+    signed = parse_qs(urlparse(headers["location"]).query)["handoff"][0]
+    ticket = list(store.records)[0]
+
+    entered = await auth_routes.google_start(_request(app, "/auth/google/start", {"handoff": signed}))
+
+    assert entered.status_code == 302
+    google = urlparse(entered.headers["location"])
+    assert google.netloc == "accounts.google.com"
+    query = parse_qs(google.query)
+    assert query["state"] == [signed], "서명된 handoff가 그대로 OAuth state가 된다"
+    assert query["redirect_uri"] == [f"{CHAT_ORIGIN}/auth/google/callback"]
+    assert "set-cookie" not in entered.headers
+
+    back = await auth_routes.google_callback(
+        _request(app, "/auth/google/callback", {"code": "google-code", "state": signed})
+    )
+
+    assert back.status_code == 302
+    location = urlparse(back.headers["location"])
+    assert f"{location.scheme}://{location.netloc}" == LOVETREE_ORIGIN
+    assert parse_qs(location.query) == {"code": [ticket], "state": [LOGIN_REQUEST]}
+    record = await store.get(ticket)
+    assert record.status == HANDOFF_STATUS_READY
+    assert (record.auth_provider, record.pending_user_id, record.provider_subject) == (
+        "google", PROFILE_ID, VERIFIED_SUBJECT
+    )
+
+
+@pytest.mark.asyncio
+async def test_the_dialog_google_entry_refuses_unusable_handoffs(shadowless) -> None:
+    settings = _hybrid_settings()
+    store = InMemoryLoveTreeLoginHandoffStore()
+    calls: list[str] = []
+    app = _app(
+        store=store,
+        oauth=GoogleOAuthClient(settings, transport=_transport(calls)),
+        settings=settings,
+        history=_HistoryStore(),
+    )
+    _, headers, _ = await _start(app)
+    signed = parse_qs(urlparse(headers["location"]).query)["handoff"][0]
+    ticket = list(store.records)[0]
+
+    forged = await auth_routes.google_start(_request(app, "/auth/google/start", {"handoff": "not-signed"}))
+    assert forged.status_code == 400
+    assert payload(forged)["error"]["code"] == "invalid_lovetree_handoff"
+
+    mismatched = create_lovetree_handoff_state(settings, ticket, OTHER_LOGIN_REQUEST)
+    wrong = await auth_routes.google_start(_request(app, "/auth/google/start", {"handoff": mismatched}))
+    assert wrong.status_code == 400
+    assert payload(wrong)["error"]["code"] == "invalid_lovetree_handoff"
+
+    live = await store.get(ticket)
+    store.records[ticket] = replace(live, expires_at="2000-01-01T00:00:00Z")
+    expired = await auth_routes.google_start(_request(app, "/auth/google/start", {"handoff": signed}))
+    assert expired.status_code == 400
+    assert payload(expired)["error"]["code"] == "lovetree_handoff_expired"
+
+    store.records[ticket] = replace(live)
+    first = await auth_routes.google_callback(
+        _request(app, "/auth/google/callback", {"code": "google-code", "state": signed})
+    )
+    assert first.status_code == 302
+    replay = await auth_routes.google_start(_request(app, "/auth/google/start", {"handoff": signed}))
+    assert replay.status_code == 400
+    assert payload(replay)["error"]["code"] == "lovetree_handoff_used"
+    assert len(calls) == 2, "거부된 표는 Google로 한 번도 나가지 않는다"

@@ -138,7 +138,7 @@ async def lovetree_handoff_start(request: Request) -> Response:
     ticket_id = _new_ticket_id()
     now = _now()
     try:
-        await store.create(
+        record = await store.create(
             ticket_id=ticket_id,
             login_request=login_request,
             return_origin=origin,
@@ -146,8 +146,31 @@ async def lovetree_handoff_start(request: Request) -> Response:
             expires_at_iso=_iso(now + timedelta(seconds=LOVETREE_HANDOFF_TTL_SECONDS)),
         )
         signed = create_lovetree_handoff_state(settings, ticket_id, login_request)
-        location = await _sign_in_entry(request, settings, signed)
+        identity = await _verified_session_identity(request)
+        if identity is not None:
+            user_id, auth_provider, provider_subject = identity
+            bound = await store.bind_verified_identity(
+                ticket_id,
+                user_id=user_id,
+                auth_provider=auth_provider,
+                provider_subject=provider_subject,
+                state_sha256=record.state_sha256,
+                now_iso=_iso(_now()),
+            )
+            if not bound:
+                # The row was just created as 'awaiting_login' in this request, so a
+                # refusal here is a storage failure, never a user identity decision.
+                # No ticket, no redirect: the browser must not be sent to LoveTree.
+                return not_ready()
+            fresh = await store.get(ticket_id)
+            location = handoff_return_url(fresh, login_request) if fresh is not None else None
+            if location is None:
+                return not_ready()
+        else:
+            location = await _sign_in_entry(request, settings, signed)
     except AuthError as exc:
+        # A refusal before any redirect is terminal: the browser is never sent to
+        # LoveTree without a ready row. The specific cause stays visible.
         return _error(exc.status_code, exc.code, exc.user_message)
     except Exception:
         # A row that could not be created must not turn into a half-started login.
@@ -155,28 +178,87 @@ async def lovetree_handoff_start(request: Request) -> Response:
     if location is None:
         return _unavailable()
     # No cookie: this browser is authenticating in order to hand a ticket to LoveTree, and
-    # it never receives a PADIEM session from these routes.
+    # it never receives a PADIEM session from these routes. The browser's own
+    # existing Chat session (if any) is unchanged -- the skip above only reads it.
     return RedirectResponse(location, status_code=302)
 
 
 async def _sign_in_entry(request: Request, settings: Settings, signed: str) -> str | None:
     """Where an unfinished login goes: the existing Google flow, or the existing dialog.
 
-    Both are deployment-owned addresses. A Google run keeps using the canonical Chat
-    callback (one registered redirect_uri, no new OAuth surface); a password-only
-    deployment lands on the page that already hosts the login dialog, which passes the
-    signed value back through the form it already submits.
+    A Google run keeps using the canonical Chat callback (one registered
+    redirect_uri, no new OAuth surface). A password-only or hybrid deployment
+    lands on the page that already hosts the login dialog, which passes the
+    signed value back through the form it already submits; the dialog's Google
+    button returns on the same single-use handoff via
+    ``lovetree_google_entry``.
     """
-    if settings.auth_mode in {"google", "hybrid"}:
+    if settings.auth_mode == "google":
         oauth = getattr(request.app.state, "google_oauth", None)
         if not isinstance(oauth, GoogleOAuthClient):
             return None
         return oauth.authorization_url(signed, bridge_origin=_bridge_origin(request))
-    if settings.auth_mode == "password":
+    if settings.auth_mode in {"password", "hybrid"}:
         base = (settings.public_base_url or "").rstrip("/")
         if not base:
             return None
         return f"{base}/?{urlencode({'handoff': signed})}"
+    return None
+
+
+async def _verified_session_identity(request: Request) -> tuple[str, str, str] | None:
+    """The provider-verified identity behind this browser's Chat session, or None.
+
+    Session validity is decided by the function Chat already uses elsewhere --
+    ``current_user_id`` from ``app.auth_routes`` -- which honours the canonical
+    session verdict (#5225), never a new session validator here. The provider
+    identity is resolved only from server-side rows that Chat itself trusts:
+
+    * a password credential row gives ``("password", username)`` -- the same
+      subject the password login leg binds -- via
+      ``find_password_credential_by_user_id``;
+    * otherwise the ``users`` row gives ``(auth_provider, provider_subject)``
+      only when it is a real Google subject -- never a ``password:`` compatibility
+      marker and never a ``shared:`` placeholder, which this finish path must not
+      invent into a provider subject.
+
+    Anything unresolved returns None and the caller falls through to the normal
+    sign-in entry, where a fresh login re-verifies the identity.
+    """
+    from .auth_routes import current_user_id
+
+    user_id = current_user_id(request)
+    if not isinstance(user_id, str) or not user_id:
+        return None
+    history = getattr(request.app.state, "history_store", None)
+    if history is None:
+        return None
+    lookup = getattr(history, "find_password_credential_by_user_id", None)
+    if callable(lookup):
+        try:
+            credential = await lookup(user_id)
+        except Exception:
+            credential = None
+        username = getattr(credential, "username", None) if credential is not None else None
+        if isinstance(username, str) and username.strip():
+            return (user_id, "password", username)
+    get_user = getattr(history, "get_user", None)
+    if not callable(get_user):
+        return None
+    try:
+        profile = await get_user(user_id)
+    except Exception:
+        return None
+    provider = getattr(profile, "auth_provider", None)
+    subject = getattr(profile, "provider_subject", None)
+    if (
+        provider in {"google", "password"}
+        and isinstance(subject, str)
+        and subject.strip()
+        and not subject.startswith("password:")
+        and not subject.startswith("shared:")
+    ):
+        return (user_id, str(provider), subject)
     return None
 
 
@@ -302,6 +384,56 @@ async def bind_after_verified_login(
     return handoff_return_url(fresh, login_request)
 
 
+async def lovetree_google_entry(request: Request) -> Response:
+    """Continue a pending handoff on Google from the Chat login dialog.
+
+    The dialog's Google button arrives here with ``?handoff=<signed>`` instead of
+    starting a fresh Google run. The signed handoff becomes the OAuth ``state`` --
+    exactly like ``_sign_in_entry``'s Google leg -- and the existing
+    ``google_callback`` recognises it through ``load_lovetree_handoff_for_callback``
+    and binds the Google-verified identity. No session cookie is set here; a reused,
+    expired, forged, or mismatched row fails closed through the same checks the
+    callback uses.
+    """
+    settings = _settings(request)
+    signed = request.query_params.get("handoff")
+    if not isinstance(signed, str) or not signed.strip():
+        return _error(400, "invalid_lovetree_handoff", "로그인 요청을 확인할 수 없어요. 처음부터 다시 시도해 주세요.")
+    # The dialog only offers Google on a deployment that offers Google. The
+    # handoff branch in google_start runs before that readiness gate, so apply
+    # the same existing gate here instead of opening a new Google surface.
+    from .auth_routes import google_auth_ready
+
+    if not google_auth_ready(request):
+        return _unavailable()
+    verified = verify_lovetree_handoff_state(settings, signed)
+    if verified is None:
+        return _error(400, "invalid_lovetree_handoff", "로그인 요청을 확인할 수 없어요. 처음부터 다시 시도해 주세요.")
+    store = _store(request)
+    if store is None:
+        return _unavailable()
+    ticket_id, login_request = verified
+    record = await store.get(ticket_id)
+    if record is None:
+        return _error(400, "invalid_lovetree_handoff", "로그인 요청을 확인할 수 없어요. 처음부터 다시 시도해 주세요.")
+    if record.state_sha256 != handoff_digest(login_request):
+        return _error(400, "invalid_lovetree_handoff", "로그인 요청을 확인할 수 없어요. 처음부터 다시 시도해 주세요.")
+    if record.status != "awaiting_login":
+        return _error(400, "lovetree_handoff_used", "이미 사용한 로그인 요청이에요. 처음부터 다시 시도해 주세요.")
+    if not record.is_live(_iso(_now())):
+        return _error(400, "lovetree_handoff_expired", "로그인 시간이 만료됐어요. 처음부터 다시 시도해 주세요.")
+    oauth = getattr(request.app.state, "google_oauth", None)
+    if not isinstance(oauth, GoogleOAuthClient):
+        return _unavailable()
+    try:
+        location = oauth.authorization_url(signed, bridge_origin=_bridge_origin(request))
+    except AuthError as exc:
+        return _error(exc.status_code, exc.code, exc.user_message)
+    response = RedirectResponse(location, status_code=302)
+    response.headers["cache-control"] = "no-store"
+    return response
+
+
 __all__ = [
     "LOVETREE_HANDOFF_CALLBACK_PATH",
     "LOVETREE_HANDOFF_TTL_SECONDS",
@@ -311,6 +443,7 @@ __all__ = [
     "bind_lovetree_handoff",
     "handoff_return_url",
     "load_lovetree_handoff_for_callback",
+    "lovetree_google_entry",
     "lovetree_handoff_start",
     "not_ready",
     "return_to_lovetree",
