@@ -17,12 +17,30 @@ PC_DEVICES_TOOL_NAME = "pc_devices"
 _LOGGER = logging.getLogger("padiem_chat.request")
 
 
+_SHORT_CODE = re.compile(r"[a-z][a-z0-9_]{0,63}")
+
+
+def refusal_code(exc) -> str | None:
+    """The engine's own bounded refusal code, when the refusal names one.
+
+    ``ChatPCDriveError.cause`` is a diagnostic string at the HTTP boundary
+    (``"<Class>: <code>: <text>"``). Only a token from the closed code grammar
+    is read back out, so a provider blob can never become a status code.
+    """
+    for part in str(getattr(exc, "cause", None) or "").split(": "):
+        token = part.strip()
+        if _SHORT_CODE.fullmatch(token):
+            return token
+    return None
+
+
 def _log_operation(audit, status, *, outcome=None):
     """Use the existing request event stream with a closed metadata projection."""
     event = {"event": "mcp_operation", "status": status,
              "request_digest": mcp_request_digest(audit["tool_name"], audit["arguments"])}
     for key, value in (("tool", audit["tool_name"]), ("approval_id", audit.get("approval_id")),
                        ("run_id", (outcome or {}).get("run_id")),
+                       ("code", (outcome or {}).get("code")),
                        ("deny_reason", (outcome or {}).get("deny_reason"))):
         if isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9_.:-]{1,96}", value):
             event[key] = value
@@ -135,10 +153,17 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
         }:
             raise ValueError("Invalid PC result")
     except ChatPCDriveError as exc:
-        # A refusal with a fixed internal code keeps the owner's generic
-        # wording but names the branch in the audit event.
-        outcome = {"status": "unavailable", "answer": exc.user_message,
-                   "deny_reason": exc.cause or exc.code}
+        # A refusal that names its branch keeps the owner's generic wording and
+        # reports that branch as a code. "The engine refused admission" is a
+        # known outcome, not "we could not learn the result".
+        reason = refusal_code(exc)
+        # An engine refusal means nothing reached a PC: that is a known
+        # failure, not an unknown result. Other refusals keep their status.
+        refused_by_engine = exc.code == "chat_pc_engine_unavailable" and bool(reason)
+        outcome = {"status": "failed" if refused_by_engine else "unavailable",
+                   "answer": exc.user_message,
+                   "code": reason or exc.code,
+                   "deny_reason": reason or exc.code}
     except Exception:
         outcome = {"status": "unavailable", "answer": "PC 작업의 실제 결과를 확인하지 못했습니다. PADIEM에서 작업 상태를 확인해 주세요."}
     if outcome["status"] == "confirmation_required":
