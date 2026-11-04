@@ -424,15 +424,40 @@ async def authorize_post(request):
         links = await pairing.links_for_owner(user_id=user_id)
     except Exception:
         return _oauth_error(503, "temporarily_unavailable")
-    if not any(isinstance(link, dict) and link.get("mesh_node_id") == device_id
-               for link in links if isinstance(links, list)):
+    linked_ids = [link.get("mesh_node_id") for link in links
+                  if isinstance(link, dict) and is_pc_device_id(link.get("mesh_node_id"))]
+    if device_id not in linked_ids:
         return _oauth_error(403, "pc_device_unavailable")
+    # 2026-11-04: the consent chooses the token's device scope. Default is
+    # "all my PCs"; "selected" narrows the token to the PCs checked here. The
+    # default PC must always be inside the chosen set so a device-less call
+    # keeps working. Absent payload fields read as the default.
+    device_scope = values.get("device_scope")
+    if device_scope is None:
+        device_scope = "all"
+    if device_scope not in {"all", "selected"}:
+        return _oauth_error(400, "invalid_request", "device_scope is invalid")
+    device_scope_json = None
+    if device_scope == "selected":
+        chosen = values.get("device_ids")
+        if (not isinstance(chosen, list) or not chosen
+                or len(chosen) > 20
+                or any(item not in linked_ids for item in chosen)):
+            return _oauth_error(403, "pc_device_unavailable")
+        if device_id not in chosen:
+            chosen.append(device_id)
+        seen: list[str] = []
+        for item in chosen:
+            if item not in seen:
+                seen.append(item)
+        device_scope_json = json.dumps(seen)
     store = _store(request)
     try:
         code = await store.create_oauth_code(
             client_id=validated["client_id"], user_id=user_id, device_id=device_id,
             redirect_uri=validated["redirect_uri"], code_challenge=validated["code_challenge"],
-            scope=validated["scope"], resource=validated["resource"])
+            scope=validated["scope"], resource=validated["resource"],
+            device_scope=device_scope, device_scope_json=device_scope_json)
     except McpGatewayStoreError:
         return _oauth_error(400, "invalid_request")
     except Exception:
@@ -538,7 +563,9 @@ async def token(request):
             issued = await store.issue_oauth_tokens(
                 client_name=client["client_name"], client_id=client["client_id"],
                 user_id=consumed["user_id"], device_id=consumed["device_id"],
-                scope=consumed["scope"], resource=consumed["resource"])
+                scope=consumed["scope"], resource=consumed["resource"],
+                device_scope=consumed.get("device_scope"),
+                device_scope_json=consumed.get("device_scope_json"))
         except Exception:
             return _oauth_error(503, "temporarily_unavailable")
         return _json(issued)

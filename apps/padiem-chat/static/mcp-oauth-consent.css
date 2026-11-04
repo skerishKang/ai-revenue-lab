@@ -125,3 +125,38 @@ h1 {
   .mcp-oauth-actions { flex-direction: column; }
   .mcp-oauth-primary, .mcp-oauth-secondary { width: 100%; }
 }
+
+/* 2026-11-04: device scope choice on the consent card. */
+.mcp-oauth-scope {
+  border: 1px solid var(--border, #d8d8e0);
+  border-radius: 8px;
+  margin: 0 0 12px;
+  padding: 8px 12px 10px;
+}
+
+.mcp-oauth-scope legend {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0 4px;
+}
+
+.mcp-oauth-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 14px 4px 0;
+}
+
+.mcp-oauth-pc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 6px 0 2px;
+}
+
+.mcp-oauth-pc-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}

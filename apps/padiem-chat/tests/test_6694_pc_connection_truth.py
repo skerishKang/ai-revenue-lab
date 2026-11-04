@@ -372,8 +372,11 @@ def test_the_install_file_reports_the_dns_host_name_not_the_netbios_form() -> No
     # Dns.GetHostName() answers the whole DNS name; COMPUTERNAME is the
     # 15-character NetBIOS form and stays only as the fallback.
     assert "[System.Net.Dns]::GetHostName()" in script
-    assert '$reported = $PairingTag + " " + $machine' in script
-    assert '$reported = $PairingTag + " " + $env:COMPUTERNAME' not in script
+    # #6775 이후: 기본 조각은 태그 하나(토큰·드라이브는 조건부로 뒤에 붙고)
+    # 마지막 조각이 기기 이름 — DNS 이름이 먼저 온다는 규칙은 그대로다.
+    assert "$reported = $PairingTag" in script
+    assert '$reported = $reported + " " + $machine' in script
+    assert '$reported = $reported + " " + $env:COMPUTERNAME' not in script
     assert '$reported = $PairingTag + " [" + ($letters -join " ") + "] " + $env:COMPUTERNAME' \
         not in script
 

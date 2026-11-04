@@ -11,6 +11,8 @@
   const clientName = document.getElementById("mcpOauthClientName");
   const redirectHost = document.getElementById("mcpOauthRedirectHost");
   const pcSelect = document.getElementById("mcpOauthPc");
+  const pcList = document.getElementById("mcpOauthPcList");
+  const scopeSelectedHelp = document.getElementById("mcpOauthScopeSelectedHelp");
   const noPc = document.getElementById("mcpOauthNoPc");
   const approve = document.getElementById("mcpOauthApprove");
   const deny = document.getElementById("mcpOauthDeny");
@@ -82,6 +84,45 @@
       if (noPc) noPc.hidden = !empty;
       if (approve) approve.disabled = empty;
     }
+    if (pcList) {
+      // 선택 범위의 체크 목록. 처음에는 전부 체크 — "고른 PC만"을 골라도
+      // 체크를 지우기 전까지는 "내 PC 전부"와 같은 결과다.
+      pcList.replaceChildren();
+      (info.pcs || []).forEach((pc) => {
+        const label = document.createElement("label");
+        label.className = "mcp-oauth-pc-choice";
+        const box = document.createElement("input");
+        box.type = "checkbox";
+        box.value = pc.device_id;
+        box.checked = true;
+        box.addEventListener("change", () => {
+          if (!box.checked && pcSelect && pcSelect.value === pc.device_id) {
+            const first = Array.from(pcList.querySelectorAll("input")).find((item) => item.checked);
+            if (first && pcSelect) pcSelect.value = first.value;
+          }
+        });
+        const text = document.createElement("span");
+        text.textContent = pc.label || pc.device_id;
+        label.append(box, text);
+        pcList.append(label);
+      });
+    }
+  }
+
+  function selectedScope() {
+    const checked = document.querySelector('input[name="mcpOauthDeviceScope"]:checked');
+    return checked ? checked.value : "all";
+  }
+
+  function syncScopeView() {
+    const selected = selectedScope() === "selected";
+    if (pcList) pcList.hidden = !selected;
+    if (scopeSelectedHelp) scopeSelectedHelp.hidden = !selected;
+  }
+
+  function checkedDeviceIds() {
+    return Array.from((pcList || document).querySelectorAll("input[type=checkbox]:checked"))
+      .map((box) => box.value);
   }
 
   async function load() {
@@ -126,7 +167,19 @@
       if (value !== null) payload[key] = value;
     });
     payload.decision = decision;
-    if (decision === "approve") payload.device_id = pcSelect.value;
+    if (decision === "approve") {
+      payload.device_id = pcSelect.value;
+      // 기본은 "내 PC 전부". "고른 PC만"이면 체크한 목록을 보내고, 기본 PC는
+      // 항상 목록에 남는다(서버도 강제한다).
+      const scope = selectedScope();
+      payload.device_scope = scope;
+      if (scope === "selected") {
+        const ids = checkedDeviceIds();
+        if (pcSelect.value && !ids.includes(pcSelect.value)) ids.push(pcSelect.value);
+        payload.device_ids = ids;
+      }
+    }
+    syncScopeView();
     try {
       const response = await fetch("/oauth/authorize", {
         method: "POST",
@@ -159,10 +212,14 @@
 
   approve?.addEventListener("click", () => decide("approve"));
   deny?.addEventListener("click", () => decide("deny"));
+  document.querySelectorAll('input[name="mcpOauthDeviceScope"]').forEach((radio) => {
+    radio.addEventListener("change", syncScopeView);
+  });
   window.addEventListener("padiem:localechange", () => {
     syncTitle();
     render();
   });
   syncTitle();
+  syncScopeView();
   load();
 })();

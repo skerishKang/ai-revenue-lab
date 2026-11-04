@@ -47,18 +47,22 @@ JSON 요청/응답뿐이므로 기존 ASGI 앱에 작은 wire 어댑터를 연�
 
 | MCP 도구 | 인자 | 기존 PC 실행 |
 | --- | --- | --- |
-| `pc_list` | `path` | `claw.pc.list_files` |
-| `pc_search` | `path`, `query` | 같은 목록 도구로 지정 폴더 바로 아래 이름을 문자 검색 |
-| `pc_read` | `path` | `claw.pc.read_file` — 기존 UTF-8 텍스트 읽기 |
-| `pc_write` | `path`, `content` | `claw.pc.write_file` |
-| `pc_move` | `path`, `destination` | `claw.pc.move_file` |
-| `pc_delete` | `path` | `claw.pc.delete_file` |
-| `pc_shell` | `command`, `cwd?`, `shell?`, `wait_seconds?` | Claw 공통 background dispatch — 응답 대기 후 같은 작업 ID 반환 |
-| `pc_shell_start` | `command`, `cwd?`, `shell?` | Claw 공통 작업 즉시 시작 |
-| `pc_shell_read` | `job_id`, `offset?`, `length?` | 공통 상태와 OutputStore 핸들의 범위 읽기 |
-| `pc_shell_stop` | `job_id` | 공통 dispatch 취소 |
+| `pc_devices` | (인자 없음) | 소유자의 연결 PC 목록 — 표시 이름·id6·온라인·기본 PC(2026-11-04) |
+| `pc_list` | `path`, `device?` | `claw.pc.list_files` |
+| `pc_search` | `path`, `query`, `device?` | 같은 목록 도구로 지정 폴더 바로 아래 이름을 문자 검색 |
+| `pc_read` | `path`, `device?` | `claw.pc.read_file` — 기존 UTF-8 텍스트 읽기 |
+| `pc_write` | `path`, `content`, `device?` | `claw.pc.write_file` |
+| `pc_move` | `path`, `destination`, `device?` | `claw.pc.move_file` |
+| `pc_delete` | `path`, `device?` | `claw.pc.delete_file` |
+| `pc_shell` | `command`, `cwd?`, `shell?`, `wait_seconds?`, `device?` | Claw 공통 background dispatch — 응답 대기 후 같은 작업 ID 반환 |
+| `pc_shell_start` | `command`, `cwd?`, `shell?`, `device?` | Claw 공통 작업 즉시 시작 |
+| `pc_shell_read` | `job_id`, `offset?`, `length?` (`device?`는 무시) | 공통 상태와 OutputStore 핸들의 범위 읽기 |
+| `pc_shell_stop` | `job_id` (`device?`는 무시) | 공통 dispatch 취소 |
 
-기기·사용자·위임·승인 여부를 도구 인자로 받지 않는다. 경로는 기존 PC root
+사용자·위임·승인 여부를 도구 인자로 받지 않는다(2026-11-04부터 `device` 예외 —
+대상 PC 선택만 받으며, 소유 링크·토큰 범위·온라인을 서버가 다시 검증한다).
+기기 선택 근거는 `pc_device_links` 단일 원천이고 전체 기기 ID·메시 노드 ID는
+응답·로그에 내려가지 않는다(끝 6자 id6만). 경로는 기존 PC root
 해석과 grants를 그대로 따른다. 검색은 재귀 전체 디스크 검색이 아니다.
 SEND/임의 shell 실행은 2026-11-01 당시 노출 도구에 없었다. 2026-11-03에
 네 가지 PC shell 작업 도구를 추가했다. 명령은 기존 위임·기기 경계를 따르며,
@@ -106,8 +110,11 @@ context / Mesh grant → P01/Engine 경로를 따른다. 네 shell 도구는 같
 `085_mcp_gateway.sql`이 credentials/확인 receipt/감사 메타데이터 테이블을
 추가한다. `094_mcp_shell_audit.sql`(2026-11-03)은 감사 행에 종료 코드·소요
 시간·출력 크기·절단 여부만 추가하며 명령 본문과 출력은 저장하지 않는다.
-기존 PC history run과 `padiem_chat.request`의 `mcp_operation` 로그도 사용한다. 토큰 ID·도구·결과·요청 digest를
-기록하고 토큰 원문·파일 본문은 로그에 넣지 않는다.
+`100_mcp_token_device_scope.sql`(2026-11-04)은 토큰·승인 코드 행에 기기 범위
+(`device_scope`·`device_scope_json`)를 추가한다 — 동의 화면의 "내 PC 전부" 또는
+"고른 PC만" 결정이 저장되는 곳이며, NULL은 기존 단일 PC 토큰이다.
+기존 PC history run과 `padiem_chat.request`의 `mcp_operation` 로그도 사용한다. 토큰 ID·도구·결과·요청 digest·대상 PC 끝 6자(`device`)를
+기록하고 토큰 원문·파일 본문·전체 기기 ID는 로그에 넣지 않는다.
 
 ## 반영 및 검증 범위
 
@@ -181,3 +188,24 @@ claude.ai·ChatGPT 웹 사용자 지정 커넥터가 공통 로그인으로 연�
 - 저장: migration **095_mcp_oauth.sql**. 기존 `padiem_mcp_tokens` 행을 OAuth grant로 확장하고 clients/codes 테이블을 추가한다. 액세스 1시간, 갱신 30일, 코드 10분·1회, 해시만 저장.
 - 설정의 '발급한 연결'에서 OAuth 연결을 보고 폐기할 수 있다. 계정 삭제는 코드·토큰을 지우고 만료 코드는 정리 회차가 지운다.
 - 배포 전 migration 095와 공통 로그인 활성화, HTTPS public base URL을 확인한다. 상세는 `docs/architecture/PADIEM_MCP_DESKTOP_COMMANDER_REPLACEMENT_20261103.md` 11절.
+
+## 추가: 여러 PC 선택 (2026-11-04, PR #6793 — 컴2로컬1의 실행 컨텍스트 수정과 함께 배포)
+
+한 MCP 연결(토큰)에서 연결된 PC 여러 대를 고를 수 있다. 실행 대상은 **토큰에 묶인 기본 PC 또는 호출마다 고른 PC**이며, Chat 화면에 저장된 PC 선택 preference와는 무관하다(저장 선택은 화면 기본값일 뿐 실행 권한이 아니다 — 컴2로컬1의 실행 컨텍스트 수정 이후 기준).
+
+### 도구
+
+- **`pc_devices`** — 토큰 소유 계정의 연결 PC 목록. 항목: 표시 이름, 기기 ID 끝 6자(id6), 온라인 여부(mesh_device_presence 180초 규칙), 기본 PC 여부. 전체 기기 ID·메시 노드 ID는 응답에 내려가지 않는다.
+- **모든 pc_* 도구** — 선택 인자 `device`(표시 이름 또는 id6). 비우면 토큰의 기본 PC(기존 동작 그대로).
+
+### 토큰 기기 범위
+
+OAuth 동의 화면에서 "내 PC 전부"(기본) 또는 "고른 PC만"을 고른다. 결정은 migration **100_mcp_token_device_scope.sql**의 `padiem_mcp_tokens.device_scope`·`device_scope_json`에 기록된다. NULL은 이전에 발급된 단일 PC 토큰 — 토큰의 PC만 허용하며 기존 연결은 무중단이다.
+
+### 안전 규칙 (Desktop Commander 원격 다중 PC 사고 #586·#599 대응)
+
+1. **명시한 device로만 실행한다.** `device`를 명시했는데 그 PC가 꺼져 있으면 `device_offline`, 토큰 범위 밖이면 `device_not_in_token_scope`로 거절한다. 다른 온라인 PC나 기본 PC로 조용히 넘어가지 않는다 — 기본 PC가 온라인인 상태에서도 선택 PC가 오프라인이면 실행하지 않는다. 같은 id6·이름이 여러 대면 `device_ambiguous`로 거절한다.
+2. **작업 ID 후속 호출은 그 작업을 만든 PC로 간다.** `pc_shell_start`를 기본이 아닌 PC에서 시작해도, 그 작업 ID의 `pc_shell_read`·`pc_shell_stop`은 그 PC의 작업에 도달한다(호출의 `device`가 달라도 작업 행의 PC가 우선). 다른 사용자·다른 토큰의 작업 ID는 소유권 오류(`이 작업을 확인할 수 없습니다`/`이 작업을 중지할 수 없습니다`)로 거절한다.
+3. **거절은 이유 코드와 감사로 남긴다.** `mcp_operation` 로그와 `padiem_mcp_audit` 행에 대상 PC 끝 6자를 남긴다(명령 원문은 기존 digest 규칙 유지).
+
+시험: `tests/test_mcp_multi_device_261104.py` (목록·온라인·기본 PC, 조용한 폴백 금지, 범위 밖 거절, 레거시 단일 PC 토큰, 작업 ID 소유권, 동의 범위 저장, migration 100 멱등).

@@ -6,12 +6,14 @@ import logging
 import re
 
 from .chat_pc_drive import ChatPCDriveError
+from .mcp_device_selection import McpDeviceRefusal, device_id6, resolve_target_device
 from .mcp_gateway_store import mcp_request_digest
 from .mcp_gateway_shell import PC_SHELL_TOOL_NAMES
 from .same_origin_guard import expected_browser_origin
 
 
 APPROVAL_META_KEY = "net.padiem/approval_id"
+PC_DEVICES_TOOL_NAME = "pc_devices"
 _LOGGER = logging.getLogger("padiem_chat.request")
 
 
@@ -24,6 +26,10 @@ def _log_operation(audit, status, *, outcome=None):
                        ("deny_reason", (outcome or {}).get("deny_reason"))):
         if isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9_.:-]{1,96}", value):
             event[key] = value
+    # 대상 PC는 끝 6자만 남긴다. 전체 기기 ID·메시 노드 ID는 로그에도 쓰지 않는다.
+    device6 = device_id6((audit.get("identity") or {}).get("device_id"))
+    if device6:
+        event["device"] = device6
     metadata = (outcome or {}).get("audit")
     if isinstance(metadata, dict):
         exit_code = metadata.get("exit_code")
@@ -51,6 +57,23 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
     executor = getattr(request.app.state, "mcp_gateway_executor", None)
     if store is None or executor is None:
         return {"status": "unavailable", "answer": "PC 작업 연결을 지금 사용할 수 없습니다."}
+    principal = dict(principal) if isinstance(principal, dict) else principal
+    # 2026-11-04: the caller may choose the target PC with the `device`
+    # argument (the identifier pc_devices returns, or the PC's display name).
+    # Resolution runs before the first audit write so both records carry the
+    # PC the work was actually aimed at; a refusal is audited and answered
+    # without reaching any PC.
+    device_refusal = None
+    if tool_name != PC_DEVICES_TOOL_NAME and isinstance(arguments, dict):
+        device_arg = arguments.get("device")
+        if isinstance(device_arg, str) and device_arg.strip():
+            try:
+                target = await resolve_target_device(
+                    request, owner_id=principal["owner_id"], principal=principal,
+                    device_arg=device_arg)
+                principal = {**principal, "device_id": target["device_id"]}
+            except McpDeviceRefusal as refusal:
+                device_refusal = refusal
     identity = {"user_id": principal["owner_id"], "device_id": principal["device_id"],
                 "token_id": principal["token_id"]}
     shell_tool = tool_name in PC_SHELL_TOOL_NAMES
@@ -63,6 +86,11 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
     except Exception:
         return {"status": "unavailable", "answer": "작업 기록을 준비하지 못해 실행하지 않았습니다. 잠시 뒤 다시 시도해 주세요."}
     _log_operation(audit, "requested")
+    if device_refusal is not None:
+        outcome = {"status": "denied", "code": device_refusal.code,
+                   "answer": device_refusal.message}
+        await _record_outcome(request, store, audit, outcome)
+        return outcome
     approval = None
     browser = tool_name in {"pc_browser_open", "pc_browser_read", "pc_browser_screenshot", "pc_browser_act"}
     if browser and approval_id is not None:

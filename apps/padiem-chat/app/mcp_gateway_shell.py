@@ -14,6 +14,8 @@ import re
 import time
 from collections.abc import Mapping
 
+from padiem_ai_core.pc_device_identity import is_pc_device_id
+
 PC_SHELL_TOOL_NAME = "pc_shell"
 PC_SHELL_START_TOOL_NAME = "pc_shell_start"
 PC_SHELL_READ_TOOL_NAME = "pc_shell_read"
@@ -37,7 +39,12 @@ _DISPATCH_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 _OUTPUT_HANDLE = re.compile(r"[0-9a-f]{64}\Z")
 _NOW = time.monotonic
 
+PC_SHELL_DEVICE_PROPERTY = {
+    "type": "string", "maxLength": 128,
+    "description": "대상 PC입니다. pc_devices가 알려 준 표시 이름이나 id6를 씁니다. 비우면 연결의 기본 PC를 씁니다.",
+}
 PC_SHELL_PROPERTIES = {
+    "device": dict(PC_SHELL_DEVICE_PROPERTY),
     "command": {
         "type": "string", "minLength": 1, "maxLength": PC_SHELL_MAX_COMMAND_CHARS,
         "description": "연결된 PC에서 실행할 명령입니다. 실행 시간 제한은 없습니다.",
@@ -66,7 +73,14 @@ PC_SHELL_READ_PROPERTIES = {
     "length": {"type": "integer", "minimum": 1, "maximum": PC_SHELL_READ_MAX_BYTES,
                "description": "읽을 최대 바이트입니다."},
 }
-PC_SHELL_STOP_PROPERTIES = {"job_id": dict(PC_SHELL_READ_PROPERTIES["job_id"])}
+PC_SHELL_STOP_PROPERTIES = {
+    "job_id": dict(PC_SHELL_READ_PROPERTIES["job_id"]),
+    "device": dict(PC_SHELL_DEVICE_PROPERTY),
+}
+# 2026-11-04: 선택 대상 PC. pc_shell·pc_shell_start는 실행 대상을 고르고,
+# pc_shell_read·stop은 작업 ID가 PC를 정하므로 받아도 무시한다.
+PC_SHELL_START_PROPERTIES["device"] = dict(PC_SHELL_DEVICE_PROPERTY)
+PC_SHELL_READ_PROPERTIES["device"] = dict(PC_SHELL_DEVICE_PROPERTY)
 
 
 def _command_material(arguments: Mapping) -> bool:
@@ -266,7 +280,20 @@ async def _read_original(request, *, uid, dispatch, run_row):
 
 
 async def _authorize_job(request, *, identity, job_id, require_receipt=True):
+    """Bind a job to (user, token, the PC the job itself names).
+
+    2026-11-04 multi-device: one token can start jobs on several PCs, so the
+    job row - not the token's default PC - decides which PC a follow-up read
+    or stop touches (the Desktop Commander #599 shape: a job id must reach the
+    machine that ran it). The receipt still binds the exact start call:
+    (user, token, the PC the job was started on), read from the row.
+    """
     if not _valid_job_id(job_id):
+        return None
+    row = await _private_dispatch_row(request, uid=identity["user_id"], dispatch_id=job_id)
+    if (not isinstance(row, dict) or row.get("dispatch_id") != job_id
+            or row.get("kind") != "command" or row.get("user_id") != identity["user_id"]
+            or not is_pc_device_id(row.get("device_id"))):
         return None
     if require_receipt:
         mcp_store = getattr(request.app.state, "mcp_gateway_store", None)
@@ -274,15 +301,11 @@ async def _authorize_job(request, *, identity, job_id, require_receipt=True):
         if not callable(owns):
             return None
         try:
-            if not await owns(identity=identity, job_id=job_id):
+            if not await owns(identity={**identity, "device_id": row["device_id"]},
+                              job_id=job_id):
                 return None
         except Exception:
             return None
-    row = await _private_dispatch_row(request, uid=identity["user_id"], dispatch_id=job_id)
-    if (not isinstance(row, dict) or row.get("dispatch_id") != job_id
-            or row.get("kind") != "command" or row.get("device_id") != identity["device_id"]
-            or row.get("user_id") != identity["user_id"]):
-        return None
     return row
 
 
@@ -321,7 +344,7 @@ async def _output_reference(request, *, identity, subject_id, dispatch, private,
     try:
         ref = await writer(
             user_id=uid, subject_id=subject_id, run_id=run_id,
-            device_id=identity["device_id"], dispatch_id=dispatch["dispatch_id"],
+            device_id=private["device_id"], dispatch_id=dispatch["dispatch_id"],
             source="mcp_shell", content=output,
         )
     except Exception:
@@ -369,7 +392,7 @@ async def _job_snapshot(request, *, identity, subject_id, job_id, offset, length
     bounded_offset = min(offset, ref["size"])
     try:
         page = await reader(user_id=identity["user_id"], subject_id=subject_id,
-                            run_id=dispatch["run_id"], device_id=identity["device_id"],
+                            run_id=dispatch["run_id"], device_id=private["device_id"],
                             handle=ref["handle"], offset=bounded_offset, length=length)
     except Exception:
         return {"status": "unavailable", "answer": "PC 작업 출력을 읽지 못했습니다."}
