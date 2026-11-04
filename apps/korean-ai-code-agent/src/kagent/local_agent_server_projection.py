@@ -4,6 +4,8 @@ from dataclasses import replace
 from datetime import datetime, timezone
 from typing import Any
 
+from padiem_ai_core.clock_skew import DEVICE_CLOCK_SKEW_TOLERANCE
+
 from .contracts import ContractError
 from .local_agent_control_plane_runtime import ControlPlaneHeartbeatReceipt
 from .local_agent_pairing import DeviceBinding, DeviceLifecycle, DeviceSession
@@ -78,7 +80,10 @@ def project_server_backed_online_binding(
         raise ContractError("server heartbeat reports a different session expiry")
     if not (session.issued_at <= heartbeat.last_seen_at < session.expires_at):
         raise ContractError("server heartbeat was not acknowledged inside the session lifetime")
-    if heartbeat.last_seen_at > now:
+    if heartbeat.last_seen_at - now > DEVICE_CLOCK_SKEW_TOLERANCE:
+        # last_seen_at은 브로커(서버)가 자기 시계로 찍은 접수 시각이고 now는
+        # 장치 쪽 검증 시각이다. 기기 시계가 느리면 서버 시각이 미래로 보이므로
+        # (#6875 시계 점검) 허용 오차를 둔다. 세션 수명 검사는 그대로 둔다.
         raise ContractError("server heartbeat acknowledgement cannot be in the future")
 
     return replace(binding, state=DeviceLifecycle.ONLINE)
