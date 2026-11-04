@@ -42,8 +42,8 @@ EXPECTED_PROVIDERS = {
     "PADIEM_B14_CREDENTIAL_04": ["experiential"],
     "PADIEM_B14_CREDENTIAL_05": ["google"],
     "PADIEM_B14_CREDENTIAL_06": ["inception"],
-    "PADIEM_B14_CREDENTIAL_07": [],
-    "PADIEM_B14_CREDENTIAL_08": [],
+    "PADIEM_B14_CREDENTIAL_07": ["openrouter"],
+    "PADIEM_B14_CREDENTIAL_08": ["kilo"],
     "PADIEM_B14_CREDENTIAL_09": ["kira"],
     "PADIEM_B14_CREDENTIAL_10": ["modelscope"],
     "PADIEM_B14_CREDENTIAL_11": ["opencode-go"],
@@ -188,8 +188,8 @@ def test_ledger_activity_is_bounded_and_sanitized(monkeypatch, tmp_path):
         {"code": "upstream_rejected", "count": 2},
     ]
     assert ledger.queries and ledger.queries[0][0] == ["agnes-ai"]
-    # Slots with no Provider never ask the ledger at all, so eleven slots query.
-    assert len(ledger.queries) == 11
+    # Slots with no Provider never ask the ledger at all, so thirteen slots query.
+    assert len(ledger.queries) == 13
 
 
 def test_unavailable_ledger_is_not_reported_as_zero(monkeypatch, tmp_path):

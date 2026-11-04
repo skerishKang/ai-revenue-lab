@@ -63,20 +63,7 @@ def test_retired_lane_is_never_in_any_route_pool() -> None:
     with pytest.raises(ModuleNotFoundError):
         importlib.import_module("app.pilot.routing_policy")
 
-@pytest.mark.asyncio
-async def test_retired_kilo_laguna_never_calls_transport(monkeypatch) -> None:
-    from app.pilot.errors import PilotNotConfigured
-    monkeypatch.setenv("B14_PROVIDER_MODE","live")
-    called=[]
-    def handler(request):
-        called.append(request)
-        raise AssertionError("retired provider must not dispatch")
-    with pytest.raises(PilotNotConfigured):
-        await plat.call_platform_chat_completions(
-            model_id="test-fixture/kilo-keyless-chat",
-            upstream_model="test-fixture/kilo-keyless-response",
-            provider="Kilo Gateway / Poolside",
-            platform_provider_id="kilo",
-            messages=[{"role":"user","content":"fixture"}],
-            transport=httpx.MockTransport(handler))
-    assert not called
+def test_retired_kilo_laguna_never_calls_transport() -> None:
+    with pytest.raises(NoSafeRoute) as exc:
+        resolve_manual_route(KILO_LAGUNA_MODEL_ID)
+    assert exc.value.upstream_called is False

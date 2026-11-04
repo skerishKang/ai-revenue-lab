@@ -195,7 +195,8 @@ def test_kilo_secret_store_binding_is_metadata_only_and_env_bridged():
     assert 'secret_name = "PADIEM_B14_CREDENTIAL_08"' in content
     assert 'secret_name = "KILO_API_KEY"' not in content
     assert "PADIEM_B14_CREDENTIAL_08 =" not in content
-    assert '"PADIEM_B14_CREDENTIAL_08"' in worker
+    from app.pilot.model_registry_file import credential_binding_names
+    assert "PADIEM_B14_CREDENTIAL_08" in credential_binding_names()
 
 def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
     """#3554: the Google AI Studio credential binding is declared metadata-only.
