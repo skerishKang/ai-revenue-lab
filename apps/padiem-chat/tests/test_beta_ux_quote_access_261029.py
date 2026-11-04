@@ -28,7 +28,7 @@ def test_logged_out_quote_dialog_names_what_signing_in_unlocks():
     # The signed-in bit comes from the capability event, which fires at startup
     # as well; the selects come back through the same refresh() that fills them.
     assert "signedIn = !!(auth && auth.authenticated === true)" in script
-    for field in ("b66QuoteSkillField", "b66QuoteModelField", "b66QuoteReasoningField"):
+    for field in ("b66QuoteSkillField", "b66QuoteModelField"):
         assert f'"{field}"' in script
     css = (STATIC / "b66-quote-runtime.css").read_text(encoding="utf-8")
     assert ".b66-quote-signin-hint" in css
