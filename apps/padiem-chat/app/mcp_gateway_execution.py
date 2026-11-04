@@ -45,9 +45,9 @@ def __getattr__(name):
 
 
 _TOOLS = {
-    "pc_list": ("files_list", "claw.pc.list_files", {"path"}),
+    "pc_list": ("files_list", "claw.pc.list_files", {"path", "job_id"}),
     "pc_search": ("files_list", "claw.pc.list_files", {"path", "query"}),
-    "pc_read": ("files", "claw.pc.read_file", {"path"}),
+    "pc_read": ("files", "claw.pc.read_file", {"path", "job_id"}),
     "pc_write": ("files_write", "claw.pc.write_file", {"path", "content"}),
     "pc_move": ("files_write", "claw.pc.move_file", {"path", "destination"}),
     "pc_delete": ("files_write", "claw.pc.delete_file", {"path"}),
@@ -131,7 +131,14 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         if browser:
             from .claw_pc_browser_command import browser_arguments
             arguments = browser_arguments(tool_id.removeprefix("claw.pc."), arguments)
-        elif set(arguments) != keys or any(not isinstance(value, str) for value in arguments.values()):
+        elif "job_id" in keys and set(arguments) == {"job_id"}:
+            # A continuation names the dispatch that is already running. It
+            # stages nothing; ownership is checked against that dispatch below.
+            pass
+        elif set(arguments) != keys - {"job_id"} or any(
+                not isinstance(value, str) for value in arguments.values()):
+            # The job id is an alternative to the target path, never an extra
+            # field: a new call names the path and nothing else.
             raise ValueError("Invalid MCP PC arguments")
     approval_id = None
     if approval is not None:
@@ -236,6 +243,16 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
                                cause=denial[0] if denial else None)
     if not isinstance(bridge, B62EngineOrchestrationBridge) or not bridge.ready:
         raise ChatPCDriveError("chat_pc_files_unavailable", "PC 파일 도구를 현재 사용할 수 없습니다.")
+    if "job_id" in keys and set(arguments) == {"job_id"}:
+        # 2026-11-04: the first call may hand the dispatch back instead of
+        # holding the MCP request open. The same tool continues it, and the
+        # Engine still receives only that dispatch id on its signed wire.
+        return await _resume_pc_files(
+            request, uid=uid, subject_id=subject_id, device_id=device_id,
+            token_id=token_id, tool_name=tool_name, scope=scope, tool_id=tool_id,
+            job_id=arguments["job_id"], plan_builder=chat_pc_plan_for_tool,
+            plan_arguments=_tool_arguments_for_plan,
+        )
     browser_context = None
     if browser:
         from .mcp_browser_context import load_browser_context
@@ -281,7 +298,8 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     except (TypeError, ValueError):
         result = {"status": "unavailable", "answer": "PC 작업 결과를 확인하지 못했습니다."}
     if not isinstance(result, dict) or result.get("status") not in {
-        "completed", "confirmation_required", "failed", "unavailable",
+        "completed", "running", "queued", "confirmation_required", "failed",
+        "unavailable",
     }:
         result = {"status": "unavailable", "answer": "PC 작업 결과를 확인하지 못했습니다."}
     if browser:
@@ -316,7 +334,98 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
                           "answer": "브라우저 캡처의 실제 이미지를 확인하지 못했습니다."}
     # The normal PC run already stores signed observations. Add a normal
     # dialogue notice, preserving unsuccessful postcondition evidence.
-    await _append_lane_notice(request, store, uid=uid, run_id=run_id,
-        content=str(result.get("answer", "")),
-        status="completed" if result["status"] in {"completed", "confirmation_required"} else "failed")
+    # A running answer is not a terminal notice: the run is still working on the
+    # PC and the continuation reads it through the same tool.
+    if result["status"] not in {"running", "queued"}:
+        await _append_lane_notice(request, store, uid=uid, run_id=run_id,
+            content=str(result.get("answer", "")),
+            status="completed" if result["status"] in {"completed", "confirmation_required"} else "failed")
     return {**result, "run_id": run_id}
+
+
+async def _resume_pc_files(
+    request, *, uid, subject_id, device_id, token_id, tool_name, scope, tool_id,
+    job_id, plan_builder, plan_arguments,
+):
+    """Continue the PC file dispatch an earlier call left running.
+
+    The ownership rule is the one pc_shell_read already uses: the dispatch must
+    belong to this user, to this MCP token (its audit receipt) and to the PC that
+    ran it. Nothing new is staged, and the Engine is handed that dispatch id
+    only, on the run it already owns - so the signed wire keeps its existing
+    shape and the Chat route keeps its existing checks.
+    """
+    store = getattr(request.app.state, "history_store", None)
+    mcp_store = getattr(request.app.state, "mcp_gateway_store", None)
+    reader = getattr(store, "get_pc_output_dispatch_for_owner", None)
+    owns = getattr(mcp_store, "owns_job_receipt", None)
+    unavailable = {"status": "unavailable", "answer": "PC 작업 상태를 확인하지 못했습니다."}
+    if not callable(reader) or not callable(owns):
+        return unavailable
+    try:
+        row = await reader(user_id=uid, dispatch_id=job_id)
+    except Exception:
+        return unavailable
+    if (
+        not isinstance(row, dict)
+        or row.get("dispatch_id") != job_id
+        or row.get("user_id") != uid
+        or row.get("device_id") != device_id
+        or row.get("kind") not in {"command", "read"}
+    ):
+        return {"status": "denied", "code": "pc_job_not_owned",
+                "answer": "이 작업을 확인할 수 없습니다."}
+    try:
+        owned = await owns(
+            identity={"user_id": uid, "device_id": device_id, "token_id": token_id},
+            job_id=job_id,
+        )
+    except Exception:
+        owned = False
+    if not owned:
+        # Another token's job is not this caller's work, even when the account
+        # and the PC happen to match.
+        return {"status": "denied", "code": "pc_job_not_owned",
+                "answer": "이 작업을 확인할 수 없습니다."}
+    run_id = row.get("run_id")
+    run_reader = getattr(store, "get_claw_run", None)
+    try:
+        run = await run_reader(uid, run_id) if callable(run_reader) else None
+    except Exception:
+        run = None
+    conversation_id = run.get("conversation_id") if isinstance(run, dict) else None
+    bridge = getattr(request.app.state, "orchestration_bridge", None)
+    if (
+        not isinstance(run_id, str) or not run_id
+        or not isinstance(conversation_id, str) or not conversation_id
+        or not isinstance(bridge, B62EngineOrchestrationBridge) or not bridge.ready
+    ):
+        return unavailable
+    from .model_policy import resolve_model_policy
+    from .task_modes import get_task_mode
+    plan = plan_builder(scope)
+    gateway = {"version": 1, "source": "mcp", "token_id": token_id,
+        "request_id": "mcp_" + uuid.uuid4().hex, "tool_id": tool_id,
+        "arguments": {"job_id": job_id}}
+    messages = [{"role": "assistant", "content": "External MCP transport request; not user speech."}]
+    policy = resolve_model_policy(messages)
+    try:
+        outcome = await bridge.start(
+            user_id=uid, messages=messages, skill=get_task_mode("auto"),
+            model_id=policy.model_id, user_text="외부 AI 도구 요청: " + tool_name,
+            conversation_id=conversation_id, subject_id=subject_id, session_id=run_id,
+            agent_plan=plan, tool_arguments=plan_arguments(plan, device_id),
+            pc_action_context=[], pc_delegation=await load_pc_delegation(request, uid),
+            pc_gateway=gateway,
+        )
+    except Exception:
+        return unavailable
+    try:
+        result = json.loads(outcome.answer)
+    except (TypeError, ValueError):
+        return unavailable
+    if not isinstance(result, dict) or result.get("status") not in {
+        "completed", "running", "queued", "failed", "unavailable",
+    }:
+        return unavailable
+    return result

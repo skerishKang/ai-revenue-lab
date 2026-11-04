@@ -29,6 +29,16 @@ class PcGatewayAction:
             output = dict(output)
             if self.value["tool_id"] in PC_GATEWAY_BROWSER_TOOLS:
                 return self._browser_result(output)
+            if output.get("status") == "running" and isinstance(output.get("job_id"), str):
+                # 2026-11-04: the PC is still working and the first answer names
+                # the dispatch instead of inventing an outcome. The same tool
+                # reads it when the client asks again with that job id.
+                return {"action": "complete", "answer": gateway_answer(
+                    "running",
+                    output.get("answer") or "PC 작업이 아직 진행 중입니다. 작업 ID로 결과를 읽을 수 있습니다.",
+                    job_id=output["job_id"],
+                    resume=output.get("resume"),
+                )}
             verification = output.get("action_verification")
             status, answer = "completed", "PC 작업 결과를 확인했습니다."
             if isinstance(verification, Mapping):

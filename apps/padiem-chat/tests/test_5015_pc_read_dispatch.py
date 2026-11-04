@@ -137,6 +137,11 @@ class _History:
             return None
         return dict(row)
 
+    async def get_pc_output_dispatch_for_owner(self, *, user_id, dispatch_id):
+        return await self.get_oracle_mesh_dispatch_for_owner(
+            user_id=user_id, dispatch_id=dispatch_id,
+        )
+
     async def oldest_pending_oracle_mesh_dispatch(self):
         for row in self.rows.values():
             if row.get("state") == "pending" and row.get("nonce_sha256") is None:
@@ -673,6 +678,26 @@ def test_a_status_poll_with_several_owner_links_uses_the_dispatch_node(monkeypat
     assert polled["dispatch"]["dispatch_id"] == dispatch_id
 
 
+def test_a_dispatch_for_an_unlinked_pc_is_refused(monkeypatch):
+    """A dispatch can only bind a PC this owner currently has as an active link."""
+    state = _state(
+        monkeypatch, links=[_owner_link(NODE), _owner_link(SECOND_NODE)],
+        mapping=_legacy_mapping(),
+    )
+    foreign = _pending_read_row()
+    foreign.update({
+        "dispatch_id": "dsp-foreign", "device_id": "device-foreign",
+        "node_ref": "node-foreign",
+    })
+    state.history_store.rows["dsp-foreign"] = foreign
+    status, body = _dispatch(state, {
+        "subject_id": SUBJECT, "run_id": RUN,
+        "dispatch_id": "dsp-foreign", "mode": "command_status",
+    })
+    assert status == 403
+    assert body["error"]["code"] == "oracle_mesh_device_unverified"
+
+
 def test_a_result_with_several_owner_links_uses_the_dispatch_node(monkeypatch):
     state = _state(
         monkeypatch, links=[_owner_link(NODE), _owner_link(SECOND_NODE)],
@@ -681,6 +706,9 @@ def test_a_result_with_several_owner_links_uses_the_dispatch_node(monkeypatch):
     _seed_result(
         state, state_name="done", exit_code=0,
         body_bytes=READ_BODY.encode("utf-8"), termination="exited",
+    )
+    state.history_store.rows["dsp-read"].update(
+        {"device_id": NODE, "node_ref": NODE},
     )
     status, body = _dispatch(state, {
         "subject_id": SUBJECT, "run_id": RUN,

@@ -443,7 +443,8 @@ class D1McpGatewayStore:
             "SELECT 1 AS owned FROM padiem_mcp_audit a JOIN padiem_mcp_tokens t "
             "ON t.id=a.token_id AND t.user_id=a.user_id "
             "WHERE a.user_id=? AND a.token_id=? AND a.device_id=? "
-            "AND a.job_receipt_sha256=? AND a.tool_name IN ('pc_shell','pc_shell_start') "
+            "AND a.job_receipt_sha256=? AND a.tool_name IN "
+            "('pc_shell','pc_shell_start','pc_list','pc_read') "
             "AND t.revoked_at IS NULL LIMIT 1",
             owner, identity["token_id"], identity["device_id"], digest,
         )
