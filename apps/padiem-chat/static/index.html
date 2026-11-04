@@ -1104,7 +1104,7 @@
         </section>
       </section>
       <section class="composer-wrap" data-locale-aria-label="composer" aria-label="메시지 작성">
-        <button type="button" class="claw-mobile-composer-toggle" id="clawMobileComposerToggle" aria-expanded="true" aria-controls="clawManualForm clawVerifiedModelSelect">모델·고급 설정 접기</button>
+        <button type="button" class="claw-mobile-composer-toggle" id="clawMobileComposerToggle" aria-expanded="true" aria-controls="clawManualForm clawVerifiedModelHint">등급 설정 접기</button>
         <div class="project-banner" id="projectBanner" hidden>
           <div class="project-banner-copy"><span data-locale-key="project-banner">프로젝트</span><strong id="activeProjectName"></strong><small id="activeProjectFiles" hidden></small></div>
           <div class="project-banner-actions">
@@ -1168,19 +1168,9 @@
           <div class="attachment-tray" id="attachmentTray" hidden>
             <ul class="attachment-chip-list" id="attachmentChipList"></ul>
           </div>
-          <label for="clawVerifiedModelSelect" class="claw-model-choice">
-            <span>AI 모델 선택</span>
-            <select id="clawVerifiedModelSelect" aria-describedby="clawVerifiedModelHint">
-              <option value="">모델을 직접 선택하세요</option>
-            </select>
-            <small id="clawVerifiedModelHint" role="status" aria-live="polite">현재 사용 가능한 모델을 표시합니다.</small>
-          </label>
-          <details class="claw-model-advanced"><summary data-locale-key="claw-model-advanced">직접 모델 ID 입력 (고급)</summary>
-          <label for="clawModelIdInput" class="claw-model-choice"><span data-locale-key="claw-model-choice-label">실행 모델 ID (등록된 모델)</span>
-            <input id="clawModelIdInput" type="text" value="" maxlength="128" autocomplete="off" autocapitalize="off" spellcheck="false" data-locale-placeholder="claw-model-choice-placeholder" placeholder="등록된 모델 ID를 입력하세요" aria-describedby="clawModelChoiceHint" />
-            <small id="clawModelChoiceHint" data-locale-key="claw-model-choice-hint">등록된 모델 ID 직접 입력 · 자동 대체 없음</small>
-          </label>
-          </details>
+          <p class="claw-model-choice" hidden><span data-locale-key="tier">AI 등급</span>
+            <small id="clawVerifiedModelHint" role="status" aria-live="polite"></small>
+          </p>
           <label for="messageInput" class="sr-only" data-locale-key="message-input-label">메시지 입력</label>
           <textarea id="messageInput" rows="1" data-locale-placeholder="input" placeholder="무엇이든 물어보세요" autocomplete="off"></textarea>
           <p id="composerInlineHint" class="composer-inline-hint" role="status" aria-live="polite" aria-atomic="true" hidden></p>

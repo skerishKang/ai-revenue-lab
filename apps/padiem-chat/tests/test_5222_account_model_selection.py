@@ -498,6 +498,11 @@ function makeEl(tag) {
     while (cur) { if (cur === el) return true; cur = cur.parentNode; }
     return false;
   };
+  el.closest = (sel) => {
+    let cur = el.parentNode;
+    while (cur) { if (matches(cur, sel)) return cur; cur = cur.parentNode; }
+    return null;
+  };
   el.addEventListener = (t, fn) => { (el.listeners[t] = el.listeners[t] || []).push(fn); };
   el.querySelector = (sel) => el.querySelectorAll(sel)[0] || null;
   el.querySelectorAll = (sel) => {
@@ -532,10 +537,9 @@ function matches(el, sel) {
 
 function boot(fixture) {
   const byId = {};
-  ["clawVerifiedModelSelect", "clawModelIdInput", "clawVerifiedModelHint"].forEach((id) => {
-    const el = makeEl(id === "clawVerifiedModelSelect" ? "select" : "div");
+  ["clawVerifiedModelHint"].forEach((id) => {
+    const el = makeEl("div");
     el.id = id;
-    if (id === "clawVerifiedModelSelect") { el.options = []; el.value = ""; }
     byId[id] = el;
   });
   const modePill = makeEl("button");
@@ -689,15 +693,11 @@ function boot(fixture) {
     if (u.startsWith("/api/claw/verified-model-choices")) {
       return jsonResponse(200, {
         ok: true,
-        scope: "b14_owner_allowed_live_ready",
+        scope: "b14_tier_ready",
         complete_inventory: true,
-        automatic_default: false,
-        model_choices: [{
-          model_id: "opencode-go/beam-free",
-          individual_model_name: "Beam Free",
-          product_name_prefix: "파디엠프리",
-          customer_selectable: true,
-        }],
+        automatic_default: true,
+        tier: "free",
+        available: true,
       });
     }
     return jsonResponse(200, {});

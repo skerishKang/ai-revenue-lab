@@ -1930,19 +1930,8 @@
     modePanel.append(header, list, truth, createCustomSection());
     syncCustomSection();
     syncAdminOption();
-    // One common Chat/Claw tier picker. Move, never clone, the existing
-    // owner-verified Claw exact-model controls into this picker. Their IDs,
-    // listeners and submit-time snapshots stay authoritative and unchanged.
-    // The composer itself now has exactly the Chat visual hierarchy.
-    const exactModelControl = document.querySelector("#composerForm > label.claw-model-choice");
-    const advancedModelControl = document.querySelector("#composerForm > details.claw-model-advanced");
-    if (exactModelControl) {
-      const optionalModels = document.createElement("div");
-      optionalModels.className = "claw-tier-model-options";
-      optionalModels.appendChild(exactModelControl);
-      if (advancedModelControl) optionalModels.appendChild(advancedModelControl);
-      modePanel.appendChild(optionalModels);
-    }
+    // One common Chat/Claw tier picker. The composer keeps exactly the Chat
+    // visual hierarchy; Claw shows only the chosen grade (no model picker).
     modeHost.appendChild(modePanel);
     syncModeCopy();
 

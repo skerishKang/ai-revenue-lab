@@ -225,10 +225,11 @@ async def test_claw_custom_calls_provider_directly_without_engine_or_b14():
 
 
 @pytest.mark.asyncio
-async def test_claw_custom_rejects_conflicts_tools_and_missing_key():
-    app, _, _, recorder = build_app(adapter=AdapterBomb())
+async def test_claw_custom_ignores_tier_and_rejects_tools_or_missing_key():
+    app, _, credential_store, recorder = build_app(adapter=AdapterBomb())
+    await credential_store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY)
 
-    conflict = await request(
+    tier_ignored = await request(
         app, "POST", "/api/claw/general", uid=OWNER,
         json_body={
             "messages": [{"role": "user", "content": "안녕"}],
@@ -236,8 +237,11 @@ async def test_claw_custom_rejects_conflicts_tools_and_missing_key():
             "custom": custom(),
         },
     )
-    assert conflict.status_code == 422
-    assert conflict.json()["error"]["code"] == "custom_selection_conflict"
+    assert tier_ignored.status_code == 200
+    assert len(recorder.requests) == 1
+    assert json.loads(recorder.requests[0].content)["model"] == "beam-free"
+    recorder.requests.clear()
+    assert AdapterBomb.calls == 0
 
     tool = await request(
         app, "POST", "/api/claw/general", uid=OWNER,
@@ -249,8 +253,9 @@ async def test_claw_custom_rejects_conflicts_tools_and_missing_key():
     assert tool.status_code == 422
     assert tool.json()["error"]["code"] == "custom_tool_unsupported"
 
+    missing_app, _, _, _ = build_app(adapter=AdapterBomb())
     missing = await request(
-        app, "POST", "/api/claw/general", uid=OWNER,
+        missing_app, "POST", "/api/claw/general", uid=OWNER,
         json_body={
             "messages": [{"role": "user", "content": "안녕"}],
             "custom": custom(),

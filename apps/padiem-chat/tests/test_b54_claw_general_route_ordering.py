@@ -94,8 +94,6 @@ const loginButton = { hidden: false, disabled: false, click() {} };
 const setNote = () => {};
 const clawManualForm = { hidden: false };
 const input = { value: "", focus() {} };
-// #3790: simulate one EXPLICIT model choice before the Claw submit.
-const clawModelIdInput = { value: "google/gemini-3.5-flash-lite" };
 let inFlight = false;
 let activeRequestCancelReason = null;
 let activeRequestArticle = null;

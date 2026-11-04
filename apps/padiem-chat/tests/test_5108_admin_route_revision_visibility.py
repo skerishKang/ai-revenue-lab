@@ -75,8 +75,8 @@ def _choice_client(monkeypatch, *, routes=None, rows=()):
     return TestClient(app)
 
 
-def test_product_model_list_states_the_applied_ledger_revision(monkeypatch):
-    """The chooser reports which applied revision governs the grade."""
+def test_product_grade_status_hides_identity_and_reports_applied_revision(monkeypatch):
+    """Grade readiness reports its governing revision without model identity."""
     routes = _RouteStore(TierRouteSnapshot("padiem-global", 7, (
         TierRoute("claw", "PLUS", APPLIED, SECONDARY, True),
     )))
@@ -90,7 +90,10 @@ def test_product_model_list_states_the_applied_ledger_revision(monkeypatch):
     body = response.json()
     assert body["route_source"] == "central"
     assert body["route_revision"] == 7
-    assert [row["model_id"] for row in body["model_choices"]] == [APPLIED, SECONDARY]
+    assert body["tier"] == "plus"
+    assert body["available"] is True
+    assert "model_choices" not in body
+    assert "model_id" not in body
 
 
 def test_product_model_list_reports_no_revision_without_an_applied_route(monkeypatch):
@@ -153,8 +156,8 @@ def _adapter():
     return mock
 
 
-def test_paid_lane_explicit_choice_cannot_replace_the_applied_route():
-    """A stored paid-grade row is authoritative for the explicit pick too."""
+def test_paid_lane_explicit_claim_must_match_the_applied_route():
+    """A stored paid-grade row is authoritative; a foreign claim is refused."""
     routes = _RouteStore(TierRouteSnapshot("padiem-global", 8, (
         TierRoute("claw", "PLUS", APPLIED, SECONDARY, True),
     )))
@@ -173,14 +176,15 @@ def test_paid_lane_explicit_choice_cannot_replace_the_applied_route():
             "tier": "plus", "model_id": APPLIED,
             "messages": [{"role": "user", "content": "안녕하세요"}],
         })
-    assert replaced.status_code == 403
-    assert replaced.json()["error"]["code"] == "model_not_available_for_tier"
+    assert replaced.status_code == 400
+    assert replaced.json()["error"]["code"] == "invalid_model_id"
     assert applied.status_code == 200
     assert adapter.execute.await_args.kwargs["central_route_model_id"] == APPLIED
+    assert "selected_model_id" not in adapter.execute.await_args.kwargs
 
 
-def test_paid_lane_without_an_applied_route_keeps_the_explicit_choice():
-    """Without a stored row the paid-grade explicit choice is unchanged."""
+def test_paid_lane_without_an_applied_route_refuses_a_foreign_model_claim():
+    """Without a stored row the grade route is still server-owned, not client-picked."""
     routes = _RouteStore(TierRouteSnapshot("padiem-global", 0, ()))
     rows = [
         {"model_id": APPLIED, "name": "Applied"},
@@ -188,9 +192,10 @@ def test_paid_lane_without_an_applied_route_keeps_the_explicit_choice():
     ]
     adapter = _adapter()
     with _dispatch_client(adapter, routes=routes, rows=rows) as client:
-        chosen = client.post("/api/claw/general", json={
+        foreign = client.post("/api/claw/general", json={
             "tier": "plus", "model_id": OTHER,
             "messages": [{"role": "user", "content": "안녕하세요"}],
         })
-    assert chosen.status_code == 200
-    assert adapter.execute.await_args.kwargs["selected_model_id"] == OTHER
+    assert foreign.status_code == 400
+    assert foreign.json()["error"]["code"] == "invalid_model_id"
+    adapter.execute.assert_not_called()

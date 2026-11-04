@@ -37,6 +37,9 @@ export const ENDPOINTS = {
   clawRuns: '/api/claw/runs',
   clawPendingResult: (runId: string) => `/api/claw/runs/${encodeURIComponent(runId)}/pending-result`,
   clawApprovalDecision: '/api/claw/approvals/decision',
+  /** #6828: grade-only status ({"tier","available"}); no model identity. */
+  clawTierStatus: '/api/claw/verified-model-choices',
+  /** Kept for source compatibility; the endpoint now reports grade status only. */
   clawVerifiedModelChoices: '/api/claw/verified-model-choices',
 
   voiceIdentity: '/api/voice/identity',

@@ -1,53 +1,43 @@
-/* #3790: Claw shares B14's owner-allowed, ready model list with B66. */
+/* #6828: Claw shows only the PADIEM grade. No model picker stays.
+ * The grade line stays out of the composer flow while the grade is ready;
+ * it appears only when the grade status needs attention. */
 (() => {
  "use strict";
- const select=document.getElementById("clawVerifiedModelSelect");
- const manual=document.getElementById("clawModelIdInput");
  const status=document.getElementById("clawVerifiedModelHint");
- if(!select||!manual||!status)return;
+ if(!status)return;
+ const line=status.closest(".claw-model-choice");
  const tr=key=>window.__padiemLocale?.text?.(key)||key;
- const EXACT_ID=/^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$/;
  let seq=0;
- function clear(){select.replaceChildren();const o=document.createElement("option");o.value="";
-  o.textContent=tr("claw-verified-model-placeholder");select.appendChild(o);select.value="";}
- function valid(data){return data&&data.ok===true&&data.scope==="b14_owner_allowed_live_ready"
-  &&data.complete_inventory===true&&data.automatic_default===false
-  &&Array.isArray(data.model_choices)&&data.model_choices.length<=256
-  &&new Set(data.model_choices.map(x=>x?.model_id)).size===data.model_choices.length
-  &&data.model_choices.every(x=>x&&typeof x.model_id==="string"&&EXACT_ID.test(x.model_id)
-    &&["파디엠프리","파디엠플러스"].includes(x.product_name_prefix)
-    &&typeof x.individual_model_name==="string"
-    &&x.individual_model_name.length>0&&x.individual_model_name.length<=100
-    &&x.customer_selectable===true);}
- async function load(){if(window.PadiemAuthGate?.authenticated()===false)return;const ticket=++seq;select.disabled=true;clear();status.textContent=tr("claw-verified-model-loading");
-  try{const tier=window.PadiemTierSelection?.get?.()||"free";
-   const r=await fetch("/api/claw/verified-model-choices?tier="+encodeURIComponent(tier),{credentials:"same-origin",cache:"no-store"});
-   if(!r.ok)throw Error("not_authenticated");const data=await r.json();
-   if(!valid(data))throw Error("invalid_choices");if(ticket!==seq)return;
-   for(const row of data.model_choices){const opt=document.createElement("option");opt.value=row.model_id;
-    opt.textContent=row.individual_model_name;
-    select.appendChild(opt);}
-   select.disabled=data.model_choices.length===0;
-   const previous=Array.from(select.options).find(x=>x.value&&x.value===manual.value);
-   select.value=previous?.value||"";
-   status.textContent=data.model_choices.length?tr("claw-verified-model-ready"):tr("claw-verified-model-unavailable");
-  }catch(_){if(ticket!==seq)return;clear();select.disabled=true;status.textContent=tr("claw-verified-model-unavailable");}
+ const GRADE_LABEL={free:"Padiem Free",plus:"Padiem Plus",pro:"Padiem Pro",max:"Padiem Max",admin:"Padiem Admin"};
+ function selectedGrade(){
+   const tier=String(window.PadiemTierSelection?.get?.()||"free").toLowerCase();
+   return GRADE_LABEL[tier]?tier:"free";
  }
- select.addEventListener("change",()=>{
-  if(!select.value||!Array.from(select.options).some(o=>o.value===select.value))return;
-  manual.value=select.value;manual.dispatchEvent(new Event("input",{bubbles:true}));
- });
- manual.addEventListener("input",()=>{
-  const opt=Array.from(select.options).find(x=>x.value&&x.value===manual.value);
-  select.value=opt?.value||"";
- });
+ function valid(data,tier){return data&&data.ok===true&&data.scope==="b14_tier_ready"
+  &&data.complete_inventory===true&&data.automatic_default===true
+  &&data.tier===tier&&typeof data.available==="boolean"
+  &&!Object.prototype.hasOwnProperty.call(data,"model_choices");}
+ function report(available){
+   if(available){status.textContent="";line&&line.setAttribute("hidden","");return;}
+   line&&line.removeAttribute("hidden");
+   status.textContent=tr("claw-verified-model-unavailable");
+ }
+ function reset(){status.textContent="";line&&line.setAttribute("hidden","");}
+ async function load(){if(window.PadiemAuthGate?.authenticated()===false)return;const ticket=++seq;
+   const tier=selectedGrade();
+   try{const r=await fetch("/api/claw/verified-model-choices?tier="+encodeURIComponent(tier),{credentials:"same-origin",cache:"no-store"});
+    if(!r.ok)throw Error("not_authenticated");const data=await r.json();
+    if(!valid(data,tier))throw Error("invalid_status");if(ticket!==seq)return;
+    report(data.available);
+  }catch(_){if(ticket!==seq)return;report(false);}
+ }
  window.addEventListener("padiem:auth-state",event=>{
   if(event.detail?.authenticated===true){void load();return;}
-  ++seq;clear();select.disabled=true;
-  manual.value=""; // session revoked: never reuse stale explicit model
-  status.textContent=tr("claw-verified-model-unavailable");
+  // Signed out: the auth gate owns that guidance, so the grade line stays
+  // out of the composer flow instead of reporting a status problem.
+  ++seq;reset();
  });
- window.addEventListener("padiem:tierchange",()=>{manual.value="";void load();});
+ window.addEventListener("padiem:tierchange",()=>void load());
  window.addEventListener("padiem:localechange",()=>void load());
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",load,{once:true});
  else void load();

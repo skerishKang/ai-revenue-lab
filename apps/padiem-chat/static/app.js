@@ -15,7 +15,9 @@
     window.PadiemClawConversationArtifactContext?.init?.(conversationArtifacts) ?? null;
   const form = document.getElementById("composerForm");
   const input = document.getElementById("messageInput");
-  const clawModelIdInput = document.getElementById("clawModelIdInput");
+  // #6828: Claw runs on the chosen PADIEM grade. No model picker stays,
+  // so no per-request model id is ever read from the DOM.
+  const clawModelIdInput = null;
   const sendButton = document.getElementById("sendButton");
   const cancelStreamButton = document.getElementById("cancelStreamButton");
   const newChatButton = document.getElementById("newChatButton");
@@ -3841,11 +3843,9 @@
         contextSnapshot.pcRunId = pcRunId;
         payload.pc_run_id = pcRunId;
       }
-      // #3554: exactly one explicit B14 model per Claw submit; no auto/default
-      // selection. The submit-time snapshot survives the Claw→chat shell flip.
-      if (clawGeneralRequest && contextSnapshot.selectedModelId) {
-        payload.model_id = contextSnapshot.selectedModelId;
-      }
+      // #6828: grade-only Claw execution. No per-request model id is sent;
+      // the server resolves the grade route. BYOK remains a separate Chat lane.
+
       // #3539: the routing decision arrives as a submit-time snapshot. It is
       // NEVER re-derived from live shell state here, because showConversation()
       // has already flipped shell.dataset.state to "chat" by the time this runs
@@ -4041,10 +4041,9 @@
       setNote(uiT("custom-text-only"), "error");
       return;
     }
-    contextSnapshot.selectedModelId =
-      clawGeneralRequest && ["free", "plus"].includes(selectedProductTier()) && typeof clawModelIdInput !== "undefined" && clawModelIdInput
-        ? clawModelIdInput.value.trim() : "";
-    // Grade-only Claw execution does not require a provider-specific model ID.
+    // #6828: grade-only Claw execution. The grade travels as `tier` and the
+    // server resolves the grade route; no per-request model id is ever sent.
+    contextSnapshot.selectedModelId = "";
     showConversation({ preserveClaw: clawGeneralRequest });
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
@@ -6976,9 +6975,9 @@
       void runClawExecution();
     });
   }
-  // #3382: composing different work — new text, model id, channel, action,
+  // #3382: composing different work — new text, channel, action,
   // sender or conversation — is what releases the uncertain-dispatch latch.
-  [input, clawModelIdInput, clawChannel, clawAction, clawSender].forEach((node) => {
+  [input, clawChannel, clawAction, clawSender].forEach((node) => {
     if (!node || typeof node.addEventListener !== "function") return;
     node.addEventListener("input", noteClawContentEdited);
     node.addEventListener("change", noteClawContentEdited);
