@@ -359,6 +359,13 @@ def build_app():
         central_model_admin_google_email=os.getenv(
             "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL", ""
         ).strip(),
+        # The central route dashboard signs its confirmation receipts with this
+        # server-only key. The Worker reads it from a secret binding; the host
+        # reads the same name from its EnvironmentFile. Absent or malformed
+        # leaves every central write fail-closed, exactly as before.
+        central_model_policy_signing_key=os.getenv(
+            "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY", ""
+        ).strip(),
         oracle_mesh_return_source=oracle_mesh_return_source,
         oracle_mesh_legacy_map_lane=legacy_map_lane_enabled(os.environ),
         claw_engine_desktop_secret=claw_engine_desktop_secret,
