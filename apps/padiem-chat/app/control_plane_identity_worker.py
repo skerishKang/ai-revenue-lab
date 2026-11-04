@@ -489,11 +489,19 @@ class CloudflareControlPlaneIdentityAuthority:
         """Identity verified scope; no account or workspace supplied by Claw."""
         if not isinstance(session_id, str) or not session_id:
             raise IdentityBridgeError(401, "canonical_auth_session_not_found", "Canonical session unavailable.")
-        scope = _closed(
-            await self._rpc("resolve_connector_owner_scope", {"session_id": session_id}, "scope"),
-            frozenset({"account_ref", "workspace_ref"}), "canonical connector owner scope",
+        scope = _dict(
+            await self._rpc("resolve_connector_owner_scope", {"session_id": session_id}, "scope")
         )
-        if any(not isinstance(scope[key], str) or not scope[key] for key in scope):
+        # 2026-11-04: the authority answers with the session owner's own
+        # canonical subject id beside the established two keys (the usr_… axis
+        # the ownership maps key on). Require those two, accept the additive
+        # key, and keep every other shape invalid.
+        if (
+            scope is None
+            or not {"account_ref", "workspace_ref"} <= set(scope)
+            or not set(scope) <= {"account_ref", "workspace_ref", "owner_subject_id"}
+            or any(not isinstance(value, str) or not value for value in scope.values())
+        ):
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical connector scope invalid.")
         return scope
 

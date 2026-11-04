@@ -742,7 +742,8 @@ class _ChatBridge(B62EngineOrchestrationBridge):
 
 
 def _chat_pc_request(*, answer, scope="drives", mesh=None, identity=None, bridge=None,
-                     selection_store=None, directory=None):
+                     selection_store=None, directory=None,
+                     linked_device="office-pc", online_device="office-pc"):
     b14 = _ChatB14([json.dumps({"action": scope}), answer])
     history = _ChatHistory()
     state = SimpleNamespace(
@@ -753,6 +754,15 @@ def _chat_pc_request(*, answer, scope="drives", mesh=None, identity=None, bridge
         claw_device_directory_source=directory or Directory([device("office-pc")]),
         claw_pc_device_selection_store=selection_store,
         orchestration_bridge=bridge,
+        # #6806: the screen-path grant accepts an explicit device only when it
+        # is an active link of the signed-in owner, and the context confirms
+        # that device only while its presence receipt is fresh.
+        pc_device_pairing_store=(
+            _OwnedLinks([linked_device]) if linked_device is not None else None
+        ),
+        mesh_device_presence_store=(
+            _SelectionPresence({online_device}) if online_device is not None else None
+        ),
     )
     return SimpleNamespace(
         app=SimpleNamespace(state=state),
@@ -844,6 +854,9 @@ def test_chat_pc_lane_refuses_a_selected_device_mismatch():
     request = _chat_pc_request(
         answer=json.dumps({"action": "tool", "tool_id": CHAT_PC_QUERY_TOOL_ID, "arguments": {}}),
         mesh=Mesh([mesh_row(None, node_ref="mesh-node")]), identity=Identity(), bridge=bridge,
+        # The mismatch premise is an owner with no link that could name the
+        # selected PC; a linked and online office-pc would legitimately confirm.
+        linked_device=None, online_device=None,
     )
     try:
         _run_chat_lane(request, device_id="office-pc")
@@ -955,6 +968,9 @@ def test_chat_lane_refuses_a_stale_saved_target():
         # saved identifier.
         mesh=Mesh([mesh_row(None, node_ref="office-pc")]), identity=Identity(), bridge=bridge,
         selection_store=SavedSelection("gone"),
+        # No owner link exists to replace the stale target; that is the
+        # refusal this test models.
+        linked_device=None, online_device=None,
     )
     try:
         _run_chat_lane(request, device_id=None)
@@ -1343,7 +1359,7 @@ class _OwnedLinks:
     async def links_for_owner(self, *, user_id):
         assert user_id == OWNER
         return [
-            {"mesh_node_id": node_id, "label": node_id}
+            {"mesh_node_id": node_id, "label": node_id, "state": "active"}
             for node_id in self.node_ids
         ]
 

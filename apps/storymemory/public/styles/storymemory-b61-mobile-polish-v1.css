@@ -1,0 +1,329 @@
+/* B61 mobile touch targets and reader theme surface completion. */
+
+/* Keep persisted Light and Dark choices in one palette across the app screens.
+   The `default` setting remains untouched and keeps the existing appearance. */
+body.smr-theme-light {
+  --night: #f2eee7 !important;
+  --night2: #e6dfd4 !important;
+  --ivory: #26221d !important;
+  --paper: #fffdf8 !important;
+  --ink: #26221d !important;
+  --muted: #655c52 !important;
+  --line: rgba(38, 34, 29, .18) !important;
+  --reader-paper: #fffdf8 !important;
+  background: #eee8df !important;
+  color: #26221d;
+}
+
+body.smr-theme-dark {
+  --night: #171512 !important;
+  --night2: #211c16 !important;
+  --ivory: #f2eadc !important;
+  --paper: #26211a !important;
+  --ink: #f2eadc !important;
+  --muted: #c1b49f !important;
+  --line: rgba(233, 225, 210, .2) !important;
+  --reader-paper: #262019 !important;
+  background: #171512 !important;
+  color: #f2eadc;
+}
+
+/* The library's original gradient was fixed to the dark palette, so the
+   settings class could not change its first screen. */
+body.smr-theme-light #library {
+  color: #26221d !important;
+  background-image:
+    radial-gradient(circle at 50% 12%, rgba(255,255,255,.92), transparent 38%),
+    linear-gradient(180deg, #f4f0e9 0%, #e9e2d7 58%, #ded5c8 100%) !important;
+}
+body.smr-theme-light #library .lib-frame { border-color: rgba(76, 62, 47, .2) !important; }
+body.smr-theme-light #library .kicker,
+body.smr-theme-light #library .lib-copy { color: #5e554b !important; }
+body.smr-theme-light #library .lib-copy strong,
+body.smr-theme-light #library .hero-title { color: #26221d !important; }
+body.smr-theme-light #library .hero-title em { color: #75543b !important; }
+body.smr-theme-light #library .library-shelf-toolbar::before { color: #655c52 !important; }
+body.smr-theme-light #library .library-reading-summary { color: #5c5349 !important; }
+body.smr-theme-light #library .today-entry,
+body.smr-theme-light #library #libOverflow,
+body.smr-theme-light #library .source-mode-switch,
+body.smr-theme-light #library .library-shelf-toolbar button {
+  border-color: rgba(66, 54, 42, .22) !important;
+  background-color: rgba(255, 253, 248, .92) !important;
+  color: #302920 !important;
+}
+body.smr-theme-light #library .source-mode-switch button.on {
+  background: #302920 !important;
+  color: #fffdf8 !important;
+}
+body.smr-theme-light #library .open-btn {
+  border-color: transparent !important;
+  background: #302920 !important;
+  color: #fffdf8 !important;
+}
+body.smr-theme-light #library .lib-actions .round {
+  border-color: rgba(66, 54, 42, .28) !important;
+  color: #302920 !important;
+}
+body.smr-theme-light #library .lib-bottom { color: #302920 !important; }
+body.smr-theme-light #library .counter,
+body.smr-theme-light #library .sel-note,
+body.smr-theme-light #library .sel-progress,
+body.smr-theme-light #library .selected-edition,
+body.smr-theme-light #library .material-note,
+body.smr-theme-light #library .object-plate,
+body.smr-theme-light #library .finish-note,
+body.smr-theme-light #library .edition-slip { color: #655c52 !important; }
+body.smr-theme-light #library .sel-title { color: #26221d !important; }
+body.smr-theme-light #library .sel-ghost { color: rgba(38, 34, 29, .24) !important; }
+body.smr-theme-light #library .lib-bottom::before { background: linear-gradient(90deg, rgba(66,54,42,.2), transparent 55%) !important; }
+
+/* Dark surfaces for the index and reading shell. The paper artwork stays a
+   paper surface, while the app chrome follows the selected theme. */
+body.smr-theme-dark #index {
+  background: radial-gradient(circle at 50% 0%, rgba(105, 79, 51, .14), transparent 32%), #171512 !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark #index .index-shell {
+  background-color: #26211a !important;
+  background-image: linear-gradient(90deg, rgba(233,225,210,.025) 1px, transparent 1px), linear-gradient(rgba(233,225,210,.02) 1px, transparent 1px) !important;
+  border-color: rgba(233,225,210,.15) !important;
+}
+body.smr-theme-dark #index .index-top {
+  background: rgba(33, 28, 22, .94) !important;
+  border-color: rgba(233,225,210,.14) !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark #index .crumb,
+body.smr-theme-dark #index .index-hero p,
+body.smr-theme-dark #index .resume-card small,
+body.smr-theme-dark #index .chapter-title span,
+body.smr-theme-dark #index .chapter-caption { color: #c1b49f !important; }
+body.smr-theme-dark #index .index-hero,
+body.smr-theme-dark #index .chapter-area { border-color: rgba(233,225,210,.16) !important; }
+body.smr-theme-dark #index .index-hero {
+  background: linear-gradient(135deg, #26211a, #211c16) !important;
+}
+body.smr-theme-dark #index .index-body { background: #211c16 !important; }
+body.smr-theme-dark #index .index-hero h1 { color: #f2eadc !important; }
+body.smr-theme-dark #index .resume-card,
+body.smr-theme-dark #index .volume-focus {
+  background: #30291f !important;
+  border-color: rgba(233,225,210,.18) !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark #index .volume-focus small,
+body.smr-theme-dark #index .volume-focus p,
+body.smr-theme-dark #index .volume-focus-fact small { color: #c1b49f !important; }
+body.smr-theme-dark #index .volume-focus b,
+body.smr-theme-dark #index .volume-focus strong { color: #f2eadc !important; }
+body.smr-theme-dark #index .volume {
+  background: #30291f !important;
+  border-color: rgba(233,225,210,.17) !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark #index .volume small { color: #c1b49f !important; }
+body.smr-theme-dark #index .volume:hover,
+body.smr-theme-dark #index .volume.on { background: #463829 !important; border-color: #b98255 !important; }
+body.smr-theme-dark #index .back-btn,
+body.smr-theme-dark #index .testament-tab {
+  background: #30291f !important;
+  border-color: rgba(233,225,210,.2) !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark #index .testament-tab.on,
+body.smr-theme-dark #index .resume-card button,
+body.smr-theme-dark #index .chapter-nav .chapter-open {
+  background: #f2eadc !important;
+  color: #211c16 !important;
+}
+body.smr-theme-dark #index .chapter-carousel {
+  background: radial-gradient(circle at 50% 48%, rgba(83, 67, 47, .38), transparent 40%), linear-gradient(180deg, #30291f, #211c16) !important;
+  border-color: rgba(233,225,210,.14) !important;
+}
+body.smr-theme-dark #index .chapter-nav button:not(.chapter-open) {
+  background: #30291f !important;
+  border-color: rgba(233,225,210,.22) !important;
+  color: #f2eadc !important;
+}
+
+body.smr-theme-dark #reader {
+  background: #171512 !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark #reader .reader-stage {
+  background: radial-gradient(circle at 50% 16%, rgba(92, 70, 47, .18), transparent 42%), linear-gradient(135deg, #211c16, #171512) !important;
+}
+body.smr-theme-dark #reader .memory-rail,
+body.smr-theme-dark #reader .ai-panel {
+  background-color: #26211a !important;
+  background-image: linear-gradient(180deg, #26211a, #211c16) !important;
+  border-color: rgba(233,225,210,.16) !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark .mobile-dock {
+  background: rgba(38, 33, 26, .96) !important;
+  border-color: rgba(233,225,210,.2) !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark .mobile-dock button {
+  background: #30291f !important;
+  color: #f2eadc !important;
+  border-color: rgba(233,225,210,.18) !important;
+}
+body.smr-theme-dark .mobile-dock .read-tab {
+  background: #f2eadc !important;
+  color: #211c16 !important;
+}
+body.smr-theme-dark .memory-rail .memory-scope-toggle { background: #211c16 !important; }
+body.smr-theme-dark .memory-rail .memory-scope-toggle button {
+  background: #30291f !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark .memory-rail .memory-scope-toggle button.on {
+  background: #f2eadc !important;
+  color: #211c16 !important;
+}
+body.smr-theme-dark .memory-rail .memory-search-wrap {
+  background: #211c16 !important;
+  border-color: rgba(233,225,210,.24) !important;
+}
+body.smr-theme-dark .memory-rail .memory-search-wrap input { color: #f2eadc !important; }
+body.smr-theme-dark .memory-rail .memory-search-wrap input::placeholder { color: #c1b49f !important; }
+body.smr-theme-dark .memory-rail .memory-search-wrap button { color: #f2eadc !important; }
+body.smr-theme-dark .memory-rail .memory-note-composer {
+  background: #30291f !important;
+  border-color: rgba(233,225,210,.18) !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark .memory-rail .memory-note-head b { color: #f2eadc !important; }
+body.smr-theme-dark .memory-rail .memory-note-head button {
+  background: #47392a !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark .memory-rail .memory-note-source { color: #c1b49f !important; }
+body.smr-theme-dark .memory-rail .memory-note-quote {
+  background: #211c16 !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark .memory-rail .memory-note-composer textarea {
+  background: #211c16 !important;
+  border-color: rgba(233,225,210,.22) !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark .memory-rail .memory-note-actions button {
+  background: #f2eadc !important;
+  color: #211c16 !important;
+}
+body.smr-theme-dark .memory-rail .side-head strong,
+body.smr-theme-dark .memory-rail .sheet-close {
+  color: #f2eadc !important;
+}
+body.smr-theme-dark .memory-rail .sheet-close:hover { color: #fffdf8 !important; }
+
+/* Phone-sized hit areas. The dot artwork remains 5/20px and its button box is
+   44px square; horizontal scrolling keeps the targets separated. */
+@media (max-width: 720px) {
+  #index .back-btn,
+  #index #resume,
+  #index .testament-tab,
+  #index .chapter-nav button {
+    box-sizing: border-box !important;
+    min-width: 46px !important;
+    min-height: 46px !important;
+  }
+  #index .chapter-dots {
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: none !important;
+    min-height: 44px !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 0 !important;
+    padding: 0 2px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none;
+  }
+  #index .chapter-dots::-webkit-scrollbar { display: none; }
+  #index .chapter-dot {
+    position: relative !important;
+    flex: 0 0 46px !important;
+    width: 46px !important;
+    min-width: 46px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    touch-action: manipulation;
+  }
+  #index .chapter-dot::before {
+    content: "";
+    display: block;
+    width: 5px;
+    height: 5px;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: #8e8173;
+  }
+  #index .chapter-dot.on::before { width: 20px; background: #bd7954; }
+  #index .chapter-dot.on { background: transparent !important; }
+
+  .memory-rail button {
+    box-sizing: border-box !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    touch-action: manipulation;
+  }
+  /* 2026-11-04: the sheet-close measured 43.999969px in the touch-target
+     audit — a sub-pixel layout rounding under the rail's fractional height.
+     Pin its own box to the full 44px so the audit passes without rounding. */
+  .memory-rail .sheet-close {
+    box-sizing: border-box !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+}
+
+/* 2026-11-04: 떠 있는 책·자료·＋ 버튼과 아래 정보 줄의 겹침 정리.
+   버튼 높이(≈54px)+여유만큼 아래 정보 블록이 버튼 띠 아래로 내려가고,
+   한글 줄바꿈은 단어 단위로만 허용하며, 진행 줄(텍스트+막대)은 버튼 왼편
+  까지로 폭을 제한해 글자가 쪼개지거나 버튼에 가리지 않게 한다. */
+@media (max-width: 720px) {
+  #library .lib-bottom {
+    grid-template-columns: 1fr !important;
+    transform: translateY(40px);
+  }
+  #library .sel-progress {
+    flex-wrap: wrap;
+    row-gap: 5px;
+    margin-right: 168px;
+  }
+  #library #libProgressText {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    word-break: keep-all;
+  }
+  #library .sel-progress i { width: 64px; }
+  #library .sel-note {
+    word-break: keep-all;
+    max-width: 148px !important;
+  }
+  #library .library-reading-summary { word-break: keep-all; }
+}
+
+/* 2026-11-04: 360px 등 좁은 폭에서는 같은 콘텐츠가 위로 짧아져 버튼 띠와
+   다시 닿는다 — 하단 여백을 버튼 높이+간격만큼 더 늘리고, 자료 소개 줄을
+   버튼 왼편까지로 좁힌다. */
+@media (max-width: 374px) {
+  #library .lib-bottom { transform: translateY(96px); }
+  #library .sel-note { max-width: 110px !important; }
+}
