@@ -3394,7 +3394,11 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         # Errors are never promoted by storing: this only preserves bytes, the
         # outcome below stays as verified. Withheld bodies (empty) are owned
         # by the non-delivery notice and store nothing, so no result is lost.
-        if 0 < len(command_output) <= 65536 and wire["termination"] in ("exited", "no_exit_code"):
+        # no_reply: the console's bounded message (for example a client-side
+        # refusal) is the only account of why no exit code exists; keep it as
+        # the original so the MCP output read can show it instead of a generic
+        # "output not verified".
+        if 0 < len(command_output) <= 65536 and wire["termination"] in ("exited", "no_exit_code", "no_reply"):
             try:
                 store_small = getattr(history_store, "store_oracle_mesh_command_result", None)
                 if not callable(store_small):
