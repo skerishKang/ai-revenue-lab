@@ -102,9 +102,10 @@
   // in. The selects' data belongs to a signed-in account, so the logged-out
   // dialog says so instead of showing three empty controls.
   let signedIn = false;
-  let modelIds = [];
-  let selectedModelByTier = {};
-  let reasoningByModel = {};
+  // #6828: the browser holds grade keys only. The server picks the model for
+  // the grade, so no model identity is ever stored or echoed here.
+  let gradeKeys = [];
+  let reasoningByGrade = {};
   let initialized = false;
   let refreshPromise = null;
   let currentRequestId = null;
@@ -1324,9 +1325,8 @@
   async function refreshModels() {
     const select = document.getElementById("b66QuoteModelSelect");
     if (!select) return;
-    modelIds = [];
-    selectedModelByTier = {};
-    reasoningByModel = {};
+    gradeKeys = [];
+    reasoningByGrade = {};
     select.replaceChildren();
     const placeholder = document.createElement("option");
     placeholder.value = "";
@@ -1336,19 +1336,16 @@
     select.disabled = true;
     const response = await readJson("/api/b66/quote/models");
     if (!response.response.ok || !response.data || !Array.isArray(response.data.tiers)) return;
-    const safe = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$/;
     const grades = new Set(["free", "plus", "pro", "max"]);
     response.data.tiers.forEach((record) => {
-      if (!record || !grades.has(record.tier) || modelIds.includes(record.tier) ||
-          typeof record.model_id !== "string" || !safe.test(record.model_id) ||
+      if (!record || !grades.has(record.tier) || gradeKeys.includes(record.tier) ||
           typeof record.name !== "string") return;
       const option = document.createElement("option");
       option.value = record.tier;
       option.textContent = record.name;
       select.append(option);
-      modelIds.push(record.tier);
-      selectedModelByTier[record.tier] = record.model_id;
-      reasoningByModel[record.tier] = Array.isArray(record.reasoning_levels)
+      gradeKeys.push(record.tier);
+      reasoningByGrade[record.tier] = Array.isArray(record.reasoning_levels)
         ? record.reasoning_levels.filter((level) => level &&
             typeof level.value === "string" &&
             /^[a-z0-9-]{1,32}$/.test(level.value) &&
@@ -1356,19 +1353,20 @@
         : [];
     });
     const configured = response.data.default_tier;
-    select.value = typeof configured === "string" && modelIds.includes(configured)
+    select.value = typeof configured === "string" && gradeKeys.includes(configured)
       ? configured : "";
-    select.disabled = modelIds.length === 0;
+    select.disabled = gradeKeys.length === 0;
     syncReasoningOptions();
     select.addEventListener("change", syncReasoningOptions);
   }
 
-  // #3906: only levels the selected model actually supports are offered, and a
-  // model switch re-validates the current choice so an unsupported level can
-  // never be submitted. No recommended level is auto-applied.
-  function reasoningOptionsForModel(modelId) {
-    if (typeof modelId !== "string" || !modelIds.includes(modelId)) return [];
-    const levels = reasoningByModel[modelId];
+  // #3906: only levels the selected grade's model actually supports are
+  // offered, and a grade switch re-validates the current choice so an
+  // unsupported level can never be submitted. No recommended level is
+  // auto-applied.
+  function reasoningOptionsForGrade(grade) {
+    if (typeof grade !== "string" || !gradeKeys.includes(grade)) return [];
+    const levels = reasoningByGrade[grade];
     if (!Array.isArray(levels) || !levels.length) return [];
     return levels;
   }
@@ -1377,7 +1375,7 @@
     const modelSelect = document.getElementById("b66QuoteModelSelect");
     const reasoningSelect = document.getElementById("b66QuoteReasoningSelect");
     if (!modelSelect || !reasoningSelect) return;
-    const options = reasoningOptionsForModel(modelSelect.value);
+    const options = reasoningOptionsForGrade(modelSelect.value);
     reasoningSelect.replaceChildren();
     options.forEach((level) => {
       const option = document.createElement("option");
@@ -1389,12 +1387,12 @@
     reasoningSelect.disabled = options.length === 0;
   }
 
-  // #3906: the reasoning choice actually offered for this exact model, or ""
-  // when the control has none so the request keeps its pre-#3906 shape.
-  function selectedReasoningLevel(modelId) {
+  // #3906: the reasoning choice actually offered for this grade, or "" when
+  // the control has none so the request keeps its pre-#3906 shape.
+  function selectedReasoningLevel(grade) {
     const reasoningSelect = document.getElementById("b66QuoteReasoningSelect");
     if (!reasoningSelect) return "";
-    const options = reasoningOptionsForModel(modelId);
+    const options = reasoningOptionsForGrade(grade);
     const current = reasoningSelect.value;
     return options.some((level) => level.value === current) ? current : "";
   }
@@ -1659,7 +1657,6 @@
     const savedSkillId = select.value;
     const modelSelect = document.getElementById("b66QuoteModelSelect");
     const selectedTier = modelSelect && modelSelect.value;
-    const modelId = selectedModelByTier[selectedTier];
     const requestText = message.value.trim();
     const savedSkill = skillById(savedSkillId);
     if (isPcForm(savedSkill)) {
@@ -1680,7 +1677,7 @@
       return;
     }
     if (!/^b66skill_[0-9a-f]{32}$/.test(savedSkillId) || !requestText ||
-        !modelId || !modelIds.includes(selectedTier)) {
+        !selectedTier || !gradeKeys.includes(selectedTier)) {
       setStatus(c.failed, "error");
       return;
     }
@@ -1689,10 +1686,11 @@
     if (existingFrame) existingFrame.hidden = true;
     setStatus(c.working, "working");
     try {
-      // #3906: forward the explicit reasoning choice with the exact model. The
-      // field is omitted when the control offers none, preserving the
-      // pre-#3906 request shape.
-      const payload = { saved_skill_id: savedSkillId, message: requestText, tier: selectedTier, model_id: modelId };
+      // #3906: forward the explicit reasoning choice with the chosen grade.
+      // The field is omitted when the control offers none, preserving the
+      // pre-#3906 request shape. #6828: the grade key is the only model choice
+      // the browser makes; the server resolves the model behind it.
+      const payload = { saved_skill_id: savedSkillId, message: requestText, tier: selectedTier };
       const reasoningLevel = selectedReasoningLevel(selectedTier);
       if (reasoningLevel) payload.reasoning_level = reasoningLevel;
       const interpreted = await readJson("/api/b66/quote/interpret", {

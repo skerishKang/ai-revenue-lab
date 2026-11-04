@@ -495,7 +495,6 @@ async def b66_quote_models(request: Request) -> JSONResponse:
             continue
         grade_choices.append({
             "tier": grade, "name": B66_GRADE_NAMES[grade],
-            "model_id": grade_model,
             "reasoning_levels": reasoning_options_for_model(
                 grade_model, transport_supported=_reasoning_transport_supported(request)),
         })
@@ -504,33 +503,17 @@ async def b66_quote_models(request: Request) -> JSONResponse:
             and ADMIN_B14_MODEL_ID not in disabled):
         grade_choices.append(
             {"tier": B66_ADMIN_GRADE, "name": B66_ADMIN_NAME,
-             "model_id": ADMIN_B14_MODEL_ID,
              "reasoning_levels": reasoning_options_for_model(
                  ADMIN_B14_MODEL_ID, transport_supported=_reasoning_transport_supported(request))}
         )
-    # A configured default can only be offered if it remains permitted.
-    proposed_default = getattr(request.app.state, "b66_quote_default_model_id", None)
-    default = proposed_default if (
-        isinstance(proposed_default, str)
-        and any(row["model_id"] == proposed_default for row in models)
-    ) else None
-    # Per-model selectable reasoning levels (#3906). Each row keeps its exact
-    # registered ID and gains only the options that model may actually use.
-    # Until B14 attests per-model capability (#3977), every model offers only
-    # the fail-closed provider default, so no unverified option is ever shown.
-    rows = [
-        {
-            "model_id": row["model_id"],
-            "name": row["name"],
-            "reasoning_levels": reasoning_options_for_model(
-                row["model_id"],
-                transport_supported=_reasoning_transport_supported(request),
-            ),
-        }
-        for row in models
-    ]
+    # #6828: the browser chooses a grade key and nothing else. The registered
+    # catalog above stays server-side authority for which grade is offerable,
+    # but no model identity crosses to the browser. The per-grade reasoning
+    # options remain, because they are capability choices the control renders,
+    # not an identity.
     return JSONResponse(
-        {"ok": True, "models": rows, "default_model_id": default, "tiers": grade_choices, "default_tier": grade_choices[0]["tier"] if grade_choices else None},
+        {"ok": True, "tiers": grade_choices,
+         "default_tier": grade_choices[0]["tier"] if grade_choices else None},
         headers=_NO_STORE,
     )
 

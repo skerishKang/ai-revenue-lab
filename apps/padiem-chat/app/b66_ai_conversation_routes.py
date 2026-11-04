@@ -195,7 +195,11 @@ async def conversation_turn(request: Request) -> JSONResponse:
         return data
     if set(data) - _ALLOWED_FIELDS:
         return _error(400, "unsupported_field", "지원하지 않는 대화 필드입니다.")
-    model_id = data.get("model_id") or FREE_PRIMARY_B14_MODEL_ID
+    # #6828: a grade key alone is a complete choice; an explicitly sent model id
+    # stays accepted during the transition only as a claim that must match the
+    # grade, and it is never written back to the browser as a choice it needs.
+    declared_model_id = data.get("model_id")
+    model_id = declared_model_id or FREE_PRIMARY_B14_MODEL_ID
     requested_tier = data.get("tier")
     grade_model_id: str | None = None
     if requested_tier is not None:
@@ -215,8 +219,9 @@ async def conversation_turn(request: Request) -> JSONResponse:
             # Only a centrally routed grade is exempt from the product-local
             # grant list; the administrator lane keeps its own restriction.
             grade_model_id = expected_model
-        if model_id != expected_model:
+        if declared_model_id is not None and declared_model_id != expected_model:
             return _error(400, "invalid_model_id", "등급 선택은 기본 모델을 사용합니다.")
+        model_id = expected_model
     if (
         not isinstance(model_id, str)
         or not _MODEL_ID_RE.fullmatch(model_id)

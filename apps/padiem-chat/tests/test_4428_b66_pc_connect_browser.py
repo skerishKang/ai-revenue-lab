@@ -100,8 +100,11 @@ def ready_page(browser, server, width=1280, pc_enabled=True):
     ))
     page.route("**/api/b66/quote/models", lambda route: route.fulfill(
         status=200, content_type="application/json",
-        body=json.dumps({"ok": True, "default_model_id": "test/model",
-                         "models": [{"model_id": "test/model", "name": "Test Model"}]}),
+        # #6828: the picker answer is grade keys; no model identity ships.
+        body=json.dumps({"ok": True, "default_tier": "free",
+                         "tiers": [{"tier": "free", "name": "시지아이 Free",
+                                    "reasoning_levels": [
+                                        {"value": "default", "label": "기본(제공자 기본값)"}]}]}),
     ))
     page.goto(server, wait_until="domcontentloaded")
     page.locator("#b66QuoteNavButton").wait_for(state="attached")

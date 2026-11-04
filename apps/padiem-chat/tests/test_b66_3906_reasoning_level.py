@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pytest
 
+from app.b66_grade_models import B66_GRADE_MODEL_IDS
 from app.b66_reasoning_level import (
     DEFAULT_REASONING_LEVEL,
     DEFAULT_REASONING_LABEL,
@@ -79,16 +80,19 @@ def _capture() -> tuple[list[dict], type]:
 # 1. The exact model the user chose is preserved end to end.
 # --------------------------------------------------------------------------
 
-def test_models_api_preserves_exact_registered_model_id_with_options():
-    client = _options_client({MODEL: [LEVEL_OPTION]})
+def test_quote_models_api_advertises_grade_options_without_naming_a_model():
+    free_model = B66_GRADE_MODEL_IDS["free"]
+    client = _options_client({free_model: [LEVEL_OPTION]})
     response = client.get("/api/b66/quote/models")
     assert response.status_code == 200
-    rows = response.json()["models"]
-    assert [row["model_id"] for row in rows] == [MODEL]
-    assert rows[0]["name"] == MODEL.split("/")[-1]
-    assert rows[0]["reasoning_levels"] == [LEVEL_OPTION]
-    # A model is never chosen for the customer by this endpoint.
-    assert response.json()["default_model_id"] is None
+    data = response.json()
+    # #6828: the customer sees grade keys and the reasoning options that grade's
+    # model can actually carry today. Nothing names the model behind it, and the
+    # endpoint still never chooses a grade for the customer.
+    assert set(data) == {"ok", "tiers", "default_tier"}
+    free = next(row for row in data["tiers"] if row["tier"] == "free")
+    assert free["reasoning_levels"] == [LEVEL_OPTION]
+    assert set(free) == {"tier", "name", "reasoning_levels"}
 
 
 def test_interpret_forwards_exact_model_id_unchanged():
@@ -220,9 +224,13 @@ def test_absent_model_id_still_reports_model_error_not_reasoning_error():
 
 def test_unverified_model_offers_the_default_option_only():
     """A model without proven reasoning support must not advertise extra levels."""
-    client = _options_client({MODEL: []})
-    rows = client.get("/api/b66/quote/models").json()["models"]
-    assert rows[0]["reasoning_levels"] == [
+    # The Free grade row is the customer's only view of this. With no transport
+    # wired, its sole offered option is the provider default; #6828 removed the
+    # model row that used to carry the same fact.
+    client = _options_client({B66_GRADE_MODEL_IDS["free"]: []})
+    tiers = client.get("/api/b66/quote/models").json()["tiers"]
+    free = next(row for row in tiers if row["tier"] == "free")
+    assert free["reasoning_levels"] == [
         {"value": DEFAULT_REASONING_LEVEL, "label": DEFAULT_REASONING_LABEL}
     ]
     assert reasoning_options_for_model(MODEL) == [
@@ -820,18 +828,32 @@ def test_b66_never_imports_the_shared_core_package_directly():
         assert "from padiem_ai_core" not in source
 
 
-def test_models_api_advertises_verified_levels_once_the_transport_is_wired():
+def test_grade_rows_advertise_verified_levels_once_the_transport_is_wired():
     """With the Core capability present the exact options become selectable."""
     client = _options_client({GEMINI_35: [], GEMINI_31: [], ATRIA: []})
     client.app.state.b66_reasoning_transport_supported = True
-    rows = {
-        row["model_id"]: [option["value"] for option in row["reasoning_levels"]]
-        for row in client.get("/api/b66/quote/models").json()["models"]
+    # The grade rows must advertise exactly what the grade's own route model
+    # supports. The identity stays server-side, so both sides are read from the
+    # shared grade map rather than named here.
+    tiers = {
+        row["tier"]: [option["value"] for option in row["reasoning_levels"]]
+        for row in client.get("/api/b66/quote/models").json()["tiers"]
     }
-    assert rows[GEMINI_35] == ["default", "minimal", "low", "medium", "high"]
-    assert rows[GEMINI_31] == ["default", "minimal", "low", "medium", "high"]
-    # Atria documents no `minimal`; the vocabulary is not copied between models.
-    assert rows[ATRIA] == ["default", "low", "medium", "high"]
+
+    def options_for(model_id):
+        return [
+            option["value"]
+            for option in reasoning_options_for_model(model_id, transport_supported=True)
+        ]
+
+    # Free and the paid test-phase grades carry their own verified vocabulary.
+    assert tiers["free"] == options_for(B66_GRADE_MODEL_IDS["free"])
+    assert tiers["plus"] == options_for(B66_GRADE_MODEL_IDS["plus"])
+    assert options_for(B66_GRADE_MODEL_IDS["free"]) == ["default", "minimal", "low", "medium", "high"]
+    assert options_for(B66_GRADE_MODEL_IDS["plus"]) == ["default", "minimal", "low", "medium", "high"]
+    # A model documenting no `minimal` keeps that gap: the vocabulary is never
+    # copied between models.
+    assert options_for(ATRIA) == ["default", "low", "medium", "high"]
 
 
 def test_api_refuses_an_explicit_level_the_transport_cannot_carry():
@@ -848,10 +870,11 @@ def test_api_refuses_an_explicit_level_the_transport_cannot_carry():
     assert seen == []
 
 
-def test_models_api_does_not_advertise_an_untransportable_level():
+def test_grade_rows_do_not_advertise_an_untransportable_level():
     client = _options_client({GEMINI_35: [], GEMINI_31: [], ATRIA: []})
-    rows = client.get("/api/b66/quote/models").json()["models"]
-    for row in rows:
+    tiers = client.get("/api/b66/quote/models").json()["tiers"]
+    assert tiers, "the grade rows are the customer's only view of this"
+    for row in tiers:
         assert [option["value"] for option in row["reasoning_levels"]] == [
             DEFAULT_REASONING_LEVEL
         ]

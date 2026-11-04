@@ -313,7 +313,12 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
     if custom is not None:
         model_id = custom.model
     else:
-        model_id = data.get("model_id") or FREE_PRIMARY_B14_MODEL_ID
+        # #6828: a grade key alone is a complete choice. The model behind the
+        # grade is resolved here, on the server, and an explicitly sent model
+        # id stays accepted for the transition window only as a claim that must
+        # match the grade.
+        declared_model_id = data.get("model_id")
+        model_id = declared_model_id or FREE_PRIMARY_B14_MODEL_ID
         if requested_tier is not None:
             if not isinstance(requested_tier, str) or requested_tier not in B66_GRADES + (B66_ADMIN_GRADE,):
                 return _error(400, "invalid_tier", "지원하지 않는 AI 등급입니다.")
@@ -331,8 +336,9 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
                 # Only a centrally routed grade is exempt from the product-local
                 # grant list; the administrator lane keeps its own restriction.
                 grade_model_id = expected_model
-            if model_id != expected_model:
+            if declared_model_id is not None and declared_model_id != expected_model:
                 return _error(400, "invalid_model_id", "등급 선택은 기본 모델을 사용합니다.")
+            model_id = expected_model
     messages = data.get("messages")
     reasoning_level = data.get("reasoning_level")
     conversation_id = data.get("conversation_id")
