@@ -410,6 +410,45 @@ class _MeshReturnSource:
         return dict(matches[0]) if len(matches) == 1 else None
 
 
+class _ActivePairingLinks:
+    """The owner's active link for the harness device.
+
+    #6806: the screen path now requires the request's own device to be an
+    ACTIVE link of the signed-in owner before a grant is accepted. The real
+    store is created empty for these harnesses, so the test double models the
+    production pairing that the flow already assumes.
+    """
+
+    def __init__(self, device_id: str) -> None:
+        self.device_id = device_id
+
+    async def links_for_owner(self, *, user_id: str) -> list[dict[str, Any]]:
+        return [{"mesh_node_id": self.device_id, "state": "active"}]
+
+
+class _FreshPresence:
+    """A fresh Mesh presence receipt for the harness device.
+
+    The selected PC is only confirmed when its liveness receipt is inside the
+    product's presence window; the receipt is rebuilt per read so a long
+    test session cannot age it.
+    """
+
+    def __init__(self, device_id: str) -> None:
+        self.device_id = device_id
+
+    async def load(self, device_id: str) -> dict[str, Any] | None:
+        if device_id != self.device_id:
+            return None
+        return {
+            "device_id": device_id,
+            "connected": True,
+            "source": "mesh",
+            "credential_generation": None,
+            "received_at": (datetime.now(timezone.utc) - timedelta(seconds=10)).isoformat(),
+        }
+
+
 class _IdentityAuthority:
     """One async authority serving: b62 login mint, current-session reads,
     the shadow-refresh read and the connector owner scope."""
@@ -626,6 +665,11 @@ class _PcHarness:
             claw_pc_device_selection_store=self.selection_store,
         )
         app.state.oracle_mesh_return_source = self.mesh
+        # #6806: the screen-path grant accepts an explicit device only when it
+        # is an active link of the signed-in owner, and the context confirms
+        # that device only while its presence receipt is fresh.
+        app.state.pc_device_pairing_store = _ActivePairingLinks(DEVICE_ID)
+        app.state.mesh_device_presence_store = _FreshPresence(DEVICE_ID)
         app.state.control_plane_identity_authority = self.authority
         app.state.identity_shadow_store = _ShadowStore(self.authority)
         app.state.b14_client = self.b14

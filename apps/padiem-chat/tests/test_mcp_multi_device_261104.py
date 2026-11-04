@@ -67,7 +67,6 @@ class RecordingHistory:
 DEVICE_B = "node//studio-second"
 LABEL_A = "사무실 PC"
 LABEL_B = "작업실 PC"
-NOW = datetime.now(timezone.utc)
 
 
 class MultiPairing:
@@ -103,9 +102,12 @@ class Presence:
     async def load(self, device_id):
         if device_id not in self.online_devices:
             return None
+        # The receipt must be fresh when the product reads it, not when this
+        # module was collected: the full suite can take longer than the
+        # 180-second presence window, which made this test order-dependent.
         return {"device_id": device_id, "connected": True, "source": "mesh",
                 "credential_generation": None,
-                "received_at": (NOW - timedelta(seconds=10)).isoformat()}
+                "received_at": (datetime.now(timezone.utc) - timedelta(seconds=10)).isoformat()}
 
 
 def app_with(owner, store, *, devices=None, online=()):
