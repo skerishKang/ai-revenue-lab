@@ -166,6 +166,7 @@ def boot(repo: Path, root: Path, python: Path) -> None:
         # The service account cannot traverse the runner workspace, so the
         # host probe runs from the staged release with a copied health script.
         health_script = Path("/opt/ci-bundles/p01-health.py")
+        health_script.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(repo / HEALTH_SCRIPT_REL, health_script)
         health_script.chmod(0o644)
         host_probe = common.as_user(
