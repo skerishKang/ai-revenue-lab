@@ -313,6 +313,61 @@ def emit_stage_event(*, stage: str, outcome: str, duration_ms: float,
         pass
 
 
+def stage_events() -> list[dict[str, object]]:
+    """The bounded stage events already recorded for this request."""
+    return list(_CURRENT_STAGE_EVENTS.get() or [])
+
+
+TURN_STAGE = "turn.summary"
+_TURN_INT_METRICS = frozenset({
+    "evidence_count", "evidence_chars", "input_chars", "history_turns",
+    "b14_attempts", "first_byte_ms",
+})
+_TURN_TEXT_METRICS = frozenset({"tier", "conversation", "result"})
+
+
+def _bounded_metric(name: str, value: object) -> object:
+    """Closed projection: ints stay non-negative, labels keep their shape."""
+    if name == "web_search":
+        return value if isinstance(value, bool) else None
+    if name in _TURN_INT_METRICS:
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            return None
+        number = int(value)
+        return min(max(number, 0), 10 ** 9) if number == number else None
+    if name in _TURN_TEXT_METRICS:
+        return value if isinstance(value, str) and _SAFE_VALUE.fullmatch(value) else None
+    return None
+
+
+def emit_turn_summary(*, duration_ms: float, metrics: dict[str, object],
+                      code: str | None = None) -> None:
+    """One aggregated line per answered turn: the numbers, never the text.
+
+    The event keeps the existing ``ai_stage`` contract; the turn's own counts
+    ride in one bounded ``metrics`` object. No prompt, answer, path or account
+    value can enter it: every key is allowlisted and every value is bounded.
+    """
+    request_id = current_request_id()
+    if request_id is None:
+        return
+    try:
+        event = build_stage_event(
+            request_id=request_id, stage=TURN_STAGE,
+            outcome="error" if code else "ok", duration_ms=duration_ms, code=code,
+        )
+        # Allowlist only: a key the contract does not name never rides along.
+        event["metrics"] = {
+            name: _bounded_metric(name, value)
+            for name, value in metrics.items()
+            if name in _TURN_INT_METRICS or name in _TURN_TEXT_METRICS
+            or name == "web_search"
+        }
+        default_emitter(event)
+    except Exception:
+        pass
+
+
 class RequestTelemetryMiddleware:
     """Emit one bounded structured event per HTTP request.
 
