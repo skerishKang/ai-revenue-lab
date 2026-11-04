@@ -40,7 +40,7 @@ requires_browser = pytest.mark.skipif(
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC = APP_ROOT / "static"
-PREVIEW_CSS = STATIC / "owner-model-preview.css"
+PREVIEW_CSS = STATIC / "attachments.css"
 
 # The phone and the desktop of the report.
 WINDOWS = ((390, 844), (1440, 900))
@@ -86,7 +86,7 @@ MIME = {
 
 def preview_rules() -> str:
     """The reservations without the comments, so a rule body is a rule body."""
-    css = PREVIEW_CSS.read_text(encoding="utf-8")
+    css = PREVIEW_CSS.read_text(encoding="utf-8").split("/* END COMPOSER RESERVATIONS */", 1)[0]
     return re.sub(r"/\*.*?\*/", "", css, flags=re.S)
 
 

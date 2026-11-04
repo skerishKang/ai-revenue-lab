@@ -27,8 +27,9 @@ test("the preview copy is gone from both locales",()=>{
   assert.equal(locale.includes("model status"),false);
 });
 
-test("the composer layout sheet that shares the file name is still served",()=>{
-  assert.equal(html.includes('href="./owner-model-preview.css"'),true);
-  const css=fs.readFileSync(path.join(staticDir,"owner-model-preview.css"),"utf8");
+test("the composer layout is retained without the preview sheet",()=>{
+  assert.equal(html.includes('owner-model-preview.css'),false);
+  assert.equal(fs.existsSync(path.join(staticDir,"owner-model-preview.css")),false);
+  const css=fs.readFileSync(path.join(staticDir,"attachments.css"),"utf8");
   assert.equal(css.includes("width: 116px"),true);
 });

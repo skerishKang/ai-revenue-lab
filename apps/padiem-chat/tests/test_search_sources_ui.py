@@ -30,7 +30,7 @@ def test_search_assets_are_additive_and_ordered():
 def test_search_and_research_controls_are_removed_from_the_ui():
     root, html, js, _, app = sources()
     capabilities = (root / "static/product-capabilities.js").read_text(encoding="utf-8")
-    preview = (root / "static/owner-model-preview.css").read_text(encoding="utf-8")
+    preview = (root / "static/attachments.css").read_text(encoding="utf-8")
     voice = (root / "static/voice-composer.css").read_text(encoding="utf-8")
     for identifier in ("webSearchButton", "deepResearchButton", "webSearchStarterButton"):
         assert f'id="{identifier}"' not in html
