@@ -185,7 +185,7 @@ def _wire(monkeypatch, *, selected=True, devices=True, mesh_ready=True,
     async def _owner(request, uid):
         return type("S", (), {"session_id": "sess_5573"})(), OWNER, "tenant-1"
 
-    async def _grant(request, session, *, device_id=None):
+    async def _grant(request, session, *, device_id=None, owner_ref=None):
         return True
 
     async def _read(request, *, owner_id, workspace_id):

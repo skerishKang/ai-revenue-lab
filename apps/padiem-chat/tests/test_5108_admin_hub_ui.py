@@ -182,9 +182,22 @@ def test_tutorial_media_origins_are_exact_scene_scoped_urls():
             "https://tutorial-media.padiem.net/tutorials/02-pc-connection/video.v20261103.webm",
             "https://tutorial-media.padiem.net/tutorials/02-pc-connection/captions.v20261103.vtt",
         },
+        # #6786: the 03/05/07 scenes recorded in the same versioned R2 path.
+        "apps/padiem-chat/static/help-tutorials/03-document-work.html": {
+            "https://tutorial-media.padiem.net/tutorials/03-document-work/video.v20261103.webm",
+            "https://tutorial-media.padiem.net/tutorials/03-document-work/captions.v20261103.vtt",
+        },
         "apps/padiem-chat/static/help-tutorials/04-bookai.html": {
             "https://tutorial-media.padiem.net/tutorials/04-bookai/video.v20261103.webm",
             "https://tutorial-media.padiem.net/tutorials/04-bookai/captions.v20261103.vtt",
+        },
+        "apps/padiem-chat/static/help-tutorials/05-account-deletion.html": {
+            "https://tutorial-media.padiem.net/tutorials/05-account-deletion/video.v20261103.webm",
+            "https://tutorial-media.padiem.net/tutorials/05-account-deletion/captions.v20261103.vtt",
+        },
+        "apps/padiem-chat/static/help-tutorials/07-external-ai-connect.html": {
+            "https://tutorial-media.padiem.net/tutorials/07-external-ai-connect/video.v20261103.webm",
+            "https://tutorial-media.padiem.net/tutorials/07-external-ai-connect/captions.v20261103.vtt",
         },
     }
     assert audit.TUTORIAL_MEDIA_URLS == {

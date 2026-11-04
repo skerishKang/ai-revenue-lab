@@ -893,6 +893,13 @@ ALLOWED_APP_ENDPOINTS = BASE_APP_ENDPOINTS | frozenset({
     # executor refuses every action decided after the cancel marker and the
     # run keeps the stopped time. No other lane borrows this route.
     "/api/pc/cancel",
+    # #6734 (3번 1단계): signed-in account self-deletion over its own Chat DB
+    # rows only, behind the same-origin guard and the exact-email confirm.
+    "/api/account/delete",
+    # #6773: the shared account deletion flow. The same POST clears the Chat
+    # data first and then deletes the common control-plane account; a partial
+    # failure keeps the common account for a retry.
+    "/api/account/shared-delete",
 })
 
 

@@ -413,3 +413,64 @@ def test_chat_screen_path_keeps_the_saved_selection():
         session_id="session_fixture"))
     assert ctx.selected_device_id is None or ctx.execution_device_id == "node_saved1" \
         or ctx.execution.ready is False
+
+
+# ── Chat 화면 경로의 소유 맵 폴백 (08:14+ 지시) ────────────────────────────────
+#
+# scope가 account_32de…(account_ 어휘)·owner_subject_id=sub_40acf…(sub_ 어휘)를
+# 돌려줘도(컨트롤 플레인 실측), 맵 행은 usr_2966… 어휘다. 화면 경로의 grant가
+# 로그인 사용자 usr_로 소유자 폴백을 한 번 더 조회하게 하되, 그 device가
+# 소유자의 활성 링크일 때만 인정한다.
+
+SCOPE_ACCOUNT = "account_32de2ed21a432b5297a2cc4e523a9785"
+SCOPE_SUBJECT = "sub_40acf385894242fc1d74c86041455523"
+
+
+def test_screen_path_falls_back_to_the_logged_in_usr_row():
+    # scope가 account_/sub_ 어휘만 돌려줘도(0매치), 로그인 사용자 usr_ 맵 행 +
+    # 활성 링크면 통과한다.
+    src = _source([_row()])
+    request, session, captured = _grant_harness(
+        source=src, links=OWNER_LINKS, scope_ref=SCOPE_ACCOUNT)
+    ok = asyncio.run(execution._check_mesh_grant(
+        request, session, device_id=NODE, owner_ref=UID, denied_reason=captured))
+    assert ok is True
+    assert captured == []
+
+
+def test_screen_path_refuses_when_the_link_is_inactive():
+    # 링크가 비활성(revoked)이면 usr_ 행이 맵에 있어도 거절한다.
+    src = _source([_row()])
+    revoked_links = [{"mesh_node_id": NODE, "state": "revoked", "label": "컴2"}]
+    request, session, captured = _grant_harness(
+        source=src, links=revoked_links, scope_ref=SCOPE_ACCOUNT)
+    ok = asyncio.run(execution._check_mesh_grant(
+        request, session, device_id=NODE, owner_ref=UID, denied_reason=captured))
+    assert ok is False
+    assert captured == ["mesh_command_target_device_not_linked"]
+
+
+def test_screen_path_never_passes_for_a_different_user():
+    # owner_ref(세션 사용자)와 다른 사용자의 링크·맵 행으로는 절대 통과하지
+    # 않는다: links_for_owner가 다른 사용자로 조회되면 소유자 활성 링크가
+    # 없어 0매치 → not_found.
+    src = _source([_row()])
+    other = "usr_" + "b" * 32
+    request, session, captured = _grant_harness(
+        source=src, links=OWNER_LINKS, scope_ref=SCOPE_ACCOUNT)
+    ok = asyncio.run(execution._check_mesh_grant(
+        request, session, device_id=NODE, owner_ref=other, denied_reason=captured))
+    assert ok is False
+    assert captured == ["mesh_command_target_not_found"]
+
+
+def test_existing_account_ref_match_path_is_unchanged():
+    # 기존 경로: scope의 account_ref가 맵 행과 정확히 일치하면 device 핀으로
+    # 단일 행을 반환 — 폴백 없이 통과(링크 검증도 통과).
+    src = _source([_row(account_ref=SCOPE_ACCOUNT)])
+    request, session, captured = _grant_harness(
+        source=src, links=OWNER_LINKS, scope_ref=SCOPE_ACCOUNT)
+    ok = asyncio.run(execution._check_mesh_grant(
+        request, session, device_id=NODE, owner_ref=UID, denied_reason=captured))
+    assert ok is True
+    assert captured == []

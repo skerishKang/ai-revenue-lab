@@ -111,7 +111,7 @@ def _wire(monkeypatch, *, selected=True, devices=True, mesh_ready=True):
     async def _owner(request, uid):
         return SimpleNamespace(session_id="sess_5573"), "usr_5573", "tenant-1"
 
-    async def _grant(request, session, *, device_id=None):
+    async def _grant(request, session, *, device_id=None, owner_ref=None):
         return True
 
     monkeypatch.setattr(lane, "_resolve_chat_owner", _owner)
@@ -368,7 +368,7 @@ def test_tools_available_requires_a_verified_target(monkeypatch):
     request, _, _, _store = _wire(monkeypatch)
     assert asyncio.run(lane.chat_pc_tools_available(request, uid=None)) is False
 
-    async def _denied(request, session, *, device_id=None):
+    async def _denied(request, session, *, device_id=None, owner_ref=None):
         return False
 
     monkeypatch.setattr(lane, "_check_mesh_grant", _denied)

@@ -149,11 +149,20 @@ def test_no_stage_is_invented() -> None:
     assert 'preparing: Object.freeze({ state: "active"' in lifecycle
     assert 'generating: Object.freeze({ state: "active"' in lifecycle
     assert 'searching: Object.freeze({ state: "active"' in lifecycle
-    # The web-search label is only reachable through a real server tool.
+    # #6783 removed the manual search controls: the evidence renderer only
+    # renders the server-selected evidence and never sets a stage of its own.
     sources = _read("search-sources.js")
-    assert 'window.PadiemChatLifecycle?.setTaskHint?.(article, "searching");' in sources
-    assert 'window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");' in sources
-    assert "data.tool.id === \"web_search\"" in sources
+    assert "setTaskHint" not in sources
+    assert "recordTaskEvent" not in sources
+    # The web-search step is recorded only when the completed answer carries
+    # the real server tool and its evidence.
+    app = _read("app.js")
+    assert 'if (Array.isArray(data.evidence) && data.evidence.length) {' in app
+    assert 'if (data.tool && data.tool.id === "web_search") {' in app
+    assert 'window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");' in app
+    assert app.index(
+        'if (Array.isArray(data.evidence) && data.evidence.length) {'
+    ) < app.index('if (data.tool && data.tool.id === "web_search") {')
 
 
 # ── #4816 / Owner 2026-10-31: two persistent icons (A안) ───────────────────

@@ -74,11 +74,11 @@ async function requestCompanion(question){
   }
   return {
     ok:true,local:false,blocked:false,title:'동행 독자',answer:payload.answer,source:'StoryMemory · 현재 읽은 범위',
-    context_permission:payload.context_permission||null,runtime:payload.runtime||'padiem-ai-engine',reference_trust:payload.reference_trust||'UNTRUSTED_REFERENCE'
+    context_permission:payload.context_permission||null,runtime:payload.runtime||'padiem-ai-engine',reference_trust:payload.reference_trust||'UNTRUSTED_REFERENCE',evidencePacket:packet
   };
 }
 function appendResult(result,q,selection,delay){
-  var meta={question:q,packet:selection||null,liveCompanion:true,blocked:!!result.blocked,error:result.error||null,context_permission:result.context_permission||null,runtime:result.runtime||null};
+  var meta={question:q,packet:selection||null,answerEvidencePacket:result.evidencePacket||null,liveCompanion:true,blocked:!!result.blocked,error:result.error||null,context_permission:result.context_permission||null,runtime:result.runtime||null};
   setTimeout(function(){appendAIMessage(result.title,result.answer,result.source,meta);},Math.max(0,Number(delay)||0));
 }
 async function submit(question,{selection=null,delay=80}={}){
