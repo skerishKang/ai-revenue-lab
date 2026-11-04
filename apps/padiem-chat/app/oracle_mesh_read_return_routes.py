@@ -4789,7 +4789,12 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
     # multi-link owner without it can only answer "ambiguous" and refuse a
     # step that already ran.
     if mode in ("command_status", "result") and selected is None:
-        reader = getattr(history_store, "get_oracle_mesh_dispatch_for_owner", None)
+        # The private owner-scoped reader is the dispatch authority that also
+        # names its PC; the public read intentionally keeps the normal row's
+        # shape. Neither leg accepts a device hint from the Engine.
+        reader = getattr(history_store, "get_pc_output_dispatch_for_owner", None)
+        if not callable(reader):
+            reader = getattr(history_store, "get_oracle_mesh_dispatch_for_owner", None)
         if callable(reader) and isinstance(payload.get("dispatch_id"), str):
             try:
                 status_dispatch = await reader(
