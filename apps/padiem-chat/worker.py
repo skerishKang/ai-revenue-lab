@@ -153,6 +153,7 @@ from app.web_xlsx_p01_engine_client import build_web_xlsx_p01_engine_client
 from app.web_xlsx_quote_write_engine_client import build_web_quote_write_engine_client
 from app.claw_web_xlsx_quote_pdf import BrowserQuotePdfRenderer
 from app.claw_search_decision import trusted_claw_search_activation
+from app.push_http_transport import PushHttpTransport
 from kagent.claw_automation import ClawAutomationTickRuntime
 from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
 from workers import Request, Response, WorkerEntrypoint
@@ -732,38 +733,6 @@ class _CloudflareEmptyAsyncByteStream(httpx.AsyncByteStream):
         return None
 
 
-class _PushHttpTransport:
-    """#5034 — the bounded HTTP surface the Web Push sender needs.
-
-    The sender only ever performs one POST to a push endpoint, so this adapter
-    exposes exactly ``post()`` over the existing Workers-fetch transport instead
-    of handing the sender a general-purpose client. The endpoint is a device
-    capability URL: it is never logged here, and only the status code is
-    returned.
-    """
-
-    def __init__(self, transport: Any, *, timeout_seconds: float = 10.0) -> None:
-        self._transport = transport
-        self._timeout_seconds = timeout_seconds
-
-    async def post(
-        self, url: str, *, content: bytes, headers: dict[str, str]
-    ) -> Any:
-        request = httpx.Request(
-            "POST",
-            url,
-            content=content,
-            headers=headers,
-            extensions={"timeout": {"read": self._timeout_seconds}},
-        )
-        response = await self._transport.handle_async_request(request)
-        try:
-            await response.aread()
-        finally:
-            await response.aclose()
-        return response
-
-
 def build_push_transport() -> Any:
     """Build the Web Push transport, or None when the runtime cannot fetch.
 
@@ -772,7 +741,7 @@ def build_push_transport() -> Any:
     """
 
     try:
-        return _PushHttpTransport(CloudflareExternalHttpTransport())
+        return PushHttpTransport(CloudflareExternalHttpTransport())
     except Exception:
         return None
 
