@@ -31,12 +31,6 @@ from .b66_quote_conversation import (
     B66QuoteConversationError,
     MAX_CONVERSATION_CHARS,
 )
-from .b66_reasoning_level import (
-    DEFAULT_REASONING_LEVEL,
-    reasoning_options_for_model,
-    reasoning_transport_available,
-    validate_reasoning_level,
-)
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .request_contract import MAX_BROWSER_BODY_BYTES
 from .member_grade_access import verified_member_grade, GRADES
@@ -231,17 +225,13 @@ async def _interpret_reserved(
     message: str,
     skill: dict,
     model_id: str,
-    reasoning_level: str | None = None,
     product_tier: str | None = None,
     result_origin: str | None = None,
 ):
     try:
-        # An omitted reasoning level is passed as an absence, exactly like an
-        # omitted model_id, so legacy interpreters and quote-parser clients that
-        # do not know the #3906 keyword keep their original call shape.
+        # The interpreter receives the message, the skill and the resolved
+        # model. Reasoning is a B14 decision, so no level keyword travels here.
         kwargs = {"message": message, "skill": skill, "model_id": model_id}
-        if reasoning_level is not None:
-            kwargs["reasoning_level"] = reasoning_level
         if product_tier is not None:
             kwargs["product_tier"] = product_tier
         if result_origin is not None:
@@ -495,24 +485,17 @@ async def b66_quote_models(request: Request) -> JSONResponse:
         # silently dropped from the picker.
         if grade_model in disabled or grade_model not in live_ready_ids:
             continue
-        grade_choices.append({
-            "tier": grade, "name": B66_GRADE_NAMES[grade],
-            "reasoning_levels": reasoning_options_for_model(
-                grade_model, transport_supported=_reasoning_transport_supported(request)),
-        })
+        grade_choices.append({"tier": grade, "name": B66_GRADE_NAMES[grade]})
     if (await b66_verified_admin(request, uid)
             and ADMIN_B14_MODEL_ID in live_ready_ids
             and ADMIN_B14_MODEL_ID not in disabled):
         grade_choices.append(
-            {"tier": B66_ADMIN_GRADE, "name": B66_ADMIN_NAME,
-             "reasoning_levels": reasoning_options_for_model(
-                 ADMIN_B14_MODEL_ID, transport_supported=_reasoning_transport_supported(request))}
+            {"tier": B66_ADMIN_GRADE, "name": B66_ADMIN_NAME}
         )
-    # #6828: the browser chooses a grade key and nothing else. The registered
-    # catalog above stays server-side authority for which grade is offerable,
-    # but no model identity crosses to the browser. The per-grade reasoning
-    # options remain, because they are capability choices the control renders,
-    # not an identity.
+    # #6828/#6838: the browser chooses a grade key and nothing else. The
+    # registered catalog above stays server-side authority for which grade is
+    # offerable, but neither model identity nor a reasoning menu crosses to the
+    # browser: B14 decides the level for the model behind the grade.
     return JSONResponse(
         {"ok": True, "tiers": grade_choices,
          "default_tier": grade_choices[0]["tier"] if grade_choices else None},
@@ -572,7 +555,6 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         model_id = expected_model
     else:
         model_id = custom.model if custom is not None else data.get("model_id")
-    reasoning_level = data.get("reasoning_level")
     if not isinstance(model_id, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", model_id):
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
     if model_id.startswith("padiem-profile/"):
@@ -583,33 +565,9 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         access, model_id, grade_model_id
     ):
         return _error(403, "model_tier_forbidden", "이용 등급에서 허용하지 않는 AI 모델입니다.")
-    # Explicit reasoning level is validated against the SAME exact model the
-    # user chose (#3906). An unsupported level is rejected with an explainable
-    # 4xx and is never ignored, downgraded, or silently replaced by another
-    # level. An omitted level keeps the pre-existing request behaviour.
-    try:
-        accepted_reasoning_level = validate_reasoning_level(model_id, reasoning_level)
-    except ValueError:
-        return _error(
-            400,
-            "unsupported_reasoning_level",
-            "선택한 모델이 지원하지 않는 추론 수준입니다.",
-        )
-    if (
-        accepted_reasoning_level is not None
-        and accepted_reasoning_level != DEFAULT_REASONING_LEVEL
-        and not reasoning_transport_available(
-            model_id, transport_supported=_reasoning_transport_supported(request)
-        )
-    ):
-        # The level is documented for this exact model, but the shared Core
-        # transport that carries it is not available yet. Refuse before any
-        # dispatch instead of silently answering with the provider default.
-        return _error(
-            422,
-            "reasoning_level_unavailable",
-            "선택한 추론 수준을 지금은 전달할 수 없습니다. 기본값으로 진행해 주세요.",
-        )
+    # #6828/#6838: a level the browser still sends is ignored, exactly like a
+    # model_id it should not be choosing. The platform lane strips it and B14
+    # decides from the registry, so there is nothing to validate here.
     if not isinstance(saved_skill_id, str) or not saved_skill_id:
         return _error(400, "invalid_saved_skill_id", "내 견적서 ID가 필요합니다.")
     if (
@@ -665,7 +623,6 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
             message=message.strip(),
             skill=skill,
             model_id=model_id,
-            reasoning_level=accepted_reasoning_level,
             product_tier=selected_grade,
             result_origin="custom_provider_direct" if custom is not None else None,
         )

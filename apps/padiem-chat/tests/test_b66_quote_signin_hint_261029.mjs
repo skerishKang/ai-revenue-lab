@@ -233,7 +233,7 @@ function dispatchCapability(auth) {
   }
 }
 
-const FIELD_IDS = ["b66QuoteSkillField", "b66QuoteModelField", "b66QuoteReasoningField"];
+const FIELD_IDS = ["b66QuoteSkillField", "b66QuoteModelField"];
 
 test("a guest sees the sign-in line instead of empty selects", async () => {
   await settle();
