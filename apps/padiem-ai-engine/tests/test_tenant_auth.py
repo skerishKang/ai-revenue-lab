@@ -13,7 +13,8 @@ from app.execution_admission import (
     TrustedExecutionAdmission,
 )
 from app.execution_admission_gate import resolve_and_require_trusted_admission
-from app.tenant_auth import (
+from app.tenant_auth import (    RESERVATION_CLOCK_SKEW,
+
     ControlPlaneTenantAdmissionAdapter,
     UsageReceipt,
     build_control_plane_admission_adapter,
@@ -204,11 +205,34 @@ def test_adapter_validates_reservation_against_post_roundtrip_observation_time()
     ]
 
 
-def test_adapter_rejects_reservation_future_to_post_roundtrip_observation() -> None:
+def test_adapter_tolerates_a_reservation_within_the_authority_clock_skew() -> None:
+    # 261105: the authority stamps reserved_at on its own clock and the host
+    # observed a one-second lead. That is not a contract violation; a bounded
+    # lead must not fail the whole turn closed.
     observation_time = NOW + timedelta(seconds=4)
     client = AsyncFakeControlPlaneClient(
         reservation=reservation_dict(
             reserved_at=iso(observation_time + timedelta(seconds=1)),
+            expires_at=iso(observation_time + timedelta(minutes=5)),
+        )
+    )
+    observations = iter((NOW, observation_time))
+    built = ControlPlaneTenantAdmissionAdapter(
+        client=client,
+        clock=lambda: next(observations),
+    )
+
+    resolved = run(built.resolve_admission(request()))
+
+    assert resolved.allowed is True
+    assert resolved.usage_reservation is not None
+
+
+def test_adapter_rejects_reservation_future_to_post_roundtrip_observation() -> None:
+    observation_time = NOW + timedelta(seconds=4)
+    client = AsyncFakeControlPlaneClient(
+        reservation=reservation_dict(
+            reserved_at=iso(observation_time + RESERVATION_CLOCK_SKEW + timedelta(seconds=5)),
             expires_at=iso(observation_time + timedelta(minutes=5)),
         )
     )
