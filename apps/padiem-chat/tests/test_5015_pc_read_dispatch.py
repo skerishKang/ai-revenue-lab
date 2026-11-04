@@ -28,6 +28,7 @@ RUN = "chat_pcq_" + "c" * 24
 CONVERSATION = "chat_" + "d" * 32
 DEVICE = "device-1"
 NODE = "node-1"
+SECOND_NODE = "node-2"
 SECRET = "s" * 32
 CHANNEL_SECRET = "u" * 32
 ROOT = "C:/Users/limone/AppData/Local/PADIEM/MeshCentralTrial"
@@ -192,7 +193,31 @@ async def _workspace(request, uid):
     return WORKSPACE if uid == OWNER else None
 
 
-def _state(monkeypatch, history=None):
+class _OwnerLinks:
+    def __init__(self, links):
+        self._links = list(links)
+
+    async def links_for_owner(self, *, user_id):
+        return list(self._links) if user_id == OWNER else []
+
+
+def _owner_link(node, root_path=ROOT):
+    return {
+        "mesh_node_id": node, "label": "PC", "state": "active",
+        "roots": [{
+            "root_ref": "pcroot_test", "label": "MeshCentralTrial",
+            "path": root_path, "state": "active",
+        }],
+    }
+
+
+def _legacy_mapping():
+    rows = _mapping()
+    rows[0]["account_ref"] = "legacy-account"
+    return rows
+
+
+def _state(monkeypatch, history=None, *, mapping=None, links=None):
     import padiem_control_plane.b54_identity_bridge as bridge
 
     identity = _Identity()
@@ -209,7 +234,8 @@ def _state(monkeypatch, history=None):
     monkeypatch.setattr(bridge, "resolve_current_b54_canonical_session", fake_bridge)
     monkeypatch.setattr(routes, "_resolve_memory_workspace", _workspace)
     source = routes.build_oracle_mesh_return_source(
-        _mapping(), CHANNEL_SECRET, routes.EXECUTION_MODE_MESH,
+        mapping if mapping is not None else _mapping(),
+        CHANNEL_SECRET, routes.EXECUTION_MODE_MESH,
     )
     assert source is not None
     return SimpleNamespace(
@@ -217,6 +243,7 @@ def _state(monkeypatch, history=None):
         control_plane_identity_authority=identity,
         history_store=history or _History(),
         claw_engine_desktop_secret=SECRET,
+        pc_device_pairing_store=_OwnerLinks(links) if links is not None else None,
     )
 
 
@@ -622,6 +649,45 @@ def test_a_status_poll_of_a_running_step_projects_running_too(monkeypatch):
     })
     assert status == 200, polled
     assert state.history_store.status_writes == [(OWNER, RUN, "running")]
+
+
+def test_a_status_poll_with_several_owner_links_uses_the_dispatch_node(monkeypatch):
+    """The Engine's status leg names only the dispatch; the dispatch names the PC.
+
+    Two active links with no device hint used to answer "ambiguous" and the
+    map fallback could not rescue it, so a step that had already run was
+    reported as an unverified target.
+    """
+    state = _state(
+        monkeypatch, links=[_owner_link(NODE), _owner_link(SECOND_NODE)],
+        mapping=_legacy_mapping(),
+    )
+    status, created = _dispatch(state, _base_payload(device_id=NODE))
+    assert status == 200, created
+    dispatch_id = created["dispatch"]["dispatch_id"]
+    status, polled = _dispatch(state, {
+        "subject_id": SUBJECT, "run_id": RUN,
+        "dispatch_id": dispatch_id, "mode": "command_status",
+    })
+    assert status == 200, polled
+    assert polled["dispatch"]["dispatch_id"] == dispatch_id
+
+
+def test_a_result_with_several_owner_links_uses_the_dispatch_node(monkeypatch):
+    state = _state(
+        monkeypatch, links=[_owner_link(NODE), _owner_link(SECOND_NODE)],
+        mapping=_legacy_mapping(),
+    )
+    _seed_result(
+        state, state_name="done", exit_code=0,
+        body_bytes=READ_BODY.encode("utf-8"), termination="exited",
+    )
+    status, body = _dispatch(state, {
+        "subject_id": SUBJECT, "run_id": RUN,
+        "dispatch_id": "dsp-read", "mode": "result",
+    })
+    assert status == 200, body
+    assert body["dispatch"]["output"] == READ_BODY
 
 
 def test_the_result_return_leg_projects_running_without_becoming_the_answer(monkeypatch):
