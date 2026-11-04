@@ -25,6 +25,8 @@ from padiem_control_plane.product_tier_routes import (
     is_free_execution_candidate,
 )
 
+from .b66_grade_models import B66_ADMIN_GRADE, B66_GRADES
+
 
 _SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}\Z")
 _QUOTE_CAPABILITIES = frozenset(("chat",))
@@ -333,7 +335,16 @@ class B66RegisteredModelCompletion:
         # `default` and an absent value mean provider-native omission, so the
         # request below is byte-identical to the pre-#3906 call.
         if product_tier is not None:
-            if product_tier not in ("free", "plus", "pro", "max") or model_id != FREE_PRIMARY_B14_MODEL_ID:
+            # #6835: every B66 grade is a server-resolved key, so a tier label
+            # is legitimate for any grade the product declares — not only the
+            # free lane. The #2505 invariant is kept exactly: the free label may
+            # never travel with a model that is not the free primary route.
+            # Pairing a paid grade with its model stays the caller's job, because
+            # only the route can read the central grade override.
+            if product_tier not in (*B66_GRADES, B66_ADMIN_GRADE):
+                await self._refund_before_dispatch()
+                raise B66ModelRouteError("model_identity_invalid")
+            if product_tier == "free" and model_id != FREE_PRIMARY_B14_MODEL_ID:
                 await self._refund_before_dispatch()
                 raise B66ModelRouteError("model_identity_invalid")
         native_parameters = await self._reasoning_parameters(model_id, reasoning_level)
