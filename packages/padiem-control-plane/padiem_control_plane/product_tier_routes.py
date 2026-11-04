@@ -58,14 +58,14 @@ MUSE_B14_MODEL_ID = "opencode-go/muse-spark-1.3-contributor"
 MUSE_B14_UPSTREAM_MODEL = "muse-spark-1.3-contributor"
 # Owner decision 2026-10-25: test-phase Google recovery order for the
 # Plus/Pro/Max/admin lanes. Free keeps its ordered non-Gemma recovery candidate.
-# Owner decision 2026-11-04: Plus/Pro/Max use TokenHarbor DeepSeek as the
-# single grade fallback. Free and admin are unchanged.
+# Owner decision 2026-11-04: Plus/Pro/Max/admin use TokenHarbor DeepSeek as
+# the single grade fallback. Free is unchanged.
 TIER_FALLBACK_B14_MODELS = {
     "max": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free"),
     "pro": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free"),
     "plus": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free"),
     "free": ("google/gemma-4-31b-it", "google/gemini-3.5-flash-lite"),
-    "admin": ("google/gemini-3.1-flash-lite", "google/gemma-4-31b-it"),
+    "admin": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free"),
 }
 
 # Owner decision 2026-10-21 (#2505): OpenCode Go free models are not execution

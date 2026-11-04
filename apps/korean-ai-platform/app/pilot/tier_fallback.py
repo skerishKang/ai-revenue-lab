@@ -7,8 +7,8 @@ Owner decision 2026-10-25: the test-phase Plus/Pro/Max/admin lanes use
 Google with the same ordered backups as the shared Control Plane.
 Free retains its primary and uses Gemma 4 31B as its first recovery model per Owner instruction 2026-11-04.
 
-Owner decision 2026-11-04: Plus/Pro/Max use TokenHarbor DeepSeek as the
-single grade fallback. Free and admin are unchanged.
+Owner decision 2026-11-04: Plus/Pro/Max/admin use TokenHarbor DeepSeek as
+the single grade fallback. Free is unchanged.
 """
 TIER_DEFAULT_B14_MODEL = "google/gemini-3.1-flash-lite"
 TIER_FALLBACK_B14_MODELS: dict[str, tuple[str, ...]] = {
@@ -16,5 +16,5 @@ TIER_FALLBACK_B14_MODELS: dict[str, tuple[str, ...]] = {
     "pro": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free"),
     "plus": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free"),
     "free": ("google/gemma-4-31b-it", "google/gemini-3.5-flash-lite"),
-    "admin": ("google/gemini-3.1-flash-lite", "google/gemma-4-31b-it"),
+    "admin": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free"),
 }

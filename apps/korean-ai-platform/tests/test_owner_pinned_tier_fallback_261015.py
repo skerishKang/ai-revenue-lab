@@ -114,7 +114,7 @@ def test_b14_still_accepts_the_attempt_option_only_to_drop_it(caplog):
     ("plus", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free")),
     ("pro", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free")),
     ("max", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free")),
-    ("admin", ("google/gemini-3.1-flash-lite", "google/gemma-4-31b-it")),
+    ("admin", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free")),
 ])
 def test_owner_test_phase_rosters_have_the_exact_recovery_order(tier, expected):
     assert TIER_FALLBACK_B14_MODELS[tier] == expected
