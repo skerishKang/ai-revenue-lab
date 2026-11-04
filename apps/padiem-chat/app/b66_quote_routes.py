@@ -14,6 +14,7 @@ from __future__ import annotations
 import inspect
 import json
 import re
+import time
 from typing import Any
 
 from starlette.requests import Request
@@ -39,6 +40,7 @@ from .b66_reasoning_level import (
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .request_contract import MAX_BROWSER_BODY_BYTES
 from .member_grade_access import verified_member_grade, GRADES
+from .request_telemetry import emit_stage_event
 from .b66_grade_models import (
     B66_ADMIN_GRADE,
     B66_ADMIN_NAME,
@@ -656,6 +658,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         denied = await _authorize_quote_usage(request, uid)
         if denied is not None:
             return denied
+    interpret_started = time.perf_counter()
     try:
         projection = await _interpret_reserved(
             interpret_fn,
@@ -688,6 +691,18 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
             response.headers["X-B66-Interpret-Exception-Family"] = (
                 _bounded_interpret_exception_family(exc)
             )
+        # This branch used to swallow the failure completely: an operator got a
+        # 502 with no traceback and no server event. Only the two closed labels
+        # the client already receives are logged — never the exception text.
+        emit_stage_event(
+            stage="b66.interpret.interpreter_exception",
+            outcome="error",
+            duration_ms=(time.perf_counter() - interpret_started) * 1000.0,
+            code=(
+                response.headers.get("X-B66-Upstream-Class")
+                or response.headers.get("X-B66-Interpret-Exception-Family")
+            ),
+        )
         return response
 
     safe_dict = getattr(projection, "safe_dict", None)
@@ -695,6 +710,12 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         response = _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
         response.headers["X-B66-Interpret-Failure-Stage"] = (
             "projection_missing_safe_dict"
+        )
+        emit_stage_event(
+            stage="b66.interpret.projection_missing_safe_dict",
+            outcome="error",
+            duration_ms=(time.perf_counter() - interpret_started) * 1000.0,
+            code="projection_missing_safe_dict",
         )
         return response
     candidate = safe_dict()

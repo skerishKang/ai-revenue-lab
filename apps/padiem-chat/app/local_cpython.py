@@ -33,6 +33,11 @@ from starlette.staticfiles import StaticFiles
 
 from .app_factory import STATIC_DIR, create_app
 from .b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
+from .b66_quote_conversation import B66QuoteConversationInterpreter
+from .b66_registered_model_boundary import (
+    B14QuoteExactModelExecutor,
+    B66RegisteredModelCompletion,
+)
 from .config import ConfigError, Settings
 from .cpython_aes_gcm import CPythonAesGcmPort
 from .control_plane_identity import IdentityBridgeError, PADIEM_CHAT_PRODUCT_ID
@@ -40,7 +45,7 @@ from .control_plane_identity_shadow import D1IdentityShadowStore
 from .control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
 from . import sqlite_settings as sqlite_policy
 from .d1_sqlite import SqliteD1
-from .dispatch_quota import DispatchAwareB14Client
+from .dispatch_quota import DispatchAwareB14Client, _refund_active_reservation
 from .history import D1HistoryStore
 from .local_r2 import ThreadedLocalDiskR2
 from .local_service_bridge import (
@@ -556,6 +561,21 @@ def build_app():
         quote_model_resolver = B66ExplicitQuoteModelResolver(completion_transport)
         app.state.b66_quote_model_resolver = quote_model_resolver
         app.state.b14_model_choice_resolver = quote_model_resolver
+        # B66 quote execution needs the exact-model facade worker.py composes.
+        # The client captured while the app was built cannot carry an exact
+        # model selection, so every grade-resolved interpret died as an opaque
+        # 502 on this host before a single B14 request left the process.
+        b66_quote_executor = B14QuoteExactModelExecutor(app.state.b14_client)
+        app.state.b66_reasoning_transport_supported = bool(
+            b66_quote_executor.supports_native_parameters
+        )
+        app.state.b66_quote_interpreter = B66QuoteConversationInterpreter(
+            B66RegisteredModelCompletion(
+                resolver=quote_model_resolver,
+                executor=b66_quote_executor,
+                refund_pre_dispatch=_refund_active_reservation,
+            )
+        )
         # The owner credential board uses the same B14 origin and proof secret
         # as the completion lane; an absent secret fails closed in the source.
         if settings.b14_base_url:
