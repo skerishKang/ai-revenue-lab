@@ -1046,7 +1046,7 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                     # has_more, items}. An array, a bare row, null and the older
                     # wrapped {ok,entries} shape are still accepted so an older
                     # PC keeps answering while it updates.
-                    offset, total, has_more = 0, None, None
+                    offset, total, has_more, truncated = 0, None, None, False
                     if isinstance(parsed, list):
                         entries = parsed
                     elif isinstance(parsed, dict) and isinstance(parsed.get("items"), list):
@@ -1061,6 +1061,7 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                         entries = parsed.get("entries") or []
                         if isinstance(parsed.get("truncated"), bool):
                             has_more = parsed["truncated"]
+                            truncated = parsed["truncated"]
                     elif isinstance(parsed, dict) and ("Name" in parsed or "name" in parsed):
                         entries = [parsed]
                     elif parsed is None:
@@ -1077,20 +1078,19 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                         total = offset + len(items)
                     if has_more is None:
                         has_more = bool(total > offset + len(items))
-                    # One structured answer: the caller reads fields, never a
-                    # PowerShell transcript, and the page is complete because it
-                    # came from the stored original rather than a preview.
-                    listing = {
-                        "ok": True, "path": path, "offset": offset,
-                        "total": total, "has_more": has_more, "items": items,
-                    }
+                    # One structured answer, in one place: the caller reads the
+                    # fields at the top level, never a PowerShell transcript and
+                    # never the same rows twice. ``truncated`` only claims a cut
+                    # the PC actually made; more pages is ``has_more``.
+                    common.pop("output", None)
+                    common["ok"] = True
+                    common["path"] = path
                     common["offset"] = offset
                     common["total"] = total
                     common["has_more"] = has_more
-                    common["truncated"] = has_more
+                    common["truncated"] = truncated
                     common["entry_count"] = len(items)
                     common["items"] = items
-                    common["output"] = listing
                     emit_progress("result")
                     return common
                 common["content"] = output
