@@ -4343,7 +4343,8 @@ def _pc_files_command(*, op: str, root: str, relative: str,
         + "$s=@($p | Sort-Object -Property @{Expression={-not $_.PSIsContainer}}, Name);"
         "$n=$s.Count;"
         "$pg=@($s | Select-Object -Skip " + str(offset) + " -First " + str(page_size)
-        + " | Select-Object Name, Length, LastWriteTimeUtc, PSIsContainer);"
+        + " | Select-Object Name, Length, "
+        "@{n='Modified';e={$_.LastWriteTimeUtc.ToString('o')}}, PSIsContainer);"
         "@{offset=" + str(offset) + "; total=$n;"
         " has_more=(($pg.Count + " + str(offset) + ") -lt $n); items=@($pg)}"
         " | ConvertTo-Json -Compress -Depth 3"

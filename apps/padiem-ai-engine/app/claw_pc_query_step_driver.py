@@ -491,6 +491,116 @@ def _pc_write_result(output: str) -> dict | None:
     return parsed if isinstance(parsed, dict) else None
 
 
+#: A listing or a search page is read from the stored original, not from a
+#: head/tail preview: a preview that cut the middle of the JSON dropped rows from
+#: a page the caller was told had 50 of them.
+PC_PAGE_OUTPUT_MAX_BYTES = 8_000_000
+_PC_JSON_DATE = re.compile(r"/Date\((-?\d+)(?:[+-]\d{4})?\)/\Z")
+_PC_ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}T[\d:.]+(?:Z|[+-]\d{2}:\d{2})\Z")
+
+
+def _pc_modified_iso(value) -> str | None:
+    """One modification time as an explicit ISO-8601 instant, or ``None``.
+
+    PowerShell's ConvertTo-Json writes a DateTime as ``/Date(1793821590883)/``.
+    That is a serialization detail of the wire, not something a caller can read,
+    so it becomes ``...Z`` here; an already-ISO value is kept as it arrived.
+    """
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    if not text or len(text) > 64:
+        return None
+    date = _PC_JSON_DATE.fullmatch(text)
+    if date is not None:
+        from datetime import datetime, timezone
+        moment = datetime.fromtimestamp(int(date.group(1)) / 1000, tz=timezone.utc)
+        return moment.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    return text if _PC_ISO_DATE.fullmatch(text) else None
+
+
+def _pc_list_item(row) -> dict | None:
+    """One listing row as the four fields a caller reads, plus its own path."""
+    if not isinstance(row, Mapping):
+        return None
+    name = row.get("Name")
+    if not isinstance(name, str):
+        name = row.get("name")
+    if not isinstance(name, str) or not name:
+        return None
+    directory = row.get("PSIsContainer")
+    if not isinstance(directory, bool):
+        directory = row.get("is_dir") if isinstance(row.get("is_dir"), bool) else False
+    size = row.get("Length")
+    if type(size) is not int:
+        size = row.get("size")
+    if type(size) is not int or size < 0:
+        size = None
+    item = {
+        "name": name,
+        "type": "dir" if directory else "file",
+        "size": size,
+        "modified": _pc_modified_iso(
+            row.get("Modified") or row.get("modified") or row.get("LastWriteTimeUtc")
+        ),
+    }
+    relative = row.get("relative_path")
+    if isinstance(relative, str) and relative:
+        item["path"] = relative
+    return item
+
+
+async def _pc_full_output(*, final, service, request_factory, secret, owner, code, limit):
+    """The complete output of one PC step, never a head/tail preview.
+
+    A page of 50 rows can exceed the Chat endpoint's preview bound, and that
+    preview keeps the first and last bytes only - so a listing parsed from it
+    silently loses rows. The stored original is the same verified output behind
+    its owner handle, so it is read in order and joined.
+    """
+    output = final.get("output")
+    ref = final.get("output_ref")
+    if ref is None:
+        if not isinstance(output, str):
+            raise ToolHandlerError(
+                code + "_output_missing", "Verified PC output is unavailable",
+            )
+        return output
+    if (
+        not isinstance(ref, dict)
+        or not isinstance(ref.get("handle"), str)
+        or re.fullmatch(r"[0-9a-f]{64}", ref["handle"]) is None
+        or type(ref.get("size")) is not int or ref["size"] < 0
+        or ref["size"] > limit
+    ):
+        raise ToolHandlerError(
+            code + "_output_unavailable", "Verified PC output is unavailable",
+        )
+    offset, chunks = 0, []
+    while offset < ref["size"]:
+        page_result = await _signed_files_call(
+            service=service, request_factory=request_factory, secret=secret,
+            owner=owner, mode="read_output",
+            payload={
+                "handle": ref["handle"], "offset": offset,
+                "length": min(65_536, ref["size"] - offset),
+            },
+        )
+        page = page_result.get("result") if isinstance(page_result, dict) else None
+        text = page.get("content") if isinstance(page, dict) else None
+        if not isinstance(text, str) or not text:
+            raise ToolHandlerError(
+                code + "_output_unavailable", "Verified PC output is unavailable",
+            )
+        offset += len(text.encode("utf-8"))
+        if offset > ref["size"]:
+            raise ToolHandlerError(
+                code + "_output_unavailable", "Verified PC output is unavailable",
+            )
+        chunks.append(text)
+    return "".join(chunks)
+
+
 def _pc_list_folder_prefix(
     list_path: str, granted_drives: tuple[str, ...] = (),
 ) -> str | None:
@@ -840,7 +950,9 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 exit_code = final.get("exit_code")
                 output = final["output"]
                 output_ref = _stored_pc_projection(final)
-                if output_ref is not None:
+                # A listing is projected into fields below; only the
+                # text tools keep the stored-output reference.
+                if output_ref is not None and op != "list":
                     if op == "read" and (termination != "exited" or exit_code != 0):
                         _raise_read_failure(output)
                     if op != "read" and (termination not in {"exited", "no_exit_code", "output_too_large"}
@@ -918,47 +1030,67 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                     "exit_code": exit_code,
                 }
                 if op == "list":
+                    full = await _pc_full_output(
+                        final=final, service=service, request_factory=request_factory,
+                        secret=secret, owner=owner, code="pc_list",
+                        limit=PC_PAGE_OUTPUT_MAX_BYTES,
+                    )
                     try:
-                        parsed = json.loads(output)
+                        parsed = json.loads(full)
                     except (TypeError, ValueError) as exc:
                         raise ToolHandlerError(
                             "pc_list_output_invalid",
                             "PC folder listing is not valid JSON",
                         ) from exc
-                    # The wire command returns the plain Select-Object JSON:
-                    # an array for several entries, one object for a single
-                    # entry, or null for an empty folder. The older wrapped
-                    # {ok,entries} shape is still accepted.
+                    # The wire command answers one page: {offset, total,
+                    # has_more, items}. An array, a bare row, null and the older
+                    # wrapped {ok,entries} shape are still accepted so an older
+                    # PC keeps answering while it updates.
+                    offset, total, has_more = 0, None, None
                     if isinstance(parsed, list):
                         entries = parsed
-                        truncated = False
+                    elif isinstance(parsed, dict) and isinstance(parsed.get("items"), list):
+                        entries = parsed["items"]
+                        if type(parsed.get("offset")) is int:
+                            offset = parsed["offset"]
+                        if type(parsed.get("total")) is int:
+                            total = parsed["total"]
+                        if isinstance(parsed.get("has_more"), bool):
+                            has_more = parsed["has_more"]
                     elif isinstance(parsed, dict) and parsed.get("ok") is True:
                         entries = parsed.get("entries") or []
-                        truncated = bool(parsed.get("truncated"))
-                    elif isinstance(parsed, dict) and "Name" in parsed:
+                        if isinstance(parsed.get("truncated"), bool):
+                            has_more = parsed["truncated"]
+                    elif isinstance(parsed, dict) and ("Name" in parsed or "name" in parsed):
                         entries = [parsed]
-                        truncated = False
                     elif parsed is None:
                         entries = []
-                        truncated = False
                     else:
                         code = parsed.get("error") if isinstance(parsed, dict) else None
                         raise ToolHandlerError(
                             "pc_list_failed",
                             "PC folder listing failed: " + str(code or "unknown"),
                         )
-                    common["truncated"] = truncated
-                    common["entry_count"] = len(entries)
-                    common["output"] = json.dumps(
-                        {
-                            "ok": True,
-                            "path": path,
-                            "entries": _pc_list_entries_with_paths(path, entries, granted),
-                            "truncated": truncated,
-                        },
-                        ensure_ascii=False,
-                        separators=(",", ":"),
-                    )
+                    rows = _pc_list_entries_with_paths(path, entries, granted)
+                    items = [item for item in (_pc_list_item(row) for row in rows) if item]
+                    if total is None:
+                        total = offset + len(items)
+                    if has_more is None:
+                        has_more = bool(total > offset + len(items))
+                    # One structured answer: the caller reads fields, never a
+                    # PowerShell transcript, and the page is complete because it
+                    # came from the stored original rather than a preview.
+                    listing = {
+                        "ok": True, "path": path, "offset": offset,
+                        "total": total, "has_more": has_more, "items": items,
+                    }
+                    common["offset"] = offset
+                    common["total"] = total
+                    common["has_more"] = has_more
+                    common["truncated"] = has_more
+                    common["entry_count"] = len(items)
+                    common["items"] = items
+                    common["output"] = listing
                     emit_progress("result")
                     return common
                 common["content"] = output
@@ -1232,7 +1364,13 @@ def _make_pc_search_handler(
                         "Verified PC outcome is incomplete",
                     )
                 projection = _pc_search_projection(
-                    final["output"], query=query, mode=search_mode,
+                    await _pc_full_output(
+                        final=final, service=service,
+                        request_factory=request_factory, secret=secret,
+                        owner=owner, code="pc_search",
+                        limit=PC_PAGE_OUTPUT_MAX_BYTES,
+                    ),
+                    query=query, mode=search_mode,
                 )
                 emit_progress("result")
                 return {
