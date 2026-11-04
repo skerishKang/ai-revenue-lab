@@ -10,7 +10,12 @@ RemainAfterExit=yes
 Environment=BOOT_RECOVERY_WAIT_SECONDS=240
 EnvironmentFile=-/opt/padiem/boot-recovery/.env
 ExecStart=/opt/padiem/boot-recovery/boot-recovery.sh
-TimeoutStartSec=420
+# 261105: a cold Windows boot measured systemd[1] "Startup finished" at
+# 11m41s (WSL first start, the D: mount and the tunnel worker ramping), and
+# the 420 s budget TERM'd the self-check before it could report or alert
+# (journal 2026-11-02 17:48:56 -> 17:56:15, result=timeout). 900 s covers
+# the measured worst case plus the 240 s unit wait and the per-unit reads.
+TimeoutStartSec=900
 StandardOutput=journal
 StandardError=journal
 
