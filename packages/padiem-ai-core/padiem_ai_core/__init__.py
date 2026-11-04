@@ -63,16 +63,16 @@ from .b14_streaming import (
     B14StreamingClient,
 )
 from .conversation_bounds import (
-    DEFAULT_HISTORY_MAX_CHARS,
-    DEFAULT_HISTORY_MAX_TURNS,
+    ALWAYS_KEPT_TURNS,
     HISTORY_TRUNCATION_NOTE,
     BoundedHistory,
     bound_conversation_history,
+    estimate_input_tokens,
+    model_input_budget,
 )
 from .grounding_runtime import (
     DEFAULT_GROUNDING_PREAMBLE,
     MAX_EVIDENCE_SNIPPET_CHARS,
-    MAX_EVIDENCE_TOTAL_CHARS,
     MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS,
     MAX_GROUNDED_SOURCES,
     MAX_RESEARCH_PAGE_FETCHES,
@@ -573,9 +573,9 @@ __all__ = [
     "B14StreamingClient",
     "DEFAULT_GROUNDING_PREAMBLE",
     "MAX_EVIDENCE_SNIPPET_CHARS",
-    "MAX_EVIDENCE_TOTAL_CHARS",
-    "DEFAULT_HISTORY_MAX_CHARS",
-    "DEFAULT_HISTORY_MAX_TURNS",
+    "ALWAYS_KEPT_TURNS",
+    "estimate_input_tokens",
+    "model_input_budget",
     "HISTORY_TRUNCATION_NOTE",
     "BoundedHistory",
     "bound_conversation_history",

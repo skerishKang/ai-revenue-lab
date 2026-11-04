@@ -156,11 +156,6 @@ class Settings:
     mcp_pc_shell_enabled: bool = False
     lovetree_account_delete_url: str | None = None
     account_delete_rpc_secret: str | None = field(default=None, repr=False)
-    # #6812 stage 2: how much conversation history the server lets travel to the
-    # model. The browser still sends the whole thread; these bounds decide what
-    # reaches B14. Defaults match padiem_ai_core.conversation_bounds.
-    history_max_turns: int = 20
-    history_max_chars: int = 12_000
 
     @classmethod
     def from_values(
@@ -205,10 +200,6 @@ class Settings:
         # Shared account deletion RPC uses the existing v2 service HMAC envelope.
         lovetree_account_delete_url: object = None,
         account_delete_rpc_secret: object = None,
-        # #6812 stage 2: bounded conversation history; appended last for the same
-        # positional safety as every other recent option.
-        history_max_turns: object = 20,
-        history_max_chars: object = 12_000,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -445,16 +436,6 @@ class Settings:
             account_delete_rpc_secret=_optional_secret(
                 account_delete_rpc_secret, name="PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET"
             ),
-            history_max_turns=_bounded_int(
-                history_max_turns,
-                name="PADIEM_CHAT_HISTORY_MAX_TURNS",
-                maximum=200,
-            ),
-            history_max_chars=_bounded_int(
-                history_max_chars,
-                name="PADIEM_CHAT_HISTORY_MAX_CHARS",
-                maximum=1_000_000,
-            ),
         )
 
     @classmethod
@@ -512,6 +493,4 @@ class Settings:
             mcp_pc_shell_enabled=os.getenv("PADIEM_MCP_PC_SHELL_ENABLED"),
             lovetree_account_delete_url=os.getenv("PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL"),
             account_delete_rpc_secret=os.getenv("PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET"),
-            history_max_turns=os.getenv("PADIEM_CHAT_HISTORY_MAX_TURNS", "20"),
-            history_max_chars=os.getenv("PADIEM_CHAT_HISTORY_MAX_CHARS", "12000"),
         )

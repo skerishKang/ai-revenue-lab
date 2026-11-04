@@ -74,6 +74,12 @@ from app.pilot.platform_secrets import (
     register_platform_provider,
     resolve_secret,
 )
+from padiem_ai_core.conversation_bounds import (
+    bound_conversation_history,
+    estimate_input_tokens,
+)
+from padiem_ai_core.evidence_blocks import trim_evidence_text
+
 from app.pilot.redaction import redact_sensitive
 from app.pilot.stream_usage_option import (
     rejects_stream_usage_option,
@@ -500,6 +506,62 @@ def _canonicalize_google_compat_signatures(response_data: dict[str, Any], *, mod
             canonical(call)
 
 
+def _model_context_window(model_id: str) -> int | None:
+    """The context window the registry declares for this model, or None.
+
+    The registry writes 0 for "not published". #4379 says an unknown model limit
+    must never be replaced by a PADIEM one, so 0 stays unknown here as well.
+    """
+    try:
+        from .catalog import CATALOG_BY_ID
+    except Exception:  # pragma: no cover - the catalog is installed at boot
+        return None
+    model = CATALOG_BY_ID.get(model_id) if isinstance(model_id, str) else None
+    window = getattr(model, "context_window", None)
+    if isinstance(window, bool) or not isinstance(window, int) or window <= 0:
+        return None
+    return window
+
+
+def _messages_for_model(
+    messages: list[dict[str, Any]], model_id: str
+) -> list[dict[str, Any]]:
+    """Trim one attempt's input to the model's registered context window.
+
+    #4379/#6842: B14 adds no turn, character or evidence total of its own. The
+    registry is read here, so this is the place that knows the window of the
+    model a physical attempt reaches, a fallback candidate included. Only the
+    oldest turns go; the system instruction and the newest exchange survive. An
+    undeclared window keeps the request exactly as it arrived, and a request
+    that still cannot fit drops the lowest-ranked evidence blocks rather than an
+    instruction.
+    """
+    window = _model_context_window(model_id)
+    if window is None:
+        return messages
+    bounded = bound_conversation_history(messages, model_context_window=window)
+    trimmed = list(bounded.messages)
+    if bounded.note:
+        trimmed = [{"role": "system", "content": bounded.note}, *trimmed]
+    budget = bounded.input_budget_tokens
+    if budget is None:
+        return trimmed
+    over = estimate_input_tokens(trimmed) - budget
+    if over <= 0:
+        return trimmed
+    for index, message in enumerate(trimmed):
+        content = message.get("content")
+        if message.get("role") != "system" or not isinstance(content, str):
+            continue
+        cut, dropped = trim_evidence_text(
+            content, max_chars=max(0, len(content) - over * 4)
+        )
+        if dropped:
+            trimmed[index] = {**message, "content": cut}
+            break
+    return trimmed
+
+
 async def call_platform_chat_completions(
     *,
     model_id: str,
@@ -523,6 +585,7 @@ async def call_platform_chat_completions(
     upstream calls. Live mode applies the Provider spec's credential contract:
     server-owned secret or explicitly keyless.
     """
+    messages = _messages_for_model(messages, model_id)
     spec = _require_spec(platform_provider_id)
 
     provider_mode = _provider_mode()
@@ -722,6 +785,7 @@ async def stream_platform_chat_completions(
     """
     import os
 
+    messages = _messages_for_model(messages, model_id)
     spec = _require_spec(platform_provider_id)
 
     if tools and platform_provider_id != "opencode-go":
