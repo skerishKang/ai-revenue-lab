@@ -297,6 +297,7 @@ def test_test_phase_primary_fallback_and_muse_identity_are_exact(label, tier):
     assert route.status is ProductRouteStatus.EXECUTABLE
     assert TIER_FALLBACK_B14_MODELS[tier] == (
         "google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free",
+        "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha",
         "google/gemma-4-31b-it")
     assert muse.route_id == (
         "admin.muse-spark-1.3-contributor.v1" if tier == "admin" else f"{tier}.muse-spark.v1")

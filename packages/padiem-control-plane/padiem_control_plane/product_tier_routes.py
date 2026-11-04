@@ -59,15 +59,16 @@ MUSE_B14_UPSTREAM_MODEL = "muse-spark-1.3-contributor"
 # Owner decision 2026-10-25: test-phase Google recovery order for the
 # Plus/Pro/Max/admin lanes.
 # Owner decision 2026-11-04: Plus/Pro/Max/admin insert TokenHarbor DeepSeek
-# as the first fallback and keep Gemma as the second. Free inserts Kilo
-# Crouton Alpha as its first fallback and OpenRouter Crouton Alpha as its
-# second, ahead of Gemma and Gemini 3.5.
+# as the first fallback, then Kilo Crouton Alpha and OpenRouter Crouton Alpha,
+# keeping Gemma as the last. Free inserts Kilo Crouton Alpha as its first
+# fallback and OpenRouter Crouton Alpha as its second, ahead of Gemma and
+# Gemini 3.5.
 TIER_FALLBACK_B14_MODELS = {
-    "max": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "google/gemma-4-31b-it"),
-    "pro": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "google/gemma-4-31b-it"),
-    "plus": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "google/gemma-4-31b-it"),
+    "max": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it"),
+    "pro": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it"),
+    "plus": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it"),
     "free": ("kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it", "google/gemini-3.5-flash-lite"),
-    "admin": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "google/gemma-4-31b-it"),
+    "admin": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it"),
 }
 
 # Owner decision 2026-10-21 (#2505): OpenCode Go free models are not execution

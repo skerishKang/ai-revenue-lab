@@ -10,6 +10,14 @@
 
 **Snapshot reconciliation (2026-10-08):** B14 Google four manual-pin model registrations were merged by PR #3788 at SHA bcb05bb7fea9a31b72d805e7237441e045883b1b. Separate LOCAL product naming/tier drafts are not thereby merged. Source registration is not a Plus product route or proof of Production readiness; recheck exact-main B14 catalog, Control Plane declaration and credential-backed live evidence.
 
+## 0E. Owner decision — paid-tier Crouton fallback (2026-11-04, confirmed 2026-11-05)
+
+- **Owner decision 2026-11-04 (confirmed 2026-11-05 08:05 KST):** the Plus/Pro/Max/admin fallback order inserts the two Crouton stealth routes between the TokenHarbor DeepSeek fallback and Gemma: `google/gemini-3.1-flash-lite` (primary) → `tokenharbor/deepseek-v4.1-flash:free` → `kilo/stealth/crouton-alpha` → `openrouter/stealth/crouton-alpha` → `google/gemma-4-31b-it`. This supersedes the paid order recorded by PR #6816, which kept Gemma as the second fallback.
+- **Free is unchanged:** `google/gemini-3.1-flash-lite` (primary) → `kilo/stealth/crouton-alpha` → `openrouter/stealth/crouton-alpha` → `google/gemma-4-31b-it` → `google/gemini-3.5-flash-lite`. The 2026-11-05 comment on issue #6812 ("Free는 폴백까지 Gemini 계열") is corrected to mean "Gemini primary, routing unchanged" (issue #6812 comment 6644460780).
+- **Crouton is not an OpenCode Free model:** both routes are free (0/0 USD) stealth models served through the Kilo and OpenRouter gateways, so the 2026-10-21 #2505 OpenCode Go free-model exclusion does not apply (Owner confirmed 2026-11-05).
+- **Public name handling (#6828):** the two ids already appear in the Free roster of the same public files, so the paid roster reuses existing names and adds no new provider or model name; both move to the private registry when #6828 completes.
+- Implementation: Draft PR #6837 changes `apps/korean-ai-platform/app/pilot/tier_fallback.py` and `packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py`. Source merge is not deployment.
+
 ## 0D. Owner-selected ExLab Qwen3.8 Flash Next Uncensored (2026-10-10)
 
 - Owner explicitly requested `experiential/qwen3.8-flash-next-uncensored`, the ExLab gateway upstream `qwen3.8-flash-next-uncensored`. Canonical B14 source now has **10 registered models / 7 platform providers**; the prior nine-model discussions are historical snapshots. This is separate from retired B.AI Qwen (`b-ai/qwen3.8-flash`) and retired ExLab GPT-5.6 Luna.
