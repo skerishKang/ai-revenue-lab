@@ -10,7 +10,7 @@ import uuid
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 
-from .orchestration_bridge import B62EngineOrchestrationBridge
+from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 from .mcp_gateway_shell import (
     PC_SHELL_READ_TOOL_NAME, PC_SHELL_START_TOOL_NAME, PC_SHELL_STOP_TOOL_NAME,
     PC_SHELL_TOOL_NAME, PC_SHELL_TOOL_NAMES, execute_pc_shell,
@@ -293,12 +293,18 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     # driver is deterministic and never dispatches a model selection call.
     messages = [{"role": "assistant", "content": "External MCP transport request; not user speech."}]
     policy = resolve_model_policy(messages)
-    outcome = await bridge.start(user_id=uid, messages=messages, skill=get_task_mode("auto"),
-        model_id=policy.model_id, user_text=label, conversation_id=conversation_id,
-        subject_id=subject_id, session_id=run_id, agent_plan=plan,
-        tool_arguments=_tool_arguments_for_plan(plan, device_id),
-        pc_action_context=[], pc_delegation=await load_pc_delegation(request, uid),
-        pc_gateway=gateway)
+    try:
+        outcome = await bridge.start(user_id=uid, messages=messages, skill=get_task_mode("auto"),
+            model_id=policy.model_id, user_text=label, conversation_id=conversation_id,
+            subject_id=subject_id, session_id=run_id, agent_plan=plan,
+            tool_arguments=_tool_arguments_for_plan(plan, device_id),
+            pc_action_context=[], pc_delegation=await load_pc_delegation(request, uid),
+            pc_gateway=gateway)
+    except B62OrchestrationError as exc:
+        # The engine refused or could not be reached: no PC work was
+        # dispatched, so the branch is named, not answered as unknown.
+        raise ChatPCDriveError("chat_pc_engine_unavailable", exc.user_message,
+                               exc.status_code, cause=exc.code) from exc
     try:
         result = json.loads(outcome.answer)
     except (TypeError, ValueError):
@@ -337,6 +343,7 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
                     "data": base64.b64encode(image).decode("ascii")}
             except Exception:
                 result = {**result, "status": "unavailable",
+                          "code": "pc_browser_capture_unreadable",
                           "answer": "브라우저 캡처의 실제 이미지를 확인하지 못했습니다."}
     # The normal PC run already stores signed observations. Add a normal
     # dialogue notice, preserving unsuccessful postcondition evidence.
@@ -365,7 +372,8 @@ async def _resume_pc_files(
     mcp_store = getattr(request.app.state, "mcp_gateway_store", None)
     reader = getattr(store, "get_pc_output_dispatch_for_owner", None)
     owns = getattr(mcp_store, "owns_job_receipt", None)
-    unavailable = {"status": "unavailable", "answer": "PC 작업 상태를 확인하지 못했습니다."}
+    unavailable = {"status": "unavailable", "code": "pc_job_status_unavailable",
+                   "answer": "PC 작업 상태를 확인하지 못했습니다."}
     if not callable(reader) or not callable(owns):
         return unavailable
     try:
@@ -406,7 +414,7 @@ async def _resume_pc_files(
         or not isinstance(conversation_id, str) or not conversation_id
         or not isinstance(bridge, B62EngineOrchestrationBridge) or not bridge.ready
     ):
-        return unavailable
+        return {**unavailable, "code": "pc_engine_unavailable"}
     from .model_policy import resolve_model_policy
     from .task_modes import get_task_mode
     plan = plan_builder(scope)
@@ -416,14 +424,20 @@ async def _resume_pc_files(
     messages = [{"role": "assistant", "content": "External MCP transport request; not user speech."}]
     policy = resolve_model_policy(messages)
     try:
-        outcome = await bridge.start(
-            user_id=uid, messages=messages, skill=get_task_mode("auto"),
-            model_id=policy.model_id, user_text="외부 AI 도구 요청: " + tool_name,
-            conversation_id=conversation_id, subject_id=subject_id, session_id=run_id,
-            agent_plan=plan, tool_arguments=plan_arguments(plan, device_id),
-            pc_action_context=[], pc_delegation=await load_pc_delegation(request, uid),
-            pc_gateway=gateway,
-        )
+        try:
+            outcome = await bridge.start(
+                user_id=uid, messages=messages, skill=get_task_mode("auto"),
+                model_id=policy.model_id, user_text="외부 AI 도구 요청: " + tool_name,
+                conversation_id=conversation_id, subject_id=subject_id, session_id=run_id,
+                agent_plan=plan, tool_arguments=plan_arguments(plan, device_id),
+                pc_action_context=[], pc_delegation=await load_pc_delegation(request, uid),
+                pc_gateway=gateway,
+            )
+        except B62OrchestrationError as exc:
+            # The engine refused or could not be reached: no PC work was
+            # dispatched, so the branch is named, not answered as unknown.
+            raise ChatPCDriveError("chat_pc_engine_unavailable", exc.user_message,
+                                   exc.status_code, cause=exc.code) from exc
     except Exception:
         return unavailable
     try:

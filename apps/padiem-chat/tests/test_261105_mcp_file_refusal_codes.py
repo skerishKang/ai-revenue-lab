@@ -96,3 +96,22 @@ def test_a_broken_engine_answer_names_its_branch():
     assert answer["status"] == "unavailable"
     assert answer["code"] == "pc_engine_result_invalid"
     assert answer["answer"] == "PC 작업 결과를 확인하지 못했습니다."
+
+
+def test_missing_gateway_pieces_are_named():
+    state = SimpleNamespace(mcp_gateway_store=None, mcp_gateway_executor=None)
+    request = SimpleNamespace(app=SimpleNamespace(state=state))
+    principal = {"owner_id": UID, "device_id": NODE, "token_id": "mcp_" + "b" * 32}
+    outcome = asyncio.run(gateway_dispatch.dispatch_mcp_tool(
+        request, principal, "pc_list", {"path": "D:\\"}))
+    assert outcome["status"] == "unavailable"
+    assert outcome["code"] == "mcp_gateway_unavailable"
+
+
+def test_an_unexpected_failure_is_named():
+    async def executor(request, principal, tool_name, arguments, *, approval=None):
+        raise RuntimeError("boom")
+
+    outcome, _ = _dispatch(executor)
+    assert outcome["status"] == "unavailable"
+    assert outcome["code"] == "pc_dispatch_failed"
