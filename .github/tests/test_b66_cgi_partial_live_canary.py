@@ -81,32 +81,46 @@ class CanaryContractTests(unittest.TestCase):
             candidate=rough, summary=rough_state,
         ))
 
-    def test_operator_exact_model_selection_is_required(self):
-        allowed = [
-            {"model_id": "agnes-ai/agnes-3.0-flash", "name": "Agnes"},
-            {"model_id": "inception/mercury-2.5", "name": "Mercury"},
-        ]
-        self.assertEqual(
-            module.selected_model_id("agnes-ai/agnes-3.0-flash", allowed),
-            "agnes-ai/agnes-3.0-flash",
-        )
-        for bad in (None, "", "unknown/model", "padiem-profile/free", "google/gemma-4-31b-it"):
-            with self.subTest(bad=bad), self.assertRaises(ValueError):
-                module.selected_model_id(bad, allowed)
+    def test_operator_grade_key_selection_is_required(self):
+        offered = [{"tier": "free", "name": "g"}, {"tier": "plus", "name": "g"}]
+        self.assertEqual(module.selected_tier(None, offered), module.DEFAULT_SELECTED_TIER)
+        self.assertEqual(module.selected_tier("free", offered), "free")
+        for bad_value in ("unknown", "freex", 1, True):
+            with self.subTest(bad=bad_value), self.assertRaises(ValueError):
+                module.selected_tier(bad_value, offered)
         with self.assertRaises(ValueError):
-            module.selected_model_id("agnes-ai/agnes-3.0-flash", allowed + [allowed[0]])
+            module.selected_tier("max", offered)          # not offered by the deployment
         with self.assertRaises(ValueError):
-            module.selected_model_id("agnes-ai/agnes-3.0-flash", None)
+            module.selected_tier("free", None)            # no offered list at all
+        with self.assertRaises(ValueError):
+            module.selected_tier("free", offered + [offered[0]])  # ambiguous rows
 
-    def test_canary_passes_explicit_id_separately_from_quote_message(self):
+    def test_grade_options_contract_refuses_a_response_that_names_a_model(self):
+        clean = {"ok": True, "tiers": [{"tier": "free", "name": "g"}], "default_tier": "free"}
+        self.assertTrue(module.grade_options_contract(clean))
+        self.assertFalse(module.grade_options_contract(
+            {"ok": True, "tiers": [{"tier": "free", "name": "g", "model_id": "x/y"}],
+             "default_tier": None}))
+        self.assertFalse(module.grade_options_contract(
+            {"ok": True, "tiers": [], "default_tier": None, "models": []}))
+        self.assertFalse(module.grade_options_contract(
+            {"ok": True, "tiers": [{"tier": "unknown-grade"}], "default_tier": None}))
+        self.assertFalse(module.grade_options_contract({"ok": False, "tiers": []}))
+        script = SCRIPT.read_text(encoding="utf8")
+        # The old contract read a model catalog from the customer response.
+        self.assertNotIn("selected_model_id(", script)
+        self.assertNotIn('"model_id": chosen_model_id', script)
+
+    def test_canary_submits_the_chosen_grade_and_verifies_the_contract(self):
         source = SCRIPT.read_text(encoding="utf8")
-        self.assertIn('"model_id": chosen_model_id', source)
+        self.assertIn('"tier": chosen_tier', source)
         self.assertIn('"/api/padiem/b66/quote/models"', source)
-        self.assertIn('SELECTED_MODEL_ENV = "B66_CGI_CANARY_SELECTED_MODEL_ID"', source)
+        self.assertIn('SELECTED_TIER_ENV = "B66_CGI_CANARY_SELECTED_TIER"', source)
+        self.assertIn('summary["GRADE_OPTIONS_CONTRACT"] = "PASS"', source)
         wf = (SCRIPT.parents[1] / "workflows" / "b66-cgi-partial-live-canary.yml").read_text(encoding="utf8")
-        self.assertIn("selected_model_id:", wf)
-        self.assertIn("required: true", wf)
-        self.assertIn("B66_CGI_CANARY_SELECTED_MODEL_ID: " + chr(36) + "{{ inputs.selected_model_id }}", wf)
+        self.assertIn("selected_tier:", wf)
+        self.assertIn('default: "plus"', wf)
+        self.assertIn("B66_CGI_CANARY_SELECTED_TIER: " + chr(36) + "{{ inputs.selected_tier }}", wf)
 
 
     def test_cookie_authenticated_post_includes_exact_same_origin(self):
@@ -123,7 +137,7 @@ class CanaryContractTests(unittest.TestCase):
             module._json_request(object(), "/api/padiem/b66/quote/models")
             module._json_request(
                 object(), "/api/padiem/b66/quote/interpret",
-                method="POST", payload={"model_id": "agnes-ai/agnes-3.0-flash"},
+                method="POST", payload={"tier": "plus"},
             )
         self.assertEqual(len(requests), 2)
         self.assertIsNone(requests[0].get_header("Origin"))

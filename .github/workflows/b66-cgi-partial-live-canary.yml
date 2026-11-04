@@ -12,9 +12,10 @@ on:
         description: "Exact current main SHA authorized for this one-shot B66 CGI Production partial canary"
         required: true
         type: string
-      selected_model_id:
-        description: "Operator-selected exact eligible B14 model ID; no default"
-        required: true
+      selected_tier:
+        description: "Operator-selected B66 grade key (free|plus|pro|max); defaults to one paid grade"
+        required: false
+        default: "plus"
         type: string
       quote_case:
         description: "Explicit one-call quote probe: partial or approximate quantity confirmation"
@@ -73,10 +74,12 @@ jobs:
           set -euo pipefail
           script=.github/scripts/b66_cgi_partial_live_canary.py
           grep -Fq 'MAX_INTERPRET_POSTS = 1' "$script"
-          grep -Fq 'SELECTED_MODEL_ENV = "B66_CGI_CANARY_SELECTED_MODEL_ID"' "$script"
+          grep -Fq 'SELECTED_TIER_ENV = "B66_CGI_CANARY_SELECTED_TIER"' "$script"
+          grep -Fq 'DEFAULT_SELECTED_TIER = "plus"' "$script"
           grep -Fq 'CASE_ENV = "B66_CGI_CANARY_CASE"' "$script"
           grep -Fq 'APPROX_QUANTITY_TEXT = ' "$script"
-          grep -Fq '"model_id": chosen_model_id' "$script"
+          grep -Fq '"tier": chosen_tier' "$script"
+          grep -Fq 'def grade_options_contract' "$script"
           grep -Fq 'padiem-b66-cgi-partial-canary/1.0 (+github-actions)' "$script"
           grep -Fq 'RETRY = 0' "$script"
           grep -Fq 'FALLBACK = 0' "$script"
@@ -99,7 +102,7 @@ jobs:
     env:
       TARGET_SHA: ${{ inputs.target_sha }}
       B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
-      B66_CGI_CANARY_SELECTED_MODEL_ID: ${{ inputs.selected_model_id }}
+      B66_CGI_CANARY_SELECTED_TIER: ${{ inputs.selected_tier }}
       B66_CGI_CANARY_CASE: ${{ inputs.quote_case }}
       B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
     steps:
@@ -117,7 +120,7 @@ jobs:
           git fetch origin main
           test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
           test -n "${B66_CGI_ALPHA_USERNAME}"
-          test -n "${B66_CGI_CANARY_SELECTED_MODEL_ID}"
+          test -n "${B66_CGI_CANARY_SELECTED_TIER}"
           test -n "${B66_CGI_ALPHA_PASSWORD}"
           echo 'PRECALL_EXACT_MAIN=PASS'
           echo 'CGI_CREDENTIAL_PRESENT=YES'

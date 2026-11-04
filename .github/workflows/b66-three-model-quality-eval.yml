@@ -63,6 +63,9 @@ jobs:
           grep -Fq 'MAX_INTERPRET_POSTS = 12' .github/scripts/b66_quote_three_model_eval.py
           grep -Fq 'RETRY = 0' .github/scripts/b66_quote_three_model_eval.py
           grep -Fq 'MODEL_FALLBACK = 0' .github/scripts/b66_quote_three_model_eval.py
+          grep -Fq 'ADMIN_MODEL_POLICY_PATH = "/api/padiem/b66/admin/model-policy"' .github/scripts/b66_quote_three_model_eval.py
+          grep -Fq 'ADMIN_MODEL_CATALOG=ADMIN_ACCOUNT_REQUIRED' .github/scripts/b66_quote_three_model_eval.py
+          grep -Fq 'NO_ALTERNATIVE_CATALOG_PATH=YES' .github/scripts/b66_quote_three_model_eval.py
           grep -Fq 'PDF_RENDER_REQUESTS=0' .github/scripts/b66_quote_three_model_eval.py
           grep -Fq 'QUOTE_STORAGE_WRITES=0' .github/scripts/b66_quote_three_model_eval.py
           echo 'B66_MODEL_COMPARISON_CONTRACT=PASS'
