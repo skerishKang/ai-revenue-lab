@@ -50,6 +50,110 @@ def _invalid_engine_answer() -> dict:
             "answer": "PC 작업 결과를 확인하지 못했습니다."}
 
 
+#: The file tools whose ``path`` argument names something inside an approved
+#: folder. ``pc_devices`` and the browser tools are not in this set.
+_PC_FILE_PATH_TOOLS = frozenset({
+    "pc_list", "pc_read", "pc_search", "pc_write", "pc_move", "pc_delete",
+})
+#: Asking for the approved folders themselves, not for one folder's contents.
+_PC_ROOT_LIST_PATHS = frozenset({"", "/"})
+
+
+def _pc_absolute_path(value) -> str | None:
+    """``value`` in ``X:/...`` spelling when it names an absolute PC path."""
+    if not isinstance(value, str):
+        return None
+    text = value.strip().replace("\\", "/")
+    if not text or any(ord(ch) < 32 for ch in text):
+        return None
+    if text.startswith("/"):
+        return text
+    if len(text) >= 2 and text[0].isalpha() and text[1] == ":":
+        return text
+    return None
+
+
+def _registered_folder_rows(roots) -> list[dict]:
+    """The approved folders as the one ``[{name, path}]`` list both answers use."""
+    rows: list[dict] = []
+    for root in roots or ():
+        if not isinstance(root, Mapping):
+            continue
+        label, path = root.get("label"), root.get("path")
+        if isinstance(label, str) and label and isinstance(path, str) and path:
+            rows.append({"name": label, "path": path})
+    return rows
+
+
+def _pc_relative_inside_roots(value, roots) -> tuple[str | None, str | None]:
+    """Where an absolute path lands against this account's approved folders.
+
+    ``("label/rest", "inside")`` for a path below a grant, ``(None, "root")``
+    when it names the grant itself (a folder, not a file), ``(None, "outside")``
+    for an absolute path no grant covers, and ``(None, None)`` when the value is
+    already relative and must stay untouched.
+    """
+    text = _pc_absolute_path(value)
+    if text is None:
+        return None, None
+    folded = text.rstrip("/").casefold()
+    best = None
+    for root in roots or ():
+        base = str(root["path"]).replace("\\", "/").rstrip("/")
+        if not base:
+            continue
+        if folded == base.casefold():
+            return None, "root"
+        if folded.startswith(base.casefold() + "/"):
+            rest = text[len(base) + 1:].strip("/")
+            if rest and (best is None or len(base) > best[0]):
+                best = (len(base), root["name"], rest)
+    if best is None:
+        return None, "outside"
+    return best[1] + "/" + best[2], "inside"
+
+
+def _registered_folders_answer(roots: list[dict]) -> dict:
+    """The folder list a caller needs before it can name a relative path."""
+    if not roots:
+        return {"status": "unavailable", "code": "pc_registered_folders_unavailable",
+                "answer": "이 PC에 등록된 폴더를 확인하지 못했습니다."}
+    names = ", ".join(row["name"] for row in roots)
+    return {"status": "completed", "folders": roots,
+            "output": {"ok": True, "folders": roots, "entry_count": len(roots)},
+            "answer": "이 PC에 등록된 폴더입니다: " + names +
+                      ". path에는 표시 이름으로 시작하는 상대 경로를 넣으세요."}
+
+
+def _outside_registered_roots_answer(roots: list[dict]) -> dict:
+    """Refuse a path no grant covers, and hand back the grants it may use."""
+    return {"status": "failed", "code": "pc_path_outside_registered_roots",
+            "folders": roots,
+            "answer": "등록된 폴더 밖의 경로입니다. 등록된 폴더: " +
+                      ", ".join(row["name"] for row in roots) + "."}
+
+
+async def _registered_pc_folders(request, *, session, user_id, device_id) -> list[dict]:
+    """The owner's approved folders, from the authority the engine also asks.
+
+    Chat resolves the same target and the same folder set the signed context
+    call returns to the Engine, so the folders a caller sees here and the one a
+    dispatch lands in cannot drift apart. A resolution that fails keeps the
+    previous behaviour: a relative path is staged exactly as it was sent.
+    """
+    try:
+        from .oracle_mesh_read_return_routes import _engine_pc_files_target
+
+        resolved, error = await _engine_pc_files_target(
+            request, session=session, selected_device_id=device_id, user_id=user_id,
+        )
+    except Exception:
+        return []
+    if error is not None or not isinstance(resolved, Mapping):
+        return []
+    return _registered_folder_rows(resolved.get("roots"))
+
+
 _TOOLS = {
     "pc_list": ("files_list", "claw.pc.list_files", {"path", "job_id"}),
     "pc_search": ("files_list", "claw.pc.list_files", {"path", "query"}),
@@ -141,10 +245,12 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             # A continuation names the dispatch that is already running. It
             # stages nothing; ownership is checked against that dispatch below.
             pass
-        elif set(arguments) != keys - {"job_id"} or any(
+        elif (set(arguments) != keys - {"job_id"}
+                and not (tool_name == "pc_list" and not arguments)) or any(
                 not isinstance(value, str) for value in arguments.values()):
             # The job id is an alternative to the target path, never an extra
-            # field: a new call names the path and nothing else.
+            # field: a new call names the path and nothing else. pc_list alone
+            # may name nothing, which asks for the approved folder list.
             raise ValueError("Invalid MCP PC arguments")
     approval_id = None
     if approval is not None:
@@ -249,6 +355,34 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
                                cause=denial[0] if denial else None)
     if not isinstance(bridge, B62EngineOrchestrationBridge) or not bridge.ready:
         raise ChatPCDriveError("chat_pc_files_unavailable", "PC 파일 도구를 현재 사용할 수 없습니다.")
+    # A caller that has never seen this PC's folders cannot name a relative
+    # path, and one it does know the spelling of is absolute. Both are answered
+    # from the same approved set the Engine's signed context call receives.
+    folders: list[dict] = []
+    if tool_name in _PC_FILE_PATH_TOOLS:
+        folders = await _registered_pc_folders(
+            request, session=session, user_id=uid, device_id=device_id,
+        )
+    if tool_name == "pc_list" and "job_id" not in arguments:
+        requested = arguments.get("path")
+        text = requested.strip().replace("\\", "/") if isinstance(requested, str) else ""
+        # No path and "/" name no folder at all; "." names one only when the
+        # account has a single grant. Anything else would be a guess.
+        if text in _PC_ROOT_LIST_PATHS or (text == "." and len(folders) > 1):
+            return _registered_folders_answer(folders)
+    if folders:
+        for key in ("path", "destination"):
+            if key not in arguments:
+                continue
+            relative, where = _pc_relative_inside_roots(arguments[key], folders)
+            if where == "outside":
+                return _outside_registered_roots_answer(folders)
+            if where == "root":
+                if tool_name == "pc_list" and key == "path":
+                    return _registered_folders_answer(folders)
+                return _outside_registered_roots_answer(folders)
+            if relative is not None:
+                arguments[key] = relative
     if "job_id" in keys and set(arguments) == {"job_id"}:
         # 2026-11-04: the first call may hand the dispatch back instead of
         # holding the MCP request open. The same tool continues it, and the

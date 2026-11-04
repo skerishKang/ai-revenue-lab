@@ -110,14 +110,18 @@ _TOOL_LIST = sorted([
     _tool("pc_list", "폴더 목록",
           "지정 폴더 안의 파일과 폴더를 한 번에 50개씩 봅니다. 각 항목은 이름·종류(파일/폴더)·크기·수정 시각입니다. "
           "다음 페이지는 offset으로 이어 봅니다. 첫 응답에서 기다리는 시간이 지나면 작업 ID를 돌려주며, "
-          "같은 도구에 job_id를 넣어 다시 부르면 결과를 읽습니다.",
+          "같은 도구에 job_id를 넣어 다시 부르면 결과를 읽습니다. "
+          "path를 비우면 이 PC에 등록된 폴더 목록(표시 이름·실제 루트)을 돌려줍니다. "
+          "절대 경로도 등록 폴더 안이면 상대 경로로 바꿔 처리합니다. 먼저 path 없이 등록 폴더를 확인하세요.",
           {"path": _PATH, "job_id": _JOB_ID, "device": _DEVICE}, required=[]),
-    _tool("pc_search", "폴더 안 이름 검색", "지정 폴더 바로 아래 이름에서 검색어를 찾습니다. 하위 폴더 전체 검색은 아닙니다.",
+    _tool("pc_search", "폴더 안 이름 검색", "지정 폴더 바로 아래 이름에서 검색어를 찾습니다. 하위 폴더 전체 검색은 아닙니다. "
+          "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
           {"path": _PATH, "query": {"type": "string", "minLength": 1}, "device": _DEVICE},
           required=["path", "query"]),
     _tool("pc_read", "파일 읽기",
           "연결 PC의 파일을 읽습니다. 첫 응답에서 기다리는 시간이 지나면 작업 ID를 돌려주며, "
-          "같은 도구에 job_id를 넣어 다시 부르면 결과를 읽습니다.",
+          "같은 도구에 job_id를 넣어 다시 부르면 결과를 읽습니다. "
+          "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
           {"path": _PATH, "job_id": _JOB_ID, "device": _DEVICE}, required=[]),
     _tool("pc_shell", "PC 명령 실행",
           "연결 PC에서 명령을 실행합니다. 응답 대기 시간이 끝나도 PC 작업은 계속 실행되며, 돌려준 작업 ID로 상태와 출력을 읽거나 중지할 수 있습니다.",
@@ -131,7 +135,8 @@ _TOOL_LIST = sorted([
     _tool("pc_shell_stop", "PC 명령 중지",
           "진행 중인 연결 PC 명령을 중지하도록 요청합니다.",
           PC_SHELL_STOP_PROPERTIES, mutates=True, required=["job_id"]),
-    _tool("pc_write", "파일 쓰기", "내용을 파일에 씁니다. 사전 위임 밖이면 PADIEM에서 확인합니다.",
+    _tool("pc_write", "파일 쓰기", "내용을 파일에 씁니다. 사전 위임 밖이면 PADIEM에서 확인합니다. "
+          "먼저 path 없이 pc_list로 등록 폴더와 표시 이름을 확인하세요.",
           {"path": _PATH, "content": {"type": "string"}, "device": _DEVICE},
           mutates=True, required=["path", "content"]),
     _tool("pc_move", "파일 이동", "파일을 다른 경로로 옮깁니다. 사전 위임 밖이면 PADIEM에서 확인합니다.",
@@ -179,7 +184,9 @@ def validate_tool_arguments(name, arguments):
             job_id = arguments.get("job_id")
             return isinstance(job_id, str) and _PC_FILE_JOB_ID.fullmatch(job_id) is not None
         if names != {"path"}:
-            return False
+            # pc_list alone may name nothing: that asks which approved folders
+            # this PC has, so the caller can name a relative path at all.
+            return name == "pc_list" and not names
     valid = all(
         isinstance(arguments[key], str)
         and len(arguments[key]) >= schema.get("minLength", 0)

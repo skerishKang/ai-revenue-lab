@@ -50,7 +50,10 @@ def test_job_id_is_a_closed_argument_of_the_read_only_file_tools():
     # A continuation is the job id and nothing else.
     assert not transport.validate_tool_arguments("pc_list", {"path": ".", "job_id": JOB})
     assert not transport.validate_tool_arguments("pc_list", {"job_id": "dsp_not-a-dispatch"})
-    assert not transport.validate_tool_arguments("pc_list", {})
+    # 261105: a bare pc_list is a request for the approved folder list, so the
+    # caller can name a relative path at all. Every other tool still needs one.
+    assert transport.validate_tool_arguments("pc_list", {})
+    assert not transport.validate_tool_arguments("pc_read", {})
     # A mutation must report its own verification, so it never continues by id.
     assert not transport.validate_tool_arguments("pc_write", {"job_id": JOB})
     assert not transport.validate_tool_arguments("pc_search", {"job_id": JOB})
