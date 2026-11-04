@@ -280,11 +280,6 @@ class UserProfile:
     email: str
     display_name: str
     picture_url: str
-    # Server-side provider projection of the users row. Never projected to the
-    # browser; public_dict keeps the old shape. Existing constructions keep the
-    # defaults, so old call sites are unchanged.
-    auth_provider: str | None = None
-    provider_subject: str | None = None
 
     def public_dict(self) -> dict[str, str]:
         return {"email": self.email, "name": self.display_name, "picture": self.picture_url}
@@ -1324,7 +1319,7 @@ class D1HistoryStore:
 
     async def get_user(self, user_id: str) -> UserProfile | None:
         row = await self._first(
-            "SELECT id, email, display_name, picture_url, auth_provider, provider_subject FROM users "
+            "SELECT id, email, display_name, picture_url FROM users "
             "WHERE id=?",
             user_id,
         )
@@ -1335,8 +1330,6 @@ class D1HistoryStore:
             str(row.get("email", "")),
             str(row.get("display_name", "")),
             str(row.get("picture_url", "")),
-            str(row.get("auth_provider")) if row.get("auth_provider") is not None else None,
-            str(row.get("provider_subject")) if row.get("provider_subject") is not None else None,
         )
 
     async def list_conversations(
