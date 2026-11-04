@@ -22,6 +22,7 @@ def test_google_free_grade_has_exact_owner_backups(monkeypatch):
     assert backups == (
         "google/gemma-4-31b-it",
         "google/gemini-3.5-flash-lite",
+        "kilo/stealth/crouton-alpha",
     )
     decision = router_core.resolve_manual_route(
         TIER_DEFAULT_B14_MODEL, product_tier="free",

@@ -211,7 +211,8 @@ def test_business14_providers_reflect_registered_route_owners(client):
         assert set(entry.keys()) == {"id", "registered", "has_key"}
         assert entry["registered"] is True
         assert isinstance(entry["has_key"], bool)
-    assert not set(("kilo", "b-ai", "infron")) & {p["id"] for p in providers}
+    assert not set(("b-ai", "infron")) & {p["id"] for p in providers}
+    assert "kilo" in {p["id"] for p in providers}
     assert "experiential" in {p["id"] for p in providers}
 
 def test_health_and_models_surfaces_have_zero_openrouter_mentions(client):
