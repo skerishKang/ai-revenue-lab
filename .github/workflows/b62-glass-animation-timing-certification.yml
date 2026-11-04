@@ -7,6 +7,8 @@ name: B62 Glass Animation Timing Certification
 on:
   schedule:
     - cron: '25 18 * * *'
+  # 야간 점검이 실패했을 때 운영자가 같은 계약을 수동으로 재실행할 수 있게 한다.
+  workflow_dispatch:
 
 permissions:
   contents: read
