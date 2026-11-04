@@ -18,7 +18,7 @@
    * apps/padiem-chat/static/voice-stt-input.js
    *
    * Chat / Claw *thin* voice-input adapter. There is no STT engine here: the
-   * recognizer life-cycle, the Gemini / Groq sessions and the microphone
+   * recognizer life-cycle, the transcription sessions and the microphone
    * plumbing live in Global Classroom and in the Cloudflare voice Worker (OFF).
    * This module only turns a verified transcription event into one input-candidate
    * and lets the user approve and send it.

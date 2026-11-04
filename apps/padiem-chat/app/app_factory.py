@@ -436,7 +436,7 @@ from .tus_chat_attachment import (
 from .same_origin_guard import SameOriginGuardMiddleware
 from .session_revocation_guard import SessionRevocationGuardMiddleware
 from .saved_output_routes import output_detail, outputs_collection
-from .owner_model_preview_routes import claw_verified_model_choices, owner_model_name_preview
+from .owner_model_preview_routes import claw_verified_model_choices
 from .saved_outputs import SavedOutputStore
 from .tier_identity_client import PadiemTierB14Client
 from .usage_gate import UsageCounterStore, UsageGate
@@ -629,7 +629,6 @@ def create_app(
         Route("/api/admin/session", platform_admin_session, methods=["GET"]),
         Route("/api/admin/roles", platform_admin_role_assign, methods=["POST"]),
         Route("/api/admin/roles/{user_id}", platform_admin_role_revoke, methods=["DELETE"]),
-        Route("/api/models/owner-name-preview", owner_model_name_preview, methods=["GET"]),
         Route("/api/claw/verified-model-choices", claw_verified_model_choices, methods=["GET"]),
         Route("/api/auth/status", auth_status, methods=["GET"]),
         Route(VOICE_IDENTITY_PATH, voice_identity, methods=["GET"]),

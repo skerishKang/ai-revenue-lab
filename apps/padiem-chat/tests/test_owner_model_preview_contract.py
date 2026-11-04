@@ -1,4 +1,11 @@
-"""#3790 B62: read-only model inventory with no product dispatch enablement."""
+"""#6828: the public model-name preview is gone; only grades reach the browser.
+
+The removed surface had no owner decision behind it: an unauthenticated GET
+answered with model identities, and a browser asset carried the same list. This
+spec pins the ABSENCE of every one of those paths, and pins the two things that
+were deliberately kept — the composer layout sheet that shares the file name,
+and the authenticated Claw chooser another lane is converting to grade choices.
+"""
 from pathlib import Path
 
 from starlette.testclient import TestClient
@@ -6,89 +13,74 @@ from starlette.testclient import TestClient
 from app.app_factory import create_app
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
-EXPECTED = {
-    "google/gemini-3.1-flash-lite": "Gemini 3.1 Flash Lite",
-    "google/gemini-3.5-flash-lite": "Gemini 3.5 Flash Lite",
-    "google/gemma-4-26b-a4b-it": "Gemma 4 26B",
-    "google/gemma-4-31b-it": "Gemma 4 31B",
-}
+APP = Path(__file__).resolve().parents[1] / "app"
+PREVIEW_PATH = "/api/models/owner-name-preview"
+REMOVED_ASSET = STATIC / "owner-model-preview.js"
+LAYOUT_CSS = STATIC / "owner-model-preview.css"
 
 
-def test_readonly_model_preview_uses_canonical_owner_name_parts_no_authority():
+def test_public_model_name_preview_route_is_not_registered():
     with TestClient(create_app()) as client:
-        response = client.get("/api/models/owner-name-preview")
-        assert response.status_code == 200
-        assert response.headers["cache-control"] == "no-store"
-        payload = response.json()
-        assert payload["scope"] == "owner_confirmed_google_subset"
-        assert payload["complete_inventory"] is False
-        assert payload["execution_enabled"] is False
-        assert set(payload) == {
-            "scope", "complete_inventory", "execution_enabled", "model_names"
-        }
-        assert {r["model_id"]: r["individual_model_name"]
-                for r in payload["model_names"]} == EXPECTED
-        for row in payload["model_names"]:
-            assert row == {
-                "model_id": row["model_id"],
-                "product_name_prefix": "파디엠플러스",
-                "individual_model_name": EXPECTED[row["model_id"]],
-                "owner_selected": True,
-                "customer_selectable": False,
-            }
-
-
-def test_preview_endpoint_accepts_no_model_selection_or_mutation():
-    with TestClient(create_app()) as client:
+        # The removed surface answered GET with identities; GET must now be
+        # unmatched, and no verb may hand back the old payload shape.
+        assert client.get(PREVIEW_PATH).status_code == 404
         for method in ("post", "put", "patch", "delete"):
-            response = client.request(
-                method.upper(), "/api/models/owner-name-preview",
-                json={"model": "google/gemini-3.5-flash-lite"},
-            )
-            assert response.status_code == 405
+            response = client.request(method.upper(), PREVIEW_PATH, json={})
+            assert response.status_code in (404, 405), (method, response.status_code)
+            assert "model_names" not in response.text
 
 
-def test_preview_dialog_is_accessible_readonly_and_not_in_composer_submission():
+def test_preview_handler_and_registration_are_gone_from_the_source():
+    app_source = (APP / "app_factory.py").read_text(encoding="utf-8")
+    routes_source = (APP / "owner_model_preview_routes.py").read_text(encoding="utf-8")
+    assert PREVIEW_PATH not in app_source
+    assert "owner_model_name_preview" not in app_source
+    assert "owner_model_name_preview" not in routes_source
+
+
+def test_removed_browser_asset_is_absent_and_no_longer_referenced():
+    assert not REMOVED_ASSET.exists(), REMOVED_ASSET
     html = (STATIC / "index.html").read_text(encoding="utf-8")
-    script = (STATIC / "owner-model-preview.js").read_text(encoding="utf-8")
-    assert 'id="ownerModelPreviewDialog"' in html
-    assert 'aria-labelledby="ownerModelPreviewTitle"' in html
-    assert 'aria-haspopup="dialog"' in html
-    assert '<script src="./owner-model-preview.js"></script>' in html
+    assert "owner-model-preview.js" not in html
+    for identifier in (
+        "ownerModelPreviewDialog",
+        "ownerModelPreviewTitle",
+        "ownerModelPreviewScope",
+        "ownerModelPreviewStatus",
+        "ownerModelPreviewList",
+        "ownerModelPreviewClose",
+        "ownerModelPreviewOpen",
+    ):
+        assert identifier not in html, identifier
+    for js in STATIC.glob("*.js"):
+        assert "owner-model-preview.js" not in js.read_text(encoding="utf-8"), js.name
+
+
+def test_preview_copy_is_gone_from_every_locale():
+    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    assert "owner-model-preview" not in locale
+    assert "모델 현황" not in locale
+    assert "model status" not in locale
+
+
+def test_layout_sheet_is_kept_because_composer_reservations_live_there():
+    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    css = LAYOUT_CSS.read_text(encoding="utf-8")
     assert 'rel="stylesheet" href="./owner-model-preview.css"' in html
-    assert 'owner-model-preview-scope' in html
-    assert "customer_selectable === false" in script
-    assert 'method: "GET"' in script
-    assert 'cache: "no-store"' in script
-    assert 'credentials: "same-origin"' in script
-    assert "list.replaceChildren(...rows)" in script
-    assert "modelIdInput.value" not in script
-    assert "messageInput" not in script
-    assert ".submit(" not in script
-    assert "innerHTML" not in script
+    assert "width: 116px" in css
+    assert ".send-button { flex: 0 0 44px;" in css
 
 
-def test_model_preview_bilingual_copy():
-    s=(STATIC/"locale.js").read_text(encoding="utf-8")
-    assert s.count('"owner-model-preview-open":') == 2
-    assert s.count('"owner-model-preview-no-activation":') == 2
-    assert s.count('"owner-model-preview-hold":') == 2
-    assert "전체 선정 목록은 아니며" in s
-    assert "not the full approved inventory" in s
-
-
-def test_model_preview_does_not_promote_a_synthetic_tier_or_dispatch():
-    # Other B62 tests intentionally install a TEST-ONLY executable Plus route
-    # by an autouse fixture. Neither fixture nor source registration grants
-    # this name-preview endpoint any execution or entitlement authority.
+def test_authenticated_claw_chooser_is_untouched_by_the_removal():
+    # Another lane converts this picker to grade choices; until then it must
+    # stay authenticated, so removing the public preview cannot widen it.
     with TestClient(create_app()) as client:
-        payload=client.get("/api/models/owner-name-preview").json()
-    assert payload["execution_enabled"] is False
-    assert all(not item["customer_selectable"]
-               for item in payload["model_names"])
+        response = client.get("/api/claw/verified-model-choices")
+        assert response.status_code == 401
+        assert response.json()["error"]["code"] == "authentication_required"
 
 
-def test_model_status_button_cannot_hijack_existing_tier_picker():
+def test_grade_pill_remains_the_only_model_choice_surface_in_the_composer():
     html = (STATIC / "index.html").read_text(encoding="utf-8")
     mode = (STATIC / "product-capabilities.js").read_text(encoding="utf-8")
     locale = (STATIC / "locale.js").read_text(encoding="utf-8")
@@ -98,10 +90,9 @@ def test_model_status_button_cannot_hijack_existing_tier_picker():
     assert 'const modePill = document.querySelector(".model-pill")' in mode
     assert '[".model-pill span:last-child", "mode"]' not in locale
     assert '[".model-pill", "aria-label", "tier"]' in locale
-    assert "model-pill:not(#ownerModelPreviewOpen)" not in locale
 
 
-def test_model_status_button_not_in_mobile_composer_tools_row():
+def test_grade_pill_stays_in_the_mobile_composer_tools_row():
     html = (STATIC / "index.html").read_text(encoding="utf-8")
     assert 'id="ownerModelPreviewOpen"' not in html
     tools_start = html.index('class="composer-tools"')
