@@ -250,6 +250,10 @@ def cost_estimate(
     return usd, krw, COST_KNOWN_FREE if usd == 0.0 else COST_CONFIGURED
 
 
+#: The closed reasoning vocabulary the platform may send (#6838).
+_REASONING_LEVELS = frozenset({"minimal", "low", "medium", "high"})
+
+
 @dataclass(frozen=True, slots=True)
 class AttemptRecord:
     """One physical provider attempt, successful or not.
@@ -285,6 +289,9 @@ class AttemptRecord:
     cost_basis: str = COST_UNKNOWN
     endpoint: str | None = None
     protocol: str = "unknown"
+    #: The reasoning level this attempt actually sent (#6838). None means the
+    #: request carried no reasoning option at all.
+    reasoning_effort: str | None = None
     #: Whether this candidate was actually sent to a provider. A candidate the
     #: gateway skipped (for example a route that cannot serve a declared tool)
     #: is visible evidence, but it is not a provider call and must never be
@@ -387,6 +394,7 @@ class AttemptRecord:
             "endpoint": self.endpoint,
             "protocol": self.protocol,
             "dispatched": 1 if self.dispatched else 0,
+            "reasoning_effort": self.reasoning_effort,
         }
 
 
@@ -692,7 +700,17 @@ class LedgerDraft:
         usage: Any = None, actual_response_model: str | None = None,
         finish_reason: str | None = None, provider_request_id: str | None = None,
         dispatched: bool = True, protocol: str | None = None,
+        reasoning_effort: str | None = None,
     ) -> AttemptRecord:
+        # #6838: the row records the level B14 actually put on the wire for this
+        # model. The platform lane notes its decision per request, so an attempt
+        # that was retried without the option correctly stores None.
+        if reasoning_effort is None and dispatched:
+            from .reasoning_policy import sent_reasoning_effort
+
+            reasoning_effort = sent_reasoning_effort(model_id)
+        if reasoning_effort is not None and reasoning_effort not in _REASONING_LEVELS:
+            raise CallLedgerError("invalid reasoning effort")
         prompt, completion, total, reasoning, token_source = token_evidence(usage)
         estimated_usd, estimated_krw, basis = cost_estimate(
             actual_response_model or model_id, prompt, completion
@@ -724,6 +742,7 @@ class LedgerDraft:
             cost_basis=basis, endpoint=self.endpoint,
             protocol=protocol or self.protocol,
             dispatched=dispatched,
+            reasoning_effort=reasoning_effort,
         )
         self.attempts.append(attempt)
         return attempt

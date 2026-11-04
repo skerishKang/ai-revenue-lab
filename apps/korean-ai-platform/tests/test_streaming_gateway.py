@@ -327,7 +327,10 @@ def test_google_tool_stream_preserves_text_and_explicit_parameters(monkeypatch):
     assert response.status_code == 200, response.text
     assert sent[0]["systemInstruction"] == {"parts": [{"text": "System instruction"}]}
     assert [item["role"] for item in sent[0]["contents"]] == ["user", "model", "user"]
-    assert sent[0]["generationConfig"] == {"temperature": 0.3, "maxOutputTokens": 100, "thinkingConfig": {"thinkingLevel": "LOW"}}
+    # #6838: the platform lane no longer forwards a caller's reasoning value.
+    # This model declares no reasoning support in the public registry, so the
+    # option is omitted rather than passed through.
+    assert sent[0]["generationConfig"] == {"temperature": 0.3, "maxOutputTokens": 100}
     assert sent[0]["toolConfig"] == {"functionCallingConfig": {"mode": "NONE"}}
     frames = _json_data_frames(response.text)
     assert frames[0]["choices"][0]["delta"] == {"content": "안녕"}

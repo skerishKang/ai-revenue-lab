@@ -147,9 +147,9 @@ def test_a_second_start_applies_nothing_and_records_the_same_migrations(host_dir
     """
     path, _ = host_dirs
     first = SqliteLedger(path)
-    assert first.apply_migrations() == 4
+    assert first.apply_migrations() == 5
     recorded = first.recorded_migrations()
-    assert [name[:4] for name in recorded] == ["0001", "0002", "0003", "0004"]
+    assert [name[:4] for name in recorded] == ["0001", "0002", "0003", "0004", "0005"]
     first.close()
 
     restarted = SqliteLedger(path)
@@ -178,17 +178,17 @@ def test_a_later_migration_runs_once_and_in_order_after_the_first(host_dirs, tmp
     source = tmp_path / "migrations"
     shutil.copytree(APP_ROOT / "migrations", source)
     ledger = SqliteLedger(path, migrations_dir=source)
-    assert ledger.apply_migrations() == 4
+    assert ledger.apply_migrations() == 5
 
     # #6788 added the real 0004_b14_attempt_timeout_reason, so the synthetic
-    # "migration added later" becomes 0005 here.
-    (source / "0005_b14_local_marker.sql").write_text(
+    # "migration added later" becomes 0006 here.
+    (source / "0006_b14_local_marker.sql").write_text(
         "CREATE TABLE b14_local_marker (id INTEGER PRIMARY KEY CHECK (id = 1));",
         encoding="utf-8",
     )
     assert ledger.apply_migrations() == 1
     assert [name[:4] for name in ledger.recorded_migrations()] == [
-        "0001", "0002", "0003", "0004", "0005",
+        "0001", "0002", "0003", "0004", "0005", "0006",
     ]
     # A third start sees both names recorded and runs neither script again.
     assert ledger.apply_migrations() == 0
@@ -230,7 +230,7 @@ def test_the_credential_source_column_names_two_states_and_defaults_to_pool(host
     """
     path, _ = host_dirs
     ledger = SqliteLedger(path)
-    assert ledger.apply_migrations() == 4
+    assert ledger.apply_migrations() == 5
     import sqlite3
 
     connection = sqlite3.connect(str(path))

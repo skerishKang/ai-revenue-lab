@@ -36,6 +36,11 @@ class CatalogModel:
     source: str = "kilo_official_gateway_models"
     source_checked_at: str = KILO_SOURCE_CHECKED_AT
     snapshot_state: str = SNAPSHOT_STATE_CONFIGURED
+    # #6838: the reasoning decision for this model. Values live only in the
+    # Owner overlay, so a model that declares nothing stays unsupported and no
+    # reasoning option is sent for it.
+    reasoning_supported: bool = False
+    reasoning_default: str | None = None
 
     @property
     def price_is_known(self) -> bool:
