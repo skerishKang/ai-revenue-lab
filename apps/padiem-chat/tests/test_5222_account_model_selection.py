@@ -498,6 +498,11 @@ function makeEl(tag) {
     while (cur) { if (cur === el) return true; cur = cur.parentNode; }
     return false;
   };
+  el.closest = (sel) => {
+    let cur = el.parentNode;
+    while (cur) { if (matches(cur, sel)) return cur; cur = cur.parentNode; }
+    return null;
+  };
   el.addEventListener = (t, fn) => { (el.listeners[t] = el.listeners[t] || []).push(fn); };
   el.querySelector = (sel) => el.querySelectorAll(sel)[0] || null;
   el.querySelectorAll = (sel) => {
