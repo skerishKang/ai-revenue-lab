@@ -1,0 +1,182 @@
+name: Deploy Bundle Boot Test
+
+# #6855: CI tested source, but not the bundle a host actually starts. These jobs
+# build the bundle from the same staging list the deploy scripts use, run it from
+# a bundle-only directory as a non-privileged account, and require /health 200.
+# No deployment, no Cloudflare credentials, no real provider keys.
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/deploy-bundle-boot-test.yml'
+      - '.github/scripts/deploy_bundle_boot/**'
+      - '.github/workflows/b14-worker-json-bundle-preflight.yml'
+      - 'apps/korean-ai-platform/**'
+      - 'apps/padiem-chat/**'
+      - 'apps/padiem-ai-engine/**'
+      - 'apps/korean-ai-code-agent/src/kagent/**'
+      - 'apps/b66-quote-adapter/app/extraction_routing.py'
+      - 'apps/b66-quote-adapter/app/file_intake.py'
+      - 'packages/padiem-ai-core/**'
+      - 'packages/padiem-control-plane/**'
+      - 'packages/padiem-auth-verify/**'
+      - 'deploy/host-com2/chat/**'
+      - 'deploy/host-com2/p01/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-bundle-boot-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  b14-bundle-boot:
+    name: B14 bundle-only boot (deploy.sh staging list)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.13.5'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Stage deploy.sh's list and build the exact Wrangler bundle
+        working-directory: apps/korean-ai-platform
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../../.github/scripts/deploy_bundle_boot/b14.py stage \
+            --repo "$GITHUB_WORKSPACE" \
+            --manifest "$RUNNER_TEMP/b14-manifest.json"
+          uv sync --frozen
+          uv run pywrangler sync --force
+          test -d python_modules
+          rm -rf .venv .venv-workers
+          npx --yes wrangler@4.149.0 deploy --dry-run \
+            --outdir "$RUNNER_TEMP/b14-wrangler"
+          python3 ../../.github/scripts/deploy_bundle_boot/b14.py verify \
+            --bundle "$RUNNER_TEMP/b14-wrangler" \
+            --manifest "$RUNNER_TEMP/b14-manifest.json"
+
+      - name: Boot the bundle-only folder as a non-privileged user
+        working-directory: apps/korean-ai-platform
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv sync --frozen
+          sudo env "PATH=$PATH" python3 ../../.github/scripts/deploy_bundle_boot/b14.py boot \
+            --bundle "$RUNNER_TEMP/b14-wrangler" \
+            --manifest "$RUNNER_TEMP/b14-manifest.json" \
+            --python "$PWD/.venv/bin/python"
+
+      - name: Never deploy
+        run: |
+          echo 'PRODUCTION_DEPLOYMENT=0'
+          echo 'CLOUDFLARE_API_CALLS=0'
+
+  chat-bundle-boot:
+    name: Chat bundle-only boot (install.sh staging list)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Stage install.sh's list as a dereferenced bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/deploy_bundle_boot/chat.py stage \
+            --repo "$GITHUB_WORKSPACE" \
+            --bundle "$RUNNER_TEMP/chat-bundle"
+
+      - name: Install the host's hashed runtime closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/chat-venv"
+          "$RUNNER_TEMP/chat-venv/bin/python" -m pip --isolated install \
+            --index-url https://pypi.org/simple \
+            --disable-pip-version-check --require-hashes \
+            -r deploy/host-com2/chat/requirements.txt
+
+      - name: Boot the bundle-only folder as a non-privileged user
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo env "PATH=$PATH" python3 .github/scripts/deploy_bundle_boot/chat.py boot \
+            --bundle "$RUNNER_TEMP/chat-bundle" \
+            --python "$RUNNER_TEMP/chat-venv/bin/python"
+
+      - name: Never start a host service
+        run: |
+          echo 'SYSTEMD_START=0'
+          echo 'PRODUCTION_DEPLOYMENT=0'
+
+  p01-bundle-boot:
+    name: P01 bundle-only boot (stage_code.sh + vendored core)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.13.5'
+
+      - name: Resolve the Engine dependency closure
+        working-directory: apps/padiem-ai-engine
+        shell: bash
+        run: uv sync --extra dev
+
+      - name: Stage with the real stage_code.sh and check the vendored core
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo env "PATH=$PATH" python3 .github/scripts/deploy_bundle_boot/p01.py stage \
+            --repo "$GITHUB_WORKSPACE" \
+            --root /opt/padiem/p01
+
+      - name: Boot the bundle-only folder as a non-privileged user
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo env "PATH=$PATH" python3 .github/scripts/deploy_bundle_boot/p01.py boot \
+            --repo "$GITHUB_WORKSPACE" \
+            --root /opt/padiem/p01 \
+            --python "$GITHUB_WORKSPACE/apps/padiem-ai-engine/.venv/bin/python"
+
+      - name: Never start a host service
+        run: |
+          echo 'SYSTEMD_START=0'
+          echo 'PRODUCTION_DEPLOYMENT=0'
