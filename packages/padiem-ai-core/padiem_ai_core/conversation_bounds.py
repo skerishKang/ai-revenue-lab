@@ -1,22 +1,31 @@
-"""Bounded conversation history for one model call (#6812 stage 2).
+"""Model-native conversation history for one model call (#4379, #6842).
 
 The browser sends the thread as it stands, the server decides how much of it
-reaches the model. Only the oldest turns are dropped: the system instruction,
-the newest turn (which carries the current user question) and any system entry
-inside the history always survive. Nothing here changes the browser request
-contract; a caller applies these bounds right before dispatch.
+reaches the model. PADIEM owns no turn total and no character total: the bound
+is the context window the model registry declares for the model this request
+actually reaches. The history is trimmed only when its estimated input exceeds
+that window minus the answer's reservation, oldest turns first. A model whose
+window the registry does not declare is never trimmed; the provider's own limit
+is the truth then (#4379).
+
+Only the oldest turns are dropped: the system instruction, the newest turn
+(which carries the current user question), the turn before it (whose reply is
+being continued, so a bound never orphans an answer) and any system entry inside
+the history always survive. Nothing here changes the browser request contract; a
+caller applies these bounds right before dispatch.
 """
 
 from __future__ import annotations
 
+import json
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
-#: Recent turns that may travel with a request.
-DEFAULT_HISTORY_MAX_TURNS = 20
-#: Characters of conversation content that may travel with a request.
-DEFAULT_HISTORY_MAX_CHARS = 12_000
+#: The share of a declared context window held back for the answer. The reserve
+#: scales with the model: it is not a PADIEM output total, only the room an
+#: answer needs before the input may use the rest of the window.
+DEFAULT_OUTPUT_RESERVE_DIVISOR = 4
 
 #: Turns that always survive, newest first: the turn holding the current
 #: question and the turn before it, which holds the answer being continued.
@@ -41,11 +50,55 @@ class BoundedHistory:
     dropped_messages: int = 0
     dropped_turns: int = 0
     note: str | None = None
+    #: Estimated input tokens of ``messages`` plus the note, and the budget the
+    #: estimate was compared against (None when the model's window is unknown).
+    input_tokens: int = 0
+    input_budget_tokens: int | None = None
 
 
-def _content_chars(message: Mapping[str, Any]) -> int:
-    content = message.get("content")
-    return len(content) if isinstance(content, str) else 0
+def estimate_input_tokens(value: Any) -> int:
+    """The low-side input estimate: four UTF-8 bytes per token.
+
+    ``compaction.estimate_tokens`` takes the larger of characters and bytes/4 so
+    a Korean prompt is never undercounted for a compaction decision. A window
+    comparison needs the opposite bias: history may only be dropped when the
+    input certainly does not fit, because removing content that fits would be a
+    PADIEM cap in disguise. The byte term is therefore used alone.
+    """
+    if isinstance(value, str):
+        text = value
+    else:
+        text = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+    return (len(text.encode("utf-8")) + 3) // 4
+
+
+def model_input_budget(
+    context_window: int | None, *, reserved_output_tokens: int | None = None
+) -> int | None:
+    """Tokens this model may receive, or None when its window is unknown.
+
+    Unknown covers an absent value and the registry's own ``0`` for "not
+    published": the registry validates ``context_window`` as a non-negative
+    integer, so 0 is its "unknown" marker and never a real window.
+    """
+    if (
+        context_window is None
+        or isinstance(context_window, bool)
+        or not isinstance(context_window, int)
+        or context_window <= 0
+    ):
+        return None
+    if reserved_output_tokens is None:
+        reserve = context_window // DEFAULT_OUTPUT_RESERVE_DIVISOR
+    else:
+        if (
+            isinstance(reserved_output_tokens, bool)
+            or not isinstance(reserved_output_tokens, int)
+            or reserved_output_tokens < 0
+        ):
+            raise ValueError("reserved_output_tokens must be a non-negative integer")
+        reserve = reserved_output_tokens
+    return max(1, context_window - reserve)
 
 
 def _turns(messages: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
@@ -62,63 +115,68 @@ def _turns(messages: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
 def bound_conversation_history(
     messages: Iterable[Mapping[str, Any]],
     *,
-    max_turns: int = DEFAULT_HISTORY_MAX_TURNS,
-    max_chars: int = DEFAULT_HISTORY_MAX_CHARS,
+    model_context_window: int | None = None,
+    reserved_output_tokens: int | None = None,
     note: str = HISTORY_TRUNCATION_NOTE,
 ) -> BoundedHistory:
-    """Keep the newest turns that fit both the turn and the character cap.
+    """Keep the history that fits the model's registered input budget.
 
-    The newest two turns are kept whatever their size: the newest holds the
-    question being answered and the one before it holds the answer it follows
-    from. Older turns are dropped oldest-first until either cap would be
-    exceeded. Dropped history is disclosed through ``note`` so the caller can
-    place it in the system instruction.
+    ``model_context_window`` is the value the model registry declares for the
+    model this request reaches. None, 0 or any non-positive value means the
+    window is not declared, and the history travels untouched (#4379). When it
+    is declared, the newest turns are kept while the estimated input fits the
+    window minus the answer's reservation; older turns are dropped oldest-first.
+    The newest two turns are kept whatever their size. Dropped history is
+    disclosed through ``note`` so the caller can place it in the system
+    instruction.
     """
 
-    if isinstance(max_turns, bool) or not isinstance(max_turns, int) or max_turns < 1:
-        raise ValueError("max_turns must be a positive integer")
-    if isinstance(max_chars, bool) or not isinstance(max_chars, int) or max_chars < 1:
-        raise ValueError("max_chars must be a positive integer")
-
     entries = [dict(message) for message in messages if isinstance(message, Mapping)]
-    kept_roles = [entry for entry in entries if entry.get("role") in NEVER_DROPPED_ROLES]
+    budget = model_input_budget(
+        model_context_window, reserved_output_tokens=reserved_output_tokens
+    )
+    if budget is None:
+        return BoundedHistory(messages=tuple(entries))
+
     turns = _turns(
         [entry for entry in entries if entry.get("role") not in NEVER_DROPPED_ROLES]
     )
-
     always_kept = min(ALWAYS_KEPT_TURNS, len(turns))
-    kept_turns: set[int] = set()
-    used_chars = 0
-    for turn_index in range(len(turns) - 1, -1, -1):
-        turn_chars = sum(_content_chars(message) for message in turns[turn_index])
-        if len(kept_turns) >= always_kept:
-            if len(kept_turns) >= max_turns:
-                break
-            if used_chars + turn_chars > max_chars:
-                break
-        kept_turns.add(turn_index)
-        used_chars += turn_chars
+    kept_turns: set[int] = set(range(len(turns)))
 
+    def retained(kept: set[int]) -> list[dict[str, Any]]:
+        out: list[dict[str, Any]] = []
+        turn_cursor = -1
+        for entry in entries:
+            if entry.get("role") in NEVER_DROPPED_ROLES:
+                out.append(entry)
+                continue
+            if entry.get("role") == "user":
+                turn_cursor += 1
+            if turn_cursor in kept:
+                out.append(entry)
+        return out
+
+    def measured(kept: set[int]) -> int:
+        total = estimate_input_tokens(retained(kept))
+        if len(kept) < len(turns):
+            total += estimate_input_tokens(note)
+        return total
+
+    input_tokens = measured(kept_turns)
+    while len(kept_turns) > always_kept and input_tokens > budget:
+        kept_turns.discard(min(kept_turns))
+        input_tokens = measured(kept_turns)
+
+    kept = retained(kept_turns)
     dropped_turns = len(turns) - len(kept_turns)
-    retained: list[dict[str, Any]] = []
-    dropped_messages = 0
-    turn_cursor = -1
-    for entry in entries:
-        if entry.get("role") in NEVER_DROPPED_ROLES:
-            retained.append(entry)
-            continue
-        if entry.get("role") == "user":
-            turn_cursor += 1
-        if turn_cursor in kept_turns:
-            retained.append(entry)
-        else:
-            dropped_messages += 1
-
-    truncated = dropped_messages > 0 or dropped_turns > 0
+    truncated = dropped_turns > 0
     return BoundedHistory(
-        messages=tuple(retained),
+        messages=tuple(kept),
         truncated=truncated,
-        dropped_messages=dropped_messages,
+        dropped_messages=len(entries) - len(kept),
         dropped_turns=dropped_turns,
         note=note if truncated else None,
+        input_tokens=input_tokens,
+        input_budget_tokens=budget,
     )

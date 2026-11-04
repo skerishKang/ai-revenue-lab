@@ -294,8 +294,13 @@ def test_deployment_stages_the_same_shared_validator_source():
     root = Path(__file__).resolve().parents[3]
     deploy = (root / "apps/korean-ai-platform/deploy.sh").read_text()
     preflight = (root / ".github/workflows/b14-worker-json-bundle-preflight.yml").read_text()
-    assert "document_parser_boundary.py pc_work_metrics.py; do" in deploy
-    assert "document_parser_boundary.py pc_work_metrics.py; do" in preflight
+    assert "document_parser_boundary.py pc_work_metrics.py" in deploy
+    assert "document_parser_boundary.py pc_work_metrics.py" in preflight
+    # #6842: the model-native input bound stages with the same list, in both
+    # places, so a deployed Worker resolves the module platform.py imports.
+    for module in ("conversation_bounds.py", "evidence_blocks.py"):
+        assert module in deploy
+        assert module in preflight
 
 
 @pytest.mark.parametrize("query", ["limit=0", "limit=201", "unknown=private", "group_by=product"])

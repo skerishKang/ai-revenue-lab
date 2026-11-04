@@ -1,27 +1,21 @@
-"""#6812 stage 2: the server bounds the conversation history it sends to B14.
+"""#4379/#6842: Chat adds no turn or character total of its own.
 
 The browser keeps sending the whole thread and the request contract is
-untouched; only what the server hands the model is bounded. The system
-instruction and the current question always survive, and a trimmed history is
-disclosed in the system wording instead of looking complete.
+untouched. #6812 stage 2 had the server cut that thread to 20 turns / 12,000
+characters; #4379 makes the model's registered context window the only bound, and
+B14 applies it where the registry is read. Chat forwards what it received.
 """
 
 from __future__ import annotations
 
 from app.b14_client import _execution_request, _multimodal_execution_request
 from app.config import Settings
-from app.request_contract import _validate_payload_parts
 from app.task_modes import get_task_mode
-from padiem_ai_core.conversation_bounds import (
-    DEFAULT_HISTORY_MAX_CHARS,
-    DEFAULT_HISTORY_MAX_TURNS,
-    HISTORY_TRUNCATION_NOTE,
-)
 
 MODEL_ID = "bounds/test-model"
 
 
-def thread(turns: int, *, chars: int = 10) -> list[dict[str, str]]:
+def thread(turns: int, *, chars: int = 40) -> list[dict[str, str]]:
     messages: list[dict[str, str]] = []
     for turn in range(1, turns + 1):
         messages.append({"role": "user", "content": f"Q{turn}:" + "x" * chars})
@@ -40,86 +34,39 @@ def request_for(messages, **kwargs):
     )
 
 
-def test_long_thread_is_trimmed_before_dispatch() -> None:
+def test_a_long_thread_travels_whole() -> None:
     messages = thread(30)
-
-    request = request_for(messages)
-
-    assert len(request.messages) == DEFAULT_HISTORY_MAX_TURNS * 2
-    # The current question is the newest user entry and it is still there.
-    assert request.messages[-2]["content"].startswith("Q30:")
-    assert request.messages[-1]["content"].startswith("A30:")
-
-
-def test_trimming_is_disclosed_in_the_system_wording() -> None:
-    request = request_for(thread(30))
-
-    context = request.additional_system_context or ""
-    assert HISTORY_TRUNCATION_NOTE in context
-
-
-def test_the_previous_exchange_survives_trimming() -> None:
-    """#4379: a follow-up still sends the turn it answers, as stored."""
-
-    messages = thread(30)
-    messages[-4] = {"role": "user", "content": "LONG-PROMPT:" + "z" * 40_000}
-    messages[-3] = {"role": "assistant", "content": "LONG-ANSWER:" + "w" * 40_000}
-
-    request = request_for(messages)
-
-    contents = [message["content"] for message in request.messages]
-    assert any(str(item).startswith("LONG-PROMPT:") for item in contents)
-    assert any(str(item).startswith("LONG-ANSWER:") for item in contents)
-    assert request.messages[-1]["content"].startswith("A30:")
-
-
-def test_system_instruction_and_question_survive_trimming() -> None:
-    request = request_for(thread(40))
-
-    assert request.agent.system_instruction
-    context = request.additional_system_context or ""
-    # The server-sampled clock preinstruction keeps its place ahead of the note.
-    assert context.index(HISTORY_TRUNCATION_NOTE) > 0
-    assert request.messages[-2]["role"] == "user"
-
-
-def test_short_thread_is_sent_unchanged_and_undisclosed() -> None:
-    messages = thread(3)
 
     request = request_for(messages)
 
     assert list(request.messages) == messages
-    assert HISTORY_TRUNCATION_NOTE not in (request.additional_system_context or "")
-
-
-def test_character_cap_bounds_the_history_it_sends() -> None:
-    messages = thread(30, chars=900)
-
-    request = request_for(messages, history_max_chars=3_000)
-
-    # The newest exchange (question + the answer it continues) always survives;
-    # everything older is dropped by the character cap.
-    assert len(request.messages) == 4
     assert request.messages[-2]["content"].startswith("Q30:")
-    assert request.messages[0]["content"].startswith("Q29:")
-    assert not any(
-        message["content"].startswith("Q28:") for message in request.messages
-    )
 
 
-def test_multimodal_history_uses_the_same_bounds() -> None:
-    messages = thread(30)
-    # Multimodal content belongs to a user turn; this one is the current turn.
-    messages[-2] = {
-        "role": "user",
-        "content": [
-            {"type": "text", "text": "Q30:"},
-            {"type": "image_url", "image_url": {"url": (
-                "data:image/png;base64,"
-                "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg=="
-            )}},
-        ],
-    }
+def test_no_truncation_wording_is_added() -> None:
+    request = request_for(thread(60))
+
+    assert "생략되었습니다" not in (request.additional_system_context or "")
+
+
+def test_a_single_huge_turn_is_not_cut() -> None:
+    # No trailing whitespace: the request contract trims edges, and the point
+    # here is that the body of a huge turn is never shortened (#4379).
+    messages = thread(3) + [{"role": "user", "content": "긴 질문" * 20_000}]
+
+    request = request_for(messages)
+
+    assert len(request.messages) == len(messages)
+    assert request.messages[-1]["content"] == messages[-1]["content"]
+    assert len(request.messages[-1]["content"]) == len(messages[-1]["content"])
+
+
+def test_the_multimodal_lane_forwards_the_thread_too() -> None:
+    parts = [
+        {"type": "text", "text": "이 사진을 설명해 주세요"},
+        {"type": "image_url", "image_url": {"url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="}},
+    ]
+    messages = thread(25) + [{"role": "user", "content": parts}]
 
     request = _multimodal_execution_request(
         messages,
@@ -128,34 +75,18 @@ def test_multimodal_history_uses_the_same_bounds() -> None:
         additional_system_context=None,
     )
 
-    assert len(request.messages) == DEFAULT_HISTORY_MAX_TURNS * 2
-    assert HISTORY_TRUNCATION_NOTE in (request.additional_system_context or "")
+    # The lane normalizes parts into immutable mappings; what matters is that
+    # both parts of the newest turn and every earlier turn are still there.
+    assert len(request.messages) == len(messages)
+    last = request.messages[-1]
+    assert last["role"] == "user"
+    assert last["content"][0]["text"] == parts[0]["text"]
+    assert last["content"][1]["image_url"]["url"] == parts[1]["image_url"]["url"]
+    assert request.messages[0]["content"] == messages[0]["content"]
 
 
-def test_browser_request_contract_still_accepts_the_whole_thread() -> None:
-    messages = thread(30)
-
-    parsed, skill, tool_request = _validate_payload_parts({"messages": messages})
-
-    # The browser contract is unchanged: nothing is trimmed at the door.
-    assert len(parsed) == 60
-    assert parsed == messages
-    assert skill is not None
-    assert tool_request is None
-
-
-def test_settings_defaults_match_the_shared_bounds() -> None:
+def test_the_settings_carry_no_history_total() -> None:
     settings = Settings()
 
-    assert settings.history_max_turns == DEFAULT_HISTORY_MAX_TURNS
-    assert settings.history_max_chars == DEFAULT_HISTORY_MAX_CHARS
-
-
-def test_history_bounds_are_configurable() -> None:
-    settings = Settings.from_values(history_max_turns="5", history_max_chars="4000")
-
-    assert settings.history_max_turns == 5
-    assert settings.history_max_chars == 4_000
-    # And the configured bound is the one that reaches the request.
-    request = request_for(thread(30), history_max_turns=5, history_max_chars=4_000)
-    assert len(request.messages) == 10
+    assert not hasattr(settings, "history_max_turns")
+    assert not hasattr(settings, "history_max_chars")
