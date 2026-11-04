@@ -61,15 +61,21 @@ def test_supported_structures_and_local_actions_are_present():
     assert "overflow-x: auto" in css
 
 
-def test_raw_answer_remains_phase12_source_after_visual_enhancement():
+def test_raw_answer_is_kept_once_in_an_inert_source_after_visual_enhancement():
     _, _, js, _, app_js, outputs_js = sources()
-    insert_at = js.index('rawParagraph.insertAdjacentElement("afterend", rich)')
-    hide_at = js.index("rawParagraph.hidden = true")
-    assert insert_at < hide_at
-    assert 'rawParagraph.classList.add("rich-response-source")' in js
+    # The completed answer text exists exactly once in the DOM: the visible
+    # rich blocks. The raw markdown source lives in an inert <template> that
+    # is never rendered, announced, or selected by copy/scan queries — the
+    # retired hidden-paragraph contract duplicated the text for the DOM.
+    assert 'document.createElement("template")' in js
+    assert "source.content.appendChild(document.createTextNode(rawParagraph.textContent))" in js
+    assert "rawParagraph.replaceWith(source, rich)" in js
+    assert "rawParagraph.hidden = true" not in js
+    assert 'rawParagraph.classList.add("rich-response-source")' not in js
+    assert "NON_ANSWER_PARAGRAPH_CLASSES" in js  # statuses are never taken for the answer
     assert 'paragraph.textContent = result.answer' in app_js
     assert 'Array.from(content.children).find((node) => node.tagName === "P")' in outputs_js
-    assert 'paragraph.textContent.trim()' in outputs_js
+    assert "template.rich-response-source" in outputs_js
     assert "outputContent.textContent = activeOutput.content" in outputs_js
 
 

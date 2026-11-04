@@ -74,7 +74,17 @@ class Element {
     this.className = "";
     this._classes = new Set();
     this._text = "";
-    this.classList = { add: (...names) => names.forEach((name) => this._classes.add(name)) };
+    this.classList = { add: (...names) => names.forEach((name) => this._classes.add(name)), contains: (name) => this._classes.has(name) };
+    if (this.tagName === "TEMPLATE") {
+      // A real <template> keeps its children in an inert fragment: not
+      // rendered, not announced, not matched by content queries.
+      const nodes = [];
+      this.content = {
+        children: nodes,
+        appendChild(node) { node.parentNode = this; nodes.push(node); return node; },
+        get textContent() { return nodes.map((node) => node.textContent).join(""); },
+      };
+    }
   }
   get textContent() { return this.children.length ? this.children.map((child) => child.textContent).join("") : this._text; }
   set textContent(value) { this._text = String(value ?? ""); this.children = []; }
@@ -101,6 +111,14 @@ class Element {
     this.parentNode.children.splice(index + 1, 0, element);
     return element;
   }
+  replaceWith(...nodes) {
+    if (!this.parentNode) throw new Error("orphan replace");
+    const parent = this.parentNode;
+    const index = parent.children.indexOf(this);
+    parent.children.splice(index, 1, ...nodes);
+    nodes.forEach((node) => { node.parentNode = parent; });
+    this.parentNode = null;
+  }
 }
 
 global.Element = Element;
@@ -124,12 +142,18 @@ const messageList = {
 const navigator = {};
 '''+ runtime + r'''
 
-function makeArticle(text, lifecycle = "streaming", withError = false) {
+function makeArticle(text, lifecycle = "streaming", withError = false, withNotice = false) {
   const article = new Element("article");
   article.className = "assistant-message";
   article.dataset.lifecycle = lifecycle;
   const content = new Element("div");
   content.className = "assistant-content";
+  if (withNotice) {
+    const notice = new Element("p");
+    notice.className = "web-grounding-notice reference-note";
+    notice.textContent = "웹 근거를 확인하지 못했습니다.";
+    content.appendChild(notice);
+  }
   const paragraph = new Element("p");
   paragraph.textContent = text;
   article.appendChild(content);
@@ -143,10 +167,15 @@ function makeArticle(text, lifecycle = "streaming", withError = false) {
 }
 
 function snapshot(entry) {
+  const visible = entry.content.children.filter((child) => child.tagName !== "TEMPLATE");
+  const source = entry.content.children.find((child) => child.tagName === "TEMPLATE");
   return {
     flag: entry.article.dataset.richResponse || null,
-    hidden: entry.paragraph.hidden,
-    richCount: entry.content.children.filter((child) => child.hasClass("rich-response")).length,
+    rawParagraphGone: !entry.content.children.includes(entry.paragraph),
+    sourceText: source ? source.content.textContent : null,
+    richCount: visible.filter((child) => child.hasClass("rich-response")).length,
+    // The answer text must exist exactly once in the renderable content.
+    visibleText: visible.map((child) => child.textContent).join(""),
   };
 }
 
@@ -169,16 +198,42 @@ const stored = makeArticle("# 저장된 제목\n- 저장 항목", "completed");
 enhanceAssistantMessage(stored.article);
 const storedState = snapshot(stored);
 
-console.log(JSON.stringify({ first, whileStreaming, completed, errorState, storedState }));
+// A status note is never taken for the answer: the real answer paragraph is
+// the one enhanced, and the notice keeps its own single copy.
+const noticed = makeArticle("# 답 제목\n- 답 항목", "completed", false, true);
+enhanceAssistantMessage(noticed.article);
+const noticedState = snapshot(noticed);
+
+console.log(JSON.stringify({ first, whileStreaming, completed, errorState, storedState, noticedState }));
 '''
     result = json.loads(_run_node(script))
 
-    locked = {"flag": None, "hidden": False, "richCount": 0}
-    assert result["first"] == locked
-    assert result["whileStreaming"] == locked
-    assert result["completed"] == {"flag": "true", "hidden": True, "richCount": 1}
-    assert result["errorState"] == locked
-    assert result["storedState"] == {"flag": "true", "hidden": True, "richCount": 1}
+    def locked(visible):
+        return {"flag": None, "rawParagraphGone": False, "sourceText": None, "richCount": 0, "visibleText": visible}
+
+    assert result["first"] == locked("# 제")
+    assert result["whileStreaming"] == locked("# 제목\n- 항목 1\n- 항목 2")
+    answer_text = "# 제목\n- 항목 1\n- 항목 2"
+    assert result["completed"] == {
+        "flag": "true",
+        "rawParagraphGone": True,
+        "sourceText": answer_text,
+        "richCount": 1,
+        "visibleText": "제목항목 1항목 2",
+    }
+    assert result["completed"]["visibleText"].count("제목") == 1
+    assert result["errorState"] == locked("# 부분 응답")
+    assert result["storedState"]["flag"] == "true"
+    assert result["storedState"]["rawParagraphGone"] is True
+    assert result["storedState"]["sourceText"] == "# 저장된 제목\n- 저장 항목"
+    assert result["storedState"]["richCount"] == 1
+    assert result["storedState"]["visibleText"].count("저장 항목") == 1
+    assert result["noticedState"]["flag"] == "true"
+    assert result["noticedState"]["sourceText"] == "# 답 제목\n- 답 항목"
+    assert result["noticedState"]["richCount"] == 1
+    # The notice paragraph survives untouched next to the single rich answer.
+    assert result["noticedState"]["visibleText"].startswith("웹 근거를 확인하지 못했습니다.")
+    assert result["noticedState"]["visibleText"].count("답 제목") == 1
 
 
 def test_request_state_remains_single_owned_by_app_controller() -> None:

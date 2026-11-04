@@ -227,20 +227,23 @@ def test_a_refused_pc_turn_is_a_refusal_and_never_a_general_answer() -> None:
     step = result["steps"][0]
     minted = step["pc_run_id"]
 
-    assert step["generic_error"] is not None, step
-    assert step["generic_error"]["code"] == "chat_pc_engine_unavailable", step["generic_error"]
+    # TTFB first-frame contract: the response commits 200 SSE before dispatch,
+    # so the Engine's refusal arrives as an in-stream error frame with the same
+    # safe code instead of a JSON error status. The refusal stays terminal.
+    assert step["generic_error"] is None, step
     assert step["answer"] == "", step
-    assert step["events"] == [], step
+    assert step["events"] == ["meta", "error"], step
+    refusal = json.loads(step["frames"]["error"])["error"]
+    assert refusal["code"] == "chat_pc_engine_unavailable", refusal
 
     # This remains the legacy direct Chat JSON-wire control. The new Engine
     # stream has separate transport/HTTP tests; this measured body stays exact.
     assert not _has_call(step, "POST", "/api/orchestration")
     refused = [call for call in step["calls"] if call["method"] == "POST" and call["path"] == "/api/chat/stream"]
-    assert len(refused) == 1 and refused[0]["status"] == ENGINE_REFUSAL_STATUS
+    assert len(refused) == 1 and refused[0]["status"] == 200, step["calls"]
 
     # The refusal is terminal for this turn: no answer frame was painted and
     # the turn was never re-asked as an ordinary chat answer.
-    assert step["events"] == [], step
     assert len(transport.bodies) == 1, transport.bodies
 
     row = harness.store.runs[minted]
@@ -260,7 +263,7 @@ def test_the_same_real_chain_completes_when_the_engine_answers() -> None:
 
     assert step["generic_error"] is None, step
     assert step["answer"] == ENGINE_ANSWER, step
-    assert step["events"] == ["delta", "done"], step
+    assert step["events"] == ["meta", "delta", "done"], step
     assert transport.statuses == [200], transport.statuses
     assert _has_call(step, "POST", "/api/chat/stream"), step["calls"]
 

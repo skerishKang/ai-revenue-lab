@@ -410,8 +410,12 @@ def test_sse_per_event_safety_limit_is_preserved(tmp_path):
 
     response = asyncio.run(_post(_chat(store, feed), "/api/chat/stream", _payload()))
 
-    assert response.status_code == 502, response.text
-    assert response.json()["error"]["code"] == "upstream_response_too_large"
+    # TTFB first-frame contract: headers commit before dispatch, so the
+    # per-event ceiling refusal is an in-stream error frame with the same code.
+    assert response.status_code == 200, response.text
+    assert "event: meta" in response.text
+    error = json.loads(response.text.split("event: error\ndata: ", 1)[1].split("\n\n", 1)[0])["error"]
+    assert error["code"] == "upstream_response_too_large"
 
 
 # ── C. completed-response safety ceiling ─────────────────────────────────────

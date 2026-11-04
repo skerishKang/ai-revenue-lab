@@ -235,6 +235,9 @@ def build_app():
     from .orchestration_timing import ensure_host_visible
 
     ensure_host_visible()
+    from .chat_stream_timing import ensure_host_visible as ensure_stream_timing_visible
+
+    ensure_stream_timing_visible()
 
     settings = Settings.from_env()
     if local_flag and not settings.local_dev:
