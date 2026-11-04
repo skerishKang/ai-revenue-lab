@@ -377,6 +377,7 @@ async def mcp_gateway_endpoint(request):
             # Provider/PC exceptions can contain tokens or local content. Never
             # return or log their text; callers receive a bounded tool failure.
             result = {"content": [{"type": "text", "text": "PC 작업 결과를 확인하지 못했습니다. PADIEM에서 연결 상태를 확인해 주세요."}],
-                      "structuredContent": {"status": "unavailable"}, "isError": True}
+                      "structuredContent": {"status": "unavailable",
+                                        "code": "pc_tool_execution_failed"}, "isError": True}
         return _result(request_id, result, version)
     return _error(-32601, "Method not found", request_id, status=404 if version == MODERN_PROTOCOL_VERSION else 200)

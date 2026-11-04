@@ -74,7 +74,8 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
     store = getattr(request.app.state, "mcp_gateway_store", None)
     executor = getattr(request.app.state, "mcp_gateway_executor", None)
     if store is None or executor is None:
-        return {"status": "unavailable", "answer": "PC 작업 연결을 지금 사용할 수 없습니다."}
+        return {"status": "unavailable", "code": "mcp_gateway_unavailable",
+                    "answer": "PC 작업 연결을 지금 사용할 수 없습니다."}
     principal = dict(principal) if isinstance(principal, dict) else principal
     # 2026-11-04: the caller may choose the target PC with the `device`
     # argument (the identifier pc_devices returns, or the PC's display name).
@@ -102,7 +103,8 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
     try:
         await store.audit(**audit, status="requested")
     except Exception:
-        return {"status": "unavailable", "answer": "작업 기록을 준비하지 못해 실행하지 않았습니다. 잠시 뒤 다시 시도해 주세요."}
+        return {"status": "unavailable", "code": "mcp_audit_unavailable",
+                    "answer": "작업 기록을 준비하지 못해 실행하지 않았습니다. 잠시 뒤 다시 시도해 주세요."}
     _log_operation(audit, "requested")
     if device_refusal is not None:
         outcome = {"status": "denied", "code": device_refusal.code,
@@ -128,7 +130,8 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
             approval = await store.consume_approval(identity=identity, approval_id=approval_id,
                                                     tool_name=tool_name, arguments=arguments)
         except Exception:
-            return {"status": "unavailable", "answer": "승인 내용을 확인하지 못해 실행하지 않았습니다."}
+            return {"status": "unavailable", "code": "mcp_approval_lookup_failed",
+                    "answer": "승인 내용을 확인하지 못해 실행하지 않았습니다."}
         if approval is None:
             outcome = {"status": "confirmation_required", "answer": "승인을 아직 받지 못했거나 이미 사용한 확인입니다. PADIEM에서 확인해 주세요.",
                        "approval_id": approval_id, "approval_status": "unavailable"}
@@ -142,7 +145,8 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
             approval = await store.consume_matching_approval(identity=identity, tool_name=tool_name,
                                                              arguments=arguments)
         except Exception:
-            return {"status": "unavailable", "answer": "승인 내용을 확인하지 못해 실행하지 않았습니다."}
+            return {"status": "unavailable", "code": "mcp_approval_lookup_failed",
+                    "answer": "승인 내용을 확인하지 못해 실행하지 않았습니다."}
     if approval is not None:
         audit["approval_id"] = approval["approval_id"]
     try:
@@ -165,7 +169,8 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
                    "code": reason or exc.code,
                    "deny_reason": reason or exc.code}
     except Exception:
-        outcome = {"status": "unavailable", "answer": "PC 작업의 실제 결과를 확인하지 못했습니다. PADIEM에서 작업 상태를 확인해 주세요."}
+        outcome = {"status": "unavailable", "code": "pc_dispatch_failed",
+                   "answer": "PC 작업의 실제 결과를 확인하지 못했습니다. PADIEM에서 작업 상태를 확인해 주세요."}
     if outcome["status"] == "confirmation_required":
         if browser:
             outcome = {**outcome, "confirmation_kind": "conversation",
@@ -181,7 +186,8 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
                     outcome["approval_url"] = origin + "/"
                 audit["approval_id"] = pending["id"]
             except Exception:
-                outcome = {"status": "unavailable", "answer": "확인할 작업을 저장하지 못해 실행하지 않았습니다. 잠시 뒤 다시 시도해 주세요."}
+                outcome = {"status": "unavailable", "code": "mcp_approval_store_failed",
+                       "answer": "확인할 작업을 저장하지 못해 실행하지 않았습니다. 잠시 뒤 다시 시도해 주세요."}
     await _record_outcome(request, store, audit, outcome)
     return outcome
 
@@ -209,7 +215,7 @@ async def _record_outcome(request, store, audit, outcome):
                                  run_id=outcome["run_id"])
                 except Exception:
                     pass
-            outcome.update({"status": "unavailable",
+            outcome.update({"status": "unavailable", "code": "mcp_audit_final_failed",
                             "answer": "작업 기록을 저장하지 못해 PC 작업 중지를 요청했습니다."})
             for key in ("job_id", "output", "output_ref", "next_offset"):
                 outcome.pop(key, None)
