@@ -92,6 +92,11 @@ def stage(repo: Path, bundle: Path) -> None:
         shutil.copytree(migrations_source, bundle / "migrations")
         staged.append("migrations")
 
+    # Match the app-relative static trees used through the installed symlink.
+    shutil.copytree(repo / "apps/padiem-chat/static", bundle / "static")
+    shutil.copytree(repo / "apps/padiem-council-apps/static", bundle / "council_static")
+    staged.extend(("static", "council_static"))
+
     for helper in ("check_config.py", "health.py"):
         shutil.copy2(repo / DEPLOY_DIR_REL / helper, bundle / helper)
         staged.append(helper)
@@ -133,6 +138,7 @@ def boot(bundle: Path, python: Path) -> None:
     if not python.is_file():
         raise SystemExit(f"CHAT_BOOT=FAIL python_missing={python}")
     common.install_tree(bundle, BUNDLE_DIR)
+    common.install_tree(bundle / "council_static", BUNDLE_DIR.parent / "padiem-council-apps" / "static")
     venv = Path("/opt/ci-venvs/chat")
     common.install_tree(python.parent.parent, venv)
     common.strip_local_packages(venv, ("padiem_chat",))

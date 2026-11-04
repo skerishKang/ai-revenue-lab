@@ -79,7 +79,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          uv sync --frozen
+          uv sync --frozen --python 3.12
           sudo env "PATH=$PATH" python3 ../../.github/scripts/deploy_bundle_boot/b14.py boot \
             --bundle "$RUNNER_TEMP/b14-wrangler" \
             --manifest "$RUNNER_TEMP/b14-manifest.json" \
@@ -157,7 +157,10 @@ jobs:
       - name: Resolve the Engine dependency closure
         working-directory: apps/padiem-ai-engine
         shell: bash
-        run: uv sync --extra dev
+        run: |
+          uv sync --extra dev
+          # Match the host venv's installed server (P01 install.sh reuses it).
+          uv pip install --python .venv/bin/python 'uvicorn==0.53.0'
 
       - name: Stage with the real stage_code.sh and check the vendored core
         shell: bash
