@@ -49,7 +49,7 @@ def test_gemini_live_engine_gates_pass() -> None:
     assert passed and failed, f"no summary in node output: {tail}"
     assert int(failed.group(1)) == 0
     # A lost case must show up as a smaller count, not a green run.
-    assert int(passed.group(1)) == 10, result.stdout[-1500:]
+    assert int(passed.group(1)) == 11, result.stdout[-1500:]
 
 
 def test_engine_is_the_global_classroom_port_with_its_provenance() -> None:
@@ -86,9 +86,8 @@ def test_engine_reads_the_model_and_the_window_from_the_server_contract() -> Non
     for field in ("cfg.model", "cfg.vad_silence_ms", "cfg.response_modalities",
                   "cfg.input_audio_transcription_mode", "liveSession.rotate_after_ms"):
         assert field in source, field
-    # The fallback to the shared authority constant is the global-classroom
-    # value, never a second literal model id.
-    assert re.search(r'LIVE_TRANSCRIBE_MODEL \|\| ""', source)
+    # Model selection belongs solely to the server session response.
+    assert 'LIVE_TRANSCRIBE_MODEL' not in source
     literals = re.findall(r'"gemini-[0-9a-z.\-]+"', source)
     assert literals == [], f"the engine must not pin a model id: {literals}"
 

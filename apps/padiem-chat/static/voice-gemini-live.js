@@ -93,17 +93,10 @@
    */
   function buildLiveSetup(session, authority) {
     const cfg = session || {};
-    const source = authority || {};
-    const model = cfg.model || source.LIVE_TRANSCRIBE_MODEL || "";
-    const modalities =
-      Array.isArray(cfg.response_modalities) && cfg.response_modalities.length
-        ? cfg.response_modalities.slice()
-        : ["TEXT"];
-    const silenceMs = Number.isFinite(cfg.vad_silence_ms)
-      ? cfg.vad_silence_ms
-      : source.LIVE_VAD_SILENCE_MS;
-    const mode =
-      cfg.input_audio_transcription_mode || source.INPUT_AUDIO_TRANSCRIPTION_MODE || "VERBATIM";
+    const model = cfg.model;
+    const modalities = cfg.response_modalities.slice();
+    const silenceMs = cfg.vad_silence_ms;
+    const mode = cfg.input_audio_transcription_mode;
     return {
       model: model ? "models/" + model : model,
       generationConfig: { responseModalities: modalities },
@@ -513,7 +506,15 @@
         }).then(function (payload) {
           const token = payload && payload.token ? String(payload.token) : "";
           if (!token) throw new Error("live-token-unavailable");
-          return { token: token, session: (payload && payload.session) || {} };
+          const config = payload && payload.session;
+          if (!config || typeof config.model !== "string" || !config.model.trim() ||
+              !Number.isFinite(config.vad_silence_ms) || !Number.isFinite(config.rotate_after_ms) ||
+              !Array.isArray(config.response_modalities) || !config.response_modalities.length ||
+              !config.response_modalities.every(function (item) { return typeof item === "string" && item.trim(); }) ||
+              typeof config.input_audio_transcription_mode !== "string" || !config.input_audio_transcription_mode.trim()) {
+            throw new Error("live-session-invalid");
+          }
+          return { token: token, session: config };
         });
       }
 
@@ -577,9 +578,7 @@
        */
       function scheduleRotation(liveSession) {
         stopRotation();
-        const rotateAfter = Number.isFinite(liveSession.rotate_after_ms)
-          ? liveSession.rotate_after_ms
-          : (authority && authority.LIVE_SESSION_ROTATE_MS) || 0;
+        const rotateAfter = liveSession.rotate_after_ms;
         if (!rotateAfter) return;
         rotationStartedAt = now();
         rotateTimer = setTimer(function () {
@@ -606,8 +605,17 @@
             openSession(result.token, result.session);
             scheduleRotation(result.session);
           })
-          .catch(function () {
+          .catch(function (error) {
             if (stopped || !micDesired) return;
+            if (error && error.message === "live-session-invalid") {
+              stopRotation();
+              releaseCapture();
+              releaseSocket();
+              micDesired = false;
+              emitError("live-unavailable");
+              stopped = true;
+              return;
+            }
             beginFallback("live-unavailable");
           });
       }
@@ -625,8 +633,17 @@
             openSession(result.token, result.session);
             scheduleRotation(result.session);
           })
-          .catch(function () {
+          .catch(function (error) {
             if (stopped || !micDesired) return;
+            if (error && error.message === "live-session-invalid") {
+              stopRotation();
+              releaseCapture();
+              releaseSocket();
+              micDesired = false;
+              emitError("live-unavailable");
+              stopped = true;
+              return;
+            }
             beginFallback("live-unavailable");
           });
       }

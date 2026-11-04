@@ -24,7 +24,6 @@ NODE_SPEC = Path(__file__).with_name("voice_live_transcript_turn_4643.cjs")
 # Values recorded in global-classroom @ ffa27e6a utils/liveTranscriptTurn.ts.
 # A drift here is the two repos diverging, which is the failure #87 was about.
 GC_CONTRACT = {
-    "LIVE_TRANSCRIBE_MODEL": '"gemini-3.5-transcribe-live"',
     "LIVE_VAD_SILENCE_MS": "1300",
     "LIVE_SESSION_ROTATE_MS": "9 * 60 * 1000 + 20 * 1000",
     "LIVE_AUDIO_HANDOFF_FRAMES": "40",
@@ -98,8 +97,6 @@ def test_adapter_has_no_local_copy_of_the_turn_logic() -> None:
     # The adapter delegates; a re-landed numeric copy is the drift the gate in the
     # Node spec counts, and here it is named exactly.
     for name in GC_CONTRACT:
-        if name == "LIVE_TRANSCRIBE_MODEL":
-            continue
         assert not re.search(rf"const {name} = \d", source), f"voice-stt-input.js restates {name}"
     assert "turnAuthority.LIVE_VAD_SILENCE_MS" in source
     assert "voice_live_transcript_turn_authority_missing" in source, (

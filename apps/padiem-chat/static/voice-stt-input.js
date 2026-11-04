@@ -64,7 +64,6 @@
   }
 
   /* #87 values come from the authority, never from a copy in this file. */
-  const LIVE_TRANSCRIBE_MODEL = turnAuthority.LIVE_TRANSCRIBE_MODEL;
   const LIVE_VAD_SILENCE_MS = turnAuthority.LIVE_VAD_SILENCE_MS;
   const LIVE_SESSION_ROTATE_MS = turnAuthority.LIVE_SESSION_ROTATE_MS;
   const LIVE_AUDIO_HANDOFF_FRAMES = turnAuthority.LIVE_AUDIO_HANDOFF_FRAMES;
@@ -418,7 +417,6 @@
     /** The same authority object, so no consumer needs a third copy. */
     authority: turnAuthority,
     constants: Object.freeze({
-      LIVE_TRANSCRIBE_MODEL: LIVE_TRANSCRIBE_MODEL,
       LIVE_VAD_SILENCE_MS: LIVE_VAD_SILENCE_MS,
       LIVE_SESSION_ROTATE_MS: LIVE_SESSION_ROTATE_MS,
       LIVE_AUDIO_HANDOFF_FRAMES: LIVE_AUDIO_HANDOFF_FRAMES,
