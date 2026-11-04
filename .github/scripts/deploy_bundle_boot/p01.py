@@ -114,8 +114,9 @@ def boot(repo: Path, root: Path, python: Path) -> None:
     common.ensure_user("p01boot")
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     DATA_DIR.chmod(0o700)
-    common.run(["chown", "-R", "p01boot:p01boot", str(DATA_DIR.parent)])
-    DATA_DIR.parent.chmod(0o755)
+    # Only the data dir belongs to the service account: the staged release
+    # stays root-owned, exactly as stage_code.sh leaves it on COM2.
+    common.run(["chown", "-R", "p01boot:p01boot", str(DATA_DIR)])
 
     env = {
         "PYTHONPATH": str(release),
