@@ -15,9 +15,6 @@ from padiem_ai_core.document_normalization import (
 )
 from padiem_ai_core.document_semantics import DocumentSegment, LocatorKind
 
-MAX_EPHEMERAL_DOCUMENT_CONTEXT_CHARS = 2_800
-MAX_PROJECT_FILES_CONTEXT_CHARS = 2_600
-MAX_REFERENCE_CONTEXT_CHARS = 8_000
 ALLOWED_DOCUMENT_MEDIA = TEXT_DOCUMENT_MEDIA
 # #261102 다중 첨부: 모델 입력에 들어가는 첨부 문서 컨텍스트의 합계 예산.
 # 기존 전송 봉투는 6MB(로컬 local_engine_transport.MAX_ENGINE_MODEL_REQUEST_BYTES
