@@ -3,7 +3,7 @@
 The removed surface had no owner decision behind it: an unauthenticated GET
 answered with model identities, and a browser asset carried the same list. This
 spec pins the ABSENCE of every one of those paths, and pins the two things that
-were deliberately kept — the composer layout sheet that shares the file name,
+were deliberately kept — the composer layout rules,
 and the authenticated Claw chooser another lane is converting to grade choices.
 """
 from pathlib import Path
@@ -16,7 +16,7 @@ STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = Path(__file__).resolve().parents[1] / "app"
 PREVIEW_PATH = "/api/models/owner-name-preview"
 REMOVED_ASSET = STATIC / "owner-model-preview.js"
-LAYOUT_CSS = STATIC / "owner-model-preview.css"
+LAYOUT_CSS = STATIC / "attachments.css"
 
 
 def test_public_model_name_preview_route_is_not_registered():
@@ -66,7 +66,8 @@ def test_preview_copy_is_gone_from_every_locale():
 def test_layout_sheet_is_kept_because_composer_reservations_live_there():
     html = (STATIC / "index.html").read_text(encoding="utf-8")
     css = LAYOUT_CSS.read_text(encoding="utf-8")
-    assert 'rel="stylesheet" href="./owner-model-preview.css"' in html
+    assert 'owner-model-preview.css' not in html
+    assert not (STATIC / "owner-model-preview.css").exists()
     assert "width: 116px" in css
     assert ".send-button { flex: 0 0 44px;" in css
 

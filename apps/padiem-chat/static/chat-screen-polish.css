@@ -11,7 +11,7 @@
 /* ── 1. Phone composer: the send button keeps the input's right edge ──────
  * At 390px the action row is 344px wide and the tools row plus the two voice
  * controls plus send need 394px, so send wrapped to the second line and was
- * painted at the LEFT edge. The reservations in owner-model-preview.css stay
+ * painted at the LEFT edge. The reservations in attachments.css stay
  * exactly as they are (the first-screen contract depends on them); the row is
  * allowed to wrap, and send is pinned to the right end of whichever line it
  * lands on. #sendButton's margin-left reservation for a missing mic is not

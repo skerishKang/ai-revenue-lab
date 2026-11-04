@@ -17,8 +17,6 @@
 @import "../../../padiem-chat/static/padiem-glass-portrait.css";
 /* 3 — base shell, sidebar, topbar, conversation, composer */
 @import "../../../padiem-chat/static/styles.css";
-/* 4 — owner model preview surface */
-@import "../../../padiem-chat/static/owner-model-preview.css";
 /* 5 — attachment tray */
 @import "../../../padiem-chat/static/attachments.css";
 /* 6 — sidebar history rows + auth dialog */

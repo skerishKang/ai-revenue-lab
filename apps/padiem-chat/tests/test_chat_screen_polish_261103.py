@@ -130,9 +130,9 @@ def test_send_button_is_right_aligned_on_the_phone() -> None:
     assert "@media (max-width: 620px)" in POLISH
     assert ".composer-actions .send-button" in POLISH
     assert "margin-left: auto" in POLISH
-    # The first-screen reservations belong to owner-model-preview.css and are
+    # The first-screen reservations belong to attachments.css and are
     # untouched by this lane.
-    preview = (STATIC / "owner-model-preview.css").read_text(encoding="utf-8")
+    preview = (STATIC / "attachments.css").read_text(encoding="utf-8")
     assert "width: 116px" in preview
     assert "width: 112px; min-width: 112px; height: 44px;" in preview
     assert ".send-button { flex: 0 0 44px;" in preview

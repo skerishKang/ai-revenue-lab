@@ -1,3 +1,55 @@
+/* B62 #3790 mobile composer containment: composer tools wrap without pushing send off-screen. */
+@media (max-width: 620px) {
+  .composer-actions { align-items: flex-end; min-width: 0; }
+  .composer-tools { flex: 1 1 0; min-width: 0; flex-wrap: wrap; }
+  .send-button { flex: 0 0 44px; align-self: flex-end; }
+}
+
+/* B62 #5297 first screen: keep the tier pill's reserved slot so installing its
+ * model control does not move the composer. The voice affordance is also
+ * reserved until mounted. Search controls are model-selected and no longer
+ * occupy a placeholder or change the composer geometry. */
+#composerForm .composer-tools .model-pill {
+  /* padiem-first-use.css owns `.model-pill { display: none !important; }`,
+     and the tier control is installed a frame before its own stylesheet is
+     applied. The pill keeps its slot through both. */
+  display: inline-flex !important;
+  visibility: hidden;
+  /* Keep the first-screen tier slot stable until the model selector is ready. */
+  width: 116px;
+  min-width: 116px;
+}
+#composerForm .composer-tools .model-pill[data-mode-control="true"] {
+  /* The tier control is installed: the pill is shown with its own width. */
+  visibility: visible;
+  width: auto;
+  min-width: 0;
+}
+@media (max-width: 720px) {
+  /* Keep the tier control's established phone footprint while it is shown. */
+  #composerForm .composer-tools .model-pill { width: 112px; min-width: 112px; height: 44px; }
+  /* The voice module's first resize settles the one-line input at 50px. */
+  #composerForm > #messageInput { min-height: 50px; }
+}
+@media (max-width: 620px) {
+  /* The voice control is mounted into the action row after the first
+   * paint. Until it is there the tools row is the whole free space, and it
+   * becomes 54px narrower (one 44px control and one 10px gap) when it
+   * arrives. That narrower row is the row the tier pill has to fit into, so
+   * the tools row keeps the width it will have in the settled composer, and
+   * its content never re-wraps.
+   *
+   * The reservation is given back as soon as the control is mounted, so the
+   * settled composer is laid out exactly as it is today.
+   *
+   * #5561: the voice waveform shares the send button's slot, so only the
+   * microphone is a separate control now. */
+  .composer-actions:not(:has(> #voiceMicButton)) #sendButton {
+    margin-left: calc(44px + 10px);
+  }
+}
+/* END COMPOSER RESERVATIONS */
+
 .attachment-tray {
   padding: 10px 12px 0;
 }
