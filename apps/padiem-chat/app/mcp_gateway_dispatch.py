@@ -5,7 +5,7 @@ import json
 import logging
 import re
 
-from .chat_pc_drive import ChatPCDriveError
+from .chat_pc_errors import ChatPCDriveError
 from .mcp_device_selection import McpDeviceRefusal, device_id6, resolve_target_device
 from .mcp_gateway_store import mcp_request_digest
 from .mcp_gateway_shell import PC_SHELL_TOOL_NAMES

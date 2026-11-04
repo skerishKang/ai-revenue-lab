@@ -33,6 +33,7 @@ from padiem_ai_core.pc_device_identity import is_pc_device_id
 from padiem_ai_core.tool_channel import ToolDefinition
 
 from .auth_routes import auth_ready, current_user_id
+from .chat_pc_errors import ChatPCDriveError
 from .history import (
     HistoryForbidden,
     HistoryStore,
@@ -55,65 +56,6 @@ CHAT_PC_RUN_PREFIX = "chat_pcq_"
 PC_TOOL_EXCLUDED_MODEL_PREFIXES = ("google/gemma-",)
 
 _SUBJECT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
-
-
-def _safe_pc_exception_cause(exc: BaseException) -> str:
-    """Public diagnostic only: class plus a redacted first-line message."""
-    name = type(exc).__name__
-    if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]{0,79}", name) is None:
-        name = "Exception"
-    try:
-        message = str(exc).splitlines()[0][:8192]
-    except Exception:
-        message = "[message unavailable]"
-    # Redact before truncation so a cut-off credential cannot escape a match.
-    message = re.sub(r"(?i)\b(?:authorization|proxy-authorization|cookie|set-cookie|"
-                     r"password|passwd|secret|token|api[ _-]?key|credential|"
-                     r"access[_-]?token|refresh[_-]?token|client[_-]?secret|"
-                     r"session[_-]?id|private[_-]?key|signature)\b"
-                     r"\s*[:=]\s*.*", "[redacted]", message)
-    message = re.sub(r"(?i)\b(?:bearer|basic)\s+\S+", "[redacted]", message)
-    message = re.sub(r"https?://[^\s]+", "[url redacted]", message, flags=re.I)
-    message = re.sub(r"""(["']).*?\1""", "[value redacted]", message)
-    message = re.sub(r"[A-Za-z]:[\\/][^\s,;]+|/(?:[^\s/]+/)+[^\s,;]*",
-                     "[path redacted]", message)
-    message = re.sub(r"[^\s@]+@[^\s@]+", "[email redacted]", message)
-    message = re.sub(r"[A-Za-z0-9_+/=.-]{24,}", "[value redacted]", message)
-    message = re.sub(r"[^\S ]+|[\x00-\x1f\x7f]", " ", message)
-    return name + ": " + message[:120]
-
-
-class ChatPCDriveError(ValueError):
-    def __init__(self, code: str, message: str, status_code: int = 503, *, cause: str | None = None) -> None:
-        super().__init__(message)
-        self.code = code
-        self.user_message = message
-        self.status_code = status_code
-        self._cause = cause if isinstance(cause, str) and re.fullmatch(r"[a-z][a-z0-9_]{0,63}", cause) else None
-
-    @property
-    def cause(self) -> str | None:
-        # Exception chaining is attached after construction, so inspect it
-        # when the HTTP boundary serializes the error.
-        if self.status_code == 503 and self.code.startswith("chat_pc_"):
-            diagnostic = _safe_pc_exception_cause(self.__cause__ or self)
-            if self._cause is not None:
-                name, message = diagnostic.split(": ", 1)
-                return name + ": " + self._cause + ": " + message
-            return diagnostic
-        return self._cause
-
-    def public_error(self) -> dict:
-        """The bounded browser error: a fixed code, a fixed message, a safe cause.
-
-        ``cause`` is carried only when it already matches the internal code
-        grammar, so an engine or provider blob can never reach the browser
-        through this field.
-        """
-        error = {"code": self.code, "message": self.user_message}
-        if self.cause is not None:
-            error["cause"] = self.cause
-        return error
 
 
 def _client_lane_run_id(value: object) -> str | None:
