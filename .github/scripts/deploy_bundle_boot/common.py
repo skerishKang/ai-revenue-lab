@@ -72,6 +72,33 @@ def make_readable(path: Path) -> None:
     run(["chmod", "-R", "a+rX", str(path)])
 
 
+def strip_local_packages(venv: Path, names: tuple[str, ...]) -> int:
+    """Drop repo-local packages from a copied CI venv.
+
+    uv/pip installs the checkout's own packages into site-packages (editable
+    finders included). The boot test must import only the bundle, so those
+    entries are removed from the copy; the staged tree is the only source left.
+    """
+    site_roots = list((venv / "lib").glob("python*/site-packages"))
+    site_roots += [venv / "Lib" / "site-packages"]
+    removed = 0
+    for site in site_roots:
+        if not site.is_dir():
+            continue
+        for entry in sorted(site.iterdir()):
+            lowered = entry.name.lower()
+            if any(name in lowered for name in names) and (
+                entry.is_dir() or entry.suffix in {".pth", ".py", ".txt"}
+            ):
+                if entry.is_dir():
+                    shutil.rmtree(entry)
+                else:
+                    entry.unlink()
+                removed += 1
+    print(f"VENV_LOCAL_PACKAGES_STRIPPED={removed} names={list(names)}", flush=True)
+    return removed
+
+
 def _as_user_argv(user: str, cmd, cwd: Path, env: dict[str, str]) -> list[str]:
     env_items = [f"{name}={value}" for name, value in sorted(env.items())]
     script = "cd " + shlex.quote(str(cwd)) + " && exec " + " ".join(

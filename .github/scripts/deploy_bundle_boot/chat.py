@@ -135,6 +135,7 @@ def boot(bundle: Path, python: Path) -> None:
     common.install_tree(bundle, BUNDLE_DIR)
     venv = Path("/opt/ci-venvs/chat")
     common.install_tree(python.parent.parent, venv)
+    common.strip_local_packages(venv, ("padiem_chat",))
     runtime_python = venv / "bin" / "python"
     if not runtime_python.exists():
         raise SystemExit("CHAT_BOOT=FAIL copied_venv_has_no_python")

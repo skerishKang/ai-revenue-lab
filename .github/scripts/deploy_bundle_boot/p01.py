@@ -102,6 +102,10 @@ def boot(repo: Path, root: Path, python: Path) -> None:
 
     venv = Path("/opt/ci-venvs/p01")
     common.install_tree(python.parent.parent, venv)
+    common.strip_local_packages(
+        venv,
+        ("padiem_ai_core", "korean_ai_code_agent", "padiem_control_plane", "padiem_ai_engine"),
+    )
     runtime_python = venv / "bin" / "python"
     if not runtime_python.exists():
         raise SystemExit("P01_BOOT=FAIL copied_venv_has_no_python")
