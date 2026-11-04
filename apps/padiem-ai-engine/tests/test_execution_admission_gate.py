@@ -13,6 +13,7 @@ from app.execution_admission import (
     TrustedExecutionAdmission,
 )
 from app.execution_admission_gate import resolve_and_require_trusted_admission
+from padiem_ai_core.clock_skew import SERVER_CLOCK_SKEW_TOLERANCE
 
 
 NOW = datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc)
@@ -123,7 +124,13 @@ def test_gate_rejects_client_shaped_allow_object() -> None:
     [
         (admission(allowed=False), "entitlement_denied"),
         (admission(expires_at=NOW), "entitlement_expired"),
-        (admission(issued_at=NOW + timedelta(seconds=1), expires_at=NOW + timedelta(minutes=5)), "invalid_admission"),
+        (
+            admission(
+                issued_at=NOW + SERVER_CLOCK_SKEW_TOLERANCE + timedelta(seconds=1),
+                expires_at=NOW + timedelta(minutes=5),
+            ),
+            "invalid_admission",
+        ),
         (admission(app_id="b14"), "entitlement_app_mismatch"),
         (admission(subject_id="subject:other"), "entitlement_subject_mismatch"),
         (admission(capability="orchestration.resume"), "entitlement_capability_mismatch"),
@@ -135,6 +142,14 @@ def test_gate_preserves_contract_fail_closed_mismatches(trusted, code) -> None:
         run(resolve_and_require_trusted_admission(adapter=Adapter(trusted), request=request(), now=NOW))
 
     assert excinfo.value.code == code
+
+
+def test_gate_tolerates_issued_at_within_server_clock_skew() -> None:
+    skewed = admission(issued_at=NOW + timedelta(seconds=3), expires_at=NOW + timedelta(minutes=5))
+
+    resolved = run(resolve_and_require_trusted_admission(adapter=Adapter(skewed), request=request(), now=NOW))
+
+    assert resolved.decision_id == "adm_gate_1"
 
 
 def test_gate_does_not_fallback_to_service_identity_or_credit_assertion() -> None:
