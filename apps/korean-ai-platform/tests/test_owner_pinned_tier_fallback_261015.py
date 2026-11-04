@@ -120,3 +120,31 @@ def test_b14_still_accepts_the_attempt_option_only_to_drop_it(caplog):
 ])
 def test_owner_test_phase_rosters_have_the_exact_recovery_order(tier, expected):
     assert TIER_FALLBACK_B14_MODELS[tier] == expected
+
+
+def test_lane_roster_and_shared_tier_declaration_do_not_drift():
+    """B14 executes what the Control Plane declares, so both rosters must match.
+
+    Reads the declaration as source text instead of importing the shared
+    package: this suite runs inside the B14 lane, where the Control Plane
+    distribution is not on the path.
+    """
+    import ast
+    from pathlib import Path
+
+    declaration_path = (
+        Path(__file__).resolve().parents[3]
+        / "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py"
+    )
+    tree = ast.parse(declaration_path.read_text(encoding="utf-8"))
+    declaration = next(
+        ast.literal_eval(node.value)
+        for node in tree.body
+        if isinstance(node, ast.Assign)
+        and any(
+            isinstance(target, ast.Name) and target.id == "TIER_FALLBACK_B14_MODELS"
+            for target in node.targets
+        )
+    )
+
+    assert declaration == TIER_FALLBACK_B14_MODELS
