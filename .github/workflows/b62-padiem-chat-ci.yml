@@ -813,11 +813,24 @@ jobs:
       fail-fast: false
       matrix:
         tier: [free, plus, pro, max]
+    env:
+      # Job-level so the preflight can distinguish "credential absent" from a
+      # real call failure without ever printing the value (#6720).
+      PADIEM_B14_SERVICE_PROOF_SECRET: ${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      # CTO 2026-11-05 (#6720): a nightly without the QA credential is a
+      # recorded skip, not a red failure with no result. The bounded
+      # GRADE_SMOKE line keeps the failure-issue collector's contract, and the
+      # same line lands in the run summary so the skip is visible there too.
+      - name: Record a skip when the QA credential is absent
+        if: ${{ env.PADIEM_B14_SERVICE_PROOF_SECRET == '' }}
+        run: |
+          line="GRADE_SMOKE tier=${{ matrix.tier }} status=0 error_code=qa_credential_missing verdict=SKIPPED"
+          echo "${line}"
+          echo "${line}" >> "${GITHUB_STEP_SUMMARY}"
       - name: One real call through the declared grade route (COM2 B14)
-        env:
-          PADIEM_B14_SERVICE_PROOF_SECRET: ${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}
+        if: ${{ env.PADIEM_B14_SERVICE_PROOF_SECRET != '' }}
         run: python3 .github/scripts/b14_real_model_call_smoke.py --tier "${{ matrix.tier }}" --base-url http://127.0.0.1:8789 --report
