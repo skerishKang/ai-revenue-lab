@@ -606,21 +606,34 @@ link_b14_app() {
 # runs the installer, and a tree without that module exits on import — so the link,
 # forward or back, has to guarantee it.
 stage_b14_shared_module() {
-  local target=$1 package source root
+  local target=$1 package source root module module_source
   package="$target/padiem_ai_core"
-  [[ -f $package/pc_work_metrics.py ]] && return 0
-  source=''
-  for root in "$source_stage_dir/$resolved" "$source_stage_dir/$old" "$staged"; do
-    [[ -n $root && -f "$root/packages/padiem-ai-core/padiem_ai_core/pc_work_metrics.py" ]] \
-      && { source="$root/packages/padiem-ai-core/padiem_ai_core/pc_work_metrics.py"; break; }
+  if [[ ! -f $package/pc_work_metrics.py ]]; then
+    source=''
+    for root in "$source_stage_dir/$resolved" "$source_stage_dir/$old" "$staged"; do
+      [[ -n $root && -f "$root/packages/padiem-ai-core/padiem_ai_core/pc_work_metrics.py" ]]         && { source="$root/packages/padiem-ai-core/padiem_ai_core/pc_work_metrics.py"; break; }
+    done
+    [[ -n $source ]] || { say 'B14_SHARED_MODULE_MISSING'; return 1; }
+    install -d -m 0755 -- "$package" || return 1
+    [[ -e $package/__init__.py ]]       || printf '%s
+' '"\"\"\"Deployment-staged canonical Core modules.\"\"\""' > "$package/__init__.py"
+    install -m 0644 -- "$source" "$package/pc_work_metrics.py" || return 1
+    say "B14_SHARED_MODULE=$source"
+  fi
+  # #6848: the platform imports more than one Core module now. Stage every
+  # canonical module this tree lacks from the same staged release, so a forward
+  # link and a rollback link both import cleanly.
+  for module in conversation_bounds.py evidence_blocks.py; do
+    [[ -f $package/$module ]] && continue
+    module_source=''
+    for root in "$source_stage_dir/$resolved" "$source_stage_dir/$old" "$staged"; do
+      [[ -n $root && -f "$root/packages/padiem-ai-core/padiem_ai_core/$module" ]]         && { module_source="$root/packages/padiem-ai-core/padiem_ai_core/$module"; break; }
+    done
+    [[ -n $module_source ]] || continue
+    install -m 0644 -- "$module_source" "$package/$module" || return 1
+    say "B14_SHARED_MODULE=$module SOURCE=$module_source"
   done
-  [[ -n $source ]] || { say 'B14_SHARED_MODULE_MISSING'; return 1; }
-  install -d -m 0755 -- "$package" || return 1
-  [[ -e $package/__init__.py ]] \
-    || printf '%s\n' '"""Deployment-staged canonical Core modules."""' > "$package/__init__.py"
-  install -m 0644 -- "$source" "$package/pc_work_metrics.py" || return 1
   chmod -R a+rX,go-w -- "$package" || return 1
-  say "B14_SHARED_MODULE=$source"
 }
 
 b14_rollback_source() {  # The newest thing that is provably the previous code, or nothing.
