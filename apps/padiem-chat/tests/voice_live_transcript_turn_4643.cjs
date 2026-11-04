@@ -21,7 +21,6 @@ const turn = require("../static/voice-live-transcript-turn.js");
 const STATIC = path.resolve(__dirname, "../static");
 
 const {
-  LIVE_TRANSCRIBE_MODEL,
   LIVE_VAD_SILENCE_MS,
   LIVE_SESSION_ROTATE_MS,
   LIVE_AUDIO_HANDOFF_FRAMES,
@@ -128,8 +127,8 @@ test("the silence probe is inert without a browser AudioContext", () => {
   assert.equal(startSpeechSilenceProbe({}), null);
 });
 
-test("the transcriber model id is the one the original dispatches", () => {
-  assert.equal(LIVE_TRANSCRIBE_MODEL, "gemini-3.5-transcribe-live");
+test("the authority does not select the live session model", () => {
+  assert.equal(Object.hasOwn(turn, "LIVE_TRANSCRIBE_MODEL"), false);
 });
 
 /* ---------------- tests/unit/interviewSessionRotation87.test.ts ---------------- */
@@ -491,7 +490,7 @@ test("no new copy of the #87 numeric contract appears outside the authority", ()
   const AUTHORITY = "voice-live-transcript-turn.js";
   const KEYS = ["LIVE_VAD_SILENCE_MS", "LIVE_SESSION_ROTATE_MS", "GROQ_MIN_CHUNK_MS",
     "GROQ_SILENCE_CUT_MS", "GROQ_MAX_CHUNK_MS", "TRANSCRIPT_TURN_STALL_MS",
-    "LIVE_TAIL_FLUSH_DRAIN_MS", "LIVE_AUDIO_HANDOFF_FRAMES", "LIVE_TRANSCRIBE_MODEL"];
+    "LIVE_TAIL_FLUSH_DRAIN_MS", "LIVE_AUDIO_HANDOFF_FRAMES"];
 
   const duplicates = [];
   const found = [];
@@ -514,7 +513,6 @@ test("no new copy of the #87 numeric contract appears outside the authority", ()
     "voice-live-transcript-turn.js:LIVE_AUDIO_HANDOFF_FRAMES",
     "voice-live-transcript-turn.js:LIVE_SESSION_ROTATE_MS",
     "voice-live-transcript-turn.js:LIVE_TAIL_FLUSH_DRAIN_MS",
-    "voice-live-transcript-turn.js:LIVE_TRANSCRIBE_MODEL",
     "voice-live-transcript-turn.js:LIVE_VAD_SILENCE_MS",
     "voice-live-transcript-turn.js:TRANSCRIPT_TURN_STALL_MS",
   ], "the authority lost a contract constant");

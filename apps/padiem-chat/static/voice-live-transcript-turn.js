@@ -34,8 +34,6 @@
    * rows" regression (issue #87).
    */
 
-  const LIVE_TRANSCRIBE_MODEL = "gemini-3.5-transcribe-live";
-
   /**
    * How much silence ends a turn. The realtime session's automatic activity
    * detection defaults to 800ms; 650ms cut ordinary 0.7-1.5s thinking pauses into
@@ -368,7 +366,6 @@
   }
 
   return Object.freeze({
-    LIVE_TRANSCRIBE_MODEL: LIVE_TRANSCRIBE_MODEL,
     LIVE_VAD_SILENCE_MS: LIVE_VAD_SILENCE_MS,
     LIVE_SESSION_ROTATE_MS: LIVE_SESSION_ROTATE_MS,
     LIVE_AUDIO_HANDOFF_FRAMES: LIVE_AUDIO_HANDOFF_FRAMES,

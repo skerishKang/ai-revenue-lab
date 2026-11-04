@@ -128,7 +128,7 @@ function makeFakeWindow(options) {
         status: 200,
         json: async () => ({
           token: opts.token || "auth_tokens/test-token",
-          session: opts.session || {
+          session: Object.hasOwn(opts, "session") ? opts.session : {
             model: "gemini-3.5-transcribe-live",
             vad_silence_ms: 1300,
             rotate_after_ms: 9 * 60 * 1000 + 20 * 1000,
@@ -195,6 +195,26 @@ test("the setup message carries the server's session contract", function () {
   assert.deepStrictEqual(setup.generationConfig.responseModalities, ["TEXT"]);
   assert.strictEqual(setup.realtimeInputConfig.automaticActivityDetection.silenceDurationMs, 1300);
   assert.deepStrictEqual(setup.inputAudioTranscription, { languageCodes: [], mode: "VERBATIM" });
+});
+
+test("missing live session settings refuse the socket and report an error", async function () {
+  const valid = { model: "test-session-model", vad_silence_ms: 1300, rotate_after_ms: 1000,
+    response_modalities: ["TEXT"], input_audio_transcription_mode: "VERBATIM" };
+  const cases = [["session", null], ["empty model", { ...valid, model: "" }],
+    ...Object.keys(valid).map((key) => { const session = { ...valid }; delete session[key]; return [key, session]; })];
+  for (const [key, session] of cases) {
+    const win = makeFakeWindow({ session });
+    const { callbacks, events } = makeCallbacks();
+    let fallbackCalls = 0;
+    const factory = engine.createRecognizerFactory({ win, doc: { querySelector: () => null },
+      fallbackFactory: () => { fallbackCalls += 1; return { stop() {} }; } });
+    const handle = factory(callbacks, { generation: 1, sessionToken: "test" });
+    await settle();
+    assert.equal(win.__sockets.length, 0, key);
+    assert.deepEqual(events.error, ["live-unavailable"], key);
+    assert.equal(fallbackCalls, 0, key);
+    handle.stop();
+  }
 });
 
 test("the adapter's PCM helpers are the original's", function () {

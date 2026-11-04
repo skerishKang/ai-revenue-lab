@@ -154,6 +154,40 @@ def expected_browser_origin(settings: Any) -> str | None:
     return None
 
 
+def expected_browser_origins(settings: Any) -> tuple[str, ...]:
+    """Every reviewed origin a cookie-authenticated mutation may come from.
+
+    ``public_base_url`` is always first. ``public_base_urls`` adds the parallel
+    hosts that deliberately serve the same app (#6850, the pages.dev entry).
+    Both lists are server configuration; the request's own ``Host``/``Origin``
+    never widens either one, and an unparsable entry contributes nothing.
+    """
+    primary = expected_browser_origin(settings)
+    if primary is None:
+        return ()
+    origins = [primary]
+    extras = getattr(settings, "public_base_urls", ())
+    if isinstance(extras, (list, tuple)):
+        for value in extras:
+            if not isinstance(value, str) or not value:
+                continue
+            parsed = urlsplit(value)
+            if parsed.scheme == "https" and parsed.netloc:
+                origin = f"https://{parsed.netloc}"
+            elif (
+                parsed.scheme == "http"
+                and parsed.netloc
+                and getattr(settings, "local_dev", False) is True
+                and (parsed.hostname or "") in LOCAL_DEV_LOOPBACK_HOSTS
+            ):
+                origin = f"http://{parsed.netloc}"
+            else:
+                continue
+            if origin not in origins:
+                origins.append(origin)
+    return tuple(origins)
+
+
 def is_local_runner_result_ingress(path: str) -> bool:
     """True only for the canonical ``/api/claw/runs/{run_id}/local-result``.
 
@@ -248,14 +282,14 @@ class SameOriginGuardMiddleware:
 
         app = scope.get("app")
         settings = getattr(getattr(app, "state", None), "settings", None)
-        expected = expected_browser_origin(settings)
-        if expected is None:
+        allowed = expected_browser_origins(settings)
+        if not allowed:
             # Fail closed: no reviewed expectation, no cookie-authenticated
             # mutation. Never derive the expectation from the request.
             return _error(503, ORIGIN_GUARD_UNAVAILABLE_CODE, ORIGIN_GUARD_UNAVAILABLE_MESSAGE)
 
         origin = _header(scope, b"origin")
-        if origin is None or origin.strip() != expected:
+        if origin is None or origin.strip() not in allowed:
             return _error(403, ORIGIN_REJECTED_CODE, ORIGIN_REJECTED_MESSAGE)
 
         content_type = _header(scope, b"content-type") or ""
@@ -362,6 +396,7 @@ __all__ = [
     "SERVER_TO_SERVER_EXEMPT_PATH_PREFIXES",
     "SameOriginGuardMiddleware",
     "expected_browser_origin",
+    "expected_browser_origins",
     "is_exempt_path",
     "is_local_runner_result_ingress",
 ]

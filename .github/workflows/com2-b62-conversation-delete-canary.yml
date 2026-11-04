@@ -49,7 +49,11 @@ jobs:
           import json,os
           rows=json.loads(os.environ['FILES'])
           paths={x.get('filename','') for x in rows} | {x.get('previous_filename','') for x in rows}
-          hit=len(rows)>=100 or any(p.startswith('apps/padiem-chat/') or p.startswith('packages/padiem-ai-core/') or p.startswith('packages/padiem-control-plane/') or p.startswith('apps/korean-ai-code-agent/') or p.startswith('apps/padiem-ai-engine/clients/python/') or p=='.github/scripts/b62_conversation-delete_browser_qa.py' for p in paths)
+          # 저장소에 없는 .github/scripts/b62_conversation-delete_browser_qa.py 항목은
+          # 이 카나리의 실제 저장소 측 본체인 워크플로 파일 자체로 대체한다.
+          # 런타임 본체(/usr/local/sbin/padiem-ci-b62-conversation-delete-check)는
+          # COM2 러너 로컬이라 저장소 경로가 아니다.
+          hit=len(rows)>=100 or any(p.startswith('apps/padiem-chat/') or p.startswith('packages/padiem-ai-core/') or p.startswith('packages/padiem-control-plane/') or p.startswith('apps/korean-ai-code-agent/') or p.startswith('apps/padiem-ai-engine/clients/python/') or p=='.github/workflows/com2-b62-conversation-delete-canary.yml' for p in paths)
           print('true' if hit else 'false')
           PY
           )"

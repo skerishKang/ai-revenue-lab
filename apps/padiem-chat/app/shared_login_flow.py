@@ -11,7 +11,7 @@ import json
 import logging
 import secrets
 import time
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 
 from starlette.responses import JSONResponse, RedirectResponse
 from starlette.routing import Route
@@ -30,6 +30,31 @@ ACCESS_SECONDS = 15 * 60
 REFRESH_SECONDS = 30 * 24 * 60 * 60
 
 logger = logging.getLogger(__name__)
+
+
+def parse_extra_origins(raw) -> tuple[str, ...]:
+    """Reviewed extra hosts that may run this login (#6850).
+
+    A comma-separated configuration value, https only, origin only. Anything
+    malformed is dropped rather than guessed at: a host that is not listed here
+    can never influence the callback or satisfy the origin checks.
+    """
+    if raw is None:
+        return ()
+    text = raw.decode('utf-8', 'ignore') if isinstance(raw, (bytes, bytearray)) else str(raw)
+    origins: list[str] = []
+    for part in text.split(','):
+        value = part.strip().rstrip('/')
+        if not value:
+            continue
+        parsed = urlsplit(value)
+        if (parsed.scheme != 'https' or not parsed.hostname or parsed.username
+                or parsed.password or parsed.path or parsed.query or parsed.fragment):
+            continue
+        origin = 'https://' + parsed.netloc
+        if origin not in origins:
+            origins.append(origin)
+    return tuple(origins)
 
 # Only these literal codes may reach logs. Exceptions (including RPC errors)
 # can contain credentials, response bodies or profile values; never stringify
@@ -156,13 +181,18 @@ class SharedLoginFlow(ComparisonFlow):
     convert a shared access token to an unbounded legacy session.
     """
 
-    def __init__(self, *, issue_session, resolve_account, revoke_session=None, provision_profile=None, public_base_url=None, **kwargs):
-        from urllib.parse import urlsplit
+    def __init__(self, *, issue_session, resolve_account, revoke_session=None, provision_profile=None, public_base_url=None, extra_origins=(), **kwargs):
         base = (public_base_url or 'https://chat.padiem.net').rstrip('/')
         url = urlsplit(base)
         if url.scheme != 'https' or not url.hostname or url.username or url.password or url.path or url.query or url.fragment:
             raise ValueError('invalid_shared_login_origin')
         self.public_base_url = base
+        # #6850: the canonical host stays first; the reviewed parallel hosts
+        # (the pages.dev entry) are the only additions. Cookies are host-scoped,
+        # so each host runs its own login round trip against the one authority.
+        self.allowed_origins = tuple(dict.fromkeys(
+            [base] + [value for value in extra_origins if isinstance(value, str) and value and value != base]
+        ))
         self.callback = base + '/auth/shared/callback'
         super().__init__(**kwargs)
         if not callable(issue_session) or not callable(resolve_account):
@@ -172,11 +202,35 @@ class SharedLoginFlow(ComparisonFlow):
         self.revoke_session = revoke_session
         self.provision_profile = provision_profile
 
+    def callback_for(self, request) -> str:
+        """The callback this request's own reviewed host must use.
+
+        ``chat.padiem.net`` keeps ``public_base_url``. A second reviewed host
+        gets its own ``/auth/shared/callback`` so the state cookie, the OAuth
+        round trip and the redirect all stay on the host the browser opened.
+        A host outside the reviewed list never changes the callback.
+        """
+        if len(self.allowed_origins) == 1:
+            return self.callback
+        raw = request.headers.get('x-forwarded-host') or request.headers.get('host') or ''
+        host = str(raw).split(',')[0].strip().lower()
+        if not host:
+            return self.callback
+        origin = 'https://' + host
+        if origin not in self.allowed_origins:
+            return self.callback
+        return origin + '/auth/shared/callback'
+
+    def origin_allowed(self, request) -> bool:
+        """True when this mutation came from a reviewed host of this app."""
+        origin = request.headers.get('origin')
+        return isinstance(origin, str) and origin.strip() in self.allowed_origins
+
     async def start_login(self, request):
         state, verifier = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
         data = _encoded({'state': state, 'verifier': verifier, 'exp': int(self.clock()) + 600})
         cookie = data + '.' + _b64(self._mac(b'shared-login', data.encode('ascii')))
-        query = urlencode({'client_id': self.client_id, 'redirect_uri': self.callback, 'state': state,
+        query = urlencode({'client_id': self.client_id, 'redirect_uri': self.callback_for(request), 'state': state,
                            'code_challenge': _b64(hashlib.sha256(verifier.encode('ascii')).digest()),
                            'code_challenge_method': 'S256'})
         response = RedirectResponse(AUTH + '/login?' + query, status_code=302,
@@ -236,7 +290,7 @@ class SharedLoginFlow(ComparisonFlow):
                 'client_assertion_type': 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
                 'client_assertion': assertion,
                 'grant_type': 'authorization_code', 'code': codes[0],
-                'redirect_uri': self.callback, 'code_verifier': state['verifier'],
+                'redirect_uri': self.callback_for(request), 'code_verifier': state['verifier'],
             }))
             if not isinstance(tokens, dict):
                 raise ValueError('invalid_exchange')
@@ -284,7 +338,7 @@ class SharedLoginFlow(ComparisonFlow):
         headers = {'cache-control': 'no-store', 'referrer-policy': 'no-referrer'}
         stage = 'refresh_exchange'
         try:
-            if request.headers.get('origin') != self.public_base_url:
+            if not self.origin_allowed(request):
                 return JSONResponse({'error': 'invalid_origin'}, status_code=403, headers=headers)
             old = request.cookies.get(REFRESH_COOKIE)
             if not old:
@@ -422,7 +476,8 @@ async def create_worker_shared_login_flow(env, authority):
             issue_shared_cookies(response, access, refresh)
             return clear_login_return_cookie(response)
 
-        flow = SharedLoginFlow(state_key=_un64(state), client_id=client_id, public_base_url=public_base_url, client_jwk=json.loads(private),
+        flow = SharedLoginFlow(state_key=_un64(state), client_id=client_id, public_base_url=public_base_url,
+            extra_origins=parse_extra_origins(binding_value(env, 'PADIEM_CHAT_PUBLIC_BASE_URLS')), client_jwk=json.loads(private),
             kid=str(kid), operator_guard=lambda request: False, legacy_user=current_user_id,
             comparator=lambda *args: None, exchange=exchange_with_httpx, resolve_account=auth.user_id,
             issue_session=issue, revoke_session=revoke_with_httpx, provision_profile=provision)

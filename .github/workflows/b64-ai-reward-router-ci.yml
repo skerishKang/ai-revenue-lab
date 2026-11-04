@@ -2,9 +2,9 @@ name: B64 AI Reward Router CI
 
 on:
   push:
+    # b64-product-w9-public-source-expansion 브랜치는 원격에 더 이상 없다(2026-11-05 기준).
     branches:
       - main
-      - b64-product-w9-public-source-expansion
     paths:
       - 'apps/ai-reward-router/**'
       - '.github/workflows/b64-ai-reward-router-ci.yml'
