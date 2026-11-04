@@ -59,10 +59,21 @@ class B14CoreStagingParity(unittest.TestCase):
     def test_installer_derives_its_list_from_deploy_sh(self) -> None:
         text = INSTALL_SH.read_text(encoding="utf-8")
         self.assertIn(
-            'DEPLOY_SH="$SRC_DIR/../../apps/korean-ai-platform/deploy.sh"',
+            'DEPLOY_SH="$SRC_DIR/../../../apps/korean-ai-platform/deploy.sh"',
             text,
             "the installer must read deploy.sh, not keep a second hand-written list",
         )
+
+    def test_deploy_sh_path_resolves_from_the_installer_location(self) -> None:
+        # SRC_DIR is deploy/host-com2/b14; three levels up is the checkout root.
+        # A wrong depth silently aborts every COM2 B14 deploy (2026-11-05 07:0x).
+        deploy_sh = (HERE / "b14" / ".." / ".." / ".." / "apps" / "korean-ai-platform" / "deploy.sh").resolve()
+        self.assertTrue(deploy_sh.is_file(), deploy_sh)
+        text = INSTALL_SH.read_text(encoding="utf-8")
+        depth = re.search(r'DEPLOY_SH="\$SRC_DIR/((?:\.\./)+)apps/', text)
+        self.assertIsNotNone(depth, "DEPLOY_SH must be derived from SRC_DIR")
+        hops = len(depth.group(1).split("/")) - 1
+        self.assertEqual(hops, 3, "install.sh sits three levels below the checkout root")
 
     def test_derived_list_matches_deploy_sh_and_has_the_6848_modules(self) -> None:
         expected = deploy_sh_module_list()

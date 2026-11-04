@@ -66,7 +66,7 @@ if ! command -v systemctl >/dev/null 2>&1; then fail "systemd_missing"; fi
 # two staging lists cannot drift. That drift is exactly how #6848's
 # conversation_bounds/evidence_blocks crashed the 2026-11-05 00:19 release at
 # first boot (reproduced 06:37) while CI stayed green (#6855).
-DEPLOY_SH="$SRC_DIR/../../apps/korean-ai-platform/deploy.sh"
+DEPLOY_SH="$SRC_DIR/../../../apps/korean-ai-platform/deploy.sh"
 CORE_SOURCE_DIR="$SRC_DIR/../../../packages/padiem-ai-core/padiem_ai_core"
 CORE_PACKAGE="$APP_ROOT/app/padiem_ai_core"
 [ -f "$DEPLOY_SH" ] || fail "deploy_script_missing"
