@@ -46,6 +46,7 @@ from .control_plane_identity_worker import CloudflareControlPlaneIdentityAuthori
 from . import sqlite_settings as sqlite_policy
 from .d1_sqlite import SqliteD1
 from .dispatch_quota import DispatchAwareB14Client, _refund_active_reservation
+from .grounding import GroundedChatService
 from .history import D1HistoryStore
 from .local_r2 import ThreadedLocalDiskR2
 from .local_service_bridge import (
@@ -557,6 +558,15 @@ def build_app():
             service_transport=completion_transport,
             stream_transport=stream_transport,
             require_service_binding=True,
+        )
+        # Anything the app factory built FROM the previous client has to be
+        # rebuilt here, exactly as worker.py does: GroundedChatService captured
+        # the stub client, so a Chat web-search turn on this host executed
+        # without the dispatch proof and without the reservation-refund rule
+        # the dispatch-aware client carries.
+        app.state.grounded_chat = GroundedChatService(
+            app.state.b14_client,
+            app.state.web_provider,
         )
         quote_model_resolver = B66ExplicitQuoteModelResolver(completion_transport)
         app.state.b66_quote_model_resolver = quote_model_resolver
