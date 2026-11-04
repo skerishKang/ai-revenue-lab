@@ -1274,7 +1274,8 @@ def test_bring_your_own_key_turn_never_reads_padiem_orchestration() -> None:
     recorded: list[dict[str, Any]] = []
 
     class _ProviderClient:
-        async def complete(self, *, selection, api_key, endpoint, messages, system_context=None):
+        async def complete(self, *, selection, api_key, endpoint, messages,
+                           system_context=None, reasoning_effort=None):
             recorded.append(
                 {
                     "model_id": selection.model_id,

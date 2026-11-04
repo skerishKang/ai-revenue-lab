@@ -401,4 +401,5 @@ def test_runtime_reuses_accepted_phase1_css_exactly():
     repo = root.parents[1]
     accepted = repo / "reference/business-62-padiem-chat-v1/styles.css"
     assert accepted.is_file()
-    assert (root / "static/styles.css").read_bytes() == accepted.read_bytes()
+    from style_contract import assert_phase1_styles_match
+    assert_phase1_styles_match(root / "static/styles.css", accepted)

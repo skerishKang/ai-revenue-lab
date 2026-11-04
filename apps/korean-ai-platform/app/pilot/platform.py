@@ -587,6 +587,15 @@ async def call_platform_chat_completions(
     """
     messages = _messages_for_model(messages, model_id)
     spec = _require_spec(platform_provider_id)
+    # #6838: the platform path decides reasoning from the registry alone; a
+    # caller's value never reaches this lane. BYOK passes it through instead.
+    from .reasoning_policy import (
+        REASONING_FIELD, note_sent_reasoning, reasoning_effort_for_model,
+        rejects_reasoning_effort, strip_reasoning,
+    )
+
+    model_parameters = strip_reasoning(model_parameters)
+    reasoning_effort = reasoning_effort_for_model(model_id)
 
     provider_mode = _provider_mode()
 
@@ -650,6 +659,10 @@ async def call_platform_chat_completions(
         except UnsupportedModelParameter as exc:
             raise InvalidRequest(str(exc)) from exc
 
+    if reasoning_effort is not None:
+        body[REASONING_FIELD] = reasoning_effort
+        note_sent_reasoning(model_id, reasoning_effort)
+
     client_kwargs: dict[str, Any] = {
         "timeout": build_provider_http_timeout(model_id),
     }
@@ -662,10 +675,31 @@ async def call_platform_chat_completions(
             response, request_started = await send_provider_request(
                 client, "POST", chat_url, headers=headers, json=body,
             )
+            # #6838: an endpoint that rejects the reasoning option is answered
+            # once more without it. Only a 4xx that names the field retries; an
+            # error is never re-sent for any other reason.
+            rejected_body: bytes | None = None
+            if reasoning_effort is not None and 400 <= response.status_code < 500:
+                rejected_body = await _read_bounded_body(
+                    response, started_at=request_started,
+                )
+                if rejects_reasoning_effort(rejected_body):
+                    logger.warning("reasoning_effort_rejected")
+                    await response.aclose()
+                    body.pop(REASONING_FIELD, None)
+                    reasoning_effort = None
+                    note_sent_reasoning(model_id, None)
+                    rejected_body = None
+                    response, request_started = await send_provider_request(
+                        client, "POST", chat_url, headers=headers, json=body,
+                    )
             async with aclosing(response):
                 if response.status_code < 200 or response.status_code >= 300:
-                    error_bytes = await _read_bounded_body(
-                        response, started_at=request_started,
+                    error_bytes = (
+                        rejected_body if rejected_body is not None
+                        else await _read_bounded_body(
+                            response, started_at=request_started,
+                        )
                     )
                     if platform_provider_id == "tokenharbor":
                         _log_tokenharbor_rejection(response, headers, error_bytes)
@@ -787,6 +821,15 @@ async def stream_platform_chat_completions(
 
     messages = _messages_for_model(messages, model_id)
     spec = _require_spec(platform_provider_id)
+    # #6838: the platform path decides reasoning from the registry alone; a
+    # caller's value never reaches this lane. BYOK passes it through instead.
+    from .reasoning_policy import (
+        REASONING_FIELD, note_sent_reasoning, reasoning_effort_for_model,
+        rejects_reasoning_effort, strip_reasoning,
+    )
+
+    model_parameters = strip_reasoning(model_parameters)
+    reasoning_effort = reasoning_effort_for_model(model_id)
 
     if tools and platform_provider_id != "opencode-go":
         from .google_provider import require_stream_tool_support
@@ -837,11 +880,16 @@ async def stream_platform_chat_completions(
     )
     if tools:
         from .google_provider import stream_google_tool_calls
+        # The tool wire receives the same decision as the plain wire.
+        tool_model_parameters = dict(model_parameters or {})
+        if reasoning_effort is not None:
+            tool_model_parameters[REASONING_FIELD] = reasoning_effort
+            note_sent_reasoning(model_id, reasoning_effort)
         tool_stream = stream_google_tool_calls(
             model_id=model_id, upstream_model=upstream_model, spec=spec,
             messages=messages, tools=tools, tool_choice=tool_choice,
             temperature=temperature, max_tokens=max_tokens,
-            model_parameters=model_parameters, transport=transport,
+            model_parameters=tool_model_parameters or None, transport=transport,
         )
         try:
             async for event in tool_stream:
@@ -884,6 +932,10 @@ async def stream_platform_chat_completions(
         except UnsupportedModelParameter as exc:
             raise InvalidRequest(str(exc)) from exc
 
+    if reasoning_effort is not None:
+        body[REASONING_FIELD] = reasoning_effort
+        note_sent_reasoning(model_id, reasoning_effort)
+
     client_kwargs: dict[str, Any] = {
         "timeout": build_provider_http_timeout(model_id),
     }
@@ -913,6 +965,22 @@ async def stream_platform_chat_completions(
                     await response.aclose()
                     body.pop("stream_options", None)
                     usage_option_sent = False
+                    rejected_body = None
+                    response, request_started = await send_provider_request(
+                        client, "POST", chat_url, headers=headers, json=body,
+                    )
+            # #6838: the same one-shot retry for the reasoning option, after the
+            # usage option had its own chance on this attempt.
+            if reasoning_effort is not None and 400 <= response.status_code < 500:
+                rejected_body = await _read_bounded_body(
+                    response, started_at=request_started,
+                )
+                if rejects_reasoning_effort(rejected_body):
+                    logger.warning("reasoning_effort_rejected")
+                    await response.aclose()
+                    body.pop(REASONING_FIELD, None)
+                    reasoning_effort = None
+                    note_sent_reasoning(model_id, None)
                     rejected_body = None
                     response, request_started = await send_provider_request(
                         client, "POST", chat_url, headers=headers, json=body,

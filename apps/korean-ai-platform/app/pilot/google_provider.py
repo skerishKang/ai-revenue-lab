@@ -303,8 +303,10 @@ def _google_tool_body(*, messages, tools, tool_choice, temperature, max_tokens, 
         generation["temperature"] = float(temperature)
     if max_tokens is not None:
         generation["maxOutputTokens"] = int(max_tokens)
-    if model_parameters:
-        generation["thinkingConfig"] = {"thinkingLevel": model_parameters["reasoning_effort"].upper()}
+    if model_parameters and model_parameters.get("reasoning_effort"):
+        generation["thinkingConfig"] = {
+            "thinkingLevel": str(model_parameters["reasoning_effort"]).upper()
+        }
     if generation:
         body["generationConfig"] = generation
     return body
