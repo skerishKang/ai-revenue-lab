@@ -1,6 +1,12 @@
 // v1 signs method and URL pathname; query strings are excluded.
 const PROOF_HEADERS = ["x-padiem-edge-at", "x-padiem-edge-id", "x-padiem-edge-tls", "x-padiem-edge-proof"];
 
+// 답변 시간 예산: the request id that crosses the front door is generated here, where
+// signing already imports Web Crypto, so worker.mjs stays proxy-only.
+export function newRequestId() {
+  return crypto.randomUUID().replaceAll("-", "");
+}
+
 export async function signedRequestHeaders(request, secret, { now = () => Date.now(), random = () => crypto.randomUUID().replaceAll("-", "") } = {}) {
   const url = new URL(request.url);
   if (!url.pathname.startsWith("/") || request.method.includes("\n") || url.pathname.includes("\n")) throw new Error("unsupported_edge_proof_request");

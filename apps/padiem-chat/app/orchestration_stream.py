@@ -15,10 +15,13 @@
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
+import time
 from typing import Any, AsyncIterator
 
+from .orchestration_bridge import B62OrchestrationError
 from .orchestration_timing import OrchestrationTiming
 from .worker_config import binding_value
 
@@ -49,6 +52,32 @@ def line(payload: dict[str, Any]) -> bytes:
     return (json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n").encode("utf-8")
 
 
+async def _bounded_records(stream: Any, deadline: float | None) -> AsyncIterator[Any]:
+    """Yield answer records while the front-door budget still has time left.
+
+    The 55s B14 chain is not the outer deadline: the front gives an answer request
+    60s. When the remaining budget is spent, raising here lets the route answer
+    with the same Korean timeout copy instead of letting Cloudflare's edge answer
+    first (답변 시간 예산).
+    """
+    iterator = stream.__aiter__()
+    while True:
+        if deadline is None:
+            try:
+                yield await iterator.__anext__()
+            except StopAsyncIteration:
+                return
+            continue
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise asyncio.TimeoutError
+        try:
+            record = await asyncio.wait_for(iterator.__anext__(), timeout=remaining)
+        except StopAsyncIteration:
+            return
+        yield record
+
+
 async def ndjson_answer(
     *,
     bridge: Any,
@@ -56,19 +85,23 @@ async def ndjson_answer(
     buffered_kwargs: dict[str, Any],
     timing: OrchestrationTiming,
     on_completed: Any,
+    timeout_seconds: float | None = None,
 ) -> AsyncIterator[bytes]:
     """엔진 NDJSON을 브라우저 NDJSON으로 옮긴다.
 
     엔진이 스트림을 주지 못하면(첫 조각 전 실패) 같은 요청을 완성 응답으로 한 번 더
     보내 한 덩어리 delta로 대체한다. 첫 delta 뒤의 실패는 다시 보내지 않는다 —
-    같은 답변을 두 번 쓰지 않기 위해서다.
+    같은 답변을 두 번 쓰지 않기 위해서다. 시간 예산이 끝나면 재시도하지 않고
+    기존 한국어 시간 초과 코드만 보낸다.
     """
+    deadline = time.monotonic() + timeout_seconds if timeout_seconds is not None else None
     text_seen = False
     result = None
     try:
         yield line({"type": "meta", "stream": True})
+        stream = bridge.start_stream(**stream_kwargs)
         try:
-            async for record in bridge.start_stream(**stream_kwargs):
+            async for record in _bounded_records(stream, deadline):
                 if not isinstance(record, dict):
                     continue
                 if "text_delta" in record:
@@ -83,14 +116,43 @@ async def ndjson_answer(
                     result = record["result"]
                     break
                 # heartbeat·event·pc_progress는 일반 답변 화면에 쓰지 않는다.
+        except asyncio.TimeoutError:
+            yield line({"type": "error", "code": "upstream_timeout"})
+            return
+        except B62OrchestrationError as exc:
+            if exc.code in {"upstream_timeout", "timeout"}:
+                yield line({"type": "error", "code": "upstream_timeout"})
+                return
+            if text_seen:
+                yield line({"type": "error", "code": exc.code})
+                return
+            # A non-timeout Engine refusal before the first token keeps the
+            # existing one-shot buffered fallback.
+            _LOG.info("orchestration_stream_fallback stage=start")
         except Exception:
             if text_seen:
                 yield line({"type": "error", "code": "invalid_engine_stream"})
                 return
             # 스트림을 못 받았다: 아래 완성 응답 경로로 대체한다.
             _LOG.info("orchestration_stream_fallback stage=start")
+        finally:
+            close = getattr(stream, "aclose", None)
+            if callable(close):
+                try:
+                    await close()
+                except Exception:
+                    pass
         if result is None:
-            result = await bridge.start(**buffered_kwargs)
+            if deadline is None:
+                result = await bridge.start(**buffered_kwargs)
+            else:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    yield line({"type": "error", "code": "upstream_timeout"})
+                    return
+                result = await asyncio.wait_for(
+                    bridge.start(**buffered_kwargs), timeout=remaining,
+                )
         answer = getattr(result, "answer", None)
         if not isinstance(answer, str) or not answer:
             yield line({"type": "error", "code": "engine_execution_failed"})
@@ -102,6 +164,10 @@ async def ndjson_answer(
         fields = await on_completed(result)
         timing.mark("save")
         yield line({"type": "done", "done": True, **dict(fields or {})})
+    except asyncio.TimeoutError:
+        yield line({"type": "error", "code": "upstream_timeout"})
+    except B62OrchestrationError as exc:
+        yield line({"type": "error", "code": exc.code})
     except Exception:
         # 원인 문자열·본문은 내보내지 않는다. 코드만 닫힌 어휘로 보낸다.
         yield line({"type": "error", "code": "engine_execution_failed"})
