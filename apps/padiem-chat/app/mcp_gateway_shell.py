@@ -359,6 +359,18 @@ async def _output_reference(request, *, identity, subject_id, dispatch, private,
     return {"handle": ref["handle"], "size": ref["size"], "truncated": ref.get("truncated") is True}
 
 
+def _terminal_without_output(result: dict, code: str) -> dict:
+    """A finished job keeps its status and exit code when only bytes are missing.
+
+    "The command finished with exit 1 but its stored output cannot be read" is
+    not the same fact as "the PC connection is unavailable". The store path
+    (#6830/#6833) keeps small bodies for exited/no_reply, so a missing copy is
+    an output-store problem, reported with its own code.
+    """
+    return {**result, "output": "", "output_ref": None, "code": code,
+            "answer": "PC 작업이 끝났지만 출력을 읽지 못했습니다."}
+
+
 async def _job_snapshot(request, *, identity, subject_id, job_id, offset, length,
                         require_receipt=True):
     private = await _authorize_job(request, identity=identity, job_id=job_id,
@@ -383,25 +395,25 @@ async def _job_snapshot(request, *, identity, subject_id, job_id, offset, length
     except Exception:
         run = None
     if not isinstance(run, dict):
-        return {"status": "unavailable", "answer": "PC 작업 상태를 확인하지 못했습니다."}
+        return _terminal_without_output(result, "pc_output_unavailable")
     ref = await _output_reference(request, identity=identity, subject_id=subject_id,
                                   dispatch=dispatch, private=private, run=run)
     if ref is None:
         if dispatch.get("termination") == "cancelled":
             return {**result, "output_ref": None}
-        return {"status": "unavailable", "answer": "PC 작업 출력을 확인하지 못했습니다."}
+        return _terminal_without_output(result, "pc_output_unavailable")
     reader = getattr(history, "read_pc_output", None)
     if not callable(reader):
-        return {"status": "unavailable", "answer": "PC 작업 출력을 확인하지 못했습니다."}
+        return _terminal_without_output(result, "pc_output_read_failed")
     bounded_offset = min(offset, ref["size"])
     try:
         page = await reader(user_id=identity["user_id"], subject_id=subject_id,
                             run_id=dispatch["run_id"], device_id=private["device_id"],
                             handle=ref["handle"], offset=bounded_offset, length=length)
     except Exception:
-        return {"status": "unavailable", "answer": "PC 작업 출력을 읽지 못했습니다."}
+        return _terminal_without_output(result, "pc_output_read_failed")
     if not isinstance(page, dict) or not isinstance(page.get("content"), str):
-        return {"status": "unavailable", "answer": "PC 작업 출력을 읽지 못했습니다."}
+        return _terminal_without_output(result, "pc_output_read_failed")
     next_offset = min(ref["size"], bounded_offset + len(page["content"].encode("utf-8")))
     return {**result, "output": page["content"], "next_offset": next_offset,
             "output_ref": ref, "answer": "PC 작업 출력을 읽었습니다.",
