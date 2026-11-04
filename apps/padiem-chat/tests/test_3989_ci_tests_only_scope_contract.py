@@ -2,8 +2,9 @@
 
 This test MODULE is intentionally the only file changed in the proof PR.
 The real CI classifier must detect tests_only from exact PR/push file metadata.
-B62 full pytest still runs this file, while the completely unchanged Workerd
-boot matrix may be omitted only for this tightly bounded change category.
+The changed modules run in the tests-only lane (#6810), while the completely
+unchanged Workerd boot matrix may be omitted only for this tightly bounded
+change category.
 """
 from __future__ import annotations
 
@@ -149,6 +150,21 @@ class TestsOnlyCIRoutingContract(unittest.TestCase):
         self.assertIn("EXPECTED_FOCUSED_FULL=success", flow)
         self.assertIn("github.event_name == 'schedule'", flow)
         self.assertIn('test "$MM_RESULT" = success', flow)
+
+    def test_changed_test_modules_run_in_the_tests_only_lane(self):
+        # #6810: a tests-only PR used to run no pytest module at all.
+        flow = WORKFLOW.read_text(encoding="utf-8")
+        start = flow.index("  b62-tests-only-tests:")
+        end = flow.index("  b62-test:", start)
+        focused = flow[start:end]
+        self.assertIn("name: B62 tests-only changed pytest", focused)
+        self.assertIn(
+            "TESTS_ONLY_MODULES: ${{ needs.registry-ci-plan.outputs.tests_only_tests }}",
+            focused,
+        )
+        self.assertIn('if [ -z "$TESTS_ONLY_MODULES" ]; then', focused)
+        self.assertIn("uv run --locked python -m pytest -q", focused)
+        self.assertIn('test "$TESTS_RESULT" = success', flow)
 
     def test_worker_sources_are_not_touched_by_this_test_module(self):
         for probe in ("timeout", "web_transport", "p01_binding", "r2_read"):

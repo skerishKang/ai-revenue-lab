@@ -34,7 +34,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn("name: b62-test", self.aggregate)
         self.assertIn("if: always()", self.aggregate)
         self.assertIn(
-            "needs: [registry-ci-plan, b62-static-ui, b62-ui-contract-tests, b62-ui-mixed-tests, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
+            "needs: [registry-ci-plan, b62-static-ui, b62-ui-contract-tests, b62-ui-mixed-tests, b62-tests-only-tests, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
             self.aggregate,
         )
         self.assertIn("WORKER_RESULT: ${{ needs.b62-worker-suite.result }}", self.aggregate)
@@ -190,6 +190,31 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('test "$CONTRACT_RESULT" = skipped', self.aggregate)
         self.assertIn('if [ "$STATIC_CHANGED" = true ]; then', self.aggregate)
 
+    def test_tests_only_change_runs_each_changed_module(self):
+        # #6810: a tests-only PR used to run no pytest module at all.
+        focused = job("b62-tests-only-tests", self.source)
+        self.assertIn("name: B62 tests-only changed pytest", focused)
+        self.assertIn("needs: registry-ci-plan", focused)
+        self.assertIn("scope == 'tests_only'", focused)
+        self.assertIn(
+            "TESTS_ONLY_MODULES: ${{ needs.registry-ci-plan.outputs.tests_only_tests }}",
+            focused,
+        )
+        # An empty proven list has nothing to run; any listed module must
+        # validate and run, and an unexpected count or path fails closed.
+        self.assertIn('if [ -z "$TESTS_ONLY_MODULES" ]; then', focused)
+        self.assertIn("B62_TESTS_ONLY=EMPTY", focused)
+        self.assertIn('test "${#modules[@]}" -ge 1', focused)
+        self.assertIn('test "${#modules[@]}" -le 100', focused)
+        self.assertIn("uv run --locked python -m pytest -q", focused)
+        self.assertIn("tests_only_tests: ${{ steps.classify-b62.outputs.tests_only_tests }}", self.plan)
+        self.assertIn("needs.b62-tests-only-tests.result", self.aggregate)
+        self.assertIn('elif [ "$SCOPE" = tests_only ]; then', self.aggregate)
+        self.assertIn('test "$TESTS_RESULT" = success', self.aggregate)
+        self.assertIn("B62_CI_MODE=TESTS_ONLY_TARGETED", self.aggregate)
+        # The Worker lane still runs for test-only edits; its source is unchanged.
+        self.assertIn('test "$WORKER_RESULT" = success', self.aggregate)
+
     def test_b14_only_keeps_full_b62_chat_b14_and_worker_bundle_gates(self):
         # The b14_only shortcut is allowed only at the live Workerd step.
         # All other gates and the registry-only branch are unchanged.
@@ -258,7 +283,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         # closed, while its own failure is reported separately and owned by
         # #4318 instead of being repeated per product.
         self.assertIn(
-            "needs: [registry-ci-plan, b62-static-ui, b62-ui-contract-tests, b62-ui-mixed-tests, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, "
+            "needs: [registry-ci-plan, b62-static-ui, b62-ui-contract-tests, b62-ui-mixed-tests, b62-tests-only-tests, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, "
             "b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
             self.aggregate,
         )

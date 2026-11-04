@@ -93,6 +93,7 @@ B62_CHAT_EXPECTED_JOBS = {
     "b62-static-ui",
     "b62-ui-contract-tests",  # #6783 all static-reading UI contracts on static changes
     "b62-ui-mixed-tests",  # #4459 exact changed-test runner; required b62-test fan-in
+    "b62-tests-only-tests",  # #6810 exact changed-test runner for tests-only PRs
     "b62-core-parser-focused",  # #5341 opt-in isolated parser focused contract
     "b62-b14-attempt-focused",  # B14 outbound attempt-policy targeted regression
     "b14-multimodal-test",
@@ -190,6 +191,7 @@ def test_b62_main_push_ci_coalescing_preserves_stable_required_gate() -> None:
     assert "b62-worker-suite" in aggregate["needs"]
     assert "b62-static-ui" in aggregate["needs"]
     assert "b62-ui-contract-tests" in aggregate["needs"]
+    assert "b62-tests-only-tests" in aggregate["needs"]
 
 
 def test_b62_main_push_group_is_distinct_from_pr_and_manual_groups() -> None:
