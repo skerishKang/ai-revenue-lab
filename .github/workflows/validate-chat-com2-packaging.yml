@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'deploy/host-com2/chat/**'
+      - 'deploy/host-com2/b14/install.sh'
       - 'deploy/host-com2/deploy_from_main.sh'
       - 'deploy/host-com2/tests/**'
       - 'deploy/host-com2/README.md'

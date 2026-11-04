@@ -191,6 +191,13 @@ BASE_FILES = {
     "apps/padiem-ai-engine/worker_identity.py": "# identity\n",
     "packages/padiem-ai-core/padiem_ai_core/__init__.py": "# core\n",
     "packages/padiem-ai-core/padiem_ai_core/pc_work_metrics.py": "# metrics\n",
+    # The installer stages every Core module deploy.sh lists (#6855 fix), so the
+    # fixture tree must carry the whole list the real checkout carries.
+    "packages/padiem-ai-core/padiem_ai_core/document_semantics.py": "# semantics\n",
+    "packages/padiem-ai-core/padiem_ai_core/document_normalization.py": "# normalization\n",
+    "packages/padiem-ai-core/padiem_ai_core/document_parser_boundary.py": "# boundary\n",
+    "packages/padiem-ai-core/padiem_ai_core/conversation_bounds.py": "# bounds\n",
+    "packages/padiem-ai-core/padiem_ai_core/evidence_blocks.py": "# evidence\n",
     "packages/padiem-control-plane/padiem_control_plane/__init__.py": "# control\n",
     "apps/korean-ai-code-agent/src/kagent/__init__.py": "# kagent\n",
     "apps/korean-ai-platform/asgi.py": "# b14\n",
