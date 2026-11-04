@@ -169,8 +169,8 @@ def test_model_lists_then_reads_the_selected_file_in_one_run():
                 "arguments": {"path": ".", "intent": "read"},
             }
         if len(observations) == 1:
-            listed = json.loads(observations[0]["output"]["output"])
-            target = listed["entries"][0]["relative_path"]
+            listed = observations[0]["output"]
+            target = listed["items"][0]["path"]
             return {
                 "action": "tool", "tool_id": PC_READ_FILE_TOOL_ID,
                 "arguments": {"path": target},
@@ -195,13 +195,14 @@ def test_model_lists_then_reads_the_selected_file_in_one_run():
         tool_id=PC_LIST_FILES_TOOL_ID, arguments={"path": "."},
     )
 
-    listing = json.dumps({
-        "ok": True,
-        "entries": [{"relative_path": "notes.txt", "PSIsContainer": False}],
-    })
     list_result = ToolExecutionResult(
         tool_id=PC_LIST_FILES_TOOL_ID,
-        output={"output": listing, "entry_count": 1},
+        output={
+            "ok": True, "path": ".", "offset": 0, "total": 1, "has_more": False,
+            "truncated": False, "entry_count": 1,
+            "items": [{"name": "notes.txt", "type": "file", "size": 19,
+                       "modified": "2026-10-19T09:00:00Z", "path": "notes.txt"}],
+        },
         event=ToolEvent(tool_id=PC_LIST_FILES_TOOL_ID, status=RunStatus.COMPLETED),
     )
     second = asyncio.run(driver.next_step(

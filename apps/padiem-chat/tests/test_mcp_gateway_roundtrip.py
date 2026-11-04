@@ -129,10 +129,10 @@ async def test_real_gateway_roundtrip_and_first_party_approval(monkeypatch, vers
         assert engine.ops == ["read"]
         listed = await call(external, token, "pc_list", {"path": "."}, version=version)
         assert listed["status"] == "completed" and listed["output"]["entry_count"] == 2
-        assert len(listed["output"]["output"]["items"]) == 2
+        assert len(listed["output"]["items"]) == 2
         found = await call(external, token, "pc_search", {"path": ".", "query": "notes"}, version=version)
         assert found["status"] == "completed" and found["output"]["entry_count"] == 1
-        entries = found["output"]["output"]["items"]
+        entries = found["output"]["items"]
         assert len(entries) == 1 and entries[0]["path"] == "notes"
         assert engine.ops == ["read", "list", "list"]
 

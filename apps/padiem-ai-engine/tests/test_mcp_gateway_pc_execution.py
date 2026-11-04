@@ -126,7 +126,7 @@ def test_literal_search_filters_existing_list_observation_without_reading():
     result, pc = run_gateway(payload)
     assert result["status"] == "completed"
     assert pc.ops == ["list"]
-    listing = result["output"]["output"]
+    listing = result["output"]
     assert all("report" in row["path"].casefold() for row in listing["items"])
     assert result["output"]["search_scope"] == "immediate_folder"
 

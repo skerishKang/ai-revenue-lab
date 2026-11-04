@@ -104,7 +104,7 @@ def test_root_listing_projects_one_readable_relative_path_per_row(monkeypatch) -
 
     # 261105: a row is a field object now, and a wire row with no Name is
     # dropped rather than handed a path it never had.
-    listed = result["output"]
+    listed = result
     assert listed["ok"] is True
     assert listed["path"] == "."
     assert result["entry_count"] == 2
@@ -125,7 +125,7 @@ def test_single_entry_folder_is_projected(monkeypatch) -> None:
                   "{\"Name\":\"one.txt\",\"Length\":4,\"PSIsContainer\":false}")
     result = asyncio.run(_handler("list", PC_LIST_FILES_TOOL_ID)({"path": "."}))
 
-    listed = result["output"]
+    listed = result
     assert [item["path"] for item in listed["items"]] == ["one.txt"]
     assert listed["items"][0]["name"] == "one.txt"
     assert listed["items"][0]["size"] == 4
@@ -139,7 +139,7 @@ def test_subfolder_listing_prefixes_each_row_with_the_listed_folder(monkeypatch)
         _handler("list", PC_LIST_FILES_TOOL_ID)({"path": "notes/sub"})
     )
 
-    listed = result["output"]
+    listed = result
     assert listed["path"] == "notes/sub"
     assert listed["items"][0]["path"] == "notes/sub/report.txt"
 
@@ -152,7 +152,7 @@ def test_legacy_wrapped_listing_keeps_its_own_relative_path(monkeypatch) -> None
     }))
     result = asyncio.run(_handler("list", PC_LIST_FILES_TOOL_ID)({"path": "."}))
 
-    listed = result["output"]
+    listed = result
     assert listed["items"][0]["path"] == "already.txt"
     assert listed["has_more"] is True
     assert result["truncated"] is True
@@ -160,7 +160,7 @@ def test_legacy_wrapped_listing_keeps_its_own_relative_path(monkeypatch) -> None
 
 def test_projected_path_is_the_value_the_read_step_submits(monkeypatch) -> None:
     _install_wire(monkeypatch, WIRE_ROWS)
-    listed = asyncio.run(_handler("list", PC_LIST_FILES_TOOL_ID)({"path": "."}))["output"]
+    listed = asyncio.run(_handler("list", PC_LIST_FILES_TOOL_ID)({"path": "."}))
     target = listed["items"][0]["path"]
 
     assert target != "."
@@ -177,7 +177,7 @@ def test_empty_folder_listing_still_projects_an_entry_list(monkeypatch) -> None:
     _install_wire(monkeypatch, "null")
     result = asyncio.run(_handler("list", PC_LIST_FILES_TOOL_ID)({"path": "."}))
 
-    listed = result["output"]
+    listed = result
     assert listed["items"] == []
     assert result["entry_count"] == 0
     assert listed["has_more"] is False
@@ -271,7 +271,7 @@ def test_real_wire_listing_feeds_the_step_driver_read_selection(monkeypatch) -> 
 
     observed = ToolExecutionResult(
         tool_id=PC_LIST_FILES_TOOL_ID,
-        output={"output": listed["output"], "entry_count": listed["entry_count"]},
+        output=listed,
         event=ToolEvent(tool_id=PC_LIST_FILES_TOOL_ID, status=RunStatus.COMPLETED),
     )
 
@@ -282,7 +282,7 @@ def test_real_wire_listing_feeds_the_step_driver_read_selection(monkeypatch) -> 
                 "arguments": {"path": ".", "intent": "read"},
             }
         assert len(observations) == 1
-        rows = observations[0]["output"]["output"]["items"]
+        rows = observations[0]["output"]["items"]
         row = next(r for r in rows if r["type"] == "file")
         return {
             "action": "tool", "tool_id": PC_READ_FILE_TOOL_ID,
@@ -397,8 +397,7 @@ def test_a_granted_drive_is_a_root_in_every_spelling(monkeypatch) -> None:
         "E:\\x", {"roots": [{"label": "C:"}, {"label": "D:"}]}
     ) is None
 
-    listed = result.get("output") if isinstance(result, dict) else None
-    assert isinstance(listed, dict)
+    listed = result
     # Rows listed from a drive keep the drive, so a follow-up read cannot have to
     # guess which of the account's volumes was meant. The last call in the loop
     # above listed C:/Users/견적, and the third row has no Name to bind.

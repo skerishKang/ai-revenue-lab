@@ -102,8 +102,9 @@ def test_a_page_is_returned_as_fields_not_as_a_transcript(monkeypatch) -> None:
     _install_wire(monkeypatch, output=json.dumps(PAGE))
     result = _list()
 
-    listing = result["output"]
-    assert isinstance(listing, dict)
+    # One place only: the rows are not repeated under ``output``.
+    assert "output" not in result
+    listing = result
     assert listing["ok"] is True and listing["path"] == "."
     assert listing["offset"] == 0 and listing["total"] == 51
     assert listing["has_more"] is True
@@ -130,7 +131,7 @@ def test_a_previewed_page_is_parsed_from_the_stored_original(monkeypatch) -> Non
     result = _list()
 
     # Every row of the page survives even though the wire answer was a preview.
-    assert [item["name"] for item in result["output"]["items"]] == ["chat.log", "chat"]
+    assert [item["name"] for item in result["items"]] == ["chat.log", "chat"]
     assert "output_ref" not in result
 
 
@@ -141,8 +142,10 @@ def test_an_old_wrapped_listing_still_answers_fields(monkeypatch) -> None:
     }))
     result = _list()
 
-    assert [item["name"] for item in result["output"]["items"]] == ["old.txt"]
-    assert result["output"]["has_more"] is True
+    assert [item["name"] for item in result["items"]] == ["old.txt"]
+    assert result["has_more"] is True
+    # The PC said it cut this legacy page, so ``truncated`` is the only flag.
+    assert result["truncated"] is True
 
 
 def test_a_folder_error_still_names_its_failure(monkeypatch) -> None:
