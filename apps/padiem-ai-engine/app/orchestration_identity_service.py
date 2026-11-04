@@ -257,8 +257,24 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
             orch_req = attached
             runtime = self._runtime_for_payload(app_id, payload)
             runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
-            result = await self._run_pc_measured(
-                runner, orch_req, self._pc_work_metrics(app_id, orch_req, payload),
+            # 답변 시간 예산: execute the caller's total budget, not just publish it.
+            # Cancelling here also ends the B14 chain inside the run, so Chat can
+            # return the Korean timeout copy before the front door's 60s.
+            if orch_req.context.timeout_seconds is None:
+                result = await self._run_pc_measured(
+                    runner, orch_req, self._pc_work_metrics(app_id, orch_req, payload),
+                )
+            else:
+                async with asyncio.timeout(orch_req.context.timeout_seconds):
+                    result = await self._run_pc_measured(
+                        runner, orch_req, self._pc_work_metrics(app_id, orch_req, payload),
+                    )
+        except TimeoutError:
+            return _service_error(
+                "upstream_timeout",
+                "AI response time exceeded the execution budget.",
+                status_code=504,
+                retryable=True,
             )
         except IdempotencyConflictError:
             return _service_error(

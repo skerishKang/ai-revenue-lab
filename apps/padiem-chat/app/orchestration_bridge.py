@@ -11,6 +11,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import json
+import math
 import re
 from typing import Any, Protocol
 import uuid
@@ -383,6 +384,9 @@ _ENGINE_ERROR_MESSAGES: dict[str, str] = {
     "approval_decision_expired": "확인 가능한 시간이 지나 작업을 이어갈 수 없습니다.",
 }
 _UNKNOWN_ENGINE_ERROR_MESSAGE = "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요."
+# 답변 시간 예산: the copy the browser already receives for an Engine timeout, reused when
+# Chat itself has to stop waiting inside the answer budget.
+ENGINE_TIMEOUT_MESSAGE = _ENGINE_ERROR_MESSAGES["upstream_timeout"]
 
 
 def _engine_error(exc: PadiemAiEngineClientError) -> B62OrchestrationError:
@@ -422,6 +426,7 @@ class B62EngineOrchestrationBridge:
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
         pc_delegation: Mapping[str, Any] | None = None,
         pc_gateway: Mapping[str, Any] | None = None,
+        timeout_seconds: float | None = None,
     ) -> dict[str, Any]:
         _safe_id("user_id", user_id)
         trace_id = f"b62_orch_{uuid.uuid4().hex[:24]}"
@@ -469,6 +474,27 @@ class B62EngineOrchestrationBridge:
             "require_evidence": False,
             "require_verification": False,
         }
+        # 답변 시간 예산: the front door gives the answer request 60s. Chat forwards what
+        # is left after grounding as the Engine execution budget, so the B14
+        # chain cannot outlive the browser's response. Late/NaN values are
+        # clamped to the Engine client's own 1-3600s contract rather than
+        # widening the request.
+        if timeout_seconds is not None:
+            try:
+                bounded = float(timeout_seconds)
+            except (TypeError, ValueError):
+                raise B62OrchestrationError(
+                    "invalid_engine_request",
+                    "AI 작업 요청 형식이 올바르지 않습니다.",
+                    status_code=500,
+                ) from None
+            if not math.isfinite(bounded):
+                raise B62OrchestrationError(
+                    "invalid_engine_request",
+                    "AI 작업 요청 형식이 올바르지 않습니다.",
+                    status_code=500,
+                )
+            request["execution_context"]["timeout_seconds"] = min(3600.0, max(1.0, bounded))
         if byok_selection is not None:
             request["agent"]["model_policy"].update(
                 user_credential_required=True, byok_selection=dict(byok_selection))
@@ -559,6 +585,7 @@ class B62EngineOrchestrationBridge:
         byok_selection: Mapping[str, str] | None = None,
         pc_delegation: Mapping[str, Any] | None = None,
         pc_gateway: Mapping[str, Any] | None = None,
+        timeout_seconds: float | None = None,
     ) -> B62OrchestrationResult:
         engine_request = self.build_engine_request(
             user_id=user_id,
@@ -576,6 +603,7 @@ class B62EngineOrchestrationBridge:
             **({"byok_selection": byok_selection} if byok_selection is not None else {}),
             pc_delegation=pc_delegation,
             pc_gateway=pc_gateway,
+            timeout_seconds=timeout_seconds,
         )
         wire = engine_request if user_credential_ref is None else {
             **engine_request, "user_credential_ref": user_credential_ref
@@ -604,6 +632,7 @@ class B62EngineOrchestrationBridge:
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
         pc_delegation: Mapping[str, Any] | None = None,
         pc_gateway: Mapping[str, Any] | None = None,
+        timeout_seconds: float | None = None,
     ):
         request = self.build_engine_request(
             user_id=user_id, messages=messages, skill=skill, model_id=model_id,
@@ -614,6 +643,7 @@ class B62EngineOrchestrationBridge:
             pc_delegation=pc_delegation,
             pc_gateway=pc_gateway,
             **({"byok_selection": byok_selection} if byok_selection is not None else {}),
+            timeout_seconds=timeout_seconds,
         )
         wire = request if user_credential_ref is None else {**request, "user_credential_ref": user_credential_ref}
         iterator = self._client.stream_orchestration(wire, pc_progress=pc_tools is not None)

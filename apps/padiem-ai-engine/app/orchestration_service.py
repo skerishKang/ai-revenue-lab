@@ -1440,9 +1440,29 @@ class OrchestrationEngineService:
             logger.info("pc_engine stage=start run_hash=%s dispatch_id=none trace_id=%s", token, trace)
             try:
                 with credential_scope(user_credential_ref):
-                    result = await self._run_pc_measured(
-                        runner, orch_req, self._pc_work_metrics(app_id, orch_req, payload),
-                    )
+                    # 답변 시간 예산: an execution budget is a total, not just metadata.
+                    # Chat now sends the time left inside the front door's 60s
+                    # answer window; the run (and the B14 chain inside it) is
+                    # cancelled here so the product can answer in Korean before
+                    # Cloudflare's edge does. A PC tool turn still declares None
+                    # and keeps its owner-approved no-deadline contract.
+                    if orch_req.context.timeout_seconds is None:
+                        result = await self._run_pc_measured(
+                            runner, orch_req, self._pc_work_metrics(app_id, orch_req, payload),
+                        )
+                    else:
+                        async with asyncio.timeout(orch_req.context.timeout_seconds):
+                            result = await self._run_pc_measured(
+                                runner, orch_req, self._pc_work_metrics(app_id, orch_req, payload),
+                            )
+            except TimeoutError:
+                logger.info("pc_engine stage=timeout run_hash=%s dispatch_id=none trace_id=%s", token, trace)
+                return _service_error(
+                    "upstream_timeout",
+                    "AI response time exceeded the execution budget.",
+                    status_code=504,
+                    retryable=True,
+                )
             except BaseException:
                 logger.info("pc_engine stage=error run_hash=%s dispatch_id=none trace_id=%s", token, trace)
                 raise

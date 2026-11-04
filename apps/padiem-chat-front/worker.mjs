@@ -20,7 +20,7 @@
  * the browser instead of being followed inside the Worker.
  */
 
-import { signedRequestHeaders } from "./edge-proof.mjs";
+import { newRequestId, signedRequestHeaders } from "./edge-proof.mjs";
 import { errorPageHtml, wantsHtml } from "./error-copy.mjs";
 
 const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
@@ -64,6 +64,16 @@ const TIMED_OUT = Symbol("timed_out");
 const CONNECTION_REFUSED = Symbol("connection_refused");
 const TRANSPORT_FAILED = Symbol("transport_failed");
 const SIGNING_FAILED = Symbol("signing_failed");
+// 답변 시간 예산: one request id crosses the front door in both directions. Chat's
+// telemetry accepts a bounded client-supplied id and echoes it as X-Request-Id,
+// so the same value on a front-generated timeout ties the two logs together.
+const REQUEST_ID_RE = /^[A-Za-z0-9._:-]{8,64}$/;
+
+function requestIdFor(request) {
+  const incoming = request.headers.get("x-request-id");
+  if (incoming && REQUEST_ID_RE.test(incoming)) return incoming;
+  return newRequestId();
+}
 
 export const MAINTENANCE_HTML = `<!doctype html>
 <html lang="ko"><head><meta charset="utf-8">
@@ -73,7 +83,7 @@ export const MAINTENANCE_HTML = `<!doctype html>
 <style>body{font-family:system-ui,sans-serif;margin:0;display:grid;place-items:center;min-height:100vh;background:#0f1115;color:#e8eaf0}main{text-align:center;padding:24px}h1{font-size:1.25rem;font-weight:600}p{color:#9aa3b2}</style>
 </head><body><main><h1>잠시 점검 중입니다</h1><p>곧 다시 이용할 수 있습니다. 잠시 후 새로고침해 주세요.</p></main></body></html>`;
 
-function maintenanceResponse(reason) {
+function maintenanceResponse(reason, requestId) {
   return new Response(MAINTENANCE_HTML, {
     status: 503,
     headers: {
@@ -81,6 +91,7 @@ function maintenanceResponse(reason) {
       "cache-control": "no-store, max-age=0",
       "retry-after": "120",
       "x-padiem-front": reason,
+      ...(requestId ? { "x-request-id": requestId } : {}),
     },
   });
 }
@@ -96,7 +107,7 @@ function connectionRefused(error) {
     /\b(?:ECONNREFUSED|connect(?:ion)? (?:failed|refused))\b/i.test(String(error?.message || ""));
 }
 
-function requestFailure(request, status, code) {
+function requestFailure(request, status, code, requestId) {
   // A browser that navigated here must not be shown the JSON body it cannot
   // read as a page; a machine call keeps the JSON it parses.
   if (wantsHtml(request)) {
@@ -107,12 +118,17 @@ function requestFailure(request, status, code) {
         "cache-control": "no-store, max-age=0",
         "retry-after": "30",
         "x-padiem-front": code,
+        ...(requestId ? { "x-request-id": requestId } : {}),
       },
     });
   }
   return new Response(JSON.stringify({ error: { code, message: "요청을 처리하지 못했습니다. 다시 시도해 주세요." } }), {
     status,
-    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+      ...(requestId ? { "x-request-id": requestId } : {}),
+    },
   });
 }
 
@@ -154,7 +170,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     });
   }
 
-  async function forward(request, target, env, timeoutMs) {
+  async function forward(request, target, env, timeoutMs, { requestId = null, answerBudgetMs = null } = {}) {
     let headers;
     try {
       headers = await sign(request, env.PADIEM_COM2_EDGE_SECRET);
@@ -168,6 +184,8 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
       headers.delete("host");
       headers.set("x-forwarded-host", new URL(request.url).host);
       headers.set("x-forwarded-proto", "https");
+      if (requestId) headers.set("x-request-id", requestId);
+      if (answerBudgetMs) headers.set("x-padiem-answer-budget-ms", String(answerBudgetMs));
       const ip = request.headers.get("cf-connecting-ip");
       if (ip) {
         const prior = request.headers.get("x-forwarded-for");
@@ -190,7 +208,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     }
   }
 
-  async function fallback(request, env, isWrite) {
+  async function fallback(request, env, isWrite, requestId = null) {
     const mode = String(env.FALLBACK_MODE || "static").trim().toLowerCase();
     if (mode === "service" && env.CHAT_WORKER && typeof env.CHAT_WORKER.fetch === "function") {
       try {
@@ -200,7 +218,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
         // The fallback itself failing falls through to the honest static answer.
       }
     }
-    return maintenanceResponse(isWrite ? "write_refused" : "read_fallback_static");
+    return maintenanceResponse(isWrite ? "write_refused" : "read_fallback_static", requestId);
   }
 
   // Static answers carry a short fresh window plus background revalidation.
@@ -222,6 +240,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
 
   return async function handle(request, env) {
     const url = new URL(request.url);
+    const requestId = requestIdFor(request);
     // MCP OAuth endpoints and metadata are dynamic, no-store responses. Keep
     // them out of the static asset/cache branch and give them the API-read
     // budget (DB + redirect work) instead of the generic proxy deadline.
@@ -266,10 +285,13 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
       : authCallback ? numeric(env.AUTH_CALLBACK_TIMEOUT_MS, DEFAULT_AUTH_CALLBACK_TIMEOUT_MS)
       : tusWrite ? numeric(env.TUS_UPLOAD_TIMEOUT_MS, DEFAULT_TUS_TIMEOUT_MS)
         : upstreamTimeout;
+    // 답변 시간 예산: Chat derives the remaining Engine budget from this value. Only an
+    // answer request carries it; ordinary writes keep their existing wire shape.
+    const answerBudgetMs = answerRequest ? timeoutMs : null;
 
     if (isWrite) {
       const started = now();
-      const response = await forward(request, target, env, timeoutMs);
+      const response = await forward(request, target, env, timeoutMs, { requestId, answerBudgetMs });
       if (answerRequest) {
         // One line per answer request: path, status, time to first byte, total time.
         // Never the body, never cookies, never identity.
@@ -277,6 +299,9 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
           const ttfb = Math.round(now() - started);
           const headers = new Headers(response.headers);
           headers.set("x-padiem-orchestration-ttfb-ms", String(ttfb));
+          // 답변 시간 예산: an edge-generated error page carries no request id; keep the
+          // one the front sent upstream so the browser can report the turn.
+          if (!headers.has("x-request-id")) headers.set("x-request-id", requestId);
           // #6742: an NDJSON answer streams through untouched. The deadline above
           // covered the first byte only — it was cleared when the headers arrived.
           if ((response.headers.get("content-type") || "").toLowerCase().includes("application/x-ndjson")) {
@@ -289,36 +314,36 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
         }
         console.log(`orchestration_timing path=${url.pathname} status=upstream_${response.description ?? String(response)} ttfb_ms=${Math.round(now() - started)} total_ms=${Math.round(now() - started)}`);
       }
-      if (response === SIGNING_FAILED) return maintenanceResponse("write_refused");
-      if (response === TIMED_OUT) return requestFailure(request, 504, "upstream_timeout");
-      if (response === TRANSPORT_FAILED) return requestFailure(request, 502, "upstream_transport_failed");
+      if (response === SIGNING_FAILED) return maintenanceResponse("write_refused", requestId);
+      if (response === TIMED_OUT) return requestFailure(request, 504, "upstream_timeout", requestId);
+      if (response === TRANSPORT_FAILED) return requestFailure(request, 502, "upstream_transport_failed", requestId);
       if (response !== CONNECTION_REFUSED) return response;
       markFailure(origin.toString());
       // An answer is never handed to a second upstream: a refused connection could
       // have arrived after the model already started, and re-sending would run the
       // same question twice. Report it instead; the client decides.
-      if (answerRequest) return requestFailure(request, 503, "upstream_refused");
-      if (canonicalWrites || appsAI || bookAIRecords) return maintenanceResponse("write_com2_canonical_refused");
-      return fallback(request, env, true);
+      if (answerRequest) return requestFailure(request, 503, "upstream_refused", requestId);
+      if (canonicalWrites || appsAI || bookAIRecords) return maintenanceResponse("write_com2_canonical_refused", requestId);
+      return fallback(request, env, true, requestId);
     }
 
     const healthTtlMs = numeric(env.HEALTH_TTL_MS, DEFAULT_HEALTH_TTL_MS);
     if (healthy(origin.toString(), healthTtlMs)) {
-      const response = await forward(request, target, env, timeoutMs);
-      if (response === SIGNING_FAILED) return maintenanceResponse("read_fallback_static");
+      const response = await forward(request, target, env, timeoutMs, { requestId });
+      if (response === SIGNING_FAILED) return maintenanceResponse("read_fallback_static", requestId);
       if (healthProbe) {
         if (response !== TIMED_OUT && response !== CONNECTION_REFUSED &&
             response !== TRANSPORT_FAILED && response.status >= 200 && response.status < 300) return response;
         markFailure(origin.toString());
       } else {
-        if (response === TIMED_OUT) return requestFailure(request, 504, "upstream_timeout");
-        if (response === TRANSPORT_FAILED) return requestFailure(request, 502, "upstream_transport_failed");
+        if (response === TIMED_OUT) return requestFailure(request, 504, "upstream_timeout", requestId);
+        if (response === TRANSPORT_FAILED) return requestFailure(request, 502, "upstream_transport_failed", requestId);
         if (response !== CONNECTION_REFUSED) return response;
         markFailure(origin.toString());
       }
     }
-    if (bookAIRecords) return maintenanceResponse("bookai_records_com2_unavailable");
-    return fallback(request, env, false);
+    if (bookAIRecords) return maintenanceResponse("bookai_records_com2_unavailable", requestId);
+    return fallback(request, env, false, requestId);
   };
 }
 

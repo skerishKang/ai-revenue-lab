@@ -63,6 +63,11 @@ class OrchestrationTiming:
         if value in {"engine", "model_first_direct", "model_first_tool"}:
             self._path = value
 
+    def elapsed_ms(self) -> float:
+        """Time spent in this request before the answer call (답변 시간 예산)."""
+
+        return max(0.0, (perf_counter() - self._started) * 1000.0)
+
     def line(self) -> str:
         fields = []
         for stage, begin, end in STAGES:

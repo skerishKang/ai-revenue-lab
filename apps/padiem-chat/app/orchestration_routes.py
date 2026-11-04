@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from .file_lane import file_resolver
 
+import asyncio
 import json
 import logging
+import math
 import re
 from typing import Any
 
@@ -42,7 +44,11 @@ from .model_first import (
     pc_context_is_relevant,
     pc_tools_for_context,
 )
-from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
+from .orchestration_bridge import (
+    ENGINE_TIMEOUT_MESSAGE,
+    B62EngineOrchestrationBridge,
+    B62OrchestrationError,
+)
 from .orchestration_timing import OrchestrationTiming
 from .orchestration_stream import NDJSON_MEDIA_TYPE, line, ndjson_answer, wants_ndjson
 from .public_chat import public_chat_result
@@ -56,6 +62,30 @@ _PC_TRACE_LOG.setLevel(logging.INFO)
 MAX_ORCHESTRATION_BROWSER_BODY_BYTES = 256 * 1024
 _CONTINUATION_RE = re.compile(r"^cont_[A-Za-z0-9_-]{8,123}$")
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
+
+# 답변 시간 예산: the front door holds an answer request for at most 60s. Chat keeps a
+# margin for the Engine's error projection and the return trip, so the browser
+# gets the existing Korean timeout copy before Cloudflare's edge can answer.
+ANSWER_BUDGET_HEADER = "x-padiem-answer-budget-ms"
+DEFAULT_ANSWER_BUDGET_MS = 60_000.0
+ANSWER_BUDGET_MARGIN_MS = 8_000.0
+MIN_ANSWER_BUDGET_MS = 1_000.0
+
+
+def _answer_budget_seconds(request: Request, timing: OrchestrationTiming) -> float:
+    """Remaining answer budget after grounding/policy work, floored at 1s."""
+
+    raw = request.headers.get(ANSWER_BUDGET_HEADER)
+    try:
+        budget_ms = float(raw) if raw is not None else DEFAULT_ANSWER_BUDGET_MS
+    except (TypeError, ValueError):
+        budget_ms = DEFAULT_ANSWER_BUDGET_MS
+    if not math.isfinite(budget_ms) or budget_ms < MIN_ANSWER_BUDGET_MS:
+        budget_ms = DEFAULT_ANSWER_BUDGET_MS
+    # A caller may lower the window, never widen it past the front's ceiling.
+    budget_ms = min(budget_ms, DEFAULT_ANSWER_BUDGET_MS)
+    remaining_ms = budget_ms - timing.elapsed_ms() - ANSWER_BUDGET_MARGIN_MS
+    return max(MIN_ANSWER_BUDGET_MS, remaining_ms) / 1000.0
 
 
 def _error(code: str, message: str, status_code: int) -> JSONResponse:
@@ -467,6 +497,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             pending_fields={"run_id": pc_run_id, "conversation_id": saved_id},
         )
 
+    answer_budget_seconds = _answer_budget_seconds(request, timing)
     if getattr(request.app.state, "orchestration_stream_enabled", False) and wants_ndjson(
         raw, request.headers.get("accept")
     ):
@@ -475,6 +506,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             user_id=uid, messages=policy.messages, skill=skill, model_id=policy.model_id,
             user_text=user_text, conversation_id=conversation_id,
             additional_system_context=grounding_context, product_identity=product_identity,
+            timeout_seconds=answer_budget_seconds,
         )
 
         async def completed_stream(result):
@@ -500,22 +532,29 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
                 buffered_kwargs=base_kwargs,
                 timing=timing,
                 on_completed=completed_stream,
+                timeout_seconds=answer_budget_seconds,
             ),
             media_type=NDJSON_MEDIA_TYPE,
             headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
         )
 
     try:
-        result = await bridge.start(
-            user_id=uid,
-            messages=policy.messages,
-            skill=skill,
-            model_id=policy.model_id,
-            user_text=user_text,
-            conversation_id=conversation_id,
-            additional_system_context=grounding_context,
-            product_identity=product_identity,
+        result = await asyncio.wait_for(
+            bridge.start(
+                user_id=uid,
+                messages=policy.messages,
+                skill=skill,
+                model_id=policy.model_id,
+                user_text=user_text,
+                conversation_id=conversation_id,
+                additional_system_context=grounding_context,
+                product_identity=product_identity,
+                timeout_seconds=answer_budget_seconds,
+            ),
+            timeout=answer_budget_seconds,
         )
+    except asyncio.TimeoutError:
+        return _error("upstream_timeout", ENGINE_TIMEOUT_MESSAGE, 504)
     except B62OrchestrationError as exc:
         return _error(exc.code, exc.user_message, exc.status_code)
 
