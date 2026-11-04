@@ -5,12 +5,16 @@ import pytest
 
 from app.documents import (
     DocumentAttachment, build_document_context, build_project_files_context,
-    combine_reference_context, MAX_REFERENCE_CONTEXT_CHARS,
+    combine_reference_context,
 )
 from app.b14_client import _bounded_context
 from padiem_ai_core.execution_runtime import (
     _normalize_additional_system_context, _compose_system_instruction,
 )
+
+# The char ceilings this suite probes are RETIRED production caps (#4379). They
+# live here as fixture magnitudes only: nothing in app/ may read them again.
+RETIRED_REFERENCE_CAP = 8_000
 
 
 def test_attached_document_and_project_files_survive_legacy_context_windows():
@@ -26,7 +30,7 @@ def test_attached_document_and_project_files_survive_legacy_context_windows():
     assert "::PROJECT_TAIL" in files_context
     combined = combine_reference_context("project instructions", files_context, doc_context)
     assert "::DOCUMENT_TAIL" in combined and "::PROJECT_TAIL" in combined
-    assert len(combined) > MAX_REFERENCE_CONTEXT_CHARS
+    assert len(combined) > RETIRED_REFERENCE_CAP
     assert _bounded_context(combined) == combined
     assert _normalize_additional_system_context(combined) == combined
     composed = _compose_system_instruction(SimpleNamespace(

@@ -11,7 +11,6 @@ from app.config import Settings
 from app.documents import (
     DocumentValidationError,
     MAX_DOCUMENT_CHARS,
-    MAX_REFERENCE_CONTEXT_CHARS,
     parse_document_item,
 )
 from app.history import ProjectProfile, UserProfile
@@ -325,15 +324,19 @@ async def test_d1_project_file_values_are_bound_and_content_not_interpolated_int
 def test_reference_context_has_hard_bounded_budget():
     from app.documents import DocumentAttachment, build_document_context, combine_reference_context
 
+    # The ceiling below is a RETIRED production cap (#4379). It is a fixture
+    # magnitude here, and an explicitly requested presentation excerpt stays
+    # bounded only because the caller asks for that budget.
+    retired_reference_cap = 8_000
     attachment = DocumentAttachment("big.txt", "text/plain", "x" * MAX_DOCUMENT_CHARS, MAX_DOCUMENT_CHARS)
     context = combine_reference_context("p" * 2200, "f" * 2600, build_document_context(attachment))
     assert context is not None
     # Default model context preserves the complete provider-bound references.
-    assert len(context) > MAX_REFERENCE_CONTEXT_CHARS
+    assert len(context) > retired_reference_cap
     # An explicitly requested presentation excerpt retains its old bounded contract.
     bounded = combine_reference_context("p" * 15000, "x" * 15000, "y" * 15000,
-                                        max_chars=MAX_REFERENCE_CONTEXT_CHARS)
-    assert len(bounded) <= MAX_REFERENCE_CONTEXT_CHARS
+                                        max_chars=retired_reference_cap)
+    assert len(bounded) <= retired_reference_cap
 
 
 def test_frontend_contract_distinguishes_binary_composer_from_text_only_project_files_and_keeps_phase1_css():
