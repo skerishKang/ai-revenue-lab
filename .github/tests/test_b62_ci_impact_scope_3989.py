@@ -268,6 +268,67 @@ class B62ScopeTests(unittest.TestCase):
         self.assertIn('test "$TESTS_RESULT" = success', text)
         self.assertIn("B62_CI_MODE=TESTS_ONLY_TARGETED", text)
 
+    def test_chat_source_change_is_detected_for_app_and_worker_python(self):
+        for path in (
+            "apps/padiem-chat/app/auth_routes.py",
+            "apps/padiem-chat/app/nested/module.py",
+            "apps/padiem-chat/worker.py",
+        ):
+            self.assertTrue(module.chat_source_changed([file(path)]), path)
+        for path in (
+            "apps/padiem-chat/static/app.js",
+            "apps/padiem-chat/tests/test_password_auth.py",
+            "apps/padiem-chat/pylock.toml",
+            "apps/padiem-chat/app/notes.txt",
+            ".github/workflows/b62-padiem-chat-ci.yml",
+        ):
+            self.assertFalse(module.chat_source_changed([file(path)]), path)
+        self.assertFalse(module.chat_source_changed(None))
+
+    def test_chat_source_scopes_emit_the_full_pytest_trigger(self):
+        cases = (
+            ([file("apps/padiem-chat/app/auth_routes.py")], "chat_only", "true"),
+            ([file("apps/padiem-chat/worker.py")], "chat_only", "true"),
+            ([file("apps/padiem-chat/app/auth_routes.py"),
+              file("apps/padiem-chat/static/app.js")], "chat_only", "true"),
+            ([file("apps/padiem-chat/static/app.js")], "static_only", "false"),
+            ([file("apps/padiem-chat/tests/test_password_auth.py")], "tests_only", "false"),
+            ([file(".github/workflows/b62-padiem-chat-ci.yml")], "full", "false"),
+        )
+        for files, expected_scope, expected_chat in cases:
+            with self.subTest(files=files), tempfile.TemporaryDirectory() as tmp:
+                output = Path(tmp) / "output.txt"
+                event = fake_event()
+                event["pull_request"]["changed_files"] = len(files)
+                with patch.dict(os.environ, {"GITHUB_OUTPUT": str(output)}, clear=False), \
+                        patch.object(module, "_load_event_files",
+                                     return_value=(event, "pull_request", files)):
+                    module.main()
+                values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+                self.assertEqual(values["scope"], expected_scope)
+                self.assertEqual(values["chat_source_changed"], expected_chat)
+
+    def test_unprovable_change_set_runs_the_chat_suite(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "output.txt"
+            with patch.dict(os.environ, {"GITHUB_OUTPUT": str(output)}, clear=False), \
+                    patch.object(module, "_load_event_files",
+                                 return_value=(fake_event(), "pull_request", None)):
+                module.main()
+            values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+        self.assertEqual(values["scope"], "full")
+        self.assertEqual(values["chat_source_changed"], "true")
+
+    def test_workflow_runs_the_full_chat_suite_for_app_source_changes(self):
+        text = (ROOT / ".github/workflows/b62-padiem-chat-ci.yml").read_text(encoding="utf-8")
+        self.assertIn("chat_source_changed: ${{ steps.classify-b62.outputs.chat_source_changed }}", text)
+        self.assertIn("name: B62 Chat full pytest (app change)", text)
+        self.assertIn("needs.registry-ci-plan.outputs.chat_source_changed == 'true'", text)
+        self.assertIn("Run the full B62 Chat pytest suite (fail closed)", text)
+        self.assertIn("needs.b62-chat-pytest.result", text)
+        self.assertIn('test "$CHAT_RESULT" = success', text)
+        self.assertIn('test "$CHAT_RESULT" = skipped', text)
+
     def test_b14_isolated_pilot_app_and_test_modules_prove_worker_source_unchanged(self):
         # B62 Workerd probes import B62 sources/Core, not the independent B14
         # app. Keep B62 Chat integration and B14 suites, but skip 4 unchanged
