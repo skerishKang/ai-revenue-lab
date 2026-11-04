@@ -12,6 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 import sqlite3
+from dataclasses import replace
 from pathlib import Path
 
 import httpx
@@ -493,6 +494,83 @@ async def test_chat_custom_rejects_missing_key_selection_and_mixed_requests():
 
 
 @pytest.mark.asyncio
+@pytest.mark.asyncio
+async def test_chat_custom_sends_the_customers_reasoning_choice():
+    # #6838: the BYOK user's reasoning effort travels unchanged to the wire.
+    app, _, credential_store, recorder, _ = build_app()
+    await credential_store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY)
+
+    payload = chat_payload()
+    payload["custom"]["reasoning_effort"] = "high"
+    response = await request(app, "POST", "/api/chat", uid=OWNER, json_body=payload)
+    assert response.status_code == 200, response.text
+    sent = json.loads(recorder.requests[0].content)
+    assert sent["reasoning_effort"] == "high"
+
+
+@pytest.mark.asyncio
+async def test_chat_custom_omits_reasoning_when_the_customer_chose_default():
+    app, _, credential_store, recorder, _ = build_app()
+    await credential_store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY)
+
+    response = await request(app, "POST", "/api/chat", uid=OWNER, json_body=chat_payload())
+    assert response.status_code == 200, response.text
+    sent = json.loads(recorder.requests[0].content)
+    assert "reasoning_effort" not in sent
+
+
+@pytest.mark.asyncio
+async def test_chat_custom_refuses_an_unknown_reasoning_value_in_korean():
+    app, _, credential_store, _, _ = build_app()
+    await credential_store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY)
+
+    payload = chat_payload()
+    payload["custom"]["reasoning_effort"] = "maximum"
+    response = await request(app, "POST", "/api/chat", uid=OWNER, json_body=payload)
+    assert response.status_code in (400, 422), response.text
+    message = response.json()["error"]["message"]
+    assert "추론 강도" in message
+
+
+@pytest.mark.asyncio
+async def test_byok_reasoning_provider_rejection_gets_clear_korean_copy():
+    # #6838: the provider refused the reasoning value. The caller gets the
+    # one actionable fix in Korean; the provider's raw body stays server-side.
+    def reject_reasoning(_request):
+        return httpx.Response(400, json={"error": {
+            "message": "reasoning_effort is not supported by this model",
+        }})
+
+    recorder = ProviderRecorder(reject_reasoning)
+    app, _, credential_store, _, _ = build_app(recorder=recorder)
+    await credential_store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY)
+
+    payload = chat_payload()
+    payload["custom"]["reasoning_effort"] = "high"
+    response = await request(app, "POST", "/api/chat", uid=OWNER, json_body=payload)
+    assert response.status_code == 400, response.text
+    body = response.json()["error"]
+    assert body["code"] == "custom_provider_reasoning_rejected"
+    assert "추론 강도" in body["message"] and "기본" in body["message"]
+    assert "reasoning_effort" not in response.text
+
+
+@pytest.mark.asyncio
+async def test_byok_via_b14_refuses_a_reasoning_choice_with_guidance():
+    # Settings freezes per-field, so the relay flag rides the app state the
+    # same way app.state overrides do elsewhere in this file.
+    app, _, credential_store, _, _ = build_app()
+    app.state.settings = replace(app.state.settings, byok_via_b14=True)
+    await credential_store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY)
+
+    payload = chat_payload()
+    payload["custom"]["reasoning_effort"] = "high"
+    response = await request(app, "POST", "/api/chat", uid=OWNER, json_body=payload)
+    assert response.status_code == 422, response.text
+    body = response.json()["error"]
+    assert body["code"] == "reasoning_effort_b14_via_unsupported"
+    assert "기본" in body["message"] and "B14" in body["message"]
+
 @pytest.mark.parametrize(
     ("status", "body", "expected_status", "code"),
     [

@@ -271,6 +271,16 @@ async def _complete_custom_chat(
 ) -> dict[str, Any]:
     """Route an owner's key through B14 when enabled, otherwise directly."""
     from .byok_bridge import enabled, resolve_reference
+    if selection.reasoning_effort is not None and enabled(request.app.state):
+        # #6838: a BYOK user's reasoning choice is never silently dropped.
+        # The B14-relayed lane cannot carry it yet (bridge -> engine -> B14
+        # user-credential wire), so the request is refused with guidance
+        # instead of answering with a different reasoning depth.
+        raise CustomProviderError(
+            422, "reasoning_effort_b14_via_unsupported",
+            "B14 경유 PADIEM Custom에서는 추론 강도를 아직 직접 고를 수 없습니다. "
+            "추론 강도를 '기본'으로 두거나 직접 연결을 사용해 주세요.",
+        )
     if enabled(request.app.state):
         from .orchestration_bridge import B62OrchestrationError
         import uuid
@@ -306,6 +316,7 @@ async def _complete_custom_chat(
         uid=uid,
         selection=selection,
         messages=messages,
+        reasoning_effort=selection.reasoning_effort,
         system_context=reference_context,
     )
 

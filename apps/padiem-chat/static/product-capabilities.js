@@ -163,6 +163,13 @@
       modelNotSet: "모델을 선택하세요",
       modelPlaceholder: "공급사 모델 ID를 입력하세요",
       modelRequired: "모델 ID를 먼저 선택하거나 입력해 주세요.",
+      reasoningLabel: "추론 강도",
+      reasoningHint: "모델이 받지 않으면 오류로 알려 드립니다. 기본은 값을 보내지 않습니다.",
+      reasoningDefault: "기본",
+      reasoningMinimal: "최소",
+      reasoningLow: "낮음",
+      reasoningMedium: "중간",
+      reasoningHigh: "높음",
       loadModels: "모델 목록 불러오기",
       loadingModels: "모델 목록 확인 중…",
       modelsLoaded: "공급사 모델 목록을 불러왔습니다.",
@@ -214,6 +221,13 @@
       modelNotSet: "Choose a model",
       modelPlaceholder: "Enter the provider model ID",
       modelRequired: "Choose or enter a model ID first.",
+      reasoningLabel: "Reasoning effort",
+      reasoningHint: "If the model rejects it, you get a clear error. Default sends no value.",
+      reasoningDefault: "Default",
+      reasoningMinimal: "Minimal",
+      reasoningLow: "Low",
+      reasoningMedium: "Medium",
+      reasoningHigh: "High",
       loadModels: "Load model list",
       loadingModels: "Checking model list…",
       modelsLoaded: "Loaded the provider model list.",
@@ -277,6 +291,9 @@
   let customEndpointLabelEl = null;
   let customEndpointInput = null;
   let customEndpointHintEl = null;
+  let customReasoningLabelEl = null;
+  let customReasoningSelect = null;
+  let customReasoningHintEl = null;
   let customTestButton = null;
 
   const ACCOUNT_COPY = Object.freeze({
@@ -980,7 +997,12 @@
       focusCustomModel();
       return false;
     }
-    customSelection = { provider: provider.provider, model };
+    customSelection = {
+      provider: provider.provider,
+      model,
+      reasoning_effort: customReasoningSelect && customReasoningSelect.value !== "default"
+        ? customReasoningSelect.value : null,
+    };
     customMessageText = "";
     customMessageState = "info";
     syncModeCopy();
@@ -1501,6 +1523,27 @@
     customModelListButton.hidden = true;
     customModelListButton.addEventListener("click", () => void loadCustomModels());
 
+    // #6838: the BYOK user picks the reasoning effort in the same panel.
+    // "default" sends no field: the provider/model default stands.
+    customReasoningLabelEl = document.createElement("label");
+    customReasoningLabelEl.className = "mode-custom-key-label";
+    customReasoningLabelEl.htmlFor = "modeCustomReasoning";
+    customReasoningLabelEl.textContent = copy.reasoningLabel;
+    customReasoningSelect = document.createElement("select");
+    customReasoningSelect.id = "modeCustomReasoning";
+    customReasoningSelect.className = "mode-custom-select";
+    customReasoningHintEl = document.createElement("small");
+    customReasoningHintEl.className = "mode-custom-hint";
+    customReasoningHintEl.textContent = copy.reasoningHint;
+    for (const [value, key] of [["default", "reasoningDefault"],
+        ["minimal", "reasoningMinimal"], ["low", "reasoningLow"],
+        ["medium", "reasoningMedium"], ["high", "reasoningHigh"]]) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = copy[key];
+      customReasoningSelect.appendChild(option);
+    }
+
     customEndpointLabelEl = document.createElement("label");
     customEndpointLabelEl.className = "mode-custom-key-label";
     customEndpointLabelEl.htmlFor = "modeCustomEndpoint";
@@ -1643,6 +1686,9 @@
       customEndpointLabelEl,
       customEndpointInput,
       customEndpointHintEl,
+      customReasoningLabelEl,
+      customReasoningSelect,
+      customReasoningHintEl,
       label,
       customInput,
       actions,
@@ -2142,7 +2188,8 @@
   window.PadiemCustomSelection = Object.freeze({
     viaEngine: () => auth.authenticated && customViaEngine,
     get: () => (customSelection
-      ? Object.freeze({ provider: customSelection.provider, model: customSelection.model })
+      ? Object.freeze({ provider: customSelection.provider, model: customSelection.model,
+        reasoning_effort: customSelection.reasoning_effort || null })
       : null),
     select: () => selectCustom(),
     open: openCustomCredentials,
