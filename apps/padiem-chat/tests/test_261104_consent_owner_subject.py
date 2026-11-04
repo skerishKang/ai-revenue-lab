@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 from types import SimpleNamespace
+from urllib.parse import urlencode
 
 import pytest
 from test_5222_account_model_selection import BASE, client_for, session
@@ -18,6 +19,7 @@ from test_mcp_gateway_account import account_app, setup
 from test_mcp_oauth_261103 import _approve, _code_from, _exchange, _params, _pkce, _register
 
 from app import chat_pc_drive
+from app.auth import SESSION_COOKIE
 
 OTHER_OWNER = "usr_" + "c" * 32
 PC_A = "node//owner-pc-a"
@@ -38,16 +40,22 @@ class QueuePairing:
 
 
 class IdentityAuthority:
-    """The canonical identity read the MCP lanes already make for a session."""
+    """The canonical identity reads the MCP lanes already make for a session."""
 
-    def __init__(self, owner_subject_id):
+    def __init__(self, owner_subject_id, product_user_id):
         self.owner_subject_id = owner_subject_id
+        self.product_user_id = product_user_id
         self.session_ids = []
+        self.reverse_lookups = []
 
     async def resolve_connector_owner_scope(self, *, session_id):
         self.session_ids.append(session_id)
         return {"account_ref": "acct_fixture", "workspace_ref": "ws_fixture",
                 "owner_subject_id": self.owner_subject_id}
+
+    async def resolve_product_user_for_subject(self, *, product_id, canonical_subject_id):
+        self.reverse_lookups.append((product_id, canonical_subject_id))
+        return self.product_user_id
 
 
 @pytest.fixture
@@ -64,12 +72,18 @@ def owner_ctx(monkeypatch):
     })
     # The canonical session's owner subject names the link owner, while the
     # browser's own product user is a different account — the reported mismatch.
-    app.state.control_plane_identity_authority = IdentityAuthority(link_owner)
+    app.state.control_plane_identity_authority = IdentityAuthority(link_owner, session_user)
 
     async def fake_owner(request, uid):
         return SimpleNamespace(session_id="sess_fixture"), "sub_fixture", "ws_fixture"
 
     monkeypatch.setattr(chat_pc_drive, "_resolve_chat_owner", fake_owner)
+
+    class Profiles:
+        async def get_user(self, user_id):
+            return SimpleNamespace(display_name="Member", email="admin@example.test")
+
+    app.state.history_store = Profiles()
     return app, db, link_owner, session_user
 
 
@@ -150,3 +164,67 @@ async def test_without_the_conversion_the_session_own_id_is_never_widened(owner_
             assert info.json()["pcs"] == []
             denied = await _approve(ui, params, device_id=PC_A)
             assert denied.status_code == 403
+
+
+
+@pytest.mark.asyncio
+async def test_a_conversion_to_another_account_is_refused(owner_ctx):
+    app, db, link_owner, session_user = owner_ctx
+    # The conversion names someone else: the authority's reverse lookup answers
+    # a product user that is not the signed-in one. Nothing of that owner may
+    # reach the screen, and nothing may be approved.
+    app.state.control_plane_identity_authority = IdentityAuthority(link_owner, OTHER_OWNER)
+    async with client_for(app) as external:
+        _client_id, _verifier, params = await _consent_params(external)
+        async with client_for(app) as ui:
+            ui.cookies.update(session(app, session_user))
+            info = await ui.get("/oauth/authorize/info", params=params)
+            assert info.status_code == 200, info.text
+            assert info.json()["pcs"] == []
+            for device in (PC_A, OTHER_PC):
+                denied = await _approve(ui, params, device_id=device)
+                assert denied.status_code == 403
+                assert denied.json()["error"] == "pc_device_unavailable"
+    assert db.conn.execute("SELECT COUNT(*) FROM padiem_mcp_tokens").fetchone()[0] == 0
+
+
+@pytest.mark.asyncio
+async def test_info_names_the_signed_in_account_and_offers_a_switch(owner_ctx):
+    app, _db, _link_owner, session_user = owner_ctx
+    async with client_for(app) as external:
+        _client_id, _verifier, params = await _consent_params(external)
+        async with client_for(app) as ui:
+            ui.cookies.update(session(app, session_user))
+            info = await ui.get("/oauth/authorize/info", params=params)
+            assert info.status_code == 200, info.text
+            body = info.json()
+            assert body["account"]["display"] == "Member"
+            assert body["account"]["email"] == "ad***@example.test"
+            target = body["switch_account_url"]
+            assert target.startswith("/oauth/switch-account?next=")
+            assert "%2Foauth%2Fauthorize" in target
+            assert params["state"] in target
+
+
+@pytest.mark.asyncio
+async def test_switch_account_signs_out_and_returns_to_the_same_request(owner_ctx):
+    app, _db, _link_owner, session_user = owner_ctx
+    params = {
+        "response_type": "code", "client_id": "mcpc_" + "a" * 32,
+        "redirect_uri": "https://client.example/cb", "code_challenge": "c" * 43,
+        "code_challenge_method": "S256", "state": "st_switch",
+    }
+    authorize_url = "/oauth/authorize?" + urlencode(params)
+    async with client_for(app) as ui:
+        ui.cookies.update(session(app, session_user))
+        switched = await ui.get("/oauth/switch-account", params={"next": authorize_url})
+        assert switched.status_code == 302
+        assert switched.headers["location"] == authorize_url
+        assert "st_switch" in switched.headers["location"]
+        # The browser's session is cleared by this response.
+        sets = " ".join(switched.headers.get_list("set-cookie"))
+        assert SESSION_COOKIE + "=" in sets and "Max-Age=0" in sets
+        # A target that is not this host's authorize path is refused.
+        escaped = await ui.get("/oauth/switch-account", params={"next": "//evil.example/x"})
+        assert escaped.status_code == 302
+        assert escaped.headers["location"] == "/oauth/authorize"
