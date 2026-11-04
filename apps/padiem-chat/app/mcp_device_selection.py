@@ -123,13 +123,25 @@ async def resolve_target_device(request: Any, *, owner_id: str, principal: Any,
     return {"device_id": target["device_id"], "id6": target["id6"]}
 
 
-async def list_owner_devices(request: Any, *, owner_id: str, principal: Any) -> list[dict[str, Any]]:
-    """``pc_devices`` 답변: 표시 이름·끝 6자·온라인 여부·기본 PC 여부."""
+async def owner_linked_ids(request: Any, *, owner_id: str) -> list[str]:
+    """The owner's active PC ids, in the order the directory answered with them.
+
+    The consent screen validates its choice through this: a PC the directory no
+    longer hands out may not be written into a token.
+    """
+    return [item["device_id"] for item in await _owner_targets(request, owner_id)]
+
+
+async def owner_devices(request: Any, *, owner_id: str) -> list[dict[str, Any]]:
+    """The owner's active PCs with the facts ``pc_devices`` shows for each.
+
+    ``pc_devices`` and the consent screen both answer from this one function on
+    the one store the deployment is switched to, so "a PC a tool can reach" and
+    "a PC the owner may approve" cannot drift apart.
+    """
     targets = await _owner_targets(request, owner_id)
-    allowed = _allowed_device_ids(principal, targets) or set()
     presence = getattr(request.app.state, "mesh_device_presence_store", None)
     loader = getattr(presence, "load", None)
-    token_device = principal.get("device_id") if isinstance(principal, dict) else None
     now = datetime.now(timezone.utc)
     devices: list[dict[str, Any]] = []
     for item in targets:
@@ -146,10 +158,24 @@ async def list_owner_devices(request: Any, *, owner_id: str, principal: Any) -> 
             from .claw_local_access_source import mesh_presence_online
             online = mesh_presence_online(row, device_id=item["device_id"], now=now)
         devices.append({
+            "device_id": item["device_id"],
             "name": item["label"],
             "id6": item["id6"],
             "online": online,
-            "default": item["device_id"] == token_device,
-            "in_scope": item["device_id"] in allowed,
         })
     return devices
+
+
+async def list_owner_devices(request: Any, *, owner_id: str, principal: Any) -> list[dict[str, Any]]:
+    """``pc_devices`` 답변: 표시 이름·끝 6자·온라인 여부·기본 PC 여부."""
+    devices = await owner_devices(request, owner_id=owner_id)
+    targets = [{"device_id": item["device_id"]} for item in devices]
+    allowed = _allowed_device_ids(principal, targets) or set()
+    token_device = principal.get("device_id") if isinstance(principal, dict) else None
+    return [{
+        "name": item["name"],
+        "id6": item["id6"],
+        "online": item["online"],
+        "default": item["device_id"] == token_device,
+        "in_scope": item["device_id"] in allowed,
+    } for item in devices]
