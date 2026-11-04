@@ -210,7 +210,7 @@ def main(argv=None) -> int:
     if args.command == "stage":
         stage(args.repo.resolve(), args.root)
     elif args.command == "boot":
-        boot(args.repo.resolve(), args.root, args.python.resolve())
+        boot(args.repo.resolve(), args.root, args.python.absolute())
     return 0
 
 

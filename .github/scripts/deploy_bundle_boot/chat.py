@@ -219,7 +219,7 @@ def main(argv=None) -> int:
     if args.command == "stage":
         stage(args.repo.resolve(), args.bundle)
     elif args.command == "boot":
-        boot(args.bundle.resolve(), args.python.resolve())
+        boot(args.bundle.resolve(), args.python.absolute())
     return 0
 
 

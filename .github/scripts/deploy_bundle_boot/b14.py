@@ -257,7 +257,7 @@ def main(argv=None) -> int:
     elif args.command == "verify":
         verify_bundle(args.bundle, json.loads(args.manifest.read_text(encoding="utf-8")))
     elif args.command == "boot":
-        boot(args.bundle.resolve(), args.manifest, args.python.resolve())
+        boot(args.bundle.resolve(), args.manifest, args.python.absolute())
     return 0
 
 
