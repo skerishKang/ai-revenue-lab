@@ -50,8 +50,11 @@ from .local_agent_verified_text_result import (
 #: could not read a normal document.
 MAX_READ_ENVELOPE_BYTES = 6_000_000
 
-#: Byte-identical to the producer's own ``safe_ref`` pattern.
-_SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
+#: The producer's own ``safe_ref`` pattern plus the ``$`` a MeshCentral node
+#: identifier carries (``7P4o…$v5ziNLxqfb$pB``). Without it every read of such a
+#: node was refused before the official client ran, while the command lane -
+#: which only requires non-empty text - answered the same node fine.
+_SAFE_REF_RE = re.compile(r"^[A-Za-z0-9$][A-Za-z0-9$._:@+\-]{0,255}$")
 #: A Windows path is ordinary text, Korean included. The ceiling is the
 #: documented extended-length path maximum of 32,767 characters (Microsoft,
 #: "Maximum Path Length Limitation"); the former 512-character bound was a
