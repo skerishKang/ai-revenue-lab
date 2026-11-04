@@ -1098,7 +1098,6 @@ class PadiemAiEngineClient:
             or not sources
             or not isinstance(context, str)
             or not context.startswith("웹 근거 사용 규칙:")
-            or len(context) > 32_768
         ):
             raise PadiemAiEngineClientError(
                 "invalid_engine_response", "Engine evidence-only response is invalid",

@@ -207,9 +207,18 @@ def test_context_without_the_untrusted_data_preamble_is_never_promoted():
     assert seam(engine, turns(("user", "오늘 한국은행 기준금리는?"))) == (None, ())
 
 
-def test_oversized_grounding_context_is_refused():
-    engine = FakeEngine(NEEDS_SEARCH, evidence={"sources": [GOOD_SOURCE], "grounding_context": FENCED + "x" * 40_000})
-    assert seam(engine, turns(("user", "오늘 한국은행 기준금리는?"))) == (None, ())
+def test_no_padiem_total_refuses_a_long_grounding_context():
+    # #4379/#6848: the evidence text is no longer refused for being long. The
+    # model's registered window, applied where the registry is read, is the
+    # bound; this lane still requires the shape and the untrusted-data preamble.
+    long_context = FENCED + "x" * 40_000
+    engine = FakeEngine(
+        NEEDS_SEARCH,
+        evidence={"sources": [GOOD_SOURCE], "grounding_context": long_context},
+    )
+    context, sources = seam(engine, turns(("user", "오늘 한국은행 기준금리는?")))
+    assert context == long_context
+    assert len(sources) == 1
 
 
 def test_provenance_fields_are_limited_and_capped():

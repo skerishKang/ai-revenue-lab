@@ -56,7 +56,12 @@ def test_search_evidence_projects_core_sources_and_context_without_model():
     assert "웹 근거 사용 규칙" in body["grounding_context"]
     assert all(item["url"].startswith("https://") for item in body["sources"])
     assert "route" not in body and "metadata" not in body
-    assert len(body["grounding_context"]) <= 32_768
+    # #4379/#6848: no PADIEM total on this model-free path, so every selected
+    # source is projected with its numbering intact.
+    assert all(
+        f"[{index}] " in body["grounding_context"]
+        for index in range(1, len(body["sources"]) + 1)
+    )
 
 
 def test_no_private_system_context_in_evidence_only():
@@ -132,10 +137,16 @@ class OversizedEvidenceProvider:
         ]
 
 
-def test_grounding_context_stays_inside_the_reviewed_bound_when_hits_are_large():
+def test_oversized_hits_are_not_cut_by_a_padiem_total():
+    # Four 21,600-character previews travel whole at the provider preview size;
+    # nothing in PADIEM ends the set (#4379/#6848).
     result = asyncio.run(service(OversizedEvidenceProvider()).research_payload(request()))
     assert result.status_code == 200
     body = result.body
     assert body["answer"] is None
-    assert len(body["sources"]) > 0
-    assert len(body["grounding_context"]) <= 32_768
+    assert len(body["sources"]) == 4
+    assert len(body["grounding_context"]) > 5_000
+    assert all(
+        f"[{index}] " in body["grounding_context"]
+        for index in range(1, len(body["sources"]) + 1)
+    )

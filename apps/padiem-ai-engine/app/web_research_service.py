@@ -455,10 +455,15 @@ class WebResearchEngineService:
                         "Evidence-only search cannot carry private system context.",
                         status_code=400,
                     )
+                # #4379/#6848: this model-free path has no model whose registry
+                # window could be read, so there is no PADIEM total to apply and
+                # the selected evidence set travels whole. When the same evidence
+                # does reach a model (search/fetch/deep_research), the dispatch
+                # that reads the registry bounds it per model.
                 prepared = await research_runtime.prepare_search(
                     request.query,
                     additional_system_context=None,
-                    max_total_context_chars=32_768,
+                    max_total_context_chars=None,
                 )
                 return ServiceResponse(status_code=200, body={
                     "ok": True,
