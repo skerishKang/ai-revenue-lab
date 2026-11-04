@@ -6,9 +6,11 @@ code, making the production first-fail boundary indistinguishable:
 1. Core ``ExecutionRuntimeError(code="execution_failed")`` (unexpected internal
    failure wrapped by the product-neutral runtime) now maps to the distinct
    safe public code ``upstream_execution_failed``.
-2. An unexpected non-``ChatRuntimeError`` exception raised in the route before
-   the first visible delta now returns HTTP 502 with the distinct safe public
-   code ``upstream_route_error``.
+2. An unexpected non-``ChatRuntimeError`` exception raised at dispatch (before
+   the first visible delta) now surfaces as an in-stream ``error`` frame with
+   the distinct safe public code ``upstream_route_error`` — the TTFB first-frame
+   contract commits the SSE headers before dispatch, so a post-commit failure
+   travels as a frame the browser already renders, never as a new JSON status.
 
 Every previously known mapping stays byte-identical, the unknown-code generic
 fallthrough is preserved, and no raw exception message, class, or traceback
@@ -18,6 +20,7 @@ may ever reach the response body.
 from __future__ import annotations
 
 import asyncio
+import json
 
 import httpx
 import pytest
@@ -126,16 +129,21 @@ def test_translate_execution_error_maps_core_execution_failed():
 
 
 def test_route_prefers_distinct_execution_failed_code_before_sse():
+    # TTFB first-frame contract: headers and the meta frame flush before
+    # dispatch, so a dispatch-stage failure is an in-stream error frame with
+    # the same safe code and message the JSON contract carried.
     client = ScriptedClient(
         [ChatRuntimeError(502, "upstream_execution_failed", GENERIC_MESSAGE)]
     )
     response = asyncio.run(_post(_app_with_client(client)))
 
-    assert response.status_code == 502
-    assert response.headers["content-type"].startswith("application/json")
-    assert response.json()["error"]["code"] == "upstream_execution_failed"
-    assert response.json()["error"]["message"] == GENERIC_MESSAGE
-    assert "event:" not in response.text
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert "event: meta" in response.text
+    error = json.loads(response.text.split("event: error\ndata: ", 1)[1].split("\n\n", 1)[0])["error"]
+    assert error["code"] == "upstream_execution_failed"
+    assert error["message"] == GENERIC_MESSAGE
+    assert response.text.count("event: delta") == 0
 
 
 # ---------------------------------------------------------------------------
@@ -166,11 +174,11 @@ def test_route_unexpected_exception_before_first_delta_is_upstream_route_error()
     client = ScriptedClient([RuntimeError(INTERNAL_SENTINEL)])
     response = asyncio.run(_post(_app_with_client(client)))
 
-    assert response.status_code == 502
-    assert response.headers["content-type"].startswith("application/json")
-    assert response.json()["error"]["code"] == "upstream_route_error"
-    assert response.json()["error"]["message"] == GENERIC_MESSAGE
-    assert "event:" not in response.text
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    error = json.loads(response.text.split("event: error\ndata: ", 1)[1].split("\n\n", 1)[0])["error"]
+    assert error["code"] == "upstream_route_error"
+    assert error["message"] == GENERIC_MESSAGE
 
 
 def test_route_unexpected_exception_emits_no_raw_detail_class_or_traceback():

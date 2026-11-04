@@ -358,6 +358,10 @@ def test_route_sse_close_closes_the_b14_transport():
         assert isinstance(response, StreamingResponse)
 
         iterator = response.body_iterator
+        # TTFB: the accepted frame flushes before dispatch; the delta follows
+        # once the model's first token arrives.
+        meta_chunk = await anext(iterator)
+        assert b"event: meta" in meta_chunk
         first_chunk = await anext(iterator)
         assert b"event: delta" in first_chunk
         assert "첫".encode("utf-8") in first_chunk

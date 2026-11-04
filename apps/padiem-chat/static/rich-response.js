@@ -403,20 +403,41 @@
     };
   }
 
+  // These paragraphs are real statuses rendered around the answer, never the
+  // answer itself: enhancing one would duplicate or hide the wrong text.
+  const NON_ANSWER_PARAGRAPH_CLASSES = [
+    "web-grounding-notice",
+    "reference-note",
+    "pc-scope-notice",
+    "claw-recovery-truth",
+  ];
+
+  function isAnswerParagraph(node) {
+    if (!node || node.tagName !== "P") return false;
+    const classes = typeof node.className === "string" ? node.className.split(/\s+/) : [];
+    return !NON_ANSWER_PARAGRAPH_CLASSES.some((name) => classes.includes(name));
+  }
+
   function enhanceAssistantMessage(article) {
     if (!(article instanceof Element) || article.dataset.richResponse === "true") return;
     if (!lifecycleApi().isCompleted(article)) return;
     const content = article.querySelector(".assistant-content");
     if (!content || content.querySelector(".typing") || content.querySelector(".error-box")) return;
-    const rawParagraph = Array.from(content.children).find((node) => node.tagName === "P");
+    const rawParagraph = Array.from(content.children).find(isAnswerParagraph);
     if (!rawParagraph || typeof rawParagraph.textContent !== "string" || !rawParagraph.textContent.trim()) return;
 
     try {
       const rich = buildRichResponse(rawParagraph.textContent);
       if (!rich.childElementCount) return;
-      rawParagraph.insertAdjacentElement("afterend", rich);
-      rawParagraph.classList.add("rich-response-source");
-      rawParagraph.hidden = true;
+      // One copy of the answer in the DOM: the raw markdown source moves into
+      // an inert <template> (never rendered, never announced, never selected
+      // by copy/scan queries) and the rich blocks replace the visible
+      // paragraph. The hidden-second-copy contract below was retired: a
+      // hidden element still duplicated the text for the DOM itself.
+      const source = document.createElement("template");
+      source.className = "rich-response-source";
+      source.content.appendChild(document.createTextNode(rawParagraph.textContent));
+      rawParagraph.replaceWith(source, rich);
       article.dataset.richResponse = "true";
     } catch (_) {
       // Keep the original plain-text paragraph visible if rich rendering fails.

@@ -210,6 +210,13 @@
   function answerText(article) {
     const content = article.querySelector(".assistant-content");
     if (!content || content.querySelector(".typing") || content.querySelector(".error-box")) return "";
+    // A completed answer carries its raw markdown source once, in the inert
+    // template the rich renderer left behind; the visible rich blocks hold the
+    // same text, so reading the DOM directly would duplicate it.
+    const source = content.querySelector("template.rich-response-source");
+    if (source && source.content && typeof source.content.textContent === "string" && source.content.textContent.trim()) {
+      return source.content.textContent.trim();
+    }
     const paragraph = Array.from(content.children).find((node) => node.tagName === "P");
     return paragraph && typeof paragraph.textContent === "string" ? paragraph.textContent.trim() : "";
   }

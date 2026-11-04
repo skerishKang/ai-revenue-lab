@@ -26,6 +26,7 @@ from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
 from .byok_client import CustomProviderError, complete_owner_custom
 from .byok_credentials import CustomProviderSelectionError
+from .chat_stream_timing import ChatStreamTiming
 from .config import Settings
 from .conversation_routes import _history_unavailable
 from .documents import (
@@ -169,6 +170,16 @@ def _empty_stream_json_error() -> JSONResponse:
         {"error": {"code": "empty_upstream_answer", "message": "AI가 표시할 답변을 만들지 못했습니다. 다시 시도해 주세요."}},
         status_code=502,
     )
+# TTFB note: the stream route no longer returns these JSON errors after the
+# first frame — once headers are on the wire the same code/message pair travels
+# as an in-stream ``error`` frame the browser already renders. The helpers
+# stay for callers that answer JSON before any streaming response exists.
+
+
+async def _no_pc_tools() -> tuple[Any, ...]:
+    """A project turn is never offered a PC tool (#5573); kept as its own awaitable
+    so the guard read and the tool decision can run concurrently."""
+    return ()
 
 
 async def _close_stream(stream: Any) -> None:
@@ -305,20 +316,28 @@ async def _restore_owner_chat_model_messages(
     conversation_id: str,
     verified_conversation: dict[str, Any],
     browser_messages: list[dict[str, str]],
+    *,
+    owned_context: dict[str, Any] | None = None,
 ) -> list[dict[str, str]]:
     """Never use displayed D1 excerpts or untrusted browser history as model truth.
 
     The last user turn is the new submitted prompt. All previous turns are
     obtained exclusively from the owner-scoped server store; browsers cannot
     replace existing assistant turns or smuggle a preview as full context.
+    ``owned_context`` is an already-fetched full-context projection (the stream
+    route reads it in parallel with the existence check); when it is absent the
+    projection is fetched here exactly as before.
     """
     newest = next((item for item in reversed(browser_messages) if item["role"] == "user"), None)
     if newest is None:
         raise HistoryContextIncomplete("new user turn is missing")
-    get_full = getattr(store, "get_conversation_model_context", None)
-    # D1 production always implements the private full-context projection;
-    # older test-only/in-memory stores retain their already-owner-scoped data.
-    owned = await get_full(owner_id, conversation_id, product_scope=PRODUCT_SCOPE_CHAT) if callable(get_full) else verified_conversation
+    if owned_context is not None:
+        owned = owned_context
+    else:
+        get_full = getattr(store, "get_conversation_model_context", None)
+        # D1 production always implements the private full-context projection;
+        # older test-only/in-memory stores retain their already-owner-scoped data.
+        owned = await get_full(owner_id, conversation_id, product_scope=PRODUCT_SCOPE_CHAT) if callable(get_full) else verified_conversation
     if owned is None or owned.get("id") != conversation_id:
         raise HistoryContextIncomplete("owner model conversation unavailable")
     rows = owned.get("messages")
@@ -345,6 +364,20 @@ async def _restore_owner_chat_model_messages(
 
 
 async def api_chat_stream(request: Request):
+    timing = ChatStreamTiming()
+    try:
+        response = await _api_chat_stream_body(request, timing)
+        if not isinstance(response, StreamingResponse):
+            # A JSON rejection never enters a response generator: log how far
+            # this request got. A streaming response logs from its own body.
+            timing.emit()
+        return response
+    except Exception:
+        timing.emit()
+        raise
+
+
+async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     content_length = request.headers.get("content-length")
     if content_length:
         try:
@@ -375,6 +408,7 @@ async def api_chat_stream(request: Request):
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
+    timing.mark("validated")
 
     if tool_request is not None or attachments:
         return JSONResponse(
@@ -408,12 +442,36 @@ async def api_chat_stream(request: Request):
 
     effective_project_id = browser_project_id
     if uid is not None and store is not None and conversation_id is not None:
-        try:
-            existing_conversation = await store.get_conversation(
-                uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT
-            )
-        except Exception:
-            return _history_unavailable()
+        # The existence check and the private full-context projection are two
+        # independent owner-scoped reads of the same conversation: run them
+        # concurrently so a stored thread does not pay both serially.
+        existing_task = store.get_conversation(uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT)
+        get_full = getattr(store, "get_conversation_model_context", None)
+        model_context_task = (
+            get_full(uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT)
+            if callable(get_full) else None
+        )
+        if model_context_task is not None:
+            existing_conversation, owned_context = await asyncio.gather(existing_task, model_context_task, return_exceptions=True)
+            # The existence check keeps its old precedence and its own error
+            # contract; the projection read keeps the restore contract's
+            # exception types (incomplete 409, overflow 413, else 503).
+            if isinstance(existing_conversation, BaseException):
+                return _history_unavailable()
+            if existing_conversation is None:
+                return _conversation_not_found()
+            if isinstance(owned_context, BaseException):
+                if isinstance(owned_context, HistoryContextIncomplete):
+                    return _model_history_incomplete()
+                if isinstance(owned_context, OverflowError):
+                    return _model_history_too_large()
+                return _history_unavailable()
+        else:
+            try:
+                existing_conversation = await existing_task
+            except Exception:
+                return _history_unavailable()
+            owned_context = None
         if existing_conversation is None:
             return _conversation_not_found()
         stored_project_id = existing_conversation.get("project_id")
@@ -426,6 +484,7 @@ async def api_chat_stream(request: Request):
         try:
             messages = await _restore_owner_chat_model_messages(
                 store, uid, conversation_id, existing_conversation, messages,
+                owned_context=owned_context,
             )
         except HistoryContextIncomplete:
             return _model_history_incomplete()
@@ -433,6 +492,7 @@ async def api_chat_stream(request: Request):
             return _model_history_too_large()
         except Exception:
             return _history_unavailable()
+    timing.mark("history")
 
     project = None
     project_context = None
@@ -441,19 +501,27 @@ async def api_chat_stream(request: Request):
     if effective_project_id is not None:
         if uid is None or store is None:
             return JSONResponse({"error": {"code": "unauthorized", "message": "프로젝트를 사용하려면 로그인이 필요합니다."}}, status_code=401)
+        # The project row and its file listing are independent reads: start
+        # both now, await each with its own error contract.
+        project_task = store.get_project(uid, effective_project_id)
+        files_task = (
+            project_file_store.list_files(uid, effective_project_id)
+            if project_file_store is not None else None
+        )
         try:
-            project = await store.get_project(uid, effective_project_id)
+            project = await project_task
         except Exception:
             return _history_unavailable()
         if project is None:
             return _project_not_found()
         project_context = build_project_context(project)
-        if project_file_store is not None:
+        if files_task is not None:
             try:
-                project_files = await project_file_store.list_files(uid, effective_project_id)
+                project_files = await files_task
             except Exception:
                 return _project_files_unavailable()
             project_files_context, project_files_used = build_project_files_context(project_files)
+    timing.mark("project")
 
     reference_context = combine_reference_context(project_context, project_files_context, None)
 
@@ -506,8 +574,15 @@ async def api_chat_stream(request: Request):
                         custom_done["project_id"] = effective_project_id
             yield _public_sse("done", custom_done)
 
+        async def custom_timing_iterator():
+            try:
+                async for chunk in custom_body_iterator():
+                    yield chunk
+            finally:
+                timing.emit()
+
         return StreamingResponse(
-            custom_body_iterator(),
+            custom_timing_iterator(),
             status_code=200,
             media_type="text/event-stream",
             headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
@@ -532,7 +607,22 @@ async def api_chat_stream(request: Request):
             return None
         return result if isinstance(result, str) else None
 
-    drive_result, pc_work_result = await asyncio.gather(_drive_preflight(), _pc_preflight(), return_exceptions=True)
+    async def _usage_preflight():
+        if not request.app.state.usage_gate_enforced:
+            return None
+        usage_gate: UsageGate = request.app.state.usage_gate
+        return await usage_gate.authorize(
+            raw_ip=request.headers.get("cf-connecting-ip"),
+            user_id=uid,
+        )
+
+    # Drive/PC context, the PC work context and the usage-gate decision are
+    # independent of one another: one gather instead of two serial waits. The
+    # gate's own exception still propagates (never swallowed into a skip).
+    drive_result, pc_work_result, usage_decision = await asyncio.gather(
+        _drive_preflight(), _pc_preflight(), _usage_preflight(), return_exceptions=True,
+    )
+    timing.mark("preflight")
 
     if isinstance(drive_result, DriveGroundingError):
         return JSONResponse({"error": {"code": drive_result.code, "message": drive_result.message}}, status_code=drive_result.status_code)
@@ -548,14 +638,11 @@ async def api_chat_stream(request: Request):
             reference_context + "\n\n" if reference_context else ""
         ) + pc_work_result
 
-    if request.app.state.usage_gate_enforced:
-        usage_gate: UsageGate = request.app.state.usage_gate
-        usage_decision = await usage_gate.authorize(
-            raw_ip=request.headers.get("cf-connecting-ip"),
-            user_id=uid,
-        )
-        if not usage_decision.allowed:
-            return _usage_denied_response(usage_decision)
+    if isinstance(usage_decision, BaseException):
+        raise usage_decision
+    if usage_decision is not None and not usage_decision.allowed:
+        return _usage_denied_response(usage_decision)
+    timing.mark("usage")
 
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
@@ -603,13 +690,21 @@ async def api_chat_stream(request: Request):
                     yield _public_sse("done", done_payload)
                     return
                 yield _public_sse("done", {"done": True})
+            async def native_timing_iterator():
+                try:
+                    async for chunk in native_body_iterator():
+                        yield chunk
+                finally:
+                    timing.emit()
+
             return StreamingResponse(
-                native_body_iterator(),
+                native_timing_iterator(),
                 status_code=200,
                 media_type="text/event-stream",
                 headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
             )
 
+    timing.mark("calendar")
     auto_grounding: AutoGroundingService = request.app.state.auto_grounding
     grounding_notice = {}
     auto_plan = None
@@ -635,248 +730,279 @@ async def api_chat_stream(request: Request):
             ) + pc_work_result
 
     client: B14Client = request.app.state.b14_client
-    lane_outcome: tuple[str, str | None] | None = None
-    async with chat_request_tier_context(request, raw.get("tier", "free")):
+    timing.mark("grounding")
+    async with chat_request_tier_context(request, raw.get("tier", "free")) as tier_binding:
+        tier_id, route_model = tier_binding
         policy = resolve_request_model_policy(messages)
-        guard = await create_guard_from_request(
-            request,
-            policy.model_id,
-            request.app.state.central_model_policy_store,
-            request.app.state.b14_catalog_source,
+        # The dispatch guard and the PC tool offer are independent reads: run
+        # them concurrently instead of paying both serially before dispatch.
+        guard, pc_tools = await asyncio.gather(
+            create_guard_from_request(
+                request,
+                policy.model_id,
+                request.app.state.central_model_policy_store,
+                request.app.state.b14_catalog_source,
+            ),
+            _chat_pc_tools_for_turn(request, uid=uid, model_id=policy.model_id, user_text=_last_user_text(messages))
+            if browser_project_id is None else _no_pc_tools(),
         )
+        if isinstance(guard, BaseException):
+            raise guard
+        if isinstance(pc_tools, BaseException):
+            raise pc_tools
         client = apply_guard_to_client(client, guard)
         # #5573 (3-B-2): only a verified PC account on a tools-declaring route
         # receives the PC tools; every other turn keeps the request bytes it
         # had before this slice. A project turn runs on its own reference
         # context and is never offered a PC tool, so it can neither be deferred
         # nor handed to the PC lane.
-        pc_tools = () if browser_project_id is not None else await _chat_pc_tools_for_turn(
-            request, uid=uid, model_id=policy.model_id, user_text=_last_user_text(messages),
-        )
         stream = client.stream_text_auto(
             messages,
             skill=skill,
             additional_system_context=reference_context,
             **({"tools": pc_tools, "tool_choice": "auto"} if pc_tools else {}),
         )
+        timing.mark("lane")
+        latest_user = next((item["content"] for item in reversed(messages) if item["role"] == "user"), None)
 
-        first_visible = None
-        tool_call = None
-        try:
-            while True:
+        async def body_iterator():
+            # The model dispatch runs here, after the response headers and the
+            # accepted frame are already on the wire: a slow first token can
+            # no longer hold the browser's first byte hostage. The server-
+            # resolved tier binding is re-bound for this response task because
+            # identity and policy read the request tier at dispatch time.
+            with request_tier_context(tier_id, model_id=route_model):
+                timing.mark("dispatch")
+                yield _public_sse("meta", {"stream": True})
+                timing.mark("flushed")
+                answer_parts: list[str] = []
                 try:
-                    event = await anext(stream)
-                except StopAsyncIteration:
-                    await _close_stream(stream)
-                    return _empty_stream_json_error()
-                candidate = getattr(event, "tool_call", None)
-                if candidate is not None:
-                    tool_call = candidate
-                    break
-                if event.delta_content:
-                    first_visible = event
-                    break
-                if event.done:
-                    await _close_stream(stream)
-                    return _empty_stream_json_error()
-        except ChatRuntimeError as exc:
-            await _close_stream(stream)
-            return _stream_json_error(exc)
-        except asyncio.CancelledError:
-            await _close_stream(stream)
-            raise
-        except Exception:
-            await _close_stream(stream)
-            return JSONResponse(
-                {"error": {"code": "upstream_route_error", "message": "답변을 불러오지 못했습니다. 다시 시도해 주세요."}},
-                status_code=502,
-            )
-
-        if tool_call is not None:
-            # The model asked for a PC tool instead of an answer. Stop reading
-            # the stream and let the PC lane re-verify the owner, grant and
-            # target before it executes anything.
-            await _close_stream(stream)
-            from .chat_pc_drive import (
-                ChatPCDriveError,
-                chat_pc_plan_for_tool,
-                execute_chat_pc_drive_lane,
-            )
-
-            selected_tool = getattr(tool_call, "name", None)
-            declared_plan = (
-                chat_pc_plan_for_tool(selected_tool)
-                if isinstance(selected_tool, str) else None
-            )
-            if declared_plan is None:
-                return JSONResponse(
-                    {"error": {"code": "chat_pc_tool_unsupported", "message": "요청한 PC 도구를 실행할 수 없습니다."}},
-                    status_code=502,
-                )
-            from .pc_action_context import build_pc_action_context
-
-            execution_user_text = next(
-                (item["content"] for item in reversed(policy.messages)
-                 if item.get("role") == "user"),
-                None,
-            )
-            try:
-                # The browser's own run handle is reused as the staged run id,
-                # so a dropped connection recovers this turn's verified result
-                # through the existing owner-scoped GET (#5567) instead of
-                # resubmitting the PC turn.
-                lane_outcome = await execute_chat_pc_drive_lane(
-                    request,
-                    user_text=latest_user_text,
-                    execution_user_text=execution_user_text,
-                    skill=skill,
-                    model_id=selected_model,
-                    conversation_id=conversation_id,
-                    device_id=raw.get("device_id"),
-                    run_id=raw.get("pc_run_id"),
-                    conversation_messages=messages,
-                    pc_action_context=build_pc_action_context(
-                        messages, user_text=latest_user_text,
-                        trusted_history=(conversation_id is not None and uid is not None and store is not None),
-                        tool_results=(
-                            ("file", project_files_context), ("file", drive_context),
-                            ("web", getattr(getattr(auto_plan, "prepared", None), "context", None)),
-                        ),
-                    ),
-                    selected_tool=selected_tool,
-                    declared_plan=declared_plan,
-                )
-            except ChatPCDriveError as exc:
-                return JSONResponse(
-                    {"error": exc.public_error()},
-                    status_code=exc.status_code,
-                )
-            if lane_outcome is None:
-                return JSONResponse(
-                    {"error": {"code": "chat_pc_lane_unavailable", "message": "PC 작업을 시작하지 못했습니다. 다시 시도해 주세요."}},
-                    status_code=502,
-                )
-
-    if lane_outcome is not None:
-        lane_answer, lane_conversation_id = lane_outcome
-        from .chat_pc_drive import pc_scope_notice_for_run
-
-        lane_scope_notice = await pc_scope_notice_for_run(
-            request, run_id=raw.get("pc_run_id"),
-        )
-
-        async def tool_lane_body_iterator():
-            yield _public_sse("delta", {"delta": lane_answer})
-            tool_done: dict[str, Any] = {"done": True}
-            if lane_conversation_id:
-                tool_done["conversation_id"] = lane_conversation_id
-            if lane_scope_notice:
-                # #5573: the scope pinned before dispatch is its own field, so
-                # the live answer states "목록만 조회합니다" without the
-                # notice being folded into the answer text.
-                tool_done["scope_notice"] = lane_scope_notice
-            yield _public_sse("done", tool_done)
-        return StreamingResponse(
-            tool_lane_body_iterator(),
-            status_code=200,
-            media_type="text/event-stream",
-            headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
-        )
-
-    assert first_visible is not None and first_visible.delta_content
-    first_delta = first_visible.delta_content
-    latest_user = next((item["content"] for item in reversed(messages) if item["role"] == "user"), None)
-
-    async def body_iterator():
-        answer_parts = [first_delta]
-        try:
-            yield _public_sse("delta", {"delta": first_delta})
-            async for item in _stream_with_keepalive(stream):
-                if item is _KEEPALIVE_SENTINEL:
-                    yield SSE_KEEPALIVE
-                    continue
-                event = item
-                if event.delta_content:
-                    answer_parts.append(event.delta_content)
-                    yield _public_sse("delta", {"delta": event.delta_content})
-                if event.done:
-                    done_payload: dict[str, Any] = {"done": True}
-                    done_payload.update(grounding_notice)
-                    if auto_plan is not None and auto_plan.prepared is not None:
-                        done_payload["answer_status"] = "answered_with_evidence"
-                        done_payload["evidence"] = _public_evidence(auto_plan.prepared.evidence)
-                        done_payload["tool"] = {"id": "web_search", "title": "웹 검색"}
-                    if drive_sources:
-                        done_payload["answer_status"] = "answered_with_evidence"
-                        done_payload["evidence"] = [
-                            {"id": f"drive-{i}", "title": src["title"], "url": src["url"],
-                             "retrieved_at": src["retrieved_at"], "source_type": "google_drive"}
-                            for i, src in enumerate(drive_sources, 1)
-                        ]
-                    if uid is not None and store is not None and latest_user:
-                        answer = "".join(answer_parts)
-                        try:
-                            if effective_project_id is None:
-                                saved_id = await store.append_exchange(uid, conversation_id, latest_user, answer, product_scope=PRODUCT_SCOPE_CHAT)
-                            else:
-                                saved_id = await store.append_exchange(
-                                    uid,
-                                    conversation_id,
-                                    latest_user,
-                                    answer,
-                                    project_id=effective_project_id,
-                                    product_scope=PRODUCT_SCOPE_CHAT,
+                    first_visible = None
+                    tool_call = None
+                    try:
+                        while True:
+                            try:
+                                event = await anext(stream)
+                            except StopAsyncIteration:
+                                timing.set_outcome("error")
+                                yield _public_sse(
+                                    "error",
+                                    {"error": {"code": "empty_upstream_answer", "message": "AI가 표시할 답변을 만들지 못했습니다. 다시 시도해 주세요."}},
                                 )
-                        except HistoryForbidden:
+                                return
+                            candidate = getattr(event, "tool_call", None)
+                            if candidate is not None:
+                                tool_call = candidate
+                                break
+                            if event.delta_content:
+                                first_visible = event
+                                timing.mark("first_token")
+                                break
+                            if event.done:
+                                timing.set_outcome("error")
+                                yield _public_sse(
+                                    "error",
+                                    {"error": {"code": "empty_upstream_answer", "message": "AI가 표시할 답변을 만들지 못했습니다. 다시 시도해 주세요."}},
+                                )
+                                return
+                    except ChatRuntimeError as exc:
+                        timing.set_outcome("error")
+                        yield _public_sse("error", {"error": {"code": exc.code, "message": exc.user_message}})
+                        return
+                    except asyncio.CancelledError:
+                        timing.set_outcome("cancelled")
+                        raise
+                    except Exception:
+                        # Same safe boundary the pre-TTFB JSON contract had for
+                        # an unexpected dispatch-stage failure.
+                        timing.set_outcome("error")
+                        yield _public_sse(
+                            "error",
+                            {"error": {"code": "upstream_route_error", "message": "답변을 불러오지 못했습니다. 다시 시도해 주세요."}},
+                        )
+                        return
+                    if tool_call is not None:
+                        # The model asked for a PC tool instead of an answer.
+                        # Stop reading the stream and let the PC lane re-verify
+                        # the owner, grant and target before it executes
+                        # anything. The lane's frames ride this same response.
+                        await _close_stream(stream)
+                        from .chat_pc_drive import (
+                            ChatPCDriveError,
+                            chat_pc_plan_for_tool,
+                            execute_chat_pc_drive_lane,
+                        )
+
+                        selected_tool = getattr(tool_call, "name", None)
+                        declared_plan = (
+                            chat_pc_plan_for_tool(selected_tool)
+                            if isinstance(selected_tool, str) else None
+                        )
+                        if declared_plan is None:
+                            timing.set_outcome("error")
                             yield _public_sse(
                                 "error",
-                                {"error": {"code": "conversation_not_found", "message": "대화를 찾을 수 없습니다."}},
+                                {"error": {"code": "chat_pc_tool_unsupported", "message": "요청한 PC 도구를 실행할 수 없습니다."}},
                             )
                             return
-                        except Exception:
-                            saved_id = None
-                        if saved_id is not None:
-                            done_payload["conversation_id"] = saved_id
-                            if effective_project_id is not None:
-                                done_payload["project_id"] = effective_project_id
-                                done_payload["project"] = (
-                                    {"id": project.id, "name": project.name}
-                                    if project is not None
-                                    else None
-                                )
-                    if project_files_used:
-                        done_payload["project_files_used"] = project_files_used
-                    yield _public_sse("done", done_payload)
-                    return
+                        from .pc_action_context import build_pc_action_context
 
-            yield _public_sse(
-                "error",
-                {"error": {"code": "malformed_upstream", "message": "AI 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요."}},
-            )
-        except ChatRuntimeError as exc:
-            yield _public_sse(
-                "error",
-                {"error": {"code": exc.code, "message": exc.user_message}},
-            )
-        except asyncio.CancelledError:
-            raise
-        except Exception:
-            yield _public_sse(
-                "error",
-                {"error": {"code": "stream_error", "message": "스트리밍 답변을 계속하지 못했습니다. 다시 시도해 주세요."}},
-            )
-        finally:
-            await _close_stream(stream)
+                        execution_user_text = next(
+                            (item["content"] for item in reversed(policy.messages)
+                             if item.get("role") == "user"),
+                            None,
+                        )
+                        try:
+                            # The browser's own run handle is reused as the
+                            # staged run id, so a dropped connection recovers
+                            # this turn's verified result through the existing
+                            # owner-scoped GET (#5567) instead of resubmitting
+                            # the PC turn.
+                            lane_outcome = await execute_chat_pc_drive_lane(
+                                request,
+                                user_text=latest_user_text,
+                                execution_user_text=execution_user_text,
+                                skill=skill,
+                                model_id=selected_model,
+                                conversation_id=conversation_id,
+                                device_id=raw.get("device_id"),
+                                run_id=raw.get("pc_run_id"),
+                                conversation_messages=messages,
+                                pc_action_context=build_pc_action_context(
+                                    messages, user_text=latest_user_text,
+                                    trusted_history=(conversation_id is not None and uid is not None and store is not None),
+                                    tool_results=(
+                                        ("file", project_files_context), ("file", drive_context),
+                                        ("web", getattr(getattr(auto_plan, "prepared", None), "context", None)),
+                                    ),
+                                ),
+                                selected_tool=selected_tool,
+                                declared_plan=declared_plan,
+                            )
+                        except ChatPCDriveError as exc:
+                            timing.set_outcome("error")
+                            yield _public_sse("error", {"error": exc.public_error()})
+                            return
+                        if lane_outcome is None:
+                            timing.set_outcome("error")
+                            yield _public_sse(
+                                "error",
+                                {"error": {"code": "chat_pc_lane_unavailable", "message": "PC 작업을 시작하지 못했습니다. 다시 시도해 주세요."}},
+                            )
+                            return
+                        lane_answer, lane_conversation_id = lane_outcome
+                        from .chat_pc_drive import pc_scope_notice_for_run
 
-    return StreamingResponse(
-        body_iterator(),
-        status_code=200,
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache, no-store",
-            "X-Accel-Buffering": "no",
-        },
-    )
+                        lane_scope_notice = await pc_scope_notice_for_run(
+                            request, run_id=raw.get("pc_run_id"),
+                        )
+                        timing.set_outcome("tool_lane")
+                        yield _public_sse("delta", {"delta": lane_answer})
+                        tool_done: dict[str, Any] = {"done": True}
+                        if lane_conversation_id:
+                            tool_done["conversation_id"] = lane_conversation_id
+                        if lane_scope_notice:
+                            # #5573: the scope pinned before dispatch is its own
+                            # field, so the live answer states "목록만 조회합니다"
+                            # without the notice being folded into the answer text.
+                            tool_done["scope_notice"] = lane_scope_notice
+                        yield _public_sse("done", tool_done)
+                        return
+
+                    assert first_visible is not None and first_visible.delta_content
+                    first_delta = first_visible.delta_content
+                    answer_parts = [first_delta]
+                    yield _public_sse("delta", {"delta": first_delta})
+                    async for item in _stream_with_keepalive(stream):
+                        if item is _KEEPALIVE_SENTINEL:
+                            yield SSE_KEEPALIVE
+                            continue
+                        event = item
+                        if event.delta_content:
+                            answer_parts.append(event.delta_content)
+                            yield _public_sse("delta", {"delta": event.delta_content})
+                        if event.done:
+                            done_payload: dict[str, Any] = {"done": True}
+                            done_payload.update(grounding_notice)
+                            if auto_plan is not None and auto_plan.prepared is not None:
+                                done_payload["answer_status"] = "answered_with_evidence"
+                                done_payload["evidence"] = _public_evidence(auto_plan.prepared.evidence)
+                                done_payload["tool"] = {"id": "web_search", "title": "웹 검색"}
+                            if drive_sources:
+                                done_payload["answer_status"] = "answered_with_evidence"
+                                done_payload["evidence"] = [
+                                    {"id": f"drive-{i}", "title": src["title"], "url": src["url"],
+                                     "retrieved_at": src["retrieved_at"], "source_type": "google_drive"}
+                                    for i, src in enumerate(drive_sources, 1)
+                                ]
+                            if uid is not None and store is not None and latest_user:
+                                answer = "".join(answer_parts)
+                                try:
+                                    if effective_project_id is None:
+                                        saved_id = await store.append_exchange(uid, conversation_id, latest_user, answer, product_scope=PRODUCT_SCOPE_CHAT)
+                                    else:
+                                        saved_id = await store.append_exchange(
+                                            uid,
+                                            conversation_id,
+                                            latest_user,
+                                            answer,
+                                            project_id=effective_project_id,
+                                            product_scope=PRODUCT_SCOPE_CHAT,
+                                        )
+                                except HistoryForbidden:
+                                    yield _public_sse(
+                                        "error",
+                                        {"error": {"code": "conversation_not_found", "message": "대화를 찾을 수 없습니다."}},
+                                    )
+                                    return
+                                except Exception:
+                                    saved_id = None
+                                if saved_id is not None:
+                                    done_payload["conversation_id"] = saved_id
+                                    if effective_project_id is not None:
+                                        done_payload["project_id"] = effective_project_id
+                                        done_payload["project"] = (
+                                            {"id": project.id, "name": project.name}
+                                            if project is not None
+                                            else None
+                                        )
+                            if project_files_used:
+                                done_payload["project_files_used"] = project_files_used
+                            yield _public_sse("done", done_payload)
+                            return
+
+                    yield _public_sse(
+                        "error",
+                        {"error": {"code": "malformed_upstream", "message": "AI 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요."}},
+                    )
+                except ChatRuntimeError as exc:
+                    timing.set_outcome("error")
+                    yield _public_sse(
+                        "error",
+                        {"error": {"code": exc.code, "message": exc.user_message}},
+                    )
+                except asyncio.CancelledError:
+                    timing.set_outcome("cancelled")
+                    raise
+                except Exception:
+                    timing.set_outcome("error")
+                    yield _public_sse(
+                        "error",
+                        {"error": {"code": "stream_error", "message": "스트리밍 답변을 계속하지 못했습니다. 다시 시도해 주세요."}},
+                    )
+                finally:
+                    await _close_stream(stream)
+                    timing.emit()
+
+        return StreamingResponse(
+            body_iterator(),
+            status_code=200,
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache, no-store",
+                "X-Accel-Buffering": "no",
+            },
+        )
 
 
 # #2505: the frame decoder moved to ``app/binary_attachment_frame.py`` so the

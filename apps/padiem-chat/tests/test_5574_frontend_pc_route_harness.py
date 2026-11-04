@@ -826,6 +826,7 @@ if (!transport) {
       generic_error: null,
       answer: "",
       events: [],
+      frames: {},
       wire: { payloadKeys: null, postBodyKeys: null },
       calls: [],
       status: [],
@@ -851,6 +852,7 @@ if (!transport) {
       await transport.readSseEvents(response, async (frame) => {
         const parsed = JSON.parse(frame.data);
         record.events.push(frame.event);
+        record.frames[frame.event] = frame.data;
         if (frame.event === "delta") record.answer += typeof parsed.delta === "string" ? parsed.delta : "";
         if (frame.event === "done") {
           record.conversation_id = typeof parsed.conversation_id === "string" ? parsed.conversation_id : null;
@@ -1033,7 +1035,7 @@ def test_mesh_only_pc_turn_reaches_engine_without_broker_devices() -> None:
     assert _has_call(step, "POST", "/api/chat/stream"), step["calls"]
     assert step["generic_error"] is None
     assert step["answer"].strip() != "", step
-    assert step["events"] == ["delta", "done"]
+    assert step["events"] == ["meta", "delta", "done"]
     assert len(harness.bridge.requests) == 1
     call = harness.bridge.requests[0]
     assert call["tool_arguments"] == {"files": {"device_id": DEVICE_ID}}
@@ -1134,7 +1136,7 @@ def test_general_turn_keeps_ordinary_route_without_pc_work(
         call = harness.b14.calls[0]
         assert call["messages"][-1]["content"] == GENERAL_5574_TEXT
         assert call["tools"] == (["query_drives", "files_list", "files", "browser"] if tools_declared else [])
-        assert step["events"] == ["delta", "delta", "done"]
+        assert step["events"] == ["meta", "delta", "delta", "done"]
 
 
 def test_followup_reuses_conversation_and_leaves_more_prior_turns_in_the_call() -> None:
@@ -1253,7 +1255,7 @@ def test_stream_route_lane_call_with_budgeted_candidates() -> None:
     assert _has_call(step, "POST", "/api/chat/stream")
     assert not _has_call(step, "POST", "/api/orchestration")
     assert step["answer"].strip() != "", step
-    assert step["events"] == ["delta", "done"], step["events"]
+    assert step["events"] == ["meta", "delta", "done"], step["events"]
     assert step["conversation_id"] is not None, step
     minted = step["pc_run_id"]
     assert minted

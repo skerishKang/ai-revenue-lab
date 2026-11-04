@@ -145,14 +145,19 @@ async def _run_view(page: Page, *, name: str, width: int, height: int) -> dict[s
     if isinstance(payload, dict) and payload.get("tool") is not None:
         raise AssertionError(f"structured answer must not depend on a manual tool marker: {payload!r}")
 
-    raw_source = article.locator(".assistant-content > p.rich-response-source")
+    # The raw markdown source is kept exactly once, in the inert <template>
+    # the rich renderer installs: never rendered, never announced, never
+    # selected by copy/scan queries. The visible rich blocks are the only
+    # rendered copy of the answer text in the DOM.
+    raw_source = article.locator(".assistant-content > template.rich-response-source")
     if await raw_source.count() != 1:
-        raise AssertionError("exactly one canonical raw source paragraph must remain")
-    raw_text = await raw_source.text_content()
+        raise AssertionError("exactly one canonical inert raw source must remain")
+    raw_text = await raw_source.evaluate("node => node.content.textContent")
     if raw_text != RAW_ANSWER:
         raise AssertionError(f"raw answer changed during rich rendering:\nEXPECTED={RAW_ANSWER!r}\nACTUAL={raw_text!r}")
-    if not await raw_source.is_hidden():
-        raise AssertionError("canonical raw paragraph should be hidden after successful rich render")
+    leftover_hidden_paragraph = article.locator(".assistant-content > p.rich-response-source")
+    if await leftover_hidden_paragraph.count() != 0:
+        raise AssertionError("the raw answer must not stay in the DOM as a second copy")
 
     rich = article.locator(".rich-response")
     await rich.wait_for(state="visible")

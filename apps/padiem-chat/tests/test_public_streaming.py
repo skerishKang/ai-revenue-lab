@@ -295,25 +295,33 @@ def test_public_stream_emits_bounded_delta_and_done_without_route_metadata():
         (ChatRuntimeError(504, "upstream_timeout", "답변 준비가 오래 걸리고 있습니다."), 504, "upstream_timeout"),
     ],
 )
-def test_pre_start_runtime_error_stays_json_before_sse(error, status, code):
+def test_pre_start_runtime_error_is_an_instream_frame_with_the_same_code(error, status, code):
+    # TTFB first-frame contract: headers and the meta frame commit before
+    # dispatch, so a dispatch-stage failure travels as an in-stream error
+    # frame carrying the same safe code and Korean message. The status is
+    # kept in the parametrization to pin which ChatRuntimeError each case is.
     client = ScriptedClient([error])
     app = _app_with_client(client)
     response = asyncio.run(_post(app, _payload()))
 
-    assert response.status_code == status
-    assert response.headers["content-type"].startswith("application/json")
-    assert response.json()["error"]["code"] == code
-    assert "event:" not in response.text
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert "event: meta" in response.text
+    error_frame = json.loads(response.text.split("event: error\ndata: ", 1)[1].split("\n\n", 1)[0])["error"]
+    assert error_frame["code"] == code
+    assert response.text.count("event: delta") == 0
 
 
-def test_done_before_visible_content_is_json_502_not_empty_sse_200():
+def test_done_before_visible_content_is_an_instream_error_frame_not_a_fake_done():
     client = ScriptedClient([_event(done=True)])
     app = _app_with_client(client)
     response = asyncio.run(_post(app, _payload()))
 
-    assert response.status_code == 502
-    assert response.headers["content-type"].startswith("application/json")
-    assert response.json()["error"]["code"] == "empty_upstream_answer"
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    error_frame = json.loads(response.text.split("event: error\ndata: ", 1)[1].split("\n\n", 1)[0])["error"]
+    assert error_frame["code"] == "empty_upstream_answer"
+    assert "event: done" not in response.text
 
 
 def test_post_start_error_emits_one_bounded_error_no_done_and_writes_no_history():
@@ -901,8 +909,12 @@ def test_a_pc_tool_turn_engine_failure_keeps_only_the_bounded_cause(
     monkeypatch.setattr(chat_pc_drive, "execute_chat_pc_drive_lane", _fail)
     response = asyncio.run(_post(app, _payload(), settings=settings, signed_in=True))
 
-    assert response.status_code == 400
-    assert response.json()["error"] == {
+    # TTFB: the lane failure rides the committed SSE response as an error
+    # frame; the bounded cause fields are unchanged.
+    assert response.status_code == 200
+    assert "event: meta" in response.text
+    frame = json.loads(response.text.split("event: error\ndata: ", 1)[1].split("\n\n", 1)[0])["error"]
+    assert frame == {
         "code": "chat_pc_engine_unavailable",
         "message": "AI 작업을 처리하지 못했습니다.",
         "cause": engine_code,
@@ -930,8 +942,9 @@ def test_a_tool_turn_that_cannot_start_reports_a_bounded_failure(monkeypatch):
     monkeypatch.setattr(chat_pc_drive, "execute_chat_pc_drive_lane", _none)
     response = asyncio.run(_post(app, _payload(), settings=settings, signed_in=True))
 
-    assert response.status_code == 502
-    assert response.json()["error"]["code"] == "chat_pc_lane_unavailable"
+    assert response.status_code == 200
+    frame = json.loads(response.text.split("event: error\ndata: ", 1)[1].split("\n\n", 1)[0])["error"]
+    assert frame["code"] == "chat_pc_lane_unavailable"
 
 
 def test_public_route_returns_after_first_visible_token_and_consumer_close_closes_b62_stream():
@@ -968,13 +981,21 @@ def test_public_route_returns_after_first_visible_token_and_consumer_close_close
 
         response = await asyncio.wait_for(api_chat_stream(request), timeout=0.2)
         assert isinstance(response, StreamingResponse)
-        assert client.calls == 1
+        # TTFB: the handler returns before the dispatch runs, so the upstream
+        # client has not been entered yet (the lazy generator starts at the
+        # response body's first read, after the meta frame).
+        assert client.calls == 0
         assert client.second_requested is False
 
         iterator = response.body_iterator
+        # TTFB: the meta frame flushes first; the delta follows on the next
+        # read, and the consumer close still closes the upstream transport.
+        meta_chunk = await asyncio.wait_for(anext(iterator), timeout=0.2)
+        assert b"event: meta" in meta_chunk
         first_chunk = await asyncio.wait_for(anext(iterator), timeout=0.2)
         assert b"event: delta" in first_chunk
         assert "첫 토큰".encode("utf-8") in first_chunk
+        assert client.calls == 1
         assert client.second_requested is False
 
         await iterator.aclose()

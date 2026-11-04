@@ -228,19 +228,22 @@ async def chat_request_tier_context(request: Request, tier_id: str):
     """Resolve a centrally assigned Chat model, then bind the request tier.
 
     ``admin`` is a separate verified administrator lane and never a product
-    grade route; it keeps the existing exact administrator model.
+    grade route; it keeps the existing exact administrator model. Yields the
+    resolved ``(tier_id, model_id)`` binding so a caller whose model dispatch
+    runs later (the streaming response body) can re-bind the same server-
+    resolved pair without a second route read.
     """
     if tier_id is None:
         # Preserve the pre-existing "no tier binding" request shape.
         with request_tier_context(None):
-            yield
+            yield (None, None)
         return
     if not isinstance(tier_id, str):
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
     normalized = tier_id.strip().lower()
     if normalized == "admin":
         with request_tier_context("admin"):
-            yield
+            yield ("admin", None)
         return
     if normalized not in _TIER_BY_ID:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
@@ -251,7 +254,7 @@ async def chat_request_tier_context(request: Request, tier_id: str):
             "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
         )
     with request_tier_context(normalized, model_id=resolution.model_id):
-        yield
+        yield (normalized, resolution.model_id)
 
 
 async def resolve_claw_tier_model_view_from_stores(

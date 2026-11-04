@@ -151,12 +151,17 @@ async def test_api_chat_stream_preserves_error_status_and_avoids_fake_success():
             json={"messages": USER_MESSAGES},
             headers={"cf-connecting-ip": "203.0.113.10"},
         )
-        assert response.status_code == 503
-        data = response.json()
-        assert data["error"]["code"] == "upstream_busy"
-        assert "사용자가 많습니다" in data["error"]["message"]
+        # TTFB first-frame contract: the 429 upstream failure surfaces as an
+        # in-stream error frame after the committed meta frame, never as a
+        # fake success answer.
+        assert response.status_code == 200
+        assert response.headers["content-type"].startswith("text/event-stream")
+        assert "event: meta" in response.text
+        data = json.loads(response.text.split("event: error\ndata: ", 1)[1].split("\n\n", 1)[0])["error"]
+        assert data["code"] == "upstream_busy"
+        assert "사용자가 많습니다" in data["message"]
         assert "concurrency limit exceeded" not in response.text
-        assert "delta" not in response.text
+        assert response.text.count("event: delta") == 0
 
 
 @pytest.mark.asyncio

@@ -23,6 +23,7 @@
     "test_4379_full_reference_model_context.py": "B14_MANAGED",
     "test_4379_local5_chat_core_integration.py": "B14_MANAGED",
     "test_4483_final_dispatch_guard.py": "B14_MANAGED",
+    "test_chat_stream_ttfb_first_frame_261105.py": "B14_MANAGED",
     "test_5002_byok_product_e2e.py": "BYOK_DIRECT",
     "test_5108_chat_central_route_execution.py": "B14_MANAGED",
     "test_5121_byok_chat_direct.py": "BYOK_DIRECT",

@@ -249,14 +249,19 @@ async def _desktop_long_answer_probe(browser: Browser) -> dict[str, Any]:
     try:
         await _submit_long_answer(page, requests)
         assistant = page.locator("#messageList .assistant-message:last-child")
-        source = assistant.locator(".assistant-content > p.rich-response-source")
-        raw_dom = await source.text_content()
+        # The raw markdown source lives once, in the inert template the rich
+        # renderer installs; the rich blocks are the only rendered copy.
+        source = assistant.locator(".assistant-content > template.rich-response-source")
+        raw_dom = await source.evaluate("node => node.content.textContent")
         if raw_dom != LONG_ANSWER:
             raise AssertionError(
                 f"completed DOM source lost streamed bytes: {len(raw_dom or '')} != {len(LONG_ANSWER)}"
             )
         if "LONG_ANSWER_END_SENTINEL_1887" not in raw_dom:
             raise AssertionError("long-answer terminal sentinel missing")
+        leftover_hidden_paragraph = assistant.locator(".assistant-content > p.rich-response-source")
+        if await leftover_hidden_paragraph.count() != 0:
+            raise AssertionError("the long answer must not stay in the DOM as a second copy")
 
         rich = assistant.locator(".rich-response")
         if await rich.locator(".rich-code-block").count() < 1:
