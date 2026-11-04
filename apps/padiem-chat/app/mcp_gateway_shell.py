@@ -197,12 +197,16 @@ try{if($env:PADIEM_MCP_SHELL -eq 'powershell'){$file='powershell.exe';if(-not(Ge
 """.strip()
     script_b64 = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
     # PowerShell command text is fixed, and user values are base64 data only.
+    # The executor runs this command inside its own PowerShell envelope and
+    # reads the reply marker from that wrapper. An outer exit here would end
+    # the wrapper before the envelope is written; the nested shell's code
+    # already lands in $LASTEXITCODE, which the executor's sentinel reports.
     return (
         "$env:PADIEM_MCP_COMMAND_B64='" + command_b64 + "';"
         "$env:PADIEM_MCP_CWD_B64='" + cwd_b64 + "';"
         "$env:PADIEM_MCP_SHELL='" + shell + "';"
         "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand "
-        + script_b64 + ";exit $LASTEXITCODE"
+        + script_b64
     )
 
 

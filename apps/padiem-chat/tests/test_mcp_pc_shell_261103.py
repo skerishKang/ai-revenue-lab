@@ -138,6 +138,10 @@ def test_command_is_encoded_and_uses_the_common_executor_without_mcp_files_or_de
     assert "$inner=[Convert]::ToBase64String" in script
     assert "-EncodedCommand $inner" in script and "& $file @args" in script
     assert "Start-Process" not in script
+    # The executor wraps this command and reads its envelope from the same
+    # PowerShell session; an outer exit would end the wrapper first.
+    assert not command.endswith(";exit $LASTEXITCODE")
+    assert "exit" not in command.split("-EncodedCommand ", 1)[0].lower()
     assert len(shell.build_pc_shell_command({"command": "x" * shell.PC_SHELL_MAX_COMMAND_CHARS})) < 120_000
 
 

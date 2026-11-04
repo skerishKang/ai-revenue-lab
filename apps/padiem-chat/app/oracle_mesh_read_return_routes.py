@@ -4783,6 +4783,25 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
     if saved_scope is not None and scope_claim != saved_scope:
         return _error(403, "pc_scope_required" if scope_claim is None else "pc_scope_frozen")
 
+    # The status/result legs carry only the dispatch id; adding a device hint
+    # is a malformed body by contract. The dispatch itself names the PC that
+    # ran the step, so use that node for the target check. Re-resolving a
+    # multi-link owner without it can only answer "ambiguous" and refuse a
+    # step that already ran.
+    if mode in ("command_status", "result") and selected is None:
+        reader = getattr(history_store, "get_oracle_mesh_dispatch_for_owner", None)
+        if callable(reader) and isinstance(payload.get("dispatch_id"), str):
+            try:
+                status_dispatch = await reader(
+                    user_id=uid, dispatch_id=payload["dispatch_id"],
+                )
+            except Exception:
+                status_dispatch = None
+            if isinstance(status_dispatch, dict):
+                hint = status_dispatch.get("node_ref") or status_dispatch.get("device_id")
+                if isinstance(hint, str) and hint:
+                    selected = hint
+
     resolved, target_error = await _engine_pc_files_target(
         request, session=session, selected_device_id=selected, user_id=uid,
     )
