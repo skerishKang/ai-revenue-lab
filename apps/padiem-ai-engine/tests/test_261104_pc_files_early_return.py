@@ -111,7 +111,7 @@ def test_list_still_answers_with_the_result_inside_the_wait(monkeypatch):
     result = asyncio.run(_handler("list", PC_LIST_FILES_TOOL_ID)({"path": "."}))
 
     assert "status" not in result
-    listed = json.loads(result["output"])
+    listed = result["output"]
     assert listed["ok"] is True
     assert result["entry_count"] == 1
     assert modes == ["dispatch", "command_status", "result"]
@@ -125,7 +125,7 @@ def test_continuation_reads_the_same_dispatch_without_staging(monkeypatch):
 
     # Exactly one dispatch exists in the whole exchange, and this call made none.
     assert modes == ["command_status", "result"]
-    listed = json.loads(result["output"])
+    listed = result["output"]
     # The projection uses the folder the dispatch names, as the first call would.
     assert listed["path"] == "docs"
     assert result["entry_count"] == 1

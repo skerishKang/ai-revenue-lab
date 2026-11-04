@@ -219,7 +219,7 @@ def test_list_still_accepts_the_command_lane_and_its_no_exit_code(monkeypatch):
         _handler("list", PC_LIST_FILES_TOOL_ID)({"path": "."})
     )
     assert result["entry_count"] == 1
-    assert json.loads(result["output"])["entries"][0]["relative_path"] == "notes.txt"
+    assert result["output"]["items"][0]["path"] == "notes.txt"
 
 def test_a_file_body_that_looks_like_an_error_marker_is_still_content(monkeypatch):
     _install(monkeypatch, result=_result_row(output=READ_FAILED))

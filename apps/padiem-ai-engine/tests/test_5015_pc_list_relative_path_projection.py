@@ -102,18 +102,19 @@ def test_root_listing_projects_one_readable_relative_path_per_row(monkeypatch) -
     _install_wire(monkeypatch, WIRE_ROWS)
     result = asyncio.run(_handler("list", PC_LIST_FILES_TOOL_ID)({"path": "."}))
 
-    listed = json.loads(result["output"])
+    # 261105: a row is a field object now, and a wire row with no Name is
+    # dropped rather than handed a path it never had.
+    listed = result["output"]
     assert listed["ok"] is True
     assert listed["path"] == "."
-    assert result["entry_count"] == 3
-    rows = listed["entries"]
-    assert rows[0]["relative_path"] == "meshcentral-padiem-trial.txt"
-    # The original Select-Object columns stay verbatim; only a path is added.
-    assert rows[0]["Name"] == "meshcentral-padiem-trial.txt"
-    assert rows[0]["Length"] == 113
-    assert rows[1]["relative_path"] == "notes"
-    # A row with no Name never receives an invented path.
-    assert "relative_path" not in rows[2]
+    assert result["entry_count"] == 2
+    rows = listed["items"]
+    assert rows[0]["path"] == "meshcentral-padiem-trial.txt"
+    assert rows[0]["name"] == "meshcentral-padiem-trial.txt"
+    assert rows[0]["size"] == 113
+    assert rows[0]["type"] == "file"
+    assert rows[1]["path"] == "notes"
+    assert rows[1]["type"] == "dir"
     assert result["execution_confirmed"] is True
     assert result["termination"] == "no_exit_code"
 
@@ -124,11 +125,10 @@ def test_single_entry_folder_is_projected(monkeypatch) -> None:
                   "{\"Name\":\"one.txt\",\"Length\":4,\"PSIsContainer\":false}")
     result = asyncio.run(_handler("list", PC_LIST_FILES_TOOL_ID)({"path": "."}))
 
-    listed = json.loads(result["output"])
-    assert listed["entries"] == [
-        {"Name": "one.txt", "Length": 4, "PSIsContainer": False,
-         "relative_path": "one.txt"}
-    ]
+    listed = result["output"]
+    assert [item["path"] for item in listed["items"]] == ["one.txt"]
+    assert listed["items"][0]["name"] == "one.txt"
+    assert listed["items"][0]["size"] == 4
     assert result["entry_count"] == 1
 
 
@@ -139,9 +139,9 @@ def test_subfolder_listing_prefixes_each_row_with_the_listed_folder(monkeypatch)
         _handler("list", PC_LIST_FILES_TOOL_ID)({"path": "notes/sub"})
     )
 
-    listed = json.loads(result["output"])
+    listed = result["output"]
     assert listed["path"] == "notes/sub"
-    assert listed["entries"][0]["relative_path"] == "notes/sub/report.txt"
+    assert listed["items"][0]["path"] == "notes/sub/report.txt"
 
 
 def test_legacy_wrapped_listing_keeps_its_own_relative_path(monkeypatch) -> None:
@@ -152,18 +152,16 @@ def test_legacy_wrapped_listing_keeps_its_own_relative_path(monkeypatch) -> None
     }))
     result = asyncio.run(_handler("list", PC_LIST_FILES_TOOL_ID)({"path": "."}))
 
-    listed = json.loads(result["output"])
-    assert listed["entries"][0]["relative_path"] == "already.txt"
-    assert listed["truncated"] is True
+    listed = result["output"]
+    assert listed["items"][0]["path"] == "already.txt"
+    assert listed["has_more"] is True
     assert result["truncated"] is True
 
 
 def test_projected_path_is_the_value_the_read_step_submits(monkeypatch) -> None:
     _install_wire(monkeypatch, WIRE_ROWS)
-    listed = json.loads(
-        asyncio.run(_handler("list", PC_LIST_FILES_TOOL_ID)({"path": "."}))["output"]
-    )
-    target = listed["entries"][0]["relative_path"]
+    listed = asyncio.run(_handler("list", PC_LIST_FILES_TOOL_ID)({"path": "."}))["output"]
+    target = listed["items"][0]["path"]
 
     assert target != "."
     _install_wire(monkeypatch, "meshcentral trial content", kind="read")
@@ -179,9 +177,10 @@ def test_empty_folder_listing_still_projects_an_entry_list(monkeypatch) -> None:
     _install_wire(monkeypatch, "null")
     result = asyncio.run(_handler("list", PC_LIST_FILES_TOOL_ID)({"path": "."}))
 
-    listed = json.loads(result["output"])
-    assert listed["entries"] == []
+    listed = result["output"]
+    assert listed["items"] == []
     assert result["entry_count"] == 0
+    assert listed["has_more"] is False
 
 
 @pytest.mark.parametrize(
@@ -283,11 +282,11 @@ def test_real_wire_listing_feeds_the_step_driver_read_selection(monkeypatch) -> 
                 "arguments": {"path": ".", "intent": "read"},
             }
         assert len(observations) == 1
-        rows = json.loads(observations[0]["output"]["output"])["entries"]
-        row = next(r for r in rows if r.get("PSIsContainer") is False)
+        rows = observations[0]["output"]["output"]["items"]
+        row = next(r for r in rows if r["type"] == "file")
         return {
             "action": "tool", "tool_id": PC_READ_FILE_TOOL_ID,
-            "arguments": {"path": row["relative_path"]},
+            "arguments": {"path": row["path"]},
         }
 
     # #5573/#5574: the Chat lane's list+read ceiling is not a grant; the same
@@ -398,12 +397,13 @@ def test_a_granted_drive_is_a_root_in_every_spelling(monkeypatch) -> None:
         "E:\\x", {"roots": [{"label": "C:"}, {"label": "D:"}]}
     ) is None
 
-    listed = json.loads(result["output"]) if "output" in result else None
-    assert listed is not None
+    listed = result.get("output") if isinstance(result, dict) else None
+    assert isinstance(listed, dict)
     # Rows listed from a drive keep the drive, so a follow-up read cannot have to
     # guess which of the account's volumes was meant. The last call in the loop
     # above listed C:/Users/견적, and the third row has no Name to bind.
-    assert [row.get("relative_path") for row in listed["entries"][:2]] == [
+    assert [row.get("path") for row in listed["items"][:2]] == [
         "C:/Users/견적/meshcentral-padiem-trial.txt", "C:/Users/견적/notes",
     ]
-    assert "relative_path" not in listed["entries"][2]
+    # The third wire row carried no Name, so no item is invented for it.
+    assert len(listed["items"]) == 2

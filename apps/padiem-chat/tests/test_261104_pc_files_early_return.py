@@ -37,7 +37,10 @@ def test_folder_listing_is_a_page_of_fifty_rows():
     command = routes._pc_files_command(op="list", root=ROOT, relative=".")
     assert "Select-Object -Skip 0 -First 50" in command
     # The four fields the model sees: name, kind, size, modified time.
-    assert "Select-Object Name, Length, LastWriteTimeUtc, PSIsContainer" in command
+    # 261105: a DateTime column serialized as /Date(...)/, so the same instant
+    # is written as ISO-8601 for the caller.
+    assert "Select-Object Name, Length, " in command
+    assert "@{n='Modified';e={$_.LastWriteTimeUtc.ToString('o')}}, PSIsContainer" in command
     assert "total=$n" in command and "has_more=" in command
     # A caller may still ask for a different page; the default is what shrank.
     explicit = routes._pc_files_command(op="list", root=ROOT, relative=".", page_size=200)
