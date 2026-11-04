@@ -36,6 +36,9 @@ from kagent.local_agent_meshcentral_private_reader import (  # noqa: E402
     MeshCentralReadRefused,
     MeshCentralVerifiedTextReader,
 )
+from kagent.local_agent_meshcentral_private_reader import (  # noqa: E402
+    MeshCentralFileReadRequest,
+)
 from kagent.local_agent_secure_transport import (  # noqa: E402
     OutboundBrokerEndpoint,
     OutboundTransportConfig,
@@ -386,3 +389,20 @@ class MeshCentralCliPortTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class MeshCentralNodeRefAlphabetTest(unittest.TestCase):
+    """#261105: a MeshCentral node id carries ``$`` and must still be admitted."""
+
+    NODE = "7P4oTs4hg$bNJQXe2OBFdAL3yxcWzF829xUYLa9h6Io5AZqaX6$v5ziNLxqfb$pB"
+
+    def test_a_dollar_node_ref_is_admitted(self):
+        request = MeshCentralFileReadRequest(
+            node_ref=self.NODE,
+            file_path="D:/PADIEM/glm2-bid-ui-261105/scripts/build_data.py",
+        )
+        self.assertEqual(request.node_ref, self.NODE)
+
+    def test_a_space_or_control_ref_is_still_refused(self):
+        for bad in ("bad node!", "noderef", "", "x" * 300):
+            with self.assertRaises(MeshCentralReadRefused):
+                MeshCentralFileReadRequest(node_ref=bad, file_path="notes.txt")
