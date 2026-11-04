@@ -340,7 +340,7 @@ def test_b66_model_list_keeps_the_applied_grade_when_the_product_grant_list_excl
     # #6828: the applied route still decides which grade is offered, but the
     # grade row no longer names it. The route is proved where it runs, in the
     # dispatch tests below.
-    assert set(tiers[0]) == {"tier", "name", "reasoning_levels"}
+    assert set(tiers[0]) == {"tier", "name"}
     assert response.json()["default_tier"] == "free"
     assert "models" not in response.json() and "default_model_id" not in response.json()
 

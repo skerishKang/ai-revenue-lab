@@ -174,7 +174,7 @@ def test_b66_customer_dropdown_shows_grades_with_grade_models_not_provider_names
     assert [t["name"] for t in only_free.json()["tiers"]] == ["시지아이 Free"]
     # The grade row no longer names what runs behind it; the catalog above is
     # still what decides that only this grade is offerable.
-    assert all(set(t) == {"tier", "name", "reasoning_levels"}
+    assert all(set(t) == {"tier", "name"}
                for t in only_free.json()["tiers"])
 
     class GoogleGradeModels:

@@ -91,8 +91,9 @@ def test_quote_models_api_advertises_grade_options_without_naming_a_model():
     # endpoint still never chooses a grade for the customer.
     assert set(data) == {"ok", "tiers", "default_tier"}
     free = next(row for row in data["tiers"] if row["tier"] == "free")
-    assert free["reasoning_levels"] == [LEVEL_OPTION]
-    assert set(free) == {"tier", "name", "reasoning_levels"}
+    # #6838: no reasoning menu and no model identity cross to the browser.
+    assert set(free) == {"tier", "name"}
+    assert all(set(row) == {"tier", "name"} for row in data["tiers"])
 
 
 def test_interpret_forwards_exact_model_id_unchanged():
@@ -147,18 +148,18 @@ def test_supported_level_is_validated():
     assert validate_reasoning_level(MODEL, DEFAULT_REASONING_LEVEL) == DEFAULT_REASONING_LEVEL
 
 
-def test_unsupported_level_is_rejected_with_explainable_4xx_and_never_substituted():
-    fake = _Interpreter()
-    client = _client(_Store(), fake)
-    response = client.post(
+def test_an_incoming_level_is_ignored_before_any_dispatch():
+    """#6838: the level is B14's decision, so the route neither validates nor
+    forwards one. It is dropped exactly like a browser-chosen model_id."""
+    seen, recording = _capture()
+    client = _client(_Store(), recording)
+    client.post(
         "/api/b66/quote/interpret",
         json={**BODY, "model_id": MODEL, "reasoning_level": "ultra"},
         headers=ORIGIN,
     )
-    assert response.status_code == 400
-    assert response.json()["error"]["code"] == "unsupported_reasoning_level"
-    # Fail closed BEFORE any dispatch: no model call, no silent downgrade.
-    assert fake.calls == []
+    assert seen and "reasoning_level" not in seen[0]
+    assert seen[0]["model_id"] == MODEL
 
 
 @pytest.mark.parametrize(
@@ -230,9 +231,7 @@ def test_unverified_model_offers_the_default_option_only():
     client = _options_client({B66_GRADE_MODEL_IDS["free"]: []})
     tiers = client.get("/api/b66/quote/models").json()["tiers"]
     free = next(row for row in tiers if row["tier"] == "free")
-    assert free["reasoning_levels"] == [
-        {"value": DEFAULT_REASONING_LEVEL, "label": DEFAULT_REASONING_LABEL}
-    ]
+    assert set(free) == {"tier", "name"}
     assert reasoning_options_for_model(MODEL) == [
         {"value": DEFAULT_REASONING_LEVEL, "label": DEFAULT_REASONING_LABEL}
     ]
@@ -333,37 +332,22 @@ def test_default_option_is_the_sole_builtin_option_constant():
 # 6. Both B66 UI surfaces share one contract; no hidden model replacement.
 # --------------------------------------------------------------------------
 
-def test_both_b66_ui_sources_expose_and_reset_the_reasoning_control():
-    """Both B66 surfaces share one contract, each in its own ID namespace.
+def test_the_quote_ui_offers_a_grade_and_no_reasoning_control():
+    """#6838: the customer chooses a grade; the level is B14's decision.
 
-    The reference UI uses the ``padiemQuote*`` namespace and the embedded
-    runtime uses ``b66Quote*``; this mirrors the existing model-select
-    convention and must stay in sync for the reasoning control.
+    The grade picker stays (it carries no model identity), and the per-model
+    reasoning control and its bookkeeping are gone from the shipped runtime.
     """
     root = Path(__file__).resolve().parents[3]
-    reference = (
-        root / "reference/business-66-padiem-quote-v1/padiem-account.js"
-    ).read_text(encoding="utf-8")
     runtime = (
         root / "apps/padiem-chat/static/b66-quote-runtime.js"
     ).read_text(encoding="utf-8")
-    assert "padiemQuoteReasoningSelect" in reference
-    assert "reasoning_levels" in reference
-    # Changing the model must re-validate/reset the level, never carry it.
-    assert "syncReasoningOptions" in reference
-    assert 'select.addEventListener("change", syncReasoningOptions)' in reference
-    assert "reasoning_level" in reference
-
-    assert "b66QuoteReasoningSelect" in runtime
-    assert "reasoning_levels" in runtime
-    assert "syncReasoningOptions" in runtime
-    assert 'select.addEventListener("change", syncReasoningOptions)' in runtime
-    assert "reasoning_level" in runtime
-
-    html = (
-        root / "reference/business-66-padiem-quote-v1/index.html"
-    ).read_text(encoding="utf-8")
-    assert 'id="padiemQuoteReasoningSelect"' in html
+    assert "b66QuoteModelSelect" in runtime
+    assert "b66QuoteReasoningSelect" not in runtime
+    assert "b66QuoteReasoningField" not in runtime
+    assert "reasoning_levels" not in runtime
+    assert "reasoning_level" not in runtime
+    assert "syncReasoningOptions" not in runtime
 
 
 def test_no_automatic_model_substitution_or_fallback_in_b66_sources():
@@ -419,7 +403,6 @@ def test_interpret_still_returns_the_candidate_and_totals_shape():
         json={
             **BODY,
             "model_id": MODEL,
-            "reasoning_level": DEFAULT_REASONING_LEVEL,
         },
         headers=ORIGIN,
     )
@@ -429,13 +412,13 @@ def test_interpret_still_returns_the_candidate_and_totals_shape():
     # QuoteCore remains the only calculation authority for totals.
     assert "candidate" in body
     assert isinstance(body["candidate"].get("missing"), list)
-    # The accepted level reaches the interpreter alongside the exact model.
+    # The resolved model reaches the interpreter; no level travels with it.
     assert seen[0]["model_id"] == MODEL
-    assert seen[0]["reasoning_level"] == DEFAULT_REASONING_LEVEL
+    assert "reasoning_level" not in seen[0]
 
 
-def test_streaming_and_plain_paths_forward_the_same_level():
-    """One accepted level value, propagated identically by both call shapes."""
+def test_interpret_reserved_forwards_no_reasoning_keyword():
+    """Both call shapes send message/skill/model only; the keyword is gone."""
     from app.b66_quote_routes import _interpret_reserved
 
     seen: list[dict] = []
@@ -451,32 +434,25 @@ def test_streaming_and_plain_paths_forward_the_same_level():
             message="synthetic quote",
             skill={"variableSchema": {}},
             model_id=MODEL,
-            reasoning_level=DEFAULT_REASONING_LEVEL,
         )
     )
-    assert seen[0] == {
+    assert seen == [{
         "message": "synthetic quote",
         "skill": {"variableSchema": {}},
         "model_id": MODEL,
-        "reasoning_level": DEFAULT_REASONING_LEVEL,
-    }
-
-    # Omitting the level must not add the keyword at all, so a legacy
-    # interpreter with a fixed signature keeps working unchanged.
-    seen.clear()
-    asyncio.run(
-        _interpret_reserved(
-            Recording().interpret,
-            message="synthetic quote",
-            skill={"variableSchema": {}},
-            model_id=MODEL,
+    }]
+    # A caller that still passes the removed keyword fails loudly instead of
+    # having it silently dropped.
+    with pytest.raises(TypeError):
+        asyncio.run(
+            _interpret_reserved(
+                Recording().interpret,
+                message="synthetic quote",
+                skill={"variableSchema": {}},
+                model_id=MODEL,
+                reasoning_level="low",
+            )
         )
-    )
-    assert seen[0] == {
-        "message": "synthetic quote",
-        "skill": {"variableSchema": {}},
-        "model_id": MODEL,
-    }
 
 
 # --------------------------------------------------------------------------
@@ -830,35 +806,20 @@ def test_b66_never_imports_the_shared_core_package_directly():
         assert "from padiem_ai_core" not in source
 
 
-def test_grade_rows_advertise_verified_levels_once_the_transport_is_wired():
-    """With the Core capability present the exact options become selectable."""
+def test_grade_rows_carry_a_grade_and_no_reasoning_menu():
+    """#6838: even with the Core transport present, the browser sees no menu."""
     client = _options_client({GEMINI_35: [], GEMINI_31: [], ATRIA: []})
     client.app.state.b66_reasoning_transport_supported = True
-    # The grade rows must advertise exactly what the grade's own route model
-    # supports. The identity stays server-side, so both sides are read from the
-    # shared grade map rather than named here.
-    tiers = {
-        row["tier"]: [option["value"] for option in row["reasoning_levels"]]
-        for row in client.get("/api/b66/quote/models").json()["tiers"]
-    }
-
-    def options_for(model_id):
-        return [
-            option["value"]
-            for option in reasoning_options_for_model(model_id, transport_supported=True)
-        ]
-
-    # Free and the paid test-phase grades carry their own verified vocabulary.
-    assert tiers["free"] == options_for(B66_GRADE_MODEL_IDS["free"])
-    assert tiers["plus"] == options_for(B66_GRADE_MODEL_IDS["plus"])
-    assert options_for(B66_GRADE_MODEL_IDS["free"]) == ["default", "minimal", "low", "medium", "high"]
-    assert options_for(B66_GRADE_MODEL_IDS["plus"]) == ["default", "minimal", "low", "medium", "high"]
-    # A model documenting no `minimal` keeps that gap: the vocabulary is never
-    # copied between models.
-    assert options_for(ATRIA) == ["default", "low", "medium", "high"]
+    rows = client.get("/api/b66/quote/models").json()["tiers"]
+    assert rows
+    for row in rows:
+        assert set(row) == {"tier", "name"}
+    # The capability vocabulary itself stays a B14 decision, not a UI option.
+    assert reasoning_options_for_model(GEMINI_35, transport_supported=True)
 
 
-def test_api_refuses_an_explicit_level_the_transport_cannot_carry():
+def test_api_ignores_an_explicit_level_the_transport_cannot_carry():
+    """#6838: no 422 gate remains; the level simply never reaches dispatch."""
     seen, recording = _capture()
     client = _client(_Store(), recording)
     response = client.post(
@@ -866,23 +827,19 @@ def test_api_refuses_an_explicit_level_the_transport_cannot_carry():
         json={**BODY, "model_id": GEMINI_35, "reasoning_level": "low"},
         headers=ORIGIN,
     )
-    assert response.status_code == 422
-    assert response.json()["error"]["code"] == "reasoning_level_unavailable"
-    # Fail closed before dispatch: no model call at all.
-    assert seen == []
+    assert response.status_code != 422
+    assert seen and "reasoning_level" not in seen[0]
 
 
-def test_grade_rows_do_not_advertise_an_untransportable_level():
+def test_grade_rows_never_mention_a_level():
     client = _options_client({GEMINI_35: [], GEMINI_31: [], ATRIA: []})
     tiers = client.get("/api/b66/quote/models").json()["tiers"]
     assert tiers, "the grade rows are the customer's only view of this"
     for row in tiers:
-        assert [option["value"] for option in row["reasoning_levels"]] == [
-            DEFAULT_REASONING_LEVEL
-        ]
+        assert "reasoning_levels" not in row
 
 
-def test_api_accepts_the_default_level_for_a_verified_model():
+def test_api_does_not_forward_even_the_default_level():
     seen, recording = _capture()
     client = _client(_Store(), recording)
     client.post(
@@ -890,6 +847,5 @@ def test_api_accepts_the_default_level_for_a_verified_model():
         json={**BODY, "model_id": GEMINI_35, "reasoning_level": "default"},
         headers=ORIGIN,
     )
-    # The default is always honoured: it needs no transport.
     assert seen and seen[0]["model_id"] == GEMINI_35
-    assert seen[0]["reasoning_level"] == "default"
+    assert "reasoning_level" not in seen[0]
