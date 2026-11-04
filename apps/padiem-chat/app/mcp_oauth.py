@@ -383,6 +383,8 @@ async def authorize_info(request):
         return _json({"error": refusal.code, "error_description": refusal.message}, 503)
     return _json({
         "client_name": validated["client"]["client_name"],
+        "account": await _account_summary(request, user_id),
+        "switch_account_url": _switch_account_url(request),
         "redirect_uri": validated["redirect_uri"],
         "scope": validated["scope"], "resource": validated["resource"],
         "issuer": issuer(_settings(request)),
@@ -516,6 +518,73 @@ async def register_client(request):
     return _json(response, 201)
 
 
+SWITCH_ACCOUNT_PATH = "/oauth/switch-account"
+
+
+def _hash8(value: str) -> str:
+    return hashlib.sha256(str(value).encode("utf-8")).hexdigest()[:8]
+
+
+def _masked_email(email: str) -> str:
+    """Enough of the address to recognise the account, never the whole one."""
+    local, _, domain = email.partition("@")
+    if not domain or not local:
+        return ""
+    return (local[:2] if len(local) > 2 else local[:1]) + "***@" + domain
+
+
+async def _account_summary(request, user_id: str) -> dict:
+    """The signed-in browser account, as the consent header may show it."""
+    store = getattr(request.app.state, "history_store", None)
+    get_user = getattr(store, "get_user", None)
+    profile = None
+    if callable(get_user):
+        try:
+            profile = await get_user(user_id)
+        except Exception:
+            profile = None
+    name = str(getattr(profile, "display_name", "") or "").strip()
+    email = _masked_email(str(getattr(profile, "email", "") or "").strip())
+    return {"name": name, "email": email, "display": name or email}
+
+
+def _switch_account_url(request) -> str:
+    query = request.url.query
+    target = AUTHORIZE_PATH + (("?" + query) if query else "")
+    return SWITCH_ACCOUNT_PATH + "?" + urlencode({"next": target})
+
+
+async def switch_account(request):
+    """Sign out on this browser and come back to the same OAuth request.
+
+    The consent screen offers this beside the account it names. Only a relative
+    path under the authorize endpoint may be returned to, so the link cannot
+    aim the browser anywhere else, and the OAuth request values (client, PKCE,
+    state, scope) travel with it untouched.
+    """
+    target = request.query_params.get("next") or ""
+    if (not isinstance(target, str) or not target.startswith(AUTHORIZE_PATH)
+            or "\\" in target or target.startswith("//")):
+        target = AUTHORIZE_PATH
+    from .auth_routes import _revoke_canonical_session
+
+    try:
+        await _revoke_canonical_session(request)
+    except Exception:
+        pass
+    response = RedirectResponse(target, status_code=302, headers=_NO_STORE)
+    from .auth import SESSION_COOKIE
+
+    response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
+    try:
+        from .shared_login_flow import clear_shared_cookies
+
+        clear_shared_cookies(response)
+    except Exception:
+        pass
+    return response
+
+
 async def _converted_owner_id(request, user_id: str) -> str:
     """The owner id this session's PC links are keyed by.
 
@@ -545,7 +614,36 @@ async def _converted_owner_id(request, user_id: str) -> str:
     except Exception:
         return user_id
     owner_subject_id = scope.get("owner_subject_id") if isinstance(scope, dict) else None
-    return owner_subject_id if isinstance(owner_subject_id, str) and owner_subject_id else user_id
+    if not isinstance(owner_subject_id, str) or not owner_subject_id:
+        return user_id
+    if owner_subject_id == user_id:
+        return owner_subject_id
+    # 2026-11-04: the conversion must name *this* person. The owner axis and the
+    # browser's product-user axis are different vocabularies, so comparing the
+    # two strings would refuse every real conversion; the authority's own
+    # reverse lookup answers which product user the resolved owner subject
+    # belongs to. Anything but the signed-in user — including an answer we
+    # cannot get — stays on the session's own id, so another account's PCs are
+    # never listed or approved.
+    from .auth_routes import PADIEM_CHAT_PRODUCT_ID
+
+    resolve_product_user = getattr(identity, "resolve_product_user_for_subject", None)
+    if not callable(resolve_product_user):
+        _LOG.warning("mcp_oauth_owner_scope_unverified reason=lookup_unavailable owner=%s session_user=%s",
+                     _hash8(owner_subject_id), _hash8(user_id))
+        return user_id
+    try:
+        resolved_user = await resolve_product_user(
+            product_id=PADIEM_CHAT_PRODUCT_ID, canonical_subject_id=owner_subject_id)
+    except Exception:
+        _LOG.warning("mcp_oauth_owner_scope_unverified reason=lookup_failed owner=%s session_user=%s",
+                     _hash8(owner_subject_id), _hash8(user_id))
+        return user_id
+    if resolved_user != user_id:
+        _LOG.warning("mcp_oauth_owner_scope_mismatch owner=%s session_user=%s",
+                     _hash8(owner_subject_id), _hash8(user_id))
+        return user_id
+    return owner_subject_id
 
 
 async def _link_directory(request, user_id: str):
@@ -669,6 +767,7 @@ def mcp_oauth_routes():
         Route(PROTECTED_RESOURCE_METADATA_PATH + "/api/mcp", metadata, methods=["GET", "OPTIONS"]),
         Route(AUTHORIZATION_SERVER_METADATA_PATH, server_metadata, methods=["GET", "OPTIONS"]),
         Route(AUTHORIZE_INFO_PATH, authorize_info, methods=["GET"]),
+        Route(SWITCH_ACCOUNT_PATH, switch_account, methods=["GET"]),
         Route(AUTHORIZE_PATH, authorize_get, methods=["GET"]),
         Route(AUTHORIZE_PATH, authorize_post, methods=["POST"]),
         Route(TOKEN_PATH, token_endpoint, methods=["POST", "OPTIONS"]),
@@ -680,6 +779,7 @@ def mcp_oauth_routes():
 __all__ = [
     "AUTHORIZATION_SERVER_METADATA_PATH", "AUTHORIZE_INFO_PATH", "AUTHORIZE_PATH",
     "PROTECTED_RESOURCE_METADATA_PATH", "REGISTER_PATH", "REVOKE_PATH", "TOKEN_PATH",
-    "authorize_get", "authorize_info", "authorize_post", "mcp_oauth_routes",
+    "SWITCH_ACCOUNT_PATH", "authorize_get", "authorize_info", "authorize_post",
+    "mcp_oauth_routes", "switch_account",
     "protected_resource_metadata", "register_client", "revoke", "token",
 ]

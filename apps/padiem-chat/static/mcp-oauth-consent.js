@@ -8,6 +8,8 @@
   const login = document.getElementById("mcpOauthLogin");
   const loginLink = document.getElementById("mcpOauthLoginLink");
   const intro = document.getElementById("mcpOauthIntro");
+  const accountLine = document.getElementById("mcpOauthAccount");
+  const switchLink = document.getElementById("mcpOauthSwitch");
   const clientName = document.getElementById("mcpOauthClientName");
   const redirectHost = document.getElementById("mcpOauthRedirectHost");
   const pcSelect = document.getElementById("mcpOauthPc");
@@ -65,8 +67,23 @@
     return parts.join(" · ");
   }
 
+  function accountName() {
+    const account = (info && info.account) || null;
+    return account && typeof account.display === "string" ? account.display : "";
+  }
+
   function render() {
     if (!info) return;
+    // 이 화면이 어느 계정으로 연결하는지 먼저 밝힌다. "다른 계정으로 로그인"은
+    // 로그아웃한 뒤 같은 OAuth 요청 값 그대로 이 화면으로 돌아온다.
+    const account = accountName();
+    if (accountLine) {
+      accountLine.textContent = account ? text("mcp-oauth-account", { account: account }) : "";
+      accountLine.hidden = !account;
+    }
+    if (switchLink) {
+      switchLink.setAttribute("href", safeLoginUrl(info.switch_account_url || ""));
+    }
     if (intro) {
       intro.replaceChildren();
       const strong = document.createElement("strong");
@@ -93,7 +110,14 @@
       if (previous && info.pcs.some((pc) => pc.device_id === previous)) pcSelect.value = previous;
       const empty = !info.pcs || info.pcs.length === 0;
       pcSelect.hidden = empty;
-      if (noPc) noPc.hidden = !empty;
+      if (noPc) {
+        noPc.hidden = !empty;
+        if (empty) {
+          noPc.textContent = account
+            ? text("mcp-oauth-no-pc-account", { account: account })
+            : text("mcp-oauth-no-pc");
+        }
+      }
       if (approve) approve.disabled = empty;
     }
     if (pcList) {
