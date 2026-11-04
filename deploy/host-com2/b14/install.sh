@@ -84,13 +84,17 @@ PY
 if $DRY_RUN; then
   note "would_stage:core_modules=$CORE_MODULES"
 else
+  # Every source must exist before anything on the host is touched: a staging
+  # that aborts halfway must not leave a half-built package behind.
+  for core_module in $CORE_MODULES; do
+    [ -f "$CORE_SOURCE_DIR/$core_module" ] || fail "core_module_source_missing:$core_module"
+  done
   install -d -o root -g root -m 0755 "$CORE_PACKAGE"
   if [ ! -e "$CORE_PACKAGE/__init__.py" ]; then
     printf '%s\n' '"""Deployment-staged canonical Core modules."""' > "$CORE_PACKAGE/__init__.py"
     chmod 0644 "$CORE_PACKAGE/__init__.py"
   fi
   for core_module in $CORE_MODULES; do
-    [ -f "$CORE_SOURCE_DIR/$core_module" ] || fail "core_module_source_missing:$core_module"
     install -o root -g root -m 0644 "$CORE_SOURCE_DIR/$core_module" "$CORE_PACKAGE/$core_module"
   done
   # The unit's WorkingDirectory is $APP_ROOT/app; import-check from the same
