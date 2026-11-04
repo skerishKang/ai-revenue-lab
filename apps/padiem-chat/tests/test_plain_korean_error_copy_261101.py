@@ -116,7 +116,10 @@ def test_an_empty_completed_answer_is_not_committed_as_a_turn():
 def test_the_front_door_answers_a_navigation_with_a_page_and_a_machine_with_json():
     assert 'import { errorPageHtml, wantsHtml } from "./error-copy.mjs";' in FRONT_WORKER
     assert "function requestFailure(request, status, code)" in FRONT_WORKER
-    assert FRONT_WORKER.count("return requestFailure(request, ") == 4
+    # #6564 pinned the four failure sites that answered a browser navigation
+    # with this JSON; #6759 added the fifth for the answer POST's own 60-second
+    # first-byte deadline. Every failure still goes through the one copy path.
+    assert FRONT_WORKER.count("return requestFailure(request, ") == 5
     assert "if (wantsHtml(request)) {" in FRONT_WORKER
     # The JSON arm is unchanged, so every existing consumer keeps its contract.
     assert 'JSON.stringify({ error: { code, message:' in FRONT_WORKER
