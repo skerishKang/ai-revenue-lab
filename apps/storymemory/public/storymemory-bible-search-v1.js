@@ -103,20 +103,23 @@ async function loadBibleBlocks(onProgress,signal){
   var completed=shards.reduce(function(n,shard){return n+(loadedIndexShards[shard.path]?1:0)},0);
   if(onProgress)onProgress(completed,shards.length);
   var next=0;var failure=null;
+  var fetchFailed=null;
   async function worker(){
-    while(next<shards.length&&!failure&&!signal?.aborted){
+    while(next<shards.length&&!fetchFailed&&!signal?.aborted){
       var shard=shards[next++];if(loadedIndexShards[shard.path])continue;
       try{
         var response=await fetch('./content/bible-web/search-index/'+shard.path,{credentials:'same-origin',signal:signal});
         if(!response.ok)throw new Error('BIBLE_SEARCH_SHARD_UNAVAILABLE');
         loadedIndexShards[shard.path]=blocksFromShard(await response.json());completed++;
         if(onProgress)onProgress(completed,shards.length);
-      }catch(error){failure=error;break}
+      }catch(error){fetchFailed=error;break}
     }
   }
-  await worker();
+  var laneCount=Math.min(4,shards.length);var lanes=[];
+  for(var lane=0;lane<laneCount;lane++)lanes.push(worker());
+  await Promise.all(lanes);
   if(signal?.aborted)throw new DOMException('Search cancelled','AbortError');
-  if(failure)throw failure;
+  if(fetchFailed)throw fetchFailed;
   if(completed!==shards.length)throw new Error('BIBLE_SEARCH_INDEX_INCOMPLETE');
   return shards.flatMap(function(shard){return loadedIndexShards[shard.path]||[]});
 }
