@@ -733,3 +733,20 @@ def test_command_intent_owner_fallback_without_a_link_keeps_the_map_node(monkeyp
     assert status == 200, body
     row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
     assert row["node_ref"] == "padiem-command-target"
+
+
+def test_no_reply_short_body_is_kept_as_the_readable_original(monkeypatch):
+    setup_auth(monkeypatch)
+    state = _state()
+    _, created, _ = _dispatch(state)
+    dispatch_id = created["dispatch"]["dispatch_id"]
+    row = state.history_store.rows[dispatch_id]
+    body = b"Authentication token required, use --token [number]."
+    status, response, _ = _submit(state, row, termination="no_reply",
+                                  exit_code=None, body=body)
+    assert status == 200, response
+    # The MCP output read needs the stored original; without it a completed
+    # failure is reported as "output not verified" instead of this message.
+    assert state.history_store.originals[dispatch_id] == body
+    assert row["result_sha256"] == hashlib.sha256(body).hexdigest()
+    assert state.history_store.finished[-1][1] == "failed"

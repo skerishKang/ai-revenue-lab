@@ -35,6 +35,30 @@ def _registered_ids_from_owner_registry() -> set[str]:
     ids = {row["id"] for row in models}
     assert len(ids) == len(models), "Owner registry contains duplicate model IDs"
     return ids
+
+
+def _free_ids_from_owner_registry() -> set[str]:
+    """Rows whose declared free capability carries complete known zero pricing.
+
+    This mirrors the source's own evidenced-free rule, so a roster change does
+    not strand a fixed snapshot here.
+    """
+    registry_path = B14_APP_DIR / "app" / "pilot" / "b14_models.json"
+    payload = json.loads(registry_path.read_text(encoding="utf-8"))
+    free_ids: set[str] = set()
+    for row in payload["models"]:
+        capabilities = row.get("capabilities") or ()
+        input_price = row.get("input_price_usd_per_1m")
+        output_price = row.get("output_price_usd_per_1m")
+        if (
+            "free" in capabilities
+            and input_price is not None
+            and output_price is not None
+            and input_price == 0
+            and output_price == 0
+        ):
+            free_ids.add(row["id"])
+    return free_ids
 GOOGLE_IDS = {
     "google/gemini-3.1-flash-lite",
     "google/gemini-3.5-flash-lite",
@@ -176,18 +200,10 @@ def test_real_b14_source_registered_routes_and_google_manual_only(b14_source_get
     assert all(not row["auto_eligible"] for row in rows)
     assert all(not row["owner_excluded"] for row in rows)
     assert not any(row.get("public") is True for row in rows)
-    # One TokenHarbor free route is executable; the two newly registered
-    # OpenCode Go temporary free previews are disabled metadata only.
-    # None becomes a public/auto selection or silently changes the B66 pin.
-    assert {row["id"] for row in rows if row["free"]} == {
-        "tokenharbor/deepseek-v4.1-flash:free",
-        # These two are registered but disabled Go trial routes. The
-        # executable B14 catalog must still exclude them.
-        "opencode-go/longcat-2.5-preview-free",
-        "opencode-go/step-5-preview-free",
-        "opencode-go/cat-jam-free",
-        "opencode-go/beam-free",
-    }
+    # Free membership must mirror the owner registry, not a fixed snapshot
+    # that goes stale on every roster change. A registered free route stays
+    # metadata only here: none of the rows may become public or auto-eligible.
+    assert {row["id"] for row in rows if row["free"]} == _free_ids_from_owner_registry()
 
 
 def test_b66_owner_allowed_selector_refuses_actual_unready_b14_source_snapshot(b14_source_gets):
