@@ -115,6 +115,58 @@ PC_WRITE_REASONS = frozenset({"backup_failed", "target_exists", "path_invalid", 
 #: next_offset을 돌려주고 read_file_chunk로 이어진다. Chat 읽기 레인과
 #: 설치된 커넥터의 읽기 봉투가 같은 숫자를 쓴다.
 PC_FILES_READ_MAX_BYTES = 20_000_000
+#: 2026-11-04: the first answer waits this long for the PC and then hands the
+#: dispatch id back instead of holding one MCP request open. It bounds only the
+#: wait for an answer, never the PC command: the same tool reads the finished
+#: result when it is called again with the job id. 20 seconds sits under an
+#: edge request ceiling of 30 that the connector client was observed to keep.
+PC_FILES_WAIT_SECONDS = 20
+PC_FILES_WAIT_ENV = "PADIEM_PC_FILES_WAIT_SECONDS"
+_PC_FILES_JOB_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
+
+
+def _pc_files_wait_seconds() -> float:
+    """The bounded first wait; a deployment may name its own, within limits."""
+    raw = (os.environ.get(PC_FILES_WAIT_ENV) or "").strip()
+    if raw:
+        try:
+            return float(min(max(int(raw), 1), 120))
+        except ValueError:
+            pass
+    return float(PC_FILES_WAIT_SECONDS)
+
+
+def _pc_files_resume_dispatch(arguments) -> str | None:
+    """The dispatch this call continues, or None when it starts new work."""
+    if not isinstance(arguments, Mapping) or "job_id" not in arguments:
+        return None
+    if set(arguments) != {"job_id"}:
+        raise ToolHandlerError(
+            "pc_file_arguments_invalid", "Only a job id continues a PC file call",
+        )
+    job_id = arguments.get("job_id")
+    if not isinstance(job_id, str) or _PC_FILES_JOB_ID.fullmatch(job_id) is None:
+        raise ToolHandlerError(
+            "pc_file_arguments_invalid", "A PC file job id is required",
+        )
+    return job_id
+
+
+def _pc_files_running(dispatch_id: str, path: str, tool_id: str) -> dict[str, Any]:
+    """The first answer while the PC is still working on a read-only tool.
+
+    Truthful and resumable: the id is the dispatch the PC is running, so the
+    next call reads that dispatch instead of staging a second one. Nothing here
+    claims the work finished, and no partial listing is presented as a result.
+    """
+    return {
+        "status": "running",
+        "job_id": dispatch_id,
+        "path": path,
+        "answer": "PC가 아직 목록을 만들고 있습니다. 같은 도구에 job_id를 넣어 다시 부르면 결과를 읽습니다.",
+        "resume": {"tool": tool_id, "argument": "job_id", "job_id": dispatch_id},
+        "_job_receipt": dispatch_id,
+    }
 #: One whole drive, in any spelling the model repeats back: `C:`, `C:\`, `C:/Users`.
 #: It became a granted root shape when the Owner made a connected PC work over its
 #: local drives by default (#5573).
@@ -582,11 +634,22 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
             raise ToolHandlerError(
                 "pc_files_admission_required", "Verified owner run is required",
             )
-        try:
-            path, extra = _validate_pc_step_arguments(op, arguments)
-        except ToolHandlerError:
-            print("pc_files_chat_call mode=arguments stage=pc_file_arguments_invalid", flush=True)
-            raise
+        resume_dispatch = _pc_files_resume_dispatch(arguments)
+        if resume_dispatch is None:
+            try:
+                path, extra = _validate_pc_step_arguments(op, arguments)
+            except ToolHandlerError:
+                print("pc_files_chat_call mode=arguments stage=pc_file_arguments_invalid", flush=True)
+                raise
+        else:
+            # A continuation stages nothing: only the read-only tools answer
+            # later, and a mutation must report its own verification.
+            if op not in ("list", "read"):
+                raise ToolHandlerError(
+                    "pc_file_arguments_invalid",
+                    "Only a read-only PC file tool continues a job",
+                )
+            path, extra = "", {}
         granted: tuple[str, ...] = ()
         context_box: dict[str, dict] = {}
 
@@ -610,12 +673,13 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
             return (drive if drive is not None else
                     _pc_path_against_verified_roots(value, ctx)), current
 
-        path, granted = await _resolve(path)
-        if "destination" in extra:
-            extra["destination"], _ = await _resolve(extra["destination"])
-        if _pc_list_folder_prefix(path, granted) is None:
-            print("pc_files_chat_call mode=arguments stage=pc_file_arguments_invalid", flush=True)
-            raise ToolHandlerError("pc_files_path_invalid", "A registered relative path is required")
+        if resume_dispatch is None:
+            path, granted = await _resolve(path)
+            if "destination" in extra:
+                extra["destination"], _ = await _resolve(extra["destination"])
+            if _pc_list_folder_prefix(path, granted) is None:
+                print("pc_files_chat_call mode=arguments stage=pc_file_arguments_invalid", flush=True)
+                raise ToolHandlerError("pc_files_path_invalid", "A registered relative path is required")
         expected_kind = "read" if op == "read" else "command"
         # The reference is what makes a repeated identical step the same call.
         # A move or a write is only identical when its destination or bytes match,
@@ -630,27 +694,29 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
         if op in ("write", "move", "delete"):
             _PC_ACTION_ATTEMPT.set({"operation": op, "path": path,
                                     "destination": extra.get("destination")})
-        dispatched = await _signed_files_call(
-            service=service, request_factory=request_factory, secret=secret,
-            owner=owner, mode="dispatch",
-            payload={"op": op, "path": path, "tool_call_ref": tool_call_ref, **extra},
-        )
-        dispatch = dispatched.get("dispatch")
-        if (
-            not isinstance(dispatch, dict)
-            or dispatch.get("run_id") != owner[1]
-            or dispatch.get("kind") != expected_kind
-        ):
-            raise ToolHandlerError(
-                "pc_files_dispatch_mismatch",
-                "PC file dispatch correlation failed",
+        dispatch_id = resume_dispatch
+        if dispatch_id is None:
+            dispatched = await _signed_files_call(
+                service=service, request_factory=request_factory, secret=secret,
+                owner=owner, mode="dispatch",
+                payload={"op": op, "path": path, "tool_call_ref": tool_call_ref, **extra},
             )
-        dispatch_id = dispatch.get("dispatch_id")
-        if not isinstance(dispatch_id, str) or not dispatch_id:
-            raise ToolHandlerError(
-                "pc_files_dispatch_missing",
-                "PC file dispatch identifier unavailable",
-            )
+            dispatch = dispatched.get("dispatch")
+            if (
+                not isinstance(dispatch, dict)
+                or dispatch.get("run_id") != owner[1]
+                or dispatch.get("kind") != expected_kind
+            ):
+                raise ToolHandlerError(
+                    "pc_files_dispatch_mismatch",
+                    "PC file dispatch correlation failed",
+                )
+            dispatch_id = dispatch.get("dispatch_id")
+            if not isinstance(dispatch_id, str) or not dispatch_id:
+                raise ToolHandlerError(
+                    "pc_files_dispatch_missing",
+                    "PC file dispatch identifier unavailable",
+                )
         emit_progress = _pc_progress_emitter(owner, dispatch_id, expected_kind)
         _PC_CALL_PROGRESS.set(emit_progress)
         emit_progress("accepted")
@@ -697,8 +763,14 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
             chunk["why"] = "file_over_single_read_cap"
             return chunk
 
+        # 2026-11-04: the first answer waits a bounded time and then hands the
+        # dispatch id back, so one MCP request is never held for the whole PC
+        # command. A continuation asks at once; a fresh call polls every 2 s.
+        wait_deadline = time.monotonic() + _pc_files_wait_seconds()
+        first_round = resume_dispatch is not None
         while True:
-            await asyncio.sleep(2)
+            await asyncio.sleep(0 if first_round else 2)
+            first_round = False
             observed = await _signed_files_call(
                 service=service, request_factory=request_factory,
                 secret=secret, owner=owner, mode="command_status",
@@ -715,6 +787,12 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                     "pc_files_result_mismatch",
                     "PC file result correlation failed; do not replay",
                 )
+            if resume_dispatch is not None:
+                # The dispatch names the folder it listed, so the continuation
+                # projects the same way the first call would have.
+                reported_path = row.get("file_path")
+                if isinstance(reported_path, str) and reported_path:
+                    path = reported_path
             if row.get("state") == "received":
                 emit_progress("picked_up")
                 # Owner-approved presentation: received means PC processing
@@ -892,6 +970,8 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                     "pc_files_result_unknown",
                     "PC file result state unknown; do not replay",
                 )
+            if time.monotonic() >= wait_deadline:
+                return _pc_files_running(dispatch_id, path, tool_id)
 
     return handler
 

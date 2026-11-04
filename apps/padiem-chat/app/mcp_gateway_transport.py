@@ -64,6 +64,19 @@ def _tool(name, title, description, properties, *, mutates=False, required=None)
 
 
 _PATH = {"type": "string", "minLength": 1, "description": "연결 PC의 파일 또는 폴더 경로"}
+#: 2026-11-04: a first call answers inside a bounded wait; when the PC is still
+#: working, the answer names the dispatch and the same tool is asked again with
+#: this argument. No new tool, and the Wire still carries a dispatch id only.
+_JOB_ID = {
+    "type": "string", "minLength": 36, "maxLength": 36,
+    "description": "이전 호출이 돌려준 PC 작업 ID입니다. 이 값을 주면 새 작업을 만들지 않고 그 작업의 상태나 결과를 읽습니다.",
+}
+#: The two read-only file tools whose answer may arrive after the first call
+#: (a large folder listing or a file read). Mutations and the name search keep
+#: one answer per call: a write must report its own verification, and a search
+#: projects its rows against the query the call carried.
+PC_FILES_RESUME_TOOLS = frozenset({"pc_list", "pc_read"})
+_PC_FILE_JOB_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 
 
 def _browser_tool_definitions():
@@ -94,13 +107,18 @@ def _browser_tool_definitions():
 _TOOL_LIST = sorted([
     *_browser_tool_definitions(),
     _tool("pc_devices", "PC 목록", "이 연결(토큰)에서 고를 수 있는 PC 목록을 봅니다. 각 항목은 표시 이름·기기 ID 끝 6자(id6)·온라인 여부·기본 PC 여부를 담습니다.", {}),
-    _tool("pc_list", "폴더 목록", "지정 폴더 안의 파일과 폴더를 봅니다.",
-          {"path": _PATH, "device": _DEVICE}, required=["path"]),
+    _tool("pc_list", "폴더 목록",
+          "지정 폴더 안의 파일과 폴더를 한 번에 50개씩 봅니다. 각 항목은 이름·종류(파일/폴더)·크기·수정 시각입니다. "
+          "다음 페이지는 offset으로 이어 봅니다. 첫 응답에서 기다리는 시간이 지나면 작업 ID를 돌려주며, "
+          "같은 도구에 job_id를 넣어 다시 부르면 결과를 읽습니다.",
+          {"path": _PATH, "job_id": _JOB_ID, "device": _DEVICE}, required=[]),
     _tool("pc_search", "폴더 안 이름 검색", "지정 폴더 바로 아래 이름에서 검색어를 찾습니다. 하위 폴더 전체 검색은 아닙니다.",
           {"path": _PATH, "query": {"type": "string", "minLength": 1}, "device": _DEVICE},
           required=["path", "query"]),
-    _tool("pc_read", "파일 읽기", "연결 PC의 파일을 읽습니다.",
-          {"path": _PATH, "device": _DEVICE}, required=["path"]),
+    _tool("pc_read", "파일 읽기",
+          "연결 PC의 파일을 읽습니다. 첫 응답에서 기다리는 시간이 지나면 작업 ID를 돌려주며, "
+          "같은 도구에 job_id를 넣어 다시 부르면 결과를 읽습니다.",
+          {"path": _PATH, "job_id": _JOB_ID, "device": _DEVICE}, required=[]),
     _tool("pc_shell", "PC 명령 실행",
           "연결 PC에서 명령을 실행합니다. 응답 대기 시간이 끝나도 PC 작업은 계속 실행되며, 돌려준 작업 ID로 상태와 출력을 읽거나 중지할 수 있습니다.",
           PC_SHELL_PROPERTIES, mutates=True, required=["command"]),
@@ -153,6 +171,15 @@ def validate_tool_arguments(name, arguments):
     if (not set(tool["inputSchema"]["required"]) <= set(arguments)
             or not set(arguments) <= set(properties)):
         return False
+    if name in PC_FILES_RESUME_TOOLS:
+        # Exactly one of a target path and a job id: a call that names both is
+        # ambiguous, and a call that names neither is not a request at all.
+        names = set(arguments) - {"device"}
+        if names == {"job_id"}:
+            job_id = arguments.get("job_id")
+            return isinstance(job_id, str) and _PC_FILE_JOB_ID.fullmatch(job_id) is not None
+        if names != {"path"}:
+            return False
     valid = all(
         isinstance(arguments[key], str)
         and len(arguments[key]) >= schema.get("minLength", 0)
