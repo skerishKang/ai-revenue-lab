@@ -372,10 +372,11 @@ async def authorize_info(request):
                 request.app.state, "shared_login_flow", None) is not None else "/",
         })
     # The list is the MCP device directory itself, answered by the same
-    # function ``pc_devices`` uses on the same store. A directory that cannot be
-    # read is an error, never an empty list: "no PC connected" has to mean that.
+    # function ``pc_devices`` uses, for the owner id the MCP lanes resolve from
+    # this session. A directory that cannot be read is an error, never an empty
+    # list: "no PC connected" has to mean that.
     try:
-        devices = await owner_devices(request, owner_id=user_id)
+        _owner_id, devices = await _link_directory(request, user_id)
     except McpDeviceRefusal as refusal:
         _LOG.warning("mcp_oauth_device_directory_unavailable reason=%s owner=%s",
                      refusal.code, hashlib.sha256(user_id.encode()).hexdigest()[:8])
@@ -419,7 +420,7 @@ async def authorize_post(request):
     if not is_pc_device_id(device_id):
         return _oauth_error(403, "pc_device_unavailable")
     try:
-        linked_ids = await owner_linked_ids(request, owner_id=user_id)
+        owner_id, linked_ids = await _link_ids(request, user_id)
     except McpDeviceRefusal:
         return _oauth_error(503, "temporarily_unavailable")
     if device_id not in linked_ids:
@@ -450,7 +451,7 @@ async def authorize_post(request):
     store = _store(request)
     try:
         code = await store.create_oauth_code(
-            client_id=validated["client_id"], user_id=user_id, device_id=device_id,
+            client_id=validated["client_id"], user_id=owner_id, device_id=device_id,
             redirect_uri=validated["redirect_uri"], code_challenge=validated["code_challenge"],
             scope=validated["scope"], resource=validated["resource"],
             device_scope=device_scope, device_scope_json=device_scope_json)
@@ -513,6 +514,63 @@ async def register_client(request):
         response["client_secret"] = registered["client_secret"]
         response["client_secret_expires_at"] = 0
     return _json(response, 201)
+
+
+async def _converted_owner_id(request, user_id: str) -> str:
+    """The owner id this session's PC links are keyed by.
+
+    The MCP lanes already make this conversion: the canonical session is
+    resolved the way ``chat_pc_drive._resolve_chat_owner`` does and the
+    identity authority answers ``owner_subject_id`` for it. The consent screen
+    reuses exactly that, so the PC a tool can reach and the PC the owner may
+    approve are looked up for the same owner. When the conversion is
+    unavailable the signed-in product id stands, which is what the screen used
+    before this conversion existed.
+    """
+    from . import chat_pc_drive
+
+    resolver = getattr(chat_pc_drive, "_resolve_chat_owner", None)
+    identity = getattr(request.app.state, "control_plane_identity_authority", None)
+    if not callable(resolver) or not callable(getattr(identity, "resolve_connector_owner_scope", None)):
+        return user_id
+    try:
+        session, _subject_id, _workspace_id = await resolver(request, user_id)
+    except Exception:
+        return user_id
+    session_id = getattr(session, "session_id", None)
+    if not isinstance(session_id, str) or not session_id:
+        return user_id
+    try:
+        scope = await identity.resolve_connector_owner_scope(session_id=session_id)
+    except Exception:
+        return user_id
+    owner_subject_id = scope.get("owner_subject_id") if isinstance(scope, dict) else None
+    return owner_subject_id if isinstance(owner_subject_id, str) and owner_subject_id else user_id
+
+
+async def _link_directory(request, user_id: str):
+    """(owner id, devices) for the consent list, on the links' own owner id."""
+    owner_id = await _converted_owner_id(request, user_id)
+    devices = await owner_devices(request, owner_id=owner_id)
+    if not devices and owner_id != user_id:
+        # A conversion that names an axis with no link rows must not turn a
+        # linked account into "no PC": the session's own product id is the one
+        # fallback, never a second owner.
+        devices = await owner_devices(request, owner_id=user_id)
+        if devices:
+            return user_id, devices
+    return owner_id, devices
+
+
+async def _link_ids(request, user_id: str):
+    """(owner id, active PC ids) for the consent choice, same owner id."""
+    owner_id = await _converted_owner_id(request, user_id)
+    ids = await owner_linked_ids(request, owner_id=owner_id)
+    if not ids and owner_id != user_id:
+        ids = await owner_linked_ids(request, owner_id=user_id)
+        if ids:
+            return user_id, ids
+    return owner_id, ids
 
 
 def _pkce_matches(verifier, challenge):
