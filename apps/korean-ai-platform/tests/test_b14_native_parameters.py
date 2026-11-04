@@ -132,7 +132,9 @@ async def test_platform_completed_exact_native_parameters(google_native_transpor
         transport=httpx.MockTransport(handler),
     )
     assert seen["body"]["model"] == "gemini-3.1-flash-lite"
-    assert seen["body"]["reasoning_effort"] == "low"
+    # #6838: a caller's reasoning value never reaches the platform lane. The
+    # public registry declares no support here, so the option is omitted.
+    assert "reasoning_effort" not in seen["body"]
     assert seen["body"]["max_tokens"] == 65536
     assert "temperature" not in seen["body"]
 
@@ -151,7 +153,9 @@ async def test_platform_rejects_unsupported_before_upstream(monkeypatch):
             provider="ExLab",
             platform_provider_id="experiential",
             messages=[{"role": "user", "content": "hi"}],
-            model_parameters={"reasoning_effort": "xhigh"},
+            # #6838: only the reasoning choice moved to B14's authority; this
+            # other model-native field is still refused before any upstream call.
+            model_parameters={"top_p": 0.5},
             transport=httpx.MockTransport(handler),
         )
 
@@ -182,7 +186,9 @@ async def test_platform_stream_exact_native_parameter_parity(monkeypatch):
     ):
         events.append(event)
     assert seen["body"]["model"] == "gemini-3.1-flash-lite"
-    assert seen["body"]["reasoning_effort"] == "high"
+    # #6838: the platform lane no longer forwards a caller's reasoning value.
+    # This model declares no support in the public registry, so it is omitted.
+    assert "reasoning_effort" not in seen["body"]
     assert seen["body"]["stream"] is True
     assert "temperature" not in seen["body"]
     assert "max_tokens" not in seen["body"]
