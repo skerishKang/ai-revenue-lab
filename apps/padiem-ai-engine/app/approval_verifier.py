@@ -17,6 +17,7 @@ from padiem_ai_core.agent_approval import (
     ApprovalPause,
     VerifiedApprovalDecision,
 )
+from padiem_ai_core.clock_skew import SERVER_CLOCK_SKEW_TOLERANCE
 
 from app.service import ServiceContractError
 
@@ -61,7 +62,10 @@ class AuthenticatedFirstPartyApprovalDecisionVerifier:
                 status_code=400,
             )
         now = datetime.now(timezone.utc)
-        if decided_at > now:
+        if decided_at - now > SERVER_CLOCK_SKEW_TOLERANCE:
+            # decided_at은 Control Plane 경유 제출 시각이고 now는 이 Worker의
+            # 시계다(#6869와 같은 교차 시계 비교). 허용 오차 안의 앞섬은
+            # 받아들이고, 만료·창 검사는 그대로 둔다.
             raise ServiceContractError(
                 "invalid_approval_decision",
                 "Approval decision cannot be from the future.",

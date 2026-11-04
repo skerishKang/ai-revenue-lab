@@ -18,6 +18,8 @@ import re
 from types import MappingProxyType
 from typing import Mapping, Protocol
 
+from padiem_ai_core.clock_skew import SERVER_CLOCK_SKEW_TOLERANCE
+
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
 _CAPABILITY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -227,7 +229,10 @@ def require_trusted_admission(
         raise ExecutionAdmissionError("entitlement_denied", "Trusted execution admission denied the request.")
     if admission.expires_at <= current:
         raise ExecutionAdmissionError("entitlement_expired", "Trusted execution admission is expired.")
-    if admission.issued_at > current:
+    if admission.issued_at - current > SERVER_CLOCK_SKEW_TOLERANCE:
+        # issued_at은 Control Plane이 자기 시계로 찍은 값이다(#6869와 같은
+        # 교차 시계 비교). 허용 오차 안의 앞섬은 받아들이고, 만료 검사는
+        # 그대로 둔다.
         raise ExecutionAdmissionError("invalid_admission", "Trusted execution admission is from the future.")
     if admission.app_id != request.app_id:
         raise ExecutionAdmissionError("entitlement_app_mismatch", "Trusted execution admission app does not match.")

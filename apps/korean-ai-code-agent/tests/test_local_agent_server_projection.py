@@ -133,9 +133,11 @@ class ServerBackedOnlineProjectionTests(unittest.TestCase):
                 heartbeat(current, last_seen_at=current.issued_at - timedelta(seconds=1)),
                 NOW,
             ),
+            # 6875 시계 점검: 기기 허용(300초) 안의 앞섬은 이제 통과하고,
+            # 그 밖의 앞섬만 여기서 거절된다.
             "heartbeat acknowledged in the future": (
                 current,
-                heartbeat(current, last_seen_at=NOW + timedelta(seconds=1)),
+                heartbeat(current, last_seen_at=NOW + timedelta(seconds=301)),
                 NOW,
             ),
             "expired session": (current, heartbeat(current), current.expires_at),

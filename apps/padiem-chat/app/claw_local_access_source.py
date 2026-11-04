@@ -67,6 +67,7 @@ from datetime import datetime, timezone
 from types import MappingProxyType
 from typing import Any, Mapping, Protocol
 
+from padiem_ai_core.clock_skew import DEVICE_CLOCK_SKEW_TOLERANCE
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 from kagent.contracts import ContractError
 from kagent.local_agent_control_plane_runtime import ControlPlaneHeartbeatReceipt
@@ -341,7 +342,10 @@ def project_mesh_online_binding(
         raise ContractError("mesh presence belongs to a different credential generation")
     if not (binding.issued_at <= observed_at < binding.credential_expires_at):
         raise ContractError("mesh presence was not observed inside the binding lifetime")
-    if observed_at > now:
+    if observed_at - now > DEVICE_CLOCK_SKEW_TOLERANCE:
+        # observed_at은 장치 쪽 메시 관측 시각이고 now는 이 Worker의 시계다.
+        # 기기 시계는 정비 상태가 제각각이므로 분 단위 앞섬까지 받아들이고
+        # (#6875 시계 점검), stale 판정은 그대로 둔다.
         raise ContractError("mesh presence observation cannot be in the future")
     if (now - observed_at).total_seconds() > MESH_PRESENCE_MAX_AGE_SECONDS:
         raise ContractError("mesh presence is stale; ONLINE projection is refused")

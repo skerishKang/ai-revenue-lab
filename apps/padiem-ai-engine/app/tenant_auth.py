@@ -43,6 +43,7 @@ from app.execution_admission import (
     TrustedUsageReservation,
     permission_product_id_for_execution_app,
 )
+from padiem_ai_core.clock_skew import SERVER_CLOCK_SKEW_TOLERANCE
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -57,8 +58,10 @@ DEFAULT_MAX_ADMISSION_TTL = timedelta(minutes=5)
 MAX_RESERVATION_UNITS = 1_000_000
 # The Control Plane stamps reserved_at on its own clock. A host whose clock
 # trails the authority by a second must not read an admitted reservation as
-# "from the future" and fail the whole turn closed.
-RESERVATION_CLOCK_SKEW = timedelta(seconds=5)
+# "from the future" and fail the whole turn closed. The tolerance itself is
+# owned by padiem_ai_core.clock_skew so the snapshot path below (#6875 시계
+# 점검) and this reservation path share one number.
+RESERVATION_CLOCK_SKEW = SERVER_CLOCK_SKEW_TOLERANCE
 
 _SNAPSHOT_KEYS = frozenset(
     {"snapshot_id", "product_id", "subject", "revision", "issued_at", "expires_at", "grants"}
@@ -218,7 +221,10 @@ def parse_entitlement_snapshot(
             "entitlement_subject_mismatch",
             "Control Plane entitlement snapshot belongs to a different subject.",
         )
-    if issued_at > now:
+    if issued_at - now > SERVER_CLOCK_SKEW_TOLERANCE:
+        # The Control Plane stamps issued_at on its own clock (#6869와 같은
+        # 교차 시계 비교). 1초 단위의 앞섬은 받아들이고, 허용 오차를 넘는
+        # 분명한 미래 값만 거절한다. 만료 검사는 그대로 둔다.
         raise ExecutionAdmissionError("invalid_admission", "Control Plane entitlement snapshot is from the future.")
     if expires_at <= now:
         raise ExecutionAdmissionError("entitlement_expired", "Control Plane entitlement snapshot is expired.")

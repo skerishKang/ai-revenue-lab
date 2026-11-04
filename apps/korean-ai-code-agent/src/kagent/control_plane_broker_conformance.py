@@ -5,6 +5,8 @@ from datetime import datetime, timezone
 import re
 from typing import Any
 
+from padiem_ai_core.clock_skew import DEVICE_CLOCK_SKEW_TOLERANCE
+
 from .contracts import ContractError
 from .local_agent_command_admission import TrustedDeviceCommandAdmissionEvidence
 from .local_agent_pairing import DeviceCommandEnvelope
@@ -288,7 +290,10 @@ def parse_control_plane_broker_admission(
     expires_at = _timestamp(payload["expires_at"], "expires_at")
     if accepted_at < envelope.issued_at:
         raise ContractError("broker admission cannot predate the command envelope")
-    if accepted_at > now:
+    if accepted_at - now > DEVICE_CLOCK_SKEW_TOLERANCE:
+        # accepted_at은 Control Plane 브로커가 자기 시계로 찍은 값이고 now는
+        # 장치 쪽 검증 시각이다. 기기 시계 흔들림을 허용 오차로 흡수하고
+        # (#6875 시계 점검), 진짜 신선함은 expires_at 검사가 보장한다.
         raise ContractError("broker admission cannot be from the future")
     if expires_at > envelope.expires_at:
         raise ContractError("broker admission cannot outlive the command envelope")

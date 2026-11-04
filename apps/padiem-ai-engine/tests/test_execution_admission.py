@@ -12,6 +12,7 @@ from app.execution_admission import (
     TrustedExecutionAdmission,
     require_trusted_admission,
 )
+from padiem_ai_core.clock_skew import SERVER_CLOCK_SKEW_TOLERANCE
 
 _NOW = datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc)
 
@@ -82,13 +83,25 @@ def test_expired_entitlement_fails_closed() -> None:
 
 
 def test_future_entitlement_fails_closed() -> None:
+    # 서버↔서버 허용 오차(5초)를 넘는 앞섬만 "미래"로 거절한다.
     _assert_rejected(
         "invalid_admission",
         admission=_admission(
-            issued_at=_NOW + timedelta(seconds=1),
+            issued_at=_NOW + SERVER_CLOCK_SKEW_TOLERANCE + timedelta(seconds=1),
             expires_at=_NOW + timedelta(minutes=10),
         ),
     )
+
+
+def test_small_future_entitlement_within_skew_is_admitted() -> None:
+    admission = _admission(
+        issued_at=_NOW + timedelta(seconds=1),
+        expires_at=_NOW + timedelta(minutes=10),
+    )
+
+    result = require_trusted_admission(request=_request(), admission=admission, now=_NOW)
+
+    assert result is admission
 
 
 def test_app_mismatch_fails_closed() -> None:

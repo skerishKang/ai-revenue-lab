@@ -44,6 +44,7 @@ from app.claw_local_access_source import (
 )
 from kagent.contracts import ContractError
 from kagent.local_agent_pairing import DeviceBinding, DeviceLifecycle
+from padiem_ai_core.clock_skew import DEVICE_CLOCK_SKEW_TOLERANCE
 from kagent.local_agent_mesh_failover import DEFAULT_HEARTBEAT_STALE_SECONDS
 
 NOW = datetime(2026, 10, 24, 9, 0, 30, tzinfo=timezone.utc)
@@ -181,7 +182,8 @@ def test_a_stale_mesh_presence_receipt_falls_back_to_paired_offline() -> None:
         project_mesh_online_binding(binding=_binding(), presence=stale, now=NOW)
     assert _canonical(_facts(presence=stale)) is DeviceLifecycle.PAIRED_OFFLINE
 
-    future = _presence(observed_at=NOW + timedelta(seconds=1))
+    # 기기 시계 허용(300초)을 넘는 앞섬만 "미래"로 거절한다.
+    future = _presence(observed_at=NOW + DEVICE_CLOCK_SKEW_TOLERANCE + timedelta(seconds=1))
     with pytest.raises(ContractError):
         project_mesh_online_binding(binding=_binding(), presence=future, now=NOW)
     assert _canonical(_facts(presence=future)) is DeviceLifecycle.PAIRED_OFFLINE
