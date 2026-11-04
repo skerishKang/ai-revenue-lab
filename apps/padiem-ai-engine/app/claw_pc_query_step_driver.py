@@ -320,14 +320,78 @@ async def _signed_files_call(*, service, request_factory, secret, owner, payload
 
 
 
+#: One stage, one sentence. A refused request, a PC-side read failure and a
+#: result that never came back are three different events; until 2026-11-05 all
+#: three carried "등록된 폴더 기준 상대경로만 허용", which read a node_ref
+#: validation refusal as a path problem and cost two investigations.
+_PC_REFUSAL_HINTS = {
+    # The executor's PC_FILE_READ_REFUSED_MARKER: this host refused the request.
+    "pc_file_read_failed_refused_local": (
+        "PC 파일 읽기 요청이 PC로 보내지기 전에 검증에서 거부되었습니다"
+        "(기기 참조·경로 형식). 폴더 범위 제한 문제로 단정하지 마세요. "
+        "실행 결과를 추정하거나 같은 작업을 재전송하지 마세요."
+    ),
+    # The executor's PC_FILE_READ_FAILED_MARKER: the request reached the PC.
+    "pc_file_read_failed": (
+        "PC로 요청은 전달됐지만 파일을 읽지 못했습니다"
+        "(없는 파일·전송 실패 등 PC 쪽 사유). 경로 규칙 위반으로 단정하지 마세요. "
+        "실행 결과를 추정하거나 같은 작업을 재전송하지 마세요."
+    ),
+    "pc_file_too_large": (
+        "파일이 한 번에 읽는 크기를 넘었습니다. 구간 읽기로 이어가야 합니다. "
+        "실행 결과를 추정하거나 같은 작업을 재전송하지 마세요."
+    ),
+}
+#: The PC ran, but the answer never came back to this lane.
+_PC_REFUSAL_RESULT_HINT = (
+    "PC 작업은 접수됐지만 결과를 가져오지 못했습니다(결과 조회 실패). 경로 문제가 아닙니다. "
+    "실행 결과를 추정하거나 같은 작업을 재전송하지 마세요."
+)
+#: The only stages where the registered-root sentence is the true one.
+_PC_REFUSAL_PATH_HINT = (
+    "PC 작업이 거부되었거나 실패했습니다. 등록된 폴더 기준 상대경로만 허용됩니다. "
+    "실행 결과를 추정하거나 같은 작업을 재전송하지 마세요."
+)
+_PC_REFUSAL_GENERIC_HINT = (
+    "PC 작업이 거부되었거나 실패했습니다. 실행 결과를 추정하거나 같은 작업을 재전송하지 마세요."
+)
+_PC_RESULT_LOOKUP_STAGES = frozenset({
+    "pc_files_output_missing",
+    "pc_files_result_mismatch",
+    "pc_files_result_unknown",
+    "pc_files_dispatch_missing",
+    "pc_files_dispatch_unavailable",
+    "pc_files_run_unavailable",
+})
+_PC_PATH_RULE_STAGES = frozenset({
+    "pc_file_arguments_invalid",
+    "pc_files_path_invalid",
+    "pc_files_root_unavailable",
+    "pc_files_search_invalid",
+    "pc_chunk_arguments_invalid",
+    "pc_files_denied",
+})
+
+
+def _pc_refusal_hint(stage) -> str:
+    """The one sentence a closed stage may claim, never a guess at the cause."""
+    known = _PC_REFUSAL_HINTS.get(stage) if isinstance(stage, str) else None
+    if known is not None:
+        return known
+    if stage in _PC_RESULT_LOOKUP_STAGES:
+        return _PC_REFUSAL_RESULT_HINT
+    if stage in _PC_PATH_RULE_STAGES:
+        return _PC_REFUSAL_PATH_HINT
+    return _PC_REFUSAL_GENERIC_HINT
+
+
 def _pc_refusal(stage):
     """Closed diagnostic data only: no exception message, path or output."""
     owner = _PC_QUERY_OWNER.get()
     if isinstance(owner, tuple) and len(owner) == 4:
         emit = _PC_CALL_PROGRESS.get() or _pc_progress_emitter(owner, "not_dispatched", "command")
         emit("refused")
-    return {"ok": False, "stage": stage,
-            "hint": "PC 작업이 거부되었거나 실패했습니다. 등록된 폴더 기준 상대경로만 허용됩니다. 실행 결과를 추정하거나 같은 작업을 재전송하지 마세요."}
+    return {"ok": False, "stage": stage, "hint": _pc_refusal_hint(stage)}
 
 
 def _pc_observing_handler(handler, *, tool_id, unexpected_stage="pc_files_internal_error"):

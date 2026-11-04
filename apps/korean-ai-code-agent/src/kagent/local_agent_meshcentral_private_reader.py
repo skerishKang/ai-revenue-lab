@@ -137,6 +137,17 @@ class MeshCentralReadRefused(ValueError):
     """Bounded refusal of one private read. Never carries content or secrets."""
 
 
+class MeshCentralReadRequestRefused(MeshCentralReadRefused):
+    """This host refused the request before the official client ran.
+
+    Kept apart from the generic refusal so the executor can report a refused
+    request (node_ref, file_path, a bound) as the local validation event it is,
+    instead of the same marker a PC-side download failure leaves. Until
+    2026-11-05 both arrived as ``read_failed``, and a report read that one body
+    as a missing file or a path-rule violation.
+    """
+
+
 class MeshCentralReadTooLarge(MeshCentralReadRefused):
     """The staged read exceeded the caller's bound and was refused whole.
 
@@ -156,7 +167,8 @@ _DOWNLOAD_MONITOR_SECONDS = 0.02
 
 def _safe_ref(value: Any, field_name: str) -> str:
     if not isinstance(value, str) or _SAFE_REF_RE.fullmatch(value) is None:
-        raise MeshCentralReadRefused(f"{field_name} must be a bounded safe reference")
+        raise MeshCentralReadRequestRefused(
+            f"{field_name} must be a bounded safe reference")
     return value
 
 
@@ -168,11 +180,11 @@ def _windows_file_path(value: Any) -> str:
     """
 
     if not isinstance(value, str) or not value.strip():
-        raise MeshCentralReadRefused("file_path must be non-empty text")
+        raise MeshCentralReadRequestRefused("file_path must be non-empty text")
     if len(value) > _MAX_FILE_PATH_CHARS:
-        raise MeshCentralReadRefused("file_path exceeds the bounded length")
+        raise MeshCentralReadRequestRefused("file_path exceeds the bounded length")
     if any(ord(character) < 32 for character in value):
-        raise MeshCentralReadRefused("file_path carries a control character")
+        raise MeshCentralReadRequestRefused("file_path carries a control character")
     return value
 
 
@@ -410,9 +422,9 @@ class MeshCentralCliFileReadPort:
     ) -> bytes:
         request = MeshCentralFileReadRequest(node_ref=node_ref, file_path=file_path)
         if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, int):
-            raise MeshCentralReadRefused("timeout_seconds must be an integer")
+            raise MeshCentralReadRequestRefused("timeout_seconds must be an integer")
         if isinstance(max_bytes, bool) or not isinstance(max_bytes, int) or max_bytes < 1:
-            raise MeshCentralReadRefused("max_bytes must be a positive integer")
+            raise MeshCentralReadRequestRefused("max_bytes must be a positive integer")
         target = os.path.join(
             self._work_dir, f"padiem-mesh-read-{os.getpid()}-{uuid4().hex}.bin"
         )

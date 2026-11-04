@@ -27,7 +27,10 @@ from datetime import datetime, timezone
 from typing import Any, Callable, Optional
 
 from .contracts import ContractError
-from .local_agent_meshcentral_private_reader import MeshCentralReadTooLarge
+from .local_agent_meshcentral_private_reader import (
+    MeshCentralReadRequestRefused,
+    MeshCentralReadTooLarge,
+)
 from .reparse_guard import walk_hits_reparse_point
 
 #: Same path the Chat worker mounts. Executor and server must agree exactly.
@@ -164,6 +167,10 @@ PC_FILE_TOO_LARGE_MARKER = PC_FILE_ERROR_PREFIX + "too_large"
 #: whole read before the download starts (the PC-side ReparsePoint walk).
 PC_FILE_LINK_REFUSED_MARKER = PC_FILE_ERROR_PREFIX + "link_refused"
 PC_FILE_READ_FAILED_MARKER = PC_FILE_ERROR_PREFIX + "read_failed"
+#: A request this host refused before the client ran. Same read lane, but a
+#: different event: the PC was never asked, so the wording that surfaces it
+#: must not read as a missing file or a registered-root violation.
+PC_FILE_READ_REFUSED_MARKER = PC_FILE_ERROR_PREFIX + "read_failed_refused_local"
 #: How much of a refusal's own message reaches the trace. The reason is what a
 #: silent read_failed cost on 2026-10-30; the bound keeps one line one line.
 _ERROR_TEXT_CHARS = 160
@@ -836,6 +843,15 @@ class OracleMeshExecutor:
             return OracleMeshExecutionOutcome(
                 termination="exited", exit_code=1,
                 body=PC_FILE_TOO_LARGE_MARKER.encode("utf-8"),
+            )
+        except MeshCentralReadRequestRefused as exc:
+            # Validation refused the request here: no client ran, no PC was
+            # contacted. Reporting this as read_failed hid that distinction.
+            self._trace_read(dispatch, "read_refused", started,
+                             error=_safe_error_text(exc))
+            return OracleMeshExecutionOutcome(
+                termination="exited", exit_code=1,
+                body=PC_FILE_READ_REFUSED_MARKER.encode("utf-8"),
             )
         except Exception as exc:
             # The class and a bounded message are the only explanation a refused
@@ -2083,6 +2099,7 @@ __all__ = [
     "MAX_READ_BYTES",
     "PC_FILE_ERROR_PREFIX",
     "PC_FILE_READ_FAILED_MARKER",
+    "PC_FILE_READ_REFUSED_MARKER",
     "PC_FILE_TOO_LARGE_MARKER",
     "POLL_PATH",
     "PRODUCT_USER_AGENT",
