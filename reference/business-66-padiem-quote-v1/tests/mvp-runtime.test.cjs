@@ -186,17 +186,17 @@ function buildAccountEnv({ signedIn, withSkill, withProfile, profile }) {
       return jsonResponse({ company_profile: runtimeProfile });
     }
     if (target.endsWith("/api/padiem/b66/quote/models")) {
+      // #6828: grade keys only; the model behind the grade stays server-side.
       return jsonResponse({
-        ok: true, models: [{ model_id: SELECTED_MODEL_ID, name: "Beam Free" }],
-        default_model_id: null,
-        tiers: [{tier:"free", name:"PADIEM Free", model_id:SELECTED_MODEL_ID}],
+        ok: true,
+        tiers: [{tier:"free", name:"PADIEM Free"}],
         default_tier: null
       });
     }
     if (target.endsWith("/api/padiem/b66/quote/interpret")) {
       const body = JSON.parse(opts.body || "{}");
-      assert.equal(body.model_id, SELECTED_MODEL_ID, "selected grade resolves Beam Free");
       assert.equal(body.tier,"free","selected grade forwarded to B14");
+      assert.equal("model_id" in body, false, "#6828: the browser never names a model");
       if (!body.message || !body.saved_skill_id) {
         return jsonResponse({ ok: false, error: { code: "quote_input_unrecognized" } }, 422);
       }

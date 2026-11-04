@@ -172,11 +172,9 @@ async def main() -> int:
                                  "user": {"id": "sidebar-user", "email": EMAIL},
                                  "methods": {"google": True, "password": False}},
                 "/b66/quote/models": {
+                    # #6828: the grade answer carries grade keys only.
                     "ok": True,
-                    "models": [{"model_id": MODEL_ID, "name": "Free",
-                                "reasoning_levels": [{"value": "default", "label": "기본"}]}],
-                    "default_model_id": None,
-                    "tiers": [{"tier": "free", "name": "시지아이 Free", "model_id": MODEL_ID,
+                    "tiers": [{"tier": "free", "name": "시지아이 Free",
                                "reasoning_levels": [{"value": "default", "label": "기본"}]}],
                     "default_tier": "free"},
                 "/b66/company-profile": {"ok": True, "company_profile": {

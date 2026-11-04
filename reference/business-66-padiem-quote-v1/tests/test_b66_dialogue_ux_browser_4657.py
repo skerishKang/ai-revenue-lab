@@ -233,14 +233,11 @@ def _reset_state() -> None:
         },
         "/b66/admin/me": {"ok": True, "admin": False},
         "/b66/quote/models": {
+            # #6828: grade keys only; the raw catalog and any model identity
+            # stay server-side, so nothing here can leak an identity to the UI.
             "ok": True,
-            "models": [{
-                "model_id": MODEL_ID, "name": "Beam Free",
-                "reasoning_levels": [{"value": "default", "label": "기본(제공자 기본값)"}],
-            }],
-            "default_model_id": None,
             "tiers": [
-                {"tier": t, "name": "PADIEM " + t.capitalize(), "model_id": MODEL_ID,
+                {"tier": t, "name": "PADIEM " + t.capitalize(),
                  "reasoning_levels": [{"value": "default", "label": "기본(제공자 기본값)"}]}
                 for t in ("free", "plus", "pro", "max")
             ],

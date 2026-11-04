@@ -83,7 +83,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if path == "/api/padiem/b66/quotes":
             return self.respond({"ok": True, "quotes": []})
         if path == "/api/padiem/b66/quote/models":
-            return self.respond({"ok": True, "models": [], "default_model_id": None})
+            # #6828: grade keys only.
+            return self.respond({"ok": True, "tiers": [], "default_tier": None})
         return self.respond({"ok": False, "error": {"code": "not_stubbed"}}, 404)
 
     def do_PUT(self):

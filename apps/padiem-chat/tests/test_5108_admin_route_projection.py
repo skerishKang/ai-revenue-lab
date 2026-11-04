@@ -335,10 +335,12 @@ def test_b66_model_list_keeps_the_applied_grade_when_the_product_grant_list_excl
     assert response.status_code == 200
     tiers = response.json()["tiers"]
     assert [row["tier"] for row in tiers] == ["free"]
-    assert tiers[0]["model_id"] == APPLIED
+    # #6828: the applied route still decides which grade is offered, but the
+    # grade row no longer names it. The route is proved where it runs, in the
+    # dispatch tests below.
+    assert set(tiers[0]) == {"tier", "name", "reasoning_levels"}
     assert response.json()["default_tier"] == "free"
-    # The product-local grant list still narrows the free-choice models.
-    assert [row["model_id"] for row in response.json()["models"]] == [UNRELATED]
+    assert "models" not in response.json() and "default_model_id" not in response.json()
 
 
 def test_b66_model_list_still_honours_the_global_model_off_list():

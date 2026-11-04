@@ -185,7 +185,6 @@
     state.user = null;
     state.skills = [];
     state.quoteModels = [];
-    state.quoteModelByTier = {};
     state.quoteReasoningByModel = {};
     const modelSelect = byId("padiemQuoteModelSelect");
     if (modelSelect) {
@@ -309,7 +308,6 @@
     const select = byId("padiemQuoteModelSelect");
     if (!select) return;
     state.quoteModels = [];
-    state.quoteModelByTier = {};
     select.replaceChildren();
     select.addEventListener("change", syncReasoningOptions);
     const placeholder = document.createElement("option");
@@ -321,11 +319,9 @@
       const result = await api("/b66/quote/models");
       if (!result.response.ok || !result.data || result.data.ok !== true ||
           !Array.isArray(result.data.tiers)) return;
-      const safeId = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$/;
       const knownTiers = new Set(["free", "plus", "pro", "max", "admin"]);
       const records = result.data.tiers.filter((row) =>
         row && knownTiers.has(row.tier) &&
-        typeof row.model_id === "string" && safeId.test(row.model_id) &&
         typeof row.name === "string"
       );
       records.forEach((row) => {
@@ -334,8 +330,9 @@
         option.textContent = row.name;
         select.append(option);
       });
+      // #6828: the browser keeps grade keys only. The model behind a grade is
+      // resolved by the server, so no model identity is stored or sent here.
       state.quoteModels = records.map((row) => row.tier);
-      state.quoteModelByTier = Object.fromEntries(records.map((row) => [row.tier, row.model_id]));
       state.quoteReasoningByModel = {};
       records.forEach((row) => {
         state.quoteReasoningByModel[row.tier] = Array.isArray(row.reasoning_levels)
@@ -363,9 +360,9 @@
      level that the new model does not support can never be submitted. The
      provider default is always first and is the initial choice; no recommended
      level is auto-applied and nothing is persisted per user. */
-  function reasoningOptionsForModel(modelId) {
-    if (typeof modelId !== "string" || !state.quoteModels.includes(modelId)) return [];
-    const levels = state.quoteReasoningByModel[modelId];
+  function reasoningOptionsForGrade(grade) {
+    if (typeof grade !== "string" || !state.quoteModels.includes(grade)) return [];
+    const levels = state.quoteReasoningByModel[grade];
     if (!Array.isArray(levels) || !levels.length) return [];
     const fallback = [{ value: "default", label: "\uAE30\uBCF8(\uC81C\uACF5\uC790 \uAE30\uBCF8\uAC12)" }];
     const allowed = /^[a-z0-9-]{1,32}$/;
@@ -379,10 +376,10 @@
   /* #3906: the reasoning choice actually being offered for this exact model.
      Returns "" when the control has no option for the model, so the request
      keeps the pre-#3906 shape instead of inventing an unsupported level. */
-  function selectedReasoningLevel(modelId) {
+  function selectedReasoningLevel(grade) {
     const reasoningSelect = byId("padiemQuoteReasoningSelect");
     if (!reasoningSelect) return "";
-    const options = reasoningOptionsForModel(modelId);
+    const options = reasoningOptionsForGrade(grade);
     if (!options.length) return "";
     const current = reasoningSelect.value;
     return options.some((level) => level.value === current) ? current : "";
@@ -392,7 +389,7 @@
     const modelSelect = byId("padiemQuoteModelSelect");
     const reasoningSelect = byId("padiemQuoteReasoningSelect");
     if (!modelSelect || !reasoningSelect) return;
-    const options = reasoningOptionsForModel(modelSelect.value);
+    const options = reasoningOptionsForGrade(modelSelect.value);
     reasoningSelect.replaceChildren();
     options.forEach((level) => {
       const option = document.createElement("option");
@@ -808,8 +805,7 @@
     try {
       const select = byId("padiemQuoteModelSelect");
       const selectedTier = select && select.value;
-      const modelId = state.quoteModelByTier[selectedTier];
-      if (!modelId || !state.quoteModels.includes(selectedTier)) {
+      if (!selectedTier || !state.quoteModels.includes(selectedTier)) {
         return { ok: false, code: "model_selection_required" };
       }
       if (action === "state") {
@@ -823,7 +819,7 @@
         return { ok: false, code: "invalid_revision" };
       }
       const payload = {
-        model_id: modelId, tier: selectedTier,
+        tier: selectedTier,
         action: action === "message" ? "message" : action,
         revision: opts.revision
       };
@@ -859,14 +855,13 @@
     if (!state.authenticated) return { ok: false, code: "unauthorized" };
     const select = byId("padiemQuoteModelSelect");
     const selectedTier = select && select.value;
-    const modelId = state.quoteModelByTier[selectedTier];
-    if (!modelId || !state.quoteModels.includes(selectedTier)) {
+    if (!selectedTier || !state.quoteModels.includes(selectedTier)) {
       return { ok: false, code: "model_selection_required" };
     }
     if (!Array.isArray(messages) || !messages.length) {
       return { ok: false, code: "invalid_messages" };
     }
-    const payload = { model_id: modelId, tier: selectedTier, messages };
+    const payload = { tier: selectedTier, messages };
     const reasoningLevel = selectedReasoningLevel(selectedTier);
     if (reasoningLevel) payload.reasoning_level = reasoningLevel;
     /* #4657: continuing an existing B66 dialogue. The id is opaque to the
@@ -887,15 +882,18 @@
         body: JSON.stringify(payload)
       });
       const data = result.data;
+      /* #6828: the browser chose a grade, so it has no model identity to
+         compare. The server-attested execution origin is what this response is
+         checked against; grade enforcement itself stays on the server. */
       if (!result.response.ok || !data || data.ok !== true ||
           typeof data.answer !== "string" || !data.answer.trim() ||
-          data.model_id !== modelId || data.model_origin !== "registered_model_completion") {
+          data.model_origin !== "registered_model_completion") {
         return { ok: false, code: data && data.error && data.error.code || "ai_chat_unavailable" };
       }
       return {
         ok: true,
         answer: data.answer,
-        model_id: modelId,
+        tier: selectedTier,
         /* #4657: the server-owned id of the conversation this answer belongs to.
            Absent when the answer could not be stored, so the browser never
            invents a dialogue id of its own. */
@@ -991,8 +989,7 @@
     /* 진행 중인 견적이 있으면 원문과 합쳐 한 번에 다시 해석한다(서버는 stateless). */
     const modelSelect = byId("padiemQuoteModelSelect");
     const selectedTier = modelSelect && modelSelect.value;
-    const modelId = state.quoteModelByTier[selectedTier];
-    if (!modelId || !state.quoteModels.includes(selectedTier)) {
+    if (!selectedTier || !state.quoteModels.includes(selectedTier)) {
       return { ok: false, code: "model_selection_required" };
     }
     let message = text;
@@ -1012,13 +1009,13 @@
       }
     }
 
-    /* #3906: forward the user's explicit reasoning choice alongside the exact
-       model. Omission keeps the pre-#3906 byte layout; the field is only sent
-       when the control actually offers a level for THIS model. */
+    /* #3906: forward the user's explicit reasoning choice alongside the chosen
+       grade. Omission keeps the pre-#3906 byte layout; the field is only sent
+       when the control actually offers a level for this grade. #6828: the grade
+       key is the whole choice the browser makes. */
     const payload = {
       saved_skill_id: state.loadedSkill.savedSkillId,
       message,
-      model_id: modelId,
       tier: selectedTier
     };
     const reasoningLevel = selectedReasoningLevel(selectedTier);

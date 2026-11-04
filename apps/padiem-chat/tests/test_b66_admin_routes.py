@@ -110,7 +110,11 @@ async def test_http_admin_authority_and_model_policy_rollout_guard():
         assert changed.json()["policy"]["disabled_models"] == ["deepseek/deepseek-chat"]
         visible=await client.get("/api/b66/quote/models",cookies=token(legacy))
         assert visible.status_code==200, visible.text
-        assert [m["model_id"] for m in visible.json()["models"]] == ["google/gemini-3.5-flash-lite"]
+        # #6828: the member view carries grade keys only. An OFF model cannot
+        # be picked from it because no identity is listed there any more, so the
+        # OFF switch is proved by the refusal below instead of by a list.
+        assert "models" not in visible.json() and "default_model_id" not in visible.json()
+        assert all("model_id" not in row for row in visible.json()["tiers"])
         direct=await client.post("/api/b66/quote/interpret",cookies=token(legacy),json={
             "model_id":"deepseek/deepseek-chat","saved_skill_id":"fake-saved-skill",
             "message":"견적 만들어줘"
@@ -209,12 +213,12 @@ async def test_global_off_is_enforced_without_membership_rollout_and_restored_on
         assert saved.status_code == 200, saved.text
         assert saved.json()["policy"]["disabled_models"] == ["deepseek/deepseek-chat"]
 
-        # The picker excludes OFF models without changing membership status.
+        # The member picker keeps exposing grade keys only; the OFF switch is
+        # proved by the dispatch refusal below.
         picker = await client.get("/api/b66/quote/models", cookies=cookie(legacy))
         assert picker.status_code == 200, picker.text
-        assert [m["model_id"] for m in picker.json()["models"]] == [
-            "google/gemini-3.5-flash-lite"
-        ]
+        assert "models" not in picker.json()
+        assert all("model_id" not in row for row in picker.json()["tiers"])
         # Direct crafted POST cannot bypass OFF, even with the precise ID.
         dispatch = await client.post(
             "/api/b66/quote/interpret", cookies=cookie(legacy),
@@ -227,7 +231,8 @@ async def test_global_off_is_enforced_without_membership_rollout_and_restored_on
         assert dispatch.status_code == 403
         assert dispatch.json()["error"]["code"] == "model_disabled"
 
-        # Turning it back ON unblocks the picker; no provider call is needed.
+        # Turning it back ON unblocks the same dispatch; no provider call is
+        # needed to show the switch moved, and the picker still names no model.
         policy["disabled_models"] = []
         policy["expected_revision"] += 1
         restored = await client.put(
@@ -236,9 +241,17 @@ async def test_global_off_is_enforced_without_membership_rollout_and_restored_on
         assert restored.status_code == 200
         picker = await client.get("/api/b66/quote/models", cookies=cookie(legacy))
         assert picker.status_code == 200
-        assert {m["model_id"] for m in picker.json()["models"]} == {
-            "google/gemini-3.5-flash-lite", "deepseek/deepseek-chat"
-        }
+        assert "models" not in picker.json()
+        off_model = saved.json()["policy"]["disabled_models"][0]
+        after_restore = await client.post(
+            "/api/b66/quote/interpret", cookies=cookie(legacy),
+            json={
+                "saved_skill_id": "fake-skill",
+                "message": "견적서를 작성해줘",
+                "model_id": off_model,
+            },
+        )
+        assert after_restore.json().get("error", {}).get("code") != "model_disabled"
 
 
 @pytest.mark.asyncio

@@ -177,20 +177,20 @@ function buildAccountEnv(options) {
         return jsonResponse({ company_profile: CGI_PROFILE });
       }
       if (target.endsWith("/api/padiem/b66/quote/models")) {
-        // Registered selection in a test fixture; user still explicitly
-        // selects the exact model before generating a quote.
+        // #6828: the grade answer carries grade keys only. The fixture still
+        // simulates a real user choosing a grade before generating a quote.
         return jsonResponse({
           ok: true,
-          models: [{ model_id: SELECTED_MODEL_ID, name: "Beam Free" }],
-          default_model_id: null,
-          tiers: [{ tier: "free", name: "PADIEM Free", model_id: SELECTED_MODEL_ID }],
+          tiers: [{ tier: "free", name: "PADIEM Free" }],
           default_tier: null
         });
       }
       if (target.endsWith("/api/padiem/b66/quote/interpret")) {
         const body = JSON.parse(opts.body || "{}");
-        assert.equal(body.model_id, SELECTED_MODEL_ID,
-          "explicit user choice is submitted independently of quote text");
+        assert.equal(body.tier, "free",
+          "the chosen grade key is submitted independently of quote text");
+        assert.equal("model_id" in body, false,
+          "#6828: the browser never names a model");
         assert.equal(body.tier, "free", "the customer selected Free grade");
         interpretBodies.push(body.message);
         if (config.transientFailureTurn === interpretBodies.length) {

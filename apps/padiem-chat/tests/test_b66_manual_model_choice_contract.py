@@ -63,7 +63,55 @@ def test_no_model_selected_returns_400_before_interpreter_call():
     assert fake.calls == []
 
 
-def test_quote_model_options_require_authentication_and_no_store():
+class _Recording:
+    """Captures what the server resolved, then stops before any dispatch."""
+
+    def __init__(self):
+        self.seen = []
+
+    async def interpret(self, **kwargs):
+        self.seen.append(kwargs)
+        raise RuntimeError("stop-after-capture")
+
+
+def test_grade_key_alone_is_a_complete_choice():
+    recording = _Recording()
+    client = _client(_Store(), recording)
+    client.post("/api/b66/quote/interpret", json={
+        "saved_skill_id": SAVED_ID, "message": "synthetic quote", "tier": "free",
+    })
+    # The grade key reached the dispatcher and the server named the model for
+    # it; the browser never sent an identity of its own.
+    assert len(recording.seen) == 1
+    resolved = recording.seen[0]
+    assert resolved["model_id"] and resolved["product_tier"] == "free"
+
+
+def test_transition_model_id_is_accepted_only_when_it_matches_the_grade():
+    recording = _Recording()
+    _client(_Store(), recording).post("/api/b66/quote/interpret", json={
+        "saved_skill_id": SAVED_ID, "message": "synthetic quote", "tier": "free",
+    })
+    assert recording.seen
+    grade_model = recording.seen[0]["model_id"]
+
+    accepted = _Recording()
+    _client(_Store(), accepted).post("/api/b66/quote/interpret", json={
+        "saved_skill_id": SAVED_ID, "message": "synthetic quote",
+        "tier": "free", "model_id": grade_model,
+    })
+    assert len(accepted.seen) == 1 and accepted.seen[0]["model_id"] == grade_model
+
+    refused = _client(_Store(), _Recording())
+    mismatch = refused.post("/api/b66/quote/interpret", json={
+        "saved_skill_id": SAVED_ID, "message": "synthetic quote",
+        "tier": "free", "model_id": "test-fixture/second-ready-model",
+    })
+    assert mismatch.status_code == 400
+    assert mismatch.json()["error"]["code"] == "invalid_model_id"
+
+
+def test_quote_model_options_require_authentication_and_carry_no_model_identity():
     denied = _client(_Store(), _Interpreter(), signed_in=False)
     assert denied.get("/api/b66/quote/models").status_code == 401
     authenticated = _client(_Store(), _Interpreter())
@@ -73,32 +121,20 @@ def test_quote_model_options_require_authentication_and_no_store():
     authenticated.app.state.b66_quote_model_resolver = TrustedOptions()
     response = authenticated.get("/api/b66/quote/models")
     assert response.status_code == 200
-    assert response.json() == {
-        "ok": True,
-        "models": [
-            {
-                "model_id": MODEL,
-                "name": "registered",
-                # #3906: every row advertises only the reasoning levels that
-                # model may actually use. With #3977 still unattested, that is
-                # the single fail-closed provider default, never a guess.
-                "reasoning_levels": [{"value": "default", "label": "기본(제공자 기본값)"}],
-            }
-        ],
-        "default_model_id": None,
-        "tiers": [],
-        "default_tier": None,
-    }
+    # #6828: the customer response is grade keys only. The registered catalog
+    # stays server-side and still decides whether a grade is offerable, but no
+    # model identity crosses to the browser and nothing is preselected for the
+    # customer here.
+    assert response.json() == {"ok": True, "tiers": [], "default_tier": None}
     assert "no-store" in response.headers["cache-control"].lower()
-    # A default is OPTIONAL and only a prefilled UI choice, not an automatic
-    # backend route. An unregistered default cannot be advertised.
+    # A host-configured model default can no longer smuggle an identity back
+    # into the customer response.
     authenticated.app.state.b66_quote_default_model_id = MODEL
-    assert authenticated.get("/api/b66/quote/models").json()["default_model_id"] == MODEL
-    authenticated.app.state.b66_quote_default_model_id = "unregistered/owner-suggestion"
-    assert authenticated.get("/api/b66/quote/models").json()["default_model_id"] is None
+    after = authenticated.get("/api/b66/quote/models").json()
+    assert "default_model_id" not in after and "models" not in after
 
 
-def test_dual_b66_ui_sends_exact_user_choice_and_no_implicit_default():
+def test_dual_b66_ui_sends_the_grade_key_and_no_model_identity():
     root = Path(__file__).resolve().parents[3]
     sources = [
         root / "reference/business-66-padiem-quote-v1/padiem-account.js",
@@ -107,7 +143,11 @@ def test_dual_b66_ui_sends_exact_user_choice_and_no_implicit_default():
     for src in sources:
         content = src.read_text(encoding="utf-8")
         assert "ModelSelect" in content
-        assert "model_id: modelId" in content
+        # #6828: the browser chooses a grade. It never stores a model identity
+        # and never sends one, so there is nothing for a browser-side bug to
+        # leak or for a crafted request to disagree with the chosen grade.
+        assert "model_id" not in content
+        assert "tier: selectedTier" in content
         assert 'select.value = ""' in content or '? configured : ""' in content
     html = (root / "reference/business-66-padiem-quote-v1/index.html").read_text(encoding="utf-8")
     assert 'id="padiemQuoteModelSelect"' in html
@@ -132,7 +172,10 @@ def test_b66_customer_dropdown_shows_grades_with_grade_models_not_provider_names
     assert only_free.status_code == 200
     assert [t["tier"] for t in only_free.json()["tiers"]] == ["free"]
     assert [t["name"] for t in only_free.json()["tiers"]] == ["시지아이 Free"]
-    assert [t["model_id"] for t in only_free.json()["tiers"]] == ["google/gemini-3.1-flash-lite"]
+    # The grade row no longer names what runs behind it; the catalog above is
+    # still what decides that only this grade is offerable.
+    assert all(set(t) == {"tier", "name", "reasoning_levels"}
+               for t in only_free.json()["tiers"])
 
     class GoogleGradeModels:
         async def list_selectable_models(self):
@@ -147,12 +190,8 @@ def test_b66_customer_dropdown_shows_grades_with_grade_models_not_provider_names
     assert [t["tier"] for t in data["tiers"]] == ["free", "plus", "pro", "max"]
     assert [t["name"] for t in data["tiers"]] == [
         "시지아이 Free", "시지아이 Plus", "시지아이 Pro", "시지아이 Max"]
-    assert [t["model_id"] for t in data["tiers"]] == [
-        "google/gemini-3.1-flash-lite",
-        "google/gemini-3.5-flash-lite",
-        "google/gemini-3.5-flash-lite",
-        "google/gemini-3.5-flash-lite",
-    ]
+    assert all("model_id" not in t for t in data["tiers"])
+    assert set(data) == {"ok", "tiers", "default_tier"}
     assert data["default_tier"] == "free"
     root = Path(__file__).resolve().parents[3]
     for path in (root / "apps/padiem-chat/static/b66-quote-runtime.js",
@@ -198,10 +237,29 @@ def test_b66_admin_option_needs_central_verification_and_uses_the_shared_admin_r
     rows = admin.get("/api/b66/quote/models").json()["tiers"]
     admin_row = next(t for t in rows if t["tier"] == B66_ADMIN_GRADE)
     assert admin_row["name"] == "Padiem 관리자"
-    # B66 and Chat share the same server-verified admin primary.
+    assert "model_id" not in admin_row
+
+    # B66 and Chat share the same server-verified admin primary. The proof
+    # stays in this file, but on the side where the identity legitimately
+    # lives: the dispatcher the server resolved for this grade, never the
+    # browser response.
     from app.model_policy import ADMIN_B14_MODEL_ID
 
-    assert admin_row["model_id"] == ADMIN_B14_MODEL_ID
+    seen: list[dict] = []
+
+    class _Recording:
+        async def interpret(self, **kwargs):
+            seen.append(kwargs)
+            raise RuntimeError("stop-after-capture")
+
+    dispatching = _client(_Store(), _Recording())
+    dispatching.app.state.b66_member_admin_store = _VerifiedAdmin()
+    dispatching.post(
+        "/api/b66/quote/interpret",
+        json={"saved_skill_id": SAVED_ID, "message": "synthetic",
+              "tier": B66_ADMIN_GRADE},
+    )
+    assert seen and seen[0]["model_id"] == ADMIN_B14_MODEL_ID
 
 
 class _GoogleGradeModels:

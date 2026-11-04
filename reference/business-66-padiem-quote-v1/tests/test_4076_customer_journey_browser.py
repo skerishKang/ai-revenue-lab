@@ -261,21 +261,11 @@ async def open_session(page, base: str, skill: dict, fingerprint: str) -> dict:
             "methods": {"google": True, "password": False},
         },
         "/b66/quote/models": {
+            # #6828: the grade answer carries grade keys only. No model
+            # identity, and no raw catalog list, reaches the browser.
             "ok": True,
-            "models": [
-                {
-                    "model_id": MODEL_ID,
-                    "name": "Beam Free",
-                    "reasoning_levels": [
-                        {"value": "default", "label": "기본(제공자 기본값)"},
-                        {"value": "low", "label": "낮음"},
-                    ],
-                }
-            ],
-            "default_model_id": None,
             "tiers": [
                 {"tier": tier, "name": "PADIEM " + tier.capitalize(),
-                 "model_id": MODEL_ID,
                  "reasoning_levels": [{"value": "default", "label": "기본(제공자 기본값)"}]}
                 for tier in ("free", "plus", "pro", "max")
             ],
@@ -538,12 +528,15 @@ async def main() -> int:
             elif totals.get("grand") != totals.get("supply", 0) + totals.get("vat", 0):
                 failures.append("quote_core_grand_mismatch")
 
-            # The exact model the customer chose is what reached the API.
+            # #6828: the customer chose a grade, so the grade key is what must
+            # reach the API — and no model identity may ever leave the browser.
             requests = JourneyHandler.state["interpretRequests"]
-            report["interpret_request_models"] = [row.get("model_id") for row in requests]
+            report["interpret_request_tiers"] = [row.get("tier") for row in requests]
             report["interpret_request_reasoning"] = [row.get("reasoning_level") for row in requests]
-            if not requests or any(row.get("model_id") != MODEL_ID for row in requests):
-                failures.append("model_id_not_preserved")
+            if not requests or any(row.get("tier") != "free" for row in requests):
+                failures.append("grade_key_not_preserved")
+            if any("model_id" in row for row in requests):
+                failures.append("model_identity_left_the_browser")
             if not requests or any(row.get("saved_skill_id") != SAVED_SKILL_ID for row in requests):
                 failures.append("saved_skill_not_bound")
 
