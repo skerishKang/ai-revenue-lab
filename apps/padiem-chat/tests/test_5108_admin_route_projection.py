@@ -96,8 +96,8 @@ def _claw_choice_client(monkeypatch, *, routes=None, rows=()):
     return TestClient(app)
 
 
-def test_claw_model_list_shows_the_applied_central_route_not_the_static_lane(monkeypatch):
-    """A stored Claw route replaces the static free lane in the model picker."""
+def test_claw_grade_status_is_available_for_applied_central_route(monkeypatch):
+    """A stored Claw route is checked but never exposed as a model picker list."""
     routes = _RouteStore(TierRouteSnapshot("padiem-global", 4, (
         TierRoute("claw", "FREE", APPLIED, SECONDARY, True),
     )))
@@ -112,15 +112,15 @@ def test_claw_model_list_shows_the_applied_central_route_not_the_static_lane(mon
     assert response.status_code == 200
     body = response.json()
     assert body["route_source"] == "central"
-    assert [row["model_id"] for row in body["model_choices"]] == [APPLIED, SECONDARY]
-    # The replaced static lane is no longer offered to the customer.
-    assert FREE_PRIMARY_B14_MODEL_ID not in {
-        row["model_id"] for row in body["model_choices"]
-    }
+    assert body["tier"] == "free"
+    assert body["available"] is True
+    assert "model_choices" not in body
+    assert "model_id" not in body
+    assert "individual_model_name" not in body
 
 
-def test_claw_model_list_keeps_the_static_lane_without_an_applied_route(monkeypatch):
-    """No stored row keeps the shared static contract; the ledger never widens it."""
+def test_claw_grade_status_checks_static_route_without_exposing_it(monkeypatch):
+    """No stored row keeps the shared static route contract without exposing identity."""
     with _claw_choice_client(monkeypatch, rows=[
         {"model_id": FREE_PRIMARY_B14_MODEL_ID, "name": "Static free"},
         {"model_id": FREE_FALLBACK_B14_MODEL_ID, "name": "Static fallback"},
@@ -130,9 +130,10 @@ def test_claw_model_list_keeps_the_static_lane_without_an_applied_route(monkeypa
     assert response.status_code == 200
     body = response.json()
     assert body["route_source"] == "static"
-    assert {row["model_id"] for row in body["model_choices"]} == {
-        FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID,
-    }
+    assert body["tier"] == "free"
+    assert body["available"] is True
+    assert "model_choices" not in body
+    assert "model_id" not in body
 
 
 def test_claw_model_list_fails_closed_on_an_unreadable_route_ledger(monkeypatch):
@@ -146,9 +147,10 @@ def test_claw_model_list_fails_closed_on_an_unreadable_route_ledger(monkeypatch)
     assert response.status_code == 200
     body = response.json()
     assert body["route_source"] == "static"
-    assert {row["model_id"] for row in body["model_choices"]} == {
-        FREE_PRIMARY_B14_MODEL_ID,
-    }
+    assert body["tier"] == "free"
+    assert body["available"] is True
+    assert "model_choices" not in body
+    assert "model_id" not in body
 
 
 def test_claw_model_list_reports_a_disabled_applied_route_instead_of_falling_back(
@@ -213,8 +215,8 @@ def _adapter():
     return mock
 
 
-def test_claw_dispatch_uses_the_applied_route_and_refuses_the_replaced_model():
-    """The applied route decides the selectable model; the old one is refused."""
+def test_claw_dispatch_uses_the_applied_route_and_rejects_legacy_mismatch():
+    """The applied route is authoritative; a mismatched legacy claim is rejected."""
     routes = _RouteStore(TierRouteSnapshot("padiem-global", 6, (
         TierRoute("claw", "FREE", APPLIED, None, True),
     )))
@@ -234,8 +236,8 @@ def test_claw_dispatch_uses_the_applied_route_and_refuses_the_replaced_model():
         })
     assert applied.status_code == 200
     assert adapter.execute.await_args.kwargs["central_route_model_id"] == APPLIED
-    assert replaced.status_code == 403
-    assert replaced.json()["error"]["code"] == "model_not_available_for_tier"
+    assert replaced.status_code == 400
+    assert replaced.json()["error"]["code"] == "invalid_model_id"
 
 
 class _QuoteStore:

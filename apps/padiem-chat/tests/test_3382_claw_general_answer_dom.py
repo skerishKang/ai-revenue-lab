@@ -493,11 +493,8 @@ function collectAnswerDom(byId) {
   for (const sseCase of CASES) {
     const { byId, requests, lifecycleSets, committed, conversationIds, advanceClock } = buildSandbox(sseCase);
     byId.messageInput.value = sseCase.prompt || "견적 상태를 알려줘.";
-    // The real Claw model field (index.html:677): a user selection has to be set
-    // where the user sets it, or the wire assertion would only prove nothing.
-    // Mirror the visible index.html Claw Plus default; a user can clear or replace it.
-    byId.clawModelIdInput.value = "google/gemini-3.5-flash-lite";
-    if (typeof sseCase.modelId === "string") byId.clawModelIdInput.value = sseCase.modelId;
+    // Claw model controls are intentionally absent: only the selected grade
+    // is sent and the server resolves its route.
     byId.composerForm.requestSubmit();
     // Preserve the FULL 400ms opportunity to catch delayed/duplicate POSTs
     // and terminal SSE frames. Drive real app timers without sleeping 400ms.
@@ -636,37 +633,18 @@ def _general_posts(result: dict) -> list[dict]:
     return [r for r in result["requests"] if r["url"] == GENERAL_ROUTE_PATH]
 
 
-def test_a_syntactically_valid_user_selection_is_accepted_by_the_route() -> None:
-    """UI-contract scope only: not registration, entitlement or provider readiness."""
-    status, content_type, raw = _capture_server(answer=ANSWER_WITH_MARKUP, model_id=TEST_ONLY_MODEL_ID)
-    assert status == 200 and content_type.startswith("text/event-stream"), raw[:400]
-    assert ANSWER_WITH_MARKUP in raw
-
-
-def test_user_selected_model_id_reaches_the_wire_request_exactly_once() -> None:
-    _status, _ctype, raw = _capture_server(answer=ANSWER_WITH_MARKUP, model_id=TEST_ONLY_MODEL_ID)
-    result = _run_client([{"name": "selection", "mode": "stream", "raw": raw, "modelId": TEST_ONLY_MODEL_ID}])[0]
+def test_removed_model_selection_never_reaches_the_wire_request() -> None:
+    _status, _ctype, raw = _capture_server(answer=ANSWER_WITH_MARKUP)
+    result = _run_client([{"name": "grade-only", "mode": "stream", "raw": raw, "modelId": TEST_ONLY_MODEL_ID}])[0]
 
     general = _general_posts(result)
     assert len(general) == 1, result["requests"]
     assert general[0]["method"] == "POST"
     sent = json.loads(general[0]["body"])
-    assert sent["model_id"] == TEST_ONLY_MODEL_ID, sent
-    assert general[0]["body"].count(TEST_ONLY_MODEL_ID) == 1, general[0]["body"]
-    # The selection must not smuggle a second lane in behind the answer.
+    assert "model_id" not in sent, sent
+    assert TEST_ONLY_MODEL_ID not in general[0]["body"]
     assert _lane_only(result) == [GENERAL_ROUTE_PATH], _lane_only(result)
     assert result["answerDom"]["paragraphText"] == ANSWER_WITH_MARKUP, result["answerDom"]
-
-
-def test_visible_default_sends_one_exact_model_id() -> None:
-    """Default must appear as an explicit model selection on the canonical Claw wire."""
-    _status, _ctype, raw = _capture_server(answer=ANSWER_WITH_MARKUP, model_id="google/gemini-3.5-flash-lite")
-    result = _run_client([{"name": "default-selection", "mode": "stream", "raw": raw}])[0]
-    general = _general_posts(result)
-    assert len(general) == 1, result["requests"]
-    assert json.loads(general[0]["body"])["model_id"] == "google/gemini-3.5-flash-lite"
-    assert general[0]["body"].count("google/gemini-3.5-flash-lite") == 1
-    assert _lane_only(result) == [GENERAL_ROUTE_PATH]
 
 
 def test_claw_free_greeting_sends_without_an_invisible_plus_model_choice() -> None:

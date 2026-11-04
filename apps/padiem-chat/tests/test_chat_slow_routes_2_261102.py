@@ -215,8 +215,10 @@ def test_roster_is_read_once_inside_the_window(monkeypatch):
     response = asyncio.run(claw_verified_model_choices(request))
     first_elapsed = time.perf_counter() - first
     assert response.status_code == 200
-    # The central route still decides membership on every request.
-    assert b'"model_id":"model-a"' in response.body
+    # Readiness response never exposes the identity of either roster entry.
+    assert b'"tier":"free"' in response.body
+    assert b'"available":true' in response.body
+    assert b"model-a" not in response.body
     assert b"model-b" not in response.body
 
     second = time.perf_counter()

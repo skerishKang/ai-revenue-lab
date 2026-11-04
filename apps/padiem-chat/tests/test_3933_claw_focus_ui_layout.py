@@ -77,19 +77,18 @@ def test_claw_only_selectors_keep_shared_first_use_portrait_and_workbench_separa
     assert not re.search(r'(^|\n)\s*html\[data-theme="padiem-glass"\]\s+\.main-panel', CSS)
 
 
-def test_three_workflow_actions_and_approved_model_selection_stay_functional():
+def test_three_workflow_actions_and_grade_status_stay_functional():
     nodes = _nodes().by_id
     for id_ in ("clawExcelStartButton", "clawCompareStartButton",
                 "clawDocumentStartButton", "clawWebOfficeDetails",
-                "clawVerifiedModelSelect", "clawModelIdInput",
-                "messageInput", "sendButton",
+                "clawVerifiedModelHint", "messageInput", "sendButton",
                 "clawMobileComposerToggle", "clawManualForm", "clawRetryButton"):
         assert id_ in nodes, id_
-    assert nodes["clawVerifiedModelSelect"][0] == "select"
+    assert "clawVerifiedModelSelect" not in nodes
+    assert "clawModelIdInput" not in nodes
     assert nodes["messageInput"][0] == "textarea"
     assert not nodes["clawExcelStartButton"][1].get("disabled")
     assert '#composerForm > .claw-model-choice' in CSS
-    assert '#composerForm > .claw-model-advanced' in CSS
     assert '#composerForm > #messageInput' in CSS
     assert '#composerForm > .composer-actions' in CSS
     assert 'data-claw-composer-collapsed="true"' in CSS

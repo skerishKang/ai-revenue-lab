@@ -398,9 +398,6 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "clawInboxEmpty","clawInboxList","clawInboxRetry","clawRunHistory","clawRunHistoryRefresh",
   "clawRunHistoryLoading","clawRunHistoryError","clawRunHistoryList","clawRunHistoryEmpty",
   "clawRetryHint","clawRetryBox","clawRetryCopy","clawRetryButton",
-  // index.html:677 declares this input; the execute request never carries it, so
-  // the duplicate guard must treat changing it as NOT new work.
-  "clawModelIdInput",
 ].forEach((id) => add(id, "div"));
 // index.html nests #messageList inside <section class="conversation">, and the
 // real app.js reads that ancestor to decide whether the first turn continues
@@ -977,25 +974,15 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
     byId.clawExecuteButton.disabled === true;
   if (!checks.RESTORING_UNCERTAIN_CONTENT_REBLOCKS_IT) fail("RESTORING_UNCERTAIN_CONTENT_REBLOCKS_IT");
 
-  // 19) CTO review of #3382: the model ID field is not part of the execute
-  //     request, so rotating it alone must NOT release the latch, while a change
-  //     to real wire content still composes exactly one new run.
-  byId.messageInput.value = "모델 ID 우회 확인";
+  // 19) CTO review of #3382: Claw submits a grade only and never a model
+  //     identity, while a change to real wire content composes exactly one run.
+  byId.messageInput.value = "와이어 내용 확인";
   executeCall = () => jsonResponse(502, { ok: false, error: { code: "engine_execution_failed" } });
   expectedPosts += 1;
   byId.clawExecuteButton.click();
   await tick(80);
   const afterBypassTry = execPosts().length;
   if (lastExec().body.model_id !== undefined) fail("EXECUTE_REQUEST_CARRIES_MODEL_ID");
-  byId.clawModelIdInput.value = "agnes-ai/agnes-3.0-flash";
-  byId.clawExecuteButton.click();
-  byId.clawRetryButton.click();
-  await tick(120);
-  checks.MODEL_ID_ONLY_CHANGE_KEEPS_LATCH =
-    execPosts().length === afterBypassTry &&
-    byId.clawExecuteButton.disabled === true &&
-    byId.clawRetryButton.disabled === true;
-  if (!checks.MODEL_ID_ONLY_CHANGE_KEEPS_LATCH) fail("MODEL_ID_ONLY_CHANGE_KEEPS_LATCH");
   byId.clawChannel.value = "email";
   executeCall = () => jsonResponse(200, { ok: true, result: { title: "quote", result_text: "ran", artifact: null } });
   expectedPosts += 1;
@@ -1004,7 +991,7 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   checks.WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE =
     execPosts().length === afterBypassTry + 1 &&
     lastExec().body.channel === "email" &&
-    lastExec().body.content === "모델 ID 우회 확인" &&
+    lastExec().body.content === "와이어 내용 확인" &&
     lastExec().body.model_id === undefined;
   if (!checks.WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE) {
     fail("WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE: " + JSON.stringify(lastExec().body));
@@ -1148,7 +1135,6 @@ def test_behavioral_execute_recovery_journey(behavioral_harness_payload: dict) -
         "PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED",
         "NEW_WORK_RUNS_AFTER_UNCERTAIN_OUTCOME",
         "RESTORING_UNCERTAIN_CONTENT_REBLOCKS_IT",
-        "MODEL_ID_ONLY_CHANGE_KEEPS_LATCH",
         "WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE",
         "TWO_UNCERTAIN_REQUESTS_BOTH_STAY_BLOCKED",
         "IN_FLIGHT_FAILURE_LEAVES_OTHER_COMPOSITION_USABLE",

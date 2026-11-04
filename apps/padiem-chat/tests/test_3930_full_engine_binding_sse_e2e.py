@@ -332,10 +332,33 @@ class TestRealP01StreamBridge(unittest.TestCase):
 
         asyncio.run(exercise())
 
-    def test_user_selected_model_is_pinned_in_single_stream_dispatch(self):
-        # An opaque test-only syntactically valid choice; actual provider
-        # registration remains the Engine/B14-owned admission decision.
-        selected_id = "test/explicit-model-1"
+    def test_server_grade_route_is_pinned_in_single_stream_dispatch(self):
+        # #6828: the browser sends only a grade; the shared server resolver
+        # owns the exact route, and that one route reaches the Engine.
+        from app import model_policy as model_policy_module
+
+        adapter, engine = self.bridge()
+        session = SimpleNamespace(auth_session=SimpleNamespace(
+            subject=SimpleNamespace(subject_id=SUBJECT)
+        ))
+        with patch("app.b54_canonical_session.resolve_current_b54_canonical_session",
+                   new=AsyncMock(return_value=session)):
+            with _client(adapter) as client:
+                client.app.state.claw_live_sse_enabled = True
+                response = client.post(GENERAL, json=_payload(), headers=LIVE)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("event: done", response.text)
+        self.assertEqual(len(engine.calls), 1)
+        wire = json.loads(engine.calls[0].body)
+        self.assertEqual(
+            wire["agent"]["model_policy"]["model"],
+            model_policy_module.DEFAULT_B14_MODEL_ID,
+        )
+        self.assertEqual(wire.get("max_retries", 0), 0)
+
+    def test_foreign_model_claim_is_refused_before_any_engine_dispatch(self):
+        # A legacy identifier is only a claim: a mismatch with the server
+        # route fails closed at the product boundary, before Engine dispatch.
         adapter, engine = self.bridge()
         session = SimpleNamespace(auth_session=SimpleNamespace(
             subject=SimpleNamespace(subject_id=SUBJECT)
@@ -345,11 +368,8 @@ class TestRealP01StreamBridge(unittest.TestCase):
             with _client(adapter) as client:
                 client.app.state.claw_live_sse_enabled = True
                 response = client.post(GENERAL, json=_payload(
-                    model_id=selected_id
+                    model_id="test/explicit-model-1"
                 ), headers=LIVE)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("event: done", response.text)
-        self.assertEqual(len(engine.calls), 1)
-        wire = json.loads(engine.calls[0].body)
-        self.assertEqual(wire["agent"]["model_policy"]["model"], selected_id)
-        self.assertEqual(wire.get("max_retries", 0), 0)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["error"]["code"], "invalid_model_id")
+        self.assertEqual(engine.calls, [])

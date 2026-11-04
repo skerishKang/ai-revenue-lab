@@ -48,11 +48,6 @@ from .member_grade_access import claw_execution_tier_denial
 from .model_policy import ADMIN_B14_MODEL_ID, resolve_claw_execution_grade
 from types import SimpleNamespace
 from padiem_ai_core.pc_device_identity import is_pc_device_id
-from padiem_control_plane.product_tier_routes import (
-    ProductTierLabel,
-    FREE_PRIMARY_B14_MODEL_ID,
-    FREE_FALLBACK_B14_MODEL_ID,
-)
 
 from kagent.p01_adapter import (
     P01AdapterError,
@@ -60,7 +55,6 @@ from kagent.p01_adapter import (
     P01DispatchClass,
     P01_FAILURE_DETAIL_CONTRACT,
     P01_FAILURE_DETAIL_UNKNOWN,
-    validate_explicit_b14_model_id,
 )
 from kagent.p01_run_flow import create_claw_run
 from .claw_search_decision import (
@@ -180,7 +174,7 @@ def _drain_task_result(task: "asyncio.Task[Any]") -> None:
 
 
 def _start_selectable_model_read(
-    request: Any, selected_model_id: str | None, central_route_model_id: str | None
+    request: Any, central_route_model_id: str | None
 ) -> tuple["asyncio.Task[Any] | None", bool]:
     """#5614: start the model-roster read before the PC work context.
 
@@ -194,7 +188,7 @@ def _start_selectable_model_read(
     (after the PC target checks), never earlier.
     """
 
-    if selected_model_id is None and central_route_model_id is None:
+    if central_route_model_id is None:
         return None, False
     resolver = getattr(
         getattr(getattr(request, "app", None), "state", None),
@@ -1665,16 +1659,10 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     )
 
     # PADIEM Custom is a direct text completion: it cannot drive a PC tool,
-    # desktop op or local file lane, and it never mixes with a PADIEM-managed
-    # tier/model selection. Refuse those combinations before any dispatch.
+    # desktop op or local file lane. When custom is present it takes precedence;
+    # any accompanying tier is ignored (the BYOK exception to grade-only UI).
     custom = None
     if "custom" in data:
-        if "tier" in data or "model_id" in data:
-            return _error(
-                422,
-                "custom_selection_conflict",
-                "PADIEM 제공 모델과 PADIEM Custom을 한 요청에서 함께 선택할 수 없습니다.",
-            )
         try:
             custom = parse_custom_selection(data.get("custom"))
         except BrowserRequestError as exc:
@@ -1875,51 +1863,25 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # keeps the historical static declaration.
     from .central_model_route_runtime import resolve_claw_tier_model
 
-    claw_route = (SimpleNamespace(ok=True, model_id=ADMIN_B14_MODEL_ID,
-                                  fallback_model_id=None, source="admin")
-                  if admin_lane else await resolve_claw_tier_model(request, requested_tier))
-    route_candidates = {
-        model_id for model_id in (claw_route.model_id, claw_route.fallback_model_id)
-        if model_id is not None
-    }
-    raw_model = data.get("model_id")
-    selected_model_id: str | None = None
-    central_route_model_id: str | None = None
-    if raw_model is not None:
+    if admin_lane:
+        claw_route = SimpleNamespace(
+            ok=True, model_id=ADMIN_B14_MODEL_ID, fallback_model_id=None, source="admin",
+        )
+    else:
         try:
-            selected_model_id = validate_explicit_b14_model_id(raw_model)
-        except P01AdapterError:
-            return _error(422, "invalid_selected_model", "등록된 B14 모델 ID 하나를 선택해 주세요.")
-        if admin_lane and selected_model_id != ADMIN_B14_MODEL_ID:
-            return _error(403, "model_not_available_for_tier", "관리자 모델과 일치하지 않습니다.")
-        if product_tier is ProductTierLabel.FREE:
-            # The resolved route candidates are the administrator's stored
-            # per-grade selection when a central row exists, and the shared
-            # static free contract when no row exists. No model name is
-            # hardcoded here, so a renamed or replaced model needs no code
-            # change and never bypasses the approved route.
-            if selected_model_id not in route_candidates:
-                return _error(403, "model_not_available_for_tier", "Free 등급에서 선택할 수 없는 모델입니다.")
-        elif product_tier is not ProductTierLabel.PLUS:
-            return _error(422, "explicit_model_tier_unsupported", "이 등급의 모델 직접 선택은 아직 지원되지 않습니다.")
-        elif claw_route.source == "central" and selected_model_id not in route_candidates:
-            # #5108: a stored central row is the administrator's exact selection
-            # for this grade, and the chooser already offers only those models.
-            # A paid-lane pick outside them fails closed instead of silently
-            # replacing the applied route. Without a stored row the Plus
-            # explicit-choice feature keeps its existing behaviour.
-            return _error(403, "model_not_available_for_tier", "선택한 AI 등급에서 선택할 수 없는 모델입니다.")
-    if selected_model_id is None:
-        if not claw_route.ok or not claw_route.model_id:
-            if product_tier is ProductTierLabel.PLUS:
-                return _error(503, "tier_unavailable", "Claw Plus에서는 등록된 실행 모델 ID를 직접 선택해 주세요.")
+            claw_route = await resolve_claw_tier_model(request, requested_tier)
+        except Exception:
             return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
-        central_route_model_id = claw_route.model_id
-    elif selected_model_id in route_candidates:
-        # A model already assigned by the central route is not treated as an
-        # unrestricted member choice; it still travels as an exact model.
-        central_route_model_id = selected_model_id
-        selected_model_id = None
+    # #6828: the shared Claw route resolver maps the requested grade server-side.
+    # During migration, a legacy model identifier is accepted only as a claim
+    # that must exactly match that route; it never selects a different model.
+    central_route_model_id: str | None = None
+    if not claw_route.ok or not claw_route.model_id:
+        return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
+    declared_model_id = data.get("model_id")
+    if declared_model_id is not None and declared_model_id != claw_route.model_id:
+        return _error(400, "invalid_model_id", "등급 선택은 기본 모델을 사용합니다.")
+    central_route_model_id = claw_route.model_id
 
     _claw_stage(CLAW_STAGE_ROUTE, turn_started)
 
@@ -2035,7 +1997,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # therefore still decide first and still fail closed; only the read itself
     # overlaps.
     catalog_task, catalog_unavailable = _start_selectable_model_read(
-        request, selected_model_id, central_route_model_id,
+        request, central_route_model_id,
     )
     # #5479: every exit from this span - a PC-target refusal, an exception,
     # or a client that left - either already awaited the roster read or must
@@ -2132,9 +2094,12 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         _claw_stage(CLAW_STAGE_PC_CONTEXT, pc_context_started)
 
         # #3790: in the production Worker Claw uses the central model
-        # ready/owner-allowed metadata resolver. Reject a forged advanced model ID
-        # before quota/P01. Test-only deployments without this optional view still
-        # rely on B14's final exact-ID execution authority.
+        # ready/owner-allowed metadata resolver. A server-resolved grade
+        # route whose model is not listed by B14 advances to its explicitly
+        # configured fallback; a forged client id never reaches this point
+        # because it is ignored wholesale at the route step (#6828).
+        # Test-only deployments without this optional view still rely on
+        # B14's final exact-ID execution authority.
         #
         # #5614: the read was started before the PC work context and is only
         # EVALUATED here, so this refusal still comes after the PC target checks.
@@ -2148,15 +2113,11 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 eligible_ids = {row["model_id"] for row in available}
             except (Exception,):
                 return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
-            target_model = selected_model_id or central_route_model_id
-            if target_model not in eligible_ids:
-                # Only a server-resolved central route may advance to its
-                # explicitly configured fallback. A member choice never does.
-                if (selected_model_id is None
-                        and claw_route.fallback_model_id in eligible_ids):
+            if central_route_model_id not in eligible_ids:
+                if claw_route.fallback_model_id in eligible_ids:
                     central_route_model_id = claw_route.fallback_model_id
                 else:
-                    return _error(422, "model_not_available", "현재 사용할 수 없는 모델입니다. 다른 모델을 선택해 주세요.")
+                    return _error(422, "model_not_available", "현재 사용할 수 없는 모델입니다. 다른 등급을 선택해 주세요.")
 
     finally:
         # A task the evaluation awaited is done, where this is a no-op; one
@@ -2340,7 +2301,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         judgement_started = time.perf_counter()
         grounding_context, search_sources = await _claw_public_search_grounding(
             request, adapter, model_user_text,
-            model_id=selected_model_id or central_route_model_id,
+            model_id=central_route_model_id,
         )
         _claw_stage(CLAW_STAGE_JUDGEMENT, judgement_started)
     else:
@@ -2440,8 +2401,6 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         if initial_pc_drive_query or pc_files_requested or pc_browser_requested:
             live_args["pc_action_context"] = pc_action_context
             live_args["pc_delegation"] = pc_delegation
-        if selected_model_id is not None:
-            live_args["selected_model_id"] = selected_model_id
         if central_route_model_id is not None:
             live_args["central_route_model_id"] = central_route_model_id
         if combined_system_context is not None:
@@ -2499,8 +2458,6 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         if initial_pc_drive_query or pc_files_requested or pc_browser_requested:
             dispatch_args["pc_action_context"] = pc_action_context
             dispatch_args["pc_delegation"] = pc_delegation
-        if selected_model_id is not None:
-            dispatch_args["selected_model_id"] = selected_model_id
         if central_route_model_id is not None:
             dispatch_args["central_route_model_id"] = central_route_model_id
         if combined_system_context is not None:

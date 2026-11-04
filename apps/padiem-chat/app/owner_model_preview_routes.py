@@ -1,8 +1,10 @@
 """#3790 dynamic Claw B14 model choices.
 
 The public model-name preview was removed (#6828): users choose a PADIEM grade,
-never a model identity. Claw's chooser follows the same B14 owner-allowed/ready
-list as B66, without requiring another product-specific live evaluation.
+never a model identity. Claw's grade status endpoint follows the same B14
+owner-allowed/ready readiness list as B66, without requiring another
+product-specific live evaluation. It reports only whether the requested grade
+has an executable server-side route; it never returns a model identity.
 """
 from __future__ import annotations
 
@@ -159,17 +161,20 @@ async def _refresh_roster(key: int, owner: object, list_fn, ttl: float) -> None:
 
 
 async def claw_verified_model_choices(request: Request) -> JSONResponse:
-    """Read live-ready exact model IDs for the server-approved Claw grade.
+    """Grade-only readiness for the server-approved Claw grade (#6828).
 
+    Users choose a PADIEM grade only; no model identity reaches the browser.
     Registration and optional model quality/E2E assessments are separate.
     B54/P01/B14 still enforce final per-request execution authorization.
 
-    The offered set follows the server-approved route for the requested grade:
+    The readiness follows the server-approved route for the requested grade:
     a centrally stored per-product/per-grade row is the administrator's exact
     selection, and the shared static product contract is used only while no
     such row exists. A disabled central row fails closed instead of silently
     widening back to the previous static lane, and no model name is hardcoded
     here, so renaming a model in the administrator console needs no code edit.
+    The response carries only the grade key, its availability and whether the
+    server-side route is configured -- never a model id or display name.
     """
     from .auth_routes import auth_ready, current_user_id
     from .central_model_route_runtime import resolve_claw_tier_model_view
@@ -212,30 +217,23 @@ async def claw_verified_model_choices(request: Request) -> JSONResponse:
             {"ok": False, "error": {"code": "tier_unavailable"}},
             status_code=503, headers=headers,
         )
-    route_ids = {
-        model_id for model_id in (route.model_id, route.fallback_model_id)
-        if isinstance(model_id, str) and model_id
-    }
-    # A stored central row is the administrator's exact selection for this
-    # product/grade. Without a row the shared static contract decides: the free
-    # lane is the contract's own free route, and a paid grade keeps the
-    # owner-allowed catalog ceiling.
-    if admin_lane or route.source == "central" or requested_tier == "free":
-        allowed_ids: frozenset[str] | None = frozenset(route_ids)
-    else:
-        allowed_ids = None
+    # Existence only, never the identity: the readiness read proves the
+    # server-side route candidates are actually listed by B14, but neither
+    # ids nor names leave this function. A stored central row is the
+    # administrator's exact selection for this product/grade. Without a row
+    # the shared static contract decides: the free lane is the contract's own
+    # free route, and a paid grade keeps the owner-allowed catalog ceiling.
     try:
         roster = await _model_roster(list_fn)
-        rows = []
-        for model_id, name in roster:
-            if allowed_ids is not None and model_id not in allowed_ids:
-                continue
-            rows.append({
-                "model_id": model_id,
-                "individual_model_name": name,
-                "product_name_prefix": "파디엠프리" if requested_tier == "free" else "파디엠플러스",
-                "customer_selectable": True,
-            })
+        listed_ids = {model_id for model_id, _name in roster}
+        route_ids = {
+            model_id for model_id in (route.model_id, route.fallback_model_id)
+            if isinstance(model_id, str) and model_id
+        }
+        if admin_lane or route.source == "central" or requested_tier == "free":
+            available = bool(route_ids & listed_ids)
+        else:
+            available = bool(listed_ids)
     except Exception:
         return JSONResponse(
             {"ok": False, "error": {"code": "model_catalog_unavailable"}},
@@ -244,13 +242,14 @@ async def claw_verified_model_choices(request: Request) -> JSONResponse:
 
     return JSONResponse({
         "ok": True,
-        "scope": "b14_owner_allowed_live_ready",
+        "scope": "b14_tier_ready",
         "complete_inventory": True,
-        "automatic_default": False,
+        "automatic_default": True,
         "route_source": route.source,
         # The ledger revision that governs this grade. 0 means no stored row
         # governs it, so an operator never reads an unrelated revision as an
         # applied decision.
         "route_revision": route_revision,
-        "model_choices": rows,
+        "tier": requested_tier,
+        "available": available,
     }, headers=headers)

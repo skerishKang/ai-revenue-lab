@@ -323,7 +323,7 @@ function makeDom() {
     "clawRunHistoryRefresh","clawRunHistoryExpand","clawRunHistoryLoading","clawRunHistoryError",
     "clawRunHistoryList","clawRunHistoryEmpty","clawRetryHint","clawRetryBox","clawRetryCopy","clawRetryButton",
     "authDialog","authDialogClose","passwordLoginForm","passwordLoginIdentifier","passwordLoginPassword",
-    "passwordLoginError","passwordLoginSubmit","googleLoginButton","clawModelIdInput",
+    "passwordLoginError","passwordLoginSubmit","googleLoginButton",
   ].forEach((id) => add(id, "div"));
   if (byId.messageList) {
     const conversationSection = makeEl("section");

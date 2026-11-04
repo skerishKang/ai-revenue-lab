@@ -36,7 +36,7 @@ def test_guest_cannot_read_models_or_contact_authority(monkeypatch):
     assert catalog.calls == 0
 
 
-def test_free_member_sees_only_registered_free_choices(monkeypatch):
+def test_free_member_receives_grade_readiness_without_identity(monkeypatch):
     rows = [
         {"model_id": "opencode-go/beam-free", "name": "Beam Free"},
         {"model_id": "google/gemini-3.1-flash-lite", "name": "Gemini 3.1 Flash Lite"},
@@ -50,11 +50,13 @@ def test_free_member_sees_only_registered_free_choices(monkeypatch):
         refused = client.get("/choices?tier=plus")
     assert first.status_code == second.status_code == 200
     assert first.headers["cache-control"] == "no-store"
-    assert second.json()["scope"] == "b14_owner_allowed_live_ready"
-    assert second.json()["automatic_default"] is False
-    assert [x["model_id"] for x in second.json()["model_choices"]] == [
-        "google/gemini-3.1-flash-lite"]
-    assert all(x["product_name_prefix"] == "파디엠프리" for x in second.json()["model_choices"])
+    assert second.json()["scope"] == "b14_tier_ready"
+    assert second.json()["automatic_default"] is True
+    assert second.json()["tier"] == "free"
+    assert second.json()["available"] is True
+    assert "model_choices" not in second.json()
+    assert "model_id" not in second.json()
+    assert "individual_model_name" not in second.json()
     assert refused.status_code == 403
     assert refused.json()["error"]["code"] == "tier_not_available"
     # #6460 4-1 second round: the read-only roster is shared for a short window,
@@ -79,7 +81,10 @@ def test_pro_member_gets_tier_ceiling_but_no_browser_escalation(monkeypatch):
         allowed = client.get("/choices?tier=plus")
         denied = client.get("/choices?tier=max")
     assert allowed.status_code == 200
-    assert [x["model_id"] for x in allowed.json()["model_choices"]] == [rows[0]["model_id"]]
+    assert allowed.json()["tier"] == "plus"
+    assert allowed.json()["available"] is True
+    assert "model_choices" not in allowed.json()
+    assert "model_id" not in allowed.json()
     assert denied.status_code == 403
 
 
@@ -100,28 +105,29 @@ def test_missing_or_invalid_catalog_fails_closed(monkeypatch):
         assert "model_choices" not in r.json()
 
 
-def test_no_default_and_advanced_exact_id_retained():
+def test_grade_only_choice_replaces_claw_model_selector():
     root = Path(__file__).resolve().parents[1] / "static"
     html = (root / "index.html").read_text(encoding="utf-8")
     app = (root / "app.js").read_text(encoding="utf-8")
     chooser = (root / "claw-verified-model-choice.js").read_text(encoding="utf-8")
-    assert 'id="clawVerifiedModelSelect"' in html
-    assert 'id="clawModelIdInput" type="text" value=""' in html
-    assert 'claw-model-advanced' in html
+    assert 'id="clawVerifiedModelSelect"' not in html
+    assert 'id="clawModelIdInput"' not in html
+    assert 'id="clawVerifiedModelHint"' in html
     assert 'claw-verified-model-choice.js' in html
-    assert '["free", "plus"].includes(selectedProductTier())' in app
-    assert 'payload.model_id = contextSnapshot.selectedModelId' in app
-    assert 'scope==="b14_owner_allowed_live_ready"' in chooser
-    assert 'const IDS=' not in chooser and 'const PROVEN=' not in chooser
+    assert 'payload.model_id = contextSnapshot.selectedModelId' not in app
+    assert 'scope==="b14_tier_ready"' in chooser
+    assert 'data.tier===tier&&typeof data.available==="boolean"' in chooser
+    assert '!Object.prototype.hasOwnProperty.call(data,"model_choices")' in chooser
+    assert 'model_id' not in chooser
 
 
-def test_login_refresh_and_logout_clear_stale_model_choice():
+def test_login_refresh_and_logout_keep_status_without_stale_model_choice():
     base = Path(__file__).resolve().parents[1] / "static"
     app = (base / "app.js").read_text(encoding="utf-8")
     js = (base / "claw-verified-model-choice.js").read_text(encoding="utf-8")
     assert 'new CustomEvent("padiem:auth-state"' in app
     assert 'window.addEventListener("padiem:auth-state"' in js
-    assert 'manual.value=""; // session revoked' in js
+    assert 'manual.value=""' not in js
 
 
 def test_admin_model_choices_require_server_verified_admin(monkeypatch):
@@ -149,7 +155,10 @@ def test_admin_model_choices_require_server_verified_admin(monkeypatch):
         client.app.state.b66_member_admin_store = AdminStore(True)
         approved = client.get("/choices?tier=admin")
     assert approved.status_code == 200
-    assert [row["model_id"] for row in approved.json()["model_choices"]] == [ADMIN_B14_MODEL_ID]
+    assert approved.json()["tier"] == "admin"
+    assert approved.json()["available"] is True
+    assert "model_choices" not in approved.json()
+    assert "model_id" not in approved.json()
     assert approved.json()["route_revision"] == 0
 
 
@@ -164,8 +173,11 @@ def test_claw_admin_exact_model_is_server_owned():
     # cannot pick the administrator model.
     assert 'admin_lane = grade.admin_lane' in source
     assert 'await claw_execution_tier_denial(request, user_id, grade)' in source
-    assert 'selected_model_id != ADMIN_B14_MODEL_ID' in source
-    assert 'if admin_lane else await resolve_claw_tier_model' in source
+    assert 'declared_model_id != claw_route.model_id' in source
+    assert 'claw_route = SimpleNamespace(' in source
+    assert 'claw_route = await resolve_claw_tier_model(request, requested_tier)' in source
+    assert 'if admin_lane:' in source
+    assert 'if not claw_route.ok or not claw_route.model_id:' in source
 
     # The shared authority is the one that still refuses a forged admin.
     shared = (root / "member_grade_access.py").read_text(encoding="utf-8")

@@ -14,10 +14,11 @@ def test_one_canonical_composer_and_tier_control_for_chat_and_claw():
     assert HTML.count('id="composerForm"') == 1
     assert HTML.count('id="messageInput"') == 1
     assert HTML.count('class="model-pill composer-tier-trigger"') == 1
-    assert 'optionalModels.appendChild(exactModelControl)' in CAP
-    assert 'modePanel.appendChild(optionalModels)' in CAP
-    assert 'manual.value=select.value' in (STATIC / "claw-verified-model-choice.js").read_text(encoding="utf-8")
-    assert 'contextSnapshot.selectedModelId' in APP
+    assert 'exactModelControl' not in CAP
+    assert 'modePanel.appendChild(modePanel)' not in CAP
+    assert 'id="clawVerifiedModelSelect"' not in HTML
+    assert 'id="clawModelIdInput"' not in HTML
+    assert 'payload.model_id = contextSnapshot.selectedModelId' not in APP
 
 
 def test_claw_dedicated_connectors_keep_real_buttons_inside_chat_card_geometry():
