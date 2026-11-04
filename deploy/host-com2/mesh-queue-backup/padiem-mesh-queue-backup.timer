@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Padiem PC queue backup (kept for a week, verified before rotation)
+
+[Timer]
+OnCalendar=04:35
+Persistent=true
+RandomizedDelaySec=180
+
+[Install]
+WantedBy=timers.target
