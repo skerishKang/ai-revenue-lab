@@ -58,15 +58,15 @@ MUSE_B14_MODEL_ID = "opencode-go/muse-spark-1.3-contributor"
 MUSE_B14_UPSTREAM_MODEL = "muse-spark-1.3-contributor"
 # Owner decision 2026-10-25: test-phase Google recovery order for the
 # Plus/Pro/Max/admin lanes.
-# Owner decision 2026-11-04: Plus/Pro/Max/admin use TokenHarbor DeepSeek as
-# the single grade fallback. Free keeps its Google chain and appends Kilo
-# Crouton Alpha as the third recovery candidate.
+# Owner decision 2026-11-04: Plus/Pro/Max/admin insert TokenHarbor DeepSeek
+# as the first fallback and keep Gemma as the second. Free inserts Kilo
+# Crouton Alpha as its first fallback, ahead of Gemma and Gemini 3.5.
 TIER_FALLBACK_B14_MODELS = {
-    "max": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free"),
-    "pro": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free"),
-    "plus": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free"),
-    "free": ("google/gemma-4-31b-it", "google/gemini-3.5-flash-lite", "kilo/stealth/crouton-alpha"),
-    "admin": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free"),
+    "max": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "google/gemma-4-31b-it"),
+    "pro": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "google/gemma-4-31b-it"),
+    "plus": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "google/gemma-4-31b-it"),
+    "free": ("kilo/stealth/crouton-alpha", "google/gemma-4-31b-it", "google/gemini-3.5-flash-lite"),
+    "admin": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "google/gemma-4-31b-it"),
 }
 
 # Owner decision 2026-10-21 (#2505): OpenCode Go free models are not execution
