@@ -134,7 +134,16 @@
         "api.kilo.ai"
       ],
       "credential_source": "platform_secret",
-      "credential_binding_name": "PADIEM_B14_CREDENTIAL_15",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_08",
+      "enabled": true
+    },
+    "openrouter": {
+      "base_origin": "https://openrouter.ai/api/v1",
+      "allowed_hosts": [
+        "openrouter.ai"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_07",
       "enabled": true
     }
   },
@@ -603,6 +612,27 @@
       "input_price_usd_per_1m": 0,
       "output_price_usd_per_1m": 0,
       "source": "https://api.kilo.ai/api/gateway/v1/models (stealth/crouton-alpha; isFree=true, context_length 1048576, tools/reasoning/vision declared)",
+      "source_checked_at": "2026-11-04",
+      "enabled": true
+    },
+    {
+      "id": "openrouter/stealth/crouton-alpha",
+      "provider_id": "openrouter",
+      "upstream_model": "stealth/crouton-alpha",
+      "display_name": "OpenRouter: Crouton Alpha",
+      "provider_name": "OpenRouter",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free",
+        "image",
+        "long_context",
+        "tools"
+      ],
+      "context_window": 1048576,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "https://openrouter.ai/api/v1/models (stealth/crouton-alpha; pricing 0/0, context_length 1048576, tools/reasoning/vision declared)",
       "source_checked_at": "2026-11-04",
       "enabled": true
     }

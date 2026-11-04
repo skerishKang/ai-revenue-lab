@@ -79,6 +79,8 @@ def test_retired_kilo_models_stay_unregistered_while_crouton_is_registered(clien
     routes = _registered_routes(client)
     kilo = [r for r in routes if r["provider_id"] == "kilo"]
     assert [r["id"] for r in kilo] == ["kilo/stealth/crouton-alpha"]
+    openrouter = [r for r in routes if r["provider_id"] == "openrouter"]
+    assert [r["id"] for r in openrouter] == ["openrouter/stealth/crouton-alpha"]
     from app.pilot.model_registry_file import retired_model_ids
     registered = {r["id"] for r in routes}
     assert not (registered & {m for m in retired_model_ids() if m.startswith("kilo/")})

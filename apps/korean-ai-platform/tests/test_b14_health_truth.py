@@ -213,9 +213,10 @@ def test_business14_providers_reflect_registered_route_owners(client):
         assert isinstance(entry["has_key"], bool)
     assert not set(("b-ai", "infron")) & {p["id"] for p in providers}
     assert "kilo" in {p["id"] for p in providers}
+    assert "openrouter" in {p["id"] for p in providers}
     assert "experiential" in {p["id"] for p in providers}
 
-def test_health_and_models_surfaces_have_zero_openrouter_mentions(client):
+def test_health_and_models_surfaces_do_not_leak_openrouter_credentials(client):
     _set_live()
 
     health = client.get("/api/pilot/health")
@@ -223,8 +224,9 @@ def test_health_and_models_surfaces_have_zero_openrouter_mentions(client):
 
     assert health.status_code == 200
     assert models.status_code == 200
-    assert "openrouter" not in health.text.lower()
-    assert "openrouter" not in models.text.lower()
+    assert "openrouter/stealth/crouton-alpha" in models.text
+    assert "sk-or-" not in health.text.lower()
+    assert "sk-or-" not in models.text.lower()
 
 
 def test_health_no_longer_reports_an_auto_chain(client):

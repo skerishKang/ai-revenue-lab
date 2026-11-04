@@ -21,6 +21,7 @@ def test_google_free_grade_has_exact_owner_backups(monkeypatch):
     backups = TIER_FALLBACK_B14_MODELS["free"]
     assert backups == (
         "kilo/stealth/crouton-alpha",
+        "openrouter/stealth/crouton-alpha",
         "google/gemma-4-31b-it",
         "google/gemini-3.5-flash-lite",
     )

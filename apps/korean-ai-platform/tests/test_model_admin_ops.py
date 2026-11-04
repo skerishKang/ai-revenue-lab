@@ -154,9 +154,10 @@ def test_registry_read_reports_the_effective_catalog(client):
     response = get(client, REGISTRY)
     assert response.status_code == 200
     body = response.json()
+    registry = read_registry()
     assert body["ok"] is True
-    assert len(body["providers"]) == 14
-    assert len(body["models"]) == 26
+    assert len(body["providers"]) == len(registry["providers"])
+    assert len(body["models"]) == len(registry["models"])
     assert len(body["slot_usage"]) == 14
     assert body["overlay"]["present"] is False
     assert SYNTHETIC_VALUE not in response.text
@@ -169,7 +170,7 @@ def test_provider_apply_writes_the_overlay_and_returns_counts(client):
     assert response.status_code == 200, response.text
     body = response.json()
     assert body["provider_id"] == "example"
-    assert body["provider_count"] == 15
+    assert body["provider_count"] == len(read_registry()["providers"])
     assert body["overlay"]["present"] is True
     assert read_overlay()["providers"]["example"]["base_origin"] == "https://api.example.com"
     assert "example" in read_registry()["providers"]
