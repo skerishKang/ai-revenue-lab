@@ -60,25 +60,47 @@ if ! command -v systemctl >/dev/null 2>&1; then fail "systemd_missing"; fi
 [ -f "$APP_ROOT/app/asgi.py" ] || fail "asgi_entry_missing"
 [ -x "$APP_ROOT/venv/bin/python" ] || fail "venv_python_missing"
 
-# The operator still stages B14's application checkout. Its one shared PC
-# metrics contract must come from the same reviewed repository revision;
-# copying the whole Core package is neither needed nor this installer's job.
-PC_METRICS_SOURCE="$SRC_DIR/../../../packages/padiem-ai-core/padiem_ai_core/pc_work_metrics.py"
-PC_METRICS_PACKAGE="$APP_ROOT/app/padiem_ai_core"
-[ -f "$PC_METRICS_SOURCE" ] || fail "pc_metrics_source_missing"
+# The operator still stages B14's application checkout. The Core modules the
+# runtime imports must come from the same reviewed repository revision, and the
+# set staged here is read from apps/korean-ai-platform/deploy.sh itself so the
+# two staging lists cannot drift. That drift is exactly how #6848's
+# conversation_bounds/evidence_blocks crashed the 2026-11-05 00:19 release at
+# first boot (reproduced 06:37) while CI stayed green (#6855).
+DEPLOY_SH="$SRC_DIR/../../apps/korean-ai-platform/deploy.sh"
+CORE_SOURCE_DIR="$SRC_DIR/../../../packages/padiem-ai-core/padiem_ai_core"
+CORE_PACKAGE="$APP_ROOT/app/padiem_ai_core"
+[ -f "$DEPLOY_SH" ] || fail "deploy_script_missing"
+CORE_MODULES=$(python3 - "$DEPLOY_SH" <<'PY' || fail "core_module_list_unreadable"
+import re, sys
+
+text = open(sys.argv[1], encoding="utf-8").read()
+loops = [m.group(1).split() for m in re.finditer(r"for module in ([^;]+); do", text)]
+if len(loops) != 2 or loops[0] != loops[1] or not loops[0]:
+    sys.exit("deploy.sh module loops unreadable")
+print(" ".join(loops[0]))
+PY
+)
+[ -n "$CORE_MODULES" ] || fail "core_module_list_empty"
 if $DRY_RUN; then
-  note "would_stage:pc_work_metrics"
+  note "would_stage:core_modules=$CORE_MODULES"
 else
-  install -d -o root -g root -m 0755 "$PC_METRICS_PACKAGE"
-  if [ ! -e "$PC_METRICS_PACKAGE/__init__.py" ]; then
-    printf '%s\n' '"""Deployment-staged canonical Core modules."""' > "$PC_METRICS_PACKAGE/__init__.py"
-    chmod 0644 "$PC_METRICS_PACKAGE/__init__.py"
+  install -d -o root -g root -m 0755 "$CORE_PACKAGE"
+  if [ ! -e "$CORE_PACKAGE/__init__.py" ]; then
+    printf '%s\n' '"""Deployment-staged canonical Core modules."""' > "$CORE_PACKAGE/__init__.py"
+    chmod 0644 "$CORE_PACKAGE/__init__.py"
   fi
-  install -o root -g root -m 0644 "$PC_METRICS_SOURCE" "$PC_METRICS_PACKAGE/pc_work_metrics.py"
-  (cd "$APP_ROOT/app" && "$APP_ROOT/venv/bin/python" -c \
-    'from padiem_ai_core.pc_work_metrics import validate_pc_work_metrics') \
-    || fail "pc_metrics_import_failed"
-  note "staged:pc_work_metrics"
+  for core_module in $CORE_MODULES; do
+    [ -f "$CORE_SOURCE_DIR/$core_module" ] || fail "core_module_source_missing:$core_module"
+    install -o root -g root -m 0644 "$CORE_SOURCE_DIR/$core_module" "$CORE_PACKAGE/$core_module"
+  done
+  # The unit's WorkingDirectory is $APP_ROOT/app; import-check from the same
+  # place the runtime resolves padiem_ai_core.
+  (cd "$APP_ROOT/app" && PYTHONDONTWRITEBYTECODE=1 "$APP_ROOT/venv/bin/python" -c "
+import importlib
+for name in '''$CORE_MODULES'''.split():
+    importlib.import_module('padiem_ai_core.' + name[:-3])
+") || fail "core_modules_import_failed"
+  note "staged:core_modules=$CORE_MODULES"
 fi
 
 write_staged() {

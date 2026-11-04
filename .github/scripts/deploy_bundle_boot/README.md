@@ -23,15 +23,23 @@ the positive result is sensitive to the two failures #6855 records.
 
 ## #6855 regression case
 
-The 2026-11-05 00:19 B14 failure cause is still being investigated by
-컴2로컬1. When the CTO provides the old/fixed pair, add it as a regression case:
+**원인 확인(2026-11-05 06:37 comp2 재현).** deploy.sh는 #6848부터
+`conversation_bounds`·`evidence_blocks`를 스테이징하지만, COM2의 B14
+installer(`deploy/host-com2/b14/install.sh`)는 `pc_work_metrics` 하나만
+옮겨 왔다. 새 릴리스는 첫 기동에서
+`ModuleNotFoundError: No module named 'padiem_ai_core.conversation_bounds'`
+으로 크래시 루프에 들어갔고, 배포 스크립트가 이전 트리로 되돌렸다.
+CI가 deploy.sh 목록으로 묶음을 만들어 통과시켰기 때문에 이 격차가 보이지
+않았다.
 
-- keep the old bundle shape as a fixture under this directory;
-- assert the old fixture fails at boot/import;
-- assert the current `deploy.sh` bundle passes.
-
-Until then these jobs are the frame: they already fail for a missing module or
-an unreadable bundle, and they name the exact staging source in their output.
+- 고침: installer가 deploy.sh의 `for module in ...` 목록을 그대로 읽어
+  스테이징한다(두 목록이 다시 어긋날 수 없다).
+- 회귀 시험: `deploy/host-com2/tests/test_b14_core_staging_261105.py` —
+  installer 목록 == deploy.sh 목록, #6848 모듈 포함, 단일 모듈 하드코딩
+  금지. 이것이 "옛 묶음(installer 목록 누락)에서 실패, 고친 묶음에서
+  통과" 케이스다.
+- 검증: 2026-11-05 comp2 실배포에서 installer 수정 전 롤백 / 수정 후
+  기동 확인.
 
 ## Boundary
 
