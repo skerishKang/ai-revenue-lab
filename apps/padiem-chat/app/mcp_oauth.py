@@ -11,6 +11,7 @@ import base64
 import hashlib
 import hmac
 import json
+import logging
 import re
 import time
 from pathlib import Path
@@ -21,6 +22,7 @@ from starlette.responses import FileResponse, JSONResponse, RedirectResponse, Re
 from starlette.routing import Route
 
 from .auth_routes import current_user_id
+from .mcp_device_selection import McpDeviceRefusal, owner_devices, owner_linked_ids
 from .mcp_gateway_store import McpGatewayStoreError
 from .mcp_oauth_metadata import (
     AUTHORIZATION_SERVER_METADATA_PATH,
@@ -65,6 +67,8 @@ _OAUTH_CORS_ORIGINS = frozenset({
     "https://claude.ai",
 })
 _OAUTH_CORS_HEADERS = frozenset({"authorization", "content-type"})
+
+_LOG = logging.getLogger(__name__)
 
 
 def _cors_origin_header(request, *, methods, preflight=False):
@@ -367,30 +371,27 @@ async def authorize_info(request):
             "X-MCP-Login-Url": _authorize_url(request) if getattr(
                 request.app.state, "shared_login_flow", None) is not None else "/",
         })
-    pairing = getattr(request.app.state, "pc_device_pairing_store", None)
-    links = []
-    if callable(getattr(pairing, "links_for_owner", None)):
-        try:
-            links = await pairing.links_for_owner(user_id=user_id)
-        except Exception:
-            links = []
-    devices = []
-    for link in links if isinstance(links, list) else []:
-        if not isinstance(link, dict):
-            continue
-        device_id = link.get("mesh_node_id")
-        if not is_pc_device_id(device_id) or any(item["device_id"] == device_id for item in devices):
-            continue
-        label = link.get("label")
-        devices.append({"device_id": device_id,
-                        "label": label.strip() if isinstance(label, str) and label.strip() else device_id})
-        if len(devices) >= 20:
-            break
+    # The list is the MCP device directory itself, answered by the same
+    # function ``pc_devices`` uses on the same store. A directory that cannot be
+    # read is an error, never an empty list: "no PC connected" has to mean that.
+    try:
+        devices = await owner_devices(request, owner_id=user_id)
+    except McpDeviceRefusal as refusal:
+        _LOG.warning("mcp_oauth_device_directory_unavailable reason=%s owner=%s",
+                     refusal.code, hashlib.sha256(user_id.encode()).hexdigest()[:8])
+        return _json({"error": refusal.code, "error_description": refusal.message}, 503)
     return _json({
         "client_name": validated["client"]["client_name"],
         "redirect_uri": validated["redirect_uri"],
         "scope": validated["scope"], "resource": validated["resource"],
-        "issuer": issuer(_settings(request)), "pcs": devices,
+        "issuer": issuer(_settings(request)),
+        "pcs": [{
+            "device_id": item["device_id"],
+            "label": item["name"] or item["id6"],
+            "name": item["name"],
+            "id6": item["id6"],
+            "online": item["online"],
+        } for item in devices],
     })
 
 
@@ -417,15 +418,10 @@ async def authorize_post(request):
     device_id = values.get("device_id")
     if not is_pc_device_id(device_id):
         return _oauth_error(403, "pc_device_unavailable")
-    pairing = getattr(request.app.state, "pc_device_pairing_store", None)
-    if not callable(getattr(pairing, "links_for_owner", None)):
-        return _oauth_error(503, "temporarily_unavailable")
     try:
-        links = await pairing.links_for_owner(user_id=user_id)
-    except Exception:
+        linked_ids = await owner_linked_ids(request, owner_id=user_id)
+    except McpDeviceRefusal:
         return _oauth_error(503, "temporarily_unavailable")
-    linked_ids = [link.get("mesh_node_id") for link in links
-                  if isinstance(link, dict) and is_pc_device_id(link.get("mesh_node_id"))]
     if device_id not in linked_ids:
         return _oauth_error(403, "pc_device_unavailable")
     # 2026-11-04: the consent chooses the token's device scope. Default is

@@ -53,6 +53,18 @@
     if (card) card.setAttribute("aria-busy", "false");
   }
 
+  // Same facts `pc_devices` shows: the owner's label, the device's last six
+  // characters and whether the queue currently reports it online.
+  function pcText(pc) {
+    const name = (pc && (pc.name || pc.label)) || "";
+    const id6 = (pc && pc.id6) || "";
+    const shown = name || id6 || (pc && pc.device_id) || "";
+    const parts = [shown];
+    if (id6 && name && id6 !== name) parts.push(id6);
+    if (pc && pc.online === true) parts.push(text("mcp-oauth-pc-online"));
+    return parts.join(" · ");
+  }
+
   function render() {
     if (!info) return;
     if (intro) {
@@ -75,7 +87,7 @@
       (info.pcs || []).forEach((pc) => {
         const option = document.createElement("option");
         option.value = pc.device_id;
-        option.textContent = pc.label || pc.device_id;
+        option.textContent = pcText(pc);
         pcSelect.append(option);
       });
       if (previous && info.pcs.some((pc) => pc.device_id === previous)) pcSelect.value = previous;
@@ -102,7 +114,7 @@
           }
         });
         const text = document.createElement("span");
-        text.textContent = pc.label || pc.device_id;
+        text.textContent = pcText(pc);
         label.append(box, text);
         pcList.append(label);
       });
