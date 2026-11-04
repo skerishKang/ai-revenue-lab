@@ -146,6 +146,12 @@ def test_execute_carries_the_denial_reason_on_the_error(monkeypatch):
 
 
 def test_dispatch_logs_deny_reason_in_the_operation_event(caplog):
+    # request_telemetry가 같은 로거("padiem_chat.request")의 전파를 끄므로
+    # caplog의 루트 핸들러로는 이벤트가 보이지 않는다 — 감사 로거에 직접
+    # caplog 핸들러를 붙여 기록을 읽는다. 단언 기준은 그대로다.
+    audit_logger = logging.getLogger("padiem_chat.request")
+    audit_logger.addHandler(caplog.handler)
+    caplog.at_level(logging.INFO, logger="padiem_chat.request")
     class _Store:
         async def audit(self, **kwargs):
             return True
@@ -176,6 +182,7 @@ def test_dispatch_logs_deny_reason_in_the_operation_event(caplog):
     assert outcome["status"] == "unavailable"
     assert outcome["deny_reason"] == "mesh_command_target_not_found"
 
+    audit_logger.removeHandler(caplog.handler)
     events = [json.loads(r.message) for r in caplog.records
               if r.levelno == logging.INFO and r.message.startswith("{")]
     mine = [e for e in events if e.get("event") == "mcp_operation"
