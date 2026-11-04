@@ -35,6 +35,8 @@ def test_removed_free_models_not_in_public_or_exact_catalog():
         "tokenharbor/deepseek-v4.1-flash:free",
         "opencode-go/beam-free",
         "opencode-go/longcat-2.5-preview-free",
+        "kilo/stealth/crouton-alpha",
+        "openrouter/stealth/crouton-alpha",
     }
     assert all(m not in CATALOG_BY_ID for m in [
         "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",

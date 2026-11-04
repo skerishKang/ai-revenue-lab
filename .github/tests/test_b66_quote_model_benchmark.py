@@ -34,7 +34,10 @@ def test_authority_current_owner_registry_only():
     expected={item["id"] for item in canonical["models"] if item["enabled"] and canonical["providers"][item["provider_id"]]["enabled"]}
     assert len(set(models))==len(models)
     assert set(models)==expected
-    assert not any(name.startswith("kilo/") for name in models)
+    assert not any(
+        name.startswith("kilo/") and name != "kilo/stealth/crouton-alpha"
+        for name in models
+    )
     assert any(name.startswith("poolside/") for name in models)
     with pytest.raises(ValueError):
         m.select_exact_model("kilo/poolside/laguna-s-2.1:free")

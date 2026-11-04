@@ -19,7 +19,11 @@ def test_retired_kilo_never_registered_or_dispatched(model_id):
         resolve_manual_route(model_id)
     assert exc.value.upstream_called is False
 
-def test_removed_kilo_provider_does_not_remove_direct_poolside():
-    assert get_platform_provider("kilo") is None
+def test_kilo_provider_reonboarded_for_crouton_only():
+    spec = get_platform_provider("kilo")
+    assert spec is not None
+    assert spec.base_origin == "https://api.kilo.ai/api/gateway/v1"
+    assert spec.credential_binding_name == "PADIEM_B14_CREDENTIAL_08"
+    assert get_catalog_by_id("kilo/stealth/crouton-alpha") is not None
     assert get_catalog_by_id("poolside/laguna-s-2.1") is not None
     assert get_platform_provider("poolside") is not None

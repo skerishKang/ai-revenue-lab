@@ -60,7 +60,9 @@ def test_only_json_providers_are_registered():
         "from app.pilot.platform_secrets import list_platform_providers;"
         "ids={p.provider_id for p in list_platform_providers()};"
         "assert ids==set(read_registry()['providers']);"
-        "assert ids.isdisjoint({'kilo','b-ai','infron'});"
+        "assert ids.isdisjoint({'b-ai','infron'});"
+        "assert [m['id'] for m in read_registry()['models'] if m['provider_id']=='kilo']==['kilo/stealth/crouton-alpha'];"
+        "assert [m['id'] for m in read_registry()['models'] if m['provider_id']=='openrouter']==['openrouter/stealth/crouton-alpha'];"
         "assert 'experiential' in ids;"
         "assert len(CATALOG_BY_ID)==len(read_registry()[\'models\'])"
     )

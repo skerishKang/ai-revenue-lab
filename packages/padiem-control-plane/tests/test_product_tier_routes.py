@@ -73,7 +73,7 @@ def test_current_tiers_contain_only_active_models() -> None:
     assert routes[ProductTierLabel.FREE].model_id == FREE_PRIMARY_B14_MODEL_ID
     assert routes[ProductTierLabel.FREE].route_id == "free.gemini-3.1-flash-lite.v1"
     assert routes[ProductTierLabel.FREE].provider_id == "google"
-    assert TIER_FALLBACK_B14_MODELS["free"] == ("google/gemma-4-31b-it", "google/gemini-3.5-flash-lite")
+    assert TIER_FALLBACK_B14_MODELS["free"] == ("kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it", "google/gemini-3.5-flash-lite")
     for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX, ProductTierLabel.ADMIN):
         assert routes[label].model_id == TEST_PHASE_PRIMARY_B14_MODEL_ID
     assert [len(tier.routes) for tier in PRODUCT_TIER_ROUTES] == [1, 2, 2, 2, 2]
@@ -296,7 +296,8 @@ def test_test_phase_primary_fallback_and_muse_identity_are_exact(label, tier):
     assert route.credential_binding == "PADIEM_B14_CREDENTIAL_05"
     assert route.status is ProductRouteStatus.EXECUTABLE
     assert TIER_FALLBACK_B14_MODELS[tier] == (
-        "google/gemini-3.1-flash-lite", "google/gemma-4-31b-it")
+        "google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free",
+        "google/gemma-4-31b-it")
     assert muse.route_id == (
         "admin.muse-spark-1.3-contributor.v1" if tier == "admin" else f"{tier}.muse-spark.v1")
     assert muse.provider_id == "opencode-go"

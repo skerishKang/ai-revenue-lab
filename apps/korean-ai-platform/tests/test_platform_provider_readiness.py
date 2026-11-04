@@ -35,7 +35,8 @@ def test_provider_readiness_mock_without_sensenova_secret_is_not_ready(monkeypat
     assert response.status_code == 200
     data = response.json()
     sensenova = _sensenova_provider(data)
-    assert not [p for p in data["providers"] if p["provider_id"]=="kilo"]
+    kilo = [p for p in data["providers"] if p["provider_id"] == "kilo"]
+    assert kilo and kilo[0]["credential_ready"] is False
     assert data["status"] == "not_ready"
     assert data["provider_mode"] == "mock"
     assert sensenova["credential_source"] == "platform_secret"
@@ -53,7 +54,8 @@ def test_provider_readiness_live_with_sensenova_secret_is_disabled(monkeypatch):
     assert response.status_code == 200
     data = response.json()
     sensenova = _sensenova_provider(data)
-    assert not [p for p in data["providers"] if p["provider_id"]=="kilo"]
+    kilo = [p for p in data["providers"] if p["provider_id"] == "kilo"]
+    assert kilo and kilo[0]["credential_ready"] is False
     assert data["status"] == "not_ready"
     assert data["provider_mode"] == "live"
     assert data["ready_provider_count"] == 0
@@ -66,7 +68,7 @@ def test_provider_readiness_live_with_sensenova_secret_is_disabled(monkeypatch):
     assert "credential_binding_name" not in response.text
 
 
-def test_provider_readiness_live_with_placeholder_sensenova_still_has_keyless_kilo(monkeypatch):
+def test_provider_readiness_live_with_placeholder_sensenova_still_reports_kilo_without_secret(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv(SENSENOVA_CREDENTIAL_BINDING, "test-key")
 
@@ -75,7 +77,8 @@ def test_provider_readiness_live_with_placeholder_sensenova_still_has_keyless_ki
     assert response.status_code == 200
     data = response.json()
     sensenova = _sensenova_provider(data)
-    assert not [p for p in data["providers"] if p["provider_id"]=="kilo"]
+    kilo = [p for p in data["providers"] if p["provider_id"] == "kilo"]
+    assert kilo and kilo[0]["credential_ready"] is False
     assert data["status"] == "not_ready"
     assert data["ready_provider_count"] == 0
     assert sensenova["credential_ready"] is False
@@ -113,6 +116,7 @@ def test_agnes_legacy_binding_name_never_satisfies_reonboarded_provider(monkeypa
     assert response.status_code == 200
     providers = {p["provider_id"]: p for p in response.json()["providers"]}
     assert "agnes-ai" in providers
-    assert "kilo" not in providers
+    assert "kilo" in providers
+    assert providers["kilo"]["credential_ready"] is False
     assert providers["agnes-ai"]["credential_ready"] is False
     assert providers["agnes-ai"]["route_ready"] is False

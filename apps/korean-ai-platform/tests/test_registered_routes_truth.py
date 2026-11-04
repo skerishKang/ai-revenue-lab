@@ -75,8 +75,15 @@ def test_only_owner_registered_manual_models(client):
     assert all(r["explicit_only"] for r in routes)
     assert not any(r["auto_eligible"] or r["owner_excluded"] for r in routes)
 
-def test_removed_kilo_models_are_unregistered(client):
-    assert not [r for r in _registered_routes(client) if r["provider_id"]=="kilo"]
+def test_retired_kilo_models_stay_unregistered_while_crouton_is_registered(client):
+    routes = _registered_routes(client)
+    kilo = [r for r in routes if r["provider_id"] == "kilo"]
+    assert [r["id"] for r in kilo] == ["kilo/stealth/crouton-alpha"]
+    openrouter = [r for r in routes if r["provider_id"] == "openrouter"]
+    assert [r["id"] for r in openrouter] == ["openrouter/stealth/crouton-alpha"]
+    from app.pilot.model_registry_file import retired_model_ids
+    registered = {r["id"] for r in routes}
+    assert not (registered & {m for m in retired_model_ids() if m.startswith("kilo/")})
 
 def test_remaining_models_visible_in_exact_catalog(client):
     data=client.get("/api/pilot/models").json()

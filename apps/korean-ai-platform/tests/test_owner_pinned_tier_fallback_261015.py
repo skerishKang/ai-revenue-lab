@@ -20,6 +20,8 @@ def test_google_free_grade_has_exact_owner_backups(monkeypatch):
     assert TIER_DEFAULT_B14_MODEL == "google/gemini-3.1-flash-lite"
     backups = TIER_FALLBACK_B14_MODELS["free"]
     assert backups == (
+        "kilo/stealth/crouton-alpha",
+        "openrouter/stealth/crouton-alpha",
         "google/gemma-4-31b-it",
         "google/gemini-3.5-flash-lite",
     )
@@ -110,7 +112,11 @@ def test_b14_still_accepts_the_attempt_option_only_to_drop_it(caplog):
     )
 
 
-@pytest.mark.parametrize("tier", ["plus", "pro", "max", "admin"])
-def test_owner_test_phase_google_rosters_have_the_exact_recovery_order(tier):
-    assert TIER_FALLBACK_B14_MODELS[tier] == (
-        "google/gemini-3.1-flash-lite", "google/gemma-4-31b-it")
+@pytest.mark.parametrize("tier,expected", [
+    ("plus", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "google/gemma-4-31b-it")),
+    ("pro", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "google/gemma-4-31b-it")),
+    ("max", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "google/gemma-4-31b-it")),
+    ("admin", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "google/gemma-4-31b-it")),
+])
+def test_owner_test_phase_rosters_have_the_exact_recovery_order(tier, expected):
+    assert TIER_FALLBACK_B14_MODELS[tier] == expected

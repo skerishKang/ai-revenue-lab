@@ -127,6 +127,24 @@
       "credential_source": "platform_secret",
       "credential_binding_name": "YETA_API_KEY",
       "enabled": true
+    },
+    "kilo": {
+      "base_origin": "https://api.kilo.ai/api/gateway/v1",
+      "allowed_hosts": [
+        "api.kilo.ai"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_08",
+      "enabled": true
+    },
+    "openrouter": {
+      "base_origin": "https://openrouter.ai/api/v1",
+      "allowed_hosts": [
+        "openrouter.ai"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_07",
+      "enabled": true
     }
   },
   "models": [
@@ -574,6 +592,48 @@
       "output_price_usd_per_1m": 0.35,
       "source": "Owner-supplied Yeta account Models screen 2026-10-27 (input/cached-input/output USD per 1M, context labels 1M and 262K as displayed); OpenAI-compatible base proven keyless on 2026-10-27 by GET https://platform.yeta.ai/v1/models -> 401 {\"type\":\"new_api_error\",\"message\":\"Invalid token\"} while https://platform.yeta.ai/api/v1/models -> 404; tool-calling/vision support and the exact context-window counts NOT verified, so capabilities stay chat-only and context_window records the displayed label; cached input US$0.01 per 1M tokens, currency USD, billed per 1M tokens",
       "source_checked_at": "2026-10-27",
+      "enabled": true
+    },
+    {
+      "id": "kilo/stealth/crouton-alpha",
+      "provider_id": "kilo",
+      "upstream_model": "stealth/crouton-alpha",
+      "display_name": "Kilo: Crouton Alpha",
+      "provider_name": "Kilo",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free",
+        "image",
+        "long_context",
+        "tools"
+      ],
+      "context_window": 1048576,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "https://api.kilo.ai/api/gateway/v1/models (stealth/crouton-alpha; isFree=true, context_length 1048576, tools/reasoning/vision declared)",
+      "source_checked_at": "2026-11-04",
+      "enabled": true
+    },
+    {
+      "id": "openrouter/stealth/crouton-alpha",
+      "provider_id": "openrouter",
+      "upstream_model": "stealth/crouton-alpha",
+      "display_name": "OpenRouter: Crouton Alpha",
+      "provider_name": "OpenRouter",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free",
+        "image",
+        "long_context",
+        "tools"
+      ],
+      "context_window": 1048576,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "https://openrouter.ai/api/v1/models (stealth/crouton-alpha; pricing 0/0, context_length 1048576, tools/reasoning/vision declared)",
+      "source_checked_at": "2026-11-04",
       "enabled": true
     }
   ],

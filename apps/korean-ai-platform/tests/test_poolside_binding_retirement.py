@@ -92,7 +92,8 @@ def test_no_retired_kilo_route_can_make_poolside_ready(monkeypatch):
     assert readiness.status_code == 200
     data=readiness.json()
     assert data["status"] == "not_ready"
-    assert not [e for e in data["providers"] if e["provider_id"] == "kilo"]
+    kilo = [e for e in data["providers"] if e["provider_id"] == "kilo"]
+    assert kilo and kilo[0]["credential_ready"] is False
     poolside=_provider(data,POOLSIDE_PROVIDER_ID)
     assert poolside["credential_ready"] is False
     assert poolside["route_ready"] is False

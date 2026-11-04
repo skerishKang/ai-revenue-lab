@@ -62,7 +62,8 @@ def test_space_bunny_manual_resolution_fails_closed() -> None:
 
 def test_space_bunny_auth_special_case_is_removed() -> None:
     import inspect
-    assert ps.get_platform_provider("kilo") is None
+    assert ps.get_platform_provider("kilo") is not None
+    assert get_catalog_by_id("kilo/stealth/crouton-alpha") is not None
     assert "KILO_SPACE_BUNNY" not in inspect.getsource(plat._request_headers)
     assert get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID) is None
 
