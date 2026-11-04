@@ -33,6 +33,7 @@
     "test_5554_claw_general_ttft_path.py": "MOCK",
     "test_5614_claw_pc_catalog_parallel.py": "MOCK",
     "test_5881_file_lane.py": "B14_MANAGED",
+    "test_6812_history_bounds.py": "B14_MANAGED",
     "test_admin_model_select_261018.py": "B14_MANAGED",
     "test_attachments.py": "B14_MANAGED",
     "test_auto_grounding.py": "B14_MANAGED",

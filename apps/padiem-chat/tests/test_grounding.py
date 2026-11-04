@@ -416,15 +416,21 @@ def test_grounding_context_has_hard_cap_and_response_sources_match_context_sourc
     ]
     prepared = prepare_grounding_context(items)
     context = prepared.context
-    # #4379: the grounded evidence context is not cut to a PADIEM character
-    # total, so every evidence item is projected.
-    assert len(context) > 5_000
-    assert len(prepared.evidence) == len(items)
-    assert 1 <= len(prepared.evidence) <= 5
+    # #6812 stage 2: a search-preview set is bounded by its per-preview and
+    # total evidence caps, so every item still projects but each preview is
+    # shorter. #4379's "no PADIEM total" still holds for fetched pages.
+    from padiem_ai_core.grounding_runtime import MAX_EVIDENCE_TOTAL_CHARS
+
+    assert len(context) <= MAX_EVIDENCE_TOTAL_CHARS
+    # Sources keep their order and numbering; the total cap can end the set
+    # early, so the response sources are exactly the accepted ones.
+    assert 1 <= len(prepared.evidence) <= len(items)
     assert context == build_grounding_context(items)
     for index, item in enumerate(prepared.evidence, start=1):
         assert f"[{index}]" in context
         assert item.title[:50] in context
     if len(prepared.evidence) < len(items):
         next_index = len(prepared.evidence) + 1
-        assert f"[{next_index}]" not in context
+        # The preamble names "[1], [2] ..." as prose, so the absent source is
+        # checked by its block form, which is what citing it would require.
+        assert f'[{next_index}] {{"source":{next_index},' not in context

@@ -138,10 +138,12 @@ def test_exact_model_streaming_keeps_free_id(mid, upstream, live_key):
         called.append(True)
         assert str(req.url) == ORIGIN + "/chat/completions"
         assert req.headers["Authorization"] == "Bearer " + SYNTHETIC
+        # #6812 stage 2: the streamed body also asks for its usage report.
         assert json.loads(req.content) == {
             "model": upstream,
             "messages": [{"role": "user", "content": "test"}],
             "stream": True,
+            "stream_options": {"include_usage": True},
         }
         payload = (
             'data: '+json.dumps({

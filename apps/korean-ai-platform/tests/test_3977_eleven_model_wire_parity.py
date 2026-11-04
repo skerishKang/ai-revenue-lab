@@ -87,8 +87,11 @@ async def test_all_exact_models_omit_defaults_and_reject_empty_upstream(
         assert not ({"temperature", "max_tokens", "reasoning_effort", "top_p", "top_k"}
                     & set(payload))
     assert set(seen[0][1]) == {"model", "messages"}
-    assert set(seen[1][1]) == {"model", "messages", "stream"}
+    # #6812 stage 2: a streamed body also asks for its usage report, and adds
+    # nothing else to the wire.
+    assert set(seen[1][1]) == {"model", "messages", "stream", "stream_options"}
     assert seen[1][1]["stream"] is True
+    assert seen[1][1]["stream_options"] == {"include_usage": True}
 
     # HTTP 200 + empty text is never model-quality success on either route.
     empty = True

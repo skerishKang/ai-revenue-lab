@@ -141,7 +141,8 @@ def test_exact_kira_streaming_upstream_model_and_omitted_defaults(live):
         assert str(req.url)==ORIGIN+"/chat/completions"
         assert req.headers["Authorization"]=="Bearer "+key
         body=json.loads(req.content)
-        assert body=={"model":UPSTREAM,"messages":[{"role":"user","content":"OK"}],"stream":True}
+        # #6812 stage 2: the streamed body also asks for its usage report.
+        assert body=={"model":UPSTREAM,"messages":[{"role":"user","content":"OK"}],"stream":True,"stream_options":{"include_usage":True}}
         events=(
             'data: {"id":"synthetic","model":"'+UPSTREAM+'",'
             '"choices":[{"delta":{"content":"OK"},"finish_reason":"stop"}]}\n\n'

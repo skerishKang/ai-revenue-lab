@@ -188,7 +188,9 @@ def test_tools_absent_preserves_google_stream_bytes(monkeypatch, extra, url):
     assert response.status_code == 200, response.text
     assert len(sent) == 1
     assert str(sent[0].url) == "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
-    assert sent[0].content == b'{"model":"gemini-3.1-flash-lite","messages":[{"role":"user","content":"' + "안녕하세요".encode() + b'"}],"stream":true}'
+    # #6812 stage 2 adds the usage request to every streamed body, so the wire
+    # snapshot carries that one key and nothing else new.
+    assert sent[0].content == b'{"model":"gemini-3.1-flash-lite","messages":[{"role":"user","content":"' + "안녕하세요".encode() + b'"}],"stream":true,"stream_options":{"include_usage":true}}'
     # Exact legacy wire snapshot; request ID is fixed, no event names or new keys.
     assert response.content == LEGACY_GOOGLE_STREAM_BYTES
 
