@@ -1194,6 +1194,64 @@ async def dispatch_oracle_mesh_read_intent(
     })
 
 
+async def _active_owner_link_node(
+    request: Request, *, user_id: str | None, device_id: str | None,
+) -> str | None:
+    """The owner's exact active link for this PC, or ``None``.
+
+    #6801 made the linked PC the command target. The deployment map's unpinned
+    row names no PC, so a token-pinned device must travel to the linked node
+    instead of the row's placeholder ref.
+    """
+    if not isinstance(user_id, str) or not user_id:
+        return None
+    if not isinstance(device_id, str) or not device_id:
+        return None
+    store = getattr(request.app.state, "pc_device_pairing_store", None)
+    if not callable(getattr(store, "links_for_owner", None)):
+        return None
+    try:
+        links = await store.links_for_owner(user_id=user_id)
+    except Exception:
+        return None
+    for link in links if isinstance(links, list) else []:
+        if (isinstance(link, dict) and link.get("mesh_node_id") == device_id
+                and link.get("state") == "active"):
+            return device_id
+    return None
+
+
+async def _owner_command_target(
+    request: Request, mesh_source: Any, *, account_ref: str | None,
+    owner_id: str | None, device_id: str | None,
+) -> dict[str, Any] | None:
+    """Resolve the deployment command row for this owner, then pin an unpinned hit.
+
+    The map rows in this deployment are keyed by the verified product user id,
+    while the connector scope answers a different account-ref axis; the grant
+    lane already falls back to the token owner (#6792). The terminal lane needs
+    the same fallback, or a valid command grant reads as unverified.
+    """
+    target: dict[str, Any] | None = None
+    tried: set[str] = set()
+    for ref in (account_ref, owner_id):
+        if not isinstance(ref, str) or not ref or ref in tried:
+            continue
+        tried.add(ref)
+        target = mesh_source.command_target(account_ref=ref, device_id=device_id)
+        if target is not None:
+            break
+    if target is None:
+        return None
+    if target.get("device_id") is None:
+        linked = await _active_owner_link_node(
+            request, user_id=owner_id, device_id=device_id,
+        )
+        if linked is not None:
+            return {**target, "device_id": linked, "node_ref": linked}
+    return target
+
+
 async def dispatch_oracle_mesh_command_intent(
     request: Request, *, command: str, wire: dict[str, Any],
     trusted_owner: tuple[Any, str, str] | None = None,
@@ -1301,7 +1359,10 @@ async def dispatch_oracle_mesh_command_intent(
         ):
             return _error(403, "oracle_mesh_command_unverified")
     else:
-        target = mesh_source.command_target(account_ref=account_ref, device_id=selected)
+        target = await _owner_command_target(
+            request, mesh_source, account_ref=account_ref,
+            owner_id=uid, device_id=selected,
+        )
     if target is None:
         return _error(403, "oracle_mesh_command_unverified")
 
@@ -1741,7 +1802,10 @@ async def dispatch_oracle_mesh_desktop_intent(
     if run_row.get("status") == "cancelled":
         return _error(409, "oracle_mesh_run_stopped")
 
-    target = mesh_source.command_target(account_ref=account_ref, device_id=selected)
+    target = await _owner_command_target(
+        request, mesh_source, account_ref=account_ref,
+        owner_id=uid, device_id=selected,
+    )
     if target is None:
         return _error(403, "oracle_mesh_command_unverified")
 
