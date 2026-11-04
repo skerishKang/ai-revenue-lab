@@ -3805,7 +3805,7 @@ PC_FILES_MAX_PATH_CHARS = 2048
 #: bound, and small enough that the Worker's parse of a page stays a fraction of its
 #: 10 ms CPU budget. The old silent `-First 200` cut had no continuation; this
 #: constant has one.
-PC_FILES_LIST_PAGE_SIZE = 200
+PC_FILES_LIST_PAGE_SIZE = 50
 #: The read bound this deployment asks an installed connector for. It is the
 #: connector's own read envelope (``MAX_READ_BYTES_ENVELOPE`` in kagent's
 #: oracle-mesh executor), not a product cap on a file's size: a file larger than
@@ -5134,6 +5134,10 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                 "result_sha256": dispatch.get("result_sha256"),
                 "termination": dispatch.get("termination"),
                 "exit_code": dispatch.get("exit_code"),
+                # The continuation leg projects the finished listing against the
+                # folder it was asked about; the Engine sent this path and is the
+                # only reader of this response.
+                "file_path": dispatch.get("file_path"),
             },
         })
     # A command result is ready only after a clean terminal row. A read keeps
@@ -5222,6 +5226,9 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             "kind": kind,
             "state": state,
             "result_sha256": digest,
+            # A continuation projects the finished listing against the folder it
+            # was asked about; the Engine sent this path and is the only reader.
+            "file_path": dispatch.get("file_path"),
             "content_sha256": digest,
             "content_bytes": len(content),
             "output": output,

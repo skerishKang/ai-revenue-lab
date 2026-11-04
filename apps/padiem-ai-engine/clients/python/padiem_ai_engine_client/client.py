@@ -613,7 +613,13 @@ _PC_GATEWAY_TOOLS = {
     "claw.pc.browser_act": {"action", "text", "role", "name", "value"},
 }
 _PC_GATEWAY_BROWSER_TOOLS = frozenset(name for name in _PC_GATEWAY_TOOLS if name.startswith("claw.pc.browser_"))
+#: 2026-11-04: the read-only file tools may answer after the first request, and
+#: the same tool continues that dispatch by job id. This is the only other
+#: argument shape those two tools accept, and the client keeps its own closed
+#: check so a widened shape has to be named here too.
+_PC_GATEWAY_RESUME_TOOLS = frozenset({"claw.pc.list_files", "claw.pc.read_file"})
 _PC_GATEWAY_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
+_PC_GATEWAY_JOB_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 
 
 def _parse_pc_gateway(value):
@@ -640,6 +646,9 @@ def _parse_pc_gateway(value):
                 or not (args.get("text", "").strip() or args.get("name", "").strip())
                 or (args.get("action") == "type" and not args.get("value"))):
             raise ValueError("Invalid PC browser action")
+    elif tool in _PC_GATEWAY_RESUME_TOOLS and set(args) == {"job_id"}:
+        if _PC_GATEWAY_JOB_ID.fullmatch(args["job_id"]) is None:
+            raise ValueError("Invalid PC gateway job id")
     elif set(args) != _PC_GATEWAY_TOOLS[tool]:
         raise ValueError("Invalid PC gateway tool arguments")
     if browser:
@@ -647,7 +656,8 @@ def _parse_pc_gateway(value):
             raise ValueError("Browser confirmation must use ordinary first-party conversation")
         if tool == "claw.pc.browser_open":
             _normalize_gateway_browser_url(args["url"])
-    elif not args["path"].strip() or ("destination" in args and not args["destination"].strip()):
+    elif "path" in args and (not args["path"].strip()
+                             or ("destination" in args and not args["destination"].strip())):
         raise ValueError("Invalid PC gateway path")
     if "browser_context" in value:
         context = value["browser_context"]
