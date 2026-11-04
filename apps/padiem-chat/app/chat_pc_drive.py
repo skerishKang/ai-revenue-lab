@@ -641,8 +641,8 @@ async def chat_pc_tools_available(request: Request, *, uid: str | None) -> bool:
         return False
     if device_id is not None and not pc_context.selected_confirmed:
         return False
-    return await _check_mesh_grant(request, session, device_id=device_id)
-
+    return await _check_mesh_grant(request, session, device_id=device_id,
+                                   owner_ref=uid)
 
 async def resolve_chat_pc_stream_context(
     request: Request, *, uid: str, requested_device_id: str | None = None,
@@ -703,7 +703,8 @@ async def resolve_chat_pc_stream_context(
             and requested_device_id != device_id
         ):
             return None
-        if not await _check_mesh_grant(request, session, device_id=device_id):
+        if not await _check_mesh_grant(request, session, device_id=device_id,
+                                       owner_ref=uid):
             return None
         # The existing command grant allows drive inventory; file scopes also
         # require the same approved root that the signed file API resolves.
@@ -739,7 +740,8 @@ async def promote_chat_pc_stream_run(
     if not callable(promoter) or _client_lane_run_id(run_id) is None:
         return None
     session, _subject, workspace = await _resolve_chat_owner(request, uid)
-    if not await _check_mesh_grant(request, session, device_id=device_id):
+    if not await _check_mesh_grant(request, session, device_id=device_id,
+                                   owner_ref=uid):
         return None
     return await promoter(user_id=uid, run_id=run_id, workspace_id=workspace, action=action)
 
@@ -1031,7 +1033,8 @@ async def execute_chat_pc_drive_lane(
         if saved_id is None:
             raise ChatPCDriveError("conversation_not_found", "대화를 찾을 수 없습니다.", 404)
         return answer, saved_id
-    if not await _check_mesh_grant(request, session, device_id=device_id):
+    if not await _check_mesh_grant(request, session, device_id=device_id,
+                                   owner_ref=uid):
         answer = _no_pc_lane_answer(files_only)
         saved_id = await _save_pair(
             store, uid=uid, conversation_id=conversation_id,
