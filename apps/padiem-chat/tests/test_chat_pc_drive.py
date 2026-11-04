@@ -448,7 +448,7 @@ def test_lane_tool_path_stages_chat_run_and_records_answer(monkeypatch):
                                   subject=SimpleNamespace(subject_id="sub_" + "a" * 32))
         return session, "sub_" + "a" * 32, "tenant-1"
 
-    async def fake_grant(req, session, *, device_id=None):
+    async def fake_grant(req, session, *, device_id=None, owner_ref=None):
         return (object(), "acc-1", "node-1")
 
     old_ready, old_uid = lane.auth_ready, lane.current_user_id
@@ -853,7 +853,7 @@ def test_selected_pc_always_uses_the_single_engine_lane(monkeypatch):
                                   subject=SimpleNamespace(subject_id="sub_" + "a" * 32))
         return session, "sub_" + "a" * 32, "tenant-1"
 
-    async def fake_grant(req, session, *, device_id=None):
+    async def fake_grant(req, session, *, device_id=None, owner_ref=None):
         return (object(), "acc-1", "node-1")
 
     old_ready, old_uid = lane.auth_ready, lane.current_user_id
