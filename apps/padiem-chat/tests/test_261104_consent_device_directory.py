@@ -84,8 +84,14 @@ async def _params_for(client):
 
 
 @pytest.mark.asyncio
-async def test_consent_lists_the_queue_links_with_pc_devices_display(directory_ctx):
+async def test_consent_lists_the_queue_links_with_pc_devices_display(directory_ctx, monkeypatch):
     app, owner, _other, _store, _pairing, _db = directory_ctx
+    # The presence receipt's own freshness window is proven elsewhere; here the
+    # judgement is fixed so the assertion is about the consent projection only.
+    monkeypatch.setattr(
+        "app.claw_local_access_source.mesh_presence_online",
+        lambda row, *, device_id, now: row is not None,
+    )
     async with client_for(app) as external:
         client_id, _verifier, params = await _params_for(external)
         async with client_for(app) as owner_ui:
