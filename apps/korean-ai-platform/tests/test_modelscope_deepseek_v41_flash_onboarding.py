@@ -165,8 +165,10 @@ def test_modelscope_streaming_keeps_exact_model_and_no_hidden_options(isolated_p
     def handler(req):
         calls.append(str(req.url))
         assert req.headers["Authorization"] == "Bearer "+SYNTHETIC_KEY
+        # #6812 stage 2: the streamed body also asks for its usage report.
         assert json.loads(req.content) == {
-            "model":UPSTREAM,"messages":[{"role":"user","content":"ok"}],"stream":True
+            "model":UPSTREAM,"messages":[{"role":"user","content":"ok"}],"stream":True,
+            "stream_options":{"include_usage":True},
         }
         return httpx.Response(200,content=(
             'data: {"id":"synthetic","model":"'+UPSTREAM+

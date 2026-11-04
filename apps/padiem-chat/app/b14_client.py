@@ -29,6 +29,11 @@ from padiem_ai_core import (
     MAX_B14_RESPONSE_BYTES,
 )
 from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
+from padiem_ai_core.conversation_bounds import (
+    DEFAULT_HISTORY_MAX_CHARS,
+    DEFAULT_HISTORY_MAX_TURNS,
+    bound_conversation_history,
+)
 from padiem_ai_core.b14_streaming import B14StreamToolCall
 from padiem_ai_core.tool_channel import ToolDefinition
 
@@ -435,7 +440,19 @@ def _execution_request(
     tier_stream_fallback: bool = False,
     tools: tuple[ToolDefinition, ...] = (),
     tool_choice: Mapping[str, Any] | str | None = None,
+    history_max_turns: int = DEFAULT_HISTORY_MAX_TURNS,
+    history_max_chars: int = DEFAULT_HISTORY_MAX_CHARS,
 ) -> ExecutionRequest:
+    # #6812 stage 2: the browser still sends the thread it always sent; the
+    # server bounds what reaches the model. The newest turn (with the current
+    # question) and the system instruction always survive, and a trimmed history
+    # is disclosed in the system wording rather than looking complete.
+    history = bound_conversation_history(
+        messages, max_turns=history_max_turns, max_chars=history_max_chars,
+    )
+    context = _trusted_dispatch_context(additional_system_context, dispatch_sample)
+    if history.note:
+        context = f"{context}\n\n{history.note}"
     return ExecutionRequest(
         agent=_agent_profile(
             skill=skill,
@@ -447,10 +464,8 @@ def _execution_request(
             product_tier=product_tier,
             tier_stream_fallback=tier_stream_fallback,
         ),
-        messages=tuple(dict(message) for message in messages),
-        additional_system_context=_trusted_dispatch_context(
-            additional_system_context, dispatch_sample
-        ),
+        messages=history.messages,
+        additional_system_context=context,
         # #5573: an absent declaration keeps the request exactly as before.
         **({"tools": tools} if tools else {}),
         **({"tool_choice": tool_choice} if tool_choice is not None else {}),
@@ -465,7 +480,16 @@ def _multimodal_execution_request(
     additional_system_context: str | None,
     product_identity: str | None = PADIEM_IDENTITY_INSTRUCTION,
     dispatch_sample: datetime | None = None,
+    history_max_turns: int = DEFAULT_HISTORY_MAX_TURNS,
+    history_max_chars: int = DEFAULT_HISTORY_MAX_CHARS,
 ) -> MultimodalExecutionRequest:
+    # Same server-side history bound as the text lane (#6812 stage 2).
+    history = bound_conversation_history(
+        messages, max_turns=history_max_turns, max_chars=history_max_chars,
+    )
+    context = _trusted_dispatch_context(additional_system_context, dispatch_sample)
+    if history.note:
+        context = f"{context}\n\n{history.note}"
     return MultimodalExecutionRequest(
         agent=_agent_profile(
             skill=skill,
@@ -473,10 +497,8 @@ def _multimodal_execution_request(
             required_capabilities=("chat", "image"),
             product_identity=product_identity,
         ),
-        messages=tuple(messages),
-        additional_system_context=_trusted_dispatch_context(
-            additional_system_context, dispatch_sample
-        ),
+        messages=history.messages,
+        additional_system_context=context,
     )
 
 
@@ -672,6 +694,8 @@ class B14Client:
             additional_system_context=bounded_context,
             dispatch_sample=self._dispatch_wall_clock(),
             tier_stream_fallback=True,
+            history_max_turns=self.settings.history_max_turns,
+            history_max_chars=self.settings.history_max_chars,
         )
         inner_stream = self._stream_core(request)
         try:
@@ -748,6 +772,8 @@ class B14Client:
             tier_stream_fallback=True,
             tools=tools,
             tool_choice=tool_choice,
+            history_max_turns=self.settings.history_max_turns,
+            history_max_chars=self.settings.history_max_chars,
         )
         inner_stream = self._stream_core(request)
         try:
@@ -784,6 +810,8 @@ class B14Client:
             max_retries=max_retries,
             model_parameters=model_parameters,
             product_tier=product_tier,
+            history_max_turns=self.settings.history_max_turns,
+            history_max_chars=self.settings.history_max_chars,
         )
         core_client = B14ExecutionClient(
             self._completion_config(
@@ -845,6 +873,8 @@ class B14Client:
             model=model,
             additional_system_context=additional_system_context,
             dispatch_sample=self._dispatch_wall_clock(),
+            history_max_turns=self.settings.history_max_turns,
+            history_max_chars=self.settings.history_max_chars,
         )
         core_client = B14ExecutionClient(
             self._completion_config(),

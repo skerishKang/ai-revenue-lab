@@ -75,6 +75,11 @@ from app.pilot.platform_secrets import (
     resolve_secret,
 )
 from app.pilot.redaction import redact_sensitive
+from app.pilot.stream_usage_option import (
+    rejects_stream_usage_option,
+    stream_options_payload,
+    stream_usage_option_enabled,
+)
 from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer, require_completed_text_answer
 from app.pilot.user_credential import UserCredential
 
@@ -789,6 +794,14 @@ async def stream_platform_chat_completions(
         "messages": _openai_compatible_messages(messages, platform_provider_id),
         "stream": True,
     }
+    # #6812 stage 2: ask this stream for its usage report. Without it a streamed
+    # attempt stored an empty prompt_tokens in the ledger even though the call
+    # consumed input. A deployment may exclude a route, and a request-level
+    # rejection of the field is retried once without it, so no lane loses its
+    # answer to a stricter endpoint.
+    usage_option_sent = stream_usage_option_enabled(platform_provider_id)
+    if usage_option_sent:
+        body["stream_options"] = stream_options_payload()
     if temperature is not None:
         body["temperature"] = float(temperature)
     # Do not invent a generation budget here. Product/runtime policy owns any
@@ -822,12 +835,33 @@ async def stream_platform_chat_completions(
             response, request_started = await send_provider_request(
                 client, "POST", chat_url, headers=headers, json=body,
             )
+            # Safety path for the usage option: an endpoint that rejects the
+            # unknown request field is answered once more without it. Only a
+            # request-level rejection that names the field triggers the retry;
+            # an error is never re-sent for any other reason.
+            rejected_body: bytes | None = None
+            if usage_option_sent and 400 <= response.status_code < 500:
+                rejected_body = await _read_bounded_body(
+                    response, started_at=request_started,
+                )
+                if rejects_stream_usage_option(rejected_body):
+                    logger.warning("stream_usage_option_rejected")
+                    await response.aclose()
+                    body.pop("stream_options", None)
+                    usage_option_sent = False
+                    rejected_body = None
+                    response, request_started = await send_provider_request(
+                        client, "POST", chat_url, headers=headers, json=body,
+                    )
             async with aclosing(response):
                 if response.status_code < 200 or response.status_code >= 300:
                     # Bound error-body bytes before inspecting provider-specific
                     # 429 diagnostics; untrusted upstream errors can be huge.
-                    error_bytes = await _read_bounded_body(
-                        response, started_at=request_started,
+                    error_bytes = (
+                        rejected_body if rejected_body is not None
+                        else await _read_bounded_body(
+                            response, started_at=request_started,
+                        )
                     )
                     if platform_provider_id == "tokenharbor":
                         _log_tokenharbor_rejection(response, headers, error_bytes)

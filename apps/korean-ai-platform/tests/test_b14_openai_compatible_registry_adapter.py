@@ -135,10 +135,13 @@ async def test_completed_and_stream_wire_is_identical_without_the_module(monkeyp
         assert headers["content-type"] == "application/json"
         assert headers["host"] == ATRIA_HOST
     assert seen[0][2] == {"model": ATRIA_UPSTREAM, "messages": _atria_kwargs()["messages"]}
+    # #6812 stage 2: the streamed body differs from the completed body by the
+    # usage request, and by nothing else.
     assert seen[1][2] == {
         "model": ATRIA_UPSTREAM,
         "messages": _atria_kwargs()["messages"],
         "stream": True,
+        "stream_options": {"include_usage": True},
     }
 
 
