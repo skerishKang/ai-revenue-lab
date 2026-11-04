@@ -750,7 +750,10 @@ async def _claw_public_search_grounding(
     if sources is None:
         # Provenance that cannot be shown means the claim cannot be made either.
         return denied
-    if not isinstance(context, str) or not context.strip() or len(context) > 32_768:
+    # #4379/#6848: no PADIEM total on the evidence text. The model's own
+    # registered window, applied where the registry is read, is the bound; this
+    # lane still requires the shape and Core's untrusted-data preamble.
+    if not isinstance(context, str) or not context.strip():
         return denied
     if CLAW_GROUNDING_PREAMBLE_MARKER not in context:
         # Without Core's untrusted-data preamble the text would enter the prompt as
