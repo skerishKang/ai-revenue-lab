@@ -64,7 +64,8 @@ def test_admin_tier_runs_on_google_per_owner_test_phase_decision_2026_10_25() ->
     assert admin.upstream_model == max_route.upstream_model
     assert admin.credential_mode is max_route.credential_mode
     assert admin.credential_binding == max_route.credential_binding
-    assert TIER_FALLBACK_B14_MODELS["admin"] == TIER_FALLBACK_B14_MODELS["max"]
+    assert TIER_FALLBACK_B14_MODELS["admin"] == (
+        "google/gemini-3.1-flash-lite", "google/gemma-4-31b-it")
 
 def test_current_tiers_contain_only_active_models() -> None:
     from padiem_control_plane.product_tier_routes import TEST_PHASE_PRIMARY_B14_MODEL_ID, FREE_PRIMARY_B14_MODEL_ID, TIER_FALLBACK_B14_MODELS
@@ -295,8 +296,12 @@ def test_test_phase_primary_fallback_and_muse_identity_are_exact(label, tier):
     assert route.upstream_model == "gemini-3.5-flash-lite"
     assert route.credential_binding == "PADIEM_B14_CREDENTIAL_05"
     assert route.status is ProductRouteStatus.EXECUTABLE
-    assert TIER_FALLBACK_B14_MODELS[tier] == (
-        "google/gemini-3.1-flash-lite", "google/gemma-4-31b-it")
+    expected_roster = (
+        ("google/gemini-3.1-flash-lite", "google/gemma-4-31b-it")
+        if tier == "admin"
+        else ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free")
+    )
+    assert TIER_FALLBACK_B14_MODELS[tier] == expected_roster
     assert muse.route_id == (
         "admin.muse-spark-1.3-contributor.v1" if tier == "admin" else f"{tier}.muse-spark.v1")
     assert muse.provider_id == "opencode-go"
