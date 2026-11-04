@@ -123,6 +123,85 @@ class CanaryContractTests(unittest.TestCase):
         self.assertIn("B66_CGI_CANARY_SELECTED_TIER: " + chr(36) + "{{ inputs.selected_tier }}", wf)
 
 
+    def test_every_computed_marker_is_actually_emitted(self):
+        """A check whose result is never printed is not evidence.
+
+        The live run against the deployed grade contract computed the grade
+        options result and the interpreter failure stage, then printed neither,
+        because _print_summary still listed the retired model-catalog keys. This
+        drives run_live end to end with zero network and fails if any marker the
+        flow sets disappears from the emitted summary.
+        """
+        import io
+        import json
+        from contextlib import redirect_stdout
+        from email.message import Message
+        from unittest.mock import patch
+
+        grade_rows = {"ok": True, "tiers": [{"tier": "free", "name": "grade"}],
+                      "default_tier": "free"}
+        refused_headers = Message()
+        refused_headers["X-B66-Interpret-Failure-Stage"] = "interpreter_exception"
+        refused_headers["X-B66-Interpret-Exception-Family"] = "type_error"
+        replies = {
+            "/api/padiem/auth/password/login": (200, Message(), b'{"ok": true}'),
+            "/api/padiem/auth/status": (200, Message(), b'{"authenticated": true}'),
+            "/api/padiem/b66/saved-skills?limit=20": (
+                200, Message(),
+                json.dumps({"ok": True, "skills": [
+                    {"saved_skill_id": "b66skill_" + "0" * 32}]}).encode("utf8")),
+            "/api/padiem/b66/quote/models": (
+                200, Message(), json.dumps(grade_rows).encode("utf8")),
+            "/api/padiem/b66/quote/interpret": (
+                502, refused_headers,
+                b'{"ok": false, "error": {"code": "quote_interpretation_failed"}}'),
+        }
+        seen = []
+
+        def fake_json_request(opener, path, method="GET", payload=None):
+            seen.append((method, path, payload))
+            status, headers, body = replies[path]
+            return module.SafeHttpResult(status=status, headers=headers, body=body)
+
+        buffer = io.StringIO()
+        with patch.object(module, "_json_request", side_effect=fake_json_request), \
+                patch.dict("os.environ", {module.CASE_ENV: "partial",
+                                          module.SELECTED_TIER_ENV: "free"}):
+            with redirect_stdout(buffer):
+                code = module.run_live("synthetic-canary-user", "synthetic-password")
+        emitted = buffer.getvalue()
+        self.assertEqual(code, 7)
+        self.assertIn("B66_CGI_PARTIAL_CANARY=FAIL", emitted)
+        for marker in ("GRADE_OPTIONS_HTTP=200", "GRADE_OPTIONS_CONTRACT=PASS",
+                       "SELECTED_TIER=free", "INTERPRET_HTTP=502",
+                       "INTERPRET_FAILURE_STAGE=interpreter_exception",
+                       "INTERPRET_EXCEPTION_FAMILY=type_error",
+                       "INTERPRET_POSTS=1"):
+            self.assertIn(marker, emitted)
+        for retired in ("MODEL_OPTIONS_HTTP", "MODEL_SELECTION_RESULT", "SELECTED_MODEL_ID"):
+            self.assertNotIn(retired, emitted)
+        # The refused request carried the grade key and no model identity.
+        self.assertEqual(seen[-1][:2], ("POST", "/api/padiem/b66/quote/interpret"))
+        self.assertEqual(seen[-1][2]["tier"], "free")
+        self.assertNotIn("model_id", seen[-1][2])
+
+    def test_interpret_stage_and_family_headers_are_closed_allowlists(self):
+        route = (SCRIPT.parents[2] / "apps" / "padiem-chat" / "app" /
+                 "b66_quote_routes.py").read_text(encoding="utf8")
+        # Every value the deployed route can send must be in the allowlist, or a
+        # real stage would be reported as unknown exactly when it matters.
+        for stage in ("interpreter_exception", "projection_missing_safe_dict",
+                      "model_selection", "runtime_unavailable",
+                      "provider_execution", "provider_response"):
+            self.assertIn(f'"{stage}"', route)
+            self.assertEqual(module.sanitize_interpret_stage(stage), stage)
+        for family in ("chat_runtime_non_upstream", "type_error", "value_error",
+                       "runtime_error", "unexpected_exception"):
+            self.assertIn(f'"{family}"', route)
+            self.assertEqual(module.sanitize_exception_family(family), family)
+        self.assertEqual(module.sanitize_interpret_stage("raw-secret"), "ABSENT_OR_UNKNOWN")
+        self.assertEqual(module.sanitize_exception_family(None), "ABSENT_OR_UNKNOWN")
+
     def test_cookie_authenticated_post_includes_exact_same_origin(self):
         # This is an isolated request-construction test: zero network calls.
         from unittest.mock import patch

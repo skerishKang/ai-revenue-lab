@@ -67,6 +67,28 @@ FALLBACK_ORIGIN = "deterministic_fallback"
 ALLOWED_MISSING_FIELDS = frozenset(
     {"recipient", "items", "name", "qty", "unitPrice"}
 )
+# Closed sets copied from b66_quote_routes' own header assignments, so a 502 can
+# be attributed to the stage that produced it. An unknown value stays unknown;
+# nothing free-form from a response header is ever echoed.
+ALLOWED_INTERPRET_STAGES = frozenset(
+    {
+        "runtime_unavailable",
+        "provider_execution",
+        "provider_response",
+        "model_selection",
+        "interpreter_exception",
+        "projection_missing_safe_dict",
+    }
+)
+ALLOWED_INTERPRET_EXCEPTION_FAMILIES = frozenset(
+    {
+        "chat_runtime_non_upstream",
+        "type_error",
+        "value_error",
+        "runtime_error",
+        "unexpected_exception",
+    }
+)
 
 
 def selected_tier(value: object, tiers: object) -> str:
@@ -192,6 +214,16 @@ def sanitize_public_error(value: Any) -> str:
     return text if text in ALLOWED_PUBLIC_ERRORS else "ABSENT_OR_UNKNOWN"
 
 
+def sanitize_interpret_stage(value: Any) -> str:
+    text = str(value or "")
+    return text if text in ALLOWED_INTERPRET_STAGES else "ABSENT_OR_UNKNOWN"
+
+
+def sanitize_exception_family(value: Any) -> str:
+    text = str(value or "")
+    return text if text in ALLOWED_INTERPRET_EXCEPTION_FAMILIES else "ABSENT_OR_UNKNOWN"
+
+
 def sanitize_missing(value: Any) -> tuple[str, ...]:
     if not isinstance(value, list):
         return ()
@@ -251,12 +283,18 @@ def _print_summary(summary: dict[str, Any]) -> None:
         "AUTHENTICATED",
         "SAVED_SKILL_HTTP",
         "SAVED_SKILL_COUNT",
+        "GRADE_OPTIONS_HTTP",
+        "GRADE_OPTIONS_CONTRACT",
+        "GRADE_SELECTION_RESULT",
+        "SELECTED_TIER",
         "INTERPRET_HTTP",
         "X_B66_UPSTREAM_CLASS",
         "X_B66_RESULT_ORIGIN",
         "X_B66_REJECTION_REASON",
         "X_B66_REJECTION_PATH",
         "X_B66_REJECTION_TYPE",
+        "INTERPRET_FAILURE_STAGE",
+        "INTERPRET_EXCEPTION_FAMILY",
         "PUBLIC_ERROR",
         "CANDIDATE_PRESENT",
         "MISSING_FIELDS",
@@ -265,9 +303,6 @@ def _print_summary(summary: dict[str, Any]) -> None:
         "SAFE_QTY_MATCH",
         "UNIT_PRICE_NULL",
         "APPROX_QTY_NULL",
-        "MODEL_OPTIONS_HTTP",
-        "MODEL_SELECTION_RESULT",
-        "SELECTED_MODEL_ID",
         "INTERPRET_POSTS",
         "LIVE_PROVIDER_CALLS_EXECUTED",
         "COOKIE_OUTPUT",
@@ -401,6 +436,12 @@ def run_live(username: str, password: str) -> int:
         ("X-B66-Rejection-Type", "X_B66_REJECTION_TYPE"),
     ):
         summary[key] = _bounded_diagnostic(_header(interpreted.headers, header))
+    summary["INTERPRET_FAILURE_STAGE"] = sanitize_interpret_stage(
+        _header(interpreted.headers, "X-B66-Interpret-Failure-Stage")
+    )
+    summary["INTERPRET_EXCEPTION_FAMILY"] = sanitize_exception_family(
+        _header(interpreted.headers, "X-B66-Interpret-Exception-Family")
+    )
 
     body = _decode_json(interpreted.body) or {}
     summary["PUBLIC_ERROR"] = sanitize_public_error(body.get("error_code"))
@@ -450,6 +491,10 @@ def self_test() -> int:
     assert sanitize_upstream_class("secret-provider-detail") == "ABSENT_OR_UNKNOWN"
     assert sanitize_public_error("quote_interpretation_failed") == "quote_interpretation_failed"
     assert sanitize_public_error("raw-secret") == "ABSENT_OR_UNKNOWN"
+    assert sanitize_interpret_stage("interpreter_exception") == "interpreter_exception"
+    assert sanitize_interpret_stage("raw-secret") == "ABSENT_OR_UNKNOWN"
+    assert sanitize_exception_family("type_error") == "type_error"
+    assert sanitize_exception_family("raw-secret") == "ABSENT_OR_UNKNOWN"
     assert sanitize_missing(["unitPrice"]) == ("unitPrice",)
     assert MODEL_COMPLETION_ORIGIN != FALLBACK_ORIGIN
     assert selected_case("partial") == "partial"

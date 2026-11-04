@@ -80,6 +80,18 @@ jobs:
           grep -Fq 'APPROX_QUANTITY_TEXT = ' "$script"
           grep -Fq '"tier": chosen_tier' "$script"
           grep -Fq 'def grade_options_contract' "$script"
+          # Evidence must be emitted, not merely computed: every marker the live
+          # flow sets has to be listed in the printed summary order, and the
+          # retired model-catalog markers must stay gone.
+          grep -Fq '"GRADE_OPTIONS_HTTP",' "$script"
+          grep -Fq '"SELECTED_TIER",' "$script"
+          grep -Fq '"INTERPRET_FAILURE_STAGE",' "$script"
+          grep -Fq '"INTERPRET_EXCEPTION_FAMILY",' "$script"
+          grep -Fq 'def sanitize_interpret_stage' "$script"
+          if grep -Eq 'SELECTED_MODEL_ID|MODEL_OPTIONS_HTTP|MODEL_SELECTION_RESULT' "$script"; then
+            echo 'B66_CGI_PARTIAL_SOURCE_CONTRACT=RETIRED_MODEL_MARKER_RETURNED'
+            exit 1
+          fi
           grep -Fq 'padiem-b66-cgi-partial-canary/1.0 (+github-actions)' "$script"
           grep -Fq 'RETRY = 0' "$script"
           grep -Fq 'FALLBACK = 0' "$script"
