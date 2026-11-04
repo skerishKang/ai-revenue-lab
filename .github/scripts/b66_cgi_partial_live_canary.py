@@ -26,7 +26,12 @@ CASE_ENV = "B66_CGI_CANARY_CASE"
 ALLOWED_CASES = frozenset({"partial", "approx_qty"})
 MAX_BODY_BYTES = 64 * 1024
 MAX_INTERPRET_POSTS = 1
-SELECTED_MODEL_ENV = "B66_CGI_CANARY_SELECTED_MODEL_ID"
+# #6828: the operator names a B66 GRADE, never a model. The server resolves the
+# grade's model, so the canary needs no elevated account authority and no
+# deployment-side model catalog to read.
+SELECTED_TIER_ENV = "B66_CGI_CANARY_SELECTED_TIER"
+DEFAULT_SELECTED_TIER = "plus"
+ALLOWED_TIERS = frozenset({"free", "plus", "pro", "max"})
 USER_AGENT = "padiem-b66-cgi-partial-canary/1.0 (+github-actions)"
 RETRY = 0
 FALLBACK = 0
@@ -64,23 +69,42 @@ ALLOWED_MISSING_FIELDS = frozenset(
 )
 
 
-def selected_model_id(value: object, models: object) -> str:
-    """A single explicit operator-chosen, currently selectable B14 exact ID."""
-    if (
-        not isinstance(value, str)
-        or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", value) is None
-        or value.startswith("padiem-profile/")
-    ):
-        raise ValueError("explicit_exact_model_id_required")
-    if not isinstance(models, list) or len(models) > 256:
-        raise ValueError("selectable_model_list_unavailable")
-    matching = [
-        row for row in models
-        if isinstance(row, dict) and row.get("model_id") == value
+def selected_tier(value: object, tiers: object) -> str:
+    """One operator-named B66 grade key that the deployment currently offers."""
+    tier = DEFAULT_SELECTED_TIER if value is None or value == "" else value
+    if not isinstance(tier, str) or tier not in ALLOWED_TIERS:
+        raise ValueError("explicit_grade_key_required")
+    if not isinstance(tiers, list) or len(tiers) > 8:
+        raise ValueError("offered_grade_list_unavailable")
+    offered = [
+        row.get("tier") for row in tiers
+        if isinstance(row, dict)
     ]
-    if len(matching) != 1:
-        raise ValueError("selected_model_unavailable_or_ambiguous")
-    return value
+    if offered.count(tier) != 1:
+        raise ValueError("selected_grade_not_offered")
+    return tier
+
+
+def grade_options_contract(payload: object) -> bool:
+    """The customer grade answer must be {ok, tiers, default_tier} with no identity.
+
+    A row that carries a model identity means the deployment still ships the old
+    contract; the canary then stops instead of reading identities back.
+    """
+    if not isinstance(payload, dict) or set(payload) != {"ok", "tiers", "default_tier"}:
+        return False
+    if payload.get("ok") is not True:
+        return False
+    tiers = payload.get("tiers")
+    if not isinstance(tiers, list) or len(tiers) > 8:
+        return False
+    for row in tiers:
+        if not isinstance(row, dict) or not set(row) <= {"tier", "name", "reasoning_levels"}:
+            return False
+        if "model_id" in row or row.get("tier") not in ALLOWED_TIERS:
+            return False
+    default_tier = payload.get("default_tier")
+    return default_tier is None or default_tier in ALLOWED_TIERS
 
 
 @dataclass(frozen=True)
@@ -324,23 +348,29 @@ def run_live(username: str, password: str) -> int:
         print("B66_CGI_PARTIAL_CANARY=FAIL_SAVED_SKILL_ID")
         return 6
 
-    models_result = _json_request(opener, "/api/padiem/b66/quote/models")
-    model_options = _decode_json(models_result.body) or {}
-    summary["MODEL_OPTIONS_HTTP"] = models_result.status
-    if models_result.status != 200 or model_options.get("ok") is not True:
+    grade_result = _json_request(opener, "/api/padiem/b66/quote/models")
+    grade_options = _decode_json(grade_result.body) or {}
+    summary["GRADE_OPTIONS_HTTP"] = grade_result.status
+    if grade_result.status != 200 or grade_options.get("ok") is not True:
         _print_summary(summary)
-        print("B66_CGI_PARTIAL_CANARY=FAIL_MODEL_OPTIONS")
+        print("B66_CGI_PARTIAL_CANARY=FAIL_GRADE_OPTIONS")
         return 7
+    if not grade_options_contract(grade_options):
+        summary["GRADE_OPTIONS_CONTRACT"] = "FAIL"
+        _print_summary(summary)
+        print("B66_CGI_PARTIAL_CANARY=FAIL_GRADE_CONTRACT")
+        return 7
+    summary["GRADE_OPTIONS_CONTRACT"] = "PASS"
     try:
-        chosen_model_id = selected_model_id(
-            os.environ.get(SELECTED_MODEL_ENV), model_options.get("models")
+        chosen_tier = selected_tier(
+            os.environ.get(SELECTED_TIER_ENV), grade_options.get("tiers")
         )
     except ValueError as exc:
-        summary["MODEL_SELECTION_RESULT"] = str(exc)
+        summary["GRADE_SELECTION_RESULT"] = str(exc)
         _print_summary(summary)
-        print("B66_CGI_PARTIAL_CANARY=FAIL_MODEL_SELECTION")
+        print("B66_CGI_PARTIAL_CANARY=FAIL_GRADE_SELECTION")
         return 8
-    summary["SELECTED_MODEL_ID"] = chosen_model_id
+    summary["SELECTED_TIER"] = chosen_tier
 
     summary["INTERPRET_POSTS"] = 1
     # An HTTP request can be rejected by Pages/CGI before any provider call.
@@ -353,7 +383,7 @@ def run_live(username: str, password: str) -> int:
         payload={
             "saved_skill_id": saved_skill_id,
             "message": PARTIAL_TEXT if case == "partial" else APPROX_QUANTITY_TEXT,
-            "model_id": chosen_model_id,
+            "tier": chosen_tier,
         },
     )
     summary["INTERPRET_HTTP"] = interpreted.status
@@ -424,6 +454,33 @@ def self_test() -> int:
     assert MODEL_COMPLETION_ORIGIN != FALLBACK_ORIGIN
     assert selected_case("partial") == "partial"
     assert selected_case("approx_qty") == "approx_qty"
+    # #6828: the operator names a grade, and the customer answer must not
+    # carry a model identity back to this probe.
+    offered = [{"tier": "free", "name": "grade"}, {"tier": "plus", "name": "grade"}]
+    assert selected_tier(None, offered) == DEFAULT_SELECTED_TIER
+    assert selected_tier("free", offered) == "free"
+    assert grade_options_contract(
+        {"ok": True, "tiers": offered, "default_tier": "free"}
+    )
+    assert not grade_options_contract(
+        {"ok": True, "tiers": [{**offered[0], "model_id": "any/value"}], "default_tier": None}
+    )
+    assert not grade_options_contract(
+        {"ok": True, "tiers": offered, "default_tier": None, "models": []}
+    )
+    for bad_tier in ("unknown", 1):
+        try:
+            selected_tier(bad_tier, offered)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("grade_key_must_be_rejected")
+    try:
+        selected_tier("max", offered)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("unoffered_grade_must_be_rejected")
     assert sanitize_missing(["private.foo"]) == ("UNKNOWN_FIELD",)
     assert _bounded_diagnostic("items[0].unitPrice") == "items[0].unitPrice"
     assert _bounded_diagnostic("raw value with spaces") == "PRESENT_REDACTED"

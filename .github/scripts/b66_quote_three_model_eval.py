@@ -1,8 +1,13 @@
 """Three-model, four-case B66 authenticated *read-only-quote* quality evaluation.
 
 One authorized workflow run makes at most 12 B66 quote interpretation POSTs
-(3 explicit registered model IDs x 4 synthetic prompts), with no retry,
-silent model substitution, quote persistence, PDF, or raw answer logging.
+(3 registered model IDs x 4 synthetic prompts), with no retry, silent model
+substitution, quote persistence, PDF, or raw answer logging.
+
+#6828: the compared model IDs are read from the administrator-only B66 model
+catalog, never from the customer picker, because the customer answer now carries
+grade keys only. Without administrator authority this evaluation stops; it does
+not fall back to another path.
 """
 from __future__ import annotations
 
@@ -13,11 +18,8 @@ import sys
 
 import b66_cgi_partial_live_canary as b66
 
-MODELS = (
-    "google/gemini-3.5-flash-lite",
-    "poolside/laguna-s-2.1",
-    "sensenova/sensenova-6.8-flash-lite",
-)
+ADMIN_MODEL_POLICY_PATH = "/api/padiem/b66/admin/model-policy"
+MAX_MODEL_IDS = 3
 CASES = (
     ("typo", "대한건설에 배관 백미터 견적 만들어조"),
     ("multiple", "A업체에 배관 100m 단가 2만원, 밸브 5개 단가 3만원 견적 만들어줘"),
@@ -28,6 +30,28 @@ MAX_INTERPRET_POSTS = 12
 RETRY = 0
 MODEL_FALLBACK = 0
 EXPECTED_ORIGIN = "registered_model_completion"
+
+
+def registered_model_ids(payload: object) -> tuple[str, ...]:
+    """The administrator catalog's selectable IDs, deterministic and capped.
+
+    Shape is checked before anything is read: a response without a bounded list
+    is a failure, not a silent short run.
+    """
+    if not isinstance(payload, dict) or payload.get("ok") is not True:
+        raise ValueError("admin_model_catalog_unavailable")
+    models = payload.get("models")
+    if not isinstance(models, list) or len(models) > 256:
+        raise ValueError("admin_model_catalog_unavailable")
+    ids = sorted({
+        row["model_id"] for row in models
+        if isinstance(row, dict) and isinstance(row.get("model_id"), str)
+        and b66.re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", row["model_id"])
+        and not row["model_id"].startswith("padiem-profile/")
+    })
+    if len(ids) < MAX_MODEL_IDS:
+        raise ValueError("admin_model_catalog_too_small")
+    return tuple(ids[:MAX_MODEL_IDS])
 
 
 def _item(items: object, index: int) -> dict:
@@ -138,24 +162,27 @@ def run_live() -> int:
     if not isinstance(skill_id, str) or b66.re.fullmatch(r"b66skill_[0-9a-f]{32}", skill_id) is None:
         print("SAVED_SKILL_ID=INVALID")
         return 6
-    model_list = b66._json_request(opener, "/api/padiem/b66/quote/models")
-    mj = b66._decode_json(model_list.body) or {}
-    if model_list.status != 200 or mj.get("ok") is not True:
-        print("MODEL_CHOICES=FAIL")
+    catalog = b66._json_request(opener, ADMIN_MODEL_POLICY_PATH)
+    if catalog.status in (401, 403):
+        print(f"ADMIN_MODEL_CATALOG=ADMIN_ACCOUNT_REQUIRED HTTP={catalog.status}; STOP")
+        print("NO_ALTERNATIVE_CATALOG_PATH=YES")
+        return 9
+    cj = b66._decode_json(catalog.body) or {}
+    if catalog.status != 200:
+        print(f"ADMIN_MODEL_CATALOG=FAIL HTTP={catalog.status}; STOP")
         return 7
     try:
-        for name in MODELS:
-            b66.selected_model_id(name, mj.get("models"))
-    except ValueError:
-        print("MODEL_CHOICES=EXPLICIT_ID_UNAVAILABLE")
+        models = registered_model_ids(cj)
+    except ValueError as exc:
+        print(f"ADMIN_MODEL_CATALOG={exc}; STOP")
         return 8
 
     print("PREFLIGHT=PASS")
-    print("MODEL_SELECTION=THREE_EXPLICIT_IDS")
+    print("MODEL_SELECTION=ADMIN_CATALOG_THREE_IDS")
     print("CASES=FOUR_SAME_SYNTHETIC_TEXTS_PER_MODEL")
     attempts = 0
     successes = 0
-    for model in MODELS:
+    for model in models:
         for case, message in CASES:
             if attempts >= MAX_INTERPRET_POSTS:
                 raise AssertionError("interpret_post_bound")
@@ -180,18 +207,18 @@ def run_live() -> int:
                 print(f"RESULT model={model} case={case} SCORE=FAIL "
                       f"ERROR_CLASS={type(exc).__name__} RETRY=0")
     print(f"INTERPRET_POST_ATTEMPTS={attempts}")
-    print(f"RESULT_PASS={successes}/{len(MODELS) * len(CASES)}")
+    print(f"RESULT_PASS={successes}/{len(models) * len(CASES)}")
     print("UPSTREAM_PHYSICAL_PROVIDER_ATTESTATION=UNVERIFIED")
     print("RAW_MODEL_ANSWER_OUTPUT=0")
     print("PASSWORD_COOKIE_TOKEN_OUTPUT=0")
     print("QUOTE_STORAGE_WRITES=0")
     print("PDF_RENDER_REQUESTS=0")
     print("RETRY=0")
-    return 0 if successes == len(MODELS) * len(CASES) else 1
+    return 0 if successes == len(models) * len(CASES) else 1
 
 
 def self_test() -> int:
-    assert len(MODELS) == 3 and len(CASES) == 4 and MAX_INTERPRET_POSTS == 12
+    assert MAX_MODEL_IDS == 3 and len(CASES) == 4 and MAX_INTERPRET_POSTS == 12
     assert RETRY == MODEL_FALLBACK == 0
     valid = {"recipient": {"company": "대한건설"},
              "items": [{"name": "배관", "qty": 100}], "missing": ["unitPrice"]}
@@ -220,6 +247,23 @@ def self_test() -> int:
     assert passed and origin == b66.MODEL_COMPLETION_ORIGIN
     refused = b66.SafeHttpResult(status=422, headers=headers, body=body)
     assert not evaluate_response(refused, "typo")[0]
+    # #6828: the compared IDs come from the administrator catalog only.
+    assert ADMIN_MODEL_POLICY_PATH == "/api/padiem/b66/admin/model-policy"
+    catalog = {"ok": True, "models": [{"model_id": f"fixture/{n}", "name": f"n{n}"}
+                                      for n in range(4)]}
+    assert len(registered_model_ids(catalog)) == MAX_MODEL_IDS
+    assert registered_model_ids(catalog) == tuple(sorted(
+        row["model_id"] for row in catalog["models"]))[:MAX_MODEL_IDS]
+    for bad_catalog in (None, {}, {"ok": False, "models": []},
+                        {"ok": True, "models": "not-a-list"},
+                        {"ok": True, "models": [{"model_id": "fixture/one"}]},
+                        {"ok": True, "models": [{"model_id": "padiem-profile/x"}] * 4}):
+        try:
+            registered_model_ids(bad_catalog)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("catalog_shape_must_fail_closed")
     print("B66_THREE_MODEL_EVAL_SELF_TEST=PASS")
     print("DEFAULT_LIVE_EXECUTION=BLOCKED")
     return 0
