@@ -115,7 +115,9 @@ def test_an_empty_completed_answer_is_not_committed_as_a_turn():
 
 def test_the_front_door_answers_a_navigation_with_a_page_and_a_machine_with_json():
     assert 'import { errorPageHtml, wantsHtml } from "./error-copy.mjs";' in FRONT_WORKER
-    assert "function requestFailure(request, status, code)" in FRONT_WORKER
+    # The answer-budget change added the request id as a fourth argument so a
+    # front-generated timeout keeps the same correlation id as the upstream.
+    assert "function requestFailure(request, status, code, requestId)" in FRONT_WORKER
     # #6564 pinned the four failure sites that answered a browser navigation
     # with this JSON; #6759 added the fifth for the answer POST's own 60-second
     # first-byte deadline. Every failure still goes through the one copy path.
