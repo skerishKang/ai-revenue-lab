@@ -9,6 +9,7 @@ import os
 import re
 import tempfile
 from pathlib import Path
+from .reasoning_policy import normalize_policy
 from .platform_secrets import (
     CredentialSource, PlatformProviderSpec, register_platform_provider
 )
@@ -375,7 +376,17 @@ def validate_registry(data: dict) -> dict:
               "output_price_usd_per_1m","source","source_checked_at","enabled"}
     found=set()
     for m in data["models"]:
-        _strict_keys(m,expected,"model")
+        keys=set(m)
+        # #6858: the Owner overlay carries the per-model reasoning block on an
+        # otherwise exact row. Everything outside {expected, +reasoning} stays a
+        # hard error, and the block itself must normalise or the boot aborts.
+        if not expected <= keys or keys - expected - {"reasoning"}:
+            raise ModelRegistryError("model: unexpected/missing keys")
+        if "reasoning" in m:
+            try:
+                normalize_policy(m["reasoning"])
+            except ValueError as exc:
+                raise ModelRegistryError(f"model reasoning block rejected: {exc}") from exc
         mid=m["id"]
         if not isinstance(mid,str) or not _ID.fullmatch(mid) or mid in found or mid.startswith("padiem-profile/"):
             raise ModelRegistryError("invalid or duplicate model identity")
