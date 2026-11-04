@@ -726,6 +726,12 @@ class LedgerDraft:
                 datetime.fromisoformat(finished_at.replace("Z", "+00:00"))
                 - timedelta(milliseconds=elapsed_ms)
             ).strftime("%Y-%m-%dT%H:%M:%SZ")
+            # #5318 timeline: stored stamps are second-precision while the
+            # elapsed is measured, so a request that begins mid-second can
+            # otherwise look like it began after its own attempt. An attempt
+            # never precedes the request that owns it.
+            if self.started_at is not None and started_at < self.started_at:
+                started_at = self.started_at
         attempt = AttemptRecord(
             log_id=self.log_id, attempt_index=self.attempt_count,
             provider=provider, model_id=model_id, upstream_model=upstream_model,
