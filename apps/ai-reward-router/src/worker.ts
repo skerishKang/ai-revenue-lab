@@ -116,8 +116,16 @@ function reviewedBrowserOrigin(value: string | undefined): string | undefined {
  * whose session row is still live in D1. Anonymous visitors can browse
  * everything; only the member's own records are ever readable.
  */
-export default {
-  async fetch(request: Request, env: B64WorkerEnv = {}): Promise<Response> {
+/**
+ * Builds the deployed Worker handler. Production uses the module default below
+ * with the real wall clock; the surface tests pin an explicit instant through
+ * `options.now` so the curated-catalog contracts stay deterministic (#6805)
+ * while the deployed entrypoint itself keeps reading the real time.
+ */
+export function createB64WorkerHandler(
+  env: B64WorkerEnv = {},
+  options: { readonly now?: () => Date } = {},
+): (request: Request) => Promise<Response> {
     const members = env.B64_INCOME_DB
       ? new D1B64MemberStore(env.B64_INCOME_DB)
       : new UnboundB64MemberStore(INCOME_D1_BINDING_NAME);
@@ -144,7 +152,13 @@ export default {
       ayetRewardedAdslotId: env.B64_AYET_REWARDED_ADSLOT_ID,
       adminEmail: env.B64_ADMIN_EMAIL,
       operationsSnapshot: () => readB64OperationsSnapshot({ db: env.B64_INCOME_DB, env: stringEnvironment(env) }),
+      now: options.now,
     });
-    return handler(request);
+    return handler;
+}
+
+export default {
+  async fetch(request: Request, env: B64WorkerEnv = {}): Promise<Response> {
+    return createB64WorkerHandler(env)(request);
   },
 };

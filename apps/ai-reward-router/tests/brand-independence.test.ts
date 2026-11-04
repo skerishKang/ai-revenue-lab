@@ -9,6 +9,7 @@ import {
 } from './helpers/b64-identity-harness.js';
 import { loadVerifiedPublicOpportunities } from '../src/public-supply/verified-public-opportunities.js';
 import { createConsumerHttpHandler } from '../src/http/consumer-http.js';
+import { PUBLIC_SUPPLY_TEST_NOW } from './helpers/public-supply-clock.js';
 
 /**
  * Brand independence of the consumer surface (#987, owner decision 2026-10-27).
@@ -22,6 +23,7 @@ import { createConsumerHttpHandler } from '../src/http/consumer-http.js';
 const handler = createConsumerHttpHandler({
   loadCandidates: () => [],
   loadPublicOpportunities: loadVerifiedPublicOpportunities,
+  now: () => PUBLIC_SUPPLY_TEST_NOW,
 });
 
 const PUBLIC_PATHS = [

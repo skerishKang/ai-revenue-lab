@@ -38,6 +38,8 @@ export interface IncomePipelineViewModel {
   readonly filteredRecords: readonly UserIncomeRecord[];
   readonly filters: IncomePipelineFilterState;
   readonly availableOpportunities: readonly PublicOpportunity[];
+  /** Evaluation instant used for the public-supply display window (tests pin it). */
+  readonly supplyNow: Date | null;
   readonly emptyState: 'NO_USER' | 'NO_RECORDS' | null;
   readonly accountOnboardingVisibleToConsumer: false;
   readonly laterTierNavigationVisible: false;
@@ -193,8 +195,8 @@ function renderRecordCard(record: UserIncomeRecord): string {
   </article>`;
 }
 
-function renderAvailableOpportunities(opportunities: readonly PublicOpportunity[]): string {
-  const displayable = displayablePublicOpportunityCards(opportunities);
+function renderAvailableOpportunities(opportunities: readonly PublicOpportunity[], now?: Date): string {
+  const displayable = displayablePublicOpportunityCards(opportunities, now);
   if (displayable.length === 0) return '';
   return `<section class="pipeline-available" aria-labelledby="available-title">
     <div class="section-head">
@@ -404,6 +406,8 @@ export function buildIncomePipelineViewModel(input: {
   records: readonly UserIncomeRecord[];
   filters?: { status?: IncomePipelineStatus | null; vendor?: string | null };
   availableOpportunities?: readonly PublicOpportunity[];
+  /** Evaluation instant for the 7-day display window; tests pin it, production keeps wall time. */
+  now?: Date;
 }): IncomePipelineViewModel {
   const filters: IncomePipelineFilterState = Object.freeze({
     status: input.filters?.status ?? null,
@@ -426,6 +430,7 @@ export function buildIncomePipelineViewModel(input: {
     filteredRecords: sorted,
     filters,
     availableOpportunities: Object.freeze([...(input.availableOpportunities ?? [])]),
+    supplyNow: input.now ?? null,
     emptyState,
     accountOnboardingVisibleToConsumer: false as const,
     laterTierNavigationVisible: false as const,
@@ -454,7 +459,7 @@ export function renderIncomePipelineWeb(viewModel: IncomePipelineViewModel, them
     ? viewModel.filteredRecords.map(renderRecordCard).join('\n')
     : renderEmptyState('아직 추적 중인 기회가 없습니다. 수익 기회에서 기회를 저장해 보세요.');
 
-  const availableHtml = renderAvailableOpportunities(viewModel.availableOpportunities);
+  const availableHtml = renderAvailableOpportunities(viewModel.availableOpportunities, viewModel.supplyNow ?? undefined);
 
   const saveFormHtml = viewModel.userId ? `
     <section class="pipeline-save" aria-labelledby="save-title">

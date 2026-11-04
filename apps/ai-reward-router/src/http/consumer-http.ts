@@ -147,6 +147,12 @@ export interface ConsumerHttpDependencies {
    */
   readonly loadPublicOpportunities?: PublicOpportunityLoader;
   /**
+   * Wall clock for the public-supply 7-day display window. Production keeps
+   * the default (real time); tests pin an explicit instant so the curated
+   * surface contracts stay deterministic (#6805).
+   */
+  readonly now?: () => Date;
+  /**
    * Optional income-pipeline lane: user income tracking records.
    * Requires a userId for user isolation. Returns empty when no user is identified.
    */
@@ -621,6 +627,7 @@ export function createConsumerHttpHandler(
 
     // The public lane degrades to an honest empty state when its loader fails;
     // the ad-click lane above already failed closed with 503.
+    const supplyNow = dependencies.now ? dependencies.now() : new Date();
     const publicLoader: PublicOpportunityLoader | undefined = dependencies.loadPublicOpportunities;
     let publicOpportunities: readonly PublicOpportunity[] = [];
     if (publicLoader) {
@@ -632,7 +639,7 @@ export function createConsumerHttpHandler(
     }
 
     if (url.pathname === '/today') {
-      const todayViewModel = buildAdClickFirstTodayRoute(candidates, { publicOpportunities });
+      const todayViewModel = buildAdClickFirstTodayRoute(candidates, { publicOpportunities, now: supplyNow });
       const html = renderAdClickFirstTodayRouteWeb(todayViewModel, themeInfo);
       return responseForMethod(request, html, {
         status: 200,
@@ -647,7 +654,7 @@ export function createConsumerHttpHandler(
       const query = url.searchParams.get('q') ?? '';
       const maxRaw = url.searchParams.get('maxSeconds');
       const maxSeconds = maxRaw && Number.isFinite(Number(maxRaw)) && Number(maxRaw) > 0 ? Number(maxRaw) : null;
-      const browseOptions: BuildAdClickFirstBrowseOptions = { category, query, maxSeconds, publicOpportunities };
+      const browseOptions: BuildAdClickFirstBrowseOptions = { category, query, maxSeconds, publicOpportunities, now: supplyNow };
       const browseViewModel = buildAdClickFirstBrowse(candidates, browseOptions);
       const html = renderAdClickFirstBrowseWeb(browseViewModel, themeInfo);
       return responseForMethod(request, html, {
@@ -661,7 +668,7 @@ export function createConsumerHttpHandler(
       if (!id) {
         return notFound(request);
       }
-      const detailViewModel = buildAdClickFirstOpportunityDetail(candidates, id, { publicOpportunities });
+      const detailViewModel = buildAdClickFirstOpportunityDetail(candidates, id, { publicOpportunities, now: supplyNow });
       if (!detailViewModel.found) {
         return responseForMethod(request, renderAdClickFirstOpportunityDetailWeb(detailViewModel, themeInfo), {
           status: 404,
@@ -831,6 +838,7 @@ export function createConsumerHttpHandler(
         records,
         filters: { status: filterStatus, vendor: filterVendor },
         availableOpportunities: publicOpportunities,
+        now: supplyNow,
       });
       const html = renderIncomePipelineWeb(pipelineViewModel, themeInfo);
       return responseForMethod(request, html, {
@@ -839,7 +847,7 @@ export function createConsumerHttpHandler(
       });
     }
 
-    const homeViewModel = buildAdClickFirstConsumerHome(candidates, { publicOpportunities });
+    const homeViewModel = buildAdClickFirstConsumerHome(candidates, { publicOpportunities, now: supplyNow });
     const html = renderAdClickFirstConsumerWeb(homeViewModel, themeInfo);
     return responseForMethod(request, html, {
       status: 200,
@@ -858,9 +866,12 @@ export function createEmptySupplyConsumerHttpHandler(): (request: Request) => Pr
  * are served on /browse, /today and /detail. This does not grant any B2B
  * provider authority.
  */
-export function createPublicSupplyConsumerHttpHandler(): (request: Request) => Promise<Response> {
+export function createPublicSupplyConsumerHttpHandler(
+  options: { readonly now?: () => Date } = {},
+): (request: Request) => Promise<Response> {
   return createConsumerHttpHandler({
     loadCandidates: () => [],
     loadPublicOpportunities: loadVerifiedPublicOpportunities,
+    now: options.now,
   });
 }

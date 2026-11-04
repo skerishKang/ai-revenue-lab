@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createConsumerHttpHandler } from '../src/http/consumer-http.js';
+import { PUBLIC_SUPPLY_TEST_NOW } from './helpers/public-supply-clock.js';
 import { D1UserIncomeRepository } from '../src/income-pipeline/d1-user-income-repository.js';
 import {
   createIdentityHarness,
@@ -116,6 +117,7 @@ test('flows 6-12: join, save, status progression, amounts, reload, isolation, lo
 
 test('flows 1-5: anonymous discovery flow stays fully usable without any session', async () => {
   const handler = createConsumerHttpHandler({
+    now: () => PUBLIC_SUPPLY_TEST_NOW,
     loadCandidates: () => [],
     loadPublicOpportunities: (await import('../src/public-supply/verified-public-opportunities.js')).loadVerifiedPublicOpportunities,
   });

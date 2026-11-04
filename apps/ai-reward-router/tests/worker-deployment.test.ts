@@ -1,10 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import worker from '../src/worker.js';
+import worker, { createB64WorkerHandler } from '../src/worker.js';
+import { PUBLIC_SUPPLY_TEST_NOW } from './helpers/public-supply-clock.js';
+
+/** The deployed wiring under a deterministic display-window clock (#6805). */
+const workerWithFreshClock = createB64WorkerHandler({}, { now: () => PUBLIC_SUPPLY_TEST_NOW });
 
 test('dedicated Worker home leads with verified public supply, ad lane stays honest (#5830)', async () => {
-  const response = await worker.fetch(new Request('https://b64.example/'));
+  const response = await workerWithFreshClock(new Request('https://b64.example/'));
   assert.equal(response.status, 200);
   assert.match(response.headers.get('content-type') ?? '', /text\/html/);
 
@@ -119,20 +123,20 @@ test('B64 Worker config declares the income D1 binding matching the worker env c
 test('B64 serves its whole consumer surface on its own host (#987 independence)', async () => {
   const own = 'https://b64-ai-reward-router.charliekant.workers.dev';
   for (const path of ['/', '/earn', '/today', '/browse', '/pipeline', '/income', '/healthz']) {
-    const response = await worker.fetch(new Request(`${own}${path}`));
+    const response = await workerWithFreshClock(new Request(`${own}${path}`));
     assert.equal(response.status, 200, `${path} must answer on the B64 host`);
   }
-  assert.equal((await worker.fetch(new Request(`${own}/detail?id=pub-prolific-participate`))).status, 200);
+  assert.equal((await workerWithFreshClock(new Request(`${own}/detail?id=pub-prolific-participate`))).status, 200);
 
   // The account entry is on the same host: no other product's origin, login
   // page or Worker appears in the anonymous dashboard.
-  const anonymous = await (await worker.fetch(new Request(`${own}/pipeline`))).text();
+  const anonymous = await (await workerWithFreshClock(new Request(`${own}/pipeline`))).text();
   assert.match(anonymous, /action="\/join"/, 'the join form is served by B64 itself');
   assert.match(anonymous, /action="\/login"/, 'the login form is served by B64 itself');
   assert.doesNotMatch(anonymous, /PADIEM 계정/);
 
   // A stray GET on a POST-only identity endpoint lands somewhere useful.
-  const stray = await worker.fetch(new Request(`${own}/join`));
+  const stray = await workerWithFreshClock(new Request(`${own}/join`));
   assert.equal(stray.status, 303);
   assert.equal(stray.headers.get('location'), '/pipeline');
 });

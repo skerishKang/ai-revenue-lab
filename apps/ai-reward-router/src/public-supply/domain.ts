@@ -175,13 +175,22 @@ export function dedupePublicOpportunities(
   return Object.freeze(unique);
 }
 
-/** The one verified-supply rule every consumer surface renders from. */
+/**
+ * The one verified-supply rule every consumer surface renders from.
+ *
+ * `now` is the evaluation instant. Production keeps the default wall clock so
+ * the 7-day honesty window stays real; tests pin an explicit instant so the
+ * curated-catalog surface contracts do not start failing on a calendar date
+ * (#6805) while the staleness rule itself keeps its dedicated explicit-date
+ * coverage in public-supply.test.ts.
+ */
 export function displayablePublicOpportunityCards(
   opportunities: readonly PublicOpportunity[],
+  now: Date = new Date(),
 ): readonly PublicOpportunityCard[] {
   return Object.freeze(
     dedupePublicOpportunities(opportunities)
-      .filter((opportunity) => isPublicOpportunityDisplayable(opportunity))
+      .filter((opportunity) => isPublicOpportunityDisplayable(opportunity, now))
       .map(toPublicOpportunityCard),
   );
 }
