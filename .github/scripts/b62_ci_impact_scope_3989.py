@@ -9,6 +9,7 @@ changes retain their full applicable gates. Unknown event/API/changes => full.
 """
 from __future__ import annotations
 
+import ast
 import json
 import os
 from pathlib import Path
@@ -35,10 +36,80 @@ B14_ATTEMPT_ONLY = "b14_attempt_only"
 # #4459: source-invariant static UI and changed pytest modules. Run every
 # changed test in the UI-mixed job; no deploy/auth/Worker/CI script ever qualifies.
 UI_MIXED_MAX_FILES = 25
+UI_CONTRACT_MAX_MODULES = 400
 _UI_MIXED_STATIC = re.compile(
     r"apps/padiem-chat/static/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.(?:css|html|js)"
 )
 _UI_MIXED_TEST = re.compile(r"apps/padiem-chat/tests/test_[A-Za-z0-9_]+\.py")
+
+
+def _is_static_segment(node: ast.AST) -> bool:
+    return isinstance(node, ast.Constant) and isinstance(node.value, str) \
+        and node.value.strip().strip("/\\") == "static"
+
+
+def _references_static_source(tree: ast.AST) -> bool:
+    """True when a test module reads a path that includes the static root.
+
+    Detects the three shapes the repository actually uses:
+    ``ROOT / "static" / "app.js"``, ``Path("static")`` / ``os.path.join(..., "static", ...)``,
+    and literal paths such as ``"static/index.html"`` or ``.../static/app.js``.
+    """
+    for node in ast.walk(tree):
+        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
+            if _is_static_segment(node.left) or _is_static_segment(node.right):
+                return True
+        elif isinstance(node, ast.Call):
+            func = node.func
+            name = func.attr if isinstance(func, ast.Attribute) else (
+                func.id if isinstance(func, ast.Name) else "")
+            if name in {"join", "Path", "PurePath"} and any(
+                    _is_static_segment(argument) for argument in node.args):
+                return True
+        elif isinstance(node, ast.Constant) and isinstance(node.value, str):
+            value = node.value
+            if (value.startswith(("static/", "static\\"))
+                    or "/static/" in value or "\\static\\" in value):
+                return True
+    return False
+
+
+def ui_contract_tests(repo_root: Path | None = None) -> tuple[str, ...]:
+    """Every B62 pytest module whose source reads a path under static/.
+
+    The list is derived from the test sources, so a new UI-contract module is
+    covered without editing this classifier. A module that cannot be parsed is
+    left out; an empty result for a static change fails closed in main().
+    """
+    root = Path(repo_root) if repo_root is not None else REPO_ROOT
+    tests_dir = root / "apps/padiem-chat/tests"
+    try:
+        candidates = sorted(tests_dir.glob("test_*.py"))
+    except OSError:
+        return ()
+    modules: list[str] = []
+    for path in candidates:
+        try:
+            source = path.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        try:
+            tree = ast.parse(source)
+        except SyntaxError:
+            continue
+        if _references_static_source(tree):
+            modules.append(f"tests/{path.name}")
+    if len(modules) > UI_CONTRACT_MAX_MODULES:
+        return ()
+    return tuple(modules)
+
+
+def _has_static_change(files: object) -> bool:
+    return isinstance(files, list) and any(
+        isinstance(row, dict) and isinstance(row.get("filename"), str)
+        and row["filename"].startswith("apps/padiem-chat/static/")
+        for row in files
+    )
 
 
 def ui_mixed_test_modules(files: object) -> tuple[str, ...]:
@@ -244,6 +315,10 @@ def _core_product_argument() -> str | None:
 
 
 def main() -> None:
+    if "--print-ui-contract" in sys.argv[1:]:
+        print(" ".join(ui_contract_tests(REPO_ROOT)))
+        return
+
     core_product = _core_product_argument()
 
     if core_product:
@@ -261,12 +336,21 @@ def main() -> None:
         return
 
     scope = FULL
+    static_changed = False
+    ui_contract: tuple[str, ...] = ()
     ui_tests: tuple[str, ...] = ()
     core_tests: tuple[str, ...] = ()
     core_modules: tuple[str, ...] = ()
     try:
         event, event_name, files = _load_event_files()
         scope = impact_scope(files)
+        static_changed = _has_static_change(files)
+        if static_changed:
+            # #6783: a static-only PR used to run no pytest module that reads
+            # static. Every module that proves a shipped UI contract runs here.
+            ui_contract = ui_contract_tests(REPO_ROOT)
+            if not ui_contract:
+                print("B62_UI_CONTRACT_DISCOVERY=EMPTY", file=sys.stderr)
         if scope == UI_MIXED:
             # Require complete PR metadata, not just a possibly truncated
             # compare listing. Main pushes and incomplete PR metadata use FULL.
@@ -289,10 +373,14 @@ def main() -> None:
         scope = FULL
     with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as out:
         out.write(f"scope={scope}\n")
+        out.write(f"static_changed={'true' if static_changed else 'false'}\n")
+        out.write(f"ui_contract={' '.join(ui_contract)}\n")
         out.write(f"ui_tests={' '.join(ui_tests)}\n")
         out.write(f"core_tests={' '.join(core_tests)}\n")
         out.write(f"core_modules={' '.join(core_modules)}\n")
     print(f"B62_CI_IMPACT_SCOPE={scope}")
+    if static_changed:
+        print(f"B62_UI_CONTRACT_MODULES={len(ui_contract)}")
 
 
 if __name__ == "__main__":

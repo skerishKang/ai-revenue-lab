@@ -34,7 +34,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn("name: b62-test", self.aggregate)
         self.assertIn("if: always()", self.aggregate)
         self.assertIn(
-            "needs: [registry-ci-plan, b62-static-ui, b62-ui-mixed-tests, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
+            "needs: [registry-ci-plan, b62-static-ui, b62-ui-contract-tests, b62-ui-mixed-tests, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
             self.aggregate,
         )
         self.assertIn("WORKER_RESULT: ${{ needs.b62-worker-suite.result }}", self.aggregate)
@@ -177,6 +177,19 @@ class ParallelB62JobsContract(unittest.TestCase):
             expected = '"$EXPECTED_FOCUSED_FULL"' if x == "FULL_RESULT" else "skipped"
             self.assertIn('test "$'+x+'" = '+expected,self.aggregate)
 
+    def test_static_change_runs_every_discovered_ui_contract_module(self):
+        # #6783: static-only PRs used to run no pytest module that reads static.
+        contract = job("b62-ui-contract-tests", self.source)
+        self.assertIn("name: B62 static UI contract pytest", contract)
+        self.assertIn("needs: registry-ci-plan", contract)
+        self.assertIn("needs.registry-ci-plan.outputs.ui_contract != ''", contract)
+        self.assertIn("UI_CONTRACT_MODULES: ${{ needs.registry-ci-plan.outputs.ui_contract }}", contract)
+        self.assertIn("uv run --locked python -m pytest -q", contract)
+        self.assertIn("needs.b62-ui-contract-tests.result", self.aggregate)
+        self.assertIn('test "$CONTRACT_RESULT" = success', self.aggregate)
+        self.assertIn('test "$CONTRACT_RESULT" = skipped', self.aggregate)
+        self.assertIn('if [ "$STATIC_CHANGED" = true ]; then', self.aggregate)
+
     def test_b14_only_keeps_full_b62_chat_b14_and_worker_bundle_gates(self):
         # The b14_only shortcut is allowed only at the live Workerd step.
         # All other gates and the registry-only branch are unchanged.
@@ -245,7 +258,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         # closed, while its own failure is reported separately and owned by
         # #4318 instead of being repeated per product.
         self.assertIn(
-            "needs: [registry-ci-plan, b62-static-ui, b62-ui-mixed-tests, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, "
+            "needs: [registry-ci-plan, b62-static-ui, b62-ui-contract-tests, b62-ui-mixed-tests, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, "
             "b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
             self.aggregate,
         )
@@ -342,6 +355,7 @@ class ParallelB62JobsContract(unittest.TestCase):
             for lane, scope, selected in cases:
                 env = dict(os.environ, LANE=lane, SCOPE=scope, PLAN_RESULT="success",
                            NIGHTLY=str(nightly).lower(),
+                           STATIC_CHANGED="false", CONTRACT_RESULT="skipped",
                            **{key: "success" if key in selected else "skipped" for key in result_keys})
                 # Only the nightly/manual run executes the full suite; every PR
                 # and main push must prove it was skipped.
@@ -363,6 +377,26 @@ class ParallelB62JobsContract(unittest.TestCase):
                         capture_output=True, text=True, encoding="utf-8", timeout=10,
                     )
                     self.assertNotEqual(proc.returncode, 0, required)
+
+        # #6783: a static change must prove the discovered contract suite ran.
+        base_static = dict(
+            os.environ, LANE="full", SCOPE="static_only", PLAN_RESULT="success",
+            NIGHTLY="false", FULL_RESULT="skipped", UI_RESULT="success",
+            MIXED_RESULT="skipped", PARSER_RESULT="skipped", ATTEMPT_RESULT="skipped",
+            WORKER_RESULT="skipped", MM_RESULT="skipped", QUICK_RESULT="skipped",
+            STATIC_CHANGED="true", UI_CONTRACT="tests/test_ui.py", CONTRACT_RESULT="success",
+        )
+        proc = subprocess.run(["bash", "-c", script], env=base_static,
+                              capture_output=True, text=True, encoding="utf-8", timeout=10)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        for contract in ("failure", "skipped", "cancelled"):
+            proc = subprocess.run(["bash", "-c", script],
+                                  env=dict(base_static, CONTRACT_RESULT=contract),
+                                  capture_output=True, text=True, encoding="utf-8", timeout=10)
+            self.assertNotEqual(proc.returncode, 0, contract)
+        proc = subprocess.run(["bash", "-c", script], env=dict(base_static, UI_CONTRACT=""),
+                              capture_output=True, text=True, encoding="utf-8", timeout=10)
+        self.assertNotEqual(proc.returncode, 0, "empty discovery must fail closed")
 
     def _exercise_host_overlap(self, scope="full", fail_target=""):
         script = WORKFLOW.parents[1] / "scripts" / "b62_host_pytest_overlap_4070.sh"

@@ -168,6 +168,17 @@ class UiMixedFastLane(unittest.TestCase):
                     self.assertEqual(values["ui_tests"], "tests/test_b62_1735_sidebar_home_ia.py"
                                      if expected == scope.UI_MIXED else "")
 
+    def test_static_only_change_selects_every_static_reading_ui_contract(self):
+        self.assertEqual(scope.impact_scope([f(CSS)]), scope.STATIC_ONLY)
+        discovered = scope.ui_contract_tests(ROOT)
+        self.assertGreater(len(discovered), 0)
+        self.assertIn("tests/test_chat_ui_message_sidebar_261020.py", discovered)
+        self.assertEqual(tuple(sorted(discovered)), discovered)
+        source = WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("name: B62 static UI contract pytest", source)
+        self.assertIn("needs.registry-ci-plan.outputs.ui_contract != ''", source)
+        self.assertIn("UI_CONTRACT_MODULES: ${{ needs.registry-ci-plan.outputs.ui_contract }}", source)
+
     def test_stable_required_b62_status_and_unmodified_security_gates(self):
         source = WORKFLOW.read_text(encoding="utf-8")
         self.assertIn("name: b62-test", source)

@@ -1,10 +1,14 @@
 """#3989 B62 expensive-suite scope: fail closed on every uncertain change."""
 from __future__ import annotations
 
+import contextlib
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
+import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -440,6 +444,83 @@ class B62ScopeTests(unittest.TestCase):
         self.assertIsNone(module.changed_files(event, "pull_request", REPO, "token"))
         self.assertIsNone(module.changed_files(fake_event(), "pull_request", REPO, ""))
         self.assertIsNone(module.changed_files(fake_event(), "pull_request", "someone/else", "token"))
+
+    def test_ui_contract_scanner_finds_modules_that_read_static(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tests = Path(tmp) / "apps/padiem-chat/tests"
+            tests.mkdir(parents=True)
+            (tests / "test_join_static.py").write_text(
+                'from pathlib import Path\nROOT = Path(__file__).parents[1]\nAPP = ROOT / "static" / "app.js"\n',
+                encoding="utf-8")
+            (tests / "test_literal_static.py").write_text(
+                'INDEX = "static/index.html"\n', encoding="utf-8")
+            (tests / "test_path_static.py").write_text(
+                'from pathlib import Path\nSTATIC = Path("static")\n', encoding="utf-8")
+            (tests / "test_os_join.py").write_text(
+                'import os\nSTYLES = os.path.join("root", "static", "styles.css")\n', encoding="utf-8")
+            (tests / "test_prose_only.py").write_text(
+                'NOTE = "the static assets are served elsewhere"\n', encoding="utf-8")
+            (tests / "test_reads_css.py").write_text(
+                'CSS = "apps/padiem-chat/static/styles.css"\n', encoding="utf-8")
+            observed = module.ui_contract_tests(Path(tmp))
+            self.assertEqual(observed, (
+                "tests/test_join_static.py",
+                "tests/test_literal_static.py",
+                "tests/test_os_join.py",
+                "tests/test_path_static.py",
+                "tests/test_reads_css.py",
+            ))
+
+    def test_static_change_emits_discovered_ui_contract_and_app_only_never_does(self):
+        cases = (
+            ([file("apps/padiem-chat/static/app.js")], "static_only", "true", "tests/test_ui.py"),
+            ([file("apps/padiem-chat/app/chat_routes.py")], "chat_only", "false", ""),
+        )
+        for files, expected_scope, expected_static, expected_contract in cases:
+            with self.subTest(files=files), tempfile.TemporaryDirectory() as tmp:
+                output = Path(tmp) / "output.txt"
+                env = {"GITHUB_OUTPUT": str(output)}
+                with patch.dict(os.environ, env, clear=False), patch.object(
+                        module, "_load_event_files", return_value=(fake_event(), "pull_request", files)), patch.object(
+                        module, "ui_contract_tests", return_value=("tests/test_ui.py",)):
+                    module.main()
+                values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+                self.assertEqual(values["scope"], expected_scope)
+                self.assertEqual(values["static_changed"], expected_static)
+                self.assertEqual(values["ui_contract"], expected_contract)
+
+    def test_static_change_with_no_discovered_contract_module_fails_closed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "output.txt"
+            with patch.dict(os.environ, {"GITHUB_OUTPUT": str(output)}, clear=False), patch.object(
+                    module, "_load_event_files", return_value=(
+                        fake_event(), "pull_request",
+                        [file("apps/padiem-chat/static/app.js")])), patch.object(
+                    module, "ui_contract_tests", return_value=()):
+                module.main()
+            values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+            self.assertEqual(values["static_changed"], "true")
+            self.assertEqual(values["ui_contract"], "")
+            self.assertEqual(values["scope"], "static_only")
+
+    def test_print_ui_contract_flag_prints_only_the_discovered_modules(self):
+        with patch.object(module, "ui_contract_tests",
+                          return_value=("tests/a.py", "tests/b.py")), patch.object(
+                sys, "argv", ["classifier", "--print-ui-contract"]), contextlib.redirect_stdout(io.StringIO()) as out:
+            module.main()
+        self.assertEqual(out.getvalue().strip(), "tests/a.py tests/b.py")
+
+    def test_workflow_runs_all_static_contracts_and_requires_their_result(self):
+        text = (ROOT / ".github/workflows/b62-padiem-chat-ci.yml").read_text(encoding="utf-8")
+        self.assertIn("ui_contract: ${{ steps.classify-b62.outputs.ui_contract }}", text)
+        self.assertIn("static_changed: ${{ steps.classify-b62.outputs.static_changed }}", text)
+        self.assertIn("name: B62 static UI contract pytest", text)
+        self.assertIn("needs.registry-ci-plan.outputs.ui_contract != ''", text)
+        self.assertIn("UI_CONTRACT_MODULES: ${{ needs.registry-ci-plan.outputs.ui_contract }}", text)
+        self.assertIn("needs.b62-ui-contract-tests.result", text)
+        self.assertIn('if [ "$STATIC_CHANGED" = true ]; then', text)
+        self.assertIn('test "$CONTRACT_RESULT" = success', text)
+        self.assertIn('test "$CONTRACT_RESULT" = skipped', text)
 
     def test_workflow_maintains_full_chat_and_bundle_with_status(self):
         text = (ROOT / ".github/workflows/b62-padiem-chat-ci.yml").read_text(encoding="utf-8")
