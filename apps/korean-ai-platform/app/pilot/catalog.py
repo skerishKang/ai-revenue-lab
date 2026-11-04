@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
-from app.pilot.cost_evidence import ConfiguredCostEvidence
+from .cost_evidence import ConfiguredCostEvidence
 
 _CURRENCY_USD = "usd"
 

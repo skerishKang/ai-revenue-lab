@@ -10,7 +10,7 @@ import importlib.util
 import json
 from pathlib import Path
 import sys
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 
 import pytest
 
@@ -19,7 +19,16 @@ from app import local_runtime as rt
 MODEL = "google/gemini-3.1-flash-lite"
 B14_URL = "https://b14.internal/api/pilot/v1/chat/completions"
 LEDGER_PATH = Path(__file__).resolve().parents[2] / "korean-ai-platform/app/pilot/call_ledger.py"
-_spec = importlib.util.spec_from_file_location("apps_ai_existing_call_ledger", LEDGER_PATH)
+# The ledger is a package member, not a standalone file: give its directory a
+# package name so its sibling imports (reasoning_policy -> catalog, #6838)
+# resolve the way they do in the gateway.
+PILOT_DIR = LEDGER_PATH.parent
+_pilot = ModuleType("apps_ai_b14_pilot")
+_pilot.__path__ = [str(PILOT_DIR)]
+sys.modules[_pilot.__name__] = _pilot
+_spec = importlib.util.spec_from_file_location(
+    "apps_ai_b14_pilot.call_ledger", LEDGER_PATH
+)
 ledger = importlib.util.module_from_spec(_spec)
 sys.modules[_spec.name] = ledger
 _spec.loader.exec_module(ledger)
