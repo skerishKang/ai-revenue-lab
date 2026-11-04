@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -162,13 +163,18 @@ def boot(repo: Path, root: Path, python: Path) -> None:
             ),
             log_path=log_path,
         )
+        # The service account cannot traverse the runner workspace, so the
+        # host probe runs from the staged release with a copied health script.
+        health_script = Path("/opt/ci-bundles/p01-health.py")
+        shutil.copy2(repo / HEALTH_SCRIPT_REL, health_script)
+        health_script.chmod(0o644)
         host_probe = common.as_user(
             "p01boot",
             [
-                "/usr/bin/python3", repo / HEALTH_SCRIPT_REL,
+                "/usr/bin/python3", health_script,
                 "--url", f"http://127.0.0.1:{PORT}/internal/v1/health",
             ],
-            cwd=repo,
+            cwd=release,
             env={},
         )
         if host_probe.returncode != 0:
