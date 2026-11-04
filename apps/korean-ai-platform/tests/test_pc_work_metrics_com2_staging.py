@@ -20,9 +20,18 @@ def staged_installer(tmp_path):
     repo = tmp_path / "repo"
     bundle = repo / "deploy/host-com2/b14"
     shutil.copytree(INSTALL.parent, bundle)
-    source = repo / "packages/padiem-ai-core/padiem_ai_core/pc_work_metrics.py"
-    source.parent.mkdir(parents=True)
-    source.write_text((ROOT / "packages/padiem-ai-core/padiem_ai_core/pc_work_metrics.py").read_text())
+    # The installer reads the module list from the canonical deploy.sh, so the
+    # fixture repo carries the real one plus every Core module it stages.
+    apps_dir = repo / "apps/korean-ai-platform"
+    apps_dir.mkdir(parents=True)
+    shutil.copy2(ROOT / "apps/korean-ai-platform/deploy.sh", apps_dir / "deploy.sh")
+    core_dir = repo / "packages/padiem-ai-core/padiem_ai_core"
+    core_dir.mkdir(parents=True)
+    core_source = ROOT / "packages/padiem-ai-core/padiem_ai_core"
+    for name in ("pc_work_metrics.py", "document_semantics.py", "document_normalization.py",
+                 "document_parser_boundary.py", "conversation_bounds.py", "evidence_blocks.py"):
+        shutil.copy2(core_source / name, core_dir / name)
+    source = core_dir / "pc_work_metrics.py"
     app_root = tmp_path / "b14"
     (app_root / "app").mkdir(parents=True)
     (app_root / "app/asgi.py").write_text("# inert app fixture\n")
@@ -71,7 +80,9 @@ def test_dry_run_does_not_stage_module_or_package(staged_installer):
     run, app_root, _, _ = staged_installer
     result = run("--dry-run")
     assert result.returncode == 0, result.stderr
-    assert "would_stage:pc_work_metrics" in result.stdout
+    assert "would_stage:core_modules=" in result.stdout
+    assert "conversation_bounds.py" in result.stdout
+    assert "evidence_blocks.py" in result.stdout
     assert not (app_root / "app/padiem_ai_core").exists()
 
 
@@ -80,7 +91,7 @@ def test_missing_canonical_source_fails_before_config_mutation(staged_installer)
     source.unlink()
     result = run()
     assert result.returncode == 2
-    assert "pc_metrics_source_missing" in result.stderr
+    assert "core_module_source_missing:pc_work_metrics.py" in result.stderr
     assert not (app_root / "app/padiem_ai_core").exists()
     assert not (tmp_path / "systemd/padiem-b14.service").exists()
 
@@ -95,8 +106,13 @@ def test_temp_install_copies_only_validator_and_keeps_existing_package_initializ
     assert result.returncode == 0, result.stderr
     assert (package / "pc_work_metrics.py").read_text() == source.read_text()
     assert (package / "__init__.py").read_text() == marker
-    assert {path.name for path in package.glob("*.py")} == {"pc_work_metrics.py", "__init__.py"}
-    assert "staged:pc_work_metrics" in result.stdout
+    # Every Core module deploy.sh lists is staged beside the initializer.
+    assert {path.name for path in package.glob("*.py")} == {
+        "pc_work_metrics.py", "document_semantics.py", "document_normalization.py",
+        "document_parser_boundary.py", "conversation_bounds.py", "evidence_blocks.py",
+        "__init__.py",
+    }
+    assert "staged:core_modules=" in result.stdout
     assert "NO_SERVICE_STARTED=YES" in result.stdout
     assert "NO_CREDENTIAL_WRITTEN=YES" in result.stdout
     assert "synthetic_staging_value_never_logged" not in result.stdout + result.stderr
