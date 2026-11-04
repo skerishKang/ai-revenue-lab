@@ -214,6 +214,20 @@ def sanitize_public_error(value: Any) -> str:
     return text if text in ALLOWED_PUBLIC_ERRORS else "ABSENT_OR_UNKNOWN"
 
 
+def public_error_code(body: Any) -> Any:
+    """The B66 routes nest the code as error.code; a flat key stays accepted.
+
+    Reading only a flat key reported every real deployment error as unknown,
+    which made the probe blind at exactly the moment its evidence mattered.
+    """
+    if not isinstance(body, dict):
+        return None
+    error = body.get("error")
+    if isinstance(error, dict) and isinstance(error.get("code"), str):
+        return error["code"]
+    return body.get("error_code")
+
+
 def sanitize_interpret_stage(value: Any) -> str:
     text = str(value or "")
     return text if text in ALLOWED_INTERPRET_STAGES else "ABSENT_OR_UNKNOWN"
@@ -444,7 +458,7 @@ def run_live(username: str, password: str) -> int:
     )
 
     body = _decode_json(interpreted.body) or {}
-    summary["PUBLIC_ERROR"] = sanitize_public_error(body.get("error_code"))
+    summary["PUBLIC_ERROR"] = sanitize_public_error(public_error_code(body))
 
     candidate = body.get("candidate")
     summary["CANDIDATE_PRESENT"] = str(isinstance(candidate, dict)).upper()
@@ -491,6 +505,15 @@ def self_test() -> int:
     assert sanitize_upstream_class("secret-provider-detail") == "ABSENT_OR_UNKNOWN"
     assert sanitize_public_error("quote_interpretation_failed") == "quote_interpretation_failed"
     assert sanitize_public_error("raw-secret") == "ABSENT_OR_UNKNOWN"
+    assert public_error_code({"ok": False, "error": {"code": "quote_interpretation_failed"}}) \
+        == "quote_interpretation_failed"
+    assert public_error_code({"error_code": "quote_input_unrecognized"}) \
+        == "quote_input_unrecognized"
+    assert public_error_code({"ok": True}) is None
+    assert public_error_code("not a body") is None
+    assert sanitize_public_error(
+        public_error_code({"ok": False, "error": {"code": "raw-secret"}})
+    ) == "ABSENT_OR_UNKNOWN"
     assert sanitize_interpret_stage("interpreter_exception") == "interpreter_exception"
     assert sanitize_interpret_stage("raw-secret") == "ABSENT_OR_UNKNOWN"
     assert sanitize_exception_family("type_error") == "type_error"

@@ -88,6 +88,7 @@ jobs:
           grep -Fq '"INTERPRET_FAILURE_STAGE",' "$script"
           grep -Fq '"INTERPRET_EXCEPTION_FAMILY",' "$script"
           grep -Fq 'def sanitize_interpret_stage' "$script"
+          grep -Fq 'def public_error_code' "$script"
           if grep -Eq 'SELECTED_MODEL_ID|MODEL_OPTIONS_HTTP|MODEL_SELECTION_RESULT' "$script"; then
             echo 'B66_CGI_PARTIAL_SOURCE_CONTRACT=RETIRED_MODEL_MARKER_RETURNED'
             exit 1
