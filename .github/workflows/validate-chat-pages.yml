@@ -1,0 +1,32 @@
+name: Validate chat pages entry
+# #6850: the pages.dev entry must keep serving the exact front door code.
+on:
+  pull_request:
+    paths:
+      - 'apps/padiem-chat-pages/**'
+      - 'apps/padiem-chat-front/**'
+      - '.github/workflows/validate-chat-pages.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Assemble the Pages upload directory
+        run: node apps/padiem-chat-pages/build.mjs
+      - name: Pages proxy contracts
+        run: node --test apps/padiem-chat-pages/test/build.test.mjs
+      - name: The entry never carries a second proxy implementation
+        run: |
+          set -euo pipefail
+          entry="$(cat apps/padiem-chat-pages/dist/_worker.js)"
+          test "$(printf '%s' "${entry}" | grep -c '^export { default }')" = '1'
+          cmp apps/padiem-chat-front/worker.mjs apps/padiem-chat-pages/dist/_worker/worker.mjs
+          echo "CHAT_PAGES_SINGLE_IMPLEMENTATION=PASS"

@@ -126,6 +126,11 @@ class Settings:
     web_timeout_seconds: float = 30.0
     auth_mode: str = "off"
     public_base_url: str | None = None
+    # #6850: reviewed extra browser origins that serve this app (the parallel
+    # pages.dev entry). public_base_url stays the single authority for links,
+    # MCP metadata and reset mails; these origins are only accepted as the
+    # origin of a browser request and as a per-host login callback host.
+    public_base_urls: tuple[str, ...] = ()
     google_client_id: str | None = field(default=None, repr=False)
     google_client_secret: str | None = field(default=None, repr=False)
     session_secret: str | None = field(default=None, repr=False)
@@ -200,6 +205,8 @@ class Settings:
         # Shared account deletion RPC uses the existing v2 service HMAC envelope.
         lovetree_account_delete_url: object = None,
         account_delete_rpc_secret: object = None,
+        # #6850: appended last so every existing positional caller is untouched.
+        public_base_urls: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -390,6 +397,22 @@ class Settings:
             maximum=10_000_000,
         )
 
+        # #6850: a comma-separated allow-list of hosts that serve the same app.
+        # Each entry takes the same https-only, root-only normalization as the
+        # canonical base, so a typo fails the boot instead of silently allowing
+        # an origin nobody reviewed.
+        raw_extra_base_urls = "" if public_base_urls is None else str(public_base_urls)
+        extra_base_urls: list[str] = []
+        for part in raw_extra_base_urls.split(","):
+            value = part.strip()
+            if not value:
+                continue
+            normalized = _normalize_base_url(
+                value, https_only=True, root_only=True, allow_loopback_http=local
+            )
+            if normalized != public and normalized not in extra_base_urls:
+                extra_base_urls.append(normalized)
+
         return cls(
             runtime_mode=mode,
             file_lane_origin=_normalize_base_url(str(file_lane_origin), https_only=True, root_only=True) if file_lane_origin else None,
@@ -407,6 +430,7 @@ class Settings:
             web_timeout_seconds=web_timeout,
             auth_mode=auth,
             public_base_url=public,
+            public_base_urls=tuple(extra_base_urls),
             google_client_id=client_id,
             google_client_secret=client_secret,
             session_secret=secret,
@@ -470,6 +494,7 @@ class Settings:
             web_timeout_seconds=os.getenv("PADIEM_CHAT_WEB_TIMEOUT_SECONDS", "30"),
             auth_mode=os.getenv("PADIEM_CHAT_AUTH_MODE", "off"),
             public_base_url=os.getenv("PADIEM_CHAT_PUBLIC_BASE_URL"),
+            public_base_urls=os.getenv("PADIEM_CHAT_PUBLIC_BASE_URLS"),
             google_client_id=os.getenv("PADIEM_CHAT_GOOGLE_CLIENT_ID"),
             google_client_secret=os.getenv("PADIEM_CHAT_GOOGLE_CLIENT_SECRET"),
             session_secret=os.getenv("PADIEM_CHAT_SESSION_SECRET"),

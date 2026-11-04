@@ -1,0 +1,29 @@
+// padiem-chat — the SAME front door as apps/padiem-chat-front, served from a
+// pages.dev hostname (#6850 decision, 2026-11-05).
+//
+// Why a second entry exists: `chat.padiem.net` is routed by the padiem.net zone
+// and its client ISP lands that name on the LAX colo (measured 2026-11-05),
+// while the same files served from a *.pages.dev hostname land on ICN
+// (cold TTFB 0.081s vs 0.78s). Both hosts run the identical proxy code; the
+// canonical `chat.padiem.net` route is untouched.
+//
+// The proxy module itself is not copied into git: build.mjs copies the
+// reviewed apps/padiem-chat-front modules into ./dist at deploy time, so there
+// is exactly one implementation of the front door.
+{
+  "name": "padiem-chat",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-10-01",
+  // Secrets (PADIEM_COM2_EDGE_SECRET) are set on the project, never here.
+  "vars": {
+    "FRONT_ORIGIN": "https://chat-com2.padiem.net",
+    // No service binding exists on Pages: static mode is the honest fallback.
+    "FALLBACK_MODE": "static",
+    // COM2 is canonical for writes; never send them to the Python fallback.
+    "COM2_CANONICAL": "writes",
+    "HEALTH_TTL_MS": "10000",
+    "UPSTREAM_TIMEOUT_MS": "8000",
+    "API_READ_TIMEOUT_MS": "30000",
+    "ORCHESTRATION_TIMEOUT_MS": "60000"
+  }
+}

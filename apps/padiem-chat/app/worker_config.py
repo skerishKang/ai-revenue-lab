@@ -304,6 +304,7 @@ def settings_from_worker_bindings(
         web_timeout_seconds=binding_value(env, "PADIEM_CHAT_WEB_TIMEOUT_SECONDS") or "30",
         auth_mode=binding_value(env, "PADIEM_CHAT_AUTH_MODE") or "off",
         public_base_url=binding_value(env, "PADIEM_CHAT_PUBLIC_BASE_URL"),
+        public_base_urls=binding_value(env, "PADIEM_CHAT_PUBLIC_BASE_URLS"),
         google_client_id=binding_value(env, "PADIEM_CHAT_GOOGLE_CLIENT_ID"),
         google_client_secret=binding_value(env, "PADIEM_CHAT_GOOGLE_CLIENT_SECRET"),
         session_secret=binding_value(env, "PADIEM_CHAT_SESSION_SECRET"),

@@ -16,7 +16,7 @@ from .shared_auth_compare_flow import _un64, exchange_with_httpx
 from . import httpx_compat as httpx
 from .shared_login_flow import (
     SharedLoginFlow, clear_login_return_cookie, issue_shared_cookies,
-    login_return_target, revoke_with_httpx,
+    login_return_target, parse_extra_origins, revoke_with_httpx,
 )
 from .shared_login_timing import record_login_timing
 
@@ -189,6 +189,7 @@ def create_host_shared_login_flow(env, authority, public_base_url):
             return clear_login_return_cookie(response)
         flow = SharedLoginFlow(state_key=_un64(state), client_id=client_id,
             public_base_url=public_base_url, client_jwk=client_jwk, kid=str(kid),
+            extra_origins=parse_extra_origins(env.get('PADIEM_CHAT_PUBLIC_BASE_URLS')),
             operator_guard=lambda request: False, legacy_user=current_user_id,
             comparator=lambda *args: None, exchange=token_exchange,
             crypto=crypto, resolve_account=auth.user_id, issue_session=issue,
