@@ -18,6 +18,7 @@ already-satisfied seam assertions; nothing here duplicates them.
 
 from __future__ import annotations
 
+import ast
 import asyncio
 import os
 import sqlite3
@@ -69,6 +70,43 @@ OTHER_TENANT = "tenant_other_3933_s1"
 SCOPE = "claw_general_execute"
 
 FIXED_NOW = datetime(2026, 10, 13, 12, 0, 0, tzinfo=timezone.utc)
+
+
+def _imports_b54_authority(tree: ast.AST) -> bool:
+    """True only when the source statically imports the B54 authority module.
+
+    The boundary is an import boundary: a docstring or comment that names the
+    module is prose, not an edge in the import graph (#6727 added one).
+    """
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom):
+            module = node.module or ""
+            if module == "claw_first_turn_authority" or module.endswith(
+                ".claw_first_turn_authority"
+            ):
+                return True
+            if module in {"", "app"} and any(
+                alias.name == "claw_first_turn_authority" for alias in node.names
+            ):
+                return True
+        elif isinstance(node, ast.Import):
+            for alias in node.names:
+                if alias.name == "claw_first_turn_authority" or alias.name.endswith(
+                    ".claw_first_turn_authority"
+                ):
+                    return True
+    return False
+
+
+def _authority_importers() -> list[str]:
+    app_dir = Path(__file__).resolve().parents[1] / "app"
+    importers = []
+    for path in sorted(app_dir.glob("*.py")):
+        if path.name == "claw_first_turn_authority.py":
+            continue
+        if _imports_b54_authority(ast.parse(path.read_text(encoding="utf-8"))):
+            importers.append(path.name)
+    return importers
 
 
 class D1Statement:
@@ -979,11 +1017,26 @@ class TestFirstTurnAuthorityBoundaries(unittest.TestCase):
         assert "claw_first_turn" not in kagent_adapter
 
     def test_route_imports_only_the_b54_private_surface(self):
-        app_dir = Path(__file__).resolve().parents[1] / "app"
-        importers = [
-            path.name
-            for path in app_dir.glob("*.py")
-            if path.name != "claw_first_turn_authority.py"
-            and "claw_first_turn_authority" in path.read_text(encoding="utf-8")
-        ]
-        assert sorted(importers) == ["claw_general_routes.py"]
+        # An import boundary, not a prose boundary: #6727 named the module in
+        # expired_purge.py's docstring and the old raw-text scan counted it.
+        assert _authority_importers() == ["claw_general_routes.py"]
+
+    def test_a_docstring_mention_is_not_an_import(self):
+        tree = ast.parse(
+            '"""The claw_first_turn_authority store cleans these rows itself."""\n'
+        )
+        assert not _imports_b54_authority(tree)
+        # The real module carrying such a mention stays outside the import set.
+        assert "expired_purge.py" not in _authority_importers()
+
+    def test_a_real_new_import_would_still_break_the_boundary(self):
+        for source in (
+            "from .claw_first_turn_authority import cleanup_abandoned\n",
+            "from app.claw_first_turn_authority import release_expired\n",
+            "from claw_first_turn_authority import cleanup_abandoned\n",
+            "from . import claw_first_turn_authority\n",
+            "import app.claw_first_turn_authority\n",
+            "def lazy():\n    from .claw_first_turn_authority import cleanup_abandoned\n",
+        ):
+            with self.subTest(source=source):
+                assert _imports_b54_authority(ast.parse(source))

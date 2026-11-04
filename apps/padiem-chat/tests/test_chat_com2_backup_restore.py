@@ -4,7 +4,7 @@
 그 파일로 **되돌아가는지**는 확인된 적이 없다. 백업이 "검증됐다"는 것과 "복원이 된다"는
 것은 다른 문제다.
 
-이 시험은 시험용 SQLite 파일에 마이그레이션 90개를 적용하고 사용자·대화·메시지·
+이 시험은 시험용 SQLite 파일에 전체 마이그레이션을 적용하고 사용자·대화·메시지·
 프로젝트·프로젝트 파일 행을 넣은 뒤,
 
 1. backup.py를 **실제로 실행**해 백업 파일을 만들고,
@@ -30,6 +30,10 @@ BACKUP = ROOT / "deploy" / "host-com2" / "chat" / "backup.py"
 MIGRATIONS = ROOT / "apps" / "padiem-chat" / "migrations"
 COUNTED_TABLES = ("users", "conversations", "messages", "projects")
 LEDGER = "padiem_local_migration_ledger"
+# Tripwire: adding a migration must update BOTH values, so a schema
+# change is never silently absorbed into the backup/restore fixture.
+EXPECTED_MIGRATION_COUNT = 99
+EXPECTED_LAST_MIGRATION = "100_mcp_token_device_scope.sql"
 
 
 class FileSqliteD1(ThreadSafeSqliteD1):
@@ -60,10 +64,19 @@ def _ledger_count(conn: sqlite3.Connection) -> int | None:
 
 
 def _seed(db_path: Path) -> dict[str, object]:
-    """마이그레이션 90개 + 사용자·대화·메시지·프로젝트·프로젝트 파일 몇 행."""
+    """전체 마이그레이션 + 사용자·대화·메시지·프로젝트·프로젝트 파일 몇 행."""
 
     applied = sorted(MIGRATIONS.glob("*.sql"))
-    assert len(applied) == 90, [path.name for path in applied][-3:]
+    assert len(applied) == EXPECTED_MIGRATION_COUNT, (
+        "새 migration을 추가했다면 EXPECTED_MIGRATION_COUNT와 "
+        "EXPECTED_LAST_MIGRATION을 함께 갱신하세요: "
+        f"count={len(applied)} last={applied[-1].name if applied else None}"
+    )
+    assert applied[-1].name == EXPECTED_LAST_MIGRATION, (
+        "새 migration을 추가했다면 EXPECTED_MIGRATION_COUNT와 "
+        "EXPECTED_LAST_MIGRATION을 함께 갱신하세요: "
+        f"last={applied[-1].name!r} expected={EXPECTED_LAST_MIGRATION!r}"
+    )
 
     db = FileSqliteD1(db_path)
     user_id = "usr_" + "a" * 32
