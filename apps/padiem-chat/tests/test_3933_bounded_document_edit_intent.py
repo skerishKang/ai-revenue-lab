@@ -79,6 +79,8 @@ def test_bounded_hark_example_keeps_exact_two_edits_and_model():
     assert projection["authorization_minted"] is False
     assert projection["overwrite_original"] is False
     assert projection["requested_edit_fields"] == ["institution_name", "supply_amount"]
+    assert "selected_model_id" not in projection
+    assert MODEL not in str(projection)
     assert "광주대학교" not in str(projection)
 
 

@@ -53,7 +53,6 @@ class DocumentEditProposal:
             "source_integrity_ref": self.integrity_ref,
             "requested_edit_fields": [item.field for item in self.edits],
             "requested_output_formats": list(self.output_formats),
-            "selected_model_id": self.model_id,
             "preserve_unrequested": True,
             "overwrite_original": False,
             "authorization_minted": False,

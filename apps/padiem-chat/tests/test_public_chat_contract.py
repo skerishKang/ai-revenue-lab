@@ -47,7 +47,12 @@ def test_public_projection_is_allowlisted_and_recursively_strips_identity() -> N
         "research": {
             "status": "complete",
             "selected_model": MODEL_SENTINEL,
+            "selected_model_id": MODEL_SENTINEL,
+            "selected_model_name": MODEL_SENTINEL,
+            "model_name": MODEL_SENTINEL,
+            "upstream_model_id": MODEL_SENTINEL,
             "selected_provider": PROVIDER_SENTINEL,
+            "provider_name": PROVIDER_SENTINEL,
         },
         "internal_debug": {"model_id": MODEL_SENTINEL},
     }
