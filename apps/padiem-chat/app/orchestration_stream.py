@@ -26,6 +26,7 @@ from .orchestration_timing import OrchestrationTiming
 from .worker_config import binding_value
 
 STREAM_FLAG_ENV = "PADIEM_CHAT_ORCHESTRATION_STREAM"
+STREAM_USERS_ENV = "PADIEM_CHAT_ORCHESTRATION_STREAM_USERS"
 NDJSON_MEDIA_TYPE = "application/x-ndjson"
 
 _LOG = logging.getLogger("padiem_chat.orchestration_stream")
@@ -163,10 +164,36 @@ class ProgressFrameBuilder:
         return None
 
 
-def orchestration_stream_enabled(source: Any) -> bool:
-    """서버가 소유한 스위치. 바인딩(Worker)과 환경변수(local host)를 같은 값으로 읽는다."""
-    value = binding_value(source, STREAM_FLAG_ENV)
-    return (value.strip() if isinstance(value, str) else "").lower() in {"1", "true", "on"}
+def _parse_stream_allowlist(source: Any) -> set[str]:
+    """Parse comma-separated user allowlist. Ignore malformed values silently."""
+    value = binding_value(source, STREAM_USERS_ENV)
+    if not isinstance(value, str):
+        return set()
+    allowlist: set[str] = set()
+    for item in value.split(","):
+        item = item.strip()
+        if not item:
+            continue
+        if len(item) > 256:
+            continue
+        allowlist.add(item)
+    return allowlist
+
+
+def orchestration_stream_enabled(source: Any, user_id: str | None = None) -> bool:
+    """서버 스위치 판정. Worker와 환경변수(local host) 양쪽에서 값을 읽는다.
+
+    If global flag is on, everyone gets streaming. If global flag is off but user
+    is logged in and in allowlist, that user gets streaming. Guests never enabled by allowlist.
+    """
+    global_value = binding_value(source, STREAM_FLAG_ENV)
+    global_enabled = (global_value.strip() if isinstance(global_value, str) else "").lower() in {"1", "true", "on"}
+    if global_enabled:
+        return True
+    if not user_id or not isinstance(user_id, str) or not user_id.strip():
+        return False
+    allowlist = _parse_stream_allowlist(source)
+    return user_id.strip() in allowlist
 
 
 def wants_ndjson(raw: Any, accept: str | None) -> bool:
@@ -320,6 +347,7 @@ __all__ = [
     "PROGRESS_KINDS",
     "ProgressFrameBuilder",
     "STREAM_FLAG_ENV",
+    "STREAM_USERS_ENV",
     "line",
     "ndjson_answer",
     "orchestration_stream_enabled",

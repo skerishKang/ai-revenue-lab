@@ -509,7 +509,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             user_text=user_text,
             store=store,
             wants_stream=(
-                getattr(request.app.state, "orchestration_stream_enabled", False)
+                orchestration_stream_enabled(request.app.state, uid)
                 and wants_ndjson(raw, request.headers.get("accept"))
             ),
         )
@@ -602,7 +602,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
         )
 
     answer_budget_seconds = _answer_budget_seconds(request, timing)
-    if getattr(request.app.state, "orchestration_stream_enabled", False) and wants_ndjson(
+    if orchestration_stream_enabled(request.app.state, _user_id(request)) and wants_ndjson(
         raw, request.headers.get("accept")
     ):
         # #6742: 일반 답변도 엔진 토큰이 오는 대로 흘려보낸다. 게이트·등급·PC 순서는 그대로다.

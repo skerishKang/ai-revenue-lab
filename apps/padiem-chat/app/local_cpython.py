@@ -196,7 +196,7 @@ def compose_host_orchestration(
     install_orchestration_routes(
         app,
         bridge,
-        stream_enabled=orchestration_stream_enabled(os.environ),
+        stream_enabled=orchestration_stream_enabled(os.environ, None),
         model_first_enabled=model_first_enabled(os.environ),
     )
     return bridge
