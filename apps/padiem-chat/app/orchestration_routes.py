@@ -224,13 +224,98 @@ async def api_orchestration(request: Request) -> JSONResponse:
     # #6732: 구간 시간만 남긴다. 실패·예외 경로에서도 그때까지 잠긴 구간을 남긴다.
     timing = OrchestrationTiming()
     response = None
+    _turn_metrics(request)
     try:
         response = await _answer_orchestration(request, timing)
-        return response
+    except Exception:
+        # #6812 계측: 예외로 끝난 턴도 한 줄 남긴다. 원문은 남기지 않는다.
+        _emit_turn_summary(request, timing, "internal_error")
+        raise
     finally:
         # NDJSON은 응답이 끝날 때 생성기가 직접 남긴다(engine_ms·save_ms 포함).
         if getattr(response, "media_type", None) != NDJSON_MEDIA_TYPE:
             timing.emit()
+    if getattr(response, "media_type", None) == NDJSON_MEDIA_TYPE:
+        _stream_turn_summary(request, response, timing)
+    else:
+        _emit_turn_summary(request, timing, _result_code(response))
+    return response
+
+
+def _turn_metrics(request: Request) -> dict[str, object]:
+    """This turn's own counters, created once per request."""
+    metrics = getattr(request.state, "orchestration_turn", None)
+    if not isinstance(metrics, dict):
+        metrics = {}
+        request.state.orchestration_turn = metrics
+    return metrics
+
+
+def _conversation_hash(value: object) -> str | None:
+    if not isinstance(value, str) or not value:
+        return None
+    import hashlib
+
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()[:8]
+
+
+def _b14_input_chars(messages: list[dict[str, str]], context: str | None) -> int:
+    """Characters this turn hands to B14: history text plus system context."""
+    total = len(context or "")
+    for message in messages:
+        content = message.get("content")
+        if isinstance(content, str):
+            total += len(content)
+    return total
+
+
+def _turn_summary_fields(request: Request) -> dict[str, object]:
+    from .request_telemetry import stage_events
+
+    metrics = dict(_turn_metrics(request))
+    first_byte = next(
+        (event.get("duration_ms") for event in stage_events()
+         if event.get("stage") == "b14.stream.first_delta"),
+        None,
+    )
+    metrics["first_byte_ms"] = first_byte if isinstance(first_byte, (int, float)) else None
+    return metrics
+
+
+def _emit_turn_summary(request: Request, timing: "OrchestrationTiming",
+                      code: str | None) -> None:
+    from .request_telemetry import emit_turn_summary
+
+    try:
+        duration_ms = timing.elapsed_ms()
+    except Exception:
+        duration_ms = 0.0
+    emit_turn_summary(
+        duration_ms=duration_ms, metrics=_turn_summary_fields(request), code=code,
+    )
+
+
+def _result_code(response: Any) -> str | None:
+    status = getattr(response, "status_code", 200)
+    return None if int(status) < 400 else "http_" + str(int(status))
+
+
+def _stream_turn_summary(request: Request, response: Any, timing: "OrchestrationTiming") -> None:
+    """Emit the one summary line when the stream actually ends."""
+    original = response.body_iterator
+
+    async def wrapped():
+        code = None
+        try:
+            async for chunk in original:
+                yield chunk
+        except Exception:
+            code = "stream_error"
+            raise
+        finally:
+            _emit_turn_summary(request, timing, code)
+
+    response.body_iterator = wrapped()
 
 
 async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -> JSONResponse:
@@ -388,6 +473,19 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             grounded_evidence = public_grounding_evidence(prepared.evidence)
 
     timing.mark("grounding")
+    # #6812 계측: 이 턴이 무엇을 얼마나 B14로 보냈는지 한 줄로 남긴다. 새 상한도,
+    # 새 차단도 없다 — 숫자만 기록한다.
+    _turn_metrics(request).update({
+        "tier": str(raw.get("tier") or "free") if isinstance(raw, dict) else "free",
+        "conversation": _conversation_hash(conversation_id),
+        "web_search": bool(grounded_evidence),
+        "evidence_count": len(grounded_evidence),
+        "evidence_chars": sum(
+            len(str(item.get("snippet") or "")) for item in grounded_evidence
+        ),
+        "history_turns": len(messages),
+        "input_chars": _b14_input_chars(messages, grounding_context),
+    })
     if model_first_on and user_credential_ref is None:
         model_first_response = await _answer_model_first(
             request,
