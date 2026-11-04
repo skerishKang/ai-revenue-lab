@@ -117,6 +117,8 @@ function byLowestActiveTime(a: AdClickConsumerCard, b: AdClickConsumerCard): num
  */
 export interface BuildAdClickFirstConsumerHomeOptions {
   readonly publicOpportunities?: readonly PublicOpportunity[];
+  /** Evaluation instant for the 7-day display window; tests pin it, production keeps wall time. */
+  readonly now?: Date;
 }
 
 export function buildAdClickFirstConsumerHome(
@@ -124,7 +126,7 @@ export function buildAdClickFirstConsumerHome(
   options: BuildAdClickFirstConsumerHomeOptions = {},
 ): AdClickFirstConsumerHomeViewModel {
   const cards = Object.freeze([...buildDefaultAdClickCards(candidates)].sort(byLowestActiveTime));
-  const publicCards = displayablePublicOpportunityCards(options.publicOpportunities ?? []);
+  const publicCards = displayablePublicOpportunityCards(options.publicOpportunities ?? [], options.now);
   return Object.freeze({
     mode: 'AD_CLICK_FIRST' as const,
     issueNumber: 1112 as const,
@@ -166,7 +168,7 @@ export function buildAdClickFirstTodayRoute(
   options: BuildAdClickFirstTodayRouteOptions = {},
 ): AdClickFirstTodayRouteViewModel {
   const cards = Object.freeze([...buildDefaultAdClickCards(candidates)].sort(byLowestActiveTime));
-  const publicCards = displayablePublicOpportunityCards(options.publicOpportunities ?? []);
+  const publicCards = displayablePublicOpportunityCards(options.publicOpportunities ?? [], options.now);
   const publicImmediateCards = Object.freeze(
     publicCards
       .filter((card) => card.todayTier === 'IMMEDIATE')
@@ -207,14 +209,20 @@ export interface BuildAdClickFirstBrowseOptions {
   readonly query?: string;
   readonly maxSeconds?: number | null;
   readonly publicOpportunities?: readonly PublicOpportunity[];
+  /** Evaluation instant for the 7-day display window; tests pin it, production keeps wall time. */
+  readonly now?: Date;
 }
 
 export interface BuildAdClickFirstTodayRouteOptions {
   readonly publicOpportunities?: readonly PublicOpportunity[];
+  /** Evaluation instant for the 7-day display window; tests pin it, production keeps wall time. */
+  readonly now?: Date;
 }
 
 export interface BuildAdClickFirstOpportunityDetailOptions {
   readonly publicOpportunities?: readonly PublicOpportunity[];
+  /** Evaluation instant for the 7-day display window; tests pin it, production keeps wall time. */
+  readonly now?: Date;
 }
 
 function publicCardMatchesQuery(card: PublicOpportunityCard, lowerQuery: string): boolean {
@@ -249,7 +257,7 @@ export function buildAdClickFirstBrowse(
 
   // Public lane: verified public opportunities only. The ad-click lane activation
   // policy is untouched; public categories become active with real verified supply.
-  const allPublicCards = displayablePublicOpportunityCards(options.publicOpportunities ?? []);
+  const allPublicCards = displayablePublicOpportunityCards(options.publicOpportunities ?? [], options.now);
   let publicCards: readonly PublicOpportunityCard[];
   if (selectedCategory === 'ALL') {
     publicCards = allPublicCards;
@@ -330,7 +338,7 @@ export function buildAdClickFirstOpportunityDetail(
   const publicOpportunity =
     card === null
       ? ((options.publicOpportunities ?? []).find(
-          (opportunity) => opportunity.id === id && isPublicOpportunityDisplayable(opportunity),
+          (opportunity) => opportunity.id === id && isPublicOpportunityDisplayable(opportunity, options.now),
         ) ?? null)
       : null;
   const publicDetail = publicOpportunity ? toPublicOpportunityDetail(publicOpportunity) : null;

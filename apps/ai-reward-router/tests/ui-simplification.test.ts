@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createPublicSupplyConsumerHttpHandler } from '../src/http/consumer-http.js';
+import { PUBLIC_SUPPLY_TEST_NOW } from './helpers/public-supply-clock.js';
 import worker from '../src/worker.js';
 import { VERIFIED_PUBLIC_OPPORTUNITIES } from '../src/public-supply/verified-public-opportunities.js';
 import { buildAdClickFirstConsumerHome } from '../src/ad-click-first/consumer-home.js';
@@ -8,7 +9,7 @@ import { renderAdClickFirstConsumerWeb, renderAdClickFirstBrowseWeb } from '../s
 import { buildIncomePipelineViewModel, renderIncomePipelineWeb } from '../src/income-pipeline/consumer-view.js';
 import type { UserIncomeRecord } from '../src/income-pipeline/domain.js';
 
-const handler = createPublicSupplyConsumerHttpHandler();
+const handler = createPublicSupplyConsumerHttpHandler({ now: () => PUBLIC_SUPPLY_TEST_NOW });
 
 test('home leads with one short value line and the "수익 기회 보기" CTA (#5830)', async () => {
   const html = await (await handler(new Request('https://b64.example/'))).text();

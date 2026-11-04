@@ -31,9 +31,13 @@ import {
   createEmptySupplyConsumerHttpHandler,
   createPublicSupplyConsumerHttpHandler,
 } from '../src/http/consumer-http.js';
-import worker from '../src/worker.js';
+import { createB64WorkerHandler } from '../src/worker.js';
+import { PUBLIC_SUPPLY_TEST_NOW } from './helpers/public-supply-clock.js';
 
 const VERIFIED_AT = '2026-10-25T00:50:00.000Z';
+
+/** The deployed handler wiring with a deterministic display-window clock (#6805). */
+const worker = createB64WorkerHandler({}, { now: () => PUBLIC_SUPPLY_TEST_NOW });
 
 test('verified public supply covers 5 vendors with at least 5 opportunities', () => {
   assert.ok(VERIFIED_PUBLIC_OPPORTUNITIES.length >= 5);
@@ -82,7 +86,7 @@ test('stale public opportunities are not displayed active without re-verificatio
 });
 
 test('browse activates public categories and keeps the ad-click lane untouched', () => {
-  const vm = buildAdClickFirstBrowse([], { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES });
+  const vm = buildAdClickFirstBrowse([], { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES, now: PUBLIC_SUPPLY_TEST_NOW });
   const byId = new Map(vm.categories.map((cat) => [cat.id, cat]));
   assert.equal(byId.get('SURVEY')?.active, true);
   assert.equal(byId.get('SURVEY')?.count, 1);
@@ -97,22 +101,22 @@ test('browse activates public categories and keeps the ad-click lane untouched',
 });
 
 test('browse category selection filters public cards and query matches title/vendor', () => {
-  const vm = buildAdClickFirstBrowse([], { category: 'SURVEY', publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES });
+  const vm = buildAdClickFirstBrowse([], { category: 'SURVEY', publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES, now: PUBLIC_SUPPLY_TEST_NOW });
   assert.equal(vm.publicCards.length, 1);
   assert.equal(vm.publicCards[0]?.vendor, 'Prolific');
-  const queried = buildAdClickFirstBrowse([], { category: 'MICROTASK', query: 'outlier', publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES });
+  const queried = buildAdClickFirstBrowse([], { category: 'MICROTASK', query: 'outlier', publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES, now: PUBLIC_SUPPLY_TEST_NOW });
   assert.equal(queried.publicCards.length, 1);
   assert.equal(queried.publicCards[0]?.vendor, 'Outlier');
 });
 
 test('maxSeconds filter applies to ad cards only, never to public opportunities', () => {
-  const vm = buildAdClickFirstBrowse([], { category: 'ALL', maxSeconds: 10, publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES });
+  const vm = buildAdClickFirstBrowse([], { category: 'ALL', maxSeconds: 10, publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES, now: PUBLIC_SUPPLY_TEST_NOW });
   assert.equal(vm.cards.length, 0);
   assert.equal(vm.publicCards.length, 6);
 });
 
 test('today route splits immediate from screening-required opportunities', () => {
-  const vm = buildAdClickFirstTodayRoute([], { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES });
+  const vm = buildAdClickFirstTodayRoute([], { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES, now: PUBLIC_SUPPLY_TEST_NOW });
   assert.equal(vm.publicImmediateCards.length, 1);
   assert.equal(vm.publicImmediateCards[0]?.vendor, 'Prolific');
   assert.equal(vm.publicScreeningCards.length, 5);
@@ -123,14 +127,14 @@ test('today route splits immediate from screening-required opportunities', () =>
 });
 
 test('today page shows screening-required projects, not instant rewards', () => {
-  const vm = buildAdClickFirstTodayRoute([], { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES });
+  const vm = buildAdClickFirstTodayRoute([], { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES, now: PUBLIC_SUPPLY_TEST_NOW });
   const html = renderAdClickFirstTodayRouteWeb(vm);
   assert.match(html, /신청·심사 후 참여/);
   assert.match(html, /지금 바로 보상이 확정되는 항목은 아닙니다/);
 });
 
 test('public detail renders required facts and a safe outbound link', () => {
-  const vm = buildAdClickFirstOpportunityDetail([], 'pub-outlier-ko-voice', { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES });
+  const vm = buildAdClickFirstOpportunityDetail([], 'pub-outlier-ko-voice', { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES, now: PUBLIC_SUPPLY_TEST_NOW });
   assert.equal(vm.found, true);
   assert.equal(vm.card, null);
   assert.ok(vm.publicDetail);
@@ -146,7 +150,7 @@ test('public detail renders required facts and a safe outbound link', () => {
 });
 
 test('Prolific card distinguishes participation eligibility from live study inventory', () => {
-  const vm = buildAdClickFirstBrowse([], { category: 'SURVEY', publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES });
+  const vm = buildAdClickFirstBrowse([], { category: 'SURVEY', publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES, now: PUBLIC_SUPPLY_TEST_NOW });
   const card = vm.publicCards[0];
   assert.ok(card, 'Prolific card exists');
   assert.equal(card.vendor, 'Prolific');
@@ -157,21 +161,21 @@ test('Prolific card distinguishes participation eligibility from live study inve
   assert.doesNotMatch(html, /바로 참여 가능/);
   assert.match(html, /참가자 등록 가능/);
   assert.match(html, /설문은 기간에 따라 공개됩니다/);
-  const detailVm = buildAdClickFirstOpportunityDetail([], 'pub-prolific-participate', { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES });
+  const detailVm = buildAdClickFirstOpportunityDetail([], 'pub-prolific-participate', { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES, now: PUBLIC_SUPPLY_TEST_NOW });
   const detailHtml = renderAdClickFirstOpportunityDetailWeb(detailVm);
   assert.match(detailHtml, /참여 단계/);
   assert.match(detailHtml, /설문은 기간에 따라 공개됩니다/);
 });
 
 test('DataAnnotation card and detail surface unconfirmed Korea residency eligibility', () => {
-  const vm = buildAdClickFirstBrowse([], { category: 'MICROTASK', publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES });
+  const vm = buildAdClickFirstBrowse([], { category: 'MICROTASK', publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES, now: PUBLIC_SUPPLY_TEST_NOW });
   const da = vm.publicCards.find((card) => card.vendor === 'DataAnnotation');
   assert.ok(da, 'DataAnnotation card exists');
   assert.equal(da.koreaStatus, 'UNCONFIRMED');
   assert.match(da.koreaLabel, /한국 거주 자격 미확인/);
   const html = renderAdClickFirstBrowseWeb(vm);
   assert.match(html, /한국 거주 자격 미확인/);
-  const detailVm = buildAdClickFirstOpportunityDetail([], 'pub-dataannotation-korean', { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES });
+  const detailVm = buildAdClickFirstOpportunityDetail([], 'pub-dataannotation-korean', { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES, now: PUBLIC_SUPPLY_TEST_NOW });
   const detailHtml = renderAdClickFirstOpportunityDetailWeb(detailVm);
   assert.match(detailHtml, /한국 거주 자격 미확인/);
   assert.doesNotMatch(detailHtml, /한국 참여 확인/);
@@ -192,7 +196,7 @@ test('reward display never doubles the unknown-amount wording', () => {
 });
 
 test('today hero covers application-based opportunities, not only instant rewards', () => {
-  const vm = buildAdClickFirstTodayRoute([], { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES });
+  const vm = buildAdClickFirstTodayRoute([], { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES, now: PUBLIC_SUPPLY_TEST_NOW });
   const html = renderAdClickFirstTodayRouteWeb(vm);
   assert.match(html, /오늘의 기회/);
   assert.match(html, /신청·심사가 필요한 프로젝트는 별도 구분됩니다/);
@@ -205,13 +209,13 @@ test('public detail hides stale records as not found', () => {
   const staleAt = new Date(Date.parse(VERIFIED_AT) - (PUBLIC_OPPORTUNITY_MAX_AGE_DAYS + 2) * 24 * 60 * 60 * 1000).toISOString();
   const staleBase = VERIFIED_PUBLIC_OPPORTUNITIES[0]!;
   const stale: PublicOpportunity = { ...staleBase, verifiedAt: staleAt };
-  const vm = buildAdClickFirstOpportunityDetail([], stale.id, { publicOpportunities: [stale] });
+  const vm = buildAdClickFirstOpportunityDetail([], stale.id, { publicOpportunities: [stale], now: PUBLIC_SUPPLY_TEST_NOW });
   assert.equal(vm.found, false);
   assert.equal(vm.publicDetail, null);
 });
 
 test('public detail lookup falls back to ad cards first, then public lane', () => {
-  const missing = buildAdClickFirstOpportunityDetail([], 'does-not-exist', { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES });
+  const missing = buildAdClickFirstOpportunityDetail([], 'does-not-exist', { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES, now: PUBLIC_SUPPLY_TEST_NOW });
   assert.equal(missing.found, false);
   assert.equal(missing.emptyState, 'NO_LIVE_REWARD_SUPPLY');
 });
@@ -227,7 +231,7 @@ test('empty-supply handler keeps browse/today without public cards (no behavior 
 });
 
 test('public-supply handler serves verified opportunities on browse, today, and detail', async () => {
-  const handler = createPublicSupplyConsumerHttpHandler();
+  const handler = createPublicSupplyConsumerHttpHandler({ now: () => PUBLIC_SUPPLY_TEST_NOW });
   const browse = await handler(new Request('https://b64.example/browse'));
   assert.equal(browse.status, 200);
   const browseHtml = await browse.text();
@@ -252,7 +256,7 @@ test('public-supply handler serves verified opportunities on browse, today, and 
 });
 
 test('deployed worker home leads with verified public supply and keeps the ad lane honest (#5830)', async () => {
-  const home = await worker.fetch(new Request('https://b64.example/'));
+  const home = await worker(new Request('https://b64.example/'));
   const homeHtml = await home.text();
   // OWNER decision #5830: existing verified public opportunities are the first
   // actionable content on the home screen; the unapproved ad lane stays an
@@ -265,7 +269,7 @@ test('deployed worker home leads with verified public supply and keeps the ad la
   assert.match(homeHtml, /공급자 승인 대기/);
   assert.doesNotMatch(homeHtml, /지금 바로|즉시 적립|바로 적립 가능/);
 
-  const browse = await worker.fetch(new Request('https://b64.example/browse'));
+  const browse = await worker(new Request('https://b64.example/browse'));
   assert.match(await browse.text(), /data-public-card-count="6"/);
 });
 
@@ -277,11 +281,11 @@ test('public supply html escapes injected copy and blocks unsafe outbound links'
     qualifications: 'a & b <c>',
     applyUrl: 'https://example.com/apply',
   };
-  const vm = buildAdClickFirstBrowse([], { category: 'SURVEY', publicOpportunities: [malicious] });
+  const vm = buildAdClickFirstBrowse([], { category: 'SURVEY', publicOpportunities: [malicious], now: PUBLIC_SUPPLY_TEST_NOW });
   const html = renderAdClickFirstBrowseWeb(vm);
   assert.doesNotMatch(html, /<script>alert/);
   assert.match(html, /&lt;script&gt;/);
-  const detailVm = buildAdClickFirstOpportunityDetail([], 'pub-evil', { publicOpportunities: [malicious] });
+  const detailVm = buildAdClickFirstOpportunityDetail([], 'pub-evil', { publicOpportunities: [malicious], now: PUBLIC_SUPPLY_TEST_NOW });
   const detailHtml = renderAdClickFirstOpportunityDetailWeb(detailVm);
   assert.doesNotMatch(detailHtml, /javascript:/);
   assert.match(detailHtml, /a &amp; b &lt;c&gt;/);
@@ -308,7 +312,7 @@ test('duplicated curation of one offer reaches the consumer once', () => {
   assert.equal(dedupePublicOpportunities([base, twin]).length, 1);
   assert.equal(dedupePublicOpportunities([base, otherProject]).length, 2, 'a different project of the same vendor is not a duplicate');
 
-  const cards = displayablePublicOpportunityCards([base, twin, otherProject]);
+  const cards = displayablePublicOpportunityCards([base, twin, otherProject], PUBLIC_SUPPLY_TEST_NOW);
   assert.equal(cards.length, 2);
 });
 

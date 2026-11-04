@@ -5,6 +5,7 @@ import {
   createPublicSupplyConsumerHttpHandler,
 } from '../src/http/consumer-http.js';
 import { buildAdClickFirstBrowse } from '../src/ad-click-first/consumer-home.js';
+import { PUBLIC_SUPPLY_TEST_NOW } from './helpers/public-supply-clock.js';
 import { renderAdClickFirstBrowseWeb } from '../src/ad-click-first/consumer-web.js';
 
 /**
@@ -15,7 +16,7 @@ import { renderAdClickFirstBrowseWeb } from '../src/ad-click-first/consumer-web.
  * page can know.
  */
 
-const publicSupply = createPublicSupplyConsumerHttpHandler();
+const publicSupply = createPublicSupplyConsumerHttpHandler({ now: () => PUBLIC_SUPPLY_TEST_NOW });
 const emptySupply = createEmptySupplyConsumerHttpHandler();
 
 async function browse(handler: ReturnType<typeof createPublicSupplyConsumerHttpHandler>, query: string): Promise<string> {
