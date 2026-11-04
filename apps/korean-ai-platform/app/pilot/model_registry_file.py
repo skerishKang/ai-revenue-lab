@@ -450,6 +450,14 @@ def credential_binding_names(path: Path | None = None) -> frozenset[str]:
         and entry["credential_binding_name"]
     )
 
+def _reasoning_fields(raw: dict) -> tuple[bool, str | None]:
+    """The catalog view of one row's reasoning block (#6838)."""
+    if "reasoning" not in raw:
+        return (False, None)
+    supported, _values, default = normalize_policy(raw["reasoning"])
+    return (supported, default if supported else None)
+
+
 def install_models(data:dict|None=None) -> None:
     """Install the one canonical registry into existing B14 execution adapters."""
     from .catalog import CATALOG_BY_ID, CATALOG_MODELS, CatalogModel

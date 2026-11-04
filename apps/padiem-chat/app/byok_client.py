@@ -86,6 +86,15 @@ class OwnerCustomCredential:
     endpoint: str
 
 
+def _unsupported_reasoning_wire() -> CustomProviderError:
+    """#6838: a BYOK wire without a reasoning field never silently drops one."""
+    return CustomProviderError(
+        422,
+        "reasoning_effort_unsupported_wire",
+        "이 공급자 형식은 추론 강도 선택을 받지 않습니다.",
+    )
+
+
 def _malformed() -> CustomProviderError:
     return CustomProviderError(
         502,
@@ -245,7 +254,12 @@ def _request_body(
     messages: list[dict[str, str]],
     system_context: str | None,
     stream: bool,
+    reasoning_effort: str | None = None,
 ) -> dict[str, Any]:
+    # #6838: BYOK is the exception. The customer's choice is sent unchanged;
+    # a wire without the field is refused instead of being quietly altered.
+    if reasoning_effort is not None and spec.wire != "openai-chat":
+        raise _unsupported_reasoning_wire()
     if spec.wire == "anthropic-messages":
         body: dict[str, Any] = {
             "model": upstream_model,
@@ -268,6 +282,8 @@ def _request_body(
     }
     if stream:
         body["stream"] = True
+    if reasoning_effort is not None:
+        body["reasoning_effort"] = reasoning_effort
     return body
 
 
@@ -696,13 +712,15 @@ class CustomProviderClient:
         messages: list[dict[str, str]],
         system_context: str | None = None,
         stream: bool | None = None,
+        reasoning_effort: str | None = None,
     ) -> dict[str, Any]:
         spec = selection.provider
         effective_endpoint = await self._safe_endpoint(spec, endpoint)
         use_stream = spec.stream_by_default if stream is None else bool(stream)
         url = _request_url(spec, effective_endpoint, selection.upstream_model, use_stream)
         body = _request_body(
-            spec, selection.upstream_model, messages, system_context, use_stream
+            spec, selection.upstream_model, messages, system_context, use_stream,
+            reasoning_effort=reasoning_effort,
         )
         headers = _headers(spec, api_key)
 
@@ -899,6 +917,7 @@ async def complete_owner_custom(
     selection: CustomModelSelection,
     messages: list[dict[str, str]],
     system_context: str | None = None,
+    reasoning_effort: str | None = None,
 ) -> dict[str, Any]:
     """The one owner-key -> explicit provider contract shared by Chat/Claw/B66.
 
@@ -916,6 +935,7 @@ async def complete_owner_custom(
         endpoint=owner.endpoint,
         messages=messages,
         system_context=system_context,
+        reasoning_effort=reasoning_effort,
     )
 
 

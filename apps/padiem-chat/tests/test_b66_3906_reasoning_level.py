@@ -740,13 +740,15 @@ asyncio.run(main())
 """
 
 
-def test_b66_level_reaches_the_real_provider_request_json():
-    """End-to-end proof through real B14 code on a mock network transport.
+def test_b66_level_never_leaks_into_the_platform_request_json():
+    """#6838: the platform lane decides the level, never the caller.
 
-    B66's own Core transport is B14/#3977 owned and not merged, so this test
-    pins the far side of that contract: the exact object B66 emits becomes a
-    TOP-LEVEL `reasoning_effort` on the provider request, in both streaming and
-    non-streaming shapes, while the default path carries no such key at all.
+    This used to pin the opposite: the object B66 emitted (#3906) became a
+    TOP-LEVEL `reasoning_effort` on the provider request. #6838 moved the
+    decision into the model registry, and the public registry carries no
+    values at all, so the far side of the contract is now that a caller
+    supplied level is dropped in both streaming and non-streaming shapes while
+    the rest of the request shape stays unchanged.
     """
     import json
     import subprocess
@@ -783,12 +785,12 @@ def test_b66_level_reaches_the_real_provider_request_json():
     assert completed.returncode == 0, completed.stderr[-2000:]
     seen = json.loads(completed.stdout.strip().splitlines()[-1])
 
-    assert seen["nonstream"]["reasoning_effort"] == "low"
-    assert seen["stream"]["reasoning_effort"] == "low"
     assert seen["stream"]["stream"] is True
     assert seen["nonstream"]["model"] == "gemini-3.5-flash-lite"
-    # No synthetic sampling default and no invented budget accompany the level.
+    # #6838: the caller's level is stripped and the public registry declares no
+    # reasoning block, so no shape may carry the option.
     for shape in ("nonstream", "stream"):
+        assert "reasoning_effort" not in seen[shape]
         assert "temperature" not in seen[shape]
         assert "max_tokens" not in seen[shape]
         assert "model_parameters" not in seen[shape]
