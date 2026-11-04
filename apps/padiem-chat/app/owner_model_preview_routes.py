@@ -1,8 +1,8 @@
-"""#3790 model preview and dynamic Claw B14 model choices.
+"""#3790 dynamic Claw B14 model choices.
 
-The historical four-Google read-only preview remains a partial source inventory.
-Claw's actual chooser follows the same B14 owner-allowed/ready list as B66,
-without requiring another product-specific model/provider live evaluation.
+The public model-name preview was removed (#6828): users choose a PADIEM grade,
+never a model identity. Claw's chooser follows the same B14 owner-allowed/ready
+list as B66, without requiring another product-specific live evaluation.
 """
 from __future__ import annotations
 
@@ -14,7 +14,6 @@ import time
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from padiem_control_plane.owner_model_name_parts import google_owner_name_parts
 from .member_grade_access import selected_grade_denial, selected_admin_denial
 from .model_policy import ADMIN_B14_MODEL_ID
 
@@ -157,28 +156,6 @@ async def _refresh_roster(key: int, owner: object, list_fn, ttl: float) -> None:
         # ceiling, and the next expired read schedules another attempt.
         print(f"ROSTER_REFRESH_FAILED resolver={type(owner).__name__} "
               f"error={type(exc).__name__}", flush=True)
-
-
-async def owner_model_name_preview(request: Request) -> JSONResponse:
-    names = google_owner_name_parts()
-    return JSONResponse(
-        {
-            "scope": "owner_confirmed_google_subset",
-            "complete_inventory": False,
-            "execution_enabled": False,
-            "model_names": [
-                {
-                    "model_id": row.model_id,
-                    "product_name_prefix": row.product_name_prefix,
-                    "individual_model_name": row.individual_model_name,
-                    "owner_selected": row.owner_selected,
-                    "customer_selectable": False,
-                }
-                for row in names
-            ],
-        },
-        headers={"Cache-Control": "no-store"},
-    )
 
 
 async def claw_verified_model_choices(request: Request) -> JSONResponse:

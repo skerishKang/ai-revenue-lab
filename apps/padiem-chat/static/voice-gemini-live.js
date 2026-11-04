@@ -15,32 +15,29 @@
   "use strict";
 
   /**
-   * apps/padiem-chat/static/voice-gemini-live.js
-   *
-   * The Gemini Live real-time transcription engine for PADIEM Chat / Claw.
+   * The real-time transcription engine for PADIEM Chat / Claw.
    *
    * PROVENANCE - GLOBAL_CLASSROOM_DIRECT_PORT, logic unchanged:
    *   skerishKang/global-classroom main ffa27e6a93605614031fed314ef33571c85b8f18
-   *   hooks/useGeminiLive.ts     -> the Live session, the real-time audio path,
+   *   hooks/useLiveSession.ts (upstream file `useGeminiLive.ts`)
+   *                                -> the Live session, the real-time audio path,
    *                                  the interim/final split, the turn commit,
    *                                  the session rotation with the audio
-   *                                  carry-over, the provider fallback order
+   *                                  carry-over, the transport substitution
    *   utils/liveTranscriptTurn.ts -> the turn/merge/handoff/tail authority, which
    *                                  already ships as
    *                                  static/voice-live-transcript-turn.js
    *   utils/audioUtils.ts        -> float32ToInt16, arrayBufferToBase64
    *
-   * What is NOT copied: the React hook and the @google/genai SDK. PADIEM's
+   * What is NOT copied: the React hook and the upstream SDK. PADIEM's
    * shell is plain browser JavaScript with no build step, so the SDK's Live
-   * transport is replaced by the very WebSocket the SDK speaks:
-   *
-   *   wss://generativelanguage.googleapis.com/ws/
-   *     google.ai.generativelanguage.v1alpha.GenerativeService.
-   *     BidiGenerateContentConstrained?access_token=<ephemeral token>
+   * transport is replaced by the very WebSocket that SDK speaks; the endpoint
+   * stays a server-owned constant below and is never named in product copy.
+   * The ephemeral token rides that socket URL as `?access_token=` only.
    *
    * The server owns the long-lived provider key. The browser only ever holds
    * the short-lived, model-locked ephemeral token minted by
-   * /api/voice/live-token, exactly like Global Classroom's live-token
+   * /api/voice/live-token, exactly like the upstream live-token
    * function. The model, the activity-detection window and the transcription
    * mode come from the server's browser-safe session contract; nothing here
    * selects a provider or a model.
@@ -396,7 +393,7 @@
 
       /**
        * Start the microphone capture and stream it to the Live session.
-       * Global Classroom's `useGeminiLive` onopen path, with the same 16 kHz
+       * The upstream `onopen` path, with the same 16 kHz
        * mono capture and the same 1024-frame processor.
        */
       function startCapture() {
@@ -466,10 +463,9 @@
       }
 
       /**
-       * The provider fallback. Global Classroom's `beginFallback`: the Live
-       * session is torn down on purpose, the user's microphone intent is
-       * restored, and the next provider in the chain takes the same run. The
-       * chain is one-way: it never returns to Gemini inside one run.
+       * The transport fallback: the Live session is torn down on purpose, the
+       * user's microphone intent is restored, and the recorded-chunk path takes
+       * the same run. The switch is one-way inside one microphone run.
        */
       function beginFallback(reason) {
         if (stopped) return;

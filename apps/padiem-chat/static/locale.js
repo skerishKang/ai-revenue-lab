@@ -139,15 +139,6 @@
       "claw-verified-model-required": "실행할 모델을 직접 선택해 주세요.",
       "claw-model-advanced": "직접 모델 ID 입력 (고급)",
 
-      "owner-model-preview-open": "파디엠플러스 모델 현황",
-      "owner-model-preview-title": "파디엠플러스 모델 현황",
-      "owner-model-preview-close": "모델 현황 닫기",
-      "owner-model-preview-scope": "Google 모델 이름 일부입니다. 전체 선정 목록은 아니며 실행 가능 여부는 Claw 모델 선택에서 확인하세요.",
-      "owner-model-preview-no-activation": "조회만 가능합니다. 자동 선택·모델 호출·결제는 발생하지 않습니다.",
-      "owner-model-preview-loading": "모델 현황을 불러오는 중입니다.",
-      "owner-model-preview-unavailable": "모델 현황을 확인할 수 없습니다.",
-      "owner-model-preview-hold": "사용 준비 중",
-
       "claw-image-attachment-unsupported": "Claw는 아직 사진 첨부를 모델에 전달할 수 없습니다. 사진은 Chat에서 사용해 주세요.",
       "claw-model-choice-label": "실행 모델 ID (등록된 모델)",
       "claw-model-choice-hint": "등록된 모델 ID 직접 입력 · 자동 대체 없음",
@@ -515,15 +506,6 @@
       "claw-model-advanced": "Enter exact model ID (advanced)",
 
       "document-upload-title": "File upload", "document-upload-copy": "Attach a file and ask", "document-formats": "Supported formats", "composer-empty-message": "Enter a message", "model-requires-login": "Sign in to start a conversation. Your tier is enabled after sign-in.", "custom-chat-only": "Padiem Custom is available in Chat only. Choose a Padiem tier in the model picker.", "custom-text-only": "Padiem Custom currently supports text conversations only. Remove the attachment or choose another model.", "voice-login-click": "Please sign in", "model-select-tooltip": "Choose model", "send-tooltip": "Send message",
-      "owner-model-preview-open": "Padiem Plus model status",
-      "owner-model-preview-title": "Padiem Plus model status",
-      "owner-model-preview-close": "Close model status",
-      "owner-model-preview-scope": "This is not the full approved inventory. Check Claw verified model choices for executable options.",
-      "owner-model-preview-no-activation": "Viewing model names cannot auto-select, execute, or bill for a model.",
-      "owner-model-preview-loading": "Loading model status…",
-      "owner-model-preview-unavailable": "Model status is unavailable.",
-      "owner-model-preview-hold": "Not yet ready",
-
       "claw-image-attachment-unsupported": "Claw cannot pass an attached photo to its model yet. Use Chat for photos.",
       "claw-model-choice-label": "Model ID (available model)",
       "claw-model-choice-hint": "Enter an exact registered model ID · no automatic fallback",

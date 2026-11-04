@@ -23,17 +23,18 @@
    * module is that someone. It supplies exactly one thing the composer asked
    * for -- a recognizer factory -- and adds nothing else to the composer.
    *
-   * Provider order (the shared STT contract, and Global Classroom's chain):
-   *   1. Gemini Live, real-time streaming transcription.
+   * STT transports (the shared contract; both are server-mediated and neither
+   * names a vendor in the browser):
+   *   Real-time path:
    *      browser -> POST /api/voice/live-token (same origin)
    *      -> Chat Worker (authenticates the existing `padiem_session` cookie,
    *         resolves the canonical Control Plane session, calls the private
    *         `padiem-voice-stt` Worker over its Service Binding)
    *      -> one short-lived, model-locked ephemeral token back to the browser
-   *      -> browser <-> Gemini Live WebSocket, real-time interim and final
+   *      -> browser <-> realtime transcription WebSocket, interim and final
    *         transcription, no audio ever stored.
-   *   2. Groq Whisper, the recorded-chunk fallback, used ONLY after a real
-   *      Gemini Live connection failure inside the same microphone run.
+   *   Recorded-chunk path: used only inside a microphone run whose realtime
+   *      session did not connect. It is not a second live call.
    *      getUserMedia -> MediaRecorder -> same-origin POST /api/voice/transcribe
    *      -> the same private STT Worker over the same Service Binding.
    *
@@ -45,8 +46,8 @@
    * - Nothing here sends a chat message. A final transcript is a *candidate*
    *   that the shared adapter places in the existing input; the user reviews
    *   or edits it and presses the existing send button.
-   * - No interim text is invented. Gemini Live interim text is shown only
-   *   when the provider actually emits it; the Groq fallback transcribes a
+   * - No interim text is invented. Interim text is shown only when the realtime
+   *   session actually emits it; the recorded-chunk path transcribes a
    *   completed chunk, so its interim preview stays empty until a real final
    *   arrives rather than showing fabricated partial text.
    * - No connection while the microphone is off. The Live session, the
@@ -544,10 +545,10 @@
       verifyIdentity: function () { return verifyIdentity(); },
     });
 
-    /* #4643: Gemini Live is the default provider and the recorded-chunk Groq
-     * path is its fallback. The fallback is only entered after a real Live
+    /* #4643: the realtime session is the default path and the recorded-chunk
+     * path is its fallback. The fallback is only entered after a real
      * connection failure inside the same microphone run, never in parallel, so
-     * the two providers are never billed for the same speech. */
+     * the two paths are never billed for the same speech. */
     const geminiApi = win.PadiemVoiceGeminiLive || null;
     const geminiFactory = geminiApi && typeof geminiApi.createRecognizerFactory === "function"
       ? geminiApi.createRecognizerFactory({

@@ -27,8 +27,8 @@
    * are measurements recorded against the live provider, and the original's
    * tests gate them.
    *
-   * Normal Global Classroom voice input and Interview mode both consume the same
-   * `gemini-3.5-transcribe-live` session, so the chunk handling, the turn boundary
+   * Normal voice input and Interview mode both consume the same realtime
+   * transcription session, so the chunk handling, the turn boundary
    * and the activity-detection window must live in one place. Diverging copies of
    * this logic are what produced the Interview-mode "multiple partial English
    * rows" regression (issue #87).
@@ -37,18 +37,18 @@
   const LIVE_TRANSCRIBE_MODEL = "gemini-3.5-transcribe-live";
 
   /**
-   * How much silence ends a turn. Gemini's automatic activity detection defaults
-   * to 800ms; 650ms cut ordinary 0.7-1.5s thinking pauses into separate
-   * utterances, so a long sentence was emitted as several final rows. 1300ms keeps
-   * typical thinking pauses inside one utterance at the cost of ~0.5s of extra
-   * final-row latency.
+   * How much silence ends a turn. The realtime session's automatic activity
+   * detection defaults to 800ms; 650ms cut ordinary 0.7-1.5s thinking pauses into
+   * separate utterances, so a long sentence was emitted as several final rows.
+   * 1300ms keeps typical thinking pauses inside one utterance at the cost of
+   * ~0.5s of extra final-row latency.
    */
   const LIVE_VAD_SILENCE_MS = 1300;
 
   /**
    * Live sessions have a vendor-documented duration limit (~10 minutes). Rotate
    * before it instead of letting the session end and permanently dropping the
-   * microphone to Browser/Groq speech recognition.
+   * microphone to the recorded-chunk path.
    */
   const LIVE_SESSION_ROTATE_MS = 9 * 60 * 1000 + 20 * 1000;
 
@@ -131,8 +131,9 @@
   /**
    * Finalise the audio a retired Live session still holds (#87).
    *
-   * Gemini's activity detection closes a turn only after it has *received* enough
-   * silence. A microphone stream that simply stops — a mute, a teardown, or the
+   * The realtime session's activity detection closes a turn only after it has
+   * *received* enough silence. A microphone stream that simply stops — a mute, a
+   * teardown, or the
    * outgoing half of a rotation — never delivers that silence, so the tail of the
    * sentence stays cached inside the session and dies with the socket. Measured
    * against the live provider on one 28.7s utterance: stopping the stream with no
@@ -266,7 +267,7 @@
   }
 
   /**
-   * Groq Whisper fallback chunk boundary (#87).
+   * Recorded-chunk fallback boundary (#87).
    *
    * The previous fixed 5500ms stop clipped speech mid-sentence regardless of what
    * was being said. Cut at a speech boundary instead: wait for a real pause once a
@@ -286,7 +287,8 @@
   }
 
   /**
-   * Safety net for the turn boundary. Google documents `input_transcription` as
+   * Safety net for the turn boundary. The session contract documents
+   * `input_transcription` as
    * the finalized transcript of one speech segment, emitted on a pause; the Live
    * turn boundary (`finished` / `turnComplete`) is what closes a turn. If that
    * boundary never arrives, a stalled turn must still surface instead of being
@@ -300,9 +302,9 @@
   }
 
   /**
-   * Lightweight RMS probe used by the Groq fallback to cut a chunk at a real
-   * speech pause (#87). A MediaRecorder stream carries no voice-activity signal,
-   * so this is the only local boundary available. Returns null when the browser
+   * Lightweight RMS probe used by the recorded-chunk fallback to cut a chunk at
+   * a real speech pause (#87). A MediaRecorder stream carries no voice-activity
+   * signal, so this is the only local boundary available. Returns null when the browser
    * cannot provide an AudioContext; the bounded maximum still cuts the chunk.
    */
   function startSpeechSilenceProbe(stream, options) {
