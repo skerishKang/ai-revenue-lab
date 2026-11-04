@@ -221,27 +221,34 @@ def test_character_cap_drops_the_oldest_turns_first() -> None:
 
     bounded = bound_conversation_history(messages, max_chars=1_000)
 
-    kept_chars = sum(len(message["content"]) for message in bounded.messages)
-    assert kept_chars <= 1_000
-    assert bounded.truncated is True
-    # newest turn kept, and it is still the tail of the conversation
-    assert bounded.messages[-1]["content"].startswith("A5:")
+    # The newest two turns (question + the answer it follows) always survive.
+    assert len(bounded.messages) == 4
+    assert bounded.messages[-2]["content"].startswith("Q5:")
+    assert bounded.messages[0]["content"].startswith("Q4:")
     assert not any(
-        message["content"].startswith("Q1:") for message in bounded.messages
+        message["content"].startswith(("Q1:", "Q2:", "Q3:"))
+        for message in bounded.messages
     )
+    assert bounded.truncated is True
+    assert bounded.dropped_turns == 3
 
 
-def test_the_newest_turn_survives_even_over_the_character_cap() -> None:
+def test_the_newest_exchange_survives_even_over_the_character_cap() -> None:
     messages = [
         {"role": "user", "content": "old " * 100},
         {"role": "assistant", "content": "old answer"},
+        {"role": "user", "content": "Q2 " * 100},
+        {"role": "assistant", "content": "A2 " * 100},
         {"role": "user", "content": "지금 질문 " * 400},
     ]
 
     bounded = bound_conversation_history(messages, max_chars=100)
 
+    # The newest two turns stay whatever their size; only the older one is cut.
     assert bounded.messages[-1] == messages[-1]
+    assert bounded.messages[0] == messages[2]
     assert bounded.truncated is True
+    assert bounded.dropped_turns == 1
 
 
 def test_system_entries_always_survive() -> None:

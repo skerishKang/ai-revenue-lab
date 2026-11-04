@@ -341,6 +341,18 @@ def _bounded_context(value: str | None) -> str | None:
     return extra or None
 
 
+def _history_bound(settings: Any, name: str, default: int) -> int:
+    """One history bound, tolerant of a settings object built before #6812.
+
+    Tests and local harnesses hand the client a minimal settings stub; an
+    absent field keeps the shared default instead of failing the answer.
+    """
+    value = getattr(settings, name, default)
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        return default
+    return value
+
+
 def _trusted_dispatch_context(
     additional_system_context: str | None, sample: datetime | None = None
 ) -> str | None:
@@ -694,8 +706,12 @@ class B14Client:
             additional_system_context=bounded_context,
             dispatch_sample=self._dispatch_wall_clock(),
             tier_stream_fallback=True,
-            history_max_turns=self.settings.history_max_turns,
-            history_max_chars=self.settings.history_max_chars,
+            history_max_turns=_history_bound(
+                self.settings, "history_max_turns", DEFAULT_HISTORY_MAX_TURNS
+            ),
+            history_max_chars=_history_bound(
+                self.settings, "history_max_chars", DEFAULT_HISTORY_MAX_CHARS
+            ),
         )
         inner_stream = self._stream_core(request)
         try:
@@ -772,8 +788,12 @@ class B14Client:
             tier_stream_fallback=True,
             tools=tools,
             tool_choice=tool_choice,
-            history_max_turns=self.settings.history_max_turns,
-            history_max_chars=self.settings.history_max_chars,
+            history_max_turns=_history_bound(
+                self.settings, "history_max_turns", DEFAULT_HISTORY_MAX_TURNS
+            ),
+            history_max_chars=_history_bound(
+                self.settings, "history_max_chars", DEFAULT_HISTORY_MAX_CHARS
+            ),
         )
         inner_stream = self._stream_core(request)
         try:
@@ -810,8 +830,12 @@ class B14Client:
             max_retries=max_retries,
             model_parameters=model_parameters,
             product_tier=product_tier,
-            history_max_turns=self.settings.history_max_turns,
-            history_max_chars=self.settings.history_max_chars,
+            history_max_turns=_history_bound(
+                self.settings, "history_max_turns", DEFAULT_HISTORY_MAX_TURNS
+            ),
+            history_max_chars=_history_bound(
+                self.settings, "history_max_chars", DEFAULT_HISTORY_MAX_CHARS
+            ),
         )
         core_client = B14ExecutionClient(
             self._completion_config(
@@ -873,8 +897,12 @@ class B14Client:
             model=model,
             additional_system_context=additional_system_context,
             dispatch_sample=self._dispatch_wall_clock(),
-            history_max_turns=self.settings.history_max_turns,
-            history_max_chars=self.settings.history_max_chars,
+            history_max_turns=_history_bound(
+                self.settings, "history_max_turns", DEFAULT_HISTORY_MAX_TURNS
+            ),
+            history_max_chars=_history_bound(
+                self.settings, "history_max_chars", DEFAULT_HISTORY_MAX_CHARS
+            ),
         )
         core_client = B14ExecutionClient(
             self._completion_config(),

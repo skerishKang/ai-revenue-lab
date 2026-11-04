@@ -18,6 +18,11 @@ DEFAULT_HISTORY_MAX_TURNS = 20
 #: Characters of conversation content that may travel with a request.
 DEFAULT_HISTORY_MAX_CHARS = 12_000
 
+#: Turns that always survive, newest first: the turn holding the current
+#: question and the turn before it, which holds the answer being continued.
+#: #4379 sends both as the stored originals, so a bound never orphans a reply.
+ALWAYS_KEPT_TURNS = 2
+
 #: Short system-side disclosure. A trimmed history must not look complete.
 HISTORY_TRUNCATION_NOTE = (
     "이전 대화의 오래된 부분은 길이 한도 때문에 생략되었습니다. "
@@ -63,9 +68,10 @@ def bound_conversation_history(
 ) -> BoundedHistory:
     """Keep the newest turns that fit both the turn and the character cap.
 
-    The newest turn is kept whatever its size, because it holds the question
-    being answered; older turns are dropped oldest-first until either cap would
-    be exceeded. Dropped history is disclosed through ``note`` so the caller can
+    The newest two turns are kept whatever their size: the newest holds the
+    question being answered and the one before it holds the answer it follows
+    from. Older turns are dropped oldest-first until either cap would be
+    exceeded. Dropped history is disclosed through ``note`` so the caller can
     place it in the system instruction.
     """
 
@@ -80,12 +86,12 @@ def bound_conversation_history(
         [entry for entry in entries if entry.get("role") not in NEVER_DROPPED_ROLES]
     )
 
+    always_kept = min(ALWAYS_KEPT_TURNS, len(turns))
     kept_turns: set[int] = set()
     used_chars = 0
     for turn_index in range(len(turns) - 1, -1, -1):
         turn_chars = sum(_content_chars(message) for message in turns[turn_index])
-        is_newest = turn_index == len(turns) - 1
-        if not is_newest:
+        if len(kept_turns) >= always_kept:
             if len(kept_turns) >= max_turns:
                 break
             if used_chars + turn_chars > max_chars:

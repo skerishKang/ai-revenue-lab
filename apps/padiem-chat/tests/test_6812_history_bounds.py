@@ -58,6 +58,21 @@ def test_trimming_is_disclosed_in_the_system_wording() -> None:
     assert HISTORY_TRUNCATION_NOTE in context
 
 
+def test_the_previous_exchange_survives_trimming() -> None:
+    """#4379: a follow-up still sends the turn it answers, as stored."""
+
+    messages = thread(30)
+    messages[-4] = {"role": "user", "content": "LONG-PROMPT:" + "z" * 40_000}
+    messages[-3] = {"role": "assistant", "content": "LONG-ANSWER:" + "w" * 40_000}
+
+    request = request_for(messages)
+
+    contents = [message["content"] for message in request.messages]
+    assert any(str(item).startswith("LONG-PROMPT:") for item in contents)
+    assert any(str(item).startswith("LONG-ANSWER:") for item in contents)
+    assert request.messages[-1]["content"].startswith("A30:")
+
+
 def test_system_instruction_and_question_survive_trimming() -> None:
     request = request_for(thread(40))
 
@@ -82,11 +97,14 @@ def test_character_cap_bounds_the_history_it_sends() -> None:
 
     request = request_for(messages, history_max_chars=3_000)
 
-    kept_chars = sum(len(message["content"]) for message in request.messages)
-    # Only the newest turn may exceed the cap; it carries the question.
-    assert len(request.messages) == 2
-    assert kept_chars <= 3_000
-    assert request.messages[-1]["content"].startswith("A30:")
+    # The newest exchange (question + the answer it continues) always survives;
+    # everything older is dropped by the character cap.
+    assert len(request.messages) == 4
+    assert request.messages[-2]["content"].startswith("Q30:")
+    assert request.messages[0]["content"].startswith("Q29:")
+    assert not any(
+        message["content"].startswith("Q28:") for message in request.messages
+    )
 
 
 def test_multimodal_history_uses_the_same_bounds() -> None:
