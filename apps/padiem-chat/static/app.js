@@ -4254,13 +4254,6 @@
         startAndroidHandoff();
         return;
       }
-      // A pending LoveTree sign-in travels unchanged: the server re-uses the
-      // same one-time handoff state for this Google run and binds the verified
-      // identity when the callback returns.
-      if (authHandoff && authHandoff.value) {
-        window.location.assign(`/auth/google/start?handoff=${encodeURIComponent(authHandoff.value)}`);
-        return;
-      }
       window.location.assign("/auth/google/start");
     });
   }
