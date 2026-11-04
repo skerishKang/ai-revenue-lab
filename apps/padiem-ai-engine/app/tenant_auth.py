@@ -55,6 +55,10 @@ BILLING_DISPOSITIONS = frozenset({"billable", "non_billable"})
 
 DEFAULT_MAX_ADMISSION_TTL = timedelta(minutes=5)
 MAX_RESERVATION_UNITS = 1_000_000
+# The Control Plane stamps reserved_at on its own clock. A host whose clock
+# trails the authority by a second must not read an admitted reservation as
+# "from the future" and fail the whole turn closed.
+RESERVATION_CLOCK_SKEW = timedelta(seconds=5)
 
 _SNAPSHOT_KEYS = frozenset(
     {"snapshot_id", "product_id", "subject", "revision", "issued_at", "expires_at", "grants"}
@@ -522,7 +526,7 @@ def parse_usage_reservation(payload: Any, *, reservation: UsageReservation, now:
         raise _unavailable("usage reservation admitted must be a boolean.")
     expires_at = _timestamp(decision["expires_at"], "reservation expires_at")
     reserved_at = _timestamp(decision["reserved_at"], "reservation reserved_at")
-    if reserved_at > now:
+    if reserved_at - now > RESERVATION_CLOCK_SKEW:
         raise _unavailable("usage reservation reserved_at is from the future.")
     if expires_at <= reserved_at:
         raise _unavailable("usage reservation expiry is not after reservation time.")
