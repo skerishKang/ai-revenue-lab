@@ -1,14 +1,10 @@
 name: B53 Padiem Sidecar S0 CI
 
 on:
-  push:
-    branches:
-      - feat/1722-b53-padiem-sidecar-s0
-    paths:
-      - 'apps/portfolio-console/business-manifest.js'
-      - 'apps/portfolio-console/tests/padiem-sidecar-registry.test.js'
-      - 'docs/products/padiem-sidecar/**'
-      - '.github/workflows/b53-padiem-sidecar-s0-ci.yml'
+  # push 트리거는 feat/1722-b53-padiem-sidecar-s0 전용이었고 해당 브랜치는
+  # 원격에 더 이상 없다(2026-11-05 기준). 항목만 남기면 push 대상이 모든
+  # 브랜치로 넓어지므로, 동작 보존을 위해 push 트리거 블록째로 뺀다.
+  # PR 트리거는 그대로 산동한다.
   pull_request:
     paths:
       - 'apps/portfolio-console/business-manifest.js'
