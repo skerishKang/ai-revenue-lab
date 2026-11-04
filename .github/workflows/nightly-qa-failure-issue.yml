@@ -38,22 +38,55 @@ jobs:
         run: |
           set -euo pipefail
           title="nightly QA 실패: ${WF}"
-          # The grade smoke prints one bounded line per declared tier. Read it
-          # from every failed job of the run (all attempts, so a partial rerun
-          # cannot erase earlier attempts' lines). No provider text.
+          # Every "Grade live smoke" job prints one bounded verdict line
+          # (--report) on pass AND on fail, and the job itself records a
+          # SKIPPED line when the QA credential is absent (#6720). The old
+          # collector read only failed jobs' logs, so a green smoke beside a
+          # red regression was reported as "결과 없음", and a smoke that never
+          # started (self-hosted runner absent) left no line at all. Read
+          # every smoke job of every attempt instead, classify the ones that
+          # never ran, and keep one line per tier; a real verdict beats a
+          # synthetic skip for the same tier. No provider text.
           grades=""
+          nl=$'\n'
           if [ "${WF}" = "B62 Padiem Chat CI" ]; then
-            grades=$(gh api \
+            smoke_jobs=$(gh api \
               "repos/${GH_REPO}/actions/runs/${RUN_ID}/jobs?filter=all&per_page=100" \
-              --jq '.jobs[] | select(.conclusion == "failure") | .id' 2>/dev/null \
-              | while read -r job; do
-                  gh run view --job "${job}" --log 2>/dev/null || true
-                done \
-              | grep -o 'GRADE_SMOKE tier=[a-z]* status=[^ ]* error_code=[^ ]* verdict=[A-Z_]*' \
-              | sort -u | head -8 || true)
+              --jq '.jobs[] | select(.name | startswith("Grade live smoke")) | [.id, .conclusion, ([.steps[]?] | length), .name] | @tsv' 2>/dev/null || true)
+            real=""
+            synthetic=""
+            while IFS=$'\t' read -r job_id conclusion step_count name; do
+              [ -n "${job_id}" ] || continue
+              tier=$(printf '%s' "${name}" | sed -n 's/^Grade live smoke (\([a-z]*\))$/\1/p')
+              tier="${tier:-unknown}"
+              found=""
+              if [ "${conclusion}" = "success" ] || { [ "${conclusion}" = "failure" ] && [ "${step_count}" -gt 0 ]; }; then
+                found=$(gh run view --job "${job_id}" --log 2>/dev/null \
+                  | grep -o 'GRADE_SMOKE tier=[a-z]* status=[^ ]* error_code=[^ ]* verdict=[A-Z_]*' \
+                  | sort -u || true)
+              fi
+              if [ -n "${found}" ]; then
+                real="${real}${found}${nl}"
+                continue
+              fi
+              case "${conclusion}" in
+                failure)
+                  if [ "${step_count}" = "0" ]; then code=qa_runner_unavailable; else code=smoke_log_missing; fi ;;
+                skipped) code=job_skipped ;;
+                cancelled) code=job_cancelled ;;
+                *) code="job_${conclusion:-unknown}" ;;
+              esac
+              synthetic="${synthetic}GRADE_SMOKE tier=${tier} status=0 error_code=${code} verdict=SKIPPED${nl}"
+            done <<< "${smoke_jobs}"
+            if [ -n "${real}" ]; then
+              for t in $(printf '%s' "${real}" | grep -o 'tier=[a-z]*' | sort -u); do
+                synthetic=$(printf '%s\n' "${synthetic}" | grep -v "GRADE_SMOKE ${t} " || true)
+              done
+            fi
+            grades=$(printf '%s\n%s\n' "${real}" "${synthetic}" | sed '/^$/d' | head -8)
           fi
           if [ -z "${grades}" ]; then
-            grades="- 등급 스모크 결과 없음"
+            grades="GRADE_SMOKE tier=none status=0 error_code=smoke_job_not_present verdict=SKIPPED"
           fi
           body=$(printf '%s\n' \
             "야간 검사가 실패했습니다." \
