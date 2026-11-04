@@ -3,9 +3,10 @@
 
 Exact static-only edits select static JavaScript parse and DOM/origin/privacy
 audits, with separate path-scoped browser QA; unchanged Python/Worker/Core
-regression and vendoring jobs are skipped. Test-only/B14-only edits retain Chat
-pytest and Worker packaging but skip unchanged real Worker boots; source/runtime
-changes retain their full applicable gates. Unknown event/API/changes => full.
+regression and vendoring jobs are skipped. Test-only edits run exactly the
+changed Chat pytest modules; B14-only edits retain Chat pytest and Worker
+packaging but skip unchanged real Worker boots; source/runtime changes retain
+their full applicable gates. Unknown event/API/changes => full.
 """
 from __future__ import annotations
 
@@ -135,6 +136,29 @@ def ui_mixed_test_modules(files: object) -> tuple[str, ...]:
     return tuple(sorted(modules)) if static_count and modules else ()
 
 
+def tests_only_modules(files: object) -> tuple[str, ...]:
+    """Safe relative pytest arguments for a strictly test-module-only change.
+
+    The scope test above proves every row is a flat ``tests/test_*.py`` module;
+    this helper re-proves the same shapes so a malformed API listing can never
+    turn into a silently empty pytest invocation. An empty tuple means the
+    change set proved no runnable module and the caller must fail closed.
+    """
+    if not isinstance(files, list) or not 1 <= len(files) <= MAX_FILES:
+        return ()
+    modules: list[str] = []
+    seen: set[str] = set()
+    for row in files:
+        if not isinstance(row, dict) or row.get("status") not in {"added", "modified"}:
+            return ()
+        path = row.get("filename")
+        if not isinstance(path, str) or path in seen or "\\" in path or ".." in Path(path).parts:
+            return ()
+        if not _UI_MIXED_TEST.fullmatch(path):
+            return ()
+        seen.add(path)
+        modules.append(path.removeprefix("apps/padiem-chat/"))
+    return tuple(sorted(modules))
 
 
 def impact_scope(files: object, repo_root: Path | None = None) -> str:
@@ -339,6 +363,7 @@ def main() -> None:
     static_changed = False
     ui_contract: tuple[str, ...] = ()
     ui_tests: tuple[str, ...] = ()
+    tests_only_tests: tuple[str, ...] = ()
     core_tests: tuple[str, ...] = ()
     core_modules: tuple[str, ...] = ()
     try:
@@ -359,6 +384,13 @@ def main() -> None:
             if event_name != "pull_request" or type(count) is not int or count != len(files):
                 scope = FULL
         ui_tests = ui_mixed_test_modules(files) if scope == UI_MIXED else ()
+        if scope == TESTS_ONLY:
+            # #6810: a tests-only PR used to run no pytest module at all.
+            # Re-prove the exact module list; an empty result never passes a
+            # reduced lane claim, so fall back to the fail-closed FULL path.
+            tests_only_tests = tests_only_modules(files)
+            if not tests_only_tests:
+                scope = FULL
         if scope == CORE_FOCUSED_ONLY:
             plan = core_focused_plan(REPO_ROOT, files, "b62")
             if plan is None:
@@ -376,6 +408,7 @@ def main() -> None:
         out.write(f"static_changed={'true' if static_changed else 'false'}\n")
         out.write(f"ui_contract={' '.join(ui_contract)}\n")
         out.write(f"ui_tests={' '.join(ui_tests)}\n")
+        out.write(f"tests_only_tests={' '.join(tests_only_tests if scope == TESTS_ONLY else ())}\n")
         out.write(f"core_tests={' '.join(core_tests)}\n")
         out.write(f"core_modules={' '.join(core_modules)}\n")
     print(f"B62_CI_IMPACT_SCOPE={scope}")

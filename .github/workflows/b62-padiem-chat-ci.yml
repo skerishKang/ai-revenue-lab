@@ -67,6 +67,7 @@ jobs:
       static_changed: ${{ steps.classify-b62.outputs.static_changed }}
       ui_contract: ${{ steps.classify-b62.outputs.ui_contract }}
       ui_tests: ${{ steps.classify-b62.outputs.ui_tests }}
+      tests_only_tests: ${{ steps.classify-b62.outputs.tests_only_tests }}
       core_tests: ${{ steps.classify-b62.outputs.core_tests }}
       core_modules: ${{ steps.classify-b62.outputs.core_modules }}
     steps:
@@ -224,10 +225,52 @@ jobs:
           done
           uv run --locked python -m pytest -q "${modules[@]}"
 
+  # #6810: a tests-only PR used to run no pytest module at all, so a stale or
+  # broken assertion could merge green (observed on #6810). Run exactly the
+  # changed modules here; an empty proven list has nothing to run and passes.
+  b62-tests-only-tests:
+    name: B62 tests-only changed pytest
+    needs: registry-ci-plan
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope == 'tests_only' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.13.5"
+      - name: Locked B62 test dependencies
+        run: uv sync --locked --extra dev
+      - name: Run every changed tests-only module (bounded, fail closed)
+        env:
+          TESTS_ONLY_MODULES: ${{ needs.registry-ci-plan.outputs.tests_only_tests }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$TESTS_ONLY_MODULES" ]; then
+            echo 'B62_TESTS_ONLY=EMPTY'
+            exit 0
+          fi
+          read -r -a modules <<< "$TESTS_ONLY_MODULES"
+          test "${#modules[@]}" -ge 1
+          test "${#modules[@]}" -le 100
+          for module in "${modules[@]}"; do
+            [[ "$module" =~ ^tests/test_[A-Za-z0-9_]+\.py$ ]]
+            test -f "$module"
+          done
+          uv run --locked python -m pytest -q "${modules[@]}"
+
   b62-test:
     name: b62-test
     if: always()
-    needs: [registry-ci-plan, b62-static-ui, b62-ui-contract-tests, b62-ui-mixed-tests, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]
+    needs: [registry-ci-plan, b62-static-ui, b62-ui-contract-tests, b62-ui-mixed-tests, b62-tests-only-tests, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]
     runs-on: ubuntu-latest
     steps:
       - name: Enforce selected lane and both relevant checks
@@ -241,6 +284,7 @@ jobs:
           CONTRACT_RESULT: ${{ needs.b62-ui-contract-tests.result }}
           UI_RESULT: ${{ needs.b62-static-ui.result }}
           MIXED_RESULT: ${{ needs.b62-ui-mixed-tests.result }}
+          TESTS_RESULT: ${{ needs.b62-tests-only-tests.result }}
           PARSER_RESULT: ${{ needs.b62-core-parser-focused.result }}
           ATTEMPT_RESULT: ${{ needs.b62-b14-attempt-focused.result }}
           FULL_RESULT: ${{ needs.b62-full-suite.result }}
@@ -309,6 +353,21 @@ jobs:
             test "$MM_RESULT" = skipped
             test "$QUICK_RESULT" = skipped
             echo 'B62_CI_MODE=UI_MIXED_TARGETED'
+          elif [ "$SCOPE" = tests_only ]; then
+            # #6810: the changed test modules are the load-bearing check for a
+            # test-only change set. Worker packaging stays source-invariant and
+            # still runs; the B14 lane must execute (failure stays its own).
+            test "$TESTS_RESULT" = success
+            test "$UI_RESULT" = skipped
+            test "$MIXED_RESULT" = skipped
+            test "$FULL_RESULT" = "$EXPECTED_FOCUSED_FULL"
+            test "$WORKER_RESULT" = success
+            case "$MM_RESULT" in
+              success|failure) ;;
+              *) echo "B14 contract lane did not execute: $MM_RESULT"; exit 1 ;;
+            esac
+            test "$QUICK_RESULT" = skipped
+            echo 'B62_CI_MODE=TESTS_ONLY_TARGETED'
           else
             test "$UI_RESULT" = skipped
             test "$MIXED_RESULT" = skipped

@@ -146,7 +146,8 @@ class B62ScopeTests(unittest.TestCase):
             self.assertEqual(module.impact_scope([file(path)]), module.CHAT_ONLY)
 
     def test_strict_test_modules_only_have_no_live_worker_source_change(self):
-        # The entire B62 pytest suite still runs, and pylock/bundle are checked.
+        # #6810: every changed module runs in its own bounded lane, and the
+        # Worker bundle/lock checks stay on the unchanged path.
         for path in (
             "apps/padiem-chat/tests/test_password_auth.py",
             "apps/padiem-chat/tests/test_worker_web_fetch_transport.py",
@@ -204,6 +205,68 @@ class B62ScopeTests(unittest.TestCase):
                 self.assertEqual(module.impact_scope(
                     module.changed_files(event, event_type, REPO, "token")),
                     module.TESTS_ONLY)
+
+    def test_tests_only_scope_emits_every_changed_module(self):
+        files = [
+            file("apps/padiem-chat/tests/test_password_auth.py"),
+            file("apps/padiem-chat/tests/test_b54_claw_run_history_ui.py", "added"),
+        ]
+        self.assertEqual(module.tests_only_modules(files), (
+            "tests/test_b54_claw_run_history_ui.py",
+            "tests/test_password_auth.py",
+        ))
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "output.txt"
+            with patch.dict(os.environ, {"GITHUB_OUTPUT": str(output)}, clear=False), \
+                    patch.object(module, "_load_event_files",
+                                 return_value=(fake_event(), "pull_request", files)):
+                module.main()
+            values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+        self.assertEqual(values["scope"], "tests_only")
+        self.assertEqual(values["ui_tests"], "")
+        self.assertEqual(values["tests_only_tests"],
+                         "tests/test_b54_claw_run_history_ui.py tests/test_password_auth.py")
+
+    def test_tests_only_module_list_fails_closed_on_unsafe_rows(self):
+        path = "apps/padiem-chat/tests/test_password_auth.py"
+        for unsafe in (
+            [],
+            [file(path), file("apps/padiem-chat/tests/conftest.py")],
+            [file(path), file("apps/padiem-chat/tests/test_nested/test_foo.py")],
+            [file(path), file("apps/padiem-chat/static/app.js")],
+            [file(path, "removed")],
+            [file(path), file(path)],
+            [file(path)] + [
+                file(f"apps/padiem-chat/tests/test_case{i}.py") for i in range(100)
+            ],
+        ):
+            with self.subTest(unsafe=unsafe):
+                self.assertEqual(module.tests_only_modules(unsafe), ())
+
+    def test_tests_only_scope_without_proven_modules_falls_back_to_full(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "output.txt"
+            with patch.dict(os.environ, {"GITHUB_OUTPUT": str(output)}, clear=False), \
+                    patch.object(module, "_load_event_files", return_value=(
+                        fake_event(), "pull_request",
+                        [file("apps/padiem-chat/tests/test_password_auth.py")])), \
+                    patch.object(module, "tests_only_modules", return_value=()):
+                module.main()
+            values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+        self.assertEqual(values["scope"], "full")
+        self.assertEqual(values["tests_only_tests"], "")
+
+    def test_workflow_runs_changed_tests_only_modules_and_requires_their_result(self):
+        text = (ROOT / ".github/workflows/b62-padiem-chat-ci.yml").read_text(encoding="utf-8")
+        self.assertIn("tests_only_tests: ${{ steps.classify-b62.outputs.tests_only_tests }}", text)
+        self.assertIn("name: B62 tests-only changed pytest", text)
+        self.assertIn("needs.registry-ci-plan.outputs.scope == 'tests_only'", text)
+        self.assertIn("TESTS_ONLY_MODULES: ${{ needs.registry-ci-plan.outputs.tests_only_tests }}", text)
+        self.assertIn('if [ -z "$TESTS_ONLY_MODULES" ]; then', text)
+        self.assertIn('test "${#modules[@]}" -le 100', text)
+        self.assertIn("needs.b62-tests-only-tests.result", text)
+        self.assertIn('test "$TESTS_RESULT" = success', text)
+        self.assertIn("B62_CI_MODE=TESTS_ONLY_TARGETED", text)
 
     def test_b14_isolated_pilot_app_and_test_modules_prove_worker_source_unchanged(self):
         # B62 Workerd probes import B62 sources/Core, not the independent B14
