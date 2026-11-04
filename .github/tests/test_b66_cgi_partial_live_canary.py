@@ -176,6 +176,7 @@ class CanaryContractTests(unittest.TestCase):
                        "SELECTED_TIER=free", "INTERPRET_HTTP=502",
                        "INTERPRET_FAILURE_STAGE=interpreter_exception",
                        "INTERPRET_EXCEPTION_FAMILY=type_error",
+                       "PUBLIC_ERROR=quote_interpretation_failed",
                        "INTERPRET_POSTS=1"):
             self.assertIn(marker, emitted)
         for retired in ("MODEL_OPTIONS_HTTP", "MODEL_SELECTION_RESULT", "SELECTED_MODEL_ID"):
@@ -201,6 +202,28 @@ class CanaryContractTests(unittest.TestCase):
             self.assertEqual(module.sanitize_exception_family(family), family)
         self.assertEqual(module.sanitize_interpret_stage("raw-secret"), "ABSENT_OR_UNKNOWN")
         self.assertEqual(module.sanitize_exception_family(None), "ABSENT_OR_UNKNOWN")
+
+    def test_public_error_code_reads_the_deployed_nested_error_shape(self):
+        route = (SCRIPT.parents[2] / "apps" / "padiem-chat" / "app" /
+                 "b66_quote_routes.py").read_text(encoding="utf8")
+        # The probe's parser must follow the shape the deployment actually sends,
+        # otherwise every real error reports as unknown and the canary is blind.
+        self.assertIn('{"ok": False, "error": {"code": code, "message": message}}', route)
+        self.assertEqual(
+            module.public_error_code(
+                {"ok": False, "error": {"code": "quote_interpretation_failed"}}),
+            "quote_interpretation_failed",
+        )
+        self.assertEqual(
+            module.public_error_code({"error_code": "quote_input_unrecognized"}),
+            "quote_input_unrecognized",
+        )
+        self.assertIsNone(module.public_error_code({"ok": True}))
+        self.assertEqual(
+            module.sanitize_public_error(
+                module.public_error_code({"ok": False, "error": {"code": "raw-secret"}})),
+            "ABSENT_OR_UNKNOWN",
+        )
 
     def test_cookie_authenticated_post_includes_exact_same_origin(self):
         # This is an isolated request-construction test: zero network calls.
