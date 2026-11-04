@@ -54,8 +54,8 @@
   }
   function segRow(label,field){
     var row=document.createElement('div');row.className='srsg-row';
-    var lb=document.createElement('div');lb.className='srsg-label';lb.textContent=label;row.appendChild(lb);
-    var seg=document.createElement('div');seg.className='srsg-seg';seg.dataset.field=field;seg.setAttribute('role','group');seg.setAttribute('aria-label',label);
+    var lb=document.createElement('div');lb.className='srsg-label';lb.id='srsg-label-'+field;lb.textContent=label;row.appendChild(lb);
+    var seg=document.createElement('div');seg.className='srsg-seg';seg.dataset.field=field;seg.setAttribute('role','group');seg.setAttribute('aria-labelledby',lb.id);
     LABELS[field].forEach(function(opt){
       var b=document.createElement('button');b.type='button';b.dataset.value=String(opt[0]);b.textContent=opt[1];
       b.setAttribute('aria-pressed',String(state[field]===opt[0]));
@@ -66,8 +66,8 @@
   }
   function themeRow(){
     var row=document.createElement('div');row.className='srsg-row';
-    var lb=document.createElement('div');lb.className='srsg-label';lb.textContent='테마 · 배경';row.appendChild(lb);
-    var seg=document.createElement('div');seg.className='srsg-sw';seg.dataset.field='theme';
+    var lb=document.createElement('div');lb.className='srsg-label';lb.id='srsg-label-theme';lb.textContent='테마 · 배경';row.appendChild(lb);
+    var seg=document.createElement('div');seg.className='srsg-sw';seg.dataset.field='theme';seg.setAttribute('role','group');seg.setAttribute('aria-labelledby',lb.id);
     [['default','현재(#fffdf8)','#fffdf8'],['light','밝게','#ffffff'],['sepia','세피아','#f2e8d5'],['dark','어둡게','#262019']].forEach(function(t){
       var b=document.createElement('button');b.type='button';b.dataset.value=t[0];b.title=t[1];b.setAttribute('aria-label',t[1]);
       b.style.background=t[2];
@@ -95,14 +95,15 @@
     if(!stage)return;
     if(stage.querySelector('.srsg-btn'))return;
     var gear=document.createElement('button');
-    gear.type='button';gear.className='srsg-btn';gear.title='읽기 설정';gear.setAttribute('aria-label','읽기 설정');
+    gear.type='button';gear.className='srsg-btn';gear.title='읽기 설정';gear.setAttribute('aria-label','읽기 설정');gear.setAttribute('aria-controls','smReaderSettingsPanel');gear.setAttribute('aria-expanded','false');
     gear.textContent='⚙';
-    panel=document.createElement('div');panel.className='srsg-panel';panel.setAttribute('role','dialog');panel.setAttribute('aria-label','읽기 설정');
+    panel=document.createElement('div');panel.id='smReaderSettingsPanel';panel.className='srsg-panel';panel.setAttribute('role','dialog');panel.setAttribute('aria-label','읽기 설정');
     var head=document.createElement('div');head.className='srsg-head';
     var hb=document.createElement('b');hb.textContent='읽기 설정';
     var hx=document.createElement('button');hx.type='button';hx.className='srsg-x';hx.setAttribute('aria-label','설정 닫기');hx.textContent='×';
     function closeSettings(restoreFocus){
       document.body.classList.remove('smr-open');
+      gear.setAttribute('aria-expanded','false');
       if(restoreFocus){var trigger=document.getElementById('smalOverflowBtn');if(trigger)trigger.focus();}
     }
     hx.onclick=function(){closeSettings(true);};
@@ -111,7 +112,7 @@
     panel.appendChild(segRow('글자 크기','fontSize'));
     panel.appendChild(segRow('줄 간격','lineHeight'));
     panel.appendChild(themeRow());
-    panel.appendChild(segRow('본문 언어','englishMode'));
+    panel.appendChild(segRow('번역본 표시','englishMode'));
     panel.appendChild(segRow('절 번호','verseNumbers'));
     var reset=document.createElement('button');reset.type='button';reset.className='srsg-reset';reset.textContent='기본값으로 초기화';
     reset.onclick=function(){state=JSON.parse(JSON.stringify(DEFAULTS));try{localStorage.removeItem(KEY);}catch(e){}apply();};
@@ -120,13 +121,14 @@
       e.stopPropagation();
       var opening=!document.body.classList.contains('smr-open');
       document.body.classList.toggle('smr-open',opening);
+      gear.setAttribute('aria-expanded',String(opening));
       if(opening)hx.focus();
     };
     panel.addEventListener('keydown',function(e){
       if(e.key==='Escape'){e.preventDefault();e.stopPropagation();closeSettings(true);}
     });
     panel.addEventListener('click',function(e){e.stopPropagation();});
-    document.addEventListener('click',function(){document.body.classList.remove('smr-open');});
+    document.addEventListener('click',function(){document.body.classList.remove('smr-open');gear.setAttribute('aria-expanded','false');});
     /* B61 #1936 D: bottom-right consolidation — single overflow toggle replaces the
        five always-visible controls (gear + 4 smal-dock buttons from
        storymemory-annotation-ui-v1.js, which must stay byte-identical per the #1895

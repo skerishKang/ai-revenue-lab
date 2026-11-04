@@ -6131,11 +6131,12 @@ async function storyMemoryLoadReaderContent(ctx,options={}){
 function storyMemoryPassageMarkup(p,index,content){
   const text=String(p?.text||'').trim();if(!text)return '';
   const locator=escapeHtml(p.canonicalLocator||p.sourceRef?.id||'');
-  const attrs=`class="verse sm-source-passage${index===0?' opening-verse':''}" data-sm-source-id="${escapeHtml(p.id||'')}" data-source-locator="${locator}" data-source-sequence="${Number(p.sequence)||0}"`;
+  const bodyLang=content?.kind==='bible'&&p?.language==='en'?'en':'ko';
+  const attrs=`class="verse sm-source-passage${index===0?' opening-verse':''}" lang="${bodyLang}" data-sm-source-id="${escapeHtml(p.id||'')}" data-source-locator="${locator}" data-source-sequence="${Number(p.sequence)||0}"`;
   if(content?.kind==='bible'){
     const v=escapeHtml(String(p.locator?.verse??p.verseLabel??''));
     const en=String(p?.sourceText||'').trim();
-    const enHtml=en&&en!==text?`<p class="verse verse-en">${escapeHtml(en)}</p>`:'';
+    const enHtml=en&&en!==text?`<p class="verse verse-en" lang="en">${escapeHtml(en)}</p>`:'';
     return `<p ${attrs}>${v?`<span class="vn">${v}</span>`:''}${escapeHtml(text)}</p>${enHtml}`;
   }
   return `<p ${attrs}>${escapeHtml(text)}</p>`;
@@ -6156,8 +6157,8 @@ function storyMemoryBuildDynamicReaderPages(bundle,{targetChars,pageMaxPassages}
     const first=items[0]?.sourceRef,last=items[items.length-1]?.sourceRef;
     const firstLabel=first?storyMemoryFormatSourceRef(first):'';const lastLabel=last?storyMemoryFormatSourceRef(last):'';
     const rangeLabel=firstLabel&&lastLabel&&firstLabel!==lastLabel?`${firstLabel} → ${lastLabel}`:(firstLabel||lastLabel||'VERIFIED SOURCE');
-    const lang=bundle?.mode==='static' && bundle?.work?.work_key==='bible-web' ? '한국어: KRV-1961 · 영어: World English Bible' : (items.some(x=>x.language==='ko')?'한국어 본문 · 원문 연결':'영어 원문');
-    return `${body}<div class="reader-page-note sm-verified-source-note"><b>VERIFIED SOURCE</b>${escapeHtml(rangeLabel)} · ${escapeHtml(lang)}</div>`;
+    const lang=bundle?.mode==='static' && bundle?.work?.work_key==='bible-web' ? '한국어 KRV-1961 · 영어 WEB (World English Bible) · 출처 표기 KRV-1961 / eBible ENGWEBP' : (items.some(x=>x.language==='ko')?'한국어 본문 · 원문 연결':'영어 원문');
+    return `${body}<div class="reader-page-note sm-verified-source-note"><b>번역본 · 출처</b>${escapeHtml(rangeLabel)} · ${escapeHtml(lang)}</div>`;
   });
   return {pages,groups,pageSourceRefs:groups.map(g=>g.map(x=>x.sourceRef).filter(Boolean)),passages};
 }
@@ -7757,8 +7758,8 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
     var ll=last?storyMemoryFormatSourceRef(last):'';
     var range=(fl&&ll&&fl!==ll)?(fl+' → '+ll):(fl||ll||'VERIFIED SOURCE');
     var isStaticBible=__smDynamicReaderState.mode==='static' && __smDynamicReaderState.work && __smDynamicReaderState.work.work_key==='bible-web';
-    var lang=isStaticBible?'한국어: KRV-1961 · 영어: World English Bible':(items.some(function(x){return x.language==='ko';})?'한국어 본문 · 원문 연결':'영어 원문');
-    return '<div class="reader-page-note sm-verified-source-note"><b>VERIFIED SOURCE</b>'+escapeHtml(range)+' · '+escapeHtml(lang)+'</div>';
+    var lang=isStaticBible?'한국어 KRV-1961 · 영어 WEB (World English Bible) · 출처 표기 KRV-1961 / eBible ENGWEBP':(items.some(function(x){return x.language==='ko';})?'한국어 본문 · 원문 연결':'영어 원문');
+    return '<div class="reader-page-note sm-verified-source-note"><b>번역본 · 출처</b>'+escapeHtml(range)+' · '+escapeHtml(lang)+'</div>';
   }
   function splitUnit(p){
     if(p.__smDepth>6)return null;
