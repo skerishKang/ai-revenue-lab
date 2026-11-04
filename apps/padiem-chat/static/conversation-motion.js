@@ -2,7 +2,10 @@
   "use strict";
 
   var FOLLOW_THRESHOLD = 180;
+  var STREAM_FOLLOW_THRESHOLD = 80;
   var followLatest = true;
+  var streamFollowActive = false;
+  var streamFollowPaused = false;
   var lastScrollY = 0;
   var suppressDirectionUntil = 0;
   var followFrame = 0;
@@ -143,9 +146,13 @@
   }
 
   function syncJumpButton(){
-    var button = ensureJumpButton();
+    // During a live answer, only update the existing control. The stream path
+    // must not create a second or late jump control while the reader is paused.
+    var button = streamFollowActive
+      ? document.getElementById("conversationJumpButton")
+      : ensureJumpButton();
     if (!button) return;
-    var show = inConversation() && !nearConversationEnd();
+    var show = inConversation() && (streamFollowPaused || !nearConversationEnd());
     button.hidden = !show;
   }
 
@@ -165,6 +172,15 @@
     markProgrammaticScroll();
     var conv = scrollableConversation();
     if (conv) {
+      if (behavior === "instant") {
+        var shared = window.PadiemConversationScroll || window.SharedConversationScroll;
+        if (shared && typeof shared.followToBottom === "function") {
+          shared.followToBottom(conv);
+        } else {
+          conv.scrollTop = conv.scrollHeight;
+        }
+        return;
+      }
       conv.scrollTo({ top: conv.scrollHeight, behavior: behavior || "auto" });
       return;
     }
@@ -307,15 +323,57 @@
         return;
       }
       if (anchorTurn) anchorNewestTurn();
-      else if (force || followLatest) followLatestContent();
+      else if (force || followLatest) {
+        if (streamFollowActive) scrollPageToEnd("instant");
+        else followLatestContent();
+      }
       syncJumpButton();
     });
   }
 
   function resumeFollow(){
     followLatest = true;
+    streamFollowPaused = false;
     syncFollowState();
     queueFollow(true, false);
+    syncJumpButton();
+  }
+
+  // The Padiem answer stream calls these around each text append. Measure the
+  // reader's position before new text changes the scroll height, then follow only
+  // when already following and within the small stream threshold. User scroll
+  // events can pause and resume the state between chunks.
+  function beforeStreamingDelta(){
+    if (!inConversation()) return null;
+    var wasStreaming = streamFollowActive;
+    streamFollowActive = true;
+    var shouldFollow = followLatest && (wasStreaming || remainingToEnd() <= STREAM_FOLLOW_THRESHOLD);
+    streamFollowPaused = !shouldFollow;
+    followLatest = shouldFollow;
+    syncFollowState();
+    syncJumpButton();
+    return shouldFollow;
+  }
+
+  function afterStreamingDelta(shouldFollow){
+    if (!inConversation() || typeof shouldFollow !== "boolean") return false;
+    streamFollowActive = true;
+    streamFollowPaused = !shouldFollow;
+    followLatest = shouldFollow;
+    syncFollowState();
+    if (shouldFollow) queueFollow(true, false);
+    else {
+      // The button belongs to the shared motion module. A stream only reveals
+      // it when present; it never creates one as a side effect of a delta.
+      var button = document.getElementById("conversationJumpButton");
+      if (button) button.hidden = false;
+    }
+    syncJumpButton();
+    return true;
+  }
+
+  function endStreaming(){
+    streamFollowActive = false;
     syncJumpButton();
   }
 
@@ -323,6 +381,8 @@
   // "following the latest turn" instead of inheriting a paused state.
   function reset(){
     followLatest = true;
+    streamFollowActive = false;
+    streamFollowPaused = false;
     lastScrollY = currentScrollTop();
     syncFollowState();
     syncJumpButton();
@@ -385,11 +445,16 @@
 
   function handleScroll(){
     var currentY = currentScrollTop();
-    if (performance.now() > suppressDirectionUntil && currentY < lastScrollY - 6) {
+    if (currentY < lastScrollY - 6
+      && (streamFollowActive || performance.now() > suppressDirectionUntil)) {
       followLatest = false;
-    } else if (nearConversationEnd()) {
+    } else if (streamFollowActive
+      ? remainingToEnd() <= STREAM_FOLLOW_THRESHOLD
+      : nearConversationEnd()) {
       followLatest = true;
     }
+    if (streamFollowActive) streamFollowPaused = !followLatest;
+    else if (followLatest) streamFollowPaused = false;
     lastScrollY = currentY;
     syncFollowState();
     syncJumpButton();
@@ -398,6 +463,7 @@
   function handlePointerWheel(event){
     if (event.deltaY < 0 && inConversation()) {
       followLatest = false;
+      if (streamFollowActive) streamFollowPaused = true;
       syncFollowState();
       syncJumpButton();
     }
@@ -455,6 +521,9 @@
 
     window.__padiemConversationMotion = {
       isFollowingLatest: function(){ return followLatest; },
+      beforeStreamingDelta: beforeStreamingDelta,
+      afterStreamingDelta: afterStreamingDelta,
+      endStreaming: endStreaming,
       resume: resumeFollow,
       reset: reset,
       syncComposerClearance: syncComposerClearance

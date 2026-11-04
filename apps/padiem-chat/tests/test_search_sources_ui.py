@@ -171,9 +171,11 @@ def test_existing_app_and_phase1_style_contracts_remain_separate():
     assert 'payload.tool = "web_search"' not in app_js
     assert 'payload.tool = "deep_research"' not in app_js
     assert "window.fetch =" not in js
-    assert (root / "static/styles.css").read_bytes() == (
-        repo / "reference/business-62-padiem-chat-v1/styles.css"
-    ).read_bytes()
+    from style_contract import assert_phase1_styles_match
+    assert_phase1_styles_match(
+        root / "static/styles.css",
+        repo / "reference/business-62-padiem-chat-v1/styles.css",
+    )
 
 
 def test_search_sources_javascript_syntax():

@@ -303,6 +303,8 @@ def test_hello_is_answered_directly_without_the_engine(monkeypatch, caplog):
     body = json.loads(response.body)
     assert body["answer"] == "안녕하세요"
     assert body["conversation_id"] == "chat_saved"
+    assert set(body) == {"orchestration", "answer", "decision_status", "conversation_id"}
+    assert "type" not in body
     assert bridge.started == [] and bridge.streamed == []
     assert len(b14.calls) == 1
     assert len(gate.calls) == 1
@@ -581,3 +583,54 @@ def test_ndjson_direct_answer_streams_and_saves_once(monkeypatch):
     assert "".join(frame["text"] for frame in frames if frame["type"] == "delta") == "안녕하세요"
     assert frames[-1]["conversation_id"] == "chat_saved"
     assert len(request.app.state.history_store.appended) == 1
+
+
+def test_ndjson_model_first_tool_sends_p01_progress_frames(monkeypatch):
+    b14 = _B14(
+        [ChatStreamEvent(tool_call=ChatToolCall(id="model-private-id", name="files", arguments={}))]
+    )
+    sent = []
+
+    async def lane(request, **kwargs):
+        sent.append(kwargs)
+        return "PC 작업 결과", "chat_pc_saved"
+
+    _install(
+        monkeypatch,
+        pc_context={
+            "pc_tools": {"device_id": DEVICE_ID, "allowed_scopes": ["files_list", "files"]},
+            "subject_id": "subject_private",
+            "workspace_id": "workspace_private",
+        },
+        lane=lane,
+    )
+    request = _request(
+        {
+            "messages": [{"role": "user", "content": PC_TEXT}],
+            "tier": "plus",
+            "device_id": DEVICE_ID,
+            "stream": 1,
+        },
+        model_first=True,
+        stream=True,
+        b14=b14,
+    )
+
+    response = _call(request)
+    frames = [json.loads(line) for line in response.body.splitlines() if line.strip()]
+
+    assert response.status_code == 200
+    assert [frame["type"] for frame in frames] == ["meta", "progress", "progress", "delta", "done"]
+    assert frames[1] == {
+        "type": "progress", "kind": "tool_started", "sequence": 1, "label": "PC 작업 중",
+    }
+    assert frames[2] == {
+        "type": "progress", "kind": "tool_completed", "sequence": 2, "label": "PC 작업 완료",
+    }
+    assert all(set(frame) <= {"type", "kind", "sequence", "label", "stage", "elapsed_ms", "text", "done", "stream",
+                               "conversation_id", "message_id", "usage", "answer_status", "evidence", "tool"}
+               for frame in frames)
+    assert "model-private-id" not in response.body.decode("utf-8")
+    assert "workspace_private" not in response.body.decode("utf-8")
+    assert len(sent) == 1 and sent[0]["selected_tool"] == "files"
+    assert response.media_type == "application/x-ndjson"
