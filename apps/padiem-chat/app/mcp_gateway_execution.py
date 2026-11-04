@@ -44,6 +44,12 @@ def __getattr__(name):
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
+def _invalid_engine_answer() -> dict:
+    """An engine answer that is not a closed status: name that branch."""
+    return {"status": "unavailable", "code": "pc_engine_result_invalid",
+            "answer": "PC 작업 결과를 확인하지 못했습니다."}
+
+
 _TOOLS = {
     "pc_list": ("files_list", "claw.pc.list_files", {"path", "job_id"}),
     "pc_search": ("files_list", "claw.pc.list_files", {"path", "query"}),
@@ -296,12 +302,12 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     try:
         result = json.loads(outcome.answer)
     except (TypeError, ValueError):
-        result = {"status": "unavailable", "answer": "PC 작업 결과를 확인하지 못했습니다."}
+        result = _invalid_engine_answer()
     if not isinstance(result, dict) or result.get("status") not in {
         "completed", "running", "queued", "confirmation_required", "failed",
         "unavailable",
     }:
-        result = {"status": "unavailable", "answer": "PC 작업 결과를 확인하지 못했습니다."}
+        result = _invalid_engine_answer()
     if browser:
         result["conversation_id"] = conversation_id
         if result["status"] == "confirmation_required":
