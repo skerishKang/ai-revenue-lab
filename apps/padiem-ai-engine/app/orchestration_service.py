@@ -911,6 +911,14 @@ class OrchestrationEngineService:
             # call, so it cannot fall through the file callback or file prompt.
             # configure_request_scope still intersects the server authorization.
             declared_plan = "browser"
+        if pc_gateway is not None and ceiling is not None and declared_plan is None:
+            # An external MCP request names its tool id rather than declaring a
+            # model plan, and its continuation carries only the job id it
+            # already started. The plan shape is the only scope both calls
+            # share, so admit it here, before the first signed context call: a
+            # continuation that sends no claim is refused against the scope its
+            # own first call pinned (Chat answers pc_scope_required).
+            declared_plan = ceiling
         scope_tools = None
         if ceiling is not None:
             # The admitted plan fixes the ceiling even when the owner has no
