@@ -290,6 +290,11 @@ def _encode_event(
         delta: dict[str, Any] = {}
         if event.delta_content is not None:
             delta["content"] = event.delta_content
+        # thought-summary stream: a thinking-summary fragment rides its own
+        # delta field, so an answer frame and a thought frame never share a
+        # content byte. The field name mirrors the provider delta B14 parsed.
+        if event.delta_thought is not None:
+            delta["reasoning_content"] = event.delta_thought
         choices = [
             {
                 "index": 0,
@@ -417,6 +422,8 @@ async def _finalize_stream_ledger(
     attempt_started: float | None, ttft_ms: int | None, fallback_used: bool,
     tools_declared: bool,
     timeout_reason: str | None,
+    thought_summary_count: int | None = None,
+    thought_summary_chars: int | None = None,
 ) -> None:
     """Close one streamed attempt and append its ledger row.
 
@@ -439,6 +446,11 @@ async def _finalize_stream_ledger(
         outcome=outcome, error_code=error_code, elapsed_ms=elapsed, usage=usage,
         finish_reason=finish_reason, actual_response_model=response_model,
         timeout_reason=timeout_reason, protocol=protocol,
+        # thought-summary stream: the ledger stores whether thinking summaries
+        # arrived and their volume (fragment count, character length) — never
+        # the thought text itself.
+        thought_summary_count=thought_summary_count,
+        thought_summary_chars=thought_summary_chars,
     )
     # The gate is the mode the platform adapter dispatched with, not the config
     # singleton read on its own: an explicit B14_PROVIDER_MODE wins at runtime,
@@ -493,18 +505,29 @@ async def _stream_body(
     finish_reason: str | None = None
     response_model: str | None = None
     ttft_ms: int | None = ledger.ttft_ms if ledger is not None else None
+    # thought-summary stream: the ledger counts what arrived, not what it said.
+    thought_summary_count = 0
+    thought_summary_chars = 0
 
     def _observe(event: StreamEvent) -> None:
         nonlocal ttft_ms, response_model, reported_usage, finish_reason
+        nonlocal thought_summary_count, thought_summary_chars
         if event.model:
             response_model = event.model
         if event.usage is not None:
             reported_usage = _ledger_usage(event.usage)
         if event.finish_reason:
             finish_reason = event.finish_reason
+        if isinstance(event.delta_thought, str) and event.delta_thought:
+            thought_summary_count += 1
+            thought_summary_chars += len(event.delta_thought)
+        # thought-summary stream: a thinking-summary fragment is a first byte.
+        # The 15-second first-byte timeout must not fire while the model is
+        # still showing its thinking.
         if ttft_ms is None and attempt_started is not None and (
             (isinstance(event.delta_content, str) and bool(event.delta_content.strip()))
             or event.tool_call is not None
+            or (isinstance(event.delta_thought, str) and bool(event.delta_thought.strip()))
         ):
             ttft_ms = int((time.perf_counter() - attempt_started) * 1000)
 
@@ -576,6 +599,8 @@ async def _stream_body(
                     attempt_started=attempt_started, ttft_ms=ttft_ms,
                     fallback_used=fallback_used, tools_declared=tools_declared,
                     timeout_reason=timeout_reason,
+                    thought_summary_count=thought_summary_count or None,
+                    thought_summary_chars=thought_summary_chars or None,
                 )
             except Exception as ledger_exc:
                 skipped(request_id, ledger_exc)
@@ -956,6 +981,15 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                             if event.done or event.tool_call is not None or (
                                 isinstance(event.delta_content, str)
                                 and bool(event.delta_content.strip())
+                            ):
+                                break
+                            # thought-summary stream: a thinking-summary
+                            # fragment is a first byte. Waiting for answer
+                            # text here would let the 15-second first-byte
+                            # timeout fire while the model is still thinking.
+                            if (
+                                isinstance(event.delta_thought, str)
+                                and bool(event.delta_thought.strip())
                             ):
                                 break
                 except TimeoutError as exc:

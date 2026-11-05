@@ -41,6 +41,11 @@ class CatalogModel:
     # reasoning option is sent for it.
     reasoning_supported: bool = False
     reasoning_default: str | None = None
+    # thought-summary stream: whether the Owner turned on streamed thinking
+    # summaries for this model. Same overlay discipline as the reasoning
+    # decision above: the value lives in the model's reasoning block, and a
+    # model that declares nothing never gets a thought request on the wire.
+    thought_summary_enabled: bool = False
 
     @property
     def price_is_known(self) -> bool:

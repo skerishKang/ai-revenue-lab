@@ -62,18 +62,18 @@ def _ok(upstream):
 
 def test_supported_default_is_the_deepest_accepted_level():
     assert policy.normalize_policy({"supported": True, "values": ["low", "high"]}) == (
-        True, ("low", "high"), "high",
+        True, ("low", "high"), "high", False,
     )
 
 
 def test_an_explicit_default_is_honoured():
     assert policy.normalize_policy(
         {"supported": True, "values": ["low", "high"], "default": "low"}
-    ) == (True, ("low", "high"), "low")
+    ) == (True, ("low", "high"), "low", False)
 
 
 def test_a_model_without_the_block_is_unsupported():
-    assert policy.normalize_policy({}) == (False, (), None)
+    assert policy.normalize_policy({}) == (False, (), None, False)
 
 
 def test_an_unsupported_model_may_not_declare_values():

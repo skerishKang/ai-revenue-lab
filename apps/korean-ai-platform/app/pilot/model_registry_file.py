@@ -461,12 +461,16 @@ def credential_binding_names(path: Path | None = None) -> frozenset[str]:
         and entry["credential_binding_name"]
     )
 
-def _reasoning_fields(raw: dict) -> tuple[bool, str | None]:
-    """The catalog view of one row's reasoning block (#6838)."""
+def _reasoning_fields(raw: dict) -> tuple[bool, str | None, bool]:
+    """The catalog view of one row's reasoning block (#6838).
+
+    Returns ``(supported, default, thought_summary)``. The thought-summary
+    switch rides the same block and is honoured only on a supported model.
+    """
     if "reasoning" not in raw:
-        return (False, None)
-    supported, _values, default = normalize_policy(raw["reasoning"])
-    return (supported, default if supported else None)
+        return (False, None, False)
+    supported, _values, default, thought_summary = normalize_policy(raw["reasoning"])
+    return (supported, default if supported else None, thought_summary if supported else False)
 
 
 def install_models(data:dict|None=None) -> None:
@@ -487,6 +491,10 @@ def install_models(data:dict|None=None) -> None:
             extra_headers=tuple(raw.get("extra_headers", {}).items()),
         ))
     for index, raw in enumerate(data["models"]):
+        # #6838/#6890: the reasoning block reaches the catalog here. Before
+        # this call the block was validated at boot but never applied, so an
+        # overlay-only reasoning decision stayed inert (see PR notes).
+        supported, default, thought_summary = _reasoning_fields(raw)
         parsed.append(CatalogModel(
             model_id=raw["id"], upstream_model=raw["upstream_model"],
             display_name=raw["display_name"], provider=raw["provider_name"],
@@ -497,6 +505,8 @@ def install_models(data:dict|None=None) -> None:
             capabilities=frozenset(raw["capabilities"]),
             platform_provider_id=raw["provider_id"],
             source=raw["source"],source_checked_at=raw["source_checked_at"],
+            reasoning_supported=supported, reasoning_default=default,
+            thought_summary_enabled=thought_summary,
             sort_order=index,enabled=(raw["enabled"] and data["providers"][raw["provider_id"]]["enabled"]),
         ))
     CATALOG_BY_ID.clear()

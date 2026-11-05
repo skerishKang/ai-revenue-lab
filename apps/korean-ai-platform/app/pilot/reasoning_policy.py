@@ -5,7 +5,7 @@ This module owns the field vocabulary and the reading rule only. Values arrive
 through the Owner overlay (``b14_models.overrides.json``, #6712):
 
     "reasoning": {"supported": true, "values": ["low", "medium", "high"],
-                  "default": "high"}
+                  "default": "high", "thought_summary": true}
 
 Rules
 -----
@@ -14,6 +14,9 @@ Rules
   the deepest accepted value, so "supported" always means "as deep as this
   model goes" rather than an invented middle setting.
 * ``supported: false`` must not carry values or a default.
+* ``thought_summary`` (thought-summary stream) turns on streamed thinking
+  summaries for the model. It is honoured only on a supported model: an
+  unsupported model may not declare it, and an omitted key defaults to off.
 * The platform path never forwards a caller's value. BYOK is the exception and
   passes the customer's own choice through unchanged.
 
@@ -30,7 +33,7 @@ REASONING_BLOCK = "reasoning"
 # Shallow to deep. An omitted default resolves to the last accepted value.
 REASONING_LEVELS = ("minimal", "low", "medium", "high")
 _LEVEL_INDEX = {level: index for index, level in enumerate(REASONING_LEVELS)}
-_BLOCK_KEYS = frozenset({"supported", "values", "default"})
+_BLOCK_KEYS = frozenset({"supported", "values", "default", "thought_summary"})
 
 
 class ReasoningPolicyError(ValueError):
@@ -48,8 +51,8 @@ def deepest(values: Any) -> str | None:
     return max(levels, key=lambda level: _LEVEL_INDEX[level])
 
 
-def normalize_policy(raw: Any) -> tuple[bool, tuple[str, ...], str | None]:
-    """Return ``(supported, values, default)`` for one model's declared block.
+def normalize_policy(raw: Any) -> tuple[bool, tuple[str, ...], str | None, bool]:
+    """Return ``(supported, values, default, thought_summary)`` for one block.
 
     Fails closed: anything this code cannot honour is an error rather than a
     silently ignored option.
@@ -61,10 +64,17 @@ def normalize_policy(raw: Any) -> tuple[bool, tuple[str, ...], str | None]:
     supported = raw.get("supported", False)
     if not isinstance(supported, bool):
         raise ReasoningPolicyError("reasoning.supported must be a boolean")
+    thought_summary = raw.get("thought_summary", False)
+    if not isinstance(thought_summary, bool):
+        raise ReasoningPolicyError("reasoning.thought_summary must be a boolean")
     if not supported:
         if raw.get("values") or raw.get("default"):
             raise ReasoningPolicyError("reasoning: unsupported model declares values")
-        return (False, (), None)
+        if thought_summary:
+            raise ReasoningPolicyError(
+                "reasoning: unsupported model declares thought_summary"
+            )
+        return (False, (), None, False)
     values = raw.get("values")
     if not isinstance(values, list) or not values:
         raise ReasoningPolicyError("reasoning.values must be a non-empty list")
@@ -77,7 +87,7 @@ def normalize_policy(raw: Any) -> tuple[bool, tuple[str, ...], str | None]:
         default = deepest(values)
     elif not isinstance(default, str) or default not in values:
         raise ReasoningPolicyError("reasoning.default must be one of values")
-    return (True, tuple(values), default)
+    return (True, tuple(values), default, thought_summary)
 
 
 def reasoning_effort_for_model(model_id: str | None) -> str | None:
@@ -93,6 +103,23 @@ def reasoning_effort_for_model(model_id: str | None) -> str | None:
     if isinstance(value, str) and value in _LEVEL_INDEX:
         return value
     return None
+
+
+def thought_summary_enabled_for_model(model_id: str | None) -> bool:
+    """Whether the Owner turned on streamed thinking summaries for this model.
+
+    A thought request is a bonus, never a dependency of the answer: an absent
+    catalog row, an unsupported model, and an overlay that omits the key all
+    mean the same thing — nothing is put on the wire.
+    """
+    if not model_id:
+        return False
+    from .catalog import CATALOG_BY_ID
+
+    model = CATALOG_BY_ID.get(model_id)
+    if model is None or not getattr(model, "reasoning_supported", False):
+        return False
+    return getattr(model, "thought_summary_enabled", False) is True
 
 
 def strip_reasoning(
@@ -115,6 +142,16 @@ def rejects_reasoning_effort(body: bytes) -> bool:
     """True only for a request-level rejection that names the option."""
     text = body.decode("utf-8", "replace").lower()
     return "reasoning_effort" in text or "reasoning effort" in text
+
+
+def rejects_thought_summary(body: bytes) -> bool:
+    """True only for a request-level rejection that names the thought request.
+
+    Same discipline as ``rejects_reasoning_effort``: a stricter endpoint is
+    retried once without the option, and nothing else re-sends the request.
+    """
+    text = body.decode("utf-8", "replace").lower()
+    return "include_thoughts" in text or "thinking_config" in text
 
 
 # What this request actually put on the wire, per model. A fallback therefore

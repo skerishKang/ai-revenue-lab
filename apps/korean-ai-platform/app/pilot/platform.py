@@ -825,11 +825,16 @@ async def stream_platform_chat_completions(
     # caller's value never reaches this lane. BYOK passes it through instead.
     from .reasoning_policy import (
         REASONING_FIELD, note_sent_reasoning, reasoning_effort_for_model,
-        rejects_reasoning_effort, strip_reasoning,
+        rejects_reasoning_effort, rejects_thought_summary, strip_reasoning,
+        thought_summary_enabled_for_model,
     )
 
     model_parameters = strip_reasoning(model_parameters)
     reasoning_effort = reasoning_effort_for_model(model_id)
+    # thought-summary stream: the Owner's per-model switch decides whether the
+    # stream is asked to include thinking summaries at all. An unsupported
+    # model keeps today's exact wire.
+    thought_summary_enabled = thought_summary_enabled_for_model(model_id)
 
     if tools and platform_provider_id != "opencode-go":
         from .google_provider import require_stream_tool_support
@@ -936,6 +941,18 @@ async def stream_platform_chat_completions(
         body[REASONING_FIELD] = reasoning_effort
         note_sent_reasoning(model_id, reasoning_effort)
 
+    # thought-summary stream: the documented OpenAI-compatible way to ask
+    # Google for thinking summaries on this wire. It rides the reasoning
+    # decision, so it only goes out for a model the Owner marked both
+    # reasoning-supported and thought-summary-enabled. This is a bonus
+    # request: an endpoint that rejects it is retried once without it below,
+    # never allowed to cost the answer itself.
+    thought_summary_sent = thought_summary_enabled
+    if thought_summary_sent:
+        body["extra_body"] = {
+            "google": {"thinking_config": {"include_thoughts": True}},
+        }
+
     client_kwargs: dict[str, Any] = {
         "timeout": build_provider_http_timeout(model_id),
     }
@@ -981,6 +998,23 @@ async def stream_platform_chat_completions(
                     body.pop(REASONING_FIELD, None)
                     reasoning_effort = None
                     note_sent_reasoning(model_id, None)
+                    rejected_body = None
+                    response, request_started = await send_provider_request(
+                        client, "POST", chat_url, headers=headers, json=body,
+                    )
+            # thought-summary stream: the same one-shot retry for the bonus
+            # thought request, after the usage and reasoning options had their
+            # own chance on this attempt. A stricter endpoint must not cost
+            # the answer the option was trying to decorate.
+            if thought_summary_sent and 400 <= response.status_code < 500:
+                rejected_body = await _read_bounded_body(
+                    response, started_at=request_started,
+                )
+                if rejects_thought_summary(rejected_body):
+                    logger.warning("thought_summary_rejected")
+                    await response.aclose()
+                    body.pop("extra_body", None)
+                    thought_summary_sent = False
                     rejected_body = None
                     response, request_started = await send_provider_request(
                         client, "POST", chat_url, headers=headers, json=body,
