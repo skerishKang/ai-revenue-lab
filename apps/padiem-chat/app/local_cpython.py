@@ -50,6 +50,7 @@ from .push_http_transport import build_host_push_transport
 from .grounding import GroundedChatService
 from .history import D1HistoryStore
 from .local_r2 import ThreadedLocalDiskR2
+from .loop_stall_watchdog import install as install_loop_stall_watchdog
 from .local_service_bridge import (
     HttpRpcBinding,
     LocalB66PdfRendererClient,
@@ -443,6 +444,10 @@ def build_app():
     app.router.on_startup.append(_bound_wal_on_startup)
     app.router.on_shutdown.append(_stop_bound_wal)
     app.router.on_shutdown.append(db.close_readers)
+    # #6923: journal event-loop stalls and dump every thread's stack while
+    # one lasts (app/loop_stall_watchdog.py; PADIEM_CHAT_LOOP_STALL_WATCHDOG=off
+    # turns it off on a host).
+    install_loop_stall_watchdog(app, env=os.environ)
     if identity_binding is not None:
         # #6613: the identity RPC client is pooled for the life of the host, so
         # the same shutdown hook that stops the SQLite readers closes it.
