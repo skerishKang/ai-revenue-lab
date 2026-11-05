@@ -3604,6 +3604,43 @@
       const paragraph = details.querySelector("p");
       if (paragraph) paragraph.textContent = summaryText;
     }
+    // The live "thinking" panel fills with fragments as they arrive. It lives
+    // beside .assistant-content, never inside it, so the answer body, saved
+    // history and exports stay free of thinking text.
+    let thoughtText = "";
+    function thoughtPanel() {
+      const body = article.querySelector(".assistant-body");
+      const content = article.querySelector(".assistant-content");
+      if (!body || !content) return null;
+      let details = body.querySelector(".orchestration-thought-summary");
+      if (!details) {
+        details = document.createElement("details");
+        details.className = "orchestration-thought-summary";
+        details.open = true;
+        const label = document.createElement("summary");
+        label.textContent = uiT("orchestration-thinking-label");
+        const paragraph = document.createElement("p");
+        details.append(label, paragraph);
+        body.insertBefore(details, content);
+      }
+      return details;
+    }
+    function renderThoughtDelta(value) {
+      if (typeof value !== "string" || !value) return;
+      thoughtText += value;
+      const details = thoughtPanel();
+      if (!details) return;
+      const paragraph = details.querySelector("p");
+      if (paragraph) paragraph.textContent = safeThoughtSummary(thoughtText);
+    }
+    function settleThoughtPanel() {
+      const details = article.querySelector(".orchestration-thought-summary");
+      if (!details) return;
+      const label = details.querySelector("summary");
+      if (label) label.textContent = uiT("orchestration-thinking-done-label");
+      // The answer has started; collapse by default and keep it expandable.
+      details.open = false;
+    }
     const response = clawGeneralRequest
       ? await chatTransport.requestClawGeneral(payload, signal)
       : await chatTransport.requestStreaming(payload, signal);
@@ -3660,6 +3697,12 @@
           let value;
           try { value = JSON.parse(frame.data); } catch (_) { return false; }
           renderThoughtSummary(value && value.summary);
+          return false;
+        }
+        if (frame.event === "thought") {
+          let value;
+          try { value = JSON.parse(frame.data); } catch (_) { return false; }
+          renderThoughtDelta(value && value.text);
           return false;
         }
         if (frame.event === "orchestration_event") {
@@ -3765,6 +3808,7 @@
             }
           }
           if (!paragraph) {
+            settleThoughtPanel();
             const content = article.querySelector(".assistant-content");
             content.replaceChildren();
             paragraph = document.createElement("p");

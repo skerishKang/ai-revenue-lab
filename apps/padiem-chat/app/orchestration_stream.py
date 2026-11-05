@@ -263,6 +263,7 @@ async def ndjson_answer(
     """
     deadline = time.monotonic() + timeout_seconds if timeout_seconds is not None else None
     text_seen = False
+    first_byte_seen = False
     result = None
     progress = ProgressFrameBuilder()
     try:
@@ -272,10 +273,19 @@ async def ndjson_answer(
             async for record in _bounded_records(stream, deadline):
                 if not isinstance(record, dict):
                     continue
+                if "thought_delta" in record:
+                    delta = (record.get("thought_delta") or {}).get("delta")
+                    if isinstance(delta, str) and delta:
+                        if not first_byte_seen:
+                            first_byte_seen = True
+                            timing.mark("first_token")
+                        yield line({"type": "thought", "text": delta})
+                    continue
                 if "text_delta" in record:
                     delta = (record.get("text_delta") or {}).get("delta")
                     if isinstance(delta, str) and delta:
-                        if not text_seen:
+                        if not first_byte_seen:
+                            first_byte_seen = True
                             timing.mark("first_token")
                         text_seen = True
                         yield line({"type": "delta", "text": delta})
@@ -330,7 +340,8 @@ async def ndjson_answer(
             yield line({"type": "error", "code": "engine_execution_failed"})
             return
         if not text_seen:
-            timing.mark("first_token")
+            if not first_byte_seen:
+                timing.mark("first_token")
             yield line({"type": "delta", "text": answer})
         timing.mark("engine")
         fields = await on_completed(result)

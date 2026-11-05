@@ -55,10 +55,16 @@ class StreamingExecutionEvent:
     metadata: RunMetadata
     done: bool = False
     tool_call: B14StreamToolCall | None = None
+    # A thinking-summary fragment for this turn. It is presentation-only: the
+    # runtime never appends it to `answer`, and a consumer that does not render
+    # it simply drops the field.
+    delta_thought: str | None = None
 
     def __post_init__(self) -> None:
         if self.delta_content is not None and not isinstance(self.delta_content, str):
             raise ValueError("delta_content must be a string or None")
+        if self.delta_thought is not None and not isinstance(self.delta_thought, str):
+            raise ValueError("delta_thought must be a string or None")
         if self.answer is not None and not isinstance(self.answer, str):
             raise ValueError("answer must be a string or None")
         if self.finish_reason is not None and not isinstance(self.finish_reason, str):
@@ -77,8 +83,8 @@ class StreamingExecutionEvent:
                 raise ValueError("tool call event must not contain delta or completion")
 
         if self.done:
-            if self.delta_content is not None:
-                raise ValueError("terminal event must not contain delta_content")
+            if self.delta_content is not None or self.delta_thought is not None:
+                raise ValueError("terminal event must not contain delta_content or delta_thought")
             if self.answer is None or (
                 not self.answer.strip() and self.finish_reason != "tool_calls"
             ):
@@ -88,8 +94,8 @@ class StreamingExecutionEvent:
         else:
             if self.answer is not None:
                 raise ValueError("progress event must not contain final answer")
-            if not self.delta_content and self.tool_call is None:
-                raise ValueError("progress event must contain a non-empty delta or tool call")
+            if not self.delta_content and self.delta_thought is None and self.tool_call is None:
+                raise ValueError("progress event must contain a non-empty delta, thought or tool call")
             if self.metadata.status is not RunStatus.MODEL_RUNNING:
                 raise ValueError("progress event metadata must be model_running")
 
@@ -102,6 +108,8 @@ class StreamingExecutionEvent:
             "metadata": self.metadata.to_public_dict(),
             "done": self.done,
         }
+        if self.delta_thought is not None:
+            payload["delta_thought"] = self.delta_thought
         if self.tool_call is not None:
             payload["tool_call"] = self.tool_call.to_public_dict()
         return payload
@@ -327,13 +335,13 @@ class StreamingExecutionRuntime:
                     )
                     return
 
-                if event.delta_content or event.tool_call is not None:
+                if event.delta_content or event.delta_thought or event.tool_call is not None:
                     safe_delta = thought_filter.feed(event.delta_content) if event.delta_content else None
                     if safe_delta:
                         answer_parts.append(safe_delta)
                     if event.tool_call is not None:
                         saw_tool_call = True
-                    if not safe_delta and event.tool_call is None:
+                    if not safe_delta and event.delta_thought is None and event.tool_call is None:
                         continue
                     yield StreamingExecutionEvent(
                         delta_content=safe_delta or None,
@@ -351,6 +359,7 @@ class StreamingExecutionRuntime:
                         ),
                         done=False,
                         tool_call=event.tool_call,
+                        delta_thought=event.delta_thought,
                     )
 
             if not saw_done:

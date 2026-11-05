@@ -282,3 +282,38 @@ test("long answers are accumulated without truncating NDJSON deltas", async () =
   assert.equal(answer.length, expected.length);
   assert.equal(answer, expected);
 });
+
+test("thought frames keep their own event and never join the answer", async () => {
+  const response = streamResponse([
+    '{"type":"meta","stream":true}\n',
+    '{"type":"thought","text":"생각 "}\n',
+    '{"ok":true,"thought_delta":{"delta":"조각"}}\n',
+    '{"type":"delta","text":"답"}\n',
+    '{"type":"done","done":true}\n',
+  ]);
+  const frames = [];
+  let answer = "";
+  await transport.readSseEvents(response, (frame) => {
+    frames.push(frame);
+    if (frame.event === "delta") answer += JSON.parse(frame.data).delta;
+    return false;
+  });
+
+  assert.equal(answer, "답");
+  assert.deepEqual(frames.map((frame) => frame.event), ["meta", "thought", "thought", "delta", "done"]);
+  assert.equal(JSON.parse(frames[1].data).text, "생각 ");
+  assert.equal(JSON.parse(frames[2].data).text, "조각");
+});
+
+test("an SSE thought frame is relayed under its own event name", async () => {
+  const response = streamResponse([
+    'event: thought\ndata: {"text":"생각"}\n\n',
+    'event: delta\ndata: {"delta":"답"}\n\n',
+    'event: done\ndata: {"done":true}\n\n',
+  ], "text/event-stream");
+  const events = [];
+  await transport.readSseEvents(response, (frame) => { events.push(frame); return false; });
+
+  assert.deepEqual(events.map((frame) => frame.event), ["thought", "delta", "done"]);
+  assert.deepEqual(JSON.parse(events[0].data), { text: "생각" });
+});

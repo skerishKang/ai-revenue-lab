@@ -353,3 +353,23 @@ def test_ndjson_more_than_128_events_reaches_one_terminal_record():
     records = consume(chunks_of(wire("event") * 257 + wire("orchestration")))
     assert len(records) == 258
     assert "orchestration" in records[-1]
+
+
+def test_thought_delta_is_a_bounded_side_record_never_an_event_or_answer():
+    thought = (json.dumps({"ok": True, "thought_delta": {"delta": "생각 조각"}},
+                          separators=(",", ":")) + "\n").encode()
+    parsed = consume(chunks_of(wire("event") + thought + wire("orchestration", {"events": [], "result": True})))
+
+    assert parsed[1] == {"thought_delta": {"delta": "생각 조각"}}
+    assert [record for record in parsed if "event" in record][0]["event"]["kind"] == "run_started"
+
+
+@pytest.mark.parametrize("record", [
+    '{"ok":true,"thought_delta":{"delta":""}}',
+    '{"ok":true,"thought_delta":{"delta":3}}',
+    '{"ok":true,"thought_delta":{"delta":"생각","extra":true}}',
+], ids=["empty", "non_string", "extra_field"])
+def test_a_malformed_thought_delta_is_a_contract_failure(record):
+    with pytest.raises(EngineNdjsonContractError) as err:
+        consume(chunks_of(wire("event") + (record + "\n").encode() + wire("orchestration")))
+    assert err.value.code == "invalid_stream_record"

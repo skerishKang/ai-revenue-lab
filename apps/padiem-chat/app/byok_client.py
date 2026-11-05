@@ -523,6 +523,7 @@ async def _openai_stream(
     response: Any, expected_model: str, *, enforce_model: bool
 ) -> dict[str, Any]:
     text: list[str] = []
+    thought: list[str] = []
     usage: dict[str, Any] | None = None
     finished = False
     length_stop = False
@@ -546,6 +547,11 @@ async def _openai_stream(
                     delta = item.get("delta")
                     if isinstance(delta, dict):
                         text.append(_text_part(delta.get("content")))
+                        # OpenAI-compatible providers stream a thinking summary
+                        # in its own field; it is never part of the answer.
+                        fragment = delta.get("reasoning_content")
+                        if isinstance(fragment, str):
+                            thought.append(fragment)
                     reason = item.get("finish_reason")
                     if reason:
                         finished = True
@@ -558,11 +564,15 @@ async def _openai_stream(
     answer = "".join(text)
     if not answer.strip():
         raise _empty_answer()
-    return {"answer": answer, "usage": usage, "truncated": length_stop}
+    result = {"answer": answer, "usage": usage, "truncated": length_stop}
+    if thought:
+        result["thought"] = "".join(thought)
+    return result
 
 
 async def _anthropic_stream(response: Any) -> dict[str, Any]:
     text: list[str] = []
+    thought: list[str] = []
     input_tokens: Any = None
     output_tokens: Any = None
     stopped = False
@@ -587,12 +597,20 @@ async def _anthropic_stream(response: Any) -> dict[str, Any]:
             block = payload.get("content_block")
             if isinstance(block, dict) and block.get("type") == "text":
                 text.append(block.get("text") if isinstance(block.get("text"), str) else "")
+            elif isinstance(block, dict) and block.get("type") == "thinking":
+                fragment = block.get("thinking")
+                if isinstance(fragment, str):
+                    thought.append(fragment)
         elif kind == "content_block_delta":
             delta = payload.get("delta")
             if isinstance(delta, dict) and delta.get("type") == "text_delta":
                 fragment = delta.get("text")
                 if isinstance(fragment, str):
                     text.append(fragment)
+            elif isinstance(delta, dict) and delta.get("type") == "thinking_delta":
+                fragment = delta.get("thinking")
+                if isinstance(fragment, str):
+                    thought.append(fragment)
         elif kind == "message_delta":
             delta = payload.get("delta")
             if isinstance(delta, dict):
@@ -613,11 +631,13 @@ async def _anthropic_stream(response: Any) -> dict[str, Any]:
         "answer": answer,
         "usage": _usage(input_tokens, output_tokens),
         "truncated": length_stop,
+        **({"thought": "".join(thought)} if thought else {}),
     }
 
 
 async def _google_stream(response: Any) -> dict[str, Any]:
     text: list[str] = []
+    thought: list[str] = []
     usage: dict[str, Any] | None = None
     length_stop = False
     async for _event, data in _SseEventStream(response).events():
@@ -632,17 +652,22 @@ async def _google_stream(response: Any) -> dict[str, Any]:
             content = first.get("content") if isinstance(first, dict) else None
             parts = content.get("parts") if isinstance(content, dict) else None
             if isinstance(parts, list):
-                text.extend(
-                    part.get("text", "")
-                    for part in parts
-                    if isinstance(part, dict) and isinstance(part.get("text"), str)
-                )
+                for part in parts:
+                    if not isinstance(part, dict) or not isinstance(part.get("text"), str):
+                        continue
+                    if part.get("thought") is True:
+                        thought.append(part["text"])
+                    else:
+                        text.append(part["text"])
         usage = _google_usage(payload) or usage
     # Gemini SSE has no [DONE] sentinel; the stream end is the terminator.
     answer = "".join(text)
     if not answer.strip():
         raise _empty_answer()
-    return {"answer": answer, "usage": usage, "truncated": length_stop}
+    result = {"answer": answer, "usage": usage, "truncated": length_stop}
+    if thought:
+        result["thought"] = "".join(thought)
+    return result
 
 
 async def _read_bounded(response: Any) -> bytes:

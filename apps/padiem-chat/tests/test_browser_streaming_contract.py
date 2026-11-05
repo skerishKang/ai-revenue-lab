@@ -31,6 +31,36 @@ def _run_node(script: str, *args: str) -> str:
     return completed.stdout.strip()
 
 
+def _run_node_script(script: str, *args: str) -> str:
+    """Run a large script from a temp file.
+
+    Windows refuses a command line over ~32K characters (WinError 206), and
+    this contract embeds the whole transport source. A script file keeps the
+    same Node harness and assertions while staying under that host limit.
+    """
+    import os
+    import tempfile
+
+    handle = tempfile.NamedTemporaryFile(
+        "w", suffix=".cjs", delete=False, encoding="utf-8", newline="\n",
+    )
+    try:
+        handle.write(script)
+        handle.close()
+        completed = subprocess.run(
+            ["node", handle.name, *args],
+            check=True,
+            capture_output=True,
+            text=True, encoding="utf-8",
+        )
+    finally:
+        try:
+            os.unlink(handle.name)
+        except OSError:
+            pass
+    return completed.stdout.strip()
+
+
 def _transport_runtime() -> str:
     return "global.window = globalThis;\n" + _transport_source()
 
@@ -300,7 +330,7 @@ def test_terminal_error_records_render_before_first_token_without_pc_recovery() 
 const fs = require("fs");
 const vm = require("vm");
 const assert = require("node:assert/strict");
-const app = fs.readFileSync(process.argv[1], "utf8");
+const app = fs.readFileSync(process.argv[process.argv.length - 1], "utf8");
 const streamStart = app.indexOf("  async function requestStreamingAnswer(");
 const streamEnd = app.indexOf("\n  function cancelActiveStream(", streamStart);
 const renderStart = app.indexOf("  function renderStreamError(");
@@ -372,7 +402,7 @@ const renderEnd = app.indexOf("\n  function renderCancelled(", renderStart);
   console.log("terminal error records displayed; pending recovery not entered");
 })().catch(error=>{console.error(error);process.exit(1);});
 '''
-    assert "pending recovery not entered" in _run_node(script, str(APP_PATH))
+    assert "pending recovery not entered" in _run_node_script(script, str(APP_PATH))
 
 
 def test_plain_korean_error_display_and_reference_code() -> None:
