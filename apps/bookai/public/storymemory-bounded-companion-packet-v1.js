@@ -11,6 +11,18 @@ function buildBoundedCompanionPacketV1(opts){
   var ceiling=progress?progress.knowledge_ceiling_locator:null;
   var boundary_available=!!ceiling;
   var cmp=window.storyMemoryCompareLocatorV1?window.storyMemoryCompareLocatorV1:function(){return 0;};
+  /* 261106 · 읽기 방식과 연 장 집합(설계 A·B). 판정과 워커 정책에 쓰인다. */
+  var readingMode=(window.storyMemoryGetReadingModeV1&&wk)?window.storyMemoryGetReadingModeV1(wk):null;
+  var openedUnits=[];
+  if(window.storyMemoryGetOpenedUnitsV1&&wk){ try{ openedUnits=window.storyMemoryGetOpenedUnitsV1(wk)||[]; }catch(_){ openedUnits=[]; } }
+  /* 261106 · 결정론 질문 분류(설계 C). 근거 범위 산출과 coReader 판정에 같은
+     분류를 쓴다. */
+  var classification=null;
+  if(window.storyMemoryClassifyCompanionQuestionV1){
+    try{
+      classification=window.storyMemoryClassifyCompanionQuestionV1(opts.query||'', {workKey:wk, readingMode:readingMode, currentBookId:rc?rc.current_book_id:null});
+    }catch(_){ classification=null; }
+  }
   /* B61 #1515 · retrieval override seam (bounded, validated, fail-closed).
      When the retrieval adapter supplies projection-eligible passages, use ONLY
      those after re-validating each against the trusted ceiling. DOM-derived
@@ -65,7 +77,11 @@ function buildBoundedCompanionPacketV1(opts){
   var groundingMerged=0;
   if(!retrievalMode && opts.query && window.storyMemoryProjectPriorGroundingV1){
     try{
-      var priorCandidates=window.storyMemoryProjectPriorGroundingV1(String(opts.query), wk);
+      var priorCandidates=window.storyMemoryProjectPriorGroundingV1(String(opts.query), wk, {
+        classification:classification,
+        readingMode:readingMode,
+        openedUnits:openedUnits
+      });
       if(Array.isArray(priorCandidates) && priorCandidates.length){
         groundingEligible=priorCandidates.length;
         var have={};
@@ -147,7 +163,8 @@ function buildBoundedCompanionPacketV1(opts){
   var coReader=null;
   if(window.storyMemoryCoReaderDecisionV1){
     /* B61 #1724 · thread permitted evidence CONTENT (not just a count) so the
-       co-reader can score relevance. In-ceiling passages + annotations only. */
+       co-reader can score relevance. In-ceiling passages + annotations only.
+       261106 · 읽기 방식·연 장 집합·분류를 같이 넘겨 새 결정 경로를 쓴다. */
     var evidenceContent=[];
     for(var epi=0;epi<allowedPassages.length;epi++){
       var ep=allowedPassages[epi]||{};
@@ -157,7 +174,12 @@ function buildBoundedCompanionPacketV1(opts){
       var ea=allowedAnnotations[eai]||{};
       evidenceContent.push({text:String(ea.text||ea.note||''), snippet:''});
     }
-    coReader=window.storyMemoryCoReaderDecisionV1(opts.query||'',opts.targetLocator||selLoc||null,wk,evidenceContent);
+    coReader=window.storyMemoryCoReaderDecisionV1(opts.query||'',opts.targetLocator||selLoc||null,wk,evidenceContent,{
+      readingMode:readingMode,
+      openedUnits:openedUnits,
+      currentBookId:rc?rc.current_book_id:null,
+      classification:classification
+    });
   }else{
     coReader={decision:boundary_available?'ALLOW':'BLOCK',reason:boundary_available?'WITHIN_CEILING':'BOUNDARY_UNAVAILABLE',ceiling:ceiling||null};
   }
@@ -168,6 +190,8 @@ function buildBoundedCompanionPacketV1(opts){
   var diagnostics={
     boundary_available:boundary_available,
     spoiler_policy:SPOILER_POLICY,
+    reading_mode:readingMode||null,
+    question_class:classification?classification.question_class:null,
     retrieval_mode:retrievalMode,
     override_received:retrievalMode?retrievalOverride.length:0,
     override_allowed:retrievalOverrideAllowed.length,
@@ -189,7 +213,7 @@ function buildBoundedCompanionPacketV1(opts){
     mode:'storymemory_bounded_companion',
     source_scope:'ceiling_filtered',
     reader_context:rc,
-    reading_progress:progress?{furthest_read_locator:progress.furthest_read_locator,knowledge_ceiling_locator:progress.knowledge_ceiling_locator,updatedAt:progress.updatedAt}:null,
+    reading_progress:progress?{furthest_read_locator:progress.furthest_read_locator,knowledge_ceiling_locator:progress.knowledge_ceiling_locator,reading_mode:readingMode,opened_units:openedUnits.slice(0,512),updatedAt:progress.updatedAt}:null,
     annotation_context:{version:'1',work_key:wk,unit_key:currentUnitKey,annotations:allowedAnnotations,count:allowedAnnotations.length},
     source_passages:allowedPassages,
     selected:selected_packet,

@@ -7960,6 +7960,15 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
 .sm-ev-badge.retryable{background:#edf2f6;color:#536b7d;border-color:rgba(83,107,125,.22);border-style:dashed}
 .sm-ev-retry{display:flex;margin:8px 0 4px}
 .sm-ev-retry button{font:700 10px var(--sans);letter-spacing:.06em;padding:6px 14px;border-radius:999px;border:1px solid rgba(164,94,56,.25);background:#fff1e7;color:#a45e38;cursor:pointer;min-height:32px}
+/* 261106 · 접힘 응답·읽은 범위 밖 참고 한 줄·전송 대기 말풍선 */
+.sm-spoiler-folds{display:flex;flex-direction:column;gap:6px;margin:10px 0 4px}
+.sm-spoiler-fold{display:flex}
+.sm-spoiler-fold-btn{font:600 10px var(--sans);letter-spacing:.04em;padding:7px 14px;border-radius:999px;border:1px dashed rgba(66,53,42,.3);background:#faf6f0;color:#5f554b;cursor:pointer;min-height:32px}
+.sm-spoiler-fold-btn:focus-visible{outline:2px solid #b1704e;outline-offset:2px}
+.sm-fold-revealed{margin:6px 0 2px;padding:8px 10px;border-left:2px solid rgba(66,53,42,.2)}
+.sm-outside-note{font:600 10px var(--sans);letter-spacing:.03em;color:#8a7d70;margin:10px 0 4px}
+.msg.ai.sm-pending{opacity:.75}
+.msg.ai.sm-pending::after{content:'…'}
 .sm-ev-retry button:focus-visible{outline:2px solid #b1704e;outline-offset:2px}
 .sm-ev-retry button[disabled]{opacity:.55;cursor:default}
 .sm-ev-target{outline:2px solid rgba(177,112,78,.85);outline-offset:3px;background:rgba(177,112,78,.08)}
@@ -8125,6 +8134,16 @@ var MAX_CHIPS=8;
 var volumeByCode={};
 try{for(var bk in STORYMEMORY_BIBLE_USFM_CODES){if(Object.prototype.hasOwnProperty.call(STORYMEMORY_BIBLE_USFM_CODES,bk))volumeByCode[STORYMEMORY_BIBLE_USFM_CODES[bk]]=bk;}}catch(_){}
 
+/* 261106 · 칩 라벨을 KRV 절 번호로(검색 쪽 #6955와 같은 근거). 웹판(WEB)과
+   한국어판(KRV)의 절 번호가 다른 자리(고린도후서 13장 합병, 로마서 14:24-26
+   장 이동)는 파서의 krvLabelOf 예외표가 매핑한다. 이동 대상(locator)은 그대로
+   두고 라벨 번호만 KRV 로 바꾼다. */
+function krvNumberOf(loc){
+  try{
+    var ev=window.storyMemoryAnswerEvidenceV1;
+    return (ev&&typeof ev.krvLabelOf==='function')?ev.krvLabelOf(loc):null;
+  }catch(_){return null;}
+}
 function labelForLocator(loc){
   try{
     var p=String(loc||'').split(':');
@@ -8136,6 +8155,8 @@ function labelForLocator(loc){
     if(p.length>=5){
       var vs=Number(p[4]);
       if(!Number.isFinite(vs)||vs<1)return null;
+      var krv=krvNumberOf(loc);
+      if(krv)return vol+' '+krv.chapter+':'+krv.verse;
       return vol+' '+ch+':'+vs;
     }
     return vol+' '+ch+'장';
@@ -8173,9 +8194,13 @@ function passageChips(answer,packet){
     var loc=locators[i];
     if(!labelForLocator(loc))continue;
     var parts=String(loc).split(':');
-    var key=parts[2]+':'+parts[3];
-    if(!byChapter[key]){byChapter[key]={chLabel:(volumeByCode[parts[2]]||'')+' '+Number(parts[3]),verses:[]};order.push(key);}
-    byChapter[key].verses.push({locator:loc,verse:parts.length>=5?Number(parts[4]):null});
+    /* 261106 · 묶음 기준도 KRV 장·절 번호를 따른다(로마서 14:24-26 → 16:25-27). */
+    var krv=krvNumberOf(loc);
+    var code=parts[2];
+    var chapter=krv?krv.chapter:Number(parts[3]);
+    var key=code+':'+chapter;
+    if(!byChapter[key]){byChapter[key]={chLabel:(volumeByCode[code]||'')+' '+chapter,verses:[]};order.push(key);}
+    byChapter[key].verses.push({locator:loc,verse:krv?krv.verse:(parts.length>=5?Number(parts[4]):null)});
   }
   var chips=[];
   for(var k=0;k<order.length;k++){
@@ -8215,6 +8240,9 @@ function evidenceFromPacket(packet,answer){
 function classifyLive(meta,packet){
   if(meta&&meta.error){
     var code=String(meta.error);
+    /* 261106 · retryable 반영(설계 G): 워커·어댑터가 알려준 재시도 가능 여부를
+       그대로 칩 상태로 옮긴다. */
+    if(meta.retryable===true)return {state:'RETRYABLE_FAILURE',error:code};
     if(code==='network_failed'||code==='http_429'||code==='packet_build_failed'||code==='question_required')return {state:'RETRYABLE_FAILURE',error:code};
     return {state:'BACKEND_UNAVAILABLE',error:code};
   }
@@ -8384,6 +8412,46 @@ function decorateLive(node,meta,answerText){
     var md=node.querySelector('.md-body');
     if(md&&md.nextSibling)node.insertBefore(retryWrap,md.nextSibling);
     else node.append(retryWrap);
+  }
+  /* 261106 · 접힘 응답(설계 E): 처음 읽어요 모드의 전개 질문 — 연 장 집합 밖
+     인용 문단이 워커에서 접혀 온다. 누르기 전까지 접힌 본문은 DOM 에 넣지
+     않는다(meta 안에만 있다). 찾아보며 읽기 모드는 접지 않고 읽은 범위 밖
+     참고 한 줄만 표시한다. */
+  if(meta.spoilerFolds&&meta.spoilerFolds.length){
+    var foldWrap=document.createElement('div');
+    foldWrap.className='sm-spoiler-folds';
+    meta.spoilerFolds.forEach(function(fold){
+      var wrap=document.createElement('div');
+      wrap.className='sm-spoiler-fold';
+      var btn=document.createElement('button');
+      btn.type='button';
+      btn.className='sm-spoiler-fold-btn';
+      var books=((fold&&Array.isArray(fold.books))?fold.books:[]).join(', ');
+      btn.textContent='더 보기 · 아직 안 읽은 '+books+' 포함';
+      btn.setAttribute('aria-expanded','false');
+      btn.onclick=function(){
+        if(wrap.dataset.revealed==='1')return;
+        wrap.dataset.revealed='1';
+        var p=document.createElement('div');
+        p.className='md-body sm-fold-revealed';
+        p.textContent=String((fold&&fold.text)||'');
+        wrap.insertBefore(p,btn);
+        btn.remove();
+      };
+      wrap.append(btn);
+      foldWrap.append(wrap);
+    });
+    var foldMd=node.querySelector('.md-body');
+    if(foldMd&&foldMd.nextSibling)node.insertBefore(foldWrap,foldMd.nextSibling);
+    else node.append(foldWrap);
+  }
+  if(meta.outsideBooks&&meta.outsideBooks.length&&!(meta.spoilerFolds&&meta.spoilerFolds.length)){
+    var outsideNote=document.createElement('div');
+    outsideNote.className='sm-outside-note';
+    outsideNote.textContent='읽은 범위 밖 참고: '+meta.outsideBooks.join(', ');
+    var outsideMd=node.querySelector('.md-body');
+    if(outsideMd&&outsideMd.nextSibling)node.insertBefore(outsideNote,outsideMd.nextSibling);
+    else node.append(outsideNote);
   }
   if(cls.state==='GROUNDED'){
     var ev=evidenceFromPacket(packet,answerText);

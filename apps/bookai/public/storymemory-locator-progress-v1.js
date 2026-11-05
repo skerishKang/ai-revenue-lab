@@ -1,8 +1,31 @@
 /* ===== B61 #1337 R1 · Locator + Reading Progress private module ===== */
+/* 261106 · 읽은 범위를 "작품별 실제로 연 장(unit_key) 집합"으로도 기록한다.
+   furthest/ceiling 은 호환용으로 그대로 두고, 처음 읽어요 모드의 판정은
+   opened_units 집합을 쓴다. 읽기 방식(browse|first_read)도 책마다 같은
+   레코드에 저장한다 (BookAIStorage works 동기화 규칙 승계). */
 (function(){
 'use strict';
 var STORAGE_KEY='storymemory.readingProgress.v1';
 var VERSION=1;
+var READING_MODES=['browse','first_read'];
+var MAX_OPENED_UNITS=512;
+function unitKeyOfLocator(locator){
+  try{
+    var p=String(locator||'').split(':');
+    if(!p[0]) return null;
+    return p[0]==='bible'? p.slice(0,4).join(':') : p.slice(0,3).join(':');
+  }catch(_){ return null; }
+}
+function sanitizeOpenedUnits(raw){
+  if(!Array.isArray(raw)) return [];
+  var out=[];
+  for(var i=0;i<raw.length && out.length<MAX_OPENED_UNITS;i++){
+    var v=raw[i];
+    if(typeof v!=='string' || !v || v.length>160) continue;
+    if(out.indexOf(v)<0) out.push(v);
+  }
+  return out;
+}
 var BIBLE_BOOK_ORDER=['GEN','EXO','LEV','NUM','DEU','JOS','JDG','RUT','1SA','2SA','1KI','2KI','1CH','2CH','EZR','NEH','EST','JOB','PSA','PRO','ECC','SNG','ISA','JER','LAM','EZE','DAN','HOS','JOL','AMO','OBA','JON','MIC','NAM','HAB','ZEP','HAG','ZEC','MAL','MAT','MRK','LUK','JHN','ACT','ROM','1CO','2CO','GAL','EPH','PHP','COL','1TH','2TH','1TI','2TI','TIT','PHM','HEB','JAS','1PE','2PE','1JN','2JN','3JN','JUD','REV'];
 var BOOK_ORDER_MAP={}; BIBLE_BOOK_ORDER.forEach(function(code,i){ BOOK_ORDER_MAP[code]=i; });
 /* B61 #1897 · prerequisite fix · the shipped bible-web corpus spells Ezekiel
@@ -71,7 +94,7 @@ function loadStore(){
     var p=JSON.parse(raw);
     if(!p || typeof p!=='object' || p.version!==VERSION || typeof p.works!=='object' || Array.isArray(p.works)) return {version:VERSION, works:{}};
     var out={version:VERSION, works:{}};
-    for(var k in p.works){ if(!Object.prototype.hasOwnProperty.call(p.works,k)) continue; var v=p.works[k]; if(!v || typeof v!=='object') continue; if(typeof v.furthest_read_locator!=='string' || !v.furthest_read_locator) continue; if(typeof v.knowledge_ceiling_locator!=='string' || !v.knowledge_ceiling_locator) continue; var fr=String(v.furthest_read_locator), kc=String(v.knowledge_ceiling_locator); if(!isLocatorCompatibleWithWork(fr,k) || !isLocatorCompatibleWithWork(kc,k)) continue; if(locatorWorkFamily(fr)!==locatorWorkFamily(kc)) continue; if(fr!==kc) continue; out.works[k]={furthest_read_locator:fr, knowledge_ceiling_locator:kc, updatedAt: Number(v.updatedAt)||Date.now()}; }
+    for(var k in p.works){ if(!Object.prototype.hasOwnProperty.call(p.works,k)) continue; var v=p.works[k]; if(!v || typeof v!=='object') continue; if(typeof v.furthest_read_locator!=='string' || !v.furthest_read_locator) continue; if(typeof v.knowledge_ceiling_locator!=='string' || !v.knowledge_ceiling_locator) continue; var fr=String(v.furthest_read_locator), kc=String(v.knowledge_ceiling_locator); if(!isLocatorCompatibleWithWork(fr,k) || !isLocatorCompatibleWithWork(kc,k)) continue; if(locatorWorkFamily(fr)!==locatorWorkFamily(kc)) continue; if(fr!==kc) continue; out.works[k]={furthest_read_locator:fr, knowledge_ceiling_locator:kc, opened_units:sanitizeOpenedUnits(v.opened_units), reading_mode:(READING_MODES.indexOf(v.reading_mode)>=0?v.reading_mode:null), updatedAt: Number(v.updatedAt)||Date.now()}; }
     return out;
   }catch(_){ return {version:VERSION, works:{}}; }
 }
@@ -80,25 +103,52 @@ function saveStore(store){
 }
 function getProgress(workKey){
   if(!workKey) return null;
-  var s=loadStore(); var w=s.works[workKey]; return w ? {furthest_read_locator:w.furthest_read_locator, knowledge_ceiling_locator:w.knowledge_ceiling_locator, updatedAt:w.updatedAt} : null;
+  var s=loadStore(); var w=s.works[workKey]; return w ? {furthest_read_locator:w.furthest_read_locator, knowledge_ceiling_locator:w.knowledge_ceiling_locator, opened_units:(w.opened_units||[]).slice(), reading_mode:w.reading_mode||null, updatedAt:w.updatedAt} : null;
 }
 function advanceProgress(workKey, locator){
   if(!workKey || !locator) return null;
   if(!isLocatorCompatibleWithWork(locator, workKey)) return null;
   var s=loadStore();
   var cur=s.works[workKey]||null;
+  var changed=false;
   if(!cur){
-    s.works[workKey]={furthest_read_locator:String(locator), knowledge_ceiling_locator:String(locator), updatedAt:Date.now()};
-    saveStore(s); return s.works[workKey];
+    cur={furthest_read_locator:String(locator), knowledge_ceiling_locator:String(locator), opened_units:[], reading_mode:null, updatedAt:Date.now()};
+    s.works[workKey]=cur; changed=true;
+  }
+  /* 실제로 연 장을 읽은 집합에 기록한다 (furthest 가 뒤로 안 가도 추가). */
+  var unit=unitKeyOfLocator(locator);
+  if(unit && cur.opened_units.indexOf(unit)<0 && cur.opened_units.length<MAX_OPENED_UNITS){
+    cur.opened_units.push(unit); changed=true;
   }
   var cmp=compareLocators(locator, cur.furthest_read_locator);
   if(cmp>0){
     cur.furthest_read_locator=String(locator);
     cur.knowledge_ceiling_locator=String(locator);
     cur.updatedAt=Date.now();
-    saveStore(s);
+    changed=true;
   }
+  if(changed){ cur.updatedAt=Date.now(); saveStore(s); }
   return cur;
+}
+function getOpenedUnits(workKey){
+  if(!workKey) return [];
+  var s=loadStore(); var w=s.works[workKey]; return w ? (w.opened_units||[]).slice() : [];
+}
+function getReadingMode(workKey){
+  if(!workKey) return null;
+  var s=loadStore(); var w=s.works[workKey];
+  if(w && w.reading_mode) return w.reading_mode;
+  return String(workKey)==='bible-web' ? 'browse' : 'first_read';
+}
+function setReadingMode(workKey, mode){
+  if(!workKey || READING_MODES.indexOf(mode)<0) return null;
+  var s=loadStore();
+  var w=s.works[workKey];
+  if(!w) return null;
+  if(w.reading_mode===mode) return w;
+  w.reading_mode=mode; w.updatedAt=Date.now();
+  saveStore(s);
+  return w;
 }
 function resetProgress(workKey){
   if(!workKey) return;
@@ -127,13 +177,21 @@ window.storyMemoryCompareLocatorV1=compareLocators;
 window.storyMemorySyncVisibleToProgressV1=syncVisibleToProgress;
 window.storyMemoryLocatorWorkFamilyV1=locatorWorkFamily;
 window.storyMemoryIsLocatorCompatibleWithWorkV1=isLocatorCompatibleWithWork;
+window.storyMemoryUnitKeyOfLocatorV1=unitKeyOfLocator;
+window.storyMemoryGetOpenedUnitsV1=getOpenedUnits;
+window.storyMemoryGetReadingModeV1=getReadingMode;
+window.storyMemorySetReadingModeV1=setReadingMode;
 window.__smLocatorProgressR1V1={
   STORAGE_KEY:STORAGE_KEY,
   VERSION:VERSION,
   BIBLE_BOOK_ORDER:BIBLE_BOOK_ORDER,
+  READING_MODES:READING_MODES,
   locatorWorkFamily:locatorWorkFamily,
   isLocatorCompatibleWithWork:isLocatorCompatibleWithWork,
   compareLocators:compareLocators,
+  unitKeyOfLocator:unitKeyOfLocator,
+  getOpenedUnits:getOpenedUnits,
+  getReadingMode:getReadingMode,
   getCeiling:getCeiling
 };
 })();
