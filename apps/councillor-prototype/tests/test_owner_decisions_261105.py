@@ -97,11 +97,17 @@ def test_policy_material_has_a_source_link_for_every_card() -> None:
     policy = DATA["policy"]
     assert len(policy["forums"]) == 3
     assert len(policy["videos"]) == 4
-    for group in ("forums", "videos", "bills"):
+    for group in ("forums", "videos"):
         for item in policy[group]:
             assert item["title"].strip()
             assert item["url"].startswith("https://"), item["url"]
             assert item.get("summary", "").strip(), item["title"]
+    for item in policy["bills"]:
+        assert item["title"].strip()
+        assert re.fullmatch(r"(8|9)-\d+", item["number"]), item["number"]
+        assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", item["date"]), item["date"]
+        assert item["result"] in ("원안가결", "수정가결"), item["result"]
+        assert item["url"].startswith("https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid="), item["url"]
     videos = policy["videos"]
     assert sum("제9대 광주광역시의회" in (item.get("note") or "") for item in videos) == 3
     assert "제9대 광주광역시의회" not in (videos[0].get("note") or "")
