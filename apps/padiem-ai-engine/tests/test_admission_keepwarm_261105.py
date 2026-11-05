@@ -1,17 +1,24 @@
-"""The host keeps its admission connection warm, so a turn stops paying for a handshake.
+"""The host keeps its admission authority warm through the Durable Object.
 
-Measured on COM2 on 2026-11-05: one snapshot RPC over a fresh connection took
-2672 ms while the two that followed over the same keep-alive connection took
-635 ms and 653 ms, and `admission_ms` sat at p50 2573 ms because PC turns are more
-than a minute apart. `app.local_admission_binding` answers that with a longer
-keep-alive expiry plus one warm cycle per binding. These tests pin that cycle and
-nothing else — the proof, the payload, the replay retry and the admission decision
-stay under ``test_local_admission_https_binding_261031.py``.
+The first cycle (#6956 follow-up) pinged ``OPTIONS /``: the request reached the
+gateway Worker (its own 404 fingerprint came back) but never dispatched — only
+``/internal/rpc/<method>`` leaves the gateway — so the Durable Object that owns
+the entitlement state and the identity worker behind it stayed cold and the
+first turn of a batch still paid the cold cost. The warm ping is now a real
+signed ``fetch_entitlement_snapshot`` for a synthetic canonical user: the
+authority answers 200 ``ok:false`` ``engine_entitlement_identity_unavailable``
+and writes nothing. One journal line per cycle names status and milliseconds
+only. These tests pin that cycle and nothing else — the proof, the payload,
+the replay retry and the admission decision stay under
+``test_local_admission_https_binding_261031.py``.
 """
 
 from __future__ import annotations
 
 import asyncio
+import json
+import logging
+import re
 
 import httpx
 import pytest
@@ -22,7 +29,7 @@ from app.local_admission_binding import (
     ADMISSION_SECRET_ENV,
     DEFAULT_KEEPWARM_SECONDS,
     KEEPALIVE_EXPIRY_SECONDS,
-    KEEPWARM_PATH,
+    KEEPWARM_METHOD,
     KEEPWARM_SECONDS_ENV,
     HttpsAdmissionBinding,
     admission_binding_for,
@@ -30,24 +37,41 @@ from app.local_admission_binding import (
 
 SECRET = "com2-host-admission-secret-0123456789abcdef"
 ORIGIN = "https://engine-admission.padiem.internal"
-WARM_URL = ORIGIN + KEEPWARM_PATH
+WARM_URL = ORIGIN + "/internal/rpc/" + KEEPWARM_METHOD
+# Pinned literally: the synthetic subject is the side-effect-free contract, so
+# a change to it must be a visible test change, not a silent constant edit.
+WARM_BODY = json.dumps(
+    {
+        "product_id": "b62",
+        "subject": {"subject_type": "user", "subject_id": "padiem-engine-keepwarm-synthetic"},
+    },
+    ensure_ascii=False,
+    separators=(",", ":"),
+).encode("utf-8")
 PERIOD = 0.02
+JOURNAL_LINE = re.compile(r"^keepwarm status=\d+ ms=\d+(?:\.\d+)?$")
 
 
 class _WarmTarget:
     """The pooled client the binding warms through, with no socket behind it."""
 
-    def __init__(self, *, fail_first: int = 0) -> None:
-        self.requests: list[str] = []
+    def __init__(self, *, fail_first: int = 0, status: int = 200) -> None:
+        self.calls: list[dict[str, object]] = []
         self.fail_first = fail_first
+        self.status = status
 
-    async def options(self, url: str) -> httpx.Response:
-        self.requests.append(url)
-        if len(self.requests) <= self.fail_first:
+    async def post(self, url: str, content=None, headers=None, timeout=None) -> httpx.Response:
+        self.calls.append(
+            {"url": url, "content": content, "headers": dict(headers or {})}
+        )
+        if len(self.calls) <= self.fail_first:
             raise httpx.ConnectError(
-                "warm target refused", request=httpx.Request("OPTIONS", url)
+                "warm target refused", request=httpx.Request("POST", url)
             )
-        return httpx.Response(404)
+        return httpx.Response(
+            self.status,
+            json={"ok": False, "error": {"code": "engine_entitlement_identity_unavailable"}},
+        )
 
 
 class _BlockingTarget(_WarmTarget):
@@ -57,10 +81,10 @@ class _BlockingTarget(_WarmTarget):
         super().__init__()
         self.released = asyncio.Event()
 
-    async def options(self, url: str) -> httpx.Response:
-        self.requests.append(url)
+    async def post(self, url: str, content=None, headers=None, timeout=None) -> httpx.Response:
+        self.calls.append({"url": url, "content": content, "headers": dict(headers or {})})
         await self.released.wait()
-        return httpx.Response(404)
+        return httpx.Response(200, json={"ok": False})
 
 
 @pytest.fixture()
@@ -72,6 +96,30 @@ def pooled(monkeypatch):
     return _install
 
 
+@pytest.fixture()
+def journal():
+    """Capture the keepwarm line exactly where the host journal receives it."""
+
+    logger = logging.getLogger("padiem_ai_engine.engine_timing")
+    seen: list[str] = []
+    level = logger.level
+
+    class _Capture(logging.Handler):
+        def emit(self, record: logging.LogRecord) -> None:
+            seen.append(record.getMessage())
+
+    handler = _Capture()
+    logger.addHandler(handler)
+    # The host imports app.engine_timing, whose import sets INFO; this suite
+    # does not, so mirror the level the journal line is emitted at.
+    logger.setLevel(logging.INFO)
+    try:
+        yield seen
+    finally:
+        logger.removeHandler(handler)
+        logger.setLevel(level)
+
+
 async def _expect_cycles(target: _WarmTarget, count: int, timeout: float = 2.0) -> None:
     """Wait for ``count`` warm requests without timing-bound assertions.
 
@@ -81,9 +129,9 @@ async def _expect_cycles(target: _WarmTarget, count: int, timeout: float = 2.0) 
     """
 
     deadline = asyncio.get_running_loop().time() + timeout
-    while len(target.requests) < count:
+    while len(target.calls) < count:
         if asyncio.get_running_loop().time() > deadline:
-            raise AssertionError(f"only {len(target.requests)} of {count} warm cycles ran")
+            raise AssertionError(f"only {len(target.calls)} of {count} warm cycles ran")
         await asyncio.sleep(0.005)
 
 
@@ -95,7 +143,41 @@ async def test_the_cycle_warms_the_same_origin_path_every_period(pooled) -> None
     finally:
         await binding.aclose()
 
-    assert target.requests == [WARM_URL] * len(target.requests)
+    assert [call["url"] for call in target.calls] == [WARM_URL] * len(target.calls)
+
+
+async def test_the_warm_ping_is_a_signed_snapshot_rpc_for_the_synthetic_subject(
+    pooled,
+) -> None:
+    target = pooled(_WarmTarget())
+    binding = HttpsAdmissionBinding(ORIGIN, SECRET, keepwarm_seconds=PERIOD)
+    try:
+        await _expect_cycles(target, 1)
+    finally:
+        await binding.aclose()
+
+    call = target.calls[0]
+    assert call["content"] == WARM_BODY
+    headers = call["headers"]
+    assert str(headers["x-padiem-service-proof"]).startswith("v2=")
+    assert headers["x-padiem-service-id"]
+    assert headers["x-padiem-service-at"]
+    assert headers["content-type"] == "application/json"
+
+
+async def test_the_warm_answer_and_its_journal_line_carry_no_payload(pooled, journal) -> None:
+    target = pooled(_WarmTarget())
+    binding = HttpsAdmissionBinding(ORIGIN, SECRET, keepwarm_seconds=PERIOD)
+    try:
+        await _expect_cycles(target, 2)
+    finally:
+        await binding.aclose()
+
+    assert journal, "the warm cycle must leave exactly one status line behind"
+    for line in journal:
+        assert JOURNAL_LINE.fullmatch(line), line
+        assert ORIGIN not in line and "padiem-engine-keepwarm-synthetic" not in line
+        assert "secret" not in line.lower()
 
 
 async def test_only_one_warm_cycle_is_outstanding_at_a_time(pooled) -> None:
@@ -107,7 +189,7 @@ async def test_only_one_warm_cycle_is_outstanding_at_a_time(pooled) -> None:
 
         # Several periods pass with a warm request still in flight: no pile-up.
         await asyncio.sleep(PERIOD * 6)
-        assert len(target.requests) == 1
+        assert len(target.calls) == 1
 
         target.released.set()
         await _expect_cycles(target, 2)
@@ -115,7 +197,7 @@ async def test_only_one_warm_cycle_is_outstanding_at_a_time(pooled) -> None:
         await binding.aclose()
 
 
-async def test_the_cycle_keeps_running_after_a_failed_attempt(pooled) -> None:
+async def test_the_cycle_keeps_running_after_a_failed_attempt(pooled, journal) -> None:
     target = pooled(_WarmTarget(fail_first=2))
     binding = HttpsAdmissionBinding(ORIGIN, SECRET, keepwarm_seconds=PERIOD)
     try:
@@ -123,7 +205,21 @@ async def test_the_cycle_keeps_running_after_a_failed_attempt(pooled) -> None:
     finally:
         await binding.aclose()
 
-    assert len(target.requests) >= 4
+    assert len(target.calls) >= 4
+    # A refused connection is a warm outcome too: one line, status 0, no error.
+    assert any(line.startswith("keepwarm status=0 ") for line in journal)
+
+
+async def test_a_non_200_warm_answer_is_logged_and_discarded(pooled, journal) -> None:
+    target = pooled(_WarmTarget(status=503))
+    binding = HttpsAdmissionBinding(ORIGIN, SECRET, keepwarm_seconds=PERIOD)
+    try:
+        await _expect_cycles(target, 2)
+    finally:
+        await binding.aclose()
+
+    assert any(line.startswith("keepwarm status=503 ") for line in journal)
+    assert len(target.calls) >= 2
 
 
 async def test_zero_period_schedules_nothing(pooled) -> None:
@@ -133,7 +229,7 @@ async def test_zero_period_schedules_nothing(pooled) -> None:
         assert binding not in binding_module._LIVE_BINDINGS
         assert binding._warm_timer is None
         await asyncio.sleep(PERIOD * 6)
-        assert target.requests == []
+        assert target.calls == []
     finally:
         await binding.aclose()
 
@@ -146,11 +242,11 @@ async def test_aclose_stops_the_cycle_and_the_registration(pooled) -> None:
 
     await binding.aclose()
 
-    frozen = len(target.requests)
+    frozen = len(target.calls)
     assert binding not in binding_module._LIVE_BINDINGS
     assert binding._warm_timer is None and binding._warm_task is None
     await asyncio.sleep(PERIOD * 6)
-    assert len(target.requests) == frozen
+    assert len(target.calls) == frozen
 
 
 async def test_a_caller_owned_client_is_never_warmed(pooled) -> None:
@@ -158,9 +254,9 @@ async def test_a_caller_owned_client_is_never_warmed(pooled) -> None:
     seen: list[str] = []
 
     class _CallersClient(httpx.AsyncClient):
-        async def options(self, url, **kwargs):  # noqa: ANN002, ANN003
+        async def post(self, url, **kwargs):  # noqa: ANN002, ANN003
             seen.append(url)
-            return httpx.Response(404)
+            return httpx.Response(200, json={"ok": False})
 
     caller_client = _CallersClient()
     binding = HttpsAdmissionBinding(ORIGIN, SECRET, client=caller_client)
@@ -168,7 +264,7 @@ async def test_a_caller_owned_client_is_never_warmed(pooled) -> None:
     await binding.aclose()
     await caller_client.aclose()
 
-    assert seen == [] and target.requests == []
+    assert seen == [] and target.calls == []
 
 
 def test_the_pooled_client_widens_keepalive_and_adds_http2_only_when_h2_exists(
