@@ -57,3 +57,13 @@ node apps/bookai/tests/bookai-sync-runtime.test.cjs
 `DB_MIGRATIONS/`, 기존 패치 노트와 자산 매니페스트는 원본 보관 자료입니다.
 
 AI 전송 시험: `node apps/bookai/tests/apps-ai-transport.test.mjs` (두 앱의 서명·답변·1.0 대체 경로·정책 거부), 양 앱의 `test_thought_filter.cjs`.
+
+## 성경 검색 색인 재생성
+
+성경 본문 검색은 `public/content/bible-web/search-index/`의 생성 파일을 사용하며, 텍스트 검색 때만 불러옵니다. 성경 장 JSON이나 매니페스트를 갱신한 뒤에는 색인을 다시 만듭니다.
+
+```sh
+node apps/bookai/scripts/build-bible-search-index.cjs
+```
+
+생성기는 기존 성경 콘텐츠 옆에 검색 색인 매니페스트와 12개 JSON 샤드를 씁니다. 원본 데이터 변경과 생성 파일을 함께 커밋해 정적 Pages 배포가 같은 색인을 제공하게 합니다.

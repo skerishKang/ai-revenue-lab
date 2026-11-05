@@ -1,0 +1,18 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs'), path=require('node:path');
+const api=require('../public/storymemory-bible-reference-v1.js');
+const resolver=require('../public/storymemory-locator-resolver-v1.js');
+const codes={'요한복음':'JHN','사도행전':'ACT','요한일서':'1JN'};
+const counts={'요한복음':21,'사도행전':28,'요한일서':5};
+for(const q of ['요한복음 3장 16절','요한복음3:16','요한복음 3:16','요한복음3장16절']) assert.equal(api.parseReference(q,codes,counts).locator,'bible:web:JHN:3:16');
+assert.equal(api.parseReference('요한 복음 3장 16절',codes,counts).locator,'bible:web:JHN:3:16');
+for(const q of ['요 3:16','요3:16','jhn 3:16']) assert.equal(api.parseReference(q,resolver.bookAliases,resolver.chapterCounts).locator,'bible:web:JHN:3:16');
+assert.deepEqual(api.parseReference('요한복음 3장',codes,counts),{ok:true,book:'JHN',chapter:3,verse:null,kind:'chapter',unitKey:'book:JHN:chapter:003',locator:'book:JHN:chapter:003'});
+assert.equal(api.parseReference('요한복음 30장',codes,counts).error,'invalid_chapter');
+assert.equal(api.parseReference('없는책 3장 16절',codes,counts).error,'unknown_book');
+assert.equal(api.parseReference('요한복음 삼장',codes,counts).error,'invalid_format');
+const unit=JSON.parse(fs.readFileSync(path.join(__dirname,'../public/content/bible-web/book-JHN-chapter-003.json'),'utf8'));
+assert.equal(api.matchPassage(api.parseReference('요한복음 3장 16절',codes,counts),unit).canonical_locator,'bible:web:JHN:3:16');
+assert.equal(api.matchPassage(api.parseReference('요한복음 3장 999절',codes,counts),unit),null);
+assert.equal(api.matchPassage(api.parseReference('요 3:16',resolver.bookAliases,resolver.chapterCounts),unit).canonical_locator,'bible:web:JHN:3:16');
+console.log('PASS reference formats, repository aliases, chapter-only lookup, and passage validation against shipped corpus');
