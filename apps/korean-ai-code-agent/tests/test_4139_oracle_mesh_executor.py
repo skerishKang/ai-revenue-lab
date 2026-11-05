@@ -857,7 +857,8 @@ class ReadDeadlineRegressionTests(unittest.TestCase):
         self.assertIn("MeshCentralReadRefused", line)
         self.assertIn("not connected", line)
         self.assertNotIn(FILE_PATH, line, "the trace names a reason, not the file")
-        self.assertEqual(len(line.strip().splitlines()), 1, "one line per refusal")
+        refusal = [one for one in line.strip().splitlines() if "phase=read_failed" in one]
+        self.assertEqual(len(refusal), 1, "one line per refusal")
 
     def test_a_decode_refusal_never_quotes_the_bytes(self):
         class _Binary:

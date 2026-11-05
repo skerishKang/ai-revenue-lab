@@ -1062,6 +1062,11 @@ class OracleMeshExecutor:
                         )
         started = time.monotonic()
         if raw is None:
+            # The guard asked the PC and answered, and the bytes are the next round
+            # trip. When the one-reply path already produced the payload there is
+            # nothing to separate, and no second line is written for it.
+            self._trace_read(dispatch, "guard_done", guard_started,
+                             path="two_step")
             call: dict[str, Any] = {
                 "node_ref": dispatch.node_ref,
                 "file_path": dispatch.file_path,
@@ -2296,6 +2301,10 @@ class OracleMeshExecutor:
         # ends an idle stretch. Set before the work, not after the submission, so a
         # round that dies mid-command still says the queue was not empty.
         self.last_round = ROUND_WORKED
+        # The claim is its own instant. A round used to be observable only at its ends,
+        # so "the queue was slow to hand this over" and "this PC took that long to
+        # answer" printed as one number and the journal could not tell them apart.
+        self._trace_command(dispatch, "claimed", time.monotonic())
         if dispatch.background:
             from dataclasses import asdict
             started = self._background_manager().start(
