@@ -24,6 +24,7 @@ its stand-in keeps signing v1.
 """
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import hmac
 import json
@@ -60,6 +61,19 @@ PDF_RESPONSE_MAX_BYTES = 32 * 1024 * 1024
 _RPC_PATH_PREFIX = "/internal/rpc/"
 _METHOD_RE = re.compile(r"^[a-z][a-z0-9_]{2,63}$")
 _SECRET_MIN_CHARS = 32
+# The identity authority is woken with a real dispatchable RPC, not a bare
+# request: only ``/internal/rpc/<method>`` leaves the gateway Worker, so a
+# no-route ping would warm the edge while the Durable Object that owns the
+# canonical identity rows — the part the next turn pays for — stayed cold.
+# ``resolve_product_user_for_subject`` is strictly read-only (#3247): the DO
+# reads the existing ``canonical_product_identity_link`` row for the exact
+# ``(product_id, canonical_subject_id)`` pair and fails closed on a missing
+# one, so this synthetic subject writes nothing and its answer is discarded.
+IDENTITY_KEEPWARM_METHOD = "resolve_product_user_for_subject"
+IDENTITY_KEEPWARM_PAYLOAD: dict[str, Any] = {
+    "product_id": "b62",
+    "canonical_subject_id": "padiem-chat-identity-keepwarm-synthetic",
+}
 
 
 class ServiceProofConfigError(ConfigError):
@@ -157,6 +171,15 @@ class HttpRpcBinding:
     adapter above still validates it exactly as it does over a real binding.
     """
 
+    # Class-level warm state keeps subclasses that bypass this __init__ (the
+    # loopback COM2 port binding composes its own fields) safe: for them the
+    # warm cycle simply stays off, and every real RPC still reaches the wire
+    # exactly as it did before.
+    _keepwarm = 0.0
+    _warm_timer: asyncio.TimerHandle | None = None
+    _warm_task: asyncio.Task[Any] | None = None
+    _warm_stopped = False
+
     def __init__(
         self,
         origin: str,
@@ -165,6 +188,7 @@ class HttpRpcBinding:
         client: httpx.AsyncClient | None = None,
         timeout_seconds: float = 30.0,
         sign_request_id: bool = True,
+        keepwarm_seconds: float = 0.0,
     ):
         self._origin = _require_https_origin(origin, name="RPC origin")
         self._secret = _require_secret(secret, name="RPC service secret")
@@ -176,6 +200,67 @@ class HttpRpcBinding:
         # A target without a replay memory refuses every v2 request, so a
         # caller bound to one keeps the v1 proof until that target has a guard.
         self._sign_request_id = bool(sign_request_id)
+        # Opt-in warm cycle: the host composition passes the configured period
+        # (PADIEM_CHAT_IDENTITY_KEEPWARM_SECONDS, default 45, 0 off), so a
+        # default-constructed binding behaves exactly as before. The cycle is
+        # armed by the first real RPC, inside the loop that RPC already runs
+        # on, and stopped by :meth:`aclose`.
+        self._keepwarm = max(0.0, float(keepwarm_seconds))
+        self._warm_timer: asyncio.TimerHandle | None = None
+        self._warm_task: asyncio.Task[Any] | None = None
+        self._warm_stopped = False
+
+    def _arm_warmer(self) -> None:
+        """Schedule the next warm cycle on the loop that is already running.
+
+        One timer outstanding at a time: this is a re-armed ``call_later``, not
+        a task parked on a sleep, so nothing is left pending when the loop the
+        binding served goes away.
+        """
+
+        if self._keepwarm <= 0 or self._warm_stopped or self._warm_timer is not None:
+            return
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            return
+        self._warm_timer = loop.call_later(self._keepwarm, self._warm_now)
+
+    def _warm_now(self) -> None:
+        self._warm_timer = None
+        if self._warm_stopped:
+            return
+        self._warm_task = asyncio.ensure_future(self._warm_once())
+
+    async def _warm_once(self) -> None:
+        """One read-only identity RPC; the answer and any failure are dropped.
+
+        The ping goes through the same signed POST as a real call but never
+        through the arming closure: the next cycle is scheduled here, after the
+        request has finished, so one warm request stays outstanding at a time.
+        Warming says nothing about the authority — the next real call carries
+        its own proof and its own verdict — and the cycle keeps going after any
+        exception; a cancellation (host shutdown) leaves nothing behind.
+        """
+
+        try:
+            body = json.dumps(
+                IDENTITY_KEEPWARM_PAYLOAD, ensure_ascii=False, separators=(",", ":")
+            ).encode("utf-8")
+            await self._post_rpc(IDENTITY_KEEPWARM_METHOD, body)
+        except asyncio.CancelledError:
+            self._warm_task = None
+            raise
+        except Exception:  # noqa: BLE001 - warming never becomes an authority answer
+            pass
+        self._warm_task = None
+        self._arm_warmer()
+
+    def _stop_warmer(self) -> None:
+        self._warm_stopped = True
+        if self._warm_timer is not None:
+            self._warm_timer.cancel()
+            self._warm_timer = None
 
     def _shared_client(self) -> httpx.AsyncClient:
         """The one client this binding keeps (#6613).
@@ -204,10 +289,50 @@ class HttpRpcBinding:
         return client
 
     async def aclose(self) -> None:
-        """Close the pooled client this binding created (host shutdown)."""
+        """Stop the warm cycle and close the pooled client this binding created (host shutdown)."""
+        self._stop_warmer()
+        task = self._warm_task
+        self._warm_task = None
+        if task is not None:
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
         client, self._client = self._client, None
         if client is not None and self._owns_client:
             await client.aclose()
+
+    async def _post_rpc(self, method: str, body: bytes) -> httpx.Response:
+        """The signed POST loop shared by real RPCs and the warm ping.
+
+        The replay retry keeps the same rule as before: every attempt signs a
+        fresh id, and a target that keeps refusing the id means this side is
+        sending the same request more than it is allowed to — the cap is what
+        stops it. Arming the warm cycle stays the caller's decision so the warm
+        ping itself never schedules another cycle while it is still in flight.
+        """
+
+        path = _RPC_PATH_PREFIX + method
+        client = self._shared_client()
+        response = None
+        attempts = RPC_MAX_ATTEMPTS if self._sign_request_id else 1
+        for _ in range(attempts):
+            # The identity lookup after OAuth exchange crosses Cloudflare
+            # too. Keep the same product agent as the token call (#6528),
+            # rather than the library default rejected by integrity checks.
+            headers = {"Content-Type": "application/json", "Accept": "application/json",
+                       "User-Agent": "PADIEM-Chat/1.0 (+https://chat.padiem.net)"}
+            headers.update(service_proof_headers(
+                self._secret, method="POST", path=path, body=body,
+                service_id=new_service_id() if self._sign_request_id else None,
+            ))
+            response = await client.post(
+                self._origin + path, content=body, headers=headers
+            )
+            if response.status_code != RPC_REPLAY_STATUS:
+                break
+        return response
 
     def __getattr__(self, method: str):
         if method.startswith("_") or not _METHOD_RE.fullmatch(method):
@@ -216,28 +341,11 @@ class HttpRpcBinding:
         async def call(payload: dict[str, Any]) -> dict[str, Any]:
             if not isinstance(payload, dict):
                 raise TypeError("RPC payload must be an object")
+            # The binding is composed before the host loop exists, so the warm
+            # cycle starts here, on the loop the real traffic already runs on.
+            self._arm_warmer()
             body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-            path = _RPC_PATH_PREFIX + method
-            client = self._shared_client()
-            response = None
-            attempts = RPC_MAX_ATTEMPTS if self._sign_request_id else 1
-            for _ in range(attempts):
-                # The identity lookup after OAuth exchange crosses Cloudflare
-                # too. Keep the same product agent as the token call (#6528),
-                # rather than the library default rejected by integrity checks.
-                headers = {"Content-Type": "application/json", "Accept": "application/json",
-                           "User-Agent": "PADIEM-Chat/1.0 (+https://chat.padiem.net)"}
-                headers.update(service_proof_headers(
-                    self._secret, method="POST", path=path, body=body,
-                    service_id=new_service_id() if self._sign_request_id else None,
-                ))
-                response = await client.post(
-                    self._origin + path, content=body, headers=headers
-                )
-                if response.status_code != RPC_REPLAY_STATUS:
-                    break
-            # A target that keeps refusing the id means this side is sending the
-            # same request more than it is allowed to; the cap is what stops it.
+            response = await self._post_rpc(method, body)
             if response.status_code != 200:
                 raise ServiceRpcHttpError(response.status_code)
             data = response.json()

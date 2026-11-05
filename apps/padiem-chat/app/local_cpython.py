@@ -285,7 +285,10 @@ def build_app():
         "PADIEM_CHAT_LOCAL_B66_PDF_ORIGIN", "PADIEM_CHAT_LOCAL_B66_PDF_SECRET"
     )
     identity_binding = (
-        HttpRpcBinding(identity_origin, identity_secret) if identity_origin else None
+        HttpRpcBinding(
+            identity_origin, identity_secret,
+            keepwarm_seconds=_identity_keepwarm_seconds(),
+        ) if identity_origin else None
     )
     identity_authority = (
         CloudflareControlPlaneIdentityAuthority(identity_binding)
@@ -768,6 +771,22 @@ def _nonnegative_env(name: str, default: int) -> int:
     if not value.isascii() or not value.isdecimal():
         raise ConfigError(name + ' must be a non-negative integer')
     return int(value)
+
+
+def _identity_keepwarm_seconds() -> float:
+    # PADIEM_CHAT_IDENTITY_KEEPWARM_SECONDS — the identity warm cycle period
+    # (#6956): unset or unreadable keeps the 45 s default, 0 switches the
+    # cycle off. A typo must not silently drop the host back to a cold
+    # identity handshake on every turn, and must not fail the boot: the cycle
+    # only ever carries a read-only RPC whose answer is discarded.
+    raw = os.getenv('PADIEM_CHAT_IDENTITY_KEEPWARM_SECONDS', '').strip()
+    if not raw:
+        return 45.0
+    try:
+        parsed = float(raw)
+    except ValueError:
+        return 45.0
+    return parsed if parsed >= 0 else 45.0
 
 
 def _optional_pair(origin_env: str, secret_env: str) -> tuple[str | None, str | None]:
