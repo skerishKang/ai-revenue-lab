@@ -10,19 +10,10 @@
 <link rel="stylesheet" href="./styles/storymemory-product-v30-v319.css">
 <link rel="stylesheet" href="./styles/storymemory-b61-overrides-v1.css">
   <link rel="stylesheet" href="storymemory-source-ui.css">
-  <link rel="stylesheet" href="storymemory-pack-marketplace-ui.css">
-  <link rel="stylesheet" href="storymemory-auto-pack-ui.css">
-<link rel="stylesheet" href="storymemory-pack-lifecycle-ui.css">
-<link rel="stylesheet" href="storymemory-pack-entitlement-ui.css">
-  <link rel="stylesheet" href="storymemory-pack-verification-ui.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="./styles/storymemory-b61-typography-authority-v1.css">
-<style id="bookai-remote-pack-surfaces-disabled">
-#packMarketplaceLaunch,#autoPackLaunch,#packEntitlementLaunch,#packVerificationLaunch,
-#packMarketplacePanel,#autoPackPanel,#packEntitlementPanel,#packVerificationPanel,#packLifecycleSheet{display:none!important}
-</style>
 </head>
 <body><a class="skip-reader-link" href="#paper">본문으로 바로가기</a>
 <div class="transition-curtain" id="curtain"></div>
@@ -7656,17 +7647,7 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
 <script type="application/x-bookai" data-bookai-script src="storymemory-legacy-hybrid-ai-v1.js"></script>
 
   <script type="application/x-bookai" data-bookai-script src="storymemory-universal-source-runtime.js"></script>
-  <script type="application/x-bookai" data-bookai-script src="storymemory-pack-marketplace-runtime.js"></script>
   <script type="application/x-bookai" data-bookai-script src="storymemory-source-ui.js"></script>
-  <script type="application/x-bookai" data-bookai-script src="storymemory-pack-marketplace-ui.js"></script>
-  <script type="application/x-bookai" data-bookai-script src="storymemory-auto-pack-runtime.js"></script>
-  <script type="application/x-bookai" data-bookai-script src="storymemory-auto-pack-ui.js"></script>
-<script type="application/x-bookai" data-bookai-script src="storymemory-pack-lifecycle-runtime.js"></script>
-<script type="application/x-bookai" data-bookai-script src="storymemory-pack-lifecycle-ui.js"></script>
-<script type="application/x-bookai" data-bookai-script src="storymemory-pack-entitlement-runtime.js"></script>
-<script type="application/x-bookai" data-bookai-script src="storymemory-pack-entitlement-ui.js"></script>
-<script type="application/x-bookai" data-bookai-script src="storymemory-pack-verification-runtime.js"></script>
-<script type="application/x-bookai" data-bookai-script src="storymemory-pack-verification-ui.js"></script>
 <link id="sm-reader-simplification-v2" rel="stylesheet" href="./styles/storymemory-reader-simplification-v2.css">
 <link id="sm-b61-1613-reachability" rel="stylesheet" href="./styles/storymemory-b61-1613-reachability-v1.css">
 <script type="application/x-bookai" data-bookai-script id="sm-reader-simplification-v2">
@@ -7983,11 +7964,6 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
   .ai-panel{overflow:hidden!important}
   .ai-panel #chatThread{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain}
   .ai-panel .ask{flex:0 0 auto!important;margin-top:8px!important;padding-top:8px!important;border-top:1px solid var(--line)!important}
-  /* Scope B: Pack/precision/entitlement/verification launchers + panels never
-     occupy the mobile primary chat surface. Capability (JS modules, desktop,
-     programmatic open APIs) untouched. */
-  .ai-panel #packMarketplaceLaunch,.ai-panel #autoPackLaunch,.ai-panel #packEntitlementLaunch,.ai-panel #packVerificationLaunch,
-  .ai-panel #packMarketplacePanel,.ai-panel #autoPackPanel,.ai-panel #packEntitlementPanel,.ai-panel #packVerificationPanel{display:none!important}
   /* Scope D: empty-state breathing room is kept compact; dismissal logic untouched. */
   .ai-panel .companion-empty-state{min-height:0!important;padding-top:6px!important}
   /* Scope E: status is plain passive text; only real buttons look like buttons. */
@@ -8423,7 +8399,6 @@ window.__smV1823EvidenceUXV1={
 })();
 </script>
 
-<script type="application/x-bookai" data-bookai-script src="./mobile-source-settings.js"></script>
 <link rel="stylesheet" href="./styles/storymemory-review-261031.css">
 <script type="application/x-bookai" data-bookai-script src="./storymemory-backup-v1.js"></script>
 <script type="application/x-bookai" data-bookai-script>

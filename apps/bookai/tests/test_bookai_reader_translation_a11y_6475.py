@@ -112,7 +112,6 @@ def test_translation_settings_persist_lang_labels_focus_contrast_and_zoom(base_u
 window.__bookaiErrors=[];
 window.addEventListener('error', e => {
   var where = e.filename || '';
-  if (where.indexOf('/storymemory-pack-') !== -1) return;
   window.__bookaiErrors.push(e.message + ' @ ' + where + ':' + e.lineno + ':' + e.colno);
 });
 """)
