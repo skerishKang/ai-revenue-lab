@@ -108,7 +108,7 @@ CTO 결정(2026-10-28): **확인된 문구가 없으면 블록을 생략**합니
 | 폰트(미리보기) | 실렌더 `document.fonts` | `@font-face` 93개 선언, 페이지당 9~12개 loaded, 제목 MaruBuri / 본문 Pretendard Variable |
 | 외부 폰트 호스트 | 요청 URL 필터 | **0건** |
 
-미리보기 URL: `https://feat-5972-councillor-v2.councillor-prototype-v2.pages.dev`
+미리보기 URL: `(옛 미리보기 배포 주소 — 2026-11-05 삭제)`
 (이 커밋으로 재배포, 별칭이 이 배포를 가리킴)
 
 ## 7. 보고 형식
@@ -126,7 +126,7 @@ FONT_VERIFIED=MaruBuri/Pretendard Variable, 외부 폰트 호스트 0건
 PANORAMA_RESOLUTION=3840x960 (원본 6016x4000 크롭, CC0)
 PORTRAIT_RESOLUTION=500x641 (공식 최대, 1.36배 확대 — 2.2배에서 개선)
 PHOTO_LICENSES=파노라마 CC0(Wikimedia Commons) / 의원·의정활동 사진 = 의회·통합특별시의회 공개 자료(현행 사용처와 동일)
-PREVIEW=feat-5972-councillor-v2.councillor-prototype-v2.pages.dev — HEAD와 9/9 바이트 일치, 5페이지 200
+PREVIEW=(옛 미리보기 배포 주소 — 2026-11-05 삭제) — HEAD와 9/9 바이트 일치, 5페이지 200
 CI=이 브랜치에 적용되는 앱 전용 워크플로 없음(해당 없음). PR #5979 = OPEN / MERGEABLE / CLEAN
 PRODUCTION=UNCHANGED
 REMAINING=히어로 파노라마·고해상도 인물·확인된 인용문, 3열 밴드 밀도
