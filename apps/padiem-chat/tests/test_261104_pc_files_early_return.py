@@ -17,6 +17,7 @@ from types import SimpleNamespace
 import pytest
 from padiem_ai_engine_client import EngineTransportResponse, PadiemAiEngineClient
 
+from app import mcp_gateway_dispatch as dispatch
 from app import mcp_gateway_execution as execution
 from app import mcp_gateway_transport as transport
 from app import oracle_mesh_read_return_routes as routes
@@ -65,8 +66,11 @@ def test_job_id_is_a_closed_argument_of_the_read_only_file_tools():
 
 
 class _Transport:
-    def __init__(self):
+    def __init__(self, answer=None):
         self.calls = []
+        self.answer = answer if answer is not None else {
+            "status": "completed", "answer": "PC 폴더 목록을 읽었습니다.",
+            "output": "{}"}
 
     async def request(self, **kwargs):
         self.calls.append(kwargs)
@@ -74,9 +78,7 @@ class _Transport:
             "orchestration": {"events": [{"event_id": "event_fixture", "run_id": RUN,
                 "trace_id": "trace_fixture", "app_id": "padiem-chat",
                 "kind": "run_completed", "sequence": 1}],
-                "execution": {"answer": json.dumps({
-                    "status": "completed", "answer": "PC 폴더 목록을 읽었습니다.",
-                    "output": "{}"})}}}).encode())
+                "execution": {"answer": json.dumps(self.answer)}}}).encode())
 
 
 class _History:
@@ -104,7 +106,7 @@ class _McpStore:
         return self.owned
 
 
-def _harness(monkeypatch, *, row, run=None, owned=True):
+def _harness(monkeypatch, *, row, run=None, owned=True, answer=None):
     async def owner(request, uid):
         return SimpleNamespace(session_id="session_fixture"), "sub_" + "a" * 32, "workspace_fixture"
 
@@ -129,7 +131,7 @@ def _harness(monkeypatch, *, row, run=None, owned=True):
     monkeypatch.setattr(execution, "_append_lane_notice", notice)
     # The real plan and target hint are used: a continuation must reach the
     # Engine through the same canonical plan the first call used.
-    engine, history = _Transport(), _History(row=row, run=run)
+    engine, history = _Transport(answer), _History(row=row, run=run)
     bridge = B62EngineOrchestrationBridge(
         client=PadiemAiEngineClient(transport=engine, app_id="padiem-chat",
                                     caller_id="padiem-chat", credential="fixture" * 8),
@@ -183,3 +185,81 @@ def test_foreign_job_is_refused_before_the_engine_is_asked(monkeypatch, row, own
     assert result["code"] == "pc_job_not_owned"
     assert not engine.calls
     assert not history.runs
+
+
+def _running_answer(**fields):
+    answer = {"status": "running", "answer": "PC에서 파일을 확인하는 중입니다.",
+              "job_id": JOB}
+    answer.update(fields)
+    return answer
+
+
+def _no_folders(monkeypatch):
+    async def folders(*args, **kwargs):
+        return []
+
+    monkeypatch.setattr(execution, "_registered_pc_folders", folders)
+
+
+def test_a_running_file_read_hands_back_the_receipt_its_continuation_needs(monkeypatch):
+    request, engine, history, principal = _harness(
+        monkeypatch, row=None, answer=_running_answer())
+    _no_folders(monkeypatch)
+
+    result = asyncio.run(execution.execute_mcp_pc_tool(request, principal, "pc_read",
+                                                       {"path": "Documents/a.txt"}))
+
+    assert result["status"] == "running" and result["job_id"] == JOB
+    # Without this receipt the audit row cannot authorize the by-id call, so
+    # the 261104 early return could never be continued (always pc_job_not_owned).
+    assert result["_job_receipt"] == JOB
+    assert len(engine.calls) == 1
+
+
+def test_a_completed_file_answer_carries_no_receipt(monkeypatch):
+    request, engine, history, principal = _harness(monkeypatch, row=None)
+    _no_folders(monkeypatch)
+
+    result = asyncio.run(execution.execute_mcp_pc_tool(request, principal, "pc_read",
+                                                       {"path": "Documents/a.txt"}))
+
+    assert result["status"] == "completed"
+    assert "_job_receipt" not in result
+
+
+def test_a_browser_answer_never_carries_a_receipt(monkeypatch):
+    request, engine, history, principal = _harness(
+        monkeypatch, row=None,
+        answer={"status": "running", "answer": "페이지를 여는 중입니다.", "job_id": JOB})
+
+    result = asyncio.run(execution.execute_mcp_pc_tool(
+        request, principal, "pc_browser_open", {"url": "https://example.test/"}))
+
+    assert result["status"] == "running"
+    # A receipt on a browser row makes the audit store refuse the row, which
+    # cancels the run: the receipt stays a read-only file-tool fact.
+    assert "_job_receipt" not in result
+
+
+class _AuditStore:
+    def __init__(self):
+        self.calls = []
+
+    async def audit(self, **kwargs):
+        self.calls.append(kwargs)
+        return "mcpe_fixture"
+
+
+def test_the_dispatch_records_the_receipt_without_returning_it():
+    store = _AuditStore()
+    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace()))
+    audit = {"identity": {"user_id": UID, "device_id": DEVICE, "token_id": TOKEN},
+             "tool_name": "pc_read", "arguments": {"path": "Documents/a.txt"}}
+    outcome = {"status": "running", "answer": "PC에서 확인하는 중입니다.", "job_id": JOB,
+               "_job_receipt": JOB, "run_id": RUN}
+
+    asyncio.run(dispatch._record_outcome(request, store, audit, outcome))
+
+    assert store.calls[0]["job_receipt_id"] == JOB
+    assert "_job_receipt" not in outcome
+    assert outcome["status"] == "running" and outcome["job_id"] == JOB
