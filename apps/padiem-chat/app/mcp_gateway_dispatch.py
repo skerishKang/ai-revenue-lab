@@ -34,6 +34,12 @@ def refusal_code(exc) -> str | None:
     return None
 
 
+def _exception_name(exc) -> str:
+    """One closed token naming the exception class, never its message."""
+    name = exc.__class__.__name__
+    return name if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]{0,63}", name) else "Exception"
+
+
 def _log_operation(audit, status, *, outcome=None):
     """Use the existing request event stream with a closed metadata projection."""
     event = {"event": "mcp_operation", "status": status,
@@ -168,7 +174,13 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
                    "answer": exc.user_message,
                    "code": reason or exc.code,
                    "deny_reason": reason or exc.code}
-    except Exception:
+    except Exception as exc:
+        # 값·경로 원문은 남기지 않고, 어느 단계에서 어떤 종류의 예외로 끝났는지만
+        # 한 줄 남긴다. 지금까지는 pc_dispatch_failed 하나로만 끝나 원인을 알 수 없었다.
+        _LOGGER.warning(json.dumps(
+            {"event": "mcp_operation", "status": "pc_dispatch_failed",
+             "stage": "mcp_gateway_dispatch", "exception": _exception_name(exc)},
+            separators=(",", ":")))
         outcome = {"status": "unavailable", "code": "pc_dispatch_failed",
                    "answer": "PC 작업의 실제 결과를 확인하지 못했습니다. PADIEM에서 작업 상태를 확인해 주세요."}
     if outcome["status"] == "confirmation_required":

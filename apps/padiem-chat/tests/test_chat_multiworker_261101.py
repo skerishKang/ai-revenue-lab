@@ -301,6 +301,28 @@ def test_workers_share_sqlite_and_serve_requests_while_sse_waits(tmp_path, worke
     stream_thread = None
     try:
         _wait_until(available)
+        # uvicorn spawns the worker processes asynchronously: the shared
+        # master socket answers as soon as the FIRST worker accepts, so the
+        # 60-request measurement below can finish while a slower worker has
+        # not joined the accept loop yet — which is runner startup, not the
+        # shared-storage claim this test makes. GET /count reads without
+        # incrementing, so waiting for every worker's pid here keeps the
+        # measured POSTs at exactly 1..60 and the pid assertion unchanged.
+        observed_pids: set[int] = set()
+        worker_deadline = time.monotonic() + 10.0
+        while len(observed_pids) < workers and time.monotonic() < worker_deadline:
+            try:
+                probe = httpx.get(base + "/count", timeout=1, trust_env=False)
+                if probe.status_code == 200:
+                    observed_pids.add(int(probe.json()["pid"]))
+            except httpx.HTTPError:
+                pass
+            if len(observed_pids) < workers:
+                time.sleep(0.05)
+        assert len(observed_pids) == workers, (
+            f"only {len(observed_pids)} of {workers} workers joined the accept "
+            f"loop within 10s: {sorted(observed_pids)}"
+        )
         stream_thread = threading.Thread(target=read_stream)
         stream_thread.start()
         assert started.wait(5)

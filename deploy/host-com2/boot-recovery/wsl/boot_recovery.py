@@ -35,34 +35,39 @@ CONFIG_PATH = Path(os.environ.get("BOOT_RECOVERY_CONFIG", "/opt/padiem/boot-reco
 DEFAULT_WAIT_SECONDS = 240
 DEFAULT_INTERVAL_SECONDS = 5
 
-#: Names come from the installed kit units; MeshCentral/cloudflared are external
-#: and may be renamed on the host — units.json overrides them at install time.
+#: Mirrors the reviewed COM2 units.json (2026-11-05). padiem-connector-watch
+#: .service is Type=oneshot fired by its timer, so it is inactive between runs:
+#: the required entry is the timer and the service is reported only. Staged or
+#: undeployed lanes (broker, P01, B14, chat timers) are reported, not fatal.
+#: units.json overrides this list at install time.
 DEFAULT_UNITS: list[dict[str, Any]] = [
     {"unit": "padiem-mesh-queue.service", "kind": "service", "required": True},
     {"unit": "padiem-file-lane.service", "kind": "service", "required": True},
     {"unit": "padiem-oracle-mesh-executor.service", "kind": "service", "required": True},
-    {"unit": "padiem-connector-watch.service", "kind": "service", "required": True},
+    {"unit": "padiem-connector-watch.service", "kind": "service", "required": False},
     {"unit": "padiem-chat-com2.service", "kind": "service", "required": True},
-    {"unit": "padiem-broker.service", "kind": "service", "required": True},
-    {"unit": "cloudflared.service", "kind": "service", "required": True},
-    {"unit": "meshcentral.service", "kind": "service", "required": True},
+    {"unit": "padiem-broker.service", "kind": "service", "required": False},
+    {"unit": "cloudflared-padiem.service", "kind": "service", "required": True},
+    {"unit": "cloudflared-chat-com2.service", "kind": "service", "required": True},
+    {"unit": "padiem-meshcentral.service", "kind": "service", "required": True},
+    {"unit": "padiem-p01.service", "kind": "service", "required": False},
+    {"unit": "padiem-b14.service", "kind": "service", "required": False},
     {"unit": "padiem-mesh-queue-backup.timer", "kind": "timer", "required": True},
     {"unit": "padiem-mesh-queue-health.timer", "kind": "timer", "required": True},
     {"unit": "padiem-connector-watch.timer", "kind": "timer", "required": True},
-    {"unit": "padiem-chat-com2-backup.timer", "kind": "timer", "required": True},
-    {"unit": "padiem-chat-com2-health.timer", "kind": "timer", "required": True},
-    {"unit": "padiem-broker-backup.timer", "kind": "timer", "required": True},
-    {"unit": "padiem-broker-health.timer", "kind": "timer", "required": True},
+    {"unit": "padiem-chat-com2-backup.timer", "kind": "timer", "required": False},
+    {"unit": "padiem-chat-com2-health.timer", "kind": "timer", "required": False},
+    {"unit": "padiem-broker-backup.timer", "kind": "timer", "required": False},
+    {"unit": "padiem-broker-health.timer", "kind": "timer", "required": False},
     {"unit": "padiem-offsite-backup.timer", "kind": "timer", "required": True},
 ]
 DEFAULT_HEALTH: list[dict[str, Any]] = [
     {"name": "queue", "url": "http://127.0.0.1:8797/health", "expect": "any_ok"},
     {"name": "file-lane", "url": "http://127.0.0.1:8788/health", "expect": "any_ok"},
     {"name": "chat", "url": "http://127.0.0.1:8798/health", "expect": "status_ok"},
-    {"name": "broker", "url": "http://127.0.0.1:8799/health", "expect": "status_ok"},
 ]
 DEFAULT_TUNNEL: list[dict[str, Any]] = [
-    {"name": "chat-public", "url": "https://chat.padiem.net/health", "expect": "status_ok"},
+    {"name": "chat-com2-public", "url": "https://chat-com2.padiem.net/health", "expect": "status_ok"},
 ]
 
 __all__ = [

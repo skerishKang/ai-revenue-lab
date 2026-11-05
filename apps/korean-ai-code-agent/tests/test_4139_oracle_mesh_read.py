@@ -9,7 +9,10 @@ import hashlib
 import unittest
 
 from kagent.contracts import ContractError
-from kagent.local_agent_meshcentral_private_reader import MeshCentralReadRefused
+from kagent.local_agent_meshcentral_private_reader import (
+    MeshCentralFileReadRequest,
+    MeshCentralReadRefused,
+)
 from kagent.local_agent_oracle_mesh_read import (
     MAX_ORACLE_MESH_READ_BYTES,
     OracleMeshReadCommand,
@@ -168,6 +171,67 @@ class ResultPackageTests(unittest.TestCase):
         tampered["content_utf8"] = "tampered\n"
         with self.assertRaises(ContractError):
             verify_oracle_mesh_result_package(package=tampered, command=_command())
+
+
+class NodeRefAlphabetTests(unittest.TestCase):
+    """#261105: the product read path refused node ids the trial path accepted.
+
+    A MeshCentral node id carries ``$``. Both lanes now ask the one alphabet in
+    ``kagent.node_ref``, so a value one lane admits is never one the other
+    refuses.
+    """
+
+    DOLLAR_NODE = "7P4oTs4hg$bNJQXe2OBFdAL3yxcWzF829xUYLa9h6Io5AZqaX6$v5ziNLxqfb$pB"
+
+    def _private_accepts(self, value: object) -> bool:
+        try:
+            MeshCentralFileReadRequest(node_ref=value, file_path="notes.txt")
+        except MeshCentralReadRefused:
+            return False
+        return True
+
+    def _oracle_accepts(self, value: object) -> bool:
+        try:
+            _target(node_ref=value)
+        except ContractError:
+            return False
+        return True
+
+    def test_a_dollar_node_id_runs_in_both_lanes(self) -> None:
+        self.assertTrue(self._private_accepts(self.DOLLAR_NODE))
+        self.assertTrue(self._oracle_accepts(self.DOLLAR_NODE))
+        # The first character may carry it too: a node id is opaque.
+        self.assertTrue(self._private_accepts("$D62t1"))
+        self.assertTrue(self._oracle_accepts("$D62t1"))
+
+    def test_the_four_refusals_survive_in_both_lanes(self) -> None:
+        for bad in ("bad node", "node\u0001ref", "", "x" * 257):
+            self.assertFalse(self._private_accepts(bad), repr(bad))
+            self.assertFalse(self._oracle_accepts(bad), repr(bad))
+
+    def test_the_two_lanes_reach_the_same_verdict(self) -> None:
+        for value in (
+            self.DOLLAR_NODE,
+            NODE,
+            "$",
+            "a$b",
+            "$D62t1",
+            "node.with_every.allowed:@+-$",
+            "x" * 256,
+            "x" * 257,
+            "bad node",
+            "node\u0001ref",
+            "",
+            "node/ref",
+            "\u0000node",
+            "node\u007f",
+            7,
+            None,
+        ):
+            self.assertEqual(
+                self._private_accepts(value), self._oracle_accepts(value), repr(value)
+            )
+
 
 
 if __name__ == "__main__":

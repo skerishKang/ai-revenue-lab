@@ -65,6 +65,20 @@ def _ps_literal(value: str) -> str:
     return "'" + value.replace("'", "''") + "'"
 
 
+def _windows_root(value: str) -> str:
+    """One Windows root ending in a single separator.
+
+    ``"C:"`` is not the C: drive root on Windows - it is that drive's current
+    folder - so the guard walks from ``"C:\\"`` instead. Both separators and a
+    doubled trailing separator are folded into one, so a segment is never joined
+    onto a drive-relative path.
+    """
+    text = value.strip().replace("/", "\\")
+    if len(text) == 2 and text[1] == ":" and text[0].isalpha():
+        return text + "\\"
+    return text if text.endswith("\\") else text + "\\"
+
+
 def pc_read_chunk_command(
     *, root: str, relative: str, offset: int, length: int,
 ) -> str:
@@ -106,7 +120,7 @@ def pc_read_chunk_command(
         # down to the file - and the file itself - is checked for the
         # ReparsePoint attribute before one byte is read, and the refusal
         # closes the read ({"ok":false,"error":"link_refused"}).
-        "$guardRoot=" + _ps_literal(root.rstrip("/") + "\\"),
+        "$guardRoot=" + _ps_literal(_windows_root(root)),
         "$guardHit=$null",
         "try{",
         "  $walk=$guardRoot",

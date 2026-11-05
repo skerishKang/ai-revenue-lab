@@ -155,6 +155,7 @@ def test_migration_directory_holds_exactly_the_ledger_migrations() -> None:
         "0003_pc_work_metrics.sql",
         "0004_b14_attempt_timeout_reason.sql",
         "0005_b14_attempt_reasoning_effort.sql",
+        "0006_b14_attempt_thought_summary.sql",
     ], (
         f"a new migration changes what `migrations apply` mutates; update the "
         f"gate and this pin together: {files}"

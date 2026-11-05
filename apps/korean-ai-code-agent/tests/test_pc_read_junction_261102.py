@@ -222,3 +222,34 @@ class PcReparseCheckUnitTests(unittest.TestCase):
             PC_FILE_LINK_REFUSED_MARKER,
         )
         assert outcome.body == PC_FILE_LINK_REFUSED_MARKER.encode("utf-8")
+
+
+class ForeignPathAndRootShapeTests(unittest.TestCase):
+    """11-05 09:22:09: 컴2가 다른 PC의 Windows 경로를 자기 파일 시스템으로 판정했다."""
+
+    def test_a_drive_only_root_means_the_drive_root(self):
+        # "C:"는 C 드라이브 루트가 아니라 그 드라이브의 현재 폴더다. Windows에서는
+        # 드라이브 루트로 접고, POSIX에서는 이 호스트 경로가 아니므로 판정하지 않는다.
+        assert walk_hits_reparse_point("C:", "C:/Windows/win.ini") is False
+
+    def test_a_root_with_a_trailing_separator_is_the_same_root(self):
+        with tempfile.TemporaryDirectory() as previous:
+            root = Path(previous) / "granted"
+            root.mkdir()
+            (root / "a.txt").write_text("ok", encoding="utf-8")
+            for suffix in (os.sep, os.sep * 2, "/"):
+                assert walk_hits_reparse_point(str(root) + suffix,
+                                               str(root / "a.txt")) is False
+
+    @unittest.skipIf(sys.platform == "win32", "다른 호스트의 경로")
+    def test_a_windows_path_is_not_judged_on_a_posix_host(self):
+        assert walk_hits_reparse_point("C:\\", "C:\\/Windows/win.ini") is False
+        assert walk_hits_reparse_point("C:", "C:/Windows/win.ini") is False
+
+    def test_a_local_path_outside_the_root_is_still_a_hit(self):
+        with tempfile.TemporaryDirectory() as previous:
+            root = Path(previous) / "granted"
+            root.mkdir()
+            outside = Path(previous) / "outside"
+            outside.mkdir()
+            assert walk_hits_reparse_point(str(root), str(outside / "x.txt")) is True

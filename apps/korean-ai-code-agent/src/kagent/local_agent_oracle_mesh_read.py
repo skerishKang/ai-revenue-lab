@@ -38,6 +38,7 @@ from .local_agent_meshcentral_private_reader import (
     MeshCentralFileReadPort,
     MeshCentralReadRefused,
 )
+from .node_ref import NODE_REF_RE
 
 #: Contract markers. This module executes on the Oracle management host only,
 #: through the injected official-client port. It never touches a device
@@ -59,7 +60,6 @@ MAX_ORACLE_MESH_READ_BYTES = 768
 #: Wire identity of the result package consumed by the Chat return route.
 ORACLE_MESH_RESULT_WIRE_VERSION = "claw-oracle-mesh-result.v1"
 
-_SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _DIGEST_RE = re.compile(r"^[0-9a-f]{64}$")
 _TEXT_SUFFIX = ".txt"
 
@@ -67,7 +67,7 @@ _CONTRACT_VERSION = "claw-oracle-mesh-read.v1"
 
 
 def _safe_ref(value: Any, field_name: str) -> str:
-    if not isinstance(value, str) or _SAFE_REF_RE.fullmatch(value) is None:
+    if not isinstance(value, str) or NODE_REF_RE.fullmatch(value) is None:
         raise ContractError(f"{field_name} must be a bounded safe reference")
     return value
 

@@ -67,19 +67,30 @@ class Verdicts(unittest.TestCase):
         self.assertEqual(report["status"], "PASS")
         self.assertEqual(len(report["skipped"]), 3)
 
-    def test_every_default_expected_unit_is_required(self):
+    def test_default_units_split_required_from_reported_only(self):
         self.assertTrue(boot.DEFAULT_UNITS)
         for entry in boot.DEFAULT_UNITS:
-            self.assertTrue(entry["required"], entry["unit"])
             self.assertIn(entry["kind"], {"service", "timer"})
-        names = {entry["unit"] for entry in boot.DEFAULT_UNITS}
+        names = {entry["unit"]: entry for entry in boot.DEFAULT_UNITS}
+        # The always-on core: required on every boot.
         for expected in (
             "padiem-mesh-queue.service", "padiem-file-lane.service",
-            "padiem-oracle-mesh-executor.service", "cloudflared.service",
-            "meshcentral.service", "padiem-chat-com2.service",
-            "padiem-broker.service", "padiem-offsite-backup.timer",
+            "padiem-oracle-mesh-executor.service", "cloudflared-padiem.service",
+            "cloudflared-chat-com2.service", "padiem-meshcentral.service",
+            "padiem-chat-com2.service", "padiem-offsite-backup.timer",
         ):
             self.assertIn(expected, names)
+            self.assertTrue(names[expected]["required"], expected)
+        # Reported-only lanes (#6895 patrol): connector-watch.service is a
+        # Type=oneshot unit fired by its timer, so it is inactive between runs
+        # and must never fail a boot check; broker/P01/B14 are staged lanes.
+        for reported in (
+            "padiem-connector-watch.service", "padiem-broker.service",
+            "padiem-p01.service", "padiem-b14.service",
+        ):
+            self.assertIn(reported, names)
+            self.assertFalse(names[reported]["required"], reported)
+        self.assertTrue(names["padiem-connector-watch.timer"]["required"])
 
 
 class ConfigAndNotify(unittest.TestCase):

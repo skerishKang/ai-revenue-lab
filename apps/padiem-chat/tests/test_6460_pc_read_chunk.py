@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import shutil
 import subprocess
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -191,3 +192,37 @@ def test_a_hundred_megabyte_file_reads_head_middle_and_tail(tmp_path):
     ), tmp_path)
     assert tail["ok"] is True and tail["eof"] is True
     assert tail["next_offset"] == size
+
+
+def test_a_drive_only_root_walks_from_the_drive_root():
+    # "C:"는 C 드라이브 루트가 아니라 그 드라이브의 현재 폴더다. 가드가 그 뜻으로
+    # 조각을 이어 붙이면 엉뚱한 경로를 훑는다(11-05 09:22 SYSTEM은 System32였다).
+    for root in ("C:", "C:/", "C:\\"):
+        script = pc_read_chunk_command(root=root, relative="Windows/win.ini",
+                                       offset=0, length=64)
+        assert r"$guardRoot='C:\'" in script, root
+
+
+@pytest.mark.skipif(POWERSHELL is None, reason="PowerShell 없음")
+def test_a_plain_file_reads_from_each_drive_root(tmp_path):
+    if Path("C:/Windows/win.ini").is_file():
+        for root in ("C:", "C:/", "C:\\"):
+            answer = _run(pc_read_chunk_command(
+                root=root, relative="Windows/win.ini", offset=0, length=64), tmp_path)
+            assert answer.get("ok") is True, (root, answer)
+
+    drive = Path("D:/")
+    if not drive.exists():
+        return
+    try:
+        folder = Path(tempfile.mkdtemp(dir=str(drive)))
+    except OSError:
+        return
+    try:
+        (folder / "plain.txt").write_text("D 드라이브 평범한 파일", encoding="utf-8")
+        answer = _run(pc_read_chunk_command(
+            root="D:", relative=folder.name + "/plain.txt", offset=0, length=64), tmp_path)
+        assert answer.get("ok") is True, answer
+        assert answer.get("text") == "D 드라이브 평범한 파일"
+    finally:
+        shutil.rmtree(folder, ignore_errors=True)

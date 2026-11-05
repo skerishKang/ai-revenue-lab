@@ -115,3 +115,23 @@ def test_an_unexpected_failure_is_named():
     outcome, _ = _dispatch(executor)
     assert outcome["status"] == "unavailable"
     assert outcome["code"] == "pc_dispatch_failed"
+
+
+def test_an_unexpected_failure_names_its_class_and_stage(caplog):
+    # 값·경로 원문은 남기지 않고 예외 종류와 단계만 한 줄 남긴다.
+    audit_logger = logging.getLogger("padiem_chat.request")
+    audit_logger.addHandler(caplog.handler)
+    caplog.set_level(logging.WARNING, logger="padiem_chat.request")
+
+    async def executor(request, principal, tool_name, arguments, *, approval=None):
+        raise RuntimeError("C:\\Users\\owner\\secret.txt")
+
+    outcome, _ = _dispatch(executor)
+    assert outcome["code"] == "pc_dispatch_failed"
+    events = [json.loads(record.message) for record in caplog.records
+              if record.message.startswith("{")]
+    failures = [event for event in events if event.get("status") == "pc_dispatch_failed"]
+    assert failures, events
+    assert failures[-1]["exception"] == "RuntimeError"
+    assert failures[-1]["stage"] == "mcp_gateway_dispatch"
+    assert "secret" not in json.dumps(events)
