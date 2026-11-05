@@ -222,6 +222,23 @@ class PcReparseCheckUnitTests(unittest.TestCase):
         )
         assert outcome.body == PC_FILE_LINK_REFUSED_MARKER.encode("utf-8")
 
+    def test_a_cmdlet_only_run_reports_no_exit_code_and_still_counts(self):
+        # 실제 PC 모양(11-05 16:20): 가드는 cmdlet만 쓰므로 $LASTEXITCODE가 비어
+        # 포트가 no_exit_code를 보고한다. 본문은 완전하므로 판정으로 쓴다.
+        executor = self._executor(marker_hit=False, termination="no_exit_code")
+        reached = {}
+
+        class _ReadPort:
+            def read_bytes(self, *, node_ref: str, file_path: str,
+                           timeout_seconds: int, max_bytes: int = 1) -> bytes:
+                reached["node_ref"] = node_ref
+                return b"inside content"
+
+        executor._read_port = _ReadPort()
+        outcome = executor._execute_read(self._dispatch())
+        assert outcome.body == b"inside content"
+        assert reached["node_ref"] == "node-pc"
+
     def test_a_run_the_pc_did_not_finish_refuses_closed(self):
         # hit=false 본문이 왔어도 PC가 명령을 끝내지 못했다면 판정이 아니다.
         executor = self._executor(marker_hit=False, termination="no_reply")

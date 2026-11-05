@@ -992,7 +992,12 @@ class OracleMeshExecutor:
             # guard failed closed for every read on every PC even when the PC
             # answered hit=false. Only a run the PC actually finished can
             # carry a verdict.
-            if getattr(outcome, "termination", None) != "exited":
+            # The guard is cmdlets and .NET calls only, so PowerShell leaves
+            # ``$LASTEXITCODE`` empty and the port reports ``no_exit_code``:
+            # the console answered completely, the code is simply unobserved
+            # (measured on the real PC, 11-05 16:20). Both shapes carry the
+            # whole transcript; anything else did not finish on the PC.
+            if getattr(outcome, "termination", None) not in ("exited", "no_exit_code"):
                 return True  # 검사 명령이 끝까지 돌지 못함 → fail closed
             raw = getattr(outcome, "output", b"")
             if not isinstance(raw, (bytes, bytearray)):
