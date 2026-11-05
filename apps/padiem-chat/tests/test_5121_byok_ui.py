@@ -122,9 +122,14 @@ def test_manual_model_requires_an_explicit_model_before_custom_selection() -> No
     assert "if (!model) {" in select_custom
     assert "setCustomMessage(customCopy().modelRequired, \"error\");" in select_custom
     assert "focusCustomModel();" in select_custom
-    assert "customSelection = { provider: provider.provider, model };" in select_custom
+    assert (
+        'reasoning_effort: customReasoningSelect && customReasoningSelect.value !== "default"'
+        in select_custom
+    )
+    assert "? customReasoningSelect.value : null," in select_custom
     # No automatic success for a typed-but-unverified model.
-    assert "customSelection = { provider: provider.provider, model };" in CAPABILITIES
+    assert "provider: provider.provider," in select_custom
+    assert "model," in select_custom
     assert (
         '"/api/chat/custom/credential/test?provider=" + encodeURIComponent(provider.provider)'
         in CAPABILITIES
@@ -199,8 +204,11 @@ def test_selected_custom_provider_model_goes_to_the_custom_field_without_tier() 
     assert "const customSelection = !clawGeneralRequest && window.PadiemCustomSelection?.get?.();" in APP
     assert "delete payload.tier;" in APP
     assert "payload.custom = { provider: customSelection.provider, model: customSelection.model };" in APP
+    assert "if (customSelection.reasoning_effort) {" in APP
+    assert "payload.custom.reasoning_effort = customSelection.reasoning_effort;" in APP
     assert "window.PadiemCustomSelection = Object.freeze({" in CAPABILITIES
-    assert 'Object.freeze({ provider: customSelection.provider, model: customSelection.model })' in CAPABILITIES
+    assert 'Object.freeze({ provider: customSelection.provider, model: customSelection.model,' in CAPABILITIES
+    assert 'reasoning_effort: customSelection.reasoning_effort || null })' in CAPABILITIES
     # Custom is Chat-only and text-only; both refusals preserve the typed prompt.
     assert 'setNote(uiT("custom-chat-only"), "error");' in APP
     assert 'setNote(uiT("custom-text-only"), "error");' in APP
