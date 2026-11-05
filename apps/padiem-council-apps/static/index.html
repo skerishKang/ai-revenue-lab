@@ -4,7 +4,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
-  <meta name="robots" content="noindex" />
+  <!-- 2026-11-05 (대표 결정): 검색 허용(Chat 홈과 같다) + 공유 미리보기. og:image·og:url만
+       절대 주소이며, 둘 다 미리보기용 메타일 뿐 화면이 그릴 때 받아오는 자산이 아니다. -->
+  <meta name="description" content="축사·인사말, SNS 홍보글, 회의정리·활동집 초안을 AI로 준비하는 의원실 업무 도구. 기존 PADIEM 계정으로 바로 씁니다." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="PADIEM" />
+  <meta property="og:title" content="PADIEM 의원3종 — 의원실 AI 업무 도구" />
+  <meta property="og:description" content="축사·인사말, SNS 홍보글, 회의정리·활동집 초안을 AI로 준비합니다." />
+  <meta property="og:url" content="https://chat.padiem.net/apps/council/" />
+  <meta property="og:image" content="https://chat.padiem.net/apps/council/static/assets/parliament-hero.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
   <title>PADIEM 의원3종</title>
   <link rel="icon" href="data:," />
   <!--
@@ -24,7 +33,7 @@
   -->
   <link rel="stylesheet" href="/padiem-themes.css" />
   <link rel="stylesheet" href="./static/council-app.css?v=92d26c46" />
-  <script type="application/json" id="padiem-asset-versions">{"assets/ATTRIBUTION.md":"ec91846d","assets/IMAGE-SLOTS.md":"62758390","assets/fonts/LICENSE-MaruBuri-NAVER.txt":"cacefe00","assets/fonts/LICENSE-PlayfairDisplay-OFL-1.1.txt":"aac9acd4","assets/fonts/LICENSE-Pretendard-OFL-1.1.txt":"14d6e897","assets/fonts/MaruBuri-Bold.woff2":"c8af5b6f","assets/fonts/MaruBuri-Regular.woff2":"e57ef6cc","assets/fonts/PlayfairDisplay-Bold-latin.woff2":"e90a9418","assets/fonts/Pretendard-Bold.woff2":"2d1cd41d","assets/fonts/Pretendard-Medium.woff2":"faae7e3f","assets/fonts/Pretendard-Regular.woff2":"5f473645","assets/fonts/Pretendard-SemiBold.woff2":"dae60b27","assets/meeting-card.jpg":"7a63c4af","assets/parliament-fr-hero.jpg":"6d938045","assets/parliament-hero.jpg":"9f5a06e5","assets/parliament-uk-hero.jpg":"c6f02283","assets/parliament-us-hero.jpg":"46393697","assets/sns-card.jpg":"b350d00a","assets/speech-card.jpg":"b3abc302","council-app.css":"92d26c46","council-app.js":"182f219c","document-export.js":"ddad0a22","pc-file-exchange.css":"180d53ab","pc-file-exchange.js":"24c726d0","photo-resize.js":"f9cf022a","project-file-upload.js":"e658f90e","tus-upload.js":"ae495d74"}</script>
+  <script type="application/json" id="padiem-asset-versions">{"assets/ATTRIBUTION.md":"ec91846d","assets/IMAGE-SLOTS.md":"62758390","assets/fonts/LICENSE-MaruBuri-NAVER.txt":"cacefe00","assets/fonts/LICENSE-PlayfairDisplay-OFL-1.1.txt":"aac9acd4","assets/fonts/LICENSE-Pretendard-OFL-1.1.txt":"14d6e897","assets/fonts/MaruBuri-Bold.woff2":"c8af5b6f","assets/fonts/MaruBuri-Regular.woff2":"e57ef6cc","assets/fonts/PlayfairDisplay-Bold-latin.woff2":"e90a9418","assets/fonts/Pretendard-Bold.woff2":"2d1cd41d","assets/fonts/Pretendard-Medium.woff2":"faae7e3f","assets/fonts/Pretendard-Regular.woff2":"5f473645","assets/fonts/Pretendard-SemiBold.woff2":"dae60b27","assets/meeting-card.jpg":"7a63c4af","assets/parliament-fr-hero.jpg":"6d938045","assets/parliament-hero.jpg":"9f5a06e5","assets/parliament-uk-hero.jpg":"c6f02283","assets/parliament-us-hero.jpg":"46393697","assets/sns-card.jpg":"b350d00a","assets/speech-card.jpg":"b3abc302","council-app.css":"92d26c46","council-app.js":"d8725cc8","document-export.js":"ddad0a22","pc-file-exchange.css":"180d53ab","pc-file-exchange.js":"24c726d0","photo-resize.js":"f9cf022a","project-file-upload.js":"e658f90e","tus-upload.js":"ae495d74"}</script>
 </head>
 <body class="council-body">
   <a class="council-skip" href="#councilMain">본문 바로가기</a>
@@ -237,6 +246,6 @@
       </p>
     </footer>
   </main>
-  <script src="./static/council-app.js?v=182f219c" defer></script>
+  <script src="./static/council-app.js?v=d8725cc8" defer></script>
 </body>
 </html>

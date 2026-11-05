@@ -2549,6 +2549,29 @@ const SCENARIOS = {
     await sleep(40);
     const snsAccept = opened[opened.length - 1] ? opened[opened.length - 1].accept : null;
 
+    // 2026-11-05: 회의정리도 가져온다 — 참고 글이 아니라 회의 원문이라 '회의 내용'
+    // 칸에 들어가고(수정 가능), 그 칸이 그대로 프롬프트로 간다. 미리보기 없음.
+    await A.ctx.window.PadiemCouncilApps.select("meeting", false);
+    await sleep(40);
+    const meetingForm = find(A, "councilMeetingForm");
+    const meetingContent = meetingForm.querySelector("[name=content]");
+    meetingContent.value = "직접 적은 첫 줄";
+    pick = { fileId: "pc-doc-md", name: "예전 인사말.md" };
+    await meetingForm.querySelector(".council-pc-ref-pick").dispatch("click");
+    await sleep(40);
+    meetingForm.querySelector("[name=title]").value = "원문 가져온 회의";
+    const meetingCalls = chatPayloads.length;
+    await meetingForm.dispatch("submit");
+    await sleep(40);
+    const meetingImport = {
+      pickLabel: text(meetingForm.querySelector(".council-pc-ref-pick")),
+      content: meetingContent.value,
+      previews: meetingForm.querySelectorAll(".council-pc-ref-preview").length,
+      names: meetingForm.querySelectorAll(".council-pc-ref-name").map((n) => text(n)),
+      prompt: chatPayloads[meetingCalls] && chatPayloads[meetingCalls].messages
+        ? chatPayloads[meetingCalls].messages[0].content : "",
+    };
+
     // 두 참고 글이 모두 프롬프트로 간다.
     await A.ctx.window.PadiemCouncilApps.select("speech", false);
     await sleep(40);
@@ -2558,6 +2581,7 @@ const SCENARIOS = {
     await sleep(40);
     const prompt = chatPayloads[chatPayloads.length - 1];
     const out = {
+      meetingImport,
       doc, hwp, textMd, foreign, uploadFail, emptyDoc, snsAccept,
       speechPrompt: prompt && prompt.messages && prompt.messages[0] ? prompt.messages[0].content : "",
       endpoints: endpointSet(),

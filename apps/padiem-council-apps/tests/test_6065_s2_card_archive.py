@@ -109,8 +109,19 @@ def test_the_skip_link_reaches_the_touch_floor_when_focused():
     assert "display: inline-flex" in focus, focus
 
 
+def _without_share_preview_meta(html: str) -> str:
+    # 2026-11-05: og:url / og:image are share-preview metadata the page itself
+    # never fetches; they name the app's own production address, not a foreign asset.
+    return "\n".join(line for line in html.splitlines()
+                     if not re.search(r'<meta property="og:(url|image)"', line))
+
+
 def test_the_card_frame_brought_no_foreign_asset_and_no_design_storage_key():
-    for text, name in ((HTML, "index.html"), (JS, "council-app.js"), (CSS, "council-app.css")):
+    for text, name in ((_without_share_preview_meta(HTML), "index.html"), (JS, "council-app.js"), (CSS, "council-app.css")):
         assert "padiem-parliament-theme" not in text, name
         assert not re.search(r"https?://", text.replace(
             "http://www.w3.org/2000/svg", "")), f"{name}: a remote reference appeared"
+    # The two exempted lines point at this app's own address and nothing else.
+    for line in HTML.splitlines():
+        if re.search(r'<meta property="og:(url|image)"', line):
+            assert 'content="https://chat.padiem.net/apps/council/' in line, line

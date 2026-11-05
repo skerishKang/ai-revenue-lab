@@ -120,7 +120,13 @@ def test_the_entry_page_gates_the_tools_on_sign_in_and_declares_independence() -
     assert "축사·인사말" in html
     assert "SNS 홍보" in html
     assert "회의정리·활동집" in html
-    assert "noindex" in html
+    # 2026-11-05 (대표 결정): the entry is a public landing page like the Chat
+    # home — search engines may index it, and a shared link shows a preview.
+    assert "noindex" not in html
+    assert '<meta name="description"' in html
+    for tag in ("og:title", "og:description", "og:url", "og:image"):
+        assert f'property="{tag}"' in html, tag
+    assert 'content="https://chat.padiem.net/apps/council/"' in html
 
 
 def test_the_entry_css_exists_and_does_not_import_chat_assets() -> None:

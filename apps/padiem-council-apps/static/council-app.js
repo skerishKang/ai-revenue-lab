@@ -1033,9 +1033,15 @@
   // One section per tool: the pick button, the files the owner chose with their
   // preview, and — when no PC is linked — one calm sentence with the way to
   // connect, never an error.
-  function createPcReferenceSection() {
+  // options (2026-11-05, all optional): pickLabel/againLabel replace the
+  // reference wording, preview=false lists only name and size (the text has
+  // its own home), onAdded(entry) hands each imported text to the caller.
+  function createPcReferenceSection(options) {
+    const opts = options || {};
+    const pickLabel = opts.pickLabel || PC_REF_COPY.pick;
+    const againLabel = opts.againLabel || PC_REF_COPY.again;
     const box = el("div", "council-pc-ref");
-    const pick = el("button", "council-pc-ref-pick", PC_REF_COPY.pick);
+    const pick = el("button", "council-pc-ref-pick", pickLabel);
     pick.type = "button";
     const note = el("p", "council-pc-ref-note");
     note.hidden = true;
@@ -1072,11 +1078,12 @@
           render();
         });
         head.append(drop);
-        item.append(head, el("pre", "council-pc-ref-preview", file.text));
+        item.append(head);
+        if (opts.preview !== false) item.append(el("pre", "council-pc-ref-preview", file.text));
         list.append(item);
       });
       list.hidden = files.length === 0;
-      pick.textContent = files.length ? PC_REF_COPY.again : PC_REF_COPY.pick;
+      pick.textContent = files.length ? againLabel : pickLabel;
     }
 
     async function addPicked(picked) {
@@ -1096,6 +1103,7 @@
       if (!entry) { say(PC_REF_COPY.unreadable); return; }
       files.push(entry);
       render();
+      if (typeof opts.onAdded === "function") opts.onAdded(entry);
     }
 
     pick.addEventListener("click", async () => {
@@ -2336,9 +2344,30 @@
   }
 
   const meetingModule = (() => {
+    let pcSection = null;
+
     function buildForm(host) {
       const form = el("form", "council-form");
       form.id = "councilMeetingForm";
+      // 2026-11-05 (대표 결정): the meeting tool gets "내 PC에서 가져오기" too. A
+      // file brought here is the meeting text itself, not a style reference,
+      // so it goes into 회의 내용 where the writer can trim it before the
+      // summary. Same PC window, same reads (#5895/#6584) — no new path.
+      const refFieldset = el("fieldset", "council-fieldset");
+      refFieldset.appendChild(el("legend", null, "회의 원문 가져오기"));
+      pcSection = createPcReferenceSection({
+        pickLabel: "내 PC에서 회의 원문 가져오기",
+        againLabel: "내 PC에서 더 가져오기",
+        preview: false,
+        onAdded(entry) {
+          const content = form.querySelector("[name=content]");
+          if (!content) return;
+          const current = String(content.value || "").replace(/\s+$/, "");
+          content.value = (current ? current + "\n\n" : "") + "[" + entry.name + "]\n" + entry.text;
+        },
+      });
+      refFieldset.appendChild(pcSection.box);
+      form.appendChild(refFieldset);
       const fields = [
         ["title", "회의명", "text", true, "예: 10월 주민 민원 회의"],
         ["when", "회의 일시", "datetime-local", false, ""],
@@ -2838,6 +2867,8 @@
       build(host) { buildForm(host); },
       buildPrompt: buildMeetingPrompt,
       buildBookPrompt,
+      // The PC check runs when the tool is actually opened, never at page load.
+      onOpen() { if (pcSection) pcSection.check(); },
     };
   })();
 
