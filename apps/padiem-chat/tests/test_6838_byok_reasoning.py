@@ -4,6 +4,7 @@ from __future__ import annotations
 import pytest
 
 from app.byok_client import CustomProviderError, _request_body
+from app.request_contract import BrowserRequestError, parse_custom_selection
 from app.byok_credentials import CustomProvider
 
 
@@ -38,3 +39,29 @@ def test_a_wire_without_the_field_refuses_instead_of_dropping_it():
         )
     assert caught.value.code == "reasoning_effort_unsupported_wire"
     assert caught.value.status_code == 422
+
+
+# --- the request contract carries the customer's choice (#6828 후속) ---
+
+def test_the_selection_parser_accepts_the_customers_reasoning_choice():
+    selection = parse_custom_selection(
+        {"provider": "fixture", "model": "fixture-model", "reasoning_effort": "low"},
+    )
+    assert selection.reasoning_effort == "low"
+
+
+def test_the_selection_parser_defaults_to_no_reasoning():
+    assert parse_custom_selection(
+        {"provider": "fixture", "model": "fixture-model"},
+    ).reasoning_effort is None
+    assert parse_custom_selection(
+        {"provider": "fixture", "model": "fixture-model", "reasoning_effort": None},
+    ).reasoning_effort is None
+
+
+def test_the_selection_parser_refuses_unknown_reasoning_values():
+    with pytest.raises(BrowserRequestError) as caught:
+        parse_custom_selection(
+            {"provider": "fixture", "model": "fixture-model", "reasoning_effort": "maximum"},
+        )
+    assert "추론 강도" in str(caught.value)

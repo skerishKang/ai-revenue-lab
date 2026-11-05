@@ -3993,6 +3993,9 @@
       if (customSelection) {
         delete payload.tier;
         payload.custom = { provider: customSelection.provider, model: customSelection.model };
+        if (customSelection.reasoning_effort) {
+          payload.custom.reasoning_effort = customSelection.reasoning_effort;
+        }
       }
       // The long PC lane can outlive the browser's request. Generate the
       // canonical run handle before submit so a dropped response can be

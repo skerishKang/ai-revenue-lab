@@ -293,6 +293,7 @@ async def _complete_custom_chat(
                 session_id="byok_" + uuid.uuid4().hex,
                 user_credential_ref=credential_ref,
                 byok_selection={"provider": selection.provider, "model": selection.model},
+                reasoning_effort=selection.reasoning_effort,
                 additional_system_context=reference_context,
             )
             answer = result.answer
@@ -306,6 +307,7 @@ async def _complete_custom_chat(
         uid=uid,
         selection=selection,
         messages=messages,
+        reasoning_effort=selection.reasoning_effort,
         system_context=reference_context,
     )
 

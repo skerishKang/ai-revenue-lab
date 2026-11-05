@@ -371,6 +371,7 @@ _ENGINE_ERROR_CODE_RE = re.compile(r"^[a-z][a-z0-9_]{0,63}$")
 _ENGINE_ERROR_MESSAGES: dict[str, str] = {
     "upstream_auth_error": "AI 서비스 인증 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.",
     "upstream_request_error": "현재 AI 모델이 요청을 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+    "custom_provider_reasoning_rejected": "선택한 모델이 이 추론 강도를 받지 않았습니다. 추론 강도를 '기본'으로 바꾸거나 다른 모델을 선택해 주세요.",
     "upstream_server_error": "AI 모델 제공자 측에서 일시적 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
     "upstream_timeout": "AI 응답 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.",
     "timeout": "AI 응답 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.",

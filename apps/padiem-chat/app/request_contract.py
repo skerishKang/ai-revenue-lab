@@ -57,22 +57,44 @@ class BrowserToolRequest:
 
 @dataclass(frozen=True, slots=True)
 class CustomModelSelection:
-    """Explicit PADIEM Custom provider/model choice (never inferred)."""
+    """Explicit PADIEM Custom provider/model choice (never inferred).
+
+    ``reasoning_effort`` is the BYOK user's own reasoning choice (#6838):
+    ``None`` means 기본 (the field is omitted from the upstream wire);
+    otherwise one of :data:`CUSTOM_REASONING_EFFORTS` travels unchanged and is
+    never silently rewritten.
+    """
 
     provider: str
     model: str
+    reasoning_effort: str | None = None
+
+
+#: The wire values the OpenAI-compatible chat wire accepts for
+#: ``reasoning_effort``. The UI offers exactly these plus 기본.
+CUSTOM_REASONING_EFFORTS = ("minimal", "low", "medium", "high")
 
 
 def parse_custom_selection(value: Any) -> CustomModelSelection:
     """Validate one explicit PADIEM Custom selection shared by every product."""
-    if not isinstance(value, dict) or set(value) != {"provider", "model"}:
+    if not isinstance(value, dict) or not {"provider", "model"} <= set(value) \
+            or set(value) - {"provider", "model", "reasoning_effort"}:
         raise BrowserRequestError("PADIEM Custom 선택 형식이 올바르지 않습니다.")
     provider = value.get("provider")
     model = value.get("model")
     if (not isinstance(provider, str) or not provider.strip()
             or not isinstance(model, str) or not model.strip()):
         raise BrowserRequestError("PADIEM Custom 선택 형식이 올바르지 않습니다.")
-    return CustomModelSelection(provider=provider.strip(), model=model.strip())
+    reasoning = value.get("reasoning_effort")
+    if reasoning is None or reasoning == "":
+        reasoning = None
+    elif reasoning not in CUSTOM_REASONING_EFFORTS:
+        raise BrowserRequestError(
+            "추론 강도 값이 올바르지 않습니다. 기본·최소·낮음·중간·높음 중에서 선택해 주세요."
+        )
+    return CustomModelSelection(
+        provider=provider.strip(), model=model.strip(), reasoning_effort=reasoning,
+    )
 
 
 def _validate_custom_selection(raw: dict[str, Any]) -> CustomModelSelection | None:

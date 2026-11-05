@@ -119,7 +119,16 @@ def _response_too_large() -> CustomProviderError:
     )
 
 
-def _raise_for_status(status: int) -> None:
+def _rejects_reasoning(text: str) -> bool:
+    """#6838: the provider's own body names the reasoning field as the reason.
+
+    Same literal rule as B14's reasoning_policy: the marker is the field name
+    or its prose form inside the provider's error body.
+    """
+    return "reasoning_effort" in text or "reasoning effort" in text
+
+
+def _raise_for_status(status: int, error_text: str = "") -> None:
     if 300 <= status < 400:
         raise CustomProviderError(
             502,
@@ -138,6 +147,17 @@ def _raise_for_status(status: int) -> None:
             429,
             "custom_provider_rate_limited",
             "PADIEM Custom 공급사 사용 한도에 도달했습니다. 잠시 후 다시 시도해 주세요.",
+        )
+    # #6838: the model refused the user's reasoning choice. Never retry
+    # without it (that would answer with a different depth than the user
+    # asked for) — answer with the one actionable fix instead.
+    if status == 400 and error_text and _rejects_reasoning(error_text):
+        raise CustomProviderError(
+            400,
+            "custom_provider_reasoning_rejected",
+            "선택한 모델이 이 추론 강도를 받지 않았습니다. 추론 강도를 '기본'으로 바꾸거나 "
+            "추론 강도를 받는 모델을 선택해 주세요.",
+            upstream_status=status,
         )
     if 500 <= status < 600:
         raise CustomProviderError(
@@ -686,7 +706,13 @@ class CustomProviderClient:
                     json=body,
                     follow_redirects=False,
                 ) as response:
-                    _raise_for_status(int(response.status_code))
+                    error_text = ""
+                    if 400 <= int(response.status_code) < 500:
+                        # A 4xx body is the only place the provider names the
+                        # reason. Read it bounded so a reasoning rejection can
+                        # be told apart from every other refusal (#6838).
+                        error_text = (await _read_bounded(response)).decode("utf-8", "replace")[:4096]
+                    _raise_for_status(int(response.status_code), error_text)
                     return await consume(response)
         except CustomProviderError:
             raise

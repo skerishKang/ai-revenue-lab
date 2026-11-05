@@ -444,6 +444,22 @@ def test_other_http_failures_are_classified(status: int, code: str, retryable: b
     assert "PRIVATE RAW BODY" not in info.value.safe_message
 
 
+def test_a_b14_reasoning_rejection_keeps_its_code_and_never_retries() -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            400,
+            content=b'{"error": {"code": "custom_provider_reasoning_rejected"}}',
+        )
+
+    client = B14ExecutionClient(
+        B14ExecutionConfig(base_url="https://b14.example"),
+        httpx.MockTransport(handler),
+    )
+    with pytest.raises(B14ExecutionError) as info:
+        run(client.execute(request_fixture()))
+    assert info.value.code == "custom_provider_reasoning_rejected"
+    assert info.value.retryable is False
+
 @pytest.mark.parametrize("content", [b"not-json", b"\xff"])
 def test_malformed_json_or_utf8_fails_closed(content: bytes) -> None:
     async def handler(request: httpx.Request) -> httpx.Response:
