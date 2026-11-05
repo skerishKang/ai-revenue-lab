@@ -170,6 +170,35 @@ try {
   assert.match(foldInstruction,/처음 읽어요/);
   assert.match(foldInstruction,/paragraphs/);
   assert.match(foldInstruction,/사전 학습 지식/);
+  /* 261106 · 원시 JSON 노출 방지(설계 E 보강): 모델 답이 JSON 으로 와도 문단·인용으로
+     정규화된다. (a) 코드펜스 JSON 은 파싱에 성공하고, (b) 깨진 JSON 은 일반 문단 처리로
+     그대로 남겨 클라이언트 정규화·안내 문구로 이어진다. */
+  const fencedAnswer='```json\n'+JSON.stringify({paragraphs:[
+    {text:'네, 요셉은 형들을 다시 만납니다. 이집트에서 자신을 드러냅니다.',citations:['창세기 45:4']},
+    {text:'지금 읽은 창세기 37장에서는 요셉이 형들에게 팔립니다.',citations:['창세기 37:28']}
+  ]})+'\n```';
+  globalThis.fetch=async()=>Response.json({ok:true,answer:fencedAnswer,context_permission:cp});
+  const fencedResponse=await bookai.fetch(new Request('https://reader.invalid/api/storymemory-ai',{
+    method:'POST',headers:{'content-type':'application/json','origin':'https://reader.invalid'},
+    body:JSON.stringify({question:'요셉은 형들을 다시 만나나요?',packet:firstReadPacket})}),env);
+  const fencedData=await fencedResponse.json();
+  assert.equal(fencedResponse.status,200);
+  assert.equal(fencedData.ok,true);
+  assert.ok(!fencedData.answer.includes('```'),'코드펜스는 답변에 남지 않는다');
+  assert.ok(!fencedData.answer.includes('"paragraphs"'),'코드펜스 JSON 은 문단으로 정규화된다');
+  assert.ok(fencedData.answer.includes('팔립니다'),'펜스 JSON 도 읽은 범위 안 문단을 유지한다');
+  assert.equal(fencedData.spoiler_folds.length,1,'펜스 JSON 도 접힘 판정을 거친다');
+  assert.deepEqual(fencedData.spoiler_folds[0].books,['창세기 45장']);
+  const brokenAnswer='{"paragraphs":[{"text":"네, 요셉은 형들을 다시 만납니다';
+  globalThis.fetch=async()=>Response.json({ok:true,answer:brokenAnswer,context_permission:cp});
+  const brokenResponse=await bookai.fetch(new Request('https://reader.invalid/api/storymemory-ai',{
+    method:'POST',headers:{'content-type':'application/json','origin':'https://reader.invalid'},
+    body:JSON.stringify({question:'요셉은 형들을 다시 만나나요?',packet:firstReadPacket})}),env);
+  const brokenData=await brokenResponse.json();
+  assert.equal(brokenResponse.status,200);
+  assert.equal(brokenData.ok,true);
+  assert.ok(brokenData.answer.startsWith('{"paragraphs"'),'깨진 JSON 은 일반 문단 처리로 워커를 나가고 클라이언트 정규화로 이어진다');
+  assert.equal(brokenData.spoiler_folds.length,0,'깨진 JSON 에서 접힘은 만들어지지 않는다');
   const browsePacket={...packet,
     reading_progress:{furthest_read_locator:'bible:web:ACT:9:5',knowledge_ceiling_locator:'bible:web:ACT:9:5',reading_mode:'browse',opened_units:['bible:web:ACT:9']},
     co_reader_decision:{decision:'ALLOW',reason:'WITHIN_CEILING',question_class:'plot'}};

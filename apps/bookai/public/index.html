@@ -7930,6 +7930,7 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
 <script type="application/x-bookai" data-bookai-script id="sm-knowledge-ceiling-v1" src="storymemory-knowledge-ceiling-policy-v1.js"></script>
 <script type="application/x-bookai" data-bookai-script id="sm-bounded-companion-packet-v1" src="storymemory-bounded-companion-packet-v1.js"></script>
 <script type="application/x-bookai" data-bookai-script id="sm-companion-adapter-v1" src="storymemory-companion-adapter-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script id="sm-answer-normalize-v1" src="storymemory-answer-normalize-v1.js"></script>
 <script type="application/x-bookai" data-bookai-script id="sm-b61-ui-polish-v1" src="storymemory-b61-ui-polish-v1.js"></script>
 <script type="application/x-bookai" data-bookai-script src="storymemory-locator-resolver-v1.js"></script>
 <script type="application/x-bookai" data-bookai-script src="storymemory-keyword-search-v1.js"></script>
@@ -8257,6 +8258,7 @@ function classifyLive(meta,packet){
 }
 var STATE_BADGE={
   GROUNDED:{cls:'grounded',text:'✓ 근거 답변',spoiler:'읽은 범위 내',title:'읽은 범위 내 근거를 참조한 답변입니다'},
+  CHAT:{cls:'boundary',text:'ⓘ 대화',spoiler:'본문 근거 칩 없음',title:'이 답변은 표시할 본문 근거 칩이 없는 대화형 응답입니다'},
   GENERAL_CHAT:{cls:'boundary',text:'ⓘ 일반 대화',spoiler:'본문 근거 미사용',title:'이 답변은 StoryMemory 본문 근거를 사용하지 않은 일반 대화입니다'},
   NO_RELEVANT_WITHIN_CEILING_EVIDENCE:{cls:'norelevant',text:'ⓘ 근거 부족',spoiler:'스포일러 아님',title:'읽은 범위 안에서 이 질문에 답할 근거를 찾지 못했습니다'},
   HARD_NO_FUTURE:{cls:'future',text:'! 읽지 않은 범위',spoiler:'미리 보여드리지 않아요',title:'아직 읽지 않은 내용은 스포일러 방지를 위해 안내하지 않습니다'},
@@ -8369,7 +8371,24 @@ function decorateLive(node,meta,answerText){
   var question=String(meta.question||'');
   var packet=meta.answerEvidencePacket||lookupPacket(question);
   var cls=classifyLive(meta,packet);
-  var badge=STATE_BADGE[cls.state]||STATE_BADGE.GROUNDED;
+  /* 261106 · 원시 JSON 노출 방지: '{' 로 시작하는 답은 클라이언트에서 한 번 더
+     정규화하고, 끝내 실패하면 JSON 대신 안내 문구로 바꾼다(설계 E 보강). */
+  if(typeof answerText==='string'&&answerText.trim().startsWith('{')&&window.storyMemoryNormalizeCompanionAnswerV1){
+    var normalized=window.storyMemoryNormalizeCompanionAnswerV1(answerText);
+    var normBody=node.querySelector('.md-body');
+    if(normBody){
+      if(normalized){
+        answerText=normalized;
+        normBody.textContent=normalized;
+      }else{
+        normBody.textContent='답을 정리하지 못했어요 · 다시 시도';
+      }
+    }
+  }
+  var ev=(cls.state==='GROUNDED')?evidenceFromPacket(packet,answerText):null;
+  var hasChips=!!(ev&&ev.chips&&ev.chips.length>0);
+  var badgeKey=window.storyMemoryCompanionBadgeV1?window.storyMemoryCompanionBadgeV1(cls.state,hasChips):cls.state;
+  var badge=STATE_BADGE[badgeKey]||STATE_BADGE.GROUNDED;
   var contract=node.querySelector('.answer-contract');
   if(contract){
     contract.innerHTML='';
@@ -8454,10 +8473,9 @@ function decorateLive(node,meta,answerText){
     else node.append(outsideNote);
   }
   if(cls.state==='GROUNDED'){
-    var ev=evidenceFromPacket(packet,answerText);
-    var hasChips=ev&&ev.chips.length>0;
-    /* The packet is candidate context, not proof that every passage grounded
-       this answer. Without an explicit answer citation, render no verse chip. */
+    /* ev·hasChips 는 위 배지 결정에서 계산됨. The packet is candidate context,
+       not proof that every passage grounded this answer. Without an explicit
+       answer citation, render no verse chip. */
     if(!packet){
       var generalBadge=STATE_BADGE.GENERAL_CHAT;
       var gbContract=node.querySelector('.answer-contract');
