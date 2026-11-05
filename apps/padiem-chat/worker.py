@@ -1746,7 +1746,7 @@ class Default(WorkerEntrypoint):
                 request_factory=Request,
                 canonical_subject_resolver=canonical_subject_resolver,
             ),
-            stream_enabled=orchestration_stream_enabled(self.env),
+            stream_enabled=orchestration_stream_enabled(self.env, None),
             model_first_enabled=model_first_enabled(self.env),
         )
         # The cutover write window (#5115 step ③) applies to this entry too:
