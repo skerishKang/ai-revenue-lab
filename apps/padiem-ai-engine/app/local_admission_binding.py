@@ -32,6 +32,19 @@ binding's own name. ``worker_identity._admission_adapter_for_env`` then composes
 the reviewed adapter unchanged, so no admission logic is re-implemented here and
 the Engine's own fail-closed gate stays the only decision point.
 
+Idle connections cost the host real time: measured on COM2 on 2026-11-05, one
+snapshot RPC over a fresh connection took 2672 ms while the two that followed
+over the same keep-alive connection took 635 ms and 653 ms. Turns spaced further
+apart than the pool's keep-alive expiry therefore paid that ~2 s handshake and
+cold-isolate cost on the first of the two calls every time. So the host keeps the
+connection it already owns: a longer keep-alive expiry plus one background warm
+cycle per binding that sends a side-effect-free ``OPTIONS /`` on the same client
+every ``PADIEM_ENGINE_ADMISSION_KEEPWARM_SECONDS`` (default 45, 0 turns the cycle
+off). The Worker has no ``/health`` and refuses ``HEAD /`` (both 404, measured the
+same day), so ``OPTIONS /`` is the request that touches nothing. Its status is
+discarded and its failures are swallowed: warming is not an authority answer and
+can never change an admission decision.
+
 Absent configuration means no binding at all: every model route keeps answering
 503 ``entitlement_unavailable``, exactly as it does today. A half-configured or
 malformed pair is treated the same way — absent, never permissive.
@@ -42,6 +55,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import hmac
+import importlib.util
 import json
 import time
 import uuid
@@ -52,6 +66,10 @@ import httpx
 __all__ = [
     "ADMISSION_ORIGIN_ENV",
     "ADMISSION_SECRET_ENV",
+    "DEFAULT_KEEPWARM_SECONDS",
+    "KEEPALIVE_EXPIRY_SECONDS",
+    "KEEPWARM_PATH",
+    "KEEPWARM_SECONDS_ENV",
     "AdmissionBindingConfigError",
     "HttpsAdmissionBinding",
     "admission_binding_for",
@@ -62,6 +80,7 @@ __all__ = [
 
 ADMISSION_ORIGIN_ENV = "PADIEM_ENGINE_LOCAL_ADMISSION_ORIGIN"
 ADMISSION_SECRET_ENV = "PADIEM_ENGINE_LOCAL_ADMISSION_SECRET"
+KEEPWARM_SECONDS_ENV = "PADIEM_ENGINE_ADMISSION_KEEPWARM_SECONDS"
 RPC_PATH_PREFIX = "/internal/rpc/"
 AT_HEADER = "x-padiem-service-at"
 PROOF_HEADER = "x-padiem-service-proof"
@@ -72,6 +91,14 @@ RPC_REPLAY_STATUS = 409
 RPC_MAX_ATTEMPTS = 3
 MIN_SECRET_CHARS = 32
 DEFAULT_TIMEOUT_SECONDS = 15.0
+# Longer than the 60 s this file shipped with: COM2 PC turns are routinely more
+# than a minute apart, and an expired keep-alive makes the next authority call
+# pay the handshake and cold-isolate cost again.
+KEEPALIVE_EXPIRY_SECONDS = 300.0
+DEFAULT_KEEPWARM_SECONDS = 45.0
+# The Worker has no /health and refuses HEAD / (both measured 404 on 2026-11-05);
+# OPTIONS / is the request that reaches no handler and writes nothing.
+KEEPWARM_PATH = "/"
 
 
 class AdmissionBindingConfigError(ValueError):
@@ -132,6 +159,24 @@ def _require_secret(value: str | None) -> str:
 
 
 _POOLED_CLIENTS: dict[int, tuple[asyncio.AbstractEventLoop, httpx.AsyncClient]] = {}
+# Bindings that own the host's pooled client, so shutdown can stop their warm
+# cycle before the client it uses goes away. A binding handed a caller's client
+# is that caller's business and is never registered here.
+_LIVE_BINDINGS: list["HttpsAdmissionBinding"] = []
+_HTTP2_AVAILABLE: bool | None = None
+
+
+def _http2_available() -> bool:
+    """HTTP/2 is offered only when this deployment can actually load ``h2``.
+
+    A host without the extra keeps HTTP/1.1 rather than failing at the first
+    authority call, so the optional dependency never becomes a boot dependency.
+    """
+
+    global _HTTP2_AVAILABLE
+    if _HTTP2_AVAILABLE is None:
+        _HTTP2_AVAILABLE = importlib.util.find_spec("h2") is not None
+    return _HTTP2_AVAILABLE
 
 
 def _pooled_client() -> httpx.AsyncClient:
@@ -156,8 +201,9 @@ def _pooled_client() -> httpx.AsyncClient:
         limits=httpx.Limits(
             max_connections=8,
             max_keepalive_connections=8,
-            keepalive_expiry=60.0,
+            keepalive_expiry=KEEPALIVE_EXPIRY_SECONDS,
         ),
+        **{"http2": True} if _http2_available() else {},
     )
     _POOLED_CLIENTS[loop_key] = (loop, client)
     return client
@@ -167,6 +213,8 @@ async def close_pooled_clients() -> None:
     """Close the host's shared authority clients (lifespan shutdown only)."""
 
     global _POOLED_CLIENTS
+    for binding in list(_LIVE_BINDINGS):
+        await binding.aclose()
     clients, _POOLED_CLIENTS = _POOLED_CLIENTS, {}
     for _owner, client in clients.values():
         try:
@@ -191,13 +239,91 @@ class HttpsAdmissionBinding:
         *,
         client: httpx.AsyncClient | None = None,
         timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
+        keepwarm_seconds: float | None = None,
     ) -> None:
         self._origin = _require_https_origin(origin)
         self._secret = _require_secret(secret)
         self._client = client
         self._timeout = timeout_seconds
+        # A caller-supplied client is the caller's transport; scheduling traffic
+        # through it behind the caller's back is not this module's decision.
+        self._keepwarm = (
+            0.0 if client is not None else (
+                DEFAULT_KEEPWARM_SECONDS if keepwarm_seconds is None
+                else float(keepwarm_seconds)
+            )
+        )
+        self._warm_timer: asyncio.TimerHandle | None = None
+        self._warm_task: asyncio.Task[Any] | None = None
+        self._warm_stopped = False
+        if self._keepwarm > 0:
+            _LIVE_BINDINGS.append(self)
+        self._arm_warmer()
+
+    def _transport_client(self) -> httpx.AsyncClient:
+        return self._client if self._client is not None else _pooled_client()
+
+    def _arm_warmer(self) -> None:
+        """Schedule the next warm cycle on the loop that is already running.
+
+        The host builds this binding while importing its ASGI app, before any
+        event loop exists, so the first authority call arms it instead. One timer
+        is outstanding at a time, which is why this is a re-armed ``call_later``
+        and not a task parked on a 45-second sleep: a task left pending when the
+        loop closes would outlive the shutdown it was supposed to honour.
+        """
+
+        if self._keepwarm <= 0 or self._warm_stopped or self._warm_timer is not None:
+            return
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            return
+        self._warm_timer = loop.call_later(self._keepwarm, self._warm_now)
+
+    def _warm_now(self) -> None:
+        self._warm_timer = None
+        if self._warm_stopped:
+            return
+        self._warm_task = asyncio.ensure_future(self._warm_once())
+
+    async def _warm_once(self) -> None:
+        """One side-effect-free request on the RPC client, outcome discarded.
+
+        Nothing is logged and no failure escapes: a warm attempt says nothing
+        about the authority, and the next real call carries its own proof and
+        its own verdict. The cycle keeps going after any exception.
+        """
+
+        try:
+            await self._transport_client().options(self._origin + KEEPWARM_PATH)
+        except Exception:  # noqa: BLE001 - warming never becomes an admission answer
+            pass
+        finally:
+            self._warm_task = None
+            self._arm_warmer()
+
+    async def aclose(self) -> None:
+        """Stop this binding's warm cycle; the pooled client itself is shared."""
+
+        self._warm_stopped = True
+        if self._warm_timer is not None:
+            self._warm_timer.cancel()
+            self._warm_timer = None
+        task = self._warm_task
+        self._warm_task = None
+        if task is not None:
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
+        if self in _LIVE_BINDINGS:
+            _LIVE_BINDINGS.remove(self)
 
     async def _call(self, method: str, payload: Mapping[str, Any]) -> dict[str, Any]:
+        # Composed before the server loop exists, so the warm cycle starts here.
+        self._arm_warmer()
         body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
         path = RPC_PATH_PREFIX + method
         response = None
@@ -250,6 +376,24 @@ class HttpsAdmissionBinding:
         return await self._call("record_usage", payload)
 
 
+def _keepwarm_setting(values: Mapping[str, Any]) -> float:
+    """The configured warm period; 0 switches the cycle off, a bad value keeps 45.
+
+    A typo in an operational number must not silently drop the host back to a
+    cold handshake on every turn, and it must not become an authority failure:
+    the cycle only ever touches the connection.
+    """
+
+    raw = str(values.get(KEEPWARM_SECONDS_ENV, "") or "").strip()
+    if not raw:
+        return DEFAULT_KEEPWARM_SECONDS
+    try:
+        parsed = float(raw)
+    except ValueError:
+        return DEFAULT_KEEPWARM_SECONDS
+    return parsed if parsed >= 0 else DEFAULT_KEEPWARM_SECONDS
+
+
 def admission_binding_for(values: Mapping[str, Any]) -> dict[str, Any]:
     """The host env entry for the admission binding, or an empty dict.
 
@@ -264,7 +408,7 @@ def admission_binding_for(values: Mapping[str, Any]) -> dict[str, Any]:
     if not origin and not secret:
         return {}
     try:
-        binding = HttpsAdmissionBinding(origin, secret)
+        binding = HttpsAdmissionBinding(origin, secret, keepwarm_seconds=_keepwarm_setting(values))
     except AdmissionBindingConfigError:
         return {}
     return {"CONTROL_PLANE_ENGINE_ADMISSION": binding}
