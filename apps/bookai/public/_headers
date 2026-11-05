@@ -1,0 +1,32 @@
+# Long-lived reading content.
+/content/bible-web/search-index/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+
+/content/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+
+# Static shell assets.
+/styles/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/*.js
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/*.mjs
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/*.css
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Entry points and API answers always revalidate.
+/
+  Cache-Control: no-cache
+
+/index.html
+  Cache-Control: no-cache
+
+/version.json
+  Cache-Control: no-cache
+
+/api/*
+  Cache-Control: no-cache

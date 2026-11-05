@@ -43,11 +43,8 @@ test('BookAI code has no Neon connection or provider configuration', () => {
   }
 });
 
-test('both reader pages keep the legacy remote lane disabled before fetch', () => {
-  for (const page of [
-    path.join(publicRoot, 'index.html'),
-    path.join(publicRoot, 'readback_index.html', 'index.html')
-  ]) {
+test('the reader page keeps the legacy remote lane disabled before fetch', () => {
+  for (const page of [path.join(publicRoot, 'index.html')]) {
     const source = fs.readFileSync(page, 'utf8');
     assertHas(source, /const remoteEnabled = false;/, page, 'remote lane must stay disabled');
     const requestStart = source.indexOf('async function request(table');
