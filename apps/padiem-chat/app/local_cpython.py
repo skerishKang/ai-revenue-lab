@@ -55,7 +55,9 @@ from .local_service_bridge import (
     LocalB66PdfRendererClient,
     compose_local_b14_transports,
 )
-from .local_p01_engine import build_local_engine_client
+from .claw_search_decision import trusted_claw_search_activation
+from .local_p01_engine import build_local_engine_client, build_local_p01_lanes
+from .worker_config import binding_value
 from .maintenance_mode import apply_write_freeze
 from .model_first import model_first_enabled
 from .orchestration_composition import compose_orchestration_bridge
@@ -588,6 +590,36 @@ def build_app():
             app.state.b14_client,
             app.state.web_provider,
         )
+        # #4469: worker.py was the only entry point that composed the Claw
+        # public web search switch, so after the 10-31 COM2 move the host read
+        # the deployment value nowhere and the lane stayed off. The host now
+        # composes the SAME wiring (compose_p01_lanes over one loopback Engine
+        # client) and the SAME trusted activation worker.py calls. Nothing is
+        # composed unless the deployment asks for it, so an absent or false
+        # switch leaves this host exactly as it is today
+        # (503 engine_not_configured on the Claw lane).
+        if binding_value(
+            os.environ, "PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED"
+        ) == "true":
+            (
+                app.state.claw_p01_adapter,
+                app.state.claw_p01_continuation_client,
+                app.state.claw_p01_composition_diagnostic,
+            ) = build_local_p01_lanes(
+                os.environ,
+                # The host's analogue of the Worker's identity-authority
+                # binding: the canonical USER lane turns on only when a
+                # Control Plane identity authority is actually composed.
+                allow_subject_identity=identity_authority is not None,
+            )
+            app.state.claw_web_search_enabled = trusted_claw_search_activation(
+                flag=binding_value(
+                    os.environ, "PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED"
+                ),
+                runtime_mode=settings.runtime_mode,
+                adapter=app.state.claw_p01_adapter,
+                usage_gate=app.state.usage_gate,
+            )
         quote_model_resolver = B66ExplicitQuoteModelResolver(completion_transport)
         app.state.b66_quote_model_resolver = quote_model_resolver
         app.state.b14_model_choice_resolver = quote_model_resolver

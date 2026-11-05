@@ -123,12 +123,19 @@ def build_local_p01_lanes(
     env: Any,
     *,
     client: httpx.AsyncClient | None = None,
+    allow_subject_identity: bool = False,
 ) -> tuple[
     Any | None,
     P01EngineApprovalContinuationClient | None,
     str | None,
 ]:
-    """Compose both B54 P01 lanes over one loopback transport, or fail closed."""
+    """Compose both B54 P01 lanes over one loopback transport, or fail closed.
+
+    ``allow_subject_identity`` is the host's view of the Worker's
+    ``identity_authority_bound``: the caller passes True only when a Control
+    Plane identity authority is actually composed, so the canonical USER lane is
+    never invented from a host that cannot revalidate the subject (#3382).
+    """
 
     config, diagnostic = local_p01_engine_config_from_env(env)
     if config is None:
@@ -144,7 +151,7 @@ def build_local_p01_lanes(
         # that binding: the validated callers still travel, the subject does not
         # get invented.
         adapter, continuation = compose_p01_lanes(
-            engine_client, allow_subject_identity=False
+            engine_client, allow_subject_identity=allow_subject_identity
         )
     except Exception:
         return None, None, P01_DIAG_COMPOSITION_UNAVAILABLE
