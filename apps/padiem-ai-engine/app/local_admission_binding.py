@@ -38,12 +38,27 @@ over the same keep-alive connection took 635 ms and 653 ms. Turns spaced further
 apart than the pool's keep-alive expiry therefore paid that ~2 s handshake and
 cold-isolate cost on the first of the two calls every time. So the host keeps the
 connection it already owns: a longer keep-alive expiry plus one background warm
-cycle per binding that sends a side-effect-free ``OPTIONS /`` on the same client
-every ``PADIEM_ENGINE_ADMISSION_KEEPWARM_SECONDS`` (default 45, 0 turns the cycle
-off). The Worker has no ``/health`` and refuses ``HEAD /`` (both 404, measured the
-same day), so ``OPTIONS /`` is the request that touches nothing. Its status is
-discarded and its failures are swallowed: warming is not an authority answer and
-can never change an admission decision.
+cycle per binding every ``PADIEM_ENGINE_ADMISSION_KEEPWARM_SECONDS`` (default
+45, 0 turns the cycle off). Its status is discarded and its failures are
+swallowed: warming is not an authority answer and can never change an admission
+decision.
+
+The first warm cycle shipped as a side-effect-free ``OPTIONS /`` and did not
+stop the cold turns (#6956). Measured against the production authority on
+2026-11-05 the 404 it got back carried exactly the gateway Worker's own
+fallback fingerprint (``text/plain`` 9-byte "Not Found" +
+``cache-control: no-store``, i.e. the request did reach the Worker), but
+``handle_internal_rpc`` only ever dispatches ``/internal/rpc/<method>`` — so
+the OPTIONS warmed the gateway isolate and the keep-alive connection while the
+Durable Object that owns the entitlement state, and the identity worker behind
+it, stayed cold. A warm ping therefore has to be a real signed RPC: one
+``fetch_entitlement_snapshot`` per cycle carrying a synthetic canonical user
+subject. The authority answers that with a 200 ``ok:false``
+``engine_entitlement_identity_unavailable`` — the reverse identity lookup
+fails before any entitlement is produced or installed, so the call writes
+nothing; the only durable touch is the bounded replay-guard row every signed
+request already leaves, pruned inside its own window. ``reserve_usage`` is
+never used for warming: that path records a reservation.
 
 Absent configuration means no binding at all: every model route keeps answering
 503 ``entitlement_unavailable``, exactly as it does today. A half-configured or
@@ -57,6 +72,7 @@ import hashlib
 import hmac
 import importlib.util
 import json
+import logging
 import time
 import uuid
 from typing import Any, Mapping
@@ -68,8 +84,10 @@ __all__ = [
     "ADMISSION_SECRET_ENV",
     "DEFAULT_KEEPWARM_SECONDS",
     "KEEPALIVE_EXPIRY_SECONDS",
-    "KEEPWARM_PATH",
+    "KEEPWARM_METHOD",
+    "KEEPWARM_PRODUCT_ID",
     "KEEPWARM_SECONDS_ENV",
+    "KEEPWARM_SYNTHETIC_SUBJECT",
     "AdmissionBindingConfigError",
     "HttpsAdmissionBinding",
     "admission_binding_for",
@@ -96,9 +114,22 @@ DEFAULT_TIMEOUT_SECONDS = 15.0
 # pay the handshake and cold-isolate cost again.
 KEEPALIVE_EXPIRY_SECONDS = 300.0
 DEFAULT_KEEPWARM_SECONDS = 45.0
-# The Worker has no /health and refuses HEAD / (both measured 404 on 2026-11-05);
-# OPTIONS / is the request that reaches no handler and writes nothing.
-KEEPWARM_PATH = "/"
+# The warm ping must leave the gateway Worker: only ``/internal/rpc/<method>``
+# dispatches, so the ping is a real signed snapshot RPC for a synthetic
+# canonical user. The reverse identity lookup for it fails before anything is
+# produced or installed — the authority answers 200 ``ok:false``
+# ``engine_entitlement_identity_unavailable`` and writes nothing.
+KEEPWARM_METHOD = "fetch_entitlement_snapshot"
+KEEPWARM_PRODUCT_ID = "b62"
+KEEPWARM_SYNTHETIC_SUBJECT = {
+    "subject_type": "user",
+    "subject_id": "padiem-engine-keepwarm-synthetic",
+}
+# One journal line per warm cycle, riding the stderr channel
+# ``app.engine_timing.ensure_host_visible`` already binds for the stage line.
+# The line carries the status code and the elapsed milliseconds and nothing
+# else: no subject, no origin, no payload, no secret.
+_KEEPWARM_LOG = logging.getLogger("padiem_ai_engine.engine_timing")
 
 
 class AdmissionBindingConfigError(ValueError):
@@ -260,8 +291,39 @@ class HttpsAdmissionBinding:
             _LIVE_BINDINGS.append(self)
         self._arm_warmer()
 
-    def _transport_client(self) -> httpx.AsyncClient:
-        return self._client if self._client is not None else _pooled_client()
+    async def _post_signed(self, path: str, body: bytes) -> httpx.Response:
+        """One signed POST attempt; every attempt gets its own fresh id.
+
+        The id is what the ingress consumes to refuse a replay, so it is signed:
+        a captured request cannot be re-signed under another id. Shared by the
+        replay-retry loop in :meth:`_call` and by the single-shot warm ping.
+        """
+
+        at = int(time.time())
+        service_id = new_service_id()
+        headers = {
+            "content-type": "application/json",
+            "accept": "application/json",
+            AT_HEADER: str(at),
+            SERVICE_ID_HEADER: service_id,
+            PROOF_HEADER: proof_for_v2(
+                self._secret, method="POST", path=path, at=at,
+                service_id=service_id, body=body,
+            ),
+        }
+        try:
+            if self._client is None:
+                return await _pooled_client().post(
+                    self._origin + path,
+                    content=body,
+                    headers=headers,
+                    timeout=self._timeout,
+                )
+            return await self._client.post(
+                self._origin + path, content=body, headers=headers
+            )
+        except httpx.HTTPError as exc:
+            raise RuntimeError("admission authority is unreachable") from exc
 
     def _arm_warmer(self) -> None:
         """Schedule the next warm cycle on the loop that is already running.
@@ -288,20 +350,40 @@ class HttpsAdmissionBinding:
         self._warm_task = asyncio.ensure_future(self._warm_once())
 
     async def _warm_once(self) -> None:
-        """One side-effect-free request on the RPC client, outcome discarded.
+        """One real signed RPC on the pooled client; the body is discarded.
 
-        Nothing is logged and no failure escapes: a warm attempt says nothing
-        about the authority, and the next real call carries its own proof and
-        its own verdict. The cycle keeps going after any exception.
+        The ping must dispatch through the gateway to the Durable Object and
+        the identity worker behind it — a request that never leaves the gateway
+        (the first keepwarm cycle's ``OPTIONS /``) leaves exactly the part cold
+        that the next turn pays for. The synthetic-subject snapshot is the one
+        dispatchable call that writes nothing. One journal line names the
+        outcome (status and milliseconds only); no failure escapes and the
+        cycle keeps going after any exception, because a warm attempt says
+        nothing about the authority — the next real call carries its own proof
+        and its own verdict.
         """
 
+        started = time.perf_counter()
+        status = 0
         try:
-            await self._transport_client().options(self._origin + KEEPWARM_PATH)
-        except Exception:  # noqa: BLE001 - warming never becomes an admission answer
-            pass
-        finally:
+            body = json.dumps(
+                {"product_id": KEEPWARM_PRODUCT_ID, "subject": dict(KEEPWARM_SYNTHETIC_SUBJECT)},
+                ensure_ascii=False, separators=(",", ":"),
+            ).encode("utf-8")
+            response = await self._post_signed(RPC_PATH_PREFIX + KEEPWARM_METHOD, body)
+            status = response.status_code
+        except asyncio.CancelledError:
             self._warm_task = None
-            self._arm_warmer()
+            raise
+        except Exception:  # noqa: BLE001 - warming never becomes an admission answer
+            status = 0
+        _KEEPWARM_LOG.info(
+            "keepwarm status=%d ms=%.1f",
+            status,
+            (time.perf_counter() - started) * 1000.0,
+        )
+        self._warm_task = None
+        self._arm_warmer()
 
     async def aclose(self) -> None:
         """Stop this binding's warm cycle; the pooled client itself is shared."""
@@ -328,32 +410,7 @@ class HttpsAdmissionBinding:
         path = RPC_PATH_PREFIX + method
         response = None
         for _ in range(RPC_MAX_ATTEMPTS):
-            at = int(time.time())
-            service_id = new_service_id()
-            headers = {
-                "content-type": "application/json",
-                "accept": "application/json",
-                AT_HEADER: str(at),
-                SERVICE_ID_HEADER: service_id,
-                PROOF_HEADER: proof_for_v2(
-                    self._secret, method="POST", path=path, at=at,
-                    service_id=service_id, body=body,
-                ),
-            }
-            try:
-                if self._client is None:
-                    response = await _pooled_client().post(
-                        self._origin + path,
-                        content=body,
-                        headers=headers,
-                        timeout=self._timeout,
-                    )
-                else:
-                    response = await self._client.post(
-                        self._origin + path, content=body, headers=headers
-                    )
-            except httpx.HTTPError as exc:
-                raise RuntimeError("admission authority is unreachable") from exc
+            response = await self._post_signed(path, body)
             if response.status_code != RPC_REPLAY_STATUS:
                 break
         if response.status_code != 200:
