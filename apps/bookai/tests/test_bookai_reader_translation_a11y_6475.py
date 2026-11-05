@@ -108,7 +108,9 @@ def test_translation_settings_persist_lang_labels_focus_contrast_and_zoom(base_u
         page_errors = []
         page.on("pageerror", lambda error: page_errors.append(f"{error} | {getattr(error, 'stack', '')}"))
         page.on("console", lambda msg: page_errors.append(f"console:{msg.type}:{msg.text} @ {msg.location}") if msg.type == "error" and "Unexpected token" in msg.text else None)
+        page.add_init_script("window.__bookaiErrors=[];window.addEventListener('error',e=>window.__bookaiErrors.push(e.message+' @ '+e.filename+':'+e.lineno+':'+e.colno));")
         _open_acts_reader(page, base_url)
+        page_errors.extend(page.evaluate("window.__bookaiErrors || []"))
 
         settings = page.evaluate("window.__smReaderSettingsV1.get()")
         assert settings["englishMode"] == "show"
@@ -200,5 +202,6 @@ def test_translation_settings_persist_lang_labels_focus_contrast_and_zoom(base_u
             page.set_viewport_size({"width": 390, "height": 844})
             page.screenshot(path=screenshot_path, full_page=True)
 
+        page_errors.extend(page.evaluate("window.__bookaiErrors || []"))
         assert page_errors == []
         browser.close()
