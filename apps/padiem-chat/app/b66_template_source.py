@@ -45,6 +45,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
+from .d1_rows import rows_from_result
+
 # #4379: a template source carries no PADIEM byte total. The platform request
 # limit bounds reception and the D1 schema CHECK bounds custody.
 MAX_TEMPLATE_SOURCE_LIST = 50
@@ -327,13 +329,8 @@ class D1B66TemplateSourceMetadataStore:
         if values:
             stmt = stmt.bind(*values)
         result = await stmt.all()
-        rows = getattr(result, "results", None)
-        if rows is None and isinstance(result, dict):
-            rows = result.get("results")
-        if not rows:
-            return []
         output: list[dict[str, Any]] = []
-        for row in rows:
+        for row in rows_from_result(result):
             item = _row_to_dict(row)
             if item is not None:
                 output.append(item)

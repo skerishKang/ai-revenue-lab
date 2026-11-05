@@ -74,8 +74,11 @@ class _Statement:
         return dict(row) if row else None
 
     async def all(self):
+        # The operating 컴2 host answers .all() with a bare list of rows. A fake that
+        # answers only the Cloudflare `{results: […]}` shape lets a shape-specific
+        # reader pass here and return zero rows in Production (#5568 follow-on).
         rows = self.db.conn.execute(self.sql, self.params).fetchall()
-        return {"results": [dict(row) for row in rows]}
+        return [dict(row) for row in rows]
 
     async def run(self):
         cursor = self.db.conn.execute(self.sql, self.params)
