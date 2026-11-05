@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 from dataclasses import dataclass
 from typing import Any
 
@@ -38,11 +40,21 @@ COUNTRIES = frozenset({"kr", "us", "uk", "fr"})
 
 class BrowserRequestError(ValueError):
     code = "invalid_request"
+    #: #6921: a short ASCII label naming WHICH contract rule refused the
+    #: request. It is journaled by the 422 sites so a refusal can be diagnosed
+    #: from the log alone; it never carries user text or request values.
+    reason = "invalid_request"
+
+    def __init__(self, message: str = "", *, reason: str | None = None) -> None:
+        super().__init__(message)
+        if reason is not None:
+            self.reason = reason
 
 
 class StaleChatClientError(BrowserRequestError):
     """A removed browser contract needs a page refresh."""
     code = "stale_chat_client"
+    reason = "stale_client"
 
 
 _RETIRED_TASK_MODES = frozenset({"explain", "write", "translate", "summarize", "code", "brainstorm"})
@@ -79,18 +91,19 @@ def parse_custom_selection(value: Any) -> CustomModelSelection:
     """Validate one explicit PADIEM Custom selection shared by every product."""
     if not isinstance(value, dict) or not {"provider", "model"} <= set(value) \
             or set(value) - {"provider", "model", "reasoning_effort"}:
-        raise BrowserRequestError("PADIEM Custom 선택 형식이 올바르지 않습니다.")
+        raise BrowserRequestError("PADIEM Custom 선택 형식이 올바르지 않습니다.", reason="custom_shape")
     provider = value.get("provider")
     model = value.get("model")
     if (not isinstance(provider, str) or not provider.strip()
             or not isinstance(model, str) or not model.strip()):
-        raise BrowserRequestError("PADIEM Custom 선택 형식이 올바르지 않습니다.")
+        raise BrowserRequestError("PADIEM Custom 선택 형식이 올바르지 않습니다.", reason="custom_shape")
     reasoning = value.get("reasoning_effort")
     if reasoning is None or reasoning == "":
         reasoning = None
     elif reasoning not in CUSTOM_REASONING_EFFORTS:
         raise BrowserRequestError(
-            "추론 강도 값이 올바르지 않습니다. 기본·최소·낮음·중간·높음 중에서 선택해 주세요."
+            "추론 강도 값이 올바르지 않습니다. 기본·최소·낮음·중간·높음 중에서 선택해 주세요.",
+            reason="custom_reasoning_effort",
         )
     return CustomModelSelection(
         provider=provider.strip(), model=model.strip(), reasoning_effort=reasoning,
@@ -103,7 +116,8 @@ def _validate_custom_selection(raw: dict[str, Any]) -> CustomModelSelection | No
     custom = parse_custom_selection(raw.get("custom"))
     if "tier" in raw:
         raise BrowserRequestError(
-            "PADIEM 제공 모델과 PADIEM Custom을 한 요청에서 함께 선택할 수 없습니다."
+            "PADIEM 제공 모델과 PADIEM Custom을 한 요청에서 함께 선택할 수 없습니다.",
+            reason="custom_with_tier",
         )
     return custom
 
@@ -113,38 +127,38 @@ def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
     has_tool_input = "tool_input" in raw
     if tool_value is None:
         if has_tool_input:
-            raise BrowserRequestError("도구 입력을 사용하려면 도구를 함께 선택해 주세요.")
+            raise BrowserRequestError("도구 입력을 사용하려면 도구를 함께 선택해 주세요.", reason="tool_input_without_tool")
         return None
     if not isinstance(tool_value, str) or not tool_value.strip():
-        raise BrowserRequestError("도구 형식이 올바르지 않습니다.")
+        raise BrowserRequestError("도구 형식이 올바르지 않습니다.", reason="tool_shape")
     try:
         tool = get_tool_presentation(tool_value.strip())
     except ValueError as exc:
-        raise BrowserRequestError(str(exc)) from exc
+        raise BrowserRequestError(str(exc), reason="tool_unknown") from exc
 
     value = raw.get("tool_input")
     if tool.id in {"web_search", "deep_research"}:
         if value is None:
             return BrowserToolRequest(tool=tool, tool_input=None)
         if not isinstance(value, str):
-            raise BrowserRequestError("검색어 형식이 올바르지 않습니다.")
+            raise BrowserRequestError("검색어 형식이 올바르지 않습니다.", reason="search_query_shape")
         query = value.strip()
         if not query:
-            raise BrowserRequestError("검색할 내용을 한 줄로 알려 주세요.")
+            raise BrowserRequestError("검색할 내용을 한 줄로 알려 주세요.", reason="search_query_empty")
         if len(query) > MAX_QUERY_CHARS:
             # #6090: MAX_QUERY_CHARS is the search provider's own query contract.
             # The answer names what the user can do, not the number.
-            raise BrowserRequestError(SEARCH_QUERY_TOO_LONG_MESSAGE)
+            raise BrowserRequestError(SEARCH_QUERY_TOO_LONG_MESSAGE, reason="search_query_too_long")
         return BrowserToolRequest(tool=tool, tool_input=query)
     if tool.id == "web_fetch":
         if not isinstance(value, str) or not value.strip():
-            raise BrowserRequestError("읽을 공개 웹 주소가 필요합니다.")
+            raise BrowserRequestError("읽을 공개 웹 주소가 필요합니다.", reason="fetch_url_missing")
         try:
             safe_url = normalize_public_url(value)
         except ValueError as exc:
-            raise BrowserRequestError(str(exc)) from exc
+            raise BrowserRequestError(str(exc), reason="fetch_url_invalid") from exc
         return BrowserToolRequest(tool=tool, tool_input=safe_url)
-    raise BrowserRequestError("지원하지 않는 도구입니다.")
+    raise BrowserRequestError("지원하지 않는 도구입니다.", reason="tool_unsupported")
 
 
 def declared_util_scope(raw: Any) -> str | None:
@@ -157,11 +171,24 @@ def declared_util_scope(raw: Any) -> str | None:
     return scope if isinstance(scope, str) and scope in _UTIL_SCOPES else None
 
 
+_KEY_LABEL = re.compile(r"^[A-Za-z0-9_]{1,32}$")
+
+
+def _unsupported_key_reason(keys: set[object]) -> str:
+    """``unsupported_key:<name>`` for the first refused key, or ``:other``.
+
+    Key names are client input; only a plain identifier is echoed into the
+    reason label, anything else is reported as ``other``.
+    """
+    first = sorted(str(key) for key in keys)[0]
+    return "unsupported_key:" + (first if _KEY_LABEL.fullmatch(first) else "other")
+
+
 def _validate_payload_parts(
     raw: Any,
 ) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None]:
     if not isinstance(raw, dict):
-        raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
+        raise BrowserRequestError("요청 형식이 올바르지 않습니다.", reason="body_not_object")
     # An old tab can still send fields removed from the current browser contract.
     # Only recognize the known retired keys/modes; unknown input stays invalid.
     if "mode" in raw or "country" in raw or (
@@ -175,47 +202,48 @@ def _validate_payload_parts(
     # can grow a mode-shaped promise again.
     # The tail order below is a load-bearing literal: test_5015 pins
     # `"pc_run_id", "web_search"}` as the end of this set.
-    if set(raw) - {"messages", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "util", "pc_run_id", "web_search"}:
-        raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
+    unsupported = set(raw) - {"messages", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "util", "pc_run_id", "web_search"}
+    if unsupported:
+        raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.", reason=_unsupported_key_reason(unsupported))
     if "util" in raw:
         util_scope = raw["util"]
         if not isinstance(util_scope, str) or util_scope not in _UTIL_SCOPES:
-            raise BrowserRequestError("유틸 업무 식별자가 올바르지 않습니다.")
+            raise BrowserRequestError("유틸 업무 식별자가 올바르지 않습니다.", reason="util_scope_invalid")
     if "pc_run_id" in raw:
         try:
             validate_chat_pc_run_id(raw.get("pc_run_id"))
         except ValueError as exc:
-            raise BrowserRequestError("PC 작업 실행 ID가 올바르지 않습니다.") from exc
+            raise BrowserRequestError("PC 작업 실행 ID가 올바르지 않습니다.", reason="pc_run_id_invalid") from exc
     if "calendar_turn_id" in raw:
         turn_id = raw["calendar_turn_id"]
         if not isinstance(turn_id, str) or not turn_id.strip() or len(turn_id) > 128:
-            raise BrowserRequestError("Calendar 요청 식별자 형식이 올바르지 않습니다.")
+            raise BrowserRequestError("Calendar 요청 식별자 형식이 올바르지 않습니다.", reason="calendar_turn_id_invalid")
 
     skill_id = raw.get("skill", "auto")
     if not isinstance(skill_id, str) or not skill_id.strip():
-        raise BrowserRequestError("작업 모드 형식이 올바르지 않습니다.")
+        raise BrowserRequestError("작업 모드 형식이 올바르지 않습니다.", reason="skill_shape")
     try:
         skill = get_task_mode(skill_id.strip())
     except ValueError as exc:
-        raise BrowserRequestError(str(exc)) from exc
+        raise BrowserRequestError(str(exc), reason="skill_unknown") from exc
 
     messages = raw.get("messages")
     if not isinstance(messages, list) or not messages:
-        raise BrowserRequestError("대화 내용은 1개 이상 보내 주세요.")
+        raise BrowserRequestError("대화 내용은 1개 이상 보내 주세요.", reason="messages_empty")
     out: list[dict[str, str]] = []
     for item in messages:
         if not isinstance(item, dict) or set(item) != {"role", "content"}:
-            raise BrowserRequestError("대화 항목 형식이 올바르지 않습니다.")
+            raise BrowserRequestError("대화 항목 형식이 올바르지 않습니다.", reason="message_shape")
         role = item.get("role")
         content = item.get("content")
         if role not in _ALLOWED_ROLES:
-            raise BrowserRequestError("브라우저에서는 사용자와 AI 대화만 보낼 수 있습니다.")
+            raise BrowserRequestError("브라우저에서는 사용자와 AI 대화만 보낼 수 있습니다.", reason="message_role")
         if not isinstance(content, str) or not content.strip():
-            raise BrowserRequestError("빈 메시지는 보낼 수 없습니다.")
+            raise BrowserRequestError("빈 메시지는 보낼 수 없습니다.", reason="message_empty")
         text = content.strip()
         out.append({"role": role, "content": text})
     if not any(item["role"] == "user" for item in out):
-        raise BrowserRequestError("사용자 질문이 필요합니다.")
+        raise BrowserRequestError("사용자 질문이 필요합니다.", reason="no_user_message")
 
     tool_request = _validate_tool_request(raw)
     return out, skill, tool_request
@@ -230,15 +258,15 @@ def _finish_payload(
     attachments: tuple[Any, ...],
 ) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None, CustomModelSelection | None]:
     if tool_request is not None and any(isinstance(item, ImageAttachment) for item in attachments):
-        raise BrowserRequestError("현재는 사진 첨부와 웹 도구를 한 요청에서 함께 사용할 수 없습니다.")
+        raise BrowserRequestError("현재는 사진 첨부와 웹 도구를 한 요청에서 함께 사용할 수 없습니다.", reason="image_with_tool")
     custom = _validate_custom_selection(raw)
     if custom is not None and (tool_request is not None or attachments):
-        raise BrowserRequestError("PADIEM Custom은 현재 텍스트 대화만 지원합니다.")
+        raise BrowserRequestError("PADIEM Custom은 현재 텍스트 대화만 지원합니다.", reason="custom_with_tool_or_attachment")
     try:
         conversation_id = validate_conversation_id(raw.get("conversation_id"))
         project_id = validate_project_id(raw.get("project_id"))
     except ValueError as exc:
-        raise BrowserRequestError(str(exc)) from exc
+        raise BrowserRequestError(str(exc), reason="conversation_or_project_id_invalid") from exc
     return messages, skill, tool_request, attachments, conversation_id, project_id, custom
 
 
@@ -249,7 +277,7 @@ def _validate_payload(
     try:
         attachments = parse_attachments(raw.get("attachments"))
     except AttachmentValidationError as exc:
-        raise BrowserRequestError(str(exc)) from exc
+        raise BrowserRequestError(str(exc), reason="attachment_invalid") from exc
     return _finish_payload(
         raw,
         messages=messages,
@@ -268,7 +296,7 @@ async def _validate_payload_async(
     try:
         attachments = await parse_attachments_async(raw.get("attachments"), file_resolver=file_resolver)
     except AttachmentValidationError as exc:
-        raise BrowserRequestError(str(exc)) from exc
+        raise BrowserRequestError(str(exc), reason="attachment_invalid") from exc
     return _finish_payload(
         raw,
         messages=messages,
@@ -299,7 +327,7 @@ def _apply_b62_model_policy(
             # is deliberately HOLD (#3568).
             policy = resolve_tier_policy(messages, tier_id, require_executable=False)
     except ModelPolicyError as exc:
-        raise BrowserRequestError(exc.message) from exc
+        raise BrowserRequestError(exc.message, reason=exc.code) from exc
     # Preserve validated browser messages verbatim; explicit browser tier
     # selection rides request context and prompt text is never rewritten.
     return policy.model_id, [dict(message) for message in messages]

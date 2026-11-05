@@ -61,6 +61,7 @@ from .request_contract import (
     _validate_payload_async,
     declared_util_scope,
 )
+from .request_telemetry import emit_stage_event
 from .tool_presentations import get_tool_presentation
 from .usage_gate import UsageGate
 from .web_tools import WebToolError
@@ -110,6 +111,25 @@ def _usage_denied_response(decision) -> JSONResponse:
         headers=headers,
     )
 
+
+def _browser_refusal_reason(exc: BaseException) -> str:
+    """#6921: a bounded ASCII label naming which contract rule refused the body."""
+    if isinstance(exc, BrowserRequestError):
+        return exc.reason
+    if isinstance(exc, json.JSONDecodeError):
+        return "json_decode"
+    if isinstance(exc, UnicodeDecodeError):
+        return "utf8_decode"
+    return "value_error"
+
+
+def _journal_browser_refusal(reason: str) -> None:
+    """One ``ai_stage`` journal line per 422 so a refusal is diagnosable afterwards.
+
+    #6921: the line carries the request id, the stage and the reason label only;
+    the body, the user text and every request value stay out of the journal.
+    """
+    emit_stage_event(stage="browser.validate", outcome="error", duration_ms=0.0, code=reason)
 
 def _login_required_response() -> JSONResponse:
     """Owner decision 2026-11-05: Chat AI answers require a signed-in member."""
@@ -397,6 +417,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
             ):
                 return _too_large_response()
         except ValueError:
+            _journal_browser_refusal("content_length_invalid")
             return JSONResponse({"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}}, status_code=422)
     try:
         body = await read_bounded_request_body(request, max_bytes=MAX_BROWSER_BODY_BYTES)
@@ -416,11 +437,13 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
         else:
             selected_model = custom.model
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
+        _journal_browser_refusal(_browser_refusal_reason(exc))
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
     timing.mark("validated")
 
     if tool_request is not None or attachments:
+        _journal_browser_refusal("streaming_unsupported")
         return JSONResponse(
             {"error": {"code": "streaming_unsupported", "message": "스트리밍 채팅은 현재 일반 텍스트 질문만 지원합니다."}},
             status_code=422,
@@ -1043,6 +1066,7 @@ async def api_chat(request: Request) -> JSONResponse:
             ):
                 return _too_large_response()
         except ValueError:
+            _journal_browser_refusal("content_length_invalid")
             return JSONResponse({"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}}, status_code=422)
     try:
         body = await read_bounded_request_body(request, max_bytes=MAX_BROWSER_BODY_BYTES)
@@ -1062,6 +1086,7 @@ async def api_chat(request: Request) -> JSONResponse:
         else:
             selected_model = custom.model
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
+        _journal_browser_refusal(_browser_refusal_reason(exc))
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
 
