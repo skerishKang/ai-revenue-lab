@@ -13,7 +13,9 @@ from .pc_correlation import run_hash as _pc_run_hash
 
 import base64
 import hashlib
+import hmac
 import json
+import os
 import re
 import ssl
 import sys
@@ -105,6 +107,25 @@ CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
 #: origin still has to be https - the Worker's origin included, because its traffic can
 #: leave the machine. The header, its secret and the server's check of it are unchanged.
 LOOPBACK_CHANNEL_HOSTS = frozenset({"127.0.0.1", "::1", "localhost"})
+#: #261105: a result lane aimed at the Chat host's own loopback crosses
+#: ``com2_edge_middleware``, which answers a request that does not carry the four
+#: ``x-padiem-edge-*`` headers with a bare 403 — before the route ever sees the
+#: channel secret. The Engine already signs that way for its own chat binding
+#: (``local_runtime.LocalChatServiceBinding._edge_headers``), so the executor reuses
+#: the same composition — the canonical string joins ``v1``, the method, the path,
+#: the unix seconds, one fresh 32-byte-hex request id and the TLS label with
+#: newlines, and the server's own ``EdgeProofVerifier`` is what decides. Over the
+#: public https origin nothing is added — the edge already sits upstream there,
+#: which is today's behaviour.
+EDGE_SECRET_FILE_ENV = "ORACLE_MESH_EDGE_SECRET_FILE"
+EDGE_AT_HEADER = "x-padiem-edge-at"
+EDGE_ID_HEADER = "x-padiem-edge-id"
+EDGE_TLS_HEADER = "x-padiem-edge-tls"
+EDGE_PROOF_HEADER = "x-padiem-edge-proof"
+EDGE_HEADERS = (EDGE_AT_HEADER, EDGE_ID_HEADER, EDGE_TLS_HEADER, EDGE_PROOF_HEADER)
+#: Exactly the label the verifier accepts for a loopback hop that carries no TLS.
+EDGE_TLS_VERSION = "TLSv1.3"
+MIN_EDGE_SECRET_CHARS = 32
 
 
 def _is_loopback_channel_origin(origin: Any) -> bool:
@@ -123,6 +144,29 @@ def _is_loopback_channel_origin(origin: Any) -> bool:
         and re.fullmatch(r"(?:localhost|127\.0\.0\.1|\[::1\])(?::[0-9]+)?", parsed.netloc, re.I)
         and not parsed.path and not parsed.query and not parsed.fragment
     )
+
+
+def edge_proof_headers(secret: str, *, method: str, path: str) -> dict[str, str]:
+    """The four headers Chat's edge verifier accepts for one request on this host.
+
+    Byte-compatible with the Engine's chat binding, and deliberately so: the verifier
+    stores the request ids it has seen, so a reused id is a replay and a retry must
+    sign a fresh one. The path is signed without a query string, which is what the
+    verifier rebuilds from the ASGI scope.
+    """
+
+    at = str(int(time.time()))
+    request_id = os.urandom(32).hex()
+    signed = "\n".join(("v1", method.upper(), path, at, request_id, EDGE_TLS_VERSION)).encode(
+        "utf-8"
+    )
+    proof = "v1=" + hmac.new(secret.encode("utf-8"), signed, hashlib.sha256).hexdigest()
+    return {
+        EDGE_AT_HEADER: at,
+        EDGE_ID_HEADER: request_id,
+        EDGE_TLS_HEADER: EDGE_TLS_VERSION,
+        EDGE_PROOF_HEADER: proof,
+    }
 
 
 #: #5553: bound shared with the Chat poll route's presence envelope.
@@ -371,6 +415,7 @@ class OracleMeshExecutor:
         chat_origin: str,
         channel_secret: str,
         queue_origin: Optional[str] = None,
+        edge_secret: Optional[str] = None,
         read_port: Any,
         command_port: Any = None,
         desktop_port: Any = None,
@@ -384,10 +429,16 @@ class OracleMeshExecutor:
         pairing_provider: Optional[Callable[[], Any]] = None,
         presence_round_begin: Optional[Callable[[], None]] = None,
     ) -> None:
-        if not isinstance(chat_origin, str) or not chat_origin.startswith("https://"):
-            raise ContractError("the chat channel must be an https origin")
+        # The result lane may be aimed at the Chat host on this machine — the one
+        # origin shape the edge middleware guards, rather than the public Worker. The
+        # rule is the queue's and nothing wider: loopback http only, any other http is
+        # refused exactly as before, because the channel secret crosses the wire.
+        if not isinstance(chat_origin, str) or not (
+            chat_origin.startswith("https://") or _is_loopback_channel_origin(chat_origin)
+        ):
+            raise ContractError("the chat channel must be an https or loopback origin")
         if len(chat_origin) > 300 or chat_origin.rstrip("/") != chat_origin:
-            raise ContractError("the chat origin must be a bare https origin")
+            raise ContractError("the chat origin must be a bare origin")
         # An empty or absent queue origin is today's behaviour: every leg, including
         # the claim, travels to the Worker. That is also the rollback, which is why it
         # is the state the field falls back to rather than a mode to configure.
@@ -424,6 +475,21 @@ class OracleMeshExecutor:
         self._origin = chat_origin
         self._queue_origin = queue_origin or None
         self._secret = channel_secret
+        # Only the Chat host sits behind the edge middleware, so only a chat leg aimed
+        # at it loopback needs the four proof headers. The queue leg on this host never
+        # carried them and still does not.
+        self._chat_reaches_edge = _is_loopback_channel_origin(chat_origin)
+        if self._chat_reaches_edge and not (
+            isinstance(edge_secret, str) and len(edge_secret) >= MIN_EDGE_SECRET_CHARS
+        ):
+            raise ContractError("a loopback chat channel needs the edge proof secret")
+        self._edge_secret = edge_secret if self._chat_reaches_edge else None
+        # One TLS context and one opener for the life of the executor instead of one
+        # per request. They are made on first use, not in here: a deployment that
+        # injects its own transport never touches them, and the tests that watch the
+        # socket deadline patch the builder around the call they care about.
+        self._ssl_context: Optional[ssl.SSLContext] = None
+        self._opener: Any = None
         self._read_port = read_port
         self._command_port = command_port
         self._desktop_port = desktop_port
@@ -528,24 +594,36 @@ class OracleMeshExecutor:
             # wire envelope would still be refused as too large and quarantined.
             data = json.dumps(payload or {}, ensure_ascii=False).encode("utf-8")
             content_type = "application/json"
-        request = urllib.request.Request(
-            url, data=data, method="POST",
-            headers={
-                "Content-Type": content_type,
-                CHANNEL_HEADER: self._secret,
-                "Accept": "application/json",
-                "User-Agent": PRODUCT_USER_AGENT,
-                # Retain the authenticated HTTPS request until a queued
-                # dispatch is available. Old consumers still get immediate poll.
-                **({"X-Oracle-Mesh-Wait": "5"} if path == POLL_PATH else {}),
-            },
-        )
-        context = ssl.create_default_context()
+        headers = {
+            "Content-Type": content_type,
+            CHANNEL_HEADER: self._secret,
+            "Accept": "application/json",
+            "User-Agent": PRODUCT_USER_AGENT,
+            # Retain the authenticated HTTPS request until a queued
+            # dispatch is available. Old consumers still get immediate poll.
+            **({"X-Oracle-Mesh-Wait": "5"} if path == POLL_PATH else {}),
+        }
+        if self._chat_reaches_edge and self._leg_for(path) == "chat":
+            # The Chat host's edge middleware answers an unsigned loopback request with
+            # a bare 403 before the channel secret is ever read, so the leg signs itself
+            # the way the Engine's chat binding does — a fresh request id per call,
+            # because the server stores the ids it has already seen.
+            headers.update(edge_proof_headers(
+                str(self._edge_secret), method="POST", path=path,
+            ))
+        request = urllib.request.Request(url, data=data, method="POST", headers=headers)
         # urllib follows 30x by default; an executor channel must never be
         # silently moved to another origin, so redirects are refused outright.
-        opener = urllib.request.build_opener(_NoRedirect())
+        # The opener and its TLS context are made once per executor, not per
+        # request: the loop posts every poll, renew, busy beat and submit through
+        # them, and rebuilding a certificate store each time bought nothing.
+        if self._opener is None:
+            self._ssl_context = ssl.create_default_context()
+            self._opener = urllib.request.build_opener(
+                _NoRedirect(), urllib.request.HTTPSHandler(context=self._ssl_context)
+            )
         try:
-            with opener.open(request, timeout=self._channel_timeout) as response:
+            with self._opener.open(request, timeout=self._channel_timeout) as response:
                 # One extra byte is the overflow detector, never content: a
                 # poll response carries the command it wants run, so reading a
                 # fixed 64 KiB used to truncate a long command's JSON and make
@@ -2170,6 +2248,7 @@ def make_oracle_mesh_executor(
     chat_origin: str,
     channel_secret: str,
     queue_origin: Optional[str] = None,
+    edge_secret: Optional[str] = None,
     meshctrl_js: str,
     login_user: str,
     password_provider: Callable[[], str],
@@ -2256,6 +2335,7 @@ def make_oracle_mesh_executor(
         chat_origin=chat_origin,
         channel_secret=channel_secret,
         queue_origin=queue_origin,
+        edge_secret=edge_secret,
         read_port=read_port,
         command_port=command_port,
         desktop_port=desktop_port,
@@ -2381,7 +2461,11 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
     """Startup entrypoint: one poll/execute/submit loop on the Oracle host.
 
     Configuration is environment-only and bounded:
-      ORACLE_MESH_CHAT_ORIGIN       https origin of the Chat worker (bare)
+      ORACLE_MESH_CHAT_ORIGIN       https origin of the Chat worker (bare), or
+                                    this host's loopback Chat origin
+                                    (http://127.0.0.1:8798). Any other http origin
+                                    is still refused: only a literal loopback
+                                    address can be reached without TLS.
       ORACLE_MESH_QUEUE_ORIGIN      optional; the origin of the 컴2 PC queue that
                                     answers the claim lane on this host
                                     (http://127.0.0.1:8797). Unset, every leg —
@@ -2389,6 +2473,12 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
                                     is the state before the queue and the rollback.
                                     The result submission always goes to the Worker.
       ORACLE_MESH_CHANNEL_SECRET_FILE  mode-0600 file holding the channel secret
+      ORACLE_MESH_EDGE_SECRET_FILE  required only when the Chat origin is this
+                                    host's loopback: the mode-0600 file holding the
+                                    COM2 edge proof secret, read once at start and
+                                    never printed. It signs the four
+                                    x-padiem-edge-* headers the Chat host's edge
+                                    middleware demands before any route runs.
       ORACLE_MESH_MESHCTRL_JS       path to the official meshctrl.js
       ORACLE_MESH_LOGIN_USER        MeshCentral operator account
       ORACLE_MESH_PASSWORD_FILE     mode-0600 file holding the operator password
@@ -2523,12 +2613,23 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
                 print(f"oracle-mesh-executor: invalid ORACLE_MESH_IDLE_POLL_MAX_SECONDS; using default {default_idle_max}",
                       file=sys.stderr)
 
+        chat_origin = need("ORACLE_MESH_CHAT_ORIGIN")
+        # Read once, at start: the edge secret is deployment material, and a
+        # rotation is a supervised restart like every other file on this list.
+        # Nothing about it is ever printed — the only signal is the refusal below.
+        edge_file = env.get(EDGE_SECRET_FILE_ENV, "").strip()
+        edge_secret = (
+            _read_secret_file(edge_file, "edge proof secret")
+            if _is_loopback_channel_origin(chat_origin) else None
+        )
+
         executor = make_oracle_mesh_executor(
-            chat_origin=need("ORACLE_MESH_CHAT_ORIGIN"),
+            chat_origin=chat_origin,
             channel_secret=_read_secret_file(
                 need("ORACLE_MESH_CHANNEL_SECRET_FILE"), "channel secret"
             ),
             queue_origin=queue_origin,
+            edge_secret=edge_secret,
             idle_poll_max_seconds=idle_max,
             meshctrl_js=need("ORACLE_MESH_MESHCTRL_JS"),
             login_user=need("ORACLE_MESH_LOGIN_USER"),
