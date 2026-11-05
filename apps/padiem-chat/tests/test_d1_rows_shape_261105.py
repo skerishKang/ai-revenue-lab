@@ -158,3 +158,65 @@ async def test_template_metadata_store_reads_rows_in_both_host_shapes(shape):
     store = D1B66TemplateSourceMetadataStore(ShapedD1(shape))
     rows = await store._all("SELECT id FROM users ORDER BY id")
     assert rows, shape
+
+
+# --- claw_first_turn_authority: the same defect family on run() results ---
+#
+# cleanup_abandoned/release_expired read the multi-row result of `run()` through
+# `.results` only. Cloudflare's run() result carries that attribute; the
+# operating 컴2 host answers run() with a plain dict, so the attribute access
+# raises AttributeError and every expired-grant sweep dies. The real SqliteD1
+# binding here is the one that actually ships on that host.
+
+import sqlite3
+from pathlib import Path
+
+from app.claw_first_turn_authority import D1FirstTurnGrantStore
+from app.d1_sqlite import SqliteD1
+
+_GRANT_MIGRATION_SQL = (
+    Path(__file__).resolve().parent.parent / "migrations" / "043_claw_coding_conversation_grant.sql"
+).read_text(encoding="utf-8")
+
+
+def _first_turn_store(tmp_path):
+    connection = sqlite3.connect(tmp_path / "grant.sqlite3")
+    connection.row_factory = sqlite3.Row
+    connection.executescript(_GRANT_MIGRATION_SQL)
+    return D1FirstTurnGrantStore(SqliteD1(connection))
+
+
+async def _insert_grant(db, *, user_id, state, correlation_key, expires_at):
+    await db.prepare(
+        "INSERT INTO claw_coding_conversation_grant "
+        "(id,user_id,subject_id,tenant_id,product_id,route_scope,conversation_ref,"
+        "correlation_key,state,issued_at,expires_at) "
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?)"
+    ).bind(
+        f"grant-{correlation_key}", user_id, "subject", "tenant", "b54-padiem-claw",
+        "chat", f"conv-{correlation_key}", correlation_key, state,
+        "2025-12-31T00:00:00Z", expires_at,
+    ).run()
+
+
+
+@pytest.mark.asyncio
+async def test_cleanup_abandoned_sweeps_reserved_rows_on_the_operating_host(tmp_path):
+    db = _first_turn_store(tmp_path).db
+    await _insert_grant(db, user_id="owner-1", state="reserved",
+                        correlation_key="gone", expires_at="2025-12-01T00:00:00Z")
+    store = D1FirstTurnGrantStore(db)
+
+    swept = await store.cleanup_abandoned("owner-1", "2026-01-01T00:00:00Z", 10)
+    assert swept == 1
+
+
+@pytest.mark.asyncio
+async def test_release_expired_frees_active_rows_on_the_operating_host(tmp_path):
+    db = _first_turn_store(tmp_path).db
+    await _insert_grant(db, user_id="owner-1", state="active",
+                        correlation_key="stale", expires_at="2025-12-01T00:00:00Z")
+    store = D1FirstTurnGrantStore(db)
+
+    released = await store.release_expired("owner-1", "2026-01-01T00:00:00Z", 10)
+    assert released == 1
