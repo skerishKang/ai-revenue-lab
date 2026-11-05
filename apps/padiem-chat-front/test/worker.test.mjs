@@ -287,6 +287,11 @@ test("front vars match the verified non-secret production contract", () => {
     // Measured 11.2s worst case plus one Free-tier retry, with a stuck turn
     // still failing inside a minute (#6460 4-2).
     ORCHESTRATION_TIMEOUT_MS: "60000",
+    // The login write waits on the same host work as the callback: 52 events
+    // over 3 days where the identity RPC alone ran past the 5s live window and
+    // the front answered a cookie-less 504 while the session was created right
+    // after it (#6957 lightened that RPC; re-measure before shrinking this).
+    AUTH_WRITE_TIMEOUT_MS: "30000",
   };
   const config = readFileSync(join(HERE, "..", "wrangler.toml"), "utf8");
   const sections = config.split(/^\[vars\]\s*$/m);
