@@ -55,6 +55,7 @@ from .orchestration_stream import (
     ProgressFrameBuilder,
     line,
     ndjson_answer,
+    stream_on_for,
     wants_ndjson,
 )
 from .public_chat import public_chat_result
@@ -107,6 +108,16 @@ def _user_id(request: Request) -> str | None:
     if not auth_ready(request):
         return None
     return current_user_id(request)
+
+
+def _stream_on_for(request: Request, uid: str | None) -> bool:
+    """The per-request streaming decision from the startup-owned state."""
+    return stream_on_for(
+        getattr(request.app.state, "orchestration_stream_enabled", False),
+        getattr(request.app.state, "orchestration_stream_users", frozenset()),
+        uid,
+        uid is None,
+    )
 
 
 async def orchestration_status(request: Request) -> JSONResponse:
@@ -509,7 +520,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             user_text=user_text,
             store=store,
             wants_stream=(
-                orchestration_stream_enabled(request.app.state, uid)
+                _stream_on_for(request, uid)
                 and wants_ndjson(raw, request.headers.get("accept"))
             ),
         )
@@ -602,7 +613,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
         )
 
     answer_budget_seconds = _answer_budget_seconds(request, timing)
-    if orchestration_stream_enabled(request.app.state, _user_id(request)) and wants_ndjson(
+    if _stream_on_for(request, uid) and wants_ndjson(
         raw, request.headers.get("accept")
     ):
         # #6742: 일반 답변도 엔진 토큰이 오는 대로 흘려보낸다. 게이트·등급·PC 순서는 그대로다.
@@ -1249,11 +1260,13 @@ def install_orchestration_routes(
     bridge: B62EngineOrchestrationBridge | None,
     *,
     stream_enabled: bool = False,
+    stream_users: frozenset[str] | None = None,
     model_first_enabled: bool = False,
 ) -> None:
     """Install routes ahead of the catch-all static Mount without changing app_factory."""
     app.state.orchestration_bridge = bridge
     app.state.orchestration_stream_enabled = stream_enabled
+    app.state.orchestration_stream_users = frozenset(stream_users or ())
     app.state.model_first_enabled = model_first_enabled
     routes = [
         Route("/api/orchestration/status", orchestration_status, methods=["GET"]),

@@ -164,36 +164,44 @@ class ProgressFrameBuilder:
         return None
 
 
-def _parse_stream_allowlist(source: Any) -> set[str]:
-    """Parse comma-separated user allowlist. Ignore malformed values silently."""
+def orchestration_stream_enabled(source: Any) -> bool:
+    """서버가 소유한 스위치. 바인딩(Worker)과 환경변수(local host)를 같은 값으로 읽는다."""
+    value = binding_value(source, STREAM_FLAG_ENV)
+    return (value.strip() if isinstance(value, str) else "").lower() in {"1", "true", "on"}
+
+
+def orchestration_stream_users(source: Any) -> frozenset[str]:
+    """Comma-separated Chat product user ids from the server-owned binding.
+
+    A missing, unreadable, or non-string value is an empty allowlist: startup
+    must never fail on a malformed value. Entries are trimmed and deduplicated;
+    empty entries are ignored.
+    """
     value = binding_value(source, STREAM_USERS_ENV)
     if not isinstance(value, str):
-        return set()
-    allowlist: set[str] = set()
-    for item in value.split(","):
-        item = item.strip()
-        if not item:
-            continue
-        if len(item) > 256:
-            continue
-        allowlist.add(item)
-    return allowlist
+        return frozenset()
+    return frozenset(
+        item.strip() for item in value.split(",") if item.strip()
+    )
 
 
-def orchestration_stream_enabled(source: Any, user_id: str | None = None) -> bool:
-    """서버 스위치 판정. Worker와 환경변수(local host) 양쪽에서 값을 읽는다.
+def stream_on_for(
+    enabled: bool,
+    users: frozenset[str] | set[str],
+    user_id: str | None,
+    is_guest: bool,
+) -> bool:
+    """Per-request decision for one caller.
 
-    If global flag is on, everyone gets streaming. If global flag is off but user
-    is logged in and in allowlist, that user gets streaming. Guests never enabled by allowlist.
+    The global switch wins for everyone. With it off, only a signed-in user in
+    the allowlist gets streaming; a guest is never enabled by the allowlist.
     """
-    global_value = binding_value(source, STREAM_FLAG_ENV)
-    global_enabled = (global_value.strip() if isinstance(global_value, str) else "").lower() in {"1", "true", "on"}
-    if global_enabled:
+    if enabled:
         return True
-    if not user_id or not isinstance(user_id, str) or not user_id.strip():
+    if is_guest or not isinstance(user_id, str):
         return False
-    allowlist = _parse_stream_allowlist(source)
-    return user_id.strip() in allowlist
+    candidate = user_id.strip()
+    return bool(candidate) and candidate in users
 
 
 def wants_ndjson(raw: Any, accept: str | None) -> bool:
@@ -351,5 +359,7 @@ __all__ = [
     "line",
     "ndjson_answer",
     "orchestration_stream_enabled",
+    "orchestration_stream_users",
+    "stream_on_for",
     "wants_ndjson",
 ]
