@@ -57,9 +57,10 @@ function boundaryWeight(text,term){
   return w;
 }
 
-function buildLexicalIndex(blocks){
-  var postings=new Map();
-  for(var i=0;i<blocks.length;i++){
+function indexBlocksRange(blocks,postings,start,end){
+  var from=Math.max(0,Number(start)||0);
+  var to=Math.min(blocks.length,Number(end)||blocks.length);
+  for(var i=from;i<to;i++){
     var b=blocks[i];
     var combined=(String(b.title||'')+' '+String(b.text||'')+' '+String(b.sourceText||'')).toLowerCase();
     var terms=combined.match(/[a-z0-9가-힣]+/g)||[];
@@ -69,8 +70,13 @@ function buildLexicalIndex(blocks){
   }
   return postings;
 }
+function buildLexicalIndex(blocks){
+  return indexBlocksRange(blocks,new Map(),0,blocks.length);
+}
 var _indexCache=(typeof WeakMap!=='undefined'?new WeakMap():null);
 function cachedIndex(blocks){ if(_indexCache){ var hit=_indexCache.get(blocks); if(hit)return hit; var built=buildLexicalIndex(blocks); _indexCache.set(blocks,built); return built; } return buildLexicalIndex(blocks); }
+function primeLexicalIndex(blocks,postings){ if(_indexCache&&blocks&&postings)_indexCache.set(blocks,postings); return postings; }
+function hasCachedIndex(blocks){ return !!(_indexCache&&blocks&&_indexCache.get(blocks)); }
 
 function loadCatalogSync(contentRoot){
   if(typeof require==='undefined') throw new Error('FS_UNAVAILABLE');
@@ -286,10 +292,10 @@ function staticKeywordSearch(query, opts){
 }
 
   if(typeof window!=='undefined'){
-    window.__smStaticKeywordSearchV1={tokenize:tokenize, buildLexicalIndex:buildLexicalIndex, cachedIndex:cachedIndex, boundaryWeight:boundaryWeight, makeSnippet:makeSnippet, staticKeywordSearch:staticKeywordSearch, loadCatalogSync: (typeof require!=='undefined'?loadCatalogSync:null)};
+    window.__smStaticKeywordSearchV1={tokenize:tokenize, buildLexicalIndex:buildLexicalIndex, cachedIndex:cachedIndex, indexBlocksRange:indexBlocksRange, primeLexicalIndex:primeLexicalIndex, hasCachedIndex:hasCachedIndex, boundaryWeight:boundaryWeight, makeSnippet:makeSnippet, staticKeywordSearch:staticKeywordSearch, loadCatalogSync: (typeof require!=='undefined'?loadCatalogSync:null)};
   }
   if(typeof module!=='undefined' && module.exports){
-    module.exports={tokenize:tokenize, buildLexicalIndex:buildLexicalIndex, cachedIndex:cachedIndex, boundaryWeight:boundaryWeight, makeSnippet:makeSnippet, staticKeywordSearch:staticKeywordSearch, loadCatalogSync: (typeof require!=='undefined'?loadCatalogSync:null), loadManifestSync: (typeof require!=='undefined'?loadManifestSync:null), loadUnitsSync: (typeof require!=='undefined'?loadUnitsSync:null)};
+    module.exports={tokenize:tokenize, buildLexicalIndex:buildLexicalIndex, cachedIndex:cachedIndex, indexBlocksRange:indexBlocksRange, primeLexicalIndex:primeLexicalIndex, hasCachedIndex:hasCachedIndex, boundaryWeight:boundaryWeight, makeSnippet:makeSnippet, staticKeywordSearch:staticKeywordSearch, loadCatalogSync: (typeof require!=='undefined'?loadCatalogSync:null), loadManifestSync: (typeof require!=='undefined'?loadManifestSync:null), loadUnitsSync: (typeof require!=='undefined'?loadUnitsSync:null)};
 
   }
 })();

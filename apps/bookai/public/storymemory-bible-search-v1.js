@@ -138,7 +138,9 @@ function getIndexManifest(signal){
   }
   return indexManifestPromise;
 }
-async function loadBibleBlocks(onProgress,signal){
+async function loadBibleBlocks(onProgress,signal,options){
+  options=options||{};
+  var laneLimit=Math.max(1,Math.min(4,Number(options.lanes)||4));
   var manifest=await getIndexManifest(signal);var shards=manifest.shards;
   if(!shards.length)throw new Error('BIBLE_SEARCH_INDEX_EMPTY');
   var completed=shards.reduce(function(n,shard){return n+(loadedIndexShards[shard.path]?1:0)},0);
@@ -156,7 +158,7 @@ async function loadBibleBlocks(onProgress,signal){
       }catch(error){fetchFailed=error;break}
     }
   }
-  var laneCount=Math.min(4,shards.length);var lanes=[];
+  var laneCount=Math.min(laneLimit,shards.length);var lanes=[];
   for(var lane=0;lane<laneCount;lane++)lanes.push(worker());
   await Promise.all(lanes);
   if(signal?.aborted)throw new DOMException('Search cancelled','AbortError');
@@ -170,7 +172,9 @@ async function loadBibleBlocks(onProgress,signal){
     }
     searchController=new AbortController();submit.disabled=true;input.disabled=true;cancelButton.hidden=false;retryButton.hidden=true;
     try{
-      var blocks=preloadedBlocksPromise?await preloadedBlocksPromise:await loadBibleBlocks(function(done,total){setStatus('성경 검색 색인을 불러오는 중이에요 ('+done+' / '+total+' 묶음)')},searchController.signal);
+      var blocks=null;
+      if(preloadedBlocksPromise){try{blocks=await preloadedBlocksPromise;}catch(_){blocks=null;}}
+      if(!blocks||!blocks.length)blocks=await loadBibleBlocks(function(done,total){setStatus('성경 검색 색인을 불러오는 중이에요 ('+done+' / '+total+' 묶음)')},searchController.signal);
       setStatus('성경 본문 '+blocks.length.toLocaleString()+'개 구절에서 검색하고 있어요.');
       var result=window.__smStaticKeywordSearchV1.staticKeywordSearch(query,{workKey:'bible-web',blocks:blocks,limit:50});
       clearResults();
@@ -202,23 +206,89 @@ async function loadBibleBlocks(onProgress,signal){
   }
   var highlightGeneration=0;
   var preloadedBlocksPromise=null;
-  function maybePrefetchBlocks(){
+  var prefetchScheduled=false;
+  var prefetchObserver=null;
+  var PREFETCH_DELAY_MS=3000;
+  var PREFETCH_INDEX_BATCH=800;
+  function warnPrefetch(message,error){
+    try{console.warn('[bible-search] '+message,String(error&&error.message||error||''));}catch(_){}
+  }
+  function prefetchSkipped(){
+    if(window.__smBibleSearchNoPrefetch)return true; // test hook: keep the cold-start path deterministic
+    var conn=navigator.connection;
+    if(conn&&(conn.saveData||/(^|\-)2g$/.test(String(conn.effectiveType||''))))return true;
+    if(document.hidden)return true;
+    if(!isBibleReader())return true;
+    return false;
+  }
+  function scheduleIdle(fn,timeout){
+    var wait=Math.max(0,Number(timeout)||3000);
+    if(typeof requestIdleCallback==='function'){
+      try{return {kind:'idle',id:requestIdleCallback(fn,{timeout:wait})};}
+      catch(error){warnPrefetch('requestIdleCallback schedule failed',error);}
+    }
+    return {kind:'timeout',id:setTimeout(fn,wait)};
+  }
+  function readerPassageReady(){
+    try{return !!document.querySelector('#readerPageBody .sm-source-passage');}catch(_){return false;}
+  }
+  function schedulePrefetchAfterRender(){
+    if(prefetchScheduled||preloadedBlocksPromise)return;
+    prefetchScheduled=true;
+    setTimeout(function(){
+      if(prefetchSkipped()){prefetchScheduled=false;return;}
+      scheduleIdle(function(){startIndexPrefetch();},3000);
+    },PREFETCH_DELAY_MS);
+  }
+  function armIndexPrefetch(){
     try{
-      if(preloadedBlocksPromise)return;
-      if(window.__smBibleSearchNoPrefetch)return; // test hook: keep the cold-start path deterministic
-      var conn=navigator.connection;
-      if(conn){
-        if(conn.saveData||/(^|\-)2g$/.test(String(conn.effectiveType||'')))return;
+      if(preloadedBlocksPromise||prefetchScheduled||prefetchObserver)return;
+      if(prefetchSkipped())return;
+      if(readerPassageReady()){schedulePrefetchAfterRender();return;}
+      if(typeof MutationObserver!=='function')return;
+      prefetchObserver=new MutationObserver(function(){
+        if(!readerPassageReady())return;
+        try{prefetchObserver.disconnect();}catch(_){}
+        prefetchObserver=null;
+        if(prefetchSkipped())return;
+        schedulePrefetchAfterRender();
+      });
+      prefetchObserver.observe(document,{childList:true,subtree:true});
+    }catch(error){warnPrefetch('prefetch arm failed',error);}
+  }
+  async function buildPrefetchedIndex(blocks){
+    var api=window.__smStaticKeywordSearchV1;
+    if(!api||typeof api.indexBlocksRange!=='function'||typeof api.primeLexicalIndex!=='function'||typeof api.hasCachedIndex!=='function')return false;
+    if(api.hasCachedIndex(blocks))return true;
+    return new Promise(function(resolve){
+      var postings=new Map();var cursor=0;
+      function step(){
+        try{
+          var end=Math.min(blocks.length,cursor+PREFETCH_INDEX_BATCH);
+          api.indexBlocksRange(blocks,postings,cursor,end);
+          cursor=end;
+          if(cursor<blocks.length){scheduleIdle(step,2000);return;}
+          api.primeLexicalIndex(blocks,postings);
+          resolve(true);
+        }catch(error){warnPrefetch('index prefetch failed',error);resolve(false);}
       }
-      if(document.hidden)return;
-      if(!isBibleReader())return;
-      var start=function(){
-        if(document.hidden)return;
-        preloadedBlocksPromise=loadBibleBlocks().catch(function(){preloadedBlocksPromise=null;});
-      };
-      if(typeof requestIdleCallback==='function')requestIdleCallback(start,3000);
-      else setTimeout(start,3000);
-    }catch(_){}
+      scheduleIdle(step,2000);
+    });
+  }
+  function startIndexPrefetch(){
+    try{
+      if(preloadedBlocksPromise||prefetchSkipped())return;
+      var run=(async function(){
+        var blocks=await loadBibleBlocks(null,null,{lanes:1});
+        await buildPrefetchedIndex(blocks);
+        return blocks;
+      })();
+      preloadedBlocksPromise=run.catch(function(error){
+        warnPrefetch('prefetch failed',error);
+        preloadedBlocksPromise=null;
+        return null;
+      });
+    }catch(error){warnPrefetch('prefetch start failed',error);}
   }
 function captureReturnSnapshot(){
   if(!isBibleReader())return null;
@@ -332,9 +402,9 @@ cancelButton.addEventListener('click',function(){if(searchController)searchContr
 retryButton.addEventListener('click',function(){retryButton.hidden=true;form.requestSubmit()});
   if(typeof setReaderContext==='function'){
     var originalSetReaderContext=setReaderContext;
-    setReaderContext=function(){var result=originalSetReaderContext.apply(this,arguments);syncPanelVisibility();maybePrefetchBlocks();return result};
+    setReaderContext=function(){var result=originalSetReaderContext.apply(this,arguments);syncPanelVisibility();armIndexPrefetch();return result};
   }
   syncPanelVisibility();
-  maybePrefetchBlocks();
-  window.storyMemoryBibleSearchV1={parseReference:parser.parseReference,loadBibleBlocks:loadBibleBlocks,openSearchResult:openSearchResult,returnToReadingPosition:returnToReadingPosition,shouldTreatAsReference:shouldTreatAsReference,krvLabelForBlock:krvLabelForBlock};
+  armIndexPrefetch();
+  window.storyMemoryBibleSearchV1={parseReference:parser.parseReference,loadBibleBlocks:loadBibleBlocks,openSearchResult:openSearchResult,returnToReadingPosition:returnToReadingPosition,shouldTreatAsReference:shouldTreatAsReference,krvLabelForBlock:krvLabelForBlock,armIndexPrefetch:armIndexPrefetch,prefetchState:function(){return {scheduled:prefetchScheduled,started:!!preloadedBlocksPromise};}};
 })();
