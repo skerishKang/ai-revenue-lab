@@ -50,7 +50,6 @@ test('both reader pages keep the legacy remote lane disabled before fetch', () =
   ]) {
     const source = fs.readFileSync(page, 'utf8');
     assertHas(source, /const remoteEnabled = false;/, page, 'remote lane must stay disabled');
-    assertHas(source, /bookai-remote-pack-surfaces-disabled/, page, 'remote pack surfaces are hidden');
     const requestStart = source.indexOf('async function request(table');
     assert.notEqual(requestStart, -1, path.relative(appRoot, page) + ': request method is present');
     const disabledGuard = source.indexOf('if(!remoteEnabled)', requestStart);
@@ -72,7 +71,6 @@ test('remote pack and hybrid-memory surfaces stay disconnected while account syn
   const sync = fs.readFileSync(path.join(publicRoot, 'bookai-sync.js'), 'utf8');
   const records = fs.readFileSync(path.join(publicRoot, 'bookai-records.js'), 'utf8');
 
-  assertHas(shell, /bookai-remote-pack-surfaces-disabled/, path.join(publicRoot, 'index.html'), 'remote pack UI is hidden');
   assertHas(hybrid, /async function remoteSnapshot\(\)\s*\{\s*return \{mode:'disabled'/,
     path.join(publicRoot, 'storymemory-legacy-hybrid-ai-v1.js'), 'remote Memory reads are disabled');
   assert.ok(!/remoteAdapter|\.request\(/.test(hybrid), 'hybrid AI must not call a remote adapter');
@@ -80,4 +78,40 @@ test('remote pack and hybrid-memory surfaces stay disconnected while account syn
     path.join(publicRoot, 'bookai-sync.js'), 'account sync uses the records API');
   assertHas(records, /'progress','note','highlight','ai_chat'/,
     path.join(publicRoot, 'bookai-records.js'), 'reader and saved-chat records stay mappable');
+});
+
+test('removed pack surfaces leave no files or references behind', () => {
+  const removed = [
+    'storymemory-pack-marketplace-runtime.js',
+    'storymemory-pack-marketplace-ui.js',
+    'storymemory-pack-marketplace-ui.css',
+    'storymemory-auto-pack-runtime.js',
+    'storymemory-auto-pack-ui.js',
+    'storymemory-auto-pack-ui.css',
+    'storymemory-pack-lifecycle-runtime.js',
+    'storymemory-pack-lifecycle-ui.js',
+    'storymemory-pack-lifecycle-ui.css',
+    'storymemory-pack-entitlement-runtime.js',
+    'storymemory-pack-entitlement-ui.js',
+    'storymemory-pack-entitlement-ui.css',
+    'storymemory-pack-verification-runtime.js',
+    'storymemory-pack-verification-ui.js',
+    'storymemory-pack-verification-ui.css',
+    'mobile-source-settings.js',
+  ];
+  for (const name of removed) {
+    assert.ok(!fs.existsSync(path.join(publicRoot, name)), name + ' must be deleted');
+  }
+  const references = [];
+  for (const file of sourceFiles(publicRoot)) {
+    const source = fs.readFileSync(file, 'utf8');
+    for (const name of removed) {
+      if (source.includes(name)) references.push(path.relative(publicRoot, file) + ': ' + name);
+    }
+  }
+  assert.deepEqual(references, [], 'removed pack surfaces must not be referenced');
+  const shell = fs.readFileSync(path.join(publicRoot, 'index.html'), 'utf8');
+  assert.ok(!shell.includes('bookai-remote-pack-surfaces-disabled'), 'pack-hiding style must be gone');
+  assert.ok(!/#packMarketplaceLaunch|#autoPackLaunch|#packEntitlementLaunch|#packVerificationLaunch/.test(shell),
+    'pack launch ids must be gone from the shell');
 });

@@ -108,5 +108,6 @@ jobs:
             apps/bookai/tests/test_bookai_6473_6472.py \
             apps/bookai/tests/test_bookai_reader_translation_a11y_6475.py \
             apps/bookai/tests/test_bookai_mobile_polish_261104.py
+            apps/bookai/tests/test_bookai_boot_resilience_261105.py
           echo 'BOOKAI_TODAY_KEYBOARD=PASS'
           echo 'PRODUCTION_MUTATION=0'

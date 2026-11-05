@@ -12,8 +12,10 @@
 - Cloudflare 계정: Charliekant (끝 6932)
 
 ```sh
-npx -y wrangler@4.156.0 pages deploy apps/bookai/public --project-name bookai --branch main --keep-vars
+npx -y wrangler@4.156.0 pages deploy apps/bookai/public --project-name bookai --branch main
 ```
+
+Pages 배포는 프로젝트 변수·비밀을 바꾸지 않습니다.
 
 배포 전에 `EXCLUDED_ASSETS.md`의 제외 자산을 확인합니다. 이 브랜치에서는 운영 배포나 비밀 변경을 하지 않습니다.
 

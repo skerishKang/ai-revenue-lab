@@ -97,7 +97,6 @@ def test_mobile_theme_touch_targets_and_dark_memory_contrast(base_url):
 window.__bookaiErrors=[];
 window.addEventListener('error', e => {
   var where = e.filename || '';
-  if (where.indexOf('/storymemory-pack-') !== -1) return;
   window.__bookaiErrors.push(e.message + ' @ ' + where + ':' + e.lineno + ':' + e.colno);
 });
 """)
@@ -119,7 +118,6 @@ window.addEventListener('error', e => {
 window.__bookaiErrors=[];
 window.addEventListener('error', e => {
   var where = e.filename || '';
-  if (where.indexOf('/storymemory-pack-') !== -1) return;
   window.__bookaiErrors.push(e.message + ' @ ' + where + ':' + e.lineno + ':' + e.colno);
 });
 """)
