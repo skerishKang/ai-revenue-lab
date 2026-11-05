@@ -82,25 +82,25 @@ def _free_tier_payload() -> dict[str, object]:
     }
 
 
-# ── 1. the anonymous Free lane stays bounded and carries no mojibake ────────
+# ── 1. the guest lane is refused before any provider call ──────────────────
 
 
 @pytest.mark.parametrize("path", FREE_TIER_PATHS)
-def test_anonymous_free_request_is_bounded_by_the_usage_gate(
+def test_guest_free_request_is_refused_with_login_required(
     free_tier_client: TestClient,
     path: str,
 ) -> None:
-    # #5474 Owner decision: no login is required for Free. The usage gate must
-    # answer instead, before any provider call.
+    # Owner decision 2026-11-05: Chat is signed-in only. The login gate answers
+    # before the usage gate and before any provider call.
     free_tier_client.app.state.usage_gate_enforced = True
     resp = free_tier_client.post(
         path,
         json=_free_tier_payload(),
         headers={"cf-connecting-ip": "203.0.113.61"},
     )
-    assert resp.status_code == 503
+    assert resp.status_code == 401
     data = resp.json()
-    assert data["error"]["code"] == "live_abuse_gate_unavailable"
+    assert data["error"]["code"] == "login_required"
     message = data["error"]["message"]
     assert MOJIBAKE_RUN.search(message) is None
     assert HANGUL.search(message)

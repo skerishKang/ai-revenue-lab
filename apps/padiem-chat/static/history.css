@@ -239,8 +239,8 @@ html[data-theme="dark"] .auth-primary {
   display: block;
 }
 
-/* #5474: Free is usable without a login; the note under the login button names
-   what signing in adds, in the same Glass typography as the rest of the panel. */
+/* Owner decision 2026-11-05: the note under the login button states what
+   signing in enables, in the same Glass typography as the rest of the panel. */
 .auth-free-note {
   display: grid;
   gap: 2px;
@@ -257,6 +257,36 @@ html[data-theme="dark"] .auth-primary {
 
 .auth-free-note span {
   opacity: 0.78;
+}
+
+/* Owner decision 2026-11-05: a guest sees one quiet invitation on the first
+   screen. The composer stays editable; pressing send opens the login dialog. */
+.empty-login-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 6px;
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: inherit;
+  opacity: 0.78;
+}
+
+.empty-login-hint[hidden] {
+  display: none;
+}
+
+.empty-login-hint-action {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  font-weight: 650;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .auth-primary {

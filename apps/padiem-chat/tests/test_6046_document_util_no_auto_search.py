@@ -31,6 +31,15 @@ def _selected_model_for_grounding_contract(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(model_policy_module, "EXECUTABLE_B14_MODEL_IDS", frozenset({DEFAULT_B14_MODEL_ID}))
 
 
+@pytest.fixture(autouse=True)
+def _signed_in_chat(monkeypatch: pytest.MonkeyPatch):
+    """These document/search behavior tests run as a signed-in Chat member."""
+    from app import chat_routes
+
+    monkeypatch.setattr(chat_routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(chat_routes, "current_user_id", lambda request: "usr_" + "7" * 32)
+
+
 # 실제 실패한 요청의 형태: 고정 템플릿 + 선택된 기록 본문. 총 길이 2,000자를 넘긴다.
 BOOK_TEMPLATE_HEAD = "다음은 사용자가 선택한 활동 기록 본문입니다. 각 기록의 이름을 출처로 유지하세요.\n\n"
 BOOK_TEMPLATE_TAIL = (

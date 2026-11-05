@@ -119,11 +119,16 @@ async def test_ephemeral_document_is_untrusted_single_system_context_and_not_pub
         seen["body"] = json.loads(request.content)
         return httpx.Response(200, json=b14_success())
 
-    app = create_app(
-        Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
-        transport=httpx.MockTransport(handler),
-    )
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+    cfg = auth_settings(runtime="b14")
+    history = MemoryHistory()
+    app = create_app(cfg, transport=httpx.MockTransport(handler), history_store=history)
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
+        client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(cfg, history.user.id),
+            domain="chat.example.test",
+            path="/",
+        )
         response = await client.post("/api/chat", json={
             "messages": [{"role": "user", "content": "이 문서에서 중요한 내용을 알려줘"}],
             "attachments": [doc(text=f"회의 메모\n{marker}\n매출은 42")],
@@ -163,11 +168,16 @@ async def test_document_can_combine_with_web_evidence_inside_context_cap():
         seen["body"] = json.loads(request.content)
         return httpx.Response(200, json=b14_success("근거 [1]과 문서를 함께 확인했습니다."))
 
-    app = create_app(
-        Settings(runtime_mode="b14", b14_base_url="https://b14.example", web_provider="mock"),
-        transport=httpx.MockTransport(handler),
-    )
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+    cfg = auth_settings(runtime="b14", web_provider="mock")
+    history = MemoryHistory()
+    app = create_app(cfg, transport=httpx.MockTransport(handler), history_store=history)
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
+        client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(cfg, history.user.id),
+            domain="chat.example.test",
+            path="/",
+        )
         response = await client.post("/api/chat", json={
             "messages": [{"role": "user", "content": "문서와 최신 정보를 비교해줘"}],
             "tool": "web_search",

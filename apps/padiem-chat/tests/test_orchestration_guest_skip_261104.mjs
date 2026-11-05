@@ -2,6 +2,8 @@
 // answer can never be ready without authenticated === true, so every turn of
 // a guest must not pay a serial status probe before the answer request. The
 // probe still runs for a signed-in session and when no session state is known.
+// Owner decision 2026-11-05: the Chat fallback now refuses that guest with
+// 401 login_required instead of reaching an anonymous Free answer.
 import test from "node:test";
 import assert from "node:assert/strict";
 
@@ -41,12 +43,12 @@ function setSession(auth) {
 test("a signed-out guest does not pay the orchestration status probe per turn", async () => {
   transport.invalidateOrchestrationReady();
   const calls = installFetch((url) => url.endsWith("/api/chat/stream")
-    ? jsonResponse({ error: { code: "quota_exhausted", message: "한도에 도달했습니다." } }, 429)
+    ? jsonResponse({ error: { code: "login_required", message: "AI 대화를 사용하려면 로그인이 필요합니다." } }, 401)
     : jsonResponse({ orchestration_ready: false, authenticated: false }));
   setSession({ loaded: true, ready: true, authenticated: false, sessionState: "guest" });
-  // The refusal reaches the caller directly, without a status round trip.
+  // The login refusal reaches the caller directly, without a status round trip.
   await assert.rejects(() => transport.requestStreaming(PAYLOAD, null), (error) => {
-    assert.equal(error.code, "quota_exhausted");
+    assert.equal(error.code, "login_required");
     return true;
   });
   assert.equal(statusCalls(calls), 0);

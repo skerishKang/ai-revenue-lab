@@ -298,11 +298,11 @@ async def auth_status(request: Request) -> JSONResponse:
         payload['shared_login_enabled'] = True
         # Presentation hint only; authentication never trusts this value.
         payload['shared_session_present'] = request.cookies.get('__Host-padiem-shared-marker') == '1'
-    # Owner decision 2026-10-24 (#5474): a guest may use Free on the Chat lane,
-    # bounded by the usage gate; paid tiers, Claw, Custom and projects still
-    # need a session. This flag is the server-authoritative condition the
-    # browser may act on, and an isolated mock app (the CI browser QA target)
-    # never advertises it, so no browser lane silently changes Production.
+    # Owner decision 2026-11-05: Chat/Claw AI answers are signed-in only.
+    # A signed-in member keeps the Free tier; a guest gets the login gate.
+    # This flag is the server-authoritative condition the browser may act on,
+    # and an isolated mock app (the CI browser QA target) never advertises it,
+    # so no browser lane silently changes Production.
     payload["model_requires_session"] = bool(
         ready and request.app.state.settings.runtime_mode != "mock"
     )

@@ -20,6 +20,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
+from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.dispatch_quota import (
     DispatchAwareUsageCounterStore,
@@ -30,6 +31,7 @@ from kagent.p01_adapter import P01AdapterError, P01DispatchClass
 
 QUOTA_SALT = "claw-refund-quota-salt-not-a-real-secret-01"
 IP = "203.0.113.77"
+SIGNED_IN_USER_ID = "usr_" + "7" * 32
 EXECUTE_ROUTE = "/api/claw/manual-intake/execute"
 PAYLOAD: dict[str, Any] = {
     "content": "가상 테스트: A업체가 9월 말까지 샘플 20개 견적서를 요청함.",
@@ -43,6 +45,12 @@ def _live_quota_settings(**overrides) -> Settings:
     values = {
         "runtime_mode": "b14",
         "b14_base_url": "https://b14.example",
+        "auth_mode": "google",
+        "public_base_url": "https://chat.example.test",
+        "google_client_id": "claw-refund-client.apps.googleusercontent.com",
+        "google_client_secret": "claw-refund-test-secret",
+        "session_secret": "claw-refund-test-session-secret-not-real-0001",
+        "session_max_age_seconds": 3600,
         "quota_salt": QUOTA_SALT,
         "anonymous_burst_limit": 4,
         "anonymous_daily_limit": 20,
@@ -52,6 +60,17 @@ def _live_quota_settings(**overrides) -> Settings:
     }
     values.update(overrides)
     return Settings.from_values(**values)
+
+
+class _History:
+    async def get_conversation(self, *args: Any, **kwargs: Any):
+        return None
+
+    async def get_conversation_model_context(self, *args: Any, **kwargs: Any):
+        return None
+
+    async def append_exchange(self, *args: Any, **kwargs: Any):
+        return None
 
 
 class RefundableMemoryStore(InMemoryUsageCounterStore):
@@ -108,11 +127,21 @@ def _make_adapter(outcome: Any = None, error: BaseException | None = None):
 
 def _app(store: RefundableMemoryStore, settings: Settings | None = None):
     wrapped = DispatchAwareUsageCounterStore(store)
-    return create_app(settings or _live_quota_settings(), usage_store=wrapped)
+    return create_app(
+        settings or _live_quota_settings(),
+        history_store=_History(),
+        usage_store=wrapped,
+    )
 
 
 def _post(app, payload: dict[str, Any] | None = None):
-    with TestClient(app) as client:
+    with TestClient(app, base_url="https://chat.example.test") as client:
+        client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(app.state.settings, SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
         return client.post(
             EXECUTE_ROUTE,
             json=payload if payload is not None else PAYLOAD,
@@ -179,7 +208,7 @@ def test_successful_execution_does_not_refund() -> None:
 
 def test_usage_denial_does_not_refund() -> None:
     store = RefundableMemoryStore()
-    app = _app(store, settings=_live_quota_settings(anonymous_burst_limit=1))
+    app = _app(store, settings=_live_quota_settings(user_burst_limit=1))
     adapter = _make_adapter()
     app.state.claw_p01_adapter = adapter
 
@@ -317,11 +346,13 @@ def test_retry_after_refund_pays_for_a_new_execution() -> None:
 @pytest.mark.asyncio
 async def test_concurrent_failures_refund_only_their_own_receipts() -> None:
     store = RefundableMemoryStore()
-    app = _app(store, settings=_live_quota_settings(anonymous_burst_limit=4))
+    app = _app(store, settings=_live_quota_settings(user_burst_limit=4))
     app.state.claw_p01_adapter = _make_adapter(error=_not_dispatched_error())
 
     async with httpx.AsyncClient(
-        transport=httpx.ASGITransport(app=app), base_url="http://test"
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+        cookies={SESSION_COOKIE: create_session_token(app.state.settings, SIGNED_IN_USER_ID)},
     ) as client:
         responses = await asyncio.gather(
             *(
@@ -388,7 +419,7 @@ def test_caller_cannot_mint_refund_identity_on_failure() -> None:
     # caller-minted identity never entered quota accounting.
     assert store.bucket_refund_calls == 3
     assert "caller-minted-refund-0001" not in str(store.counts)
-    assert all(key[1].startswith("anon_") or key[1] == "global" for key in store.counts)
+    assert all(key[1] == SIGNED_IN_USER_ID or key[1] == "global" for key in store.counts)
 
 
 def test_execute_route_has_no_body_driven_refund_authority() -> None:

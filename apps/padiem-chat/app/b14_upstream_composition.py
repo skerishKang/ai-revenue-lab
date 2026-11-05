@@ -26,6 +26,7 @@ from padiem_ai_core.b14_streaming import (
 )
 from padiem_ai_core.b14_upstream import (
     MODE_HTTPS,
+    MODE_LOOPBACK,
     B14HttpsPostJson,
     B14HttpsTransport,
 )
@@ -74,7 +75,7 @@ def compose_b14_transports(
     they own the Service Binding call shape and live with the Worker composition,
     while this decision stays importable and testable on either side.
     """
-    if upstream_mode != MODE_HTTPS:
+    if upstream_mode not in (MODE_HTTPS, MODE_LOOPBACK):
         if binding is None:
             return None, None
         return (

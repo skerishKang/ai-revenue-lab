@@ -1,25 +1,21 @@
-"""#5474: the anonymous Chat lane and the usage gate that bounds it.
+"""Owner decision 2026-11-05: Chat/Claw AI answers are signed-in only.
 
-Originally a verification suite: an anonymous request that omitted ``tier``
-reached the usage gate while an explicit ``tier == "free"`` claim was answered
-401 by the login check. The Owner decision of 2026-10-24 settles that
-asymmetry in favour of anonymous Free on the Chat lane, so both claims now take
-the same path and this module pins the resulting contract:
+This module replaces the 2026-10-24 anonymous-Free contract (#5474). It pins
+the new boundary:
 
-* The Production worker enforces the usage gate unconditionally
-  (``worker.py`` sets ``app.state.usage_gate_enforced = True``) and the gate is
-  evaluated in both routes before any B14 call. Without a quota store or a
-  client IP it denies with 503 and makes zero provider calls.
-* With a store bound, anonymous Free — explicit or defaulted — is bounded per
-  real client IP and the second burst call is denied with 429 before B14.
-* Paid tiers, Custom and projects still require a session: anonymous requests
-  are answered 401 before any provider call.
-* With no enforcing gate the request executes, which is the documented
-  development-stage posture (``app_factory.py``: quotas disabled by default,
-  provider-governed rather than locally quota-gated).
-* Mock runtime keeps its anonymous harness behaviour.
+* A guest gets HTTP 401 ``login_required`` on both Chat routes before the usage
+  gate, before any history/provider work, and before B14. The canary client
+  proves zero model calls.
+* The login gate precedes the usage gate: an enforcing deployment without a
+  quota store still answers 401 ``login_required`` (not 503).
+* A signed-in member keeps the Free tier and the existing usage gate. The
+  second burst call is still 429 ``rate_limited``.
+* A signed-in member is never turned into a guest by an expired/tampered
+  cookie; that request is 401 ``login_required``.
+* The network-free mock runtime keeps its CI harness behavior, matching the
+  server-owned ``model_requires_session = false`` projection.
 
-Every test uses a canary B14 client: if any denied path executes a model, the
+Every test uses a canary B14 client: if a refused path executes a model, the
 test fails loudly.
 """
 from __future__ import annotations
@@ -75,6 +71,8 @@ def quota_settings() -> Settings:
         quota_salt=QUOTA_SALT,
         anonymous_burst_limit=1,
         anonymous_daily_limit=10,
+        user_burst_limit=1,
+        user_daily_limit=10,
     )
 
 
@@ -174,84 +172,48 @@ def assert_code(app, response: httpx.Response, *, expected_status: int, expected
 
 
 @pytest.mark.parametrize("path", PATHS)
-def test_enforcing_gate_without_store_denies_anonymous_before_b14(path: str) -> None:
-    app = build_enforced_app()
-    response = asyncio.run(post(app, path, payload(), origin=ORIGIN))
-    assert_code(app, response, expected_status=503, expected_code="live_abuse_gate_unavailable")
-
-
-@pytest.mark.parametrize("path", PATHS)
-def test_enforcing_gate_without_client_ip_denies_anonymous_before_b14(path: str) -> None:
-    """Origin is present but there is no Cloudflare IP to attribute the call to."""
-
-    app = build_enforced_app(store=InMemoryUsageCounterStore())
-    response = asyncio.run(post(app, path, payload(), origin=ORIGIN))
-    assert_code(app, response, expected_status=503, expected_code="live_identity_unavailable")
-
-
-@pytest.mark.parametrize("path", PATHS)
-def test_anonymous_access_is_rate_limited_before_b14(path: str) -> None:
-    """The second burst call is denied before any further model execution."""
-
-    app = create_app(quota_settings(), history_store=EmptyHistory(), usage_store=InMemoryUsageCounterStore())
-    app.state.usage_gate_enforced = True
-    scripted = ScriptedB14()
-    app.state.b14_client = scripted
-
-    first = asyncio.run(post(app, path, payload(), origin=ORIGIN, client_ip=CLIENT_IP))
-    second = asyncio.run(post(app, path, payload(), origin=ORIGIN, client_ip=CLIENT_IP))
-
-    assert first.status_code == 200, first.text
-    assert scripted.calls == 1
-    assert second.status_code == 429, second.text
-    assert second.json()["error"]["code"] == "rate_limited"
-    assert scripted.calls == 1
-
-
-# --- 2. anonymous Free, explicit or defaulted, shares one bounded path -----
-
-
-@pytest.mark.parametrize("path", PATHS)
-def test_explicit_free_tier_reaches_the_usage_gate_before_b14(path: str) -> None:
-    app = build_enforced_app(store=InMemoryUsageCounterStore())
-    response = asyncio.run(post(app, path, payload(tier="free"), origin=ORIGIN))
-    assert_code(app, response, expected_status=503, expected_code="live_identity_unavailable")
-
-
-@pytest.mark.parametrize("path", PATHS)
-def test_explicit_free_tier_is_quota_bounded_for_anonymous_callers(path: str) -> None:
-    app = create_app(quota_settings(), history_store=EmptyHistory(), usage_store=InMemoryUsageCounterStore())
-    app.state.usage_gate_enforced = True
-    scripted = ScriptedB14()
-    app.state.b14_client = scripted
-
-    first = asyncio.run(post(app, path, payload(tier="free"), origin=ORIGIN, client_ip=CLIENT_IP))
-    second = asyncio.run(post(app, path, payload(tier="free"), origin=ORIGIN, client_ip=CLIENT_IP))
-
-    assert first.status_code == 200, first.text
-    assert scripted.calls == 1
-    assert second.status_code == 429, second.text
-    assert second.json()["error"]["code"] == "rate_limited"
-    assert scripted.calls == 1
-
-
-@pytest.mark.parametrize("path", PATHS)
-def test_omitted_tier_reaches_the_usage_gate_instead_of_the_login_gate(path: str) -> None:
-    """Pinning the shared path: the omitted claim is not blocked by a login gate."""
-
-    app = build_enforced_app(store=InMemoryUsageCounterStore())
-    response = asyncio.run(post(app, path, payload()))
-    assert_code(app, response, expected_status=503, expected_code="live_identity_unavailable")
-
-
-@pytest.mark.parametrize("path", PATHS)
-def test_anonymous_paid_tier_still_requires_login(path: str) -> None:
+@pytest.mark.parametrize("body", (
+    payload(),
+    payload(tier="free"),
+    payload(tier="plus"),
+    payload(custom={"provider": "custom-free", "model": "custom-free/gpt-5.5"}),
+))
+def test_guest_chat_is_refused_before_b14(path: str, body) -> None:
     app = build_app()
-    response = asyncio.run(post(app, path, payload(tier="plus"), origin=ORIGIN))
-    assert_code(app, response, expected_status=401, expected_code="unauthorized")
+    response = asyncio.run(post(app, path, body, origin=ORIGIN))
+    assert_code(app, response, expected_status=401, expected_code="login_required")
 
 
-# --- 3. the gate must not over-block a signed-in member ---------------------
+@pytest.mark.parametrize("path", PATHS)
+def test_login_gate_precedes_the_usage_gate(path: str) -> None:
+    """No quota store and no client IP: the login gate answers first, not 503."""
+    app = build_enforced_app()
+    response = asyncio.run(post(app, path, payload(tier="free"), origin=ORIGIN))
+    assert_code(app, response, expected_status=401, expected_code="login_required")
+
+
+# --- 2. signed-in members are unchanged and still quota-bounded ------------
+
+
+@pytest.mark.parametrize("path", PATHS)
+def test_signed_in_member_is_still_quota_bounded(path: str) -> None:
+    app = create_app(quota_settings(), history_store=EmptyHistory(), usage_store=InMemoryUsageCounterStore())
+    app.state.usage_gate_enforced = True
+    scripted = ScriptedB14()
+    app.state.b14_client = scripted
+    cookie = create_session_token(quota_settings(), OWNER)
+
+    first = asyncio.run(post(app, path, payload(), cookie=cookie, origin=ORIGIN, client_ip=CLIENT_IP))
+    second = asyncio.run(post(app, path, payload(), cookie=cookie, origin=ORIGIN, client_ip=CLIENT_IP))
+
+    assert first.status_code == 200, first.text
+    assert scripted.calls == 1
+    assert second.status_code == 429, second.text
+    assert second.json()["error"]["code"] == "rate_limited"
+    assert scripted.calls == 1
+
+
+# --- 3. a dead cookie is a guest, and a guest gets the login gate ----------
 
 
 @pytest.mark.parametrize("path", PATHS)
@@ -269,47 +231,26 @@ def test_signed_in_member_still_reaches_the_model(path: str) -> None:
 def test_expired_or_tampered_session_is_not_identity(path: str) -> None:
     app = build_app()
     expired = create_session_token(settings(), OWNER, now=int(time.time()) - 7200)
-    response = asyncio.run(post(app, path, payload(tier="plus"), cookie=expired, origin=ORIGIN))
-    assert_code(app, response, expected_status=401, expected_code="unauthorized")
+    response = asyncio.run(post(app, path, payload(), cookie=expired, origin=ORIGIN))
+    assert_code(app, response, expected_status=401, expected_code="login_required")
 
     token = create_session_token(settings(), OWNER)
-    response = asyncio.run(post(app, path, payload(tier="plus"), cookie=token[:-4] + "AAAA", origin=ORIGIN))
-    assert_code(app, response, expected_status=401, expected_code="unauthorized")
+    response = asyncio.run(post(app, path, payload(), cookie=token[:-4] + "AAAA", origin=ORIGIN))
+    assert_code(app, response, expected_status=401, expected_code="login_required")
+
+
+# --- 4. the login gate does not depend on the usage gate -------------------
 
 
 @pytest.mark.parametrize("path", PATHS)
-def test_expired_session_behaves_as_anonymous_free(path: str) -> None:
-    """A dead cookie is no identity, so Free lands on the anonymous usage gate."""
-
-    app = build_enforced_app(store=InMemoryUsageCounterStore())
-    expired = create_session_token(settings(), OWNER, now=int(time.time()) - 7200)
-    response = asyncio.run(post(app, path, payload(tier="free"), cookie=expired, origin=ORIGIN))
-    assert_code(app, response, expected_status=503, expected_code="live_identity_unavailable")
-
-
-@pytest.mark.parametrize("path", PATHS)
-def test_custom_selection_cannot_reach_the_platform_key_without_a_session(path: str) -> None:
-    app = build_app()
-    response = asyncio.run(
-        post(app, path, payload(custom={"provider": "custom-free", "model": "custom-free/gpt-5.5"}), origin=ORIGIN)
-    )
-    assert_code(app, response, expected_status=401, expected_code="unauthorized")
-
-
-# --- 4. the documented development-stage posture -----------------------------
-
-
-@pytest.mark.parametrize("path", PATHS)
-def test_development_posture_without_enforcing_gate_executes_anonymously(path: str) -> None:
-    """No enforcing gate means no local billing authority, so the request runs."""
+def test_development_posture_without_enforcing_gate_still_requires_login(path: str) -> None:
+    """No enforcing gate means no local quota authority; login still applies."""
 
     app = create_app(settings(), history_store=EmptyHistory())
     assert app.state.usage_gate_enforced is False
-    scripted = ScriptedB14()
-    app.state.b14_client = scripted
+    app.state.b14_client = B14Canary()
     response = asyncio.run(post(app, path, payload(), origin=ORIGIN))
-    assert response.status_code == 200, response.text
-    assert scripted.calls == 1
+    assert_code(app, response, expected_status=401, expected_code="login_required")
 
 
 def test_mock_runtime_keeps_anonymous_chat_available() -> None:

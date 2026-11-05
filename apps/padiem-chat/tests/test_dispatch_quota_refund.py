@@ -5,6 +5,7 @@ import json
 import httpx
 import pytest
 
+from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
 from app.main import create_app
@@ -14,6 +15,7 @@ from app.usage_gate import InMemoryUsageCounterStore
 
 QUOTA_SALT = "dispatch-refund-test-salt-not-a-real-secret-0001"
 IP = "203.0.113.77"
+SIGNED_IN_USER_ID = "usr_" + "7" * 32
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 
 
@@ -21,6 +23,12 @@ def _settings(**overrides):
     values = {
         "runtime_mode": "b14",
         "b14_base_url": "https://b14.example",
+        "auth_mode": "google",
+        "public_base_url": "https://chat.example.test",
+        "google_client_id": "dispatch-refund-client.apps.googleusercontent.com",
+        "google_client_secret": "dispatch-refund-test-secret",
+        "session_secret": "dispatch-refund-test-session-secret-not-real-0001",
+        "session_max_age_seconds": 3600,
         "quota_salt": QUOTA_SALT,
         "anonymous_burst_limit": 4,
         "anonymous_daily_limit": 20,
@@ -30,6 +38,17 @@ def _settings(**overrides):
     }
     values.update(overrides)
     return Settings.from_values(**values)
+
+
+class _History:
+    async def get_conversation(self, *args, **kwargs):
+        return None
+
+    async def get_conversation_model_context(self, *args, **kwargs):
+        return None
+
+    async def append_exchange(self, *args, **kwargs):
+        return None
 
 
 def _success_body():
@@ -95,13 +114,17 @@ async def test_missing_required_service_binding_refunds_exact_authorization_once
     settings = _settings()
     store = RefundableMemoryStore()
     wrapped = DispatchAwareUsageCounterStore(store)
-    app = create_app(settings, usage_store=wrapped)
+    app = create_app(settings, history_store=_History(), usage_store=wrapped)
     app.state.b14_client = DispatchAwareB14Client(
         settings,
         require_service_binding=True,
     )
 
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID)},
+    ) as client:
         response = await client.post(
             "/api/chat",
             json={"messages": MESSAGES},
@@ -122,14 +145,18 @@ async def test_successful_dispatch_consumes_exactly_one_quota_operation():
     store = RefundableMemoryStore()
     wrapped = DispatchAwareUsageCounterStore(store)
     service = FakeServiceTransport()
-    app = create_app(settings, usage_store=wrapped)
+    app = create_app(settings, history_store=_History(), usage_store=wrapped)
     app.state.b14_client = DispatchAwareB14Client(
         settings,
         service_transport=service,
         require_service_binding=True,
     )
 
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID)},
+    ) as client:
         response = await client.post(
             "/api/chat",
             json={"messages": MESSAGES},
@@ -148,14 +175,18 @@ async def test_ambiguous_transport_failure_is_not_refunded():
     store = RefundableMemoryStore()
     wrapped = DispatchAwareUsageCounterStore(store)
     service = FakeServiceTransport(error=RuntimeError("transport state is ambiguous"))
-    app = create_app(settings, usage_store=wrapped)
+    app = create_app(settings, history_store=_History(), usage_store=wrapped)
     app.state.b14_client = DispatchAwareB14Client(
         settings,
         service_transport=service,
         require_service_binding=True,
     )
 
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID)},
+    ) as client:
         response = await client.post(
             "/api/chat",
             json={"messages": MESSAGES},
@@ -175,14 +206,18 @@ async def test_b14_server_failure_is_not_refunded():
     store = RefundableMemoryStore()
     wrapped = DispatchAwareUsageCounterStore(store)
     service = FakeServiceTransport(status=503, body=b'{"error":{"code":"upstream_error"}}')
-    app = create_app(settings, usage_store=wrapped)
+    app = create_app(settings, history_store=_History(), usage_store=wrapped)
     app.state.b14_client = DispatchAwareB14Client(
         settings,
         service_transport=service,
         require_service_binding=True,
     )
 
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+        cookies={SESSION_COOKIE: create_session_token(settings, SIGNED_IN_USER_ID)},
+    ) as client:
         response = await client.post(
             "/api/chat",
             json={"messages": MESSAGES},
