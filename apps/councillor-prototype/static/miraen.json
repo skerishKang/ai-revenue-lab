@@ -172,7 +172,7 @@
     ]
   },
   "policy": {
-    "source": "자료 출처: 전남광주통합특별시의회 보도자료·공식 유튜브, 광주광역시의회 공식 유튜브",
+    "source": "자료 출처: 전남광주통합특별시의회 보도자료·공식 유튜브, 광주광역시의회 의안정보시스템·공식 유튜브",
     "forums": [
       {
         "date": "2026-10-07",
@@ -220,7 +220,496 @@
         "url": "https://www.youtube.com/watch?v=8vdllvPwRAY"
       }
     ],
-    "bills": []
+    "bills": [
+      {
+        "assembly": 9,
+        "number": "9-1343",
+        "title": "광주광역시 파크골프 진흥 조례안",
+        "date": "2026-01-22",
+        "result": "수정가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39772"
+      },
+      {
+        "assembly": 9,
+        "number": "9-1313",
+        "title": "광주광역시 악취방지 관리 및 지원 조례안",
+        "date": "2025-11-20",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39736"
+      },
+      {
+        "assembly": 9,
+        "number": "9-1227",
+        "title": "광주광역시교육청 학생 미디어교육 활성화 및 지원에 관한 조례 전부개정조례안",
+        "date": "2025-09-29",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39650"
+      },
+      {
+        "assembly": 9,
+        "number": "9-1171",
+        "title": "광주광역시 광주3·15의거 및 4·19혁명 기념사업 지원 조례 일부개정조례안",
+        "date": "2025-08-14",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39595"
+      },
+      {
+        "assembly": 9,
+        "number": "9-1170",
+        "title": "광주광역시 일·휴양연계관광산업 육성 및 지원 조례안",
+        "date": "2025-08-14",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39593"
+      },
+      {
+        "assembly": 9,
+        "number": "9-1099",
+        "title": "광주광역시 전통시장 및 상점가 지원 조례 일부개정조례안",
+        "date": "2025-05-22",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39520"
+      },
+      {
+        "assembly": 9,
+        "number": "9-1098",
+        "title": "광주광역시 화훼산업 육성 및 지원 조례안",
+        "date": "2025-05-22",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39519"
+      },
+      {
+        "assembly": 9,
+        "number": "9-1070",
+        "title": "광주광역시 정원문화 조성 및 진흥 조례 일부개정조례안",
+        "date": "2025-05-13",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39491"
+      },
+      {
+        "assembly": 9,
+        "number": "9-1038",
+        "title": "광주광역시 재정건전화 조례안",
+        "date": "2025-03-20",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39459"
+      },
+      {
+        "assembly": 9,
+        "number": "9-993",
+        "title": "광주광역시 바이오산업 육성 및 지원 조례안",
+        "date": "2025-01-20",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39413"
+      },
+      {
+        "assembly": 9,
+        "number": "9-941",
+        "title": "광주광역시 광주영어방송재단 설립 및 운영 조례 일부개정조례안",
+        "date": "2024-10-17",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39358"
+      },
+      {
+        "assembly": 9,
+        "number": "9-901",
+        "title": "광주광역시 바르게살기운동조직 육성 및 지원 조례안",
+        "date": "2024-09-26",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39318"
+      },
+      {
+        "assembly": 9,
+        "number": "9-831",
+        "title": "광주광역시 의료관광 활성화 및 지원 조례 일부개정조례안",
+        "date": "2024-08-14",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39248"
+      },
+      {
+        "assembly": 9,
+        "number": "9-830",
+        "title": "광주광역시교육청 직업교육지원센터 설치 및 운영 조례안",
+        "date": "2024-08-14",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39247"
+      },
+      {
+        "assembly": 9,
+        "number": "9-793",
+        "title": "광주광역시 명예시민증 수여 및 명예시장 추대 조례 일부개정조례안",
+        "date": "2024-06-26",
+        "result": "수정가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39210"
+      },
+      {
+        "assembly": 9,
+        "number": "9-703",
+        "title": "광주광역시 웰니스 관광 육성 및 지원 조례안",
+        "date": "2024-04-15",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39120"
+      },
+      {
+        "assembly": 9,
+        "number": "9-618",
+        "title": "광주광역시교육청 학교 스마트체육 활성화에 관한 조례안",
+        "date": "2023-10-20",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=39035"
+      },
+      {
+        "assembly": 9,
+        "number": "9-473",
+        "title": "광주광역시 이스포츠(전자스포츠) 진흥 조례 일부개정조례안",
+        "date": "2023-08-16",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38889"
+      },
+      {
+        "assembly": 9,
+        "number": "9-397",
+        "title": "광주 · 전남 공동혁신도시 발전기금 설치 및 운용 조례안",
+        "date": "2023-06-28",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38813"
+      },
+      {
+        "assembly": 9,
+        "number": "9-326",
+        "title": "광주광역시 지능형 로봇산업 육성 및 지원 조례안",
+        "date": "2023-04-14",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38742"
+      },
+      {
+        "assembly": 9,
+        "number": "9-325",
+        "title": "광주광역시 산업디자인 진흥 조례안",
+        "date": "2023-04-14",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38741"
+      },
+      {
+        "assembly": 9,
+        "number": "9-272",
+        "title": "광주광역시 민원업무 담당 공무원 등 보호 조례안",
+        "date": "2023-03-02",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38688"
+      },
+      {
+        "assembly": 9,
+        "number": "9-229",
+        "title": "광주광역시교육청 빛고을 직업교육 혁신지구 사업 활성화 조례안",
+        "date": "2023-01-19",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38645"
+      },
+      {
+        "assembly": 9,
+        "number": "9-222",
+        "title": "광주광역시 침수방지시설 설치 지원 조례안",
+        "date": "2023-01-19",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38638"
+      },
+      {
+        "assembly": 9,
+        "number": "9-154",
+        "title": "광주광역시 자살예방 및 생명존중문화 조성을 위한 조례 일부개정조례안",
+        "date": "2022-10-21",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38570"
+      },
+      {
+        "assembly": 9,
+        "number": "9-109",
+        "title": "광주광역시 공공심야약국 지원 조례 일부개정조례안",
+        "date": "2022-09-23",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38520"
+      },
+      {
+        "assembly": 9,
+        "number": "9-108",
+        "title": "광주광역시 공공심야어린이병원 지원 조례안",
+        "date": "2022-09-23",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38519"
+      },
+      {
+        "assembly": 9,
+        "number": "9-51",
+        "title": "광주광역시 쓰레기 담으며 걷기 활성화 및 지원 조례안",
+        "date": "2022-09-02",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38462"
+      },
+      {
+        "assembly": 9,
+        "number": "9-26",
+        "title": "광주광역시 환경친화적 자동차정비산업 육성 및 지원 조례안",
+        "date": "2022-08-11",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38437"
+      },
+      {
+        "assembly": 8,
+        "number": "8-1507",
+        "title": "광주광역시교육청 아동복지시설학생 희망 키움 조례안",
+        "date": "2022-01-14",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38296"
+      },
+      {
+        "assembly": 8,
+        "number": "8-1317",
+        "title": "광주광역시 전통무예 진흥 및 지원 조례안",
+        "date": "2021-09-24",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38105"
+      },
+      {
+        "assembly": 8,
+        "number": "8-1304",
+        "title": "광주광역시 보호관찰 대상자 등에 대한 사회정착 지원 조례안",
+        "date": "2021-09-24",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38092"
+      },
+      {
+        "assembly": 8,
+        "number": "8-1303",
+        "title": "광주광역시 수도급수 조례 일부개정조례안",
+        "date": "2021-09-24",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38091"
+      },
+      {
+        "assembly": 8,
+        "number": "8-1267",
+        "title": "광주광역시교육청 청소년 한부모 학습권 보장 조례안",
+        "date": "2021-08-18",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=38050"
+      },
+      {
+        "assembly": 8,
+        "number": "8-1212",
+        "title": "광주광역시 전통문화 보존ㆍ관리 및 육성 조례안",
+        "date": "2021-06-18",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37998"
+      },
+      {
+        "assembly": 8,
+        "number": "8-1154",
+        "title": "광주광역시 호스피스·완화의료 지원 및 웰다잉(Well-dying) 문화조성 조례안",
+        "date": "2021-04-19",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37940"
+      },
+      {
+        "assembly": 8,
+        "number": "8-1152",
+        "title": "광주광역시교육청 개인형 이동장치 안전교육 강화 조례안",
+        "date": "2021-04-19",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37938"
+      },
+      {
+        "assembly": 8,
+        "number": "8-1078",
+        "title": "광주광역시 스마트농업 육성 및 지원 조례안",
+        "date": "2021-03-04",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37862"
+      },
+      {
+        "assembly": 8,
+        "number": "8-1055",
+        "title": "광주광역시교육청 학생 미디어교육 활성화 및 지원에 관한 조례안",
+        "date": "2021-01-21",
+        "result": "수정가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37834"
+      },
+      {
+        "assembly": 8,
+        "number": "8-1054",
+        "title": "광주광역시 교육복지우선지원사업 운영 및 지원에 관한 조례안",
+        "date": "2021-01-21",
+        "result": "수정가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37833"
+      },
+      {
+        "assembly": 8,
+        "number": "8-1010",
+        "title": "광주광역시교육청 한복교복 장려 지원 조례안",
+        "date": "2020-11-10",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37799"
+      },
+      {
+        "assembly": 8,
+        "number": "8-996",
+        "title": "광주광역시 지방문화원 설립 및 운영 조례안",
+        "date": "2020-10-23",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37785"
+      },
+      {
+        "assembly": 8,
+        "number": "8-988",
+        "title": "광주광역시 공무직 채용 및 복무 등 운영 조례안",
+        "date": "2020-10-23",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37777"
+      },
+      {
+        "assembly": 8,
+        "number": "8-943",
+        "title": "광주광역시 한복착용 장려 및 지원 조례안",
+        "date": "2020-10-06",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37731"
+      },
+      {
+        "assembly": 8,
+        "number": "8-930",
+        "title": "광주광역시 의안 비용추계 조례안",
+        "date": "2020-10-06",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37718"
+      },
+      {
+        "assembly": 8,
+        "number": "8-850",
+        "title": "광주광역시교육청 학생 보건교육 진흥 조례안",
+        "date": "2020-08-25",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37638"
+      },
+      {
+        "assembly": 8,
+        "number": "8-835",
+        "title": "광주광역시 빅데이터 활용에 관한 조례 일부개정조례안",
+        "date": "2020-08-25",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37623"
+      },
+      {
+        "assembly": 8,
+        "number": "8-721",
+        "title": "광주광역시 5·18민주유공자 생활지원금 지급 조례 일부개정조례안",
+        "date": "2020-05-06",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37508"
+      },
+      {
+        "assembly": 8,
+        "number": "8-701",
+        "title": "광주광역시교육청 4차 산업혁명 교육 환경 조성 및 인재양성 조례안",
+        "date": "2020-04-28",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37488"
+      },
+      {
+        "assembly": 8,
+        "number": "8-697",
+        "title": "광주광역시 청년 창업 지원 조례 일부개정조례안",
+        "date": "2020-04-28",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37484"
+      },
+      {
+        "assembly": 8,
+        "number": "8-696",
+        "title": "광주광역시 창업ㆍ벤처기업 육성 및 지원 조례안",
+        "date": "2020-04-28",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37483"
+      },
+      {
+        "assembly": 8,
+        "number": "8-692",
+        "title": "광주광역시 사물인터넷도시 조성 조례안",
+        "date": "2020-04-28",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37479"
+      },
+      {
+        "assembly": 8,
+        "number": "8-607",
+        "title": "광주광역시 5·18민주유공자 생활지원금 지급에 관한 조례 일부개정조례안",
+        "date": "2020-01-23",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37394"
+      },
+      {
+        "assembly": 8,
+        "number": "8-597",
+        "title": "광주광역시교육청 학교급식 유전자변형식품 등(GMO) 사용 등에 관한 조례 일부개정조례안",
+        "date": "2020-01-23",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37384"
+      },
+      {
+        "assembly": 8,
+        "number": "8-592",
+        "title": "광주광역시 마이스(MICE)산업 육성 조례안",
+        "date": "2020-01-23",
+        "result": "수정가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37379"
+      },
+      {
+        "assembly": 8,
+        "number": "8-368",
+        "title": "광주광역시 1인 가구 지원 조례안",
+        "date": "2019-09-09",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37154"
+      },
+      {
+        "assembly": 8,
+        "number": "8-242",
+        "title": "광주광역시 빈집 및 소규모주택 정비에 관한 조례안",
+        "date": "2019-02-28",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=37009"
+      },
+      {
+        "assembly": 8,
+        "number": "8-205",
+        "title": "광주광역시교육청 학교급식 유전자변형식품 등(GMO) 사용 등에 관한 조례안",
+        "date": "2019-01-30",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=36972"
+      },
+      {
+        "assembly": 8,
+        "number": "8-145",
+        "title": "광주광역시 중소기업 기술혁신 촉진에 관한 조례안",
+        "date": "2018-10-24",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=36912"
+      },
+      {
+        "assembly": 8,
+        "number": "8-123",
+        "title": "광주광역시 홍보매체 이용 조례안",
+        "date": "2018-10-23",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=36890"
+      },
+      {
+        "assembly": 8,
+        "number": "8-104",
+        "title": "광주광역시 학생의 비만 예방교육 활성화에 관한 조례안",
+        "date": "2018-10-02",
+        "result": "원안가결",
+        "url": "https://council.gwangju.go.kr:5142/bills/viewer.do?searchBlUid=36871"
+      }
+    ]
   },
   "media": {
     "source": "본회의 발언과 사진은 의회가 공개한 공식 페이지에서 보실 수 있습니다.",

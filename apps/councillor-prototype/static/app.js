@@ -200,13 +200,47 @@ function renderContact(data) {
   });
 }
 
+// The old council's bill system has no per-assembly list page, so the policy page
+// groups the representative bills itself: 9th assembly first, newest first inside each.
+function renderBills(policy) {
+  const grid = document.getElementById("policyBills");
+  if (!grid) return;
+  const block = grid.closest(".policy-block");
+  const items = Array.isArray(policy.bills) ? policy.bills : [];
+  if (items.length === 0) {
+    if (block) block.hidden = true;
+    return;
+  }
+  if (block) block.hidden = false;
+  const assemblies = Array.from(new Set(items.map((item) => Number(item.assembly))))
+    .filter((n) => Number.isFinite(n))
+    .sort((a, b) => b - a);
+  grid.innerHTML = assemblies.map((assembly) => {
+    const group = items.filter((item) => Number(item.assembly) === assembly);
+    if (group.length === 0) return "";
+    return '<section class="bill-group" aria-labelledby="bills-' + assembly + '">' +
+      '<h3 class="bill-group-title" id="bills-' + assembly + '">제' + assembly + '대 광주광역시의회' +
+        '<span class="bill-count">' + group.length + "건</span></h3>" +
+      '<ul class="bill-list">' +
+        group.map((item) => {
+          const href = safeHref(item.url);
+          return '<li class="bill-row"><a href="' + escapeHtml(href || "#") + '" target="_blank" rel="noopener">' +
+            '<span class="bill-number">' + escapeHtml(item.number) + "</span>" +
+            '<span class="bill-title">' + escapeHtml(item.title) + "</span>" +
+            '<span class="bill-date">' + escapeHtml(item.date) + "</span>" +
+            '<span class="bill-result">' + escapeHtml(item.result) + "</span>" +
+          "</a></li>";
+        }).join("") +
+      "</ul></section>";
+  }).join("");
+}
+
 function renderPolicy(data) {
   const policy = data && data.policy;
   if (!policy) return;
   const groups = [
     ["policyForums", policy.forums, "원문 보기"],
-    ["policyVideos", policy.videos, "영상 보기"],
-    ["policyBills", policy.bills, "의안 보기"]
+    ["policyVideos", policy.videos, "영상 보기"]
   ];
   groups.forEach(([id, items, label]) => {
     const grid = document.getElementById(id);
@@ -229,6 +263,7 @@ function renderPolicy(data) {
         "</article>";
     }).join("");
   });
+  renderBills(policy);
   const source = document.getElementById("policySource");
   if (source && policy.source) source.textContent = policy.source;
 }

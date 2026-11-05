@@ -469,6 +469,34 @@ body {
 .policy-meta { color: var(--accent-2); font-weight: 700; font-size: var(--fs-label); margin: 0 0 6px !important; }
 .card-link { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2); text-decoration: none; font-weight: 600; font-size: var(--fs-body); }
 .card-link:hover { text-decoration: underline; }
+.policy-note { color: var(--muted); font-size: var(--fs-label); margin: -6px 0 0; }
+.bill-groups { margin-top: 6px; }
+.bill-group + .bill-group { margin-top: 30px; }
+.bill-group-title { font-family: var(--font-serif); font-size: clamp(18px, 1.6vw, 22px); margin: 0 0 10px; }
+.bill-count { color: var(--muted); font-family: inherit; font-size: var(--fs-label); font-weight: 600; margin-left: 8px; }
+.bill-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
+.bill-row { border-bottom: 1px solid var(--border); }
+.bill-row a {
+  display: grid; grid-template-columns: 76px minmax(0, 1fr) 96px 76px; gap: 14px;
+  align-items: center; min-height: var(--tap); padding: 10px 0;
+  color: var(--text); text-decoration: none; font-size: var(--fs-body);
+}
+.bill-row a:hover .bill-title { color: var(--accent-2); text-decoration: underline; }
+.bill-number { color: var(--accent-2); font-weight: 700; font-size: var(--fs-label); white-space: nowrap; }
+.bill-title { min-width: 0; }
+.bill-date { color: var(--muted); font-size: var(--fs-label); white-space: nowrap; }
+.bill-result { color: var(--accent-2); font-weight: 700; font-size: var(--fs-label); white-space: nowrap; }
+@media (max-width: 760px) {
+  .bill-row a {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: "num date result" "title title title";
+    gap: 4px 10px; padding: 12px 0;
+  }
+  .bill-number { grid-area: num; }
+  .bill-date { grid-area: date; }
+  .bill-result { grid-area: result; justify-self: end; }
+  .bill-title { grid-area: title; font-weight: 600; }
+}
 
 .media-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .media-tile {
