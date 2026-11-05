@@ -1447,3 +1447,12 @@ def test_a_cancelled_command_reports_no_exit_code_rather_than_an_invented_zero()
     assert '"cancelled"' in allowed
     for observed in ("timed_out", "no_reply", "not_executed"):
         assert '"%s"' % observed in allowed
+
+
+def test_a_dollar_node_ref_is_bounded_text() -> None:
+    """#261105: the return route reads the same node id the agent read."""
+    node = "7P4oTs4hg$bNJQXe2OBFdAL3yxcWzF829xUYLa9h6Io5AZqaX6$v5ziNLxqfb$pB"
+    assert routes._ref(node, 256) == node
+    assert routes._ref("$D62t1", 256) == "$D62t1"
+    for bad in ("bad node", "noderef", "", "x" * 257):
+        assert routes._ref(bad, 256) is None

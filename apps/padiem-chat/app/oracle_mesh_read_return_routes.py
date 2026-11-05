@@ -200,7 +200,8 @@ _MAX_COMMAND_MESSAGE_PARTS = 256
 #: characters are refused.
 _MAX_PATH_VALUE_CHARS = 32_767
 _SAFE_REF_CHARS = frozenset(
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._:@+-"
+    # "$" is part of a MeshCentral node id, and node_ref is read here.
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._:@+-$"
 )
 #: #5553 optional executor presence beat carried on the poll. It is additive:
 #: the poll body, response and authorization are unchanged when it is absent
