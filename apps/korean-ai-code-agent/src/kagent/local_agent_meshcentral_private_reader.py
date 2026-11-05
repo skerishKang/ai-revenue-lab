@@ -44,17 +44,13 @@ from .local_agent_verified_text_result import (
     VerifiedTextResultRefused,
     build_verified_text_result,
 )
+from .node_ref import NODE_REF_RE
 
 #: #4139 wire envelope for one file body: the same 6 MB the Claw request
 #: route already accepts for one user message. The former 768-byte trial cap
 #: could not read a normal document.
 MAX_READ_ENVELOPE_BYTES = 6_000_000
 
-#: The producer's own ``safe_ref`` pattern plus the ``$`` a MeshCentral node
-#: identifier carries (``7P4o…$v5ziNLxqfb$pB``). Without it every read of such a
-#: node was refused before the official client ran, while the command lane -
-#: which only requires non-empty text - answered the same node fine.
-_SAFE_REF_RE = re.compile(r"^[A-Za-z0-9$][A-Za-z0-9$._:@+\-]{0,255}$")
 #: A Windows path is ordinary text, Korean included. The ceiling is the
 #: documented extended-length path maximum of 32,767 characters (Microsoft,
 #: "Maximum Path Length Limitation"); the former 512-character bound was a
@@ -166,7 +162,7 @@ _DOWNLOAD_MONITOR_SECONDS = 0.02
 
 
 def _safe_ref(value: Any, field_name: str) -> str:
-    if not isinstance(value, str) or _SAFE_REF_RE.fullmatch(value) is None:
+    if not isinstance(value, str) or NODE_REF_RE.fullmatch(value) is None:
         raise MeshCentralReadRequestRefused(
             f"{field_name} must be a bounded safe reference")
     return value
