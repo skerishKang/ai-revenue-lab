@@ -49,8 +49,11 @@ def _dispatch(**extra) -> dict:
 
 
 class _ReadPort:
-    def read_bytes(self, **kwargs):
-        del kwargs
+    """The real read port's own signature: a fake must not swallow a bad call."""
+
+    def read_bytes(self, *, node_ref: str, file_path: str,
+                   timeout_seconds: int = 60, max_bytes: int = 1_048_576) -> bytes:
+        del node_ref, file_path, timeout_seconds, max_bytes
         return BODY
 
 
@@ -61,8 +64,9 @@ class _OneReplyPort:
         self.body = body
         self.calls = 0
 
-    def run_command(self, **kwargs):
-        del kwargs
+    def run_command(self, *, node_ref: str, command: object,
+                    timeout_seconds: int | None = None):
+        del node_ref, command, timeout_seconds
         self.calls += 1
         encoded = base64.b64encode(self.body).decode("ascii")
         reply = (
@@ -127,8 +131,9 @@ class TestClaimAndGuardMarkers(unittest.TestCase):
 
     def test_a_failed_read_keeps_its_own_phase_and_never_reads_done(self):
         class _Refusing:
-            def read_bytes(self, **kwargs):
-                del kwargs
+            def read_bytes(self, *, node_ref: str, file_path: str,
+                           timeout_seconds: int = 60, max_bytes: int = 1_048_576):
+                del node_ref, file_path, timeout_seconds, max_bytes
                 raise OSError("channel died")
 
         executor = _executor()
