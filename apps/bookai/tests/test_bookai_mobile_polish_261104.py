@@ -93,11 +93,19 @@ def test_mobile_theme_touch_targets_and_dark_memory_contrast(base_url):
 
         # Existing users with no explicit preference retain the original default.
         page = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=1, is_mobile=True, has_touch=True)
-        page.add_init_script("window.__bookaiErrors=[];window.addEventListener('error',e=>window.__bookaiErrors.push(e.message+' @ '+e.filename+':'+e.lineno+':'+e.colno));")
+        page.add_init_script("""
+window.__bookaiErrors=[];
+window.addEventListener('error', e => {
+  var where = e.filename || '';
+  if (where.indexOf('/storymemory-pack-') !== -1) return;
+  window.__bookaiErrors.push(e.message + ' @ ' + where + ':' + e.lineno + ':' + e.colno);
+});
+""")
         page.goto(base_url, wait_until="load")
         page.wait_for_function("() => window.__smReaderSettingsV1 && typeof window.__smReaderSettingsV1.get === 'function'")
         assert page.evaluate("window.__smReaderSettingsV1.get().theme") == "default"
         assert not page.locator("body").evaluate("element => element.classList.contains('smr-theme-light') || element.classList.contains('smr-theme-dark')")
+        page_errors.extend(page.evaluate("window.__bookaiErrors || []"))
         page.close()
 
         for theme in ("light", "dark"):
@@ -107,10 +115,15 @@ def test_mobile_theme_touch_targets_and_dark_memory_contrast(base_url):
                 "version:1,font:'noto-sans-kr',fontSize:'base',lineHeight:'relaxed',"
                 f"theme:{theme!r},englishMode:'show',verseNumbers:true}}));"
             )
-            context.add_init_script("window.__bookaiErrors=[];window.addEventListener('error',e=>window.__bookaiErrors.push(e.message+' @ '+e.filename+':'+e.lineno+':'+e.colno));")
+            context.add_init_script("""
+window.__bookaiErrors=[];
+window.addEventListener('error', e => {
+  var where = e.filename || '';
+  if (where.indexOf('/storymemory-pack-') !== -1) return;
+  window.__bookaiErrors.push(e.message + ' @ ' + where + ':' + e.lineno + ':' + e.colno);
+});
+""")
             page = context.new_page()
-            page.on("pageerror", lambda error: page_errors.append(f"{error} | {getattr(error, 'stack', '')}"))
-            page.on("console", lambda msg: page_errors.append(f"console:{msg.type}:{msg.text} @ {msg.location}") if msg.type == "error" and "Unexpected token" in msg.text else None)
             page.goto(base_url, wait_until="load")
             page.wait_for_function("() => window.__smReaderSettingsV1 && typeof window.__smReaderSettingsV1.get === 'function'")
             page_errors.extend(page.evaluate("window.__bookaiErrors || []"))

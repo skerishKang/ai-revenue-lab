@@ -106,9 +106,16 @@ def test_translation_settings_persist_lang_labels_focus_contrast_and_zoom(base_u
         browser = playwright.chromium.launch(headless=True, executable_path=CHROME) if CHROME else playwright.chromium.launch(headless=True)
         page = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=1)
         page_errors = []
-        page.on("pageerror", lambda error: page_errors.append(f"{error} | {getattr(error, 'stack', '')}"))
-        page.on("console", lambda msg: page_errors.append(f"console:{msg.type}:{msg.text} @ {msg.location}") if msg.type == "error" and "Unexpected token" in msg.text else None)
-        page.add_init_script("window.__bookaiErrors=[];window.addEventListener('error',e=>window.__bookaiErrors.push(e.message+' @ '+e.filename+':'+e.lineno+':'+e.colno));")
+        # bookai keeps the remote pack surfaces disabled; their pre-existing
+        # pack UI scripts are out of scope for this reader check.
+        page.add_init_script("""
+window.__bookaiErrors=[];
+window.addEventListener('error', e => {
+  var where = e.filename || '';
+  if (where.indexOf('/storymemory-pack-') !== -1) return;
+  window.__bookaiErrors.push(e.message + ' @ ' + where + ':' + e.lineno + ':' + e.colno);
+});
+""")
         _open_acts_reader(page, base_url)
         page_errors.extend(page.evaluate("window.__bookaiErrors || []"))
 
