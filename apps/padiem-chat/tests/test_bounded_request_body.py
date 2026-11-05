@@ -18,6 +18,11 @@ class FakeRequest:
         self.stream_calls = 0
         self.yield_count = 0
         self.url = SimpleNamespace(path="/api/chat")
+        # A real Starlette request always carries the app. The mock runtime
+        # keeps this reader test focused on the body limit, not the login gate.
+        self.app = SimpleNamespace(
+            state=SimpleNamespace(settings=SimpleNamespace(runtime_mode="mock"))
+        )
 
     def stream(self):
         self.stream_calls += 1

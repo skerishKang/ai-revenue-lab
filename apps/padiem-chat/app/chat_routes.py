@@ -111,6 +111,14 @@ def _usage_denied_response(decision) -> JSONResponse:
     )
 
 
+def _login_required_response() -> JSONResponse:
+    """Owner decision 2026-11-05: Chat AI answers require a signed-in member."""
+    return JSONResponse(
+        {"error": {"code": "login_required", "message": "AI 대화를 사용하려면 로그인이 필요합니다."}},
+        status_code=401,
+    )
+
+
 def _public_sse(event: str, payload: dict[str, Any]) -> bytes:
     data = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     return f"event: {event}\ndata: {data}\n\n".encode("utf-8")
@@ -419,16 +427,17 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
         )
 
     uid = current_user_id(request) if auth_ready(request) else None
+    # Owner decision 2026-11-05: Chat/Claw AI answers are signed-in only.
+    # "Free without a login" is gone; a signed-in member keeps the Free tier.
+    # The mock runtime is the network-free CI harness and stays available.
+    if uid is None and getattr(getattr(request.app.state, "settings", None), "runtime_mode", None) != "mock":
+        return _login_required_response()
     if custom is not None and uid is None:
         return JSONResponse(
             {"error": {"code": "unauthorized", "message": "PADIEM Custom을 사용하려면 로그인이 필요합니다."}},
             status_code=401,
         )
-    # Owner decision 2026-10-24 (#5474): Free is available with or without a
-    # login on the Chat lane, and the usage gate below bounds anonymous spend.
-    # Paid tiers, Custom, Claw and projects still require a session.
-    anonymous_free = uid is None and raw.get("tier") == "free"
-    if "tier" in raw and not anonymous_free:
+    if "tier" in raw:
         if raw.get("tier") == "admin":
             admin_denial = await selected_admin_denial(request, uid)
             if admin_denial is not None:
@@ -1068,16 +1077,17 @@ async def api_chat(request: Request) -> JSONResponse:
             )
 
     uid = current_user_id(request) if auth_ready(request) else None
+    # Owner decision 2026-11-05: Chat/Claw AI answers are signed-in only.
+    # "Free without a login" is gone; a signed-in member keeps the Free tier.
+    # The mock runtime is the network-free CI harness and stays available.
+    if uid is None and getattr(getattr(request.app.state, "settings", None), "runtime_mode", None) != "mock":
+        return _login_required_response()
     if custom is not None and uid is None:
         return JSONResponse(
             {"error": {"code": "unauthorized", "message": "PADIEM Custom을 사용하려면 로그인이 필요합니다."}},
             status_code=401,
         )
-    # Owner decision 2026-10-24 (#5474): Free is available with or without a
-    # login on the Chat lane, and the usage gate below bounds anonymous spend.
-    # Paid tiers, Custom, Claw and projects still require a session.
-    anonymous_free = uid is None and raw.get("tier") == "free"
-    if "tier" in raw and not anonymous_free:
+    if "tier" in raw:
         if raw.get("tier") == "admin":
             admin_denial = await selected_admin_denial(request, uid)
             if admin_denial is not None:

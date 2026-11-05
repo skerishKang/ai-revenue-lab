@@ -1595,6 +1595,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     - no manual-intake/quote/order, B66, connector, Memory or sandbox semantics
       are involved.
     """
+    # Owner decision 2026-11-05: Claw execution is signed-in only. Refuse a
+    # guest before the body is read, before quota, and before any Engine/model
+    # dispatch. The mock runtime is the network-free CI harness.
+    if getattr(getattr(request.app.state, "settings", None), "runtime_mode", None) != "mock":
+        uid = current_user_id(request) if auth_ready(request) else None
+        if uid is None:
+            return _error(401, "login_required", "Claw를 사용하려면 로그인이 필요합니다.")
     turn_started = time.perf_counter()
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     # #2505: an attached binary document travels in the same frame the Chat lane

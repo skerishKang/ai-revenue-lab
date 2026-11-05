@@ -21,6 +21,7 @@ import httpx
 from starlette.requests import Request
 from starlette.responses import StreamingResponse
 
+from app.auth import SESSION_COOKIE, create_session_token
 from app.b14_client import ChatRuntimeError
 from app.config import Settings
 from app.dispatch_quota import (
@@ -34,6 +35,18 @@ from app.usage_gate import UsageDecision
 
 
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
+SIGNED_IN_USER_ID = "usr_" + "7" * 32
+
+
+class _History:
+    async def get_conversation(self, *args, **kwargs):
+        return None
+
+    async def get_conversation_model_context(self, *args, **kwargs):
+        return None
+
+    async def append_exchange(self, *args, **kwargs):
+        return None
 
 
 class RecordingDownstream(httpx.AsyncByteStream):
@@ -88,6 +101,12 @@ def _settings() -> Settings:
         runtime_mode="b14",
         b14_base_url="https://b14.internal",
         live_enabled=False,
+        auth_mode="google",
+        public_base_url="https://chat.example.test",
+        google_client_id="stream-close-client.apps.googleusercontent.com",
+        google_client_secret="stream-close-test-secret",
+        session_secret="stream-close-test-session-secret-not-real-0001",
+        session_max_age_seconds=3600,
     )
 
 
@@ -325,6 +344,7 @@ def _scope(body: bytes, app) -> dict:
         "headers": [
             (b"content-type", b"application/json"),
             (b"content-length", str(len(body)).encode("ascii")),
+            (b"cookie", f"{SESSION_COOKIE}={create_session_token(_settings(), SIGNED_IN_USER_ID)}".encode("ascii")),
         ],
         "client": ("127.0.0.1", 12345),
         "server": ("test", 80),
@@ -341,7 +361,7 @@ def test_route_sse_close_closes_the_b14_transport():
     ).encode("utf-8")
 
     async def scenario() -> None:
-        app = create_app(_settings())
+        app = create_app(_settings(), history_store=_History())
         app.state.b14_client = _client(downstream)
         app.state.usage_gate_enforced = False
 

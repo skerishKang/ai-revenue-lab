@@ -32,6 +32,17 @@ from app.grounding import GroundedChatService
 from app.main import create_app
 import app.model_policy as model_policy_module
 from app.model_policy import DEFAULT_B14_MODEL_ID
+
+
+@pytest.fixture(autouse=True)
+def _signed_in_chat(monkeypatch: pytest.MonkeyPatch):
+    """These long-input behavior tests run as a signed-in Chat member."""
+    from app import chat_routes
+
+    monkeypatch.setattr(chat_routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(chat_routes, "current_user_id", lambda request: "usr_" + "7" * 32)
+
+
 from app.web_tools import (
     MAX_QUERY_CHARS,
     SEARCH_QUERY_TOO_LONG_CODE,
