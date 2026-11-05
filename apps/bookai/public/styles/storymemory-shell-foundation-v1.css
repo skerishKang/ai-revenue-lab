@@ -112,7 +112,7 @@ button{cursor:pointer}
 .marker.on::after{width:20px;border-radius:4px;background:var(--accent)}
 
 /* transition flash */
-.transition-curtain{position:fixed;inset:0;z-index:300;background:#f2ece4;transform:translateY(100%);transition:transform .72s cubic-bezier(.2,.75,.2,1);pointer-events:none}
+.transition-curtain{position:fixed;inset:0;z-index:300;background:#f2ece4;transform:translateY(100%);transition:transform .2s cubic-bezier(.2,.75,.2,1);pointer-events:none}
 .transition-curtain.go{transform:translateY(0)}
 
 /* ========== BIBLE INDEX ========== */
@@ -2003,15 +2003,15 @@ body.focus-reading .paper{
   transition:opacity .28s
 }
 .reader-screen.paper-enter .paper-stack{
-  animation:readerPaperArrival .72s cubic-bezier(.16,.78,.18,1)
+  animation:readerPaperArrival .42s cubic-bezier(.16,.78,.18,1)
 }
 @keyframes readerPaperArrival{
   0%{opacity:.25;transform:translateY(22px) scale(.965)}
   58%{opacity:1;transform:translateY(-4px) scale(1.006)}
   100%{transform:translateY(0) scale(1)}
 }
-.reader-screen.paper-enter .under1{animation:underSheetArrival1 .88s .08s both cubic-bezier(.16,.78,.18,1)}
-.reader-screen.paper-enter .under2{animation:underSheetArrival2 .82s .04s both cubic-bezier(.16,.78,.18,1)}
+.reader-screen.paper-enter .under1{animation:underSheetArrival1 .46s .04s both cubic-bezier(.16,.78,.18,1)}
+.reader-screen.paper-enter .under2{animation:underSheetArrival2 .42s .02s both cubic-bezier(.16,.78,.18,1)}
 @keyframes underSheetArrival1{
   from{opacity:0;transform:translate(-2px,2px) rotate(0)}
   to{opacity:1;transform:translate(-18px,14px) rotate(-1.9deg)}

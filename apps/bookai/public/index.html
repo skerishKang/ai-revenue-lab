@@ -434,10 +434,12 @@
         <div class="chat-hint">Enter 전송 · 선택한 본문은 자동으로 함께 전달</div>
       </div>
     </aside>
+    <!-- #reader is position:fixed, so it is its own stacking context: the scrim
+         has to live inside it or z-index 130 paints over the whole reader. -->
+    <div class="scrim" id="scrim"></div>
   </div>
 </section>
 
-<div class="scrim" id="scrim"></div>
 <div class="mobile-dock" id="mobileDock">
   <button data-mobile="memory">기억</button>
   <button class="read-tab" data-mobile="read">읽기</button>
@@ -1101,7 +1103,7 @@ function transitionTo(id){
    showScreen(id);
    c.style.transform='translateY(-100%)';
    setTimeout(()=>{c.classList.remove('go');c.style.transform=''},40)
- },420);
+ },200);
 }
 const CINEMATIC_SUBS={
   iliad:'EPIC · MEMORY EDITION',
@@ -1116,52 +1118,18 @@ const CINEMATIC_SUBS={
   alice:'WONDERLAND · MEMORY EDITION',
   personal:'PRIVATE COLLECTION'
 };
-const OPEN_TIMINGS={
- bible:{extract:520,total:1550},
- iliad:{extract:495,total:1490},
- crime:{extract:475,total:1440},
- pride:{extract:455,total:1390},
- personal:{extract:445,total:1360},
- odyssey:{extract:420,total:1300},
- aeneid:{extract:485,total:1470},
- metamorphoses:{extract:470,total:1450},
- 'paradise-lost':{extract:460,total:1420},
- 'divine-comedy':{extract:450,total:1400},
- alice:{extract:395,total:1250}
-};
+const OPEN_TIMING={extract:180,total:600};
+function __smReducedMotion(){return matchMedia('(prefers-reduced-motion: reduce)').matches;}
 let openingBook=false;
 document.getElementById('openBook').onclick=()=>{
  if(openingBook)return;
- openingBook=true;
  const book=BOOKS[selected];
  const rig=document.querySelector('.book-rig.selected');
- const timing=OPEN_TIMINGS[book.motif]||{extract:315,total:920};
  const cinematic=document.getElementById('bookCinematic');
  document.getElementById('cinematicTitle').textContent=book.title;
  document.getElementById('cinematicSub').textContent=CINEMATIC_SUBS[book.motif]||'MEMORY EDITION';
 
- libraryEl.classList.add('opening-book');
- rig?.classList.add('extracting');
-
- setTimeout(()=>{
-   rig?.classList.add('opening');
-   libraryEl.classList.add('opening-phase');
- },timing.extract);
-
- setTimeout(()=>{
-   cinematic.classList.add('active');
- },timing.extract+110);
-
- setTimeout(()=>{
-   cinematic.classList.add('readable-hold');
- },timing.extract+470);
-
- setTimeout(()=>{
-   cinematic.classList.remove('readable-hold');
-   cinematic.classList.add('to-world');
- },Math.max(timing.extract+760,timing.total-220));
-
- setTimeout(()=>{
+ const reveal=()=>{
    const target=book.title==='성경'?'index':'reader';
    if(target==='reader'){
      setReaderContext({kind:'book',book:book.title,note:book.note,motif:book.motif});
@@ -1175,17 +1143,43 @@ document.getElementById('openBook').onclick=()=>{
    rig?.classList.remove('extracting','opening');
 
    if(target==='index'){
-     setTimeout(()=>targetEl?.classList.add('index-rest'),250);
+     setTimeout(()=>targetEl?.classList.add('index-rest'),180);
    }
    setTimeout(()=>{
      cinematic.classList.remove('active','to-world','readable-hold','handoff-reveal');
    },220);
    setTimeout(()=>{
      targetEl?.classList.remove('index-enter','index-rest','paper-enter');
-   },760);
+   },600);
 
    openingBook=false;
- },timing.total+110);
+ };
+
+ if(__smReducedMotion()){reveal();return;}
+
+ openingBook=true;
+ libraryEl.classList.add('opening-book');
+ rig?.classList.add('extracting');
+
+ setTimeout(()=>{
+   rig?.classList.add('opening');
+   libraryEl.classList.add('opening-phase');
+ },OPEN_TIMING.extract);
+
+ setTimeout(()=>{
+   cinematic.classList.add('active');
+ },OPEN_TIMING.extract+70);
+
+ setTimeout(()=>{
+   cinematic.classList.add('readable-hold');
+ },OPEN_TIMING.extract+150);
+
+ setTimeout(()=>{
+   cinematic.classList.remove('readable-hold');
+   cinematic.classList.add('to-world');
+ },OPEN_TIMING.total-90);
+
+ setTimeout(reveal,OPEN_TIMING.total);
 };
 document.querySelectorAll('[data-back="library"]').forEach(b=>b.onclick=()=>transitionTo('library'));
 document.getElementById('resume').onclick=()=>{setReaderContext({kind:'bible',book:'성경',volume:'고린도전서',chapter:3,chapterCount:16});transitionTo('reader')};
@@ -1520,7 +1514,7 @@ renderVolumes('new',{preserve:true});
 
 
 function __smReaderCompactMode(){
-  return innerWidth<=720 || (innerWidth<=900 && matchMedia('(orientation: portrait)').matches);
+  return matchMedia('(max-width:768px)').matches;
 }
 
 
@@ -4555,7 +4549,10 @@ function setReaderContext(ctx={}){
   renderGlobalMemoryOverview();
   applyMemorySearch(__smMemorySearch);
   const stored=readStoredReaderProgress();
-  readerViewMode=stored.mode==='flow'?'flow':'page';
+  // A phone reader gets the scroll view until it has chosen otherwise; 'page' is
+  // only implied once a progress record exists for this context.
+  const defaultMode=(stored.mode==='flow'||stored.mode==='page')?stored.mode:(__smReaderCompactMode()?'flow':'page');
+  readerViewMode=defaultMode;
   if(Number.isFinite(stored.page))readerPageIndex=Math.max(0,Math.min(READER_PAGES.length-1,stored.page));
   applyReaderViewMode(readerViewMode,{restore:true});
 }
@@ -7654,6 +7651,8 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
 (function(){
   'use strict';
   var needsFit=true;
+  var fontsSettled=false;
+  var overflowPages={};
   function passageList(){
     if(typeof __smDynamicReaderState==='undefined'||!__smDynamicReaderState)return null;
     var st=__smDynamicReaderState;
@@ -7670,39 +7669,34 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
     var lang=isStaticBible?'한국어 KRV-1961 · 영어 WEB (World English Bible) · 출처 표기 KRV-1961 / eBible ENGWEBP':(items.some(function(x){return x.language==='ko';})?'한국어 본문 · 원문 연결':'영어 원문');
     return '<div class="reader-page-note sm-verified-source-note"><b>번역본 · 출처</b>'+escapeHtml(range)+' · '+escapeHtml(lang)+'</div>';
   }
-  function splitUnit(p){
-    if(p.__smDepth>6)return null;
+  function sentenceParts(p){
     var text=String(p.text||'');
-    var parts=null;
     var s=text.match(/[^.!?。？!]*[.!?。？!]+["'”’]?\s*|[^.!?。？!]+$/g);
-    if(s&&s.length>1){parts=s.map(function(x){return x.trim();}).filter(function(x){return x.length;});}
-    if(!parts||parts.length<2){
-      var mid=Math.ceil(text.length/2);
-      var cut=-1;
-      for(var w=mid;w>mid-800&&w>0;w--){if(text[w]===' '||text[w]==='\n'){cut=w;break;}}
-      if(cut<0){for(var e=mid;e<mid+800&&e<text.length;e++){if(text[e]===' '||text[e]==='\n'){cut=e;break;}}}
-      if(cut<=0||cut>=text.length)return null;
-      parts=[text.slice(0,cut).trim(),text.slice(cut).trim()];
-    }
-    if(!parts||parts.length<2)return null;
-    return parts.map(function(t){
+    if(!s)return null;
+    var parts=s.map(function(x){return x.trim();}).filter(function(x){return x.length;});
+    if(parts.length<2)return null;
+    return parts.map(function(t,idx){
       var c=Object.assign({},p);
-      c.text=t;c.__smDepth=(p.__smDepth||0)+1;
+      c.text=t;c.__smSentencePart=true;
+      // The English original belongs to the verse, not to each sentence: it rides
+      // on the first fragment so a split can never repeat it or leave a word page.
+      if(idx)c.sourceText='';
       return c;
     });
   }
   function fitPages(){
-    if(typeof readerViewMode!=='undefined'&&readerViewMode==='flow')return;
-    if(typeof __smDynamicReaderState==='undefined')return;
+    if(!fontsSettled)return false;
+    if(typeof readerViewMode!=='undefined'&&readerViewMode==='flow')return false;
+    if(typeof __smDynamicReaderState==='undefined')return false;
     var st=__smDynamicReaderState;
     var list=passageList();
     var inner=document.querySelector('.paper-inner');
     var body=document.getElementById('readerPageBody');
-    if(!list||!inner||!body||inner.clientHeight<160)return;
+    if(!list||!inner||!body||inner.clientHeight<160)return false;
     var anchorRef=null;
     try{anchorRef=(st.pageSourceRefs&&st.pageSourceRefs[readerPageIndex]&&st.pageSourceRefs[readerPageIndex][0])||null;}catch(e){}
     var content=st.content;
-    var pages=[],groups=[],refs=[];
+    var pages=[],groups=[],refs={},overflow={};
     var cur=[],curHtml='';
     function finalize(){
       if(!cur.length)return;
@@ -7723,7 +7717,15 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
       }).join('');
       pages.push(html+noteHtml(cur));
       groups.push(cur.slice());
-      refs.push(cur.map(function(x){return x.sourceRef;}).filter(Boolean));
+      refs[pages.length-1]=cur.map(function(x){return x.sourceRef;}).filter(Boolean);
+    }
+    // A passage that still overflows after the sentence split keeps its own page
+    // and the sheet scrolls, instead of being cut below sentence level.
+    function soloPage(p,trial){
+      cur.push(p);curHtml=trial;
+      finalize();
+      overflow[pages.length-1]=true;
+      cur=[];curHtml='';
     }
     var queue=list.slice();
     var i=0;
@@ -7738,25 +7740,39 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
         continue;
       }
       if(over&&!cur.length){
-        var parts=splitUnit(p);
-        if(parts){queue.splice.apply(queue,[i,1].concat(parts));continue;}
-        cur.push(p);curHtml=trial;
-        finalize();
-        cur=[];curHtml='';i++;
+        if(!p.__smSentencePart){
+          var parts=sentenceParts(p);
+          if(parts){queue.splice.apply(queue,[i,1].concat(parts));continue;}
+        }
+        soloPage(p,trial);
+        i++;
         continue;
       }
       cur.push(p);curHtml=trial;i++;
     }
     finalize();
-    if(!pages.length)return;
+    if(!pages.length)return false;
     READER_PAGES=pages;
     st.pagePassages=groups;
     st.pageSourceRefs=refs;
+    overflowPages=overflow;
     var idx=0;
     if(anchorRef){
-      for(var j=0;j<refs.length;j++){if(refs[j].indexOf(anchorRef)>=0){idx=j;break;}}
+      for(var j=0;j<pages.length;j++){if((refs[j]||[]).indexOf(anchorRef)>=0){idx=j;break;}}
     }
     readerPageIndex=Math.max(0,Math.min(READER_PAGES.length-1,idx));
+    return true;
+  }
+  function applyPageChrome(){
+    var inner=document.querySelector('.paper-inner');
+    if(!inner)return;
+    var pageMode=typeof readerViewMode==='undefined'||readerViewMode!=='flow';
+    var compact=false;
+    try{compact=__smReaderCompactMode();}catch(e){}
+    try{inner.classList.toggle('sm-page-scroll',pageMode&&overflowPages[readerPageIndex]===true);}catch(e){}
+    // The phone's chapter title is already carried by the header chip and the
+    // per-page source note, so page mode gives that height to the text.
+    document.body.classList.toggle('sm-page-head-hidden',compact&&pageMode);
   }
   function ensureChip(){
     var head=document.querySelector('.paper-head');
@@ -7780,9 +7796,10 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
   }
   var _origRender=window.renderReaderPage;
   window.renderReaderPage=function(direction){
-    if(needsFit){fitPages();needsFit=false;}
+    if(needsFit&&fitPages())needsFit=false;
     var r=_origRender.apply(this,arguments);
     updateChip();
+    applyPageChrome();
     return r;
   };
   var _origBind=window.storyMemoryBindReaderContext;
@@ -7800,21 +7817,64 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
     var r=_origShow.apply(this,arguments);
     if(id==='reader'){needsFit=true;}
     updateChip();
+    applyPageChrome();
     return r;
   };
-  var resizeTimer=null;
-  window.addEventListener('resize',function(){
-    clearTimeout(resizeTimer);
-    resizeTimer=setTimeout(function(){
-      var rd=document.getElementById('reader');
-      if(rd&&rd.classList.contains('active')&&passageList()){
-        var anchor=null;try{anchor=__smDynamicReaderState.pageSourceRefs[readerPageIndex][0];}catch(e){}
-        fitPages();
-        if(_origRender)window.renderReaderPage(0);
-      }
-    },250);
-  });
-  window.__smReaderSimplificationV2={version:'v2',fitPages:fitPages};
+  function refitAfterLayoutChange(){
+    var rd=document.getElementById('reader');
+    if(!rd||!rd.classList.contains('active')||!passageList())return;
+    needsFit=true;
+    if(fitPages()){
+      needsFit=false;
+      if(_origRender)window.renderReaderPage(0);
+    }
+  }
+  var layoutTimer=null;
+  function scheduleRefit(){
+    clearTimeout(layoutTimer);
+    layoutTimer=setTimeout(refitAfterLayoutChange,250);
+  }
+  window.addEventListener('resize',scheduleRefit);
+  var typoSignature='';
+  function typographyKey(){
+    var c=document.body.classList;
+    return ['smr-fs-sm','smr-fs-lg','smr-fs-xl','smr-lh-tight','smr-lh-loose','smr-en-compact','smr-en-hide','smr-vn-hide']
+      .filter(function(name){return c.contains(name);}).join(',')+'|'+document.documentElement.style.getPropertyValue('--font-bible');
+  }
+  // Reader settings change the text metrics without changing the sheet box, so
+  // the pagination has to be recomputed from the class/style mutation itself.
+  new MutationObserver(function(){
+    var key=typographyKey();
+    if(key===typoSignature)return;
+    typoSignature=key;
+    needsFit=true;
+    scheduleRefit();
+  }).observe(document.body,{attributes:true,attributeFilter:['class']});
+  new MutationObserver(function(){
+    var key=typographyKey();
+    if(key===typoSignature)return;
+    typoSignature=key;
+    needsFit=true;
+    scheduleRefit();
+  }).observe(document.documentElement,{attributes:true,attributeFilter:['style']});
+  typoSignature=typographyKey();
+  if(typeof ResizeObserver!=='undefined'){
+    var innerWatched=false;
+    // Font swap, panel toggles and rotation all resize the sheet itself, so the
+    // fit is recomputed from the sheet box instead of trusting window resize.
+    var watchInner=function(){
+      var inner=document.querySelector('.paper-inner');
+      if(!inner||innerWatched)return;
+      innerWatched=true;
+      new ResizeObserver(scheduleRefit).observe(inner);
+    };
+    watchInner();
+    window.addEventListener('resize',watchInner);
+  }
+  (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve())
+    .then(function(){fontsSettled=true;refitAfterLayoutChange();})
+    .catch(function(){fontsSettled=true;});
+  window.__smReaderSimplificationV2={version:'v2',fitPages:fitPages,fontsReady:function(){return fontsSettled;},isOverflowPage:function(){return overflowPages[readerPageIndex]===true;}};
 })();
 </script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@500;600;700&display=swap">

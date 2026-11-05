@@ -68,13 +68,14 @@ d.querySelectorAll('[data-close-sheet]').forEach(function(b){
   };
 });
 
-/* reader-entry defaults: wide desktop shows both panels; laptop shows
-   Memory with the AI rail persistently discoverable. Mobile unchanged. */
+/* reader-entry defaults: Memory opens on every desktop width, the AI panel only
+ above 1440px where the 320-400px glass clears the paper. Below that the reader
+ opens with the AI rail tab as the entry point, so the text is never covered. */
 var wasReader=false;
 function applyReaderDefaults(){
   if(compactMode())return;
   d.body.classList.add('memory-open');
-  d.body.classList.toggle('ai-open',innerWidth>=1200);
+  d.body.classList.toggle('ai-open',innerWidth>=1440);
   syncRailTabs();
 }
 if(d.body.classList.contains('reader-mode'))applyReaderDefaults();
