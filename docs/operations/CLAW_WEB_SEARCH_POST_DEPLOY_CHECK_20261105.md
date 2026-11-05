@@ -58,10 +58,11 @@
 의도된 동작: off면 호스트는 P01 레인을 조립하지 않으므로 Claw 일반 레인 전체가 503이다.
 이는 #6915 이전 컴2의 상태와 같다(#6915 본문 "남는 사실" 참조).
 
-## 4. 저널 집계 — 지금 남는 것 / 남지 않는 것
+## 4. 저널 집계 — 요청 이벤트와 검색 단계 이벤트
 
-요청 이벤트는 한 줄 JSON(`"event":"http_request"`, `app/request_telemetry.py:58`)이고,
-경로는 템플릿(`/api/claw/general`)·상태·`duration_ms`·`error_code`만 담는다(본문 없음).
+두 종류의 한 줄 JSON이 남는다: HTTP 요청 이벤트(`"event":"http_request"`,
+`app/request_telemetry.py:58` — 경로 템플릿·상태·`duration_ms`·`error_code`, 본문 없음)와
+웹 검색 단계 이벤트(`"event":"claw_web_search"`, (d)).
 
 ### (a) Claw 요청 상태 집계
 
@@ -115,21 +116,50 @@ if values:
 '
 ```
 
-### (d) 웹 검색 호출·실패 건수 — **저널에 남지 않는다**
+### (d) 웹 검색 단계 집계 — `claw_web_search`
 
-이건 도구 부족이 아니라 현재 코드의 계약이다. 억지로 세면 틀린 숫자가 나온다.
+판정(decide)·근거(ground) 단계가 끝날 때 한 줄 JSON이 남는다(#4469 텔레메트리):
 
-- `emit_stage_event`는 **실패(outcome="error")만** 로그로 남긴다
-  (`app/request_telemetry.py:308-311`). 성공 스테이지는 요청 내부 목록에만 쌓인다.
-- Claw 단계 계측은 항상 기본값 `outcome="ok"`로 호출된다
-  (`app/claw_general_routes.py:135-144, 2299-2307`).
-- `_claw_public_search_grounding`은 판정·근거 호출의 모든 예외를 삼키고 검색 없음으로
-  되돌린다(`app/claw_general_routes.py:706-750`).
-- Engine 쪽 `web_research_service.py`에도 검색 판정/근거 로그 라인이 없다.
+```json
+{"event":"claw_web_search","stage":"decide|ground","outcome":"ok|skipped|error","sources":0,"duration_ms":12.3}
+```
 
-따라서 지금 확인 가능한 대체 신호는 **응답 `done.sources`의 존재와 개수**뿐이다.
-호출/실패를 저널로 세려면 고정 필드 1줄(성공/실패, query·본문 없음)을 추가하는
-후속 변경이 필요하다 — 별도 PR로 CTO 판정.
+- `stage=decide`: 모델 판정 호출. `ok`=판정 도착, `skipped`=판정 자체를 못 함(클라이언트·digest·model id 없음), `error`=호출 예외.
+- `stage=ground`: 근거 조회. `ok`=출처 확보, `skipped`=모델이 "검색 불필요" 판정, `error`=조회 예외 또는 증거 형태 거부(`error="invalid_evidence"`).
+- `error` 필드는 예외 클래스 이름 또는 `invalid_evidence`만. query·대화·증거 본문·URL은 남지 않는다.
+- 스위치가 꺼진 턴은 이 줄을 남기지 않는다(오늘과 동일한 무로그).
+
+```sh
+journalctl -u padiem-chat-com2.service --since '1 hour ago' -o cat \
+  | grep '"event":"claw_web_search"' \
+  | /opt/padiem/chat-com2/venv/bin/python -c '
+import sys, json, collections
+counts = collections.Counter()
+sources = 0
+for line in sys.stdin:
+    try:
+        event = json.loads(line)
+    except Exception:
+        continue
+    if event.get("event") != "claw_web_search":
+        continue
+    counts[(event.get("stage"), event.get("outcome"), event.get("error") or "-")] += 1
+    sources += int(event.get("sources") or 0)
+for key, count in sorted(counts.items()):
+    print("stage=%s outcome=%s error=%s count=%d" % (key[0], key[1], key[2], count))
+print("sources_total=%d" % sources)
+'
+```
+
+실패만 세기:
+
+```sh
+journalctl -u padiem-chat-com2.service --since today -o cat \
+  | grep '"event":"claw_web_search"' | grep -c '"outcome":"error"' || true
+```
+
+판정 대비 검색 비율: `decide ok` 대비 `ground ok` 비율로 본다(둘 다 위 집계에 나온다).
+`ground error`가 연속되면 Engine 판정/근거 경로를 확인한다 — 이제 저널만으로 원인이 보인다.
 
 ## 5. 기록 양식
 
@@ -142,4 +172,5 @@ if values:
 - [ ] `/api/claw/general` 503 비율 0에 가까움 (a)
 - [ ] 5xx 없음: `grep -c '"status":5'`
 - [ ] p95 `duration_ms`가 켜기 전과 크게 다르지 않음 (c)
-- [ ] 최신성 질문 5건 중 sources가 붙은 비율 기록 (검색 실패는 저널로 못 세므로 이 비율이 대체 지표)
+- [ ] `claw_web_search` 집계에서 `ground ok` / `ground error` 비율 기록 ((d) 명령)
+- [ ] 최신성 질문 5건 중 sources가 붙은 비율도 함께 기록 (응답 쪽 대조)
