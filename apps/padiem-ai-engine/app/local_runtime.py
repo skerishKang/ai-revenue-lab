@@ -899,6 +899,12 @@ async def _lifespan(receive: Any, send: Any) -> None:
     while True:
         message = await receive()
         if message.get("type") == "lifespan.startup":
+            # The admission binding is composed before the loop exists, so the
+            # keepwarm cycle arms here, on the running loop: the first warm ping
+            # goes out a full period after boot instead of after the first turn.
+            from app.local_admission_binding import arm_live_binders
+
+            arm_live_binders()
             await send({"type": "lifespan.startup.complete"})
         elif message.get("type") == "lifespan.shutdown":
             # The pooled B14 clients outlive individual requests, so the host owns

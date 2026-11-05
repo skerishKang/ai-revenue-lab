@@ -91,6 +91,7 @@ __all__ = [
     "AdmissionBindingConfigError",
     "HttpsAdmissionBinding",
     "admission_binding_for",
+    "arm_live_binders",
     "new_service_id",
     "proof_for",
     "proof_for_v2",
@@ -195,6 +196,20 @@ _POOLED_CLIENTS: dict[int, tuple[asyncio.AbstractEventLoop, httpx.AsyncClient]] 
 # is that caller's business and is never registered here.
 _LIVE_BINDINGS: list["HttpsAdmissionBinding"] = []
 _HTTP2_AVAILABLE: bool | None = None
+
+
+def arm_live_binders() -> None:
+    """Arm the warm cycle of every live binding, from inside a running loop.
+
+    The host composes its bindings while importing the ASGI app, before any
+    event loop exists, so composition alone cannot schedule the first cycle.
+    The host's lifespan startup calls this on the running loop; each binding's
+    own guard keeps exactly one timer outstanding, and the first-call arming
+    path is unchanged.
+    """
+
+    for binding in list(_LIVE_BINDINGS):
+        binding.arm_warmer()
 
 
 def _http2_available() -> bool:
@@ -342,6 +357,16 @@ class HttpsAdmissionBinding:
         except RuntimeError:
             return
         self._warm_timer = loop.call_later(self._keepwarm, self._warm_now)
+
+    def arm_warmer(self) -> None:
+        """Public arm point for the host; one timer outstanding at a time.
+
+        The binding is composed before the host loop exists, so the host calls
+        this once that loop is running (ASGI lifespan startup). Calling it from
+        inside a running loop at composition time arms the cycle immediately.
+        """
+
+        self._arm_warmer()
 
     def _warm_now(self) -> None:
         self._warm_timer = None
