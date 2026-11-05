@@ -292,6 +292,12 @@ class AttemptRecord:
     #: The reasoning level this attempt actually sent (#6838). None means the
     #: request carried no reasoning option at all.
     reasoning_effort: str | None = None
+    #: thought-summary stream: how many thinking-summary fragments streamed in
+    #: and their total character length. None means no thought request rode
+    #: this attempt (unsupported model, or an endpoint that rejected it). The
+    #: thought text itself is never stored.
+    thought_summary_count: int | None = None
+    thought_summary_chars: int | None = None
     #: Whether this candidate was actually sent to a provider. A candidate the
     #: gateway skipped (for example a route that cannot serve a declared tool)
     #: is visible evidence, but it is not a provider call and must never be
@@ -335,6 +341,12 @@ class AttemptRecord:
                 raise CallLedgerError("an undispatched attempt cannot carry a cost basis")
             if self.outcome == OUTCOME_SUCCESS:
                 raise CallLedgerError("an undispatched attempt cannot have succeeded")
+        # thought-summary stream: the row holds the thought request's volume,
+        # not its content. Both values move together or not at all.
+        if (self.thought_summary_count is None) != (self.thought_summary_chars is None):
+            raise CallLedgerError("thought summary volume is incomplete")
+        object.__setattr__(self, "thought_summary_count", _non_negative_int("thought_summary_count", self.thought_summary_count))
+        object.__setattr__(self, "thought_summary_chars", _non_negative_int("thought_summary_chars", self.thought_summary_chars))
 
         object.__setattr__(self, "provider", _clean_text("provider", self.provider, 64))
         object.__setattr__(self, "model_id", _clean_id("model_id", self.model_id))
@@ -395,6 +407,8 @@ class AttemptRecord:
             "protocol": self.protocol,
             "dispatched": 1 if self.dispatched else 0,
             "reasoning_effort": self.reasoning_effort,
+        "thought_summary_count": self.thought_summary_count,
+        "thought_summary_chars": self.thought_summary_chars,
         }
 
 
@@ -701,6 +715,8 @@ class LedgerDraft:
         finish_reason: str | None = None, provider_request_id: str | None = None,
         dispatched: bool = True, protocol: str | None = None,
         reasoning_effort: str | None = None,
+        thought_summary_count: int | None = None,
+        thought_summary_chars: int | None = None,
     ) -> AttemptRecord:
         # #6838: the row records the level B14 actually put on the wire for this
         # model. The platform lane notes its decision per request, so an attempt
@@ -749,6 +765,8 @@ class LedgerDraft:
             protocol=protocol or self.protocol,
             dispatched=dispatched,
             reasoning_effort=reasoning_effort,
+            thought_summary_count=thought_summary_count,
+            thought_summary_chars=thought_summary_chars,
         )
         self.attempts.append(attempt)
         return attempt

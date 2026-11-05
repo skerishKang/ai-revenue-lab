@@ -72,6 +72,7 @@ _ATTEMPT_COLUMNS = (
     "prompt_tokens", "completion_tokens", "total_tokens", "reasoning_tokens",
     "token_source", "estimated_usd", "estimated_krw", "cost_basis", "endpoint",
     "protocol", "dispatched", "reasoning_effort",
+    "thought_summary_count", "thought_summary_chars",
 )
 
 _REQUEST_ENV: ContextVar[Any] = ContextVar("b14_call_ledger_env", default=None)

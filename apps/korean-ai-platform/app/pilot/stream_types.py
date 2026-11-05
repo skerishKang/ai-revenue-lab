@@ -76,6 +76,11 @@ class StreamEvent:
     response_id: str | None = None
     model: str | None = None
     delta_content: str | None = None
+    # A thinking-summary fragment the provider streamed for this turn. It is
+    # carried apart from the answer text so the answer body stays clean and a
+    # consumer can render it as its own stream of frames. The ledger stores
+    # only fragment counts and lengths, never this text.
+    delta_thought: str | None = None
     finish_reason: str | None = None
     usage: StreamUsage | None = None
     done: bool = False
@@ -87,7 +92,7 @@ class StreamEvent:
     signature: str | None = None
 
     def __post_init__(self) -> None:
-        for name in ("response_id", "model", "delta_content", "finish_reason"):
+        for name in ("response_id", "model", "delta_content", "delta_thought", "finish_reason"):
             value = getattr(self, name)
             if value is not None and not isinstance(value, str):
                 raise ValueError(f"{name} must be a string or None")
@@ -108,6 +113,7 @@ class StreamEvent:
             raise ValueError("tool_call must be StreamToolCall or None")
         if self.done and (
             self.delta_content is not None
+            or self.delta_thought is not None
             or self.usage is not None
             or self.tool_call is not None
             or self.signature is not None
@@ -209,6 +215,7 @@ def _parse_sse_frame(frame: bytes, *, provider="unknown", model_id="unknown") ->
         raise fail("choices_not_list")
 
     delta_content: str | None = None
+    delta_thought: str | None = None
     finish_reason: str | None = None
     if choices:
         choice = choices[0]
@@ -224,6 +231,13 @@ def _parse_sse_frame(frame: bytes, *, provider="unknown", model_id="unknown") ->
             delta_content = text_content(content)
         except MalformedUpstreamResponse as exc:
             raise fail(exc.reason) from None
+        # The thinking-summary fragment rides its own delta field, never the
+        # answer content. A non-string value is a malformed frame: the field is
+        # either a summary string or absent, anything else is a wire change
+        # this parser must not silently swallow.
+        delta_thought = delta.get("reasoning_content")
+        if delta_thought is not None and not isinstance(delta_thought, str):
+            raise fail("thought_delta_not_str")
         finish_reason = choice.get("finish_reason")
         if finish_reason is not None and not isinstance(finish_reason, str):
             raise fail("finish_reason_not_str")
@@ -234,6 +248,7 @@ def _parse_sse_frame(frame: bytes, *, provider="unknown", model_id="unknown") ->
         response_id=response_id,
         model=model,
         delta_content=delta_content,
+        delta_thought=delta_thought,
         finish_reason=finish_reason,
         usage=usage,
     )
