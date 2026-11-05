@@ -107,6 +107,7 @@ def test_translation_settings_persist_lang_labels_focus_contrast_and_zoom(base_u
         page = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=1)
         page_errors = []
         page.on("pageerror", lambda error: page_errors.append(f"{error} | {getattr(error, 'stack', '')}"))
+        page.on("console", lambda msg: page_errors.append(f"console:{msg.type()}:{msg.text} @ {msg.location}") if msg.type() == "error" and "Unexpected token" in msg.text else None)
         _open_acts_reader(page, base_url)
 
         settings = page.evaluate("window.__smReaderSettingsV1.get()")
