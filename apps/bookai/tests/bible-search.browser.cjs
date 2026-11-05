@@ -13,6 +13,9 @@ fs.mkdirSync(path.dirname(screenshotPath),{recursive:true});
 (async()=>{
   const browser=await chromium.launch({headless:true,...(process.env.B61_CHROME_PATH?{executablePath:process.env.B61_CHROME_PATH}:{})});
   const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
+  // Keep the cold-start index path deterministic here; the idle prefetch is
+  // exercised by the local verification run instead.
+  await page.addInitScript(()=>{window.__smBibleSearchNoPrefetch=true;});
   page.setDefaultTimeout(20000);
   const browserErrors=[];
   const indexRequests=[];
@@ -61,6 +64,12 @@ fs.mkdirSync(path.dirname(screenshotPath),{recursive:true});
       assert.equal(await page.locator('#readerVolumeTitle').innerText(),before.title,'search itself must not navigate');
       await page.locator('#bibleSearchResults .bible-search-result').first().click();
       await page.waitForFunction(expected=>!!document.querySelector('#readerPageBody [data-source-locator="'+expected+'"]'),locator,{timeout:30000});
+      // The exposed IIFE-local highlight helper must mark the opened verse.
+      await page.waitForFunction(expected=>{
+        const el=document.querySelector('#readerPageBody [data-source-locator="'+expected+'"]');
+        return !!el&&(el.classList.contains('sm-ev-target')||el.getAttribute('data-sm-ev-active')==='1');
+      },locator,{timeout:15000});
+      assert.equal(await page.locator('#readerPageBody .sm-ev-target[data-source-locator="'+locator+'"]').count(),1,'opened verse must carry the highlight class');
       assert.equal(await page.locator('#bibleSearchReturn').isVisible(),true);
       await page.locator('#bibleSearchReturn').click();
       await page.waitForFunction(title=>document.getElementById('readerVolumeTitle').textContent.trim()===title&&document.getElementById('bibleSearchReturn').hidden,before.title,{timeout:30000});
@@ -83,9 +92,7 @@ fs.mkdirSync(path.dirname(screenshotPath),{recursive:true});
 
     for(const [query,message] of [
       ['요한복음 30장','해당 장이 없어요'],
-      ['요한복음 3장 999절','해당 절을 찾지 못했어요'],
-      ['요한복옴 3:16','책 이름을 찾지 못했어요'],
-      ['요한복음 삼장','구절 형식을 확인해 주세요']
+      ['요한복음 3장 999절','해당 절을 찾지 못했어요']
     ]){
       await openSearchPanel();
       await page.locator('#bibleSearchInput').fill(query);
@@ -158,6 +165,29 @@ fs.mkdirSync(path.dirname(screenshotPath),{recursive:true});
     page.off('request',trackPreviewChapter);
     await page.locator('#bibleSearchReturn').click();
     await page.waitForFunction(title=>document.getElementById('readerVolumeTitle').textContent.trim()===title&&document.getElementById('bibleSearchReturn').hidden,before.title,{timeout:30000});
+
+    // unknown_book / invalid_format and words containing 장·절 must reach full-text
+    // search, not the "구절 형식을 확인해 주세요" reference error.
+    for(const query of ['요한복옴 3:16','요한복음 삼장','장막','유월절','장로','백부장','절기']){
+      await openSearchPanel();
+      await page.locator('#bibleSearchInput').fill(query);
+      await page.locator('#bibleSearchForm').press('Enter');
+      await page.waitForFunction(()=>/개 결과 중|검색 결과가 없어요/.test(document.querySelector('#bibleSearchStatus')?.textContent||''),null,{timeout:180000});
+      const text=await page.locator('#bibleSearchStatus').innerText();
+      assert.doesNotMatch(text,/구절 형식을 확인해 주세요|책 이름을 찾지 못했어요/,query+' must be routed to text search');
+    }
+    // KRV-numbered reference: the benediction is WEB 2CO 13:14 / KRV 13:13.
+    await openSearchPanel();
+    await page.locator('#bibleSearchInput').fill('고린도후서 13장 13절');
+    await page.locator('#bibleSearchForm').press('Enter');
+    await page.waitForFunction(()=>document.querySelectorAll('#bibleSearchResults .bible-search-result').length>0);
+    assert.match(await page.locator('#bibleSearchResults .bible-search-result').first().locator('strong').innerText(),/고린도후서 13장 13절/);
+    assert.match(await page.locator('#bibleSearchResults .bible-search-result').first().locator('span').innerText(),/은혜와/);
+    // Four WEB-orphan verses get an explicit guide instead of a silent failure.
+    await openSearchPanel();
+    await page.locator('#bibleSearchInput').fill('행 8:37');
+    await page.locator('#bibleSearchForm').press('Enter');
+    await page.getByRole('status').filter({hasText:'이 판본 배열에는 없는 절'}).waitFor();
 
     if(browserErrors.length)throw new Error('browser console/page errors: '+browserErrors.join(' | '));
     console.log('PASS: 390px references, full-text search, cancel, failure retry, one-chapter preview and return');

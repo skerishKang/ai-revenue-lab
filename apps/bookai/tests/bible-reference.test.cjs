@@ -15,4 +15,31 @@ const unit=JSON.parse(fs.readFileSync(path.join(__dirname,'../public/content/bib
 assert.equal(api.matchPassage(api.parseReference('요한복음 3장 16절',codes,counts),unit).canonical_locator,'bible:web:JHN:3:16');
 assert.equal(api.matchPassage(api.parseReference('요한복음 3장 999절',codes,counts),unit),null);
 assert.equal(api.matchPassage(api.parseReference('요 3:16',resolver.bookAliases,resolver.chapterCounts),unit).canonical_locator,'bible:web:JHN:3:16');
+// Abbreviation table (66-book standard)
+const A=resolver.bookAliases,C=resolver.chapterCounts;
+for(const [q,loc] of [['창 1:1','bible:web:GEN:1:1'],['출 1:1','bible:web:EXO:1:1'],['레 1:1','bible:web:LEV:1:1'],['민 1:1','bible:web:NUM:1:1'],['신 1:1','bible:web:DEU:1:1'],['수 1:1','bible:web:JOS:1:1'],['삿 1:1','bible:web:JDG:1:1'],['룻 1:1','bible:web:RUT:1:1'],['삼상 1:1','bible:web:1SA:1:1'],['삼하 2:1','bible:web:2SA:2:1'],['왕상 1:1','bible:web:1KI:1:1'],['왕하 1:1','bible:web:2KI:1:1'],['대상 1:1','bible:web:1CH:1:1'],['대하 1:1','bible:web:2CH:1:1'],['스 1:1','bible:web:EZR:1:1'],['느 1:1','bible:web:NEH:1:1'],['에 1:1','bible:web:EST:1:1'],['욥 1:1','bible:web:JOB:1:1'],['시 1:1','bible:web:PSA:1:1'],['잠 1:1','bible:web:PRO:1:1'],['전 1:1','bible:web:ECC:1:1'],['아 1:1','bible:web:SNG:1:1'],['사 1:1','bible:web:ISA:1:1'],['렘 1:1','bible:web:JER:1:1'],['애 1:1','bible:web:LAM:1:1'],['겔 1:1','bible:web:EZK:1:1'],['단 1:1','bible:web:DAN:1:1'],['호 1:1','bible:web:HOS:1:1'],['욜 1:1','bible:web:JOL:1:1'],['암 1:1','bible:web:AMO:1:1'],['옵 1:1','bible:web:OBA:1:1'],['욘 1:1','bible:web:JON:1:1'],['미 1:1','bible:web:MIC:1:1'],['나 1:1','bible:web:NAM:1:1'],['합 1:1','bible:web:HAB:1:1'],['습 1:1','bible:web:ZEP:1:1'],['학 1:1','bible:web:HAG:1:1'],['슥 1:1','bible:web:ZEC:1:1'],['말 1:1','bible:web:MAL:1:1'],['마 1:1','bible:web:MAT:1:1'],['막 1:1','bible:web:MRK:1:1'],['눅 1:1','bible:web:LUK:1:1'],['요 3:16','bible:web:JHN:3:16'],['행 1:1','bible:web:ACT:1:1'],['롬 1:1','bible:web:ROM:1:1'],['고전 1:1','bible:web:1CO:1:1'],['고후 1:1','bible:web:2CO:1:1'],['갈 1:1','bible:web:GAL:1:1'],['엡 1:1','bible:web:EPH:1:1'],['빌 1:1','bible:web:PHP:1:1'],['골 1:1','bible:web:COL:1:1'],['살전 1:1','bible:web:1TH:1:1'],['살후 1:1','bible:web:2TH:1:1'],['딤전 1:1','bible:web:1TI:1:1'],['딤후 1:1','bible:web:2TI:1:1'],['딛 1:1','bible:web:TIT:1:1'],['몬 1:1','bible:web:PHM:1:1'],['히 1:1','bible:web:HEB:1:1'],['약 1:1','bible:web:JAS:1:1'],['벧전 1:1','bible:web:1PE:1:1'],['벧후 1:1','bible:web:2PE:1:1'],['요일 1:1','bible:web:1JN:1:1'],['요이 1:1','bible:web:2JN:1:1'],['요삼 1:1','bible:web:3JN:1:1'],['유 1:1','bible:web:JUD:1:1'],['계 1:1','bible:web:REV:1:1'],['마태 5:3','bible:web:MAT:5:3'],['마가 1:1','bible:web:MRK:1:1'],['누가 1:1','bible:web:LUK:1:1'],['사도 1:1','bible:web:ACT:1:1'],['시편 23편','book:PSA:chapter:023']]) assert.equal(api.parseReference(q,A,C).locator,loc,q);
+// Range, fullwidth, space-separated, single-chapter book
+assert.equal(api.parseReference('요 3:16-18',A,C).verse,16);
+assert.equal(api.parseReference('요 3:16-18',A,C).isRange,true);
+assert.equal(api.parseReference('요 3:16-18',A,C).rangeEnd,18);
+assert.equal(api.parseReference('요 3:16-18',A,C).rangeEndChapter,null);
+const crossRange=api.parseReference('창 1:1-2:3',A,C);
+assert.equal(crossRange.isRange,true);
+assert.equal(crossRange.rangeEndChapter,2);
+assert.equal(crossRange.rangeEnd,3);
+assert.equal(crossRange.verse,1);
+assert.equal(api.parseReference('요 ３：１６',A,C).locator,'bible:web:JHN:3:16');
+assert.equal(api.parseReference('요한복음 3 16',A,C).locator,'bible:web:JHN:3:16');
+assert.equal(api.parseReference('옵 1:1',A,C).locator,'bible:web:OBA:1:1');
+assert.equal(api.parseReference('몬 1:1',A,C).locator,'bible:web:PHM:1:1');
+assert.equal(api.parseReference('유 1:1',A,C).locator,'bible:web:JUD:1:1');
+assert.equal(api.parseReference('고린도후서 13장 13절',A,C).locator,'bible:web:2CO:13:13');
+// KRV number priority
+const coUnit=JSON.parse(fs.readFileSync(path.join(__dirname,'../public/content/bible-web/book-2CO-chapter-013.json'),'utf8'));
+const coHit=api.matchPassage(api.parseReference('고린도후서 13장 13절',A,C),coUnit);
+assert.equal(coHit.canonical_locator,'bible:web:2CO:13:14');
+assert.equal(api.krvLabelOf(coHit,'2CO').verse,13);
+const romUnit=JSON.parse(fs.readFileSync(path.join(__dirname,'../public/content/bible-web/book-ROM-chapter-016.json'),'utf8'));
+const romPassages=romUnit.passages.concat(JSON.parse(fs.readFileSync(path.join(__dirname,'../public/content/bible-web/book-ROM-chapter-014.json'),'utf8')).passages);
+assert.equal(api.matchPassage(api.parseReference('로마서 16장 25절',A,C),{passages:romPassages}).canonical_locator,'bible:web:ROM:14:24');
 console.log('PASS reference formats, repository aliases, chapter-only lookup, and passage validation against shipped corpus');
