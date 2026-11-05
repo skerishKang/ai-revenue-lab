@@ -2,9 +2,11 @@
 """GET every external link the councillor site publishes and report the broken ones.
 
 Checked: activity records, media tiles, social channels, policy cards and every
-absolute href in the six HTML pages. A 4xx, 5xx or a timeout fails the run. The
-weekly workflow runs this, not the pull-request lane: an external council page
-having a bad day must not block a content change.
+absolute href in the six HTML pages. A 4xx, 5xx or a timeout fails the run; a
+5xx, 429 or a connection failure is retried once after a short pause first, so a
+council server hiccup does not raise a false alarm. The weekly workflow runs this,
+not the pull-request lane: an external council page having a bad day must not
+block a content change.
 """
 from __future__ import annotations
 
@@ -12,6 +14,7 @@ import argparse
 import json
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -19,6 +22,7 @@ from pathlib import Path
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 SITE_PAGES = ("index.html", "about.html", "activity.html", "policy.html", "media.html", "404.html")
+RETRY_DELAY = 3.0
 
 
 def collect() -> list[str]:
@@ -40,7 +44,7 @@ def collect() -> list[str]:
     return sorted(url for url in urls if url.startswith(("http://", "https://")))
 
 
-def check(url: str, timeout: float) -> tuple[str, int, str]:
+def fetch(url: str, timeout: float) -> tuple[str, int, str]:
     request = urllib.request.Request(
         url,
         headers={"User-Agent": "Mozilla/5.0 (compatible; councillor-link-check/1.0)"},
@@ -54,10 +58,25 @@ def check(url: str, timeout: float) -> tuple[str, int, str]:
         return url, 0, type(error).__name__
 
 
+def transient(status: int) -> bool:
+    return status == 0 or status == 429 or status >= 500
+
+
+def check(url: str, timeout: float, retries: int = 1) -> tuple[str, int, str]:
+    result = fetch(url, timeout)
+    for _ in range(retries):
+        if not transient(result[1]):
+            break
+        time.sleep(RETRY_DELAY)
+        result = fetch(url, timeout)
+    return result
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--timeout", type=float, default=20.0)
     parser.add_argument("--workers", type=int, default=8)
+    parser.add_argument("--retries", type=int, default=1)
     args = parser.parse_args()
 
     urls = collect()
@@ -67,7 +86,7 @@ def main() -> int:
 
     failures: list[tuple[str, int, str]] = []
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        for future in as_completed([pool.submit(check, url, args.timeout) for url in urls]):
+        for future in as_completed([pool.submit(check, url, args.timeout, args.retries) for url in urls]):
             url, status, error = future.result()
             ok = 200 <= status < 400
             print(("OK   " if ok else "FAIL ") + f"{status:>3} {url}" + (f" ({error})" if error else ""))
