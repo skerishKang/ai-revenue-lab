@@ -7945,12 +7945,13 @@ body.smr-theme-dark .memory-rail .rail-nav .pill{background:rgba(255,255,255,.08
 body.smr-theme-dark .memory-rail .memory-scope-toggle button{color:#a99e8d!important}
 body.smr-theme-dark .memory-rail .memory-scope-toggle button.on{background:rgba(255,255,255,.1)!important;color:#e9e1d2!important}
 </style>
+<script type="application/x-bookai" data-bookai-script src="./storymemory-answer-evidence-v1.js"></script>
 <script type="application/x-bookai" data-bookai-script id="sm-companion-evidence-ux-v1">
 /* ===== B61 #1823 Companion source evidence presentation + insufficient-context UX v1 =====
    Presentation-only Product Adapter lane (#1745 split: Engine/Core owns evidence
    truth; B61 owns labels/grouping/navigation/copy). Wraps the accepted bounded
    packet builder + appendAIMessage render path without touching BYTE_LOCKED
-   modules. Chips derive exclusively from model-visible packet evidence. */
+   modules. Chips require an explicit answer citation intersecting bounded refs. */
 (function(){
 'use strict';
 if(window.__smV1823EvidenceUXV1)return;
@@ -7986,9 +7987,12 @@ function groupChapterVerses(items,chLabel){
   }
   return out;
 }
-function passageChips(packet){
+function passageChips(answer,packet){
   var rc=packet&&packet.reader_context||{};
   var cmp=window.storyMemoryCompareLocatorV1||null;
+  var evidenceApi=window.storyMemoryAnswerEvidenceV1;
+  if(!evidenceApi||typeof evidenceApi.projectAnswerEvidence!=='function')return [];
+  var locators=evidenceApi.projectAnswerEvidence(answer,packet,STORYMEMORY_BIBLE_USFM_CODES,cmp);
   function isCurrent(loc){
     try{
       if(rc.visible_locator_start&&rc.visible_locator_end&&cmp){
@@ -7999,17 +8003,11 @@ function passageChips(packet){
       return !rc.current_unit_key||unit===String(rc.current_unit_key);
     }catch(_){return false;}
   }
-  var byChapter={},order=[],passages=(packet&&Array.isArray(packet.source_passages))?packet.source_passages:[];
-  for(var i=0;i<passages.length;i++){
-    var p=passages[i]||{};
-    var loc=p.canonical_locator||p.canonicalLocator||p.locator||'';
-    if(!loc)continue;
+  var byChapter={},order=[];
+  for(var i=0;i<locators.length;i++){
+    var loc=locators[i];
     if(!labelForLocator(loc))continue;
     var parts=String(loc).split(':');
-    // Show sources from the reader's current Bible chapter. Prior passages may
-    // still be sent as model context, but are not labelled as chapter evidence.
-    if (parts[0] === 'bible' && /^bible:[^:]+:[^:]+:\d+$/.test(String(rc.current_unit_key || ''))
-        && parts.slice(0, 4).join(':') !== String(rc.current_unit_key)) continue;
     var key=parts[2]+':'+parts[3];
     if(!byChapter[key]){byChapter[key]={chLabel:(volumeByCode[parts[2]]||'')+' '+Number(parts[3]),verses:[]};order.push(key);}
     byChapter[key].verses.push({locator:loc,verse:parts.length>=5?Number(parts[4]):null});
@@ -8044,13 +8042,10 @@ function selectedChip(packet){
   if(!lab)return null;
   return {kind:'selected',locator:loc,label:'선택 · '+lab};
 }
-function evidenceFromPacket(packet){
+function evidenceFromPacket(packet,answer){
   if(!packet||typeof packet!=='object')return null;
-  var chips=[];
-  var sel=selectedChip(packet);if(sel)chips.push(sel);
-  chips=chips.concat(passageChips(packet)).concat(annotationChips(packet));
-  var d=packet.diagnostics||{};
-  return {chips:chips.slice(0,MAX_CHIPS),overflow:Math.max(0,chips.length-MAX_CHIPS),counts:{passages:d.allowed_source_count||((packet.source_passages||[]).length),annotations:d.allowed_annotation_count||(((packet.annotation_context||{}).annotations||[]).length)}};
+  var chips=passageChips(answer,packet);
+  return {chips:chips.slice(0,MAX_CHIPS),overflow:Math.max(0,chips.length-MAX_CHIPS)};
 }
 function classifyLive(meta,packet){
   if(meta&&meta.error){
@@ -8171,15 +8166,15 @@ try{
 if(typeof origAppend==='function'){
   appendAIMessage=function(title,body,source,meta){
     var node=origAppend(title,body,source,meta);
-    try{decorateLive(node,meta);}catch(_){}
+    try{decorateLive(node,meta,body);}catch(_){}
     return node;
   };
   window.__smV1823AppendAIMessageDecorated=appendAIMessage;
 }
-function decorateLive(node,meta){
+function decorateLive(node,meta,answerText){
   if(!node||!meta||meta.liveCompanion!==true)return;
   var question=String(meta.question||'');
-  var packet=lookupPacket(question);
+  var packet=meta.answerEvidencePacket||lookupPacket(question);
   var cls=classifyLive(meta,packet);
   var badge=STATE_BADGE[cls.state]||STATE_BADGE.GROUNDED;
   var contract=node.querySelector('.answer-contract');
@@ -8226,12 +8221,11 @@ function decorateLive(node,meta){
     else node.append(retryWrap);
   }
   if(cls.state==='GROUNDED'){
-    var ev=evidenceFromPacket(packet);
+    var ev=evidenceFromPacket(packet,answerText);
     var hasChips=ev&&ev.chips.length>0;
-    var hasCounts=ev&&ev.counts&&(ev.counts.passages>0||ev.counts.annotations>0);
-    /* Truth lock GENERAL_CHAT_FALSE_STORY_SOURCE=0: an ALLOW answer that used no
-       StoryMemory evidence must not present a StoryMemory source claim. */
-    if(!packet||(!hasChips&&!hasCounts)){
+    /* The packet is candidate context, not proof that every passage grounded
+       this answer. Without an explicit answer citation, render no verse chip. */
+    if(!packet){
       var generalBadge=STATE_BADGE.GENERAL_CHAT;
       var gbContract=node.querySelector('.answer-contract');
       if(gbContract){
@@ -8246,6 +8240,7 @@ function decorateLive(node,meta){
       if(gbSrc)gbSrc.innerHTML='출처 · 일반 대화 · 본문 근거 미사용<br>StoryMemory 본문 근거를 사용하지 않았습니다';
       return;
     }
+    if(!hasChips)return;
     var strip=document.createElement('div');
     strip.className='sm-ev-strip';
     strip.setAttribute('role','group');
@@ -8279,13 +8274,6 @@ function decorateLive(node,meta){
         more.title='표시하지 않은 추가 근거 '+ev.overflow+'개';
         strip.append(more);
       }
-    }else if(ev&&ev.counts&&(ev.counts.passages>0||ev.counts.annotations>0)){
-      var cnt=document.createElement('span');
-      cnt.className='sm-ev-more';
-      cnt.textContent='읽은 범위 내 근거 '+(ev.counts.passages+ev.counts.annotations)+'개 참조';
-      strip.append(cnt);
-    }else{
-      return;
     }
     var saveBtn=node.querySelector('.save-ai-memory');
     if(saveBtn)node.insertBefore(strip,saveBtn);
@@ -8300,7 +8288,8 @@ window.__smV1823EvidenceUXV1={
   evidenceFromPacket:evidenceFromPacket,
   classifyLive:classifyLive,
   navigateLocator:navigateLocator,
-  lookupPacket:lookupPacket
+  lookupPacket:lookupPacket,
+  decorateLive:decorateLive
 };
 })();
 </script>
