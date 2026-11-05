@@ -455,6 +455,26 @@ def test_conversion_opens_only_the_canonical_reader_and_calls_no_provider() -> N
 
     assert "PdfReader" not in code
     assert "pypdf" not in code
-    assert "_open_pdf_reader(source)" in code
+    assert "_open_pdf_reader(source" in code
     for forbidden in ("httpx", "requests", "openai", "subprocess", "multiprocessing", "pdfplumber", "pdfium"):
         assert forbidden not in code.lower()
+
+
+@pytest.mark.skipif(
+    not Path(__file__).resolve().parents[3].joinpath(
+        "docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Master_Proposal_10p.pdf"
+    ).exists(),
+    reason="Customer package PDF is not in this checkout.",
+)
+def test_ppt_export_pdf_with_broken_xref_converts_all_ten_pages() -> None:
+    source = Path(__file__).resolve().parents[3].joinpath(
+        "docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Master_Proposal_10p.pdf"
+    )
+    with pytest.raises(DocumentNormalizationError) as excinfo:
+        from padiem_ai_core.document_normalization import _open_pdf_reader
+
+        _open_pdf_reader(source.read_bytes())
+    assert getattr(excinfo.value, "code", None) == "pdf_invalid"
+    result = convert(source.read_bytes())
+    assert result.page_count == 10
+    assert len(result.markdown) > 0

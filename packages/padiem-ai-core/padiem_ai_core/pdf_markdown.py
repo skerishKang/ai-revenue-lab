@@ -774,7 +774,7 @@ def convert_pdf_to_markdown(
         )
     if not byte_size:
         raise DocumentNormalizationError("invalid_binary_payload", "PDF payload is empty.")
-    reader = _open_pdf_reader(source)
+    reader = _open_pdf_reader(source, recover_broken_structure=True)
     emitted: list[list[str]] = []
     layers: list[str] = []
     rotated: list[bool] = []

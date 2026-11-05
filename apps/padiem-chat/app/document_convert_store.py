@@ -32,6 +32,63 @@ MAX_DOCUMENT_JOBS_PAGE = 50
 MAX_REPORT_JSON_CHARS = 12_000
 
 
+def _summarize_agreement(report: Any) -> Any:
+    """Bound the verification report to fit MAX_REPORT_JSON_CHARS as valid JSON.
+
+    Per-page agreement rows never fit for long documents (100 pages already
+    overflow), and cutting the JSON string corrupts it, so the whole report
+    was discarded on read. Instead keep the document-level minimum/mean plus
+    the page numbers that need review and the first few mismatches.
+    """
+    if not isinstance(report, dict):
+        return report
+    agreement = report.get("agreement")
+    if not isinstance(agreement, list):
+        return report
+    if len(json.dumps(report, ensure_ascii=False)) <= MAX_REPORT_JSON_CHARS:
+        return report
+    rows = agreement
+    coverages = [r.get("character_coverage") for r in rows if isinstance(r, dict) and isinstance(r.get("character_coverage"), (int, float))]
+    digits = [r.get("digit_preservation") for r in rows if isinstance(r, dict) and isinstance(r.get("digit_preservation"), (int, float))]
+    orders = [r.get("reading_order") for r in rows if isinstance(r, dict) and isinstance(r.get("reading_order"), (int, float))]
+    review_pages = [r.get("page") for r in rows if isinstance(r, dict) and isinstance(r.get("page"), int) and (not isinstance(r.get("character_coverage"), (int, float)) or r.get("character_coverage") < 0.99)]
+
+    def mean(values: list[float]) -> float | None:
+        return round(sum(values) / len(values), 4) if values else None
+
+    def lowest(values: list[float]) -> float | None:
+        return round(min(values), 4) if values else None
+
+    summary = {
+        "page_count": report.get("page_count"),
+        "agreement_summary": {
+            "page_count": len(rows),
+            "min_character_coverage": lowest(coverages),
+            "mean_character_coverage": mean(coverages),
+            "min_digit_preservation": lowest(digits),
+            "mean_digit_preservation": mean(digits),
+            "min_reading_order": lowest(orders),
+            "mean_reading_order": mean(orders),
+            "review_pages": review_pages[:50],
+            "review_page_count": len(review_pages),
+            "summarized": True,
+        },
+        "mismatches": (report.get("mismatches") if isinstance(report.get("mismatches"), list) else [])[:20],
+        "warnings": (report.get("warnings") if isinstance(report.get("warnings"), list) else [])[:20],
+    }
+    if len(json.dumps(summary, ensure_ascii=False)) > MAX_REPORT_JSON_CHARS:
+        summary["mismatches"] = summary["mismatches"][:5]
+        summary["warnings"] = summary["warnings"][:5]
+    return summary
+
+
+def _encode_report(report: Any) -> str | None:
+    if report is None:
+        return None
+    summarized = _summarize_agreement(report)
+    return json.dumps(summarized, ensure_ascii=False)[:MAX_REPORT_JSON_CHARS]
+
+
 def _now_iso() -> str:
     return (
         datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
@@ -279,7 +336,7 @@ class D1DocumentConvertStore:
             JOB_STATUS_QUEUED,
             max(page_count, 0),
             key,
-            None if probe is None else json.dumps(probe, ensure_ascii=False)[:MAX_REPORT_JSON_CHARS],
+            _encode_report(probe),
             now,
             now,
         )
@@ -373,7 +430,7 @@ class D1DocumentConvertStore:
     ) -> ConvertItemRecord | None:
         if status not in _DOCUMENT_STATUSES:
             raise ValueError("변환 상태 값이 올바르지 않습니다.")
-        encoded = None if report is None else json.dumps(report, ensure_ascii=False)[:MAX_REPORT_JSON_CHARS]
+        encoded = _encode_report(report)
         await self._run(
             "UPDATE document_convert_items SET status = ?, page_count = ?, "
             "character_count = ?, markdown_key = ?, report_json = ?, error_code = ?, "
