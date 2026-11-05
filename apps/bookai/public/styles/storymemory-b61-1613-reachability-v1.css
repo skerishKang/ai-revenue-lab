@@ -32,8 +32,8 @@
   /* The phone sheet reserves no room for a toolbar (it is not shown here) and
      only as much bottom room as the dock needs, so a page carries two verses
      instead of one at the largest type. */
-  .paper-inner{padding-top:24px!important;padding-bottom:60px!important}
-  .reader-page-note{font-size:9px;line-height:1.25;padding:5px 7px}
+  .paper-inner{padding-top:24px!important;padding-bottom:56px!important}
+  .reader-page-note{font-size:9px;line-height:1.25;padding:5px 7px;margin-top:6px!important}
   .paper-inner .verse{margin-bottom:8px!important}
   body.sm-page-head-hidden .paper-head h1{display:none}
   .reader-layout>.memory-rail,.reader-layout>.ai-panel{
