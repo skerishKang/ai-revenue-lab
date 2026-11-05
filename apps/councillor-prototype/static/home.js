@@ -15,9 +15,7 @@
     document: '<path d="M5 2.6h6.2l3.8 3.8v11H5z"/><path d="M11.2 2.6v3.8h3.8"/><path d="M7.6 11h4.8M7.6 14h4.8"/>',
     building: '<path d="M2.8 8.6L10 3.4l7.2 5.2"/><path d="M5.2 9.4v6.4M9 9.4v6.4M11 9.4v6.4M14.8 9.4v6.4"/><path d="M2.6 17.4h14.8"/>',
     flag: '<path d="M5.6 17.2V3.4"/><path d="M5.6 4.3c3-1.5 6 1.5 9 .3v6.4c-3 1.2-6-1.8-9-.3z"/>',
-    photo: '<rect x="2.8" y="4.2" width="14.4" height="11.6" rx="2.1"/><circle cx="7.4" cy="8.5" r="1.5"/><path d="M4.6 14.4l4.1-3.7 3 2.7 2.2-1.9 3.3 3"/>',
-    news: '<path d="M4 4.2h9.6v12H5.6A1.6 1.6 0 014 14.6z"/><path d="M13.6 7.2h2.8v7.6a1.4 1.4 0 01-1.4 1.4h-1.4"/><path d="M6.5 7.2h4.8M6.5 10h4.8"/>',
-    source: '<path d="M8.6 11.4a3 3 0 004.2 0l2.6-2.6a3 3 0 00-4.2-4.2L10 5.8"/><path d="M11.4 8.6a3 3 0 00-4.2 0L4.6 11.2a3 3 0 004.2 4.2l1.2-1.2"/>'
+    flag: '<path d="M5.6 17.2V3.4"/><path d="M5.6 4.3c3-1.5 6 1.5 9 .3v6.4c-3 1.2-6-1.8-9-.3z"/>'
   };
 
   function icon(name) {
@@ -100,27 +98,6 @@
     grid.appendChild(summary);
   }
 
-  // Counts of material held on this page — not achievement or performance data.
-  function renderStats(activities, mediaTiles, newsItems) {
-    const list = document.getElementById("statList");
-    if (!list) return;
-    const items = [
-      ["record", "의정활동 기록", activities.length + "건"],
-      ["photo", "사진·영상 자료", mediaTiles.length + "건"],
-      ["news", "의정소식", newsItems.length + "건"],
-      ["source", "자료 출처", "3곳"]
-    ];
-    list.innerHTML = items.map((it) =>
-      '<li class="stat-item">' +
-        '<span class="stat-icon" aria-hidden="true">' + icon(it[0]) + "</span>" +
-        "<span>" +
-          '<span class="stat-value">' + it[2] + "</span>" +
-          '<span class="stat-label">' + it[1] + "</span>" +
-        "</span>" +
-      "</li>"
-    ).join("");
-  }
-
   function renderNewsColumn(newsItems) {
     const list = document.getElementById("homeNews");
     if (!list) return;
@@ -194,7 +171,6 @@
       const mediaTiles = data.media.tiles;
       const NEWS = activities.filter((item) => item.featured === true);
       renderKeyActivities(activities);
-      renderStats(activities, mediaTiles, NEWS);
       renderNewsColumn(NEWS);
       renderMediaColumn(mediaTiles);
     });

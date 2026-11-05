@@ -403,6 +403,9 @@ body {
 .profile-list dt { font-size: var(--fs-label); color: var(--accent-2); margin: 0; font-weight: 700; letter-spacing: 0.04em; }
 .profile-list dd { margin: 0; font-size: var(--fs-body); }
 .profile-list dd a { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2); font-weight: 600; }
+.intro-video { margin-top: 32px; }
+.intro-video video { width: 100%; aspect-ratio: 16 / 9; display: block; border-radius: var(--radius-sm); background: #000; }
+.intro-video-title { font-family: var(--font-serif); font-size: 18px; margin: 10px 0 0; }
 
 .activity-toolbar { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
 .activity-toolbar label { font-size: var(--fs-label); align-self: center; color: var(--muted); }
@@ -460,6 +463,10 @@ body {
 }
 .info-card h3, .policy-card h3 { margin: 0 0 8px; font-size: 18px; }
 .info-card p, .policy-card p { color: var(--muted); font-size: var(--fs-body); margin: 0 0 16px; line-height: 1.65; }
+.policy-block { margin-top: 34px; }
+.policy-block[hidden] { display: none; }
+.policy-heading { font-family: var(--font-serif); font-size: clamp(18px, 1.6vw, 22px); margin: 0 0 14px; }
+.policy-meta { color: var(--accent-2); font-weight: 700; font-size: var(--fs-label); margin: 0 0 6px !important; }
 .card-link { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--accent-2); text-decoration: none; font-weight: 600; font-size: var(--fs-body); }
 .card-link:hover { text-decoration: underline; }
 
@@ -486,6 +493,20 @@ body {
 .tile-title { display: block; font-size: var(--fs-body); font-weight: 600; margin: 6px 0 8px; }
 .tile-notes { list-style: none; margin: 0; padding: 0; font-size: var(--fs-label); color: var(--muted); }
 .tile-notes li { padding: 1px 0; }
+.media-more { margin-top: 30px; }
+.media-more-title { font-family: var(--font-serif); font-size: 20px; margin: 0 0 10px; }
+.link-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
+.link-list li { border-bottom: 1px solid var(--border); }
+.link-list a {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  min-height: var(--tap); padding: 10px 0; color: var(--text);
+  text-decoration: none; font-size: var(--fs-body);
+}
+.link-list a:hover { color: var(--accent-2); text-decoration: underline; }
+.link-kind { color: var(--muted); font-size: var(--fs-label); font-weight: 700; white-space: nowrap; }
+/* A headline is still a tap target when it is the only link in a row. */
+.col-item-title a, .news-title a { display: inline-flex; align-items: center; min-height: var(--tap); }
+
 .media-video { margin-top: 28px; }
 .media-video video { width: 100%; aspect-ratio: 16 / 9; display: block; border-radius: var(--radius-sm); background: #000; }
 
@@ -596,6 +617,10 @@ body {
      8 full-width tiles pushed the page to ~9 screens on a phone. */
   .media-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
   .media-tile { padding: 12px; }
+  /* Phones get the introduction footage edge to edge, like the hero band. */
+  .intro-video { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
+  .intro-video video { border-radius: 0; }
+  .intro-video-title, .intro-video .source-note { padding: 0 var(--gutter); }
   .footer-inner { flex-direction: column; align-items: flex-start; gap: 14px; }
   .profile-list > div { grid-template-columns: 1fr; gap: 2px; }
 }

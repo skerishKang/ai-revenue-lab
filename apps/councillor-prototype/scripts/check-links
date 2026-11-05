@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+"""GET every external link the councillor site publishes and report the broken ones.
+
+Checked: activity records, media tiles, social channels, policy cards and every
+absolute href in the six HTML pages. A 4xx, 5xx or a timeout fails the run. The
+weekly workflow runs this, not the pull-request lane: an external council page
+having a bad day must not block a content change.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+import urllib.error
+import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+
+APP_ROOT = Path(__file__).resolve().parents[1]
+SITE_PAGES = ("index.html", "about.html", "activity.html", "policy.html", "media.html", "404.html")
+
+
+def collect() -> list[str]:
+    data = json.loads((APP_ROOT / "static/miraen.json").read_text(encoding="utf-8"))
+    urls: set[str] = set()
+    for item in data.get("activity", {}).get("items", []):
+        urls.add(item.get("url", ""))
+    for tile in data.get("media", {}).get("tiles", []):
+        urls.add(tile.get("url", ""))
+    for channel in data.get("sns", {}).get("channels", []):
+        urls.add(channel.get("url", ""))
+    policy = data.get("policy", {})
+    for key in ("forums", "videos", "bills"):
+        for item in policy.get(key, []):
+            urls.add(item.get("url", ""))
+    for name in SITE_PAGES:
+        html = (APP_ROOT / name).read_text(encoding="utf-8")
+        urls.update(re.findall(r'href="(https?://[^"]+)"', html))
+    return sorted(url for url in urls if url.startswith(("http://", "https://")))
+
+
+def check(url: str, timeout: float) -> tuple[str, int, str]:
+    request = urllib.request.Request(
+        url,
+        headers={"User-Agent": "Mozilla/5.0 (compatible; councillor-link-check/1.0)"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            return url, response.status, ""
+    except urllib.error.HTTPError as error:
+        return url, error.code, str(error.reason)
+    except Exception as error:  # noqa: BLE001 - every failure is reported, never hidden
+        return url, 0, type(error).__name__
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--timeout", type=float, default=20.0)
+    parser.add_argument("--workers", type=int, default=8)
+    args = parser.parse_args()
+
+    urls = collect()
+    if not urls:
+        print("no external links found")
+        return 1
+
+    failures: list[tuple[str, int, str]] = []
+    with ThreadPoolExecutor(max_workers=args.workers) as pool:
+        for future in as_completed([pool.submit(check, url, args.timeout) for url in urls]):
+            url, status, error = future.result()
+            ok = 200 <= status < 400
+            print(("OK   " if ok else "FAIL ") + f"{status:>3} {url}" + (f" ({error})" if error else ""))
+            if not ok:
+                failures.append((url, status, error))
+
+    print(f"\n{len(urls)} links, {len(failures)} failed")
+    for url, status, error in failures:
+        print(f"  {status or 'ERR'} {url} {error}".rstrip())
+    return 1 if failures else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
