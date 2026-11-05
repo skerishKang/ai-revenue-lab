@@ -245,7 +245,10 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
             raise AssertionError(f"delete button accessible name is not tied to title: {title!r} -> {label!r}")
         if mobile:
             box = await row.locator(".history-more").bounding_box()
-            if box is None or box["width"] < 44 or box["height"] < 44:
+            # Sub-pixel layout rounding reports an exactly-44px target as
+            # 43.99999… on some runs; compare the rendered size rounded to
+            # hundredths of a pixel so the 44px criterion itself is unchanged.
+            if box is None or round(box["width"], 2) < 44 or round(box["height"], 2) < 44:
                 raise AssertionError(f"mobile delete target under 44px: {title!r} -> {box!r}")
 
     await _assert_no_horizontal_overflow(page, f"{name}-initial")
@@ -331,9 +334,21 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
         raise AssertionError("active deletion failed to preserve current Project context")
     if (await page.locator("#activeProjectName").inner_text()).strip() != PROJECT_NAME:
         raise AssertionError("active deletion changed the current Project")
-    focused_id = await page.evaluate("document.activeElement && document.activeElement.id")
-    if focused_id != "messageInput":
-        raise AssertionError(f"active deletion should return focus to composer, got {focused_id!r}")
+    # The app applies the composer focus as part of its post-reset sequence,
+    # after the row/state conditions above already hold, so a one-shot read
+    # races the app's own next tick on a loaded runner (observed ''). Waiting
+    # for the focus condition keeps the criterion — focus must land on the
+    # composer — without lowering it or polling from the host.
+    try:
+        await page.wait_for_function(
+            "() => document.activeElement && document.activeElement.id === 'messageInput'",
+            timeout=5_000,
+        )
+    except Exception as exc:
+        focused_id = await page.evaluate("document.activeElement && document.activeElement.id")
+        raise AssertionError(
+            f"active deletion should return focus to composer, got {focused_id!r}"
+        ) from exc
 
     await _assert_no_horizontal_overflow(page, f"{name}-final")
     await page.screenshot(path=str(OUT_DIR / f"{name}-final.png"), full_page=True)
