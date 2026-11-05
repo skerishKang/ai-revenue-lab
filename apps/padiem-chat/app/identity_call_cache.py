@@ -1,4 +1,4 @@
-"""Success-only, short-TTL in-memory cache for the two per-turn identity reads.
+"""Success-only, short-TTL in-memory cache for the repeated identity reads.
 
 Every orchestration turn resolves the chat owner through the Control Plane
 authority (`resolve_current_auth_session`, apps/padiem-chat/app/chat_pc_drive.py
@@ -19,9 +19,10 @@ session revocation invalidate through `invalidate_auth_cache`; an invalidation
 also fences every in-flight load, so a lookup that started before the logout
 cannot repopulate the cache after it.
 
-Residual staleness is bounded and auth-neutral: the session revocation guard
-keeps its own SQLite discipline unchanged, so what can lag up to the TTL is
-only which PC tools the lane offers, never whether a request is signed in.
+Residual staleness is bounded: the session revocation guard reads through
+`resolve_auth_session`, so a revoked session may still be honoured for up to
+20 s — the same shape the existing auth validation cache already has (30 s).
+The 60 s entries only affect which PC tools the lane offers.
 """
 from __future__ import annotations
 
@@ -31,6 +32,12 @@ import time
 from typing import Any, Callable
 
 _MAX_TTL_SECONDS = 60
+#: Same window as the existing per-turn reads: the product user of a verified
+#: subject cannot change while that subject stays signed in.
+_PRODUCT_USER_TTL_SECONDS = 60
+#: Long enough to collapse the repeated reads inside one request and a 2 s
+#: poll, short enough that a revoked session stops being honoured.
+_AUTH_SESSION_TTL_SECONDS = 20
 
 
 def _hash_key(value: str) -> str:
@@ -38,12 +45,14 @@ def _hash_key(value: str) -> str:
 
 
 class CachedIdentityAuthority:
-    """Transparent authority wrapper; exactly two reads are cached.
+    """Transparent authority wrapper; four reads are cached.
 
-    Everything else — `resolve_auth_session` for the revocation guard, the
-    revoke/delete/membership calls, the schema helpers — delegates untouched,
-    so the guard's own cache discipline and every audit path keep their
-    present behaviour.
+    ``resolve_current_auth_session`` (60 s), ``resolve_connector_owner_scope``
+    (60 s), ``resolve_product_user_for_subject`` (60 s) and
+    ``resolve_auth_session`` (20 s) are the per-request reads; they repeat
+    inside one request and, for the Engine PC-files poll, once per poll. The
+    revoke/delete/membership calls and the schema helpers delegate untouched.
+    Session revocation therefore lands within 20 s rather than instantly.
     """
 
     def __init__(self, inner: Any, *, ttl_seconds: int = 60,
@@ -70,16 +79,21 @@ class CachedIdentityAuthority:
         resolved, which is the same product user vocabulary.
         """
         self._epoch += 1
+        # The session->user mapping is the authority's, not this cache's, so a
+        # user-level invalidation drops every session answer (revocations are
+        # rare and the cache is small).
         for key in [k for k, (_, _, user_ref) in self._entries.items()
-                    if user_ref == user_id]:
+                    if user_ref == user_id or k.startswith("authsess:")]:
             self._entries.pop(key, None)
 
     def invalidate_session(self, session_id: str) -> None:
-        """Drop the owner-scope entry of one canonical session."""
+        """Drop both entries keyed by one canonical session."""
         self._epoch += 1
         self._entries.pop("ownerscope:" + _hash_key(session_id), None)
+        self._entries.pop("authsess:" + _hash_key(session_id), None)
 
-    async def _get_or_load(self, key: str, user_ref: str, loader) -> Any:
+    async def _get_or_load(self, key: str, user_ref: str, loader,
+                           ttl: float | None = None, ref_of=None) -> Any:
         now = self._clock()
         entry = self._entries.get(key)
         if entry is not None and entry[0] > now:
@@ -88,7 +102,9 @@ class CachedIdentityAuthority:
         task = self._inflight.get(key)
         if task is None:
             epoch = self._epoch
-            task = asyncio.create_task(self._load(key, user_ref, loader, epoch))
+            task = asyncio.create_task(self._load(
+                key, user_ref, loader, epoch,
+                self._ttl_seconds if ttl is None else ttl, ref_of))
             self._inflight[key] = task
 
             def _finished(done: asyncio.Task) -> None:
@@ -101,10 +117,13 @@ class CachedIdentityAuthority:
             task.add_done_callback(_finished)
         return await asyncio.shield(task)
 
-    async def _load(self, key: str, user_ref: str, loader, epoch: int) -> Any:
+    async def _load(self, key: str, user_ref: str, loader, epoch: int,
+                    ttl: float, ref_of=None) -> Any:
         value = await loader()
+        if ref_of is not None:
+            user_ref = ref_of(value) or ""
         if self._epoch == epoch:
-            self._entries[key] = (self._clock() + self._ttl_seconds, value, user_ref)
+            self._entries[key] = (self._clock() + ttl, value, user_ref)
         return value
 
     async def resolve_current_auth_session(
@@ -119,6 +138,52 @@ class CachedIdentityAuthority:
             )
 
         return await self._get_or_load(key, product_user_id, loader)
+
+    async def resolve_product_user_for_subject(
+        self, *, product_id: str, canonical_subject_id: str,
+    ) -> str:
+        """The Subject -> product user bridge, cached per (product, subject).
+
+        The Engine PC-files poll resolves this on every poll; the answer only
+        changes when the subject's product link does. The entry is filed under
+        the uid it resolved, so `invalidate_user` of that account drops it.
+        """
+        key = ("productuser:" + product_id + ":"
+               + _hash_key(canonical_subject_id))
+
+        async def loader() -> Any:
+            return await self._inner.resolve_product_user_for_subject(
+                product_id=product_id, canonical_subject_id=canonical_subject_id,
+            )
+
+        uid = await self._get_or_load(
+            key, "", loader, ttl=_PRODUCT_USER_TTL_SECONDS,
+            ref_of=lambda value: value if isinstance(value, str) else None,
+        )
+        if not isinstance(uid, str) or not uid:
+            # An answer whose uid cannot key an invalidation is not kept.
+            self._entries.pop(key, None)
+        return uid
+
+    async def resolve_auth_session(self, *, session_id: str) -> Any:
+        """The request-path session read, cached per session id for 20 s.
+
+        The revocation guard calls this method too, so a revoked session is
+        honoured within the TTL instead of instantly — the same shape the
+        existing auth validation cache already has (30 s). A refusal is never
+        stored: the authority is asked again on the next call.
+        """
+        key = "authsess:" + _hash_key(session_id)
+
+        async def loader() -> Any:
+            return await self._inner.resolve_auth_session(session_id=session_id)
+
+        session = await self._get_or_load(
+            key, "", loader, ttl=_AUTH_SESSION_TTL_SECONDS,
+        )
+        if session is None:
+            self._entries.pop(key, None)
+        return session
 
     async def resolve_connector_owner_scope(self, *, session_id: str) -> dict[str, str]:
         """The PC-lane owner scope, cached per canonical session."""
