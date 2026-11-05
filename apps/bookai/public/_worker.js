@@ -190,6 +190,21 @@ function buildEnginePayload(question, bounded, model) {
   };
 }
 
+function assetCacheControl(pathname) {
+  if (pathname === "/" || pathname === "/index.html" || pathname === "/version.json" || pathname.startsWith("/api/")) return "no-cache";
+  if (pathname.startsWith("/content/")) return "public, max-age=604800, stale-while-revalidate=2592000";
+  if (pathname.startsWith("/styles/") || pathname.endsWith(".js") || pathname.endsWith(".mjs") || pathname.endsWith(".css")) return "public, max-age=86400, stale-while-revalidate=604800";
+  return null;
+}
+async function serveAsset(request, env) {
+  const response = await env.ASSETS.fetch(request);
+  const cacheControl = assetCacheControl(new URL(request.url).pathname);
+  if (!cacheControl) return response;
+  const headers = new Headers(response.headers);
+  headers.set("cache-control", cacheControl);
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -270,6 +285,6 @@ export default {
         }
       });
     }
-    return env.ASSETS.fetch(request);
+    return serveAsset(request, env);
   }
 };
