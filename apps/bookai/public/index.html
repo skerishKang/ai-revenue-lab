@@ -317,10 +317,10 @@
       </div>
       <div class="user-memory-list" id="userMemoryList"><div class="annotation-empty">아직 저장한 메모가 없습니다.</div></div>
 
-      <div class="memory-section-label">현재 기억</div><div class="memory-item system-memory" data-index="01" data-memory-type="person" data-memory-key="바울"><b>바울</b><small>사도 · 현재 중요 · 3절 전 등장</small></div>
-      <div class="memory-item system-memory on" data-index="02" data-memory-type="person" data-memory-key="아볼로"><b>아볼로</b><small>교사 · 현재 중요 · 1장 전 등장</small></div>
-      <div class="memory-item system-memory" data-index="03" data-memory-type="place" data-memory-key="고린도"><b>고린도</b><small>도시 · 현재 공동체</small></div>
-      <div class="memory-item system-memory" data-index="04" data-memory-type="concept" data-memory-key="하나님의 밭"><b>하나님의 밭</b><small>비유 · 현재 장</small></div>
+      <div class="memory-section-label" id="currentChapterMemoryHeading">현재 장과 관련된 기억</div>
+      <div id="currentChapterMemoryList" aria-live="polite"></div>
+      <div class="memory-section-label" id="otherChapterMemoryHeading" hidden>다른 장의 기억</div>
+      <div id="otherChapterMemoryList" aria-live="polite" hidden></div>
     </aside>
 
     <main class="reader-stage">
@@ -373,7 +373,7 @@
           <span class="crop-mark crop-tl"></span><span class="crop-mark crop-tr"></span>
           <span class="crop-mark crop-bl"></span><span class="crop-mark crop-br"></span>
           <div class="paper-inner">
-            <div class="paper-eyebrow"><span id="readerEyebrowLeft">THE FIRST LETTER TO THE CORINTHIANS</span><span class="reader-source-badge" id="readerSourceBadge">예시 본문</span><span id="readerEyebrowRight">CHAPTER 03</span></div>
+            <div class="paper-eyebrow"><span id="readerEyebrowLeft">THE FIRST LETTER TO THE CORINTHIANS</span><span class="reader-source-badge" id="readerSourceBadge">화면 예시 · 본문 아님</span><span id="readerEyebrowRight">CHAPTER 03</span></div>
             <div class="paper-running-head"><span>MEMORY EDITION</span><i></i><span>READING COPY</span></div>
             <div class="paper-rule-ornament"><i></i><b>✦</b><i></i></div>
             <div class="paper-head"><h1><span id="readerVolumeTitle">고린도전서</span> <em id="readerChapterTitle">3장</em></h1><small id="readerPageCount">PAGE 1 / 3</small></div>
@@ -2132,8 +2132,26 @@ const KNOWN_MEMORY_ENTITIES={
   '바울':{type:'person',summary:'현재 읽은 범위에서 반복해서 등장하는 인물입니다.'},
   '아볼로':{type:'person',summary:'현재 읽은 범위에서 바울과 함께 언급되는 인물입니다.'},
   '고린도':{type:'place',summary:'현재 독서의 공동체와 배경을 연결하는 장소 Memory입니다.'},
-  '하나님의 밭':{type:'concept',summary:'현재 장에서 공동체를 설명하는 비유·개념 Memory입니다.'}
+  '하나님의 밭':{type:'concept',summary:'현재 장에서 공동체를 설명하는 비유·개념 Memory입니다.'},
+  '사울':{type:'person',summary:'사도행전 9장 본문에 등장하는 인물입니다.'},
+  '아나니아':{type:'person',summary:'사도행전 9장 본문에 등장하는 인물입니다.'},
+  '예수':{type:'person',summary:'사도행전 9장 본문에 등장하는 인물입니다.'},
+  '다메섹':{type:'place',summary:'사도행전 9장 본문에 등장하는 장소입니다.'},
+  '예루살렘':{type:'place',summary:'사도행전 9장 본문에 등장하는 장소입니다.'},
+  '제자':{type:'group',summary:'사도행전 9장 본문에 등장하는 집단입니다.'},
+  '회당':{type:'place',summary:'사도행전 9장 본문에 등장하는 장소입니다.'},
+  '유다':{type:'person',summary:'사도행전 9장 본문에 등장하는 인물입니다.'},
+  '룻다':{type:'place',summary:'사도행전 9장 본문에 등장하는 장소입니다.'},
+  '욥바':{type:'place',summary:'사도행전 9장 본문에 등장하는 장소입니다.'},
+  '다비다':{type:'person',summary:'사도행전 9장 본문에 등장하는 인물입니다.'},
+  '도르가':{type:'person',summary:'사도행전 9장 본문에 등장하는 인물입니다.'},
+  '베드로':{type:'person',summary:'사도행전 9장 본문에 등장하는 인물입니다.'},
+  '시몬':{type:'person',summary:'사도행전 9장 본문에 등장하는 인물입니다.'},
+  '사론':{type:'place',summary:'사도행전 9장 본문에 등장하는 장소입니다.'}
 };
+const STORYMEMORY_CHAPTER_ENTITY_CANDIDATES=Object.freeze({
+  '사도행전 9장':['사울','아나니아','예수','다메섹','예루살렘','제자','회당','유다','룻다','욥바','다비다','도르가','베드로','시몬','사론']
+});
 
 function memoryEntityNames(){
   return Object.keys(KNOWN_MEMORY_ENTITIES);
@@ -2925,6 +2943,7 @@ function updateAuthGateUI({syncing=false,error=false}={}){
     title.innerHTML=__smAuthBridge.installed?'기억을 기기 밖에도<br>이어두시겠어요?':'기억은 지금<br>이 기기에 저장됩니다.';
     copy.textContent='읽기 기록과 Memory는 로그인하지 않아도 이 기기에 저장됩니다. 파디엠 계정으로 로그인하면 계정에도 저장되어 다른 기기에서도 이어집니다.';
     primary.textContent=__smAuthBridge.installed?'로그인하고 동기화':'파디엠으로 로그인';
+    primary.hidden=!__smAuthBridge.installed;
     secondary.textContent='지금은 로컬로 계속';
   }
 }
@@ -3283,19 +3302,20 @@ const STORYMEMORY_SOURCE_REGISTRY={
     language:'ko',
     rights:'no-fulltext',
     transport:'metadata-only',
-    status:'prototype'
+    status:'unavailable'
   }
 };
 
 function sourceForReaderContext(kind=__smCurrentReaderKind){
-  return kind==='bible'?STORYMEMORY_SOURCE_REGISTRY['bible-demo']:STORYMEMORY_SOURCE_REGISTRY['book-demo'];
+  if(kind!=='bible')return STORYMEMORY_SOURCE_REGISTRY['book-demo'];
+  return __smCurrentReaderLabel==='고린도전서 3장'?STORYMEMORY_SOURCE_REGISTRY['bible-demo']:{...STORYMEMORY_SOURCE_REGISTRY['bible-demo'],status:'unavailable'};
 }
 function updateReaderSourceBadge(){
   const badge=document.getElementById('readerSourceBadge');
   if(!badge)return;
   const source=sourceForReaderContext();
-  badge.textContent=source.status==='demo'?'예시 본문':'본문 안내';
-  badge.title=source.status==='demo'?'예시로 제공되는 본문입니다.':'본문 정보가 준비되지 않았습니다.';
+  badge.textContent=source.status==='demo'?'화면 예시 · 본문 아님':'본문 이용 불가';
+  badge.title=source.status==='demo'?'화면 동작을 위한 예시이며 실제 성경 본문이 아닙니다.':'현재 자료의 본문을 표시할 수 없습니다.';
 }
 function unifiedProgressEntries(){
   const out={};
@@ -4050,7 +4070,7 @@ function buildSupportedTextAnswer(question,selection=null){
   const short=quote.length>150?quote.slice(0,150)+'…':quote;
   return {
     route:'SUPPORTED_TEXT',title:selection?.quote?'선택한 본문':'현재 페이지 근거',
-    body:`현재 읽은 범위에서 확인되는 문장은 “${short}”입니다. 이 응답은 이 source span을 넘어서 사실을 추가하지 않습니다.`,
+    body:`현재 읽은 범위에서 확인되는 문장은 “${short}”입니다. 이 답변은 현재 읽는 본문 밖의 정보를 덧붙이지 않습니다.`,
     source:selection?.source||(`${__smCurrentReaderLabel}${verses.length?' · '+verses.join(',')+'절':''}`),
     spoilerBlocked:false
   };
@@ -4459,9 +4479,9 @@ function setReaderContext(ctx={}){
       quick.forEach((b,i)=>{if(presets[i]){b.dataset.q=presets[i][0];b.textContent=presets[i][1]}});
     }else{
       READER_PAGES=[
-        `<p class="verse opening-verse"><span class="dropcap">${escapeHtml(volume.slice(0,1))}</span>${escapeHtml(volume)} ${chapter}장의 본문을 불러오는 중이거나 현재 이용할 수 없습니다.</p>
-         <div class="reader-page-note"><b>FLOW CONTINUITY</b>연결 상태를 확인하고 다시 열어 주세요.</div>`,
-        `<p class="verse">이 장의 본문을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>
+        `<p class="verse opening-verse"><span class="dropcap">${escapeHtml(volume.slice(0,1))}</span>${escapeHtml(volume)} ${chapter}장의 본문을 현재 이용할 수 없습니다.</p>
+         <div class="reader-page-note"><b>?? ??</b>? ?? ??? ?? ??? ? ????.</div>`,
+        `<p class="verse">이 장의 본문을 표시할 수 없습니다.</p>
          <div class="reader-page-note"><b>MEMORY FIRST</b>AI는 아직 읽지 않은 다음 장을 참조하지 않고 현재 읽은 범위 안의 기억만 사용합니다.</div>`,
         `<p class="verse">본문을 불러온 뒤 읽기와 메모를 이어갈 수 있습니다.</p>`
       ];
@@ -4486,7 +4506,7 @@ function setReaderContext(ctx={}){
     contextRule.textContent='현재 책의 표시와 Memory만 AI에 전달';
 
     READER_PAGES=[
-      `<p class="verse opening-verse"><span class="dropcap">${escapeHtml(book.slice(0,1))}</span>${escapeHtml(book)}의 본문을 불러오는 중이거나 현재 이용할 수 없습니다.</p>
+      `<p class="verse opening-verse"><span class="dropcap">${escapeHtml(book.slice(0,1))}</span>${escapeHtml(book)}의 본문을 현재 이용할 수 없습니다.</p>
        <div class="reader-page-note"><b>CURRENT READING</b>${escapeHtml(note)}</div>`,
       `<p class="verse">읽다가 남긴 밑줄·메모·인물·장소 정보는 왼쪽 Memory에 누적되고, 오른쪽 AI Companion은 현재까지 읽은 범위와 그 기록을 함께 사용합니다.</p>`,
       `<p class="verse">본문을 이용할 수 있게 되면 이곳에서 읽을 수 있습니다.</p>
@@ -4500,8 +4520,8 @@ function setReaderContext(ctx={}){
   }
 
   ANSWERS.context=['현재 맥락',`${__smCurrentReaderLabel}에서 지금까지 읽은 범위와 저장된 Memory를 기준으로 설명합니다.`,__smCurrentReaderLabel];
-  ANSWERS.summary=['여기까지 정리',`현재 Reader 위치인 ${__smCurrentReaderLabel}까지의 기록을 요약하는 자리입니다. 실제 제품에서는 source span과 Memory를 DB에서 먼저 조회합니다.`,__smCurrentReaderLabel];
-  ANSWERS.memory=['내 기록과 연결','현재 독서 위치와 사용자의 표시·메모를 함께 조회해 연결하는 흐름입니다.',__smCurrentReaderLabel];
+  ANSWERS.summary=['여기까지 정리','자동 요약을 만들 수 없습니다. 읽은 범위에 대해 구체적으로 질문해 주세요.',__smCurrentReaderLabel];
+  ANSWERS.memory=['내 기록과 연결','현재 읽은 범위에서 표시나 메모를 찾지 못하면 연결된 기록이 없다고 안내합니다.',__smCurrentReaderLabel];
   ANSWERS.spoiler=['스포일러 차단','현재 읽은 위치 이후의 정보는 사용하지 않는 것을 기본 정책으로 합니다.',__smCurrentReaderLabel];
 
   updateReaderSourceBadge();
@@ -5140,7 +5160,22 @@ const __SM_V319_MEMORY_META=Object.freeze({
   '바울':{label:'사도',provenance:'ai',contextNative:false},
   '아볼로':{label:'교사',provenance:'ai',contextNative:false},
   '고린도':{label:'도시',provenance:'ai',contextNative:true},
-  '하나님의 밭':{label:'비유',provenance:'ai',contextNative:false}
+  '하나님의 밭':{label:'비유',provenance:'ai',contextNative:false},
+  '사울':{label:'인물',provenance:'text',contextNative:false},
+  '아나니아':{label:'인물',provenance:'text',contextNative:false},
+  '예수':{label:'인물',provenance:'text',contextNative:false},
+  '다메섹':{label:'장소',provenance:'text',contextNative:false},
+  '예루살렘':{label:'장소',provenance:'text',contextNative:false},
+  '제자':{label:'집단',provenance:'text',contextNative:false},
+  '회당':{label:'장소',provenance:'text',contextNative:false},
+  '유다':{label:'인물',provenance:'text',contextNative:false},
+  '룻다':{label:'장소',provenance:'text',contextNative:false},
+  '욥바':{label:'장소',provenance:'text',contextNative:false},
+  '다비다':{label:'인물',provenance:'text',contextNative:false},
+  '도르가':{label:'인물',provenance:'text',contextNative:false},
+  '베드로':{label:'인물',provenance:'text',contextNative:false},
+  '시몬':{label:'인물',provenance:'text',contextNative:false},
+  '사론':{label:'장소',provenance:'text',contextNative:false}
 });
 MEMORY_TYPE_LABELS.group='집단';
 MEMORY_TYPE_LABELS.event='사건';
@@ -5203,7 +5238,61 @@ function __smV319MemoryDistance(key,page=readerPageIndex){
   return {state:'unknown',latestPage:null,distance:null,label:'등장 기록 없음',detail:'현재 읽은 범위 기준'};
 }
 function __smV319Provenance(key){
-  return __smV319IsPinned(key)?{label:'고정됨',kind:'pinned'}:{label:'AI 추천',kind:'ai'};
+  return __smV319IsPinned(key)?{label:'고정됨',kind:'pinned'}:{label:'본문 확인',kind:'text'};
+}
+function __smB614MemoryCard(name,index,scope){
+  const def=KNOWN_MEMORY_ENTITIES[name]||{type:'context'};
+  const card=document.createElement('div');
+  card.className='memory-item system-memory'+(index===0?' on':'');
+  card.dataset.index=String(index+1).padStart(2,'0');
+  card.dataset.memoryType=def.type||'context';
+  card.dataset.memoryKey=name;
+  card.dataset.memoryCanonicalKey=name;
+  card.dataset.memoryList=scope;
+  const title=document.createElement('b');title.textContent=name;
+  const detail=document.createElement('small');
+  detail.textContent=scope==='other'?'현재 장에서 연결 위치를 찾지 못한 고정 Memory':'현재 본문에서 확인';
+  card.append(title,detail);
+  return card;
+}
+function __smB614RebuildMemoryRail(){
+  const current=document.getElementById('currentChapterMemoryList');
+  const other=document.getElementById('otherChapterMemoryList');
+  const otherHeading=document.getElementById('otherChapterMemoryHeading');
+  if(!current||!other||!otherHeading)return;
+  const pins=__smV319ReadPins();
+  const sourceAvailable=typeof storyMemoryIsAuthoritativeReaderMode==='function'&&storyMemoryIsAuthoritativeReaderMode();
+  const candidates=sourceAvailable?[...new Set([
+    ...memoryEntityNames(),
+    ...(STORYMEMORY_CHAPTER_ENTITY_CANDIDATES[__smCurrentReaderLabel]||[]),
+    ...pins
+  ])]:[];
+  const seen=(sourceAvailable?candidates:[])
+    .filter(name=>__smV319MemoryDistance(name).state==='seen')
+    .sort((a,b)=>{
+      const pageA=Math.min(...__smV319OccurrencePages(a).filter(p=>p<=readerPageIndex));
+      const pageB=Math.min(...__smV319OccurrencePages(b).filter(p=>p<=readerPageIndex));
+      return pageA-pageB||a.localeCompare(b,'ko');
+    });
+  const pinnedFuture=sourceAvailable?[...pins].filter(name=>__smV319MemoryDistance(name).state==='future'):[];
+  const unrelatedPins=sourceAvailable?[...pins].filter(name=>__smV319MemoryDistance(name).state==='unknown'):[...pins];
+  const currentNames=[...new Set([...seen,...pinnedFuture])];
+  current.replaceChildren(...currentNames.map((name,index)=>__smB614MemoryCard(name,index,'current')));
+  other.replaceChildren(...unrelatedPins.map((name,index)=>__smB614MemoryCard(name,index,'other')));
+  other.hidden=unrelatedPins.length===0;
+  otherHeading.hidden=unrelatedPins.length===0;
+  let empty=current.querySelector('.memory-current-empty');
+  if(!seen.length){
+    empty=document.createElement('div');
+    empty.className='annotation-empty memory-current-empty';
+    empty.textContent=sourceAvailable?'현재 읽은 본문에서 연결된 인물·장소·개념이 없습니다.':'본문을 이용할 수 없어 관련 기억을 확인할 수 없습니다.';
+    current.append(empty);
+  }
+  if(__smFocusedMemoryKey&&!seen.includes(__smFocusedMemoryKey))renderMemoryFocus(null);
+  updateSystemMemorySemanticData();
+  wireSystemMemoryTimeline();
+  applyMemoryFilter(__smMemoryFilter);
+  applyMemorySearch(__smMemorySearch);
 }
 function __smV319RefreshMemoryRail(){
   const pins=__smV319ReadPins();
@@ -5224,7 +5313,7 @@ function __smV319RefreshMemoryRail(){
     small.textContent=`${meta.label} · ${distance.label}`;
     let row=item.querySelector('.memory-provenance-row');
     if(!row){row=document.createElement('div');row.className='memory-provenance-row';item.append(row)}
-    row.innerHTML=`<span class="memory-provenance-chip ${pinned?'is-pinned':''}">${pinned?'고정됨':'AI 추천'}</span><span class="memory-distance-chip ${distance.state==='future'?'is-future':''}">${escapeHtml(distance.detail)}</span>`;
+    row.innerHTML=`<span class="memory-provenance-chip ${pinned?'is-pinned':''}">${pinned?'고정됨':'본문 확인'}</span><span class="memory-distance-chip ${distance.state==='future'?'is-future':''}">${escapeHtml(distance.detail)}</span>`;
     let pin=item.querySelector('.memory-pin-btn');
     if(!pin){
       pin=document.createElement('button');
@@ -5236,10 +5325,10 @@ function __smV319RefreshMemoryRail(){
     pin.textContent=pinned?'◆':'◇';
     pin.setAttribute('aria-label',pinned?`${key} 고정 해제`:`${key} Memory에 고정`);
     pin.setAttribute('aria-pressed',pinned?'true':'false');
-    pin.title=pinned?'사용자 고정 Memory · 클릭하여 해제':'AI 추천 Memory · 클릭하여 고정';
+    pin.title=pinned?'사용자 고정 Memory · 클릭하여 해제':'본문에서 확인한 Memory · 클릭하여 고정';
   });
 
-  const section=[...document.querySelectorAll('.memory-section-label')].find(x=>x.textContent.trim()==='현재 기억');
+  const section=document.getElementById('currentChapterMemoryHeading');
   if(section){
     let summary=section.nextElementSibling?.classList.contains('memory-pinned-summary')?section.nextElementSibling:null;
     if(!summary){summary=document.createElement('div');summary.className='memory-pinned-summary';section.insertAdjacentElement('afterend',summary)}
@@ -5296,6 +5385,13 @@ const __smV319RenderReaderPage=renderReaderPage;
 renderReaderPage=function(direction=0){
   const result=__smV319RenderReaderPage(direction);
   requestAnimationFrame(__smV319RefreshMemoryRail);
+  return result;
+};
+const __smB614UpdateFlowProgress=updateFlowProgress;
+updateFlowProgress=function(...args){
+  const previousPage=readerPageIndex;
+  const result=__smB614UpdateFlowProgress(...args);
+  if(readerPageIndex!==previousPage)requestAnimationFrame(__smV319RefreshMemoryRail);
   return result;
 };
 if(typeof renderFlowReader==='function'){
@@ -5362,6 +5458,7 @@ cooccurrenceScore=function(a,b){
 
 const __smV319RefreshMemoryRailBase=__smV319RefreshMemoryRail;
 __smV319RefreshMemoryRail=function(){
+  __smB614RebuildMemoryRail();
   __smV319RefreshMemoryRailBase();
   document.querySelectorAll('.system-memory').forEach(item=>{
     const key=item.dataset.memoryCanonicalKey||item.dataset.memoryKey||item.querySelector('b')?.textContent?.trim()||'';
@@ -5369,6 +5466,13 @@ __smV319RefreshMemoryRail=function(){
     item.dataset.memoryCanonicalKey=key;
     item.dataset.memoryKey=key;
     const distance=__smV319MemoryDistance(key);
+    if(item.dataset.memoryList==='other'){
+      const small=item.querySelector(':scope > small');
+      const sourceAvailable=typeof storyMemoryIsAuthoritativeReaderMode==='function'&&storyMemoryIsAuthoritativeReaderMode();
+      if(small)small.textContent=sourceAvailable?'현재 장에서 연결 위치를 찾지 못한 고정 Memory':'본문을 확인할 수 없는 상태의 고정 Memory';
+      const distanceChip=item.querySelector('.memory-distance-chip');
+      if(distanceChip)distanceChip.textContent=!sourceAvailable?'본문 이용 불가':(distance.state==='future'?'읽지 않은 범위':'현재 본문에 없음');
+    }
     const title=item.querySelector(':scope > b');
     if(title){
       if(distance.state==='future'){
@@ -6011,9 +6115,10 @@ async function storyMemoryBindReaderContext(ctx={},options={}){
     updateReaderSourceBadge();
     applyReaderViewMode(readerViewMode,{restore:false});
     syncAnnotationStats();renderAnnotationMemoryList();renderUserMemoryList();
+    __smV319RefreshMemoryRail();
     return {applied:true,mode:bundle.mode,contentId:content.id,passages:built.passages.length,pages:built.pages.length,unitOrdinal:__smDynamicReaderState.unitOrdinal};
   }catch(error){
-    if(generation===__smDynamicReaderState.generation){__smDynamicReaderState={...__smDynamicReaderState,mode:'fallback',remoteError:String(error?.message||error||'CONTENT_BIND_ERROR')};updateReaderSourceBadge();}
+    if(generation===__smDynamicReaderState.generation){__smDynamicReaderState={...__smDynamicReaderState,mode:'fallback',remoteError:String(error?.message||error||'CONTENT_BIND_ERROR')};updateReaderSourceBadge();__smV319RefreshMemoryRail();}
     return {applied:false,mode:'fallback',reason:'CONTENT_ERROR',error:String(error?.message||error||'CONTENT_BIND_ERROR')};
   }
 }
@@ -6488,7 +6593,7 @@ buildCanonicalAnswer=function(key,page=__smReaderSafePage()){
 buildSupportedTextAnswer=function(question,selection=null){
   const page=__smReaderSafePage();const quote=selection?.quote||__smReaderPageText(page);const short=quote.length>150?quote.slice(0,150)+'…':quote;
   const ref=storyMemorySourcePassageForPage(page)?.ref||null;
-  return {route:'SUPPORTED_TEXT',title:selection?.quote?'선택한 본문':'현재 페이지 근거',body:`현재 읽은 범위에서 확인되는 문장은 “${short}”입니다. 이 응답은 이 source span을 넘어서 사실을 추가하지 않습니다.`,source:selection?.source||(ref?storyMemoryFormatSourceRef(ref):__smCurrentReaderLabel),sourceRefs:ref?[ref]:[],spoilerBlocked:false};
+  return {route:'SUPPORTED_TEXT',title:selection?.quote?'선택한 본문':'현재 페이지 근거',body:`현재 읽은 범위에서 확인되는 문장은 “${short}”입니다. 이 답변은 현재 읽는 본문 밖의 정보를 덧붙이지 않습니다.`,source:selection?.source||(ref?storyMemoryFormatSourceRef(ref):__smCurrentReaderLabel),sourceRefs:ref?[ref]:[],spoilerBlocked:false};
 };
 buildInterpretationAnswer=function(question,entities=[]){
   const page=__smReaderSafePage();const basis=entities.map(e=>buildCanonicalAnswer(e,page)).filter(Boolean);const supported=basis.filter(x=>!x.blockedAll).map(x=>x.body).join(' ');const ref=storyMemorySourcePassageForPage(page)?.ref||null;
@@ -7944,6 +8049,8 @@ body.smr-theme-dark .memory-rail .annotation-memory-list .annotation-empty,body.
 body.smr-theme-dark .memory-rail .rail-nav .pill{background:rgba(255,255,255,.08);border-color:rgba(233,225,210,.2);color:#e9e1d2}
 body.smr-theme-dark .memory-rail .memory-scope-toggle button{color:#a99e8d!important}
 body.smr-theme-dark .memory-rail .memory-scope-toggle button.on{background:rgba(255,255,255,.1)!important;color:#e9e1d2!important}
+.memory-rail [hidden]{display:none!important}
+.memory-rail .memory-current-empty{margin:4px 0 10px;padding:10px 12px}
 </style>
 <script type="application/x-bookai" data-bookai-script src="./storymemory-answer-evidence-v1.js"></script>
 <script type="application/x-bookai" data-bookai-script id="sm-companion-evidence-ux-v1">
