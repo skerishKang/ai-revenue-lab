@@ -63,7 +63,9 @@ async def test_tampered_state_does_not_exchange_code():
     start = await flow.start_login(request())
     cookie = start.headers['set-cookie'].split(';', 1)[0]
     result = await flow.finish_login(request('state=wrong&code=synthetic-code', cookie))
-    assert result.status_code == 503 and not calls
+    # #6922: a state that is not this host's is the browser's flow, answered 400;
+    # the point here is unchanged - the code is never exchanged.
+    assert result.status_code == 400 and not calls
 
 
 @pytest.mark.asyncio

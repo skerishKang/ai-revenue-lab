@@ -267,10 +267,17 @@ async def test_reverting_identity_user_agent_reproduces_post_exchange_failure(hi
     assert "x-padiem-service-proof" not in caplog.text
 
 
+def _signed_state_cookie(flow, **fields):
+    data = _encoded(fields)
+    return STATE_COOKIE + "=" + data + "." + _b64(flow._mac(b"shared-login", data.encode("ascii")))
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(("code", "stage"), [
-    ("invalid_flow", "validate_flow"), ("invalid_cookie", "validate_flow"),
-    ("invalid_state", "validate_flow"), ("invalid_exchange", "exchange"),
+    ("invalid_flow", "validate_flow"), ("state_cookie_missing", "validate_flow"),
+    ("invalid_cookie", "validate_flow"), ("invalid_state", "validate_flow"),
+    ("state_expired", "validate_flow"), ("state_mismatch", "validate_flow"),
+    ("invalid_exchange", "exchange"),
     ("unknown_account", "resolve_account"), ("invalid_session_response", "issue_session"),
 ])
 async def test_each_finish_rejection_logs_only_its_fixed_reason(code, stage, caplog):
@@ -278,12 +285,19 @@ async def test_each_finish_rejection_logs_only_its_fixed_reason(code, stage, cap
     callback = await callback_request(flow)
     if code == "invalid_flow":
         callback = request("state=synthetic", callback.headers["cookie"])
+    elif code == "state_cookie_missing":
+        callback = request(callback.url.query, "")
     elif code == "invalid_cookie":
         cookie = callback.headers["cookie"].rsplit(".", 1)[0] + ".invalid"
         callback = request(callback.url.query, cookie)
     elif code == "invalid_state":
-        data = _encoded({"state": callback.query_params["state"], "verifier": "synthetic", "exp": 1000})
-        cookie = STATE_COOKIE + "=" + data + "." + _b64(flow._mac(b"shared-login", data.encode("ascii")))
+        cookie = _signed_state_cookie(flow, state=callback.query_params["state"], verifier=7, exp=2000)
+        callback = request(callback.url.query, cookie)
+    elif code == "state_expired":
+        cookie = _signed_state_cookie(flow, state=callback.query_params["state"], verifier="synthetic", exp=1000)
+        callback = request(callback.url.query, cookie)
+    elif code == "state_mismatch":
+        cookie = _signed_state_cookie(flow, state="another-login-on-this-host", verifier="synthetic", exp=2000)
         callback = request(callback.url.query, cookie)
     elif code == "invalid_exchange":
         flow.exchange = lambda *args: {"access_token": ACCESS, "refresh_token": None}
@@ -293,8 +307,14 @@ async def test_each_finish_rejection_logs_only_its_fixed_reason(code, stage, cap
         flow.issue_session = lambda *args: {"private": PRIVATE}
     caplog.set_level(logging.WARNING)
     response = await flow.finish_login(callback)
-    assert response.status_code == 503
-    assert json.loads(response.body) == {"error": "authentication_unavailable"}
+    if stage == "validate_flow":
+        # #6922: the browser's flow is wrong, not this host: 400 and the way back in.
+        assert response.status_code == 400
+        assert response.headers["content-type"].startswith("text/html")
+        assert 'href="/auth/shared/start"' in response.body.decode("utf-8")
+    else:
+        assert response.status_code == 503
+        assert json.loads(response.body) == {"error": "authentication_unavailable"}
     assert not any(cookie.startswith(ACCESS_COOKIE + "=") for cookie in response.headers.getlist("set-cookie"))
     assert_reason_only(caplog, stage, code)
 
