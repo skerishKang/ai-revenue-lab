@@ -415,6 +415,56 @@
     let historyQuery = "";
     const itemNames = new Map();
 
+    // The conversion runs server-side after a 202, so the panel follows the
+    // item detail until the result is stored. A reopened panel rebuilds the
+    // DOM; a poller whose itemsWrap left the document stops quietly.
+    const POLL_INTERVAL_MS = 2000;
+    const polledItems = new Set();
+
+    async function pollItemUntilTerminal(jobId, item) {
+      if (polledItems.has(item.id)) return;
+      polledItems.add(item.id);
+      try {
+        while (true) {
+          await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+          if (!itemsWrap.isConnected) return;
+          let data = null;
+          try {
+            data = await api("/api/document-conversions/items/" + item.id);
+          } catch (_) {
+            continue; // a transient read failure must not end the watch
+          }
+          const status = data && data.item && data.item.status;
+          if (status === "queued" || status === "working") continue;
+          if (jobId === currentJobId) await loadJob();
+          await loadHistory();
+          if (status === "failed") {
+            uploadStatus.textContent = item.name + " 변환 실패. " + describeError({ code: (data.item && data.item.error_code) || "convert_failed" });
+          } else if (status === "reviewed" || status === "done") {
+            uploadStatus.textContent = item.name + " 변환 완료. 원본과 결과를 비교해 보세요.";
+          }
+          return;
+        }
+      } finally {
+        polledItems.delete(item.id);
+      }
+    }
+
+    // Re-entry: a panel opened while a conversion runs keeps watching it.
+    function pollWorkingItemsOfJob(jobId) {
+      (async () => {
+        let data = null;
+        try {
+          data = await api("/api/document-conversions/" + jobId);
+        } catch (_) {
+          return;
+        }
+        (data && data.items || []).forEach((item) => {
+          if (item.status === "working") void pollItemUntilTerminal(jobId, item);
+        });
+      })();
+    }
+
     function markActiveHistory() {
       histList.querySelectorAll(".pdfmd-history-item").forEach((btn) => {
         if (btn.dataset.jobId === currentJobId) btn.setAttribute("aria-current", "true");
@@ -612,6 +662,11 @@
         itemNames.set(currentJobId, currentItems.map((item) => item.name).filter(Boolean));
         renderItems();
         if (historyQuery.trim()) renderHistory();
+        currentItems.forEach((item) => {
+          if (item.status === "working" && !item.has_markdown) {
+            void pollItemUntilTerminal(currentJobId, item);
+          }
+        });
       } catch (e) {
         uploadStatus.textContent = "작업을 불러오지 못했습니다. " + describeError(e);
       }
@@ -652,7 +707,7 @@
 
         const actions = el("div", "pdfmd-item-actions");
 
-        if (!item.has_markdown && !workBlocked) {
+        if (!item.has_markdown && !workBlocked && item.status !== "working") {
           const runBtn = el("button", "pdfmd-btn pdfmd-btn-primary", item.status === "failed" ? "다시 변환" : "변환 실행");
           runBtn.type = "button";
           runBtn.setAttribute("aria-label", item.name + " " + runBtn.textContent);
@@ -660,8 +715,14 @@
             runBtn.disabled = true;
             uploadStatus.textContent = item.name + " 변환 중...";
             try {
-              await api("/api/document-conversions/items/" + item.id + "/run", { method: "POST" });
-              uploadStatus.textContent = item.name + " 변환 완료. 원본과 결과를 비교해 보세요.";
+              const data = await api("/api/document-conversions/items/" + item.id + "/run", { method: "POST" });
+              if (data && data.item && data.item.status === "working") {
+                // 202: the conversion is running server-side; the item poller
+                // repaints the list when it reaches reviewed or failed.
+                uploadStatus.textContent = item.name + " 변환 중. 완료되면 목록이 갱신됩니다.";
+              } else {
+                uploadStatus.textContent = item.name + " 변환 완료. 원본과 결과를 비교해 보세요.";
+              }
               await loadJob();
               await loadHistory();
             } catch (e) {
@@ -937,6 +998,9 @@
         historyJobs = data.jobs || [];
         histTools.hidden = !historyJobs.length;
         renderHistory();
+        historyJobs.forEach((job) => {
+          if (job.status === "working") pollWorkingItemsOfJob(job.id);
+        });
       } catch (e) {
         if (PDFMD_CHECKING) {
           // No answer is an answer of its own: the work cannot start without

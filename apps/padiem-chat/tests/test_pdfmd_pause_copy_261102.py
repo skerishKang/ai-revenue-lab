@@ -34,11 +34,16 @@ def test_the_internal_channel_name_is_gone_from_the_screen() -> None:
 
 
 def test_the_pause_still_says_what_is_and_is_not_possible() -> None:
-    # The screen states the absence and states what still works, in plain words.
+    # The panel states the absence and states what still works, in plain words —
+    # painted only when the server actually answers that the work is paused.
     assert "지금은 새 변환을 시작할 수 없습니다" in PDFMD
     assert "기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다" in PDFMD
     assert "곧 다시 이용할 수 있어요" in PDFMD
-    assert "새 업로드는 잠시 멈춤" in INDEX
+    # The static card no longer claims a pause on first paint: new work is
+    # enabled, so the pause sentence belongs to the panel's server answer.
+    assert "새 업로드는 잠시 멈춤" not in INDEX
+    assert "일시 중단" not in INDEX
+    assert "PDF·ZIP을 Markdown으로 변환·비교·다운로드" in INDEX
 
 
 def test_the_owner_pause_contract_is_untouched() -> None:

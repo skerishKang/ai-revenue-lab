@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
+import time
 
 import pytest
 from starlette.testclient import TestClient
@@ -535,8 +536,15 @@ def test_com2_pdfmd_local_roundtrip_and_owner_fence(staging_host_env, monkeypatc
         assert uploaded.status_code == 201, uploaded.text
         item = uploaded.json()["items"][0]["id"]
         converted = owner.post(f"/api/document-conversions/items/{item}/run")
-        assert converted.status_code == 200, converted.text
+        assert converted.status_code == 202, converted.text
+        # The conversion runs in a background task; the markdown appears once
+        # it settles.
         downloaded = owner.get(f"/api/document-conversions/items/{item}/markdown")
+        for _ in range(50):
+            if downloaded.status_code == 200:
+                break
+            time.sleep(0.05)
+            downloaded = owner.get(f"/api/document-conversions/items/{item}/markdown")
         assert downloaded.status_code == 200 and downloaded.text == "# synthetic conversion"
         with TestClient(app, base_url=origin, headers={"Origin": origin}) as other:
             assert other.post("/api/auth/password/register", json={
