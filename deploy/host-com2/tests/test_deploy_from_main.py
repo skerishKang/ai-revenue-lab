@@ -1247,9 +1247,33 @@ class MigrationServiceUserGitTest(DeployHarness):
 
 
 class ScriptBoundaryTest(unittest.TestCase):
-    def test_start_probes_are_given_ninety_seconds_by_default(self) -> None:
+    def test_the_ladder_defaults_to_four_minutes_and_an_env_value_wins(self) -> None:
+        """11-06: a measured cold import took 56 s; 30 s rolled a good release back."""
         text = SCRIPT.read_text(encoding="utf-8")
-        self.assertIn("health_timeout=${PADIEM_COM2_HEALTH_TIMEOUT:-90}", text)
+        for name, var, default in (
+            ("PADIEM_COM2_PORT_WAIT_TIMEOUT", "port_wait_timeout", "240"),
+            ("PADIEM_COM2_HEALTH_TIMEOUT", "health_timeout", "240"),
+        ):
+            # The script's own assignment line, run by bash: unset gives the
+            # default, an exported value is used verbatim.
+            line = f'{var}=${{{name}:-{default}}}'
+            self.assertIn(line, text)
+            unset = subprocess.run(
+                [BASH_BIN, "-c", f'unset {name}; {line}; printf %s "${{{var}}}"'],
+                capture_output=True, text=True,
+            )
+            self.assertEqual(unset.returncode, 0, unset.stderr)
+            self.assertEqual(unset.stdout, default)
+            overridden = subprocess.run(
+                [BASH_BIN, "-c", f'{line}; printf %s "${{{var}}}"'],
+                capture_output=True, text=True, env=dict(os.environ, **{name: "7"}),
+            )
+            self.assertEqual(overridden.stdout, "7", overridden.stderr)
+
+    def test_start_probes_are_given_four_minutes_by_default(self) -> None:
+        text = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("health_timeout=${PADIEM_COM2_HEALTH_TIMEOUT:-240}", text)
+        self.assertIn("port_wait_timeout=${PADIEM_COM2_PORT_WAIT_TIMEOUT:-240}", text)
         # chat, p01 and b14 walk the shared readiness ladder (unit active ->
         # port listening -> health contract); the queue keeps its own probe.
         for label in ("CHAT", "P01", "B14", "CHAT_ROLLBACK", "P01_ROLLBACK", "B14_ROLLBACK"):

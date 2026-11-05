@@ -38,10 +38,10 @@
 #   PADIEM_COM2_MESH_QUEUE_USER  the account that owns that root
 #   PADIEM_COM2_HEALTH_TIMEOUT / PADIEM_COM2_HEALTH_INTERVAL
 #                                how long a start or a rollback may take to become
-#                                healthy (90s, 2s)
+#                                healthy (240s, 2s)
 #   PADIEM_COM2_UNIT_WAIT_TIMEOUT / PADIEM_COM2_PORT_WAIT_TIMEOUT
 #                                how long systemctl is-active and the port bind may
-#                                take before the health contract is even probed (30s)
+#                                take before the health contract is even probed (30s, 240s)
 #   PADIEM_COM2_STOP_WAIT_TIMEOUT  how long the previous process may take to release
 #                                MainPID 0 and its port (30s)
 #   PADIEM_COM2_WAIT_POLL_INTERVAL  poll gap inside every wait stage (1s)
@@ -75,14 +75,20 @@ stage_only=0
 # Chat (which already had its own patience) retries until this deadline. 11-02:
 # the deadline is the whole readiness budget now, and Chat walks the same ladder
 # instead of carrying separate attempt caps.
-health_timeout=${PADIEM_COM2_HEALTH_TIMEOUT:-90}
+# 11-06: the same shape of the 11-02 B14 case, measured on Chat. Under the
+# staging copy and a neighbouring restart, a cold import took 56 s while the
+# port was still unbound; a 30 s wait rolled a good release back, and the
+# rollback release then bound in 5 s. A start that has not bound is not an
+# unhealthy release, so both remaining readiness deadlines default to 240 s.
+# An explicit value always wins.
+health_timeout=${PADIEM_COM2_HEALTH_TIMEOUT:-240}
 health_interval=${PADIEM_COM2_HEALTH_INTERVAL:-2}
 # 11-02 B14: the release was fine, but the probe ran while the unit was still
 # activating and the port did not exist yet, so a good tree rolled itself back.
 # Each readiness stage therefore has its own bound, and the previous process
 # must be provably gone before the new one starts.
 unit_wait_timeout=${PADIEM_COM2_UNIT_WAIT_TIMEOUT:-30}
-port_wait_timeout=${PADIEM_COM2_PORT_WAIT_TIMEOUT:-30}
+port_wait_timeout=${PADIEM_COM2_PORT_WAIT_TIMEOUT:-240}
 stop_wait_timeout=${PADIEM_COM2_STOP_WAIT_TIMEOUT:-30}
 wait_poll_interval=${PADIEM_COM2_WAIT_POLL_INTERVAL:-1}
 ss_bin=${PADIEM_COM2_SS:-ss}
@@ -355,8 +361,8 @@ wait_service_down() {
 
 # One readiness ladder for every restarted service:
 #   a. unit active       (<= PADIEM_COM2_UNIT_WAIT_TIMEOUT, 30s)
-#   b. port listening    (<= PADIEM_COM2_PORT_WAIT_TIMEOUT, 30s)
-#   c. health contract   (<= PADIEM_COM2_HEALTH_TIMEOUT, 90s — stage d verdict)
+#   b. port listening    (<= PADIEM_COM2_PORT_WAIT_TIMEOUT, 240s)
+#   c. health contract   (<= PADIEM_COM2_HEALTH_TIMEOUT, 240s — stage d verdict)
 # A stage timeout or a failed contract returns 1 and the caller rolls back.
 wait_service_ready() {
   local label=$1 unit=$2 port=$3
