@@ -81,3 +81,10 @@ apps/padiem-android-connector/gradlew.bat whitespace=trailing,cr-at-eol,blank-at
 # a Windows worktree and the Linux CI checkout agree byte for byte. text=auto
 # keeps the photography and fonts byte-exact (git's binary detection).
 apps/padiem-council-apps/static/** text=auto eol=lf
+
+# 2026-11-05: shell scripts are run by bash on the Linux hosts, and the ops patrol
+# script is run through WSL from a Windows checkout. core.autocrlf=true materialized
+# it CRLF, so bash died on `set: pipefail\r: invalid option name` before it read a
+# single journal. Every .sh blob is stored LF (git ls-files --eol: 81 i/lf, 0 i/crlf),
+# so this rule changes materialization only and renormalizes nothing.
+*.sh text eol=lf
