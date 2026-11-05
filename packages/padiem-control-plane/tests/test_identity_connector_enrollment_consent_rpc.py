@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
+import json
 import sqlite3
 from types import SimpleNamespace
 
@@ -11,16 +12,24 @@ import pytest
 
 from canonical_connector_enrollment_consent_rpc import CanonicalIdentityEnrollmentConsentRPC
 from canonical_connector_enrollment_durable import IdentityDurableConnectorEnrollmentRecords
+from identity_authority_durable import (
+    CloudflareCanonicalIdentityAuthorityStore,
+    decode_identity_lookup_key,
+)
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.contracts import CanonicalSubjectRef, ControlPlaneContractError, SubjectType
 from padiem_control_plane.padiem_connector_enrollment import ConnectorEnrollmentConsent
-from padiem_control_plane.tenants import TenantMembershipRole
+from padiem_control_plane.tenants import (
+    TenantMembership,
+    TenantMembershipRole,
+    TenantMembershipState,
+)
 
 NOW = datetime(2026, 10, 12, 10, tzinfo=timezone.utc)
 PRODUCT = "b54-padiem-claw"
 SUBJECT = "sub.canonical.owner"
 SESSION_ID = "session.owner.canonical"
-TENANT = "tenant.owner.canonical"
+TENANT = "tenant_" + "a" * 32
 DEVICE = "device.windows.owner"
 
 
@@ -34,7 +43,9 @@ class Cursor:
 class Sql:
     def __init__(self):
         self.db = sqlite3.connect(":memory:", isolation_level=None)
+        self.calls = []
     def exec(self, query, *args):
+        self.calls.append(query)
         cursor = self.db.execute(query, args)
         if cursor.description:
             names = [c[0] for c in cursor.description]
@@ -72,7 +83,13 @@ class Canonical:
     def resolve_active_tenant_membership(self, *, tenant_id, canonical_subject_id, now):
         if tenant_id != TENANT or canonical_subject_id != SUBJECT or not self.session.is_active(now=now):
             raise ControlPlaneContractError("canonical_tenant_membership_inactive", "no active membership")
-        return SimpleNamespace(role=TenantMembershipRole(self.role))
+        return TenantMembership(
+            tenant_id=tenant_id,
+            canonical_subject_id=canonical_subject_id,
+            state=TenantMembershipState.ACTIVE,
+            created_at=NOW - timedelta(days=1),
+            role=TenantMembershipRole(self.role),
+        )
 
 
 def harness(*, enabled=True, scope_approved=True, schema_installed=True, schema_created=True):
@@ -360,3 +377,94 @@ def test_resolve_connector_owner_scope_names_only_the_session_owner():
     # Backward compatible: the established fields keep their reviewed values.
     assert scope["account_ref"] == "account.shared.test"
     assert scope["workspace_ref"] == "workspace.shared.test"
+
+
+def _real_authority_harness():
+    """A harness whose session, tenant and membership reads are real SQL."""
+
+    storage = Storage()
+    store = CloudflareCanonicalIdentityAuthorityStore(
+        storage,
+        lookup_key=b"I" * 32,
+        allowed_product_ids=frozenset({"b62", "b54-padiem-claw"}),
+    )
+    link = store.resolve_or_create_product_link(
+        product_id="b62",
+        product_user_id="usr_real_owner",
+        auth_provider="google",
+        provider_subject="ps-real-owner",
+        now=NOW,
+    )
+    tenant = store.create_tenant(now=NOW)
+    store.assign_tenant_membership(
+        tenant_id=tenant.tenant_id,
+        canonical_subject_id=link.canonical_subject_id,
+        now=NOW,
+        role="owner",
+    )
+    session = store.establish_auth_session(
+        product_id="b62",
+        subject=CanonicalSubjectRef(
+            subject_type=SubjectType.USER, subject_id=link.canonical_subject_id
+        ),
+        authenticated_at=NOW - timedelta(days=1),
+        not_after=NOW + timedelta(days=365),
+        now=NOW,
+    )
+    storage.sql.exec(
+        "CREATE TABLE canonical_connector_context (product_id TEXT NOT NULL, "
+        "subject_id TEXT NOT NULL, actor_ref TEXT NOT NULL UNIQUE, "
+        "account_ref TEXT NOT NULL UNIQUE, workspace_ref TEXT NOT NULL UNIQUE, "
+        "created_at TEXT NOT NULL, PRIMARY KEY(product_id, subject_id))"
+    )
+    storage.sql.exec(
+        "INSERT INTO canonical_connector_context "
+        "(product_id,subject_id,actor_ref,account_ref,workspace_ref,created_at) "
+        "VALUES (?,?,?,?,?,?)",
+        "b62",
+        link.canonical_subject_id,
+        "actor.real.test",
+        "account.real.test",
+        "workspace.real.test",
+        NOW.isoformat(),
+    )
+    env = SimpleNamespace(
+        CONTROL_PLANE_CONNECTOR_ENROLLMENT_RPC_ENABLED="true",
+        CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCOPE_APPROVED="true",
+        CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCHEMA_INSTALLED="true",
+        CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCHEMA_INSTALL_ENABLED="false",
+    )
+
+    class Harness(CanonicalIdentityEnrollmentConsentRPC):
+        def __init__(self):
+            self.env = env
+            self._store = store
+            self._storage = storage
+
+    return Harness(), storage, session, link.canonical_subject_id
+
+
+def test_owner_scope_read_reuses_the_verified_membership_and_one_payload():
+    """The owner-scope read is five indexed reads and the same response dict.
+
+    The owner check already resolved the tenant, subject and membership rows; the
+    scope read must consume that verified membership instead of re-resolving the
+    same three rows, and the response shape must not change.
+    """
+
+    fake, storage, session, subject_id = _real_authority_harness()
+    before = len(storage.sql.calls)
+
+    result = call("resolve_connector_owner_scope", fake, {"session_id": session.session_id})
+
+    executed = storage.sql.calls[before:]
+    assert len(executed) == 5
+    expected = {
+        "ok": True,
+        "scope": {
+            "account_ref": "account.real.test",
+            "workspace_ref": "workspace.real.test",
+            "owner_subject_id": subject_id,
+        },
+    }
+    assert json.dumps(result, sort_keys=True) == json.dumps(expected, sort_keys=True)

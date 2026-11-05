@@ -37,7 +37,7 @@ MAX_PRODUCT_USER_ID_CHARS = 256
 _KEY_RE = re.compile(r"^[A-Za-z0-9_-]{43}$")
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _ALLOWED_PROVIDERS = frozenset({"google", "password"})
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 
 
 def _utc(value: datetime, field_name: str) -> datetime:
@@ -51,6 +51,25 @@ def _utc(value: datetime, field_name: str) -> datetime:
 
 def _iso(value: datetime) -> str:
     return _utc(value, "timestamp").isoformat().replace("+00:00", "Z")
+
+
+def _iso_sort_key(column: str) -> str:
+    """SQL expression whose text order matches ``datetime`` order for ``_iso``.
+
+    ``_iso`` omits the fractional part when it is exactly zero, so plain text
+    ordering would rank ``12:00:00.500000Z`` *before* ``12:00:00Z``. Padding the
+    fraction to six digits removes that mismatch, so comparing two rows in SQL
+    compares the same instants Python compared before.
+    """
+    return (
+        f"substr({column},1,19) || '.' || "
+        f"CASE WHEN length({column}) > 20 THEN substr({column},21,6) ELSE '000000' END"
+    )
+
+
+def _iso_sort_bound(value: datetime) -> str:
+    """The same canonical form as :func:`_iso_sort_key`, for a bound value."""
+    return f"{value:%Y-%m-%dT%H:%M:%S}.{value.microsecond:06d}"
 
 
 def _parse_iso(value: Any, field_name: str) -> datetime:
@@ -199,6 +218,8 @@ class CloudflareCanonicalIdentityAuthorityStore:
         self._initialize()
 
     def _initialize(self) -> None:
+        if self._schema_is_current():
+            return
         self._sql.exec(
             "CREATE TABLE IF NOT EXISTS canonical_identity_subject ("
             "provider TEXT NOT NULL, provider_fingerprint TEXT NOT NULL, "
@@ -225,6 +246,10 @@ class CloudflareCanonicalIdentityAuthorityStore:
         self._sql.exec(
             "CREATE INDEX IF NOT EXISTS idx_canonical_auth_session_subject "
             "ON canonical_auth_session(product_id, subject_id)"
+        )
+        self._sql.exec(
+            "CREATE INDEX IF NOT EXISTS idx_canonical_auth_session_current "
+            "ON canonical_auth_session(product_id, subject_id, state, expires_at)"
         )
         self._sql.exec(
             "CREATE TABLE IF NOT EXISTS canonical_tenant ("
@@ -266,14 +291,33 @@ class CloudflareCanonicalIdentityAuthorityStore:
                 "identity authority schema version is invalid",
             ) from exc
 
+    def _schema_is_current(self) -> bool:
+        """True when this store already holds the current schema version.
+
+        A warm Durable Object needs exactly one read here instead of the full
+        CREATE TABLE / CREATE INDEX / PRAGMA / migration sequence it repeated on
+        every instance construction. A brand-new store has no schema table yet
+        and a store from an older version reports an older number, so both fall
+        through to the unchanged create-and-migrate path. Any other probe
+        failure also falls through, where the DDL path surfaces it instead of
+        this shortcut silently accepting a broken store.
+        """
+
+        try:
+            return self._schema_version() == SCHEMA_VERSION
+        except Exception:
+            return False
+
     def _apply_migrations(self) -> None:
         """Explicit additive migration path for already-deployed stores.
 
         Version 3 adds nullable ``canonical_tenant_membership.role``. Version 4
-        creates the hash-and-time common-account deletion audit table. Legacy
-        rows remain roleless; no default or backfill value is fabricated. The
-        migration also preserves the version-2 auth-session tenant column for
-        stores that predate it.
+        creates the hash-and-time common-account deletion audit table. Version 5
+        adds the current-session selection index over ``(product_id, subject_id,
+        state, expires_at)``; the existing two-column subject index is kept.
+        Legacy rows remain roleless; no default or backfill value is fabricated.
+        The migration also preserves the version-2 auth-session tenant column
+        for stores that predate it.
         """
         current_version = self._schema_version()
         if current_version > SCHEMA_VERSION:
@@ -296,6 +340,11 @@ class CloudflareCanonicalIdentityAuthorityStore:
         if "role" not in membership_columns:
             self._sql.exec(
                 "ALTER TABLE canonical_tenant_membership ADD COLUMN role TEXT"
+            )
+        if current_version < 5:
+            self._sql.exec(
+                "CREATE INDEX IF NOT EXISTS idx_canonical_auth_session_current "
+                "ON canonical_auth_session(product_id, subject_id, state, expires_at)"
             )
         if current_version < SCHEMA_VERSION:
             self._sql.exec(
@@ -1149,14 +1198,18 @@ class CloudflareCanonicalIdentityAuthorityStore:
            ``(product_id, product_user_id)`` yields the canonical subject id;
         3. ``canonical_auth_session`` is read for that ``(product_id,
            subject_id)`` pair, served by the existing index;
-        4. only sessions that are ACTIVE **and** not past ``now`` survive;
-        5. the newest survivor wins, ordered by ``issued_at``, then
-           ``revision``, then ``session_id``.
+        4. state, expiry, ordering and ``LIMIT 1`` are applied by SQL itself
+           against the ``(product_id, subject_id, state, expires_at)`` index, in
+           the same order the Python selection used: ``issued_at``, then
+           ``revision``, then ``session_id``;
+        5. that single winning row is decoded under the canonical contract.
 
         Repeated logins can leave more than one ACTIVE session, so multiple
         active rows are not an error: the newest is selected deterministically.
         An expired or revoked row is never a fallback, and when nothing is
-        active this fails closed.
+        active this fails closed. Rows that cannot be candidates are filtered by
+        SQL and never decoded; the winning row is still decoded, so a malformed
+        selected row fails the read rather than reading as an absent session.
 
         ``resolve_auth_session(session_id)`` is unchanged; this is a separate
         lookup and neither creates, extends, revokes nor writes any row.
@@ -1201,46 +1254,37 @@ class CloudflareCanonicalIdentityAuthorityStore:
             )
         canonical_subject_id = str(link_rows[0]["canonical_subject_id"])
 
+        issued_key = _iso_sort_key("issued_at")
+        expires_key = _iso_sort_key("expires_at")
         session_rows = _rows(
             self._sql.exec(
                 "SELECT session_id, product_id, subject_type, subject_id, issued_at, "
                 "expires_at, state, revision, tenant_id FROM canonical_auth_session "
-                "WHERE product_id=? AND subject_id=?",
+                f"WHERE product_id=? AND subject_id=? AND state=? AND {expires_key} > ? "
+                f"ORDER BY {issued_key} DESC, revision DESC, session_id DESC LIMIT 1",
                 product,
                 canonical_subject_id,
+                AuthSessionState.ACTIVE.value,
+                _iso_sort_bound(observed_at),
             )
         )
-        active: list[tuple[datetime, int, str, AuthSessionSnapshot]] = []
-        for row in session_rows:
-            # #3243 integrity: a malformed canonical row is storage corruption,
-            # not an absent session. It is validated under the canonical contract
-            # and fails the whole read, so a corrupt newest row can never be
-            # skipped in favour of an older active one (and vice versa).
-            snapshot = self._session_from_row(row)
-            if snapshot.product_id != product or snapshot.subject.subject_id != canonical_subject_id:
-                # The query is scoped to exactly this product and subject; a row
-                # that disagrees is corruption too.
-                raise ControlPlaneContractError(
-                    "identity_authority_storage_error",
-                    "canonical auth session row is out of scope",
-                )
-            if snapshot.state is not AuthSessionState.ACTIVE:
-                # A valid REVOKED / explicitly EXPIRED row is a non-candidate.
-                continue
-            if snapshot.expires_at <= observed_at:
-                # Valid ACTIVE but already lapsed at this instant: not effective.
-                continue
-            active.append(
-                (snapshot.issued_at, snapshot.revision, snapshot.session_id, snapshot)
-            )
-        if not active:
+        if not session_rows:
             raise ControlPlaneContractError(
                 "canonical_auth_session_not_found",
                 "no active canonical auth session exists for this product user",
             )
-        # Newest issued wins; revision then session id break ties deterministically.
-        active.sort(key=lambda item: (item[0], item[1], item[2]))
-        return active[-1][3]
+        # #3243 integrity: the selected row is decoded under the canonical
+        # contract, so a malformed newest row is corruption and never reads as
+        # an absent session.
+        snapshot = self._session_from_row(session_rows[0])
+        if snapshot.product_id != product or snapshot.subject.subject_id != canonical_subject_id:
+            # The query is scoped to exactly this product and subject; a row
+            # that disagrees is corruption too.
+            raise ControlPlaneContractError(
+                "identity_authority_storage_error",
+                "canonical auth session row is out of scope",
+            )
+        return snapshot
 
     def resolve_product_user_for_subject(
         self,

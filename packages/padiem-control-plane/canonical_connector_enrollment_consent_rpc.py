@@ -80,9 +80,12 @@ class CanonicalIdentityEnrollmentConsentRPC:
             canonical_subject_id=session.subject.subject_id,
             now=now,
         )
-        return require_canonical_connector_owner_session(
+        verified = require_canonical_connector_owner_session(
             session=session, membership_role=getattr(membership, "role", None), now=now,
         )
+        # The verified membership travels with its session: the scope read must
+        # not resolve the same tenant, subject and membership rows again.
+        return verified, membership
 
     async def resolve_connector_owner_scope(self, payload: dict) -> dict:
         """Read only the authenticated session's established connector scope."""
@@ -91,10 +94,13 @@ class CanonicalIdentityEnrollmentConsentRPC:
             if not self._connector_enrollment_enabled():
                 raise ControlPlaneContractError("connector_enrollment_rpc_disabled", "connector enrollment disabled")
             now = datetime.now(timezone.utc)
-            session = self._connector_session_for_consent(wire["session_id"], now)
+            session, membership = self._connector_session_for_consent(wire["session_id"], now)
             scope = ReadOnlyExistingConnectorScope(
                 identity_do_storage=self._storage, membership_authority=self._store,
-            ).resolve_scope(subject_id=session.subject.subject_id, tenant_ref=session.tenant_id, now=now)
+            ).resolve_scope(
+                subject_id=session.subject.subject_id, tenant_ref=session.tenant_id,
+                now=now, membership=membership,
+            )
             return {"ok": True, "scope": {
                 "account_ref": scope.account_ref, "workspace_ref": scope.workspace_ref,
                 # 2026-11-04: the session owner's own canonical subject id (the
@@ -113,10 +119,13 @@ class CanonicalIdentityEnrollmentConsentRPC:
             if not self._connector_enrollment_enabled():
                 raise ControlPlaneContractError("connector_enrollment_rpc_disabled", "connector enrollment consent RPC is disabled")
             now = datetime.now(timezone.utc)
-            session = self._connector_session_for_consent(wire["session_id"], now)
+            session, membership = self._connector_session_for_consent(wire["session_id"], now)
             scope = ReadOnlyExistingConnectorScope(
                 identity_do_storage=self._storage, membership_authority=self._store
-            ).resolve_scope(subject_id=session.subject.subject_id, tenant_ref=session.tenant_id, now=now)
+            ).resolve_scope(
+                subject_id=session.subject.subject_id, tenant_ref=session.tenant_id,
+                now=now, membership=membership,
+            )
             consent = self._connector_enrollment_records.current_for_device(
                 owner_subject_id=session.subject.subject_id, device_id=wire["device_id"], now=now,
             )
@@ -138,7 +147,7 @@ class CanonicalIdentityEnrollmentConsentRPC:
             if not self._connector_enrollment_enabled():
                 raise ControlPlaneContractError("connector_enrollment_rpc_disabled", "connector enrollment consent RPC is disabled")
             now = datetime.now(timezone.utc)
-            session = self._connector_session_for_consent(wire["session_id"], now)
+            session, _membership = self._connector_session_for_consent(wire["session_id"], now)
             expires_at = _dt(wire["expires_at"])
             self._connector_enrollment_records.bind_challenge(
                 challenge_id=wire["challenge_id"], session=session, expires_at=expires_at, now=now,
@@ -162,10 +171,13 @@ class CanonicalIdentityEnrollmentConsentRPC:
             )
             if not isinstance(session, AuthSessionSnapshot) or not session.is_active(now=now):
                 raise ControlPlaneContractError("canonical_session_required", "original canonical session is no longer active")
-            session = self._connector_session_for_consent(session_id=session.session_id, now=now)
+            session, membership = self._connector_session_for_consent(session_id=session.session_id, now=now)
             scope = ReadOnlyExistingConnectorScope(
                 identity_do_storage=self._storage, membership_authority=self._store
-            ).resolve_scope(subject_id=session.subject.subject_id, tenant_ref=session.tenant_id, now=now)
+            ).resolve_scope(
+                subject_id=session.subject.subject_id, tenant_ref=session.tenant_id,
+                now=now, membership=membership,
+            )
             consent = self._connector_enrollment_records.current_consent(
                 consent_id=wire["consent_id"], now=now,
             )
@@ -211,11 +223,12 @@ class CanonicalIdentityEnrollmentConsentRPC:
             if wire["confirmed"] is not True or wire["confirmation_version"] != _CONNECTOR_ENROLLMENT_CONFIRMATION_VERSION:
                 raise ControlPlaneContractError("connector_enrollment_explicit_consent_required", "explicit owner consent is required")
             now = datetime.now(timezone.utc)
-            session = self._connector_session_for_consent(wire["session_id"], now)
+            session, membership = self._connector_session_for_consent(wire["session_id"], now)
             scope = ReadOnlyExistingConnectorScope(
                 identity_do_storage=self._storage, membership_authority=self._store
             ).resolve_scope(
-                subject_id=session.subject.subject_id, tenant_ref=session.tenant_id, now=now
+                subject_id=session.subject.subject_id, tenant_ref=session.tenant_id,
+                now=now, membership=membership,
             )
             device_id = wire["device_id"]
             consent = ConnectorEnrollmentConsent(
@@ -244,7 +257,7 @@ class CanonicalIdentityEnrollmentConsentRPC:
             if wire["confirmed"] is not True or wire["confirmation_version"] != _CONNECTOR_ENROLLMENT_CONFIRMATION_VERSION:
                 raise ControlPlaneContractError("connector_enrollment_explicit_consent_required", "explicit owner revocation is required")
             now = datetime.now(timezone.utc)
-            session = self._connector_session_for_consent(wire["session_id"], now)
+            session, _membership = self._connector_session_for_consent(wire["session_id"], now)
             current = self._connector_enrollment_records.current_consent(
                 consent_id=wire["consent_id"], now=now
             )
