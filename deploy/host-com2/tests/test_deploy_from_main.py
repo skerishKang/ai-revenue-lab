@@ -1412,9 +1412,9 @@ class OracleMeshExecutorScenarioTest(DeployHarness):
         )
         self.assertIn("COM2_DEPLOY_EXECUTOR_TRACEBACKS=0", result.stdout)
         self.assertIn(
-            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:PASS",
-            result.stdout,
+            "COM2_DEPLOY_DECISION_EXECUTOR=REDEPLOY reason_files=1",
         )
+        self.assertIn("executor:PASS", result.stdout)
 
     def test_a_traceback_after_start_puts_the_previous_copy_back(self) -> None:
         (self.fakes / "journal_traceback").write_text("1\n", encoding="utf-8")
