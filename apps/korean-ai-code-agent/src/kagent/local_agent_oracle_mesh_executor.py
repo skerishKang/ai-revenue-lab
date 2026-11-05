@@ -300,6 +300,20 @@ def _ps_literal_for_root(value: str) -> str:
     return "'" + value.replace("'", "''") + "'"
 
 
+def _pc_guard_root(value: str) -> str:
+    """The granted root as the PC walk needs it: one trailing separator.
+
+    ``"C:"`` is not the C: drive root on Windows - it is that drive's current
+    folder (SYSTEM's is usually ``C:\\Windows\\System32``), so a drive-only root is
+    completed to ``"C:\\"`` before one segment is joined. Every other root keeps
+    its own text and gains the single separator the join needs.
+    """
+    text = value.strip().replace("/", "\\")
+    if len(text) == 2 and text[1] == ":" and text[0].isalpha():
+        return text + "\\"
+    return text if text.endswith("\\") else text + "\\"
+
+
 def _step_timeout_seconds(env: dict[str, str]) -> int:
     """The deployment's own PC-step deadline, in seconds.
 
@@ -939,21 +953,27 @@ class OracleMeshExecutor:
         """
         if self._command_port is None:
             return True  # 명령 채널이 없으면 검사 자체가 불가능 — fail closed
+        guard_root = _pc_guard_root(granted_root)
+        guard_target = file_path.strip().replace("/", "\\")
         script = (
             "$ErrorActionPreference = 'Stop';"
-            "$root = " + _ps_literal_for_root(granted_root) + ";"
-            "$target = " + _ps_literal_for_root(file_path) + ";"
+            "$root = " + _ps_literal_for_root(guard_root) + ";"
+            "$target = " + _ps_literal_for_root(guard_target) + ";"
             "$walk = $root;"
             "$hit = $false;"
             "try {"
-            " $rest = $target.Substring($root.Length).Replace('/', '\');"
-            " foreach ($seg in ($rest -split '\')) {"
-            "  if (-not $seg) { continue };"
-            "  $walk = Join-Path $walk $seg;"
-            "  if (-not (Test-Path -LiteralPath $walk)) { break };"
-            "  $item = Get-Item -LiteralPath $walk -Force -ErrorAction SilentlyContinue;"
-            "  if ($item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0))"
-            "  { $hit = $true; break } };"
+            " if (-not $target.StartsWith($root, [StringComparison]::OrdinalIgnoreCase)) { $hit = $true };"
+            " if (-not $hit) {"
+            "  $rest = $target.Substring($root.Length);"
+            "  foreach ($seg in $rest.Split([char]'\\')) {"
+            "   if (-not $seg) { continue };"
+            "   $walk = Join-Path $walk $seg;"
+            "   if (-not (Test-Path -LiteralPath $walk)) { break };"
+            "   $item = Get-Item -LiteralPath $walk -Force -ErrorAction SilentlyContinue;"
+            "   if ($item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0))"
+            "   { $hit = $true; break }"
+            "  }"
+            " }"
             "} catch { $hit = $true };"
             "$account = [ordered]@{hit=[bool]$hit};"
             "$json = ConvertTo-Json -InputObject $account -Compress;"
