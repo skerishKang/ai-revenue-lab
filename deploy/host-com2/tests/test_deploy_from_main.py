@@ -109,6 +109,21 @@ esac
 exit 0
 """
 
+FAKE_JOURNALCTL = """#!/usr/bin/env bash
+echo "journalctl $*" >> "$FAKE_LOG"
+# journal_traceback holds how many of the next calls report a traceback: the
+# deploy checks once, the rollback opens its own window.
+marker="$FAKE_ROOT/journal_traceback"
+if [[ -f $marker ]]; then
+  left=$(cat "$marker")
+  if (( left > 0 )); then
+    echo "Traceback (most recent call last):"
+    echo $((left - 1)) > "$marker"
+  fi
+fi
+exit 0
+"""
+
 FAKE_SS = """#!/usr/bin/env bash
 # Stand-in for `ss -ltn`: one line per listening loopback port in the REAL
 # shape (state, queues, local address, peer address) — 11-02 the old fake
@@ -152,6 +167,8 @@ p01_root=$P01_ROOT
 b14_app=$B14_APP
 queue_root=$QUEUE_ROOT
 systemctl_bin=$SYSTEMCTL_BIN
+journalctl_bin=$JOURNALCTL_BIN
+oracle_mesh_root=$ORACLE_MESH_ROOT
 python_bin=$PYTHON_BIN
 git_bin=git
 ai_check=${FAKE_AI_MODE:-warn}
@@ -200,6 +217,10 @@ BASE_FILES = {
     "packages/padiem-ai-core/padiem_ai_core/evidence_blocks.py": "# evidence\n",
     "packages/padiem-control-plane/padiem_control_plane/__init__.py": "# control\n",
     "apps/korean-ai-code-agent/src/kagent/__init__.py": "# kagent\n",
+    # The executor imports the Core package, as the real one does.
+    "apps/korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py": (
+        "import padiem_ai_core\n\n# executor\n"
+    ),
     "apps/korean-ai-platform/asgi.py": "# b14\n",
     "apps/padiem-mesh-queue/service.py": "# queue\n",
     "apps/padiem-mesh-queue/deploy/health_check.sh": QUEUE_HEALTH,
@@ -294,6 +315,7 @@ class DeployHarness(unittest.TestCase):
     """A throwaway origin + production checkout; no test methods of its own."""
 
     scenario = "chat"
+    base_extra: dict[str, str] = {}
 
     def setUp(self) -> None:
         self.tmp = Path(tempfile.mkdtemp(prefix="com2-deploy-"))
@@ -344,6 +366,9 @@ class DeployHarness(unittest.TestCase):
         self.systemctl = self.tmp / "fake-systemctl"
         self.systemctl.write_text(FAKE_SYSTEMCTL, encoding="utf-8")
         self.systemctl.chmod(0o755)
+        self.journalctl = self.tmp / "fake-journalctl"
+        self.journalctl.write_text(FAKE_JOURNALCTL, encoding="utf-8")
+        self.journalctl.chmod(0o755)
         self.fake_ss = self.tmp / "fake-ss"
         self.fake_ss.write_text(FAKE_SS, encoding="utf-8")
         self.fake_ss.chmod(0o755)
@@ -382,6 +407,10 @@ class DeployHarness(unittest.TestCase):
     def _write_base(self) -> None:
         for relative, text in BASE_FILES.items():
             self._write(relative, text)
+        # A scenario may need a base file of its own (an import chain the
+        # queue really has) without changing what every scenario starts from.
+        for relative, text in type(self).base_extra.items():
+            self._write(relative, text)
         target = self.ops / "deploy/host-com2"
         target.mkdir(parents=True, exist_ok=True)
         shutil.copy2(SCRIPT, target / "deploy_from_main.sh")
@@ -398,6 +427,12 @@ sys.exit(0 if code == "none" else 1)
             install.write_text(FAKE_INSTALL.format(svc=service), encoding="utf-8")
             health = self.ops / f"deploy/host-com2/{service}/health.py"
             health.write_text(FAKE_HEALTH.format(svc=service), encoding="utf-8")
+        # #6898's backup kit is run by the queue leg, so it gets the same fake.
+        backup_install = self.ops / "deploy/host-com2/mesh-queue-backup/install.sh"
+        backup_install.parent.mkdir(parents=True, exist_ok=True)
+        backup_install.write_text(
+            FAKE_INSTALL.format(svc="mesh-queue-backup"), encoding="utf-8"
+        )
 
     def _commit(self, message: str) -> str:
         self._git(str(self.ops), "add", "-A")
@@ -438,6 +473,8 @@ sys.exit(0 if code == "none" else 1)
             "P01_ROOT": self.p01.as_posix(),
             "B14_APP": self.b14.as_posix(),
             "SYSTEMCTL_BIN": self.systemctl.as_posix(),
+            "JOURNALCTL_BIN": self.journalctl.as_posix(),
+            "ORACLE_MESH_ROOT": (self.tmp / "oracle-mesh").as_posix(),
             "PYTHON_BIN": Path(sys.executable).as_posix(),
             "QUEUE_ROOT": self.queue.as_posix(),
         }
@@ -536,6 +573,16 @@ class SourceStagingTest(DeployHarness):
 class ChatScenarioTest(DeployHarness):
     scenario = "chat"
 
+    def test_a_chat_only_release_never_installs_the_queue_backup_kit(self) -> None:
+        # The kit belongs to the queue leg; a chat release leaves it untouched.
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            [line for line in self._calls() if line.startswith("install mesh-queue-backup")],
+            [],
+            self._calls(),
+        )
+
     def test_dry_run_reports_the_plan_and_touches_nothing(self) -> None:
         result = self._run_main(
             self.second, "--ops-checkout", self.ops.as_posix(),
@@ -547,7 +594,7 @@ class ChatScenarioTest(DeployHarness):
         self.assertIn("COM2_DEPLOY_SERVICES=chat", result.stdout)
         self.assertIn("COM2_DEPLOY_PENDING_MIGRATIONS=none", result.stdout)
         self.assertIn(
-            "COM2_DEPLOY_SUMMARY=chat:WOULD_DEPLOY p01:SKIP b14:SKIP queue:SKIP",
+            "COM2_DEPLOY_SUMMARY=chat:WOULD_DEPLOY p01:SKIP b14:SKIP queue:SKIP executor:SKIP",
             result.stdout,
         )
         self.assertEqual(self._head(), self.first)
@@ -557,7 +604,7 @@ class ChatScenarioTest(DeployHarness):
         result = self._run_apply()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn(
-            "COM2_DEPLOY_SUMMARY=chat:PASS p01:SKIP b14:SKIP queue:SKIP", result.stdout
+            "COM2_DEPLOY_SUMMARY=chat:PASS p01:SKIP b14:SKIP queue:SKIP executor:SKIP", result.stdout
         )
         self.assertEqual(self._head(), self.second)
         calls = self._calls()
@@ -689,7 +736,7 @@ class ChatScenarioTest(DeployHarness):
         result = self._run_apply()
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIn(
-            "COM2_DEPLOY_SUMMARY=chat:ROLLBACK p01:SKIP b14:SKIP queue:SKIP", result.stdout
+            "COM2_DEPLOY_SUMMARY=chat:ROLLBACK p01:SKIP b14:SKIP queue:SKIP executor:SKIP", result.stdout
         )
         installs = [line for line in self._calls() if line.startswith("install chat")]
         self.assertEqual(len(installs), 2, installs)
@@ -857,7 +904,7 @@ class DeployScopeScenarioTest(DeployHarness):
             )
         self.assertIn("COM2_DEPLOY_NO_SERVICE_CHANGES=YES", output)
         self.assertIn(
-            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP",
+            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP",
             output,
         )
 
@@ -932,7 +979,7 @@ class P01ScenarioTest(DeployHarness):
         result = self._run_apply()
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIn(
-            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:ROLLBACK b14:SKIP queue:SKIP", result.stdout
+            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:ROLLBACK b14:SKIP queue:SKIP executor:SKIP", result.stdout
         )
         # The rollback is verified with the same patience as a fresh start.
         self.assertIn("COM2_DEPLOY_HEALTH_P01_ROLLBACK_ATTEMPTS=1", result.stdout)
@@ -1006,7 +1053,7 @@ class B14ScenarioTest(DeployHarness):
         result = self._run_apply()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn(
-            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:PASS queue:SKIP", result.stdout
+            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:PASS queue:SKIP executor:SKIP", result.stdout
         )
         self.assertTrue(self.b14.is_symlink(), self.b14.readlink())
         self.assertEqual(
@@ -1147,7 +1194,7 @@ class MeshQueueScenarioTest(DeployHarness):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("COM2_DEPLOY_SERVICES=queue", result.stdout)
         self.assertIn(
-            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:PASS", result.stdout
+            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:PASS executor:SKIP", result.stdout
         )
         self.assertEqual(
             (self.queue / "service.py").read_text(encoding="utf-8"), "# queue 2\n"
@@ -1167,6 +1214,17 @@ class MeshQueueScenarioTest(DeployHarness):
         self.assertTrue((self.queue / "src").is_dir())
         self.assertEqual(self._started("padiem-mesh-queue.service"), 1, self._calls())
 
+    def test_the_queue_leg_installs_the_backup_kit(self) -> None:
+        # #6898's kit is preview-only by default; the deploy is the one place that
+        # passes --apply, so a queue release leaves the host's backup script and
+        # its timer matching the code it just staged.
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        backups = [line for line in self._calls() if line.startswith("install mesh-queue-backup")]
+        self.assertEqual(backups, ["install mesh-queue-backup --apply"], self._calls())
+        # The kit installs units only: nothing in it starts or enables them.
+        self.assertNotIn("enable", " ".join(self._calls()).replace("is-enabled", ""))
+
     def test_a_slow_queue_start_is_not_reported_as_a_broken_release(self) -> None:
         self._fail_health_once("queue")
         result = self._run_apply()
@@ -1184,6 +1242,189 @@ class MeshQueueScenarioTest(DeployHarness):
         )
         self.assertEqual(self._started("padiem-mesh-queue.service"), 2, self._calls())
 
+
+
+CHANGES["queue_imported_chat"] = (
+    # #6794's pairing store: changed for the queue, mapped only to chat.
+    "apps/padiem-chat/app/pc_device_pairing_store.py",
+    "PAIRING_TAG = 2\n",
+)
+
+
+class QueueImportedModuleScenarioTest(DeployHarness):
+    """A Chat module the queue imports is queue code (#6892).
+
+    stage_queue_code links apps/padiem-chat/app, packages/padiem-ai-core and
+    packages/padiem-control-plane into the queue root, so the queue process runs
+    those modules. #6794 changed them and two days of deploys still printed
+    queue:SKIP, because service_for_path names only chat for those paths.
+    """
+
+    scenario = "queue_imported_chat"
+    base_extra = {
+        # The chain production has: a queue module imports the Chat routes
+        # module, which imports the pairing store #6794 changed.
+        "apps/padiem-mesh-queue/queue_chat_link.py": (
+            "from app.oracle_mesh_read_return_routes import PAIRING_TAG\n"
+        ),
+        "apps/padiem-chat/app/oracle_mesh_read_return_routes.py": (
+            "from app.pc_device_pairing_store import PAIRING_TAG\n"
+        ),
+        "apps/padiem-chat/app/pc_device_pairing_store.py": "PAIRING_TAG = 1\n",
+        # Nothing imports this one, so a change here is chat's alone.
+        "apps/padiem-chat/app/unrelated_chat_module.py": "UNRELATED = 1\n",
+    }
+
+    def _dry_run(self, sha: str) -> str:
+        result = self._run_main(
+            sha, "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
+        )
+        output = result.stdout + result.stderr
+        self.assertEqual(result.returncode, 0, output)
+        return output
+
+    def test_the_store_6794_changed_selects_the_queue(self) -> None:
+        output = self._dry_run(self.second)
+        self.assertIn(
+            "COM2_DEPLOY_QUEUE_IMPORTED=apps/padiem-chat/app/pc_device_pairing_store.py",
+            output,
+        )
+        self.assertIn(
+            "COM2_DEPLOY_DECISION_QUEUE=REDEPLOY reason_files=1 reason=CHANGED_PATHS",
+            output,
+        )
+        self.assertIn(
+            "COM2_DEPLOY_SUMMARY=chat:WOULD_DEPLOY p01:SKIP b14:SKIP queue:WOULD_DEPLOY executor:SKIP",
+            output,
+        )
+
+    def test_a_chat_module_the_queue_never_imports_keeps_the_queue_skipped(self) -> None:
+        # On top of the deployed commit, so the push is a fast-forward.
+        self._git(str(self.ops), "checkout", "-q", self.second)
+        self._write("apps/padiem-chat/app/unrelated_chat_module.py", "UNRELATED = 2\n")
+        sha = self._commit("unrelated chat change")
+        self._git(str(self.ops), "push", "-q", "origin", "HEAD:main")
+        # Back to the deployed commit: the run compares origin/main to HEAD.
+        self._git(str(self.ops), "checkout", "-q", self.second)
+        output = self._dry_run(sha)
+        self.assertIn("COM2_DEPLOY_DECISION_CHAT=REDEPLOY", output)
+        self.assertIn("COM2_DEPLOY_DECISION_QUEUE=SKIP reason_files=0", output)
+
+
+CHANGES["executor"] = (
+    "apps/korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py",
+    "import padiem_ai_core\n\n# executor 2\n",
+)
+
+
+class OracleMeshExecutorScenarioTest(DeployHarness):
+    """The executor is a deployment target (#6892 follow-up).
+
+    It ran from /opt/padiem/oracle-mesh/kagent-src, a hand copy of 11-01 that no
+    deploy updated, so a kagent fix merged to main never reached the process that
+    does the PC reads. The tree is a commit directory with the unit's PYTHONPATH
+    path pointing at it now, and a change to kagent or to a module kagent imports
+    selects it whether or not service_for_path names that path.
+    """
+
+    scenario = "executor"
+    base_extra = {
+        "apps/korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py": (
+            "import padiem_ai_core\n\n# executor\n"
+        ),
+    }
+
+    def setUp(self) -> None:
+        super().setUp()
+        # The tree the unit runs today: a hand copy, with the one module this
+        # repository does not track.
+        self.oracle = self.tmp / "oracle-mesh"
+        self.live = self.oracle / "kagent-src"
+        (self.live / "padiem_agent").mkdir(parents=True)
+        (self.live / "padiem_agent" / "marker.py").write_text(
+            "AGENT = 1\n", encoding="utf-8"
+        )
+
+    def _dry(self) -> str:
+        result = self._run_main(
+            self.second, "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
+        )
+        output = result.stdout + result.stderr
+        self.assertEqual(result.returncode, 0, output)
+        return output
+
+    def _release(self) -> Path:
+        return self.oracle / "src" / self.second
+
+    def test_a_kagent_change_selects_the_executor(self) -> None:
+        output = self._dry()
+        self.assertIn(
+            "COM2_DEPLOY_DECISION_EXECUTOR=REDEPLOY reason_files=1 reason=CHANGED_PATHS",
+            output,
+        )
+        self.assertIn(
+            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:WOULD_DEPLOY b14:SKIP queue:SKIP "
+            "executor:WOULD_DEPLOY",
+            output,
+        )
+
+    def test_a_module_the_executor_imports_selects_it_too(self) -> None:
+        self._git(str(self.ops), "checkout", "-q", self.second)
+        # The fixture executor imports the Core package itself, so the one
+        # module both this repository and the import list carry is its __init__.
+        self._write("packages/padiem-ai-core/padiem_ai_core/__init__.py", "# core 2\n")
+        sha = self._commit("core package the executor imports")
+        self._git(str(self.ops), "push", "-q", "origin", "HEAD:main")
+        self._git(str(self.ops), "checkout", "-q", self.second)
+        result = self._run_main(
+            sha, "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
+        )
+        output = result.stdout + result.stderr
+        self.assertEqual(result.returncode, 0, output)
+        # The executor imports the Core package, so its modules are its code:
+        # the path maps to chat and p01, and the import list selects it too.
+        self.assertIn(
+            "COM2_DEPLOY_EXECUTOR_IMPORTED=packages/padiem-ai-core/padiem_ai_core/__init__.py",
+            output,
+        )
+        self.assertIn("COM2_DEPLOY_DECISION_EXECUTOR=REDEPLOY", output)
+
+    def test_the_executor_runs_from_a_commit_directory(self) -> None:
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        release = self._release()
+        self.assertTrue((release / "kagent" / "local_agent_oracle_mesh_executor.py").is_file())
+        self.assertTrue((release / "padiem_ai_core" / "__init__.py").is_file())
+        # The module this repository does not track is carried forward.
+        self.assertTrue((release / "padiem_agent" / "marker.py").is_file())
+        self.assertEqual(self.live.resolve(), release.resolve())
+        # The hand copy is displaced, never deleted: it is the rollback copy.
+        displaced = list(self.oracle.glob("kagent-src.displaced-*"))
+        self.assertEqual(len(displaced), 1, displaced)
+        self.assertTrue((displaced[0] / "padiem_agent" / "marker.py").is_file())
+        self.assertEqual(
+            self._started("padiem-oracle-mesh-executor.service"), 1, self._calls()
+        )
+        self.assertIn("COM2_DEPLOY_EXECUTOR_TRACEBACKS=0", result.stdout)
+        self.assertIn(
+            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:PASS",
+            result.stdout,
+        )
+
+    def test_a_traceback_after_start_puts_the_previous_copy_back(self) -> None:
+        (self.fakes / "journal_traceback").write_text("1\n", encoding="utf-8")
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("COM2_DEPLOY_EXECUTOR_TRACEBACKS=1", result.stdout)
+        self.assertIn("executor:ROLLBACK", result.stdout)
+        self.assertIn("COM2_DEPLOY_HEALTH_EXECUTOR_ROLLBACK_ATTEMPTS=", result.stdout)
+        self.assertEqual(
+            self.live.resolve(),
+            list(self.oracle.glob("kagent-src.displaced-*"))[0].resolve(),
+        )
 
 
 class MigrationServiceUserGitTest(DeployHarness):
