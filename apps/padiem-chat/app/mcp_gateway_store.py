@@ -33,6 +33,13 @@ _CLIENT = re.compile(r"mcpc_[0-9a-f]{32}\Z")
 _APPROVAL = re.compile(r"mcpa_[0-9a-f]{32}\Z")
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 _JOB_RECEIPT = re.compile(r"dsp_[0-9a-f]{32}\Z")
+#: The tools allowed to bind an audit row to a common dispatch receipt. The
+#: continuation check (``owns_job_receipt``) reads five of these names in SQL;
+#: the file tools continue a running read the same way the shell tools do.
+_JOB_RECEIPT_TOOLS = frozenset({
+    "pc_shell", "pc_shell_start", "pc_shell_read", "pc_shell_stop",
+    "pc_list", "pc_read",
+})
 _TOKEN_COLUMNS = "id,name,device_id,created_at,last_used_at,revoked_at,kind,expires_at"
 
 
@@ -410,7 +417,7 @@ class D1McpGatewayStore:
             raise McpGatewayStoreError("Invalid audit metadata")
         if job_receipt_id is not None and (
                 not isinstance(job_receipt_id, str) or not _JOB_RECEIPT.fullmatch(job_receipt_id)
-                or tool_name not in {"pc_shell", "pc_shell_start", "pc_shell_read", "pc_shell_stop"}):
+                or tool_name not in _JOB_RECEIPT_TOOLS):
             raise McpGatewayStoreError("Invalid job receipt")
         receipt_sha256 = (hashlib.sha256(job_receipt_id.encode("ascii")).hexdigest()
                           if job_receipt_id is not None else None)

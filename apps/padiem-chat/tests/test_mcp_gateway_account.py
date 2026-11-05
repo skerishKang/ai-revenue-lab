@@ -16,7 +16,9 @@ from app.mcp_gateway_account_routes import (
     authenticate_mcp_request, mcp_approval_post, mcp_approvals_get,
     mcp_token_delete, mcp_tokens_get, mcp_tokens_post,
 )
-from app.mcp_gateway_store import D1McpGatewayStore, MCP_APPROVAL_TTL_SECONDS
+from app.mcp_gateway_store import (
+    D1McpGatewayStore, MCP_APPROVAL_TTL_SECONDS, McpGatewayStoreError,
+)
 from test_5222_account_model_selection import BASE, build_app, client_for, seed_db, session
 
 
@@ -232,6 +234,26 @@ async def test_common_job_receipt_is_hashed_and_bound_to_token_account_and_pc():
     assert not await store.owns_job_receipt(identity=identity, job_id="oracle_mesh_cmd_" + "a" * 32)
     assert await store.revoke_token(user_id=owner, token_id=token["id"], now=NOW)
     assert not await store.owns_job_receipt(identity=identity, job_id=job_id)
+
+
+@pytest.mark.asyncio
+async def test_file_tools_may_record_the_receipt_a_continuation_reads():
+    db, owner, _, store = setup()
+    _, identity = await issued(store, owner)
+    cases = (("pc_read", {"path": "a.txt"}, "dsp_" + "b" * 32),
+             ("pc_list", {"path": "."}, "dsp_" + "c" * 32))
+    for tool_name, arguments, job_id in cases:
+        await store.audit(identity=identity, tool_name=tool_name, arguments=arguments,
+                          status="running", job_receipt_id=job_id, now=NOW)
+        assert await store.owns_job_receipt(identity=identity, job_id=job_id)
+    # Every other tool still cannot write a receipt: its row would be refused
+    # and the dispatch cancelled after the PC had already run the work.
+    for tool_name, arguments in (("pc_write", {"path": "a.txt", "content": "x"}),
+                                 ("pc_browser_open", {"url": "https://example.test/"})):
+        with pytest.raises(McpGatewayStoreError):
+            await store.audit(identity=identity, tool_name=tool_name, arguments=arguments,
+                              status="running", job_receipt_id="dsp_" + "d" * 32, now=NOW)
+    assert await store.owns_job_receipt(identity=identity, job_id="dsp_" + "d" * 32) is False
 
 
 @pytest.mark.asyncio

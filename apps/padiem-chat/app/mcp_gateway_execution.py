@@ -6,6 +6,7 @@ model-driven Engine tool; its owner/device/grant checks still run here first.
 from collections.abc import Mapping
 import base64
 import json
+import re
 import uuid
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
@@ -57,6 +58,10 @@ _PC_FILE_PATH_TOOLS = frozenset({
 })
 #: Asking for the approved folders themselves, not for one folder's contents.
 _PC_ROOT_LIST_PATHS = frozenset({"", "/"})
+#: The read-only file tools whose running answer may be continued by job id.
+_PC_FILE_JOB_TOOLS = frozenset({"pc_list", "pc_read"})
+#: The only spelling a continuation may name: one common dispatch id.
+_JOB_RECEIPT_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 
 
 def _pc_absolute_path(value) -> str | None:
@@ -448,6 +453,15 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         "unavailable",
     }:
         result = _invalid_engine_answer()
+    # 2026-11-04: a file tool may answer "running" and hand the dispatch back,
+    # and the same tool then continues it with that job id. The continuation is
+    # authorized by the audit receipt, so the receipt is attached here and
+    # nowhere else: a browser or write answer carrying one would have its audit
+    # refused and the run cancelled (_record_outcome's guard).
+    receipt = result.get("job_id")
+    if (tool_name in _PC_FILE_JOB_TOOLS and result["status"] in {"running", "queued"}
+            and isinstance(receipt, str) and _JOB_RECEIPT_ID.fullmatch(receipt)):
+        result["_job_receipt"] = receipt
     if browser:
         result["conversation_id"] = conversation_id
         if result["status"] == "confirmation_required":
