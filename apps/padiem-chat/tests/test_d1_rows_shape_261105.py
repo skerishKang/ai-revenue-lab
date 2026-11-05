@@ -21,7 +21,9 @@ from test_5568_document_convert_routes import (
     build_client,
     open_job,
     pdf_bytes,
+    run_item,
     upload,
+    wait_item_terminal,
 )
 
 from app.b66_template_source import D1B66TemplateSourceMetadataStore
@@ -119,9 +121,9 @@ async def test_owner_can_list_run_and_delete_a_ten_page_conversion_in_both_host_
         items = detail.json()["items"]
         assert [item["name"] for item in items] == ["Business35_Master_Proposal_10p.pdf"], items
 
-        run = await client.post(f"/api/document-conversions/items/{items[0]['id']}/run")
-        assert run.status_code == 200, run.text
-        converted = run.json()["item"]
+        run = await run_item(client, items[0]["id"])
+        assert run.status_code == 202, run.text
+        converted = await wait_item_terminal(client, items[0]["id"])
         assert converted["page_count"] == 10
         assert len(converted["report"]["pages"]) == 10
         assert len(converted["report"]["agreement"]) == 10

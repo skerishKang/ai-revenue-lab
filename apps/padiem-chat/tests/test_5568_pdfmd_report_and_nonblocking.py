@@ -25,7 +25,9 @@ from test_5568_document_convert_routes import (
     build_client,
     open_job,
     pdf_bytes,
+    run_item,
     upload,
+    wait_item_terminal,
 )
 
 
@@ -161,9 +163,8 @@ async def test_slow_conversion_does_not_block_twenty_http_requests(monkeypatch):
 
         with pytest.MonkeyPatch.context() as patch:
             patch.setattr(document_convert_routes, "convert_pdf_to_markdown", slow_convert)
-            task = asyncio.create_task(
-                client.post(f"/api/document-conversions/items/{item_id}/run")
-            )
+            run = await run_item(client, item_id)
+            assert run.status_code == 202, run.text
             try:
                 assert await asyncio.to_thread(entered.wait, 3)
                 replies = await asyncio.wait_for(
@@ -178,7 +179,7 @@ async def test_slow_conversion_does_not_block_twenty_http_requests(monkeypatch):
                 assert all(reply.status_code == 200 for reply in replies)
             finally:
                 release.set()
-            run = await task
-        assert run.status_code == 200, run.text
+            ran = await wait_item_terminal(client, item_id)
+        assert ran["status"] == "reviewed", ran
     finally:
         await client.aclose()

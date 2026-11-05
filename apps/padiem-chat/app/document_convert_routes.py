@@ -24,6 +24,7 @@ import inspect
 import io
 import json
 import zipfile
+from datetime import datetime, timezone
 from urllib.parse import quote, unquote
 
 from starlette.requests import Request
@@ -74,6 +75,19 @@ MAX_JOB_BODY_BYTES = 4_096
 # Pause new work while COM2 becomes the canonical document runtime (#5710).
 # Do not disable existing owner-scoped reads, downloads, reviews or deletes.
 PDFMD_NEW_WORK_DISABLED = True
+
+#: A working row older than this deadline is a conversion this process can no
+#: longer see (host restart, crash) — the next run request may take it over.
+#: A live run answers far sooner than this, and the in-process guard below
+#: keeps a still-running conversion from ever being duplicated here.
+WORKING_RESTART_AFTER_SECONDS = 600
+
+#: Background conversions started by convert_item_run, kept referenced so a
+#: running task cannot be garbage-collected mid-conversion.
+_BACKGROUND_RUNS: set[asyncio.Task] = set()
+
+#: Items whose background conversion this process is driving right now.
+_RUNNING_ITEMS: set[str] = set()
 _NO_STORE = {"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"}
 
 
@@ -420,8 +434,84 @@ async def _resolve_item(request: Request):
     return uid, ledger, bucket, item, job, None
 
 
+def _working_stale(item) -> bool:
+    """True when a working row is older than the restart deadline.
+
+    A live run writes the working row only once, so a row stuck working past
+    the deadline is one this process can no longer see (host restart, crash);
+    the next run request may start over. A run this process is driving is
+    already excluded by the in-process guard before this check.
+    """
+
+    try:
+        updated = datetime.fromisoformat(str(item.updated_at).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return True
+    return (
+        datetime.now(timezone.utc) - updated
+    ).total_seconds() >= WORKING_RESTART_AFTER_SECONDS
+
+
+async def _run_conversion(ledger, bucket, uid: str, item, job) -> None:
+    """Convert, store, record failure and roll the job up — the request-free
+    half of convert_item_run. Every state change is the same ledger path the
+    synchronous route used."""
+
+    try:
+        try:
+            obj = await _r2_call(bucket, "get", item.original_key)
+            payload = await _object_bytes(obj)
+            result = await asyncio.to_thread(
+                convert_pdf_to_markdown,
+                name=item.name, media_type=PDF_MEDIA_TYPE, payload=payload,
+                mode=job.mode, notices=_PRODUCT_NOTICES,
+            )
+        except DocumentNormalizationError as exc:
+            await _fail(ledger, uid, item, job, exc.code, 422)
+            return
+        except Exception:
+            await _fail(ledger, uid, item, job, "convert_failed", 503)
+            return
+        key = markdown_object_key(uid, job.id, item.id)
+        try:
+            await _r2_call(
+                bucket, "put", key, result.markdown.encode("utf-8"),
+                httpMetadata={"contentType": "text/markdown"},
+            )
+            await ledger.complete_item(
+                uid,
+                item.id,
+                status=JOB_STATUS_REVIEWED,
+                page_count=result.page_count,
+                character_count=len(result.markdown),
+                markdown_key=key,
+                report=result.public_dict(),
+                error_code=None,
+            )
+            await ledger.refresh_job(uid, job.id)
+        except Exception:
+            try:
+                await _r2_call(bucket, "delete", key)
+            except Exception:
+                pass
+            await _fail(ledger, uid, item, job, "convert_store_unavailable", 503)
+    except Exception:
+        # _fail swallows its own ledger errors; an escape here would leave the
+        # row working until the restart deadline takes it over, so the net
+        # still records the failure instead of leaking the exception.
+        await _fail(ledger, uid, item, job, "convert_failed", 503)
+
+
 async def convert_item_run(request: Request):
-    """Convert one queued item with the adopted engine and store its Markdown."""
+    """Start one item's conversion and answer 202 with the working item.
+
+    The conversion runs in a background task: the front edge answers a long
+    request with 504 while the origin is still converting, so the request that
+    starts the work must not be the one that waits for it. The browser follows
+    the item detail until the result is stored. An item this process is already
+    converting — or one whose working row is recent — is answered with its
+    current state instead of a second conversion.
+    """
 
     if _new_work_disabled(request):
         return _paused()
@@ -431,50 +521,32 @@ async def convert_item_run(request: Request):
     uid, ledger, bucket, item, job, _error = resolved
     if item.markdown_key is not None:
         return JSONResponse({"item": item.public_dict(), "job": job.public_dict()})
+    if item.id in _RUNNING_ITEMS or (
+        item.status == JOB_STATUS_WORKING and not _working_stale(item)
+    ):
+        return JSONResponse(
+            {"item": item.public_dict(), "job": job.public_dict()},
+            status_code=202,
+        )
     try:
         working = await ledger.set_item_status(uid, item.id, JOB_STATUS_WORKING)
     except Exception:
         return _unavailable()
     if working is None:
         return _unavailable()
-    try:
-        obj = await _r2_call(bucket, "get", item.original_key)
-        payload = await _object_bytes(obj)
-        result = await asyncio.to_thread(
-            convert_pdf_to_markdown,
-            name=item.name, media_type=PDF_MEDIA_TYPE, payload=payload,
-            mode=job.mode, notices=_PRODUCT_NOTICES,
-        )
-    except DocumentNormalizationError as exc:
-        return await _fail(ledger, uid, item, job, exc.code, 422)
-    except Exception:
-        return await _fail(ledger, uid, item, job, "convert_failed", 503)
-    key = markdown_object_key(uid, job.id, item.id)
-    try:
-        await _r2_call(
-            bucket, "put", key, result.markdown.encode("utf-8"),
-            httpMetadata={"contentType": "text/markdown"},
-        )
-        done = await ledger.complete_item(
-            uid,
-            item.id,
-            status=JOB_STATUS_REVIEWED,
-            page_count=result.page_count,
-            character_count=len(result.markdown),
-            markdown_key=key,
-            report=result.public_dict(),
-            error_code=None,
-        )
-        refreshed = await ledger.refresh_job(uid, job.id)
-    except Exception:
-        try:
-            await _r2_call(bucket, "delete", key)
-        except Exception:
-            pass
-        return await _fail(ledger, uid, item, job, "convert_store_unavailable", 503)
-    if done is None:
-        return _unavailable()
-    return JSONResponse({"item": done.public_dict(), "job": (refreshed or job).public_dict()})
+    _RUNNING_ITEMS.add(item.id)
+    task = asyncio.create_task(_run_conversion(ledger, bucket, uid, working, job))
+
+    def _release_run(done: asyncio.Task) -> None:
+        _RUNNING_ITEMS.discard(item.id)
+        _BACKGROUND_RUNS.discard(done)
+
+    task.add_done_callback(_release_run)
+    _BACKGROUND_RUNS.add(task)
+    return JSONResponse(
+        {"item": working.public_dict(), "job": job.public_dict()},
+        status_code=202,
+    )
 
 
 async def _fail(ledger, uid: str, item, job, code: str, status: int) -> JSONResponse:

@@ -7,8 +7,9 @@ submenu drives; the two Claw cards route to the existing Claw workspace and
 its own chip handler. No second engine, no new routes.
 
 The flow-linked cards must say so in their buttons ("Claw에서 …") — they are
-not direct-run claims. The PDF → Markdown card must carry the truthful paused
-note (COM2 migration; existing history/download still work).
+not direct-run claims. The PDF → Markdown card describes the open conversion
+surface; its only pause sentence is the one the panel shows when the server
+actually answers that new work is blocked (#5710 gate).
 
 Static assertions pin the markup/CSS contracts; the Node harness executes the
 REAL util-menu.js against the same fake-DOM host the #5608/#5785 suites use
@@ -66,17 +67,27 @@ def test_flow_linked_cards_do_not_claim_direct_run() -> None:
     assert _card_button_label("meeting") == "열기"
 
 
-def test_pdfmd_card_carries_the_truthful_paused_note() -> None:
+def test_pdfmd_card_describes_open_conversion() -> None:
+    """#5710's static paused note is gone: new work is enabled, and the only
+    pause sentence left is the one the panel itself shows when the server
+    actually answers that new work is blocked."""
     grid = _grid()
-    pdfmd = grid[grid.index("util-tool-paused") : grid.index('data-util-tool="claw-quote"')]
+    pdfmd = grid[grid.index('data-util-tool="meeting"') : grid.index('data-util-tool="claw-quote"')]
     assert "PDF → Markdown" in pdfmd
-    assert "util-tool-note" in pdfmd
-    assert "일시 중단" in pdfmd
-    assert "새 업로드는 잠시 멈춤" in pdfmd
-    # The note stays truthful without naming the deployment: the internal host
-    # name is not screen copy, and the move it referred to finished 2026-10-31.
-    assert "COM2" not in pdfmd
+    assert "util-tool-paused" not in pdfmd
+    assert "util-tool-note" not in pdfmd
+    assert "일시 중단" not in pdfmd
+    assert "새 업로드는 잠시 멈춤" not in pdfmd
+    assert "PDF·ZIP을 Markdown으로 변환·비교·다운로드" in pdfmd
     assert _card_button_label("pdfmd") == "이력 열기"
+
+
+def test_pdfmd_tab_tagline_matches_the_card_copy() -> None:
+    html = _html()
+    tagline = 'data-tagline="PDF·ZIP을 Markdown으로 변환·비교·다운로드"'
+    assert tagline in html
+    assert 'id="utilTagline">PDF·ZIP을 Markdown으로 변환·비교·다운로드</p>' in html
+    assert "기존 작업 이력·결과 다운로드" not in html
 
 
 # ── behaviour contract in util-menu.js ──────────────────────────────────────

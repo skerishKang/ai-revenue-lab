@@ -7,6 +7,7 @@ rather than in Production.
 
 from __future__ import annotations
 
+import asyncio
 import io
 import json
 import sqlite3
@@ -207,6 +208,25 @@ async def upload(client, job_id, payload, *, name, media_type=PDF_MEDIA):
         },
     )
 
+
+async def run_item(client, item_id):
+    """Start one conversion; the route answers 202 with the working item."""
+    return await client.post(f"/api/document-conversions/items/{item_id}/run")
+
+
+async def wait_item_terminal(client, item_id, timeout=10.0):
+    """Follow one item's detail until its background conversion settles."""
+
+    deadline = asyncio.get_event_loop().time() + timeout
+    while True:
+        response = await client.get(f"/api/document-conversions/items/{item_id}")
+        assert response.status_code == 200, response.text
+        item = response.json()["item"]
+        if item["status"] in ("reviewed", "done", "failed"):
+            return item
+        assert asyncio.get_event_loop().time() < deadline, "conversion did not settle"
+        await asyncio.sleep(0.05)
+
 @pytest.mark.asyncio
 async def test_upload_convert_review_download_journey():
     r2 = MemoryR2()
@@ -222,9 +242,10 @@ async def test_upload_convert_review_download_journey():
         assert item["page_count"] == 0
         assert item["report"] is None
 
-        run = await client.post(f"/api/document-conversions/items/{item['id']}/run")
-        assert run.status_code == 200, run.text
-        ran = run.json()["item"]
+        run = await run_item(client, item["id"])
+        assert run.status_code == 202, run.text
+        assert run.json()["item"]["status"] == "working"
+        ran = await wait_item_terminal(client, item["id"])
         assert ran["status"] == "reviewed"
         assert ran["has_markdown"] is True
         # The conversion is the pypdf site: it back-fills the page count.
@@ -285,9 +306,11 @@ async def test_multi_pdf_zip_uploads_one_item_per_pdf_member():
         assert created.json()["rejected"] == [{"name": "notes.txt", "code": "pdf_magic_mismatch"}]
 
         for item in items:
-            run = await client.post(f"/api/document-conversions/items/{item['id']}/run")
-            assert run.status_code == 200, run.text
-            # The conversion back-fills the real page count.
+            run = await run_item(client, item["id"])
+            assert run.status_code == 202, run.text
+        for item in items:
+            # The conversions back-fill the real page counts.
+            assert (await wait_item_terminal(client, item["id"]))["status"] == "reviewed"
         pages = {
             item["name"]: (await client.get(f"/api/document-conversions/items/{item['id']}")).json()["item"]["page_count"]
             for item in items
@@ -317,10 +340,11 @@ async def test_scan_only_pdf_is_marked_unreadable_not_guessed():
         # upload; it surfaces through the conversion report instead.
         assert item["report"] is None
 
-        run = await client.post(f"/api/document-conversions/items/{item['id']}/run")
-        assert run.status_code == 200, run.text
-        assert run.json()["item"]["status"] == "reviewed"
-        assert run.json()["item"]["report"]["warnings"] == ["unreadable_page:1"]
+        run = await run_item(client, item["id"])
+        assert run.status_code == 202, run.text
+        ran = await wait_item_terminal(client, item["id"])
+        assert ran["status"] == "reviewed"
+        assert ran["report"]["warnings"] == ["unreadable_page:1"]
 
         markdown = await client.get(f"/api/document-conversions/items/{item['id']}/markdown")
         assert "추출 가능한 텍스트 레이어가 없습니다" in markdown.text
@@ -341,12 +365,16 @@ async def test_corrupt_member_fails_only_that_item_and_keeps_the_others():
         items = {item["name"]: item["id"] for item in created.json()["items"]}
         assert set(items) == {"good.pdf", "bad.pdf"}
 
-        good_run = await client.post(f"/api/document-conversions/items/{items['good.pdf']}/run")
-        assert good_run.status_code == 200
-        bad_run = await client.post(f"/api/document-conversions/items/{items['bad.pdf']}/run")
-        assert bad_run.status_code == 422
-        assert bad_run.json()["item"]["status"] == "failed"
-        assert bad_run.json()["item"]["error_code"]
+        good_run = await run_item(client, items["good.pdf"])
+        assert good_run.status_code == 202
+        bad_run = await run_item(client, items["bad.pdf"])
+        assert bad_run.status_code == 202
+        assert bad_run.json()["item"]["status"] == "working"
+        good_item = await wait_item_terminal(client, items["good.pdf"])
+        bad_item = await wait_item_terminal(client, items["bad.pdf"])
+        assert good_item["status"] == "reviewed"
+        assert bad_item["status"] == "failed"
+        assert bad_item["error_code"]
 
         detail = await client.get(f"/api/document-conversions/{job_id}")
         by_name = {item["name"]: item for item in detail.json()["items"]}
@@ -370,9 +398,10 @@ async def test_verify_mode_reports_per_page_agreement_not_accuracy():
         job_id = await open_job(client, mode="verify")
         created = await upload(client, job_id, pdf_bytes(texts=["Document 7 page 1"]), name="검증.pdf")
         item_id = created.json()["items"][0]["id"]
-        run = await client.post(f"/api/document-conversions/items/{item_id}/run")
-        assert run.status_code == 200, run.text
-        report = run.json()["item"]["report"]
+        run = await run_item(client, item_id)
+        assert run.status_code == 202, run.text
+        ran = await wait_item_terminal(client, item_id)
+        report = ran["report"]
         assert len(report["pages"]) == 1
         assert report["agreement"][0]["character_coverage"] == 1.0
         assert report["agreement"][0]["digit_preservation"] == 1.0
@@ -402,7 +431,7 @@ async def test_another_owner_cannot_reach_the_job_or_its_bytes():
         job_id = await open_job(owner_client)
         created = await upload(owner_client, job_id, pdf_bytes(texts=["Document 8 page 1"]), name="비공개.pdf")
         item_id = created.json()["items"][0]["id"]
-        await owner_client.post(f"/api/document-conversions/items/{item_id}/run")
+        await run_item(owner_client, item_id)
 
         for method, url in (
             ("get", f"/api/document-conversions/{job_id}"),
@@ -458,7 +487,8 @@ async def test_work_ledger_survives_navigating_away():
         first = await open_job(client)
         created = await upload(client, first, pdf_bytes(texts=["Document 9 page 1"]), name="이전.pdf")
         item_id = created.json()["items"][0]["id"]
-        await client.post(f"/api/document-conversions/items/{item_id}/run")
+        assert (await run_item(client, item_id)).status_code == 202
+        await wait_item_terminal(client, item_id)
 
         listed = await client.get("/api/document-conversions")
         assert listed.status_code == 200
@@ -469,7 +499,7 @@ async def test_work_ledger_survives_navigating_away():
 
         reopened = await client.get(f"/api/document-conversions/{first}")
         assert reopened.json()["items"][0]["has_markdown"] is True
-        again = await client.post(f"/api/document-conversions/items/{item_id}/run")
+        again = await run_item(client, item_id)
         assert again.status_code == 200
         assert again.json()["item"]["status"] == "reviewed"
     finally:
@@ -580,10 +610,12 @@ async def test_upload_is_pypdf_free_and_conversion_still_parses():
 
         with pytest.MonkeyPatch.context() as patch:
             patch.setattr(pypdf, "PdfReader", _Recording)
-            run = await client.post(f"/api/document-conversions/items/{item['id']}/run")
-        assert run.status_code == 200, run.text
+            run = await run_item(client, item["id"])
+            assert run.status_code == 202, run.text
+            # The conversion runs in a background task: keep the recording
+            # reader active until the item settles.
+            ran = await wait_item_terminal(client, item["id"])
         assert conversions, "conversion must still run pypdf"
-        ran = run.json()["item"]
         assert ran["page_count"] == 1
         assert ran["has_markdown"] is True
         markdown = await client.get(f"/api/document-conversions/items/{item['id']}/markdown")
@@ -604,8 +636,8 @@ async def test_5710_paused_migration_blocks_new_writes_but_preserves_existing_fi
         created = await upload(client, job_id, pdf_bytes(texts=["Existing PDF"]), name="existing.pdf")
         assert created.status_code == 201
         item_id = created.json()["items"][0]["id"]
-        finished = await client.post(f"/api/document-conversions/items/{item_id}/run")
-        assert finished.status_code == 200
+        assert (await run_item(client, item_id)).status_code == 202
+        await wait_item_terminal(client, item_id)
         baseline_keys = set(r2.objects)
 
         monkeypatch.setattr(document_convert_routes, "PDFMD_NEW_WORK_DISABLED", True)

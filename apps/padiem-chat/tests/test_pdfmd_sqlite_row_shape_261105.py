@@ -34,7 +34,9 @@ from test_5568_document_convert_routes import (
     build_client,
     open_job,
     pdf_bytes,
+    run_item,
     upload,
+    wait_item_terminal,
 )
 
 
@@ -116,9 +118,11 @@ async def test_screen_paths_list_convert_and_archive_on_the_sqlite_facade(monkey
         assert [record["id"] for record in detail.json()["items"]] == item_ids
 
         for item_id in item_ids:
-            ran = await client.post(f"/api/document-conversions/items/{item_id}/run")
-            assert ran.status_code == 200, ran.text
-            assert ran.json()["item"]["status"] == "reviewed"
+            ran = await run_item(client, item_id)
+            assert ran.status_code == 202, ran.text
+            assert ran.json()["item"]["status"] == "working"
+        for item_id in item_ids:
+            assert (await wait_item_terminal(client, item_id))["status"] == "reviewed"
 
         rolled_up = await client.get(f"/api/document-conversions/{job_id}")
         assert rolled_up.json()["job"]["status"] == "reviewed"
