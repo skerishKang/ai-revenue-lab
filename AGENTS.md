@@ -20,6 +20,7 @@ Canonical operating documents:
 - `docs/operations/GITHUB_REPORT_HANDOFF_POLICY.md`
 - `docs/operations/MULTI_MACHINE_LOCAL_WORKTREE_POLICY.md`
 - `docs/operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
+- `docs/operations/COM2_SERVER_ONLY_POLICY_20261106.md` — COM2 hosts production services only; lanes work from COM1 and deploy over SSH from the WSL-side ops checkout (LF). No lane workloads, whole-tree backups or archive extraction on COM2.
 - `docs/operations/CLOUDFLARE_CREDENTIAL_OPERATIONS.md` — read before Cloudflare credential diagnosis; distinguish local environment/API credentials, stored OAuth and workflow Secrets before retrying or declaring access unavailable.
 
 For any model/provider question, start at [the shared model documentation index](docs/models/README.md); do not rely on a product README's copied model list as live registry/route evidence. The index points separately to OWNER policy, B14 source, product route declarations and Production verification. It does not grant model-change authority.
