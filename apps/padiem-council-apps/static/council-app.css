@@ -120,6 +120,27 @@ body.council-body {
   /* 높이는 이 파일의 44px 하한 블록 한 곳에서만 선언한다(#6075). 여기에 값을 다시
      적으면 두 곳이 서로 다른 값을 갖는 순간이 생기므로 선언 자체를 두지 않는다. */
 }
+/* AI 등급(2026-11-05): 계정이 쓸 수 있는 PADIEM 등급 선택. 국가 선택과 같은 생김새이며
+   높이는 아래 44px 하한 블록이 정한다. 로그아웃이면 [hidden]. */
+.council-tier {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--council-muted);
+  white-space: nowrap;
+}
+.council-tier select {
+  font: inherit;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 14px;
+  border: 1px solid var(--council-border);
+  background: var(--council-surface, transparent);
+  color: inherit;
+}
+.council-tier select:disabled { opacity: 1; cursor: default; }
+.council-tier-status { font-size: 12px; color: var(--council-muted); }
 
 #councilMain {
   max-width: 960px;
@@ -767,7 +788,8 @@ body.council-body {
 .council-photo-controls button,
 .council-photo-pos-select,
 .council-result h3,
-.council-country select {
+.council-country select,
+.council-tier select {
   min-height: 44px;
 }
 /* 390px 실측에서 빠진 두 개: 언어 선택 32px, 활동 기록 체크박스 13px. */
@@ -830,7 +852,8 @@ body.council-body {
   .council-brand-name,
   .council-badge { white-space: nowrap; }
   .council-badge-action,
-  .council-country { white-space: nowrap; }
+  .council-country,
+  .council-tier { white-space: nowrap; }
   #councilMain { padding: 16px 14px 40px; }
   .council-title { font-size: 21px; margin-bottom: 12px; }
   .council-menu { grid-template-columns: 1fr; gap: 12px; }
@@ -1489,6 +1512,13 @@ html[data-style="light"] { --pa-sun-op: .82; }
   border-color: color-mix(in srgb, var(--topbar-text) 34%, transparent);
   background: color-mix(in srgb, var(--tone-1) 30%, transparent);
 }
+.council-tier,
+.council-tier-status { color: color-mix(in srgb, var(--topbar-text) 80%, transparent); }
+.council-tier select {
+  color: var(--topbar-text);
+  border-color: color-mix(in srgb, var(--topbar-text) 34%, transparent);
+  background: color-mix(in srgb, var(--tone-1) 30%, transparent);
+}
 .council-badge-action:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
 
 /* ── 축 전환 통제 ──────────────────────────────────────────────────────── */
@@ -2028,6 +2058,7 @@ html.council-in-workspace .council-topbar {
 }
 html.council-in-workspace .council-badge,
 html.council-in-workspace .council-badge-action,
+html.council-in-workspace .council-tier select,
 html.council-in-workspace .council-theme-trigger {
   color: var(--text);
   border-color: var(--line);

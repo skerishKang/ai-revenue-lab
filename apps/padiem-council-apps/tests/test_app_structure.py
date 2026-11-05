@@ -38,6 +38,9 @@ ALLOWED_ENDPOINTS = {
     "/api/pc/",
     "/api/auth/status",
     "/api/auth/password/login",
+    # 2026-11-05: the account's stored AI tier (#5222) — the same row Chat
+    # reads and writes; this app sends the restored tier instead of "free".
+    "/api/account/model-selection",
 }
 
 FORBIDDEN_MARKERS = (

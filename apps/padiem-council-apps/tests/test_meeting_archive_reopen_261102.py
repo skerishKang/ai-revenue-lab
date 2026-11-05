@@ -52,7 +52,7 @@ def test_a_card_opens_the_tool_itself_not_just_the_card_frame() -> None:
 
 def test_the_lane_reuses_the_existing_contract_only() -> None:
     assert set(OBS["endpoints"]) <= {
-        "GET /api/auth/status",
+        "GET /api/auth/status", "GET /api/account/model-selection",
         "GET /api/pc/pairings",
         "POST /api/chat/stream",
         "GET /api/projects",

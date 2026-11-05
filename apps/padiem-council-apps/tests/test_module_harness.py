@@ -7,9 +7,13 @@ own the assertions.
 """
 
 from __future__ import annotations
+
+from datetime import date
 import base64
 
 from _council_module import run
+
+TODAY = date.today().isoformat()
 
 SPEECH_PROMPT_TAIL = (
     "분량: 보통(600자 내외)\n"
@@ -105,12 +109,15 @@ def test_saving_stores_each_draft_through_the_project_file_channel() -> None:
     # + the meeting record. The roster rewrite replaces its previous file, so
     # exactly one "SNS 사진 구성.json" survives.
     assert observed["savedCount"] == 6
+    # 2026-11-05: the SNS draft is named like the speech — SNS_행사명_날짜 — so a
+    # second save no longer collides with "<플랫폼> 게시글.txt" every time.
+    sns_name = f"SNS_주민 정원 사업 설명회_{TODAY}.txt"
     assert observed["savedNames"] == [
         "축사_제78주년 광복절 기념식_2026-08-15.txt",
         "현장1.png",
         "현장2.jpg",
         "SNS 사진 구성.json",
-        "인스타그램 게시글.txt",
+        sns_name,
         "10월 주민 민원 회의.txt",
     ]
     # #A3: each writing carries the kind its screen saved it as, so each list
@@ -120,7 +127,7 @@ def test_saving_stores_each_draft_through_the_project_file_channel() -> None:
         "현장1.png": "",
         "현장2.jpg": "",
         "SNS 사진 구성.json": "",
-        "인스타그램 게시글.txt": "sns",
+        sns_name: "sns",
         "10월 주민 민원 회의.txt": "meeting",
     }
 
@@ -174,6 +181,7 @@ def test_the_tools_touch_only_the_existing_endpoints() -> None:
     observed = run("generate")
     exact = {
         "GET /api/auth/status",
+        "GET /api/account/model-selection",
         "POST /api/chat/stream",
         "GET /api/projects",
         "GET /api/projects/p1/files",

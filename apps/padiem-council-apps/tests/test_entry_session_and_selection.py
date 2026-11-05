@@ -126,7 +126,8 @@ def test_one_card_click_opens_exactly_one_tool_and_the_next_closes_it() -> None:
     # Opening a tool also reads the PC pairing once (the calm "connect your
     # computer" guidance); selecting never writes anything.
     assert set(run("selection")["endpoints"]) <= {
-        "GET /api/auth/status", "GET /api/projects", "GET /api/projects/p1/files",
+        "GET /api/auth/status", "GET /api/account/model-selection",
+        "GET /api/projects", "GET /api/projects/p1/files",
         "GET /api/pc/pairings",
     }
 
@@ -175,6 +176,8 @@ def test_the_login_uses_the_existing_credential_contract_and_nothing_more() -> N
     assert set(observation["endpoints"]) == {
         "GET /api/auth/status",
         "POST /api/auth/password/login",
+        # 2026-11-05: the signed-in account's stored AI tier is read once (#5222).
+        "GET /api/account/model-selection",
         "GET /api/projects",
         "GET /api/projects/p1/files",
         "POST /api/chat/stream",

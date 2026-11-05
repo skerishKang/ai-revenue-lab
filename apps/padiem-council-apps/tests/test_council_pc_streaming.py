@@ -140,6 +140,16 @@ def test_stored_sns_drafts_are_listed_and_reopen() -> None:
     assert obs["snsNotice"].startswith("블로그 게시글.txt를 열었습니다.")
 
 
+def test_the_pc_save_document_copies_stay_off_the_lists() -> None:
+    # 2026-11-05: "내 PC에 저장" uploads a 한글/워드 copy with the same doc_kind so
+    # the Chat library can group it. It is not a second manuscript: the lists
+    # show the text drafts only, never the .hwpx/.docx beside them.
+    obs = run("parity")
+    assert obs["speechLabels"] == ["지난 축사.txt (8자)"], obs["speechLabels"]
+    assert not any(label.endswith(".hwpx (0자)") for label in obs["speechLabels"])
+    assert obs["snsLabels"] == ["블로그 게시글.txt (10자)"], obs["snsLabels"]
+
+
 def test_the_pc_bridge_reuses_the_existing_pc_routes_only() -> None:
     source = JS
     for route in ('"/api/pc/pairings"', '"/api/pc/reference"', '"/api/pc/file?dispatch_id="'):
