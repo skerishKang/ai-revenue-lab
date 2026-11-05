@@ -656,6 +656,58 @@ def test_separate_runs_do_not_reuse_the_previous_turn_ceiling():
 
 
 
+def test_a_job_id_continuation_admits_the_scope_its_first_call_pinned() -> None:
+    """A continuation names only a dispatch, and its scope is the plan shape.
+
+    The external lane is addressed by tool id, so its claim comes from the plan
+    shape rather than from a model plan. The continuation must send that same
+    claim before its first signed call: with no claim, Chat compares "absent"
+    with the scope the first call pinned and refuses the context read
+    (pc_scope_required), so no continuation ever reached a PC result.
+    """
+    job_id = "dsp_" + "a" * 32
+    pc = _FakePcEndpoint()
+    # The dispatch the first call started is already finished on the PC.
+    pc.rows[job_id] = {
+        "run_id": LISTING_ONLY_RUN, "kind": "read", "op": "read",
+        "output": READ_OUTPUT, "content_bytes": len(READ_OUTPUT.encode("utf-8")),
+    }
+    model = _ScriptedModel([])  # an external request never asks the model
+    transport = _transport_for(model=model, pc=pc)
+    request = _bridge_request()
+    # The external lane ships this exact empty evidence list; the client lane
+    # refuses a gateway request without it.
+    request["pc_action_context"] = []
+    request["pc_gateway"] = {
+        "version": 1, "source": "mcp", "token_id": "mcptok_" + "b" * 24,
+        "request_id": "mcp_" + "c" * 32, "tool_id": "claw.pc.read_file",
+        "arguments": {"job_id": job_id},
+    }
+    client = PadiemAiEngineClient(
+        transport=transport, app_id=CHAT_APP_ID, caller_id=CHAT_APP_ID,
+        credential="x" * 64,
+    )
+    with patch.object(asyncio, "sleep", _instant_sleep):
+        result = asyncio.run(client.orchestrate(request))
+
+    assert transport.statuses == [200], transport.response_bodies
+    # (a) The claim is admitted before the first signed leg, and it rides every
+    # leg: nothing reached Chat with an empty scope.
+    assert pc.modes[0] == "context", pc.modes
+    assert pc.claims, pc.legs
+    assert pc.claims[0]["requested"] == pc.claims[0]["admitted"] == "files"
+    assert pc.claims[0]["source"] == "declared"
+    # (b) Key for key this is the claim the first call pinned (op order too).
+    assert len({json.dumps(claim, sort_keys=True) for claim in pc.claims}) == 1
+    # (c) The continuation stages nothing and reports the stored read result.
+    assert "dispatch" not in pc.modes, pc.modes
+    assert [leg["dispatch_id"] for leg in pc.legs
+            if leg["mode"] == "command_status"] == [job_id]
+    assert result["execution"]["metadata"]["status"] == "completed", result
+    assert READ_OUTPUT in result["execution"]["answer"]
+    assert model.prompts == []
+
+
 def _orchestrate_declared(transport, declared_plan, *, selected_device=True):
     request = _bridge_request()
     request["declared_plan"] = declared_plan

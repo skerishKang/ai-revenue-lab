@@ -244,6 +244,16 @@ def pc_file_arguments_acceptable(tool_id: str, arguments: dict[str, Any]) -> boo
     carries no path rule and no size rule — the command transport that already
     exists bounds what one step can carry, and that bound is not a product limit.
     """
+    if set(arguments) == {"job_id"}:
+        # A continuation names the dispatch it already started and nothing else.
+        # The Engine handler re-checks that id and the ownership row; nothing
+        # here authorizes a path or stages a second dispatch.
+        job_id = arguments.get("job_id")
+        return (
+            tool_id in _PC_FILE_RESUME_TOOL_IDS
+            and isinstance(job_id, str)
+            and _PC_FILE_TOOL_RESUME_START.fullmatch(job_id) is not None
+        )
     if not _pc_path_text(arguments.get("path")):
         return False
     if tool_id == PC_MOVE_FILE_TOOL_ID and not _pc_path_text(arguments.get("destination")):
@@ -437,13 +447,34 @@ def pc_drives_tool_spec() -> ToolSpec:
         output_contract={"type":"object"}, timeout_seconds=None)
 
 
+#: 2026-11-06: a read-only file tool answers either a folder path or the job id
+#: of the dispatch it already started. Neither is a required field here because
+#: the closed schema language has no "one of": the handler already refuses any
+#: argument set other than exactly ``{"path"}`` or exactly ``{"job_id"}``
+#: (``_pc_files_resume_dispatch`` and ``_validate_pc_step_arguments``).
+_PC_FILE_TOOL_RESUME_START = re.compile(r"dsp_[0-9a-f]{32}\Z")
+#: Only the read-only file tools answer later; a mutation must report its own
+#: verification, so it never continues by job id.
+_PC_FILE_RESUME_TOOL_IDS = frozenset({PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID})
+
+def _pc_file_tool_input_schema() -> dict:
+    return {
+        "type": "object",
+        "properties": {
+            "path": {"type": "string", "minLength": 1, "maxLength": 2048},
+            "job_id": {"type": "string", "minLength": 1, "maxLength": 64,
+                       "pattern": _PC_FILE_TOOL_RESUME_START.pattern},
+        },
+        "additionalProperties": False,
+    }
+
+
 def pc_list_files_tool_spec() -> ToolSpec:
     return ToolSpec(id=PC_LIST_FILES_TOOL_ID, title="List files in the verified PC folder",
         description="List files inside the approved folder on the verified owner PC",
         owner="core", side_effect=ToolSideEffect.READ, approval_policy=ApprovalPolicy.NOT_REQUIRED,
         auth_scope=(PC_LIST_FILES_SCOPE,),
-        input_schema={"type":"object","properties":{"path":{"type":"string","minLength":1,"maxLength":2048}},
-                      "required":["path"],"additionalProperties":False},
+        input_schema=_pc_file_tool_input_schema(),
         output_contract={"type":"object"}, timeout_seconds=None)
 
 
@@ -452,8 +483,7 @@ def pc_read_file_tool_spec() -> ToolSpec:
         description="Read one file inside the approved folder on the verified owner PC",
         owner="core", side_effect=ToolSideEffect.READ, approval_policy=ApprovalPolicy.NOT_REQUIRED,
         auth_scope=(PC_READ_FILE_SCOPE,),
-        input_schema={"type":"object","properties":{"path":{"type":"string","minLength":1,"maxLength":2048}},
-                      "required":["path"],"additionalProperties":False},
+        input_schema=_pc_file_tool_input_schema(),
         output_contract={"type":"object"}, timeout_seconds=None)
 
 
@@ -981,8 +1011,27 @@ class StructuredPCQueryStepDriver:
                 tool_id in PC_FILE_TOOL_IDS or tool_id in PC_FILE_WRITE_TOOL_IDS
             ) and isinstance(arguments, Mapping):
                 if not set(arguments) <= (
-                    PC_FILE_TOOL_ARGUMENT_KEYS[tool_id] | {"intent"}
+                    # `job_id` is the continuation shape, and it is only ever
+                    # accepted alone (the branch below); this table stays the
+                    # exact path/bytes shape the remote wrappers compare against.
+                    PC_FILE_TOOL_ARGUMENT_KEYS[tool_id] | {"intent", "job_id"}
                 ):
+                    raise PCQueryStepError(
+                        "model tool selection is invalid or unauthorized",
+                        detail="tool_selection_invalid",
+                    )
+                if set(arguments) == {"job_id"}:
+                    # A continuation names the dispatch it already started. The
+                    # Engine handler checks that id against the ownership row
+                    # and stages nothing, so no path is supplied or invented.
+                    if pc_file_arguments_acceptable(
+                        tool_id, {"job_id": arguments.get("job_id")},
+                    ):
+                        with pc_core_stage("invocation", tool_id):
+                            invocation = ToolInvocation(
+                                tool_id=tool_id, arguments={"job_id": arguments["job_id"]},
+                            )
+                        return AgentStepDecision.use_tool(invocation)
                     raise PCQueryStepError(
                         "model tool selection is invalid or unauthorized",
                         detail="tool_selection_invalid",
