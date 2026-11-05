@@ -276,6 +276,23 @@ function storyMemorySeedGroundingBlocksV1(blocks, workKey){
   __gTermIndex=null; __gTermIndexWorkKey=null;
   return !!__gBlocks;
 }
+/* 261106 · 근거 블록 로더 교체. 기존 로더는 매니페스트 0번부터 24장을 순차로
+   읽어 근거 어휘가 항상 창세기 1~24장이었고 느린 회선에서 질문 전 15~25초를
+   만들었다. 이제 질문 전 정적 요청은 현재 장+직전 장 2개로 한정한다(≤3).
+   더 넓은 범위는 검색 색인/프리페치된 블록을 재사용해 채운다(정적 요청 없음). */
+function manifestUnitByOrdinal(manifest, ordinal){
+  if(!manifest || !Array.isArray(manifest.units)) return null;
+  for(var i=0;i<manifest.units.length;i++){
+    var u=manifest.units[i];
+    if(u && Number(u.unit_ordinal)===Number(ordinal)) return u;
+  }
+  return null;
+}
+function manifestUnitKeyForBibleLocator(locator){
+  var m=String(locator||'').match(/^bible:[^:]+:([A-Za-z0-9]+):(\d+)/);
+  if(!m) return null;
+  return 'book:'+m[1].toUpperCase()+':chapter:'+String(Number(m[2])).padStart(3,'0');
+}
 async function loadInCeilingBlocksForWork(workKey){
   if(typeof window==='undefined' || !window.storyMemoryStatic) return null;
   try{
@@ -287,19 +304,42 @@ async function loadInCeilingBlocksForWork(workKey){
     var manifestRes=await staticAdapter.getManifest(workKey);
     var manifest=(manifestRes&&manifestRes.manifest)?manifestRes.manifest:manifestRes;
     if(!manifest || !Array.isArray(manifest.units)) return null;
+    var rc=null;
+    try{ rc=(typeof window.storyMemoryGetReaderContextV1==='function')?window.storyMemoryGetReaderContextV1():null; }catch(_){}
     var progress=null;
     try{ progress=(typeof window.storyMemoryGetReadingProgressV1==='function')?window.storyMemoryGetReadingProgressV1(workKey):null; }catch(_){}
-    var ceiling=progress?progress.knowledge_ceiling_locator:null;
-    var cmp=window.storyMemoryCompareLocatorV1||null;
-    var units=manifest.units;
+    var currentOrdinal=Number(rc && rc.current_unit_ordinal);
+    if(!Number.isFinite(currentOrdinal) || currentOrdinal<1){
+      currentOrdinal=0;
+      var rcUnitKey=rc ? String(rc.current_unit_key||'') : '';
+      if(rcUnitKey){
+        for(var mi=0;mi<manifest.units.length;mi++){
+          var mu=manifest.units[mi];
+          if(mu && String(mu.unit_key||'')===rcUnitKey){ currentOrdinal=Number(mu.unit_ordinal)||0; break; }
+        }
+      }
+      if(!currentOrdinal){
+        var anchor=(progress && progress.knowledge_ceiling_locator) || (rc && rc.visible_locator_end) || null;
+        var wantedUnit=manifestUnitKeyForBibleLocator(anchor);
+        if(wantedUnit){
+          for(var wi=0;wi<manifest.units.length;wi++){
+            var wu=manifest.units[wi];
+            if(wu && String(wu.unit_key||'')===wantedUnit){ currentOrdinal=Number(wu.unit_ordinal)||0; break; }
+          }
+        }
+      }
+      if(!currentOrdinal) currentOrdinal=1;
+    }
+    var ordinals=[currentOrdinal];
+    if(currentOrdinal-1>=1) ordinals.push(currentOrdinal-1);
     var blocks=[];
-    var reachedCeiling=false;
-    var limit=Math.min(units.length, 24);
-    for(var j=0;j<limit;j++){
-      var u=units[j];
+    for(var oi=0;oi<ordinals.length;oi++){
+      var u=manifestUnitByOrdinal(manifest, ordinals[oi]);
+      if(!u) continue;
       var bundle=null;
       try{ bundle=await staticAdapter.loadUnit({workKey:workKey, unitOrdinal:u.unit_ordinal}); }catch(_){ continue; }
       var unit=(bundle&&bundle.unit)?bundle.unit:null;
+      if(!unit) continue;
       var passages=(unit&&Array.isArray(unit.passages))?unit.passages:[];
       for(var k=0;k<passages.length;k++){
         var row=passages[k];
@@ -326,9 +366,7 @@ async function loadInCeilingBlocksForWork(workKey){
           unit: unit,
           manifestUnit: u
         });
-        if(ceiling && cmp){ try{ if(cmp(loc, ceiling)>=0) reachedCeiling=true; }catch(_){ if(loc===ceiling) reachedCeiling=true; } }
       }
-      if(reachedCeiling) break;
     }
     return blocks.length?blocks:null;
   }catch(e){ return null; }
@@ -368,52 +406,110 @@ function storyMemoryInCeilingTermIndexV1(workKey){
   __gTermIndex=idx; __gTermIndexWorkKey=String(workKey);
   return idx;
 }
-function storyMemoryProjectPriorGroundingV1(query, workKey){
-  var blocks=storyMemoryGroundingBlocksV1(workKey);
-  if(!blocks || !blocks.length) return [];
+/* 261106 · 근거 범위 산출. 이야기책+처음 읽어요+전개 질문만 "연 장 집합"으로
+   좁히고, 그 외(찾아보며 읽기·배경 질문·비이야기책)는 전체 참고다. 정적 요청
+   없이 검색 색인/프리페치된 블록(window.storyMemoryBibleSearchV1)을 재사용해
+   범위를 채운다. 천장 필터는 연 장 집합 경로에만 적용한다. */
+function openedUnitSet(workKey){
+  var units=[];
+  try{ units=(window.storyMemoryGetOpenedUnitsV1?window.storyMemoryGetOpenedUnitsV1(workKey):[])||[]; }catch(_){ units=[]; }
+  var set=new Set();
+  for(var i=0;i<units.length;i++) set.add(String(units[i]));
+  return set;
+}
+function unitKeyOfBlockLocator(locator){
+  try{
+    var p=String(locator||'').split(':');
+    if(!p[0]) return null;
+    return p[0]==='bible'? p.slice(0,4).join(':') : p.slice(0,3).join(':');
+  }catch(_){ return null; }
+}
+function loadedSearchIndexBlocks(){
+  try{
+    var api=window.storyMemoryBibleSearchV1;
+    if(api && typeof api.loadedIndexBlocks==='function') return api.loadedIndexBlocks();
+  }catch(_){}
+  return null;
+}
+function keywordCandidatesFrom(query, workKey, blocks){
   var kw=(window.__smStaticKeywordSearchV1&&typeof window.__smStaticKeywordSearchV1.staticKeywordSearch==='function')?window.__smStaticKeywordSearchV1.staticKeywordSearch:null;
-  if(typeof kw!=='function') return [];
+  if(typeof kw!=='function' || !blocks || !blocks.length) return [];
   var res=null;
   try{ res=kw(String(query||''), {blocks:blocks, workKey:workKey, limit:RECALL_LIMIT}); }catch(_){ return []; }
-  if(!res || res.status!=='FOUND' || !Array.isArray(res.results) || !res.results.length) return [];
+  if(!res || res.status!=='FOUND' || !Array.isArray(res.results)) return [];
+  return res.results.map(function(r){
+    return { source_kind:'keyword', canonical_locator:r.canonical_locator, work_key:r.work_key, unit_key:r.unit_key, language:r.language, snippet:r.snippet, text:r.ko||r.en||r.snippet, score:r.score };
+  });
+}
+function storyMemoryProjectPriorGroundingV1(query, workKey, opts){
+  opts=opts||{};
+  var blocks=storyMemoryGroundingBlocksV1(workKey)||[];
+  var candidates=keywordCandidatesFrom(query, workKey, blocks);
+  var classification=opts.classification||null;
+  var readingMode=opts.readingMode||null;
+  var scopedToOpened=classification && classification.plot && readingMode==='first_read';
+  var indexBlocks=loadedSearchIndexBlocks();
+  if(indexBlocks && indexBlocks.length){
+    var scopeBlocks=indexBlocks;
+    if(scopedToOpened){
+      var opened=openedUnitSet(workKey);
+      var filtered=[];
+      for(var fi=0;fi<indexBlocks.length;fi++){
+        var floc=String(indexBlocks[fi].canonical_locator||'');
+        var funit=unitKeyOfBlockLocator(floc);
+        if(funit && opened.has(funit)) filtered.push(indexBlocks[fi]);
+      }
+      scopeBlocks=filtered;
+    }
+    var scoped=keywordCandidatesFrom(query, workKey, scopeBlocks);
+    var seenLoc={};
+    for(var si=0;si<candidates.length;si++) seenLoc[String(candidates[si].canonical_locator||'')]=true;
+    for(var pi=0;pi<scoped.length && candidates.length<RECALL_LIMIT;pi++){
+      var sp=scoped[pi];
+      var sloc=String(sp.canonical_locator||'');
+      if(!sloc || seenLoc[sloc]) continue;
+      seenLoc[sloc]=true;
+      candidates.push(sp);
+    }
+  }
+  if(!candidates.length) return [];
+  var projected=candidates;
+  var ceilingFiltered=scopedToOpened;
   var projMod=window.__smRetrievalCeilingProjectionV1;
-  if(!projMod || typeof projMod.buildProjection!=='function') return [];
   var progress=null;
   try{ progress=(typeof window.storyMemoryGetReadingProgressV1==='function')?window.storyMemoryGetReadingProgressV1(workKey):null; }catch(_){}
   var ceiling=progress?progress.knowledge_ceiling_locator:null;
   var furthest=progress?progress.furthest_read_locator:ceiling;
-  if(!ceiling) return [];
-  var candidates=res.results.map(function(r){
-    return { source_kind:'keyword', canonical_locator:r.canonical_locator, work_key:r.work_key, unit_key:r.unit_key, language:r.language, snippet:r.snippet, text:r.ko||r.en||r.snippet, score:r.score };
-  });
-  var projection=null;
-  try{
-    projection=projMod.buildProjection({
-      query:String(query||''),
-      workKey:workKey,
-      knowledgeCeilingLocator:ceiling,
-      furthestReadLocator:furthest,
-      keywordCandidates:candidates,
-      annotationCandidates:[],
-      limit:PROJECTION_LIMIT,
-      maxBytes:7000
-    });
-  }catch(_){ return []; }
-  var projected=(projection && Array.isArray(projection.candidates))?projection.candidates:[];
+  if(ceilingFiltered && projMod && typeof projMod.buildProjection==='function' && ceiling){
+    try{
+      var projection=projMod.buildProjection({
+        query:String(query||''),
+        workKey:workKey,
+        knowledgeCeilingLocator:ceiling,
+        furthestReadLocator:furthest,
+        keywordCandidates:candidates,
+        annotationCandidates:[],
+        limit:PROJECTION_LIMIT,
+        maxBytes:7000
+      });
+      projected=(projection && Array.isArray(projection.candidates))?projection.candidates:[];
+    }catch(_){ return []; }
+  } else {
+    projected=candidates.slice(0, PROJECTION_LIMIT);
+  }
+  if(!projected.length) return [];
   /* B61 #1804 bounded correction 1 · eligible-evidence neighborhood. A lexical
      hit is often not self-sufficient (e.g. GEN 1:4 presumes the creation of
      light in 1:3 and the day/night naming in 1:5). Project the deterministic
      ±1 same-unit in-ceiling neighborhood around each accepted candidate so the
      model-visible refs carry the minimum local context that supports the
-     answer. Constraints: every added ref <= knowledge ceiling, no future ref,
-     bounded count (<=2 per candidate), deterministic, corpus-ordered. */
+     answer. Constraints: no future ref on the opened path, bounded count
+     (<=2 per candidate), deterministic, corpus-ordered. */
   var NEIGHBORHOOD_RADIUS=1;
   var MAX_NEIGHBORHOOD_PER_CANDIDATE=NEIGHBORHOOD_RADIUS*2;
   var cmp2=window.storyMemoryCompareLocatorV1||null;
-  var blocks=storyMemoryGroundingBlocksV1(workKey);
   var byLoc={};
-  var orderedSameUnit=[];
-  if(blocks && blocks.length){
+  if(blocks.length){
     for(var bi=0;bi<blocks.length;bi++){
       var bl=blocks[bi];
       var bloc=String(bl.canonical_locator||'');
@@ -423,16 +519,15 @@ function storyMemoryProjectPriorGroundingV1(query, workKey){
   }
   var expanded=[];
   var seen={};
-  var addedNeighbors=0;
   for(var ci=0;ci<projected.length;ci++){
     var cand=projected[ci];
     var cloc=String(cand.canonical_locator||'');
     var baseBlock=cloc?byLoc[cloc]:null;
     var unitKey=baseBlock?(baseBlock.unit_key||cand.unit_key||null):(cand.unit_key||null);
     var neighbors=[];
-    if(baseBlock && unitKey && blocks && blocks.length){
+    if(baseBlock && unitKey && blocks.length){
       var idx=-1;
-      for(var si=0;si<blocks.length;si++){ if(String(blocks[si].canonical_locator||'')===cloc){ idx=si; break; } }
+      for(var sj=0;sj<blocks.length;sj++){ if(String(blocks[sj].canonical_locator||'')===cloc){ idx=sj; break; } }
       if(idx>=0){
         for(var d=-NEIGHBORHOOD_RADIUS;d<=NEIGHBORHOOD_RADIUS;d++){
           if(d===0) continue;
@@ -444,9 +539,7 @@ function storyMemoryProjectPriorGroundingV1(query, workKey){
           if(nb.canonical_locator===cloc) continue;
           var nloc=String(nb.canonical_locator||'');
           if(!nloc) continue;
-          var future=false;
-          if(ceiling && cmp2){ try{ future=cmp2(nloc, ceiling)>0; }catch(_){ future=false; } }
-          if(future) continue;
+          if(ceilingFiltered && ceiling && cmp2){ try{ if(cmp2(nloc, ceiling)>0) continue; }catch(_){} }
           neighbors.push({ canonical_locator:nloc, unit_key:nb.unit_key||null, work_key:nb.work_key||workKey, language:'ko', snippet:String(nb.ko||nb.text||''), text:String(nb.ko||nb.en||''), sequence:(nb.sequence!=null?Number(nb.sequence):null), score:(cand.score!=null?cand.score-0.001:null) });
         }
       }
@@ -466,7 +559,6 @@ function storyMemoryProjectPriorGroundingV1(query, workKey){
       var ek=String(e.canonical_locator||'');
       if(!ek || seen[ek]) continue;
       seen[ek]=true;
-      if(li>0) addedNeighbors++;
       expanded.push(e);
     }
   }

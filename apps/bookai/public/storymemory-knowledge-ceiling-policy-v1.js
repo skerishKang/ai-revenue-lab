@@ -52,8 +52,20 @@ function isWorkRelatedQuery(query, workKey){
   return new RegExp(wk.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).test(q);
 }
 /* B61 #1656 · extended future-probe preflight (Layer C): catches story-advance
-   phrasings (전개/이어서/어떻게 돼/그 후/끝나) that previously reached the model. */
-var FUTURE_PROBE_RE=/(?:다음|그\s*다음|다음\s*장|다음\s*권|앞으로|미래|결말|스포|결국|어떻게\s*돼|어떻게\s*전개|이야기\s*전개|이어서|그\s*후|이후|나중에|끝나|죽어|죽지|죽는지|사망|살아\s*남|무슨\s*일\s*생기|어떤\s*일\s*생기|무슨\s*내용|전개를\s*알려|전개가\s*어떻|what\s*happens?|the\s*end|ending)/i;
+   phrasings (전개/이어서/어떻게 돼/그 후/끝나) that previously reached the model.
+   261106 · '다시 만나나요' 계열 재등장 물음도 전개 질문으로 잡는다 (대표 결정
+   2026-11-05: 전개 질문은 거절 대신 접힘 응답으로 바뀐다). */
+var FUTURE_PROBE_RE=/(?:다음|그\s*다음|다음\s*장|다음\s*권|앞으로|미래|결말|스포|결국|어떻게\s*돼|어떻게\s*전개|이야기\s*전개|이어서|그\s*후|이후|나중에|끝나|죽어|죽지|죽는지|사망|살아\s*남|무슨\s*일\s*생기|어떤\s*일\s*생기|무슨\s*내용|전개를\s*알려|전개가\s*어떻|다시\s*만나|만나나요|만날까|다시\s*돌아|돌아오나요|다시\s*오나요|what\s*happens?|the\s*end|ending)/i;
+/* 261106 · 배경 질문(누구/어디/무슨 뜻/언제/왜 불리는지)은 어느 읽기 방식에서도
+   전체 참고다. 결정론 판정(LLM 없음). */
+var BACKGROUND_RE=/(?:누구|누가|어디|무슨\s*뜻|무슨\s*말|무슨\s*의미|무엇|어떤\s*사람|어떤\s*곳|어떤\s*책|언제|왜|어떻게\s*불리|불리는|유래|의미|뜻|배경|정의)/;
+/* 261106 · 일반 대화는 질문 자체(인사·기분·독서법)로 판정한다. 작품 고유어
+   (인물·책이름)가 있으면 일반 대화로 보지 않는다. */
+var GENERAL_CHAT_RE=/(?:안녕|하이|hello|좋은\s*아침|좋은\s*저녁|좋은\s*밤|반갑|기분|우울|힘들|스트레스|짜증|외로|불안|행복|설레|심심|지쳤|피곤|어떻게\s*읽|읽는\s*방법|읽기\s*설정|읽기\s*방법|몇\s*장부터|글꼴|글자\s*크기|줄\s*간격|테마|감사|고마워|수고)/i;
+/* 261106 · 이야기책(서사) 목록 — 코드 상수. 창세기~에스더, 복음서 4권, 사도행전.
+   이 목록 밖(시가서·예언서·서신, 비-성경 작품)은 처음 읽어요 모드에서도
+   전개 질문이 전체 참고다. */
+var NARRATIVE_BIBLE_BOOKS=['GEN','EXO','LEV','NUM','DEU','JOS','JDG','RUT','1SA','2SA','1KI','2KI','1CH','2CH','EZR','NEH','EST','MAT','MRK','LUK','JHN','ACT'];
 /* B61 #1724 · deterministic relevance gate. The pre-#1724 contract gated ONLY
    on evidence COUNT (current-page passages always exist), so work-related
    queries with no permitted grounding still reached ALLOW → model invoked →
@@ -103,10 +115,37 @@ function queryContentRelated(query, workKey){
     return false;
   }catch(_){ return false; }
 }
-function coReaderDecision(query, targetLocator, workKey, evidence){
+/* 261106 · 결정론 질문 분류 (LLM 없음). 일반 대화(인사·기분·독서법) → 배경
+   질문 → 전개 질문 → 작품 내용 순. 작품 고유어(인물·책이름)가 있으면 일반
+   대화 패턴보다 작품 질문이 이긴다. */
+function classifyCompanionQuestion(query, context){
+  context=context||{};
   var q=String(query||'').toLowerCase();
-  var isConsent = /스포.*괜찮|괜찮.*스포|스포일러.*허용|미리.*알려/.test(q);
-  var isYesNo = /yes\/no|예.*아니오|아니오.*예|맞나|아니냐|일까/.test(q) && /미래|앞으로|다음/.test(q);
+  var workKey=context.workKey||null;
+  var entityHit=isWorkRelatedQuery(q, workKey);
+  /* B61 #1804 · content-overlap: 천장 어휘와 겹치면 작품 내용 신호로 본다
+     (일상어 오버랩은 더 이상 거절로 이어지지 않고 분류 힌트로만 쓴다). */
+  var contentHit=false;
+  try{ contentHit=queryContentRelated(q, workKey); }catch(_){ contentHit=false; }
+  var general=GENERAL_CHAT_RE.test(q) && !WORK_ENTITY_RE.test(q) && !WORK_BOOK_RE.test(q);
+  var plot=FUTURE_PROBE_RE.test(q);
+  var background=!plot && BACKGROUND_RE.test(q);
+  var cls = general?'general' : plot?'plot' : background?'background' : (entityHit||contentHit)?'work' : 'work';
+  return {
+    question_class:cls,
+    general:cls==='general',
+    plot:cls==='plot',
+    background:cls==='background',
+    work_related:entityHit||contentHit,
+    reading_mode:context.readingMode||null
+  };
+}
+function isNarrativeBibleBook(bookId){
+  return NARRATIVE_BIBLE_BOOKS.indexOf(String(bookId||'').toUpperCase())>=0;
+}
+function coReaderDecision(query, targetLocator, workKey, evidence, context){
+  var q=String(query||'').toLowerCase();
+  context=context||{};
   var ceil=getCeiling(workKey);
   if(!ceil){
     return {decision:'BLOCK', reason:'BOUNDARY_UNAVAILABLE', copy:REFUSAL_COPY_NOBOUNDARY, ceiling:null, requested: targetLocator||null, query:q};
@@ -114,45 +153,77 @@ function coReaderDecision(query, targetLocator, workKey, evidence){
   if(targetLocator && !isLocatorCompatibleWithWork(targetLocator, workKey)) {
     return {decision:'BLOCK', reason:'HARD_NO_FUTURE', copy:REFUSAL_COPY_FUTURE, ceiling:ceil, requested: targetLocator||null, query:q};
   }
-  var isFutureLoc = targetLocator ? isFuture(targetLocator, workKey) : false;
-  var needsFuture = isFutureLoc || FUTURE_PROBE_RE.test(q);
-  if(needsFuture){
-    var copy=isConsent? REFUSAL_COPY_CONSENT : (isYesNo? REFUSAL_COPY_YESNO : REFUSAL_COPY_FUTURE);
-    return {decision:'BLOCK', reason:'HARD_NO_FUTURE', copy:copy, ceiling:ceil, requested: targetLocator||null, query:q};
+  var mode=(context.readingMode!==undefined && context.readingMode!==null)?context.readingMode:(R1.getReadingMode?R1.getReadingMode(workKey):null);
+  var classification=context.classification||classifyCompanionQuestion(query, {workKey:workKey, readingMode:mode, currentBookId:context.currentBookId});
+  /* 구형 경로(reading_mode 미지정): 기존 거절 정책을 그대로 유지한다. */
+  if(mode===null || mode===undefined){
+    var isConsent = /스포.*괜찮|괜찮.*스포|스포일러.*허용|미리.*알려/.test(q);
+    var isYesNo = /yes\/no|예.*아니오|아니오.*예|맞나|아니냐|일까/.test(q) && /미래|앞으로|다음/.test(q);
+    var isFutureLoc = targetLocator ? isFuture(targetLocator, workKey) : false;
+    var needsFuture = isFutureLoc || FUTURE_PROBE_RE.test(q);
+    if(needsFuture){
+      var copy=isConsent? REFUSAL_COPY_CONSENT : (isYesNo? REFUSAL_COPY_YESNO : REFUSAL_COPY_FUTURE);
+      return {decision:'BLOCK', reason:'HARD_NO_FUTURE', copy:copy, ceiling:ceil, requested: targetLocator||null, query:q};
+    }
+    var workRelatedLegacy=isWorkRelatedQuery(q, workKey) || queryContentRelated(q, workKey);
+    var hasEvidenceContentLegacy=Array.isArray(evidence);
+    var evidenceCountLegacy=hasEvidenceContentLegacy ? evidence.length : (Number.isFinite(Number(evidence)) ? Number(evidence) : null);
+    if(workRelatedLegacy && evidenceCountLegacy!==null && evidenceCountLegacy<=0){
+      return {decision:'BLOCK', reason:'NO_WITHIN_CEILING_EVIDENCE', copy:REFUSAL_COPY_NOEVIDENCE, ceiling:ceil, requested: targetLocator||null, query:q};
+    }
+    if(workRelatedLegacy && hasEvidenceContentLegacy){
+      var relevantLegacy=evidenceHasRelevantStem(q, evidence);
+      if(!relevantLegacy){
+        return {decision:'BLOCK', reason:'NO_RELEVANT_WITHIN_CEILING_EVIDENCE', copy:REFUSAL_COPY_NORELEVANT, ceiling:ceil, requested: targetLocator||null, query:q};
+      }
+    }
+    return {decision:'ALLOW', reason:'WITHIN_CEILING', ceiling:ceil, requested: targetLocator||null, query:q};
   }
-  var workRelated=isWorkRelatedQuery(q, workKey);
-  /* B61 #1804 · content-overlap classification: a query whose lexical stems
-     appear in the in-ceiling read-range corpus is work-content related even if
-     it is absent from the compact entity tables (e.g. 빛/어둠/태초 in GEN 1 at
-     ceiling GEN 1:10). Deterministic, topic-free, scoped to the trusted ceiling. */
-  workRelated = workRelated || queryContentRelated(q, workKey);
+  /* 261106 · 새 결정 경로: 일반 대화·배경 질문은 어느 모드에서도 전체 참고,
+     전개 질문만 읽기 방식을 따른다. 일상어 오버랩으로 질문을 거절하지 않는다
+     (evidenceHasRelevantStem 게이트는 새 경로에서 제거). */
+  if(classification.general){
+    return {decision:'ALLOW', reason:'GENERAL_CHAT', question_class:'general', ceiling:ceil, requested: targetLocator||null, query:q};
+  }
+  if(classification.plot){
+    if(mode==='browse'){
+      return {decision:'ALLOW', reason:'WITHIN_CEILING', question_class:'plot', ceiling:ceil, requested: targetLocator||null, query:q};
+    }
+    if(workKey==='bible-web'){
+      var bookId=String(context.currentBookId||'');
+      if(!isNarrativeBibleBook(bookId)){
+        /* 비이야기책(시가서·예언서·서신)은 처음 읽어요 모드에서도 전체 참고. */
+        return {decision:'ALLOW', reason:'WITHIN_CEILING', question_class:'plot', ceiling:ceil, requested: targetLocator||null, query:q};
+      }
+      /* 이야기책 + 처음 읽어요: 거절 대신 접힘 응답. */
+      return {decision:'ALLOW', reason:'WITHIN_CEILING', question_class:'plot', spoiler_fold:true, ceiling:ceil, requested: targetLocator||null, query:q};
+    }
+    return {decision:'BLOCK', reason:'HARD_NO_FUTURE', copy:REFUSAL_COPY_FUTURE, ceiling:ceil, requested: targetLocator||null, query:q};
+  }
+  if(classification.background){
+    return {decision:'ALLOW', reason:'BACKGROUND_QUESTION', question_class:'background', ceiling:ceil, requested: targetLocator||null, query:q};
+  }
   var hasEvidenceContent=Array.isArray(evidence);
   var evidenceCount=hasEvidenceContent ? evidence.length : (Number.isFinite(Number(evidence)) ? Number(evidence) : null);
-  if(workRelated && evidenceCount!==null && evidenceCount<=0){
+  if(classification.work_related && evidenceCount!==null && evidenceCount<=0){
     return {decision:'BLOCK', reason:'NO_WITHIN_CEILING_EVIDENCE', copy:REFUSAL_COPY_NOEVIDENCE, ceiling:ceil, requested: targetLocator||null, query:q};
   }
-  /* B61 #1724 · content-level relevance: work-related queries must be grounded
-     in permitted evidence text, not just accompanied by any in-ceiling count. */
-  if(workRelated && hasEvidenceContent){
-    var relevant=evidenceHasRelevantStem(q, evidence);
-    if(!relevant){
-      return {decision:'BLOCK', reason:'NO_RELEVANT_WITHIN_CEILING_EVIDENCE', copy:REFUSAL_COPY_NORELEVANT, ceiling:ceil, requested: targetLocator||null, query:q};
-    }
-  }
-  return {decision:'ALLOW', reason:'WITHIN_CEILING', ceiling:ceil, requested: targetLocator||null, query:q};
+  return {decision:'ALLOW', reason:'WITHIN_CEILING', question_class:classification.question_class, ceiling:ceil, requested: targetLocator||null, query:q};
 }
 window.storyMemoryIsFutureLocatorV1=isFuture;
 window.storyMemoryFilterFuturePassagesV1=filterFuturePassages;
 window.storyMemoryFilterFutureAnnotationsV1=filterFutureAnnotations;
 window.storyMemoryCoReaderDecisionV1=coReaderDecision;
+window.storyMemoryClassifyCompanionQuestionV1=classifyCompanionQuestion;
 window.storyMemoryIsWorkRelatedQueryV1=isWorkRelatedQuery;
 window.storyMemoryEvidenceHasRelevantStemV1=evidenceHasRelevantStem;
 window.storyMemoryQueryContentRelatedV1=queryContentRelated;
 window.__smKnowledgeCeilingV1={
   STORAGE_KEY:R1.STORAGE_KEY, VERSION:R1.VERSION, BIBLE_BOOK_ORDER:R1.BIBLE_BOOK_ORDER,
+  NARRATIVE_BIBLE_BOOKS:NARRATIVE_BIBLE_BOOKS, FUTURE_PROBE_RE:FUTURE_PROBE_RE, BACKGROUND_RE:BACKGROUND_RE, GENERAL_CHAT_RE:GENERAL_CHAT_RE,
   REFUSAL_COPY_FUTURE:REFUSAL_COPY_FUTURE, REFUSAL_COPY_CONSENT:REFUSAL_COPY_CONSENT, REFUSAL_COPY_YESNO:REFUSAL_COPY_YESNO, REFUSAL_COPY_NOBOUNDARY:REFUSAL_COPY_NOBOUNDARY, REFUSAL_COPY_NOEVIDENCE:REFUSAL_COPY_NOEVIDENCE, REFUSAL_COPY_NORELEVANT:REFUSAL_COPY_NORELEVANT
 };
 if(typeof module!=='undefined' && module.exports){
-  module.exports={coReaderDecision:coReaderDecision, isWorkRelatedQuery:isWorkRelatedQuery, isFuture:isFuture, filterFuturePassages:filterFuturePassages, filterFutureAnnotations:filterFutureAnnotations, evidenceHasRelevantStem:evidenceHasRelevantStem, queryContentRelated:queryContentRelated, REFUSAL_COPY_FUTURE:REFUSAL_COPY_FUTURE, REFUSAL_COPY_CONSENT:REFUSAL_COPY_CONSENT, REFUSAL_COPY_YESNO:REFUSAL_COPY_YESNO, REFUSAL_COPY_NOBOUNDARY:REFUSAL_COPY_NOBOUNDARY, REFUSAL_COPY_NOEVIDENCE:REFUSAL_COPY_NOEVIDENCE, REFUSAL_COPY_NORELEVANT:REFUSAL_COPY_NORELEVANT};
+  module.exports={coReaderDecision:coReaderDecision, classifyCompanionQuestion:classifyCompanionQuestion, isNarrativeBibleBook:isNarrativeBibleBook, NARRATIVE_BIBLE_BOOKS:NARRATIVE_BIBLE_BOOKS, isWorkRelatedQuery:isWorkRelatedQuery, isFuture:isFuture, filterFuturePassages:filterFuturePassages, filterFutureAnnotations:filterFutureAnnotations, evidenceHasRelevantStem:evidenceHasRelevantStem, queryContentRelated:queryContentRelated, REFUSAL_COPY_FUTURE:REFUSAL_COPY_FUTURE, REFUSAL_COPY_CONSENT:REFUSAL_COPY_CONSENT, REFUSAL_COPY_YESNO:REFUSAL_COPY_YESNO, REFUSAL_COPY_NOBOUNDARY:REFUSAL_COPY_NOBOUNDARY, REFUSAL_COPY_NOEVIDENCE:REFUSAL_COPY_NOEVIDENCE, REFUSAL_COPY_NORELEVANT:REFUSAL_COPY_NORELEVANT};
 }
 })();

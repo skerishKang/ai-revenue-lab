@@ -138,6 +138,19 @@ function getIndexManifest(signal){
   }
   return indexManifestPromise;
 }
+/* 261106 · 동행 독자 근거 경로가 프리페치된 검색 색인 블록을 재사용하게 한다.
+   이미 내려받은 묶음만 돌려주고(부분이면 부분대로), 새 내려받기를 시작하지
+   않는다 — 질문 전 정적 장 요청 한도(≤3)를 흔들지 않는다. */
+function loadedIndexBlocks(){
+  var paths=Object.keys(loadedIndexShards);
+  if(!paths.length)return null;
+  var out=[];
+  for(var i=0;i<paths.length;i++){
+    var shard=loadedIndexShards[paths[i]];
+    if(Array.isArray(shard)) out=out.concat(shard);
+  }
+  return out.length?out:null;
+}
 async function loadBibleBlocks(onProgress,signal,options){
   options=options||{};
   var laneLimit=Math.max(1,Math.min(4,Number(options.lanes)||4));
@@ -406,5 +419,5 @@ retryButton.addEventListener('click',function(){retryButton.hidden=true;form.req
   }
   syncPanelVisibility();
   armIndexPrefetch();
-  window.storyMemoryBibleSearchV1={parseReference:parser.parseReference,loadBibleBlocks:loadBibleBlocks,openSearchResult:openSearchResult,returnToReadingPosition:returnToReadingPosition,shouldTreatAsReference:shouldTreatAsReference,krvLabelForBlock:krvLabelForBlock,armIndexPrefetch:armIndexPrefetch,prefetchState:function(){return {scheduled:prefetchScheduled,started:!!preloadedBlocksPromise};}};
+  window.storyMemoryBibleSearchV1={parseReference:parser.parseReference,loadBibleBlocks:loadBibleBlocks,openSearchResult:openSearchResult,returnToReadingPosition:returnToReadingPosition,shouldTreatAsReference:shouldTreatAsReference,krvLabelForBlock:krvLabelForBlock,armIndexPrefetch:armIndexPrefetch,loadedIndexBlocks:loadedIndexBlocks,prefetchState:function(){return {scheduled:prefetchScheduled,started:!!preloadedBlocksPromise};}};
 })();

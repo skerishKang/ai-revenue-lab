@@ -76,11 +76,45 @@
     });
     row.appendChild(seg);return row;
   }
+  /* 261106 · 읽기 방식(설계 B): 찾아보며 읽기(전체 참고) / 처음 읽어요(순서대로).
+     책마다 저장한다(읽기 진행 레코드 규칙 승계). 성경 기본값 찾아보며, 그 외
+     작품 기본값 처음 읽어요 — 기본값은 progress 모듈이 정한다. */
+  function currentReadingModeWorkKey(){
+    var rc=null;
+    try{ rc=(window.storyMemoryGetReaderContextV1&&window.storyMemoryGetReaderContextV1())||null; }catch(_){}
+    return (rc&&rc.current_work_key)||'bible-web';
+  }
+  function syncReadingModeRow(){
+    if(!panel)return;
+    var seg=panel.querySelector('[data-field="readingMode"]');
+    if(!seg)return;
+    var mode=window.storyMemoryGetReadingModeV1?window.storyMemoryGetReadingModeV1(currentReadingModeWorkKey()):null;
+    seg.querySelectorAll('button').forEach(function(b){
+      var on=(b.dataset.value===mode);
+      b.classList.toggle('on',on);
+      b.setAttribute('aria-pressed',String(on));
+    });
+  }
+  function readingModeRow(){
+    var row=document.createElement('div');row.className='srsg-row';
+    var lb=document.createElement('div');lb.className='srsg-label';lb.id='srsg-label-readingMode';lb.textContent='읽기 방식';row.appendChild(lb);
+    var seg=document.createElement('div');seg.className='srsg-seg';seg.dataset.field='readingMode';seg.setAttribute('role','group');seg.setAttribute('aria-labelledby',lb.id);
+    [['browse','찾아보며 읽기'],['first_read','처음 읽어요']].forEach(function(opt){
+      var b=document.createElement('button');b.type='button';b.dataset.value=opt[0];b.textContent=opt[1];
+      b.onclick=function(){
+        if(window.storyMemorySetReadingModeV1)window.storyMemorySetReadingModeV1(currentReadingModeWorkKey(),opt[0]);
+        syncReadingModeRow();
+      };
+      seg.appendChild(b);
+    });
+    row.appendChild(seg);return row;
+  }
   var panel=null;
   function syncPanel(){
     if(!panel)return;
     panel.querySelectorAll('.srsg-seg,.srsg-sw').forEach(function(seg){
       var field=seg.dataset.field;
+      if(field==='readingMode')return;
       seg.querySelectorAll('button').forEach(function(b){
         var v=b.dataset.value;
         if(field==='verseNumbers')v=(v==='true');
@@ -89,6 +123,7 @@
         b.setAttribute('aria-pressed',String(on));
       });
     });
+    syncReadingModeRow();
   }
   function buildUI(){
     var stage=document.querySelector('#reader .reader-stage')||document.getElementById('reader');
@@ -114,6 +149,7 @@
     panel.appendChild(themeRow());
     panel.appendChild(segRow('번역본 표시','englishMode'));
     panel.appendChild(segRow('절 번호','verseNumbers'));
+    panel.appendChild(readingModeRow());
     var reset=document.createElement('button');reset.type='button';reset.className='srsg-reset';reset.textContent='기본값으로 초기화';
     reset.onclick=function(){state=JSON.parse(JSON.stringify(DEFAULTS));try{BookAIStorage.removeItem(KEY);}catch(e){}apply();};
     panel.appendChild(reset);
@@ -122,7 +158,7 @@
       var opening=!document.body.classList.contains('smr-open');
       document.body.classList.toggle('smr-open',opening);
       gear.setAttribute('aria-expanded',String(opening));
-      if(opening)hx.focus();
+      if(opening){syncReadingModeRow();hx.focus();}
     };
     panel.addEventListener('keydown',function(e){
       if(e.key==='Escape'){e.preventDefault();e.stopPropagation();closeSettings(true);}

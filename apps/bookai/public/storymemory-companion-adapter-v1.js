@@ -4,6 +4,10 @@
 'use strict';
 var AI_PATH='/api/storymemory-ai';
 var MAX_QUESTION_CHARS=2000;
+/* 261106 · 전송 UX(설계 G): 전송 잠금, 대기 말풍선, 45초 AbortController,
+   오류 코드별 안내 문구, retryable 반영. */
+var REQUEST_TIMEOUT_MS=45000;
+var inFlight=false;
 
 function clip(v,n){var s=String(v==null?'':v).replace(/\s+/g,' ').trim();return s.length>n?s.slice(0,Math.max(0,n-1))+'…':s;}
 function selectedOverride(){
@@ -44,18 +48,29 @@ function localBlockedResult(packet){
     context_permission:null
   };
 }
-function localFailure(code){
+/* 261106 · 오류 코드별 안내 문구(설계 G). */
+function failureCopy(code){
+  var c=String(code||'');
+  if(c==='response_timeout')return '응답이 길어져 중단했어요 · 다시 시도';
+  if(c==='credential_unavailable'||c==='com2_ai_credential_unavailable')return '서비스 설정 점검 중이에요. 잠시 후 다시 시도해 주세요.';
+  if(c==='http_504'||c==='http_503'||c==='com2_ai_timeout'||c==='ingress_timeout')return '응답이 지연되고 있어요. 잠시 후 다시 시도해 주세요.';
+  if(c==='http_403'||c==='service_authentication_failed'||c==='service_app_not_authorized')return '서비스 연결을 점검 중이에요. 잠시 후 다시 시도해 주세요.';
+  return '지금은 AI 동행 독자 연결을 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.';
+}
+function localFailure(code,retryable){
   return {
     ok:false,
     local:true,
     blocked:false,
     title:'동행 독자',
-    answer:'지금은 AI 동행 독자 연결을 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.',
+    answer:failureCopy(code),
     source:'StoryMemory',
-    error:String(code||'companion_unavailable')
+    error:String(code||'companion_unavailable'),
+    retryable:!!retryable
   };
 }
-async function requestCompanion(question){
+async function requestCompanion(question,opts){
+  opts=opts||{};
   var q=clip(question,MAX_QUESTION_CHARS);
   if(!q)return localFailure('question_required');
   var packet;
@@ -65,32 +80,79 @@ async function requestCompanion(question){
   if(!(packet&&packet.diagnostics&&packet.diagnostics.boundary_available===true))return localBlockedResult(packet);
   var response;
   try{
-    response=await fetch(AI_PATH,{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({question:q,packet:packet})});
-  }catch(_){return localFailure('network_failed');}
+    response=await fetch(AI_PATH,{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({question:q,packet:packet}),signal:opts.signal});
+  }catch(err){
+    if(opts.signal&&opts.signal.aborted)return localFailure('response_timeout');
+    return localFailure('network_failed',true);
+  }
   var payload=null;
   try{payload=await response.json();}catch(_){return localFailure('invalid_response');}
   if(!response.ok||!payload||payload.ok!==true||typeof payload.answer!=='string'){
-    return localFailure(payload&&payload.error||('http_'+response.status));
+    var code=payload&&payload.error||('http_'+response.status);
+    return localFailure(code,!!(payload&&payload.error&&payload.error.retryable)||response.status>=500||response.status===429);
   }
   return {
     ok:true,local:false,blocked:false,title:'동행 독자',answer:payload.answer,source:'StoryMemory · 현재 읽은 범위',
-    context_permission:payload.context_permission||null,runtime:payload.runtime||'padiem-ai-engine',reference_trust:payload.reference_trust||'UNTRUSTED_REFERENCE',evidencePacket:packet
+    context_permission:payload.context_permission||null,runtime:payload.runtime||'padiem-ai-engine',reference_trust:payload.reference_trust||'UNTRUSTED_REFERENCE',evidencePacket:packet,
+    spoilerFolds:Array.isArray(payload.spoiler_folds)?payload.spoiler_folds:null,
+    outsideBooks:Array.isArray(payload.outside_books)?payload.outside_books:null,
+    readingMode:payload.reading_mode||null
   };
 }
 function appendResult(result,q,selection,delay){
-  var meta={question:q,packet:selection||null,answerEvidencePacket:result.evidencePacket||null,liveCompanion:true,blocked:!!result.blocked,error:result.error||null,context_permission:result.context_permission||null,runtime:result.runtime||null};
+  var meta={question:q,packet:selection||null,answerEvidencePacket:result.evidencePacket||null,liveCompanion:true,blocked:!!result.blocked,error:result.error||null,retryable:!!result.retryable,context_permission:result.context_permission||null,runtime:result.runtime||null,spoilerFolds:result.spoilerFolds||null,outsideBooks:result.outsideBooks||null,readingMode:result.readingMode||null};
   setTimeout(function(){appendAIMessage(result.title,result.answer,result.source,meta);},Math.max(0,Number(delay)||0));
 }
+function setSendLocked(locked){
+  try{
+    var btn=document.getElementById('sendBtn');
+    if(!btn)return;
+    btn.disabled=!!locked;
+    if(locked)btn.setAttribute('aria-busy','true');
+    else btn.removeAttribute('aria-busy');
+  }catch(_){}
+}
+function appendPendingBubble(){
+  try{
+    var thread=document.getElementById('chatThread');
+    if(!thread)return null;
+    var d=document.createElement('div');
+    d.className='msg ai sm-pending';
+    d.setAttribute('aria-live','polite');
+    d.textContent='답을 준비하고 있어요';
+    thread.append(d);
+    thread.scrollTop=thread.scrollHeight;
+    return d;
+  }catch(_){return null;}
+}
+function removePendingBubble(el){ try{ if(el&&el.parentNode)el.parentNode.removeChild(el); }catch(_){} }
 async function submit(question,{selection=null,delay=80}={}){
-  var q=clip(question,MAX_QUESTION_CHARS);if(!q)return null;
+  var q=clip(question,MAX_QUESTION_CHARS);
+  if(!q)return null;
+  /* 261106 · 전송 잠금: 답을 기다리는 동안 같은 질문이 겹치지 않는다. */
+  if(inFlight)return null;
+  inFlight=true;
+  setSendLocked(true);
   appendUserMessage(q,selection);
-  var result=await requestCompanion(q);
+  var pendingEl=appendPendingBubble();
+  /* 261106 · 45초 AbortController: 길어진 응답은 중단하고 다시 시도 안내. */
+  var controller=typeof AbortController==='function'?new AbortController():null;
+  var timer=controller?setTimeout(function(){controller.abort();},REQUEST_TIMEOUT_MS):null;
+  var result;
+  try{
+    result=await requestCompanion(q,{signal:controller?controller.signal:null});
+  }finally{
+    if(timer)clearTimeout(timer);
+    removePendingBubble(pendingEl);
+    inFlight=false;
+    setSendLocked(false);
+  }
   appendResult(result,q,selection,delay);
   return result;
 }
 window.storyMemoryRequestCompanionV1=requestCompanion;
 window.storyMemorySubmitCompanionQuestionV1=submit;
-window.__smCompanionAdapterV1={version:'1',path:AI_PATH,legacyHybridFallback:false,directProvider:false,priorPageGrounding:true};
+window.__smCompanionAdapterV1={version:'1',path:AI_PATH,legacyHybridFallback:false,directProvider:false,priorPageGrounding:true,sendLock:true,requestTimeoutMs:REQUEST_TIMEOUT_MS};
 
 // Live UI ownership. Legacy Hybrid remains callable for isolated diagnostics only.
 sendChat=async function(){

@@ -134,5 +134,61 @@ try {
   for(const name of ['com2-hmac.mjs','app-ai-transport.mjs'])
     assert.equal(await readFile(new URL('../public/'+name,import.meta.url),'utf8'),
       await readFile(new URL('../../storymemory/public/'+name,import.meta.url),'utf8'),'deployable helpers stay identical');
-  console.log('PASS: both workers signed COM2 success + bounded answer; 1.0 missing/network/timeout/401/404/5xx fallback; no policy/quota bypass; BookAI COM2-only; thought and CP filters preserved');
+  // 261106 · 읽기 방식 별 정책(설계 F) + 접힘 응답(설계 E) + 태그명 미노출 지시.
+  // 구형 패킷(reading_mode 없음)에도 태그명 금지 지시가 들어간다.
+  let legacyInstruction=null;
+  globalThis.fetch=async request=>{legacyInstruction=JSON.parse(await request.text()).agent.system_instruction;return success();};
+  await bookai.fetch(req(),env);
+  assert.match(legacyInstruction,/태그명/);
+  assert.match(legacyInstruction,/사전 학습 지식/);
+  const firstReadPacket={...packet,
+    reading_progress:{furthest_read_locator:'bible:web:GEN:37:31',knowledge_ceiling_locator:'bible:web:GEN:37:31',reading_mode:'first_read',opened_units:['bible:web:GEN:37']},
+    co_reader_decision:{decision:'ALLOW',reason:'WITHIN_CEILING',question_class:'plot'},
+    reader_context:{authoritative_reader:true,current_work_key:'bible-web',current_unit_key:'bible:web:GEN:37'}};
+  let foldInstruction=null;
+  globalThis.fetch=async request=>{
+    foldInstruction=JSON.parse(await request.text()).agent.system_instruction;
+    return Response.json({ok:true,answer:JSON.stringify({paragraphs:[
+      {text:'네, 요셉은 형들을 다시 만납니다. 이집트에서 자신을 드러냅니다.',citations:['창세기 45:4']},
+      {text:'지금 읽은 창세기 37장에서는 요셉이 형들에게 팔립니다.',citations:['창세기 37:28']}
+    ]}),context_permission:cp});
+  };
+  const foldResponse=await bookai.fetch(new Request('https://reader.invalid/api/storymemory-ai',{
+    method:'POST',headers:{'content-type':'application/json','origin':'https://reader.invalid'},
+    body:JSON.stringify({question:'요셉은 형들을 다시 만나나요?',packet:firstReadPacket})}),env);
+  const foldData=await foldResponse.json();
+  assert.equal(foldResponse.status,200);
+  assert.equal(foldData.ok,true);
+  assert.ok(foldData.answer.includes('팔립니다'),'읽은 범위 안의 문단은 답변에 남는다');
+  assert.ok(!foldData.answer.includes('다시 만납니다'),'연 장 집합 밖 인용 문단은 답변에서 접힌다');
+  assert.equal(foldData.spoiler_folds.length,1);
+  assert.deepEqual(foldData.spoiler_folds[0].books,['창세기 45장']);
+  assert.ok(foldData.spoiler_folds[0].text.includes('다시 만납니다'));
+  assert.equal(foldData.reading_mode,'first_read');
+  assert.equal(foldData.question_class,'plot');
+  assert.match(foldInstruction,/태그명/);
+  assert.match(foldInstruction,/처음 읽어요/);
+  assert.match(foldInstruction,/paragraphs/);
+  assert.match(foldInstruction,/사전 학습 지식/);
+  const browsePacket={...packet,
+    reading_progress:{furthest_read_locator:'bible:web:ACT:9:5',knowledge_ceiling_locator:'bible:web:ACT:9:5',reading_mode:'browse',opened_units:['bible:web:ACT:9']},
+    co_reader_decision:{decision:'ALLOW',reason:'WITHIN_CEILING',question_class:'plot'}};
+  let browseInstruction=null;
+  globalThis.fetch=async request=>{
+    browseInstruction=JSON.parse(await request.text()).agent.system_instruction;
+    return Response.json({ok:true,answer:'요셉은 형들을 다시 만납니다(창세기 45:4).',context_permission:cp});
+  };
+  const browseResponse=await bookai.fetch(new Request('https://reader.invalid/api/storymemory-ai',{
+    method:'POST',headers:{'content-type':'application/json','origin':'https://reader.invalid'},
+    body:JSON.stringify({question:'요셉은 형들을 다시 만나나요?',packet:browsePacket})}),env);
+  const browseData=await browseResponse.json();
+  assert.equal(browseResponse.status,200);
+  assert.ok(browseData.answer.includes('다시 만납니다'),'찾아보며 읽기 모드는 접지 않는다');
+  assert.equal(browseData.spoiler_folds,undefined);
+  assert.deepEqual(browseData.outside_books,['창세기 45장']);
+  assert.match(browseInstruction,/태그명/);
+  assert.match(browseInstruction,/배경 지식/);
+  assert.ok(!/paragraphs/.test(browseInstruction),'찾아보며 읽기 모드에는 접힘 JSON 계약이 없다');
+  assert.ok(!/사전 학습 지식/.test(browseInstruction),'사전 학습 지식 금지 문구는 전개 질문·처음 읽어요에만 남는다');
+  console.log('PASS: both workers signed COM2 success + bounded answer; 1.0 missing/network/timeout/401/404/5xx fallback; no policy/quota bypass; BookAI COM2-only; thought and CP filters preserved; reading-mode policies, plot folding, tag-name discipline asserted');
 }finally{globalThis.fetch=originalFetch;}
