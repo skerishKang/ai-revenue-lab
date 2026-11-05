@@ -369,6 +369,14 @@ class PcToolsTurnRuntime:
                     if event.tool_call is not None:
                         calls.append(event.tool_call)
                         saw_output = True
+                    thought = getattr(event, "delta_thought", None)
+                    if thought:
+                        # A thinking-summary fragment is a visible first byte;
+                        # it rides its own record so it never joins the answer.
+                        saw_output = True
+                        sink = _PC_TURN_STREAM_SINK.get()
+                        if sink is not None:
+                            sink({"thought_delta": {"delta": thought}})
                     if event.delta_content:
                         saw_output = True
                         sink = _PC_TURN_STREAM_SINK.get()

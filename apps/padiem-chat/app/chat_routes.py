@@ -781,6 +781,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                 try:
                     first_visible = None
                     tool_call = None
+                    first_byte_marked = False
                     try:
                         while True:
                             try:
@@ -796,6 +797,14 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                             if candidate is not None:
                                 tool_call = candidate
                                 break
+                            if event.delta_thought:
+                                # A thinking summary is the first visible byte;
+                                # it is shown beside the answer, never inside it.
+                                if not first_byte_marked:
+                                    first_byte_marked = True
+                                    timing.mark("first_token")
+                                yield _public_sse("thought", {"text": event.delta_thought})
+                                continue
                             if event.delta_content:
                                 first_visible = event
                                 timing.mark("first_token")
@@ -920,6 +929,8 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                             yield SSE_KEEPALIVE
                             continue
                         event = item
+                        if event.delta_thought:
+                            yield _public_sse("thought", {"text": event.delta_thought})
                         if event.delta_content:
                             answer_parts.append(event.delta_content)
                             yield _public_sse("delta", {"delta": event.delta_content})

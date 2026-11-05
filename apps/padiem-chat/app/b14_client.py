@@ -174,6 +174,9 @@ class ChatStreamEvent:
     done: bool = False
     tool_call: ChatToolCall | None = None
     finish_reason: str | None = None
+    # Presentation-only thinking summary. The answer body and saved history
+    # never include it.
+    delta_thought: str | None = None
 
 
 # #5573: Core owns tool-call validation (3-B-1). The product projection only
@@ -591,6 +594,21 @@ class B14Client:
                 if tool_call is not None:
                     yield ChatStreamEvent(
                         tool_call=tool_call, finish_reason=finish_reason,
+                    )
+                thought = getattr(event, "delta_thought", None)
+                if thought:
+                    # A thinking summary is the model's first visible byte. It
+                    # stays out of the answer text and the saved turn.
+                    if not first_delta_emitted:
+                        first_delta_emitted = True
+                        emit_stage_event(
+                            stage="b14.stream.first_delta",
+                            outcome="ok",
+                            duration_ms=(time.perf_counter()-stream_started)*1000,
+                        )
+                    yield ChatStreamEvent(
+                        delta_thought=thought,
+                        finish_reason=finish_reason,
                     )
                 if event.delta_content:
                     if not first_delta_emitted:

@@ -336,7 +336,7 @@ def project_pc_stream_record(record: Any, *, pc_run_id: str) -> tuple[str, dict]
 
 def _engine_stream_record_kind(record) -> str:
     if isinstance(record, dict):
-        kinds = set(record) & {"event", "pc_progress", "heartbeat", "text_delta", "result", "orchestration", "error"}
+        kinds = set(record) & {"event", "pc_progress", "heartbeat", "text_delta", "thought_delta", "result", "orchestration", "error"}
         if len(kinds) == 1:
             return next(iter(kinds))
     return "unknown"
@@ -351,7 +351,7 @@ def _engine_stream_cause(exc: Exception, record_kind: str) -> dict[str, str]:
         seen.add(id(current))
         current = current.__cause__
     kind = getattr(current, "record_kind", record_kind)
-    if kind not in {"event", "pc_progress", "heartbeat", "text_delta", "result", "orchestration", "error"}:
+    if kind not in {"event", "pc_progress", "heartbeat", "text_delta", "thought_delta", "result", "orchestration", "error"}:
         kind = "unknown"
     return {"exception_class": type(current).__name__, "record_kind": kind}
 
@@ -434,6 +434,14 @@ def chat_pc_orchestration_sse(
                                 yield _frame("scope_notice", {"scope_notice": notice})
                                 scope_sent = True
                     yield _frame(kind, value)
+                    continue
+                if "thought_delta" in item:
+                    value = item["thought_delta"]
+                    if not isinstance(value, dict) or set(value) != {"delta"} or not isinstance(value["delta"], str):
+                        raise ValueError("Invalid thought delta")
+                    if terminal is not None:
+                        raise ValueError("Thought after terminal")
+                    yield _frame("thought", {"text": value["delta"]})
                     continue
                 if "text_delta" in item:
                     value = item["text_delta"]

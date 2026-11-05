@@ -784,6 +784,8 @@ async def _first_model_first_event(stream: Any):
     async for event in stream:
         if getattr(event, "tool_call", None) is not None:
             return event
+        if getattr(event, "delta_thought", None):
+            return event
         if getattr(event, "delta_content", None):
             return event
         if getattr(event, "done", False):
@@ -916,7 +918,9 @@ async def _model_first_json(
             try:
                 first = await _first_model_first_event(stream)
                 if first is None or (
-                    first.delta_content is None and first.tool_call is None
+                    first.delta_content is None
+                    and first.delta_thought is None
+                    and first.tool_call is None
                 ):
                     return _error(
                         "model_first_empty",
@@ -926,8 +930,13 @@ async def _model_first_json(
                 if first.tool_call is not None:
                     tool_call = first.tool_call
                 else:
-                    parts.append(first.delta_content)
-                    timing.mark("first_token")
+                    if first.delta_thought:
+                        # A thinking summary is the first visible byte; it is
+                        # presentation-only and stays out of `parts`.
+                        timing.mark("first_token")
+                    if first.delta_content is not None:
+                        parts.append(first.delta_content)
+                        timing.mark("first_token")
                     async for event in stream:
                         if event.delta_content:
                             parts.append(event.delta_content)
@@ -1032,17 +1041,25 @@ async def _model_first_ndjson(
             try:
                 first = await _first_model_first_event(stream)
                 if first is None or (
-                    first.delta_content is None and first.tool_call is None
+                    first.delta_content is None
+                    and first.delta_thought is None
+                    and first.tool_call is None
                 ):
                     yield line({"type": "error", "code": "model_first_empty"})
                     return
                 if first.tool_call is not None:
                     tool_call = first.tool_call
                 else:
-                    timing.mark("first_token")
-                    parts.append(first.delta_content)
-                    yield line({"type": "delta", "text": first.delta_content})
+                    if first.delta_thought:
+                        timing.mark("first_token")
+                        yield line({"type": "thought", "text": first.delta_thought})
+                    if first.delta_content is not None:
+                        timing.mark("first_token")
+                        parts.append(first.delta_content)
+                        yield line({"type": "delta", "text": first.delta_content})
                     async for event in stream:
+                        if event.delta_thought:
+                            yield line({"type": "thought", "text": event.delta_thought})
                         if event.delta_content:
                             parts.append(event.delta_content)
                             yield line({"type": "delta", "text": event.delta_content})

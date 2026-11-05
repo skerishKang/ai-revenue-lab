@@ -44,15 +44,21 @@ def request(*, model: str = MODEL, routing: B14RoutingOptions | None = None) -> 
 def chunk_payload(
     *,
     content: str | None = None,
+    thought: str | None = None,
     finish_reason: str | None = None,
     usage: dict | None = None,
 ) -> dict:
     choices = []
-    if content is not None or finish_reason is not None:
+    if content is not None or thought is not None or finish_reason is not None:
+        delta = {}
+        if content is not None:
+            delta["content"] = content
+        if thought is not None:
+            delta["reasoning_content"] = thought
         choices = [
             {
                 "index": 0,
-                "delta": {} if content is None else {"content": content},
+                "delta": delta,
                 "finish_reason": finish_reason,
             }
         ]
@@ -783,3 +789,30 @@ def test_a_completion_event_cannot_carry_a_token():
 
     with pytest.raises(ValueError):
         B14StreamEvent(done=True, finish_reason="stop", signature="sig_turn_xyz")
+
+
+def test_a_thinking_summary_rides_its_own_delta_and_never_joins_the_answer():
+    raw = (
+        sse(chunk_payload(thought="먼저 "))
+        + sse(chunk_payload(thought="살펴봅니다"))
+        + sse(chunk_payload(content="답변"))
+        + sse(chunk_payload(finish_reason="stop"))
+        + b"data: [DONE]\n\n"
+    )
+
+    events = collect(_client_for(raw), request())
+
+    assert [event.delta_thought for event in events[:-1]] == ["먼저 ", "살펴봅니다", None, None]
+    assert [event.delta_content for event in events[:-1]] == [None, None, "답변", None]
+    assert events[0].to_public_dict()["delta_thought"] == "먼저 "
+    assert "delta_thought" not in events[2].to_public_dict()
+
+
+def test_a_non_string_thinking_summary_is_refused():
+    payload = chunk_payload(content="답변")
+    payload["choices"][0]["delta"]["reasoning_content"] = 17
+
+    with pytest.raises(B14ExecutionError) as exc:
+        collect(_client_for(sse(payload)), request())
+
+    assert exc.value.code == "malformed_upstream"

@@ -58,6 +58,14 @@ def _side_record(record: dict[str, Any]) -> dict[str, Any] | None:
             or set(data) != {"delta"} or not isinstance(data["delta"], str) or not data["delta"]):
             raise EngineNdjsonContractError("invalid_stream_record")
         return {"text_delta": dict(data)}
+    # A thinking-summary fragment is presentation-only and rides its own
+    # record, so it can never be mistaken for answer text.
+    if "thought_delta" in record:
+        data = record["thought_delta"]
+        if (set(record) != {"ok", "thought_delta"} or not isinstance(data, dict)
+            or set(data) != {"delta"} or not isinstance(data["delta"], str) or not data["delta"]):
+            raise EngineNdjsonContractError("invalid_stream_record")
+        return {"thought_delta": dict(data)}
     key = "pc_progress" if "pc_progress" in record else "heartbeat"
     if key not in record:
         return None
@@ -137,7 +145,7 @@ async def decode_orchestration_ndjson(
                         raise EngineNdjsonContractError("invalid_stream_json") from exc
                     if not isinstance(record, dict):
                         raise EngineNdjsonContractError("invalid_stream_record")
-                    kinds = set(record) & {"error", "event", "text_delta", "heartbeat", "pc_progress", "orchestration"}
+                    kinds = set(record) & {"error", "event", "text_delta", "thought_delta", "heartbeat", "pc_progress", "orchestration"}
                     if len(kinds) == 1:
                         record_kind = next(iter(kinds))
                     if record.get("ok") is False:

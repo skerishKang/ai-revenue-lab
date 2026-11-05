@@ -181,6 +181,9 @@
         if (data.text_delta && typeof data.text_delta.delta === "string") {
           return { event: "delta", data: JSON.stringify({ delta: data.text_delta.delta }) };
         }
+        if (data.thought_delta && typeof data.thought_delta.delta === "string") {
+          return { event: "thought", data: JSON.stringify({ text: data.thought_delta.delta }) };
+        }
         if (data.event && typeof data.event === "object") {
           return { event: "orchestration_event", data: JSON.stringify(data.event) };
         }

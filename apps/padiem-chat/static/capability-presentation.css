@@ -33,6 +33,8 @@
   margin: 8px 0 0;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  max-height: 12rem;
+  overflow-y: auto;
 }
 
 /* #5221: the work card is a disclosure. The summary always names the real

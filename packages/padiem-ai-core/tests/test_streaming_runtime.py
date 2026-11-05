@@ -10,7 +10,7 @@ import padiem_ai_core
 from padiem_ai_core.b14_execution import B14ExecutionError, B14RouteMetadata
 from padiem_ai_core.b14_streaming import B14StreamEvent, B14StreamToolCall
 from padiem_ai_core.tool_channel import ToolDefinition
-from padiem_ai_core.contracts import AgentProfile, ErrorClass, RunStatus, UsageMetadata
+from padiem_ai_core.contracts import AgentProfile, ErrorClass, RunMetadata, RunStatus, UsageMetadata
 from padiem_ai_core.dispatch_preinstruction import PREINSTRUCTION_VERSION
 from padiem_ai_core.execution_runtime import ExecutionRequest, ExecutionRuntimeError
 from padiem_ai_core.streaming_runtime import (
@@ -571,3 +571,43 @@ def test_stream_unclosed_thought_fails_without_leaking():
     with pytest.raises(ExecutionRuntimeError) as exc:
         run(collect(runtime, request()))
     assert exc.value.code == "empty_upstream_answer"
+
+
+def test_thought_fragments_stream_apart_and_never_enter_the_answer():
+    client = FakeStreamClient((
+        B14StreamEvent(delta_thought="생각 조각", route=ROUTE),
+        B14StreamEvent(delta_content="답", route=ROUTE),
+        B14StreamEvent(finish_reason="stop", route=ROUTE),
+        B14StreamEvent(route=ROUTE, done=True),
+    ))
+    runtime = StreamingExecutionRuntime(
+        app_id="test-app", b14_stream_client=client, clock=lambda: 10.0
+    )
+
+    events = run(collect(runtime, request()))
+
+    assert [event.delta_thought for event in events[:-1]] == ["생각 조각", None]
+    assert [event.delta_content for event in events[:-1]] == [None, "답"]
+    terminal = events[-1]
+    assert terminal.done is True
+    assert terminal.answer == "답"
+    assert terminal.delta_thought is None
+    assert "delta_thought" not in terminal.to_public_dict()
+
+
+def test_a_thought_only_progress_event_is_valid():
+    event = StreamingExecutionEvent(
+        delta_content=None,
+        answer=None,
+        finish_reason=None,
+        route=ROUTE,
+        metadata=RunMetadata(
+            trace_id="trace-stream-1",
+            app_id="test-app",
+            agent_id="general-agent",
+            status=RunStatus.MODEL_RUNNING,
+        ),
+        delta_thought="생각",
+    )
+    assert event.delta_thought == "생각"
+    assert event.to_public_dict()["delta_thought"] == "생각"

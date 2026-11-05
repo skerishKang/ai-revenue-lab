@@ -64,6 +64,10 @@ class B14StreamEvent:
     response_id: str | None = None
     model: str | None = None
     delta_content: str | None = None
+    # A thinking-summary fragment rides its own delta field so it never shares
+    # a byte with the answer body. Consumers may show it as it arrives; it is
+    # never part of the answer and never stored.
+    delta_thought: str | None = None
     finish_reason: str | None = None
     usage: UsageMetadata = field(default_factory=UsageMetadata)
     route: B14RouteMetadata = field(default_factory=B14RouteMetadata)
@@ -75,7 +79,7 @@ class B14StreamEvent:
     signature: str | None = None
 
     def __post_init__(self) -> None:
-        for name in ("response_id", "model", "delta_content", "finish_reason"):
+        for name in ("response_id", "model", "delta_content", "delta_thought", "finish_reason"):
             value = getattr(self, name)
             if value is not None and not isinstance(value, str):
                 raise ValueError(f"{name} must be a string or None")
@@ -99,6 +103,7 @@ class B14StreamEvent:
                 raise ValueError("tool call event must not contain delta or completion")
         if self.done and (
             self.delta_content is not None
+            or self.delta_thought is not None
             or self.signature is not None
             or any(
                 value is not None
@@ -121,6 +126,8 @@ class B14StreamEvent:
             "route": self.route.to_public_dict(),
             "done": self.done,
         }
+        if self.delta_thought is not None:
+            payload["delta_thought"] = self.delta_thought
         if self.signature is not None:
             payload["signature"] = self.signature
         if self.tool_call is not None:
@@ -285,6 +292,7 @@ def _parse_data_frame(frame: _SSEFrame, *, tools_requested: bool = False) -> B14
 
     usage = _parse_usage(payload)
     delta_content: str | None = None
+    delta_thought: str | None = None
     finish_reason: str | None = None
     # #4727: an opaque provider token beside the text, relayed unchanged. A
     # provider that never issues one keeps producing the exact frame it did
@@ -307,6 +315,12 @@ def _parse_data_frame(frame: _SSEFrame, *, tools_requested: bool = False) -> B14
         if content is not None and not isinstance(content, str):
             raise _malformed()
         delta_content = content
+        # A thinking-summary fragment is either a string or absent. Any other
+        # value is a wire change this parser must not silently swallow.
+        thought = delta.get("reasoning_content")
+        if thought is not None and not isinstance(thought, str):
+            raise _malformed("Business 14 returned a non-string thought delta.")
+        delta_thought = thought
         finish_reason_raw = choice.get("finish_reason")
         if finish_reason_raw is not None and not isinstance(finish_reason_raw, str):
             raise _malformed()
@@ -325,6 +339,7 @@ def _parse_data_frame(frame: _SSEFrame, *, tools_requested: bool = False) -> B14
         response_id=response_id,
         model=model,
         delta_content=delta_content,
+        delta_thought=delta_thought,
         finish_reason=finish_reason,
         usage=usage,
         route=route,

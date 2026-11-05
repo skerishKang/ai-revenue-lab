@@ -295,7 +295,7 @@ def _encode_line(payload: dict[str, Any]) -> str:
 
 
 def _stream_event_line(event: OrchestrationEvent | dict[str, Any]) -> str:
-    if isinstance(event, dict) and set(event) in ({"pc_progress"}, {"text_delta"}):
+    if isinstance(event, dict) and set(event) in ({"pc_progress"}, {"text_delta"}, {"thought_delta"}):
         return _encode_line({"ok": True, **event})
     return _encode_line({"ok": True, "event": event.to_public_dict()})
 

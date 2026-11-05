@@ -2378,3 +2378,35 @@ async def test_pc_run_correlation_logs_runner_error_without_run_id(caplog, monke
     token = hashlib.sha256(run.encode()).hexdigest()[:16]
     assert "pc_engine stage=error run_hash=" + token + " dispatch_id=none trace_id=" in caplog.text
     assert run not in caplog.text and "not logged" not in caplog.text
+
+
+class _NativeThoughtPcModel(_NativePcModel):
+    async def stream(self, request):
+        from padiem_ai_core.b14_streaming import B14StreamEvent
+        self.requests.append(request)
+        route = B14RouteMetadata(selected_provider="test", selected_model="test/route")
+        yield B14StreamEvent(delta_thought="생각 조각", route=route)
+        yield B14StreamEvent(delta_content="답", route=route)
+        yield B14StreamEvent(done=True, finish_reason="stop", route=route)
+
+
+@pytest.mark.asyncio
+async def test_pc_stream_carries_thought_as_its_own_record_and_keeps_the_answer_clean():
+    from padiem_ai_core import StreamingExecutionRuntime
+    model = _NativeThoughtPcModel()
+    fallback = MockEngineRuntime()
+    async def capable(_): return True
+    service = OrchestrationEngineService(
+        runtime_factory=lambda _: fallback, b14_service_bound=True,
+        pc_streaming_runtime_factory=lambda app: StreamingExecutionRuntime(app_id=app, b14_stream_client=model),
+        pc_tools_capability=capable,
+    )
+    prepared = await service.prepare_stream(
+        method="POST", path=ORCHESTRATION_STREAM_PATH, content_type="application/json",
+        body=json.dumps(_pc_turn_payload()).encode(), pc_progress=True,
+    )
+    lines = [json.loads(line) async for line in service.iter_ndjson(prepared)]
+
+    assert [x["thought_delta"]["delta"] for x in lines if "thought_delta" in x] == ["생각 조각"]
+    assert [x["text_delta"]["delta"] for x in lines if "text_delta" in x] == ["답"]
+    assert lines[-1]["orchestration"]["execution"]["answer"] == "답"
