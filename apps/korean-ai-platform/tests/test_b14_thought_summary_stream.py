@@ -200,8 +200,17 @@ def test_helper_reads_the_catalog_switch(monkeypatch):
     assert policy.thought_summary_enabled_for_model(None) is False
 
 
-def test_install_models_applies_the_reasoning_block_to_the_catalog():
-    """The block was validated at boot but never installed (#6838 gap)."""
+def test_install_models_applies_the_reasoning_block_to_the_catalog(monkeypatch):
+    """The block was validated at boot but never installed (#6838 gap).
+
+    install_models owns global registry state, so the provider registration is
+    stubbed out and the catalog is snapshotted around the call: this test
+    proves the reasoning block reaches CatalogModel without leaking a test
+    provider spec into the suite.
+    """
+    monkeypatch.setattr(
+        "app.pilot.model_registry_file.register_platform_provider", lambda spec: None,
+    )
     data = {
         "schema_version": 1,
         "comment": "test",
@@ -253,7 +262,10 @@ def test_install_models_applies_the_reasoning_block_to_the_catalog():
         cat.CATALOG_MODELS.extend(saved_list)
 
 
-def test_install_models_leaves_a_plain_row_unsupported():
+def test_install_models_leaves_a_plain_row_unsupported(monkeypatch):
+    monkeypatch.setattr(
+        "app.pilot.model_registry_file.register_platform_provider", lambda spec: None,
+    )
     data = {
         "schema_version": 1,
         "comment": "test",
