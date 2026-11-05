@@ -131,3 +131,18 @@ def test_the_document_lane_reuses_the_shared_tus_modules_of_this_app() -> None:
     # 새 업로드 경로가 아니다: 프로젝트 파일 tus 컬렉션은 #6584의 주소 그대로다.
     wrapper = (STATIC / "project-file-upload.js").read_text(encoding="utf-8")
     assert '"/api/projects/" + encodeURIComponent(projectId) + "/files/tus"' in wrapper
+
+
+def test_the_meeting_tool_imports_the_meeting_text_into_the_content_field() -> None:
+    # 2026-11-05 (대표 결정): 회의정리에도 '내 PC에서 가져오기'. The file IS the
+    # meeting text, so it lands in 회의 내용 (editable) after what was typed,
+    # tagged with its name; no preview block duplicates it; the prompt carries it.
+    meeting = run("pc_import")["meetingImport"]
+    assert meeting["pickLabel"] == "내 PC에서 더 가져오기"
+    assert meeting["content"] == (
+        "직접 적은 첫 줄\n\n[예전 인사말.md]\n예전 인사말 원고입니다. 문체를 참고하세요."
+    )
+    assert meeting["previews"] == 0
+    assert meeting["names"] == ["예전 인사말.md"]
+    assert "예전 인사말 원고입니다. 문체를 참고하세요." in meeting["prompt"]
+    assert "회의명: 원문 가져온 회의" in meeting["prompt"]
