@@ -3,6 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 import inspect
+import os
+import re
+import time
 from typing import Any
 
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
@@ -21,6 +24,7 @@ from padiem_control_plane.contracts import (
 )
 
 from .control_plane_identity import IdentityBridgeError
+from .request_telemetry import current_request_id, is_safe_request_id
 from .request_timing import timed_async
 
 
@@ -180,6 +184,43 @@ class PrivateGoogleConnectTicket:
         }
 
 
+#: #6919: one identity RPC slower than this leaves a journal line naming the
+#: method and the milliseconds. On 2026-11-05 the ``identity`` bucket of a PC
+#: read's /api/mcp request ran 0.35-6.9 s with nothing in the journal to say
+#: which of the calls behind it was slow. 0 journals every call.
+IDENTITY_SLOW_RPC_MS_ENV = "PADIEM_CHAT_IDENTITY_SLOW_MS"
+IDENTITY_SLOW_RPC_MS_DEFAULT = 250
+_SAFE_LABEL = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,63}$")
+
+
+def _identity_slow_rpc_ms() -> int:
+    raw = os.environ.get(IDENTITY_SLOW_RPC_MS_ENV, "")
+    try:
+        value = int(str(raw).strip()) if str(raw).strip() else IDENTITY_SLOW_RPC_MS_DEFAULT
+    except ValueError:
+        return IDENTITY_SLOW_RPC_MS_DEFAULT
+    return min(60_000, max(0, value))
+
+
+def journal_identity_rpc(method_name: str, elapsed_ms: float, outcome: str) -> None:
+    """One bounded line per slow identity RPC: method, milliseconds, outcome.
+
+    Only fixed identifiers travel - the RPC method name, a code from the
+    closed error set or ``ok``, and the request id - never the payload or a
+    response value. Written with ``print`` like ``sqlite_slow_execute`` so it
+    reaches the host journal, whose INFO loggers are not captured.
+    """
+    if elapsed_ms < _identity_slow_rpc_ms():
+        return
+    method = method_name if _SAFE_LABEL.fullmatch(str(method_name)) else "other"
+    code = outcome if _SAFE_LABEL.fullmatch(str(outcome)) else "other"
+    request_id = current_request_id()
+    if not is_safe_request_id(request_id):
+        request_id = "none"
+    print("identity_rpc_slow method=%s ms=%d outcome=%s request_id=%s"
+          % (method, int(round(elapsed_ms)), code, request_id), flush=True)
+
+
 class CloudflareControlPlaneIdentityAuthority:
     """B62 adapter over the private Control Plane identity Worker Service Binding."""
 
@@ -194,8 +235,20 @@ class CloudflareControlPlaneIdentityAuthority:
 
         Kept separate from the dict success-field projection because the
         reverse product-user lookup answers with a scalar ``product_user_id``
-        rather than a nested object (#5015).
+        rather than a nested object (#5015). #6919: a slow call is journaled
+        by method name (see ``journal_identity_rpc``).
         """
+        started = time.perf_counter()
+        outcome = "ok"
+        try:
+            return await self._rpc_envelope_unmeasured(method_name, payload)
+        except IdentityBridgeError as exc:
+            outcome = str(getattr(exc, "code", "error") or "error")
+            raise
+        finally:
+            journal_identity_rpc(method_name, (time.perf_counter() - started) * 1000.0, outcome)
+
+    async def _rpc_envelope_unmeasured(self, method_name: str, payload: dict[str, Any]) -> dict[str, Any]:
         method = getattr(self._binding, method_name, None)
         if not callable(method):
             raise IdentityBridgeError(
