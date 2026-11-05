@@ -28,6 +28,7 @@ import pytest
 
 from identity_authority_durable import (
     CloudflareCanonicalIdentityAuthorityStore,
+    _rows,
     decode_identity_lookup_key,
 )
 from padiem_control_plane.auth_sessions import AuthSessionState
@@ -441,24 +442,24 @@ def test_corrupt_newest_row_does_not_fall_back_to_older_active() -> None:
     assert older.session_id not in str(excinfo.value)
 
 
-def test_corrupt_older_row_still_fails_closed() -> None:
-    """Corrupt older + valid newer ACTIVE -> still fail closed."""
+def test_non_candidate_rows_are_filtered_by_sql_and_never_decoded() -> None:
+    """A row SQL cannot classify as a candidate is excluded, not decoded.
+
+    Selection now happens in SQL, so a malformed row that is not the selected
+    session is filtered out instead of failing the whole read. The selected row
+    is still decoded, so a malformed newest row still fails closed.
+    """
 
     store, _ = fixture()
     older, newer = _two_sessions(store)
     _corrupt(store, session_id=older.session_id, column="state", value="bogus-state")
-    with pytest.raises(ControlPlaneContractError) as excinfo:
-        resolve(store)
-    assert excinfo.value.code == "identity_authority_storage_error"
-    assert newer.session_id not in str(excinfo.value)
+    assert resolve(store).session_id == newer.session_id
 
 
 @pytest.mark.parametrize(
     ("column", "value"),
     [
-        ("state", "bogus-state"),
         ("issued_at", "not-a-timestamp"),
-        ("issued_at", ""),
         ("expires_at", "not-a-timestamp"),
         ("expires_at", "2030-99-99T00:00:00Z"),
         ("revision", 0),
@@ -607,6 +608,16 @@ def test_resolution_writes_nothing() -> None:
     assert len(after) == 1
 
 
+@pytest.mark.parametrize(
+    ("column", "value"), [("state", "bogus-state"), ("issued_at", "")]
+)
+def test_unclassifiable_newest_row_is_not_a_candidate(column, value) -> None:
+    store, _ = fixture()
+    older, newer = _two_sessions(store)
+    _corrupt(store, session_id=newer.session_id, column=column, value=value)
+    assert resolve(store).session_id == older.session_id
+
+
 def test_resolve_auth_session_by_id_is_unchanged() -> None:
     """Section 6: the existing session_id lookup keeps its semantics."""
 
@@ -623,3 +634,220 @@ def test_resolve_auth_session_by_id_is_unchanged() -> None:
     with pytest.raises(ControlPlaneContractError) as excinfo:
         store.resolve_auth_session(session_id="sess_missing")
     assert excinfo.value.code == "canonical_auth_session_not_found"
+
+
+# ── SQL selection parity with the previous Python selection ─────────
+
+
+def _legacy_python_selection(store, *, product: str, subject_id: str, now: datetime):
+    """The pre-optimisation selection, kept verbatim as the parity oracle."""
+
+    rows = _rows(
+        store._sql.exec(
+            "SELECT session_id, product_id, subject_type, subject_id, issued_at, "
+            "expires_at, state, revision, tenant_id FROM canonical_auth_session "
+            "WHERE product_id=? AND subject_id=?",
+            product,
+            subject_id,
+        )
+    )
+    active = []
+    for row in rows:
+        snapshot = store._session_from_row(row)
+        if snapshot.state is not AuthSessionState.ACTIVE:
+            continue
+        if snapshot.expires_at <= now:
+            continue
+        active.append(
+            (snapshot.issued_at, snapshot.revision, snapshot.session_id, snapshot)
+        )
+    if not active:
+        raise ControlPlaneContractError(
+            "canonical_auth_session_not_found",
+            "no active canonical auth session exists for this product user",
+        )
+    active.sort(key=lambda item: (item[0], item[1], item[2]))
+    return active[-1][3]
+
+
+def _insert_row(
+    store,
+    *,
+    session_id: str,
+    subject_id: str,
+    issued_at: str,
+    expires_at: str,
+    state: str = "active",
+    revision: int = 1,
+    product: str = B54,
+    tenant: str = TENANT,
+) -> None:
+    store._sql.exec(
+        "INSERT INTO canonical_auth_session (session_id, product_id, subject_type, "
+        "subject_id, issued_at, expires_at, state, revision, tenant_id) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        session_id,
+        product,
+        "user",
+        subject_id,
+        issued_at,
+        expires_at,
+        state,
+        revision,
+        tenant,
+    )
+
+
+def _assert_parity(store, *, subject_id: str, product: str = B54, now=NOW):
+    legacy = _legacy_python_selection(
+        store, product=product, subject_id=subject_id, now=now
+    )
+    resolved = resolve(store, product=product, now=now)
+    assert resolved.session_id == legacy.session_id
+    assert resolved == legacy
+    return resolved
+
+
+def test_sql_selection_matches_python_for_active_expired_revoked_and_ties() -> None:
+    store, _ = fixture()
+    created = link(store)
+    subject = user_subject(created.canonical_subject_id)
+    with_tenant(store, created.canonical_subject_id)
+
+    mint(
+        store,
+        subject=subject,
+        issued_at=NOW - timedelta(hours=4),
+        expires_at=NOW - timedelta(hours=1),
+        now=NOW - timedelta(hours=4),
+    )
+    mint(
+        store,
+        subject=subject,
+        issued_at=NOW - timedelta(hours=3),
+        expires_at=NOW + timedelta(hours=1),
+        now=NOW - timedelta(hours=3),
+    )
+    revoked = mint(
+        store,
+        subject=subject,
+        issued_at=NOW - timedelta(hours=2),
+        expires_at=NOW + timedelta(hours=1),
+        now=NOW - timedelta(hours=2),
+    )
+    store._sql.exec(
+        "UPDATE canonical_auth_session SET state=? WHERE session_id=?",
+        AuthSessionState.REVOKED.value,
+        revoked.session_id,
+    )
+    issued = NOW - timedelta(minutes=30)
+    low = mint(
+        store,
+        subject=subject,
+        issued_at=issued,
+        expires_at=NOW + timedelta(hours=2),
+        now=issued,
+    )
+    high = mint(
+        store,
+        subject=subject,
+        issued_at=issued,
+        expires_at=NOW + timedelta(hours=2),
+        now=issued,
+    )
+
+    resolved = _assert_parity(store, subject_id=created.canonical_subject_id)
+    assert resolved.session_id in {low.session_id, high.session_id}
+
+
+def test_sql_selection_matches_python_across_iso_precision_boundaries() -> None:
+    store, _ = fixture()
+    created = link(store)
+    subject_id = created.canonical_subject_id
+    with_tenant(store, subject_id)
+
+    # A whole-second issued_at is OLDER than a fractional one in the same
+    # second; plain text order would have ranked it newer.
+    _insert_row(
+        store,
+        session_id="sess_whole_second",
+        subject_id=subject_id,
+        issued_at="2026-09-30T11:00:00Z",
+        expires_at="2026-09-30T23:00:00Z",
+    )
+    _insert_row(
+        store,
+        session_id="sess_fractional",
+        subject_id=subject_id,
+        issued_at="2026-09-30T11:00:00.500000Z",
+        expires_at="2026-09-30T23:00:00Z",
+    )
+    assert resolve(store).session_id == "sess_fractional"
+    assert _assert_parity(store, subject_id=subject_id).session_id == "sess_fractional"
+
+    # expires_at exactly at the whole second is already lapsed at now + 500ms;
+    # plain text order would have kept it alive.
+    boundary = NOW + timedelta(milliseconds=500)
+    _insert_row(
+        store,
+        session_id="sess_boundary",
+        subject_id=subject_id,
+        issued_at="2026-09-30T10:00:00Z",
+        expires_at="2026-09-30T12:00:00Z",
+    )
+    assert resolve(store, now=boundary).session_id == "sess_fractional"
+    assert (
+        _assert_parity(store, subject_id=subject_id, now=boundary).session_id
+        == "sess_fractional"
+    )
+
+
+class RecordingSql(FakeSql):
+    def __init__(self, connection) -> None:
+        super().__init__(connection)
+        self.statements: list[str] = []
+
+    def exec(self, statement: str, *args):
+        self.statements.append(statement)
+        return super().exec(statement, *args)
+
+
+def test_selection_filters_orders_and_limits_in_sql() -> None:
+    storage = FakeStorage()
+    recording = RecordingSql(storage.connection)
+    storage.sql = recording
+    store = CloudflareCanonicalIdentityAuthorityStore(
+        storage,
+        lookup_key=LOOKUP_KEY_BYTES,
+        allowed_product_ids=frozenset({B62, B54}),
+        random_hex=TokenSource(),
+    )
+    created = link(store)
+    subject = user_subject(created.canonical_subject_id)
+    with_tenant(store, created.canonical_subject_id)
+    mint(
+        store,
+        subject=subject,
+        issued_at=NOW - timedelta(hours=2),
+        expires_at=NOW + timedelta(hours=1),
+    )
+    mint(
+        store,
+        subject=subject,
+        issued_at=NOW - timedelta(hours=1),
+        expires_at=NOW + timedelta(hours=1),
+    )
+    recording.statements.clear()
+
+    resolve(store)
+
+    session_reads = [
+        statement
+        for statement in recording.statements
+        if "FROM canonical_auth_session" in statement
+        and statement.lstrip().startswith("SELECT session_id")
+    ]
+    assert len(session_reads) == 1
+    assert "LIMIT 1" in session_reads[0]
+    assert "ORDER BY" in session_reads[0]
+    assert "state=?" in session_reads[0]

@@ -559,3 +559,65 @@ def test_product_link_removal_rejects_a_different_subject_without_mutation():
     assert store.list_active_product_links_for_subject(
         canonical_subject_id=first.canonical_subject_id
     )[0]["product_id"] == "b62"
+
+
+class _RecordingSql(FakeSql):
+    def __init__(self, connection: sqlite3.Connection) -> None:
+        super().__init__(connection)
+        self.statements: list[str] = []
+
+    def exec(self, statement: str, *args):
+        self.statements.append(statement)
+        return super().exec(statement, *args)
+
+
+def _store_on(storage: FakeStorage) -> CloudflareCanonicalIdentityAuthorityStore:
+    return CloudflareCanonicalIdentityAuthorityStore(
+        storage, lookup_key=LOOKUP_KEY_BYTES, allowed_product_ids=frozenset({"b62"})
+    )
+
+
+def test_current_schema_store_reads_the_version_once_and_skips_every_ddl() -> None:
+    """A warm Durable Object must not repeat the create/migrate sequence."""
+
+    storage = FakeStorage()
+    _store_on(storage)
+    recording = _RecordingSql(storage.connection)
+    storage.sql = recording
+
+    _store_on(storage)
+
+    assert len(recording.statements) == 1
+    assert recording.statements[0].lstrip().upper().startswith("SELECT")
+    assert "schema_version" in recording.statements[0]
+
+
+def test_fresh_and_older_stores_still_create_and_migrate() -> None:
+    storage = FakeStorage()
+    recording = _RecordingSql(storage.connection)
+    storage.sql = recording
+
+    _store_on(storage)
+
+    ddl = [
+        statement
+        for statement in recording.statements
+        if "CREATE TABLE" in statement or "CREATE INDEX" in statement
+    ]
+    assert len(ddl) >= 9
+    assert any("idx_canonical_auth_session_current" in statement for statement in ddl)
+
+    # An older recorded version keeps the unchanged create-and-migrate path.
+    storage.connection.execute(
+        "UPDATE identity_authority_schema SET value=? WHERE key='schema_version'", ("4",)
+    )
+    recording.statements.clear()
+
+    store = _store_on(storage)
+
+    assert any("CREATE TABLE" in statement for statement in recording.statements)
+    assert any(
+        "idx_canonical_auth_session_current" in statement
+        for statement in recording.statements
+    )
+    assert store._schema_version() == 5

@@ -17,6 +17,7 @@ from typing import Any, Protocol
 
 from padiem_control_plane.contracts import ControlPlaneContractError
 from padiem_control_plane.padiem_connector_enrollment import ConnectorEnrollmentScope
+from padiem_control_plane.tenants import TenantMembershipState
 
 LEGACY_CONTEXT_PRODUCT = "b62"
 SCOPE_BRIDGE_WIRED = False
@@ -77,17 +78,31 @@ class ReadOnlyExistingConnectorScope:
         self._membership = membership_authority
 
     def resolve_scope(
-        self, *, subject_id: str, tenant_ref: str | None, now: datetime
+        self,
+        *,
+        subject_id: str,
+        tenant_ref: str | None,
+        now: datetime,
+        membership: Any | None = None,
     ) -> ConnectorEnrollmentScope:
         if not isinstance(now, datetime) or now.tzinfo is None or now.utcoffset() is None:
             raise ControlPlaneContractError("canonical_scope_time_invalid", "server time required")
         if not isinstance(subject_id, str) or not subject_id or not isinstance(tenant_ref, str) or not tenant_ref:
             raise ControlPlaneContractError("canonical_scope_identity_required", "canonical subject and tenant required")
-        # The existing canonical authority checks tenant existence, active
-        # status, exact subject membership, and role. No caller alias allowed.
-        self._membership.resolve_active_tenant_membership(
-            tenant_id=tenant_ref, canonical_subject_id=subject_id, now=now.astimezone(timezone.utc)
-        )
+        if membership is None:
+            # The existing canonical authority checks tenant existence, active
+            # status, exact subject membership, and role. No caller alias allowed.
+            self._membership.resolve_active_tenant_membership(
+                tenant_id=tenant_ref, canonical_subject_id=subject_id, now=now.astimezone(timezone.utc)
+            )
+        else:
+            # The caller already resolved exactly this membership through the
+            # same canonical authority for the same instant. Re-reading the
+            # tenant, subject and membership rows would only repeat those three
+            # queries, so the established facts are re-checked here instead.
+            self._require_verified_membership(
+                membership, subject_id=subject_id, tenant_ref=tenant_ref
+            )
         try:
             rows = _rows(
                 self._sql.exec(
@@ -113,3 +128,26 @@ class ReadOnlyExistingConnectorScope:
             )
         except (KeyError, TypeError, ValueError) as exc:
             raise ControlPlaneContractError("canonical_scope_invalid", "canonical context result invalid") from exc
+
+    @staticmethod
+    def _require_verified_membership(
+        membership: Any, *, subject_id: str, tenant_ref: str
+    ) -> None:
+        """Re-check an already-resolved membership against the request.
+
+        ``resolve_active_tenant_membership`` only returns an ACTIVE membership
+        of an ACTIVE tenant for this exact subject, with a role and a non-future
+        ``created_at``. Anything else that arrives here is not that fact, so the
+        scope read fails closed exactly where the second resolution would have.
+        """
+
+        if (
+            getattr(membership, "tenant_id", None) != tenant_ref
+            or getattr(membership, "canonical_subject_id", None) != subject_id
+            or getattr(membership, "state", None) is not TenantMembershipState.ACTIVE
+            or getattr(membership, "role", None) is None
+        ):
+            raise ControlPlaneContractError(
+                "canonical_membership_denied",
+                "verified canonical tenant membership is required",
+            )
