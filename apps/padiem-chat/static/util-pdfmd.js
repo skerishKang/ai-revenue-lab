@@ -785,8 +785,20 @@
         card.appendChild(actions);
 
         if (item.report && item.report.agreement && item.report.agreement.length) {
-          const agr = item.report.agreement[0];
-          const info = el("div", "pdfmd-agreement", "일치도(문자): " + (agr.character_coverage * 100).toFixed(1) + "%" + (agr.digit_preservation != null ? " / 숫자 보존: " + (agr.digit_preservation * 100).toFixed(1) + "%" : ""));
+          let lowestCover = null;
+          let lowestDigit = null;
+          item.report.agreement.forEach((row) => {
+            const c = Number(row && row.character_coverage);
+            if (Number.isFinite(c) && (lowestCover === null || c < lowestCover)) lowestCover = c;
+            const d = Number(row && row.digit_preservation);
+            if (Number.isFinite(d) && (lowestDigit === null || d < lowestDigit)) lowestDigit = d;
+          });
+          const lowPages = item.report.agreement.filter((row) => Number(row && row.character_coverage) < 0.99).length;
+          const info = el("div", "pdfmd-agreement", "일치도(전체 최저): " + (lowestCover !== null ? (lowestCover * 100).toFixed(1) + "%" : "—") + (lowestDigit !== null ? " / 숫자 보존(최저): " + (lowestDigit * 100).toFixed(1) + "%" : "") + " · 확인 필요 " + lowPages + "쪽");
+          card.appendChild(info);
+        } else if (item.report && item.report.agreement_summary) {
+          const s = item.report.agreement_summary;
+          const info = el("div", "pdfmd-agreement", "일치도(전체 최저): " + (s.min_character_coverage !== null && s.min_character_coverage !== undefined ? (s.min_character_coverage * 100).toFixed(1) + "%" : "—") + (s.min_digit_preservation !== null && s.min_digit_preservation !== undefined ? " / 숫자 보존(최저): " + (s.min_digit_preservation * 100).toFixed(1) + "%" : "") + " · 확인 필요 " + (s.review_page_count || 0) + "쪽");
           card.appendChild(info);
         }
         if (item.report && item.report.warnings && item.report.warnings.length) {

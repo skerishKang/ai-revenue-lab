@@ -19,6 +19,7 @@ conversion time.
 
 from __future__ import annotations
 
+import asyncio
 import inspect
 import io
 import json
@@ -439,7 +440,8 @@ async def convert_item_run(request: Request):
     try:
         obj = await _r2_call(bucket, "get", item.original_key)
         payload = await _object_bytes(obj)
-        result = convert_pdf_to_markdown(
+        result = await asyncio.to_thread(
+            convert_pdf_to_markdown,
             name=item.name, media_type=PDF_MEDIA_TYPE, payload=payload,
             mode=job.mode, notices=_PRODUCT_NOTICES,
         )

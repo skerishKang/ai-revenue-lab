@@ -40,6 +40,7 @@ from .document_convert_store import (
     JOB_STATUS_QUEUED,
     JOB_STATUS_WORKING,
     MAX_REPORT_JSON_CHARS,
+    _encode_report,
     ConvertItemRecord,
     ConvertJobRecord,
     _DOCUMENT_STATUSES,
@@ -157,7 +158,7 @@ class Com2SqliteLedger:
             JOB_STATUS_QUEUED,
             max(page_count, 0),
             key,
-            None if probe is None else json.dumps(probe, ensure_ascii=False)[:MAX_REPORT_JSON_CHARS],
+            _encode_report(probe),
             now,
             now,
         )
@@ -251,7 +252,7 @@ class Com2SqliteLedger:
     ) -> ConvertItemRecord | None:
         if status not in _DOCUMENT_STATUSES:
             raise ValueError("변환 상태 값이 올바르지 않습니다.")
-        encoded = None if report is None else json.dumps(report, ensure_ascii=False)[:MAX_REPORT_JSON_CHARS]
+        encoded = _encode_report(report)
         await self._run(
             "UPDATE document_convert_items SET status = ?, page_count = ?, "
             "character_count = ?, markdown_key = ?, report_json = ?, error_code = ?, "
