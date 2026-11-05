@@ -26,6 +26,7 @@ from .orchestration_timing import OrchestrationTiming
 from .worker_config import binding_value
 
 STREAM_FLAG_ENV = "PADIEM_CHAT_ORCHESTRATION_STREAM"
+STREAM_USERS_ENV = "PADIEM_CHAT_ORCHESTRATION_STREAM_USERS"
 NDJSON_MEDIA_TYPE = "application/x-ndjson"
 
 _LOG = logging.getLogger("padiem_chat.orchestration_stream")
@@ -167,6 +168,40 @@ def orchestration_stream_enabled(source: Any) -> bool:
     """서버가 소유한 스위치. 바인딩(Worker)과 환경변수(local host)를 같은 값으로 읽는다."""
     value = binding_value(source, STREAM_FLAG_ENV)
     return (value.strip() if isinstance(value, str) else "").lower() in {"1", "true", "on"}
+
+
+def orchestration_stream_users(source: Any) -> frozenset[str]:
+    """Comma-separated Chat product user ids from the server-owned binding.
+
+    A missing, unreadable, or non-string value is an empty allowlist: startup
+    must never fail on a malformed value. Entries are trimmed and deduplicated;
+    empty entries are ignored.
+    """
+    value = binding_value(source, STREAM_USERS_ENV)
+    if not isinstance(value, str):
+        return frozenset()
+    return frozenset(
+        item.strip() for item in value.split(",") if item.strip()
+    )
+
+
+def stream_on_for(
+    enabled: bool,
+    users: frozenset[str] | set[str],
+    user_id: str | None,
+    is_guest: bool,
+) -> bool:
+    """Per-request decision for one caller.
+
+    The global switch wins for everyone. With it off, only a signed-in user in
+    the allowlist gets streaming; a guest is never enabled by the allowlist.
+    """
+    if enabled:
+        return True
+    if is_guest or not isinstance(user_id, str):
+        return False
+    candidate = user_id.strip()
+    return bool(candidate) and candidate in users
 
 
 def wants_ndjson(raw: Any, accept: str | None) -> bool:
@@ -320,8 +355,11 @@ __all__ = [
     "PROGRESS_KINDS",
     "ProgressFrameBuilder",
     "STREAM_FLAG_ENV",
+    "STREAM_USERS_ENV",
     "line",
     "ndjson_answer",
     "orchestration_stream_enabled",
+    "orchestration_stream_users",
+    "stream_on_for",
     "wants_ndjson",
 ]

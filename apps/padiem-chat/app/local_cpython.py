@@ -60,7 +60,7 @@ from .maintenance_mode import apply_write_freeze
 from .model_first import model_first_enabled
 from .orchestration_composition import compose_orchestration_bridge
 from .orchestration_routes import install_orchestration_routes
-from .orchestration_stream import orchestration_stream_enabled
+from .orchestration_stream import orchestration_stream_enabled, orchestration_stream_users
 from .project_files import D1ProjectFileStore
 from .queue_store_proxy import (
     QueueBackedDriveStore,
@@ -197,6 +197,7 @@ def compose_host_orchestration(
         app,
         bridge,
         stream_enabled=orchestration_stream_enabled(os.environ),
+        stream_users=orchestration_stream_users(os.environ),
         model_first_enabled=model_first_enabled(os.environ),
     )
     return bridge
