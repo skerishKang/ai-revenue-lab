@@ -255,10 +255,18 @@ def test_library_to_reader_entry_stays_under_one_second(browser, base_url):
     try:
         page.wait_for_function("() => document.querySelector('.screen.active')?.id === 'library'")
         # A non-scripture book opens straight into the reading surface; the
-        # scripture shelf stops at its chapter index first. The clock runs inside
-        # the page, so this is the reader's own click-to-visible interval.
+        # scripture shelf stops at its chapter index first. The selection is
+        # confirmed before the clock starts, so the measure cannot be taken on
+        # the wrong card when the shelf boots on a different default book.
         page.evaluate("() => document.getElementById('prevBook').click()")
-        page.wait_for_timeout(400)
+        page.wait_for_function(
+            """() => {
+              const rig = document.querySelector('.book-rig.selected');
+              return !!rig && !rig.textContent.includes('성경');
+            }""",
+            timeout=10000,
+        )
+        # The clock runs inside the page: this is the reader's own click-to-visible interval.
         page.evaluate("() => { window.__entryStart = performance.now(); document.getElementById('openBook').click(); }")
         page.wait_for_function("() => document.querySelector('.screen.active')?.id === 'reader'")
         elapsed = page.evaluate("() => (performance.now() - window.__entryStart) / 1000")
