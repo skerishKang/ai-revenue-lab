@@ -7,8 +7,9 @@
 ## 운영 주소
 
 - 운영: https://bookai.padiem.net
-- Pages 미리보기(pages.dev): 미확인 (7단계 확인 전)
-- 롤백 배포 ID: 미확인
+- Pages 미리보기(pages.dev): https://bookai-3to.pages.dev (2026-11-05 확인)
+- 롤백 배포 ID: 40fe3f10-6a88-4241-8c5c-cec87a2110c7 (2026-11-05 확인, source 6ac5fca)
+- Cloudflare 계정: Charliekant (끝 6932)
 
 ```sh
 npx -y wrangler@4.156.0 pages deploy apps/bookai/public --project-name bookai --branch main --keep-vars
