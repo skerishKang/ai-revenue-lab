@@ -102,6 +102,11 @@
     const blocks = [];
     const lines = String(text || "").replace(/\r\n?/g, "\n").split("\n");
     let first = true;
+    // 2026-11-05: a period line ("기간: 2026-10-01 ~ 2026-10-31") is front
+    // matter — it sits between the title and the first heading/paragraph. The
+    // old test required `first`, which the title had already consumed, so the
+    // period style never applied.
+    let frontMatter = false;
     lines.forEach((raw) => {
       const line = raw.replace(/\s+$/, "");
       if (!line.trim()) {
@@ -112,12 +117,15 @@
         // The book draft opens with its title (optionally "1. 제목") — the
         // same first line the book file name rule reads.
         blocks.push({ kind: "title", text: line.replace(/^\s*\d+\.\s*/, "").trim() });
+        frontMatter = true;
+      } else if (frontMatter && PERIOD_RE.test(line)) {
+        blocks.push({ kind: "period", text: line.trim() });
       } else if (opts.headings && HEADING_RE.test(line)) {
         blocks.push({ kind: "heading", text: line.trim() });
-      } else if (first && opts.firstLineTitle && PERIOD_RE.test(line)) {
-        blocks.push({ kind: "period", text: line.trim() });
+        frontMatter = false;
       } else {
         blocks.push({ kind: "para", text: line.trim() });
+        frontMatter = false;
       }
       first = false;
     });
@@ -196,8 +204,13 @@
   // The first paragraph carries the section properties (page setup), exactly
   // like the reference skeleton; it doubles as the title paragraph. Body
   // paragraphs follow with plain charPrIDRef="0" runs.
+  //
+  // 2026-11-05: the title block that paragraph 0 already carries is not
+  // written a second time. Before this, every HWPX opened with the same
+  // title on two lines (paragraph 0 + the title block); DOCX was unaffected.
   function hwpxSection(titleText, blocks) {
     const first = titleText || "";
+    let titleCarried = false;
     let paras = '<hp:p id="0" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">' +
       '<hp:run charPrIDRef="1"><hp:secPr id="" textDirection="HORIZONTAL" spaceColumns="1134" tabStop="8000" tabStopVal="4000" tabStopUnit="HWPUNIT" outlineShapeIDRef="1" memoShapeIDRef="0" textVerticalWidthHead="0" masterPageCnt="0">' +
       '<hp:grid lineGrid="0" charGrid="0" wongoji="0"/>' +
@@ -214,8 +227,12 @@
       '<hp:t>' + escapeXml(first) + '</hp:t></hp:run></hp:p>';
     let id = 1;
     blocks.forEach((block) => {
+      if (block.kind === "title" && !titleCarried && String(block.text || "") === first) {
+        // Paragraph 0 is this title; writing it again doubled the first line.
+        titleCarried = true;
+        return;
+      }
       const t = escapeXml(block.text || "");
-      const charRef = block.kind === "heading" ? '2' : '0';
       if (block.kind === "blank") {
         paras += '<hp:p id="' + id + '" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="0"><hp:t></hp:t></hp:run></hp:p>';
       } else if (block.kind === "title") {
