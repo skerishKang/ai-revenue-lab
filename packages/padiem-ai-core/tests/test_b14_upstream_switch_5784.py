@@ -140,3 +140,49 @@ async def test_https_transport_refuses_targets_it_did_not_choose() -> None:
         with pytest.raises(httpx.RequestError) as error:
             await transport.handle_async_request(httpx.Request("POST", url, content=b"{}"))
         assert fragment in str(error.value)
+
+
+# --- #6920: loopback mode, the same application next door over plain HTTP ---
+
+LOOPBACK_URL = "http://127.0.0.1:8789"
+
+
+def test_loopback_mode_resolves_a_loopback_http_origin() -> None:
+    resolved = up.resolve_b14_upstream(
+        {up.UPSTREAM_MODE_ENV: "loopback", up.UPSTREAM_URL_ENV: LOOPBACK_URL + "/"}
+    )
+    assert resolved.mode == up.MODE_LOOPBACK
+    assert resolved.origin == LOOPBACK_URL
+    # The same direct-origin transport family as https, never the binding.
+    assert resolved.uses_https and resolved.uses_loopback
+    assert not resolved.uses_service_binding
+
+
+@pytest.mark.parametrize(
+    "url,code",
+    [
+        ("http://b14.padiem.net", "b14_upstream_url_loopback_required"),
+        ("https://127.0.0.1:8789", "b14_upstream_url_loopback_required"),
+        ("http://127.0.0.1:8789/api", "b14_upstream_url_path_forbidden"),
+        ("http://user:pw@127.0.0.1:8789", "b14_upstream_url_credentials_forbidden"),
+        ("", "b14_upstream_url_required"),
+    ],
+)
+def test_loopback_mode_admits_only_a_bare_loopback_http_origin(url: str, code: str) -> None:
+    with pytest.raises(up.B14UpstreamConfigError) as caught:
+        up.resolve_b14_upstream({up.UPSTREAM_MODE_ENV: "loopback", up.UPSTREAM_URL_ENV: url})
+    assert caught.value.code == code
+
+
+def test_https_mode_still_refuses_a_loopback_http_origin() -> None:
+    # Loopback is its own switch position; the https rule does not loosen.
+    with pytest.raises(up.B14UpstreamConfigError) as caught:
+        up.resolve_b14_upstream({up.UPSTREAM_MODE_ENV: "https", up.UPSTREAM_URL_ENV: LOOPBACK_URL})
+    assert caught.value.code == "b14_upstream_url_scheme_invalid"
+
+
+def test_the_transport_accepts_a_loopback_origin_and_pins_it() -> None:
+    transport = up.B14HttpsTransport(origin=LOOPBACK_URL + "/", allowed_paths=ALLOWED)
+    assert transport.origin == LOOPBACK_URL
+    with pytest.raises(up.B14UpstreamConfigError):
+        up.B14HttpsTransport(origin="http://b14.padiem.net", allowed_paths=ALLOWED)

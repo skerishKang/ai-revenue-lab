@@ -27,6 +27,13 @@ UPSTREAM_URL_ENV = "B14_UPSTREAM_URL"
 
 MODE_BINDING = "binding"
 MODE_HTTPS = "https"
+# #6920: the same application on the same host, reached over plain HTTP on a
+# loopback address. On COM2 the HTTPS origin (b14.padiem.net) is served by a
+# Cloudflare PoP in Los Angeles, so a Chat process calling the B14 process next
+# to it paid 1.4-2.9 s of transit per call (measured 2026-11-05, loopback 2 ms).
+# The caller proof is unchanged: B14 authenticates the body, not the transport.
+MODE_LOOPBACK = "loopback"
+_LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
 
 # The Service Binding origin is a routing label, not a resolvable host.
 BINDING_ORIGIN = "https://b14.internal"
@@ -53,12 +60,34 @@ class B14Upstream:
 
     @property
     def uses_https(self) -> bool:
-        return self.mode == MODE_HTTPS
+        """The direct-origin family: a validated origin reached over the
+        caller's own outbound client with the caller proof. ``loopback`` is the
+        same transport on a loopback address; the name predates it."""
+        return self.mode in (MODE_HTTPS, MODE_LOOPBACK)
+
+    @property
+    def uses_loopback(self) -> bool:
+        return self.mode == MODE_LOOPBACK
 
 
-def normalize_origin(raw: str) -> str:
-    """Return the scheme+host only, refusing anything that could redirect."""
+def normalize_origin(raw: str, *, loopback: bool = False) -> str:
+    """Return the scheme+host only, refusing anything that could redirect.
+
+    ``loopback`` admits exactly one other shape: plain HTTP on a loopback host.
+    The HTTPS rule is unchanged for every other value, so a non-loopback
+    ``http://`` origin is still refused even in loopback mode.
+    """
     parsed = urlsplit(raw.strip())
+    if loopback:
+        if parsed.scheme != "http" or (parsed.hostname or "") not in _LOOPBACK_HOSTS:
+            raise B14UpstreamConfigError("b14_upstream_url_loopback_required")
+        if parsed.username or parsed.password:
+            raise B14UpstreamConfigError("b14_upstream_url_credentials_forbidden")
+        if parsed.query or parsed.fragment:
+            raise B14UpstreamConfigError("b14_upstream_url_query_forbidden")
+        if parsed.path.strip("/"):
+            raise B14UpstreamConfigError("b14_upstream_url_path_forbidden")
+        return urlunsplit(("http", parsed.netloc, "", "", ""))
     if parsed.scheme != _ALLOWED_SCHEME:
         raise B14UpstreamConfigError("b14_upstream_url_scheme_invalid")
     if not parsed.hostname:
@@ -90,6 +119,10 @@ def resolve_b14_upstream(environ: Mapping[str, str] | None = None) -> B14Upstrea
             # beats silently choosing one of the two.
             raise B14UpstreamConfigError("b14_upstream_url_ignored_in_binding_mode")
         return B14Upstream(mode=MODE_BINDING, origin=BINDING_ORIGIN)
+    if mode == MODE_LOOPBACK:
+        if not raw_url:
+            raise B14UpstreamConfigError("b14_upstream_url_required")
+        return B14Upstream(mode=MODE_LOOPBACK, origin=normalize_origin(raw_url, loopback=True))
     if mode != MODE_HTTPS:
         raise B14UpstreamConfigError("b14_upstream_mode_invalid")
     if not raw_url:
@@ -122,7 +155,12 @@ class B14HttpsTransport(httpx.AsyncBaseTransport):
     ) -> None:
         if not allowed_paths:
             raise ValueError("B14 https transport requires a path allowlist")
-        self._origin = normalize_origin(origin)
+        # The origin was validated by the switch already; re-validate it in the
+        # shape it has (loopback HTTP or HTTPS) so a value from anywhere else
+        # cannot steer this transport.
+        self._origin = normalize_origin(
+            origin, loopback=urlsplit(origin.strip()).scheme == "http",
+        )
         self._allowed_paths = frozenset(allowed_paths)
         self._headers_for_body = headers_for_body
         self._correlation_headers = correlation_headers
