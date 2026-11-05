@@ -121,13 +121,18 @@ PC_FILES_READ_MAX_BYTES = 20_000_000
 #: result when it is called again with the job id.
 #:
 #: #6919: the budget counts from the moment the handler is entered, so the
-#: context read and the dispatch itself spend it too. The call that carries
-#: this handler is cut at 30 s by the Chat gateway (local_engine_transport),
-#: and that 30 s also holds the Engine's admission (1.4–5.6 s observed) and
-#: receipt (0.6 s) around the handler. 18 s + one last status poll + the
-#: result read stays under 25 s in the worst observed case; 20 s counted from
-#: the dispatch reached 33 s and the gateway answered pc_dispatch_failed.
-PC_FILES_WAIT_SECONDS = 18
+#: context read and the dispatch itself spend it too. Two 30 s ceilings sit
+#: around it: the Chat gateway cuts its call to the Engine at 30 s
+#: (local_engine_transport), and the connector client cuts the whole
+#: /api/mcp request at 30 s. Measured on 2026-11-05 (four live reads):
+#: Engine admission 1.4–5.6 s, receipt 0.5–1.8 s, and Chat's own work
+#: around the Engine call 3.6 s; the loop below overshoots the budget by at
+#: most one status poll and the result read (~1.5 s). With 18 s the fourth
+#: read came back at 29.8 s on /api/mcp — 0.2 s under the ceiling. 14 s
+#: keeps the worst observed sum (14 + 1.5 + 5.6 + 1.8 + 3.6) at 26.5 s. A read
+#: the PC finishes later is handed back as running and answered by the next
+#: call; nothing is lost, only the first answer arrives sooner.
+PC_FILES_WAIT_SECONDS = 14
 PC_FILES_WAIT_ENV = "PADIEM_PC_FILES_WAIT_SECONDS"
 _PC_FILES_JOB_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 
@@ -955,8 +960,13 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
         wait_deadline = handler_started + _pc_files_wait_seconds()
         first_round = resume_dispatch is not None
         while True:
-            await asyncio.sleep(0 if first_round else 2)
-            first_round = False
+            if first_round:
+                first_round = False
+            else:
+                # #6919: never sleep past the deadline. The idle gap before
+                # the handback used to add up to 2 s on top of the budget;
+                # now the last poll happens as soon as the budget is spent.
+                await asyncio.sleep(max(0.0, min(2.0, wait_deadline - time.monotonic())))
             observed = await _signed_files_call(
                 service=service, request_factory=request_factory,
                 secret=secret, owner=owner, mode="command_status",
