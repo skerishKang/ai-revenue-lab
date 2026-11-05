@@ -124,12 +124,12 @@ def test_visible_product_copy_has_no_prototype_labels(base_url):
                 "본문을 이용할 수 없어 관련 기억을 확인할 수 없습니다."
             )
             page.evaluate("__smCurrentReaderLabel='사도행전 9장';updateReaderSourceBadge()")
-            assert badge.inner_text() == "본문 이용 불가"
+            assert badge.inner_text() == "본문 확인 불가"
 
             page.evaluate("openAuthGate()")
             page.wait_for_function("() => document.body.classList.contains('auth-gate-open')")
-            assert "현재 이용할 수 없습니다" in page.locator("#authGateCopy").inner_text()
-            assert page.locator("#authGatePrimary").is_hidden()
+            assert "파디엠 계정으로 로그인" in page.locator("#authGateCopy").inner_text()
+            assert page.locator("#authGatePrimary").inner_text() == "파디엠으로 로그인"
             _assert_no_dev_copy(page)
         finally:
             browser.close()
@@ -144,8 +144,8 @@ def test_memory_rail_tracks_current_chapter_and_shows_empty_state(base_url):
             _open_reader(page, base_url)
             page.evaluate(
                 """() => {
-                  localStorage.clear();
-                  localStorage.setItem('storymemory.pinnedEntities.v1', JSON.stringify(['아브라함','요셉']));
+                  BookAIStorage.clear();
+                  BookAIStorage.setItem('storymemory.pinnedEntities.v1', JSON.stringify(['아브라함','요셉']));
                   setReaderContext({kind:'bible',volume:'사도행전',chapter:9,chapterCount:28});
                 }"""
             )

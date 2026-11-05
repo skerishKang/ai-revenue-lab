@@ -252,7 +252,7 @@ def _open_settings(page):
 
 @pytest.mark.parametrize("width,height", [PHONE, TABLET])
 def test_every_chapter_dot_answers_its_own_press(base_url, width, height):
-    """The SELECTED SHEET label is decoration and must never eat a chapter tap."""
+    """Every dot stays individually tappable, including in the phone's scroll row."""
     with sync_playwright() as pw:
         browser = _launch(pw)
         page = browser.new_page(viewport={"width": width, "height": height})
@@ -260,7 +260,26 @@ def test_every_chapter_dot_answers_its_own_press(base_url, width, height):
             _open_library(page, base_url, width, height)
             _open_index(page)
             dots = page.evaluate("() => document.querySelectorAll('#index .chapter-dot').length")
-            misses = page.evaluate(HIT_TEST, "#index .chapter-dot")
+            misses = page.evaluate(
+                """(selector) => {
+                  const out = [];
+                  for (const el of document.querySelectorAll(selector)) {
+                    el.scrollIntoView({block: 'nearest', inline: 'center'});
+                    const b = el.getBoundingClientRect();
+                    const x = b.left + b.width / 2, y = b.top + b.height / 2;
+                    if (x < 0 || y < 0 || x > innerWidth || y > innerHeight) {
+                      out.push({miss: 'off-screen after scroll', rect: [b.x, b.y, b.width, b.height]});
+                      continue;
+                    }
+                    const hit = document.elementFromPoint(x, y);
+                    if (!hit || !(el.contains(hit) || hit.contains(el))) {
+                      out.push({miss: hit?.id ? '#' + hit.id : hit?.tagName.toLowerCase(), rect: [b.x, b.y, b.width, b.height]});
+                    }
+                  }
+                  return out;
+                }""",
+                "#index .chapter-dot",
+            )
         finally:
             browser.close()
     assert dots >= 16, "the chapter carousel lost its dots"

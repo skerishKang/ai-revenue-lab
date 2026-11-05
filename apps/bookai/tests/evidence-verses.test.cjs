@@ -95,7 +95,7 @@ test('clicking the displayed verse routes to its book, chapter, and exact locato
     setTimeout: () => 0
   };
   const html = fs.readFileSync(path.join(publicDir, 'index.html'), 'utf8');
-  const script = html.match(/<script id="sm-companion-evidence-ux-v1">([\s\S]*?)<\/script>/);
+  const script = html.match(/<script[^>]*id="sm-companion-evidence-ux-v1"[^>]*>([\s\S]*?)<\/script>/);
   assert.ok(script, 'B61 evidence presentation script is present');
   vm.runInNewContext(script[1], context);
 

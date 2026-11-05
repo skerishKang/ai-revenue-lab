@@ -18,7 +18,7 @@ except ModuleNotFoundError:  # pragma: no cover
 pytestmark = pytest.mark.skipif(sync_playwright is None, reason="playwright is not installed")
 
 PUBLIC = Path(__file__).resolve().parents[1] / "public"
-CHROME = os.environ.get("B61_CHROME_PATH") or r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+CHROME = os.environ.get("B61_CHROME_PATH")
 
 
 class StaticHandler(http.server.SimpleHTTPRequestHandler):
@@ -84,11 +84,11 @@ def _visible_button_boxes(page, selector: str):
 
 
 def test_mobile_theme_touch_targets_and_dark_memory_contrast(base_url):
-    if not Path(CHROME).is_file():
+    if CHROME and not Path(CHROME).is_file():
         pytest.skip("Chrome executable is unavailable")
 
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=True, executable_path=CHROME)
+        browser = playwright.chromium.launch(headless=True, executable_path=CHROME) if CHROME else playwright.chromium.launch(headless=True)
         page_errors = []
 
         # Existing users with no explicit preference retain the original default.

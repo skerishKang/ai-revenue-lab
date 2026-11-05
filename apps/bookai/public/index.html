@@ -3335,7 +3335,7 @@ function updateReaderSourceBadge(){
   const badge=document.getElementById('readerSourceBadge');
   if(!badge)return;
   const source=sourceForReaderContext();
-  badge.textContent=source.status==='demo'?'화면 예시 · 본문 아님':'본문 이용 불가';
+  badge.textContent=source.status==='demo'?'화면 예시 · 본문 아님':'본문 확인 불가';
   badge.title=source.status==='demo'?'화면 동작을 위한 예시이며 실제 성경 본문이 아닙니다.':'현재 자료의 본문을 표시할 수 없습니다.';
 }
 function unifiedProgressEntries(){

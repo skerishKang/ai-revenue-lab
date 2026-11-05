@@ -98,11 +98,11 @@ def _contrast(rgb_a: str, rgb_b: str) -> float:
 
 
 def test_translation_settings_persist_lang_labels_focus_contrast_and_zoom(base_url, tmp_path):
-    if not CHROME:
+    if CHROME and not Path(CHROME).is_file():
         pytest.skip("Chrome executable is unavailable")
 
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=True, executable_path=CHROME)
+        browser = playwright.chromium.launch(headless=True, executable_path=CHROME) if CHROME else playwright.chromium.launch(headless=True)
         page = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=1)
         page_errors = []
         page.on("pageerror", lambda error: page_errors.append(str(error)))
@@ -150,7 +150,7 @@ def test_translation_settings_persist_lang_labels_focus_contrast_and_zoom(base_u
         language.get_by_role("button", name="한글만").click()
         assert page.locator("body").evaluate("element => element.classList.contains('smr-en-hide')")
         assert page.locator("#readerPageBody .verse-en").first.is_visible() is False
-        saved = page.evaluate("JSON.parse(localStorage.getItem('storymemory.readerSettings.v1'))")
+        saved = page.evaluate("BookAILocalDB.flush().then(() => JSON.parse(BookAIStorage.getItem('storymemory.readerSettings.v1')))")
         assert saved["englishMode"] == "hide"
 
         language.get_by_role("button", name="한영 함께").click()
@@ -163,7 +163,7 @@ def test_translation_settings_persist_lang_labels_focus_contrast_and_zoom(base_u
         spacing.get_by_role("button", name="넓게").click()
         loose_height = page.locator("#readerPageBody .verse[lang='ko']").first.evaluate("el => parseFloat(getComputedStyle(el).lineHeight)")
         assert loose_height > initial_line_height
-        saved = page.evaluate("JSON.parse(localStorage.getItem('storymemory.readerSettings.v1'))")
+        saved = page.evaluate("BookAILocalDB.flush().then(() => JSON.parse(BookAIStorage.getItem('storymemory.readerSettings.v1')))")
         assert saved["englishMode"] == "show" and saved["fontSize"] == "xl" and saved["lineHeight"] == "loose"
 
         page.reload(wait_until="load")
