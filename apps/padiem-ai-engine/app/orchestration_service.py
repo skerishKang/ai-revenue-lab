@@ -79,6 +79,10 @@ from app.orchestration_continuation import (
 
 # #5015: the only plan agents whose tool arguments carry a PC execution target.
 # The target is a closed property: no other argument may ride along.
+#: #6919: how long a PC answer waits for its metrics row to be delivered; a
+#: slower delivery (B14's 5 s window, an unreachable ledger) finishes in the
+#: background instead of holding the answer.
+PC_WORK_METRICS_ANSWER_GRACE_SECONDS = 0.25
 _PC_PLAN_AGENT_IDS = frozenset({
     "agent:padiem:claw-pc-query@1",
     "agent:padiem:chat-pc-query@1",
@@ -651,6 +655,8 @@ class OrchestrationEngineService:
         self._pc_streaming_runtime_factory = pc_streaming_runtime_factory
         self._pc_tools_capability = pc_tools_capability
         self._pc_work_metrics_reporter = pc_work_metrics_reporter
+        # #6919: metrics deliveries still in flight after the answer left.
+        self._pc_work_metrics_tasks: set[asyncio.Task[Any]] = set()
         # #4379: the durable ledger owns the tool payloads. The runtime keeps
         # only references, so a long run does not retain every tool output in
         # the Worker.
@@ -1341,7 +1347,7 @@ class OrchestrationEngineService:
                 if not replay:
                     collector.finish(outcome, reason)
                     if self._pc_work_metrics_reporter is not None:
-                        await self._pc_work_metrics_reporter({
+                        await self._report_pc_work_metrics({
                             **collector.ledger_identity, "metrics": collector.snapshot(),
                         })
             except Exception:
@@ -1349,6 +1355,41 @@ class OrchestrationEngineService:
                 logging.getLogger(__name__).warning("pc_work_metrics_report_failed")
             finally:
                 reset_pc_work_metrics(token)
+
+    async def _report_pc_work_metrics(self, payload: dict[str, Any]) -> None:
+        """Deliver one PC-turn metrics row without holding the answer.
+
+        #6919: the reporter keeps its own window (5 s, matched to B14's deferred
+        ledger write) and used to be awaited inside the request, so every PC
+        turn whose ledger did not answer held the answer for the full 5 s
+        (2026-11-05: 26.6 s turns carried 5.0 s of this). The request now
+        waits ``PC_WORK_METRICS_ANSWER_GRACE_SECONDS`` and lets a slower
+        delivery finish in the background; the task is kept so it is never
+        collected mid-flight, and its completion callback logs a failure.
+        Nothing from the payload is logged, and nothing is retried here.
+        """
+        task = asyncio.ensure_future(self._pc_work_metrics_reporter(payload))
+        self._pc_work_metrics_tasks.add(task)
+        task.add_done_callback(self._pc_work_metrics_delivered)
+        # asyncio.wait neither cancels the task nor re-raises its failure (a
+        # shield would, and asyncio then logs the exception text itself).
+        done, _pending = await asyncio.wait({task}, timeout=PC_WORK_METRICS_ANSWER_GRACE_SECONDS)
+        if not done:
+            logging.getLogger(__name__).info("pc_work_metrics_delivery_deferred")
+
+    def _pc_work_metrics_delivered(self, task: asyncio.Task[Any]) -> None:
+        self._pc_work_metrics_tasks.discard(task)
+        if task.cancelled():
+            return
+        if task.exception() is not None:
+            # Observability never changes a model answer or logs its data.
+            logging.getLogger(__name__).warning("pc_work_metrics_report_failed")
+
+    async def drain_pc_work_metrics(self) -> None:
+        """Await every metrics delivery still in flight (shutdown and tests)."""
+        pending = [task for task in self._pc_work_metrics_tasks if not task.done()]
+        if pending:
+            await asyncio.gather(*pending, return_exceptions=True)
 
     async def orchestrate_payload(
         self, payload: Any, *, trusted_office_run_id: str | None = None,
