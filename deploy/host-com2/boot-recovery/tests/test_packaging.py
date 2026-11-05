@@ -61,14 +61,20 @@ class Packaging(unittest.TestCase):
             "padiem-mesh-queue.service", "padiem-file-lane.service",
             "padiem-oracle-mesh-executor.service", "padiem-connector-watch.service",
             "padiem-chat-com2.service", "padiem-broker.service",
-            "cloudflared.service", "meshcentral.service",
+            "cloudflared-padiem.service", "cloudflared-chat-com2.service",
+            "padiem-meshcentral.service",
             "padiem-offsite-backup.timer", "padiem-chat-com2-backup.timer",
             "padiem-broker-backup.timer",
         ):
             self.assertIn(expected, names)
         health = {entry["name"] for entry in data["health"]}
         self.assertIn("chat", health)
-        self.assertIn("broker", health)
+        # #6895 patrol: connector-watch.service is Type=oneshot fired by its
+        # timer, so it is inactive between runs and must never be a required
+        # service check; the timer carries the requirement.
+        by_name = {entry["unit"]: entry for entry in data["units"]}
+        self.assertFalse(by_name["padiem-connector-watch.service"]["required"])
+        self.assertTrue(by_name["padiem-connector-watch.timer"]["required"])
 
     def test_self_check_never_restarts_anything(self):
         source = (HERE / "wsl" / "boot_recovery.py").read_text(encoding="utf-8")

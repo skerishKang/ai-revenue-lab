@@ -266,6 +266,16 @@ jobs:
             [[ "$module" =~ ^tests/test_[A-Za-z0-9_]+\.py$ ]]
             test -f "$module"
           done
+          # #6890 prevention: a tests-only PR that adds a new app.b14_client
+          # importer without registering it in model_path_manifest.json used
+          # to merge green (the guard test itself was unchanged, so this lane
+          # never ran it) and then broke every other lane on main. The guard
+          # is a cheap static classification, so it always rides this lane.
+          manifest_guard="tests/test_5002_model_path_classification.py"
+          case " ${TESTS_ONLY_MODULES} " in
+            *" ${manifest_guard} "*) ;;
+            *) modules+=("$manifest_guard") ;;
+          esac
           uv run --locked python -m pytest -q "${modules[@]}"
 
   # #6801: chat_only PRs (shipped app/worker source) used to run no Chat pytest
