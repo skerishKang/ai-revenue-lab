@@ -39,7 +39,7 @@ function cacheControlFor(pathname, rules = parseHeaders(headersSource)) {
 }
 
 const LONG = 'public, max-age=604800, stale-while-revalidate=2592000';
-const SHELL = 'public, max-age=86400, stale-while-revalidate=604800';
+const SHELL = 'no-cache';
 
 test('_headers applies the required cache policy per path', () => {
   const cases = [
@@ -50,6 +50,7 @@ test('_headers applies the required cache policy per path', () => {
     ['/bookai-bootstrap.js', SHELL],
     ['/storymemory-source-ui.css', SHELL],
     ['/app-ai-transport.mjs', SHELL],
+    ['/storymemory-answer-normalize-v1.js', SHELL],
     ['/', 'no-cache'],
     ['/index.html', 'no-cache'],
     ['/version.json', 'no-cache'],
@@ -59,6 +60,8 @@ test('_headers applies the required cache policy per path', () => {
   for (const [pathname, expected] of cases) {
     assert.equal(cacheControlFor(pathname), expected, pathname);
   }
+  /* 261106 · 셸 자산은 no-cache(ETag 재검증)라서 하루 만료가 남아 있으면 안 된다. */
+  assert.ok(!headersSource.includes('max-age=86400'), 'shell assets must not carry a day-long max-age');
 });
 
 test('the worker applies the same policy to env.ASSETS responses', () => {
@@ -69,5 +72,6 @@ test('the worker applies the same policy to env.ASSETS responses', () => {
   for (const value of [LONG, SHELL, 'no-cache']) {
     assert.ok(workerSource.includes(value), value);
   }
+  assert.ok(!workerSource.includes('max-age=86400'), 'worker shell policy must not keep a day-long max-age');
   assert.ok(workerSource.includes('"cache-control": "no-store"'), 'API json responses stay no-store');
 });
