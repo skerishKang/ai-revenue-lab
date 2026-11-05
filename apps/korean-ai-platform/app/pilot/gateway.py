@@ -320,9 +320,21 @@ def _validate_body(raw: Any) -> dict:
     from .model_native_parameters import (
         OPTIONAL_FIELDS, UnsupportedModelParameter, validate_native_parameters,
     )
+    # #6838: on the BYOK lane the caller owns the model, so B14 has no
+    # registry knowledge to validate the reasoning choice against; it is
+    # shape-checked against the accepted vocabulary and still forwarded.
+    user_reasoning = None
+    if credential is not None and raw.get("reasoning_effort") is not None:
+        user_reasoning = raw["reasoning_effort"]
+        if user_reasoning not in {"minimal", "low", "medium", "high"}:
+            raise _InvalidBody(
+                "추론 강도는 기본·최소·낮음·중간·높음 중에서 선택해 주세요."
+            )
     try:
         native_options = validate_native_parameters(
-            model, {key: raw[key] for key in OPTIONAL_FIELDS if key in raw}
+            model,
+            {key: raw[key] for key in OPTIONAL_FIELDS
+             if key in raw and not (credential is not None and key == "reasoning_effort")}
         )
     except UnsupportedModelParameter as exc:
         raise _InvalidBody(str(exc)) from exc
@@ -341,6 +353,8 @@ def _validate_body(raw: Any) -> dict:
     # body shape it had before this field existed.
     if credential is not None:
         body["user_credential"] = credential
+    if user_reasoning not in (None, ""):
+        body["reasoning_effort"] = user_reasoning
     return body
 
 
@@ -1493,11 +1507,16 @@ async def _handle_user_credential_chat(
         return int((time.perf_counter() - attempt_started) * 1000)
 
     try:
+        # #6838: the BYOK user's reasoning effort travels unchanged to the
+        # caller's provider; the managed lane above keeps registry-owned.
+        reasoning_effort = body.get("reasoning_effort")
         response_data = await call_user_credential_chat_completions(
             credential=credential,
             messages=body["messages"],
             temperature=body.get("temperature"),
             max_tokens=body.get("max_tokens"),
+            **({"reasoning_effort": reasoning_effort}
+             if reasoning_effort is not None else {}),
             **({"transport": transport} if transport is not None else {}),
         )
     except PilotError as exc:

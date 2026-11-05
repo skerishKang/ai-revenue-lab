@@ -1141,6 +1141,11 @@ def _user_credential_headers(credential: UserCredential) -> dict[str, str]:
     }
 
 
+def _reasoning_field() -> str:
+    # Local import, matching this file's lazy reasoning_policy style.
+    from .reasoning_policy import REASONING_FIELD
+    return REASONING_FIELD
+
 def _user_credential_request_shape(
     credential: UserCredential,
     messages: list[dict[str, Any]],
@@ -1148,6 +1153,7 @@ def _user_credential_request_shape(
     max_tokens: int | None,
     *,
     streaming: bool,
+    reasoning_effort: str | None = None,
 ) -> dict[str, Any]:
     body: dict[str, Any] = {
         "model": credential.upstream_model,
@@ -1161,6 +1167,11 @@ def _user_credential_request_shape(
     # delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
+    # #6838: the BYOK user's reasoning effort travels unchanged. The
+    # provider's own refusal is surfaced as-is (no silent retry without
+    # it) and the gateway names the reasoning rejection in its response.
+    if reasoning_effort is not None:
+        body[_reasoning_field()] = reasoning_effort
     return body
 
 
@@ -1171,6 +1182,7 @@ async def call_user_credential_chat_completions(
     temperature: float | None = None,
     max_tokens: int | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
+    reasoning_effort: str | None = None,
 ) -> dict[str, Any]:
     """One completed call with the caller's own key: no pool, no roster, no retry.
 
@@ -1200,6 +1212,7 @@ async def call_user_credential_chat_completions(
     if transport is not None:
         client_kwargs["transport"] = transport
 
+    from .reasoning_policy import REASONING_FIELD, rejects_reasoning_effort
     start = time.monotonic()
     try:
         async with httpx.AsyncClient(**client_kwargs) as client:
@@ -1209,7 +1222,8 @@ async def call_user_credential_chat_completions(
                 credential.chat_completions_url,
                 headers=_user_credential_headers(credential),
                 json=_user_credential_request_shape(
-                    credential, messages, temperature, max_tokens, streaming=False
+                    credential, messages, temperature, max_tokens, streaming=False,
+                    reasoning_effort=reasoning_effort,
                 ),
             )
             async with aclosing(response):
@@ -1217,6 +1231,16 @@ async def call_user_credential_chat_completions(
                     error_bytes = await _read_bounded_body(
                         response, started_at=request_started,
                     )
+                    # #6838: the caller's key, the caller's reasoning
+                    # choice. A rejection is answered with one actionable
+                    # error and never retried without the choice.
+                    if response.status_code == 400 and rejects_reasoning_effort(error_bytes):
+                        from .errors import PilotError
+                        raise PilotError(
+                            "custom_provider_reasoning_rejected",
+                            "선택한 모델이 이 추론 강도를 받지 않았습니다. 추론 강도를 '기본'으로 바꾸거나 다른 모델을 선택해 주세요.",
+                            status_code=400,
+                        )
                     _raise_upstream_error(
                         response.status_code, credential.provider_id,
                         error_bytes.decode("utf-8", "replace"), model_id=model_id,

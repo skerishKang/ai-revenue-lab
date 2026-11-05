@@ -6,6 +6,8 @@ from collections.abc import Mapping
 
 _REF = ContextVar("engine_user_credential_ref", default=None)
 FIELD = "user_credential_ref"
+_REASONING = ContextVar("engine_byok_reasoning_effort", default=None)
+REASONING_FIELD = "reasoning_effort"
 
 
 def split_credential(payload):
@@ -21,11 +23,18 @@ def split_credential(payload):
     if (payload.get("app_id") != "padiem-chat" or not isinstance(ref, str) or not ref
             or not required or not payload.get("subject_id")):
         raise ValueError("User credential reference is required for this execution.")
+    # #6838: the BYOK user's reasoning choice rides the same hop. It
+    # is stripped from what Core sees and injected into the B14 body.
+    reasoning = policy.get("reasoning_effort")
+    _REASONING.set(reasoning if isinstance(reasoning, str) and reasoning else None)
     return {k: v for k, v in payload.items() if k != FIELD}, ref
 
 
 @contextmanager
 def credential_scope(ref):
+    # The reasoning choice is set by split_credential for this one request
+    # and re-assigned (possibly to None) by the next split; the per-task
+    # context keeps concurrent executions apart.
     token = _REF.set(ref)
     try:
         yield
@@ -40,6 +49,9 @@ def b14_body(raw):
     # Only the B14 body shape is decoded. The reference itself is not parsed.
     data = json.loads(raw)
     data[FIELD] = ref
+    reasoning = _REASONING.get()
+    if reasoning is not None:
+        data[REASONING_FIELD] = reasoning
     return json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
 
 
@@ -55,7 +67,7 @@ def core_model_policy(policy):
     # These are product replay markers, not model options. Core's closed
     # model-policy contract must never see them or the opaque credential.
     return {**{k: v for k, v in policy.items()
-               if k not in {'user_credential_required', 'byok_selection'}},
+               if k not in {'user_credential_required', 'byok_selection', REASONING_FIELD}},
             'max_retries': 0}
 
 

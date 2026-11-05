@@ -56,6 +56,19 @@ def _reference(document: dict | str | None = CREDENTIAL) -> dict:
     return body
 
 
+def _reference_with_reasoning() -> dict:
+    body = _reference()
+    body["reasoning_effort"] = "high"
+    return body
+
+
+def _rejects_reasoning() -> httpx.Response:
+    return httpx.Response(
+        400,
+        headers={"content-type": "application/json"},
+        content=json.dumps({"error": {"message": "reasoning_effort is not supported by this model"}}).encode("utf-8"),
+    )
+
 def _completed(body_text: str = "답", tokens=(3, 4, 7)) -> httpx.Response:
     return httpx.Response(
         200,
@@ -119,6 +132,81 @@ def _app_with(transport):
     app.state.stream_transport = transport
     return app
 
+
+# ---------------------------------------------------------------------------
+# 2. #6838: the caller's reasoning effort travels unchanged to the wire, and a
+# provider rejection is answered with one actionable error (no silent retry).
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_the_callers_reasoning_effort_reaches_the_provider_body(
+    live_lane, monkeypatch, captured
+):
+    calls, written = captured
+    transport = _transport(calls, lambda _request: _completed())
+    app = _app_with(transport)
+
+    from starlette.testclient import TestClient
+
+    with TestClient(app) as client:
+        response = client.post(
+            CHAT_COMPLETIONS,
+            json=_reference_with_reasoning(),
+        )
+    await drain()
+
+    assert response.status_code == 200, response.text
+    sent = json.loads(calls[0].content.decode("utf-8"))
+    assert sent["reasoning_effort"] == "high"
+    assert calls[0].headers["Authorization"] == f"Bearer {SENTINEL}"
+
+
+@pytest.mark.asyncio
+async def test_a_reasoning_rejection_is_named_and_never_retried(
+    live_lane, monkeypatch, captured
+):
+    calls, written = captured
+    transport = _transport(calls, lambda _request: _rejects_reasoning())
+    app = _app_with(transport)
+
+    from starlette.testclient import TestClient
+
+    with TestClient(app) as client:
+        response = client.post(
+            CHAT_COMPLETIONS,
+            json=_reference_with_reasoning(),
+        )
+    await drain()
+
+    assert response.status_code == 400, response.text
+    error = response.json()["error"]
+    assert error["code"] == "custom_provider_reasoning_rejected"
+    assert "추론 강도" in error["message"] and "기본" in error["message"]
+    assert "reasoning_effort" not in response.text
+    assert len(calls) == 1
+    record = written[0]
+    assert record.error_code == "custom_provider_reasoning_rejected"
+    assert record.credential_source == "user"
+
+
+@pytest.mark.asyncio
+async def test_no_reasoning_field_is_sent_when_the_caller_chose_none(
+    live_lane, monkeypatch, captured
+):
+    calls, _written = captured
+    transport = _transport(calls, lambda _request: _completed())
+    app = _app_with(transport)
+
+    from starlette.testclient import TestClient
+
+    with TestClient(app) as client:
+        response = client.post(CHAT_COMPLETIONS, json=_reference())
+    await drain()
+
+    assert response.status_code == 200, response.text
+    sent = json.loads(calls[0].content.decode("utf-8"))
+    assert "reasoning_effort" not in sent
 
 # ---------------------------------------------------------------------------
 # 1. the key is used, and it is used nowhere else

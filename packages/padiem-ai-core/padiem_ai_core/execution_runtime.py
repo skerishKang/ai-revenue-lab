@@ -314,7 +314,7 @@ def _error_class_for_b14(code: str) -> ErrorClass:
         "upstream_response_too_large",
     }:
         return ErrorClass.PROVIDER_BAD_RESPONSE
-    if code == "upstream_request_error":
+    if code in {"upstream_request_error", "custom_provider_reasoning_rejected"}:
         return ErrorClass.INPUT_ERROR
     return ErrorClass.INTERNAL_ERROR
 
@@ -325,6 +325,7 @@ def _safe_message_for_b14(code: str) -> str:
         "upstream_rate_limited": "Model execution is temporarily rate limited.",
         "upstream_auth_error": "Model execution authorization failed.",
         "upstream_request_error": "Model execution request was rejected.",
+        "custom_provider_reasoning_rejected": "Model execution rejected the reasoning effort.",
         "upstream_server_error": "Model execution service failed.",
         "upstream_unavailable": "Model execution service is unavailable.",
         "upstream_response_too_large": "Model execution response exceeded the safety limit.",

@@ -556,20 +556,62 @@ async def test_byok_reasoning_provider_rejection_gets_clear_korean_copy():
 
 
 @pytest.mark.asyncio
-async def test_byok_via_b14_refuses_a_reasoning_choice_with_guidance():
-    # Settings freezes per-field, so the relay flag rides the app state the
-    # same way app.state overrides do elsewhere in this file.
-    app, _, credential_store, _, _ = build_app()
+async def test_byok_via_b14_forwards_the_reasoning_choice_to_the_bridge():
+    # #6838: the relayed lane now carries the user's reasoning effort in the
+    # engine request policy; B14 applies it to the user-credential call.
+    captured = {}
+
+    class FakeBridge:
+        async def start(self, **kwargs):
+            captured.update(kwargs)
+            class _Result:
+                answer = "b14 경유 답변"
+            return _Result()
+
+    app, history, credential_store, _, _ = build_app()
     app.state.settings = replace(app.state.settings, byok_via_b14=True)
+    app.state.orchestration_bridge = FakeBridge()
     await credential_store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY)
 
     payload = chat_payload()
     payload["custom"]["reasoning_effort"] = "high"
     response = await request(app, "POST", "/api/chat", uid=OWNER, json_body=payload)
-    assert response.status_code == 422, response.text
+    assert response.status_code == 200, response.text
+    assert response.json()["answer"] == "b14 경유 답변"
+    assert captured["reasoning_effort"] == "high"
+    assert captured["byok_selection"] == {"provider": PROVIDER_ID, "model": MODEL_ID}
+    saved = history.conversations[response.json()["conversation_id"]]
+    assert saved["messages"][1]["content"] == "b14 경유 답변"
+
+
+@pytest.mark.asyncio
+async def test_byok_via_b14_reasoning_rejection_gets_clear_korean_copy():
+    # #6838: the provider refused the reasoning value behind B14. The code
+    # survives the engine relay and the caller gets one actionable fix;
+    # the request is never retried without the choice.
+    class RejectingBridge:
+        async def start(self, **kwargs):
+            from app.orchestration_bridge import B62OrchestrationError
+            raise B62OrchestrationError(
+                "custom_provider_reasoning_rejected",
+                "선택한 모델이 이 추론 강도를 받지 않았습니다. 추론 강도를 '기본'으로 바꾸거나 다른 모델을 선택해 주세요.",
+                status_code=400,
+            )
+
+    app, _, credential_store, recorder, _ = build_app()
+    app.state.settings = replace(app.state.settings, byok_via_b14=True)
+    app.state.orchestration_bridge = RejectingBridge()
+    await credential_store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY)
+
+    payload = chat_payload()
+    payload["custom"]["reasoning_effort"] = "high"
+    response = await request(app, "POST", "/api/chat", uid=OWNER, json_body=payload)
+    assert response.status_code == 400, response.text
     body = response.json()["error"]
-    assert body["code"] == "reasoning_effort_b14_via_unsupported"
-    assert "기본" in body["message"] and "B14" in body["message"]
+    assert body["code"] == "custom_provider_reasoning_rejected"
+    assert "추론 강도" in body["message"] and "기본" in body["message"]
+    assert len(recorder.requests) == 0
+
 
 @pytest.mark.parametrize(
     ("status", "body", "expected_status", "code"),
@@ -581,6 +623,7 @@ async def test_byok_via_b14_refuses_a_reasoning_choice_with_guidance():
         (418, {"error": "vendor-teapot"}, 502, "custom_provider_rejected"),
     ],
 )
+@pytest.mark.asyncio
 async def test_chat_custom_maps_provider_failures_without_vendor_leak(
     status, body, expected_status, code
 ):

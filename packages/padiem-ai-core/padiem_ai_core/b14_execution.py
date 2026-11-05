@@ -266,6 +266,22 @@ def _safe_reason_codes(value: Any) -> tuple[str, ...]:
     return tuple(result)
 
 
+def _b14_reasoning_rejection_code(raw: bytes) -> str | None:
+    # A BYOK reasoning choice the model refused is answered with one
+    # enumerated code, so the engine can relay an actionable error instead
+    # of a generic 400 (#6838).
+    try:
+        data = json.loads(bytes(raw).decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    if not isinstance(data, Mapping):
+        return None
+    error = data.get("error")
+    if not isinstance(error, Mapping):
+        return None
+    code = error.get("code")
+    return code if code == "custom_provider_reasoning_rejected" else None
+
 def _b14_rate_limit_diagnostic(raw: bytes) -> str | None:
     # The status alone cannot tell a provider free-tier exhaustion from a transient
     # capacity 429, and B14 already answers with one of its enumerated codes.
@@ -732,6 +748,13 @@ class B14ExecutionClient:
                 diagnostic_class=_b14_rate_limit_diagnostic(raw),
             )
         if 400 <= status_code < 500:
+            reasoning_rejection = _b14_reasoning_rejection_code(raw)
+            if reasoning_rejection is not None:
+                raise B14ExecutionError(
+                    reasoning_rejection,
+                    "Business 14 rejected the reasoning choice.",
+                    upstream_status_code=status_code,
+                )
             raise B14ExecutionError(
                 "upstream_request_error",
                 "Business 14 rejected the request.",
