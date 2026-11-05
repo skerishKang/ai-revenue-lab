@@ -117,8 +117,11 @@ def test_a_fast_dispatch_still_polls_through_the_remaining_budget(monkeypatch):
 
 
 def test_the_default_budget_leaves_room_for_admission_and_receipt():
-    # Chat gateway cut 30 s; worst observed admission 5.6 s + receipt 0.6 s;
-    # one last status poll and the result read fit in the rest.
-    gateway_cut = 30.0
-    observed_overhead = 5.6 + 0.6
-    assert PC_FILES_WAIT_SECONDS + observed_overhead < gateway_cut - 4.0
+    # Both ceilings are 30 s: the Chat gateway's cut of the Engine call and the
+    # connector client's cut of the whole /api/mcp request. Worst observed on
+    # 2026-11-05: admission 5.6 s, receipt 1.8 s, Chat's own work 3.6 s, and
+    # the loop's overshoot (one poll + the result read) 1.5 s. The sum must
+    # stay clear of 30 s by a margin wider than the day's measurement noise.
+    ceiling = 30.0
+    observed_overhead = 5.6 + 1.8 + 3.6 + 1.5
+    assert PC_FILES_WAIT_SECONDS + observed_overhead <= ceiling - 3.0
