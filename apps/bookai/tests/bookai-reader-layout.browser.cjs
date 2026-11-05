@@ -1,6 +1,9 @@
 const {chromium}=require('playwright');const assert=require('node:assert/strict');
 // Owner decision 2026-11-05: the Bible search panel must not create a reader
 // grid row. At 375x812 the paper stack must keep top <= 120 and height >= 600.
+// The 2026-11-05 reader layout regressions (page count, sheet tap targets, panel
+// width, entry time) live in test_bookai_reader_layout_mobile_261105.py: this file
+// attaches to the 18782 fixture server that CI does not start, so it cannot gate them.
 (async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.B61_CHROME_PATH});try{
   const p=await browser.newPage({viewport:{width:375,height:812}});
   await p.goto(process.env.B61_BASE_URL||'http://127.0.0.1:18782/',{waitUntil:'load'});
