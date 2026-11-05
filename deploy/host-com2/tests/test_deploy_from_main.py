@@ -168,7 +168,9 @@ b14_app=$B14_APP
 queue_root=$QUEUE_ROOT
 systemctl_bin=$SYSTEMCTL_BIN
 journalctl_bin=$JOURNALCTL_BIN
-oracle_mesh_root=$ORACLE_MESH_ROOT
+executor_root=$ORACLE_MESH_ROOT
+executor_src=$executor_root/kagent-src
+executor_releases=$executor_root/src
 python_bin=$PYTHON_BIN
 git_bin=git
 ai_check=${FAKE_AI_MODE:-warn}
@@ -1473,7 +1475,13 @@ class MigrationServiceUserGitTest(DeployHarness):
             for line in (self.tmp / "git-argv.log").read_text(encoding="utf-8").splitlines()
             if line
         ]
-        shows = [line for line in calls if " show " in " " + line + " "]
+        # The import lists read code with `git show` too; the migration read is
+        # the one this test is about.
+        shows = [
+            line
+            for line in calls
+            if " show " in " " + line + " " and "apps/padiem-chat/migrations/" in line
+        ]
         # Exactly one read of the pending file, and it carries no per-command
         # trust exemption: the reading account already owns the object store.
         self.assertEqual(len(shows), 1, calls)
