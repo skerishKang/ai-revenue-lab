@@ -45,6 +45,7 @@ def base_url():
 
 def _open_acts_reader(page, base_url):
     page.goto(base_url + "?view=reader", wait_until="load")
+    page.wait_for_function("() => window.__smReaderSettingsV1 && typeof window.__smReaderSettingsV1.get === 'function'")
     page.wait_for_selector("#smalOverflowBtn")
     page.wait_for_selector("#readerPageBody")
     # Exercise the production passage renderer without depending on a remote DB
@@ -167,6 +168,7 @@ def test_translation_settings_persist_lang_labels_focus_contrast_and_zoom(base_u
         assert saved["englishMode"] == "show" and saved["fontSize"] == "xl" and saved["lineHeight"] == "loose"
 
         page.reload(wait_until="load")
+        page.wait_for_function("() => window.__smReaderSettingsV1 && typeof window.__smReaderSettingsV1.get === 'function'")
         assert page.evaluate("window.__smReaderSettingsV1.get().fontSize") == "xl"
         assert page.evaluate("window.__smReaderSettingsV1.get().lineHeight") == "loose"
         _open_acts_reader(page, base_url)
