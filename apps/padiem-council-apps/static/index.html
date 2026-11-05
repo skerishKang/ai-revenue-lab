@@ -12,7 +12,7 @@
 
     * Chat/Claw 화면과 별도 진입점이며, 임미란 의원 홈페이지(별도 래퍼)와도 다른 사용자 진입이다.
     * 이 앱은 자체 AI 엔진·라우터·인증·저장을 두지 않는다. 생성은 기존 PADIEM 공용 계약
-      (POST /api/chat, B14 라우터)을, 저장은 기존 프로젝트 파일 계약(/api/projects/{pid}/files)을,
+      (POST /api/chat/stream, B14 라우터)을, 저장은 기존 프로젝트 파일 계약(/api/projects/{pid}/files)을,
       로그인은 기존 세션 계약(POST /api/auth/password/login, GET /api/auth/status)을 그대로 사용한다.
     * 로그인이 필요하면 이 화면 안에서 한다. PADIEM Chat 홈페이지로 이동시키지 않는다.
       Google 로그인은 제공자 왕복이 끝나면 이 화면으로 돌아온다(서명된 상태값의 허용 목록으로만 판정).
@@ -24,7 +24,7 @@
   -->
   <link rel="stylesheet" href="/padiem-themes.css" />
   <link rel="stylesheet" href="./static/council-app.css?v=ab2c8625" />
-  <script type="application/json" id="padiem-asset-versions">{"assets/ATTRIBUTION.md":"ec91846d","assets/IMAGE-SLOTS.md":"62758390","assets/fonts/LICENSE-MaruBuri-NAVER.txt":"cacefe00","assets/fonts/LICENSE-PlayfairDisplay-OFL-1.1.txt":"aac9acd4","assets/fonts/LICENSE-Pretendard-OFL-1.1.txt":"14d6e897","assets/fonts/MaruBuri-Bold.woff2":"c8af5b6f","assets/fonts/MaruBuri-Regular.woff2":"e57ef6cc","assets/fonts/PlayfairDisplay-Bold-latin.woff2":"e90a9418","assets/fonts/Pretendard-Bold.woff2":"2d1cd41d","assets/fonts/Pretendard-Medium.woff2":"faae7e3f","assets/fonts/Pretendard-Regular.woff2":"5f473645","assets/fonts/Pretendard-SemiBold.woff2":"dae60b27","assets/meeting-card.jpg":"7a63c4af","assets/parliament-fr-hero.jpg":"6d938045","assets/parliament-hero.jpg":"9f5a06e5","assets/parliament-uk-hero.jpg":"c6f02283","assets/parliament-us-hero.jpg":"46393697","assets/sns-card.jpg":"b350d00a","assets/speech-card.jpg":"b3abc302","council-app.css":"ab2c8625","council-app.js":"e05cc1af","document-export.js":"fc9391f2","pc-file-exchange.css":"180d53ab","pc-file-exchange.js":"24c726d0","photo-resize.js":"f9cf022a","project-file-upload.js":"cd5bd8cd","tus-upload.js":"0b0a8aa7"}</script>
+  <script type="application/json" id="padiem-asset-versions">{"assets/ATTRIBUTION.md":"ec91846d","assets/IMAGE-SLOTS.md":"62758390","assets/fonts/LICENSE-MaruBuri-NAVER.txt":"cacefe00","assets/fonts/LICENSE-PlayfairDisplay-OFL-1.1.txt":"aac9acd4","assets/fonts/LICENSE-Pretendard-OFL-1.1.txt":"14d6e897","assets/fonts/MaruBuri-Bold.woff2":"c8af5b6f","assets/fonts/MaruBuri-Regular.woff2":"e57ef6cc","assets/fonts/PlayfairDisplay-Bold-latin.woff2":"e90a9418","assets/fonts/Pretendard-Bold.woff2":"2d1cd41d","assets/fonts/Pretendard-Medium.woff2":"faae7e3f","assets/fonts/Pretendard-Regular.woff2":"5f473645","assets/fonts/Pretendard-SemiBold.woff2":"dae60b27","assets/meeting-card.jpg":"7a63c4af","assets/parliament-fr-hero.jpg":"6d938045","assets/parliament-hero.jpg":"9f5a06e5","assets/parliament-uk-hero.jpg":"c6f02283","assets/parliament-us-hero.jpg":"46393697","assets/sns-card.jpg":"b350d00a","assets/speech-card.jpg":"b3abc302","council-app.css":"ab2c8625","council-app.js":"c5dcfa0c","document-export.js":"ddad0a22","pc-file-exchange.css":"180d53ab","pc-file-exchange.js":"24c726d0","photo-resize.js":"f9cf022a","project-file-upload.js":"e658f90e","tus-upload.js":"ae495d74"}</script>
 </head>
 <body class="council-body">
   <a class="council-skip" href="#councilMain">본문 바로가기</a>
@@ -231,6 +231,6 @@
       </p>
     </footer>
   </main>
-  <script src="./static/council-app.js?v=e05cc1af" defer></script>
+  <script src="./static/council-app.js?v=c5dcfa0c" defer></script>
 </body>
 </html>

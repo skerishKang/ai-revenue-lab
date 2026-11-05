@@ -5,14 +5,16 @@
  * The shared layer re-states the SAME shipped contracts as the original
  * util-menu.js (apps/padiem-chat/static/util-menu.js, after PR #5916):
  *
- *   - generation:  POST /api/chat {messages:[{role:"user",content}],
- *     mode:"auto", tier, util:"speech"|"sns"|"meeting"}. The util scope is
- *     the #5916 routing label that keeps a declared utility out of the
- *     shared native-calendar branch (a meeting text containing
- *     확인/추가/일정 must reach the model, not the calendar clarify);
- *     unknown scopes are refused server-side before any model call. tier
- *     comes from window.PadiemTierSelection when it returns one of
- *     free/plus/pro/max/admin, otherwise "free". No timezone, no
+ *   - generation:  POST /api/chat/stream {messages:[{role:"user",content}],
+ *     tier, util:"speech"|"sns"|"meeting"} — the answer is painted as it
+ *     streams (#6556). There is no "mode" field: automatic model routing
+ *     was retired (2026-11-02) and the stream contract refuses the key.
+ *     The util scope is the #5916 routing label that keeps a declared
+ *     utility out of the shared native-calendar branch (a meeting text
+ *     containing 확인/추가/일정 must reach the model, not the calendar
+ *     clarify); unknown scopes are refused server-side before any model
+ *     call. tier comes from window.PadiemTierSelection when it returns one
+ *     of free/plus/pro/max/admin, otherwise "free". No timezone, no
  *     calendar_turn_id.
  *   - storage:     /api/projects, /api/projects/{pid}/files (text/plain JSON
  *     writes; details read back via data.file.content)
@@ -760,12 +762,14 @@
     preview: "가져온 글",
     unavailable: "PC 파일 창을 열지 못했습니다. 잠시 후 다시 시도해 주세요.",
     unreadable: "이 파일은 참고 글로 읽지 못했어요. 글자가 들어 있는 문서를 골라 주세요.",
+    // #6598의 구형 .hwp 안내(사유 코드 legacy_hwp_unsupported와 같은 문장).
+    // 구형 .hwp는 어느 경로로도 읽지 않고 곧바로 이 안내로 거절한다 — 거절
+    // 이유가 아니라 다음에 할 일(HWPX로 저장)을 말한다. 2026-11-05: #6630
+    // 통합 때 같은 키가 한 번 더 들어가 이 문장이 "아직 지원하지 않습니다"에
+    // 덮였던 것을 되돌렸다. 키는 하나만 둔다.
     hwpLegacy: "한글에서 ‘다른 이름으로 저장 → HWPX’로 저장한 뒤 다시 올려 주세요. HWPX로 저장하기: ① 한글에서 문서를 열고 ② 파일 - 다른 이름으로 저장을 고른 뒤 ③ 파일 형식을 HWPX로 정해 저장하세요.",
     hwpEncrypted: "암호가 걸린 한글 파일은 읽을 수 없어요.",
     hwpDistributable: "배포용으로 저장된 한글 파일은 읽을 수 없어요.",
-    // #6598과 같은 사유 코드(legacy_hwp_unsupported)의 문장 — 구형 .hwp는
-    // 어느 경로로도 읽지 않고 곧바로 이 안내로 거절한다.
-    hwpLegacy: "기존 HWP 파일은 아직 지원하지 않습니다.",
     laneDown: "파일 읽기 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.",
     docReading: "가져온 문서를 읽는 중…",
     noPc: "컴퓨터를 연결하면 예전 글을 가져올 수 있습니다.",
@@ -933,11 +937,10 @@
         const refused = await res.json().catch(() => null);
         const code = refused && refused.error && typeof refused.error.code === "string"
           ? refused.error.code : "";
+        // #6598: the server's legacy-.hwp refusal carries the same sentence.
         if (code === "legacy_hwp_unsupported") return { error: PC_REF_COPY.hwpLegacy };
         if (code === "hwp_encrypted") return { error: PC_REF_COPY.hwpEncrypted };
         if (code === "hwp_distributable") return { error: PC_REF_COPY.hwpDistributable };
-        // #6598이 이 경로에 같은 사유 코드를 싣는 순간에도 같은 문장이 나온다.
-        if (code === "legacy_hwp_unsupported") return { error: PC_REF_COPY.hwpLegacy };
         if (code === "file_lane_unavailable") return { error: PC_REF_COPY.laneDown };
         return null;
       }

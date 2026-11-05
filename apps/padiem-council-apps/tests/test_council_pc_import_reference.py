@@ -55,18 +55,26 @@ def test_a_pc_document_becomes_a_reference_through_the_project_lane() -> None:
     assert "GET /api/projects/p1/files/f1" in obs["endpoints"]
 
 
+LEGACY_HWP_GUIDANCE = "한글에서 ‘다른 이름으로 저장 → HWPX’로 저장한 뒤 다시 올려 주세요."
+
+
 def test_a_legacy_hwp_pick_is_refused_with_the_6598_reason() -> None:
     obs = run("pc_import")
     hwp = obs["hwp"]
-    assert hwp["status"] == "기존 HWP 파일은 아직 지원하지 않습니다."
+    # #6598: the refusal names the next step (save as HWPX), the same sentence
+    # Chat shows for the legacy_hwp_unsupported reason code — not a bare
+    # "not supported yet". 2026-11-05: #6630 had re-declared the key with that
+    # bare sentence, which silently won; this pins the guidance.
+    assert hwp["status"].startswith(LEGACY_HWP_GUIDANCE)
+    assert "아직 지원하지 않습니다" not in hwp["status"]
     # 거절은 형식에 대한 것 — 어떤 읽기(파일·참조)도 부르지 않았다.
     assert hwp["dispatchesAfter"] == 1
     assert hwp["uploadsAfter"] == 1
     assert hwp["referenceReadsAfter"] == 0
-    # #6598이 아직 머지 전이어도 사유 코드 문자열은 미리 맞춰 둔다 — 이 경로가
-    # 같은 코드를 답하는 순간에도 같은 문장이 나온다.
+    # The server's reason code on the reference route answers with the same sentence.
     assert 'code === "legacy_hwp_unsupported"' in JS
-    assert "기존 HWP 파일은 아직 지원하지 않습니다." in JS
+    assert JS.count("hwpLegacy:") == 1, "the copy key is declared once — a second declaration silently wins"
+    assert LEGACY_HWP_GUIDANCE in JS
 
 
 def test_a_text_file_still_imports_through_the_reference_route() -> None:

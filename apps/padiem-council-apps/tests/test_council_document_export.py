@@ -18,6 +18,7 @@ from __future__ import annotations
 import base64
 import io
 import json
+import re
 import xml.etree.ElementTree as ET
 import zipfile
 
@@ -74,6 +75,28 @@ def test_the_hwpx_package_is_a_hangul_readable_owpml_zip():
         assert expected in manifest
 
 
+def _hwpx_texts(zf: zipfile.ZipFile) -> list[str]:
+    """Paragraph texts of section0 in document order (one <hp:t> per paragraph)."""
+    section = zf.read("Contents/section0.xml").decode("utf-8")
+    return re.findall(r"<hp:t>([^<]*)</hp:t>", section)
+
+
+def test_the_hwpx_title_is_written_once():
+    # 2026-11-05: paragraph 0 (the page-setup paragraph) already carries the
+    # title, and the title block was written again as paragraph 1 — every
+    # 한글 download opened with the same title on two lines. DOCX never did.
+    seen = run("export")
+    speech = _hwpx_texts(_zip_of(seen["speech"]["hwpx"]))
+    assert speech[0] == "주민 감사의 밤", "paragraph 0 is the title"
+    assert speech.count("주민 감사의 밤") == 1, speech[:3]
+    assert speech[1] == "존경하는 시민 여러분,", "the body follows the title directly"
+    book = _hwpx_texts(_zip_of(seen["book"]["hwpx"]))
+    assert book[0] == "10월 활동집"
+    assert book.count("10월 활동집") == 1, book[:3]
+    docx = _zip_of(seen["speech"]["docx"]).read("word/document.xml").decode("utf-8")
+    assert docx.count("<w:t>주민 감사의 밤</w:t>") == 1, "DOCX keeps its single title"
+
+
 def test_the_docx_package_is_a_word_readable_ooxml_zip():
     seen = run("export")
     zf = _zip_of(seen["speech"]["docx"])
@@ -105,6 +128,9 @@ def test_the_book_export_keeps_the_drafts_structure():
     docx = _zip_of(book["docx"]).read("word/document.xml").decode("utf-8")
     assert "제1장 주민 간담회" in docx and 'w:val="28"' in docx, "소제목은 볼드 큰 글자"
     assert "관내 주민 40명이 참석해 정자 조성을 논의했다." in docx
+    # 2026-11-05: 제목 바로 뒤의 기간 줄은 기간 서식(기울임·회색)으로 간다. 전에는
+    # 그 분기가 제목이 쓴 `first` 뒤에 있어 닿지 않았고, 기간 줄이 본문으로 나갔다.
+    assert '<w:i/><w:color w:val="555555"/></w:rPr><w:t>기간: 2026-10-01 ~ 2026-10-31</w:t>' in docx
 
 
 def test_the_export_module_rides_the_same_versioned_asset_lane():
