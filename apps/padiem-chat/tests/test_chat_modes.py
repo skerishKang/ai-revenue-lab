@@ -79,7 +79,9 @@ def test_the_accepted_request_keys_no_longer_name_a_mode():
     from app import request_contract
 
     source = (ROOT / "app" / "request_contract.py").read_text(encoding="utf-8")
-    accepted = source.split("if set(raw) - {", 1)[1].split("}:", 1)[0]
+    # The accepted-key set literal, whichever statement holds it (#6921 moved it
+    # out of the if-test so the refused key can be named in the journal).
+    accepted = source.split("set(raw) - {", 1)[1].split("}", 1)[0]
     assert '"mode"' not in accepted
     assert '"messages"' in accepted and '"tier"' in accepted and '"skill"' in accepted
 

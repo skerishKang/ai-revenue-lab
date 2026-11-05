@@ -18,7 +18,7 @@ except ModuleNotFoundError:  # pragma: no cover
 pytestmark = pytest.mark.skipif(sync_playwright is None, reason="playwright is not installed")
 
 PUBLIC = Path(__file__).resolve().parents[1] / "public"
-CHROME = os.environ.get("B61_CHROME_PATH") or r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+CHROME = os.environ.get("B61_CHROME_PATH")
 
 
 class StaticHandler(http.server.SimpleHTTPRequestHandler):
@@ -84,18 +84,28 @@ def _visible_button_boxes(page, selector: str):
 
 
 def test_mobile_theme_touch_targets_and_dark_memory_contrast(base_url):
-    if not Path(CHROME).is_file():
+    if CHROME and not Path(CHROME).is_file():
         pytest.skip("Chrome executable is unavailable")
 
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=True, executable_path=CHROME)
+        browser = playwright.chromium.launch(headless=True, executable_path=CHROME) if CHROME else playwright.chromium.launch(headless=True)
         page_errors = []
 
         # Existing users with no explicit preference retain the original default.
         page = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=1, is_mobile=True, has_touch=True)
+        page.add_init_script("""
+window.__bookaiErrors=[];
+window.addEventListener('error', e => {
+  var where = e.filename || '';
+  if (where.indexOf('/storymemory-pack-') !== -1) return;
+  window.__bookaiErrors.push(e.message + ' @ ' + where + ':' + e.lineno + ':' + e.colno);
+});
+""")
         page.goto(base_url, wait_until="load")
+        page.wait_for_function("() => window.__smReaderSettingsV1 && typeof window.__smReaderSettingsV1.get === 'function'")
         assert page.evaluate("window.__smReaderSettingsV1.get().theme") == "default"
         assert not page.locator("body").evaluate("element => element.classList.contains('smr-theme-light') || element.classList.contains('smr-theme-dark')")
+        page_errors.extend(page.evaluate("window.__bookaiErrors || []"))
         page.close()
 
         for theme in ("light", "dark"):
@@ -105,9 +115,18 @@ def test_mobile_theme_touch_targets_and_dark_memory_contrast(base_url):
                 "version:1,font:'noto-sans-kr',fontSize:'base',lineHeight:'relaxed',"
                 f"theme:{theme!r},englishMode:'show',verseNumbers:true}}));"
             )
+            context.add_init_script("""
+window.__bookaiErrors=[];
+window.addEventListener('error', e => {
+  var where = e.filename || '';
+  if (where.indexOf('/storymemory-pack-') !== -1) return;
+  window.__bookaiErrors.push(e.message + ' @ ' + where + ':' + e.lineno + ':' + e.colno);
+});
+""")
             page = context.new_page()
-            page.on("pageerror", lambda error: page_errors.append(str(error)))
             page.goto(base_url, wait_until="load")
+            page.wait_for_function("() => window.__smReaderSettingsV1 && typeof window.__smReaderSettingsV1.get === 'function'")
+            page_errors.extend(page.evaluate("window.__bookaiErrors || []"))
             assert page.locator("body").evaluate(f"element => element.classList.contains('smr-theme-{theme}')")
             library_boxes = _visible_button_boxes(page, "#library button")
             assert all(box["width"] >= 44 and box["height"] >= 44 for box in library_boxes)

@@ -13,7 +13,7 @@ import secrets
 import time
 from urllib.parse import urlencode, urlsplit
 
-from starlette.responses import JSONResponse, RedirectResponse
+from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
 from starlette.routing import Route
 
 from .shared_auth_compare_flow import AUTH, TOKEN_URL, ComparisonFlow, _await, _b64, _encoded, _un64
@@ -62,6 +62,7 @@ def parse_extra_origins(raw) -> tuple[str, ...]:
 # reason through SharedAuthUnavailable without exposing its message.
 _FINISH_FAILURE_CODES = frozenset({
     'invalid_flow', 'invalid_cookie', 'invalid_state', 'invalid_exchange',
+    'state_cookie_missing', 'state_expired', 'state_mismatch',
     'unknown_account', 'invalid_session_response', 'invalid_es256_signature',
     'invalid_key', 'invalid_token_endpoint', 'exchange_failed',
     'exchange_response_too_large', 'exchange_invalid_response',
@@ -78,6 +79,44 @@ _FINISH_FAILURE_CODES = frozenset({
     'invalid_profile_response', 'profile_account_mismatch', 'invalid_profile',
     'legacy_account_conflict',
 })
+
+
+# #6922: a callback that does not belong to a login this host started. No state
+# cookie (started on another host, older than the 10-minute window, or cookies
+# blocked), a cookie this host did not sign, an expired or mismatched state: the
+# browser's flow is wrong, not this host, so the answer is 400 with a restart
+# link instead of 503 (which the patrol counted as an outage and the user read
+# as "service unavailable"). Anything else in the stage stays a host failure.
+_FLOW_RESTART_CODES = frozenset({
+    'invalid_flow', 'state_cookie_missing', 'invalid_cookie', 'state_expired',
+    'state_mismatch', 'invalid_state',
+})
+
+RESTART_LOGIN_PATH = '/auth/shared/start'
+
+_RESTART_PAGE = (
+    '<!doctype html><html lang="ko"><head><meta charset="utf-8">'
+    '<meta name="viewport" content="width=device-width, initial-scale=1">'
+    '<meta name="robots" content="noindex"><title>로그인을 다시 시작해 주세요</title>'
+    '<style>body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;'
+    'display:flex;min-height:100vh;align-items:center;justify-content:center;'
+    'background:#f6f6f7;color:#1c1c1e}main{max-width:28rem;margin:1rem;padding:2rem;'
+    'background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}'
+    'h1{font-size:1.25rem;margin:0 0 .75rem}p{margin:.5rem 0;line-height:1.55}'
+    'a.button{display:inline-block;margin-top:1rem;padding:.6rem 1.1rem;border-radius:8px;'
+    'background:#1c1c1e;color:#fff;text-decoration:none}code{font-size:.8rem;color:#6e6e73}'
+    '</style></head><body><main>'
+    '<h1>로그인을 처음부터 다시 시작해 주세요</h1>'
+    '<p>이 로그인 요청은 이 주소에서 시작한 로그인과 맞지 않습니다. 로그인 창을 연 지 '
+    '10분이 지났거나, 다른 주소에서 시작했거나, 브라우저가 쿠키를 막은 경우입니다.</p>'
+    '<a class="button" href="' + RESTART_LOGIN_PATH + '">다시 로그인</a>'
+    '<p><code>{code}</code></p></main></body></html>'
+)
+
+
+def _restart_login_response(code, headers):
+    """The 400 answer for a mismatched callback: what happened, and the way back in."""
+    return HTMLResponse(_RESTART_PAGE.replace('{code}', code), status_code=400, headers=headers)
 
 
 # Authority rejection codes that mean the presented credential is dead. When
@@ -268,18 +307,30 @@ class SharedLoginFlow(ComparisonFlow):
 
         try:
             states, codes = request.query_params.getlist('state'), request.query_params.getlist('code')
-            parts = request.cookies.get(STATE_COOKIE, '').split('.')
-            if len(states) != 1 or len(codes) != 1 or not codes[0] or len(parts) != 2:
+            if len(states) != 1 or len(codes) != 1 or not codes[0]:
                 raise ValueError('invalid_flow')
+            raw_cookie = request.cookies.get(STATE_COOKIE, '')
+            if not raw_cookie:
+                # #6922: the browser carries no state for this host — the login
+                # was started on another host, more than 10 minutes ago, or
+                # with cookies blocked. The journal names that apart from a
+                # forged cookie and from an expired or foreign state below.
+                raise ValueError('state_cookie_missing')
+            parts = raw_cookie.split('.')
+            if len(parts) != 2:
+                raise ValueError('invalid_cookie')
             mac = _b64(self._mac(b'shared-login', parts[0].encode('ascii')))
             if not hmac.compare_digest(mac, parts[1]):
                 raise ValueError('invalid_cookie')
             state = json.loads(_un64(parts[0]))
-            if (type(state.get('exp')) is not int or state['exp'] <= int(self.clock())
+            if (type(state.get('exp')) is not int
                     or not isinstance(state.get('state'), str)
-                    or not hmac.compare_digest(state['state'], states[0])
                     or not isinstance(state.get('verifier'), str)):
                 raise ValueError('invalid_state')
+            if state['exp'] <= int(self.clock()):
+                raise ValueError('state_expired')
+            if not hmac.compare_digest(state['state'], states[0]):
+                raise ValueError('state_mismatch')
             mark('validate_flow')
             stage = 'client_assertion'
             assertion = await self._assertion(int(self.clock()))
@@ -322,14 +373,17 @@ class SharedLoginFlow(ComparisonFlow):
                 int((time.monotonic() - started) * 1000), request_id,
                 ' ' + ' '.join(detail_fields) if detail_fields else ''), flush=True)
         except Exception as exc:
-            logger.warning('shared_login_finish_failed stage=%s code=%s',
-                           stage, _finish_failure_code(exc, stage))
+            code = _finish_failure_code(exc, stage)
+            logger.warning('shared_login_finish_failed stage=%s code=%s', stage, code)
             from .shared_login_timing import format_login_timing_fields
             detail_fields = marks + format_login_timing_fields(timing_details)
             logger.warning('shared_login_timing outcome=failed stage=%s total_ms=%d request_id=%s%s',
                            stage, int((time.monotonic() - started) * 1000), request_id,
                            ' ' + ' '.join(detail_fields) if detail_fields else '')
-            response = JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
+            if stage == 'validate_flow' and code in _FLOW_RESTART_CODES:
+                response = _restart_login_response(code, headers)
+            else:
+                response = JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
         response.delete_cookie(STATE_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
         return response
 

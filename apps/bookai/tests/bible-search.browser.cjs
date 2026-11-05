@@ -1,10 +1,11 @@
 const {chromium}=require('playwright');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
+const os=require('node:os');
 const path=require('node:path');
 
 const baseUrl=process.env.B61_BASE_URL||'http://127.0.0.1:18793/';
-const screenshotPath=process.env.B61_SCREENSHOT_PATH||'D:\\PADIEM\\b61-6474\\bible-search-390.png';
+const screenshotPath=process.env.B61_SCREENSHOT_PATH||path.join(os.tmpdir(),'bookai-bible-search-390.png');
 const repoRoot=path.resolve(__dirname,'../../..');
 assert.ok(path.relative(repoRoot,path.resolve(screenshotPath)).startsWith('..'),'screenshot must be stored outside the repository');
 fs.mkdirSync(path.dirname(screenshotPath),{recursive:true});
@@ -41,12 +42,13 @@ fs.mkdirSync(path.dirname(screenshotPath),{recursive:true});
       renderReaderPage(0);saveReaderProgress();
     });
     await page.waitForTimeout(120);
+    await page.evaluate(()=>BookAILocalDB.flush());
     const before=await page.evaluate(()=>({
       title:document.getElementById('readerVolumeTitle').textContent.trim(),
       chapter:document.getElementById('readerChapterTitle').textContent.trim(),
       page:readerPageIndex,
-      progress:Object.fromEntries(Array.from({length:localStorage.length},(_,i)=>localStorage.key(i)).filter(k=>k&&k.startsWith('storymemory.readerProgress.')).map(k=>[k,localStorage.getItem(k)])),
-      reading:localStorage.getItem('storymemory.readingProgress.v1')
+      progress:Object.fromEntries(Array.from({length:BookAIStorage.length},(_,i)=>BookAIStorage.key(i)).filter(k=>k&&k.startsWith('storymemory.readerProgress.')).map(k=>[k,BookAIStorage.getItem(k)])),
+      reading:BookAIStorage.getItem('storymemory.readingProgress.v1')
     }));
     assert.equal(await page.locator('#memorySearchInput').getAttribute('aria-label'),'Memory 검색');
     async function openSearchPanel(){if(!(await panel.evaluate(el=>el.open)))await panel.locator('summary').click()}
@@ -63,12 +65,13 @@ fs.mkdirSync(path.dirname(screenshotPath),{recursive:true});
       await page.locator('#bibleSearchReturn').click();
       await page.waitForFunction(title=>document.getElementById('readerVolumeTitle').textContent.trim()===title&&document.getElementById('bibleSearchReturn').hidden,before.title,{timeout:30000});
       await page.waitForTimeout(80);
+      await page.evaluate(()=>BookAILocalDB.flush());
       const after=await page.evaluate(()=>({
         title:document.getElementById('readerVolumeTitle').textContent.trim(),
         chapter:document.getElementById('readerChapterTitle').textContent.trim(),
         page:readerPageIndex,
-        progress:Object.fromEntries(Array.from({length:localStorage.length},(_,i)=>localStorage.key(i)).filter(k=>k&&k.startsWith('storymemory.readerProgress.')).map(k=>[k,localStorage.getItem(k)])),
-        reading:localStorage.getItem('storymemory.readingProgress.v1')
+        progress:Object.fromEntries(Array.from({length:BookAIStorage.length},(_,i)=>BookAIStorage.key(i)).filter(k=>k&&k.startsWith('storymemory.readerProgress.')).map(k=>[k,BookAIStorage.getItem(k)])),
+        reading:BookAIStorage.getItem('storymemory.readingProgress.v1')
       }));
       assert.deepEqual(after,before,'temporary result navigation must restore reading position and stored progress');
     }

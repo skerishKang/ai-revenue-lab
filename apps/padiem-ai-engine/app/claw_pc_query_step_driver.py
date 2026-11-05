@@ -118,9 +118,16 @@ PC_FILES_READ_MAX_BYTES = 20_000_000
 #: 2026-11-04: the first answer waits this long for the PC and then hands the
 #: dispatch id back instead of holding one MCP request open. It bounds only the
 #: wait for an answer, never the PC command: the same tool reads the finished
-#: result when it is called again with the job id. 20 seconds sits under an
-#: edge request ceiling of 30 that the connector client was observed to keep.
-PC_FILES_WAIT_SECONDS = 20
+#: result when it is called again with the job id.
+#:
+#: #6919: the budget counts from the moment the handler is entered, so the
+#: context read and the dispatch itself spend it too. The call that carries
+#: this handler is cut at 30 s by the Chat gateway (local_engine_transport),
+#: and that 30 s also holds the Engine's admission (1.4–5.6 s observed) and
+#: receipt (0.6 s) around the handler. 18 s + one last status poll + the
+#: result read stays under 25 s in the worst observed case; 20 s counted from
+#: the dispatch reached 33 s and the gateway answered pc_dispatch_failed.
+PC_FILES_WAIT_SECONDS = 18
 PC_FILES_WAIT_ENV = "PADIEM_PC_FILES_WAIT_SECONDS"
 _PC_FILES_JOB_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 
@@ -799,6 +806,9 @@ def _pc_file_call_ref(run_id: str, tool_id: str, path: str) -> str:
 def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, secret,
                           first_chunk=None):
     async def handler(arguments):
+        # #6919: the first-answer budget starts here, before the context read
+        # and the dispatch, so the whole call stays under the gateway's cut.
+        handler_started = time.monotonic()
         owner = _PC_QUERY_OWNER.get()
         if (
             not isinstance(owner, tuple) or len(owner) != 4
@@ -940,7 +950,9 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
         # 2026-11-04: the first answer waits a bounded time and then hands the
         # dispatch id back, so one MCP request is never held for the whole PC
         # command. A continuation asks at once; a fresh call polls every 2 s.
-        wait_deadline = time.monotonic() + _pc_files_wait_seconds()
+        # #6919: the deadline is anchored at the handler's entry (see
+        # PC_FILES_WAIT_SECONDS); at least one status poll still happens.
+        wait_deadline = handler_started + _pc_files_wait_seconds()
         first_round = resume_dispatch is not None
         while True:
             await asyncio.sleep(0 if first_round else 2)
