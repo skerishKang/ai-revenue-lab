@@ -1412,7 +1412,7 @@ class OracleMeshExecutorScenarioTest(DeployHarness):
         )
         self.assertIn("COM2_DEPLOY_EXECUTOR_TRACEBACKS=0", result.stdout)
         self.assertIn(
-            "COM2_DEPLOY_DECISION_EXECUTOR=REDEPLOY reason_files=1",
+            "COM2_DEPLOY_DECISION_EXECUTOR=REDEPLOY reason_files=1", result.stdout
         )
         self.assertIn("executor:PASS", result.stdout)
 
