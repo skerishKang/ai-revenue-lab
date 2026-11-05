@@ -50,6 +50,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Mapping, Protocol
 
+from .d1_rows import rows_from_result
 from .history import validate_conversation_id
 
 __all__ = [
@@ -361,7 +362,9 @@ class D1FirstTurnGrantStore:
             "ORDER BY expires_at ASC LIMIT ?"
         ).bind(user_id, now_iso, limit)
         rows = await statement.run()
-        ids = [row["id"] for row in (rows.results or [])]
+        # The operating host answers run() with a plain dict; Cloudflare's
+        # carries `results`. rows_from_result reads both (app/d1_rows.py).
+        ids = [row["id"] for row in rows_from_result(rows) if isinstance(row, dict)]
         if not ids:
             return 0
         placeholders = ",".join("?" for _ in ids)
@@ -374,7 +377,7 @@ class D1FirstTurnGrantStore:
         ).bind(*ids)
         leftovers = await check.run()
         leftover_ids = {
-            row["id"] for row in (leftovers.results or []) if isinstance(row, dict)
+            row["id"] for row in rows_from_result(leftovers) if isinstance(row, dict)
         }
         return len(ids) - len(leftover_ids & set(ids))
 
@@ -393,7 +396,8 @@ class D1FirstTurnGrantStore:
             "ORDER BY expires_at ASC LIMIT ?"
         ).bind(user_id, now_iso, limit)
         rows = await statement.run()
-        ids = [row["id"] for row in (rows.results or [])]
+        # Same host-shape rule as cleanup_abandoned above.
+        ids = [row["id"] for row in rows_from_result(rows) if isinstance(row, dict)]
         if not ids:
             return 0
         placeholders = ",".join("?" for _ in ids)
