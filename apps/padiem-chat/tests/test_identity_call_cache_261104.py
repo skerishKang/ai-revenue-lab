@@ -14,6 +14,8 @@ in flight when the invalidation landed).
 from __future__ import annotations
 
 import asyncio
+import hashlib
+
 import pytest
 
 from app.auth_validation_cache import invalidate_auth_cache
@@ -35,6 +37,8 @@ class FakeAuthority:
         self.session_result = object()
         self.owner_error: Exception | None = None
         self.gate: asyncio.Event | None = None
+        self.product_user_calls: list[str] = []
+        self.auth_session_result = object()
 
     async def resolve_current_auth_session(self, *, product_id, product_user_id):
         self.session_calls.append(product_user_id)
@@ -50,9 +54,15 @@ class FakeAuthority:
             raise self.owner_error
         return self.scope_result
 
+    async def resolve_product_user_for_subject(self, *, product_id, canonical_subject_id):
+        self.product_user_calls.append(product_id + ":" + canonical_subject_id)
+        if self.owner_error is not None:
+            raise self.owner_error
+        return UID
+
     async def resolve_auth_session(self, *, session_id):
         self.session_calls.append("guard:" + session_id)
-        return object()
+        return self.auth_session_result
 
     binding_marker = "inner-binding"
 
@@ -216,12 +226,14 @@ def test_concurrent_callers_share_one_lookup() -> None:
     asyncio.run(journey())
 
 
-def test_everything_else_delegates_untouched() -> None:
+def test_the_cached_reads_delegate_and_the_rest_passes_through() -> None:
     inner = FakeAuthority()
     wrapped = CachedIdentityAuthority(inner)
 
-    # The revocation guard's read stays a live authority call.
-    asyncio.run(wrapped.resolve_auth_session(session_id=SESSION))
+    # The session read is cached for 20 s now: one authority call, two readers.
+    first = asyncio.run(wrapped.resolve_auth_session(session_id=SESSION))
+    second = asyncio.run(wrapped.resolve_auth_session(session_id=SESSION))
+    assert first is second is inner.auth_session_result
     assert inner.session_calls == ["guard:" + SESSION]
     # Attribute passthrough keeps composition checks working.
     assert wrapped.binding_marker == "inner-binding"
@@ -246,3 +258,86 @@ def test_invalidate_auth_cache_reaches_the_wrapped_authority() -> None:
     asyncio.run(wrapped.resolve_current_auth_session(
         product_id="b62", product_user_id=UID))
     assert inner.session_calls == [UID, UID]
+
+
+def test_product_user_of_a_subject_is_cached_per_product_and_subject() -> None:
+    inner = FakeAuthority()
+    wrapped = CachedIdentityAuthority(inner)
+
+    first = asyncio.run(wrapped.resolve_product_user_for_subject(
+        product_id="b62", canonical_subject_id="sub_fixture"))
+    second = asyncio.run(wrapped.resolve_product_user_for_subject(
+        product_id="b62", canonical_subject_id="sub_fixture"))
+    assert first == second == UID
+    assert inner.product_user_calls == ["b62:sub_fixture"]
+
+    asyncio.run(wrapped.resolve_product_user_for_subject(
+        product_id="b62", canonical_subject_id="sub_other"))
+    asyncio.run(wrapped.resolve_product_user_for_subject(
+        product_id="b54", canonical_subject_id="sub_fixture"))
+    assert inner.product_user_calls == [
+        "b62:sub_fixture", "b62:sub_other", "b54:sub_fixture"]
+    # The key carries the subject id only as a hash.
+    key = "productuser:b62:" + hashlib.sha256(b"sub_fixture").hexdigest()
+    assert key in wrapped._entries
+
+
+def test_a_logout_drops_the_product_user_entry_by_the_uid_it_resolved() -> None:
+    inner = FakeAuthority()
+    wrapped = CachedIdentityAuthority(inner)
+
+    asyncio.run(wrapped.resolve_product_user_for_subject(
+        product_id="b62", canonical_subject_id="sub_fixture"))
+    wrapped.invalidate_user(UID)
+    asyncio.run(wrapped.resolve_product_user_for_subject(
+        product_id="b62", canonical_subject_id="sub_fixture"))
+    assert inner.product_user_calls == ["b62:sub_fixture", "b62:sub_fixture"]
+
+
+def test_the_session_read_is_cached_for_twenty_seconds() -> None:
+    inner = FakeAuthority()
+    clock = [100.0]
+    wrapped = CachedIdentityAuthority(inner, ttl_seconds=60, clock=lambda: clock[0])
+
+    first = asyncio.run(wrapped.resolve_auth_session(session_id=SESSION))
+    clock[0] += 19.0
+    second = asyncio.run(wrapped.resolve_auth_session(session_id=SESSION))
+    assert first is second is inner.auth_session_result
+    assert inner.session_calls == ["guard:" + SESSION]
+
+    clock[0] += 2.0  # 21 s after the load: the 20 s window is over
+    asyncio.run(wrapped.resolve_auth_session(session_id=SESSION))
+    assert inner.session_calls == ["guard:" + SESSION, "guard:" + SESSION]
+
+
+def test_session_invalidation_drops_both_session_entries() -> None:
+    inner = FakeAuthority()
+    wrapped = CachedIdentityAuthority(inner)
+
+    asyncio.run(wrapped.resolve_connector_owner_scope(session_id=SESSION))
+    asyncio.run(wrapped.resolve_auth_session(session_id=SESSION))
+    wrapped.invalidate_session(SESSION)
+    asyncio.run(wrapped.resolve_connector_owner_scope(session_id=SESSION))
+    asyncio.run(wrapped.resolve_auth_session(session_id=SESSION))
+    assert inner.owner_calls == [SESSION, SESSION]
+    assert inner.session_calls == ["guard:" + SESSION, "guard:" + SESSION]
+
+    # Another session's answer survives this invalidation.
+    asyncio.run(wrapped.resolve_auth_session(session_id=OTHER_SESSION))
+    wrapped.invalidate_session(SESSION)
+    asyncio.run(wrapped.resolve_auth_session(session_id=OTHER_SESSION))
+    assert inner.session_calls.count("guard:" + OTHER_SESSION) == 1
+
+
+def test_a_logout_drops_every_cached_session_answer() -> None:
+    inner = FakeAuthority()
+    wrapped = CachedIdentityAuthority(inner)
+
+    asyncio.run(wrapped.resolve_auth_session(session_id=SESSION))
+    asyncio.run(wrapped.resolve_auth_session(session_id=OTHER_SESSION))
+    # The cache cannot map a session to its user, so a logout drops them all.
+    wrapped.invalidate_user(OTHER_UID)
+    asyncio.run(wrapped.resolve_auth_session(session_id=SESSION))
+    asyncio.run(wrapped.resolve_auth_session(session_id=OTHER_SESSION))
+    assert inner.session_calls == ["guard:" + SESSION, "guard:" + OTHER_SESSION,
+                                   "guard:" + SESSION, "guard:" + OTHER_SESSION]
