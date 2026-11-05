@@ -222,6 +222,36 @@ _ERROR_TEXT_CHARS = 160
 #: value every executor had before 2026-10-17, and the read/desktop lanes still
 #: multiply it by four, so no new ceiling is introduced by naming it.
 DEFAULT_STEP_TIMEOUT_SECONDS = 30
+#: 2026-11-05: one small pc_files read used to cost TWO MeshCentral logins - a
+#: command-channel walk for the ReparsePoint guard, then a separate
+#: ``meshctrl.js download``. This flag folds both into ONE ``runcommand`` reply:
+#: the walk runs first, and only a clear walk reads the bytes, so the order the
+#: guard established (guard before bytes) is unchanged. On by default; ``0``
+#: keeps the previous two-step path only.
+READ_SINGLE_ROUNDTRIP_ENV = "ORACLE_MESH_READ_SINGLE_ROUNDTRIP"
+#: The largest file the single-roundtrip path may carry. The command lane has no
+#: PADIEM output ceiling of its own (#5895 left ``MAX_TRANSCRIPT_BYTES`` None),
+#: so the bound is read from the one reply bound that still exists:
+#: ``HANDOFF_CAPTURE_LIMIT`` (262,144 bytes) in
+#: ``local_agent_meshcentral_command_port``. The reply is base64 twice over -
+#: once for the bytes on the PC's console (4/3) and once for the console text in
+#: the transport envelope (4/3), 16/9 in all - so 262,144 * 9 / 16 = 147,456,
+#: minus one header line and its wrapping: 131,072 (128 KiB). A larger file is
+#: not refused; it falls back to the download path, which the server's own
+#: ``max_bytes`` already bounds.
+SINGLE_ROUNDTRIP_MAX_BYTES = 131_072
+#: The one line the single-roundtrip script writes before its payload. The word
+#: after it is either ``link_refused`` (the PC walk found a link, no bytes) or
+#: ``<length>:<sha256>`` for the base64 lines that follow.
+READ_META_PREFIX = "PADIEM_READ="
+#: Verdicts the script writes INSTEAD of bytes. Only ``link_refused`` is a
+#: decision; every other word is a mechanical miss and falls back to the two-step
+#: path, which refuses exactly as it always has when its own guard cannot answer.
+READ_VERDICT_LINK_REFUSED = "link_refused"
+READ_VERDICT_TOO_LARGE = "too_large"
+READ_VERDICT_GUARD_ERROR = "guard_error"
+READ_VERDICT_READ_ERROR = "read_error"
+_READ_META_RE = re.compile(r"(\d+):([0-9a-f]{64})")
 #: A result the server refuses for a non-retryable reason is quarantined to
 #: the pending dir instead of dropped: the bytes survive a restart, the cause
 #: is recorded next to them, and the queue moves on. Retrying forever would
@@ -381,6 +411,99 @@ def _step_timeout_seconds(env: dict[str, str]) -> int:
     return value
 
 
+def _single_roundtrip_enabled(env: dict[str, str]) -> bool:
+    """The deployment's switch for the one-reply read; absent means on."""
+    raw = env.get(READ_SINGLE_ROUNDTRIP_ENV, "").strip().lower()
+    if not raw:
+        return True
+    return raw not in ("0", "false", "off", "no")
+
+
+def _single_roundtrip_script(
+    *, granted_root: str, file_path: str, max_bytes: int,
+) -> str:
+    """One PowerShell run: the SAME walk first, then the bytes.
+
+    The walk is byte-for-byte the one ``_pc_reparse_check`` sends, and it runs
+    before a single byte is read: a hit writes the verdict and nothing else, so
+    the order the #5994 guard established is preserved. The size is measured
+    before ``ReadAllBytes`` so a file past this lane's bound never becomes an
+    in-memory read on the customer PC. Any mechanical failure writes a word the
+    executor treats as "use the two-step path", never as content.
+    """
+    root = _pc_guard_root(granted_root)
+    target = file_path.strip().replace("/", "\\")
+    return (
+        "$ErrorActionPreference='Stop';"
+        "$root = " + _ps_literal_for_root(root) + ";"
+        "$target = " + _ps_literal_for_root(target) + ";"
+        "$hit = $false; $failed = $false;"
+        "try {"
+        " if (-not $target.StartsWith($root, [StringComparison]::OrdinalIgnoreCase)) { $hit = $true };"
+        " if (-not $hit) {"
+        "  $rest = $target.Substring($root.Length); $walk = $root;"
+        "  foreach ($seg in $rest.Split([char]'\\')) {"
+        "   if (-not $seg) { continue };"
+        "   $walk = Join-Path $walk $seg;"
+        "   if (-not (Test-Path -LiteralPath $walk)) { break };"
+        "   $item = Get-Item -LiteralPath $walk -Force -ErrorAction SilentlyContinue;"
+        "   if ($item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0))"
+        "   { $hit = $true; break }"
+        "  }"
+        " }"
+        "} catch { $failed = $true };"
+        "if ($hit) { Write-Output 'PADIEM_READ=" + READ_VERDICT_LINK_REFUSED + "' }"
+        " elseif ($failed) { Write-Output 'PADIEM_READ=" + READ_VERDICT_GUARD_ERROR + "' }"
+        " else {"
+        "  $info = Get-Item -LiteralPath $target -Force;"
+        "  if ($info.Length -gt " + str(int(max_bytes)) + ") {"
+        "   Write-Output 'PADIEM_READ=" + READ_VERDICT_TOO_LARGE + "'"
+        "  } else {"
+        "   try {"
+        "    $bytes = [IO.File]::ReadAllBytes($target);"
+        "    $sha = [Security.Cryptography.SHA256]::Create();"
+        "    $hash = ([BitConverter]::ToString($sha.ComputeHash($bytes))).Replace('-','').ToLowerInvariant();"
+        "    Write-Output ('PADIEM_READ=' + $bytes.Length + ':' + $hash);"
+        "    Write-Output ([Convert]::ToBase64String($bytes));"
+        "   } catch { Write-Output 'PADIEM_READ=" + READ_VERDICT_READ_ERROR + "' }"
+        "  }"
+        " }"
+    )
+
+
+def _parse_single_roundtrip(raw: bytes) -> tuple[str, bytes | None]:
+    """Read one reply as ``(verdict, bytes)``; unknown shapes are a fallback.
+
+    The console wraps a long line and the transport strips nothing, so the reply
+    is read with its whitespace removed: the header keeps its exact spelling and
+    the base64 run follows it. A length or digest that does not match the bytes
+    it carries is a fallback, never a shorter body reported as the file.
+    """
+    text = raw.decode("utf-8", errors="replace")
+    flat = "".join(text.split())
+    start = flat.find(READ_META_PREFIX)
+    if start < 0:
+        return "fallback", None
+    rest = flat[start + len(READ_META_PREFIX):]
+    if rest.startswith(READ_VERDICT_LINK_REFUSED):
+        return READ_VERDICT_LINK_REFUSED, None
+    match = _READ_META_RE.match(rest)
+    if match is None:
+        return "fallback", None
+    declared = int(match.group(1))
+    digest = match.group(2)
+    payload_text = rest[match.end():]
+    if not payload_text:
+        return "fallback", None
+    try:
+        payload = base64.b64decode(payload_text, validate=True)
+    except Exception:
+        return "fallback", None
+    if len(payload) != declared or hashlib.sha256(payload).hexdigest() != digest:
+        return "fallback", None
+    return "bytes", payload
+
+
 def _desktop_dispatch_text(dispatch: "OracleMeshDispatch") -> str | None:
     """The typed value for a type op, and only from the claim that carried it.
 
@@ -409,6 +532,11 @@ class OracleMeshExecutor:
     redirects explicitly refused.
     """
 
+    #: The one-reply read, on by default. Kept as a class attribute as well so an
+    #: executor built without ``__init__`` to exercise a single method still has
+    #: the switch the live composition would have set.
+    _read_single_roundtrip = True
+
     def __init__(
         self,
         *,
@@ -428,6 +556,7 @@ class OracleMeshExecutor:
         presence_provider: Optional[Callable[[], Any]] = None,
         pairing_provider: Optional[Callable[[], Any]] = None,
         presence_round_begin: Optional[Callable[[], None]] = None,
+        read_single_roundtrip: bool = True,
     ) -> None:
         # The result lane may be aimed at the Chat host on this machine — the one
         # origin shape the edge middleware guards, rather than the public Worker. The
@@ -490,7 +619,10 @@ class OracleMeshExecutor:
         # socket deadline patch the builder around the call they care about.
         self._ssl_context: Optional[ssl.SSLContext] = None
         self._opener: Any = None
+        if type(read_single_roundtrip) is not bool:
+            raise ContractError("the single-roundtrip read switch must be a boolean")
         self._read_port = read_port
+        self._read_single_roundtrip = read_single_roundtrip
         self._command_port = command_port
         self._desktop_port = desktop_port
         self._timeout = timeout_seconds
@@ -886,7 +1018,13 @@ class OracleMeshExecutor:
         # complete) refuses the read with the ``link_refused`` marker so not
         # one byte of an outside file crosses the relay. A server that names
         # no root keeps the read exactly as it was before this guard.
+        read_bound = dispatch.max_bytes
+        if read_bound is None:
+            read_bound = MAX_READ_BYTES
+        if MAX_READ_BYTES_ENVELOPE is not None:
+            read_bound = max(1, min(read_bound, MAX_READ_BYTES_ENVELOPE))
         guard_started = time.monotonic()
+        raw: bytes | None = None
         if dispatch.granted_root:
             if walk_hits_reparse_point(dispatch.granted_root, dispatch.file_path):
                 self._trace_read(dispatch, "link_refused", guard_started,
@@ -896,73 +1034,85 @@ class OracleMeshExecutor:
                     body=PC_FILE_LINK_REFUSED_MARKER.encode("utf-8"),
                 )
             if self._command_port is not None:
-                hit, reason, detail = self._pc_reparse_check(
-                    granted_root=dispatch.granted_root,
-                    file_path=dispatch.file_path,
-                    node_ref=dispatch.node_ref,
-                )
-                if hit:
-                    self._trace_read(dispatch, "link_refused", guard_started,
-                                     reason=reason, detail=detail)
+                refused = False
+                if self._read_single_roundtrip:
+                    raw, refused = self._read_in_one_roundtrip(
+                        dispatch, read_bound, guard_started,
+                    )
+                if refused:
                     return OracleMeshExecutionOutcome(
                         termination="exited", exit_code=1,
                         body=PC_FILE_LINK_REFUSED_MARKER.encode("utf-8"),
                     )
-        read_bound = dispatch.max_bytes
-        if read_bound is None:
-            read_bound = MAX_READ_BYTES
-        if MAX_READ_BYTES_ENVELOPE is not None:
-            read_bound = max(1, min(read_bound, MAX_READ_BYTES_ENVELOPE))
-        call: dict[str, Any] = {
-            "node_ref": dispatch.node_ref,
-            "file_path": dispatch.file_path,
-        }
-        # The port validates this deadline outright and refuses before the
-        # official client runs. An executor with no deadline of its own must
-        # therefore leave the argument out so the port's default applies; the
-        # None that used to travel here refused every read from 2026-10-29 on.
-        if self._timeout is not None:
-            call["timeout_seconds"] = self._timeout * 4
-        if dispatch.max_bytes is not None:
-            # Pass the server-computed bound only when the poll supplied one;
-            # older servers keep the port's historical default.
-            call["max_bytes"] = read_bound
+                # No bytes from the one-reply path means it fell back (a shape it
+                # could not verify, a file past its bound, or no command port);
+                # the PC walk below then runs exactly as it did before.
+                if raw is None:
+                    hit, reason, detail = self._pc_reparse_check(
+                        granted_root=dispatch.granted_root,
+                        file_path=dispatch.file_path,
+                        node_ref=dispatch.node_ref,
+                    )
+                    if hit:
+                        self._trace_read(dispatch, "link_refused", guard_started,
+                                         reason=reason, detail=detail)
+                        return OracleMeshExecutionOutcome(
+                            termination="exited", exit_code=1,
+                            body=PC_FILE_LINK_REFUSED_MARKER.encode("utf-8"),
+                        )
         started = time.monotonic()
-        try:
-            body = self._read_port.read_bytes(**call)
-        except MeshCentralReadTooLarge as exc:
-            self._trace_read(dispatch, "read_too_large", started,
-                             error=_safe_error_text(exc))
-            return OracleMeshExecutionOutcome(
-                termination="exited", exit_code=1,
-                body=PC_FILE_TOO_LARGE_MARKER.encode("utf-8"),
-            )
-        except MeshCentralReadRequestRefused as exc:
-            # Validation refused the request here: no client ran, no PC was
-            # contacted. Reporting this as read_failed hid that distinction.
-            self._trace_read(dispatch, "read_refused", started,
-                             error=_safe_error_text(exc))
-            return OracleMeshExecutionOutcome(
-                termination="exited", exit_code=1,
-                body=PC_FILE_READ_REFUSED_MARKER.encode("utf-8"),
-            )
-        except Exception as exc:
-            # The class and a bounded message are the only explanation a refused
-            # read ever leaves; the file itself is never part of the trace.
-            self._trace_read(dispatch, "read_failed", started,
-                             error=_safe_error_text(exc))
-            return OracleMeshExecutionOutcome(
-                termination="exited", exit_code=1,
-                body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"),
-            )
-        if not isinstance(body, (bytes, bytearray)):
-            self._trace_read(dispatch, "read_failed", started,
-                             error="body_not_bytes")
-            return OracleMeshExecutionOutcome(
-                termination="exited", exit_code=1,
-                body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"),
-            )
-        raw = bytes(body)
+        if raw is None:
+            call: dict[str, Any] = {
+                "node_ref": dispatch.node_ref,
+                "file_path": dispatch.file_path,
+            }
+            # The port validates this deadline outright and refuses before the
+            # official client runs. An executor with no deadline of its own must
+            # therefore leave the argument out so the port's default applies; the
+            # None that used to travel here refused every read from 2026-10-29 on.
+            if self._timeout is not None:
+                call["timeout_seconds"] = self._timeout * 4
+            if dispatch.max_bytes is not None:
+                # Pass the server-computed bound only when the poll supplied one;
+                # older servers keep the port's historical default.
+                call["max_bytes"] = read_bound
+            try:
+                body = self._read_port.read_bytes(**call)
+            except MeshCentralReadTooLarge as exc:
+                self._trace_read(dispatch, "read_too_large", started,
+                                 error=_safe_error_text(exc))
+                return OracleMeshExecutionOutcome(
+                    termination="exited", exit_code=1,
+                    body=PC_FILE_TOO_LARGE_MARKER.encode("utf-8"),
+                )
+            except MeshCentralReadRequestRefused as exc:
+                # Validation refused the request here: no client ran, no PC was
+                # contacted. Reporting this as read_failed hid that distinction.
+                self._trace_read(dispatch, "read_refused", started,
+                                 error=_safe_error_text(exc))
+                return OracleMeshExecutionOutcome(
+                    termination="exited", exit_code=1,
+                    body=PC_FILE_READ_REFUSED_MARKER.encode("utf-8"),
+                )
+            except Exception as exc:
+                # The class and a bounded message are the only explanation a refused
+                # read ever leaves; the file itself is never part of the trace.
+                self._trace_read(dispatch, "read_failed", started,
+                                 error=_safe_error_text(exc))
+                return OracleMeshExecutionOutcome(
+                    termination="exited", exit_code=1,
+                    body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"),
+                )
+            if not isinstance(body, (bytes, bytearray)):
+                self._trace_read(dispatch, "read_failed", started,
+                                 error="body_not_bytes")
+                return OracleMeshExecutionOutcome(
+                    termination="exited", exit_code=1,
+                    body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"),
+                )
+            raw = bytes(body)
+            self._trace_read(dispatch, "read_ok", started,
+                             path="download", bytes=len(raw))
         if len(raw) > read_bound:
             # Oversize is refused, never truncated.
             self._trace_read(dispatch, "read_too_large", started,
@@ -980,6 +1130,61 @@ class OracleMeshExecutor:
                 body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"),
             )
         return OracleMeshExecutionOutcome(termination="exited", exit_code=0, body=raw)
+
+    def _read_in_one_roundtrip(
+        self,
+        dispatch: OracleMeshDispatch,
+        read_bound: int,
+        started: float,
+    ) -> tuple[bytes | None, bool]:
+        """Guard-then-read in ONE command reply; ``(bytes, refused)``.
+
+        ``(None, False)`` means "use the two-step path": the reply could not be
+        verified, the file is past this lane's bound, or no command port exists.
+        ``(None, True)`` is the guard's own verdict, and it is returned without a
+        single byte, exactly as the separate walk refused before.
+        """
+        max_bytes = min(int(read_bound), SINGLE_ROUNDTRIP_MAX_BYTES)
+        script = _single_roundtrip_script(
+            granted_root=dispatch.granted_root or "",
+            file_path=dispatch.file_path,
+            max_bytes=max_bytes,
+        )
+        call_started = time.monotonic()
+        try:
+            outcome = self._command_port.run_command(
+                node_ref=dispatch.node_ref,
+                command=script,
+                # The same deadline shape the read lane uses: a deployment that
+                # names a base step gets four of them, and one that names none
+                # keeps the platform's own bound.
+                timeout_seconds=(self._timeout * 4 if self._timeout is not None else None),
+            )
+        except Exception as exc:
+            self._trace_read(dispatch, "single_roundtrip_fallback", call_started,
+                             error=_safe_error_text(exc))
+            return None, False
+        termination = getattr(outcome, "termination", None)
+        if termination not in ("exited", "no_exit_code"):
+            self._trace_read(dispatch, "single_roundtrip_fallback", call_started,
+                             termination=str(termination))
+            return None, False
+        raw = getattr(outcome, "output", b"")
+        if not isinstance(raw, (bytes, bytearray)):
+            self._trace_read(dispatch, "single_roundtrip_fallback", call_started,
+                             error="output_not_bytes")
+            return None, False
+        verdict, payload = _parse_single_roundtrip(bytes(raw))
+        if verdict == READ_VERDICT_LINK_REFUSED:
+            self._trace_read(dispatch, "link_refused", started, reason="pc_hit")
+            return None, True
+        if verdict != "bytes" or payload is None:
+            self._trace_read(dispatch, "single_roundtrip_fallback", call_started,
+                             error="unverified_reply")
+            return None, False
+        self._trace_read(dispatch, "read_ok", call_started,
+                         path="single_roundtrip", bytes=len(payload))
+        return payload, False
 
     def _trace_command(
         self,
@@ -2261,6 +2466,7 @@ def make_oracle_mesh_executor(
     presence_provider: Optional[Callable[[], Any]] = None,
     pairing_provider: Optional[Callable[[], Any]] = None,
     presence_round_begin: Optional[Callable[[], None]] = None,
+    read_single_roundtrip: bool = True,
 ) -> OracleMeshExecutor:
     """Build the executor with the REAL official meshctrl read port.
 
@@ -2643,6 +2849,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             presence_provider=presence_provider,
             pairing_provider=pairing_provider,
             presence_round_begin=beat.begin_round if beat is not None else None,
+            read_single_roundtrip=_single_roundtrip_enabled(env),
         )
         idle = max(1, min(int(env.get("ORACLE_MESH_POLL_SECONDS", "5") or 5), 300))
         # The idle ceiling is readable for the operator who wants to weigh the old
