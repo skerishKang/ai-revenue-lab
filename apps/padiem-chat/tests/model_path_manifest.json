@@ -71,6 +71,7 @@
     "test_tier_route_consumer_coverage.py": "B14_MANAGED",
     "test_unassigned_profile_gate.py": "B14_MANAGED",
     "test_upstream_busy_diagnostics.py": "B14_MANAGED",
-    "test_upstream_error_mapping.py": "B14_MANAGED"
+    "test_upstream_error_mapping.py": "B14_MANAGED",
+    "test_user_response_privacy_261105.py": "B14_MANAGED"
   }
 }
