@@ -73,7 +73,7 @@ def test_work_scopes_are_routing_labels_and_an_unknown_one_is_refused(tmp_path, 
     assert "WORK_SCOPE_AUTHORITY_DRIFT" in contract.findings()
 
     unrefused = real.replace(
-        'raise BrowserRequestError("유틸 업무 식별자가 올바르지 않습니다.")',
+        'raise BrowserRequestError("유틸 업무 식별자가 올바르지 않습니다.", reason="util_scope_invalid")',
         "pass")
     swap(monkeypatch, "REQUEST_CONTRACT", unrefused, tmp_path)
     assert "WORK_SCOPE_NOT_REFUSED" in contract.findings()

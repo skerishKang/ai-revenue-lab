@@ -1,3 +1,5 @@
+> 2026-11-05부터 apps/storymemory 개발을 중단합니다. 성경 기능은 apps/bookai로 이전했으며 새 기능은 북AI에만 반영합니다.
+
 # B61 StoryMemory
 
 Production: https://storymemory-padiem.pages.dev/

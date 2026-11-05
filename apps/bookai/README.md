@@ -4,6 +4,12 @@
 
 배포 대상은 새 Cloudflare Pages 프로젝트 `bookai`, 도메인은 `bookai.padiem.net`입니다. PR·머지·배포·도메인 연결은 CTO가 담당합니다.
 
+## 운영 주소
+
+- 운영: https://bookai.padiem.net
+- Pages 미리보기(pages.dev): 미확인 (7단계 확인 전)
+- 롤백 배포 ID: 미확인
+
 ```sh
 npx -y wrangler@4.156.0 pages deploy apps/bookai/public --project-name bookai --branch main --keep-vars
 ```
@@ -32,7 +38,7 @@ npx -y wrangler@4.156.0 pages deploy apps/bookai/public --project-name bookai --
 - `BOOKAI_COM2_SYNC_SECRET`
 - `BOOKAI_COM2_AI_SECRET` (컴2 앱 AI 호출)
 
-`STORYMEMORY_MODEL`은 명시 AI 모델 덮어쓰기 설정입니다. 기본값은 `google/gemini-3.1-flash-lite`이고 `max_retries:0`을 유지합니다. 서버의 앱별 허용 모델 설정도 함께 충족해야 합니다.
+`STORYMEMORY_MODEL`은 명시 AI 모델 덮어쓰기 설정입니다. 기본값은 PADIEM 등급 기본 경로를 따르며 `max_retries:0`을 유지합니다. 서버의 앱별 허용 모델 설정도 함께 충족해야 합니다.
 
 AI 요청은 `public/_worker.js` → `https://chat.padiem.net/api/apps/ai` → 컴2 P01로 갑니다. 북AI의 호출자 `sub_app_bookai`는 고정되어 있으며 `BOOKAI_COM2_AI_SECRET`을 Pages와 컴2 Chat에 CTO가 같은 값으로 설정합니다. 기록 API와 같은 HMAC 규격을 재사용합니다. 북AI에는 클라우드플레어 엔진 대체 경로가 없으며 요청 제한 시간은 60초입니다. `<thought>` 제거와 읽기 범위의 근거 검증은 계속 적용합니다.
 
@@ -57,3 +63,13 @@ node apps/bookai/tests/bookai-sync-runtime.test.cjs
 `DB_MIGRATIONS/`, 기존 패치 노트와 자산 매니페스트는 원본 보관 자료입니다.
 
 AI 전송 시험: `node apps/bookai/tests/apps-ai-transport.test.mjs` (두 앱의 서명·답변·1.0 대체 경로·정책 거부), 양 앱의 `test_thought_filter.cjs`.
+
+## 성경 검색 색인 재생성
+
+성경 본문 검색은 `public/content/bible-web/search-index/`의 생성 파일을 사용하며, 텍스트 검색 때만 불러옵니다. 성경 장 JSON이나 매니페스트를 갱신한 뒤에는 색인을 다시 만듭니다.
+
+```sh
+node apps/bookai/scripts/build-bible-search-index.cjs
+```
+
+생성기는 기존 성경 콘텐츠 옆에 검색 색인 매니페스트와 12개 JSON 샤드를 씁니다. 원본 데이터 변경과 생성 파일을 함께 커밋해 정적 Pages 배포가 같은 색인을 제공하게 합니다.

@@ -125,7 +125,7 @@ def findings() -> list[str]:
 
     if _util_scopes() != WORK_SCOPES:
         drift.append("WORK_SCOPE_AUTHORITY_DRIFT")
-    if 'raise BrowserRequestError("유틸 업무 식별자가 올바르지 않습니다.")' not in _read(REQUEST_CONTRACT):
+    if 'raise BrowserRequestError("유틸 업무 식별자가 올바르지 않습니다.", reason="util_scope_invalid")' not in _read(REQUEST_CONTRACT):
         drift.append("WORK_SCOPE_NOT_REFUSED")
     routes = _read(CHAT_ROUTES)
     if "declared_util_scope(raw)" not in routes or "util_scope is None" not in routes:

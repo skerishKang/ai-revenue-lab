@@ -184,8 +184,8 @@ def test_a_malformed_continuation_is_refused(monkeypatch, arguments):
 
 def test_the_first_wait_is_settable_and_bounded(monkeypatch):
     monkeypatch.delenv(PC_FILES_WAIT_ENV, raising=False)
-    assert _pc_files_wait_seconds() == 20.0
-    for raw, expected in (("5", 5.0), ("0", 1.0), ("999", 120.0), ("abc", 20.0), ("", 20.0)):
+    assert _pc_files_wait_seconds() == 18.0
+    for raw, expected in (("5", 5.0), ("0", 1.0), ("999", 120.0), ("abc", 18.0), ("", 18.0)):
         monkeypatch.setenv(PC_FILES_WAIT_ENV, raw)
         assert _pc_files_wait_seconds() == expected
 

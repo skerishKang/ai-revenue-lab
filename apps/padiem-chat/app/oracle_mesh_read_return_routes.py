@@ -38,6 +38,7 @@ device-acknowledged one.
 from __future__ import annotations
 
 import base64
+import contextvars
 import hashlib
 import hmac
 import json
@@ -827,19 +828,47 @@ def _error(status: int, code: str, message: str | None = None) -> JSONResponse:
     return _response({"ok": False, "error": error}, status)
 
 
+#: #6923: the rule the last body reader stopped at, read back by ``_invalid_body``
+#: so the journal names it while the public code stays ``oracle_mesh_invalid_body``.
+_BODY_REFUSAL: contextvars.ContextVar[str] = contextvars.ContextVar(
+    "oracle_mesh_body_refusal", default="")
+
+
+def _refused(reason: str) -> None:
+    """Record the rule a body reader stopped at and answer its ``None``."""
+    _BODY_REFUSAL.set(reason)
+    return None
+
+
+def _invalid_body(route: str, reason: str | None = None) -> JSONResponse:
+    """#6923: one ``ai_stage`` line per 400 naming the route and the rule.
+
+    11-04 21:44 and 11-05 15:12 KST the executor's result submits were refused
+    as ``oracle_mesh_invalid_body`` while the two sides ran different versions,
+    and nothing in the journal said which field. The response is unchanged; the
+    journal carries the route, the rule label and the request id only — never a
+    value from the body.
+    """
+    label = reason if reason is not None else (_BODY_REFUSAL.get() or "body")
+    _BODY_REFUSAL.set("")
+    emit_stage_event(stage="mesh." + route + ".validate", outcome="error",
+                     duration_ms=0, code=label)
+    return _error(400, "oracle_mesh_invalid_body")
+
+
 def _read_json(raw: bytes, keys: frozenset, limit: int = _MAX_BODY_BYTES,
                optional: frozenset = frozenset()) -> dict[str, Any] | None:
     try:
         value = json.loads(raw.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError, TypeError):
-        return None
+        return _refused("json_decode")
     if type(value) is not dict:
-        return None
+        return _refused("body_shape")
     names = set(value)
     # Required keys must all be present; optional keys (the desktop screenshot
     # blob, absent on input-only turns) may be present; anything else refuses.
     if not keys <= names <= keys | optional:
-        return None
+        return _refused("keys_missing" if keys - names else "keys_unknown")
     return value
 
 
@@ -873,17 +902,17 @@ async def _read_body(
     optional: frozenset = frozenset(),
 ) -> dict[str, Any] | None:
     if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
-        return None
+        return _refused("content_type")
     try:
         declared = request.headers.get("content-length")
         if limit is not None and declared is not None and (
                 not declared.isdecimal() or int(declared) > limit):
-            return None
+            return _refused("content_length")
         raw = await request.body()
         if limit is not None and len(raw) > limit:
-            return None
+            return _refused("body_too_large")
     except Exception:
-        return None
+        return _refused("body_read")
     return _read_json(raw, keys, limit, optional)
 
 
@@ -914,19 +943,19 @@ async def _read_result_body(
                 not declared.isdecimal() or int(declared) > _MAX_RESULT_BODY_BYTES
             )
         ):
-            return None
+            return _refused("content_length")
         raw = await request.body()
     except Exception:
-        return None
+        return _refused("body_read")
     if len(raw) < 6 or (
         _MAX_RESULT_BODY_BYTES is not None and len(raw) > _MAX_RESULT_BODY_BYTES
     ):
-        return None
+        return _refused("frame_size")
     header_size = int.from_bytes(raw[:4], "big")
     # A frame without its own body is not a capture; the note-only shape
     # stays JSON. The declared header size can never exceed the body it sits in.
     if not 0 < header_size or 4 + header_size >= len(raw):
-        return None
+        return _refused("frame_header_size")
     header = _read_json(
         raw[4:4 + header_size], _RESULT_KEYS, limit=_MAX_RESULT_BODY_BYTES,
         optional=_RESULT_BLOB_KEYS,
@@ -968,14 +997,14 @@ async def oracle_mesh_read_request(request: Request) -> JSONResponse:
         return _error(503, "oracle_mesh_unconfigured")
     wire = await _read_body(request, _REQUEST_KEYS)
     if wire is None:
-        return _error(400, "oracle_mesh_invalid_body")
+        return _invalid_body("read_request")
     for key in ("device_id", "run_id", "root_ref"):
         if _ref(wire.get(key)) is None:
-            return _error(400, "oracle_mesh_invalid_body")
+            return _invalid_body("read_request", "ref:" + key)
     if _text_value(wire.get("path_relative")) is None:
-        return _error(400, "oracle_mesh_invalid_body")
+        return _invalid_body("read_request", "path_relative")
     if wire.get("confirmed") is not True:
-        return _error(400, "oracle_mesh_invalid_body")
+        return _invalid_body("read_request", "confirmed")
     return await dispatch_oracle_mesh_read_intent(request, wire)
 
 
@@ -2344,12 +2373,12 @@ async def oracle_mesh_read_cancel_check(request: Request) -> JSONResponse:
     try:
         body = json.loads((await request.body()).decode("utf-8"))
     except (UnicodeDecodeError, ValueError):
-        return _error(400, "oracle_mesh_invalid_body")
+        return _invalid_body("cancel_check", "json_decode")
     if not isinstance(body, dict):
-        return _error(400, "oracle_mesh_invalid_body")
+        return _invalid_body("cancel_check", "body_shape")
     dispatch_id = _ref(body.get("dispatch_id"), 128)
     if dispatch_id is None:
-        return _error(400, "oracle_mesh_invalid_body")
+        return _invalid_body("cancel_check", "dispatch_id")
     history_store = getattr(request.app.state, "history_store", None)
     reader = getattr(history_store, "oracle_mesh_dispatch_cancellation", None)
     if not callable(reader):
@@ -2389,17 +2418,17 @@ async def oracle_mesh_read_busy_check(request: Request) -> JSONResponse:
     try:
         body = json.loads((await request.body()).decode("utf-8"))
     except (UnicodeDecodeError, ValueError):
-        return _error(400, "oracle_mesh_invalid_body")
+        return _invalid_body("busy_check", "json_decode")
     if not isinstance(body, dict):
-        return _error(400, "oracle_mesh_invalid_body")
+        return _invalid_body("busy_check", "body_shape")
     node_ref = _ref(body.get("node_ref"), 256)
     if node_ref is None:
-        return _error(400, "oracle_mesh_invalid_body")
+        return _invalid_body("busy_check", "node_ref")
     dispatch_id = body.get("dispatch_id")
     if dispatch_id is None:
         dispatch_id = ""
     elif not isinstance(dispatch_id, str) or len(dispatch_id) > 128:
-        return _error(400, "oracle_mesh_invalid_body")
+        return _invalid_body("busy_check", "dispatch_id")
     history_store = getattr(request.app.state, "history_store", None)
     reader = getattr(history_store, "oracle_mesh_node_live_claims", None)
     if not callable(reader):
@@ -2442,16 +2471,16 @@ async def oracle_mesh_read_lane_status(request: Request) -> JSONResponse:
     device_ids: list[str] = []
     if body:
         if not isinstance(body, dict):
-            return _error(400, "oracle_mesh_invalid_body")
+            return _invalid_body("lane_status", "body_shape")
         wanted = body.get("device_ids")
         if wanted is None:
             wanted = []
         if not isinstance(wanted, list):
-            return _error(400, "oracle_mesh_invalid_body")
+            return _invalid_body("lane_status", "device_ids_shape")
         for wanted_id in wanted:
             bounded = _ref(wanted_id, 128)
             if bounded is None:
-                return _error(400, "oracle_mesh_invalid_body")
+                return _invalid_body("lane_status", "device_id")
             device_ids.append(bounded)
     history_store = getattr(request.app.state, "history_store", None)
     reader = getattr(history_store, "oracle_mesh_lane_status", None)
@@ -3003,18 +3032,18 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     """Executor submit: secret + single-use nonce, verified, appended once."""
     parsed_result = await _read_result_body(request)
     if parsed_result is None:
-        return _error(400, "oracle_mesh_invalid_body")
+        return _invalid_body("result")
     wire, result_blob_raw = parsed_result
     if _ref(wire.get("dispatch_id"), 128) is None:
-        return _error(400, "oracle_mesh_invalid_body")
+        return _invalid_body("result", "dispatch_id")
     if _ref(wire.get("nonce"), 128) is None:
-        return _error(400, "oracle_mesh_invalid_body")
+        return _invalid_body("result", "nonce")
     if wire.get("termination") not in (
         "exited", "cancelled", "timed_out", "no_reply", "no_exit_code",
         "not_executed", "output_too_large",
         "captured", "acted", "desktop_unavailable",
     ):
-        return _error(400, "oracle_mesh_invalid_body")
+        return _invalid_body("result", "termination")
     # #4139: a wait timeout and a console that never answered have NO observed
     # exit code. That is carried as null, never invented as 0; only a real
     # "exited" run must report an integer. A desktop turn never reports one
@@ -3030,9 +3059,9 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
             # the PC's console. That is carried as null, never invented as 0.
             "cancelled",
         ):
-            return _error(400, "oracle_mesh_invalid_body")
+            return _invalid_body("result", "exit_code_missing")
     elif isinstance(wire.get("exit_code"), bool) or not isinstance(wire.get("exit_code"), int):
-        return _error(400, "oracle_mesh_invalid_body")
+        return _invalid_body("result", "exit_code_type")
     if wire.get("content_bytes") == 0 and wire.get("content_sha256") == "":
         # Legacy empty-read shape: canonicalize before verification and
         # pinning so a 0-byte outcome is delivered instead of stranding.
