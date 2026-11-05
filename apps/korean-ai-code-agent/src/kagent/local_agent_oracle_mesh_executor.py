@@ -812,20 +812,20 @@ class OracleMeshExecutor:
         if dispatch.granted_root:
             if walk_hits_reparse_point(dispatch.granted_root, dispatch.file_path):
                 self._trace_read(dispatch, "link_refused", guard_started,
-                                 error="reparse point below the granted root")
+                                 reason="local_hit")
                 return OracleMeshExecutionOutcome(
                     termination="exited", exit_code=1,
                     body=PC_FILE_LINK_REFUSED_MARKER.encode("utf-8"),
                 )
             if self._command_port is not None:
-                hit = self._pc_reparse_check(
+                hit, reason, detail = self._pc_reparse_check(
                     granted_root=dispatch.granted_root,
                     file_path=dispatch.file_path,
                     node_ref=dispatch.node_ref,
                 )
                 if hit:
                     self._trace_read(dispatch, "link_refused", guard_started,
-                                     error="reparse point below the granted root")
+                                     reason=reason, detail=detail)
                     return OracleMeshExecutionOutcome(
                         termination="exited", exit_code=1,
                         body=PC_FILE_LINK_REFUSED_MARKER.encode("utf-8"),
@@ -941,7 +941,7 @@ class OracleMeshExecutor:
 
     def _pc_reparse_check(
         self, *, granted_root: str, file_path: str, node_ref: str,
-    ) -> bool:
+    ) -> tuple[bool, str | None, str | None]:
         """Run a ReparsePoint walk ON THE PC through the MeshCentral command channel.
 
         The walk checks every folder from the granted root down to the file -
@@ -949,11 +949,16 @@ class OracleMeshExecutor:
         that cannot be completed) means the read is refused before the download
         starts, so not one byte of an outside file crosses the relay.
 
-        Returns True when the PC reports a reparse-point crossing (or the check
-        itself failed — fail closed).
+        Returns ``(hit, reason, detail)``. Every refusal used to share one fixed
+        trace string, so a real link hit could not be told from a check that
+        never ran — the 11-05 outage was the second kind. ``reason`` is
+        ``pc_hit``, ``pc_no_marker`` or ``pc_check_error``; ``detail`` names the
+        exception class or the termination that failed the check closed, and
+        never carries command output.
         """
         if self._command_port is None:
-            return True  # 명령 채널이 없으면 검사 자체가 불가능 — fail closed
+            # 명령 채널이 없으면 검사 자체가 불가능 — fail closed
+            return True, "pc_check_error", "no_command_port"
         guard_root = _pc_guard_root(granted_root)
         guard_target = file_path.strip().replace("/", "\\")
         script = (
@@ -997,25 +1002,35 @@ class OracleMeshExecutor:
             # the console answered completely, the code is simply unobserved
             # (measured on the real PC, 11-05 16:20). Both shapes carry the
             # whole transcript; anything else did not finish on the PC.
-            if getattr(outcome, "termination", None) not in ("exited", "no_exit_code"):
-                return True  # 검사 명령이 끝까지 돌지 못함 → fail closed
+            termination = getattr(outcome, "termination", None)
+            if termination not in ("exited", "no_exit_code"):
+                # 검사 명령이 끝까지 돌지 못함 → fail closed
+                return True, "pc_check_error", f"termination={termination}"
             raw = getattr(outcome, "output", b"")
             if not isinstance(raw, (bytes, bytearray)):
-                return True  # 본문 없는 응답 → fail closed
+                return True, "pc_check_error", "output_not_bytes"
             text = bytes(raw).decode("utf-8", errors="replace")
             for line in text.splitlines():
-                if line.startswith("PADIEM_PC_REPARSE="):
+                if not line.startswith("PADIEM_PC_REPARSE="):
+                    continue
+                try:
                     parsed = json.loads(
                         base64.b64decode(line[len("PADIEM_PC_REPARSE="):]))
-                    hit = parsed.get("hit") if isinstance(parsed, dict) else None
-                    # A marker that does not carry an explicit boolean verdict
-                    # is a check that cannot report — refuse closed.
-                    if type(hit) is not bool:
-                        return True
-                    return hit
-            return True  # account line 없음 — 검사 실패 → fail closed
-        except Exception:
-            return True  # 검사 실패 → fail closed
+                except Exception as exc:
+                    return True, "pc_check_error", exc.__class__.__name__
+                hit = parsed.get("hit") if isinstance(parsed, dict) else None
+                # A marker that does not carry an explicit boolean verdict is a
+                # check that cannot report — refuse closed, and say so.
+                if type(hit) is not bool:
+                    return True, "pc_check_error", "hit_not_bool"
+                if hit:
+                    return True, "pc_hit", None
+                return False, None, None
+            return True, "pc_no_marker", None  # account line 없음 — 검사 실패
+        except Exception as exc:
+            # A channel that refuses or breaks cannot answer the walk, so the
+            # read stays refused — and the trace now says which failure it was.
+            return True, "pc_check_error", exc.__class__.__name__
 
     def _trace_read(
         self, dispatch: OracleMeshDispatch, phase: str, started: float,
