@@ -80,11 +80,21 @@ def _workers_ready() -> bool:
 def _b14_consistent() -> bool:
     if os.environ.get("PADIEM_CHAT_RUNTIME_MODE", "mock") != "b14":
         return True
-    return (
-        os.environ.get("B14_UPSTREAM_MODE") == "https"
-        and str(os.environ.get("B14_UPSTREAM_URL", "")).startswith("https://")
-        and len(os.environ.get("PADIEM_B14_SERVICE_PROOF_SECRET", "")) >= 32
-    )
+    mode = os.environ.get("B14_UPSTREAM_MODE")
+    url = str(os.environ.get("B14_UPSTREAM_URL", ""))
+    if mode == "https":
+        origin_ok = url.startswith("https://")
+    elif mode == "loopback":
+        # #6926/#6920: the B14 process on this host, plain HTTP on a loopback
+        # address. Same rule the application's own validator enforces
+        # (padiem_ai_core.b14_upstream); the proof secret rule below is unchanged.
+        origin_ok = any(
+            url == f"http://{host}" or url.startswith(f"http://{host}:")
+            for host in ("127.0.0.1", "localhost", "[::1]")
+        )
+    else:
+        return False
+    return origin_ok and len(os.environ.get("PADIEM_B14_SERVICE_PROOF_SECRET", "")) >= 32
 
 
 def _pairs_consistent(origin_name: str, secret_name: str) -> bool:
