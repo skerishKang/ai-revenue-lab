@@ -10,7 +10,9 @@ var SNIPPET_RADIUS=48;
    Conversational wrappers (e.g. X에 대해 알려줘) must still reach the lexical
    stem (X) deterministically. Topic-free: strips only grammatical particles,
    keeps every original term, single strip, stem length>=2. No topic rules. */
-var KO_PARTICLES=['에게서','에게','에서','께서','부터','까지','처럼','같이','보다','마다','밖에','이랑','하고','랑','와','과','으로','의','에','게','께','을','를','이','가','은','는','도','만','로'];
+var KO_PARTICLES=['에게서','에게','에서','께서','부터','까지','처럼','같이','보다','마다','밖에','이랑','하고','랑','와','과','으로','의','에','게','께','을','를','이','가','은','는','도','만','로','님'];
+var KO_ARCHAIC={'예수님':'예수','멸망하지':'멸망치','하지':'치','하게':'케','하여':'케','주님':'주','성령님':'성령','그리스도님':'그리스도','하나님께':'하나님','할지어다':'할찌어다','있을지어다':'있을찌어다','말씀하셨다':'가라사대','이르시되':'가라사대','보셨다':'보시니라'};
+var EN_STOPWORDS={'in':1,'the':1,'of':1,'and':1,'a':1,'to':1,'is':1,'was':1,'for':1};
 /* Topic-free conversational function words: wrappers/question words that carry
    no lexical content (about/tell-me/please/what/how). Removed from the TERM
    list only; the original query string is untouched for exact-match scoring. */
@@ -28,12 +30,31 @@ function particleStem(term){
 }
 function tokenize(value){
   var raw=String(value||'').toLowerCase();
-  var parts=raw.match(/[a-z0-9가-힣]{2,}/g)||[];
-  for(var _i=0,_a=['개','산','섬','왕','신'];_i<_a.length;_i++){ var term=_a[_i]; var re=new RegExp('(^|[\\s(])'+term+'($|[\\s?!.),])'); if(re.test(raw)) parts.push(term); }
+  var parts=raw.match(/[a-z0-9가-힣]+/g)||[];
+  for(var _i=0,_a=['개','산','섬','왕','신','빛','물','피'];_i<_a.length;_i++){ var term=_a[_i]; var re=new RegExp('(^|[\\s(])'+term+'($|[\\s?!.),])'); if(re.test(raw)) parts.push(term); }
   var seen={}; var out=[];
-  for(var i=0;i<parts.length;i++){ var p=parts[i]; if(KO_STOPWORDS[p]) continue; if(!seen[p]){ seen[p]=1; out.push(p); if(out.length>=MAX_TERMS) break; } }
-  for(var s=0;s<parts.length && out.length<MAX_TERMS;s++){ if(KO_STOPWORDS[parts[s]]) continue; var st=particleStem(parts[s]); if(st && !KO_STOPWORDS[st] && !seen[st]){ seen[st]=1; out.push(st); } }
+  for(var i=0;i<parts.length;i++){ var p=parts[i]; if(KO_STOPWORDS[p]||EN_STOPWORDS[p]) continue; if(!seen[p]){ seen[p]=1; out.push(p); if(out.length>=MAX_TERMS) break; } }
+  for(var s=0;s<parts.length && out.length<MAX_TERMS;s++){ if(KO_STOPWORDS[parts[s]]||EN_STOPWORDS[parts[s]]) continue; var st=particleStem(parts[s]); if(st && !KO_STOPWORDS[st] && !seen[st]){ seen[st]=1; out.push(st); } }
+  // archaic expansion
+  for(var ex=0;ex<parts.length && out.length<MAX_TERMS;ex++){
+    var src=parts[ex];
+    for(var ak in KO_ARCHAIC){ if(!Object.prototype.hasOwnProperty.call(KO_ARCHAIC,ak))continue; if(src.indexOf(ak)===0){ var expanded=KO_ARCHAIC[ak]; if(expanded&&!seen[expanded]){ seen[expanded]=1; out.push(expanded); } break; } }
+  }
   return out;
+}
+function boundaryWeight(text,term){
+  var low=String(text||'').toLowerCase(); var w=0; var pos=0;
+  while(true){ var idx=low.indexOf(term,pos); if(idx===-1)break;
+    var before=idx>0?low[idx-1]:' ';
+    var afterIdx=idx+term.length;
+    var after=afterIdx<low.length?low[afterIdx]:' ';
+    var boundaryBefore=/[\s(?!.,;:]/.test(before)||before===' ';
+    var boundaryAfter=/[\s?!.,;:)]/.test(after);
+    if(boundaryAfter)w+=8; else if(after!==' ')w-=4;
+    if(boundaryBefore)w+=2;
+    pos=idx+1;
+  }
+  return w;
 }
 
 function buildLexicalIndex(blocks){
@@ -41,13 +62,15 @@ function buildLexicalIndex(blocks){
   for(var i=0;i<blocks.length;i++){
     var b=blocks[i];
     var combined=(String(b.title||'')+' '+String(b.text||'')+' '+String(b.sourceText||'')).toLowerCase();
-    var terms=combined.match(/[a-z0-9가-힣]{2,}/g)||[];
-    for(var _j=0,_b=['개','산','섬','왕','신'];_j<_b.length;_j++){ var t=_b[_j]; var re2=new RegExp('(^|[\\s(])'+t+'($|[\\s?!.),])'); if(re2.test(combined)) terms.push(t); }
+    var terms=combined.match(/[a-z0-9가-힣]+/g)||[];
+    for(var _j=0,_b=['개','산','섬','왕','신','빛','물','피'];_j<_b.length;_j++){ var t=_b[_j]; var re2=new RegExp('(^|[\\s(])'+t+'($|[\\s?!.),])'); if(re2.test(combined)) terms.push(t); }
     var uniq={}; for(var k=0;k<terms.length;k++) uniq[terms[k]]=1;
     for(var term in uniq){ if(!postings.has(term)) postings.set(term,new Set()); postings.get(term).add(i); }
   }
   return postings;
 }
+var _indexCache=(typeof WeakMap!=='undefined'?new WeakMap():null);
+function cachedIndex(blocks){ if(_indexCache){ var hit=_indexCache.get(blocks); if(hit)return hit; var built=buildLexicalIndex(blocks); _indexCache.set(blocks,built); return built; } return buildLexicalIndex(blocks); }
 
 function loadCatalogSync(contentRoot){
   if(typeof require==='undefined') throw new Error('FS_UNAVAILABLE');
@@ -127,8 +150,12 @@ function scoreBlock(block, terms, exact){
   var bodyHay=(String(block.text||'')+' '+String(block.sourceText||'')).toLowerCase();
   var titleHay=String(block.title||'').toLowerCase();
   var score=0;
-  for(var i=0;i<terms.length;i++){ var term=terms[i]; if(bodyHay.indexOf(term)!==-1) score+=10; else if(titleHay.indexOf(term)!==-1) score+=3; }
+  for(var i=0;i<terms.length;i++){ var term=terms[i]; if(bodyHay.indexOf(term)!==-1){ score+=10; } else if(titleHay.indexOf(term)!==-1) score+=3; }
   if(exact && bodyHay.indexOf(exact)!==-1) score+=25; else if(exact && titleHay.indexOf(exact)!==-1) score+=5;
+  // word-boundary weighting on ko (and en when latin)
+  var combinedText=String(block.ko||block.text||'');
+  if(/[A-Za-z]/.test(String(block.ko||''))===false && terms.length && /[a-z]/i.test(terms[0])) combinedText=String(block.en||block.sourceText||'')+' '+String(block.ko||'');
+  for(var w=0;w<terms.length;w++){ score+=boundaryWeight(combinedText,terms[w]); }
   return score;
 }
 
@@ -161,20 +188,22 @@ function staticKeywordSearch(query, opts){
   var terms=tokenize(query);
   if(!terms.length) return {status:'NO_RESULT', query:query, results:[], truncated:false, total:0};
   var exact=String(query||'').trim().toLowerCase();
-  var allBlocks=[];
+  var allBlocks=[], cacheKey=null;
   if(opts.blocks && Array.isArray(opts.blocks)){
-    allBlocks=opts.blocks.slice();
+    cacheKey=opts.blocks;
+    allBlocks=opts.blocks;
     if(workKey){
       var filtered=[];
       for(var i=0;i<allBlocks.length;i++) if(String(allBlocks[i].work_key)===String(workKey)) filtered.push(allBlocks[i]);
-      allBlocks=filtered;
+      if(filtered.length!==allBlocks.length){allBlocks=filtered;cacheKey=filtered;}
     }
   } else if(opts.dataAdapter && typeof opts.dataAdapter.getBlocks==='function'){
-    allBlocks=opts.dataAdapter.getBlocks().slice();
+    var source=opts.dataAdapter.getBlocks();
+    cacheKey=source; allBlocks=source;
     if(workKey){
       var filtered2=[];
       for(var k=0;k<allBlocks.length;k++) if(String(allBlocks[k].work_key)===String(workKey)) filtered2.push(allBlocks[k]);
-      allBlocks=filtered2;
+      if(filtered2.length!==allBlocks.length){allBlocks=filtered2;cacheKey=filtered2;}
     }
   } else {
     if(typeof require==='undefined'){
@@ -191,7 +220,8 @@ function staticKeywordSearch(query, opts){
     }
   }
   if(!allBlocks.length) return {status:'NO_RESULT', query:query, results:[], truncated:false, total:0};
-  var index=buildLexicalIndex(allBlocks);
+  var index=cachedIndex(cacheKey||allBlocks);
+  var isLatinQuery=/^[A-Za-z0-9\s]+$/.test(String(query).trim())&&/[A-Za-z]/.test(String(query));
   var candidates=new Set();
   for(var ti=0;ti<terms.length;ti++){
     var term=terms[ti];
@@ -203,7 +233,17 @@ function staticKeywordSearch(query, opts){
     });
   }
   if(!candidates.size){
-    return {status:'NO_RESULT', query:query, results:[], truncated:false, total:0};
+    // substring fallback for single-char / single-term queries
+    var fallbackTerm=String(query||'').trim();
+    if(fallbackTerm){
+      for(var fi=0;fi<allBlocks.length;fi++){
+        var fbBody=String(allBlocks[fi].text||'').toLowerCase();
+        var fbEn=String(allBlocks[fi].en||'').toLowerCase();
+        var fbKo=String(allBlocks[fi].ko||'').toLowerCase();
+        if(fbBody.indexOf(fallbackTerm.toLowerCase())!==-1||fbEn.indexOf(fallbackTerm.toLowerCase())!==-1||fbKo.indexOf(fallbackTerm.toLowerCase())!==-1)candidates.add(fi);
+      }
+    }
+    if(!candidates.size)return {status:'NO_RESULT', query:query, results:[], truncated:false, total:0};
   }
   var rows=[];
   candidates.forEach(function(idx){
@@ -218,7 +258,7 @@ function staticKeywordSearch(query, opts){
   var sliced=rows.slice(0,limit);
   var results=sliced.map(function(r){
     var b=r.block;
-    var snippet=makeSnippet(b.text||b.ko||b.en||'', query);
+    var snippet=isLatinQuery?makeSnippet(b.en||b.sourceText||b.text||'', query):makeSnippet(b.text||b.ko||b.en||'', query);
     var lang=detectLanguage(b, terms);
     return {
       canonical_locator: b.canonical_locator,
@@ -245,10 +285,11 @@ function staticKeywordSearch(query, opts){
   return {status:'FOUND', query:query, results:results, truncated:truncated, total:total, limit:limit};
 }
 
-if(typeof window!=='undefined'){
-  window.__smStaticKeywordSearchV1={tokenize:tokenize, buildLexicalIndex:buildLexicalIndex, makeSnippet:makeSnippet, staticKeywordSearch:staticKeywordSearch, loadCatalogSync: (typeof require!=='undefined'?loadCatalogSync:null)};
-}
-if(typeof module!=='undefined' && module.exports){
-  module.exports={tokenize:tokenize, buildLexicalIndex:buildLexicalIndex, makeSnippet:makeSnippet, staticKeywordSearch:staticKeywordSearch, loadCatalogSync: (typeof require!=='undefined'?loadCatalogSync:null), loadManifestSync: (typeof require!=='undefined'?loadManifestSync:null), loadUnitsSync: (typeof require!=='undefined'?loadUnitsSync:null)};
-}
+  if(typeof window!=='undefined'){
+    window.__smStaticKeywordSearchV1={tokenize:tokenize, buildLexicalIndex:buildLexicalIndex, cachedIndex:cachedIndex, boundaryWeight:boundaryWeight, makeSnippet:makeSnippet, staticKeywordSearch:staticKeywordSearch, loadCatalogSync: (typeof require!=='undefined'?loadCatalogSync:null)};
+  }
+  if(typeof module!=='undefined' && module.exports){
+    module.exports={tokenize:tokenize, buildLexicalIndex:buildLexicalIndex, cachedIndex:cachedIndex, boundaryWeight:boundaryWeight, makeSnippet:makeSnippet, staticKeywordSearch:staticKeywordSearch, loadCatalogSync: (typeof require!=='undefined'?loadCatalogSync:null), loadManifestSync: (typeof require!=='undefined'?loadManifestSync:null), loadUnitsSync: (typeof require!=='undefined'?loadUnitsSync:null)};
+
+  }
 })();

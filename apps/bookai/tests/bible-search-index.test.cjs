@@ -45,12 +45,24 @@ for(let i=0;i<fullBlocks.length;i++){
   assert.deepEqual(actual,expected,'packed index row differs from source at '+fullBlocks[i].canonical_locator);
 }
 
-const queries=['태초에','여호와','사랑','예수','믿음','바울','이스라엘','홍해','In the beginning','Jesus Christ'];
+const queries=['태초에','여호와','사랑','예수','믿음','바울','이스라엘','홍해','In the beginning','Jesus Christ','장막','빛','예수님'];
 for(const query of queries){
   const baseline=keyword.staticKeywordSearch(query,{workKey:'bible-web',blocks:fullBlocks,limit:8});
   const indexed=keyword.staticKeywordSearch(query,{workKey:'bible-web',blocks:indexBlocks,limit:8});
   assert.deepEqual(indexed,baseline,'index search must match full-corpus search for '+query);
 }
+for(const q of ['예수','장막','빛','예수님']){
+  const r=keyword.staticKeywordSearch(q,{workKey:'bible-web',blocks:fullBlocks,limit:50});
+  assert.ok(r.total>0,q+' must return results');
+}
+assert.equal(keyword.cachedIndex(fullBlocks),keyword.cachedIndex(fullBlocks),'lexical index must be memoized for the same blocks array');
+assert.deepEqual(keyword.tokenize('빛'),['빛']);
+assert.deepEqual(keyword.tokenize('물'),['물']);
+assert.deepEqual(keyword.tokenize('피'),['피']);
+assert.ok(!keyword.tokenize('in the beginning').includes('in'),'English stopwords must be dropped');
+assert.ok(!keyword.tokenize('in the beginning').includes('the'),'English stopwords must be dropped');
+assert.ok(!keyword.staticKeywordSearch('예수',{workKey:'bible-web',blocks:fullBlocks,limit:50}).results.some(r=>r.canonical_locator==='bible:web:1CH:24:11'),'예수아 must not top 예수 results');
+assert.deepEqual(new Set(keyword.staticKeywordSearch('예수님',{workKey:'bible-web',blocks:fullBlocks,limit:50}).results.map(r=>r.canonical_locator)), new Set(keyword.staticKeywordSearch('예수',{workKey:'bible-web',blocks:fullBlocks,limit:50}).results.map(r=>r.canonical_locator)),'예수님 must match 예수');
 
 function gzipSize(text){return zlib.gzipSync(Buffer.from(text),{level:9}).length;}
 function assetSizes(root,relativePaths){

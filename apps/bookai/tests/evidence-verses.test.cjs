@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const {test} = require('node:test');
-const {projectAnswerEvidence} = require('../public/storymemory-answer-evidence-v1.js');
+const {projectAnswerEvidence, parseCitations, krvLabelOf} = require('../public/storymemory-answer-evidence-v1.js');
 
 const publicDir = path.join(__dirname, '../public');
 const codes = {사도행전: 'ACT', 창세기: 'GEN'};
@@ -58,6 +58,23 @@ test('a locator is not invented when the answer names a verse absent from the pa
   const answer = '창세기 2:1-3을 참고하세요.';
   const actsOnly = packet(['bible:web:ACT:9:1', 'bible:web:ACT:9:2']);
   assert.deepEqual(projectAnswerEvidence(answer, actsOnly, codes, compareLocators), []);
+});
+
+test('shared abbreviations, overlap resolution and explicit locator form', () => {
+  const citations = parseCitations('1 John 1:9와 창 1:1, bible:web:JHN:3:16', codes);
+  assert.deepEqual(citations.map(c => [c.code, c.chapter, c.start]),
+    [['1JN', 1, 9], ['GEN', 1, 1], ['JHN', 3, 16]]);
+  const onlyLong = parseCitations('요일 1:9', codes);
+  assert.equal(onlyLong.length, 1);
+  assert.equal(onlyLong[0].code, '1JN');
+  assert.deepEqual(parseCitations('고후 13:13', codes).map(c => c.code), ['2CO']);
+  assert.equal(krvLabelOf('bible:web:2CO:13:14').verse, 13);
+  assert.equal(krvLabelOf('bible:web:ROM:14:24').verse, 25);
+});
+
+test('KRV-numbered citations keep their evidence chip', () => {
+  const packet2 = packet(['bible:web:2CO:13:14'], 'bible:web:2CO:13:14');
+  assert.deepEqual(projectAnswerEvidence('고후 13:13의 축도', packet2, codes, compareLocators), ['bible:web:2CO:13:14']);
 });
 
 test('clicking the displayed verse routes to its book, chapter, and exact locator', () => {
