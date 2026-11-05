@@ -135,17 +135,20 @@ class PcReparseCheckUnitTests(unittest.TestCase):
     bound the dispatch carries.
     """
 
-    def _executor(self, *, marker_hit=None, no_marker=False, raises=False):
+    def _executor(self, *, marker_hit=None, no_marker=False, raises=False,
+                  termination="exited"):
         from kagent.local_agent_oracle_mesh_executor import (
             OracleMeshExecutor, PC_FILE_LINK_REFUSED_MARKER,
         )
+        # 11-05: the fake used to invent an outcome with a ``body`` field the
+        # real port never carried, so the executor's ``outcome.body`` read
+        # passed here and raised AttributeError on every real PC. The fake now
+        # returns the real outcome class — a field drift fails in this file
+        # first, the way the read-port fake already works.
+        from kagent.local_agent_meshcentral_command_port import (
+            MeshCentralCommandOutcome,
+        )
         import base64 as _b64
-
-        class _Outcome:
-            def __init__(self, body: bytes):
-                self.body = body
-                self.termination = "exited"
-                self.exit_code = 0
 
         if raises:
             class _Port:
@@ -161,7 +164,11 @@ class PcReparseCheckUnitTests(unittest.TestCase):
                     else:
                         payload = {"hit": bool(marker_hit)}
                     encoded = _b64.b64encode(json.dumps(payload).encode("utf-8")).decode("ascii")
-                    return _Outcome(("PADIEM_PC_REPARSE=" + encoded).encode("utf-8"))
+                    return MeshCentralCommandOutcome(
+                        termination=termination,
+                        exit_code=0 if termination == "exited" else None,
+                        output=("PADIEM_PC_REPARSE=" + encoded).encode("utf-8"),
+                    )
 
         executor = OracleMeshExecutor.__new__(OracleMeshExecutor)
         executor._command_port = _Port()
@@ -209,6 +216,15 @@ class PcReparseCheckUnitTests(unittest.TestCase):
 
     def test_a_check_that_cannot_report_refuses_closed(self):
         executor = self._executor(no_marker=True)
+        outcome = executor._execute_read(self._dispatch())
+        from kagent.local_agent_oracle_mesh_executor import (
+            PC_FILE_LINK_REFUSED_MARKER,
+        )
+        assert outcome.body == PC_FILE_LINK_REFUSED_MARKER.encode("utf-8")
+
+    def test_a_run_the_pc_did_not_finish_refuses_closed(self):
+        # hit=false 본문이 왔어도 PC가 명령을 끝내지 못했다면 판정이 아니다.
+        executor = self._executor(marker_hit=False, termination="no_reply")
         outcome = executor._execute_read(self._dispatch())
         from kagent.local_agent_oracle_mesh_executor import (
             PC_FILE_LINK_REFUSED_MARKER,

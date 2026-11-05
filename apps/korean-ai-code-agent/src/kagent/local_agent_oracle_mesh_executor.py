@@ -808,9 +808,10 @@ class OracleMeshExecutor:
         # complete) refuses the read with the ``link_refused`` marker so not
         # one byte of an outside file crosses the relay. A server that names
         # no root keeps the read exactly as it was before this guard.
+        guard_started = time.monotonic()
         if dispatch.granted_root:
             if walk_hits_reparse_point(dispatch.granted_root, dispatch.file_path):
-                self._trace_read(dispatch, "link_refused", time.monotonic(),
+                self._trace_read(dispatch, "link_refused", guard_started,
                                  error="reparse point below the granted root")
                 return OracleMeshExecutionOutcome(
                     termination="exited", exit_code=1,
@@ -823,7 +824,7 @@ class OracleMeshExecutor:
                     node_ref=dispatch.node_ref,
                 )
                 if hit:
-                    self._trace_read(dispatch, "link_refused", time.monotonic(),
+                    self._trace_read(dispatch, "link_refused", guard_started,
                                      error="reparse point below the granted root")
                     return OracleMeshExecutionOutcome(
                         termination="exited", exit_code=1,
@@ -984,10 +985,19 @@ class OracleMeshExecutor:
             outcome = self._command_port.run_command(
                 node_ref=node_ref, command=script, timeout_seconds=30,
             )
-            body = outcome.body if isinstance(outcome.body, bytes) else (
-                (outcome.body or "").encode("utf-8")
-            )
-            text = body.decode("utf-8", errors="replace")
+            # 11-05: the command port's outcome carries ``output`` — the same
+            # field the command lane reads. ``outcome.body`` never existed on
+            # MeshCentralCommandOutcome (a frozen slots dataclass), so this
+            # line raised AttributeError, fell into the except below, and the
+            # guard failed closed for every read on every PC even when the PC
+            # answered hit=false. Only a run the PC actually finished can
+            # carry a verdict.
+            if getattr(outcome, "termination", None) != "exited":
+                return True  # 검사 명령이 끝까지 돌지 못함 → fail closed
+            raw = getattr(outcome, "output", b"")
+            if not isinstance(raw, (bytes, bytearray)):
+                return True  # 본문 없는 응답 → fail closed
+            text = bytes(raw).decode("utf-8", errors="replace")
             for line in text.splitlines():
                 if line.startswith("PADIEM_PC_REPARSE="):
                     parsed = json.loads(
