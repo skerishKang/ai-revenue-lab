@@ -7,6 +7,15 @@ from pathlib import Path
 import httpx
 import pytest
 
+
+@pytest.fixture(autouse=True)
+def _signed_in_chat(monkeypatch):
+    """These Chat behavior tests run as a signed-in member."""
+    from app import chat_routes
+
+    monkeypatch.setattr(chat_routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(chat_routes, "current_user_id", lambda request: "usr_" + "7" * 32)
+
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.history import PRODUCT_SCOPE_CHAT

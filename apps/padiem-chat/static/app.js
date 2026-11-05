@@ -749,6 +749,12 @@
       message: "claw-general-model-unavailable",
       hint: "claw-general-model-unavailable-note",
     }),
+    // Owner decision 2026-11-05: a guest Claw request is refused with 401
+    // login_required; the UI names the login step instead of a generic error.
+    login_required: Object.freeze({
+      message: "claw-error-auth-needed",
+      hint: "claw-login-required-note",
+    }),
   });
   // Closed server code for a rejected customer-owned key. Named here so the
   // streaming answer region keeps no provider vocabulary of its own.
@@ -1901,6 +1907,12 @@
           ? "expired"
           : "guest";
     const presentation = resolveSessionPresentation(sessionState);
+    // Owner decision 2026-11-05: invite a guest to sign in with one quiet line
+    // on the first screen. The flag keeps this off the network-free CI mock.
+    const guestLoginHint = document.getElementById("guestLoginHint");
+    if (guestLoginHint) {
+      guestLoginHint.hidden = !(sessionState === "guest" && authState.model_requires_session === true);
+    }
 
     if (accountContainer) {
       accountContainer.dataset.accountState = sessionState;
@@ -4073,6 +4085,12 @@
       }
       if (requestEpoch !== conversationEpoch) return false;
       handleCustomRequestFailure(error);
+      // A guest that bypassed the pre-send gate (stale auth state) still gets
+      // the login path, never a raw provider error.
+      if (error && error.code === "login_required") {
+        setNote(uiT("model-requires-login"), "error");
+        openAuthDialog();
+      }
       // An explicit retry replays the failed turn with that turn's own run
       // handle. When the server accepts it, reading the inherited handle back
       // reports it as still processing and never ends the retry turn; when the
@@ -4157,22 +4175,18 @@
     },
   });
 
-  // Owner decision 2026-10-24 (#5474): a guest may use Free on the Chat lane;
-  // the server bounds anonymous spend with the usage gate. Claw, paid tiers,
-  // Custom and projects still need a session, so this stops those requests
-  // before they leave the browser: the visitor gets the login gate instead of a
-  // raw error, and keeps the text they typed. Every screen stays browsable
-  // without a session.
+  // Owner decision 2026-11-05: Chat/Claw AI answers are signed-in only.
+  // The composer stays editable; pressing send opens the existing login
+  // dialog, keeps the typed text, and never leaves a model request behind.
+  // The server is the final authority and answers a bypassing guest with 401
+  // login_required. A mock/preview deployment that cannot authenticate keeps
+  // its CI harness behavior through the server-owned flag.
   function requireSessionForModelUse() {
     if (authState.authenticated === true) return true;
-    // Only the server may decide that this deployment gates model use behind a
-    // session (auth/status `model_requires_session`). An isolated mock or
-    // preview deployment that cannot authenticate must never block the
-    // composer.
     if (authState.model_requires_session !== true) return true;
-    if (!clawGeneralRequestActive() && selectedProductTier() === "free") return true;
     setNote(uiT("model-requires-login"), "error");
     if (loginButton && !loginButton.hidden && !loginButton.disabled) loginButton.click();
+    else openAuthDialog();
     return false;
   }
 
@@ -4369,6 +4383,8 @@
       await loadAuthStatus();
     }
   }
+  const guestLoginEntryButton = document.getElementById("guestLoginEntryButton");
+  if (guestLoginEntryButton) guestLoginEntryButton.addEventListener("click", openAuthDialog);
   loginButton.addEventListener("click", async () => {
     if (!authState.ready) {
       // #5479: the session state is unknown, so the button retries it instead of

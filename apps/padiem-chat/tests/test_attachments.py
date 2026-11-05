@@ -23,6 +23,15 @@ PNG = b"\x89PNG\r\n\x1a\nphase8"
 WEBP = b"RIFF\x08\x00\x00\x00WEBPphase8"
 
 
+@pytest.fixture(autouse=True)
+def _signed_in_chat(monkeypatch: pytest.MonkeyPatch):
+    """These attachment behavior tests run as a signed-in Chat member."""
+    from app import chat_routes
+
+    monkeypatch.setattr(chat_routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(chat_routes, "current_user_id", lambda request: "usr_" + "7" * 32)
+
+
 def encoded(data: bytes) -> str:
     return base64.b64encode(data).decode("ascii")
 

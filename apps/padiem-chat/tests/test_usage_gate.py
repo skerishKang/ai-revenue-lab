@@ -163,7 +163,7 @@ async def test_daily_and_global_limits_are_finite_and_fail_closed():
 
 
 @pytest.mark.asyncio
-async def test_api_denial_happens_before_b14_and_allowed_request_calls_once():
+async def test_api_guest_is_refused_before_the_usage_gate_and_b14():
     provider_calls = 0
 
     async def handler(request):
@@ -178,26 +178,30 @@ async def test_api_denial_happens_before_b14_and_allowed_request_calls_once():
         usage_store=store,
     )
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        allowed = await client.post(
+        first = await client.post(
             "/api/chat",
             json={"messages": USER_MESSAGES},
             headers={"cf-connecting-ip": "203.0.113.30"},
         )
-        denied = await client.post(
+        second = await client.post(
             "/api/chat",
             json={"messages": USER_MESSAGES},
             headers={"cf-connecting-ip": "203.0.113.30"},
         )
 
-    assert allowed.status_code == 200
-    assert denied.status_code == 429
-    assert denied.json()["error"]["code"] == "rate_limited"
-    assert denied.headers["retry-after"] == "60"
-    assert provider_calls == 1
+    assert first.status_code == 401
+    assert second.status_code == 401
+    assert first.json()["error"]["code"] == "login_required"
+    assert provider_calls == 0
+    assert store.consume_calls == 0
 
 
 @pytest.mark.asyncio
-async def test_api_missing_identity_is_rejected_before_b14_call():
+async def test_api_signed_in_request_without_public_ip_still_reaches_the_model(monkeypatch):
+    from app import chat_routes
+
+    monkeypatch.setattr(chat_routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(chat_routes, "current_user_id", lambda request: "usr_" + "7" * 32)
     provider_calls = 0
 
     async def handler(request):
@@ -205,17 +209,21 @@ async def test_api_missing_identity_is_rejected_before_b14_call():
         provider_calls += 1
         return httpx.Response(200, json=_success_payload())
 
+    store = InMemoryUsageCounterStore()
     app = create_app(
-        _live_settings(),
+        _live_settings(user_burst_limit=1),
         transport=httpx.MockTransport(handler),
-        usage_store=InMemoryUsageCounterStore(),
+        usage_store=store,
     )
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": USER_MESSAGES})
+        allowed = await client.post("/api/chat", json={"messages": USER_MESSAGES})
+        denied = await client.post("/api/chat", json={"messages": USER_MESSAGES})
 
-    assert response.status_code == 503
-    assert response.json()["error"]["code"] == "live_identity_unavailable"
-    assert provider_calls == 0
+    assert allowed.status_code == 200
+    assert denied.status_code == 429
+    assert denied.json()["error"]["code"] == "rate_limited"
+    assert denied.headers["retry-after"] == "60"
+    assert provider_calls == 1
 
 
 @pytest.mark.asyncio

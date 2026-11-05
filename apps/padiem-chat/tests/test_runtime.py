@@ -6,6 +6,15 @@ from pathlib import Path
 import httpx
 import pytest
 
+
+@pytest.fixture(autouse=True)
+def _signed_in_chat(monkeypatch):
+    """These Chat behavior tests run as a signed-in member."""
+    from app import chat_routes
+
+    monkeypatch.setattr(chat_routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(chat_routes, "current_user_id", lambda request: "usr_" + "7" * 32)
+
 from app.b14_client import B14Client, ChatRuntimeError, PADIEM_IDENTITY_INSTRUCTION
 from app.config import ConfigError, Settings
 from app.main import create_app

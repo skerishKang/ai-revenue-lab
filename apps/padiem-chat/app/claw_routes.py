@@ -503,6 +503,13 @@ async def claw_manual_intake_preview(request: Request) -> JSONResponse:
 
 
 async def claw_manual_intake_execute(request: Request) -> JSONResponse:
+    # Owner decision 2026-11-05: Claw execution is signed-in only. Refuse a
+    # guest before the body is read, before quota, and before any P01/Engine
+    # dispatch. The mock runtime is the network-free CI harness.
+    if getattr(getattr(request.app.state, "settings", None), "runtime_mode", None) != "mock":
+        uid = current_user_id(request) if auth_ready(request) else None
+        if uid is None:
+            return _error(401, "login_required", "Claw를 사용하려면 로그인이 필요합니다.")
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")

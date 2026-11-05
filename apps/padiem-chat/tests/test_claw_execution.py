@@ -1345,6 +1345,19 @@ def _live_quota_settings(**overrides) -> Settings:
     return Settings.from_values(**values)
 
 
+def _signed_live_settings(**overrides) -> Settings:
+    values = {
+        "auth_mode": "google",
+        "public_base_url": "https://chat.example.test",
+        "google_client_id": "claw-gate-client.apps.googleusercontent.com",
+        "google_client_secret": "claw-gate-google-secret",
+        "session_secret": "claw-gate-session-secret-not-a-real-credential-0",
+        "session_max_age_seconds": 3600,
+    }
+    values.update(overrides)
+    return _live_quota_settings(**values)
+
+
 class _PresenceOnlyHistoryStore:
     """auth_ready() only requires that a history store is bound."""
 
@@ -1411,35 +1424,70 @@ def test_signed_in_execute_authorizes_with_the_session_user_id() -> None:
     assert gate.calls == [{"raw_ip": TRUSTED_IP, "user_id": SIGNED_IN_USER_ID}]
 
 
-def test_anonymous_execute_is_burst_bounded_per_trusted_ip_with_the_real_usage_gate() -> None:
+def test_guest_execute_is_refused_before_quota_or_engine() -> None:
     store = InMemoryUsageCounterStore()
-    app = create_app(_live_quota_settings(), usage_store=store)
+    app = create_app(_live_quota_settings(), history_store=_PresenceOnlyHistoryStore(), usage_store=store)
     assert app.state.usage_gate_enforced is True
     adapter = _make_adapter()
     with TestClient(app) as client, _injected_adapter(client, adapter):
+        resp = client.post(EXECUTE_ROUTE_PATH, json=dict(GATE_PAYLOAD, action="reply"), headers={"cf-connecting-ip": TRUSTED_IP})
+    assert resp.status_code == 401
+    assert resp.json()["error"]["code"] == "login_required"
+    adapter.execute.assert_not_awaited()
+    assert store.consume_calls == 0
+
+
+def test_signed_in_execute_is_burst_bounded_per_user() -> None:
+    settings = _signed_live_settings(user_burst_limit=1, user_daily_limit=10)
+    store = InMemoryUsageCounterStore()
+    app = create_app(settings, history_store=_PresenceOnlyHistoryStore(), usage_store=store)
+    assert app.state.usage_gate_enforced is True
+    adapter = _make_adapter()
+    with TestClient(app, base_url="https://chat.example.test") as client, _injected_adapter(client, adapter):
+        client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(settings, SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
         first = client.post(EXECUTE_ROUTE_PATH, json=dict(GATE_PAYLOAD, action="reply"), headers={"cf-connecting-ip": TRUSTED_IP})
         second = client.post(EXECUTE_ROUTE_PATH, json=dict(GATE_PAYLOAD, action="reply"), headers={"cf-connecting-ip": TRUSTED_IP})
-        third = client.post(EXECUTE_ROUTE_PATH, json=dict(GATE_PAYLOAD, action="reply"), headers={"cf-connecting-ip": TRUSTED_IP})
-        other_ip = client.post(EXECUTE_ROUTE_PATH, json=dict(GATE_PAYLOAD, action="reply"), headers={"cf-connecting-ip": "192.0.2.9"})
-    assert (first.status_code, second.status_code) == (200, 200)
-    assert third.status_code == 429
-    assert third.headers["retry-after"]
-    assert other_ip.status_code == 200
-    assert adapter.execute.await_count == 3
+    assert first.status_code == 200, first.text
+    assert second.status_code == 429, second.text
+    assert second.json()["error"]["code"] == "rate_limited"
+    assert adapter.execute.await_count == 1
 
 
-def test_execute_fails_closed_when_live_identity_or_gate_is_unavailable() -> None:
-    store = InMemoryUsageCounterStore()
-    app = create_app(_live_quota_settings(), usage_store=store)
+def test_signed_in_execute_fails_closed_when_gate_store_is_unbound() -> None:
+    settings = _signed_live_settings()
+    app = create_app(settings, history_store=_PresenceOnlyHistoryStore())
+    app.state.usage_gate_enforced = True
     adapter = _make_adapter()
-    with TestClient(app) as client, _injected_adapter(client, adapter):
-        no_identity = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD)
-    assert no_identity.status_code == 503
-    assert no_identity.json()["error"]["code"] == "live_identity_unavailable"
-    adapter.execute.assert_not_called()
+    with TestClient(app, base_url="https://chat.example.test") as client, _injected_adapter(client, adapter):
+        client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(settings, SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        resp = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD)
+    assert resp.status_code == 503
+    assert resp.json()["error"]["code"] == "live_abuse_gate_unavailable"
+    adapter.execute.assert_not_awaited()
 
-    unbound = create_app(_live_quota_settings())
-    assert unbound.state.usage_gate_enforced is False
+
+def test_general_claw_guest_is_refused_before_engine() -> None:
+    app = create_app(_live_quota_settings(), history_store=_PresenceOnlyHistoryStore())
+    adapter = _make_adapter()
+    app.state.claw_p01_adapter = adapter
+    with TestClient(app, base_url="https://chat.example.test") as client:
+        resp = client.post(
+            "/api/claw/general",
+            json={"messages": [{"role": "user", "content": "안녕"}]},
+        )
+    assert resp.status_code == 401
+    assert resp.json()["error"]["code"] == "login_required"
+    adapter.execute.assert_not_awaited()
 
 
 def test_quota_denial_does_not_expose_internal_quota_state() -> None:
