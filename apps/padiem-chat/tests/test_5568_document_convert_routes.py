@@ -79,7 +79,11 @@ class _Statement:
 
     async def run(self):
         cursor = self.db.conn.execute(self.sql, self.params)
-        return {"meta": {"changes": cursor.rowcount}}
+        # Both real backends answer run() with the rows a SELECT produced —
+        # D1 in {"results": ...} and app.d1_sqlite.SqliteD1 the same way — so the
+        # fake carries them too, instead of only the write meta.
+        rows = [] if cursor.description is None else [dict(row) for row in cursor.fetchall()]
+        return {"meta": {"changes": cursor.rowcount}, "results": rows}
 
 
 class FakeD1:

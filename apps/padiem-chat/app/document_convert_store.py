@@ -152,7 +152,9 @@ def _row_to_dict(row: Any) -> dict[str, Any] | None:
 def _rows_from_result(result: Any) -> list[dict[str, Any]]:
     if result is None:
         return []
-    rows = getattr(result, "results", None)
+    rows = result if isinstance(result, list) else None
+    if rows is None:
+        rows = getattr(result, "results", None)
     if rows is None and isinstance(result, dict):
         rows = result.get("results")
     if rows is None:
@@ -272,8 +274,11 @@ class D1DocumentConvertStore:
         statement = self.db.prepare(sql)
         if values:
             statement = statement.bind(*values)
-        result = await statement.all()
-        return _rows_from_result(result)
+        # run() is the one shape both backends answer alike: D1 returns
+        # {"results": rows} and the COM2 SQLite facade puts the same rows there.
+        # statement.all() returns a bare list on that facade, which read as an
+        # empty ledger on Production while every fake-shaped test stayed green.
+        return _rows_from_result(await statement.run())
 
     async def _run(self, sql: str, *values: Any) -> Any:
         statement = self.db.prepare(sql)
