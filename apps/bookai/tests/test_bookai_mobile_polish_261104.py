@@ -107,7 +107,7 @@ def test_mobile_theme_touch_targets_and_dark_memory_contrast(base_url):
                 f"theme:{theme!r},englishMode:'show',verseNumbers:true}}));"
             )
             page = context.new_page()
-            page.on("pageerror", lambda error: page_errors.append(str(error)))
+            page.on("pageerror", lambda error: page_errors.append(f"{error} | {getattr(error, 'stack', '')}"))
             page.goto(base_url, wait_until="load")
             page.wait_for_function("() => window.__smReaderSettingsV1 && typeof window.__smReaderSettingsV1.get === 'function'")
             assert page.locator("body").evaluate(f"element => element.classList.contains('smr-theme-{theme}')")

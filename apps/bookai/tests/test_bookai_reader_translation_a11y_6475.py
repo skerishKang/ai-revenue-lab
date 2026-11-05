@@ -106,7 +106,7 @@ def test_translation_settings_persist_lang_labels_focus_contrast_and_zoom(base_u
         browser = playwright.chromium.launch(headless=True, executable_path=CHROME) if CHROME else playwright.chromium.launch(headless=True)
         page = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=1)
         page_errors = []
-        page.on("pageerror", lambda error: page_errors.append(str(error)))
+        page.on("pageerror", lambda error: page_errors.append(f"{error} | {getattr(error, 'stack', '')}"))
         _open_acts_reader(page, base_url)
 
         settings = page.evaluate("window.__smReaderSettingsV1.get()")
