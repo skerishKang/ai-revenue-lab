@@ -6,9 +6,10 @@
 #   bash patrol.sh [일수]   # 기본 3일
 #
 # scanner_404 = 인터넷 스캐너가 두드리는 경로(접두 일치)의 합계·종류 수만 한 줄로 요약한다(개별 경로는 숨김).
-# internal_404 = 우리 망(121.148.41.4·127.0.0.1)에서 온 404로, 경로·건수를 그대로 보여 레인 스크립트 오탈자 신호로 쓴다.
+# internal_404 = 우리 망(PATROL_INTERNAL_IPS, 공백 구분, 기본 127.0.0.1)에서 온 404로, 경로·건수를 그대로 보여 레인 스크립트 오탈자 신호로 쓴다.
 set -uo pipefail
 DAYS="${1:-3}"
+INTERNAL_IPS="${PATROL_INTERNAL_IPS:-127.0.0.1}"
 SINCE="${DAYS} days ago"
 UNITS=(padiem-chat-com2 padiem-p01 padiem-b14 padiem-mesh-queue cloudflared-padiem)
 
@@ -53,7 +54,10 @@ for unit in "${UNITS[@]}"; do
   scanner_total=0
   internal_total=0
   other_total=0
-  declare -A scanner_seen=() internal_counts=() other_counts=()
+  declare -A scanner_seen=() internal_counts=() other_counts=() internal_ips=()
+  for ips in $INTERNAL_IPS; do
+    internal_ips["$ips"]=1
+  done
   if [ -n "$a404" ]; then
     while IFS=' ' read -r ip path; do
       [ -z "${path:-}" ] && continue
@@ -64,16 +68,13 @@ for unit in "${UNITS[@]}"; do
           scanner_seen["$path"]=1
           ;;
         *)
-          case "$ip" in
-            121.148.41.4|127.0.0.1)
-              internal_total=$((internal_total + 1))
-              internal_counts["$path"]=$(( ${internal_counts["$path"]:-0} + 1 ))
-              ;;
-            *)
-              other_total=$((other_total + 1))
-              other_counts["$path"]=$(( ${other_counts["$path"]:-0} + 1 ))
-              ;;
-          esac
+          if [ -n "${internal_ips["$ip"]:-}" ]; then
+            internal_total=$((internal_total + 1))
+            internal_counts["$path"]=$(( ${internal_counts["$path"]:-0} + 1 ))
+          else
+            other_total=$((other_total + 1))
+            other_counts["$path"]=$(( ${other_counts["$path"]:-0} + 1 ))
+          fi
           ;;
       esac
     done <<< "$a404"
@@ -89,7 +90,7 @@ for unit in "${UNITS[@]}"; do
     echo "  404 집계:"
     echo "    scanner_404=${scanner_total} (경로 ${#scanner_seen[@]}종)"
     if [ "$internal_total" -gt 0 ]; then
-      echo "    internal_404 (우리 망 121.148.41.4·127.0.0.1):"
+      echo "    internal_404 (우리 망):"
       for p in "${!internal_counts[@]}"; do
         printf '      %s %s\n' "$p" "${internal_counts[$p]}"
       done | sort -k2 -rn
