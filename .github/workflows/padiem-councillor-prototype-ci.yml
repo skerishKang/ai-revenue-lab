@@ -25,6 +25,9 @@ on:
       - 'apps/councillor-prototype/**'
       - '.github/workflows/padiem-councillor-prototype-ci.yml'
   workflow_dispatch:
+  schedule:
+    # 매주 월요일 09:00 KST (00:00 UTC) — 외부 링크가 흔들려도 PR 레인은 막지 않는다.
+    - cron: '0 0 * * 1'
 
 permissions:
   contents: read
@@ -65,3 +68,23 @@ jobs:
 
       - name: Test the councillor prototype page contracts
         run: python -m pytest apps/councillor-prototype/tests -q
+
+  external-links:
+    # Only the weekly schedule and a manual dispatch check the outside web.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check every external link
+        run: python apps/councillor-prototype/scripts/check-links

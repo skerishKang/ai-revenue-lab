@@ -4,10 +4,10 @@
 
 ## 실행
 ```bash
-python scripts/build-dist
-python -m http.server 8792 --directory apps/councillor-prototype/dist
+python -m http.server 8792 --directory apps/councillor-prototype
 ```
-브라우저에서 http://127.0.0.1:8792/ 접속.
+브라우저에서 http://127.0.0.1:8792/ 접속. 소스는 `.html` 링크를 그대로 두어 이 미리보기가
+동작하고, `scripts/build-dist`가 배포 묶음에서만 깨끗한 주소(`/about`)로 바꿉니다.
 
 ## 구조
 - `index.html` — 홈 (히어로·의정활동 카드·자료 수·소식/미디어/바로가기)
@@ -18,7 +18,8 @@ python -m http.server 8792 --directory apps/councillor-prototype/dist
 - `static/home.js` — 홈 전용 렌더러 (같은 데이터를 읽습니다)
 - `static/miraen.json` — **내용 단일 소스.** 화면은 이 파일을 읽어 렌더링하고, 스크립트에는 내용을 복사하지 않습니다. `tests/`가 형식과 링크를 확인합니다.
 - `site.config.json` — 배포 기준 주소(`baseUrl`) 한 곳. HTML·`robots.txt`·`sitemap.xml`의 `__BASE_URL__`을 빌드할 때 이 값으로 바꿉니다.
-- `scripts/build-dist` — 배포 묶음 `dist/` 생성. html·static·robots·sitemap·404·favicon만 복사하고 docs·tests·README·scripts는 넣지 않습니다.
+- `scripts/build-dist` — 배포 묶음 `dist/` 생성. html·static·robots·sitemap·404·favicon만 복사하고 docs·tests·README·scripts는 넣지 않습니다. 내부 메뉴 링크는 `dist/`에서만 깨끗한 주소로 바꿉니다.
+- `scripts/check-links` — 공개한 외부 링크를 전부 GET해 4xx·5xx·시간초과를 보고합니다. PR이 아니라 주 1회 워크플로가 실행합니다.
 
 ## 검증
 ```bash

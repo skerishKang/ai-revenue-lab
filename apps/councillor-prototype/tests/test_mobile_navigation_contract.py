@@ -235,9 +235,12 @@ def test_the_first_screen_offers_a_call_and_the_council_minwon_page():
     assert call, "the hero has no immediate-call button"
     assert call.group(1) == DATA["profile"][-1]["value"], "the number must be the office number in miraen.json"
     assert "062-613-5133" in call.group(0), "the number must be visible on the button"
-    minwon = re.search(r'href="(https://council\.gwangju\.go\.kr/[^"]+)"[^>]*target="_blank" rel="noopener"', actions)
-    assert minwon, "the hero has no council 민원 link"
-    assert "PID=133" in minwon.group(1), "민원 means 의회에바란다 (PID=133), not the photo board"
+    minwon = re.search(r'href="(https://council\.jeonnam-gwangju\.go\.kr/jngjassem/board/16)"[^>]*target="_blank" rel="noopener"[^>]*>(.*?)</a>', actions, re.S)
+    assert minwon, "the hero has no link to the new council's 의견 창구"
+    label = strip_tags(minwon.group(2))
+    assert "광주시의회" not in label and "광주광역시" not in label, f"the old council name is back: {label!r}"
+    email = re.search(r'href="mailto:([^"]+)"', actions)
+    assert email and email.group(1) == DATA["contact"]["email"], "the hero must publish the office email from miraen.json"
 
 
 def test_the_office_number_is_dialable_from_the_profile():
@@ -262,7 +265,7 @@ def test_every_page_declares_lang_description_canonical_og_and_icons():
             assert meta_content(html, "robots") is None or "noindex" not in meta_content(html, "robots")
             canonical = re.search(r'<link rel="canonical" href="([^"]+)"', html)
             assert canonical, f"{name}: no canonical"
-            expected = PLACEHOLDER + "/" if name == "index.html" else f"{PLACEHOLDER}/{name}"
+            expected = PLACEHOLDER + "/" if name == "index.html" else f"{PLACEHOLDER}/{name.removesuffix('.html')}"
             assert canonical.group(1) == expected, f"{name}: canonical {canonical.group(1)} != {expected}"
 
 
@@ -283,9 +286,9 @@ def test_robots_and_sitemap_agree_with_the_pages():
     assert f"Sitemap: {PLACEHOLDER}/sitemap.xml" in robots
     sitemap = (APP_ROOT / "sitemap.xml").read_text(encoding="utf-8")
     locs = re.findall(r"<loc>([^<]+)</loc>", sitemap)
-    assert locs == [PLACEHOLDER + "/"] + [f"{PLACEHOLDER}/{name}" for name in PAGES if name != "index.html"], locs
+    assert locs == [PLACEHOLDER + "/"] + [f"{PLACEHOLDER}/{name.removesuffix('.html')}" for name in PAGES if name != "index.html"], locs
     assert "404.html" not in sitemap, "a 404 page must not be indexed"
-    assert sitemap.count("<lastmod>2026-11-01</lastmod>") == len(locs)
+    assert sitemap.count("<lastmod>2026-11-05</lastmod>") == len(locs)
 
 
 def test_the_deployment_origin_lives_only_in_site_config():
@@ -331,7 +334,8 @@ def test_every_tappable_control_is_at_least_44px():
     assert "--tap: 44px" in STYLES
     controls = [".btn", ".brand", ".skip-link", ".top-nav a", ".ghost", ".top-cta", ".strip-link", ".section-more",
                 ".col-item", ".col-tile", ".footer-nav a", ".mobile-tabbar a", ".card-link",
-                ".back-btn", ".detail-link", ".profile-list dd a", ".activity-toolbar input", ".activity-toolbar select"]
+                ".back-btn", ".detail-link", ".profile-list dd a", ".activity-toolbar input", ".activity-toolbar select",
+                ".link-list a"]
     for selector in controls:
         bodies = rules(CSS_RULES, selector)
         assert bodies, f"{selector} has no rule"
@@ -354,7 +358,7 @@ def test_the_screens_render_miraen_json_without_copying_its_content():
         assert re.search(r"NEWS\s*=\s*\w+\.filter\(.*?featured\s*===\s*true", js), \
             f"{name} must derive news from the featured activity items"
     assert re.search(r"renderNewsColumn\(NEWS\)", HOME_JS)
-    assert re.search(r"renderStats\(activities,\s*mediaTiles,\s*NEWS\)", HOME_JS)
+    assert "renderStats" not in HOME_JS, "the material-count band was removed by the 11-05 decision"
 
 
 def test_activity_records_are_verified_sorted_and_uniquely_keyed():
@@ -396,7 +400,14 @@ def test_the_about_page_renders_the_same_bio_and_profile():
     dl = re.search(r'<dl class="profile-list"[^>]*>(.*?)</dl>', html, re.S).group(1)
     pairs = [(strip_tags(label), strip_tags(value))
              for label, value in re.findall(r"<div><dt>(.*?)</dt><dd>(.*?)</dd></div>", dl, re.S)]
-    assert pairs == [(row["label"], row["value"]) for row in DATA["profile"]]
+    assert [label for label, _ in pairs] == [row["label"] for row in DATA["profile"]]
+    for label, value in pairs:
+        if label == "의원실":
+            assert DATA["profile"][-1]["value"] in value
+            assert DATA["contact"]["email"] in value, "the office row must publish the email"
+        else:
+            expected = next(row["value"] for row in DATA["profile"] if row["label"] == label)
+            assert value == expected, f"{label}: {value!r} != {expected!r}"
     assert "(3인 선거구)" in html, "남구 제1선거구 must say it is a 3-seat district"
     assert "박사과정" in html, "the PhD course must be in the education line"
 
@@ -424,10 +435,15 @@ def test_news_reaches_past_the_new_council_opening():
 # ── 7. policy links and the media gallery ──────────────────────────────────
 def test_policy_cards_do_not_share_one_photo_board():
     html = page("policy.html")
-    hrefs = re.findall(r'<a class="card-link" href="([^"]+)"', html)
-    assert hrefs, "the policy page has no cards"
+    assert 'id="policyForums"' in html and 'id="policyVideos"' in html, "the render slots are gone"
+    assert '<a class="card-link"' not in html, "policy cards belong in miraen.json, not the page"
+    policy = DATA["policy"]
+    items = policy["forums"] + policy["videos"] + policy["bills"]
+    assert len(policy["forums"]) >= 3 and len(policy["videos"]) >= 4, "the confirmed material is missing"
+    hrefs = [item["url"] for item in items]
     assert len(hrefs) == len(set(hrefs)), f"two cards share a link: {hrefs}"
     for href in hrefs:
+        assert href.startswith("https://"), href
         assert "PID=014" not in href, "PID=014 is the photo gallery, not a policy page"
     for hidden in ("의정 보고서", "예산·결산"):
         assert hidden not in html, f"{hidden} has no correct page and must stay hidden"
@@ -504,13 +520,13 @@ def test_the_dist_build_resolves_the_configured_base_url(built_dist):
         html = read_text(built_dist / name)
         canonical = re.search(r'<link rel="canonical" href="([^"]+)"', html)
         if name != "404.html":
-            expected = BASE_URL + "/" if name == "index.html" else f"{BASE_URL}/{name}"
+            expected = BASE_URL + "/" if name == "index.html" else f"{BASE_URL}/{name.removesuffix('.html')}"
             assert canonical and canonical.group(1) == expected, f"{name}: canonical not built"
         assert meta_content(html, "og:image", "property") == f"{BASE_URL}/static/images/og-card.jpg", name
     robots = read_text(built_dist / "robots.txt")
     assert f"Sitemap: {BASE_URL}/sitemap.xml" in robots
     locs = re.findall(r"<loc>([^<]+)</loc>", read_text(built_dist / "sitemap.xml"))
-    assert locs == [BASE_URL + "/"] + [f"{BASE_URL}/{name}" for name in PAGES if name != "index.html"], locs
+    assert locs == [BASE_URL + "/"] + [f"{BASE_URL}/{name.removesuffix('.html')}" for name in PAGES if name != "index.html"], locs
     assert (built_dist / "static" / "miraen.json").is_file()
 
 

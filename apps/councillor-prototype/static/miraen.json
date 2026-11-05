@@ -3,6 +3,10 @@
   "name": "임미란",
   "pageTitle": "임미란 의원",
   "mark": "임",
+  "contact": {
+    "phone": "062-613-5133",
+    "email": "miran2640@naver.com"
+  },
   "hero": {
     "mediaKind": "CONFIRMED",
     "eyebrow": "전남광주통합특별시의회 · 남구 제1선거구",
@@ -83,6 +87,33 @@
     "source": "출처: 전남광주통합특별시의회·광주광역시의회 공식 페이지, 중앙선거관리위원회 공개 자료",
     "items": [
       {
+        "date": "2026-11-04",
+        "tag": "위원회",
+        "title": "보건복지위원회 행정사무감사 · 옛 자활근로대 부지 거주 주민 주거문제",
+        "url": "https://council.jeonnam-gwangju.go.kr/jngjassem/board/7/1/read/2258",
+        "body": "국가폭력의 역사에서 시작된 광주 운암동 옛 자활근로대 부지에 수십 년째 사는 주민들의 주거 문제를 행정이 해결해야 한다고 강조했습니다. 부지 일부가 병원 주차장으로 쓰이며 연 5,400만 원의 공유재산 사용료 수입이 나는 반면, 2025년 1월 기준 19세대 29명이 주민등록돼 있고 무허가건축물 12동이 남아 있습니다. 실태조사와 안전점검, 이주·정착 지원, 공유재산 관리방안을 포함한 종합 실행계획을 의회에 제출해 달라고 촉구했습니다.",
+        "source": "전남광주통합특별시의회 보도자료 (2026-11-05 게시)",
+        "featured": true
+      },
+      {
+        "date": "2026-11-02",
+        "tag": "토론회",
+        "title": "은둔형 외톨이 지원방안 마련 정책토론회 · 제2차 기본계획 수립 방향 논의",
+        "url": "https://council.jeonnam-gwangju.go.kr/jngjassem/board/7/1/read/2134",
+        "body": "광주특별시·특별시의회·광주사회서비스원이 공동으로 연 토론회에서 임미란 의원이 좌장을 맡아 제3차 은둔형 외톨이 실태조사 결과와 제2차(2027~2031) 기본계획 수립 방향을 논의했습니다. 당사자 404명과 가족 92명 조사에서 57.9%가 은둔생활에서 벗어나고 싶다고 답했지만 실제 시도는 30.4%에 그쳤습니다. 당사자 상황에 맞춘 지원과 신뢰할 수 있는 관계 형성, 지원기관 간 연계를 주요 과제로 정리했습니다.",
+        "source": "전남광주통합특별시의회 보도자료 (2026-11-02 게시)",
+        "featured": true
+      },
+      {
+        "date": "2026-10-29",
+        "tag": "토론회",
+        "title": "장애인의 일할 권리 보장 정책토론회 · 지속가능한 직업재활 고용 지원 체계 모색",
+        "url": "https://council.jeonnam-gwangju.go.kr/jngjassem/board/7/1/read/2115",
+        "body": "광주광역시사회복지협의회와 공동으로 5·18민주화운동교육관에서 토론회를 열고 임미란 의원이 좌장을 맡았습니다. 광주지역 직업재활시설 29개소와 이용 장애인 893명의 현황을 바탕으로 훈련수당·보충급여·참여소득·장기근속수당을 잇는 ‘일-소득 사다리’ 구축 방안을 논의했습니다. 현장의 목소리가 조례 제·개정과 정책·예산 반영으로 이어지도록 하겠다고 밝혔습니다.",
+        "source": "전남광주통합특별시의회 보도자료 (2026-11-02 게시)",
+        "featured": true
+      },
+      {
         "date": "2026-10-07",
         "tag": "토론회",
         "title": "웰니스정책 토론회 · 성공적인 웰니스 정책, 행정 설계와 제도적 기반이 우선돼야",
@@ -113,7 +144,7 @@
         "title": "6·25전쟁 제76주년 기념식 행사",
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
         "thumb": "./static/images/activity-01.jpg",
-        "source": "광주광역시의회 공개 사진자료실"
+        "source": "제9대 광주광역시의회 공개 사진자료실"
       },
       {
         "date": "2026-06-22",
@@ -121,14 +152,14 @@
         "title": "제344회 임시회 제3차 본회의",
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
         "thumb": "./static/images/activity-02.jpg",
-        "source": "광주광역시의회 공개 사진자료실"
+        "source": "제9대 광주광역시의회 공개 사진자료실"
       },
       {
         "date": "2026-06-15",
         "tag": "위원회",
         "title": "제1차 산업건설위원회",
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
-        "source": "광주광역시의회 공개 사진자료실"
+        "source": "제9대 광주광역시의회 공개 사진자료실"
       },
       {
         "date": "2026-06-03",
@@ -140,6 +171,57 @@
       }
     ]
   },
+  "policy": {
+    "source": "자료 출처: 전남광주통합특별시의회 보도자료·공식 유튜브, 광주광역시의회 공식 유튜브",
+    "forums": [
+      {
+        "date": "2026-10-07",
+        "title": "웰니스정책 토론회 · 성공적인 웰니스 정책, 행정 설계와 제도적 기반이 우선돼야",
+        "summary": "전남광주통합특별시의회·광주여자대학교 앵커사업단·광주광역시한의사회가 공동으로 연 토론회입니다. AI 헬스케어 데이터 표준화와 치유관광 자원 연계, 조례 제정과 단계별 계획 수립을 제안했습니다.",
+        "url": "https://council.jeonnam-gwangju.go.kr/jngjassem/board/7/6/read/1672"
+      },
+      {
+        "date": "2026-10-29",
+        "title": "장애인의 일할 권리 보장 정책토론회",
+        "summary": "광주광역시사회복지협의회와 공동 주최하고 임미란 의원이 좌장을 맡았습니다. 직업재활시설 29개소·이용 장애인 893명의 현황을 바탕으로 훈련수당·보충급여·참여소득·장기근속수당을 잇는 ‘일-소득 사다리’ 방안을 논의했습니다.",
+        "url": "https://council.jeonnam-gwangju.go.kr/jngjassem/board/7/1/read/2115"
+      },
+      {
+        "date": "2026-11-02",
+        "title": "은둔형 외톨이 지원방안 마련 정책토론회",
+        "summary": "광주특별시·특별시의회·광주사회서비스원 공동 주최로 열렸고 임미란 의원이 좌장을 맡았습니다. 제3차 실태조사 결과와 제2차(2027~2031) 기본계획 수립 방향을 논의했습니다.",
+        "url": "https://council.jeonnam-gwangju.go.kr/jngjassem/board/7/1/read/2134"
+      }
+    ],
+    "videos": [
+      {
+        "date": "2026-09-11",
+        "title": "제3회 제1차 정례회 5분자유발언 · 웰니스 관광",
+        "note": "전남광주통합특별시의회",
+        "summary": "지역 웰니스 관광 경쟁력 강화를 위해 전담 컨트롤타워 구축과 체계적인 정책 추진이 필요하다고 강조했습니다.",
+        "url": "https://www.youtube.com/shorts/-7q4YCV1TCw"
+      },
+      {
+        "title": "제327회 5분자유발언",
+        "note": "제9대 광주광역시의회",
+        "summary": "제9대 광주광역시의회에서 진행한 5분자유발언 영상입니다.",
+        "url": "https://www.youtube.com/watch?v=rc87So2Dgcs"
+      },
+      {
+        "title": "제325회 제1차 정례회 시정질문",
+        "note": "제9대 광주광역시의회",
+        "summary": "제9대 광주광역시의회 제325회 제1차 정례회 시정질문 영상입니다.",
+        "url": "https://www.youtube.com/watch?v=8QYTXpxW6pA"
+      },
+      {
+        "title": "제316회 교육행정질문",
+        "note": "제9대 광주광역시의회",
+        "summary": "제9대 광주광역시의회 제316회 교육행정질문 영상입니다.",
+        "url": "https://www.youtube.com/watch?v=8vdllvPwRAY"
+      }
+    ],
+    "bills": []
+  },
   "media": {
     "source": "본회의 발언과 사진은 의회가 공개한 공식 페이지에서 보실 수 있습니다.",
     "tiles": [
@@ -149,7 +231,7 @@
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=003",
         "thumb": "./static/images/profile-portrait.webp",
         "notes": [
-          "광주광역시의회 공식 페이지 제공",
+          "제9대 광주광역시의회 공식 페이지 제공",
           "출처: council.gwangju.go.kr"
         ]
       },
@@ -159,7 +241,7 @@
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
         "thumb": "./static/images/media-01.jpg",
         "notes": [
-          "의회 공개 사진자료실",
+          "제9대 광주광역시의회 공개 사진자료실",
           "2026-06-15"
         ]
       },
@@ -169,7 +251,7 @@
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
         "thumb": "./static/images/media-02.jpg",
         "notes": [
-          "의회 공개 사진자료실",
+          "제9대 광주광역시의회 공개 사진자료실",
           "2026-05-17"
         ]
       },
@@ -179,7 +261,7 @@
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
         "thumb": "./static/images/media-03.jpg",
         "notes": [
-          "의회 공개 사진자료실",
+          "제9대 광주광역시의회 공개 사진자료실",
           "2026-06-22"
         ]
       },
@@ -189,7 +271,7 @@
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
         "thumb": "./static/images/media-04.jpg",
         "notes": [
-          "의회 공개 사진자료실",
+          "제9대 광주광역시의회 공개 사진자료실",
           "2026-06-25"
         ]
       },
@@ -199,7 +281,7 @@
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
         "thumb": "./static/images/media-05.jpg",
         "notes": [
-          "의회 공개 사진자료실",
+          "제9대 광주광역시의회 공개 사진자료실",
           "2026-06-15"
         ]
       },
@@ -209,7 +291,7 @@
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
         "thumb": "./static/images/media-06.jpg",
         "notes": [
-          "의회 공개 사진자료실",
+          "제9대 광주광역시의회 공개 사진자료실",
           "2026-06-06"
         ]
       },
@@ -219,7 +301,7 @@
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
         "thumb": "./static/images/media-07.jpg",
         "notes": [
-          "의회 공개 사진자료실",
+          "제9대 광주광역시의회 공개 사진자료실",
           "2026-06-15"
         ]
       },
@@ -229,7 +311,7 @@
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
         "thumb": "./static/images/media-08.jpg",
         "notes": [
-          "의회 공개 사진자료실",
+          "제9대 광주광역시의회 공개 사진자료실",
           "2026-05-17"
         ]
       },
@@ -238,7 +320,7 @@
         "title": "의정스케치",
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=010",
         "notes": [
-          "의회 공개 사진자료실"
+          "제9대 광주광역시의회 공개 사진자료실"
         ]
       },
       {
@@ -247,7 +329,7 @@
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=017",
         "notes": [
           "본회의 발언·현장 기록 영상",
-          "의회가 공개한 공식 기록"
+          "제9대 광주광역시의회 공개 기록"
         ]
       },
       {
@@ -255,13 +337,15 @@
         "title": "영상인사말",
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=029",
         "notes": [
-          "영상 인사말"
+          "영상 인사말",
+          "제9대 광주광역시의회 공개 자료"
         ]
       },
       {
         "kind": "본회의",
         "title": "제316회 교육행정질문",
         "url": "https://www.youtube.com/watch?v=8vdllvPwRAY",
+        "thumb": "./static/images/youtube-316.webp",
         "notes": [
           "유튜브"
         ]
@@ -270,6 +354,7 @@
         "kind": "본회의",
         "title": "제325회 제1차 정례회 시정질문",
         "url": "https://www.youtube.com/watch?v=8QYTXpxW6pA",
+        "thumb": "./static/images/youtube-325.webp",
         "notes": [
           "유튜브"
         ]
@@ -278,6 +363,7 @@
         "kind": "5분발언",
         "title": "제327회 교육행정 5분자유발언",
         "url": "https://www.youtube.com/watch?v=rc87So2Dgcs",
+        "thumb": "./static/images/youtube-327.webp",
         "notes": [
           "유튜브"
         ]
@@ -286,6 +372,7 @@
         "kind": "5분발언",
         "title": "제3회 제1차 정례회 5분자유발언 · 웰니스 관광",
         "url": "https://www.youtube.com/shorts/-7q4YCV1TCw",
+        "thumb": "./static/images/youtube-wellness.webp",
         "notes": [
           "전남광주통합특별시의회 유튜브",
           "2026-09-11"
@@ -296,7 +383,8 @@
         "title": "광주광역시의회 유튜브",
         "url": "https://www.youtube.com/channel/UCvQfeQB_3OQwgclBaqamidw",
         "notes": [
-          "공식 채널"
+          "공식 채널",
+          "제9대 광주광역시의회 공식 채널"
         ]
       },
       {
@@ -325,5 +413,5 @@
       }
     ]
   },
-  "sourceNotice": "자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-11-01 확인)"
+  "sourceNotice": "자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-11-05 확인)"
 }

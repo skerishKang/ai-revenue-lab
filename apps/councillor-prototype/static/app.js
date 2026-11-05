@@ -139,16 +139,14 @@ function renderMedia() {
   const grid = document.getElementById("mediaGrid");
   if (!grid) return;
   grid.innerHTML = "";
-  MEDIA.forEach((m) => {
+  MEDIA.filter((m) => m.thumb).forEach((m) => {
     const tile = document.createElement("a");
     tile.className = "media-tile";
     tile.href = safeHref(m.url) || "#";
     tile.target = "_blank";
     tile.rel = "noopener";
     tile.setAttribute("tabindex", "0");
-    const thumb = m.thumb
-      ? `<img class="tile-thumb" src="${escapeHtml(safeHref(m.thumb))}" alt="${escapeHtml(m.title)}" loading="lazy" onerror="this.style.display='none'" />`
-      : `<span class="tile-thumb tile-thumb-empty" aria-hidden="true">${escapeHtml(m.kind)}</span>`;
+    const thumb = `<img class="tile-thumb" src="${escapeHtml(safeHref(m.thumb))}" alt="${escapeHtml(m.title)}" loading="lazy" onerror="this.style.display='none'" />`;
     const notes = (m.notes || []).map((n) => `<li>${escapeHtml(n)}</li>`).join("");
     tile.innerHTML = thumb +
       `<div class="tile-kind">${escapeHtml(m.kind)}</div>` +
@@ -177,6 +175,82 @@ function renderNews() {
   });
 }
 
+// Tiles without a picture of their own move to a compact link list under the gallery
+// instead of holding an empty 4:3 box.
+function renderMediaMore() {
+  const list = document.getElementById("mediaMore");
+  if (!list) return;
+  const rest = MEDIA.filter((m) => !m.thumb);
+  list.innerHTML = rest.map((m) =>
+    '<li><a href="' + escapeHtml(safeHref(m.url) || "#") + '" target="_blank" rel="noopener">' +
+      '<span class="link-title">' + escapeHtml(m.title) + "</span>" +
+      '<span class="link-kind">' + escapeHtml(m.kind) + "</span>" +
+    "</a></li>"
+  ).join("");
+}
+
+// The email lives once in miraen.json. The markup carries the same value for a visitor
+// without JavaScript; this keeps the link in sync when the address changes.
+function renderContact(data) {
+  const email = data && data.contact && data.contact.email;
+  if (!email) return;
+  document.querySelectorAll("[data-contact-email]").forEach((link) => {
+    link.href = "mailto:" + email;
+    if (!link.textContent.trim()) link.textContent = email;
+  });
+}
+
+function renderPolicy(data) {
+  const policy = data && data.policy;
+  if (!policy) return;
+  const groups = [
+    ["policyForums", policy.forums, "원문 보기"],
+    ["policyVideos", policy.videos, "영상 보기"],
+    ["policyBills", policy.bills, "의안 보기"]
+  ];
+  groups.forEach(([id, items, label]) => {
+    const grid = document.getElementById(id);
+    if (!grid) return;
+    const list = Array.isArray(items) ? items : [];
+    const block = grid.closest(".policy-block");
+    if (list.length === 0) {
+      if (block) block.hidden = true;
+      return;
+    }
+    grid.innerHTML = list.map((item, index) => {
+      const meta = [item.date, item.note].filter(Boolean).join(" · ");
+      const href = safeHref(item.url);
+      return '<article class="info-card">' +
+        '<div class="card-num">' + String(index + 1).padStart(2, "0") + "</div>" +
+        "<h3>" + escapeHtml(item.title) + "</h3>" +
+        (meta ? '<p class="policy-meta">' + escapeHtml(meta) + "</p>" : "") +
+        (item.summary ? "<p>" + escapeHtml(item.summary) + "</p>" : "") +
+        (href ? '<a class="card-link" href="' + escapeHtml(href) + '" target="_blank" rel="noopener">' + label + "</a>" : "") +
+        "</article>";
+    }).join("");
+  });
+  const source = document.getElementById("policySource");
+  if (source && policy.source) source.textContent = policy.source;
+}
+
+// about.html shows the 2025 introduction footage that used to sit in miraen.json
+// without a screen. 자동 재생 없이 방문자가 시작한다.
+function renderIntroVideo(data) {
+  const host = document.getElementById("introVideo");
+  const feature = data && data.feature;
+  if (!host || !feature || !Array.isArray(feature.sources) || feature.sources.length === 0) return;
+  const src = safeHref(feature.sources[0]);
+  if (!src) return;
+  const poster = data.hero && data.hero.poster ? safeHref(data.hero.poster) : "";
+  host.innerHTML =
+    '<video controls preload="metadata"' + (poster ? ' poster="' + escapeHtml(poster) + '"' : "") + ">" +
+      '<source src="' + escapeHtml(src) + '" type="video/mp4" />' +
+    "</video>" +
+    '<p class="intro-video-title">' + escapeHtml(feature.kind || "소개 영상") + "</p>" +
+    (feature.title ? '<p class="source-note">' + escapeHtml(feature.title) + " · " + escapeHtml((data.hero && data.hero.credit) || "") + "</p>" : "");
+  host.hidden = false;
+}
+
 // Theme toggle — the head script applies the saved value before first paint.
 function initTheme() {
   const btn = document.getElementById("themeToggle");
@@ -200,6 +274,14 @@ function initTheme() {
 
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
+
+  window.COUNCILLOR_DATA_READY.then((data) => {
+    if (!data) return;
+    renderContact(data);
+    renderPolicy(data);
+    renderIntroVideo(data);
+    renderMediaMore();
+  });
 
   const search = document.getElementById("activitySearch");
   const filter = document.getElementById("activityFilter");
