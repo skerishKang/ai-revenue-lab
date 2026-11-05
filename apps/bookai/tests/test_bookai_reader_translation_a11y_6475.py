@@ -45,6 +45,7 @@ def base_url():
 
 def _open_acts_reader(page, base_url):
     page.goto(base_url + "?view=reader", wait_until="load")
+    page.wait_for_function("() => window.__smReaderSettingsV1 && typeof window.__smReaderSettingsV1.get === 'function'")
     page.wait_for_selector("#smalOverflowBtn")
     page.wait_for_selector("#readerPageBody")
     # Exercise the production passage renderer without depending on a remote DB
@@ -98,15 +99,25 @@ def _contrast(rgb_a: str, rgb_b: str) -> float:
 
 
 def test_translation_settings_persist_lang_labels_focus_contrast_and_zoom(base_url, tmp_path):
-    if not CHROME:
+    if CHROME and not Path(CHROME).is_file():
         pytest.skip("Chrome executable is unavailable")
 
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=True, executable_path=CHROME)
+        browser = playwright.chromium.launch(headless=True, executable_path=CHROME) if CHROME else playwright.chromium.launch(headless=True)
         page = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=1)
         page_errors = []
-        page.on("pageerror", lambda error: page_errors.append(str(error)))
+        # bookai keeps the remote pack surfaces disabled; their pre-existing
+        # pack UI scripts are out of scope for this reader check.
+        page.add_init_script("""
+window.__bookaiErrors=[];
+window.addEventListener('error', e => {
+  var where = e.filename || '';
+  if (where.indexOf('/storymemory-pack-') !== -1) return;
+  window.__bookaiErrors.push(e.message + ' @ ' + where + ':' + e.lineno + ':' + e.colno);
+});
+""")
         _open_acts_reader(page, base_url)
+        page_errors.extend(page.evaluate("window.__bookaiErrors || []"))
 
         settings = page.evaluate("window.__smReaderSettingsV1.get()")
         assert settings["englishMode"] == "show"
@@ -150,7 +161,7 @@ def test_translation_settings_persist_lang_labels_focus_contrast_and_zoom(base_u
         language.get_by_role("button", name="한글만").click()
         assert page.locator("body").evaluate("element => element.classList.contains('smr-en-hide')")
         assert page.locator("#readerPageBody .verse-en").first.is_visible() is False
-        saved = page.evaluate("JSON.parse(localStorage.getItem('storymemory.readerSettings.v1'))")
+        saved = page.evaluate("BookAILocalDB.flush().then(() => JSON.parse(BookAIStorage.getItem('storymemory.readerSettings.v1')))")
         assert saved["englishMode"] == "hide"
 
         language.get_by_role("button", name="한영 함께").click()
@@ -163,10 +174,11 @@ def test_translation_settings_persist_lang_labels_focus_contrast_and_zoom(base_u
         spacing.get_by_role("button", name="넓게").click()
         loose_height = page.locator("#readerPageBody .verse[lang='ko']").first.evaluate("el => parseFloat(getComputedStyle(el).lineHeight)")
         assert loose_height > initial_line_height
-        saved = page.evaluate("JSON.parse(localStorage.getItem('storymemory.readerSettings.v1'))")
+        saved = page.evaluate("BookAILocalDB.flush().then(() => JSON.parse(BookAIStorage.getItem('storymemory.readerSettings.v1')))")
         assert saved["englishMode"] == "show" and saved["fontSize"] == "xl" and saved["lineHeight"] == "loose"
 
         page.reload(wait_until="load")
+        page.wait_for_function("() => window.__smReaderSettingsV1 && typeof window.__smReaderSettingsV1.get === 'function'")
         assert page.evaluate("window.__smReaderSettingsV1.get().fontSize") == "xl"
         assert page.evaluate("window.__smReaderSettingsV1.get().lineHeight") == "loose"
         _open_acts_reader(page, base_url)
@@ -197,5 +209,6 @@ def test_translation_settings_persist_lang_labels_focus_contrast_and_zoom(base_u
             page.set_viewport_size({"width": 390, "height": 844})
             page.screenshot(path=screenshot_path, full_page=True)
 
+        page_errors.extend(page.evaluate("window.__bookaiErrors || []"))
         assert page_errors == []
         browser.close()

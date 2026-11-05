@@ -104,6 +104,9 @@ jobs:
       - name: TODAY button reveals under keyboard focus and Enter activates it
         run: |
           set -euo pipefail
-          python -m pytest -q apps/bookai/tests/test_today_button_keyboard_261103.py
+          python -m pytest -q apps/bookai/tests/test_today_button_keyboard_261103.py \
+            apps/bookai/tests/test_bookai_6473_6472.py \
+            apps/bookai/tests/test_bookai_reader_translation_a11y_6475.py \
+            apps/bookai/tests/test_bookai_mobile_polish_261104.py
           echo 'BOOKAI_TODAY_KEYBOARD=PASS'
           echo 'PRODUCTION_MUTATION=0'
