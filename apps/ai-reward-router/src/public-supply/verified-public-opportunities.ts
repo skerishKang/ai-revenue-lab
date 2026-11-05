@@ -8,8 +8,8 @@ import {
  *
  * Each record's `verifiedAt` advances only when that record's own official
  * source was read again, because the 7-day display window is what keeps a
- * consumer-facing claim honest. The 2026-10-27 pass read every source and
- * recorded the confirming wording (evidence in issue #987).
+ * consumer-facing claim honest. The 2026-10-27 and 2026-11-05 passes read
+ * every source and recorded the confirming wording (evidence in issue #987).
  * These records earn B64 nothing (monetizationRole NONE): they link users to
  * official provider pages. They are NOT provider-approved B2B supply and must
  * never be promoted into LIVE_AUTHORIZED provider lanes.
@@ -20,10 +20,11 @@ import {
  *
  * Refresh note: the TELUS Digital careers listing answers a plain HTTP GET with
  * a Cloudflare JS challenge (403), so re-checking that record takes a real
- * browser — it reported "Showing 1-1 of 1 results" for South Korea on 2026-10-27.
+ * browser — it reported "Showing 1-1 of 1 results" for South Korea on 2026-10-27
+ * and again on 2026-11-05.
  */
 
-const REVERIFIED_AT = '2026-10-27T04:00:00.000Z';
+const REVERIFIED_AT = '2026-11-05T06:13:06.000Z';
 
 const record = (
   input: Omit<PublicOpportunity, 'userValueScore' | 'monetizationRole' | 'tierNote' | 'ctaLabel'> &
@@ -92,7 +93,7 @@ export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Objec
         confirmed: true,
       }),
       payer: 'Outlier (주급, PayPal 또는 Airtm 지급)',
-      qualifications: '한국어 유창 (읽기·쓰기·평가), 미스터리 서지 인센티브 +7.5% 가능, 대부분 주 5-10시간',
+      qualifications: '한국어 유창 (읽기·쓰기·평가), Missions 보너스 +7.5% 가능, 대부분 주 5-10시간',
       applyUrl: 'https://app.outlier.ai/login?job_post_id=4722459005',
       sourceUrl: 'https://outlier.ai/languages/ko-kr',
       verifiedAt: REVERIFIED_AT,
