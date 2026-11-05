@@ -610,11 +610,12 @@ class LocalB14Binding:
         headers = dict(items()) if callable(items) else dict(raw_headers or {})
         client_app = _APPS_AI_CLIENT_APP.get()
         if client_app is not None:
-            # Existing B14 ledger reads these allowlisted correlation headers
-            # alongside its already-measured model, status and attempt outcome.
+            # The caller's own x-padiem-product is the ledger identity (#6954);
+            # only a request that carries none is stamped with the host lane.
+            if not any(str(k).lower() == "x-padiem-product" for k in headers):
+                headers["x-padiem-product"] = "engine"
             headers = {k: v for k, v in headers.items()
-                       if str(k).lower() not in {"x-padiem-product", "x-padiem-client-app"}}
-            headers["x-padiem-product"] = "engine"
+                       if str(k).lower() != "x-padiem-client-app"}
             headers["x-padiem-client-app"] = client_app
         body = getattr(request, "body", b"")
         if not isinstance(body, (bytes, bytearray)):

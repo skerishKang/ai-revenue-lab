@@ -16,6 +16,9 @@ PC_WORK_METRICS_PATH = "/api/pilot/v1/internal/pc-turn-metrics"
 # B14 deferred_writes.WRITE_TIMEOUT_SECONDS is also five seconds. This bounds
 # telemetry delivery only; it is not a PC-command or model execution deadline.
 DELIVERY_SECONDS = 5.0
+# #6954: the retry ladder replaces the fixed 50 ms spin — the total wait still
+# stays inside DELIVERY_SECONDS, which remains the only hard deadline.
+RETRY_BACKOFF_SECONDS = (0.25, 0.5, 1.0)
 logger = logging.getLogger(__name__)
 
 
@@ -26,9 +29,21 @@ class PcWorkMetricsReporter:
         self._delivery_seconds = delivery_seconds
 
     async def __call__(self, payload):
+        # #6954: a turn whose execution never reached a model call has no ledger
+        # row to attach to — retrying would always end in the same 409. Skip it
+        # (the journal distinguishes skipped from the delivered outcomes).
+        metrics = payload.get("metrics") or {}
+        if not metrics.get("model_calls"):
+            logger.warning("pc_work_metrics_delivery status=skipped")
+            return "skipped"
+        # The ledger identity (product, subject_ref, session_ref) reaches B14 as
+        # the correlation headers the transport already attaches from the
+        # context collector; adding them here as well produced duplicated
+        # header values that broke the ledger match.
         status = "unavailable"
         try:
             body = json.dumps(payload, ensure_ascii=True, separators=(",", ":")).encode()
+            attempt = 0
             async with asyncio.timeout(self._delivery_seconds):
                 while True:
                     response = await self._transport.handle_async_request(httpx.Request(
@@ -46,7 +61,10 @@ class PcWorkMetricsReporter:
                     error = result.get("error", {}) if isinstance(result, dict) else {}
                     code = error.get("code") if isinstance(error, dict) else None
                     if response.status_code == 409 and code == "ledger_pending":
-                        await asyncio.sleep(0.05)
+                        await asyncio.sleep(
+                            RETRY_BACKOFF_SECONDS[min(attempt, len(RETRY_BACKOFF_SECONDS) - 1)]
+                        )
+                        attempt += 1
                         continue
                     status = "conflict" if response.status_code == 409 else "unavailable"
                     break
@@ -57,6 +75,7 @@ class PcWorkMetricsReporter:
             # No response body, identity, provider reference or exception detail
             # may be echoed into operational logs.
             status = "unavailable"
-        if status != "recorded":
-            logger.warning("pc_work_metrics_delivery status=%s", status)
+        # One line per delivery outcome (values only): the journal distinguishes
+        # recorded / skipped / unavailable so #6954 cannot hide behind silence.
+        logger.warning("pc_work_metrics_delivery status=%s", status)
         return status
