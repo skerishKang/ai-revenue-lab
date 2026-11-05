@@ -15,6 +15,7 @@ import logging
 import httpx
 import pytest
 
+from app import chat_routes
 from app.config import Settings
 from app.main import create_app
 from app.request_contract import (
@@ -185,8 +186,15 @@ async def _raw_post(app, path, body: bytes, headers: list[tuple[str, str]]):
         "server": ("chat.example.test", 443),
     }
     sent = []
+    delivered = False
 
     async def receive():
+        # The body once, then a disconnect: middleware that polls receive()
+        # for the client going away must see it, or it spins forever.
+        nonlocal delivered
+        if delivered:
+            return {"type": "http.disconnect"}
+        delivered = True
         return {"type": "http.request", "body": body, "more_body": False}
 
     async def send(message):
@@ -198,7 +206,11 @@ async def _raw_post(app, path, body: bytes, headers: list[tuple[str, str]]):
 
 
 @pytest.mark.asyncio
-async def test_a_bad_content_length_header_is_journaled_too(caplog):
+async def test_a_bad_content_length_header_is_journaled_too(caplog, monkeypatch):
+    # The header is only parsed while a browser body limit is set; the
+    # shipped limit is None (#4379, cgroup-bounded), so the branch is dormant
+    # in production and exercised here with a limit in place.
+    monkeypatch.setattr(chat_routes, "MAX_BROWSER_BODY_BYTES", 1_000_000)
     logger = _attach(caplog)
     try:
         app = create_app(_settings())
