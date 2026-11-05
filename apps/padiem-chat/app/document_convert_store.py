@@ -14,6 +14,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
+from .d1_rows import rows_from_result
+
 JOB_STATUS_QUEUED = "queued"
 JOB_STATUS_WORKING = "working"
 JOB_STATUS_REVIEWED = "reviewed"
@@ -150,15 +152,8 @@ def _row_to_dict(row: Any) -> dict[str, Any] | None:
 
 
 def _rows_from_result(result: Any) -> list[dict[str, Any]]:
-    if result is None:
-        return []
-    rows = getattr(result, "results", None)
-    if rows is None and isinstance(result, dict):
-        rows = result.get("results")
-    if rows is None:
-        return []
     out: list[dict[str, Any]] = []
-    for row in rows:
+    for row in rows_from_result(result):
         converted = _row_to_dict(row)
         if converted is not None:
             out.append(converted)
@@ -372,9 +367,11 @@ class D1DocumentConvertStore:
         return _job_from_row(row) if row is not None else None
 
     async def list_jobs(self, user_id: str, *, limit: int) -> list[ConvertJobRecord]:
+        # A ledger the owner never filled is not history: it leaves the list once
+        # its last item is gone, and get_job still serves an in-flight job by id.
         rows = await self._all(
             "SELECT id, mode, status, item_count, created_at, updated_at "
-            "FROM document_convert_jobs WHERE user_id = ? "
+            "FROM document_convert_jobs WHERE user_id = ? AND item_count > 0 "
             "ORDER BY updated_at DESC LIMIT ?",
             user_id,
             limit,

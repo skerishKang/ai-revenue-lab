@@ -11,6 +11,10 @@ for the queue lane and `batch` for the Chat stores that write through
 connection because `_changed_rows` treats `0` as "this conditional write matched
 nothing", which is how a losing concurrent writer never inherits another
 writer's row (history.py:_changed_rows).
+
+`all()` here answers a bare list, while Cloudflare's D1 answers a result object
+carrying `results`; store-side reads normalize both through
+`app.d1_rows.rows_from_result` rather than picking one shape locally.
 """
 from __future__ import annotations
 
