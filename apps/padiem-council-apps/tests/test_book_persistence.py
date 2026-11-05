@@ -63,7 +63,7 @@ def test_re_editing_and_saving_under_a_new_title_keeps_both_versions() -> None:
 
 def test_the_book_lane_reuses_the_existing_project_file_contract() -> None:
     assert set(OBSERVATION["endpoints"]) <= {
-        "GET /api/auth/status",
+        "GET /api/auth/status", "GET /api/account/model-selection",
         "POST /api/chat/stream",
         "GET /api/projects",
         "GET /api/projects/p1/files",

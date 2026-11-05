@@ -165,6 +165,12 @@ const projectsListing = () => projectRows.slice();
 // #5942: the same-origin session contract the entry page uses. A scenario flips
 // these to walk signed-out → in-page login → expiry without any second authority.
 let authState = { authenticated: true, user: { name: "테스트 사용자" } };
+// 2026-11-05: the account's stored AI tier (#5222 contract). The default answer
+// is a Free-only account with nothing stored; a scenario swaps it to prove the
+// header offers the server's list and the request carries the restored tier.
+let modelSelection = null;
+let modelSelectionPutOutcome = null;
+const tierWrites = [];
 let loginOutcome = null;
 // #6127: the status read itself can fail. A scenario swaps this in to prove the
 // module tells a server fault apart from a signed-out visitor.
@@ -291,6 +297,14 @@ async function fetch(url, init) {
     if (fetchRejects) throw fetchRejects;
     if (authStatusQueue && authStatusQueue.length) return authStatusQueue.shift();
     return authStatusOutcome || json(authState);
+  }
+  if (String(url) === "/api/account/model-selection") {
+    if (method === "PUT") {
+      tierWrites.push(body);
+      return modelSelectionPutOutcome || json({ ok: true, selection: { tier: body && body.tier } });
+    }
+    return modelSelection || json({ ok: true, selection: null, stored_tier: null, restorable_tier: "free",
+                                     default_tier: "free", allowed_tiers: ["free"], admin_available: false });
   }
   if (method === "POST" && String(url) === "/api/auth/password/login") {
     loginAttempts.push(body);
@@ -522,7 +536,15 @@ function spawnSession(windowState = {}) {
   panel.append(loginForm, authStatus, googleRow);
   const action = mk("button", "councilAuthAction", "council-badge-action");
   action.hidden = true;
-  root.append(panel, action);
+  // 2026-11-05: the AI tier control the shipped index.html carries in the top bar.
+  const tierWrap = mk("label", "councilTierWrap", "council-tier");
+  tierWrap.hidden = true;
+  const tierSelect = mk("select", "councilTier");
+  tierSelect.name = "tier";
+  const tierStatus = mk("span", "councilTierStatus", "council-tier-status");
+  tierStatus.hidden = true;
+  tierWrap.append(tierSelect, tierStatus);
+  root.append(panel, action, tierWrap);
 
   ["speech", "sns", "meeting"].forEach((tool) => {
     const section = mk("section", "council-" + tool, "council-card");
@@ -2000,7 +2022,11 @@ const SCENARIOS = {
     stored("1월 회의.txt", "회의 일시: 2026-01-05T10:00" + NL + "첫 기록", "text/plain", null, null, "meeting");
     stored("3월 회의.txt", "회의 일시: 2026-03-12T10:00" + NL + "둘째 기록", "text/plain", null, null, "meeting");
     stored("지난 축사.txt", "지난 축사 본문", "text/plain", null, null, "speech");
+    // 2026-11-05: the 한글 copy "내 PC에 저장" uploads carries the same kind (for
+    // the Chat library) — it is not a second manuscript and stays off the list.
+    stored("축사_지난_2026-11-05.hwpx", "", "application/hwp+zip", "PK-bytes", null, "speech");
     stored("블로그 게시글.txt", "저장된 SNS 초안", "text/plain", null, null, "sns");
+    stored("SNS_지난_2026-11-05.docx", "", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "PK-bytes", null, "sns");
     const s = spawnSession();
     await s.ctx.window.PadiemCouncilApps.init();
     await sleep(40);
@@ -2037,6 +2063,8 @@ const SCENARIOS = {
     const speechNotice = text(find(s, "councilSpeechNotice"));
     const speechBody = find(s, "councilSpeechOutput").value;
 
+    const speechLabels = find(s, "councilSpeechSaved").querySelectorAll(".council-saved-open").map((b) => text(b));
+
     // a stored SNS draft is listed and reopens
     const snsList = find(s, "councilSnsSaved");
     const snsLabels = snsList.querySelectorAll(".council-saved-open").map((b) => text(b));
@@ -2045,8 +2073,85 @@ const SCENARIOS = {
     const snsBody = find(s, "councilSnsOutput").value;
     const snsNotice = text(find(s, "councilSnsNotice"));
     return { before, afterMove, bookPrompt, year, periodStatus, selectedAfterQuick,
-             speechNotice, speechBody, snsLabels, snsBody, snsNotice,
+             speechNotice, speechBody, speechLabels, snsLabels, snsBody, snsNotice,
              alerts, pageErrors };
+  },
+  async tier() {
+    // 2026-11-05: the signed-in account's AI tier. The header offers only the
+    // tiers the server listed, the restored choice rides every generation, a
+    // change is saved through the same account route, and a refused tier
+    // reverts. A Free-only account sees one (disabled) choice; a signed-out
+    // visitor sees nothing.
+    const out = {};
+
+    // A: a Pro member who last chose Plus in Chat
+    authState = { authenticated: true, user: { name: "테스트 사용자" }, member_grade: "pro" };
+    modelSelection = json({ ok: true, selection: { tier: "plus" }, stored_tier: "plus",
+                            restorable_tier: "plus", default_tier: "pro",
+                            allowed_tiers: ["free", "plus", "pro"], admin_available: false });
+    tierWrites.length = 0;
+    const A = spawnSession();
+    const apiA = A.ctx.window.PadiemCouncilApps;
+    await apiA.init();
+    await sleep(40);
+    const selectA = find(A, "councilTier");
+    const initialA = apiA.tier().current;
+    const formA = find(A, "councilSpeechForm");
+    formA.querySelector("[name=event]").value = "등급 검증";
+    await formA.dispatch("submit");
+    await sleep(30);
+    const firstTier = chatPayloads[chatPayloads.length - 1].tier;
+    selectA.value = "pro";
+    await selectA.dispatch("change");
+    await sleep(30);
+    await formA.dispatch("submit");
+    await sleep(30);
+    const secondTier = chatPayloads[chatPayloads.length - 1].tier;
+    // the server refuses a tier this account may not use → the choice reverts
+    modelSelectionPutOutcome = json({ error: { code: "tier_denied" } }, 403);
+    selectA.value = "free";
+    await selectA.dispatch("change");
+    await sleep(30);
+    out.pro = {
+      wrapHidden: find(A, "councilTierWrap").hidden,
+      choices: selectA.children.map((o) => o.value),
+      labels: selectA.children.map((o) => text(o)),
+      initial: initialA,
+      firstTier, secondTier,
+      writes: tierWrites.slice(),
+      afterRefusal: apiA.tier().current,
+      selectAfterRefusal: selectA.value,
+      refusalStatus: text(find(A, "councilTierStatus")),
+      disabled: !!selectA.disabled,
+    };
+    modelSelectionPutOutcome = null;
+
+    // B: a Free member whose preference store is unavailable
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    modelSelection = json({ error: { code: "model_selection_unavailable" } }, 503);
+    const B = spawnSession();
+    await B.ctx.window.PadiemCouncilApps.init();
+    await sleep(40);
+    const formB = find(B, "councilSpeechForm");
+    formB.querySelector("[name=event]").value = "무료 등급";
+    await formB.dispatch("submit");
+    await sleep(30);
+    out.free = {
+      wrapHidden: find(B, "councilTierWrap").hidden,
+      choices: find(B, "councilTier").children.map((o) => o.value),
+      disabled: !!find(B, "councilTier").disabled,
+      tier: chatPayloads[chatPayloads.length - 1].tier,
+    };
+
+    // C: signed out — nothing to choose
+    authState = { authenticated: false, user: null };
+    modelSelection = null;
+    const C = spawnSession();
+    await C.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    out.guest = { wrapHidden: find(C, "councilTierWrap").hidden, writes: tierWrites.length };
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    return Object.assign(out, { endpoints: endpointSet(), alerts, pageErrors });
   },
   async prompt() {
     const builder = String(process.argv[4] || "");

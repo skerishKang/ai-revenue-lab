@@ -23,8 +23,8 @@
       padiem-council-style 에 따로 저장한다. 사진·폰트 모두 이 앱의 정적 자산만 쓴다.
   -->
   <link rel="stylesheet" href="/padiem-themes.css" />
-  <link rel="stylesheet" href="./static/council-app.css?v=ab2c8625" />
-  <script type="application/json" id="padiem-asset-versions">{"assets/ATTRIBUTION.md":"ec91846d","assets/IMAGE-SLOTS.md":"62758390","assets/fonts/LICENSE-MaruBuri-NAVER.txt":"cacefe00","assets/fonts/LICENSE-PlayfairDisplay-OFL-1.1.txt":"aac9acd4","assets/fonts/LICENSE-Pretendard-OFL-1.1.txt":"14d6e897","assets/fonts/MaruBuri-Bold.woff2":"c8af5b6f","assets/fonts/MaruBuri-Regular.woff2":"e57ef6cc","assets/fonts/PlayfairDisplay-Bold-latin.woff2":"e90a9418","assets/fonts/Pretendard-Bold.woff2":"2d1cd41d","assets/fonts/Pretendard-Medium.woff2":"faae7e3f","assets/fonts/Pretendard-Regular.woff2":"5f473645","assets/fonts/Pretendard-SemiBold.woff2":"dae60b27","assets/meeting-card.jpg":"7a63c4af","assets/parliament-fr-hero.jpg":"6d938045","assets/parliament-hero.jpg":"9f5a06e5","assets/parliament-uk-hero.jpg":"c6f02283","assets/parliament-us-hero.jpg":"46393697","assets/sns-card.jpg":"b350d00a","assets/speech-card.jpg":"b3abc302","council-app.css":"ab2c8625","council-app.js":"c5dcfa0c","document-export.js":"ddad0a22","pc-file-exchange.css":"180d53ab","pc-file-exchange.js":"24c726d0","photo-resize.js":"f9cf022a","project-file-upload.js":"e658f90e","tus-upload.js":"ae495d74"}</script>
+  <link rel="stylesheet" href="./static/council-app.css?v=92d26c46" />
+  <script type="application/json" id="padiem-asset-versions">{"assets/ATTRIBUTION.md":"ec91846d","assets/IMAGE-SLOTS.md":"62758390","assets/fonts/LICENSE-MaruBuri-NAVER.txt":"cacefe00","assets/fonts/LICENSE-PlayfairDisplay-OFL-1.1.txt":"aac9acd4","assets/fonts/LICENSE-Pretendard-OFL-1.1.txt":"14d6e897","assets/fonts/MaruBuri-Bold.woff2":"c8af5b6f","assets/fonts/MaruBuri-Regular.woff2":"e57ef6cc","assets/fonts/PlayfairDisplay-Bold-latin.woff2":"e90a9418","assets/fonts/Pretendard-Bold.woff2":"2d1cd41d","assets/fonts/Pretendard-Medium.woff2":"faae7e3f","assets/fonts/Pretendard-Regular.woff2":"5f473645","assets/fonts/Pretendard-SemiBold.woff2":"dae60b27","assets/meeting-card.jpg":"7a63c4af","assets/parliament-fr-hero.jpg":"6d938045","assets/parliament-hero.jpg":"9f5a06e5","assets/parliament-uk-hero.jpg":"c6f02283","assets/parliament-us-hero.jpg":"46393697","assets/sns-card.jpg":"b350d00a","assets/speech-card.jpg":"b3abc302","council-app.css":"92d26c46","council-app.js":"182f219c","document-export.js":"ddad0a22","pc-file-exchange.css":"180d53ab","pc-file-exchange.js":"24c726d0","photo-resize.js":"f9cf022a","project-file-upload.js":"e658f90e","tus-upload.js":"ae495d74"}</script>
 </head>
 <body class="council-body">
   <a class="council-skip" href="#councilMain">본문 바로가기</a>
@@ -57,6 +57,12 @@
         </form>
         <p class="council-tool-search-status" id="councilSearchStatus" role="status" aria-live="polite" hidden></p>
       </div>
+      <!-- AI 등급(2026-11-05): 로그인한 계정이 쓸 수 있는 PADIEM 등급만 서버 응답으로 채운다.
+           모델·프로바이더 이름은 쓰지 않는다. 로그아웃 상태에서는 숨긴다. -->
+      <label class="council-tier" id="councilTierWrap" hidden>AI 등급
+        <select id="councilTier" name="tier" aria-label="AI 등급"></select>
+        <span class="council-tier-status" id="councilTierStatus" role="status" aria-live="polite" hidden></span>
+      </label>
       <button type="button" class="council-badge-action" id="councilAuthAction" hidden>로그인</button>
       <!-- 시안의 두 축 전환은 우상단 아이콘 하나. 값은 스크린리더에만 남긴다. -->
       <span class="council-theme" id="councilTheme">
@@ -231,6 +237,6 @@
       </p>
     </footer>
   </main>
-  <script src="./static/council-app.js?v=c5dcfa0c" defer></script>
+  <script src="./static/council-app.js?v=182f219c" defer></script>
 </body>
 </html>

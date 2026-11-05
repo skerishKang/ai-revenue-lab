@@ -194,8 +194,7 @@
     // (including try_native_calendar_chat's own second classification) and
     // the server refuses unknown scopes before any model call. It grants no
     // identity, tier, entitlement or tool scope and is not an auth input.
-    const selected = window.PadiemTierSelection?.get?.();
-    const tier = ["free", "plus", "pro", "max", "admin"].includes(selected) ? selected : "free";
+    const tier = currentTier();
     const country = currentCountry();
     const content = prompt + countryInstruction(country);
     const payload = { messages: [{ role: "user", content: content }], tier };
@@ -597,14 +596,26 @@
   function hasDocKind(file, kind) {
     return String((file && file.doc_kind) || "") === kind;
   }
+  // 2026-11-05: the lists show the text drafts only. The 한글/워드 copies that
+  // "내 PC에 저장" uploads carry the same doc_kind (so the Chat library can
+  // group them), but they are not a second manuscript — they stay in the
+  // project and never sit beside the .txt in these lists. A record without a
+  // media type (older rows) is read as text.
+  function isTextDocument(file) {
+    const type = String((file && file.media_type) || "text/plain");
+    return type === "text/plain";
+  }
   function isSpeechFile(file) {
-    return hasDocKind(file, "speech") || (!(file && file.doc_kind) && isManuscriptFile(file));
+    return isTextDocument(file)
+      && (hasDocKind(file, "speech") || (!(file && file.doc_kind) && isManuscriptFile(file)));
   }
   function isMeetingFile(file) {
-    return hasDocKind(file, "meeting") || (!(file && file.doc_kind) && isManuscriptFile(file));
+    return isTextDocument(file)
+      && (hasDocKind(file, "meeting") || (!(file && file.doc_kind) && isManuscriptFile(file)));
   }
   function isBookFile(file) {
-    return hasDocKind(file, "book") || (!(file && file.doc_kind) && isStoredBook(file));
+    return isTextDocument(file)
+      && (hasDocKind(file, "book") || (!(file && file.doc_kind) && isStoredBook(file)));
   }
   /** The book file name comes from the draft's own first line, so an edited
    *  title re-saves under the edited name; unsafe characters are dropped. */
@@ -1662,6 +1673,8 @@
 
   const snsModule = (() => {
     let pcSection = null;
+    let snsPhotoSources = null;
+    let snsPhotoSourcesChecked = false;
 
     function buildForm(host) {
       const form = el("form", "council-form");
@@ -1743,6 +1756,13 @@
       const photoAdd = el("button", "council-photo-add", "사진 추가");
       photoAdd.type = "button";
       photoAdd.id = "councilSnsPhotoAdd";
+      // 2026-11-05: with a linked PC the first button opens the PC window, so a
+      // phone (or any device) also keeps its own picker beside it — before this,
+      // a linked PC meant the gallery of the device in hand was unreachable.
+      const photoAddLocal = el("button", "council-photo-add council-photo-add-local", "이 기기에서 추가");
+      photoAddLocal.type = "button";
+      photoAddLocal.id = "councilSnsPhotoAddLocal";
+      photoAddLocal.hidden = true;
       const photoInput = document.createElement("input");
       photoInput.type = "file";
       photoInput.accept = "image/png,image/jpeg,image/webp";
@@ -1751,7 +1771,7 @@
       photoInput.id = "councilSnsPhotoInput";
       const photoCount = el("span", "council-photos-count", "0장");
       photoCount.id = "councilSnsPhotoCount";
-      photoHead.append(photoTitle, photoAdd, photoInput, photoCount);
+      photoHead.append(photoTitle, photoAdd, photoAddLocal, photoInput, photoCount);
       const photoList = el("ul", "council-photo-list");
       photoList.id = "councilSnsPhotoList";
       const photoNote = el("p", "council-photo-note");
@@ -1939,14 +1959,25 @@
         if (typeof File !== "function") return;
         await addPhotoFiles([new File([bytes], name, { type: type })]);
       }
+      // The two entry points are named by where the photo is: 사진 추가 opens the
+      // device picker, or the PC window once a PC is linked (then it reads
+      // "내 PC에서 추가" and the device picker moves to the second button).
+      function reflectPhotoSources(linked) {
+        photoAdd.textContent = linked ? "내 PC에서 추가" : "사진 추가";
+        photoAddLocal.hidden = !linked;
+      }
       photoAdd.addEventListener("click", async () => {
         const linked = await pcLinked();
+        reflectPhotoSources(linked === true);
         if (linked !== true) { photoInput.click(); return; }
         let component;
         try { component = await loadPcExchange(); } catch (_) { component = null; }
         if (!component || typeof component.open !== "function") { photoInput.click(); return; }
         component.open({ mode: "import", onSelect: (picked) => { void importPickedPhoto(picked); } });
       });
+      photoAddLocal.addEventListener("click", () => { photoInput.click(); });
+      // The PC check runs when the SNS tool is opened (onOpen), never at page load.
+      snsPhotoSources = reflectPhotoSources;
       async function addPhotoFiles(pickedFiles) {
         const files = Array.from(pickedFiles || []);
         const failed = [];
@@ -2047,6 +2078,7 @@
         if (!pid) return;
         const files = await listProjectFiles(pid);
         const drafts = files
+          .filter(isTextDocument)
           .filter((f) => hasDocKind(f, "sns") || (!(f && f.doc_kind) && isSnsPostFile(f)))
           .filter(sameCountry);
         savedList.replaceChildren();
@@ -2195,9 +2227,14 @@
         void runGeneration();
       });
       wireCopy(copyB, output);
+      /** SNS_행사명_날짜 (행사명이 비면 플랫폼 게시글 이름) — 저장·내려받기·PC 저장이 같은 줄기를 쓴다. */
+      function snsStoredName() {
+        const event = form.querySelector("[name=event]");
+        return "SNS_" + (fileNamePart(event ? event.value : "") || title.textContent || "게시글") + "_" + todayStamp();
+      }
       dlB.addEventListener("click", () => {
         const text = String(output.value || "").trim();
-        if (text) downloadText(text, "SNS_" + (title.textContent || "게시글") + "_" + todayStamp() + ".txt");
+        if (text) downloadText(text, snsStoredName() + ".txt");
       });
       wireResultDownloads({
         hwpxBtn: dlHwpxB, docxBtn: dlDocxB, kind: "sns",
@@ -2226,8 +2263,12 @@
         }
         saveBtn.disabled = true;
         saveBtn.textContent = "저장 중…";
+        // 2026-11-05: the stored name follows the speech rule — SNS_행사명_날짜 —
+        // instead of the bare platform name, which made every second save ask
+        // 새 이름/덮어쓰기. The platform name stays the fallback when no event
+        // was typed. Stored drafts are listed by their doc_kind, not by name.
         const outcome = await saveCouncilText({
-          pid, name: (title.textContent || "SNS 게시글").trim() + ".txt", text, kind: "sns", anchor: saveBtn,
+          pid, name: snsStoredName() + ".txt", text, kind: "sns", anchor: saveBtn,
         });
         saveBtn.textContent = "저장";
         refreshSave();
@@ -2252,7 +2293,15 @@
     return {
       build(host) { buildForm(host); },
       buildPrompt: buildSnsPrompt,
-      onOpen() { if (pcSection) pcSection.check(); },
+      onOpen() {
+        if (pcSection) pcSection.check();
+        // One pairing read, like the reference section's own check: the photo
+        // buttons follow its answer so the second source shows up on open.
+        if (snsPhotoSources && !snsPhotoSourcesChecked) {
+          snsPhotoSourcesChecked = true;
+          void pcLinked().then((linked) => snsPhotoSources(linked === true));
+        }
+      },
     };
   })();
 
@@ -2825,6 +2874,136 @@
     });
   }
 
+  // ── AI 등급 (2026-11-05) ──────────────────────────────────────────────────
+  // This page ships no Chat tier picker, so every request used to carry
+  // tier:"free" — a Plus/Pro/Max or administrator account generated on the
+  // Free tier here. The signed-in account's stored selection (#5222 contract:
+  // GET/PUT /api/account/model-selection, the same row Chat reads and writes)
+  // now decides the tier, and the header offers exactly the tiers the server
+  // says this account may use, labelled as Chat labels them. The server
+  // re-verifies every choice (PUT) and every request (/api/chat/stream); the
+  // list here is presentation, never authority. No model or provider name is
+  // ever shown — only PADIEM tiers.
+  const TIER_ORDER = Object.freeze(["free", "plus", "pro", "max"]);
+  const TIER_LABELS = Object.freeze({
+    free: "Padiem Free", plus: "Padiem Plus", pro: "Padiem Pro", max: "Padiem Max", admin: "Padiem 관리자",
+  });
+  const MODEL_SELECTION_PATH = "/api/account/model-selection";
+  const tierState = { current: "free", allowed: ["free"], admin: false, loaded: false, bound: false };
+
+  function currentTier() {
+    if (tierState.loaded) return tierState.current;
+    // Before the account's selection is known (or on a host that embeds the
+    // Chat picker) the Chat selection, if any, still answers; otherwise Free.
+    const selected = window.PadiemTierSelection?.get?.();
+    return ["free", "plus", "pro", "max", "admin"].includes(selected) ? selected : "free";
+  }
+
+  function tierChoices() {
+    const choices = tierState.allowed.slice();
+    if (tierState.admin) choices.push("admin");
+    return choices;
+  }
+
+  function renderTierSelect() {
+    const wrap = host("councilTierWrap");
+    const select = host("councilTier");
+    if (!wrap || !select) return;
+    const choices = tierChoices();
+    if (typeof select.replaceChildren === "function") select.replaceChildren();
+    choices.forEach((tier) => {
+      const option = document.createElement("option");
+      option.value = tier;
+      option.textContent = TIER_LABELS[tier] || tier;
+      if (tier === tierState.current) option.selected = true;
+      select.appendChild(option);
+    });
+    select.value = tierState.current;
+    // One choice is not a choice: a Free-only account sees the tier as a label.
+    select.disabled = choices.length <= 1;
+    wrap.hidden = !session.signedIn;
+  }
+
+  function hideTierSelect() {
+    const wrap = host("councilTierWrap");
+    if (wrap) wrap.hidden = true;
+  }
+
+  function setTierStatus(text) {
+    const node = host("councilTierStatus");
+    if (!node) return;
+    node.textContent = text || "";
+    node.hidden = !text;
+  }
+
+  // The auth status grade is the baseline (default = the account's own tier,
+  // the same highest-available rule the server applies); the stored selection
+  // refines it. A failed read keeps the baseline — never a lower tier than the
+  // account has, never a higher one than the server listed.
+  async function loadTierSelection(memberGrade) {
+    const grade = TIER_ORDER.indexOf(memberGrade) >= 0 ? memberGrade : "free";
+    tierState.allowed = TIER_ORDER.slice(0, TIER_ORDER.indexOf(grade) + 1);
+    tierState.current = grade;
+    tierState.admin = false;
+    tierState.loaded = true;
+    try {
+      const res = await fetch(MODEL_SELECTION_PATH, {
+        credentials: "include",
+        cache: "no-store",
+        headers: { Accept: "application/json" },
+      });
+      if (res.ok) {
+        const data = await res.json().catch(() => null);
+        if (data && Array.isArray(data.allowed_tiers)) {
+          const allowed = data.allowed_tiers.filter((tier) => TIER_ORDER.indexOf(tier) >= 0);
+          if (allowed.length) tierState.allowed = allowed;
+          tierState.admin = data.admin_available === true;
+          const restorable = typeof data.restorable_tier === "string" ? data.restorable_tier : "";
+          if (tierChoices().indexOf(restorable) >= 0) tierState.current = restorable;
+          else tierState.current = tierChoices()[tierChoices().length - 1];
+        }
+      }
+    } catch (_) { /* the auth-status grade stays */ }
+    renderTierSelect();
+    return tierState.current;
+  }
+
+  function bindTierSelect() {
+    const select = host("councilTier");
+    if (!select || tierState.bound) return;
+    tierState.bound = true;
+    select.addEventListener("change", async () => {
+      const wanted = String(select.value || "");
+      const previous = tierState.current;
+      if (wanted === previous || tierChoices().indexOf(wanted) < 0) { select.value = previous; return; }
+      setTierStatus("");
+      let res;
+      try {
+        res = await fetch(MODEL_SELECTION_PATH, {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tier: wanted }),
+        });
+      } catch (_) {
+        res = null;
+      }
+      if (res && res.status >= 400 && res.status < 500) {
+        // The server's own gate said no (401/403/422): the account may not
+        // use this tier, so the choice is not applied here either.
+        tierState.current = previous;
+        select.value = previous;
+        if (res.status === 401) markSessionLost();
+        else setTierStatus("이 계정에서는 고를 수 없는 AI 등급입니다.");
+        return;
+      }
+      // Saved, or the preference store was unreachable: the choice applies to
+      // this page now, and every request is still verified by the server.
+      tierState.current = wanted;
+      if (!res || !res.ok) setTierStatus("AI 등급 선택을 계정에 저장하지 못했습니다. 이 화면에서는 적용됩니다.");
+    });
+  }
+
   // ── independent entry wiring: auth gate, then build all three tools ──────
 
   async function readAuthStatusOnce() {
@@ -2840,13 +3019,16 @@
       // untouched. 401/403 IS such a verdict about the visitor, so it is returned
       // quietly and never re-asked.
       if (res.status >= 500) throw new Error("auth status unavailable");
-      return { signedIn: false, methods: null, unavailable: false };
+      return { signedIn: false, methods: null, memberGrade: null, unavailable: false };
     }
     const data = await res.json().catch(() => null);
     if (!data) throw new Error("auth status unavailable");
     return {
       signedIn: !!(data && data.authenticated === true),
       methods: (data && data.methods) || null,
+      // The server-verified grade (auth_routes member_grade); a presentation
+      // hint only — every request is re-checked by the model gates.
+      memberGrade: data && typeof data.member_grade === "string" ? data.member_grade : null,
       unavailable: false,
     };
   }
@@ -2868,7 +3050,7 @@
     // fail-closed gate, unchanged from the retired councillor screen: nothing is attached unless
     // the server itself says this cookie is authenticated, and an unanswered read
     // is not permission.
-    return outcome || { signedIn: false, methods: null, unavailable: true };
+    return outcome || { signedIn: false, methods: null, memberGrade: null, unavailable: true };
   }
 
   // ── session and selection state (this page's UI state, never an authority) ──
@@ -3073,6 +3255,7 @@
     syncCountrySelect();
     // syncCountrySelect sets the value without dispatching, so the pills follow it here.
     applyTheme(selectedCountry(), theme.style);
+    await loadTierSelection(auth.memberGrade);
     buildToolPanels();
     const wanted = session.pending || toolFromUrl() || rememberedTool();
     const focusWanted = Boolean(session.pending);
@@ -3105,6 +3288,7 @@
   function markSessionLost() {
     if (!session.signedIn) return false;
     session.signedIn = false;
+    hideTierSelect();
     openLoginHere(session.selected, "세션이 만료되었습니다. 다시 로그인하면 이 화면에서 이어나갑니다.");
     return true;
   }
@@ -3373,6 +3557,7 @@
     };
     bindCards();
     bindAuthForm();
+    bindTierSelect();
     // The design axes belong to the page, not to the session: a signed-out visitor sees
     // the cinematic home and may change country and style before logging in.
     wireTheme();
@@ -3405,6 +3590,7 @@
     syncCountrySelect();
     // syncCountrySelect sets the value without dispatching, so the pills follow it here.
     applyTheme(selectedCountry(), theme.style);
+    await loadTierSelection(auth.memberGrade);
     buildToolPanels();
     const tool = toolFromUrl() || rememberedTool();
     applySelection(TOOLS.indexOf(tool) >= 0 ? tool : null, false);
@@ -3429,6 +3615,7 @@
                     countries: DESIGN_COUNTRIES.slice(), styles: DESIGN_STYLES.slice() }),
     setTheme: (country, style) => applyTheme(country, style),
     workspace: () => (session.selected ? "workspace" : "home"),
+    tier: () => ({ current: currentTier(), choices: tierChoices(), loaded: tierState.loaded }),
     openLogin: (tool) => openLoginHere(tool),
     sessionLost: () => markSessionLost(),
     speech: speechModule,
