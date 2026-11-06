@@ -11,6 +11,7 @@ on:
       - ".github/workflows/b14-ledger-d1-provision-gate.yml"
       - ".github/workflows/b14-ledger-d1-provision-gate-contract-tests.yml"
       - ".github/tests/test_b14_ledger_d1_provision_gate.py"
+      - ".github/scripts/b14_ledger_d1_schema.py"
       - "apps/korean-ai-platform/migrations/**"
   workflow_dispatch:
 
