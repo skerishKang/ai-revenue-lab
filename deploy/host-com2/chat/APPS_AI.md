@@ -39,4 +39,6 @@ StoryMemory retains the existing authenticated Cloudflare ingress as a fallback 
 
 Both apps continue removing complete and unfinished `<thought>` blocks and validating the returned context-permission diagnostics.
 
+BookAI's current default output budget is 4096 tokens; StoryMemory remains at 900.
+
 Focused tests cover app signatures, five-minute expiry, model/token limits, real local P01 request/response with a synthetic B14 provider, ledger attribution, 1.0 fallback, thought removal and proxy deadlines. These tests do not claim that production configuration or deployment has been applied.

@@ -33,7 +33,7 @@ const BIBLE_BOOK_CODES = Object.freeze({
   '갈라디아서':'GAL','에베소서':'EPH','빌립보서':'PHP','골로새서':'COL','데살로니가전서':'1TH','데살로니가후서':'2TH','디모데전서':'1TI','디모데후서':'2TI',
   '디도서':'TIT','빌레몬서':'PHM','히브리서':'HEB','야고보서':'JAS','베드로전서':'1PE','베드로후서':'2PE','요한일서':'1JN','요한이서':'2JN','요한삼서':'3JN','유다서':'JUD','요한계시록':'REV',
   '창':'GEN','출':'EXO','레':'LEV','민':'NUM','신':'DEU','수':'JOS','삿':'JDG','룻':'RUT','삼상':'1SA','삼하':'2SA','왕상':'1KI','왕하':'2KI','대상':'1CH','대하':'2CH','스':'EZR','느':'NEH','에':'EST','욥':'JOB','시':'PSA','잠':'PRO','전':'ECC','아':'SNG','사':'ISA','렘':'JER','애':'LAM','겔':'EZK','단':'DAN','호':'HOS','욜':'JOL','암':'AMO','옵':'OBA','욘':'JON','미':'MIC','나':'NAM','합':'HAB','습':'ZEP','학':'HAG','슥':'ZEC','말':'MAL','마':'MAT','막':'MRK','눅':'LUK','요':'JHN','행':'ACT','롬':'ROM','고전':'1CO','고후':'2CO','갈':'GAL','엡':'EPH','빌':'PHP','골':'COL','살전':'1TH','살후':'2TH','딤전':'1TI','딤후':'2TI','딛':'TIT','몬':'PHM','히':'HEB','약':'JAS','벧전':'1PE','벧후':'2PE','요일':'1JN','요이':'2JN','요삼':'3JN','유':'JUD','계':'REV',
-  '시편':'PSA','마태':'MAT','마가':'MRK','누가':'LUK','요한':'JHN','사도':'ACT'
+  '마태':'MAT','마가':'MRK','누가':'LUK','요한':'JHN','사도':'ACT'
 });
 
 function json(body, status = 200) {
@@ -315,7 +315,7 @@ function buildEnginePayload(question, bounded, model) {
       system_instruction: storyMemorySystemInstruction(bounded),
       task_type: "korean",
       optimize_for: "korean",
-      max_tokens: 900,
+      max_tokens: 4096,
       required_capabilities: [],
       model_policy: { model, max_retries: 0 }
     },
