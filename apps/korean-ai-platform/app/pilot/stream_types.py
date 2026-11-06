@@ -90,6 +90,8 @@ class StreamEvent:
     # it here, so a native follow-up can return each token with the part it
     # belonged to. Nothing in B14 interprets it.
     signature: str | None = None
+    # Internal transport evidence for the attempt ledger; never sent to clients.
+    wire_protocol: str | None = None
 
     def __post_init__(self) -> None:
         for name in ("response_id", "model", "delta_content", "delta_thought", "finish_reason"):
@@ -105,6 +107,8 @@ class StreamEvent:
                 or len(self.signature) > MAX_TOOL_SIGNATURE_CHARS
             ):
                 raise ValueError("event signature must be a bounded string")
+        if self.wire_protocol not in (None, "native", "chat/completions"):
+            raise ValueError("unknown stream wire protocol")
         if self.usage is not None and not isinstance(self.usage, StreamUsage):
             raise ValueError("usage must be StreamUsage or None")
         if not isinstance(self.done, bool):

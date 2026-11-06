@@ -24,6 +24,7 @@ contract applies to both.
 from __future__ import annotations
 
 from contextlib import aclosing
+from dataclasses import replace
 
 import json
 import os
@@ -518,6 +519,101 @@ def _openai_compatible_messages(
     return projected
 
 
+class _CompatibleToolCollector:
+    """Assemble bounded function-call fragments on the compatible fallback."""
+
+    def __init__(self, tools, choice, model_id):
+        self.model_id = model_id
+        self.names = {tool["function"]["name"] for tool in tools}
+        if choice == "none":
+            self.names = set()
+        elif isinstance(choice, dict):
+            self.names = {choice["function"]["name"]}
+        self.parts = {}
+        self.finished = False
+
+    def consume(self, frame, event):
+        from .stream_types import StreamEvent, StreamToolCall
+        from .tool_channel import (
+            MAX_TOOL_ARGUMENT_CHARS, MAX_TOOL_CALLS, InvalidToolDeclaration,
+            validate_tool_calls,
+        )
+
+        def fail(reason):
+            return malformed(reason, provider="google", model=self.model_id, path="stream")
+
+        data = "\n".join(
+            line[5:].lstrip(" ") for line in frame.decode("utf-8").splitlines()
+            if line.startswith("data:")
+        ).strip()
+        if data and data != "[DONE]":
+            payload = json.loads(data)
+            choices = payload.get("choices", [])
+            delta = choices[0].get("delta", {}) if choices else {}
+            chunks = delta.get("tool_calls", []) if isinstance(delta, dict) else []
+            if not isinstance(chunks, list) or (self.finished and chunks):
+                raise fail("invalid_tool_fragments")
+            for chunk in chunks:
+                if not isinstance(chunk, dict):
+                    raise fail("invalid_tool_fragment")
+                index = chunk.get("index")
+                if isinstance(index, bool) or not isinstance(index, int) or not 0 <= index < MAX_TOOL_CALLS:
+                    raise fail("invalid_tool_index")
+                part = self.parts.setdefault(index, {"id": None, "name": "", "arguments": "", "signature": None})
+                call_id = chunk.get("id")
+                if call_id is not None:
+                    if not isinstance(call_id, str) or (part["id"] is not None and part["id"] != call_id):
+                        raise fail("invalid_tool_id")
+                    part["id"] = call_id
+                if chunk.get("type", "function") != "function":
+                    raise fail("invalid_tool_type")
+                function = chunk.get("function") or {}
+                if not isinstance(function, dict):
+                    raise fail("invalid_tool_function")
+                for name in ("name", "arguments"):
+                    value = function.get(name)
+                    if value is not None:
+                        if not isinstance(value, str):
+                            raise fail("invalid_tool_fragment")
+                        part[name] += value
+                if len(part["name"]) > 128 or len(part["arguments"]) > MAX_TOOL_ARGUMENT_CHARS:
+                    raise fail("tool_fragment_too_large")
+                extra = chunk.get("extra_content")
+                if isinstance(extra, dict) and isinstance(extra.get("google"), dict):
+                    signature = extra["google"].get("thought_signature")
+                    if signature is not None:
+                        part["signature"] = signature
+
+        if event is None or (not event.done and event.finish_reason != "tool_calls"):
+            return []
+        if self.finished:
+            return []
+        self.finished = True
+        if event.finish_reason == "tool_calls" and not self.parts:
+            raise fail("missing_tool_calls")
+        if self.parts and (event.done or event.finish_reason != "tool_calls"):
+            raise fail("incomplete_tool_calls")
+        if list(sorted(self.parts)) != list(range(len(self.parts))):
+            raise fail("invalid_tool_indexes")
+        result, ids = [], set()
+        for index, part in sorted(self.parts.items()):
+            try:
+                calls = validate_tool_calls([{"id": part["id"], "type": "function",
+                    "function": {"name": part["name"], "arguments": part["arguments"]},
+                    **({"signature": part["signature"]} if part["signature"] is not None else {})}], 0)
+                call = calls[0]
+                if call["function"]["name"] not in self.names or call["id"] in ids:
+                    raise ValueError("undeclared or duplicate tool call")
+                ids.add(call["id"])
+                result.append(StreamEvent(tool_call=StreamToolCall(
+                    call["id"], call["function"]["name"], call["function"]["arguments"],
+                    index, signature=call.get("signature"),
+                )))
+            except (InvalidToolDeclaration, ValueError, TypeError):
+                raise fail("invalid_tool_call") from None
+        return result
+
+
 def _canonicalize_google_compat_signatures(response_data: dict[str, Any], *, model_id="unknown") -> None:
     """Move a Google compatible response's signature onto B14's own field."""
 
@@ -880,7 +976,7 @@ async def stream_platform_chat_completions(
     # caller's value never reaches this lane. BYOK passes it through instead.
     from .reasoning_policy import (
         REASONING_FIELD, note_sent_reasoning, reasoning_effort_for_model,
-        rejects_reasoning_effort, rejects_thought_summary, strip_reasoning,
+        rejects_reasoning_effort, strip_reasoning,
         thought_summary_enabled_for_model,
     )
 
@@ -938,25 +1034,37 @@ async def stream_platform_chat_completions(
     _require_owner_allowed_live_model(
         model_id, upstream_model, platform_provider_id
     )
-    if tools:
-        from .google_provider import stream_google_tool_calls
+    native_thought_fallback = False
+    if tools or (platform_provider_id == "google" and thought_summary_enabled):
+        from .google_provider import NativeThoughtRejected, stream_google_tool_calls
         # The tool wire receives the same decision as the plain wire.
         tool_model_parameters = dict(model_parameters or {})
+        request_thoughts = platform_provider_id == "google" and thought_summary_enabled
         if reasoning_effort is not None:
-            tool_model_parameters[REASONING_FIELD] = reasoning_effort
+            if not request_thoughts:
+                tool_model_parameters[REASONING_FIELD] = reasoning_effort
             note_sent_reasoning(model_id, reasoning_effort)
         tool_stream = stream_google_tool_calls(
             model_id=model_id, upstream_model=upstream_model, spec=spec,
             messages=messages, tools=tools, tool_choice=tool_choice,
             temperature=temperature, max_tokens=max_tokens,
             model_parameters=tool_model_parameters or None, transport=transport,
+            include_thoughts=request_thoughts,
+            policy_effort=reasoning_effort if request_thoughts else None,
         )
         try:
             async for event in tool_stream:
                 yield event
+        except NativeThoughtRejected as exc:
+            logger.warning("native_thought_rejected status=%d fallback=compatible", exc.status_code)
+            native_thought_fallback = True
+        except PilotError as exc:
+            exc.wire_protocol = "native"
+            raise
+        else:
+            return
         finally:
             await tool_stream.aclose()
-        return
     from .worker_env import load_request_secret
     await load_request_secret(spec.credential_binding_name)
     headers = _request_headers(spec, model_id=model_id)
@@ -966,6 +1074,16 @@ async def stream_platform_chat_completions(
         "messages": _openai_compatible_messages(messages, platform_provider_id),
         "stream": True,
     }
+    if tools:
+        from .tool_channel import validate_tool_choice, validate_tools
+        body["tools"] = validate_tools(tools)
+        choice = validate_tool_choice(tool_choice, body["tools"])
+        if choice is not None:
+            body["tool_choice"] = choice
+    tool_collector = (
+        _CompatibleToolCollector(body["tools"], body.get("tool_choice"), model_id)
+        if native_thought_fallback and tools else None
+    )
     # #6812 stage 2: ask this stream for its usage report. Without it a streamed
     # attempt stored an empty prompt_tokens in the ledger even though the call
     # consumed input. A deployment may exclude a route, and a request-level
@@ -996,18 +1114,6 @@ async def stream_platform_chat_completions(
         body[REASONING_FIELD] = reasoning_effort
         note_sent_reasoning(model_id, reasoning_effort)
 
-    # thought-summary stream: the documented OpenAI-compatible way to ask
-    # Google for thinking summaries on this wire. It rides the reasoning
-    # decision, so it only goes out for a model the Owner marked both
-    # reasoning-supported and thought-summary-enabled. This is a bonus
-    # request: an endpoint that rejects it is retried once without it below,
-    # never allowed to cost the answer itself.
-    thought_summary_sent = thought_summary_enabled
-    if thought_summary_sent:
-        body["extra_body"] = {
-            "google": {"thinking_config": {"include_thoughts": True}},
-        }
-
     client_kwargs: dict[str, Any] = {
         "timeout": build_provider_http_timeout(model_id),
     }
@@ -1028,7 +1134,7 @@ async def stream_platform_chat_completions(
             # request-level rejection that names the field triggers the retry;
             # an error is never re-sent for any other reason.
             rejected_body: bytes | None = None
-            if usage_option_sent and 400 <= response.status_code < 500:
+            if not native_thought_fallback and usage_option_sent and 400 <= response.status_code < 500:
                 if rejected_body is None:
                     rejected_body = await _read_bounded_body(
                         response, started_at=request_started,
@@ -1044,7 +1150,7 @@ async def stream_platform_chat_completions(
                     )
             # #6838: the same one-shot retry for the reasoning option, after the
             # usage option had its own chance on this attempt.
-            if reasoning_effort is not None and 400 <= response.status_code < 500:
+            if not native_thought_fallback and reasoning_effort is not None and 400 <= response.status_code < 500:
                 if rejected_body is None:
                     rejected_body = await _read_bounded_body(
                         response, started_at=request_started,
@@ -1055,24 +1161,6 @@ async def stream_platform_chat_completions(
                     body.pop(REASONING_FIELD, None)
                     reasoning_effort = None
                     note_sent_reasoning(model_id, None)
-                    rejected_body = None
-                    response, request_started = await send_provider_request(
-                        client, "POST", chat_url, headers=headers, json=body,
-                    )
-            # thought-summary stream: the same one-shot retry for the bonus
-            # thought request, after the usage and reasoning options had their
-            # own chance on this attempt. A stricter endpoint must not cost
-            # the answer the option was trying to decorate.
-            if thought_summary_sent and 400 <= response.status_code < 500:
-                if rejected_body is None:
-                    rejected_body = await _read_bounded_body(
-                        response, started_at=request_started,
-                    )
-                if rejects_thought_summary(rejected_body):
-                    logger.warning("thought_summary_rejected")
-                    await response.aclose()
-                    body.pop("extra_body", None)
-                    thought_summary_sent = False
                     rejected_body = None
                     response, request_started = await send_provider_request(
                         client, "POST", chat_url, headers=headers, json=body,
@@ -1107,6 +1195,8 @@ async def stream_platform_chat_completions(
                         )
                     except PilotError as exc:
                         exc.upstream_status = response.status_code
+                        if native_thought_fallback:
+                            exc.wire_protocol = "chat/completions"
                         logger.warning(
                             "upstream_http_error status=%d code=%s body_summary=%s",
                             response.status_code,
@@ -1134,6 +1224,12 @@ async def stream_platform_chat_completions(
                         if len(frame) > MAX_RESPONSE_BYTES:
                             raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
                         event = _parse_sse_frame(frame, provider=platform_provider_id, model_id=model_id)
+                        if event is not None and native_thought_fallback:
+                            event = replace(event, wire_protocol="chat/completions")
+                        if tool_collector is not None:
+                            for tool_event in tool_collector.consume(frame, event):
+                                saw_text = True
+                                yield replace(tool_event, wire_protocol="chat/completions")
                         if event is None:
                             continue
                         if event.delta_content and event.delta_content.strip():
@@ -1150,6 +1246,12 @@ async def stream_platform_chat_completions(
 
                 if buffer.strip():
                     event = _parse_sse_frame(buffer, provider=platform_provider_id, model_id=model_id)
+                    if event is not None and native_thought_fallback:
+                        event = replace(event, wire_protocol="chat/completions")
+                    if tool_collector is not None:
+                        for tool_event in tool_collector.consume(buffer, event):
+                            saw_text = True
+                            yield replace(tool_event, wire_protocol="chat/completions")
                     if event is not None:
                         if event.delta_content and event.delta_content.strip():
                             saw_text = True

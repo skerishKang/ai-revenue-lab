@@ -424,6 +424,7 @@ async def _finalize_stream_ledger(
     timeout_reason: str | None,
     thought_summary_count: int | None = None,
     thought_summary_chars: int | None = None,
+    wire_protocol: str | None = None,
 ) -> None:
     """Close one streamed attempt and append its ledger row.
 
@@ -436,7 +437,7 @@ async def _finalize_stream_ledger(
         int((time.perf_counter() - attempt_started) * 1000)
         if attempt_started is not None else None
     )
-    protocol = _protocol_for(
+    protocol = wire_protocol or _protocol_for(
         candidate.get("platform_provider_id"), candidate.get("upstream_model"),
         tools_declared=tools_declared,
     )
@@ -508,10 +509,13 @@ async def _stream_body(
     # thought-summary stream: the ledger counts what arrived, not what it said.
     thought_summary_count = 0
     thought_summary_chars = 0
+    wire_protocol: str | None = None
 
     def _observe(event: StreamEvent) -> None:
         nonlocal ttft_ms, response_model, reported_usage, finish_reason
-        nonlocal thought_summary_count, thought_summary_chars
+        nonlocal thought_summary_count, thought_summary_chars, wire_protocol
+        if event.wire_protocol is not None:
+            wire_protocol = event.wire_protocol
         if event.model:
             response_model = event.model
         if event.usage is not None:
@@ -602,6 +606,7 @@ async def _stream_body(
                     timeout_reason=timeout_reason,
                     thought_summary_count=thought_summary_count or None,
                     thought_summary_chars=thought_summary_chars or None,
+                    wire_protocol=wire_protocol,
                 )
             except Exception as ledger_exc:
                 skipped(request_id, ledger_exc)
@@ -1025,8 +1030,8 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                                                 for event in reversed(initial_events)
                                                 if event.finish_reason), None),
                             dispatched=dispatched,
-                            protocol=_protocol_for(platform_provider_id, upstream_model,
-                                                   tools_declared=tools_declared),
+                            protocol=getattr(exc, "wire_protocol", None) or _protocol_for(
+                                platform_provider_id, upstream_model, tools_declared=tools_declared),
                         )
                     except Exception as ledger_exc:
                         ledger = None

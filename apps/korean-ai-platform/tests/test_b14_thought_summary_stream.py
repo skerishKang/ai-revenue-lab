@@ -31,9 +31,6 @@ MODEL_ID = "test-model"
 UPSTREAM_MODEL = "test-upstream"
 PROVIDER_ID = "test-route"
 
-THOUGHT_OPTION = {"google": {"thinking_config": {"include_thoughts": True}}}
-
-
 def _sse_frame(delta: dict) -> bytes:
     chunk = {
         "id": "r1", "model": "m",
@@ -317,7 +314,7 @@ def test_install_models_leaves_a_plain_row_unsupported(monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-def test_enabled_model_asks_for_thinking_summaries(monkeypatch) -> None:
+def test_compatible_route_does_not_send_thought_options(monkeypatch) -> None:
     _enable(monkeypatch)
     bodies: list[dict] = []
 
@@ -329,7 +326,8 @@ def test_enabled_model_asks_for_thinking_summaries(monkeypatch) -> None:
 
     events = run(_collect(_stream(_wire(monkeypatch, handler))))
 
-    assert bodies[0]["extra_body"] == THOUGHT_OPTION
+    assert "extra_body" not in bodies[0]
+    assert "google" not in bodies[0]
     thoughts = [event for event in events if event.delta_thought is not None]
     assert [event.delta_thought for event in thoughts] == ["생각 조각"]
     assert any(event.delta_content == "답" for event in events)
@@ -350,7 +348,7 @@ def test_disabled_model_keeps_todays_exact_wire(monkeypatch) -> None:
     assert "extra_body" not in bodies[0]
 
 
-def test_endpoint_that_rejects_thoughts_still_answers(monkeypatch) -> None:
+def test_compatible_route_does_not_retry_a_thought_rejection(monkeypatch) -> None:
     _enable(monkeypatch)
     bodies: list[dict] = []
 
@@ -366,12 +364,12 @@ def test_endpoint_that_rejects_thoughts_still_answers(monkeypatch) -> None:
             200, content=SSE_OK, headers={"content-type": "text/event-stream"},
         )
 
-    events = run(_collect(_stream(_wire(monkeypatch, handler))))
+    with pytest.raises(MalformedUpstreamResponse):
+        run(_collect(_stream(_wire(monkeypatch, handler))))
 
-    assert len(bodies) == 2
-    assert bodies[0]["extra_body"] == THOUGHT_OPTION
-    assert "extra_body" not in bodies[1]
-    assert any(event.delta_content == "ok" for event in events)
+    assert len(bodies) == 1
+    assert "extra_body" not in bodies[0]
+    assert "google" not in bodies[0]
 
 
 def test_unrelated_request_error_never_retries_for_thoughts(monkeypatch) -> None:
@@ -399,6 +397,238 @@ def test_only_a_rejection_naming_the_thought_option_is_a_retry_signal():
     assert policy.rejects_thought_summary(b'{"error":"thinking_config is not supported"}')
     assert not policy.rejects_thought_summary(b'{"error":"rate limited"}')
     assert not policy.rejects_thought_summary(b"")
+
+
+_NATIVE_MODEL = "google/gemini-3.1-flash-lite"
+_NATIVE_UPSTREAM = "gemini-3.1-flash-lite"
+
+
+def _native_wire(monkeypatch, handler, *, effort="high", thoughts=True):
+    from app.pilot.google_provider import GOOGLE_BASE_ORIGIN
+
+    transport = _wire(monkeypatch, handler)
+    model = cat.CatalogModel(
+        model_id=_NATIVE_MODEL, upstream_model=_NATIVE_UPSTREAM,
+        display_name="Test", provider="Test", provider_type="platform",
+        input_price_usd_per_1m=None, output_price_usd_per_1m=None,
+        platform_provider_id="google", capabilities=frozenset({"chat", "tools"}),
+        reasoning_supported=True, reasoning_default=effort,
+        thought_summary_enabled=thoughts,
+    )
+    monkeypatch.setitem(cat.CATALOG_BY_ID, _NATIVE_MODEL, model)
+
+    class NativeSpec:
+        provider_id = "google"
+        base_origin = GOOGLE_BASE_ORIGIN
+        credential_binding_name = "TEST_CREDENTIAL_BINDING"
+
+    monkeypatch.setattr(plat, "_require_spec", lambda _provider_id: NativeSpec())
+    return transport
+
+
+def _native_stream(transport, *, tools=None):
+    return plat.stream_platform_chat_completions(
+        model_id=_NATIVE_MODEL, upstream_model=_NATIVE_UPSTREAM,
+        provider="Test", platform_provider_id="google",
+        messages=[{"role": "user", "content": "hello"}],
+        tools=tools, transport=transport,
+    )
+
+
+def _native_sse():
+    payload = {
+        "responseId": "r1", "modelVersion": "fixture",
+        "candidates": [{"index": 0, "content": {"parts": [
+            {"thought": True, "text": "thinking"}, {"text": "answer"},
+        ]}, "finishReason": "STOP"}],
+    }
+    return ("data: " + json.dumps(payload) + "\n\n").encode()
+
+
+@pytest.mark.parametrize("effort", ["minimal", "low", "medium", "high"])
+def test_native_thought_request_maps_policy_effort(monkeypatch, effort):
+    requests = []
+
+    def handler(request):
+        requests.append((request.url.path, json.loads(request.content)))
+        return httpx.Response(200, content=_native_sse(),
+                              headers={"content-type": "text/event-stream"})
+
+    events = run(_collect(_native_stream(_native_wire(monkeypatch, handler, effort=effort))))
+    assert ":streamGenerateContent" in requests[0][0]
+    assert requests[0][1]["generationConfig"]["thinkingConfig"] == {
+        "includeThoughts": True, "thinkingLevel": effort.upper(),
+    }
+    assert "tools" not in requests[0][1]
+    assert [event.delta_thought for event in events if event.delta_thought] == ["thinking"]
+    assert [event.delta_content for event in events if event.delta_content] == ["answer"]
+
+
+def test_policy_effort_does_not_require_the_user_override_allowlist(monkeypatch):
+    from app.pilot import model_native_parameters
+
+    monkeypatch.delitem(model_native_parameters._SUPPORTED, _NATIVE_MODEL, raising=False)
+    sent = []
+
+    def handler(request):
+        sent.append(json.loads(request.content))
+        return httpx.Response(200, content=_native_sse(),
+                              headers={"content-type": "text/event-stream"})
+
+    run(_collect(_native_stream(_native_wire(monkeypatch, handler))))
+    assert sent[0]["generationConfig"]["thinkingConfig"]["thinkingLevel"] == "HIGH"
+
+
+@pytest.mark.asyncio
+async def test_native_thought_fragments_reach_the_attempt_ledger(monkeypatch):
+    transport = _native_wire(monkeypatch, lambda request: httpx.Response(
+        200, content=_native_sse(), headers={"content-type": "text/event-stream"},
+    ))
+    ledger = _draft()
+    candidate = {**_CANDIDATE, "model_id": _NATIVE_MODEL,
+                 "upstream_model": _NATIVE_UPSTREAM, "platform_provider_id": "google"}
+    frames = [frame async for frame in _stream_body(
+        _native_stream(transport), [], request_id="req-thought", decision=_decision(),
+        attempt_count=1, fallback_used=False, ledger=ledger, candidate=candidate,
+        attempt_started=1.0,
+    )]
+    assert any(b"reasoning_content" in frame for frame in frames)
+    attempt = ledger.attempts[-1]
+    assert (attempt.thought_summary_count, attempt.thought_summary_chars) == (1, len("thinking"))
+    assert attempt.protocol == "native"
+
+
+def test_native_4xx_falls_back_once_without_thought_options(monkeypatch, caplog):
+    requests = []
+
+    def handler(request):
+        requests.append((request.url.path, json.loads(request.content)))
+        if len(requests) == 1:
+            return httpx.Response(400, json={"error": "fixture"})
+        return httpx.Response(200, content=SSE_OK, headers={"content-type": "text/event-stream"})
+
+    events = run(_collect(_native_stream(_native_wire(monkeypatch, handler))))
+    assert len(requests) == 2
+    assert ":streamGenerateContent" in requests[0][0]
+    assert requests[1][0].endswith("/chat/completions")
+    assert requests[1][1]["reasoning_effort"] == "high"
+    assert "extra_body" not in requests[1][1] and "google" not in requests[1][1]
+    assert "native_thought_rejected status=400 fallback=compatible" in caplog.text
+    assert any(event.delta_content == "ok" for event in events)
+    assert all(event.wire_protocol == "chat/completions" for event in events)
+
+
+def test_disabled_thought_policy_keeps_compatible_wire(monkeypatch):
+    requests = []
+
+    def handler(request):
+        requests.append((request.url.path, json.loads(request.content)))
+        return httpx.Response(200, content=SSE_OK, headers={"content-type": "text/event-stream"})
+
+    run(_collect(_native_stream(_native_wire(monkeypatch, handler, thoughts=False))))
+    assert len(requests) == 1 and requests[0][0].endswith("/chat/completions")
+    assert requests[0][1]["reasoning_effort"] == "high"
+    assert "extra_body" not in requests[0][1] and "google" not in requests[0][1]
+
+
+def test_native_4xx_tool_fallback_preserves_fragmented_tool_calls(monkeypatch):
+    requests = []
+    tool = {"type": "function", "function": {
+        "name": "lookup", "description": "Look up a value",
+        "parameters": {"type": "object", "properties": {"x": {"type": "integer"}}},
+    }}
+    chunks = [
+        {"choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0,
+            "id": "call_1", "type": "function", "function": {
+                "name": "lookup", "arguments": '{"x":',
+            }}]}, "finish_reason": None}]},
+        {"choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0,
+            "function": {"arguments": "1}"}}]}, "finish_reason": "tool_calls"}]},
+    ]
+    sse = b"".join(("data: " + json.dumps(chunk) + "\n\n").encode() for chunk in chunks)
+    sse += b"data: [DONE]\n\n"
+
+    def handler(request):
+        requests.append((request.url.path, json.loads(request.content)))
+        if len(requests) == 1:
+            return httpx.Response(422, json={"error": "fixture"})
+        return httpx.Response(200, content=sse, headers={"content-type": "text/event-stream"})
+
+    events = run(_collect(_native_stream(_native_wire(monkeypatch, handler), tools=[tool])))
+    assert len(requests) == 2 and requests[1][1]["tools"]
+    calls = [event.tool_call for event in events if event.tool_call is not None]
+    assert len(calls) == 1
+    assert (calls[0].id, calls[0].name, json.loads(calls[0].arguments)) == (
+        "call_1", "lookup", {"x": 1},
+    )
+    assert events[-1].done and events[-1].wire_protocol == "chat/completions"
+
+
+def test_native_thought_and_tool_call_are_both_delivered(monkeypatch):
+    tool = {"type": "function", "function": {
+        "name": "lookup", "description": "Look up a value",
+        "parameters": {"type": "object", "properties": {}},
+    }}
+    payload = {"candidates": [{"content": {"parts": [
+        {"thought": True, "text": "thinking"},
+        {"functionCall": {"id": "call_1", "name": "lookup", "args": {}}},
+    ]}, "finishReason": "STOP"}]}
+    response = ("data: " + json.dumps(payload) + "\n\n").encode()
+    transport = _native_wire(monkeypatch, lambda request: httpx.Response(
+        200, content=response, headers={"content-type": "text/event-stream"},
+    ))
+    events = run(_collect(_native_stream(transport, tools=[tool])))
+    assert [event.delta_thought for event in events if event.delta_thought] == ["thinking"]
+    assert [event.tool_call.name for event in events if event.tool_call] == ["lookup"]
+    assert events[-1].finish_reason == "tool_calls"
+
+
+def test_compatible_tool_fallback_refuses_undeclared_calls(monkeypatch):
+    tool = {"type": "function", "function": {
+        "name": "lookup", "description": "Look up a value",
+        "parameters": {"type": "object", "properties": {}},
+    }}
+    payload = {"choices": [{"index": 0, "delta": {"tool_calls": [{
+        "index": 0, "id": "call_1", "type": "function",
+        "function": {"name": "other", "arguments": "{}"},
+    }]}, "finish_reason": "tool_calls"}]}
+    response = ("data: " + json.dumps(payload) + "\n\n").encode() + b"data: [DONE]\n\n"
+    requests = []
+
+    def handler(request):
+        requests.append(request.url.path)
+        if len(requests) == 1:
+            return httpx.Response(400, json={"error": "fixture"})
+        return httpx.Response(200, content=response, headers={"content-type": "text/event-stream"})
+
+    with pytest.raises(MalformedUpstreamResponse):
+        run(_collect(_native_stream(_native_wire(monkeypatch, handler), tools=[tool])))
+    assert len(requests) == 2
+
+
+def test_native_4xx_compatible_rejection_is_not_retried_again(monkeypatch):
+    requests = []
+
+    def handler(request):
+        requests.append(request.url.path)
+        return httpx.Response(400, json={"error": "reasoning_effort unsupported"})
+
+    with pytest.raises(MalformedUpstreamResponse):
+        run(_collect(_native_stream(_native_wire(monkeypatch, handler))))
+    assert len(requests) == 2
+
+
+def test_native_5xx_does_not_fall_back(monkeypatch):
+    requests = []
+
+    def handler(request):
+        requests.append(request.url.path)
+        return httpx.Response(503, json={"error": "fixture"})
+
+    from app.pilot.errors import UpstreamServerError
+    with pytest.raises(UpstreamServerError):
+        run(_collect(_native_stream(_native_wire(monkeypatch, handler))))
+    assert len(requests) == 1
 
 
 def test_parse_splits_the_thought_fragment_from_the_answer():
