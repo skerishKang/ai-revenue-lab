@@ -40,6 +40,8 @@
 #   PADIEM_COM2_EXECUTOR_UNIT_DIR  where the executor's unit is installed (/etc/systemd/system)
 #   PADIEM_COM2_EXECUTOR_UNIT_SYNC 1 copies a differing executor unit; default 0
 #                                reports EXECUTOR_UNIT_DRIFT and changes nothing
+#   PADIEM_COM2_INSTALLED_ROOT  prefix for the sidecar drift report's installed paths
+#                                (empty on the host; the offline test points it at a temp dir)
 #   PADIEM_COM2_HEALTH_TIMEOUT / PADIEM_COM2_HEALTH_INTERVAL
 #                                how long a start or a rollback may take to become
 #                                healthy (240s, 2s)
@@ -114,6 +116,8 @@ executor_src=$executor_root/kagent-src
 executor_releases=$executor_root/src
 executor_unit_dir=${PADIEM_COM2_EXECUTOR_UNIT_DIR:-/etc/systemd/system}
 executor_unit_sync=${PADIEM_COM2_EXECUTOR_UNIT_SYNC:-0}
+# Every installed path the sidecar drift report reads is absolute on the host.
+aux_root=${PADIEM_COM2_INSTALLED_ROOT:-}
 systemctl_bin=${PADIEM_COM2_SYSTEMCTL:-systemctl}
 journalctl_bin=${PADIEM_COM2_JOURNALCTL:-journalctl}
 python_bin=${PADIEM_COM2_PYTHON:-python3}
@@ -1415,6 +1419,73 @@ ensure_target_units_ready() {
   done
 }
 
+# Installers this deploy never runs. Each one copies files onto the host, so a
+# change to the repository leaves the installed copy behind until someone runs
+# that installer by hand — the silence #6892 was about. This reads and reports
+# only: nothing is copied, reloaded or restarted, and a difference never changes
+# the deploy result.
+#
+# The cron lane renders its unit files from templates with the profile's values,
+# so those are not comparable byte for byte; the scripts it copies are. Its app
+# root is the installer's default profile (staging).
+report_sidecar_drift() {
+  local service relative installed entry name listing='' count=0
+  local -a pairs=(
+    "file-lane|deploy/host-com2/file-lane/check_config.py|/opt/padiem/file-lane/check_config.py"
+    "file-lane|deploy/host-com2/file-lane/health.py|/opt/padiem/file-lane/health.py"
+    "file-lane|deploy/host-com2/file-lane/padiem-file-lane.service|/etc/systemd/system/padiem-file-lane.service"
+    "boot-recovery|deploy/host-com2/boot-recovery/wsl/boot_recovery.py|/opt/padiem/boot-recovery/boot_recovery.py"
+    "boot-recovery|deploy/host-com2/boot-recovery/wsl/boot-recovery.sh|/opt/padiem/boot-recovery/boot-recovery.sh"
+    "boot-recovery|deploy/host-com2/boot-recovery/wsl/padiem-boot-recovery.service|/etc/systemd/system/padiem-boot-recovery.service"
+    "connector-watch|deploy/host-com2/connector-watch/connector_watch_host.py|/opt/padiem/connector-watch/connector_watch_host.py"
+    "connector-watch|.github/scripts/connector_lane_watch.py|/opt/padiem/connector-watch/connector_lane_watch.py"
+    "connector-watch|deploy/host-com2/connector-watch/padiem-connector-watch.service|/etc/systemd/system/padiem-connector-watch.service"
+    "connector-watch|deploy/host-com2/connector-watch/padiem-connector-watch.timer|/etc/systemd/system/padiem-connector-watch.timer"
+    "offsite-backup|deploy/host-com2/offsite-backup/offsite.py|/opt/padiem/offsite-backup/offsite.py"
+    "offsite-backup|deploy/host-com2/offsite-backup/padiem-offsite-backup.service|/etc/systemd/system/padiem-offsite-backup.service"
+    "offsite-backup|deploy/host-com2/offsite-backup/padiem-offsite-backup.timer|/etc/systemd/system/padiem-offsite-backup.timer"
+    "cron|deploy/host-com2/cron/run-cron.sh|/opt/padiem/chat-staging/run-cron.sh"
+    "cron|deploy/host-com2/cron/run-expired-purge.sh|/opt/padiem/chat-staging/run-expired-purge.sh"
+    "cron|deploy/host-com2/cron/status-cron.sh|/opt/padiem/chat-staging/status-cron.sh"
+    "cron|deploy/host-com2/cron/check_config_cron.py|/opt/padiem/chat-staging/check_config_cron.py"
+    "cron|deploy/host-com2/cron/README.md|/opt/padiem/chat-staging/README-cron.md"
+  )
+  [[ -n $staged ]] || { say 'AUX_DRIFT=UNKNOWN'; return 0; }
+  # The restart drop-in is one file the installer writes for every listed unit.
+  if [[ -f $staged/deploy/host-com2/restart-policy/units.txt ]]; then
+    while IFS= read -r name; do
+      pairs+=("restart-policy|deploy/host-com2/restart-policy/10-padiem-restart.conf|/etc/systemd/system/$name.d/padiem-restart.conf")
+    done < <(grep -vE '^[[:space:]]*(#|$)' \
+      "$staged/deploy/host-com2/restart-policy/units.txt" 2>/dev/null || true)
+  fi
+  for entry in "${pairs[@]}"; do
+    service=${entry%%|*}
+    relative=${entry#*|}
+    installed=$aux_root${relative#*|}
+    relative=${relative%%|*}
+    # A smaller operator tree simply does not carry the file.
+    [[ -f $staged/$relative ]] || continue
+    # The installed path relative to its root: one drop-in per unit, so the
+    # basename alone would name ten identical entries.
+    name=${installed#"$aux_root"}
+    name=${name#/}
+    if [[ ! -e $installed ]]; then
+      listing+="${listing:+,}${service}:${name}=NOT_INSTALLED"
+    elif cmp -s -- "$staged/$relative" "$installed"; then
+      continue
+    else
+      listing+="${listing:+,}${service}:${name}"
+    fi
+    count=$((count + 1))
+  done
+  if (( count )); then
+    say "AUX_DRIFT=$listing"
+  else
+    say 'AUX_DRIFT=NONE'
+  fi
+  return 0
+}
+
 run_deploy() {
 
   local sha=$1 origin changed='' services='' pending='' line status=0
@@ -1717,6 +1788,8 @@ PY
   elif [[ $ai_status == SKIP && $ai_code != none ]]; then
     ai_word="ai:SKIP reason=$ai_code"
   fi
+  # Reported only: an installer this run does not call may be behind the code.
+  report_sidecar_drift || true
   say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} executor:${result[executor]} $ai_word"
   if (( extended_smoke )); then
     "$python_bin" "$staged/deploy/host-com2/post_deploy_smoke.py" \
