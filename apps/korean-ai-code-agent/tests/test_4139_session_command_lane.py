@@ -163,7 +163,7 @@ class TestTheFlagShipsOff(unittest.TestCase):
         # asserted by the lane that ran a command through `runcommand` and no session.
         harness = _Harness(sessions=[], run_result=type(
             "C", (), {"returncode": 0, "stdout": _frame("ok"), "stderr": b""})())
-        outcome = harness.port().run_command(
+        outcome = harness.port().run_command(run_as="system",
             node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
             dispatch_id=OURS, session_lane=False,
         )
@@ -188,7 +188,7 @@ class TestASessionCarriesTheCommand(unittest.TestCase):
         echoed = ('PS C:\\\\> Write-Output ("PADIEM_" + "B64=" + ...)'
                   ' / "__PADIEM_" + "EXIT__"\r\n').encode()
         harness = _Harness(sessions=[[echoed + _frame("4 lines", "0")]])
-        outcome = harness.port().run_command(
+        outcome = harness.port().run_command(run_as="system",
             node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
             dispatch_id=OURS, session_lane=True,
         )
@@ -202,7 +202,7 @@ class TestASessionCarriesTheCommand(unittest.TestCase):
         echoed = b'PS C:\\\\> Write-Output ("PADIEM_" + "B64=" + ...)\r\nPS C:\\\\> '
         # The session prints the echo and then closes without ever printing a frame.
         harness = _Harness(sessions=[[echoed]], shell_alive=False)
-        outcome = harness.port().run_command(
+        outcome = harness.port().run_command(run_as="system",
             node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
             dispatch_id=OURS, session_lane=True,
         )
@@ -220,7 +220,7 @@ class TestAShortCommandDoesNotWaitBehindALongOne(unittest.TestCase):
         long_outcome = {}
 
         def run_long() -> None:
-            long_outcome["value"] = long_harness.port().run_command(
+            long_outcome["value"] = long_harness.port().run_command(run_as="system",
                 node_ref=NODE, command="Start-Sleep 90", timeout_seconds=None,
                 dispatch_id="dsp_" + "b" * 32, session_lane=True,
             )
@@ -229,7 +229,7 @@ class TestAShortCommandDoesNotWaitBehindALongOne(unittest.TestCase):
         worker.start()
         time.sleep(0.05)
         started = time.monotonic()
-        short = short_harness.port().run_command(
+        short = short_harness.port().run_command(run_as="system",
             node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
             dispatch_id=OURS, session_lane=True,
         )
@@ -247,7 +247,7 @@ class TestCancelAndFallback(unittest.TestCase):
         harness = _Harness(sessions=[[]])
         port = harness.port()
         with mock.patch.object(port, "kill_command_process") as killer:
-            outcome = port.run_command(
+            outcome = port.run_command(run_as="system",
                 node_ref=NODE, command="Start-Sleep 90", timeout_seconds=None,
                 dispatch_id=OURS, session_lane=True, cancel_probe=lambda: True,
             )
@@ -265,7 +265,7 @@ class TestCancelAndFallback(unittest.TestCase):
                     pty_error=OSError("no terminal device") if failure == "pty" else None,
                     shell_alive=False if failure == "closed" else True,
                 )
-                outcome = harness.port().run_command(
+                outcome = harness.port().run_command(run_as="system",
                     node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
                     dispatch_id=OURS, session_lane=True,
                 )
@@ -291,7 +291,7 @@ class TestTheMeasuredShellFailure(unittest.TestCase):
             line = self.PROBE_LINE + suffix
             with self.subTest(suffix=suffix):
                 harness = _Harness(sessions=[[line.encode()]], shell_alive=False)
-                outcome = harness.port().run_command(
+                outcome = harness.port().run_command(run_as="system",
                     node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
                     dispatch_id=OURS, session_lane=True,
                 )
