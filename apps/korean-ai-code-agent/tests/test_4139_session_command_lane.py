@@ -190,7 +190,7 @@ class TestASessionCarriesTheCommand(unittest.TestCase):
         harness = _Harness(sessions=[[echoed + _frame("4 lines", "0")]])
         outcome = harness.port().run_command(
             node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
-            dispatch_id=OURS, session_lane=True,
+            dispatch_id=OURS, session_lane=True, run_as="system",
         )
         self.assertEqual((outcome.termination, outcome.exit_code), ("exited", 0))
         self.assertEqual(outcome.output, b"4 lines", "the prompt and echo are dropped")
@@ -204,7 +204,7 @@ class TestASessionCarriesTheCommand(unittest.TestCase):
         harness = _Harness(sessions=[[echoed]], shell_alive=False)
         outcome = harness.port().run_command(
             node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
-            dispatch_id=OURS, session_lane=True,
+            dispatch_id=OURS, session_lane=True, run_as="system",
         )
         self.assertEqual(outcome.termination, "no_reply")
         self.assertIsNone(outcome.exit_code)
@@ -222,7 +222,7 @@ class TestAShortCommandDoesNotWaitBehindALongOne(unittest.TestCase):
         def run_long() -> None:
             long_outcome["value"] = long_harness.port().run_command(
                 node_ref=NODE, command="Start-Sleep 90", timeout_seconds=None,
-                dispatch_id="dsp_" + "b" * 32, session_lane=True,
+                dispatch_id="dsp_" + "b" * 32, session_lane=True, run_as="system",
             )
 
         worker = threading.Thread(target=run_long, daemon=True)
@@ -231,7 +231,7 @@ class TestAShortCommandDoesNotWaitBehindALongOne(unittest.TestCase):
         started = time.monotonic()
         short = short_harness.port().run_command(
             node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
-            dispatch_id=OURS, session_lane=True,
+            dispatch_id=OURS, session_lane=True, run_as="system",
         )
         elapsed = time.monotonic() - started
         self.assertEqual(short.output, b"fast")
@@ -249,7 +249,7 @@ class TestCancelAndFallback(unittest.TestCase):
         with mock.patch.object(port, "kill_command_process") as killer:
             outcome = port.run_command(
                 node_ref=NODE, command="Start-Sleep 90", timeout_seconds=None,
-                dispatch_id=OURS, session_lane=True, cancel_probe=lambda: True,
+                dispatch_id=OURS, session_lane=True, run_as="system", cancel_probe=lambda: True,
             )
         self.assertEqual(outcome.termination, "cancelled")
         killer.assert_called_once_with(node_ref=NODE, dispatch_id=OURS)
@@ -267,7 +267,7 @@ class TestCancelAndFallback(unittest.TestCase):
                 )
                 outcome = harness.port().run_command(
                     node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
-                    dispatch_id=OURS, session_lane=True,
+                    dispatch_id=OURS, session_lane=True, run_as="system",
                 )
                 self.assertEqual(outcome.termination, "exited")
                 self.assertEqual(outcome.output, b"via queue")
@@ -293,7 +293,7 @@ class TestTheMeasuredShellFailure(unittest.TestCase):
                 harness = _Harness(sessions=[[line.encode()]], shell_alive=False)
                 outcome = harness.port().run_command(
                     node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
-                    dispatch_id=OURS, session_lane=True,
+                    dispatch_id=OURS, session_lane=True, run_as="system",
                 )
                 self.assertEqual(outcome.termination, "no_reply", line)
                 self.assertIsNone(outcome.exit_code)
