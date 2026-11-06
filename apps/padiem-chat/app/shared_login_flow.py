@@ -61,7 +61,7 @@ def parse_extra_origins(raw) -> tuple[str, ...]:
 # them or attach a traceback. Follow explicit causes to retain the authority's
 # reason through SharedAuthUnavailable without exposing its message.
 _FINISH_FAILURE_CODES = frozenset({
-    'invalid_flow', 'invalid_cookie', 'invalid_state', 'invalid_exchange',
+    'invalid_flow', 'invalid_cookie', 'invalid_state', 'invalid_exchange', 'invalid_grant',
     'state_cookie_missing', 'state_expired', 'state_mismatch',
     'unknown_account', 'invalid_session_response', 'invalid_es256_signature',
     'invalid_key', 'invalid_token_endpoint', 'exchange_failed',
@@ -91,6 +91,10 @@ _FLOW_RESTART_CODES = frozenset({
     'invalid_flow', 'state_cookie_missing', 'invalid_cookie', 'state_expired',
     'state_mismatch', 'invalid_state',
 })
+
+# A one-time authorization code rejected by the authority must be retried by
+# starting a fresh login. Other token-exchange failures remain retryable 503s.
+_EXCHANGE_RESTART_CODES = frozenset({'invalid_grant'})
 
 RESTART_LOGIN_PATH = '/auth/shared/start'
 
@@ -380,7 +384,8 @@ class SharedLoginFlow(ComparisonFlow):
             logger.warning('shared_login_timing outcome=failed stage=%s total_ms=%d request_id=%s%s',
                            stage, int((time.monotonic() - started) * 1000), request_id,
                            ' ' + ' '.join(detail_fields) if detail_fields else '')
-            if stage == 'validate_flow' and code in _FLOW_RESTART_CODES:
+            if ((stage == 'validate_flow' and code in _FLOW_RESTART_CODES)
+                    or (stage == 'exchange' and code in _EXCHANGE_RESTART_CODES)):
                 response = _restart_login_response(code, headers)
             else:
                 response = JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)

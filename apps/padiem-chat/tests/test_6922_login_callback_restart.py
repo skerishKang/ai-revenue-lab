@@ -16,9 +16,11 @@ import pytest
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
-from app.shared_auth_compare_flow import _b64, _encoded
+from app import httpx_compat
+from app.shared_auth_compare_flow import _b64, _encoded, exchange_with_httpx
 from app.shared_login_flow import (
     ACCESS_COOKIE,
+    _EXCHANGE_RESTART_CODES,
     RESTART_LOGIN_PATH,
     STATE_COOKIE,
     SharedLoginFlow,
@@ -76,6 +78,42 @@ def _signed(flow, **fields) -> str:
 
 def _journal(caplog) -> list[str]:
     return [record.getMessage() for record in caplog.records if record.name == "app.shared_login_flow"]
+
+
+def _install_token_endpoint(monkeypatch, *, status=None, body=b"", error=None):
+    class _Response:
+        headers = {}
+
+        def __init__(self):
+            self.status_code = status
+
+        async def aiter_bytes(self):
+            if body:
+                yield body
+
+    class _Stream:
+        async def __aenter__(self):
+            if error is not None:
+                raise error
+            return _Response()
+
+        async def __aexit__(self, *args):
+            return False
+
+    class _Client:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return False
+
+        def stream(self, *args, **kwargs):
+            return _Stream()
+
+    monkeypatch.setattr(httpx_compat, "AsyncClient", _Client)
 
 
 # --- which callbacks are the browser's flow, and what they are called ---------
@@ -183,6 +221,62 @@ async def test_a_failure_after_validation_is_still_503(caplog):
 
 
 @pytest.mark.asyncio
+async def test_reused_authorization_code_restarts_login(monkeypatch, caplog):
+    _install_token_endpoint(
+        monkeypatch,
+        status=400,
+        body=b'{"error":"invalid_grant","error_description":"private response detail"}',
+    )
+    flow = _flow(exchange=exchange_with_httpx)
+    state, cookie = await _started(flow)
+    caplog.set_level(logging.WARNING)
+
+    response = await flow.finish_login(_request(urlencode({"state": state, "code": CODE}), cookie))
+
+    body = response.body.decode("utf-8")
+    assert response.status_code == 400
+    assert f'href="{RESTART_LOGIN_PATH}"' in body
+    assert "invalid_grant" in body
+    assert "private response detail" not in body
+    assert "private response detail" not in caplog.text
+    assert _journal(caplog)[0] == "shared_login_finish_failed stage=exchange code=invalid_grant"
+
+
+@pytest.mark.asyncio
+async def test_auth_server_timeout_stays_503_with_fixed_message(monkeypatch, caplog):
+    _install_token_endpoint(
+        monkeypatch,
+        error=httpx_compat.ReadTimeout("private timeout detail"),
+    )
+    flow = _flow(exchange=exchange_with_httpx)
+    state, cookie = await _started(flow)
+    caplog.set_level(logging.WARNING)
+
+    response = await flow.finish_login(_request(urlencode({"state": state, "code": CODE}), cookie))
+
+    assert response.status_code == 503
+    assert response.body == b'{"error":"authentication_unavailable"}'
+    assert "private timeout detail" not in caplog.text
+    assert _journal(caplog)[0] == "shared_login_finish_failed stage=exchange code=exchange_failed"
+
+
+@pytest.mark.parametrize("status, body", [
+    (400, b'{"error":"invalid_client"}'),
+    (503, b'{"error":"server_error"}'),
+])
+@pytest.mark.asyncio
+async def test_other_token_exchange_errors_stay_503(monkeypatch, status, body):
+    _install_token_endpoint(monkeypatch, status=status, body=body)
+    flow = _flow(exchange=exchange_with_httpx)
+    state, cookie = await _started(flow)
+
+    response = await flow.finish_login(_request(urlencode({"state": state, "code": CODE}), cookie))
+
+    assert response.status_code == 503
+    assert response.body == b'{"error":"authentication_unavailable"}'
+
+
+@pytest.mark.asyncio
 async def test_a_matching_callback_still_logs_in():
     flow = _flow()
     state, cookie = await _started(flow)
@@ -194,4 +288,5 @@ async def test_a_matching_callback_still_logs_in():
 
 def test_every_restart_code_is_a_fixed_journal_code():
     assert _FLOW_RESTART_CODES <= _FINISH_FAILURE_CODES
+    assert _EXCHANGE_RESTART_CODES <= _FINISH_FAILURE_CODES
     assert "validate_flow_failed" not in _FLOW_RESTART_CODES
