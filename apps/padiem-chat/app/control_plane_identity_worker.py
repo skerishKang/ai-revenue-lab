@@ -233,13 +233,17 @@ _product_user_cache: dict[tuple[str, str], tuple[float, str]] = {}
 
 
 def _product_user_cache_get(product_id: str, canonical_subject_id: str) -> str | None:
+    from .identity_cache_metrics import record
     entry = _product_user_cache.get((product_id, canonical_subject_id))
     if entry is None:
+        record('subject', 'resolve_product_user_for_subject', False)
         return None
     stored_at, product_user_id = entry
     if (time.monotonic() - stored_at) >= PRODUCT_USER_CACHE_TTL_SECONDS:
         _product_user_cache.pop((product_id, canonical_subject_id), None)
+        record('subject', 'resolve_product_user_for_subject', False)
         return None
+    record('subject', 'resolve_product_user_for_subject', True)
     return product_user_id
 
 

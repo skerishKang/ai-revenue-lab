@@ -30,6 +30,7 @@ import asyncio
 import hashlib
 import time
 from typing import Any, Callable
+from .identity_cache_metrics import record
 
 _MAX_TTL_SECONDS = 60
 #: Same window as the existing per-turn reads: the product user of a verified
@@ -96,10 +97,14 @@ class CachedIdentityAuthority:
 
     async def _get_or_load(self, key: str, user_ref: str, loader,
                            ttl: float | None = None, ref_of=None) -> Any:
+        methods = {'authsession': 'resolve_current_auth_session', 'authsess': 'resolve_auth_session',
+                   'ownerscope': 'resolve_connector_owner_scope', 'productuser': 'resolve_product_user_for_subject'}
         now = self._clock()
         entry = self._entries.get(key)
         if entry is not None and entry[0] > now:
+            record('wrapper', methods[key.split(':', 1)[0]], True)
             return entry[1]
+        record('wrapper', methods[key.split(':', 1)[0]], False)
         self._entries.pop(key, None)
         task = self._inflight.get(key)
         if task is None:

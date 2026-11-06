@@ -415,6 +415,9 @@ def build_app():
         """Arm the identity keepwarm cycle on the running loop (host boot)."""
 
         if identity_binding is not None:
+            from .identity_cache_metrics import arm, stop
+            arm()
+            app.router.on_shutdown.append(stop)
             identity_binding.arm_warmer()
             print("[local] identity_keepwarm=armed")
 
