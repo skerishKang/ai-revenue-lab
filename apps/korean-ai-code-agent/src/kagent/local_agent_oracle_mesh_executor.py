@@ -1503,8 +1503,9 @@ class OracleMeshExecutor:
         raw = bytes(body)
         if (run_as == "user" and termination == "exited" and exit_code == 1
                 and raw.strip() == b"pc_user_session_unavailable"):
-            termination = "not_executed"
-            exit_code = None
+            # The guard wrapper itself completed with exit 1. Keep the canonical
+            # exited-failure shape so existing result stores retain this closed
+            # refusal marker for the caller.
             raw = b"pc_user_session_unavailable"
             self._trace_command(
                 dispatch, "user_session_unavailable", started, run_as=run_as,
