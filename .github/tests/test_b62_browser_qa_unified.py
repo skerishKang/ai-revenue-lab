@@ -59,12 +59,13 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
             [],
         )
 
-    def test_official_ubuntu_mirror_pilot_preserves_full_browser_dependency_contract(self):
+    def test_official_ubuntu_mirror_covers_all_lanes_and_preserves_full_browser_dependency_contract(self):
         master = MASTER.read_text(encoding="utf-8")
-        self.assertEqual(master.count("run: uv run playwright install --with-deps --only-shell chromium"), 16)
+        self.assertEqual(master.count("run: uv run playwright install-deps chromium"), 16)
+        self.assertEqual(master.count("run: uv run playwright install --only-shell chromium"), 16)
         self.assertEqual(
             master.count("run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh"),
-            2,
+            16,
         )
         # Match anchored top-level YAML job headers only; splitting on
         # "\\n  " also splits deeper indented lines and loses the job IDs.
@@ -79,9 +80,9 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
         self.assertEqual(len(job_sources), 16)
         for name, source in job_sources.items():
             with self.subTest(name=name):
-                expected = name in ("error-retry-browser-qa", "saved-outputs-browser-qa")
-                self.assertEqual("b62_playwright_apt_mirror_3989.sh" in source, expected)
-                self.assertIn("uv run playwright install --with-deps --only-shell chromium", source)
+                self.assertIn("b62_playwright_apt_mirror_3989.sh", source)
+                self.assertIn("uv run playwright install-deps chromium", source)
+                self.assertIn("uv run playwright install --only-shell chromium", source)
         script = (ROOT / ".github/scripts/b62_playwright_apt_mirror_3989.sh").read_text(
             encoding="utf-8"
         )

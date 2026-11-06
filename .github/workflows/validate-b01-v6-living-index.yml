@@ -33,6 +33,12 @@ jobs:
         with:
           python-version: '3.12'
 
+      # #3989: swap the hosted Azure archive before the font and Playwright OS
+      # dependency apt downloads so a slow mirror cannot consume the job timeout.
+      - name: Select Ubuntu archive before font installation
+        shell: bash
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
+
       - name: Install Korean fonts and Python dependencies
         shell: bash
         run: |
@@ -56,10 +62,6 @@ jobs:
           # Keyed on the Python Playwright release this lane resolves
           # from its own lock, so a browser build can never be reused across releases.
           key: pw-chromium-py-${{ steps.playwright-version.outputs.version }}-${{ runner.os }}-${{ runner.arch }}
-
-      - name: Select Ubuntu archive for Playwright OS dependencies
-        shell: bash
-        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
 
       - name: Install Chromium system libraries
         shell: bash
