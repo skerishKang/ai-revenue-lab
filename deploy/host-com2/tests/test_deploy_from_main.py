@@ -91,7 +91,13 @@ case "$1" in
     echo 0 > "$(state_file "$2")"
     ;;
   start)
-    echo 1 > "$(state_file "$2")"
+    # `crashed_<unit>` models a process that dies at once: systemd reports the
+    # unit inactive while it waits out RestartSec for the next attempt.
+    if [[ -f "$FAKE_ROOT/crashed_$2" ]]; then
+      echo 0 > "$(state_file "$2")"
+    else
+      echo 1 > "$(state_file "$2")"
+    fi
     key="$FAKE_ROOT/starts_${2}"
     n=$(cat "$key" 2>/dev/null || echo 0)
     echo $((n + 1)) > "$key"
@@ -857,6 +863,25 @@ class ChatScenarioTest(DeployHarness):
         self.assertEqual(len(installs), 2, installs)
         self.assertIn((self.previous / self.first).as_posix(), installs[1])
         self.assertIn("systemctl start padiem-chat-com2.service", self._calls())
+
+    def test_rollback_stops_a_unit_waiting_for_an_automatic_restart(self) -> None:
+        # 11-07 05:38: the failed unit sat in its Restart=always window, where
+        # is-active is false. Stopping only an active unit left that restart
+        # pending, and it started the new release while the installer swapped
+        # links one at a time; the old app then reached for
+        # app.identity_cache_metrics and the rollback failed too.
+        (self.fakes / "crashed_padiem-chat-com2.service").write_text("1\n", encoding="utf-8")
+        self._fail_service("chat", 999)
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stderr)
+        calls = self._calls()
+        installs = [i for i, call in enumerate(calls) if call.startswith("install chat")]
+        stops = [i for i, call in enumerate(calls) if call == "systemctl stop padiem-chat-com2.service"]
+        starts = [i for i, call in enumerate(calls) if call == "systemctl start padiem-chat-com2.service"]
+        self.assertEqual(len(installs), 2, calls)
+        self.assertEqual(len(stops), 2, calls)
+        self.assertLess(stops[-1], installs[1], calls)
+        self.assertLess(installs[1], starts[-1], calls)
 
     def test_slow_chat_start_is_retried_without_rollback(self) -> None:
         (self.fakes / "fail_once_chat").write_text("2", encoding="utf-8")

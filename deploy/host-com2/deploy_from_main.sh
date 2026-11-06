@@ -782,7 +782,13 @@ deploy_b14() {
 rollback_chat() {
   local previous="$previous_dir/$old"
   [[ -d $previous/deploy/host-com2/chat ]] || { say 'CHAT_ROLLBACK=NO_PREVIOUS_CHECKOUT'; return 1; }
-  with_service_stopped "$CHAT_UNIT" || return 1
+  # A failing unit waits in `activating` for its next Restart=always attempt,
+  # where is-active is false; stopping only an active unit leaves that pending
+  # restart alive. It then fires while the installer swaps links one at a time,
+  # and imports a mixed tree (11-07 05:38: the new app asked for
+  # app.identity_cache_metrics after the app link had already moved back).
+  # Stop unconditionally: stop also cancels the pending restart.
+  "$systemctl_bin" stop "$CHAT_UNIT" || return 1
   wait_service_down CHAT_ROLLBACK "$CHAT_UNIT" "$chat_port" || return 1
   bash "$previous/deploy/host-com2/chat/install.sh" \
     --apply --source-root "$previous" || return 1
