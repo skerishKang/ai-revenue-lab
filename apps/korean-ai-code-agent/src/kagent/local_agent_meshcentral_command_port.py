@@ -620,21 +620,40 @@ def parse_sweep_reply(raw: bytes) -> dict[str, Any] | None:
 
 
 def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = None,
-          split_markers: bool = False, run_as: str = "user") -> str:
-    """Run one command and return its independently captured streams as Base64.
+          split_markers: bool = False) -> str:
+    """Run one command on the PC and bring its output back as ASCII Base64.
 
-    MeshCentral 1.2.5's runAsUser=1 can fall back to its agent when there is no
-    console user. User mode therefore verifies an interactive, non-SYSTEM token
-    before evaluating the supplied command. A missing user produces the fixed
-    refusal code and never evaluates the requested command. SYSTEM mode is an
-    explicit internal option; no public tool schema exposes it.
+    Three rules carry it:
 
-    Stdout and stderr travel as separate Base64 members inside the existing
-    output envelope. The parser renders stderr in a labeled section of the
-    existing text body, so no Chat/P01 result fields or size rules change.
+    * ``[Console]::OutputEncoding`` is set to UTF-8 first, so the console writes
+      the script's own bytes instead of the machine's code page;
+    * the merged stdout+stderr string is Base64-encoded **on the PC**, so the
+      reply frame carries only Base64 characters whatever the console produced —
+      this is what stops a cp949 answer from being destroyed in transit;
+    * the captured run is inside ``try``/``catch``, because a command carrying
+      ``-ErrorAction Stop`` raises a *terminating* error, and an uncaught one
+      would skip the envelope and the exit sentinel entirely. The error record's
+      own text then travels inside the envelope instead of being lost.
+
+    Only the reply is encoded. The command itself travels as MeshCentral's own
+    UTF-8 JSON — measured on the real PC, a Korean path in the command reaches
+    the agent intact — and encoding it too would shrink the argument the OS can
+    exec by a third for no transport gain. The merge is applied to the whole
+    statement (``2>&1`` inside the captured expression), which is what #4139
+    measured: without it, a command that writes to stderr either loses that text
+    or never returns a transcript at all. ``$LASTEXITCODE`` is PowerShell's
+    record of the last native command, so the sentinel reports the real remote
+    exit code, and a cmdlet-only pipeline still leaves it empty rather than 0.
+
+    With a dispatch id the wrapped script also leaves, and removes, that
+    dispatch's marker file - see ``cancel_kill_command``. The marker is two lines:
+    the process id first, because that is all the stop has ever read and all it
+    will read, and this executor host's own tag second. The tag is what lets a
+    console sweep tell its own leftover from the leftover of the failover partner
+    that claimed the same PC during a handover - a distinction that has to exist
+    before anything on a customer machine may be ended. Without a dispatch id it is
+    the same bytes as before, so nothing about a command's own result can change.
     """
-    if run_as not in ("user", "system"):
-        raise MeshCentralCommandRefused("run_as must be user or system")
     marks = ""
     clears = ""
     if dispatch_id is not None:
@@ -652,88 +671,24 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
             " if ($__padiem_pidfile) {"
             " Remove-Item -LiteralPath $__padiem_pidfile -Force -ErrorAction SilentlyContinue };"
         )
-    user_guard = (
-        " try { $__padiem_identity=[Security.Principal.WindowsIdentity]::GetCurrent();"
-        " $__padiem_interactive=$false;"
-        " if ($__padiem_identity -and $null -ne $__padiem_identity.Groups) {"
-        " $__padiem_interactive=@($__padiem_identity.Groups | Where-Object { $_.Value -eq 'S-1-5-4' }).Count -gt 0 };"
-        " $__padiem_session=[Diagnostics.Process]::GetCurrentProcess().SessionId;"
-        " if (-not $__padiem_identity -or -not $__padiem_identity.User"
-        " -or $__padiem_identity.User.Value -eq 'S-1-5-18'"
-        " -or $__padiem_session -eq 0 -or -not $__padiem_interactive) {"
-        " $__padiem_refused=$true;"
-        " [void]$__padiem_stdout.Add('pc_user_session_unavailable');"
-        " $__padiem_exit=1 }"
-        " } catch { $__padiem_refused=$true;"
-        " [void]$__padiem_stdout.Add('pc_user_session_unavailable');"
-        " $__padiem_exit=1 };"
-    ) if run_as == "user" else ""
     return (
         "[Console]::OutputEncoding=[Text.Encoding]::UTF8;"
-        " $__padiem_stdout=New-Object 'System.Collections.Generic.List[object]';"
-        " $__padiem_stderr=New-Object 'System.Collections.Generic.List[object]';"
-        " $__padiem_exit=$null;$LASTEXITCODE=$null;$__padiem_refused=$false;"
-        + user_guard +
-        " if (-not $__padiem_refused) {" + marks +
-        " try { & { " + command + " } 2>&1 | ForEach-Object {"
-        " if ($_ -is [System.Management.Automation.ErrorRecord])"
-        " { [void]$__padiem_stderr.Add($_) }"
-        " else { [void]$__padiem_stdout.Add($_) } };"
-        " $__padiem_exit=$LASTEXITCODE"
-        " } catch { [void]$__padiem_stderr.Add($_);$__padiem_exit=1 };" + clears +
-        " $__padiem_ps_error=$false;"
-        " foreach ($__padiem_error in $__padiem_stderr) {"
-        " if ($__padiem_error -isnot [System.Management.Automation.ErrorRecord])"
-        " { $__padiem_ps_error=$true;continue };"
-        " $__padiem_error_text=[string]($__padiem_error | Out-String);"
-        " if ($__padiem_error.FullyQualifiedErrorId -notlike '*NativeCommandError*'"
-        " -or $__padiem_error_text -match '(?i)CommandNotFoundException|At line:\\s*\\d+\\s+char:')"
-        " { $__padiem_ps_error=$true } };"
-        " if ($__padiem_ps_error -and ($null -eq $__padiem_exit -or $__padiem_exit -eq 0))"
-        " { $__padiem_exit=1 };"
-        " };"
-        " $__padiem_stdout_text=[string]($__padiem_stdout.ToArray() | Out-String);"
-        " $__padiem_stderr_text=[string]($__padiem_stderr.ToArray() | Out-String);"
-        " $__padiem_streams=('PADIEM_STREAMS_V1:' + (ConvertTo-Json -InputObject "
-        "([ordered]@{stdout=$__padiem_stdout_text;stderr=$__padiem_stderr_text}) -Compress));"
-        " $__padiem=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($__padiem_streams));"
-        # The marker is assembled from two literals so an echoed script cannot forge it.
-        + (
-            ' Write-Output ("PADIEM_" + "B64=" + $__padiem);'
-            ' Write-Output ("__PADIEM_" + "EXIT__" + $__padiem_exit)'
+        " $__padiem=$null;" + marks +
+        " try { $__padiem=(& { " + command + " } 2>&1 | Out-String)"
+        " } catch { $__padiem=($_ | Out-String) };" + clears +
+        # A terminal session echoes the script the shell was handed. The markers are
+        # assembled from two literals on that lane, so the echo can never contain the
+        # joined token while the bytes the PC prints stay exactly the same.
+        (
+            ' Write-Output ("PADIEM_" + "B64=" + '
+            "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
+            ' Write-Output ("__PADIEM_" + "EXIT__" + $LASTEXITCODE)'
             if split_markers else
-            ' Write-Output ("' + ENVELOPE_PREFIX + '" + $__padiem);'
-            ' Write-Output ("' + EXIT_SENTINEL + '" + $__padiem_exit)'
+            ' Write-Output ("' + ENVELOPE_PREFIX + '" + '
+            "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
+            ' Write-Output ("' + EXIT_SENTINEL + '" + $LASTEXITCODE)'
         )
     )
-
-
-def _unpack_streams(body: bytes) -> tuple[bytes, bytes] | None:
-    """Decode stdout/stderr members while retaining the existing text API."""
-    prefix = b"PADIEM_STREAMS_V1:"
-    if not body.startswith(prefix):
-        return None
-    try:
-        streams = json.loads(body[len(prefix):].decode("utf-8"))
-        if (not isinstance(streams, dict)
-                or not isinstance(streams.get("stdout"), str)
-                or not isinstance(streams.get("stderr"), str)):
-            return None
-        stdout = streams["stdout"].encode("utf-8")
-        stderr = streams["stderr"].encode("utf-8")
-    except Exception:
-        return None
-    return stdout, stderr
-
-
-def _present_streams(stdout: bytes, stderr: bytes) -> bytes:
-    """Render stderr in a labeled section of the existing text-body contract."""
-    if not stderr:
-        return stdout
-    separator = b"--- stderr ---\n"
-    if stdout and not stdout.endswith((b"\n", b"\r")):
-        separator = b"\n" + separator
-    return stdout + separator + stderr
 
 
 def _unwrap_envelope(output: bytes) -> tuple[bytes, bytes] | None:
@@ -829,9 +784,6 @@ def parse_transcript(raw: bytes) -> tuple[str, int | None, bytes]:
         # presented as the PC's output, so it keeps its own outcome.
         return "bad_reply", code, b""
     prefix, body = envelope
-    streams = _unpack_streams(body)
-    if streams is not None:
-        body = _present_streams(*streams)
     if prefix:
         body = prefix + body
     if raw_code is None:
@@ -1041,7 +993,6 @@ class MeshCentralCliCommandPort:
         line_guard: Callable[[], bool] | None = None,
         session_lane: bool | None = None,
         line_probe: bool | None = None,
-        run_as: str = "user",
     ) -> MeshCentralCommandOutcome:
         def phase(name: str) -> None:
             if callable(phase_observer):
@@ -1069,8 +1020,6 @@ class MeshCentralCliCommandPort:
 
         if not isinstance(node_ref, str) or not node_ref.strip():
             raise MeshCentralCommandRefused("node_ref is required")
-        if run_as not in ("user", "system"):
-            raise MeshCentralCommandRefused("run_as must be user or system")
         # Owner decision (#5895): a long-running command carries no PADIEM
         # client deadline by default, the way the desktop lane already runs
         # with None. An explicit timeout remains available and is a caller
@@ -1085,7 +1034,7 @@ class MeshCentralCliCommandPort:
         # PC. Refusing a malformed id here is also the only thing standing between
         # a caller-supplied string and a PowerShell literal on a customer machine.
         checked_dispatch = None if dispatch_id is None else _checked_dispatch_id(dispatch_id)
-        wrapped = _wrap(body, checked_dispatch, self._host_tag, run_as=run_as)
+        wrapped = _wrap(body, checked_dispatch, self._host_tag)
         # The NUL the C execve boundary appends is counted, so a refusal here
         # is the kernel's own limit, not a product rule. The aggregate argv and
         # environment ceiling depends on this host's stack rlimit and is not
@@ -1105,10 +1054,6 @@ class MeshCentralCliCommandPort:
             "--run", wrapped,
             "--reply",
         ]
-        if run_as == "user":
-            # MeshCentral v1.2.5 maps this to runAsUser=1 (user-or-agent).
-            # The wrapper rejects the agent token before evaluating the command.
-            argv.insert(argv.index("--run"), "--runasuser")
         password = self._password_provider()
         if not isinstance(password, str) or not password or "\n" in password or "\r" in password:
             raise MeshCentralCommandRefused(
@@ -1141,8 +1086,7 @@ class MeshCentralCliCommandPort:
             outcome = self._from_transcript(raw)
             phase("reply")
             return outcome
-        if (run_as == "system" and checked_dispatch is not None
-                and _session_lane_enabled(session_lane)):
+        if checked_dispatch is not None and _session_lane_enabled(session_lane):
             # #82 standard 2: the command gets its own terminal session, so another
             # dispatch on this PC is never waiting behind it. No line sweep here - the
             # session is not the queue the sweep exists to unblock.
@@ -1151,7 +1095,6 @@ class MeshCentralCliCommandPort:
                 node_ref=node_ref.strip(), command=body, dispatch_id=checked_dispatch,
                 password=password, phase=phase, cancelled=cancelled,
                 timeout_seconds=timeout_seconds,
-                run_as=run_as,
             )
             if session_outcome is not None:
                 return session_outcome
@@ -1171,7 +1114,6 @@ class MeshCentralCliCommandPort:
         phase: Callable[[str], None],
         cancelled: Callable[[], bool] | None,
         timeout_seconds: int | None,
-        run_as: str,
     ) -> MeshCentralCommandOutcome | None:
         """One dispatch on its own terminal session; ``None`` when none opened.
 
@@ -1202,10 +1144,7 @@ class MeshCentralCliCommandPort:
             "--id", node_ref,
             "--powershell",
         ]
-        wrapped = _wrap(
-            command, dispatch_id, self._host_tag,
-            split_markers=True, run_as=run_as,
-        )
+        wrapped = _wrap(command, dispatch_id, self._host_tag, split_markers=True)
         try:
             handoff = self._pty_factory(
                 _terminal_payload(password, wrapped),
@@ -1481,7 +1420,6 @@ class MeshCentralCliCommandPort:
         node_ref: str,
         script: str,
         *,
-        run_as: str,
         answer: Callable[[bytes], bool] | None = None,
         wait_seconds: float = CANCEL_KILL_WAIT_SECONDS,
     ) -> bytes:
@@ -1498,10 +1436,6 @@ class MeshCentralCliCommandPort:
         to be discarded here. The session is bounded in both shapes, so an unreachable
         agent cannot turn a repair into the new way to hang a PC.
         """
-        if run_as != "system":
-            raise MeshCentralCommandRefused(
-                "the maintenance terminal requires an explicit system subject"
-            )
         if not isinstance(node_ref, str) or not node_ref.strip():
             raise MeshCentralCommandRefused("node_ref is required")
         if self._popen_factory is None:
@@ -1572,7 +1506,6 @@ class MeshCentralCliCommandPort:
             )
         raw = self._run_shell_session(
             node_ref, cancel_kill_command(checked),
-            run_as="system",
             answer=lambda buf: STOP_EVIDENCE.encode("ascii") in buf,
             wait_seconds=CANCEL_KILL_WAIT_SECONDS,
         )
@@ -1614,7 +1547,6 @@ class MeshCentralCliCommandPort:
         try:
             raw = self._run_shell_session(
                 node_ref, script,
-                run_as="system",
                 answer=lambda buf: parse_sweep_reply(buf) is not None,
                 wait_seconds=LINE_SWEEP_WAIT_SECONDS,
             )

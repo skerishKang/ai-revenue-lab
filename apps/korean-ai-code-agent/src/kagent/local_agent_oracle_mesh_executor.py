@@ -1164,7 +1164,6 @@ class OracleMeshExecutor:
                 # names a base step gets four of them, and one that names none
                 # keeps the platform's own bound.
                 timeout_seconds=(self._timeout * 4 if self._timeout is not None else None),
-                run_as="system",
             )
         except Exception as exc:
             self._trace_read(dispatch, "single_roundtrip_fallback", call_started,
@@ -1197,7 +1196,6 @@ class OracleMeshExecutor:
         dispatch: OracleMeshDispatch,
         phase: str,
         started: float,
-        run_as: str | None = None,
         **fields: Any,
     ) -> None:
         """Bounded phase correlation only: never command or output content.
@@ -1221,7 +1219,6 @@ class OracleMeshExecutor:
                 f" request_id={dispatch.request_id or '-'}"
                 f" command_id={dispatch.command_id}"
                 f" run_hash={_pc_run_hash(dispatch.run_id) or 'none'}"
-                + (f" run_as={run_as}" if run_as in ("user", "system") else "")
                 + (f" {safe}" if safe else ""),
                 file=sys.stderr,
                 flush=True,
@@ -1280,7 +1277,6 @@ class OracleMeshExecutor:
         try:
             outcome = self._command_port.run_command(
                 node_ref=node_ref, command=script, timeout_seconds=30,
-                run_as="system",
             )
             # 11-05: the command port's outcome carries ``output`` — the same
             # field the command lane reads. ``outcome.body`` never existed on
@@ -1414,8 +1410,7 @@ class OracleMeshExecutor:
         return probe
 
     def _execute_command(
-        self, dispatch: OracleMeshDispatch, *, additional_cancel_probe=None,
-        run_as: str = "user",
+        self, dispatch: OracleMeshDispatch, *, additional_cancel_probe=None
     ) -> OracleMeshExecutionOutcome:
         """#4139 terminal lane: run the command the server put in the dispatch.
 
@@ -1425,23 +1420,15 @@ class OracleMeshExecutor:
         complete console answer whose ``$LASTEXITCODE`` was empty) instead of
         borrowing the shell's own success.
         """
-        if run_as not in ("user", "system"):
-            return OracleMeshExecutionOutcome(
-                termination="not_executed", exit_code=None, body=b"",
-            )
         if self._command_port is None:
             # A command dispatch on an executor that was not composed with a
             # command port is a misconfiguration, not a silent no-op.
             raise OracleMeshChannelRefused("command execution is not configured")
         started = time.monotonic()
-        self._trace_command(dispatch, "start", started, run_as=run_as)
+        self._trace_command(dispatch, "start", started)
 
         def phase(phase_name: str) -> None:
-            maintenance_phase = phase_name.startswith(("line_", "cancel_kill"))
-            phase_run_as = "system" if maintenance_phase else run_as
-            self._trace_command(
-                dispatch, phase_name, started, run_as=phase_run_as,
-            )
+            self._trace_command(dispatch, phase_name, started)
 
         owner_cancel = self._cancel_probe(dispatch)
         def cancelled():
@@ -1466,22 +1453,18 @@ class OracleMeshExecutor:
                 # Whether the server sees any live claim on this PC at all. The
                 # connector's own map cannot see the failover partner's claim.
                 line_guard=self._line_guard(dispatch),
-                run_as=run_as,
             )
         except Exception as exc:
             if type(exc).__name__ == "MeshCentralCommandRefused":
                 # The port refused before the PC was asked. Collapsing that into
                 # ``no_reply`` would report a silent console for a command that
                 # never ran, so the two observations stay separate.
-                self._trace_command(
-                    dispatch, "refused", started, run_as=run_as, reason="port",
-                )
+                self._trace_command(dispatch, "refused", started, reason="port")
                 return OracleMeshExecutionOutcome(
                     termination="not_executed", exit_code=None, body=b"",
                 )
             self._trace_command(
-                dispatch, "error", started, run_as=run_as,
-                error_type=type(exc).__name__,
+                dispatch, "error", started, error_type=type(exc).__name__,
             )
             return OracleMeshExecutionOutcome(termination="no_reply", exit_code=None, body=b"")
         termination = getattr(observed, "termination", "no_reply")
@@ -1501,14 +1484,6 @@ class OracleMeshExecutor:
         if not isinstance(body, (bytes, bytearray)):
             body = b""
         raw = bytes(body)
-        if (run_as == "user" and termination == "exited" and exit_code == 1
-                and raw.strip() == b"pc_user_session_unavailable"):
-            termination = "not_executed"
-            exit_code = None
-            raw = b"pc_user_session_unavailable"
-            self._trace_command(
-                dispatch, "user_session_unavailable", started, run_as=run_as,
-            )
         blocked = getattr(observed, "line_blocked", 0)
         cleared = getattr(observed, "line_cleared", 0)
         blocked = blocked if isinstance(blocked, int) and not isinstance(blocked, bool) else 0
@@ -1516,8 +1491,7 @@ class OracleMeshExecutor:
         self._line_blocked += max(0, blocked)
         self._line_cleared += max(0, cleared)
         self._trace_command(
-            dispatch, "result", started, run_as=run_as,
-            termination=termination,
+            dispatch, "result", started, termination=termination,
             output_bytes=len(raw),
             line_blocked=blocked or None,
             line_cleared=cleared or None,
