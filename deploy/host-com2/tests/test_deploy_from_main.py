@@ -1741,6 +1741,125 @@ class MigrationServiceUserGitTest(DeployHarness):
         self.assertIn("sql = sys.stdin.read()", function)
 
 
+SIDECAR_SOURCES = [
+    "deploy/host-com2/file-lane/check_config.py",
+    "deploy/host-com2/file-lane/health.py",
+    "deploy/host-com2/file-lane/padiem-file-lane.service",
+    "deploy/host-com2/boot-recovery/wsl/boot_recovery.py",
+    "deploy/host-com2/boot-recovery/wsl/boot-recovery.sh",
+    "deploy/host-com2/boot-recovery/wsl/padiem-boot-recovery.service",
+    "deploy/host-com2/connector-watch/connector_watch_host.py",
+    ".github/scripts/connector_lane_watch.py",
+    "deploy/host-com2/connector-watch/padiem-connector-watch.service",
+    "deploy/host-com2/connector-watch/padiem-connector-watch.timer",
+    "deploy/host-com2/offsite-backup/offsite.py",
+    "deploy/host-com2/offsite-backup/padiem-offsite-backup.service",
+    "deploy/host-com2/offsite-backup/padiem-offsite-backup.timer",
+    "deploy/host-com2/cron/run-cron.sh",
+    "deploy/host-com2/cron/run-expired-purge.sh",
+    "deploy/host-com2/cron/status-cron.sh",
+    "deploy/host-com2/cron/check_config_cron.py",
+    "deploy/host-com2/cron/README.md",
+    "deploy/host-com2/restart-policy/10-padiem-restart.conf",
+    "deploy/host-com2/restart-policy/units.txt",
+]
+
+# The installed path each installer writes, without the leading slash so the
+# test can point the report at a throwaway root. A new installer copy belongs
+# in this map and in report_sidecar_drift's table.
+SIDECAR_INSTALLED = {
+    "deploy/host-com2/file-lane/check_config.py": "opt/padiem/file-lane/check_config.py",
+    "deploy/host-com2/file-lane/health.py": "opt/padiem/file-lane/health.py",
+    "deploy/host-com2/file-lane/padiem-file-lane.service": "etc/systemd/system/padiem-file-lane.service",
+    "deploy/host-com2/boot-recovery/wsl/boot_recovery.py": "opt/padiem/boot-recovery/boot_recovery.py",
+    "deploy/host-com2/boot-recovery/wsl/boot-recovery.sh": "opt/padiem/boot-recovery/boot-recovery.sh",
+    "deploy/host-com2/boot-recovery/wsl/padiem-boot-recovery.service": "etc/systemd/system/padiem-boot-recovery.service",
+    "deploy/host-com2/connector-watch/connector_watch_host.py": "opt/padiem/connector-watch/connector_watch_host.py",
+    ".github/scripts/connector_lane_watch.py": "opt/padiem/connector-watch/connector_lane_watch.py",
+    "deploy/host-com2/connector-watch/padiem-connector-watch.service": "etc/systemd/system/padiem-connector-watch.service",
+    "deploy/host-com2/connector-watch/padiem-connector-watch.timer": "etc/systemd/system/padiem-connector-watch.timer",
+    "deploy/host-com2/offsite-backup/offsite.py": "opt/padiem/offsite-backup/offsite.py",
+    "deploy/host-com2/offsite-backup/padiem-offsite-backup.service": "etc/systemd/system/padiem-offsite-backup.service",
+    "deploy/host-com2/offsite-backup/padiem-offsite-backup.timer": "etc/systemd/system/padiem-offsite-backup.timer",
+    "deploy/host-com2/cron/run-cron.sh": "opt/padiem/chat-staging/run-cron.sh",
+    "deploy/host-com2/cron/run-expired-purge.sh": "opt/padiem/chat-staging/run-expired-purge.sh",
+    "deploy/host-com2/cron/status-cron.sh": "opt/padiem/chat-staging/status-cron.sh",
+    "deploy/host-com2/cron/check_config_cron.py": "opt/padiem/chat-staging/check_config_cron.py",
+    "deploy/host-com2/cron/README.md": "opt/padiem/chat-staging/README-cron.md",
+}
+
+
+class SidecarDriftReportTest(DeployHarness):
+    """Installers the deploy never runs keep their own copy on the host.
+
+    file-lane, boot-recovery, the restart drop-in, connector-watch,
+    offsite-backup and cron each install their files by hand, so a change to
+    main leaves the installed copy stale until someone remembers to run that
+    installer (#6892 follow-up). The deploy reports the difference once and
+    changes nothing.
+    """
+
+    scenario = "chat"
+    base_extra = {
+        path: (REPO / path).read_text(encoding="utf-8") for path in SIDECAR_SOURCES
+    }
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.host = self.tmp / "host"
+        self.env["PADIEM_COM2_INSTALLED_ROOT"] = self.host.as_posix()
+
+    def _installed_pairs(self) -> list[tuple[str, str]]:
+        pairs = list(SIDECAR_INSTALLED.items())
+        units = (REPO / "deploy/host-com2/restart-policy/units.txt").read_text(
+            encoding="utf-8"
+        )
+        for unit in units.splitlines():
+            unit = unit.strip()
+            if not unit or unit.startswith("#"):
+                continue
+            pairs.append((
+                "deploy/host-com2/restart-policy/10-padiem-restart.conf",
+                f"etc/systemd/system/{unit}.d/padiem-restart.conf",
+            ))
+        return pairs
+
+    def _blob(self, path: str) -> bytes:
+        # What git archive puts in the staged mirror: the commit's bytes,
+        # not this checkout's line endings.
+        done = subprocess.run(
+            ["git", "-C", self.ops.as_posix(), "show", f"{self.second}:{path}"],
+            capture_output=True, check=True,
+        )
+        return done.stdout
+
+    def _install_all(self) -> None:
+        for source, target in self._installed_pairs():
+            path = self.host / target
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(self._blob(source))
+
+    def test_matching_installed_copies_report_none(self) -> None:
+        self._install_all()
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("COM2_DEPLOY_AUX_DRIFT=NONE", result.stdout)
+        self.assertIn("chat:PASS", result.stdout)
+
+    def test_one_stale_copy_is_named_and_left_alone(self) -> None:
+        self._install_all()
+        stale = self.host / "etc/systemd/system/padiem-connector-watch.timer"
+        stale.write_text("# stale\n", encoding="utf-8")
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn(
+            "COM2_DEPLOY_AUX_DRIFT=connector-watch:etc/systemd/system/"
+            "padiem-connector-watch.timer",
+            result.stdout,
+        )
+        # Reported, never repaired: the stale copy is still there.
+        self.assertEqual(stale.read_text(encoding="utf-8"), "# stale\n")
+
 class ScriptBoundaryTest(unittest.TestCase):
     def test_the_ladder_defaults_to_four_minutes_and_an_env_value_wins(self) -> None:
         """11-06: a measured cold import took 56 s; 30 s rolled a good release back."""
