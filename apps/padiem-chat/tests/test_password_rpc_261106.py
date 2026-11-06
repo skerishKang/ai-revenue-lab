@@ -30,6 +30,7 @@ from app.config import Settings
 from app.history import D1HistoryStore, _password_user_id
 from app.main import create_app
 from app.password_auth import hash_password
+from app.queue_store_proxy import QueueForwardingHistoryStore
 
 from test_6446_account_isolation_sweep import apply_all_migrations
 
@@ -85,11 +86,18 @@ class SqliteD1:
             raise
 
 
-def build(secret=SECRET):
+class UnexpectedQueueCall:
+    async def call(self, *args, **kwargs):
+        raise AssertionError("password RPC must keep replay state in the local history store")
+
+
+def build(secret=SECRET, *, queue_wrapped=False):
     db = SqliteD1()
     apply_all_migrations(db)
     store = D1HistoryStore(db)
     asyncio.run(store.register_password_user(EMAIL, EMAIL, "User", hash_password(PASSWORD)))
+    if queue_wrapped:
+        store = QueueForwardingHistoryStore(store, client=UnexpectedQueueCall())
     settings = Settings.from_values(
         runtime_mode="mock",
         auth_mode="password",
@@ -176,13 +184,21 @@ def test_proof_failures_are_unauthorized():
 
 
 def test_a_repeated_service_id_is_a_replay():
-    app, _ = build()
+    app, _ = build(queue_wrapped=True)
     service_id = str(uuid.uuid4())
     first = rpc(app, VERIFY_PATH, {"email": EMAIL, "password": PASSWORD}, service_id=service_id)
     assert first.status_code == 200
     replay = rpc(app, VERIFY_PATH, {"email": EMAIL, "password": PASSWORD}, service_id=service_id)
     assert replay.status_code == 409
     assert replay.json()["error"]["code"] == "rpc_replay_detected"
+
+
+def test_queue_wrapped_store_verifies_password_using_local_replay_store():
+    app, db = build(queue_wrapped=True)
+    response = rpc(app, VERIFY_PATH, {"email": EMAIL, "password": PASSWORD})
+
+    assert response.status_code == 200
+    assert db.conn.execute("SELECT COUNT(*) FROM password_rpc_service_ids").fetchone()[0] == 1
 
 
 def test_register_path_signs_up_and_stays_honest_on_conflicts():

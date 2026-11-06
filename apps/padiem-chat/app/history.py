@@ -314,6 +314,7 @@ class ProjectProfile:
 
 class HistoryStore(Protocol):
     async def upsert_google_user(self, subject: str, email: str, name: str, picture: str) -> UserProfile: ...
+    async def consume_service_id(self, service_id: str, expires_at: str) -> bool: ...
     async def register_password_user(self, username: str, email: str, name: str, password_hash: str) -> UserProfile: ...
     async def find_password_credential(self, identifier: str) -> PasswordCredential | None: ...
     async def find_password_credential_by_user_id(self, user_id: str) -> PasswordCredential | None: ...
@@ -1209,6 +1210,21 @@ class D1HistoryStore:
         except Exception as exc:
             raise HistoryConflict("password account registration conflict") from exc
         return UserProfile(uid, email, display, "")
+
+    async def consume_service_id(self, service_id: str, expires_at: str) -> bool:
+        """Persist one service RPC id on this store and reject its replay."""
+        cutoff = datetime.now(timezone.utc).isoformat()
+        await self._run(
+            "DELETE FROM password_rpc_service_ids WHERE expires<=?",
+            cutoff,
+        )
+        row = await self._first(
+            "INSERT INTO password_rpc_service_ids(service_id, expires) VALUES(?, ?) "
+            "ON CONFLICT(service_id) DO NOTHING RETURNING service_id",
+            service_id,
+            expires_at,
+        )
+        return row is not None
 
     async def find_password_credential(self, identifier: str) -> PasswordCredential | None:
         if "@" in identifier:
