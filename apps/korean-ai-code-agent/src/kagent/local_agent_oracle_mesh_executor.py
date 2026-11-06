@@ -2104,7 +2104,12 @@ class OracleMeshExecutor:
         # A persistence failure is reported, never hidden: the bytes stay in
         # memory and are still submitted, but the operator must be able to see
         # that this result is not durable across a restart.
+        persist_started = time.monotonic()
         persist_error = self._persist_pending()
+        # The read_ok→submit gap suspects the persist (it owns the fsyncs): one
+        # phase line in the existing format names how long it took. It carries
+        # no values and no paths — instrumentation only, never a behaviour.
+        self._trace_command(dispatch, "persisted", persist_started)
         submit_started = time.monotonic()
         self._trace_command(dispatch, "submit", submit_started)
         try:
