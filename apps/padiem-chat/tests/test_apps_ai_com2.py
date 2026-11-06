@@ -111,6 +111,7 @@ async def test_signed_request_reaches_p01_and_preserves_context_projection(app_n
     assert req.headers["x-padiem-client-app"] == app_name
     sent = json.loads(req.content)
     assert sent["app_id"] == "b61"
+    assert sent["agent"]["max_tokens"] == 900
     assert sent["agent"]["model_policy"] == {"model": DEFAULT_MODEL, "max_retries": 0}
     assert sent["context_permission"] == data["context_permission"]
 
@@ -181,6 +182,25 @@ async def test_configurable_policy_changes_model_and_limits_per_app():
     result, seen = await request(too_large, settings=configured)
     assert result.status_code == 413
     assert seen == []
+
+
+def test_bookai_default_output_budget_is_raised_without_widening_storymemory():
+    policies = policies_from_env(env())
+    assert policies["sub_app_bookai"].max_tokens == 4096
+    assert policies["sub_app_storymemory"].max_tokens == 900
+
+
+@pytest.mark.asyncio
+async def test_bookai_accepts_raised_output_budget_and_forwards_it_to_p01():
+    data = payload()
+    data["agent"]["max_tokens"] = 4096
+    result, seen = await request(data, head=headers(
+        encoded(data), subject="sub_app_bookai", secret=TEST_SECRET + "book"
+    ))
+    assert result.status_code == 200, result.text
+    assert len(seen) == 1
+    sent = json.loads(seen[0].content)
+    assert sent["agent"]["max_tokens"] == 4096
 
 
 @pytest.mark.asyncio

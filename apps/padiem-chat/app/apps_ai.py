@@ -59,7 +59,7 @@ def policies_from_env(env: Mapping[str, Any]) -> dict[str, AppAIPolicy]:
             if not isinstance(item, dict) or set(item) - {"allowed_models", "max_tokens", "max_body_bytes"}:
                 raise ValueError
             models = item.get("allowed_models", [DEFAULT_MODEL])
-            tokens = item.get("max_tokens", 900)
+            tokens = item.get("max_tokens", 4096 if name == "bookai" else 900)
             limit = item.get("max_body_bytes", MAX_ENGINE_REQUEST_BYTES)
             if not isinstance(models, list) or not models or any(
                 not isinstance(model, str) or not model.strip() or model != model.strip()
