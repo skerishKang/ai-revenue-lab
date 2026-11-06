@@ -33,7 +33,7 @@ SCRIPTS = (
     "voice-live-transcript-turn.js",
     "voice-stt-input.js",
     "voice-composer.js",
-    "voice-gemini-live.js",
+    "voice-live-session.js",
 )
 
 PAGE = """<!doctype html><html lang="ko"><head><meta charset="utf-8"></head><body>
@@ -140,7 +140,7 @@ def test_the_live_transcript_reaches_the_input_box_and_nothing_is_sent() -> None
               // The product seam: the engine's own recognizer factory, the one
               // the wiring stage installs as the default provider.
               window.PadiemVoiceComposer.registerRecognizerFactory(
-                window.PadiemVoiceGeminiLive.createRecognizerFactory({
+                window.PadiemVoiceLiveSession.createRecognizerFactory({
                   win: window,
                   doc: document,
                   fetchImpl: window.fetch,

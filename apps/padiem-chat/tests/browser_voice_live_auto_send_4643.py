@@ -32,7 +32,7 @@ SCRIPTS = (
     "voice-live-transcript-turn.js",
     "voice-stt-input.js",
     "voice-composer.js",
-    "voice-gemini-live.js",
+    "voice-live-session.js",
     "voice-live-turn-controller.js",
     "voice-ui-menu.js",
 )
@@ -150,7 +150,7 @@ def test_a_confirmed_turn_is_submitted_once_while_the_microphone_stays_open() ->
                 }, 0);
               });
               window.PadiemVoiceComposer.registerRecognizerFactory(
-                window.PadiemVoiceGeminiLive.createRecognizerFactory({
+                window.PadiemVoiceLiveSession.createRecognizerFactory({
                   win: window,
                   doc: document,
                   fetchImpl: window.fetch,
@@ -238,7 +238,7 @@ def test_mode1_never_submits_anything() -> None:
                 window.__sent.push(document.getElementById('messageInput').value);
               });
               window.PadiemVoiceComposer.registerRecognizerFactory(
-                window.PadiemVoiceGeminiLive.createRecognizerFactory({
+                window.PadiemVoiceLiveSession.createRecognizerFactory({
                   win: window,
                   doc: document,
                   fetchImpl: window.fetch,
