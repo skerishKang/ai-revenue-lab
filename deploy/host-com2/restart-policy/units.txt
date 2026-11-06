@@ -1,15 +1,15 @@
 # Long-running COM2 units that must come back after any exit (#4953 A).
 # Drop-ins cannot resurrect a oneshot or a timer; timers already recur on their
-# own schedule, so only services are listed. External unit names (cloudflared,
-# meshcentral) are checked before a drop-in is written; a renamed unit shows up
-# as SKIPPED_MISSING instead of silently doing nothing.
+# own schedule, so only long-running services are listed. The connector watch
+# is oneshot. The unqualified cloudflared and meshcentral names and the broker
+# name were absent on COM2; the known tunnel and mesh names are listed below.
+# The broker has only a staging unit in this repository, not a confirmed COM2
+# production replacement.
 padiem-mesh-queue.service
 padiem-file-lane.service
 padiem-oracle-mesh-executor.service
-padiem-connector-watch.service
 padiem-chat-com2.service
-padiem-broker.service
-cloudflared.service
+padiem-p01.service
+padiem-b14.service
 cloudflared-padiem.service
-meshcentral.service
 padiem-meshcentral.service

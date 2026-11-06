@@ -22,9 +22,8 @@ class Packaging(unittest.TestCase):
         ]
         for expected in (
             "padiem-mesh-queue.service", "padiem-file-lane.service",
-            "padiem-oracle-mesh-executor.service", "padiem-connector-watch.service",
-            "padiem-chat-com2.service", "padiem-broker.service",
-            "cloudflared.service", "meshcentral.service",
+            "padiem-oracle-mesh-executor.service", "padiem-chat-com2.service",
+            "padiem-p01.service", "padiem-b14.service",
             # 컴2's tunnel and MeshCentral units carry these names; a host applies only
             # the ones it actually has and reports the rest as SKIPPED_MISSING.
             "cloudflared-padiem.service", "padiem-meshcentral.service",
@@ -32,6 +31,9 @@ class Packaging(unittest.TestCase):
             self.assertIn(expected, names)
         self.assertFalse([name for name in names if name.endswith(".timer")])
         self.assertNotIn("padiem-boot-recovery.service", names)
+        for absent in ("padiem-connector-watch.service", "padiem-broker.service",
+                       "cloudflared.service", "meshcentral.service"):
+            self.assertNotIn(absent, names)
 
     def test_installer_is_dry_run_by_default_and_never_touches_a_running_unit(self):
         subprocess.run(["bash", "-n", "install.sh"], cwd=POLICY, check=True)
