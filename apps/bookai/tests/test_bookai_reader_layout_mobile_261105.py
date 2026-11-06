@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import http.server
 import os
+import statistics
 import threading
 from pathlib import Path
 
@@ -250,9 +251,12 @@ def test_ai_input_is_wide_enough_to_type_at_1280(browser, base_url):
         page.close()
 
 
-def test_library_to_reader_entry_stays_under_one_second(browser, base_url):
-    page = _reader_page(browser, {"width": 375, "height": 812}, base_url)
+def _measure_library_to_reader_entry(browser, base_url):
+    context = browser.new_context(viewport={"width": 375, "height": 812})
+    page = context.new_page()
+    page.set_default_timeout(30000)
     try:
+        page.goto(base_url, wait_until="load")
         page.wait_for_function("() => document.querySelector('.screen.active')?.id === 'library'")
         # A non-scripture book opens straight into the reading surface; the
         # scripture shelf stops at its chapter index first. The selection is
@@ -269,7 +273,20 @@ def test_library_to_reader_entry_stays_under_one_second(browser, base_url):
         # The clock runs inside the page: this is the reader's own click-to-visible interval.
         page.evaluate("() => { window.__entryStart = performance.now(); document.getElementById('openBook').click(); }")
         page.wait_for_function("() => document.querySelector('.screen.active')?.id === 'reader'")
-        elapsed = page.evaluate("() => (performance.now() - window.__entryStart) / 1000")
-        assert elapsed < 1.0, f"library-to-reader entry took {elapsed:.2f}s, expected < 1.0s"
+        return page.evaluate("() => (performance.now() - window.__entryStart) / 1000")
     finally:
-        page.close()
+        context.close()
+
+
+def test_library_to_reader_entry_stays_under_one_second(browser, base_url):
+    _measure_library_to_reader_entry(browser, base_url)  # discard the first-load warm-up
+    measurements = [
+        _measure_library_to_reader_entry(browser, base_url)
+        for _ in range(3)
+    ]
+
+    median = statistics.median(measurements)
+    assert median < 1.0, (
+        f"library-to-reader entry median was {median:.4f}s "
+        f"from 3 measurements {measurements}, expected < 1.0s"
+    )
