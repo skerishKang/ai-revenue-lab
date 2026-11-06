@@ -101,7 +101,14 @@ p01_root=${PADIEM_COM2_P01_APP:-/opt/padiem/p01}
 b14_app=${PADIEM_COM2_B14_APP:-/opt/padiem/b14/app}
 queue_root=${PADIEM_COM2_MESH_QUEUE_APP:-/opt/padiem/mesh-queue}
 queue_account=${PADIEM_COM2_MESH_QUEUE_USER:-padiem-mesh}
+# The Oracle mesh executor ran from a hand copy of this repository that no
+# deploy updated. Its tree is a commit directory now, with the PYTHONPATH
+# path the unit already names pointing at it.
+executor_root=${PADIEM_COM2_ORACLE_MESH_ROOT:-/opt/padiem/oracle-mesh}
+executor_src=$executor_root/kagent-src
+executor_releases=$executor_root/src
 systemctl_bin=${PADIEM_COM2_SYSTEMCTL:-systemctl}
+journalctl_bin=${PADIEM_COM2_JOURNALCTL:-journalctl}
 python_bin=${PADIEM_COM2_PYTHON:-python3}
 git_bin=${PADIEM_COM2_GIT:-git}
 chat_health_url=${PADIEM_COM2_CHAT_HEALTH_URL:-http://127.0.0.1:8798/health}
@@ -119,6 +126,7 @@ CHAT_UNIT=padiem-chat-com2.service
 P01_UNIT=padiem-p01.service
 B14_UNIT=padiem-b14.service
 QUEUE_UNIT=padiem-mesh-queue.service
+EXECUTOR_UNIT=padiem-oracle-mesh-executor.service
 
 fail() { printf 'COM2_DEPLOY=STOP\nCOM2_DEPLOY_REASON=%s\n' "$1" >&2; exit "${2:-2}"; }
 say() { printf 'COM2_DEPLOY_%s\n' "$*"; }
@@ -238,6 +246,14 @@ service_for_path() {
   case "$1" in
     apps/padiem-mesh-queue/*)
       printf '%s\n' queue ;;
+    *) : ;;
+  esac
+  # The executor stages this app tree plus the Core modules it imports, so the
+  # app path selects it directly; the Core modules come from the import list.
+  case "$1" in
+    apps/korean-ai-code-agent/*)
+      printf '%s
+' executor ;;
     *) : ;;
   esac
 }
@@ -394,6 +410,14 @@ wait_for_health() {
     (( pause > remaining )) && pause=$remaining
     sleep "$pause"
   done
+}
+
+# The queue health script can exit zero for an unreachable or invalid response.
+# Keep the generic retry loop, but require its explicit healthy marker as well.
+queue_health_ok() {
+  local output
+  output=$("$@" 2>&1) || return 1
+  printf '%s\n' "$output" | grep -Eq '^MESH_QUEUE_HEALTH=OK([[:space:]]|$)'
 }
 
 # Compare that actual link target with the requested Git tree. Missing, broken,
@@ -733,6 +757,253 @@ rollback_b14() {
     "$python_bin" "$staged/deploy/host-com2/b14/health.py" --url "$b14_health_url"
 }
 
+# What a service actually runs, computed from the code itself.
+#
+# The queue links the Chat app tree, the Core package and the control plane into
+# its root, so those modules are queue code even though they live under another
+# app's path. #6794 made the pairing claim idempotent in apps/padiem-chat/app, and
+# every deploy after it still reported queue:SKIP because service_for_path names
+# only chat there. The Oracle mesh executor has the same shape: it stages kagent
+# and the Core modules kagent imports, so a change to any of them has to move the
+# process that does the reads (#6889 never reached it).
+#
+# The list comes from the imports themselves: every module reachable from the
+# service's own tree at the deployed commit. A hand-written allowlist is the same
+# bug one import later, so no path is spelled out by name here.
+module_import_closure() {
+  # $1 the commit, $2 the tree the service runs, $3... every "module=directory"
+  # pair those modules may import from.
+  "$python_bin" - "$ops_checkout" "$1" "${@:2}" <<'CLOSURE_PY'
+import ast
+import subprocess
+import sys
+
+sys.stdout.reconfigure(newline="\n")
+repo, sha, entry = sys.argv[1], sys.argv[2], sys.argv[3].rstrip("/")
+pairs = dict(argument.split("=", 1) for argument in sys.argv[4:])
+
+GIT = ["git", "-C", repo]
+
+
+def git(*args):
+    done = subprocess.run(
+        GIT + list(args), capture_output=True, text=True, encoding="utf-8", check=True
+    )
+    return done.stdout
+
+
+tree = {
+    line.strip()
+    for line in git("ls-tree", "-r", "--name-only", sha).splitlines()
+    if line.strip()
+}
+
+# The trees a module may belong to: the service's own, then each package it links.
+roots = [entry] + [directory.rstrip("/") for directory in pairs.values()]
+
+
+def candidates(base, parts):
+    if not parts:
+        return [base + "/__init__.py"] if base + "/__init__.py" in tree else []
+    tail = "/".join(parts)
+    found = [base + "/" + tail + ".py", base + "/" + tail + "/__init__.py"]
+    for index in range(1, len(parts) + 1):
+        found.append(base + "/" + "/".join(parts[:index]) + "/__init__.py")
+    return [path for path in found if path in tree]
+
+
+def resolve(path, module, level):
+    """The files one import statement in `path` refers to."""
+    parts = [part for part in (module or "").split(".") if part]
+    holding = [root for root in roots if path.startswith(root + "/")]
+    if not holding:
+        return []
+    root = max(holding, key=len)
+    package = path[len(root) + 1:].split("/")[:-1]
+    if level:
+        keep = len(package) - (level - 1)
+        if keep < 0:
+            return []
+        base = root + ("/" + "/".join(package[:keep]) if keep else "")
+        return candidates(base, parts)
+    if parts and parts[0] in pairs:
+        return candidates(pairs[parts[0]].rstrip("/"), parts[1:])
+    if root == entry and len(parts) == 1:
+        return candidates(entry, parts)
+    return []
+
+
+def imports_of(path):
+    try:
+        node = ast.parse(git("show", "%s:%s" % (sha, path)))
+    except (SyntaxError, ValueError):
+        return []
+    found = []
+    for statement in ast.walk(node):
+        if isinstance(statement, ast.Import):
+            found.extend((alias.name, 0) for alias in statement.names)
+        elif isinstance(statement, ast.ImportFrom):
+            found.append((statement.module or "", statement.level))
+            for alias in statement.names:
+                name = (
+                    "%s.%s" % (statement.module, alias.name)
+                    if statement.module
+                    else alias.name
+                )
+                found.append((name, statement.level))
+    return found
+
+
+# Every module the service runs: its own tree, never tests.
+pending = sorted(
+    path
+    for path in tree
+    if path.startswith(entry + "/")
+    and path.endswith(".py")
+    and "/tests/" not in path
+    and not path.rsplit("/", 1)[-1].startswith("test_")
+    and path.rsplit("/", 1)[-1] != "conftest.py"
+)
+seen = set()
+while pending:
+    path = pending.pop()
+    if path in seen:
+        continue
+    seen.add(path)
+    for module, level in imports_of(path):
+        for target in resolve(path, module, level):
+            if target not in seen:
+                pending.append(target)
+
+for path in sorted(seen):
+    print(path)
+CLOSURE_PY
+}
+
+# The queue's own root is its app tree; what it links in comes from the imports.
+queue_import_closure() {
+  module_import_closure "$1" apps/padiem-mesh-queue \
+    app=apps/padiem-chat/app \
+    padiem_ai_core=packages/padiem-ai-core/padiem_ai_core \
+    padiem_control_plane=packages/padiem-control-plane/padiem_control_plane
+}
+
+# The executor runs kagent, which imports the Core package.
+executor_import_closure() {
+  module_import_closure "$1" apps/korean-ai-code-agent/src/kagent \
+    kagent=apps/korean-ai-code-agent/src/kagent \
+    padiem_ai_core=packages/padiem-ai-core/padiem_ai_core \
+    padiem_agent=packages/padiem-ai-core/padiem_agent
+}
+
+# The Oracle mesh executor (`padiem-oracle-mesh-executor`) used to run from
+# /opt/padiem/oracle-mesh/kagent-src, a copy of this repository taken by hand on
+# 11-01 that no deploy ever touched: #6889's kagent fix never reached the process
+# that performs the reads, and the lane kept refusing `$` node ids. The tree is a
+# commit directory now, with the PYTHONPATH path the unit already names pointing
+# at it, the same shape P01 and B14 use.
+#
+# $1 the tree to copy from, $2 the release directory to build, $3 the tree to
+# carry padiem_agent forward from.
+stage_executor_code() {
+  local source=$1 target=$2 preserve=$3
+  [[ -d $source/apps/korean-ai-code-agent/src/kagent ]] \
+    || { say "EXECUTOR_SOURCE_MISSING PATH=$source"; return 1; }
+  command -v -- rsync >/dev/null 2>&1 || { say 'EXECUTOR_RSYNC_MISSING'; return 1; }
+  install -d -m 0755 -- "$target" || return 1
+  rsync -a --delete --exclude '__pycache__' --exclude '*.pyc' \
+    "$source/apps/korean-ai-code-agent/src/kagent/" "$target/kagent/" || return 1
+  rsync -a --delete --exclude '__pycache__' --exclude '*.pyc' \
+    "$source/packages/padiem-ai-core/padiem_ai_core/" "$target/padiem_ai_core/" || return 1
+  # padiem_agent is not tracked here. It is carried forward from the tree the
+  # unit runs today; inventing one would be worse than keeping the last copy.
+  if [[ -d $preserve/padiem_agent ]]; then
+    rsync -a --delete --exclude '__pycache__' --exclude '*.pyc' \
+      "$preserve/padiem_agent/" "$target/padiem_agent/" || return 1
+    say "EXECUTOR_PRESERVED=padiem_agent FROM=$preserve"
+  else
+    say 'EXECUTOR_PRESERVED=padiem_agent MISSING'
+  fi
+  chmod -R a+rX,go-w -- "$target" || return 1
+  say "EXECUTOR_STAGED=$target"
+}
+
+# The link is the deployment. A directory the operator copied by hand is
+# displaced, never deleted: it is the rollback copy.
+link_executor_source() {
+  local target=$1 displaced
+  [[ -d $target ]] || { say "EXECUTOR_SOURCE_MISSING PATH=$target"; return 1; }
+  if [[ ! -L $executor_src && -d $executor_src ]]; then
+    displaced="${executor_src}.displaced-$(date +%Y%m%dT%H%M%S)"
+    mv -- "$executor_src" "$displaced" || { say 'EXECUTOR_DISPLACE_FAILED'; return 1; }
+    say "EXECUTOR_OPERATOR_COPY=$displaced"
+  fi
+  ln -sfn -- "$target" "$executor_src" || return 1
+  say "EXECUTOR_LINK=$target"
+}
+
+# The unit's PYTHONPATH is the link, so this imports exactly what the process
+# will: a tree that cannot import the executor is not a release.
+executor_imports() {
+  PYTHONPATH=$1 "$python_bin" -c 'import kagent.local_agent_oracle_mesh_executor' 2>/dev/null
+}
+
+# A module that imports cleanly can still die after the import. One traceback in
+# the journal since this start is a verdict, never retried.
+executor_no_traceback() {
+  local since=$1 count
+  count=$("$journalctl_bin" -u "$EXECUTOR_UNIT" --since "@$since" --no-pager 2>/dev/null \
+    | grep -c 'Traceback (most recent call last)' || true)
+  say "EXECUTOR_TRACEBACKS=${count:-0}"
+  [[ ${count:-0} == 0 ]]
+}
+
+executor_rollback_source() {
+  local candidate displaced
+  displaced=$(ls -1dt "$executor_src".displaced-* 2>/dev/null | head -1 || true)
+  for candidate in "$executor_releases/$old" "$displaced"; do
+    [[ -n $candidate && -d $candidate ]] && { printf '%s' "$candidate"; return 0; }
+  done
+  return 1
+}
+
+deploy_executor() {
+  local target="$executor_releases/$resolved" preserve before_active=0 started
+  if unit_active "$EXECUTOR_UNIT"; then before_active=1; fi
+  with_service_stopped "$EXECUTOR_UNIT" || return 1
+  preserve=$(readlink -f -- "$executor_src" 2>/dev/null || true)
+  stage_executor_code "$staged" "$target" "$preserve" || return 1
+  link_executor_source "$target" || return 1
+  assert_service_readable EXECUTOR_LIVE "$target" "$read_check_user" || return 1
+  if (( before_active )); then
+    started=$(date +%s)
+    "$systemctl_bin" start "$EXECUTOR_UNIT" || return 1
+    wait_unit_active EXECUTOR "$EXECUTOR_UNIT" || return 1
+    wait_for_health EXECUTOR executor_imports "$target" || return 1
+    executor_no_traceback "$started" || return 1
+  else
+    say 'EXECUTOR_START=SKIPPED_NOT_ACTIVE_BEFORE'
+  fi
+}
+
+rollback_executor() {
+  local target started
+  with_service_stopped "$EXECUTOR_UNIT" || return 1
+  if target=$(executor_rollback_source); then
+    link_executor_source "$target" || return 1
+  else
+    say 'EXECUTOR_ROLLBACK=NO_PREVIOUS_COPY'
+    "$systemctl_bin" start "$EXECUTOR_UNIT" || return 1
+    return 1
+  fi
+  started=$(date +%s)
+  "$systemctl_bin" start "$EXECUTOR_UNIT" || return 1
+  wait_unit_active EXECUTOR_ROLLBACK "$EXECUTOR_UNIT" || return 1
+  wait_for_health EXECUTOR_ROLLBACK executor_imports "$target" || return 1
+  executor_no_traceback "$started"
+}
+
+
 # The queue keeps its database, environment, venv and secrets on the host; only its
 # code comes from the mirror, with the excludes its own installer uses.
 stage_queue_code() {
@@ -777,9 +1048,14 @@ deploy_queue() {
   assert_service_readable QUEUE_SOURCE "$staged/apps/padiem-mesh-queue" "$queue_account" \
     || return 1
   stage_queue_code "$staged/apps/padiem-mesh-queue" || return 1
+  # #6898's kit installs the backup script and its timer units from the mirror.
+  # It never starts, enables or restarts anything and never opens the queue
+  # database; running it here keeps the host's backup copy on the code that
+  # just landed, right after the queue's own tree is staged.
+  bash "$staged/deploy/host-com2/mesh-queue-backup/install.sh" --apply || return 1
   if (( before_active )); then
     "$systemctl_bin" start "$QUEUE_UNIT" || return 1
-    wait_for_health QUEUE bash "$queue_root/deploy/health_check.sh"
+    wait_for_health QUEUE queue_health_ok bash "$queue_root/deploy/health_check.sh"
   else
     say 'QUEUE_START=SKIPPED_NOT_ACTIVE_BEFORE'
   fi
@@ -791,12 +1067,12 @@ rollback_queue() {
     with_service_stopped "$QUEUE_UNIT" || return 1
     stage_queue_code "$source" || return 1
     "$systemctl_bin" start "$QUEUE_UNIT" || return 1
-    wait_for_health QUEUE_ROLLBACK bash "$queue_root/deploy/health_check.sh"
+    wait_for_health QUEUE_ROLLBACK queue_health_ok bash "$queue_root/deploy/health_check.sh"
     return
   fi
   printf 'COM2_DEPLOY_QUEUE_ROLLBACK=MANUAL PREVIOUS=%s\n' "$previous_dir/$old" >&2
   "$systemctl_bin" start "$QUEUE_UNIT" || return 1
-  wait_for_health QUEUE_ROLLBACK bash "$queue_root/deploy/health_check.sh"
+  wait_for_health QUEUE_ROLLBACK queue_health_ok bash "$queue_root/deploy/health_check.sh"
 }
 
 # Chat migrations used to stop the run and wait for an operator to apply them. The
@@ -918,7 +1194,10 @@ ensure_target_units_ready() {
       b14) ensure_unit_ready B14 "$B14_UNIT" \
         "$python_bin" "$probe_root/deploy/host-com2/b14/health.py" --url "$b14_health_url" ;;
       queue) ensure_unit_ready QUEUE "$QUEUE_UNIT" \
-        bash "$queue_root/deploy/health_check.sh" ;;
+        queue_health_ok bash "$queue_root/deploy/health_check.sh" ;;
+      # Probed by its own active state: the import check for a tree that is
+      # about to be replaced says nothing about this run.
+      executor) ensure_unit_ready EXECUTOR "$EXECUTOR_UNIT" ;;
     esac || fail "UNIT_NOT_READY_${service}"
   done
 }
@@ -926,11 +1205,11 @@ ensure_target_units_ready() {
 run_deploy() {
 
   local sha=$1 origin changed='' services='' pending='' line status=0
-  local mapped='' service='' reason='' state=''
+  local mapped='' service='' reason='' state='' queue_dependent='' executor_dependent=''
   local p01_mismatch=0 excluded_test=0 excluded_docs=0 excluded_example=0 excluded_meta=0 excluded_unmapped=0
-  declare -A wanted=([chat]=0 [p01]=0 [b14]=0 [queue]=0)
-  declare -A reason_files=([chat]=0 [p01]=0 [b14]=0 [queue]=0)
-  declare -A result=([chat]=SKIP [p01]=SKIP [b14]=SKIP [queue]=SKIP)
+  declare -A wanted=([chat]=0 [p01]=0 [b14]=0 [queue]=0 [executor]=0)
+  declare -A reason_files=([chat]=0 [p01]=0 [b14]=0 [queue]=0 [executor]=0)
+  declare -A result=([chat]=SKIP [p01]=SKIP [b14]=SKIP [queue]=SKIP [executor]=SKIP)
 
   "$git_bin" -C "$ops_checkout" fetch --quiet origin main || fail GIT_FETCH_FAILED
   origin=$("$git_bin" -C "$ops_checkout" rev-parse origin/main) || fail GIT_FETCH_FAILED
@@ -952,6 +1231,21 @@ run_deploy() {
     verify_staged_source
     say "SUMMARY=stage:PASS"
     return 0
+  fi
+
+  # Reported, never fatal: an import list this script cannot read must not
+  # stop a deploy, but a silent SKIP is the bug the list exists to end.
+  if queue_dependent=$(queue_import_closure "$resolved" 2>/dev/null); then
+    say "QUEUE_IMPORT_CLOSURE_FILES=$(printf '%s\n' "$queue_dependent" | awk 'NF{n++} END{print n+0}')"
+  else
+    queue_dependent=''
+    say 'QUEUE_IMPORT_CLOSURE=UNKNOWN'
+  fi
+  if executor_dependent=$(executor_import_closure "$resolved" 2>/dev/null); then
+    say "EXECUTOR_IMPORT_CLOSURE_FILES=$(printf '%s\n' "$executor_dependent" | awk 'NF{n++} END{print n+0}')"
+  else
+    executor_dependent=''
+    say 'EXECUTOR_IMPORT_CLOSURE=UNKNOWN'
   fi
 
   if p01_matches_target; then
@@ -985,17 +1279,33 @@ run_deploy() {
     fi
     for service in $mapped; do
       case "$service" in
-        chat|p01|b14|queue)
+        chat|p01|b14|queue|executor)
           wanted[$service]=1
           reason_files[$service]=$((reason_files[$service] + 1))
           ;;
         *) fail INVALID_SERVICE_PATH_MAPPING ;;
       esac
     done
+    # A module the queue imports selects it even when the path maps elsewhere:
+    # the Chat tree and the shared packages are linked into the queue root.
+    if [[ -n $queue_dependent ]] && (( ! wanted[queue] )) \
+      && grep -Fqx -- "$line" <<<"$queue_dependent"; then
+      wanted[queue]=1
+      reason_files[queue]=$((reason_files[queue] + 1))
+      say "QUEUE_IMPORTED=$line"
+    fi
+    # The executor stages kagent and the Core modules kagent imports, so the
+    # same rule decides it: a path that maps elsewhere can still be its code.
+    if [[ -n $executor_dependent ]] && (( ! wanted[executor] )) \
+      && grep -Fqx -- "$line" <<<"$executor_dependent"; then
+      wanted[executor]=1
+      reason_files[executor]=$((reason_files[executor] + 1))
+      say "EXECUTOR_IMPORTED=$line"
+    fi
   done <<<"$changed"
 
   say "EXCLUDED_COUNTS=tests:$excluded_test docs:$excluded_docs env_example:$excluded_example repo_meta:$excluded_meta unmapped:$excluded_unmapped"
-  for line in chat p01 b14 queue; do
+  for line in chat p01 b14 queue executor; do
     if (( wanted[$line] )); then
       services+="${services:+,}$line"
     fi
@@ -1017,7 +1327,7 @@ run_deploy() {
   say "SERVICES=${services:-none}"
   if [[ $old == "$resolved" ]] && [[ -z $services ]]; then
     say 'NOOP=YES'
-    say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP'
+    say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP'
     return 0
   fi
 
@@ -1051,7 +1361,7 @@ run_deploy() {
   # or mirrored source tree when no service was selected.
   if [[ -z $services ]]; then
     say 'NO_SERVICE_CHANGES=YES'
-    say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP'
+    say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP'
     return 0
   fi
 
@@ -1066,10 +1376,10 @@ run_deploy() {
   fi
 
   if ! (( apply )); then
-    for line in chat p01 b14 queue; do
+    for line in chat p01 b14 queue executor; do
       if (( wanted[$line] )); then result[$line]=WOULD_DEPLOY; fi
     done
-    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]}"
+    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} executor:${result[executor]}"
     return 0
   fi
 
@@ -1132,14 +1442,15 @@ PY
   verify_staged_source
 
   local failed=0 ai_status=SKIP ai_code=none ai_output
-  declare -A was_active=([chat]=0 [p01]=0 [b14]=0 [queue]=0)
-  for line in chat p01 b14 queue; do
+  declare -A was_active=([chat]=0 [p01]=0 [b14]=0 [queue]=0 [executor]=0)
+  for line in chat p01 b14 queue executor; do
     if (( ! wanted[$line] )); then continue; fi
     case "$line" in
       chat) if unit_active "$CHAT_UNIT"; then was_active[chat]=1; fi ;;
       p01) if unit_active "$P01_UNIT"; then was_active[p01]=1; fi ;;
       b14) if unit_active "$B14_UNIT"; then was_active[b14]=1; fi ;;
       queue) if unit_active "$QUEUE_UNIT"; then was_active[queue]=1; fi ;;
+      executor) if unit_active "$EXECUTOR_UNIT"; then was_active[executor]=1; fi ;;
     esac
     if "deploy_$line"; then
       result[$line]=PASS
@@ -1193,7 +1504,7 @@ PY
   elif [[ $ai_status == SKIP && $ai_code != none ]]; then
     ai_word="ai:SKIP reason=$ai_code"
   fi
-  say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} $ai_word"
+  say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} executor:${result[executor]} $ai_word"
   if (( extended_smoke )); then
     "$python_bin" "$staged/deploy/host-com2/post_deploy_smoke.py" \
       --base-url "$ai_base_url" --chat-db "$chat_db" \
