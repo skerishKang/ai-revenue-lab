@@ -248,8 +248,8 @@ def test_ui_mounts_an_incremental_thinking_panel_outside_the_answer():
     index = (STATIC / "index.html").read_text(encoding="utf-8")
     panel = (STATIC / "thought-panel.js").read_text(encoding="utf-8")
 
-    assert "window.PadiemChatThoughtPanel.handleFrame(article, frame" in app
-    assert "window.PadiemChatThoughtPanel.settle(" in app
+    assert "window.PadiemChatThoughtPanel?.handleFrame?.(article, frame" in app
+    assert "window.PadiemChatThoughtPanel?.settle?.(" in app
     assert "body.insertBefore(details, content)" in panel
     assert "details.open = true;" not in panel
     assert "details.open = false;" in panel
