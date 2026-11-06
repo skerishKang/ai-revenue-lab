@@ -20,7 +20,7 @@ function freshContext(store) {
   const backing = store || new Map();
   const window = {};
   const ctx = {
-    window,
+    window, setTimeout, clearTimeout,
     BookAIStorage: {
       getItem: key => (backing.has(key) ? backing.get(key) : null),
       setItem: (key, value) => backing.set(key, String(value)),
