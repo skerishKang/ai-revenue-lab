@@ -411,7 +411,12 @@ def build_app():
 
     app.router.on_startup.append(_compose_oracle_mesh_return_source_on_startup)
 
-    async def _arm_identity_keepwarm_on_startup() -> None:
+    # apply_write_freeze below rebinds ``app`` to the ASGI wrapper, so a startup
+    # hook that read the closure name at call time reached
+    # MaintenanceModeMiddleware and failed on ``.router`` (#7035 rollout: the
+    # host app never finished starting). Bind the Starlette app in the default
+    # argument, exactly as the two hooks above and below already do.
+    async def _arm_identity_keepwarm_on_startup(app=app) -> None:
         """Arm the identity keepwarm cycle on the running loop (host boot)."""
 
         if identity_binding is not None:
