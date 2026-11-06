@@ -542,7 +542,7 @@ class ExecutorRoutingTests(unittest.TestCase):
             output=b"pc_user_session_unavailable",
         ))
         outcome = _executor(command_port=port).execute(_dispatch())
-        self.assertEqual((outcome.termination, outcome.exit_code), ("exited", 1))
+        self.assertEqual((outcome.termination, outcome.exit_code), ("not_executed", None))
         self.assertEqual(outcome.body, b"pc_user_session_unavailable")
         self.assertEqual(port.calls[0][3], "user")
     def test_timeout_phase_and_result_keep_the_same_ids(self):
