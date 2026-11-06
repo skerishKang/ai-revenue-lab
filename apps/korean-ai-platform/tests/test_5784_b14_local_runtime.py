@@ -117,7 +117,8 @@ def _attempt(log_id: str, index: int) -> AttemptRecord:
         model_id="agnes-ai/agnes-3.0-flash",
         upstream_model="agnes-3.0-flash",
         outcome="success" if index else "error",
-        error_code=None if index else "upstream_timeout",
+        http_status=None if index else 422,
+        error_code=None if index else "upstream_client_error",
     )
 
 
@@ -147,9 +148,9 @@ def test_a_second_start_applies_nothing_and_records_the_same_migrations(host_dir
     """
     path, _ = host_dirs
     first = SqliteLedger(path)
-    assert first.apply_migrations() == 6
+    assert first.apply_migrations() == 7
     recorded = first.recorded_migrations()
-    assert [name[:4] for name in recorded] == ["0001", "0002", "0003", "0004", "0005", "0006"]
+    assert [name[:4] for name in recorded] == ["0001", "0002", "0003", "0004", "0005", "0006", "0007"]
     first.close()
 
     restarted = SqliteLedger(path)
@@ -178,17 +179,17 @@ def test_a_later_migration_runs_once_and_in_order_after_the_first(host_dirs, tmp
     source = tmp_path / "migrations"
     shutil.copytree(APP_ROOT / "migrations", source)
     ledger = SqliteLedger(path, migrations_dir=source)
-    assert ledger.apply_migrations() == 6
+    assert ledger.apply_migrations() == 7
 
-    # #6788 added the real 0004_b14_attempt_timeout_reason, so the synthetic
-    # "migration added later" becomes 0006 here.
-    (source / "0007_b14_local_marker.sql").write_text(
+    # #6838 adds the real 0007 attempt HTTP status, so the synthetic
+    # "migration added later" becomes 0008 here.
+    (source / "0008_b14_local_marker.sql").write_text(
         "CREATE TABLE b14_local_marker (id INTEGER PRIMARY KEY CHECK (id = 1));",
         encoding="utf-8",
     )
     assert ledger.apply_migrations() == 1
     assert [name[:4] for name in ledger.recorded_migrations()] == [
-        "0001", "0002", "0003", "0004", "0005", "0006", "0007",
+        "0001", "0002", "0003", "0004", "0005", "0006", "0007", "0008",
     ]
     # A third start sees both names recorded and runs neither script again.
     assert ledger.apply_migrations() == 0
@@ -230,7 +231,7 @@ def test_the_credential_source_column_names_two_states_and_defaults_to_pool(host
     """
     path, _ = host_dirs
     ledger = SqliteLedger(path)
-    assert ledger.apply_migrations() == 6
+    assert ledger.apply_migrations() == 7
     import sqlite3
 
     connection = sqlite3.connect(str(path))
@@ -287,6 +288,8 @@ async def test_call_and_attempts_round_trip(host_dirs) -> None:
     assert detail["request_id"] == call.request_id
     assert [row["attempt_index"] for row in detail["attempts"]] == [0, 1]
     assert [row["outcome"] for row in detail["attempts"]] == ["error", "success"]
+    assert detail["attempts"][0]["http_status"] == 422
+    assert detail["attempts"][1]["http_status"] is None
 
 
 @pytest.mark.asyncio

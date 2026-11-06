@@ -1014,6 +1014,7 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                             provider=provider, model_id=selected_model,
                             upstream_model=upstream_model,
                             route_id=attempt_candidate["route_id"], outcome="error",
+                            http_status=getattr(exc, "upstream_status", None),
                             error_code=exc.code,
                             timeout_reason=getattr(exc, "timeout_reason", None),
                             elapsed_ms=int((time.perf_counter() - attempt_started) * 1000),
