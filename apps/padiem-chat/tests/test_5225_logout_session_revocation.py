@@ -28,6 +28,11 @@ from padiem_control_plane import (
     AuthSessionState,
     ProductIdentityLink,
 )
+from padiem_control_plane.tenants import (
+    TenantMembership,
+    TenantMembershipRole,
+    TenantMembershipState,
+)
 
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
@@ -144,8 +149,22 @@ class CanonicalAuthority:
     def create_tenant(self):
         return "tenant_0123456789abcdef0123456789abcdef"
 
-    def assign_tenant_membership(self, *, tenant_id, canonical_subject_id):
+    def assign_tenant_membership(self, *, tenant_id, canonical_subject_id, role=None):
         self.memberships[:] = [tenant_id]
+        return TenantMembership(
+            tenant_id=tenant_id,
+            canonical_subject_id=canonical_subject_id,
+            state=TenantMembershipState.ACTIVE,
+            role=TenantMembershipRole(role) if role is not None else TenantMembershipRole.OWNER,
+        )
+
+    def resolve_active_tenant_membership(self, *, tenant_id, canonical_subject_id, now):
+        return TenantMembership(
+            tenant_id=tenant_id,
+            canonical_subject_id=canonical_subject_id,
+            state=TenantMembershipState.ACTIVE,
+            role=TenantMembershipRole.OWNER,
+        )
 
     # -- canonical session authority ---------------------------------------
     def establish_auth_session(self, *, product_id, subject, authenticated_at, not_after):

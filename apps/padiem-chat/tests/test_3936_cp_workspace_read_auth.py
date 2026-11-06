@@ -1,7 +1,5 @@
-"""#3936: canonical membership RPC stays compatible with CP's role-aware producer.
+"""Password login repairs its personal membership through the existing role RPC.
 
-A new password user may sign in without a canonical shadow when the assignment
-RPC rejects a legitimate role=None response after the server writes membership.
 No live user, D1, or Cloudflare RPC is used by these focused regressions.
 """
 from __future__ import annotations
@@ -26,6 +24,7 @@ class IdentityBinding:
     def __init__(self, membership):
         self.membership = membership
         self.calls = []
+        self.assign_payloads = []
 
     async def resolve_or_create_product_link(self, payload):
         self.calls.append("link")
@@ -48,7 +47,11 @@ class IdentityBinding:
 
     async def assign_tenant_membership(self, payload):
         self.calls.append("assign")
-        return {"ok": True, "membership": dict(self.membership)}
+        self.assign_payloads.append(dict(payload))
+        membership = dict(self.membership)
+        if payload.get("role") is not None:
+            membership["role"] = payload["role"]
+        return {"ok": True, "membership": membership}
 
     async def establish_auth_session(self, payload):
         self.calls.append("session")
@@ -102,6 +105,11 @@ async def test_real_cp_membership_response_permits_shadow_persistence(wire):
     assert shadow.saved is not None, "trusted login must not silently lose canonical shadow"
     assert shadow.saved.auth_session.tenant_id == TENANT
     assert binding.calls == ["link", "memberships", "create_tenant", "assign", "session"]
+    assert binding.assign_payloads == [{
+        "tenant_id": TENANT,
+        "canonical_subject_id": SUBJECT,
+        "role": "owner",
+    }]
 
 
 @pytest.mark.parametrize("extra", [{"role": "superuser"}, {"workspace_id": "injected"}, {"role": None, "owner": USER}])

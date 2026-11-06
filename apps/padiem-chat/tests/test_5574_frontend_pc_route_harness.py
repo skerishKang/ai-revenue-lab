@@ -63,6 +63,11 @@ from padiem_control_plane import (
     ProductIdentityLink,
     SubjectType,
 )
+from padiem_control_plane.tenants import (
+    TenantMembership,
+    TenantMembershipRole,
+    TenantMembershipState,
+)
 from padiem_control_plane.b54_identity_bridge import (
     B54_PRODUCT_ID,
     TrustedB54ServerAuthEvidence,
@@ -71,7 +76,7 @@ from padiem_control_plane.b54_identity_bridge import (
 
 OWNER = "usr_" + "5" * 32
 SUBJECT_ID = "sub-padiem-owner-5574"
-TENANT_ID = "tenant-5574"
+TENANT_ID = "tenant_0123456789abcdef0123456789abcdef"
 ACCOUNT_REF = "acct-5574"
 DEVICE_ID = "office-pc"
 WORKSPACE_ID = "memory-5574"
@@ -480,6 +485,14 @@ class _IdentityAuthority:
     def resolve_active_memberships(self, *, canonical_subject_id):
         assert canonical_subject_id == SUBJECT_ID
         return (TENANT_ID,)
+
+    def resolve_active_tenant_membership(self, *, tenant_id, canonical_subject_id, now):
+        return TenantMembership(
+            tenant_id=tenant_id,
+            canonical_subject_id=canonical_subject_id,
+            state=TenantMembershipState.ACTIVE,
+            role=TenantMembershipRole.OWNER,
+        )
 
     def establish_auth_session(
         self, *, product_id, subject, authenticated_at, not_after,
