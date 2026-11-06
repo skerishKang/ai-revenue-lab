@@ -783,6 +783,29 @@ def test_pre_start_upstream_errors_keep_json_http_status(
     assert response.json()["error"]["code"] == expected_code
 
 
+def test_pre_start_unexpected_error_logs_traceback_and_keeps_generic_response(
+    monkeypatch, caplog,
+):
+    from app.pilot import stream_gateway
+
+    def fail_validation(_raw):
+        raise RuntimeError("synthetic pre-start failure")
+
+    monkeypatch.setattr(stream_gateway, "_validate_preview_body", fail_validation)
+    with caplog.at_level("ERROR", logger=stream_gateway.logger.name):
+        response = _client().post(STREAM_URL, json=_payload())
+
+    assert response.status_code == 500
+    assert response.json()["error"]["code"] == "internal_error"
+    assert "synthetic pre-start failure" not in response.text
+    record = next(
+        record for record in caplog.records
+        if "stream_preview_pre_start_internal_error" in record.getMessage()
+    )
+    assert record.exc_info is not None
+    assert record.exc_info[0] is RuntimeError
+
+
 def test_malformed_first_event_fails_before_sse_200():
     async def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, content=b"data: not-json\n\n")

@@ -1048,6 +1048,9 @@ async def _model_first_ndjson(
                     yield line({"type": "error", "code": "model_first_empty"})
                     return
                 if first.tool_call is not None:
+                    if getattr(first, "delta_thought", None):
+                        timing.mark("first_token")
+                        yield line({"type": "thought", "text": getattr(first, "delta_thought", None)})
                     tool_call = first.tool_call
                 else:
                     if getattr(first, "delta_thought", None):
@@ -1058,6 +1061,12 @@ async def _model_first_ndjson(
                         parts.append(first.delta_content)
                         yield line({"type": "delta", "text": first.delta_content})
                     async for event in stream:
+                        candidate_tool_call = getattr(event, "tool_call", None)
+                        if candidate_tool_call is not None:
+                            if getattr(event, "delta_thought", None):
+                                yield line({"type": "thought", "text": getattr(event, "delta_thought", None)})
+                            tool_call = candidate_tool_call
+                            break
                         if getattr(event, "delta_thought", None):
                             yield line({"type": "thought", "text": getattr(event, "delta_thought", None)})
                         if event.delta_content:
