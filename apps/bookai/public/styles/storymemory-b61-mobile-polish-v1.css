@@ -232,6 +232,9 @@ body.smr-theme-dark .memory-rail .sheet-close:hover { color: #fffdf8 !important;
     min-width: 46px !important;
     min-height: 46px !important;
   }
+  #index .chapter-nav .chapter-open {
+    min-width: 108px !important;
+  }
   #index .chapter-dots {
     left: 12px !important;
     right: 12px !important;
