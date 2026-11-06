@@ -231,7 +231,12 @@ async def test_host_finish_reuses_canonical_google_account_or_creates_once(
     responses, calls, notified, issued = await host_roundtrip(
         history, host_factory=host_factory, monkeypatch=monkeypatch)
     assert [response.status_code for response in responses] == [302, 302]
-    assert len(calls) == 2 and notified == issued == [uid, uid]
+    # 261106 · the second finish for the same canonical subject inside the TTL
+    # window is answered by the authority's process cache (perf/identity-
+    # resolve-subject-261106), so the reverse lookup RPC runs once. The
+    # account-reuse contract itself is unchanged: one user row, the same uid
+    # notified and issued for both finishes.
+    assert len(calls) == 1 and notified == issued == [uid, uid]
     rows = connection.execute("SELECT * FROM users").fetchall()
     assert len(rows) == 1 and rows[0]["id"] == uid
     assert rows[0]["provider_subject"] == (GOOGLE_SUBJECT if existing else "shared:" + ACCOUNT)
