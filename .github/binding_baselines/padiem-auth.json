@@ -18,6 +18,10 @@
       "type": "service"
     },
     {
+      "name": "PADIEM_ACCOUNT_DELETE_RPC_SECRET",
+      "type": "secret_text"
+    },
+    {
       "name": "PADIEM_AUTH_CLIENTS",
       "type": "plain_text"
     },
