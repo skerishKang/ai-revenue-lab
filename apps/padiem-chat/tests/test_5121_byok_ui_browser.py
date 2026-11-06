@@ -22,7 +22,7 @@ STATIC = Path(__file__).resolve().parents[1] / "static"
 FAKE_KEY = "test-5121-synthetic-key-0123456789abcdef"
 PROVIDER = "opencode-go"
 MODEL = "opencode-go/beam-free"
-DISPLAY_NAME = "Padiem Custom (OpenCode Go)"
+DISPLAY_NAME = "Padiem Custom"
 DEFAULT_ENDPOINT = "https://opencode.ai/inference/go/v1"
 MANUAL_PROVIDER = "qa-manual"
 MANUAL_DISPLAY_NAME = "QA Manual Provider"
@@ -316,7 +316,7 @@ def test_desktop_custom_key_save_replace_delete_and_selection(browser, static_se
             ".mode-custom-heading .status-spark, .mode-custom-heading svg,"
             " .mode-custom-heading img, .mode-custom-heading [aria-hidden='true']"
         ).count() == 0
-        expect(page.locator(".mode-option-model")).to_have_text("모델 " + MODEL)
+        expect(page.locator(".mode-option-model")).to_have_text("내 API 키로 직접 호출")
         panel_text = page.locator(".mode-presentation-panel").inner_text()
         assert "업데이트 내역" not in panel_text
         assert "연결 테스트" not in panel_text
@@ -324,6 +324,9 @@ def test_desktop_custom_key_save_replace_delete_and_selection(browser, static_se
         custom_option = page.locator('[data-mode-value="custom"]')
         assert custom_option.is_enabled()
         assert DISPLAY_NAME in custom_option.inner_text()
+        # #6828: the grade row never names the supplier or an internal model id.
+        assert PROVIDER not in custom_option.inner_text()
+        assert MODEL not in custom_option.inner_text()
         assert "Padiem Free" in page.locator('[data-mode-value="free"]').inner_text()
 
         # Selecting without a key keeps the card open and focuses the key field.

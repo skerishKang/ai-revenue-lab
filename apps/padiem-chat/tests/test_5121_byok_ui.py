@@ -33,7 +33,7 @@ def test_model_card_adds_a_custom_lane_separate_from_padiem_tiers() -> None:
     assert 'modePanel.append(header, list, truth, createCustomSection());' in CAPABILITIES
     assert 'customOption.dataset.modeValue = "custom";' in CAPABILITIES
     assert '"mode-option mode-option--custom"' in CAPABILITIES
-    assert 'customOptionTitle.textContent = provider ? provider.display_name : copy.option;' in CAPABILITIES
+    assert "if (customOptionTitle) customOptionTitle.textContent = copy.option;" in CAPABILITIES
 
     section = CSS.split(".mode-custom-section {", 1)[1].split("}", 1)[0]
     assert "border-top: 1px solid var(--line)" in section
@@ -41,6 +41,29 @@ def test_model_card_adds_a_custom_lane_separate_from_padiem_tiers() -> None:
     assert "max-height: min(72vh, 640px)" in panel
     assert "overflow-y: auto" in panel
     assert "overscroll-behavior: contain" in panel
+
+
+def test_custom_tier_row_shows_no_supplier_or_model_name() -> None:
+    """#6828: a PADIEM grade row never names a supplier or an internal model id."""
+    from app.byok_credentials import CUSTOM_PROVIDERS, DEFAULT_CUSTOM_PROVIDER
+
+    spec = CUSTOM_PROVIDERS[DEFAULT_CUSTOM_PROVIDER]
+    assert spec.display_name == "Padiem Custom"
+    assert "(" not in spec.display_name
+    assert spec.display_name == spec.display_name.replace("(", "").strip()
+
+    # The rendered row text is built only from PADIEM copy: the supplier
+    # display name and the model id are not interpolated into it.
+    row = CAPABILITIES.split("if (customOptionTitle)", 1)[1].split("if (customOptionState)", 1)[0]
+    assert "provider.display_name" not in row
+    assert "copy.modelLabel" not in row
+    assert "customOptionTitle.textContent = copy.option;" in row
+    assert "customOptionModel.textContent = provider" in row
+    assert "copy.optionHint" in row
+    # The whole grade-facing copy block is free of supplier and model ids.
+    copy_block = _custom_copy_block().lower()
+    assert "opencode" not in copy_block
+    assert "beam" not in copy_block
 
 
 def _custom_copy_block() -> str:
