@@ -2901,7 +2901,9 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
     #: The wait before the next ask. It grows only across rounds the lane itself
     #: answered empty, and resets the moment the queue produces work.
     gap = IDLE_POLL_BASE_SECONDS
-    idle_reported_at = 0.0
+    #: None, not 0.0: monotonic() is seconds since boot, and a fresh container can
+    #: report less than the heartbeat interval.
+    idle_reported_at = None
     while True:
         try:
             result = executor.run_once()
@@ -2920,7 +2922,8 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             # longer - a skipped round goes back to the base so a failover landing on
             # this host starts claiming on the next second.
             if (executor.last_round == ROUND_IDLE
-                    and time.monotonic() - idle_reported_at >= IDLE_HEARTBEAT_SECONDS):
+                    and (idle_reported_at is None
+                         or time.monotonic() - idle_reported_at >= IDLE_HEARTBEAT_SECONDS)):
                 print("oracle-mesh-executor poll idle", flush=True)
                 idle_reported_at = time.monotonic()
             time.sleep(gap)
