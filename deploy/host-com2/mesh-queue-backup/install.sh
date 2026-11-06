@@ -2,6 +2,7 @@
 # Installs the PC queue backup script and its units. Never starts or enables
 # anything, and never touches the queue database — the timer fires the script
 # and the script itself reads the queue read-only (VACUUM INTO).
+# Offline packaging checks exercise the installer without changing host state.
 set -euo pipefail
 here=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 apply=0
