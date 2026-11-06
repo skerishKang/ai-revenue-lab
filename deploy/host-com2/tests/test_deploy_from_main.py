@@ -172,6 +172,7 @@ journalctl_bin=$JOURNALCTL_BIN
 executor_root=$ORACLE_MESH_ROOT
 executor_src=$executor_root/kagent-src
 executor_releases=$executor_root/src
+executor_unit_dir=$EXECUTOR_UNIT_DIR
 python_bin=$PYTHON_BIN
 git_bin=git
 ai_check=${FAKE_AI_MODE:-warn}
@@ -368,6 +369,8 @@ class DeployHarness(unittest.TestCase):
         self.queue.mkdir()
         self.units = self.tmp / "units"
         self.units.mkdir()
+        self.executor_units = self.tmp / "executor-units"
+        self.executor_units.mkdir()
         self.db = self.tmp / "chat.sqlite3"
         self._ledger(
             ["001_auth_history.sql"]
@@ -488,6 +491,7 @@ sys.exit(0 if code == "none" else 1)
             "PYTHON_BIN": Path(sys.executable).as_posix(),
             "QUEUE_ROOT": self.queue.as_posix(),
             "QUEUE_UNIT_DIR": self.units.as_posix(),
+            "EXECUTOR_UNIT_DIR": self.executor_units.as_posix(),
         }
         return subprocess.run(
             [BASH_BIN, "-c", APPLY_WRAPPER, "bash",
@@ -1490,6 +1494,12 @@ class OracleMeshExecutorScenarioTest(DeployHarness):
         "apps/korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py": (
             "import padiem_ai_core\n\n# executor\n"
         ),
+        # The unit source this repository carries for the executor (#6892
+        # follow-up ②); the host had the only copy before it.
+        "deploy/host-com2/oracle-mesh/padiem-oracle-mesh-executor.service.example": (
+            (REPO / "deploy/host-com2/oracle-mesh/"
+             "padiem-oracle-mesh-executor.service.example").read_text(encoding="utf-8")
+        ),
     }
 
     def setUp(self) -> None:
@@ -1570,6 +1580,87 @@ class OracleMeshExecutorScenarioTest(DeployHarness):
             "COM2_DEPLOY_DECISION_EXECUTOR=REDEPLOY reason_files=1", result.stdout
         )
         self.assertIn("executor:PASS", result.stdout)
+
+    def _installed_unit(self) -> Path:
+        return self.executor_units / "padiem-oracle-mesh-executor.service"
+
+    def _install_unit(self) -> str:
+        # The unit the host runs today: the measured directives, plus a host
+        # setting this repository does not know (the drop-in's queue origin).
+        text = (
+            "[Service]\n"
+            "User=padiem-mesh\n"
+            "Restart=always\n"
+            "Environment=ORACLE_MESH_QUEUE_ORIGIN=http://127.0.0.1:8797\n"
+        )
+        self._installed_unit().write_text(text, encoding="utf-8")
+        self._installed_unit().chmod(0o640)
+        return text
+
+    def _example_text(self) -> str:
+        return (self.ops / "deploy/host-com2/oracle-mesh/"
+                "padiem-oracle-mesh-executor.service.example").read_text(encoding="utf-8")
+
+    def test_a_differing_unit_is_reported_and_left_alone(self) -> None:
+        installed = self._install_unit()
+
+        result = self._run_apply()
+
+        output = result.stdout + result.stderr
+        self.assertEqual(result.returncode, 0, output)
+        drift = next(
+            line for line in result.stdout.splitlines() if "EXECUTOR_UNIT_DRIFT=" in line
+        )
+        keys = drift.split("YES:", 1)[1].split(",")
+        # The unit has directives the repository's copy does not carry, and the
+        # copy carries directives the host does not. An identical value is not
+        # drift.
+        self.assertIn("Environment", keys, drift)
+        self.assertIn("ExecStart", keys, drift)
+        self.assertNotIn("User", keys, drift)
+        self.assertIn("COM2_DEPLOY_EXECUTOR_UNITS=CONFIRM_ONLY", result.stdout)
+        self.assertEqual(self._installed_unit().read_text(encoding="utf-8"), installed)
+        self.assertEqual(list(self.executor_units.glob("*.bak-*")), [])
+        self.assertEqual(self._calls().count("systemctl daemon-reload"), 0)
+        self.assertIn("executor:PASS", result.stdout)
+
+    def test_the_sync_flag_copies_and_backs_up_the_unit(self) -> None:
+        installed = self._install_unit()
+        self.env = {**self.env, "PADIEM_COM2_EXECUTOR_UNIT_SYNC": "1"}
+
+        result = self._run_apply()
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn(
+            "COM2_DEPLOY_EXECUTOR_UNITS=UPDATED:padiem-oracle-mesh-executor.service",
+            result.stdout,
+        )
+        self.assertEqual(self._installed_unit().read_text(encoding="utf-8"),
+                         self._example_text())
+        backup = self._installed_unit().with_name(
+            "padiem-oracle-mesh-executor.service.bak-" + self.second
+        )
+        self.assertEqual(backup.read_text(encoding="utf-8"), installed)
+        # The installed mode is the host's, not the example's.
+        self.assertEqual(self._installed_unit().stat().st_mode & 0o777, 0o640)
+        self.assertEqual(self._calls().count("systemctl daemon-reload"), 1, self._calls())
+
+    def test_a_rollback_puts_the_installed_unit_back(self) -> None:
+        installed = self._install_unit()
+        self.env = {**self.env, "PADIEM_COM2_EXECUTOR_UNIT_SYNC": "1"}
+        (self.fakes / "journal_traceback").write_text("1\n", encoding="utf-8")
+
+        result = self._run_apply()
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("executor:ROLLBACK", result.stdout)
+        self.assertIn(
+            "COM2_DEPLOY_EXECUTOR_UNITS_ROLLBACK=RESTORED:padiem-oracle-mesh-executor.service",
+            result.stdout,
+        )
+        self.assertEqual(self._installed_unit().read_text(encoding="utf-8"), installed)
+        # Forward and back: the unit changed both times.
+        self.assertEqual(self._calls().count("systemctl daemon-reload"), 2, self._calls())
 
     def test_a_traceback_after_start_puts_the_previous_copy_back(self) -> None:
         (self.fakes / "journal_traceback").write_text("1\n", encoding="utf-8")

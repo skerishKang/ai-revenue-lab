@@ -37,6 +37,9 @@
 #   PADIEM_COM2_MESH_QUEUE_APP   the PC queue install root (its code also from the mirror)
 #   PADIEM_COM2_MESH_QUEUE_USER  the account that owns that root
 #   PADIEM_COM2_QUEUE_UNIT_DIR   where the queue units are installed (/etc/systemd/system)
+#   PADIEM_COM2_EXECUTOR_UNIT_DIR  where the executor's unit is installed (/etc/systemd/system)
+#   PADIEM_COM2_EXECUTOR_UNIT_SYNC 1 copies a differing executor unit; default 0
+#                                reports EXECUTOR_UNIT_DRIFT and changes nothing
 #   PADIEM_COM2_HEALTH_TIMEOUT / PADIEM_COM2_HEALTH_INTERVAL
 #                                how long a start or a rollback may take to become
 #                                healthy (240s, 2s)
@@ -109,6 +112,8 @@ queue_unit_dir=${PADIEM_COM2_QUEUE_UNIT_DIR:-/etc/systemd/system}
 executor_root=${PADIEM_COM2_ORACLE_MESH_ROOT:-/opt/padiem/oracle-mesh}
 executor_src=$executor_root/kagent-src
 executor_releases=$executor_root/src
+executor_unit_dir=${PADIEM_COM2_EXECUTOR_UNIT_DIR:-/etc/systemd/system}
+executor_unit_sync=${PADIEM_COM2_EXECUTOR_UNIT_SYNC:-0}
 systemctl_bin=${PADIEM_COM2_SYSTEMCTL:-systemctl}
 journalctl_bin=${PADIEM_COM2_JOURNALCTL:-journalctl}
 python_bin=${PADIEM_COM2_PYTHON:-python3}
@@ -248,6 +253,10 @@ service_for_path() {
       printf '%s\n' p01
       printf '%s\n' b14
       printf '%s\n' queue ;;
+    # The executor's unit source: only its sync step reads it, so a change here
+    # has to select the executor or the new file never reaches the check.
+    deploy/host-com2/oracle-mesh/*)
+      printf '%s\n' executor ;;
     *) : ;;
   esac
   case "$1" in
@@ -979,6 +988,89 @@ executor_rollback_source() {
   return 1
 }
 
+# The executor's unit was the one deployment input with no source in this
+# repository: a change meant editing /etc/systemd/system by hand and nothing
+# recorded what the host ran (#6892 follow-up). deploy/host-com2/oracle-mesh
+# holds the example, and this step compares it with the installed unit. The
+# installed unit may carry host settings this repository does not know, so the
+# default is to report the drifting directives and change nothing; copying needs
+# PADIEM_COM2_EXECUTOR_UNIT_SYNC=1. executor.env is never read or written.
+EXECUTOR_UNIT_EXAMPLE=deploy/host-com2/oracle-mesh/padiem-oracle-mesh-executor.service.example
+
+executor_unit_directives() {
+  # $1 a unit file: one directive per line, sections and comments dropped, so a
+  # moved block or a reworded comment is not drift.
+  sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' \
+    -e '/^[#;]/d' -e '/^\[/d' -e '/^$/d' -- "$1"
+}
+
+executor_unit_drift_keys() {
+  # $1 the example, $2 the installed unit: the directive names whose value
+  # differs, or that only one side carries.
+  local differing
+  differing=$( { diff <(executor_unit_directives "$1" | sort) \
+                     <(executor_unit_directives "$2" | sort) || true; } \
+             | sed -n 's/^[<>][[:space:]]//p' ) || true
+  printf '%s' "$differing" | cut -d= -f1 | sort -u | paste -sd, -
+}
+
+sync_executor_unit_file() {
+  # $1 the staged tree, $2 the commit a backup is named after.
+  local source=$1 sha=$2 example target drift
+  example="$source/$EXECUTOR_UNIT_EXAMPLE"
+  target="$executor_unit_dir/$EXECUTOR_UNIT"
+  [[ -f $example ]] || { say 'EXECUTOR_UNIT_EXAMPLE=MISSING'; return 0; }
+  if [[ ! -f $target ]]; then
+    say 'EXECUTOR_UNIT_DRIFT=YES:NOT_INSTALLED'
+  else
+    if cmp -s -- "$example" "$target"; then
+      say 'EXECUTOR_UNITS=SAME'
+      return 0
+    fi
+    drift=$(executor_unit_drift_keys "$example" "$target")
+    # An identical directive set with different bytes is layout or comments.
+    say "EXECUTOR_UNIT_DRIFT=YES:${drift:-COMMENT_OR_LAYOUT}"
+  fi
+  if [[ $executor_unit_sync != 1 ]]; then
+    say 'EXECUTOR_UNITS=CONFIRM_ONLY'
+    return 0
+  fi
+  if [[ -e $target ]]; then
+    # The copy this deploy replaces is the only way back; a re-run of the same
+    # commit keeps the first backup.
+    if [[ ! -e $target.bak-$sha ]]; then
+      cp -p -- "$target" "$target.bak-$sha" \
+        || { say 'EXECUTOR_UNIT_BACKUP_FAILED'; return 1; }
+    fi
+    # cp into an existing file keeps that file's mode and owner.
+    cp -- "$example" "$target" || { say 'EXECUTOR_UNIT_COPY_FAILED'; return 1; }
+  else
+    install -m 0644 -- "$example" "$target" \
+      || { say 'EXECUTOR_UNIT_COPY_FAILED'; return 1; }
+  fi
+  "$systemctl_bin" daemon-reload || { say 'EXECUTOR_UNIT_RELOAD_FAILED'; return 1; }
+  say "EXECUTOR_UNITS=UPDATED:$EXECUTOR_UNIT"
+}
+
+restore_executor_unit_file() {
+  # $1 the commit whose install is being rolled back. Only a deploy that copied
+  # the unit has a backup to put back.
+  local sha=$1 target="$executor_unit_dir/$EXECUTOR_UNIT"
+  if [[ ! -f $target.bak-$sha ]]; then
+    say 'EXECUTOR_UNITS_ROLLBACK=NONE'
+    return 0
+  fi
+  if [[ -e $target ]]; then
+    cp -- "$target.bak-$sha" "$target" \
+      || { say 'EXECUTOR_UNIT_RESTORE_FAILED'; return 1; }
+  else
+    cp -p -- "$target.bak-$sha" "$target" \
+      || { say 'EXECUTOR_UNIT_RESTORE_FAILED'; return 1; }
+  fi
+  "$systemctl_bin" daemon-reload || { say 'EXECUTOR_UNIT_ROLLBACK_RELOAD_FAILED'; return 1; }
+  say "EXECUTOR_UNITS_ROLLBACK=RESTORED:$EXECUTOR_UNIT"
+}
+
 deploy_executor() {
   local target="$executor_releases/$resolved" preserve before_active=0 started
   if unit_active "$EXECUTOR_UNIT"; then before_active=1; fi
@@ -987,6 +1079,8 @@ deploy_executor() {
   stage_executor_code "$staged" "$target" "$preserve" || return 1
   link_executor_source "$target" || return 1
   assert_service_readable EXECUTOR_LIVE "$target" "$read_check_user" || return 1
+  # Reported by default; only PADIEM_COM2_EXECUTOR_UNIT_SYNC=1 replaces the unit.
+  sync_executor_unit_file "$staged" "$resolved" || return 1
   if (( before_active )); then
     started=$(date +%s)
     "$systemctl_bin" start "$EXECUTOR_UNIT" || return 1
@@ -1005,9 +1099,12 @@ rollback_executor() {
     link_executor_source "$target" || return 1
   else
     say 'EXECUTOR_ROLLBACK=NO_PREVIOUS_COPY'
+    restore_executor_unit_file "$resolved" || return 1
     "$systemctl_bin" start "$EXECUTOR_UNIT" || return 1
     return 1
   fi
+  # A deploy that copied the unit left the copy it replaced.
+  restore_executor_unit_file "$resolved" || return 1
   started=$(date +%s)
   "$systemctl_bin" start "$EXECUTOR_UNIT" || return 1
   wait_unit_active EXECUTOR_ROLLBACK "$EXECUTOR_UNIT" || return 1
