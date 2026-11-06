@@ -264,6 +264,7 @@ def _encode_event(
     decision: rcore.RouteDecision,
     attempt_count: int = 1,
     fallback_used: bool = False,
+    tools_declared: bool = False,
 ) -> bytes:
     if event.tool_call is not None:
         call = event.tool_call
@@ -277,7 +278,7 @@ def _encode_event(
             payload["signature"] = call.signature
         return b"event: tool_call\n" + _encode_data_frame(payload)
     if event.done:
-        if event.finish_reason is not None:
+        if tools_declared and event.finish_reason is not None:
             return b"event: done\n" + _encode_data_frame({
                 "finish_reason": event.finish_reason,
             })
@@ -543,6 +544,7 @@ async def _stream_body(
             yield _encode_event(
                 event, request_id=request_id, decision=decision,
                 attempt_count=attempt_count, fallback_used=fallback_used,
+                tools_declared=tools_declared,
             )
             if event.done:
                 outcome = OUTCOME_SUCCESS
@@ -557,6 +559,7 @@ async def _stream_body(
             yield _encode_event(
                 event, request_id=request_id, decision=decision,
                 attempt_count=attempt_count, fallback_used=fallback_used,
+                tools_declared=tools_declared,
             )
             if event.done:
                 outcome = OUTCOME_SUCCESS
