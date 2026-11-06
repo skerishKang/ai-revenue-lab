@@ -22,7 +22,11 @@ from padiem_control_plane import (
     ProductIdentityLink,
     SubjectType,
 )
-from padiem_control_plane.tenants import TenantMembership
+from padiem_control_plane.tenants import (
+    TenantMembership,
+    TenantMembershipRole,
+    TenantMembershipState,
+)
 
 PADIEM_CHAT_PRODUCT_ID = "b62"
 
@@ -96,8 +100,12 @@ class TrustedControlPlaneIdentityAuthority(Protocol):
     def create_tenant(self) -> str: ...
 
     def assign_tenant_membership(
-        self, *, tenant_id: str, canonical_subject_id: str
-    ) -> None: ...
+        self,
+        *,
+        tenant_id: str,
+        canonical_subject_id: str,
+        role: str | None = None,
+    ) -> TenantMembership: ...
 
     def resolve_connector_workspace(self, *, session_id: str) -> Any: ...
 
@@ -213,12 +221,58 @@ async def bridge_trusted_product_auth(
                 tenant_id = await _maybe_await(authority.create_tenant())
                 if not isinstance(tenant_id, str) or not tenant_id:
                     raise ValueError("invalid canonical tenant")
-                await _maybe_await(
+                membership = await _maybe_await(
                     authority.assign_tenant_membership(
                         tenant_id=tenant_id,
                         canonical_subject_id=subject.subject_id,
+                        role=TenantMembershipRole.OWNER.value,
                     )
                 )
+                if (
+                    not isinstance(membership, TenantMembership)
+                    or membership.tenant_id != tenant_id
+                    or membership.canonical_subject_id != subject.subject_id
+                    or membership.state is not TenantMembershipState.ACTIVE
+                    or membership.role is not TenantMembershipRole.OWNER
+                ):
+                    raise ValueError("invalid personal tenant owner membership")
+            elif len(memberships) == 1:
+                tenant_id = memberships[0]
+                try:
+                    membership = await _maybe_await(
+                        authority.resolve_active_tenant_membership(
+                            tenant_id=tenant_id,
+                            canonical_subject_id=subject.subject_id,
+                            now=evidence.authenticated_at,
+                        )
+                    )
+                except Exception as exc:
+                    if getattr(exc, "code", None) != "canonical_tenant_membership_role_missing":
+                        raise
+                    membership = None
+                if membership is not None and (
+                    not isinstance(membership, TenantMembership)
+                    or membership.tenant_id != tenant_id
+                    or membership.canonical_subject_id != subject.subject_id
+                    or membership.state is not TenantMembershipState.ACTIVE
+                ):
+                    raise ValueError("invalid existing personal tenant membership")
+                if membership is None or membership.role is None:
+                    membership = await _maybe_await(
+                        authority.assign_tenant_membership(
+                            tenant_id=tenant_id,
+                            canonical_subject_id=subject.subject_id,
+                            role=TenantMembershipRole.OWNER.value,
+                        )
+                    )
+                    if (
+                        not isinstance(membership, TenantMembership)
+                        or membership.tenant_id != tenant_id
+                        or membership.canonical_subject_id != subject.subject_id
+                        or membership.state is not TenantMembershipState.ACTIVE
+                        or membership.role is not TenantMembershipRole.OWNER
+                    ):
+                        raise ValueError("invalid personal tenant owner membership")
             elif len(memberships) > 1:
                 raise ValueError("ambiguous canonical tenant membership")
         except Exception as exc:

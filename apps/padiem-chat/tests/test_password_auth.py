@@ -3,11 +3,17 @@ from __future__ import annotations
 import asyncio
 from functools import lru_cache
 from datetime import datetime, timedelta, timezone
+from types import SimpleNamespace
 
 import httpx
 import pytest
 
 from padiem_control_plane import AuthSessionSnapshot, ProductIdentityLink
+from padiem_control_plane.tenants import (
+    TenantMembership,
+    TenantMembershipRole,
+    TenantMembershipState,
+)
 
 from app.auth import SESSION_COOKIE
 from app.auth_abuse import (
@@ -19,6 +25,7 @@ from app.auth_abuse import (
 )
 from app.auth_routes import _parse_locked_until, _password_lock_minutes
 from app.config import ConfigError, Settings
+from app.control_plane_identity import IdentityBridgeError
 from app.history import HistoryConflict, PasswordCredential, UserProfile
 from app.main import create_app
 from app.password_auth import (
@@ -149,6 +156,7 @@ class Authority:
         self.link_calls = []
         self.session_calls = []
         self.memberships: list[str] = []
+        self.membership_roles: dict[str, TenantMembershipRole | None] = {}
         self.created = 0
         self.assigned = []
 
@@ -168,9 +176,32 @@ class Authority:
         self.created += 1
         return "tenant_0123456789abcdef0123456789abcdef"
 
-    def assign_tenant_membership(self, *, tenant_id, canonical_subject_id):
-        self.assigned.append((tenant_id, canonical_subject_id))
+    def assign_tenant_membership(self, *, tenant_id, canonical_subject_id, role=None):
+        self.assigned.append((tenant_id, canonical_subject_id, role))
         self.memberships[:] = [tenant_id]
+        if role is not None:
+            self.membership_roles[tenant_id] = TenantMembershipRole(role)
+        return TenantMembership(
+            tenant_id=tenant_id,
+            canonical_subject_id=canonical_subject_id,
+            state=TenantMembershipState.ACTIVE,
+            role=self.membership_roles.get(tenant_id),
+        )
+
+    def resolve_active_tenant_membership(self, *, tenant_id, canonical_subject_id, now):
+        role = self.membership_roles.get(tenant_id)
+        if role is None:
+            raise IdentityBridgeError(
+                503,
+                "canonical_tenant_membership_role_missing",
+                "Canonical membership role is unavailable.",
+            )
+        return TenantMembership(
+            tenant_id=tenant_id,
+            canonical_subject_id=canonical_subject_id,
+            state=TenantMembershipState.ACTIVE,
+            role=role,
+        )
 
     def establish_auth_session(self, **kwargs):
         self.session_calls.append(kwargs)
@@ -181,6 +212,22 @@ class Authority:
             issued_at=kwargs["authenticated_at"],
             expires_at=kwargs["not_after"],
             tenant_id=self.memberships[0] if len(self.memberships) == 1 else None,
+        )
+
+
+class SuccessfulStreamClient:
+    async def stream_text_auto(self, messages, *, skill=None, additional_system_context=None):
+        yield SimpleNamespace(
+            delta_content="응답",
+            done=False,
+            tool_call=None,
+            delta_thought=None,
+        )
+        yield SimpleNamespace(
+            delta_content=None,
+            done=True,
+            tool_call=None,
+            delta_thought=None,
         )
 
 
@@ -253,6 +300,8 @@ async def test_password_register_creates_session_and_personal_tenant() -> None:
         control_plane_identity_authority=authority,
         identity_shadow_store=shadow,
     )
+    app.state.b14_client = SuccessfulStreamClient()
+    app.state.usage_gate_enforced = False
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
@@ -266,20 +315,70 @@ async def test_password_register_creates_session_and_personal_tenant() -> None:
             },
         )
         status = await client.get("/api/auth/status")
+        streamed = await client.post(
+            "/api/chat/stream",
+            json={"messages": [{"role": "user", "content": "답해 주세요"}]},
+        )
 
     assert response.status_code == 200
     assert SESSION_COOKIE in response.headers["set-cookie"]
     assert status.json()["authenticated"] is True
     assert status.json()["methods"] == {"google": False, "password": True}
+    assert streamed.status_code == 200
+    assert "event: meta" in streamed.text
+    assert 'event: delta\ndata: {"delta":"응답"}' in streamed.text
+    assert streamed.text.index("event: meta") < streamed.text.index("event: delta")
+    assert "event: error" not in streamed.text
+    assert "event: done" in streamed.text
     # The email is the single login identifier, so it is also the credential
     # subject the canonical identity link is written with.
     assert authority.link_calls[0]["auth_provider"] == "password"
     assert authority.link_calls[0]["provider_subject"] == "owner@example.test"
     assert authority.created == 1
     assert len(authority.assigned) == 1
+    assert authority.assigned[0][2] == TenantMembershipRole.OWNER.value
     assert len(shadow.saved) == 1
     assert shadow.saved[0].auth_session.tenant_id == "tenant_0123456789abcdef0123456789abcdef"
     assert set(store.credentials) == {"owner@example.test"}
+
+
+@pytest.mark.asyncio
+async def test_existing_roleless_password_membership_is_repaired_once_on_login() -> None:
+    store = MemoryStore()
+    authority = Authority()
+    tenant_id = "tenant_0123456789abcdef0123456789abcdef"
+    authority.memberships[:] = [tenant_id]
+    # An existing email account with one active but roleless membership models
+    # an account created before the login repair was installed.
+    encoded = _registered_password_hash()
+    await store.register_password_user(
+        "owner@example.test", "owner@example.test", "Owner", encoded,
+    )
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        control_plane_identity_authority=authority,
+        identity_shadow_store=ShadowStore(),
+    )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        first = await client.post(
+            "/api/auth/password/login",
+            json={"identifier": "owner@example.test", "password": "correct horse battery staple"},
+        )
+        second = await client.post(
+            "/api/auth/password/login",
+            json={"identifier": "owner@example.test", "password": "correct horse battery staple"},
+        )
+
+    assert first.status_code == second.status_code == 200
+    assert authority.created == 0
+    assert authority.memberships == [tenant_id]
+    assert authority.membership_roles[tenant_id] is TenantMembershipRole.OWNER
+    assert authority.assigned == [(tenant_id, "subject:padiem:user:password-001", "owner")]
 
 
 @pytest.mark.asyncio

@@ -120,6 +120,8 @@ def test_binding_report_matches_expected_state():
             # declaration; names only, same store, and no STT provider key.
             "PADIEM_CHAT_DAUM_REST_API_KEY",
             "PADIEM_CHAT_FILE_LANE_TICKET_SECRET",
+            # #7010: Chat-owned password RPC replay-protection binding name.
+            "PADIEM_CHAT_PASSWORD_RPC_SECRET",
             # #6267: Chat-owned shared-auth comparison bindings.
             "PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK",
             "PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY",

@@ -64,6 +64,11 @@ from padiem_control_plane import (
     ProductIdentityLink,
 )
 from padiem_control_plane.b54_identity_bridge import B54_PRODUCT_ID
+from padiem_control_plane.tenants import (
+    TenantMembership,
+    TenantMembershipRole,
+    TenantMembershipState,
+)
 
 SECRET = "offline-file-lane-contract-000000000000000000"
 USER = "usr_" + "a" * 32
@@ -148,6 +153,16 @@ class _FakeB54Authority:
 
     def resolve_active_memberships(self, *, canonical_subject_id: str):
         return (TENANT,)
+
+    def resolve_active_tenant_membership(
+        self, *, tenant_id: str, canonical_subject_id: str, now: datetime
+    ) -> TenantMembership:
+        return TenantMembership(
+            tenant_id=tenant_id,
+            canonical_subject_id=canonical_subject_id,
+            state=TenantMembershipState.ACTIVE,
+            role=TenantMembershipRole.OWNER,
+        )
 
     def establish_auth_session(self, **kwargs: object) -> AuthSessionSnapshot:
         subject = kwargs["subject"]
