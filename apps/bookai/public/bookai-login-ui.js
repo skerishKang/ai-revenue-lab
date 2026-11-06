@@ -8,6 +8,12 @@
   if(!primary||!secondary||!state||!copy)return;
   let authenticated=false,accountId=null;
   function show(){
+    // The legacy cloud gate hides its primary action until a session bridge is
+    // installed; register this client's session first so the login button stays
+    // visible and the sync lane follows the same authenticated flag.
+    if(typeof window.installStoryMemoryAuthBridge==='function'){
+      window.installStoryMemoryAuthBridge({authenticated});
+    }
     if(label)label.textContent=authenticated?'로그인됨':'기기 저장';
     primary.textContent=authenticated?'로그아웃':'파디엠으로 로그인';
     secondary.textContent='닫기';

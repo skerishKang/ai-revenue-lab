@@ -327,3 +327,83 @@ body.smr-theme-dark .memory-rail .sheet-close:hover { color: #fffdf8 !important;
   #library .lib-bottom { transform: translateY(96px); }
   #library .sel-note { max-width: 110px !important; }
 }
+
+/* 2026-11-06 #6476 mobile audit: the AI companion kept light-only surfaces in
+   Dark (context card, composer, quick action) and its empty-state heading used
+   the light-theme ink, so text became unreadable. */
+body.smr-theme-dark #reader .reader-layout { background: #171512 !important; }
+body.smr-theme-dark #reader .ai-panel .context-card {
+  background: #211c16 !important;
+  border-color: rgba(233, 225, 210, .18) !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark #reader .ai-panel .context-card small { color: #c1b49f !important; }
+body.smr-theme-dark #reader .ai-panel .context-card button {
+  background: #47392a !important;
+  border-color: rgba(233, 225, 210, .2) !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark #reader .ai-panel .companion-empty-state h3 { color: #f2eadc !important; }
+body.smr-theme-dark #reader .ai-panel .companion-empty-state p { color: #c1b49f !important; }
+body.smr-theme-dark #reader .ai-panel .quick button {
+  background: #30291f !important;
+  border-color: rgba(233, 225, 210, .2) !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark #reader .ai-panel .chat-compose input,
+body.smr-theme-dark #reader .ai-panel #askInput {
+  background: #211c16 !important;
+  border-color: rgba(233, 225, 210, .22) !important;
+  color: #f2eadc !important;
+}
+body.smr-theme-dark #reader .ai-panel #askInput::placeholder { color: #c1b49f !important; }
+body.smr-theme-dark #reader .ai-panel .ask {
+  background-image: linear-gradient(rgba(38, 33, 26, 0), #26211a 28%) !important;
+}
+
+/* Phone-sized hit areas that the earlier pass left below 44px. */
+@media (max-width: 720px) {
+  /* The chapter pill sits inside the reader header; growing it to 44px stole
+     a line of text and pushed the largest type past the 12-page budget, so the
+     visible pill keeps its height and an invisible overlay supplies the target. */
+  #reader #v2ChapterChip { position: relative; z-index: 2; }
+  #reader #v2ChapterChip::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: -9px !important;
+    bottom: -9px !important;
+  }
+  #reader #bibleSearchInput,
+  #reader #bibleSearchSubmit,
+  #reader .ai-panel .quick button,
+  #reader .ai-panel .save-ai-memory,
+  #reader .memory-rail .memory-search-wrap input {
+    box-sizing: border-box !important;
+    min-height: 44px !important;
+  }
+  #reader #smalOverflowBtn,
+  #reader .ai-panel .ai-head-actions button {
+    box-sizing: border-box !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+}
+
+/* 2026-11-06 #6476 mobile audit: the floating reader-tools button (bottom:10)
+   sat directly under the 48px mobile dock (z-index 100), so a tap on its
+   visible edge activated the dock's AI tab instead. Lift it clear of the dock. */
+@media (max-width: 768px) {
+  #reader .smal-overflow-btn { bottom: 76px !important; z-index: 120 !important; }
+  #reader .smal-overflow-menu { bottom: 122px !important; z-index: 121 !important; }
+}
+
+/* The account entry on the TODAY screen was 27px tall and the auth sheet
+   buttons 43px, both under the 44px phone target. */
+@media (max-width: 720px) {
+  .today-cloud-button { min-height: 44px !important; }
+  .auth-gate-primary, .auth-gate-secondary { min-height: 44px !important; }
+}
