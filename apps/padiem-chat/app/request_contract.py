@@ -82,7 +82,7 @@ class CustomModelSelection:
     reasoning_effort: str | None = None
 
 
-#: The wire values the OpenAI-compatible chat wire accepts for
+#: The wire values the chat-completions wire accepts for
 #: ``reasoning_effort``. The UI offers exactly these plus 기본.
 CUSTOM_REASONING_EFFORTS = ("minimal", "low", "medium", "high")
 

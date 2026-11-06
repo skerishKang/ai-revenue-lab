@@ -49,10 +49,10 @@ CHAT_PC_DRIVE_COMMAND = (
 CHAT_PC_QUERY_AGENT_ID = "agent:padiem:chat-pc-query@1"
 CHAT_PC_QUERY_TOOL_ID = "claw.pc.query_drives"
 CHAT_PC_RUN_PREFIX = "chat_pcq_"
-# #6554: a Gemma route may declare native tools (function calling), but the PC
-# tool set stays off it. PC-tool exposure is an owner decision bound to the
-# Gemini routes; a Gemma allowance would be a separate decision, never a side
-# effect of the tools capability.
+# #6554: a route outside the owner-selected PC-tool family may declare native
+# tools (function calling), but the PC tool set stays off it. PC-tool exposure
+# is an owner decision bound to that family; allowing another family would be a
+# separate decision, never a side effect of the tools capability.
 PC_TOOL_EXCLUDED_MODEL_PREFIXES = ("google/gemma-",)
 
 _SUBJECT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")

@@ -1,7 +1,7 @@
-"""B66-only one-model direct transport experiment (Kira Qwen3.8 Flash Free).
+"""B66-only one-model direct transport experiment.
 
 B14 remains the read-only registered-model/owner authority. Only the already
-authorized exact Kira model bypasses its *completion executor*; Chat and Claw
+authorized exact pilot model bypasses its *completion executor*; Chat and Claw
 remain untouched. Credential and URL cannot be supplied by the browser.
 """
 from __future__ import annotations

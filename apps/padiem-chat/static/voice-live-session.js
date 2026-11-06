@@ -19,7 +19,7 @@
    *
    * PROVENANCE - GLOBAL_CLASSROOM_DIRECT_PORT, logic unchanged:
    *   skerishKang/global-classroom main ffa27e6a93605614031fed314ef33571c85b8f18
-   *   hooks/useLiveSession.ts (upstream file `useGeminiLive.ts`)
+   *   hooks/useLiveSession.ts (the upstream live-session hook)
    *                                -> the Live session, the real-time audio path,
    *                                  the interim/final split, the turn commit,
    *                                  the session rotation with the audio

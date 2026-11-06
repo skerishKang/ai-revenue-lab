@@ -56,9 +56,12 @@ def test_engine_is_the_global_classroom_port_with_its_provenance() -> None:
     source = ENGINE_JS.read_text(encoding="utf-8")
     assert "GLOBAL_CLASSROOM_DIRECT_PORT" in source
     assert "ffa27e6a93605614031fed314ef33571c85b8f18" in source
-    # The original's own names, so a drift is visible in review.
-    for name in ("useGeminiLive.ts", "liveTranscriptTurn.ts", "audioUtils.ts"):
+    # The original's own names, so a drift is visible in review. The one whose
+    # name carried a provider is described by role instead; the repository,
+    # commit and upstream path above still identify it.
+    for name in ("liveTranscriptTurn.ts", "audioUtils.ts"):
         assert name in source, name
+    assert "the upstream live-session hook" in source
     assert "float32ToInt16" in source
     assert "arrayBufferToBase64" in source
     assert "audio/pcm;rate=16000" in source

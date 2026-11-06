@@ -688,7 +688,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
             return _error(503, "company_profile_read_failed", "회사정보를 불러오지 못했습니다.")
 
     # Response origin is set by the trusted interpreter branch, never by
-    # Gemini/model JSON, quote text or a user-controlled request field.
+    # registered-model JSON, quote text or a user-controlled request field.
     # Keep the candidate JSON contract unchanged; emit only fixed labels.
     response_headers = dict(_NO_STORE)
     result_origin = getattr(projection, "result_origin", None)
