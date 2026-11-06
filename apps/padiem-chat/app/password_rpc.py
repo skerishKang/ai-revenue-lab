@@ -20,14 +20,15 @@ nothing beyond the password account's product user id. Registration reuses
 ``register_password_user`` (the #5424 email-as-identifier contract); no second
 credential store is created here.
 
-The replay table is created lazily instead of shipping a D1 migration: it is
-additive, idempotent, and only ever holds bounded window-lifetime rows.
+The replay table is added through the normal D1/host migration path and holds
+only bounded window-lifetime rows.
 """
 from __future__ import annotations
 
 import hashlib
 import hmac
 import json
+import logging
 import re
 import time
 from datetime import datetime, timedelta, timezone
@@ -57,6 +58,8 @@ from .password_auth import (
     verify_password_async,
 )
 
+_LOG = logging.getLogger(__name__)
+
 PASSWORD_VERIFY_PATH = "/internal/password-verify"
 PASSWORD_REGISTER_PATH = "/internal/password-register"
 
@@ -70,7 +73,6 @@ _SERVICE_ID_RE = re.compile(
 )
 _PROOF_RE = re.compile(r"v2=[a-f0-9]{64}")
 _RPC_BODY_LIMIT = 512
-_REPLAY_TABLE = "password_rpc_service_ids"
 
 
 def _error(status: int, code: str, message: str) -> JSONResponse:
@@ -107,30 +109,11 @@ async def _consume_service_id(store, service_id: str, at: int) -> bool:
 
     A v2 proof is only meaningful against a target that keeps every id for the
     clock window, so this receiver consumes ids durably too. The rows live at
-    most one window past their ``at`` and are pruned on every claim. The table
-    is created lazily on first use per backing store, so this lane ships no D1
-    migration and a fresh store bootstraps itself.
+    most one window past their ``at`` and are pruned on every claim. Storage
+    access stays behind the history store's public interface.
     """
-    cutoff = datetime.now(timezone.utc).isoformat()
     expiry = datetime.fromtimestamp(at + 600, tz=timezone.utc).isoformat()
-    for attempt in range(2):
-        try:
-            await store._run(f"DELETE FROM {_REPLAY_TABLE} WHERE expires<=?", cutoff)
-            row = await store._first(
-                f"INSERT INTO {_REPLAY_TABLE}(service_id, expires) VALUES(?, ?) "
-                "ON CONFLICT(service_id) DO NOTHING RETURNING service_id",
-                service_id,
-                expiry,
-            )
-            return row is not None
-        except Exception:
-            if attempt:
-                raise
-            await store._run(
-                f"CREATE TABLE IF NOT EXISTS {_REPLAY_TABLE} "
-                "(service_id TEXT PRIMARY KEY, expires TEXT NOT NULL)"
-            )
-    return False
+    return await store.consume_service_id(service_id, expiry)
 
 
 async def password_verify_rpc(request: Request) -> JSONResponse:
@@ -164,7 +147,8 @@ async def _password_rpc(request: Request, *, path: str, process) -> JSONResponse
     try:
         if not await _consume_service_id(store, verified["service_id"], verified["at"]):
             return _error(409, "rpc_replay_detected", "replayed service id")
-    except Exception:
+    except Exception as exc:
+        _LOG.warning("password_rpc_store_error exception_type=%s", type(exc).__name__)
         return _error(503, "auth_storage_error", "verification store unavailable")
     payload = verified["payload"]
     if not isinstance(payload, dict):
@@ -198,7 +182,8 @@ async def _verify_credentials(request: Request, store, payload: dict) -> JSONRes
 
     try:
         credential = await store.find_password_credential(identifier) if identifier else None
-    except Exception:
+    except Exception as exc:
+        _LOG.warning("password_verify_store_error exception_type=%s", type(exc).__name__)
         return _error(503, "auth_storage_error", "로그인 정보를 확인하지 못했습니다.")
 
     # Always execute the verifier, including for a missing identifier.
