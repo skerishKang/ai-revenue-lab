@@ -329,6 +329,102 @@ async def test_multi_pdf_zip_uploads_one_item_per_pdf_member():
 
 
 @pytest.mark.asyncio
+async def test_multiple_pdf_uploads_create_items_and_selected_archive_contains_only_selection():
+    client, _app = await build_client()
+    try:
+        job_id = await open_job(client)
+        uploaded = []
+        for name, text in (("keep-one.pdf", "Keep one"), ("keep-two.pdf", "Keep two"), ("skip.pdf", "Skip this")):
+            response = await upload(client, job_id, pdf_bytes(texts=[text]), name=name)
+            assert response.status_code == 201, response.text
+            uploaded.extend(response.json()["items"])
+        assert len(uploaded) == 3
+        failed_upload = await upload(
+            client, job_id, b"%PDF-1.4 invalid body %%EOF", name="failed.pdf"
+        )
+        assert failed_upload.status_code == 201, failed_upload.text
+        uploaded.extend(failed_upload.json()["items"])
+
+        for item in uploaded:
+            assert (await run_item(client, item["id"])).status_code == 202
+        terminal = [await wait_item_terminal(client, item["id"]) for item in uploaded]
+        assert [item["status"] for item in terminal] == ["reviewed", "reviewed", "reviewed", "failed"]
+
+        selected = await client.get(
+            f"/api/document-conversions/{job_id}/archive",
+            params=[("item_id", uploaded[0]["id"]), ("item_id", uploaded[1]["id"])],
+        )
+        assert selected.status_code == 200, selected.text
+        with __import__("zipfile").ZipFile(io.BytesIO(selected.content)) as built:
+            assert set(built.namelist()) == {"keep-one.md", "keep-two.md", "manifest.json"}
+            manifest = json.loads(built.read("manifest.json"))
+            assert manifest["converted"] == 2
+            assert manifest["failed"] == []
+            assert {entry["name"] for entry in manifest["files"]} == {"keep-one.pdf", "keep-two.pdf"}
+    finally:
+        await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_zip_with_only_non_pdf_members_reports_all_skipped_members():
+    client, _app = await build_client()
+    try:
+        job_id = await open_job(client)
+        response = await upload(
+            client, job_id, zip_bytes({"notes.txt": b"notes", "table.csv": b"a,b"}),
+            name="non-pdf.zip", media_type=ZIP_MEDIA,
+        )
+        assert response.status_code == 201, response.text
+        body = response.json()
+        assert body["items"] == []
+        assert len(body["rejected"]) == 2
+        assert {entry["name"] for entry in body["rejected"]} == {"notes.txt", "table.csv"}
+    finally:
+        await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_zip_path_traversal_is_rejected_by_server():
+    client, _app = await build_client()
+    try:
+        job_id = await open_job(client)
+        response = await upload(
+            client, job_id, zip_bytes({"../escape.pdf": pdf_bytes(texts=["outside"])}),
+            name="unsafe.zip", media_type=ZIP_MEDIA,
+        )
+        assert response.status_code == 422
+        assert response.json()["error"]["code"] == "ooxml_unsafe_path"
+        detail = await client.get(f"/api/document-conversions/{job_id}")
+        assert detail.json()["items"] == []
+    finally:
+        await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_zip_with_overexpanded_member_is_rejected_by_existing_byte_bound(monkeypatch):
+    from app import document_convert_routes
+
+    monkeypatch.setattr(document_convert_routes, "MAX_BINARY_DOCUMENT_BYTES", 256)
+    buffer = io.BytesIO()
+    with __import__("zipfile").ZipFile(
+        buffer, "w", compression=__import__("zipfile").ZIP_DEFLATED
+    ) as packed:
+        packed.writestr("bomb.pdf", b"%PDF-" + b"A" * 4096)
+    archive = buffer.getvalue()
+    assert len(archive) < 256
+    client, _app = await build_client()
+    try:
+        job_id = await open_job(client)
+        response = await upload(client, job_id, archive, name="compressed.zip", media_type=ZIP_MEDIA)
+        assert response.status_code == 422
+        assert response.json()["error"]["code"] == "ooxml_entry_size"
+        detail = await client.get(f"/api/document-conversions/{job_id}")
+        assert detail.json()["items"] == []
+    finally:
+        await client.aclose()
+
+
+@pytest.mark.asyncio
 async def test_scan_only_pdf_is_marked_unreadable_not_guessed():
     client, _app = await build_client()
     try:
@@ -442,6 +538,7 @@ async def test_another_owner_cannot_reach_the_job_or_its_bytes():
             ("post", f"/api/document-conversions/items/{item_id}/review"),
             ("delete", f"/api/document-conversions/items/{item_id}"),
             ("get", f"/api/document-conversions/{job_id}/archive"),
+            ("get", f"/api/document-conversions/{job_id}/archive?item_id={item_id}"),
             ("post", f"/api/document-conversions/{job_id}/files"),
         ):
             if url.endswith("/files"):

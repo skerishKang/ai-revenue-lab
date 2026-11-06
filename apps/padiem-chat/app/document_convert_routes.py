@@ -377,7 +377,7 @@ async def convert_job_files(request: Request):
         return _unavailable()
     if not created and not rejected:
         return _error("empty_archive", "변환할 PDF가 없습니다.", 422)
-    if not created:
+    if not created and upload_kind != ZIP_MEDIA_TYPE:
         return _error(
             rejected[0]["code"], "업로드한 문서를 변환 대상으로 읽을 수 없습니다.", 422
         )
@@ -720,7 +720,7 @@ async def convert_job_detail(request: Request):
 
 
 async def convert_job_archive(request: Request):
-    """One ZIP of every converted Markdown in the ledger, plus a bounded manifest."""
+    """ZIP all converted Markdown in the ledger, or a requested ready subset."""
 
     resolved = await _resolve_job(request)
     if resolved[-1] is not None:
@@ -730,7 +730,25 @@ async def convert_job_archive(request: Request):
         items = await ledger.list_items(uid, job.id)
     except Exception:
         return _unavailable()
-    converted = [item for item in items if item.markdown_key is not None]
+    raw_selection = request.query_params.getlist("item_id")
+    manifest_items = items
+    if raw_selection:
+        selected_ids = set()
+        for raw_item_id in raw_selection:
+            try:
+                selected_ids.add(validate_item_id(raw_item_id))
+            except ValueError:
+                return _not_found()
+        job_item_ids = {item.id for item in items}
+        if not selected_ids.issubset(job_item_ids):
+            return _not_found()
+        selected_items = [item for item in items if item.id in selected_ids]
+        if any(item.markdown_key is None for item in selected_items):
+            return _error("document_convert_not_ready", "선택한 결과가 아직 준비되지 않았습니다.", 422)
+        converted = selected_items
+        manifest_items = selected_items
+    else:
+        converted = [item for item in items if item.markdown_key is not None]
     if not converted:
         return _not_found()
     bundle = io.BytesIO()
@@ -771,7 +789,7 @@ async def convert_job_archive(request: Request):
                         "converted": len(manifest),
                         "failed": [
                             {"name": item.name, "code": item.error_code}
-                            for item in items
+                            for item in manifest_items
                             if item.status == JOB_STATUS_FAILED
                         ],
                         "files": manifest,

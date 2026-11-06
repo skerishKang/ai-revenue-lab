@@ -211,6 +211,49 @@
     return (name.replace(/\.[^.]+$/, "") || "document") + ".md";
   }
 
+  function splitMarkdownPages(markdown) {
+    const source = String(markdown || "");
+    const marker = /<!--\s*padiem:page\s+(\d+)\s*-->/g;
+    const matches = Array.from(source.matchAll(marker));
+    if (!matches.length) return [{ number: 1, text: source }];
+    return matches.map((match, index) => {
+      const start = match.index + match[0].length;
+      const end = index + 1 < matches.length ? matches[index + 1].index : source.length;
+      return {
+        number: Number(match[1]),
+        text: source.slice(start, end).replace(/^\r?\n+/, ""),
+      };
+    });
+  }
+
+  function reviewPageNumbers(report) {
+    const source = report && typeof report === "object" ? report : {};
+    const pages = new Set();
+    (Array.isArray(source.pages) ? source.pages : []).forEach((row) => {
+      if (row && row.native_text_present === false && Number(row.number) > 0) pages.add(Number(row.number));
+    });
+    (Array.isArray(source.agreement) ? source.agreement : []).forEach((row) => {
+      if (row && Number(row.character_coverage) < 0.99 && Number(row.page) > 0) pages.add(Number(row.page));
+    });
+    (Array.isArray(source.mismatches) ? source.mismatches : []).forEach((row) => {
+      if (row && Number(row.page) > 0) pages.add(Number(row.page));
+    });
+    (Array.isArray(source.warnings) ? source.warnings : []).forEach((warning) => {
+      const match = String(warning).match(/(?:^|:)unreadable_page:(\d+)/);
+      if (match) pages.add(Number(match[1]));
+    });
+    const summary = source.agreement_summary;
+    (summary && Array.isArray(summary.review_pages) ? summary.review_pages : []).forEach((page) => {
+      if (Number(page) > 0) pages.add(Number(page));
+    });
+    return Array.from(pages).sort((a, b) => a - b);
+  }
+
+  window.PadiemPdfMdPageMap = Object.freeze({
+    splitPages: splitMarkdownPages,
+    reviewPages: reviewPageNumbers,
+  });
+
   window.initPdfMdUtility = function (panel, workState = "checking") {
     // Three states, and only the server's answer may claim the last two:
     // "checking" is the first paint, "open" and "paused" come from the list
@@ -350,6 +393,10 @@
     uploadStatus.setAttribute("role", "status");
     uploadStatus.setAttribute("aria-live", "polite");
     panel.appendChild(uploadStatus);
+    const uploadProgress = el("ol", "pdfmd-upload-progress");
+    uploadProgress.hidden = true;
+    uploadProgress.setAttribute("aria-label", "파일별 업로드 진행 상태");
+    panel.appendChild(uploadProgress);
 
     // Items
     const itemsWrap = el("div", "pdfmd-items");
@@ -360,6 +407,34 @@
     previewWrap.hidden = true;
     const previewTitle = el("h4", null, "원본과 변환본 비교");
     previewWrap.appendChild(previewTitle);
+    const reviewSummary = el("p", "pdfmd-review-summary", "");
+    reviewSummary.setAttribute("role", "status");
+    previewWrap.appendChild(reviewSummary);
+
+    const pageControls = el("div", "pdfmd-page-controls");
+    const previousPageBtn = el("button", "pdfmd-btn", "이전 페이지");
+    previousPageBtn.type = "button";
+    previousPageBtn.setAttribute("aria-label", "이전 페이지");
+    const pageInputLabel = el("label", null, "페이지 ");
+    const pageInput = document.createElement("input");
+    pageInput.type = "number";
+    pageInput.min = "1";
+    pageInput.value = "1";
+    pageInput.className = "pdfmd-page-input";
+    pageInput.setAttribute("aria-label", "이동할 페이지");
+    const pageTotal = el("span", "pdfmd-page-total", "/ 1");
+    const pageReviewFlag = el("span", "pdfmd-page-review-flag", "");
+    pageInputLabel.appendChild(pageInput);
+    pageInputLabel.appendChild(pageTotal);
+    pageInputLabel.appendChild(pageReviewFlag);
+    const nextPageBtn = el("button", "pdfmd-btn", "다음 페이지");
+    nextPageBtn.type = "button";
+    nextPageBtn.setAttribute("aria-label", "다음 페이지");
+    pageControls.appendChild(previousPageBtn);
+    pageControls.appendChild(pageInputLabel);
+    pageControls.appendChild(nextPageBtn);
+    previewWrap.appendChild(pageControls);
+
     const previewGrid = el("div", "pdfmd-preview-grid");
 
     const origPane = el("div", "pdfmd-pane");
@@ -371,9 +446,9 @@
 
     const mdPane = el("div", "pdfmd-pane");
     mdPane.appendChild(el("span", "pdfmd-pane-label", "Markdown 변환본"));
-    const mdView = document.createElement("pre");
-    mdView.className = "pdfmd-md";
+    const mdView = el("div", "pdfmd-md");
     mdView.tabIndex = 0;
+    mdView.setAttribute("role", "region");
     mdView.setAttribute("aria-label", "Markdown 변환본");
     mdPane.appendChild(mdView);
 
@@ -383,10 +458,17 @@
     panel.appendChild(previewWrap);
 
     // Archive
+    const archiveControls = el("div", "pdfmd-archive-controls");
     const archiveBtn = el("button", "pdfmd-btn", "전체 ZIP 다운로드");
     archiveBtn.type = "button";
     archiveBtn.hidden = true;
-    panel.appendChild(archiveBtn);
+    const selectedArchiveBtn = el("button", "pdfmd-btn", "선택 항목 ZIP 다운로드");
+    selectedArchiveBtn.type = "button";
+    selectedArchiveBtn.hidden = true;
+    selectedArchiveBtn.disabled = true;
+    archiveControls.appendChild(archiveBtn);
+    archiveControls.appendChild(selectedArchiveBtn);
+    panel.appendChild(archiveControls);
 
     // History: client-side date grouping and filtering. The list API carries
     // no filenames, so names join the search index as jobs are opened.
@@ -411,6 +493,12 @@
     let currentJobId = null;
     let currentItems = [];
     let lastUploadError = "";
+    let previewItem = null;
+    let previewOriginalUrl = "";
+    let previewPageNumber = 1;
+    let previewPageCount = 1;
+    let previewReviewPages = new Set();
+    const selectedResultIds = new Set();
     let historyJobs = [];
     let historyQuery = "";
     const itemNames = new Map();
@@ -420,6 +508,77 @@
     // DOM; a poller whose itemsWrap left the document stops quietly.
     const POLL_INTERVAL_MS = 2000;
     const polledItems = new Set();
+
+    function reviewPagesFor(item) {
+      return new Set(window.PadiemPdfMdPageMap.reviewPages(item && item.report));
+    }
+
+    function setPreviewPage(value, scrollMarkdown = true) {
+      const page = Math.max(1, Math.min(previewPageCount, Number(value) || 1));
+      previewPageNumber = page;
+      pageInput.value = String(page);
+      pageInput.max = String(previewPageCount);
+      pageTotal.textContent = "/ " + previewPageCount;
+      previousPageBtn.disabled = page <= 1;
+      nextPageBtn.disabled = page >= previewPageCount;
+      pageReviewFlag.textContent = previewReviewPages.has(page) ? " · 확인 필요" : "";
+      pageReviewFlag.dataset.review = previewReviewPages.has(page) ? "true" : "false";
+      const target = previewOriginalUrl ? previewOriginalUrl.split("#", 1)[0] + "#page=" + page : "";
+      if (target && origFrame.src !== target) origFrame.src = target;
+      if (scrollMarkdown) {
+        const block = mdView.querySelector('[data-page="' + page + '"]');
+        if (block) block.scrollIntoView({ block: "start", behavior: "smooth" });
+      }
+    }
+
+    function renderMarkdownPreview(markdown, item) {
+      const pages = window.PadiemPdfMdPageMap.splitPages(markdown);
+      previewItem = item;
+      previewReviewPages = reviewPagesFor(item);
+      previewPageCount = Math.max(pages.length, Number(item.page_count) || 1);
+      mdView.replaceChildren();
+      pages.forEach((page) => {
+        const block = el("section", "pdfmd-page");
+        block.dataset.page = String(page.number);
+        block.setAttribute("aria-label", page.number + "쪽");
+        const heading = el("div", "pdfmd-page-heading", page.number + "쪽");
+        if (previewReviewPages.has(page.number)) {
+          heading.appendChild(el("span", "pdfmd-page-review-badge", "확인 필요"));
+        }
+        const text = el("pre", "pdfmd-page-text", page.text);
+        block.appendChild(heading);
+        block.appendChild(text);
+        mdView.appendChild(block);
+      });
+
+      const summary = item.report && item.report.agreement_summary;
+      const summarizedCount = summary && Number(summary.review_page_count) || 0;
+      const exactPages = Array.from(previewReviewPages).sort((a, b) => a - b);
+      if (exactPages.length) {
+        reviewSummary.textContent = "확인 필요: " + exactPages.join(", ") + "쪽. 원본 PDF에서 표시한 페이지를 확인해 주세요.";
+      } else if (summarizedCount) {
+        reviewSummary.textContent = "확인 필요 페이지 " + summarizedCount + "쪽이 있습니다. 원본 PDF에서 확인해 주세요.";
+      } else if (item.report && item.report.warnings && item.report.warnings.length) {
+        reviewSummary.textContent = "검토 알림: " + item.report.warnings.join(", ");
+      } else {
+        reviewSummary.textContent = "확인 필요 페이지가 없습니다.";
+      }
+      setPreviewPage(1);
+    }
+
+    previousPageBtn.addEventListener("click", () => setPreviewPage(previewPageNumber - 1));
+    nextPageBtn.addEventListener("click", () => setPreviewPage(previewPageNumber + 1));
+    pageInput.addEventListener("change", () => setPreviewPage(pageInput.value));
+    mdView.addEventListener("scroll", () => {
+      const top = mdView.getBoundingClientRect().top;
+      let visiblePage = null;
+      mdView.querySelectorAll(".pdfmd-page").forEach((block) => {
+        if (block.getBoundingClientRect().top - top <= 24) {
+          visiblePage = Number(block.dataset.page);
+        }
+      });
+      if (visiblePage && visiblePage !== previewPageNumber) setPreviewPage(visiblePage, false);
+    });
 
     async function pollItemUntilTerminal(jobId, item) {
       if (polledItems.has(item.id)) return;
@@ -475,7 +634,10 @@
     function setJobId(id) {
       if (id !== currentJobId) {
         previewWrap.hidden = true;
-        mdView.textContent = "";
+        previewItem = null;
+        previewOriginalUrl = "";
+        selectedResultIds.clear();
+        mdView.replaceChildren();
         origFrame.removeAttribute("src");
       }
       currentJobId = id;
@@ -484,6 +646,8 @@
       jobIdSpan.hidden = !id;
       newJobBtn.hidden = workBlocked || !id;
       archiveBtn.hidden = !id;
+      selectedArchiveBtn.hidden = !id;
+      selectedArchiveBtn.disabled = true;
       markActiveHistory();
     }
 
@@ -574,16 +738,26 @@
       if (linked === false) pcNote.hidden = false;
     });
 
-    async function uploadFile(file) {
+    async function uploadFile(file, onProgress) {
       if (workBlocked) return false;
+      const update = (message) => {
+        uploadStatus.textContent = message;
+        if (typeof onProgress === "function") onProgress(message);
+      };
       lastUploadError = "";
-      if (!currentJobId) await createJob();
-      if (!currentJobId) return false;
+      if (!currentJobId) {
+        update(file.name + " 작업 준비 중...");
+        await createJob();
+      }
+      if (!currentJobId) {
+        update(file.name + " 업로드 실패. 작업을 만들지 못했습니다.");
+        return false;
+      }
       const isZip = file.name.toLowerCase().endsWith(".zip") || file.type === "application/zip";
       const mediaType = isZip ? "application/zip" : "application/pdf";
-      const buf = await file.arrayBuffer();
-      uploadStatus.textContent = file.name + " 업로드 중...";
+      update(file.name + " 업로드 중...");
       try {
+        const buf = await file.arrayBuffer();
         const data = await api("/api/document-conversions/" + currentJobId + "/files", {
           method: "POST",
           headers: {
@@ -593,19 +767,17 @@
           },
           body: buf,
         });
-        if (data.rejected && data.rejected.length) {
-          const rejected = data.rejected.map((r) => r.name + ": " + describeError({ code: r.code }, "지원하지 않는 파일입니다.")).join(" / ");
-          lastUploadError = rejected;
-          uploadStatus.textContent = "일부 파일을 올리지 못했습니다. " + rejected;
-          await loadJob();
-          return false;
-        }
-        uploadStatus.textContent = file.name + " 업로드 완료";
+        const createdCount = Array.isArray(data.items) ? data.items.length : 0;
+        const rejected = Array.isArray(data.rejected) ? data.rejected : [];
+        const details = rejected.map((entry) => entry.name).join(", ");
+        const summary = file.name + ": PDF " + createdCount + "개 추가 · " +
+          rejected.length + "개 건너뜀" + (details ? " (" + details + ")" : "");
+        update(summary);
         await loadJob();
         return true;
       } catch (e) {
         lastUploadError = describeError(e);
-        uploadStatus.textContent = file.name + " 업로드 실패. " + lastUploadError;
+        update(file.name + " 업로드 실패. " + lastUploadError);
         return false;
       }
     }
@@ -613,16 +785,34 @@
     async function uploadFiles(files) {
       if (workBlocked) return;
       if (!files.length) return;
+      uploadProgress.replaceChildren();
+      uploadProgress.hidden = false;
+      const rows = files.map((file) => {
+        const row = el("li", "pdfmd-upload-progress-row");
+        row.appendChild(el("span", "pdfmd-upload-progress-name", file.name));
+        const state = el("span", "pdfmd-upload-progress-state", "대기 중");
+        row.appendChild(state);
+        uploadProgress.appendChild(row);
+        return state;
+      });
       let uploaded = 0;
       let failed = 0;
-      for (const f of files) {
-        if (await uploadFile(f)) uploaded += 1;
+      for (let index = 0; index < files.length; index += 1) {
+        const name = files[index].name;
+        const onProgress = (message) => {
+          rows[index].textContent = message.startsWith(name + ": ")
+            ? message.slice(name.length + 2)
+            : message.startsWith(name + " ") ? message.slice(name.length + 1) : message;
+        };
+        if (await uploadFile(files[index], onProgress)) uploaded += 1;
         else failed += 1;
       }
       if (uploaded && !failed) {
-        uploadStatus.textContent = uploaded + "개 파일 업로드 완료. 목록에서 '변환 실행'을 눌러 주세요.";
+        uploadStatus.textContent = uploaded + "개 파일 처리 완료. 목록에서 '변환 실행'을 눌러 주세요.";
       } else if (uploaded && failed) {
-        uploadStatus.textContent = uploaded + "개 업로드 완료, " + failed + "개 파일을 올리지 못했습니다. " + (lastUploadError || "파일 형식을 확인해 주세요.");
+        uploadStatus.textContent = uploaded + "개 파일 처리 완료, " + failed + "개 실패. " + (lastUploadError || "파일 형식을 확인해 주세요.");
+      } else if (failed) {
+        uploadStatus.textContent = failed + "개 파일을 처리하지 못했습니다. " + (lastUploadError || "파일 형식을 확인해 주세요.");
       }
       if (uploaded) await loadHistory();
     }
@@ -672,8 +862,19 @@
       }
     }
 
+    function syncArchiveControls() {
+      const available = currentItems.filter((item) => item.has_markdown);
+      const availableIds = new Set(available.map((item) => item.id));
+      Array.from(selectedResultIds).forEach((id) => {
+        if (!availableIds.has(id)) selectedResultIds.delete(id);
+      });
+      selectedArchiveBtn.hidden = !currentJobId || available.length === 0;
+      selectedArchiveBtn.disabled = selectedResultIds.size === 0;
+    }
+
     function renderItems() {
       itemsWrap.replaceChildren();
+      syncArchiveControls();
       if (!currentJobId) {
         itemsWrap.appendChild(emptyBlock("첫 PDF를 변환해 보세요.", null, [
           "PDF 또는 ZIP 파일을 선택합니다.",
@@ -706,6 +907,21 @@
         }
 
         const actions = el("div", "pdfmd-item-actions");
+        if (item.has_markdown) {
+          const selection = el("label", "pdfmd-select-result");
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = selectedResultIds.has(item.id);
+          checkbox.setAttribute("aria-label", item.name + " ZIP에 포함");
+          checkbox.addEventListener("change", () => {
+            if (checkbox.checked) selectedResultIds.add(item.id);
+            else selectedResultIds.delete(item.id);
+            syncArchiveControls();
+          });
+          selection.appendChild(checkbox);
+          selection.appendChild(el("span", null, "ZIP에 포함"));
+          actions.appendChild(selection);
+        }
 
         if (!item.has_markdown && !workBlocked && item.status !== "working") {
           const runBtn = el("button", "pdfmd-btn pdfmd-btn-primary", item.status === "failed" ? "다시 변환" : "변환 실행");
@@ -738,14 +954,15 @@
           previewBtn.setAttribute("aria-label", item.name + " 원본과 변환본 비교");
           previewBtn.addEventListener("click", async () => {
             previewWrap.hidden = false;
-            mdView.textContent = "Markdown을 불러오는 중...";
-            origFrame.src = "/api/document-conversions/items/" + item.id + "/original?display=inline";
+            mdView.replaceChildren(el("p", "pdfmd-preview-loading", "Markdown을 불러오는 중..."));
+            previewOriginalUrl = "/api/document-conversions/items/" + item.id + "/original?display=inline";
+            origFrame.src = previewOriginalUrl + "#page=1";
             try {
               const res = await fetch("/api/document-conversions/items/" + item.id + "/markdown?display=inline", { credentials: "include" });
               if (!res.ok) throw new Error("http_" + res.status);
-              mdView.textContent = await res.text();
+              renderMarkdownPreview(await res.text(), item);
             } catch (e) {
-              mdView.textContent = "미리보기를 불러오지 못했습니다. " + describeError(e);
+              mdView.replaceChildren(el("p", "pdfmd-preview-error", "미리보기를 불러오지 못했습니다. " + describeError(e)));
             }
           });
           actions.appendChild(previewBtn);
@@ -871,23 +1088,30 @@
       itemsWrap.appendChild(list);
     }
 
-    archiveBtn.addEventListener("click", async () => {
-      if (!currentJobId) return;
-      archiveBtn.disabled = true;
+    async function downloadArchive(button, selectedOnly) {
+      if (!currentJobId || (selectedOnly && !selectedResultIds.size)) return;
+      button.disabled = true;
       try {
-        const res = await fetch("/api/document-conversions/" + currentJobId + "/archive", { credentials: "include" });
+        const params = new URLSearchParams();
+        if (selectedOnly) selectedResultIds.forEach((id) => params.append("item_id", id));
+        const query = params.toString();
+        const url = "/api/document-conversions/" + currentJobId + "/archive" + (query ? "?" + query : "");
+        const res = await fetch(url, { credentials: "include" });
         if (!res.ok) {
           uploadStatus.textContent = "ZIP 다운로드에 실패했습니다.";
           return;
         }
         const blob = await res.blob();
-        downloadBlob(blob, "pdf-to-markdown-" + currentJobId + ".zip");
+        downloadBlob(blob, "pdf-to-markdown-" + currentJobId + (selectedOnly ? "-selected" : "") + ".zip");
       } catch (e) {
         uploadStatus.textContent = "ZIP 다운로드에 실패했습니다. " + describeError(e);
       } finally {
-        archiveBtn.disabled = false;
+        button.disabled = selectedOnly ? selectedResultIds.size === 0 : false;
       }
-    });
+    }
+
+    archiveBtn.addEventListener("click", () => downloadArchive(archiveBtn, false));
+    selectedArchiveBtn.addEventListener("click", () => downloadArchive(selectedArchiveBtn, true));
 
     function historyGroup(value) {
       const date = new Date(value);
