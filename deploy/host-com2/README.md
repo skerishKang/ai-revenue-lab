@@ -104,6 +104,13 @@ sudo env PADIEM_COM2_OPS_CHECKOUT=/mnt/d/work/ai-revenue-lab-ops \
 않는다. `--ai-check=required`에서는 SKIP이 나오지 않는다: 같은 코드도 `ai:FAIL`이고 exit 1·되돌림이다.
 확인이 실행 자체를 못 한 `ai_check_unavailable`은 자격 문제가 아니라 고장이라 warn에서도 `ai:FAIL`로 남는다.
 
+### 동시 실행
+
+계획, `--stage-only`, `--apply`는 모두 같은 잠금(`<state-dir>/deploy.lock`)을 잡는다. 다른 실행이
+잡고 있으면 `COM2_DEPLOY_REASON=DEPLOY_IN_PROGRESS`로 즉시 멈춘다. 계획이 진행 중인 apply와
+겹치면 운영 체크아웃 HEAD가 이미 새 SHA로 옮겨진 뒤라 `chat:SKIP` 같은 거짓 판정이 나오기 때문이다.
+잠금은 프로세스가 끝나거나 죽으면 풀린다.
+
 ### 설정
 
 | 변수 | 기본값 | 의미 |
@@ -111,6 +118,7 @@ sudo env PADIEM_COM2_OPS_CHECKOUT=/mnt/d/work/ai-revenue-lab-ops \
 | `PADIEM_COM2_OPS_CHECKOUT` | 없음(필수) | 운영 전용 체크아웃 |
 | `PADIEM_COM2_STAGING_CHECKOUT` | `/mnt/d/work/ai-revenue-lab-staging-chat` | 스테이징 경로(같으면 거부) |
 | `PADIEM_COM2_STATE_DIR` | `/var/lib/padiem-com2-deploy` | 실행 사본 보관 |
+| `PADIEM_COM2_DEPLOY_LOCK` | `<STATE_DIR>/deploy.lock` | 동시 실행 잠금 파일 |
 | `PADIEM_COM2_PREVIOUS_DIR` | `/opt/padiem/com2-deploy/previous` | root 소유·서비스 읽기 가능한 직전 체크아웃 |
 | `PADIEM_COM2_CHAT_HEALTH_ATTEMPTS` | `31` | Chat 기동 health 확인 횟수 |
 | `PADIEM_COM2_CHAT_HEALTH_INTERVAL` | `2` | Chat health 재시도 간격(초) |

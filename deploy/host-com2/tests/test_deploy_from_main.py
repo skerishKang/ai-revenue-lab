@@ -12,6 +12,7 @@ import sqlite3
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -583,6 +584,105 @@ class SourceStagingTest(DeployHarness):
         self.assertTrue(installs, out)
         self.assertIn(stage.as_posix(), " ".join(installs))
         self.assertNotIn(self.ops.as_posix(), " ".join(installs))
+
+
+class DeployLockTest(DeployHarness):
+    """One run at a time: a plan must not read a checkout another apply moves."""
+
+    scenario = "chat"
+
+    def _hold_lock(self) -> None:
+        """Hold the deploy lock the way the script would, and keep it held."""
+        lock = self.state / "deploy.lock"
+        self.state.mkdir(parents=True, exist_ok=True)
+        if shutil.which("flock"):
+            try:
+                import fcntl
+            except ImportError:  # pragma: no cover - no flock means no fcntl
+                self.skipTest("fcntl is required to hold the deploy lock")
+            handle = open(lock, "a+", encoding="utf-8")
+            self.addCleanup(handle.close)
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            return
+        # The directory fallback needs a live PID; the holder shell owns it.
+        lock_dir = lock.parent / (lock.name + ".d")
+        self.addCleanup(shutil.rmtree, lock_dir, True)
+        holder = subprocess.Popen(
+            [
+                BASH_BIN,
+                "-c",
+                'mkdir -p -- "$1" && printf "%s\n" "$$" > "$1/pid" && exec sleep 60',
+                "bash",
+                lock_dir.as_posix(),
+            ],
+        )
+        self.addCleanup(holder.wait)
+        self.addCleanup(holder.kill)
+        pid_file = lock_dir / "pid"
+        deadline = time.time() + 5
+        while not pid_file.exists():
+            if time.time() > deadline:
+                self.fail("the lock holder did not start")
+            time.sleep(0.05)
+
+    def _plan(self) -> subprocess.CompletedProcess[str]:
+        return self._run_main(
+            self.second,
+            "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(),
+            "--chat-db", self.db.as_posix(),
+        )
+
+    def test_a_second_apply_stops_while_an_apply_holds_the_lock(self) -> None:
+        self._hold_lock()
+        head = self._head()
+        result = self._run_main(
+            self.second, "--apply",
+            "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(),
+            "--chat-db", self.db.as_posix(),
+        )
+        out = result.stdout + result.stderr
+        self.assertNotEqual(result.returncode, 0, out)
+        self.assertIn("COM2_DEPLOY_REASON=DEPLOY_IN_PROGRESS", out)
+        self.assertNotIn("COM2_DEPLOY_SUMMARY=", out)
+        self.assertEqual(self._head(), head, out)
+        self.assertEqual(self._calls(), [], out)
+
+    def test_a_plan_stops_while_an_apply_holds_the_lock(self) -> None:
+        # 11-07 05:34: the plan ran after the other apply had already moved HEAD
+        # and reported chat:SKIP. It must stop instead of planning on that HEAD.
+        self._hold_lock()
+        head = self._head()
+        result = self._plan()
+        out = result.stdout + result.stderr
+        self.assertNotEqual(result.returncode, 0, out)
+        self.assertIn("COM2_DEPLOY_REASON=DEPLOY_IN_PROGRESS", out)
+        self.assertNotIn("COM2_DEPLOY_SUMMARY=", out)
+        self.assertEqual(self._head(), head, out)
+
+    def test_stage_only_stops_while_an_apply_holds_the_lock(self) -> None:
+        self._hold_lock()
+        stage = self._stage_dir()
+        result = self._run_main(
+            self.second, "--stage-only",
+            "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(),
+            "--chat-db", self.db.as_posix(),
+        )
+        out = result.stdout + result.stderr
+        self.assertNotEqual(result.returncode, 0, out)
+        self.assertIn("COM2_DEPLOY_REASON=DEPLOY_IN_PROGRESS", out)
+        self.assertFalse((stage / self.second).exists(), out)
+
+    def test_a_finished_plan_releases_the_lock(self) -> None:
+        first = self._plan()
+        out = first.stdout + first.stderr
+        self.assertEqual(first.returncode, 0, out)
+        second = self._plan()
+        out = second.stdout + second.stderr
+        self.assertEqual(second.returncode, 0, out)
+        self.assertNotIn("DEPLOY_IN_PROGRESS", out)
 
 
 class ChatScenarioTest(DeployHarness):

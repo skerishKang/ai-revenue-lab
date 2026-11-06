@@ -25,6 +25,7 @@
 #   PADIEM_COM2_OPS_CHECKOUT     production checkout (required)
 #   PADIEM_COM2_STAGING_CHECKOUT staging checkout to stay apart (default below)
 #   PADIEM_COM2_STATE_DIR        private execution state (default below)
+#   PADIEM_COM2_DEPLOY_LOCK      one-run lock (default <state dir>/deploy.lock)
 #   PADIEM_COM2_PREVIOUS_DIR     root-owned, service-readable rollback worktrees
 #   PADIEM_COM2_SOURCE_DIR       Linux-side staging mirror the services install from
 #   PADIEM_COM2_READ_CHECK_USER  user the readability checks run as (default padiem-chat)
@@ -182,13 +183,67 @@ parse_args() {
   [[ -n $requested ]] || { usage; exit 2; }
 }
 
+# Only one run may read or move the operating checkout at a time. A plan that
+# runs while an apply is moving HEAD reads the new commit as PREVIOUS and turns
+# the missing diff into a false SKIP (2026-11-07 05:34: another lane's apply had
+# already moved the checkout to 80be22ee, so the plan reported chat:SKIP).
+# Every mode takes the same exclusive lock. flock releases it even when the
+# holder is killed; the directory fallback covers shells without util-linux and
+# records the holder PID there.
+deploy_lock_dir=''
+release_deploy_lock() {
+  if [[ -n $deploy_lock_dir ]]; then rm -rf -- "$deploy_lock_dir"; fi
+  return 0
+}
+
+acquire_deploy_lock() {
+  local lock_path=${PADIEM_COM2_DEPLOY_LOCK:-"$state_dir/deploy.lock"} holder
+  if command -v flock >/dev/null 2>&1; then
+    exec 9>>"$lock_path" || fail DEPLOY_LOCK_UNWRITABLE
+    if ! flock -n 9; then
+      say "LOCK=BUSY PATH=$lock_path"
+      fail DEPLOY_IN_PROGRESS
+    fi
+    say "LOCK=ACQUIRED PATH=$lock_path"
+    return 0
+  fi
+  deploy_lock_dir="$lock_path.d"
+  if ! mkdir -- "$deploy_lock_dir" 2>/dev/null; then
+    holder=$(cat -- "$deploy_lock_dir/pid" 2>/dev/null || true)
+    if [[ -z $holder ]]; then
+      # The holder may be between mkdir and writing its PID; never steal it.
+      sleep 0.2
+      holder=$(cat -- "$deploy_lock_dir/pid" 2>/dev/null || true)
+    fi
+    if [[ $holder =~ ^[0-9]+$ ]] && kill -0 -- "$holder" 2>/dev/null; then
+      say "LOCK=BUSY PATH=$lock_path HOLDER=$holder"
+      fail DEPLOY_IN_PROGRESS
+    fi
+    if [[ -z $holder ]]; then
+      say "LOCK=BUSY PATH=$lock_path"
+      fail DEPLOY_IN_PROGRESS
+    fi
+    # A killed holder cannot keep the lock forever.
+    rm -rf -- "$deploy_lock_dir"
+    mkdir -- "$deploy_lock_dir" 2>/dev/null || {
+      say "LOCK=BUSY PATH=$lock_path"
+      fail DEPLOY_IN_PROGRESS
+    }
+  fi
+  if ! printf '%s\n' "$$" > "$deploy_lock_dir/pid"; then
+    release_deploy_lock
+    fail DEPLOY_LOCK_UNWRITABLE
+  fi
+  say "LOCK=ACQUIRED PATH=$lock_path"
+}
+
 # The script moves the checkout it lives in, and bash keeps reading this file as
 # it runs. Execute an immutable copy from the state directory instead.
 main() {
   parse_args "$@"
   if [[ -n ${PADIEM_COM2_DEPLOY_REEXEC_COPY:-} ]]; then
     # This process is the immutable copy; remove it when the run ends.
-    trap 'rm -f -- "$PADIEM_COM2_DEPLOY_REEXEC_COPY"' EXIT
+    trap 'release_deploy_lock; rm -f -- "$PADIEM_COM2_DEPLOY_REEXEC_COPY"' EXIT
   fi
   if [[ -z ${PADIEM_COM2_DEPLOY_REEXEC:-} ]]; then
     export PADIEM_COM2_DEPLOY_REEXEC=1
@@ -206,6 +261,9 @@ main() {
     && [[ $(readlink -f -- "$staging_checkout") == "$ops_checkout" ]]; then
     fail OPS_CHECKOUT_IS_STAGING
   fi
+  # Before any mode reads HEAD or stages the mirror: a second run must stop
+  # here, not after it has already planned against a moving checkout.
+  acquire_deploy_lock
   if (( apply )); then
     [[ $(uname -s) == Linux ]] || fail LINUX_REQUIRED
     [[ ${EUID} -eq 0 ]] || fail ROOT_REQUIRED
