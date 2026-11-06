@@ -492,7 +492,7 @@ def test_execute_terminal_adds_no_evidence_for_ungrounded_core_result() -> None:
     )
     response = run(service.execute_payload(execute_payload()))
     assert response.status_code == 200
-    assert set(response.body) == {"ok", "answer", "route", "metadata"}
+    assert set(response.body) == {"ok", "answer", "answer_truncated", "route", "metadata"}
     assert "sources" not in response.body
     assert "citations" not in response.body
 

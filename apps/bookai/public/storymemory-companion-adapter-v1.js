@@ -52,6 +52,7 @@ function localBlockedResult(packet){
 function failureCopy(code){
   var c=String(code||'');
   if(c==='response_timeout')return '응답이 길어져 중단했어요 · 다시 시도';
+  if(c==='answer_incomplete')return '답이 끝까지 만들어지지 않았어요 · 다시 시도';
   if(c==='credential_unavailable'||c==='com2_ai_credential_unavailable')return '서비스 설정 점검 중이에요. 잠시 후 다시 시도해 주세요.';
   if(c==='http_504'||c==='http_503'||c==='com2_ai_timeout'||c==='ingress_timeout')return '응답이 지연되고 있어요. 잠시 후 다시 시도해 주세요.';
   if(c==='http_403'||c==='service_authentication_failed'||c==='service_app_not_authorized')return '서비스 연결을 점검 중이에요. 잠시 후 다시 시도해 주세요.';

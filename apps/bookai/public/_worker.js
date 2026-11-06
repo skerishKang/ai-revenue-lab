@@ -50,9 +50,23 @@ function clip(value, limit) {
   const text = String(value ?? "").replace(/\s+/g, " ").trim();
   return text.length > limit ? text.slice(0, Math.max(0, limit - 1)) + "…" : text;
 }
-function removeThoughtBlocks(value) {
+function removeThoughtBlocksReported(value) {
   const withoutClosed = value.replace(/<thought\b[^>]*>[\s\S]*?<\/thought\s*>/gi, "");
-  return withoutClosed.replace(/<thought\b[^>]*>[\s\S]*$/i, "");
+  const open = /<thought\b[^>]*>/i.exec(withoutClosed);
+  if (!open) return { text: withoutClosed, cut: false };
+  const dropped = withoutClosed.slice(open.index + open[0].length);
+  // An open block that never closed carried prose the reader never got.
+  return { text: withoutClosed.slice(0, open.index), cut: dropped.length > 0 };
+}
+function removeThoughtBlocks(value) {
+  return removeThoughtBlocksReported(value).text;
+}
+function answerTruncationReason(payload, visible, cutHere, budgetTokens) {
+  if (cutHere || payload?.answer_truncated === true) return "thought_unclosed";
+  const usage = payload?.metadata?.usage;
+  const produced = usage && typeof usage === "object" ? usage.output_tokens : null;
+  if (Number.isInteger(produced) && Number.isInteger(budgetTokens) && budgetTokens >= 1 && produced >= budgetTokens) return "length_cap";
+  return null;
 }
 function sameOrigin(request) {
   const requestUrl = new URL(request.url);
@@ -395,9 +409,10 @@ export default {
       }
       const model = storyMemoryModel(env);
       if (!model) return json({ ok: false, error: "storymemory_model_invalid" }, 503);
+      const enginePayload = buildEnginePayload(question, bounded, model);
       const upstream = await executeAppAI({
         env, app: APP_AI_CALLER,
-        payload: buildEnginePayload(question, bounded, model),
+        payload: enginePayload,
         allowIngressFallback: APP_AI_CALLER === "storymemory"
       });
       const payload = upstream.payload;
@@ -408,8 +423,15 @@ export default {
       if (!cp || cp.boundary_disposition !== "permitted" || Number(cp.context_filtered_count || 0) !== 0 || Number(cp.context_allowed_count || 0) < 1) {
         return json({ ok: false, error: "engine_permission_projection_invalid" }, 502);
       }
-      const answer = removeThoughtBlocks(payload.answer);
+      const removed = removeThoughtBlocksReported(payload.answer);
+      const answer = removed.text;
       if (!answer.trim()) return json({ ok: false, error: "ingress_invalid_response" }, 502);
+      const finishReason = answerTruncationReason(payload, answer, removed.cut, enginePayload.agent.max_tokens);
+      if (finishReason) {
+        // Never a 200 carrying only the part that survived the cut.
+        console.warn("bookai_answer_incomplete reason=%s visible_chars=%d", finishReason, answer.length);
+        return json({ ok: false, error: "answer_incomplete", retryable: true, finish_reason: finishReason }, 502);
+      }
       const runtime = upstream.transport === "com2_p01" ? "padiem-p01" : "padiem-ai-engine";
       const contextPermission = {
         boundary_disposition: cp.boundary_disposition,
@@ -440,6 +462,7 @@ export default {
           reading_mode: "first_read",
           question_class: "plot",
           spoiler_folds: spoilerFolds,
+          finish_reason: spoilerFolds.length ? "folded" : "complete",
           runtime,
           transport: upstream.transport,
           reference_trust: "UNTRUSTED_REFERENCE",
@@ -457,6 +480,7 @@ export default {
       return json({
         ok: true,
         answer,
+        finish_reason: "complete",
         ...modeFields,
         ...(outsideBooks.length ? { outside_books: outsideBooks } : {}),
         runtime,
