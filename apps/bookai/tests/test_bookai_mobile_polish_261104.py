@@ -58,6 +58,45 @@ def _assert_minimum_target(locator, minimum: float = 44):
     return box
 
 
+def _wait_for_layout_stable(page, selector: str):
+    page.evaluate(
+        """async selector => {
+          await document.fonts.ready;
+          const root = document.querySelector("#library");
+          const boxes = () => Array.from(document.querySelectorAll(selector)).map(element => {
+            const rect = element.getBoundingClientRect();
+            return [rect.x, rect.y, rect.width, rect.height];
+          });
+          const deadline = performance.now() + 10000;
+          let previous = JSON.stringify(boxes());
+          let stableFrames = 0;
+          while (performance.now() < deadline) {
+            const transitions = root.getAnimations({subtree: true}).filter(animation =>
+              animation.playState === "running" &&
+              animation.effect?.getComputedTiming().iterations !== Infinity
+            );
+            if (transitions.length) {
+              await Promise.all(transitions.map(animation => animation.finished.catch(() => null)));
+              previous = JSON.stringify(boxes());
+              stableFrames = 0;
+              continue;
+            }
+            await new Promise(requestAnimationFrame);
+            const current = JSON.stringify(boxes());
+            if (current === previous) {
+              stableFrames += 1;
+              if (stableFrames >= 2) return;
+            } else {
+              previous = current;
+              stableFrames = 0;
+            }
+          }
+          throw new Error(`Layout did not stabilize for ${selector}: ${JSON.stringify(boxes())}`);
+        }""",
+        selector,
+    )
+
+
 def _overlaps(boxes):
     overlaps = []
     for index, first in enumerate(boxes):
@@ -74,10 +113,19 @@ def _visible_button_boxes(page, selector: str):
         """elements => elements.map(element => {
           const rect = element.getBoundingClientRect();
           const style = getComputedStyle(element);
-          return {rect, style, visible: rect.width > 0 && rect.height > 0 &&
+          return {element, rect, style, visible: rect.width > 0 && rect.height > 0 &&
             style.display !== 'none' && style.visibility !== 'hidden' &&
             rect.right > 0 && rect.bottom > 0 && rect.left < innerWidth && rect.top < innerHeight};
         }).filter(item => item.visible).map(item => ({
+          selector: (() => {
+            const parts = [];
+            for (let node = item.element; node; node = node.parentElement) {
+              const classes = Array.from(node.classList || []).map(value => "." + value).join("");
+              parts.unshift(node.id ? "#" + node.id : node.tagName.toLowerCase() + classes);
+              if (node.id) break;
+            }
+            return parts.join(" > ");
+          })(),
           x: item.rect.x, y: item.rect.y, width: item.rect.width, height: item.rect.height
         }))"""
     )
@@ -126,8 +174,10 @@ window.addEventListener('error', e => {
             page.wait_for_function("() => window.__smReaderSettingsV1 && typeof window.__smReaderSettingsV1.get === 'function'")
             page_errors.extend(page.evaluate("window.__bookaiErrors || []"))
             assert page.locator("body").evaluate(f"element => element.classList.contains('smr-theme-{theme}')")
+            _wait_for_layout_stable(page, "#library button")
             library_boxes = _visible_button_boxes(page, "#library button")
-            assert all(box["width"] >= 44 and box["height"] >= 44 for box in library_boxes)
+            undersized = [box for box in library_boxes if box["width"] < 44 or box["height"] < 44]
+            assert not undersized, f"Visible #library buttons below 44px after layout stabilized: {undersized}"
             assert not _overlaps(library_boxes)
 
             library = page.evaluate(
