@@ -112,3 +112,17 @@ test('removed pack surfaces leave no files or references behind', () => {
   assert.ok(!/#packMarketplaceLaunch|#autoPackLaunch|#packEntitlementLaunch|#packVerificationLaunch/.test(shell),
     'pack launch ids must be gone from the shell');
 });
+
+test('the published version manifest names only contracts the app still ships', () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(publicRoot, 'version.json'), 'utf8'));
+  const published = JSON.stringify(manifest);
+  assert.ok(!/auto-pack|entitlement|verification/i.test(published),
+    'version.json must not publish a contract of a removed pack surface');
+  assert.ok(!published.includes('DEFERRED_TO_BI_PORTAL'),
+    'version.json must name the deployment the app actually has');
+  assert.match(manifest.version, /^\d+\.\d+\.\d+$/, 'version must be a release, not a candidate');
+  assert.ok(/^https?:|^[a-z0-9-]+:[a-z0-9-]+$/.test(String(manifest.deployment)),
+    'deployment must name a real target');
+  assert.equal(manifest.runtime_contract, 'storymemory-universal-source-runtime-1.0',
+    'the source runtime that index.html still loads stays declared');
+});

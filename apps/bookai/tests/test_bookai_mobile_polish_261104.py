@@ -53,9 +53,29 @@ def _contrast(foreground: str, background: str) -> float:
 def _assert_minimum_target(locator, minimum: float = 44):
     box = locator.bounding_box()
     assert box is not None
-    assert box["width"] >= minimum, (locator, box)
-    assert box["height"] >= minimum, (locator, box)
+    rounded = _rounded_target_box(box)
+    assert rounded["width"] >= minimum, (locator, rounded)
+    assert rounded["height"] >= minimum, (locator, rounded)
     return box
+
+
+def _rounded_target_box(box):
+    return {
+        **box,
+        "width": round(box["width"], 2),
+        "height": round(box["height"], 2),
+    }
+
+
+def _touch_target_is_undersized(box, minimum: float = 44):
+    rounded = _rounded_target_box(box)
+    return rounded["width"] < minimum or rounded["height"] < minimum
+
+
+def test_touch_target_rounding_accepts_subpixel_noise_and_rejects_43_5px():
+    assert not _touch_target_is_undersized({"width": 43.99997, "height": 44.0})
+    assert _touch_target_is_undersized({"width": 43.5, "height": 44.0})
+    assert _touch_target_is_undersized({"width": 44.0, "height": 43.5})
 
 
 def _wait_for_layout_stable(page, selector: str):
@@ -176,7 +196,11 @@ window.addEventListener('error', e => {
             assert page.locator("body").evaluate(f"element => element.classList.contains('smr-theme-{theme}')")
             _wait_for_layout_stable(page, "#library button")
             library_boxes = _visible_button_boxes(page, "#library button")
-            undersized = [box for box in library_boxes if box["width"] < 44 or box["height"] < 44]
+            undersized = [
+                _rounded_target_box(box)
+                for box in library_boxes
+                if _touch_target_is_undersized(box)
+            ]
             assert not undersized, f"Visible #library buttons below 44px after layout stabilized: {undersized}"
             assert not _overlaps(library_boxes)
 
@@ -197,7 +221,7 @@ window.addEventListener('error', e => {
                 "#index .back-btn, #index #resume, #index .testament-tab, #chapterDots button, "
                 "#prevChapter, #openChapter, #nextChapter",
             )
-            assert all(box["width"] >= 44 and box["height"] >= 44 for box in entry_targets)
+            assert all(not _touch_target_is_undersized(box) for box in entry_targets)
             page.locator("#index .volume").filter(has_text="사도행전").click()
             page.wait_for_function("!document.querySelector('#index').classList.contains('volume-transitioning')")
             for _ in range(8):
@@ -209,7 +233,7 @@ window.addEventListener('error', e => {
             page.wait_for_function("document.querySelector('#index .chapter-stack.on')?.dataset.chapter === '9'")
             page.wait_for_timeout(1300)  # let the existing book transition settle before measuring
             index_button_boxes = _visible_button_boxes(page, "#index button")
-            assert all(box["width"] >= 44 and box["height"] >= 44 for box in index_button_boxes)
+            assert all(not _touch_target_is_undersized(box) for box in index_button_boxes)
 
             for selector in ("#index .back-btn", "#index #resume", "#index .testament-tab"):
                 for index in range(page.locator(selector).count()):
@@ -221,7 +245,7 @@ window.addEventListener('error', e => {
                 stack = page.locator("#chapterTrack .chapter-stack").nth(index)
                 box = stack.bounding_box()
                 if box and box["x"] < 390 and box["x"] + box["width"] > 0 and box["y"] < 844 and box["y"] + box["height"] > 0:
-                    assert box["width"] >= 44 and box["height"] >= 44, box
+                    assert not _touch_target_is_undersized(box), _rounded_target_box(box)
             nav_boxes = [_assert_minimum_target(page.locator(selector)) for selector in ("#prevChapter", "#openChapter", "#nextChapter")]
             assert not _overlaps(nav_boxes)
 
@@ -241,7 +265,7 @@ window.addEventListener('error', e => {
             page.wait_for_function("document.body.classList.contains('memory-open')")
             memory = page.locator(".memory-rail")
             memory_initial_boxes = _visible_button_boxes(page, ".memory-rail button")
-            assert all(box["width"] >= 44 and box["height"] >= 44 for box in memory_initial_boxes)
+            assert all(not _touch_target_is_undersized(box) for box in memory_initial_boxes)
             assert not _overlaps(memory_initial_boxes)
             _assert_minimum_target(memory.locator(".sheet-close"))
             _assert_minimum_target(memory.locator("#memorySearchClear"))
@@ -257,10 +281,13 @@ window.addEventListener('error', e => {
             cancel_box = _assert_minimum_target(memory.locator("#cancelMemoryNote"))
 
             memory_button_boxes = _visible_button_boxes(page, ".memory-rail button")
-            assert all(box["width"] >= 44 and box["height"] >= 44 for box in memory_button_boxes)
+            assert all(not _touch_target_is_undersized(box) for box in memory_button_boxes)
             assert not _overlaps(memory_button_boxes)
-            assert new_note_box["width"] == 44 and new_note_box["height"] == 44
-            assert save_box["height"] >= 44 and cancel_box["width"] == 44 and cancel_box["height"] == 44
+            assert _rounded_target_box(new_note_box)["width"] == 44.00
+            assert _rounded_target_box(new_note_box)["height"] == 44.00
+            assert not _touch_target_is_undersized(save_box)
+            assert _rounded_target_box(cancel_box)["width"] == 44.00
+            assert _rounded_target_box(cancel_box)["height"] == 44.00
 
             if theme == "dark":
                 colors = page.evaluate(
