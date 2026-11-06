@@ -967,10 +967,14 @@ link_executor_source() {
   say "EXECUTOR_LINK=$target"
 }
 
-# The unit's PYTHONPATH is the link, so this imports exactly what the process
-# will: a tree that cannot import the executor is not a release.
-executor_imports() {
-  PYTHONPATH=$1 "$python_bin" -c 'import kagent.local_agent_oracle_mesh_executor' 2>/dev/null
+# The executor is poll-only and has no listening port. Check the process systemd
+# actually started rather than importing with the deploy script's Python, which
+# need not have the service's venv or environment.
+executor_process_alive() {
+  local pid
+  unit_active "$EXECUTOR_UNIT" || return 1
+  pid=$("$systemctl_bin" show -p MainPID --value "$EXECUTOR_UNIT" 2>/dev/null) || return 1
+  [[ $pid =~ ^[1-9][0-9]*$ ]]
 }
 
 # A module that imports cleanly can still die after the import. One traceback in
@@ -1089,7 +1093,7 @@ deploy_executor() {
     started=$(date +%s)
     "$systemctl_bin" start "$EXECUTOR_UNIT" || return 1
     wait_unit_active EXECUTOR "$EXECUTOR_UNIT" || return 1
-    wait_for_health EXECUTOR executor_imports "$target" || return 1
+    wait_for_health EXECUTOR executor_process_alive || return 1
     executor_no_traceback "$started" || return 1
   else
     say 'EXECUTOR_START=SKIPPED_NOT_ACTIVE_BEFORE'
@@ -1112,7 +1116,7 @@ rollback_executor() {
   started=$(date +%s)
   "$systemctl_bin" start "$EXECUTOR_UNIT" || return 1
   wait_unit_active EXECUTOR_ROLLBACK "$EXECUTOR_UNIT" || return 1
-  wait_for_health EXECUTOR_ROLLBACK executor_imports "$target" || return 1
+  wait_for_health EXECUTOR_ROLLBACK executor_process_alive || return 1
   executor_no_traceback "$started"
 }
 
