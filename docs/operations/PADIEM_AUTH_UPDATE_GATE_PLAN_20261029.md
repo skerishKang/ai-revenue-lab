@@ -25,3 +25,12 @@ COM1의 기존 OAuth로 승인 계정의 활성 배포가 단일 버전임을 �
 갱신 게이트는 어떤 모드에서도 `bootstrap-deploy.mjs`를 호출하거나 서명·지문·refresh 키를 재생성하지 않는다. 같은 코드의 dry-run과 업데이트는 기존 Secret을 보존하고 일반 vars 보존(`--keep-vars`)과 전후 기준선을 검증해야 한다. 단순한 이름·종류 검사를 충분한 안전성으로 취급하지 않는다. 실제 구성과 계획된 업로드의 동등성, 부재/추가 바인딩, 대상 리소스, 활성 버전 변화에 대한 fail-closed 테스트가 남았다.
 
 롤백 시 Secret 원문은 읽을 수 없으므로 과거 버전이 현재와 같은 키 세대를 사용한다는 배포 이력 근거를 CTO가 기준선의 `active_key_generation` 및 `rollback_key_generations`에 명시 승인해야 한다. 확인되지 않은 과거 버전은 거부한다. 이 표시는 실제 Secret 값이 같다는 암호학적 증명이 아니며, 확인 근거가 없으면 롤백하지 않는다.
+
+## 2026-11-06 — 바인딩 기준에 승인된 이름
+
+`.github/binding_baselines/padiem-auth.json`은 다음 비밀 바인딩 이름을 승인한다.
+
+- `PADIEM_AUTH_PASSWORD_RPC_SECRET` — #6991
+- `PADIEM_ACCOUNT_DELETE_RPC_SECRET` — #6994
+
+이 기록은 이름 승인만 뜻한다. 비밀 값은 저장하지 않으며, 런타임에 값이 설정됐거나 기능이 운영 활성화됐다는 근거로 사용하지 않는다.
