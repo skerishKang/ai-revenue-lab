@@ -122,9 +122,9 @@ jobs:
           # Read schema names only; never query ledger rows or column values.
           trap 'rm -f /tmp/b14-ledger-columns.json /tmp/b14-ledger-indexes.json' EXIT
           npx --yes wrangler@4 d1 execute padiem-b14-call-ledger --remote --json \
-            --command "SELECT m.name AS table_name, p.name AS column_name FROM sqlite_master AS m JOIN pragma_table_info(m.name) AS p WHERE m.type = 'table' AND m.name NOT LIKE 'sqlite_%' AND m.name != 'd1_migrations' ORDER BY m.name, p.cid" > /tmp/b14-ledger-columns.json
+            --command "SELECT m.name AS table_name, p.name AS column_name FROM sqlite_master AS m JOIN pragma_table_info(m.name) AS p WHERE m.type = 'table' AND m.name NOT LIKE 'sqlite_%' AND substr(m.name, 1, 4) != '_cf_' AND m.name != 'd1_migrations' ORDER BY m.name, p.cid" > /tmp/b14-ledger-columns.json
           npx --yes wrangler@4 d1 execute padiem-b14-call-ledger --remote --json \
-            --command "SELECT name FROM sqlite_master WHERE type = 'index' AND name NOT LIKE 'sqlite_autoindex%' AND tbl_name != 'd1_migrations' ORDER BY name" > /tmp/b14-ledger-indexes.json
+            --command "SELECT name FROM sqlite_master WHERE type = 'index' AND name NOT LIKE 'sqlite_autoindex%' AND substr(name, 1, 4) != '_cf_' AND substr(tbl_name, 1, 4) != '_cf_' AND tbl_name != 'd1_migrations' ORDER BY name" > /tmp/b14-ledger-indexes.json
           python3 ../../.github/scripts/b14_ledger_d1_schema.py \
             --remote-columns /tmp/b14-ledger-columns.json \
             --remote-indexes /tmp/b14-ledger-indexes.json
