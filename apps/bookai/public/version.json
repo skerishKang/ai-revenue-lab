@@ -1,5 +1,5 @@
 {
-  "version": "3.5.0",
+  "version": "3.5.1",
   "build": "72f05a7",
   "runtime_contract": "storymemory-universal-source-runtime-1.0",
   "deployment": "cloudflare-pages:bookai",
