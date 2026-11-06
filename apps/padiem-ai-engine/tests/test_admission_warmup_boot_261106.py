@@ -11,12 +11,15 @@ These tests pin the startup behaviour and nothing else — the signed warm ping,
 its journal line and the periodic cycle stay under
 ``test_admission_keepwarm_261105.py``. The production sequence is reproduced
 literally: the binding is composed **before** a loop exists, then the loop
-starts and ``start_admission_warmers`` is called.
+starts and ``start_admission_warmers`` is called. ``_isolated_registry`` keeps
+bindings leaked by earlier suites out of the kick, so the assertions describe
+exactly the binding under test.
 """
 
 from __future__ import annotations
 
 import asyncio
+import contextlib
 
 import httpx
 import pytest
@@ -31,7 +34,6 @@ from app.local_admission_binding import (
 SECRET = "com2-host-admission-secret-0123456789abcdef"
 ORIGIN = "https://engine-admission.padiem.internal"
 WARM_URL = ORIGIN + "/internal/rpc/" + KEEPWARM_METHOD
-PERIOD = 0.02
 
 
 class _WarmTarget:
@@ -71,6 +73,23 @@ def pooled(monkeypatch):
     return _install
 
 
+@contextlib.contextmanager
+def _isolated_registry(binding: HttpsAdmissionBinding):
+    """Only the binding under test rides the startup kick.
+
+    ``_LIVE_BINDINGS`` is process-wide and suites above this one may leave
+    bindings in it; without the isolation a leaked warmer would fire into this
+    test's pooled target and the assertions could not name their subject.
+    """
+
+    saved = binding_module._LIVE_BINDINGS[:]
+    binding_module._LIVE_BINDINGS[:] = [binding]
+    try:
+        yield
+    finally:
+        binding_module._LIVE_BINDINGS[:] = saved
+
+
 async def _expect_cycles(target: _WarmTarget, count: int, timeout: float = 2.0) -> None:
     deadline = asyncio.get_running_loop().time() + timeout
     while len(target.calls) < count:
@@ -89,7 +108,8 @@ def test_the_first_ping_fires_at_startup_before_any_authority_call(pooled) -> No
     assert target.calls == []
 
     async def scenario() -> None:
-        start_admission_warmers()
+        with _isolated_registry(binding):
+            start_admission_warmers()
         await asyncio.sleep(0.05)
         await binding.aclose()
 
@@ -101,10 +121,11 @@ def test_the_first_ping_fires_at_startup_before_any_authority_call(pooled) -> No
 
 def test_the_startup_ping_re_fires_periodically(pooled) -> None:
     target = pooled(_WarmTarget())
-    binding = HttpsAdmissionBinding(ORIGIN, SECRET, keepwarm_seconds=PERIOD)
+    binding = HttpsAdmissionBinding(ORIGIN, SECRET, keepwarm_seconds=0.02)
 
     async def scenario() -> None:
-        start_admission_warmers()
+        with _isolated_registry(binding):
+            start_admission_warmers()
         await _expect_cycles(target, 3)
         await binding.aclose()
 
@@ -120,7 +141,8 @@ def test_zero_keepwarm_stays_cold_at_startup(pooled) -> None:
     assert binding not in binding_module._LIVE_BINDINGS
 
     async def scenario() -> None:
-        start_admission_warmers()
+        with _isolated_registry(binding):
+            start_admission_warmers()
         await asyncio.sleep(0.05)
 
     asyncio.run(scenario())
@@ -130,10 +152,11 @@ def test_zero_keepwarm_stays_cold_at_startup(pooled) -> None:
 
 def test_shutdown_cancels_the_startup_kick(pooled) -> None:
     target = pooled(_BlockingTarget())
-    binding = HttpsAdmissionBinding(ORIGIN, SECRET, keepwarm_seconds=PERIOD)
+    binding = HttpsAdmissionBinding(ORIGIN, SECRET, keepwarm_seconds=0.02)
 
     async def scenario() -> None:
-        start_admission_warmers()
+        with _isolated_registry(binding):
+            start_admission_warmers()
         await asyncio.sleep(0.02)
         assert len(target.calls) == 1  # the startup kick is in flight
         await binding.aclose()  # cancels the in-flight ping and the cycle
@@ -148,7 +171,7 @@ def test_shutdown_cancels_the_startup_kick(pooled) -> None:
 
 async def test_a_cycle_a_call_already_started_is_left_alone(pooled) -> None:
     target = pooled(_WarmTarget())
-    binding = HttpsAdmissionBinding(ORIGIN, SECRET, keepwarm_seconds=PERIOD)
+    binding = HttpsAdmissionBinding(ORIGIN, SECRET, keepwarm_seconds=0.02)
     try:
         # An authority call arms the periodic cycle itself; the startup hook
         # must not double-fire on top of it.
@@ -156,7 +179,8 @@ async def test_a_cycle_a_call_already_started_is_left_alone(pooled) -> None:
             {"product_id": "b62", "subject": {"subject_type": "user", "subject_id": "x"}}
         )
         assert len(target.calls) == 1  # the real call only
-        start_admission_warmers()
+        with _isolated_registry(binding):
+            start_admission_warmers()
         assert len(target.calls) == 1  # no instant second cycle
         await _expect_cycles(target, 2)  # the periodic cycle keeps going
     finally:
