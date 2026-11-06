@@ -16,6 +16,9 @@ export class AuthState {
       google_nonce TEXT NOT NULL, google_verifier TEXT NOT NULL, expires INTEGER NOT NULL,
       consumed INTEGER NOT NULL DEFAULT 0
     )`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS password_attempts (
+      state_digest TEXT PRIMARY KEY, attempts INTEGER NOT NULL, expires INTEGER NOT NULL
+    )`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS codes (
       digest TEXT PRIMARY KEY, client TEXT NOT NULL, redirect TEXT NOT NULL,
       challenge TEXT NOT NULL, subject TEXT NOT NULL, account_id TEXT NOT NULL, expires INTEGER NOT NULL, consumed INTEGER NOT NULL DEFAULT 0
@@ -85,6 +88,25 @@ export class AuthState {
     return this.storage.transactionSync(() => {
       const rows = this.sql.exec('UPDATE login_requests SET consumed=1 WHERE state_digest=? AND browser_digest=? AND consumed=0 AND expires>? RETURNING client,redirect,service_state,service_challenge,google_nonce,google_verifier', stateDigest, browserDigest, now).toArray();
       return rows[0] || null;
+    });
+  }
+
+  // One email-form attempt against a live login state. The attempt counter
+  // bounds guessing against one rendered form without consuming the state, so
+  // a mistyped first try can still succeed afterwards. A state that runs out
+  // of attempts is consumed: it can no longer finish any leg, and the browser
+  // restarts from /login with a fresh state.
+  beginPasswordAttempt({ stateDigest, browserDigest, now, maxAttempts = 5 }) {
+    return this.storage.transactionSync(() => {
+      this.sql.exec('DELETE FROM password_attempts WHERE expires<=?', now);
+      const rows = this.sql.exec('SELECT client,redirect,service_state,service_challenge FROM login_requests WHERE state_digest=? AND browser_digest=? AND consumed=0 AND expires>?', stateDigest, browserDigest, now).toArray();
+      if (rows.length !== 1) return { ok: false, reason: 'invalid' };
+      const counted = this.sql.exec('INSERT INTO password_attempts(state_digest,attempts,expires) VALUES(?,1,?) ON CONFLICT(state_digest) DO UPDATE SET attempts=attempts+1 RETURNING attempts', stateDigest, now + 600).toArray()[0];
+      if (Number(counted?.attempts) > maxAttempts) {
+        this.sql.exec('UPDATE login_requests SET consumed=1 WHERE state_digest=?', stateDigest);
+        return { ok: false, reason: 'exhausted' };
+      }
+      return { ok: true, login: rows[0] };
     });
   }
 
