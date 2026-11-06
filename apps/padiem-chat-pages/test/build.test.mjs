@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtemp, readFile, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { pathToFileURL, fileURLToPath } from "node:url";
 
 import { buildDist } from "../build.mjs";
 
@@ -57,11 +57,11 @@ test("the generated entry proxies the same paths to the same tunnel origin", asy
   };
   try {
     const response = await worker.fetch(
-      edgeRequest("https://padiem-chat.pages.dev/api/health"),
+      edgeRequest("https://padiem-chat.pages.dev/health"),
       baseEnv(),
     );
     assert.equal(response.status, 200);
-    assert.deepEqual(upstream, [`${ORIGIN}/api/health`]);
+    assert.deepEqual(upstream, [`${ORIGIN}/health`]);
   } finally {
     globalThis.fetch = original;
   }
@@ -105,4 +105,46 @@ test("a write is never retried on a second upstream and answers the maintenance 
   } finally {
     globalThis.fetch = original;
   }
+});
+
+test("#6924 operational probes only target registered chat health routes", async () => {
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
+  const server = await readFile(
+    path.join(repoRoot, "apps", "padiem-chat", "app", "app_factory.py"),
+    "utf8",
+  );
+  assert.match(server, /Route\("\/health",/, "Chat must keep GET /health registered");
+  assert.doesNotMatch(server, /Route\("\/api\/health"/, "Chat must not register /api/health");
+
+  const forbidden = ["/api/" + "health", "/api/" + "models"];
+  const roots = [
+    "apps/padiem-chat/app",
+    "apps/padiem-chat/static",
+    "apps/padiem-chat-pages",
+    "apps/padiem-chat-front",
+    "scripts",
+    "deploy",
+    ".github/scripts",
+    ".github/workflows",
+  ];
+  const codeExt = new Set([".py", ".js", ".mjs", ".cjs", ".ts", ".sh", ".yml", ".yaml"]);
+  const offenders = [];
+  async function walk(dir) {
+    for (const entry of await readdir(dir, { withFileTypes: true })) {
+      if (entry.name === "node_modules" || entry.name === "dist") continue;
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        await walk(full);
+        continue;
+      }
+      if (!codeExt.has(path.extname(entry.name))) continue;
+      if (path.resolve(full) === fileURLToPath(import.meta.url)) continue;
+      const text = await readFile(full, "utf8");
+      for (const needle of forbidden) {
+        if (text.includes(needle)) offenders.push(`${path.relative(repoRoot, full)}: ${needle}`);
+      }
+    }
+  }
+  for (const root of roots) await walk(path.join(repoRoot, root));
+  assert.deepEqual(offenders, [], "probes must use /health (Chat) or /api/pilot/... (B14)");
 });
