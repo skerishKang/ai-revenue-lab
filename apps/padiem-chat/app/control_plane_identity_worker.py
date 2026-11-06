@@ -221,6 +221,40 @@ def journal_identity_rpc(method_name: str, elapsed_ms: float, outcome: str) -> N
           % (method, int(round(elapsed_ms)), code, request_id), flush=True)
 
 
+# 261106 · subject→product_user 역방향 조회 프로세스 캐시(짧은 TTL).
+# /internal/chat/engine-pc-files 같은 서버 소유 경로가 같은 canonical subject 를
+# 요청마다 다시 조회한다(11-03 이후 느린 이벤트 133건 전수가 이 경로, p50 441ms).
+# 링크는 resolve_or_create_product_link 이 유일하게 만들고 remove_product_link 가
+# 유일하게 지우므로, 두 메서드가 성공하면 같은 키를 무효화한다. 키에 product_id 와
+# canonical_subject_id 가 모두 들어가 다른 사용자·다른 제품 결과가 섞이지 않는다.
+PRODUCT_USER_CACHE_TTL_SECONDS = 60.0
+PRODUCT_USER_CACHE_MAX_ENTRIES = 1024
+_product_user_cache: dict[tuple[str, str], tuple[float, str]] = {}
+
+
+def _product_user_cache_get(product_id: str, canonical_subject_id: str) -> str | None:
+    entry = _product_user_cache.get((product_id, canonical_subject_id))
+    if entry is None:
+        return None
+    stored_at, product_user_id = entry
+    if (time.monotonic() - stored_at) >= PRODUCT_USER_CACHE_TTL_SECONDS:
+        _product_user_cache.pop((product_id, canonical_subject_id), None)
+        return None
+    return product_user_id
+
+
+def _product_user_cache_put(product_id: str, canonical_subject_id: str, product_user_id: str) -> None:
+    if len(_product_user_cache) >= PRODUCT_USER_CACHE_MAX_ENTRIES:
+        oldest = next(iter(_product_user_cache), None)
+        if oldest is not None:
+            _product_user_cache.pop(oldest, None)
+    _product_user_cache[(product_id, canonical_subject_id)] = (time.monotonic(), product_user_id)
+
+
+def _product_user_cache_invalidate(product_id: str, canonical_subject_id: str) -> None:
+    _product_user_cache.pop((product_id, canonical_subject_id), None)
+
+
 class CloudflareControlPlaneIdentityAuthority:
     """B62 adapter over the private Control Plane identity Worker Service Binding."""
 
@@ -314,6 +348,9 @@ class CloudflareControlPlaneIdentityAuthority:
             "identity link",
         )
         try:
+            # 261106 · a create/rebind changes the reverse lookup for this
+            # exact pair; drop the stale cache entry before returning.
+            _product_user_cache_invalidate(wire["product_id"], wire["canonical_subject_id"])
             return ProductIdentityLink(
                 product_id=wire["product_id"],
                 product_user_id=wire["product_user_id"],
@@ -464,6 +501,14 @@ class CloudflareControlPlaneIdentityAuthority:
             raise IdentityBridgeError(
                 503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
             )
+        # 261106 · the short-TTL process cache answers the repeated reverse
+        # lookup for the same subject without one DO RPC per request. The link
+        # writers below invalidate the same key, so a rebind or a removal is
+        # visible immediately inside this process; a mutation made in another
+        # process stays bounded by the TTL.
+        cached = _product_user_cache_get(product_id, canonical_subject_id)
+        if cached is not None:
+            return cached
         result = await self._rpc_envelope(
             "resolve_product_user_for_subject",
             {"product_id": product_id, "canonical_subject_id": canonical_subject_id},
@@ -475,6 +520,7 @@ class CloudflareControlPlaneIdentityAuthority:
         product_user_id = result.get("product_user_id")
         if not isinstance(product_user_id, str) or not product_user_id:
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity link is invalid.")
+        _product_user_cache_put(product_id, canonical_subject_id, product_user_id)
         return product_user_id
 
     async def list_active_product_links_for_subject(
@@ -536,6 +582,8 @@ class CloudflareControlPlaneIdentityAuthority:
             or result["revoked_sessions"] < 0
         ):
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
+        # 261106 · the removal invalidates the reverse lookup for this pair.
+        _product_user_cache_invalidate(product_id, canonical_subject_id)
         return {key: result[key] for key in keys if key != "ok"}
 
     async def resolve_connector_owner_scope(self, *, session_id: str) -> dict[str, str]:

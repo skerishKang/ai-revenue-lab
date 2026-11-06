@@ -93,6 +93,15 @@ binding = "PADIEM_B14_SERVICE_PROOF_SECRET"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_B14_SERVICE_PROOF_SECRET"
 
+# 공통 로그인(옵트인) 이메일 가입·로그인: padiem-auth가 Chat의 내부 확인 경로
+# (/internal/password-verify, /internal/password-register)를 부를 때 쓰는 서비스
+# 간 v2 증명 시크릿. auth 측 PADIEM_AUTH_PASSWORD_RPC_SECRET과 같은 값이며 값은
+# Secrets Store에만 있다. 배포 승인 절차는 기존과 동일하다.
+[[secrets_store_secrets]]
+binding = "PADIEM_CHAT_PASSWORD_RPC_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_CHAT_PASSWORD_RPC_SECRET"
+
 # #4139: one existing PADIEM Identity and canonical Broker for Chat/Claw.
 # The Connector's product route is ON by default. Account/device ownership
 # still comes from the existing canonical authorities, not from the socket.

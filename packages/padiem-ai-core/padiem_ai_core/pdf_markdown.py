@@ -11,7 +11,10 @@ context — and that decision is untouched here.
 
 Conversion is a separate, explicitly bounded product surface. It projects the
 same native text layer into a Markdown document using the text matrices the
-reader already reports, and never calls a provider, model or OCR engine.
+reader already reports, and never calls a provider, model or OCR engine. A
+page that proves a two-column layout on its own run geometry is read column
+by column (#5568 field measurement); every other page keeps the single
+whole-page pass, so one-column documents convert exactly as before.
 
 What this module deliberately does NOT do
 -----------------------------------------
@@ -73,6 +76,24 @@ _COLUMN_TOLERANCE_PT = 4.0
 #: Whitespace this wide (in em of the taller run) is a column gap, not a word
 #: gap. Reflowed text chunks sit closer than this, so a table needs real air.
 _COLUMN_GAP_EM = 1.2
+#: Two-column pages (#5568 field measurement): a split needs two dominant
+#: run-start margins this far apart, as a share of the page width.
+_COLUMN_ANCHOR_MIN_SEPARATION = 0.22
+#: Each column margin must own at least this share of the body-size lines'
+#: run starts, with an absolute floor of four runs.
+_COLUMN_ANCHOR_MIN_SHARE = 0.15
+#: The inter-column bridge must carry at least this much air before a line
+#: splits into its two columns: absolute points and multiples of the page's
+#: own leading (run heights are untrustworthy; the leading is not).
+_COLUMN_SPLIT_MIN_GAP_PT = 10.0
+_COLUMN_SPLIT_GAP_RATIO = 1.2
+#: Both sides of a split need this many body-size lines, and this share of the
+#: page's body-size text, or the page is not a two-column prose page.
+_COLUMN_MIN_SIDE_LINES = 5
+_COLUMN_MIN_SIDE_SHARE = 0.15
+#: A page where this share of body lines carries two or more non-column gaps
+#: is a table page; its rows are read whole, the way they always were.
+_COLUMN_TABLE_PAGE_SHARE = 0.4
 #: Width this module charges one glyph, in em. Only ever used to measure the
 #: empty space *between* runs; no coordinate is asserted about the page.
 _ADVANCE_PER_GLYPH = 0.5
@@ -444,6 +465,221 @@ def _is_columnar(line: _Line) -> bool:
     return True
 
 
+def _dominant_margin(
+    lines: list[_Line], low: float, high: float, min_count: int
+) -> float | None:
+    """The most common run-start x inside [low, high], clustered, or None.
+
+    A column's left margin is where nearly every one of its lines begins, so
+    the margin x dominates its third of the page. Indented first lines form
+    their own, smaller cluster and are ignored by the count floor.
+    """
+
+    clusters: list[tuple[float, int]] = []
+    for value in sorted(
+        run.x for line in lines for run in line.runs if low <= run.x <= high
+    ):
+        if clusters and value - clusters[-1][0] <= _COLUMN_TOLERANCE_PT:
+            start, count = clusters[-1]
+            clusters[-1] = (start, count + 1)
+        else:
+            clusters.append((value, 1))
+    if not clusters:
+        return None
+    start, count = max(clusters, key=lambda item: item[1])
+    return start if count >= min_count else None
+
+
+def _column_plan(lines: list[_Line], page_width: float) -> list[list[_Line]] | None:
+    """Split a page into reading-order segments when it is a two-column page.
+
+    #5568 measured real two-column papers and found the left and right column
+    of the same visual row merged into one emitted line, and the merged rows
+    re-emitted as a fake table. The cause is bucketing by baseline alone, so a
+    two-column page is first detected and then read column by column: the left
+    column's lines, then the right column's, with full-width lines (titles,
+    captions, page-wide rules) kept at their own y position between them.
+
+    Detection is evidence-based and deliberately narrow; every rejection keeps
+    the page on the whole-page path this module always used, so one-column
+    documents convert exactly as before:
+
+    * two dominant run-start margins far apart, one per column;
+    * both sides carrying real body text, not a table page or artwork.
+
+    The split point sits just left of the right column's margin. Run heights
+    are untrustworthy -- a layer may leave the size in the font operator, not
+    the text matrix -- so the plan measures air in multiples of the page's own
+    leading, which is real in either encoding.
+    """
+
+    lines = [line for line in lines if line.text]
+    if len(lines) < 12:
+        return None
+    if _is_rotated([run for line in lines for run in line.runs]):
+        return None
+    body = _body_size(lines)
+    if not body:
+        return None
+    scale = max(body, _leading(lines))
+    body_lines = [line for line in lines if abs(line.height - body) <= body * 0.35]
+    if len(body_lines) < 12:
+        return None
+    if _is_sparse(lines, body):
+        return None
+    gap_min = max(_COLUMN_SPLIT_MIN_GAP_PT, scale * _COLUMN_SPLIT_GAP_RATIO)
+
+    # Two dominant run-start margins, one per column. The right column's edge
+    # is the leftmost cluster that reaches the count floor (indented first
+    # lines sit right of it); the left column's edge is the rightmost one.
+    needed = max(4, int(len(body_lines) * _COLUMN_ANCHOR_MIN_SHARE))
+    left_margin = _dominant_margin(
+        body_lines, page_width * 0.04, page_width * 0.45, needed
+    )
+    right_margin = _dominant_margin(
+        body_lines, page_width * 0.5, page_width * 0.96, needed
+    )
+    if left_margin is None or right_margin is None:
+        return None
+    separation = right_margin - left_margin
+    if not (
+        page_width * _COLUMN_ANCHOR_MIN_SEPARATION
+        <= separation
+        <= page_width * 0.9
+    ):
+        return None
+    split_center = right_margin - scale * 0.5
+
+    # Where the left column's own text stops. Left-only lines end inside the
+    # column; a spanning line whose text keeps running past that edge is one
+    # full-width line (a title, a caption, a page-wide rule) cut by the split
+    # point, not two column lines -- it must stay whole.
+    left_limit = 0.0
+    for line in lines:
+        left_only = [run for run in line.runs if run.x < split_center]
+        if left_only and len(left_only) == len(line.runs):
+            left_limit = max(
+                left_limit, left_only[-1].x + _advance_of(left_only[-1])
+            )
+    have_left_limit = left_limit > 0.0
+
+    left_lines: list[_Line] = []
+    right_lines: list[_Line] = []
+    plan_items: list[tuple[str, _Line]] = []
+    for line in lines:
+        left_part = [run for run in line.runs if run.x < split_center]
+        right_part = [run for run in line.runs if run.x >= split_center]
+        if left_part and right_part:
+            bridge = right_part[0].x - left_part[-1].x - _advance_of(left_part[-1])
+            whole = bridge < gap_min or (
+                have_left_limit
+                and left_part[-1].x + _advance_of(left_part[-1])
+                > left_limit + scale
+            )
+            if whole:
+                # No real air at the boundary: the line spans the page (a
+                # title, a caption, a page-wide rule) and reads as one line.
+                # It is page evidence, not column evidence, on either side.
+                plan_items.append(("full", line))
+            else:
+                left_line = _Line(y=line.y, height=line.height, runs=left_part)
+                right_line = _Line(y=line.y, height=line.height, runs=right_part)
+                left_lines.append(left_line)
+                right_lines.append(right_line)
+                plan_items.append(("left", left_line))
+                plan_items.append(("right", right_line))
+            continue
+        if left_part:
+            left_lines.append(line)
+            plan_items.append(("left", line))
+        else:
+            right_lines.append(line)
+            plan_items.append(("right", line))
+
+    # A page-wide table's rows are read whole. The rows a split would tear
+    # apart are the ones with runs on both sides and real air at the boundary;
+    # of those, a table row also carries two or more cell gaps away from the
+    # boundary, while a merged prose line carries none. A table inside one
+    # column never reaches the boundary and does not block the split.
+    table_like = 0
+    spanning = 0
+    for line in body_lines:
+        left_part = [run for run in line.runs if run.x < split_center]
+        right_part = [run for run in line.runs if run.x >= split_center]
+        if not left_part or not right_part:
+            continue
+        bridge = right_part[0].x - left_part[-1].x - _advance_of(left_part[-1])
+        if bridge < gap_min:
+            continue
+        if left_limit and (
+            left_part[-1].x + _advance_of(left_part[-1]) > left_limit + scale
+        ):
+            continue
+        spanning += 1
+        extra_gaps = 0
+        for previous, current in zip(line.runs, line.runs[1:]):
+            gap = current.x - previous.x - _advance_of(previous)
+            if gap < max(current.height, previous.height) * _COLUMN_GAP_EM:
+                continue
+            boundary = (previous.x + _advance_of(previous) + current.x) / 2.0
+            if abs(boundary - split_center) <= scale:
+                continue
+            extra_gaps += 1
+        if extra_gaps >= 2:
+            table_like += 1
+    if spanning and table_like >= spanning * _COLUMN_TABLE_PAGE_SHARE:
+        return None
+
+    left_count = sum(
+        1 for line in left_lines if abs(line.height - body) <= body * 0.35
+    )
+    right_count = sum(
+        1 for line in right_lines if abs(line.height - body) <= body * 0.35
+    )
+    if min(left_count, right_count) < _COLUMN_MIN_SIDE_LINES:
+        return None
+    left_text = sum(
+        len(run.text)
+        for line in left_lines
+        for run in line.runs
+        if abs(run.height - body) <= body * 0.35
+    )
+    right_text = sum(
+        len(run.text)
+        for line in right_lines
+        for run in line.runs
+        if abs(run.height - body) <= body * 0.35
+    )
+    total_text = left_text + right_text
+    if (
+        not total_text
+        or min(left_text, right_text) < total_text * _COLUMN_MIN_SIDE_SHARE
+    ):
+        return None
+
+    segments: list[list[_Line]] = []
+    left_block: list[_Line] = []
+    right_block: list[_Line] = []
+
+    def flush() -> None:
+        nonlocal left_block, right_block
+        if left_block or right_block:
+            segments.append(left_block + right_block)
+            left_block = []
+            right_block = []
+
+    for kind, line in plan_items:
+        if kind == "full":
+            flush()
+            segments.append([line])
+        elif kind == "left":
+            left_block.append(line)
+        else:
+            right_block.append(line)
+    flush()
+    return segments
+
+
 def _detect_table(lines: list[_Line], start: int) -> tuple[int, list[list[str]]] | None:
     """Read a column-aligned block as a table from the runs' own x positions."""
 
@@ -519,6 +755,7 @@ def _page_lines(
         return [_anchor(number), f"> {notices.unreadable_page}"], [], layer, False
     try:
         page_height = float(page.mediabox.height)
+        page_width = float(page.mediabox.width)
     except Exception as exc:
         raise DocumentNormalizationError(
             "pdf_page_geometry_unavailable", "PDF page geometry could not be read safely."
@@ -526,60 +763,70 @@ def _page_lines(
     if not runs:
         return [_anchor(number), layer], [], layer, False
     lines = _group_lines(runs, page_height)
-    body = _body_size(lines)
-    leading = _leading(lines)
-    sparse = _is_sparse(lines, body)
+    # #5568 field measurement: a two-column page is read column by column;
+    # a page that is not proven two-column keeps the whole-page path.
+    segments = _column_plan(lines, page_width)
+    if segments is None:
+        segments = [lines]
     out: list[str] = [_anchor(number)]
     pending: list[str] = []
-    index = 0
-    while index < len(lines):
-        line = lines[index]
-        text = line.text
-        if not text:
-            index += 1
+    ordered: list[_Line] = []
+    for segment in segments:
+        if not segment:
             continue
-        if not sparse:
-            table = _detect_table(lines, index)
-            if table is not None:
+        ordered.extend(segment)
+        body = _body_size(segment)
+        leading = _leading(segment)
+        sparse = _is_sparse(segment, body)
+        index = 0
+        while index < len(segment):
+            line = segment[index]
+            text = line.text
+            if not text:
+                index += 1
+                continue
+            if not sparse:
+                table = _detect_table(segment, index)
+                if table is not None:
+                    if pending:
+                        out.append(" ".join(pending).strip())
+                        pending = []
+                    out.extend(_table_markdown(table[1]))
+                    out.append("")
+                    index += table[0]
+                    continue
+            level = None if sparse else _heading_level(line, body)
+            if level is not None:
                 if pending:
                     out.append(" ".join(pending).strip())
                     pending = []
-                out.extend(_table_markdown(table[1]))
-                out.append("")
-                index += table[0]
+                if out and out[-1].strip():
+                    out.append("")
+                out.extend(["#" * level + " " + text, ""])
+                index += 1
                 continue
-        level = None if sparse else _heading_level(line, body)
-        if level is not None:
-            if pending:
+            item = None if line.height > body * 1.1 else _list_markdown(text)
+            if item is not None:
+                if pending:
+                    out.append(" ".join(pending).strip())
+                    pending = []
+                    out.append("")
+                # A list glued under a paragraph line is a lazy continuation, so the
+                # block needs its own blank line before it starts.
+                if out and out[-1].strip() and not _MD_ITEM.match(out[-1]):
+                    out.append("")
+                out.append(item)
+                index += 1
+                continue
+            if pending and _starts_paragraph(segment[index - 1] if index else None, line, body, leading):
                 out.append(" ".join(pending).strip())
+                out.append("")
                 pending = []
-            if out and out[-1].strip():
-                out.append("")
-            out.extend(["#" * level + " " + text, ""])
+            pending.append(text)
             index += 1
-            continue
-        item = None if line.height > body * 1.1 else _list_markdown(text)
-        if item is not None:
-            if pending:
-                out.append(" ".join(pending).strip())
-                pending = []
-                out.append("")
-            # A list glued under a paragraph line is a lazy continuation, so the
-            # block needs its own blank line before it starts.
-            if out and out[-1].strip() and not _MD_ITEM.match(out[-1]):
-                out.append("")
-            out.append(item)
-            index += 1
-            continue
-        if pending and _starts_paragraph(lines[index - 1] if index else None, line, body, leading):
-            out.append(" ".join(pending).strip())
-            out.append("")
-            pending = []
-        pending.append(text)
-        index += 1
     if pending:
         out.append(" ".join(pending).strip())
-    return out, runs, layer, _digit_fragmented(lines)
+    return out, runs, layer, _digit_fragmented(ordered)
 
 
 def _is_rotated(runs: list[_Run]) -> bool:

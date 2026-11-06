@@ -24,7 +24,10 @@ def validate_config(config, baseline, live_clients=None, reviewed_config=None):
         raise ValueError('invalid declared vars')
     reviewed = {b.get('name'): b for b in bindings if b.get('type') == 'plain_text'}
     for name, value in declared.items():
-        if name not in {'GOOGLE_CLIENT_ID', 'PADIEM_AUTH_CLIENTS'} or not isinstance(value, str):
+        # PADIEM_CHAT_PASSWORD_RPC_ORIGIN: the shared-login email signup/login
+        # lane's reviewed target origin for Chat's signed internal password
+        # routes (no secret value is ever declared in [vars]).
+        if name not in {'GOOGLE_CLIENT_ID', 'PADIEM_AUTH_CLIENTS', 'PADIEM_CHAT_PASSWORD_RPC_ORIGIN'} or not isinstance(value, str):
             raise ValueError('unreviewed declared variable')
         expected = reviewed.get(name, {}).get('sha256')
         if expected != hashlib.sha256(value.encode('utf-8')).hexdigest():

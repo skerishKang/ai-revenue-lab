@@ -91,10 +91,10 @@ __all__ = [
     "AdmissionBindingConfigError",
     "HttpsAdmissionBinding",
     "admission_binding_for",
-    "arm_live_binders",
     "new_service_id",
     "proof_for",
     "proof_for_v2",
+    "start_admission_warmers",
 ]
 
 ADMISSION_ORIGIN_ENV = "PADIEM_ENGINE_LOCAL_ADMISSION_ORIGIN"
@@ -196,20 +196,6 @@ _POOLED_CLIENTS: dict[int, tuple[asyncio.AbstractEventLoop, httpx.AsyncClient]] 
 # is that caller's business and is never registered here.
 _LIVE_BINDINGS: list["HttpsAdmissionBinding"] = []
 _HTTP2_AVAILABLE: bool | None = None
-
-
-def arm_live_binders() -> None:
-    """Arm the warm cycle of every live binding, from inside a running loop.
-
-    The host composes its bindings while importing the ASGI app, before any
-    event loop exists, so composition alone cannot schedule the first cycle.
-    The host's lifespan startup calls this on the running loop; each binding's
-    own guard keeps exactly one timer outstanding, and the first-call arming
-    path is unchanged.
-    """
-
-    for binding in list(_LIVE_BINDINGS):
-        binding.arm_warmer()
 
 
 def _http2_available() -> bool:
@@ -358,15 +344,28 @@ class HttpsAdmissionBinding:
             return
         self._warm_timer = loop.call_later(self._keepwarm, self._warm_now)
 
-    def arm_warmer(self) -> None:
-        """Public arm point for the host; one timer outstanding at a time.
+    def start_warmer(self) -> None:
+        """Fire the first warm cycle now, at the host's event-loop start.
 
-        The binding is composed before the host loop exists, so the host calls
-        this once that loop is running (ASGI lifespan startup). Calling it from
-        inside a running loop at composition time arms the cycle immediately.
+        The binding is composed while the ASGI app is imported, before any loop
+        exists, so until now the cycle waited for the first authority call
+        (#6972): a host that idled between turns stayed cold for hours and paid
+        the handshake and cold-isolate cost on its first turn. The lifespan
+        startup has a running loop, which is all the first ping needs; the
+        periodic re-arm takes over from there. A cycle an earlier call already
+        started is left alone, and shutdown keeps cancelling everything.
         """
 
-        self._arm_warmer()
+        if self._keepwarm <= 0 or self._warm_stopped:
+            return
+        if self._warm_task is not None or self._warm_timer is not None:
+            # The first authority call (or an earlier kick) already started it.
+            return
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            return
+        self._warm_task = asyncio.ensure_future(self._warm_once())
 
     def _warm_now(self) -> None:
         self._warm_timer = None
@@ -456,6 +455,20 @@ class HttpsAdmissionBinding:
 
     async def record_usage(self, payload: dict[str, Any]) -> dict[str, Any]:
         return await self._call("record_usage", payload)
+
+
+def start_admission_warmers() -> None:
+    """The host lifespan startup hook: fire every live binding's first warm cycle.
+
+    Until now the cycle armed itself on the first authority call (#6972), so a
+    host that idled between turns stayed cold for hours. The lifespan startup
+    has a running loop, which is all the first ping needs; failures stay
+    swallowed inside the cycle exactly as before. Bindings with the cycle off
+    are not registered, so this touches nothing for them.
+    """
+
+    for binding in list(_LIVE_BINDINGS):
+        binding.start_warmer()
 
 
 def _keepwarm_setting(values: Mapping[str, Any]) -> float:

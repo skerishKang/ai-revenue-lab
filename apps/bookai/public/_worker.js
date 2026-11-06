@@ -332,7 +332,9 @@ function buildEnginePayload(question, bounded, model) {
 function assetCacheControl(pathname) {
   if (pathname === "/" || pathname === "/index.html" || pathname === "/version.json" || pathname.startsWith("/api/")) return "no-cache";
   if (pathname.startsWith("/content/")) return "public, max-age=604800, stale-while-revalidate=2592000";
-  if (pathname.startsWith("/styles/") || pathname.endsWith(".js") || pathname.endsWith(".mjs") || pathname.endsWith(".css")) return "public, max-age=86400, stale-while-revalidate=604800";
+  /* 261106 · 셸 자산(js/mjs/css/styles)은 no-cache 로 ETag 재검증한다. 배포 전환
+     후 최대 24시간 옛 스크립트에 머무는 문제(브라우저 max-age 캐시)를 없앤다. */
+  if (pathname.startsWith("/styles/") || pathname.endsWith(".js") || pathname.endsWith(".mjs") || pathname.endsWith(".css")) return "no-cache";
   return null;
 }
 async function serveAsset(request, env) {

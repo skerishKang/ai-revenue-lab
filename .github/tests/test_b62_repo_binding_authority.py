@@ -38,12 +38,19 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
     #   - The default-OFF account-comparison route adds two Secrets Store
     #     bindings, a public key id and an opt-in switch. The production gate
     #     must verify these exact additions just like every other binding.
+    #   - The shared-login email signup/login lane (auth.padiem.net, opt-in)
+    #     declares PADIEM_CHAT_PASSWORD_RPC_SECRET, the receiver-side proof
+    #     secret for the signed /internal/password-verify and
+    #     /internal/password-register calls. Same deploy-window rule as the
+    #     other pending secrets: the Owner stores the value first.
     # Each one is named here as a pending addition - never unexplained drift, and
     # never a silent removal of something serving traffic. Each returns to an empty
     # diff as its own deploy lands.
     assert binding_diff(index(rows), expected) == {
         'added': [{'name': 'PADIEM_CHAT_FILE_LANE_ORIGIN', 'type': 'plain_text'},
                   {'name': 'PADIEM_CHAT_FILE_LANE_TICKET_SECRET',
+                   'type': 'secrets_store_secret'},
+                  {'name': 'PADIEM_CHAT_PASSWORD_RPC_SECRET',
                    'type': 'secrets_store_secret'},
                   {'name': 'PADIEM_CHAT_SHARED_AUTH_CLIENT_KID', 'type': 'plain_text'},
                   {'name': 'PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK', 'type': 'secrets_store_secret'},

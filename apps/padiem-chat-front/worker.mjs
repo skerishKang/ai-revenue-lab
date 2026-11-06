@@ -60,6 +60,14 @@ const DEFAULT_TUS_TIMEOUT_MS = 180000;
 // the browser saw upstream_timeout while the host was still finishing the login, so
 // this one path gets its own allowance; every other /auth/* keeps the short one.
 const DEFAULT_AUTH_CALLBACK_TIMEOUT_MS = 30000;
+// The login write (/api/auth/*) waits on the same host work as the callback: an
+// OAuth exchange, a JWKS-verified token and the canonical identity RPC. Measured
+// on the host: 52 events over 3 days where resolve_or_create_product_link alone
+// ran past the 5s window and the front answered a cookie-less 504 while the
+// session was created right after it. #6957 lightened that RPC; until its effect
+// is measured, the login write keeps its own window so the cookie the host
+// already made reaches the browser. Every other write keeps the generic window.
+const DEFAULT_AUTH_WRITE_TIMEOUT_MS = 30000;
 const TIMED_OUT = Symbol("timed_out");
 const CONNECTION_REFUSED = Symbol("connection_refused");
 const TRANSPORT_FAILED = Symbol("transport_failed");
@@ -259,6 +267,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     const appsAI = request.method === "POST" && url.pathname === "/api/apps/ai";
     const bookAIRecords = url.pathname === "/api/bookai/records";
     const authCallback = READ_METHODS.has(request.method) && url.pathname === "/auth/shared/callback";
+    const authWrite = !READ_METHODS.has(request.method) && url.pathname.startsWith("/api/auth/");
     const tusWrite = (request.method === "PATCH" || request.method === "POST") &&
       /^\/api\/projects\/[^/]+\/files\/tus(?:\/|$)/.test(url.pathname);
     const upstreamTimeout = numeric(env.UPSTREAM_TIMEOUT_MS, DEFAULT_TIMEOUT_MS);
@@ -284,6 +293,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
       : apiRead ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS)
       : authCallback ? numeric(env.AUTH_CALLBACK_TIMEOUT_MS, DEFAULT_AUTH_CALLBACK_TIMEOUT_MS)
       : tusWrite ? numeric(env.TUS_UPLOAD_TIMEOUT_MS, DEFAULT_TUS_TIMEOUT_MS)
+      : authWrite ? numeric(env.AUTH_WRITE_TIMEOUT_MS, DEFAULT_AUTH_WRITE_TIMEOUT_MS)
         : upstreamTimeout;
     // 답변 시간 예산: Chat derives the remaining Engine budget from this value. Only an
     // answer request carries it; ordinary writes keep their existing wire shape.

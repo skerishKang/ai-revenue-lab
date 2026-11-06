@@ -5,18 +5,18 @@
 /content/*
   Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
 
-# Static shell assets.
+# Static shell assets always revalidate (ETag); deploy cadence beats day-long caches.
 /styles/*
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: no-cache
 
 /*.js
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: no-cache
 
 /*.mjs
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: no-cache
 
 /*.css
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: no-cache
 
 # Entry points and API answers always revalidate.
 /

@@ -31,6 +31,11 @@ API_READ_TIMEOUT_MS = "30000"
 # zero 504s). 60s leaves room for one Free-tier retry of that work while still
 # failing a genuinely stuck turn.
 ORCHESTRATION_TIMEOUT_MS = "60000"
+# The login write waits on the same host work as the callback (OAuth exchange,
+# JWKS verification, canonical identity RPC). Measured on the host: 52 events
+# over 3 days where the identity RPC alone ran past the 5s live window and the
+# front answered a cookie-less 504 while the session was created right after.
+AUTH_WRITE_TIMEOUT_MS = "30000"
 
 # Read-path fallback target. Declared here so the binding exists in both modes;
 # static mode simply never calls it.

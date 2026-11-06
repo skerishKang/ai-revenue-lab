@@ -5,6 +5,8 @@ import asyncio
 import hashlib
 import hmac
 import json
+import logging
+import time
 from types import SimpleNamespace
 
 import httpx
@@ -26,9 +28,66 @@ IDENTITY = {"product": "claw", "subject_ref": "usr_synthetic",
 
 
 def payload():
+    # #6954: a real finished turn has at least one model call; a turn without
+    # one never reaches the transport at all (see the skip test below).
     collector = PcWorkMetricsCollector(IDENTITY["session_ref"])
+    call_id = collector.model_start(messages=[{"role": "user", "content": "synthetic"}])
+    collector.model_finish(call_id)
     collector.finish("completed", "completed")
     return {**IDENTITY, "metrics": collector.snapshot()}
+
+
+async def test_zero_model_call_turn_skips_http_and_journals_once(caplog):
+    """#6954: an MCP pc_* turn has no ledger row to attach to, so the reporter
+    must not open a transport request at all — one journal line, nothing sent."""
+    calls = []
+    def handle(request):
+        calls.append(request)
+        return httpx.Response(200, json={"ok": True})
+    reporter = PcWorkMetricsReporter(transport=httpx.MockTransport(handle), base_url="https://b14.internal")
+    collector = PcWorkMetricsCollector(IDENTITY["session_ref"])  # no model_start
+    collector.finish("completed", "completed")
+    assert await reporter({**IDENTITY, "metrics": collector.snapshot()}) == "skipped_no_model_call"
+    assert calls == []
+    assert caplog.text.count("pc_work_metrics_delivery") == 1
+    assert "pc_work_metrics_delivery status=skipped_no_model_call" in caplog.text
+
+
+async def test_repeated_409_backs_off_in_order_and_finishes_inside_window(caplog, monkeypatch):
+    """#6954: ledger_pending retries wait 0.25 → 0.5 → 1 → 2 s instead of a fixed
+    50 ms, and the delivery window still ends the loop on time."""
+    waits = []
+    real_sleep = asyncio.sleep
+    async def recorded_sleep(delay, *args, **kwargs):
+        waits.append(delay)
+        await real_sleep(delay)
+    monkeypatch.setattr("app.pc_work_metrics_reporter.asyncio.sleep", recorded_sleep)
+    attempts = 0
+    def handle(request):
+        nonlocal attempts
+        attempts += 1
+        return httpx.Response(409, json={"error": {"code": "ledger_pending"}})
+    reporter = PcWorkMetricsReporter(transport=httpx.MockTransport(handle), base_url="https://b14.internal")
+    started = time.monotonic()
+    assert await reporter(payload()) == "unavailable"
+    elapsed = time.monotonic() - started
+    assert waits[:4] == [0.25, 0.5, 1.0, 2.0]
+    assert attempts == 5  # t=0, 0.25, 0.75, 1.75, 3.75 — the next wait crosses the window
+    assert elapsed < 5.5  # the 5 s window, not the loop, ends the delivery
+    assert "pc_work_metrics_delivery status=unavailable" in caplog.text
+
+
+async def test_first_try_success_delivers_once_without_retry(caplog):
+    calls = []
+    def handle(request):
+        calls.append(request)
+        return httpx.Response(200, json={"ok": True})
+    reporter = PcWorkMetricsReporter(transport=httpx.MockTransport(handle), base_url="https://b14.internal")
+    started = time.monotonic()
+    assert await reporter(payload()) == "recorded"
+    assert len(calls) == 1
+    assert time.monotonic() - started < 0.2
+    assert caplog.text.count("pc_work_metrics_delivery") == 0
 
 
 async def test_pending_actual_ledger_row_is_retried_with_identical_summary():
