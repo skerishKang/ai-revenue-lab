@@ -27,13 +27,21 @@ class B62BrowserCacheContractTests(unittest.TestCase):
                 self.assertIn("cache-dependency-glob: apps/padiem-chat/uv.lock", block)
                 self.assertEqual(block.count("Cache pinned Playwright Chromium"), 1)
                 self.assertEqual(block.count("actions/cache@v4"), 1)
+                self.assertIn("id: playwright-browser-cache", block)
                 self.assertIn("path: ~/.cache/ms-playwright", block)
                 self.assertIn("key: b62-playwright-headless-shell-1.55.0-", block)
                 self.assertIn("runner.os", block)
                 self.assertIn("runner.arch", block)
+                self.assertIn(
+                    "if: steps.playwright-browser-cache.outputs.cache-hit != 'true'", block
+                )
                 self.assertLess(
                     block.index("Cache pinned Playwright Chromium"),
-                    block.index("name: Install Chromium runtime"),
+                    block.index("name: Install Chromium system libraries"),
+                )
+                self.assertLess(
+                    block.index("name: Install Chromium system libraries"),
+                    block.index("name: Install Chromium browser"),
                 )
         self.assertRegex(text, r"(?m)^  pull_request:")
         self.assertRegex(text, r"(?m)^  workflow_dispatch:")

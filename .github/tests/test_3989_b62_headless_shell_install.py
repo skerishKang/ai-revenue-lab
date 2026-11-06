@@ -40,21 +40,32 @@ class B62HeadlessShellContract(unittest.TestCase):
     def test_all_sixteen_jobs_install_pinned_headless_shell_with_os_deps(self):
         observed = jobs()
         self.assertEqual(set(observed), EXPECTED_JOBS)
-        exact = "uv run playwright install --with-deps --only-shell chromium"
+        deps = "uv run playwright install-deps chromium"
+        browser = "uv run playwright install --only-shell chromium"
+        mirror = "run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh"
         cache_key = "key: b62-playwright-headless-shell-1.55.0-"
         for name, job in observed.items():
             with self.subTest(job=name):
-                self.assertEqual(job.count("name: Install Chromium runtime"), 1)
-                self.assertEqual(job.count(exact), 1)
+                self.assertEqual(job.count("name: Install Chromium system libraries"), 1)
+                self.assertEqual(job.count("name: Install Chromium browser"), 1)
+                self.assertEqual(job.count(deps), 1)
+                self.assertEqual(job.count(browser), 1)
+                self.assertEqual(job.count(mirror), 1)
                 self.assertEqual(job.count(cache_key), 1)
                 self.assertIn("uv pip install 'playwright==1.55.0'", job)
                 self.assertIn("path: ~/.cache/ms-playwright", job)
+                self.assertIn("id: playwright-browser-cache", job)
+                self.assertIn(
+                    "if: steps.playwright-browser-cache.outputs.cache-hit != 'true'", job
+                )
                 self.assertNotIn("install --with-deps chromium", job)
                 self.assertNotIn("b62-playwright-1.55.0-", job)
                 self.assertNotIn("install chromium --only-shell", job)
                 self.assertIn("actions/cache@v4", job)
                 self.assertIn("actions/upload-artifact@v4", job)
-        self.assertEqual(WORKFLOW.read_text(encoding="utf-8").count(exact), 16)
+        workflow = WORKFLOW.read_text(encoding="utf-8")
+        self.assertEqual(workflow.count(deps), 16)
+        self.assertEqual(workflow.count(browser), 16)
 
     def test_all_chromium_call_sites_launch_only_default_headless_shell(self):
         inspected = []
@@ -79,12 +90,24 @@ class B62HeadlessShellContract(unittest.TestCase):
                 inspected.append(source.name)
         self.assertGreaterEqual(len(inspected), 25, inspected)
 
-    def test_existing_daily_strict_certification_is_unchanged(self):
+    def test_existing_daily_strict_certification_keeps_split_full_browser_install(self):
         scheduled = (ROOT / ".github/workflows/b62-glass-animation-timing-certification.yml")
         content = scheduled.read_text(encoding="utf-8")
         self.assertIn("B62_GLASS_SHELL_MODE: strict", content)
-        self.assertIn("run: uv run playwright install --with-deps chromium", content)
+        self.assertIn("uv run playwright install-deps chromium", content)
+        self.assertIn("uv run playwright install chromium", content)
+        self.assertIn("steps.playwright-browser-cache.outputs.cache-hit != 'true'", content)
+        self.assertIn("key: b62-playwright-1.55.0-", content)
+        self.assertNotIn("install --with-deps chromium", content)
         self.assertIn("  schedule:", content)
+
+    def test_pr_glass_gate_selects_archive_before_the_font_download(self):
+        gate = (
+            ROOT / ".github/workflows/validate-b01-v6-living-index.yml"
+        ).read_text(encoding="utf-8")
+        mirror = gate.index("b62_playwright_apt_mirror_3989.sh")
+        self.assertLess(mirror, gate.index("fonts-noto-cjk"))
+        self.assertLess(mirror, gate.index("apt-get update"))
 
     def test_plan_guard_pins_this_install_scope_contract(self):
         plan = PLAN.read_text(encoding="utf-8")
