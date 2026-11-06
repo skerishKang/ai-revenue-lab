@@ -328,6 +328,57 @@ def test_remote_schema_queries_compare_only_names_from_the_migration_schema() ->
             b14_schema.verify_remote_schema(columns_path, indexes_path)
 
 
+def test_d1_internal_objects_are_excluded_from_readback_and_comparison() -> None:
+    commands = re.findall(r'--command "([^"]*)"', _workflow_text())
+    db = sqlite3.connect(":memory:")
+    try:
+        for migration in b14_schema.migration_files(MIGRATIONS):
+            db.executescript(migration.read_text(encoding="utf-8"))
+        db.execute('CREATE TABLE "_cf_KV" (key TEXT)')
+        db.execute('CREATE INDEX "_cf_internal_index" ON "_cf_KV" (key)')
+        db.execute('CREATE INDEX "user_named_internal_index" ON "_cf_KV" (key)')
+        db.execute('CREATE TABLE "_cfXordinary" (value TEXT)')
+        seen_pragmas = []
+
+        def authorize(action, name, argument, _database, _source):
+            if action == sqlite3.SQLITE_PRAGMA and name == "table_info":
+                seen_pragmas.append(argument)
+                if argument == "_cf_KV":
+                    return sqlite3.SQLITE_DENY
+            return sqlite3.SQLITE_OK
+
+        db.set_authorizer(authorize)
+        columns = db.execute(commands[0]).fetchall()
+        indexes = db.execute(commands[1]).fetchall()
+        assert "_cf_KV" not in seen_pragmas
+        assert "_cfXordinary" in seen_pragmas
+        assert ("_cf_KV", "key") not in columns
+        assert ("_cfXordinary", "value") in columns
+        assert ("_cf_internal_index",) not in indexes
+        assert ("user_named_internal_index",) not in indexes
+    finally:
+        db.close()
+
+    expected = b14_schema.schema_from_migrations()
+    column_rows = [
+        {"table_name": table, "column_name": column}
+        for table, columns in expected["tables"].items() for column in columns
+    ]
+    column_rows.append({"table_name": "_cf_KV", "column_name": "key"})
+    index_rows = [{"name": name} for name in expected["indexes"]]
+    index_rows.append({"name": "_cf_internal_index"})
+    with tempfile.TemporaryDirectory(dir=ROOT / ".github" / "tests") as temp_dir:
+        columns_path = Path(temp_dir) / "columns.json"
+        indexes_path = Path(temp_dir) / "indexes.json"
+        columns_path.write_text(json.dumps([{"results": column_rows}]), encoding="utf-8")
+        indexes_path.write_text(json.dumps([{"results": index_rows}]), encoding="utf-8")
+        assert b14_schema.verify_remote_schema(columns_path, indexes_path) == expected
+        column_rows.append({"table_name": "_cfXordinary", "column_name": "value"})
+        columns_path.write_text(json.dumps([{"results": column_rows}]), encoding="utf-8")
+        with pytest.raises(b14_schema.SchemaError, match="B14_REMOTE_TABLE_COLUMN_MISMATCH"):
+            b14_schema.verify_remote_schema(columns_path, indexes_path)
+
+
 def test_binding_still_targets_the_canonical_ledger_database() -> None:
     """The gate is only meaningful while wrangler routes the ledger binding at
     the same database it provisions."""

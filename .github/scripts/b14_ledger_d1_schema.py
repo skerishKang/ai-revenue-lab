@@ -113,8 +113,8 @@ def remote_tables_from_rows(rows: list[dict[str, Any]]) -> dict[str, list[str]]:
         column = row.get("column_name")
         if not isinstance(table, str) or not isinstance(column, str):
             raise SchemaError("B14_REMOTE_COLUMN_ROW_INVALID")
-        # Wrangler owns this bookkeeping table; it is outside application SQL.
-        if table == "d1_migrations":
+        # Wrangler and D1 internal tables are outside application SQL.
+        if table == "d1_migrations" or table.startswith("_cf_"):
             continue
         tables.setdefault(table, []).append(column)
     return tables
@@ -128,7 +128,8 @@ def verify_remote_schema(columns_path: Path, indexes_path: Path) -> dict[str, An
         name = row.get("name")
         if not isinstance(name, str):
             raise SchemaError("B14_REMOTE_INDEX_ROW_INVALID")
-        remote_indexes.append(name)
+        if not name.startswith("_cf_"):
+            remote_indexes.append(name)
     remote_indexes.sort()
 
     if remote_tables != expected["tables"]:
