@@ -35,6 +35,7 @@
 #   PADIEM_COM2_CHAT_DB_USER     owner the Chat migration backup and apply run as (default padiem-chat)
 #   PADIEM_COM2_P01_APP          P01 install root (#6442 releases/rollback)
 #   PADIEM_COM2_B14_APP          B14 app tree (a link into the mirror)
+#   PADIEM_COM2_CHAT_APP         Chat app tree (a link into the mirror)
 #   PADIEM_COM2_MESH_QUEUE_APP   the PC queue install root (its code also from the mirror)
 #   PADIEM_COM2_MESH_QUEUE_USER  the account that owns that root
 #   PADIEM_COM2_QUEUE_UNIT_DIR   where the queue units are installed (/etc/systemd/system)
@@ -106,6 +107,7 @@ chat_db=${PADIEM_COM2_CHAT_DB:-/mnt/d/padiem/chat-com2/chat.sqlite3}
 chat_db_user=${PADIEM_COM2_CHAT_DB_USER:-padiem-chat}
 p01_root=${PADIEM_COM2_P01_APP:-/opt/padiem/p01}
 b14_app=${PADIEM_COM2_B14_APP:-/opt/padiem/b14/app}
+chat_app=${PADIEM_COM2_CHAT_APP:-/opt/padiem/chat-com2/app}
 queue_root=${PADIEM_COM2_MESH_QUEUE_APP:-/opt/padiem/mesh-queue}
 queue_account=${PADIEM_COM2_MESH_QUEUE_USER:-padiem-mesh}
 queue_unit_dir=${PADIEM_COM2_QUEUE_UNIT_DIR:-/etc/systemd/system}
@@ -1074,6 +1076,43 @@ executor_matches_previous_release() {
   [[ $actual == "$executor_releases/$old" ]]
 }
 
+# Chat and B14 have the executor's shape: the link is the deployment. 11-07
+# 05:38 the Chat unit rolled back to previous/7b638c11 while the checkout still
+# moved to 80be22ee; only Chat's three changed files happened to select it. The
+# running code is what a deploy must compare, never the checkout alone.
+#
+# 0 the link points at this checkout's recorded release; 1 another commit, a
+# broken link, or a tree this script cannot prove; 2 no tree on this host.
+chat_matches_previous_release() {
+  local actual expected
+  if [[ ! -L $chat_app && ! -e $chat_app ]]; then
+    return 2
+  fi
+  [[ -L $chat_app ]] || return 1
+  actual=$(readlink -f -- "$chat_app") || return 1
+  [[ -d $actual ]] || return 1
+  # Compare real paths on both sides, so the same mirror reached through
+  # another symlinked root is that release, not an unprovable tree.
+  expected=$(readlink -f -- "$source_stage_dir/$old/apps/padiem-chat/app" 2>/dev/null)
+  [[ -n $expected ]] && [[ $actual == "$expected" ]] && return 0
+  expected=$(readlink -f -- "$previous_dir/$old/apps/padiem-chat/app" 2>/dev/null)
+  [[ -n $expected ]] && [[ $actual == "$expected" ]]
+}
+
+b14_matches_previous_release() {
+  local actual expected
+  if [[ ! -L $b14_app && ! -e $b14_app ]]; then
+    return 2
+  fi
+  [[ -L $b14_app ]] || return 1
+  actual=$(readlink -f -- "$b14_app") || return 1
+  [[ -d $actual ]] || return 1
+  expected=$(readlink -f -- "$source_stage_dir/$old/apps/korean-ai-platform" 2>/dev/null)
+  [[ -n $expected ]] && [[ $actual == "$expected" ]] && return 0
+  expected=$(readlink -f -- "$previous_dir/$old/apps/korean-ai-platform" 2>/dev/null)
+  [[ -n $expected ]] && [[ $actual == "$expected" ]]
+}
+
 # The executor's unit was the one deployment input with no source in this
 # repository: a change meant editing /etc/systemd/system by hand and nothing
 # recorded what the host ran (#6892 follow-up). deploy/host-com2/oracle-mesh
@@ -1572,8 +1611,9 @@ run_deploy() {
 
   local sha=$1 origin changed='' services='' pending='' line status=0
   local mapped='' service='' reason='' state='' queue_dependent='' executor_dependent=''
-  local p01_mismatch=0 excluded_test=0 excluded_docs=0 excluded_example=0 excluded_meta=0 excluded_unmapped=0
+  local mismatch=0 p01_mismatch=0 excluded_test=0 excluded_docs=0 excluded_example=0 excluded_meta=0 excluded_unmapped=0
   local executor_mismatch=0 executor_code=0
+  local chat_mismatch=0 chat_code=0 b14_mismatch=0 b14_code=0
   declare -A wanted=([chat]=0 [p01]=0 [b14]=0 [queue]=0 [executor]=0)
   declare -A reason_files=([chat]=0 [p01]=0 [b14]=0 [queue]=0 [executor]=0)
   declare -A result=([chat]=SKIP [p01]=SKIP [b14]=SKIP [queue]=SKIP [executor]=SKIP)
@@ -1637,6 +1677,32 @@ run_deploy() {
       ;;
   esac
 
+  # Same rule for the two services whose rollback is a link: a rollback the next
+  # plan cannot see stays rolled back when the next commit misses their paths.
+  chat_code=0
+  chat_matches_previous_release || chat_code=$?
+  case $chat_code in
+    0) say 'CHAT_RUNNING_CODE=MATCH' ;;
+    2) say 'CHAT_RUNNING_CODE=NOT_INSTALLED' ;;
+    *)
+      say 'CHAT_RUNNING_CODE=DIFF_OR_UNVERIFIABLE'
+      wanted[chat]=1
+      chat_mismatch=1
+      ;;
+  esac
+
+  b14_code=0
+  b14_matches_previous_release || b14_code=$?
+  case $b14_code in
+    0) say 'B14_RUNNING_CODE=MATCH' ;;
+    2) say 'B14_RUNNING_CODE=NOT_INSTALLED' ;;
+    *)
+      say 'B14_RUNNING_CODE=DIFF_OR_UNVERIFIABLE'
+      wanted[b14]=1
+      b14_mismatch=1
+      ;;
+  esac
+
   changed=$("$git_bin" -C "$ops_checkout" diff --name-only "$old" "$resolved") \
     || fail GIT_DIFF_FAILED
   while IFS= read -r line; do
@@ -1696,14 +1762,14 @@ run_deploy() {
       state=REDEPLOY
       reason=CHANGED_PATHS
     fi
-    if [[ $line == p01 ]] && (( p01_mismatch )); then
-      if (( reason_files[$line] )); then
-        reason=CHANGED_PATHS+RUNNING_CODE_MISMATCH
-      else
-        reason=RUNNING_CODE_MISMATCH
-      fi
-    fi
-    if [[ $line == executor ]] && (( executor_mismatch )); then
+    mismatch=0
+    case $line in
+      p01) mismatch=$p01_mismatch ;;
+      executor) mismatch=$executor_mismatch ;;
+      chat) mismatch=$chat_mismatch ;;
+      b14) mismatch=$b14_mismatch ;;
+    esac
+    if (( mismatch )); then
       if (( reason_files[$line] )); then
         reason=CHANGED_PATHS+RUNNING_CODE_MISMATCH
       else
