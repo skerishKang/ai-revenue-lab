@@ -65,8 +65,8 @@ class _OneReplyPort:
         self.calls = 0
 
     def run_command(self, *, node_ref: str, command: object,
-                    timeout_seconds: int | None = None):
-        del node_ref, command, timeout_seconds
+                    timeout_seconds: int | None = None, run_as: str = "system"):
+        del node_ref, command, timeout_seconds, run_as
         self.calls += 1
         encoded = base64.b64encode(self.body).decode("ascii")
         reply = (
