@@ -5,7 +5,7 @@ const vm = require('node:vm');
 const {test} = require('node:test');
 
 const publicDir = path.join(__dirname, '../public');
-function setup({catalog, packet, staticAdapter, actualPacket, createAdapter, fetchStatic, withoutAbort} = {}) {
+function setup({catalog, packet, staticAdapter, actualPacket, createAdapter, fetchStatic, withoutAbort, clock} = {}) {
   const timers = new Map();
   let nextTimer = 1;
   const results = [], requests = [], userMessages = [];
@@ -37,6 +37,7 @@ function setup({catalog, packet, staticAdapter, actualPacket, createAdapter, fet
   }
   const context = vm.createContext({
     window, document, AbortController: withoutAbort ? undefined : AbortController,
+    performance: clock,
     sendChat: null, askPreset: null,
     setTimeout(fn, ms) { const id = nextTimer++; timers.set(id, {fn, ms}); return id; },
     clearTimeout(id) { timers.delete(id); },
@@ -305,4 +306,16 @@ test('the shipped static adapter isolates a stalled fetch and can retry after th
   env.fire(0);
   assert.equal(fetches, 2);
   assert.equal(sharedCalls, 0);
+});
+test('guest submit sends only the elapsed packet duration as diagnostic metadata', async () => {
+  const values = [100, 223.6];
+  const env = setup({clock: {now: () => values.shift()}});
+  const result = await env.window.storyMemorySubmitCompanionQuestionV1('question', {delay: 0});
+  env.fire(0);
+  assert.equal(result.ok, true);
+  const body = JSON.parse(env.requests[0][1].body);
+  assert.equal(body.packet_ms, 124);
+  assert.equal(body.question, 'question');
+  assert.equal(body.packet.co_reader_decision.decision, 'ALLOW');
+  assert.equal(env.results[0][1], 'answer');
 });
