@@ -14,6 +14,7 @@ on:
   pull_request:
     paths:
       - "apps/com2-backup/**"
+      - "deploy/host-com2/mesh-queue-backup/**"
       - "scripts/ops/com2_backup.py"
       - "scripts/ops/tests/test_com2_backup.py"
       - "scripts/ops/com2_backup_schedule.py"
@@ -103,6 +104,9 @@ jobs:
 
       - name: Run B62 generation pointer tests
         run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_b62_generation.py scripts/ops/tests/test_com2_b62_generation_publish.py
+
+      - name: Run queue backup packaging tests
+        run: python -m unittest discover -s deploy/host-com2/mesh-queue-backup/tests -q
 
       - name: Record gate scope
         run: |
