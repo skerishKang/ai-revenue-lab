@@ -8,15 +8,17 @@ function record(id, text='', updated=100) {
 function harness({remote=[],queued=[],cap=Infinity}={}) {
   const server = new Map(remote.map(row=>[row.record_id,structuredClone(row)]));
   const local = new Map(), queue = new Map(queued.map(row=>[row.record_id,structuredClone(row)]));
-  let cursor=0, release, periodic, requests=[], postBytes=[];
+  let cursor=0, release, periodic, requests=[], postBytes=[], account='sub_test', owner=null, failed=false;
+  const notice={hidden:true,textContent:''};
   const ready = new Promise(resolve=>{release=resolve;});
   const events = new EventTarget();
   const root = {
     BookAIReady:ready,
-    BookAISession:{isAuthenticated:()=>true,getAccountId:()=>'sub_test'},
+    document:{getElementById:id=>id==='todayAccountSyncStatus'?notice:null},
+    BookAISession:{isAuthenticated:()=>true,getAccountId:()=>account},
     addEventListener:events.addEventListener.bind(events),
     BookAILocalDB:{
-      flush:async()=>{},bindAccount:async()=>{},
+      flush:async()=>{},bindAccount:async id=>{if(owner&&owner!==id)throw Error('account_mismatch');owner=id;},
       cursor:async()=>cursor,setCursor:async(_id,value)=>{cursor=value;},
       pending:async()=>Array.from(queue.values()).map(row=>structuredClone(row)),
       merge:async(_id,rows)=>{for(const row of rows){
@@ -30,6 +32,7 @@ function harness({remote=[],queued=[],cap=Infinity}={}) {
   };
   const fetcher=async(raw,init)=>{
     const url=new URL(raw,'https://bookai.padiem.net');requests.push({url,method:init.method});
+    if(failed)return {ok:false,status:503};
     if(init.method==='POST'){
       postBytes.push(Buffer.byteLength(init.body));const data=JSON.parse(init.body),kept=[];
       for(const row of data.records){
@@ -46,7 +49,9 @@ function harness({remote=[],queued=[],cap=Infinity}={}) {
   let timer=0;
   vm.runInNewContext(source,{window:root,navigator:{onLine:true},TextEncoder,AbortController,fetch:fetcher,
     setTimeout:()=>++timer,clearTimeout:()=>{},setInterval:callback=>{periodic=callback;return ++timer;},console});
-  return {root,release,server,local,queue,requests,postBytes,cursor:()=>cursor,poll:()=>periodic()};
+  return {root,release,server,local,queue,requests,postBytes,notice,
+    setAccount:value=>{account=value;events.dispatchEvent(new Event('bookai-session'));},
+    setFailure:value=>{failed=value;},cursor:()=>cursor,poll:()=>periodic()};
 }
 (async()=>{
   const paged=harness({remote:Array.from({length:620},(_,i)=>record('same-'+i))});
@@ -75,5 +80,26 @@ function harness({remote=[],queued=[],cap=Infinity}={}) {
   assert.equal(upload.queue.size,1);assert.ok(upload.queue.has('oversized'));
   assert.equal(upload.server.size,6);assert.ok(upload.postBytes.length>=2);
   assert.ok(upload.postBytes.every(size=>size<=5*1024*1024));
+  const mismatch=harness({queued:[record('local-note','kept')]});
+  mismatch.release();await mismatch.root.BookAISync.syncNow();
+  mismatch.queue.set('unsent',record('unsent','preserve'));
+  mismatch.local.set('local',record('local','local record'));
+  const before=mismatch.requests.length;
+  mismatch.setAccount('sub_other');
+  const rejected=await mismatch.root.BookAISync.syncNow();
+  assert.equal(rejected.reason,'account_mismatch');
+  assert.equal(mismatch.notice.hidden,false);
+  assert.equal(mismatch.notice.textContent,'다른 계정 기록이라 동기화하지 않았습니다');
+  assert.equal(mismatch.requests.length,before,'different account never sends a request');
+  assert.equal(mismatch.queue.get('unsent').payload.body,'preserve');
+  assert.equal(mismatch.local.get('local').payload.body,'local record');
+  assert.equal(mismatch.server.get('local-note').payload.body,'kept');
+  mismatch.setAccount('sub_test');
+  assert.equal((await mismatch.root.BookAISync.syncNow()).state,'synced');
+  assert.equal(mismatch.notice.hidden,true);
+  mismatch.setFailure(true);
+  const generic=await mismatch.root.BookAISync.syncNow();
+  assert.equal(generic.reason,'sync_unavailable');
+  assert.equal(mismatch.notice.hidden,true,'generic failures do not claim an account mismatch');
   console.log('PASS: UI-ready gate, 620 equal-time records, late offline upload reconciliation, safe capped cursor, >5MiB batched queue and isolated oversized record');
 })().catch(error=>{console.error(error);process.exitCode=1;});
