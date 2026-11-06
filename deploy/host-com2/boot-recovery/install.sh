@@ -28,6 +28,8 @@ install -m 0755 "$here/wsl/boot-recovery.sh" "$app/boot-recovery.sh"
 if [[ ! -e "$app/.env" ]]; then install -m 0600 "$here/wsl/boot-recovery.env.example" "$app/.env"; fi
 chmod 0600 "$app/.env"
 if [[ ! -e "$app/units.json" ]]; then install -m 0644 "$here/wsl/units.json.example" "$app/units.json"; fi
+/usr/bin/python3 "$here/wsl/check_units_json_drift.py" \
+  "$app/units.json" "$here/wsl/units.json.example"
 install -d -m 0700 /var/lib/padiem/boot-recovery
 if ! /usr/bin/python3 "$app/boot_recovery.py" check --wait-seconds 0 >/dev/null 2>&1; then
   # A failing check at install time is information, not an install error; the
