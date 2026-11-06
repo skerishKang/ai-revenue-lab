@@ -1855,11 +1855,11 @@ SIDECAR_INSTALLED = {
     "deploy/host-com2/offsite-backup/offsite.py": "opt/padiem/offsite-backup/offsite.py",
     "deploy/host-com2/offsite-backup/padiem-offsite-backup.service": "etc/systemd/system/padiem-offsite-backup.service",
     "deploy/host-com2/offsite-backup/padiem-offsite-backup.timer": "etc/systemd/system/padiem-offsite-backup.timer",
-    "deploy/host-com2/cron/run-cron.sh": "opt/padiem/chat-staging/run-cron.sh",
-    "deploy/host-com2/cron/run-expired-purge.sh": "opt/padiem/chat-staging/run-expired-purge.sh",
-    "deploy/host-com2/cron/status-cron.sh": "opt/padiem/chat-staging/status-cron.sh",
-    "deploy/host-com2/cron/check_config_cron.py": "opt/padiem/chat-staging/check_config_cron.py",
-    "deploy/host-com2/cron/README.md": "opt/padiem/chat-staging/README-cron.md",
+    "deploy/host-com2/cron/run-cron.sh": "opt/padiem/chat-com2/run-cron.sh",
+    "deploy/host-com2/cron/run-expired-purge.sh": "opt/padiem/chat-com2/run-expired-purge.sh",
+    "deploy/host-com2/cron/status-cron.sh": "opt/padiem/chat-com2/status-cron.sh",
+    "deploy/host-com2/cron/check_config_cron.py": "opt/padiem/chat-com2/check_config_cron.py",
+    "deploy/host-com2/cron/README.md": "opt/padiem/chat-com2/README-cron.md",
 }
 
 
@@ -1933,6 +1933,25 @@ class SidecarDriftReportTest(DeployHarness):
         )
         # Reported, never repaired: the stale copy is still there.
         self.assertEqual(stale.read_text(encoding="utf-8"), "# stale\n")
+
+    def test_production_cron_missing_and_stale_are_reported_even_with_staging(self) -> None:
+        self._install_all()
+        prod = self.host / "opt/padiem/chat-com2"
+        staging = self.host / "opt/padiem/chat-staging"
+        staging.mkdir(parents=True)
+        for name in ("run-cron.sh", "status-cron.sh"):
+            shutil.copyfile(prod / name, staging / name)
+        (prod / "run-cron.sh").unlink()
+        (prod / "status-cron.sh").write_text("# stale\n", encoding="utf-8")
+
+        result = self._run_apply()
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("cron:opt/padiem/chat-com2/run-cron.sh=NOT_INSTALLED", result.stdout)
+        self.assertIn("cron:opt/padiem/chat-com2/status-cron.sh", result.stdout)
+        self.assertNotIn("cron:opt/padiem/chat-com2/status-cron.sh=NOT_INSTALLED", result.stdout)
+        self.assertNotIn("cron:opt/padiem/chat-staging/", result.stdout)
+        self.assertEqual((prod / "status-cron.sh").read_text(encoding="utf-8"), "# stale\n")
 
 class ScriptBoundaryTest(unittest.TestCase):
     def test_the_ladder_defaults_to_four_minutes_and_an_env_value_wins(self) -> None:

@@ -1451,7 +1451,7 @@ ensure_target_units_ready() {
 #
 # The cron lane renders its unit files from templates with the profile's values,
 # so those are not comparable byte for byte; the scripts it copies are. Its app
-# root is the installer's default profile (staging).
+# root is the production profile's app root, not the installer's staging default.
 report_sidecar_drift() {
   local service relative installed entry name listing='' count=0
   local -a pairs=(
@@ -1468,11 +1468,11 @@ report_sidecar_drift() {
     "offsite-backup|deploy/host-com2/offsite-backup/offsite.py|/opt/padiem/offsite-backup/offsite.py"
     "offsite-backup|deploy/host-com2/offsite-backup/padiem-offsite-backup.service|/etc/systemd/system/padiem-offsite-backup.service"
     "offsite-backup|deploy/host-com2/offsite-backup/padiem-offsite-backup.timer|/etc/systemd/system/padiem-offsite-backup.timer"
-    "cron|deploy/host-com2/cron/run-cron.sh|/opt/padiem/chat-staging/run-cron.sh"
-    "cron|deploy/host-com2/cron/run-expired-purge.sh|/opt/padiem/chat-staging/run-expired-purge.sh"
-    "cron|deploy/host-com2/cron/status-cron.sh|/opt/padiem/chat-staging/status-cron.sh"
-    "cron|deploy/host-com2/cron/check_config_cron.py|/opt/padiem/chat-staging/check_config_cron.py"
-    "cron|deploy/host-com2/cron/README.md|/opt/padiem/chat-staging/README-cron.md"
+    "cron|deploy/host-com2/cron/run-cron.sh|/opt/padiem/chat-com2/run-cron.sh"
+    "cron|deploy/host-com2/cron/run-expired-purge.sh|/opt/padiem/chat-com2/run-expired-purge.sh"
+    "cron|deploy/host-com2/cron/status-cron.sh|/opt/padiem/chat-com2/status-cron.sh"
+    "cron|deploy/host-com2/cron/check_config_cron.py|/opt/padiem/chat-com2/check_config_cron.py"
+    "cron|deploy/host-com2/cron/README.md|/opt/padiem/chat-com2/README-cron.md"
   )
   [[ -n $staged ]] || { say 'AUX_DRIFT=UNKNOWN'; return 0; }
   # The restart drop-in is one file the installer writes for every listed unit.
