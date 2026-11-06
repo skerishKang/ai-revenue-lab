@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import base64
 import io
+import json
 import re
 import subprocess
 import unittest
@@ -39,6 +40,16 @@ def _transcript(body: str, code: str = "0") -> bytes:
     ).encode("utf-8")
 
 
+def _stream_transcript(marker: str, stdout: str, stderr: str, code: str = "0") -> bytes:
+    streams = "PADIEM_STREAMS_V1:" + json.dumps(
+        {"stdout": stdout, "stderr": stderr}, ensure_ascii=False,
+        separators=(",", ":"),
+    )
+    # [Console]::Out.WriteLine emits the one-use session marker before the
+    # wrapper's encoded stream envelope, so it remains visible during streaming.
+    return marker.encode("ascii") + b"\r\n" + _transcript(streams, code)
+
+
 def _inner(wrapped: str) -> str:
     """The caller's command as it reaches the PC."""
     return _INNER.search(wrapped).group("body")
@@ -49,6 +60,35 @@ class _Completed:
         self.returncode = returncode
         self.stdout = stdout
         self.stderr = stderr
+
+
+class _SingleRead:
+    def __init__(self, raw: bytes):
+        self.raw = raw
+        self.done = False
+
+    def fileno(self):
+        raise OSError("not an OS pipe")
+
+    def read(self, _size):
+        if self.done:
+            return b""
+        self.done = True
+        return self.raw
+
+
+class _StreamProcess:
+    def __init__(self, raw: bytes | None):
+        self.stdin = io.BytesIO()
+        self.stdout = _SingleRead(raw or b"")
+        self.stderr = io.BytesIO()
+        self.killed = False
+
+    def poll(self):
+        return 0 if self.stdout.done else None
+
+    def kill(self):
+        self.killed = True
 
 
 def _port(completed=None, *, calls=None, password=PASSWORD, exc=None):
@@ -140,10 +180,154 @@ class TranscriptParsingTests(unittest.TestCase):
 
 
 class CommandPortTests(unittest.TestCase):
+    def test_console_active_user_only_reply_proves_user_execution(self):
+        calls = []
+
+        def popen(argv, **kwargs):
+            del kwargs
+            calls.append(list(argv))
+            run_arg = argv[argv.index("--run") + 1]
+            if "PADIEM_CONSOLE_SESSION_ID" in run_arg:
+                return _StreamProcess(_transcript("PADIEM_CONSOLE_SESSION_ID:1\r\n"))
+            match = re.search(r"PADIEM_USER_SESSION_STARTED:[0-9a-f]{32}", run_arg)
+            self.assertIsNotNone(match, "user execution needs a unique start marker")
+            return _StreamProcess(_stream_transcript(
+                match.group(0), "console-user-output\r\n", "",
+            ))
+
+        port = MeshCentralCliCommandPort(
+            command_runner=lambda *a, **k: None,
+            meshctrl_js=MESHCTRL, login_user="padiemadmin",
+            password_provider=lambda: PASSWORD, url="wss://127.0.0.1:4443",
+            popen_factory=popen,
+        )
+        outcome = port.run_command(
+            node_ref=NODE, command="hostname.exe", run_as="user",
+        )
+        self.assertIn("--runasuseronly", calls[1])
+        self.assertNotIn("--runasuser", calls[1])
+        self.assertEqual(outcome.output, b"console-user-output\r\n")
+        self.assertEqual(outcome.run_as, "user")
+        self.assertEqual(outcome.response_kind, "user_session_start_marker")
+
+    def test_only_confirmed_missing_console_session_returns_user_session_unavailable(self):
+        calls = []
+
+        def popen(argv, **kwargs):
+            del kwargs
+            calls.append(list(argv))
+            run_arg = argv[argv.index("--run") + 1]
+            if "PADIEM_CONSOLE_SESSION_ID" in run_arg:
+                return _StreamProcess(_transcript(
+                    "PADIEM_CONSOLE_SESSION_ID:4294967295\r\n",
+                ))
+            self.fail("user work must not be submitted when the console is absent")
+
+        port = MeshCentralCliCommandPort(
+            command_runner=lambda *a, **k: None,
+            meshctrl_js=MESHCTRL, login_user="padiemadmin",
+            password_provider=lambda: PASSWORD, url="wss://127.0.0.1:4443",
+            popen_factory=popen,
+        )
+        outcome = port.run_command(
+            node_ref=NODE, command="must-not-run.exe", run_as="user",
+        )
+        self.assertEqual((outcome.termination, outcome.exit_code), ("exited", 1))
+        self.assertEqual(outcome.output, b"pc_user_session_unavailable")
+        self.assertIsNone(outcome.run_as)
+        self.assertEqual(outcome.response_kind, "console_session_absent")
+        self.assertEqual(len(calls), 1, "a missing console refuses before user work")
+        probe = calls[0][calls[0].index("--run") + 1]
+        self.assertIn("PADIEM_CONSOLE_SESSION_ID", probe)
+        self.assertNotIn("must-not-run.exe", probe)
+
+    def test_unreadable_console_probe_does_not_claim_no_session(self):
+        calls = []
+
+        def popen(argv, **kwargs):
+            del kwargs
+            calls.append(list(argv))
+            return _StreamProcess(_transcript("session-query-reply-without-id\r\n"))
+
+        port = MeshCentralCliCommandPort(
+            command_runner=lambda *a, **k: None,
+            meshctrl_js=MESHCTRL, login_user="padiemadmin",
+            password_provider=lambda: PASSWORD, url="wss://127.0.0.1:4443",
+            popen_factory=popen,
+        )
+        outcome = port.run_command(
+            node_ref=NODE, command="must-not-run.exe", run_as="user",
+        )
+        self.assertEqual(outcome.termination, "no_reply")
+        self.assertIsNone(outcome.run_as)
+        self.assertEqual(outcome.output, b"")
+        self.assertEqual(outcome.response_kind, "console_session_probe_unavailable")
+        self.assertEqual(len(calls), 1, "unreadable evidence must stop before user work")
+        self.assertNotIn("--runasuseronly", calls[0])
+
+    def test_active_console_session_without_user_reply_is_not_called_unavailable(self):
+        calls = []
+
+        def popen(argv, **kwargs):
+            del kwargs
+            calls.append(list(argv))
+            run_arg = argv[argv.index("--run") + 1]
+            if "PADIEM_CONSOLE_SESSION_ID" in run_arg:
+                return _StreamProcess(_transcript("PADIEM_CONSOLE_SESSION_ID:1\r\n"))
+            return _StreamProcess(None)
+
+        port = MeshCentralCliCommandPort(
+            command_runner=lambda *a, **k: None,
+            meshctrl_js=MESHCTRL, login_user="padiemadmin",
+            password_provider=lambda: PASSWORD, url="wss://127.0.0.1:4443",
+            popen_factory=popen,
+        )
+        outcome = port.run_command(
+            node_ref=NODE, command="must-not-run.exe", run_as="user",
+        )
+        self.assertEqual(outcome.termination, "no_reply")
+        self.assertEqual(outcome.output, b"")
+        self.assertIsNone(outcome.run_as)
+        self.assertEqual(outcome.response_kind, "user_reply_missing_marker")
+        self.assertIn("--runasuseronly", calls[1])
+
+    def test_failed_user_command_keeps_exit_code_and_separates_stderr(self):
+        calls = []
+
+        def popen(argv, **kwargs):
+            del kwargs
+            calls.append(list(argv))
+            run_arg = argv[argv.index("--run") + 1]
+            if "PADIEM_CONSOLE_SESSION_ID" in run_arg:
+                return _StreamProcess(_transcript("PADIEM_CONSOLE_SESSION_ID:1\r\n"))
+            marker = re.search(r"PADIEM_USER_SESSION_STARTED:[0-9a-f]{32}", run_arg)
+            self.assertIsNotNone(marker)
+            return _StreamProcess(_stream_transcript(
+                marker.group(0), "stdout line\r\n", "stderr line\r\n", "7",
+            ))
+
+        port = MeshCentralCliCommandPort(
+            command_runner=lambda *a, **k: None,
+            meshctrl_js=MESHCTRL, login_user="padiemadmin",
+            password_provider=lambda: PASSWORD, url="wss://127.0.0.1:4443",
+            popen_factory=popen,
+        )
+        outcome = port.run_command(
+            node_ref=NODE, command="broken-command.exe", run_as="user",
+        )
+        self.assertIn("--runasuseronly", calls[1])
+        self.assertEqual((outcome.termination, outcome.exit_code), ("exited", 7))
+        self.assertEqual(
+            outcome.output,
+            b"stdout line\r\n--- stderr ---\nstderr line\r\n",
+        )
+        self.assertEqual(outcome.run_as, "user")
+        self.assertEqual(outcome.response_kind, "user_session_start_marker")
+
     def test_command_runs_through_the_official_client_with_the_sentinel(self):
         calls = []
         port = _port(_Completed(0, _transcript("ok\r\n")), calls=calls)
-        outcome = port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
+        outcome = port.run_command(run_as="system", node_ref=NODE, command="hostname.exe", timeout_seconds=45)
         self.assertEqual(outcome.termination, "exited")
         self.assertEqual(outcome.exit_code, 0)
         self.assertEqual(outcome.output, b"ok\r\n")
@@ -174,14 +358,14 @@ class CommandPortTests(unittest.TestCase):
         for value in (600, None):
             calls = []
             port = _port(_Completed(0, _transcript("ok\r\n")), calls=calls)
-            outcome = port.run_command(node_ref=NODE, command="long_running.exe", timeout_seconds=value)
+            outcome = port.run_command(run_as="system", node_ref=NODE, command="long_running.exe", timeout_seconds=value)
             self.assertEqual(outcome.termination, "exited", value)
             self.assertEqual(calls[0][1]["timeout"], value)
 
     def test_timeout_claims_no_exit_code(self):
         expired = subprocess.TimeoutExpired(cmd="node", timeout=45, output=b"")
         port = _port(exc=expired)
-        outcome = port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
+        outcome = port.run_command(run_as="system", node_ref=NODE, command="hostname.exe", timeout_seconds=45)
         self.assertEqual(outcome.termination, "timed_out")
         self.assertIsNone(outcome.exit_code)
 
@@ -206,14 +390,14 @@ class CommandPortTests(unittest.TestCase):
             password_provider=lambda: PASSWORD, url="wss://127.0.0.1:4443",
             popen_factory=lambda argv, **kw: _Proc(),
         )
-        outcome = port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=1)
+        outcome = port.run_command(run_as="system", node_ref=NODE, command="hostname.exe", timeout_seconds=1)
         self.assertEqual(outcome.termination, "timed_out")
         self.assertIsNone(outcome.exit_code)
 
     def test_phase_observer_sees_spawn_and_reply_without_payload(self):
         phases = []
         port = _port(_Completed(0, ("ok\n" + EXIT_SENTINEL + "0\n\n").encode()))
-        port.run_command(
+        port.run_command(run_as="system",
             node_ref=NODE, command="hostname.exe", timeout_seconds=45,
             phase_observer=phases.append,
         )
@@ -240,7 +424,7 @@ class CommandPortTests(unittest.TestCase):
             password_provider=lambda: PASSWORD, url="wss://127.0.0.1:4443",
             popen_factory=lambda argv, **kw: _Proc(),
         )
-        outcome = port.run_command(
+        outcome = port.run_command(run_as="system",
             node_ref=NODE, command="hostname.exe", timeout_seconds=1,
             phase_observer=phases.append,
         )
@@ -249,20 +433,20 @@ class CommandPortTests(unittest.TestCase):
 
     def test_client_failure_is_no_reply(self):
         port = _port(_Completed(1, b""))
-        outcome = port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
+        outcome = port.run_command(run_as="system", node_ref=NODE, command="hostname.exe", timeout_seconds=45)
         self.assertEqual(outcome.termination, "no_reply")
         self.assertIsNone(outcome.exit_code)
 
     def test_non_utf8_output_is_refused_not_altered(self):
         port = _port(_Completed(0, b"\xff\xfe" + EXIT_SENTINEL.encode() + b"0\n\n"))
         with self.assertRaises(MeshCentralCommandRefused):
-            port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
+            port.run_command(run_as="system", node_ref=NODE, command="hostname.exe", timeout_seconds=45)
 
     def test_command_accepts_utf8_and_several_lines(self):
         calls = []
         port = _port(_Completed(0, _transcript("ok\n")), calls=calls)
         korean_path = 'type "C:\\사용자\\보고서.txt"'
-        outcome = port.run_command(node_ref=NODE, command=korean_path, timeout_seconds=45)
+        outcome = port.run_command(run_as="system", node_ref=NODE, command=korean_path, timeout_seconds=45)
         self.assertEqual((outcome.termination, outcome.exit_code), ("exited", 0))
         run_arg = calls[0][0][calls[0][0].index("--run") + 1]
         # Korean is ordinary command text: it reaches the PC unchanged.
@@ -270,7 +454,7 @@ class CommandPortTests(unittest.TestCase):
         # A multi-line command keeps its newlines and still gets the envelope.
         multi = "echo one\necho two"
         port = _port(_Completed(0, _transcript("one\ntwo\n")))
-        outcome = port.run_command(node_ref=NODE, command=multi, timeout_seconds=45)
+        outcome = port.run_command(run_as="system", node_ref=NODE, command=multi, timeout_seconds=45)
         self.assertEqual((outcome.termination, outcome.exit_code), ("exited", 0))
         self.assertEqual(outcome.output, b"one\ntwo\n")
 
@@ -281,7 +465,7 @@ class CommandPortTests(unittest.TestCase):
         # input, and the OS exec boundary has its own named guard below.
         for bad in ("", "a\x00b", "a\rb"):
             with self.assertRaises(MeshCentralCommandRefused):
-                port.run_command(node_ref=NODE, command=bad, timeout_seconds=45)
+                port.run_command(run_as="system", node_ref=NODE, command=bad, timeout_seconds=45)
 
     def test_long_multiline_utf8_command_reaches_the_client_verbatim(self):
         calls = []
@@ -289,7 +473,7 @@ class CommandPortTests(unittest.TestCase):
             _Completed(0, _transcript("ok\n")), calls=calls,
         )
         command = "Write-Output '보고서'\n" + ("Get-Item 'C:\\temp\\a.txt'\n" * 4000)
-        port.run_command(node_ref=NODE, command=command, timeout_seconds=45)
+        port.run_command(run_as="system", node_ref=NODE, command=command, timeout_seconds=45)
         argv = calls[0][0]
         sent = argv[argv.index("--run") + 1]
         # Only the trailing whitespace is dropped (so the appended envelope and
@@ -308,7 +492,7 @@ class CommandPortTests(unittest.TestCase):
         # argument, so the refusal names that boundary instead of letting
         # execve fail as an opaque E2BIG.
         with self.assertRaises(MeshCentralCommandRefused) as caught:
-            port.run_command(node_ref=NODE, command="x" * 131_072, timeout_seconds=45)
+            port.run_command(run_as="system", node_ref=NODE, command="x" * 131_072, timeout_seconds=45)
         self.assertIn("argument", str(caught.exception))
         self.assertEqual(calls, [])
 
@@ -317,7 +501,7 @@ class CommandPortTests(unittest.TestCase):
         port = _port(
             _Completed(0, _transcript("done\n")), calls=calls,
         )
-        outcome = port.run_command(
+        outcome = port.run_command(run_as="system",
             node_ref=NODE, command="Get-Content 'C:\\a.txt'\n" * 5_000,
             timeout_seconds=45,
         )
@@ -364,7 +548,7 @@ class CommandPortTests(unittest.TestCase):
         class _RefusingPort:
             def run_command(self, *, node_ref, command, timeout_seconds, phase_observer=None,
                     cancel_probe=None, dispatch_id=None, keep_dispatch_ids=(),
-                    line_guard=None):
+                    line_guard=None, run_as=None):
                 raise MeshCentralCommandRefused(
                     "the wrapped command exceeds the OS single-argument limit"
                 )
@@ -379,7 +563,7 @@ class CommandPortTests(unittest.TestCase):
         calls = []
         port = _port(_Completed(0, b""), calls=calls, password="")
         with self.assertRaises(MeshCentralCommandRefused):
-            port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
+            port.run_command(run_as="system", node_ref=NODE, command="hostname.exe", timeout_seconds=45)
         self.assertEqual(calls, [])
 
 
@@ -390,8 +574,8 @@ class _FakeCommandPort:
 
     def run_command(self, *, node_ref, command, timeout_seconds, phase_observer=None,
                     cancel_probe=None, dispatch_id=None, keep_dispatch_ids=(),
-                    line_guard=None):
-        self.calls.append((node_ref, command, timeout_seconds))
+                    line_guard=None, run_as=None):
+        self.calls.append((node_ref, command, timeout_seconds, run_as))
         return self._outcome
 
 
@@ -439,6 +623,7 @@ class ExecutorRoutingTests(unittest.TestCase):
         self.assertEqual(outcome.body, b"Padiem-Command-Center\r\n")
         self.assertEqual(read_port.calls, [])
         self.assertEqual(command_port.calls[0][1], "hostname.exe")
+        self.assertEqual(command_port.calls[0][3], "user")
 
     def test_poll_retains_the_server_request_id_for_trace_correlation(self):
         def transport(path, payload):
@@ -465,6 +650,7 @@ class ExecutorRoutingTests(unittest.TestCase):
         command = "DO_NOT_LOG_THIS_COMMAND_5015"
         port = _FakeCommandPort(MeshCentralCommandOutcome(
             termination="exited", exit_code=0, output=b"visible only in memory",
+            response_kind="user_session_start_marker", run_as="user",
         ))
         output = io.StringIO()
         with redirect_stderr(output):
@@ -474,6 +660,8 @@ class ExecutorRoutingTests(unittest.TestCase):
         self.assertIn("phase=result", log)
         self.assertIn("request_id=oracle_mesh_req_test", log)
         self.assertIn("command_id=c", log)
+        self.assertIn("response_kind=user_session_start_marker", log)
+        self.assertIn("run_as=user", log)
         self.assertNotIn(command, log)
         self.assertNotIn("visible only in memory", log)
     def test_timeout_phase_and_result_keep_the_same_ids(self):
@@ -626,7 +814,7 @@ class TestTheOwnerStopReachesARunningCommand(unittest.TestCase):
 
         proc = _Proc()
         phases = []
-        outcome = self._streaming_port(proc).run_command(
+        outcome = self._streaming_port(proc).run_command(run_as="system",
             node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
             phase_observer=phases.append, cancel_probe=lambda: True,
         )
@@ -657,7 +845,7 @@ class TestTheOwnerStopReachesARunningCommand(unittest.TestCase):
             asked.append(1)
             raise RuntimeError("the channel is down")
 
-        outcome = self._streaming_port(proc).run_command(
+        outcome = self._streaming_port(proc).run_command(run_as="system",
             node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
             cancel_probe=probe,
         )
@@ -670,7 +858,7 @@ class TestTheOwnerStopReachesARunningCommand(unittest.TestCase):
 
         port = _port(_Completed(0, _transcript("x\n")))
         with self.assertRaises(ContractError):
-            port.run_command(node_ref=NODE, command="hostname.exe",
+            port.run_command(run_as="system", node_ref=NODE, command="hostname.exe",
                              timeout_seconds=5, cancel_probe="yes")
 
 
@@ -686,7 +874,7 @@ class TestTheExecutorProbesTheChannel(unittest.TestCase):
 
             def run_command(self, *, node_ref, command, timeout_seconds,
                             phase_observer=None, cancel_probe=None, dispatch_id=None,
-                            keep_dispatch_ids=(), line_guard=None):
+                            keep_dispatch_ids=(), line_guard=None, run_as=None):
                 self.answer = cancel_probe() if cancel_probe is not None else None
                 return MeshCentralCommandOutcome(
                     termination="cancelled", exit_code=None, output=b"",
@@ -721,7 +909,7 @@ class TestTheExecutorProbesTheChannel(unittest.TestCase):
 
             def run_command(self, *, node_ref, command, timeout_seconds,
                             phase_observer=None, cancel_probe=None, dispatch_id=None,
-                            keep_dispatch_ids=(), line_guard=None):
+                            keep_dispatch_ids=(), line_guard=None, run_as=None):
                 self.answer = cancel_probe()
                 return MeshCentralCommandOutcome(
                     termination="no_reply", exit_code=None, output=b"",
@@ -850,7 +1038,7 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
             popen_factory=popen, pty_factory=pty_factory,
         )
         phases = []
-        outcome = port.run_command(
+        outcome = port.run_command(run_as="system",
             node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
             phase_observer=phases.append, cancel_probe=lambda: True,
             dispatch_id=self.MARKED,
@@ -919,7 +1107,7 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
             popen_factory=lambda argv, **kw: _NeverChild(), pty_factory=lambda payload: _RefusingPty(payload),
         )
         phases = []
-        outcome = port.run_command(
+        outcome = port.run_command(run_as="system",
             node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
             phase_observer=phases.append, cancel_probe=lambda: True,
             dispatch_id=self.MARKED,
@@ -979,7 +1167,7 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
         self.assertNotIn(STOP_EVIDENCE.encode("ascii"), typed[0])
 
         phases = []
-        outcome = port.run_command(
+        outcome = port.run_command(run_as="system",
             node_ref=NODE, command="hostname.exe", timeout_seconds=None,
             phase_observer=phases.append, cancel_probe=lambda: True,
             dispatch_id="dsp_" + "a" * 32,
