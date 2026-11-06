@@ -202,3 +202,20 @@ def test_reader_and_ai_do_not_overflow_horizontally(page, base_url):
         "() => ({viewport: innerWidth, width: document.documentElement.scrollWidth})"
     )
     assert metrics["width"] <= metrics["viewport"]
+
+
+def test_today_account_entry_and_auth_sheet_meet_touch_target(page, base_url):
+    page.goto(base_url, wait_until="domcontentloaded")
+    page.locator("#library.active").wait_for()
+    page.locator("#todayEntry").click()
+    page.locator("#today.active").wait_for()
+    cloud = "#todayCloudButton"
+    page.locator(cloud).wait_for(state="visible")
+    box = _box(page, cloud)
+    assert box and box["height"] >= 44, (cloud, box)
+    page.locator(cloud).click()
+    page.locator("#authGateSheet").wait_for(state="visible")
+    for selector in ["#authGatePrimary", "#authGateSecondary"]:
+        page.locator(selector).wait_for(state="visible")
+        box = _box(page, selector)
+        assert box and box["height"] >= 44, (selector, box)

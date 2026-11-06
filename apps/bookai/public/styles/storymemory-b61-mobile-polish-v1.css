@@ -400,3 +400,10 @@ body.smr-theme-dark #reader .ai-panel .ask {
   #reader .smal-overflow-btn { bottom: 76px !important; z-index: 120 !important; }
   #reader .smal-overflow-menu { bottom: 122px !important; z-index: 121 !important; }
 }
+
+/* The account entry on the TODAY screen was 27px tall and the auth sheet
+   buttons 43px, both under the 44px phone target. */
+@media (max-width: 720px) {
+  .today-cloud-button { min-height: 44px !important; }
+  .auth-gate-primary, .auth-gate-secondary { min-height: 44px !important; }
+}
