@@ -19,20 +19,30 @@ BODY=$(curl -sS --max-time "$MAX_TIME" "$URL" 2>&1)
 CURL=$?
 if [ "$CURL" -ne 0 ]; then
   echo "MESH_QUEUE_HEALTH=UNREACHABLE curl=$CURL target=$URL"
-  exit 0
+  exit 1
 fi
 
-printf '%s' "$BODY" | python3 -c '
+HEALTH_RC=0
+HEALTH_OUTPUT=$(printf '%s' "$BODY" | python3 -c '
 import json, sys
 raw = sys.stdin.read()
 try:
     row = json.loads(raw)
 except Exception:
     print("MESH_QUEUE_HEALTH=UNPARSED bytes=%d" % len(raw))
-    raise SystemExit(0)
+    raise SystemExit(1)
 if not isinstance(row, dict) or row.get("ok") is not True:
     print("MESH_QUEUE_HEALTH=UNEXPECTED shape=%s" % type(row).__name__)
+    raise SystemExit(1)
 else:
     print("MESH_QUEUE_HEALTH=OK pending_unclaimed=%s pending_claimed=%s received=%s" % (
         row.get("pending_unclaimed"), row.get("pending_claimed"), row.get("received")))
-' 2>/dev/null || echo "MESH_QUEUE_HEALTH=UNPARSED"
+' 2>/dev/null)
+HEALTH_RC=$?
+if [ -n "$HEALTH_OUTPUT" ]; then
+  printf '%s\n' "$HEALTH_OUTPUT"
+else
+  echo "MESH_QUEUE_HEALTH=UNPARSED"
+  HEALTH_RC=1
+fi
+exit "$HEALTH_RC"
