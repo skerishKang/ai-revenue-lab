@@ -61,7 +61,7 @@ EXPECTED_TABLE_COLUMNS = {
         "prompt_tokens", "completion_tokens", "total_tokens", "reasoning_tokens",
         "token_source", "estimated_usd", "estimated_krw", "cost_basis",
         "endpoint", "protocol", "dispatched", "timeout_reason", "reasoning_effort",
-        "thought_summary_count", "thought_summary_chars",
+        "thought_summary_count", "thought_summary_chars", "http_status",
     ],
 }
 EXPECTED_INDEXES = {
