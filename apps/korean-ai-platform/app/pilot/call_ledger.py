@@ -269,6 +269,7 @@ class AttemptRecord:
     upstream_model: str | None = None
     route_id: str | None = None
     outcome: str = OUTCOME_SUCCESS
+    http_status: int | None = None
     error_code: str | None = None
     timeout_reason: str | None = None
     retry_index: int = 0
@@ -313,6 +314,7 @@ class AttemptRecord:
             raise CallLedgerError("attempt_index is out of range")
         if self.outcome not in {OUTCOME_SUCCESS, OUTCOME_ERROR, OUTCOME_ABORTED}:
             raise CallLedgerError("attempt outcome is not a known outcome")
+        object.__setattr__(self, "http_status", _http_status(self.http_status))
         if self.protocol not in _PROTOCOLS:
             raise CallLedgerError("attempt protocol is not a known protocol")
         if self.latency_source not in {LATENCY_MEASURED, LATENCY_UNKNOWN}:
@@ -385,6 +387,7 @@ class AttemptRecord:
             "upstream_model": self.upstream_model,
             "route_id": self.route_id,
             "outcome": self.outcome,
+            "http_status": self.http_status,
             "error_code": self.error_code,
             "timeout_reason": self.timeout_reason,
             "retry_index": self.retry_index,
@@ -708,7 +711,8 @@ class LedgerDraft:
     def record_attempt(
         self, *, provider: str | None, model_id: str | None,
         upstream_model: str | None = None, route_id: str | None = None,
-        outcome: str = OUTCOME_SUCCESS, error_code: str | None = None,
+        outcome: str = OUTCOME_SUCCESS, http_status: int | None = None,
+        error_code: str | None = None,
         timeout_reason: str | None = None,
         retry_index: int = 0, elapsed_ms: int | None = None,
         usage: Any = None, actual_response_model: str | None = None,
@@ -751,7 +755,8 @@ class LedgerDraft:
         attempt = AttemptRecord(
             log_id=self.log_id, attempt_index=self.attempt_count,
             provider=provider, model_id=model_id, upstream_model=upstream_model,
-            route_id=route_id, outcome=outcome, error_code=error_code,
+            route_id=route_id, outcome=outcome, http_status=http_status,
+            error_code=error_code,
             timeout_reason=timeout_reason,
             retry_index=retry_index, actual_response_model=actual_response_model,
             finish_reason=finish_reason, provider_request_id=provider_request_id,

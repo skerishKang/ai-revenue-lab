@@ -324,8 +324,9 @@ def test_0003_upgrades_existing_b14_without_new_usage_store(tmp_path):
     old.close()
     current = SqliteLedger(path)
     # 0003(pc_work_metrics) + 0004(attempt timeout_reason) + 0005(attempt
-    # reasoning_effort) + 0006(attempt thought_summary) all upgrade the old DB.
-    assert current.apply_migrations() == 4
+    # reasoning_effort), 0006(thought summary), 0007(attempt HTTP status) all
+    # upgrade the old DB.
+    assert current.apply_migrations() == 5
     assert current.apply_migrations() == 0
     columns = {row[1] for row in current.connect().execute("PRAGMA table_info(b14_model_call)")}
     assert {"pc_work_metrics_json", "pc_work_metrics_recorded_at"} <= columns

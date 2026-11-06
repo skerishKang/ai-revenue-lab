@@ -40,6 +40,7 @@ from app.pilot.malformed_diagnostics import malformed
 from app.pilot.errors import (
     KiloFreeRateLimited,
     MalformedUpstreamResponse,
+    PilotError,
     PilotNotConfigured,
     UpstreamAuthFailed,
     UpstreamBusyRateLimited,
@@ -395,6 +396,52 @@ async def _read_bounded_body(
             raise UpstreamResponseTooLarge(cap)
         buf += chunk
     return bytes(buf)
+
+
+_SENSITIVE_ERROR_FIELDS = (
+    "key", "token", "secret", "password", "credential", "authorization",
+    "auth", "cookie", "session",
+)
+_SENSITIVE_ERROR_ASSIGNMENT = re.compile(
+    r"(?i)\b(api[_ -]?key|access[_ -]?token|refresh[_ -]?token|"
+    r"authorization|password|secret|credential|token)\b[\"']?(\s*[:=]\s*)"
+    r"(?:\"[^\"\\]*\"|'[^'\\]*'|[^\s,;}]+)"
+)
+_JWT_VALUE = re.compile(
+    r"\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b"
+)
+_OPAQUE_LONG_VALUE = re.compile(r"\b[A-Za-z0-9_-]{32,}\b")
+
+
+def _safe_provider_error_summary(body: bytes) -> str:
+    """Return a bounded provider error excerpt with common credentials masked."""
+    raw = body.decode("utf-8", "replace")
+
+    def scrub_text(value: str) -> str:
+        value = redact_sensitive(value)
+        value = _SENSITIVE_ERROR_ASSIGNMENT.sub(r"\1\2[REDACTED]", value)
+        value = _JWT_VALUE.sub("[REDACTED]", value)
+        return _OPAQUE_LONG_VALUE.sub("[REDACTED]", value)
+
+    def scrub(value: Any, key: str = "") -> Any:
+        normalized_key = key.casefold()
+        if any(part in normalized_key for part in _SENSITIVE_ERROR_FIELDS):
+            return "[REDACTED]"
+        if isinstance(value, dict):
+            return {str(name): scrub(item, str(name)) for name, item in value.items()}
+        if isinstance(value, list):
+            return [scrub(item) for item in value]
+        if isinstance(value, str):
+            return scrub_text(value)
+        return value
+
+    try:
+        parsed = json.loads(raw)
+    except (ValueError, TypeError):
+        summary = scrub_text(raw)
+    else:
+        summary = json.dumps(scrub(parsed), ensure_ascii=False, separators=(",", ":"))
+    return summary[:200]
 
 
 def _signature_as_extra_content(entry: dict[str, Any]) -> dict[str, Any]:
@@ -974,9 +1021,10 @@ async def stream_platform_chat_completions(
             # an error is never re-sent for any other reason.
             rejected_body: bytes | None = None
             if usage_option_sent and 400 <= response.status_code < 500:
-                rejected_body = await _read_bounded_body(
-                    response, started_at=request_started,
-                )
+                if rejected_body is None:
+                    rejected_body = await _read_bounded_body(
+                        response, started_at=request_started,
+                    )
                 if rejects_stream_usage_option(rejected_body):
                     logger.warning("stream_usage_option_rejected")
                     await response.aclose()
@@ -989,9 +1037,10 @@ async def stream_platform_chat_completions(
             # #6838: the same one-shot retry for the reasoning option, after the
             # usage option had its own chance on this attempt.
             if reasoning_effort is not None and 400 <= response.status_code < 500:
-                rejected_body = await _read_bounded_body(
-                    response, started_at=request_started,
-                )
+                if rejected_body is None:
+                    rejected_body = await _read_bounded_body(
+                        response, started_at=request_started,
+                    )
                 if rejects_reasoning_effort(rejected_body):
                     logger.warning("reasoning_effort_rejected")
                     await response.aclose()
@@ -1007,9 +1056,10 @@ async def stream_platform_chat_completions(
             # own chance on this attempt. A stricter endpoint must not cost
             # the answer the option was trying to decorate.
             if thought_summary_sent and 400 <= response.status_code < 500:
-                rejected_body = await _read_bounded_body(
-                    response, started_at=request_started,
-                )
+                if rejected_body is None:
+                    rejected_body = await _read_bounded_body(
+                        response, started_at=request_started,
+                    )
                 if rejects_thought_summary(rejected_body):
                     logger.warning("thought_summary_rejected")
                     await response.aclose()
@@ -1042,9 +1092,20 @@ async def stream_platform_chat_completions(
                             logger, platform_provider_id, response.status_code,
                             response.headers, error_body,
                         )
-                    _raise_upstream_error(
-                        response.status_code, platform_provider_id, error_body, model_id=model_id
-                    )
+                    try:
+                        _raise_upstream_error(
+                            response.status_code, platform_provider_id, error_body,
+                            model_id=model_id,
+                        )
+                    except PilotError as exc:
+                        exc.upstream_status = response.status_code
+                        logger.warning(
+                            "upstream_http_error status=%d code=%s body_summary=%s",
+                            response.status_code,
+                            exc.code,
+                            _safe_provider_error_summary(error_bytes),
+                        )
+                        raise
 
                 # Bound our accumulator per frame without delaying first-token
                 # delivery by reading ahead to fill a fixed-size HTTP chunk.

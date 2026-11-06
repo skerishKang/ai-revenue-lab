@@ -189,7 +189,8 @@ async def test_one_record_writes_one_parent_and_every_attempt() -> None:
                         protocol="chat/completions", streaming=False,
                         requested_model_id=MODEL_ID, started_at=utc_now_iso())
     draft.record_attempt(provider="Agnes AI", model_id=MODEL_ID, outcome="error",
-                         error_code="upstream_timeout", timeout_reason="first_byte",
+                         http_status=422, error_code="upstream_client_error",
+                         timeout_reason="first_byte",
                          elapsed_ms=12)
     draft.record_attempt(provider="Agnes AI", model_id=MODEL_ID, outcome="success",
                          elapsed_ms=40, usage={"prompt_tokens": 5,
@@ -211,6 +212,7 @@ async def test_one_record_writes_one_parent_and_every_attempt() -> None:
     assert len(attempts) == 2
     assert "error" in attempts[0][2] and "success" in attempts[1][2]
     assert "timeout_reason" in attempts[0][1] and "first_byte" in attempts[0][2]
+    assert "http_status" in attempts[0][1] and 422 in attempts[0][2]
 
 
 @pytest.mark.asyncio
@@ -808,12 +810,94 @@ async def test_the_stream_lane_records_ttft_and_the_usage_the_provider_reported(
     assert record.streaming is True
     assert record.outcome == "success"
     assert record.attempt_count == 1 and record.attempts[0].dispatched is True
+    assert record.attempts[0].http_status is None
     # TTFT is measured, not assumed: it exists only because a visible token did.
     assert record.ttft_ms is not None and record.ttft_ms >= 0
     assert (record.prompt_tokens, record.total_tokens) == (4, 10)
     assert record.token_source == "measured"
     assert record.actual_response_model == "gemini-3.1-flash-lite"
     assert record.selected_model_id == "google/gemini-3.1-flash-lite"
+
+
+@pytest.mark.asyncio
+async def test_streaming_4xx_body_is_read_once_and_recorded_on_the_attempt(
+    monkeypatch, caplog,
+):
+    import httpx
+
+    from app.pilot import reasoning_policy
+    from app.pilot.stream_usage_option import STREAM_USAGE_OPT_OUT_ENV
+
+    written = _capture_stream_lane(monkeypatch)
+    sent_bodies = []
+    monkeypatch.delenv(STREAM_USAGE_OPT_OUT_ENV, raising=False)
+    monkeypatch.setattr(
+        reasoning_policy, "reasoning_effort_for_model", lambda *_: "medium"
+    )
+    monkeypatch.setattr(
+        reasoning_policy, "thought_summary_enabled_for_model", lambda *_: False
+    )
+
+    response_body = (
+        b'{"error":{"message":"invalid api_key=fixture-value"}}'
+    )
+    reads = 0
+
+    class OneShotBody(httpx.AsyncByteStream):
+        async def __aiter__(self):
+            nonlocal reads
+            reads += 1
+            if reads > 1:
+                raise AssertionError("provider response body was consumed more than once")
+            yield response_body
+
+        async def aclose(self):
+            return None
+
+    def reject(_request):
+        sent_bodies.append(json.loads(_request.content))
+        return httpx.Response(
+            422,
+            stream=OneShotBody(),
+            headers={"Content-Type": "application/json"},
+        )
+
+    app = create_app()
+    app.state.stream_transport = httpx.MockTransport(reject)
+    with TestClient(app) as client:
+        response = client.post(
+            _STREAM_PREVIEW,
+            json={
+                "model": _GOOGLE_TOOL_MODEL,
+                "stream": True,
+                "messages": [{"role": "user", "content": "ping"}],
+            },
+        )
+    await drain()
+
+    assert response.status_code == 502
+    assert response.json()["error"]["code"] == "upstream_client_error"
+    assert "StreamConsumed" not in response.text
+    assert "StreamConsumed" not in caplog.text
+    assert reads == 1
+    assert len(sent_bodies) == 1
+    assert sent_bodies[0].get("stream_options") == {"include_usage": True}
+    assert reasoning_policy.REASONING_FIELD in sent_bodies[0]
+    assert len(written) == 1
+    record = written[0]
+    assert record.outcome == "error"
+    assert len(record.attempts) == 1
+    attempt = record.attempts[0]
+    assert attempt.outcome == "error"
+    assert attempt.http_status == 422
+    assert attempt.error_code == "upstream_client_error"
+    error_logs = [record.getMessage() for record in caplog.records
+                  if "upstream_http_error" in record.getMessage()]
+    assert len(error_logs) == 1
+    assert "fixture-value" not in error_logs[0]
+    summary = error_logs[0].split("body_summary=", 1)[1]
+    assert len(summary) <= 200
+    assert "[REDACTED]" in summary
 
 
 # ---------------------------------------------------------------------------
