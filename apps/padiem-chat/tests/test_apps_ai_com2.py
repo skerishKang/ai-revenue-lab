@@ -94,6 +94,51 @@ async def request(data=None, *, settings=None, head=None, wire=None, response=No
         return result, seen
 
 
+def timing_entries(response):
+    header = response.headers.get("server-timing", "")
+    assert header, "missing Server-Timing"
+    values = {}
+    for part in header.split(", "):
+        name, separator, value = part.partition(";dur=")
+        assert separator == ";dur=" and name in {"chat", "p01", "engine"}, part
+        assert value.isdigit(), part
+        assert name not in values, part
+        values[name] = int(value)
+    return values
+
+
+@pytest.mark.asyncio
+async def test_success_reports_chat_p01_and_engine_stage_times():
+    response = httpx.Response(200, json={
+        "ok": True, "answer": "Saul saw a light.",
+        "context_permission": {"boundary_disposition": "permitted", "context_filtered_count": 0, "context_allowed_count": 1},
+        "metadata": {"app_id": "b61", "duration_ms": 6123},
+    })
+    result, seen = await request(response=response)
+    assert result.status_code == 200 and len(seen) == 1
+    timing = timing_entries(result)
+    assert set(timing) == {"chat", "p01", "engine"}
+    assert timing["engine"] == 6123
+    assert timing["chat"] >= timing["p01"]
+    assert DEFAULT_MODEL not in result.headers["server-timing"]
+
+
+@pytest.mark.asyncio
+async def test_requests_refused_before_p01_report_only_the_chat_stage():
+    result, seen = await request(settings=env(STORYMEMORY_COM2_AI_SECRET=""))
+    assert result.status_code == 503 and not seen
+    assert set(timing_entries(result)) == {"chat"}
+
+
+@pytest.mark.asyncio
+async def test_a_p01_refusal_keeps_chat_and_p01_without_engine():
+    result, seen = await request(response=httpx.Response(403, json={
+        "ok": False, "error": {"code": "service_app_not_authorized", "message": "not allowed"},
+    }))
+    assert result.status_code == 403 and len(seen) == 1
+    assert set(timing_entries(result)) == {"chat", "p01"}
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize("app_name,subject,secret", [
     ("storymemory", "sub_app_storymemory", TEST_SECRET),
