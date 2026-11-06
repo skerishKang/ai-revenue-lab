@@ -1,0 +1,37 @@
+# The Oracle mesh executor on COM2 (#6892 follow-up).
+#
+# This is the repository's copy of a unit that lived only on the host. Nothing
+# installs it: deploy/host-com2/deploy_from_main.sh compares it with
+# /etc/systemd/system/padiem-oracle-mesh-executor.service and reports the
+# directives that differ (EXECUTOR_UNIT_DRIFT=YES:<keys>). It only copies this
+# file over the installed unit when PADIEM_COM2_EXECUTOR_UNIT_SYNC=1, because
+# the installed unit carries host settings this example does not know.
+#
+# The environment file is the deployment's own configuration and is never read
+# or written here. It also carries PYTHONPATH=/opt/padiem/oracle-mesh/kagent-src,
+# the path deploy_from_main.sh points at the released commit, so this unit does
+# not set PYTHONPATH and cannot drop an entry the host's env file adds.
+#
+# No secret belongs in this file: credentials stay in executor.env, which
+# systemd reads as the service user.
+[Unit]
+Description=Padiem Oracle Mesh executor (PC reads and commands)
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=padiem-mesh
+Group=padiem-mesh
+WorkingDirectory=/opt/padiem/oracle-mesh
+EnvironmentFile=/opt/padiem/oracle-mesh/executor.env
+ExecStart=/opt/padiem/oracle-mesh/venv/bin/python -m kagent.local_agent_oracle_mesh_executor
+Restart=always
+RestartSec=10
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
