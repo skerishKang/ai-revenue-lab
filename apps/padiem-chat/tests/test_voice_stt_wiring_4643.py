@@ -136,7 +136,7 @@ def test_constants_match_reviewed_chunking_contract():
     out = _node(
         """
         const m = require('./static/voice-stt-wiring.js');
-        console.log([m.GROQ_MIN_CHUNK_MS, m.GROQ_SILENCE_CUT_MS, m.GROQ_MAX_CHUNK_MS].join(','));
+        console.log([m.RECORDED_MIN_CHUNK_MS, m.RECORDED_SILENCE_CUT_MS, m.RECORDED_MAX_CHUNK_MS].join(','));
         """
     )
     assert out == "4000,700,20000"

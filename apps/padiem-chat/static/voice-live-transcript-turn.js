@@ -272,16 +272,16 @@
    * minimum window has been captured, and keep a hard maximum so the payload
    * stays bounded.
    */
-  const GROQ_MIN_CHUNK_MS = 4000;
-  const GROQ_SILENCE_CUT_MS = 700;
-  const GROQ_MAX_CHUNK_MS = 20000;
+  const RECORDED_MIN_CHUNK_MS = 4000;
+  const RECORDED_SILENCE_CUT_MS = 700;
+  const RECORDED_MAX_CHUNK_MS = 20000;
 
-  function shouldCutGroqChunk(input) {
+  function shouldCutRecordedChunk(input) {
     const elapsedMs = input.elapsedMs;
     const silenceMs = input.silenceMs;
-    if (elapsedMs >= GROQ_MAX_CHUNK_MS) return true;
-    if (elapsedMs < GROQ_MIN_CHUNK_MS) return false;
-    return silenceMs >= GROQ_SILENCE_CUT_MS;
+    if (elapsedMs >= RECORDED_MAX_CHUNK_MS) return true;
+    if (elapsedMs < RECORDED_MIN_CHUNK_MS) return false;
+    return silenceMs >= RECORDED_SILENCE_CUT_MS;
   }
 
   /**
@@ -370,15 +370,15 @@
     LIVE_SESSION_ROTATE_MS: LIVE_SESSION_ROTATE_MS,
     LIVE_AUDIO_HANDOFF_FRAMES: LIVE_AUDIO_HANDOFF_FRAMES,
     LIVE_TAIL_FLUSH_DRAIN_MS: LIVE_TAIL_FLUSH_DRAIN_MS,
-    GROQ_MIN_CHUNK_MS: GROQ_MIN_CHUNK_MS,
-    GROQ_SILENCE_CUT_MS: GROQ_SILENCE_CUT_MS,
-    GROQ_MAX_CHUNK_MS: GROQ_MAX_CHUNK_MS,
+    RECORDED_MIN_CHUNK_MS: RECORDED_MIN_CHUNK_MS,
+    RECORDED_SILENCE_CUT_MS: RECORDED_SILENCE_CUT_MS,
+    RECORDED_MAX_CHUNK_MS: RECORDED_MAX_CHUNK_MS,
     TRANSCRIPT_TURN_STALL_MS: TRANSCRIPT_TURN_STALL_MS,
     mergeLiveTranscriptChunk: mergeLiveTranscriptChunk,
     createAudioHandoffBuffer: createAudioHandoffBuffer,
     flushLiveTranscriptTail: flushLiveTranscriptTail,
     createTranscriptTurnBuffer: createTranscriptTurnBuffer,
-    shouldCutGroqChunk: shouldCutGroqChunk,
+    shouldCutRecordedChunk: shouldCutRecordedChunk,
     shouldFlushStalledTurn: shouldFlushStalledTurn,
     startSpeechSilenceProbe: startSpeechSilenceProbe,
     resolveRecognitionLanguage: resolveRecognitionLanguage,

@@ -60,9 +60,9 @@
    */
 
   /* #87 chunking constants, verbatim from global-classroom/utils/liveTranscriptTurn.ts */
-  const GROQ_MIN_CHUNK_MS = 4000;
-  const GROQ_SILENCE_CUT_MS = 700;
-  const GROQ_MAX_CHUNK_MS = 20000;
+  const RECORDED_MIN_CHUNK_MS = 4000;
+  const RECORDED_SILENCE_CUT_MS = 700;
+  const RECORDED_MAX_CHUNK_MS = 20000;
 
   const TRANSCRIBE_PATH = "/api/voice/transcribe";
   const IDENTITY_PATH = "/api/voice/identity";
@@ -294,7 +294,7 @@
         // user explicitly ended the run, so one-word fragments are not billed
         // as separate transcriptions.
         const elapsed = chunkStartedAt ? now() - chunkStartedAt : 0;
-        if (!force && elapsed < GROQ_MIN_CHUNK_MS) return;
+        if (!force && elapsed < RECORDED_MIN_CHUNK_MS) return;
         if (force) finalFlushDone = true;
         sending = true;
         recorder = null;
@@ -351,7 +351,7 @@
         }
         if (speechSeenAt && !sending && chunks.length) {
           const idle = at - lastSpeechAt;
-          if (idle >= GROQ_SILENCE_CUT_MS || (chunkStartedAt && at - chunkStartedAt >= GROQ_MAX_CHUNK_MS)) {
+          if (idle >= RECORDED_SILENCE_CUT_MS || (chunkStartedAt && at - chunkStartedAt >= RECORDED_MAX_CHUNK_MS)) {
             if (typeof callbacks.onAutoStopRequested === "function") {
               callbacks.onAutoStopRequested();
             }
@@ -536,7 +536,7 @@
     let identityRefreshSeq = 0;
     const identityListeners = [];
 
-    const groqFactory = createRecognizerFactory({
+    const recordedFactory = createRecognizerFactory({
       win: win,
       doc: doc,
       fetchImpl: fetchImpl,
@@ -557,13 +557,13 @@
           fetchImpl: fetchImpl,
           mediaDevices: mediaDevices,
           now: options.now,
-          fallbackFactory: groqFactory,
+          fallbackFactory: recordedFactory,
           liveTokenPath: function (targetDoc) {
             return routeForShell(targetDoc, LIVE_TOKEN_PATH, CLAW_LIVE_TOKEN_PATH);
           },
         })
       : null;
-    const factory = liveFactory || groqFactory;
+    const factory = liveFactory || recordedFactory;
     const canCapture = !!(mediaDevices && typeof win.MediaRecorder === "function");
 
     function registerFactory(available) {
@@ -688,9 +688,9 @@
   }
 
   return {
-    GROQ_MIN_CHUNK_MS: GROQ_MIN_CHUNK_MS,
-    GROQ_SILENCE_CUT_MS: GROQ_SILENCE_CUT_MS,
-    GROQ_MAX_CHUNK_MS: GROQ_MAX_CHUNK_MS,
+    RECORDED_MIN_CHUNK_MS: RECORDED_MIN_CHUNK_MS,
+    RECORDED_SILENCE_CUT_MS: RECORDED_SILENCE_CUT_MS,
+    RECORDED_MAX_CHUNK_MS: RECORDED_MAX_CHUNK_MS,
     TRANSCRIBE_PATH: TRANSCRIBE_PATH,
     CLAW_TRANSCRIBE_PATH: CLAW_TRANSCRIBE_PATH,
     CLAW_IDENTITY_PATH: CLAW_IDENTITY_PATH,
