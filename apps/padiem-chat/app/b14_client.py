@@ -329,7 +329,7 @@ def _resolve_b62_policy(
 # #7044: a thinking summary is the model's first visible byte, and the platform
 # instruction "write the thinking summary in the answer's language" reaches the
 # model but is not applied to that summary. A short italicised aside appended to
-# the outgoing copy is the smallest lever that actually moved it in measurement.
+# the outgoing copy is the smallest lever to try; see #7044 for the measurement.
 # It rides only on the streaming request the summary belongs to: the stored turn,
 # the ledger, the tool lane, the multimodal lane and non-streaming completion are
 # untouched (the stored messages list is never mutated, only copied).
