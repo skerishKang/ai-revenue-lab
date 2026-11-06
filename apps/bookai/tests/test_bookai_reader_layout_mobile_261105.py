@@ -258,6 +258,12 @@ def _measure_library_to_reader_entry(browser, base_url):
     try:
         page.goto(base_url, wait_until="load")
         page.wait_for_function("() => document.querySelector('.screen.active')?.id === 'library'")
+        # The library screen is static markup, but prevBook is wired by the
+        # deferred boot scripts. Wait for the control so the click cannot land
+        # before the shelf exists.
+        page.wait_for_function(
+            "() => typeof document.getElementById('prevBook').onclick === 'function'"
+        )
         # A non-scripture book opens straight into the reading surface; the
         # scripture shelf stops at its chapter index first. The selection is
         # confirmed before the clock starts, so the measure cannot be taken on
