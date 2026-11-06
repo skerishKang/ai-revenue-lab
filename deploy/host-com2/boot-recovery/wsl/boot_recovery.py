@@ -35,10 +35,11 @@ CONFIG_PATH = Path(os.environ.get("BOOT_RECOVERY_CONFIG", "/opt/padiem/boot-reco
 DEFAULT_WAIT_SECONDS = 240
 DEFAULT_INTERVAL_SECONDS = 5
 
-#: Mirrors the reviewed COM2 units.json (2026-11-05). padiem-connector-watch
+#: Based on the reviewed COM2 units.json (2026-11-05); P01 became required
+#: after its 2026-11-06 redeploy. padiem-connector-watch
 #: .service is Type=oneshot fired by its timer, so it is inactive between runs:
 #: the required entry is the timer and the service is reported only. Staged or
-#: undeployed lanes (broker, P01, B14, chat timers) are reported, not fatal.
+#: undeployed lanes (broker, B14, chat timers) are reported, not fatal.
 #: units.json overrides this list at install time.
 DEFAULT_UNITS: list[dict[str, Any]] = [
     {"unit": "padiem-mesh-queue.service", "kind": "service", "required": True},
@@ -50,7 +51,7 @@ DEFAULT_UNITS: list[dict[str, Any]] = [
     {"unit": "cloudflared-padiem.service", "kind": "service", "required": True},
     {"unit": "cloudflared-chat-com2.service", "kind": "service", "required": True},
     {"unit": "padiem-meshcentral.service", "kind": "service", "required": True},
-    {"unit": "padiem-p01.service", "kind": "service", "required": False},
+    {"unit": "padiem-p01.service", "kind": "service", "required": True},
     {"unit": "padiem-b14.service", "kind": "service", "required": False},
     {"unit": "padiem-mesh-queue-backup.timer", "kind": "timer", "required": True},
     {"unit": "padiem-mesh-queue-health.timer", "kind": "timer", "required": True},

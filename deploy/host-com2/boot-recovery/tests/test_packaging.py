@@ -73,6 +73,8 @@ class Packaging(unittest.TestCase):
         # timer, so it is inactive between runs and must never be a required
         # service check; the timer carries the requirement.
         by_name = {entry["unit"]: entry for entry in data["units"]}
+        self.assertTrue(by_name["padiem-p01.service"]["required"])
+        self.assertFalse(by_name["padiem-b14.service"]["required"])
         self.assertFalse(by_name["padiem-connector-watch.service"]["required"])
         self.assertTrue(by_name["padiem-connector-watch.timer"]["required"])
 

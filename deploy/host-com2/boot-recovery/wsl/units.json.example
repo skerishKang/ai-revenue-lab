@@ -1,5 +1,5 @@
 {
-  "_comment": "COM2 host units as of 2026-11-05 (mirrors the live /opt/padiem/boot-recovery/units.json). padiem-connector-watch.service is Type=oneshot fired by its timer, so it is inactive between runs: the required entry is the timer, and the service is reported only. required=false entries are reported but do not fail the boot check (staged/undeployed lanes).",
+  "_comment": "COM2 host units are based on the reviewed 2026-11-05 list; padiem-p01.service became required after its 2026-11-06 redeploy. padiem-connector-watch.service is Type=oneshot fired by its timer, so it is inactive between runs: the required entry is the timer, and the service is reported only. required=false entries are reported but do not fail the boot check (staged/undeployed broker, B14, and chat-timer entries).",
   "units": [
     {"unit": "padiem-mesh-queue.service", "kind": "service", "required": true},
     {"unit": "padiem-file-lane.service", "kind": "service", "required": true},
@@ -10,7 +10,7 @@
     {"unit": "cloudflared-padiem.service", "kind": "service", "required": true},
     {"unit": "cloudflared-chat-com2.service", "kind": "service", "required": true},
     {"unit": "padiem-meshcentral.service", "kind": "service", "required": true},
-    {"unit": "padiem-p01.service", "kind": "service", "required": false},
+    {"unit": "padiem-p01.service", "kind": "service", "required": true},
     {"unit": "padiem-b14.service", "kind": "service", "required": false},
     {"unit": "padiem-mesh-queue-backup.timer", "kind": "timer", "required": true},
     {"unit": "padiem-mesh-queue-health.timer", "kind": "timer", "required": true},
