@@ -1512,6 +1512,8 @@ class OracleMeshExecutorScenarioTest(DeployHarness):
         (self.live / "padiem_agent" / "marker.py").write_text(
             "AGENT = 1\n", encoding="utf-8"
         )
+        # The plan reads the same tree the apply wrapper points the script at.
+        self.env["PADIEM_COM2_ORACLE_MESH_ROOT"] = self.oracle.as_posix()
 
     def _dry(self) -> str:
         result = self._run_main(
@@ -1527,8 +1529,11 @@ class OracleMeshExecutorScenarioTest(DeployHarness):
 
     def test_a_kagent_change_selects_the_executor(self) -> None:
         output = self._dry()
+        # The hand copy in setUp is not the recorded release directory, so the
+        # running-code comparison selects the executor too.
         self.assertIn(
-            "COM2_DEPLOY_DECISION_EXECUTOR=REDEPLOY reason_files=1 reason=CHANGED_PATHS",
+            "COM2_DEPLOY_DECISION_EXECUTOR=REDEPLOY reason_files=1 "
+            "reason=CHANGED_PATHS+RUNNING_CODE_MISMATCH",
             output,
         )
         self.assertIn(
@@ -1539,6 +1544,12 @@ class OracleMeshExecutorScenarioTest(DeployHarness):
 
     def test_a_module_the_executor_imports_selects_it_too(self) -> None:
         self._git(str(self.ops), "checkout", "-q", self.second)
+        # The link is on the recorded release, so only the import list can
+        # select the executor here.
+        release = self.oracle / "src" / self.second
+        release.parent.mkdir(parents=True, exist_ok=True)
+        self.live.rename(release)
+        self.live.symlink_to(release, target_is_directory=True)
         # The fixture executor imports the Core package itself, so the one
         # module both this repository and the import list carry is its __init__.
         self._write("packages/padiem-ai-core/padiem_ai_core/__init__.py", "# core 2\n")
@@ -1553,11 +1564,47 @@ class OracleMeshExecutorScenarioTest(DeployHarness):
         self.assertEqual(result.returncode, 0, output)
         # The executor imports the Core package, so its modules are its code:
         # the path maps to chat and p01, and the import list selects it too.
+        self.assertIn("COM2_DEPLOY_EXECUTOR_RUNNING_CODE=MATCH", output)
         self.assertIn(
             "COM2_DEPLOY_EXECUTOR_IMPORTED=packages/padiem-ai-core/padiem_ai_core/__init__.py",
             output,
         )
         self.assertIn("COM2_DEPLOY_DECISION_EXECUTOR=REDEPLOY", output)
+
+    def test_a_rolled_back_link_selects_the_executor_again(self) -> None:
+        # 11-06 22:28: the deploy rolled the executor back to a displaced copy
+        # and still moved the checkout to that commit, so the old..new diff was
+        # empty and the executor was skipped while it ran the older code.
+        self._git(str(self.ops), "checkout", "-q", self.second)
+        displaced = self.oracle / "kagent-src.displaced-20261106T222917"
+        self.live.rename(displaced)
+        self.live.symlink_to(displaced, target_is_directory=True)
+
+        output = self._dry()
+
+        self.assertIn("COM2_DEPLOY_EXECUTOR_RUNNING_CODE=DIFF_OR_UNVERIFIABLE", output)
+        self.assertIn(
+            "COM2_DEPLOY_DECISION_EXECUTOR=REDEPLOY reason_files=0 "
+            "reason=RUNNING_CODE_MISMATCH",
+            output,
+        )
+        self.assertIn(
+            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:WOULD_DEPLOY b14:SKIP queue:SKIP "
+            "executor:WOULD_DEPLOY",
+            output,
+        )
+
+    def test_a_link_on_the_recorded_release_is_skipped(self) -> None:
+        self._git(str(self.ops), "checkout", "-q", self.second)
+        release = self.oracle / "src" / self.second
+        release.parent.mkdir(parents=True, exist_ok=True)
+        self.live.rename(release)
+        self.live.symlink_to(release, target_is_directory=True)
+
+        output = self._dry()
+
+        self.assertIn("COM2_DEPLOY_EXECUTOR_RUNNING_CODE=MATCH", output)
+        self.assertIn("COM2_DEPLOY_DECISION_EXECUTOR=SKIP reason_files=0", output)
 
     def test_the_executor_runs_from_a_commit_directory(self) -> None:
         result = self._run_apply()
@@ -1808,11 +1855,11 @@ SIDECAR_INSTALLED = {
     "deploy/host-com2/offsite-backup/offsite.py": "opt/padiem/offsite-backup/offsite.py",
     "deploy/host-com2/offsite-backup/padiem-offsite-backup.service": "etc/systemd/system/padiem-offsite-backup.service",
     "deploy/host-com2/offsite-backup/padiem-offsite-backup.timer": "etc/systemd/system/padiem-offsite-backup.timer",
-    "deploy/host-com2/cron/run-cron.sh": "opt/padiem/chat-staging/run-cron.sh",
-    "deploy/host-com2/cron/run-expired-purge.sh": "opt/padiem/chat-staging/run-expired-purge.sh",
-    "deploy/host-com2/cron/status-cron.sh": "opt/padiem/chat-staging/status-cron.sh",
-    "deploy/host-com2/cron/check_config_cron.py": "opt/padiem/chat-staging/check_config_cron.py",
-    "deploy/host-com2/cron/README.md": "opt/padiem/chat-staging/README-cron.md",
+    "deploy/host-com2/cron/run-cron.sh": "opt/padiem/chat-com2/run-cron.sh",
+    "deploy/host-com2/cron/run-expired-purge.sh": "opt/padiem/chat-com2/run-expired-purge.sh",
+    "deploy/host-com2/cron/status-cron.sh": "opt/padiem/chat-com2/status-cron.sh",
+    "deploy/host-com2/cron/check_config_cron.py": "opt/padiem/chat-com2/check_config_cron.py",
+    "deploy/host-com2/cron/README.md": "opt/padiem/chat-com2/README-cron.md",
 }
 
 
@@ -1886,6 +1933,25 @@ class SidecarDriftReportTest(DeployHarness):
         )
         # Reported, never repaired: the stale copy is still there.
         self.assertEqual(stale.read_text(encoding="utf-8"), "# stale\n")
+
+    def test_production_cron_missing_and_stale_are_reported_even_with_staging(self) -> None:
+        self._install_all()
+        prod = self.host / "opt/padiem/chat-com2"
+        staging = self.host / "opt/padiem/chat-staging"
+        staging.mkdir(parents=True)
+        for name in ("run-cron.sh", "status-cron.sh"):
+            shutil.copyfile(prod / name, staging / name)
+        (prod / "run-cron.sh").unlink()
+        (prod / "status-cron.sh").write_text("# stale\n", encoding="utf-8")
+
+        result = self._run_apply()
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("cron:opt/padiem/chat-com2/run-cron.sh=NOT_INSTALLED", result.stdout)
+        self.assertIn("cron:opt/padiem/chat-com2/status-cron.sh", result.stdout)
+        self.assertNotIn("cron:opt/padiem/chat-com2/status-cron.sh=NOT_INSTALLED", result.stdout)
+        self.assertNotIn("cron:opt/padiem/chat-staging/", result.stdout)
+        self.assertEqual((prod / "status-cron.sh").read_text(encoding="utf-8"), "# stale\n")
 
 class ScriptBoundaryTest(unittest.TestCase):
     def test_the_ladder_defaults_to_four_minutes_and_an_env_value_wins(self) -> None:

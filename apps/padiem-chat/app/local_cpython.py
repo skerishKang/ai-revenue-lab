@@ -415,6 +415,8 @@ def build_app():
         """Arm the identity keepwarm cycle on the running loop (host boot)."""
 
         if identity_binding is not None:
+            from .identity_cache_metrics import arm
+            arm()
             identity_binding.arm_warmer()
             print("[local] identity_keepwarm=armed")
 
@@ -466,6 +468,8 @@ def build_app():
     # turns it off on a host).
     install_loop_stall_watchdog(app, env=os.environ)
     if identity_binding is not None:
+        from .identity_cache_metrics import stop as stop_identity_cache_metrics
+        app.router.on_shutdown.append(stop_identity_cache_metrics)
         # #6613: the identity RPC client is pooled for the life of the host, so
         # the same shutdown hook that stops the SQLite readers closes it.
         app.router.on_shutdown.append(identity_binding.aclose)

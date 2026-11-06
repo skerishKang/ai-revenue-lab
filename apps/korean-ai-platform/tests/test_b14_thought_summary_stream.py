@@ -498,6 +498,39 @@ async def test_native_thought_fragments_reach_the_attempt_ledger(monkeypatch):
     assert attempt.protocol == "native"
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("tools_declared", [False, True])
+@pytest.mark.parametrize("primed", [False, True])
+async def test_native_thought_done_frame_matches_tool_contract(monkeypatch, tools_declared, primed):
+    from padiem_ai_core.b14_streaming import _decode_sse_frame, _parse_data_frame
+
+    tool = {"type": "function", "function": {
+        "name": "lookup", "description": "Look up a value",
+        "parameters": {"type": "object", "properties": {}},
+    }}
+    transport = _native_wire(monkeypatch, lambda request: httpx.Response(
+        200, content=_native_sse(), headers={"content-type": "text/event-stream"},
+    ))
+    events = await _collect(_native_stream(transport, tools=[tool] if tools_declared else None))
+    assert events[-1].done and events[-1].finish_reason == "stop"
+
+    async def remaining():
+        for event in ([] if primed else events):
+            yield event
+
+    frames = [frame async for frame in _stream_body(
+        remaining(), events if primed else [], request_id="req-thought", decision=_decision(),
+        attempt_count=1, fallback_used=False, tools_declared=tools_declared,
+    )]
+    assert any(b"reasoning_content" in frame for frame in frames)
+    expected = (b'event: done\ndata: {"finish_reason":"stop"}\n\n'
+                if tools_declared else b"data: [DONE]\n\n")
+    assert frames[-1] == expected
+    parsed = _parse_data_frame(_decode_sse_frame(frames[-1]), tools_requested=tools_declared)
+    assert parsed.done
+    assert parsed.finish_reason == ("stop" if tools_declared else None)
+
+
 def test_native_4xx_falls_back_once_without_thought_options(monkeypatch, caplog):
     requests = []
 

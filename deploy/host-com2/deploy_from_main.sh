@@ -996,6 +996,26 @@ executor_rollback_source() {
   return 1
 }
 
+# The link is the deployment, so the link is also the deployment evidence. 11-06
+# 22:28 the executor rolled back to a displaced copy, the ops checkout still
+# moved to that commit, and the empty old..new diff then skipped the executor:
+# the process kept running code no deploy had installed (#7028). Compare what
+# the unit actually runs, the way P01 does, instead of trusting the checkout.
+#
+# 0 the unit runs the commit this checkout recorded as deployed; 1 it runs
+# something else, or that cannot be proven (missing, broken, unreadable); 2 no
+# executor tree on this host, so there is nothing to compare.
+executor_matches_previous_release() {
+  local actual
+  if [[ ! -L $executor_src && ! -e $executor_src ]]; then
+    return 2
+  fi
+  [[ -L $executor_src ]] || return 1
+  actual=$(readlink -f -- "$executor_src") || return 1
+  [[ -d $actual ]] || return 1
+  [[ $actual == "$executor_releases/$old" ]]
+}
+
 # The executor's unit was the one deployment input with no source in this
 # repository: a change meant editing /etc/systemd/system by hand and nothing
 # recorded what the host ran (#6892 follow-up). deploy/host-com2/oracle-mesh
@@ -1431,7 +1451,7 @@ ensure_target_units_ready() {
 #
 # The cron lane renders its unit files from templates with the profile's values,
 # so those are not comparable byte for byte; the scripts it copies are. Its app
-# root is the installer's default profile (staging).
+# root is the production profile's app root, not the installer's staging default.
 report_sidecar_drift() {
   local service relative installed entry name listing='' count=0
   local -a pairs=(
@@ -1448,11 +1468,11 @@ report_sidecar_drift() {
     "offsite-backup|deploy/host-com2/offsite-backup/offsite.py|/opt/padiem/offsite-backup/offsite.py"
     "offsite-backup|deploy/host-com2/offsite-backup/padiem-offsite-backup.service|/etc/systemd/system/padiem-offsite-backup.service"
     "offsite-backup|deploy/host-com2/offsite-backup/padiem-offsite-backup.timer|/etc/systemd/system/padiem-offsite-backup.timer"
-    "cron|deploy/host-com2/cron/run-cron.sh|/opt/padiem/chat-staging/run-cron.sh"
-    "cron|deploy/host-com2/cron/run-expired-purge.sh|/opt/padiem/chat-staging/run-expired-purge.sh"
-    "cron|deploy/host-com2/cron/status-cron.sh|/opt/padiem/chat-staging/status-cron.sh"
-    "cron|deploy/host-com2/cron/check_config_cron.py|/opt/padiem/chat-staging/check_config_cron.py"
-    "cron|deploy/host-com2/cron/README.md|/opt/padiem/chat-staging/README-cron.md"
+    "cron|deploy/host-com2/cron/run-cron.sh|/opt/padiem/chat-com2/run-cron.sh"
+    "cron|deploy/host-com2/cron/run-expired-purge.sh|/opt/padiem/chat-com2/run-expired-purge.sh"
+    "cron|deploy/host-com2/cron/status-cron.sh|/opt/padiem/chat-com2/status-cron.sh"
+    "cron|deploy/host-com2/cron/check_config_cron.py|/opt/padiem/chat-com2/check_config_cron.py"
+    "cron|deploy/host-com2/cron/README.md|/opt/padiem/chat-com2/README-cron.md"
   )
   [[ -n $staged ]] || { say 'AUX_DRIFT=UNKNOWN'; return 0; }
   # The restart drop-in is one file the installer writes for every listed unit.
@@ -1495,6 +1515,7 @@ run_deploy() {
   local sha=$1 origin changed='' services='' pending='' line status=0
   local mapped='' service='' reason='' state='' queue_dependent='' executor_dependent=''
   local p01_mismatch=0 excluded_test=0 excluded_docs=0 excluded_example=0 excluded_meta=0 excluded_unmapped=0
+  local executor_mismatch=0 executor_code=0
   declare -A wanted=([chat]=0 [p01]=0 [b14]=0 [queue]=0 [executor]=0)
   declare -A reason_files=([chat]=0 [p01]=0 [b14]=0 [queue]=0 [executor]=0)
   declare -A result=([chat]=SKIP [p01]=SKIP [b14]=SKIP [queue]=SKIP [executor]=SKIP)
@@ -1543,6 +1564,20 @@ run_deploy() {
     wanted[p01]=1
     p01_mismatch=1
   fi
+
+  # A rollback the next deploy cannot see is the same defect as no deploy at
+  # all: the checkout records the commit, the process runs the copy before it.
+  executor_code=0
+  executor_matches_previous_release || executor_code=$?
+  case $executor_code in
+    0) say 'EXECUTOR_RUNNING_CODE=MATCH' ;;
+    2) say 'EXECUTOR_RUNNING_CODE=NOT_INSTALLED' ;;
+    *)
+      say 'EXECUTOR_RUNNING_CODE=DIFF_OR_UNVERIFIABLE'
+      wanted[executor]=1
+      executor_mismatch=1
+      ;;
+  esac
 
   changed=$("$git_bin" -C "$ops_checkout" diff --name-only "$old" "$resolved") \
     || fail GIT_DIFF_FAILED
@@ -1604,6 +1639,13 @@ run_deploy() {
       reason=CHANGED_PATHS
     fi
     if [[ $line == p01 ]] && (( p01_mismatch )); then
+      if (( reason_files[$line] )); then
+        reason=CHANGED_PATHS+RUNNING_CODE_MISMATCH
+      else
+        reason=RUNNING_CODE_MISMATCH
+      fi
+    fi
+    if [[ $line == executor ]] && (( executor_mismatch )); then
       if (( reason_files[$line] )); then
         reason=CHANGED_PATHS+RUNNING_CODE_MISMATCH
       else

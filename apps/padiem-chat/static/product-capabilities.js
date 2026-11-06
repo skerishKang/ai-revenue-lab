@@ -129,6 +129,7 @@
       heading: "내 API 키",
       description: "공급사 모델을 내 API 키로 직접 호출합니다. Padiem 등급 모델과 별개입니다.",
       option: "Padiem Custom",
+      optionHint: "내 API 키로 직접 호출",
       modelLabel: "모델",
       stateReady: "사용 가능",
       stateKey: "키 필요",
@@ -187,6 +188,7 @@
       heading: "My API key",
       description: "Calls the provider model directly with your API key, separate from Padiem models.",
       option: "Padiem Custom",
+      optionHint: "Calls with your own API key",
       modelLabel: "Model",
       stateReady: "Available",
       stateKey: "Key required",
@@ -869,10 +871,12 @@
     customOption.setAttribute("aria-disabled", selectable ? "false" : "true");
     customOption.setAttribute("aria-pressed", customSelection && selectable ? "true" : "false");
     customOption.dataset.modeStatus = state === "ready" ? "available" : state === "key" ? "key" : "unavailable";
-    if (customOptionTitle) customOptionTitle.textContent = provider ? provider.display_name : copy.option;
+    // #6828: the tier row is a PADIEM grade, so it never carries a supplier or
+    // model name from the provider list. Only the PADIEM name is rendered.
+    if (customOptionTitle) customOptionTitle.textContent = copy.option;
     if (customOptionModel) {
       customOptionModel.textContent = provider
-        ? copy.modelLabel + " " + (model || copy.modelNotSet)
+        ? copy.optionHint
         : "";
       customOptionModel.hidden = !provider;
     }

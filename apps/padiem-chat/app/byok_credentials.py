@@ -111,7 +111,7 @@ class ResolvedCustomSelection:
 CUSTOM_PROVIDERS: dict[str, CustomProvider] = {
     "opencode-go": CustomProvider(
         provider_id="opencode-go",
-        display_name="Padiem Custom (OpenCode Go)",
+        display_name="Padiem Custom",
         base_origin="https://opencode.ai/inference/go/v1",
         wire="openai-chat",
         auth="bearer",

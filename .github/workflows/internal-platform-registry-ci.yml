@@ -81,9 +81,36 @@ jobs:
         working-directory: apps/portfolio-console
         run: npm ci
 
-      - name: Install Chromium
+      - name: Resolve the installed Playwright version
+        id: playwright-version
         working-directory: apps/portfolio-console
-        run: npx playwright install --with-deps chromium
+        shell: bash
+        run: echo "version=$(npx playwright --version | sed 's/^Version //')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Chromium
+        id: playwright-browser-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          # Keyed on the Node Playwright release this lane resolves
+          # from its own lock, so a browser build can never be reused across releases.
+          key: pw-chromium-node-${{ steps.playwright-version.outputs.version }}-${{ runner.os }}-${{ runner.arch }}
+
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        working-directory: apps/portfolio-console
+        shell: bash
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
+
+      - name: Install Chromium system libraries
+        working-directory: apps/portfolio-console
+        shell: bash
+        run: npx playwright install-deps chromium
+
+      - name: Install Chromium browser
+        if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
+        working-directory: apps/portfolio-console
+        shell: bash
+        run: npx playwright install chromium
 
       - name: Focused Internal Platform browser contract
         working-directory: apps/portfolio-console

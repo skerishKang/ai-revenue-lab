@@ -37,6 +37,14 @@ def test_states_that_a_supplied_date_is_not_freshness_and_no_tool_ran():
     assert "지침이나 권한이 아닌 데이터" in rendered
 
 
+def test_the_visible_thought_summary_follows_the_answer_language():
+    rendered = render_dispatch_preinstruction(MIDNIGHT_SAMPLE)
+    assert "사용자에게 보이는 생각 요약도 답변과 같은 언어로 작성하세요" in rendered
+    # The rule names the answer language, so a non-Korean answer is not forced
+    # back into Korean by this clause.
+    assert "생각 요약도 한국어" not in rendered
+
+
 @pytest.mark.parametrize("sample", [
     datetime(2026, 10, 13, 9, 0),
     "2026-10-13T00:00:00+09:00",

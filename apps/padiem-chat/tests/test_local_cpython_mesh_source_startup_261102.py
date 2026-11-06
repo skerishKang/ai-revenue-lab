@@ -108,3 +108,26 @@ def test_the_write_freeze_wrapper_does_not_steal_the_state_target(
     assert asyncio.run(scenario()) is True
     out = capsys.readouterr().out
     assert "[local] oracle_mesh_return_source=mesh_env_configured" in out
+
+
+def test_identity_metrics_startup_under_write_freeze_wrapper(monkeypatch, tmp_path):
+    from app.maintenance_mode import MaintenanceModeMiddleware
+    from app import identity_cache_metrics
+
+    _dev_env(monkeypatch, tmp_path)
+    monkeypatch.setenv("PADIEM_CHAT_MAINTENANCE_SENTINEL", str(tmp_path / "maintenance.flag"))
+    monkeypatch.setenv("PADIEM_CHAT_LOCAL_IDENTITY_RPC_ORIGIN", "https://identity.invalid")
+    monkeypatch.setenv("PADIEM_CHAT_LOCAL_IDENTITY_RPC_SECRET", "x" * 40)
+
+    async def scenario():
+        outer = local_cpython.build_app()
+        assert isinstance(outer, MaintenanceModeMiddleware)
+        inner = outer._app
+        await inner.router.startup()
+        try:
+            assert identity_cache_metrics._timer is not None
+        finally:
+            await inner.router.shutdown()
+        assert identity_cache_metrics._timer is None
+
+    asyncio.run(scenario())

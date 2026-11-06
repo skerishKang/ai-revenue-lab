@@ -60,12 +60,18 @@ jobs:
       # Share the pinned browser across independent B62 QA workflows.
       # Cache keys pin the Playwright release to prevent binary drift.
       - name: Cache pinned Playwright Chromium
+        id: playwright-browser-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
-      - name: Install Chromium runtime
-        run: uv run playwright install --with-deps --only-shell chromium
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
+      - name: Install Chromium system libraries
+        run: uv run playwright install-deps chromium
+      - name: Install Chromium browser
+        if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
+        run: uv run playwright install --only-shell chromium
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail

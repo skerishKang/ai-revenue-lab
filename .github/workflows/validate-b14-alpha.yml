@@ -119,7 +119,31 @@ jobs:
       - name: Install exact locked dependencies
         run: uv sync --group dev --frozen
 
-      - name: Install Chromium
+      - name: Resolve the installed Playwright version
+        id: playwright-version
+        shell: bash
+        run: echo "version=$(uv run playwright --version | sed 's/^Version //')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Chromium
+        id: playwright-browser-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          # Keyed on the Python Playwright release this lane resolves
+          # from its own lock, so a browser build can never be reused across releases.
+          key: pw-chromium-py-${{ steps.playwright-version.outputs.version }}-${{ runner.os }}-${{ runner.arch }}
+
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        shell: bash
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
+
+      - name: Install Chromium system libraries
+        shell: bash
+        run: uv run playwright install-deps chromium
+
+      - name: Install Chromium browser
+        if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
+        shell: bash
         run: uv run playwright install chromium
 
       # Same complete pytest discovery as both previous steps, now executed
