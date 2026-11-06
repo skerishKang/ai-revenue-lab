@@ -64,8 +64,30 @@ jobs:
           set -euo pipefail
           mkdir -p "${RUNNER_TEMP}/pw"
           npm install --prefix "${RUNNER_TEMP}/pw" playwright@1.55.0 >/dev/null
-          "${RUNNER_TEMP}/pw/node_modules/.bin/playwright" install --with-deps chromium >/dev/null
           echo "PW=${RUNNER_TEMP}/pw/node_modules/playwright" >> "${GITHUB_ENV}"
+
+      - name: Cache Playwright Chromium
+        id: playwright-browser-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          # Node Playwright build for the release pinned in the step above; the
+          # key is separate from the Python builds because they unpack different
+          # Chromium revisions into the same directory.
+          key: pw-chromium-node-1.55.0-${{ runner.os }}-${{ runner.arch }}
+
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        shell: bash
+        run: bash .github/scripts/b62_playwright_apt_mirror_3989.sh
+
+      - name: Install Chromium system libraries
+        shell: bash
+        run: '"${RUNNER_TEMP}/pw/node_modules/.bin/playwright" install-deps chromium >/dev/null'
+
+      - name: Install Chromium browser
+        if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: '"${RUNNER_TEMP}/pw/node_modules/.bin/playwright" install chromium >/dev/null'
 
       - name: Write B60 browser smoke
         shell: bash

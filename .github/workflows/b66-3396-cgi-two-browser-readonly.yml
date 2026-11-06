@@ -101,7 +101,25 @@ jobs:
       - name: Install pinned Playwright
         run: |
           python -m pip install --disable-pip-version-check --quiet "playwright==1.55.0"
-          python -m playwright install --with-deps chromium
+
+      - name: Cache pinned Playwright Chromium
+        id: playwright-browser-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          # Reuses the repo-wide full-Chromium entry for Python Playwright 1.55.0;
+          # the binary is identical, so this lane does not need its own copy.
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash .github/scripts/b62_playwright_apt_mirror_3989.sh
+
+      - name: Install Chromium system libraries
+        run: python -m playwright install-deps chromium
+
+      - name: Install Chromium browser
+        if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
+        run: python -m playwright install chromium
       - name: 'Exactly scoped CGI alpha mode: two isolated logins and guaranteed cleanup'
         shell: bash
         run: |

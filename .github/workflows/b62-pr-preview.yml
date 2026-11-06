@@ -159,7 +159,22 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install 'playwright==1.55.0'
-          python -m playwright install --with-deps chromium
+
+      - name: Cache pinned Playwright Chromium
+        id: playwright-browser-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          # Reuses the repo-wide full-Chromium entry for Python Playwright 1.55.0;
+          # the binary is identical, so this lane does not need its own copy.
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+
+      - name: Install Chromium system libraries
+        run: python -m playwright install-deps chromium
+
+      - name: Install Chromium browser
+        if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
+        run: python -m playwright install chromium
 
       - name: Browser-smoke immutable Glass Preview
         shell: bash
