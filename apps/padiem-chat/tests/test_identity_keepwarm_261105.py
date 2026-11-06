@@ -225,3 +225,81 @@ async def test_a_warm_answer_that_is_not_ok_is_still_just_warming() -> None:
         await binding.aclose()
 
     assert len([call for call in client.calls if call["url"] == WARM_URL]) >= 2
+
+
+async def test_the_cycle_arms_at_creation_without_any_real_call() -> None:
+    """#6895 후속: 호스트는 첫 호출이 아니라 바인딩 생성(기동) 시점에 점화한다.
+
+    The binding is composed while the host app is built, so the first warm ping
+    goes out a full period after boot without any real RPC — a journal of
+    identity_keepwarm lines with no turn around them is how ops proves the
+    ignition.
+    """
+
+    client = _WarmClient()
+    binding = HttpRpcBinding(ORIGIN, SECRET, client=client, keepwarm_seconds=PERIOD)
+    try:
+        await _expect_cycles(client, 1)
+    finally:
+        await binding.aclose()
+
+    warm_urls = [call["url"] for call in client.calls if call["url"] == WARM_URL]
+    assert len(warm_urls) >= 1
+    # No real RPC was ever made: every recorded call is the warm ping.
+    assert len(client.calls) == len(warm_urls)
+
+
+async def test_every_cycle_leaves_one_identity_keepwarm_status_line() -> None:
+    """운영 증명: 주기마다 값만 담은 저널 한 줄이 남는다."""
+
+    import logging
+    import re
+
+    seen: list[str] = []
+    logger = logging.getLogger("padiem_chat.identity_keepwarm")
+
+    class _Capture(logging.Handler):
+        def emit(self, record: logging.LogRecord) -> None:
+            seen.append(record.getMessage())
+
+    line_re = re.compile(r"^identity_keepwarm status=\d+ ms=\d+(?:\.\d+)?$")
+    handler = _Capture()
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+    try:
+        client = _WarmClient(fail_first=1)
+        binding = HttpRpcBinding(ORIGIN, SECRET, client=client, keepwarm_seconds=PERIOD)
+        try:
+            await _expect_cycles(client, 3)
+        finally:
+            await binding.aclose()
+    finally:
+        logger.removeHandler(handler)
+        logger.setLevel(logging.NOTSET)
+
+    assert seen, "each warm cycle must leave exactly one status line"
+    for line in seen:
+        assert line_re.fullmatch(line), line
+        assert ORIGIN not in line and "padiem-chat-identity-keepwarm-synthetic" not in line
+        assert "secret" not in line.lower()
+
+
+async def test_a_real_call_overlapping_the_armed_cycle_keeps_one_warm_outstanding() -> None:
+    """A real RPC landing during the warm request adds no second warm."""
+
+    client = _BlockingClient()
+    binding = HttpRpcBinding(ORIGIN, SECRET, client=client, keepwarm_seconds=PERIOD)
+    try:
+        # The cycle armed at creation is already in flight.
+        await _expect_cycles(client, 1)
+        assert binding._warm_task is not None
+        assert binding._warm_timer is None
+
+        answer = await binding.resolve_current_auth_session(
+            {"product_id": "b62", "product_user_id": "u1"}
+        )
+        assert isinstance(answer, dict)
+        warm_calls = [call for call in client.calls if call["url"] == WARM_URL]
+        assert len(warm_calls) == 1, "a warm request must stay single while in flight"
+    finally:
+        await binding.aclose()

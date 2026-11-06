@@ -28,6 +28,7 @@ import asyncio
 import hashlib
 import hmac
 import json
+import logging
 import re
 import time
 import uuid
@@ -60,6 +61,9 @@ PDF_RENDER_PATH = "/internal/v1/render"
 PDF_RESPONSE_MAX_BYTES = 32 * 1024 * 1024
 _RPC_PATH_PREFIX = "/internal/rpc/"
 _METHOD_RE = re.compile(r"^[a-z][a-z0-9_]{2,63}$")
+# One journal line per warm cycle (status and milliseconds only) — ops proves
+# the ignition without a turn, the same way the Engine's keepwarm line does.
+_IDENTITY_KEEPWARM_LOG = logging.getLogger("padiem_chat.identity_keepwarm")
 _SECRET_MIN_CHARS = 32
 # The identity authority is woken with a real dispatchable RPC, not a bare
 # request: only ``/internal/rpc/<method>`` leaves the gateway Worker, so a
@@ -202,13 +206,19 @@ class HttpRpcBinding:
         self._sign_request_id = bool(sign_request_id)
         # Opt-in warm cycle: the host composition passes the configured period
         # (PADIEM_CHAT_IDENTITY_KEEPWARM_SECONDS, default 45, 0 off), so a
-        # default-constructed binding behaves exactly as before. The cycle is
-        # armed by the first real RPC, inside the loop that RPC already runs
-        # on, and stopped by :meth:`aclose`.
+        # default-constructed binding behaves exactly as before. The cycle arms
+        # here when a loop is already running (tests, in-loop composition) and
+        # at the host's ASGI startup otherwise; :meth:`aclose` stops it.
         self._keepwarm = max(0.0, float(keepwarm_seconds))
         self._warm_timer: asyncio.TimerHandle | None = None
         self._warm_task: asyncio.Task[Any] | None = None
         self._warm_stopped = False
+        self._arm_warmer()
+
+    def arm_warmer(self) -> None:
+        """Public arm point for the host; one timer outstanding at a time."""
+
+        self._arm_warmer()
 
     def _arm_warmer(self) -> None:
         """Schedule the next warm cycle on the loop that is already running.
@@ -240,19 +250,29 @@ class HttpRpcBinding:
         request has finished, so one warm request stays outstanding at a time.
         Warming says nothing about the authority — the next real call carries
         its own proof and its own verdict — and the cycle keeps going after any
-        exception; a cancellation (host shutdown) leaves nothing behind.
+        exception; a cancellation (host shutdown) leaves nothing behind. One
+        journal line names the outcome (status and milliseconds only) so the
+        operator can prove the cycle is firing without a turn.
         """
 
+        started = time.perf_counter()
+        status = 0
         try:
             body = json.dumps(
                 IDENTITY_KEEPWARM_PAYLOAD, ensure_ascii=False, separators=(",", ":")
             ).encode("utf-8")
-            await self._post_rpc(IDENTITY_KEEPWARM_METHOD, body)
+            response = await self._post_rpc(IDENTITY_KEEPWARM_METHOD, body)
+            status = response.status_code
         except asyncio.CancelledError:
             self._warm_task = None
             raise
         except Exception:  # noqa: BLE001 - warming never becomes an authority answer
-            pass
+            status = 0
+        _IDENTITY_KEEPWARM_LOG.info(
+            "identity_keepwarm status=%d ms=%.1f",
+            status,
+            (time.perf_counter() - started) * 1000.0,
+        )
         self._warm_task = None
         self._arm_warmer()
 

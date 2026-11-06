@@ -294,6 +294,11 @@ def build_app():
         CloudflareControlPlaneIdentityAuthority(identity_binding)
         if identity_binding is not None else None
     )
+    # The identity keepwarm cycle (#6975) now arms at host boot: the ASGI
+    # startup below arms the binding on the running loop, so the first warm
+    # ping goes out a full period after boot instead of after the first turn.
+    # The pre-wrap binding is armed directly — the cache wrapper is unrelated
+    # to the warm cycle and the loopback binding stays off (keepwarm 0).
     # 261104: the two per-turn identity reads (chat owner + PC owner scope)
     # are pure functions of a verified credential and cost 0.6-1.0 s of
     # trans-Pacific Worker RTT from this host. Successful answers are cached
@@ -405,6 +410,15 @@ def build_app():
         print("[local] oracle_mesh_return_source=mesh_env_configured")
 
     app.router.on_startup.append(_compose_oracle_mesh_return_source_on_startup)
+
+    async def _arm_identity_keepwarm_on_startup() -> None:
+        """Arm the identity keepwarm cycle on the running loop (host boot)."""
+
+        if identity_binding is not None:
+            identity_binding.arm_warmer()
+            print("[local] identity_keepwarm=armed")
+
+    app.router.on_startup.append(_arm_identity_keepwarm_on_startup)
 
     wal_checkpoint_tasks = {}
 
