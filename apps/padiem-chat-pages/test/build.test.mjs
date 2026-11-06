@@ -117,21 +117,23 @@ test("#6924 operational probes only target registered chat health routes", async
   assert.doesNotMatch(server, /Route\("\/api\/health"/, "Chat must not register /api/health");
 
   const forbidden = ["/api/" + "health", "/api/" + "models"];
-  const roots = [
-    "apps/padiem-chat/app",
-    "apps/padiem-chat/static",
-    "apps/padiem-chat-pages",
-    "apps/padiem-chat-front",
-    "scripts",
-    "deploy",
-    ".github/scripts",
-    ".github/workflows",
-  ];
+  const roots = ["."];
   const codeExt = new Set([".py", ".js", ".mjs", ".cjs", ".ts", ".sh", ".yml", ".yaml"]);
+  // This test intentionally requests a removed route in-process to pin its
+  // absence; it never sends the path over the network.
+  const intentionalAbsence = new Set([
+    "apps/padiem-chat/tests/test_owner_model_preview_contract.py",
+  ]);
   const offenders = [];
   async function walk(dir) {
     for (const entry of await readdir(dir, { withFileTypes: true })) {
-      if (entry.name === "node_modules" || entry.name === "dist") continue;
+      if (
+        ["node_modules", "dist", ".git", ".venv", "venv", "vendor", "build", "coverage", "__pycache__"].includes(
+          entry.name,
+        )
+      ) {
+        continue;
+      }
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
         await walk(full);
@@ -139,9 +141,11 @@ test("#6924 operational probes only target registered chat health routes", async
       }
       if (!codeExt.has(path.extname(entry.name))) continue;
       if (path.resolve(full) === fileURLToPath(import.meta.url)) continue;
+      const rel = path.relative(repoRoot, full).split(path.sep).join("/");
+      if (intentionalAbsence.has(rel)) continue;
       const text = await readFile(full, "utf8");
       for (const needle of forbidden) {
-        if (text.includes(needle)) offenders.push(`${path.relative(repoRoot, full)}: ${needle}`);
+        if (text.includes(needle)) offenders.push(`${rel}: ${needle}`);
       }
     }
   }
