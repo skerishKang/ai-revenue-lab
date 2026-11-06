@@ -67,7 +67,25 @@ def test_the_real_gate_is_still_the_server_answer_not_the_copy() -> None:
     assert 'window.initPdfMdUtility(panel, "paused");' in PDFMD
     # An unconfirmed state never performs an action, but only a confirmed pause
     # says so on screen.
-    assert "const workBlocked = PDFMD_NEW_WORK_DISABLED || PDFMD_CHECKING;" in PDFMD
+    assert "const workBlocked = PDFMD_NEW_WORK_DISABLED || PDFMD_LOGIN_REQUIRED || PDFMD_CHECKING;" in PDFMD
     assert "modeSel.disabled = workBlocked;" in PDFMD
     assert "fileInput.disabled = workBlocked;" in PDFMD
     assert 'if (workBlocked) return false;' in PDFMD
+
+
+def test_a_guest_401_asks_for_login_instead_of_claiming_a_pause() -> None:
+    # A 401 says the session is missing, not that the work stopped. It has its
+    # own state, its own sentence and the app's existing login entry.
+    assert 'const PDFMD_LOGIN_REQUIRED = workState === "login_required";' in PDFMD
+    assert 'window.initPdfMdUtility(panel, "login_required");' in PDFMD
+    assert "로그인 후 PDF 변환을 이용할 수 있습니다." in PDFMD
+    assert "로그인이 필요합니다" in PDFMD
+    assert "로그인 필요" in PDFMD
+    assert 'loginEntry.id = "pdfmdLoginEntry";' in PDFMD
+    assert 'document.getElementById("loginButton")' in PDFMD
+    # The 401 branch is decided before the no-answer branch, so a guest never
+    # falls through to the pause sentence.
+    code = _code(PDFMD)
+    catch_body = code[code.index("} catch (e) {"):]
+    assert catch_body.index("if (e.status === 401) {") < catch_body.index("if (PDFMD_CHECKING) {")
+    assert '"로그인하면 작업 이력을 볼 수 있습니다."' in PDFMD
