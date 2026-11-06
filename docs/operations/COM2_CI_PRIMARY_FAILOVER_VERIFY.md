@@ -16,11 +16,14 @@ superseded COM2-primary pilot is kept as a dated record at the bottom of this fi
   `ubuntu-24.04` runner: an offline container build (`--pull=never --network=none --read-only`)
   executes the full policy suite and the job publishes the pending/success/failure status on the
   exact open same-repository PR head SHA.
-- Trigger chain on every PR: `com2-pr-policy-trigger.yml` (`pull_request`, hosted, no checkout,
-  emits a trusted PR event) → `workflow_run` → `com2-pr-auto-sandbox.yml`. The sandbox `if:`
-  requires the trigger run to have completed successfully, `event == 'pull_request'`, a
-  same-repository `head_repository`, and a resolvable PR number. Fork PRs never reach it and
-  keep hosted validation only.
+- Trigger chain on every PR: `operations-policy-guard.yml` (`pull_request`, hosted, no PR code
+  checked out) → `workflow_run` → `com2-pr-auto-sandbox.yml`. The sandbox `if:` requires the
+  guard run to have completed successfully, `event == 'pull_request'`, a same-repository
+  `head_repository`, and a resolvable PR number. Fork PRs never reach it and keep hosted
+  validation only.
+- `#6901`: the former `com2-pr-policy-trigger.yml` echo lane was removed. It ran on every PR
+  only to emit that trusted event, and its always-green `COM2 policy dispatch` check could be
+  read as a policy result. One PR now starts two lanes, not three.
 - General browser QA is GitHub-hosted: `b62-browser-qa-unified.yml` and the per-surface
   `*-browser-qa` checks run per push/PR and are the default path.
 
@@ -72,7 +75,9 @@ The B62 visual tail (Glass Shell, Glass Zoom, Chat Gutter) runs in two lanes wit
   the trusted default branch (`schedule` plus `workflow_dispatch`, no PR-controlled code) and
   trigger an exact-SHA hosted backup when a policy status is stale.
 - `operations-policy-guard-hosted-backup.yml` is the on-demand hosted policy backup
-  (`workflow_dispatch`). `operations-policy-guard.yml` still runs on `pull_request`.
+  (`workflow_dispatch`). `operations-policy-guard.yml` still runs on `pull_request`: its
+  contract-report job runs on every PR, while its blocking policy suite runs only for fork PRs
+  and manual recovery, because `COM2 full policy` owns the same-repository verdict.
 
 ## Dated record: the COM2-primary pilot (superseded, retained as history)
 

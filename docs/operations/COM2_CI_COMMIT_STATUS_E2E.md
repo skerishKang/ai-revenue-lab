@@ -20,7 +20,7 @@ How the one required status check is produced and how to read it, verified again
 
 ```text
 push to PR branch
-→ com2-pr-policy-trigger.yml        (pull_request, hosted, no checkout)  → trusted PR event
+→ operations-policy-guard.yml       (pull_request, hosted, no PR code)   → trusted PR event + contract report
 → com2-pr-auto-sandbox.yml          (workflow_run, hosted ubuntu-24.04)   → offline container policy suite
 → POST /statuses/<exact head sha>   context "COM2 full policy"
 → ruleset "PADIEM COM2 policy gate" reads that context and gates the merge
@@ -31,8 +31,9 @@ run's success does not carry over; the sandbox re-resolves the still-open PR and
 
 ## Reading a run
 
-- `COM2 policy dispatch` success proves only that the trusted PR event was emitted. It is not the
-  policy suite result and must not be reported as one.
+- The guard run's success proves only that the trusted PR event was emitted and the contract
+  report ran. It is not the policy suite result and must not be reported as one; the former
+  `COM2 policy dispatch` echo check was removed in `#6901` for exactly that reason.
 - The suite verdict is the job in `com2-pr-auto-sandbox.yml`; the `pending` → `success` transition
   on the context is the acceptance signal.
 - COM2 browser canaries publish **different**, non-required contexts (for example
