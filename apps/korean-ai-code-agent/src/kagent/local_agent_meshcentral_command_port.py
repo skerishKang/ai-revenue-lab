@@ -942,9 +942,26 @@ class MeshCentralCliCommandPort:
         host_tag: str | None = None,
         process_lane: Any = None,
         process_lane_enabled: bool | None = None,
+        run_as_user: bool = False,
+        run_as_user_only: bool = False,
     ) -> None:
         if not callable(command_runner):
             raise ContractError("meshcentral command requires an injected command runner")
+        # #7065: the agent runs as a Windows service (LocalSystem) unless the run is
+        # asked for the signed-in user. Default off keeps today's argv byte-for-byte;
+        # a deployment opts in through the environment below.
+        #
+        # Measured limit, stated so nobody reads an enabled flag as a promise:
+        # MeshCentral's own issue tracker records that on Windows "run as user" is
+        # ignored and the command still runs as ``nt authority\system``
+        # (Ylianst/MeshCentral#4949, #6430). The flag is passed through as the client
+        # documents it (``--runasuser``: try the logged-in user, fall back to the
+        # agent; ``--runasuseronly``: refuse if that is impossible); whether the PC
+        # honours it is the agent's answer, not this module's claim.
+        if not isinstance(run_as_user, bool) or not isinstance(run_as_user_only, bool):
+            raise ContractError("the run-as-user flags must be booleans")
+        self._run_as_user = run_as_user or run_as_user_only
+        self._run_as_user_only = run_as_user_only
         # The agent's own process verbs, when a deployment supplies the socket for them
         # (`local_agent_meshcentral_process_port`). None, or the flag off, means the
         # terminal stop below is what runs - which is today's shipped behaviour.
@@ -1052,8 +1069,17 @@ class MeshCentralCliCommandPort:
             "--id", node_ref.strip(),
             "--powershell",
             "--run", wrapped,
-            "--reply",
         ]
+        # #7065. The envelope below is PowerShell text, so ``--powershell`` is not a
+        # caller choice: the ``shell`` a tool asks for (powershell/cmd/bash) is
+        # already carried INSIDE that text as ``$env:PADIEM_MCP_SHELL`` and dispatched
+        # by the script itself (``mcp_gateway_shell.build_pc_shell_command``). Dropping
+        # this flag would hand PowerShell syntax to cmd.exe and break every command.
+        if self._run_as_user:
+            argv.append("--runasuser")
+        if self._run_as_user_only:
+            argv.append("--runasuseronly")
+        argv.append("--reply")
         password = self._password_provider()
         if not isinstance(password, str) or not password or "\n" in password or "\r" in password:
             raise MeshCentralCommandRefused(
