@@ -23,6 +23,7 @@ for _p in (
 import importlib
 import json
 import os
+from collections.abc import Iterator
 from pathlib import Path
 
 import httpx
@@ -59,6 +60,29 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
     for item in items:
         module = Path(str(item.fspath)).name
         item.add_marker(getattr(pytest.mark, _MODEL_PATH_MARKERS.get(module, _DEFAULT_MODEL_PATH_MARKER)))
+
+
+@pytest.fixture(autouse=True)
+def _restore_process_environment() -> Iterator[None]:
+    """Undo every direct ``os.environ`` write a test leaves behind.
+
+    #7042 CI: a test that called ``build_app()`` let
+    ``app.local_cpython._ensure_session_secret`` write
+    ``PADIEM_CHAT_SESSION_SECRET`` straight into ``os.environ``. ``monkeypatch``
+    only undoes its own ``setenv`` calls, so the next test compared Settings
+    against a secret it never set. Each test now starts from the environment
+    the previous test received.
+    """
+    before = dict(os.environ)
+    try:
+        yield
+    finally:
+        for name in list(os.environ):
+            if name not in before:
+                del os.environ[name]
+        for name, value in before.items():
+            if os.environ.get(name) != value:
+                os.environ[name] = value
 
 
 def _attach_reviewed_browser_origin(app: object, request: httpx.Request) -> None:
