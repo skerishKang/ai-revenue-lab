@@ -478,3 +478,69 @@ def test_ppt_export_pdf_with_broken_xref_converts_all_ten_pages() -> None:
     result = convert(source.read_bytes())
     assert result.page_count == 10
     assert len(result.markdown) > 0
+
+
+# --- #5568 field follow-up: two-column reading order -------------------------
+
+TWO_COL_TITLE = "A Full Width Title"
+TWO_COL_CAPTION = "A caption line that spans the whole page width"
+LEFT_ROWS = [f"left row {i:02d} of the first column" for i in range(1, 11)]
+RIGHT_ROWS = [f"right row {i:02d} of the second column" for i in range(1, 11)]
+
+
+def two_column_pdf() -> bytes:
+    """Left and right column rows share one baseline, like real two-column PDFs.
+
+    Each column carries three paragraphs (a wider gap between them), so the
+    fixture mirrors the whitespace a real column layout uses.
+    """
+    ops = [
+        TextOp(TWO_COL_TITLE, 180, 800, size=14),
+        TextOp(TWO_COL_CAPTION, 54, 760),
+    ]
+    for i, (left, right) in enumerate(zip(LEFT_ROWS, RIGHT_ROWS)):
+        gap = 24 if i in (4, 8) else 12
+        baseline = 700 - i * 12 - (24 if i > 7 else 12 if i > 3 else 0)
+        ops.append(TextOp(left, 54, baseline))
+        ops.append(TextOp(right, 316, baseline))
+    return build_pdf([ops])
+
+
+def test_two_column_rows_are_read_column_by_column() -> None:
+    md = convert(two_column_pdf()).markdown
+    for row in LEFT_ROWS + RIGHT_ROWS:
+        assert row in md
+    # The left column's rows all come before the right column's first row.
+    assert max(md.index(row) for row in LEFT_ROWS) < min(
+        md.index(row) for row in RIGHT_ROWS
+    )
+    # The full-width caption stays above the body it precedes.
+    assert md.index(TWO_COL_CAPTION) < md.index(LEFT_ROWS[0])
+    # Reading order is the invariant: every row appears exactly once, the
+    # left column's rows before the right column's, and a line that continues
+    # from the left column's end into the right column's start keeps that
+    # order inside the line. No row ever jumps ahead of an earlier one.
+    sequence: list[str] = []
+    for line in md.splitlines():
+        present = [row for row in LEFT_ROWS + RIGHT_ROWS if row in line]
+        positions = [line.index(row) for row in present]
+        assert positions == sorted(positions), line
+        sequence.extend(present)
+    assert sequence == LEFT_ROWS + RIGHT_ROWS, sequence
+    # Shared-baseline column rows must never be re-emitted as a fake table.
+    assert "|" not in md
+
+
+def test_one_column_customer_pdf_output_is_invariant() -> None:
+    """The two-column plan must leave one-column documents byte-identical."""
+    source = Path(__file__).resolve().parents[3].joinpath(
+        "docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Master_Proposal_10p.pdf"
+    )
+    if not source.exists():
+        pytest.skip("Customer package PDF is not in this checkout.")
+    result = convert(source.read_bytes())
+    assert result.page_count == 10
+    assert (
+        hashlib.sha256(result.markdown.encode("utf-8")).hexdigest()
+        == "bd54838274ca532eaed449d3911e7be339396d247e18b49a875848efd27f6628"
+    )
