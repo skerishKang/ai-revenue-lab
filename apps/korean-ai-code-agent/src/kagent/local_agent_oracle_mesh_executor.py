@@ -2485,6 +2485,9 @@ def make_oracle_mesh_executor(
     pairing_provider: Optional[Callable[[], Any]] = None,
     presence_round_begin: Optional[Callable[[], None]] = None,
     read_single_roundtrip: bool = True,
+    # #7065: opt-in run-as-user. False keeps the argv an existing host already sends.
+    run_as_user: bool = False,
+    run_as_user_only: bool = False,
 ) -> OracleMeshExecutor:
     """Build the executor with the REAL official meshctrl read port.
 
@@ -2546,6 +2549,10 @@ def make_oracle_mesh_executor(
         # #4139: the command lane reads the child incrementally so a runaway
         # command can never be buffered whole before it is size-checked.
         popen_factory=_popen,
+        # #7065: off unless the deployment asks for it, so the argv an existing
+        # host sends is unchanged.
+        run_as_user=run_as_user,
+        run_as_user_only=run_as_user_only,
     )
     # The desktop lane reuses the SAME operator credential and private tunnel
     # over the official relay protocol; only the wire changes (MSC frames),
@@ -2868,6 +2875,14 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             pairing_provider=pairing_provider,
             presence_round_begin=beat.begin_round if beat is not None else None,
             read_single_roundtrip=_single_roundtrip_enabled(env),
+            # #7065: opt-in only. The connector keeps running its commands as the
+            # agent account (LocalSystem on Windows) unless the deployment says
+            # otherwise, and an enabled flag is a request the PC may still ignore
+            # on Windows (see the port's note).
+            run_as_user=str(env.get("PADIEM_MESH_RUN_AS_USER", "")).strip().lower()
+            in {"1", "true"},
+            run_as_user_only=str(env.get("PADIEM_MESH_RUN_AS_USER_ONLY", "")).strip().lower()
+            in {"1", "true"},
         )
         idle = max(1, min(int(env.get("ORACLE_MESH_POLL_SECONDS", "5") or 5), 300))
         # The idle ceiling is readable for the operator who wants to weigh the old

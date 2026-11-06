@@ -28,11 +28,12 @@ async function post(url, headers, body, transport, timeoutMs) {
       const response=await fetch(new Request(url,{
         method:'POST',headers,body,redirect:'manual',signal:controller.signal
       }));
+      const timing=response.headers.get('server-timing')||'';
       let payload;
       try {payload=await response.json();}
       catch {return failed(transport==='com2_p01'?'com2_ai_invalid_response':'ingress_invalid_response',response.status>=400?response.status:502,transport);}
       if(response.status>=300&&response.status<400)return failed('upstream_redirect_rejected',502,transport);
-      return {status:response.status,transport,payload};
+      return {status:response.status,transport,payload,timing};
     })(),timeoutPromise]);
   } catch(error) {
     if(error?.message==='app_ai_timeout'||controller.signal.aborted)
