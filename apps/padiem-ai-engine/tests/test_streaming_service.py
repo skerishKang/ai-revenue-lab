@@ -79,7 +79,7 @@ def progress(text: str = "반가") -> StreamingExecutionEvent:
     )
 
 
-def terminal(answer: str = "반가워요.") -> StreamingExecutionEvent:
+def terminal(answer: str = "반가워요.", *, answer_truncated: bool = False) -> StreamingExecutionEvent:
     return StreamingExecutionEvent(
         delta_content=None,
         answer=answer,
@@ -96,6 +96,7 @@ def terminal(answer: str = "반가워요.") -> StreamingExecutionEvent:
             usage=UsageMetadata(input_tokens=4, output_tokens=3, total_tokens=7),
         ),
         done=True,
+        answer_truncated=answer_truncated,
     )
 
 
@@ -527,3 +528,78 @@ async def test_the_core_stream_runtime_has_a_single_lane_without_the_auto_branch
     assert len(b14.manual_calls) == 1
     assert len(b14.auto_calls) == 0
     assert events[-1].done is True
+
+
+def permission_payload() -> dict:
+    data = valid_payload()
+    data["context_permission_required"] = True
+    data["context_permission"] = {
+        "envelope": {
+            "request_id": "trace-1",
+            "source_quality_gate_applied": False,
+            "policy_hints": ["b61-test"],
+            "candidates": [{
+                "id": "ctx/1", "scope_id": "lovebud", "resource_ref": "doc:1",
+                "provenance": ["test"], "source_quality_selected": True,
+                "user_asserted_permission": False,
+            }],
+        },
+        "boundary": {
+            "allowed_scope_ids": ["lovebud"], "allowed_resource_refs": ["doc:1"],
+            "denied_scope_ids": [], "denied_resource_refs": [], "boundary_available": True,
+            "max_allowed_context": 1, "policy_version": "test:v1",
+        },
+    }
+    return data
+
+
+@pytest.mark.asyncio
+async def test_required_context_permission_without_projection_fails_before_runtime() -> None:
+    data = valid_payload()
+    data["context_permission_required"] = True
+    runtime = FakeRuntime([progress()])
+    service = StreamingEngineService(runtime_factory=lambda app_id: runtime, b14_service_bound=True)
+
+    result = await service.prepare(
+        method="POST", path=STREAM_PATH, content_type="application/json",
+        body=json.dumps(data, ensure_ascii=False).encode(),
+    )
+
+    assert isinstance(result, ServiceResponse)
+    assert result.status_code == 422
+    assert result.body["error"]["code"] == "boundary_unavailable"
+    assert runtime.calls == []
+
+
+@pytest.mark.asyncio
+async def test_context_permission_gates_refs_and_stamps_terminal_diagnostics() -> None:
+    runtime = FakeRuntime([progress(), terminal()])
+    service = StreamingEngineService(runtime_factory=lambda app_id: runtime, b14_service_bound=True)
+
+    prepared = await service.prepare(
+        method="POST", path=STREAM_PATH, content_type="application/json",
+        body=json.dumps(permission_payload(), ensure_ascii=False).encode(),
+    )
+
+    assert isinstance(prepared, PreparedStream)
+    assert "allowed_context_refs=doc:1" in (runtime.calls[0].additional_system_context or "")
+    decoded = [json.loads(line) async for line in service.iter_ndjson(prepared)]
+    assert decoded[0]["event"].get("context_permission") is None
+    diagnostics = decoded[-1]["event"]["context_permission"]
+    assert diagnostics["boundary_disposition"] == "permitted"
+    assert diagnostics["context_allowed_count"] == 1
+
+
+@pytest.mark.asyncio
+async def test_terminal_answer_truncated_rides_the_stream_line() -> None:
+    runtime = FakeRuntime([terminal(answer="잘린 앞부분", answer_truncated=True)])
+    service = StreamingEngineService(runtime_factory=lambda app_id: runtime, b14_service_bound=True)
+
+    prepared = await service.prepare(
+        method="POST", path=STREAM_PATH, content_type="application/json",
+        body=json.dumps(valid_payload(), ensure_ascii=False).encode(),
+    )
+    assert isinstance(prepared, PreparedStream)
+
+    decoded = [json.loads(line) async for line in service.iter_ndjson(prepared)]
+    assert decoded[-1]["event"]["answer_truncated"] is True

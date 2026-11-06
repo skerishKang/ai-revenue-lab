@@ -378,3 +378,86 @@ async def test_a_closed_block_and_an_early_stop_still_return_the_whole_answer():
     ))
     assert result.status_code == 200, result.text
     assert result.json()["answer"].startswith("바울은 다메섹에서")
+
+
+def stream_body(*events, tails=()):
+    lines = [json.dumps({"ok": True, "event": event}, ensure_ascii=False) for event in events]
+    lines.extend(tails)
+    return ("\n".join(lines) + "\n").encode("utf-8")
+
+
+def stream_headers(body):
+    return {**headers(body), "accept": "application/x-ndjson"}
+
+
+def terminal_event(answer, *, extra=None):
+    event = {
+        "delta_content": None, "answer": answer, "finish_reason": "stop", "route": {},
+        "metadata": {"app_id": "b61", "duration_ms": 1234, "usage": {"output_tokens": 12}},
+        "done": True,
+        "context_permission": {
+            "boundary_disposition": "permitted", "context_candidate_count": 1,
+            "context_allowed_count": 1, "context_filtered_count": 0,
+            "filter_reason_codes": [], "policy_version": "test:v1",
+        },
+    }
+    event.update(extra or {})
+    return event
+
+
+@pytest.mark.asyncio
+async def test_stream_accept_publishes_delta_frames_in_order_then_one_done_frame():
+    body_events = stream_body(
+        {"delta_content": "사울이", "answer": None, "finish_reason": None, "route": {},
+         "metadata": {"app_id": "b61"}, "done": False},
+        {"delta_content": " 빛을 보았다.", "answer": None, "finish_reason": None, "route": {},
+         "metadata": {"app_id": "b61"}, "done": False},
+        terminal_event("사울이 빛을 보았다."),
+    )
+    upstream = httpx.Response(200, content=body_events, headers={"content-type": "application/x-ndjson"})
+    body = encoded(payload())
+    result, seen = await request(response=upstream, head=stream_headers(body))
+
+    assert result.status_code == 200, result.text
+    assert result.headers["content-type"].startswith("application/x-ndjson")
+    assert "server-timing" not in result.headers
+    frames = [json.loads(line) for line in result.text.splitlines()]
+    assert [frame["type"] for frame in frames] == ["delta", "delta", "done"]
+    assert frames[0]["text"] == "사울이"
+    assert frames[1]["text"] == " 빛을 보았다."
+    assert frames[2]["answer"] == "사울이 빛을 보았다."
+    assert frames[2]["context_permission"]["context_allowed_count"] == 1
+    assert frames[2]["timing"]["engine"] == 1234
+
+
+@pytest.mark.asyncio
+async def test_a_rejected_stream_request_is_a_bounded_json_error_before_200():
+    upstream = httpx.Response(422, json={
+        "ok": False, "error": {"code": "boundary_unavailable", "message": "no boundary"},
+    }, headers={"content-type": "application/json"})
+    body = encoded(payload())
+    result, _ = await request(response=upstream, head=stream_headers(body))
+
+    assert result.status_code == 422
+    assert result.json()["error"]["code"] == "boundary_unavailable"
+    assert "application/x-ndjson" not in result.headers["content-type"]
+
+
+@pytest.mark.asyncio
+async def test_a_truncated_terminal_event_ends_the_stream_with_a_retryable_error():
+    body_events = stream_body(
+        {"delta_content": "잘린", "answer": None, "finish_reason": None, "route": {},
+         "metadata": {"app_id": "b61"}, "done": False},
+        terminal_event("잘린 앞부분", extra={"answer_truncated": True}),
+    )
+    upstream = httpx.Response(200, content=body_events, headers={"content-type": "application/x-ndjson"})
+    body = encoded(payload())
+    result, _ = await request(response=upstream, head=stream_headers(body))
+
+    assert result.status_code == 200
+    frames = [json.loads(line) for line in result.text.splitlines()]
+    assert frames[0]["type"] == "delta"
+    assert frames[-1]["type"] == "error"
+    assert frames[-1]["error"]["code"] == "answer_incomplete"
+    assert frames[-1]["error"]["retryable"] is True
+    assert not any(frame.get("type") == "done" for frame in frames)

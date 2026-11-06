@@ -10,14 +10,14 @@ from dataclasses import dataclass
 import json
 import re
 import time
-from typing import Any, Mapping
+from typing import Any, AsyncIterator, Mapping
 
 import httpx
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, StreamingResponse
 from starlette.routing import Route
 
 from padiem_ai_engine_client import (
-    ENGINE_EXECUTE_PATH, PadiemAiEngineClient, PadiemAiEngineClientError,
+    ENGINE_EXECUTE_PATH, EngineRunStream, PadiemAiEngineClient, PadiemAiEngineClientError,
 )
 from .local_engine_transport import (
     LocalEngineHttpTransport, LocalEngineTransportError, MAX_ENGINE_REQUEST_BYTES,
@@ -168,6 +168,17 @@ def _error(code: str, status: int, retryable: bool | None = None) -> JSONRespons
     )
 
 
+def _frame(payload: Mapping[str, Any]) -> str:
+    return json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n"
+
+
+def _error_frame(code: str, retryable: bool | None = None) -> str:
+    error: dict[str, Any] = {"code": code}
+    if retryable is not None:
+        error["retryable"] = bool(retryable)
+    return _frame({"ok": False, "type": "error", "error": error})
+
+
 class AppsAIService:
     def __init__(self, env: Mapping[str, Any], *, client: httpx.AsyncClient | None = None, clock=time.time):
         self.policies = policies_from_env(env)
@@ -189,9 +200,10 @@ class AppsAIService:
         started = time.perf_counter()
         timing: dict[str, float | int] = {}
         response = await self._handle(request, timing)
-        response.headers["Server-Timing"] = _server_timing(
-            started, timing.get("p01"), timing.get("engine"),
-        )
+        if not isinstance(response, StreamingResponse):
+            response.headers["Server-Timing"] = _server_timing(
+                started, timing.get("p01"), timing.get("engine"),
+            )
         return response
 
     async def _handle(self, request, timing: dict[str, float | int]):
@@ -246,6 +258,12 @@ class AppsAIService:
         engine = self._engines.get(subject)
         if engine is None:
             return _error("p01_not_configured", 503)
+        wants_stream = any(
+            part.split(";", 1)[0].strip().lower() == "application/x-ndjson"
+            for part in request.headers.get("accept", "").split(",")
+        )
+        if wants_stream:
+            return await self._open_stream(engine, policy, payload, timing, tokens)
         try:
             p01_started = time.perf_counter()
             try:
@@ -273,6 +291,113 @@ class AppsAIService:
             return _error("answer_incomplete", 502, retryable=True)
         body["answer"] = visible
         return JSONResponse(body, headers={"cache-control": "no-store"})
+
+    async def _open_stream(
+        self,
+        engine: PadiemAiEngineClient,
+        policy: AppAIPolicy,
+        payload: Mapping[str, Any],
+        timing: dict[str, float | int],
+        tokens: int,
+    ):
+        """Commit NDJSON only after P01 accepted the full request.
+
+        P01 primes its first event before answering 200, so every pre-stream
+        failure is still a bounded JSON error the caller can fall back from.
+        """
+        started = time.perf_counter()
+        try:
+            stream = await engine.stream_run(
+                {key: value for key, value in payload.items() if key != "app_id"}
+            )
+        except PadiemAiEngineClientError as error:
+            timing["p01"] = (time.perf_counter() - started) * 1000.0
+            status = error.status if isinstance(error.status, int) and 400 <= error.status <= 599 else 400
+            if error.code in {"invalid_engine_response", "engine_http_error"} and status < 500:
+                status = 502
+            return _error(error.code, status)
+        except (LocalEngineTransportError, httpx.HTTPError):
+            timing["p01"] = (time.perf_counter() - started) * 1000.0
+            return _error("p01_unavailable", 503)
+        timing["p01"] = (time.perf_counter() - started) * 1000.0
+        return StreamingResponse(
+            self._stream_frames(stream, policy, timing, tokens, started),
+            media_type="application/x-ndjson",
+            headers={"cache-control": "no-store", "x-content-type-options": "nosniff"},
+        )
+
+    async def _stream_frames(
+        self,
+        stream: EngineRunStream,
+        policy: AppAIPolicy,
+        timing: dict[str, float | int],
+        tokens: int,
+        started: float,
+    ) -> AsyncIterator[str]:
+        """Publish only visible answer text, then one validated terminal frame."""
+        terminal: dict[str, Any] | None = None
+        try:
+            async for event in stream.events:
+                if not isinstance(event, Mapping):
+                    yield _error_frame("invalid_engine_response")
+                    return
+                delta = event.get("delta_content")
+                if isinstance(delta, str) and delta:
+                    yield _frame({"ok": True, "type": "delta", "text": delta})
+                if event.get("done") is True:
+                    terminal = dict(event)
+                    break
+        except PadiemAiEngineClientError as error:
+            retryable = error.retryable or error.status is None or error.status >= 500
+            yield _error_frame(error.code, retryable=retryable)
+            return
+        except (LocalEngineTransportError, httpx.HTTPError):
+            yield _error_frame("p01_unavailable", retryable=True)
+            return
+        except Exception:
+            yield _error_frame("engine_stream_failed", retryable=True)
+            return
+        finally:
+            close = getattr(stream.events, "aclose", None)
+            if callable(close):
+                try:
+                    await close()
+                except Exception:
+                    pass
+
+        if terminal is None:
+            yield _error_frame("engine_stream_incomplete", retryable=True)
+            return
+        answer = terminal.get("answer")
+        if not isinstance(answer, str) or not answer:
+            yield _error_frame("invalid_engine_response")
+            return
+        visible, cut_here = strip_thought_blocks_reported(answer)
+        reason = _answer_truncation_reason(terminal, visible, cut_here, tokens)
+        if reason is not None or not visible:
+            _journal_answer_incomplete(
+                policy.name, reason or "empty_visible_answer", visible, terminal
+            )
+            yield _error_frame("answer_incomplete", retryable=True)
+            return
+        metadata = terminal.get("metadata") if isinstance(terminal.get("metadata"), Mapping) else {}
+        duration = metadata.get("duration_ms")
+        if type(duration) is int and duration >= 0:
+            timing["engine"] = duration
+        timing["chat"] = (time.perf_counter() - started) * 1000.0
+        yield _frame({
+            "ok": True,
+            "type": "done",
+            "answer": visible,
+            "context_permission": terminal.get("context_permission"),
+            "finish_reason": terminal.get("finish_reason"),
+            "metadata": dict(metadata),
+            "timing": {
+                key: round(timing[key])
+                for key in ("chat", "p01", "engine")
+                if key in timing
+            },
+        })
 
 
 def create_apps_ai_service(env, *, client=None, clock=time.time):
