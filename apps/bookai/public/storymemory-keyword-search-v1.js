@@ -42,19 +42,36 @@ function tokenize(value){
   }
   return out;
 }
+/* Korean writes words and particles without a space between them, so a term that
+   continues straight into a grammatical particle is still a whole word. Reading
+   only the raw character made every agglutinative form a mid-word hit and scored
+   it below the spaced form of the same word. */
+function koParticleAt(low, end){
+  for(var i=0;i<KO_PARTICLES.length;i++){
+    var p=KO_PARTICLES[i];
+    if(low.substr(end,p.length)===p) return true;
+  }
+  return false;
+}
+/* The boundary weight answers one question per passage: is the term used here as a
+   whole word? Accumulating it per occurrence let a passage that repeats the word
+   outrank an earlier passage in the canon, so the strongest single occurrence is
+   what classifies the passage. */
 function boundaryWeight(text,term){
-  var low=String(text||'').toLowerCase(); var w=0; var pos=0;
+  var low=String(text||'').toLowerCase(); var w=null; var pos=0;
   while(true){ var idx=low.indexOf(term,pos); if(idx===-1)break;
     var before=idx>0?low[idx-1]:' ';
     var afterIdx=idx+term.length;
     var after=afterIdx<low.length?low[afterIdx]:' ';
     var boundaryBefore=/[\s(?!.,;:]/.test(before)||before===' ';
-    var boundaryAfter=/[\s?!.,;:)]/.test(after);
-    if(boundaryAfter)w+=8; else if(after!==' ')w-=4;
-    if(boundaryBefore)w+=2;
+    var boundaryAfter=/[\s?!.,;:)]/.test(after)||(/[가-힣]/.test(after)&&koParticleAt(low,afterIdx));
+    var occ=0;
+    if(boundaryAfter)occ+=8; else if(after!==' ')occ-=4;
+    if(boundaryBefore)occ+=2;
+    if(w===null||occ>w)w=occ;
     pos=idx+1;
   }
-  return w;
+  return w===null?0:w;
 }
 
 function indexBlocksRange(blocks,postings,start,end){
@@ -258,6 +275,8 @@ function staticKeywordSearch(query, opts){
     if(s>0) rows.push({block:block, score:s});
   });
   if(!rows.length) return {status:'NO_RESULT', query:query, results:[], truncated:false, total:0};
+  /* ordinal is the passage sequence within the work, so for the bible it is canon
+     order: equal scores must read 창세기→계시록 rather than by locator text. */
   rows.sort(function(a,b){ var d=b.score-a.score; if(d!==0) return d; d=a.block.ordinal-b.block.ordinal; if(d!==0) return d; return String(a.block.canonical_locator).localeCompare(String(b.block.canonical_locator)); });
   var total=rows.length;
   var truncated=total>limit;
