@@ -34,3 +34,23 @@ def pytest_configure(config) -> None:
     basetemp = _windows_basetemp()
     basetemp.mkdir(parents=True, exist_ok=True)
     config.option.basetemp = str(basetemp)
+
+
+# 261106 · the subject→product_user reverse-lookup cache added in
+# perf/identity-resolve-subject-261106 is process-wide on purpose (it removes
+# one Control-Plane DO RPC per repeated request). Every test therefore starts
+# with an empty cache, so suites never observe each other's entries and
+# response-shape tests still reach the RPC path.
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def _fresh_identity_subject_cache():
+    try:
+        from app.control_plane_identity_worker import _product_user_cache
+    except Exception:
+        yield
+        return
+    _product_user_cache.clear()
+    yield
+    _product_user_cache.clear()
