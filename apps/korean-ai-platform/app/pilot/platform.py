@@ -413,8 +413,16 @@ _JWT_VALUE = re.compile(
 _OPAQUE_LONG_VALUE = re.compile(r"\b[A-Za-z0-9_-]{32,}\b")
 
 
-def _safe_provider_error_summary(body: bytes) -> str:
+def _safe_provider_error_summary(
+    body: bytes, *, provider_id: str, status: int,
+) -> str:
     """Return a bounded provider error excerpt with common credentials masked."""
+    if provider_id == "tokenharbor" or (
+        status == 429 and provider_id in {"agnes-ai", "experiential"}
+    ):
+        # These routes have established body-blind diagnostics; their safe
+        # metadata classifiers already emit the allowed error summary.
+        return "[omitted by diagnostic policy]"
     raw = body.decode("utf-8", "replace")
 
     def scrub_text(value: str) -> str:
@@ -1103,7 +1111,11 @@ async def stream_platform_chat_completions(
                             "upstream_http_error status=%d code=%s body_summary=%s",
                             response.status_code,
                             exc.code,
-                            _safe_provider_error_summary(error_bytes),
+                            _safe_provider_error_summary(
+                                error_bytes,
+                                provider_id=platform_provider_id,
+                                status=response.status_code,
+                            ),
                         )
                         raise
 
