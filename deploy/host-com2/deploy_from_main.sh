@@ -697,6 +697,63 @@ verify_staged_source() {
     || fail SOURCE_PERMISSIONS_STAGED_P01
 }
 
+# Move the production checkout to $resolved and keep $previous_dir/$old as the
+# rollback source. The script-only path uses this too: the next plan reads this
+# checkout, so a change to the script itself has to land here before it can act.
+move_checkout_to_target() {
+  if [[ -n $("$git_bin" -C "$ops_checkout" status --porcelain --untracked-files=no) ]]; then
+    fail CHECKOUT_DIRTY
+  fi
+
+  # Rollback sources must be traversable by the service but not writable by it.
+  [[ ! -L $previous_dir && ! -L $previous_dir/$old ]] || fail PREVIOUS_CHECKOUT_INVALID
+  install -d -m 0755 -- "$previous_dir" || fail PREVIOUS_DIR_UNWRITABLE
+  if [[ ! -d $previous_dir/$old ]]; then
+    (umask 022; "$git_bin" -C "$ops_checkout" worktree add --detach --quiet \
+      "$previous_dir/$old" "$old") || fail PREVIOUS_CHECKOUT_FAILED
+  fi
+  if [[ ${EUID} -eq 0 ]]; then
+    chown root:root "$previous_dir" || fail PREVIOUS_CHECKOUT_FAILED
+    chown -R root:root "$previous_dir/$old" || fail PREVIOUS_CHECKOUT_FAILED
+  fi
+  find "$previous_dir/$old" -type d -exec chmod a+rx,go-w {} + || fail PREVIOUS_CHECKOUT_FAILED
+  find "$previous_dir/$old" -type f -exec chmod a+r,go-w {} + || fail PREVIOUS_CHECKOUT_FAILED
+  assert_service_readable PREVIOUS "$previous_dir/$old" "$read_check_user" \
+    || fail SOURCE_PERMISSIONS_PREVIOUS
+  say "PREVIOUS_CHECKOUT=$previous_dir/$old"
+
+  (umask 022; "$git_bin" -C "$ops_checkout" checkout --detach --quiet "$resolved") \
+    || fail CHECKOUT_MOVE_FAILED
+  # Older deploys may already have left tracked files at 0600. Restrict the
+  # repair to tracked files and their directories; never expose untracked envs.
+  "$python_bin" - "$ops_checkout" "$git_bin" <<'PY' || fail CHECKOUT_PERMISSIONS_FAILED
+import os, stat, subprocess, sys
+root = os.path.abspath(sys.argv[1])
+files = subprocess.check_output([sys.argv[2], "-C", root, "ls-files", "-z"]).split(b"\0")
+dirs = {root}
+for name in files:
+    if not name:
+        continue
+    path = os.path.join(root, os.fsdecode(name))
+    try:
+        mode = os.lstat(path).st_mode
+    except FileNotFoundError:
+        continue
+    if stat.S_ISREG(mode):
+        os.chmod(path, stat.S_IMODE(mode) | 0o444)
+    parent = os.path.dirname(path)
+    while parent.startswith(root + os.sep) and parent not in dirs:
+        if os.path.islink(parent):
+            raise RuntimeError("tracked directory is a symlink")
+        dirs.add(parent)
+        parent = os.path.dirname(parent)
+for path in dirs:
+    mode = os.stat(path).st_mode
+    os.chmod(path, stat.S_IMODE(mode) | 0o555)
+PY
+  say "CHECKOUT=$ops_checkout"
+}
+
 deploy_chat() {
   local before_active=0
   if unit_running_or_restarting "$CHAT_UNIT"; then before_active=1; fi
@@ -1649,6 +1706,7 @@ run_deploy() {
   local mismatch=0 p01_mismatch=0 excluded_test=0 excluded_docs=0 excluded_example=0 excluded_meta=0 excluded_unmapped=0
   local executor_mismatch=0 executor_code=0
   local chat_mismatch=0 chat_code=0 b14_mismatch=0 b14_code=0
+  local deploy_script_changed=0
   declare -A wanted=([chat]=0 [p01]=0 [b14]=0 [queue]=0 [executor]=0)
   declare -A reason_files=([chat]=0 [p01]=0 [b14]=0 [queue]=0 [executor]=0)
   declare -A result=([chat]=SKIP [p01]=SKIP [b14]=SKIP [queue]=SKIP [executor]=SKIP)
@@ -1743,6 +1801,9 @@ run_deploy() {
   while IFS= read -r line; do
     [[ -n $line ]] || continue
     say "CHANGED=$line"
+    if [[ $line == deploy/host-com2/deploy_from_main.sh ]]; then
+      deploy_script_changed=1
+    fi
     if reason=$(deploy_path_exclusion "$line"); then
       case "$reason" in
         TEST_DIRECTORY|TEST_FILE) excluded_test=$((excluded_test + 1)) ;;
@@ -1860,8 +1921,21 @@ run_deploy() {
   fi
 
   # Test/docs-only and unrelated changes must not move the production checkout
-  # or mirrored source tree when no service was selected.
+  # or mirrored source tree when no service was selected. The deploy script is
+  # the exception: the next plan reads this checkout, so until it moves the host
+  # keeps planning with the old script and a fix to the script itself never
+  # reaches production (11-07: #7055's running-code comparison stayed unused).
   if [[ -z $services ]]; then
+    if (( deploy_script_changed )); then
+      if (( apply )); then
+        move_checkout_to_target
+        say 'CHECKOUT_ONLY=YES reason=DEPLOY_SCRIPT_CHANGED'
+        say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP'
+        return 0
+      fi
+      say 'CHECKOUT_ONLY=WOULD reason=DEPLOY_SCRIPT_CHANGED'
+      printf '적용하면 체크아웃만 새 SHA로 넘어가고, 다음 계획부터 새 스크립트가 쓰입니다.\n'
+    fi
     say 'NO_SERVICE_CHANGES=YES'
     say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP'
     return 0
@@ -1887,57 +1961,7 @@ run_deploy() {
 
   ensure_target_units_ready "$services"
 
-  if [[ -n $("$git_bin" -C "$ops_checkout" status --porcelain --untracked-files=no) ]]; then
-    fail CHECKOUT_DIRTY
-  fi
-
-  # Rollback sources must be traversable by the service but not writable by it.
-  [[ ! -L $previous_dir && ! -L $previous_dir/$old ]] || fail PREVIOUS_CHECKOUT_INVALID
-  install -d -m 0755 -- "$previous_dir" || fail PREVIOUS_DIR_UNWRITABLE
-  if [[ ! -d $previous_dir/$old ]]; then
-    (umask 022; "$git_bin" -C "$ops_checkout" worktree add --detach --quiet \
-      "$previous_dir/$old" "$old") || fail PREVIOUS_CHECKOUT_FAILED
-  fi
-  if [[ ${EUID} -eq 0 ]]; then
-    chown root:root "$previous_dir" || fail PREVIOUS_CHECKOUT_FAILED
-    chown -R root:root "$previous_dir/$old" || fail PREVIOUS_CHECKOUT_FAILED
-  fi
-  find "$previous_dir/$old" -type d -exec chmod a+rx,go-w {} + || fail PREVIOUS_CHECKOUT_FAILED
-  find "$previous_dir/$old" -type f -exec chmod a+r,go-w {} + || fail PREVIOUS_CHECKOUT_FAILED
-  assert_service_readable PREVIOUS "$previous_dir/$old" "$read_check_user" \
-    || fail SOURCE_PERMISSIONS_PREVIOUS
-  say "PREVIOUS_CHECKOUT=$previous_dir/$old"
-
-  (umask 022; "$git_bin" -C "$ops_checkout" checkout --detach --quiet "$resolved") \
-    || fail CHECKOUT_MOVE_FAILED
-  # Older deploys may already have left tracked files at 0600. Restrict the
-  # repair to tracked files and their directories; never expose untracked envs.
-  "$python_bin" - "$ops_checkout" "$git_bin" <<'PY' || fail CHECKOUT_PERMISSIONS_FAILED
-import os, stat, subprocess, sys
-root = os.path.abspath(sys.argv[1])
-files = subprocess.check_output([sys.argv[2], "-C", root, "ls-files", "-z"]).split(b"\0")
-dirs = {root}
-for name in files:
-    if not name:
-        continue
-    path = os.path.join(root, os.fsdecode(name))
-    try:
-        mode = os.lstat(path).st_mode
-    except FileNotFoundError:
-        continue
-    if stat.S_ISREG(mode):
-        os.chmod(path, stat.S_IMODE(mode) | 0o444)
-    parent = os.path.dirname(path)
-    while parent.startswith(root + os.sep) and parent not in dirs:
-        if os.path.islink(parent):
-            raise RuntimeError("tracked directory is a symlink")
-        dirs.add(parent)
-        parent = os.path.dirname(parent)
-for path in dirs:
-    mode = os.stat(path).st_mode
-    os.chmod(path, stat.S_IMODE(mode) | 0o555)
-PY
-  say "CHECKOUT=$ops_checkout"
+  move_checkout_to_target
 
   # Nothing above touched a service; from here the host is being changed, so the
   # mirror and its permissions must already be proven.

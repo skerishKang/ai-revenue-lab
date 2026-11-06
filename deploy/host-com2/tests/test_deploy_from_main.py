@@ -307,6 +307,12 @@ CHANGES.update({
         "apps/korean-ai-platform/tests/test_5784_b14_local_runtime.py",
         "test fixture\n",
     ),
+    # The deploy script itself has no service mapping: the plan selects nothing
+    # for it, which is exactly the case that used to strand the checkout.
+    "deploy_script_only": (
+        "deploy/host-com2/deploy_from_main.sh",
+        "#!/usr/bin/env bash\n# script-only change\n",
+    ),
 })
 
 
@@ -1105,6 +1111,7 @@ class DeployScopeScenarioTest(DeployHarness):
         scenarios = {
             "test_code_plus_test_redeploys_and_counts_only_code": "code_and_test",
             "test_documentation_only_skips": "docs_only",
+            "test_documentation_only_apply_keeps_the_checkout_where_it_is": "docs_only",
             "test_runtime_config_lock_requirements_and_units_select_services": "runtime_config",
             "test_a_common_systemd_policy_change_selects_all_services": "common_unit_policy",
             "test_a_shared_core_change_selects_chat_and_p01": "shared_runtime",
@@ -1157,6 +1164,15 @@ class DeployScopeScenarioTest(DeployHarness):
         self.assertIn("COM2_DEPLOY_DECISION_CHAT=SKIP reason_files=0", output)
         self.assertIn("COM2_DEPLOY_NO_SERVICE_CHANGES=YES", output)
 
+    def test_documentation_only_apply_keeps_the_checkout_where_it_is(self) -> None:
+        result = self._run_apply()
+        output = result.stdout + result.stderr
+        self.assertEqual(result.returncode, 0, output)
+        self.assertIn("COM2_DEPLOY_NO_SERVICE_CHANGES=YES", output)
+        self.assertNotIn("CHECKOUT_ONLY", output)
+        self.assertEqual(self._head(), self.first)
+        self.assertEqual(self._calls(), [])
+
     def test_runtime_config_lock_requirements_and_units_select_services(self) -> None:
         output = self._dry_run()
         for service, count in (("CHAT", 2), ("P01", 1), ("B14", 1), ("QUEUE", 1)):
@@ -1200,6 +1216,61 @@ class DeployScopeScenarioTest(DeployHarness):
                 f"COM2_DEPLOY_DECISION_{service}=SKIP reason_files=0",
                 output,
             )
+
+
+class CheckoutOnlyScenarioTest(DeployHarness):
+    """A change to the deploy script alone still has to reach the production checkout."""
+
+    scenario = "deploy_script_only"
+
+    def _dry_run(self) -> str:
+        result = self._run_main(
+            self.second, "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
+        )
+        output = result.stdout + result.stderr
+        self.assertEqual(result.returncode, 0, output)
+        return output
+
+    def test_a_script_only_apply_moves_the_checkout_and_touches_no_service(self) -> None:
+        result = self._run_apply()
+        output = result.stdout + result.stderr
+        self.assertEqual(result.returncode, 0, output)
+        self.assertIn(
+            "COM2_DEPLOY_CHANGED=deploy/host-com2/deploy_from_main.sh", output
+        )
+        self.assertIn(
+            "COM2_DEPLOY_CHECKOUT_ONLY=YES reason=DEPLOY_SCRIPT_CHANGED", output
+        )
+        self.assertIn(
+            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP",
+            output,
+        )
+        self.assertEqual(self._head(), self.second)
+        # The rollback snapshot is what the next plan reads the old commit from.
+        self.assertIn(
+            f"COM2_DEPLOY_PREVIOUS_CHECKOUT={self.previous.as_posix()}/{self.first}",
+            output,
+        )
+        self.assertTrue((self.previous / self.first).is_dir())
+        self.assertEqual(
+            [
+                call for call in self._calls()
+                if call.startswith(("systemctl start", "systemctl stop", "install "))
+            ],
+            [],
+        )
+
+    def test_a_script_only_plan_reports_the_checkout_would_move(self) -> None:
+        output = self._dry_run()
+        self.assertIn(
+            "COM2_DEPLOY_CHECKOUT_ONLY=WOULD reason=DEPLOY_SCRIPT_CHANGED", output
+        )
+        self.assertIn(
+            "적용하면 체크아웃만 새 SHA로 넘어가고, 다음 계획부터 새 스크립트가 쓰입니다.", output
+        )
+        self.assertIn("COM2_DEPLOY_NO_SERVICE_CHANGES=YES", output)
+        self.assertEqual(self._head(), self.first)
 
 
 class P01ScenarioTest(DeployHarness):
