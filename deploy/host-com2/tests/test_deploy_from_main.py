@@ -1193,6 +1193,18 @@ class StartupLadderTest(DeployHarness):
 class MeshQueueScenarioTest(DeployHarness):
     scenario = "queue"
 
+    def test_queue_deploy_refreshes_installed_health_check(self) -> None:
+        installed = self.queue / "health_check.sh"
+        installed.write_text("#!/usr/bin/env bash\necho stale\n", encoding="utf-8")
+        installed.chmod(0o755)
+
+        result = self._run_apply()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        source = self._stage() / "apps/padiem-mesh-queue/deploy/health_check.sh"
+        self.assertEqual(installed.read_bytes(), source.read_bytes())
+        self.assertEqual(installed.stat().st_mode & 0o777, 0o755)
+
     def test_queue_code_is_staged_from_the_mirror_and_restarts(self) -> None:
         (self.queue / "queue.env").write_text("MESH_QUEUE_DB_PATH=/keep\n", encoding="utf-8")
         (self.queue / "queue.sqlite3").write_text("data", encoding="utf-8")
