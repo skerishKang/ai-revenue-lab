@@ -7,16 +7,21 @@ Proves statically that the gate:
   4. refuses when the ledger database is absent — it never creates one, and it
      never emits the database identifier or any secret value;
   5. applies through wrangler's migrations mechanism from the B14 app directory;
-  6. verifies the applied shape by readback: 45/27 columns and the 8 indexes the
-     migration itself declares, schema names only, never row content;
+  6. replays every migration against a blank SQLite database, compares the
+     remote schema names with that result, and pins the expected schema here;
   7. never deploys the worker and never edits wrangler.toml.
 """
 
 from __future__ import annotations
 
+import importlib.util
+import json
 import re
 from pathlib import Path
+import sqlite3
+import tempfile
 
+import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -24,11 +29,46 @@ WORKFLOW = ROOT / ".github" / "workflows" / "b14-ledger-d1-provision-gate.yml"
 APP_DIR = ROOT / "apps" / "korean-ai-platform"
 WRANGLER = APP_DIR / "wrangler.toml"
 MIGRATIONS = APP_DIR / "migrations"
+SCHEMA_SCRIPT = ROOT / ".github" / "scripts" / "b14_ledger_d1_schema.py"
+_SCHEMA_SPEC = importlib.util.spec_from_file_location("b14_ledger_d1_schema", SCHEMA_SCRIPT)
+assert _SCHEMA_SPEC and _SCHEMA_SPEC.loader
+b14_schema = importlib.util.module_from_spec(_SCHEMA_SPEC)
+_SCHEMA_SPEC.loader.exec_module(b14_schema)
 LEDGER_MIGRATION = MIGRATIONS / "0001_b14_model_call_ledger.sql"
 CREDENTIAL_MIGRATION = MIGRATIONS / "0002_credential_source.sql"
 PC_METRICS_MIGRATION = MIGRATIONS / "0003_pc_work_metrics.sql"
 DATABASE_NAME = "padiem-b14-call-ledger"
 BINDING = "B14_CALL_LEDGER_D1"
+EXPECTED_TABLE_COLUMNS = {
+    "b14_model_call": [
+        "log_id", "request_id", "endpoint", "product", "origin_source",
+        "origin_request_id", "subject_ref", "tenant_ref", "membership_tier",
+        "client_app", "client_version", "session_ref", "requested_model_id",
+        "selected_model_id", "selected_provider", "selected_upstream_model",
+        "selected_route_id", "actual_response_model", "route_mode", "streaming",
+        "protocol", "outcome", "http_status", "error_code", "finish_reason",
+        "started_at", "finished_at", "elapsed_ms", "latency_source", "ttft_ms",
+        "attempt_count", "fallback_used", "fallback_depth", "prompt_tokens",
+        "completion_tokens", "total_tokens", "reasoning_tokens", "token_source",
+        "estimated_usd", "estimated_krw", "cost_basis", "currency",
+        "credential_source", "pc_work_metrics_json", "pc_work_metrics_recorded_at",
+    ],
+    "b14_model_call_attempt": [
+        "log_id", "attempt_index", "provider", "model_id", "upstream_model",
+        "route_id", "outcome", "error_code", "retry_index",
+        "actual_response_model", "finish_reason", "provider_request_id",
+        "started_at", "finished_at", "elapsed_ms", "latency_source",
+        "prompt_tokens", "completion_tokens", "total_tokens", "reasoning_tokens",
+        "token_source", "estimated_usd", "estimated_krw", "cost_basis",
+        "endpoint", "protocol", "dispatched", "timeout_reason", "reasoning_effort",
+        "thought_summary_count", "thought_summary_chars",
+    ],
+}
+EXPECTED_INDEXES = {
+    "b14_model_call_started", "b14_model_call_request", "b14_model_call_outcome",
+    "b14_model_call_model", "b14_model_call_product", "b14_model_call_subject",
+    "b14_model_call_attempt_log", "b14_model_call_pc_turn",
+}
 
 
 def _workflow_text() -> str:
@@ -147,19 +187,23 @@ def test_migrations_apply_uses_the_wrangler_migrations_mechanism_once() -> None:
     assert "--file=" not in text
 
 
-def test_migration_directory_holds_exactly_the_ledger_migrations() -> None:
+def test_migration_directory_is_read_dynamically() -> None:
     files = sorted(path.name for path in MIGRATIONS.glob("*.sql"))
-    assert files == [
-        "0001_b14_model_call_ledger.sql",
-        "0002_credential_source.sql",
-        "0003_pc_work_metrics.sql",
-        "0004_b14_attempt_timeout_reason.sql",
-        "0005_b14_attempt_reasoning_effort.sql",
-        "0006_b14_attempt_thought_summary.sql",
-    ], (
-        f"a new migration changes what `migrations apply` mutates; update the "
-        f"gate and this pin together: {files}"
-    )
+    assert files
+    assert b14_schema.migration_names(MIGRATIONS) == files
+
+    apply_run = _step("Apply ledger migrations to the remote database")["run"]
+    final_run = _step("Final evidence")["run"]
+    assert "b14_ledger_d1_schema.py --print-migrations" in apply_run
+    assert "b14_ledger_d1_schema.py --print-migrations" in final_run
+    assert "D1_MIGRATIONS=0001," not in _workflow_text()
+
+
+def test_migrations_replay_to_the_handwritten_schema_contract() -> None:
+    """The lists stay explicit here and must match the SQL replay result."""
+    schema = b14_schema.schema_from_migrations(MIGRATIONS)
+    assert schema["tables"] == EXPECTED_TABLE_COLUMNS
+    assert schema["indexes"] == sorted(EXPECTED_INDEXES)
 
 
 def test_credential_source_migration_is_one_guarded_alter() -> None:
@@ -204,43 +248,84 @@ def test_pc_metrics_migration_adds_only_two_nullable_columns_and_lookup_index() 
     assert re.search(r"^\s*(DROP|DELETE|UPDATE|INSERT|CREATE TABLE)\b", sql, re.M) is None
 
 
-def test_gate_index_readback_matches_the_migration_declares_them() -> None:
-    """Drift guard: the set the gate asserts against the remote must be exactly
-    the set the migration creates, read from the migration itself."""
-    sql = "\n".join(path.read_text(encoding="utf-8") for path in MIGRATIONS.glob("*.sql"))
-    declared = set(re.findall(r"CREATE INDEX IF NOT EXISTS (\w+)", sql))
-    block = re.search(r"DECLARED_INDEXES = \{(.*?)\}", _workflow_text(), re.S)
-    assert block, "the gate must pin the declared index set"
-    pinned = set(re.findall(r"'(\w+)'", block.group(1)))
-    assert pinned == declared, f"gate pins {sorted(pinned)} but SQL creates {sorted(declared)}"
-    assert len(pinned) == 8
+def test_gate_schema_readback_uses_the_migration_replay() -> None:
+    readback = _step("Post-apply migrations list and schema readback")["run"]
+    assert "b14_ledger_d1_schema.py" in readback
+    assert "--remote-columns" in readback and "--remote-indexes" in readback
+    assert "DECLARED_INDEXES" not in _workflow_text()
 
 
-def test_schema_readback_asserts_the_expected_column_shape() -> None:
-    text = _workflow_text()
-    assert "assert len(call) == 45" in text
-    assert "assert len(attempt) == 27" in text
-    assert "assert len(declared) == 8" in text
-    assert "not name.startswith('sqlite_autoindex')" in text
-    # The apply-readback step and the final evidence step must both carry the
-    # numbers: a stale marker in either place would misreport what was verified.
-    assert text.count("B14_LEDGER_COLUMNS=45,27") == 2
-    assert text.count("B14_LEDGER_INDEXES=8") == 2
-    assert "B14_LEDGER_COLUMN_ASSERT=PASS" in text
-    assert "B14_LEDGER_INDEX_ASSERT=PASS" in text
+def test_schema_evidence_is_derived_from_replayed_sql(capsys) -> None:
+    schema = b14_schema.schema_from_migrations(MIGRATIONS)
+    assert len(schema["indexes"]) == len(EXPECTED_INDEXES)
+
+    b14_schema._report_schema(schema)
+    output = capsys.readouterr().out
+    assert "B14_LEDGER_SCHEMA_ASSERT=PASS" in output
+    assert "B14_LEDGER_TABLE_ASSERT=PASS" in output
+    assert "B14_LEDGER_TABLES=" + ",".join(schema["tables"]) in output
+    expected_counts = ",".join(
+        f"{table}:{len(columns)}" for table, columns in schema["tables"].items()
+    )
+    assert f"B14_LEDGER_COLUMNS={expected_counts}" in output
+    assert "B14_LEDGER_INDEX_ASSERT=PASS" in output
+    assert f"B14_LEDGER_INDEXES={len(schema['indexes'])}" in output
+    assert re.search(r"B14_LEDGER_COLUMNS=\d+,\d+", _workflow_text()) is None
+    assert re.search(r"B14_LEDGER_INDEXES=\d+", _workflow_text()) is None
 
 
 def test_remote_readback_is_schema_names_only() -> None:
     """Content-blind contract: the gate reads schema *names*, never rows and
     never values, so a ledger that later holds request data stays unread."""
     commands = re.findall(r'--command "([^"]*)"', _workflow_text())
-    assert len(commands) == 3, commands
+    assert len(commands) == 2, commands
+    assert "JOIN pragma_table_info(m.name)" in commands[0]
+    assert "SELECT m.name AS table_name, p.name AS column_name" in commands[0]
+    assert "d1_migrations" in commands[0]
+    assert "SELECT name FROM sqlite_master WHERE type = 'index'" in commands[1]
     for sql in commands:
-        assert re.match(r"^(PRAGMA table_info\(|SELECT name FROM sqlite_master WHERE type='index'$)", sql), sql
         assert "*" not in sql
     joined = " ".join(commands).lower()
     for forbidden in ("select *", "count(", " limit ", "estimated_usd", "subject_ref", "hex("):
         assert forbidden not in joined, forbidden
+
+
+def test_remote_schema_queries_compare_only_names_from_the_migration_schema() -> None:
+    commands = re.findall(r'--command "([^"]*)"', _workflow_text())
+    db = sqlite3.connect(":memory:")
+    try:
+        db.execute("PRAGMA foreign_keys = ON")
+        for migration in b14_schema.migration_files(MIGRATIONS):
+            db.executescript(migration.read_text(encoding="utf-8"))
+        db.execute("CREATE TABLE d1_migrations (id INTEGER PRIMARY KEY, name TEXT)")
+
+        columns_cursor = db.execute(commands[0])
+        columns = [
+            dict(zip((item[0] for item in columns_cursor.description), row))
+            for row in columns_cursor.fetchall()
+        ]
+        indexes_cursor = db.execute(commands[1])
+        indexes = [
+            dict(zip((item[0] for item in indexes_cursor.description), row))
+            for row in indexes_cursor.fetchall()
+        ]
+    finally:
+        db.close()
+
+    with tempfile.TemporaryDirectory(dir=ROOT / ".github" / "tests") as temp_dir:
+        temp_root = Path(temp_dir)
+        columns_path = temp_root / "columns.json"
+        indexes_path = temp_root / "indexes.json"
+        columns_path.write_text(json.dumps([{"results": columns}]), encoding="utf-8")
+        indexes_path.write_text(json.dumps([{"results": indexes}]), encoding="utf-8")
+        verified = b14_schema.verify_remote_schema(columns_path, indexes_path)
+        assert verified["tables"] == EXPECTED_TABLE_COLUMNS
+        assert verified["indexes"] == sorted(EXPECTED_INDEXES)
+
+        columns.pop()
+        columns_path.write_text(json.dumps([{"results": columns}]), encoding="utf-8")
+        with pytest.raises(b14_schema.SchemaError, match="B14_REMOTE_TABLE_COLUMN_MISMATCH"):
+            b14_schema.verify_remote_schema(columns_path, indexes_path)
 
 
 def test_binding_still_targets_the_canonical_ledger_database() -> None:
@@ -257,17 +342,14 @@ def test_final_evidence_markers_present() -> None:
     for marker in (
         "B14_LEDGER_D1_PROVISION=PASS",
         "D1_PROVISION_TARGET=padiem-b14-call-ledger",
-        "D1_MIGRATIONS=0001,0002,0003",
-        "D1_MIGRATION_0001=APPLIED_OR_REPLAY_SAFE",
-        "D1_MIGRATION_0002=APPLIED_ONCE_BY_MIGRATIONS_TABLE",
-        "D1_MIGRATION_0003=APPLIED_ONCE_BY_MIGRATIONS_TABLE",
         "D1_DATABASE_CREATED=0",
         "WORKER_DEPLOYED=0",
         "WRANGLER_TOML_MODIFIED=0",
     ):
         assert marker in text, marker
-    # Markers that must survive in exactly the two places they belong.
-    assert text.count("D1_MIGRATIONS=0001,0002,0003") == 2
+    # The dynamic inventory is emitted before and after migration application.
+    assert text.count("b14_ledger_d1_schema.py --print-migrations") == 2
+    assert "D1_MIGRATIONS=0001," not in text
 
 
 def test_workflow_never_deploys_worker_or_edits_config() -> None:
