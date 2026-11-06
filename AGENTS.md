@@ -238,3 +238,9 @@ The compact Issue/PR comment is the complete report in COMPACT mode. LONG mode, 
 - Implementation report: `docs/operations/templates/WEB_DEVELOPER_REPORT.md`
 - Independent/local validation report: `docs/operations/templates/LOCAL_VALIDATION_REPORT.md`
 - Final review: `docs/operations/templates/CTO_FINAL_REVIEW.md`
+
+## Lane session time indicator (owner instruction, 2026-11-05)
+
+- The "NNm left" / remaining-capacity display in a lane is from the session tool (Freebuff). The owner extends sessions on demand.
+- Do not shrink, split, or cut short work because of that indicator, and do not stop a task or a report citing remaining session time. If a session actually ends, the CTO issues a new-session prompt then.
+- 레인 화면의 남은 시간 표시(프리버프)는 대표가 연장한다. 그 표시 때문에 작업을 줄이거나 멈추지 않는다.
