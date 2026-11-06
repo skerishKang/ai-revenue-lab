@@ -59,7 +59,7 @@ function setup({catalog, packet, staticAdapter, actualPacket, createAdapter, fet
     timers.delete(found[0]);
     found[1].fn();
   }
-  return {window, button, results, requests, userMessages, timers, fire};
+  return {window, context, button, results, requests, userMessages, timers, fire};
 }
 
 test('guest submit shows a retry bubble after an unresolved packet build within ten seconds', async () => {
@@ -269,4 +269,40 @@ test('a slow grounding load that finishes before the deadline retains its eviden
   env.fire(0);
   assert.equal(env.window.storyMemoryGroundingBlocksV1('bible-web')[0].text, 'available');
   assert.equal([...env.timers.values()].some(timer => timer.ms === 6000), false);
+});
+test('the shipped static adapter isolates a stalled fetch and can retry after the deadline', async () => {
+  let fetches = 0;
+  let firstSignal;
+  let sharedCalls = 0;
+  const env = setup({
+    actualPacket: true,
+    staticAdapter: {getCatalog: () => { sharedCalls += 1; return new Promise(() => {}); }},
+    fetchStatic: (_url, options) => {
+      fetches += 1;
+      if (fetches === 1) {
+        firstSignal = options.signal;
+        return new Promise(() => {});
+      }
+      return Promise.resolve({ok: true, json: async () => ({
+        schema_version: 'storymemory-static-content-1.0', works: [],
+      })});
+    },
+  });
+  const html = fs.readFileSync(path.join(publicDir, 'index.html'), 'utf8');
+  const start = html.indexOf('function createStoryMemoryStaticAdapter(');
+  const end = html.indexOf('\nconst storyMemoryStatic=createStoryMemoryStaticAdapter();', start);
+  assert.ok(start >= 0 && end > start);
+  env.context.STORYMEMORY_STATIC_CONTENT_CONFIG = {
+    basePath: 'content', catalogPath: 'content/catalog.json', schemaVersion: 'storymemory-static-content-1.0',
+  };
+  vm.runInContext(html.slice(start, end) + '\nwindow.createStoryMemoryStaticAdapter=createStoryMemoryStaticAdapter;', env.context);
+  const first = env.window.storyMemorySubmitCompanionQuestionV1('question', {delay: 0});
+  env.fire(6000);
+  assert.equal((await first).ok, true);
+  env.fire(0);
+  assert.equal(firstSignal.aborted, true);
+  assert.equal((await env.window.storyMemorySubmitCompanionQuestionV1('retry', {delay: 0})).ok, true);
+  env.fire(0);
+  assert.equal(fetches, 2);
+  assert.equal(sharedCalls, 0);
 });
