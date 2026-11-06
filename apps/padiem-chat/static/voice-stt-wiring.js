@@ -549,9 +549,9 @@
      * path is its fallback. The fallback is only entered after a real
      * connection failure inside the same microphone run, never in parallel, so
      * the two paths are never billed for the same speech. */
-    const geminiApi = win.PadiemVoiceGeminiLive || null;
-    const geminiFactory = geminiApi && typeof geminiApi.createRecognizerFactory === "function"
-      ? geminiApi.createRecognizerFactory({
+    const liveApi = win.PadiemVoiceLiveSession || null;
+    const liveFactory = liveApi && typeof liveApi.createRecognizerFactory === "function"
+      ? liveApi.createRecognizerFactory({
           win: win,
           doc: doc,
           fetchImpl: fetchImpl,
@@ -563,7 +563,7 @@
           },
         })
       : null;
-    const factory = geminiFactory || groqFactory;
+    const factory = liveFactory || groqFactory;
     const canCapture = !!(mediaDevices && typeof win.MediaRecorder === "function");
 
     function registerFactory(available) {
