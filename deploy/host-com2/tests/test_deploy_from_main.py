@@ -364,8 +364,9 @@ class DeployHarness(unittest.TestCase):
         ):
             shutil.copytree(self.ops / source, release / name)
         (self.p01 / "app").symlink_to(release, target_is_directory=True)
+        # No B14 tree by default: the running-code comparison must report
+        # NOT_INSTALLED, not a mismatch, for every scenario that never installs it.
         self.b14 = self.tmp / "b14-app"
-        self.b14.mkdir()
         self.queue = self.tmp / "mesh-queue"
         self.queue.mkdir()
         self.units = self.tmp / "units"
@@ -395,6 +396,7 @@ class DeployHarness(unittest.TestCase):
             "PADIEM_COM2_PYTHON": Path(sys.executable).as_posix(),
             "PADIEM_COM2_PREVIOUS_DIR": self.previous.as_posix(),
             "PADIEM_COM2_P01_APP": self.p01.as_posix(),
+            "PADIEM_COM2_CHAT_APP": (self.tmp / "chat-app").as_posix(),
             "PADIEM_COM2_SS": self.fake_ss.as_posix(),
             # Bounded so a retry test finishes in seconds, not in the 30s default.
             "PADIEM_COM2_HEALTH_TIMEOUT": "4",
@@ -1162,6 +1164,11 @@ class P01ScenarioTest(DeployHarness):
 
 class B14ScenarioTest(DeployHarness):
     scenario = "b14"
+
+    def setUp(self) -> None:
+        super().setUp()
+        # A hand copy this script cannot prove: the first apply displaces it.
+        self.b14.mkdir()
 
     def test_b14_runs_from_the_mirror_and_keeps_the_operator_copy(self) -> None:
         (self.b14 / "operator-marker").write_text("hand staged\n", encoding="utf-8")
@@ -2126,3 +2133,98 @@ class ScriptBoundaryTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ChatB14RunningCodeTest(DeployHarness):
+    """#7028 follow-up: Chat and B14 rollbacks are visible to the next plan."""
+
+    scenario = "chat"
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.chat_app = self.tmp / "chat-app"
+        self.env["PADIEM_COM2_CHAT_APP"] = self.chat_app.as_posix()
+        self.env["PADIEM_COM2_B14_APP"] = self.b14.as_posix()
+        # The deploy compares real paths with the shell's own readlink; a
+        # drive-letter spelling never resolves a link there, so give the run the
+        # /c/ spelling it produces.
+        for key in ("PADIEM_COM2_PREVIOUS_DIR", "PADIEM_COM2_CHAT_APP", "PADIEM_COM2_B14_APP"):
+            self.env[key] = self._msys(self.env[key])
+
+    @staticmethod
+    def _msys(path: str) -> str:
+        if len(path) > 2 and path[1] == ":" and path[2] == "/":
+            return "/" + path[0].lower() + path[2:]
+        return path
+
+    def _dry_run(self) -> str:
+        result = self._run_main(
+            self.second, "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
+        )
+        output = result.stdout + result.stderr
+        self.assertEqual(result.returncode, 0, output)
+        return output
+
+    def _tree(self, root: Path, sha: str, relative: str) -> Path:
+        target = root / sha / relative
+        target.mkdir(parents=True, exist_ok=True)
+        (target / "marker").write_text(sha + "\n", encoding="utf-8")
+        return target
+
+    def _point(self, link: Path, target: Path) -> None:
+        link.parent.mkdir(parents=True, exist_ok=True)
+        if link.is_symlink() or link.exists():
+            link.unlink()
+        link.symlink_to(target, target_is_directory=True)
+
+    def test_a_chat_rollback_link_is_selected_again(self) -> None:
+        # The checkout records the new commit, the unit runs the rollback copy.
+        self._git(str(self.ops), "checkout", "-q", self.second)
+        rolled_back = self._tree(self.previous, self.first, "apps/padiem-chat/app")
+        self._point(self.chat_app, rolled_back)
+
+        output = self._dry_run()
+
+        self.assertIn("COM2_DEPLOY_CHAT_RUNNING_CODE=DIFF_OR_UNVERIFIABLE", output)
+        self.assertIn(
+            "COM2_DEPLOY_DECISION_CHAT=REDEPLOY reason_files=0 "
+            "reason=RUNNING_CODE_MISMATCH",
+            output,
+        )
+        self.assertIn("COM2_DEPLOY_SUMMARY=chat:WOULD_DEPLOY", output)
+
+    def test_a_chat_link_on_the_recorded_release_is_skipped(self) -> None:
+        self._git(str(self.ops), "checkout", "-q", self.second)
+        current = self._tree(self._stage().parent, self.second, "apps/padiem-chat/app")
+        self._point(self.chat_app, current)
+
+        output = self._dry_run()
+
+        self.assertIn("COM2_DEPLOY_CHAT_RUNNING_CODE=MATCH", output)
+        self.assertIn("COM2_DEPLOY_DECISION_CHAT=SKIP reason_files=0", output)
+
+    def test_a_b14_rollback_link_is_selected_again(self) -> None:
+        self._git(str(self.ops), "checkout", "-q", self.second)
+        rolled_back = self._tree(self.previous, self.first, "apps/korean-ai-platform")
+        self._point(self.b14, rolled_back)
+
+        output = self._dry_run()
+
+        self.assertIn("COM2_DEPLOY_B14_RUNNING_CODE=DIFF_OR_UNVERIFIABLE", output)
+        self.assertIn(
+            "COM2_DEPLOY_DECISION_B14=REDEPLOY reason_files=0 "
+            "reason=RUNNING_CODE_MISMATCH",
+            output,
+        )
+        self.assertIn("COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:WOULD_DEPLOY", output)
+
+    def test_a_b14_link_on_the_recorded_release_is_skipped(self) -> None:
+        self._git(str(self.ops), "checkout", "-q", self.second)
+        current = self._tree(self._stage().parent, self.second, "apps/korean-ai-platform")
+        self._point(self.b14, current)
+
+        output = self._dry_run()
+
+        self.assertIn("COM2_DEPLOY_B14_RUNNING_CODE=MATCH", output)
+        self.assertIn("COM2_DEPLOY_DECISION_B14=SKIP reason_files=0", output)
