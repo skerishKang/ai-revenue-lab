@@ -6010,13 +6010,21 @@ async function storyMemoryLoadBibleChapter(ctx,{adapter=storyMemoryRemote,static
   let staticError=null;
   const staticWorkKey=storyMemoryStaticWorkKey(content);
   if(!forceRemote&&staticWorkKey&&typeof staticAdapter?.loadUnitByKey==='function'){
-    try{
-      const unitKey=`book:${bookCode}:chapter:${String(chapter).padStart(3,'0')}`;
-      const staticBundle=await staticAdapter.loadUnitByKey({workKey:staticWorkKey,unitKey,language:'ko'});
-      const normalized=storyMemoryNormalizeStaticUnit(content,staticBundle);
-      if(normalized.passages.length)return {...normalized,reason:'STATIC_BIBLE_CHAPTER_READY'};
-      staticError='STATIC_EMPTY';
-    }catch(error){staticError=String(error?.message||error||'STATIC_BIBLE_CONTENT_ERROR')}
+    // #7026: the chapter JSON is fetched once per context change below the
+    // "본문을 이용할 수 없습니다" placeholder, and nothing retried it. One
+    // transient failure (network blip, a 5xx from the edge) therefore left the
+    // placeholder on screen for the rest of the visit even though the same
+    // chapter loaded on the next attempt. The adapter drops a rejected request
+    // from its promise cache, so the second call really refetches.
+    const unitKey=`book:${bookCode}:chapter:${String(chapter).padStart(3,'0')}`;
+    for(let attempt=1;attempt<=2;attempt+=1){
+      try{
+        const staticBundle=await staticAdapter.loadUnitByKey({workKey:staticWorkKey,unitKey,language:'ko'});
+        const normalized=storyMemoryNormalizeStaticUnit(content,staticBundle);
+        if(normalized.passages.length)return {...normalized,reason:'STATIC_BIBLE_CHAPTER_READY'};
+        staticError='STATIC_EMPTY';
+      }catch(error){staticError=String(error?.message||error||'STATIC_BIBLE_CONTENT_ERROR')}
+    }
   }
   const legacyDbBodyRemote=!!adapter?.runtimeContract?.legacyDbBodyRemote;
   if(!legacyDbBodyRemote)return {mode:'fallback',reason:'STATIC_BIBLE_SOURCE_NOT_AVAILABLE',content,work:null,passages:[],staticError,legacyDbBodyRemote:false};
