@@ -23,7 +23,7 @@ from starlette.testclient import TestClient
 
 from app.factory import create_app
 from app.pilot import model_admin_ops as ops
-from app.pilot.model_registry_file import read_overlay, read_registry
+from app.pilot.model_registry_file import read_overlay, read_registry, write_overlay
 from app.pilot.service_proof import PROOF_HEADER, PROOF_TIME_HEADER, compute_service_proof
 
 PREFIX = "/api/pilot"
@@ -261,6 +261,49 @@ def test_model_apply_with_a_matching_receipt_registers_the_model(client):
     assert MODEL["id"] in {row["id"] for row in effective["models"]}
     assert "example" in effective["providers"]
     assert ops._RECEIPTS == {}
+
+
+def test_model_apply_keeps_an_existing_reasoning_block(client):
+    provider = {k: v for k, v in PROVIDER.items() if k != "provider_id"}
+    reasoning = {
+        "supported": True,
+        "values": ["minimal", "low", "medium", "high"],
+    }
+    write_overlay({
+        "providers": {"example": provider},
+        "models": [{**MODEL, "reasoning": reasoning}],
+    })
+    assert read_overlay()["models"][0]["reasoning"] == reasoning
+
+    cleaned, reason = ops._clean_model(MODEL)
+    assert cleaned is not None, reason
+    ops._RECEIPTS["tkn"] = _receipt(cleaned)
+
+    response = post(client, MODEL_APPLY, {"model": MODEL, "probe_id": "tkn"})
+    assert response.status_code == 200, response.text
+
+    overlay_row = next(row for row in read_overlay()["models"] if row["id"] == MODEL["id"])
+    assert overlay_row["reasoning"] == reasoning
+    effective_row = next(row for row in read_registry()["models"] if row["id"] == MODEL["id"])
+    assert effective_row["reasoning"] == reasoning
+
+
+def test_model_apply_does_not_invent_a_reasoning_block(client):
+    provider = {k: v for k, v in PROVIDER.items() if k != "provider_id"}
+    write_overlay({"providers": {"example": provider}, "models": [MODEL]})
+    assert "reasoning" not in read_overlay()["models"][0]
+
+    cleaned, reason = ops._clean_model(MODEL)
+    assert cleaned is not None, reason
+    ops._RECEIPTS["tkn"] = _receipt(cleaned)
+
+    response = post(client, MODEL_APPLY, {"model": MODEL, "probe_id": "tkn"})
+    assert response.status_code == 200, response.text
+
+    overlay_row = next(row for row in read_overlay()["models"] if row["id"] == MODEL["id"])
+    assert "reasoning" not in overlay_row
+    effective_row = next(row for row in read_registry()["models"] if row["id"] == MODEL["id"])
+    assert "reasoning" not in effective_row
 
 
 def test_model_apply_refuses_a_retired_identity(client):
