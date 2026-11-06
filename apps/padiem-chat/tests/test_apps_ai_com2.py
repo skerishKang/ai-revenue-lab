@@ -281,3 +281,55 @@ async def test_app_transport_uses_55_seconds_without_changing_host_default(monke
     assert result.status == 200
     assert seen == [{"connect": 55.0, "read": 55.0, "write": 55.0, "pool": 55.0}]
     assert DEFAULT_TIMEOUT_SECONDS == 30.0
+
+
+def engine_response(answer, *, extra=None, usage=None):
+    body = {
+        "ok": True, "answer": answer,
+        "context_permission": {"boundary_disposition": "permitted", "context_filtered_count": 0, "context_allowed_count": 1},
+        "metadata": {"app_id": "b61", "trace_id": "test-app-ai"},
+    }
+    if usage is not None:
+        body["metadata"]["usage"] = usage
+    if extra:
+        body.update(extra)
+    return httpx.Response(200, json=body)
+
+
+@pytest.mark.asyncio
+async def test_unclosed_thought_block_is_a_retryable_answer_incomplete_not_a_short_200():
+    # The model stopped mid-block, so everything after the tag was dropped with it.
+    answer = "바울은 신약에서 중요한 인물로, 예수 그리스도의 <thought>reasoning that never closed"
+    result, _ = await request(response=engine_response(answer))
+    assert result.status_code == 502, result.text
+    body = result.json()
+    assert body["ok"] is False and body["error"]["code"] == "answer_incomplete"
+    assert body["error"]["retryable"] is True
+    assert "answer" not in body
+
+
+@pytest.mark.asyncio
+async def test_engine_truncation_flag_survives_to_the_app_answer_incomplete():
+    # Core already removed the block, so only its flag can say the answer was cut.
+    result, _ = await request(response=engine_response("잘린 앞부분", extra={"answer_truncated": True}))
+    assert result.status_code == 502
+    assert result.json()["error"]["code"] == "answer_incomplete"
+
+
+@pytest.mark.asyncio
+async def test_generation_stopped_at_the_output_budget_is_answer_incomplete():
+    data = payload()
+    budget = data["agent"]["max_tokens"]
+    result, _ = await request(data, response=engine_response("문장이 여기서", usage={"output_tokens": budget}))
+    assert result.status_code == 502, result.text
+    assert result.json()["error"]["code"] == "answer_incomplete"
+
+
+@pytest.mark.asyncio
+async def test_a_closed_block_and_an_early_stop_still_return_the_whole_answer():
+    result, _ = await request(response=engine_response(
+        "<thought>private</thought>바울은 다메섹에서 부르심을 받았습니다. 그는 이방인의 사도가 되었습니다.",
+        usage={"output_tokens": 12},
+    ))
+    assert result.status_code == 200, result.text
+    assert result.json()["answer"].startswith("바울은 다메섹에서")

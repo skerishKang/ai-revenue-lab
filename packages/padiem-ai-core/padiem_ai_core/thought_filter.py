@@ -6,6 +6,10 @@ class ThoughtFilter:
     def __init__(self):
         self.pending = ""
         self.closing = None
+        # Set when a finished stream still sits inside an open thought block, so
+        # the caller can tell "nothing left to show" apart from "the answer was
+        # cut short". The visible text stays identical either way.
+        self.truncated = False
 
     def feed(self, text, *, final=False):
         self.pending += text
@@ -20,6 +24,8 @@ class ThoughtFilter:
                     for n in range(1, min(len(lower), len(self.closing)-1)+1):
                         if lower.endswith(self.closing[:n]):
                             keep = n
+                    if final and len(self.pending) > keep:
+                        self.truncated = True
                     self.pending = self.pending[-keep:] if keep else ""
                     break
                 self.pending = self.pending[pos+len(self.closing):]
@@ -46,3 +52,10 @@ class ThoughtFilter:
 
 def strip_thought_blocks(text):
     return ThoughtFilter().feed(text, final=True)
+
+
+def strip_thought_blocks_ex(text):
+    """Return the visible text and whether an unclosed thought block cut it."""
+    filter = ThoughtFilter()
+    visible = filter.feed(text, final=True)
+    return visible, filter.truncated and bool(filter.closing)

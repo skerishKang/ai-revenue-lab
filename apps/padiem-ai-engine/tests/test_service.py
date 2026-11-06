@@ -131,7 +131,8 @@ async def test_success_maps_strict_request_to_core_once() -> None:
     assert response.status_code == 200
     assert response.body["ok"] is True
     assert response.body["answer"] == "반가워요."
-    assert set(response.body) == {"ok", "answer", "route", "metadata"}
+    assert set(response.body) == {"ok", "answer", "answer_truncated", "route", "metadata"}
+    assert response.body["answer_truncated"] is False
     assert response.body["route"]["selected_provider"] == "openrouter"
     assert response.body["metadata"]["provider"] == "openrouter"
     assert factory.app_ids == ["lovebud"]

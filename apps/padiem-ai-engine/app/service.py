@@ -330,6 +330,9 @@ class EngineService:
         body: dict[str, Any] = {
             "ok": True,
             "answer": result.answer,
+            # Carried so the calling product can tell a finished answer apart
+            # from one the model stopped mid-block or mid-budget. Never shown.
+            "answer_truncated": bool(getattr(result, "answer_truncated", False)),
             **evidence_fields,
             "route": result.route.to_public_dict(),
             "metadata": result.metadata.to_public_dict(),

@@ -95,7 +95,12 @@ class AppsAIEngineTransport(LocalEngineHttpTransport):
         return path, method, headers
 
 
-def strip_thought_blocks(value: str) -> str:
+def strip_thought_blocks_reported(value: str) -> tuple[str, bool]:
+    """The visible text plus whether an open block ran to the end of the answer.
+
+    When depth is still open at the end, everything after the last tag was
+    dropped with the block. That is an incomplete answer, not a shorter one.
+    """
     output, depth, pos = [], 0, 0
     for match in _THOUGHT.finditer(value):
         if depth == 0:
@@ -107,12 +112,41 @@ def strip_thought_blocks(value: str) -> str:
         pos = match.end()
     if depth == 0:
         output.append(value[pos:])
-    return "".join(output).strip()
+        return "".join(output).strip(), False
+    return "".join(output).strip(), len(value) - pos > 0
 
 
-def _error(code: str, status: int) -> JSONResponse:
+def strip_thought_blocks(value: str) -> str:
+    return strip_thought_blocks_reported(value)[0]
+
+
+def _answer_truncation_reason(payload: Mapping[str, Any], visible: str, cut_here: bool,
+                              budget_tokens: int) -> str | None:
+    """Why the answer is not the whole answer. None means it is complete."""
+    if cut_here or payload.get("answer_truncated") is True:
+        return "thought_unclosed"
+    usage = (payload.get("metadata") or {}).get("usage") if isinstance(payload.get("metadata"), Mapping) else None
+    produced = usage.get("output_tokens") if isinstance(usage, Mapping) else None
+    if type(produced) is int and type(budget_tokens) is int and budget_tokens >= 1 and produced >= budget_tokens:
+        return "length_cap"
+    return None
+
+
+def _journal_answer_incomplete(name: str, reason: str, visible: str, payload: Mapping[str, Any]) -> None:
+    """One bounded journal line. Never the answer text, the model or the provider."""
+    usage = (payload.get("metadata") or {}).get("usage") if isinstance(payload.get("metadata"), Mapping) else None
+    produced = usage.get("output_tokens") if isinstance(usage, Mapping) else "none"
+    trace = payload.get("metadata", {}).get("trace_id") if isinstance(payload.get("metadata"), Mapping) else "none"
+    print("app_ai_answer_incomplete app=%s reason=%s visible_chars=%d output_tokens=%s trace_id=%s"
+          % (name, reason, len(visible), produced, trace), flush=True)
+
+
+def _error(code: str, status: int, retryable: bool | None = None) -> JSONResponse:
+    error: dict[str, Any] = {"code": code}
+    if retryable is not None:
+        error["retryable"] = bool(retryable)
     return JSONResponse(
-        {"ok": False, "error": {"code": code}},
+        {"ok": False, "error": error},
         status_code=status, headers={"cache-control": "no-store"},
     )
 
@@ -196,7 +230,14 @@ class AppsAIService:
         except (LocalEngineTransportError, httpx.HTTPError):
             return _error("p01_unavailable", 503)
         body = dict(body)
-        body["answer"] = strip_thought_blocks(body["answer"])
+        visible, cut_here = strip_thought_blocks_reported(body["answer"])
+        reason = _answer_truncation_reason(body, visible, cut_here, tokens)
+        if reason is not None:
+            # A half answer is not a success. The caller retries; it never sees
+            # prose that stopped inside an unclosed block or at the budget.
+            _journal_answer_incomplete(policy.name, reason, visible, body)
+            return _error("answer_incomplete", 502, retryable=True)
+        body["answer"] = visible
         return JSONResponse(body, headers={"cache-control": "no-store"})
 
 

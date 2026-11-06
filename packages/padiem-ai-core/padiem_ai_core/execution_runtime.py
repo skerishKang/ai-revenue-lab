@@ -9,7 +9,7 @@ from types import MappingProxyType
 from typing import Any, Protocol
 import uuid
 
-from .thought_filter import strip_thought_blocks
+from .thought_filter import strip_thought_blocks, strip_thought_blocks_ex
 
 from .b14_execution import (
     B14ChatRequest,
@@ -441,6 +441,9 @@ class ExecutionResult:
     # model answered with a call rather than with prose, so ``answer`` may be
     # empty. The empty tuple is the unchanged pre-#5536 result.
     tool_calls: tuple[ToolCall, ...] = ()
+    # True when an unclosed thought block cut the prose, or when the caller
+    # already knows the generation stopped at its output budget.
+    answer_truncated: bool = False
 
     def __post_init__(self) -> None:
         tool_calls = tuple(self.tool_calls or ())
@@ -452,9 +455,13 @@ class ExecutionResult:
             raise ValueError("answer must be a non-empty string")
         # #5536: a tool call is a complete answer of its own, so the text may
         # be empty when the model answered with a call.
-        if not strip_thought_blocks(self.answer).strip() and not tool_calls:
+        visible, cut_inside_thought = strip_thought_blocks_ex(self.answer)
+        if not visible.strip() and not tool_calls:
             raise ValueError("answer must be a non-empty string")
-        object.__setattr__(self, "answer", strip_thought_blocks(self.answer).strip())
+        object.__setattr__(self, "answer", visible.strip())
+        # A block the model never closed means the prose after it was dropped.
+        # The caller decides whether that is a retryable answer, never the filter.
+        object.__setattr__(self, "answer_truncated", cut_inside_thought or self.answer_truncated)
         if not isinstance(self.route, B14RouteMetadata):
             raise ValueError("route must be B14RouteMetadata")
         if not isinstance(self.metadata, RunMetadata):

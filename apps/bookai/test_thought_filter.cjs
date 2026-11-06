@@ -10,19 +10,21 @@ const fs=require('fs'), path=require('path'), assert=require('node:assert/strict
   const req=()=>new Request('https://test.invalid/api/storymemory-ai',{method:'POST',
     headers:{'content-type':'application/json'},body:JSON.stringify({question:'What happened?',packet})});
   const env={BOOKAI_COM2_AI_SECRET:'x'.repeat(40)};
-  for(const [input,expected,status] of [
-    ['<thought>private\nreason</thought>Answer.','Answer.',200],
-    ['Normal answer.\nUnchanged.','Normal answer.\nUnchanged.',200],
-    ['<thought>unfinished private text',null,502],
-    ['Answer.<thought>unfinished', 'Answer.',200],
-    ['<THOUGHT>one</THOUGHT>Answer.<thought>two</thought>','Answer.',200],
+  for(const [input,expected,status,error] of [
+    ['<thought>private\nreason</thought>Answer.','Answer.',200,null],
+    ['Normal answer.\nUnchanged.','Normal answer.\nUnchanged.',200,null],
+    ['<thought>unfinished private text',null,502,'ingress_invalid_response'],
+    // 261106 · an unclosed block is no longer a short 200. The prose that was
+    // still visible is not a finished answer, so it travels as a retryable error.
+    ['Answer.<thought>unfinished', null, 502, 'answer_incomplete'],
+    ['<THOUGHT>one</THOUGHT>Answer.<thought>two</thought>','Answer.',200,null],
   ]){
     global.fetch=async()=>Response.json({ok:true,answer:input,context_permission:{
       boundary_disposition:'permitted',context_filtered_count:0,context_allowed_count:1}});
     const r=await worker.fetch(req(),env), data=await r.json();
     assert.equal(r.status,status);
     if(expected!==null) assert.equal(data.answer,expected);
-    else {assert.equal(data.error,'ingress_invalid_response'); assert.ok(!JSON.stringify(data).includes('private'));}
+    else {assert.equal(data.error,error); assert.ok(!JSON.stringify(data).includes('private'));}
   }
   console.log('PASS: 5 worker response cases');
 })().catch(e=>{console.error(e);process.exitCode=1});
