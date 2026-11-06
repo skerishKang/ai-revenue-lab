@@ -42,6 +42,11 @@ from padiem_control_plane import (
     IdentityLinkState,
     ProductIdentityLink,
 )
+from padiem_control_plane.tenants import (
+    TenantMembership,
+    TenantMembershipRole,
+    TenantMembershipState,
+)
 from padiem_control_plane.b54_identity_bridge import (
     B54_PRODUCT_ID,
     TRUSTED_B54_SERVER_AUTH_PROVIDERS,
@@ -179,6 +184,16 @@ class CanonicalAuthority:
     def resolve_active_memberships(self, *, canonical_subject_id: str):
         self.membership_reads.append(canonical_subject_id)
         return (TENANT,)
+
+    def resolve_active_tenant_membership(
+        self, *, tenant_id: str, canonical_subject_id: str, now: datetime,
+    ) -> TenantMembership:
+        return TenantMembership(
+            tenant_id=tenant_id,
+            canonical_subject_id=canonical_subject_id,
+            state=TenantMembershipState.ACTIVE,
+            role=TenantMembershipRole.OWNER,
+        )
 
     def create_tenant(self) -> str:
         self.tenants_created += 1

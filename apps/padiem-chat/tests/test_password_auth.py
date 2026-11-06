@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 from functools import lru_cache
 from datetime import datetime, timedelta, timezone
+from types import SimpleNamespace
 
 import httpx
 import pytest
@@ -23,7 +24,6 @@ from app.auth_abuse import (
     InMemoryAuthAbuseStore,
 )
 from app.auth_routes import _parse_locked_until, _password_lock_minutes
-from app.b14_client import ChatStreamEvent
 from app.config import ConfigError, Settings
 from app.control_plane_identity import IdentityBridgeError
 from app.history import HistoryConflict, PasswordCredential, UserProfile
@@ -217,8 +217,18 @@ class Authority:
 
 class SuccessfulStreamClient:
     async def stream_text_auto(self, messages, *, skill=None, additional_system_context=None):
-        yield ChatStreamEvent(delta_content="응답")
-        yield ChatStreamEvent(done=True)
+        yield SimpleNamespace(
+            delta_content="응답",
+            done=False,
+            tool_call=None,
+            delta_thought=None,
+        )
+        yield SimpleNamespace(
+            delta_content=None,
+            done=True,
+            tool_call=None,
+            delta_thought=None,
+        )
 
 
 def test_password_hash_roundtrip_and_validation() -> None:
