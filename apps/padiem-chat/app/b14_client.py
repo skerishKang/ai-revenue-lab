@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
 from typing import Any, Protocol
+import os
 import time
 
 # Core completion transports use real httpx's type family, also on Workers.
@@ -323,6 +324,67 @@ def _resolve_b62_policy(
         )
     except ModelPolicyError as exc:
         raise ChatRuntimeError(422, exc.code, exc.message) from exc
+
+
+# #7044: a thinking summary is the model's first visible byte, and the platform
+# instruction "write the thinking summary in the answer's language" reaches the
+# model but is not applied to that summary. A short italicised aside appended to
+# the outgoing copy is the smallest lever that actually moved it in measurement.
+# It rides only on the streaming request the summary belongs to: the stored turn,
+# the ledger, the tool lane, the multimodal lane and non-streaming completion are
+# untouched (the stored messages list is never mutated, only copied).
+THOUGHT_LANGUAGE_HINT = "(생각 과정 요약도 이 질문과 같은 언어로 작성해 주세요.)"
+THOUGHT_LANGUAGE_HINT_ENV = "PADIEM_CHAT_THOUGHT_LANGUAGE_HINT"
+
+
+def _thought_language_hint_enabled() -> bool:
+    """Default on; ``0``/``false``/``off``/``no`` turns the hint off.
+
+    An unset variable keeps the reviewed behaviour, so a deployment that never
+    sets it behaves exactly like this change. Only an explicit off value
+    disables it, and any other value is treated as on rather than as a silent
+    failure of the feature.
+    """
+    raw = os.environ.get(THOUGHT_LANGUAGE_HINT_ENV)
+    if raw is None:
+        return True
+    return raw.strip().lower() not in {"0", "false", "off", "no"}
+
+
+def _with_thought_language_hint(
+    messages: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Return a copy whose last user message ends with the language hint.
+
+    The caller's list and every message dict stay untouched, so whatever is
+    persisted as the conversation keeps the exact text the browser sent.
+    """
+    for index in range(len(messages) - 1, -1, -1):
+        message = messages[index]
+        if message.get("role") != "user":
+            continue
+        content = message.get("content")
+        if not isinstance(content, str) or not content.strip():
+            return messages
+        patched = list(messages)
+        replaced = dict(message)
+        replaced["content"] = f"{content}\n\n{THOUGHT_LANGUAGE_HINT}"
+        patched[index] = replaced
+        return patched
+    return messages
+
+
+def _streaming_messages(
+    messages: list[dict[str, Any]],
+    *,
+    tools: tuple[ToolDefinition, ...] = (),
+) -> list[dict[str, Any]]:
+    """Thought-summary streaming copy: no tool lane, switch respected."""
+    if tools:
+        return messages
+    if not _thought_language_hint_enabled():
+        return messages
+    return _with_thought_language_hint(messages)
 
 
 def _bounded_context(value: str | None) -> str | None:
@@ -685,7 +747,7 @@ class B14Client:
             )
 
         request = _execution_request(
-            messages,
+            _streaming_messages(messages),
             skill=resolved_skill,
             model=resolved_model,
             required_capabilities=("free",),
@@ -758,7 +820,7 @@ class B14Client:
         # identity for one would silently change the streaming shape.
         tier = _owner_product_tier(policy.profile)
         request = _execution_request(
-            policy.messages,
+            _streaming_messages(policy.messages, tools=tools),
             skill=resolved_skill,
             model=policy.model_id,
             required_capabilities=("chat",),
