@@ -28,6 +28,11 @@ import pytest
 import identity_authority_durable as durable_module
 from identity_authority_durable import CloudflareCanonicalIdentityAuthorityStore
 from padiem_control_plane.auth_sessions import AuthSessionState
+from padiem_control_plane.tenants import (
+    TenantMembership,
+    TenantMembershipRole,
+    TenantMembershipState,
+)
 from padiem_control_plane.b54_identity_bridge import (
     B54IdentityBridgeError,
     TrustedB54ServerAuthEvidence,
@@ -97,6 +102,7 @@ class CanonicalStoreAuthority:
 
     def __init__(self, store: CloudflareCanonicalIdentityAuthorityStore) -> None:
         self._store = store
+        self.role_assignments: list[tuple[str, str, str | None]] = []
 
     def resolve_or_create_product_link(
         self, *, product_id, product_user_id, auth_provider, provider_subject
@@ -124,13 +130,28 @@ class CanonicalStoreAuthority:
     def create_tenant(self) -> str:
         return self._store.create_tenant(now=NOW).tenant_id
 
-    def assign_tenant_membership(self, *, tenant_id: str, canonical_subject_id: str) -> None:
-        self._store.assign_tenant_membership(
-            tenant_id=tenant_id, canonical_subject_id=canonical_subject_id, now=NOW
+    def assign_tenant_membership(
+        self, *, tenant_id: str, canonical_subject_id: str, role: str | None = None
+    ) -> TenantMembership:
+        self.role_assignments.append((tenant_id, canonical_subject_id, role))
+        return self._store.assign_tenant_membership(
+            tenant_id=tenant_id,
+            canonical_subject_id=canonical_subject_id,
+            now=NOW,
+            role=role,
         )
 
     def resolve_active_memberships(self, *, canonical_subject_id: str):
         return tuple(self._store._active_membership_tenant_ids(canonical_subject_id))
+
+    def resolve_active_tenant_membership(
+        self, *, tenant_id: str, canonical_subject_id: str, now: datetime
+    ) -> TenantMembership:
+        return self._store.resolve_active_tenant_membership(
+            tenant_id=tenant_id,
+            canonical_subject_id=canonical_subject_id,
+            now=now,
+        )
 
 
 def _fixture():
@@ -144,18 +165,35 @@ def _fixture():
     return storage, store, CanonicalStoreAuthority(store)
 
 
-def _evidence(user_id: str) -> TrustedB54ServerAuthEvidence:
+def _evidence(
+    user_id: str,
+    *,
+    provider: str = "password",
+    authenticated_at: datetime = NOW - timedelta(minutes=1),
+) -> TrustedB54ServerAuthEvidence:
     return TrustedB54ServerAuthEvidence(
         product_user_id=user_id,
-        provider="password",
+        provider=provider,
         provider_subject="claw-" + user_id,
-        authenticated_at=NOW - timedelta(minutes=1),
-        expires_at=NOW + timedelta(hours=1),
+        authenticated_at=authenticated_at,
+        expires_at=authenticated_at + timedelta(hours=1),
     )
 
 
-def _bridge(authority, user_id: str):
-    return asyncio.run(bridge_trusted_b54_server_auth(authority, _evidence(user_id), now=NOW))
+def _bridge(
+    authority,
+    user_id: str,
+    *,
+    provider: str = "password",
+    authenticated_at: datetime = NOW - timedelta(minutes=1),
+):
+    return asyncio.run(
+        bridge_trusted_b54_server_auth(
+            authority,
+            _evidence(user_id, provider=provider, authenticated_at=authenticated_at),
+            now=authenticated_at,
+        )
+    )
 
 
 def _session_count(storage: FakeStorage) -> int:
@@ -250,6 +288,10 @@ def test_zero_membership_provisions_through_the_canonical_authority():
     assert store.get_tenant(tenant_id=tenant_id).tenant_id == tenant_id
     subject_id = bridged.auth_session.subject.subject_id
     assert store._active_membership_tenant_ids(subject_id) == [tenant_id]
+    membership = store.resolve_active_tenant_membership(
+        tenant_id=tenant_id, canonical_subject_id=subject_id, now=NOW
+    )
+    assert membership.role is TenantMembershipRole.OWNER
     assert (
         storage.connection.execute(
             "SELECT COUNT(*) FROM canonical_auth_session WHERE tenant_id=?", (tenant_id,)
@@ -262,10 +304,60 @@ def test_repeated_bridge_calls_reuse_the_existing_canonical_tenant():
     _storage, _store, authority = _fixture()
 
     first = _bridge(authority, "usr_2964stable")
-    second = _bridge(authority, "usr_2964stable")
+    second = _bridge(
+        authority,
+        "usr_2964stable",
+        authenticated_at=NOW + timedelta(minutes=1),
+    )
 
     assert first.auth_session.tenant_id == second.auth_session.tenant_id
     assert first.identity_link.canonical_subject_id == second.identity_link.canonical_subject_id
+    assert len(authority.role_assignments) == 1
+
+
+def test_google_first_login_creates_personal_membership_with_owner_role():
+    _storage, store, authority = _fixture()
+
+    bridged = _bridge(authority, "usr_2964google", provider="google")
+
+    membership = store.resolve_active_tenant_membership(
+        tenant_id=bridged.auth_session.tenant_id,
+        canonical_subject_id=bridged.auth_session.subject.subject_id,
+        now=NOW,
+    )
+    assert membership.role is TenantMembershipRole.OWNER
+    assert authority.role_assignments == [
+        (membership.tenant_id, membership.canonical_subject_id, "owner")
+    ]
+
+
+def test_existing_roleless_membership_is_repaired_once_on_login():
+    _storage, store, authority = _fixture()
+    _link, tenant_ids = _enroll(
+        authority, store, product_id=B54_PRODUCT, user_id="usr_2964roleless", memberships=1
+    )
+
+    first = _bridge(
+        authority,
+        "usr_2964roleless",
+        authenticated_at=NOW + timedelta(minutes=1),
+    )
+    second = _bridge(
+        authority,
+        "usr_2964roleless",
+        authenticated_at=NOW + timedelta(minutes=2),
+    )
+
+    membership = store.resolve_active_tenant_membership(
+        tenant_id=tenant_ids[0],
+        canonical_subject_id=first.auth_session.subject.subject_id,
+        now=NOW,
+    )
+    assert first.auth_session.tenant_id == second.auth_session.tenant_id == tenant_ids[0]
+    assert membership.role is TenantMembershipRole.OWNER
+    assert authority.role_assignments == [
+        (tenant_ids[0], first.auth_session.subject.subject_id, "owner")
+    ]
 
 
 def test_authority_without_personal_tenant_capability_refuses_instead_of_minting_one():
@@ -348,10 +440,17 @@ def test_session_without_the_resolved_tenant_is_rejected():
             return ()
 
         def create_tenant(self) -> str:
-            return "tenant_never_enrolled"
+            return "tenant_ffffffffffffffffffffffffffffffff"
 
-        def assign_tenant_membership(self, *, tenant_id: str, canonical_subject_id: str) -> None:
-            return None
+        def assign_tenant_membership(
+            self, *, tenant_id: str, canonical_subject_id: str, role: str | None = None
+        ) -> TenantMembership:
+            return TenantMembership(
+                tenant_id=tenant_id,
+                canonical_subject_id=canonical_subject_id,
+                state=TenantMembershipState.ACTIVE,
+                role=TenantMembershipRole.OWNER,
+            )
 
     _storage, store, authority = _fixture()
 

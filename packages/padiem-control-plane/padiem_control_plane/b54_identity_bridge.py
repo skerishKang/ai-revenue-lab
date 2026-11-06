@@ -47,6 +47,11 @@ from .contracts import (
     ProductIdentityLink,
     SubjectType,
 )
+from .tenants import (
+    TenantMembership,
+    TenantMembershipRole,
+    TenantMembershipState,
+)
 
 B54_PRODUCT_ID = "b54-padiem-claw"
 
@@ -272,12 +277,20 @@ class TrustedB54ControlPlaneIdentityAuthority(Protocol):
     def create_tenant(self) -> str: ...
 
     def assign_tenant_membership(
-        self, *, tenant_id: str, canonical_subject_id: str
-    ) -> None: ...
+        self,
+        *,
+        tenant_id: str,
+        canonical_subject_id: str,
+        role: str | None = None,
+    ) -> TenantMembership: ...
 
     def resolve_active_memberships(
         self, *, canonical_subject_id: str
     ) -> tuple[str, ...]: ...
+
+    def resolve_active_tenant_membership(
+        self, *, tenant_id: str, canonical_subject_id: str, now: datetime
+    ) -> TenantMembership: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -342,6 +355,10 @@ async def bridge_trusted_b54_server_auth(
             500,
         )
 
+    effective_now = now if now is not None else datetime.now(timezone.utc)
+    if effective_now.tzinfo is None or effective_now.utcoffset() is None:
+        raise ValueError("now must be timezone-aware")
+
     try:
         link = await _maybe_await(
             authority.resolve_or_create_product_link(
@@ -378,7 +395,9 @@ async def bridge_trusted_b54_server_auth(
         subject_id=link.canonical_subject_id,
     )
 
-    tenant_id = await _resolve_canonical_tenant(authority, subject)
+    tenant_id = await _resolve_canonical_tenant(
+        authority, subject, now=effective_now
+    )
 
     try:
         session = await _maybe_await(
@@ -426,9 +445,6 @@ async def bridge_trusted_b54_server_auth(
             403,
         )
 
-    effective_now = now if now is not None else datetime.now(timezone.utc)
-    if effective_now.tzinfo is None or effective_now.utcoffset() is None:
-        raise ValueError("now must be timezone-aware")
     if not session.is_active(now=effective_now):
         raise _bridge_error(
             "b54_control_plane_session_inactive",
@@ -446,14 +462,16 @@ async def bridge_trusted_b54_server_auth(
 async def _resolve_canonical_tenant(
     authority: TrustedB54ControlPlaneIdentityAuthority,
     subject: CanonicalSubjectRef,
+    *,
+    now: datetime,
 ) -> str:
     """Resolve the one canonical tenant for ``subject``, or fail closed.
 
     Zero membership is provisioned only through the canonical Control Plane
-    personal-tenant authority — the same policy the reviewed password-authenticated
-    B62 login path already uses.  An authority that does not expose that canonical
-    capability is a policy refusal, not a licence to mint a tenant locally or to
-    proceed without one.
+    personal-tenant authority with OWNER role, following the policy used by the
+    reviewed B62 login path. A single roleless membership is repaired on login;
+    existing roles are preserved. An authority without this capability is a
+    policy refusal, not a licence to mint locally or continue without tenancy.
     """
 
     try:
@@ -481,7 +499,52 @@ async def _resolve_canonical_tenant(
             403,
         )
     if len(memberships) == 1:
-        return memberships[0]
+        tenant_id = memberships[0]
+        try:
+            membership = await _maybe_await(
+                authority.resolve_active_tenant_membership(
+                    tenant_id=tenant_id,
+                    canonical_subject_id=subject.subject_id,
+                    now=now,
+                )
+            )
+        except Exception as exc:
+            if (
+                getattr(exc, "code", None)
+                != "canonical_tenant_membership_role_missing"
+            ):
+                raise _bridge_error(
+                    "b54_control_plane_tenant_unavailable",
+                    "B54 canonical tenant membership is unavailable.",
+                ) from exc
+            membership = None
+        if membership is not None and (
+            not isinstance(membership, TenantMembership)
+            or membership.tenant_id != tenant_id
+            or membership.canonical_subject_id != subject.subject_id
+            or membership.state is not TenantMembershipState.ACTIVE
+        ):
+            raise _bridge_error(
+                "b54_control_plane_tenant_invalid",
+                "Canonical tenant authority returned an invalid membership.",
+            )
+        if membership is not None and membership.role is not None:
+            return tenant_id
+        try:
+            assigned = await _maybe_await(
+                authority.assign_tenant_membership(
+                    tenant_id=tenant_id,
+                    canonical_subject_id=subject.subject_id,
+                    role=TenantMembershipRole.OWNER.value,
+                )
+            )
+            _validate_owner_membership(assigned, tenant_id, subject.subject_id)
+        except Exception as exc:
+            raise _bridge_error(
+                "b54_control_plane_tenant_unavailable",
+                "B54 canonical tenant provisioning is unavailable.",
+            ) from exc
+        return tenant_id
 
     if not callable(getattr(authority, "create_tenant", None)) or not callable(
         getattr(authority, "assign_tenant_membership", None)
@@ -494,18 +557,33 @@ async def _resolve_canonical_tenant(
         tenant_id = await _maybe_await(authority.create_tenant())
         if not isinstance(tenant_id, str) or not tenant_id:
             raise ValueError("invalid canonical tenant")
-        await _maybe_await(
+        assigned = await _maybe_await(
             authority.assign_tenant_membership(
                 tenant_id=tenant_id,
                 canonical_subject_id=subject.subject_id,
+                role=TenantMembershipRole.OWNER.value,
             )
         )
+        _validate_owner_membership(assigned, tenant_id, subject.subject_id)
     except Exception as exc:
         raise _bridge_error(
             "b54_control_plane_tenant_unavailable",
             "B54 canonical tenant provisioning is unavailable.",
         ) from exc
     return tenant_id
+
+
+def _validate_owner_membership(
+    membership: Any, tenant_id: str, canonical_subject_id: str
+) -> None:
+    if (
+        not isinstance(membership, TenantMembership)
+        or membership.tenant_id != tenant_id
+        or membership.canonical_subject_id != canonical_subject_id
+        or membership.state is not TenantMembershipState.ACTIVE
+        or membership.role is not TenantMembershipRole.OWNER
+    ):
+        raise ValueError("invalid canonical personal tenant owner membership")
 
 
 def require_active_b54_canonical_session(

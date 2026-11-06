@@ -265,6 +265,16 @@ def test_producer_pins_provider_and_derives_the_lifetime_server_side():
         def resolve_active_memberships(self, *, canonical_subject_id: str):
             return (TENANT,)
 
+        def resolve_active_tenant_membership(
+            self, *, tenant_id: str, canonical_subject_id: str, now: datetime
+        ) -> TenantMembership:
+            return TenantMembership(
+                tenant_id=tenant_id,
+                canonical_subject_id=canonical_subject_id,
+                state=TenantMembershipState.ACTIVE,
+                role=TenantMembershipRole.OWNER,
+            )
+
         def establish_auth_session(self, **kwargs):
             seen.append(kwargs)
             return AuthSessionSnapshot(
