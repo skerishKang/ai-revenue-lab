@@ -249,37 +249,34 @@ async def test_the_cycle_arms_at_creation_without_any_real_call() -> None:
     assert len(client.calls) == len(warm_urls)
 
 
-async def test_every_cycle_leaves_one_identity_keepwarm_status_line() -> None:
-    """운영 증명: 주기마다 값만 담은 저널 한 줄이 남는다."""
+async def test_every_cycle_leaves_one_identity_keepwarm_status_line(caplog) -> None:
+    """Capture each warm status through the host-visible logger with caplog."""
 
     import logging
     import re
 
-    seen: list[str] = []
-    logger = logging.getLogger("padiem_chat.identity_keepwarm")
-
-    class _Capture(logging.Handler):
-        def emit(self, record: logging.LogRecord) -> None:
-            seen.append(record.getMessage())
-
+    logger_name = "padiem_chat.orchestration_timing"
     line_re = re.compile(r"^identity_keepwarm status=\d+ ms=\d+(?:\.\d+)?$")
-    handler = _Capture()
-    logger.addHandler(handler)
-    logger.setLevel(logging.INFO)
-    try:
-        client = _WarmClient(fail_first=1)
-        binding = HttpRpcBinding(ORIGIN, SECRET, client=client, keepwarm_seconds=PERIOD)
-        try:
-            await _expect_cycles(client, 3)
-        finally:
-            await binding.aclose()
-    finally:
-        logger.removeHandler(handler)
-        logger.setLevel(logging.NOTSET)
+    caplog.set_level(logging.INFO)
 
-    assert seen, "each warm cycle must leave exactly one status line"
-    for line in seen:
-        assert line_re.fullmatch(line), line
+    client = _WarmClient(fail_first=1)
+    binding = HttpRpcBinding(ORIGIN, SECRET, client=client, keepwarm_seconds=PERIOD)
+    try:
+        # Construction arms the startup cycle in this running event loop; no real
+        # RPC is needed for the status line to reach the service journal logger.
+        await _expect_cycles(client, 3)
+    finally:
+        await binding.aclose()
+
+    warm_count = sum(call["url"] == WARM_URL for call in client.calls)
+    records = [
+        record
+        for record in caplog.records
+        if record.name == logger_name and line_re.fullmatch(record.getMessage())
+    ]
+    assert len(records) == warm_count
+    for record in records:
+        line = record.getMessage()
         assert ORIGIN not in line and "padiem-chat-identity-keepwarm-synthetic" not in line
         assert "secret" not in line.lower()
 

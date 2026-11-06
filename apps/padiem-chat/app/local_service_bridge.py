@@ -28,7 +28,6 @@ import asyncio
 import hashlib
 import hmac
 import json
-import logging
 import re
 import time
 import uuid
@@ -38,6 +37,7 @@ import httpx
 
 from .b14_upstream_composition import compose_b14_transports
 from .config import ConfigError
+from .orchestration_timing import LOG as _IDENTITY_KEEPWARM_LOG
 
 __all__ = [
     "HttpRpcBinding",
@@ -63,7 +63,6 @@ _RPC_PATH_PREFIX = "/internal/rpc/"
 _METHOD_RE = re.compile(r"^[a-z][a-z0-9_]{2,63}$")
 # One journal line per warm cycle (status and milliseconds only) — ops proves
 # the ignition without a turn, the same way the Engine's keepwarm line does.
-_IDENTITY_KEEPWARM_LOG = logging.getLogger("padiem_chat.identity_keepwarm")
 _SECRET_MIN_CHARS = 32
 # The identity authority is woken with a real dispatchable RPC, not a bare
 # request: only ``/internal/rpc/<method>`` leaves the gateway Worker, so a
