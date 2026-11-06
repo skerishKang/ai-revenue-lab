@@ -129,13 +129,14 @@ test('email login verifies through the signed Chat RPC and finishes the shared c
   assert.equal(minted.access_token.split('.').length, 3);
 });
 
-test('password accounts disclose the login identifier as their profile, server side only', async () => {
+test('password accounts disclose the login identifier without claiming a verified mailbox', async () => {
   const f = await setup({ profile: true });
   const begun = await f.begin();
   const done = await f.postForm('/login/password', begun.formState, begun.cookie, { email: EMAIL, password: PASSWORD });
   const target = new URL(done.headers.get('location'));
   const body = await (await f.post({ grant_type: 'authorization_code', code: target.searchParams.get('code'), code_verifier: begun.verifier, redirect_uri: REDIRECT })).json();
-  assert.deepEqual(body.profile, { email: EMAIL, email_verified: true, name: '', picture: '' });
+  assert.deepEqual(body.profile, { email: EMAIL, email_verified: false, name: '', picture: '' });
+  assert.equal(body.profile.email_verified === true, false);
   assert.equal(JSON.stringify(body).includes(USER_ID), false);
 });
 

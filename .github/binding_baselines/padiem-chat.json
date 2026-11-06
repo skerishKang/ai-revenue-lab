@@ -148,6 +148,10 @@
       "type": "secret_text"
     },
     {
+      "name": "PADIEM_CHAT_PASSWORD_RPC_SECRET",
+      "type": "secrets_store_secret"
+    },
+    {
       "name": "PADIEM_CHAT_LIVE_ENABLED",
       "type": "plain_text"
     },

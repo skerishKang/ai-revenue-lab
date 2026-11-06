@@ -40,6 +40,10 @@
     {
       "name": "PADIEM_AUTH_SIGNING_KID",
       "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_CHAT_PASSWORD_RPC_ORIGIN",
+      "type": "plain_text"
     }
   ],
   "source": "2026-10-31 name and type lookup (values not inspected)"

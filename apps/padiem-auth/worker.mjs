@@ -2,7 +2,7 @@ import { AuthState } from './state.mjs';
 import { verifyGoogleIdToken } from './google-id-token.mjs';
 import { issueAccessToken } from './access-token.mjs';
 import { verifyClientAssertion } from './client-assertion.mjs';
-import { profileClaimAllowlist, verifiedProfile } from './profile-claims.mjs';
+import { profileClaimAllowlist, verifiedProfile, verifiedIssuedProfile } from './profile-claims.mjs';
 
 const ORIGIN = 'https://auth.padiem.net';
 const CALLBACK = `${ORIGIN}/oauth/google/callback`;
@@ -359,11 +359,14 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const fields = profileClaimAllowlist(clients[pending.client]);
       let encryptedProfile;
       if (fields.length) {
-        // The mailbox itself is not verified by a password login; this claim
-        // only asserts "this is the account's registered login identifier",
-        // which the credential check just proved. If a product needs Google-
-        // style mailbox verification for password accounts, gate it here.
-        const profile = verifiedProfile({ email, email_verified: true, name: '', picture: '' }, fields);
+        // A password login proves the credential, not the mailbox: the profile
+        // NEVER claims a verified email. Operator allowlists key on the email,
+        // so a "verified" claim on an account registered with someone else's
+        // address would grant operator standing; Chat's shared-profile
+        // provision also rejects any password profile outright. profile_claims
+        // clients are expected to keep password_login off.
+        const claims = { email, email_verified: false, name: '', picture: '' };
+        const profile = Object.fromEntries(fields.map(field => [field, claims[field]]));
         const iv = crypto.getRandomValues(new Uint8Array(12));
         const aad = encoder.encode(`profile:${pending.client}:${codeDigest}`);
         const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: aad }, refreshKey, encoder.encode(JSON.stringify(profile)));
@@ -452,7 +455,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
           if (!iv || !cipher || extra !== undefined) throw new Error('invalid profile');
           const aad = encoder.encode(`profile:${id}:${await digest(code[1])}`);
           const plain = await crypto.subtle.decrypt({name:'AES-GCM',iv:un64(iv),additionalData:aad}, refreshKey, un64(cipher));
-          profile = verifiedProfile(JSON.parse(new TextDecoder().decode(plain)), fields);
+          profile = verifiedIssuedProfile(JSON.parse(new TextDecoder().decode(plain)), fields);
         }
         if (tokenTiming) tokenTiming.profileMs = performance.now() - profileStarted;
       } else {
