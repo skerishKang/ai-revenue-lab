@@ -270,6 +270,7 @@ async function requestRetrievalPreview(query, opts){
    unit (bounded), caches blocks + a stem term index, and projects eligible
    prior-page candidates so the co-reader can ground ALLOW in model-visible refs. */
 var __gBlocks=null, __gBlocksWorkKey=null, __gBlocksLoading=null, __gTermIndex=null, __gTermIndexWorkKey=null;
+var GROUNDING_LOAD_TIMEOUT_MS=6000;
 function storyMemorySeedGroundingBlocksV1(blocks, workKey){
   __gBlocks=Array.isArray(blocks)?blocks:null;
   __gBlocksWorkKey=(__gBlocks&&__gBlocks.length)?String(workKey||''):null;
@@ -293,10 +294,8 @@ function manifestUnitKeyForBibleLocator(locator){
   if(!m) return null;
   return 'book:'+m[1].toUpperCase()+':chapter:'+String(Number(m[2])).padStart(3,'0');
 }
-async function loadInCeilingBlocksForWork(workKey){
-  if(typeof window==='undefined' || !window.storyMemoryStatic) return null;
+async function loadInCeilingBlocksUnbounded(workKey, staticAdapter){
   try{
-    var staticAdapter=window.storyMemoryStatic;
     var catalog=await staticAdapter.getCatalog();
     var entry=null;
     for(var i=0;i<catalog.works.length;i++) if(catalog.works[i].work_key===workKey) entry=catalog.works[i];
@@ -337,7 +336,7 @@ async function loadInCeilingBlocksForWork(workKey){
       var u=manifestUnitByOrdinal(manifest, ordinals[oi]);
       if(!u) continue;
       var bundle=null;
-      try{ bundle=await staticAdapter.loadUnit({workKey:workKey, unitOrdinal:u.unit_ordinal}); }catch(_){ continue; }
+      try{ bundle=await staticAdapter.loadUnit({workKey:workKey, unitOrdinal:u.unit_ordinal}); }catch(_){ return null; }
       var unit=(bundle&&bundle.unit)?bundle.unit:null;
       if(!unit) continue;
       var passages=(unit&&Array.isArray(unit.passages))?unit.passages:[];
@@ -370,6 +369,30 @@ async function loadInCeilingBlocksForWork(workKey){
     }
     return blocks.length?blocks:null;
   }catch(e){ return null; }
+}
+async function loadInCeilingBlocksForWork(workKey){
+  if(typeof window==='undefined' || !window.storyMemoryStatic) return null;
+  var controller=typeof AbortController==='function'?new AbortController():null;
+  var staticAdapter=window.storyMemoryStatic;
+  // Isolate these requests from reader-wide cached promises. A timed-out fetch
+  // must not poison a later attempt or evict an in-flight reader request.
+  if(typeof window.createStoryMemoryStaticAdapter==='function' && typeof window.fetch==='function'){
+    staticAdapter=window.createStoryMemoryStaticAdapter({fetchImpl:function(url,options){
+      var requestOptions=Object.assign({},options||{});
+      if(controller)requestOptions.signal=controller.signal;
+      return window.fetch(url,requestOptions);
+    }});
+  }
+  var deadline;
+  try{
+    return await Promise.race([
+      loadInCeilingBlocksUnbounded(workKey,staticAdapter),
+      new Promise(function(resolve){deadline=setTimeout(function(){
+        if(controller)controller.abort();
+        resolve(null);
+      },GROUNDING_LOAD_TIMEOUT_MS);})
+    ]);
+  }finally{clearTimeout(deadline);}
 }
 async function storyMemoryEnsureGroundingBlocksV1(workKey){
   if(!workKey) return null;
