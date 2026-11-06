@@ -65,6 +65,9 @@ RENEW_INTERVAL_SECONDS = 20
 IDLE_POLL_BASE_SECONDS = 1
 IDLE_POLL_MAX_SECONDS = 60
 COM2_IDLE_POLL_MAX_SECONDS = 10
+#: An idle loop says so at most this often. The counter line is printed only on a
+#: round that carried work, so without this a quiet lane looks like a lost counter.
+IDLE_HEARTBEAT_SECONDS = 300
 #: Only an empty answer from the lane earns a longer wait. A round this host skipped -
 #: the failover gate closed, or a held result still waiting to be sent - proves nothing
 #: about the queue, and backing off there would slow exactly the moment a handover needs
@@ -2442,6 +2445,7 @@ __all__ = [
     "CHANNEL_STALL_SECONDS",
     "IDLE_POLL_BASE_SECONDS",
     "IDLE_POLL_MAX_SECONDS",
+    "IDLE_HEARTBEAT_SECONDS",
     "MAX_COMMAND_BYTES",
     "MAX_READ_BYTES",
     "PC_FILE_ERROR_PREFIX",
@@ -2897,6 +2901,9 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
     #: The wait before the next ask. It grows only across rounds the lane itself
     #: answered empty, and resets the moment the queue produces work.
     gap = IDLE_POLL_BASE_SECONDS
+    #: None, not 0.0: monotonic() is seconds since boot, and a fresh container can
+    #: report less than the heartbeat interval.
+    idle_reported_at = None
     while True:
         try:
             result = executor.run_once()
@@ -2914,6 +2921,11 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             # something about the queue, and only for it does the next ask wait
             # longer - a skipped round goes back to the base so a failover landing on
             # this host starts claiming on the next second.
+            if (executor.last_round == ROUND_IDLE
+                    and (idle_reported_at is None
+                         or time.monotonic() - idle_reported_at >= IDLE_HEARTBEAT_SECONDS)):
+                print("oracle-mesh-executor poll idle", flush=True)
+                idle_reported_at = time.monotonic()
             time.sleep(gap)
             gap = (IDLE_POLL_BASE_SECONDS if executor.last_round != ROUND_IDLE
                    else min(gap * 2, executor.idle_poll_max_seconds))
