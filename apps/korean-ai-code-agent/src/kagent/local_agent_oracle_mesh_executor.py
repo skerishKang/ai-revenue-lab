@@ -1160,6 +1160,7 @@ class OracleMeshExecutor:
             outcome = self._command_port.run_command(
                 node_ref=dispatch.node_ref,
                 command=script,
+                run_as="system",
                 # The same deadline shape the read lane uses: a deployment that
                 # names a base step gets four of them, and one that names none
                 # keeps the platform's own bound.
@@ -1276,7 +1277,8 @@ class OracleMeshExecutor:
         )
         try:
             outcome = self._command_port.run_command(
-                node_ref=node_ref, command=script, timeout_seconds=30,
+                node_ref=node_ref, command=script, run_as="system",
+                timeout_seconds=30,
             )
             # 11-05: the command port's outcome carries ``output`` — the same
             # field the command lane reads. ``outcome.body`` never existed on
@@ -1425,7 +1427,7 @@ class OracleMeshExecutor:
             # command port is a misconfiguration, not a silent no-op.
             raise OracleMeshChannelRefused("command execution is not configured")
         started = time.monotonic()
-        self._trace_command(dispatch, "start", started)
+        self._trace_command(dispatch, "start", started, requested_as="user")
 
         def phase(phase_name: str) -> None:
             self._trace_command(dispatch, phase_name, started)
@@ -1438,6 +1440,7 @@ class OracleMeshExecutor:
             observed = self._command_port.run_command(
                 node_ref=dispatch.node_ref,
                 command=dispatch.command_text or "",
+                run_as="user",
                 # Long-running commands carry no PADIEM client deadline; the
                 # progress trace is already reported through phase (#5983). The
                 # owner's stop is what ends one now (#5895): the probe asks the
@@ -1459,12 +1462,16 @@ class OracleMeshExecutor:
                 # The port refused before the PC was asked. Collapsing that into
                 # ``no_reply`` would report a silent console for a command that
                 # never ran, so the two observations stay separate.
-                self._trace_command(dispatch, "refused", started, reason="port")
+                self._trace_command(
+                    dispatch, "refused", started,
+                    reason="port", response_kind="port_refusal",
+                )
                 return OracleMeshExecutionOutcome(
                     termination="not_executed", exit_code=None, body=b"",
                 )
             self._trace_command(
                 dispatch, "error", started, error_type=type(exc).__name__,
+                response_kind="port_error",
             )
             return OracleMeshExecutionOutcome(termination="no_reply", exit_code=None, body=b"")
         termination = getattr(observed, "termination", "no_reply")
@@ -1484,6 +1491,20 @@ class OracleMeshExecutor:
         if not isinstance(body, (bytes, bytearray)):
             body = b""
         raw = bytes(body)
+        response_kind = getattr(observed, "response_kind", None)
+        if response_kind not in {
+            "user_session_start_marker",
+            "user_reply_missing_marker",
+            "user_session_no_reply",
+            "console_session_absent",
+            "console_session_probe_unavailable",
+            "meshcentral_runcommands_reply",
+            "meshcentral_no_reply",
+        }:
+            response_kind = None
+        observed_run_as = getattr(observed, "run_as", None)
+        if observed_run_as not in ("user", "system"):
+            observed_run_as = None
         blocked = getattr(observed, "line_blocked", 0)
         cleared = getattr(observed, "line_cleared", 0)
         blocked = blocked if isinstance(blocked, int) and not isinstance(blocked, bool) else 0
@@ -1493,6 +1514,8 @@ class OracleMeshExecutor:
         self._trace_command(
             dispatch, "result", started, termination=termination,
             output_bytes=len(raw),
+            response_kind=response_kind,
+            run_as=observed_run_as,
             line_blocked=blocked or None,
             line_cleared=cleared or None,
         )
