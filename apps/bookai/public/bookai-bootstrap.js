@@ -1,6 +1,7 @@
 /* Prepare IndexedDB before any of the legacy reader's synchronous startup code.
    One bad script must never hold the first screen hostage: every script is
-   isolated, the gate is always removed, and the whole boot is capped at 15s. */
+   isolated and the gate is always removed. The 15s deadline only reveals the
+   screen; the remaining scripts keep loading and the final flush still runs. */
 (function () {
   'use strict';
   const BOOT_TIMEOUT_MS = 15000;
@@ -27,14 +28,17 @@
     document.body.append(el);
     setTimeout(()=>el.remove(),8000);
   }
-  function finish(reason){
-    if(finished)return;
-    finished=true;
-    clearTimeout(deadlineTimer);
+  function reveal(reason){
     const current=document.getElementById('bookai-startup');
     if(current)current.remove();
     document.body.removeAttribute('aria-busy');
     if(reason==='timeout')toast('일부 기능을 불러오지 못했어요');
+  }
+  function finish(reason){
+    if(finished)return;
+    finished=true;
+    clearTimeout(deadlineTimer);
+    reveal(reason);
     window.dispatchEvent(new Event('bookai-ready'));
   }
   function scriptName(script){
@@ -52,19 +56,16 @@
     else{script.textContent=old.textContent;old.replaceWith(script);}
   }
   window.BookAIReady=(async()=>{
-    deadlineTimer=setTimeout(()=>finish('timeout'),BOOT_TIMEOUT_MS);
+    deadlineTimer=setTimeout(()=>reveal('timeout'),BOOT_TIMEOUT_MS);
     try{
       try{await BookAILocalDB.init();}
       catch(error){console.error('bookai_storage_failed',error&&error.message||error);}
       for(const script of [...document.querySelectorAll('script[data-bookai-script]')]){
-        if(finished)break;
         try{await runScript(script);}
         catch(error){console.error('bookai_script_failed',scriptName(script),error&&error.message||error);}
       }
-      if(!finished){
-        try{await BookAILocalDB.flush();}
-        catch(error){console.error('bookai_storage_flush_failed',error&&error.message||error);}
-      }
+      try{await BookAILocalDB.flush();}
+      catch(error){console.error('bookai_storage_flush_failed',error&&error.message||error);}
       finish('ready');
     }catch(error){
       console.error('bookai_boot_failed',error&&error.message||error);
