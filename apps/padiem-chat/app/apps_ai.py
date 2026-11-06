@@ -141,6 +141,23 @@ def _journal_answer_incomplete(name: str, reason: str, visible: str, payload: Ma
           % (name, reason, len(visible), produced, trace), flush=True)
 
 
+def _server_timing(started: float, p01_ms: float | None, engine_ms: int | None) -> str:
+    """Elapsed split for one app AI request. Durations only, never a name.
+
+    ``engine`` is the run duration P01 already reports in its response metadata;
+    the exact B14 call time stays in the P01 journal and the B14 ledger.
+    """
+    def whole(value: float) -> int:
+        return max(0, min(600_000, int(round(value))))
+
+    parts = [f"chat;dur={whole(time.perf_counter() - started)}"]
+    if p01_ms is not None:
+        parts.append(f"p01;dur={whole(p01_ms)}")
+    if engine_ms is not None:
+        parts.append(f"engine;dur={whole(engine_ms)}")
+    return ", ".join(parts)
+
+
 def _error(code: str, status: int, retryable: bool | None = None) -> JSONResponse:
     error: dict[str, Any] = {"code": code}
     if retryable is not None:
@@ -169,6 +186,15 @@ class AppsAIService:
                 )
 
     async def handle(self, request):
+        started = time.perf_counter()
+        timing: dict[str, float | int] = {}
+        response = await self._handle(request, timing)
+        response.headers["Server-Timing"] = _server_timing(
+            started, timing.get("p01"), timing.get("engine"),
+        )
+        return response
+
+    async def _handle(self, request, timing: dict[str, float | int]):
         if request.method != "POST":
             return _error("method_not_allowed", 405)
         if request.url.path != APPS_AI_PATH or request.url.query:
@@ -221,7 +247,11 @@ class AppsAIService:
         if engine is None:
             return _error("p01_not_configured", 503)
         try:
-            body = await engine.execute({key: value for key, value in payload.items() if key != "app_id"})
+            p01_started = time.perf_counter()
+            try:
+                body = await engine.execute({key: value for key, value in payload.items() if key != "app_id"})
+            finally:
+                timing["p01"] = (time.perf_counter() - p01_started) * 1000.0
         except PadiemAiEngineClientError as error:
             status = error.status if isinstance(error.status, int) and 400 <= error.status <= 599 else 400
             if error.code in {"invalid_engine_response", "engine_http_error"} and status < 500:
@@ -230,6 +260,10 @@ class AppsAIService:
         except (LocalEngineTransportError, httpx.HTTPError):
             return _error("p01_unavailable", 503)
         body = dict(body)
+        metadata = body.get("metadata")
+        duration_ms = metadata.get("duration_ms") if isinstance(metadata, Mapping) else None
+        if type(duration_ms) is int and duration_ms >= 0:
+            timing["engine"] = duration_ms
         visible, cut_here = strip_thought_blocks_reported(body["answer"])
         reason = _answer_truncation_reason(body, visible, cut_here, tokens)
         if reason is not None:

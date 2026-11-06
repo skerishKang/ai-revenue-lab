@@ -351,6 +351,21 @@ function assetCacheControl(pathname) {
   if (pathname.startsWith("/styles/") || pathname.endsWith(".js") || pathname.endsWith(".mjs") || pathname.endsWith(".css")) return "no-cache";
   return null;
 }
+// Chat's own stage entries: a closed name set and a duration, nothing else.
+// Anything outside this shape (another name, unit, or parameter) is dropped.
+const UPSTREAM_TIMING_NAMES = new Set(["chat", "p01", "engine"]);
+function upstreamTimingEntries(header) {
+  const entries = [];
+  for (const part of String(header ?? "").split(",")) {
+    const match = /^([a-z0-9]+);dur=(\d+(?:\.\d+)?)$/.exec(part.trim());
+    if (!match || !UPSTREAM_TIMING_NAMES.has(match[1])) continue;
+    const value = Number(match[2]);
+    if (!Number.isFinite(value) || value < 0 || value > 600000) continue;
+    if (entries.some((entry) => entry.startsWith(`${match[1]};`))) continue;
+    entries.push(`${match[1]};dur=${Math.round(value)}`);
+  }
+  return entries;
+}
 async function serveAsset(request, env) {
   const response = await env.ASSETS.fetch(request);
   const cacheControl = assetCacheControl(new URL(request.url).pathname);
@@ -387,6 +402,7 @@ export default {
       const workerStarted = performance.now();
       let packetMs = null;
       let upstreamMs = null;
+      let upstreamTiming = null;
       const durationMs = (started) => Math.max(0, Math.round(performance.now() - started));
       const timedJson = (body, status = 200) => {
         const response = json(body, status);
@@ -394,6 +410,7 @@ export default {
         if (packetMs !== null) timing.push(`packet;dur=${packetMs}`);
         timing.push(`worker;dur=${durationMs(workerStarted)}`);
         if (upstreamMs !== null) timing.push(`upstream;dur=${upstreamMs}`);
+        if (upstreamTiming !== null) timing.push(...upstreamTiming);
         response.headers.set('Server-Timing', timing.join(', '));
         return response;
       };
@@ -434,6 +451,7 @@ export default {
         allowIngressFallback: APP_AI_CALLER === "storymemory"
       });
       upstreamMs = durationMs(upstreamStarted);
+      upstreamTiming = upstreamTimingEntries(upstream.timing);
       const payload = upstream.payload;
       if (upstream.status < 200 || upstream.status >= 300 || payload?.ok !== true || typeof payload?.answer !== "string") {
         return timedJson({ ok: false, error: upstreamErrorCode(payload, upstream.transport === "authenticated_ingress" ? "ingress_execution_failed" : "com2_ai_execution_failed"), retryable: Boolean(payload?.error?.retryable) }, upstream.status >= 400 && upstream.status <= 599 ? upstream.status : 502);
