@@ -28,6 +28,11 @@ HOST_ENV = {
         "com2-host-identity-secret-0123456789abcdef"
     ),
     "PADIEM_CHAT_LOOP_STALL_WATCHDOG": "off",
+    # build_app() exports a generated session secret to os.environ when none
+    # is pinned, and monkeypatch cannot undo a direct write; the leaked value
+    # broke a later Settings.from_env() comparison. Pin it, as the Mesh
+    # startup test already does.
+    "PADIEM_CHAT_SESSION_SECRET": "synthetic-session-secret-0123456789abcdef",
 }
 
 
