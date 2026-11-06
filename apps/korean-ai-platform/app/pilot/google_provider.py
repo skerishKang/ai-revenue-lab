@@ -9,8 +9,8 @@ and ``gemma-4-31b-it``. All four were confirmed present in the live
 Google's documented OpenAI-compatible origin is
 https://generativelanguage.googleapis.com/v1beta/openai. The existing
 Business 14 OpenAI-compatible client uses Authorization: Bearer with the
-Google AI Studio key. Text-only calls retain this wire; slice 3-A uses native
-streamGenerateContent with x-goog-api-key only for explicit tools. The existing binding is
+Google AI Studio key. Native streaming handles declared tools and enabled thought
+summaries with x-goog-api-key. The existing binding is
 ``PADIEM_B14_CREDENTIAL_05`` (name only; the value is never read, printed, or
 committed here).
 
@@ -153,7 +153,10 @@ def _tool_channel():
     return tool_channel
 
 
-def _google_tool_body(*, messages, tools, tool_choice, temperature, max_tokens, model_parameters):
+def _google_tool_body(
+    *, messages, tools, tool_choice, temperature, max_tokens, model_parameters,
+    include_thoughts=False,
+):
     """Translate the already validated B14 declaration, without adding defaults.
 
     The same translation carries a follow-up turn (#4727): an assistant call
@@ -287,8 +290,10 @@ def _google_tool_body(*, messages, tools, tool_choice, temperature, max_tokens, 
         contents.append({"role": "user", "parts": [{"text": message["content"]}]})
     close_call_turn()
 
-    functions = function_declarations(tools)
-    body = {"contents": contents, "tools": [{"functionDeclarations": functions}]}
+    body = {"contents": contents}
+    if declared:
+        functions = function_declarations(tools)
+        body["tools"] = [{"functionDeclarations": functions}]
     if system_parts:
         body["systemInstruction"] = {"parts": system_parts}
     if choice is not None:
@@ -307,6 +312,8 @@ def _google_tool_body(*, messages, tools, tool_choice, temperature, max_tokens, 
         generation["thinkingConfig"] = {
             "thinkingLevel": str(model_parameters["reasoning_effort"]).upper()
         }
+    if include_thoughts:
+        generation.setdefault("thinkingConfig", {})["includeThoughts"] = True
     if generation:
         body["generationConfig"] = generation
     return body
@@ -320,8 +327,9 @@ class _GoogleMalformedShape(ValueError):
 class _GoogleToolStream:
     """Decode complete native SSE frames; no tool execution or classification."""
 
-    def __init__(self, names, model_id="unknown"):
+    def __init__(self, names, model_id="unknown", *, include_thoughts=False):
         self.model_id = model_id
+        self.include_thoughts = include_thoughts
         import uuid
         self.names = names
         self.call_prefix = "call_" + uuid.uuid4().hex
@@ -381,6 +389,11 @@ class _GoogleToolStream:
                     if not isinstance(part, dict):
                         raise _GoogleMalformedShape("invalid_part")
                     if part.get("thought") is True:
+                        if self.include_thoughts and "text" in part:
+                            thought = part["text"]
+                            if not isinstance(thought, str) or self.finish_reason is not None:
+                                raise _GoogleMalformedShape("invalid_thought")
+                            events.append(StreamEvent(**metadata, delta_thought=thought))
                         continue
                     if "functionCall" in part:
                         if self.finish_reason is not None:
@@ -409,10 +422,8 @@ class _GoogleToolStream:
                         text = part["text"]
                         if not isinstance(text, str) or self.finish_reason is not None:
                             raise _GoogleMalformedShape("invalid_text")
-                        # A signed answer part relays its own token. A thinking
-                        # part is deliberately not relayed above, so its token
-                        # has no part to travel with; the turn's merge rule is
-                        # the last non-null token a consumer saw.
+                        # A signed answer part relays its own token. Thinking
+                        # text is carried separately from the answer.
                         events.append(StreamEvent(
                             **metadata, delta_content=text,
                             signature=part_signature(part),
@@ -450,44 +461,66 @@ class _GoogleToolStream:
                             path="native_stream") from None
 
 
+class NativeThoughtRejected(Exception):
+    """The native thought request was rejected before streaming began."""
+
+    def __init__(self, status_code):
+        self.status_code = status_code
+        super().__init__(f"native thought request rejected: HTTP {status_code}")
+
+
 async def stream_google_tool_calls(*, model_id, upstream_model, spec, messages, tools,
                                    tool_choice=None, temperature=None, max_tokens=None,
-                                   model_parameters=None, transport=None):
-    """Google-only native wire, entered only when tools are explicitly present.
+                                   model_parameters=None, transport=None, include_thoughts=False,
+                                   policy_effort=None):
+    """Google-only native wire for tool calls or enabled thought summaries.
 
     References: https://ai.google.dev/api/generate-content#method:-models.streamgeneratecontent
     and https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite.
     Uses the existing Google binding; no credential in the URL or diagnostics.
     """
+    from dataclasses import replace
     import httpx
     from . import platform as plat
     from .catalog import get_catalog_by_id
-    from .errors import InvalidRequest, UpstreamResponseTooLarge, UpstreamServerError, UpstreamTimeout
+    from .errors import (
+        InvalidRequest, PilotError, UpstreamResponseTooLarge,
+        UpstreamServerError, UpstreamTimeout,
+    )
     from .model_native_parameters import UnsupportedModelParameter, validate_native_parameters
     from .stream_types import StreamEvent, _pop_sse_frames
     from .upstream_answer_contract import UpstreamEmptyAnswer
     from .worker_env import load_request_secret
 
-    require_stream_tool_support(model_id, spec.provider_id)
+    if tools:
+        require_stream_tool_support(model_id, spec.provider_id)
     registered = get_catalog_by_id(model_id)
-    if registered.upstream_model != upstream_model or spec.base_origin != GOOGLE_BASE_ORIGIN:
+    if (
+        registered is None or registered.platform_provider_id != GOOGLE_PROVIDER_ID
+        or registered.upstream_model != upstream_model or spec.base_origin != GOOGLE_BASE_ORIGIN
+    ):
         raise InvalidRequest("Google tool wire requires the exact registered route.")
     try:
         parameters = validate_native_parameters(model_id, model_parameters or {})
     except UnsupportedModelParameter as exc:
         raise InvalidRequest(str(exc)) from exc
+    if include_thoughts and policy_effort is not None:
+        if policy_effort not in {"minimal", "low", "medium", "high"}:
+            raise InvalidRequest("Invalid thought policy effort.")
+        parameters["reasoning_effort"] = policy_effort
     body = _google_tool_body(messages=messages, tools=tools, tool_choice=tool_choice,
-        temperature=temperature, max_tokens=max_tokens, model_parameters=parameters)
+        temperature=temperature, max_tokens=max_tokens, model_parameters=parameters,
+        include_thoughts=include_thoughts)
     await load_request_secret(spec.credential_binding_name)
     legacy_headers = plat._request_headers(spec, model_id=model_id)
     headers = {"Content-Type": "application/json", "x-goog-api-key": legacy_headers["Authorization"][7:]}
     url = f"https://{GOOGLE_ALLOWED_HOST}/v1beta/models/{upstream_model}:streamGenerateContent?alt=sse"
-    permitted_names = {tool["function"]["name"] for tool in tools}
+    permitted_names = {tool["function"]["name"] for tool in (tools or [])}
     if tool_choice == "none":
         permitted_names = set()
     elif isinstance(tool_choice, dict):
         permitted_names = {tool_choice["function"]["name"]}
-    decoder = _GoogleToolStream(permitted_names, model_id)
+    decoder = _GoogleToolStream(permitted_names, model_id, include_thoughts=include_thoughts)
     kwargs = {"timeout": plat.build_provider_http_timeout(model_id)}
     if transport is not None:
         kwargs["transport"] = transport
@@ -499,10 +532,19 @@ async def stream_google_tool_calls(*, model_id, upstream_model, spec, messages, 
             )
             async with aclosing(response):
                 if not 200 <= response.status_code < 300:
+                    if include_thoughts and 400 <= response.status_code < 500:
+                        raise NativeThoughtRejected(response.status_code)
                     error = await plat._read_bounded_body(
                         response, started_at=request_started,
                     )
-                    plat._raise_upstream_error(response.status_code, GOOGLE_PROVIDER_ID, error.decode("utf-8", "replace"), model_id=model_id)
+                    try:
+                        plat._raise_upstream_error(
+                            response.status_code, GOOGLE_PROVIDER_ID,
+                            error.decode("utf-8", "replace"), model_id=model_id,
+                        )
+                    except PilotError as exc:
+                        exc.upstream_status = response.status_code
+                        raise
                 async for chunk in plat._iter_sse_bounded_slices(
                     response, started_at=request_started,
                 ):
@@ -513,10 +555,10 @@ async def stream_google_tool_calls(*, model_id, upstream_model, spec, messages, 
                         if len(frame) > plat.MAX_RESPONSE_BYTES:
                             raise UpstreamResponseTooLarge(plat.MAX_RESPONSE_BYTES)
                         for event in decoder.decode(frame):
-                            yield event
+                            yield replace(event, wire_protocol="native")
                 if buffer.strip():
                     for event in decoder.decode(buffer):
-                        yield event
+                        yield replace(event, wire_protocol="native")
     except plat.ProviderAttemptTimeout as exc:
         plat.logger.warning(
             "b14_provider_attempt_timeout provider=%s reason=%s mode=stream",
@@ -533,4 +575,4 @@ async def stream_google_tool_calls(*, model_id, upstream_model, spec, messages, 
         raise malformed("missing_finish", provider="google", model=model_id, path="native_stream")
     if not decoder.saw_output:
         raise UpstreamEmptyAnswer(decoder.finish_reason, streamed=True)
-    yield StreamEvent(done=True, finish_reason=decoder.finish_reason)
+    yield StreamEvent(done=True, finish_reason=decoder.finish_reason, wire_protocol="native")
