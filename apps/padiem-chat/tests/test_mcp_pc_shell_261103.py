@@ -145,6 +145,31 @@ def test_command_is_encoded_and_uses_the_common_executor_without_mcp_files_or_de
     assert len(shell.build_pc_shell_command({"command": "x" * shell.PC_SHELL_MAX_COMMAND_CHARS})) < 120_000
 
 
+def test_nested_powershell_asks_for_text_output_and_pins_utf8_output():
+    """#7068: the nested call must not invite CliXml, and its bytes stay UTF-8.
+
+    Measured on the live PC (11-07): the dispatcher's nested
+    ``powershell.exe -EncodedCommand`` made the outer console fail with
+    ProcessStreamReader_CliXmlError on a Korean-locale console. Text output is
+    asked for explicitly, and the console encoding is pinned so the answer is not
+    read in the code page it was not written in.
+    """
+    script = base64.b64decode(
+        shell.build_pc_shell_command({"command": "Write-Output ok"})
+        .rsplit("-EncodedCommand ", 1)[1]
+    ).decode("utf-16-le")
+    assert "-OutputFormat Text -EncodedCommand $inner" in script
+    assert "[Console]::OutputEncoding=[Text.Encoding]::UTF8" in script
+    # The cmd/bash branch keeps the same nested shape; nothing is redirected
+    # into a pipeline the console would try to deserialize.
+    cmd_script = base64.b64decode(
+        shell.build_pc_shell_command({"command": "echo ok", "shell": "cmd"})
+        .rsplit("-EncodedCommand ", 1)[1]
+    ).decode("utf-16-le")
+    assert "$file='cmd.exe'" in cmd_script and "& $file @args" in cmd_script
+    assert "ConvertTo-CliXml" not in cmd_script and "Export-Clixml" not in cmd_script
+
+
 def test_common_dispatch_is_background_with_actual_dsp_receipt_format(monkeypatch):
     from app import oracle_mesh_read_return_routes as routes
 
