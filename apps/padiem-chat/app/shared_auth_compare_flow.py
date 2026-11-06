@@ -77,9 +77,25 @@ async def exchange_with_httpx(url, data, *, client=None):
                 response_headers = getattr(response, 'headers', {})
                 _record_portal_server_timing(response_headers.get('server-timing') if hasattr(response_headers, 'get') else None)
                 if response.status_code in (400, 401):
-                    # A closed authority rejection. Status only; the body may carry token material.
+                    # A closed authority rejection. Only recognize this one
+                    # allow-listed OAuth error; never expose or log the body.
                     print(f"[shared_login] token exchange status={response.status_code}", flush=True)
-                    raise ValueError('exchange_rejected')
+                    rejection_code = 'exchange_rejected'
+                    error_body = bytearray()
+                    try:
+                        async for chunk in response.aiter_bytes():
+                            if len(error_body) + len(chunk) > MAX_AUTH_RESPONSE_BYTES:
+                                break
+                            error_body.extend(chunk)
+                        else:
+                            error = json.loads(error_body)
+                            if isinstance(error, dict) and error.get('error') == 'invalid_grant':
+                                rejection_code = 'invalid_grant'
+                    except Exception:
+                        # The response status already determines the existing
+                        # closed-rejection behavior if its optional body is unreadable.
+                        pass
+                    raise ValueError(rejection_code)
                 if response.status_code != 200:
                     # 5xx and unexpected statuses stay retryable (never a 401).
                     print(f"[shared_login] token exchange status={response.status_code}", flush=True)
