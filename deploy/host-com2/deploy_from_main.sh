@@ -1020,6 +1020,8 @@ stage_queue_code() {
     --exclude 'ownership-map.json' --exclude 'watch-read-secret.txt' \
     --exclude /backup.sh --exclude /health_check.sh --exclude /provision_service_secret.sh \
     "$source/" "$queue_root/" || return 1
+  # The systemd health timer runs the installer-managed root-level copy.
+  install -m 0755 "$queue_root/deploy/health_check.sh" "$queue_root/health_check.sh" || return 1
   # The rules the queue shares with Chat have one implementation: the modules are
   # linked into the mirror, never copied, exactly as the queue's installer does.
   ln -sfn "$staged/apps/padiem-chat/app" "$queue_root/app" || return 1
