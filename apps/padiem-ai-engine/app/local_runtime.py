@@ -899,6 +899,17 @@ async def _lifespan(receive: Any, send: Any) -> None:
     while True:
         message = await receive()
         if message.get("type") == "lifespan.startup":
+            from app.local_admission_binding import start_admission_warmers
+
+            # (#6972) the admission warm cycle used to wait for the first
+            # authority call, so a host that idled between turns stayed cold for
+            # hours and paid the handshake and cold-isolate cost on its first
+            # turn. The loop exists here: fire the first ping now and let the
+            # periodic re-arm take over. Shutdown still cancels everything.
+            try:
+                start_admission_warmers()
+            except Exception:  # noqa: BLE001 - warming is not a boot dependency
+                logger.warning("p01_local_admission_warm_start_failed")
             await send({"type": "lifespan.startup.complete"})
         elif message.get("type") == "lifespan.shutdown":
             # The pooled B14 clients outlive individual requests, so the host owns
