@@ -171,7 +171,7 @@ class _Harness:
         # they turn it on explicitly; the default-off state has its own test.
         call.setdefault("line_probe", True)
         phases = []
-        outcome = self.port().run_command(
+        outcome = self.port().run_command(run_as="system",
             node_ref=NODE, phase_observer=phases.append, **call,
         )
         return outcome, phases
@@ -332,7 +332,7 @@ class TestASilentLineIsClearedAndTriedOnce(unittest.TestCase):
             ),
         )
         phases = []
-        outcome = refusing.run_command(
+        outcome = refusing.run_command(run_as="system",
             node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
             dispatch_id=OURS, phase_observer=phases.append, line_probe=True,
         )
