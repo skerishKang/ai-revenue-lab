@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtemp, readFile, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { pathToFileURL, fileURLToPath } from "node:url";
 
 import { buildDist } from "../build.mjs";
 
@@ -57,11 +57,11 @@ test("the generated entry proxies the same paths to the same tunnel origin", asy
   };
   try {
     const response = await worker.fetch(
-      edgeRequest("https://padiem-chat.pages.dev/api/health"),
+      edgeRequest("https://padiem-chat.pages.dev/health"),
       baseEnv(),
     );
     assert.equal(response.status, 200);
-    assert.deepEqual(upstream, [`${ORIGIN}/api/health`]);
+    assert.deepEqual(upstream, [`${ORIGIN}/health`]);
   } finally {
     globalThis.fetch = original;
   }
@@ -105,4 +105,50 @@ test("a write is never retried on a second upstream and answers the maintenance 
   } finally {
     globalThis.fetch = original;
   }
+});
+
+test("#6924 operational probes only target registered chat health routes", async () => {
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
+  const server = await readFile(
+    path.join(repoRoot, "apps", "padiem-chat", "app", "app_factory.py"),
+    "utf8",
+  );
+  assert.match(server, /Route\("\/health",/, "Chat must keep GET /health registered");
+  assert.doesNotMatch(server, /Route\("\/api\/health"/, "Chat must not register /api/health");
+
+  const forbidden = ["/api/" + "health", "/api/" + "models"];
+  const roots = ["."];
+  const codeExt = new Set([".py", ".js", ".mjs", ".cjs", ".ts", ".sh", ".yml", ".yaml"]);
+  // This test intentionally requests a removed route in-process to pin its
+  // absence; it never sends the path over the network.
+  const intentionalAbsence = new Set([
+    "apps/padiem-chat/tests/test_owner_model_preview_contract.py",
+  ]);
+  const offenders = [];
+  async function walk(dir) {
+    for (const entry of await readdir(dir, { withFileTypes: true })) {
+      if (
+        ["node_modules", "dist", ".git", ".venv", "venv", "vendor", "build", "coverage", "__pycache__"].includes(
+          entry.name,
+        )
+      ) {
+        continue;
+      }
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        await walk(full);
+        continue;
+      }
+      if (!codeExt.has(path.extname(entry.name))) continue;
+      if (path.resolve(full) === fileURLToPath(import.meta.url)) continue;
+      const rel = path.relative(repoRoot, full).split(path.sep).join("/");
+      if (intentionalAbsence.has(rel)) continue;
+      const text = await readFile(full, "utf8");
+      for (const needle of forbidden) {
+        if (text.includes(needle)) offenders.push(`${rel}: ${needle}`);
+      }
+    }
+  }
+  for (const root of roots) await walk(path.join(repoRoot, root));
+  assert.deepEqual(offenders, [], "probes must use /health (Chat) or /api/pilot/... (B14)");
 });
