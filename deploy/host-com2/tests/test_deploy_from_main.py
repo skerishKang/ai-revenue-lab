@@ -1512,6 +1512,8 @@ class OracleMeshExecutorScenarioTest(DeployHarness):
         (self.live / "padiem_agent" / "marker.py").write_text(
             "AGENT = 1\n", encoding="utf-8"
         )
+        # The plan reads the same tree the apply wrapper points the script at.
+        self.env["PADIEM_COM2_ORACLE_MESH_ROOT"] = self.oracle.as_posix()
 
     def _dry(self) -> str:
         result = self._run_main(
@@ -1527,8 +1529,11 @@ class OracleMeshExecutorScenarioTest(DeployHarness):
 
     def test_a_kagent_change_selects_the_executor(self) -> None:
         output = self._dry()
+        # The hand copy in setUp is not the recorded release directory, so the
+        # running-code comparison selects the executor too.
         self.assertIn(
-            "COM2_DEPLOY_DECISION_EXECUTOR=REDEPLOY reason_files=1 reason=CHANGED_PATHS",
+            "COM2_DEPLOY_DECISION_EXECUTOR=REDEPLOY reason_files=1 "
+            "reason=CHANGED_PATHS+RUNNING_CODE_MISMATCH",
             output,
         )
         self.assertIn(
@@ -1539,6 +1544,12 @@ class OracleMeshExecutorScenarioTest(DeployHarness):
 
     def test_a_module_the_executor_imports_selects_it_too(self) -> None:
         self._git(str(self.ops), "checkout", "-q", self.second)
+        # The link is on the recorded release, so only the import list can
+        # select the executor here.
+        release = self.oracle / "src" / self.second
+        release.parent.mkdir(parents=True, exist_ok=True)
+        self.live.rename(release)
+        self.live.symlink_to(release, target_is_directory=True)
         # The fixture executor imports the Core package itself, so the one
         # module both this repository and the import list carry is its __init__.
         self._write("packages/padiem-ai-core/padiem_ai_core/__init__.py", "# core 2\n")
@@ -1553,11 +1564,47 @@ class OracleMeshExecutorScenarioTest(DeployHarness):
         self.assertEqual(result.returncode, 0, output)
         # The executor imports the Core package, so its modules are its code:
         # the path maps to chat and p01, and the import list selects it too.
+        self.assertIn("COM2_DEPLOY_EXECUTOR_RUNNING_CODE=MATCH", output)
         self.assertIn(
             "COM2_DEPLOY_EXECUTOR_IMPORTED=packages/padiem-ai-core/padiem_ai_core/__init__.py",
             output,
         )
         self.assertIn("COM2_DEPLOY_DECISION_EXECUTOR=REDEPLOY", output)
+
+    def test_a_rolled_back_link_selects_the_executor_again(self) -> None:
+        # 11-06 22:28: the deploy rolled the executor back to a displaced copy
+        # and still moved the checkout to that commit, so the old..new diff was
+        # empty and the executor was skipped while it ran the older code.
+        self._git(str(self.ops), "checkout", "-q", self.second)
+        displaced = self.oracle / "kagent-src.displaced-20261106T222917"
+        self.live.rename(displaced)
+        self.live.symlink_to(displaced, target_is_directory=True)
+
+        output = self._dry()
+
+        self.assertIn("COM2_DEPLOY_EXECUTOR_RUNNING_CODE=DIFF_OR_UNVERIFIABLE", output)
+        self.assertIn(
+            "COM2_DEPLOY_DECISION_EXECUTOR=REDEPLOY reason_files=0 "
+            "reason=RUNNING_CODE_MISMATCH",
+            output,
+        )
+        self.assertIn(
+            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:WOULD_DEPLOY b14:SKIP queue:SKIP "
+            "executor:WOULD_DEPLOY",
+            output,
+        )
+
+    def test_a_link_on_the_recorded_release_is_skipped(self) -> None:
+        self._git(str(self.ops), "checkout", "-q", self.second)
+        release = self.oracle / "src" / self.second
+        release.parent.mkdir(parents=True, exist_ok=True)
+        self.live.rename(release)
+        self.live.symlink_to(release, target_is_directory=True)
+
+        output = self._dry()
+
+        self.assertIn("COM2_DEPLOY_EXECUTOR_RUNNING_CODE=MATCH", output)
+        self.assertIn("COM2_DEPLOY_DECISION_EXECUTOR=SKIP reason_files=0", output)
 
     def test_the_executor_runs_from_a_commit_directory(self) -> None:
         result = self._run_apply()
