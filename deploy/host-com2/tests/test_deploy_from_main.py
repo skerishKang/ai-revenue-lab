@@ -1581,6 +1581,33 @@ class OracleMeshExecutorScenarioTest(DeployHarness):
         )
         self.assertIn("executor:PASS", result.stdout)
 
+    def test_active_executor_does_not_require_deployer_python_imports(self) -> None:
+        # The service venv can supply dependencies absent from the deployer's
+        # Python. The systemd fake represents an already running process.
+        self._git(str(self.ops), "checkout", "-q", self.second)
+        self._write(
+            "apps/korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py",
+            "import dependency_only_in_executor_venv\n",
+        )
+        self.second = self._commit("executor venv dependency")
+        self._git(str(self.ops), "push", "-q", "origin", "HEAD:main")
+        self._git(str(self.ops), "checkout", "-q", "--detach", self.first)
+
+        result = self._run_apply()
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("COM2_DEPLOY_HEALTH_EXECUTOR_ATTEMPTS=1", result.stdout)
+        self.assertIn("executor:PASS", result.stdout)
+
+    def test_executor_without_a_main_process_fails_health(self) -> None:
+        (self.fakes / "mainpid_padiem-oracle-mesh-executor.service").write_text(
+            "0\n", encoding="utf-8"
+        )
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("COM2_DEPLOY_HEALTH_EXECUTOR_ATTEMPTS=", result.stdout)
+        self.assertIn("executor:ROLLBACK_FAILED", result.stdout)
+
     def _installed_unit(self) -> Path:
         return self.executor_units / "padiem-oracle-mesh-executor.service"
 
