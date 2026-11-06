@@ -40,7 +40,11 @@ from pathlib import Path
 from typing import Any
 
 EXECUTOR_UNIT = os.environ.get("CONNECTOR_WATCH_EXECUTOR_UNIT", "padiem-oracle-mesh-executor.service")
-CHAT_HEALTH_URL = os.environ.get("CONNECTOR_WATCH_CHAT_HEALTH_URL", "https://chat.padiem.net/health")
+#: deploy_from_main.sh already judges Chat from this host's loopback and the COM2
+#: middleware exempts GET /health from the proof check. The public hostname goes
+#: through the edge in front of Chat, which answered 403 to this non-browser probe:
+#: the probe was refused, Chat was not. Read the same health the deploy reads.
+CHAT_HEALTH_URL = os.environ.get("CONNECTOR_WATCH_CHAT_HEALTH_URL", "http://127.0.0.1:8798/health")
 #: After the cutover the queue is the live store, and this timer sits next to it. Both
 #: reads are loopback, so this host is the one place that can see the queue at all.
 QUEUE_ORIGIN = os.environ.get("CONNECTOR_WATCH_QUEUE_ORIGIN", "http://127.0.0.1:8797").rstrip("/")
@@ -66,6 +70,11 @@ _COUNTER = re.compile(r"\b(line_blocked_total|line_cleared_total)=(\d{1,9})\b")
 #: executor that predates the field is `unattributed` - never guessed as chat.
 _REFUSAL = re.compile(r"oracle-mesh-executor channel refusal:")
 _REFUSAL_LEG = re.compile(r"oracle-mesh-executor channel refusal:.*\bleg=(chat|queue)\b")
+
+
+#: The executor prints this at most once per IDLE_HEARTBEAT_SECONDS while its polls
+#: succeed and the lane has nothing: a quiet lane, not a lost counter.
+_IDLE_HEARTBEAT = re.compile(r"oracle-mesh-executor poll idle")
 
 
 def parse_counters(text: str) -> dict[str, int | None]:
@@ -143,7 +152,7 @@ def restart_verdict(props: dict[str, Any], previous: dict[str, Any] | None) -> t
     return OK, f"restarts_{restarts}"
 
 
-def counters_verdict(counters: dict[str, int | None]) -> tuple[str, str]:
+def counters_verdict(counters: dict[str, int | None], *, idle_seen: bool = False) -> tuple[str, str]:
     """The #6106 counters, reported as numbers whenever they were seen.
 
     A missing counter is not a stall — the executor may simply not have completed a
@@ -153,6 +162,11 @@ def counters_verdict(counters: dict[str, int | None]) -> tuple[str, str]:
     blocked = counters.get("line_blocked_total")
     cleared = counters.get("line_cleared_total")
     if blocked is None and cleared is None:
+        # The counters are printed only on a round that carried work; an idle poll
+        # returns before that line. The bounded idle heartbeat in the same window is
+        # the evidence that the lane was asked and was simply empty.
+        if idle_seen:
+            return OK, "idle_no_work_seen"
         return UNKNOWN, "counters_not_seen"
     # No spaces: this reason rides a single machine-readable line.
     return OK, f"line_blocked={blocked},line_cleared={cleared}"
@@ -334,11 +348,12 @@ def run(*, unit: str = EXECUTOR_UNIT, journal_minutes: int = JOURNAL_MINUTES,
     previous = _previous()
     window = read_journal(unit, journal_minutes)
     counters = parse_counters(window)
+    idle_seen = bool(_IDLE_HEARTBEAT.search(window))
     refusals = count_refusals(window)
     checks = {
         "process": process_verdict(props),
         "restart": restart_verdict(props, previous),
-        "counters": counters_verdict(counters),
+        "counters": counters_verdict(counters, idle_seen=idle_seen),
         "chat": health_verdict(read_health(health_url)),
     }
     if QUEUE_BACKEND == "com2":
