@@ -578,6 +578,7 @@ async def _stream_body(
             "stream_preview_post_start_internal_error request_id=%s attempt=%d",
             request_id,
             attempt_count,
+            exc_info=True,
         )
         generic = PilotError(
             code="internal_error",
@@ -1092,6 +1093,7 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
         logger.error(
             "stream_preview_pre_start_internal_error request_id=%s",
             request_id,
+            exc_info=True,
         )
         return JSONResponse(
             status_code=500,
