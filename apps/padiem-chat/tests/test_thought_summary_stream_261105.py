@@ -17,7 +17,7 @@ import httpx
 from padiem_ai_core.contracts import AgentProfile
 from padiem_ai_core.execution_runtime import ExecutionRequest
 
-from app.b14_client import B14Client, ChatStreamEvent
+from app.b14_client import B14Client, ChatStreamEvent, ChatToolCall
 from app.byok_client import _anthropic_stream, _openai_stream
 from app.config import Settings
 import test_orchestration_stream_allowlist_261105 as allow
@@ -148,6 +148,26 @@ def test_sse_shows_thought_before_the_answer_and_keeps_it_out_of_delta():
     assert client.closed is True
 
 
+class _ThoughtAndToolStreamClient:
+    async def stream_text_auto(self, messages, *, skill=None, additional_system_context=None, **kwargs):
+        yield ChatStreamEvent(
+            delta_thought="도구를 준비합니다.",
+            tool_call=ChatToolCall(id="private-tool-call", name="untrusted", arguments={}),
+        )
+
+
+def test_sse_keeps_thought_when_the_same_stream_event_requests_a_tool():
+    app = _app_with_client(_ThoughtAndToolStreamClient())
+
+    collected = asyncio.run(_collect_simple(app, _payload()))
+    body = collected.body
+
+    assert collected.status == 200
+    assert body.index("event: thought") < body.index("event: error")
+    assert "도구를 준비합니다." in body
+    assert "private-tool-call" not in body
+
+
 # ---------------------------------------------------------------------------
 # NDJSON orchestration route
 # ---------------------------------------------------------------------------
@@ -225,16 +245,20 @@ def test_ui_mounts_an_incremental_thinking_panel_outside_the_answer():
     css = (STATIC / "capability-presentation.css").read_text(encoding="utf-8")
     export = (STATIC / "conversation-export.js").read_text(encoding="utf-8")
 
-    assert 'if (frame.event === "thought")' in app
-    assert "renderThoughtDelta(value && value.text)" in app
-    assert 'details.open = true;' in app
-    assert 'details.open = false;' in app
-    assert "body.insertBefore(details, content)" in app
-    assert "settleThoughtPanel();" in app
+    index = (STATIC / "index.html").read_text(encoding="utf-8")
+    panel = (STATIC / "thought-panel.js").read_text(encoding="utf-8")
+
+    assert "window.PadiemChatThoughtPanel.handleFrame(article, frame" in app
+    assert "window.PadiemChatThoughtPanel.settle(" in app
+    assert "body.insertBefore(details, content)" in panel
+    assert "details.open = true;" not in panel
+    assert "details.open = false;" in panel
     assert 'return normalizeStreamFrame({ event: data.type, data: text });' in transport
     assert 'data.thought_delta' in transport
-    assert '"orchestration-thinking-label": "생각 중"' in locale
-    assert '"orchestration-thinking-done-label": "생각"' in locale
+    assert '"orchestration-thinking-label": "생각 중…"' in locale
+    assert '"orchestration-thinking-done-label": "생각 과정 보기"' in locale
+    assert '<script src="./thought-panel.js"></script>' in index
+    assert index.index('<script src="./thought-panel.js"></script>') < index.index('<script src="./app.js"></script>')
     assert ".orchestration-thought-summary > summary" in css
     # Done when the panel sits before .assistant-content and the exporter only
     # reads .assistant-content: thinking text cannot reach an export.
@@ -244,8 +268,10 @@ def test_ui_mounts_an_incremental_thinking_panel_outside_the_answer():
 
 def test_thought_frames_are_redacted_and_bounded_like_the_legacy_summary():
     app = (STATIC / "app.js").read_text(encoding="utf-8")
+    panel = (STATIC / "thought-panel.js").read_text(encoding="utf-8")
 
-    assert "paragraph.textContent = safeThoughtSummary(thoughtText);" in app
+    assert "sanitize: safeThoughtSummary" in app
+    assert "paragraph.textContent = sanitize(state.text);" in panel
     assert 'value.trim().slice(0, 2000)' in app
     assert "[user prompt omitted]" in app
     assert "[secret redacted]" in app

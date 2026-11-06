@@ -827,6 +827,11 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                                 return
                             candidate = getattr(event, "tool_call", None)
                             if candidate is not None:
+                                if getattr(event, "delta_thought", None):
+                                    if not first_byte_marked:
+                                        first_byte_marked = True
+                                        timing.mark("first_token")
+                                    yield _public_sse("thought", {"text": event.delta_thought})
                                 tool_call = candidate
                                 break
                             if getattr(event, "delta_thought", None):

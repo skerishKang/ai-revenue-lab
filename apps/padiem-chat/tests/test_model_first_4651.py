@@ -634,3 +634,64 @@ def test_ndjson_model_first_tool_sends_p01_progress_frames(monkeypatch):
     assert "workspace_private" not in response.body.decode("utf-8")
     assert len(sent) == 1 and sent[0]["selected_tool"] == "files"
     assert response.media_type == "application/x-ndjson"
+
+
+@pytest.mark.parametrize("event_shape", ["separate", "combined_first", "combined_later"])
+def test_ndjson_model_first_keeps_thought_before_a_tool_call(monkeypatch, event_shape):
+    tool_call = ChatStreamEvent(
+        tool_call=ChatToolCall(id="private-tool-call", name="files", arguments={})
+    )
+    if event_shape == "separate":
+        events = [
+            ChatStreamEvent(delta_thought="도구를 준비합니다."),
+            tool_call,
+        ]
+        expected_thought = ["도구를 준비합니다."]
+    elif event_shape == "combined_first":
+        events = [ChatStreamEvent(delta_thought="도구를 준비합니다.", tool_call=tool_call.tool_call)]
+        expected_thought = ["도구를 준비합니다."]
+    else:
+        events = [
+            ChatStreamEvent(delta_thought="도구를 "),
+            ChatStreamEvent(delta_thought="준비합니다.", tool_call=tool_call.tool_call),
+        ]
+        expected_thought = ["도구를 ", "준비합니다."]
+    b14 = _B14(events)
+    sent = []
+
+    async def lane(request, **kwargs):
+        sent.append(kwargs)
+        return "PC 작업 결과", "chat_pc_saved"
+
+    _install(
+        monkeypatch,
+        pc_context={
+            "pc_tools": {"device_id": DEVICE_ID, "allowed_scopes": ["files_list", "files"]},
+            "subject_id": "subject_1",
+            "workspace_id": "workspace_1",
+        },
+        lane=lane,
+    )
+    request = _request(
+        {
+            "messages": [{"role": "user", "content": PC_TEXT}],
+            "tier": "plus",
+            "device_id": DEVICE_ID,
+            "stream": 1,
+        },
+        model_first=True,
+        stream=True,
+        b14=b14,
+    )
+
+    response = _call(request)
+    frames = [json.loads(line) for line in response.body.splitlines() if line.strip()]
+    frame_types = [frame["type"] for frame in frames]
+
+    assert response.status_code == 200
+    assert frame_types == ["meta", *("thought" for _ in expected_thought),
+                           "progress", "progress", "delta", "done"]
+    assert [frame["text"] for frame in frames if frame["type"] == "thought"] == expected_thought
+    assert frames[-2] == {"type": "delta", "text": "PC 작업 결과"}
+    assert len(sent) == 1 and sent[0]["selected_tool"] == "files"
+    assert "private-tool-call" not in response.body.decode("utf-8")
