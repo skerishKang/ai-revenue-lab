@@ -71,6 +71,24 @@
     return fallback || "잠시 후 다시 시도해 주세요.";
   }
 
+  // Reuse the app's own login entries instead of a second auth surface. The
+  // sidebar button opens the existing dialog and, when signed in, signs out —
+  // so it is clicked only in the state that asks a guest to sign in.
+  function openExistingLogin() {
+    const loginButton = document.getElementById("loginButton");
+    const label = loginButton ? String(loginButton.textContent || "").trim() : "";
+    if (loginButton && !loginButton.hidden && !loginButton.disabled && label.indexOf("로그인") !== -1) {
+      loginButton.click();
+      return true;
+    }
+    const guestEntry = document.getElementById("guestLoginEntryButton");
+    if (guestEntry) {
+      guestEntry.click();
+      return true;
+    }
+    return false;
+  }
+
   function pad(value) {
     return String(value).padStart(2, "0");
   }
@@ -255,16 +273,16 @@
   });
 
   window.initPdfMdUtility = function (panel, workState = "checking") {
-    // Three states, and only the server's answer may claim the last two:
-    // "checking" is the first paint, "open" and "paused" come from the list
-    // route. Controls stay closed until the answer arrives, but the pause
-    // sentence appears only when the server actually says the work is paused —
-    // a screen that guesses "일시 중단" before knowing is a second kind of lie.
-    const PDFMD_CHECKING = workState !== "open" && workState !== "paused";
+    // Four states, and only an answer may claim the last three: "checking" is
+    // the first paint, "open" and "paused" come from the list route, and
+    // "login_required" comes from a 401. A guest is asked to sign in; only the
+    // server's pause answer may say the work itself is stopped.
+    const PDFMD_LOGIN_REQUIRED = workState === "login_required";
+    const PDFMD_CHECKING = workState !== "open" && workState !== "paused" && workState !== "login_required";
     const PDFMD_NEW_WORK_DISABLED = workState === "paused";
     // Everything that refuses an action: an answer or a promise refuses, an
     // unknown never refuses but still cannot act.
-    const workBlocked = PDFMD_NEW_WORK_DISABLED || PDFMD_CHECKING;
+    const workBlocked = PDFMD_NEW_WORK_DISABLED || PDFMD_LOGIN_REQUIRED || PDFMD_CHECKING;
     panel.replaceChildren();
     panel.classList.add("pdfmd-shell");
 
@@ -276,6 +294,17 @@
       header.querySelector(".pdfmd-desc").textContent = "지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.";
       const notice = el("p", "pdfmd-status", "서비스 준비 중 · 신규 업로드 및 변환 일시 중단");
       notice.setAttribute("role", "status");
+      panel.appendChild(notice);
+    } else if (PDFMD_LOGIN_REQUIRED) {
+      header.querySelector(".pdfmd-desc").textContent = "로그인 후 PDF 변환을 이용할 수 있습니다.";
+      const notice = el("div", "pdfmd-status");
+      notice.setAttribute("role", "status");
+      notice.appendChild(el("span", null, "로그인 후 PDF 변환을 이용할 수 있습니다. "));
+      const loginEntry = el("button", "pdfmd-link", "로그인");
+      loginEntry.type = "button";
+      loginEntry.id = "pdfmdLoginEntry";
+      loginEntry.addEventListener("click", openExistingLogin);
+      notice.appendChild(loginEntry);
       panel.appendChild(notice);
     } else if (PDFMD_CHECKING) {
       const notice = el("p", "pdfmd-status", "새 변환을 열 수 있는지 확인 중…");
@@ -339,11 +368,21 @@
       drop.removeAttribute("aria-label");
       drop.classList.add("pdfmd-paused");
       drop.style.opacity = "0.65";
-      dropTitle.textContent = PDFMD_NEW_WORK_DISABLED ? "PDF 업로드 준비 중" : "PDF 파일을 선택하세요";
-      dropSub.textContent = PDFMD_NEW_WORK_DISABLED ? "곧 다시 이용할 수 있어요." : "방금 연 화면 · 잠시 후 자동으로 정해집니다.";
-      dropCta.textContent = PDFMD_NEW_WORK_DISABLED ? "업로드 일시 중단" : "확인 중";
+      if (PDFMD_NEW_WORK_DISABLED) {
+        dropTitle.textContent = "PDF 업로드 준비 중";
+        dropSub.textContent = "곧 다시 이용할 수 있어요.";
+        dropCta.textContent = "업로드 일시 중단";
+      } else if (PDFMD_LOGIN_REQUIRED) {
+        dropTitle.textContent = "로그인이 필요합니다";
+        dropSub.textContent = "로그인 후 PDF를 올려 변환할 수 있습니다.";
+        dropCta.textContent = "로그인 필요";
+      } else {
+        dropTitle.textContent = "PDF 파일을 선택하세요";
+        dropSub.textContent = "방금 연 화면 · 잠시 후 자동으로 정해집니다.";
+        dropCta.textContent = "확인 중";
+      }
     }
-    if (PDFMD_NEW_WORK_DISABLED) drop.style.cursor = "not-allowed";
+    if (PDFMD_NEW_WORK_DISABLED || PDFMD_LOGIN_REQUIRED) drop.style.cursor = "not-allowed";
 
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -711,7 +750,7 @@
 
     if (workBlocked) {
       pcPick.disabled = true;
-      pcPick.textContent = PC_COPY.pick + " · " + (PDFMD_NEW_WORK_DISABLED ? PC_COPY.ready : PC_COPY.checking);
+      pcPick.textContent = PC_COPY.pick + " · " + (PDFMD_NEW_WORK_DISABLED ? PC_COPY.ready : PDFMD_LOGIN_REQUIRED ? "로그인 필요" : PC_COPY.checking);
     } else {
       pcPick.addEventListener("click", async () => {
         // An unlinked computer gets the same sentence the council app shows,
@@ -1226,6 +1265,20 @@
           if (job.status === "working") pollWorkingItemsOfJob(job.id);
         });
       } catch (e) {
+        if (e.status === 401) {
+          // A guest is not a pause: the work itself is open, this session is
+          // not. Repaint once as login_required; the repaint's own history read
+          // lands on the login explanation below.
+          if (workState !== "login_required") {
+            window.initPdfMdUtility(panel, "login_required");
+            return;
+          }
+          historyJobs = [];
+          histTools.hidden = true;
+          histList.replaceChildren();
+          histList.appendChild(emptyBlock("로그인하면 작업 이력을 볼 수 있습니다.", null, null));
+          return;
+        }
         if (PDFMD_CHECKING) {
           // No answer is an answer of its own: the work cannot start without
           // it, so the pause sentence is the truthful one. The history area
@@ -1236,11 +1289,7 @@
         historyJobs = [];
         histTools.hidden = true;
         histList.replaceChildren();
-        if (e.status === 401) {
-          histList.appendChild(emptyBlock("로그인하면 작업 이력을 볼 수 있습니다.", null, null));
-        } else {
-          histList.appendChild(emptyBlock("작업 이력을 불러오지 못했습니다.", describeError(e), null));
-        }
+        histList.appendChild(emptyBlock("작업 이력을 불러오지 못했습니다.", describeError(e), null));
       }
     }
 

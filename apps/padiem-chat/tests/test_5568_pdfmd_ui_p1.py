@@ -256,6 +256,7 @@ async function fetch(url) {
   requests.push(target);
   if (target.indexOf("/api/document-conversions?limit=") !== -1) {
     if (historyMode === "unauthorized") return json({ error: { code: "unauthorized" } }, 401);
+    if (historyMode === "server_error") return json({ error: { code: "upstream" } }, 500);
     if (historyMode === "open") return json({ jobs: jobs, new_work_enabled: true });
     return json({ jobs: jobs });
   }
@@ -392,6 +393,29 @@ function buttonByText(label) {
   const historyText = text(panel.querySelector(".pdfmd-history"));
   if (!historyText.includes("로그인하면 작업 이력을 볼 수 있습니다.")) fail("GUEST_STATE_MISSING", historyText);
   if (historyText.includes("unauthorized")) fail("RAW_UNAUTHORIZED_LEAKED", historyText);
+  // A 401 says the session is missing, not that the work stopped: the panel
+  // asks for login and never paints the pause copy.
+  const guestNotices = root.findAll(".pdfmd-status").map(text).join(" ");
+  if (!guestNotices.includes("로그인 후 PDF 변환을 이용할 수 있습니다.")) fail("GUEST_LOGIN_REQUIRED_MISSING", guestNotices);
+  if (guestNotices.includes("일시 중단") || guestNotices.includes("준비 중")) fail("GUEST_CLAIMS_PAUSE", guestNotices);
+  const guestDrop = root.findAll(".pdfmd-drop")[0];
+  const guestCta = guestDrop && guestDrop.querySelector(".pdfmd-drop-cta");
+  if (!guestCta || text(guestCta) !== "로그인 필요") fail("GUEST_DROP_CTA_WRONG", guestCta && text(guestCta));
+  if (root.querySelector("#pdfmdMode").disabled !== true) fail("GUEST_MODE_ENABLED");
+  const guestPick = root.querySelector(".pdfmd-pc-pick");
+  if (!guestPick || guestPick.disabled !== true) fail("GUEST_PC_PICK_ENABLED");
+  if (text(guestPick).includes("준비 중")) fail("GUEST_PC_PICK_CLAIMS_READY", text(guestPick));
+  const guestLoginEntryPresent = Boolean(panel.querySelector("#pdfmdLoginEntry"));
+  if (!guestLoginEntryPresent) fail("GUEST_LOGIN_ENTRY_MISSING");
+
+  // 6b) A server failure keeps the previous behavior: no answer still may not
+  // claim a pause from the open answer, so a 5xx lands on the pause sentence.
+  historyMode = "server_error";
+  ctx.window.initPdfMdUtility(panel);
+  await flush();
+  await flush();
+  const serverErrorNotices = root.findAll(".pdfmd-status").map(text).join(" ");
+  if (!serverErrorNotices.includes("서비스 준비 중 · 신규 업로드 및 변환 일시 중단")) fail("SERVER_ERROR_PAUSE_MISSING", serverErrorNotices);
 
   // 7) #6597 follow-up: the opened answer paints a usable uploader, and no
   // pause sentence is left anywhere on it.
@@ -424,6 +448,10 @@ function buttonByText(label) {
     dropCta: dropCta ? text(dropCta) : "",
     newJobHidden: newJob ? newJob.hidden === true : null,
     guestState: historyText.trim(),
+    guestNotice: guestNotices.trim(),
+    guestDropCta: guestCta ? text(guestCta) : "",
+    guestLoginEntry: guestLoginEntryPresent,
+    serverErrorNotice: serverErrorNotices.trim(),
   }));
 })().catch((error) => {
   console.log(JSON.stringify({ ok: false, error: String((error && error.stack) || error) }));
@@ -492,3 +520,13 @@ def test_preview_labels_markdown_and_guest_state() -> None:
     assert payload["paneLabels"] == ["원본 PDF", "Markdown 변환본"]
     assert payload["markdownLoaded"] is True
     assert "로그인하면 작업 이력을 볼 수 있습니다." in payload["guestState"]
+
+
+def test_guest_401_asks_for_login_and_a_server_error_keeps_the_pause() -> None:
+    payload = _run_harness()
+    assert "로그인 후 PDF 변환을 이용할 수 있습니다." in payload["guestNotice"]
+    assert "일시 중단" not in payload["guestNotice"]
+    assert "준비 중" not in payload["guestNotice"]
+    assert payload["guestDropCta"] == "로그인 필요"
+    assert payload["guestLoginEntry"] is True
+    assert "신규 업로드 및 변환 일시 중단" in payload["serverErrorNotice"]
