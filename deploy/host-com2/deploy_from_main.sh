@@ -393,6 +393,14 @@ unit_loaded() {
   [[ $state == loaded ]]
 }
 
+# Display only: the ActiveState systemd reports, so a plan shows a unit waiting
+# out RestartSec as `activating` instead of the `inactive` that is-active implies.
+unit_state() {
+  local state
+  state=$("$systemctl_bin" show -p ActiveState --value "$1" 2>/dev/null || true)
+  printf '%s' "${state:-unknown}"
+}
+
 # $1 unit, optional $2 label and $3 port. Stop whenever the unit is loaded.
 # Stopping only an active unit left a pending auto-restart alive while the
 # caller replaced code underneath it (11-07 05:38: the restart fired during
@@ -1637,7 +1645,7 @@ report_sidecar_drift() {
 run_deploy() {
 
   local sha=$1 origin changed='' services='' pending='' line status=0
-  local mapped='' service='' reason='' state='' queue_dependent='' executor_dependent=''
+  local mapped='' service='' reason='' state='' unit='' queue_dependent='' executor_dependent=''
   local mismatch=0 p01_mismatch=0 excluded_test=0 excluded_docs=0 excluded_example=0 excluded_meta=0 excluded_unmapped=0
   local executor_mismatch=0 executor_code=0
   local chat_mismatch=0 chat_code=0 b14_mismatch=0 b14_code=0
@@ -1806,6 +1814,19 @@ run_deploy() {
     say "DECISION_${line^^}=$state reason_files=${reason_files[$line]} reason=$reason"
   done
   say "SERVICES=${services:-none}"
+  # Reported only, and only when planning: the deploy does not judge from this.
+  if (( ! apply )); then
+    for line in chat p01 b14 queue executor; do
+      case $line in
+        chat) unit=$CHAT_UNIT ;;
+        p01) unit=$P01_UNIT ;;
+        b14) unit=$B14_UNIT ;;
+        queue) unit=$QUEUE_UNIT ;;
+        executor) unit=$EXECUTOR_UNIT ;;
+      esac
+      say "UNIT_STATE_${line^^}=$(unit_state "$unit")"
+    done
+  fi
   if [[ $old == "$resolved" ]] && [[ -z $services ]]; then
     say 'NOOP=YES'
     say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP'

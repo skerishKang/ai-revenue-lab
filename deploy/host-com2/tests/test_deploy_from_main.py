@@ -1040,6 +1040,23 @@ class CouncilAssetScenarioTest(DeployHarness):
         self.assertIn("COM2_DEPLOY_SERVICES=chat", result.stdout)
         self.assertIn("COM2_DEPLOY_SUMMARY=chat:WOULD_DEPLOY", result.stdout)
 
+    def test_a_plan_reports_each_unit_state(self) -> None:
+        # A unit in its Restart=always wait is `activating` in systemd even
+        # though is-active already says false; the plan names the difference
+        # without letting it change any decision.
+        self.env["PADIEM_COM2_SYSTEMCTL"] = self.systemctl.as_posix()
+        (self.fakes / "state_padiem-chat-com2.service").write_text("0\n", encoding="utf-8")
+        (self.fakes / "restarting_padiem-chat-com2.service").write_text("1\n", encoding="utf-8")
+        result = self._run_main(
+            self.second, "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        for service in ("CHAT", "P01", "B14", "QUEUE", "EXECUTOR"):
+            self.assertIn(f"COM2_DEPLOY_UNIT_STATE_{service}=", result.stdout)
+        self.assertIn("COM2_DEPLOY_UNIT_STATE_CHAT=activating", result.stdout)
+        self.assertIn("COM2_DEPLOY_UNIT_STATE_P01=active", result.stdout)
+
 
 class MigrationScenarioTest(DeployHarness):
     scenario = "migration"
