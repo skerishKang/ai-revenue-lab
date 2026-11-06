@@ -384,53 +384,72 @@ export default {
       });
     }
     if (url.pathname === AI_PATH) {
-      if (request.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405);
-      if (!sameOrigin(request)) return json({ ok: false, error: "cross_origin_forbidden" }, 403);
+      const workerStarted = performance.now();
+      let packetMs = null;
+      let upstreamMs = null;
+      const durationMs = (started) => Math.max(0, Math.round(performance.now() - started));
+      const timedJson = (body, status = 200) => {
+        const response = json(body, status);
+        const timing = [];
+        if (packetMs !== null) timing.push(`packet;dur=${packetMs}`);
+        timing.push(`worker;dur=${durationMs(workerStarted)}`);
+        if (upstreamMs !== null) timing.push(`upstream;dur=${upstreamMs}`);
+        response.headers.set('Server-Timing', timing.join(', '));
+        return response;
+      };
+      if (request.method !== "POST") return timedJson({ ok: false, error: "method_not_allowed" }, 405);
+      if (!sameOrigin(request)) return timedJson({ ok: false, error: "cross_origin_forbidden" }, 403);
       const contentType = (request.headers.get("content-type") || "").split(";", 1)[0].trim().toLowerCase();
-      if (contentType !== "application/json") return json({ ok: false, error: "unsupported_media_type" }, 415);
+      if (contentType !== "application/json") return timedJson({ ok: false, error: "unsupported_media_type" }, 415);
       const length = Number(request.headers.get("content-length") || 0);
-      if (Number.isFinite(length) && length > MAX_BODY_BYTES) return json({ ok: false, error: "request_too_large" }, 413);
+      if (Number.isFinite(length) && length > MAX_BODY_BYTES) return timedJson({ ok: false, error: "request_too_large" }, 413);
       let raw;
-      try { raw = await request.text(); } catch { return json({ ok: false, error: "invalid_request" }, 400); }
-      if (new TextEncoder().encode(raw).length > MAX_BODY_BYTES) return json({ ok: false, error: "request_too_large" }, 413);
+      try { raw = await request.text(); } catch { return timedJson({ ok: false, error: "invalid_request" }, 400); }
+      if (new TextEncoder().encode(raw).length > MAX_BODY_BYTES) return timedJson({ ok: false, error: "request_too_large" }, 413);
       let input;
-      try { input = JSON.parse(raw); } catch { return json({ ok: false, error: "invalid_json" }, 400); }
-      if (!input || typeof input !== "object" || Array.isArray(input) || Object.keys(input).some((k) => !["question", "packet"].includes(k))) {
-        return json({ ok: false, error: "invalid_request" }, 400);
+      try { input = JSON.parse(raw); } catch { return timedJson({ ok: false, error: "invalid_json" }, 400); }
+      if (!input || typeof input !== "object" || Array.isArray(input) || Object.keys(input).some((k) => !["question", "packet", "packet_ms"].includes(k))) {
+        return timedJson({ ok: false, error: "invalid_request" }, 400);
+      }
+      // Client timing is diagnostic only and is never forwarded upstream.
+      if (typeof input.packet_ms === 'number' && Number.isFinite(input.packet_ms) && input.packet_ms >= 0 && input.packet_ms <= 60000) {
+        packetMs = Math.round(input.packet_ms);
       }
       const question = clip(input.question, MAX_QUESTION_CHARS);
-      if (!question) return json({ ok: false, error: "question_required" }, 400);
+      if (!question) return timedJson({ ok: false, error: "question_required" }, 400);
       let bounded;
       try { bounded = boundedPacket(input.packet); }
       catch (error) {
         const code = String(error?.message || "invalid_packet");
         const status = code === "outside_knowledge_boundary" || code === "boundary_unavailable" ? 422 : (code === "reference_context_too_large" ? 413 : 400);
-        return json({ ok: false, error: code }, status);
+        return timedJson({ ok: false, error: code }, status);
       }
       const model = storyMemoryModel(env);
-      if (!model) return json({ ok: false, error: "storymemory_model_invalid" }, 503);
+      if (!model) return timedJson({ ok: false, error: "storymemory_model_invalid" }, 503);
       const enginePayload = buildEnginePayload(question, bounded, model);
+      const upstreamStarted = performance.now();
       const upstream = await executeAppAI({
         env, app: APP_AI_CALLER,
         payload: enginePayload,
         allowIngressFallback: APP_AI_CALLER === "storymemory"
       });
+      upstreamMs = durationMs(upstreamStarted);
       const payload = upstream.payload;
       if (upstream.status < 200 || upstream.status >= 300 || payload?.ok !== true || typeof payload?.answer !== "string") {
-        return json({ ok: false, error: upstreamErrorCode(payload, upstream.transport === "authenticated_ingress" ? "ingress_execution_failed" : "com2_ai_execution_failed"), retryable: Boolean(payload?.error?.retryable) }, upstream.status >= 400 && upstream.status <= 599 ? upstream.status : 502);
+        return timedJson({ ok: false, error: upstreamErrorCode(payload, upstream.transport === "authenticated_ingress" ? "ingress_execution_failed" : "com2_ai_execution_failed"), retryable: Boolean(payload?.error?.retryable) }, upstream.status >= 400 && upstream.status <= 599 ? upstream.status : 502);
       }
       const cp = payload?.context_permission;
       if (!cp || cp.boundary_disposition !== "permitted" || Number(cp.context_filtered_count || 0) !== 0 || Number(cp.context_allowed_count || 0) < 1) {
-        return json({ ok: false, error: "engine_permission_projection_invalid" }, 502);
+        return timedJson({ ok: false, error: "engine_permission_projection_invalid" }, 502);
       }
       const removed = removeThoughtBlocksReported(payload.answer);
       const answer = removed.text;
-      if (!answer.trim()) return json({ ok: false, error: "ingress_invalid_response" }, 502);
+      if (!answer.trim()) return timedJson({ ok: false, error: "ingress_invalid_response" }, 502);
       const finishReason = answerTruncationReason(payload, answer, removed.cut, enginePayload.agent.max_tokens);
       if (finishReason) {
         // Never a 200 carrying only the part that survived the cut.
         console.warn("bookai_answer_incomplete reason=%s visible_chars=%d", finishReason, answer.length);
-        return json({ ok: false, error: "answer_incomplete", retryable: true, finish_reason: finishReason }, 502);
+        return timedJson({ ok: false, error: "answer_incomplete", retryable: true, finish_reason: finishReason }, 502);
       }
       const runtime = upstream.transport === "com2_p01" ? "padiem-p01" : "padiem-ai-engine";
       const contextPermission = {
@@ -456,7 +475,7 @@ export default {
         }
         const visibleAnswer = visible.join("\n\n") ||
           "읽은 범위 안에서는 이 질문에 답할 내용이 아직 없어요. 더 보기를 누르면 읽지 않은 범위의 내용을 확인할 수 있어요.";
-        return json({
+        return timedJson({
           ok: true,
           answer: visibleAnswer,
           reading_mode: "first_read",
@@ -477,7 +496,7 @@ export default {
         const openedSet = parseOpenedUnitSet(bounded.openedUnits);
         outsideBooks = citationsOutsideOpenedFromParsed(parseVerseCitations(answer), openedSet).map((item) => item.label);
       }
-      return json({
+      return timedJson({
         ok: true,
         answer,
         finish_reason: "complete",

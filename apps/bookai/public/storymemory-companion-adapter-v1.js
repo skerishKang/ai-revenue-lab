@@ -77,6 +77,7 @@ async function requestCompanion(question,opts){
   var q=clip(question,MAX_QUESTION_CHARS);
   if(!q)return localFailure('question_required');
   var packet;
+  var packetStarted=(typeof performance!=='undefined' && typeof performance.now==='function')?performance.now():Date.now();
   var packetTimer;
   try{
     packet=await Promise.race([
@@ -87,12 +88,14 @@ async function requestCompanion(question,opts){
     var code=e&&e.message||'packet_build_failed';
     return localFailure(code,code==='packet_timeout');
   }finally{clearTimeout(packetTimer);}
+  var packetFinished=(typeof performance!=='undefined' && typeof performance.now==='function')?performance.now():Date.now();
+  var packetMs=Math.max(0,Math.round(packetFinished-packetStarted));
   var decision=packet&&packet.co_reader_decision||null;
   if(!decision||decision.decision!=='ALLOW')return localBlockedResult(packet);
   if(!(packet&&packet.diagnostics&&packet.diagnostics.boundary_available===true))return localBlockedResult(packet);
   var response;
   try{
-    response=await fetch(AI_PATH,{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({question:q,packet:packet}),signal:opts.signal});
+    response=await fetch(AI_PATH,{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({question:q,packet:packet,packet_ms:packetMs}),signal:opts.signal});
   }catch(err){
     if(opts.signal&&opts.signal.aborted)return localFailure('response_timeout');
     return localFailure('network_failed',true);
