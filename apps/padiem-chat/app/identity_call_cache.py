@@ -79,6 +79,7 @@ class CachedIdentityAuthority:
         resolved, which is the same product user vocabulary.
         """
         self._epoch += 1
+        self._inflight.clear()
         # The session->user mapping is the authority's, not this cache's, so a
         # user-level invalidation drops every session answer (revocations are
         # rare and the cache is small).
@@ -89,6 +90,7 @@ class CachedIdentityAuthority:
     def invalidate_session(self, session_id: str) -> None:
         """Drop both entries keyed by one canonical session."""
         self._epoch += 1
+        self._inflight.clear()
         self._entries.pop("ownerscope:" + _hash_key(session_id), None)
         self._entries.pop("authsess:" + _hash_key(session_id), None)
 
