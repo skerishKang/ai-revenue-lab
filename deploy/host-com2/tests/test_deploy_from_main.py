@@ -184,17 +184,22 @@ counter="$root/calls_queue"
 seen=0
 [[ -f $counter ]] && seen=$(cat "$counter")
 echo $((seen + 1)) > "$counter"
+starts=$(cat "$root/starts_padiem-mesh-queue.service" 2>/dev/null || echo 0)
+if [[ -f $root/queue_health_output ]] && (( starts == 1 )); then
+  cat "$root/queue_health_output"
+  exit 0
+fi
 if [[ -f $root/fail_once_queue ]]; then
   count=$(cat "$root/fail_once_queue")
   if (( count <= 1 )); then rm -f "$root/fail_once_queue"; else echo $((count - 1)) > "$root/fail_once_queue"; fi
-  echo 'HEALTH=FAIL STATUS=0'
+  echo 'MESH_QUEUE_HEALTH=UNREACHABLE curl=7'
   exit 1
 fi
 if [[ -f $root/fail_queue ]] && (( seen < $(cat "$root/fail_queue") )); then
-  echo 'HEALTH=FAIL STATUS=0'
+  echo 'MESH_QUEUE_HEALTH=UNREACHABLE curl=7'
   exit 1
 fi
-echo 'HEALTH=PASS STATUS=200'
+echo 'MESH_QUEUE_HEALTH=OK pending_unclaimed=0 pending_claimed=0 received=0'
 """
 
 BASE_FILES = {
@@ -1233,6 +1238,26 @@ class MeshQueueScenarioTest(DeployHarness):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("COM2_DEPLOY_HEALTH_QUEUE_ATTEMPTS=2", result.stdout)
         self.assertIn("queue:PASS", result.stdout)
+
+    def test_queue_ok_marker_with_exit_zero_passes(self) -> None:
+        (self.fakes / "queue_health_output").write_text(
+            "MESH_QUEUE_HEALTH=OK pending_unclaimed=0 pending_claimed=0 received=0\n",
+            encoding="utf-8",
+        )
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("queue:PASS", result.stdout)
+        self.assertEqual(self._started("padiem-mesh-queue.service"), 1, self._calls())
+
+    def test_non_ok_marker_with_exit_zero_enters_queue_rollback(self) -> None:
+        (self.fakes / "queue_health_output").write_text(
+            "MESH_QUEUE_HEALTH=UNREACHABLE curl=7\n", encoding="utf-8"
+        )
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("queue:ROLLBACK", result.stdout)
+        self.assertEqual(self._started("padiem-mesh-queue.service"), 2, self._calls())
+        self.assertEqual((self.queue / "service.py").read_text(encoding="utf-8"), "# queue\n")
 
     def test_a_broken_queue_rolls_its_code_back_and_stays_started(self) -> None:
         self._fail_service("queue", 20)

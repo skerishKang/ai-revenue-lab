@@ -406,6 +406,14 @@ wait_for_health() {
   done
 }
 
+# The queue health script can exit zero for an unreachable or invalid response.
+# Keep the generic retry loop, but require its explicit healthy marker as well.
+queue_health_ok() {
+  local output
+  output=$("$@" 2>&1) || return 1
+  printf '%s\n' "$output" | grep -Eq '^MESH_QUEUE_HEALTH=OK([[:space:]]|$)'
+}
+
 # Compare that actual link target with the requested Git tree. Missing, broken,
 # or unprovable state is not evidence that a deployment can be skipped.
 p01_matches_target() {
@@ -1041,7 +1049,7 @@ deploy_queue() {
   bash "$staged/deploy/host-com2/mesh-queue-backup/install.sh" --apply || return 1
   if (( before_active )); then
     "$systemctl_bin" start "$QUEUE_UNIT" || return 1
-    wait_for_health QUEUE bash "$queue_root/deploy/health_check.sh"
+    wait_for_health QUEUE queue_health_ok bash "$queue_root/deploy/health_check.sh"
   else
     say 'QUEUE_START=SKIPPED_NOT_ACTIVE_BEFORE'
   fi
@@ -1053,12 +1061,12 @@ rollback_queue() {
     with_service_stopped "$QUEUE_UNIT" || return 1
     stage_queue_code "$source" || return 1
     "$systemctl_bin" start "$QUEUE_UNIT" || return 1
-    wait_for_health QUEUE_ROLLBACK bash "$queue_root/deploy/health_check.sh"
+    wait_for_health QUEUE_ROLLBACK queue_health_ok bash "$queue_root/deploy/health_check.sh"
     return
   fi
   printf 'COM2_DEPLOY_QUEUE_ROLLBACK=MANUAL PREVIOUS=%s\n' "$previous_dir/$old" >&2
   "$systemctl_bin" start "$QUEUE_UNIT" || return 1
-  wait_for_health QUEUE_ROLLBACK bash "$queue_root/deploy/health_check.sh"
+  wait_for_health QUEUE_ROLLBACK queue_health_ok bash "$queue_root/deploy/health_check.sh"
 }
 
 # Chat migrations used to stop the run and wait for an operator to apply them. The
@@ -1180,7 +1188,7 @@ ensure_target_units_ready() {
       b14) ensure_unit_ready B14 "$B14_UNIT" \
         "$python_bin" "$probe_root/deploy/host-com2/b14/health.py" --url "$b14_health_url" ;;
       queue) ensure_unit_ready QUEUE "$QUEUE_UNIT" \
-        bash "$queue_root/deploy/health_check.sh" ;;
+        queue_health_ok bash "$queue_root/deploy/health_check.sh" ;;
       # Probed by its own active state: the import check for a tree that is
       # about to be replaced says nothing about this run.
       executor) ensure_unit_ready EXECUTOR "$EXECUTOR_UNIT" ;;
