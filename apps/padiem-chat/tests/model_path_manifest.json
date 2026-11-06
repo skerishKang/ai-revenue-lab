@@ -25,6 +25,7 @@
     "test_4483_final_dispatch_guard.py": "B14_MANAGED",
     "test_5002_byok_product_e2e.py": "BYOK_DIRECT",
     "test_5108_chat_central_route_execution.py": "B14_MANAGED",
+    "test_7044_thought_language_hint.py": "B14_MANAGED",
     "test_5121_byok_chat_direct.py": "BYOK_DIRECT",
     "test_5121_byok_claw_b66_direct.py": "BYOK_DIRECT",
     "test_5121_byok_claw_b66_product_e2e.py": "BYOK_DIRECT",
