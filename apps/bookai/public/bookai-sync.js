@@ -7,6 +7,14 @@
   let running = null, timer = null, controller = null, epoch = 0;
   let observedAccount = null, rerun = false, booted = false, fullPullRequired = true, lastResult = {state:'idle'};
   const ready = Promise.resolve(root.BookAIReady).then(() => { booted = true; });
+  function showAccountMismatch(show) {
+    const doc = root.document;
+    const el = doc && typeof doc.getElementById === 'function'
+      ? doc.getElementById('todayAccountSyncStatus') : null;
+    if (!el) return;
+    el.hidden = !show;
+    el.textContent = show ? '다른 계정 기록이라 동기화하지 않았습니다' : '';
+  }
   function account() {
     return root.BookAISession?.isAuthenticated()
       ? root.BookAISession.getAccountId?.() || null : null;
@@ -118,6 +126,7 @@
     lastResult = upload.oversized.length
       ? {state:'queued',reason:'record_exceeds_sync_limit',remaining:upload.oversized.length}
       : {state:'synced',at:Date.now(),uploaded:pending.length};
+    showAccountMismatch(false);
     return lastResult;
   }
   function syncNow() {
@@ -127,6 +136,7 @@
     const id = account();
     if (!id || navigator.onLine === false) {
       lastResult = {state:id ? 'offline' : 'local'};
+      if (!id) showAccountMismatch(false);
       return Promise.resolve(lastResult);
     }
     const generation = epoch, fromStart = fullPullRequired;
@@ -134,6 +144,7 @@
     running = run(id, generation, fromStart).catch(error => {
       if (fromStart) fullPullRequired = true;
       lastResult = {state:'queued',reason:error.message || 'sync_unavailable'};
+      showAccountMismatch(lastResult.reason === 'account_mismatch');
       return lastResult;
     }).finally(() => {
       running = null;

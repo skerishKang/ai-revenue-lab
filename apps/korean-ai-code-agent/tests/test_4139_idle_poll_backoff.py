@@ -426,3 +426,23 @@ class TestRealMainConfiguration(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestTheIdleHeartbeatIsBounded(unittest.TestCase):
+    """A quiet lane says so once, so the host watch can tell it from a lost counter."""
+
+    def _stdout(self, answer, stop_at=600.0):
+        import contextlib
+        import io
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            _run_loop(answer, stop_at=stop_at)
+        return out.getvalue()
+
+    def test_an_idle_round_reports_the_quiet_lane_once(self):
+        self.assertEqual(self._stdout(lambda _round: ROUND_IDLE)
+                         .count("oracle-mesh-executor poll idle"), 1)
+
+    def test_a_skipped_round_never_claims_the_lane_was_empty(self):
+        self.assertEqual(self._stdout(lambda _round: ROUND_SKIPPED)
+                         .count("oracle-mesh-executor poll idle"), 0)

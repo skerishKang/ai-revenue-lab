@@ -378,9 +378,45 @@ PY
 
 unit_active() { "$systemctl_bin" is-active --quiet "$1"; }
 
+# A unit that crashed and waits out RestartSec reports `activating`, where
+# is-active is false while systemd still holds the next attempt. It is running
+# work: the stop has to cancel that attempt, and the unit has to come back.
+unit_running_or_restarting() {
+  local state
+  state=$("$systemctl_bin" show -p ActiveState --value "$1" 2>/dev/null || true)
+  [[ $state == active || $state == activating ]]
+}
+
+unit_loaded() {
+  local state
+  state=$("$systemctl_bin" show -p LoadState --value "$1" 2>/dev/null || true)
+  [[ $state == loaded ]]
+}
+
+# Display only: the ActiveState systemd reports, so a plan shows a unit waiting
+# out RestartSec as `activating` instead of the `inactive` that is-active implies.
+unit_state() {
+  local state
+  state=$("$systemctl_bin" show -p ActiveState --value "$1" 2>/dev/null || true)
+  printf '%s' "${state:-unknown}"
+}
+
+# $1 unit, optional $2 label and $3 port. Stop whenever the unit is loaded.
+# Stopping only an active unit left a pending auto-restart alive while the
+# caller replaced code underneath it (11-07 05:38: the restart fired during
+# Chat's one-link-at-a-time swap and imported a mixed tree). A label proves the
+# old process — and its port, when one is named — is gone before the install.
 with_service_stopped() {
-  local unit=$1
-  if unit_active "$unit"; then "$systemctl_bin" stop "$unit" || return 1; fi
+  local unit=$1 label=${2:-} port=${3:-}
+  unit_loaded "$unit" || return 0
+  "$systemctl_bin" stop "$unit" || return 1
+  if [[ -n $label ]]; then
+    if [[ -n $port ]]; then
+      wait_service_down "$label" "$unit" "$port" || return 1
+    else
+      wait_main_pid_gone "$label" "$unit" || return 1
+    fi
+  fi
 }
 
 # A listening check against the real `ss -ltn` output shape:
@@ -661,11 +697,67 @@ verify_staged_source() {
     || fail SOURCE_PERMISSIONS_STAGED_P01
 }
 
+# Move the production checkout to $resolved and keep $previous_dir/$old as the
+# rollback source. The script-only path uses this too: the next plan reads this
+# checkout, so a change to the script itself has to land here before it can act.
+move_checkout_to_target() {
+  if [[ -n $("$git_bin" -C "$ops_checkout" status --porcelain --untracked-files=no) ]]; then
+    fail CHECKOUT_DIRTY
+  fi
+
+  # Rollback sources must be traversable by the service but not writable by it.
+  [[ ! -L $previous_dir && ! -L $previous_dir/$old ]] || fail PREVIOUS_CHECKOUT_INVALID
+  install -d -m 0755 -- "$previous_dir" || fail PREVIOUS_DIR_UNWRITABLE
+  if [[ ! -d $previous_dir/$old ]]; then
+    (umask 022; "$git_bin" -C "$ops_checkout" worktree add --detach --quiet \
+      "$previous_dir/$old" "$old") || fail PREVIOUS_CHECKOUT_FAILED
+  fi
+  if [[ ${EUID} -eq 0 ]]; then
+    chown root:root "$previous_dir" || fail PREVIOUS_CHECKOUT_FAILED
+    chown -R root:root "$previous_dir/$old" || fail PREVIOUS_CHECKOUT_FAILED
+  fi
+  find "$previous_dir/$old" -type d -exec chmod a+rx,go-w {} + || fail PREVIOUS_CHECKOUT_FAILED
+  find "$previous_dir/$old" -type f -exec chmod a+r,go-w {} + || fail PREVIOUS_CHECKOUT_FAILED
+  assert_service_readable PREVIOUS "$previous_dir/$old" "$read_check_user" \
+    || fail SOURCE_PERMISSIONS_PREVIOUS
+  say "PREVIOUS_CHECKOUT=$previous_dir/$old"
+
+  (umask 022; "$git_bin" -C "$ops_checkout" checkout --detach --quiet "$resolved") \
+    || fail CHECKOUT_MOVE_FAILED
+  # Older deploys may already have left tracked files at 0600. Restrict the
+  # repair to tracked files and their directories; never expose untracked envs.
+  "$python_bin" - "$ops_checkout" "$git_bin" <<'PY' || fail CHECKOUT_PERMISSIONS_FAILED
+import os, stat, subprocess, sys
+root = os.path.abspath(sys.argv[1])
+files = subprocess.check_output([sys.argv[2], "-C", root, "ls-files", "-z"]).split(b"\0")
+dirs = {root}
+for name in files:
+    if not name:
+        continue
+    path = os.path.join(root, os.fsdecode(name))
+    try:
+        mode = os.lstat(path).st_mode
+    except FileNotFoundError:
+        continue
+    if stat.S_ISREG(mode):
+        os.chmod(path, stat.S_IMODE(mode) | 0o444)
+    parent = os.path.dirname(path)
+    while parent.startswith(root + os.sep) and parent not in dirs:
+        if os.path.islink(parent):
+            raise RuntimeError("tracked directory is a symlink")
+        dirs.add(parent)
+        parent = os.path.dirname(parent)
+for path in dirs:
+    mode = os.stat(path).st_mode
+    os.chmod(path, stat.S_IMODE(mode) | 0o555)
+PY
+  say "CHECKOUT=$ops_checkout"
+}
+
 deploy_chat() {
   local before_active=0
-  if unit_active "$CHAT_UNIT"; then before_active=1; fi
-  with_service_stopped "$CHAT_UNIT" || return 1
-  wait_service_down CHAT "$CHAT_UNIT" "$chat_port" || return 1
+  if unit_running_or_restarting "$CHAT_UNIT"; then before_active=1; fi
+  with_service_stopped "$CHAT_UNIT" CHAT "$chat_port" || return 1
   bash "$staged/deploy/host-com2/chat/install.sh" \
     --apply --source-root "$staged" || return 1
   assert_service_readable CHAT_LIVE "$staged/apps/padiem-chat/app" "$read_check_user" || return 1
@@ -680,9 +772,8 @@ deploy_chat() {
 
 deploy_p01() {
   local before_active=0
-  if unit_active "$P01_UNIT"; then before_active=1; fi
-  with_service_stopped "$P01_UNIT" || return 1
-  wait_service_down P01 "$P01_UNIT" "$p01_port" || return 1
+  if unit_running_or_restarting "$P01_UNIT"; then before_active=1; fi
+  with_service_stopped "$P01_UNIT" P01 "$p01_port" || return 1
   bash "$staged/deploy/host-com2/p01/install.sh" \
     --apply --source-root "$staged" || return 1
   local live
@@ -764,9 +855,8 @@ b14_rollback_source() {  # The newest thing that is provably the previous code, 
 
 deploy_b14() {
   local before_active=0
-  if unit_active "$B14_UNIT"; then before_active=1; fi
-  with_service_stopped "$B14_UNIT" || return 1
-  wait_service_down B14 "$B14_UNIT" "$b14_port" || return 1
+  if unit_running_or_restarting "$B14_UNIT"; then before_active=1; fi
+  with_service_stopped "$B14_UNIT" B14 "$b14_port" || return 1
   link_b14_app "$staged/apps/korean-ai-platform" || return 1
   bash "$staged/deploy/host-com2/b14/install.sh" --reload || return 1
   assert_service_readable B14_LIVE "$staged/apps/korean-ai-platform" padiem-b14 || return 1
@@ -784,14 +874,10 @@ deploy_b14() {
 rollback_chat() {
   local previous="$previous_dir/$old"
   [[ -d $previous/deploy/host-com2/chat ]] || { say 'CHAT_ROLLBACK=NO_PREVIOUS_CHECKOUT'; return 1; }
-  # A failing unit waits in `activating` for its next Restart=always attempt,
-  # where is-active is false; stopping only an active unit leaves that pending
-  # restart alive. It then fires while the installer swaps links one at a time,
-  # and imports a mixed tree (11-07 05:38: the new app asked for
-  # app.identity_cache_metrics after the app link had already moved back).
-  # Stop unconditionally: stop also cancels the pending restart.
-  "$systemctl_bin" stop "$CHAT_UNIT" || return 1
-  wait_service_down CHAT_ROLLBACK "$CHAT_UNIT" "$chat_port" || return 1
+  # The failing unit waits in `activating` for its next Restart=always attempt,
+  # where is-active is false. The helper stops it unconditionally and proves it
+  # is gone, so no restart can fire while the installer swaps links one at a time.
+  with_service_stopped "$CHAT_UNIT" CHAT_ROLLBACK "$chat_port" || return 1
   bash "$previous/deploy/host-com2/chat/install.sh" \
     --apply --source-root "$previous" || return 1
   "$systemctl_bin" start "$CHAT_UNIT" || return 1
@@ -805,8 +891,7 @@ rollback_p01() {
   local snapshot
   snapshot=$(ls -1dt "$p01_root"/rollback/p01.* 2>/dev/null | head -1 || true)
   [[ -n $snapshot ]] || { say 'P01_ROLLBACK=NO_SNAPSHOT'; return 1; }
-  with_service_stopped "$P01_UNIT" || return 1
-  wait_service_down P01_ROLLBACK "$P01_UNIT" "$p01_port" || return 1
+  with_service_stopped "$P01_UNIT" P01_ROLLBACK "$p01_port" || return 1
   # A snapshot taken before this existed may still be 0600; a rollback that
   # cannot be read is no rollback at all, so fix it and then prove it.
   chmod -R a+rX,u+w,go-w "$snapshot" || return 1
@@ -831,8 +916,7 @@ rollback_p01() {
 rollback_b14() {
   local previous="$previous_dir/$old/apps/korean-ai-platform" source
   if source=$(b14_rollback_source); then
-    with_service_stopped "$B14_UNIT" || return 1
-    wait_service_down B14_ROLLBACK "$B14_UNIT" "$b14_port" || return 1
+    with_service_stopped "$B14_UNIT" B14_ROLLBACK "$b14_port" || return 1
     link_b14_app "$source" || return 1
     "$systemctl_bin" start "$B14_UNIT" || return 1
     wait_service_ready B14_ROLLBACK "$B14_UNIT" "$b14_port" \
@@ -1204,8 +1288,8 @@ restore_executor_unit_file() {
 
 deploy_executor() {
   local target="$executor_releases/$resolved" preserve before_active=0 started
-  if unit_active "$EXECUTOR_UNIT"; then before_active=1; fi
-  with_service_stopped "$EXECUTOR_UNIT" || return 1
+  if unit_running_or_restarting "$EXECUTOR_UNIT"; then before_active=1; fi
+  with_service_stopped "$EXECUTOR_UNIT" EXECUTOR || return 1
   preserve=$(readlink -f -- "$executor_src" 2>/dev/null || true)
   stage_executor_code "$staged" "$target" "$preserve" || return 1
   link_executor_source "$target" || return 1
@@ -1225,7 +1309,7 @@ deploy_executor() {
 
 rollback_executor() {
   local target started
-  with_service_stopped "$EXECUTOR_UNIT" || return 1
+  with_service_stopped "$EXECUTOR_UNIT" EXECUTOR_ROLLBACK || return 1
   if target=$(executor_rollback_source); then
     link_executor_source "$target" || return 1
   else
@@ -1377,8 +1461,8 @@ queue_rollback_source() {
 
 deploy_queue() {
   local before_active=0
-  if unit_active "$QUEUE_UNIT"; then before_active=1; fi
-  with_service_stopped "$QUEUE_UNIT" || return 1
+  if unit_running_or_restarting "$QUEUE_UNIT"; then before_active=1; fi
+  with_service_stopped "$QUEUE_UNIT" QUEUE || return 1
   assert_service_readable QUEUE_SOURCE "$staged/apps/padiem-mesh-queue" "$queue_account" \
     || return 1
   stage_queue_code "$staged/apps/padiem-mesh-queue" || return 1
@@ -1402,7 +1486,7 @@ deploy_queue() {
 rollback_queue() {
   local source
   if source=$(queue_rollback_source); then
-    with_service_stopped "$QUEUE_UNIT" || return 1
+    with_service_stopped "$QUEUE_UNIT" QUEUE_ROLLBACK || return 1
     stage_queue_code "$source" || return 1
   else
     printf 'COM2_DEPLOY_QUEUE_ROLLBACK=MANUAL PREVIOUS=%s\n' "$previous_dir/$old" >&2
@@ -1506,7 +1590,9 @@ print("COM2_DEPLOY_CHAT_MIGRATION_APPLIED_ONE=%s" % name)
 # the operator left enabled but stopped therefore received the new code and never
 # came up, and the health gate rolled it back (B14, 2026-11-01). Nothing moves until
 # every selected unit is enabled, and an enabled-but-stopped one is started and
-# health-checked here.
+# health-checked here. A unit waiting out RestartSec is already coming up: the
+# deploy stops it and starts it again, so starting it a second time here only
+# adds a window for that pending restart to interleave.
 ensure_unit_ready() {
   local label=$1 unit=$2
   shift 2
@@ -1514,7 +1600,7 @@ ensure_unit_ready() {
     say "UNIT_ENABLED_${label}=NO UNIT=$unit"
     return 1
   fi
-  if unit_active "$unit"; then
+  if unit_running_or_restarting "$unit"; then
     say "UNIT_READY_${label}=ACTIVE"
     return 0
   fi
@@ -1616,10 +1702,11 @@ report_sidecar_drift() {
 run_deploy() {
 
   local sha=$1 origin changed='' services='' pending='' line status=0
-  local mapped='' service='' reason='' state='' queue_dependent='' executor_dependent=''
+  local mapped='' service='' reason='' state='' unit='' queue_dependent='' executor_dependent=''
   local mismatch=0 p01_mismatch=0 excluded_test=0 excluded_docs=0 excluded_example=0 excluded_meta=0 excluded_unmapped=0
   local executor_mismatch=0 executor_code=0
   local chat_mismatch=0 chat_code=0 b14_mismatch=0 b14_code=0
+  local deploy_script_changed=0
   declare -A wanted=([chat]=0 [p01]=0 [b14]=0 [queue]=0 [executor]=0)
   declare -A reason_files=([chat]=0 [p01]=0 [b14]=0 [queue]=0 [executor]=0)
   declare -A result=([chat]=SKIP [p01]=SKIP [b14]=SKIP [queue]=SKIP [executor]=SKIP)
@@ -1714,6 +1801,9 @@ run_deploy() {
   while IFS= read -r line; do
     [[ -n $line ]] || continue
     say "CHANGED=$line"
+    if [[ $line == deploy/host-com2/deploy_from_main.sh ]]; then
+      deploy_script_changed=1
+    fi
     if reason=$(deploy_path_exclusion "$line"); then
       case "$reason" in
         TEST_DIRECTORY|TEST_FILE) excluded_test=$((excluded_test + 1)) ;;
@@ -1785,6 +1875,19 @@ run_deploy() {
     say "DECISION_${line^^}=$state reason_files=${reason_files[$line]} reason=$reason"
   done
   say "SERVICES=${services:-none}"
+  # Reported only, and only when planning: the deploy does not judge from this.
+  if (( ! apply )); then
+    for line in chat p01 b14 queue executor; do
+      case $line in
+        chat) unit=$CHAT_UNIT ;;
+        p01) unit=$P01_UNIT ;;
+        b14) unit=$B14_UNIT ;;
+        queue) unit=$QUEUE_UNIT ;;
+        executor) unit=$EXECUTOR_UNIT ;;
+      esac
+      say "UNIT_STATE_${line^^}=$(unit_state "$unit")"
+    done
+  fi
   if [[ $old == "$resolved" ]] && [[ -z $services ]]; then
     say 'NOOP=YES'
     say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP'
@@ -1818,8 +1921,21 @@ run_deploy() {
   fi
 
   # Test/docs-only and unrelated changes must not move the production checkout
-  # or mirrored source tree when no service was selected.
+  # or mirrored source tree when no service was selected. The deploy script is
+  # the exception: the next plan reads this checkout, so until it moves the host
+  # keeps planning with the old script and a fix to the script itself never
+  # reaches production (11-07: #7055's running-code comparison stayed unused).
   if [[ -z $services ]]; then
+    if (( deploy_script_changed )); then
+      if (( apply )); then
+        move_checkout_to_target
+        say 'CHECKOUT_ONLY=YES reason=DEPLOY_SCRIPT_CHANGED'
+        say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP'
+        return 0
+      fi
+      say 'CHECKOUT_ONLY=WOULD reason=DEPLOY_SCRIPT_CHANGED'
+      printf '적용하면 체크아웃만 새 SHA로 넘어가고, 다음 계획부터 새 스크립트가 쓰입니다.\n'
+    fi
     say 'NO_SERVICE_CHANGES=YES'
     say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP'
     return 0
@@ -1845,57 +1961,7 @@ run_deploy() {
 
   ensure_target_units_ready "$services"
 
-  if [[ -n $("$git_bin" -C "$ops_checkout" status --porcelain --untracked-files=no) ]]; then
-    fail CHECKOUT_DIRTY
-  fi
-
-  # Rollback sources must be traversable by the service but not writable by it.
-  [[ ! -L $previous_dir && ! -L $previous_dir/$old ]] || fail PREVIOUS_CHECKOUT_INVALID
-  install -d -m 0755 -- "$previous_dir" || fail PREVIOUS_DIR_UNWRITABLE
-  if [[ ! -d $previous_dir/$old ]]; then
-    (umask 022; "$git_bin" -C "$ops_checkout" worktree add --detach --quiet \
-      "$previous_dir/$old" "$old") || fail PREVIOUS_CHECKOUT_FAILED
-  fi
-  if [[ ${EUID} -eq 0 ]]; then
-    chown root:root "$previous_dir" || fail PREVIOUS_CHECKOUT_FAILED
-    chown -R root:root "$previous_dir/$old" || fail PREVIOUS_CHECKOUT_FAILED
-  fi
-  find "$previous_dir/$old" -type d -exec chmod a+rx,go-w {} + || fail PREVIOUS_CHECKOUT_FAILED
-  find "$previous_dir/$old" -type f -exec chmod a+r,go-w {} + || fail PREVIOUS_CHECKOUT_FAILED
-  assert_service_readable PREVIOUS "$previous_dir/$old" "$read_check_user" \
-    || fail SOURCE_PERMISSIONS_PREVIOUS
-  say "PREVIOUS_CHECKOUT=$previous_dir/$old"
-
-  (umask 022; "$git_bin" -C "$ops_checkout" checkout --detach --quiet "$resolved") \
-    || fail CHECKOUT_MOVE_FAILED
-  # Older deploys may already have left tracked files at 0600. Restrict the
-  # repair to tracked files and their directories; never expose untracked envs.
-  "$python_bin" - "$ops_checkout" "$git_bin" <<'PY' || fail CHECKOUT_PERMISSIONS_FAILED
-import os, stat, subprocess, sys
-root = os.path.abspath(sys.argv[1])
-files = subprocess.check_output([sys.argv[2], "-C", root, "ls-files", "-z"]).split(b"\0")
-dirs = {root}
-for name in files:
-    if not name:
-        continue
-    path = os.path.join(root, os.fsdecode(name))
-    try:
-        mode = os.lstat(path).st_mode
-    except FileNotFoundError:
-        continue
-    if stat.S_ISREG(mode):
-        os.chmod(path, stat.S_IMODE(mode) | 0o444)
-    parent = os.path.dirname(path)
-    while parent.startswith(root + os.sep) and parent not in dirs:
-        if os.path.islink(parent):
-            raise RuntimeError("tracked directory is a symlink")
-        dirs.add(parent)
-        parent = os.path.dirname(parent)
-for path in dirs:
-    mode = os.stat(path).st_mode
-    os.chmod(path, stat.S_IMODE(mode) | 0o555)
-PY
-  say "CHECKOUT=$ops_checkout"
+  move_checkout_to_target
 
   # Nothing above touched a service; from here the host is being changed, so the
   # mirror and its permissions must already be proven.
@@ -1906,11 +1972,11 @@ PY
   for line in chat p01 b14 queue executor; do
     if (( ! wanted[$line] )); then continue; fi
     case "$line" in
-      chat) if unit_active "$CHAT_UNIT"; then was_active[chat]=1; fi ;;
-      p01) if unit_active "$P01_UNIT"; then was_active[p01]=1; fi ;;
-      b14) if unit_active "$B14_UNIT"; then was_active[b14]=1; fi ;;
-      queue) if unit_active "$QUEUE_UNIT"; then was_active[queue]=1; fi ;;
-      executor) if unit_active "$EXECUTOR_UNIT"; then was_active[executor]=1; fi ;;
+      chat) if unit_running_or_restarting "$CHAT_UNIT"; then was_active[chat]=1; fi ;;
+      p01) if unit_running_or_restarting "$P01_UNIT"; then was_active[p01]=1; fi ;;
+      b14) if unit_running_or_restarting "$B14_UNIT"; then was_active[b14]=1; fi ;;
+      queue) if unit_running_or_restarting "$QUEUE_UNIT"; then was_active[queue]=1; fi ;;
+      executor) if unit_running_or_restarting "$EXECUTOR_UNIT"; then was_active[executor]=1; fi ;;
     esac
     if "deploy_$line"; then
       result[$line]=PASS

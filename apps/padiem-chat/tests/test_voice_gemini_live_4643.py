@@ -1,7 +1,7 @@
 """#4643: the Gemini Live real-time transcription engine for Chat/Claw.
 
 `voice_gemini_live_4643.cjs` is the behavioural spec of
-`static/voice-gemini-live.js`: the Live session, the real-time interim and
+`static/voice-live-session.js`: the Live session, the real-time interim and
 final split, the turn commit, the session rotation with the audio carry-over,
 the provider fallback and the teardown that leaves nothing running. A bare
 `.cjs` in this directory is not collected by pytest, so this file runs it --
@@ -22,7 +22,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
-ENGINE_JS = STATIC / "voice-gemini-live.js"
+ENGINE_JS = STATIC / "voice-live-session.js"
 WIRING_JS = STATIC / "voice-stt-wiring.js"
 INDEX_HTML = STATIC / "index.html"
 NODE_SPEC = Path(__file__).with_name("voice_gemini_live_4643.cjs")
@@ -92,9 +92,9 @@ def test_engine_reads_the_model_and_the_window_from_the_server_contract() -> Non
     assert literals == [], f"the engine must not pin a model id: {literals}"
 
 
-def test_wiring_uses_gemini_live_first_and_keeps_groq_as_the_fallback() -> None:
+def test_wiring_uses_the_live_engine_first_and_keeps_the_recorded_fallback() -> None:
     source = WIRING_JS.read_text(encoding="utf-8")
-    assert "PadiemVoiceGeminiLive" in source
+    assert "PadiemVoiceLiveSession" in source
     assert "fallbackFactory: groqFactory" in source
     # The recorded-chunk path stays reachable as the next provider.
     assert "createRecognizerFactory" in source
@@ -105,12 +105,12 @@ def test_wiring_uses_gemini_live_first_and_keeps_groq_as_the_fallback() -> None:
 
 def test_page_loads_the_engine_before_the_wiring_that_uses_it() -> None:
     html = INDEX_HTML.read_text(encoding="utf-8")
-    assert html.count('<script src="./voice-gemini-live.js"></script>') == 1
+    assert html.count('<script src="./voice-live-session.js"></script>') == 1
     order = [
         html.index("voice-live-transcript-turn.js"),
         html.index("voice-stt-input.js"),
         html.index("voice-composer.js"),
-        html.index("voice-gemini-live.js"),
+        html.index("voice-live-session.js"),
         html.index("voice-stt-wiring.js"),
     ]
     assert order == sorted(order), "the engine must load before the wiring"
@@ -128,7 +128,7 @@ def test_m1_live_transcript_lands_in_the_input_box() -> None:
 
 
 def test_no_voice_path_sends_a_chat_message() -> None:
-    for name in ("voice-gemini-live.js", "voice-stt-wiring.js", "voice-stt-input.js"):
+    for name in ("voice-live-session.js", "voice-stt-wiring.js", "voice-stt-input.js"):
         source = (STATIC / name).read_text(encoding="utf-8")
         code = re.sub(r"/\*.*?\*/", "", source, flags=re.DOTALL)
         code = re.sub(r"//[^\n]*", "", code)
@@ -145,4 +145,4 @@ def test_the_engine_opens_nothing_before_the_microphone_runs() -> None:
     assert "fetchLiveToken()" in source[load_index:]
     # No module-level connection: the module body only defines functions.
     module_tail = source[source.index("function createRecognizerFactory"):]
-    assert "new AudioContext" not in module_tail.split("return function geminiLiveRecognizerFactory")[0]
+    assert "new AudioContext" not in module_tail.split("return function liveRecognizerFactory")[0]

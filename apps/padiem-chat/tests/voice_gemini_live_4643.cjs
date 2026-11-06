@@ -1,7 +1,7 @@
 /*
  * #4643: the Gemini Live real-time transcription engine.
  *
- * Behavioural contract for apps/padiem-chat/static/voice-gemini-live.js:
+ * Behavioural contract for apps/padiem-chat/static/voice-live-session.js:
  * the Live session, the real-time interim/final split, the turn commit, the
  * session rotation with the audio carry-over, the provider fallback and the
  * teardown that leaves nothing running.
@@ -15,7 +15,7 @@ const assert = require("node:assert");
 const path = require("node:path");
 
 const STATIC = path.join(__dirname, "..", "static");
-const engine = require(path.join(STATIC, "voice-gemini-live.js"));
+const engine = require(path.join(STATIC, "voice-live-session.js"));
 const authority = require(path.join(STATIC, "voice-live-transcript-turn.js"));
 
 let passed = 0;
