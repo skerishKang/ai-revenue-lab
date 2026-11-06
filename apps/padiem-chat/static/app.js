@@ -3842,7 +3842,7 @@
         if (!data || data.done !== true || !paragraph || !answer) throw new Error(uiT("stream-complete-invalid"));
         if (done) throw new Error(uiT("stream-done-duplicate"));
         done = true;
-        window.PadiemChatThoughtPanel.settle(
+        window.PadiemChatThoughtPanel?.settle?.(
           article, uiT("orchestration-thinking-done-label"),
         );
         if (clawGeneralRequest && data.pc_pending === true
