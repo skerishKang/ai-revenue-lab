@@ -24,6 +24,12 @@ export async function googleProductUserId(subject) {
   const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(`google:${subject}`)));
   return 'usr_' + [...hash].map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 32);
 }
+// Separate HMAC domain so a password-account fingerprint can never collide
+// with a Google-account fingerprint under the same identity key.
+export async function passwordIdentityFingerprint(key, subject) {
+  if (!key || key.algorithm?.name !== 'HMAC') throw new Error('identity key unavailable');
+  return b64(new Uint8Array(await crypto.subtle.sign('HMAC', key, encoder.encode(`padiem-auth:password:v1\0${subject}`))));
+}
 const epoch = () => Math.floor(Date.now() / 1000);
 const headers = { 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' };
 const json = (status, value) => new Response(JSON.stringify(value), { status, headers: { ...headers, 'content-type': 'application/json' } });
@@ -129,8 +135,56 @@ async function verifyAccountDeletionRpc(request, secret, current) {
   return { serviceId, payload, at };
 }
 
+// padiem-auth is the CALLER here: the email signup/login forms prove the
+// credential against Chat's internal password routes with the same v2 service
+// proof envelope the account-delete receiver verifies (fresh UUID bound into
+// the signature, ±300s clock window, ≤512-byte body).
+async function passwordRpcHeaders(secret, path, body) {
+  const at = String(epoch());
+  const serviceId = crypto.randomUUID();
+  const key = await crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const signed = new Uint8Array([
+    ...encoder.encode('v2\nPOST\n'),
+    ...encoder.encode(path),
+    10,
+    ...encoder.encode(at),
+    10,
+    ...encoder.encode(serviceId),
+    10,
+    ...body,
+  ]);
+  const mac = [...new Uint8Array(await crypto.subtle.sign('HMAC', key, signed))].map(x => x.toString(16).padStart(2, '0')).join('');
+  return { 'content-type': 'application/json', 'x-padiem-service-at': at, 'x-padiem-service-id': serviceId, 'x-padiem-service-proof': `v2=${mac}` };
+}
+
+const esc = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+const pageStyle = `*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f6f8;font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif;color:#1c1e21}main{width:100%;max-width:360px;margin:24px;padding:32px 28px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}h1{font-size:20px;margin:0 0 20px;text-align:center}.btn{display:block;width:100%;padding:12px;border-radius:8px;border:1px solid #dadce0;background:#fff;font-size:15px;text-align:center;text-decoration:none;color:#1c1e21;cursor:pointer}.btn+.btn{margin-top:10px}.btn-primary{background:#1a73e8;border-color:#1a73e8;color:#fff}form{margin:0}label{display:block;font-size:13px;margin:12px 0 4px;color:#5f6368}input{width:100%;padding:11px;border:1px solid #dadce0;border-radius:8px;font-size:15px}.message{margin:0 0 12px;padding:10px;border-radius:8px;background:#fce8e6;color:#c5221f;font-size:14px}.link{display:block;margin-top:16px;text-align:center;font-size:14px;color:#1a73e8;text-decoration:none}`;
+const page = (title, body) => `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="referrer" content="no-referrer"><style>${pageStyle}</style></head><body><main>${body}</main></body></html>`;
+const emailFields = (message) => `${message ? `<p class="message">${esc(message)}</p>` : ''}<label for="email">이메일</label><input id="email" name="email" type="email" required maxlength="255" autocomplete="username"><label for="password">비밀번호</label><input id="password" name="password" type="password" required maxlength="128" autocomplete="current-password">`;
+const loginFormPage = (action, message) => page('로그인', `<h1>이메일로 로그인</h1><form method="post" action="${esc(action)}">${emailFields(message)}<button class="btn btn-primary" type="submit">로그인</button></form>`);
+const signupFormPage = (action, message) => page('회원가입', `<h1>이메일로 회원가입</h1><form method="post" action="${esc(action)}">${message ? `<p class="message">${esc(message)}</p>` : ''}<label for="name">이름(선택)</label><input id="name" name="name" type="text" maxlength="160" autocomplete="name">${emailFields('')}<button class="btn btn-primary" type="submit">회원가입</button></form>`);
+const messagePage = (message) => page('안내', `<h1>안내</h1><p class="message" style="background:#e8f0fe;color:#1c1e21">${esc(message)}</p>`);
+const htmlPage = (status, body, extra = {}) => new Response(body, { status, headers: { ...headers, 'content-type': 'text/html; charset=utf-8', 'referrer-policy': 'no-referrer', ...extra } });
+const loginChoicePage = (googleHref, formAction, signupHref) => page('로그인', `<h1>PADIEM 로그인</h1><a class="btn" href="${esc(googleHref)}">Google로 계속</a><form method="post" action="${esc(formAction)}">${emailFields('')}<button class="btn" type="submit">이메일로 로그인</button></form><a class="link" href="${esc(signupHref)}">이메일로 회원가입</a>`);
+
+// Per-IP fixed-minute window for the email form POST. The window uses the
+// replay-memory DO (claimAssertion): N slots per (ip, minute), each claimed at
+// most once, so the check is durable and serialized without a new primitive.
+async function allowPasswordAttempt(stateFor, ip, now, limit = 10) {
+  if (!ip) return true;
+  const windowIndex = Math.floor(now / 60);
+  const gate = stateFor('password-login-gate');
+  for (let i = 0; i < limit; i++) {
+    if (await gate.claimAssertion({ key: `password-login:${ip}:${windowIndex}:${i}`, expires: (windowIndex + 1) * 60, now })) return true;
+  }
+  return false;
+}
+
 // An adapter is injected in tests; the deployed entry point below only uses DO bindings.
-export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch }) {
+export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, accountDeleteRpcSecret, passwordRpcSecret, passwordRpcOrigin, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch }) {
+  const passwordRpcConfigured = typeof passwordRpcSecret === 'string' && passwordRpcSecret.length >= 32 &&
+    typeof passwordRpcOrigin === 'string' && /^https:\/\/[^/]+\/?$/.test(passwordRpcOrigin);
+  const passwordChoiceEnabled = (client) => client?.password_login === true && passwordRpcConfigured;
   async function verifyClient(params, client, current) {
     const assertion = one(params, 'client_assertion');
     if (one(params, 'client_assertion_type') !== 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer') throw new Error('bad client authentication');
@@ -213,7 +267,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const keys = (jwks?.keys || []).map(({ kty, crv, x, y, kid, use, alg }) => ({ kty, crv, x, y, kid, use, alg }));
       return json(200, { keys });
     }
-    if (url.pathname === '/login' && request.method === 'GET') {
+    if ((url.pathname === '/login' || url.pathname === '/login/google' || url.pathname === '/signup') && request.method === 'GET') {
       const id = one(url.searchParams, 'client_id'), returnTo = one(url.searchParams, 'redirect_uri');
       const serviceState = one(url.searchParams, 'state'), challenge = one(url.searchParams, 'code_challenge');
       const client = clients[id];
@@ -222,10 +276,104 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const fields = profileClaimAllowlist(client);
       const object = random(), stateSecret = random(), browser = random(), nonce = random(), verifier = random();
       await stateFor(object).createLogin({ stateDigest: await digest(stateSecret), browserDigest: await digest(browser), client: id, redirect: returnTo, serviceState, serviceChallenge: challenge, googleNonce: nonce, googleVerifier: verifier, expires: current + 600 });
+      const cookieSet = cookieHeader(browser, 600);
+      // The email choice/signup screens create exactly the same login state and
+      // browser cookie as the Google redirect does; the email form POST later
+      // consumes that same state. Email entry stays OFF unless the client opts
+      // in (password_login) and the Chat verification RPC is configured.
+      if (passwordChoiceEnabled(client)) {
+        const carry = new URLSearchParams({ client_id: id, redirect_uri: returnTo, state: serviceState, code_challenge: challenge, code_challenge_method: 'S256' });
+        if (url.pathname === '/login') {
+          const formAction = `/login/password?state=${encodeURIComponent(`${object}.${stateSecret}`)}`;
+          return htmlPage(200, loginChoicePage(`/login/google?${carry}`, formAction, `/signup?${carry}`), { 'set-cookie': cookieSet });
+        }
+        if (url.pathname === '/signup') {
+          const formAction = `/signup/password?state=${encodeURIComponent(`${object}.${stateSecret}`)}`;
+          return htmlPage(200, signupFormPage(formAction, ''), { 'set-cookie': cookieSet });
+        }
+      }
+      if (url.pathname === '/signup') return json(404, { error: 'not_found' });
       const google = new URL('https://accounts.google.com/o/oauth2/v2/auth');
       const values = { client_id: googleClientId, redirect_uri: CALLBACK, response_type: 'code', scope: fields.length ? 'openid email profile' : 'openid', state: `${object}.${stateSecret}`, nonce, code_challenge: await digest(verifier), code_challenge_method: 'S256' };
       for (const [k, v] of Object.entries(values)) google.searchParams.set(k, v);
-      return redirect(google.href, { 'set-cookie': cookieHeader(browser, 600) });
+      return redirect(google.href, { 'set-cookie': cookieSet });
+    }
+    if ((url.pathname === '/login/password' || url.pathname === '/signup/password') && request.method === 'POST') {
+      if (!passwordRpcConfigured) return json(404, { error: 'not_found' });
+      const register = url.pathname === '/signup/password';
+      const state = split(one(url.searchParams, 'state')), browser = cookieValue(request);
+      if (!state || !opaque.test(browser)) return json(400, { error: 'invalid_request' });
+      const contentLength = Number(request.headers.get('content-length') || '0');
+      if (contentLength > 4096) return json(400, { error: 'invalid_request' });
+      const form = new URLSearchParams(await request.text());
+      const email = one(form, 'email').trim().toLowerCase();
+      const password = one(form, 'password');
+      const name = one(form, 'name').trim().slice(0, 160);
+      const action = `${register ? '/signup/password' : '/login/password'}?state=${encodeURIComponent(state.join('.'))}`;
+      const formError = (message) => htmlPage(200, register ? signupFormPage(action, message) : loginFormPage(action, message));
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 255 || password.length < 1 || password.length > 128 ||
+          (register && /[\x00-\x1f\x7f]/.test(name))) {
+        return formError(register ? '이메일과 비밀번호 형식을 확인해 주세요.' : '이메일 주소와 비밀번호를 입력해 주세요.');
+      }
+      if (!await allowPasswordAttempt(stateFor, request.headers.get('cf-connecting-ip'), current)) {
+        return htmlPage(429, messagePage('로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.'));
+      }
+      const attempt = await diagnosed('password_attempt_failed', async () =>
+        stateFor(state[0]).beginPasswordAttempt({ stateDigest: await digest(state[1]), browserDigest: await digest(browser), now: current, maxAttempts: 5 }));
+      if (!attempt.ok && attempt.reason === 'exhausted') {
+        return htmlPage(429, messagePage('시도 횟수가 초과되었습니다. 처음부터 다시 로그인해 주세요.'));
+      }
+      if (!attempt.ok) return json(400, { error: 'invalid_request' });
+      const rpcPath = register ? '/internal/password-register' : '/internal/password-verify';
+      const payload = register ? { email, password, name } : { email, password };
+      const rpcBody = encoder.encode(JSON.stringify(payload));
+      let response;
+      try {
+        response = await fetcher(passwordRpcOrigin.replace(/\/+$/, '') + rpcPath, { method: 'POST', redirect: 'manual', headers: await passwordRpcHeaders(passwordRpcSecret, rpcPath, rpcBody), body: rpcBody });
+      } catch {
+        return htmlPage(503, messagePage('로그인 서비스에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.'));
+      }
+      if (response.status !== 200) {
+        if (response.status === 401 && !register) return formError('이메일 또는 비밀번호가 올바르지 않습니다.');
+        let code = '';
+        try { code = String((await response.json())?.error?.code || ''); } catch { /* status-only fallback */ }
+        if (response.status === 409 || code === 'account_exists') return formError('이미 사용 중인 이메일입니다.');
+        if (response.status === 400 && code.startsWith('invalid_')) return formError('입력 정보를 확인해 주세요.');
+        return htmlPage(503, messagePage('지금은 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.'));
+      }
+      let data;
+      try { data = await response.json(); } catch { return htmlPage(503, messagePage('지금은 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.')); }
+      if (data?.ok !== true || !/^usr_[A-Za-z0-9_-]{1,79}$/.test(data.product_user_id ?? '')) {
+        return htmlPage(503, messagePage('지금은 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.'));
+      }
+      const pending = await diagnosed('login_state_read_failed', async () =>
+        stateFor(state[0]).consumeLogin({ stateDigest: await digest(state[1]), browserDigest: await digest(browser), now: current }));
+      if (!pending) return json(400, { error: 'invalid_callback' });
+      if (!clients[pending.client]?.redirect_uris?.includes(pending.redirect)) return json(400, { error: 'invalid_callback' });
+      const account = await diagnosed('identity_lookup_failed', async () => {
+        const result = await stateFor('google-account-registry').resolveAccount({ fingerprint: await passwordIdentityFingerprint(identityKey, email), productId: pending.client, userId: data.product_user_id, subject: email, provider: 'password', now: current });
+        if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
+        return result;
+      });
+      const codeSecret = random(), codeDigest = await digest(codeSecret);
+      const fields = profileClaimAllowlist(clients[pending.client]);
+      let encryptedProfile;
+      if (fields.length) {
+        // The mailbox itself is not verified by a password login; this claim
+        // only asserts "this is the account's registered login identifier",
+        // which the credential check just proved. If a product needs Google-
+        // style mailbox verification for password accounts, gate it here.
+        const profile = verifiedProfile({ email, email_verified: true, name: '', picture: '' }, fields);
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const aad = encoder.encode(`profile:${pending.client}:${codeDigest}`);
+        const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: aad }, refreshKey, encoder.encode(JSON.stringify(profile)));
+        encryptedProfile = `${b64(iv)}.${b64(new Uint8Array(cipher))}`;
+      }
+      await diagnosed('code_issue_failed', async () => stateFor(state[0]).createCode({ digest: codeDigest, client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60, encryptedProfile }));
+      const target = new URL(pending.redirect);
+      target.searchParams.set('code', `${state[0]}.${codeSecret}`);
+      target.searchParams.set('state', pending.service_state);
+      return redirect(target.href, { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' });
     }
     if (url.pathname === '/oauth/google/callback' && request.method === 'GET') {
       const state = split(one(url.searchParams, 'state')), browser = cookieValue(request), code = one(url.searchParams, 'code');
@@ -345,7 +493,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'setAccountStatus']);
+const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'setAccountStatus']);
 export class AuthStateObject extends AuthState {
   constructor(state, env) { super(state); this.state = state; this.env = env; }
   async createCode(input) {
@@ -367,14 +515,14 @@ export class AuthStateObject extends AuthState {
     }
     return finalized;
   }
-  async resolveAccount({ fingerprint, productId, userId, subject, now = Math.floor(Date.now() / 1000) }) {
+  async resolveAccount({ fingerprint, productId, userId, subject, provider = 'google', now = Math.floor(Date.now() / 1000) }) {
     // DO serialization prevents two concurrent first logins from issuing two
     // authority calls or binding one fingerprint to different accounts.
     return this.state.blockConcurrencyWhile(async () => {
       const current = this.accountByFingerprint(fingerprint);
       if (current && (current.state !== 'active' || productId !== 'b62')) return current;
       const linked = await diagnosed('identity_authority_rpc_failed', async () => {
-        const request = { product_id: productId, product_user_id: userId, auth_provider: 'google', provider_subject: subject };
+        const request = { product_id: productId, product_user_id: userId, auth_provider: provider, provider_subject: subject };
         if (current) request.expected_canonical_subject_id = current.account_id;
         const result = plainRpc(await this.env.IDENTITY_AUTHORITY.resolve_or_create_product_link(request));
         if (result?.ok !== true || result?.link?.state !== 'active' || result?.link?.product_id !== productId || result?.link?.product_user_id !== userId || !/^sub_[A-Za-z0-9_-]+$/.test(result?.link?.canonical_subject_id ?? '')) {
@@ -425,7 +573,7 @@ export default {
         if (!response.ok) throw new Error('state failed');
         return (await response.json()).value;
       }; } });
-      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, accountDeleteRpcSecret: env.PADIEM_ACCOUNT_DELETE_RPC_SECRET, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor }).fetch(request);
+      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, accountDeleteRpcSecret: env.PADIEM_ACCOUNT_DELETE_RPC_SECRET, passwordRpcSecret: env.PADIEM_AUTH_PASSWORD_RPC_SECRET, passwordRpcOrigin: env.PADIEM_CHAT_PASSWORD_RPC_ORIGIN, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor }).fetch(request);
     } catch { return json(503, { error: 'authentication_unavailable' }); }
   }
 };

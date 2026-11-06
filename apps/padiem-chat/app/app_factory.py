@@ -138,6 +138,7 @@ from .b66_saved_skill_candidate_store import (
 )
 from .home_product_access_routes import ACCESS_PATH, home_product_access
 from .account_deletion import account_delete, shared_account_delete
+from .password_rpc import password_register_rpc, password_verify_rpc
 from .auth_routes import (
     auth_status,
     google_callback,
@@ -651,6 +652,9 @@ def create_app(
         Route("/auth/lovetree/start", lovetree_handoff_start, methods=["GET"]),
         Route("/api/auth/password/register", password_register, methods=["POST"]),
         Route("/api/auth/password/login", password_login, methods=["POST"]),
+        # padiem-auth email signup/login (opt-in) verifies credentials here.
+        Route("/internal/password-verify", password_verify_rpc, methods=["POST"]),
+        Route("/internal/password-register", password_register_rpc, methods=["POST"]),
         Route("/api/auth/password/change", password_change, methods=["POST"]),
         # #5441 lost-password self-service reset. The request route issues one
         # short-lived, single-use link; the confirm route redeems it and sets
