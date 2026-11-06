@@ -170,5 +170,48 @@ class TestClaimAndGuardMarkers(unittest.TestCase):
         self.assertNotIn("claimed", _phases(journal.getvalue()))
 
 
+class TestPersistMarker(unittest.TestCase):
+    """The read_ok→submit gap suspects the persist (it owns the fsyncs).
+
+    One ``phase=persisted`` line in the existing format, once per submit and
+    always before ``submit`` — a value, a path or a second line would be an
+    answer to a question nobody asked. The fakes above are the repository's
+    contract shapes: exact signatures, no ``**kwargs``.
+    """
+
+    def test_the_submit_marks_persist_once_between_read_and_submit(self):
+        journal, calls = _round(_executor())
+        seen = _phases(journal)
+        self.assertIn("persisted", seen)
+        self.assertEqual(seen.count("persisted"), 1)
+        self.assertLess(seen.index("read_ok"), seen.index("persisted"))
+        self.assertLess(seen.index("persisted"), seen.index("submit"))
+        self.assertEqual(calls, [POLL_PATH, RESULT_PATH])
+
+    def test_the_persist_line_keeps_the_existing_shape_and_carries_no_value(self):
+        journal, _ = _round(_executor())
+        line = next(l for l in journal.splitlines() if " phase=persisted " in l)
+        for field in (" ts=", " elapsed_ms=", " dispatch_id=", " run_hash="):
+            self.assertIn(field, line, line)
+        self.assertIn("dsp-261105", line)
+        for forbidden in (FILE_PATH, "C:/synthetic", "본문", NODE):
+            self.assertNotIn(forbidden, line, forbidden)
+
+    def test_a_refused_submit_still_marks_its_persist_once(self):
+        def transport(path, payload):
+            if path == POLL_PATH:
+                return 200, {"ok": True, "dispatch": _dispatch()}
+            return 200, {"ok": False}
+
+        executor = _executor()
+        executor._transport = transport
+        journal = io.StringIO()
+        with contextlib.redirect_stderr(journal):
+            executor.run_once()
+        seen = _phases(journal.getvalue())
+        self.assertEqual(seen.count("persisted"), 1)
+        self.assertLess(seen.index("persisted"), seen.index("submit_refused"))
+
+
 if __name__ == "__main__":
     unittest.main()
