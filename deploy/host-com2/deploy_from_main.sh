@@ -36,6 +36,7 @@
 #   PADIEM_COM2_B14_APP          B14 app tree (a link into the mirror)
 #   PADIEM_COM2_MESH_QUEUE_APP   the PC queue install root (its code also from the mirror)
 #   PADIEM_COM2_MESH_QUEUE_USER  the account that owns that root
+#   PADIEM_COM2_QUEUE_UNIT_DIR   where the queue units are installed (/etc/systemd/system)
 #   PADIEM_COM2_HEALTH_TIMEOUT / PADIEM_COM2_HEALTH_INTERVAL
 #                                how long a start or a rollback may take to become
 #                                healthy (240s, 2s)
@@ -101,6 +102,7 @@ p01_root=${PADIEM_COM2_P01_APP:-/opt/padiem/p01}
 b14_app=${PADIEM_COM2_B14_APP:-/opt/padiem/b14/app}
 queue_root=${PADIEM_COM2_MESH_QUEUE_APP:-/opt/padiem/mesh-queue}
 queue_account=${PADIEM_COM2_MESH_QUEUE_USER:-padiem-mesh}
+queue_unit_dir=${PADIEM_COM2_QUEUE_UNIT_DIR:-/etc/systemd/system}
 # The Oracle mesh executor ran from a hand copy of this repository that no
 # deploy updated. Its tree is a commit directory now, with the PYTHONPATH
 # path the unit already names pointing at it.
@@ -127,6 +129,16 @@ P01_UNIT=padiem-p01.service
 B14_UNIT=padiem-b14.service
 QUEUE_UNIT=padiem-mesh-queue.service
 EXECUTOR_UNIT=padiem-oracle-mesh-executor.service
+
+# The files the queue's own installer installs from deploy/ (#6892 follow-up).
+# The code mirror excludes them, so they follow the deployed commit through
+# sync_queue_installer_files instead of a hand run of install.sh.
+QUEUE_INSTALLER_FILES=(
+  padiem-mesh-queue.service
+  padiem-mesh-queue-health.service
+  padiem-mesh-queue-health.timer
+  provision_service_secret.sh
+)
 
 fail() { printf 'COM2_DEPLOY=STOP\nCOM2_DEPLOY_REASON=%s\n' "$1" >&2; exit "${2:-2}"; }
 say() { printf 'COM2_DEPLOY_%s\n' "$*"; }
@@ -1019,6 +1031,7 @@ stage_queue_code() {
     --exclude '*.sqlite3*' --exclude 'queue.env' --exclude 'service-secret.txt' \
     --exclude 'ownership-map.json' --exclude 'watch-read-secret.txt' \
     --exclude /backup.sh --exclude /health_check.sh --exclude /provision_service_secret.sh \
+    --exclude '*.bak-*' \
     "$source/" "$queue_root/" || return 1
   # The systemd health timer runs the installer-managed root-level copy.
   install -m 0755 "$queue_root/deploy/health_check.sh" "$queue_root/health_check.sh" || return 1
@@ -1032,6 +1045,97 @@ stage_queue_code() {
     chown -R -- "$queue_account" "$queue_root" 2>/dev/null || true
   fi
   say "QUEUE_STAGED=$source"
+}
+
+# install.sh owns four files the code mirror never writes: the queue's main unit,
+# its health unit and timer, and provision_service_secret.sh. stage_queue_code
+# excludes the installer's copies on purpose, so a change to any of them on main
+# used to leave the installed file at whatever the last hand run wrote (#7012
+# fixed health_check.sh the same way). State and environment files — queue.env,
+# service-secret.txt, the database — are never read or written here.
+queue_installer_target() {
+  # $1 one name from QUEUE_INSTALLER_FILES; the installed path it belongs at.
+  case "$1" in
+    provision_service_secret.sh) printf '%s\n' "$queue_root/$1" ;;
+    *) printf '%s\n' "$queue_unit_dir/$1" ;;
+  esac
+}
+
+queue_unit_changed() {
+  # $1 a queued installer file name. Only a unit needs a daemon-reload.
+  case "$1" in
+    *.service|*.timer) return 0 ;;
+  esac
+  return 1
+}
+
+sync_queue_installer_files() {
+  # $1 the staged queue tree, $2 the commit a backup is named after.
+  local source=$1 sha=$2 name path target mode
+  local -a updated=()
+  local reload=0
+  for name in "${QUEUE_INSTALLER_FILES[@]}"; do
+    path="$source/deploy/$name"
+    target=$(queue_installer_target "$name")
+    # A smaller operator tree simply does not carry the file.
+    [[ -f $path ]] || continue
+    if [[ -f $target ]] && cmp -s -- "$path" "$target"; then continue; fi
+    if [[ -e $target ]]; then
+      # The copy this deploy replaces is the only way back. The first backup of a
+      # commit is the state before it was ever installed, so a re-run keeps it.
+      if [[ ! -e $target.bak-$sha ]]; then
+        cp -p -- "$target" "$target.bak-$sha" \
+          || { say "QUEUE_UNITS_BACKUP_FAILED=$name"; return 1; }
+      fi
+      # cp into an existing file keeps that file's mode and owner.
+      cp -- "$path" "$target" || { say "QUEUE_UNITS_COPY_FAILED=$name"; return 1; }
+    else
+      case $name in
+        *.sh) mode=0755 ;;
+        *) mode=0644 ;;
+      esac
+      install -m "$mode" -- "$path" "$target" \
+        || { say "QUEUE_UNITS_COPY_FAILED=$name"; return 1; }
+    fi
+    updated+=("$name")
+    if queue_unit_changed "$name"; then reload=1; fi
+  done
+  if (( reload )); then
+    "$systemctl_bin" daemon-reload || { say 'QUEUE_UNITS_RELOAD_FAILED'; return 1; }
+  fi
+  if (( ${#updated[@]} )); then
+    say "QUEUE_UNITS=UPDATED:$(IFS=,; printf '%s' "${updated[*]}")"
+  else
+    say 'QUEUE_UNITS=SAME'
+  fi
+}
+
+restore_queue_installer_files() {
+  # $1 the commit whose install is being rolled back. Only the files that deploy
+  # replaced come back; one it created stays, because the host had none before.
+  local sha=$1 name target restored=0 reload=0
+  for name in "${QUEUE_INSTALLER_FILES[@]}"; do
+    target=$(queue_installer_target "$name")
+    [[ -f $target.bak-$sha ]] || continue
+    if [[ -e $target ]]; then
+      # Same rule as the copy: the installed mode and owner stay as they are.
+      cp -- "$target.bak-$sha" "$target" \
+        || { say "QUEUE_UNITS_RESTORE_FAILED=$name"; return 1; }
+    else
+      cp -p -- "$target.bak-$sha" "$target" \
+        || { say "QUEUE_UNITS_RESTORE_FAILED=$name"; return 1; }
+    fi
+    restored=$((restored + 1))
+    if queue_unit_changed "$name"; then reload=1; fi
+  done
+  if (( reload )); then
+    "$systemctl_bin" daemon-reload || { say 'QUEUE_UNITS_ROLLBACK_RELOAD_FAILED'; return 1; }
+  fi
+  if (( restored )); then
+    say "QUEUE_UNITS_ROLLBACK=RESTORED:$restored"
+  else
+    say 'QUEUE_UNITS_ROLLBACK=NONE'
+  fi
 }
 
 queue_rollback_source() {
@@ -1050,6 +1154,10 @@ deploy_queue() {
   assert_service_readable QUEUE_SOURCE "$staged/apps/padiem-mesh-queue" "$queue_account" \
     || return 1
   stage_queue_code "$staged/apps/padiem-mesh-queue" || return 1
+  # The units and the secret provisioner install.sh installs follow the same
+  # commit as the code; only what differs is copied, and only a changed unit
+  # reloads systemd.
+  sync_queue_installer_files "$staged/apps/padiem-mesh-queue" "$resolved" || return 1
   # #6898's kit installs the backup script and its timer units from the mirror.
   # It never starts, enables or restarts anything and never opens the queue
   # database; running it here keeps the host's backup copy on the code that
@@ -1068,11 +1176,17 @@ rollback_queue() {
   if source=$(queue_rollback_source); then
     with_service_stopped "$QUEUE_UNIT" || return 1
     stage_queue_code "$source" || return 1
+  else
+    printf 'COM2_DEPLOY_QUEUE_ROLLBACK=MANUAL PREVIOUS=%s\n' "$previous_dir/$old" >&2
+  fi
+  # The forward run replaced the installer-owned files; put them back before the
+  # unit starts on the previous code.
+  restore_queue_installer_files "$resolved" || return 1
+  if [[ -n $source ]]; then
     "$systemctl_bin" start "$QUEUE_UNIT" || return 1
     wait_for_health QUEUE_ROLLBACK queue_health_ok bash "$queue_root/deploy/health_check.sh"
     return
   fi
-  printf 'COM2_DEPLOY_QUEUE_ROLLBACK=MANUAL PREVIOUS=%s\n' "$previous_dir/$old" >&2
   "$systemctl_bin" start "$QUEUE_UNIT" || return 1
   wait_for_health QUEUE_ROLLBACK queue_health_ok bash "$queue_root/deploy/health_check.sh"
 }

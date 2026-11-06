@@ -166,6 +166,7 @@ chat_db_user=
 p01_root=$P01_ROOT
 b14_app=$B14_APP
 queue_root=$QUEUE_ROOT
+queue_unit_dir=$QUEUE_UNIT_DIR
 systemctl_bin=$SYSTEMCTL_BIN
 journalctl_bin=$JOURNALCTL_BIN
 executor_root=$ORACLE_MESH_ROOT
@@ -365,6 +366,8 @@ class DeployHarness(unittest.TestCase):
         self.b14.mkdir()
         self.queue = self.tmp / "mesh-queue"
         self.queue.mkdir()
+        self.units = self.tmp / "units"
+        self.units.mkdir()
         self.db = self.tmp / "chat.sqlite3"
         self._ledger(
             ["001_auth_history.sql"]
@@ -484,6 +487,7 @@ sys.exit(0 if code == "none" else 1)
             "ORACLE_MESH_ROOT": (self.tmp / "oracle-mesh").as_posix(),
             "PYTHON_BIN": Path(sys.executable).as_posix(),
             "QUEUE_ROOT": self.queue.as_posix(),
+            "QUEUE_UNIT_DIR": self.units.as_posix(),
         }
         return subprocess.run(
             [BASH_BIN, "-c", APPLY_WRAPPER, "bash",
@@ -1288,6 +1292,120 @@ CHANGES["queue_imported_chat"] = (
     "apps/padiem-chat/app/pc_device_pairing_store.py",
     "PAIRING_TAG = 2\n",
 )
+
+
+QUEUE_INSTALLED = {
+    "padiem-mesh-queue.service": "[Service]\nExecStart=/opt/padiem/mesh-queue/venv/bin/python service.py\n",
+    "padiem-mesh-queue-health.service": "[Service]\nExecStart=/opt/padiem/mesh-queue/health_check.sh\n",
+    "padiem-mesh-queue-health.timer": "[Timer]\nOnUnitActiveSec=5min\n",
+    "provision_service_secret.sh": "#!/usr/bin/env bash\necho provision\n",
+}
+
+
+class QueueInstallerSyncTest(DeployHarness):
+    """The files the queue's installer installs follow the deployed commit.
+
+    deploy_from_main.sh's queue leg mirrored code only, so the main unit, the
+    health unit and timer, and provision_service_secret.sh stayed at whatever the
+    last hand run of apps/padiem-mesh-queue/deploy/install.sh wrote (#6892
+    follow-up). Only a differing file is replaced, the copy it replaces is kept
+    as .bak-<sha>, and only a changed unit reloads systemd.
+    """
+
+    scenario = "queue"
+    base_extra = {
+        f"apps/padiem-mesh-queue/deploy/{name}": text
+        for name, text in QUEUE_INSTALLED.items()
+    }
+
+    def _install_stale(self) -> None:
+        for name in QUEUE_INSTALLED:
+            # install.sh puts the units in the unit directory and the
+            # provisioner at the queue root.
+            target = self._installed(name)
+            target.write_text(f"# stale {name}\n", encoding="utf-8")
+            target.chmod(0o604 if name.endswith(".sh") else 0o644)
+        (self.queue / "queue.env").write_text("MESH_QUEUE_DB_PATH=/keep\n", encoding="utf-8")
+        (self.queue / "service-secret.txt").write_text("keep-secret\n", encoding="utf-8")
+
+    def _installed(self, name: str) -> Path:
+        return self.units / name if not name.endswith(".sh") else self.queue / name
+
+    def _source(self, name: str) -> Path:
+        # The checkout carries these from the base commit; the run mirrors the
+        # same bytes into the channel staging directory.
+        return self.ops / "apps/padiem-mesh-queue/deploy" / name
+
+    def test_identical_installed_files_are_not_touched(self) -> None:
+        for name in QUEUE_INSTALLED:
+            target = self.units / name
+            target.write_bytes(self._source(name).read_bytes())
+            target.chmod(0o640)
+        (self.queue / "provision_service_secret.sh").write_bytes(
+            self._source("provision_service_secret.sh").read_bytes()
+        )
+
+        result = self._run_apply()
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("COM2_DEPLOY_QUEUE_UNITS=SAME", result.stdout)
+        self.assertNotIn("systemctl daemon-reload", self._calls())
+        self.assertEqual(list(self.units.glob("*.bak-*")), [])
+        self.assertEqual(
+            (self.units / "padiem-mesh-queue.service").stat().st_mode & 0o777, 0o640
+        )
+
+    def test_a_changed_file_is_backed_up_and_copied(self) -> None:
+        self._install_stale()
+        sh_mode = self._installed("provision_service_secret.sh").stat().st_mode & 0o777
+
+        result = self._run_apply()
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn(
+            "COM2_DEPLOY_QUEUE_UNITS=UPDATED:padiem-mesh-queue.service,"
+            "padiem-mesh-queue-health.service,padiem-mesh-queue-health.timer,"
+            "provision_service_secret.sh",
+            result.stdout,
+        )
+        for name in QUEUE_INSTALLED:
+            target = self._installed(name)
+            self.assertEqual(target.read_bytes(), self._source(name).read_bytes(), name)
+            backup = target.with_name(target.name + ".bak-" + self.second)
+            self.assertEqual(backup.read_text(encoding="utf-8"), f"# stale {name}\n", name)
+        # The installed mode and owner are the host's, not the mirror's.
+        self.assertEqual(
+            (self.units / "padiem-mesh-queue.service").stat().st_mode & 0o777, 0o644
+        )
+        self.assertEqual(
+            self._installed("provision_service_secret.sh").stat().st_mode & 0o777, sh_mode
+        )
+        # A changed unit needs exactly one reload; the queue's state is untouched.
+        self.assertEqual(self._calls().count("systemctl daemon-reload"), 1, self._calls())
+        self.assertEqual(
+            (self.queue / "queue.env").read_text(encoding="utf-8"), "MESH_QUEUE_DB_PATH=/keep\n"
+        )
+        self.assertEqual(
+            (self.queue / "service-secret.txt").read_text(encoding="utf-8"), "keep-secret\n"
+        )
+
+    def test_a_rollback_puts_the_installed_files_back(self) -> None:
+        self._install_stale()
+        (self.fakes / "queue_health_output").write_text(
+            "MESH_QUEUE_HEALTH=UNREACHABLE curl=7\n", encoding="utf-8"
+        )
+
+        result = self._run_apply()
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("queue:ROLLBACK", result.stdout)
+        self.assertIn("COM2_DEPLOY_QUEUE_UNITS_ROLLBACK=RESTORED:4", result.stdout)
+        for name in QUEUE_INSTALLED:
+            target = self._installed(name)
+            self.assertEqual(target.read_text(encoding="utf-8"), f"# stale {name}\n", name)
+        # Forward and back: a unit changed both times.
+        self.assertEqual(self._calls().count("systemctl daemon-reload"), 2, self._calls())
+        self.assertEqual((self.queue / "service.py").read_text(encoding="utf-8"), "# queue\n")
 
 
 class QueueImportedModuleScenarioTest(DeployHarness):
