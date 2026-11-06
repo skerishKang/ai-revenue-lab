@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import base64
 import io
-import json
 import re
 import subprocess
 import unittest
@@ -167,61 +166,6 @@ class CommandPortTests(unittest.TestCase):
                          "__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__")
         self.assertEqual(kwargs["input"], PASSWORD + "\n")
         self.assertEqual(kwargs["timeout"], 45)
-
-    def test_pc_command_requests_user_session_and_refuses_agent_fallback(self):
-        calls = []
-        port = _port(_Completed(0, _transcript("ok\r\n")), calls=calls)
-        port.run_command(node_ref=NODE, command="hostname.exe")
-        argv = calls[0][0]
-        self.assertIn("--runasuser", argv)
-        self.assertNotIn("--runasuseronly", argv)
-        wrapped = argv[argv.index("--run") + 1]
-        self.assertIn("S-1-5-18", wrapped)
-        self.assertIn("S-1-5-4", wrapped)
-        self.assertIn("pc_user_session_unavailable", wrapped)
-        self.assertIn("if (-not $__padiem_refused)", wrapped)
-        self.assertLess(
-            wrapped.index("pc_user_session_unavailable"),
-            wrapped.index("hostname.exe"),
-        )
-
-    def test_system_subject_requires_an_explicit_internal_argument(self):
-        calls = []
-        port = _port(_Completed(0, _transcript("ok\r\n")), calls=calls)
-        port.run_command(node_ref=NODE, command="hostname.exe", run_as="system")
-        argv = calls[0][0]
-        self.assertNotIn("--runasuser", argv)
-        self.assertNotIn("--runasuseronly", argv)
-        wrapped = argv[argv.index("--run") + 1]
-        self.assertNotIn("pc_user_session_unavailable", wrapped)
-
-    def test_stderr_is_separated_in_the_existing_text_reply(self):
-        stdout = b"stdout line\r\n"
-        stderr = b"stderr line\r\n"
-        packet = "PADIEM_STREAMS_V1:" + json.dumps({
-            "stdout": stdout.decode("utf-8"),
-            "stderr": stderr.decode("utf-8"),
-        })
-        termination, exit_code, output = parse_transcript(_transcript(packet, "1"))
-        self.assertEqual((termination, exit_code), ("exited", 1))
-        self.assertEqual(
-            output,
-            stdout + b"--- stderr ---\n" + stderr,
-        )
-
-    def test_missing_command_error_is_a_nonzero_failed_result(self):
-        stderr = b"The term was not recognized. CommandNotFoundException\r\n"
-        packet = "PADIEM_STREAMS_V1:" + json.dumps({
-            "stdout": "",
-            "stderr": stderr.decode("utf-8"),
-        })
-        termination, exit_code, output = parse_transcript(_transcript(packet, "1"))
-        self.assertEqual((termination, exit_code), ("exited", 1))
-        self.assertIn(b"CommandNotFoundException", output)
-        wrapped = _wrap("gh auth status")
-        self.assertIn("CommandNotFoundException", wrapped)
-        self.assertIn("FullyQualifiedErrorId", wrapped)
-        self.assertIn("$__padiem_exit=1", wrapped)
 
     def test_long_and_unbounded_command_deadlines_are_accepted(self):
         # #5895: the 60s default and 300s ceiling are gone. A ten-minute command
@@ -420,7 +364,7 @@ class CommandPortTests(unittest.TestCase):
         class _RefusingPort:
             def run_command(self, *, node_ref, command, timeout_seconds, phase_observer=None,
                     cancel_probe=None, dispatch_id=None, keep_dispatch_ids=(),
-                            line_guard=None, run_as="user"):
+                    line_guard=None):
                 raise MeshCentralCommandRefused(
                     "the wrapped command exceeds the OS single-argument limit"
                 )
@@ -446,8 +390,8 @@ class _FakeCommandPort:
 
     def run_command(self, *, node_ref, command, timeout_seconds, phase_observer=None,
                     cancel_probe=None, dispatch_id=None, keep_dispatch_ids=(),
-                    line_guard=None, run_as="user"):
-        self.calls.append((node_ref, command, timeout_seconds, run_as))
+                    line_guard=None):
+        self.calls.append((node_ref, command, timeout_seconds))
         return self._outcome
 
 
@@ -532,19 +476,6 @@ class ExecutorRoutingTests(unittest.TestCase):
         self.assertIn("command_id=c", log)
         self.assertNotIn(command, log)
         self.assertNotIn("visible only in memory", log)
-        self.assertIn("run_as=user", log)
-
-    def test_no_logged_in_user_returns_the_closed_refusal_code(self):
-        from kagent.local_agent_meshcentral_command_port import MeshCentralCommandOutcome
-
-        port = _FakeCommandPort(MeshCentralCommandOutcome(
-            termination="exited", exit_code=1,
-            output=b"pc_user_session_unavailable",
-        ))
-        outcome = _executor(command_port=port).execute(_dispatch())
-        self.assertEqual((outcome.termination, outcome.exit_code), ("exited", 1))
-        self.assertEqual(outcome.body, b"pc_user_session_unavailable")
-        self.assertEqual(port.calls[0][3], "user")
     def test_timeout_phase_and_result_keep_the_same_ids(self):
         from kagent.local_agent_meshcentral_command_port import MeshCentralCommandOutcome
 
@@ -755,7 +686,7 @@ class TestTheExecutorProbesTheChannel(unittest.TestCase):
 
             def run_command(self, *, node_ref, command, timeout_seconds,
                             phase_observer=None, cancel_probe=None, dispatch_id=None,
-                            keep_dispatch_ids=(), line_guard=None, run_as="user"):
+                            keep_dispatch_ids=(), line_guard=None):
                 self.answer = cancel_probe() if cancel_probe is not None else None
                 return MeshCentralCommandOutcome(
                     termination="cancelled", exit_code=None, output=b"",
@@ -790,7 +721,7 @@ class TestTheExecutorProbesTheChannel(unittest.TestCase):
 
             def run_command(self, *, node_ref, command, timeout_seconds,
                             phase_observer=None, cancel_probe=None, dispatch_id=None,
-                            keep_dispatch_ids=(), line_guard=None, run_as="user"):
+                            keep_dispatch_ids=(), line_guard=None):
                 self.answer = cancel_probe()
                 return MeshCentralCommandOutcome(
                     termination="no_reply", exit_code=None, output=b"",
@@ -829,7 +760,7 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
         self.assertIn("Set-Content -LiteralPath $__padiem_pidfile -Value $PID", wrapped)
         self.assertIn("Remove-Item -LiteralPath $__padiem_pidfile", wrapped)
         self.assertNotIn("\n", wrapped)
-        # Without a dispatch id the wrapper carries no cancellation marker.
+        # Without a dispatch id the script is the bytes it always was.
         self.assertNotIn("padiem-dispatch", _wrap("Get-ChildItem C:/x"))
 
     def test_a_name_that_is_not_a_dispatch_id_is_refused_before_anyone_is_asked(self):
