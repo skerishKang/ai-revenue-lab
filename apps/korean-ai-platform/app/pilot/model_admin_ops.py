@@ -42,6 +42,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route, Router
 
+from app.pilot.reasoning_policy import normalize_policy
 from app.pilot.service_proof import service_proof_denial
 
 REGISTRY_PATH = "/v1/admin/model-ops/registry"
@@ -613,7 +614,22 @@ async def model_ops_model_apply(request: Request):
             number = _slot_number(provider_row.get("credential_binding_name"))
             if number is not None and slots.get(number, 0) > MAX_PROVIDERS_PER_SLOT:
                 return _error("credential_slot_full", "이 키 슬롯은 이미 가득 찼습니다.", status=409)
-        update: dict[str, Any] = {"models": [model_row]}
+        write_row = model_row
+        existing = next(
+            (row for row in registry["models"] if row.get("id") == model_row["id"]), None
+        )
+        if existing is not None and "reasoning" in existing and "reasoning" not in model_row:
+            # The console submits only the writable fields and the overlay
+            # replaces a model row whole, so carry the stored block forward
+            # instead of letting a re-save drop it. A client-supplied block is
+            # still refused by _clean_model, and this copy is re-validated here.
+            block = json.loads(json.dumps(existing["reasoning"]))
+            try:
+                normalize_policy(block)
+            except ValueError:
+                return _error("model_row_invalid", "모델 정보를 확인해 주세요.", status=400)
+            write_row = {**model_row, "reasoning": block}
+        update: dict[str, Any] = {"models": [write_row]}
         if provider_row is not None:
             update["providers"] = {model_row["provider_id"]: provider_row}
         try:
