@@ -3662,7 +3662,7 @@
           renderThoughtSummary(value && value.summary);
           return false;
         }
-        if (window.PadiemChatThoughtPanel.handleFrame(article, frame, {
+        if (window.PadiemChatThoughtPanel?.handleFrame?.(article, frame, {
           activeLabel: uiT("orchestration-thinking-label"),
           sanitize: safeThoughtSummary,
         })) return false;
