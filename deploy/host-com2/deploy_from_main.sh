@@ -378,9 +378,37 @@ PY
 
 unit_active() { "$systemctl_bin" is-active --quiet "$1"; }
 
+# A unit that crashed and waits out RestartSec reports `activating`, where
+# is-active is false while systemd still holds the next attempt. It is running
+# work: the stop has to cancel that attempt, and the unit has to come back.
+unit_running_or_restarting() {
+  local state
+  state=$("$systemctl_bin" show -p ActiveState --value "$1" 2>/dev/null || true)
+  [[ $state == active || $state == activating ]]
+}
+
+unit_loaded() {
+  local state
+  state=$("$systemctl_bin" show -p LoadState --value "$1" 2>/dev/null || true)
+  [[ $state == loaded ]]
+}
+
+# $1 unit, optional $2 label and $3 port. Stop whenever the unit is loaded.
+# Stopping only an active unit left a pending auto-restart alive while the
+# caller replaced code underneath it (11-07 05:38: the restart fired during
+# Chat's one-link-at-a-time swap and imported a mixed tree). A label proves the
+# old process — and its port, when one is named — is gone before the install.
 with_service_stopped() {
-  local unit=$1
-  if unit_active "$unit"; then "$systemctl_bin" stop "$unit" || return 1; fi
+  local unit=$1 label=${2:-} port=${3:-}
+  unit_loaded "$unit" || return 0
+  "$systemctl_bin" stop "$unit" || return 1
+  if [[ -n $label ]]; then
+    if [[ -n $port ]]; then
+      wait_service_down "$label" "$unit" "$port" || return 1
+    else
+      wait_main_pid_gone "$label" "$unit" || return 1
+    fi
+  fi
 }
 
 # A listening check against the real `ss -ltn` output shape:
@@ -663,9 +691,8 @@ verify_staged_source() {
 
 deploy_chat() {
   local before_active=0
-  if unit_active "$CHAT_UNIT"; then before_active=1; fi
-  with_service_stopped "$CHAT_UNIT" || return 1
-  wait_service_down CHAT "$CHAT_UNIT" "$chat_port" || return 1
+  if unit_running_or_restarting "$CHAT_UNIT"; then before_active=1; fi
+  with_service_stopped "$CHAT_UNIT" CHAT "$chat_port" || return 1
   bash "$staged/deploy/host-com2/chat/install.sh" \
     --apply --source-root "$staged" || return 1
   assert_service_readable CHAT_LIVE "$staged/apps/padiem-chat/app" "$read_check_user" || return 1
@@ -680,9 +707,8 @@ deploy_chat() {
 
 deploy_p01() {
   local before_active=0
-  if unit_active "$P01_UNIT"; then before_active=1; fi
-  with_service_stopped "$P01_UNIT" || return 1
-  wait_service_down P01 "$P01_UNIT" "$p01_port" || return 1
+  if unit_running_or_restarting "$P01_UNIT"; then before_active=1; fi
+  with_service_stopped "$P01_UNIT" P01 "$p01_port" || return 1
   bash "$staged/deploy/host-com2/p01/install.sh" \
     --apply --source-root "$staged" || return 1
   local live
@@ -764,9 +790,8 @@ b14_rollback_source() {  # The newest thing that is provably the previous code, 
 
 deploy_b14() {
   local before_active=0
-  if unit_active "$B14_UNIT"; then before_active=1; fi
-  with_service_stopped "$B14_UNIT" || return 1
-  wait_service_down B14 "$B14_UNIT" "$b14_port" || return 1
+  if unit_running_or_restarting "$B14_UNIT"; then before_active=1; fi
+  with_service_stopped "$B14_UNIT" B14 "$b14_port" || return 1
   link_b14_app "$staged/apps/korean-ai-platform" || return 1
   bash "$staged/deploy/host-com2/b14/install.sh" --reload || return 1
   assert_service_readable B14_LIVE "$staged/apps/korean-ai-platform" padiem-b14 || return 1
@@ -784,14 +809,10 @@ deploy_b14() {
 rollback_chat() {
   local previous="$previous_dir/$old"
   [[ -d $previous/deploy/host-com2/chat ]] || { say 'CHAT_ROLLBACK=NO_PREVIOUS_CHECKOUT'; return 1; }
-  # A failing unit waits in `activating` for its next Restart=always attempt,
-  # where is-active is false; stopping only an active unit leaves that pending
-  # restart alive. It then fires while the installer swaps links one at a time,
-  # and imports a mixed tree (11-07 05:38: the new app asked for
-  # app.identity_cache_metrics after the app link had already moved back).
-  # Stop unconditionally: stop also cancels the pending restart.
-  "$systemctl_bin" stop "$CHAT_UNIT" || return 1
-  wait_service_down CHAT_ROLLBACK "$CHAT_UNIT" "$chat_port" || return 1
+  # The failing unit waits in `activating` for its next Restart=always attempt,
+  # where is-active is false. The helper stops it unconditionally and proves it
+  # is gone, so no restart can fire while the installer swaps links one at a time.
+  with_service_stopped "$CHAT_UNIT" CHAT_ROLLBACK "$chat_port" || return 1
   bash "$previous/deploy/host-com2/chat/install.sh" \
     --apply --source-root "$previous" || return 1
   "$systemctl_bin" start "$CHAT_UNIT" || return 1
@@ -805,8 +826,7 @@ rollback_p01() {
   local snapshot
   snapshot=$(ls -1dt "$p01_root"/rollback/p01.* 2>/dev/null | head -1 || true)
   [[ -n $snapshot ]] || { say 'P01_ROLLBACK=NO_SNAPSHOT'; return 1; }
-  with_service_stopped "$P01_UNIT" || return 1
-  wait_service_down P01_ROLLBACK "$P01_UNIT" "$p01_port" || return 1
+  with_service_stopped "$P01_UNIT" P01_ROLLBACK "$p01_port" || return 1
   # A snapshot taken before this existed may still be 0600; a rollback that
   # cannot be read is no rollback at all, so fix it and then prove it.
   chmod -R a+rX,u+w,go-w "$snapshot" || return 1
@@ -831,8 +851,7 @@ rollback_p01() {
 rollback_b14() {
   local previous="$previous_dir/$old/apps/korean-ai-platform" source
   if source=$(b14_rollback_source); then
-    with_service_stopped "$B14_UNIT" || return 1
-    wait_service_down B14_ROLLBACK "$B14_UNIT" "$b14_port" || return 1
+    with_service_stopped "$B14_UNIT" B14_ROLLBACK "$b14_port" || return 1
     link_b14_app "$source" || return 1
     "$systemctl_bin" start "$B14_UNIT" || return 1
     wait_service_ready B14_ROLLBACK "$B14_UNIT" "$b14_port" \
@@ -1204,8 +1223,8 @@ restore_executor_unit_file() {
 
 deploy_executor() {
   local target="$executor_releases/$resolved" preserve before_active=0 started
-  if unit_active "$EXECUTOR_UNIT"; then before_active=1; fi
-  with_service_stopped "$EXECUTOR_UNIT" || return 1
+  if unit_running_or_restarting "$EXECUTOR_UNIT"; then before_active=1; fi
+  with_service_stopped "$EXECUTOR_UNIT" EXECUTOR || return 1
   preserve=$(readlink -f -- "$executor_src" 2>/dev/null || true)
   stage_executor_code "$staged" "$target" "$preserve" || return 1
   link_executor_source "$target" || return 1
@@ -1225,7 +1244,7 @@ deploy_executor() {
 
 rollback_executor() {
   local target started
-  with_service_stopped "$EXECUTOR_UNIT" || return 1
+  with_service_stopped "$EXECUTOR_UNIT" EXECUTOR_ROLLBACK || return 1
   if target=$(executor_rollback_source); then
     link_executor_source "$target" || return 1
   else
@@ -1377,8 +1396,8 @@ queue_rollback_source() {
 
 deploy_queue() {
   local before_active=0
-  if unit_active "$QUEUE_UNIT"; then before_active=1; fi
-  with_service_stopped "$QUEUE_UNIT" || return 1
+  if unit_running_or_restarting "$QUEUE_UNIT"; then before_active=1; fi
+  with_service_stopped "$QUEUE_UNIT" QUEUE || return 1
   assert_service_readable QUEUE_SOURCE "$staged/apps/padiem-mesh-queue" "$queue_account" \
     || return 1
   stage_queue_code "$staged/apps/padiem-mesh-queue" || return 1
@@ -1402,7 +1421,7 @@ deploy_queue() {
 rollback_queue() {
   local source
   if source=$(queue_rollback_source); then
-    with_service_stopped "$QUEUE_UNIT" || return 1
+    with_service_stopped "$QUEUE_UNIT" QUEUE_ROLLBACK || return 1
     stage_queue_code "$source" || return 1
   else
     printf 'COM2_DEPLOY_QUEUE_ROLLBACK=MANUAL PREVIOUS=%s\n' "$previous_dir/$old" >&2
@@ -1506,7 +1525,9 @@ print("COM2_DEPLOY_CHAT_MIGRATION_APPLIED_ONE=%s" % name)
 # the operator left enabled but stopped therefore received the new code and never
 # came up, and the health gate rolled it back (B14, 2026-11-01). Nothing moves until
 # every selected unit is enabled, and an enabled-but-stopped one is started and
-# health-checked here.
+# health-checked here. A unit waiting out RestartSec is already coming up: the
+# deploy stops it and starts it again, so starting it a second time here only
+# adds a window for that pending restart to interleave.
 ensure_unit_ready() {
   local label=$1 unit=$2
   shift 2
@@ -1514,7 +1535,7 @@ ensure_unit_ready() {
     say "UNIT_ENABLED_${label}=NO UNIT=$unit"
     return 1
   fi
-  if unit_active "$unit"; then
+  if unit_running_or_restarting "$unit"; then
     say "UNIT_READY_${label}=ACTIVE"
     return 0
   fi
@@ -1906,11 +1927,11 @@ PY
   for line in chat p01 b14 queue executor; do
     if (( ! wanted[$line] )); then continue; fi
     case "$line" in
-      chat) if unit_active "$CHAT_UNIT"; then was_active[chat]=1; fi ;;
-      p01) if unit_active "$P01_UNIT"; then was_active[p01]=1; fi ;;
-      b14) if unit_active "$B14_UNIT"; then was_active[b14]=1; fi ;;
-      queue) if unit_active "$QUEUE_UNIT"; then was_active[queue]=1; fi ;;
-      executor) if unit_active "$EXECUTOR_UNIT"; then was_active[executor]=1; fi ;;
+      chat) if unit_running_or_restarting "$CHAT_UNIT"; then was_active[chat]=1; fi ;;
+      p01) if unit_running_or_restarting "$P01_UNIT"; then was_active[p01]=1; fi ;;
+      b14) if unit_running_or_restarting "$B14_UNIT"; then was_active[b14]=1; fi ;;
+      queue) if unit_running_or_restarting "$QUEUE_UNIT"; then was_active[queue]=1; fi ;;
+      executor) if unit_running_or_restarting "$EXECUTOR_UNIT"; then was_active[executor]=1; fi ;;
     esac
     if "deploy_$line"; then
       result[$line]=PASS

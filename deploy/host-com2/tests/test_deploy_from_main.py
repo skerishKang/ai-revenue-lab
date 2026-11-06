@@ -6,6 +6,7 @@ COM2, systemd, or a real service; no root is required.
 """
 from __future__ import annotations
 
+import getpass
 import os
 import shutil
 import sqlite3
@@ -75,28 +76,50 @@ case "$1" in
     [[ $state == 1 ]]; exit $?
     ;;
   show)
-    # `show -p MainPID --value <unit>`: the unit name is argument 5. MainPID 0
-    # means the previous process is gone; a marker pins a wedged PID.
+    # `show -p <property> --value <unit>`: the unit name is argument 5.
     unit="${5}"
-    if [[ -f "$FAKE_ROOT/mainpid_${unit}" ]]; then
-      cat "$FAKE_ROOT/mainpid_${unit}"
-    elif [[ $(cat "$(state_file "${unit}")" 2>/dev/null || echo 0) == 1 ]]; then
-      echo 4242
-    else
-      echo 0
-    fi
+    property="${3}"
+    case "$property" in
+      MainPID)
+        # MainPID 0 means the previous process is gone; a marker pins a wedged PID.
+        if [[ -f "$FAKE_ROOT/mainpid_${unit}" ]]; then
+          cat "$FAKE_ROOT/mainpid_${unit}"
+        elif [[ $(cat "$(state_file "${unit}")" 2>/dev/null || echo 0) == 1 ]]; then
+          echo 4242
+        else
+          echo 0
+        fi
+        ;;
+      ActiveState)
+        # `restarting_<unit>` is the Restart=always window: the last start died
+        # and systemd holds the next attempt, where is-active is already false.
+        if [[ -f "$FAKE_ROOT/restarting_${unit}" ]]; then
+          echo activating
+        elif [[ $(cat "$(state_file "${unit}")" 2>/dev/null || echo 1) == 1 ]]; then
+          echo active
+        else
+          echo inactive
+        fi
+        ;;
+      LoadState)
+        if [[ -f "$FAKE_ROOT/not_loaded_${unit}" ]]; then echo not-found; else echo loaded; fi
+        ;;
+    esac
     exit 0
     ;;
   stop)
     echo 0 > "$(state_file "$2")"
+    rm -f "$FAKE_ROOT/restarting_$2"
     ;;
   start)
     # `crashed_<unit>` models a process that dies at once: systemd reports the
     # unit inactive while it waits out RestartSec for the next attempt.
     if [[ -f "$FAKE_ROOT/crashed_$2" ]]; then
       echo 0 > "$(state_file "$2")"
+      echo 1 > "$FAKE_ROOT/restarting_$2"
     else
       echo 1 > "$(state_file "$2")"
+      rm -f "$FAKE_ROOT/restarting_$2"
     fi
     key="$FAKE_ROOT/starts_${2}"
     n=$(cat "$key" 2>/dev/null || echo 0)
@@ -184,6 +207,16 @@ python_bin=$PYTHON_BIN
 git_bin=git
 ai_check=${FAKE_AI_MODE:-warn}
 run_deploy "$1"
+"""
+
+# One service function, without the pre-deploy "enabled but stopped" start.
+DEPLOY_CHAT_WRAPPER = """set -euo pipefail
+source "$1"
+apply=1
+systemctl_bin=$SYSTEMCTL_BIN
+python_bin=$PYTHON_BIN
+staged=$OPS_CHECKOUT
+deploy_chat
 """
 
 # The queue's own probe is a shell script, with the same failure knobs.
@@ -884,6 +917,45 @@ class ChatScenarioTest(DeployHarness):
         self.assertEqual(len(stops), 2, calls)
         self.assertLess(stops[-1], installs[1], calls)
         self.assertLess(installs[1], starts[-1], calls)
+
+    def test_forward_deploy_stops_a_unit_waiting_for_an_automatic_restart(self) -> None:
+        # The same window on the forward path: the unit is in its Restart=always
+        # wait (is-active false), so a stop that only looks at is-active leaves
+        # the pending start alive while the installer replaces the code.
+        (self.fakes / "state_padiem-chat-com2.service").write_text("0\n", encoding="utf-8")
+        (self.fakes / "restarting_padiem-chat-com2.service").write_text("1\n", encoding="utf-8")
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        calls = self._calls()
+        stop = calls.index("systemctl stop padiem-chat-com2.service")
+        install = next(i for i, call in enumerate(calls) if call.startswith("install chat"))
+        starts = [i for i, call in enumerate(calls) if call == "systemctl start padiem-chat-com2.service"]
+        self.assertLess(stop, install, calls)
+        self.assertEqual(len(starts), 1, calls)
+        self.assertLess(install, starts[0], calls)
+
+    def test_an_inactive_unit_is_stopped_but_not_started_by_the_deploy(self) -> None:
+        # The apply flow starts an enabled-but-stopped unit before any deploy, so
+        # this calls the deploy itself. A loaded unit still gets the stop; the
+        # decision to start follows what the unit was before the work.
+        (self.fakes / "state_padiem-chat-com2.service").write_text("0\n", encoding="utf-8")
+        env = {
+            **self.env,
+            "OPS_CHECKOUT": self.ops.as_posix(),
+            "SYSTEMCTL_BIN": self.systemctl.as_posix(),
+            "PYTHON_BIN": Path(sys.executable).as_posix(),
+            "PADIEM_COM2_READ_CHECK_USER": getpass.getuser(),
+        }
+        result = subprocess.run(
+            [BASH_BIN, "-c", DEPLOY_CHAT_WRAPPER, "bash",
+             (self.ops / "deploy/host-com2/deploy_from_main.sh").as_posix()],
+            capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("COM2_DEPLOY_CHAT_START=SKIPPED_NOT_ACTIVE_BEFORE", result.stdout)
+        calls = self._calls()
+        self.assertIn("systemctl stop padiem-chat-com2.service", calls)
+        self.assertNotIn("systemctl start padiem-chat-com2.service", calls)
 
     def test_slow_chat_start_is_retried_without_rollback(self) -> None:
         (self.fakes / "fail_once_chat").write_text("2", encoding="utf-8")
@@ -2115,9 +2187,22 @@ class ScriptBoundaryTest(unittest.TestCase):
         self.assertIn("port_wait_timeout=${PADIEM_COM2_PORT_WAIT_TIMEOUT:-240}", text)
         # chat, p01 and b14 walk the shared readiness ladder (unit active ->
         # port listening -> health contract); the queue keeps its own probe.
-        for label in ("CHAT", "P01", "B14", "CHAT_ROLLBACK", "P01_ROLLBACK", "B14_ROLLBACK"):
+        # The stop and the "old process is gone" proof are one helper call, so a
+        # path cannot stop the unit and then skip the wait.
+        for label, unit, port in (
+            ("CHAT", "CHAT_UNIT", "chat_port"),
+            ("P01", "P01_UNIT", "p01_port"),
+            ("B14", "B14_UNIT", "b14_port"),
+            ("CHAT_ROLLBACK", "CHAT_UNIT", "chat_port"),
+            ("P01_ROLLBACK", "P01_UNIT", "p01_port"),
+            ("B14_ROLLBACK", "B14_UNIT", "b14_port"),
+        ):
             self.assertIn(f'wait_service_ready {label} ', text)
-            self.assertIn(f'wait_service_down {label} ', text)
+            self.assertIn(f'with_service_stopped "${unit}" {label} "${port}"', text)
+        for label, unit in (("QUEUE", "QUEUE_UNIT"), ("QUEUE_ROLLBACK", "QUEUE_UNIT"),
+                            ("EXECUTOR", "EXECUTOR_UNIT"),
+                            ("EXECUTOR_ROLLBACK", "EXECUTOR_UNIT")):
+            self.assertIn(f'with_service_stopped "${unit}" {label}', text)
         self.assertIn('wait_service_ready P01_ROLLBACK "$P01_UNIT" "$p01_port"', text)
         for label in ("QUEUE", "QUEUE_ROLLBACK"):
             self.assertIn(f"wait_for_health {label} ", text)
