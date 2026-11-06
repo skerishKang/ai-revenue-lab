@@ -150,7 +150,8 @@ def _server_timing(started: float, p01_ms: float | None, engine_ms: int | None) 
     def whole(value: float) -> int:
         return max(0, min(600_000, int(round(value))))
 
-    parts = [f"chat;dur={whole(time.perf_counter() - started)}"]
+    # perf_counter is seconds; Server-Timing durations are milliseconds like p01.
+    parts = [f"chat;dur={whole((time.perf_counter() - started) * 1000.0)}"]
     if p01_ms is not None:
         parts.append(f"p01;dur={whole(p01_ms)}")
     if engine_ms is not None:
