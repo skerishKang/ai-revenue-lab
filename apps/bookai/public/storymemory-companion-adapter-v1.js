@@ -7,6 +7,7 @@ var MAX_QUESTION_CHARS=2000;
 /* 261106 · 전송 UX(설계 G): 전송 잠금, 대기 말풍선, 45초 AbortController,
    오류 코드별 안내 문구, retryable 반영. */
 var REQUEST_TIMEOUT_MS=45000;
+var PACKET_TIMEOUT_MS=8000;
 var inFlight=false;
 
 function clip(v,n){var s=String(v==null?'':v).replace(/\s+/g,' ').trim();return s.length>n?s.slice(0,Math.max(0,n-1))+'…':s;}
@@ -51,6 +52,7 @@ function localBlockedResult(packet){
 /* 261106 · 오류 코드별 안내 문구(설계 G). */
 function failureCopy(code){
   var c=String(code||'');
+  if(c==='packet_timeout')return '질문 준비에 시간이 걸렸어요. 다시 시도해 주세요.';
   if(c==='response_timeout')return '응답이 길어져 중단했어요 · 다시 시도';
   if(c==='answer_incomplete')return '답이 끝까지 만들어지지 않았어요 · 다시 시도';
   if(c==='credential_unavailable'||c==='com2_ai_credential_unavailable')return '서비스 설정 점검 중이에요. 잠시 후 다시 시도해 주세요.';
@@ -75,7 +77,16 @@ async function requestCompanion(question,opts){
   var q=clip(question,MAX_QUESTION_CHARS);
   if(!q)return localFailure('question_required');
   var packet;
-  try{packet=await buildPacketWithGrounding(q);}catch(e){return localFailure(e&&e.message||'packet_build_failed');}
+  var packetTimer;
+  try{
+    packet=await Promise.race([
+      buildPacketWithGrounding(q),
+      new Promise(function(_,reject){packetTimer=setTimeout(function(){reject(new Error('packet_timeout'));},PACKET_TIMEOUT_MS);})
+    ]);
+  }catch(e){
+    var code=e&&e.message||'packet_build_failed';
+    return localFailure(code,code==='packet_timeout');
+  }finally{clearTimeout(packetTimer);}
   var decision=packet&&packet.co_reader_decision||null;
   if(!decision||decision.decision!=='ALLOW')return localBlockedResult(packet);
   if(!(packet&&packet.diagnostics&&packet.diagnostics.boundary_available===true))return localBlockedResult(packet);
