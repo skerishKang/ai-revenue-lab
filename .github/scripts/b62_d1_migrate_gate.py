@@ -174,8 +174,28 @@ def build_inventory(app_name: str) -> list[dict[str, Any]]:
                     "destructive": is_destructive(text),
                 }
             )
+        final = _schema(db)
     finally:
         db.close()
+
+    # A later migration may remove the object this file created (for example,
+    # 103 drops the claw_task_alert table created by 010). The final schema can
+    # no longer prove that the earlier file ran, so it must stay unprovable:
+    # baseline records it in the ledger rather than executing it again. A
+    # recorded unprovable migration also stops future runs from reporting
+    # permanent LEDGER_OBJECT_DRIFT.
+    for entry in entries:
+        representative = entry["representative"]
+        if representative is None:
+            continue
+        if representative["kind"] == "table":
+            present = representative["table"] in final["tables"]
+        else:
+            present = (
+                f"{representative['table']}.{representative['column']}" in final["columns"]
+            )
+        if not present:
+            entry["representative"] = None
     return entries
 
 

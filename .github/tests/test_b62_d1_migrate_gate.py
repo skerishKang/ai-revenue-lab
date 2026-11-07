@@ -262,6 +262,11 @@ def test_inventory_pins_every_file_and_flags_the_real_rebuilds() -> None:
     assert all(re.fullmatch(r"\d{3}", item["number"]) for item in inventory)
     # every file with no distinguishing object is one of the sanctioned rebuilds
     assert UNPROVABLE.intersection(i["name"] for i in inventory) <= {i["name"] for i in inventory if i["representative"] is None}
+    # 103 removes the table 010 created, so the final schema cannot prove 010
+    # ran. It must be unprovable (baseline records it) rather than pending.
+    by_name = {item["name"]: item for item in inventory}
+    assert by_name["010_claw_task_alert.sql"]["representative"] is None
+    assert by_name["103_drop_claw_task_alert.sql"]["representative"] is None
     # 018 names DROP TABLE only inside a comment, so it is not destructive
     assert gate.is_destructive(
         "-- Runtime CREATE TABLE / ALTER TABLE / DROP TABLE stays\nCREATE TABLE t(a);"
