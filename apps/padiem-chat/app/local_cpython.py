@@ -38,7 +38,9 @@ from .b66_registered_model_boundary import (
     B14QuoteExactModelExecutor,
     B66RegisteredModelCompletion,
 )
+from .calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
 from .config import ConfigError, Settings
+from .connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from .cpython_aes_gcm import CPythonAesGcmPort
 from .control_plane_identity import IdentityBridgeError, PADIEM_CHAT_PRODUCT_ID
 from .control_plane_identity_shadow import D1IdentityShadowStore
@@ -54,10 +56,16 @@ from .loop_stall_watchdog import install as install_loop_stall_watchdog
 from .local_service_bridge import (
     HttpRpcBinding,
     LocalB66PdfRendererClient,
+    LocalEngineFetchBinding,
     compose_local_b14_transports,
+    local_engine_request_factory,
 )
 from .claw_search_decision import trusted_claw_search_activation
-from .local_p01_engine import build_local_engine_client, build_local_p01_lanes
+from .local_p01_engine import (
+    build_local_engine_client,
+    build_local_p01_lanes,
+    local_p01_engine_config_from_env,
+)
 from .worker_config import binding_value
 from .maintenance_mode import apply_write_freeze
 from .model_first import model_first_enabled
@@ -218,6 +226,50 @@ def _mesh_command_output_limit() -> int | None:
     return int(raw)
 
 
+LOCAL_GOOGLE_OAUTH_RPC_ORIGIN_ENV = "PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_RPC_ORIGIN"
+LOCAL_GOOGLE_OAUTH_RPC_SECRET_ENV = "PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_RPC_SECRET"
+
+
+def _google_connector_authorities(
+    env: Any,
+    *,
+    oauth_binding_factory: Any = None,
+) -> tuple[Any, Any]:
+    """Compose the COM2 stand-ins for the Worker's Google connector bindings.
+
+    The Worker reaches ``padiem-google-oauth-state`` and the P01 Engine over
+    Service Bindings. This host reaches the same reviewed read-only RPC and the
+    same internal activation path over HTTPS/loopback. Either surface stays
+    ``None`` when its env pair is absent, exactly as the Worker stays
+    fail-closed without the binding.
+    """
+
+    origin, secret = _optional_pair(
+        LOCAL_GOOGLE_OAUTH_RPC_ORIGIN_ENV, LOCAL_GOOGLE_OAUTH_RPC_SECRET_ENV
+    )
+    workspace_truth = None
+    if origin is not None and secret is not None:
+        # v1 proof matches the documented COM2 ingress contract; the call is
+        # read-only and idempotent, so no request-id replay guard is required.
+        factory = oauth_binding_factory or (
+            lambda o, s: HttpRpcBinding(o, s, sign_request_id=False)
+        )
+        workspace_truth = CloudflareGoogleOAuthWorkspaceTruth(factory(origin, secret))
+    calendar_client = None
+    try:
+        p01_config, _ = local_p01_engine_config_from_env(env)
+    except Exception:
+        p01_config = None
+    if p01_config is not None:
+        calendar_client = CloudflareCalendarReadActivationEngineClient(
+            LocalEngineFetchBinding(p01_config.origin),
+            caller_id=p01_config.caller_id,
+            credential=p01_config.credential,
+            request_factory=local_engine_request_factory,
+        )
+    return workspace_truth, calendar_client
+
+
 def build_app():
     """Compose the Chat ASGI app over the local SQLite + disk-R2 bindings."""
 
@@ -309,6 +361,9 @@ def build_app():
         from .identity_call_cache import CachedIdentityAuthority
         identity_authority = CachedIdentityAuthority(identity_authority)
     identity_shadow_store = D1IdentityShadowStore(db)
+    google_oauth_workspace_truth, calendar_read_activation_client = (
+        _google_connector_authorities(os.environ)
+    )
     pdf_renderer = (
         LocalB66PdfRendererClient(pdf_origin, pdf_secret) if pdf_origin else None
     )
@@ -370,6 +425,7 @@ def build_app():
         usage_store=D1UsageCounterStore(db),
         control_plane_identity_authority=identity_authority,
         identity_shadow_store=identity_shadow_store,
+        google_oauth_workspace_truth=google_oauth_workspace_truth,
         b66_pdf_renderer_client=pdf_renderer,
         central_model_admin_google_email=os.getenv(
             "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL", ""
@@ -393,6 +449,11 @@ def build_app():
         claw_push_vapid_subject=os.getenv("PADIEM_PUSH_VAPID_SUBJECT"),
         claw_push_transport=build_host_push_transport(),
     )
+
+    # #6460 3번: the Calendar READ activation route reads this state slot. The
+    # Worker sets it from the P01 Service Binding; this host sets the same
+    # client over the loopback Engine. Absent env keeps it None → 503.
+    app.state.calendar_read_activation_client = calendar_read_activation_client
 
     # apply_write_freeze below rebinds ``app`` to the ASGI wrapper; bind the
     # Starlette app in the handler default so startup still updates the state

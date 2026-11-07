@@ -38,7 +38,7 @@ x-padiem-service-proof: v1=hex(hmac_sha256(secret, "v1\n"+method+"\n"+path+"\n"+
 | 3 | `LOCAL_AGENT_BROKER_AUTHORITY_SERVICE` (padiem-local-agent-broker-state) | PC 커넥터 페어링/브로커 상태 (RPC) | RPC 메서드 호출 | **(나) 단계 이전** — 클레임·페어링·presence는 COM2 큐가 진실(`queue_store_proxy.py`, #6121). device/enrollment/session/read는 Stage 2-C로 이전 | Stage 2-C 설계(`COM2_CONTROL_PLANE_RPC_INGRESS_20261029.md` §5). 그 전까지 PC 레인 fail-closed |
 | 4 | `VOICE_STT_SERVICE` (padiem-voice-stt) | 서버 STT | binding transport (`app/voice_stt_routes.py`) | 미구현 — 음성 레인 off 유지 | Tunnel 호스트명 + 대상 proof 검증 + 로컬 클라이언트(PDF와 같은 모양) |
 | 5 | `B66_PDF_RENDERER_SERVICE` (padiem-b66-pdf-renderer) | B66 견적서 PDF 렌더 (fetch `/internal/v1/render`) | binding fetch (worker.py:304-337) | **구현 완료** — `LocalB66PdfRendererClient` (같은 경로·키 집합·32MiB 상한·proof) | Tunnel 호스트명 + 대상 proof 검증, env 쌍 |
-| 6 | `GOOGLE_OAUTH_STATE_SERVICE` (padiem-google-oauth-state) | workspace connector truth RPC (`workspace_connector_state`) | RPC (`app/connector_workspace_truth.py:218`) | 로그인은 무관하게 동작(§3). **대상 입구 구현(미배포·기본 꺼짐)** — allowlist 1개 | 2와 같은 배포·env 절차 |
+| 6 | `GOOGLE_OAUTH_STATE_SERVICE` (padiem-google-oauth-state) | workspace connector truth RPC (`workspace_connector_state`, `workspace_calendar_connector_state`) | RPC (`app/connector_workspace_truth.py:218`) | 로그인은 무관하게 동작(§3). **대상 입구 구현(미배포·기본 꺼짐)** — allowlist 2개(read-only). COM2 조립은 `app/local_cpython.py` `_google_connector_authorities` | 2와 같은 배포·env 절차 |
 | 7 | `P01_ENGINE_SERVICE` (padiem-ai-engine) | P01 웹 XLSX 엔진 호출 (fetch) | binding fetch (`app/web_xlsx_p01_engine_client.py:66-102`) | 미구현 — P01 레인 off 유지 | Tunnel 호스트명 + 호출자 인증 검토 + 로컬 fetch 클라이언트 |
 | 8 | `DOCUMENT_PARSER_SERVICE` (padiem-document-parser) | 격리 바이너리 파싱 | transport 존재하나 `wrangler.toml`에서 **주석 처리** | 해당 없음 — 프로덕션에서도 미배선 | 활성화 결정 시 7과 같은 절차 |
 
@@ -115,6 +115,8 @@ fail-closed이고 로그인·세션은 동작한다(https 공개 오리진이므
 | `PADIEM_CHAT_RUNTIME_MODE=mock|b14`, `PADIEM_CHAT_LIVE_ENABLED` | 모델·자동검색 게이트 |
 | `B14_UPSTREAM_MODE=https`, `B14_UPSTREAM_URL`, `PADIEM_B14_SERVICE_PROOF_SECRET` | 1번 |
 | `PADIEM_CHAT_LOCAL_IDENTITY_RPC_ORIGIN`, `…_SECRET` | 2번 (클라이언트 준비됨) |
+| `PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_RPC_ORIGIN`, `…_SECRET` | 6번 — 대상 `PADIEM_GOOGLE_STATE_RPC_INGRESS_SECRET`와 같은 값 |
+| `PADIEM_CHAT_LOCAL_P01_ENGINE_ORIGIN`, `PADIEM_CHAT_LOCAL_P01_CALLER_ID`, `PADIEM_CHAT_LOCAL_P01_ENGINE_CREDENTIAL` | Calendar READ 활성화(기존 P01 loopback) |
 | `PADIEM_CHAT_LOCAL_B66_PDF_ORIGIN`, `…_SECRET` | 5번 |
 | `PADIEM_CHAT_WEB_PROVIDER`, `TINYFISH_API_KEY`, `PADIEM_CHAT_DAUM_REST_API_KEY` | 웹 검색 |
 
