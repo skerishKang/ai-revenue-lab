@@ -3150,7 +3150,7 @@ class D1HistoryStore:
                 command_id, tool_request_ref, request_id, revision_ref,
                 evidence_ref, request_fingerprint, account_ref, workspace_ref,
                 device_id, binding_ref, node_ref, root_ref, path_relative,
-                file_path, kind, command_text, tool_call_ref, fields["user_mode"],
+                file_path, kind, command_text, tool_call_ref, 1 if user_mode else 0,
                 "pending", expires_at, now,
                 *correlation_params, "pending", now,
             )
