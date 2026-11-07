@@ -481,8 +481,13 @@ def build_app():
     from .auth_validation_cache import SqliteAuthValidationCache
     cache_seconds = _nonnegative_env('PADIEM_CHAT_AUTH_CACHE_SECONDS', 30)
     link_seconds = _nonnegative_env('PADIEM_CHAT_SHARED_LINK_CACHE_SECONDS', 600)
+    # #7084: the revocation guard reloads this entry on a background task just
+    # before it expires, so the request that would have waited ~1.2 s for the
+    # authority answers from the still-valid entry instead.
+    refresh_ahead = _nonnegative_env('PADIEM_CHAT_AUTH_REFRESH_AHEAD_SECONDS', 5)
     app.state.auth_validation_cache = (
         SqliteAuthValidationCache(db, ttl_seconds=cache_seconds,
+                                  refresh_ahead_seconds=refresh_ahead,
                                   link_ttl_seconds=link_seconds) if cache_seconds else None
     )
 

@@ -564,3 +564,73 @@ async def _outcome(*, store, sender, workspace_id, member_id):
         body="Your scheduled run is done.",
         url=None,
     )
+
+class _GoneSender:
+    """A push service that accepted nothing: the device is gone (404/410)."""
+
+    def __init__(self):
+        self.calls: list[Any] = []
+
+    async def send(self, **kwargs):
+        self.calls.append(kwargs)
+        return SimpleNamespace(delivered=False, gone=True)
+
+
+async def test_the_delivery_attempt_is_recorded_without_its_endpoint(capsys):
+    """#5034: the send attempt is distinguishable in the record — state and
+    per-device counts only, never the device endpoint (NO_ENDPOINT_IN_LOG)."""
+    db = _seed_db()
+    store = D1ClawPushSubscriptionStore(db)
+    await store.register(
+        workspace_id=_OWN_TENANT,
+        member_id=SIGNED_IN_USER_ID,
+        endpoint=_ENDPOINT,
+        p256dh="k",
+        auth="a",
+        scope=_SCOPE,
+        now="2026-10-21T00:00:00Z",
+    )
+    outcome = await _outcome(
+        store=store, sender=_Sender(ok=True), workspace_id=_OWN_TENANT,
+        member_id=SIGNED_IN_USER_ID,
+    )
+    captured = capsys.readouterr().out
+    assert outcome.state == "delivered"
+    lines = [ln for ln in captured.splitlines() if ln.startswith("claw_push_delivery")]
+    assert lines, captured
+    assert "state=delivered" in lines[-1]
+    assert "attempted=1" in lines[-1]
+    assert "delivered=1" in lines[-1]
+    assert "failed=0" in lines[-1]
+    assert "gone=0" in lines[-1]
+    assert _ENDPOINT not in captured
+
+
+async def test_a_gone_device_delivery_is_recorded_with_its_drop(capsys):
+    """#5034: a 404/410 device shows up as gone in the record — the row is
+    dropped by the existing seam and the journal says so without the URL."""
+    db = _seed_db()
+    store = D1ClawPushSubscriptionStore(db)
+    await store.register(
+        workspace_id=_OWN_TENANT,
+        member_id=SIGNED_IN_USER_ID,
+        endpoint=_ENDPOINT,
+        p256dh="k",
+        auth="a",
+        scope=_SCOPE,
+        now="2026-10-21T00:00:00Z",
+    )
+    outcome = await _outcome(
+        store=store, sender=_GoneSender(), workspace_id=_OWN_TENANT,
+        member_id=SIGNED_IN_USER_ID,
+    )
+    captured = capsys.readouterr().out
+    assert outcome.state == "failed"
+    lines = [ln for ln in captured.splitlines() if ln.startswith("claw_push_delivery")]
+    assert lines, captured
+    assert "state=failed" in lines[-1]
+    assert "attempted=1" in lines[-1]
+    assert "delivered=0" in lines[-1]
+    assert "failed=1" in lines[-1]
+    assert "gone=1" in lines[-1]
+    assert _ENDPOINT not in captured
