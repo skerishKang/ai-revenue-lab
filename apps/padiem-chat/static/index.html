@@ -341,6 +341,12 @@
             <h4 data-locale-key="mcp-settings-approvals">확인이 필요한 작업</h4>
             <p data-locale-key="mcp-settings-approval-help">아래 PC와 파일 경로, 저장할 내용 등 작업 전체를 확인해 주세요. 승인은 표시된 작업 한 번에만 적용됩니다.</p>
             <ul class="mcp-settings-list" id="mcpGatewayApprovals" data-locale-aria-label="mcp-settings-approvals" aria-label="확인이 필요한 작업"></ul>
+            <div id="pcManagedBlock" hidden>
+              <h4 data-locale-key="pc-managed-title">PC 연결</h4>
+              <p data-locale-key="pc-managed-note">관리 PC에서는 관리자가 SYSTEM 권한으로 명령을 실행할 수 있습니다.</p>
+              <p id="pcManagedNotReady" class="mcp-settings-status" role="status" hidden data-locale-key="pc-managed-not-ready">관리 PC 표시를 아직 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.</p>
+              <ul class="mcp-settings-list" id="pcManagedList" data-locale-aria-label="pc-managed-list" aria-label="PC 연결"></ul>
+            </div>
           </section>
           <section class="settings-section" aria-labelledby="adminSettingsTitle" id="adminSettingsSection" hidden>
             <p class="settings-label" data-locale-key="admin-section">관리자</p>

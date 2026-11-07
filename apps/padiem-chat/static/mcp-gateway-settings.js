@@ -3,7 +3,7 @@
 (function (root) {
   "use strict";
   const API = "/api/account/mcp";
-  const state = { tokens: [], approvals: [], links: [], issued: "", ready: false, busy: false, epoch: 0, status: "mcp-settings-help" };
+  const state = { tokens: [], approvals: [], links: [], issued: "", ready: false, busy: false, epoch: 0, status: "mcp-settings-help", admin: false, managed: {}, managedReady: false };
   let nodes;
   const copy = (key) => root.__padiemLocale?.text(key) || key;
   function element(tag, className, text) {
@@ -107,7 +107,59 @@
       nodes.approvals.append(item);
     }
   }
-  function paint() { paintDevices(); paintTokens(); paintApprovals(); controls(); }
+  function paintManaged() {
+    const visible = state.admin && state.ready && activeLinks().length > 0;
+    nodes.managedblock.hidden = !visible;
+    if (!visible) return;
+    nodes.managednotready.hidden = state.managedReady;
+    nodes.managedlist.replaceChildren();
+    for (const link of activeLinks()) {
+      const item = element("li", "mcp-settings-card"), detail = element("div", "mcp-settings-detail");
+      detail.append(element("strong", "", link.label || link.mesh_node_id));
+      field(detail, "mcp-settings-device", pcName(link.mesh_node_id));
+      const online = link.online === true ? copy("pc-managed-online") : copy("pc-managed-offline");
+      detail.append(element("span", "mcp-settings-status", online));
+      const choice = element("label", "mcp-settings-field");
+      const box = element("input");
+      box.type = "checkbox";
+      box.checked = state.managed[link.link_id] === true;
+      box.disabled = state.busy || !state.managedReady;
+      box.addEventListener("change", () => { void setManaged(link, box); });
+      choice.append(box, element("span", "", copy("pc-managed-toggle")));
+      item.append(detail, choice);
+      nodes.managedlist.append(item);
+    }
+  }
+  async function setManaged(link, box) {
+    if (state.busy) { box.checked = state.managed[link.link_id] === true; return; }
+    const epoch = state.epoch;
+    state.busy = true; paint();
+    try {
+      const reply = await request("/api/pc/devices/" + encodeURIComponent(link.link_id) + "/managed",
+        "POST", { managed: box.checked });
+      if (epoch !== state.epoch) return;
+      if (reply.status === 403) {
+        state.admin = false;
+        nodes.managedblock.hidden = true;
+        state.status = "pc-managed-forbidden"; controls(); return;
+      }
+      if (reply.status === 503 && reply.body?.error?.code === "pc_pairing_not_ready") {
+        state.managedReady = false;
+        nodes.managednotready.hidden = false;
+        state.status = "pc-managed-not-ready"; controls(); return;
+      }
+      if (reply.status === 200 && reply.body?.ok === true && reply.body?.link) {
+        state.managed[link.link_id] = reply.body.link.managed === true;
+        state.status = state.managed[link.link_id] ? "pc-managed-on" : "pc-managed-off";
+      } else {
+        box.checked = state.managed[link.link_id] === true;
+        state.status = "mcp-settings-save-error";
+      }
+    } catch (_) {
+      if (epoch === state.epoch) { box.checked = state.managed[link.link_id] === true; }
+    } finally { if (epoch === state.epoch) { state.busy = false; paint(); } }
+  }
+  function paint() { paintDevices(); paintTokens(); paintApprovals(); paintManaged(); controls(); }
   function reset() {
     ++state.epoch;
     state.tokens = []; state.approvals = []; state.links = [];
@@ -134,6 +186,25 @@
         state.tokens = tokens.body.tokens; state.approvals = approvals.body.approvals;
         state.links = pairings?.status === 200 && pairings.body?.ok === true && Array.isArray(pairings.body.links)
           ? pairings.body.links.filter((link) => link && typeof link.mesh_node_id === "string" && link.mesh_node_id) : [];
+        state.admin = pairings?.status === 200 && pairings.body?.admin === true;
+        state.managed = {}; state.managedReady = true;
+        if (state.admin) {
+          const states = await Promise.allSettled(activeLinks().map((link) =>
+            request("/api/pc/devices/" + encodeURIComponent(link.link_id) + "/managed")));
+          if (epoch !== state.epoch) return;
+          activeLinks().forEach((link, index) => {
+            const settled = states[index];
+            if (settled.status !== "fulfilled") return;
+            const reply = settled.value;
+            if (reply.status === 200 && reply.body?.ok === true) {
+              state.managed[link.link_id] = reply.body.managed === true;
+            } else if (reply.status === 503 && reply.body?.error?.code === "pc_pairing_not_ready") {
+              state.managedReady = false;
+            } else if (reply.status === 403) {
+              state.admin = false;
+            }
+          });
+        }
         state.ready = true;
         state.status = activeLinks().length ? "mcp-settings-ready" : "mcp-settings-no-pc-help";
       }
@@ -206,7 +277,7 @@
     const byId = (id) => root.document.getElementById(id);
     if (!byId("mcpGatewaySettings")) return;
     nodes = { section: byId("mcpGatewaySettings"), dialog: byId("settingsDialog") };
-    for (const name of ["Status", "Endpoint", "Device", "Name", "Issue", "Refresh", "List", "Approvals", "Issued", "Token", "Copy", "Hide", "Editor"]) {
+    for (const name of ["Status", "Endpoint", "Device", "Name", "Issue", "Refresh", "List", "Approvals", "Issued", "Token", "Copy", "Hide", "Editor", "ManagedBlock", "ManagedList", "ManagedNotReady"]) {
       nodes[name.toLowerCase()] = byId("mcpGateway" + name);
     }
     nodes.endpoint.value = root.location.origin + "/api/mcp";
