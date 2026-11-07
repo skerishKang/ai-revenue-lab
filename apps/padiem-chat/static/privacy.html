@@ -12,13 +12,13 @@
   <a class="legal-back" href="/">← Padiem으로 돌아가기</a>
   <h1>개인정보처리방침</h1>
   <p class="legal-muted">
-    시행일: <span class="legal-owner-check">[대표 확인: 시행일]</span> ·
-    버전: 초안(v0, 게시 전 대표 검토 필요)
+    시행일: 2026-11-10 ·
+    버전: v1
   </p>
 
   <div class="legal-card">
     <p>
-      <strong class="legal-owner-check">[대표 확인: 사업자명]</strong>(이하 "회사")은(는)
+      <strong>PADIEM(파디엠)</strong>(이하 "회사")은(는)
       AI 업무 도우미 서비스 Padiem(이하 "서비스", <strong>chat.padiem.net</strong>)을 운영하며,
       개인정보보호법 등 관련 법령을 준수합니다.
     </p>
@@ -87,7 +87,8 @@
   <ul>
     <li>회사는 회원의 사전 동의나 법령 근거 없이 개인정보를 제3자에게 제공하지 않습니다.</li>
     <li>처리 위탁: (가) 서비스 호스팅·데이터 저장, (나) AI 답변 생성(입력 내용·첨부 문서의 처리), (다) Google 로그인·Drive·Calendar 연동은 각각 위탁 업체를 통해 수행됩니다. 위탁 업체와 업무 내용·보유 기간은
-      <span class="legal-owner-check">[대표 확인: 위탁 업체 목록·내용]</span> 에 따릅니다.</li>
+      호스팅·데이터 저장은 Cloudflare, Google Cloud에 위탁합니다. AI 답변 생성은
+      "AI 응답 생성을 위한 처리 위탁"이며 위탁 업체명은 본 방침에 기재하지 않습니다(요청 시 고지).</li>
     <li>AI 답변 생성 위탁 업체는 회사가 정한 범위(요청 처리) 외의 목적으로 회원 내용을 사용하지 않도록 계약으로 제한합니다.</li>
   </ul>
 
@@ -112,10 +113,9 @@
   <h2>7. 개인정보 보호책임자</h2>
   <div class="legal-card">
     <ul>
-      <li>성명: <span class="legal-owner-check">[대표 확인: 개인정보 보호책임자 성명]</span></li>
-      <li>연락처: <span class="legal-owner-check">[대표 확인: 이메일·전화]</span></li>
-      <li>회사 주소: <span class="legal-owner-check">[대표 확인: 주소]</span></li>
-      <li>대표자: <span class="legal-owner-check">[대표 확인: 대표자 성명]</span></li>
+      <li>성명: 강혜림(대표)</li>
+      <li>연락처: <a href="mailto:ceo@padiem.net">ceo@padiem.net</a></li>
+      <!-- 추후 추가 가능: 회사 주소, 사업자등록번호 항목 -->
     </ul>
   </div>
 
@@ -138,9 +138,9 @@
       <li><strong>Google Drive &amp; Calendar:</strong> read-only access (<code>drive.readonly</code>, <code>calendar.readonly</code>) for users who connect them. Tokens are stored sealed on a separate OAuth server; tool execution receives only short-lived access leases.</li>
       <li><strong>Web push:</strong> for opted-in devices, the subscription endpoint and keys are stored server-side only and never echoed to screens or logs.</li>
       <li><strong>Cookies:</strong> one authentication cookie (<code>padiem_session</code>). No advertising or tracking cookies.</li>
-      <li><strong>Processors:</strong> hosting/storage, AI answer generation, and Google sign-in/Drive/Calendar integration are delegated under contract; no personal data is sold or shared without a legal basis.</li>
+      <li><strong>Processors:</strong> hosting/storage is delegated to Cloudflare and Google Cloud; AI answer generation is delegated under contract ("AI 응답 생성을 위한 처리 위탁", processor not named); Google sign-in/Drive/Calendar integration runs through Google. No personal data is sold or shared without a legal basis.</li>
       <li><strong>Limited Use:</strong> Padiem's use and transfer of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements.</li>
-      <li><strong>Operator details</strong> (business name, representative, address, contact, privacy officer, effective date): pending owner confirmation.</li>
+      <li><strong>Operator:</strong> PADIEM(파디엠), CEO 강혜림 — contact ceo@padiem.net. Privacy officer: 강혜림 (CEO). Effective date: 2026-11-10.</li>
     </ul>
   </section>
 </main>

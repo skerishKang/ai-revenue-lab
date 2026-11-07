@@ -6,9 +6,12 @@ reach anonymous visitors without any login, so the pages live next to the
 existing standalone pages (``help.html``, ``third-party-licenses.html``) and
 are linked from the app's sidebar footer.
 
-The drafts describe only what the code actually collects and processes, mark
-every owner-reserved field as ``[대표 확인]``, and carry the Google Limited
-Use disclosure required for verification.
+The drafts describe only what the code actually collects and processes and
+carry the Google Limited Use disclosure required for verification. The
+owner-reserved fields (business name, representative, contact, privacy
+officer, effective date, hosting processors, governing law) are filled with
+the 2026-11-07 owner decision values and the tests enforce that no
+``[대표 확인]`` marker remains.
 """
 
 from __future__ import annotations
@@ -34,16 +37,29 @@ def test_the_pages_exist_and_are_public_standalone_documents():
         assert "legal-back" in page and 'href="/"' in page
 
 
-def test_the_owner_reserved_fields_are_marked_not_invented():
-    required_markers = [
-        "사업자명", "대표자", "주소", "개인정보 보호책임자", "시행일",
-    ]
-    for marker in required_markers:
-        assert "[대표 확인" in PRIVACY, marker
-    assert PRIVACY.count("[대표 확인") >= 6
-    assert TERMS.count("[대표 확인") >= 3
-    # No invented business facts: the placeholders must survive into the draft.
-    assert "시행일: <span" in PRIVACY and "시행일: <span" in TERMS
+def test_the_owner_confirmed_fields_are_filled_and_no_marker_remains():
+    """[대표 확인] 자리는 전부 실제 값으로 채워지고 마커는 남지 않는다."""
+    for page in (PRIVACY, TERMS):
+        assert "[대표 확인" not in page, "all owner-reserved markers must be resolved"
+        assert "PADIEM(파디엠)" in page
+        assert "2026-11-10" in page
+    # Contact and privacy officer (owner decision 2026-11-07).
+    assert "강혜림" in PRIVACY and "ceo@padiem.net" in PRIVACY
+    assert "강혜림(대표)" in PRIVACY
+    assert "ceo@padiem.net" in TERMS
+    # Address and business registration number are deliberately not fields yet;
+    # only the HTML comment reserves the slot for a later addition, so check
+    # the rendered content with comments stripped (email-address prose may
+    # still mention 주소).
+    import re
+    rendered = re.sub(r"<!--.*?-->", "", PRIVACY, flags=re.S)
+    assert "회사 주소" not in rendered and "사업자등록번호" not in rendered
+    # Governing law (owner decision 2026-11-07).
+    assert "대한민국 법" in TERMS
+    # Hosting processors are named; the AI processor stays unnamed by decision.
+    assert "Cloudflare" in PRIVACY and "Google Cloud" in PRIVACY
+    assert "AI 응답 생성을 위한 처리 위탁" in PRIVACY
+    assert "기재하지 않습니다" in PRIVACY
 
 
 def test_the_draft_states_only_what_the_code_does():
@@ -61,9 +77,10 @@ def test_the_draft_states_only_what_the_code_does():
     assert "구독 정보" in PRIVACY and "노출되지 않" in PRIVACY
     # One session cookie; no ads/tracking.
     assert "padiem_session" in PRIVACY and "추적용 쿠키는 사용하지 않습니다" in PRIVACY
-    # Delegation wording stays at the "AI 처리 위탁" level: no vendor names.
+    # Delegation wording: hosting is named (Cloudflare, Google Cloud); the AI
+    # answer generation processor stays unnamed ("AI 응답 생성을 위한 처리 위탁").
     assert "AI 답변 생성" in PRIVACY and "위탁" in PRIVACY
-    for banned in ("Cloudflare", "Workers", "D1", "OpenAI", "Anthropic", "Agnes", "OpenRouter"):
+    for banned in ("Workers", "D1", "OpenAI", "Anthropic", "Agnes", "OpenRouter"):
         assert banned not in PRIVACY, banned
         assert banned not in TERMS, banned
 
