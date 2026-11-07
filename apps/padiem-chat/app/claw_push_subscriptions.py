@@ -336,6 +336,25 @@ class PushDeliveryOutcome:
         return False
 
 
+def _record_delivery_outcome(
+    *, state: str, attempted: int = 0, delivered: int = 0, failed: int = 0, gone: int = 0
+) -> None:
+    """#5034: one bounded journal line per delivery attempt.
+
+    The issue asks the four stages (inbox save, send attempt, push-service
+    acceptance, device receipt) to stay distinguishable in the record.  The
+    journal line carries the state and the per-device counts only: never the
+    endpoint (``NO_ENDPOINT_IN_LOG`` in :mod:`app.claw_web_push_sender`),
+    never the title/body/url payload and never an account identifier.
+    """
+
+    print(
+        "claw_push_delivery state=%s attempted=%s delivered=%s failed=%s gone=%s"
+        % (state, attempted, delivered, failed, gone),
+        flush=True,
+    )
+
+
 async def deliver_inbox_push(
     *,
     store: D1ClawPushSubscriptionStore,
@@ -356,18 +375,22 @@ async def deliver_inbox_push(
     """
 
     if sender is None or not callable(getattr(sender, "send", None)):
+        _record_delivery_outcome(state="not_configured")
         return PushDeliveryOutcome(state="not_configured")
     try:
         subscriptions = await store.list_for(
             workspace_id=workspace_id, member_id=member_id, scope=scope
         )
     except WorkspaceStorageError:
+        _record_delivery_outcome(state="failed")
         return PushDeliveryOutcome(state="failed")
     if not subscriptions:
+        _record_delivery_outcome(state="no_subscription")
         return PushDeliveryOutcome(state="no_subscription")
     attempted = 0
     delivered = 0
     failed = 0
+    gone = 0
     for subscription in subscriptions:
         attempted += 1
         try:
@@ -385,8 +408,9 @@ async def deliver_inbox_push(
         # #5034: a sender may answer a bounded outcome object instead of a bare
         # bool. A 404/410 means the device is gone, so the row is dropped here
         # rather than retried forever. This never touches the inbox record.
-        gone = bool(getattr(result, "gone", False))
-        if gone:
+        gone_result = bool(getattr(result, "gone", False))
+        if gone_result:
+            gone += 1
             try:
                 await store.unregister(
                     workspace_id=workspace_id,
@@ -400,9 +424,15 @@ async def deliver_inbox_push(
         else:
             failed += 1
     if delivered:
+        _record_delivery_outcome(
+            state="delivered", attempted=attempted, delivered=delivered, failed=failed, gone=gone
+        )
         return PushDeliveryOutcome(
             state="delivered", attempted=attempted, delivered=delivered, failed=failed
         )
+    _record_delivery_outcome(
+        state="failed", attempted=attempted, delivered=0, failed=failed, gone=gone
+    )
     return PushDeliveryOutcome(
         state="failed", attempted=attempted, delivered=0, failed=failed
     )
