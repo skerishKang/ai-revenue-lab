@@ -1,7 +1,9 @@
 """Successor-pending canonical-primary parity contract (#3568).
 
 Static and network-free. Space Bunny survives only as historical identity
-constants, not as a registered model/provider. Padiem has no canonical
+constants, not as a registered model. Since #6816 (2026-11-04, owner-merged)
+the kilo host may exist as a fallback provider declaration in the B14 catalog
+with zero catalog models riding it. Padiem has no canonical
 text/vision primary pending owner decision.
 
 The product-tier authority is asserted once:
@@ -69,7 +71,14 @@ def test_kilo_catalog_fully_retires_space_bunny_to_historical_metadata() -> None
     data=json.loads(B14_JSON.read_text(encoding="utf-8"))
     ids={m["id"] for m in data["models"]}
     assert len(ids)==len(data["models"])
-    assert "kilo" not in data["providers"]
+    # #6816 (2026-11-04, owner-merged) re-declared the kilo host as a provider
+    # declaration for the Free fallback (Kilo Crouton Alpha,
+    # PADIEM_B14_CREDENTIAL_08). The retirement stays on the MODEL axis: the
+    # catalog may declare the kilo provider host, but no catalog model may
+    # ride it — the retired ids below stay unregistered.
+    if "kilo" in data["providers"]:
+        kilo_models = [m["id"] for m in data["models"] if m.get("provider") == "kilo"]
+        assert kilo_models == [], kilo_models
     assert ids.isdisjoint({
         "kilo/stealth-space-bunny-alpha",
         "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
