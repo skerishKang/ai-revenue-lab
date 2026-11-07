@@ -194,7 +194,15 @@ jobs:
             curl -fsS "${auth[@]}" \
               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" \
               -o "${deployments}"
-            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" --arg state "${OAUTH_STATE_WORKER}" '.success == true and .result.enabled == ($worker == $identity or $worker == $state) and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            # Before-snapshot topology: identity's signed ingress is already on
+            # workers.dev and the edge Worker stays off. The state Worker may be
+            # either value here — this run's own deploy applies the reviewed
+            # jsonc; the read-back below enforces enabled==true after it.
+            if [ "${worker}" = "${OAUTH_STATE_WORKER}" ]; then
+              jq -e '.success == true and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            else
+              jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" '.success == true and .result.enabled == ($worker == $identity) and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            fi
             jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
             echo "${output}=present_configured" >> "${GITHUB_OUTPUT}"
           }
@@ -340,6 +348,9 @@ jobs:
             curl -fsS "${auth[@]}" \
               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" \
               -o "${settings}"
+            # Post-deploy read-back: this job's own deploys applied the
+            # reviewed jsonc topology, so state and identity must be on
+            # workers.dev now; edge and previews stay disabled.
             jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" --arg state "${OAUTH_STATE_WORKER}" '.success == true and .result.enabled == ($worker == $identity or $worker == $state) and .result.previews_enabled == false' "${subdomain}" >/dev/null
             jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
             jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
