@@ -16,6 +16,7 @@ import time
 from typing import Any
 
 from .history import _row_to_dict
+from .identity_cache_metrics import record as record_cache_metric
 from .shared_login_timing import record_login_timing
 
 
@@ -197,7 +198,12 @@ class SqliteAuthValidationCache:
             # it. ``force`` is required because the entry is still fresh, and a
             # normal load would return that same entry without asking again. A
             # failure leaves the current entry in place until it expires.
+            scheduled = key not in self._inflight
             self._schedule(key, background_loader or loader, force=True)
+            if scheduled:
+                # Bounded per-minute aggregate, so the move off the request path
+                # stays measurable without a log line per reload.
+                record_cache_metric('auth_validation', 'refresh_ahead', True)
         return value
 
     async def _get_account_link(self, subject):
