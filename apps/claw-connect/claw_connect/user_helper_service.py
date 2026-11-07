@@ -140,9 +140,11 @@ _GENERIC_WRITE = 0x40000000
 _OPEN_EXISTING = 3
 _PIPE_ACCESS_DUPLEX = 0x00000003
 _PIPE_TYPE_BYTE = 0x00000000
+_PIPE_READMODE_BYTE = 0x00000000
 _PIPE_WAIT = 0x00000000
 _PIPE_REJECT_REMOTE_CLIENTS = 0x00000008
-_INVALID_HANDLE_VALUE = ctypes.c_void_p(-1).value
+_PIPE_UNLIMITED_INSTANCES = 255
+_ERROR_INVALID_PARAMETER = 87
 _ERROR_PIPE_CONNECTED = 535
 _ERROR_BROKEN_PIPE = 109
 _ERROR_NO_DATA = 232
@@ -157,10 +159,38 @@ class _SecurityAttributes(ctypes.Structure):
     ]
 
 
+def _is_invalid_handle(handle: Any) -> bool:
+    try:
+        value = handle.value if hasattr(handle, "value") else int(handle)
+    except Exception:
+        return not handle
+    return value in (0, -1, (1 << 64) - 1)
+
+
 def _kernel32():
     if sys.platform != "win32":
         raise UserHelperError(USER_HELPER_REFUSED, "named pipes exist on Windows only")
-    return ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    try:
+        kernel.CreateNamedPipeW.restype = ctypes.c_void_p
+        kernel.CreateNamedPipeW.argtypes = [ctypes.c_wchar_p, ctypes.c_ulong, ctypes.c_ulong, ctypes.c_ulong,
+                                            ctypes.c_ulong, ctypes.c_ulong, ctypes.c_ulong, ctypes.c_void_p]
+        kernel.ConnectNamedPipe.restype = ctypes.c_int
+        kernel.ConnectNamedPipe.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+        kernel.ReadFile.restype = ctypes.c_int
+        kernel.ReadFile.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_ulong, ctypes.c_void_p, ctypes.c_void_p]
+        kernel.WriteFile.restype = ctypes.c_int
+        kernel.WriteFile.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_ulong, ctypes.c_void_p, ctypes.c_void_p]
+        kernel.CloseHandle.restype = ctypes.c_int
+        kernel.CloseHandle.argtypes = [ctypes.c_void_p]
+        kernel.WaitNamedPipeW.restype = ctypes.c_int
+        kernel.WaitNamedPipeW.argtypes = [ctypes.c_wchar_p, ctypes.c_ulong]
+        kernel.CreateFileW.restype = ctypes.c_void_p
+        kernel.CreateFileW.argtypes = [ctypes.c_wchar_p, ctypes.c_ulong, ctypes.c_ulong, ctypes.c_void_p,
+                                       ctypes.c_ulong, ctypes.c_ulong, ctypes.c_void_p]
+    except Exception:
+        pass
+    return kernel
 
 
 def build_security_attributes(sddl: str = PIPE_SDDL):
@@ -171,12 +201,20 @@ def build_security_attributes(sddl: str = PIPE_SDDL):
     early would leave the pipe with a dangling security descriptor.
     """
     advapi32 = ctypes.WinDLL("advapi32", use_last_error=True)
+    try:
+        advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorW.restype = ctypes.c_int
+        advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorW.argtypes = [
+            ctypes.c_wchar_p, ctypes.c_ulong, ctypes.c_void_p, ctypes.c_void_p,
+        ]
+    except Exception:
+        pass
     descriptor = ctypes.c_void_p()
     converted = advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorW(
         ctypes.c_wchar_p(sddl), 1, ctypes.byref(descriptor), None,
     )
     if not converted:
-        raise UserHelperError(USER_HELPER_REFUSED, "the pipe DACL could not be built")
+        error = ctypes.get_last_error()
+        raise UserHelperError(USER_HELPER_REFUSED, f"the pipe DACL could not be built (winerr={error})")
     attributes = _SecurityAttributes()
     attributes.nLength = ctypes.sizeof(_SecurityAttributes)
     attributes.lpSecurityDescriptor = descriptor
@@ -201,7 +239,7 @@ class WindowsPipeConnection:
             error = ctypes.get_last_error()
             if error in (_ERROR_BROKEN_PIPE, _ERROR_NO_DATA):
                 return b""
-            raise UserHelperError(USER_HELPER_BAD_REPLY, "the pipe read failed")
+            raise UserHelperError(USER_HELPER_BAD_REPLY, f"the pipe read failed (winerr={error})")
         return buffer.raw[: read.value]
 
     def write_all(self, data: bytes) -> None:
@@ -210,12 +248,13 @@ class WindowsPipeConnection:
             self._handle, data, len(data), ctypes.byref(written), None,
         )
         if not ok or written.value != len(data):
-            raise UserHelperError(USER_HELPER_BAD_REPLY, "the pipe write failed")
+            error = ctypes.get_last_error()
+            raise UserHelperError(USER_HELPER_BAD_REPLY, f"the pipe write failed (winerr={error})")
 
     def close(self) -> None:
-        if self._handle:
+        if self._handle and not _is_invalid_handle(self._handle):
             self._kernel.CloseHandle(self._handle)
-            self._handle = None
+        self._handle = None
 
 
 class WindowsPipeListener:
@@ -235,20 +274,23 @@ class WindowsPipeListener:
     def _create_instance(self):
         handle = self._kernel.CreateNamedPipeW(
             ctypes.c_wchar_p("\\\\.\\pipe\\" + self._name),
-            _PIPE_ACCESS_DUPLEX | _PIPE_REJECT_REMOTE_CLIENTS,
-            _PIPE_TYPE_BYTE | _PIPE_WAIT,
-            1,                      # one instance: the helper is serial
+            _PIPE_ACCESS_DUPLEX,
+            _PIPE_TYPE_BYTE | _PIPE_READMODE_BYTE | _PIPE_WAIT | _PIPE_REJECT_REMOTE_CLIENTS,
+            _PIPE_UNLIMITED_INSTANCES,
             PIPE_BUFFER_BYTES,
             PIPE_BUFFER_BYTES,
             0,
             ctypes.byref(self._attributes),
         )
-        if handle == _INVALID_HANDLE_VALUE or not handle:
-            raise UserHelperError(USER_HELPER_REFUSED, "the helper pipe could not be created")
+        if _is_invalid_handle(handle):
+            error = ctypes.get_last_error()
+            raise UserHelperError(USER_HELPER_REFUSED, f"the helper pipe could not be created (winerr={error})")
         return handle
 
     def accept(self, timeout_seconds: float) -> Connection | None:
         """Wait for one connection, or return ``None`` when the wait expired."""
+        if self._handle is None or _is_invalid_handle(self._handle):
+            self._handle = self._create_instance()
         connected = self._kernel.ConnectNamedPipe(self._handle, None)
         if not connected:
             error = ctypes.get_last_error()
@@ -258,17 +300,21 @@ class WindowsPipeListener:
             elif error == _ERROR_SEM_TIMEOUT:
                 return None
             else:
-                raise UserHelperError(USER_HELPER_REFUSED, "the pipe accept failed")
+                raise UserHelperError(USER_HELPER_REFUSED, f"the pipe accept failed (winerr={error})")
         connection = WindowsPipeConnection(self._handle)
-        # The instance now belongs to the connection; the next accept creates a
-        # fresh one, so the helper is never listening while it is serving.
-        self._handle = self._create_instance()
+        # The instance now belongs to the connection; prepare next if possible.
+        self._handle = None
+        try:
+            self._handle = self._create_instance()
+        except UserHelperError:
+            # Do not fail the already-accepted connection; listener can recreate on next accept.
+            self._handle = None
         return connection
 
     def close(self) -> None:
-        if self._handle:
+        if self._handle and not _is_invalid_handle(self._handle):
             self._kernel.CloseHandle(self._handle)
-            self._handle = None
+        self._handle = None
 
 
 # ---------------------------------------------------------------------------
@@ -346,7 +392,7 @@ def serve_pipe(*, device_id: str, secret: bytes, listener: Listener | None = Non
             try:
                 connection = active.accept(ACCEPT_POLL_SECONDS)
             except UserHelperError as refused:
-                stats.last_error = refused.code
+                stats.last_error = f"{refused.code}: {refused.detail}" if refused.detail else refused.code
                 break
             if connection is None:
                 continue
@@ -400,7 +446,11 @@ def main(argv: list[str] | None = None) -> int:
         stats = serve_pipe(device_id=args.device_id, secret=secret,
                            max_requests=args.max_requests)
     except UserHelperError as refused:
-        print(f"refused:{refused.code}", file=sys.stderr)
+        detail = f" {refused.detail}" if refused.detail else ""
+        print(f"refused:{refused.code}{detail}", file=sys.stderr)
+        return 2
+    if stats.last_error:
+        print(f"refused:{stats.last_error}", file=sys.stderr)
         return 2
     print(f"served={stats.served} refused={stats.refused}")
     return 0
