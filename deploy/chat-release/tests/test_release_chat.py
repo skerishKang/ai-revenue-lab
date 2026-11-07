@@ -119,3 +119,10 @@ class ReleaseScriptParses(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+    def test_portable_paths_for_the_linux_ci_runtime(self):
+        """The packaging job runs the dry-run under pwsh on ubuntu: backslash
+        path separators inside Join-Path leaves and node args break there."""
+        self.assertIn("test/worker.test.mjs", self.text)
+        self.assertNotIn("apps\padiem-chat", self.text)
+        self.assertNotIn("test\worker.test.mjs", self.text)

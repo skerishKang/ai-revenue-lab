@@ -124,7 +124,7 @@ function Get-HttpStatus([string]$Url) {
 }
 
 function Get-FrontVersionIds {
-    Push-Location (Join-Path $RepoRoot "apps\padiem-chat-front")
+    Push-Location (Join-Path $RepoRoot "apps/padiem-chat-front")
     try {
         $out = (& npx wrangler deployments list 2>&1 | Out-String)
         if ($LASTEXITCODE -ne 0) { return @() }
@@ -138,7 +138,7 @@ function Invoke-FrontRollbackIfNeeded {
     # back; the summary records it.
     if ($Script:FrontDeployed -and $Script:PrevFrontVersion) {
         Write-Info "rolling the front back to $($Script:PrevFrontVersion)"
-        Push-Location (Join-Path $RepoRoot "apps\padiem-chat-front")
+        Push-Location (Join-Path $RepoRoot "apps/padiem-chat-front")
         try { & npx wrangler rollback $Script:PrevFrontVersion } finally { Pop-Location }
         Add-Summary "FRONT_ROLLED_BACK_TO=$($Script:PrevFrontVersion)"
     }
@@ -191,8 +191,8 @@ else {
 
 # ── step 3 ───────────────────────────────────────────────────────────────────
 Write-Step "3/6 front Worker (padiem-chat-front) test, version pin, deploy"
-$frontDir = Join-Path $RepoRoot "apps\padiem-chat-front"
-$staticDir = Join-Path $RepoRoot "apps\padiem-chat\static"
+$frontDir = Join-Path $RepoRoot "apps/padiem-chat-front"
+$staticDir = Join-Path $RepoRoot "apps/padiem-chat/static"
 
 # Static blobs for the step 5 comparison come from the pinned SHA, not the
 # working tree: git archive extracts them read-only. Zip + Expand-Archive on
@@ -204,15 +204,15 @@ $archiveZip = Join-Path $tmpRoot "release.zip"
 if ($LASTEXITCODE -ne 0) { throw "STEP3_FAIL: git archive failed" }
 Expand-Archive -Path $archiveZip -DestinationPath $tmpRoot -Force
 $shaFrontDir = Join-Path $tmpRoot "apps\padiem-chat-front"
-$shaStaticDir = Join-Path $tmpRoot "apps\padiem-chat\static"
+$shaStaticDir = Join-Path $tmpRoot "apps/padiem-chat/static"
 
 Push-Location $frontDir
 $Script:FrontDeployed = $false
 $Script:PrevFrontVersion = $null
 $Script:NewFrontVersion = $null
 try {
-    & node --test test\worker.test.mjs
-    if ($LASTEXITCODE -ne 0) { throw "STEP3_FAIL: node --test test\worker.test.mjs failed" }
+    & node --test test/worker.test.mjs
+    if ($LASTEXITCODE -ne 0) { throw "STEP3_FAIL: node --test test/worker.test.mjs failed" }
 
     $prevIds = @(Get-FrontVersionIds)
     if ($prevIds.Count -eq 0) {
@@ -257,7 +257,7 @@ Pop-Location
 # back (step 6) because a half-released screen is worse than the previous one.
 try {
     Write-Step "4/6 pages mirror (padiem-chat.pages.dev)"
-    $pagesDir = Join-Path $RepoRoot "apps\padiem-chat-pages"
+    $pagesDir = Join-Path $RepoRoot "apps/padiem-chat-pages"
     if ($DryRun) {
         Write-Info "[DRYRUN] would run: node build.mjs ; npx wrangler pages deploy dist --project-name $Script:PagesProject --branch main"
     }
