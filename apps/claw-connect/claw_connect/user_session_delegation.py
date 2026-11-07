@@ -63,13 +63,26 @@ def open_pipe_connection(path: str) -> Connection:
     if sys.platform != "win32":
         raise FileNotFoundError(path)
     kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    try:
+        kernel.WaitNamedPipeW.restype = ctypes.c_int
+        kernel.WaitNamedPipeW.argtypes = [ctypes.c_wchar_p, ctypes.c_ulong]
+        kernel.CreateFileW.restype = ctypes.c_void_p
+        kernel.CreateFileW.argtypes = [ctypes.c_wchar_p, ctypes.c_ulong, ctypes.c_ulong, ctypes.c_void_p,
+                                       ctypes.c_ulong, ctypes.c_ulong, ctypes.c_void_p]
+    except Exception:
+        pass
     kernel.WaitNamedPipeW(ctypes.c_wchar_p(path), 2000)
     handle = kernel.CreateFileW(
         ctypes.c_wchar_p(path),
         0x80000000 | 0x40000000,  # GENERIC_READ | GENERIC_WRITE
         0, None, 3, 0, None,      # OPEN_EXISTING
     )
-    if handle == ctypes.c_void_p(-1).value or not handle:
+    try:
+        hv = handle if isinstance(handle, int) else getattr(handle, "value", handle)
+        invalid = hv in (0, -1, (1 << 64) - 1)
+    except Exception:
+        invalid = not handle
+    if invalid:
         raise FileNotFoundError(path)
     from .user_helper_service import WindowsPipeConnection  # noqa: PLC0415
 

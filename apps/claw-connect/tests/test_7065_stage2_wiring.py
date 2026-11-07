@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import struct
+import sys
 
 import pytest
 
@@ -461,3 +462,34 @@ def test_an_empty_secret_file_is_a_refusal(tmp_path):
     path.write_bytes(b"\n")
     with pytest.raises(helper.UserHelperError):
         service.load_secret(str(path))
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows named pipe required")
+def test_windows_named_pipe_listener_roundtrip_one_request():
+    import sys as _sys
+    import threading
+
+    device_id = "pipewin_" + "7" * 24
+    runner = Runner(stdout=b"padiem-user\n")
+    listener = service.WindowsPipeListener(device_id)
+    stats_box = {}
+
+    def server():
+        stats_box["stats"] = service.serve_pipe(
+            device_id=device_id, secret=SECRET, listener=listener, runner=runner, max_requests=1,
+        )
+
+    t = threading.Thread(target=server, daemon=True)
+    t.start()
+    conn = delegation.open_pipe_connection(helper.pipe_path(device_id))
+    try:
+        conn.write_all(_signed_frame())
+        payload = service.read_frame(conn.read_exact)
+    finally:
+        conn.close()
+    t.join(timeout=10)
+    assert not t.is_alive()
+    assert stats_box["stats"].served == 1
+    assert payload.get("status") == "ok"
+    assert payload.get("exit_code") == 0
+    assert runner.calls and runner.calls[0]["argv"] == ["whoami.exe"]
