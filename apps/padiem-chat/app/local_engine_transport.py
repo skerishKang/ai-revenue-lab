@@ -347,6 +347,7 @@ class LocalEngineHttpTransport:
         headers: Mapping[str, str],
         body: bytes | None,
     ) -> EngineTransportResponse:
+        started = perf_counter()
         received = bytearray()
         try:
             async with client.stream(
@@ -362,6 +363,7 @@ class LocalEngineHttpTransport:
                 response_headers = (
                     {"content-type": str(content_type)} if content_type else {}
                 )
+                record_duration("p01", (perf_counter() - started) * 1000)
                 return EngineTransportResponse(
                     status=int(response.status_code),
                     body=bytes(received),
@@ -370,6 +372,7 @@ class LocalEngineHttpTransport:
         except httpx.HTTPError:
             # Connection, timeout and protocol failures carry a URL and a type
             # that must not travel into a public status line.
+            record_duration("p01", (perf_counter() - started) * 1000)
             raise LocalEngineTransportError("local engine request failed") from None
 
 

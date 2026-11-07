@@ -137,7 +137,9 @@ async def test_middleware_records_only_template_and_fixed_timing_dimensions():
     assert event['status'] == 403
     assert event['timings_ms']['auth'] == 7
     assert event['timings_ms']['sqlite_wait'] == 2
-    assert set(event['timings_ms']) == set(STAGES)
+    # 대표 결정(2026-11-07): the engine was not called on this route, so the
+    # journal omits the p01 key instead of fabricating a zero.
+    assert set(event['timings_ms']) == set(STAGES) - {'p01'}
     assert private not in json.dumps(event)
     assert private.encode() in wire[-1]['body']  # actual response remains intact
 

@@ -172,6 +172,30 @@ def test_loopback_origins_normalize_to_one_shape():
     assert local_engine_origin("http://localhost:8811") == "http://localhost:8811"
 
 
+@pytest.mark.asyncio
+async def test_the_completed_lane_records_the_engine_call_span():
+    """엔진 호출이 있는 턴은 timings_ms.p01(호출 시작~응답 수신)을 남긴다."""
+
+    from app.request_timing import reset_timing, start_timing
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"status": "ok"})
+
+    timing, token = start_timing()
+    try:
+        transport = _transport(handler)
+        response = await transport.request(
+            method="POST",
+            url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_PATH}",
+            headers={},
+            body=b'{"goal":"tick"}',
+        )
+        assert response.status == 200
+        assert timing.snapshot()["p01"] > 0
+    finally:
+        reset_timing(token)
+
+
 async def test_the_origin_is_the_only_thing_rewritten():
     seen: dict[str, object] = {}
 

@@ -183,6 +183,18 @@ def classify_product(route: str) -> str:
     return "other"
 
 
+def _journal_timings(timings: dict[str, float]) -> dict[str, float]:
+    """엔진을 부르지 않은 요청은 p01 키를 생략한다(0으로 채우지 않는다).
+
+    p01은 엔진 호출 구간만 남긴다. 값이 0이면 '엔진 호출 없음'과 '즉시 끝난
+    호출'을 구분할 수 없으므로, 엔진을 호출하지 않은 요청의 http_request
+    이벤트에서는 p01 키 자체를 생략한다.
+    """
+    if timings.get("p01"):
+        return timings
+    return {key: value for key, value in timings.items() if key != "p01"}
+
+
 def build_request_event(
     *,
     request_id: str,
@@ -212,7 +224,7 @@ def build_request_event(
         "outcome": classify_outcome(status),
     }
     if timings_ms is not None:
-        event['timings_ms'] = timings_ms
+        event['timings_ms'] = _journal_timings(timings_ms)
     # Only a refused request carries the code, and only when it is the bounded
     # identifier shape. A successful request never gains an empty field.
     if status >= 400 and isinstance(error_code, str) and _REFUSAL_CODE_RE.fullmatch(error_code):

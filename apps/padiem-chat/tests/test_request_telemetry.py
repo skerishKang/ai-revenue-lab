@@ -17,6 +17,7 @@ from starlette.testclient import TestClient
 
 from app.app_factory import create_app
 from app.config import Settings
+from app.request_timing import record_duration, reset_timing, start_timing
 from app import orchestration_routes
 from app.request_telemetry import (
     OUTCOME_CLIENT_ERROR,
@@ -533,3 +534,61 @@ async def test_middleware_passes_non_http_scope_through():
 def test_health_reports_request_telemetry_enabled(client: TestClient):
     body = client.get("/health").json()
     assert body["request_telemetry_enabled"] is True
+
+
+# --------------------------------------------------------------------------
+# #7109 후속: 엔진 호출 턴의 timings_ms.p01 — 호출 턴만 기록, 미호출 턴은 키 생략
+# --------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_engine_call_turn_records_positive_p01_in_timings():
+    events: list[dict] = []
+
+    async def _app(scope, receive, send):
+        record_duration("p01", 123.5)
+        await send({"type": "http.response.start", "status": 200, "headers": []})
+        await send({"type": "http.response.body", "body": b"{}", "more_body": False})
+
+    async def _receive():
+        return {"type": "http.request", "body": b"", "more_body": False}
+
+    async def _send(message):
+        pass
+
+    middleware = RequestTelemetryMiddleware(_app, emitter=events.append)
+    await middleware(
+        {"type": "http", "method": "POST", "path": "/api/chat", "headers": [], "query_string": b""},
+        _receive,
+        _send,
+    )
+
+    timings = events[-1]["timings_ms"]
+    assert timings["p01"] == 123.5
+
+
+@pytest.mark.asyncio
+async def test_turn_without_engine_call_omits_p01_key():
+    events: list[dict] = []
+
+    async def _app(scope, receive, send):
+        await send({"type": "http.response.start", "status": 200, "headers": []})
+        await send({"type": "http.response.body", "body": b"{}", "more_body": False})
+
+    async def _receive():
+        return {"type": "http.request", "body": b"", "more_body": False}
+
+    async def _send(message):
+        pass
+
+    middleware = RequestTelemetryMiddleware(_app, emitter=events.append)
+    await middleware(
+        {"type": "http", "method": "POST", "path": "/api/chat", "headers": [], "query_string": b""},
+        _receive,
+        _send,
+    )
+
+    timings = events[-1]["timings_ms"]
+    assert "p01" not in timings
+    # 나머지 구간 키는 그대로 남는다(기존 저널 형태 유지).
+    assert "auth" in timings and "queue" in timings
