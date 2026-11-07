@@ -118,6 +118,35 @@ class ReleaseScriptStaticContract(unittest.TestCase):
         packaging = (REPO / ".github" / "workflows" / "validate-chat-com2-packaging.yml").read_text(encoding="utf-8")
         self.assertIn("deploy/chat-release/tests", packaging)
 
+    def test_step5_pair_iteration_keeps_the_full_url(self):
+        """PowerShell flattens a single-element @() pair literal: the verify
+        would iterate STRINGS and $pair[1] becomes the second CHARACTER ("h"),
+        which the 4th deploy requested as a bogus host (STEP5_FAIL: remote
+        name could not be resolved: 'h'). The comma-preserved single-element
+        form and the multi-element form must both keep $pair[1] = full URL."""
+        exe = _powershell_exe()
+        snippet = (
+            "$frontStatusPairs = @("
+            "@('chat.padiem.net /health', 'https://chat.padiem.net/health'),"
+            "@('chat.padiem.net /privacy', 'https://chat.padiem.net/privacy'));"
+            "$frontAssetHosts = @(,@('chat.padiem.net', 'https://chat.padiem.net'));"
+            "$urls = @();"
+            "foreach ($pair in $frontStatusPairs) { $urls += $pair[1] }"
+            "foreach ($pair in $frontAssetHosts) { $urls += ($pair[1] + '/chat-transport.js') }"
+            "($urls -join '|')"
+        )
+        result = subprocess.run(
+            [exe, "-NoProfile", "-NonInteractive", "-Command", snippet],
+            capture_output=True, text=True, timeout=60,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        urls = result.stdout.strip().split("|")
+        self.assertEqual(urls, [
+            "https://chat.padiem.net/health",
+            "https://chat.padiem.net/privacy",
+            "https://chat.padiem.net/chat-transport.js",
+        ])
+
     def test_pages_mirror_failure_never_rolls_the_front_back(self):
         """A pages-mirror-only verification failure is recorded as
         PAGES_VERIFY_FAIL and fails the release with exit 1 — the front stays
@@ -146,6 +175,17 @@ class ReleaseScriptStaticContract(unittest.TestCase):
                        "COM2_DEPLOY_SUMMARY", "sha256", "workers/domains chat.padiem.net",
                        "DRYRUN: nothing was deployed."):
             self.assertIn(marker, combined)
+        # The dry-run expands the STEP 5 URL list: a flattened pair list would
+        # print a character ("h") instead of the host — assert the full URLs
+        # (the 4th deploy's STEP5_FAIL came from exactly that flattening).
+        for url in ("GET https://chat.padiem.net/health",
+                    "GET https://chat.padiem.net/privacy",
+                    "GET https://chat.padiem.net/chat-transport.js",
+                    "GET https://chat.padiem.net/index.html",
+                    "GET https://padiem-chat.pages.dev/privacy",
+                    "GET https://padiem-chat.pages.dev/chat-transport.js",
+                    "GET https://padiem-chat.pages.dev/index.html"):
+            self.assertIn(url, combined)
         # No credential material in the plan output.
         self.assertNotIn("CLOUDFLARE_API_TOKEN=", combined)
 

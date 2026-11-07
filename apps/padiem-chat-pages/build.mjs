@@ -2,8 +2,9 @@
 //
 //   dist/                apps/padiem-chat/static (the same files the Worker's
 //                        ASSETS binding serves) — Pages serves these directly
-//   dist/_redirects      pretty-URL rewrites the Pages asset layer must apply
-//                        (see buildRedirects)
+//   dist/_routes.json    excludes the root-level pretty pages from the
+//                        function so the static layer serves them (see
+//                        buildRoutes)
 //   dist/_worker/        the reviewed apps/padiem-chat-front modules, copied
 //                        verbatim so there is one proxy implementation
 //   dist/_worker.js      the advanced-mode entry that re-exports that module
@@ -48,16 +49,22 @@ async function assetVersion() {
 
 // chat.padiem.net serves the root-level *.html pages extension-less through
 // the Worker's [assets] html_handling (privacy -> privacy.html). The Pages
-// asset layer does not apply that resolution when a _worker.js is deployed:
-// without these rewrites /privacy and /terms fall through to the proxy and
-// come back 404 from COM2, which has no such route (#7130-era pages mirror).
-async function buildRedirects(outDir) {
+// advanced mode (_worker.js) runs the function for every request the
+// _routes.json rules include, and COM2 has no such route — so the root-level
+// pages are EXCLUDED from the function and served by the static asset layer,
+// which applies the default .html omission. The rules stay far below the 100
+// include/exclude ceiling (developers.cloudflare.com/pages/functions/routing).
+async function buildRoutes(outDir) {
   const entries = await readdir(staticDir, { withFileTypes: true });
-  const lines = entries
+  const exclude = entries
     .filter((entry) => entry.isFile() && entry.name.endsWith(".html") && entry.name !== "index.html")
-    .map((entry) => `/${entry.name.replace(/\.html$/, "")} /${entry.name} 200`);
-  await writeFile(path.join(outDir, "_redirects"), lines.join("\n") + "\n", "utf8");
-  return lines;
+    .map((entry) => `/${entry.name.replace(/\.html$/, "")}`);
+  await writeFile(
+    path.join(outDir, "_routes.json"),
+    JSON.stringify({ version: 1, include: ["/*"], exclude }, null, 2) + "\n",
+    "utf8",
+  );
+  return exclude;
 }
 
 export async function buildDist({ outDir = distDir } = {}) {
@@ -70,7 +77,8 @@ export async function buildDist({ outDir = distDir } = {}) {
   // are untouched — only dist/ is stamped.
   const version = await assetVersion();
   const stamped = await stampStaticTree(outDir, version);
-  await buildRedirects(outDir);
+  const routesExclude = await buildRoutes(outDir);
+  console.log(`padiem-chat-pages: _routes.json excludes ${routesExclude.length} pretty urls (limit 100)`);
   const modulesDir = path.join(outDir, "_worker");
   await mkdir(modulesDir, { recursive: true });
   for (const name of FRONT_MODULES) {
