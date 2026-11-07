@@ -125,9 +125,10 @@ def test_whoami_shell_runs_whoami_only():
     assert refused.value.code == helper.USER_HELPER_REFUSED
 
 
-def test_shell_outside_stage_one_is_refused():
+@pytest.mark.parametrize("shell", ["bash", "fish", "pwsh", "Powershell"])
+def test_a_shell_the_helper_does_not_run_is_refused(shell):
     with pytest.raises(helper.UserHelperError) as refused:
-        helper.parse_request(_request(shell="powershell", command="whoami"))
+        helper.parse_request(_request(shell=shell, command="whoami"))
     assert refused.value.code == helper.USER_HELPER_REFUSED
 
 
@@ -209,6 +210,56 @@ def test_wsl_argv_without_a_distro_uses_the_default_one():
 
 def test_whoami_argv_is_one_executable():
     assert helper.build_argv(_signed()) == ["whoami.exe"]
+
+
+# ---------------------------------------------------------------------------
+# #7104 stage 2: powershell and cmd run as the logged-in user
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize("shell,command", [
+    ("powershell", "Write-Output 'ok'"),
+    ("cmd", "echo ok"),
+])
+def test_stage_two_shells_parse_and_sign(shell, command):
+    request = _signed(shell=shell, command=command)
+    assert request.shell == shell
+    assert helper.verify_nonce(SECRET, request) is True
+
+
+def test_powershell_argv_is_one_encoded_command():
+    request = _signed(shell="powershell", command="Get-Location")
+    argv = helper.build_argv(request)
+    assert argv[:6] == ["powershell.exe", "-NoProfile", "-NonInteractive",
+                        "-ExecutionPolicy", "Bypass", "-EncodedCommand"]
+    assert len(argv) == 7
+    script = base64.b64decode(argv[6]).decode("utf-16-le")
+    assert "Get-Location" in script
+    # The exit code is the child's own, the same rule the SYSTEM lane applies.
+    assert "$LASTEXITCODE" in script
+
+
+def test_cmd_argv_passes_the_command_as_one_element():
+    request = _signed(shell="cmd", command='echo "a b" & whoami')
+    assert helper.build_argv(request) == ["cmd.exe", "/d", "/s", "/c", 'echo "a b" & whoami']
+
+
+@pytest.mark.parametrize("command", ["", "   ", "a\x00b", "a\x07b"])
+def test_stage_two_command_must_be_a_bounded_line(command):
+    assert helper.is_windows_shell_command(command) is False
+
+
+def test_stage_two_command_keeps_newlines_for_a_real_script():
+    assert helper.is_windows_shell_command("Get-Location\nWrite-Output 'x'") is True
+
+
+def test_stage_two_shell_does_not_get_the_wsl_read_only_gate():
+    # `systemctl restart` is refused on wsl; on a Windows shell it is just text.
+    request = helper.parse_request(_request(shell="cmd", command="systemctl restart x"))
+    assert request.command == "systemctl restart x"
+
+
+def test_distro_still_belongs_to_the_wsl_shell_only_on_stage_two():
+    with pytest.raises(helper.UserHelperError):
+        helper.parse_request(_request(shell="powershell", command="whoami", distro="Ubuntu"))
 
 
 # ---------------------------------------------------------------------------

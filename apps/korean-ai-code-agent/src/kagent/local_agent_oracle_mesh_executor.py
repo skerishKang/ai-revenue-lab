@@ -1440,14 +1440,20 @@ class OracleMeshExecutor:
     def build_user_helper_pipe_client_ps(*, device_id: str, request_id: str,
                                          shell: str, command: str,
                                          cwd: str | None, timeout_seconds: int,
-                                         distro: str | None) -> str:
-        """#7076c: PS pipe client sent via runcommand (SYSTEM) to the PC.
+                                         distro: str | None,
+                                         secret_file: str | None = None) -> str:
+        """#7076c/#7105: PS pipe client sent via runcommand (SYSTEM) to the PC.
 
         The script runs on the target PC as SYSTEM. It reads the helper secret
         file path from the registered Padiem task arguments (never from dispatch
         or command text), computes HMAC-SHA256 nonce over the exact
         HelperRequest.material() contract, connects to the #7076 pipe, and
         exchanges one length-prefixed (4-byte BE + UTF-8 JSON) frame.
+
+        ``secret_file`` is a test seam: a CI runner has no registered Padiem
+        task, so a test points the client at the file it wrote. No production
+        caller passes it, and the executable, the frame bytes and the nonce are
+        the same either way.
 
         Secret value is never printed. Failure to reach the helper is reported
         as user_session_unavailable ? no SYSTEM fallback.
@@ -1466,6 +1472,20 @@ class OracleMeshExecutor:
             "command": command, "timeout_seconds": int(timeout_seconds), "distro": distro,
         }
         req_b64 = _b64.b64encode(_json.dumps(payload, ensure_ascii=True, separators=(",", ":")).encode("utf-8")).decode("ascii")
+        if secret_file is None:
+            secret_source = r"""
+  $task=Get-ScheduledTask -TaskPath '@@TASK_PATH@@' -TaskName '@@TASK_NAME@@' -ErrorAction Stop
+  $arg=[string]$task.Actions[0].Arguments
+  $secretFile=$null
+  if($arg -match '--secret-file\s+"([^"]+)"'){ $secretFile=$Matches[1] }
+  elseif($arg -match "--secret-file\s+'([^']+)'"){ $secretFile=$Matches[1] }
+  elseif($arg -match '--secret-file\s+([^\s]+)'){ $secretFile=$Matches[1] }""".replace("@@TASK_PATH@@", USER_HELPER_TASK_PATH).replace("@@TASK_NAME@@", USER_HELPER_TASK_NAME)
+        else:
+            secret_source = (
+                "\n  $secretFile=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('"
+                + _b64.b64encode(str(secret_file).encode("utf-8")).decode("ascii")
+                + "'))"
+            )
         script = f"""
 $ErrorActionPreference='Stop'
 $mat=[Convert]::FromBase64String('{mat_b64}')
@@ -1473,20 +1493,14 @@ $reqB64='{req_b64}'
 $pipeName='{pipe_name}'
 $pipePath='\\\\.\\pipe\\'+$pipeName
 function Fail($code,$msg){{ Write-Output ($code+': '+$msg); exit 1 }}
-try {{
-  $task=Get-ScheduledTask -TaskPath '{USER_HELPER_TASK_PATH}' -TaskName '{USER_HELPER_TASK_NAME}' -ErrorAction Stop
-  $arg=[string]$task.Actions[0].Arguments
-  $secretFile=$null
-  if($arg -match '--secret-file\\s+"([^"]+)"'){{ $secretFile=$Matches[1] }}
-  elseif($arg -match "--secret-file\\s+'([^']+)'"){{ $secretFile=$Matches[1] }}
-  elseif($arg -match '--secret-file\\s+([^\\s]+)'){{ $secretFile=$Matches[1] }}
+try {{{secret_source}
   if(-not $secretFile){{ Fail 'user_session_unavailable' 'helper secret file is not configured' }}
   $raw=[System.IO.File]::ReadAllBytes($secretFile)
   $secretText=[System.Text.Encoding]::UTF8.GetString($raw).Trim()
   $secret=[System.Text.Encoding]::UTF8.GetBytes($secretText)
   if($secret.Length -eq 0){{ Fail 'user_session_unavailable' 'helper secret is unavailable' }}
   $hmac=New-Object System.Security.Cryptography.HMACSHA256 -ArgumentList (,$secret)
-  $nonce=-join ($hmac.ComputeHash($mat) | ForEach-Object {{ $_.ToString('x2') }})''
+  $nonce=-join ($hmac.ComputeHash($mat) | ForEach-Object {{ $_.ToString('x2') }})
   $req=[System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($reqB64)) | ConvertFrom-Json
   $req | Add-Member -NotePropertyName nonce -NotePropertyValue $nonce -Force
   $body=[System.Text.Encoding]::UTF8.GetBytes(($req | ConvertTo-Json -Compress -Depth 5))
@@ -1533,6 +1547,14 @@ try {{
                 body = __import__("base64").b64decode(stdout) if isinstance(stdout,str) else b""
             except Exception:
                 body = b""
+            if not body:
+                # #7105: a failing stage-2 command often writes only to stderr.
+                # An empty body with a non-zero code would read as "no answer".
+                stderr = obj.get("stderr_b64")
+                try:
+                    body = __import__("base64").b64decode(stderr) if isinstance(stderr, str) else b""
+                except Exception:
+                    body = b""
             code = obj.get("exit_code")
             if isinstance(code, bool) or not isinstance(code, int): code = 0
             return OracleMeshExecutionOutcome(termination="exited", exit_code=code, body=body)

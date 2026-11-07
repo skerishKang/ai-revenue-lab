@@ -14,8 +14,8 @@ executes one request at a time. The SYSTEM agent stops running commands itself
 and forwards them over a local named pipe. Authority moves DOWN (SYSTEM →
 interactive user), which is the safe direction.
 
-Stage 1 scope (this module, deliberately narrow)
-------------------------------------------------
+Stage 1 scope
+-------------
 * ``whoami`` — the identity check that proves the helper is in the user session.
 * ``wsl.exe -d <distro> -- bash -lc <command>`` — observation only, and only for
   a read-only verb allowlist. This is the path that unblocks Chat/B14/P01/queue
@@ -24,8 +24,23 @@ Stage 1 scope (this module, deliberately narrow)
 * A logged-out user is reported as ``user_session_unavailable``. The SYSTEM agent
   never silently runs the command instead.
 
-Not in stage 1: file writes, find/replace editing, interactive stdin. Those are
-stages 2-4 of #7065 and each needs its own approval receipt path.
+Stage 2 scope (#7105)
+---------------------
+The owner's decision (2026-11-07) is that an ordinary user request runs as the
+logged-in Windows user, so the helper also runs the two Windows shells:
+``powershell`` (``powershell.exe -EncodedCommand``) and ``cmd`` (``cmd.exe /c``).
+The wire format, the nonce, the replay guard and the one-process rule are
+unchanged: stage 2 adds shell values, not a second protocol.
+
+The read-only allowlist stays where it was — on ``wsl``. It exists because WSL
+was the observation lane; a Windows command is not restricted to observations
+because the dispatch itself is the authorization and authority still moves
+DOWN (SYSTEM → the logged-in user). The command text is still checked before a
+process exists: bounded length, no NUL, no control characters.
+
+Not here: file writes through an editor, find/replace editing, interactive
+stdin, and the switch that makes ``user`` the default mode (that is a separate
+decision).
 
 Wire format
 -----------
@@ -80,7 +95,12 @@ USER_HELPER_NOT_READ_ONLY = "user_helper_not_read_only"
 
 SHELL_WHOAMI = "whoami"
 SHELL_WSL = "wsl"
+SHELL_POWERSHELL = "powershell"
+SHELL_CMD = "cmd"
 STAGE1_SHELLS = (SHELL_WHOAMI, SHELL_WSL)
+#: #7105 stage 2 — the Windows shells that run as the logged-in user.
+STAGE2_SHELLS = (SHELL_POWERSHELL, SHELL_CMD)
+SUPPORTED_SHELLS = STAGE1_SHELLS + STAGE2_SHELLS
 
 PIPE_PREFIX = "padiem-user-helper-"
 DEFAULT_TIMEOUT_SECONDS = 30
@@ -237,6 +257,26 @@ def is_read_only_command(command: str) -> bool:
     return True
 
 
+def is_windows_shell_command(command: str) -> bool:
+    """Whether one stage-2 command is a runnable Windows command line.
+
+    This is the stage-1 style gate applied to a shell that is allowed to do real
+    work: the command must be one bounded string with no NUL and no control
+    characters (tab, newline and carriage return belong in a real script). No
+    verb allowlist is applied here — the approved dispatch is what authorizes the
+    command, and the account the process runs as is strictly less privileged
+    than the SYSTEM agent that forwarded it.
+    """
+    if not isinstance(command, str):
+        return False
+    if not command.strip() or len(command) > MAX_COMMAND_CHARS:
+        return False
+    for char in command:
+        if ord(char) < 32 and char not in ("\t", "\n", "\r"):
+            return False
+    return True
+
+
 def parse_request(payload: Mapping[str, Any]) -> HelperRequest:
     """Validate one request frame, or refuse it with the reason.
 
@@ -260,8 +300,8 @@ def parse_request(payload: Mapping[str, Any]) -> HelperRequest:
         raise UserHelperError(USER_HELPER_BAD_REQUEST, "nonce is not text")
 
     shell = payload.get("shell", SHELL_WHOAMI)
-    if shell not in STAGE1_SHELLS:
-        raise UserHelperError(USER_HELPER_REFUSED, "shell is not one stage 1 runs")
+    if shell not in SUPPORTED_SHELLS:
+        raise UserHelperError(USER_HELPER_REFUSED, "shell is not one this helper runs")
 
     command = payload.get("command")
     if not isinstance(command, str) or not command or len(command) > MAX_COMMAND_CHARS:
@@ -290,9 +330,12 @@ def parse_request(payload: Mapping[str, Any]) -> HelperRequest:
             raise UserHelperError(USER_HELPER_REFUSED, "the whoami shell runs whoami only")
         if distro is not None:
             raise UserHelperError(USER_HELPER_BAD_REQUEST, "distro belongs to the wsl shell")
-    else:
+    elif shell == SHELL_WSL:
         if not is_read_only_command(command):
             raise UserHelperError(USER_HELPER_NOT_READ_ONLY, "command is not a read-only observation")
+    elif not is_windows_shell_command(command):
+        raise UserHelperError(USER_HELPER_BAD_REQUEST,
+                              "command is not a runnable Windows command line")
 
     return HelperRequest(
         request_id=request_id,
@@ -308,18 +351,57 @@ def parse_request(payload: Mapping[str, Any]) -> HelperRequest:
 # ---------------------------------------------------------------------------
 # Execution: one request, one process, no reuse.
 # ---------------------------------------------------------------------------
+#: The trailer that makes a stage-2 PowerShell request report the exit code of
+#: the last native command it ran, the same rule the SYSTEM lane applies. A
+#: command that ends in its own ``exit`` never reaches it, which is correct.
+_POWERSHELL_EXIT_TAIL = (
+    "\n$__padiem_exit=0\n"
+    "if($null -ne $LASTEXITCODE){$__padiem_exit=[int]$LASTEXITCODE}\n"
+    "exit $__padiem_exit\n"
+)
+
+
+def powershell_envelope(command: str) -> str:
+    """The script handed to ``powershell.exe -EncodedCommand`` for one request.
+
+    The command is the script: it is not spliced into a shell word list, so a
+    quote in it cannot become a second command. The console is pinned to UTF-8
+    for the same reason #7068 pinned the SYSTEM lane: a Korean-locale console
+    otherwise returns bytes in its own code page.
+    """
+    return (
+        "$ErrorActionPreference='Continue'\n"
+        "$ProgressPreference='SilentlyContinue'\n"
+        "try{[Console]::OutputEncoding=[Text.Encoding]::UTF8}catch{}\n"
+        + command
+        + _POWERSHELL_EXIT_TAIL
+    )
+
+
 def build_argv(request: HelperRequest) -> list[str]:
     """The argv for exactly one process, built from validated parts only.
 
     The command travels as its own argv element, never as a shell string, so a
     quote or a space in it cannot become a second command. For WSL the element
     after ``--`` is handed to bash by WSL itself, which is the documented
-    behaviour of ``wsl.exe -d <distro> -- <argv>``.
+    behaviour of ``wsl.exe -d <distro> -- <argv>``. PowerShell receives the
+    script Base64-encoded (UTF-16LE), the same shape the SYSTEM lane uses, so no
+    quoting rule of any caller can rewrite it.
     """
     if request.shell == SHELL_WHOAMI:
         return ["whoami.exe"]
+    if request.shell == SHELL_POWERSHELL:
+        encoded = base64.b64encode(
+            powershell_envelope(request.command).encode("utf-16-le")
+        ).decode("ascii")
+        return [
+            "powershell.exe", "-NoProfile", "-NonInteractive",
+            "-ExecutionPolicy", "Bypass", "-EncodedCommand", encoded,
+        ]
+    if request.shell == SHELL_CMD:
+        return ["cmd.exe", "/d", "/s", "/c", request.command]
     if request.shell != SHELL_WSL:
-        raise UserHelperError(USER_HELPER_REFUSED, "shell is not one stage 1 runs")
+        raise UserHelperError(USER_HELPER_REFUSED, "shell is not one this helper runs")
     if not is_read_only_command(request.command):
         raise UserHelperError(USER_HELPER_NOT_READ_ONLY, "command is not a read-only observation")
     argv = ["wsl.exe"]

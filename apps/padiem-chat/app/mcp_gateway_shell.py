@@ -264,12 +264,14 @@ try{if($env:PADIEM_MCP_SHELL -eq 'powershell'){$file='powershell.exe';if(-not(Ge
     )
 
 
-#: #7076d — where this tool's shell vocabulary meets the helper's (#7065 stage-1).
+#: #7076d/#7105 — where this tool's shell vocabulary meets the helper's.
 #: ``bash`` is the same shell the helper runs inside the user's WSL, and the
 #: identity probe is the one command that means the same thing in every shell,
-#: so it maps to the helper's dedicated ``whoami`` shell. Every other shell name
-#: is passed through unchanged: the helper is the final allowlist authority and
-#: its own refusal is what the caller must see, not a second copy of that rule.
+#: so it maps to the helper's dedicated ``whoami`` shell. ``powershell`` and
+#: ``cmd`` are the helper's own stage-2 shells, so they pass through as the shell
+#: the user session runs. Every other name is passed through unchanged too: the
+#: helper is the final allowlist authority and its own refusal is what the caller
+#: must see, not a second copy of that rule.
 USER_HELPER_SHELL_FOR_BASH = "wsl"
 USER_HELPER_SHELL_FOR_WHOAMI = "whoami"
 USER_HELPER_TIMEOUT_SECONDS = 30
