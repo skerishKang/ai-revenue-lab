@@ -57,7 +57,8 @@ def _quote(value: str) -> str:
 
 
 def build_launch(*, python_executable: str, device_id: str, secret_file: str,
-                 module: str = "claw_connect.user_helper_service") -> HelperLaunch:
+                 module: str = "claw_connect.user_helper_service",
+                 working_directory: str = "") -> HelperLaunch:
     """The helper's launch command.
 
     The device id and the secret path are validated by the stage-1 rules before
@@ -71,7 +72,7 @@ def build_launch(*, python_executable: str, device_id: str, secret_file: str,
     return HelperLaunch(
         executable=python_executable,
         arguments=["-m", module, "--device-id", device_id, "--secret-file", secret_file],
-        working_directory="",
+        working_directory=working_directory,
     )
 
 
@@ -105,6 +106,7 @@ def task_definition(*, launch: HelperLaunch, user: str) -> dict[str, Any]:
         "Action": {
             "Execute": launch.executable,
             "Argument": " ".join(_quote(arg) for arg in launch.arguments),
+            "WorkingDirectory": launch.working_directory,
         },
     }
 
@@ -126,7 +128,11 @@ def register_script(definition: dict[str, Any]) -> str:
     return "\n".join([
         "$ErrorActionPreference = 'Stop'",
         "$action = New-ScheduledTaskAction -Execute "
-        + literal(action["Execute"]) + " -Argument " + literal(action["Argument"]),
+        + literal(action["Execute"]) + " -Argument " + literal(action["Argument"])
+        + (
+            " -WorkingDirectory " + literal(action["WorkingDirectory"])
+            if action.get("WorkingDirectory") else ""
+        ),
         "$trigger = New-ScheduledTaskTrigger -AtLogOn -User " + literal(trigger["User"]),
         "$principal = New-ScheduledTaskPrincipal -UserId " + literal(principal["UserId"])
         + " -LogonType " + literal(principal["LogonType"])
@@ -137,6 +143,8 @@ def register_script(definition: dict[str, Any]) -> str:
         + " -TaskPath " + literal(definition["TaskPath"])
         + " -Action $action -Trigger $trigger -Principal $principal -Settings $settings"
         + " -Description " + literal(definition["Description"]) + " -Force",
+        "Start-ScheduledTask -TaskName " + literal(definition["TaskName"])
+        + " -TaskPath " + literal(definition["TaskPath"]),
     ])
 
 
