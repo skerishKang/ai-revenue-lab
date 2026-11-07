@@ -185,6 +185,17 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   const passwordRpcConfigured = typeof passwordRpcSecret === 'string' && passwordRpcSecret.length >= 32 &&
     typeof passwordRpcOrigin === 'string' && /^https:\/\/[^/]+\/?$/.test(passwordRpcOrigin);
   const passwordChoiceEnabled = (client) => client?.password_login === true && passwordRpcConfigured;
+  // Last-link deletion must also remove the Chat account that owns the
+  // password credential. Otherwise the surviving credential can rebuild a new
+  // canonical subject on the next login (2026-11-07 incident).
+  async function deleteChatAccount(productUserId) {
+    if (!passwordRpcConfigured) return;
+    const path = '/internal/account-delete';
+    const body = encoder.encode(JSON.stringify({ product_user_id: productUserId }));
+    const headers = await passwordRpcHeaders(passwordRpcSecret, path, body);
+    const response = await fetcher(passwordRpcOrigin.replace(/\/+$/, '') + path, { method: 'POST', redirect: 'manual', headers, body });
+    if (response.status !== 200) throw new Error('chat account delete failed');
+  }
   async function verifyClient(params, client, current) {
     const assertion = one(params, 'client_assertion');
     if (one(params, 'client_assertion_type') !== 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer') throw new Error('bad client authentication');
@@ -243,6 +254,14 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
           const revoked = await stateFor(row.object_id).forceRevokeForAccountDeletion({ id: row.session_id });
           if (revoked !== true) throw new Error('session_revoke_failed');
           revokedSessions++;
+        }
+        // prepare runs before the authority removes the last product link, so
+        // the single remaining link still names the product user id owned by
+        // Chat. Delete that Chat account and its password credential first.
+        const linkResult = await registry.activeProductLinks({ accountId });
+        const links = Array.isArray(linkResult?.links) ? linkResult.links : [];
+        if (links.length === 1 && /^usr_[A-Za-z0-9_-]{1,79}$/.test(links[0]?.product_user_id ?? '')) {
+          await deleteChatAccount(links[0].product_user_id);
         }
         return json(200, { ok: true, prepared: true, revoked_sessions: revokedSessions });
       } catch {
@@ -324,6 +343,12 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         return htmlPage(429, messagePage('시도 횟수가 초과되었습니다. 처음부터 다시 로그인해 주세요.'));
       }
       if (!attempt.ok) return json(400, { error: 'invalid_request' });
+      const passwordFingerprint = await passwordIdentityFingerprint(identityKey, email);
+      // Prove deletion before touching the credential: a deleted identity is a
+      // distinct outcome from a wrong password, and it must not mint a new sub_.
+      if (!register && await stateFor('google-account-registry').identityIsDeleted({ fingerprint: passwordFingerprint })) {
+        return formError('탈퇴한 계정입니다. 같은 이메일로 새로 가입해 주세요.');
+      }
       const rpcPath = register ? '/internal/password-register' : '/internal/password-verify';
       const payload = register ? { email, password, name } : { email, password };
       const rpcBody = encoder.encode(JSON.stringify(payload));
@@ -346,12 +371,13 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       if (data?.ok !== true || !/^usr_[A-Za-z0-9_-]{1,79}$/.test(data.product_user_id ?? '')) {
         return htmlPage(503, messagePage('지금은 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.'));
       }
+      if (register) await stateFor('google-account-registry').clearIdentityDeletion({ fingerprint: passwordFingerprint });
       const pending = await diagnosed('login_state_read_failed', async () =>
         stateFor(state[0]).consumeLogin({ stateDigest: await digest(state[1]), browserDigest: await digest(browser), now: current }));
       if (!pending) return json(400, { error: 'invalid_callback' });
       if (!clients[pending.client]?.redirect_uris?.includes(pending.redirect)) return json(400, { error: 'invalid_callback' });
       const account = await diagnosed('identity_lookup_failed', async () => {
-        const result = await stateFor('google-account-registry').resolveAccount({ fingerprint: await passwordIdentityFingerprint(identityKey, email), productId: pending.client, userId: data.product_user_id, subject: email, provider: 'password', now: current });
+        const result = await stateFor('google-account-registry').resolveAccount({ fingerprint: passwordFingerprint, productId: pending.client, userId: data.product_user_id, subject: email, provider: 'password', now: current, allowRecreate: register });
         if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
         return result;
       });
@@ -397,6 +423,9 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         if (!keyResponse.ok) throw new Error('google keys unavailable');
         return verifyGoogleIdToken({ token: googleToken.id_token, jwks: await keyResponse.json(), clientId: googleClientId, nonce: pending.google_nonce, now: now(), profile: profileClaimAllowlist(clients[pending.client]).length > 0 });
       });
+      if (await stateFor('google-account-registry').identityIsDeleted({ fingerprint: await identityFingerprint(identityKey, identity.sub) })) {
+        return htmlPage(403, messagePage('탈퇴한 계정입니다. 다시 시작하려면 새 계정으로 가입해 주세요.'));
+      }
       const account = await diagnosed('identity_lookup_failed', async () => {
         const userId = await googleProductUserId(identity.sub);
         const fingerprint = await identityFingerprint(identityKey, identity.sub);
@@ -496,7 +525,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'setAccountStatus']);
+const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'activeProductLinks']);
 export class AuthStateObject extends AuthState {
   constructor(state, env) { super(state); this.state = state; this.env = env; }
   async createCode(input) {
@@ -518,10 +547,11 @@ export class AuthStateObject extends AuthState {
     }
     return finalized;
   }
-  async resolveAccount({ fingerprint, productId, userId, subject, provider = 'google', now = Math.floor(Date.now() / 1000) }) {
+  async resolveAccount({ fingerprint, productId, userId, subject, provider = 'google', now = Math.floor(Date.now() / 1000), allowRecreate = false }) {
     // DO serialization prevents two concurrent first logins from issuing two
     // authority calls or binding one fingerprint to different accounts.
     return this.state.blockConcurrencyWhile(async () => {
+      if (!allowRecreate && this.identityIsDeleted({ fingerprint })) throw new Error('identity_deleted');
       const current = this.accountByFingerprint(fingerprint);
       if (current && (current.state !== 'active' || productId !== 'b62')) return current;
       const linked = await diagnosed('identity_authority_rpc_failed', async () => {
@@ -542,6 +572,12 @@ export class AuthStateObject extends AuthState {
       return diagnosed('account_mapping_storage_failed', async () => this.putAccount({ fingerprint, accountId: linked.link.canonical_subject_id, now }));
     });
   }
+  async activeProductLinks({ accountId }) {
+    const result = plainRpc(await this.env.IDENTITY_AUTHORITY.list_active_product_links_for_subject({ canonical_subject_id: accountId }));
+    if (result?.ok !== true || !Array.isArray(result.links)) throw new Error('identity authority failed');
+    return { links: result.links };
+  }
+
   async fetch(request) {
     const action = new URL(request.url).pathname.slice(1);
     if (request.method !== 'POST' || !methods.has(action)) return json(404, { error: 'not_found' });

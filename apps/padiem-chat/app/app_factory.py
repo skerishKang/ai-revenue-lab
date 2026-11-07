@@ -137,7 +137,7 @@ from .b66_saved_skill_candidate_store import (
     SavedQuoteSkillCandidateStore,
 )
 from .home_product_access_routes import ACCESS_PATH, home_product_access
-from .account_deletion import account_delete, shared_account_delete
+from .account_deletion import account_delete, chat_account_delete_rpc, shared_account_delete
 from .password_rpc import password_register_rpc, password_verify_rpc
 from .auth_routes import (
     auth_status,
@@ -655,6 +655,7 @@ def create_app(
         # padiem-auth email signup/login (opt-in) verifies credentials here.
         Route("/internal/password-verify", password_verify_rpc, methods=["POST"]),
         Route("/internal/password-register", password_register_rpc, methods=["POST"]),
+        Route("/internal/account-delete", chat_account_delete_rpc, methods=["POST"]),
         Route("/api/auth/password/change", password_change, methods=["POST"]),
         # #5441 lost-password self-service reset. The request route issues one
         # short-lived, single-use link; the confirm route redeems it and sets

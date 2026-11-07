@@ -42,6 +42,9 @@ export class AuthState {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS account_deletion_audit (
       account_id_hash TEXT PRIMARY KEY, deleted_at INTEGER NOT NULL
     )`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS identity_deletion_tombstone (
+      fingerprint TEXT PRIMARY KEY, deleted_at INTEGER NOT NULL
+    )`);
   }
 
   accountByFingerprint(fingerprint) {
@@ -61,6 +64,18 @@ export class AuthState {
       if (!record || record.account_id !== accountId || record.state !== 'active') throw new Error('identity_conflict');
       return record;
     });
+  }
+
+  // A deleted identity must not be re-created by an automatic login. The
+  // tombstone is keyed by the provider fingerprint (email/Google subject hash)
+  // and is removed only by an explicit sign-up.
+  identityIsDeleted({ fingerprint }) {
+    return this.sql.exec('SELECT fingerprint FROM identity_deletion_tombstone WHERE fingerprint=?', fingerprint).toArray().length === 1;
+  }
+
+  clearIdentityDeletion({ fingerprint }) {
+    this.sql.exec('DELETE FROM identity_deletion_tombstone WHERE fingerprint=?', fingerprint);
+    return true;
   }
 
   setAccountStatus({ accountId, blocked }) {
@@ -237,6 +252,10 @@ export class AuthState {
         accountId, lockToken, now
       ).toArray();
       if (lock.length !== 1 || !/^[a-f0-9]{64}$/.test(accountIdHash ?? '')) return false;
+      this.sql.exec(
+        'INSERT INTO identity_deletion_tombstone(fingerprint,deleted_at) SELECT fingerprint,? FROM google_accounts WHERE account_id=? ON CONFLICT(fingerprint) DO UPDATE SET deleted_at=excluded.deleted_at',
+        now, accountId
+      );
       this.sql.exec('DELETE FROM google_accounts WHERE account_id=?', accountId);
       this.sql.exec('DELETE FROM auth_session_index WHERE account_id=?', accountId);
       this.sql.exec(
