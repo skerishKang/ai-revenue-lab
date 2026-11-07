@@ -60,6 +60,8 @@
 #   PADIEM_COM2_PYTHON           python3
 #   PADIEM_COM2_GIT              git
 #   B66_CGI_ALPHA_USERNAME / B66_CGI_ALPHA_PASSWORD  existing QA account
+#                                (also auto-loaded from the root-only
+#                                /etc/padiem/qa-smoke.env below)
 #   PADIEM_COM2_CHAT_VENV_PYTHON  the chat service's own venv interpreter
 #                                (default /opt/padiem/chat-com2/venv/bin/python)
 #   PADIEM_COM2_AI_CHECK_BASE_URL  target Chat origin (default https://chat.padiem.net)
@@ -69,6 +71,17 @@ umask 077
 # Root-run import checks must not leave __pycache__ in the staged tree; the
 # service user cannot read a root-owned bytecode directory.
 export PYTHONDONTWRITEBYTECODE=1
+
+# The QA smoke account (provision_qa_smoke_account.ps1 writes it root-only
+# 0600) reaches this systemd-run script only through the environment, so one
+# source line connects the file to the AI answer gate's B66_CGI_ALPHA_* pair.
+qa_smoke_env=${PADIEM_COM2_QA_SMOKE_ENV:-/etc/padiem/qa-smoke.env}
+if [[ -r $qa_smoke_env ]]; then
+  set -a
+  # shellcheck disable=SC1090
+  . "$qa_smoke_env"
+  set +a
+fi
 
 ops_checkout=${PADIEM_COM2_OPS_CHECKOUT:-}
 staging_checkout=${PADIEM_COM2_STAGING_CHECKOUT:-/mnt/d/work/ai-revenue-lab-staging-chat}
