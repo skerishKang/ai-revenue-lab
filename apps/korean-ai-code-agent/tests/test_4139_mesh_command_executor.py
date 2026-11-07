@@ -1119,3 +1119,37 @@ class _NeverChild:
 
     def kill(self):
         self.killed = True
+
+
+class LoginKeyFileArgvTests(unittest.TestCase):
+    def test_keyfile_uses_loginkeyfile_without_loginpass_or_stdin_secret(self):
+        calls = []
+        key_path = "C:/mesh/op.key"
+        port = MeshCentralCliCommandPort(
+            command_runner=lambda argv, **kw: calls.append((list(argv), dict(kw))) or _Completed(0, _transcript("ok\r\n")),
+            meshctrl_js=MESHCTRL,
+            login_user="padiemadmin",
+            password_provider=lambda: (_ for _ in ()).throw(AssertionError("password must not be requested")),
+            url="wss://127.0.0.1:4443",
+            login_key_file=key_path,
+        )
+        outcome = port.run_command(node_ref=NODE, command="hostname.exe")
+        self.assertEqual(outcome.termination, "exited")
+        self.assertEqual(outcome.exit_code, 0)
+        argv, kwargs = calls[0]
+        self.assertIn("--loginkeyfile", argv)
+        self.assertEqual(argv[argv.index("--loginkeyfile") + 1], key_path)
+        self.assertNotIn("--loginpass", argv)
+        self.assertIn("--loginuser", argv)
+        self.assertIsNone(kwargs.get("input"))
+        self.assertNotIn(PASSWORD, " ".join(str(v) for v in argv))
+        self.assertNotIn(PASSWORD, str(kwargs))
+
+    def test_unset_keyfile_keeps_loginpass_and_stdin(self):
+        calls = []
+        port = _port(_Completed(0, _transcript("ok\r\n")), calls=calls)
+        port.run_command(node_ref=NODE, command="hostname.exe")
+        argv, kwargs = calls[0]
+        self.assertIn("--loginpass", argv)
+        self.assertNotIn("--loginkeyfile", argv)
+        self.assertEqual(kwargs.get("input"), PASSWORD + "\n")
