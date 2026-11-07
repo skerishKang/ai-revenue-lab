@@ -2800,6 +2800,51 @@
     return data;
   }
 
+  // The first screen reads /api/claw/runs twice: the sidebar needs the
+  // run -> conversation mapping (limit 30) and Claw's history needs the run
+  // cards (limit 10). The wider answer already contains the narrower one, so
+  // one short-lived in-memory read answers both. It is keyed to the auth
+  // generation and never stored outside memory; the window is short enough
+  // that a run created just after it is seen on the next read.
+  const CLAW_RUNS_READ_WINDOW_MS = 1500;
+  const emptyClawRunsRead = () => ({
+    at: 0, epoch: -1, limit: 0, response: null, data: null, inFlight: null, inFlightLimit: 0,
+  });
+  let clawRunsRead = emptyClawRunsRead();
+
+  function readClawRuns(limit, epoch) {
+    const now = Date.now();
+    if (clawRunsRead.epoch === epoch && clawRunsRead.data
+        && clawRunsRead.limit >= limit
+        && now - clawRunsRead.at < CLAW_RUNS_READ_WINDOW_MS) {
+      return Promise.resolve({ response: clawRunsRead.response, data: clawRunsRead.data });
+    }
+    if (clawRunsRead.inFlight && clawRunsRead.epoch === epoch
+        && clawRunsRead.inFlightLimit >= limit) {
+      return clawRunsRead.inFlight;
+    }
+    const run = (async () => {
+      const response = await fetch(`/api/claw/runs?limit=${limit}`, {
+        headers: { "Accept": "application/json" }, cache: "no-store",
+      });
+      const data = await response.json().catch(() => null);
+      if (response.ok && data && data.ok === true && Array.isArray(data.runs)) {
+        clawRunsRead = { at: Date.now(), epoch, limit, response, data, inFlight: null, inFlightLimit: 0 };
+      }
+      return { response, data };
+    })();
+    clawRunsRead.epoch = epoch;
+    clawRunsRead.inFlight = run;
+    clawRunsRead.inFlightLimit = limit;
+    run.finally(() => {
+      if (clawRunsRead.inFlight === run) {
+        clawRunsRead.inFlight = null;
+        clawRunsRead.inFlightLimit = 0;
+      }
+    }).catch(() => {});
+    return run;
+  }
+
   async function loadRecentConversations() {
     if (!authState.authenticated || !authState.history_ready) {
       clearHistoryUI();
@@ -2833,10 +2878,7 @@
         const verifiedClawIds = new Set();
         try {
           const threadRunHistoryLimit = 30;
-          const runsResponse = await fetch(`/api/claw/runs?limit=${threadRunHistoryLimit}`, {
-            headers: { "Accept": "application/json" }, cache: "no-store",
-          });
-          const runsData = await runsResponse.json().catch(() => null);
+          const { response: runsResponse, data: runsData } = await readClawRuns(threadRunHistoryLimit, epoch);
           if (!current()) return;
           if (runsResponse.ok && runsData?.ok === true && Array.isArray(runsData.runs)) {
             runsData.runs.forEach((run) => {
@@ -7780,8 +7822,7 @@
     clearClawRunHistoryPdfPreviews();
     if (clawRunHistoryList) clawRunHistoryList.replaceChildren();
     try {
-      const response = await fetch(`/api/claw/runs?limit=${clawRunHistoryLimit}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
-      const data = await response.json().catch(() => null);
+      const { response, data } = await readClawRuns(clawRunHistoryLimit, authViewEpoch);
       // A response begun before logout/workspace departure is not a license
       // to paint old owner file cards into a newer authenticated session.
       if (visibilityEpoch !== clawRunHistoryVisibilityEpoch ||

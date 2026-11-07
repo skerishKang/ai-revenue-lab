@@ -147,8 +147,37 @@ async function refresh({force=false}={}){
  };
  // Fast cards paint as soon as their own read finishes. One slow connector
  // cannot hold the PC or Drive card, and focus events share the current read.
- const reads=["/api/claw/local-access/devices","/api/connectors/status","/api/connectors/github/status"];
- const pending=Promise.allSettled(reads.map((url,index)=>read(url).then(value=>paint(index,value)).catch(error=>{
+ const DEVICES_URL="/api/claw/local-access/devices";
+ // The device manager (claw-device-manager.js) is the directory owner and
+ // publishes both its open read and its last confirmed snapshot. Sharing that
+ // removes the second connection this screen used to open to the same
+ // endpoint. A snapshot older than a few seconds is not used, so a later focus
+ // still reads fresh truth.
+ const DEVICES_SHARED_WINDOW_MS=5000;
+ async function readDevices(force){
+  const shared=force?null:window.PadiemClawDeviceDirectoryRead;
+  if(typeof shared==="function"){
+   let snapshot=null;
+   try{snapshot=await shared();}catch(_error){snapshot=null;}
+   if(snapshot&&snapshot.readCompleted===true
+     &&typeof snapshot.updatedAt==="number"
+     &&Date.now()-snapshot.updatedAt<DEVICES_SHARED_WINDOW_MS){
+    return {
+     ok:snapshot.available===true&&snapshot.ownerScoped===true,
+     available:snapshot.available===true,
+     ownerScoped:snapshot.ownerScoped===true,
+     usagePaused:snapshot.usagePaused===true,
+     devices:Array.isArray(snapshot.devices)?snapshot.devices:[],
+    };
+   }
+  }
+  return read(DEVICES_URL);
+ }
+ const reads=[DEVICES_URL,"/api/connectors/status","/api/connectors/github/status"];
+ // A forced refresh follows a write (pause/resume), so it must ask the server
+ // rather than reuse a snapshot taken before the write.
+ const readOne=url=>url===DEVICES_URL?readDevices(force):read(url);
+ const pending=Promise.allSettled(reads.map((url,index)=>readOne(url).then(value=>paint(index,value)).catch(error=>{
   if(current!==generation||sequence!==refreshSequence)return;
   const id=ids[index];
   if(error.sessionDenied)set(id,"unknown");

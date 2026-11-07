@@ -534,6 +534,10 @@
     let stopped = false;
     let identityKey = "";
     let identityRefreshSeq = 0;
+    // First screen proves identity once: the module verifies at init and the
+    // auth notification asks again while that read is still open. Reusing the
+    // open read keeps the newest sequence fence without a second round trip.
+    let identityInflight = null;
     const identityListeners = [];
 
     const recordedFactory = createRecognizerFactory({
@@ -626,13 +630,18 @@
     // overwriting the newest account identity.
     function verifyIdentity() {
       if (stopped) return Promise.resolve("");
+      if (identityInflight) return identityInflight;
       const sequence = ++identityRefreshSeq;
       const pending = refreshIdentity().then(function (key) {
         if (stopped || sequence !== identityRefreshSeq) return "";
         announceIdentity(key);
         return key;
       });
-      return pending;
+      const shared = pending.finally(function () {
+        if (identityInflight === shared) identityInflight = null;
+      });
+      identityInflight = shared;
+      return shared;
     }
 
     function listen(target, name, handler) {
