@@ -281,7 +281,9 @@ try{if($env:PADIEM_MCP_SHELL -eq 'powershell'){$file='powershell.exe';if(-not(Ge
 #: must see, not a second copy of that rule.
 USER_HELPER_SHELL_FOR_BASH = "wsl"
 USER_HELPER_SHELL_FOR_WHOAMI = "whoami"
-USER_HELPER_TIMEOUT_SECONDS = 30
+# #7107: request material only. 0 means the helper has no execution deadline;
+# the command runs until it ends and the owner stops it through pc_shell_stop.
+USER_HELPER_TIMEOUT_SECONDS = 0
 
 
 def build_pc_shell_user_material(arguments: Mapping) -> str:

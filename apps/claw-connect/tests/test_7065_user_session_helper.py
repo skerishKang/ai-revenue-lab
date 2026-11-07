@@ -110,11 +110,20 @@ def test_request_id_must_be_a_request_identifier():
         helper.parse_request(_request(request_id="req_short"))
 
 
-def test_timeout_is_bounded():
+def test_timeout_is_signed_but_not_an_execution_deadline():
+    # #7107: the field stays on the wire for the nonce contract; it no longer
+    # ends a command. The runner receives None and the child runs to completion.
+    seen = {}
+
+    def runner(argv, cwd, timeout_seconds):
+        seen["timeout"] = timeout_seconds
+        return 0, b"ok\n", b""
+
+    reply = helper.serve_one(_signed(timeout_seconds=999_999), secret=SECRET, runner=runner)
+    assert seen["timeout"] is None
+    assert reply.status == "ok"
     with pytest.raises(helper.UserHelperError):
-        helper.parse_request(_request(timeout_seconds=helper.MAX_TIMEOUT_SECONDS + 1))
-    with pytest.raises(helper.UserHelperError):
-        helper.parse_request(_request(timeout_seconds=0))
+        helper.parse_request(_request(timeout_seconds=-1))
     with pytest.raises(helper.UserHelperError):
         helper.parse_request(_request(timeout_seconds=True))
 
@@ -303,11 +312,12 @@ def test_a_timeout_is_reported_as_a_timeout():
     assert reply.error_code == helper.USER_HELPER_TIMEOUT
 
 
-def test_a_large_body_is_cut_and_says_so():
-    runner = Runner(stdout=b"x" * (helper.MAX_STREAM_BYTES + 10))
-    reply = helper.serve_one(_signed(), secret=SECRET, runner=runner)
-    assert reply.truncated is True
-    assert len(reply.stdout) == helper.MAX_STREAM_BYTES
+def test_a_large_body_is_returned_whole():
+    # #7107: the 256 KiB per-stream cut is gone. The caller pages the whole body.
+    body = b"x" * (helper.MAX_STREAM_BYTES + 10)
+    reply = helper.serve_one(_signed(), secret=SECRET, runner=Runner(stdout=body))
+    assert reply.truncated is False
+    assert reply.stdout == body
 
 
 # ---------------------------------------------------------------------------

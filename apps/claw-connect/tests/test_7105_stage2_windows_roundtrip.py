@@ -224,3 +224,115 @@ def test_a_long_command_is_kept_alive_by_heartbeats(tmp_path):
         server.join(timeout=90)
         listener.close()
     assert not failures, failures
+
+
+def test_a_large_output_is_returned_whole(tmp_path):
+    """#7107: 300 KiB crosses the pipe as chunks, not as a 256 KiB cut."""
+    secret_file = tmp_path / "user-helper.secret"
+    secret_file.write_bytes(SECRET + b"\n")
+    listener = service.WindowsPipeListener(DEVICE)
+    failures: list[BaseException] = []
+
+    def _serve() -> None:
+        try:
+            service.serve_pipe(device_id=DEVICE, secret=SECRET, listener=listener,
+                               max_requests=1)
+        except BaseException as exc:  # noqa: BLE001
+            failures.append(exc)
+
+    server = threading.Thread(target=_serve, daemon=True)
+    server.start()
+    try:
+        reply = _run_client(
+            request_id="req_" + "e" * 32, shell="powershell",
+            command="[Console]::Out.Write(('x' * 300000))",
+            secret_file=secret_file,
+        )
+        assert reply["status"] == "ok", reply
+        assert reply.get("truncated") is False
+        assert len(_stdout(reply)) == 300_000
+    finally:
+        server.join(timeout=90)
+        listener.close()
+    assert not failures, failures
+
+
+def test_a_command_past_the_old_thirty_second_limit_completes(tmp_path):
+    """#7107: the old 30s helper deadline would have failed this command."""
+    secret_file = tmp_path / "user-helper.secret"
+    secret_file.write_bytes(SECRET + b"\n")
+    listener = service.WindowsPipeListener(DEVICE)
+    failures: list[BaseException] = []
+
+    def _serve() -> None:
+        try:
+            service.serve_pipe(device_id=DEVICE, secret=SECRET, listener=listener,
+                               max_requests=1)
+        except BaseException as exc:  # noqa: BLE001
+            failures.append(exc)
+
+    server = threading.Thread(target=_serve, daemon=True)
+    server.start()
+    try:
+        reply = _run_client(
+            request_id="req_" + "d" * 32, shell="powershell",
+            command="Start-Sleep -Seconds 32; Write-Output 'past-30'",
+            secret_file=secret_file,
+        )
+        assert reply["status"] == "ok", reply
+        assert "past-30" in _stdout(reply)
+    finally:
+        server.join(timeout=120)
+        listener.close()
+    assert not failures, failures
+
+
+def test_a_dead_client_stops_the_user_child_and_frees_the_helper(tmp_path):
+    """#7107: killing the SYSTEM client ends the user child, not an orphan."""
+    marker = tmp_path / "after-stop.txt"
+    secret_file = tmp_path / "user-helper.secret"
+    secret_file.write_bytes(SECRET + b"\n")
+    listener = service.WindowsPipeListener(DEVICE)
+    failures: list[BaseException] = []
+
+    def _serve() -> None:
+        try:
+            service.serve_pipe(device_id=DEVICE, secret=SECRET, listener=listener,
+                               max_requests=2)
+        except BaseException as exc:  # noqa: BLE001
+            failures.append(exc)
+
+    server = threading.Thread(target=_serve, daemon=True)
+    server.start()
+    script = OracleMeshExecutor.build_user_helper_pipe_client_ps(
+        device_id=DEVICE, request_id="req_" + "f" * 32, shell="powershell",
+        command=("Start-Sleep -Seconds 20; Set-Content -LiteralPath "
+                 f"'{marker}' -Value done"),
+        cwd=None, timeout_seconds=0, distro=None, secret_file=str(secret_file),
+    )
+    encoded = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
+    client = subprocess.Popen(
+        ["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy",
+         "Bypass", "-EncodedCommand", encoded],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    try:
+        time.sleep(3)
+        client.kill()
+        client.wait(timeout=10)
+        # The heartbeat write fails on the next 5s pulse; the helper then kills
+        # the user child. The 20s marker must never appear.
+        time.sleep(7)
+        assert not marker.exists(), "the user child survived the dead client"
+        reply = _run_client(
+            request_id="req_" + "a" * 31 + "b", shell="powershell",
+            command="Write-Output 'after-stop'", secret_file=secret_file,
+        )
+        assert reply["status"] == "ok", reply
+        assert "after-stop" in _stdout(reply)
+    finally:
+        if client.poll() is None:
+            client.kill()
+        server.join(timeout=30)
+        listener.close()
+    assert not failures, failures

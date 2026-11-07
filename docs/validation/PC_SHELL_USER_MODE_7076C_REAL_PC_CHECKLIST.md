@@ -22,10 +22,10 @@
 ## 확인 항목
 1. **로그인 사용자 계정 확인**: 로그인된 사용자 세션에서 `whoami` 결과가 `limone`(또는 해당 PC의 대상 사용자)인지 확인.
 2. **helper 중지/부재 시 실패 코드**: helper 작업을 중지하거나 사용자 로그오프 상태에서 `pc_shell mode=user` 요청 → 결과 오류코드가 `user_session_unavailable` 이고 SYSTEM fallback이 발생하지 않는지 확인.
-3. **allowlist 밖 명령 거부**: `mode=user`로 helper 최종 allowlist(#7076 stage-1 read-only 계약) 밖 명령 요청 → helper 거부 오류코드가 그대로 패스스루되고, SYSTEM에서 대신 실행되지 않는지 확인.
+3. **allowlist 밖 명령 거부**: `mode=user`로 helper의 shell 계약(stage-1 read-only, stage-2 powershell/cmd) 밖 명령 요청 → helper 거부 오류코드가 그대로 패스스루되고, SYSTEM에서 대신 실행되지 않는지 확인.
 
 ## 구현 메모(검증 관점)
 - Chat MCP: `PADIEM_MCP_PC_SHELL_USER_MODE`(기본 OFF). OFF면 `mode=user` 거부, 기존 경로 불변. ON이면 `mode=user` dispatch에 `user_mode=true` 포함.
 - oracle_mesh_dispatch: `user_mode` 컬럼(기본 0) + history create/select/poll 전달.
 - kagent executor: `user_mode` command dispatch를 pipe-client PowerShell로 처리(`runcommand` 경유). PS는 작업 스케줄러 인자에서 `--secret-file` 경로를 찾아 #7076 framing(4-byte BE + UTF-8 JSON)과 nonce(HMAC-SHA256, `HelperRequest.material` 동일)를 사용. secret 값은 명령문/로그에 포함하지 않음. 연결 불가 → `user_session_unavailable`, helper 거부 코드 패스스루, SYSTEM fallback 없음.
-- CI PS 실행은 제약이 있어 framing/bytes는 generated PS/계약 기준 golden 검증으로 고정.
+- CI PS 실행: windows-latest의 `apps/claw-connect/tests/test_7105_stage2_windows_roundtrip.py`가 실제 PowerShell/cmd 자식과 named pipe를 왕복한다. framing/bytes 계약은 같은 시험의 golden 검증과 함께 고정한다.
