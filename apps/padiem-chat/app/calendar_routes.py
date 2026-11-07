@@ -156,7 +156,6 @@ async def calendar_today(request: Request) -> JSONResponse:
         return _error(503, "calendar_store_unavailable", "캘린더 저장소를 사용할 수 없습니다.")
 
     workspace_id = await _resolve_memory_workspace(request, uid)
-    task_alert_store = getattr(request.app.state, "claw_task_alert_store", None)
     history_store = getattr(request.app.state, "history_store", None)
     automation_store = getattr(request.app.state, "claw_automation_store", None)
 
@@ -165,8 +164,7 @@ async def calendar_today(request: Request) -> JSONResponse:
             workspace_id=workspace_id,
             tz_name=tz_param,
             calendar_store=store,
-            task_alert_store=task_alert_store,
-            history_store=history_store,
+                        history_store=history_store,
             automation_store=automation_store,
             user_id=uid,
             limit=limit_val,
@@ -210,15 +208,13 @@ async def calendar_upcoming(request: Request) -> JSONResponse:
         return _error(503, "calendar_store_unavailable", "캘린더 저장소를 사용할 수 없습니다.")
 
     workspace_id = await _resolve_memory_workspace(request, uid)
-    task_alert_store = getattr(request.app.state, "claw_task_alert_store", None)
 
     try:
         projection = await build_upcoming_projection(
             workspace_id=workspace_id,
             tz_name=tz_param,
             calendar_store=store,
-            task_alert_store=task_alert_store,
-            user_id=uid,
+                        user_id=uid,
             limit=limit_val,
         )
     except CalendarContractError as exc:
@@ -273,7 +269,6 @@ async def calendar_items(request: Request) -> JSONResponse:
         return _error(503, "calendar_store_unavailable", "캘린더 저장소를 사용할 수 없습니다.")
 
     workspace_id = await _resolve_memory_workspace(request, uid)
-    task_alert_store = getattr(request.app.state, "claw_task_alert_store", None)
     history_store = getattr(request.app.state, "history_store", None)
     automation_store = getattr(request.app.state, "claw_automation_store", None)
 
@@ -284,8 +279,7 @@ async def calendar_items(request: Request) -> JSONResponse:
             end_date=end_d,
             tz_name=tz_param,
             calendar_store=store,
-            task_alert_store=task_alert_store,
-            history_store=history_store,
+                        history_store=history_store,
             automation_store=automation_store,
             user_id=uid,
             limit=limit_val,
@@ -325,7 +319,6 @@ async def calendar_item_detail(request: Request) -> JSONResponse:
         return _error(503, "calendar_store_unavailable", "캘린더 저장소를 사용할 수 없습니다.")
 
     workspace_id = await _resolve_memory_workspace(request, uid)
-    task_alert_store = getattr(request.app.state, "claw_task_alert_store", None)
     history_store = getattr(request.app.state, "history_store", None)
     automation_store = getattr(request.app.state, "claw_automation_store", None)
 
@@ -335,8 +328,7 @@ async def calendar_item_detail(request: Request) -> JSONResponse:
             workspace_id=workspace_id,
             tz_name=tz_param,
             calendar_store=store,
-            task_alert_store=task_alert_store,
-            history_store=history_store,
+                        history_store=history_store,
             automation_store=automation_store,
             user_id=uid,
         )

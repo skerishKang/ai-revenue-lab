@@ -73,11 +73,6 @@ def test_sidebar_simplified_ia_removes_duplicates_and_renames_files() -> None:
         'id="clawNavButton"',
     ):
         assert kept in sidebar
-    # Automation alerts and Claw tasks stay reachable outside the sidebar.
-    assert 'id="automationAlertsButton"' in INDEX
-    assert 'id="clawTasksButton"' in INDEX
-    assert 'openClawInbox("alerts")' in APP
-    assert 'openClawInbox("tasks")' in APP
 
 
 def test_padiem_home_settings_and_account_share_bottom_utility_group() -> None:

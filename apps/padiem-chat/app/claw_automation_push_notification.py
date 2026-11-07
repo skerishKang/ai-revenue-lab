@@ -41,11 +41,6 @@ from typing import Any
 
 from .claw_push_subscriptions import deliver_inbox_push
 
-# The inbox surface stays a defensive fallback until the inbox lane (PR2)
-# removes it; the real target is the automation's own conversation.
-INBOX_ALERTS_PATH = "/claw?view=inbox&kind=alerts"
-INBOX_TASKS_PATH = "/claw?view=inbox&kind=tasks"
-
 # 대표 결정(2026-11-07): 알림 클릭은 그 자동화의 대화를 연다. The reference is
 # the server-derived conversation id only — no title, no document, no ERP
 # content and no secret ever reaches the lock screen or the URL.
@@ -81,9 +76,7 @@ def _notification_text(
         title, body = _FAILED_TITLE, _FAILED_BODY
     else:
         title, body = _COMPLETED_TITLE, _COMPLETED_BODY
-    if isinstance(conversation_url, str) and conversation_url:
-        return title, body, conversation_url
-    return title, body, INBOX_ALERTS_PATH
+    return title, body, conversation_url
 
 
 async def notify_terminal_run(
@@ -138,8 +131,6 @@ async def notify_terminal_run(
 
 __all__ = [
     "CONVERSATION_LINK_PATH",
-    "INBOX_ALERTS_PATH",
-    "INBOX_TASKS_PATH",
     "AutomationPushOutcome",
     "notify_terminal_run",
 ]

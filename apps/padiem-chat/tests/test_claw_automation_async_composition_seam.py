@@ -68,7 +68,6 @@ from test_claw_automation_background_execution import (  # noqa: E402
     WORKSPACE,
     OutcomeAdapter,
     RecordingHistoryStore,
-    RecordingTaskAlertStore,
     make_rule,
     membership,
     resolver,
@@ -136,7 +135,6 @@ def _authority(*workspaces: str) -> StaticMembershipAuthority:
 
 async def _compose(trigger, *, boundary, store, adapter, receipt, **kwargs):
     history = RecordingHistoryStore()
-    task_alert = RecordingTaskAlertStore()
     bg = await compose_background_execution(
         trigger=trigger,
         boundary=boundary,
@@ -144,12 +142,11 @@ async def _compose(trigger, *, boundary, store, adapter, receipt, **kwargs):
         adapter=adapter,
         owner_resolver=resolver(),
         history_store=history,
-        task_alert_store=task_alert,
         completed_at=NOW,
         trigger_receipt=receipt,
         **kwargs,
     )
-    return bg, history, task_alert
+    return bg, history
 
 
 def _trigger_from(receipt, authority) -> ClawAutomationTrigger:
@@ -191,7 +188,7 @@ async def test_async_d1_end_to_end_claim_execute_and_project(d1_store):
     # Compose execution with the PRECOMPUTED receipt: no second claim, no
     # re-run of the trigger, execution through the existing chain only.
     adapter = OutcomeAdapter()
-    bg, history, task_alert = await _compose(
+    bg, history = await _compose(
         _trigger_from(trigger_receipt, authority),
         boundary=boundary,
         store=d1_store,
@@ -206,7 +203,7 @@ async def test_async_d1_end_to_end_claim_execute_and_project(d1_store):
     assert bg.terminal_run_ids == (run_id,)
     assert len(adapter.calls) == 1
     assert history.rows  # CLAW_RUN_HISTORY_PROJECTION=YES
-    assert task_alert.add_task_calls + task_alert.add_alert_calls >= 1  # TASK_ALERT_OUTPUT=YES
+    assert len(history.message_calls) >= 1  # the result lands in the automation conversation
     rows = await d1_store.list_runs(WORKSPACE)
     assert [row.status for row in rows] == [ClawScheduledRunStatus.COMPLETED]
 
@@ -217,8 +214,7 @@ async def test_scheduled_execution_composition_runs_full_existing_path(d1_store)
     boundary = _async_boundary(d1_store)
     discovery = _discovery(d1_store, authority, boundary)
     history = RecordingHistoryStore()
-    task_alert = RecordingTaskAlertStore()
-
+    
     receipt = await compose_scheduled_automation_execution(
         discovery=discovery,
         boundary=boundary,
@@ -226,7 +222,6 @@ async def test_scheduled_execution_composition_runs_full_existing_path(d1_store)
         adapter=OutcomeAdapter(),
         owner_resolver=resolver(),
         history_store=history,
-        task_alert_store=task_alert,
         now=NOW,
         completed_at=NOW,
     )
@@ -234,7 +229,7 @@ async def test_scheduled_execution_composition_runs_full_existing_path(d1_store)
     assert len(receipt.executions) == 1
     assert receipt.executions[0].terminal_run_ids
     assert history.rows
-    assert task_alert.add_task_calls + task_alert.add_alert_calls >= 1
+    assert len(history.message_calls) >= 1
     payload = receipt.safe_dict()
     assert payload["downstream_side_effects_observed"] is False
     assert payload["production_config_mutation"] == 0
@@ -284,7 +279,6 @@ async def test_scheduled_execution_forwards_the_central_route_model(d1_store):
         adapter=adapter,
         owner_resolver=resolver(),
         history_store=RecordingHistoryStore(),
-        task_alert_store=RecordingTaskAlertStore(),
         now=NOW,
         completed_at=NOW,
         central_route_model_id="central/plus-route",
@@ -318,7 +312,6 @@ async def test_scheduled_execution_without_a_central_route_keeps_the_legacy_call
         adapter=adapter,
         owner_resolver=resolver(),
         history_store=RecordingHistoryStore(),
-        task_alert_store=RecordingTaskAlertStore(),
         now=NOW,
         completed_at=NOW,
     )
@@ -378,7 +371,7 @@ async def test_precomputed_receipt_skips_the_synchronous_trigger(d1_store):
 
     # ...and composing with it never touches the synchronous dispatch.
     adapter = OutcomeAdapter()
-    bg, _, _ = await _compose(
+    bg, _ = await _compose(
         _trigger_from(trigger_receipt, authority),
         boundary=fail_boundary,
         store=d1_store,
@@ -397,8 +390,7 @@ async def test_precomputed_receipt_skips_the_synchronous_trigger(d1_store):
             adapter=adapter,
             owner_resolver=resolver(),
             history_store=RecordingHistoryStore(),
-            task_alert_store=RecordingTaskAlertStore(),
-            completed_at=NOW,
+                completed_at=NOW,
         )
 
 
@@ -428,8 +420,7 @@ async def test_precomputed_receipt_mismatch_fails_closed(d1_store):
             adapter=adapter,
             owner_resolver=resolver(),
             history_store=RecordingHistoryStore(),
-            task_alert_store=RecordingTaskAlertStore(),
-            completed_at=NOW,
+                completed_at=NOW,
             trigger_receipt=trigger_receipt,
         )
     assert adapter.calls == []
@@ -455,8 +446,7 @@ async def test_precomputed_receipt_mismatch_fails_closed(d1_store):
             adapter=adapter,
             owner_resolver=resolver(),
             history_store=RecordingHistoryStore(),
-            task_alert_store=RecordingTaskAlertStore(),
-            completed_at=NOW,
+                completed_at=NOW,
             trigger_receipt=trigger_receipt,
         )
     assert adapter.calls == []
@@ -478,8 +468,7 @@ async def test_precomputed_receipt_mismatch_fails_closed(d1_store):
             adapter=adapter,
             owner_resolver=resolver(),
             history_store=RecordingHistoryStore(),
-            task_alert_store=RecordingTaskAlertStore(),
-            completed_at=NOW,
+                completed_at=NOW,
             trigger_receipt=trigger_receipt,
         )
     assert adapter.calls == []
@@ -503,8 +492,7 @@ async def test_precomputed_receipt_mismatch_fails_closed(d1_store):
             adapter=adapter,
             owner_resolver=resolver(),
             history_store=RecordingHistoryStore(),
-            task_alert_store=RecordingTaskAlertStore(),
-            completed_at=NOW,
+                completed_at=NOW,
             trigger_receipt=trigger_receipt,
         )
     assert adapter.calls == []
@@ -523,14 +511,14 @@ async def test_retry_of_the_same_invocation_executes_exactly_once(d1_store):
     trigger = _trigger_from(trigger_receipt, authority)
 
     adapter = OutcomeAdapter()
-    first, history, _ = await _compose(
+    first, history = await _compose(
         trigger, boundary=boundary, store=d1_store, adapter=adapter,
         receipt=trigger_receipt,
     )
     assert len(adapter.calls) == 1
 
     # RETRY_DUPLICATE_EXECUTION=0: same receipt, same instant, second compose.
-    second, history2, _ = await _compose(
+    second, history2 = await _compose(
         trigger, boundary=boundary, store=d1_store, adapter=adapter,
         receipt=trigger_receipt,
     )
@@ -637,8 +625,7 @@ async def _run_worker_source(db, adapter, monkeypatch):
             adapter=adapter,
             owner_resolver=resolver(),
             history_store=RecordingHistoryStore(),
-            task_alert_store=RecordingTaskAlertStore(),
-        ),
+            ),
     )
 
 
@@ -867,7 +854,7 @@ async def test_receipts_pin_no_external_side_effect(d1_store):
     disc = await engine.aadiscover_and_trigger(now=NOW)
     trigger_receipt = disc.triggered_receipts[0]
     adapter = OutcomeAdapter()
-    bg, _, _ = await _compose(
+    bg, _ = await _compose(
         _trigger_from(trigger_receipt, authority),
         boundary=boundary,
         store=d1_store,
@@ -917,8 +904,7 @@ async def test_receipts_pin_no_external_side_effect(d1_store):
         "second_p01_authority",
         "second_history_store",
         "second_session_authority",
-        "second_task_alert_authority",
-        "production_scheduler_activation",
+                "production_scheduler_activation",
         "production_mutation",
     ):
         assert bg_payload[marker] == 0, marker
@@ -1072,8 +1058,7 @@ async def test_an_injected_lane_without_push_parts_still_runs_the_job(monkeypatc
             adapter=_RouteRecordingAdapter(),
             owner_resolver=resolver(),
             history_store=RecordingHistoryStore(),
-            task_alert_store=RecordingTaskAlertStore(),
-        ),
+            ),
     )
 
     # No push authority is the historical state: the automation pass is

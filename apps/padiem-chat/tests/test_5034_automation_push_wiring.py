@@ -12,7 +12,8 @@ and get attempted exactly once per event?
 
 Pinned here:
 
-- EVENT_REACHES_PUSH=PASS (a COMPLETED run notifies, output or not)
+- EVENT_REACHES_PUSH=PASS (a COMPLETED run notifies, output or not; the
+  Task/Alert projection is gone with the inbox — PR2)
 - TERMINAL_DECIDES=PASS (FAILED/CANCELLED use the failure wording)
 - CLICK_TARGET_CONVERSATION=PASS (the URL is the automation conversation)
 - DEDUP_BY_RUN=PASS (a re-projected run does not notify twice)
@@ -32,7 +33,6 @@ import pytest
 from app.claw_automation_background_execution import _project_terminal_run
 from app.claw_automation_push_notification import (
     CONVERSATION_LINK_PATH,
-    INBOX_ALERTS_PATH,
     notify_terminal_run,
 )
 from app.claw_push_subscriptions import (
@@ -162,23 +162,26 @@ async def test_the_push_links_to_the_automation_conversation() -> None:
 
 
 @pytest.mark.asyncio
-async def test_a_missing_conversation_url_falls_back_to_the_inbox_surface() -> None:
+async def test_a_missing_conversation_url_sends_no_link_at_all() -> None:
     store = _RecordingStore([_subscription()])
     sender = _RecordingSender()
 
-    for missing in (None, ""):
-        await notify_terminal_run(
-            push_store=store,
-            push_sender=sender,
-            workspace_id=WORKSPACE,
-            member_id=MEMBER,
-            scope=SCOPE,
-            run_status="COMPLETED",
-            created=True,
-            conversation_url=missing,
-        )
+    await notify_terminal_run(
+        push_store=store,
+        push_sender=sender,
+        workspace_id=WORKSPACE,
+        member_id=MEMBER,
+        scope=SCOPE,
+        run_status="COMPLETED",
+        created=True,
+        conversation_url=None,
+    )
 
-    assert [call["url"] for call in sender.calls] == [INBOX_ALERTS_PATH] * 2
+    call = sender.calls[0]
+    # The inbox deep link is gone; a notification without a target still
+    # reaches the device and simply focuses the app when tapped.
+    assert call["url"] is None
+    assert call["title"] == "자동화 완료"
 
 
 @pytest.mark.asyncio
@@ -430,13 +433,9 @@ async def test_a_failed_run_reaches_the_push_seam_once() -> None:
     terminal state.
     """
 
-    from test_claw_automation_background_execution import (
-        RecordingHistoryStore,
-        RecordingTaskAlertStore,
-    )
+    from test_claw_automation_background_execution import RecordingHistoryStore
 
     rule, row, owner = _failed_terminal_pair()
-    alerts = RecordingTaskAlertStore()
     history = RecordingHistoryStore()
     store = _RecordingStore([_owner_subscription(owner)])
     sender = _RecordingSender()
@@ -446,13 +445,10 @@ async def test_a_failed_run_reaches_the_push_seam_once() -> None:
         scheduled_run=row,
         owner=owner,
         history_store=history,
-        task_alert_store=alerts,
         push_store=store,
         push_sender=sender,
         push_scope=SCOPE,
     )
-
-    assert alerts.add_alert_calls == 1
     assert len(history.ensure_calls) == 1
     assert history.ensure_calls[0]["user_id"] == owner.product_user_id
     assert history.ensure_calls[0]["rule_id"] == rule.rule_id
@@ -472,7 +468,6 @@ async def test_a_failed_run_reaches_the_push_seam_once() -> None:
         scheduled_run=row,
         owner=owner,
         history_store=history,
-        task_alert_store=alerts,
         push_store=_RecordingStore([_owner_subscription(owner)]),
         push_sender=second,
         push_scope=SCOPE,
@@ -493,7 +488,6 @@ async def test_a_completed_run_without_output_still_notifies() -> None:
 
     from test_claw_automation_background_execution import (
         RecordingHistoryStore,
-        RecordingTaskAlertStore,
         make_rule,
         scheduled_run,
     )
@@ -501,7 +495,6 @@ async def test_a_completed_run_without_output_still_notifies() -> None:
     rule = make_rule(output_type=ClawAutomationOutputType.REPORT)
     row = scheduled_run(rule=rule, status=ClawScheduledRunStatus.COMPLETED)
     owner = _failed_terminal_pair()[2]
-    alerts = RecordingTaskAlertStore()
     store = _RecordingStore([_owner_subscription(owner)])
     sender = _RecordingSender()
     history = RecordingHistoryStore()
@@ -511,7 +504,6 @@ async def test_a_completed_run_without_output_still_notifies() -> None:
         scheduled_run=row,
         owner=owner,
         history_store=history,
-        task_alert_store=alerts,
         push_store=store,
         push_sender=sender,
         push_scope=SCOPE,
