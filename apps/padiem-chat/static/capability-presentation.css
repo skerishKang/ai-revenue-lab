@@ -105,6 +105,12 @@
   color: var(--accent-strong, var(--accent));
 }
 
+/* An emptied status pill must disappear entirely: inline-flex would otherwise
+ * keep rendering it as a stray ellipse between the heading and the clock. */
+.capability-current[hidden] {
+  display: none;
+}
+
 /* #5573 §7: the elapsed clock is secondary to the stage, so it stays quiet and
  * keeps a fixed digit width while it ticks. */
 .capability-elapsed {
