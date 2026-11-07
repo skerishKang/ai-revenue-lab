@@ -53,7 +53,7 @@ def test_release_procedure_names_com2_as_authority_and_exact_locations() -> None
         "PC_USER_HELPER_INSTALL_URL",
         "PC_USER_HELPER_SHA256",
         "deploy/host-com2/chat/padiem-chat-com2.service:15",
-        "apps/padiem-chat/app/local_cpython.py:641-647",
+        "apps/padiem-chat/app/local_cpython.py:642-647",
         "apps/padiem-chat-front/wrangler.toml:24",
         "apps/padiem-chat-front/worker.mjs:335-351",
         "COM2_CANONICAL=writes",

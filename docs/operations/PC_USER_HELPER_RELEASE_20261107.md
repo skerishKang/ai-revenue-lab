@@ -87,7 +87,7 @@ Cloudflare Worker variables.
 | --- | --- |
 | `/opt/padiem/chat-com2/.env` | live COM2 environment file; the release target |
 | `deploy/host-com2/chat/padiem-chat-com2.service:15` | `EnvironmentFile` loads that file into the service |
-| `apps/padiem-chat/app/local_cpython.py:641-647` | reads both into `pc_pairing_user_helper_url` / `_sha256` |
+| `apps/padiem-chat/app/local_cpython.py:642-647` | reads both into `pc_pairing_user_helper_url` / `_sha256` |
 | `apps/padiem-chat/app/pc_device_pairing_routes.py:597-617` | handoff response carries the pair |
 | `apps/padiem-chat/app/pc_device_pairing_routes.py:932-977` | signed-in one-click install file carries the pair |
 
