@@ -9,15 +9,15 @@ main chat turn were never reached.
 
 These regressions pin the fixed routing:
 
-* an explicitly Google-named calendar/drive question from a granted owner is
-  handed back to the main chat turn (409 ``orchestration_not_applicable``,
-  the code the transport already falls back on), where the same bounded
-  grant check (30s cache, 300ms budget, one journal line) declares the tools;
+* an explicit Google name, or a broad calendar/drive read intent whose named
+  service is granted, is handed back to the main chat turn (409
+  ``orchestration_not_applicable``, the code the transport already falls back
+  on), where the same bounded grant check declares the tools;
 * a grant-less or unverified owner keeps the orchestration search path
   byte-for-byte: the check answers False without widening anything;
-* "일정" alone still belongs to the workspace-native calendar and "드라이브"
-  alone still belongs to the PC lane — only the explicit Google naming
-  routes between lanes.
+* without its own service grant, "일정" stays with the workspace-native
+  calendar and "드라이브" stays with the PC lane — the broad rules are
+  connection-gated.
 """
 
 from __future__ import annotations
@@ -365,3 +365,228 @@ global.fetch=async(url,init)=>{
 })().catch(e=>{console.error(e);process.exitCode=1});
 """)
     assert result == {"threw": True, "calls": 2}
+
+
+BROAD_CALENDAR_QUESTIONS = (
+    "내일 일정 뭐야",
+    "이번 주 회의 몇 개야",
+    "오늘 약속 있어?",
+    "다음 주 스케줄 보여줘",
+    "이번 달 일정 알려줘",
+    "내일 미팅 일정 확인해줘",
+    "이번 주 캘린더 조회해줘",
+    "오후에 회의 있어?",
+    "금요일 일정 알려줘",
+    "다음 주에 잡힌 약속 뭐가 있어",
+    "이번 주말 일정 정리해줘",
+    "내일 3시 회의 확인",
+    "오늘 일정 검색해줘",
+    "이번 주 미팅 몇 건이야",
+    "모레 약속 어때",
+)
+
+BROAD_DRIVE_QUESTIONS = (
+    "드라이브에서 견적서 찾아줘",
+    "드라이브 목록 보여줘",
+    "내 파일에서 찾아줘",
+    "내 파일 목록 보여줘",
+    "지난주 올린 파일",
+    "공유된 파일",
+    "이번 주 공유된 문서",
+    "문서 찾아줘",
+    "견적서 어디 있어",
+    "최근 사진 보여줘",
+    "드라이브에 있는 보고서",
+    "이번 주 회의 자료 찾아줘",
+)
+
+BROAD_NEGATIVE_QUESTIONS = (
+    "일정한 간격으로 회의를 해요",
+    "그는 회의적인 태도를 보였다",
+    "회의록 쓰는 법 알려줘",
+    "이번 주 회의록 쓰는 법",
+    "오늘 일정한 속도로 달렸다",
+    "내일 회의적인 사람을 만난다",
+    "약속을 지키는 법",
+    "오늘 약속을 지키는 법",
+    "문서 작성법",
+    "파일 정리하는 법",
+    "드라이브 고치는 법",
+    "드라이브란 무엇인가요",
+    "내 파일이 안 열려요",
+    "PDF 파일 여는 법",
+    "이번 주 회의는 끝났다",
+    "오늘 회의실 위치 알려줘",
+    "다음 주 법정 일정",
+    "일정 관리 방법",
+    "파일을 찾는 방법",
+    "지난주 올린 파일 정리하는 법",
+    "파일 올려줘",
+    "공유해줘",
+    "내 파일이 최근에 안 열려요",
+    "3시간 회의",
+)
+
+BROAD_CALENDAR_QUESTION = "이번 주 회의 몇 개야"
+BROAD_DRIVE_QUESTION = "드라이브에서 견적서 찾아줘"
+
+
+@pytest.mark.parametrize("text", BROAD_CALENDAR_QUESTIONS)
+def test_broad_calendar_read_intents_are_recognized(text):
+    assert tools_module.google_connector_broad_intent(text) == "calendar"
+
+
+@pytest.mark.parametrize("text", BROAD_DRIVE_QUESTIONS)
+def test_broad_drive_read_intents_are_recognized(text):
+    assert tools_module.google_connector_broad_intent(text) == "drive"
+
+
+@pytest.mark.parametrize("text", BROAD_NEGATIVE_QUESTIONS)
+def test_broad_intent_refuses_false_positives(text):
+    assert tools_module.google_connector_broad_intent(text) is None
+
+
+def test_explicit_google_naming_is_not_double_counted_as_broad_intent():
+    assert tools_module.google_connector_broad_intent("구글 캘린더 일정") is None
+    assert tools_module.google_connector_broad_intent("구글 드라이브 파일") is None
+    assert tools_module.google_connector_broad_intent("지메일 검색") is None
+
+
+@pytest.mark.asyncio
+async def test_a_broad_turn_requires_its_own_service_grant(monkeypatch):
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": CONNECTED, "calendar": _NOT_CONNECTED},
+        authority=True,
+    )
+    request = SimpleNamespace()
+    assert await tools_module.google_connector_turn_for_text(
+        request, uid="u1", user_text=BROAD_CALENDAR_QUESTION,
+    ) is False
+    assert await tools_module.google_connector_turn_for_text(
+        request, uid="u1", user_text=BROAD_DRIVE_QUESTION,
+    ) is True
+
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": _NOT_CONNECTED, "calendar": CONNECTED},
+        authority=True,
+        calendar_state="active",
+    )
+    tools_module.invalidate_connector_tool_grant_cache()
+    assert await tools_module.google_connector_turn_for_text(
+        request, uid="u1", user_text=BROAD_CALENDAR_QUESTION,
+    ) is True
+    assert await tools_module.google_connector_turn_for_text(
+        request, uid="u1", user_text=BROAD_DRIVE_QUESTION,
+    ) is False
+
+
+@pytest.mark.asyncio
+async def test_broad_turn_does_not_run_without_an_owner(monkeypatch):
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": CONNECTED, "calendar": CONNECTED},
+        authority=True,
+        calendar_state="active",
+    )
+    assert await tools_module.google_connector_turn_for_text(
+        SimpleNamespace(), uid=None, user_text=BROAD_CALENDAR_QUESTION,
+    ) is False
+
+
+@pytest.mark.asyncio
+async def test_explicit_google_naming_keeps_its_existing_turn_path(monkeypatch):
+    _patch_truth(monkeypatch, overrides={}, authority=False)
+    assert await tools_module.google_connector_turn_for_text(
+        SimpleNamespace(), uid="u1", user_text="구글 캘린더 일정",
+    ) is True
+
+
+@pytest.mark.asyncio
+async def test_the_fallback_guard_can_require_the_named_service(monkeypatch):
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": CONNECTED, "calendar": _NOT_CONNECTED},
+        authority=True,
+    )
+    assert await tools_module.connector_tools_granted_for_fallback(
+        SimpleNamespace(), uid="u1", service="drive",
+    ) is True
+    assert await tools_module.connector_tools_granted_for_fallback(
+        SimpleNamespace(), uid="u1", service="calendar",
+    ) is False
+
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": _NOT_CONNECTED, "calendar": CONNECTED},
+        authority=True,
+        calendar_state="active",
+    )
+    tools_module.invalidate_connector_tool_grant_cache()
+    assert await tools_module.connector_tools_granted_for_fallback(
+        SimpleNamespace(), uid="u1", service="calendar",
+    ) is True
+    assert await tools_module.connector_tools_granted_for_fallback(
+        SimpleNamespace(), uid="u1", service="drive",
+    ) is False
+
+
+@pytest.mark.asyncio
+async def test_a_granted_broad_calendar_question_hands_back_to_the_main_turn(monkeypatch):
+    global bridge
+    bridge = _install(monkeypatch)
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": CONNECTED, "calendar": CONNECTED},
+        authority=True,
+        calendar_state="active",
+    )
+    response = await routes.api_orchestration(_request(_payload(BROAD_CALENDAR_QUESTION)))
+
+    assert response.status_code == 409
+    assert json.loads(response.body)["error"]["code"] == "orchestration_not_applicable"
+    assert bridge.requests == []
+
+
+@pytest.mark.asyncio
+async def test_a_granted_broad_drive_question_hands_back_to_the_main_turn(monkeypatch):
+    global bridge
+    bridge = _install(monkeypatch)
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": CONNECTED, "calendar": CONNECTED},
+        authority=True,
+        calendar_state="active",
+    )
+    response = await routes.api_orchestration(_request(_payload(BROAD_DRIVE_QUESTION)))
+
+    assert response.status_code == 409
+    assert json.loads(response.body)["error"]["code"] == "orchestration_not_applicable"
+    assert bridge.requests == []
+
+
+@pytest.mark.asyncio
+async def test_a_broad_question_without_its_own_grant_keeps_the_search_path(monkeypatch):
+    global bridge
+    bridge = _install(monkeypatch)
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": CONNECTED, "calendar": _NOT_CONNECTED},
+        authority=True,
+    )
+    response = await routes.api_orchestration(_request(_payload(BROAD_CALENDAR_QUESTION)))
+
+    assert response.status_code == 200
+    assert len(bridge.requests) == 1
+
+
+@pytest.mark.asyncio
+async def test_a_broad_question_from_an_unconnected_owner_keeps_the_search_path(monkeypatch):
+    global bridge
+    bridge = _install(monkeypatch)
+    _patch_truth(monkeypatch, overrides={}, authority=False)
+    response = await routes.api_orchestration(_request(_payload(BROAD_CALENDAR_QUESTION)))
+
+    assert response.status_code == 200
+    assert len(bridge.requests) == 1

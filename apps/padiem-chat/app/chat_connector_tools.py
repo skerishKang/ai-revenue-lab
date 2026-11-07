@@ -202,9 +202,10 @@ GRANT_REASON_TIMEOUT = "timeout"
 #: short-lived; a timeout or failed check is never cached.
 CONNECTOR_TOOL_GRANT_GRANTED_TTL_SECONDS = 300.0
 CONNECTOR_TOOL_GRANT_NOT_CONNECTED_TTL_SECONDS = 30.0
-#: Hard budget for the truth read on an explicitly Google-named turn. The
-#: measured /api/connectors/status path (identity resolve + Google RPC) needs
-#: seconds, not milliseconds; a general turn pays no check at all.
+#: Hard budget for the truth read on a connector-intent turn (explicit Google
+#: naming or a broad read intent). The measured /api/connectors/status path
+#: (identity resolve + Google RPC) needs seconds, not milliseconds; a general
+#: turn pays no check at all.
 CONNECTOR_TOOL_GRANT_INTENT_BUDGET_SECONDS = 3.0
 _GRANT_CACHE_MAX_ENTRIES = 512
 
@@ -399,7 +400,8 @@ async def connector_tools_for_turn(
     (Drive READ, Calendar READ, Gmail search + read).
 
     A general turn never pays the grant check: the tools are declared only on
-    an explicitly Google-named turn, whose check may wait up to
+    a connector-intent turn (explicit Google naming, or a broad read intent
+    whose named service is granted), whose check may wait up to
     ``CONNECTOR_TOOL_GRANT_INTENT_BUDGET_SECONDS`` for the same truth the
     connection screen shows. Never raises: every failure mode collapses to
     "declare nothing this turn".
@@ -468,6 +470,79 @@ _GOOGLE_CONNECTOR_INTENT = re.compile(
     re.IGNORECASE,
 )
 
+# Broad read intents are deliberately narrower than "any sentence containing a
+# calendar or file word". They are only promoted after the named service's
+# grant check says connected, so a non-connected owner keeps the native
+# calendar / PC lane exactly as before. Creation, editing, how-to and general
+# knowledge questions are refused here and stay on their existing path.
+_CALENDAR_BROAD_TIME = re.compile(
+    r"(?:오늘|어제|내일|모레|지난\s*주|이번\s*주|다음\s*주|지난\s*달|이번\s*달|다음\s*달|"
+    r"이번\s*주말|다음\s*주말|주말|(?:월|화|수|목|금|토|일)요일|"
+    r"오전|오후|\d{1,2}\s*시(?!간)|\d{1,2}월\s*\d{1,2}일)"
+)
+_CALENDAR_BROAD_NOUN = re.compile(
+    r"(?:일정(?!한|하|된|되|적)|스케줄(?!러)|약속(?!한|하|된|되)|"
+    r"회의(?!록|적|실)|미팅|캘린더)"
+)
+_CALENDAR_BROAD_QUERY = re.compile(
+    r"(?:뭐|무슨|알려|보여|조회|확인|있어|있나|몇\s*(?:개|건)|어때|언제|어디|"
+    r"정리|요약|검색|찾아|[?？])"
+)
+_CALENDAR_BROAD_CREATE = re.compile(r"(?:잡아|등록|추가|생성|만들|예약|변경|취소|삭제)")
+
+_DRIVE_BROAD_LOCATOR = re.compile(r"(?:드라이브|내\s*드라이브)")
+_DRIVE_BROAD_PERSONAL = re.compile(r"내\s*파일")
+_DRIVE_BROAD_NOUN = re.compile(
+    r"(?:파일|문서|폴더|견적서|보고서|자료|사진|스프레드시트|프레젠테이션|시트)"
+)
+_DRIVE_BROAD_READ = re.compile(
+    r"(?:찾아|검색|보여|열어|확인|조회|목록|뭐가|어디|올린|공유된|공유한|"
+    r"저장한|업로드한|받은)"
+)
+_DRIVE_BROAD_TIME = re.compile(
+    r"(?:오늘|어제|지난\s*주|지난\s*달|이번\s*주|이번\s*달|최근|올린|공유된|공유한|"
+    r"저장한|업로드한)"
+)
+_DRIVE_BROAD_WRITE = re.compile(r"(?:올려|업로드해|저장해|삭제|이동|공유해|편집|수정|만들어|작성해)")
+_GENERAL_HOWTO = re.compile(
+    r"(?:방법|(?:하는|쓰는|지키는|정리하는|관리하는|찾는|여는|고치는|작성하는|사용하는)\s*법|"
+    r"작성법|가이드|뜻|의미|차이|how\s*to)",
+    re.IGNORECASE,
+)
+
+
+def _calendar_broad_read_intent(text: str) -> bool:
+    if _CALENDAR_BROAD_CREATE.search(text):
+        return False
+    return bool(
+        _CALENDAR_BROAD_TIME.search(text)
+        and _CALENDAR_BROAD_NOUN.search(text)
+        and _CALENDAR_BROAD_QUERY.search(text)
+    )
+
+
+def _drive_broad_read_intent(text: str) -> bool:
+    if _DRIVE_BROAD_WRITE.search(text):
+        return False
+    locator = _DRIVE_BROAD_LOCATOR.pattern
+    personal = _DRIVE_BROAD_PERSONAL.pattern
+    noun = _DRIVE_BROAD_NOUN.pattern
+    read = _DRIVE_BROAD_READ.pattern
+    time_marker = _DRIVE_BROAD_TIME.pattern
+    if re.search(rf"(?:{locator}).{{0,40}}(?:{noun}|{read})", text):
+        return True
+    if re.search(rf"(?:{noun}|{read}).{{0,40}}(?:{locator})", text):
+        return True
+    if re.search(rf"(?:{personal}).{{0,40}}(?:{read})", text):
+        return True
+    if re.search(rf"(?:{noun}).{{0,24}}(?:{read})", text):
+        return True
+    if re.search(rf"(?:{read}).{{0,24}}(?:{noun})", text):
+        return True
+    if re.search(rf"(?:{time_marker}).{{0,24}}(?:{noun})", text):
+        return True
+    return False
+
 
 def google_connector_intent(user_text: Any) -> bool:
     """True only when the turn's own words explicitly name a Google connector."""
@@ -475,13 +550,58 @@ def google_connector_intent(user_text: Any) -> bool:
     return isinstance(user_text, str) and bool(_GOOGLE_CONNECTOR_INTENT.search(user_text))
 
 
-async def connector_tools_granted_for_fallback(request: Request, *, uid: str | None) -> bool:
+def google_connector_broad_intent(user_text: Any) -> str | None:
+    """The broad READ service for this turn, or None.
+
+    Only ``calendar`` and ``drive`` are broadened; Gmail keeps its explicit
+    naming rule. Explicit Google naming is handled by ``google_connector_intent``
+    and is not repeated here. The caller must still require the named service's
+    grant before treating the result as a connector turn.
+    """
+
+    if not isinstance(user_text, str):
+        return None
+    text = user_text.strip()
+    if not text or _GOOGLE_CONNECTOR_INTENT.search(text) or _GENERAL_HOWTO.search(text):
+        return None
+    if _drive_broad_read_intent(text):
+        return "drive"
+    if _calendar_broad_read_intent(text):
+        return "calendar"
+    return None
+
+
+async def google_connector_turn_for_text(
+    request: Request, *, uid: str | None, user_text: Any,
+) -> bool:
+    """Whether this chat turn should use the connector READ tools.
+
+    Explicit Google naming keeps its existing path; the declaration's own
+    grant check still runs later. A broad read intent is promoted only when
+    the named service is actually granted, so a non-connected owner keeps the
+    native calendar / PC lane. The decision is cached for the declaration call
+    that follows.
+    """
+
+    if google_connector_intent(user_text):
+        return True
+    service = google_connector_broad_intent(user_text)
+    if service is None or not isinstance(uid, str) or not uid:
+        return False
+    decision, _elapsed_ms, _timed_out = await _bounded_grant_decision(request, uid=uid)
+    return decision.reason == GRANT_REASON_GRANTED and bool(getattr(decision, service, False))
+
+
+async def connector_tools_granted_for_fallback(
+    request: Request, *, uid: str | None, service: str | None = None,
+) -> bool:
     """The orchestration-path connector-intent guard.
 
-    The caller has already matched the explicit Google intent; the decision
-    reuses the same per-user cache (granted 5min / not_connected 30s) and the
-    3s intent budget, and journals one line. True only when a verified
-    authority said the Drive or Calendar READ grant is connected, so the
+    The caller has already matched an explicit Google name or a broad read
+    intent. The decision reuses the same per-user cache (granted 5min /
+    not_connected 30s) and the 3s intent budget, and journals one line. True
+    only when a verified authority said the named READ grant is connected;
+    without ``service``, any READ grant (the explicit Google path), so the
     orchestration lane can hand the turn to the main chat turn that declares
     the connector tools. Every failure mode answers False — grant-less owners
     keep the search path exactly as it is.
@@ -489,6 +609,8 @@ async def connector_tools_granted_for_fallback(request: Request, *, uid: str | N
 
     decision, elapsed_ms, _timed_out = await _bounded_grant_decision(request, uid=uid)
     granted = decision.reason == GRANT_REASON_GRANTED
+    if granted and service is not None:
+        granted = bool(getattr(decision, service, False))
     emit_stage_event(
         stage="chat.connector_tools",
         outcome="ok" if granted else "error",
@@ -496,8 +618,9 @@ async def connector_tools_granted_for_fallback(request: Request, *, uid: str | N
         code=decision.reason,
     )
     _LOG.info(
-        "connector_tools orchestration_fallback=%s reason=%s",
+        "connector_tools orchestration_fallback=%s reason=%s service=%s",
         granted,
         decision.reason,
+        service or "any",
     )
     return granted

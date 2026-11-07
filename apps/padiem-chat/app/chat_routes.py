@@ -22,7 +22,11 @@ from .auto_grounding import (
 )
 from .native_calendar_intent import parse_native_calendar_intent, try_native_calendar_chat
 from .native_calendar_adapter import NativeCalendarAdapterError
-from .chat_connector_tools import google_connector_intent, is_connector_tool_name
+from .chat_connector_tools import (
+    google_connector_intent,
+    google_connector_turn_for_text,
+    is_connector_tool_name,
+)
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
 from .byok_client import CustomProviderError, complete_owner_custom
@@ -270,13 +274,14 @@ async def _chat_connector_tools_for_turn(
 ) -> tuple[Any, ...]:
     """The connector READ tool declarations for this turn, or an empty tuple.
 
-    Only an explicitly Google-named turn pays the grant check (3s budget, the
-    same per-user cache the connection screen seeds); a general turn declares
-    nothing and reads nothing. The resolved route must also declare native
-    tools in the B14 catalog — the same gate the PC tools pass — because a
-    route without that capability fails the stream before dispatch (measured:
-    execution_failed at 0.46ms on a route whose row declares no tools). A
-    project turn is never offered a connector tool.
+    A connector-intent turn pays the grant check (3s budget, the same
+    per-user cache the connection screen seeds): explicit Google naming, or a
+    broad calendar/drive read intent whose service is connected. A general
+    turn declares nothing and reads nothing. The resolved route must also
+    declare native tools in the B14 catalog — the same gate the PC tools pass
+    — because a route without that capability fails the stream before dispatch
+    (measured: execution_failed at 0.46ms on a route whose row declares no
+    tools). A project turn is never offered a connector tool.
     """
     from .chat_connector_tools import connector_tools_for_turn
     from .chat_pc_drive import chat_pc_route_declares_tools
@@ -871,10 +876,18 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
     util_scope = declared_util_scope(raw)
-    # An explicitly Google-named connector question ("구글 캘린더", "구글 드라이브")
-    # belongs to the connector READ tools on this same turn, never to the
-    # workspace-native calendar store.
-    google_connector_turn = google_connector_intent(latest_user_text)
+    # A connector question belongs to the connector READ tools on this same
+    # turn, never to the workspace-native calendar store. Explicit Google
+    # naming always qualifies; a broad read intent qualifies only when the
+    # named service's grant is connected.
+    if browser_project_id is None:
+        google_connector_turn = await google_connector_turn_for_text(
+            request, uid=uid, user_text=latest_user_text,
+        )
+    else:
+        # A project turn is never offered a connector tool; keep its existing
+        # explicit-Google/native-calendar behavior without broad promotion.
+        google_connector_turn = google_connector_intent(latest_user_text)
     needs_native_calendar = False
     if util_scope is None and not google_connector_turn:
         try:
