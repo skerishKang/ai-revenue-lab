@@ -266,19 +266,18 @@ async def _no_connector_tools() -> tuple[Any, ...]:
 
 
 async def _chat_connector_tools_for_turn(
-    request: Request, *, uid: str | None,
+    request: Request, *, uid: str | None, intent: bool,
 ) -> tuple[Any, ...]:
     """The connector READ tool declarations for this turn, or an empty tuple.
 
-    The bounded grant check (30s per-user cache, 300ms budget, reviewed
-    workspace truth) runs inside the same gather as the PC offer, so a slow
-    or failed check never delays the dispatch: it just declares nothing this
-    turn. A project turn keeps its own reference context and is never offered
-    a connector tool.
+    Only an explicitly Google-named turn pays the grant check (3s budget, the
+    same per-user cache the connection screen seeds); a general turn declares
+    nothing and reads nothing. A project turn is never offered a connector
+    tool.
     """
     from .chat_connector_tools import connector_tools_for_turn
 
-    return await connector_tools_for_turn(request, uid=uid)
+    return await connector_tools_for_turn(request, uid=uid, intent_turn=intent)
 
 
 #: The tool output becomes model context; the bound keeps one connector read
@@ -948,7 +947,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
             ),
             _chat_pc_tools_for_turn(request, uid=uid, model_id=policy.model_id, user_text=_last_user_text(messages))
             if browser_project_id is None else _no_pc_tools(),
-            _chat_connector_tools_for_turn(request, uid=uid)
+            _chat_connector_tools_for_turn(request, uid=uid, intent=google_connector_turn)
             if browser_project_id is None else _no_connector_tools(),
         )
         if isinstance(guard, BaseException):

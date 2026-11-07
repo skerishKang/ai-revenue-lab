@@ -490,4 +490,27 @@ async def connectors_status(request: Request) -> JSONResponse:
         for row in document["connectors"]:
             if row.get("connector_id") == _CALENDAR_ROW_CONNECTOR_ID:
                 row[CALENDAR_READ_GRANT_ROW_FIELD] = grant_state
+    # #7100 follow-up: this projection already paid the identity and Google
+    # RPCs for its own document. When its trusted answer is granted, seed the
+    # same per-user cache the connector-intent turns read, so a conversation
+    # right after the connection screen checks at 0ms. Uncacheable answers
+    # (unverified, ambiguous) seed nothing.
+    if authority:
+        from .chat_connector_tools import (
+            GRANT_REASON_GRANTED,
+            ConnectorToolGrant,
+            seed_connector_grant_cache,
+        )
+
+        drive_ok = (overrides.get("drive") or (None,))[0] == WORKSPACE_STATE_CONNECTED
+        calendar_ok = (overrides.get("calendar") or (None,))[0] == WORKSPACE_STATE_CONNECTED
+        if calendar_ok and grant_state == CALENDAR_READ_GRANT_INACTIVE:
+            calendar_ok = False
+        if drive_ok or calendar_ok:
+            seed_connector_grant_cache(
+                current_user_id(request),
+                ConnectorToolGrant(
+                    reason=GRANT_REASON_GRANTED, drive=drive_ok, calendar=calendar_ok,
+                ),
+            )
     return JSONResponse(document, headers=dict(_NO_STORE_HEADERS))
