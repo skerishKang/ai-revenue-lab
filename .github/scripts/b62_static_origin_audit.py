@@ -33,6 +33,12 @@ DRIVE_REVOKE_NAVIGATION_HOSTS = {
     "apps/padiem-chat/static/claw-connection-chips.js": frozenset({"myaccount.google.com"}),
 }
 
+# #6659 legal pages: the Google Limited Use disclosure links to the policy text
+# itself. Navigation only, one file, no network dependency at load time.
+LEGAL_PAGES_NAVIGATION_HOSTS = {
+    "apps/padiem-chat/static/privacy.html": frozenset({"developers.google.com"}),
+}
+
 
 # Explicit user-initiated source/license navigation only on the OSS notice.
 # The full URLs, not their hosts, are permitted: no new network dependencies.
@@ -150,6 +156,7 @@ def main() -> None:
             feature_hosts = MEETING_DIRECT_DRIVE_HOSTS.get(relative.as_posix(), frozenset())
             feature_hosts |= ADMIN_HUB_NAVIGATION_HOSTS.get(relative.as_posix(), frozenset())
             feature_hosts |= DRIVE_REVOKE_NAVIGATION_HOSTS.get(relative.as_posix(), frozenset())
+            feature_hosts |= LEGAL_PAGES_NAVIGATION_HOSTS.get(relative.as_posix(), frozenset())
             if (host not in ALLOWED_LITERAL_HTTP_HOSTS and host not in feature_hosts
                     and not license_notice_url_allowed(relative.as_posix(), url)
                     and not tutorial_help_navigation_url_allowed(relative.as_posix(), url)

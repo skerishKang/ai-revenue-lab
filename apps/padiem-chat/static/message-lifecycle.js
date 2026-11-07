@@ -415,6 +415,7 @@
         } else if (pcLiveLabel && (current.textContent || "").trim() === pcLiveLabel) {
           current.textContent = "";
         }
+        if (!current.textContent) current.hidden = true;
         current.classList?.remove?.("padiem-activity-sweep");
       }
       syncBadgeVisibility(article);
@@ -765,6 +766,10 @@
     status.setAttribute("role", "status");
     status.setAttribute("aria-live", "polite");
     status.textContent = view.statusLabel || "";
+    // A card without a current stage must not render the pill at all: an
+    // empty inline-flex pill reads as a stray broken icon between the
+    // heading and the elapsed clock (owner screenshot, #7100 후속).
+    status.hidden = !view.statusLabel;
     // #5453: the sweep only rides a stage that is really still running.
     if (view.live) status.classList.add("padiem-activity-sweep");
     header.append(heading, status);

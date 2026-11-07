@@ -83,6 +83,11 @@
         }
       case "input_schema_rejected":
         return "요청 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요.";
+      case "orchestration_not_applicable":
+        // The lane handed the turn back (connector-tool routing) or the
+        // fallback could not finish. The user copy stays one general retry
+        // sentence; the compact code note keeps the diagnostic detail.
+        return "답변을 불러오지 못했습니다. 다시 시도해 주세요.";
       case "entitlement_unavailable":
       case "live_abuse_gate_unavailable":
       case "orchestration_unavailable":
