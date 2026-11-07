@@ -22,6 +22,7 @@ from kagent.local_agent_oracle_mesh_executor import OracleMeshExecutor, USER_SES
 
 SECRET = b"deployment-secret-for-tests"
 DEVICE = "dev_" + "c" * 32
+MESH_DEVICE = "abcdefghijklmnopqrstuvwx1234567890ABCDEFGHIJKLMNOPQRSTfi$D62t1"
 REQ_ID = "req_" + "a" * 32
 
 
@@ -39,9 +40,25 @@ def test_executor_ps_embeds_exact_helper_request_material():
     assert SECRET.decode() not in ps
     assert "[Array]::Reverse($len)" in ps or "Reverse($len)" in ps
     assert "NamedPipeClientStream" in ps
-    assert "padiem-user-helper-" + DEVICE in ps
+    assert helper.pipe_name(DEVICE) in ps
     assert "Get-ScheduledTask" in ps and "--secret-file" in ps
     # discovers secret file path via scheduled task args on target PC; secret value never embedded
+
+
+def test_golden_meshcentral_raw_device_id_yields_same_pipe_name_and_no_ps_dollar_expansion():
+    expected = helper.pipe_name(MESH_DEVICE)
+    ps = OracleMeshExecutor.build_user_helper_pipe_client_ps(
+        device_id=MESH_DEVICE, request_id=REQ_ID, shell="whoami", command="whoami",
+        cwd=None, timeout_seconds=30, distro=None,
+    )
+    # helper and executor must target identical pipe; raw id contains '$' but PS embeds only hashed literal
+    from kagent.local_agent_oracle_mesh_executor import user_helper_pipe_name
+    assert user_helper_pipe_name(MESH_DEVICE) == expected
+    assert expected in ps
+    assert MESH_DEVICE not in ps
+    assert "$D62t1" not in ps
+    pipe_value = ps.split("pipeName='", 1)[1].split("'", 1)[0]
+    assert "$" not in pipe_value
 
 
 def test_golden_helper_frame_for_ps_client_request():

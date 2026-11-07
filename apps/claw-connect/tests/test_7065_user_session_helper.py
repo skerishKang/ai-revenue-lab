@@ -63,13 +63,28 @@ class Runner:
 # ---------------------------------------------------------------------------
 # Pipe naming
 # ---------------------------------------------------------------------------
-def test_pipe_name_is_derived_from_the_device_id():
-    assert helper.pipe_name(DEVICE) == "padiem-user-helper-" + DEVICE
-    assert helper.pipe_path(DEVICE) == "\\\\.\\pipe\\padiem-user-helper-" + DEVICE
+def test_pipe_name_is_stable_hash_of_raw_device_id():
+    expected = helper.pipe_name(DEVICE)
+    assert expected == helper.PIPE_PREFIX + helper.device_id_pipe_suffix(DEVICE)
+    assert expected == helper.pipe_name(DEVICE)
+    assert helper.pipe_path(DEVICE) == "\\\\.\\pipe\\" + expected
+    assert expected.startswith(helper.PIPE_PREFIX + "dev_")
+    suffix = expected[len(helper.PIPE_PREFIX):]
+    assert len(suffix) == 36 and suffix.startswith("dev_")
+    assert all(c in "0123456789abcdef" for c in suffix[4:])
 
 
-@pytest.mark.parametrize("bad", ["", "dev_short", "dev_" + "Z" * 32, "../../etc", None])
-def test_pipe_name_refuses_anything_that_is_not_a_device_id(bad):
+def test_pipe_name_accepts_meshcentral_raw_device_id_and_is_safe():
+    raw = "abcdefghijklmnopqrstuvwx1234567890ABCDEFGHIJKLMNOPQRSTfi$D62t1"
+    # raw includes '$' and is MeshCentral-like; must not raise and must derive stable hash
+    name = helper.pipe_name(raw)
+    assert name == helper.pipe_name(raw)
+    assert "$" not in name
+    assert name.startswith(helper.PIPE_PREFIX + "dev_")
+
+
+@pytest.mark.parametrize("bad", ["", "has space", "bad\nid", "bad\rid", "../../etc", "node//abc", None])
+def test_pipe_name_refuses_unsafe_device_id(bad):
     with pytest.raises(helper.UserHelperError) as refused:
         helper.pipe_name(bad)
     assert refused.value.code == helper.USER_HELPER_BAD_REQUEST

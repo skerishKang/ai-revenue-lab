@@ -70,6 +70,36 @@ def test_user_mode_pipe_absent_maps_to_user_session_unavailable_no_fallback():
     assert "Get-ScheduledTask" in port.calls[0]["command"]
 
 
+def test_user_mode_missing_device_id_returns_user_session_unavailable_no_fallback():
+    port = FakePort(output=b"unexpected-system\n")
+    ex = _executor(port)
+    # node_ref has mesh id but dispatch.device_id missing; executor must not infer/fallback to SYSTEM
+    d = OracleMeshDispatch(dispatch_id="dsp_"+"4"*32, nonce="n", node_ref="node//abcdef$X99@mesh", file_path="command",
+                           command_id="c", run_id="r", kind="command",
+                           command_text=json.dumps({"shell":"whoami","command":"whoami","cwd":None,"timeout_seconds":30,"distro":None}),
+                           user_mode=True, device_id="")
+    out = ex.execute(d)
+    body = json.loads(out.body.decode())
+    assert body["error_code"] == USER_SESSION_UNAVAILABLE
+    assert port.calls == []
+
+
+def test_user_mode_accepts_raw_meshcentral_device_id():
+    raw = "abcdefghijklmnopqrstuvwx1234567890ABCDEFGHIJKLMNOPQRSTfi$D62t1"
+    helper_reply = json.dumps({"request_id":"req_"+"0"*32,"status":"ok","exit_code":0,
+                               "stdout_b64":base64.b64encode(b"limone\r\n").decode(),"stderr_b64":"","duration_ms":5}).encode()
+    port = FakePort(output=helper_reply)
+    ex = _executor(port)
+    d = OracleMeshDispatch(dispatch_id="dsp_"+"5"*32, nonce="n", node_ref=raw+"@mesh", file_path="command",
+                           command_id="c", run_id="r", kind="command",
+                           command_text=json.dumps({"shell":"whoami","command":"whoami","cwd":None,"timeout_seconds":30,"distro":None}),
+                           user_mode=True, device_id=raw)
+    out = ex.execute(d)
+    assert b"limone" in out.body
+    sent = port.calls[0]["command"]
+    assert raw not in sent and "$D62t1" not in sent
+
+
 def test_system_mode_dispatch_uses_normal_command_path():
     port = FakePort(output=b"ok\n")
     ex = _executor(port)
