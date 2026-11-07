@@ -23,6 +23,7 @@ from .auto_grounding import (
 from .native_calendar_intent import parse_native_calendar_intent, try_native_calendar_chat
 from .native_calendar_adapter import NativeCalendarAdapterError
 from .chat_connector_tools import (
+    CONNECTOR_UNAVAILABLE_NOTE,
     google_connector_intent,
     google_connector_turn_for_text,
     is_connector_tool_name,
@@ -889,14 +890,22 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
         # explicit-Google/native-calendar behavior without broad promotion.
         google_connector_turn = google_connector_intent(latest_user_text)
     needs_native_calendar = False
-    if util_scope is None and not google_connector_turn:
+    native_plan_op = "none"
+    if util_scope is None:
         try:
-            needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
+            native_plan_op = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"]
+            needs_native_calendar = native_plan_op != "none"
         except Exception:
             needs_native_calendar = False
-    if needs_native_calendar and calendar_store is None:
+    # #7088 후속: a granted user's calendar READ ask ("내일 일정 뭐야") is
+    # served by the connected Google Calendar (google_connector_turn is
+    # grant-gated above), so the native branch steps aside. CREATE asks
+    # ("일정 등록해줘") stay with the workspace-native store — the connector
+    # is READ-only.
+    native_read_moved_to_connector = bool(google_connector_turn and native_plan_op == "read")
+    if needs_native_calendar and calendar_store is None and not native_read_moved_to_connector:
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
-    if calendar_store is not None and util_scope is None and not google_connector_turn:
+    if calendar_store is not None and util_scope is None and not native_read_moved_to_connector:
         try:
             client_turn_id = raw.get("calendar_turn_id")
             if not isinstance(client_turn_id, str):
@@ -998,6 +1007,13 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
         if isinstance(connector_tools, BaseException):
             # The connector offer must never fail the turn: declare nothing.
             connector_tools = ()
+        # A connector-intent turn that answers without its tools must not
+        # invent schedules, files or mail: the bounded note makes the model
+        # state the miss instead (#7088 후속).
+        connector_note = (
+            CONNECTOR_UNAVAILABLE_NOTE
+            if google_connector_turn and not connector_tools else ""
+        )
         client = apply_guard_to_client(client, guard)
         turn_tools = pc_tools + connector_tools
         # #5573 (3-B-2): only a verified PC account on a tools-declaring route
@@ -1009,7 +1025,10 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
         stream = client.stream_text_auto(
             messages,
             skill=skill,
-            additional_system_context=reference_context,
+            additional_system_context=(
+                reference_context + "\n\n" + connector_note
+                if connector_note else reference_context
+            ),
             **({"tools": turn_tools, "tool_choice": "auto"} if turn_tools else {}),
         )
         timing.mark("lane")
@@ -1525,18 +1544,19 @@ async def api_chat(request: Request) -> JSONResponse:
     calendar_store = getattr(request.app.state, "calendar_store", None)
     util_scope = declared_util_scope(raw)
     # An explicitly Google-named connector question ("구글 캘린더", "구글 드라이브")
-    # belongs to the connector READ tools on this same turn, never to the
-    # workspace-native calendar store.
+    # The completed route declares no connector tools, so the native store
+    # remains its only truthful calendar source: the #7124 skip does not
+    # apply here.
     google_connector_turn = google_connector_intent(latest_user_text)
     needs_native_calendar = False
-    if util_scope is None and not google_connector_turn:
+    if util_scope is None:
         try:
             needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
         except Exception:
             needs_native_calendar = False
     if needs_native_calendar and calendar_store is None:
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
-    if calendar_store is not None and util_scope is None and not google_connector_turn:
+    if calendar_store is not None and util_scope is None:
         try:
             client_turn_id = raw.get("calendar_turn_id")
             if not isinstance(client_turn_id, str):
