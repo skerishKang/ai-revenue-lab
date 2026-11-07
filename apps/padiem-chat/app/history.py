@@ -1112,10 +1112,24 @@ class D1HistoryStore:
         }
 
     async def _first(self, sql: str, *values: Any) -> dict[str, Any] | None:
-        statement = self.db.prepare(sql)
-        if values:
-            statement = statement.bind(*values)
-        return _row_to_dict(await statement.first())
+        try:
+            statement = self.db.prepare(sql)
+            if values:
+                statement = statement.bind(*values)
+            row = await statement.first()
+        except Exception as exc:
+            # user_mode column compat (migration 102). 102 ��� �Ϸ� �� ���� ����.
+            if 'no such column: user_mode' in str(exc) and 'oracle_mesh_dispatch' in sql and 'user_mode' in sql:
+                sql = sql.replace('COALESCE(user_mode,0) AS user_mode', '0 AS user_mode').replace('user_mode', '0')
+                # also handle SELECT user_mode
+                sql = sql.replace('user_mode', '0')
+                statement = self.db.prepare(sql)
+                if values:
+                    statement = statement.bind(*values)
+                row = await statement.first()
+            else:
+                raise
+        return _row_to_dict(row)
 
     async def _run(self, sql: str, *values: Any) -> Any:
         try:
@@ -1146,10 +1160,23 @@ class D1HistoryStore:
             raise
 
     async def _all(self, sql: str, *values: Any) -> list[dict[str, Any]]:
-        statement = self.db.prepare(sql)
-        if values:
-            statement = statement.bind(*values)
-        return _rows_from_result(await statement.run())
+        try:
+            statement = self.db.prepare(sql)
+            if values:
+                statement = statement.bind(*values)
+            result = await statement.run()
+        except Exception as exc:
+            # user_mode column compat (migration 102). 102 ��� �Ϸ� �� ���� ����.
+            if 'no such column: user_mode' in str(exc) and 'oracle_mesh_dispatch' in sql and 'user_mode' in sql:
+                sql = sql.replace('COALESCE(user_mode,0) AS user_mode', '0 AS user_mode')
+                sql = sql.replace('user_mode', '0')
+                statement = self.db.prepare(sql)
+                if values:
+                    statement = statement.bind(*values)
+                result = await statement.run()
+            else:
+                raise
+        return _rows_from_result(result)
 
     async def upsert_shared_user(self, user_id: str, account_id: str, email: str, name: str, picture: str) -> UserProfile:
         if not re.fullmatch(r'usr_[0-9a-f]{32}', user_id) or not re.fullmatch(r'sub_[A-Za-z0-9_-]+', account_id):
