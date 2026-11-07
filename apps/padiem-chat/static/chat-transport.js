@@ -585,6 +585,9 @@
     if (!response.ok) {
       if (response.status === 401 || response.status === 503) invalidateOrchestrationReady();
       const data = await response.json().catch(() => null);
+      // The connector-tool fallback answers with this code: the turn belongs
+      // to the main chat stream, which declares the connector READ tools.
+      if (data?.error?.code === "orchestration_not_applicable") return null;
       throw errorFor(data, streamErrorMessage(data), response.status);
     }
     // 플래그가 꺼져 있으면 서버는 지금과 같은 JSON을 준다: 호출자는 기존 경로를 쓴다.

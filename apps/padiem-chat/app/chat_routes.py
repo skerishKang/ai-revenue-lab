@@ -22,7 +22,7 @@ from .auto_grounding import (
 )
 from .native_calendar_intent import parse_native_calendar_intent, try_native_calendar_chat
 from .native_calendar_adapter import NativeCalendarAdapterError
-from .chat_connector_tools import is_connector_tool_name
+from .chat_connector_tools import google_connector_intent, is_connector_tool_name
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
 from .byok_client import CustomProviderError, complete_owner_custom
@@ -844,15 +844,19 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
     util_scope = declared_util_scope(raw)
+    # An explicitly Google-named connector question ("구글 캘린더", "구글 드라이브")
+    # belongs to the connector READ tools on this same turn, never to the
+    # workspace-native calendar store.
+    google_connector_turn = google_connector_intent(latest_user_text)
     needs_native_calendar = False
-    if util_scope is None:
+    if util_scope is None and not google_connector_turn:
         try:
             needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
         except Exception:
             needs_native_calendar = False
     if needs_native_calendar and calendar_store is None:
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
-    if calendar_store is not None and util_scope is None:
+    if calendar_store is not None and util_scope is None and not google_connector_turn:
         try:
             client_turn_id = raw.get("calendar_turn_id")
             if not isinstance(client_turn_id, str):
@@ -1480,15 +1484,19 @@ async def api_chat(request: Request) -> JSONResponse:
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
     util_scope = declared_util_scope(raw)
+    # An explicitly Google-named connector question ("구글 캘린더", "구글 드라이브")
+    # belongs to the connector READ tools on this same turn, never to the
+    # workspace-native calendar store.
+    google_connector_turn = google_connector_intent(latest_user_text)
     needs_native_calendar = False
-    if util_scope is None:
+    if util_scope is None and not google_connector_turn:
         try:
             needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
         except Exception:
             needs_native_calendar = False
     if needs_native_calendar and calendar_store is None:
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
-    if calendar_store is not None and util_scope is None:
+    if calendar_store is not None and util_scope is None and not google_connector_turn:
         try:
             client_turn_id = raw.get("calendar_turn_id")
             if not isinstance(client_turn_id, str):

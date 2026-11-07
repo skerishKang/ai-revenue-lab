@@ -9,6 +9,7 @@ import json
 import logging
 import math
 import re
+from collections.abc import Mapping
 from typing import Any
 
 from starlette.requests import Request
@@ -383,6 +384,29 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
                 "이 요청은 기존 채팅 경로에서 처리합니다.",
                 409,
             )
+        # The connector READ tools are declared on the main chat turn. An
+        # explicitly Google-named calendar/drive question from a granted owner
+        # falls back to /api/chat/stream here, where the same bounded grant
+        # check (30s per-user cache, 300ms budget, one journal line) decides.
+        # Grant-less or unverified owners keep this search path unchanged: the
+        # check answers False without widening anything.
+        if custom is None:
+            from .chat_connector_tools import (
+                connector_tools_granted_for_fallback,
+                google_connector_intent,
+            )
+
+            latest_turn_text = next(
+                (item.get("content") for item in reversed(messages)
+                 if isinstance(item, Mapping) and item.get("role") == "user"),
+                None,
+            )
+            if google_connector_intent(latest_turn_text) and await connector_tools_granted_for_fallback(request, uid=uid):
+                return _error(
+                    "orchestration_not_applicable",
+                    "이 요청은 커넥터 도구가 있는 기존 채팅 경로에서 처리합니다.",
+                    409,
+                )
         # #5015: an explicit browser tier is a preference, not authority.
         # Reuse the same server-side grade/administrator gates and resolver the
         # Chat stream route applies. A request without a tier resolves the
