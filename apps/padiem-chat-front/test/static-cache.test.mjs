@@ -39,6 +39,8 @@ test("a static script answer carries the session cache window", async () => {
 test("the html entry is never cached as static", async () => {
   const handle = createFront({ fetchImpl: async () => { throw new Error("no upstream in this test"); } });
   const home = await handle(new Request("https://chat.example.test/"), env);
-  assert.notEqual(home.headers.get("cache-control"),
-    "private, max-age=300");
+  // Explicit no-cache: index.html pins which asset version a tab runs, so
+  // every navigation must revalidate (the assets default left it implicit).
+  assert.equal(home.headers.get("cache-control"), "no-cache");
+  assert.notEqual(home.headers.get("cache-control"), "private, max-age=300");
 });

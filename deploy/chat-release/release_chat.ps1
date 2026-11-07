@@ -66,6 +66,10 @@ $Script:PollSeconds = 15
 # deploy never ran (first real release, 2026-11-08).
 # npx.cmd on Windows (see above); plain npx on the Linux CI runner's pwsh.
 $Script:Npx = if ($env:OS -eq "Windows_NT") { "npx.cmd" } else { "npx" }
+
+# The asset stamper (deploy/chat-release/stamp_index_html.mjs) versions the
+# deploy COPY of index.html; the repository file is never modified here.
+$Script:Stamper = Join-Path $PSScriptRoot "stamp_index_html.mjs"
 $Script:RepoRoot = (Resolve-Path (Join-Path (Join-Path $PSScriptRoot "..") "..")).Path
 
 $Script:Summary = New-Object System.Collections.Generic.List[string]
@@ -269,6 +273,11 @@ $archiveZip = Join-Path $tmpRoot "release.zip"
 & git -C $RepoRoot archive --format=zip -o $archiveZip $shaCommit -- apps/padiem-chat-front apps/padiem-chat/static apps/padiem-chat-pages
 if ($LASTEXITCODE -ne 0) { throw "STEP3_FAIL: git archive failed" }
 Expand-Archive -Path $archiveZip -DestinationPath $tmpRoot -Force
+# The extracted pages build (post-merge) imports the stamper from deploy/;
+# the archive pins the SHA's app trees, so the running script ships its own
+# stamper copy into the extraction (identical bytes on a clean main checkout).
+New-Item -ItemType Directory -Path (Join-Path $tmpRoot "deploy/chat-release") -Force | Out-Null
+Copy-Item $Script:Stamper (Join-Path $tmpRoot "deploy/chat-release/stamp_index_html.mjs") -Force
 $shaFrontDir = Join-Path $tmpRoot "apps/padiem-chat-front"
 $shaPagesDir = Join-Path $tmpRoot "apps/padiem-chat-pages"
 $shaStaticDir = Join-Path $tmpRoot "apps/padiem-chat/static"
@@ -278,6 +287,23 @@ $shaStaticDir = Join-Path $tmpRoot "apps/padiem-chat/static"
 if (-not (Test-Path (Join-Path $shaFrontDir "../padiem-chat/static/index.html"))) {
     throw "STEP3_FAIL: [assets] relative path broken inside the extraction ($shaFrontDir)"
 }
+
+# Version-stamp a COPY of the pinned static tree: every local script/link
+# reference in the HTML entries gains ?v=<8-char sha> and every JS/CSS
+# literal that loads another static file carries the same version, so a
+# deploy is a fresh cache key for already-open tabs and mobile browsers.
+# The repository files stay untouched; the stamped copy ships via the
+# wrangler --assets override below and pins the step 5 comparison. The
+# stamper (stamp_index_html.mjs) is archived into the extraction too: the
+# extracted pages build imports it. Kept in a separate file so this script
+# only orchestrates.
+$assetVersion = $shaCommit.Substring(0, 8)
+$stampStaticDir = Join-Path $tmpRoot "stamped-static"
+Copy-Item $shaStaticDir $stampStaticDir -Recurse
+& node $Script:Stamper $stampStaticDir $assetVersion
+if ($LASTEXITCODE -ne 0) { throw "STEP3_FAIL: index.html asset stamping failed" }
+Write-Info "asset version stamp = $assetVersion"
+Add-Summary "ASSET_VERSION=$assetVersion"
 
 Push-Location $shaFrontDir
 $Script:FrontDeployed = $false
@@ -303,11 +329,13 @@ try {
     }
 
     if ($DryRun) {
-        Write-Info "[DRYRUN] would run: npx wrangler deploy --keep-vars (account $($Script:CloudflareAccountId))"
+        Write-Info "[DRYRUN] would run: npx wrangler deploy --keep-vars --assets $stampStaticDir (account $($Script:CloudflareAccountId))"
     }
     else {
         $env:CLOUDFLARE_ACCOUNT_ID = $Script:CloudflareAccountId
-        & $Script:Npx wrangler deploy --keep-vars
+        # The stamped static copy replaces the wrangler.toml [assets] directory
+        # for this deploy: the Worker ships the version-stamped index.html.
+        & $Script:Npx wrangler deploy --keep-vars --assets $stampStaticDir
         if ($LASTEXITCODE -ne 0) { throw "STEP3_FAIL: wrangler deploy failed" }
         $Script:FrontDeployed = $true
         $newIds = @(Get-FrontVersionIds)
@@ -336,6 +364,9 @@ try {
     else {
         Push-Location $shaPagesDir
         try {
+            # build.mjs stamps dist/index.html with the same asset version as
+            # the Worker copy, so both surfaces answer identical bytes.
+            $env:PADIEM_ASSET_VERSION = $assetVersion
             & node build.mjs
             if ($LASTEXITCODE -ne 0) { throw "STEP4_FAIL: pages build failed" }
             & $Script:Npx wrangler pages deploy dist --project-name $Script:PagesProject --branch main
@@ -370,7 +401,10 @@ try {
                 $liveHash = ([System.BitConverter]::ToString(
                         [System.Security.Cryptography.SHA256]::Create().ComputeHash($live)
                     )).Replace("-", "").ToLowerInvariant()
-                $pinned = Get-FileSha256Hex (Join-Path $shaStaticDir $asset)
+                # index.html is compared against the STAMPED copy (the bytes
+                # both surfaces must serve); every other asset in the stamped
+                # tree is byte-identical to the pinned SHA blob.
+                $pinned = Get-FileSha256Hex (Join-Path $stampStaticDir $asset)
                 $ok = $liveHash -eq $pinned
                 $verify.Add("$($pair[0])/$asset sha256=$(if ($ok) { 'match' } else { 'MISMATCH' })") | Out-Null
                 if (-not $ok) {

@@ -238,9 +238,17 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
   const STATIC_CACHE_CONTROL = "private, max-age=300";
   function withStaticCache(response) {
     const type = response.headers.get("content-type") || "";
-    if (!response.ok || type.includes("text/html")) return response;
+    if (!response.ok) return response;
     const headers = new Headers(response.headers);
-    headers.set("cache-control", STATIC_CACHE_CONTROL);
+    if (type.includes("text/html")) {
+      // Say no-cache explicitly: the assets default (max-age=0, must-revalidate)
+      // is close, but a few mobile browsers round it down to heuristic caching,
+      // and index.html is the file that pins which asset version a tab runs.
+      // no-cache keeps storing + ETag revalidation, it just removes the guess.
+      headers.set("cache-control", "no-cache");
+    } else {
+      headers.set("cache-control", STATIC_CACHE_CONTROL);
+    }
     return new Response(response.body, {
       status: response.status, statusText: response.statusText, headers,
     });

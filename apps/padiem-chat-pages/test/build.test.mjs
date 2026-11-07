@@ -88,6 +88,43 @@ test("the generated entry serves the shell from the Pages asset store", async ()
   assert.match(await response.text(), /<title>chat<\/title>/);
 });
 
+test("dist/index.html stamps every local asset reference with ?v=<version>", async () => {
+  const previous = process.env.PADIEM_ASSET_VERSION;
+  process.env.PADIEM_ASSET_VERSION = "ab12cd34";
+  let out;
+  try {
+    out = await assembled();
+  } finally {
+    if (previous === undefined) delete process.env.PADIEM_ASSET_VERSION;
+    else process.env.PADIEM_ASSET_VERSION = previous;
+  }
+  const html = await readFile(path.join(out, "index.html"), "utf8");
+  const refs = [...html.matchAll(
+    /(<(?:script|link)\b[^>]*?\b(?:src|href)=)(["'])([^"']+?)\2/gi,
+  )].map((match) => match[3]);
+  const local = refs.filter((value) =>
+    !/^(?:[a-z][a-z0-9+.-]*:|\/\/|#)/i.test(value));
+  assert.ok(local.length > 50, `expected ~90 local references, got ${local.length}`);
+  for (const value of local) {
+    assert.ok(value.endsWith("?v=ab12cd34"), value);
+  }
+  // External references are untouched.
+  for (const value of refs) {
+    if (!local.includes(value)) assert.ok(!value.includes("?v="), value);
+  }
+  // JS/CSS literals that load static files carry the same version; API-only
+  // files stay byte-identical to the repository source.
+  const a11y = await readFile(path.join(out, "a11y.js"), "utf8");
+  assert.ok(a11y.includes(`"./interaction-polish.js?v=ab12cd34"`), a11y.slice(180, 220));
+  const cinematic = await readFile(path.join(out, "padiem-cinematic-chat.css"), "utf8");
+  assert.match(cinematic, /@import url\('\.\/padiem-foundation\.css\?v=ab12cd34'\)/);
+  const transport = await readFile(path.join(out, "chat-transport.js"), "utf8");
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
+  const repoTransport = await readFile(
+    path.join(repoRoot, "apps", "padiem-chat", "static", "chat-transport.js"), "utf8");
+  assert.equal(transport, repoTransport);
+});
+
 test("a write is never retried on a second upstream and answers the maintenance page", async () => {
   const out = await assembled();
   const { default: worker } = await import(pathToFileURL(path.join(out, "_worker.js")).href);
