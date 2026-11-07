@@ -25,7 +25,7 @@ on:
     paths:
       - '.github/actions/shared-python-install/**'
       - "apps/claw-connect/**"
-      # #7104: the stage-2 round trip runs the executor's own PowerShell pipe
+      # #7105: the stage-2 round trip runs the executor's own PowerShell pipe
       # client against the real helper, so a change to that client is a
       # claw-connect surface. It is imported from source, not installed.
       - "apps/korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py"

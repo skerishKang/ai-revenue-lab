@@ -251,7 +251,7 @@ def test_bash_maps_to_the_helpers_wsl_shell_and_never_to_a_system_shell():
     assert material["command"] == "systemctl is-active padiem"
     assert material["distro"] is None
 
-    # #7104: powershell and cmd are the helper's own stage-2 shells, so they are
+    # #7105: powershell and cmd are the helper's own stage-2 shells, so they are
     # passed through as the shell the user session runs.
     for name in ("powershell", "cmd"):
         passthrough = json.loads(shell.build_pc_shell_user_material(

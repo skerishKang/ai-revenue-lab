@@ -129,6 +129,12 @@ class CheckConfig(unittest.TestCase):
             environment.update(google_pair)
             with unittest.mock.patch.dict(os.environ, environment, clear=True):
                 self.assertTrue(module.ready())
+            # The GitHub App connector is a single optional secret: absent is
+            # accepted, present-but-short is not.
+            environment = self._full_env(data)
+            environment["PADIEM_GITHUB_APP_CLIENT_SECRET"] = "x" * 40
+            with unittest.mock.patch.dict(os.environ, environment, clear=True):
+                self.assertTrue(module.ready())
             for broken in (
                 {"PADIEM_LOCAL_DEV": "1"},
                 {"PADIEM_CHAT_PUBLIC_BASE_URL": "http://chat-com2.padiem.net"},
@@ -138,6 +144,7 @@ class CheckConfig(unittest.TestCase):
                 {"PADIEM_CHAT_LOCAL_IDENTITY_RPC_ORIGIN": "https://identity.example"},
                 {"PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_SECRET": "x" * 40},
                 {"PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_ORIGIN": "https://padiem-google-oauth-state.example.workers.dev"},
+                {"PADIEM_GITHUB_APP_CLIENT_SECRET": "short"},
             ):
                 environment = self._full_env(data)
                 environment.update(broken)

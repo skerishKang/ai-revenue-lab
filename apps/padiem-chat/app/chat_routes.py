@@ -22,7 +22,7 @@ from .auto_grounding import (
 )
 from .native_calendar_intent import parse_native_calendar_intent, try_native_calendar_chat
 from .native_calendar_adapter import NativeCalendarAdapterError
-from .chat_connector_tools import is_connector_tool_name
+from .chat_connector_tools import google_connector_intent, is_connector_tool_name
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
 from .byok_client import CustomProviderError, complete_owner_custom
@@ -266,19 +266,18 @@ async def _no_connector_tools() -> tuple[Any, ...]:
 
 
 async def _chat_connector_tools_for_turn(
-    request: Request, *, uid: str | None,
+    request: Request, *, uid: str | None, intent: bool,
 ) -> tuple[Any, ...]:
     """The connector READ tool declarations for this turn, or an empty tuple.
 
-    The bounded grant check (30s per-user cache, 300ms budget, reviewed
-    workspace truth) runs inside the same gather as the PC offer, so a slow
-    or failed check never delays the dispatch: it just declares nothing this
-    turn. A project turn keeps its own reference context and is never offered
-    a connector tool.
+    Only an explicitly Google-named turn pays the grant check (3s budget, the
+    same per-user cache the connection screen seeds); a general turn declares
+    nothing and reads nothing. A project turn is never offered a connector
+    tool.
     """
     from .chat_connector_tools import connector_tools_for_turn
 
-    return await connector_tools_for_turn(request, uid=uid)
+    return await connector_tools_for_turn(request, uid=uid, intent_turn=intent)
 
 
 #: The tool output becomes model context; the bound keeps one connector read
@@ -844,15 +843,19 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
     util_scope = declared_util_scope(raw)
+    # An explicitly Google-named connector question ("구글 캘린더", "구글 드라이브")
+    # belongs to the connector READ tools on this same turn, never to the
+    # workspace-native calendar store.
+    google_connector_turn = google_connector_intent(latest_user_text)
     needs_native_calendar = False
-    if util_scope is None:
+    if util_scope is None and not google_connector_turn:
         try:
             needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
         except Exception:
             needs_native_calendar = False
     if needs_native_calendar and calendar_store is None:
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
-    if calendar_store is not None and util_scope is None:
+    if calendar_store is not None and util_scope is None and not google_connector_turn:
         try:
             client_turn_id = raw.get("calendar_turn_id")
             if not isinstance(client_turn_id, str):
@@ -944,7 +947,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
             ),
             _chat_pc_tools_for_turn(request, uid=uid, model_id=policy.model_id, user_text=_last_user_text(messages))
             if browser_project_id is None else _no_pc_tools(),
-            _chat_connector_tools_for_turn(request, uid=uid)
+            _chat_connector_tools_for_turn(request, uid=uid, intent=google_connector_turn)
             if browser_project_id is None else _no_connector_tools(),
         )
         if isinstance(guard, BaseException):
@@ -1480,15 +1483,19 @@ async def api_chat(request: Request) -> JSONResponse:
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
     util_scope = declared_util_scope(raw)
+    # An explicitly Google-named connector question ("구글 캘린더", "구글 드라이브")
+    # belongs to the connector READ tools on this same turn, never to the
+    # workspace-native calendar store.
+    google_connector_turn = google_connector_intent(latest_user_text)
     needs_native_calendar = False
-    if util_scope is None:
+    if util_scope is None and not google_connector_turn:
         try:
             needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
         except Exception:
             needs_native_calendar = False
     if needs_native_calendar and calendar_store is None:
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
-    if calendar_store is not None and util_scope is None:
+    if calendar_store is not None and util_scope is None and not google_connector_turn:
         try:
             client_turn_id = raw.get("calendar_turn_id")
             if not isinstance(client_turn_id, str):

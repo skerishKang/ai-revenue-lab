@@ -141,32 +141,69 @@ async def test_unverified_not_connected_and_failed_checks_declare_nothing(monkey
 
     monkeypatch.setattr(tools_module, "_reviewed_workspace_truth", _broken_truth)
     tools_module.invalidate_connector_tool_grant_cache()
-    assert await tools_module.connector_tools_for_turn(SimpleNamespace(), uid="u1") == ()
+    assert await tools_module.connector_tools_for_turn(
+        SimpleNamespace(), uid="u1", intent_turn=True,
+    ) == ()
 
 
 @pytest.mark.asyncio
-async def test_a_slow_truth_read_never_delays_the_turn(monkeypatch):
+async def test_a_general_turn_never_pays_the_grant_check(monkeypatch):
+    """일반 턴은 확인 0회: 커넥터 도구는 명시적 Google 의도 턴에만 선언된다."""
     calls: list[str] = []
 
-    async def _slow_truth(request):
+    async def _counting_truth(request):
         calls.append("truth")
-        await asyncio.sleep(1.0)
         return {"drive": _CONNECTED, "calendar": _CONNECTED}, None, True, "s"
 
-    monkeypatch.setattr(tools_module, "_reviewed_workspace_truth", _slow_truth)
+    monkeypatch.setattr(tools_module, "_reviewed_workspace_truth", _counting_truth)
+    tools = await tools_module.connector_tools_for_turn(
+        SimpleNamespace(), uid="u1", intent_turn=False,
+    )
+    assert tools == ()
+    assert calls == [], "the grant check is paid by intent turns only"
+
+
+@pytest.mark.asyncio
+async def test_an_intent_turn_waits_for_the_slow_truth_and_reaches_the_tools(monkeypatch):
+    """명시적 의도 턴은 1~3초 확인을 기다려 커넥터 경로로 간다(3초 상한)."""
+    calls: list[str] = []
+
+    async def _measured_truth(request):
+        calls.append("truth")
+        await asyncio.sleep(0.8)  # the production path took ~2.7s: inside the budget
+        return {"drive": _CONNECTED, "calendar": _CONNECTED}, None, True, "s"
+
+    async def _active_state(request, sid):
+        return "active"
+
+    monkeypatch.setattr(tools_module, "_reviewed_workspace_truth", _measured_truth)
+    monkeypatch.setattr(tools_module, "_reviewed_calendar_read_grant_state", _active_state)
+    started = time.perf_counter()
+    tools = await tools_module.connector_tools_for_turn(
+        SimpleNamespace(), uid="u1", intent_turn=True,
+    )
+    elapsed = time.perf_counter() - started
+    assert [tool.name for tool in tools] == ["drive_read", "calendar_read"]
+    assert elapsed >= 0.8, "the intent turn waited for the truth read"
+    assert elapsed < 3.0, "the answer arrived inside the 3s budget"
+
+    # A read slower than the intent budget times out at ~3s and is not cached.
+    async def _too_slow_truth(request):
+        calls.append("truth")
+        await asyncio.sleep(3.6)
+        return {"drive": _CONNECTED, "calendar": _CONNECTED}, None, True, "s"
+
+    monkeypatch.setattr(tools_module, "_reviewed_workspace_truth", _too_slow_truth)
+    tools_module.invalidate_connector_tool_grant_cache()
     started = time.perf_counter()
     decision, elapsed_ms, timed_out = await tools_module._bounded_grant_decision(
-        SimpleNamespace(), uid="u1"
+        SimpleNamespace(), uid="u1",
     )
     elapsed = time.perf_counter() - started
     assert timed_out is True
     assert decision.reason == "timeout"
-    # The budget bound the wait: the turn starts without the tools long
-    # before the slow authority answered.
-    assert elapsed < 0.8
-    assert elapsed_ms <= 0.3 * 1000.0 + 50.0
-    assert await tools_module.connector_tools_for_turn(SimpleNamespace(), uid="u1") == ()
-
+    assert 2.9 <= elapsed < 4.0, "the intent budget bounds the wait at ~3s"
+    assert 2900.0 <= elapsed_ms < 4000.0
     # A timeout is never cached: the next turn retries the check.
     _patch_truth(
         monkeypatch,
@@ -176,11 +213,29 @@ async def test_a_slow_truth_read_never_delays_the_turn(monkeypatch):
         calls=calls,
     )
     tools_module.invalidate_connector_tool_grant_cache()
-    tools = await tools_module.connector_tools_for_turn(SimpleNamespace(), uid="u1")
+    tools = await tools_module.connector_tools_for_turn(
+        SimpleNamespace(), uid="u1", intent_turn=True,
+    )
     assert [tool.name for tool in tools] == ["drive_read", "calendar_read"]
-    # One slow read (the budget timeout) + one entry-point retry above it +
-    # the fresh read after invalidation.
     assert calls.count("truth") == 3
+
+
+def test_the_cache_lifetime_follows_the_decision_reason():
+    granted = tools_module.ConnectorToolGrant(reason="granted", drive=True, calendar=True)
+    absent = tools_module.ConnectorToolGrant(reason="not_connected", drive=False, calendar=False)
+    assert tools_module._cache_ttl_for(granted) == 300.0
+    assert tools_module._cache_ttl_for(absent) == 30.0
+    assert tools_module._cache_ttl_for(
+        tools_module.ConnectorToolGrant(reason="timeout", drive=False, calendar=False)
+    ) == 0.0
+    assert tools_module._cache_ttl_for(
+        tools_module.ConnectorToolGrant(reason="unverified", drive=False, calendar=False)
+    ) == 0.0
+    # Uncacheable decisions are never stored by the seeding entry point.
+    tools_module.seed_connector_grant_cache(
+        "u1", tools_module.ConnectorToolGrant(reason="timeout", drive=False, calendar=False),
+    )
+    assert tools_module._GRANT_CACHE.get("u1") is None
 
 
 @pytest.mark.asyncio
@@ -194,15 +249,65 @@ async def test_the_grant_decision_is_cached_until_invalidated(monkeypatch):
         calls=calls,
     )
     request = SimpleNamespace()
-    first = await tools_module.connector_tools_for_turn(request, uid="u1")
-    second = await tools_module.connector_tools_for_turn(request, uid="u1")
+    first = await tools_module.connector_tools_for_turn(request, uid="u1", intent_turn=True)
+    second = await tools_module.connector_tools_for_turn(request, uid="u1", intent_turn=True)
     assert [tool.name for tool in first] == ["drive_read", "calendar_read"]
     assert [tool.name for tool in second] == ["drive_read", "calendar_read"]
     assert calls.count("truth") == 1, "the same user inside the window reuses one decision"
 
     tools_module.invalidate_connector_tool_grant_cache("u1")
-    await tools_module.connector_tools_for_turn(request, uid="u1")
+    await tools_module.connector_tools_for_turn(request, uid="u1", intent_turn=True)
     assert calls.count("truth") == 2, "invalidation forces a fresh grant read"
+
+
+@pytest.mark.asyncio
+async def test_a_not_connected_answer_is_cached_only_for_its_short_window(monkeypatch):
+    calls: list[str] = []
+    fake_now = [1000.0]
+
+    class _FakeTime:
+        @staticmethod
+        def monotonic():
+            return fake_now[0]
+
+        @staticmethod
+        def perf_counter():
+            return time.perf_counter()
+
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": _NOT_CONNECTED, "calendar": _NOT_CONNECTED},
+        authority=True,
+        calls=calls,
+    )
+    monkeypatch.setattr(tools_module, "time", _FakeTime)
+    request = SimpleNamespace()
+    first = await tools_module.connector_tools_for_turn(request, uid="u1", intent_turn=True)
+    second = await tools_module.connector_tools_for_turn(request, uid="u1", intent_turn=True)
+    assert first == () and second == ()
+    assert calls.count("truth") == 1, "the short not_connected window reuses one answer"
+
+    fake_now[0] += 31.0
+    await tools_module.connector_tools_for_turn(request, uid="u1", intent_turn=True)
+    assert calls.count("truth") == 2, "past the 30s window the answer is re-asked"
+
+    # A granted answer outlives that window five-fold.
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": _CONNECTED, "calendar": _CONNECTED},
+        authority=True,
+        calendar_state="active",
+        calls=calls,
+    )
+    tools_module.invalidate_connector_tool_grant_cache()
+    fake_now[0] += 31.0
+    await tools_module.connector_tools_for_turn(request, uid="u1", intent_turn=True)
+    fake_now[0] += 150.0
+    await tools_module.connector_tools_for_turn(request, uid="u1", intent_turn=True)
+    assert calls.count("truth") == 3, "the granted answer is still fresh inside 5 minutes"
+    fake_now[0] += 150.0
+    await tools_module.connector_tools_for_turn(request, uid="u1", intent_turn=True)
+    assert calls.count("truth") == 4, "past 5 minutes the granted answer expires"
 
 
 class _FakeEngineBinding:

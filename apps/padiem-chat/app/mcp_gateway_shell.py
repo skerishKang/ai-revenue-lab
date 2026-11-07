@@ -264,7 +264,7 @@ try{if($env:PADIEM_MCP_SHELL -eq 'powershell'){$file='powershell.exe';if(-not(Ge
     )
 
 
-#: #7076d/#7104 — where this tool's shell vocabulary meets the helper's.
+#: #7076d/#7105 — where this tool's shell vocabulary meets the helper's.
 #: ``bash`` is the same shell the helper runs inside the user's WSL, and the
 #: identity probe is the one command that means the same thing in every shell,
 #: so it maps to the helper's dedicated ``whoami`` shell. ``powershell`` and

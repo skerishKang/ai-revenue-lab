@@ -314,6 +314,21 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
             client=outbound_http_client,
         ) if google_oauth_origin else None
     )
+    # The GitHub App connector ports mirror the Worker composition
+    # (worker.py): the store rides this runtime's own SQLite (the same
+    # claw_github_* tables migration 046 creates) and the provider needs only
+    # the single App client secret. Absent secret keeps today's fail-closed
+    # 503 on /api/connectors/github/* — an unconfigured lane is never a boot
+    # error, exactly like the optional pairs above.
+    github_client_secret = os.getenv("PADIEM_GITHUB_APP_CLIENT_SECRET", "").strip()
+    github_oauth_store = None
+    github_oauth_provider = None
+    if github_client_secret:
+        from .github_oauth_store import D1GitHubOAuthStore
+        from .github_oauth_provider import GitHubAppOAuthProvider
+        github_oauth_store = D1GitHubOAuthStore(db, session_secret=settings.session_secret)
+        github_oauth_provider = GitHubAppOAuthProvider(client_secret=github_client_secret)
+    print("[local] github_oauth=" + ("bound" if github_oauth_store is not None else "unbound"))
     identity_authority = (
         CloudflareControlPlaneIdentityAuthority(identity_binding)
         if identity_binding is not None else None
@@ -395,6 +410,8 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
         control_plane_identity_authority=identity_authority,
         identity_shadow_store=identity_shadow_store,
         b66_pdf_renderer_client=pdf_renderer,
+        github_oauth_store=github_oauth_store,
+        github_oauth_provider=github_oauth_provider,
         central_model_admin_google_email=os.getenv(
             "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL", ""
         ).strip(),

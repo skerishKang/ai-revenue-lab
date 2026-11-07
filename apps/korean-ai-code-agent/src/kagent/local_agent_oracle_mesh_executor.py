@@ -1442,7 +1442,7 @@ class OracleMeshExecutor:
                                          cwd: str | None, timeout_seconds: int,
                                          distro: str | None,
                                          secret_file: str | None = None) -> str:
-        """#7076c/#7104: PS pipe client sent via runcommand (SYSTEM) to the PC.
+        """#7076c/#7105: PS pipe client sent via runcommand (SYSTEM) to the PC.
 
         The script runs on the target PC as SYSTEM. It reads the helper secret
         file path from the registered Padiem task arguments (never from dispatch
@@ -1548,7 +1548,7 @@ try {{{secret_source}
             except Exception:
                 body = b""
             if not body:
-                # #7104: a failing stage-2 command often writes only to stderr.
+                # #7105: a failing stage-2 command often writes only to stderr.
                 # An empty body with a non-zero code would read as "no answer".
                 stderr = obj.get("stderr_b64")
                 try:

@@ -24,7 +24,7 @@ Stage 1 scope
 * A logged-out user is reported as ``user_session_unavailable``. The SYSTEM agent
   never silently runs the command instead.
 
-Stage 2 scope (#7104)
+Stage 2 scope (#7105)
 ---------------------
 The owner's decision (2026-11-07) is that an ordinary user request runs as the
 logged-in Windows user, so the helper also runs the two Windows shells:
@@ -98,7 +98,7 @@ SHELL_WSL = "wsl"
 SHELL_POWERSHELL = "powershell"
 SHELL_CMD = "cmd"
 STAGE1_SHELLS = (SHELL_WHOAMI, SHELL_WSL)
-#: #7104 stage 2 — the Windows shells that run as the logged-in user.
+#: #7105 stage 2 — the Windows shells that run as the logged-in user.
 STAGE2_SHELLS = (SHELL_POWERSHELL, SHELL_CMD)
 SUPPORTED_SHELLS = STAGE1_SHELLS + STAGE2_SHELLS
 

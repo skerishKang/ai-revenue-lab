@@ -1,4 +1,4 @@
-"""#7104 stage 2 — one real Windows round trip across the whole user lane.
+"""#7105 stage 2 — one real Windows round trip across the whole user lane.
 
 This is the test the earlier fake-only list was missing: the pipe is the real
 named pipe, the loop is the real ``serve_pipe``, the client is the real
@@ -45,7 +45,7 @@ pytestmark = pytest.mark.skipif(
     reason="the helper pipe and its PowerShell client exist on Windows only",
 )
 
-SECRET = b"deployment-secret-for-the-7104-round-trip"
+SECRET = b"deployment-secret-for-the-7105-round-trip"
 DEVICE = "dev_" + "d" * 32
 
 

@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
 import time
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -148,10 +149,16 @@ GRANT_REASON_NOT_CONNECTED = "not_connected"
 GRANT_REASON_UNVERIFIED = "unverified"
 GRANT_REASON_TIMEOUT = "timeout"
 
-#: Per-user memory cache for the bounded grant check.
-CONNECTOR_TOOL_GRANT_TTL_SECONDS = 30.0
-#: Hard budget for the truth read; a slower read declares nothing.
-CONNECTOR_TOOL_GRANT_BUDGET_SECONDS = 0.3
+#: Per-user memory cache for the bounded grant check. Production measurement
+#: (main 2e2fab26): the workspace truth costs ~2.7s end to end, so a granted
+#: answer is worth keeping for five minutes while an absent answer stays
+#: short-lived; a timeout or failed check is never cached.
+CONNECTOR_TOOL_GRANT_GRANTED_TTL_SECONDS = 300.0
+CONNECTOR_TOOL_GRANT_NOT_CONNECTED_TTL_SECONDS = 30.0
+#: Hard budget for the truth read on an explicitly Google-named turn. The
+#: measured /api/connectors/status path (identity resolve + Google RPC) needs
+#: seconds, not milliseconds; a general turn pays no check at all.
+CONNECTOR_TOOL_GRANT_INTENT_BUDGET_SECONDS = 3.0
 _GRANT_CACHE_MAX_ENTRIES = 512
 
 _GRANT_CACHE: dict[str, tuple[float, "ConnectorToolGrant"]] = {}
@@ -167,6 +174,16 @@ class ConnectorToolGrant:
 
 
 _UNDECLARED = ConnectorToolGrant(reason=GRANT_REASON_UNVERIFIED, drive=False, calendar=False)
+
+
+def _cache_ttl_for(decision: ConnectorToolGrant) -> float:
+    """The per-reason cache lifetime; a non-positive value means never cache."""
+
+    if decision.reason == GRANT_REASON_GRANTED:
+        return CONNECTOR_TOOL_GRANT_GRANTED_TTL_SECONDS
+    if decision.reason == GRANT_REASON_NOT_CONNECTED:
+        return CONNECTOR_TOOL_GRANT_NOT_CONNECTED_TTL_SECONDS
+    return 0.0
 
 
 def _tools_for_decision(decision: ConnectorToolGrant) -> tuple[ToolDefinition, ...]:
@@ -215,8 +232,8 @@ def _prune_grant_cache(now: float) -> None:
     if len(_GRANT_CACHE) < _GRANT_CACHE_MAX_ENTRIES:
         return
     for key in [
-        key for key, (at, _decision) in _GRANT_CACHE.items()
-        if now - at >= CONNECTOR_TOOL_GRANT_TTL_SECONDS
+        key for key, (at, decision) in _GRANT_CACHE.items()
+        if now - at >= _cache_ttl_for(decision)
     ]:
         _GRANT_CACHE.pop(key, None)
     if len(_GRANT_CACHE) >= _GRANT_CACHE_MAX_ENTRIES:
@@ -237,13 +254,14 @@ def invalidate_connector_tool_grant_cache(uid: str | None = None) -> None:
 
 
 async def _bounded_grant_decision(
-    request: Request, *, uid: str | None
+    request: Request, *, uid: str | None,
+    budget: float = CONNECTOR_TOOL_GRANT_INTENT_BUDGET_SECONDS,
 ) -> tuple[ConnectorToolGrant, float, bool]:
     """Resolve the decision inside the per-user cache and the hard budget.
 
-    Returns ``(decision, elapsed_ms, timed_out)``. A timeout is never cached,
-    so the next turn retries the check instead of staying tool-less for a
-    full TTL after one slow read.
+    Returns ``(decision, elapsed_ms, timed_out)``. A timeout and a failed
+    check are never cached, so the next turn retries the check instead of
+    staying tool-less for a full TTL after one slow read.
     """
 
     started = time.perf_counter()
@@ -251,15 +269,15 @@ async def _bounded_grant_decision(
         return _UNDECLARED, 0.0, False
     cached = _GRANT_CACHE.get(uid)
     now = time.monotonic()
-    if cached is not None and now - cached[0] < CONNECTOR_TOOL_GRANT_TTL_SECONDS:
+    if cached is not None and now - cached[0] < _cache_ttl_for(cached[1]):
         return cached[1], (time.perf_counter() - started) * 1000.0, False
     try:
         decision = await asyncio.wait_for(
             _grant_decision_for_uid(request, uid=uid),
-            timeout=CONNECTOR_TOOL_GRANT_BUDGET_SECONDS,
+            timeout=budget,
         )
     except asyncio.TimeoutError:
-        # A slow truth read never delays the turn and is never cached.
+        # A slow truth read is never cached: the next turn retries the check.
         elapsed = (time.perf_counter() - started) * 1000.0
         return (
             ConnectorToolGrant(reason=GRANT_REASON_TIMEOUT, drive=False, calendar=False),
@@ -271,8 +289,27 @@ async def _bounded_grant_decision(
         return _UNDECLARED, elapsed, False
     now = time.monotonic()
     _prune_grant_cache(now)
-    _GRANT_CACHE[uid] = (now, decision)
+    if _cache_ttl_for(decision) > 0:
+        _GRANT_CACHE[uid] = (now, decision)
     return decision, (time.perf_counter() - started) * 1000.0, False
+
+
+def seed_connector_grant_cache(uid: str | None, decision: ConnectorToolGrant) -> None:
+    """Fill the per-user cache from a truth answer computed elsewhere.
+
+    The ``/api/connectors/status`` projection already pays the identity and
+    Google RPCs for its own document; when its trusted answer is cacheable,
+    the next connector-intent turn reads this cache at 0ms instead of
+    re-asking. Uncacheable decisions (timeout, unverified) are ignored.
+    """
+
+    if not isinstance(uid, str) or not uid:
+        return
+    if _cache_ttl_for(decision) <= 0:
+        return
+    now = time.monotonic()
+    _prune_grant_cache(now)
+    _GRANT_CACHE[uid] = (now, decision)
 
 
 def _journal_decision(
@@ -299,14 +336,19 @@ def _journal_decision(
 
 
 async def connector_tools_for_turn(
-    request: Request, *, uid: str | None
+    request: Request, *, uid: str | None, intent_turn: bool,
 ) -> tuple[ToolDefinition, ...]:
     """The connector tool declarations for this turn, or an empty tuple.
 
-    Never raises and never exceeds the budget: every failure mode collapses
-    to "declare nothing this turn" so the first token is never delayed.
+    A general turn never pays the grant check: the tools are declared only on
+    an explicitly Google-named turn, whose check may wait up to
+    ``CONNECTOR_TOOL_GRANT_INTENT_BUDGET_SECONDS`` for the same truth the
+    connection screen shows. Never raises: every failure mode collapses to
+    "declare nothing this turn".
     """
 
+    if not intent_turn:
+        return ()
     try:
         decision, elapsed_ms, _timed_out = await _bounded_grant_decision(request, uid=uid)
     except Exception:  # noqa: BLE001 - the turn must proceed without tools
@@ -357,3 +399,47 @@ def connector_tool_request(tool_name: str, arguments: Mapping[str, Any]) -> dict
         "tool_id": tool_id,
         "arguments": dict(arguments),
     }
+
+
+# Only an explicitly Google-named connector question routes between lanes.
+# "일정" alone stays with the workspace-native calendar and "드라이브" alone
+# stays with the PC lane; "구글 캘린더"/"구글 드라이브" (or the English forms)
+# name this product's Google connector tools.
+_GOOGLE_CONNECTOR_INTENT = re.compile(
+    r"구글\s*캘린더|구글\s*드라이브|google\s*calendar|google\s*drive",
+    re.IGNORECASE,
+)
+
+
+def google_connector_intent(user_text: Any) -> bool:
+    """True only when the turn's own words explicitly name a Google connector."""
+
+    return isinstance(user_text, str) and bool(_GOOGLE_CONNECTOR_INTENT.search(user_text))
+
+
+async def connector_tools_granted_for_fallback(request: Request, *, uid: str | None) -> bool:
+    """The orchestration-path connector-intent guard.
+
+    The caller has already matched the explicit Google intent; the decision
+    reuses the same per-user cache (granted 5min / not_connected 30s) and the
+    3s intent budget, and journals one line. True only when a verified
+    authority said the Drive or Calendar READ grant is connected, so the
+    orchestration lane can hand the turn to the main chat turn that declares
+    the connector tools. Every failure mode answers False — grant-less owners
+    keep the search path exactly as it is.
+    """
+
+    decision, elapsed_ms, _timed_out = await _bounded_grant_decision(request, uid=uid)
+    granted = decision.reason == GRANT_REASON_GRANTED
+    emit_stage_event(
+        stage="chat.connector_tools",
+        outcome="ok" if granted else "error",
+        duration_ms=round(elapsed_ms, 1),
+        code=decision.reason,
+    )
+    _LOG.info(
+        "connector_tools orchestration_fallback=%s reason=%s",
+        granted,
+        decision.reason,
+    )
+    return granted
