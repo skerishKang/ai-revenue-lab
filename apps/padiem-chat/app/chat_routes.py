@@ -5,7 +5,6 @@ from .file_lane import file_resolver
 import asyncio
 import base64
 import json
-import logging
 from collections.abc import Mapping
 from typing import Any
 
@@ -64,10 +63,6 @@ from .request_contract import (
     declared_util_scope,
 )
 from .request_telemetry import emit_stage_event
-
-#: #7088: one line per connector tool execution — the tool alias and the
-#: result item count only. A mail body, subject or sender never reaches it.
-_JOURNAL_LOG = logging.getLogger("padiem_chat.connector_tools")
 from .tool_presentations import get_tool_presentation
 from .usage_gate import UsageGate
 from .web_tools import WebToolError
@@ -271,17 +266,25 @@ async def _no_connector_tools() -> tuple[Any, ...]:
 
 
 async def _chat_connector_tools_for_turn(
-    request: Request, *, uid: str | None, intent: bool,
+    request: Request, *, uid: str | None, intent: bool, model_id: str,
 ) -> tuple[Any, ...]:
     """The connector READ tool declarations for this turn, or an empty tuple.
 
     Only an explicitly Google-named turn pays the grant check (3s budget, the
     same per-user cache the connection screen seeds); a general turn declares
-    nothing and reads nothing. A project turn is never offered a connector
-    tool.
+    nothing and reads nothing. The resolved route must also declare native
+    tools in the B14 catalog — the same gate the PC tools pass — because a
+    route without that capability fails the stream before dispatch (measured:
+    execution_failed at 0.46ms on a route whose row declares no tools). A
+    project turn is never offered a connector tool.
     """
     from .chat_connector_tools import connector_tools_for_turn
+    from .chat_pc_drive import chat_pc_route_declares_tools
 
+    if not intent:
+        return ()
+    if not await chat_pc_route_declares_tools(request, model_id):
+        return ()
     return await connector_tools_for_turn(request, uid=uid, intent_turn=intent)
 
 
@@ -370,7 +373,12 @@ async def _connector_tool_lane(
         stage="chat.connector_tools.items", outcome="ok",
         duration_ms=0.0, code=f"items={len(result_items)}" if result_items is not None else None,
     )
-    _JOURNAL_LOG.info("connector_tools execute tool=%s items=%s", tool_name, len(result_items) if result_items is not None else "-")
+    # Counts only (#7088): the host journal is stdout, so print it directly.
+    print(
+        f"connector_tools execute tool={tool_name} "
+        f"items={len(result_items) if result_items is not None else '-'}",
+        flush=True,
+    )
     try:
         result_json = json.dumps(output, ensure_ascii=False)
     except (TypeError, ValueError):
@@ -967,7 +975,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
             ),
             _chat_pc_tools_for_turn(request, uid=uid, model_id=policy.model_id, user_text=_last_user_text(messages))
             if browser_project_id is None else _no_pc_tools(),
-            _chat_connector_tools_for_turn(request, uid=uid, intent=google_connector_turn)
+            _chat_connector_tools_for_turn(request, uid=uid, intent=google_connector_turn, model_id=policy.model_id)
             if browser_project_id is None else _no_connector_tools(),
         )
         if isinstance(guard, BaseException):

@@ -360,6 +360,98 @@ async def test_a_not_connected_answer_is_cached_only_for_its_short_window(monkey
     assert calls.count("truth") == 4, "past 5 minutes the granted answer expires"
 
 
+def test_the_real_b14_request_builder_accepts_the_connector_tools():
+    """커넥터 도구가 선언된 턴이 실제 B14 요청 빌더·검증을 통과한다(fake 아님)."""
+    from app.b14_client import _execution_request
+    from app.model_policy import MAX_HOLD_MODEL_ID
+    from app.task_modes import get_task_mode
+    from padiem_ai_core.b14_execution import B14ChatRequest
+    from padiem_ai_core.streaming_runtime import (
+        _compose_system_instruction,
+        _native_model_parameters,
+        _normalize_model_policy,
+    )
+
+    req = _execution_request(
+        [{"role": "user", "content": "이번 주 구글 캘린더 일정 알려줘"}],
+        skill=get_task_mode(),
+        model=MAX_HOLD_MODEL_ID,
+        required_capabilities=("chat",),
+        additional_system_context=None,
+        tools=tools_module.CONNECTOR_TOOL_DECLARATIONS,
+        tool_choice="auto",
+    )
+    assert req.agent.allowed_tools == ()
+    si = _compose_system_instruction(req)
+    model, temperature, routing = _normalize_model_policy(req.agent)
+    b14 = B14ChatRequest(
+        messages=({"role": "system", "content": si}, *req.messages) if si is not None else req.messages,
+        model=model, temperature=temperature, max_tokens=req.agent.max_tokens,
+        routing=routing, model_parameters=_native_model_parameters(req.agent),
+        tools=req.tools, tool_choice=req.tool_choice,
+    )
+    payload = b14.to_payload()
+    assert [t["function"]["name"] for t in payload["tools"]] == [
+        "drive_read", "calendar_read", "gmail_search", "gmail_read",
+    ]
+    assert payload["tool_choice"] == "auto"
+
+
+def test_a_route_without_native_tools_declares_no_connector_tools(monkeypatch):
+    """라우트가 도구 미선언이면 grant 확인 없이 미선언(측정된 execution_failed 방지)."""
+    calls: list[str] = []
+
+    class _Rows:
+        async def list_registered_models(self):
+            return [{"model_id": "some/max-model", "capabilities": ["chat"],
+                     "b14_enabled": True, "owner_excluded": False}]
+
+    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+        b14_model_choice_resolver=_Rows(),
+    )))
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": _CONNECTED, "calendar": _CONNECTED},
+        authority=True,
+    )
+    tools = asyncio.run(tools_module.connector_tools_for_turn(
+        request, uid="u1", intent_turn=True,
+    ))
+    assert [t.name for t in tools] == ["drive_read", "calendar_read"]
+
+
+def test_the_route_gate_blocks_the_grant_check_when_the_route_declares_no_tools(monkeypatch):
+    from app import chat_routes as chat_routes_module
+
+    checks: list[str] = []
+
+    async def _declares(request, model_id):
+        checks.append("declares")
+        return False
+
+    monkeypatch.setattr(
+        "app.chat_pc_drive.chat_pc_route_declares_tools", _declares,
+    )
+    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace()))
+    helper = chat_routes_module._chat_connector_tools_for_turn
+    tools = asyncio.run(helper(request, uid="u1", intent=True, model_id="some/max-model"))
+    assert tools == ()
+    assert checks == ["declares"], "the expensive grant check must not run"
+
+
+@pytest.mark.asyncio
+async def test_the_decision_journal_always_prints_bounded_fields(monkeypatch, capsys):
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": _CONNECTED, "calendar": _CONNECTED},
+        authority=True,
+    )
+    await tools_module.connector_tools_for_turn(SimpleNamespace(), uid="u1", intent_turn=True)
+    out = capsys.readouterr().out
+    assert "connector_tools declared=2 reason=granted" in out
+    assert "check_ms=" in out
+
+
 class _FakeEngineBinding:
     def __init__(self, status: int, body: dict[str, Any]) -> None:
         self._status = status
@@ -460,7 +552,7 @@ class _FakeTiming:
 
 
 @pytest.mark.asyncio
-async def test_a_model_tool_call_executes_through_the_engine_and_answers(caplog):
+async def test_a_model_tool_call_executes_through_the_engine_and_answers(capsys):
     """tool_call → Engine execute (fake) → one plain follow-up answer turn."""
     engine = _RecordingEngineClient()
     client = _ScriptedFollowUpClient()
@@ -490,14 +582,13 @@ async def test_a_model_tool_call_executes_through_the_engine_and_answers(caplog)
         ):
             frames.append(frame)
 
-    with caplog.at_level(logging.INFO, logger="padiem_chat.connector_tools"):
-        await asyncio.wait_for(_frame_stream(), timeout=5)
+    await asyncio.wait_for(_frame_stream(), timeout=5)
     assert engine.calls == [{"tool_name": "drive_read", "arguments": {"query": "보고서"}}]
     # #7088: the execution journal carries counts only — the output content
-    # (file names, mail bodies, subjects, senders) never reaches the log.
-    execute_log = [r for r in caplog.records if "connector_tools execute" in r.getMessage()]
-    assert execute_log and "items=1" in execute_log[-1].getMessage()
-    assert "보고서" not in execute_log[-1].getMessage()
+    # (file names, mail bodies, subjects, senders) never reaches the journal.
+    journal = capsys.readouterr().out
+    assert "connector_tools execute tool=drive_read items=1" in journal
+    assert "보고서" not in journal.split("connector_tools execute")[-1]
     # The follow-up dispatch carries the tool result as context and no tools,
     # so a connector read can never chain into another tool lane.
     assert len(client.calls) == 1
