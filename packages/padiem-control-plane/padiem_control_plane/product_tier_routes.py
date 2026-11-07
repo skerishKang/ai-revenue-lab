@@ -64,11 +64,11 @@ MUSE_B14_UPSTREAM_MODEL = "muse-spark-1.3-contributor"
 # fallback and OpenRouter Crouton Alpha as its second, ahead of Gemma and
 # Gemini 3.5.
 TIER_FALLBACK_B14_MODELS = {
-    "max": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it"),
-    "pro": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it"),
-    "plus": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it"),
-    "free": ("kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it", "google/gemini-3.5-flash-lite"),
-    "admin": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it"),
+    "max": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it", "modelscope/moonshotai/Kimi-K3.1-Pro"),
+    "pro": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it", "modelscope/moonshotai/Kimi-K3.1-Pro"),
+    "plus": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it", "modelscope/moonshotai/Kimi-K3.1-Pro"),
+    "free": ("kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it", "google/gemini-3.5-flash-lite", "modelscope/moonshotai/Kimi-K3.1-Pro"),
+    "admin": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it", "modelscope/moonshotai/Kimi-K3.1-Pro"),
 }
 
 # Owner decision 2026-10-21 (#2505): OpenCode Go free models are not execution

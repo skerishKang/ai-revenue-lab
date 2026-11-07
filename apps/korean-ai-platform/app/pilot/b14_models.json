@@ -356,6 +356,22 @@
       "enabled": true
     },
     {
+      "id": "modelscope/moonshotai/Kimi-K3.1-Pro",
+      "provider_id": "modelscope",
+      "upstream_model": "moonshotai/Kimi-K3.1-Pro",
+      "display_name": "ModelScope: Kimi K3.1 Pro",
+      "provider_name": "ModelScope",
+      "capabilities": [
+        "chat"
+      ],
+      "context_window": 1048576,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "https://api-inference.modelscope.cn/v1/models (moonshotai/Kimi-K3.1-Pro) + NVIDIA Build Kimi K3.1 Pro spec (1M context)",
+      "source_checked_at": "2026-11-07",
+      "enabled": true
+    },
+    {
       "id": "tokenharbor/deepseek-v4.1-flash:free",
       "provider_id": "tokenharbor",
       "upstream_model": "deepseek-v4.1-flash:free",
