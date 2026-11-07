@@ -63,6 +63,7 @@ def ready() -> bool:
         and _pairs_consistent(
             "PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_ORIGIN", "PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_SECRET"
         )
+        and _optional_secret_strong("PADIEM_GITHUB_APP_CLIENT_SECRET")
     )
 
 
@@ -106,6 +107,12 @@ def _pairs_consistent(origin_name: str, secret_name: str) -> bool:
     if not origin and not secret:
         return True
     return origin.startswith("https://") and len(secret) >= 32
+
+
+def _optional_secret_strong(name: str) -> bool:
+    """A single optional credential: absent is fine, present must be strong."""
+    value = os.environ.get(name, "").strip()
+    return not value or len(value) >= 32
 
 
 def desktop_tools_warning() -> str | None:

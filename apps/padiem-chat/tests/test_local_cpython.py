@@ -265,6 +265,52 @@ def test_service_stand_ins_bind_only_when_their_pair_is_configured(local_env, mo
         build_app()
 
 
+def test_github_connector_ports_bind_only_with_the_secret(local_env, monkeypatch, capsys):
+    app = build_app()
+    assert app.state.github_oauth_store is None
+    assert app.state.github_oauth_provider is None
+    assert "[local] github_oauth=unbound" in capsys.readouterr().out
+
+    monkeypatch.setenv("PADIEM_GITHUB_APP_CLIENT_SECRET", "synthetic-github-app-secret-0123456789")
+    app = build_app()
+    from app.github_oauth_provider import GitHubAppOAuthProvider
+    from app.github_oauth_store import D1GitHubOAuthStore
+    assert isinstance(app.state.github_oauth_store, D1GitHubOAuthStore)
+    assert isinstance(app.state.github_oauth_provider, GitHubAppOAuthProvider)
+    assert "[local] github_oauth=bound" in capsys.readouterr().out
+
+
+def test_github_status_stays_fail_closed_unbound_and_reports_off_when_bound(
+    staging_host_env, monkeypatch,
+):
+    monkeypatch.setenv("PADIEM_CHAT_AUTH_MODE", "password")
+
+    def register_for(email: str):
+        return {
+            "headers": {"Origin": "https://chat-com2-staging.padiem.net"},
+            "json": {"email": email, "password": "test-password-012345"},
+        }
+
+    app = build_app()
+    with TestClient(app, base_url="https://chat-com2-staging.padiem.net") as client:
+        assert client.post(
+            "/api/auth/password/register", **register_for("github-owner@example.test")
+        ).status_code == 200
+        unavailable = client.get("/api/connectors/github/status")
+        assert unavailable.status_code == 503
+        assert unavailable.json() == {"ok": False, "error": {"code": "github_connector_unavailable"}}
+
+    monkeypatch.setenv("PADIEM_GITHUB_APP_CLIENT_SECRET", "synthetic-github-app-secret-0123456789")
+    app = build_app()
+    with TestClient(app, base_url="https://chat-com2-staging.padiem.net") as client:
+        assert client.post(
+            "/api/auth/password/register", **register_for("github-owner-bound@example.test")
+        ).status_code == 200
+        status = client.get("/api/connectors/github/status")
+        assert status.status_code == 200
+        assert status.json() == {"ok": True, "state": "off", "linked": False}
+
+
 def test_host_mode_requires_https_and_never_mixes_with_the_local_flag(tmp_path, monkeypatch):
     monkeypatch.setenv("PADIEM_CHAT_CPYTHON_HOST", "1")
     monkeypatch.setenv("PADIEM_CHAT_LOCAL_DATA_DIR", str(tmp_path))
