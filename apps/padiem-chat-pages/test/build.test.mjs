@@ -190,16 +190,23 @@ test("#6924 operational probes only target registered chat health routes", async
   assert.deepEqual(offenders, [], "probes must use /health (Chat) or /api/pilot/... (B14)");
 });
 
-test("the generated _redirects keeps the pretty urls the front asset layer serves", async () => {
+test("the generated _routes.json serves the pretty urls from the static layer", async () => {
   const out = await assembled();
-  const redirects = await readFile(path.join(out, "_redirects"), "utf8");
-  // Pages advanced mode skips the asset layer's .html resolution for
-  // non-asset paths, so every root-level page (except the index) needs an
-  // explicit 200 rewrite or it 404s through the proxy (#7130-era mirror).
-  assert.match(redirects, /^\/privacy \/privacy\.html 200$/m);
-  assert.match(redirects, /^\/terms \/terms\.html 200$/m);
-  assert.doesNotMatch(redirects, /^\/index /m);
-  for (const line of redirects.split("\n").filter((line) => line.trim())) {
-    assert.match(line, /^\/[A-Za-z0-9._-]+ \/[A-Za-z0-9._-]+\.html 200$/);
+  const routes = JSON.parse(await readFile(path.join(out, "_routes.json"), "utf8"));
+  // Pages advanced mode runs the function for every INCLUDED request: the
+  // root-level pages (except the index) must be EXCLUDED so the static layer
+  // serves them with the default .html omission instead of 404ing through
+  // the proxy (#7130-era mirror; 4th deploy).
+  assert.deepEqual(routes.include, ["/*"]);
+  for (const pretty of ["/privacy", "/terms"]) {
+    assert.ok(routes.exclude.includes(pretty), `${pretty} excluded`);
   }
+  assert.ok(!routes.exclude.includes("/index"));
+  // The include/exclude rules stay far below the 100-rule ceiling.
+  assert.ok(routes.include.length + routes.exclude.length < 100);
+  const redirectsGone = await readFile(path.join(out, "_redirects"), "utf8").then(
+    () => true,
+    () => false,
+  );
+  assert.equal(redirectsGone, false, "_redirects is not applied in advanced mode and must not ship");
 });

@@ -382,22 +382,44 @@ try {
     $verify = New-Object System.Collections.Generic.List[string]
     $Script:PagesVerifyFailed = New-Object System.Collections.Generic.List[string]
 
+    # A single-element pair list must be comma-preserved: @(@("a", "b"))
+    # FLATTENS in PowerShell and $pair[1] becomes the second CHARACTER of the
+    # host ("h"), which the verify then requests as a bogus host (the 4th
+    # deploy's STEP5_FAIL). Two-or-more element lists iterate correctly.
+    $frontStatusPairs = @(
+        @("chat.padiem.net /health", "$Script:PublicHost/health"),
+        @("chat.padiem.net /privacy", "$Script:PublicHost/privacy")
+    )
+    $frontAssetHosts = @(,@("chat.padiem.net", "$Script:PublicHost"))
+    $pagesStatusPairs = @(,@("padiem-chat.pages.dev /privacy", "$Script:PagesHost/privacy"))
+    $pagesAssetHosts = @(,@("padiem-chat.pages.dev", $Script:PagesHost))
+
     if ($DryRun) {
-        Write-Info "[DRYRUN] would verify: $Script:PublicHost/health + /privacy 200; sha256(chat-transport.js, /) == Sha static; workers/domains chat.padiem.net -> $Script:FrontWorker; $Script:PagesHost same"
+        # Expand the URL list without sending anything: this is what the
+        # contract test asserts the shape of.
+        Write-Info "[DRYRUN] would verify:"
+        foreach ($pair in $frontStatusPairs) { Write-Info "  GET $($pair[1]) (expect 200)" }
+        foreach ($pair in $frontAssetHosts) {
+            foreach ($asset in @("chat-transport.js", "index.html")) {
+                Write-Info "  GET $($pair[1])/$asset (expect sha256 == the pinned SHA static)"
+            }
+        }
+        Write-Info "  check: workers/domains chat.padiem.net -> $Script:FrontWorker"
+        foreach ($pair in $pagesStatusPairs) { Write-Info "  GET $($pair[1]) (expect 200)" }
+        foreach ($pair in $pagesAssetHosts) {
+            foreach ($asset in @("chat-transport.js", "index.html")) {
+                Write-Info "  GET $($pair[1])/$asset (expect sha256 == the pinned SHA static)"
+            }
+        }
     }
     else {
-        foreach ($pair in @(
-                @("chat.padiem.net /health", "$Script:PublicHost/health"),
-                @("chat.padiem.net /privacy", "$Script:PublicHost/privacy")
-            )) {
+        foreach ($pair in $frontStatusPairs) {
             $status = Get-HttpStatus $pair[1]
             $verify.Add("$($pair[0])=$status") | Out-Null
             if ($status -ne 200) { throw "STEP5_FAIL: $($pair[0]) returned $status" }
         }
 
-        foreach ($pair in @(
-                @("chat.padiem.net", "$Script:PublicHost")
-            )) {
+        foreach ($pair in $frontAssetHosts) {
             foreach ($asset in @("chat-transport.js", "index.html")) {
                 $live = Get-HttpBytes ($pair[1] + "/" + $asset)
                 $liveHash = ([System.BitConverter]::ToString(
