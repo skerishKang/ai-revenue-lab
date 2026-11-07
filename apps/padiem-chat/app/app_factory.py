@@ -511,7 +511,15 @@ class CachedStaticFiles(StaticFiles):
     async def get_response(self, path: str, scope):
         response = await super().get_response(path, scope)
         content_type = response.headers.get("content-type", "")
-        if response.status_code == 200 and "text/html" not in content_type:
+        if response.status_code != 200:
+            return response
+        if "text/html" in content_type:
+            # HTML must pick up a new deploy on the next navigation. Say
+            # no-cache explicitly: leaving the header empty lets mobile
+            # browsers fall back to heuristic caching, and index.html is the
+            # file that pins which asset version a tab runs.
+            response.headers["cache-control"] = "no-cache"
+        else:
             response.headers["cache-control"] = (
                 "private, max-age=300"
             )

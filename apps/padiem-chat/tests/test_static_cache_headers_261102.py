@@ -40,4 +40,6 @@ def test_the_html_entry_is_not_static_cached():
     client = _client()
     home = client.get("/")
     assert home.status_code == 200
-    assert "max-age=300" not in home.headers.get("cache-control", "")
+    # Explicit no-cache: an empty header lets mobile browsers fall back to
+    # heuristic caching, and index.html pins which asset version a tab runs.
+    assert home.headers["cache-control"] == "no-cache"
