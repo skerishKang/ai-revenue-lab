@@ -135,6 +135,9 @@ class History:
         self._seq += 1
         dispatch_id = "dsp-%d" % self._seq
         row = {**fields, "dispatch_id": dispatch_id, "state": "pending",
+               # The production SELECT answers the mode for every row; a fake
+               # that omitted it would read as the SYSTEM lane at the poll.
+               "user_mode": 1 if fields.get("user_mode") is True else 0,
                "nonce_sha256": None, "result_sha256": None, "result_bytes": None}
         self.rows[dispatch_id] = row
         return dict(row)

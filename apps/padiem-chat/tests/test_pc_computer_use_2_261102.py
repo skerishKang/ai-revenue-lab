@@ -74,7 +74,9 @@ class History:
     async def create_oracle_mesh_dispatch(self, **fields):
         self._seq += 1
         dispatch_id = "dsp-" + str(self._seq)
-        row = {**fields, "dispatch_id": dispatch_id, "state": "pending"}
+        row = {**fields, "dispatch_id": dispatch_id, "state": "pending",
+               # The production SELECT answers the mode for every row.
+               "user_mode": 1 if fields.get("user_mode") is True else 0}
         self.rows[dispatch_id] = row
         return dict(row)
 
@@ -252,6 +254,8 @@ class PendingHistory:
             "tool_request_ref": "ref", "request_id": "req", "revision_ref": "rev",
             "evidence_ref": None, "request_fingerprint": "fp",
             "kind": "desktop", "command_text": command_text,
+            # The production SELECT answers the mode for every row.
+            "user_mode": 0,
         }
         self.ref = ref
         self.claimed = False

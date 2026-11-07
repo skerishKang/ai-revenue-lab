@@ -2302,6 +2302,25 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
         await asyncio.sleep(min(2, max(0.01, deadline - time.monotonic())))
     if pending is None:
         return _response({"ok": True, "dispatch": None})
+    # #7076d: the execution mode is the one fact this response may never guess.
+    # A store that cannot state the mode of a row leaves the executor with no
+    # basis to call it anything but its default, and that default is the SYSTEM
+    # lane — which is exactly how a `mode=user` request ran as `nt authority\system`.
+    # Such a row is therefore not handed out at all: no claim, no execution,
+    # until a path that carries `user_mode` answers. The poll is fail-closed here
+    # rather than fail-open in the executor, because only the row knows the mode.
+    raw_user_mode = pending.get("user_mode")
+    if isinstance(raw_user_mode, bool):
+        user_mode = raw_user_mode
+    elif type(raw_user_mode) is int and raw_user_mode in (0, 1):
+        user_mode = bool(raw_user_mode)
+    else:
+        return _error(503, "oracle_mesh_dispatch_mode_unavailable")
+    if user_mode and (pending.get("kind") or "read") != "command":
+        # Only a command dispatch can be delegated to the PC's user session;
+        # a row that asks for it on any other lane is one this lane cannot run
+        # as asked, so it is refused instead of being run as SYSTEM.
+        return _error(503, "oracle_mesh_dispatch_mode_unavailable")
     nonce = secrets.token_hex(16)
     nonce_sha256 = hashlib.sha256(nonce.encode("utf-8")).hexdigest()
     try:
@@ -2352,8 +2371,7 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             **({"granted_root": granted_root} if granted_root else {}),
             **({"background": True, "owner_ref": pending["user_id"]}
                if pending.get("background") is True else {}),
-            "user_mode": pending.get("user_mode", 0) == 1 or pending.get("user_mode") is True,
-
+            "user_mode": user_mode,
         },
     })
 
