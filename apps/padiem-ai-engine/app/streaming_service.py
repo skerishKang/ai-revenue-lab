@@ -23,6 +23,12 @@ from padiem_ai_core.execution_context import IdempotencyConflictError
 from padiem_ai_core.execution_runtime import ExecutionResult
 
 from app.evidence_projection import project_terminal_evidence
+from app.context_permission_wire import (
+    EngineContextPermissionWireError,
+    parse_context_permission_required,
+    parse_engine_context_permission,
+    request_with_allowed_context_refs,
+)
 from app.service import (
     MAX_REQUEST_BODY_BYTES,
     ServiceContractError,
@@ -65,6 +71,9 @@ class PreparedStream:
     context: ExecutionContext | None = None
     replayed: bool = False
     idempotency: StreamIdempotencyBinding | None = None
+    # Terminal context permission diagnostics, mirrored from execute so a stream
+    # consumer can apply the same reading-boundary check.
+    context_permission: dict[str, Any] | None = None
 
 
 def _runtime_error_response(exc: ExecutionRuntimeError) -> ServiceResponse:
@@ -93,17 +102,25 @@ def _encode_line(payload: dict[str, Any]) -> str:
     ) + "\n"
 
 
-def _event_line(event: StreamingExecutionEvent, *, replayed: bool = False) -> str:
+def _event_line(
+    event: StreamingExecutionEvent,
+    *,
+    replayed: bool = False,
+    context_permission: Mapping[str, Any] | None = None,
+) -> str:
     # #1745 parity chokepoint: the settling terminal event line is extended with
     # the same canonical Engine evidence projection used by execute and research.
     # Core's streaming contract carries no grounded evidence, so today this adds
     # nothing and stream output is byte-identical; when Core settles evidence on
     # a terminal event, stream converges with non-stream automatically instead
     # of forking a second streaming evidence protocol.
-    payload: dict[str, Any] = {
-        "ok": True,
-        "event": {**event.to_public_dict(), **project_terminal_evidence(event)},
+    public_event: dict[str, Any] = {
+        **event.to_public_dict(),
+        **project_terminal_evidence(event),
     }
+    if context_permission is not None and event.done:
+        public_event["context_permission"] = dict(context_permission)
+    payload: dict[str, Any] = {"ok": True, "event": public_event}
     if replayed:
         payload["replayed"] = True
     return _encode_line(payload)
@@ -211,6 +228,37 @@ class StreamingEngineService:
                 status_code=exc.status_code,
             )
 
+        # The completed execute path applies the reading-boundary gate before the
+        # runtime. A stream must reject the same request before HTTP 200 commits.
+        permission_projection = None
+        try:
+            permission_required = parse_context_permission_required(
+                payload.get("context_permission_required")
+            )
+            request_id = request.trace_id or (
+                context.trace_id if context is not None else "execute"
+            )
+            permission_projection = parse_engine_context_permission(
+                payload.get("context_permission"),
+                app_id=app_id,
+                request_id=request_id,
+            )
+            if permission_required and permission_projection is None:
+                return _service_error(
+                    "boundary_unavailable",
+                    "Trusted context permission boundary is unavailable.",
+                    status_code=422,
+                )
+            if permission_projection is not None:
+                request = request_with_allowed_context_refs(request, permission_projection)
+        except EngineContextPermissionWireError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        permission_diagnostics = (
+            permission_projection.diagnostics()
+            if permission_projection is not None
+            else None
+        )
+
         idempotency_binding: StreamIdempotencyBinding | None = None
         if context is not None and context.idempotency_key is not None:
             if self._idempotency_adapter is None:
@@ -258,6 +306,7 @@ class StreamingEngineService:
                     route=replay.route,
                     metadata=replay.metadata,
                     done=True,
+                    answer_truncated=bool(getattr(replay, "answer_truncated", False)),
                 )
                 return PreparedStream(
                     first_event=replay_event,
@@ -265,6 +314,7 @@ class StreamingEngineService:
                     context=context,
                     replayed=True,
                     idempotency=None,
+                    context_permission=permission_diagnostics,
                 )
 
             idempotency_binding = StreamIdempotencyBinding(
@@ -297,6 +347,7 @@ class StreamingEngineService:
                 context=context,
                 replayed=False,
                 idempotency=idempotency_binding,
+                context_permission=permission_diagnostics,
             )
         except StopAsyncIteration:
             await _close_iterator(iterator)
@@ -342,7 +393,11 @@ class StreamingEngineService:
         accumulated_deltas: list[str] = []
 
         try:
-            yield _event_line(prepared.first_event, replayed=prepared.replayed)
+            yield _event_line(
+                prepared.first_event,
+                replayed=prepared.replayed,
+                context_permission=prepared.context_permission,
+            )
             if prepared.first_event.done:
                 completed = True
                 if idempotency is not None:
@@ -372,7 +427,10 @@ class StreamingEngineService:
                     accumulated_deltas.append(event.delta_content)
                 if event.done:
                     last_answer = event.answer
-                yield _event_line(event)
+                yield _event_line(
+                    event,
+                    context_permission=prepared.context_permission,
+                )
                 if event.done:
                     completed = True
                     if idempotency is not None:

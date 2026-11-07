@@ -2,6 +2,7 @@ import {com2SignedHeaders} from './com2-hmac.mjs';
 
 export const COM2_AI_URL = 'https://chat.padiem.net/api/apps/ai';
 export const INGRESS_EXECUTE_URL = 'https://padiem-ai-engine-ingress.charliekant.workers.dev/internal/v1/execute';
+const MAX_STREAM_PROBE_BYTES=64*1024;
 const APP_CREDENTIALS = Object.freeze({
   storymemory: {subject:'sub_app_storymemory', key:'STORYMEMORY_COM2_AI_SECRET'},
   bookai: {subject:'sub_app_bookai', key:'BOOKAI_COM2_AI_SECRET'}
@@ -28,11 +29,12 @@ async function post(url, headers, body, transport, timeoutMs) {
       const response=await fetch(new Request(url,{
         method:'POST',headers,body,redirect:'manual',signal:controller.signal
       }));
+      const timing=response.headers.get('server-timing')||'';
       let payload;
       try {payload=await response.json();}
       catch {return failed(transport==='com2_p01'?'com2_ai_invalid_response':'ingress_invalid_response',response.status>=400?response.status:502,transport);}
       if(response.status>=300&&response.status<400)return failed('upstream_redirect_rejected',502,transport);
-      return {status:response.status,transport,payload};
+      return {status:response.status,transport,payload,timing};
     })(),timeoutPromise]);
   } catch(error) {
     if(error?.message==='app_ai_timeout'||controller.signal.aborted)
@@ -75,4 +77,57 @@ export async function executeAppAI({env, app, payload, allowIngressFallback=fals
 export function upstreamErrorCode(payload, fallback='com2_ai_execution_failed') {
   const value=typeof payload?.error==='string'?payload.error:payload?.error?.code;
   return typeof value==='string'&&/^[A-Za-z0-9_.:-]{1,96}$/.test(value)?value:fallback;
+}
+function streamFailed(code,status,transport){
+  return {stream:false,status,transport,payload:{ok:false,error:{code,retryable:status>=500}},transportFailure:true};
+}
+// Streaming is a capability probe, not a second pipeline: a JSON answer or any
+// refusal is handed back so the caller keeps its existing one-shot handling.
+export async function executeAppAIStream({env, app, payload, timeoutMs=60000}) {
+  const identity=APP_CREDENTIALS[app];
+  if(!identity)throw new Error('invalid_app');
+  if(!com2CredentialConfigured(env,app))
+    return streamFailed('com2_ai_credential_unavailable',503,'com2_p01');
+  const body=JSON.stringify(payload);
+  const headers=await com2SignedHeaders({method:'POST',path:'/api/apps/ai',
+    timestamp:Math.floor(Date.now()/1000),subject:identity.subject,body,secret:env[identity.key]});
+  headers['content-type']='application/json';
+  headers['accept']='application/x-ndjson';
+  const controller=new AbortController();
+  const timer=setTimeout(()=>{controller.abort();},timeoutMs);
+  let response;
+  try {
+    response=await fetch(new Request(COM2_AI_URL,{
+      method:'POST',headers,body,redirect:'manual',signal:controller.signal
+    }));
+  } catch {
+    clearTimeout(timer);
+    const aborted=controller.signal.aborted;
+    return streamFailed(aborted?'com2_ai_timeout':'com2_ai_request_failed',aborted?504:502,'com2_p01');
+  }
+  if(response.status>=300&&response.status<400){
+    clearTimeout(timer);
+    return streamFailed('upstream_redirect_rejected',502,'com2_p01');
+  }
+  const timing=response.headers.get('server-timing')||'';
+  const contentType=String(response.headers.get('content-type')||'').split(';',1)[0].trim().toLowerCase();
+  if(response.status===200&&contentType==='application/x-ndjson'){
+    return {
+      stream:true,status:response.status,transport:'com2_p01',response,timing,
+      cleanup(){clearTimeout(timer);}
+    };
+  }
+  // The upstream answered with its ordinary JSON envelope (or refused). Read it
+  // bounded and let the caller decide between using it and the one-shot path.
+  let parsed=null;
+  try{
+    const text=await response.text();
+    if(text.length<=MAX_STREAM_PROBE_BYTES){try{parsed=JSON.parse(text);}catch{parsed=null;}}
+  }catch{parsed=null;}
+  clearTimeout(timer);
+  return {
+    stream:false,status:response.status,transport:'com2_p01',timing,
+    payload:parsed||{ok:false,error:{code:response.ok?'com2_ai_invalid_response':'com2_ai_execution_failed',retryable:false}},
+    transportFailure:false
+  };
 }

@@ -23,6 +23,7 @@ ENGINE_INTERNAL_ORIGIN = "https://padiem-ai-engine.internal"
 ENGINE_CONTRACT_MAJOR = 1
 ENGINE_CONTRACT_VERSION = "1.0"
 ENGINE_EXECUTE_PATH = "/internal/v1/execute"
+ENGINE_STREAM_PATH = "/internal/v1/stream"
 ENGINE_HEALTH_PATH = "/internal/v1/health"
 ENGINE_ORCHESTRATE_PATH = "/internal/v1/orchestrate"
 ENGINE_RESEARCH_PATH = "/internal/v1/research"
@@ -280,6 +281,15 @@ class EngineStreamTransportResponse:
     status: int
     chunks: AsyncIterator[bytes]
     headers: Mapping[str, str] = field(default_factory=dict)
+
+
+@dataclass(frozen=True, slots=True)
+class EngineRunStream:
+    """A committed completed-answer stream (HTTP 200 already negotiated)."""
+
+    status: int
+    headers: Mapping[str, str]
+    events: AsyncIterator[dict[str, Any]]
 
 
 class EngineTransport(Protocol):
@@ -993,6 +1003,69 @@ def _document_projection(body: dict[str, Any]) -> dict[str, Any]:
     return {name: projected[name] for name in _DOCUMENT_PROJECTION_FIELDS}
 
 
+_RUN_STREAM_MAX_LINE_BYTES = 256 * 1024
+_RUN_STREAM_MAX_ERROR_BYTES = 64 * 1024
+
+
+def _run_stream_line(line: bytes) -> dict[str, Any] | None:
+    if not line.strip():
+        return None
+    try:
+        data = json.loads(line.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_stream", "Engine returned an invalid stream line"
+        ) from None
+    if not isinstance(data, dict):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_stream", "Engine returned an invalid stream record"
+        )
+    if data.get("ok") is not True:
+        error = data.get("error") if isinstance(data.get("error"), Mapping) else {}
+        raise PadiemAiEngineClientError(
+            error.get("code") if isinstance(error.get("code"), str) else "engine_stream_failed",
+            error.get("message") if isinstance(error.get("message"), str) else "Padiem AI Engine stream failed",
+            retryable=error.get("retryable") is True,
+        )
+    event = data.get("event")
+    if not isinstance(event, Mapping):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_stream", "Engine returned an invalid stream event"
+        )
+    return dict(event)
+
+
+async def _decode_run_ndjson(chunks: AsyncIterator[bytes]) -> AsyncIterator[dict[str, Any]]:
+    buffer = b""
+    try:
+        async for chunk in chunks:
+            if not isinstance(chunk, bytes):
+                raise PadiemAiEngineClientError(
+                    "invalid_engine_stream", "Engine streaming chunk is invalid"
+                )
+            buffer += chunk
+            while True:
+                newline = buffer.find(b"\n")
+                if newline < 0:
+                    break
+                line, buffer = buffer[:newline], buffer[newline + 1:]
+                item = _run_stream_line(line)
+                if item is not None:
+                    yield item
+            if len(buffer) > _RUN_STREAM_MAX_LINE_BYTES:
+                raise PadiemAiEngineClientError(
+                    "invalid_engine_stream", "Engine stream line exceeded the safety bound"
+                )
+        if buffer.strip():
+            item = _run_stream_line(buffer)
+            if item is not None:
+                yield item
+    finally:
+        close = getattr(chunks, "aclose", None)
+        if callable(close):
+            await close()
+
+
 def _json_body(response: EngineTransportResponse) -> dict[str, Any]:
     try:
         body = json.loads(response.body.decode("utf-8"))
@@ -1066,6 +1139,54 @@ class PadiemAiEngineClient:
                 "invalid_engine_response", "Engine completed-run response is invalid"
             )
         return body
+
+    async def stream_run(self, request: Mapping[str, Any]) -> EngineRunStream:
+        """Open the completed-answer NDJSON stream for an execute-shaped request.
+
+        The call returns only after the Engine has validated the request and
+        primed its first event, so a non-200 result is a bounded JSON error the
+        caller can answer before committing a 200 of its own.
+        """
+        payload = _run_payload(
+            self.app_id, request, allowed=_EXECUTION_ALLOWED | _EXECUTION_CONTEXT_PERMISSION
+        )
+        stream_request = getattr(self._transport, "stream_request", None)
+        if not callable(stream_request):
+            raise PadiemAiEngineClientError(
+                "engine_stream_unavailable", "Engine streaming transport is not configured"
+            )
+        response = await stream_request(
+            method="POST",
+            url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_STREAM_PATH}",
+            headers=self._headers(),
+            body=json.dumps(payload, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8"),
+        )
+        if not isinstance(response, EngineStreamTransportResponse):
+            raise PadiemAiEngineClientError("invalid_engine_stream", "Engine stream response is invalid")
+        content_type = response.headers.get("content-type", "").split(";", 1)[0].strip().lower()
+        if response.status != 200 or content_type != "application/x-ndjson":
+            buffered = bytearray()
+            try:
+                async for chunk in response.chunks:
+                    buffered.extend(chunk)
+                    if len(buffered) > _RUN_STREAM_MAX_ERROR_BYTES:
+                        break
+            finally:
+                close = getattr(response.chunks, "aclose", None)
+                if callable(close):
+                    await close()
+            try:
+                _json_body(EngineTransportResponse(status=response.status, body=bytes(buffered)))
+            except PadiemAiEngineClientError as exc:
+                raise exc from None
+            raise PadiemAiEngineClientError(
+                "engine_http_error", "Padiem AI Engine stream request failed", status=response.status
+            )
+        return EngineRunStream(
+            status=response.status,
+            headers=dict(response.headers),
+            events=_decode_run_ndjson(response.chunks),
+        )
 
     async def search_evidence(self, *, query: str, agent: Mapping[str, Any]) -> dict[str, Any]:
         """Use the existing authenticated Engine research route with zero model calls.

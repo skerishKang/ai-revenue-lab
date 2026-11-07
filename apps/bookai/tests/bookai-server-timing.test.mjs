@@ -25,7 +25,7 @@ function durations(response) {
   assert.ok(header);
   const values = {};
   for (const part of header.split(', ')) {
-    const match = /^(packet|worker|upstream);dur=(\d+)$/.exec(part);
+    const match = /^(packet|worker|upstream|chat|p01|engine);dur=(\d+)$/.exec(part);
     assert.ok(match, `invalid or unsafe timing entry: ${part}`);
     assert.equal(values[match[1]], undefined);
     values[match[1]] = Number(match[2]);
@@ -72,6 +72,41 @@ test('invalid client timing is ignored and cannot inject a timing header', async
       assert.ok(Number.isFinite(timing.worker));
       assert.ok(Number.isFinite(timing.upstream));
     }
+  } finally { globalThis.fetch = previous; }
+});
+
+test('upstream stage timings follow the worker entries and nothing else is forwarded', async () => {
+  const previous = globalThis.fetch;
+  globalThis.fetch = async () => new Response(JSON.stringify({
+    ok: true, answer: 'answer', context_permission: contextPermission,
+  }), {status: 200, headers: {
+    'content-type': 'application/json',
+    'server-timing': 'chat;dur=6800, p01;dur=6790.4, engine;dur=6500, '
+      + 'model;dur=1, chat;dur=9, p01;dur=5;desc="x", engine;dur=unknown',
+  }});
+  try {
+    const response = await worker.fetch(request({packet_ms: 3}), env);
+    assert.equal(response.status, 200);
+    const timing = durations(response);
+    assert.equal(timing.packet, 3);
+    assert.equal(timing.chat, 6800);
+    assert.equal(timing.p01, 6790);
+    assert.equal(timing.engine, 6500);
+    const names = response.headers.get('server-timing').split(', ').map(part => part.split(';')[0]);
+    assert.deepEqual(names.slice(0, 4), ['packet', 'worker', 'upstream', 'chat']);
+    assert.ok(!response.headers.get('server-timing').includes('model'));
+  } finally { globalThis.fetch = previous; }
+});
+
+test('an upstream header without stage timings adds none', async () => {
+  const previous = globalThis.fetch;
+  globalThis.fetch = async () => Response.json({ok: true, answer: 'answer', context_permission: contextPermission});
+  try {
+    const timing = durations(await worker.fetch(request(), env));
+    assert.deepEqual(Object.keys(timing).sort(), ['upstream', 'worker']);
+    assert.equal(timing.chat, undefined);
+    assert.equal(timing.p01, undefined);
+    assert.equal(timing.engine, undefined);
   } finally { globalThis.fetch = previous; }
 });
 
