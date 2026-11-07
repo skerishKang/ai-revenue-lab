@@ -96,14 +96,45 @@ class ParserAndHygiene(unittest.TestCase):
             if "Out-Line" in line and "$email" in line and "Mask-Email" not in line:
                 self.fail(f"line {number} prints the raw email: {line.strip()}")
 
-    def test_com2_write_goes_through_root_only_install(self):
-        self.assertIn("install -m 600 /dev/stdin", self.text)
-        self.assertIn("/etc/padiem/qa-smoke.env", self.text)
-        # The remote command carries no credential material (it only points
-        # install at stdin), and the env content is never logged.
-        remote_line = next(line for line in self.text.splitlines() if "sudo sh -c" in line)
-        self.assertNotIn("plainPassword", remote_line)
-        self.assertNotIn("envContent", remote_line)
+    def test_com2_write_survives_the_cmdexe_remote_shell(self):
+        # COM2's ssh lands in Windows cmd.exe: no sudo there, and cmd would
+        # chew any quote, pipe or redirect before wsl.exe ever sees it (the
+        # release_chat.ps1 exit-255 trap). The whole remote command is ONE
+        # bare argv line: wsl.exe -d Ubuntu -u root --exec ... — nothing for
+        # cmd to reinterpret, stdin rides ssh -> cmd -> wsl untouched.
+        lines = self.text.splitlines()
+        write_line = next(line for line in lines if "--exec install" in line)
+        verify_line = next(line for line in lines if "--exec test" in line)
+        # The remote templates are the PowerShell single-quoted literals on
+        # those lines; assert against the VALUE, not the quoting syntax.
+        write_remote = re.search(r"'([^']+)'", write_line).group(1)
+        verify_remote = re.search(r"'([^']+)'", verify_line).group(1)
+        for remote in (write_remote, verify_remote):
+            self.assertIn("wsl.exe -d Ubuntu -u root --exec", remote, remote)
+            # No shell metacharacter the remote cmd.exe would eat first.
+            for forbidden in ("sudo", "'", '"', "|", ">", "<", "&&"):
+                self.assertNotIn(forbidden, remote, f"{forbidden!r} in: {remote}")
+        self.assertIn("install -D -m 600 /dev/stdin", write_remote)
+        # The path arrives through the -f substitution: the template ends in
+        # {0} and the param default pins /etc/padiem/qa-smoke.env.
+        self.assertRegex(write_remote, r"install -D -m 600 /dev/stdin \{0\}$")
+        self.assertRegex(verify_remote, r"test -s \{0\}$")
+        self.assertIn('$Com2EnvPath = "/etc/padiem/qa-smoke.env"', self.text)
+        # The remote command carries no credential material — it only points
+        # install at stdin; the env content never touches argv or a log.
+        self.assertNotIn("plainPassword", write_line)
+        self.assertNotIn("envContent", write_line)
+        self.assertNotIn("plainPassword", verify_line)
+        # The remote command must be passed UNQUOTED through the ssh
+        # arguments (each token a separate argv ssh rejoins), so no quote
+        # character ever reaches the remote shell.
+        arguments_template = next(line for line in lines if "o ConnectTimeout=10 {1} {2}" in line)
+        self.assertNotIn('"{2}"', arguments_template)
+        # sudo branches and messages are gone: no executable line mentions it
+        # (comments may explain why the remote shell gets none).
+        for number, line in enumerate(self.text.splitlines(), start=1):
+            if not line.strip().startswith("#"):
+                self.assertNotIn("sudo", line, f"line {number}: {line.strip()}")
 
 
 class EscapeSelfTest(unittest.TestCase):

@@ -203,25 +203,28 @@ else {
 # ── COM2 env file: piped straight into ssh stdin, root-only, never echoed ────
 $envContent = ('{0}={1}' -f $Script:UsernameEnv, (ConvertTo-EnvSingleQuoted $email)) + "`n" +
     ('{0}={1}' -f $Script:PasswordEnv, (ConvertTo-EnvSingleQuoted $plainPassword)) + "`n"
-# The remote command holds no credential material — it only points install at
-# stdin. sudo creates the folder and lands the file root-only 0600.
-$com2Remote = "sudo sh -c 'mkdir -p /etc/padiem && install -m 600 /dev/stdin {0}'" -f $Com2EnvPath
-$sshArguments = '-i "{0}" -o BatchMode=yes -o ConnectTimeout=10 {1} "{2}"' -f $Com2SshKey, $Com2SshTarget, $com2Remote
+# COM2's ssh lands in Windows cmd.exe: no sudo there, and cmd would chew any
+# quote, pipe or redirect before wsl.exe ever sees it (the release_chat.ps1
+# exit-255 trap). So the remote command is ONE bare argv line — no quotes, no
+# pipes, no redirects — that ssh rejoins and cmd passes through to
+# wsl.exe -d Ubuntu -u root --exec. install -D creates /etc/padiem and lands
+# the file root:root 0600; stdin rides ssh -> cmd -> wsl untouched.
+$com2Remote = 'wsl.exe -d Ubuntu -u root --exec install -D -m 600 /dev/stdin {0}' -f $Com2EnvPath
+$sshArguments = '-i "{0}" -o BatchMode=yes -o ConnectTimeout=10 {1} {2}' -f $Com2SshKey, $Com2SshTarget, $com2Remote
 $ssh = Invoke-ProcessWithStdin 'ssh' $sshArguments $envContent
 if ($ssh.exit -eq 0) {
     Out-Line 'COM2_ENV' 'written'
-}
-elseif ($ssh.stderr -match 'sudo: a password is required|sudo: no tty') {
-    Out-Line 'COM2_ENV' 'sudo_unavailable (ask ops to run the sudo part manually; nothing was printed or stored locally)'
 }
 else {
     Out-Line 'COM2_ENV' ("failed exit={0} stderr_class=ssh" -f $ssh.exit)
 }
 if ($ssh.exit -eq 0) {
+    # exit 0 from `test -s` is the whole verification — no output parsing.
+    $verifyRemote = 'wsl.exe -d Ubuntu -u root --exec test -s {0}' -f $Com2EnvPath
     $verify = Invoke-ProcessWithStdin 'ssh' (
-        '-i "{0}" -o BatchMode=yes -o ConnectTimeout=10 {1} "sudo test -s {2} && echo present"' -f $Com2SshKey, $Com2SshTarget, $Com2EnvPath
+        '-i "{0}" -o BatchMode=yes -o ConnectTimeout=10 {1} {2}' -f $Com2SshKey, $Com2SshTarget, $verifyRemote
     ) ''
-    if ($verify.stdout -match 'present') {
+    if ($verify.exit -eq 0) {
         Out-Line 'COM2_ENV_VERIFIED' 'true'
     }
     else {
