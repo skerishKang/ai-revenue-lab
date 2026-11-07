@@ -385,14 +385,15 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
                 409,
             )
         # The connector READ tools are declared on the main chat turn. An
-        # explicitly Google-named calendar/drive question from a granted owner
-        # falls back to /api/chat/stream here, where the same bounded grant
-        # check (30s per-user cache, 300ms budget, one journal line) decides.
-        # Grant-less or unverified owners keep this search path unchanged: the
+        # explicit Google name, or a broad calendar/drive read intent whose
+        # named service is granted, falls back to /api/chat/stream here. The
+        # check is bounded (3s, granted result cached 5min, one journal line);
+        # grant-less or unverified owners keep this search path unchanged: the
         # check answers False without widening anything.
         if custom is None:
             from .chat_connector_tools import (
                 connector_tools_granted_for_fallback,
+                google_connector_broad_intent,
                 google_connector_intent,
             )
 
@@ -401,7 +402,11 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
                  if isinstance(item, Mapping) and item.get("role") == "user"),
                 None,
             )
-            if google_connector_intent(latest_turn_text) and await connector_tools_granted_for_fallback(request, uid=uid):
+            explicit_intent = google_connector_intent(latest_turn_text)
+            broad_service = None if explicit_intent else google_connector_broad_intent(latest_turn_text)
+            if (explicit_intent or broad_service is not None) and await connector_tools_granted_for_fallback(
+                request, uid=uid, service=broad_service,
+            ):
                 return _error(
                     "orchestration_not_applicable",
                     "이 요청은 커넥터 도구가 있는 기존 채팅 경로에서 처리합니다.",
