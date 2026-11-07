@@ -6,11 +6,12 @@ PowerShell script the executor sends, and the child the helper starts is a real
 ``powershell.exe``/``cmd.exe`` process. Nothing about the HMAC, the 4-byte
 length prefix or the two-sided frame is simulated.
 
-The one injected value is the secret file path. A CI runner has no registered
-``PadiemUserSessionHelper`` scheduled task, so the client is pointed at a file
-this test wrote instead of reading the path from the task's arguments. The
-secret bytes, the material, the nonce the client computes and the nonce the
-helper verifies are all real. No production caller passes that argument.
+The injected value is the task argument string. A CI runner has no registered
+``PadiemUserSessionHelper`` scheduled task, so most tests pass the exact string
+the installer writes (device id and secret path) instead of reading it from the
+task. One test registers a real task and reads its arguments back through
+``Get-ScheduledTask``. The secret bytes, the material, the nonce the client
+computes and the nonce the helper verifies are all real.
 
 Windows only, and it runs on the ``windows-latest`` job of
 ``.github/workflows/claw-connect-contract-tests.yml``.
@@ -20,6 +21,7 @@ from __future__ import annotations
 import base64
 import json
 import subprocess
+import tempfile
 import sys
 import threading
 import time
@@ -48,15 +50,25 @@ pytestmark = pytest.mark.skipif(
 
 SECRET = b"deployment-secret-for-the-7105-round-trip"
 DEVICE = "dev_" + "d" * 32
+TASK_DEVICE = "dev_$D62t1"
+
+
+def _task_args(secret_file: Path, device_id: str = DEVICE) -> str:
+    return f'--device-id "{device_id}" --secret-file "{secret_file}"'
 
 
 def _run_client_raw(*, request_id: str, shell: str, command: str,
-                    secret_file: Path, timeout_seconds: int = 30) -> tuple[str, float, subprocess.CompletedProcess]:
+                    secret_file: Path, timeout_seconds: int = 30,
+                    task_arguments: str | None = None, task_path: str = "\\",
+                    task_name: str = "",
+                    registered_task: bool = False) -> tuple[str, float, subprocess.CompletedProcess]:
     """Send one request with the shipped PowerShell client, return raw output."""
+    if task_arguments is None and not registered_task:
+        task_arguments = _task_args(secret_file)
     script = OracleMeshExecutor.build_user_helper_pipe_client_ps(
-        device_id=DEVICE, request_id=request_id, shell=shell, command=command,
+        request_id=request_id, shell=shell, command=command,
         cwd=None, timeout_seconds=timeout_seconds, distro=None,
-        secret_file=str(secret_file),
+        task_arguments=task_arguments, task_path=task_path, task_name=task_name,
     )
     encoded = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
     started = time.monotonic()
@@ -72,11 +84,15 @@ def _run_client_raw(*, request_id: str, shell: str, command: str,
 
 
 def _run_client(*, request_id: str, shell: str, command: str,
-                secret_file: Path, timeout_seconds: int = 30) -> dict:
+                secret_file: Path, timeout_seconds: int = 30,
+                task_arguments: str | None = None, task_path: str = "\\",
+                task_name: str = "", registered_task: bool = False) -> dict:
     """Send one request with the shipped PowerShell client, return its reply."""
     text, _elapsed, _completed = _run_client_raw(
         request_id=request_id, shell=shell, command=command,
         secret_file=secret_file, timeout_seconds=timeout_seconds,
+        task_arguments=task_arguments, task_path=task_path,
+        task_name=task_name, registered_task=registered_task,
     )
     reply = json.loads(text)
     assert isinstance(reply, dict)
@@ -305,10 +321,11 @@ def test_a_dead_client_stops_the_user_child_and_frees_the_helper(tmp_path):
     server = threading.Thread(target=_serve, daemon=True)
     server.start()
     script = OracleMeshExecutor.build_user_helper_pipe_client_ps(
-        device_id=DEVICE, request_id="req_" + "f" * 32, shell="powershell",
+        request_id="req_" + "f" * 32, shell="powershell",
         command=("Start-Sleep -Seconds 20; Set-Content -LiteralPath "
                  f"'{marker}' -Value done"),
-        cwd=None, timeout_seconds=0, distro=None, secret_file=str(secret_file),
+        cwd=None, timeout_seconds=0, distro=None,
+        task_arguments=_task_args(secret_file),
     )
     encoded = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
     client = subprocess.Popen(
@@ -335,4 +352,66 @@ def test_a_dead_client_stops_the_user_child_and_frees_the_helper(tmp_path):
             client.kill()
         server.join(timeout=30)
         listener.close()
+    assert not failures, failures
+
+
+def _register_task_with_arguments(task_name: str, arguments: str) -> None:
+    import uuid
+    from xml.sax.saxutils import escape
+
+    xml_path = Path(tempfile.gettempdir()) / f"{task_name}-{uuid.uuid4().hex}.xml"
+    xml = f"""<?xml version="1.0" encoding="UTF-16"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo><Description>temporary #7108 PR-3 arguments test</Description></RegistrationInfo>
+  <Triggers><TimeTrigger><StartBoundary>2030-01-01T00:00:00</StartBoundary><Enabled>false</Enabled></TimeTrigger></Triggers>
+  <Principals><Principal id="Author"><LogonType>InteractiveToken</LogonType><RunLevel>LeastPrivilege</RunLevel></Principal></Principals>
+  <Settings><MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy><DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries><StopIfGoingOnBatteries>false</StopIfGoingOnBatteries><AllowHardTerminate>true</AllowHardTerminate><StartWhenAvailable>false</StartWhenAvailable><RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable><IdleSettings><StopOnIdleEnd>false</StopOnIdleEnd><RestartOnIdle>false</RestartOnIdle></IdleSettings><AllowStartOnDemand>true</AllowStartOnDemand><Enabled>true</Enabled><Hidden>false</Hidden><RunOnlyIfIdle>false</RunOnlyIfIdle><WakeToRun>false</WakeToRun><ExecutionTimeLimit>PT1H</ExecutionTimeLimit><Priority>7</Priority></Settings>
+  <Actions Context="Author"><Exec><Command>powershell.exe</Command><Arguments>{escape(arguments)}</Arguments></Exec></Actions>
+</Task>"""
+    xml_path.write_text(xml, encoding="utf-16")
+    try:
+        done = subprocess.run(
+            ["schtasks.exe", "/Create", "/TN", task_name, "/XML", str(xml_path), "/F"],
+            capture_output=True, text=True, errors="replace", timeout=60, check=False,
+        )
+        assert done.returncode == 0, done.stdout + done.stderr
+    finally:
+        xml_path.unlink(missing_ok=True)
+
+
+def test_real_registered_task_arguments_drive_the_pipe_name(tmp_path):
+    """The production path: Get-ScheduledTask -> --device-id -> SHA-256 -> pipe."""
+    import uuid
+
+    secret_file = tmp_path / "user-helper.secret"
+    secret_file.write_bytes(SECRET + b"\n")
+    task_name = "PadiemUserSessionHelperTest" + uuid.uuid4().hex[:8]
+    task_args = _task_args(secret_file, TASK_DEVICE)
+    _register_task_with_arguments(task_name, task_args)
+    listener = service.WindowsPipeListener(TASK_DEVICE)
+    failures: list[BaseException] = []
+
+    def _serve() -> None:
+        try:
+            service.serve_pipe(device_id=TASK_DEVICE, secret=SECRET, listener=listener,
+                               max_requests=1)
+        except BaseException as exc:  # noqa: BLE001
+            failures.append(exc)
+
+    server = threading.Thread(target=_serve, daemon=True)
+    server.start()
+    try:
+        reply = _run_client(
+            request_id="req_" + "9" * 32, shell="powershell",
+            command="Write-Output 'task-args-ok'",
+            secret_file=secret_file, task_path="\\", task_name=task_name,
+            registered_task=True,
+        )
+        assert reply["status"] == "ok", reply
+        assert "task-args-ok" in _stdout(reply)
+    finally:
+        server.join(timeout=90)
+        listener.close()
+        subprocess.run(["schtasks.exe", "/Delete", "/TN", task_name, "/F"],
+                       capture_output=True, text=True, timeout=60, check=False)
     assert not failures, failures
