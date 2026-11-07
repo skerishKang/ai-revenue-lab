@@ -12,7 +12,9 @@ SCRIPT = ROOT / 'scripts/ops/summarize_chat_latency_261101.py'
 SPEC = importlib.util.spec_from_file_location('chat_latency_summary_261101', SCRIPT)
 summary = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(summary)
-ROUTE = '/api/claw/inbox/{kind}'
+# 작업함 제거(#7109)로 inbox 라우트가 삭제됐다 — 센티널은 남아 있는 소유자
+# 범위 라우트(/api/claw/runs)를 사용한다.
+ROUTE = '/api/claw/runs'
 
 
 def event(duration=10, **kwargs):
