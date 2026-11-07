@@ -184,7 +184,11 @@ class SqliteD1:
         self.read_workers = read_workers
         # Wall-clock free timestamps (perf_counter) for the idle checkpoint.
         self._last_statement = perf_counter()
-        self._last_checkpoint = 0.0
+        # "Never checkpointed" is -inf on purpose: perf_counter starts near 0
+        # on a freshly booted machine, so a 0.0 sentinel read as "checked
+        # seconds ago" and skipped the first idle checkpoint (the CI flake in
+        # test_sqlite_sync_normal_261103).
+        self._last_checkpoint = float("-inf")
         if read_workers:
             path = next((row[2] for row in connection.execute("PRAGMA database_list") if row[1] == "main"), "")
             if not path or connection.execute("PRAGMA journal_mode").fetchone()[0].lower() != "wal":

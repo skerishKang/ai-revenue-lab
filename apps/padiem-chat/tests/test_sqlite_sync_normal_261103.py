@@ -22,6 +22,7 @@ from app.sqlite_settings import (  # noqa: F401  (re-exported for the assertions
     AUTOCHECKPOINT_PAGES,
     BUSY_TIMEOUT_MS,
     CACHE_KIB,
+    IDLE_CHECKPOINT_SECONDS,
 )
 
 
@@ -71,9 +72,11 @@ async def test_idle_checkpoint_truncates_the_wal(tmp_path):
             await db.prepare("INSERT INTO sample VALUES (?, ?)").bind(value + 1, value).run()
         wal = str(tmp_path / "chat.sqlite3") + "-wal"
         assert os.path.getsize(wal) > 0
-        # Pretend the last statement was long enough ago to be "idle".
+        # Pretend the last statement was long enough ago to be "idle", and
+        # that no checkpoint ran before: -inf is the "never" sentinel (0.0
+        # reads as "just checked" on a freshly booted runner).
         db._last_statement = perf_counter() - 3600
-        db._last_checkpoint = 0.0
+        db._last_checkpoint = float("-inf")
         report = await db.checkpoint_if_idle()
         assert report.get("busy") == 0
         # The behavioural claim: the WAL file is gone (a fresh one starts at
@@ -108,12 +111,36 @@ async def test_checkpoint_is_skipped_while_traffic_is_recent(tmp_path):
 async def test_checkpoint_respects_the_interval_between_runs(tmp_path):
     db = _database(tmp_path)
     try:
+        # Seed the interval clock explicitly: the first checkpoint must see an
+        # interval that already elapsed, whatever the runner's uptime is.
         db._last_statement = perf_counter() - 3600
+        db._last_checkpoint = perf_counter() - (2 * IDLE_CHECKPOINT_SECONDS)
         first = await db.checkpoint_if_idle()
         assert "skipped" not in first
         db._last_statement = perf_counter() - 3600
         second = await db.checkpoint_if_idle()
         assert second == {"skipped": "checked_recently"}
+    finally:
+        await db.close_readers()
+        db.connection.close()
+
+
+@pytest.mark.asyncio
+async def test_first_checkpoint_is_allowed_on_a_freshly_booted_runner(tmp_path, monkeypatch):
+    """Pins the CI flake: a runner that booted seconds ago has perf_counter
+    near zero, and the old 0.0 'never checkpointed' sentinel read as
+    'checked recently' (assert None == 0 / checked_recently flakes). With the
+    -inf sentinel the first idle checkpoint runs at any epoch."""
+    from app import d1_sqlite as d1_module
+
+    db = _database(tmp_path)
+    try:
+        monkeypatch.setattr(d1_module, "perf_counter", lambda: 5.0)
+        db.connection.execute("PRAGMA wal_autocheckpoint = 0")
+        db._last_statement = 5.0 - 3600.0
+        report = await db.checkpoint_if_idle()
+        assert "skipped" not in report
+        assert report.get("busy") == 0
     finally:
         await db.close_readers()
         db.connection.close()

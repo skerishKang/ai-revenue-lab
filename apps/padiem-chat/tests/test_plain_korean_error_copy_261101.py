@@ -142,4 +142,4 @@ def test_the_front_door_still_never_reads_or_rewrites_bodies():
     # The proxy contract is unchanged by a copy fix: no body reads were added.
     assert ".json()" not in FRONT_WORKER
     assert ".arrayBuffer()" not in FRONT_WORKER
-    assert "/text\/event-stream/i" in FRONT_WORKER  # SSE still passes through
+    assert r"/text\/event-stream/i" in FRONT_WORKER  # SSE still passes through
