@@ -845,6 +845,26 @@ class ChatScenarioTest(DeployHarness):
         self.assertEqual(self._head(), self.first)
         self.assertEqual(self._calls(), [])
 
+    def test_the_qa_smoke_env_file_feeds_the_required_gate(self) -> None:
+        # A systemd-run deploy inherits nothing interactive, so the QA pair
+        # reaches the AI gate only through the sourced root-only env file
+        # (provision_qa_smoke_account.ps1 writes it on the host).
+        self.env["FAKE_AI_MODE"] = "required"
+        self.env.pop("B66_CGI_ALPHA_USERNAME", None)
+        self.env.pop("B66_CGI_ALPHA_PASSWORD", None)
+        qa_env = self.tmp / "qa-smoke.env"
+        qa_env.write_text(
+            "B66_CGI_ALPHA_USERNAME='qa-fixture'\n"
+            "B66_CGI_ALPHA_PASSWORD='qa-fixture'\n",
+            encoding="utf-8",
+        )
+        self.env["PADIEM_COM2_QA_SMOKE_ENV"] = qa_env.as_posix()
+        result = self._run_apply()
+        self.assertNotIn(
+            "AI_CHECK_REQUIRED_CREDENTIALS_MISSING", result.stderr, result.stderr[:2000]
+        )
+        self.assertIn("ai:PASS", result.stdout)
+
     def test_ai_pass_has_no_error_code(self) -> None:
         result = self._run_apply()
         self.assertEqual(result.returncode, 0, result.stderr)
