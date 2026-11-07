@@ -276,3 +276,23 @@ HELPER_RELEASE_PAIRING_VERIFY=NOT_RUN
 WORKER_FALLBACK_UPDATE=NOT_RUN
 PRODUCTION_MUTATION=0
 ```
+
+## Replacing the source-installed helper on the operator PC (no Python)
+
+`\Padiem\PadiemUserSessionHelper` currently runs the #7105 source install
+(`python -m claw_connect.user_helper_service --device-id <id> --secret-file
+C:\ProgramData\Padiem\helper.secret`). To move that task to the single-file
+EXE — same CLI contract, and the pipe name derives from the device id, so the
+agent-side path is unchanged:
+
+1. Download the released EXE and verify SHA-256 against the `.sha256` object.
+2. Place it at `C:\ProgramData\Padiem\padiem-user-helper.exe`.
+3. `schtasks /end /tn "\Padiem\PadiemUserSessionHelper"` — stop the running
+   python helper instance.
+4. `schtasks /change /tn "\Padiem\PadiemUserSessionHelper" /tr "\"C:\ProgramData\Padiem\padiem-user-helper.exe\" --device-id <same device id> --secret-file \"C:\ProgramData\Padiem\helper.secret\""` — swap the task action to the EXE.
+5. `schtasks /run /tn "\Padiem\PadiemUserSessionHelper"`.
+6. Pipe check: the name is `padiem-user-helper-dev_<32 hex>` from
+   `claw_connect.user_session_helper.pipe_name(<device id>)`; confirm it exists
+   (`[System.IO.Directory]::GetFiles("\.\pipe\")`) and that the executor
+   reaches it (the whoami roundtrip). Rollback = repeat 3-5 with the old
+   `python -m ...` action line.

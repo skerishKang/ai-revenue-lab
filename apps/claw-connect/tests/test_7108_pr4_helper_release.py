@@ -108,3 +108,38 @@ def test_dry_run_prints_the_exact_com2_plan_without_mutating(tmp_path: Path) -> 
     assert "PRODUCTION_MUTATION=0" in output
     assert "PLAN_DEPLOY_BODY" not in output
     assert "set_var" not in output
+
+
+def test_dry_run_survives_a_work_folder_without_the_builder(tmp_path: Path) -> None:
+    """The 2026-11-08 real condition: the script is run alone from a work
+    folder that sits on another branch without apps/claw-connect. The dry-run
+    must print the topology plan instead of dying on the missing builder."""
+    shell = shutil.which("powershell") or shutil.which("pwsh")
+    if not shell:
+        pytest.skip("PowerShell is not available")
+    script = Path(__file__).resolve().parents[1] / "release-windows-helper.ps1"
+    solo_dir = tmp_path / "solo"
+    solo_dir.mkdir()
+    shutil.copyfile(script, solo_dir / "release-windows-helper.ps1")
+    done = subprocess.run(
+        [
+            shell, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+            "-File", str(solo_dir / "release-windows-helper.ps1"), "-DryRun",
+        ],
+        capture_output=True, text=True, errors="replace", timeout=120, check=False,
+        cwd=str(solo_dir),
+    )
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert "PLAN_BUILD=SKIPPED_BUILDER_ABSENT_IN_THIS_WORK_FOLDER" in done.stdout
+    assert "PLAN_R2_UPLOAD=" in done.stdout
+    assert "PLAN_COM2_TRANSPORT=" in done.stdout
+    assert "PRODUCTION_MUTATION=0" in done.stdout
+
+
+def test_wrangler_resolution_prefers_the_cmd_shim() -> None:
+    """npm's .ps1 shims re-parse arguments through Invoke-Expression and mangle
+    values with spaces/quotes (the R2 cache-control header). The release must
+    pin the .cmd shim before falling back."""
+    text = (Path(__file__).resolve().parents[1] / "release-windows-helper.ps1").read_text(encoding="utf-8")
+    assert '"wrangler.cmd"' in text
+    assert text.index('"wrangler.cmd"') < text.index('"wrangler")')

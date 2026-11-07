@@ -71,19 +71,33 @@ function Invoke-Checked {
 }
 
 if (-not $ArtifactPath) {
-    if (-not (Test-Path -LiteralPath $Builder -PathType Leaf)) {
-        throw "helper builder is missing: $Builder"
+    $builderAvailable = Test-Path -LiteralPath $Builder -PathType Leaf
+    if (-not $builderAvailable -and -not $DryRun) {
+        # A real run needs the builder (or an explicit -ArtifactPath): this
+        # work folder sits on another branch without apps/claw-connect.
+        throw "helper builder is missing: $Builder (run from a checkout that has apps/claw-connect, or pass -ArtifactPath + -Version)"
     }
-    $builderArgs = @{}
-    if ($Python) { $builderArgs.Python = $Python }
-    if ($OutRoot) { $builderArgs.OutRoot = $OutRoot }
-    $buildLines = @(& $Builder @builderArgs)
-    if ($buildLines.Count -eq 0) { throw "helper builder produced no receipt" }
-    $build = [string]$buildLines[$buildLines.Count - 1] | ConvertFrom-Json
-    if (-not $build.ok) { throw "helper builder did not report ok" }
-    $Exe = [string]$build.exe
-    $Version = [string]$build.version
-    $SourceSha = [string]$build.source_sha
+    if ($builderAvailable) {
+        $builderArgs = @{}
+        if ($Python) { $builderArgs.Python = $Python }
+        if ($OutRoot) { $builderArgs.OutRoot = $OutRoot }
+        $buildLines = @(& $Builder @builderArgs)
+        if ($buildLines.Count -eq 0) { throw "helper builder produced no receipt" }
+        $build = [string]$buildLines[$buildLines.Count - 1] | ConvertFrom-Json
+        if (-not $build.ok) { throw "helper builder did not report ok" }
+        $Exe = [string]$build.exe
+        $Version = [string]$build.version
+        $SourceSha = [string]$build.source_sha
+    }
+    else {
+        # DryRun in a foreign work folder: print the topology plan without
+        # building. The release-time values are filled in by the builder at
+        # the real run.
+        if (-not $Version) { $Version = "0.3.0-rc1-dryrun" }
+        $Exe = ""
+        $SourceSha = "<pinned-release-sha>"
+        Write-Output "PLAN_BUILD=SKIPPED_BUILDER_ABSENT_IN_THIS_WORK_FOLDER (run build-windows-helper.ps1 from a branch checkout, or pass -ArtifactPath + -Version)"
+    }
 } else {
     if (-not $Version) { throw "-Version is required with -ArtifactPath" }
     $Exe = (Resolve-Path -LiteralPath $ArtifactPath).Path
@@ -95,7 +109,7 @@ if (-not $ArtifactPath) {
 }
 if (-not $SourceSha) { $SourceSha = "UNKNOWN" }
 
-if (-not (Test-Path -LiteralPath $Exe -PathType Leaf)) { throw "helper EXE is missing: $Exe" }
+if ($Exe -and -not (Test-Path -LiteralPath $Exe -PathType Leaf)) { throw "helper EXE is missing: $Exe" }
 if ($Version -notmatch '^[0-9A-Za-z][0-9A-Za-z._-]{0,63}$') {
     throw "helper version is not a safe path segment: $Version"
 }
@@ -111,9 +125,17 @@ if ($SshTarget -notmatch '^[^@\s]+@[^@\s]+$') { throw "SshTarget must be user@ho
 if ($WslDistro -notmatch '^[A-Za-z0-9._-]+$') { throw "WslDistro is not a safe distro name" }
 if ($RemoteWindowsHome -match '\s') { throw "RemoteWindowsHome must not contain spaces" }
 
-$File = Get-Item -LiteralPath $Exe
-$Sha = Get-Sha256Hex -Path $Exe
-$Bytes = [int64]$File.Length
+if ($Exe) {
+    $File = Get-Item -LiteralPath $Exe
+    $Sha = Get-Sha256Hex -Path $Exe
+    $Bytes = [int64]$File.Length
+}
+else {
+    # DryRun without a built artifact: the builder computes these at the real
+    # run; the plan prints the topology with placeholders.
+    $Sha = "<sha256-computed-at-release>"
+    $Bytes = 0
+}
 $Key = ($KeyPrefix.Trim('/') + '/' + $Version + '/padiem-user-helper.exe')
 $Url = $PublicBaseUrl.TrimEnd('/') + '/' + $Key
 $ShaKey = $Key + '.sha256'
@@ -275,10 +297,13 @@ if ($DryRun) {
     if ($ArtifactPath) {
         Write-Output "PLAN_BUILD=SKIPPED_ARTIFACT_PATH"
     } else {
+        if ($Exe) {
         Write-Output "PLAN_BUILD=build-windows-helper.ps1 -OutRoot $OutRoot"
     }
+    }
     Write-Output "PLAN_CLOUDFLARE_ACCOUNT_ID=$CloudflareAccountId"
-    Write-Output ("PLAN_R2_UPLOAD=wrangler r2 object put `"$Bucket/$Key`" --file `"$Exe`" --content-type application/octet-stream --cache-control `"public, max-age=31536000, immutable`" --remote")
+    $planExe = if ($Exe) { $Exe } else { "<built-exe>" }
+    Write-Output ("PLAN_R2_UPLOAD=wrangler r2 object put `"$Bucket/$Key`" --file `"$planExe`" --content-type application/octet-stream --cache-control `"public, max-age=31536000, immutable`" --remote")
     Write-Output ("PLAN_R2_CHECKSUM=wrangler r2 object put `"$Bucket/$ShaKey`" --file <temporary sha256 file> --content-type text/plain --cache-control `"public, max-age=31536000, immutable`" --remote")
     Write-Output "PLAN_COM2_ENV=backup $Com2EnvFile to $Com2EnvFile.bak-<UTC>; replace PC_USER_HELPER_INSTALL_URL and PC_USER_HELPER_SHA256; chmod 0600 root:root"
     Write-Output "PLAN_COM2_TRANSPORT=scp -i $SshKey ... ${SshTarget}:$planRemoteName; $planSsh"
@@ -291,7 +316,14 @@ if ($DryRun) {
     return
 }
 
-$Wrangler = (Get-Command wrangler -ErrorAction SilentlyContinue).Source
+# npm's .ps1 shims re-parse their arguments through Invoke-Expression, which
+# mangles values that contain spaces or quotes (the R2 cache-control header
+# and URLs). Prefer the .cmd shim, which passes arguments verbatim.
+$Wrangler = $null
+foreach ($wranglerCandidate in @("wrangler.cmd", "wrangler.exe", "wrangler")) {
+    $found = Get-Command $wranglerCandidate -ErrorAction SilentlyContinue
+    if ($found) { $Wrangler = $found.Source; break }
+}
 if (-not $Wrangler) { throw "wrangler is not on PATH" }
 $Ssh = (Get-Command ssh -ErrorAction SilentlyContinue).Source
 if (-not $Ssh) { throw "ssh is not on PATH" }
