@@ -485,3 +485,76 @@ def test_shell_ignores_approval_receipts_and_never_creates_one():
     assert all(record["approval_id"] is None for record in store.records)
     assert store.records[-1]["job_receipt_id"] == JOB_ID
 
+
+
+
+def test_the_shell_wait_poll_interval_grows_and_caps_at_five_seconds(monkeypatch):
+    """대표 결정(2026-11-07): the shell wait polls start fast and grow
+    (0.5 → 1 → 2 → 4, capped at 5 s) so a running PC job stops hammering the
+    host while the wait window runs. The total wait window is unchanged."""
+    history, receipts = CommonHistory(), ReceiptStore()
+    request = _request(history, receipts)
+    receipts.job_id = JOB_ID
+    receipts.identity = {"user_id": UID, "device_id": DEVICE, "token_id": TOKEN}
+
+    async def dispatch(_request, **kwargs):
+        return _response({"dispatch": {"dispatch_id": JOB_ID, "run_id": RUN_ID,
+                                        "device_id": DEVICE}})
+    sleeps: list[float] = []
+
+    async def recording_sleep(seconds):
+        sleeps.append(seconds)
+
+    clock = [0.0]
+
+    def now():
+        clock[0] += 0.5
+        return clock[0]
+
+    monkeypatch.setattr(shell, "_dispatch_command", dispatch)
+    monkeypatch.setattr(shell, "_NOW", now)
+    monkeypatch.setattr(shell.asyncio, "sleep", recording_sleep)
+
+    result = asyncio.run(shell.execute_pc_shell(
+        request, uid=UID, subject_id=SUBJECT, workspace_id="workspace", device_id=DEVICE,
+        token_id=TOKEN, run_id=RUN_ID, session=SimpleNamespace(), conversation_id="conv_fixture",
+        arguments={"command": "sleep", "cwd": None, "shell": "powershell", "wait_seconds": 30},
+    ))
+
+    assert result["status"] == "running"
+    # The polls start fast and grow 2× up to the 5 s cap.
+    assert sleeps[:4] == [0.5, 1.0, 2.0, 4.0]
+    assert max(sleeps) <= 5.0
+
+
+def test_the_shell_wait_ends_the_moment_the_job_finishes(monkeypatch):
+    """결과가 도착하면 그 폴링에서 바로 돌아간다 — 추가 대기 없음."""
+    history, receipts = CommonHistory(), ReceiptStore()
+    request = _request(history, receipts)
+    receipts.job_id = JOB_ID
+    receipts.identity = {"user_id": UID, "device_id": DEVICE, "token_id": TOKEN}
+    history.state = "done"
+    history.exit_code = 0
+
+    async def dispatch(_request, **kwargs):
+        return _response({"dispatch": {"dispatch_id": JOB_ID, "run_id": RUN_ID,
+                                        "device_id": DEVICE}})
+    async def original(_request, *, uid, dispatch, run_row):
+        return history.output
+    sleeps: list[float] = []
+
+    async def recording_sleep(seconds):
+        sleeps.append(seconds)
+
+    monkeypatch.setattr(shell, "_dispatch_command", dispatch)
+    monkeypatch.setattr(shell, "_read_original", original)
+    monkeypatch.setattr(shell.asyncio, "sleep", recording_sleep)
+
+    result = asyncio.run(shell.execute_pc_shell(
+        request, uid=UID, subject_id=SUBJECT, workspace_id="workspace", device_id=DEVICE,
+        token_id=TOKEN, run_id=RUN_ID, session=SimpleNamespace(), conversation_id="conv_fixture",
+        arguments={"command": "sleep", "cwd": None, "shell": "powershell", "wait_seconds": 30},
+    ))
+
+    assert result["status"] == "completed"
+    assert sleeps == []

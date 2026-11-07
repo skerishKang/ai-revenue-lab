@@ -965,6 +965,7 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
         # PC_FILES_WAIT_SECONDS); at least one status poll still happens.
         wait_deadline = handler_started + _pc_files_wait_seconds()
         first_round = resume_dispatch is not None
+        poll_seconds = 0.5
         while True:
             if first_round:
                 first_round = False
@@ -972,7 +973,11 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 # #6919: never sleep past the deadline. The idle gap before
                 # the handback used to add up to 2 s on top of the budget;
                 # now the last poll happens as soon as the budget is spent.
-                await asyncio.sleep(max(0.0, min(2.0, wait_deadline - time.monotonic())))
+                # 대표 결정(2026-11-07): the status polls start fast and grow
+                # (0.5 → 1 → 2 → …, capped at 5 s) so a waiting caller stops
+                # hammering the host while the PC keeps running.
+                await asyncio.sleep(max(0.0, min(poll_seconds, wait_deadline - time.monotonic())))
+                poll_seconds = min(poll_seconds * 2, 5.0)
             observed = await _signed_files_call(
                 service=service, request_factory=request_factory,
                 secret=secret, owner=owner, mode="command_status",
@@ -1391,8 +1396,10 @@ def _make_pc_search_handler(
         emit_progress("accepted")
         import asyncio
 
+        poll_seconds = 0.5
         while True:
-            await asyncio.sleep(2)
+            await asyncio.sleep(poll_seconds)
+            poll_seconds = min(poll_seconds * 2, 5.0)
             observed = await _signed_files_call(
                 service=service, request_factory=request_factory,
                 secret=secret, owner=owner, mode="command_status",

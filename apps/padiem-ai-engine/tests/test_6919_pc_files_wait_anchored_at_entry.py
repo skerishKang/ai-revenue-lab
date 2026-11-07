@@ -130,3 +130,43 @@ def test_the_default_budget_leaves_room_for_admission_and_receipt():
     ceiling = 30.0
     observed_overhead = 1.8 + 0.7 + 0.6 + 2.0
     assert PC_FILES_WAIT_SECONDS + observed_overhead <= ceiling - 3.0
+
+
+
+def test_status_poll_interval_grows_and_caps_at_five_seconds(monkeypatch):
+    """대표 결정(2026-11-07): the status polls start fast and grow
+    (0.5 → 1 → 2 → 4, capped at 5 s) so a pending PC stop hammering the host
+    while the wait budget runs. The total wait budget is unchanged."""
+
+    sleeps: list[float] = []
+
+    async def recording_sleep(seconds: float) -> None:
+        sleeps.append(seconds)
+
+    clock = _Clock()
+    modes: list[str] = []
+
+    async def fake_call(**kwargs):
+        mode = kwargs["mode"]
+        modes.append(mode)
+        if mode == "dispatch":
+            clock.now += 1.0
+            return {"dispatch": {"run_id": RUN_ID, "kind": "command",
+                                 "dispatch_id": DISPATCH_ID}}
+        clock.now += 1.0
+        return {"dispatch": {"dispatch_id": DISPATCH_ID, "run_id": RUN_ID,
+                             "kind": "command", "state": "pending",
+                             "termination": "no_exit_code", "exit_code": None}}
+
+    monkeypatch.setattr(driver, "_signed_files_call", fake_call)
+    monkeypatch.setattr(asyncio, "sleep", recording_sleep)
+    monkeypatch.setattr(driver, "time", types.SimpleNamespace(monotonic=clock.monotonic, time=time.time))
+    monkeypatch.setattr(driver, "_pc_files_wait_seconds", lambda: 21.0)
+
+    result = asyncio.run(_handler("list", PC_LIST_FILES_TOOL_ID)({"path": "."}))
+
+    assert result["status"] == "running"
+    assert modes[0] == "dispatch"
+    # The first wait is 0.5 s and the interval grows 2× up to the 5 s cap.
+    assert sleeps[:4] == [0.5, 1.0, 2.0, 4.0]
+    assert max(sleeps) <= 5.0
