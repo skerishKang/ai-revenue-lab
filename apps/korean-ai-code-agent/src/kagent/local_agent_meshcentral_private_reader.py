@@ -292,6 +292,7 @@ class MeshCentralCliFileReadPort:
         url: str = "wss://127.0.0.1:4443",
         work_dir: str | None = None,
         popen_factory: Callable[..., Any] | None = None,
+        login_key_file: str | None = None,
     ) -> None:
         if not callable(command_runner):
             raise ContractError("meshcentral read requires an injected command runner")
@@ -303,7 +304,12 @@ class MeshCentralCliFileReadPort:
         self._login_user = _safe_ref(login_user, "login_user")
         if not callable(password_provider):
             raise ContractError("the login password must be provided at call time")
+        if login_key_file is not None and (
+            not isinstance(login_key_file, str) or not login_key_file.strip()
+        ):
+            raise ContractError("the MeshCentral login-key file must be a path")
         self._password_provider = password_provider
+        self._login_key_file = login_key_file
         if not isinstance(url, str) or not url.startswith("wss://") or "@" in url:
             raise ContractError("the private tunnel URL must be a wss:// endpoint")
         self._url = url
@@ -424,40 +430,61 @@ class MeshCentralCliFileReadPort:
         target = os.path.join(
             self._work_dir, f"padiem-mesh-read-{os.getpid()}-{uuid4().hex}.bin"
         )
+        key_file = getattr(self, "_login_key_file", None)
+        use_key = isinstance(key_file, str) and bool(key_file.strip())
         argv = [
-            "node", "-e", _MESHCTRL_STDIN_BOOTSTRAP,
+            "node", "-e", _MESHCTRL_LOGINKEY_BOOTSTRAP if use_key else _MESHCTRL_STDIN_BOOTSTRAP,
             self._meshctrl_js, "download",
             "--url", self._url,
             "--loginuser", self._login_user,
-            "--loginpass", _PASSWORD_MARKER,
+        ]
+        if use_key:
+            argv.extend(["--loginkeyfile", key_file.strip()])
+        else:
+            argv.extend(["--loginpass", _PASSWORD_MARKER])
+        argv.extend([
             "--id", request.node_ref,
             "--file", request.file_path,
             "--target", target,
-        ]
+        ])
         try:
-            password = self._password_provider()
-            if (not isinstance(password, str) or not password
-                    or "\n" in password or "\r" in password):
-                raise MeshCentralReadRefused(
-                    "the protected MeshCentral operator credential is invalid"
-                )
-            # The official CLI parses the credential only inside the child;
-            # neither the OS command line nor command logs contain it.
-            if self._popen_factory is not None:
-                self._run_monitored_download(
-                    argv=argv, password=password, target=target,
-                    max_bytes=max_bytes, timeout_seconds=timeout_seconds,
-                )
-            else:
-                completed = self._command_runner(
-                    argv, input=password + "\n",
-                    timeout=timeout_seconds,
-                )
-                if getattr(completed, "returncode", None) != 0:
-                    raise MeshCentralReadRefused(
-                        "the official meshcentral client refused the private read"
-                        + _stderr_note(getattr(completed, "stderr", None))
+            if use_key:
+                if self._popen_factory is not None:
+                    self._run_monitored_download(
+                        argv=argv, password="", target=target,
+                        max_bytes=max_bytes, timeout_seconds=timeout_seconds,
                     )
+                    completed = None
+                else:
+                    completed = self._command_runner(
+                        argv, input=None,
+                        timeout=timeout_seconds,
+                    )
+            else:
+                password = self._password_provider()
+                if (not isinstance(password, str) or not password
+                        or "\n" in password or "\r" in password):
+                    raise MeshCentralReadRefused(
+                        "the protected MeshCentral operator credential is invalid"
+                    )
+                # The official CLI parses the credential only inside the child;
+                # neither the OS command line nor command logs contain it.
+                if self._popen_factory is not None:
+                    self._run_monitored_download(
+                        argv=argv, password=password, target=target,
+                        max_bytes=max_bytes, timeout_seconds=timeout_seconds,
+                    )
+                    completed = None
+                else:
+                    completed = self._command_runner(
+                        argv, input=password + "\n",
+                        timeout=timeout_seconds,
+                    )
+            if completed is not None and getattr(completed, "returncode", None) != 0:
+                raise MeshCentralReadRefused(
+                    "the official meshcentral client refused the private read"
+                    + _stderr_note(getattr(completed, "stderr", None))
+                )
             try:
                 if os.path.getsize(target) > max_bytes:
                     raise MeshCentralReadTooLarge(

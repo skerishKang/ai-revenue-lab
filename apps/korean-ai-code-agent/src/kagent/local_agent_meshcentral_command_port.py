@@ -50,6 +50,7 @@ from typing import Any, Callable
 
 from .contracts import ContractError
 from .local_agent_meshcentral_private_reader import (
+    _MESHCTRL_LOGINKEY_BOOTSTRAP,
     _MESHCTRL_STDIN_BOOTSTRAP,
     _MESHCTRL_STDIN_LINE_BOOTSTRAP,
 )
@@ -817,15 +818,16 @@ def _still_the_terminal(fd: int) -> None:
     termios.tcsetattr(fd, termios.TCSANOW, attrs)
 
 
-def _terminal_payload(password: str, script: str) -> bytes:
+def _terminal_payload(password: str | None, script: str) -> bytes:
     """The credential line, then the script line, submitted the way a console takes it.
 
     The queue this side writes into is line-oriented: the line feed is what delivers
     the bytes to the client. The console at the far end submits on a carriage return,
     and once the client is in raw mode nothing translates either one - so both, in
-    that order, are written down.
+    that order, are written down. With key-file login no password line is written.
     """
-    return (password + "\n" + script + "\r\n").encode("utf-8")
+    prefix = "" if not password else password + "\n"
+    return (prefix + script + "\r\n").encode("utf-8")
 
 
 class _TerminalHandoff:
@@ -944,6 +946,7 @@ class MeshCentralCliCommandPort:
         process_lane_enabled: bool | None = None,
         run_as_user: bool = False,
         run_as_user_only: bool = False,
+        login_key_file: str | None = None,
     ) -> None:
         if not callable(command_runner):
             raise ContractError("meshcentral command requires an injected command runner")
@@ -982,12 +985,17 @@ class MeshCentralCliCommandPort:
             raise ContractError("the meshcentral login user is required")
         if not callable(password_provider):
             raise ContractError("the login password must be provided at call time")
+        if login_key_file is not None and (
+            not isinstance(login_key_file, str) or not login_key_file.strip()
+        ):
+            raise ContractError("the MeshCentral login-key file must be a path")
         if not isinstance(url, str) or not url.startswith("wss://") or "@" in url:
             raise ContractError("the private tunnel URL must be a wss:// endpoint")
         self._run = command_runner
         self._meshctrl_js = meshctrl_js
         self._login_user = login_user
         self._password_provider = password_provider
+        self._login_key_file = login_key_file
         self._url = url
         self._work_dir = work_dir
         #: Which executor wrote a marker. The failover partner (#5462) can hold a
@@ -996,6 +1004,36 @@ class MeshCentralCliCommandPort:
         self._host_tag = (
             _checked_host_tag(host_tag) if host_tag is not None else _local_host_tag()
         )
+
+    def _uses_login_key_file(self) -> bool:
+        key_file = getattr(self, "_login_key_file", None)
+        return isinstance(key_file, str) and bool(key_file.strip())
+
+    def _runcommand_bootstrap(self) -> str:
+        return _MESHCTRL_LOGINKEY_BOOTSTRAP if self._uses_login_key_file() else _MESHCTRL_STDIN_BOOTSTRAP
+
+    def _shell_bootstrap(self) -> str:
+        return _MESHCTRL_LOGINKEY_BOOTSTRAP if self._uses_login_key_file() else _MESHCTRL_STDIN_LINE_BOOTSTRAP
+
+    def _login_argv(self) -> list[str]:
+        if self._uses_login_key_file():
+            return ["--loginkeyfile", self._login_key_file.strip()]
+        return ["--loginpass", "__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__"]
+
+    def _login_input(self) -> tuple[str | None, str | None]:
+        if self._uses_login_key_file():
+            return None, None
+        password = self._password_provider()
+        if not isinstance(password, str) or not password or "\n" in password or "\r" in password:
+            raise MeshCentralCommandRefused(
+                "the protected MeshCentral operator credential is invalid"
+            )
+        return password, password + "\n"
+
+    def _terminal_password(self, password: str | None) -> str:
+        if self._uses_login_key_file():
+            return ""
+        return password or ""
 
     def run_command(
         self,
@@ -1061,15 +1099,17 @@ class MeshCentralCliCommandPort:
                 "the wrapped command exceeds the OS single-argument limit"
             )
         argv = [
-            "node", "-e", _MESHCTRL_STDIN_BOOTSTRAP,
+            "node", "-e", self._runcommand_bootstrap(),
             self._meshctrl_js, "runcommand",
             "--url", self._url,
             "--loginuser", self._login_user,
-            "--loginpass", "__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__",
+        ]
+        argv.extend(self._login_argv())
+        argv.extend([
             "--id", node_ref.strip(),
             "--powershell",
             "--run", wrapped,
-        ]
+        ])
         # #7065. The envelope below is PowerShell text, so ``--powershell`` is not a
         # caller choice: the ``shell`` a tool asks for (powershell/cmd/bash) is
         # already carried INSIDE that text as ``$env:PADIEM_MCP_SHELL`` and dispatched
@@ -1080,17 +1120,13 @@ class MeshCentralCliCommandPort:
         if self._run_as_user_only:
             argv.append("--runasuseronly")
         argv.append("--reply")
-        password = self._password_provider()
-        if not isinstance(password, str) or not password or "\n" in password or "\r" in password:
-            raise MeshCentralCommandRefused(
-                "the protected MeshCentral operator credential is invalid"
-            )
+        password, login_input = self._login_input()
         if self._popen_factory is None:
             # Buffered fallback for callers that only inject a command runner.
             phase("spawn")
             try:
                 completed = self._run(
-                    argv, input=password + "\n", timeout=timeout_seconds,
+                    argv, input=login_input, timeout=timeout_seconds,
                 )
             except Exception as exc:
                 if type(exc).__name__ == "TimeoutExpired":
@@ -1162,18 +1198,20 @@ class MeshCentralCliCommandPort:
         if self._popen_factory is None:
             return None
         argv = [
-            "node", "-e", _MESHCTRL_STDIN_LINE_BOOTSTRAP,
+            "node", "-e", self._shell_bootstrap(),
             self._meshctrl_js, "shell",
             "--url", self._url,
             "--loginuser", self._login_user,
-            "--loginpass", "__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__",
+        ]
+        argv.extend(self._login_argv())
+        argv.extend([
             "--id", node_ref,
             "--powershell",
-        ]
+        ])
         wrapped = _wrap(command, dispatch_id, self._host_tag, split_markers=True)
         try:
             handoff = self._pty_factory(
-                _terminal_payload(password, wrapped),
+                _terminal_payload(self._terminal_password(password), wrapped),
             )
         except Exception:
             phase("session_open_refused")
@@ -1468,22 +1506,20 @@ class MeshCentralCliCommandPort:
             raise MeshCentralCommandRefused(
                 "the agent's terminal channel needs the streaming client"
             )
-        password = self._password_provider()
-        if not isinstance(password, str) or not password or "\n" in password or "\r" in password:
-            raise MeshCentralCommandRefused(
-                "the protected MeshCentral operator credential is invalid"
-            )
+        password, _ = self._login_input()
         argv = [
-            "node", "-e", _MESHCTRL_STDIN_LINE_BOOTSTRAP,
+            "node", "-e", self._shell_bootstrap(),
             self._meshctrl_js, "shell",
             "--url", self._url,
             "--loginuser", self._login_user,
-            "--loginpass", "__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__",
+        ]
+        argv.extend(self._login_argv())
+        argv.extend([
             "--id", node_ref.strip(),
             "--powershell",
-        ]
+        ])
         handoff = self._pty_factory(
-            _terminal_payload(password, script),
+            _terminal_payload(self._terminal_password(password), script),
         )
         child = self._popen_factory(
             argv, stdin=handoff.slave, stdout=handoff.slave, stderr=handoff.slave,
