@@ -119,6 +119,34 @@ function Get-Com2Journal([string]$UnitName) {
     return ($out -join "`n")
 }
 
+function Get-LiveAssetSha256([string]$Url, [string]$Asset) {
+    # Cloudflare Web Analytics (zone setting) injects its beacon <script> into
+    # served HTML at the edge, so the live index.html never equals the bytes we
+    # uploaded. Strip exactly that injected tag before hashing; every other
+    # byte must still match. Non-HTML assets are hashed as served.
+    $bytes = Get-HttpBytes $Url
+    if ($Asset -like "*.html") {
+        $html = (New-Object System.Text.UTF8Encoding $false).GetString($bytes)
+        $html = [regex]::Replace($html, '\r?\n?<script[^>]*static\.cloudflareinsights\.com/beacon\.min\.js[^>]*>\s*</script>', '')
+        $bytes = (New-Object System.Text.UTF8Encoding $false).GetBytes($html)
+    }
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try { return ([System.BitConverter]::ToString($sha.ComputeHash($bytes))).Replace("-", "").ToLowerInvariant() }
+    finally { $sha.Dispose() }
+}
+
+function Use-WranglerLoginForReadOnlyApi {
+    # The domains check needs a bearer token. When none is in the environment,
+    # reuse wrangler's own stored login (the account that just deployed) for
+    # this process only. The value is never printed.
+    if ($env:CLOUDFLARE_API_TOKEN) { return }
+    $cfg = Join-Path $env:USERPROFILE ".wrangler\config\default.toml"
+    if (-not (Test-Path -LiteralPath $cfg)) { return }
+    foreach ($line in [IO.File]::ReadAllLines($cfg)) {
+        if ($line -match '^\s*oauth_token\s*=\s*"([^"]+)"') { $env:CLOUDFLARE_API_TOKEN = $Matches[1]; return }
+    }
+}
+
 function Get-HttpBytes([string]$Url) {
     $tmp = New-TemporaryFile
     try {
@@ -421,10 +449,7 @@ try {
 
         foreach ($pair in $frontAssetHosts) {
             foreach ($asset in @("chat-transport.js", "index.html")) {
-                $live = Get-HttpBytes ($pair[1] + "/" + $asset)
-                $liveHash = ([System.BitConverter]::ToString(
-                        [System.Security.Cryptography.SHA256]::Create().ComputeHash($live)
-                    )).Replace("-", "").ToLowerInvariant()
+                $liveHash = Get-LiveAssetSha256 ($pair[1] + "/" + $asset) $asset
                 # index.html is compared against the STAMPED copy (the bytes
                 # both surfaces must serve); every other asset in the stamped
                 # tree is byte-identical to the pinned SHA blob.
@@ -437,6 +462,7 @@ try {
             }
         }
 
+        Use-WranglerLoginForReadOnlyApi
         if (-not $env:CLOUDFLARE_API_TOKEN) {
             throw "STEP5_FAIL: CLOUDFLARE_API_TOKEN missing in the environment (read-only domains check; the value is never printed)"
         }
@@ -455,11 +481,10 @@ try {
         # the front back — it is recorded as PAGES_VERIFY_FAIL and fails the
         # release with exit 1 after the summary.
         foreach ($asset in @("chat-transport.js", "index.html")) {
-            $live = Get-HttpBytes ($Script:PagesHost + "/" + $asset)
-            $liveHash = ([System.BitConverter]::ToString(
-                    [System.Security.Cryptography.SHA256]::Create().ComputeHash($live)
-                )).Replace("-", "").ToLowerInvariant()
-            $pinned = Get-FileSha256Hex (Join-Path $shaStaticDir $asset)
+            # The pages build stamps dist with the same ?v=<sha8>, so the
+            # mirror must serve the STAMPED bytes too.
+            $liveHash = Get-LiveAssetSha256 ($Script:PagesHost + "/" + $asset) $asset
+            $pinned = Get-FileSha256Hex (Join-Path $stampStaticDir $asset)
             $ok = $liveHash -eq $pinned
             $verify.Add("padiem-chat.pages.dev/$asset sha256=$(if ($ok) { 'match' } else { 'MISMATCH' })") | Out-Null
             if (-not $ok) {
