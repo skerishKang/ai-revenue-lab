@@ -463,3 +463,30 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
   padding: 4px 10px;
   box-sizing: border-box;
 }
+
+/* ── Auth dialog contrast — 2026-11-08 lane (#7118 후속 화면 점검) ──────────
+ * The padiem-glass auth panel kept its translucent gradient (history.css,
+ * #5666), which composites over the portrait art behind the modal — the same
+ * ink (#17202a) swings from ~15:1 over the bright stop to ~2:1 over the dark
+ * regions of the artwork, and the dark regions sit right behind the form.
+ * The panel goes opaque with the same glass hues, so the token ink keeps AA
+ * (≥4.5:1) against every pixel of the surface, light and dark. Verified
+ * pairs (WCAG relative luminance): #17202a/#f6f9fb 15.6:1,
+ * #17202a/#dfe6ea 13.1:1, #edf5fc/#1a1b1f 15.6:1.
+ */
+
+html[data-theme="padiem-glass"] .auth-panel {
+  background: linear-gradient(160deg, #f6f9fb, #dfe6ea);
+  color: var(--text, #17202a);
+  /* The blur existed to melt the translucent surface into the page; on an
+     opaque panel it is pure GPU cost. */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* The dark theme panel already composes to an opaque token surface; pin both
+   properties so a future translucent --panel cannot reopen the same gap. */
+html[data-theme="dark"] .auth-panel {
+  background: var(--panel, #1a1b1f);
+  color: #edf5fc;
+}
