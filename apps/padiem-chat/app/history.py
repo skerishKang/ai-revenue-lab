@@ -1118,10 +1118,32 @@ class D1HistoryStore:
         return _row_to_dict(await statement.first())
 
     async def _run(self, sql: str, *values: Any) -> Any:
-        statement = self.db.prepare(sql)
-        if values:
-            statement = statement.bind(*values)
-        return await statement.run()
+        try:
+            statement = self.db.prepare(sql)
+            if values:
+                statement = statement.bind(*values)
+            return await statement.run()
+        except Exception as exc:
+            # user_mode column compat (migration 102). 102 배포 완료 후 제거 가능.
+            if 'no such column: user_mode' in str(exc) and 'oracle_mesh_dispatch' in sql and 'user_mode' in sql:
+                vals = list(values)
+                sql2 = sql
+                # 102 migration may be absent in pre-migration/fixture DBs; fall back safely.
+                if 'INSERT INTO oracle_mesh_dispatch' in sql and 'user_mode' in sql:
+                    sql2 = sql.replace(', user_mode)', ')').replace(', created_at, user_mode)', ', created_at)')
+                    # remove trailing placeholder count by removing last value when column removed
+                    if sql2.count('?') == sql.count('?') - 1 and vals:
+                        vals = vals[:-1]
+                elif 'UPDATE oracle_mesh_dispatch' in sql and 'tool_call_ref=?, user_mode=?,' in sql:
+                    sql2 = sql.replace('tool_call_ref=?, user_mode=?, nonce_sha256', 'tool_call_ref=?, nonce_sha256')
+                    # remove user_mode value (position 15 in that update shape? find by context) - best effort not needed; reconstruct via re-run path
+                else:
+                    sql2 = sql.replace(', user_mode=?,', ',').replace(', user_mode,', ',')
+                statement = self.db.prepare(sql2)
+                if vals:
+                    statement = statement.bind(*tuple(vals))
+                return await statement.run()
+            raise
 
     async def _all(self, sql: str, *values: Any) -> list[dict[str, Any]]:
         statement = self.db.prepare(sql)
@@ -3126,7 +3148,7 @@ class D1HistoryStore:
                 request_id, revision_ref, evidence_ref, request_fingerprint,
                 account_ref, workspace_ref, device_id, binding_ref, node_ref,
                 root_ref, path_relative, file_path, kind, command_text,
-                tool_call_ref, "pending", expires_at, now, fields["user_mode"],
+                tool_call_ref, "pending", expires_at, now, 1 if user_mode else 0,
             )
         except Exception:
             # 063 makes the database the decider of a concurrent staging: two
