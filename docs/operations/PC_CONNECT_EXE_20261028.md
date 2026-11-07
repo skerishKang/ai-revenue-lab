@@ -7,8 +7,8 @@ ISSUE=#5573
 CODE_SIGNING=NONE (대표 결정: 무서명으로 진행)
 AGENT_INSTALL_OPTION=-install (measured on the tagged Windows agent, 2026-10-28)
 AGENT_FOLDER=%ProgramFiles%\PADIEM
-CONNECT_EXE_SHA256=c302ff6dd46531dd3a874caff4a5cddac7a312cdc3ea32ce7a46ee4823f76abc
-CONNECT_EXE_BYTES=26624
+CONNECT_EXE_SHA256=a6700b9ff183147d6df8ebfa2cabf3aedd5ab440b2d8c43ac645c515822ca222
+CONNECT_EXE_BYTES=34816
 BUILD=scripts/pc_pairing/build-connect-exe.ps1
 ```
 
@@ -53,6 +53,10 @@ exe                   →  관리자 권한 요청 (거절하면 아무것도 �
                      →  %ProgramFiles%\PADIEM\MeshAgent.exe 로 복사
                      →  MeshAgent.exe -install --agentName="<tag> [C D] <PCNAME>", 이어서 -start
                      →  PadiemPcConnect.exe 복사 + Windows 앱 목록(PADIEM-PC-Connect) 등록
+                     →  (선택) helper EXE를 versioned URL에서 내려받아 SHA-256 검증
+                     →  %ProgramData%\Padiem\padiem-user-helper.exe + helper.secret(32바이트)
+                     →  콘솔 로그인 사용자로 \Padiem\PadiemUserSessionHelper (ONLOGON, Limited) 등록·시작
+                     →  helper-status.json 기록. 실패해도 위 연결은 성공으로 남는다
 서버                  →  관찰된 이름에서 tag와 드라이버를 읽고 링크를 active로 만든다
 ```
 
@@ -60,6 +64,38 @@ exe                   →  관리자 권한 요청 (거절하면 아무것도 �
 미서명 실행을 막는 PC에서는 같은 연결을 .ps1으로 끝낼 수 있다. `.exe`가
 `pc_pairing_connect_exe_unavailable`로 거절될 때만 카드를 .ps1로 내려간다 — 로그인 실패
 같은 거절을 몰래 다른 파일로 바꾸지는 않는다.
+
+### 2.1 사용자 세션 helper (선택)
+
+같은 원클릭 설치가 `padiem-user-helper.exe`도 provision한다. 이것은 서비스가 아니라
+콘솔 사용자의 세션에서 도는 per-user 프로세스이고, 실패해도 MeshCentral 연결은 그대로
+성공이다. helper가 없으면 서버는 기존 `user_session_unavailable`로 답할 뿐, PC 연결을
+되돌리지 않는다.
+
+```text
+배포 설정  PC_USER_HELPER_INSTALL_URL=https://<static-host>/pc-helper/padiem-user-helper-7108.exe
+          PC_USER_HELPER_SHA256=<그 빌드가 출력한 64-hex>
+```
+
+- **버전 고정 방식**: helper EXE는 agent와 같은 정적 배포 호스트의 **versioned path**로
+  서빙하고, 배포가 URL과 SHA-256을 함께 고정한다. 빌드/배포 때 두 값을 같이 올리고,
+  설치 파일과 .exe 꼬리말에는 그 두 값이 그대로 실린다. PC는 받은 바이트의 SHA-256이
+  다르면 배치하지 않고 `sha256_mismatch`만 남긴다. 값이 없거나 잘못되면 helper 단계만
+  생략되고 agent 설치는 정상 진행된다.
+- 파일은 `%ProgramData%\Padiem\padiem-user-helper.exe`, 비밀은 같은 폴더의
+  `helper.secret`(32 random bytes, 64 lowercase hex)이다. ACL은 `SYSTEM:(R)`과
+  **콘솔 로그인 사용자** `:(M)`만 남기고 상속을 끊는다. 비밀값은 콘솔에도
+  `helper-status.json`에도 쓰지 않는다.
+- 작업은 `\Padiem\PadiemUserSessionHelper`, `ONLOGON`, `Interactive`, `Limited`이며
+  등록 직후 시작한다. 사용자는 `Win32_ComputerSystem.UserName`에서 읽는다 — 설치가
+  돌고 있는 관리자 승격 토큰이 아니라 실제로 그 PC에 로그인한 계정이다.
+- `--device-id`에는 이 설치가 이미 가진 pairing tag(`pd-…`)를 넣는다. PR-3 executor는
+  작업 인자에서 같은 값을 읽어 `padiem-user-helper-dev_<sha256 앞 32hex>` 파이프를
+  계산한다. 즉 **설치 파일이 tag를 정하고, executor가 그 tag를 그대로 따라간다.**
+- 결과는 `%ProgramData%\Padiem\helper-status.json`에 남는다. 성공은
+  `{"status":"installed",…}`이고, 실패는 `download_failed`, `sha256_mismatch`,
+  `no_console_user`, `secret_acl_failed`, `task_registration_failed` 중 하나와 함께
+  `not_installed`로 기록된다.
 
 ## 3. 빌드와 재현
 
@@ -82,7 +118,7 @@ Worker로 돌고, 코드와 함께 가는 바이트만이 반드시 서비스된
 
 ```text
 CONNECT_EXE_REPRODUCIBLE=1   # 두 번의 빌드가 같은 바이트
-CONNECT_EXE_SEED=9890add7442b6acffcb5aa6ddbbb63036e8c1b8eb41e768a6188a6358ed2b8be
+CONNECT_EXE_SEED=fc984d67eb1c3e936423c26eabc86cd9a74239acefdf3c378487e5a24f5e6342
 ```
 
 `SEED`는 `PadiemPcConnect.cs`·`app.manifest`·`win32_reproducible.py` 세 파일의 해시에서
