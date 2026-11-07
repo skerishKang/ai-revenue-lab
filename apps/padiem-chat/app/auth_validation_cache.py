@@ -21,7 +21,8 @@ from .shared_login_timing import record_login_timing
 
 def _sql_timing_operation(sql: str) -> str | None:
     normalized = ' '.join(str(sql).lower().split())
-    if normalized.startswith('select product_user_id from auth_validation_cache '):
+    if normalized.startswith('select product_user_id from auth_validation_cache ') or \
+            normalized.startswith('select product_user_id, valid_until from auth_validation_cache '):
         return 'session_read'
     if normalized.startswith('select product_user_id from auth_account_link_cache '):
         return 'link_read'
@@ -89,13 +90,22 @@ async def invalidate_auth_cache(request: Any, *, user_id: str,
 
 
 class SqliteAuthValidationCache:
-    def __init__(self, db, *, ttl_seconds=30, link_ttl_seconds=0, clock=time.time):
+    def __init__(self, db, *, ttl_seconds=30, link_ttl_seconds=0,
+                 refresh_ahead_seconds=0, clock=time.time):
         if not 0 < ttl_seconds <= 60:
             raise ValueError('invalid_auth_cache_ttl')
         if not 0 <= link_ttl_seconds <= 900:
             raise ValueError('invalid_account_link_ttl')
+        if not 0 <= refresh_ahead_seconds:
+            raise ValueError('invalid_auth_cache_refresh_ahead')
         self.db, self.ttl_seconds, self.clock = db, float(ttl_seconds), clock
         self.link_ttl_seconds = float(link_ttl_seconds)
+        # #7084: reload an entry shortly before it expires so the request that
+        # would have paid for the reload already has a valid answer. The margin
+        # can never reach the TTL, so no expired answer is ever served and the
+        # revocation bound stays exactly the TTL.
+        self.refresh_ahead_seconds = min(float(refresh_ahead_seconds),
+                                         float(ttl_seconds) / 2)
         # Coordination only, not authority: completed entries live in SQLite.
         self._inflight: dict[tuple[str, ...], asyncio.Task] = {}
 
@@ -126,23 +136,21 @@ class SqliteAuthValidationCache:
         finally:
             _record_cache_sql(operation, started)
 
-    async def _get(self, key):
-        row = await self._first(
-            'SELECT product_user_id FROM auth_validation_cache '
+    async def _cached_row(self, key):
+        return await self._first(
+            'SELECT product_user_id, valid_until FROM auth_validation_cache '
             'WHERE kind=? AND owner_id=? AND session_hash=? AND valid_until>?',
             *key, self.clock())
+
+    async def _get(self, key):
+        row = await self._cached_row(key)
         value = row.get('product_user_id') if row else None
         return value if isinstance(value, str) and value else None
 
-    async def get_or_load(self, kind, owner_id, session_id, loader):
-        """Return the authority's user ID; loader returns (user_id, expiry)."""
-        key = self._key(kind, owner_id, session_id)
-        cached = await self._get(key)
-        if cached is not None:
-            return cached
+    def _schedule(self, key, loader, *, force=False):
         task = self._inflight.get(key)
         if task is None:
-            task = asyncio.create_task(self._load(key, loader))
+            task = asyncio.create_task(self._load(key, loader, force=force))
             self._inflight[key] = task
             def finished(done):
                 if self._inflight.get(key) is done:
@@ -151,7 +159,46 @@ class SqliteAuthValidationCache:
                 if not done.cancelled():
                     done.exception()
             task.add_done_callback(finished)
-        return await asyncio.shield(task)
+        return task
+
+    async def get_or_load(self, kind, owner_id, session_id, loader):
+        """Return the authority's user ID; loader returns (user_id, expiry)."""
+        key = self._key(kind, owner_id, session_id)
+        cached = await self._get(key)
+        if cached is not None:
+            return cached
+        return await asyncio.shield(self._schedule(key, loader))
+
+    async def get_or_load_ahead(self, kind, owner_id, session_id, loader,
+                                background_loader=None):
+        """Like ``get_or_load``, but reload shortly before the entry expires.
+
+        A still-valid entry within ``refresh_ahead_seconds`` of its expiry is
+        returned immediately and one single-flight reload runs behind the
+        response. Customers therefore pay the authority call on a background
+        task instead of inside the request. Only a still-valid answer is served:
+        an expired entry takes the same blocking path as before, so a revoked
+        session is still refused within the TTL and an authority outage still
+        reports the same retryable failure.
+        """
+        if not self.refresh_ahead_seconds:
+            return await self.get_or_load(kind, owner_id, session_id, loader)
+        key = self._key(kind, owner_id, session_id)
+        row = await self._cached_row(key)
+        value = row.get('product_user_id') if row else None
+        if not (isinstance(value, str) and value):
+            return await self.get_or_load(kind, owner_id, session_id, loader)
+        try:
+            remaining = float(row.get('valid_until')) - self.clock()
+        except (TypeError, ValueError):
+            remaining = 0.0
+        if remaining <= self.refresh_ahead_seconds:
+            # Not awaited: the answer is already valid, the reload only replaces
+            # it. ``force`` is required because the entry is still fresh, and a
+            # normal load would return that same entry without asking again. A
+            # failure leaves the current entry in place until it expires.
+            self._schedule(key, background_loader or loader, force=True)
+        return value
 
     async def _get_account_link(self, subject):
         row = await self._first(
@@ -213,10 +260,11 @@ class SqliteAuthValidationCache:
             raise AuthValidationInvalidated('auth_validation_invalidated')
         return row['product_user_id']
 
-    async def _load(self, key, loader):
-        cached = await self._get(key)
-        if cached is not None:
-            return cached
+    async def _load(self, key, loader, *, force=False):
+        if not force:
+            cached = await self._get(key)
+            if cached is not None:
+                return cached
         epoch = await self._first('SELECT revision FROM auth_validation_cache_revision WHERE id=1')
         if not epoch or type(epoch.get('revision')) is not int:
             raise RuntimeError('auth_cache_schema_unavailable')
