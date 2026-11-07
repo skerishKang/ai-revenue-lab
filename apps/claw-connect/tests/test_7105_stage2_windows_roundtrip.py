@@ -22,6 +22,7 @@ import json
 import subprocess
 import sys
 import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -49,22 +50,34 @@ SECRET = b"deployment-secret-for-the-7105-round-trip"
 DEVICE = "dev_" + "d" * 32
 
 
-def _run_client(*, request_id: str, shell: str, command: str,
-                secret_file: Path, timeout_seconds: int = 30) -> dict:
-    """Send one request with the shipped PowerShell client, return its reply."""
+def _run_client_raw(*, request_id: str, shell: str, command: str,
+                    secret_file: Path, timeout_seconds: int = 30) -> tuple[str, float, subprocess.CompletedProcess]:
+    """Send one request with the shipped PowerShell client, return raw output."""
     script = OracleMeshExecutor.build_user_helper_pipe_client_ps(
         device_id=DEVICE, request_id=request_id, shell=shell, command=command,
         cwd=None, timeout_seconds=timeout_seconds, distro=None,
         secret_file=str(secret_file),
     )
     encoded = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
+    started = time.monotonic()
     completed = subprocess.run(
         ["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy",
          "Bypass", "-EncodedCommand", encoded],
         capture_output=True, timeout=90, check=False,
     )
+    elapsed = time.monotonic() - started
     text = completed.stdout.decode("utf-8", "replace").strip()
     assert text, completed.stderr.decode("utf-8", "replace")
+    return text, elapsed, completed
+
+
+def _run_client(*, request_id: str, shell: str, command: str,
+                secret_file: Path, timeout_seconds: int = 30) -> dict:
+    """Send one request with the shipped PowerShell client, return its reply."""
+    text, _elapsed, _completed = _run_client_raw(
+        request_id=request_id, shell=shell, command=command,
+        secret_file=secret_file, timeout_seconds=timeout_seconds,
+    )
     reply = json.loads(text)
     assert isinstance(reply, dict)
     return reply
@@ -127,3 +140,199 @@ def test_real_pipe_round_trip_runs_powershell_and_cmd_as_the_helper_user(tmp_pat
 
     assert not failures, failures
     assert not server.is_alive(), "the helper never served all four requests"
+
+
+def test_pipe_absent_fails_within_the_connect_window(tmp_path):
+    secret_file = tmp_path / "user-helper.secret"
+    secret_file.write_bytes(SECRET + b"\n")
+
+    text, elapsed, completed = _run_client_raw(
+        request_id="req_" + "a" * 32, shell="powershell", command="whoami",
+        secret_file=secret_file,
+    )
+    assert "user_session_unavailable" in text, text
+    assert completed.returncode != 0
+    # Connect(5000) is the bound; the process must be gone well before the
+    # helper could ever answer a request it never received.
+    assert elapsed < 12, elapsed
+
+
+def test_secret_file_missing_fails_before_any_pipe_wait(tmp_path):
+    text, elapsed, completed = _run_client_raw(
+        request_id="req_" + "b" * 32, shell="powershell", command="whoami",
+        secret_file=tmp_path / "absent.secret",
+    )
+    assert "user_session_unavailable" in text, text
+    assert completed.returncode != 0
+    assert elapsed < 8, elapsed
+
+
+def test_helper_accepts_and_never_answers_fails_within_the_read_window(tmp_path):
+    secret_file = tmp_path / "user-helper.secret"
+    secret_file.write_bytes(SECRET + b"\n")
+    listener = service.WindowsPipeListener(DEVICE)
+    held: list[object] = []
+
+    def _silent() -> None:
+        connection = listener.accept(10)
+        if connection is not None:
+            held.append(connection)
+            time.sleep(30)
+
+    silent = threading.Thread(target=_silent, daemon=True)
+    silent.start()
+    try:
+        text, elapsed, completed = _run_client_raw(
+            request_id="req_" + "c" * 32, shell="powershell", command="whoami",
+            secret_file=secret_file,
+        )
+        assert "user_session_unavailable" in text, text
+        assert completed.returncode != 0
+        # The helper accepted the connection but sent no start frame: the 15s
+        # per-frame read window is what ends this, not a command deadline.
+        assert 10 <= elapsed < 25, elapsed
+    finally:
+        for connection in held:
+            connection.close()
+        listener.close()
+
+
+def test_a_long_command_is_kept_alive_by_heartbeats(tmp_path):
+    secret_file = tmp_path / "user-helper.secret"
+    secret_file.write_bytes(SECRET + b"\n")
+    listener = service.WindowsPipeListener(DEVICE)
+    failures: list[BaseException] = []
+
+    def _serve() -> None:
+        try:
+            service.serve_pipe(device_id=DEVICE, secret=SECRET, listener=listener,
+                               max_requests=1)
+        except BaseException as exc:  # noqa: BLE001 - asserted below
+            failures.append(exc)
+
+    server = threading.Thread(target=_serve, daemon=True)
+    server.start()
+    try:
+        reply = _run_client(
+            request_id="req_" + "d" * 32, shell="powershell",
+            command="Start-Sleep -Seconds 7; Write-Output 'late-answer'",
+            secret_file=secret_file,
+        )
+        assert reply["status"] == "ok", reply
+        assert "late-answer" in _stdout(reply)
+    finally:
+        server.join(timeout=90)
+        listener.close()
+    assert not failures, failures
+
+
+def test_a_large_output_is_returned_whole(tmp_path):
+    """#7107: 300 KiB crosses the pipe as chunks, not as a 256 KiB cut."""
+    secret_file = tmp_path / "user-helper.secret"
+    secret_file.write_bytes(SECRET + b"\n")
+    listener = service.WindowsPipeListener(DEVICE)
+    failures: list[BaseException] = []
+
+    def _serve() -> None:
+        try:
+            service.serve_pipe(device_id=DEVICE, secret=SECRET, listener=listener,
+                               max_requests=1)
+        except BaseException as exc:  # noqa: BLE001
+            failures.append(exc)
+
+    server = threading.Thread(target=_serve, daemon=True)
+    server.start()
+    try:
+        reply = _run_client(
+            request_id="req_" + "e" * 32, shell="powershell",
+            command="[Console]::Out.Write(('x' * 300000))",
+            secret_file=secret_file,
+        )
+        assert reply["status"] == "ok", reply
+        assert reply.get("truncated") is False
+        assert len(_stdout(reply)) == 300_000
+    finally:
+        server.join(timeout=90)
+        listener.close()
+    assert not failures, failures
+
+
+def test_a_command_past_the_old_thirty_second_limit_completes(tmp_path):
+    """#7107: the old 30s helper deadline would have failed this command."""
+    secret_file = tmp_path / "user-helper.secret"
+    secret_file.write_bytes(SECRET + b"\n")
+    listener = service.WindowsPipeListener(DEVICE)
+    failures: list[BaseException] = []
+
+    def _serve() -> None:
+        try:
+            service.serve_pipe(device_id=DEVICE, secret=SECRET, listener=listener,
+                               max_requests=1)
+        except BaseException as exc:  # noqa: BLE001
+            failures.append(exc)
+
+    server = threading.Thread(target=_serve, daemon=True)
+    server.start()
+    try:
+        reply = _run_client(
+            request_id="req_" + "d" * 32, shell="powershell",
+            command="Start-Sleep -Seconds 32; Write-Output 'past-30'",
+            secret_file=secret_file,
+        )
+        assert reply["status"] == "ok", reply
+        assert "past-30" in _stdout(reply)
+    finally:
+        server.join(timeout=120)
+        listener.close()
+    assert not failures, failures
+
+
+def test_a_dead_client_stops_the_user_child_and_frees_the_helper(tmp_path):
+    """#7107: killing the SYSTEM client ends the user child, not an orphan."""
+    marker = tmp_path / "after-stop.txt"
+    secret_file = tmp_path / "user-helper.secret"
+    secret_file.write_bytes(SECRET + b"\n")
+    listener = service.WindowsPipeListener(DEVICE)
+    failures: list[BaseException] = []
+
+    def _serve() -> None:
+        try:
+            service.serve_pipe(device_id=DEVICE, secret=SECRET, listener=listener,
+                               max_requests=2)
+        except BaseException as exc:  # noqa: BLE001
+            failures.append(exc)
+
+    server = threading.Thread(target=_serve, daemon=True)
+    server.start()
+    script = OracleMeshExecutor.build_user_helper_pipe_client_ps(
+        device_id=DEVICE, request_id="req_" + "f" * 32, shell="powershell",
+        command=("Start-Sleep -Seconds 20; Set-Content -LiteralPath "
+                 f"'{marker}' -Value done"),
+        cwd=None, timeout_seconds=0, distro=None, secret_file=str(secret_file),
+    )
+    encoded = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
+    client = subprocess.Popen(
+        ["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy",
+         "Bypass", "-EncodedCommand", encoded],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    try:
+        time.sleep(3)
+        client.kill()
+        client.wait(timeout=10)
+        # The heartbeat write fails on the next 5s pulse; the helper then kills
+        # the user child. The 20s marker must never appear.
+        time.sleep(7)
+        assert not marker.exists(), "the user child survived the dead client"
+        reply = _run_client(
+            request_id="req_" + "a" * 31 + "b", shell="powershell",
+            command="Write-Output 'after-stop'", secret_file=secret_file,
+        )
+        assert reply["status"] == "ok", reply
+        assert "after-stop" in _stdout(reply)
+    finally:
+        if client.poll() is None:
+            client.kill()
+        server.join(timeout=30)
+        listener.close()
+    assert not failures, failures

@@ -105,10 +105,11 @@ SUPPORTED_SHELLS = STAGE1_SHELLS + STAGE2_SHELLS
 PIPE_PREFIX = "padiem-user-helper-"
 DEFAULT_TIMEOUT_SECONDS = 30
 MAX_TIMEOUT_SECONDS = 120
-#: Per-stream ceiling. A status check is a few hundred bytes; this only stops a
-#: chatty command from filling the pipe, and a cut body is reported as cut.
+#: Legacy direct-pipe read window; the stage-2 frame path no longer cuts output.
 MAX_STREAM_BYTES = 262_144
-MAX_COMMAND_CHARS = 8_192
+#: #7107: the tool schema already accepts 50,000-character commands; the helper
+#: must not be the narrower copy that refuses them.
+MAX_COMMAND_CHARS = 50_000
 MAX_CWD_CHARS = 1_024
 #: How many request ids the helper remembers for replay refusal. A request is a
 #: single observation, so this only has to outlive a retry window.
@@ -308,10 +309,10 @@ def parse_request(payload: Mapping[str, Any]) -> HelperRequest:
         raise UserHelperError(USER_HELPER_BAD_REQUEST, "command is missing or too long")
 
     timeout = payload.get("timeout_seconds", DEFAULT_TIMEOUT_SECONDS)
-    if not isinstance(timeout, int) or isinstance(timeout, bool):
-        raise UserHelperError(USER_HELPER_BAD_REQUEST, "timeout_seconds must be an integer")
-    if not 1 <= timeout <= MAX_TIMEOUT_SECONDS:
-        raise UserHelperError(USER_HELPER_BAD_REQUEST, "timeout_seconds is out of range")
+    if not isinstance(timeout, int) or isinstance(timeout, bool) or timeout < 0:
+        # #7107: kept as signed request material for wire compatibility, but it
+        # is not an execution deadline. The command runs until it ends.
+        raise UserHelperError(USER_HELPER_BAD_REQUEST, "timeout_seconds must be a non-negative integer")
 
     cwd = payload.get("cwd")
     if cwd is not None and _bounded_text(cwd, MAX_CWD_CHARS) is None:
@@ -455,36 +456,29 @@ def error_reply(request_id: str, code: str, *, detail: str = "",
     )
 
 
-def _cut(data: bytes) -> tuple[bytes, bool]:
-    if len(data) <= MAX_STREAM_BYTES:
-        return data, False
-    return data[:MAX_STREAM_BYTES], True
-
-
 #: Signature of the runner seam. Tests pass a double; production passes
 #: :func:`run_process`. Keeping it a parameter is what lets the suite prove the
 #: one-process rule without starting a real WSL distribution.
-Runner = Callable[[Sequence[str], str | None, int], tuple[int | None, bytes, bytes]]
+Runner = Callable[[Sequence[str], str | None, int | None], tuple[int | None, bytes, bytes]]
 
 
-def run_process(argv: Sequence[str], cwd: str | None, timeout_seconds: int
+def run_process(argv: Sequence[str], cwd: str | None, timeout_seconds: int | None
                 ) -> tuple[int | None, bytes, bytes]:
     """Start one process, wait for it, and return what it printed.
 
-    A timeout kills the process and reports ``USER_HELPER_TIMEOUT`` rather than
-    returning partial output as if the command had finished. The exit code is
-    the child's own; it is never inferred from "the process started".
+    #7107: there is deliberately no timeout. The owner's stop is what ends a
+    command; a fixed 30/120-second deadline turned every long-but-healthy job
+    into a failure. The exit code is the child's own; it is never inferred from
+    "the process started".
     """
     try:
         completed = subprocess.run(  # noqa: S603 - argv is built from validated parts
             list(argv),
             cwd=cwd,
             capture_output=True,
-            timeout=timeout_seconds,
+            timeout=None,
             check=False,
         )
-    except subprocess.TimeoutExpired as expired:
-        raise UserHelperError(USER_HELPER_TIMEOUT, "the process did not finish in time") from expired
     except FileNotFoundError as missing:
         raise UserHelperError(USER_HELPER_REFUSED, "the executable is not on this PC") from missing
     return completed.returncode, completed.stdout or b"", completed.stderr or b""
@@ -504,19 +498,19 @@ def serve_one(request: HelperRequest, *, secret: bytes, runner: Runner = run_pro
                            detail="the request nonce did not verify")
     try:
         argv = build_argv(request)
-        exit_code, stdout, stderr = runner(argv, request.cwd, request.timeout_seconds)
+        exit_code, stdout, stderr = runner(argv, request.cwd, None)
     except UserHelperError as refused:
         return error_reply(request.request_id, refused.code, detail=refused.detail,
                            duration_ms=int((time.monotonic() - started) * 1000))
-    stdout, cut_out = _cut(stdout)
-    stderr, cut_err = _cut(stderr)
+    # #7107: no per-stream cut. The caller pages the full body; a silent cut is
+    # the one thing this lane must not present as the whole answer.
     return HelperReply(
         request_id=request.request_id,
         status="ok",
         exit_code=exit_code,
         stdout=stdout,
         stderr=stderr,
-        truncated=cut_out or cut_err,
+        truncated=False,
         duration_ms=int((time.monotonic() - started) * 1000),
     )
 

@@ -30,23 +30,29 @@ service and it never runs as SYSTEM.
 """
 from __future__ import annotations
 
+import base64
 import ctypes
 import json
 import os
+import queue
 import struct
+import subprocess
 import sys
+import threading
 import time
 from dataclasses import dataclass
 from typing import Any, Callable, Protocol
 
 from .user_session_helper import (
-    MAX_STREAM_BYTES,
+    STAGE2_SHELLS,
+    build_argv,
     ReplayGuard,
     Runner,
     UserHelperError,
     USER_HELPER_BAD_REPLY,
     USER_HELPER_BAD_REQUEST,
     USER_HELPER_REFUSED,
+    USER_HELPER_TIMEOUT,
     error_reply,
     parse_request,
     pipe_name,
@@ -58,12 +64,23 @@ from .user_session_helper import (
 #: Frame ceiling. A request is a command line plus a little metadata, and a reply
 #: is two Base64 bodies; this bounds a malformed peer without bounding real work.
 MAX_FRAME_BYTES = 2 * 1024 * 1024
+#: #7106: a peer may connect and then say nothing (an executor restart, a killed
+#: client). Without this window the helper sits in ReadFile forever, its single
+#: accept slot stays occupied, and every later request queues behind a dead one.
+REQUEST_READ_TIMEOUT_SECONDS = 5.0
+#: While a stage-2 command runs, the helper sends this heartbeat so the SYSTEM
+#: client can tell "still working" from "helper died after accepting". The
+#: heartbeat is about liveness, not about how long a command may run.
+HEARTBEAT_SECONDS = 5.0
 #: How long one accept waits before the loop re-checks its stop condition. A
 #: helper that is asked to stop must not sit in a blocking accept forever.
 ACCEPT_POLL_SECONDS = 0.5
 #: The pipe's own buffer. Large enough for one frame, so a writer never blocks
 #: mid-frame on a healthy connection.
 PIPE_BUFFER_BYTES = 64 * 1024
+#: #7107: one output frame carries at most this much raw stdout/stderr. The
+#: 2 MiB frame cap is a chunk size, not a total-output cap.
+STREAM_CHUNK_BYTES = 512 * 1024
 
 
 # ---------------------------------------------------------------------------
@@ -181,6 +198,9 @@ def _kernel32():
         kernel.ReadFile.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_ulong, ctypes.c_void_p, ctypes.c_void_p]
         kernel.WriteFile.restype = ctypes.c_int
         kernel.WriteFile.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_ulong, ctypes.c_void_p, ctypes.c_void_p]
+        kernel.PeekNamedPipe.restype = ctypes.c_int
+        kernel.PeekNamedPipe.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_ulong,
+                                         ctypes.c_void_p, ctypes.POINTER(ctypes.c_ulong), ctypes.c_void_p]
         kernel.CloseHandle.restype = ctypes.c_int
         kernel.CloseHandle.argtypes = [ctypes.c_void_p]
         kernel.WaitNamedPipeW.restype = ctypes.c_int
@@ -241,6 +261,85 @@ class WindowsPipeConnection:
                 return b""
             raise UserHelperError(USER_HELPER_BAD_REPLY, f"the pipe read failed (winerr={error})")
         return buffer.raw[: read.value]
+
+    def _available(self) -> int:
+        """Bytes already in the pipe, without consuming them."""
+        total = ctypes.c_ulong(0)
+        ok = self._kernel.PeekNamedPipe(
+            self._handle, None, 0, None, ctypes.byref(total), None,
+        )
+        if not ok:
+            error = ctypes.get_last_error()
+            if error in (_ERROR_BROKEN_PIPE, _ERROR_NO_DATA):
+                return 0
+            raise UserHelperError(
+                USER_HELPER_BAD_REPLY, f"the pipe peek failed (winerr={error})")
+        return total.value
+
+    def read_exact_bounded(self, size: int) -> bytes:
+        """Read one frame's bytes, or refuse if the peer stops mid-frame.
+
+        The stage-2 client writes the 4-byte prefix and the body as two writes.
+        A client killed between them used to leave the helper blocked in
+        ``ReadFile`` for the rest of the body toward a hole that never fills.
+        ``PeekNamedPipe`` lets this read the bytes that are already there and
+        give up on a peer that stopped, so one half-frame cannot wedge the
+        helper's only accept slot.
+        """
+        deadline = time.monotonic() + REQUEST_READ_TIMEOUT_SECONDS
+        collected = bytearray()
+        while len(collected) < size:
+            available = self._available()
+            if available <= 0:
+                if time.monotonic() >= deadline:
+                    raise UserHelperError(
+                        USER_HELPER_TIMEOUT, "the request frame stopped mid-way")
+                time.sleep(0.05)
+                continue
+            chunk = self.read_exact(min(available, size - len(collected)))
+            if not chunk:
+                raise UserHelperError(
+                    USER_HELPER_BAD_REPLY, "the pipe closed before the frame was complete")
+            collected.extend(chunk)
+        return bytes(collected)
+
+    def wait_readable(self, timeout_seconds: float) -> None:
+        """Wait for the first byte of a frame, or refuse after the window.
+
+        ``PeekNamedPipe`` is what makes this bounded without touching the
+        blocking ``ReadFile`` below: a peer that connected and sent nothing is
+        refused here, and the helper's serial accept loop moves on. A closed
+        peer is a refusal with no reply, not a broken pipe that ends the loop.
+        """
+        deadline = time.monotonic() + float(timeout_seconds)
+        while True:
+            available = ctypes.c_ulong(0)
+            ok = self._kernel.PeekNamedPipe(
+                self._handle, None, 0, None, ctypes.byref(available), None,
+            )
+            if not ok:
+                error = ctypes.get_last_error()
+                if error in (_ERROR_BROKEN_PIPE, _ERROR_NO_DATA):
+                    raise UserHelperError(
+                        USER_HELPER_BAD_REPLY, "the pipe closed before a request arrived")
+                raise UserHelperError(
+                    USER_HELPER_BAD_REPLY, f"the pipe peek failed (winerr={error})")
+            if available.value > 0:
+                return
+            if time.monotonic() >= deadline:
+                raise UserHelperError(
+                    USER_HELPER_TIMEOUT, "no request frame arrived in time")
+            time.sleep(0.05)
+
+    def peer_closed(self) -> bool:
+        """Whether the client end is gone, without consuming a byte."""
+        total = ctypes.c_ulong(0)
+        ok = self._kernel.PeekNamedPipe(
+            self._handle, None, 0, None, ctypes.byref(total), None,
+        )
+        if ok:
+            return False
+        return ctypes.get_last_error() in (_ERROR_BROKEN_PIPE, _ERROR_NO_DATA)
 
     def write_all(self, data: bytes) -> None:
         written = ctypes.c_ulong(0)
@@ -329,6 +428,42 @@ class ServeStats:
     last_error: str = ""
 
 
+class _FrameWriter:
+    """One writer for one connection, shared by the serve thread and heartbeat.
+
+    A start frame and a heartbeat go out while ``serve_one`` runs. Two threads
+    writing frames interleaved would corrupt the 4-byte prefix, so every frame
+    takes this lock; a failed write marks the peer gone and is never retried.
+    """
+
+    def __init__(self, connection: Connection) -> None:
+        self._connection = connection
+        self._lock = threading.Lock()
+        self.gone = threading.Event()
+
+    def send(self, payload: dict[str, Any]) -> bool:
+        with self._lock:
+            if self.gone.is_set():
+                return False
+            try:
+                self._connection.write_all(encode_frame(payload))
+                return True
+            except Exception:
+                self.gone.set()
+                return False
+
+
+def _heartbeat_frames(writer: _FrameWriter, request_id: str, stop: threading.Event) -> None:
+    """Say "still working" until the command ends or the peer disappears."""
+    count = 0
+    while not stop.wait(HEARTBEAT_SECONDS):
+        count += 1
+        if not writer.send({
+            "request_id": request_id, "status": "running", "heartbeat": count,
+        }):
+            return
+
+
 def handle_connection(connection: Connection, *, secret: bytes,
                       guard: ReplayGuard, runner: Runner = run_process) -> str:
     """Serve exactly one request on one connection and close it.
@@ -339,7 +474,18 @@ def handle_connection(connection: Connection, *, secret: bytes,
     """
     request_id = ""
     try:
-        payload = read_frame(connection.read_exact)
+        # #7106: a connection that never sends a frame is the stale half-open
+        # peer that used to wedge the helper forever. Refuse it with no reply so
+        # the next request can be accepted; fakes without the seam keep the old
+        # behaviour and are only used by unit tests.
+        waiter = getattr(connection, "wait_readable", None)
+        if callable(waiter):
+            try:
+                waiter(REQUEST_READ_TIMEOUT_SECONDS)
+            except UserHelperError:
+                return "refused"
+        bounded = getattr(connection, "read_exact_bounded", None)
+        payload = read_frame(bounded if callable(bounded) else connection.read_exact)
         request_id = str(payload.get("request_id", ""))
         request = parse_request(payload)
         if not verify_nonce(secret, request):
@@ -352,8 +498,34 @@ def handle_connection(connection: Connection, *, secret: bytes,
                                 detail="this request id was already served")
             connection.write_all(encode_frame(reply.to_frame()))
             return "refused"
-        reply = serve_one(request, secret=secret, runner=runner)
-        connection.write_all(encode_frame(reply.to_frame()))
+        if request.shell in STAGE2_SHELLS:
+            # #7107: production stage-2 commands stream their output and run
+            # without a deadline. Tests that inject a runner keep the one-shot
+            # seam below, so their framing contract is unchanged.
+            if runner is run_process:
+                return _serve_streaming(connection, request)
+            # #7106: the SYSTEM client must be able to distinguish "the helper
+            # took the request and is working" from "the helper accepted and
+            # died". A start frame goes out before the child exists, and a
+            # heartbeat every few seconds until it exits; neither limits how
+            # long the command itself may run.
+            writer = _FrameWriter(connection)
+            writer.send({"request_id": request.request_id, "status": "started"})
+            stop = threading.Event()
+            pulses = threading.Thread(
+                target=_heartbeat_frames, args=(writer, request.request_id, stop),
+                daemon=True,
+            )
+            pulses.start()
+            try:
+                reply = serve_one(request, secret=secret, runner=runner)
+            finally:
+                stop.set()
+                pulses.join(timeout=1)
+            writer.send(reply.to_frame())
+        else:
+            reply = serve_one(request, secret=secret, runner=runner)
+            connection.write_all(encode_frame(reply.to_frame()))
         return "served" if reply.status == "ok" else "refused"
     except UserHelperError as refused:
         # A malformed frame still gets an answer when the request id is known,
@@ -366,6 +538,127 @@ def handle_connection(connection: Connection, *, secret: bytes,
         return "refused"
     finally:
         connection.close()
+
+
+def _peer_closed(connection: Connection) -> bool:
+    """Whether the SYSTEM peer has already gone away."""
+    probe = getattr(connection, "peer_closed", None)
+    try:
+        return bool(probe()) if callable(probe) else False
+    except Exception:
+        return True
+
+
+def _kill_process_tree(process: subprocess.Popen) -> None:
+    """End the command and its children; the user shell may have spawned them."""
+    if sys.platform == "win32":
+        try:
+            subprocess.run(  # noqa: S603 - the pid is this helper's own child
+                ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                capture_output=True, check=False,
+            )
+        except Exception:
+            pass
+    try:
+        process.kill()
+    except Exception:
+        pass
+
+
+def _serve_streaming(connection: Connection, request) -> str:
+    """#7107: run one stage-2 command, stream its output, and never time it out.
+
+    The connection is the owner's handle on the work. While it is alive the
+    helper sends ``started``, a heartbeat every five seconds, and one frame per
+    output chunk. If the owner stops the dispatch the SYSTEM client is killed,
+    this helper sees the broken pipe, and the user child is ended too; the same
+    broken pipe is why a mid-frame client can no longer leave an orphan here.
+    """
+    request_id = request.request_id
+    writer = _FrameWriter(connection)
+    writer.send({"request_id": request_id, "status": "started"})
+    started = time.monotonic()
+    try:
+        argv = build_argv(request)
+        process = subprocess.Popen(  # noqa: S603 - argv is built from validated parts
+            argv, cwd=request.cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            bufsize=0,
+        )
+    except UserHelperError as refused:
+        writer.send(error_reply(request_id, refused.code, detail=refused.detail).to_frame())
+        return "refused"
+    except OSError as missing:
+        writer.send(error_reply(request_id, USER_HELPER_REFUSED,
+                                detail="the executable is not on this PC").to_frame())
+        return "refused"
+
+    events: queue.Queue = queue.Queue()
+
+    def pump(name: str, stream) -> None:
+        try:
+            while True:
+                chunk = stream.read(STREAM_CHUNK_BYTES)
+                if not chunk:
+                    return
+                events.put((name, chunk))
+        finally:
+            events.put((name, None))
+
+    for name, stream in (("stdout", process.stdout), ("stderr", process.stderr)):
+        threading.Thread(target=pump, args=(name, stream), daemon=True).start()
+
+    stop = threading.Event()
+    pulses = threading.Thread(
+        target=_heartbeat_frames, args=(writer, request_id, stop), daemon=True,
+    )
+    pulses.start()
+    pending = 2
+    stdout_bytes = stderr_bytes = 0
+    cancelled = False
+    try:
+        while True:
+            if not cancelled and writer.gone.is_set():
+                # The owner stopped the dispatch or the executor restarted. The
+                # heartbeat write is the reliable death signal: a killed client
+                # closes the pipe and the next 5s write fails. The child belongs
+                # to this helper, so end it instead of leaving an orphan.
+                cancelled = True
+                _kill_process_tree(process)
+            try:
+                name, chunk = events.get(timeout=0.2)
+            except queue.Empty:
+                if process.poll() is not None and pending == 0:
+                    break
+                continue
+            if chunk is None:
+                pending -= 1
+                if process.poll() is not None and pending == 0:
+                    break
+                continue
+            if name == "stdout":
+                stdout_bytes += len(chunk)
+            else:
+                stderr_bytes += len(chunk)
+            writer.send({
+                "request_id": request_id, "status": name,
+                "data_b64": base64.b64encode(chunk).decode("ascii"),
+            })
+        exit_code = process.wait()
+    finally:
+        stop.set()
+        pulses.join(timeout=1)
+        if process.poll() is None:
+            _kill_process_tree(process)
+    final = {
+        "request_id": request_id,
+        "status": "cancelled" if cancelled else "ok",
+        "exit_code": exit_code,
+        "stdout_bytes": stdout_bytes,
+        "stderr_bytes": stderr_bytes,
+        "truncated": False,
+        "duration_ms": int((time.monotonic() - started) * 1000),
+    }
+    return "served" if writer.send(final) and not cancelled else "refused"
 
 
 def serve_pipe(*, device_id: str, secret: bytes, listener: Listener | None = None,

@@ -203,7 +203,7 @@ html[data-theme="padiem-glass"] .brand-row {
   flex: 0 0 auto;
   font-size: 12px;
   padding: 0 10px;
-  min-width: 0;
+  min-width: 44px;
   min-height: 44px;
   max-width: 112px;
 }
