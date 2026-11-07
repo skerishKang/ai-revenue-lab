@@ -203,10 +203,15 @@ jobs:
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" -o "${settings}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${sub}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
-            # Signed connector-truth ingress is exposed on workers.dev for the
-            # state Worker (identity exposes its signed ingress the same way);
-            # the edge Worker and previews stay disabled.
-            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" --arg state "${STATE_WORKER}" '.success == true and .result.enabled == ($worker == $identity or $worker == $state) and .result.previews_enabled == false' "${sub}" >/dev/null
+            # Before-snapshot topology: identity's signed ingress is already on
+            # workers.dev and the edge Worker stays off. The state Worker may be
+            # either value here — this deploy is the transition that turns it
+            # on; the read-back below enforces enabled==true after it.
+            if [ "${worker}" = "${STATE_WORKER}" ]; then
+              jq -e '.success == true and .result.previews_enabled == false' "${sub}" >/dev/null
+            else
+              jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" '.success == true and .result.enabled == ($worker == $identity) and .result.previews_enabled == false' "${sub}" >/dev/null
+            fi
             jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${dep}" >/dev/null
             version="$(jq -r '.result.deployments[0].versions[0].version_id // .result.deployments[0].versions[0].version // empty' "${dep}")"
             test -n "${version}"
@@ -293,9 +298,9 @@ jobs:
             sub="${RUNNER_TEMP}/${worker}-sub-after.json"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${sub}"
-            # Same read-back shape as the pre-mutation snapshot: the state and
-            # identity signed ingresses live on workers.dev; edge and previews
-            # stay disabled.
+            # Post-deploy read-back: the transition has happened, so the state
+            # and identity signed ingresses must be on workers.dev now; edge
+            # and previews stay disabled.
             jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" --arg state "${STATE_WORKER}" '.success == true and .result.enabled == ($worker == $identity or $worker == $state) and .result.previews_enabled == false' "${sub}" >/dev/null
             jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${dep}" >/dev/null
             jq -r '.result.deployments[0].versions[0].version_id // .result.deployments[0].versions[0].version // empty' "${dep}"

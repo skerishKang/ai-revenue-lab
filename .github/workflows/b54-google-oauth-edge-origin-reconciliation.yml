@@ -254,15 +254,21 @@ jobs:
             python "${GITHUB_WORKSPACE}/.github/scripts/cloudflare_served_version_cli.py" resolve-active --deployments "${output}"
           }
 
-          # Reviewed subdomain topology: the state and identity signed ingresses
-          # live on workers.dev; the edge Worker and previews stay disabled.
+          # Reviewed subdomain topology: identity's signed ingress lives on
+          # workers.dev; the edge Worker and previews stay disabled. This
+          # workflow deploys only the edge Worker, so the state Worker's flag
+          # may be either value — before and after its own transition deploy.
           require_reviewed_subdomain_topology() {
             local worker="$1"
             local output="${RUNNER_TEMP}/${worker}-subdomain.json"
             curl -fsS "${auth[@]}" \
               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" \
               -o "${output}"
-            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" --arg state "${STATE_WORKER}" '.success == true and .result.enabled == ($worker == $identity or $worker == $state) and .result.previews_enabled == false' "${output}" >/dev/null
+            if [ "${worker}" = "${STATE_WORKER}" ]; then
+              jq -e '.success == true and .result.previews_enabled == false' "${output}" >/dev/null
+            else
+              jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" '.success == true and .result.enabled == ($worker == $identity) and .result.previews_enabled == false' "${output}" >/dev/null
+            fi
           }
 
           cors_probe() {
