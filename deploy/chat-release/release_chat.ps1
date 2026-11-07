@@ -14,7 +14,7 @@
 #      "WorkingDirectory=$OPS" /bin/bash -c "bash
 #      $OPS/deploy/host-com2/deploy_from_main.sh <sha> --apply
 #      --ops-checkout $OPS". Poll the journal for COM2_DEPLOY_SUMMARY and
-#      require chat:PASS. Any other summary aborts the release.
+#      require chat:PASS or chat:SKIP (no chat change) and no :FAIL.
 #   3. front Worker (padiem-chat-front): node --test, record the previous
 #      Version ID (rollback point), npx wrangler deploy --keep-vars — all
 #      from the SHA-extracted folder, never from the work folder. The front
@@ -281,8 +281,11 @@ else {
     }
     Write-Info "COM2_DEPLOY_SUMMARY=$summaryLine"
     Add-Summary "COM2_DEPLOY_SUMMARY=$summaryLine"
-    if ($summaryLine -notmatch "chat:PASS") {
-        throw "STEP2_FAIL: COM2 deploy did not end chat:PASS ($summaryLine)"
+    # chat:SKIP is a valid outcome: deploy_from_main.sh skips the chat unit
+    # when the release changes no chat-runtime path (e.g. a pages/build-only
+    # release). Any :FAIL, or a chat state other than PASS/SKIP, aborts.
+    if ($summaryLine -match ":FAIL" -or $summaryLine -notmatch "chat:(PASS|SKIP)") {
+        throw "STEP2_FAIL: COM2 deploy did not end chat:PASS/SKIP without FAIL ($summaryLine)"
     }
 }
 
