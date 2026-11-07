@@ -1,6 +1,8 @@
 """Bind a bearer request to exact first-party consent and existing PC execution."""
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 import json
 import logging
 import re
@@ -18,6 +20,15 @@ _LOGGER = logging.getLogger("padiem_chat.request")
 
 
 _SHORT_CODE = re.compile(r"[a-z][a-z0-9_]{0,63}")
+_SHELL_TOOL_NAMES = frozenset({"pc_shell", "pc_shell_start"})
+
+
+def _command_bytes(tool_name: str, arguments) -> int | None:
+    """UTF-8 length of a shell command only; the body is never stored."""
+    if tool_name not in _SHELL_TOOL_NAMES or not isinstance(arguments, Mapping):
+        return None
+    command = arguments.get("command")
+    return len(command.encode("utf-8")) if isinstance(command, str) else None
 
 
 def refusal_code(exc) -> str | None:
@@ -51,6 +62,9 @@ def _log_operation(audit, status, *, outcome=None):
         if isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9_.:-]{1,96}", value):
             event[key] = value
     # 대상 PC는 끝 6자만 남긴다. 전체 기기 ID·메시 노드 ID는 로그에도 쓰지 않는다.
+    command_bytes = _command_bytes(audit["tool_name"], audit["arguments"])
+    if command_bytes is not None:
+        event["command_bytes"] = command_bytes
     device6 = device_id6((audit.get("identity") or {}).get("device_id"))
     if device6:
         event["device"] = device6
@@ -107,7 +121,8 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
     audit = {"identity": identity, "tool_name": tool_name, "arguments": arguments,
              "approval_id": None if shell_tool else approval_id}
     try:
-        await store.audit(**audit, status="requested")
+        await store.audit(**audit, status="requested",
+                          command_bytes=_command_bytes(tool_name, arguments))
     except Exception:
         return {"status": "unavailable", "code": "mcp_audit_unavailable",
                     "answer": "작업 기록을 준비하지 못해 실행하지 않았습니다. 잠시 뒤 다시 시도해 주세요."}
@@ -209,6 +224,7 @@ async def _record_outcome(request, store, audit, outcome):
     job_receipt = outcome.pop("_job_receipt", None)
     try:
         await store.audit(**audit, status=outcome["status"],
+                          command_bytes=_command_bytes(audit["tool_name"], audit["arguments"]),
                           exit_code=metadata.get("exit_code"),
                           duration_ms=metadata.get("duration_ms"),
                           output_bytes=metadata.get("output_bytes"),
