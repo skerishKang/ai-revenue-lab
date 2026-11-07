@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<title>개인정보처리방침 — Padiem</title>
+<link rel="stylesheet" href="./legal-pages.css">
+</head>
+<body class="legal-page">
+<main class="legal-wrap">
+  <a class="legal-back" href="/">← Padiem으로 돌아가기</a>
+  <h1>개인정보처리방침</h1>
+  <p class="legal-muted">
+    시행일: 2026-11-10 ·
+    버전: v1
+  </p>
+
+  <div class="legal-card">
+    <p>
+      <strong>PADIEM(파디엠)</strong>(이하 "회사")은(는)
+      AI 업무 도우미 서비스 Padiem(이하 "서비스", <strong>chat.padiem.net</strong>)을 운영하며,
+      개인정보보호법 등 관련 법령을 준수합니다.
+    </p>
+    <p>
+      본 방침은 서비스 코드가 실제로 수집·처리하는 범위만을 기술합니다.
+    </p>
+  </div>
+
+  <h2>1. 수집·처리하는 개인정보</h2>
+
+  <h3>1-1. 계정 및 로그인</h3>
+  <ul>
+    <li>이메일 로그인: 로그인 식별자로 이메일 주소를 사용하며, 비밀번호는 평문으로 저장하지 않습니다.</li>
+    <li>Google 로그인: Google 계정의 이메일, 이름, 프로필 사진 URL을 받아 계정을 만듭니다.</li>
+    <li>보관 위치: 서비스 계정 정보(이메일·프로필)는 회사가 운영하는 데이터베이스에 저장합니다.</li>
+  </ul>
+
+  <h3>1-2. 대화 기록</h3>
+  <ul>
+    <li>회원이 입력한 질문과 서비스가 생성한 답변을 계정별로 저장합니다. 저장된 대화는 화면의 대화 목록에서 다시 보거나 검색·삭제할 수 있습니다.</li>
+    <li>답변 생성을 위해 입력 내용은 AI 처리 위탁 업체로 전달됩니다(5조). 첨부한 문서·이미지도 답변 생성에만 사용됩니다.</li>
+  </ul>
+
+  <h3>1-3. PC 연결</h3>
+  <ul>
+    <li>회원이 PC를 서비스에 연결하면 기기 식별 정보(기기 ID, 페어링 상태)를 저장합니다.</li>
+    <li>연결된 PC의 파일 목록 조회·파일 읽기·브라우저 조작 등의 동작은 <strong>회원이 그 대화에서 요청한 경우에만</strong> 실행되며, 실행 전에 매번 계정·기기 권한을 다시 확인합니다.</li>
+    <li>파일 저장·수정·삭제 같은 변경 동작은 회원의 요청에 그 대상이 담긴 경우에만 선언되고, 실행은 별도 확인 절차를 거칩니다.</li>
+  </ul>
+
+  <h3>1-4. Google Drive · Google Calendar 읽기</h3>
+  <ul>
+    <li>연결한 회원에 한해 <strong>읽기 전용</strong>으로만 접근합니다 —
+      Drive: <code>drive.readonly</code>, Calendar: <code>calendar.readonly</code>. 쓰기·삭제 권한은 요청하거나 저장하지 않습니다.</li>
+    <li>읽은 결과(파일 목록·일정)는 회원의 질문에 답하는 데만 사용되고, 다른 회원과 공유되지 않습니다.</li>
+    <li>Google에서 받은 접근 토큰·갱신 토큰은 별도 OAuth 서버에 암호화(봉인)하여 보관하고, 도구 실행 시에는 단기 접근 권한만 발급해 전달합니다. 채팅 화면·모델·로그로 토큰이 노출되지 않습니다.</li>
+    <li>연결을 끊거나 권한을 뺏으면(계정 삭제 포함) 저장된 권한 정보와 봉인 토큰은 더 이상 사용할 수 없습니다.</li>
+  </ul>
+
+  <h3>1-5. 웹 푸시 알림</h3>
+  <ul>
+    <li>알림 수신을 동의한 기기의 구독 정보(엔드포인트 URL, 암호화 키)를 서버에만 저장합니다. 구독 정보는 화면 응답·로그에 노출되지 않고, 식별 불가능한 요약값으로만 관리됩니다.</li>
+  </ul>
+
+  <h3>1-6. 쿠키 · 세션</h3>
+  <ul>
+    <li>로그인 상태 유지를 위해 인증 쿠키(<code>padiem_session</code>) 1종을 사용합니다. 광고·추적용 쿠키는 사용하지 않습니다.</li>
+  </ul>
+
+  <h2>2. 개인정보의 이용 목적</h2>
+  <ul>
+    <li>회원 식별과 로그인 유지, 서비스 제공(대화 답변, PC 작업, Drive·Calendar 조회, 알림)</li>
+    <li>회원이 요청한 작업의 실행과 그 결과 전달, 문의 대응</li>
+    <li>서비스 안정성 확보(남용·보안 사고 방지, 오류 기록)</li>
+  </ul>
+
+  <h2>3. 보관 기간 및 파기</h2>
+  <ul>
+    <li>대화 기록: 회원이 삭제할 때까지 보관하며, 대화 단위 즉시 삭제를 화면에서 제공합니다.</li>
+    <li>계정 삭제: 계정 삭제 기능(<strong>설정 → 계정 삭제</strong>)을 제공합니다. 마지막 확인 절차(가입 이메일과 동일한 입력) 후 대화 기록, 캘린더 기록 등 해당 회원 소유 데이터를 일괄 삭제하고 로그인 계정도 삭제합니다.</li>
+    <li>연결 해제: Drive 연결 해제 시 저장된 Drive 권한 정보를 즉시 무효화합니다.</li>
+    <li>일부 보안·감사 기록은 법령이 요구한 기간 동안만 별도 보관 후 파기합니다.</li>
+  </ul>
+
+  <h2>4. 개인정보의 제3자 제공 및 처리 위탁</h2>
+  <ul>
+    <li>회사는 회원의 사전 동의나 법령 근거 없이 개인정보를 제3자에게 제공하지 않습니다.</li>
+    <li>처리 위탁: (가) 서비스 호스팅·데이터 저장, (나) AI 답변 생성(입력 내용·첨부 문서의 처리), (다) Google 로그인·Drive·Calendar 연동은 각각 위탁 업체를 통해 수행됩니다. 위탁 업체와 업무 내용·보유 기간은
+      호스팅·데이터 저장은 Cloudflare, Google Cloud에 위탁합니다. AI 답변 생성은
+      "AI 응답 생성을 위한 처리 위탁"이며 위탁 업체명은 본 방침에 기재하지 않습니다(요청 시 고지).</li>
+    <li>AI 답변 생성 위탁 업체는 회사가 정한 범위(요청 처리) 외의 목적으로 회원 내용을 사용하지 않도록 계약으로 제한합니다.</li>
+  </ul>
+
+  <h2>5. Google 사용자 데이터의 제한적 사용 (Limited Use)</h2>
+  <div class="legal-card">
+    <p>
+      Padiem 앱의 Google API로부터 받은 사용자 정보의 사용 및 다른 앱으로의 전송은
+      제한적 사용 요건을 포함하여 Google API 서비스 사용자 데이터 정책을 준수합니다.
+    </p>
+    <p lang="en" class="legal-muted">
+      Padiem's use and transfer to any other app of information received from
+      Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy" rel="noopener">Google API Services User Data Policy</a>,
+      including the Limited Use requirements.
+    </p>
+  </div>
+
+  <h2>6. 이용자 권리</h2>
+  <ul>
+    <li>회원은 언제든 자신의 개인정보를 열람하고, 잘못된 정보를 정정하고, 삭제를 요구할 수 있습니다. 화면의 대화 삭제·계정 삭제 기능으로 직접 처리할 수 있으며, 그 외 요청은 아래 연락처로 해 주세요.</li>
+  </ul>
+
+  <h2>7. 개인정보 보호책임자</h2>
+  <div class="legal-card">
+    <ul>
+      <li>성명: 강혜림(대표)</li>
+      <li>연락처: <a href="mailto:ceo@padiem.net">ceo@padiem.net</a></li>
+      <!-- 추후 추가 가능: 회사 주소, 사업자등록번호 항목 -->
+    </ul>
+  </div>
+
+  <h2>8. 방침 변경</h2>
+  <p>본 방침을 변경하면 시행일과 함께 이 페이지에 게시합니다. 중요한 변경은 서비스 안내로 알립니다.</p>
+
+  <div class="legal-links">
+    <a href="./terms.html">이용약관</a>
+    <a href="./privacy.html">개인정보처리방침</a>
+    <a href="./third-party-licenses.html">오픈소스 고지</a>
+    <a href="/">Padiem</a>
+  </div>
+
+  <section class="legal-summary" lang="en">
+    <h2>Privacy Policy — Summary (English)</h2>
+    <ul>
+      <li><strong>Account:</strong> email (or Google sign-in: email, name, profile photo URL) stored to create your account.</li>
+      <li><strong>Conversations:</strong> your questions and the assistant's answers are stored per account; you can delete each conversation or your whole account (Settings → Delete account).</li>
+      <li><strong>Connected PC:</strong> device identifiers for a paired computer. File listing, reading, browser actions and writes run <strong>only when you ask for them in a conversation</strong>, with ownership re-verified each time.</li>
+      <li><strong>Google Drive &amp; Calendar:</strong> read-only access (<code>drive.readonly</code>, <code>calendar.readonly</code>) for users who connect them. Tokens are stored sealed on a separate OAuth server; tool execution receives only short-lived access leases.</li>
+      <li><strong>Web push:</strong> for opted-in devices, the subscription endpoint and keys are stored server-side only and never echoed to screens or logs.</li>
+      <li><strong>Cookies:</strong> one authentication cookie (<code>padiem_session</code>). No advertising or tracking cookies.</li>
+      <li><strong>Processors:</strong> hosting/storage is delegated to Cloudflare and Google Cloud; AI answer generation is delegated under contract ("AI 응답 생성을 위한 처리 위탁", processor not named); Google sign-in/Drive/Calendar integration runs through Google. No personal data is sold or shared without a legal basis.</li>
+      <li><strong>Limited Use:</strong> Padiem's use and transfer of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements.</li>
+      <li><strong>Operator:</strong> PADIEM(파디엠), CEO 강혜림 — contact ceo@padiem.net. Privacy officer: 강혜림 (CEO). Effective date: 2026-11-10.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>
