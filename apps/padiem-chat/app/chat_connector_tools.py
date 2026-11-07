@@ -1,4 +1,4 @@
-"""Chat model-turn connector tools: Drive READ + Calendar READ.
+"""Chat model-turn connector tools: Drive READ + Calendar READ + Gmail READ.
 
 The model turn never received the connected Google connector tools: the
 Engine resolves connector authority only on the execution path
@@ -14,6 +14,9 @@ the declaration side for the two approved READ tools only:
   function-name grammar rejects the canonical ``tool:google:...@1`` form;
   the alias→canonical mapping is a closed table pinned to the Core canonical
   id tuples at import time, never a heuristic;
+* Gmail (#7088) follows the same shape with two READ tools — mail search
+  and one-message read. Send, drafts and deletion are out of scope; the
+  journal records counts only, never a mail body, subject or sender;
 * the grant check reuses the existing reviewed workspace truth
   (``connector_status_projection``) — no new grant store, identity or OAuth
   authority — and is bounded: per-user 30s memory cache, a 300ms budget,
@@ -43,12 +46,19 @@ from padiem_ai_core.calendar_capability import (
     CALENDAR_READ_TOOL_IDS,
     calendar_read_tool_specs,
 )
+from padiem_ai_core.connectors import (
+    GMAIL_CANONICAL_TOOL_IDS,
+    GMAIL_GET_MESSAGE_TOOL_ID,
+    GMAIL_SEARCH_MESSAGES_TOOL_ID,
+    gmail_read_tool_specs,
+)
 from padiem_ai_core.drive_capability import (
     DRIVE_CANONICAL_TOOL_IDS,
     DRIVE_READ_TOOL_IDS,
     DRIVE_SEARCH_FILES_TOOL_ID,
     drive_read_tool_specs,
 )
+from padiem_ai_core.gmail_capability import GMAIL_READ_TOOL_IDS
 from padiem_ai_core.tool_channel import ToolDefinition
 
 from .connector_status_projection import (
@@ -64,27 +74,37 @@ _LOG = logging.getLogger("padiem_chat.connector_tools")
 
 # The Engine pins the canonical connector app/agent provisioning identities in
 # its connector_bindings (DRIVE_REFERENCE_APP_ID / DRIVE_AGENT_ID /
-# CALENDAR_REFERENCE_APP_ID / CALENDAR_AGENT_ID). The Chat side repeats only
-# these four closed identifiers — the same precedent as
-# drive_case_folder_engine.PDF_BINARY_READ_APP_ID — and copies nothing else:
-# tool ids and schemas come from Core below.
+# CALENDAR_REFERENCE_APP_ID / CALENDAR_AGENT_ID / GMAIL_REFERENCE_APP_ID). The
+# Chat side repeats only these five closed provisioning identifiers — the same
+# precedent as drive_case_folder_engine.PDF_BINARY_READ_APP_ID — and copies
+# nothing else: tool ids and schemas come from Core below. The Gmail agent id
+# is the reviewed canary provisioning value (a14_gmail_read_production_canary).
 DRIVE_REFERENCE_APP_ID = "b54-padiem-claw-drive"
 DRIVE_AGENT_ID = "agent:padiem:claw_drive_reader@1"
 CALENDAR_REFERENCE_APP_ID = "b54-padiem-claw-calendar"
 CALENDAR_AGENT_ID = "agent:padiem:claw_calendar_reader@1"
+GMAIL_REFERENCE_APP_ID = "b54-padiem-claw"
+GMAIL_AGENT_ID = "agent:padiem:claw_mail_reader@1"
 
 _DRIVE_SPEC_INDEX = {spec.id: spec for spec in drive_read_tool_specs()}
 _CALENDAR_SPEC_INDEX = {spec.id: spec for spec in calendar_read_tool_specs()}
+_GMAIL_SPEC_INDEX = {spec.id: spec for spec in gmail_read_tool_specs()}
 _DRIVE_SPEC = _DRIVE_SPEC_INDEX.get(DRIVE_SEARCH_FILES_TOOL_ID)
 _CALENDAR_SPEC = _CALENDAR_SPEC_INDEX.get(CALENDAR_LIST_EVENTS_TOOL_ID)
+_GMAIL_SEARCH_SPEC = _GMAIL_SPEC_INDEX.get(GMAIL_SEARCH_MESSAGES_TOOL_ID)
+_GMAIL_GET_SPEC = _GMAIL_SPEC_INDEX.get(GMAIL_GET_MESSAGE_TOOL_ID)
 
 # Provider function-call names reject ':'/'@', so each declaration carries a
 # bounded alias and the lane resolves it through CONNECTOR_TOOL_BINDINGS.
 DRIVE_READ_TOOL_NAME = "drive_read"
 CALENDAR_READ_TOOL_NAME = "calendar_read"
+GMAIL_SEARCH_TOOL_NAME = "gmail_search"
+GMAIL_READ_TOOL_NAME = "gmail_read"
 
 _DRIVE_CANONICAL_ID = DRIVE_CANONICAL_TOOL_IDS[0]  # tool:google:drive.search_files@1
 _CALENDAR_CANONICAL_ID = CALENDAR_CANONICAL_TOOL_IDS[2]  # tool:google:calendar.event_list@1
+_GMAIL_SEARCH_CANONICAL_ID = GMAIL_CANONICAL_TOOL_IDS[0]  # tool:google:gmail.search_messages@1
+_GMAIL_GET_CANONICAL_ID = GMAIL_CANONICAL_TOOL_IDS[1]  # tool:google:gmail.get_message@1
 
 #: Closed alias -> (canonical Engine tool id, Engine app id, Engine agent id).
 #: Execution authority stays Engine-side; this table only names the tool.
@@ -95,13 +115,19 @@ CONNECTOR_TOOL_BINDINGS: Mapping[str, tuple[str, str, str]] = {
         CALENDAR_REFERENCE_APP_ID,
         CALENDAR_AGENT_ID,
     ),
+    GMAIL_SEARCH_TOOL_NAME: (
+        _GMAIL_SEARCH_CANONICAL_ID,
+        GMAIL_REFERENCE_APP_ID,
+        GMAIL_AGENT_ID,
+    ),
+    GMAIL_READ_TOOL_NAME: (_GMAIL_GET_CANONICAL_ID, GMAIL_REFERENCE_APP_ID, GMAIL_AGENT_ID),
 }
 
 
 def _require_reviewed_declarations() -> None:
     """Fail closed if the Core READ surface drifted from the reviewed mapping."""
 
-    if _DRIVE_SPEC is None or _CALENDAR_SPEC is None:
+    if _DRIVE_SPEC is None or _CALENDAR_SPEC is None or _GMAIL_SEARCH_SPEC is None or _GMAIL_GET_SPEC is None:
         raise RuntimeError("core connector READ specs lost their reviewed entries")
     if DRIVE_READ_TOOL_IDS[0] != DRIVE_SEARCH_FILES_TOOL_ID:
         raise RuntimeError("core Drive READ spec order drifted from the canonical ids")
@@ -113,14 +139,25 @@ def _require_reviewed_declarations() -> None:
         raise RuntimeError("core Calendar canonical tool id drifted from the reviewed tool")
     if CALENDAR_REFERENCE_APP_ID == DRIVE_REFERENCE_APP_ID:
         raise RuntimeError("connector app identities collapsed onto one id")
+    if GMAIL_READ_TOOL_IDS[0] != GMAIL_SEARCH_MESSAGES_TOOL_ID:
+        raise RuntimeError("core Gmail READ spec order drifted from the canonical ids")
+    if GMAIL_READ_TOOL_IDS[1] != GMAIL_GET_MESSAGE_TOOL_ID:
+        raise RuntimeError("core Gmail READ spec order drifted from the canonical ids")
+    if _GMAIL_SEARCH_CANONICAL_ID != "tool:google:gmail.search_messages@1":
+        raise RuntimeError("core Gmail canonical tool id drifted from the reviewed tool")
+    if _GMAIL_GET_CANONICAL_ID != "tool:google:gmail.get_message@1":
+        raise RuntimeError("core Gmail canonical tool id drifted from the reviewed tool")
+    if GMAIL_REFERENCE_APP_ID == DRIVE_REFERENCE_APP_ID or GMAIL_REFERENCE_APP_ID == CALENDAR_REFERENCE_APP_ID:
+        raise RuntimeError("connector app identities collapsed onto one id")
 
 
 _require_reviewed_declarations()
 
 
-#: The declared connector tools, in the bindings-table order (Drive, Calendar).
-#: ``parameters`` is the Core input_schema verbatim — the schema the Engine's
-#: own registry validates execution arguments against.
+#: The declared connector tools: Drive READ, Calendar READ, then the two Gmail
+#: READ tools (search + read one message). ``parameters`` is the Core
+#: input_schema verbatim — the schema the Engine's own registry validates
+#: execution arguments against.
 CONNECTOR_TOOL_DECLARATIONS: tuple[ToolDefinition, ...] = (
     ToolDefinition(
         name=DRIVE_READ_TOOL_NAME,
@@ -131,6 +168,16 @@ CONNECTOR_TOOL_DECLARATIONS: tuple[ToolDefinition, ...] = (
         name=CALENDAR_READ_TOOL_NAME,
         description=_CALENDAR_SPEC.description,
         parameters=dict(_CALENDAR_SPEC.input_schema),
+    ),
+    ToolDefinition(
+        name=GMAIL_SEARCH_TOOL_NAME,
+        description=_GMAIL_SEARCH_SPEC.description,
+        parameters=dict(_GMAIL_SEARCH_SPEC.input_schema),
+    ),
+    ToolDefinition(
+        name=GMAIL_READ_TOOL_NAME,
+        description=_GMAIL_GET_SPEC.description,
+        parameters=dict(_GMAIL_GET_SPEC.input_schema),
     ),
 )
 
@@ -171,9 +218,12 @@ class ConnectorToolGrant:
     reason: str
     drive: bool
     calendar: bool
+    gmail: bool = False
 
 
-_UNDECLARED = ConnectorToolGrant(reason=GRANT_REASON_UNVERIFIED, drive=False, calendar=False)
+_UNDECLARED = ConnectorToolGrant(
+    reason=GRANT_REASON_UNVERIFIED, drive=False, calendar=False, gmail=False
+)
 
 
 def _cache_ttl_for(decision: ConnectorToolGrant) -> float:
@@ -189,7 +239,7 @@ def _cache_ttl_for(decision: ConnectorToolGrant) -> float:
 def _tools_for_decision(decision: ConnectorToolGrant) -> tuple[ToolDefinition, ...]:
     if decision.reason != GRANT_REASON_GRANTED:
         return ()
-    enabled = (decision.drive, decision.calendar)
+    enabled = (decision.drive, decision.calendar, decision.gmail, decision.gmail)
     return tuple(
         declaration
         for declaration, on in zip(CONNECTOR_TOOL_DECLARATIONS, enabled)
@@ -198,7 +248,7 @@ def _tools_for_decision(decision: ConnectorToolGrant) -> tuple[ToolDefinition, .
 
 
 async def _grant_decision_for_uid(request: Request, *, uid: str) -> ConnectorToolGrant:
-    """Ask the existing reviewed workspace truth about the two READ tools.
+    """Ask the existing reviewed workspace truth about the READ tools.
 
     Reuses ``connector_status_projection``'s reviewed resolution (product
     authentication first, then the canonical shadow and the Google OAuth
@@ -211,20 +261,22 @@ async def _grant_decision_for_uid(request: Request, *, uid: str) -> ConnectorToo
         return _UNDECLARED
     drive_state = (overrides.get("drive") or (None,))[0]
     calendar_state = (overrides.get("calendar") or (None,))[0]
+    gmail_state = (overrides.get("gmail") or (None,))[0]
     drive_ok = drive_state == WORKSPACE_STATE_CONNECTED
     calendar_ok = calendar_state == WORKSPACE_STATE_CONNECTED
+    gmail_ok = gmail_state == WORKSPACE_STATE_CONNECTED
     if calendar_ok:
         state = await _reviewed_calendar_read_grant_state(request, session_id)
         if state == CALENDAR_READ_GRANT_ACTIVE:
             calendar_ok = True
         elif state == CALENDAR_READ_GRANT_INACTIVE:
             calendar_ok = False
-    if not drive_ok and not calendar_ok:
+    if not drive_ok and not calendar_ok and not gmail_ok:
         return ConnectorToolGrant(
-            reason=GRANT_REASON_NOT_CONNECTED, drive=False, calendar=False
+            reason=GRANT_REASON_NOT_CONNECTED, drive=False, calendar=False, gmail=False
         )
     return ConnectorToolGrant(
-        reason=GRANT_REASON_GRANTED, drive=drive_ok, calendar=calendar_ok
+        reason=GRANT_REASON_GRANTED, drive=drive_ok, calendar=calendar_ok, gmail=gmail_ok
     )
 
 
@@ -338,7 +390,8 @@ def _journal_decision(
 async def connector_tools_for_turn(
     request: Request, *, uid: str | None, intent_turn: bool,
 ) -> tuple[ToolDefinition, ...]:
-    """The connector tool declarations for this turn, or an empty tuple.
+    """The connector tool declarations for this turn, or an empty tuple
+    (Drive READ, Calendar READ, Gmail search + read).
 
     A general turn never pays the grant check: the tools are declared only on
     an explicitly Google-named turn, whose check may wait up to
@@ -403,10 +456,10 @@ def connector_tool_request(tool_name: str, arguments: Mapping[str, Any]) -> dict
 
 # Only an explicitly Google-named connector question routes between lanes.
 # "일정" alone stays with the workspace-native calendar and "드라이브" alone
-# stays with the PC lane; "구글 캘린더"/"구글 드라이브" (or the English forms)
-# name this product's Google connector tools.
+# stays with the PC lane; "구글 캘린더"/"구글 드라이브"/"지메일"/"구글 메일"
+# (or the English forms) name this product's Google connector tools.
 _GOOGLE_CONNECTOR_INTENT = re.compile(
-    r"구글\s*캘린더|구글\s*드라이브|google\s*calendar|google\s*drive",
+    r"구글\s*캘린더|구글\s*드라이브|구글\s*메일|지메일|gmail|google\s*calendar|google\s*drive",
     re.IGNORECASE,
 )
 

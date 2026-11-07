@@ -68,12 +68,22 @@ def _visible_lines(path):
         yield line
 
 
+# Owner decision 2026-11-07 (#6659): the legal pages state the registered
+# trade name verbatim — "PADIEM(파디엠)" — so the title-case rule does not
+# retitle it there. Scoped to the two legal pages only; the app UI keeps
+# reading "Padiem ...".
+LEGAL_PAGE_TRADE_NAME_FILES = frozenset({"privacy.html", "terms.html"})
+LEGAL_PAGE_TRADE_NAME = "PADIEM(파디엠)"
+
+
 def test_no_visible_all_caps_brand_string_left_in_the_ui():
     root = ROOT / "static"
     offenders = []
     for path in sorted(root.glob("*.html")) + sorted(root.glob("*.js")):
         for line in _visible_lines(path):
             if path.name == "install.html" and line in INSTALL_PATH_OWNED_LINES:
+                continue
+            if path.name in LEGAL_PAGE_TRADE_NAME_FILES and LEGAL_PAGE_TRADE_NAME in line:
                 continue
             if "PADIEM" in line:
                 offenders.append(f"{path.name}: {line.strip()[:70]}")

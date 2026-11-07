@@ -175,9 +175,16 @@ def validate_pc_shell_read_arguments(arguments) -> bool:
 
 
 def validate_pc_shell_stop_arguments(arguments) -> bool:
-    return (isinstance(arguments, Mapping)
-            and set(arguments) == {"job_id"}
-            and _valid_job_id(arguments.get("job_id")))
+    # The advertised schema (PC_SHELL_STOP_PROPERTIES) includes the optional
+    # ``device`` selector shared by every PC tool, so an accepted call must not be
+    # rejected for passing it. The job id alone names the job; ``device`` is not
+    # needed to find it and is not used here.
+    if not isinstance(arguments, Mapping) or not set(arguments) <= set(PC_SHELL_STOP_PROPERTIES):
+        return False
+    device = arguments.get("device")
+    if device is not None and not isinstance(device, str):
+        return False
+    return "job_id" in arguments and _valid_job_id(arguments.get("job_id"))
 
 
 def validate_shell_tool_arguments(tool_name: str, arguments, *, user_mode_enabled: bool | None = None) -> bool:

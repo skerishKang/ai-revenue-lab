@@ -493,3 +493,77 @@ def test_windows_named_pipe_listener_roundtrip_one_request():
     assert payload.get("status") == "ok"
     assert payload.get("exit_code") == 0
     assert runner.calls and runner.calls[0]["argv"] == ["whoami.exe"]
+
+
+class SilentConnection(FakeConnection):
+    """A peer that connects and never sends a request frame."""
+
+    def __init__(self):
+        super().__init__(b"")
+
+    def wait_readable(self, timeout_seconds):
+        raise helper.UserHelperError(
+            helper.USER_HELPER_TIMEOUT, "no request frame arrived in time")
+
+
+def test_a_connection_that_never_sends_a_frame_is_refused_and_the_loop_continues():
+    silent = SilentConnection()
+    assert service.handle_connection(silent, secret=SECRET,
+                                     guard=service.ReplayGuard()) == "refused"
+    assert silent.closed is True
+    # One stale half-open peer must not end the helper's serial accept loop.
+    served = FakeConnection(request_frame=_signed_frame())
+    assert service.handle_connection(
+        served, secret=SECRET, guard=service.ReplayGuard(),
+        runner=Runner(stdout=b"me\n"),
+    ) == "served"
+
+
+def _frames(raw: bytes) -> list[dict]:
+    frames, index = [], 0
+    while index < len(raw):
+        length = int.from_bytes(raw[index:index + 4], "big")
+        index += 4
+        frames.append(json.loads(raw[index:index + length].decode("utf-8")))
+        index += length
+    return frames
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows named pipe required")
+def test_a_half_written_frame_is_refused_and_does_not_wedge_the_helper():
+    import threading
+
+    device_id = "pipehalf_" + "8" * 24
+    listener = service.WindowsPipeListener(device_id)
+    box = {}
+
+    def server():
+        box["stats"] = service.serve_pipe(
+            device_id=device_id, secret=SECRET, listener=listener,
+            runner=Runner(stdout=b"me\n"), max_requests=1,
+        )
+
+    thread = threading.Thread(target=server, daemon=True)
+    thread.start()
+    conn = delegation.open_pipe_connection(helper.pipe_path(device_id))
+    try:
+        # A length prefix with no body: the shape a client killed between its
+        # two writes leaves behind.
+        conn.write_all(struct.pack(">I", 64))
+        thread.join(timeout=15)
+    finally:
+        conn.close()
+        listener.close()
+    assert not thread.is_alive(), "the helper stayed blocked on a half-written frame"
+    assert box["stats"].refused == 1
+
+
+def test_stage_two_frames_start_before_the_command_and_end_with_the_reply():
+    conn = FakeConnection(request_frame=_signed_frame(shell="powershell", command="whoami"))
+    assert service.handle_connection(
+        conn, secret=SECRET, guard=service.ReplayGuard(),
+        runner=Runner(stdout=b"me\n"),
+    ) == "served"
+    frames = _frames(conn.written)
+    assert frames[0]["status"] == "started"
+    assert frames[-1]["status"] == "ok"

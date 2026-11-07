@@ -1506,15 +1506,35 @@ try {{{secret_source}
   $body=[System.Text.Encoding]::UTF8.GetBytes(($req | ConvertTo-Json -Compress -Depth 5))
   $len=[System.BitConverter]::GetBytes([int]$body.Length); [Array]::Reverse($len)
   $client=New-Object System.IO.Pipes.NamedPipeClientStream('.',$pipeName,[System.IO.Pipes.PipeDirection]::InOut)
-  $client.Connect(2000)
-  $client.Write($len,0,4); $client.Write($body,0,$body.Length); $client.Flush()
-  $hdr=New-Object byte[] 4; $read=0; while($read -lt 4){{ $n=$client.Read($hdr,$read,4-$read); if($n -le 0){{ throw 'short header' }}; $read+=$n }}
-  [Array]::Reverse($hdr); $rlen=[System.BitConverter]::ToInt32($hdr,0)
-  if($rlen -lt 0 -or $rlen -gt 2097152){{ throw 'bad frame length' }}
-  $rbody=New-Object byte[] $rlen; $read=0; while($read -lt $rlen){{ $n=$client.Read($rbody,$read,$rlen-$read); if($n -le 0){{ throw 'short body' }}; $read+=$n }}
-  $client.Dispose()
-  [Console]::Out.Write([System.Text.Encoding]::UTF8.GetString($rbody))
-  exit 0
+  # #7106: every pipe step is bounded. Connect 5s, each write 5s, each frame
+  # 15s. A helper that accepted and then died fails here instead of holding
+  # the executor's single dispatch loop open forever. The 15s read window is
+  # per frame, not a command deadline: while a stage-2 command runs the helper
+  # sends a heartbeat every 5s, so a long command keeps its lane.
+  $client.Connect(5000)
+  $w=$client.WriteAsync($len,0,4); if(-not $w.Wait(5000)){{ throw 'helper write timeout' }}
+  $w=$client.WriteAsync($body,0,$body.Length); if(-not $w.Wait(5000)){{ throw 'helper write timeout' }}
+  $client.Flush()
+  while($true){{
+    $hdr=New-Object byte[] 4; $read=0
+    while($read -lt 4){{
+      $t=$client.ReadAsync($hdr,$read,4-$read); if(-not $t.Wait(15000)){{ throw 'helper read timeout' }}
+      $n=$t.Result; if($n -le 0){{ throw 'short header' }}; $read+=$n
+    }}
+    [Array]::Reverse($hdr); $rlen=[System.BitConverter]::ToInt32($hdr,0)
+    if($rlen -lt 0 -or $rlen -gt 2097152){{ throw 'bad frame length' }}
+    $rbody=New-Object byte[] $rlen; $read=0
+    while($read -lt $rlen){{
+      $t=$client.ReadAsync($rbody,$read,$rlen-$read); if(-not $t.Wait(15000)){{ throw 'helper read timeout' }}
+      $n=$t.Result; if($n -le 0){{ throw 'short body' }}; $read+=$n
+    }}
+    $text=[System.Text.Encoding]::UTF8.GetString($rbody)
+    $frame=$text | ConvertFrom-Json
+    if($frame.status -eq 'started' -or $frame.status -eq 'running'){{ continue }}
+    $client.Dispose()
+    [Console]::Out.Write($text)
+    exit 0
+  }}
 }} catch {{
   if($_.Exception -is [System.IO.FileNotFoundException] -or $_.Exception -is [System.TimeoutException] -or $_.Exception -is [System.ComponentModel.Win32Exception] -or $_.FullyQualifiedErrorId -like '*NoMatchingMSFT_ScheduledTask*' -or $_.Exception.Message -like '*pipe*not*') {{
     Fail 'user_session_unavailable' 'helper pipe is not available'

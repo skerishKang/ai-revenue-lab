@@ -6187,6 +6187,10 @@
   // same reviewed ticket endpoint; only the reviewed connector id differs.
   const GOOGLE_DRIVE_CONNECTOR = "google-drive";
   const GOOGLE_DRIVE_TICKET_ENDPOINT = "/api/connectors/google/ticket";
+  // #7088: Gmail joins the same reviewed READ-only connect handoff with its
+  // already-registered readonly scope set.
+  const GOOGLE_GMAIL_CONNECTOR = "gmail";
+  const GOOGLE_GMAIL_TICKET_ENDPOINT = "/api/connectors/google/ticket";
   const GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket";
   const GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/api/connectors/google/calendar/activate-read";
   const CONNECTOR_STATUS_IDS = new Set([
@@ -6342,6 +6346,16 @@
     }
   }
 
+  function gmailConnectButton() {
+    const scope = connectorsScope();
+    if (!scope) return null;
+    try {
+      return scope.querySelector(`[data-google-connector-connect="${GOOGLE_GMAIL_CONNECTOR}"]`);
+    } catch (_) {
+      return null;
+    }
+  }
+
   /** The whole Drive visibility rule as a pure predicate: an authenticated
    *  session and a canonical ``not_connected`` row. ``unverified``,
    *  ``ambiguous``, ``connected``, a missing row and a signed-out session all
@@ -6401,6 +6415,58 @@
       googleConnectorConnectInFlight = false;
       button.disabled = false;
       setConnectorCopy(button, "connectors-connect-drive");
+      if (connectorsError) {
+        setConnectorCopy(connectorsError, "connectors-connect-drive-error");
+        connectorsError.hidden = false;
+      }
+    }
+  }
+
+  /** Gmail carries the same rule as Drive: connect is the whole action. */
+  function syncGmailConnectButton(row = null) {
+    const button = gmailConnectButton();
+    if (!button) return;
+    const workspaceState = row && typeof row.workspace_state === "string" ? row.workspace_state : "";
+    const offered = driveConnectOffered(authState.authenticated, workspaceState);
+    button.hidden = !offered;
+    button.disabled = googleConnectorConnectInFlight;
+    if (offered && !googleConnectorConnectInFlight) {
+      setConnectorCopy(button, "connectors-connect-gmail");
+    }
+  }
+
+  async function beginGmailConnect() {
+    const button = gmailConnectButton();
+    if (!button || googleConnectorConnectInFlight) return;
+    if (!authState.authenticated) {
+      openAuthDialog();
+      return;
+    }
+    googleConnectorConnectInFlight = true;
+    button.disabled = true;
+    setConnectorCopy(button, "connectors-connecting-gmail");
+    if (connectorsError) connectorsError.hidden = true;
+    try {
+      const startResponse = await fetch(GOOGLE_GMAIL_TICKET_ENDPOINT, {
+        method: "POST",
+        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ connector_id: GOOGLE_GMAIL_CONNECTOR, begin_oauth: true }),
+        cache: "no-store",
+      });
+      const startDocument = await startResponse.json().catch(() => null);
+      const authorization = startDocument && startDocument.authorization;
+      const redirect = startResponse.ok && authorization &&
+        authorization.connector_id === GOOGLE_GMAIL_CONNECTOR
+        ? reviewedGoogleAuthorizationUrl(authorization.authorization_url)
+        : null;
+      if (!redirect) throw new Error("gmail authorization unavailable");
+      window.location.assign(redirect);
+    } catch (_) {
+      // Bounded failure with no automatic retry: only a new explicit user
+      // gesture starts another attempt, and this attempt's state is dropped.
+      googleConnectorConnectInFlight = false;
+      button.disabled = false;
+      setConnectorCopy(button, "connectors-connect-gmail");
       if (connectorsError) {
         setConnectorCopy(connectorsError, "connectors-connect-drive-error");
         connectorsError.hidden = false;
@@ -6595,6 +6661,7 @@
     });
     syncGoogleCalendarConnectButton();
     syncGoogleDriveConnectButton();
+    syncGmailConnectButton();
   }
 
   function setConnectorCardsUnavailable() {
@@ -6605,6 +6672,7 @@
     });
     syncGoogleCalendarConnectButton();
     syncGoogleDriveConnectButton();
+    syncGmailConnectButton();
   }
 
   function renderConnectorStatus(document) {
@@ -6634,6 +6702,7 @@
     });
     syncGoogleCalendarConnectButton(rows.get("connector:google:calendar@1") || null);
     syncGoogleDriveConnectButton(rows.get("connector:google:drive@1") || null);
+    syncGmailConnectButton(rows.get("connector:google:gmail@1") || null);
   }
 
   async function loadConnectorStatus() {
@@ -6748,6 +6817,11 @@
   const driveConnectButton = googleDriveConnectButton();
   if (driveConnectButton) driveConnectButton.addEventListener("click", () => {
     void beginGoogleDriveConnect();
+  });
+  // #7088: Gmail connect starts only from this explicit user gesture.
+  const gmailConnectButtonEl = gmailConnectButton();
+  if (gmailConnectButtonEl) gmailConnectButtonEl.addEventListener("click", () => {
+    void beginGmailConnect();
   });
   document.addEventListener("padiem:drive-quick-connect", () => {
     void (async () => {
