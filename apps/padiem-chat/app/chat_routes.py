@@ -22,6 +22,7 @@ from .auto_grounding import (
 )
 from .native_calendar_intent import parse_native_calendar_intent, try_native_calendar_chat
 from .native_calendar_adapter import NativeCalendarAdapterError
+from .chat_connector_tools import is_connector_tool_name
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
 from .byok_client import CustomProviderError, complete_owner_custom
@@ -257,6 +258,168 @@ def _last_user_text(messages: Any) -> str:
             content = message.get("content")
             return content if isinstance(content, str) else ""
     return ""
+
+
+async def _no_connector_tools() -> tuple[Any, ...]:
+    """A project turn is never offered a connector tool."""
+    return ()
+
+
+async def _chat_connector_tools_for_turn(
+    request: Request, *, uid: str | None,
+) -> tuple[Any, ...]:
+    """The connector READ tool declarations for this turn, or an empty tuple.
+
+    The bounded grant check (30s per-user cache, 300ms budget, reviewed
+    workspace truth) runs inside the same gather as the PC offer, so a slow
+    or failed check never delays the dispatch: it just declares nothing this
+    turn. A project turn keeps its own reference context and is never offered
+    a connector tool.
+    """
+    from .chat_connector_tools import connector_tools_for_turn
+
+    return await connector_tools_for_turn(request, uid=uid)
+
+
+#: The tool output becomes model context; the bound keeps one connector read
+#: from crowding out the conversation the answer is written into.
+_CONNECTOR_RESULT_CONTEXT_CHARS = 24_000
+
+
+async def _connector_tool_lane(
+    request: Request, *, tool_name: str, tool_arguments: Any,
+    client: Any, messages: list, skill: Any,
+    reference_context: str | None, conversation_id: str | None,
+    uid: str | None, store: Any, latest_user: str | None,
+    timing: ChatStreamTiming,
+):
+    """Execute one declared connector READ tool through the Engine, then answer.
+
+    The Engine owns every authority decision (grant, scopes, allowlist); the
+    lane only carries the closed tool identity from
+    ``chat_connector_tools.CONNECTOR_TOOL_BINDINGS`` and the model's parsed
+    arguments as data. The redacted tool output becomes model context for one
+    plain follow-up dispatch — no tools are re-declared, so a connector read
+    can never chain into another tool lane.
+    """
+    import time as _time
+
+    from .chat_connector_tools import connector_tool_arguments_ok
+    from .connector_tool_engine_client import ConnectorToolEngineError
+
+    if not is_connector_tool_name(tool_name) or not connector_tool_arguments_ok(tool_arguments):
+        timing.set_outcome("error")
+        yield _public_sse(
+            "error",
+            {"error": {"code": "connector_tool_unsupported", "message": "요청한 커넥터 도구를 실행할 수 없습니다."}},
+        )
+        return
+    engine_client = getattr(request.app.state, "connector_tool_engine_client", None)
+    if engine_client is None:
+        timing.set_outcome("error")
+        yield _public_sse(
+            "error",
+            {"error": {"code": "connector_tool_unavailable", "message": "커넥터 도구를 사용할 수 없습니다."}},
+        )
+        return
+    started = _time.perf_counter()
+    try:
+        tool = await engine_client.execute(
+            tool_name=tool_name, arguments=dict(tool_arguments),
+        )
+    except ConnectorToolEngineError as exc:
+        timing.set_outcome("error")
+        emit_stage_event(
+            stage="chat.connector_tools.execute", outcome="error",
+            duration_ms=(_time.perf_counter() - started) * 1000.0, code=exc.code,
+        )
+        yield _public_sse("error", {"error": {"code": exc.code, "message": exc.message}})
+        return
+    except Exception:
+        timing.set_outcome("error")
+        emit_stage_event(
+            stage="chat.connector_tools.execute", outcome="error",
+            duration_ms=(_time.perf_counter() - started) * 1000.0,
+            code="connector_tool_unavailable",
+        )
+        yield _public_sse(
+            "error",
+            {"error": {"code": "connector_tool_unavailable", "message": "커넥터 도구 실행에 실패했습니다. 다시 시도해 주세요."}},
+        )
+        return
+    emit_stage_event(
+        stage="chat.connector_tools.execute", outcome="ok",
+        duration_ms=(_time.perf_counter() - started) * 1000.0, code=tool_name,
+    )
+    output = tool.get("output")
+    try:
+        result_json = json.dumps(output, ensure_ascii=False)
+    except (TypeError, ValueError):
+        result_json = json.dumps({"unreadable": True}, ensure_ascii=False)
+    if len(result_json) > _CONNECTOR_RESULT_CONTEXT_CHARS:
+        result_json = result_json[:_CONNECTOR_RESULT_CONTEXT_CHARS] + " …(잘림)"
+    result_context = "[connector:" + tool_name + " 결과]\n" + result_json
+
+    follow = client.stream_text_auto(
+        messages,
+        skill=skill,
+        additional_system_context=(
+            reference_context + "\n\n" if reference_context else ""
+        ) + result_context,
+    )
+    answer_parts: list[str] = []
+    try:
+        while True:
+            try:
+                event = await anext(follow)
+            except StopAsyncIteration:
+                timing.set_outcome("error")
+                yield _public_sse(
+                    "error",
+                    {"error": {"code": "empty_upstream_answer", "message": "AI가 표시할 답변을 만들지 못했습니다. 다시 시도해 주세요."}},
+                )
+                return
+            if getattr(event, "delta_thought", None):
+                yield _public_sse("thought", {"text": event.delta_thought})
+                continue
+            if event.delta_content:
+                answer_parts.append(event.delta_content)
+                yield _public_sse("delta", {"delta": event.delta_content})
+            if event.done:
+                break
+    except ChatRuntimeError as exc:
+        timing.set_outcome("error")
+        yield _public_sse("error", {"error": {"code": exc.code, "message": exc.user_message}})
+        return
+    except asyncio.CancelledError:
+        raise
+    except Exception:
+        timing.set_outcome("error")
+        yield _public_sse(
+            "error",
+            {"error": {"code": "upstream_route_error", "message": "답변을 불러오지 못했습니다. 다시 시도해 주세요."}},
+        )
+        return
+    answer = "".join(answer_parts)
+    if not answer:
+        timing.set_outcome("error")
+        yield _public_sse(
+            "error",
+            {"error": {"code": "empty_upstream_answer", "message": "AI가 표시할 답변을 만들지 못했습니다. 다시 시도해 주세요."}},
+        )
+        return
+    timing.set_outcome("tool_lane")
+    done_payload: dict[str, Any] = {"done": True}
+    if uid is not None and store is not None and latest_user:
+        try:
+            saved_id = await store.append_exchange(
+                uid, conversation_id, latest_user, answer, product_scope=PRODUCT_SCOPE_CHAT,
+            )
+        except Exception:
+            saved_id = None
+        if saved_id is not None:
+            done_payload["conversation_id"] = saved_id
+    yield _public_sse("done", done_payload)
 
 
 def _model_history_incomplete() -> JSONResponse:
@@ -768,9 +931,11 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     async with chat_request_tier_context(request, raw.get("tier", "free")) as tier_binding:
         tier_id, route_model = tier_binding
         policy = resolve_request_model_policy(messages)
-        # The dispatch guard and the PC tool offer are independent reads: run
-        # them concurrently instead of paying both serially before dispatch.
-        guard, pc_tools = await asyncio.gather(
+        # The dispatch guard, the PC tool offer and the connector READ offer
+        # are independent reads: run them concurrently instead of paying them
+        # serially before dispatch. The connector check is bounded (30s cache,
+        # 300ms budget) and declares nothing on a slow or failed check.
+        guard, pc_tools, connector_tools = await asyncio.gather(
             create_guard_from_request(
                 request,
                 policy.model_id,
@@ -779,22 +944,29 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
             ),
             _chat_pc_tools_for_turn(request, uid=uid, model_id=policy.model_id, user_text=_last_user_text(messages))
             if browser_project_id is None else _no_pc_tools(),
+            _chat_connector_tools_for_turn(request, uid=uid)
+            if browser_project_id is None else _no_connector_tools(),
         )
         if isinstance(guard, BaseException):
             raise guard
         if isinstance(pc_tools, BaseException):
             raise pc_tools
+        if isinstance(connector_tools, BaseException):
+            # The connector offer must never fail the turn: declare nothing.
+            connector_tools = ()
         client = apply_guard_to_client(client, guard)
+        turn_tools = pc_tools + connector_tools
         # #5573 (3-B-2): only a verified PC account on a tools-declaring route
         # receives the PC tools; every other turn keeps the request bytes it
         # had before this slice. A project turn runs on its own reference
         # context and is never offered a PC tool, so it can neither be deferred
-        # nor handed to the PC lane.
+        # nor handed to the PC lane. Connector READ tools join the same
+        # declaration only when the bounded grant check said "granted".
         stream = client.stream_text_auto(
             messages,
             skill=skill,
             additional_system_context=reference_context,
-            **({"tools": pc_tools, "tool_choice": "auto"} if pc_tools else {}),
+            **({"tools": turn_tools, "tool_choice": "auto"} if turn_tools else {}),
         )
         timing.mark("lane")
         latest_user = next((item["content"] for item in reversed(messages) if item["role"] == "user"), None)
@@ -882,6 +1054,28 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                         )
 
                         selected_tool = getattr(tool_call, "name", None)
+                        if isinstance(selected_tool, str) and is_connector_tool_name(selected_tool):
+                            # The model asked for a connector READ tool. The
+                            # Engine re-verifies the grant and scopes on its
+                            # own execute path; the lane carries only the
+                            # closed tool identity and the parsed arguments.
+                            await _close_stream(stream)
+                            async for frame in _connector_tool_lane(
+                                request,
+                                tool_name=selected_tool,
+                                tool_arguments=getattr(tool_call, "arguments", None),
+                                client=client,
+                                messages=messages,
+                                skill=skill,
+                                reference_context=reference_context,
+                                conversation_id=conversation_id,
+                                uid=uid,
+                                store=store,
+                                latest_user=latest_user,
+                                timing=timing,
+                            ):
+                                yield frame
+                            return
                         declared_plan = (
                             chat_pc_plan_for_tool(selected_tool)
                             if isinstance(selected_tool, str) else None

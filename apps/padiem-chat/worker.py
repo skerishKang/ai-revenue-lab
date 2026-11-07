@@ -98,6 +98,7 @@ from app.b66_experiential_direct_pilot import B66ExperientialPilotExecutor
 from app.config import ConfigError
 from app.connector_gateway_runtime_mount import maybe_dispatch_connector_gateway
 from app.connector_owner_runtime_mount import compose_owner_enrollment_from_worker
+from app.connector_tool_engine_client import CloudflareConnectorToolEngineClient
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
 from app.calendar_read_state_engine import CloudflareCalendarReadStateEngineClient
@@ -1472,6 +1473,25 @@ class Default(WorkerEntrypoint):
         except Exception:
             calendar_read_state_engine_client = None
         worker_app.state.calendar_read_state_engine_client = calendar_read_state_engine_client
+        # The connector READ tool lane reuses the same P01 Engine Service
+        # Binding and caller credential, pinned to the private tool-execute
+        # path. Authority stays Engine-side; an unconfigured binding leaves
+        # the lane failing closed while the turn itself proceeds.
+        try:
+            p01_config_tools = p01_engine_config_from_worker_bindings(self.env)
+            connector_tool_engine_client = (
+                CloudflareConnectorToolEngineClient(
+                    p01_config_tools.service_binding,
+                    caller_id=p01_config_tools.caller_id,
+                    credential=p01_config_tools.credential,
+                    request_factory=Request,
+                )
+                if p01_config_tools is not None
+                else None
+            )
+        except Exception:
+            connector_tool_engine_client = None
+        worker_app.state.connector_tool_engine_client = connector_tool_engine_client
         worker_app.state.project_file_store = project_file_store
         worker_app.state.voice_stt_transport = (
             CloudflareVoiceSttServiceTransport(voice_stt_binding, Request)

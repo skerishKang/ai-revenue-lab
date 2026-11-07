@@ -59,6 +59,7 @@ from .local_service_bridge import (
 from .claw_search_decision import trusted_claw_search_activation
 from .local_p01_engine import (
     build_local_calendar_read_activation_client,
+    build_local_connector_tool_client,
     build_local_engine_client,
     build_local_p01_lanes,
 )
@@ -440,6 +441,19 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
         "[local] calendar_read_activation="
         + ("bound" if calendar_read_activation_client is not None else "unbound")
         + (" reason=" + calendar_diagnostic if calendar_diagnostic else "")
+    )
+    # The connector READ tool lane reuses the same P01 Engine caller surface
+    # over the same loopback binding, restricted to the private tool-execute
+    # path. Authority stays Engine-side; an unbound client only means the lane
+    # fails closed while the turn itself proceeds.
+    connector_tool_client, connector_tool_diagnostic = (
+        build_local_connector_tool_client(os.environ, client=outbound_http_client)
+    )
+    app.state.connector_tool_engine_client = connector_tool_client
+    print(
+        "[local] connector_tool_execute="
+        + ("bound" if connector_tool_client is not None else "unbound")
+        + (" reason=" + connector_tool_diagnostic if connector_tool_diagnostic else "")
     )
 
     # apply_write_freeze below rebinds ``app`` to the ASGI wrapper; bind the

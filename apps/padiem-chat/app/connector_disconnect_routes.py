@@ -64,6 +64,11 @@ async def disconnect_google_drive(request: Request) -> JSONResponse:
             return _reply(503, "connector_disconnect_unverified")
     except Exception:
         return _reply(503, "connector_disconnect_unavailable")
+    # The connector tool offer is cached per user for one short window; a
+    # revoked Drive grant must stop being declared at once.
+    from .chat_connector_tools import invalidate_connector_tool_grant_cache
+
+    invalidate_connector_tool_grant_cache(uid)
     return JSONResponse(
         {"ok": True, "state": "off", "revoked": result},
         status_code=200, headers=_HEADERS,
