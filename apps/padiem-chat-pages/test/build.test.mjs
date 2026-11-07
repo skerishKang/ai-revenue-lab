@@ -190,18 +190,23 @@ test("#6924 operational probes only target registered chat health routes", async
   assert.deepEqual(offenders, [], "probes must use /health (Chat) or /api/pilot/... (B14)");
 });
 
-test("the generated _routes.json serves the pretty urls from the static layer", async () => {
+test("the generated _routes.json serves the shell and pretty urls from the static layer", async () => {
   const out = await assembled();
   const routes = JSON.parse(await readFile(path.join(out, "_routes.json"), "utf8"));
   // Pages advanced mode runs the function for every INCLUDED request: the
-  // root-level pages (except the index) must be EXCLUDED so the static layer
-  // serves them with the default .html omission instead of 404ing through
-  // the proxy (#7130-era mirror; 4th deploy).
+  // shell and root-level pages must be EXCLUDED so the static layer serves
+  // the stamped dist/index.html and the default .html omission instead of
+  // proxying to COM2 (#7130-era mirror; 5th deploy root).
   assert.deepEqual(routes.include, ["/*"]);
-  for (const pretty of ["/privacy", "/terms"]) {
-    assert.ok(routes.exclude.includes(pretty), `${pretty} excluded`);
+  for (const staticPath of ["/", "/index.html", "/privacy", "/terms"]) {
+    assert.ok(routes.exclude.includes(staticPath), `${staticPath} excluded`);
   }
+  assert.equal(new Set(routes.exclude).size, routes.exclude.length,
+    "no duplicate exclude rules");
   assert.ok(!routes.exclude.includes("/index"));
+  // A bare "/" has no wildcard, so console/SPA subpaths stay on the proxy.
+  assert.ok(!routes.exclude.includes("/c/*"));
+  assert.ok(!routes.exclude.includes("/claw"));
   // The include/exclude rules stay far below the 100-rule ceiling.
   assert.ok(routes.include.length + routes.exclude.length < 100);
   const redirectsGone = await readFile(path.join(out, "_redirects"), "utf8").then(
