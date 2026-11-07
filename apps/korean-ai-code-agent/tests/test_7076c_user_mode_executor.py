@@ -109,3 +109,27 @@ def test_system_mode_dispatch_uses_normal_command_path():
     # _execute_command will call port.run_command with the raw command text
     out = ex.execute(d)
     assert port.calls[0]["command"] == "hostname.exe"
+
+
+def test_after_a_failed_user_dispatch_the_next_system_dispatch_still_runs():
+    # The client's bounded read is what ends the stuck user round; the executor
+    # must be usable for the very next dispatch, including the SYSTEM lane.
+    port = FakePort(output=b"user_session_unavailable: helper pipe is not available\n")
+    ex = _executor(port)
+    user = OracleMeshDispatch(
+        dispatch_id="dsp_" + "6" * 32, nonce="n", node_ref=NODE, file_path="command",
+        command_id="c", run_id="r", kind="command",
+        command_text=json.dumps({"shell": "whoami", "command": "whoami", "cwd": None,
+                                 "timeout_seconds": 30, "distro": None}),
+        user_mode=True, device_id=DEVICE,
+    )
+    out = ex.execute(user)
+    assert json.loads(out.body)["error_code"] == USER_SESSION_UNAVAILABLE
+
+    system = OracleMeshDispatch(
+        dispatch_id="dsp_" + "7" * 32, nonce="n", node_ref=NODE, file_path="command",
+        command_id="c", run_id="r", kind="command",
+        command_text="hostname.exe", user_mode=False, device_id=DEVICE,
+    )
+    ex.execute(system)
+    assert port.calls[-1]["command"] == "hostname.exe"
