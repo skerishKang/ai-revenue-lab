@@ -175,3 +175,14 @@ def test_the_voice_identity_proof_is_single_flight():
     source = (STATIC / "voice-stt-wiring.js").read_text(encoding="utf-8")
     assert "if (identityInflight) return identityInflight;" in source
     assert "let identityInflight = null;" in source
+    # Sign-out/sign-in happens in this page, so a changed signed-in state must
+    # abandon the open read instead of announcing it for the new owner.
+    assert "if (next !== lastSignedIn) {" in source
+    assert "identityRefreshSeq += 1;" in source
+
+
+def test_a_changed_owner_never_reuses_the_previous_pairing_read():
+    source = (STATIC / "pc-connect-flow.js").read_text(encoding="utf-8")
+    assert "if (signedIn !== lastSignedIn) {" in source
+    assert "pairingsGeneration += 1;" in source
+    assert "if (generation !== pairingsGeneration) return result;" in source

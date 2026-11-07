@@ -301,6 +301,10 @@
   const PAIRINGS_READ_WINDOW_MS = 2000;
   let pairingsInFlight = null;
   let pairingsReadAt = 0;
+  // A read begun under one signed-in state must never repaint another. The
+  // counter is bumped when the owner can have changed, and the settling read
+  // discards itself.
+  let pairingsGeneration = 0;
 
   function invalidatePairings() {
     pairingsReadAt = 0;
@@ -326,8 +330,10 @@
       if (answered) return answered;
       if (pairingsInFlight) return pairingsInFlight;
     }
+    const generation = ++pairingsGeneration;
     const run = (async () => {
       const result = await request(PAIRINGS, { method: "GET" });
+      if (generation !== pairingsGeneration) return result;
       if (result.ok && result.body && Array.isArray(result.body.links)) {
         state.links = result.body.links;
         state.read = "ok";
@@ -757,10 +763,17 @@
     };
     wireStarter();
     wireLangRepaint();
+    let lastSignedIn = window.PadiemAuthGate?.authenticated?.() === true;
     window.addEventListener("padiem:auth-state", () => {
       // A session event may be a different owner: never answer it from the
-      // window a previous one filled. Concurrent callers still share the one
-      // read this starts.
+      // window a previous one filled, and never let a read begun before it
+      // repaint. Concurrent callers still share the one read this starts.
+      const signedIn = window.PadiemAuthGate?.authenticated?.() === true;
+      if (signedIn !== lastSignedIn) {
+        lastSignedIn = signedIn;
+        pairingsGeneration += 1;
+        pairingsInFlight = null;
+      }
       invalidatePairings();
       state.links = [];
       state.read = "unavailable";

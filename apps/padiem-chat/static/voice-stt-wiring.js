@@ -649,7 +649,22 @@
       target.addEventListener(name, handler);
       identityListeners.push([target, name, handler]);
     }
-    const onAuthChange = function () { verifyIdentity(); };
+    // Sign-out and sign-in happen in this page, so an auth notification can be
+    // a different owner. The open read then belongs to the previous answer and
+    // must not announce it: abandon it and ask again. A repeated notification
+    // for the same signed-in state still shares the open read.
+    let lastSignedIn = win.PadiemAuthGate?.authenticated?.() === true;
+    const onAuthChange = function (event) {
+      const next = typeof (event && event.detail && event.detail.authenticated) === "boolean"
+        ? event.detail.authenticated
+        : win.PadiemAuthGate?.authenticated?.() === true;
+      if (next !== lastSignedIn) {
+        lastSignedIn = next;
+        identityInflight = null;
+        identityRefreshSeq += 1;
+      }
+      verifyIdentity();
+    };
     for (const eventName of ["padiem:auth-state", "padiem:auth-changed", "padiem:account-changed"]) {
       listen(win, eventName, onAuthChange);
     }
