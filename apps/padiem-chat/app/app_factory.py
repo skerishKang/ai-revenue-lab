@@ -265,7 +265,6 @@ from .calendar_routes import (
     calendar_work_logs_list,
 )
 from .calendar_store import CalendarStore, D1CalendarStore, InMemoryCalendarStore
-from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
 from .claw_push_subscriptions import (
     D1ClawPushSubscriptionStore,
     claw_push_capability,
@@ -291,7 +290,6 @@ from .claw_local_connect_routes import (
     claw_local_connect,
     claw_local_connect_status,
 )
-from .claw_task_alert_store import D1ClawTaskAlertStore
 from .claw_automation_store import D1ClawAutomationStore
 from .claw_automation_rules_routes import claw_automation_rules
 from .claw_automation_rule_create_routes import claw_automation_rule_create
@@ -572,7 +570,6 @@ def create_app(
     platform_admin_role_store=None,
     central_model_policy_store=None,
     central_model_policy_signing_key: str = "",
-    claw_task_alert_store=None,
     claw_push_subscription_store=None,
     claw_push_vapid_private_key: str | None = None,
     claw_push_vapid_public_key: str | None = None,
@@ -1013,10 +1010,8 @@ def create_app(
         Route(OFFICE_XLSX_DOWNLOAD_PATH, claw_office_xlsx_download, methods=["GET"]),
         Route(OFFICE_OUTPUTS_QUERY_PATH, claw_office_outputs_query, methods=["GET"]),
         Route("/api/claw/runs/{run_id}/local-result", local_runner_result, methods=["POST"]),
-        Route("/api/claw/inbox/{kind}", claw_inbox_list, methods=["GET"]),
-        Route("/api/claw/inbox/{kind}/{item_id}", claw_inbox_status, methods=["PATCH"]),
-        # #5034 Web Push opt-in for the EXISTING user inbox. This adds a device
-        # subscription, never a second inbox or a second notification authority.
+        # #5034 Web Push opt-in for automation notifications. This adds a
+        # device subscription, never a second notification authority.
         Route("/api/claw/inbox/push/capability", claw_push_capability, methods=["GET"]),
         Route("/api/claw/inbox/push/subscription", claw_push_subscription_register, methods=["POST"]),
         Route("/api/claw/inbox/push/subscription", claw_push_subscription_unregister, methods=["DELETE"]),
@@ -1879,16 +1874,6 @@ def create_app(
     app.state.b66_native_sol_pdf_client = b66_native_sol_pdf_client
     app.state.b66_native_sol_releases = b66_native_sol_releases
 
-    # #2341 Task/Alert inbox: consume the existing migration-010 D1 authority.
-    # No schema creation or alternate DB authority is introduced here.
-    _task_alert_store = claw_task_alert_store
-    if _task_alert_store is None and d1_binding is not None:
-        try:
-            _task_alert_store = D1ClawTaskAlertStore(d1_binding)
-        except Exception:
-            _task_alert_store = None
-    app.state.claw_task_alert_store = _task_alert_store
-
     # #5034 Web Push subscriptions: the same PADIEM_CHAT_DB binding, a device
     # endpoint registry only. No notification record is stored here.
     _push_subscription_store = claw_push_subscription_store
@@ -1902,8 +1887,8 @@ def create_app(
     # #5034 Web Push delivery authority. The VAPID private key is a server-only
     # secret: it is never logged, never returned to a browser and never placed in
     # [vars]. Only the public half reaches the capability route. With no key the
-    # capability route honestly reports enabled=false and the web inbox is
-    # unaffected.
+    # capability route honestly reports enabled=false and the conversation view
+    # is unaffected.
     _push_public_key = (claw_push_vapid_public_key or "").strip() or None
     _push_private_key = (claw_push_vapid_private_key or "").strip() or None
     _push_subject = (claw_push_vapid_subject or "").strip() or None

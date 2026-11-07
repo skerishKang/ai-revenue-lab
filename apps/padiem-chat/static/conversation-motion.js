@@ -39,10 +39,7 @@
     }
     var state = shell.dataset.state;
     if (state === "home" || state === "chat") return true;
-    if (state === "claw") {
-      var workspace = document.getElementById("clawWorkspace");
-      return !workspace || workspace.dataset.view !== "inbox";
-    }
+    if (state === "claw") return true;
     return false;
   }
 

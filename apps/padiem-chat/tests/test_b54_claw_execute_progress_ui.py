@@ -39,7 +39,7 @@ fetch, and a deterministic virtual clock:
 - RETRY_AFTER_HANDOFF_CLEARS_WAIT=PASS
 - AMBIGUOUS_FAILURE_CLEARS_WAIT=PASS
 - NETWORK_FAILURE_CLEARS_WAIT=PASS
-- INBOX_NAVIGATION_CLEARS_WAIT=PASS
+- AUTOMATION_NAVIGATION_CLEARS_WAIT=PASS
 - AUTH_LOSS_CLEARS_WAIT=PASS
 - STALE_COMPLETION_CANNOT_RESTART_WAIT=PASS
 - EXECUTE_POST_COUNT_MATCHES_USER_ACTIONS=PASS
@@ -190,12 +190,12 @@ def test_exactly_one_explicit_dispatch_path_starts_the_wait() -> None:
 
 def test_wait_timer_lifecycle_is_closed() -> None:
     app = _app_source()
-    # Definition plus exactly six teardown call sites: dispatch, success/failure
-    # finally, home reset, auth loss, inbox navigation, and #3237 automation
-    # navigation. Every Claw view switch must drop the timer so a late
-    # completion can never resurrect a cleared wait.
+    # Definition plus exactly five teardown call sites: dispatch, success/failure
+    # finally, home reset, auth loss, and #3237 automation navigation. Every Claw
+    # view switch must drop the timer so a late completion can never resurrect a
+    # cleared wait.
     assert app.count("function clearClawWait()") == 1
-    assert app.count("clearClawWait();") == 6
+    assert app.count("clearClawWait();") == 5
     finally_block = app[app.index("    } finally {\n      // The owning request always tears its wait timer down"):]
     finally_block = finally_block[: finally_block.index("setClawButtonsBusy(false);")]
     assert "clearClawWait();" in finally_block
@@ -205,9 +205,6 @@ def test_wait_timer_lifecycle_is_closed() -> None:
     auth = app[app.index("if (!authenticated) {"):]
     auth = auth[: auth.index("const sessionState")]
     assert "clearClawWait();" in auth
-    inbox = app[app.index("function openClawInbox(kind)"):]
-    inbox = inbox[: inbox.index("function openClawWorkspace(")]
-    assert "clearClawWait();" in inbox
     # #3237: the read-only automation view is a Claw view too, so leaving it
     # must also tear the wait timer down.
     automation = app[app.index("function openClawAutomation()"):]
@@ -464,8 +461,7 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "clawResultDocx","clawStatus","clawWait","clawArtifactMeta","clawArtifactName","clawArtifactSize",
   "clawResultSuccessNote","clawResultHint","clawExecuteHint","clawApprovedMemory","clawApprovedRefresh",
   "clawApprovedLoading","clawApprovedError","clawApprovedList","clawApprovedEmpty","clawMemoryReview",
-  "tasksNavButton","alertsNavButton","clawInbox","clawInboxTitle","clawInboxLoading","clawInboxError",
-  "clawInboxEmpty","clawInboxList","clawInboxRetry","clawRunHistory","clawRunHistoryRefresh",
+  "clawRunHistory","clawRunHistoryRefresh","automationNavButton","clawAutomation","automationViewBody",
   "clawRunHistoryLoading","clawRunHistoryError","clawRunHistoryList","clawRunHistoryEmpty",
   "clawRetryHint","clawRetryBox","clawRetryCopy","clawRetryButton",
 ].forEach((id) => add(id, "div"));
@@ -813,10 +809,12 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   checks.WAIT_VISIBLE_BEFORE_NAVIGATION =
     byId.clawWait.hidden === false && activeTimers() === 1 && unchanged(navWindow);
   if (!checks.WAIT_VISIBLE_BEFORE_NAVIGATION) fail("WAIT_VISIBLE_BEFORE_NAVIGATION");
-  byId.tasksNavButton.click();
+  byId.automationNavButton.click();
   await flush();
-  checks.INBOX_NAVIGATION_CLEARS_WAIT = byId.clawWait.hidden === true && activeTimers() === 0;
-  if (!checks.INBOX_NAVIGATION_CLEARS_WAIT) fail("INBOX_NAVIGATION_CLEARS_WAIT: " + activeTimers());
+  // The automation view starts its own rules-loading timer, so the cleared
+  // wait is proven by the execute wait's own hidden flag.
+  checks.AUTOMATION_NAVIGATION_CLEARS_WAIT = byId.clawWait.hidden === true;
+  if (!checks.AUTOMATION_NAVIGATION_CLEARS_WAIT) fail("AUTOMATION_NAVIGATION_CLEARS_WAIT");
   settle(jsonResponse(200, { ok: true, result: { title: "quote", result_text: "late", artifact: null } }));
   await flush();
   advance(3000);
@@ -940,7 +938,7 @@ def test_behavioral_elapsed_wait_journey() -> None:
         "NO_REPLAY_AFTER_AMBIGUOUS_FAILURE",
         "NETWORK_FAILURE_CLEARS_WAIT",
         "WAIT_VISIBLE_BEFORE_NAVIGATION",
-        "INBOX_NAVIGATION_CLEARS_WAIT",
+        "AUTOMATION_NAVIGATION_CLEARS_WAIT",
         "NAV_CLEARED_WAIT_STAYS_CLEARED",
         "NAVIGATION_RELEASES_WAIT",
         "WAIT_VISIBLE_BEFORE_AUTH_LOSS",
@@ -983,7 +981,7 @@ def test_behavioral_wait_stays_within_existing_authority() -> None:
         "/api/conversations",
         "/api/claw/runs",
         "/api/claw/memory",
-        "/api/claw/inbox/tasks",
+        "/api/claw/automation/rules",
         "/api/claw/manual-intake/execute",
     }
     urls = {r["url"].split("?")[0] for r in payload["requests"]}

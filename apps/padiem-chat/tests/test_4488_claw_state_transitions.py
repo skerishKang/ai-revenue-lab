@@ -199,7 +199,11 @@ def test_the_memory_visibility_gate_requires_an_owner_session_in_claw() -> None:
     body = app[start : app.index("\n  }", start)]
     assert "authState.authenticated === true" in body
     assert 'shell.dataset.state === "claw"' in body
-    assert 'clawWorkspace?.dataset.view !== "inbox"' in body
+    # 작업함(Claw Inbox) 제거(#7109, 대표 결정 2026-11-07)로 inbox 뷰 제외
+    # 조건은 사라지고, 랜딩(hero) 상태에서의 숨김만 남는다 — 게이트 강도는
+    # 소유자 세션·Claw 상태 조건에 그대로 유지된다.
+    assert 'clawWorkspace?.dataset.view === "general"' in body
+    assert "!emptyState.hidden" in body
     assert "clawApprovedMemory.hidden = !show;" in body
     assert "if (clawApprovedDisclosure) clawApprovedDisclosure.hidden = !show;" in body
     # Loading only ever happens behind the gate.

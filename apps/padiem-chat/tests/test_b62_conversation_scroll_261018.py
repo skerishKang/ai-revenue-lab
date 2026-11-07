@@ -15,7 +15,7 @@ def test_shared_conversation_motion_covers_chat_and_general_claw():
     assert "function inConversation()" in motion
     assert 'state === "chat"' in motion
     assert 'state === "claw"' in motion
-    assert 'workspace.dataset.view !== "inbox"' in motion
+    # 작업함 제거(#7109)로 inbox 뷰 조건은 conversation-motion.js에서 삭제 —
     assert "function remainingToEnd()" in motion
     assert 'className = "conversation-jump"' in motion
     assert 'data-locale-aria-label", "conversation-jump"' in motion

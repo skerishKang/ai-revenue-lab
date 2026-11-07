@@ -17,8 +17,9 @@
  *     browser-side database, no cookie). The device subscription lives on the
  *     server, keyed by the signed-in account, exactly like the rest of the
  *     product's state;
- *   - it never treats a push permission as a substitute for the web inbox. The
- *     inbox keeps working when push is denied, unsupported or unconfigured.
+ *   - it never treats a push permission as a substitute for the in-app
+ *     conversation notification. The conversation view keeps working when push
+ *     is denied, unsupported or unconfigured.
  */
 
 "use strict";
@@ -149,7 +150,7 @@ async function currentPushState() {
  * Turn push on for this device. Must be called from a user gesture.
  *
  * Returns one of the PUSH_STATE values. A denial is a normal answer, not an
- * error: the web inbox stays the source of truth either way.
+ * error: the conversation view stays the source of truth either way.
  */
 async function enablePush() {
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
@@ -250,12 +251,12 @@ if (typeof window !== "undefined") {
 }
 
 /* ------------------------------------------------------------------ *
- * Inbox toggle wiring
+ * Settings toggle wiring
  *
- * The toggle lives in the existing inbox header. It is only shown when the
+ * The toggle lives in the existing settings dialog. It is only shown when the
  * deployment actually has push authority AND the browser supports it: a
  * toggle that could never deliver is worse than no toggle. When push is
- * denied or unsupported the web inbox stays exactly as it is.
+ * denied or unsupported the conversation view stays exactly as it is.
  * ------------------------------------------------------------------ */
 
 const PUSH_LABELS = {
@@ -264,9 +265,9 @@ const PUSH_LABELS = {
   on: "이 기기로 알림을 받습니다.",
   off: "이 기기 알림이 꺼져 있습니다.",
   denied: "브라우저에서 알림이 차단되었습니다. 사이트 설정에서 허용해 주세요.",
-  unsupported: "이 브라우저는 백그라운드 알림을 지원하지 않습니다. 알림함은 그대로 사용할 수 있습니다.",
+  unsupported: "이 브라우저는 백그라운드 알림을 지원하지 않습니다.",
   unconfigured: "",
-  error: "알림 설정을 변경하지 못했습니다. 알림함은 그대로 사용할 수 있습니다."
+  error: "알림 설정을 변경하지 못했습니다."
 };
 
 function pushLabel(key, fallback) {

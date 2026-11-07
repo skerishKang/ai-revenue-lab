@@ -150,9 +150,6 @@ def test_the_header_carries_the_one_primary_action() -> None:
     assert 'id="clawAutomationCreateOpen"' in index
     assert 'aria-controls="clawAutomationCreate"' in index
     assert 'aria-expanded="false"' in index
-    # The alerts entry is a secondary control, not a second primary.
-    assert 'id="automationAlertsButton"' in index
-    assert 'class="claw-inbox-secondary"' in index
 
 
 def test_a_retry_is_not_part_of_the_permanent_header() -> None:
@@ -284,7 +281,7 @@ def test_the_ready_state_shows_one_entry_and_no_retry(browser, server) -> None:
           const panel = document.getElementById('clawAutomation');
           return {
             ctaVisible: vis('#clawAutomationCreateOpen'),
-            alertsVisible: vis('#automationAlertsButton'),
+            alertsVisible: Boolean(document.getElementById('automationAlertsButton')),
             retryVisible: vis('#clawAutomationRetry'),
             errorVisible: vis('#clawAutomationError'),
             forbiddenVisible: vis('#clawAutomationForbidden'),
@@ -296,7 +293,8 @@ def test_the_ready_state_shows_one_entry_and_no_retry(browser, server) -> None:
         }"""
     )
     assert state["ctaVisible"] is True
-    assert state["alertsVisible"] is True
+    # The inbox entry was removed with the inbox itself (PR2).
+    assert state["alertsVisible"] is False
     # No failure, so no retry.
     assert state["retryVisible"] is False
     assert state["errorVisible"] is False

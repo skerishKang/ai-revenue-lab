@@ -259,9 +259,8 @@ def test_auth_loss_and_navigation_clear_recovery_state() -> None:
     auth_block = app[app.index("if (!authenticated) {"):]
     auth_block = auth_block[: auth_block.index("const sessionState")]
     assert "clearClawRecovery({ syncControls: true });" in auth_block
-    # home navigation and Claw inbox navigation
+    # home navigation drops any pending Claw execute recovery timer/state.
     assert "// Leaving for home drops any pending Claw execute recovery timer/state." in app
-    assert "// Inbox navigation leaves the manual form: drop the pending recovery timer/state." in app
 
 
 def test_locale_keys_are_declared_for_both_languages() -> None:
@@ -343,6 +342,11 @@ function makeEl(tag) {
   el.hasChildNodes = () => el.children.length > 0;
   el.remove = () => { if (el.parentNode) el.parentNode.children = el.parentNode.children.filter((c) => c !== el); };
   el.addEventListener = (t, fn) => { (el.listeners[t] = el.listeners[t] || []).push(fn); };
+  el.dispatchEvent = (ev) => {
+    const type = ev && ev.type;
+    (el.listeners[type] || []).forEach((fn) => fn({ type, target: el }));
+    return true;
+  };
   el.querySelector = (sel) => el.children.find((c) => c.className && c.className.includes(sel.replace(/^\./, ""))) || null;
   el.querySelectorAll = (sel) => (sel && sel.indexOf("claw-chip") >= 0 ? [] : el.children);
   el.focus = () => { doc.activeElement = el; };
@@ -394,8 +398,7 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "clawResultDocx","clawStatus","clawArtifactMeta","clawArtifactName","clawArtifactSize",
   "clawResultSuccessNote","clawResultHint","clawExecuteHint","clawApprovedMemory","clawApprovedRefresh",
   "clawApprovedLoading","clawApprovedError","clawApprovedList","clawApprovedEmpty","clawMemoryReview",
-  "tasksNavButton","alertsNavButton","clawInbox","clawInboxTitle","clawInboxLoading","clawInboxError",
-  "clawInboxEmpty","clawInboxList","clawInboxRetry","clawRunHistory","clawRunHistoryRefresh",
+  "clawRunHistory","clawRunHistoryRefresh","newChatButton","automationNavButton",
   "clawRunHistoryLoading","clawRunHistoryError","clawRunHistoryList","clawRunHistoryEmpty",
   "clawRetryHint","clawRetryBox","clawRetryCopy","clawRetryButton",
 ].forEach((id) => add(id, "div"));
@@ -554,7 +557,7 @@ async function advanceClock(ms) {
     else virtualTimers.delete(chosenId);
     chosen.callback(...chosen.args);
     await Promise.resolve();
-    if (++iterations > 10000) throw new Error("timer loop");
+    if (++iterations > 20000) throw new Error("timer loop");
   }
   virtualNow = until;
   await new Promise((r) => setImmediate(r));
@@ -714,13 +717,24 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   await tick(120);
   if (execPosts().length !== beforeEditRetry) fail("EDIT_DURING_COOLDOWN_POSTED");
   checks.NAV_EDIT_DURING_COOLDOWN_NO_POST = true;
-  // The cooldown is long, so prove the target contract on a fresh cycle.
-  byId.tasksNavButton.click();
+  // 8b) A fresh cycle after a real HOME round-trip. From Claw, the first
+  // Chat entry switches lanes; the second is the home reset that clears the
+  // pending recovery state (대표 결정 2026-11-07: 작업함 왕복 대신 홈 왕복으로
+  // 경로만 변경, 단언 강도 동일).
+  byId.newChatButton.click();
+  await tick(60);
+  byId.newChatButton.click();
   await tick(60);
   byId.clawNavButton.click();
   await tick(60);
   executeCall = () => jsonResponse(429, { ok: false, error: { code: "rate_limited" } }, { "Retry-After": "2" });
   byId.messageInput.value = "B업체 발주 요청 — 품목 3개";
+  byId.clawChannel.value = "sms";
+  byId.clawAction.value = "order";
+  byId.clawSender.value = "B상사";
+  // #3382: composing different work releases the uncertain-dispatch latch —
+  // and a real user edit is an input event, not a bare value assignment.
+  byId.messageInput.dispatchEvent({ type: "input" });
   expectedPosts += 1;
   byId.clawExecuteButton.click();
   await tick(80);
@@ -746,7 +760,10 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   byId.clawExecuteButton.click();
   await tick(80);
   if (byId.clawRetryBox.hidden !== false) fail("COOLDOWN_NOT_VISIBLE_BEFORE_NAV");
-  byId.tasksNavButton.click();
+  // Claw -> Chat -> Home: the second Chat-entry click is the home reset.
+  byId.newChatButton.click();
+  await tick(60);
+  byId.newChatButton.click();
   await tick(60);
   checks.NAVIGATION_CLEARS_RETRY_STATE = byId.clawRetryBox.hidden === true && byId.clawRetryButton.disabled === true;
   if (!checks.NAVIGATION_CLEARS_RETRY_STATE) fail("NAVIGATION_CLEARS_RETRY_STATE");
@@ -754,23 +771,18 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   await tick(60);
   // The cleared cooldown must not be resurrected by returning to the form.
   if (byId.clawRetryBox.hidden !== true || byId.clawRetryButton.disabled !== true) fail("NAV_CLEAR_DID_NOT_PERSIST");
+  // Home reset cleared the composer; a new explicit dispatch needs new text.
+  byId.messageInput.value = "쿨다운 해제 확인";
   // A cleared cooldown no longer blocks an explicit new dispatch.
-  const beforeAfterNav = execPosts().length;
+  const beforeAfterPost = execPosts().length;
   expectedPosts += 1;
   byId.clawExecuteButton.click();
   await tick(80);
-  checks.NAVIGATION_RELEASES_COOLDOWN = execPosts().length === beforeAfterNav + 1 && byId.clawRetryBox.hidden === false;
+  checks.NAVIGATION_RELEASES_COOLDOWN = execPosts().length === beforeAfterPost + 1 && byId.clawRetryBox.hidden === false;
   if (!checks.NAVIGATION_RELEASES_COOLDOWN) fail("NAVIGATION_RELEASES_COOLDOWN");
 
-  // 10) A locale switch re-renders the runtime countdown copy.
-  executeCall = () => jsonResponse(429, { ok: false, error: { code: "rate_limited" } }, { "Retry-After": "30" });
-  byId.tasksNavButton.click();
-  await tick(40);
-  byId.clawNavButton.click();
-  await tick(40);
-  expectedPosts += 1;
-  byId.clawExecuteButton.click();
-  await tick(80);
+  // 10) A locale switch re-renders the current runtime countdown copy.
+  // The 30s cooldown started in step 9 is still live; do not dispatch again.
   if (byId.clawRetryBox.hidden !== false) fail("LOCALE_CASE_COOLDOWN_NOT_VISIBLE");
   const koCopy = byId.clawRetryCopy.textContent;
   lang = "en";
@@ -862,7 +874,10 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
     byId.clawResultEmpty.textContent ===
       COPY.ko["claw-general-model-unavailable"] + " " + COPY.ko["claw-general-model-unavailable-note"];
   if (!checks.HOLD_503_SHOWS_MODEL_UNAVAILABLE_COPY) {
-    fail("HOLD_503_SHOWS_MODEL_UNAVAILABLE_COPY: " + byId.clawStatus.textContent + " | " + byId.clawResultEmpty.textContent);
+    fail("HOLD_503_SHOWS_MODEL_UNAVAILABLE_COPY: posts=" + afterHold + "/" + expectedPosts
+      + " hidden=" + byId.clawResultEmpty.hidden
+      + " status=" + byId.clawStatus.textContent
+      + " | result=" + byId.clawResultEmpty.textContent);
   }
   checks.HOLD_503_IS_NOT_AMBIGUOUS =
     byId.clawRetryHint.hidden === true &&

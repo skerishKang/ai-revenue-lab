@@ -266,7 +266,6 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("orchestration_continuations", "user_id = ?"),
     ("orchestration_decisions", "user_id = ?"),
     ("claw_run_history", "user_id = ?"),
-    ("claw_task_alert", "member_id = ?"),
     ("claw_approved_memory", "user_id = ?"),
     ("padiem_calendar_work_log", "owner_id = ?"),
     ("padiem_calendar_appointment", "owner_id = ?"),

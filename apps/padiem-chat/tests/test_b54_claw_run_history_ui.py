@@ -132,7 +132,8 @@ def test_single_flight_and_visibility_guards_are_present() -> None:
     # Unguarded fetch is only reachable through the single-flight wrapper.
     assert app.count("await fetchClawRunHistory(options);") == 1
     assert 'const show = authState.authenticated === true' in app
-    assert 'clawWorkspace?.dataset.view !== "inbox"' in app
+    # The removed inbox must not survive as a run-history visibility gate.
+    assert 'clawWorkspace?.dataset.view !== "inbox"' not in app
 
 
 def test_auth_loss_clears_rendered_run_history_dom() -> None:
@@ -294,14 +295,13 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "projectsList","projectsEmpty","projectCreateButton","projectBanner","activeProjectName","activeProjectFiles",
   "editProjectButton","exitProjectButton","projectDialog","projectForm","projectDialogTitle","projectDialogClose",
   "projectDialogCancel","projectNameInput","projectInstructionsInput","projectFormError","projectSaveButton",
-  "projectFilesPanel","projectFileInput","projectFilesList","projectFilesEmpty","clawNavButton","clawWorkspace",
+  "projectFilesPanel","projectFileInput","projectFilesList","projectFilesEmpty","clawNavButton","clawWorkspace","clawAutomation",
   "clawManualForm","clawChannel","clawAction","clawSender","clawResultArea","clawResultPreview",
   "clawResultCard","clawResultEmpty","clawResultKind","clawGenerateBtn","clawExecuteButton","clawResultBadge",
   "clawResultDocx","clawApprovalActions","clawStatus","clawArtifactMeta","clawArtifactName","clawArtifactSize",
   "clawResultSuccessNote","clawResultHint","clawExecuteHint","clawApprovedMemory","clawApprovedRefresh",
   "clawApprovedLoading","clawApprovedError","clawApprovedList","clawApprovedEmpty","clawMemoryReview",
-  "tasksNavButton","alertsNavButton","clawInbox","clawInboxTitle","clawInboxLoading","clawInboxError",
-  "clawInboxEmpty","clawInboxList","clawInboxRetry","clawRunHistory","clawRunHistoryRefresh",
+  "clawRunHistory","clawRunHistoryRefresh","automationNavButton",
   "clawRunHistoryLoading","clawRunHistoryError","clawRunHistoryList","clawRunHistoryEmpty","clawRunHistoryExpand",
 ].forEach((id) => add(id, "div"));
 // index.html nests #messageList inside <section class="conversation">, and the
@@ -481,12 +481,12 @@ function collectText(root) {
     requests.some((r) => r.url === "/api/claw/manual-intake/artifact/" + ARTIFACT_ID);
   if (!checks.ARTIFACT_REDOWNLOAD_REUSES_BOUNDED_ROUTE) fail("ARTIFACT_REDOWNLOAD_REUSES_BOUNDED_ROUTE");
 
-  // 7) The inbox view hides the panel and does not fetch run history.
+  // 7) The automation view hides the panel and does not fetch run history.
   const beforeInbox = runCalls();
-  byId.tasksNavButton.click();
+  byId.automationNavButton.click();
   await tick(50);
-  checks.RUN_HISTORY_HIDDEN_IN_INBOX_VIEW = byId.clawRunHistory.hidden === true && runCalls() === beforeInbox;
-  if (!checks.RUN_HISTORY_HIDDEN_IN_INBOX_VIEW) fail("RUN_HISTORY_HIDDEN_IN_INBOX_VIEW");
+  checks.RUN_HISTORY_HIDDEN_IN_AUTOMATION_VIEW = byId.clawRunHistory.hidden === true && runCalls() === beforeInbox;
+  if (!checks.RUN_HISTORY_HIDDEN_IN_AUTOMATION_VIEW) fail("RUN_HISTORY_HIDDEN_IN_AUTOMATION_VIEW");
 
   // 8) Returning to the workspace shows the panel again and refetches.
   byId.clawNavButton.click();
@@ -578,7 +578,7 @@ function collectText(root) {
   await tick(30);
   checks.HARK_HISTORY_NO_DUPLICATE_EXPAND=runCalls()===afterExpand;
   if (!checks.HARK_HISTORY_NO_DUPLICATE_EXPAND) fail("HARK_HISTORY_NO_DUPLICATE_EXPAND");
-  byId.tasksNavButton.click();
+  byId.automationNavButton.click();
   await tick(50);
   byId.clawNavButton.click();
   await tick(50);
@@ -633,7 +633,7 @@ def test_behavioral_run_history_journey() -> None:
         "RUN_STATUS_LOCALIZED",
         "RUN_HISTORY_SINGLE_FLIGHT",
         "ARTIFACT_REDOWNLOAD_REUSES_BOUNDED_ROUTE",
-        "RUN_HISTORY_HIDDEN_IN_INBOX_VIEW",
+        "RUN_HISTORY_HIDDEN_IN_AUTOMATION_VIEW",
         "RUN_HISTORY_EMPTY_STATE",
         "RUN_HISTORY_ERROR_RETRY",
         "RUN_WITHOUT_ARTIFACT_HAS_NO_DOWNLOAD",
@@ -659,7 +659,7 @@ def test_behavioral_requests_stay_within_existing_authority() -> None:
         "/api/conversations",
         "/api/claw/runs",
         "/api/claw/memory",
-        "/api/claw/inbox/tasks",
+        "/api/claw/automation/rules",
         "/api/claw/manual-intake/artifact/" + "doc_" + "a" * 32,
         "/api/claw/approvals/decision",
     }
