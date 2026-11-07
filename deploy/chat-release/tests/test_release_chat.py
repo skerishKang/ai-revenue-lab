@@ -67,7 +67,12 @@ class ReleaseScriptStaticContract(unittest.TestCase):
         # (PS 5.1 -> ssh -> cmd -> wsl cannot carry the nested quoting), and it
         # runs the dep17.sh shape against the OPS checkout — never a /mnt/d
         # work-folder path.
-        self.assertIn("$remoteShB64", self.text)
+        # Uploaded with scp and run as "bash <file>" (the dep17.sh path): a
+        # pipe or ">" inside the ssh command is parsed by cmd.exe on COM2.
+        self.assertIn("& scp -i $Script:Com2SshKey -o BatchMode=yes", self.text)
+        self.assertIn('Invoke-Com2 "bash $remoteShPath"', self.text)
+        self.assertIn('$remoteSh = $remoteSh -replace "`r`n", "`n"', self.text)
+        self.assertNotIn("base64 -d", self.text)
         self.assertIn("WorkingDirectory=$OPS", self.text)
         self.assertIn("$OPS/deploy/host-com2/deploy_from_main.sh", self.text)
         self.assertIn("git -C \"$OPS\" fetch -q origin", self.text)
