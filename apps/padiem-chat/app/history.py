@@ -1118,12 +1118,12 @@ class D1HistoryStore:
                 statement = statement.bind(*values)
             row = await statement.first()
         except Exception as exc:
-            # user_mode column compat (migration 102). 102 ��� �Ϸ� �� ���� ����.
+            # user_mode column compat (migration 102). 102 배포 완료 후 제거 가능.
             if 'no such column: user_mode' in str(exc) and 'oracle_mesh_dispatch' in sql and 'user_mode' in sql:
-                sql = sql.replace('COALESCE(user_mode,0) AS user_mode', '0 AS user_mode').replace('user_mode', '0')
-                # also handle SELECT user_mode
-                sql = sql.replace('user_mode', '0')
-                statement = self.db.prepare(sql)
+                sql2 = sql.replace('COALESCE(user_mode,0) AS user_mode', '0 AS user_mode')
+                sql2 = sql2.replace(', COALESCE(user_mode,0) AS user_mode', ', 0 AS user_mode')
+                sql2 = sql2.replace(' COALESCE(user_mode, 0) AS user_mode', ' 0 AS user_mode')
+                statement = self.db.prepare(sql2)
                 if values:
                     statement = statement.bind(*values)
                 row = await statement.first()
@@ -1166,11 +1166,12 @@ class D1HistoryStore:
                 statement = statement.bind(*values)
             result = await statement.run()
         except Exception as exc:
-            # user_mode column compat (migration 102). 102 ��� �Ϸ� �� ���� ����.
+            # user_mode column compat (migration 102). 102 배포 완료 후 제거 가능.
             if 'no such column: user_mode' in str(exc) and 'oracle_mesh_dispatch' in sql and 'user_mode' in sql:
-                sql = sql.replace('COALESCE(user_mode,0) AS user_mode', '0 AS user_mode')
-                sql = sql.replace('user_mode', '0')
-                statement = self.db.prepare(sql)
+                sql2 = sql.replace('COALESCE(user_mode,0) AS user_mode', '0 AS user_mode')
+                sql2 = sql2.replace(', COALESCE(user_mode,0) AS user_mode', ', 0 AS user_mode')
+                sql2 = sql2.replace(' COALESCE(user_mode, 0) AS user_mode', ' 0 AS user_mode')
+                statement = self.db.prepare(sql2)
                 if values:
                     statement = statement.bind(*values)
                 result = await statement.run()
