@@ -1502,6 +1502,7 @@ async def dispatch_oracle_mesh_file_read_intent(
     relative: str,
     background: bool = False,
     job_operation: dict[str, Any] | None = None,
+    user_mode: bool = False,
 ) -> JSONResponse:
     """Stage ONE PC-files read on the existing kind="read" Mesh lane.
 
