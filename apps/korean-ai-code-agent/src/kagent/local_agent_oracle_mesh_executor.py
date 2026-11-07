@@ -1515,6 +1515,12 @@ try {{{secret_source}
   $w=$client.WriteAsync($len,0,4); if(-not $w.Wait(5000)){{ throw 'helper write timeout' }}
   $w=$client.WriteAsync($body,0,$body.Length); if(-not $w.Wait(5000)){{ throw 'helper write timeout' }}
   $client.Flush()
+  # #7107: the helper streams stdout/stderr as chunks. Accumulate them in
+  # memory and emit one reply object; there is no 256 KiB cut and no fixed
+  # command deadline. The 15s read window is per frame, and a 5s heartbeat
+  # keeps a healthy long command alive.
+  $stdout=New-Object System.Collections.Generic.List[byte]
+  $stderr=New-Object System.Collections.Generic.List[byte]
   while($true){{
     $hdr=New-Object byte[] 4; $read=0
     while($read -lt 4){{
@@ -1531,8 +1537,20 @@ try {{{secret_source}
     $text=[System.Text.Encoding]::UTF8.GetString($rbody)
     $frame=$text | ConvertFrom-Json
     if($frame.status -eq 'started' -or $frame.status -eq 'running'){{ continue }}
+    if($frame.status -eq 'stdout'){{
+      $stdout.AddRange([byte[]][Convert]::FromBase64String([string]$frame.data_b64)); continue
+    }}
+    if($frame.status -eq 'stderr'){{
+      $stderr.AddRange([byte[]][Convert]::FromBase64String([string]$frame.data_b64)); continue
+    }}
+    $reply=[ordered]@{{
+      request_id=$frame.request_id; status=$frame.status; exit_code=$frame.exit_code;
+      stdout_b64=[Convert]::ToBase64String($stdout.ToArray());
+      stderr_b64=[Convert]::ToBase64String($stderr.ToArray());
+      truncated=$false; error_code=$frame.error_code; duration_ms=$frame.duration_ms
+    }}
     $client.Dispose()
-    [Console]::Out.Write($text)
+    [Console]::Out.Write(($reply | ConvertTo-Json -Compress))
     exit 0
   }}
 }} catch {{
@@ -1561,6 +1579,10 @@ try {{{secret_source}
         if not isinstance(obj, dict):
             return OracleMeshExecutionOutcome(termination="exited", exit_code=1, body=raw if isinstance(raw,(bytes,bytearray)) else text.encode("utf-8","replace"))
         status = obj.get("status")
+        if status == "cancelled":
+            # The helper ended the child because the owner stopped the dispatch
+            # or the SYSTEM client went away. That is a stop, not a silent reply.
+            return OracleMeshExecutionOutcome(termination="cancelled", exit_code=None, body=b"")
         if status == "ok":
             stdout = obj.get("stdout_b64")
             try:
@@ -1614,12 +1636,25 @@ try {{{secret_source}
         except Exception:
             return OracleMeshExecutionOutcome(termination="not_executed", exit_code=None,
                 body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "user mode client unavailable"}, ensure_ascii=True).encode("utf-8"))
+        # #7107: a background job's own cancel event is not the only stop path.
+        # pc_shell_stop marks the dispatch cancelled on the server; the owner
+        # probe is what makes this PS client notice and hang up, which in turn
+        # makes the helper end the user child. Check both, like the SYSTEM lane.
+        owner_cancel = self._cancel_probe(dispatch)
+
+        def cancelled():
+            return ((callable(additional_cancel_probe) and additional_cancel_probe())
+                    or owner_cancel())
+
         try:
-            observed = self._command_port.run_command(node_ref=node_ref, command=ps, timeout_seconds=None, cancel_probe=additional_cancel_probe)
+            observed = self._command_port.run_command(node_ref=node_ref, command=ps, timeout_seconds=None, cancel_probe=cancelled)
         except Exception:
             return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
                 body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
         term = getattr(observed, "termination", "no_reply")
+        if term == "cancelled":
+            # The #7107 helper ended the user child when this dispatch was stopped.
+            return OracleMeshExecutionOutcome(termination="cancelled", exit_code=None, body=b"")
         if term != "exited":
             return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
                 body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
@@ -2450,8 +2485,12 @@ try {{{secret_source}
     def _run_background_dispatch(self, payload, *, cancel_probe):
         dispatch = OracleMeshDispatch(**payload)
         renewer = self.start_lease_renewal(dispatch)
-        lock = self._node_execution_lock(dispatch)
-        acquired = False
+        # #7107: a user-mode command runs in the logged-in user's session, not
+        # on the SYSTEM console, so it must not hold the per-node console lock.
+        # A long user command would otherwise block the next SYSTEM dispatch
+        # even though the two lanes cannot collide.
+        lock = None if getattr(dispatch, "user_mode", False) else self._node_execution_lock(dispatch)
+        acquired = lock is None
         try:
             # Keep this claim alive while another command owns the same PC.
             # Other PCs have independent locks and can continue executing.
@@ -2470,7 +2509,7 @@ try {{{secret_source}
                     "body": outcome.body}
         finally:
             self._clear_active(dispatch)
-            if acquired:
+            if acquired and lock is not None:
                 lock.release()
             if renewer is not None:
                 renewer.set()
