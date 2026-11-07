@@ -48,7 +48,7 @@ POLL_FIELDS = {
     "dispatch_id", "nonce", "expires_at", "node_ref", "file_path", "account_ref",
     "device_id", "binding_ref", "root_ref", "path_relative", "command_id", "run_id",
     "tool_request_ref", "request_id", "revision_ref", "evidence_ref",
-    "request_fingerprint", "kind", "command_text", "max_bytes",
+    "request_fingerprint", "kind", "command_text", "max_bytes", "user_mode",
 }
 
 

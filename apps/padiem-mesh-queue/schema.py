@@ -95,6 +95,7 @@ QUEUE_MIGRATIONS = (
     # issue_code writes the row and the claim path reads it, so a queue
     # database without the table cannot serve either.
     "093_pc_install_tokens.sql",
+    "102_oracle_mesh_dispatch_user_mode.sql",
 )
 
 QUEUE_TABLES = (

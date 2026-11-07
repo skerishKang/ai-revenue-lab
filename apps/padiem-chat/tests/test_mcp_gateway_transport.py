@@ -139,7 +139,7 @@ def test_fourteen_sorted_tools_use_closed_schemas_and_token_bound_device(gateway
     assert "device" not in next(tool for tool in tools if tool["name"] == "pc_devices")["inputSchema"]["properties"]
     shell = next(tool for tool in tools if tool["name"] == "pc_shell")
     assert shell["inputSchema"]["required"] == ["command"]
-    assert set(shell["inputSchema"]["properties"]) == {"command", "cwd", "shell", "wait_seconds", "device"}
+    assert set(shell["inputSchema"]["properties"]) == {"command", "cwd", "shell", "wait_seconds", "device", "mode"}
     assert shell["inputSchema"]["properties"]["shell"]["enum"] == ["powershell", "cmd", "bash"]
     wait = shell["inputSchema"]["properties"]["wait_seconds"]
     assert wait["type"] == "integer" and wait["minimum"] == 1 and wait["maximum"] == 150

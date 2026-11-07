@@ -159,6 +159,8 @@ class Settings:
     # ship dark; Off hides them and refuses calls, except stop for an owned
     # active job. A deployment opts in with PADIEM_MCP_PC_SHELL_ENABLED=true.
     mcp_pc_shell_enabled: bool = False
+    # #7076c: route pc_shell mode=user to the logged-in user helper (pipe). Default OFF.
+    mcp_pc_shell_user_mode_enabled: bool = False
     lovetree_account_delete_url: str | None = None
     account_delete_rpc_secret: str | None = field(default=None, repr=False)
     # 공통 로그인(옵트인) 이메일 가입·로그인: padiem-auth가 Chat의 내부 확인
@@ -205,6 +207,7 @@ class Settings:
         local_dev: object = None,
         # MCP pc_shell ships dark; appended last for the same positional safety.
         mcp_pc_shell_enabled: object = None,
+        mcp_pc_shell_user_mode_enabled: object = None,
         # Shared account deletion RPC uses the existing v2 service HMAC envelope.
         lovetree_account_delete_url: object = None,
         account_delete_rpc_secret: object = None,
@@ -238,6 +241,14 @@ class Settings:
             shell_enabled = True
         else:
             raise ConfigError("PADIEM_MCP_PC_SHELL_ENABLED must be true or false")
+
+        raw_shell_user = "" if mcp_pc_shell_user_mode_enabled is None else str(mcp_pc_shell_user_mode_enabled).strip().lower()
+        if raw_shell_user in {"", "0", "false"}:
+            shell_user_enabled = False
+        elif raw_shell_user in {"1", "true"}:
+            shell_user_enabled = True
+        else:
+            raise ConfigError("PADIEM_MCP_PC_SHELL_USER_MODE must be true or false")
 
         raw_base = "" if b14_base_url is None else str(b14_base_url).strip()
         base = _normalize_base_url(raw_base) if raw_base else None
@@ -458,6 +469,7 @@ class Settings:
             global_daily_limit=global_daily,
             local_dev=local,
             mcp_pc_shell_enabled=shell_enabled,
+            mcp_pc_shell_user_mode_enabled=shell_user_enabled,
             lovetree_account_delete_url=(
                 _normalize_base_url(str(lovetree_account_delete_url), https_only=True)
                 if lovetree_account_delete_url else None
@@ -524,6 +536,7 @@ class Settings:
             global_daily_limit=os.getenv("PADIEM_CHAT_GLOBAL_DAILY_LIMIT", "1000"),
             local_dev=os.getenv("PADIEM_LOCAL_DEV"),
             mcp_pc_shell_enabled=os.getenv("PADIEM_MCP_PC_SHELL_ENABLED"),
+            mcp_pc_shell_user_mode_enabled=os.getenv("PADIEM_MCP_PC_SHELL_USER_MODE"),
             lovetree_account_delete_url=os.getenv("PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL"),
             account_delete_rpc_secret=os.getenv("PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET"),
             password_rpc_secret=os.getenv("PADIEM_CHAT_PASSWORD_RPC_SECRET"),

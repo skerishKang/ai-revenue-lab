@@ -1112,22 +1112,74 @@ class D1HistoryStore:
         }
 
     async def _first(self, sql: str, *values: Any) -> dict[str, Any] | None:
-        statement = self.db.prepare(sql)
-        if values:
-            statement = statement.bind(*values)
-        return _row_to_dict(await statement.first())
+        try:
+            statement = self.db.prepare(sql)
+            if values:
+                statement = statement.bind(*values)
+            row = await statement.first()
+        except Exception as exc:
+            # user_mode column compat (migration 102). 102 배포 완료 후 제거 가능.
+            if 'no such column: user_mode' in str(exc) and 'oracle_mesh_dispatch' in sql and 'user_mode' in sql:
+                sql2 = sql.replace('COALESCE(user_mode,0) AS user_mode', '0 AS user_mode')
+                sql2 = sql2.replace(', COALESCE(user_mode,0) AS user_mode', ', 0 AS user_mode')
+                sql2 = sql2.replace(' COALESCE(user_mode, 0) AS user_mode', ' 0 AS user_mode')
+                statement = self.db.prepare(sql2)
+                if values:
+                    statement = statement.bind(*values)
+                row = await statement.first()
+            else:
+                raise
+        return _row_to_dict(row)
 
     async def _run(self, sql: str, *values: Any) -> Any:
-        statement = self.db.prepare(sql)
-        if values:
-            statement = statement.bind(*values)
-        return await statement.run()
+        try:
+            statement = self.db.prepare(sql)
+            if values:
+                statement = statement.bind(*values)
+            return await statement.run()
+        except Exception as exc:
+            # user_mode column compat (migration 102). 102 배포 완료 후 제거 가능.
+            emsg=str(exc)
+            if ('no such column: user_mode' in emsg or 'has no column named user_mode' in emsg) and 'oracle_mesh_dispatch' in sql and 'user_mode' in sql:
+                vals = list(values)
+                sql2 = sql
+                if 'INSERT INTO oracle_mesh_dispatch' in sql and ', created_at, user_mode)' in sql:
+                    sql2 = sql.replace(', created_at, user_mode)', ', created_at)')
+                    if sql2.count('?') == sql.count('?') - 1 and vals:
+                        vals = vals[:-1]
+                elif 'UPDATE oracle_mesh_dispatch' in sql and 'tool_call_ref=?, user_mode=?,' in sql:
+                    sql2 = sql.replace('tool_call_ref=?, user_mode=?,', 'tool_call_ref=?,')
+                    # value order includes tool_call_ref, user_mode before nonce/state in that update
+                    # find param positions by rebuilding? easier: reconstruct from known shape not safe; try removing second-to-last in that segment impossible.
+                    # Fallback: re-raise only for rare pre-102 update-replace path; reads/inserts are main compatibility need.
+                    raise
+                else:
+                    sql2 = sql.replace(', user_mode=?,', ',').replace(', user_mode,', ',')
+                statement = self.db.prepare(sql2)
+                if vals:
+                    statement = statement.bind(*tuple(vals))
+                return await statement.run()
+            raise
 
     async def _all(self, sql: str, *values: Any) -> list[dict[str, Any]]:
-        statement = self.db.prepare(sql)
-        if values:
-            statement = statement.bind(*values)
-        return _rows_from_result(await statement.run())
+        try:
+            statement = self.db.prepare(sql)
+            if values:
+                statement = statement.bind(*values)
+            result = await statement.run()
+        except Exception as exc:
+            # user_mode column compat (migration 102). 102 배포 완료 후 제거 가능.
+            if 'no such column: user_mode' in str(exc) and 'oracle_mesh_dispatch' in sql and 'user_mode' in sql:
+                sql2 = sql.replace('COALESCE(user_mode,0) AS user_mode', '0 AS user_mode')
+                sql2 = sql2.replace(', COALESCE(user_mode,0) AS user_mode', ', 0 AS user_mode')
+                sql2 = sql2.replace(' COALESCE(user_mode, 0) AS user_mode', ' 0 AS user_mode')
+                statement = self.db.prepare(sql2)
+                if values:
+                    statement = statement.bind(*values)
+                result = await statement.run()
+            else:
+                raise
+        return _rows_from_result(result)
 
     async def upsert_shared_user(self, user_id: str, account_id: str, email: str, name: str, picture: str) -> UserProfile:
         if not re.fullmatch(r'usr_[0-9a-f]{32}', user_id) or not re.fullmatch(r'sub_[A-Za-z0-9_-]+', account_id):
@@ -2940,6 +2992,7 @@ class D1HistoryStore:
         kind: str = "read",
         command_text: str | None = None,
         tool_call_ref: str | None = None,
+        user_mode: bool = False,
     ) -> dict[str, Any]:
         """#4139 — stage one Oracle management-host execution for one run.
 
@@ -3056,7 +3109,7 @@ class D1HistoryStore:
             "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, revision_ref, "
             "evidence_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
             "binding_ref, node_ref, root_ref, path_relative, file_path, nonce_sha256, "
-            f"state, expires_at FROM oracle_mesh_dispatch WHERE {correlation_sql}",
+            f"state, expires_at, COALESCE(user_mode,0) AS user_mode FROM oracle_mesh_dispatch WHERE {correlation_sql}",
             *correlation_params,
         )
         def same_payload(row: dict[str, Any]) -> bool:
@@ -3091,13 +3144,13 @@ class D1HistoryStore:
                 "request_id=?, revision_ref=?, evidence_ref=?, request_fingerprint=?, "
                 "account_ref=?, workspace_ref=?, device_id=?, binding_ref=?, node_ref=?, "
                 "root_ref=?, path_relative=?, file_path=?, kind=?, command_text=?, "
-                "tool_call_ref=?, nonce_sha256=NULL, claimed_until=NULL, state=?, "
+                "tool_call_ref=?, user_mode=?, nonce_sha256=NULL, claimed_until=NULL, state=?, "
                 "expires_at=?, created_at=? WHERE "
                 f"{correlation_sql} AND state=? AND expires_at<=?",
                 command_id, tool_request_ref, request_id, revision_ref,
                 evidence_ref, request_fingerprint, account_ref, workspace_ref,
                 device_id, binding_ref, node_ref, root_ref, path_relative,
-                file_path, kind, command_text, tool_call_ref,
+                file_path, kind, command_text, tool_call_ref, 1 if user_mode else 0,
                 "pending", expires_at, now,
                 *correlation_params, "pending", now,
             )
@@ -3105,7 +3158,7 @@ class D1HistoryStore:
                 "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, revision_ref, "
                 "evidence_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
                 "binding_ref, node_ref, root_ref, path_relative, file_path, nonce_sha256, "
-                f"state, expires_at FROM oracle_mesh_dispatch WHERE {correlation_sql}",
+                f"state, expires_at, COALESCE(user_mode,0) AS user_mode FROM oracle_mesh_dispatch WHERE {correlation_sql}",
                 *correlation_params,
             )
             if replaced is None:
@@ -3119,13 +3172,13 @@ class D1HistoryStore:
                 "revision_ref, evidence_ref, request_fingerprint, account_ref, workspace_ref, "
                 "device_id, binding_ref, node_ref, root_ref, path_relative, file_path, "
                 "kind, command_text, tool_call_ref, "
-                "nonce_sha256, state, expires_at, created_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?)",
+                "nonce_sha256, state, expires_at, created_at, user_mode) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)",
                 dispatch_id, user_id, run_id, command_id, tool_request_ref,
                 request_id, revision_ref, evidence_ref, request_fingerprint,
                 account_ref, workspace_ref, device_id, binding_ref, node_ref,
                 root_ref, path_relative, file_path, kind, command_text,
-                tool_call_ref, "pending", expires_at, now,
+                tool_call_ref, "pending", expires_at, now, 1 if user_mode else 0,
             )
         except Exception:
             # 063 makes the database the decider of a concurrent staging: two
@@ -3138,7 +3191,7 @@ class D1HistoryStore:
                 "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, "
                 "revision_ref, evidence_ref, request_fingerprint, account_ref, workspace_ref, "
                 "device_id, binding_ref, node_ref, root_ref, path_relative, file_path, "
-                "nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "
+                "nonce_sha256, state, expires_at, COALESCE(user_mode,0) AS user_mode FROM oracle_mesh_dispatch "
                 f"WHERE {correlation_sql}",
                 *correlation_params,
             )
@@ -3157,7 +3210,7 @@ class D1HistoryStore:
             "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, revision_ref, "
             "evidence_ref, request_fingerprint, account_ref, workspace_ref, device_id, "
             "binding_ref, node_ref, root_ref, path_relative, file_path, nonce_sha256, "
-            f"state, expires_at FROM oracle_mesh_dispatch WHERE {correlation_sql}",
+            f"state, expires_at, COALESCE(user_mode,0) AS user_mode FROM oracle_mesh_dispatch WHERE {correlation_sql}",
             *correlation_params,
         )
         if created is None:
@@ -3179,8 +3232,8 @@ class D1HistoryStore:
             "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
             "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
-            "file_path, nonce_sha256, state, expires_at, tool_call_ref FROM oracle_mesh_dispatch "
-            "WHERE state=? AND expires_at>? "
+            "file_path, nonce_sha256, state, expires_at, tool_call_ref, COALESCE(user_mode,0) AS user_mode "
+            "FROM oracle_mesh_dispatch WHERE state=? AND expires_at>? "
             "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?)) "
             "ORDER BY created_at ASC LIMIT 1",
             "pending", now, now,
@@ -3444,8 +3497,8 @@ class D1HistoryStore:
             "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
             "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
-            "file_path, nonce_sha256, state, expires_at, tool_call_ref FROM oracle_mesh_dispatch "
-            "WHERE dispatch_id=?",
+            "file_path, nonce_sha256, state, expires_at, tool_call_ref, COALESCE(user_mode,0) AS user_mode "
+            "FROM oracle_mesh_dispatch WHERE dispatch_id=?",
             dispatch_id,
         )
         if row is None:
@@ -3488,8 +3541,8 @@ class D1HistoryStore:
             "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
             "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
-            "file_path, nonce_sha256, state, expires_at, tool_call_ref FROM oracle_mesh_dispatch "
-            "WHERE dispatch_id=?",
+            "file_path, nonce_sha256, state, expires_at, tool_call_ref, COALESCE(user_mode,0) AS user_mode "
+            "FROM oracle_mesh_dispatch WHERE dispatch_id=?",
             dispatch_id,
         )
         if accepted is None or accepted.get("state") != "received":

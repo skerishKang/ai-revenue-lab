@@ -1290,6 +1290,7 @@ async def dispatch_oracle_mesh_command_intent(
     background: bool = False,
     job_operation: dict[str, Any] | None = None,
     ttl_seconds: int | None = None,
+    user_mode: bool = False,
 ) -> JSONResponse:
     """Owner intent for ONE terminal command on the pinned management PC.
 
@@ -1456,6 +1457,7 @@ async def dispatch_oracle_mesh_command_intent(
             command_text=command,
             tool_call_ref=tool_call_ref,
             **({"background": True, "job_operation": job_operation} if background else {}),
+            user_mode=user_mode,
         )
     except HistoryForbidden:
         return _error(404, "oracle_mesh_run_unavailable")
@@ -1486,6 +1488,7 @@ async def dispatch_oracle_mesh_command_intent(
             "device_id": target.get("device_id") or target["node_ref"],
             "execution": "server_owned",
             "broker_acknowledged": False,
+            "user_mode": user_mode,
         },
     })
 
@@ -1499,6 +1502,7 @@ async def dispatch_oracle_mesh_file_read_intent(
     relative: str,
     background: bool = False,
     job_operation: dict[str, Any] | None = None,
+    user_mode: bool = False,
 ) -> JSONResponse:
     """Stage ONE PC-files read on the existing kind="read" Mesh lane.
 
@@ -1624,6 +1628,7 @@ async def dispatch_oracle_mesh_file_read_intent(
             kind="read",
             tool_call_ref=tool_call_ref,
             **({"background": True, "job_operation": job_operation} if background else {}),
+            user_mode=user_mode,
         )
     except HistoryForbidden:
         return _error(404, "oracle_mesh_run_unavailable")
@@ -2347,6 +2352,8 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             **({"granted_root": granted_root} if granted_root else {}),
             **({"background": True, "owner_ref": pending["user_id"]}
                if pending.get("background") is True else {}),
+            "user_mode": pending.get("user_mode", 0) == 1 or pending.get("user_mode") is True,
+
         },
     })
 
