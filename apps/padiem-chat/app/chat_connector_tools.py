@@ -154,6 +154,24 @@ def _require_reviewed_declarations() -> None:
 _require_reviewed_declarations()
 
 
+def _plain_json(value: Any) -> Any:
+    """Convert a frozen Core schema into plain JSON-serializable structures.
+
+    Core freezes ToolSpec schemas with recursive ``MappingProxyType`` values.
+    ``ToolDefinition.to_provider_schema`` shallow-converts only the
+    ``properties`` mapping, so deeper frozen values reach ``json.dumps`` inside
+    the B14 stream client and fail there as ``TypeError`` — masked by the Core
+    runtime as ``execution_failed`` (measured 0.46ms, #7088 후속). Building the
+    declarations with plain JSON data removes the failure at the source.
+    """
+
+    if isinstance(value, Mapping):
+        return {key: _plain_json(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_plain_json(item) for item in value]
+    return value
+
+
 #: The declared connector tools: Drive READ, Calendar READ, then the two Gmail
 #: READ tools (search + read one message). ``parameters`` is the Core
 #: input_schema verbatim — the schema the Engine's own registry validates
@@ -162,22 +180,22 @@ CONNECTOR_TOOL_DECLARATIONS: tuple[ToolDefinition, ...] = (
     ToolDefinition(
         name=DRIVE_READ_TOOL_NAME,
         description=_DRIVE_SPEC.description,
-        parameters=dict(_DRIVE_SPEC.input_schema),
+        parameters=_plain_json(_DRIVE_SPEC.input_schema),
     ),
     ToolDefinition(
         name=CALENDAR_READ_TOOL_NAME,
         description=_CALENDAR_SPEC.description,
-        parameters=dict(_CALENDAR_SPEC.input_schema),
+        parameters=_plain_json(_CALENDAR_SPEC.input_schema),
     ),
     ToolDefinition(
         name=GMAIL_SEARCH_TOOL_NAME,
         description=_GMAIL_SEARCH_SPEC.description,
-        parameters=dict(_GMAIL_SEARCH_SPEC.input_schema),
+        parameters=_plain_json(_GMAIL_SEARCH_SPEC.input_schema),
     ),
     ToolDefinition(
         name=GMAIL_READ_TOOL_NAME,
         description=_GMAIL_GET_SPEC.description,
-        parameters=dict(_GMAIL_GET_SPEC.input_schema),
+        parameters=_plain_json(_GMAIL_GET_SPEC.input_schema),
     ),
 )
 
@@ -421,6 +439,26 @@ async def connector_tools_for_turn(
     return tools
 
 
+async def calendar_granted_for_turn(request: Request, *, uid: str | None) -> bool:
+    """Whether this user's connected Google Calendar serves a READ ask.
+
+    Used by the chat route's calendar branch: a granted user's plain calendar
+    ask ("내일 일정 뭐야") is served by the connector tool instead of the
+    workspace-native store. Same bounded decision (3s budget, per-user cache,
+    one journal line). Every failure mode answers False, so the native store
+    keeps serving when Google is absent or unverifiable.
+    """
+
+    decision, elapsed_ms, _timed_out = await _bounded_grant_decision(request, uid=uid)
+    granted = decision.reason == GRANT_REASON_GRANTED and decision.calendar
+    print(
+        f"connector_tools calendar_granted={granted} reason={decision.reason} "
+        f"check_ms={round(elapsed_ms, 1)}",
+        flush=True,
+    )
+    return granted
+
+
 def connector_tool_arguments_ok(arguments: Any) -> bool:
     """The model's parsed arguments must be a bounded JSON object."""
 
@@ -459,13 +497,27 @@ def connector_tool_request(tool_name: str, arguments: Mapping[str, Any]) -> dict
     }
 
 
-# Only an explicitly Google-named connector question routes between lanes.
-# "일정" alone stays with the workspace-native calendar and "드라이브" alone
-# stays with the PC lane; "구글 캘린더"/"구글 드라이브"/"지메일"/"구글 메일"
-# (or the English forms) name this product's Google connector tools.
+# Connector-intent questions route between lanes. Explicit Google naming
+# ("구글 캘린더"/"구글 드라이브"/"지메일"/"구글 메일" and the English forms)
+# always counts. Calendar ask words (일정/스케줄/약속) count too: a granted
+# user's "내일 일정 뭐야" must reach the connected Google Calendar instead of
+# the orchestration search lane (#7088 후속, owner instruction 2026-11-08).
+# The orchestration guard still checks the grant first, so a grant-less owner
+# keeps the existing search path; "드라이브"/"파일" alone stay with the PC lane.
 _GOOGLE_CONNECTOR_INTENT = re.compile(
-    r"구글\s*캘린더|구글\s*드라이브|구글\s*메일|지메일|gmail|google\s*calendar|google\s*drive",
+    r"구글\s*캘린더|구글\s*드라이브|구글\s*메일|지메일|gmail"
+    r"|google\s*calendar|google\s*drive"
+    r"|일정|스케줄|약속",
     re.IGNORECASE,
+)
+
+#: Appended to the system context when a connector-intent turn answers without
+#: its connector tools, so the model states the miss instead of inventing
+#: schedules, files or mail (#7088 후속).
+CONNECTOR_UNAVAILABLE_NOTE = (
+    "[시스템 참고] 이 턴에서는 Google 캘린더/Drive/Gmail을 실제로 읽지 못했습니다. "
+    "일정·파일·메일 내용을 조회하거나 만들어내지 말고, 읽지 못한 사실을 답변에 "
+    "명확히 말하세요."
 )
 
 
