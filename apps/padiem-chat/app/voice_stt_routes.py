@@ -366,7 +366,7 @@ async def voice_transcribe(request: Request) -> JSONResponse:
 
 
 async def voice_live_token(request: Request) -> JSONResponse:
-    """Mint one ephemeral Gemini Live token for the authenticated session.
+    """Mint one ephemeral live-session token for the authenticated session.
 
     The browser needs a short-lived, model-locked token to open a real-time
     Live transcription session. The long-lived provider key stays in the
