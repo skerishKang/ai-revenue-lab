@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import hashlib
 import json
 import pathlib
 import sqlite3
@@ -34,7 +35,9 @@ for _root in (
 from app import mcp_gateway_shell as shell  # noqa: E402
 from app import oracle_mesh_read_return_routes as routes  # noqa: E402
 from claw_connect import user_session_helper as helper  # noqa: E402
-from kagent.local_agent_oracle_mesh_executor import OracleMeshExecutor  # noqa: E402
+from kagent.local_agent_oracle_mesh_executor import (  # noqa: E402
+    OracleMeshExecutor, user_helper_pipe_name,
+)
 from schema import apply  # noqa: E402
 from service import create_app  # noqa: E402
 
@@ -239,7 +242,19 @@ def test_mcp_user_mode_material_survives_dispatch_queue_and_reaches_the_pipe_cli
         timeout_seconds=0,
     ).material()
     assert base64.b64encode(expected).decode("ascii") in sent
-    assert helper.pipe_name(DEVICE) in sent
+    # #7119: the script runs on the PC and derives the name from the registered
+    # task's --device-id. The literal is deliberately not embedded; instead pin
+    # the exact rule, the formula in the sent script, and #7144's fixed vector.
+    expected_pipe = helper.pipe_name(DEVICE)
+    assert expected_pipe == user_helper_pipe_name(DEVICE)
+    assert expected_pipe == "padiem-user-helper-dev_" + hashlib.sha256(
+        DEVICE.encode("utf-8")).hexdigest()[:32]
+    assert expected_pipe not in sent
+    assert "$pipeName='padiem-user-helper-dev_'+$digest.Substring(0,32)" in sent
+    assert "--device-id" in sent
+    assert helper.pipe_name(
+        "abcdefghijklmnopqrstuvwx1234567890ABCDEFGHIJKLMNOPQRSTfi$D62t1"
+    ) == "padiem-user-helper-dev_2959164bca88cbde05fc885a7e4e09c8"
     assert "NamedPipeClientStream" in sent
     assert "PADIEM_MCP_COMMAND_B64" not in sent
     assert b"padiem-pc\\limone" in outcome.body
