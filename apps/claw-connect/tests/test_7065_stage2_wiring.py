@@ -506,6 +506,13 @@ class SilentConnection(FakeConnection):
             helper.USER_HELPER_TIMEOUT, "no request frame arrived in time")
 
 
+def test_the_command_limit_matches_the_tool_schema():
+    assert len(helper.parse_request(_request(
+        shell="powershell", command="x" * 50_000)).command) == 50_000
+    with pytest.raises(helper.UserHelperError):
+        helper.parse_request(_request(shell="powershell", command="x" * 50_001))
+
+
 def test_a_connection_that_never_sends_a_frame_is_refused_and_the_loop_continues():
     silent = SilentConnection()
     assert service.handle_connection(silent, secret=SECRET,

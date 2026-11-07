@@ -57,6 +57,18 @@ def test_ps_client_bounds_every_pipe_step():
     assert "helper write timeout" in ps
 
 
+def test_ps_client_accumulates_streamed_chunks_without_a_256_kib_cut():
+    ps = OracleMeshExecutor.build_user_helper_pipe_client_ps(
+        device_id=DEVICE, request_id=REQ_ID, shell="powershell", command="whoami",
+        cwd=None, timeout_seconds=0, distro=None,
+    )
+    assert "$stdout.AddRange" in ps
+    assert "$stderr.AddRange" in ps
+    assert "data_b64" in ps
+    assert "[Convert]::ToBase64String($stdout.ToArray())" in ps
+    assert "2097152" in ps
+
+
 def test_golden_meshcentral_raw_device_id_yields_same_pipe_name_and_no_ps_dollar_expansion():
     expected = helper.pipe_name(MESH_DEVICE)
     ps = OracleMeshExecutor.build_user_helper_pipe_client_ps(
