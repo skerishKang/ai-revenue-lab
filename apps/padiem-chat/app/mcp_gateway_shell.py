@@ -264,6 +264,52 @@ try{if($env:PADIEM_MCP_SHELL -eq 'powershell'){$file='powershell.exe';if(-not(Ge
     )
 
 
+#: #7076d — where this tool's shell vocabulary meets the helper's (#7065 stage-1).
+#: ``bash`` is the same shell the helper runs inside the user's WSL, and the
+#: identity probe is the one command that means the same thing in every shell,
+#: so it maps to the helper's dedicated ``whoami`` shell. Every other shell name
+#: is passed through unchanged: the helper is the final allowlist authority and
+#: its own refusal is what the caller must see, not a second copy of that rule.
+USER_HELPER_SHELL_FOR_BASH = "wsl"
+USER_HELPER_SHELL_FOR_WHOAMI = "whoami"
+USER_HELPER_TIMEOUT_SECONDS = 30
+
+
+def build_pc_shell_user_material(arguments: Mapping) -> str:
+    """#7076d — the helper request material for one ``mode=user`` command.
+
+    The canonical wire contract is #7065 stage-1
+    (``claw_connect.user_session_helper``, ``parse_request``/``HelperRequest``):
+    a JSON object carrying ``shell``/``command``/``cwd``/``timeout_seconds``/
+    ``distro``. The executor unwraps exactly this shape
+    (``local_agent_oracle_mesh_executor.py:1550-1570``), and the PC's pipe client
+    adds ``request_id`` and the HMAC ``nonce`` because only that PC holds the
+    deployment secret they are signed with.
+
+    This is deliberately NOT ``build_pc_shell_command``: that string is the
+    SYSTEM lane's PowerShell dispatcher, and sending it here is what made a
+    ``mode=user`` request arrive as something the user-session helper can never
+    parse.
+    """
+    if not _command_material(arguments):
+        raise ValueError("Invalid MCP PC shell arguments")
+    command = arguments["command"]
+    shell = arguments.get("shell", "powershell")
+    if command.strip() == "whoami":
+        helper_shell = USER_HELPER_SHELL_FOR_WHOAMI
+    elif shell == "bash":
+        helper_shell = USER_HELPER_SHELL_FOR_BASH
+    else:
+        helper_shell = shell
+    return json.dumps({
+        "shell": helper_shell,
+        "command": command,
+        "cwd": arguments.get("cwd"),
+        "timeout_seconds": USER_HELPER_TIMEOUT_SECONDS,
+        "distro": None,
+    }, ensure_ascii=True, separators=(",", ":"))
+
+
 async def _dispatch_command(request, *, command, run_id, device_id, trusted_owner, user_mode=False):
     from .oracle_mesh_read_return_routes import dispatch_oracle_mesh_command_intent
     return await dispatch_oracle_mesh_command_intent(
@@ -495,7 +541,11 @@ def _dispatch_refusal_code(payload) -> str | None:
 async def execute_pc_shell_start(request, *, uid, workspace_id, device_id, run_id,
                                  session, conversation_id, arguments):
     user_mode = arguments.get("mode", "system") == "user"
-    command = build_pc_shell_command(arguments)
+    # #7076d: a user-mode dispatch carries the helper's request material, which
+    # is the one shape the executor and the #7065 helper both speak. The SYSTEM
+    # lane keeps its PowerShell dispatcher unchanged.
+    command = (build_pc_shell_user_material(arguments) if user_mode
+               else build_pc_shell_command(arguments))
     response = await _dispatch_command(
         request, command=command, run_id=run_id, device_id=device_id,
         trusted_owner=(session, uid, workspace_id), user_mode=user_mode,
