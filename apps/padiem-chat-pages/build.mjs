@@ -2,13 +2,15 @@
 //
 //   dist/                apps/padiem-chat/static (the same files the Worker's
 //                        ASSETS binding serves) — Pages serves these directly
+//   dist/_redirects      pretty-URL rewrites the Pages asset layer must apply
+//                        (see buildRedirects)
 //   dist/_worker/        the reviewed apps/padiem-chat-front modules, copied
 //                        verbatim so there is one proxy implementation
 //   dist/_worker.js      the advanced-mode entry that re-exports that module
 //
 // Nothing generated here is committed: `dist/` is ignored, and every deploy
 // rebuilds it from the repository sources.
-import { cp, mkdir, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -44,6 +46,20 @@ async function assetVersion() {
   }
 }
 
+// chat.padiem.net serves the root-level *.html pages extension-less through
+// the Worker's [assets] html_handling (privacy -> privacy.html). The Pages
+// asset layer does not apply that resolution when a _worker.js is deployed:
+// without these rewrites /privacy and /terms fall through to the proxy and
+// come back 404 from COM2, which has no such route (#7130-era pages mirror).
+async function buildRedirects(outDir) {
+  const entries = await readdir(staticDir, { withFileTypes: true });
+  const lines = entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".html") && entry.name !== "index.html")
+    .map((entry) => `/${entry.name.replace(/\.html$/, "")} /${entry.name} 200`);
+  await writeFile(path.join(outDir, "_redirects"), lines.join("\n") + "\n", "utf8");
+  return lines;
+}
+
 export async function buildDist({ outDir = distDir } = {}) {
   await rm(outDir, { recursive: true, force: true });
   await mkdir(outDir, { recursive: true });
@@ -54,6 +70,7 @@ export async function buildDist({ outDir = distDir } = {}) {
   // are untouched — only dist/ is stamped.
   const version = await assetVersion();
   const stamped = await stampStaticTree(outDir, version);
+  await buildRedirects(outDir);
   const modulesDir = path.join(outDir, "_worker");
   await mkdir(modulesDir, { recursive: true });
   for (const name of FRONT_MODULES) {

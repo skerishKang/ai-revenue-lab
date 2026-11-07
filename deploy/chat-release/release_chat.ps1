@@ -354,8 +354,11 @@ catch {
 Pop-Location
 
 # ── steps 4 and 5 ────────────────────────────────────────────────────────────
-# Pages mirror then surface verification; a failure in either rolls the front
-# back (step 6) because a half-released screen is worse than the previous one.
+# Pages mirror then surface verification. A FRONT failure (chat.padiem.net
+# itself) rolls the front back — a half-released screen is worse than the
+# previous one. A PAGES-MIRROR-ONLY failure must not touch the front: the
+# mirror is a convenience host, so it is recorded as PAGES_VERIFY_FAIL and the
+# release exits 1 with the front still serving.
 try {
     Write-Step "4/6 pages mirror (padiem-chat.pages.dev)"
     if ($DryRun) {
@@ -377,6 +380,7 @@ try {
 
     Write-Step "5/6 verify the release surfaces"
     $verify = New-Object System.Collections.Generic.List[string]
+    $Script:PagesVerifyFailed = New-Object System.Collections.Generic.List[string]
 
     if ($DryRun) {
         Write-Info "[DRYRUN] would verify: $Script:PublicHost/health + /privacy 200; sha256(chat-transport.js, /) == Sha static; workers/domains chat.padiem.net -> $Script:FrontWorker; $Script:PagesHost same"
@@ -384,8 +388,7 @@ try {
     else {
         foreach ($pair in @(
                 @("chat.padiem.net /health", "$Script:PublicHost/health"),
-                @("chat.padiem.net /privacy", "$Script:PublicHost/privacy"),
-                @("padiem-chat.pages.dev /privacy", "$Script:PagesHost/privacy")
+                @("chat.padiem.net /privacy", "$Script:PublicHost/privacy")
             )) {
             $status = Get-HttpStatus $pair[1]
             $verify.Add("$($pair[0])=$status") | Out-Null
@@ -393,8 +396,7 @@ try {
         }
 
         foreach ($pair in @(
-                @("chat.padiem.net", "$Script:PublicHost"),
-                @("padiem-chat.pages.dev", $Script:PagesHost)
+                @("chat.padiem.net", "$Script:PublicHost")
             )) {
             foreach ($asset in @("chat-transport.js", "index.html")) {
                 $live = Get-HttpBytes ($pair[1] + "/" + $asset)
@@ -425,6 +427,28 @@ try {
             throw "STEP5_FAIL: chat.padiem.net custom domain is not on $Script:FrontWorker"
         }
         $verify.Add("workers/domains chat.padiem.net=$($entries[0].service)") | Out-Null
+
+        # PAGES mirror checks: the mirror is a convenience host (the front
+        # Worker owns chat.padiem.net), so a mirror-only failure must NOT roll
+        # the front back — it is recorded as PAGES_VERIFY_FAIL and fails the
+        # release with exit 1 after the summary.
+        foreach ($asset in @("chat-transport.js", "index.html")) {
+            $live = Get-HttpBytes ($Script:PagesHost + "/" + $asset)
+            $liveHash = ([System.BitConverter]::ToString(
+                    [System.Security.Cryptography.SHA256]::Create().ComputeHash($live)
+                )).Replace("-", "").ToLowerInvariant()
+            $pinned = Get-FileSha256Hex (Join-Path $shaStaticDir $asset)
+            $ok = $liveHash -eq $pinned
+            $verify.Add("padiem-chat.pages.dev/$asset sha256=$(if ($ok) { 'match' } else { 'MISMATCH' })") | Out-Null
+            if (-not $ok) {
+                $Script:PagesVerifyFailed.Add("$asset sha256 mismatch") | Out-Null
+            }
+        }
+        $pagesPrivacy = Get-HttpStatus ($Script:PagesHost + "/privacy")
+        $verify.Add("padiem-chat.pages.dev/privacy=$pagesPrivacy") | Out-Null
+        if ($pagesPrivacy -ne 200) {
+            $Script:PagesVerifyFailed.Add("/privacy returned $pagesPrivacy") | Out-Null
+        }
     }
 }
 catch {
@@ -433,11 +457,21 @@ catch {
 }
 
 foreach ($line in $verify) { Write-Info $line; Add-Summary "VERIFY $line" }
+if ($Script:PagesVerifyFailed.Count -gt 0) {
+    foreach ($line in $Script:PagesVerifyFailed) {
+        Write-Info "PAGES_VERIFY_FAIL: $line"
+        Add-Summary "PAGES_VERIFY_FAIL $line"
+    }
+}
 
 # ── step 6 ───────────────────────────────────────────────────────────────────
 Write-Step "6/6 report"
+if ($Script:PagesVerifyFailed.Count -gt 0) {
+    Write-Info "the front is intact; the pages mirror regressed — investigate before the next release"
+}
 Write-Info "release complete; the summary below is the deploy record"
 Show-Summary
 if ($DryRun) {
     Write-Host "DRYRUN: nothing was deployed."
 }
+if ($Script:PagesVerifyFailed.Count -gt 0) { exit 1 }
