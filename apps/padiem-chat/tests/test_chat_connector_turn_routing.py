@@ -237,6 +237,46 @@ async def test_a_non_google_question_never_pays_the_grant_check(monkeypatch):
     assert calls == [], "the grant check is paid by connector-intent turns only"
 
 
+@pytest.mark.asyncio
+async def test_the_connectors_status_answer_fills_the_grant_cache(monkeypatch):
+    """앱 연결 화면(status)이 계산한 granted로 캐시가 채워진다: 다음 턴 확인 0회."""
+    from app import connector_status_projection as projection_module
+
+    truth_calls: list[str] = []
+
+    async def _trusted_truth(request):
+        return {"drive": CONNECTED, "calendar": CONNECTED}, None, True, "authsession:test"
+
+    async def _active_state(request, sid):
+        return "active"
+
+    async def _counting_turn_truth(request, *, uid, intent_turn):
+        # The turn-path truth read must NOT run: the cache already knows.
+        truth_calls.append("truth")
+        return ()
+
+    monkeypatch.setattr(projection_module, "_reviewed_workspace_truth", _trusted_truth)
+    monkeypatch.setattr(projection_module, "_reviewed_calendar_read_grant_state", _active_state)
+    monkeypatch.setattr(projection_module, "current_user_id", lambda request: "u1")
+    monkeypatch.setattr(tools_module, "_reviewed_workspace_truth", _counting_turn_truth)
+
+    request = Request({
+        "type": "http",
+        "method": "GET",
+        "path": "/api/connectors/status",
+        "headers": [],
+    })
+    request.scope["app"] = SimpleNamespace(state=SimpleNamespace())
+    response = await projection_module.connectors_status(request)
+    assert response.status_code == 200
+
+    tools = await tools_module.connector_tools_for_turn(
+        SimpleNamespace(), uid="u1", intent_turn=True,
+    )
+    assert [tool.name for tool in tools] == ["drive_read", "calendar_read"]
+    assert truth_calls == [], "the seeded cache answers the next turn at 0ms"
+
+
 TRANSPORT_SOURCE = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
 
 
