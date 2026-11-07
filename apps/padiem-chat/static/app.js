@@ -6187,9 +6187,10 @@
   // same reviewed ticket endpoint; only the reviewed connector id differs.
   const GOOGLE_DRIVE_CONNECTOR = "google-drive";
   const GOOGLE_DRIVE_TICKET_ENDPOINT = "/api/connectors/google/ticket";
-  // #7088: Gmail joins the same reviewed READ-only connect handoff with the
-  // already-registered gmail.readonly scope set.
+  // #7088: Gmail joins the same reviewed READ-only connect handoff with its
+  // already-registered readonly scope set.
   const GOOGLE_GMAIL_CONNECTOR = "gmail";
+  const GOOGLE_GMAIL_TICKET_ENDPOINT = "/api/connectors/google/ticket";
   const GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket";
   const GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/api/connectors/google/calendar/activate-read";
   const CONNECTOR_STATUS_IDS = new Set([
@@ -6446,7 +6447,7 @@
     setConnectorCopy(button, "connectors-connecting-gmail");
     if (connectorsError) connectorsError.hidden = true;
     try {
-      const startResponse = await fetch(GOOGLE_DRIVE_TICKET_ENDPOINT, {
+      const startResponse = await fetch(GOOGLE_GMAIL_TICKET_ENDPOINT, {
         method: "POST",
         headers: { "Accept": "application/json", "Content-Type": "application/json" },
         body: JSON.stringify({ connector_id: GOOGLE_GMAIL_CONNECTOR, begin_oauth: true }),
