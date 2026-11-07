@@ -210,8 +210,10 @@ def test_mcp_user_mode_material_survives_dispatch_queue_and_reaches_the_pipe_cli
     assert staged["user_mode"] is True
     assert staged["kind"] == "command"
     material = json.loads(staged["command_text"])
+    # #7111: the user helper has no execution deadline — timeout_seconds 0
+    # means the command runs until it ends and the owner stops it.
     assert material == {"shell": "whoami", "command": "whoami", "cwd": None,
-                        "timeout_seconds": 30, "distro": None}
+                        "timeout_seconds": 0, "distro": None}
     assert "PADIEM_MCP_COMMAND_B64" not in staged["command_text"]
 
     # ... and it still is, after the real queue store and poll route.
@@ -234,7 +236,7 @@ def test_mcp_user_mode_material_survives_dispatch_queue_and_reaches_the_pipe_cli
     request_id = "req_" + DISPATCH_ID[len("dsp_"):][:32]
     expected = helper.HelperRequest(
         request_id=request_id, nonce="", shell="whoami", command="whoami",
-        timeout_seconds=30,
+        timeout_seconds=0,
     ).material()
     assert base64.b64encode(expected).decode("ascii") in sent
     assert helper.pipe_name(DEVICE) in sent
