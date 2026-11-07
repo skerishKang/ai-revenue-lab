@@ -12,9 +12,10 @@ still builds every URL from ``ENGINE_INTERNAL_ORIGIN``; only the origin the
 socket connects to is the configured loopback origin, so no caller can widen
 the target.
 
-Deliberately absent: NDJSON streaming, retries, redirect following and any
-non-loopback target. A host transport that guesses at those would be a second
-Engine protocol, not a host stand-in for the existing one.
+NDJSON streaming exists only for the two closed paths in ``STREAM_PATHS``.
+Deliberately absent: retries, redirect following and any non-loopback target. A
+host transport that guesses at those would be a second Engine protocol, not a
+host stand-in for the existing one.
 """
 
 from __future__ import annotations
@@ -38,6 +39,7 @@ from padiem_ai_engine_client import (
     ENGINE_ORCHESTRATE_RESUME_PATH,
     ENGINE_ORCHESTRATE_STREAM_PATH,
     ENGINE_RESEARCH_PATH,
+    ENGINE_STREAM_PATH,
     EngineStreamTransportResponse,
     EngineTransportResponse,
 )
@@ -77,7 +79,7 @@ DEFAULT_STREAM_TIMEOUT_SECONDS = 600.0
 # A non-200 Engine answer is one bounded JSON error, never a stream.
 MAX_STREAM_ERROR_BODY_BYTES = 64 * 1024
 STREAM_CHUNK_BYTES = 65_536
-STREAM_PATHS = frozenset({ENGINE_ORCHESTRATE_STREAM_PATH})
+STREAM_PATHS = frozenset({ENGINE_ORCHESTRATE_STREAM_PATH, ENGINE_STREAM_PATH})
 
 
 class LocalEngineTransportError(ValueError):

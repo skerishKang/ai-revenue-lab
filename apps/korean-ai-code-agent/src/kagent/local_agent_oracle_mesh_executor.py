@@ -65,6 +65,9 @@ RENEW_INTERVAL_SECONDS = 20
 IDLE_POLL_BASE_SECONDS = 1
 IDLE_POLL_MAX_SECONDS = 60
 COM2_IDLE_POLL_MAX_SECONDS = 10
+#: An idle loop says so at most this often. The counter line is printed only on a
+#: round that carried work, so without this a quiet lane looks like a lost counter.
+IDLE_HEARTBEAT_SECONDS = 300
 #: Only an empty answer from the lane earns a longer wait. A round this host skipped -
 #: the failover gate closed, or a held result still waiting to be sent - proves nothing
 #: about the queue, and backing off there would slow exactly the moment a handover needs
@@ -2442,6 +2445,7 @@ __all__ = [
     "CHANNEL_STALL_SECONDS",
     "IDLE_POLL_BASE_SECONDS",
     "IDLE_POLL_MAX_SECONDS",
+    "IDLE_HEARTBEAT_SECONDS",
     "MAX_COMMAND_BYTES",
     "MAX_READ_BYTES",
     "PC_FILE_ERROR_PREFIX",
@@ -2481,6 +2485,9 @@ def make_oracle_mesh_executor(
     pairing_provider: Optional[Callable[[], Any]] = None,
     presence_round_begin: Optional[Callable[[], None]] = None,
     read_single_roundtrip: bool = True,
+    # #7065: opt-in run-as-user. False keeps the argv an existing host already sends.
+    run_as_user: bool = False,
+    run_as_user_only: bool = False,
 ) -> OracleMeshExecutor:
     """Build the executor with the REAL official meshctrl read port.
 
@@ -2542,6 +2549,10 @@ def make_oracle_mesh_executor(
         # #4139: the command lane reads the child incrementally so a runaway
         # command can never be buffered whole before it is size-checked.
         popen_factory=_popen,
+        # #7065: off unless the deployment asks for it, so the argv an existing
+        # host sends is unchanged.
+        run_as_user=run_as_user,
+        run_as_user_only=run_as_user_only,
     )
     # The desktop lane reuses the SAME operator credential and private tunnel
     # over the official relay protocol; only the wire changes (MSC frames),
@@ -2864,6 +2875,14 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             pairing_provider=pairing_provider,
             presence_round_begin=beat.begin_round if beat is not None else None,
             read_single_roundtrip=_single_roundtrip_enabled(env),
+            # #7065: opt-in only. The connector keeps running its commands as the
+            # agent account (LocalSystem on Windows) unless the deployment says
+            # otherwise, and an enabled flag is a request the PC may still ignore
+            # on Windows (see the port's note).
+            run_as_user=str(env.get("PADIEM_MESH_RUN_AS_USER", "")).strip().lower()
+            in {"1", "true"},
+            run_as_user_only=str(env.get("PADIEM_MESH_RUN_AS_USER_ONLY", "")).strip().lower()
+            in {"1", "true"},
         )
         idle = max(1, min(int(env.get("ORACLE_MESH_POLL_SECONDS", "5") or 5), 300))
         # The idle ceiling is readable for the operator who wants to weigh the old
@@ -2897,6 +2916,9 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
     #: The wait before the next ask. It grows only across rounds the lane itself
     #: answered empty, and resets the moment the queue produces work.
     gap = IDLE_POLL_BASE_SECONDS
+    #: None, not 0.0: monotonic() is seconds since boot, and a fresh container can
+    #: report less than the heartbeat interval.
+    idle_reported_at = None
     while True:
         try:
             result = executor.run_once()
@@ -2914,6 +2936,11 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             # something about the queue, and only for it does the next ask wait
             # longer - a skipped round goes back to the base so a failover landing on
             # this host starts claiming on the next second.
+            if (executor.last_round == ROUND_IDLE
+                    and (idle_reported_at is None
+                         or time.monotonic() - idle_reported_at >= IDLE_HEARTBEAT_SECONDS)):
+                print("oracle-mesh-executor poll idle", flush=True)
+                idle_reported_at = time.monotonic()
             time.sleep(gap)
             gap = (IDLE_POLL_BASE_SECONDS if executor.last_round != ROUND_IDLE
                    else min(gap * 2, executor.idle_poll_max_seconds))

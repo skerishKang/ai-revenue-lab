@@ -55,6 +55,7 @@ function failureCopy(code){
   if(c==='packet_timeout')return '질문 준비에 시간이 걸렸어요. 다시 시도해 주세요.';
   if(c==='response_timeout')return '응답이 길어져 중단했어요 · 다시 시도';
   if(c==='answer_incomplete')return '답이 끝까지 만들어지지 않았어요 · 다시 시도';
+  if(c==='stream_failed'||c==='stream_incomplete'||c==='network_failed')return '응답이 중간에 끊겼어요 · 다시 시도';
   if(c==='credential_unavailable'||c==='com2_ai_credential_unavailable')return '서비스 설정 점검 중이에요. 잠시 후 다시 시도해 주세요.';
   if(c==='http_504'||c==='http_503'||c==='com2_ai_timeout'||c==='ingress_timeout')return '응답이 지연되고 있어요. 잠시 후 다시 시도해 주세요.';
   if(c==='http_403'||c==='service_authentication_failed'||c==='service_app_not_authorized')return '서비스 연결을 점검 중이에요. 잠시 후 다시 시도해 주세요.';
@@ -70,6 +71,64 @@ function localFailure(code,retryable){
     source:'StoryMemory',
     error:String(code||'companion_unavailable'),
     retryable:!!retryable
+  };
+}
+/* 261106 · 조각 스트림: 첫 조각이 오면 대기 말풍선을 답 말풍선으로 바꿔 이어
+   붙인다. 오류가 나면 이 함수는 결과만 돌려주고, 말풍선 정리는 submit 이 한다. */
+async function readStreamResponse(response,bubble,packet,signal){
+  var reader=response.body.getReader();
+  var decoder=typeof TextDecoder==='function'?new TextDecoder():null;
+  var buffer='',streamed='',doneFrame=null,errorFrame=null;
+  function handle(frame){
+    if(!frame||typeof frame!=='object')return;
+    if(frame.ok===false||frame.type==='error'){
+      var e=frame.error&&typeof frame.error==='object'?frame.error:{};
+      errorFrame={code:String(e.code||'stream_failed'),retryable:e.retryable===true};
+      return;
+    }
+    if(frame.type==='delta'){
+      if(typeof frame.text==='string'&&frame.text){
+        streamed+=frame.text;
+        if(bubble){try{bubble.className='msg ai';bubble.textContent=streamed;}catch(_){}}
+      }
+      return;
+    }
+    if(frame.type==='done')doneFrame=frame;
+  }
+  function drain(text){
+    buffer+=text;
+    var index;
+    while((index=buffer.indexOf('\n'))>=0){
+      var line=buffer.slice(0,index).trim();buffer=buffer.slice(index+1);
+      if(!line)continue;
+      var frame;try{frame=JSON.parse(line);}catch(_){continue;}
+      handle(frame);
+    }
+  }
+  try{
+    while(!errorFrame&&!doneFrame){
+      var chunk=await reader.read();
+      if(chunk.done)break;
+      drain(decoder?decoder.decode(chunk.value,{stream:true}):String(chunk.value));
+    }
+    if(!errorFrame&&!doneFrame&&buffer.trim()){
+      try{handle(JSON.parse(buffer.trim()));}catch(_){}
+    }
+  }catch(_){
+    if(signal&&signal.aborted)errorFrame={code:'response_timeout',retryable:false};
+    else if(!errorFrame)errorFrame={code:'network_failed',retryable:true};
+  }finally{
+    try{if(reader.releaseLock)reader.releaseLock();}catch(_){}
+  }
+  if(errorFrame)return localFailure(errorFrame.code,errorFrame.retryable);
+  if(!doneFrame||doneFrame.ok===false)return localFailure('stream_incomplete',true);
+  if(typeof doneFrame.answer!=='string'||!doneFrame.answer.trim())return localFailure('invalid_response');
+  return {
+    ok:true,local:false,blocked:false,title:'동행 독자',answer:doneFrame.answer,source:'StoryMemory · 현재 읽은 범위',
+    context_permission:doneFrame.context_permission||null,runtime:doneFrame.runtime||'padiem-ai-engine',reference_trust:doneFrame.reference_trust||'UNTRUSTED_REFERENCE',evidencePacket:packet,
+    spoilerFolds:Array.isArray(doneFrame.spoiler_folds)?doneFrame.spoiler_folds:null,
+    outsideBooks:Array.isArray(doneFrame.outside_books)?doneFrame.outside_books:null,
+    readingMode:doneFrame.reading_mode||null
   };
 }
 async function requestCompanion(question,opts){
@@ -95,10 +154,15 @@ async function requestCompanion(question,opts){
   if(!(packet&&packet.diagnostics&&packet.diagnostics.boundary_available===true))return localBlockedResult(packet);
   var response;
   try{
-    response=await fetch(AI_PATH,{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({question:q,packet:packet,packet_ms:packetMs}),signal:opts.signal});
+    response=await fetch(AI_PATH,{method:'POST',headers:{'content-type':'application/json','accept':'application/x-ndjson'},credentials:'same-origin',body:JSON.stringify({question:q,packet:packet,packet_ms:packetMs}),signal:opts.signal});
   }catch(err){
     if(opts.signal&&opts.signal.aborted)return localFailure('response_timeout');
     return localFailure('network_failed',true);
+  }
+  var responseType='';
+  try{responseType=response.headers&&typeof response.headers.get==='function'?String(response.headers.get('content-type')||''):'';}catch(_){}
+  if(response.ok&&response.body&&typeof response.body.getReader==='function'&&responseType.split(';')[0].trim().toLowerCase()==='application/x-ndjson'){
+    return readStreamResponse(response,opts.bubble,packet,opts.signal);
   }
   var payload=null;
   try{payload=await response.json();}catch(_){return localFailure('invalid_response');}
@@ -155,7 +219,7 @@ async function submit(question,{selection=null,delay=80}={}){
   var timer=controller?setTimeout(function(){controller.abort();},REQUEST_TIMEOUT_MS):null;
   var result;
   try{
-    result=await requestCompanion(q,{signal:controller?controller.signal:null});
+    result=await requestCompanion(q,{signal:controller?controller.signal:null,bubble:pendingEl});
   }finally{
     if(timer)clearTimeout(timer);
     removePendingBubble(pendingEl);

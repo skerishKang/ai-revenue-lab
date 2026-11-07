@@ -8,7 +8,9 @@
   let observedAccount = null, rerun = false, booted = false, fullPullRequired = true, lastResult = {state:'idle'};
   const ready = Promise.resolve(root.BookAIReady).then(() => { booted = true; });
   function showAccountMismatch(show) {
-    const el = root.document.getElementById('todayAccountSyncStatus');
+    const doc = root.document;
+    const el = doc && typeof doc.getElementById === 'function'
+      ? doc.getElementById('todayAccountSyncStatus') : null;
     if (!el) return;
     el.hidden = !show;
     el.textContent = show ? '다른 계정 기록이라 동기화하지 않았습니다' : '';
