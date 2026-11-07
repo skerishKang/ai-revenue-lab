@@ -124,15 +124,21 @@ PC_FILES_READ_MAX_BYTES = 20_000_000
 #: context read and the dispatch itself spend it too. Two 30 s ceilings sit
 #: around it: the Chat gateway cuts its call to the Engine at 30 s
 #: (local_engine_transport), and the connector client cuts the whole
-#: /api/mcp request at 30 s. Measured on 2026-11-05 (four live reads):
-#: Engine admission 1.4–5.6 s, receipt 0.5–1.8 s, and Chat's own work
-#: around the Engine call 3.6 s; the loop below overshoots the budget by at
-#: most one status poll and the result read (~1.5 s). With 18 s the fourth
-#: read came back at 29.8 s on /api/mcp — 0.2 s under the ceiling. 14 s
-#: keeps the worst observed sum (14 + 1.5 + 5.6 + 1.8 + 3.6) at 26.5 s. A read
-#: the PC finishes later is handed back as running and answered by the next
-#: call; nothing is lost, only the first answer arrives sooner.
-PC_FILES_WAIT_SECONDS = 14
+#: /api/mcp request at 30 s.
+#:
+#: Re-measured on 2026-11-07 from com2 journals, p90 of the fixed costs
+#: around one first-round read. Chat /api/mcp identity 0.0 ms (160 POST
+#: lines over 24 h; the binding is cached). Engine admission 1.8 s — the
+#: warmer-era engine_timing lines on com2 run 1.39–1.47 s and the observed
+#: steady-state bound is 1.8 s — and receipt 0.7 s (recent engine_timing
+#: receipts 0.35–0.70 s; the loopback submit brought the pre-warmer 1.7 s
+#: down). Chat's own context+dispatch work around the call 0.6 s (12
+#: first-round reads: queue, sqlite, edge). The loop below still overshoots
+#: the budget by one status poll plus the result pickup, 2.0 s. The sum is
+#: 5.1 s, so 21 s keeps 21 + 5.1 = 26.1 s inside the 30 s − 3 s margin. A
+#: read the PC finishes later is handed back as running and answered by the
+#: next call; nothing is lost, only the first answer arrives sooner.
+PC_FILES_WAIT_SECONDS = 21
 PC_FILES_WAIT_ENV = "PADIEM_PC_FILES_WAIT_SECONDS"
 _PC_FILES_JOB_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 
