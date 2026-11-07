@@ -5,19 +5,21 @@ NETWORK_FREE. This pins the wiring, not the crypto (that is
 ``test_5034_claw_push_subscription.py``).
 
 The question this file answers: when an existing scheduled automation run
-reaches a terminal state, does the EXISTING inbox projection still happen
-unchanged, and does a device notification additionally get attempted exactly
-once for that event?
+reaches a terminal state, does the notification fire directly from that
+terminal state (대표 결정 2026-11-07: COMPLETED 성공, FAILED/CANCELLED 실패,
+출력·작업함 투사 무관), click through to the automation's own conversation,
+and get attempted exactly once per event?
 
 Pinned here:
 
-- EVENT_REACHES_PUSH=PASS (a COMPLETED run with an ALERT output notifies)
-- INBOX_PROJECTION_UNCHANGED=PASS (the existing Task/Alert write still happens)
+- EVENT_REACHES_PUSH=PASS (a COMPLETED run notifies, output or not)
+- TERMINAL_DECIDES=PASS (FAILED/CANCELLED use the failure wording)
+- CLICK_TARGET_CONVERSATION=PASS (the URL is the automation conversation)
 - DEDUP_BY_RUN=PASS (a re-projected run does not notify twice)
 - PUSH_FAILURE_NEVER_RERUNS_JOB=PASS (a failing sender changes nothing)
 - PUSH_FAILURE_NEVER_RAISES=PASS (the automation lane result is unaffected)
 - NO_PUSH_STORE_IS_A_NOOP=PASS (an unconfigured deployment is silent)
-- MINIMAL_LOCK_SCREEN=PASS (only a short status and an inbox link)
+- MINIMAL_LOCK_SCREEN=PASS (only a short status and the conversation link)
 - ACCOUNT_ISOLATION=PASS (the notification is scoped to the run's own owner)
 """
 
@@ -29,8 +31,8 @@ import pytest
 
 from app.claw_automation_background_execution import _project_terminal_run
 from app.claw_automation_push_notification import (
+    CONVERSATION_LINK_PATH,
     INBOX_ALERTS_PATH,
-    INBOX_TASKS_PATH,
     notify_terminal_run,
 )
 from app.claw_push_subscriptions import (
@@ -111,9 +113,10 @@ class _RecordingSender:
 
 
 @pytest.mark.asyncio
-async def test_completed_alert_run_notifies_the_owner_device() -> None:
+async def test_completed_run_notifies_the_owner_device() -> None:
     store = _RecordingStore([_subscription()])
     sender = _RecordingSender()
+    conversation_url = CONVERSATION_LINK_PATH.format(conversation_id="chat_" + "3" * 32)
 
     outcome = await notify_terminal_run(
         push_store=store,
@@ -121,21 +124,22 @@ async def test_completed_alert_run_notifies_the_owner_device() -> None:
         workspace_id=WORKSPACE,
         member_id=MEMBER,
         scope=SCOPE,
-        created_kind="alert",
-        created=True,
         run_status="COMPLETED",
+        created=True,
+        conversation_url=conversation_url,
     )
 
     assert outcome.state == "delivered"
     assert outcome.delivered == 1
     assert len(sender.calls) == 1
-    assert sender.calls[0]["url"] == INBOX_ALERTS_PATH
+    assert sender.calls[0]["url"] == conversation_url
 
 
 @pytest.mark.asyncio
-async def test_task_output_links_to_the_task_inbox() -> None:
+async def test_the_push_links_to_the_automation_conversation() -> None:
     store = _RecordingStore([_subscription()])
     sender = _RecordingSender()
+    conversation_url = CONVERSATION_LINK_PATH.format(conversation_id="chat_" + "4" * 32)
 
     await notify_terminal_run(
         push_store=store,
@@ -143,60 +147,38 @@ async def test_task_output_links_to_the_task_inbox() -> None:
         workspace_id=WORKSPACE,
         member_id=MEMBER,
         scope=SCOPE,
-        created_kind="task",
-        created=True,
         run_status="COMPLETED",
+        created=True,
+        conversation_url=conversation_url,
     )
 
-    assert sender.calls[0]["url"] == INBOX_TASKS_PATH
+    # 대표 결정(2026-11-07): the lock-screen notification opens the automation's
+    # own conversation. The reference is the only thing the URL carries — no
+    # result body, no run output ever rides the lock screen.
+    assert sender.calls[0]["url"] == conversation_url
+    assert sender.calls[0]["title"] == "자동화 완료"
+    assert sender.calls[0]["body"] == "예약 작업이 완료되었습니다."
+    assert "run_id" not in sender.calls[0]["url"]
 
 
 @pytest.mark.asyncio
-async def test_the_push_links_to_the_run_that_produced_the_result() -> None:
-    store = _RecordingStore([_subscription()])
-    sender = _RecordingSender()
-    run_id = "sched_run_" + "b" * 64
-
-    await notify_terminal_run(
-        push_store=store,
-        push_sender=sender,
-        workspace_id=WORKSPACE,
-        member_id=MEMBER,
-        scope=SCOPE,
-        created_kind="alert",
-        created=True,
-        run_status="COMPLETED",
-        run_id=run_id,
-    )
-
-    # #5034: the lock-screen notification opens the original run, not an
-    # undifferentiated list. The reference is the only thing the URL carries.
-    assert sender.calls[0]["url"] == f"/claw?notify=run&run_id={run_id}"
-    assert "title" not in sender.calls[0]["url"]
-
-
-@pytest.mark.asyncio
-async def test_a_reference_outside_the_run_grammar_falls_back_to_the_inbox() -> None:
+async def test_a_missing_conversation_url_falls_back_to_the_inbox_surface() -> None:
     store = _RecordingStore([_subscription()])
     sender = _RecordingSender()
 
-    for forged in (
-        "../../other", "run/../x", "", None,
-        "sched_run_" + "b" * 130, "run id with spaces",
-    ):
+    for missing in (None, ""):
         await notify_terminal_run(
             push_store=store,
             push_sender=sender,
             workspace_id=WORKSPACE,
             member_id=MEMBER,
             scope=SCOPE,
-            created_kind="alert",
-            created=True,
             run_status="COMPLETED",
-            run_id=forged,
+            created=True,
+            conversation_url=missing,
         )
 
-    assert [call["url"] for call in sender.calls] == [INBOX_ALERTS_PATH] * 6
+    assert [call["url"] for call in sender.calls] == [INBOX_ALERTS_PATH] * 2
 
 
 @pytest.mark.asyncio
@@ -210,9 +192,28 @@ async def test_failed_run_uses_failure_wording() -> None:
         workspace_id=WORKSPACE,
         member_id=MEMBER,
         scope=SCOPE,
-        created_kind="alert",
-        created=True,
         run_status="FAILED",
+        created=True,
+    )
+
+    assert "실패" in sender.calls[0]["title"]
+
+
+@pytest.mark.asyncio
+async def test_cancelled_run_uses_failure_wording_too() -> None:
+    """TERMINAL_DECIDES: CANCELLED is not COMPLETED, so it is a failure."""
+
+    store = _RecordingStore([_subscription()])
+    sender = _RecordingSender()
+
+    await notify_terminal_run(
+        push_store=store,
+        push_sender=sender,
+        workspace_id=WORKSPACE,
+        member_id=MEMBER,
+        scope=SCOPE,
+        run_status="CANCELLED",
+        created=True,
     )
 
     assert "실패" in sender.calls[0]["title"]
@@ -234,9 +235,8 @@ async def test_reprojected_run_does_not_notify_twice() -> None:
         workspace_id=WORKSPACE,
         member_id=MEMBER,
         scope=SCOPE,
-        created_kind="alert",
-        created=True,
         run_status="COMPLETED",
+        created=True,
     )
     second = await notify_terminal_run(
         push_store=store,
@@ -244,9 +244,8 @@ async def test_reprojected_run_does_not_notify_twice() -> None:
         workspace_id=WORKSPACE,
         member_id=MEMBER,
         scope=SCOPE,
-        created_kind="alert",
-        created=False,
         run_status="COMPLETED",
+        created=False,
     )
 
     assert first.state == "delivered"
@@ -270,9 +269,8 @@ async def test_failing_sender_never_raises_into_the_automation_lane() -> None:
         workspace_id=WORKSPACE,
         member_id=MEMBER,
         scope=SCOPE,
-        created_kind="alert",
-        created=True,
         run_status="COMPLETED",
+        created=True,
     )
 
     assert outcome.state == "failed"
@@ -287,9 +285,8 @@ async def test_no_push_store_is_a_silent_noop() -> None:
         workspace_id=WORKSPACE,
         member_id=MEMBER,
         scope=SCOPE,
-        created_kind="alert",
-        created=True,
         run_status="COMPLETED",
+        created=True,
     )
     assert outcome.state == "not_configured"
 
@@ -302,9 +299,8 @@ async def test_no_subscription_reports_no_subscription() -> None:
         workspace_id=WORKSPACE,
         member_id=MEMBER,
         scope=SCOPE,
-        created_kind="alert",
-        created=True,
         run_status="COMPLETED",
+        created=True,
     )
     assert outcome.state == "no_subscription"
 
@@ -325,9 +321,8 @@ async def test_another_members_device_is_never_notified() -> None:
         workspace_id=WORKSPACE,
         member_id=MEMBER,
         scope=SCOPE,
-        created_kind="alert",
-        created=True,
         run_status="COMPLETED",
+        created=True,
     )
 
     assert outcome.state == "no_subscription"
@@ -367,16 +362,19 @@ async def test_minimal_lock_screen_payload() -> None:
         workspace_id=WORKSPACE,
         member_id=MEMBER,
         scope=SCOPE,
-        created_kind="alert",
-        created=True,
         run_status="COMPLETED",
+        created=True,
+        conversation_url=CONVERSATION_LINK_PATH.format(
+            conversation_id="chat_" + "5" * 32
+        ),
     )
 
     call = sender.calls[0]
-    # A short status and a link. No run output, no document content, no ids.
+    # A short status and the conversation link. No run output, no document
+    # content, no ids.
     assert len(call["title"]) <= 120
     assert len(call["body"]) <= 200
-    assert call["url"].startswith("/claw")
+    assert call["url"].startswith("/?notify=conversation&conversation_id=chat_")
     assert "endpoint" not in call["body"]
 
 
@@ -424,47 +422,103 @@ def _failed_terminal_pair():
     return rule, row, owner
 
 
-async def _project_failed_terminal(store, sender, alerts, *, owner, rule, row):
-    from test_claw_automation_background_execution import RecordingHistoryStore
+@pytest.mark.asyncio
+async def test_a_failed_run_reaches_the_push_seam_once() -> None:
+    """대표 결정(2026-11-07): one automation owns one conversation — the first
+    terminal projection ensured it, appended the result message once and
+    linked the run row to it; the notification fires straight from the
+    terminal state.
+    """
+
+    from test_claw_automation_background_execution import (
+        RecordingHistoryStore,
+        RecordingTaskAlertStore,
+    )
+
+    rule, row, owner = _failed_terminal_pair()
+    alerts = RecordingTaskAlertStore()
+    history = RecordingHistoryStore()
+    store = _RecordingStore([_owner_subscription(owner)])
+    sender = _RecordingSender()
 
     await _project_terminal_run(
         rule=rule,
         scheduled_run=row,
         owner=owner,
-        history_store=RecordingHistoryStore(),
+        history_store=history,
         task_alert_store=alerts,
         push_store=store,
         push_sender=sender,
         push_scope=SCOPE,
     )
 
+    assert alerts.add_alert_calls == 1
+    assert len(history.ensure_calls) == 1
+    assert history.ensure_calls[0]["user_id"] == owner.product_user_id
+    assert history.ensure_calls[0]["rule_id"] == rule.rule_id
+    assert len(history.message_calls) == 1
+    assert history.message_calls[0]["message_id"] == row.run_id + "_result"
+    assert history.record_calls[0]["conversation_id"] == history._automation_conversation
+    assert len(sender.calls) == 1
+    assert sender.calls[0]["title"] == "자동화 실패"
+    assert sender.calls[0]["url"].startswith("/?notify=conversation&conversation_id=chat_")
+
+    # A re-projection of the same terminal row is not a new event: the result
+    # message already exists in the SAME history store, so the idempotent
+    # append reports False and the device attempt is skipped entirely.
+    second = _RecordingSender()
+    await _project_terminal_run(
+        rule=rule,
+        scheduled_run=row,
+        owner=owner,
+        history_store=history,
+        task_alert_store=alerts,
+        push_store=_RecordingStore([_owner_subscription(owner)]),
+        push_sender=second,
+        push_scope=SCOPE,
+    )
+    assert second.calls == []
+
 
 @pytest.mark.asyncio
-async def test_a_failed_run_reaches_the_push_seam_once() -> None:
-    """#5034 option 1: the failure wording is only reachable through the record.
+async def test_a_completed_run_without_output_still_notifies() -> None:
+    """TERMINAL_DECIDES: COMPLETED is a success regardless of the output.
 
-    Before the status boundary existed, a FAILED row projected nothing, so
-    ``created`` stayed False and the notification was skipped as a duplicate.
+    A REPORT/DRAFT rule's COMPLETED run materializes no Task/Alert record (the
+    status boundary answers nothing for it), which is exactly the case the old
+    created-signal skipped — the terminal state alone decides now.
     """
 
-    from test_claw_automation_background_execution import RecordingTaskAlertStore
+    from kagent.claw_automation import ClawAutomationOutputType, ClawScheduledRunStatus
 
-    rule, row, owner = _failed_terminal_pair()
+    from test_claw_automation_background_execution import (
+        RecordingHistoryStore,
+        RecordingTaskAlertStore,
+        make_rule,
+        scheduled_run,
+    )
+
+    rule = make_rule(output_type=ClawAutomationOutputType.REPORT)
+    row = scheduled_run(rule=rule, status=ClawScheduledRunStatus.COMPLETED)
+    owner = _failed_terminal_pair()[2]
     alerts = RecordingTaskAlertStore()
     store = _RecordingStore([_owner_subscription(owner)])
     sender = _RecordingSender()
+    history = RecordingHistoryStore()
 
-    await _project_failed_terminal(store, sender, alerts, owner=owner, rule=rule, row=row)
-
-    assert alerts.add_alert_calls == 1
-    assert len(sender.calls) == 1
-    assert sender.calls[0]["title"] == "자동화 실패"
-    assert sender.calls[0]["url"].startswith("/claw")
-
-    # A re-projection of the same terminal row is not a new event.
-    second = _RecordingSender()
-    await _project_failed_terminal(
-        _RecordingStore([_owner_subscription(owner)]), second, alerts,
-        owner=owner, rule=rule, row=row,
+    await _project_terminal_run(
+        rule=rule,
+        scheduled_run=row,
+        owner=owner,
+        history_store=history,
+        task_alert_store=alerts,
+        push_store=store,
+        push_sender=sender,
+        push_scope=SCOPE,
     )
-    assert second.calls == []
+
+    assert len(sender.calls) == 1
+    assert sender.calls[0]["title"] == "자동화 완료"
+    assert sender.calls[0]["url"].startswith("/?notify=conversation&conversation_id=chat_")
+    assert len(history.message_calls) == 1
+    assert "완료" in history.message_calls[0]["content"]

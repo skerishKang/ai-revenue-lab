@@ -337,6 +337,7 @@ class HistoryStore(Protocol):
     async def delete_project(self, user_id: str, project_id: str) -> bool: ...
     async def list_project_conversations(self, user_id: str, project_id: str, *, product_scope: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
     async def record_claw_run(self, user_id: str, run_id: str, channel: str, action: str, title: str, status: str, result_summary: str | None = None, artifact_document_id: str | None = None, artifact_filename: str | None = None, artifact_media_type: str | None = None, conversation_id: str | None = None, workspace_id: str | None = None) -> None: ...
+    async def ensure_claw_automation_conversation(self, *, user_id: str, rule_id: str, rule_name: str) -> str: ...
     async def list_recent_claw_runs(self, user_id: str, limit: int = MAX_CLAW_RUNS, workspace_id: str | None = None) -> list[dict[str, Any]]: ...
     async def update_claw_run_status(self, user_id: str, run_id: str, status: str, result_summary: str | None = None) -> bool: ...
     async def append_step_result_message(self, *, user_id: str, run_id: str, message_id: str, content: str) -> bool: ...
@@ -1918,6 +1919,40 @@ class D1HistoryStore:
                 await self._delete_full_keys([key])
             raise
         return cid
+
+    async def ensure_claw_automation_conversation(
+        self, *, user_id: str, rule_id: str, rule_name: str,
+    ) -> str:
+        """대표 결정(2026-11-07): 예약 자동화 하나는 대화 하나를 소유한다.
+
+        The conversation id is derived deterministically from the rule id, so
+        the first terminal projection creates the conversation and every later
+        run of the same rule reuses it — no mapping table, no second write
+        authority. A rule rename keeps the same conversation on purpose.
+        """
+
+        rule_ref = _safe_identifier("rule_id", rule_id)
+        digest = hashlib.sha256(
+            ("claw-automation-conversation:" + rule_ref).encode("utf-8")
+        ).hexdigest()
+        conversation_id = validate_conversation_id("chat_" + digest[:32])
+        existing = await self.get_conversation(
+            user_id, conversation_id, product_scope=PRODUCT_SCOPE_CHAT
+        )
+        if existing is not None:
+            return conversation_id
+        now = _now_iso()
+        await self._run(
+            "INSERT OR IGNORE INTO conversations (id, user_id, project_id, title, created_at, updated_at, product_scope) "
+            "VALUES (?, ?, NULL, ?, ?, ?, ?)",
+            conversation_id,
+            user_id,
+            (rule_name or "자동화")[:MAX_HISTORY_TITLE_CHARS],
+            now,
+            now,
+            PRODUCT_SCOPE_CHAT,
+        )
+        return conversation_id
 
     async def record_claw_run(
         self,

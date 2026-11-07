@@ -1764,6 +1764,23 @@
     }
   }
 
+  // 대표 결정(2026-11-07): an automation notification click opens the automation's
+  // own conversation — one rule owns one conversation, and the query carries the
+  // server-derived chat_ id only, consumed once after the session proves the
+  // owner. The id must be the exact conversation grammar; anything else is left
+  // in the URL untouched rather than decoded into a target.
+  const NOTIFICATION_CONVERSATION_ID = /^chat_[a-f0-9]{32}$/;
+  let pendingNotificationConversationId = "";
+  {
+    const conversationParts = String((window.location && window.location.search) || "")
+      .replace(/^\?/, "").split("&");
+    const conversationPart = conversationParts.find((part) => part.startsWith("conversation_id=")) || "";
+    if (conversationParts.indexOf("notify=conversation") >= 0
+        && NOTIFICATION_CONVERSATION_ID.test(conversationPart.slice("conversation_id=".length))) {
+      pendingNotificationConversationId = conversationPart.slice("conversation_id=".length);
+    }
+  }
+
   function applyAuthState(data) {
     authViewEpoch += 1;
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
@@ -1780,6 +1797,18 @@
         window.location.pathname + (remaining.length ? `?${remaining.join("&")}` : "") + (window.location.hash || ""),
       );
       openClawRunTarget(notificationRunId);
+    }
+    if (authenticated && pendingNotificationConversationId) {
+      const notificationConversationId = pendingNotificationConversationId;
+      pendingNotificationConversationId = "";
+      const remaining = String((window.location && window.location.search) || "")
+        .replace(/^\?/, "").split("&").filter(Boolean)
+        .filter((part) => part !== "notify=conversation" && !part.startsWith("conversation_id="));
+      window.history.replaceState(
+        null, "",
+        window.location.pathname + (remaining.length ? `?${remaining.join("&")}` : "") + (window.location.hash || ""),
+      );
+      openSavedConversation(notificationConversationId);
     }
     // A completed or concurrent sign-in invalidates any pending Android handoff.
     if (authenticated && androidHandoff) clearAndroidHandoff();
