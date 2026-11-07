@@ -24,8 +24,8 @@ existing durable tick / existing occurrence_key dedup            (#2940)
         |
         v  existing execute_and_project_scheduled_occurrence()   (#2915/#2922)
         |
-        v  existing project_terminal_scheduled_run_to_history()  (#2927)
-        v  existing project_terminal_scheduled_run_to_task_alert() (#2933)
+        v  existing project_terminal_scheduled_run_to_history()  (#2927,
+        v    linked to the automation's own conversation — 대표 결정 2026-11-07)
 ```
 
 Why the claim exists. After #2940 a durable tick can claim a ``PENDING`` row and
@@ -105,8 +105,6 @@ from .claw_automation_owner_resolution import (
     ClawAutomationOwnerResolver,
     ResolvedAutomationOwner,
 )
-from .claw_automation_projection_bridge import ClawTaskAlertProjectionStore
-from .claw_automation_task_alert_bridge import project_terminal_scheduled_run_to_task_alert
 from .claw_automation_push_notification import (
     CONVERSATION_LINK_PATH,
     notify_terminal_run,
@@ -296,7 +294,6 @@ class BackgroundExecutionReceipt:
             "second_p01_authority": 0,
             "second_history_store": 0,
             "second_session_authority": 0,
-            "second_task_alert_authority": 0,
             "running_auto_redispatch": 0,
             "terminal_p01_redispatch": 0,
             "production_scheduler_activation": 0,
@@ -383,10 +380,9 @@ async def _call(value: Any) -> Any:
     """Resolve one store result whether the store is sync or awaitable.
 
     The durable reference stores answer synchronously, while a D1-backed Worker
-    store can only answer through awaited statements. Resolving both here — the
-    same tolerance ``claw_inbox_routes`` already applies to its store — keeps ONE
-    store contract and lets either implementation be injected. It never wraps a
-    coroutine in ``asyncio.run`` and never blocks the event loop.
+    store can only answer through awaited statements. Resolving both here keeps
+    ONE store contract and lets either implementation be injected. It never
+    wraps a coroutine in ``asyncio.run`` and never blocks the event loop.
     """
 
     return await value if inspect.isawaitable(value) else value
@@ -568,7 +564,6 @@ async def _project_terminal_run(
     scheduled_run: ClawScheduledRun,
     owner: ResolvedAutomationOwner,
     history_store: HistoryStore,
-    task_alert_store: ClawTaskAlertProjectionStore,
     push_store: Any | None = None,
     push_sender: Any | None = None,
     push_scope: str = "",
@@ -605,12 +600,6 @@ async def _project_terminal_run(
         message_id=scheduled_run.run_id + "_result",
         content=_automation_result_message_text(rule, scheduled_run),
     )
-    projection = await project_terminal_scheduled_run_to_task_alert(
-        rule=rule,
-        scheduled_run=scheduled_run,
-        owner=owner,
-        store=task_alert_store,
-    )
     if push_store is not None:
         # The status enum is a (str, Enum): str(member) is the qualified name on
         # this runtime, so the decision value must be the enum's own value.
@@ -638,7 +627,6 @@ async def compose_background_execution(
     adapter: P01ExecutionPort,
     owner_resolver: ClawAutomationOwnerResolver,
     history_store: HistoryStore,
-    task_alert_store: ClawTaskAlertProjectionStore,
     push_store: Any | None = None,
     push_sender: Any | None = None,
     push_scope: str = "",
@@ -790,8 +778,7 @@ async def compose_background_execution(
                     scheduled_run=current,
                     owner=owner,
                     history_store=history_store,
-                    task_alert_store=task_alert_store,
-                    push_store=push_store,
+                        push_store=push_store,
                     push_sender=push_sender,
                     push_scope=push_scope,
                 )
@@ -827,7 +814,6 @@ async def compose_background_execution(
                 scheduled_run=current,
                 owner=owner,
                 history_store=history_store,
-                task_alert_store=task_alert_store,
                 push_store=push_store,
                 push_sender=push_sender,
                 push_scope=push_scope,
@@ -840,8 +826,7 @@ async def compose_background_execution(
             scheduled_run=projection.scheduled_run,
             owner=owner,
             history_store=history_store,
-            task_alert_store=task_alert_store,
-            push_store=push_store,
+                push_store=push_store,
             push_sender=push_sender,
             push_scope=push_scope,
         )

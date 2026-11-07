@@ -259,9 +259,8 @@ def test_auth_loss_and_navigation_clear_recovery_state() -> None:
     auth_block = app[app.index("if (!authenticated) {"):]
     auth_block = auth_block[: auth_block.index("const sessionState")]
     assert "clearClawRecovery({ syncControls: true });" in auth_block
-    # home navigation and Claw inbox navigation
+    # home navigation drops any pending Claw execute recovery timer/state.
     assert "// Leaving for home drops any pending Claw execute recovery timer/state." in app
-    assert "// Inbox navigation leaves the manual form: drop the pending recovery timer/state." in app
 
 
 def test_locale_keys_are_declared_for_both_languages() -> None:
@@ -343,6 +342,11 @@ function makeEl(tag) {
   el.hasChildNodes = () => el.children.length > 0;
   el.remove = () => { if (el.parentNode) el.parentNode.children = el.parentNode.children.filter((c) => c !== el); };
   el.addEventListener = (t, fn) => { (el.listeners[t] = el.listeners[t] || []).push(fn); };
+  el.dispatchEvent = (ev) => {
+    const type = ev && ev.type;
+    (el.listeners[type] || []).forEach((fn) => fn({ type, target: el }));
+    return true;
+  };
   el.querySelector = (sel) => el.children.find((c) => c.className && c.className.includes(sel.replace(/^\./, ""))) || null;
   el.querySelectorAll = (sel) => (sel && sel.indexOf("claw-chip") >= 0 ? [] : el.children);
   el.focus = () => { doc.activeElement = el; };
@@ -394,8 +398,7 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "clawResultDocx","clawStatus","clawArtifactMeta","clawArtifactName","clawArtifactSize",
   "clawResultSuccessNote","clawResultHint","clawExecuteHint","clawApprovedMemory","clawApprovedRefresh",
   "clawApprovedLoading","clawApprovedError","clawApprovedList","clawApprovedEmpty","clawMemoryReview",
-  "tasksNavButton","alertsNavButton","clawInbox","clawInboxTitle","clawInboxLoading","clawInboxError",
-  "clawInboxEmpty","clawInboxList","clawInboxRetry","clawRunHistory","clawRunHistoryRefresh",
+  "clawRunHistory","clawRunHistoryRefresh","newChatButton","automationNavButton",
   "clawRunHistoryLoading","clawRunHistoryError","clawRunHistoryList","clawRunHistoryEmpty",
   "clawRetryHint","clawRetryBox","clawRetryCopy","clawRetryButton",
 ].forEach((id) => add(id, "div"));
@@ -554,7 +557,7 @@ async function advanceClock(ms) {
     else virtualTimers.delete(chosenId);
     chosen.callback(...chosen.args);
     await Promise.resolve();
-    if (++iterations > 10000) throw new Error("timer loop");
+    if (++iterations > 20000) throw new Error("timer loop");
   }
   virtualNow = until;
   await new Promise((r) => setImmediate(r));
@@ -714,13 +717,21 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   await tick(120);
   if (execPosts().length !== beforeEditRetry) fail("EDIT_DURING_COOLDOWN_POSTED");
   checks.NAV_EDIT_DURING_COOLDOWN_NO_POST = true;
-  // The cooldown is long, so prove the target contract on a fresh cycle.
-  byId.tasksNavButton.click();
+  // 8b) A fresh cycle after a HOME round-trip — the same recovery-clearing
+  // navigation the inbox view switch used to provide (대표 결정 2026-11-07:
+  // 작업함 왕복 대신 홈 왕복으로 경로만 변경, 단언 강도 동일).
+  byId.newChatButton.click();
   await tick(60);
   byId.clawNavButton.click();
   await tick(60);
   executeCall = () => jsonResponse(429, { ok: false, error: { code: "rate_limited" } }, { "Retry-After": "2" });
   byId.messageInput.value = "B업체 발주 요청 — 품목 3개";
+  byId.clawChannel.value = "sms";
+  byId.clawAction.value = "order";
+  byId.clawSender.value = "B상사";
+  // #3382: composing different work releases the uncertain-dispatch latch —
+  // and a real user edit is an input event, not a bare value assignment.
+  byId.messageInput.dispatchEvent({ type: "input" });
   expectedPosts += 1;
   byId.clawExecuteButton.click();
   await tick(80);
@@ -746,7 +757,7 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   byId.clawExecuteButton.click();
   await tick(80);
   if (byId.clawRetryBox.hidden !== false) fail("COOLDOWN_NOT_VISIBLE_BEFORE_NAV");
-  byId.tasksNavButton.click();
+  byId.newChatButton.click();
   await tick(60);
   checks.NAVIGATION_CLEARS_RETRY_STATE = byId.clawRetryBox.hidden === true && byId.clawRetryButton.disabled === true;
   if (!checks.NAVIGATION_CLEARS_RETRY_STATE) fail("NAVIGATION_CLEARS_RETRY_STATE");
@@ -764,7 +775,7 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
 
   // 10) A locale switch re-renders the runtime countdown copy.
   executeCall = () => jsonResponse(429, { ok: false, error: { code: "rate_limited" } }, { "Retry-After": "30" });
-  byId.tasksNavButton.click();
+  byId.automationNavButton.click();
   await tick(40);
   byId.clawNavButton.click();
   await tick(40);

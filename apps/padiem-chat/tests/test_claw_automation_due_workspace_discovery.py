@@ -1119,7 +1119,6 @@ def test_discovery_module_registers_cron_source_and_scheduled_handler() -> None:
     assert "async def scheduled" in worker_source
     assert "run_scheduled_automation_source" in worker_source
     assert "compose_scheduled_automation_execution" in worker_source
-    assert "D1ClawTaskAlertStore" in worker_source
     assert "ClawAutomationOwnerResolver" in worker_source
     assert tomllib.loads(wrangler_source).get("triggers") == {
         "crons": ["17 3 * * *"]

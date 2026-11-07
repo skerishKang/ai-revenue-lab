@@ -409,43 +409,6 @@ class RecordingHistoryStore:
         return created
 
 
-class RecordingTaskAlertStore:
-    """Counting double of the existing Task/Alert store surface."""
-
-    def __init__(self) -> None:
-        self.tasks: dict[str, ClawFollowupTask] = {}
-        self.alerts: dict[str, ClawAlert] = {}
-        self.reads = 0
-        self.writes = 0
-        self.add_task_calls = 0
-        self.add_alert_calls = 0
-
-    async def get_task(self, task_id: str, *, workspace_id: str, member_id: str):
-        self.reads += 1
-        task = self.tasks.get(task_id)
-        if task is None or task.workspace_id != workspace_id:
-            return None
-        return task if task.member_id == member_id else None
-
-    async def get_alert(self, alert_id: str, *, workspace_id: str, member_id: str):
-        self.reads += 1
-        alert = self.alerts.get(alert_id)
-        if alert is None or alert.workspace_id != workspace_id:
-            return None
-        return alert if alert.is_visible_to(member_id) else None
-
-    async def add_task(self, task: ClawFollowupTask):
-        self.writes += 1
-        self.add_task_calls += 1
-        self.tasks[task.task_id] = task
-        return task
-
-    async def add_alert(self, alert: ClawAlert):
-        self.writes += 1
-        self.add_alert_calls += 1
-        self.alerts[alert.alert_id] = alert
-        return alert
-
 
 class CompetingClaimantStore:
     """Delegates to the real store after letting another claimant win first."""
@@ -521,7 +484,6 @@ class Harness:
         self.adapter = adapter or OutcomeAdapter()
         self.owner_resolver = owner_resolver or resolver()
         self.history = RecordingHistoryStore()
-        self.task_alert = RecordingTaskAlertStore()
 
     async def compose(self, trigger, *, recovery_bound=8, store=None, **kwargs):
         return await compose_background_execution(
@@ -531,7 +493,6 @@ class Harness:
             adapter=self.adapter,
             owner_resolver=self.owner_resolver,
             history_store=self.history,
-            task_alert_store=self.task_alert,
             recovery_bound=recovery_bound,
             completed_at=NOW,
             **kwargs,
@@ -594,7 +555,7 @@ async def test_legacy_rule_is_not_background_dispatched():
     assert harness.store.get_run(run_id_for(), WORKSPACE) is None
 
 
-async def test_execution_projects_into_existing_history_and_task_alert():
+async def test_execution_projects_into_existing_history_and_automation_conversation():
     harness = Harness()
     harness.store.save_rule(make_rule(output_type=ClawAutomationOutputType.ALERT))
 
@@ -607,8 +568,9 @@ async def test_execution_projects_into_existing_history_and_task_alert():
     assert record["user_id"] == OWNER_USER
     assert record["status"] == "completed"
     assert record["workspace_id"] == WORKSPACE
-    assert harness.task_alert.add_alert_calls == 1
-    assert harness.task_alert.add_task_calls == 0
+    assert record["conversation_id"] == harness.history._automation_conversation
+    assert len(harness.history.message_calls) == 1
+    assert harness.history.message_calls[0]["message_id"] == expected + "_result"
 
 
 # ── 2. duplicate trigger -----------------------------------------------------
@@ -893,7 +855,6 @@ async def test_terminal_row_reached_by_race_is_projection_only_retry():
     assert receipt.execution_claimed_run_ids == ()
     assert harness.adapter.calls == []
     assert [call["run_id"] for call in harness.history.record_calls] == [expected]
-    assert harness.task_alert.add_alert_calls == 1
 
 
 async def test_projection_only_retry_is_idempotent_and_preserves_one_record():
@@ -908,8 +869,6 @@ async def test_projection_only_retry_is_idempotent_and_preserves_one_record():
     expected = run_id_for()
     assert len(harness.history.rows) == 1
     assert harness.history.rows[(OWNER_USER, expected)]["status"] == "completed"
-    assert harness.task_alert.add_alert_calls == 1
-    assert len(harness.task_alert.alerts) == 1
     assert harness.adapter.calls == []
 
 
@@ -917,34 +876,33 @@ async def test_projection_only_retry_is_idempotent_and_preserves_one_record():
 
 
 @pytest.mark.parametrize("output_type", [ClawAutomationOutputType.REPORT, ClawAutomationOutputType.DRAFT])
-async def test_completed_report_or_draft_writes_no_task_alert(output_type):
+async def test_completed_report_or_draft_lands_in_the_automation_conversation(output_type):
     harness = Harness()
     harness.store.save_rule(make_rule(output_type=output_type))
 
     await harness.compose(make_trigger())
 
-    assert harness.task_alert.writes == 0
-    assert harness.task_alert.reads == 0
     assert len(harness.history.record_calls) == 1
+    assert len(harness.history.message_calls) == 1
+    assert harness.history.message_calls[0]["message_id"] == run_id_for() + "_result"
 
 
 @pytest.mark.parametrize(
-    "output_type,expected_task,expected_alert",
-    [
-        (ClawAutomationOutputType.TASK_PROPOSAL, 1, 0),
-        (ClawAutomationOutputType.ALERT, 0, 1),
-    ],
+    "output_type",
+    [ClawAutomationOutputType.TASK_PROPOSAL, ClawAutomationOutputType.ALERT],
 )
-async def test_completed_proposal_or_alert_delegates_to_existing_authority(
-    output_type, expected_task, expected_alert
-):
+async def test_completed_proposal_or_alert_notifies_success_directly(output_type):
+    """대표 결정(2026-11-07): the terminal state alone decides — the projection
+    authority is no longer part of the notification path."""
+
     harness = Harness()
     harness.store.save_rule(make_rule(output_type=output_type))
 
     await harness.compose(make_trigger())
 
-    assert harness.task_alert.add_task_calls == expected_task
-    assert harness.task_alert.add_alert_calls == expected_alert
+    assert len(harness.history.message_calls) == 1
+    # A COMPLETED run with output lands the output contract's title + content.
+    assert "bounded P01 answer" in harness.history.message_calls[0]["content"]
 
 
 # ── 11. P01 failure / cancellation ------------------------------------------
@@ -962,36 +920,17 @@ async def test_p01_failure_terminalizes_only_through_existing_bridge():
     stored = harness.store.get_run(expected, WORKSPACE)
     assert stored.status is ClawScheduledRunStatus.FAILED
     assert stored.error_message == terminal_bridge_module._FAILED_MESSAGE
-    # #5034 option 1: the failed row is terminalized only through the existing
-    # bridge, and that same bridge records exactly one status Alert. No second
-    # terminal or notification authority is reached.
-    assert harness.task_alert.writes == 1
-    assert harness.task_alert.add_alert_calls == 1
     assert [call["status"] for call in harness.history.record_calls] == ["failed"]
+    assert len(harness.history.message_calls) == 1
+    assert "완료되지 못했습니다" in harness.history.message_calls[0]["content"]
 
 
-async def test_projection_authority_failure_propagates_instead_of_becoming_dispatch_failure():
-    harness = Harness()
-    harness.store.save_rule(make_rule())
-    failing_store = ProjectionFailingStore(harness.store)
-
-    with pytest.raises(RuntimeError, match="projection authority failed"):
-        await harness.compose(make_trigger(), store=failing_store)
-
-    expected = run_id_for()
-    assert [run.run_id for run in harness.adapter.calls] == [expected]
-    assert harness.store.get_run(expected, WORKSPACE).status is (
-        ClawScheduledRunStatus.RUNNING
-    )
-    assert harness.history.record_calls == []
-    assert harness.task_alert.writes == 0
-
-
-async def test_failed_run_records_no_task_and_exactly_one_status_alert():
-    """#5034 option 1: a failed run is a result, but never an output-derived Task.
+async def test_failed_task_proposal_run_lands_a_failure_result_message():
+    """대표 결정(2026-11-07): a failed run is a result in the automation's own
+    conversation; the output boundary no longer decides anything.
 
     The output boundary still creates nothing from a TASK_PROPOSAL rule whose run
-    failed; the separate status boundary records exactly one Alert.
+    failed — and the failure wording lands in the conversation regardless.
     """
 
     harness = Harness(adapter=RaisingAdapter())
@@ -999,11 +938,8 @@ async def test_failed_run_records_no_task_and_exactly_one_status_alert():
 
     await harness.compose(make_trigger())
 
-    assert harness.task_alert.add_task_calls == 0
-    assert harness.task_alert.add_alert_calls == 1
-    assert harness.task_alert.writes == 1
-    alert = next(iter(harness.task_alert.alerts.values()))
-    assert alert.severity is ClawAlertSeverity.WARN
+    assert len(harness.history.message_calls) == 1
+    assert "완료되지 못했습니다" in harness.history.message_calls[0]["content"]
     # The P01 dispatch is not re-run by the notification boundary.
     assert [run.run_id for run in harness.adapter.calls] == [run_id_for()]
 
@@ -1018,7 +954,6 @@ async def test_cancellation_propagates_and_creates_no_task_alert():
     assert harness.store.get_run(run_id_for(), WORKSPACE).status is (
         ClawScheduledRunStatus.CANCELLED
     )
-    assert harness.task_alert.writes == 0
 
 
 async def test_one_poisoned_candidate_does_not_stop_the_others():
@@ -1092,8 +1027,7 @@ async def test_boundary_without_a_tick_runtime_is_refused():
             adapter=harness.adapter,
             owner_resolver=harness.owner_resolver,
             history_store=harness.history,
-            task_alert_store=harness.task_alert,
-        )
+                    )
 
 
 # ── 13. receipt hygiene and no second authority -----------------------------
@@ -1116,7 +1050,6 @@ async def test_receipt_is_bounded_ids_only_and_locks_every_side_effect():
     assert payload["second_p01_authority"] == 0
     assert payload["second_history_store"] == 0
     assert payload["second_session_authority"] == 0
-    assert payload["second_task_alert_authority"] == 0
     assert payload["running_auto_redispatch"] == 0
     assert payload["terminal_p01_redispatch"] == 0
     assert payload["production_scheduler_activation"] == 0
@@ -1160,7 +1093,8 @@ def test_source_reuses_existing_authorities_and_adds_no_new_one():
         "from .claw_automation_execution_bridge import P01ExecutionPort",
         "execute_and_project_scheduled_occurrence",
         "project_terminal_scheduled_run_to_history",
-        "project_terminal_scheduled_run_to_task_alert",
+        "ensure_claw_automation_conversation",
+        "append_step_result_message",
         "ClawAutomationOwnerResolver",
     ):
         assert reused in source

@@ -510,8 +510,8 @@ def test_host_missing_routes_are_owner_scoped_and_use_existing_stores(staging_ho
     # No canonical authority is configured in this local-only fixture.
     app.state.identity_shadow_store = None
     assert app.state.claw_device_directory_source.configured is True
-    paths = ("/api/claw/local-access/devices", "/api/claw/inbox/tasks",
-             "/api/claw/inbox/alerts", "/api/pc/pairings", "/api/chat/custom/credential")
+    paths = ("/api/claw/local-access/devices", "/api/pc/pairings",
+             "/api/chat/custom/credential")
     with TestClient(app, base_url="https://chat-com2-staging.padiem.net") as client:
         for path in paths:
             assert client.get(path).status_code == 401, path
