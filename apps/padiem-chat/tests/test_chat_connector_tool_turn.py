@@ -35,6 +35,12 @@ from padiem_ai_core.calendar_capability import (
     CALENDAR_LIST_EVENTS_TOOL_ID,
     calendar_read_tool_specs,
 )
+from padiem_ai_core.connectors import (
+    GMAIL_CANONICAL_TOOL_IDS,
+    GMAIL_GET_MESSAGE_TOOL_ID,
+    GMAIL_SEARCH_MESSAGES_TOOL_ID,
+    gmail_read_tool_specs,
+)
 from padiem_ai_core.drive_capability import (
     DRIVE_CANONICAL_TOOL_IDS,
     DRIVE_SEARCH_FILES_TOOL_ID,
@@ -46,6 +52,8 @@ _NOT_CONNECTED = ("not_connected", None)
 
 _DRIVE_SPEC = {spec.id: spec for spec in drive_read_tool_specs()}[DRIVE_SEARCH_FILES_TOOL_ID]
 _CALENDAR_SPEC = {spec.id: spec for spec in calendar_read_tool_specs()}[CALENDAR_LIST_EVENTS_TOOL_ID]
+_GMAIL_SEARCH_SPEC = {spec.id: spec for spec in gmail_read_tool_specs()}[GMAIL_SEARCH_MESSAGES_TOOL_ID]
+_GMAIL_GET_SPEC = {spec.id: spec for spec in gmail_read_tool_specs()}[GMAIL_GET_MESSAGE_TOOL_ID]
 
 
 def _patch_truth(monkeypatch, *, overrides, authority, session_id="authsession:test",
@@ -115,6 +123,48 @@ async def test_drive_only_grant_declares_one_tool(monkeypatch):
     assert decision.reason == "granted"
     assert (decision.drive, decision.calendar) == (True, False)
     assert [tool.name for tool in tools_module._tools_for_decision(decision)] == ["drive_read"]
+
+
+@pytest.mark.asyncio
+async def test_a_gmail_only_grant_declares_the_two_gmail_tools(monkeypatch):
+    """Gmail 연결만 있으면 지메일 검색·읽기 2개가 선언된다(canonical id 고정)."""
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": _NOT_CONNECTED, "calendar": _NOT_CONNECTED, "gmail": _CONNECTED},
+        authority=True,
+    )
+    decision = await tools_module._grant_decision_for_uid(SimpleNamespace(), uid="u1")
+    assert decision.reason == "granted"
+    assert (decision.drive, decision.calendar, decision.gmail) == (False, False, True)
+    declared = tools_module._tools_for_decision(decision)
+    assert [tool.name for tool in declared] == ["gmail_search", "gmail_read"]
+    by_name = {tool.name: tool for tool in declared}
+    assert by_name["gmail_search"].parameters == dict(_GMAIL_SEARCH_SPEC.input_schema)
+    assert by_name["gmail_read"].parameters == dict(_GMAIL_GET_SPEC.input_schema)
+    search_id, gmail_app, gmail_agent = tools_module.CONNECTOR_TOOL_BINDINGS["gmail_search"]
+    read_id, _app2, _agent2 = tools_module.CONNECTOR_TOOL_BINDINGS["gmail_read"]
+    assert (search_id, gmail_app, gmail_agent) == (
+        GMAIL_CANONICAL_TOOL_IDS[0], "b54-padiem-claw", "agent:padiem:claw_mail_reader@1",
+    )
+    assert (read_id, _app2, _agent2) == (
+        GMAIL_CANONICAL_TOOL_IDS[1], "b54-padiem-claw", "agent:padiem:claw_mail_reader@1",
+    )
+
+
+@pytest.mark.asyncio
+async def test_a_full_google_grant_declares_all_four_read_tools(monkeypatch):
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": _CONNECTED, "calendar": _CONNECTED, "gmail": _CONNECTED},
+        authority=True,
+        calendar_state="active",
+    )
+    tools = await tools_module.connector_tools_for_turn(
+        SimpleNamespace(), uid="u1", intent_turn=True,
+    )
+    assert [tool.name for tool in tools] == [
+        "drive_read", "calendar_read", "gmail_search", "gmail_read",
+    ]
 
 
 @pytest.mark.asyncio
@@ -371,7 +421,7 @@ async def test_the_engine_client_fails_closed_on_refusal_and_undeclared_tools():
     assert refused_error.value.code == "connector_tool_refused"
 
     with pytest.raises(ConnectorToolEngineError) as unsupported:
-        await client.execute(tool_name="gmail_read", arguments={})
+        await client.execute(tool_name="gmail_send", arguments={})
     assert unsupported.value.status_code == 422
 
 
@@ -410,12 +460,14 @@ class _FakeTiming:
 
 
 @pytest.mark.asyncio
-async def test_a_model_tool_call_executes_through_the_engine_and_answers():
+async def test_a_model_tool_call_executes_through_the_engine_and_answers(caplog):
     """tool_call → Engine execute (fake) → one plain follow-up answer turn."""
     engine = _RecordingEngineClient()
     client = _ScriptedFollowUpClient()
     timing = _FakeTiming()
     frames: list[bytes] = []
+
+    import logging
 
     async def _frame_stream():
         from app.chat_routes import _connector_tool_lane
@@ -438,8 +490,14 @@ async def test_a_model_tool_call_executes_through_the_engine_and_answers():
         ):
             frames.append(frame)
 
-    await asyncio.wait_for(_frame_stream(), timeout=5)
+    with caplog.at_level(logging.INFO, logger="padiem_chat.connector_tools"):
+        await asyncio.wait_for(_frame_stream(), timeout=5)
     assert engine.calls == [{"tool_name": "drive_read", "arguments": {"query": "보고서"}}]
+    # #7088: the execution journal carries counts only — the output content
+    # (file names, mail bodies, subjects, senders) never reaches the log.
+    execute_log = [r for r in caplog.records if "connector_tools execute" in r.getMessage()]
+    assert execute_log and "items=1" in execute_log[-1].getMessage()
+    assert "보고서" not in execute_log[-1].getMessage()
     # The follow-up dispatch carries the tool result as context and no tools,
     # so a connector read can never chain into another tool lane.
     assert len(client.calls) == 1

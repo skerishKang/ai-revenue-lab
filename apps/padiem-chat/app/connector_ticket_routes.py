@@ -23,7 +23,8 @@ _REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive", "google-calendar"})
 # #3289: the reviewed connectors whose OAuth handoff the product surface may
 # start. Each maps to exactly one control-plane reviewed readonly scope set;
 # Drive is https://www.googleapis.com/auth/drive.readonly and never widens it.
-_OAUTH_START_REVIEWED_CONNECTORS = frozenset({"google-calendar", "google-drive"})
+# Gmail (#7088) joins with the already-registered gmail.readonly scope set.
+_OAUTH_START_REVIEWED_CONNECTORS = frozenset({"gmail", "google-calendar", "google-drive"})
 _NO_STORE_HEADERS = {
     "Cache-Control": "no-store, max-age=0",
     "Pragma": "no-cache",
