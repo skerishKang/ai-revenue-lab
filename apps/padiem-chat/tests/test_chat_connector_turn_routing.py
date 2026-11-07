@@ -66,7 +66,7 @@ def _clean_cache():
     tools_module.invalidate_connector_tool_grant_cache()
 
 
-def test_only_explicit_google_naming_routes_between_lanes():
+def test_calendar_ask_words_and_explicit_google_naming_route_between_lanes():
     assert tools_module.google_connector_intent(CALENDAR_QUESTION) is True
     assert tools_module.google_connector_intent(DRIVE_QUESTION) is True
     assert tools_module.google_connector_intent("google drive에서 찾아줘") is True
@@ -75,8 +75,16 @@ def test_only_explicit_google_naming_routes_between_lanes():
     assert tools_module.google_connector_intent("지메일에서 중요 메일 검색해줘") is True
     assert tools_module.google_connector_intent("gmail 읽어줘") is True
     assert tools_module.google_connector_intent("구글 메일 확인해줘") is True
-    # The native calendar and the PC lane keep their own questions.
-    assert tools_module.google_connector_intent("오늘 일정 알려줘") is False
+    # #7128: calendar ask words WITHOUT explicit Google naming are broad
+    # intent, promoted only when the calendar grant is connected (owner
+    # 2026-11-08: granted users' "내일 일정 뭐야" must reach Google Calendar).
+    assert tools_module.google_connector_intent("내일 일정 뭐야") is False
+    assert tools_module.google_connector_broad_intent("내일 일정 뭐야") == "calendar"
+    assert tools_module.google_connector_broad_intent("오늘 일정 알려줘") == "calendar"
+    assert tools_module.google_connector_broad_intent("이번 주 스케줄 알려줘") == "calendar"
+    # The PC lane and Gmail keep their own rules: Gmail stays explicit-only,
+    # bare drive/file words stay with the PC lane.
+    assert tools_module.google_connector_broad_intent("지메일 확인해줘") is None
     assert tools_module.google_connector_intent("드라이브 목록 보여줘") is False
     assert tools_module.google_connector_intent("메일 확인해줘") is False
     assert tools_module.google_connector_intent("") is False
@@ -210,6 +218,34 @@ async def test_a_granted_drive_question_hands_back_to_the_main_turn(monkeypatch)
     assert response.status_code == 409
     assert json.loads(response.body)["error"]["code"] == "orchestration_not_applicable"
     assert bridge.requests == []
+
+
+@pytest.mark.asyncio
+async def test_a_granted_calendar_ask_hands_back_to_the_main_turn(monkeypatch):
+    """Granted 사용자의 '내일 일정 뭐야'가 커넥터 경로로 간다(도구 선언 전제)."""
+    global bridge
+    bridge = _install(monkeypatch)
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": _NOT_CONNECTED, "calendar": CONNECTED},
+        authority=True,
+        calendar_state="active",
+    )
+    response = await routes.api_orchestration(_request(_payload("내일 일정 뭐야")))
+
+    assert response.status_code == 409
+    assert json.loads(response.body)["error"]["code"] == "orchestration_not_applicable"
+    assert bridge.requests == []
+    # The same promotion drives the main turn's declaration decision.
+    assert await tools_module.google_connector_turn_for_text(
+        SimpleNamespace(), uid="u1", user_text="내일 일정 뭐야",
+    ) is True
+
+
+def test_the_unavailable_note_states_the_miss_without_inventing():
+    note = tools_module.CONNECTOR_UNAVAILABLE_NOTE
+    assert "실제로 읽지 못했습니다" in note
+    assert "만들어내지 말" in note
 
 
 @pytest.mark.asyncio

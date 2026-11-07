@@ -452,6 +452,47 @@ async def test_the_decision_journal_always_prints_bounded_fields(monkeypatch, ca
     assert "check_ms=" in out
 
 
+def test_the_max_route_passes_the_native_tools_gate():
+    """#7124 라우트 게이트가 Max 라우트에서 통과하는지 실제 레지스트리로 확인.
+
+    The gate withholds connector tools on a route whose B14 registration does
+    not declare the ``tools`` capability. The Max grade's own route model must
+    pass, or calendar asks on that grade answer without tools (measured
+    #7088 후속). The row shape mirrors the normalized catalog view the gate
+    reads, with capabilities taken verbatim from the canonical registry.
+    """
+    import json as _json
+    from pathlib import Path as _Path
+
+    from app.chat_pc_drive import chat_pc_route_declares_tools  # noqa: F401 — gate under test
+    from app.model_policy import MAX_HOLD_MODEL_ID
+
+    registry = _json.loads(
+        (_Path(__file__).resolve().parents[3] / "apps" / "korean-ai-platform"
+         / "app" / "pilot" / "b14_models.json").read_text(encoding="utf-8")
+    )
+    rows = registry if isinstance(registry, list) else registry.get("models", [])
+    row = next(r for r in rows if r.get("id") == MAX_HOLD_MODEL_ID or r.get("model_id") == MAX_HOLD_MODEL_ID)
+    assert "tools" in row["capabilities"], "the Max route model lost its tools capability"
+
+    import asyncio
+
+    class _Resolver:
+        async def list_registered_models(self):
+            return [{
+                "model_id": MAX_HOLD_MODEL_ID,
+                "capabilities": list(row["capabilities"]),
+                "b14_enabled": True,
+                "owner_excluded": False,
+            }]
+
+    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+        b14_model_choice_resolver=_Resolver(),
+    )))
+    result = asyncio.run(chat_pc_route_declares_tools(request, MAX_HOLD_MODEL_ID))
+    assert result is True
+
+
 class _FakeEngineBinding:
     def __init__(self, status: int, body: dict[str, Any]) -> None:
         self._status = status
