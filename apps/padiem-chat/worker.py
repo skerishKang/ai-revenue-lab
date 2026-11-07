@@ -1688,6 +1688,16 @@ class Default(WorkerEntrypoint):
         worker_app.state.pc_pairing_install_url = (
             getattr(self.env, "PC_AGENT_INSTALL_URL", None) or ""
         ).strip()
+        # #7108 PR-2: the optional user-helper EXE, served from the same static
+        # host as the agent under a versioned path and pinned by the digest the
+        # helper build printed. A missing half omits the helper step; the agent
+        # install remains the success criterion.
+        worker_app.state.pc_pairing_user_helper_url = (
+            getattr(self.env, "PC_USER_HELPER_INSTALL_URL", None) or ""
+        ).strip()
+        worker_app.state.pc_pairing_user_helper_sha256 = (
+            getattr(self.env, "PC_USER_HELPER_SHA256", None) or ""
+        ).strip()
         worker_app.state.mesh_presence_generation_resolver = (
             build_mesh_presence_generation_resolver(self.env)
         )

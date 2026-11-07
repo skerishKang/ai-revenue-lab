@@ -198,6 +198,15 @@ ORACLE_MESH_EXECUTION_MODE = "off"
 # the value itself is injected at deploy time, never committed.
 PC_AGENT_INSTALL_URL = ""
 
+# #7108 PR-2: the user-session helper EXE the one-click install also places.
+# Serve it from the same static host as the agent under a versioned path (for
+# example .../padiem-user-helper-7108.exe); PC_USER_HELPER_SHA256 is the digest
+# that build printed. Both are required for the helper step, and an empty or
+# malformed pair simply omits that step - the agent install still succeeds.
+# Values are injected at deploy time, never committed.
+PC_USER_HELPER_INSTALL_URL = ""
+PC_USER_HELPER_SHA256 = ""
+
 # #5881 COM2 file lane origin. An empty value means not configured: the file-lane
 # client then answers every upload and read ticket with "파일 서버가 아직 연결되지
 # 않았습니다" instead of pointing attachments at a host that is not serving them.
