@@ -1,4 +1,4 @@
-import {COM2_AI_URL, executeAppAI, com2CredentialConfigured, ingressCredential, upstreamErrorCode} from './app-ai-transport.mjs';
+import {COM2_AI_URL, executeAppAI, executeAppAIStream, com2CredentialConfigured, ingressCredential, upstreamErrorCode} from './app-ai-transport.mjs';
 const APP_AI_CALLER = 'bookai';
 let bookaiAuth;
 const AI_PATH = "/api/storymemory-ai";
@@ -351,6 +351,63 @@ function assetCacheControl(pathname) {
   if (pathname.startsWith("/styles/") || pathname.endsWith(".js") || pathname.endsWith(".mjs") || pathname.endsWith(".css")) return "no-cache";
   return null;
 }
+// Chat's own stage entries: a closed name set and a duration, nothing else.
+// Anything outside this shape (another name, unit, or parameter) is dropped.
+const UPSTREAM_TIMING_NAMES = new Set(["chat", "p01", "engine"]);
+function upstreamTimingEntries(header) {
+  const entries = [];
+  for (const part of String(header ?? "").split(",")) {
+    const match = /^([a-z0-9]+);dur=(\d+(?:\.\d+)?)$/.exec(part.trim());
+    if (!match || !UPSTREAM_TIMING_NAMES.has(match[1])) continue;
+    const value = Number(match[2]);
+    if (!Number.isFinite(value) || value < 0 || value > 600000) continue;
+    if (entries.some((entry) => entry.startsWith(`${match[1]};`))) continue;
+    entries.push(`${match[1]};dur=${Math.round(value)}`);
+  }
+  return entries;
+}
+// 261106 · 스트리밍은 서버 스위치로만 켠다. 기본은 기존 한 번에 받기 경로다.
+function chatStreamEnabled(env) {
+  const value = env?.BOOKAI_AI_STREAM;
+  return value === true || value === 1 || value === "1" || value === "on" || value === "true";
+}
+function streamFallbackEligible(result) {
+  if (!result || result.stream === true) return false;
+  if (result.transportFailure === true) return true;
+  if ([401, 403, 404, 405, 415].includes(result.status)) return true;
+  return result.status >= 500;
+}
+const MAX_STREAM_FRAME_CHARS = 256 * 1024;
+function createNdjsonReader(response) {
+  if (!response || !response.body || typeof response.body.getReader !== "function") return null;
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let finished = false;
+  return {
+    async next() {
+      while (true) {
+        const index = buffer.indexOf("\n");
+        if (index >= 0) {
+          const line = buffer.slice(0, index).trim();
+          buffer = buffer.slice(index + 1);
+          if (!line) continue;
+          return JSON.parse(line);
+        }
+        if (finished) {
+          const tail = buffer.trim();
+          buffer = "";
+          return tail ? JSON.parse(tail) : null;
+        }
+        const chunk = await reader.read();
+        if (chunk.done) { finished = true; continue; }
+        buffer += decoder.decode(chunk.value, { stream: true });
+        if (buffer.length > MAX_STREAM_FRAME_CHARS) throw new Error("stream_frame_too_large");
+      }
+    },
+    cancel() { try { reader.cancel(); } catch (_) {} }
+  };
+}
 async function serveAsset(request, env) {
   const response = await env.ASSETS.fetch(request);
   const cacheControl = assetCacheControl(new URL(request.url).pathname);
@@ -387,6 +444,7 @@ export default {
       const workerStarted = performance.now();
       let packetMs = null;
       let upstreamMs = null;
+      let upstreamTiming = null;
       const durationMs = (started) => Math.max(0, Math.round(performance.now() - started));
       const timedJson = (body, status = 200) => {
         const response = json(body, status);
@@ -394,6 +452,7 @@ export default {
         if (packetMs !== null) timing.push(`packet;dur=${packetMs}`);
         timing.push(`worker;dur=${durationMs(workerStarted)}`);
         if (upstreamMs !== null) timing.push(`upstream;dur=${upstreamMs}`);
+        if (upstreamTiming !== null) timing.push(...upstreamTiming);
         response.headers.set('Server-Timing', timing.join(', '));
         return response;
       };
@@ -428,85 +487,198 @@ export default {
       if (!model) return timedJson({ ok: false, error: "storymemory_model_invalid" }, 503);
       const enginePayload = buildEnginePayload(question, bounded, model);
       const upstreamStarted = performance.now();
-      const upstream = await executeAppAI({
-        env, app: APP_AI_CALLER,
-        payload: enginePayload,
-        allowIngressFallback: APP_AI_CALLER === "storymemory"
-      });
-      upstreamMs = durationMs(upstreamStarted);
-      const payload = upstream.payload;
-      if (upstream.status < 200 || upstream.status >= 300 || payload?.ok !== true || typeof payload?.answer !== "string") {
-        return timedJson({ ok: false, error: upstreamErrorCode(payload, upstream.transport === "authenticated_ingress" ? "ingress_execution_failed" : "com2_ai_execution_failed"), retryable: Boolean(payload?.error?.retryable) }, upstream.status >= 400 && upstream.status <= 599 ? upstream.status : 502);
-      }
-      const cp = payload?.context_permission;
-      if (!cp || cp.boundary_disposition !== "permitted" || Number(cp.context_filtered_count || 0) !== 0 || Number(cp.context_allowed_count || 0) < 1) {
-        return timedJson({ ok: false, error: "engine_permission_projection_invalid" }, 502);
-      }
-      const removed = removeThoughtBlocksReported(payload.answer);
-      const answer = removed.text;
-      if (!answer.trim()) return timedJson({ ok: false, error: "ingress_invalid_response" }, 502);
-      const finishReason = answerTruncationReason(payload, answer, removed.cut, enginePayload.agent.max_tokens);
-      if (finishReason) {
-        // Never a 200 carrying only the part that survived the cut.
-        console.warn("bookai_answer_incomplete reason=%s visible_chars=%d", finishReason, answer.length);
-        return timedJson({ ok: false, error: "answer_incomplete", retryable: true, finish_reason: finishReason }, 502);
-      }
-      const runtime = upstream.transport === "com2_p01" ? "padiem-p01" : "padiem-ai-engine";
-      const contextPermission = {
-        boundary_disposition: cp.boundary_disposition,
-        context_candidate_count: Number(cp.context_candidate_count || 0),
-        context_allowed_count: Number(cp.context_allowed_count || 0),
-        context_filtered_count: Number(cp.context_filtered_count || 0),
-        filter_reason_codes: Array.isArray(cp.filter_reason_codes) ? cp.filter_reason_codes.slice(0, 8) : [],
-        policy_version: clip(cp.policy_version, 64)
-      };
-      // 261106 · 접힘 응답(설계 E). 처음 읽어요 모드의 전개 질문만 대상. 연 장
-      // 집합 밖 인용이 있는 문단은 답변에서 떼어 내고 접힘 목록으로 돌려준다 —
-      // 누르기 전까지 클라이언트 DOM 에 들어가지 않는다.
-      if (bounded.readingMode === "first_read" && bounded.questionClass === "plot" && bounded.workKey === "bible-web") {
-        const openedSet = parseOpenedUnitSet(bounded.openedUnits);
-        const paragraphs = parseModelParagraphs(answer);
-        const visible = [];
-        const spoilerFolds = [];
-        for (const paragraph of paragraphs) {
-          const outside = citationsOutsideOpened(paragraph.citations, openedSet);
-          if (outside.length) spoilerFolds.push({ books: outside.map((item) => item.label), text: paragraph.text });
-          else visible.push(paragraph.text);
+      // One envelope in, one browser body out. The one-shot and the streamed
+      // terminal frame must pass the same checks.
+      const finalizeAnswer = (payload, transport) => {
+        const cp = payload?.context_permission;
+        if (!cp || cp.boundary_disposition !== "permitted" || Number(cp.context_filtered_count || 0) !== 0 || Number(cp.context_allowed_count || 0) < 1) {
+          return { ok: false, status: 502, body: { ok: false, error: "engine_permission_projection_invalid" } };
         }
-        const visibleAnswer = visible.join("\n\n") ||
-          "읽은 범위 안에서는 이 질문에 답할 내용이 아직 없어요. 더 보기를 누르면 읽지 않은 범위의 내용을 확인할 수 있어요.";
-        return timedJson({
+        const removed = removeThoughtBlocksReported(payload.answer);
+        const answer = removed.text;
+        if (!answer.trim()) return { ok: false, status: 502, body: { ok: false, error: "ingress_invalid_response" } };
+        const finishReason = answerTruncationReason(payload, answer, removed.cut, enginePayload.agent.max_tokens);
+        if (finishReason) {
+          // Never a 200 carrying only the part that survived the cut.
+          console.warn("bookai_answer_incomplete reason=%s visible_chars=%d", finishReason, answer.length);
+          return { ok: false, status: 502, body: { ok: false, error: "answer_incomplete", retryable: true, finish_reason: finishReason } };
+        }
+        const runtime = transport === "com2_p01" ? "padiem-p01" : "padiem-ai-engine";
+        const contextPermission = {
+          boundary_disposition: cp.boundary_disposition,
+          context_candidate_count: Number(cp.context_candidate_count || 0),
+          context_allowed_count: Number(cp.context_allowed_count || 0),
+          context_filtered_count: Number(cp.context_filtered_count || 0),
+          filter_reason_codes: Array.isArray(cp.filter_reason_codes) ? cp.filter_reason_codes.slice(0, 8) : [],
+          policy_version: clip(cp.policy_version, 64)
+        };
+        // 261106 · 접힘 응답(설계 E). 처음 읽어요 모드의 전개 질문만 대상. 연 장
+        // 집합 밖 인용이 있는 문단은 답변에서 떼어 내고 접힘 목록으로 돌려준다 —
+        // 누르기 전까지 클라이언트 DOM 에 들어가지 않는다.
+        if (bounded.readingMode === "first_read" && bounded.questionClass === "plot" && bounded.workKey === "bible-web") {
+          const openedSet = parseOpenedUnitSet(bounded.openedUnits);
+          const paragraphs = parseModelParagraphs(answer);
+          const visible = [];
+          const spoilerFolds = [];
+          for (const paragraph of paragraphs) {
+            const outside = citationsOutsideOpened(paragraph.citations, openedSet);
+            if (outside.length) spoilerFolds.push({ books: outside.map((item) => item.label), text: paragraph.text });
+            else visible.push(paragraph.text);
+          }
+          const visibleAnswer = visible.join("\n\n") ||
+            "읽은 범위 안에서는 이 질문에 답할 내용이 아직 없어요. 더 보기를 누르면 읽지 않은 범위의 내용을 확인할 수 있어요.";
+          return { ok: true, status: 200, body: {
+            ok: true,
+            answer: visibleAnswer,
+            reading_mode: "first_read",
+            question_class: "plot",
+            spoiler_folds: spoilerFolds,
+            finish_reason: spoilerFolds.length ? "folded" : "complete",
+            runtime,
+            transport,
+            reference_trust: "UNTRUSTED_REFERENCE",
+            context_permission: contextPermission
+          } };
+        }
+        const modeFields = bounded.readingMode ? { reading_mode: bounded.readingMode, question_class: bounded.questionClass } : {};
+        // 찾아보며 읽기 등 접지 않는 모드: 답 아래 한 줄 안내용으로 읽은 범위 밖
+        // 참고 책·장만 돌려준다.
+        let outsideBooks = [];
+        if (bounded.readingMode === "browse" && bounded.openedUnits.length) {
+          const openedSet = parseOpenedUnitSet(bounded.openedUnits);
+          outsideBooks = citationsOutsideOpenedFromParsed(parseVerseCitations(answer), openedSet).map((item) => item.label);
+        }
+        return { ok: true, status: 200, body: {
           ok: true,
-          answer: visibleAnswer,
-          reading_mode: "first_read",
-          question_class: "plot",
-          spoiler_folds: spoilerFolds,
-          finish_reason: spoilerFolds.length ? "folded" : "complete",
+          answer,
+          finish_reason: "complete",
+          ...modeFields,
+          ...(outsideBooks.length ? { outside_books: outsideBooks } : {}),
           runtime,
-          transport: upstream.transport,
+          transport,
           reference_trust: "UNTRUSTED_REFERENCE",
           context_permission: contextPermission
+        } };
+      };
+      const upstreamError = (result) => timedJson(
+        { ok: false, error: upstreamErrorCode(result.payload, result.transport === "authenticated_ingress" ? "ingress_execution_failed" : "com2_ai_execution_failed"), retryable: Boolean(result.payload?.error?.retryable) },
+        result.status >= 400 && result.status <= 599 ? result.status : 502
+      );
+      const respondOneShot = async () => {
+        const result = await executeAppAI({
+          env, app: APP_AI_CALLER,
+          payload: enginePayload,
+          allowIngressFallback: APP_AI_CALLER === "storymemory"
         });
+        upstreamMs = durationMs(upstreamStarted);
+        upstreamTiming = upstreamTimingEntries(result.timing);
+        const payload = result.payload;
+        if (result.status < 200 || result.status >= 300 || payload?.ok !== true || typeof payload?.answer !== "string") {
+          return upstreamError(result);
+        }
+        const finalized = finalizeAnswer(payload, result.transport);
+        return finalized.ok ? timedJson(finalized.body) : timedJson(finalized.body, finalized.status);
+      };
+      const respondStream = async (attempt) => {
+        const reader = createNdjsonReader(attempt.response);
+        const finish = () => { if (reader) reader.cancel(); attempt.cleanup(); };
+        if (!reader) { finish(); return respondOneShot(); }
+        let first = null;
+        try { first = await reader.next(); } catch { first = null; }
+        if (!first || first.ok === false || first.type === "error") {
+          // Nothing reached the reader yet: the switch falls back to the one-shot
+          // path, exactly as if streaming were off.
+          finish();
+          return respondOneShot();
+        }
+        upstreamMs = durationMs(upstreamStarted);
+        upstreamTiming = upstreamTimingEntries(attempt.timing);
+        if (first.type !== "delta") {
+          finish();
+          if (first.type === "done" && typeof first.answer === "string") {
+            const finalized = finalizeAnswer({
+              ok: true, answer: first.answer, context_permission: first.context_permission,
+              metadata: first.metadata, finish_reason: first.finish_reason
+            }, attempt.transport);
+            return finalized.ok ? timedJson(finalized.body) : timedJson(finalized.body, finalized.status);
+          }
+          return respondOneShot();
+        }
+        const firstChunkMs = durationMs(upstreamStarted);
+        const timing = [];
+        if (packetMs !== null) timing.push(`packet;dur=${packetMs}`);
+        timing.push(`worker;dur=${durationMs(workerStarted)}`);
+        timing.push(`first_chunk;dur=${firstChunkMs}`);
+        if (upstreamTiming !== null) timing.push(...upstreamTiming);
+        const encoder = new TextEncoder();
+        const body = new ReadableStream({
+          async start(controller) {
+            const send = (value) => { try { controller.enqueue(encoder.encode(JSON.stringify(value) + "\n")); } catch (_) {} };
+            try {
+              let frame = first;
+              while (frame) {
+                if (frame.ok === false || frame.type === "error") {
+                  const error = frame.error && typeof frame.error === "object" ? frame.error : {};
+                  send({ ok: false, type: "error", error: { code: String(error.code || "stream_failed"), retryable: error.retryable === true } });
+                  return;
+                }
+                if (frame.type === "delta") {
+                  if (typeof frame.text === "string" && frame.text) send({ ok: true, type: "delta", text: frame.text });
+                } else if (frame.type === "done") {
+                  const finalized = finalizeAnswer({
+                    ok: true, answer: frame.answer, context_permission: frame.context_permission,
+                    metadata: frame.metadata, finish_reason: frame.finish_reason
+                  }, attempt.transport);
+                  if (!finalized.ok) {
+                    send({ ok: false, type: "error", error: { code: String(finalized.body.error || "stream_failed"), retryable: finalized.body.retryable === true } });
+                  } else {
+                    send({ ok: true, type: "done", ...finalized.body, timing: {
+                      ...(frame.timing && typeof frame.timing === "object" ? frame.timing : {}),
+                      upstream: durationMs(upstreamStarted),
+                      worker: durationMs(workerStarted)
+                    } });
+                  }
+                  return;
+                }
+                frame = await reader.next();
+              }
+              send({ ok: false, type: "error", error: { code: "stream_incomplete", retryable: true } });
+            } catch (_) {
+              send({ ok: false, type: "error", error: { code: "stream_failed", retryable: true } });
+            } finally {
+              finish();
+              try { controller.close(); } catch (_) {}
+            }
+          }
+        });
+        return new Response(body, {
+          status: 200,
+          headers: {
+            "content-type": "application/x-ndjson; charset=utf-8",
+            "cache-control": "no-store",
+            "x-content-type-options": "nosniff",
+            "server-timing": timing.join(", ")
+          }
+        });
+      };
+      if (chatStreamEnabled(env) && (bounded.readingMode === null || bounded.readingMode === "browse")) {
+        const attempt = await executeAppAIStream({ env, app: APP_AI_CALLER, payload: enginePayload });
+        if (attempt.stream === true) return await respondStream(attempt);
+        if (attempt.status >= 200 && attempt.status < 300 && attempt.payload?.ok === true) {
+          // The upstream ignored the stream hint and answered once; use it
+          // instead of paying for a second generation.
+          upstreamMs = durationMs(upstreamStarted);
+          upstreamTiming = upstreamTimingEntries(attempt.timing);
+          const finalized = finalizeAnswer(attempt.payload, attempt.transport);
+          return finalized.ok ? timedJson(finalized.body) : timedJson(finalized.body, finalized.status);
+        }
+        if (!streamFallbackEligible(attempt)) {
+          upstreamMs = durationMs(upstreamStarted);
+          upstreamTiming = upstreamTimingEntries(attempt.timing);
+          return upstreamError(attempt);
+        }
       }
-      const modeFields = bounded.readingMode ? { reading_mode: bounded.readingMode, question_class: bounded.questionClass } : {};
-      // 찾아보며 읽기 등 접지 않는 모드: 답 아래 한 줄 안내용으로 읽은 범위 밖
-      // 참고 책·장만 돌려준다.
-      let outsideBooks = [];
-      if (bounded.readingMode === "browse" && bounded.openedUnits.length) {
-        const openedSet = parseOpenedUnitSet(bounded.openedUnits);
-        outsideBooks = citationsOutsideOpenedFromParsed(parseVerseCitations(answer), openedSet).map((item) => item.label);
-      }
-      return timedJson({
-        ok: true,
-        answer,
-        finish_reason: "complete",
-        ...modeFields,
-        ...(outsideBooks.length ? { outside_books: outsideBooks } : {}),
-        runtime,
-        transport: upstream.transport,
-        reference_trust: "UNTRUSTED_REFERENCE",
-        context_permission: contextPermission
-      });
+      return await respondOneShot();
     }
     return serveAsset(request, env);
   }

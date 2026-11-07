@@ -6,6 +6,7 @@ COM2, systemd, or a real service; no root is required.
 """
 from __future__ import annotations
 
+import getpass
 import os
 import shutil
 import sqlite3
@@ -75,28 +76,50 @@ case "$1" in
     [[ $state == 1 ]]; exit $?
     ;;
   show)
-    # `show -p MainPID --value <unit>`: the unit name is argument 5. MainPID 0
-    # means the previous process is gone; a marker pins a wedged PID.
+    # `show -p <property> --value <unit>`: the unit name is argument 5.
     unit="${5}"
-    if [[ -f "$FAKE_ROOT/mainpid_${unit}" ]]; then
-      cat "$FAKE_ROOT/mainpid_${unit}"
-    elif [[ $(cat "$(state_file "${unit}")" 2>/dev/null || echo 0) == 1 ]]; then
-      echo 4242
-    else
-      echo 0
-    fi
+    property="${3}"
+    case "$property" in
+      MainPID)
+        # MainPID 0 means the previous process is gone; a marker pins a wedged PID.
+        if [[ -f "$FAKE_ROOT/mainpid_${unit}" ]]; then
+          cat "$FAKE_ROOT/mainpid_${unit}"
+        elif [[ $(cat "$(state_file "${unit}")" 2>/dev/null || echo 0) == 1 ]]; then
+          echo 4242
+        else
+          echo 0
+        fi
+        ;;
+      ActiveState)
+        # `restarting_<unit>` is the Restart=always window: the last start died
+        # and systemd holds the next attempt, where is-active is already false.
+        if [[ -f "$FAKE_ROOT/restarting_${unit}" ]]; then
+          echo activating
+        elif [[ $(cat "$(state_file "${unit}")" 2>/dev/null || echo 1) == 1 ]]; then
+          echo active
+        else
+          echo inactive
+        fi
+        ;;
+      LoadState)
+        if [[ -f "$FAKE_ROOT/not_loaded_${unit}" ]]; then echo not-found; else echo loaded; fi
+        ;;
+    esac
     exit 0
     ;;
   stop)
     echo 0 > "$(state_file "$2")"
+    rm -f "$FAKE_ROOT/restarting_$2"
     ;;
   start)
     # `crashed_<unit>` models a process that dies at once: systemd reports the
     # unit inactive while it waits out RestartSec for the next attempt.
     if [[ -f "$FAKE_ROOT/crashed_$2" ]]; then
       echo 0 > "$(state_file "$2")"
+      echo 1 > "$FAKE_ROOT/restarting_$2"
     else
       echo 1 > "$(state_file "$2")"
+      rm -f "$FAKE_ROOT/restarting_$2"
     fi
     key="$FAKE_ROOT/starts_${2}"
     n=$(cat "$key" 2>/dev/null || echo 0)
@@ -186,6 +209,16 @@ ai_check=${FAKE_AI_MODE:-warn}
 run_deploy "$1"
 """
 
+# One service function, without the pre-deploy "enabled but stopped" start.
+DEPLOY_CHAT_WRAPPER = """set -euo pipefail
+source "$1"
+apply=1
+systemctl_bin=$SYSTEMCTL_BIN
+python_bin=$PYTHON_BIN
+staged=$OPS_CHECKOUT
+deploy_chat
+"""
+
 # The queue's own probe is a shell script, with the same failure knobs.
 QUEUE_HEALTH = """#!/usr/bin/env bash
 root=${FAKE_ROOT:-}
@@ -273,6 +306,12 @@ CHANGES.update({
     "historical_test_paths": (
         "apps/korean-ai-platform/tests/test_5784_b14_local_runtime.py",
         "test fixture\n",
+    ),
+    # The deploy script itself has no service mapping: the plan selects nothing
+    # for it, which is exactly the case that used to strand the checkout.
+    "deploy_script_only": (
+        "deploy/host-com2/deploy_from_main.sh",
+        "#!/usr/bin/env bash\n# script-only change\n",
     ),
 })
 
@@ -885,6 +924,45 @@ class ChatScenarioTest(DeployHarness):
         self.assertLess(stops[-1], installs[1], calls)
         self.assertLess(installs[1], starts[-1], calls)
 
+    def test_forward_deploy_stops_a_unit_waiting_for_an_automatic_restart(self) -> None:
+        # The same window on the forward path: the unit is in its Restart=always
+        # wait (is-active false), so a stop that only looks at is-active leaves
+        # the pending start alive while the installer replaces the code.
+        (self.fakes / "state_padiem-chat-com2.service").write_text("0\n", encoding="utf-8")
+        (self.fakes / "restarting_padiem-chat-com2.service").write_text("1\n", encoding="utf-8")
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        calls = self._calls()
+        stop = calls.index("systemctl stop padiem-chat-com2.service")
+        install = next(i for i, call in enumerate(calls) if call.startswith("install chat"))
+        starts = [i for i, call in enumerate(calls) if call == "systemctl start padiem-chat-com2.service"]
+        self.assertLess(stop, install, calls)
+        self.assertEqual(len(starts), 1, calls)
+        self.assertLess(install, starts[0], calls)
+
+    def test_an_inactive_unit_is_stopped_but_not_started_by_the_deploy(self) -> None:
+        # The apply flow starts an enabled-but-stopped unit before any deploy, so
+        # this calls the deploy itself. A loaded unit still gets the stop; the
+        # decision to start follows what the unit was before the work.
+        (self.fakes / "state_padiem-chat-com2.service").write_text("0\n", encoding="utf-8")
+        env = {
+            **self.env,
+            "OPS_CHECKOUT": self.ops.as_posix(),
+            "SYSTEMCTL_BIN": self.systemctl.as_posix(),
+            "PYTHON_BIN": Path(sys.executable).as_posix(),
+            "PADIEM_COM2_READ_CHECK_USER": getpass.getuser(),
+        }
+        result = subprocess.run(
+            [BASH_BIN, "-c", DEPLOY_CHAT_WRAPPER, "bash",
+             (self.ops / "deploy/host-com2/deploy_from_main.sh").as_posix()],
+            capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("COM2_DEPLOY_CHAT_START=SKIPPED_NOT_ACTIVE_BEFORE", result.stdout)
+        calls = self._calls()
+        self.assertIn("systemctl stop padiem-chat-com2.service", calls)
+        self.assertNotIn("systemctl start padiem-chat-com2.service", calls)
+
     def test_slow_chat_start_is_retried_without_rollback(self) -> None:
         (self.fakes / "fail_once_chat").write_text("2", encoding="utf-8")
         result = self._run_apply()
@@ -968,6 +1046,23 @@ class CouncilAssetScenarioTest(DeployHarness):
         self.assertIn("COM2_DEPLOY_SERVICES=chat", result.stdout)
         self.assertIn("COM2_DEPLOY_SUMMARY=chat:WOULD_DEPLOY", result.stdout)
 
+    def test_a_plan_reports_each_unit_state(self) -> None:
+        # A unit in its Restart=always wait is `activating` in systemd even
+        # though is-active already says false; the plan names the difference
+        # without letting it change any decision.
+        self.env["PADIEM_COM2_SYSTEMCTL"] = self.systemctl.as_posix()
+        (self.fakes / "state_padiem-chat-com2.service").write_text("0\n", encoding="utf-8")
+        (self.fakes / "restarting_padiem-chat-com2.service").write_text("1\n", encoding="utf-8")
+        result = self._run_main(
+            self.second, "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        for service in ("CHAT", "P01", "B14", "QUEUE", "EXECUTOR"):
+            self.assertIn(f"COM2_DEPLOY_UNIT_STATE_{service}=", result.stdout)
+        self.assertIn("COM2_DEPLOY_UNIT_STATE_CHAT=activating", result.stdout)
+        self.assertIn("COM2_DEPLOY_UNIT_STATE_P01=active", result.stdout)
+
 
 class MigrationScenarioTest(DeployHarness):
     scenario = "migration"
@@ -1016,6 +1111,7 @@ class DeployScopeScenarioTest(DeployHarness):
         scenarios = {
             "test_code_plus_test_redeploys_and_counts_only_code": "code_and_test",
             "test_documentation_only_skips": "docs_only",
+            "test_documentation_only_apply_keeps_the_checkout_where_it_is": "docs_only",
             "test_runtime_config_lock_requirements_and_units_select_services": "runtime_config",
             "test_a_common_systemd_policy_change_selects_all_services": "common_unit_policy",
             "test_a_shared_core_change_selects_chat_and_p01": "shared_runtime",
@@ -1068,6 +1164,15 @@ class DeployScopeScenarioTest(DeployHarness):
         self.assertIn("COM2_DEPLOY_DECISION_CHAT=SKIP reason_files=0", output)
         self.assertIn("COM2_DEPLOY_NO_SERVICE_CHANGES=YES", output)
 
+    def test_documentation_only_apply_keeps_the_checkout_where_it_is(self) -> None:
+        result = self._run_apply()
+        output = result.stdout + result.stderr
+        self.assertEqual(result.returncode, 0, output)
+        self.assertIn("COM2_DEPLOY_NO_SERVICE_CHANGES=YES", output)
+        self.assertNotIn("CHECKOUT_ONLY", output)
+        self.assertEqual(self._head(), self.first)
+        self.assertEqual(self._calls(), [])
+
     def test_runtime_config_lock_requirements_and_units_select_services(self) -> None:
         output = self._dry_run()
         for service, count in (("CHAT", 2), ("P01", 1), ("B14", 1), ("QUEUE", 1)):
@@ -1111,6 +1216,61 @@ class DeployScopeScenarioTest(DeployHarness):
                 f"COM2_DEPLOY_DECISION_{service}=SKIP reason_files=0",
                 output,
             )
+
+
+class CheckoutOnlyScenarioTest(DeployHarness):
+    """A change to the deploy script alone still has to reach the production checkout."""
+
+    scenario = "deploy_script_only"
+
+    def _dry_run(self) -> str:
+        result = self._run_main(
+            self.second, "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
+        )
+        output = result.stdout + result.stderr
+        self.assertEqual(result.returncode, 0, output)
+        return output
+
+    def test_a_script_only_apply_moves_the_checkout_and_touches_no_service(self) -> None:
+        result = self._run_apply()
+        output = result.stdout + result.stderr
+        self.assertEqual(result.returncode, 0, output)
+        self.assertIn(
+            "COM2_DEPLOY_CHANGED=deploy/host-com2/deploy_from_main.sh", output
+        )
+        self.assertIn(
+            "COM2_DEPLOY_CHECKOUT_ONLY=YES reason=DEPLOY_SCRIPT_CHANGED", output
+        )
+        self.assertIn(
+            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP executor:SKIP",
+            output,
+        )
+        self.assertEqual(self._head(), self.second)
+        # The rollback snapshot is what the next plan reads the old commit from.
+        self.assertIn(
+            f"COM2_DEPLOY_PREVIOUS_CHECKOUT={self.previous.as_posix()}/{self.first}",
+            output,
+        )
+        self.assertTrue((self.previous / self.first).is_dir())
+        self.assertEqual(
+            [
+                call for call in self._calls()
+                if call.startswith(("systemctl start", "systemctl stop", "install "))
+            ],
+            [],
+        )
+
+    def test_a_script_only_plan_reports_the_checkout_would_move(self) -> None:
+        output = self._dry_run()
+        self.assertIn(
+            "COM2_DEPLOY_CHECKOUT_ONLY=WOULD reason=DEPLOY_SCRIPT_CHANGED", output
+        )
+        self.assertIn(
+            "적용하면 체크아웃만 새 SHA로 넘어가고, 다음 계획부터 새 스크립트가 쓰입니다.", output
+        )
+        self.assertIn("COM2_DEPLOY_NO_SERVICE_CHANGES=YES", output)
+        self.assertEqual(self._head(), self.first)
 
 
 class P01ScenarioTest(DeployHarness):
@@ -2115,9 +2275,22 @@ class ScriptBoundaryTest(unittest.TestCase):
         self.assertIn("port_wait_timeout=${PADIEM_COM2_PORT_WAIT_TIMEOUT:-240}", text)
         # chat, p01 and b14 walk the shared readiness ladder (unit active ->
         # port listening -> health contract); the queue keeps its own probe.
-        for label in ("CHAT", "P01", "B14", "CHAT_ROLLBACK", "P01_ROLLBACK", "B14_ROLLBACK"):
+        # The stop and the "old process is gone" proof are one helper call, so a
+        # path cannot stop the unit and then skip the wait.
+        for label, unit, port in (
+            ("CHAT", "CHAT_UNIT", "chat_port"),
+            ("P01", "P01_UNIT", "p01_port"),
+            ("B14", "B14_UNIT", "b14_port"),
+            ("CHAT_ROLLBACK", "CHAT_UNIT", "chat_port"),
+            ("P01_ROLLBACK", "P01_UNIT", "p01_port"),
+            ("B14_ROLLBACK", "B14_UNIT", "b14_port"),
+        ):
             self.assertIn(f'wait_service_ready {label} ', text)
-            self.assertIn(f'wait_service_down {label} ', text)
+            self.assertIn(f'with_service_stopped "${unit}" {label} "${port}"', text)
+        for label, unit in (("QUEUE", "QUEUE_UNIT"), ("QUEUE_ROLLBACK", "QUEUE_UNIT"),
+                            ("EXECUTOR", "EXECUTOR_UNIT"),
+                            ("EXECUTOR_ROLLBACK", "EXECUTOR_UNIT")):
+            self.assertIn(f'with_service_stopped "${unit}" {label}', text)
         self.assertIn('wait_service_ready P01_ROLLBACK "$P01_UNIT" "$p01_port"', text)
         for label in ("QUEUE", "QUEUE_ROLLBACK"):
             self.assertIn(f"wait_for_health {label} ", text)

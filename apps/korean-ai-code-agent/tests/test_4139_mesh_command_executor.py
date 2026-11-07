@@ -68,6 +68,61 @@ def _port(completed=None, *, calls=None, password=PASSWORD, exc=None):
     )
 
 
+class RunAsUserArgvTests(unittest.TestCase):
+    """#7065: the run-as-user request is a flag, and the default argv is unchanged.
+
+    Measured limit, recorded so an enabled flag is not read as a promise: on
+    Windows MeshCentral ignores run-as-user and the command still runs as
+    ``nt authority\\system`` (Ylianst/MeshCentral#4949, #6430). The flag is what
+    this host sends; what the PC does with it is the PC's answer.
+    """
+
+    def _port(self, calls, **kwargs):
+        def runner(argv, **opts):
+            calls.append((list(argv), dict(opts)))
+            return _Completed(0, _transcript("ok\r\n"))
+
+        return MeshCentralCliCommandPort(
+            command_runner=runner,
+            meshctrl_js=MESHCTRL,
+            login_user="padiemadmin",
+            password_provider=lambda: PASSWORD,
+            url="wss://127.0.0.1:4443",
+            **kwargs,
+        )
+
+    def test_default_command_carries_no_run_as_user_flag(self):
+        calls = []
+        self._port(calls).run_command(node_ref=NODE, command="whoami")
+        argv = calls[0][0]
+        self.assertNotIn("--runasuser", argv)
+        self.assertNotIn("--runasuseronly", argv)
+        # The PowerShell envelope is not a caller choice: the tool's shell
+        # selection already rides inside the command text.
+        self.assertIn("--powershell", argv)
+
+    def test_enabled_request_reaches_the_official_client(self):
+        calls = []
+        self._port(calls, run_as_user=True).run_command(node_ref=NODE, command="whoami")
+        argv = calls[0][0]
+        self.assertIn("--runasuser", argv)
+        self.assertNotIn("--runasuseronly", argv)
+        self.assertIn("--powershell", argv)
+        self.assertLess(argv.index("--runasuser"), argv.index("--reply"))
+
+        calls = []
+        self._port(calls, run_as_user_only=True).run_command(node_ref=NODE, command="whoami")
+        argv = calls[0][0]
+        self.assertIn("--runasuser", argv)
+        self.assertIn("--runasuseronly", argv)
+
+    def test_flags_must_be_booleans(self):
+        from kagent.contracts import ContractError
+
+        with self.assertRaises(ContractError):
+            self._port([], run_as_user="yes")
+
+
 class TranscriptParsingTests(unittest.TestCase):
     def test_korean_and_emoji_names_survive_the_reply_envelope(self):
         """The whole point of the envelope: cp949-era names come back intact.
