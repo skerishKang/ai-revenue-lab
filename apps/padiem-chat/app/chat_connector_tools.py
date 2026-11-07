@@ -380,10 +380,15 @@ def _journal_decision(
         duration_ms=round(elapsed_ms, 1),
         code=decision.reason,
     )
-    _LOG.info(
-        "connector_tools declared=%d reason=%s",
-        tool_count,
-        decision.reason,
+    # One always-visible journal line: the host captures stdout, while the
+    # telemetry emitter only prints failures and the logger has no handler on
+    # the host. The line names the declaration count, the closed reason label
+    # and the elapsed check time only — never a user identifier, file name,
+    # calendar content or mail content.
+    print(
+        f"connector_tools declared={tool_count} reason={decision.reason} "
+        f"check_ms={round(elapsed_ms, 1)}",
+        flush=True,
     )
 
 
