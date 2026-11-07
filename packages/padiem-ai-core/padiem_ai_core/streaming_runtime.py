@@ -59,12 +59,18 @@ class StreamingExecutionEvent:
     # runtime never appends it to `answer`, and a consumer that does not render
     # it simply drops the field.
     delta_thought: str | None = None
+    # Set on the terminal event when the visible answer was cut by an unclosed
+    # thought block, so stream consumers can apply the same retry guidance as
+    # the completed response.
+    answer_truncated: bool = False
 
     def __post_init__(self) -> None:
         if self.delta_content is not None and not isinstance(self.delta_content, str):
             raise ValueError("delta_content must be a string or None")
         if self.delta_thought is not None and not isinstance(self.delta_thought, str):
             raise ValueError("delta_thought must be a string or None")
+        if not isinstance(self.answer_truncated, bool):
+            raise ValueError("answer_truncated must be a boolean")
         if self.answer is not None and not isinstance(self.answer, str):
             raise ValueError("answer must be a string or None")
         if self.finish_reason is not None and not isinstance(self.finish_reason, str):
@@ -112,6 +118,8 @@ class StreamingExecutionEvent:
             payload["delta_thought"] = self.delta_thought
         if self.tool_call is not None:
             payload["tool_call"] = self.tool_call.to_public_dict()
+        if self.answer_truncated:
+            payload["answer_truncated"] = True
         return payload
 
 
@@ -332,6 +340,7 @@ class StreamingExecutionRuntime:
                             chunk_model=last_model,
                         ),
                         done=True,
+                        answer_truncated=thought_filter.truncated,
                     )
                     return
 
