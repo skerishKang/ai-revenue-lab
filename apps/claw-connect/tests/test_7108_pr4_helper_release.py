@@ -1,8 +1,8 @@
-"""#7117 PR-4 — the helper EXE release script stays a plan until the CTO runs it.
+"""#7117 PR-4 - the helper EXE release script stays a plan until the CTO runs it.
 
-The dry-run test uses a tiny local file, so it proves the build/upload/deploy
-plan and the exact URL/SHA/set_var payload without touching Cloudflare, R2,
-GitHub Actions, or a helper binary.
+The dry-run test uses a tiny local file, so it proves the build/upload/COM2
+EnvironmentFile plan and the exact URL/SHA values without touching Cloudflare,
+R2, GitHub Actions, SSH, the COM2 host, or a helper binary.
 """
 from __future__ import annotations
 
@@ -18,35 +18,56 @@ SCRIPT = ROOT / "apps" / "claw-connect" / "release-windows-helper.ps1"
 DOC = ROOT / "docs" / "operations" / "PC_USER_HELPER_RELEASE_20261107.md"
 
 
-def test_release_script_has_the_required_stages() -> None:
+def test_release_script_targets_com2_env_not_the_worker_gate() -> None:
     text = SCRIPT.read_text(encoding="utf-8")
-    assert "build-windows-helper.ps1" in text
-    assert "r2 object put" in text
-    assert "--remote" in text
-    assert "b62-production-code-deploy-gate.yml" in text
-    assert "PC_USER_HELPER_INSTALL_URL" in text
-    assert "PC_USER_HELPER_SHA256" in text
-    assert "set_var" in text
+    for needle in (
+        "build-windows-helper.ps1",
+        "r2 object put",
+        "--remote",
+        "/opt/padiem/chat-com2/.env",
+        "padiem-chat-com2.service",
+        "wsl.exe",
+        "scp",
+        "ssh",
+        "COM2_ENV_BACKUP",
+        "os.replace",
+        "/proc/",
+        "PAIRING_RESPONSE_VERIFY=REQUIRED_SIGNED_IN_OWNER",
+        "PC_USER_HELPER_INSTALL_URL",
+        "PC_USER_HELPER_SHA256",
+    ):
+        assert needle in text, needle
+    assert "b62-production-code-deploy-gate.yml" not in text
+    assert "set_var" not in text
     assert "PC_AGENT_INSTALL_URL" not in text
 
 
-def test_release_procedure_names_the_worker_and_exact_locations() -> None:
+def test_release_procedure_names_com2_as_authority_and_exact_locations() -> None:
     text = DOC.read_text(encoding="utf-8")
     for needle in (
         "padiem-pc-helper-releases",
         "downloads.padiem.net",
+        "9be14bb7b8974e65d0afba647ab16932",
+        "wrangler r2 bucket create",
+        "wrangler r2 bucket domain add",
         "PC_USER_HELPER_INSTALL_URL",
         "PC_USER_HELPER_SHA256",
-        "apps/padiem-chat/wrangler.toml:207",
-        "apps/padiem-chat/worker.py:1695-1700",
-        ".github/workflows/b62-production-code-deploy-gate.yml:140-144",
+        "deploy/host-com2/chat/padiem-chat-com2.service:15",
         "apps/padiem-chat/app/local_cpython.py:641-647",
+        "apps/padiem-chat-front/wrangler.toml:24",
+        "apps/padiem-chat-front/worker.mjs:335-351",
+        "COM2_CANONICAL=writes",
+        "PAIRING_RESPONSE_VERIFY=REQUIRED_SIGNED_IN_OWNER",
         "HELPER_RELEASE_UPLOAD=NOT_RUN",
+        "HELPER_RELEASE_ENV_SET=NOT_RUN",
+        "PRODUCTION_MUTATION=0",
     ):
         assert needle in text, needle
+    assert "not the production authority" not in text
+    assert "B62 set_var" not in text
 
 
-def test_dry_run_prints_the_exact_release_plan_without_mutating(tmp_path: Path) -> None:
+def test_dry_run_prints_the_exact_com2_plan_without_mutating(tmp_path: Path) -> None:
     shell = shutil.which("powershell") or shutil.which("pwsh")
     if not shell:
         pytest.skip("PowerShell is not available")
@@ -71,5 +92,19 @@ def test_dry_run_prints_the_exact_release_plan_without_mutating(tmp_path: Path) 
     assert "PC_USER_HELPER_INSTALL_URL" in output
     assert "PC_USER_HELPER_SHA256" in output
     assert "PLAN_R2_UPLOAD=" in output
-    assert "PLAN_DEPLOY_BODY=" in output
+    assert "PLAN_COM2_ENV=" in output
+    assert "/opt/padiem/chat-com2/.env" in output
+    assert "PLAN_COM2_TRANSPORT=" in output
+    assert "scp" in output
+    assert "wsl.exe" in output
+    assert "PLAN_COM2_RESTART=" in output
+    assert "padiem-chat-com2.service" in output
+    assert "PLAN_COM2_ENV_READBACK=" in output
+    assert "PLAN_PAIRING_RESPONSE=" in output
+    assert "/api/pc/pairings/install-file" in output
+    assert "PADIEMHELPERURL" in output
+    assert "PADIEMHELPERSHA" in output
+    assert "PLAN_WORKER_FALLBACK=NOT_UPDATED" in output
     assert "PRODUCTION_MUTATION=0" in output
+    assert "PLAN_DEPLOY_BODY" not in output
+    assert "set_var" not in output
