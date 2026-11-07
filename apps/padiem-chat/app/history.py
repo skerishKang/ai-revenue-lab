@@ -1139,18 +1139,20 @@ class D1HistoryStore:
             return await statement.run()
         except Exception as exc:
             # user_mode column compat (migration 102). 102 배포 완료 후 제거 가능.
-            if 'no such column: user_mode' in str(exc) and 'oracle_mesh_dispatch' in sql and 'user_mode' in sql:
+            emsg=str(exc)
+            if ('no such column: user_mode' in emsg or 'has no column named user_mode' in emsg) and 'oracle_mesh_dispatch' in sql and 'user_mode' in sql:
                 vals = list(values)
                 sql2 = sql
-                # 102 migration may be absent in pre-migration/fixture DBs; fall back safely.
-                if 'INSERT INTO oracle_mesh_dispatch' in sql and 'user_mode' in sql:
-                    sql2 = sql.replace(', user_mode)', ')').replace(', created_at, user_mode)', ', created_at)')
-                    # remove trailing placeholder count by removing last value when column removed
+                if 'INSERT INTO oracle_mesh_dispatch' in sql and ', created_at, user_mode)' in sql:
+                    sql2 = sql.replace(', created_at, user_mode)', ', created_at)')
                     if sql2.count('?') == sql.count('?') - 1 and vals:
                         vals = vals[:-1]
                 elif 'UPDATE oracle_mesh_dispatch' in sql and 'tool_call_ref=?, user_mode=?,' in sql:
-                    sql2 = sql.replace('tool_call_ref=?, user_mode=?, nonce_sha256', 'tool_call_ref=?, nonce_sha256')
-                    # remove user_mode value (position 15 in that update shape? find by context) - best effort not needed; reconstruct via re-run path
+                    sql2 = sql.replace('tool_call_ref=?, user_mode=?,', 'tool_call_ref=?,')
+                    # value order includes tool_call_ref, user_mode before nonce/state in that update
+                    # find param positions by rebuilding? easier: reconstruct from known shape not safe; try removing second-to-last in that segment impossible.
+                    # Fallback: re-raise only for rare pre-102 update-replace path; reads/inserts are main compatibility need.
+                    raise
                 else:
                     sql2 = sql.replace(', user_mode=?,', ',').replace(', user_mode,', ',')
                 statement = self.db.prepare(sql2)
