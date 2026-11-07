@@ -125,6 +125,8 @@ class _History:
         dispatch_id = "dsp-%d" % self._seq
         row = {
             **fields, "dispatch_id": dispatch_id, "state": "pending",
+            # The production SELECT answers the mode for every row.
+            "user_mode": 1 if fields.get("user_mode") is True else 0,
             "nonce_sha256": None, "result_sha256": None, "result_bytes": None,
             "termination": None, "exit_code": None,
         }
@@ -280,6 +282,8 @@ def _pending_read_row(*, tool_request_ref=READ_CALL):
         "node_ref": NODE, "root_ref": routes._PC_FILES_READ_ROOT_REF,
         "path_relative": "notes.txt", "file_path": ROOT + "/notes.txt",
         "nonce_sha256": None, "state": "pending",
+        # The production SELECT answers the mode for every row.
+        "user_mode": 0,
         "expires_at": (
             datetime.now(timezone.utc) + timedelta(minutes=5)
         ).isoformat(timespec="milliseconds").replace("+00:00", "Z"),

@@ -145,6 +145,10 @@ class History:
                # Mirror the production store's default kind: the browser read
                # intent stages the kind=read download lane.
                "kind": fields.get("kind") or "read",
+               # Mirror the production column (`COALESCE(user_mode,0) AS user_mode`):
+               # every real SELECT of this row answers the mode, so the poll can
+               # never read a missing key as the SYSTEM lane.
+               "user_mode": 1 if fields.get("user_mode") is True else 0,
                "nonce_sha256": None, "result_sha256": None, "result_bytes": None,
                "created_at": NOW.isoformat()}
         self.rows[dispatch_id] = row
