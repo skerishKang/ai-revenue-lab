@@ -118,6 +118,18 @@ class ReleaseScriptStaticContract(unittest.TestCase):
         packaging = (REPO / ".github" / "workflows" / "validate-chat-com2-packaging.yml").read_text(encoding="utf-8")
         self.assertIn("deploy/chat-release/tests", packaging)
 
+    def test_pages_mirror_failure_never_rolls_the_front_back(self):
+        """A pages-mirror-only verification failure is recorded as
+        PAGES_VERIFY_FAIL and fails the release with exit 1 — the front stays
+        serving (the 2026-11-08 incident rolled a healthy front back over a
+        pages /privacy 404)."""
+        self.assertIn("$Script:PagesVerifyFailed", self.text)
+        self.assertIn("PAGES_VERIFY_FAIL", self.text)
+        self.assertIn("exit 1", self.text)
+        # The rollback helper fires from its definition and the two
+        # front-failure catch sites only — never from the pages-fail path.
+        self.assertEqual(self.text.count("Invoke-FrontRollbackIfNeeded"), 3)
+
     def test_dry_run_completes_with_the_plan_contract(self):
         """The CTO's first touch is -DryRun: it must run to completion on a
         plain checkout (no Cloudflare auth, no COM2 access) and print the
