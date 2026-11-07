@@ -100,7 +100,8 @@ async def activate_google_calendar_read(request: Request) -> JSONResponse:
         return _error(503, "calendar_read_activation_unavailable", "캘린더 읽기 활성화를 사용할 수 없습니다.")
     if request.headers.get("origin") != expected_origin:
         return _error(403, "calendar_read_activation_origin_rejected", "요청 출처를 확인할 수 없습니다.")
-    if current_user_id(request) is None:
+    uid = current_user_id(request)
+    if uid is None:
         return _error(401, "authentication_required", "로그인이 필요합니다.")
 
     try:
@@ -147,6 +148,11 @@ async def activate_google_calendar_read(request: Request) -> JSONResponse:
             status = 503
         return _error(status, code, _ACTIVATION_FAILURE_MESSAGES[code])
 
+    # A freshly activated Calendar READ grant must be declared on the next
+    # turn, not after the per-user offer cache expires.
+    from .chat_connector_tools import invalidate_connector_tool_grant_cache
+
+    invalidate_connector_tool_grant_cache(uid)
     return JSONResponse(
         {
             "ok": document["ok"],
