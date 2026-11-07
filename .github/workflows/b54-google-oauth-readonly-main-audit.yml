@@ -107,7 +107,7 @@ jobs:
 
           # #2451/#3701: all served-version shape and 100%-traffic validation is
           # delegated to the canonical CLI. inspect_worker suppresses CLI stdout so
-          # its command-substitution state remains exactly "present_private".
+          # its command-substitution state remains exactly "present".
           pull_paths = text.split("pull_request:", 1)[1].split("push:", 1)[0]
           assert ".github/scripts/cloudflare_served_version_cli.py" in pull_paths
           assert audit.count("cloudflare_served_version_cli.py resolve-active") == 2
@@ -253,16 +253,19 @@ jobs:
             curl -fsS "${auth[@]}" \
               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" \
               -o "${deployments}"
-            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            # Reviewed subdomain topology: the state and identity signed
+            # ingresses live on workers.dev; the edge Worker and previews stay
+            # disabled.
+            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" --arg state "${OAUTH_STATE_WORKER}" '.success == true and .result.enabled == ($worker == $identity or $worker == $state) and .result.previews_enabled == false' "${subdomain}" >/dev/null
             python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}" >/dev/null
-            printf '%s\n' "present_private"
+            printf '%s\n' "present"
           }
 
           identity_state="$(inspect_worker "${IDENTITY_WORKER}")"
           state_state="$(inspect_worker "${OAUTH_STATE_WORKER}")"
           edge_state="$(inspect_worker "${OAUTH_EDGE_WORKER}")"
 
-          if [ "${identity_state}" = "present_private" ]; then
+          if [ "${identity_state}" = "present" ]; then
             identity_settings="${RUNNER_TEMP}/${IDENTITY_WORKER}-settings.json"
             for binding in CONTROL_PLANE_IDENTITY_LOOKUP_KEY GOOGLE_CONNECT_TICKET_KEY CONTROL_PLANE_ALLOWED_PRODUCT CONTROL_PLANE_IDENTITY; do
               jq -e --arg name "${binding}" '.result.bindings | any(.name == $name)' "${identity_settings}" >/dev/null
@@ -272,7 +275,7 @@ jobs:
             echo "IDENTITY_RUNTIME_BINDINGS=NOT_DEPLOYED"
           fi
 
-          if [ "${state_state}" = "present_private" ]; then
+          if [ "${state_state}" = "present" ]; then
             state_settings="${RUNNER_TEMP}/${OAUTH_STATE_WORKER}-settings.json"
             for binding in GOOGLE_CONNECT_TICKET_KEY GOOGLE_OAUTH_SEAL_KEY GOOGLE_OAUTH_CLIENT_SECRET GOOGLE_OAUTH_CLIENT_ID GOOGLE_OAUTH_REDIRECT_URI GOOGLE_OAUTH_AUTHORITY_REF GOOGLE_OAUTH_STATE; do
               jq -e --arg name "${binding}" '.result.bindings | any(.name == $name)' "${state_settings}" >/dev/null
@@ -284,7 +287,7 @@ jobs:
             echo "OAUTH_STATE_RUNTIME_BINDINGS=NOT_DEPLOYED"
           fi
 
-          if [ "${edge_state}" = "present_private" ]; then
+          if [ "${edge_state}" = "present" ]; then
             edge_settings="${RUNNER_TEMP}/${OAUTH_EDGE_WORKER}-settings.json"
             jq -e --arg state "${OAUTH_STATE_WORKER}" \
               '.result.bindings | any(.name == "GOOGLE_OAUTH_SERVICE" and .type == "service" and .service == $state)' "${edge_settings}" >/dev/null

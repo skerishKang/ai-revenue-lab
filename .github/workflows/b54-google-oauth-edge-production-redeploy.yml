@@ -201,11 +201,13 @@ jobs:
             jq -r '.result.deployments[0].versions[0].version_id' "${output}"
           }
 
-          require_private_subdomain_disabled() {
+          # Reviewed subdomain topology: the state and identity signed ingresses
+          # live on workers.dev; the edge Worker and previews stay disabled.
+          require_reviewed_subdomain_topology() {
             local worker="$1"
             local output="${RUNNER_TEMP}/${worker}-subdomain.json"
             curl -fsS "${auth[@]}"               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain"               -o "${output}"
-            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${output}" >/dev/null
+            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" --arg state "${STATE_WORKER}" '.success == true and .result.enabled == ($worker == $identity or $worker == $state) and .result.previews_enabled == false' "${output}" >/dev/null
           }
 
           cors_probe() {
@@ -233,7 +235,7 @@ jobs:
           jq -e --arg identity "${IDENTITY_WORKER}" --arg state "${STATE_WORKER}"             '[.result[] | select(.service == $identity or .service == $state)] | length == 0' "${domains_before}" >/dev/null
 
           for worker in "${IDENTITY_WORKER}" "${STATE_WORKER}" "${EDGE_WORKER}"; do
-            require_private_subdomain_disabled "${worker}"
+            require_reviewed_subdomain_topology "${worker}"
           done
 
           edge_settings_before="${RUNNER_TEMP}/edge-settings-before.json"
@@ -305,7 +307,7 @@ jobs:
           jq -e --arg state "${STATE_WORKER}"             '.result.bindings | any(.name == "GOOGLE_OAUTH_SERVICE" and .service == $state)' "${edge_settings_after}" >/dev/null
           jq -e --arg target "${TARGET_ORIGIN}"             '.result.bindings | any(.name == "GOOGLE_OAUTH_ALLOWED_ORIGIN" and .type == "plain_text" and .text == $target)' "${edge_settings_after}" >/dev/null
           for worker in "${IDENTITY_WORKER}" "${STATE_WORKER}" "${EDGE_WORKER}"; do
-            require_private_subdomain_disabled "${worker}"
+            require_reviewed_subdomain_topology "${worker}"
           done
           cors_probe "${TARGET_ORIGIN}" "204" "${TARGET_ORIGIN}" "target-after"
           cors_probe "${LEGACY_ORIGIN}" "403" "" "legacy-after"

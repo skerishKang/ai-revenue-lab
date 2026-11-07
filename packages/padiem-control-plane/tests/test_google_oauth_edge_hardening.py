@@ -34,12 +34,14 @@ def test_google_oauth_edge_disables_credentialed_cors_and_requires_strict_boolea
     assert "RAW_AUTHORIZATION_CODE_LOGGED = False" in source
 
 
-def test_google_oauth_worker_configs_remain_private_and_observability_off():
+def test_google_oauth_worker_configs_keep_reviewed_topology_and_observability_off():
     state = json.loads((ROOT / STATE_CONFIG).read_text(encoding="utf-8"))
     edge = json.loads((ROOT / EDGE_CONFIG).read_text(encoding="utf-8"))
 
     assert state["name"] == "padiem-google-oauth-state"
-    assert state["workers_dev"] is False
+    # The signed /internal/rpc ingress is the only public surface: workers.dev
+    # is on (identity-worker shape), previews and routes stay off.
+    assert state["workers_dev"] is True
     assert state["preview_urls"] is False
     assert state["observability"]["enabled"] is False
     assert "routes" not in state and "route" not in state

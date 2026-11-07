@@ -24,6 +24,7 @@ from starlette.testclient import TestClient
 from app.config import ConfigError, Settings
 from app.control_plane_identity_shadow import D1IdentityShadowStore
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
+from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.identity_call_cache import CachedIdentityAuthority
 from app.local_cpython import _ensure_session_secret, apply_migrations, build_app
 from app.local_r2 import LocalDiskR2
@@ -229,11 +230,14 @@ def test_service_stand_ins_bind_only_when_their_pair_is_configured(local_env, mo
     app = build_app()
     assert app.state.control_plane_identity_authority is None
     assert app.state.b66_pdf_renderer_client is None
+    assert app.state.google_oauth_workspace_truth is None
 
     monkeypatch.setenv("PADIEM_CHAT_LOCAL_IDENTITY_RPC_ORIGIN", "https://identity.example")
     monkeypatch.setenv("PADIEM_CHAT_LOCAL_IDENTITY_RPC_SECRET", "local-service-secret-0123456789abcd")
     monkeypatch.setenv("PADIEM_CHAT_LOCAL_B66_PDF_ORIGIN", "https://pdf.example")
     monkeypatch.setenv("PADIEM_CHAT_LOCAL_B66_PDF_SECRET", "local-service-secret-0123456789abcd")
+    monkeypatch.setenv("PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_ORIGIN", "https://padiem-google-oauth-state.example")
+    monkeypatch.setenv("PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_SECRET", "local-service-secret-0123456789abcd")
     app = build_app()
     # 261104: the composed authority is the per-turn identity cache wrapping
     # the real Control Plane adapter; the binding stays one delegation away.
@@ -244,9 +248,19 @@ def test_service_stand_ins_bind_only_when_their_pair_is_configured(local_env, mo
     assert isinstance(app.state.control_plane_identity_authority._binding, HttpRpcBinding)
     assert isinstance(app.state.identity_shadow_store, D1IdentityShadowStore)
     assert isinstance(app.state.b66_pdf_renderer_client, LocalB66PdfRendererClient)
+    # #7091: the Google OAuth workspace truth rides the same HttpRpcBinding
+    # shape over the Google OAuth state Worker's signed HTTPS ingress.
+    google_truth = app.state.google_oauth_workspace_truth
+    assert isinstance(google_truth, CloudflareGoogleOAuthWorkspaceTruth)
+    assert isinstance(google_truth._binding, HttpRpcBinding)
+    assert google_truth._binding._origin == "https://padiem-google-oauth-state.example"
 
     # A half-configured pair is a boot error, never a silent downgrade.
     monkeypatch.delenv("PADIEM_CHAT_LOCAL_B66_PDF_SECRET")
+    with pytest.raises(ConfigError):
+        build_app()
+    monkeypatch.setenv("PADIEM_CHAT_LOCAL_B66_PDF_SECRET", "local-service-secret-0123456789abcd")
+    monkeypatch.delenv("PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_SECRET")
     with pytest.raises(ConfigError):
         build_app()
 

@@ -919,10 +919,12 @@ def test_b0_slice_added_no_public_route_or_authority_constant() -> None:
     assert source.count("async def fetch") == 2
 
 
-def test_worker_config_still_declares_no_public_route() -> None:
+def test_worker_config_declares_signed_workers_dev_ingress_without_routes() -> None:
     config_path = Path(__file__).parents[1] / ("wrang" + "ler.google-oauth.jsonc")
     config = json.loads(config_path.read_text(encoding="utf-8"))
-    assert config["workers_dev"] is False
+    # workers.dev carries only the secret-gated /internal/rpc ingress
+    # (identity-authority shape); no route and no previews.
+    assert config["workers_dev"] is True
     assert config["preview_urls"] is False
     assert "routes" not in config and "route" not in config
 

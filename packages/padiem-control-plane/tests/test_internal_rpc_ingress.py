@@ -336,28 +336,50 @@ def test_identity_fetch_is_absent_without_the_secret_and_gated_with_it():
     assert binding_result == {"ok": True, "link": {"product_user_id": "usr_1"}}
 
 
-def test_google_state_fetch_exposes_only_workspace_connector_state():
+def test_google_state_fetch_exposes_the_two_com2_workspace_truth_methods():
     module = _load_worker(
         ADAPTER_ROOT / "google_oauth_worker.py", "google_worker_ingress_test"
     )
     stub = _Stub({"ok": True, "state": {"connectors": []}})
     env = _env(GOOGLE_OAUTH_STATE=_Namespace(stub))
 
+    # No secret: the door is not registered — every path keeps the plain 404.
     default = module.Default(env=env)
     response = _run(default.fetch(_signed_request(method="workspace_connector_state", at=int(__import__("time").time()))))
     assert response.status == 404
 
     env.PADIEM_GOOGLE_STATE_RPC_INGRESS_SECRET = SECRET
     default = module.Default(env=env)
-    ok = _run(default.fetch(_signed_request(
-        method="workspace_connector_state", body=b'{"workspace_ref":"w"}', at=int(__import__("time").time())
-    )))
-    assert ok.status == 200 and json.loads(ok.body)["ok"] is True
-    assert stub.calls[0][0] == "workspace_connector_state"
+    now = int(__import__("time").time())
+    # Both methods the composed COM2 truth read issues together are answered.
+    for name in ("workspace_connector_state", "workspace_calendar_connector_state"):
+        ok = _run(default.fetch(_signed_request(
+            method=name, body=b'{"workspace_ref":"w"}', at=now
+        )))
+        assert ok.status == 200 and json.loads(ok.body)["ok"] is True, name
+    assert [name for name, _ in stub.calls] == [
+        "workspace_connector_state",
+        "workspace_calendar_connector_state",
+    ]
+
+    # A missing or wrong proof is a rejection, never a dispatch.
+    before = len(stub.calls)
+    missing = _Request(
+        "https://google-oauth-state.invalid/internal/rpc/workspace_connector_state",
+        headers={}, body=b'{"workspace_ref":"w"}',
+    )
+    assert _run(default.fetch(missing)).status == 403
+    wrong = _signed_request(
+        method="workspace_calendar_connector_state", body=b'{"workspace_ref":"w"}',
+        at=int(__import__("time").time()), secret="wrong-secret-0123456789abcdef",
+    )
+    assert _run(default.fetch(wrong)).status == 403
+    assert len(stub.calls) == before
 
     for name in ("begin_connect", "complete_callback", "issue_access_lease", "disconnect_drive"):
         assert _run(default.fetch(_signed_request(method=name, at=int(__import__("time").time())))).status == 404, name
     assert isinstance(_run(default.workspace_connector_state({"workspace_ref": "w"})), dict)
+    assert isinstance(_run(default.workspace_calendar_connector_state({"workspace_ref": "w"})), dict)
 
 
 def test_com2_required_identity_methods_require_valid_service_proof():
