@@ -31,9 +31,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Management;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -63,7 +65,11 @@ namespace Padiem.Connect
         const string KeyTag = "PADIEMTAG";
         const string KeyAgentUrl = "PADIEMURL";
         const string KeyChatOrigin = "PADIEMCHAT";
-        const int TrailerWindowBytes = 4096;
+        const string KeyHelperUrl = "PADIEMHELPERURL";
+        const string KeyHelperSha256 = "PADIEMHELPERSHA";
+        // Both the agent link and the optional helper link can be long; the
+        // window has to cover the whole trailer those two lines produce.
+        const int TrailerWindowBytes = 8192;
 
         const string HandoffPath = "/api/pc/pairings/handoff";
         const string AgentServiceName = "Mesh Agent";
@@ -72,6 +78,11 @@ namespace Padiem.Connect
         const string AgentFileName = "MeshAgent.exe";
         const string DurableFolder = "PADIEM";
         const string InstalledExeName = "PadiemPcConnect.exe";
+        const string UserHelperTaskName = "PadiemUserSessionHelper";
+        const string UserHelperTaskFolder = "\\Padiem\\";
+        const string UserHelperFileName = "padiem-user-helper.exe";
+        const string UserHelperSecretName = "helper.secret";
+        const string UserHelperStatusName = "helper-status.json";
         const string UninstallSubKey =
             "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\PADIEM-PC-Connect";
         const string UninstallDisplayName = "Padiem PC 연결";
@@ -90,6 +101,10 @@ namespace Padiem.Connect
             new Regex("^[A-Za-z0-9_-]{1,64}$", RegexOptions.CultureInvariant);
         static readonly Regex MachineWord =
             new Regex("^[A-Za-z0-9._\\-]{1,128}$", RegexOptions.CultureInvariant);
+        static readonly Regex Sha256HexPattern =
+            new Regex("^[0-9a-f]{64}$", RegexOptions.CultureInvariant);
+        static readonly Regex ConsoleUserNamePattern =
+            new Regex("^[^\\\\/\\s]+\\\\[^\\\\/\\s]+$", RegexOptions.CultureInvariant);
 
         const int ExitOk = 0;
         const int ExitUsage = 2;
@@ -219,6 +234,10 @@ namespace Padiem.Connect
                 Say("설치 위치 " + durable);
                 Say("실행 명령 " + AgentFileName + " " + installerArguments);
                 Say("에이전트 이름 " + name);
+                Say("사용자 세션 도우미 " + UserHelperPath() + " "
+                    + (string.IsNullOrEmpty(CleanHttps(Value(KeyHelperUrl)))
+                        || !IsSha256((Value(KeyHelperSha256) ?? "").Trim().ToLowerInvariant())
+                        ? "(설정 없음)" : "(내려받아 SHA-256 검증)"));
                 return ExitOk;
             }
             string temp = Path.Combine(Path.GetTempPath(),
@@ -262,6 +281,21 @@ namespace Padiem.Connect
                 try { File.Delete(temp); }
                 catch (Exception) { }
             }
+            bool helperConfigured = !string.IsNullOrEmpty(CleanHttps(Value(KeyHelperUrl)))
+                && IsSha256((Value(KeyHelperSha256) ?? "").Trim().ToLowerInvariant());
+            if (helperConfigured)
+            {
+                // The helper is optional: its own failure is recorded locally and
+                // never turns the connection that just came up into a failure.
+                if (InstallUserHelper(tag))
+                {
+                    Say("사용자 세션 도우미를 설치했습니다.");
+                }
+                else
+                {
+                    Say("사용자 세션 도우미는 설치하지 못했습니다. PC 연결은 계속 진행됩니다.");
+                }
+            }
             if (!RegisterUninstaller())
             {
                 Say("Windows 앱 목록에 제거 항목을 등록하지 못했습니다. 설치를 다시 실행해 주세요.");
@@ -280,6 +314,352 @@ namespace Padiem.Connect
             // cannot start after the file is cleaned up.
             return Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.ProgramFiles), DurableFolder, AgentFileName);
+        }
+
+        static string UserHelperStateDirectory()
+        {
+            // ProgramData, not Program Files: the secret and status live beside
+            // the helper, and the task runs as the ordinary console user.
+            return Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.CommonApplicationData), "Padiem");
+        }
+
+        static string UserHelperPath()
+        {
+            return Path.Combine(UserHelperStateDirectory(), UserHelperFileName);
+        }
+
+        static string UserHelperSecretPath()
+        {
+            return Path.Combine(UserHelperStateDirectory(), UserHelperSecretName);
+        }
+
+        static string UserHelperStatusPath()
+        {
+            return Path.Combine(UserHelperStateDirectory(), UserHelperStatusName);
+        }
+
+        static string ConsoleUserName()
+        {
+            // The account signed in at the console, not the elevated
+            // administrator token this process runs under. Registering the
+            // installer's own identity would put the helper in the wrong
+            // session, which is the one thing the logon task must not do.
+            try
+            {
+                using (ManagementObject computer = new ManagementObject(
+                    "Win32_ComputerSystem.Name='.'"))
+                {
+                    computer.Get();
+                    object value = computer["UserName"];
+                    string name = value == null
+                        ? null : Convert.ToString(value, CultureInfo.InvariantCulture);
+                    if (!string.IsNullOrEmpty(name) && ConsoleUserNamePattern.IsMatch(name))
+                    {
+                        return name;
+                    }
+                }
+            }
+            catch (Exception) { }
+            return null;
+        }
+
+        static bool IsSha256(string value)
+        {
+            return !string.IsNullOrEmpty(value) && Sha256HexPattern.IsMatch(value);
+        }
+
+        static string Sha256Hex(string path)
+        {
+            using (SHA256 sha = SHA256.Create())
+            using (FileStream stream = File.OpenRead(path))
+            {
+                return BitConverter.ToString(sha.ComputeHash(stream))
+                    .Replace("-", "").ToLowerInvariant();
+            }
+        }
+
+        static void InstallUserHelperSecret(string path)
+        {
+            // 32 random bytes as 64 lowercase hex characters - the shape the
+            // Connector's own provisioning lane writes. The value never goes to
+            // the console or to helper-status.json.
+            byte[] bytes = new byte[32];
+            using (RandomNumberGenerator random = RandomNumberGenerator.Create())
+            {
+                random.GetBytes(bytes);
+            }
+            StringBuilder hex = new StringBuilder(bytes.Length * 2);
+            for (int index = 0; index < bytes.Length; index++)
+            {
+                hex.Append(bytes[index].ToString("x2", CultureInfo.InvariantCulture));
+            }
+            File.WriteAllText(path, hex.ToString() + "\n", new UTF8Encoding(false));
+        }
+
+        static bool SetUserHelperSecretAcl(string path, string user)
+        {
+            // icacls is the OS's own ACL tool: SYSTEM reads, the console user
+            // reads and writes, and inherited entries are removed.
+            try
+            {
+                string icacls = Path.Combine(Environment.GetFolderPath(
+                    Environment.SpecialFolder.System), "icacls.exe");
+                if (!File.Exists(icacls))
+                {
+                    return false;
+                }
+                ProcessStartInfo start = new ProcessStartInfo(icacls,
+                    Quote(path) + " /inheritance:r /grant:r \"SYSTEM:(R)\" "
+                    + Quote(user + ":(M)"));
+                start.UseShellExecute = false;
+                start.CreateNoWindow = true;
+                using (Process process = Process.Start(start))
+                {
+                    if (process == null)
+                    {
+                        return false;
+                    }
+                    process.WaitForExit();
+                    return process.ExitCode == 0;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        static string Quote(string value)
+        {
+            return "\"" + (value ?? "").Replace("\"", "") + "\"";
+        }
+
+        static string XmlEscape(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return "";
+            }
+            return value.Replace("&", "&amp;").Replace("<", "&lt;")
+                .Replace(">", "&gt;").Replace("\"", "&quot;")
+                .Replace("'", "&apos;");
+        }
+
+        static string JsonEscape(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return "";
+            }
+            StringBuilder escaped = new StringBuilder(value.Length);
+            for (int index = 0; index < value.Length; index++)
+            {
+                char character = value[index];
+                if (character == '"' || character == '\\')
+                {
+                    escaped.Append('\\').Append(character);
+                }
+                else if (character < ' ')
+                {
+                    escaped.Append(' ');
+                }
+                else
+                {
+                    escaped.Append(character);
+                }
+            }
+            return escaped.ToString();
+        }
+
+        static void WriteUserHelperStatus(string status, string reason,
+            string deviceId, string sha256, string user)
+        {
+            // Local evidence only; the secret is never a member of this object.
+            try
+            {
+                Directory.CreateDirectory(UserHelperStateDirectory());
+                StringBuilder json = new StringBuilder();
+                json.Append("{\"status\":\"").Append(JsonEscape(status)).Append("\"");
+                json.Append(",\"task\":\"").Append(JsonEscape(UserHelperTaskName)).Append("\"");
+                if (!string.IsNullOrEmpty(deviceId))
+                {
+                    json.Append(",\"device_id\":\"").Append(JsonEscape(deviceId)).Append("\"");
+                }
+                if (!string.IsNullOrEmpty(sha256))
+                {
+                    json.Append(",\"sha256\":\"").Append(JsonEscape(sha256)).Append("\"");
+                }
+                if (!string.IsNullOrEmpty(user))
+                {
+                    json.Append(",\"user\":\"").Append(JsonEscape(user)).Append("\"");
+                }
+                if (!string.IsNullOrEmpty(reason))
+                {
+                    json.Append(",\"reason\":\"").Append(JsonEscape(reason)).Append("\"");
+                }
+                json.Append("}\n");
+                File.WriteAllText(UserHelperStatusPath(), json.ToString(),
+                    new UTF8Encoding(false));
+            }
+            catch (Exception) { }
+        }
+
+        static string UserHelperTaskXml(string helperExe, string secretPath,
+            string deviceId, string user)
+        {
+            string arguments = "--device-id \"" + deviceId
+                + "\" --secret-file \"" + secretPath + "\"";
+            return "<?xml version=\"1.0\" encoding=\"UTF-16\"?>\r\n"
+                + "<Task version=\"1.2\" xmlns=\"http://schemas.microsoft.com/windows/2004/02/mit/task\">\r\n"
+                + "  <RegistrationInfo><Description>PADIEM user-session helper (#7108). One request per process.</Description></RegistrationInfo>\r\n"
+                + "  <Triggers><LogonTrigger><Enabled>true</Enabled><UserId>"
+                + XmlEscape(user) + "</UserId></LogonTrigger></Triggers>\r\n"
+                + "  <Principals><Principal id=\"Author\"><UserId>" + XmlEscape(user)
+                + "</UserId><LogonType>InteractiveToken</LogonType><RunLevel>LeastPrivilege</RunLevel></Principal></Principals>\r\n"
+                + "  <Settings><MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>"
+                + "<DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>"
+                + "<StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>"
+                + "<StartWhenAvailable>true</StartWhenAvailable>"
+                + "<AllowStartOnDemand>true</AllowStartOnDemand><Enabled>true</Enabled>"
+                + "<ExecutionTimeLimit>PT0S</ExecutionTimeLimit></Settings>\r\n"
+                + "  <Actions Context=\"Author\"><Exec><Command>" + XmlEscape(helperExe)
+                + "</Command><Arguments>" + XmlEscape(arguments)
+                + "</Arguments><WorkingDirectory>"
+                + XmlEscape(Path.GetDirectoryName(helperExe))
+                + "</WorkingDirectory></Exec></Actions>\r\n"
+                + "</Task>\r\n";
+        }
+
+        static bool RunSchtasks(string arguments)
+        {
+            try
+            {
+                string schtasks = Path.Combine(Environment.GetFolderPath(
+                    Environment.SpecialFolder.System), "schtasks.exe");
+                if (!File.Exists(schtasks))
+                {
+                    return false;
+                }
+                ProcessStartInfo start = new ProcessStartInfo(schtasks, arguments);
+                start.UseShellExecute = false;
+                start.CreateNoWindow = true;
+                using (Process process = Process.Start(start))
+                {
+                    if (process == null)
+                    {
+                        return false;
+                    }
+                    process.WaitForExit();
+                    return process.ExitCode == 0;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        static bool RegisterUserHelperTask(string helperExe, string secretPath,
+            string deviceId, string user)
+        {
+            // ONLOGON + InteractiveToken + LeastPrivilege: the helper starts in
+            // the console user's own session, never elevated. Creating it from
+            // this already-elevated process does not ask for a second approval.
+            string taskPath = UserHelperTaskFolder + UserHelperTaskName;
+            string temp = Path.Combine(Path.GetTempPath(),
+                "padiem-helper-task-" + Guid.NewGuid().ToString("N") + ".xml");
+            try
+            {
+                File.WriteAllText(temp, UserHelperTaskXml(
+                    helperExe, secretPath, deviceId, user), Encoding.Unicode);
+                if (!RunSchtasks("/Create /TN \"" + taskPath + "\" /XML \"" + temp + "\" /F"))
+                {
+                    return false;
+                }
+                // A re-run replaces the task; starting it now puts the helper in
+                // the session without waiting for the next logon.
+                RunSchtasks("/Run /TN \"" + taskPath + "\"");
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            finally
+            {
+                try { File.Delete(temp); } catch (Exception) { }
+            }
+        }
+
+        static bool InstallUserHelper(string tag)
+        {
+            // Download, verify, place, secret, ACL, logon task, status: the same
+            // order as the PowerShell lanes. Every failure is recorded and
+            // returns false; the agent connection that already came up stands.
+            string url = CleanHttps(Value(KeyHelperUrl));
+            string sha = (Value(KeyHelperSha256) ?? "").Trim().ToLowerInvariant();
+            if (string.IsNullOrEmpty(url) || !IsSha256(sha))
+            {
+                return false;
+            }
+            string deviceId = tag != null && InstallTag.IsMatch(tag)
+                ? tag : Guid.NewGuid().ToString("N");
+            string user = ConsoleUserName();
+            if (string.IsNullOrEmpty(user))
+            {
+                WriteUserHelperStatus("not_installed", "no_console_user", deviceId, sha, null);
+                return false;
+            }
+            string temp = Path.Combine(Path.GetTempPath(),
+                "padiem-user-helper-" + Guid.NewGuid().ToString("N") + ".exe");
+            try
+            {
+                if (Download(url, temp) <= 0)
+                {
+                    WriteUserHelperStatus("not_installed", "download_failed", deviceId, sha, user);
+                    return false;
+                }
+                if (!string.Equals(Sha256Hex(temp), sha, StringComparison.Ordinal))
+                {
+                    WriteUserHelperStatus("not_installed", "sha256_mismatch", deviceId, sha, user);
+                    return false;
+                }
+                Directory.CreateDirectory(UserHelperStateDirectory());
+                if (!Place(temp, UserHelperPath()))
+                {
+                    WriteUserHelperStatus("not_installed", "place_failed", deviceId, sha, user);
+                    return false;
+                }
+                if (!File.Exists(UserHelperSecretPath())
+                    || new FileInfo(UserHelperSecretPath()).Length == 0)
+                {
+                    InstallUserHelperSecret(UserHelperSecretPath());
+                }
+                if (!SetUserHelperSecretAcl(UserHelperSecretPath(), user))
+                {
+                    WriteUserHelperStatus("not_installed", "secret_acl_failed", deviceId, sha, user);
+                    return false;
+                }
+                if (!RegisterUserHelperTask(
+                        UserHelperPath(), UserHelperSecretPath(), deviceId, user))
+                {
+                    WriteUserHelperStatus("not_installed", "task_registration_failed",
+                        deviceId, sha, user);
+                    return false;
+                }
+                WriteUserHelperStatus("installed", null, deviceId, sha, user);
+                return true;
+            }
+            catch (Exception)
+            {
+                WriteUserHelperStatus("not_installed", "provision_failed", deviceId, sha, user);
+                return false;
+            }
+            finally
+            {
+                try { File.Delete(temp); } catch (Exception) { }
+            }
         }
 
         static string InstalledConnectExePath()
@@ -504,6 +884,10 @@ namespace Padiem.Connect
                 : (string.IsNullOrEmpty(tag) ? "CONNECT_EXE_CHECK=NO_TRAILER" : "CONNECT_EXE_CHECK=URL_UNUSABLE"));
             Console.WriteLine("CONNECT_EXE_CHECK_TAG=" + tag);
             Console.WriteLine("CONNECT_EXE_CHECK_URL_PRESENT=" + (string.IsNullOrEmpty(agentUrl) ? "0" : "1"));
+            string helperUrl = CleanHttps(Value(KeyHelperUrl));
+            string helperSha = (Value(KeyHelperSha256) ?? "").Trim().ToLowerInvariant();
+            Console.WriteLine("CONNECT_EXE_CHECK_HELPER_URL_PRESENT=" + (string.IsNullOrEmpty(helperUrl) ? "0" : "1"));
+            Console.WriteLine("CONNECT_EXE_CHECK_HELPER_SHA_PRESENT=" + (IsSha256(helperSha) ? "1" : "0"));
             Console.WriteLine("CONNECT_EXE_CHECK_DRIVES=" + string.Join(" ", FixedDriveLetters()));
             Console.WriteLine("CONNECT_EXE_CHECK_SERVICE_INSTALLED=" + (AgentAlreadyInstalled() ? "1" : "0"));
             Console.WriteLine("CONNECT_EXE_CHECK_AGENT_TARGET=" + DurableAgentPath());
