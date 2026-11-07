@@ -123,7 +123,9 @@ jobs:
           ]
 
           assert state["name"] == "padiem-google-oauth-state"
-          assert state["workers_dev"] is False and state["preview_urls"] is False
+          # The state Worker exposes only the secret-gated /internal/rpc
+          # ingress on workers.dev (identity-authority shape); no previews.
+          assert state["workers_dev"] is True and state["preview_urls"] is False
           assert state["observability"]["enabled"] is False
           assert "route" not in state and "routes" not in state
           assert state["secrets"]["required"] == [
