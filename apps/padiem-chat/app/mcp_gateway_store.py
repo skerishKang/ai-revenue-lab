@@ -402,14 +402,15 @@ class D1McpGatewayStore:
                     exit_code: int | None = None, duration_ms: int | None = None,
                     output_bytes: int | None = None,
                     output_truncated: bool | None = None,
-                    job_receipt_id: str | None = None) -> str:
+                    job_receipt_id: str | None = None,
+                    command_bytes: int | None = None) -> str:
         """Record metadata, never credential material or file contents/results."""
         if not isinstance(status, str) or not re.fullmatch(r"[a-z_]{1,64}", status):
             raise McpGatewayStoreError("Invalid audit status")
         if exit_code is not None and (
                 not isinstance(exit_code, int) or isinstance(exit_code, bool)):
             raise McpGatewayStoreError("Invalid audit metadata")
-        for value in (duration_ms, output_bytes):
+        for value in (duration_ms, output_bytes, command_bytes):
             if value is not None and (
                     not isinstance(value, int) or isinstance(value, bool) or value < 0):
                 raise McpGatewayStoreError("Invalid audit metadata")
@@ -422,11 +423,37 @@ class D1McpGatewayStore:
         receipt_sha256 = (hashlib.sha256(job_receipt_id.encode("ascii")).hexdigest()
                           if job_receipt_id is not None else None)
         event_id = "mcpe_" + uuid4().hex
-        await self._run("INSERT INTO padiem_mcp_audit (id,user_id,token_id,device_id,tool_name,request_digest,status,approval_id,created_at,exit_code,duration_ms,output_bytes,output_truncated,job_receipt_sha256) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                        event_id, _owner(identity["user_id"]), identity["token_id"], identity["device_id"], tool_name,
-                        mcp_request_digest(tool_name, arguments), status, approval_id, _stamp(now),
-                        exit_code, duration_ms, output_bytes,
-                        None if output_truncated is None else int(output_truncated), receipt_sha256)
+        columns = ("id,user_id,token_id,device_id,tool_name,request_digest,status,"
+                   "approval_id,created_at,exit_code,duration_ms,output_bytes,"
+                   "output_truncated,job_receipt_sha256")
+        values = (
+            event_id, _owner(identity["user_id"]), identity["token_id"],
+            identity["device_id"], tool_name,
+            mcp_request_digest(tool_name, arguments), status, approval_id,
+            _stamp(now), exit_code, duration_ms, output_bytes,
+            None if output_truncated is None else int(output_truncated),
+            receipt_sha256,
+        )
+        insert = "INSERT INTO padiem_mcp_audit (" + columns
+        placeholders = "?,?,?,?,?,?,?,?,?,?,?,?,?,?"
+        if command_bytes is None:
+            await self._run(insert + ") VALUES (" + placeholders + ")", *values)
+        else:
+            try:
+                await self._run(
+                    insert + ",command_bytes) VALUES (" + placeholders + ",?)",
+                    *values, command_bytes,
+                )
+            except Exception as exc:
+                text = str(exc).lower()
+                if ("no such column" not in text
+                        and "has no column named" not in text):
+                    raise
+                # Migration 103 adds command_bytes. An older database (the
+                # queue schema stops at 102) still keeps the audit record;
+                # a missing length column must never block PC execution.
+                await self._run(
+                    insert + ") VALUES (" + placeholders + ")", *values)
         return event_id
 
     async def owns_job_receipt(self, *, identity: dict, job_id: str) -> bool:

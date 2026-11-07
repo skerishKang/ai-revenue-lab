@@ -180,6 +180,13 @@ class PcPairingStore(Protocol):
     ) -> dict[str, Any] | None: ...
 
 
+    async def is_managed_link(self, *, user_id: str, mesh_node_id: str) -> bool: ...
+
+    async def set_managed(
+        self, *, link_id: str, by_user_id: str, managed: bool, now: datetime,
+    ) -> dict[str, Any]: ...
+
+
 def _user_id(value: Any) -> str:
     if not isinstance(value, str) or _USER_ID_RE.fullmatch(value) is None:
         raise PcPairingError("user id invalid")
@@ -631,6 +638,67 @@ class D1PcPairingStore:
         if db is None:
             raise ValueError("D1 binding is required")
         self.db = db
+
+    async def is_managed_link(self, *, user_id: str, mesh_node_id: str) -> bool:
+        """Read the managed(contract) mark for this pair, if it is live."""
+        owner = _user_id(user_id)
+        node = _mesh_node_id(mesh_node_id)
+        try:
+            row = await self._first(
+                "SELECT managed_at FROM pc_device_links WHERE user_id=? AND mesh_node_id=? "
+                "AND state='active' AND paused_at IS NULL",
+                owner, node,
+            )
+        except Exception:
+            # Migration 103 is not applied (the queue schema stops at 102):
+            # no column means "not managed", so SYSTEM stays refused.
+            return False
+        return isinstance(row, dict) and bool(row.get("managed_at"))
+
+    async def set_managed(
+        self, *, link_id: str, by_user_id: str, managed: bool, now: datetime,
+    ) -> dict[str, Any]:
+        """Mark or unmark one link; the actor is the verified platform admin."""
+        if not isinstance(link_id, str) or _LINK_ID_RE.fullmatch(link_id) is None:
+            raise PcPairingError("link id invalid")
+        actor = _user_id(by_user_id)
+        if not isinstance(managed, bool):
+            raise PcPairingError("managed flag invalid")
+        row = await self._first(
+            "SELECT user_id, state, paused_at FROM pc_device_links WHERE link_id=?",
+            link_id,
+        )
+        if not isinstance(row, dict) or not row.get("user_id"):
+            raise PcPairingError("link not found")
+        if row.get("state") != _STATE_ACTIVE or row.get("paused_at"):
+            raise PcPairingError("link not active")
+        moment = _stamp(now)
+        try:
+            if managed:
+                await self._run(
+                    "UPDATE pc_device_links SET managed_at=?, managed_by=?, updated_at=? "
+                    "WHERE link_id=? AND state='active'",
+                    moment, actor, moment, link_id,
+                )
+            else:
+                await self._run(
+                    "UPDATE pc_device_links SET managed_at=NULL, managed_by=NULL, updated_at=? "
+                    "WHERE link_id=? AND state='active'",
+                    moment, link_id,
+                )
+        except Exception as exc:
+            text = str(exc).lower()
+            if "no such column" not in text and "has no column named" not in text:
+                raise
+            raise PcPairingError("managed column missing") from exc
+        stored = await self._read_link(row["user_id"], link_id)
+        if stored is None:
+            raise PcPairingError("link not stored")
+        return {
+            **_public_link(stored),
+            "managed": managed,
+            "managed_at": moment if managed else None,
+        }
 
     async def _first(self, sql: str, *values: Any) -> dict[str, Any] | None:
         statement = self.db.prepare(sql)

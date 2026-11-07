@@ -67,6 +67,12 @@ class _GatewayStore:
 
 
 class _Pairing:
+    def __init__(self, *, managed: bool = False) -> None:
+        self.managed = managed
+
+    async def is_managed_link(self, *, user_id: str, mesh_node_id: str) -> bool:
+        return bool(self.managed and user_id == OWNER and mesh_node_id == DEVICE)
+
     async def link_for(self, *, user_id: str, mesh_node_id: str):
         if user_id == OWNER and mesh_node_id == DEVICE:
             return {"mesh_node_id": DEVICE, "user_id": OWNER}
@@ -82,6 +88,14 @@ class _Authority:
     async def resolve_connector_owner_scope(self, *, session_id: str):
         assert session_id == "session_fixture"
         return {"account_ref": "account_fixture", "workspace_ref": "workspace_fixture"}
+
+
+class _Admin:
+    def __init__(self, *, admin: bool) -> None:
+        self.admin = admin
+
+    async def is_global_model_admin(self, *, user_id: str) -> bool:
+        return bool(self.admin and user_id == OWNER)
 
 
 class _MeshSource:
@@ -240,7 +254,8 @@ def _install_owner_boundaries(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(execution, "_append_lane_notice", notice)
 
 
-def _app(monkeypatch: pytest.MonkeyPatch, *, user_mode: bool, complete_after: int):
+def _app(monkeypatch: pytest.MonkeyPatch, *, user_mode: bool, complete_after: int,
+         admin: bool = False, managed: bool = False):
     _install_owner_boundaries(monkeypatch)
     history = _History(complete_after=complete_after)
     gateway_store = _GatewayStore()
@@ -253,7 +268,8 @@ def _app(monkeypatch: pytest.MonkeyPatch, *, user_mode: bool, complete_after: in
         mcp_pc_shell_user_mode_enabled=user_mode,
     )
     app.state.mcp_gateway_store = gateway_store
-    app.state.pc_device_pairing_store = _Pairing()
+    app.state.pc_device_pairing_store = _Pairing(managed=managed)
+    app.state.central_model_admin_authorizer = _Admin(admin=admin)
     app.state.history_store = history
     app.state.mcp_gateway_executor = execute_mcp_pc_tool
     app.state.control_plane_identity_authority = _Authority()
@@ -324,7 +340,8 @@ def test_explicit_user_mode_queues_user_mode_and_zero_timeout(
 def test_explicit_system_stays_system_when_user_mode_is_on(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    app, history, _ = _app(monkeypatch, user_mode=True, complete_after=1)
+    app, history, _ = _app(monkeypatch, user_mode=True, complete_after=1,
+                           admin=True, managed=True)
     with TestClient(app) as client:
         response = _call(
             client,
@@ -408,3 +425,83 @@ def test_pc_shell_wait_returns_when_the_consumer_result_arrives(
     assert result["output"] == OUTPUT
     assert sleeps == [0.5, 1.0]
     assert sum(sleeps) < 30
+
+
+def test_system_mode_runs_for_an_admin_on_a_managed_pc(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    app, history, gateway_store = _app(
+        monkeypatch, user_mode=True, complete_after=1, admin=True, managed=True,
+    )
+    with TestClient(app) as client:
+        response = _call(
+            client,
+            "pc_shell",
+            {"command": "whoami", "mode": "system", "wait_seconds": 1},
+        )
+
+    assert response.status_code == 200, response.text
+    queued = history.queue[0]
+    assert queued["user_mode"] is False
+    assert "PADIEM_MCP_COMMAND_B64" in queued["command_text"]
+    assert [row["status"] for row in gateway_store.audit_records] == ["requested", "completed"]
+    assert all(row.get("command_bytes") == len("whoami") for row in gateway_store.audit_records)
+
+
+def test_system_mode_is_denied_for_an_admin_on_an_unmanaged_pc(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    app, history, gateway_store = _app(
+        monkeypatch, user_mode=True, complete_after=1, admin=True, managed=False,
+    )
+    with TestClient(app) as client:
+        response = _call(
+            client,
+            "pc_shell",
+            {"command": "whoami", "mode": "system", "wait_seconds": 1},
+        )
+
+    assert response.status_code == 200, response.text
+    result = response.json()["result"]["structuredContent"]
+    assert result["status"] == "denied"
+    assert result["deny_reason"] == "pc_shell_system_denied"
+    assert result["answer"] == "SYSTEM 실행은 관리자와 관리(계약) PC에서만 허용됩니다."
+    assert history.queue == []
+    assert [row["status"] for row in gateway_store.audit_records] == ["requested", "denied"]
+    assert all(row.get("command_bytes") == len("whoami") for row in gateway_store.audit_records)
+
+
+def test_system_mode_is_denied_for_a_non_admin_on_a_managed_pc(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    app, history, gateway_store = _app(
+        monkeypatch, user_mode=True, complete_after=1, admin=False, managed=True,
+    )
+    with TestClient(app) as client:
+        response = _call(
+            client,
+            "pc_shell",
+            {"command": "whoami", "mode": "system", "wait_seconds": 1},
+        )
+
+    result = response.json()["result"]["structuredContent"]
+    assert result["status"] == "denied"
+    assert result["deny_reason"] == "pc_shell_system_denied"
+    assert history.queue == []
+    assert [row["status"] for row in gateway_store.audit_records] == ["requested", "denied"]
+
+
+def test_pc_shell_start_uses_the_same_system_rule(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    app, history, _ = _app(
+        monkeypatch, user_mode=True, complete_after=0, admin=False, managed=False,
+    )
+    with TestClient(app) as client:
+        response = _call(client, "pc_shell_start", {"command": "whoami", "mode": "system"})
+
+    assert response.status_code == 200, response.text
+    result = response.json()["result"]["structuredContent"]
+    assert result["status"] == "denied"
+    assert result["deny_reason"] == "pc_shell_system_denied"
+    assert history.queue == []

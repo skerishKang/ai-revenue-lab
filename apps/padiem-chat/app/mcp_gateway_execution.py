@@ -180,6 +180,30 @@ _SHELL_TOOLS = {
 }
 
 
+async def _pc_system_mode_allowed(request, *, uid: str, device_id: str) -> bool:
+    """SYSTEM execution needs an administrator AND a managed PC (2026-11-08).
+
+    Fail-closed: no authority, no pairing store, a missing link or any error is
+    a refusal. It never switches the caller to the user lane; a caller who asked
+    for SYSTEM gets SYSTEM or an explicit denial.
+    """
+    from .platform_admin_authority import platform_authority_for
+    try:
+        admin = await platform_authority_for(request).is_global_model_admin(user_id=uid)
+    except Exception:
+        admin = False
+    if admin is not True:
+        return False
+    store = getattr(request.app.state, "pc_device_pairing_store", None)
+    reader = getattr(store, "is_managed_link", None)
+    if not callable(reader):
+        return False
+    try:
+        return await reader(user_id=uid, mesh_node_id=device_id) is True
+    except Exception:
+        return False
+
+
 async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, approval=None):
     """Called only after PAT verification; an approval is an atomic-store result.
 
@@ -265,6 +289,13 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             # field: a new call names the path and nothing else. pc_list alone
             # may name nothing, which asks for the approved folder list.
             raise ValueError("Invalid MCP PC arguments")
+    if (shell_enabled and shell_user_enabled
+            and tool_name in {PC_SHELL_TOOL_NAME, PC_SHELL_START_TOOL_NAME}
+            and isinstance(arguments, Mapping) and arguments.get("mode") == "system"
+            and not await _pc_system_mode_allowed(request, uid=uid, device_id=device_id)):
+        return {"status": "denied",
+                "answer": "SYSTEM 실행은 관리자와 관리(계약) PC에서만 허용됩니다.",
+                "deny_reason": "pc_shell_system_denied"}
     approval_id = None
     if approval is not None:
         if browser:

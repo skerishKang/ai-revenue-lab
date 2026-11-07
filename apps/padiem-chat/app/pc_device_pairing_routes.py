@@ -66,6 +66,9 @@ PC_PAIRING_CONNECT_EXE_MARKER = "PADIEMTRAILER:PADIEM-PC-CONNECT-1"
 #: knows about to their own account, without waiting for somebody else's PC to
 #: run an installer.
 PC_PAIRING_ADOPT_PATH = "/api/pc/pairings/adopt"
+#: 2026-11-08: administrator-only managed(contract) PC mark/unmark. SYSTEM
+#: execution needs this mark together with the administrator verdict.
+PC_PAIRING_MANAGED_PATH = "/api/pc/devices/{link_id}/managed"
 PC_PAIRING_LINK_PATH = "/api/pc/pairings/{link_id}"
 PC_PAIRING_ROOTS_PATH = "/api/pc/pairings/{link_id}/roots"
 PC_PAIRING_ROOT_PATH = "/api/pc/pairings/{link_id}/roots/{root_ref}"
@@ -93,6 +96,7 @@ _ADOPT_BODY_KEYS = frozenset({
 
 _MAX_BODY_BYTES = 2048
 _NO_STORE = {"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"}
+_LOGGER = logging.getLogger("padiem_chat.request")
 
 #: Refusal codes this surface can produce, and the browser-visible sentence for
 #: each. Anything else is the generic failure: a pairing refusal must not
@@ -122,6 +126,7 @@ _MESSAGES = {
     "pc_pairing_root_limit": "이 PC 연결에 승인할 수 있는 폴더 한계에 도달했습니다.",
     "pc_pairing_link_not_found": "연결을 찾을 수 없습니다.",
     "pc_pairing_not_admin": "이 PC를 채택할 수 있는 권한이 없습니다.",
+    "pc_pairing_managed_not_admin": "관리(계약) PC를 표시할 권한이 없습니다.",
     #: Adoption names an account and a device. Both answers are 404s with
     #: different work behind them: no such account, a machine the Mesh lane has
     #: never reported, or a reported machine whose drive scope nobody has stated.
@@ -166,6 +171,10 @@ _REASONS = {
     "link not yours": "pc_pairing_link_forbidden",
     "link label invalid": "pc_pairing_body_invalid",
     "link label too long": "pc_pairing_body_invalid",
+    "managed flag invalid": "pc_pairing_body_invalid",
+    #: Migration 103 not applied: the mark cannot be written yet, but every
+    #: existing link read still works. Same 준비 중 shape as an absent table.
+    "managed column missing": "pc_pairing_not_ready",
     "link not stored": "pc_pairing_unavailable",
     "pairing link not stored": "pc_pairing_unavailable",
     "user id invalid": "unauthorized",
@@ -199,7 +208,7 @@ def _refused(exc: PcPairingError) -> JSONResponse:
         status = 404
     elif code in {"pc_pairing_link_not_active", "pc_pairing_root_label_taken"}:
         status = 409
-    elif code == "pc_pairing_unavailable":
+    elif code in {"pc_pairing_unavailable", "pc_pairing_not_ready"}:
         status = 503
     else:
         status = 400
@@ -254,6 +263,15 @@ async def _body(request: Request) -> dict[str, Any] | None:
 
 def _now() -> datetime:
     return datetime.now(timezone.utc)
+
+
+def _log_managed(*, actor: str, link_id: Any, managed: bool, result: str) -> None:
+    """One admin mark/unmark line: actor, link and result; no command or path."""
+    event = {"event": "pc_link_managed", "managed": bool(managed), "result": result}
+    for key, value in (("actor", actor), ("link_id", link_id)):
+        if isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9_.:-]{1,64}", value):
+            event[key] = value
+    _LOGGER.info(json.dumps(event, separators=(",", ":")))
 
 
 def _issued_pairing(request: Request, issued: dict[str, Any]) -> dict[str, Any]:
@@ -472,6 +490,37 @@ async def pc_pairing_token_reissue(request: Request) -> JSONResponse:
     if refused is not None:
         return refused
     return _json({"ok": True, "pairing": _issued_pairing(request, issued)}, 201)
+
+
+async def pc_pairing_managed(request: Request) -> JSONResponse:
+    """Administrator-only managed(contract) PC mark/unmark (2026-11-08)."""
+    user_id = current_user_id(request)
+    if not user_id:
+        return _error(401, "unauthorized")
+    store = _store(request)
+    if store is None:
+        return _error(503, "pc_pairing_unavailable")
+    body = await _body(request)
+    if body is None or set(body) != {"managed"} or not isinstance(body["managed"], bool):
+        return _error(400, "pc_pairing_body_invalid")
+    link_id = request.path_params.get("link_id")
+    from .platform_admin_authority import platform_authority_for
+    try:
+        admin = await platform_authority_for(request).is_global_model_admin(user_id=user_id)
+    except Exception:
+        admin = False
+    if admin is not True:
+        _log_managed(actor=user_id, link_id=link_id, managed=body["managed"], result="denied")
+        return _error(403, "pc_pairing_managed_not_admin")
+    link, refused = await _await_store(
+        store.set_managed, link_id=link_id, by_user_id=user_id,
+        managed=body["managed"], now=_now(),
+    )
+    if refused is not None:
+        _log_managed(actor=user_id, link_id=link_id, managed=body["managed"], result="refused")
+        return refused
+    _log_managed(actor=user_id, link_id=link_id, managed=body["managed"], result="ok")
+    return _json({"ok": True, "link": link}, 200)
 
 
 async def pc_pairing_label(request: Request) -> JSONResponse:
