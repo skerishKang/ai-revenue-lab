@@ -98,7 +98,9 @@ def test_accessible_loading_error_empty_and_refresh_states() -> None:
 
 def test_consumes_the_existing_owner_scoped_route_without_new_authority() -> None:
     app = _app_source()
-    assert 'fetch(`/api/claw/runs?limit=${clawRunHistoryLimit}`' in app
+    # The one owner-scoped run-history read, bounded by the same limit.
+    assert 'readClawRuns(clawRunHistoryLimit' in app
+    assert '/api/claw/runs?limit=${limit}' in app
     # Reuses the single bounded artifact route rather than a second download path.
     assert "/api/claw/manual-intake/artifact/" in app
     assert app.count("/api/claw/manual-intake/artifact/") == 1
@@ -128,7 +130,7 @@ def test_single_flight_and_visibility_guards_are_present() -> None:
     assert "let clawRunHistoryInFlight = false;" in app
     assert "if (clawRunHistoryInFlight) return;" in app
     # Unguarded fetch is only reachable through the single-flight wrapper.
-    assert app.count("await fetchClawRunHistory();") == 1
+    assert app.count("await fetchClawRunHistory(options);") == 1
     assert 'const show = authState.authenticated === true' in app
     assert 'clawWorkspace?.dataset.view !== "inbox"' in app
 

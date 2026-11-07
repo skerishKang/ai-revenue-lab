@@ -874,8 +874,8 @@ ALLOWED_APP_ENDPOINTS = BASE_APP_ENDPOINTS | frozenset({
     "/api/claw/runs/",
     # #5895: the same existing #2317 owner-scoped run-history GET, now also read
     # when a saved conversation opens so an unfinished PC run can be continued.
-    # It is the route `fetch(`/api/claw/runs?limit=${clawRunHistoryLimit}`)`
-    # already calls; the plain form simply lets the server pick the page size.
+    # It is the route `readClawRuns(clawRunHistoryLimit, ...)` already calls;
+    # the plain form simply lets the server pick the page size.
     # No new route, no new write.
     "/api/claw/runs",
     # #5434: the self-service password change of the signed-in account. A POST
@@ -910,7 +910,7 @@ def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
     app = _app_source()
     # #3932: same existing run-history endpoint, bounded 10/30 on explicit user click.
     # Keep the old baseline route in scope; never admit a new endpoint silently.
-    assert app.count("fetch(`/api/claw/runs?limit=${clawRunHistoryLimit}`") == 1
+    assert app.count("readClawRuns(clawRunHistoryLimit") == 1
     assert "let clawRunHistoryLimit = 10;" in app
     assert "clawRunHistoryLimit = 30;" in app
     present = set(re.findall(r'"/api/[^"]+"', app))
