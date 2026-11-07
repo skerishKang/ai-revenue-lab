@@ -350,9 +350,23 @@ html[data-theme="padiem-glass"] .settings-panel {
 /* Chat uses the SAME conversation frame and fixed composer as the first screen.
  * The original active-only widened panel moved the input on first submit.
  * Keep data-state=chat for routing/history, not for a second visual page. */
+/* #7100 후속: the error card's retry is a card-secondary control, not a full
+ * CTA. It borrows the answer-action control's compact 32px geometry and never
+ * stretches across the card; the mobile 44px touch-target rule
+ * (mobile-target-legibility.css) still wins on small screens. The accepted
+ * base stylesheet stays byte-pinned, so the override lives in this layer. */
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .error-box {
   padding: 18px 20px !important;
   border-radius: 16px !important;
+}
+
+.app-shell .error-box .retry-button {
+  min-height: 32px;
+  width: fit-content;
+  align-self: flex-start;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: 13px;
 }
 
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .retry-button {
