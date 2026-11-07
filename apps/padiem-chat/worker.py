@@ -81,7 +81,6 @@ from app.claw_telegram_delivery_host_composition import (
 from app.claw_artifact_delivery_receipt_store import (
     D1ArtifactDeliveryReceiptStore,
 )
-from app.claw_task_alert_store import D1ClawTaskAlertStore
 from app.claw_push_subscriptions import D1ClawPushSubscriptionStore
 from app.claw_web_push_sender import VapidAuthority, WebPushSender
 from app.b66_quote_conversation import B66QuoteConversationInterpreter
@@ -319,19 +318,17 @@ async def run_scheduled_automation_source(
                 canonical_owner_authority=resolved_identity,
             )
             history_store = D1HistoryStore(db_binding)
-            task_alert_store = D1ClawTaskAlertStore(db_binding)
             push_store, push_sender, push_scope = _push_delivery_parts(env, db_binding)
         else:
             adapter = getattr(execution_ports, "adapter", None)
             owner_resolver = getattr(execution_ports, "owner_resolver", None)
             history_store = getattr(execution_ports, "history_store", None)
-            task_alert_store = getattr(execution_ports, "task_alert_store", None)
             push_store = getattr(execution_ports, "push_store", None)
             push_sender = getattr(execution_ports, "push_sender", None)
             push_scope = getattr(execution_ports, "push_scope", "")
             if any(
                 value is None
-                for value in (adapter, owner_resolver, history_store, task_alert_store)
+                for value in (adapter, owner_resolver, history_store)
             ):
                 return None
         return await compose_scheduled_automation_execution(
@@ -341,7 +338,6 @@ async def run_scheduled_automation_source(
             adapter=adapter,
             owner_resolver=owner_resolver,
             history_store=history_store,
-            task_alert_store=task_alert_store,
             push_store=push_store,
             push_sender=push_sender,
             push_scope=push_scope,

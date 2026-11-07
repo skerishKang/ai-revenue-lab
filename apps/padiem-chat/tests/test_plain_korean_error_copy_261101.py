@@ -96,7 +96,6 @@ def test_the_server_status_token_is_never_echoed_as_screen_copy():
     token, because an invented label there would read as a derived run status.
     That contract is asserted below so this file cannot quietly undo it.
     """
-    assert 'meta.textContent = statusText === statusKey ? uiT("status-unknown") : statusText;' in APP_JS
     assert 'badge.textContent = memory.status === "approved" ? clawT("claw-memory-status-approved") : uiT("status-unknown");' in APP_JS
     assert ', value: memory.status === "approved" ? clawT("claw-memory-status-approved") : uiT("status-unknown") },' in APP_JS
     # The old echoes are gone, not merely shadowed by a new line.

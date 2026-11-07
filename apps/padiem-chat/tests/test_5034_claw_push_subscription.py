@@ -59,7 +59,6 @@ ROOT = Path(__file__).resolve().parents[1]
 
 SUBSCRIPTION_PATH = "/api/claw/inbox/push/subscription"
 CAPABILITY_PATH = "/api/claw/inbox/push/capability"
-LIST_ALERTS = "/api/claw/inbox/alerts"
 
 SIGNED_IN_USER_ID = "usr_" + "7" * 32
 OTHER_USER_ID = "usr_" + "f" * 32
@@ -441,17 +440,6 @@ async def test_a_raising_push_sender_never_escapes():
     assert outcome.failed == 1
     assert outcome.inbox_state_changed is False
 
-
-def test_the_web_inbox_still_works_while_a_push_is_denied():
-    """A denied or unconfigured push never removes the web inbox record."""
-    db = _seed_db()
-    with _client(db) as client:
-        registered = _post(client, SUBSCRIPTION_PATH, _payload())
-        assert registered.status_code == 200
-        # No push authority at all: the inbox read surface is unaffected.
-        alerts = client.get(LIST_ALERTS)
-    assert alerts.status_code == 200
-    assert alerts.json()["ok"] is True
 
 
 def test_the_subscription_table_holds_no_notification_record():

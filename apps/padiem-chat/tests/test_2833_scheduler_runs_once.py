@@ -43,7 +43,6 @@ from test_claw_automation_background_execution import (
     WORKSPACE,
     OutcomeAdapter,
     RecordingHistoryStore,
-    RecordingTaskAlertStore,
     make_rule,
     resolver,
 )
@@ -93,13 +92,12 @@ async def test_two_cron_ticks_of_the_same_occurrence_execute_once(
 async def test_the_scheduled_lane_runs_the_whole_existing_chain(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """한 번의 크론 틱이 실행·이력·Task-Alert 투영까지 실제로 만든다."""
+    """한 번의 크론 틱이 실행·이력·자동화 대화 기록까지 실제로 만든다."""
     db = _route_db()
     store = D1ClawAutomationStore(db)
     await store.save_rule(make_rule())
     adapter = OutcomeAdapter()
     history = RecordingHistoryStore()
-    task_alert = RecordingTaskAlertStore()
 
     module = _load_worker(monkeypatch)
     receipt = await module.run_scheduled_automation_source(
@@ -109,7 +107,6 @@ async def test_the_scheduled_lane_runs_the_whole_existing_chain(
             adapter=adapter,
             owner_resolver=resolver(),
             history_store=history,
-            task_alert_store=task_alert,
         ),
     )
 
@@ -231,7 +228,6 @@ def _injected_tick(db, monkeypatch: pytest.MonkeyPatch):
                 adapter=adapter,
                 owner_resolver=resolver(),
                 history_store=history,
-                task_alert_store=RecordingTaskAlertStore(),
             ),
             automation_store=store,
             identity_authority=identity,

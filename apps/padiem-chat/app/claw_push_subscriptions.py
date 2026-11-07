@@ -1,12 +1,11 @@
-"""#5034 — Web Push opt-in for the EXISTING user web-alert inbox.
+"""#5034 — Web Push opt-in for the automation notification lane.
 
-This module adds no inbox, no alert record, and no second notification
-authority.  The user inbox stays exactly where it is: the existing
-:class:`~app.claw_task_alert_store.D1ClawTaskAlertStore` and the existing
-``/api/claw/inbox/{tasks,alerts}`` HTTP surface.  What is added here is the
-*opt-in device subscription* and the delivery seam that distinguishes
-"the web inbox persisted the record" from "the browser actually received a
-push".
+대표 결정(2026-11-07): the Claw inbox (작업함) is removed; the automation
+result record is the automation's own conversation message (one rule owns one
+conversation).  This module adds no alert record and no second notification
+authority — what lives here is the *opt-in device subscription* store and the
+delivery seam that distinguishes "the conversation message was written" from
+"the browser actually received a push".
 
 Reused, never recreated
 -----------------------
@@ -14,20 +13,19 @@ Reused, never recreated
   and the server-owned workspace authority
   (:func:`app.claw_memory_routes._resolve_memory_workspace`) — the browser can
   name neither;
-* the existing ``PADIEM_CHAT_DB`` D1 binding and the existing
-  ``claw_task_alert`` inbox authority for the records themselves;
-* the existing alert/task records: this module never writes, edits, completes
+* the existing ``PADIEM_CHAT_DB`` D1 binding for the subscription rows
+  themselves;
+* the existing conversation/result records: this module never writes, edits
   or re-opens one.
 
 Invariants
 ----------
-* ``NO_SECOND_INBOX`` — no notification record is stored here, and the inbox
-  read surface is untouched.
-* ``INBOX_STATE_NEVER_CHANGED_BY_PUSH`` — a push failure (or a missing push
-  authority) never changes the status of the underlying task or alert, and
-  never re-executes the job that produced it.
+* ``NO_SECOND_INBOX`` — no notification record is stored here.
+* ``CONVERSATION_STATE_NEVER_CHANGED_BY_PUSH`` — a push failure (or a missing
+  push authority) never changes the conversation message or the run record,
+  and never re-executes the job that produced it.
 * ``WEB_INBOX_SURVIVES_PUSH_DENIAL`` — a denied, unsupported or unconfigured
-  push leaves the web inbox exactly as it was.
+  push leaves the conversation view exactly as it was.
 * ``SERVER_DERIVED_OWNER`` — workspace and member come from the session only.
 * ``NO_ENDPOINT_IN_RESPONSE`` — the browser never receives an endpoint, a key
   or a secret back; only the subscription id, the scope and the timestamps.

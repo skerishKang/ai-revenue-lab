@@ -219,11 +219,10 @@ def test_calendar_item_detail_is_read_only_and_link_backs_are_server_validated()
     assert "createElement(\"a\")" not in source
     assert "href" not in source
     assert source.count('method: method') == 2
-    for kind in ("claw_session", "task", "artifact", "run"):
+    for kind in ("claw_session", "artifact", "run"):
         assert f'"{kind}"' in source
     app = APP_PATH.read_text(encoding="utf-8")
     assert 'window.addEventListener("padiem:calendar-open-link"' in app
-    assert 'openClawInboxTarget("tasks", targetId)' in app
     assert "openClawRunTarget(targetId)" in app
     assert "downloadClawArtifact(targetId" in app
 

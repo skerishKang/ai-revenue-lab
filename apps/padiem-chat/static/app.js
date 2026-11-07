@@ -462,12 +462,7 @@
     syncComposerForClaw(state === "claw");
     const chatNav = document.getElementById("newChatButton");
     const clawNav = document.getElementById("clawNavButton");
-    const tasksNav = document.getElementById("tasksNavButton");
-    const alertsNav = document.getElementById("alertsNavButton");
-    const tasksEntry = document.getElementById("clawTasksButton");
-    const alertsEntry = document.getElementById("automationAlertsButton");
-    const inboxKind = workspace && workspace.dataset.view === "inbox" ? workspace.dataset.inboxKind : "";
-    // New Chat no longer shows a mode hint: the redundant label was removed
+        // New Chat no longer shows a mode hint: the redundant label was removed
     // when the sidebar actions row was rearranged (B62 split-search task).
     if (clawNav) clawNav.dataset.modeHint = uiT("nav-claw-hint");
     // 11-03 audit: Calendar and Library own their menu row now, so the entry
@@ -475,7 +470,7 @@
     // current at once.
     if (chatNav) chatNav.setAttribute("aria-current", (state === "claw" || state === "connectors" || state === "automation" || state === "meeting" || state === "util") ? "false" : "page");
     if (chatNav && (state === "calendar" || state === "library")) chatNav.setAttribute("aria-current", "false");
-    if (clawNav) clawNav.setAttribute("aria-current", state === "claw" && !inboxKind ? "page" : "false");
+    if (clawNav) clawNav.setAttribute("aria-current", state === "claw" ? "page" : "false");
     const utilNav = document.getElementById("utilNavButton");
     if (utilNav) utilNav.setAttribute("aria-current", state === "util" ? "page" : "false");
     const meetingNav = document.getElementById("meetingNavButton");
@@ -484,11 +479,7 @@
     if (connectorsNav) connectorsNav.setAttribute("aria-current", state === "connectors" ? "page" : "false");
     const automationNav = document.getElementById("automationNavButton");
     if (automationNav) automationNav.setAttribute("aria-current", state === "automation" ? "page" : "false");
-    if (tasksNav) tasksNav.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
-    if (alertsNav) alertsNav.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
-    if (tasksEntry) tasksEntry.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
-    if (alertsEntry) alertsEntry.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
-  }
+      }
   // #2505: Chat and Claw show the SAME conversation. Opening the other screen
   // changes the lane the next submit belongs to, and keeps the transcript, the
   // conversation id and the stored record exactly as they are — so a thread
@@ -1840,29 +1831,13 @@
       accountDeleteConfirm.hidden = true;
       resetAccountDeleteConfirm();
     }
-    const inboxNavButtons = [
-      document.getElementById("tasksNavButton"),
-      document.getElementById("alertsNavButton"),
-      // #4462: the sidebar entries are gone; the general-view task entry
-      // and the automation-view alerts entry reuse the same signed-in gate.
-      document.getElementById("clawTasksButton"),
-      document.getElementById("automationAlertsButton"),
-    ].filter(Boolean);
-    inboxNavButtons.forEach((button) => {
-      button.disabled = !authenticated;
-      button.setAttribute("aria-disabled", authenticated ? "false" : "true");
-    });
-    if (!authenticated) {
-      const inbox = document.getElementById("clawInbox");
-      const inboxList = document.getElementById("clawInboxList");
+        if (!authenticated) {
       const automation = document.getElementById("clawAutomation");
       const automationList = document.getElementById("clawAutomationList");
       const workspace = document.getElementById("clawWorkspace");
       const runHistory = document.getElementById("clawRunHistory");
       const runHistoryList = document.getElementById("clawRunHistoryList");
       const runHistoryError = document.getElementById("clawRunHistoryError");
-      if (inbox) inbox.hidden = true;
-      if (inboxList) inboxList.replaceChildren();
       // #3237: an Automation view never outlives the session that loaded it.
       if (automation) automation.hidden = true;
       if (automationList) automationList.replaceChildren();
@@ -3203,19 +3178,7 @@
     },
   });
 
-  // #5034 LOCAL4: the common notification inbox deep-links into the existing
-  // Claw inbox view focused on the exact item, so a notification never opens a
-  // second copy of the task/alert list. Read-only handle: it moves the view
-  // only and grants no new authority.
-  window.PadiemInboxOpener = Object.freeze({
-    open: (kind, itemId) => {
-      if (!authState.authenticated || (kind !== "alerts" && kind !== "tasks")) return false;
-      openClawInboxTarget(kind, typeof itemId === "string" && itemId ? itemId : "");
-      return true;
-    },
-  });
-
-  // Hark's private web XLSX intake creates a separate trusted owner-owned
+    // Hark's private web XLSX intake creates a separate trusted owner-owned
   // work conversation. This explicit navigation never guesses that it was the
   // currently displayed chat or fabricates an assistant answer/file READ grant.
   window.addEventListener("padiem:claw-web-work-conversation-open", async (event) => {
@@ -4669,26 +4632,15 @@
     renderProjectState();
     if (!selectedAttachments.length) setNote(idleNote());
     syncComposerForClaw(shell.dataset.state === "claw");
-    const activeInboxKind = document.getElementById("clawWorkspace")?.dataset.inboxKind;
-    if (activeInboxKind === "tasks" || activeInboxKind === "alerts") loadClawInbox(activeInboxKind);
-  });
+      });
   window.addEventListener("padiem:attachmentcapabilitychange", () => {
     if (!selectedAttachments.length) setNote(idleNote());
   });
 
   // Claw first-class workspace & MVP usability wiring (#2299)
   const clawNavButton = document.getElementById("clawNavButton");
-  const tasksNavButton = document.getElementById("tasksNavButton");
-  const alertsNavButton = document.getElementById("alertsNavButton");
   const clawWorkspace = document.getElementById("clawWorkspace");
-  const clawInbox = document.getElementById("clawInbox");
-  const clawInboxTitle = document.getElementById("clawInboxTitle");
-  const clawInboxLoading = document.getElementById("clawInboxLoading");
-  const clawInboxError = document.getElementById("clawInboxError");
-  const clawInboxEmpty = document.getElementById("clawInboxEmpty");
-  const clawInboxList = document.getElementById("clawInboxList");
-  const clawInboxRetry = document.getElementById("clawInboxRetry");
-  // #3237: canonical automation rule catalogue. #3257 adds the first Create
+    // #3237: canonical automation rule catalogue. #3257 adds the first Create
   // surface: the browser submits only the seven product fields, while rule id,
   // owner provenance, workspace/subject and the execution target (repository +
   // exact revision) are minted or derived server-side. Editing, deleting,
@@ -5362,158 +5314,7 @@
     }
   }
 
-  function resetClawInboxState() {
-    if (clawInboxLoading) clawInboxLoading.hidden = true;
-    if (clawInboxError) clawInboxError.hidden = true;
-    if (clawInboxEmpty) clawInboxEmpty.hidden = true;
-  }
-
-  function setClawInboxLoading() {
-    resetClawInboxState();
-    if (clawInboxList) clawInboxList.replaceChildren();
-    if (clawInboxLoading) {
-      clawInboxLoading.hidden = false;
-      clawInboxLoading.textContent = uiT("claw-inbox-loading");
-    }
-  }
-
-  function setClawInboxError() {
-    resetClawInboxState();
-    if (clawInboxError) {
-      clawInboxError.hidden = false;
-      clawInboxError.textContent = uiT("claw-inbox-error");
-    }
-  }
-
-  async function updateClawInboxStatus(kind, itemId, status) {
-    try {
-      const response = await fetch(`/api/claw/inbox/${encodeURIComponent(kind)}/${encodeURIComponent(itemId)}`, {
-        method: "PATCH",
-        headers: { "Accept": "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-        cache: "no-store",
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || data.ok !== true) throw new Error("inbox update failed");
-      await loadClawInbox(kind);
-    } catch (_) {
-      setClawInboxError();
-      if (clawInboxRetry) clawInboxRetry.focus?.();
-    }
-  }
-
-  function renderClawInboxItems(kind, items, focusItemId = "") {
-    resetClawInboxState();
-    if (!clawInboxList) return;
-    clawInboxList.replaceChildren();
-    if (!Array.isArray(items) || items.length === 0) {
-      if (clawInboxEmpty) {
-        clawInboxEmpty.dataset.localeKey = kind === "tasks" ? "claw-inbox-empty-tasks" : "claw-inbox-empty-alerts";
-        clawInboxEmpty.textContent = uiT(clawInboxEmpty.dataset.localeKey);
-        clawInboxEmpty.hidden = false;
-      }
-      return;
-    }
-    items.forEach((item) => {
-      if (!item || typeof item !== "object") return;
-      const id = kind === "tasks" ? item.task_id : item.alert_id;
-      if (typeof id !== "string" || typeof item.title !== "string") return;
-      const card = document.createElement("article");
-      card.className = "claw-inbox-item";
-      card.dataset.itemId = id;
-      card.setAttribute("role", "listitem");
-
-      const copy = document.createElement("div");
-      copy.className = "claw-inbox-item-copy";
-      const title = document.createElement("strong");
-      title.textContent = item.title;
-      const meta = document.createElement("span");
-      const statusKey = `claw-inbox-status-${String(item.status || "")}`;
-      const statusText = uiT(statusKey);
-      // An unrecognised server token is not screen copy; the raw value used to
-      // be echoed here.
-      meta.textContent = statusText === statusKey ? uiT("status-unknown") : statusText;
-      copy.append(title, meta);
-
-      const action = document.createElement("button");
-      action.type = "button";
-      action.className = "claw-inbox-status-action";
-      let nextStatus = "";
-      let actionKey = "";
-      if (kind === "tasks") {
-        nextStatus = item.status === "open" ? "done" : "open";
-        actionKey = item.status === "open" ? "claw-inbox-mark-done" : "claw-inbox-reopen";
-      } else {
-        nextStatus = item.status === "active" ? "dismissed" : "active";
-        actionKey = item.status === "active" ? "claw-inbox-dismiss" : "claw-inbox-restore";
-      }
-      action.textContent = uiT(actionKey);
-      action.addEventListener("click", () => updateClawInboxStatus(kind, id, nextStatus), { once: true });
-      card.append(copy, action);
-      clawInboxList.appendChild(card);
-    });
-    if (focusItemId) {
-      const target = Array.from(clawInboxList.children).find((card) => card.dataset && card.dataset.itemId === focusItemId);
-      if (target) {
-        target.setAttribute("tabindex", "-1");
-        target.focus?.();
-        target.scrollIntoView?.();
-      }
-    }
-  }
-
-  async function loadClawInbox(kind, focusItemId = "") {
-    if (!authState.authenticated || !clawInbox) return;
-    setClawInboxLoading();
-    try {
-      const response = await fetch(`/api/claw/inbox/${encodeURIComponent(kind)}?limit=20`, {
-        headers: { "Accept": "application/json" },
-        cache: "no-store",
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || data.ok !== true || !Array.isArray(data.items)) throw new Error("inbox unavailable");
-      renderClawInboxItems(kind, data.items, focusItemId);
-    } catch (_) {
-      setClawInboxError();
-    }
-  }
-
-  let pendingClawInboxFocusId = "";
-
-  function openClawInbox(kind) {
-    if (!clawWorkspace || !clawInbox || !authState.authenticated) return;
-    shell.dataset.state = "claw";
-    // Chat/Claw separation: the Claw inbox is a Claw view. The Claw conversation is shown
-    // again, the Chat conversation stays parked.
-    switchConversationProduct(PRODUCT_CLAW);
-    clawWorkspace.dataset.view = "inbox";
-    clawWorkspace.dataset.inboxKind = kind;
-    clawInbox.hidden = false;
-    if (clawAutomation) clawAutomation.hidden = true;
-    if (clawManualForm) clawManualForm.hidden = true;
-    if (clawResultArea) clawResultArea.hidden = true;
-    // Inbox navigation leaves the manual form: drop the pending recovery timer/state.
-    clearClawRecovery({ syncControls: true });
-    clearClawWait();
-    if (clawInboxTitle) {
-      clawInboxTitle.dataset.localeKey = kind === "tasks" ? "claw-inbox-tasks-title" : "claw-inbox-alerts-title";
-      clawInboxTitle.textContent = uiT(clawInboxTitle.dataset.localeKey);
-    }
-    setNavActive();
-    closeSidebar();
-    syncApprovedMemoryVisibility();
-    syncClawRunHistoryVisibility();
-    const focusItemId = pendingClawInboxFocusId;
-    pendingClawInboxFocusId = "";
-    loadClawInbox(kind, focusItemId);
-  }
-
-  function openClawInboxTarget(kind, focusItemId) {
-    pendingClawInboxFocusId = focusItemId;
-    openClawInbox(kind);
-  }
-
-  // --- #3237 read-only automation rule catalogue -----------------------------
+    // --- #3237 read-only automation rule catalogue -----------------------------
   function resetClawAutomationState() {
     if (clawAutomationLoading) clawAutomationLoading.hidden = true;
     if (clawAutomationError) clawAutomationError.hidden = true;
@@ -6074,6 +5875,9 @@
     if (view) view.hidden = false;
     shell.dataset.state = "automation";
     clearClawWait();
+    // Leaving the Claw workspace hides the run panel, exactly as the inbox
+    // view switch used to; returning refetches through the sync below.
+    syncClawRunHistoryVisibility();
     setNavActive();
     closeSidebar();
     // Owner decision: every screen stays browsable without a session. The page
@@ -6093,9 +5897,7 @@
   if (automationNavButton) automationNavButton.addEventListener("click", openClawAutomation);
   // #4462: automation-related run/completion/failure alerts stay reachable
   // from the automation view after the standalone sidebar Alerts entry is gone.
-  const automationAlertsButton = document.getElementById("automationAlertsButton");
-  if (automationAlertsButton) automationAlertsButton.addEventListener("click", () => openClawInbox("alerts"));
-  if (clawAutomationRetry) clawAutomationRetry.addEventListener("click", () => void loadClawAutomationRules());
+    if (clawAutomationRetry) clawAutomationRetry.addEventListener("click", () => void loadClawAutomationRules());
   // The retry is a failure-only control. It lives here, next to the loader
   // it retries, and it is never part of the permanent header.
   function setClawAutomationRetryVisible(visible) {
@@ -6115,8 +5917,6 @@
     // The shared Chat first-use hero also introduces Claw when the
     // existing conversation has not started. Do not reset live messages.
     if (messageList.hidden && messageList.children.length === 0) emptyState.hidden = false;
-    delete clawWorkspace.dataset.inboxKind;
-    if (clawInbox) clawInbox.hidden = true;
     if (clawAutomation) clawAutomation.hidden = true;
     if (clawManualForm) clawManualForm.hidden = true;
     if (clawResultArea) clawResultArea.hidden = false;
@@ -6135,8 +5935,6 @@
     // Chat/Claw separation: the document workflow belongs to the Claw conversation.
     switchConversationProduct(PRODUCT_CLAW);
     clawWorkspace.dataset.view = "manual";
-    delete clawWorkspace.dataset.inboxKind;
-    if (clawInbox) clawInbox.hidden = true;
     if (clawAutomation) clawAutomation.hidden = true;
     if (clawManualForm) clawManualForm.hidden = false;
     if (clawResultArea) clawResultArea.hidden = false;
@@ -6160,11 +5958,7 @@
       void openSavedConversation(targetId);
       return;
     }
-    if (kind === "task" && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(targetId)) {
-      openClawInboxTarget("tasks", targetId);
-      return;
-    }
-    if (kind === "run" && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(targetId)) {
+        if (kind === "run" && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(targetId)) {
       openClawRunTarget(targetId);
       return;
     }
@@ -6873,20 +6667,10 @@
   });
   const clawManualEntryButton = document.getElementById("clawManualEntryButton");
   if (clawManualEntryButton) clawManualEntryButton.addEventListener("click", openClawManual);
-  if (tasksNavButton) tasksNavButton.addEventListener("click", () => openClawInbox("tasks"));
-  if (alertsNavButton) alertsNavButton.addEventListener("click", () => openClawInbox("alerts"));
   // #4462: background task history stays reachable from the general Claw
   // entry bar (#3531 keeps the workspace canvas hidden in general/manual
   // views, so the entry lives beside the manual-entry control instead).
-  // In-conversation run status/results are unchanged; this only preserves
-  // the out-of-conversation task list path (the calendar task links keep
-  // working as before).
-  const clawTasksButton = document.getElementById("clawTasksButton");
-  if (clawTasksButton) clawTasksButton.addEventListener("click", () => openClawInbox("tasks"));
-  if (clawInboxRetry) clawInboxRetry.addEventListener("click", () => {
-    const kind = clawWorkspace?.dataset.inboxKind;
-    if (kind === "tasks" || kind === "alerts") loadClawInbox(kind);
-  });
+  // In-conversation run status/results are unchanged.
   if (clawManualForm) {
     const modeChips = clawManualForm.querySelectorAll(".claw-chip[data-claw-action]");
     modeChips.forEach((chip) => {

@@ -25,7 +25,6 @@ from .claw_automation_due_workspace_discovery import (
 )
 from .claw_automation_execution_bridge import P01ExecutionPort
 from .claw_automation_owner_resolution import ClawAutomationOwnerResolver
-from .claw_automation_projection_bridge import ClawTaskAlertProjectionStore
 from .history import HistoryStore
 
 
@@ -46,7 +45,6 @@ class ScheduledAutomationExecutionReceipt:
             "second_owner_authority": False,
             "second_p01_authority": False,
             "second_history_store": False,
-            "second_task_alert_authority": False,
             # This receipt does not observe side effects performed by the injected
             # existing P01/store/history/projection authorities. It must therefore
             # never assert that the composed execution had zero provider calls or
@@ -66,7 +64,6 @@ async def compose_scheduled_automation_execution(
     adapter: P01ExecutionPort,
     owner_resolver: ClawAutomationOwnerResolver,
     history_store: HistoryStore,
-    task_alert_store: ClawTaskAlertProjectionStore,
     push_store: Any | None = None,
     push_sender: Any | None = None,
     push_scope: str = "",
@@ -117,7 +114,6 @@ async def compose_scheduled_automation_execution(
                 adapter=adapter,
                 owner_resolver=owner_resolver,
                 history_store=history_store,
-                task_alert_store=task_alert_store,
                 **kwargs,
             )
         )

@@ -36,7 +36,7 @@ Why every method is ``async``. Cloudflare D1 is only reachable through awaited
 statements, and a synchronous adapter over an async binding would have to block
 the event loop, spin a thread or fake a result — all three would be dishonest.
 This adapter therefore implements the EXISTING ``ClawAutomationStore`` protocol
-the same way ``D1ClawTaskAlertStore`` implements ``ClawMemoryStore``: the
+the same way the other awaitable adapters do: the
 protocol names the contract, the adapter supplies the awaitable implementation,
 and each consumer resolves either shape through the established
 ``inspect.isawaitable`` tolerance. No ``asyncio.run``, no
