@@ -1764,11 +1764,12 @@
     }
   }
 
-  // 대표 결정(2026-11-07): an automation notification click opens the automation's
-  // own conversation — one rule owns one conversation, and the query carries the
-  // server-derived chat_ id only, consumed once after the session proves the
-  // owner. The id must be the exact conversation grammar; anything else is left
-  // in the URL untouched rather than decoded into a target.
+  // Owner decision 2026-11-07: an automation notification click opens the
+  // automation's own conversation — one rule owns one conversation, and the
+  // query carries the server-derived chat_ id only, consumed once after the
+  // session proves the owner. The id must be the exact conversation grammar;
+  // anything else is left in the URL untouched rather than decoded into a
+  // target.
   const NOTIFICATION_CONVERSATION_ID = /^chat_[a-f0-9]{32}$/;
   let pendingNotificationConversationId = "";
   {
