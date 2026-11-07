@@ -135,9 +135,15 @@ function Get-HttpStatus([string]$Url) {
 function Get-FrontVersionIds {
     Push-Location $shaFrontDir
     try {
-        $out = (& npx wrangler deployments list 2>&1 | Out-String)
+        # wrangler's text output has no "Version ID:" label and lists the oldest
+        # deployment first, so read --json and take the newest deployment's
+        # versions (highest traffic share first). Full 36-char UUIDs.
+        $out = (& npx wrangler deployments list --json 2>$null | Out-String)
         if ($LASTEXITCODE -ne 0) { return @() }
-        return ([regex]::Matches($out, "Version ID:\s*([0-9a-fA-F-]{32})") | ForEach-Object { $_.Groups[1].Value })
+        try { $deps = @($out | ConvertFrom-Json | ForEach-Object { $_ }) } catch { return @() }
+        if ($deps.Count -eq 0) { return @() }
+        $latest = $deps | Sort-Object { [datetime]$_.created_on } -Descending | Select-Object -First 1
+        return @($latest.versions | Sort-Object { [double]$_.percentage } -Descending | ForEach-Object { [string]$_.version_id })
     }
     finally { Pop-Location }
 }
