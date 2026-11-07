@@ -16,8 +16,11 @@ facts without adding a second session store:
 * the logout revokes that exact canonical session in the Control Plane;
 * every cookie-bearing request checks that canonical session and refuses the
   request when it is no longer effective-ACTIVE. The COM2 composition may reuse
-  a successful check for 30 seconds in SQLite; logout and permission changes
-  invalidate that shared cache before returning success.
+  a successful check for 30 seconds in SQLite, and reloads it shortly before it
+  expires on a background task so the reloading request does not wait for the
+  authority; logout and permission changes invalidate that shared cache before
+  returning success. An expired entry is never served, so the revocation bound
+  stays the cache TTL.
 
 Scope and boundaries
 --------------------
@@ -230,19 +233,32 @@ class SessionRevocationGuardMiddleware:
         try:
             try:
                 if cache is not None:
-                    async def load_active_session():
-                        authority_started = time.perf_counter()
-                        try:
-                            session = await resolve(session_id=canonical_session_id)
-                        finally:
-                            record_login_timing(
-                                'session_revocation_authority',
-                                (time.perf_counter() - authority_started) * 1000)
-                        if not _is_effective_active(session, now=datetime.now(timezone.utc)):
-                            raise _InactiveCachedSession()
-                        return claims.user_id, session.expires_at.timestamp()
-                    cached_user = await cache.get_or_load(
-                        'legacy', claims.user_id, canonical_session_id, load_active_session)
+                    def active_session_loader(*, timed):
+                        async def load():
+                            started_at = time.perf_counter() if timed else None
+                            try:
+                                session = await resolve(session_id=canonical_session_id)
+                            finally:
+                                if started_at is not None:
+                                    record_login_timing(
+                                        'session_revocation_authority',
+                                        (time.perf_counter() - started_at) * 1000)
+                            if not _is_effective_active(session, now=datetime.now(timezone.utc)):
+                                raise _InactiveCachedSession()
+                            return claims.user_id, session.expires_at.timestamp()
+                        return load
+                    ahead = getattr(cache, 'get_or_load_ahead', None)
+                    if callable(ahead):
+                        cached_user = await ahead(
+                            'legacy', claims.user_id, canonical_session_id,
+                            active_session_loader(timed=True),
+                            # The reload runs after the response, so its authority
+                            # time is not this request's waiting time.
+                            active_session_loader(timed=False))
+                    else:
+                        cached_user = await cache.get_or_load(
+                            'legacy', claims.user_id, canonical_session_id,
+                            active_session_loader(timed=True))
                     active = cached_user == claims.user_id
                 else:
                     authority_started = time.perf_counter()
