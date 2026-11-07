@@ -417,3 +417,52 @@ def test_native_pc_tools_offer_search_inside_the_existing_scopes():
     assert pc_tools_turn.SEARCH_TOOL_SCOPES == {
         "search_files": "files_list", "search_contents": "files",
     }
+
+
+
+def test_the_search_status_poll_interval_grows_and_caps_at_five_seconds(monkeypatch):
+    """대표 결정(2026-11-07): the status polls start fast and grow
+    (0.5 → 1 → 2 → 4, capped at 5 s) while the PC search keeps running; the
+    verified result ends the wait the moment a poll observes it."""
+
+    import types
+
+    sleeps: list[float] = []
+
+    async def recording_sleep(seconds: float) -> None:
+        sleeps.append(seconds)
+
+    states = iter(["pending", "pending", "pending", "pending", "pending", "done"])
+    calls: list[str] = []
+
+    async def fake_call(**kwargs):
+        mode = kwargs["mode"]
+        calls.append(mode)
+        if mode == "dispatch":
+            return {"dispatch": {
+                "run_id": RUN_ID, "kind": "command", "dispatch_id": DISPATCH_ID,
+            }}
+        if mode == "command_status":
+            return {"dispatch": {
+                "dispatch_id": DISPATCH_ID, "run_id": RUN_ID,
+                "kind": "command", "state": next(states),
+            }}
+        if mode == "result":
+            return {"dispatch": {
+                "dispatch_id": DISPATCH_ID, "run_id": RUN_ID, "kind": "command",
+                "output": search_answer(), "result_sha256": "a" * 64,
+                "termination": "exited", "exit_code": 0,
+            }}
+        raise AssertionError("unexpected mode " + str(mode))
+
+    monkeypatch.setattr(driver, "_signed_files_call", fake_call)
+    monkeypatch.setattr(asyncio, "sleep", recording_sleep)
+
+    result = asyncio.run(_handler(PC_SEARCH_FILES_TOOL_ID, "name")({"query": "견적"}))
+
+    # The verified result ends the wait as soon as a poll observes it.
+    assert result["output"].startswith('{"ok":true')
+    assert calls.count("command_status") == 6
+    # The polls start fast and grow 2× up to the 5 s cap.
+    assert sleeps[:5] == [0.5, 1.0, 2.0, 4.0, 5.0]
+    assert max(sleeps) <= 5.0

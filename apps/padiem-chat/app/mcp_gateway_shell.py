@@ -591,6 +591,7 @@ async def execute_pc_shell(request, *, uid, subject_id, workspace_id, device_id,
     job_id = started["job_id"]
     deadline = _NOW() + arguments["wait_seconds"]
     snapshot = None
+    poll_seconds = PC_SHELL_POLL_SECONDS
     while _NOW() < deadline:
         snapshot = await _job_snapshot(
             request, identity={"user_id": uid, "device_id": device_id, "token_id": token_id},
@@ -599,7 +600,10 @@ async def execute_pc_shell(request, *, uid, subject_id, workspace_id, device_id,
         )
         if snapshot.get("status") not in {"queued", "running"}:
             return snapshot
-        await asyncio.sleep(min(PC_SHELL_POLL_SECONDS, max(0, deadline - _NOW())))
+        # 대표 결정(2026-11-07): 대기 폴링은 처음 빠르게, 점점 느리게(상한 5초).
+        # 전체 대기 한도(wait_seconds)는 그대로다.
+        await asyncio.sleep(min(poll_seconds, max(0, deadline - _NOW())))
+        poll_seconds = min(poll_seconds * 2, 5.0)
     return {"status": "running", "answer": "응답 대기 시간이 끝났습니다. PC 작업은 계속 실행 중입니다.",
             "job_id": job_id, "output": "", "next_offset": 0,
             "_job_receipt": job_id}
