@@ -95,7 +95,7 @@ def test_engine_reads_the_model_and_the_window_from_the_server_contract() -> Non
 def test_wiring_uses_the_live_engine_first_and_keeps_the_recorded_fallback() -> None:
     source = WIRING_JS.read_text(encoding="utf-8")
     assert "PadiemVoiceLiveSession" in source
-    assert "fallbackFactory: groqFactory" in source
+    assert "fallbackFactory: recordedFactory" in source
     # The recorded-chunk path stays reachable as the next provider.
     assert "createRecognizerFactory" in source
     # The token route is same-origin and product-specific.

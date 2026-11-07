@@ -24,9 +24,9 @@ test("exports ported merge and turn-buffer", () => {
 test("constants match Global Classroom #87", () => {
   const c = adapter.constants;
   assert.equal(c.LIVE_VAD_SILENCE_MS, 1300);
-  assert.equal(c.GROQ_MIN_CHUNK_MS, 4000);
-  assert.equal(c.GROQ_SILENCE_CUT_MS, 700);
-  assert.equal(c.GROQ_MAX_CHUNK_MS, 20000);
+  assert.equal(c.RECORDED_MIN_CHUNK_MS, 4000);
+  assert.equal(c.RECORDED_SILENCE_CUT_MS, 700);
+  assert.equal(c.RECORDED_MAX_CHUNK_MS, 20000);
   assert.equal(c.TRANSCRIPT_TURN_STALL_MS, 2500);
 });
 
@@ -38,15 +38,15 @@ test("constants match Global Classroom #87", () => {
 test("recognizer and adapter agree on the reviewed chunk thresholds", () => {
   const wiring = require("../static/voice-stt-wiring.js");
   const contract = adapter.constants;
-  const keys = ["GROQ_MIN_CHUNK_MS", "GROQ_SILENCE_CUT_MS", "GROQ_MAX_CHUNK_MS"];
+  const keys = ["RECORDED_MIN_CHUNK_MS", "RECORDED_SILENCE_CUT_MS", "RECORDED_MAX_CHUNK_MS"];
   for (const key of keys) {
     assert.equal(typeof wiring[key], "number", key + " missing from the recognizer");
     assert.equal(typeof contract[key], "number", key + " missing from the adapter");
     assert.equal(wiring[key], contract[key], key + " drifted between the two modules");
   }
   // The cut rule is only sound while the window stays ordered.
-  assert.ok(contract.GROQ_MIN_CHUNK_MS < contract.GROQ_MAX_CHUNK_MS);
-  assert.ok(contract.GROQ_SILENCE_CUT_MS > 0 && contract.GROQ_SILENCE_CUT_MS < contract.GROQ_MIN_CHUNK_MS);
+  assert.ok(contract.RECORDED_MIN_CHUNK_MS < contract.RECORDED_MAX_CHUNK_MS);
+  assert.ok(contract.RECORDED_SILENCE_CUT_MS > 0 && contract.RECORDED_SILENCE_CUT_MS < contract.RECORDED_MIN_CHUNK_MS);
 });
 
 test("interim is preview only, never final candidate", () => {

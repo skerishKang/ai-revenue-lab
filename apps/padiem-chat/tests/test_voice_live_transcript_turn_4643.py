@@ -28,9 +28,9 @@ GC_CONTRACT = {
     "LIVE_SESSION_ROTATE_MS": "9 * 60 * 1000 + 20 * 1000",
     "LIVE_AUDIO_HANDOFF_FRAMES": "40",
     "LIVE_TAIL_FLUSH_DRAIN_MS": "1200",
-    "GROQ_MIN_CHUNK_MS": "4000",
-    "GROQ_SILENCE_CUT_MS": "700",
-    "GROQ_MAX_CHUNK_MS": "20000",
+    "RECORDED_MIN_CHUNK_MS": "4000",
+    "RECORDED_SILENCE_CUT_MS": "700",
+    "RECORDED_MAX_CHUNK_MS": "20000",
     "TRANSCRIPT_TURN_STALL_MS": "2500",
 }
 
@@ -73,7 +73,7 @@ def test_authority_exports_the_full_shared_surface() -> None:
     source = AUTHORITY_JS.read_text(encoding="utf-8")
     for name in [
         "mergeLiveTranscriptChunk", "createAudioHandoffBuffer", "flushLiveTranscriptTail",
-        "createTranscriptTurnBuffer", "shouldCutGroqChunk", "shouldFlushStalledTurn",
+        "createTranscriptTurnBuffer", "shouldCutRecordedChunk", "shouldFlushStalledTurn",
         "startSpeechSilenceProbe", "resolveRecognitionLanguage",
     ]:
         assert f"{name}: {name}" in source, f"authority does not export {name}"

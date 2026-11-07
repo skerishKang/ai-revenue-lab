@@ -25,15 +25,15 @@ const {
   LIVE_SESSION_ROTATE_MS,
   LIVE_AUDIO_HANDOFF_FRAMES,
   LIVE_TAIL_FLUSH_DRAIN_MS,
-  GROQ_MIN_CHUNK_MS,
-  GROQ_SILENCE_CUT_MS,
-  GROQ_MAX_CHUNK_MS,
+  RECORDED_MIN_CHUNK_MS,
+  RECORDED_SILENCE_CUT_MS,
+  RECORDED_MAX_CHUNK_MS,
   TRANSCRIPT_TURN_STALL_MS,
   mergeLiveTranscriptChunk,
   createAudioHandoffBuffer,
   flushLiveTranscriptTail,
   createTranscriptTurnBuffer,
-  shouldCutGroqChunk,
+  shouldCutRecordedChunk,
   shouldFlushStalledTurn,
   startSpeechSilenceProbe,
   resolveRecognitionLanguage,
@@ -101,15 +101,15 @@ test("the Live session rotates before the provider session limit", () => {
 });
 
 test("the Groq fallback cuts at a speech pause, not at a fixed clock", () => {
-  const cutAt = (elapsedMs, silenceMs) => shouldCutGroqChunk({ elapsedMs, silenceMs });
+  const cutAt = (elapsedMs, silenceMs) => shouldCutRecordedChunk({ elapsedMs, silenceMs });
 
   // The previous fixed 5500ms stop cut mid-sentence while speech continued.
   assert.equal(cutAt(5500, 0), false);
-  assert.equal(cutAt(GROQ_MIN_CHUNK_MS - 1, 60000), false);
-  assert.equal(cutAt(GROQ_MIN_CHUNK_MS, GROQ_SILENCE_CUT_MS - 1), false);
-  assert.equal(cutAt(GROQ_MIN_CHUNK_MS, GROQ_SILENCE_CUT_MS), true);
+  assert.equal(cutAt(RECORDED_MIN_CHUNK_MS - 1, 60000), false);
+  assert.equal(cutAt(RECORDED_MIN_CHUNK_MS, RECORDED_SILENCE_CUT_MS - 1), false);
+  assert.equal(cutAt(RECORDED_MIN_CHUNK_MS, RECORDED_SILENCE_CUT_MS), true);
   // A monologue that never pauses is still bounded.
-  assert.equal(cutAt(GROQ_MAX_CHUNK_MS, 0), true);
+  assert.equal(cutAt(RECORDED_MAX_CHUNK_MS, 0), true);
 });
 
 test("the browser fallback language follows the hint, then the observed source", () => {
@@ -481,15 +481,15 @@ test("no new copy of the #87 numeric contract appears outside the authority", ()
   // means. Any definition that is not the authority and not listed here fails.
   const PENDING_REMOVAL = new Set([
     // voice-stt-wiring.js re-declares the Groq chunk boundary and hand-rolls its
-    // own silence gate instead of shouldCutGroqChunk()/startSpeechSilenceProbe().
+    // own silence gate instead of shouldCutRecordedChunk()/startSpeechSilenceProbe().
     // It is owned by the open #4698 lane, so it is reported, not edited in parallel.
-    "voice-stt-wiring.js:GROQ_MIN_CHUNK_MS",
-    "voice-stt-wiring.js:GROQ_SILENCE_CUT_MS",
-    "voice-stt-wiring.js:GROQ_MAX_CHUNK_MS",
+    "voice-stt-wiring.js:RECORDED_MIN_CHUNK_MS",
+    "voice-stt-wiring.js:RECORDED_SILENCE_CUT_MS",
+    "voice-stt-wiring.js:RECORDED_MAX_CHUNK_MS",
   ]);
   const AUTHORITY = "voice-live-transcript-turn.js";
-  const KEYS = ["LIVE_VAD_SILENCE_MS", "LIVE_SESSION_ROTATE_MS", "GROQ_MIN_CHUNK_MS",
-    "GROQ_SILENCE_CUT_MS", "GROQ_MAX_CHUNK_MS", "TRANSCRIPT_TURN_STALL_MS",
+  const KEYS = ["LIVE_VAD_SILENCE_MS", "LIVE_SESSION_ROTATE_MS", "RECORDED_MIN_CHUNK_MS",
+    "RECORDED_SILENCE_CUT_MS", "RECORDED_MAX_CHUNK_MS", "TRANSCRIPT_TURN_STALL_MS",
     "LIVE_TAIL_FLUSH_DRAIN_MS", "LIVE_AUDIO_HANDOFF_FRAMES"];
 
   const duplicates = [];
@@ -507,13 +507,13 @@ test("no new copy of the #87 numeric contract appears outside the authority", ()
   // above would pass by deleting the original instead of the copies.
   const authorityKeys = found.filter((entry) => entry.startsWith(AUTHORITY + ":"));
   assert.deepEqual(authorityKeys.sort(), [
-    "voice-live-transcript-turn.js:GROQ_MAX_CHUNK_MS",
-    "voice-live-transcript-turn.js:GROQ_MIN_CHUNK_MS",
-    "voice-live-transcript-turn.js:GROQ_SILENCE_CUT_MS",
     "voice-live-transcript-turn.js:LIVE_AUDIO_HANDOFF_FRAMES",
     "voice-live-transcript-turn.js:LIVE_SESSION_ROTATE_MS",
     "voice-live-transcript-turn.js:LIVE_TAIL_FLUSH_DRAIN_MS",
     "voice-live-transcript-turn.js:LIVE_VAD_SILENCE_MS",
+    "voice-live-transcript-turn.js:RECORDED_MAX_CHUNK_MS",
+    "voice-live-transcript-turn.js:RECORDED_MIN_CHUNK_MS",
+    "voice-live-transcript-turn.js:RECORDED_SILENCE_CUT_MS",
     "voice-live-transcript-turn.js:TRANSCRIPT_TURN_STALL_MS",
   ], "the authority lost a contract constant");
 });
