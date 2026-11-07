@@ -1,9 +1,11 @@
 # PADIEM user-session helper — installer (#7065 c, stage 2)
 #
-#   .\install_user_helper.ps1 -DeviceId dev_<32 hex> -SecretFile <path>
+#   .\install_user_helper.ps1 -DeviceId <raw device id> -SecretFile <path>
 #       Register the helper to start at this user's logon. NO administrator right.
+#       -DeviceId accepts raw MeshCentral device IDs (may include '$'); a stable
+#       hashed pipe identifier is derived internally.
 #
-#   .\install_user_helper.ps1 -DeviceId dev_<32 hex> -SecretFile <path> -GrantSystemAcl
+#   .\install_user_helper.ps1 -DeviceId <raw device id> -SecretFile <path> -GrantSystemAcl
 #       ALSO grant the helper pipe's DACL to SYSTEM. THIS STEP NEEDS ADMINISTRATOR.
 #
 #   .\install_user_helper.ps1 -Uninstall
@@ -58,7 +60,7 @@ if (-not $SecretFile) { throw '-SecretFile is required' }
 if (-not (Test-Path -LiteralPath $SecretFile)) { throw "secret file not found: $SecretFile" }
 
 # The device id is validated by the Python module, not by this script: one
-# definition of a valid device id, and it is the one the pipe name uses.
+# definition of a valid raw device id; the module derives a stable hashed pipe name.
 $deviceOk = & $Python -c "import sys; from claw_connect.user_session_helper import pipe_name; pipe_name(sys.argv[1])" $DeviceId 2>&1
 if ($LASTEXITCODE -ne 0) { throw "invalid device id: $deviceOk" }
 

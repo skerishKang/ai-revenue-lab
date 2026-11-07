@@ -39,6 +39,18 @@ from .local_agent_meshcentral_private_reader import (
 )
 from .reparse_guard import walk_hits_reparse_point
 
+_DEVICE_ID_RAW = re.compile(r"^[A-Za-z0-9_.$:@+\-]{1,256}\Z")
+
+
+def user_helper_pipe_suffix(device_id: str) -> str:
+    if not isinstance(device_id, str) or _DEVICE_ID_RAW.fullmatch(device_id) is None:
+        raise ValueError("device_id is not a device identifier")
+    return "dev_" + hashlib.sha256(device_id.encode("utf-8")).hexdigest()[:32]
+
+
+def user_helper_pipe_name(device_id: str) -> str:
+    return USER_HELPER_PIPE_PREFIX + user_helper_pipe_suffix(device_id)
+
 #: Same path the Chat worker mounts. Executor and server must agree exactly.
 POLL_PATH = "/api/claw/connector/mesh-reads/poll"
 RESULT_PATH = "/api/claw/connector/mesh-reads/result"
@@ -1438,11 +1450,14 @@ class OracleMeshExecutor:
         exchanges one length-prefixed (4-byte BE + UTF-8 JSON) frame.
 
         Secret value is never printed. Failure to reach the helper is reported
-        as user_session_unavailable — no SYSTEM fallback.
+        as user_session_unavailable ? no SYSTEM fallback.
         """
         import base64 as _b64
-        def b(v):
-            return _b64.b64encode((v or "").encode("utf-8")).decode("ascii")
+        import json as _json
+        # Compute stable hashed pipe name from raw device_id; embed only the
+        # safe derived name so raw IDs (which may contain '$') never appear in
+        # the PowerShell script and cannot trigger variable expansion.
+        pipe_name = user_helper_pipe_name(device_id)
         mat = "\n".join([request_id, shell, cwd or "", command, str(int(timeout_seconds)), distro or ""]).encode("utf-8")
         # material is not secret; embed as base64 data for exact byte fidelity.
         mat_b64 = _b64.b64encode(mat).decode("ascii")
@@ -1450,13 +1465,12 @@ class OracleMeshExecutor:
             "request_id": request_id, "shell": shell, "cwd": cwd,
             "command": command, "timeout_seconds": int(timeout_seconds), "distro": distro,
         }
-        import json as _json
         req_b64 = _b64.b64encode(_json.dumps(payload, ensure_ascii=True, separators=(",", ":")).encode("utf-8")).decode("ascii")
         script = f"""
 $ErrorActionPreference='Stop'
 $mat=[Convert]::FromBase64String('{mat_b64}')
 $reqB64='{req_b64}'
-$pipeName='padiem-user-helper-{device_id}'
+$pipeName='{pipe_name}'
 $pipePath='\\\\.\\pipe\\'+$pipeName
 function Fail($code,$msg){{ Write-Output ($code+': '+$msg); exit 1 }}
 try {{
@@ -1549,14 +1563,10 @@ try {{
         if not isinstance(timeout_s, int) or isinstance(timeout_s, bool): timeout_s = 30
         # Helper (stage-1, #7076 module) is final allowlist authority; executor does format checks only.
         device_id = getattr(dispatch, "device_id", None) or ""
-        if not device_id:
-            nr = node_ref or ""
-            import re as _re
-            m = _re.search(r"(dev_[0-9a-f]{32})", nr)
-            device_id = m.group(1) if m else ""
-        if not device_id:
+        if not isinstance(device_id, str) or not device_id.strip():
             return OracleMeshExecutionOutcome(termination="not_executed", exit_code=None,
                 body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
+        device_id = device_id.strip()
         try:
             ps = self.build_user_helper_pipe_client_ps(device_id=device_id, request_id=req_id, shell=shell_name, command=cmd, cwd=cwd, timeout_seconds=timeout_s, distro=distro)
         except Exception:

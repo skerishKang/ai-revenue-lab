@@ -420,11 +420,18 @@ def test_the_unregister_script_names_only_this_task():
     assert "-Confirm:$false" in script
 
 
-@pytest.mark.parametrize("bad", ["", "dev_short", "dev_" + "Z" * 32])
+@pytest.mark.parametrize("bad", ["", "has space", "bad\nid", "../../etc"])
 def test_the_launch_refuses_a_bad_device_id(bad):
     with pytest.raises(Exception):
         registration.build_launch(python_executable="python.exe", device_id=bad,
                                   secret_file="C:\\secret")
+
+
+def test_the_launch_accepts_meshcentral_raw_device_id():
+    raw = "abcdefghijklmnopqrstuvwx1234567890ABCDEFGHIJKLMNOPQRSTfi$D62t1"
+    launch = registration.build_launch(python_executable="python.exe", device_id=raw,
+                                       secret_file="C:\\secret")
+    assert raw in " ".join(launch.arguments)
 
 
 def test_the_launch_refuses_a_secret_path_with_a_quote():

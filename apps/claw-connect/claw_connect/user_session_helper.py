@@ -95,9 +95,10 @@ MAX_CWD_CHARS = 1_024
 REPLAY_WINDOW = 512
 
 _REQUEST_ID = re.compile(r"req_[0-9a-f]{32}\Z")
-#: A device id is interpolated into a pipe name, so it is refused unless it is
-#: exactly the shape the server issues. No customer text reaches this position.
-_DEVICE_ID = re.compile(r"dev_[0-9a-f]{32}\Z")
+#: Raw device identifiers from MeshCentral may contain alphanumerics and '$' (and '@', '.', '-', '_', ':', '+').
+#: The pipe name is derived as a stable hash so arbitrary safe raw ids map to the
+#: same pipe across helper/install/executor. Validate minimally (no whitespace/control/path separators).
+_DEVICE_ID_RAW = re.compile(r"^[A-Za-z0-9_.$:@+\-]{1,256}\Z")
 #: A WSL distribution name is an argv element, never a shell word.
 _DISTRO = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
 
@@ -126,15 +127,26 @@ class UserHelperError(RuntimeError):
         self.detail = detail
 
 
+def device_id_pipe_suffix(device_id: str) -> str:
+    """Derive the pipe identifier suffix from a raw device id.
+
+    Use sha256 of the raw UTF-8 device id hex-prefix to produce a stable
+    ``dev_<32hex>`` suffix regardless of original charset (e.g. '$').
+    """
+    if not isinstance(device_id, str) or _DEVICE_ID_RAW.fullmatch(device_id) is None:
+        raise UserHelperError(USER_HELPER_BAD_REQUEST, "device_id is not a device identifier")
+    h = hashlib.sha256(device_id.encode("utf-8")).hexdigest()
+    return "dev_" + h[:32]
+
+
 def pipe_name(device_id: str) -> str:
     """The local pipe this PC's helper listens on.
 
-    The device id is validated rather than escaped: it is the server's own
-    identifier, and a name built from anything else is not this helper's pipe.
+    Accepts raw device identifiers from MeshCentral (may include '$' etc.)
+    and derives a stable hashed pipe name. The returned name is always of
+    form ``padiem-user-helper-dev_<32hex>``.
     """
-    if not isinstance(device_id, str) or _DEVICE_ID.fullmatch(device_id) is None:
-        raise UserHelperError(USER_HELPER_BAD_REQUEST, "device_id is not a device identifier")
-    return PIPE_PREFIX + device_id
+    return PIPE_PREFIX + device_id_pipe_suffix(device_id)
 
 
 def pipe_path(device_id: str) -> str:
