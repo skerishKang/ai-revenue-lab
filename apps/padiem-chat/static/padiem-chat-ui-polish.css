@@ -418,3 +418,34 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
 .settings-guide summary { cursor: pointer; font-weight: 650; }
 .settings-guide p, .settings-guide li { font-size: 13px; line-height: 1.65; }
 .settings-guide ol { margin: 8px 0 0; padding-left: 22px; }
+
+/* #6659: the guest (pre-login) screen's legal links, under the starter grid.
+ * The accepted base stylesheet stays byte-pinned, so this layer owns the rule.
+ * Compact text links only — no layout pressure on the topbar account target. */
+.guest-legal-links {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--muted, #6f7079);
+}
+.guest-legal-links a {
+  color: var(--accent-strong, #5546d6);
+  text-decoration: none;
+  margin: 0 10px;
+}
+.guest-legal-links a:hover { text-decoration: underline; }
+
+/* CI Linux font metrics render the topbar/sidebar login label at ~43.6px —
+ * under the shared 44px touch-target contract the account-session QA
+ * enforces. Pin the floor here; the accepted base stylesheet stays pinned. */
+.app-shell .login-button {
+  min-width: 44px;
+}
+
+/* #6659: the guest legal links are interactive targets too — keep them at the
+ * 24x24 CSS px floor the accessibility QA enforces. */
+.guest-legal-links a {
+  display: inline-block;
+  min-height: 24px;
+  padding: 4px 10px;
+  box-sizing: border-box;
+}
