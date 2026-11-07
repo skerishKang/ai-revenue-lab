@@ -60,6 +60,8 @@
 #   PADIEM_COM2_PYTHON           python3
 #   PADIEM_COM2_GIT              git
 #   B66_CGI_ALPHA_USERNAME / B66_CGI_ALPHA_PASSWORD  existing QA account
+#   PADIEM_COM2_CHAT_VENV_PYTHON  the chat service's own venv interpreter
+#                                (default /opt/padiem/chat-com2/venv/bin/python)
 #   PADIEM_COM2_AI_CHECK_BASE_URL  target Chat origin (default https://chat.padiem.net)
 #   COM2_CHAT_HEALTH_URL / COM2_P01_HEALTH_URL / COM2_B14_HEALTH_URL
 set -euo pipefail
@@ -132,6 +134,7 @@ apply=0
 ai_check=warn
 extended_smoke=0
 ai_base_url=${PADIEM_COM2_AI_CHECK_BASE_URL:-https://chat.padiem.net}
+chat_venv_python=${PADIEM_COM2_CHAT_VENV_PYTHON:-/opt/padiem/chat-com2/venv/bin/python}
 requested=''
 resolved=''
 old=''
@@ -1989,6 +1992,17 @@ run_deploy() {
     fi
   done
 
+  tools_serialization=SKIP
+  if (( ! failed )) && [[ ${result[chat]} == PASS ]] && [[ -x "$chat_venv_python" ]]; then
+    if tools_out=$("$chat_venv_python" "$staged/.github/scripts/post_deploy_tool_serialization_check.py"         --staged-app "$staged/apps/padiem-chat" 2>/dev/null); then
+      tools_serialization=PASS
+    else
+      tools_serialization=FAIL
+      failed=1
+    fi
+    say "$tools_out"
+  fi
+
   if (( ! failed )); then
     ai_status=FAIL
     ai_code=ai_check_unavailable
@@ -2032,7 +2046,7 @@ run_deploy() {
   fi
   # Reported only: an installer this run does not call may be behind the code.
   report_sidecar_drift || true
-  say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} executor:${result[executor]} $ai_word"
+  say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} executor:${result[executor]} tools_serialization:$tools_serialization $ai_word"
   if (( extended_smoke )); then
     "$python_bin" "$staged/deploy/host-com2/post_deploy_smoke.py" \
       --base-url "$ai_base_url" --chat-db "$chat_db" \
