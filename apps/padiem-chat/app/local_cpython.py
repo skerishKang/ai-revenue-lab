@@ -639,6 +639,12 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
     app.state.pc_device_pairing_store = D1PcPairingStore(db)
     app.state.claw_pc_device_selection_store = D1PcDeviceSelectionStore(db)
     app.state.pc_pairing_install_url = (os.getenv("PC_AGENT_INSTALL_URL") or "").strip()
+    app.state.pc_pairing_user_helper_url = (
+        os.getenv("PC_USER_HELPER_INSTALL_URL") or ""
+    ).strip()
+    app.state.pc_pairing_user_helper_sha256 = (
+        os.getenv("PC_USER_HELPER_SHA256") or ""
+    ).strip()
 
     # The upload UI and write routes open only on the COM2 host when the
     # reviewed PDF conversion dependency is actually installed.

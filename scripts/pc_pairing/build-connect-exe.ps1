@@ -100,7 +100,8 @@ function Invoke-Compile {
     (New-Object Text.UTF8Encoding($false)))
   $arguments = @(
     "/nologo", "/noconfig", "/target:exe", "/optimize+", "/platform:anycpu", "/debug-",
-    "/codepage:65001", "/reference:System.dll", "/win32manifest:app.manifest",
+    "/codepage:65001", "/reference:System.dll", "/reference:System.Management.dll",
+    "/win32manifest:app.manifest",
     "/out:$ExeName", "PadiemPcConnect.cs"
   )
   # Every path this function touches is absolute: the two builds run in one process,

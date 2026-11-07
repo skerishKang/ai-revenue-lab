@@ -13,6 +13,12 @@
   agent's name and finishes the pairing - this PC never has to name itself,
   and no account password is ever asked for or stored here.
 
+  It then provisions the optional user-session helper: the deployment's
+  versioned helper EXE is downloaded, its SHA-256 checked, and it is placed in
+  %ProgramData%\Padiem with a 32-byte secret, a per-user ONLOGON/Limited task
+  and a local helper-status.json. A helper that cannot be provisioned never
+  undoes the agent connection above.
+
   Nothing about the pairing is written to disk: the code, the tag and the link
   live in this process only. Re-running the script on an already-installed PC
   skips the download and re-submits the pairing for the code you type now.
@@ -58,6 +64,8 @@ $Copy = @{
   ElevationNeeded = "관리자 권한 승인 창이 나타나면 [예]를 눌러 주세요. 설치에는 관리자 권한이 필요합니다."
   ElevationRefused = "설치 권한이 거부되었습니다. 이 스크립트를 관리자 권한으로 다시 실행해 주세요."
   ElevationFailed = "PC 연결 설치 프로그램을 실행하지 못했습니다. 잠시 후 다시 시도해 주세요."
+  HelperInstalled = "사용자 세션 도우미를 설치했습니다."
+  HelperUnavailable = "사용자 세션 도우미는 설치하지 못했습니다. PC 연결은 계속 진행됩니다."
 }
 
 # ---- the agent install sequence the double-click program runs ----
@@ -128,6 +136,164 @@ function Install-PadiemAgentService {
   return ($null -ne $service)
 }
 
+# ---- the user-session helper the one-click install also provisions ----
+# The helper is a per-user process, not a service: it listens on this PC's
+# named pipe and runs one request per process (see claw_connect.user_helper_service).
+# It is optional. The MeshCentral agent above is the connection; a helper that
+# cannot be provisioned here is recorded in helper-status.json and never undoes
+# the agent install or asks for a second elevation.
+$PadiemUserHelperTaskName = "PadiemUserSessionHelper"
+$PadiemUserHelperTaskFolder = "\Padiem\"
+$PadiemUserHelperFileName = "padiem-user-helper.exe"
+$PadiemUserHelperStateDir = if ($env:ProgramData) { Join-Path $env:ProgramData "Padiem" } else { $null }
+$PadiemUserHelperExe = if ($PadiemUserHelperStateDir) { Join-Path $PadiemUserHelperStateDir $PadiemUserHelperFileName } else { $null }
+$PadiemUserHelperSecret = if ($PadiemUserHelperStateDir) { Join-Path $PadiemUserHelperStateDir "helper.secret" } else { $null }
+$PadiemUserHelperStatus = if ($PadiemUserHelperStateDir) { Join-Path $PadiemUserHelperStateDir "helper-status.json" } else { $null }
+
+function Get-PadiemConsoleUser {
+  # The account actually signed in at the console - not the elevated
+  # administrator token this installer runs under. Registering the installer's
+  # own identity would put the helper in the wrong session (or in no session at
+  # all), which is the one thing the logon task must not do.
+  try {
+    $computer = Get-CimInstance -ClassName Win32_ComputerSystem -ErrorAction Stop
+    $name = [string] $computer.UserName
+    if ($name -and $name -match '^[^\\/\s]+\\[^\\/\s]+$') { return $name }
+  } catch { }
+  return $null
+}
+
+function Get-PadiemHelperDeviceId {
+  param([string] $Tag)
+  # The pairing tag is the identifier the server and this PC already share, so
+  # it is the helper's device id by default. A tag that is not a safe raw id
+  # gets a fresh 32-hex id; PR-3 reads whichever value this task carries out
+  # of its own argument and derives the same pipe name from it.
+  if ($Tag -and $Tag -match '^[A-Za-z0-9_.$:@+\-]{1,256}$') { return $Tag }
+  return [guid]::NewGuid().ToString("N")
+}
+
+function Get-PadiemSha256 {
+  param([string] $Path)
+  $sha = [System.Security.Cryptography.SHA256]::Create()
+  try {
+    $stream = [System.IO.File]::OpenRead($Path)
+    try {
+      return ([BitConverter]::ToString($sha.ComputeHash($stream))).Replace("-", "").ToLowerInvariant()
+    } finally { $stream.Dispose() }
+  } finally { $sha.Dispose() }
+}
+
+function New-PadiemHelperSecret {
+  param([string] $Path)
+  # 32 random bytes, written as 64 lowercase hex characters - the shape the
+  # Connector's own provisioning lane already writes. The value stays in this
+  # process and on this file; it is never written to the console or the status.
+  $bytes = New-Object byte[] 32
+  $random = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+  try { $random.GetBytes($bytes) } finally { $random.Dispose() }
+  $hex = -join ($bytes | ForEach-Object { $_.ToString("x2") })
+  $encoding = New-Object System.Text.UTF8Encoding($false)
+  $writer = New-Object System.IO.StreamWriter($Path, $false, $encoding)
+  try { $writer.Write($hex + "`n") } finally { $writer.Dispose() }
+}
+
+function Set-PadiemHelperSecretAcl {
+  param([string] $Path, [string] $ConsoleUser)
+  # SYSTEM reads the secret; the console user reads and writes it. Inheritance
+  # is removed so the elevated installer account is not an implicit reader.
+  $null = & icacls $Path /inheritance:r /grant:r "SYSTEM:(R)" ($ConsoleUser + ":(M)") 2>&1
+  return ($LASTEXITCODE -eq 0)
+}
+
+function Write-PadiemHelperStatus {
+  param([hashtable] $Status)
+  # Local evidence only. The secret is never a member of this hashtable, and
+  # the writer is used instead of the cmdlets the wrapper bans for pairing data.
+  if (-not $PadiemUserHelperStatus) { return }
+  try {
+    New-Item -ItemType Directory -Path $PadiemUserHelperStateDir -Force | Out-Null
+    $json = $Status | ConvertTo-Json -Compress
+    $encoding = New-Object System.Text.UTF8Encoding($false)
+    $writer = New-Object System.IO.StreamWriter($PadiemUserHelperStatus, $false, $encoding)
+    try { $writer.Write($json + "`n") } finally { $writer.Dispose() }
+  } catch { }
+}
+
+function Register-PadiemUserHelperTask {
+  param([string] $HelperExe, [string] $SecretPath, [string] $DeviceId, [string] $ConsoleUser)
+  # ONLOGON, Interactive, Limited: the helper starts in the console user's own
+  # session and never runs elevated. Registering for that user from this
+  # already-elevated process does not ask Windows for another approval.
+  $arguments = '--device-id "' + $DeviceId + '" --secret-file "' + $SecretPath + '"'
+  $action = New-ScheduledTaskAction -Execute $HelperExe -Argument $arguments -WorkingDirectory $PadiemUserHelperStateDir
+  $trigger = New-ScheduledTaskTrigger -AtLogOn -User $ConsoleUser
+  $principal = New-ScheduledTaskPrincipal -UserId $ConsoleUser -LogonType Interactive -RunLevel Limited
+  $settings = New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+  Register-ScheduledTask -TaskName $PadiemUserHelperTaskName -TaskPath $PadiemUserHelperTaskFolder -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "PADIEM user-session helper (#7108). One request per process." -Force | Out-Null
+  Start-ScheduledTask -TaskName $PadiemUserHelperTaskName -TaskPath $PadiemUserHelperTaskFolder
+  return $true
+}
+
+function Install-PadiemUserHelper {
+  # Download, verify, place, secret, ACL, logon task, status: the same order in
+  # both PowerShell lanes and the double-click program. Every failure returns
+  # false after writing its reason; nothing here throws into the caller.
+  param([string] $Url, [string] $Sha256, [string] $DeviceId)
+  $status = @{ status = "not_installed"; task = $PadiemUserHelperTaskName; device_id = $DeviceId }
+  if (-not $Url -or -not $Sha256) { return $false }
+  if (-not $PadiemUserHelperStateDir) {
+    $status.reason = "state_dir_missing"
+    Write-PadiemHelperStatus $status
+    return $false
+  }
+  $temp = $null
+  try {
+    $consoleUser = Get-PadiemConsoleUser
+    if (-not $consoleUser) {
+      $status.reason = "no_console_user"
+      Write-PadiemHelperStatus $status
+      return $false
+    }
+    $temp = Join-Path $env:TEMP ("padiem-user-helper-" + [guid]::NewGuid().ToString("N") + ".exe")
+    Invoke-WebRequest -Uri $Url -OutFile $temp -UseBasicParsing -TimeoutSec 180
+    $actual = Get-PadiemSha256 -Path $temp
+    if ($actual -ne $Sha256.ToLowerInvariant()) {
+      $status.reason = "sha256_mismatch"
+      Write-PadiemHelperStatus $status
+      return $false
+    }
+    New-Item -ItemType Directory -Path $PadiemUserHelperStateDir -Force | Out-Null
+    Copy-Item -LiteralPath $temp -Destination $PadiemUserHelperExe -Force
+    if (-not (Test-Path -LiteralPath $PadiemUserHelperSecret) -or (Get-Item -LiteralPath $PadiemUserHelperSecret).Length -eq 0) {
+      New-PadiemHelperSecret -Path $PadiemUserHelperSecret
+    }
+    if (-not (Set-PadiemHelperSecretAcl -Path $PadiemUserHelperSecret -ConsoleUser $consoleUser)) {
+      $status.reason = "secret_acl_failed"
+      Write-PadiemHelperStatus $status
+      return $false
+    }
+    if (-not (Register-PadiemUserHelperTask -HelperExe $PadiemUserHelperExe -SecretPath $PadiemUserHelperSecret -DeviceId $DeviceId -ConsoleUser $consoleUser)) {
+      $status.reason = "task_registration_failed"
+      Write-PadiemHelperStatus $status
+      return $false
+    }
+    $status.status = "installed"
+    $status.sha256 = $Sha256.ToLowerInvariant()
+    $status.user = $consoleUser
+    Write-PadiemHelperStatus $status
+    return $true
+  } catch {
+    $status.status = "not_installed"
+    $status.reason = "provision_failed"
+    $status.error = $_.Exception.GetType().Name
+    Write-PadiemHelperStatus $status
+    return $false
+  } finally {
+    if ($temp) { Remove-Item -LiteralPath $temp -Force -ErrorAction SilentlyContinue }
+  }
+}
+
 function Format-PadiemCode {
   param([string] $Value)
   # Codes are issued from an unambiguous alphabet; accept the code whether the
@@ -192,6 +358,24 @@ function Invoke-PadiemClaim {
       -ContentType 'application/json' -Body $body -TimeoutSec 30
   } catch {
     return $null
+  }
+}
+
+function Invoke-PadiemUserHelperInstall {
+  param([string] $Url, [string] $Sha256, [string] $Tag)
+  # Optional and best-effort: an unconfigured deployment says nothing, and a
+  # configured one says which of the two happened without changing the exit code.
+  # Defined with the other functions, before the $installed branch that can call it.
+  if (-not $Url -or -not $Sha256) { return }
+  try {
+    $deviceId = Get-PadiemHelperDeviceId -Tag $Tag
+    if (Install-PadiemUserHelper -Url $Url -Sha256 $Sha256 -DeviceId $deviceId) {
+      Write-Host $Copy.HelperInstalled
+    } else {
+      Write-Host $Copy.HelperUnavailable
+    }
+  } catch {
+    Write-Host $Copy.HelperUnavailable
   }
 }
 
@@ -262,6 +446,8 @@ $handoff = Invoke-PadiemHandoff -Origin $origin -PairingCode $pairingCode
 if (-not $handoff -or -not $handoff.handoff) { Write-Error $Copy.NotReady; exit 3 }
 $agentUrl = [string] $handoff.handoff.agent_url
 $tag = [string] $handoff.handoff.install_tag
+$helperUrl = [string] $handoff.handoff.user_helper_url
+$helperSha = [string] $handoff.handoff.user_helper_sha256
 $installed = Test-PadiemAgentInstalled -Directory $AgentInstallDir
 
 if (-not $agentUrl -and -not $installed) {
@@ -283,6 +469,7 @@ if ($installed) {
     $claim = Invoke-PadiemClaim -Origin $origin -PairingCode $pairingCode -MeshNodeId $env:PADIEM_MESH_NODE_ID -Drives (Get-PadiemDriveRoots)
     if (-not $claim) { Write-Error $Copy.CodeRejected; exit 4 }
   }
+  Invoke-PadiemUserHelperInstall -Url $helperUrl -Sha256 $helperSha -Tag $tag
   if ($agentUrl) { Write-Host ("{0} (표식 {1})" -f $Copy.Waiting, $tag) } else { Write-Host $Copy.AgentReady }
   exit 0
 }
@@ -334,5 +521,6 @@ try {
 } finally {
   Remove-Item -LiteralPath $installer -Force -ErrorAction SilentlyContinue
 }
+Invoke-PadiemUserHelperInstall -Url $helperUrl -Sha256 $helperSha -Tag $tag
 Write-Host $Copy.Installed
 Write-Host ("{0} (표식 {1})" -f $Copy.Waiting, $tag)

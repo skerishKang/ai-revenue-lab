@@ -27,9 +27,6 @@ from starlette.responses import JSONResponse, Response
 from .auth_routes import current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .claw_local_access_source import MESH_PRESENCE_MAX_AGE_SECONDS
-from .pc_pairing_connect_exe_asset import connect_exe_bytes
-from .pc_pairing_agent_install import render_agent_install_block
-from .pc_scope_cache import invalidate_owner_scope
 from .pc_device_pairing_store import (
     INSTALL_TOKEN_HEX_CHARS,
     INSTALL_TOKEN_PREFIX,
@@ -38,6 +35,12 @@ from .pc_device_pairing_store import (
     normalize_root_label,
     normalize_root_path,
 )
+from .pc_pairing_agent_install import (
+    render_agent_install_block,
+    render_user_helper_install_block,
+)
+from .pc_pairing_connect_exe_asset import connect_exe_bytes
+from .pc_scope_cache import invalidate_owner_scope
 
 #: The collection is the issue endpoint: POST creates a code, GET lists this
 #: account's links and pending codes. A code that was issued and never redeemed
@@ -534,6 +537,24 @@ _INSTALL_TOKEN_RE = re.compile(
 )
 
 
+def user_helper_config(url_value: Any, sha_value: Any) -> tuple[str, str] | None:
+    """The deployment's reviewed helper EXE and digest, or ``None``.
+
+    Both halves are required and both are deployment values, never request
+    values: the URL is the versioned download the build published, and the
+    digest is the one that build printed. A half-configured deployment is
+    treated exactly like no configuration - the agent install still runs and
+    the helper step is simply absent.
+    """
+    url = install_url_from_config(url_value)
+    if url is None or not isinstance(sha_value, str):
+        return None
+    sha = sha_value.strip().lower()
+    if re.fullmatch(r"[0-9a-f]{64}", sha) is None:
+        return None
+    return url, sha
+
+
 def personalized_install_url(*, agent_url: Any, install_token: Any) -> str | None:
     """The deployment's install link with this account's token beside its own args.
 
@@ -572,6 +593,10 @@ async def pc_pairing_handoff(request: Request) -> JSONResponse:
     agent_url = install_url_from_config(
         getattr(request.app.state, "pc_pairing_install_url", None),
     )
+    helper = user_helper_config(
+        getattr(request.app.state, "pc_pairing_user_helper_url", None),
+        getattr(request.app.state, "pc_pairing_user_helper_sha256", None),
+    )
     body = await _body(request)
     if body is None or set(body) != {"code"}:
         return _error(400, "pc_pairing_body_invalid")
@@ -588,6 +613,8 @@ async def pc_pairing_handoff(request: Request) -> JSONResponse:
         "handoff": {
             "install_tag": handoff["install_tag"],
             "agent_url": agent_url,
+            "user_helper_url": helper[0] if helper is not None else None,
+            "user_helper_sha256": helper[1] if helper is not None else None,
             "expires_at": handoff["expires_at"],
         },
     }, 200)
@@ -615,6 +642,7 @@ def _script_quote(value: str) -> str:
 
 def render_install_script(
     *, install_tag: Any, agent_url: Any, install_token: Any = None,
+    user_helper_url: Any = None, user_helper_sha256: Any = None,
 ) -> str | None:
     """The Windows install file one click hands out, or ``None`` when it cannot.
 
@@ -655,34 +683,77 @@ def render_install_script(
         quoted_token = _script_quote(install_token)
         if quoted_token is None:
             return None
+    # #7108 PR-2: the helper is optional. An unconfigured or malformed helper
+    # value omits its step; it never refuses the agent install that is the
+    # file's actual job.
+    helper_vars = ""
+    helper_call = ""
+    helper = user_helper_config(user_helper_url, user_helper_sha256)
+    if helper is not None:
+        quoted_helper_url = _script_quote(helper[0])
+        if quoted_helper_url is not None:
+            helper_vars = (
+                f"$PadiemUserHelperUrl = {quoted_helper_url}\n"
+                f"$PadiemUserHelperSha256 = '{helper[1]}'\n"
+            )
+            helper_call = (
+                "  # Optional: the MeshCentral connection above is the install's\n"
+                "  # success criterion. A helper that cannot be provisioned here is\n"
+                "  # recorded in helper-status.json and never undoes that connection.\n"
+                "  try {\n"
+                "    if (Install-PadiemUserHelper -Url $PadiemUserHelperUrl -Sha256 $PadiemUserHelperSha256 -DeviceId (Get-PadiemHelperDeviceId -Tag $PairingTag)) {\n"
+                "      Write-Host \"사용자 세션 도우미를 설치했습니다.\"\n"
+                "    } else {\n"
+                "      Write-Host \"사용자 세션 도우미는 설치하지 못했습니다. PC 연결은 계속 진행됩니다.\"\n"
+                "    }\n"
+                "  } catch {\n"
+                "    Write-Host \"사용자 세션 도우미는 설치하지 못했습니다. PC 연결은 계속 진행됩니다.\"\n"
+                "  }\n"
+            )
     return _INSTALL_SCRIPT_TEMPLATE % {
         "tag": quoted_tag, "url": quoted_url, "token": quoted_token,
+        "helper_vars": helper_vars, "helper_call": helper_call,
     }
 
 
-def connect_exe_trailer(*, install_tag: Any, agent_url: Any) -> bytes | None:
+def connect_exe_trailer(
+    *, install_tag: Any, agent_url: Any,
+    user_helper_url: Any = None, user_helper_sha256: Any = None,
+) -> bytes | None:
     """The lines a downloaded program reads out of its own file, or ``None``.
 
-    Two values and nothing else: the account's tag, which is what the agent reports
-    back inside its name, and the deployment's own installer link. No chat origin
-    travels here on purpose - the program needs neither to install, and a file that
-    carried an address the browser had chosen would be a file that could be pointed
-    somewhere else. The origin belongs to the typed-code path, which is a switch on
-    the command line, not a value in a download.
+    The account's tag, the deployment's own installer link, and - when this
+    deployment configured it - the versioned user-helper EXE and its digest.
+    No chat origin travels here on purpose - the program needs neither to
+    install, and a file that carried an address the browser had chosen would be
+    a file that could be pointed somewhere else. The origin belongs to the
+    typed-code path, which is a switch on the command line, not a value in a
+    download.
+
+    The helper pair is optional and travels before the agent link, so the last
+    line of the trailer is always the same one older programs already read.
     """
     if not isinstance(install_tag, str) or _INSTALL_TAG_RE.fullmatch(install_tag) is None:
         return None
     url = install_url_from_config(agent_url)
     if url is None:
         return None
-    return (
-        f"{PC_PAIRING_CONNECT_EXE_MARKER}\r\n"
-        f"PADIEMTAG:{install_tag}\r\n"
-        f"PADIEMURL:{url}\r\n"
-    ).encode("ascii")
+    lines = [
+        f"{PC_PAIRING_CONNECT_EXE_MARKER}\r\n",
+        f"PADIEMTAG:{install_tag}\r\n",
+    ]
+    helper = user_helper_config(user_helper_url, user_helper_sha256)
+    if helper is not None:
+        lines.append(f"PADIEMHELPERURL:{helper[0]}\r\n")
+        lines.append(f"PADIEMHELPERSHA:{helper[1]}\r\n")
+    lines.append(f"PADIEMURL:{url}\r\n")
+    return "".join(lines).encode("ascii")
 
 
-def render_install_exe(*, install_tag: Any, agent_url: Any) -> bytes | None:
+def render_install_exe(
+    *, install_tag: Any, agent_url: Any,
+    user_helper_url: Any = None, user_helper_sha256: Any = None,
+) -> bytes | None:
     """The double-click connect program with this account's tag behind its bytes.
 
     Windows runs an executable without regard for what follows it, so the tag rides
@@ -691,7 +762,10 @@ def render_install_exe(*, install_tag: Any, agent_url: Any) -> bytes | None:
     this function adds nothing to the front and changes nothing inside, which is
     what lets the same SHA-256 the build printed describe what a PC receives.
     """
-    trailer = connect_exe_trailer(install_tag=install_tag, agent_url=agent_url)
+    trailer = connect_exe_trailer(
+        install_tag=install_tag, agent_url=agent_url,
+        user_helper_url=user_helper_url, user_helper_sha256=user_helper_sha256,
+    )
     if trailer is None:
         return None
     try:
@@ -716,6 +790,7 @@ _INSTALL_SCRIPT_TEMPLATE = (
     # leaves the reported name exactly as it was.
     "$PadiemInstallToken = %(token)s\n"
     "$AgentInstallerUrl = %(url)s\n"
+    "%(helper_vars)s"
     "\n"
     "function Get-PadiemDriveLetters {\n"
     "  # The PC names the fixed drives it actually has. Network drives carry a\n"
@@ -734,6 +809,8 @@ _INSTALL_SCRIPT_TEMPLATE = (
     # the double-click program runs. A lane that drifts is a test failure, not
     # a smaller version of the same answer.
     + render_agent_install_block()
+    + "\n"
+    + render_user_helper_install_block()
     + "\n"
     "# One approval covers the whole sequence: the service work below needs the\n"
     "# administrator token, the same single prompt the double-click program asks\n"
@@ -783,6 +860,7 @@ _INSTALL_SCRIPT_TEMPLATE = (
     "  if ($service) {\n"
     "    Write-Host (\"에이전트 서비스 상태: \" + $service.Status + \" - \" + $PadiemAgentDurableExe)\n"
     "  }\n"
+    "%(helper_call)s"
     "  Write-Host \"연결 진행 중 - 서버가 이 PC를 확인하면 PADIEM PC 목록에 자동으로 나타납니다.\"\n"
     "} finally {\n"
     "  Remove-Item -LiteralPath $work -Recurse -Force -ErrorAction SilentlyContinue\n"
@@ -890,8 +968,14 @@ async def pc_pairing_install_file(request: Request) -> Response:
         personalized_install_url(agent_url=agent_url, install_token=token)
         if token is not None else agent_url
     )
+    helper = user_helper_config(
+        getattr(request.app.state, "pc_pairing_user_helper_url", None),
+        getattr(request.app.state, "pc_pairing_user_helper_sha256", None),
+    )
     script = render_install_script(
         install_tag=issued["install_tag"], agent_url=rendered_url, install_token=token,
+        user_helper_url=helper[0] if helper is not None else None,
+        user_helper_sha256=helper[1] if helper is not None else None,
     )
     if script is None:
         return _error(503, "pc_pairing_install_url_missing")
@@ -946,7 +1030,15 @@ async def pc_pairing_install_exe(request: Request) -> Response:
         personalized_install_url(agent_url=agent_url, install_token=token)
         if token is not None else agent_url
     )
-    program = render_install_exe(install_tag=issued["install_tag"], agent_url=rendered_url)
+    helper = user_helper_config(
+        getattr(request.app.state, "pc_pairing_user_helper_url", None),
+        getattr(request.app.state, "pc_pairing_user_helper_sha256", None),
+    )
+    program = render_install_exe(
+        install_tag=issued["install_tag"], agent_url=rendered_url,
+        user_helper_url=helper[0] if helper is not None else None,
+        user_helper_sha256=helper[1] if helper is not None else None,
+    )
     if program is None:
         return _error(503, "pc_pairing_connect_exe_unavailable")
     return Response(
