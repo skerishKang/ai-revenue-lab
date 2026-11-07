@@ -107,7 +107,7 @@
            empty/text area starts a chat; the right icon invokes existing #4471 Search. -->
       <!-- Chat + Claw: one top-level interaction group. -->
       <div class="sidebar-chat-claw-group">
-        <div class="sidebar-actions-row sidebar-unified-row" role="group" data-locale-aria-label="sidebar-actions-group" aria-label="새 채팅, 대화 검색, 알림함">
+        <div class="sidebar-actions-row sidebar-unified-row" role="group" data-locale-aria-label="sidebar-actions-group" aria-label="새 채팅, 대화 검색">
         <button class="new-chat" id="newChatButton" type="button"><span aria-hidden="true">＋</span><span data-locale-key="new-chat">새 채팅</span></button>
         <button class="side-item sidebar-search-item" id="sidebarSearchButton" type="button" disabled aria-disabled="true" data-locale-aria-label="search" aria-label="검색" data-locale-title="search" title="검색"><span class="side-icon" aria-hidden="true">⌕</span><span class="visually-hidden" data-locale-key="search">검색</span></button>
       </div>
@@ -280,7 +280,7 @@
           <section class="settings-section" id="clawPushSetting" hidden aria-labelledby="clawPushTitle">
             <p class="settings-label" data-locale-key="claw-push-setting-label">알림</p>
             <h3 id="clawPushTitle" data-locale-key="claw-push-title">이 기기의 알림</h3>
-            <button class="claw-inbox-secondary" id="clawPushToggle" type="button" aria-pressed="false" data-locale-key="claw-push-enable">이 기기에서 알림 받기</button>
+            <button class="settings-action" id="clawPushToggle" type="button" aria-pressed="false" data-locale-key="claw-push-enable">이 기기에서 알림 받기</button>
             <p class="claw-push-status" id="clawPushStatus" aria-live="polite" aria-atomic="true"></p>
           </section>
           <section class="settings-section pc-delegation-settings" id="pcDelegationSettings" aria-labelledby="pcDelegationTitle">
@@ -532,7 +532,6 @@
                   <option value="memory" data-locale-key="claw-automation-create-target-memory">기억</option>
                   <option value="tasks" data-locale-key="claw-automation-create-target-tasks">작업</option>
                   <option value="connectors" data-locale-key="claw-automation-create-target-connectors">Connectors</option>
-                  <option value="inbox" data-locale-key="claw-automation-create-target-inbox">수신함</option>
                 </select>
               </label>
               <label class="calendar-record-field" for="clawAutomationCreateOutput">
@@ -544,7 +543,7 @@
                   <option value="task_proposal" data-locale-key="claw-automation-create-output-task-proposal">작업 제안</option>
                 </select>
               </label>
-              <p class="claw-inbox-help" data-locale-key="claw-automation-create-notification-note">결과는 웹 알림 수신함(web_alert_inbox)으로만 전달됩니다.</p>
+              <p class="claw-inbox-help" data-locale-key="claw-automation-create-notification-note">결과는 이 자동화의 대화에 저장됩니다.</p>
               <div class="calendar-record-actions">
                 <button type="button" class="calendar-record-cancel" id="clawAutomationCreateCancel" data-locale-key="claw-automation-create-cancel">취소</button>
                 <button type="submit" class="calendar-record-submit" id="clawAutomationCreateSubmit" data-locale-key="claw-automation-create-submit">자동화 만들기</button>
@@ -1326,9 +1325,6 @@
   <!-- #5805: the phone header collapse scroll mirror. No parameter, no
        routing, no network; the surface CSS is mobile-header-collapse.css. -->
   <script src="./mobile-header-collapse.js"></script>
-  <!-- #5034 LOCAL4: the common notification inbox. Presentation-only over the
-       existing /api/claw/inbox/{alerts,tasks} contract: no new endpoint, no
-       second inbox, no polling loop. -->
   <script src="./meeting-drive-upload.js"></script>
   <script src="./meeting-capture.js"></script>
   <script src="./sidebar-section-collapse.js"></script>

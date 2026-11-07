@@ -1,6 +1,6 @@
 """#5034 — Web Push opt-in for the automation notification lane.
 
-대표 결정(2026-11-07): the Claw inbox (작업함) is removed; the automation
+대표 결정(2026-11-07): the former Claw inbox is removed; the automation
 result record is the automation's own conversation message (one rule owns one
 conversation).  This module adds no alert record and no second notification
 authority — what lives here is the *opt-in device subscription* store and the

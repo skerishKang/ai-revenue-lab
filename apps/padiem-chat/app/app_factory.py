@@ -1002,8 +1002,8 @@ def create_app(
         Route(OFFICE_XLSX_DOWNLOAD_PATH, claw_office_xlsx_download, methods=["GET"]),
         Route(OFFICE_OUTPUTS_QUERY_PATH, claw_office_outputs_query, methods=["GET"]),
         Route("/api/claw/runs/{run_id}/local-result", local_runner_result, methods=["POST"]),
-        # #5034 Web Push opt-in for the EXISTING user inbox. This adds a device
-        # subscription, never a second inbox or a second notification authority.
+        # #5034 Web Push opt-in for automation notifications. This adds a
+        # device subscription, never a second notification authority.
         Route("/api/claw/inbox/push/capability", claw_push_capability, methods=["GET"]),
         Route("/api/claw/inbox/push/subscription", claw_push_subscription_register, methods=["POST"]),
         Route("/api/claw/inbox/push/subscription", claw_push_subscription_unregister, methods=["DELETE"]),
@@ -1879,8 +1879,8 @@ def create_app(
     # #5034 Web Push delivery authority. The VAPID private key is a server-only
     # secret: it is never logged, never returned to a browser and never placed in
     # [vars]. Only the public half reaches the capability route. With no key the
-    # capability route honestly reports enabled=false and the web inbox is
-    # unaffected.
+    # capability route honestly reports enabled=false and the conversation view
+    # is unaffected.
     _push_public_key = (claw_push_vapid_public_key or "").strip() or None
     _push_private_key = (claw_push_vapid_private_key or "").strip() or None
     _push_subject = (claw_push_vapid_subject or "").strip() or None

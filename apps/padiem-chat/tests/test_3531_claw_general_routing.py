@@ -90,7 +90,8 @@ def test_claw_default_view_is_general_not_manual() -> None:
     assert 'clawWorkspace.dataset.view = "manual"' in manual
     assert "if (clawManualForm) clawManualForm.hidden = false;" in manual
     assert APP.count('clawWorkspace.dataset.view = "general"') == 1
-    assert APP.count('workspace.dataset.view = "general"') == 2
+    # With the inbox gone, only the automation fallback still resets to general.
+    assert APP.count('workspace.dataset.view = "general"') == 1
     assert APP.count('clawWorkspace.dataset.view = "manual"') == 1
 
 

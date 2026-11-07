@@ -1880,8 +1880,6 @@
         runHistoryError.removeAttribute("data-state");
       }
       if (workspace) {
-        delete workspace.dataset.inboxKind;
-        if (workspace.dataset.view === "inbox") workspace.dataset.view = "general";
         if (workspace.dataset.view === "automation") workspace.dataset.view = "general";
       }
       // Auth loss hides the standalone Connectors/Automation pages the same
@@ -7493,7 +7491,6 @@
       && !emptyState.hidden;
     const show = authState.authenticated === true
       && shell.dataset.state === "claw"
-      && clawWorkspace?.dataset.view !== "inbox"
       && !onLanding;
     clawApprovedMemory.hidden = !show;
     if (clawApprovedDisclosure) clawApprovedDisclosure.hidden = !show;
@@ -7820,11 +7817,10 @@
 
   function syncClawRunHistoryVisibility() {
     if (!clawRunHistory) return;
-    // Owner-authenticated surface only, and never inside the inbox view.
+    // Owner-authenticated surface only.
     const wasVisible = clawRunHistory.hidden === false;
     const show = authState.authenticated === true
-      && shell.dataset.state === "claw"
-      && clawWorkspace?.dataset.view !== "inbox";
+      && shell.dataset.state === "claw";
     clawRunHistory.hidden = !show;
     if (clawRunHistoryDisclosure) clawRunHistoryDisclosure.hidden = !show;
     if (show) {

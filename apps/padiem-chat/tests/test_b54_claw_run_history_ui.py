@@ -132,7 +132,8 @@ def test_single_flight_and_visibility_guards_are_present() -> None:
     # Unguarded fetch is only reachable through the single-flight wrapper.
     assert app.count("await fetchClawRunHistory(options);") == 1
     assert 'const show = authState.authenticated === true' in app
-    assert 'clawWorkspace?.dataset.view !== "inbox"' in app
+    # The removed inbox must not survive as a run-history visibility gate.
+    assert 'clawWorkspace?.dataset.view !== "inbox"' not in app
 
 
 def test_auth_loss_clears_rendered_run_history_dom() -> None:

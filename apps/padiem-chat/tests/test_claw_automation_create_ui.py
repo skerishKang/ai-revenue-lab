@@ -88,7 +88,6 @@ CREATE_LOCALE_KEYS = (
     "claw-automation-create-target-memory",
     "claw-automation-create-target-tasks",
     "claw-automation-create-target-connectors",
-    "claw-automation-create-target-inbox",
     "claw-automation-create-output-label",
     "claw-automation-create-output-alert",
     "claw-automation-create-output-draft",
@@ -121,6 +120,8 @@ def test_create_surface_is_declared_inside_the_automation_panel() -> None:
     html = _html_source()
     for token in FORM_IDS:
         assert f'id="{token}"' in html, token
+    # The removed inbox is not offered as a new automation target.
+    assert 'value="inbox"' not in html
     # The create form lives inside the automation panel section, after the
     # scheduler truth note, reusing the existing form system classes.
     panel = html.split('id="clawAutomation"', 1)[1].split("</section>", 1)[0]

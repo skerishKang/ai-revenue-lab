@@ -12,7 +12,7 @@
   /* The row shrinks while a primary surface is scrolled away from the top
    * and comes back at the top. Inner scrollers (code blocks, chip rows) must
    * not trigger it, so the check stays on the column-level surfaces, and a
-   * hidden view (e.g. the Claw inbox behind the conversation) keeps a stale
+   * hidden view (e.g. Claw automation behind the conversation) keeps a stale
    * offset that must not count. */
   const SCROLL_SURFACES = ".conversation, .claw-workspace, .claw-inbox";
   const COLLAPSE_THRESHOLD = 24;

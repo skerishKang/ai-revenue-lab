@@ -281,7 +281,7 @@ def test_the_ready_state_shows_one_entry_and_no_retry(browser, server) -> None:
           const panel = document.getElementById('clawAutomation');
           return {
             ctaVisible: vis('#clawAutomationCreateOpen'),
-            alertsVisible: false,
+            alertsVisible: Boolean(document.getElementById('automationAlertsButton')),
             retryVisible: vis('#clawAutomationRetry'),
             errorVisible: vis('#clawAutomationError'),
             forbiddenVisible: vis('#clawAutomationForbidden'),
@@ -293,7 +293,8 @@ def test_the_ready_state_shows_one_entry_and_no_retry(browser, server) -> None:
         }"""
     )
     assert state["ctaVisible"] is True
-    assert state["alertsVisible"] is True
+    # The inbox entry was removed with the inbox itself (PR2).
+    assert state["alertsVisible"] is False
     # No failure, so no retry.
     assert state["retryVisible"] is False
     assert state["errorVisible"] is False

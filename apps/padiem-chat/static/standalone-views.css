@@ -436,7 +436,6 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   gap: 12px;
 }
 .app-shell[data-state="calendar"] .calendar-error,
-.app-shell[data-state="automation"] #clawInboxError,
 .app-shell[data-state="connectors"] #connectorsError {
   color: var(--danger, #b42318);
 }

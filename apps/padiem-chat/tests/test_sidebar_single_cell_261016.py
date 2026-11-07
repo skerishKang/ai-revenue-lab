@@ -14,7 +14,7 @@ APP = (STATIC / "app.js").read_text(encoding="utf-8")
 SEARCH = (STATIC / "conversation-search.js").read_text(encoding="utf-8")
 
 
-def test_one_visual_row_has_three_distinct_keyboard_actions():
+def test_one_visual_row_has_two_distinct_keyboard_actions():
     start = HTML.index('class="sidebar-actions-row sidebar-unified-row"')
     end = HTML.index("</div>", start)
     region = HTML[start:end]
@@ -25,8 +25,8 @@ def test_one_visual_row_has_three_distinct_keyboard_actions():
     assert region.count('type="button"') == 2
     assert region.index('id="newChatButton"') < region.index('id="sidebarSearchButton"')
     assert 'class="visually-hidden" data-locale-key="search"' in region
-    # The group announcement names all three actions it now contains.
-    assert 'aria-label="새 채팅, 대화 검색, 알림함"' in region
+    # The group announcement names both actions it now contains.
+    assert 'aria-label="새 채팅, 대화 검색"' in region
     assert re.search(r"sidebar-unified-row\s*\{[^}]*gap:\s*0", CSS)
     assert ".sidebar-actions-row.sidebar-unified-row > .sidebar-search-item" in CSS
 

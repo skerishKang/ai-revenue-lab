@@ -717,9 +717,12 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   await tick(120);
   if (execPosts().length !== beforeEditRetry) fail("EDIT_DURING_COOLDOWN_POSTED");
   checks.NAV_EDIT_DURING_COOLDOWN_NO_POST = true;
-  // 8b) A fresh cycle after a HOME round-trip — the same recovery-clearing
-  // navigation the inbox view switch used to provide (대표 결정 2026-11-07:
-  // 작업함 왕복 대신 홈 왕복으로 경로만 변경, 단언 강도 동일).
+  // 8b) A fresh cycle after a real HOME round-trip. From Claw, the first
+  // Chat entry switches lanes; the second is the home reset that clears the
+  // pending recovery state (대표 결정 2026-11-07: 작업함 왕복 대신 홈 왕복으로
+  // 경로만 변경, 단언 강도 동일).
+  byId.newChatButton.click();
+  await tick(60);
   byId.newChatButton.click();
   await tick(60);
   byId.clawNavButton.click();
@@ -757,6 +760,9 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   byId.clawExecuteButton.click();
   await tick(80);
   if (byId.clawRetryBox.hidden !== false) fail("COOLDOWN_NOT_VISIBLE_BEFORE_NAV");
+  // Claw -> Chat -> Home: the second Chat-entry click is the home reset.
+  byId.newChatButton.click();
+  await tick(60);
   byId.newChatButton.click();
   await tick(60);
   checks.NAVIGATION_CLEARS_RETRY_STATE = byId.clawRetryBox.hidden === true && byId.clawRetryButton.disabled === true;
@@ -765,23 +771,18 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   await tick(60);
   // The cleared cooldown must not be resurrected by returning to the form.
   if (byId.clawRetryBox.hidden !== true || byId.clawRetryButton.disabled !== true) fail("NAV_CLEAR_DID_NOT_PERSIST");
+  // Home reset cleared the composer; a new explicit dispatch needs new text.
+  byId.messageInput.value = "쿨다운 해제 확인";
   // A cleared cooldown no longer blocks an explicit new dispatch.
-  const beforeAfterNav = execPosts().length;
+  const beforeAfterPost = execPosts().length;
   expectedPosts += 1;
   byId.clawExecuteButton.click();
   await tick(80);
-  checks.NAVIGATION_RELEASES_COOLDOWN = execPosts().length === beforeAfterNav + 1 && byId.clawRetryBox.hidden === false;
+  checks.NAVIGATION_RELEASES_COOLDOWN = execPosts().length === beforeAfterPost + 1 && byId.clawRetryBox.hidden === false;
   if (!checks.NAVIGATION_RELEASES_COOLDOWN) fail("NAVIGATION_RELEASES_COOLDOWN");
 
-  // 10) A locale switch re-renders the runtime countdown copy.
-  executeCall = () => jsonResponse(429, { ok: false, error: { code: "rate_limited" } }, { "Retry-After": "30" });
-  byId.automationNavButton.click();
-  await tick(40);
-  byId.clawNavButton.click();
-  await tick(40);
-  expectedPosts += 1;
-  byId.clawExecuteButton.click();
-  await tick(80);
+  // 10) A locale switch re-renders the current runtime countdown copy.
+  // The 30s cooldown started in step 9 is still live; do not dispatch again.
   if (byId.clawRetryBox.hidden !== false) fail("LOCALE_CASE_COOLDOWN_NOT_VISIBLE");
   const koCopy = byId.clawRetryCopy.textContent;
   lang = "en";
@@ -873,7 +874,10 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
     byId.clawResultEmpty.textContent ===
       COPY.ko["claw-general-model-unavailable"] + " " + COPY.ko["claw-general-model-unavailable-note"];
   if (!checks.HOLD_503_SHOWS_MODEL_UNAVAILABLE_COPY) {
-    fail("HOLD_503_SHOWS_MODEL_UNAVAILABLE_COPY: " + byId.clawStatus.textContent + " | " + byId.clawResultEmpty.textContent);
+    fail("HOLD_503_SHOWS_MODEL_UNAVAILABLE_COPY: posts=" + afterHold + "/" + expectedPosts
+      + " hidden=" + byId.clawResultEmpty.hidden
+      + " status=" + byId.clawStatus.textContent
+      + " | result=" + byId.clawResultEmpty.textContent);
   }
   checks.HOLD_503_IS_NOT_AMBIGUOUS =
     byId.clawRetryHint.hidden === true &&
