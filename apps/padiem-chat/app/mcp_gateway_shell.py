@@ -46,7 +46,7 @@ PC_SHELL_DEVICE_PROPERTY = {
 PC_SHELL_MODES = ("system", "user")
 PC_SHELL_MODE_PROPERTY = {
     "type": "string", "enum": list(PC_SHELL_MODES),
-    "description": "Execution session. system is default; user requires server switch.",
+    "description": "실행 세션입니다. 사용자 모드가 켜진 배포에서 mode를 생략하면 user로 실행합니다. system은 mode=system으로 명시하며, 사용자 모드가 꺼진 배포의 생략 기본값은 system입니다.",
 }
 
 
@@ -199,21 +199,30 @@ def validate_shell_tool_arguments(tool_name: str, arguments, *, user_mode_enable
     return False
 
 
-def normalize_pc_shell_arguments(arguments: Mapping) -> dict:
+def _pc_shell_default_mode(user_mode_enabled: bool) -> str:
+    """The one default-mode decision for pc_shell and pc_shell_start."""
+    return "user" if user_mode_enabled else "system"
+
+
+def normalize_pc_shell_arguments(
+    arguments: Mapping, *, user_mode_enabled: bool = False,
+) -> dict:
     if not validate_pc_shell_arguments(arguments):
         raise ValueError("Invalid MCP PC shell arguments")
     return {"command": arguments["command"], "cwd": arguments.get("cwd"),
             "shell": arguments.get("shell", "powershell"),
-            "mode": arguments.get("mode", "system"),
+            "mode": arguments.get("mode", _pc_shell_default_mode(user_mode_enabled)),
             "wait_seconds": arguments.get("wait_seconds", PC_SHELL_DEFAULT_WAIT_SECONDS)}
 
 
-def normalize_pc_shell_start_arguments(arguments: Mapping) -> dict:
+def normalize_pc_shell_start_arguments(
+    arguments: Mapping, *, user_mode_enabled: bool = False,
+) -> dict:
     if not validate_pc_shell_start_arguments(arguments):
         raise ValueError("Invalid MCP PC shell start arguments")
     return {"command": arguments["command"], "cwd": arguments.get("cwd"),
             "shell": arguments.get("shell", "powershell"),
-            "mode": arguments.get("mode", "system")}
+            "mode": arguments.get("mode", _pc_shell_default_mode(user_mode_enabled))}
 
 
 def normalize_pc_shell_read_arguments(arguments: Mapping) -> dict:
@@ -551,7 +560,8 @@ def _dispatch_refusal_code(payload) -> str | None:
 
 async def execute_pc_shell_start(request, *, uid, workspace_id, device_id, run_id,
                                  session, conversation_id, arguments):
-    user_mode = arguments.get("mode", "system") == "user"
+    # The normalizer owns the default mode; this lane only consumes its result.
+    user_mode = arguments.get("mode") == "user"
     # #7076d: a user-mode dispatch carries the helper's request material, which
     # is the one shape the executor and the #7065 helper both speak. The SYSTEM
     # lane keeps its PowerShell dispatcher unchanged.
