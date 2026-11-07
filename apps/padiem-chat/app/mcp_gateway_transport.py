@@ -349,7 +349,7 @@ async def mcp_gateway_endpoint(request):
         if isinstance(name, str) and name in PC_SHELL_TOOL_NAMES and not _pc_shell_enabled(request):
             if name == PC_SHELL_STOP_TOOL_NAME:
                 if not validate_tool_arguments(name, arguments, user_mode_enabled=shell_user_mode):
-                    return _error(-32020, "tool_not_enabled: �� ������ ���� �������� ���� �ֽ��ϴ�.",
+                    return _error(-32020, "tool_not_enabled: 이 도구는 현재 배포에서 꺼져 있습니다.",
                                   request_id, data={"code": "tool_not_enabled", "tool": name})
                 from .mcp_gateway_shell import is_active_job_for_identity
                 try:
@@ -363,12 +363,12 @@ async def mcp_gateway_endpoint(request):
                 except Exception:
                     active = False
                 if not active:
-                    return _error(-32020, "tool_not_enabled: �� ������ ���� �������� ���� �ֽ��ϴ�.",
+                    return _error(-32020, "tool_not_enabled: 이 도구는 현재 배포에서 꺼져 있습니다.",
                                   request_id, data={"code": "tool_not_enabled", "tool": name})
             else:
                 # Not advertised, and refused even when a client calls it by name.
                 # Nothing is dispatched and nothing is written to the PC queue.
-                return _error(-32020, "tool_not_enabled: �� ������ ���� �������� ���� �ֽ��ϴ�.",
+                return _error(-32020, "tool_not_enabled: 이 도구는 현재 배포에서 꺼져 있습니다.",
                               request_id, data={"code": "tool_not_enabled", "tool": name})
         if not validate_tool_arguments(name, arguments, user_mode_enabled=shell_user_mode):
             return _error(-32602, "Unknown tool or invalid arguments", request_id)

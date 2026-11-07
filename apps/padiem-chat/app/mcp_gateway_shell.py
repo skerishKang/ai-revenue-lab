@@ -41,7 +41,7 @@ _NOW = time.monotonic
 
 PC_SHELL_DEVICE_PROPERTY = {
     "type": "string", "maxLength": 128,
-    "description": "��� PC�Դϴ�. pc_devices�� �˷� �� ǥ�� �̸��̳� id6�� ���ϴ�. ���� ������ �⺻ PC�� ���ϴ�.",
+    "description": "대상 PC입니다. pc_devices가 알려 준 표시 이름이나 id6를 씁니다. 비우면 연결의 기본 PC를 씁니다.",
 }
 PC_SHELL_MODES = ("system", "user")
 PC_SHELL_MODE_PROPERTY = {
@@ -55,19 +55,19 @@ def _shell_base_properties():
         "device": dict(PC_SHELL_DEVICE_PROPERTY),
         "command": {
             "type": "string", "minLength": 1, "maxLength": PC_SHELL_MAX_COMMAND_CHARS,
-            "description": "����� PC���� ������ �����Դϴ�. ���� �ð� ������ �����ϴ�.",
+            "description": "연결된 PC에서 실행할 명령입니다. 실행 시간 제한은 없습니다.",
         },
         "cwd": {
             "type": "string", "minLength": 1, "maxLength": PC_SHELL_MAX_CWD_CHARS,
-            "description": "���� �����Դϴ�. �����ϸ� PC�� �⺻ �۾� ������ ���ϴ�.",
+            "description": "실행 폴더입니다. 생략하면 PC의 기본 작업 폴더를 씁니다.",
         },
         "shell": {
             "type": "string", "enum": list(PC_SHELL_SHELLS),
-            "description": "����� ���Դϴ�. �⺻���� powershell�Դϴ�.",
+            "description": "사용할 셸입니다. 기본값은 powershell입니다.",
         },
         "wait_seconds": {
             "type": "integer", "minimum": 1, "maximum": PC_SHELL_MAX_WAIT_SECONDS,
-            "description": "���信�� ��ٸ� �ð��Դϴ�. �� �ð��� ������ PC �۾��� ��� ����˴ϴ�.",
+            "description": "응답에서 기다릴 시간입니다. 이 시간이 지나도 PC 작업은 계속 실행됩니다.",
         },
     }
 
@@ -78,11 +78,11 @@ PC_SHELL_START_PROPERTIES = {
 }
 PC_SHELL_READ_PROPERTIES = {
     "job_id": {"type": "string", "minLength": 36, "maxLength": 36,
-               "description": "pc_shell �Ǵ� pc_shell_start�� ������ Claw �۾� ID�Դϴ�."},
+               "description": "pc_shell 또는 pc_shell_start가 돌려준 Claw 작업 ID입니다."},
     "offset": {"type": "integer", "minimum": 0,
-               "description": "��� �ڵ��� ���� ��ġ(����Ʈ)�Դϴ�."},
+               "description": "출력 핸들의 시작 위치(바이트)입니다."},
     "length": {"type": "integer", "minimum": 1, "maximum": PC_SHELL_READ_MAX_BYTES,
-               "description": "���� �ִ� ����Ʈ�Դϴ�."},
+               "description": "읽을 최대 바이트입니다."},
     "device": dict(PC_SHELL_DEVICE_PROPERTY),
 }
 PC_SHELL_STOP_PROPERTIES = {
