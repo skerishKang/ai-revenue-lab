@@ -12,7 +12,7 @@ RELATED=PR #6142(CPython HttpRpcBinding·v1 proof), COM2_CHAT_SERVICE_BINDINGS_2
 | Worker | 하는 일 | RPC 메서드(현재) | 소유·경계 |
 |---|---|---|---|
 | `padiem-control-plane-identity` | canonical 신원 서버: product 사용자 연결, 인증 세션 발급/조회/폐기, connector workspace·context 조회, 테넌트·커넥터 등록 | `Default` 31개 (link/session 7, connector 3, tenant 6, enrollment 12, ticket 1 등) — `identity_authority_worker.py:507-575` | **공유 신원 서버**. 허용 제품은 `_ALLOWED_PRODUCTS = {"b62","b54-padiem-claw","lovetree-4-0"}`(:27), env `CONTROL_PLANE_ALLOWED_PRODUCTS`가 이 집합과 정확히 일치해야 통과(:156-158). 러브트리 로그인(#5963 계열)도 이 서버를 쓴다 |
-| `padiem-google-oauth-state` | Google OAuth 상태·커넥터 truth: connect/callback, access lease, workspace connector/calendar state, Drive 바인딩 선택 | `Default` 12개 — `google_oauth_worker.py:392-446` | Control Plane. Chat은 `workspace_connector_state` 하나만 호출(`app/connector_workspace_truth.py:218`) |
+| `padiem-google-oauth-state` | Google OAuth 상태·커넥터 truth: connect/callback, access lease, workspace connector/calendar state, Drive 바인딩 선택 | `Default` 12개 — `google_oauth_worker.py:392-446` | Control Plane. Chat은 read-only 2개(`workspace_connector_state`, `workspace_calendar_connector_state`)만 호출(`app/connector_workspace_truth.py:218`) |
 | `padiem-local-agent-broker-state` | PC 브로커 DO: 페어링/등록, device 세션, 명령 enqueue/material, poll/ack, device HTTP, device directory, 사무소/텍스트 read | `Default` 30+개 — `local_agent_broker_worker.py:142-260` | Control Plane. 같은 상태 표를 COM2 큐도 쓴다(§2) |
 
 세 대상 모두 지금 `fetch → 404`이고 플래그도 `PUBLIC_FETCH=False` / `PRODUCTION_ROUTE_CONFIGURED=False`다. 즉 HTTPS 계약이 **없다**.
@@ -29,7 +29,7 @@ RELATED=PR #6142(CPython HttpRpcBinding·v1 proof), COM2_CHAT_SERVICE_BINDINGS_2
 ## 3. 결정
 
 - **IDENTITY_AUTHORITY: (가)**. 공유 신원 서버를 컴2로 옮기는 것은 러브트리까지 포함한 제품 경계 변경이라 범위 밖이고, 세션·링크 RPC는 상태가 없어 HTTPS로 닫기에 적합하다. 단, 허용 메서드를 Chat 병행 호스트가 실제 쓰는 9개로 제한하고(테넌트 관리·connect ticket·enrollment schema/동의는 제외), 기존 RPC·제품 pin은 건드리지 않는다.
-- **GOOGLE_OAUTH_STATE: (가)**. Chat이 쓰는 read-only 1개(`workspace_connector_state`)만 연다.
+- **GOOGLE_OAUTH_STATE: (가)**. Chat이 쓰는 read-only 2개(`workspace_connector_state`, `workspace_calendar_connector_state`)만 연다. 두 번째는 기본 projection을 넓히지 않는 별도 Calendar presence RPC다(#2830).
 - **LOCAL_AGENT_BROKER: (나)** — §2.
 
 ## 4. (가) 구현 — 공통 계약
@@ -49,7 +49,9 @@ RELATED=PR #6142(CPython HttpRpcBinding·v1 proof), COM2_CHAT_SERVICE_BINDINGS_2
 
 바인딩 이름: identity `PADIEM_IDENTITY_RPC_INGRESS_SECRET`, google-state `PADIEM_GOOGLE_STATE_RPC_INGRESS_SECRET` (평문 str 또는 Secrets Store `.get()` capability 둘 다 수용).
 
-allowlist: identity 9개(link/session 7 + connector workspace·context), google-state 1개.
+allowlist: identity 9개(link/session 7 + connector workspace·context), google-state 2개(`workspace_connector_state`, `workspace_calendar_connector_state` — 둘 다 read-only).
+
+COM2 호스트의 클라이언트 env 쌍은 `PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_RPC_ORIGIN` / `PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_RPC_SECRET`이며, 대상 비밀 `PADIEM_GOOGLE_STATE_RPC_INGRESS_SECRET`와 같은 값을 쓴다(값은 env 파일 0600에만).
 
 검증: `packages/padiem-control-plane/tests/test_internal_rpc_ingress.py` 9건 — 클라이언트 v1 수식과 대상 검증기의 일치, 변조·stale·미허용·상한·비POST·비JSON·위임 예외, 비밀 없음→404, 그리고 같은 `Default` 객체의 기존 RPC 메서드가 그대로 동작함(바인딩 경로 불변).
 

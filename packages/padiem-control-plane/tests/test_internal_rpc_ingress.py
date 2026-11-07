@@ -336,26 +336,35 @@ def test_identity_fetch_is_absent_without_the_secret_and_gated_with_it():
     assert binding_result == {"ok": True, "link": {"product_user_id": "usr_1"}}
 
 
-def test_google_state_fetch_exposes_only_workspace_connector_state():
+def test_google_state_fetch_exposes_only_reviewed_readonly_truth_methods():
     module = _load_worker(
         ADAPTER_ROOT / "google_oauth_worker.py", "google_worker_ingress_test"
     )
     stub = _Stub({"ok": True, "state": {"connectors": []}})
     env = _env(GOOGLE_OAUTH_STATE=_Namespace(stub))
 
+    allowed = ("workspace_connector_state", "workspace_calendar_connector_state")
     default = module.Default(env=env)
-    response = _run(default.fetch(_signed_request(method="workspace_connector_state", at=int(__import__("time").time()))))
-    assert response.status == 404
+    for name in allowed:
+        response = _run(default.fetch(_signed_request(method=name, at=int(__import__("time").time()))))
+        assert response.status == 404, name
 
     env.PADIEM_GOOGLE_STATE_RPC_INGRESS_SECRET = SECRET
     default = module.Default(env=env)
-    ok = _run(default.fetch(_signed_request(
-        method="workspace_connector_state", body=b'{"workspace_ref":"w"}', at=int(__import__("time").time())
-    )))
-    assert ok.status == 200 and json.loads(ok.body)["ok"] is True
-    assert stub.calls[0][0] == "workspace_connector_state"
+    for name in allowed:
+        ok = _run(default.fetch(_signed_request(
+            method=name, body=b'{"workspace_ref":"w"}', at=int(__import__("time").time())
+        )))
+        assert ok.status == 200 and json.loads(ok.body)["ok"] is True, name
+    assert [call[0] for call in stub.calls] == list(allowed)
 
-    for name in ("begin_connect", "complete_callback", "issue_access_lease", "disconnect_drive"):
+    for name in (
+        "begin_connect",
+        "complete_callback",
+        "issue_access_lease",
+        "disconnect_drive",
+        "select_drive_binding",
+    ):
         assert _run(default.fetch(_signed_request(method=name, at=int(__import__("time").time())))).status == 404, name
     assert isinstance(_run(default.workspace_connector_state({"workspace_ref": "w"})), dict)
 

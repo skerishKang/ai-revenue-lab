@@ -31,19 +31,26 @@ import json
 import re
 import time
 import uuid
-from typing import Any, Callable
+from types import SimpleNamespace
+from typing import Any, Callable, Mapping
+from urllib.parse import urlparse
 
 import httpx
 
+from padiem_ai_engine_client import ENGINE_INTERNAL_ORIGIN
+
 from .b14_upstream_composition import compose_b14_transports
+from .calendar_read_activation_engine import CALENDAR_READ_ACTIVATION_PATH
 from .config import ConfigError
 from .orchestration_timing import LOG as _IDENTITY_KEEPWARM_LOG
 
 __all__ = [
     "HttpRpcBinding",
     "LocalB66PdfRendererClient",
+    "LocalEngineFetchBinding",
     "ServiceProofConfigError",
     "compose_local_b14_transports",
+    "local_engine_request_factory",
     "new_service_id",
     "service_proof_headers",
 ]
@@ -373,6 +380,111 @@ class HttpRpcBinding:
             return data
 
         return call
+
+
+LOCAL_ENGINE_FETCH_PATHS = frozenset({CALENDAR_READ_ACTIVATION_PATH})
+_LOCAL_ENGINE_FETCH_TIMEOUT_SECONDS = 30.0
+
+
+class _LocalEngineFetchResponse:
+    """The two attributes the reviewed Engine client reads from a response."""
+
+    def __init__(self, status: int, text: str) -> None:
+        self.status = status
+        self._text = text
+
+    async def text(self) -> str:
+        return self._text
+
+
+def local_engine_request_factory(
+    url: str,
+    *,
+    method: str,
+    headers: Mapping[str, str],
+    body: str,
+) -> SimpleNamespace:
+    """Build the request object the reviewed Engine client hands to a binding."""
+
+    return SimpleNamespace(
+        js_object={
+            "url": url,
+            "method": method,
+            "headers": dict(headers),
+            "body": body,
+        }
+    )
+
+
+class LocalEngineFetchBinding:
+    """Fetch-shaped stand-in for the Engine Service Binding on the CPython host.
+
+    The Calendar READ activation client builds the same internal request the
+    Worker sends over its Service Binding. This binding accepts that request
+    object, keeps the Engine's closed path allowlist, and rewrites only the
+    origin to the configured loopback host. Caller/credential authority is
+    never read from the request object: the reviewed client already set those
+    headers from the host composition.
+    """
+
+    def __init__(
+        self,
+        origin: str,
+        *,
+        client: httpx.AsyncClient | None = None,
+        timeout_seconds: float = _LOCAL_ENGINE_FETCH_TIMEOUT_SECONDS,
+    ) -> None:
+        try:
+            parsed = httpx.URL(origin)
+        except Exception:
+            raise ServiceProofConfigError("Engine origin must be a bare http(s) origin") from None
+        if (
+            parsed.scheme not in ("http", "https")
+            or not parsed.host
+            or parsed.path not in ("", "/")
+            or parsed.query
+            or parsed.fragment
+            or parsed.userinfo
+        ):
+            raise ServiceProofConfigError("Engine origin must be a bare http(s) origin")
+        self._origin = origin.rstrip("/")
+        self._client = client
+        self._timeout = timeout_seconds
+
+    async def fetch(self, request: Mapping[str, Any]) -> _LocalEngineFetchResponse:
+        if not isinstance(request, Mapping):
+            raise RuntimeError("engine fetch request must be an object")
+        url = request.get("url")
+        body = request.get("body")
+        headers = request.get("headers") or {}
+        if (
+            not isinstance(url, str)
+            or not isinstance(body, (str, bytes))
+            or not isinstance(headers, Mapping)
+        ):
+            raise RuntimeError("engine fetch request is invalid")
+        parsed = urlparse(url)
+        expected = urlparse(ENGINE_INTERNAL_ORIGIN)
+        if parsed.netloc != expected.netloc or parsed.path not in LOCAL_ENGINE_FETCH_PATHS:
+            raise RuntimeError("engine fetch path is not reviewed")
+        endpoint = self._origin + parsed.path
+        payload = body.encode("utf-8") if isinstance(body, str) else bytes(body)
+        try:
+            client = self._client
+            if client is None:
+                async with httpx.AsyncClient(
+                    timeout=self._timeout, follow_redirects=False
+                ) as fresh:
+                    response = await fresh.post(
+                        endpoint, content=payload, headers=dict(headers)
+                    )
+            else:
+                response = await client.post(
+                    endpoint, content=payload, headers=dict(headers)
+                )
+        except httpx.HTTPError:
+            raise RuntimeError("engine fetch transport failed") from None
+        return _LocalEngineFetchResponse(int(response.status_code), response.text)
 
 
 class LocalB66PdfRendererClient:

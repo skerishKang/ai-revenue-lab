@@ -529,6 +529,7 @@ def create_app(
     usage_store: UsageCounterStore | None = None,
     control_plane_identity_authority=None,
     identity_shadow_store=None,
+    google_oauth_workspace_truth=None,
     drive_case_folder_engine_client=None,
     d1_binding=None,
     r2_binding=None,
@@ -1411,6 +1412,12 @@ def create_app(
         if connector_owner_enrollment is not None else None
     )
     app.state.identity_shadow_store = identity_shadow_store
+    # #6460 3번: the canonical Google connector truth read by
+    # /api/connectors/status. The Worker injects the Service Binding adapter;
+    # the CPython host injects the same reviewed adapter over its HTTPS RPC
+    # stand-in. Absent stays None and the status surface fails closed exactly
+    # as before.
+    app.state.google_oauth_workspace_truth = google_oauth_workspace_truth
     # #3190: owner-gated Project Drive case-folder routes. A missing client fails
     # closed with 503; there is no global/network fallback.
     app.state.drive_case_folder_engine_client = drive_case_folder_engine_client

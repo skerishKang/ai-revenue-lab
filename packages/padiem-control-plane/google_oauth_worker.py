@@ -399,8 +399,13 @@ class Default(WorkerEntrypoint):
     # #5573 A2: default-off HTTPS ingress for the COM2 parallel host. Only the
     # read-only connector truth the Chat host calls; everything else stays on
     # the binding, and without the secret the door is not registered at all.
+    # #6460 3번: the Chat status surface reads the default gmail/drive set and
+    # the separate, identity-free Calendar presence RPC. Both are read-only and
+    # the default RPC still returns only the reviewed non-widened set (#2830).
     RPC_INGRESS_SECRET_BINDING = "PADIEM_GOOGLE_STATE_RPC_INGRESS_SECRET"
-    RPC_INGRESS_METHODS = frozenset({"workspace_connector_state"})
+    RPC_INGRESS_METHODS = frozenset(
+        {"workspace_connector_state", "workspace_calendar_connector_state"}
+    )
 
     def _authority_ref(self) -> str:
         value = getattr(self.env, "GOOGLE_OAUTH_AUTHORITY_REF", _AUTHORITY_REF_FALLBACK)
