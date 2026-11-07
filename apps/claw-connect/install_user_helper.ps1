@@ -28,6 +28,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$InstallRoot = $PSScriptRoot
 $TaskName = 'PadiemUserSessionHelper'
 $TaskFolder = '\Padiem\'
 $Python = $env:PADIEM_PYTHON
@@ -67,7 +68,7 @@ if ($LASTEXITCODE -ne 0) { throw "invalid device id: $deviceOk" }
 $user = [Security.Principal.WindowsIdentity]::GetCurrent().Name
 $argument = '-m claw_connect.user_helper_service --device-id ' + $DeviceId + ' --secret-file "' + $SecretFile + '"'
 
-$action = New-ScheduledTaskAction -Execute $Python -Argument $argument
+$action = New-ScheduledTaskAction -Execute $Python -Argument $argument -WorkingDirectory $InstallRoot
 $trigger = New-ScheduledTaskTrigger -AtLogOn -User $user
 $principal = New-ScheduledTaskPrincipal -UserId $user -LogonType Interactive -RunLevel Limited
 $settings = New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
@@ -77,6 +78,7 @@ Register-ScheduledTask -TaskName $TaskName -TaskPath $TaskFolder -Action $action
     -Description 'PADIEM user-session helper (#7065). One request per process.' -Force | Out-Null
 
 Write-Output "registered task $TaskFolder$TaskName for $user (run level Limited)"
+Start-ScheduledTask -TaskName $TaskName -TaskPath $TaskFolder
 
 if ($GrantSystemAcl) {
     if (-not (Test-Administrator)) {
