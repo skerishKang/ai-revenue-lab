@@ -22,7 +22,7 @@ Canonical operating documents:
 - `docs/operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 - `docs/operations/COM2_SERVER_ONLY_POLICY_20261106.md` — COM2 hosts production services only; lanes work from COM1 and deploy over SSH from the WSL-side ops checkout (LF). No lane workloads, whole-tree backups or archive extraction on COM2.
 - `docs/operations/CLOUDFLARE_CREDENTIAL_OPERATIONS.md` — read before Cloudflare credential diagnosis; distinguish local environment/API credentials, stored OAuth and workflow Secrets before retrying or declaring access unavailable.
-- `docs/operations/CHAT_PADIEM_NET_REQUEST_TOPOLOGY_20261108.md` — read before touching chat.padiem.net paths: `padiem-chat-front`(static `[assets]` + COM2 proxy) request topology, the changed-file → deploy-target table, and the Worker·COM2 secret/callback pairing rules.
+- `docs/operations/CHAT_PADIEM_NET_REQUEST_TOPOLOGY_20261108.md` — read before touching chat.padiem.net paths: `padiem-chat-front`(static `[assets]` + COM2 proxy) request topology, the changed-file → deploy-target table, and the Worker·COM2 secret/callback pairing rules. Static (screen) changes ship with `deploy/chat-release/release_chat.ps1` — never with COM2's `deploy_from_main.sh` alone.
 
 For any model/provider question, start at [the shared model documentation index](docs/models/README.md); do not rely on a product README's copied model list as live registry/route evidence. The index points separately to OWNER policy, B14 source, product route declarations and Production verification. It does not grant model-change authority.
 

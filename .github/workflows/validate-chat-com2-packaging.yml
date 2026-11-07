@@ -7,10 +7,12 @@ on:
       - 'deploy/host-com2/deploy_from_main.sh'
       - 'deploy/host-com2/tests/**'
       - 'deploy/host-com2/README.md'
+      - 'deploy/chat-release/**'
       - 'apps/padiem-chat/app/local_cpython.py'
       - 'apps/padiem-chat/app/local_cron.py'
       - 'apps/padiem-chat/app/local_service_bridge.py'
       - 'docs/operations/CHAT_COM2_RUNBOOK.md'
+      - 'docs/operations/CHAT_PADIEM_NET_REQUEST_TOPOLOGY_20261108.md'
       - '.github/workflows/validate-chat-com2-packaging.yml'
   workflow_dispatch:
 permissions:
@@ -29,3 +31,5 @@ jobs:
         run: python -m unittest discover -s deploy/host-com2/chat/tests -q
       - name: Deploy-from-main plan, apply, rollback and migration stop
         run: python -m unittest discover -s deploy/host-com2/tests -q
+      - name: Chat release script contracts (parser, dry-run plan, no secret echo)
+        run: python -m unittest discover -s deploy/chat-release/tests -q

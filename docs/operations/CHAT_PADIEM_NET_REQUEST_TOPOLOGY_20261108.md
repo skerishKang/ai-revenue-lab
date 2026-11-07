@@ -36,7 +36,7 @@ chat.padiem.net은 Cloudflare Worker **padiem-chat-front**(`apps/padiem-chat-fro
 | 변경 파일 | 필요한 배포 | 근거 |
 |---|---|---|
 | `apps/padiem-chat/app/**`(API 로직) | ① 컴2 `deploy_from_main.sh <main-sha>`(주 담당) ② B62 Python Worker 폴백 정합성: `b62-production-code-deploy-gate` workflow_dispatch(`deploy_production_code`) | `deploy/host-com2/README.md:14,41`, `.github/workflows/b62-production-code-deploy-gate.yml:112-146` |
-| `apps/padiem-chat/static/**`(화면·locale) | **padiem-chat-front 재배포**(`wrangler deploy`, apps/padiem-chat-front 체크아웃에서; 새 static이 포함된 SHA로) — 컴2 배포만으로는 미반영 | front `wrangler.toml:14-16`([assets]=`../padiem-chat/static`), 런북 §2-3 |
+| `apps/padiem-chat/static/**`(화면·locale) | **padiem-chat-front 재배포** — 컴2 배포만으로는 미반영. `deploy/chat-release/release_chat.ps1 -Sha <sha>` 한 번이 이 표의 컴2·front·pages를 순서대로 실행하고 검증까지 수행한다 | front `wrangler.toml:14-16`([assets]=`../padiem-chat/static`), 런북 §2-3 |
 | `apps/padiem-chat-front/**`(프록시·폴백·타임아웃·env) | padiem-chat-front 재배포; Custom Domain 이동·`COM2_CANONICAL` 변경은 런북 절차(승인 창) | 런북 §2 |
 | `packages/padiem-control-plane/google_oauth_worker.py` | `b54-google-oauth-state-production-redeploy`(workflow_dispatch + 확인 문구) | 해당 워크플로 |
 | `packages/padiem-control-plane/identity_authority_worker.py` | `b54-control-plane-identity-production-redeploy` | 해당 워크플로 |
@@ -69,5 +69,5 @@ chat.padiem.net은 Cloudflare Worker **padiem-chat-front**(`apps/padiem-chat-fro
 
 ## 4. 오늘의 두 사고 매핑
 
-- **#7100·#7102(화면 미반영)**: static 변경 → 컴2 배포(`deploy_from_main.sh`)로는 front `[assets]`가 갱신되지 않음 → §2의 2행. static PR 머지 후에는 front 재배포가 배포의 완결이다.
+- **#7100·#7102(화면 미반영)**: static 변경 → 컴2 배포(`deploy_from_main.sh`)로는 front `[assets]`가 갱신되지 않음 → §2의 2행. static PR 머지 후에는 `release_chat.ps1`(또는 최소한 front 재배포)이 배포의 완결이다.
 - **#7118(이관 링크 미사용)**: D1→컴2 이관 행의 봉인 키 불일치 → §3의 `PADIEM_CHAT_SESSION_SECRET` 동일값 요건. 이미 갈라진 봉인은 재연결(save upsert)로만 회수된다(#7118의 200 재연결 필요 응답).
