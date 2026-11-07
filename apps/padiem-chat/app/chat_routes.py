@@ -5,6 +5,7 @@ from .file_lane import file_resolver
 import asyncio
 import base64
 import json
+import logging
 from collections.abc import Mapping
 from typing import Any
 
@@ -63,6 +64,10 @@ from .request_contract import (
     declared_util_scope,
 )
 from .request_telemetry import emit_stage_event
+
+#: #7088: one line per connector tool execution — the tool alias and the
+#: result item count only. A mail body, subject or sender never reaches it.
+_JOURNAL_LOG = logging.getLogger("padiem_chat.connector_tools")
 from .tool_presentations import get_tool_presentation
 from .usage_gate import UsageGate
 from .web_tools import WebToolError
@@ -350,7 +355,22 @@ async def _connector_tool_lane(
         stage="chat.connector_tools.execute", outcome="ok",
         duration_ms=(_time.perf_counter() - started) * 1000.0, code=tool_name,
     )
+    # The journal carries counts only (#7088): never a mail body, subject or
+    # sender — the tool output itself travels to the model context alone.
     output = tool.get("output")
+    result_items = None
+    if isinstance(output, list):
+        result_items = output
+    elif isinstance(output, Mapping):
+        for value in output.values():
+            if isinstance(value, list):
+                result_items = value
+                break
+    emit_stage_event(
+        stage="chat.connector_tools.items", outcome="ok",
+        duration_ms=0.0, code=f"items={len(result_items)}" if result_items is not None else None,
+    )
+    _JOURNAL_LOG.info("connector_tools execute tool=%s items=%s", tool_name, len(result_items) if result_items is not None else "-")
     try:
         result_json = json.dumps(output, ensure_ascii=False)
     except (TypeError, ValueError):

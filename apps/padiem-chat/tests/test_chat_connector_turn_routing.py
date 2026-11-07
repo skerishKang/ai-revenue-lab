@@ -71,9 +71,14 @@ def test_only_explicit_google_naming_routes_between_lanes():
     assert tools_module.google_connector_intent(DRIVE_QUESTION) is True
     assert tools_module.google_connector_intent("google drive에서 찾아줘") is True
     assert tools_module.google_connector_intent("Google Calendar events please") is True
+    # #7088: Gmail joins the same explicit-naming rule.
+    assert tools_module.google_connector_intent("지메일에서 중요 메일 검색해줘") is True
+    assert tools_module.google_connector_intent("gmail 읽어줘") is True
+    assert tools_module.google_connector_intent("구글 메일 확인해줘") is True
     # The native calendar and the PC lane keep their own questions.
     assert tools_module.google_connector_intent("오늘 일정 알려줘") is False
     assert tools_module.google_connector_intent("드라이브 목록 보여줘") is False
+    assert tools_module.google_connector_intent("메일 확인해줘") is False
     assert tools_module.google_connector_intent("") is False
     assert tools_module.google_connector_intent(None) is False
 
@@ -201,6 +206,22 @@ async def test_a_granted_drive_question_hands_back_to_the_main_turn(monkeypatch)
         calendar_state="active",
     )
     response = await routes.api_orchestration(_request(_payload(DRIVE_QUESTION)))
+
+    assert response.status_code == 409
+    assert json.loads(response.body)["error"]["code"] == "orchestration_not_applicable"
+    assert bridge.requests == []
+
+
+@pytest.mark.asyncio
+async def test_a_granted_gmail_question_hands_back_to_the_main_turn(monkeypatch):
+    global bridge
+    bridge = _install(monkeypatch)
+    _patch_truth(
+        monkeypatch,
+        overrides={"drive": _NOT_CONNECTED, "calendar": _NOT_CONNECTED, "gmail": CONNECTED},
+        authority=True,
+    )
+    response = await routes.api_orchestration(_request(_payload("지메일에서 중요 메일 검색해줘")))
 
     assert response.status_code == 409
     assert json.loads(response.body)["error"]["code"] == "orchestration_not_applicable"

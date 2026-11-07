@@ -171,10 +171,11 @@ def test_live_cards_are_exactly_the_reviewed_canonical_connector_ids() -> None:
 
     assert "google-calendar" in cards
     assert 'data-google-connector-connect="google-calendar"' in cards["google-calendar"]["inner"]
-    # #3289: Drive is the second reviewed connection action. It is the only
-    # other live card allowed to own one.
+    # #3289: Drive is the second reviewed connection action.
     assert 'data-google-connector-connect="google-drive"' in cards["google-drive"]["inner"]
-    for slug in ("gmail", "telegram", "slack"):
+    # #7088: Gmail is the third reviewed connection action (gmail.readonly).
+    assert 'data-google-connector-connect="gmail"' in cards["gmail"]["inner"]
+    for slug in ("telegram", "slack"):
         assert "data-google-connector-connect" not in cards[slug]["inner"]
 
 
@@ -226,7 +227,7 @@ def test_live_status_locale_keys_are_complete_in_ko_and_en() -> None:
         assert len(table[language]["connectors-note"]) < 120
 
 
-def test_reviewed_google_connector_connection_actions_are_exactly_calendar_and_drive() -> None:
+def test_reviewed_google_connector_connection_actions_are_calendar_drive_and_gmail() -> None:
     block = _connector_block()
     assert block.count('fetch("/api/connectors/status"') == 1
     assert 'GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket"' in block
@@ -243,9 +244,14 @@ def test_reviewed_google_connector_connection_actions_are_exactly_calendar_and_d
     assert 'fetch(GOOGLE_DRIVE_TICKET_ENDPOINT' in block
     assert 'connector_id: GOOGLE_DRIVE_CONNECTOR, begin_oauth: true' in block
     assert 'google/drive/activate-read' not in block
-    # Exactly the three reviewed POSTs: status is a read, and Calendar owns
-    # the only other two.
-    assert block.count('method: "POST"') == 3
+    # #7088 Gmail: connect only, over the same reviewed ticket endpoint.
+    assert 'GOOGLE_GMAIL_CONNECTOR = "gmail"' in block
+    assert 'GOOGLE_GMAIL_TICKET_ENDPOINT = "/api/connectors/google/ticket"' in block
+    assert 'fetch(GOOGLE_GMAIL_TICKET_ENDPOINT' in block
+    assert 'connector_id: GOOGLE_GMAIL_CONNECTOR, begin_oauth: true' in block
+    # Exactly the four reviewed POSTs: status is a read; Calendar owns two
+    # (connect + activation) and Drive and Gmail own one connect each.
+    assert block.count('method: "POST"') == 4
     assert "oauth.padiem.net" not in block
     assert "connect_ticket" not in block
     assert 'url.hostname !== "accounts.google.com"' in block

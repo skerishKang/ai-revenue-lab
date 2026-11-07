@@ -504,13 +504,15 @@ async def connectors_status(request: Request) -> JSONResponse:
 
         drive_ok = (overrides.get("drive") or (None,))[0] == WORKSPACE_STATE_CONNECTED
         calendar_ok = (overrides.get("calendar") or (None,))[0] == WORKSPACE_STATE_CONNECTED
+        gmail_ok = (overrides.get("gmail") or (None,))[0] == WORKSPACE_STATE_CONNECTED
         if calendar_ok and grant_state == CALENDAR_READ_GRANT_INACTIVE:
             calendar_ok = False
-        if drive_ok or calendar_ok:
+        if drive_ok or calendar_ok or gmail_ok:
             seed_connector_grant_cache(
                 current_user_id(request),
                 ConnectorToolGrant(
-                    reason=GRANT_REASON_GRANTED, drive=drive_ok, calendar=calendar_ok,
+                    reason=GRANT_REASON_GRANTED,
+                    drive=drive_ok, calendar=calendar_ok, gmail=gmail_ok,
                 ),
             )
     return JSONResponse(document, headers=dict(_NO_STORE_HEADERS))

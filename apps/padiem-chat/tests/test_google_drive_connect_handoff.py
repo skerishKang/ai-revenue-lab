@@ -92,13 +92,13 @@ def test_markup_owns_one_hidden_drive_connect_action() -> None:
     assert inner.count("data-google-connector-connect") == 1
 
 
-def test_only_the_two_reviewed_google_cards_own_a_connection_action() -> None:
+def test_only_the_reviewed_google_cards_own_a_connection_action() -> None:
     owners = set()
     for attributes, inner in re.findall(r'<div class="capability-card"([^>]*)>(.*?)</div>', _index(), re.DOTALL):
         slug = re.search(r'data-connector="([^"]+)"', attributes)
         if slug and "data-google-connector-connect" in inner:
             owners.add(slug.group(1))
-    assert owners == {"google-drive", "google-calendar"}
+    assert owners == {"gmail", "google-drive", "google-calendar"}
 
 
 def test_visibility_predicate_executes_over_the_closed_state_vocabulary() -> None:
@@ -152,9 +152,18 @@ def test_no_ticket_request_is_reachable_without_the_click() -> None:
     assert block.count("void beginGoogleDriveConnect();") == 1
     assert block.count("beginGoogleDriveConnect") == 2
     assert 'if (driveConnectButton) driveConnectButton.addEventListener("click", () => {' in block
+    # #7088: Gmail follows the same one-click, one-POST shape.
+    assert block.count("fetch(GOOGLE_GMAIL_TICKET_ENDPOINT") == 1
+    gmail_begin = _function("beginGmailConnect")
+    assert gmail_begin.count("fetch(GOOGLE_GMAIL_TICKET_ENDPOINT") == 1
+    assert block.count("async function beginGmailConnect() {") == 1
+    assert block.count("void beginGmailConnect();") == 1
+    assert block.count("beginGmailConnect") == 2
+    assert 'if (gmailConnectButtonEl) gmailConnectButtonEl.addEventListener("click", () => {' in block
     # nothing on load, open, retry or render starts it
     for trigger in ("openConnectorsDialog", "loadConnectorStatus", "renderConnectorStatus", "setConnectorCardsLoading"):
         assert "beginGoogleDriveConnect" not in _function(trigger), trigger
+        assert "beginGmailConnect" not in _function(trigger), trigger
     for forbidden in ("setTimeout", "setInterval", "prefetch", "requestIdleCallback"):
         assert forbidden not in _connector_block(), forbidden
 
@@ -267,13 +276,19 @@ def test_drive_stays_readonly_with_no_scope_widening() -> None:
 
 def test_oauth_start_is_closed_to_exactly_the_reviewed_connectors() -> None:
     routes = TICKET_ROUTES.read_text(encoding="utf-8")
-    assert '_OAUTH_START_REVIEWED_CONNECTORS = frozenset({"google-calendar", "google-drive"})' in routes
+    assert '_OAUTH_START_REVIEWED_CONNECTORS = frozenset({"gmail", "google-calendar", "google-drive"})' in routes
     assert "if begin_oauth and connector_id not in _OAUTH_START_REVIEWED_CONNECTORS:" in routes
     assert 'OAUTH_START_REVIEWED_CONNECTORS = tuple(sorted(_OAUTH_START_REVIEWED_CONNECTORS))' in routes
     # the Drive scope is the reviewed Control Plane readonly set, unchanged
     assert f'GOOGLE_DRIVE_READONLY_SCOPE = "{DRIVE_SCOPE}"' in DURABLE_STORE.read_text(encoding="utf-8")
+    # #7088: the Gmail scope is the reviewed readonly set on every reviewed
+    # control-plane surface (store, ingress runtime, ticket, access lease).
+    assert 'GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"' in DURABLE_STORE.read_text(encoding="utf-8")
     ingress = INGRESS_RUNTIME.read_text(encoding="utf-8")
     assert '"google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),' in ingress
+    assert '"gmail": (GMAIL_READONLY_SCOPE,),' in ingress
+    ticket = TICKET_ROUTES  # the chat route allowlist is asserted above
+    assert "gmail" in routes
 
 
 def test_no_drive_api_read_happens_in_this_slice() -> None:

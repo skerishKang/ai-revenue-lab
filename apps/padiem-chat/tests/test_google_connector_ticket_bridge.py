@@ -413,11 +413,9 @@ async def test_oauth_start_stays_closed_to_every_unreviewed_connector():
             domain="chat.example.test",
             path="/",
         )
-        # Gmail is a reviewed ticket connector but not a reviewed OAuth start,
-        # so the OAuth-start gate refuses it; connectors outside the reviewed
-        # set never reach that gate at all.
+        # #7088: Gmail is now a reviewed OAuth start; connectors outside the
+        # reviewed set never reach that gate at all.
         for connector_id, expected_code in (
-            ("gmail", "connector_oauth_start_not_reviewed"),
             ("telegram", "connector_not_reviewed"),
             ("slack", "connector_not_reviewed"),
         ):
