@@ -43,6 +43,7 @@ PC_SHELL_DEVICE_PROPERTY = {
     "type": "string", "maxLength": 128,
     "description": "대상 PC입니다. pc_devices가 알려 준 표시 이름이나 id6를 씁니다. 비우면 연결의 기본 PC를 씁니다.",
 }
+PC_SHELL_MODES = ("system", "user")
 PC_SHELL_PROPERTIES = {
     "device": dict(PC_SHELL_DEVICE_PROPERTY),
     "command": {
@@ -61,9 +62,13 @@ PC_SHELL_PROPERTIES = {
         "type": "integer", "minimum": 1, "maximum": PC_SHELL_MAX_WAIT_SECONDS,
         "description": "응답에서 기다릴 시간입니다. 이 시간이 지나도 PC 작업은 계속 실행됩니다.",
     },
+    "mode": {
+        "type": "string", "enum": list(PC_SHELL_MODES),
+        "description": "Execution session. system is default; user requires server switch.",
+    },
 }
 PC_SHELL_START_PROPERTIES = {
-    key: dict(PC_SHELL_PROPERTIES[key]) for key in ("command", "cwd", "shell")
+    key: dict(PC_SHELL_PROPERTIES[key]) for key in ("command", "cwd", "shell", "mode")
 }
 PC_SHELL_READ_PROPERTIES = {
     "job_id": {"type": "string", "minLength": 36, "maxLength": 36,
@@ -106,14 +111,19 @@ def validate_pc_shell_arguments(arguments) -> bool:
         return False
     if "command" not in arguments or not _command_material(arguments):
         return False
+    mode = arguments.get("mode", "system")
+    if not isinstance(mode, str) or mode not in PC_SHELL_MODES:
+        return False
     wait = arguments.get("wait_seconds", PC_SHELL_DEFAULT_WAIT_SECONDS)
     return isinstance(wait, int) and not isinstance(wait, bool) and 1 <= wait <= PC_SHELL_MAX_WAIT_SECONDS
 
 
 def validate_pc_shell_start_arguments(arguments) -> bool:
-    return (isinstance(arguments, Mapping)
-            and set(arguments) <= set(PC_SHELL_START_PROPERTIES)
-            and "command" in arguments and _command_material(arguments))
+    if not (isinstance(arguments, Mapping) and set(arguments) <= set(PC_SHELL_START_PROPERTIES)
+            and "command" in arguments and _command_material(arguments)):
+        return False
+    mode = arguments.get("mode", "system")
+    return isinstance(mode, str) and mode in PC_SHELL_MODES
 
 
 def validate_pc_shell_read_arguments(arguments) -> bool:
@@ -150,6 +160,7 @@ def normalize_pc_shell_arguments(arguments: Mapping) -> dict:
         raise ValueError("Invalid MCP PC shell arguments")
     return {"command": arguments["command"], "cwd": arguments.get("cwd"),
             "shell": arguments.get("shell", "powershell"),
+            "mode": arguments.get("mode", "system"),
             "wait_seconds": arguments.get("wait_seconds", PC_SHELL_DEFAULT_WAIT_SECONDS)}
 
 
@@ -157,7 +168,8 @@ def normalize_pc_shell_start_arguments(arguments: Mapping) -> dict:
     if not validate_pc_shell_start_arguments(arguments):
         raise ValueError("Invalid MCP PC shell start arguments")
     return {"command": arguments["command"], "cwd": arguments.get("cwd"),
-            "shell": arguments.get("shell", "powershell")}
+            "shell": arguments.get("shell", "powershell"),
+            "mode": arguments.get("mode", "system")}
 
 
 def normalize_pc_shell_read_arguments(arguments: Mapping) -> dict:
@@ -215,13 +227,14 @@ try{if($env:PADIEM_MCP_SHELL -eq 'powershell'){$file='powershell.exe';if(-not(Ge
     )
 
 
-async def _dispatch_command(request, *, command, run_id, device_id, trusted_owner):
+async def _dispatch_command(request, *, command, run_id, device_id, trusted_owner, user_mode=False):
     from .oracle_mesh_read_return_routes import dispatch_oracle_mesh_command_intent
     return await dispatch_oracle_mesh_command_intent(
         request, command=command,
         wire={"run_id": run_id, "device_id": device_id, "confirmed": True},
         trusted_owner=trusted_owner, background=True,
         ttl_seconds=PC_SHELL_START_TTL_SECONDS,
+        user_mode=user_mode,
     )
 
 
@@ -444,10 +457,11 @@ def _dispatch_refusal_code(payload) -> str | None:
 
 async def execute_pc_shell_start(request, *, uid, workspace_id, device_id, run_id,
                                  session, conversation_id, arguments):
+    user_mode = arguments.get("mode", "system") == "user"
     command = build_pc_shell_command(arguments)
     response = await _dispatch_command(
         request, command=command, run_id=run_id, device_id=device_id,
-        trusted_owner=(session, uid, workspace_id),
+        trusted_owner=(session, uid, workspace_id), user_mode=user_mode,
     )
     payload = _response_payload(response)
     dispatch = payload.get("dispatch") if isinstance(payload, dict) else None
@@ -472,7 +486,7 @@ async def execute_pc_shell(request, *, uid, subject_id, workspace_id, device_id,
     started = await execute_pc_shell_start(
         request, uid=uid, workspace_id=workspace_id, device_id=device_id,
         run_id=run_id, session=session, conversation_id=conversation_id,
-        arguments={key: arguments[key] for key in ("command", "cwd", "shell") if key in arguments},
+        arguments={key: arguments[key] for key in ("command", "cwd", "shell", "mode") if key in arguments},
     )
     if started.get("status") != "running":
         return started
@@ -538,3 +552,4 @@ async def _cancel_run(request, *, uid, run_id):
         return await cancel(user_id=uid, run_id=run_id)
     except Exception:
         return 0
+

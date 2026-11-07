@@ -271,6 +271,7 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
 
     settings = getattr(request.app.state, "settings", None)
     shell_enabled = bool(getattr(settings, "mcp_pc_shell_enabled", False))
+    shell_user_enabled = bool(getattr(settings, "mcp_pc_shell_user_mode_enabled", False))
     identity = {"user_id": uid, "device_id": device_id, "token_id": token_id}
     if shell and not shell_enabled:
         if tool_name != PC_SHELL_STOP_TOOL_NAME:
@@ -278,6 +279,9 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
         return await execute_pc_shell_stop(
             request, identity=identity, job_id=arguments["job_id"],
         )
+    if shell and isinstance(arguments, Mapping) and arguments.get("mode") == "user" and not shell_user_enabled:
+        return {"status": "tool_not_enabled", "answer": "이 모드는 현재 환경에서 사용할 수 없습니다.",
+                "deny_reason": "pc_shell_user_mode_disabled"}
 
     session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
     if session is None or not subject_id:

@@ -105,6 +105,7 @@ def test_closed_schemas_accept_only_the_common_dispatch_id_and_bounded_ranges():
     assert shell.validate_pc_shell_arguments({"command": "git status"})
     assert shell.normalize_pc_shell_arguments({"command": "git status"}) == {
         "command": "git status", "cwd": None, "shell": "powershell", "wait_seconds": 120,
+        "mode": "system",
     }
     assert shell.validate_pc_shell_start_arguments({"command": "sleep"})
     assert shell.validate_pc_shell_read_arguments({"job_id": JOB_ID, "offset": 10, "length": 4})
@@ -483,3 +484,4 @@ def test_shell_ignores_approval_receipts_and_never_creates_one():
     assert [record["status"] for record in store.records] == ["requested", "running"]
     assert all(record["approval_id"] is None for record in store.records)
     assert store.records[-1]["job_receipt_id"] == JOB_ID
+

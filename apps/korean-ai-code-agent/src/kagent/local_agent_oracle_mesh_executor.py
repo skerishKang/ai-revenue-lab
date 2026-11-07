@@ -8,6 +8,10 @@ and never re-reads the PC file on a retry: a transient store failure is
 answered by resending the bytes it already holds.
 """
 from __future__ import annotations
+USER_SESSION_UNAVAILABLE = "user_session_unavailable"
+USER_HELPER_PIPE_PREFIX = "padiem-user-helper-"
+USER_HELPER_TASK_PATH = r"\Padiem"
+USER_HELPER_TASK_NAME = "PadiemUserSessionHelper"
 
 from .pc_correlation import run_hash as _pc_run_hash
 
@@ -333,6 +337,9 @@ class OracleMeshDispatch:
     # Only the authenticated queue projection may set these fields.
     background: bool = False
     owner_ref: str | None = None
+    # #7076c: route command through the PC logged-in user helper (pipe).
+    user_mode: bool = False
+    device_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -974,6 +981,9 @@ class OracleMeshExecutor:
         granted_root = dispatch.get("granted_root")
         if granted_root is not None:
             granted_root = _require_text(granted_root, "granted_root")
+        user_mode = dispatch.get("user_mode", False)
+        if type(user_mode) is not bool or (user_mode and kind != "command"):
+            raise OracleMeshChannelRefused("invalid user_mode dispatch", leg=leg)
         return OracleMeshDispatch(
             dispatch_id=_require_text(dispatch.get("dispatch_id"), "dispatch_id"),
             nonce=_require_text(dispatch.get("nonce"), "nonce"),
@@ -989,6 +999,8 @@ class OracleMeshExecutor:
             granted_root=granted_root,
             background=background,
             owner_ref=owner_ref,
+            user_mode=user_mode,
+            device_id=_require_text(dispatch.get("device_id"), "device_id") if dispatch.get("device_id") is not None else None,
         )
 
     def execute(self, dispatch: OracleMeshDispatch) -> OracleMeshExecutionOutcome:
@@ -1412,9 +1424,164 @@ class OracleMeshExecutor:
 
         return probe
 
+
+
+    @staticmethod
+    def build_user_helper_pipe_client_ps(*, device_id: str, request_id: str,
+                                         shell: str, command: str,
+                                         cwd: str | None, timeout_seconds: int,
+                                         distro: str | None) -> str:
+        """#7076c: PS pipe client sent via runcommand (SYSTEM) to the PC.
+
+        The script runs on the target PC as SYSTEM. It reads the helper secret
+        file path from the registered Padiem task arguments (never from dispatch
+        or command text), computes HMAC-SHA256 nonce over the exact
+        HelperRequest.material() contract, connects to the #7076 pipe, and
+        exchanges one length-prefixed (4-byte BE + UTF-8 JSON) frame.
+
+        Secret value is never printed. Failure to reach the helper is reported
+        as user_session_unavailable — no SYSTEM fallback.
+        """
+        import base64 as _b64
+        def b(v):
+            return _b64.b64encode((v or "").encode("utf-8")).decode("ascii")
+        mat = "\n".join([request_id, shell, cwd or "", command, str(int(timeout_seconds)), distro or ""]).encode("utf-8")
+        # material is not secret; embed as base64 data for exact byte fidelity.
+        mat_b64 = _b64.b64encode(mat).decode("ascii")
+        payload = {
+            "request_id": request_id, "shell": shell, "cwd": cwd,
+            "command": command, "timeout_seconds": int(timeout_seconds), "distro": distro,
+        }
+        import json as _json
+        req_b64 = _b64.b64encode(_json.dumps(payload, ensure_ascii=True, separators=(",", ":")).encode("utf-8")).decode("ascii")
+        script = f"""
+$ErrorActionPreference='Stop'
+$mat=[Convert]::FromBase64String('{mat_b64}')
+$reqB64='{req_b64}'
+$pipeName='padiem-user-helper-{device_id}'
+$pipePath='\\\\.\\pipe\\'+$pipeName
+function Fail($code,$msg){{ Write-Output ($code+': '+$msg); exit 1 }}
+try {{
+  $task=Get-ScheduledTask -TaskPath '{USER_HELPER_TASK_PATH}' -TaskName '{USER_HELPER_TASK_NAME}' -ErrorAction Stop
+  $arg=[string]$task.Actions[0].Arguments
+  $secretFile=$null
+  if($arg -match '--secret-file\\s+"([^"]+)"'){{ $secretFile=$Matches[1] }}
+  elseif($arg -match "--secret-file\\s+'([^']+)'"){{ $secretFile=$Matches[1] }}
+  elseif($arg -match '--secret-file\\s+([^\\s]+)'){{ $secretFile=$Matches[1] }}
+  if(-not $secretFile){{ Fail 'user_session_unavailable' 'helper secret file is not configured' }}
+  $raw=[System.IO.File]::ReadAllBytes($secretFile)
+  $secretText=[System.Text.Encoding]::UTF8.GetString($raw).Trim()
+  $secret=[System.Text.Encoding]::UTF8.GetBytes($secretText)
+  if($secret.Length -eq 0){{ Fail 'user_session_unavailable' 'helper secret is unavailable' }}
+  $hmac=New-Object System.Security.Cryptography.HMACSHA256 -ArgumentList (,$secret)
+  $nonce=-join ($hmac.ComputeHash($mat) | ForEach-Object {{ $_.ToString('x2') }})''
+  $req=[System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($reqB64)) | ConvertFrom-Json
+  $req | Add-Member -NotePropertyName nonce -NotePropertyValue $nonce -Force
+  $body=[System.Text.Encoding]::UTF8.GetBytes(($req | ConvertTo-Json -Compress -Depth 5))
+  $len=[System.BitConverter]::GetBytes([int]$body.Length); [Array]::Reverse($len)
+  $client=New-Object System.IO.Pipes.NamedPipeClientStream('.',$pipeName,[System.IO.Pipes.PipeDirection]::InOut)
+  $client.Connect(2000)
+  $client.Write($len,0,4); $client.Write($body,0,$body.Length); $client.Flush()
+  $hdr=New-Object byte[] 4; $read=0; while($read -lt 4){{ $n=$client.Read($hdr,$read,4-$read); if($n -le 0){{ throw 'short header' }}; $read+=$n }}
+  [Array]::Reverse($hdr); $rlen=[System.BitConverter]::ToInt32($hdr,0)
+  if($rlen -lt 0 -or $rlen -gt 2097152){{ throw 'bad frame length' }}
+  $rbody=New-Object byte[] $rlen; $read=0; while($read -lt $rlen){{ $n=$client.Read($rbody,$read,$rlen-$read); if($n -le 0){{ throw 'short body' }}; $read+=$n }}
+  $client.Dispose()
+  [Console]::Out.Write([System.Text.Encoding]::UTF8.GetString($rbody))
+  exit 0
+}} catch {{
+  if($_.Exception -is [System.IO.FileNotFoundException] -or $_.Exception -is [System.TimeoutException] -or $_.Exception -is [System.ComponentModel.Win32Exception] -or $_.FullyQualifiedErrorId -like '*NoMatchingMSFT_ScheduledTask*' -or $_.Exception.Message -like '*pipe*not*') {{
+    Fail 'user_session_unavailable' 'helper pipe is not available'
+  }}
+  Fail 'user_session_unavailable' 'helper pipe is not available'
+}}
+""".strip()
+        return script
+
+    @staticmethod
+    def _parse_user_helper_outcome(raw: bytes) -> OracleMeshExecutionOutcome:
+        import json as _json
+        text = raw.decode("utf-8", errors="replace").strip() if isinstance(raw, (bytes, bytearray)) else str(raw).strip()
+        if not text:
+            return OracleMeshExecutionOutcome(termination="no_reply", exit_code=None, body=b"")
+        try:
+            obj = _json.loads(text)
+        except Exception:
+            # pipe-unavailable marker emitted by PS client
+            if text.startswith(USER_SESSION_UNAVAILABLE):
+                return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
+                    body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
+            return OracleMeshExecutionOutcome(termination="exited", exit_code=1, body=raw if isinstance(raw,(bytes,bytearray)) else text.encode("utf-8","replace"))
+        if not isinstance(obj, dict):
+            return OracleMeshExecutionOutcome(termination="exited", exit_code=1, body=raw if isinstance(raw,(bytes,bytearray)) else text.encode("utf-8","replace"))
+        status = obj.get("status")
+        if status == "ok":
+            stdout = obj.get("stdout_b64")
+            try:
+                body = __import__("base64").b64decode(stdout) if isinstance(stdout,str) else b""
+            except Exception:
+                body = b""
+            code = obj.get("exit_code")
+            if isinstance(code, bool) or not isinstance(code, int): code = 0
+            return OracleMeshExecutionOutcome(termination="exited", exit_code=code, body=body)
+        err = obj.get("error_code") if isinstance(obj.get("error_code"), str) else "user_helper_refused"
+        detail = obj.get("detail") if isinstance(obj.get("detail"), str) else ""
+        return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
+            body=_json.dumps({"ok": False, "error_code": err, "detail": detail}, ensure_ascii=True).encode("utf-8"))
+
+    def _execute_user_mode_command(self, dispatch: OracleMeshDispatch, *, additional_cancel_probe=None) -> OracleMeshExecutionOutcome:
+        if self._command_port is None:
+            raise OracleMeshChannelRefused("command execution is not configured")
+        import json as _json
+        node_ref = dispatch.node_ref
+        raw = getattr(dispatch, "command_text", "") or ""
+        # user_mode carries helper request material JSON (shell/command/cwd/timeout/distro).
+        try:
+            mat = _json.loads(raw)
+            if not isinstance(mat, dict): raise ValueError("not object")
+        except Exception:
+            return OracleMeshExecutionOutcome(termination="not_executed", exit_code=None,
+                body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "user mode request unavailable"}, ensure_ascii=True).encode("utf-8"))
+        req_id = f"req_{dispatch.dispatch_id.replace('dsp_','')[:32].ljust(32,'0')}"
+        shell_name = mat.get("shell") if isinstance(mat.get("shell"), str) else "whoami"
+        cmd = mat.get("command") if isinstance(mat.get("command"), str) else ""
+        cwd = mat.get("cwd") if isinstance(mat.get("cwd"), str) else None
+        distro = mat.get("distro") if isinstance(mat.get("distro"), str) else None
+        timeout_s = mat.get("timeout_seconds")
+        if not isinstance(timeout_s, int) or isinstance(timeout_s, bool): timeout_s = 30
+        # Helper (stage-1, #7076 module) is final allowlist authority; executor does format checks only.
+        device_id = getattr(dispatch, "device_id", None) or ""
+        if not device_id:
+            nr = node_ref or ""
+            import re as _re
+            m = _re.search(r"(dev_[0-9a-f]{32})", nr)
+            device_id = m.group(1) if m else ""
+        if not device_id:
+            return OracleMeshExecutionOutcome(termination="not_executed", exit_code=None,
+                body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
+        try:
+            ps = self.build_user_helper_pipe_client_ps(device_id=device_id, request_id=req_id, shell=shell_name, command=cmd, cwd=cwd, timeout_seconds=timeout_s, distro=distro)
+        except Exception:
+            return OracleMeshExecutionOutcome(termination="not_executed", exit_code=None,
+                body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "user mode client unavailable"}, ensure_ascii=True).encode("utf-8"))
+        try:
+            observed = self._command_port.run_command(node_ref=node_ref, command=ps, timeout_seconds=None, cancel_probe=additional_cancel_probe)
+        except Exception:
+            return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
+                body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
+        term = getattr(observed, "termination", "no_reply")
+        if term != "exited":
+            return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
+                body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
+        out = getattr(observed, "output", b"") or b""
+        if not isinstance(out, (bytes, bytearray)): out = str(out).encode("utf-8","replace")
+        return self._parse_user_helper_outcome(bytes(out))
+
     def _execute_command(
         self, dispatch: OracleMeshDispatch, *, additional_cancel_probe=None
     ) -> OracleMeshExecutionOutcome:
+        if getattr(dispatch, "user_mode", False):
+            return self._execute_user_mode_command(dispatch, additional_cancel_probe=additional_cancel_probe)
         """#4139 terminal lane: run the command the server put in the dispatch.
 
         The exit code is whatever the PC reported through the sentinel. When no
@@ -2965,3 +3132,10 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+# re-export
+try:
+    USER_SESSION_UNAVAILABLE
+except NameError:
+    USER_SESSION_UNAVAILABLE = 'user_session_unavailable'
