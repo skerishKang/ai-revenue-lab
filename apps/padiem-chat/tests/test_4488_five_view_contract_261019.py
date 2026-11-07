@@ -53,6 +53,7 @@ def test_five_views_body_gap_wins_the_cascade():
 
 def test_five_views_share_error_ink():
     assert ".app-shell[data-state=\"calendar\"] .calendar-error," in FRAME
-    assert ".app-shell[data-state=\"automation\"] #clawInboxError," in FRAME
+    # 작업함 제거(#7109)로 clawInboxError 선택자는 삭제 —
+    # calendar·connectors의 에러 잉크 공유 계약은 그대로 유지된다.
     assert ".app-shell[data-state=\"connectors\"] #connectorsError {" in FRAME
     assert "color: var(--danger, #b42318);" in FRAME
