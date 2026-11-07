@@ -24,6 +24,7 @@ def test_google_free_grade_has_exact_owner_backups(monkeypatch):
         "openrouter/stealth/crouton-alpha",
         "google/gemma-4-31b-it",
         "google/gemini-3.5-flash-lite",
+        "modelscope/moonshotai/Kimi-K3.1-Pro",
     )
     decision = router_core.resolve_manual_route(
         TIER_DEFAULT_B14_MODEL, product_tier="free",
@@ -113,10 +114,10 @@ def test_b14_still_accepts_the_attempt_option_only_to_drop_it(caplog):
 
 
 @pytest.mark.parametrize("tier,expected", [
-    ("plus", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
-    ("pro", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
-    ("max", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
-    ("admin", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
+    ("plus", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it", "modelscope/moonshotai/Kimi-K3.1-Pro")),
+    ("pro", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it", "modelscope/moonshotai/Kimi-K3.1-Pro")),
+    ("max", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it", "modelscope/moonshotai/Kimi-K3.1-Pro")),
+    ("admin", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it", "modelscope/moonshotai/Kimi-K3.1-Pro")),
 ])
 def test_owner_test_phase_rosters_have_the_exact_recovery_order(tier, expected):
     assert TIER_FALLBACK_B14_MODELS[tier] == expected
