@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
+from urllib.parse import urlparse
 
 import httpx
 from kagent.p01_adapter import P01_APP_ID
@@ -22,9 +23,15 @@ from kagent.p01_approval_continuation import P01EngineApprovalContinuationClient
 from kagent.p01_orchestration_client import P01EngineOrchestrationClient
 from padiem_ai_engine_client import PadiemAiEngineClient
 
+from .calendar_read_activation_engine import (
+    CALENDAR_READ_ACTIVATION_PATH,
+    CloudflareCalendarReadActivationEngineClient,
+)
 from .claw_p01_composition import compose_p01_lanes
 from .orchestration_composition import CHAT_ENGINE_APP_ID
 from .local_engine_transport import (
+    DEFAULT_TIMEOUT_SECONDS,
+    MAX_ENGINE_RESPONSE_BYTES,
     LocalEngineHttpTransport,
     LocalEngineTransportError,
     local_engine_origin,
@@ -169,6 +176,144 @@ def build_local_p01_adapter(
     return adapter, diagnostic
 
 
+@dataclass(frozen=True, slots=True)
+class LocalEngineRequest:
+    """The ``js_object`` shape a Service Binding receives, built by the client."""
+
+    url: str
+    method: str = "GET"
+    headers: dict[str, str] | None = None
+    body: str | None = None
+
+    @property
+    def js_object(self) -> dict[str, Any]:
+        return {
+            "url": self.url,
+            "method": self.method,
+            "headers": dict(self.headers or {}),
+            "body": self.body,
+        }
+
+
+class LocalEngineFetchResponse:
+    """The bounded slice of a Binding ``Response`` the Engine clients read."""
+
+    __slots__ = ("status", "_body")
+
+    def __init__(self, *, status: int, body: str) -> None:
+        self.status = int(status)
+        self._body = body
+
+    async def text(self) -> str:
+        return self._body
+
+
+class LocalEngineFetchBinding:
+    """Service-Binding-shaped ``fetch`` over one loopback Engine origin.
+
+    The Worker client builds its URL from ``ENGINE_INTERNAL_ORIGIN`` and hands
+    the request to a Service Binding that ignores the host entirely. A native
+    host has no binding, so this object accepts exactly the paths named at
+    construction and dials the configured loopback origin with the same method,
+    headers and body. A path outside that set is refused before any socket use,
+    so the caller cannot widen the target.
+    """
+
+    def __init__(
+        self,
+        origin: str,
+        *,
+        paths: tuple[str, ...],
+        client: httpx.AsyncClient | None = None,
+        timeout: float = DEFAULT_TIMEOUT_SECONDS,
+    ) -> None:
+        self._origin = local_engine_origin(origin)
+        self._paths = frozenset(paths)
+        self._client = client
+        self._timeout = timeout
+        if client is not None and getattr(client, "follow_redirects", False):
+            raise LocalEngineTransportError(
+                "local engine client must not follow redirects"
+            )
+
+    async def fetch(self, request: object) -> LocalEngineFetchResponse:
+        if not isinstance(request, dict):
+            raise LocalEngineTransportError("Engine request must be an object")
+        parsed = urlparse(str(request.get("url") or ""))
+        if parsed.path not in self._paths:
+            raise LocalEngineTransportError(
+                "Engine client requested an unsupported internal target"
+            )
+        method = str(request.get("method") or "").upper()
+        if method != "POST":
+            raise LocalEngineTransportError("Engine call must be POST")
+        headers = {
+            str(name): str(value)
+            for name, value in dict(request.get("headers") or {}).items()
+        }
+        body = request.get("body")
+        if body is not None and not isinstance(body, (str, bytes)):
+            raise LocalEngineTransportError("Engine request body must be text")
+        owns_client = self._client is None
+        client = self._client or httpx.AsyncClient(
+            follow_redirects=False, timeout=self._timeout
+        )
+        try:
+            try:
+                response = await client.request(
+                    method, self._origin + parsed.path, headers=headers, content=body
+                )
+            except httpx.HTTPError:
+                raise LocalEngineTransportError(
+                    "local engine request failed"
+                ) from None
+            if len(response.content) > MAX_ENGINE_RESPONSE_BYTES:
+                raise LocalEngineTransportError(
+                    "Engine response exceeded the host transport safety limit"
+                )
+            return LocalEngineFetchResponse(
+                status=response.status_code, body=response.text
+            )
+        finally:
+            if owns_client:
+                await client.aclose()
+
+
+def build_local_calendar_read_activation_client(
+    env: Any,
+    *,
+    client: httpx.AsyncClient | None = None,
+) -> tuple[CloudflareCalendarReadActivationEngineClient | None, str | None]:
+    """The Worker's Calendar READ activation client over the loopback Engine.
+
+    Same client class, same caller surface and same closed response contract the
+    deployed Worker uses; only the transport is the host's loopback binding and
+    only the reviewed activation path is reachable through it. Unconfigured
+    stays unbound so the route keeps its documented 503.
+    """
+
+    config, diagnostic = local_p01_engine_config_from_env(env)
+    if config is None:
+        return None, diagnostic
+    try:
+        binding = LocalEngineFetchBinding(
+            config.origin, paths=(CALENDAR_READ_ACTIVATION_PATH,), client=client
+        )
+        return (
+            CloudflareCalendarReadActivationEngineClient(
+                binding,
+                caller_id=config.caller_id,
+                credential=config.credential,
+                request_factory=LocalEngineRequest,
+            ),
+            None,
+        )
+    except (TypeError, ValueError):
+        return None, P01_DIAG_CLIENT_CONSTRUCTOR_ERROR
+    except Exception:
+        return None, P01_DIAG_COMPOSITION_UNAVAILABLE
+
+
 __all__ = [
     "CHAT_ENGINE_APP_ID",
     "LOCAL_P01_CALLER_ID_ENV",
@@ -176,7 +321,11 @@ __all__ = [
     "LOCAL_P01_ORIGIN_ENV",
     "LOCAL_P01_ORIGIN_INVALID_DIAGNOSTIC",
     "LOCAL_P01_UNBOUND_DIAGNOSTIC",
+    "LocalEngineFetchBinding",
+    "LocalEngineFetchResponse",
+    "LocalEngineRequest",
     "LocalP01EngineConfig",
+    "build_local_calendar_read_activation_client",
     "build_local_engine_client",
     "build_local_p01_adapter",
     "build_local_p01_lanes",

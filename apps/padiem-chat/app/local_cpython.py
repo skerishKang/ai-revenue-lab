@@ -57,7 +57,11 @@ from .local_service_bridge import (
     compose_local_b14_transports,
 )
 from .claw_search_decision import trusted_claw_search_activation
-from .local_p01_engine import build_local_engine_client, build_local_p01_lanes
+from .local_p01_engine import (
+    build_local_calendar_read_activation_client,
+    build_local_engine_client,
+    build_local_p01_lanes,
+)
 from .worker_config import binding_value
 from .maintenance_mode import apply_write_freeze
 from .model_first import model_first_enabled
@@ -218,8 +222,12 @@ def _mesh_command_output_limit() -> int | None:
     return int(raw)
 
 
-def build_app():
-    """Compose the Chat ASGI app over the local SQLite + disk-R2 bindings."""
+def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
+    """Compose the Chat ASGI app over the local SQLite + disk-R2 bindings.
+
+    ``outbound_http_client`` is an injection seam for tests only: the host
+    otherwise owns one client per composed binding and closes it at shutdown.
+    """
 
     local_flag = os.getenv("PADIEM_LOCAL_DEV", "").strip().lower() in {"1", "true"}
     host_flag = os.getenv("PADIEM_CHAT_CPYTHON_HOST", "").strip().lower() in {"1", "true"}
@@ -289,6 +297,21 @@ def build_app():
             identity_origin, identity_secret,
             keepwarm_seconds=_identity_keepwarm_seconds(),
         ) if identity_origin else None
+    )
+    # The connector status projection reads connector truth from the same two
+    # private authorities the Worker composes: the identity lane above resolves
+    # *which* workspace, and this Google OAuth lane answers *whether the
+    # connector is usable*. Without both, /api/connectors/status keeps its
+    # reviewed unverified projection and the connect button stays hidden.
+    google_oauth_origin, google_oauth_secret = _optional_pair(
+        "PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_ORIGIN",
+        "PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_SECRET",
+    )
+    google_oauth_binding = (
+        HttpRpcBinding(
+            google_oauth_origin, google_oauth_secret,
+            client=outbound_http_client,
+        ) if google_oauth_origin else None
     )
     identity_authority = (
         CloudflareControlPlaneIdentityAuthority(identity_binding)
@@ -394,6 +417,31 @@ def build_app():
         claw_push_transport=build_host_push_transport(),
     )
 
+    from .connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
+
+    app.state.google_oauth_workspace_truth = (
+        CloudflareGoogleOAuthWorkspaceTruth(google_oauth_binding)
+        if google_oauth_binding is not None
+        else None
+    )
+    print(
+        "[local] google_oauth_workspace_truth="
+        + ("bound" if google_oauth_binding is not None else "unbound")
+    )
+    # #2952: Calendar READ activation reuses the same P01 Engine caller surface
+    # the Worker validates, over this host's loopback binding.
+    calendar_read_activation_client, calendar_diagnostic = (
+        build_local_calendar_read_activation_client(
+            os.environ, client=outbound_http_client
+        )
+    )
+    app.state.calendar_read_activation_client = calendar_read_activation_client
+    print(
+        "[local] calendar_read_activation="
+        + ("bound" if calendar_read_activation_client is not None else "unbound")
+        + (" reason=" + calendar_diagnostic if calendar_diagnostic else "")
+    )
+
     # apply_write_freeze below rebinds ``app`` to the ASGI wrapper; bind the
     # Starlette app in the handler default so startup still updates the state
     # object requests read (the wrapper itself has no .state).
@@ -473,6 +521,8 @@ def build_app():
         # #6613: the identity RPC client is pooled for the life of the host, so
         # the same shutdown hook that stops the SQLite readers closes it.
         app.router.on_shutdown.append(identity_binding.aclose)
+    if google_oauth_binding is not None and outbound_http_client is None:
+        app.router.on_shutdown.append(google_oauth_binding.aclose)
     if shared_login_flow is not None:
         exchange_close = getattr(getattr(shared_login_flow, 'exchange', None), 'aclose', None)
         if callable(exchange_close):
