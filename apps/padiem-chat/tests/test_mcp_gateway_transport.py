@@ -139,10 +139,24 @@ def test_fourteen_sorted_tools_use_closed_schemas_and_token_bound_device(gateway
     assert "device" not in next(tool for tool in tools if tool["name"] == "pc_devices")["inputSchema"]["properties"]
     shell = next(tool for tool in tools if tool["name"] == "pc_shell")
     assert shell["inputSchema"]["required"] == ["command"]
-    assert set(shell["inputSchema"]["properties"]) == {"command", "cwd", "shell", "wait_seconds", "device", "mode"}
+    assert set(shell["inputSchema"]["properties"]) == {"command", "cwd", "shell", "wait_seconds", "device"}
     assert shell["inputSchema"]["properties"]["shell"]["enum"] == ["powershell", "cmd", "bash"]
     wait = shell["inputSchema"]["properties"]["wait_seconds"]
     assert wait["type"] == "integer" and wait["minimum"] == 1 and wait["maximum"] == 150
+    assert gateway.calls == []
+
+
+@pytest.mark.parametrize("version", [MODERN, LEGACY])
+def test_pc_shell_exposes_mode_only_when_user_mode_switch_is_on(gateway, version):
+    gateway.app.state.settings.mcp_pc_shell_enabled = True
+    gateway.app.state.settings.mcp_pc_shell_user_mode_enabled = True
+    response = post(gateway, version=version)
+    tools = response.json()["result"]["tools"]
+    shell = next(tool for tool in tools if tool["name"] == "pc_shell")
+    start = next(tool for tool in tools if tool["name"] == "pc_shell_start")
+    assert set(shell["inputSchema"]["properties"]) == {"command", "cwd", "shell", "wait_seconds", "device", "mode"}
+    assert shell["inputSchema"]["properties"]["mode"]["enum"] == ["system", "user"]
+    assert "mode" in start["inputSchema"]["properties"]
     assert gateway.calls == []
 
 

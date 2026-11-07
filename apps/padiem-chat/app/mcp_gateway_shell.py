@@ -41,51 +41,77 @@ _NOW = time.monotonic
 
 PC_SHELL_DEVICE_PROPERTY = {
     "type": "string", "maxLength": 128,
-    "description": "대상 PC입니다. pc_devices가 알려 준 표시 이름이나 id6를 씁니다. 비우면 연결의 기본 PC를 씁니다.",
+    "description": "��� PC�Դϴ�. pc_devices�� �˷� �� ǥ�� �̸��̳� id6�� ���ϴ�. ���� ������ �⺻ PC�� ���ϴ�.",
 }
 PC_SHELL_MODES = ("system", "user")
-PC_SHELL_PROPERTIES = {
-    "device": dict(PC_SHELL_DEVICE_PROPERTY),
-    "command": {
-        "type": "string", "minLength": 1, "maxLength": PC_SHELL_MAX_COMMAND_CHARS,
-        "description": "연결된 PC에서 실행할 명령입니다. 실행 시간 제한은 없습니다.",
-    },
-    "cwd": {
-        "type": "string", "minLength": 1, "maxLength": PC_SHELL_MAX_CWD_CHARS,
-        "description": "실행 폴더입니다. 생략하면 PC의 기본 작업 폴더를 씁니다.",
-    },
-    "shell": {
-        "type": "string", "enum": list(PC_SHELL_SHELLS),
-        "description": "사용할 셸입니다. 기본값은 powershell입니다.",
-    },
-    "wait_seconds": {
-        "type": "integer", "minimum": 1, "maximum": PC_SHELL_MAX_WAIT_SECONDS,
-        "description": "응답에서 기다릴 시간입니다. 이 시간이 지나도 PC 작업은 계속 실행됩니다.",
-    },
-    "mode": {
-        "type": "string", "enum": list(PC_SHELL_MODES),
-        "description": "Execution session. system is default; user requires server switch.",
-    },
+PC_SHELL_MODE_PROPERTY = {
+    "type": "string", "enum": list(PC_SHELL_MODES),
+    "description": "Execution session. system is default; user requires server switch.",
 }
+
+
+def _shell_base_properties():
+    return {
+        "device": dict(PC_SHELL_DEVICE_PROPERTY),
+        "command": {
+            "type": "string", "minLength": 1, "maxLength": PC_SHELL_MAX_COMMAND_CHARS,
+            "description": "����� PC���� ������ �����Դϴ�. ���� �ð� ������ �����ϴ�.",
+        },
+        "cwd": {
+            "type": "string", "minLength": 1, "maxLength": PC_SHELL_MAX_CWD_CHARS,
+            "description": "���� �����Դϴ�. �����ϸ� PC�� �⺻ �۾� ������ ���ϴ�.",
+        },
+        "shell": {
+            "type": "string", "enum": list(PC_SHELL_SHELLS),
+            "description": "����� ���Դϴ�. �⺻���� powershell�Դϴ�.",
+        },
+        "wait_seconds": {
+            "type": "integer", "minimum": 1, "maximum": PC_SHELL_MAX_WAIT_SECONDS,
+            "description": "���信�� ��ٸ� �ð��Դϴ�. �� �ð��� ������ PC �۾��� ��� ����˴ϴ�.",
+        },
+    }
+
+
+PC_SHELL_PROPERTIES = {**_shell_base_properties(), "mode": dict(PC_SHELL_MODE_PROPERTY)}
 PC_SHELL_START_PROPERTIES = {
-    key: dict(PC_SHELL_PROPERTIES[key]) for key in ("command", "cwd", "shell", "mode")
+    key: dict(PC_SHELL_PROPERTIES[key]) for key in ("command", "cwd", "shell", "mode", "device")
 }
 PC_SHELL_READ_PROPERTIES = {
     "job_id": {"type": "string", "minLength": 36, "maxLength": 36,
-               "description": "pc_shell 또는 pc_shell_start가 돌려준 Claw 작업 ID입니다."},
+               "description": "pc_shell �Ǵ� pc_shell_start�� ������ Claw �۾� ID�Դϴ�."},
     "offset": {"type": "integer", "minimum": 0,
-               "description": "출력 핸들의 시작 위치(바이트)입니다."},
+               "description": "��� �ڵ��� ���� ��ġ(����Ʈ)�Դϴ�."},
     "length": {"type": "integer", "minimum": 1, "maximum": PC_SHELL_READ_MAX_BYTES,
-               "description": "읽을 최대 바이트입니다."},
+               "description": "���� �ִ� ����Ʈ�Դϴ�."},
+    "device": dict(PC_SHELL_DEVICE_PROPERTY),
 }
 PC_SHELL_STOP_PROPERTIES = {
     "job_id": dict(PC_SHELL_READ_PROPERTIES["job_id"]),
     "device": dict(PC_SHELL_DEVICE_PROPERTY),
 }
-# 2026-11-04: 선택 대상 PC. pc_shell·pc_shell_start는 실행 대상을 고르고,
-# pc_shell_read·stop은 작업 ID가 PC를 정하므로 받아도 무시한다.
-PC_SHELL_START_PROPERTIES["device"] = dict(PC_SHELL_DEVICE_PROPERTY)
-PC_SHELL_READ_PROPERTIES["device"] = dict(PC_SHELL_DEVICE_PROPERTY)
+
+
+def _pc_shell_user_mode_enabled(request_or_settings=None) -> bool:
+    if request_or_settings is None:
+        return False
+    settings = getattr(request_or_settings, "app", None)
+    settings = getattr(settings, "state", None)
+    settings = getattr(settings, "settings", request_or_settings)
+    if getattr(request_or_settings, "app", None) is None and hasattr(request_or_settings, "mcp_pc_shell_user_mode_enabled"):
+        settings = request_or_settings
+    return bool(getattr(settings, "mcp_pc_shell_user_mode_enabled", False))
+
+
+def pc_shell_properties(*, user_mode_enabled: bool = False):
+    props = _shell_base_properties()
+    if user_mode_enabled:
+        props["mode"] = dict(PC_SHELL_MODE_PROPERTY)
+    return props
+
+
+def pc_shell_start_properties(*, user_mode_enabled: bool = False):
+    base = pc_shell_properties(user_mode_enabled=user_mode_enabled)
+    return {key: dict(base[key]) for key in ("command", "cwd", "shell", "device") + (("mode",) if user_mode_enabled else ())}
 
 
 def _command_material(arguments: Mapping) -> bool:
@@ -106,24 +132,33 @@ def _valid_job_id(value) -> bool:
     return isinstance(value, str) and _DISPATCH_ID.fullmatch(value) is not None
 
 
-def validate_pc_shell_arguments(arguments) -> bool:
-    if not isinstance(arguments, Mapping) or not set(arguments) <= set(PC_SHELL_PROPERTIES):
+def _mode_argument_valid(arguments: Mapping, *, allow_user_mode: bool) -> bool:
+    if "mode" not in arguments:
+        return True
+    mode = arguments.get("mode")
+    if not isinstance(mode, str) or mode not in PC_SHELL_MODES:
+        return False
+    return allow_user_mode or mode == "system"
+
+
+def validate_pc_shell_arguments(arguments, *, user_mode_enabled: bool | None = None) -> bool:
+    allowed = set(pc_shell_properties(user_mode_enabled=True if user_mode_enabled is None else bool(user_mode_enabled)))
+    if not isinstance(arguments, Mapping) or not set(arguments) <= allowed:
         return False
     if "command" not in arguments or not _command_material(arguments):
         return False
-    mode = arguments.get("mode", "system")
-    if not isinstance(mode, str) or mode not in PC_SHELL_MODES:
+    if not _mode_argument_valid(arguments, allow_user_mode=True if user_mode_enabled is None else bool(user_mode_enabled)):
         return False
     wait = arguments.get("wait_seconds", PC_SHELL_DEFAULT_WAIT_SECONDS)
     return isinstance(wait, int) and not isinstance(wait, bool) and 1 <= wait <= PC_SHELL_MAX_WAIT_SECONDS
 
 
-def validate_pc_shell_start_arguments(arguments) -> bool:
-    if not (isinstance(arguments, Mapping) and set(arguments) <= set(PC_SHELL_START_PROPERTIES)
+def validate_pc_shell_start_arguments(arguments, *, user_mode_enabled: bool | None = None) -> bool:
+    allowed = set(pc_shell_start_properties(user_mode_enabled=True if user_mode_enabled is None else bool(user_mode_enabled)))
+    if not (isinstance(arguments, Mapping) and set(arguments) <= allowed
             and "command" in arguments and _command_material(arguments)):
         return False
-    mode = arguments.get("mode", "system")
-    return isinstance(mode, str) and mode in PC_SHELL_MODES
+    return _mode_argument_valid(arguments, allow_user_mode=True if user_mode_enabled is None else bool(user_mode_enabled))
 
 
 def validate_pc_shell_read_arguments(arguments) -> bool:
@@ -145,14 +180,16 @@ def validate_pc_shell_stop_arguments(arguments) -> bool:
             and _valid_job_id(arguments.get("job_id")))
 
 
-def validate_shell_tool_arguments(tool_name: str, arguments) -> bool:
-    validators = {
-        PC_SHELL_TOOL_NAME: validate_pc_shell_arguments,
-        PC_SHELL_START_TOOL_NAME: validate_pc_shell_start_arguments,
-        PC_SHELL_READ_TOOL_NAME: validate_pc_shell_read_arguments,
-        PC_SHELL_STOP_TOOL_NAME: validate_pc_shell_stop_arguments,
-    }
-    return tool_name in validators and validators[tool_name](arguments)
+def validate_shell_tool_arguments(tool_name: str, arguments, *, user_mode_enabled: bool | None = None) -> bool:
+    if tool_name == PC_SHELL_TOOL_NAME:
+        return validate_pc_shell_arguments(arguments, user_mode_enabled=user_mode_enabled)
+    if tool_name == PC_SHELL_START_TOOL_NAME:
+        return validate_pc_shell_start_arguments(arguments, user_mode_enabled=user_mode_enabled)
+    if tool_name == PC_SHELL_READ_TOOL_NAME:
+        return validate_pc_shell_read_arguments(arguments)
+    if tool_name == PC_SHELL_STOP_TOOL_NAME:
+        return validate_pc_shell_stop_arguments(arguments)
+    return False
 
 
 def normalize_pc_shell_arguments(arguments: Mapping) -> dict:
