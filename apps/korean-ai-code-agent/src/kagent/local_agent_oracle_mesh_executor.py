@@ -1437,33 +1437,33 @@ class OracleMeshExecutor:
         return probe
 
     @staticmethod
-    def build_user_helper_pipe_client_ps(*, device_id: str, request_id: str,
-                                         shell: str, command: str,
-                                         cwd: str | None, timeout_seconds: int,
+    def build_user_helper_pipe_client_ps(*, request_id: str, shell: str,
+                                         command: str, cwd: str | None,
+                                         timeout_seconds: int,
                                          distro: str | None,
-                                         secret_file: str | None = None) -> str:
+                                         task_arguments: str | None = None,
+                                         task_path: str = USER_HELPER_TASK_PATH,
+                                         task_name: str = USER_HELPER_TASK_NAME) -> str:
         """#7076c/#7105: PS pipe client sent via runcommand (SYSTEM) to the PC.
 
-        The script runs on the target PC as SYSTEM. It reads the helper secret
-        file path from the registered Padiem task arguments (never from dispatch
-        or command text), computes HMAC-SHA256 nonce over the exact
-        HelperRequest.material() contract, connects to the #7076 pipe, and
-        exchanges one length-prefixed (4-byte BE + UTF-8 JSON) frame.
+        The script runs on the target PC as SYSTEM. It reads the registered
+        Padiem task's own arguments, takes ``--device-id`` from that string, and
+        computes the pipe name locally with UTF-8 SHA-256. The dispatch's
+        ``device_id`` is never used: both installation lanes (one-click pairing
+        tag and connector ``mesh_node_id``) are already represented by the value
+        the installer wrote into the task.
 
-        ``secret_file`` is a test seam: a CI runner has no registered Padiem
-        task, so a test points the client at the file it wrote. No production
-        caller passes it, and the executable, the frame bytes and the nonce are
-        the same either way.
+        ``task_arguments`` is a test seam. A CI runner has no registered Padiem
+        task, so a test can supply the exact argument string the installer
+        writes. No production caller passes it, and the parsing, hashing, frame
+        bytes and nonce are the same either way.
 
-        Secret value is never printed. Failure to reach the helper is reported
-        as user_session_unavailable ? no SYSTEM fallback.
+        Secret value is never printed. A missing task, a missing ``--device-id``,
+        or a missing secret file is reported as user_session_unavailable before
+        any pipe connect - no SYSTEM fallback.
         """
         import base64 as _b64
         import json as _json
-        # Compute stable hashed pipe name from raw device_id; embed only the
-        # safe derived name so raw IDs (which may contain '$') never appear in
-        # the PowerShell script and cannot trigger variable expansion.
-        pipe_name = user_helper_pipe_name(device_id)
         mat = "\n".join([request_id, shell, cwd or "", command, str(int(timeout_seconds)), distro or ""]).encode("utf-8")
         # material is not secret; embed as base64 data for exact byte fidelity.
         mat_b64 = _b64.b64encode(mat).decode("ascii")
@@ -1472,35 +1472,48 @@ class OracleMeshExecutor:
             "command": command, "timeout_seconds": int(timeout_seconds), "distro": distro,
         }
         req_b64 = _b64.b64encode(_json.dumps(payload, ensure_ascii=True, separators=(",", ":")).encode("utf-8")).decode("ascii")
-        if secret_file is None:
-            secret_source = r"""
-  $task=Get-ScheduledTask -TaskPath '@@TASK_PATH@@' -TaskName '@@TASK_NAME@@' -ErrorAction Stop
-  $arg=[string]$task.Actions[0].Arguments
+        if task_arguments is None:
+            arguments_source = (
+                "\n  $task=Get-ScheduledTask -TaskPath '@@TASK_PATH@@' -TaskName '@@TASK_NAME@@' -ErrorAction SilentlyContinue"
+                "\n  if(-not $task){ Fail 'user_session_unavailable' 'helper task is not registered' }"
+                "\n  if(-not $task.Actions -or $task.Actions.Count -lt 1){ Fail 'user_session_unavailable' 'helper task has no action' }"
+                "\n  $arg=[string]$task.Actions[0].Arguments"
+            ).replace("@@TASK_PATH@@", str(task_path).replace("'", "''")).replace(
+                "@@TASK_NAME@@", str(task_name).replace("'", "''")
+            )
+        else:
+            arguments_source = (
+                "\n  $arg=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('"
+                + _b64.b64encode(str(task_arguments).encode("utf-8")).decode("ascii")
+                + "'))"
+            )
+        script = r"""
+$ErrorActionPreference='Stop'
+$mat=[Convert]::FromBase64String('@@MAT_B64@@')
+$reqB64='@@REQ_B64@@'
+function Fail($code,$msg){ Write-Output ($code+': '+$msg); exit 1 }
+try {@@ARGUMENTS_SOURCE@@
+  $deviceId=$null
+  if($arg -match '--device-id\s+"([^"]+)"'){ $deviceId=$Matches[1] }
+  elseif($arg -match "--device-id\s+'([^']+)'"){ $deviceId=$Matches[1] }
+  elseif($arg -match '--device-id\s+([^\s]+)'){ $deviceId=$Matches[1] }
+  if(-not $deviceId){ Fail 'user_session_unavailable' 'helper device id is not configured' }
+  if($deviceId -notmatch '^[A-Za-z0-9_.$:@+\-]{1,256}$'){ Fail 'user_session_unavailable' 'helper device id is not valid' }
+  $sha=[System.Security.Cryptography.SHA256]::Create()
+  $digest=-join ($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($deviceId)) | ForEach-Object { $_.ToString('x2') })
+  $pipeName='padiem-user-helper-dev_'+$digest.Substring(0,32)
+  $pipePath='\\.\pipe\'+$pipeName
   $secretFile=$null
   if($arg -match '--secret-file\s+"([^"]+)"'){ $secretFile=$Matches[1] }
   elseif($arg -match "--secret-file\s+'([^']+)'"){ $secretFile=$Matches[1] }
-  elseif($arg -match '--secret-file\s+([^\s]+)'){ $secretFile=$Matches[1] }""".replace("@@TASK_PATH@@", USER_HELPER_TASK_PATH).replace("@@TASK_NAME@@", USER_HELPER_TASK_NAME)
-        else:
-            secret_source = (
-                "\n  $secretFile=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('"
-                + _b64.b64encode(str(secret_file).encode("utf-8")).decode("ascii")
-                + "'))"
-            )
-        script = f"""
-$ErrorActionPreference='Stop'
-$mat=[Convert]::FromBase64String('{mat_b64}')
-$reqB64='{req_b64}'
-$pipeName='{pipe_name}'
-$pipePath='\\\\.\\pipe\\'+$pipeName
-function Fail($code,$msg){{ Write-Output ($code+': '+$msg); exit 1 }}
-try {{{secret_source}
-  if(-not $secretFile){{ Fail 'user_session_unavailable' 'helper secret file is not configured' }}
+  elseif($arg -match '--secret-file\s+([^\s]+)'){ $secretFile=$Matches[1] }
+  if(-not $secretFile){ Fail 'user_session_unavailable' 'helper secret file is not configured' }
   $raw=[System.IO.File]::ReadAllBytes($secretFile)
   $secretText=[System.Text.Encoding]::UTF8.GetString($raw).Trim()
   $secret=[System.Text.Encoding]::UTF8.GetBytes($secretText)
-  if($secret.Length -eq 0){{ Fail 'user_session_unavailable' 'helper secret is unavailable' }}
+  if($secret.Length -eq 0){ Fail 'user_session_unavailable' 'helper secret is unavailable' }
   $hmac=New-Object System.Security.Cryptography.HMACSHA256 -ArgumentList (,$secret)
-  $nonce=-join ($hmac.ComputeHash($mat) | ForEach-Object {{ $_.ToString('x2') }})
+  $nonce=-join ($hmac.ComputeHash($mat) | ForEach-Object { $_.ToString('x2') })
   $req=[System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($reqB64)) | ConvertFrom-Json
   $req | Add-Member -NotePropertyName nonce -NotePropertyValue $nonce -Force
   $body=[System.Text.Encoding]::UTF8.GetBytes(($req | ConvertTo-Json -Compress -Depth 5))
@@ -1512,8 +1525,8 @@ try {{{secret_source}
   # per frame, not a command deadline: while a stage-2 command runs the helper
   # sends a heartbeat every 5s, so a long command keeps its lane.
   $client.Connect(5000)
-  $w=$client.WriteAsync($len,0,4); if(-not $w.Wait(5000)){{ throw 'helper write timeout' }}
-  $w=$client.WriteAsync($body,0,$body.Length); if(-not $w.Wait(5000)){{ throw 'helper write timeout' }}
+  $w=$client.WriteAsync($len,0,4); if(-not $w.Wait(5000)){ throw 'helper write timeout' }
+  $w=$client.WriteAsync($body,0,$body.Length); if(-not $w.Wait(5000)){ throw 'helper write timeout' }
   $client.Flush()
   # #7107: the helper streams stdout/stderr as chunks. Accumulate them in
   # memory and emit one reply object; there is no 256 KiB cut and no fixed
@@ -1521,46 +1534,47 @@ try {{{secret_source}
   # keeps a healthy long command alive.
   $stdout=New-Object System.Collections.Generic.List[byte]
   $stderr=New-Object System.Collections.Generic.List[byte]
-  while($true){{
+  while($true){
     $hdr=New-Object byte[] 4; $read=0
-    while($read -lt 4){{
-      $t=$client.ReadAsync($hdr,$read,4-$read); if(-not $t.Wait(15000)){{ throw 'helper read timeout' }}
-      $n=$t.Result; if($n -le 0){{ throw 'short header' }}; $read+=$n
-    }}
+    while($read -lt 4){
+      $t=$client.ReadAsync($hdr,$read,4-$read); if(-not $t.Wait(15000)){ throw 'helper read timeout' }
+      $n=$t.Result; if($n -le 0){ throw 'short header' }; $read+=$n
+    }
     [Array]::Reverse($hdr); $rlen=[System.BitConverter]::ToInt32($hdr,0)
-    if($rlen -lt 0 -or $rlen -gt 2097152){{ throw 'bad frame length' }}
+    if($rlen -lt 0 -or $rlen -gt 2097152){ throw 'bad frame length' }
     $rbody=New-Object byte[] $rlen; $read=0
-    while($read -lt $rlen){{
-      $t=$client.ReadAsync($rbody,$read,$rlen-$read); if(-not $t.Wait(15000)){{ throw 'helper read timeout' }}
-      $n=$t.Result; if($n -le 0){{ throw 'short body' }}; $read+=$n
-    }}
+    while($read -lt $rlen){
+      $t=$client.ReadAsync($rbody,$read,$rlen-$read); if(-not $t.Wait(15000)){ throw 'helper read timeout' }
+      $n=$t.Result; if($n -le 0){ throw 'short body' }; $read+=$n
+    }
     $text=[System.Text.Encoding]::UTF8.GetString($rbody)
     $frame=$text | ConvertFrom-Json
-    if($frame.status -eq 'started' -or $frame.status -eq 'running'){{ continue }}
-    if($frame.status -eq 'stdout'){{
+    if($frame.status -eq 'started' -or $frame.status -eq 'running'){ continue }
+    if($frame.status -eq 'stdout'){
       $stdout.AddRange([byte[]][Convert]::FromBase64String([string]$frame.data_b64)); continue
-    }}
-    if($frame.status -eq 'stderr'){{
+    }
+    if($frame.status -eq 'stderr'){
       $stderr.AddRange([byte[]][Convert]::FromBase64String([string]$frame.data_b64)); continue
-    }}
-    $reply=[ordered]@{{
+    }
+    $reply=[ordered]@{
       request_id=$frame.request_id; status=$frame.status; exit_code=$frame.exit_code;
       stdout_b64=[Convert]::ToBase64String($stdout.ToArray());
       stderr_b64=[Convert]::ToBase64String($stderr.ToArray());
       truncated=$false; error_code=$frame.error_code; duration_ms=$frame.duration_ms
-    }}
+    }
     $client.Dispose()
     [Console]::Out.Write(($reply | ConvertTo-Json -Compress))
     exit 0
-  }}
-}} catch {{
-  if($_.Exception -is [System.IO.FileNotFoundException] -or $_.Exception -is [System.TimeoutException] -or $_.Exception -is [System.ComponentModel.Win32Exception] -or $_.FullyQualifiedErrorId -like '*NoMatchingMSFT_ScheduledTask*' -or $_.Exception.Message -like '*pipe*not*') {{
-    Fail 'user_session_unavailable' 'helper pipe is not available'
-  }}
+  }
+} catch {
   Fail 'user_session_unavailable' 'helper pipe is not available'
-}}
+}
 """.strip()
-        return script
+        return (
+            script.replace("@@MAT_B64@@", mat_b64)
+            .replace("@@REQ_B64@@", req_b64)
+            .replace("@@ARGUMENTS_SOURCE@@", arguments_source)
+        )
 
     @staticmethod
     def _parse_user_helper_outcome(raw: bytes) -> OracleMeshExecutionOutcome:
@@ -1625,14 +1639,13 @@ try {{{secret_source}
         distro = mat.get("distro") if isinstance(mat.get("distro"), str) else None
         timeout_s = mat.get("timeout_seconds")
         if not isinstance(timeout_s, int) or isinstance(timeout_s, bool): timeout_s = 30
-        # Helper (stage-1, #7076 module) is final allowlist authority; executor does format checks only.
-        device_id = getattr(dispatch, "device_id", None) or ""
-        if not isinstance(device_id, str) or not device_id.strip():
-            return OracleMeshExecutionOutcome(termination="not_executed", exit_code=None,
-                body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
-        device_id = device_id.strip()
+        # #7117 PR-3: the pipe name comes from the registered task's own
+        # --device-id, not from dispatch.device_id. The value is written by the
+        # installer (one-click pairing tag or connector mesh_node_id), so both
+        # lanes hash the same string on the PC. A missing task or argument is
+        # reported by the PS client before any pipe wait.
         try:
-            ps = self.build_user_helper_pipe_client_ps(device_id=device_id, request_id=req_id, shell=shell_name, command=cmd, cwd=cwd, timeout_seconds=timeout_s, distro=distro)
+            ps = self.build_user_helper_pipe_client_ps(request_id=req_id, shell=shell_name, command=cmd, cwd=cwd, timeout_seconds=timeout_s, distro=distro)
         except Exception:
             return OracleMeshExecutionOutcome(termination="not_executed", exit_code=None,
                 body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "user mode client unavailable"}, ensure_ascii=True).encode("utf-8"))

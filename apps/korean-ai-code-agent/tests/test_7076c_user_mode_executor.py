@@ -71,10 +71,11 @@ def test_user_mode_pipe_absent_maps_to_user_session_unavailable_no_fallback():
     assert "Get-ScheduledTask" in port.calls[0]["command"]
 
 
-def test_user_mode_missing_device_id_returns_user_session_unavailable_no_fallback():
-    port = FakePort(output=b"unexpected-system\n")
+def test_user_mode_missing_dispatch_device_id_still_uses_the_task_arguments():
+    port = FakePort(output=b"user_session_unavailable: helper device id is not configured\n")
     ex = _executor(port)
-    # node_ref has mesh id but dispatch.device_id missing; executor must not infer/fallback to SYSTEM
+    # node_ref has a mesh id but dispatch.device_id is missing; the client must
+    # still be sent because the PC's registered task is the only authority.
     d = OracleMeshDispatch(dispatch_id="dsp_"+"4"*32, nonce="n", node_ref="node//abcdef$X99@mesh", file_path="command",
                            command_id="c", run_id="r", kind="command",
                            command_text=json.dumps({"shell":"whoami","command":"whoami","cwd":None,"timeout_seconds":30,"distro":None}),
@@ -82,7 +83,11 @@ def test_user_mode_missing_device_id_returns_user_session_unavailable_no_fallbac
     out = ex.execute(d)
     body = json.loads(out.body.decode())
     assert body["error_code"] == USER_SESSION_UNAVAILABLE
-    assert port.calls == []
+    assert len(port.calls) == 1
+    sent = port.calls[0]["command"]
+    assert "Get-ScheduledTask" in sent
+    assert "--device-id" in sent
+    # no SYSTEM fallback: only the pipe client ran
 
 
 def test_user_mode_accepts_raw_meshcentral_device_id():

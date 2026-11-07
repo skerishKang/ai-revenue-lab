@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import json
 import os
 import struct
 import subprocess
@@ -30,10 +31,13 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+KAGENT_SRC = ROOT.parent / "korean-ai-code-agent" / "src"
+for path in (str(ROOT), str(KAGENT_SRC)):
+    if path not in sys.path:
+        sys.path.insert(0, path)
 
 from claw_connect import user_helper_service as service  # noqa: E402
+from kagent.local_agent_oracle_mesh_executor import OracleMeshExecutor  # noqa: E402
 from claw_connect import user_session_delegation as delegation  # noqa: E402
 from claw_connect import user_session_helper as helper  # noqa: E402
 
@@ -74,11 +78,11 @@ def _pe_subsystem(path: Path) -> int:
     return struct.unpack_from("<H", data, pe_offset + 24 + 68)[0]
 
 
-def _start_helper(exe: Path, secret_file: Path) -> subprocess.Popen:
+def _start_helper(exe: Path, secret_file: Path, device_id: str = DEVICE) -> subprocess.Popen:
     return subprocess.Popen(
         [
             str(exe),
-            "--device-id", DEVICE,
+            "--device-id", device_id,
             "--secret-file", str(secret_file),
             "--max-requests", "1",
         ],
@@ -223,3 +227,57 @@ def test_entrypoint_hides_every_child_console(monkeypatch):
     assert captured["kwargs"]["creationflags"] & getattr(
         subprocess, "CREATE_NO_WINDOW", 0x08000000
     )
+
+
+def _wait_for_pipe(device_id: str, proc: subprocess.Popen, timeout_seconds: float = 2.0) -> None:
+    """Give PyInstaller's onefile bootstrap a moment without opening the pipe.
+
+    Test-Path on a named pipe can consume the listener's only instance, so the
+    client's own Connect(5000) is the actual readiness probe.
+    """
+    deadline = time.monotonic() + timeout_seconds
+    while time.monotonic() < deadline:
+        if proc.poll() is not None:
+            out, err = proc.communicate(timeout=10)
+            pytest.fail(f"the helper exited before its pipe appeared: {proc.returncode} {out!r} {err!r}")
+        time.sleep(0.1)
+
+
+@pytest.mark.skipif(not _HELPER_EXE, reason="PADIEM_HELPER_EXE is not configured")
+def test_registered_task_arguments_reach_the_built_helper(tmp_path):
+    """The real EXE, the real scheduled-task argument string, the real client."""
+    exe = Path(_HELPER_EXE)
+    assert exe.is_file(), f"built helper is missing: {exe}"
+
+    device = "helper7108$" + uuid.uuid4().hex
+    secret_file = tmp_path / "user-helper.secret"
+    secret_file.write_bytes(SECRET + b"\n")
+    task_args = f'--device-id "{device}" --secret-file "{secret_file}"'
+    proc = _start_helper(exe, secret_file, device)
+    try:
+        _wait_for_pipe(device, proc)
+        script = OracleMeshExecutor.build_user_helper_pipe_client_ps(
+            request_id="req_" + uuid.uuid4().hex,
+            shell="powershell",
+            command="Write-Output 'exe-task-args-ok'",
+            cwd=None,
+            timeout_seconds=30,
+            distro=None,
+            task_arguments=task_args,
+        )
+        encoded = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
+        done = subprocess.run(
+            ["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy",
+             "Bypass", "-EncodedCommand", encoded],
+            capture_output=True, timeout=90, check=False,
+        )
+        text = done.stdout.decode("utf-8", "replace").strip()
+        assert text, done.stderr.decode("utf-8", "replace")
+        reply = json.loads(text)
+        assert reply["status"] == "ok", reply
+        stdout = base64.b64decode(reply["stdout_b64"]).decode("utf-8", "replace")
+        assert "exe-task-args-ok" in stdout
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+        proc.communicate(timeout=30)

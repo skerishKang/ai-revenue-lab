@@ -26,10 +26,14 @@ MESH_DEVICE = "abcdefghijklmnopqrstuvwx1234567890ABCDEFGHIJKLMNOPQRSTfi$D62t1"
 REQ_ID = "req_" + "a" * 32
 
 
+def _task_args(device_id: str, secret_file: str = r"C:\Padiem\helper.secret") -> str:
+    return f'--device-id "{device_id}" --secret-file "{secret_file}"'
+
+
 def test_executor_ps_embeds_exact_helper_request_material():
     cmd = "whoami"
     ps = OracleMeshExecutor.build_user_helper_pipe_client_ps(
-        device_id=DEVICE, request_id=REQ_ID, shell="whoami", command=cmd,
+        task_arguments=_task_args(DEVICE), request_id=REQ_ID, shell="whoami", command=cmd,
         cwd=None, timeout_seconds=30, distro=None,
     )
     req = helper.HelperRequest(request_id=REQ_ID, nonce="n", shell="whoami",
@@ -40,14 +44,17 @@ def test_executor_ps_embeds_exact_helper_request_material():
     assert SECRET.decode() not in ps
     assert "[Array]::Reverse($len)" in ps or "Reverse($len)" in ps
     assert "NamedPipeClientStream" in ps
-    assert helper.pipe_name(DEVICE) in ps
-    assert "Get-ScheduledTask" in ps and "--secret-file" in ps
-    # discovers secret file path via scheduled task args on target PC; secret value never embedded
+    assert "padiem-user-helper-dev_" in ps
+    assert "SHA256" in ps
+    assert helper.pipe_name(DEVICE) not in ps
+    assert "Get-ScheduledTask" not in ps  # task_arguments is the test seam
+    assert "--secret-file" in ps
+    # the injected task arguments carry the path; the production lookup is below
 
 
 def test_ps_client_bounds_every_pipe_step():
     ps = OracleMeshExecutor.build_user_helper_pipe_client_ps(
-        device_id=DEVICE, request_id=REQ_ID, shell="powershell", command="whoami",
+        task_arguments=_task_args(DEVICE), request_id=REQ_ID, shell="powershell", command="whoami",
         cwd=None, timeout_seconds=30, distro=None,
     )
     assert "$client.Connect(5000)" in ps
@@ -59,7 +66,7 @@ def test_ps_client_bounds_every_pipe_step():
 
 def test_ps_client_accumulates_streamed_chunks_without_a_256_kib_cut():
     ps = OracleMeshExecutor.build_user_helper_pipe_client_ps(
-        device_id=DEVICE, request_id=REQ_ID, shell="powershell", command="whoami",
+        task_arguments=_task_args(DEVICE), request_id=REQ_ID, shell="powershell", command="whoami",
         cwd=None, timeout_seconds=0, distro=None,
     )
     assert "$stdout.AddRange" in ps
@@ -72,17 +79,32 @@ def test_ps_client_accumulates_streamed_chunks_without_a_256_kib_cut():
 def test_golden_meshcentral_raw_device_id_yields_same_pipe_name_and_no_ps_dollar_expansion():
     expected = helper.pipe_name(MESH_DEVICE)
     ps = OracleMeshExecutor.build_user_helper_pipe_client_ps(
-        device_id=MESH_DEVICE, request_id=REQ_ID, shell="whoami", command="whoami",
+        task_arguments=_task_args(MESH_DEVICE), request_id=REQ_ID, shell="whoami", command="whoami",
         cwd=None, timeout_seconds=30, distro=None,
     )
     # helper and executor must target identical pipe; raw id contains '$' but PS embeds only hashed literal
     from kagent.local_agent_oracle_mesh_executor import user_helper_pipe_name
     assert user_helper_pipe_name(MESH_DEVICE) == expected
-    assert expected in ps
+    assert expected not in ps
     assert MESH_DEVICE not in ps
     assert "$D62t1" not in ps
-    pipe_value = ps.split("pipeName='", 1)[1].split("'", 1)[0]
-    assert "$" not in pipe_value
+    assert "$digest.Substring(0,32)" in ps
+
+
+def test_production_client_reads_the_registered_task_and_hashes_on_the_pc():
+    ps = OracleMeshExecutor.build_user_helper_pipe_client_ps(
+        request_id=REQ_ID, shell="whoami", command="whoami",
+        cwd=None, timeout_seconds=30, distro=None,
+    )
+    assert "Get-ScheduledTask -TaskPath '\\Padiem' -TaskName 'PadiemUserSessionHelper'" in ps
+    assert "$task.Actions[0].Arguments" in ps
+    assert "--device-id" in ps
+    assert "--secret-file" in ps
+    assert "padiem-user-helper-dev_" in ps
+    assert "$digest.Substring(0,32)" in ps
+    assert "helper task is not registered" in ps
+    assert "helper device id is not configured" in ps
+    assert DEVICE not in ps
 
 
 def test_golden_helper_frame_for_ps_client_request():
