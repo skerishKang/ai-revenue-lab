@@ -251,8 +251,10 @@ def test_bash_maps_to_the_helpers_wsl_shell_and_never_to_a_system_shell():
     assert material["command"] == "systemctl is-active padiem"
     assert material["distro"] is None
 
-    # A shell the helper does not run is passed through unchanged: the helper's
-    # own refusal is the answer, and the SYSTEM lane is never used instead.
-    passthrough = json.loads(shell.build_pc_shell_user_material(
-        {"command": "hostname", "shell": "powershell"}))
-    assert passthrough["shell"] == "powershell"
+    # #7104: powershell and cmd are the helper's own stage-2 shells, so they are
+    # passed through as the shell the user session runs.
+    for name in ("powershell", "cmd"):
+        passthrough = json.loads(shell.build_pc_shell_user_material(
+            {"command": "hostname", "shell": name}))
+        assert passthrough["shell"] == name
+        assert passthrough["command"] == "hostname"

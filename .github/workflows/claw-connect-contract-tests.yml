@@ -25,6 +25,10 @@ on:
     paths:
       - '.github/actions/shared-python-install/**'
       - "apps/claw-connect/**"
+      # #7104: the stage-2 round trip runs the executor's own PowerShell pipe
+      # client against the real helper, so a change to that client is a
+      # claw-connect surface. It is imported from source, not installed.
+      - "apps/korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py"
       # #6265 retroactive guard: the contract tests install the shared Core
       # with pip install -e, so a Core source change is a claw-connect
       # surface change even when no claw-connect file moves.
