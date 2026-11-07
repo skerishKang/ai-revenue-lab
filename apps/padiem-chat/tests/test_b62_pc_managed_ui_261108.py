@@ -13,9 +13,9 @@ STATIC = Path(__file__).resolve().parents[1] / "static"
 
 def test_settings_markup_carries_the_managed_block():
     html = (STATIC / "index.html").read_text(encoding="utf-8")
-    assert 'id="pcManagedBlock" hidden' in html
-    assert 'id="pcManagedList"' in html
-    assert 'id="pcManagedNotReady"' in html
+    assert 'id="mcpGatewayManagedBlock" hidden' in html
+    assert 'id="mcpGatewayManagedList"' in html
+    assert 'id="mcpGatewayManagedNotReady"' in html
     assert 'data-locale-key="pc-managed-title"' in html
     # The reviewed one-line description, verbatim in the default (ko) markup.
     assert "관리 PC에서는 관리자가 SYSTEM 권한으로 명령을 실행할 수 있습니다." in html
