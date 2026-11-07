@@ -61,9 +61,12 @@ separately justified storage migration and is deliberately NOT part of Phase A.
 
 from __future__ import annotations
 
+import asyncio
+import functools
 import inspect
 import json
 import re
+import time
 from types import SimpleNamespace
 from typing import Any
 import uuid
@@ -502,6 +505,128 @@ async def claw_manual_intake_preview(request: Request) -> JSONResponse:
     )
 
 
+_CLAW_EXECUTE_IDEMPOTENCY_TTL_SECONDS = 60.0
+_CLAW_EXECUTE_IDEMPOTENCY_WAIT_SECONDS = 10.0
+_CLAW_EXECUTE_IDEMPOTENCY_POLL_SECONDS = 0.01
+_CLAW_EXECUTE_IDEMPOTENCY_MAX_ENTRIES = 256
+_CLAW_EXECUTE_IDEMPOTENCY_KEY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$")
+_CLAW_EXECUTE_IDEMPOTENCY_CACHE: dict[
+    str, tuple[float, int, bytes, tuple[tuple[str, str], ...]]
+] = {}
+_CLAW_EXECUTE_IDEMPOTENCY_INFLIGHT: set[str] = set()
+
+
+def reset_claw_execute_idempotency() -> None:
+    """Drop the short-lived replay cache (tests and runtime reset hooks)."""
+    _CLAW_EXECUTE_IDEMPOTENCY_CACHE.clear()
+    _CLAW_EXECUTE_IDEMPOTENCY_INFLIGHT.clear()
+
+
+def _prune_claw_execute_idempotency(now: float) -> None:
+    expired = [
+        key
+        for key, entry in _CLAW_EXECUTE_IDEMPOTENCY_CACHE.items()
+        if entry[0] <= now
+    ]
+    for key in expired:
+        _CLAW_EXECUTE_IDEMPOTENCY_CACHE.pop(key, None)
+
+
+def _replay_claw_execute_response(
+    entry: tuple[float, int, bytes, tuple[tuple[str, str], ...]],
+) -> Response:
+    _, status_code, body, headers = entry
+    return Response(content=body, status_code=status_code, headers=dict(headers))
+
+
+async def _wait_for_claw_execute_replay(
+    cache_key: str,
+) -> tuple[float, int, bytes, tuple[tuple[str, str], ...]] | None:
+    """Wait briefly for the in-flight original, then return its cached reply."""
+    waited = 0.0
+    while (
+        cache_key in _CLAW_EXECUTE_IDEMPOTENCY_INFLIGHT
+        and waited < _CLAW_EXECUTE_IDEMPOTENCY_WAIT_SECONDS
+    ):
+        await asyncio.sleep(_CLAW_EXECUTE_IDEMPOTENCY_POLL_SECONDS)
+        waited += _CLAW_EXECUTE_IDEMPOTENCY_POLL_SECONDS
+    cached = _CLAW_EXECUTE_IDEMPOTENCY_CACHE.get(cache_key)
+    now = time.monotonic()
+    if cached is not None and cached[0] > now:
+        return cached
+    return None
+
+
+def _idempotent_claw_execute(handler: Any) -> Any:
+    """Replay the first result for a repeated short-lived request key.
+
+    The browser sends one random key per explicit execute click. A double
+    submit, proxy retry, or duplicate event listener therefore reaches the
+    P01/Engine boundary at most once while the key is retained. The key is
+    scoped to the authenticated user. The in-flight set and short polling wait
+    handle concurrent requests without an event-loop-bound asyncio.Lock: this
+    Worker serves requests on separate loops, and the existing B66 turn guard
+    uses the same in-isolate pattern. A deployment spanning isolates still
+    needs a shared D1 receipt; this cache is deliberately process-local.
+    """
+
+    @functools.wraps(handler)
+    async def wrapped(request: Request) -> Response:
+        raw_key = request.headers.get("idempotency-key")
+        if raw_key is None:
+            return await handler(request)
+        key = raw_key.strip()
+        if not _CLAW_EXECUTE_IDEMPOTENCY_KEY_RE.fullmatch(key):
+            return _error(
+                400,
+                "invalid_idempotency_key",
+                "Idempotency-Key 형식이 올바르지 않습니다.",
+            )
+        uid = current_user_id(request) if auth_ready(request) else None
+        cache_key = f"{uid if uid is not None else 'anonymous'}:{key}"
+        now = time.monotonic()
+        _prune_claw_execute_idempotency(now)
+        cached = _CLAW_EXECUTE_IDEMPOTENCY_CACHE.get(cache_key)
+        if cached is not None and cached[0] > now:
+            return _replay_claw_execute_response(cached)
+
+        if cache_key in _CLAW_EXECUTE_IDEMPOTENCY_INFLIGHT:
+            cached = await _wait_for_claw_execute_replay(cache_key)
+            if cached is not None:
+                return _replay_claw_execute_response(cached)
+            return _error(
+                503,
+                "idempotency_in_progress",
+                "같은 실행 요청이 처리 중입니다. 잠시 후 다시 시도해 주세요.",
+            )
+        _CLAW_EXECUTE_IDEMPOTENCY_INFLIGHT.add(cache_key)
+        try:
+            response = await handler(request)
+            headers = tuple(
+                (name, value)
+                for name, value in response.headers.items()
+                if name.lower() not in {"content-length", "transfer-encoding"}
+            )
+            _CLAW_EXECUTE_IDEMPOTENCY_CACHE[cache_key] = (
+                time.monotonic() + _CLAW_EXECUTE_IDEMPOTENCY_TTL_SECONDS,
+                response.status_code,
+                bytes(response.body),
+                headers,
+            )
+            while (
+                len(_CLAW_EXECUTE_IDEMPOTENCY_CACHE)
+                > _CLAW_EXECUTE_IDEMPOTENCY_MAX_ENTRIES
+            ):
+                oldest = next(iter(_CLAW_EXECUTE_IDEMPOTENCY_CACHE))
+                _CLAW_EXECUTE_IDEMPOTENCY_CACHE.pop(oldest, None)
+            return response
+        finally:
+            _CLAW_EXECUTE_IDEMPOTENCY_INFLIGHT.discard(cache_key)
+
+    return wrapped
+
+
+@_idempotent_claw_execute
 async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     # Owner decision 2026-11-05: Claw execution is signed-in only. Refuse a
     # guest before the body is read, before quota, and before any P01/Engine

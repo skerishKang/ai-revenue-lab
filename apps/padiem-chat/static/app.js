@@ -7184,6 +7184,36 @@
   setClawAreaState("idle");
   clearClawArtifact();
 
+  const CLAW_DISPATCH_KEY_WINDOW_MS = 10000;
+  // A duplicate listener or a retried click shares the key already claimed by
+  // the in-flight dispatch. Without a shared value, two closures would each
+  // mint their own key and the server could not recognize the replay.
+  function clawClaimDispatchKey() {
+    const button = clawExecuteButton;
+    const existing = button && button.dataset ? button.dataset.clawDispatchKey : "";
+    const existingAt = Number(
+      button && button.dataset ? button.dataset.clawDispatchAt || "0" : "0",
+    );
+    if (existing && Date.now() - existingAt < CLAW_DISPATCH_KEY_WINDOW_MS) {
+      return existing;
+    }
+    // #7133: the random part is minted by the shared transport helper —
+    // app.js never calls crypto directly (browser-minting contracts).
+    const minted = chatTransport.createRequestId?.();
+    const key = minted ? `claw-${minted}` : `claw-${Date.now().toString(36)}`;
+    if (button && button.dataset) {
+      button.dataset.clawDispatchKey = key;
+      button.dataset.clawDispatchAt = String(Date.now());
+    }
+    return key;
+  }
+  function releaseClawDispatchKey(key) {
+    const button = clawExecuteButton;
+    if (!button || !button.dataset || button.dataset.clawDispatchKey !== key) return;
+    delete button.dataset.clawDispatchKey;
+    delete button.dataset.clawDispatchAt;
+  }
+
   // Single execute entry point. The primary button and the post-cooldown retry
   // button both funnel through here, so a retry can never bypass the
   // single-flight, pre-dispatch cooldown or uncertain-dispatch guards and the
@@ -7206,6 +7236,7 @@
       input.focus();
       return;
     }
+    const idempotencyKey = clawClaimDispatchKey();
     clearClawRecovery();
     // Remember the exact bytes this dispatch carried, so a later ambiguous
     // failure can tell an identical re-send apart from new work.
@@ -7227,7 +7258,11 @@
     try {
       const response = await fetch("/api/claw/manual-intake/execute", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Idempotency-Key": idempotencyKey,
+        },
         body: JSON.stringify(executePayload),
       });
       const data = await response.json().catch(() => null);
@@ -7307,19 +7342,26 @@
       // The owning request always tears its wait timer down: success, known
       // pre-dispatch denial, ambiguous failure, and auth loss all clear it.
       clearClawWait();
+      releaseClawDispatchKey(idempotencyKey);
       setClawButtonsBusy(false);
     }
   }
 
   if (clawExecuteButton) {
-    clawExecuteButton.addEventListener("click", () => {
-      void runClawExecution();
-    });
+    if (clawExecuteButton.dataset.clawExecuteWired !== "1") {
+      clawExecuteButton.dataset.clawExecuteWired = "1";
+      clawExecuteButton.addEventListener("click", () => {
+        void runClawExecution();
+      });
+    }
   }
   if (clawRetryButton) {
-    clawRetryButton.addEventListener("click", () => {
-      void runClawExecution();
-    });
+    if (clawRetryButton.dataset.clawRetryWired !== "1") {
+      clawRetryButton.dataset.clawRetryWired = "1";
+      clawRetryButton.addEventListener("click", () => {
+        void runClawExecution();
+      });
+    }
   }
   // #3382: composing different work — new text, channel, action,
   // sender or conversation — is what releases the uncertain-dispatch latch.

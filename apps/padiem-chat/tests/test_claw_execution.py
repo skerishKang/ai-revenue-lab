@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+import threading
+import time
 
 import pytest
 from starlette.testclient import TestClient
@@ -300,6 +304,85 @@ def test_valid_reply_executes_through_p01_chain(client: TestClient) -> None:
     data = resp.json()
     assert data["ok"] is True
     assert data["result"]["action"] == "reply_draft"
+
+
+def test_same_idempotency_key_executes_once_and_replays_first_result(
+    client: TestClient,
+) -> None:
+    """A browser/proxy replay of one dispatch must not create a second run."""
+    adapter = _make_adapter()
+    payload = {
+        "content": "같은 실행 요청입니다.",
+        "channel": "kakao",
+        "action": "reply",
+    }
+    headers = {"Idempotency-Key": "claw-idem-test-20261107"}
+    with _injected_adapter(client, adapter):
+        first = client.post(
+            "/api/claw/manual-intake/execute", json=payload, headers=headers
+        )
+        second = client.post(
+            "/api/claw/manual-intake/execute", json=payload, headers=headers
+        )
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert first.json()["ok"] is True
+    assert second.json() == first.json()
+    assert adapter.execute.await_count == 1
+
+
+def test_concurrent_same_idempotency_key_executes_once(
+    client: TestClient,
+) -> None:
+    """Separate request loops still share one in-flight execute result."""
+    first_started = threading.Event()
+    release_first = threading.Event()
+    outcome = _make_outcome()
+
+    async def execute(*args, **kwargs):
+        first_started.set()
+        while not release_first.is_set():
+            await asyncio.sleep(0.01)
+        return outcome
+
+    adapter = MagicMock()
+    adapter.execute = AsyncMock(side_effect=execute)
+    payload = {
+        "content": "동시에 도착한 같은 실행 요청입니다.",
+        "channel": "kakao",
+        "action": "reply",
+    }
+    headers = {"Idempotency-Key": "claw-idem-concurrent-20261107"}
+
+    with _injected_adapter(client, adapter):
+        first_client = TestClient(client.app)
+        second_client = TestClient(client.app)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            first_future = pool.submit(
+                first_client.post,
+                "/api/claw/manual-intake/execute",
+                json=payload,
+                headers=headers,
+            )
+            try:
+                assert first_started.wait(2.0)
+                second_future = pool.submit(
+                    second_client.post,
+                    "/api/claw/manual-intake/execute",
+                    json=payload,
+                    headers=headers,
+                )
+                # Give the second request time to observe the in-flight key.
+                time.sleep(0.2)
+            finally:
+                release_first.set()
+            first = first_future.result(timeout=5)
+            second = second_future.result(timeout=5)
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert second.json() == first.json()
+    assert adapter.execute.await_count == 1
 
 
 def test_valid_summary_executes_through_p01_chain(client: TestClient) -> None:
@@ -1236,6 +1319,8 @@ def test_execute_button_exists_in_served_html() -> None:
 def test_execute_handler_is_attached_in_app_js() -> None:
     assert 'document.getElementById("clawExecuteButton")' in APP_JS
     assert 'clawExecuteButton.addEventListener("click"' in APP_JS
+    assert 'clawExecuteButton.dataset.clawExecuteWired' in APP_JS
+    assert '"Idempotency-Key": idempotencyKey' in APP_JS
 
 
 def test_execute_handler_calls_a_registered_route(client: TestClient) -> None:
