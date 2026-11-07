@@ -29,6 +29,19 @@ $Builder = Join-Path $Here "build-windows-helper.ps1"
 $Workflow = "b62-production-code-deploy-gate.yml"
 $Confirmation = "DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN"
 
+function Get-Sha256Hex {
+    param([Parameter(Mandatory = $true)][string]$Path)
+    $stream = [System.IO.File]::OpenRead($Path)
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        $bytes = $sha.ComputeHash($stream)
+        return (($bytes | ForEach-Object { $_.ToString("x2") }) -join "")
+    } finally {
+        $stream.Dispose()
+        $sha.Dispose()
+    }
+}
+
 function Invoke-Checked {
     param(
         [Parameter(Mandatory = $true)][string]$FilePath,
@@ -69,7 +82,7 @@ if ($PublicBaseUrl -notmatch '^https://[^/]+') {
 }
 
 $File = Get-Item -LiteralPath $Exe
-$Sha = (Get-FileHash -LiteralPath $Exe -Algorithm SHA256).Hash.ToLowerInvariant()
+$Sha = Get-Sha256Hex -Path $Exe
 $Bytes = [int64]$File.Length
 $Key = ($KeyPrefix.Trim('/') + '/' + $Version + '/padiem-user-helper.exe')
 $Url = $PublicBaseUrl.TrimEnd('/') + '/' + $Key
@@ -156,7 +169,7 @@ Write-Output "HELPER_RELEASE_VERIFY=START"
 $download = [System.IO.Path]::GetTempFileName()
 try {
     $response = Invoke-WebRequest -Uri $Url -OutFile $download -UseBasicParsing
-    $servedSha = (Get-FileHash -LiteralPath $download -Algorithm SHA256).Hash.ToLowerInvariant()
+    $servedSha = Get-Sha256Hex -Path $download
     if ($servedSha -ne $Sha) { throw "served helper SHA-256 differs from the built artifact" }
     $servedLength = $null
     if ($response -and $response.Headers) { $servedLength = [string]$response.Headers["Content-Length"] }
