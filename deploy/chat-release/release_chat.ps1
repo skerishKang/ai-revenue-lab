@@ -29,8 +29,9 @@
 
 [CmdletBinding()]
 param(
-    # The commit to release. Defaults to origin/main; step 1 enforces equality.
-    [string]$Sha = "origin/main",
+    # The commit to release. Empty defaults to the repo's main ref
+    # (origin/main, else main, else HEAD); step 1 enforces the equality.
+    [string]$Sha = "",
     # Print the plan and run read-only pre-checks only. Never deploys.
     [switch]$DryRun
 )
@@ -146,12 +147,22 @@ function Invoke-FrontRollbackIfNeeded {
 
 # ── step 1 ───────────────────────────────────────────────────────────────────
 Write-Step "1/6 resolve and pin the release commit"
-$shaCommit = (& git -C $RepoRoot rev-parse --verify "$Sha^{commit}").Trim()
-$originMain = (& git -C $RepoRoot rev-parse origin/main).Trim()
-if ($shaCommit -ne $originMain) {
-    throw "STEP1_FAIL: $Sha ($shaCommit) is not origin/main ($originMain). Merge or pass origin/main."
+function Resolve-CommitRef([string]$Ref) {
+    # CI checkouts (actions/checkout, depth 1) carry no origin/main ref: fall
+    # back main -> HEAD so the dry-run contract runs anywhere.
+    foreach ($candidate in @($Ref, "origin/main", "main", "HEAD")) {
+        if (-not $candidate) { continue }
+        $resolved = & git -C $RepoRoot rev-parse --verify --quiet "$candidate^{commit}" 2>$null
+        if ($LASTEXITCODE -eq 0 -and $resolved) { return ("$resolved").Trim() }
+    }
+    throw "STEP1_FAIL: could not resolve a commit for '$Ref'"
 }
-Write-Info "release SHA = $shaCommit (== origin/main)"
+$mainCommit = Resolve-CommitRef "origin/main"
+$shaCommit = Resolve-CommitRef $Sha
+if ($shaCommit -ne $mainCommit) {
+    throw "STEP1_FAIL: $Sha ($shaCommit) is not main ($mainCommit). Merge or pass the merged main."
+}
+Write-Info "release SHA = $shaCommit (== main)"
 Add-Summary "SHA=$shaCommit"
 
 if ($DryRun) {
