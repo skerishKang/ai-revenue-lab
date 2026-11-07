@@ -645,6 +645,10 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
     app.state.pc_pairing_user_helper_sha256 = (
         os.getenv("PC_USER_HELPER_SHA256") or ""
     ).strip()
+    # #7108: while chat.padiem.net is served by padiem-chat-front, this COM2
+    # host is the operating pairing authority; these values feed the handoff
+    # and one-click install responses. The Worker reads the same names only
+    # for the fallback/rollback path.
 
     # The upload UI and write routes open only on the COM2 host when the
     # reviewed PDF conversion dependency is actually installed.
