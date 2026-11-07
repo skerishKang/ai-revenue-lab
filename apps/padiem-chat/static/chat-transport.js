@@ -239,6 +239,21 @@
       ? crypto.randomUUID() : null;
   }
 
+  // #7133: one neutral random request handle for idempotency-style keys.
+  // Same fallback chain as createChatPcRunId; the caller owns the prefix, so
+  // the shape stays honest for whichever surface mints it.
+  function createRequestId() {
+    if (typeof crypto === "undefined") return null;
+    if (typeof crypto.randomUUID === "function") {
+      return crypto.randomUUID().replace(/-/g, "");
+    }
+    if (typeof crypto.getRandomValues === "function") {
+      const bytes = crypto.getRandomValues(new Uint8Array(16));
+      return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+    }
+    return null;
+  }
+
   function createChatPcRunId() {
     if (typeof crypto === "undefined") return null;
     if (typeof crypto.randomUUID === "function") {
@@ -624,6 +639,7 @@
   window.PadiemChatTransport = Object.freeze({
     createCalendarTurnId,
     createChatPcRunId,
+    createRequestId,
     errorFor,
     streamErrorMessage,
     isStreamLoss,
