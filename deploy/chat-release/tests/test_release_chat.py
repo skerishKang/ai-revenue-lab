@@ -159,6 +159,17 @@ class ReleaseScriptStaticContract(unittest.TestCase):
         # front-failure catch sites only — never from the pages-fail path.
         self.assertEqual(self.text.count("Invoke-FrontRollbackIfNeeded"), 3)
 
+    def test_pages_assets_use_the_stamped_copy(self):
+        """STEP 5 compares pages' /index.html with the stamped bytes.
+
+        The pages static layer serves build.mjs's dist/index.html, not the
+        repository's unversioned index.html. Comparing against $shaStaticDir
+        would fail every release once "/" is excluded from the proxy.
+        """
+        pages = self.text.split("# PAGES mirror checks", 1)[1]
+        self.assertIn("Join-Path $stampStaticDir $asset", pages)
+        self.assertNotIn("Join-Path $shaStaticDir $asset", pages)
+
     def test_dry_run_completes_with_the_plan_contract(self):
         """The CTO's first touch is -DryRun: it must run to completion on a
         plain checkout (no Cloudflare auth, no COM2 access) and print the

@@ -52,13 +52,21 @@ async function assetVersion() {
 // advanced mode (_worker.js) runs the function for every request the
 // _routes.json rules include, and COM2 has no such route — so the root-level
 // pages are EXCLUDED from the function and served by the static asset layer,
-// which applies the default .html omission. The rules stay far below the 100
-// include/exclude ceiling (developers.cloudflare.com/pages/functions/routing).
+// which applies the default .html omission. "/" and "/index.html" belong to
+// that static set too: the shell must be the stamped dist/index.html, not
+// COM2's unversioned copy. A bare "/" has no wildcard, so it excludes only the
+// root; /c/... and /claw keep proxying to COM2 as before. The rules stay far
+// below the 100 include/exclude ceiling
+// (developers.cloudflare.com/pages/functions/routing).
 async function buildRoutes(outDir) {
   const entries = await readdir(staticDir, { withFileTypes: true });
-  const exclude = entries
-    .filter((entry) => entry.isFile() && entry.name.endsWith(".html") && entry.name !== "index.html")
-    .map((entry) => `/${entry.name.replace(/\.html$/, "")}`);
+  const exclude = [
+    "/",
+    "/index.html",
+    ...entries
+      .filter((entry) => entry.isFile() && entry.name.endsWith(".html") && entry.name !== "index.html")
+      .map((entry) => `/${entry.name.replace(/\.html$/, "")}`),
+  ];
   await writeFile(
     path.join(outDir, "_routes.json"),
     JSON.stringify({ version: 1, include: ["/*"], exclude }, null, 2) + "\n",
@@ -78,7 +86,7 @@ export async function buildDist({ outDir = distDir } = {}) {
   const version = await assetVersion();
   const stamped = await stampStaticTree(outDir, version);
   const routesExclude = await buildRoutes(outDir);
-  console.log(`padiem-chat-pages: _routes.json excludes ${routesExclude.length} pretty urls (limit 100)`);
+  console.log(`padiem-chat-pages: _routes.json excludes ${routesExclude.length} static routes (limit 100)`);
   const modulesDir = path.join(outDir, "_worker");
   await mkdir(modulesDir, { recursive: true });
   for (const name of FRONT_MODULES) {
