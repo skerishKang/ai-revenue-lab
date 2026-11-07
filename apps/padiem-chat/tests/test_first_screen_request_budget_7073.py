@@ -1,17 +1,15 @@
 """#7073: the Chat first screen reads each owner-scoped list once.
 
 The COM2 journal showed the first screen paying for the same reads several
-times (inbox x4, pairings x3, devices x2, voice identity x2, runs x2, grade
-readiness x2, admin role x2). These regressions pin the two behaviours that
-removed the repeats: a repeated notification for the same session reuses the
-read already open, and a list that nothing on the screen displays is not read
-until its surface opens.
+times (pairings x3, devices x2, voice identity x2, runs x2, grade readiness
+x2, admin role x2). These regressions pin the behaviours that removed the
+repeats: an owner-scoped list is read once and shared, and a list that nothing
+on the screen displays is not read until its surface opens.
 
 They are controlled harnesses, not production timings.
 """
 from __future__ import annotations
 
-import ast
 import json
 import os
 from pathlib import Path
@@ -20,14 +18,6 @@ import subprocess
 
 TESTS = Path(__file__).parent
 STATIC = TESTS.parent / "static"
-
-
-def literal(path, name):
-    tree = ast.parse(path.read_text(encoding="utf-8"))
-    assignment = next(node for node in tree.body if isinstance(node, ast.Assign)
-                      and any(isinstance(target, ast.Name) and target.id == name
-                              for target in node.targets))
-    return ast.literal_eval(assignment.value)
 
 
 def run_node(source, **environment):
@@ -42,62 +32,6 @@ const assert=require('node:assert/strict');
 const flush=async()=>{for(let i=0;i<12;i++)await new Promise(r=>setImmediate(r));};
 const deferred=()=>{let resolve;const promise=new Promise(r=>{resolve=r});return {promise,resolve};};
 """
-
-
-def inbox_harness():
-    path = TESTS / "test_5034_notification_inbox.py"
-    harness = literal(path, "_HARNESS").split("async function main() {", 1)[0]
-    harness = harness.replace("process.argv[2]", json.dumps(str(STATIC / "notification-inbox.js")))
-    harness = harness.replace("const recorder = makeFetch(spec.scripted);",
-                              "const recorder={fetch:fixtureFetch,calls:fetchCalls};")
-    locales = literal(path, "LOCALES")
-    for language in ("ko", "en"):
-        locales[language]["notification-inbox-refreshing"] = "refreshing-previous"
-        locales[language]["notification-inbox-stale"] = "stale-previous"
-    return "const LOCALES=" + json.dumps(locales, ensure_ascii=False) + ";\n" + harness
-
-
-def test_a_repeated_auth_notification_reuses_the_open_inbox_read():
-    result = run_node(inbox_harness() + """
-const assert=require('node:assert/strict');
-const gate=(()=>{let resolve;const promise=new Promise(r=>{resolve=r});return {promise,resolve};})();
-const fetchCalls=[];
-const fixtureFetch=async url=>{fetchCalls.push(url);await gate.promise;
- return {ok:true,status:200,json:async()=>({ok:true,items:[]})};};
-(async()=>{
-const ctx=run({signedIn:true});await flush();
-assert.equal(fetchCalls.length,2,'one alerts+tasks pair starts the screen');
-// A second notification for the same session used to reset the in-flight
-// guard and start a duplicate pair.
-ctx.window.dispatchEvent(new CustomEvent('padiem:auth-state',{detail:{authenticated:true}}));
-ctx.window.dispatchEvent(new CustomEvent('padiem:auth-state',{detail:{authenticated:true}}));
-await flush();
-assert.equal(fetchCalls.length,2,'the open read answers the repeat');
-gate.resolve();await flush();
-assert.equal(fetchCalls.length,2);
-console.log(JSON.stringify({bootRequests:2,repeatsShared:true}));
-})().catch(e=>{console.error(e);process.exitCode=1});
-""")
-    assert result == {"bootRequests": 2, "repeatsShared": True}
-
-
-def test_a_new_account_generation_still_reads_again():
-    result = run_node(inbox_harness() + """
-const assert=require('node:assert/strict');
-const fetchCalls=[];
-const fixtureFetch=async url=>{fetchCalls.push(url);
- return {ok:true,status:200,json:async()=>({ok:true,items:[]})};};
-(async()=>{
-const ctx=run({signedIn:true});await flush();
-assert.equal(fetchCalls.length,2);
-ctx.window.dispatchEvent(new CustomEvent('padiem:auth-state',{detail:{authenticated:false}}));
-ctx.window.dispatchEvent(new CustomEvent('padiem:auth-state',{detail:{authenticated:true}}));
-await flush();
-assert.equal(fetchCalls.length,4,'sign-in after sign-out is a new owner read');
-console.log(JSON.stringify({afterAccountChange:4}));
-})().catch(e=>{console.error(e);process.exitCode=1});
-""")
-    assert result == {"afterAccountChange": 4}
 
 
 ADMIN_ENTRY = PRELUDE + """

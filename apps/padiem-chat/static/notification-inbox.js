@@ -510,14 +510,6 @@
     const next = typeof (detail && detail.authenticated) === "boolean"
       ? detail.authenticated
       : isAuthenticated();
-    // A repeated notification for the same session reuses the read already in
-    // flight. Bumping the epoch here would make the settling response discard
-    // itself (see `current()` in loadList) and start a duplicate pair, which is
-    // what the first screen paid twice for.
-    if (next === state.authenticated && state.inflight) {
-      render();
-      return;
-    }
     // Account events invalidate even signed-in -> signed-in transitions.
     // Never use a display name as an owner key or retain old in-flight rows.
     state.epoch += 1;
