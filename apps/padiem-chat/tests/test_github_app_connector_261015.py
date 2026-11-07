@@ -153,3 +153,75 @@ async def test_owner_guards_and_foreign_origin_can_never_disconnect():
         invalid = await client.get("/api/connectors/github/callback",params={"code":"fake","state":"forged"})
         assert invalid.status_code == 400
         assert app.state.github_oauth_provider.exchanges == 0
+
+
+class MigratedSealGitHubStore(FakeGitHubStore):
+    """A row migrated from the Cloudflare era: status() sees a live link, but
+    the seal was written under a different product session secret, so the
+    credential cannot be unsealed until a fresh reconnect re-saves it."""
+
+    def __init__(self):
+        super().__init__()
+        self.resealed = set()
+
+    async def token_pair(self, user_id):
+        if user_id not in self.resealed:
+            return None
+        return await super().token_pair(user_id)
+
+    async def save(self, **kwargs):
+        self.resealed.add(kwargs["user_id"])
+        await super().save(**kwargs)
+
+
+class UnavailableStoreGitHubStore(FakeGitHubStore):
+    """A transient store failure must stay a 503, never a relink hint."""
+
+    async def token_pair(self, user_id):
+        raise RuntimeError("store unavailable")
+
+
+async def _seed_link(store, owner_id):
+    # Seed the migrated row directly: it was written by the previous era's
+    # store, never through this store's own save() path.
+    store.links[owner_id] = {"login": "skerishKang", "installation_id": 1,
+                             "enabled": True}
+
+
+@pytest.mark.asyncio
+async def test_status_reports_relink_required_for_a_seal_that_cannot_unseal():
+    app, history = app_with_ports()
+    store = MigratedSealGitHubStore()
+    app.state.github_oauth_store = store
+    await _seed_link(store, history.profile.id)
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=ORIGIN) as client:
+        client.cookies.set(SESSION_COOKIE, cookie_for(history.profile.id), domain="chat.example.test")
+        status = await client.get("/api/connectors/github/status")
+        assert status.status_code == 200
+        assert status.json() == {"ok": True, "state": "off", "linked": False,
+                                 "relink_required": True}
+        # The reconnect flow stays usable and replaces the stale row: the
+        # fresh save re-seals with the current key, so the link reads back on.
+        start = await client.get("/api/connectors/github/start", follow_redirects=False)
+        assert start.status_code == 303
+        state = parse_qs(urlparse(start.headers["location"]).query)["state"][0]
+        callback = await client.get("/api/connectors/github/callback",
+            params={"state": state, "code": "fresh-code"}, follow_redirects=False)
+        assert callback.status_code == 303
+        status = await client.get("/api/connectors/github/status")
+        assert status.status_code == 200
+        assert status.json() == {"ok": True, "state": "on", "linked": True,
+                                 "login": "skerishKang"}
+
+
+@pytest.mark.asyncio
+async def test_status_keeps_authority_503_when_the_store_raises():
+    app, history = app_with_ports()
+    store = UnavailableStoreGitHubStore()
+    app.state.github_oauth_store = store
+    await _seed_link(store, history.profile.id)
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=ORIGIN) as client:
+        client.cookies.set(SESSION_COOKIE, cookie_for(history.profile.id), domain="chat.example.test")
+        status = await client.get("/api/connectors/github/status")
+        assert status.status_code == 503
+        assert status.json() == {"ok": False, "error": {"code": "github_authority_unavailable"}}
