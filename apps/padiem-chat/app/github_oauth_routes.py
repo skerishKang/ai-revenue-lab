@@ -163,6 +163,15 @@ async def github_status(request: Request):
                              "login": status["login"]}, headers=HEADERS)
     uid, token, state, err = await _credentials(request)
     if err:
+        if err == "github_credential_unavailable":
+            # A stored link whose sealed credential cannot be unsealed any
+            # more — e.g. a row migrated from the Cloudflare D1 era under a
+            # different product session secret. That is a stale link, not an
+            # outage: answer 200 so the card renders its connect button
+            # (relink) instead of a dead 503. A successful reconnect
+            # overwrites the row (save() upserts on user_id).
+            return JSONResponse({"ok": True, "state": "off", "linked": False,
+                                 "relink_required": True}, headers=HEADERS)
         return _error(err)
     if state is None:
         return JSONResponse({"ok": True, "state": "off", "linked": False}, headers=HEADERS)

@@ -86,3 +86,26 @@ async def test_tokens_sealed_owner_scoped_and_off_persists():
     assert await store.status("user-a") is None
     assert (await store.token_pair("user-b"))["access_token"] == "ghu_other"
     await store.disconnect("user-a")
+
+
+@pytest.mark.asyncio
+async def test_reconnection_replaces_a_row_sealed_under_another_secret():
+    db = SQLiteD1()
+    old = D1GitHubOAuthStore(db, session_secret="old-seal-" + "x" * 40, cipher=FakeAuthenticatedCipher())
+    now = int(time.time())
+    await old.save(user_id="user-a", github_user_id=1, login="old-login", installation_id=11,
+                   access_token="a1", refresh_token="r1",
+                   access_expires_at=now + 1000, refresh_expires_at=now + 20000)
+    # The row lands on a host whose product session secret differs: the link
+    # reads back but the seal can never unseal.
+    new = D1GitHubOAuthStore(db, session_secret="new-seal-" + "y" * 40, cipher=FakeAuthenticatedCipher())
+    assert (await new.status("user-a"))["login"] == "old-login"
+    assert await new.token_pair("user-a") is None
+    # A successful reconnect upserts the same user_id row and re-seals with
+    # the current key, replacing the stale credential entirely.
+    await new.save(user_id="user-a", github_user_id=2, login="new-login", installation_id=22,
+                   access_token="a2", refresh_token="r2",
+                   access_expires_at=now + 1000, refresh_expires_at=now + 20000)
+    pair = await new.token_pair("user-a")
+    assert pair["access_token"] == "a2" and pair["refresh_token"] == "r2"
+    assert (await new.status("user-a"))["login"] == "new-login"
