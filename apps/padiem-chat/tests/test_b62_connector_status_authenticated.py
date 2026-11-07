@@ -993,3 +993,71 @@ def test_closed_mapping_is_reviewed_google_readonly_only():
         "google-calendar": ("calendar", CALENDAR_ID),
     }
     projection_module._require_reviewed_targets()
+
+
+# --------------------------------------------------------------------------
+# 21. the CPython host reaches the same truth over its HTTPS RPC binding
+# --------------------------------------------------------------------------
+
+
+async def test_21_com2_http_rpc_binding_projects_verified_workspace_truth():
+    """The host has no Service Binding, so it uses the reviewed HTTPS RPC shape.
+
+    #7089: the CPython assembly wraps the same Google OAuth adapter around
+    ``<origin>/internal/rpc/<method>``. This pins that transport onto the
+    verified projection — the state in which the connect action is offered —
+    and proves a wired truth never degrades to ``unverified``.
+    """
+
+    from app.local_service_bridge import HttpRpcBinding
+
+    seen: list[str] = []
+
+    def _handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request.url.path)
+        if request.url.path.endswith("/workspace_connector_state"):
+            return httpx.Response(
+                200, json={"ok": True, "connectors": [GMAIL_NOT_CONNECTED]}
+            )
+        if request.url.path.endswith("/workspace_calendar_connector_state"):
+            return httpx.Response(
+                200, json={"ok": True, "connectors": [CALENDAR_NOT_CONNECTED]}
+            )
+        return httpx.Response(
+            404,
+            json={"ok": False, "error": {"code": "not_found", "message": "synthetic"}},
+        )
+
+    rpc_client = httpx.AsyncClient(
+        transport=httpx.MockTransport(_handler), follow_redirects=False
+    )
+    binding = HttpRpcBinding(
+        "https://google-oauth.example.test",
+        "synthetic-rpc-secret-not-production-0001",
+        client=rpc_client,
+    )
+    settings, app = _app(
+        identity_binding=_IdentityBinding(), shadow_store=_ShadowStore()
+    )
+    app.state.google_oauth_workspace_truth = CloudflareGoogleOAuthWorkspaceTruth(
+        binding
+    )
+
+    try:
+        async with _client(settings, app) as client:
+            response = await client.get(STATUS_PATH)
+    finally:
+        await rpc_client.aclose()
+
+    assert response.status_code == 200
+    document = response.json()
+    gmail = _rows(document)[GMAIL_ID]
+    # not_connected is a VERIFIED answer: the row is no longer unverified, so
+    # the UI may offer the connect action.
+    assert gmail["workspace_state"] == WORKSPACE_STATE_NOT_CONNECTED
+    assert gmail["workspace_reason"] is None
+    assert document["workspace_state_authority"] is True
+    assert seen == [
+        "/internal/rpc/workspace_connector_state",
+        "/internal/rpc/workspace_calendar_connector_state",
+    ]
