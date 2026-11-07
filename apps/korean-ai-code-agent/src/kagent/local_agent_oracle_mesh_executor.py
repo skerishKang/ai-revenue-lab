@@ -1424,8 +1424,6 @@ class OracleMeshExecutor:
 
         return probe
 
-
-
     @staticmethod
     def build_user_helper_pipe_client_ps(*, device_id: str, request_id: str,
                                          shell: str, command: str,
@@ -2655,6 +2653,7 @@ def make_oracle_mesh_executor(
     # #7065: opt-in run-as-user. False keeps the argv an existing host already sends.
     run_as_user: bool = False,
     run_as_user_only: bool = False,
+    login_key_file: str | None = None,
 ) -> OracleMeshExecutor:
     """Build the executor with the REAL official meshctrl read port.
 
@@ -2703,6 +2702,7 @@ def make_oracle_mesh_executor(
         # This is detection-then-abort, not a transport cap; the read still
         # refuses an oversize file whole.
         popen_factory=_popen,
+        login_key_file=login_key_file,
     )
     # The terminal lane reuses the SAME official client, operator credential and
     # private tunnel; nothing new is opened for commands.
@@ -2720,6 +2720,7 @@ def make_oracle_mesh_executor(
         # host sends is unchanged.
         run_as_user=run_as_user,
         run_as_user_only=run_as_user_only,
+        login_key_file=login_key_file,
     )
     # The desktop lane reuses the SAME operator credential and private tunnel
     # over the official relay protocol; only the wire changes (MSC frames),
@@ -3132,10 +3133,3 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
-
-# re-export
-try:
-    USER_SESSION_UNAVAILABLE
-except NameError:
-    USER_SESSION_UNAVAILABLE = 'user_session_unavailable'
