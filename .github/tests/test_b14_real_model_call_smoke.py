@@ -113,7 +113,9 @@ def test_the_default_request_names_the_free_grade_model_of_its_own() -> None:
     assert not hasattr(smoke, "REQUESTED_ROUTE")
     assert body["business14"]["product_tier"] == smoke.PRODUCT_TIER
     assert body["business14"]["max_retries"] == 0
-    assert 0 < body["max_tokens"] <= 64
+    # #7071: bounded, but large enough that reasoning-capable grade probes can
+    # return visible text (32 exhausted on reasoning in 07:45 KST run).
+    assert body["max_tokens"] == 256
     assert set(body) == {"model", "messages", "max_tokens", "business14"}
 
 

@@ -905,6 +905,55 @@ async def call_platform_chat_completions(
         require_completed_text_answer(response_data, allow_tool_calls=bool(tools))
         _usage_from_payload(response_data.get("usage"), provider=platform_provider_id,
                             model=model_id, path="completed", payload=response_data)
+    except UpstreamEmptyAnswer as exc:
+        # #7071: a small output budget can be spent on reasoning before any
+        # visible text, leaving an empty answer with a length/budget finish.
+        # Retry once on the same route without reasoning so the answer has room.
+        # Only this bounded case retries; no fallback, no arbitrary retry, and no
+        # change when reasoning was not requested.
+        if (
+            reasoning_effort is not None
+            and not tools
+            and exc.finish_category == "length"
+        ):
+            logger.warning("reasoning_budget_empty_retry")
+            body.pop(REASONING_FIELD, None)
+            reasoning_effort = None
+            note_sent_reasoning(model_id, None)
+            try:
+                async with httpx.AsyncClient(**client_kwargs) as retry_client:
+                    response, request_started = await send_provider_request(
+                        retry_client, "POST", chat_url, headers=headers, json=body,
+                    )
+                    async with aclosing(response):
+                        if response.status_code < 200 or response.status_code >= 300:
+                            error_bytes = await _read_bounded_body(
+                                response, started_at=request_started,
+                            )
+                            _raise_upstream_error(
+                                response.status_code, platform_provider_id,
+                                error_bytes.decode("utf-8", "replace"), model_id=model_id,
+                            )
+                        body_bytes = await _read_bounded_body(
+                            response, cap=_completed_response_cap(), started_at=request_started,
+                        )
+            except ProviderAttemptTimeout as retry_exc:
+                raise UpstreamTimeout(timeout_reason=retry_exc.reason) from retry_exc
+            except httpx.TimeoutException as retry_exc:
+                raise UpstreamTimeout(timeout_reason="first_byte") from retry_exc
+            except httpx.RequestError as retry_exc:
+                raise UpstreamServerError() from retry_exc
+            try:
+                response_data = json.loads(body_bytes)
+            except (json.JSONDecodeError, ValueError):
+                raise malformed("json_decode", provider=platform_provider_id, model=model_id, path="completed") from None
+            if not isinstance(response_data, dict) or "choices" not in response_data:
+                raise malformed("payload_not_object" if not isinstance(response_data, dict) else "choices_missing", response_data, provider=platform_provider_id, model=model_id, path="completed")
+            require_completed_text_answer(response_data, allow_tool_calls=bool(tools))
+            _usage_from_payload(response_data.get("usage"), provider=platform_provider_id,
+                                model=model_id, path="completed", payload=response_data)
+        else:
+            raise
     except MalformedUpstreamResponse as exc:
         # Usage validation already emitted its one structural warning.
         if not exc.reason.startswith("usage_"):
