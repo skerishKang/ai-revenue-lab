@@ -19,13 +19,13 @@ def test_readonly_audit_uses_canonical_cli_at_both_served_version_sites() -> Non
     assert CLI.is_file()
 
 
-def test_private_worker_state_output_is_not_contaminated_by_cli_stdout() -> None:
+def test_worker_state_output_is_not_contaminated_by_cli_stdout() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
     inspect = text.split("inspect_worker() {", 1)[1].split("identity_state=", 1)[0]
     assert 'if [ "${code}" = "404" ]' in inspect
     assert 'printf \'%s\\n\' "absent"' in inspect
     assert 'resolve-active --deployments "${deployments}" >/dev/null' in inspect
-    assert 'printf \'%s\\n\' "present_private"' in inspect
+    assert 'printf \'%s\\n\' "present"' in inspect
     assert inspect.index('if [ "${code}" = "404" ]') < inspect.index("resolve-active")
 
 

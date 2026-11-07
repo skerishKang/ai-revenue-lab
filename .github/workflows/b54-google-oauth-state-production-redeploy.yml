@@ -53,6 +53,7 @@ jobs:
               'environment: production',
               'padiem-google-oauth-state',
               'STATE_WORKER_REDEPLOY=1',
+              'STATE_WORKERS_DEV_ENABLED=1',
               'EDGE_WORKER_REDEPLOY=0',
               'IDENTITY_WORKER_REDEPLOY=0',
               'CUSTOM_DOMAIN_MUTATION=0',
@@ -202,7 +203,10 @@ jobs:
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" -o "${settings}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${sub}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
-            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${sub}" >/dev/null
+            # Signed connector-truth ingress is exposed on workers.dev for the
+            # state Worker (identity exposes its signed ingress the same way);
+            # the edge Worker and previews stay disabled.
+            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" --arg state "${STATE_WORKER}" '.success == true and .result.enabled == ($worker == $identity or $worker == $state) and .result.previews_enabled == false' "${sub}" >/dev/null
             jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${dep}" >/dev/null
             version="$(jq -r '.result.deployments[0].versions[0].version_id // .result.deployments[0].versions[0].version // empty' "${dep}")"
             test -n "${version}"
@@ -289,7 +293,10 @@ jobs:
             sub="${RUNNER_TEMP}/${worker}-sub-after.json"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${sub}"
-            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${sub}" >/dev/null
+            # Same read-back shape as the pre-mutation snapshot: the state and
+            # identity signed ingresses live on workers.dev; edge and previews
+            # stay disabled.
+            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" --arg state "${STATE_WORKER}" '.success == true and .result.enabled == ($worker == $identity or $worker == $state) and .result.previews_enabled == false' "${sub}" >/dev/null
             jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${dep}" >/dev/null
             jq -r '.result.deployments[0].versions[0].version_id // .result.deployments[0].versions[0].version // empty' "${dep}"
           }
@@ -310,6 +317,7 @@ jobs:
           jq -e --arg state "${STATE_WORKER}" '.result.bindings | any(.name == "GOOGLE_OAUTH_SERVICE" and .type == "service" and .service == $state)' "${edge_settings}" >/dev/null
 
           echo "STATE_ACTIVE_VERSION_CHANGED=PASS"
+          echo "STATE_WORKERS_DEV_ENABLED=1"
           echo "EDGE_WORKER_REDEPLOY=0"
           echo "IDENTITY_WORKER_REDEPLOY=0"
           echo "CUSTOM_DOMAIN_MUTATION=0"

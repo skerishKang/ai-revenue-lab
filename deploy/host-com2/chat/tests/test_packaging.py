@@ -119,6 +119,16 @@ class CheckConfig(unittest.TestCase):
             module.DATA = data
             with unittest.mock.patch.dict(os.environ, self._full_env(data), clear=True):
                 self.assertTrue(module.ready())
+            # The Google OAuth truth pair follows the same rule as the identity
+            # and PDF pairs: together it is accepted, half of it is not.
+            google_pair = {
+                "PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_ORIGIN": "https://padiem-google-oauth-state.example.workers.dev",
+                "PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_SECRET": "x" * 40,
+            }
+            environment = self._full_env(data)
+            environment.update(google_pair)
+            with unittest.mock.patch.dict(os.environ, environment, clear=True):
+                self.assertTrue(module.ready())
             for broken in (
                 {"PADIEM_LOCAL_DEV": "1"},
                 {"PADIEM_CHAT_PUBLIC_BASE_URL": "http://chat-com2.padiem.net"},
@@ -126,6 +136,8 @@ class CheckConfig(unittest.TestCase):
                 {"PADIEM_CHAT_SESSION_SECRET": "short"},
                 {"PADIEM_CHAT_RUNTIME_MODE": "b14"},
                 {"PADIEM_CHAT_LOCAL_IDENTITY_RPC_ORIGIN": "https://identity.example"},
+                {"PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_SECRET": "x" * 40},
+                {"PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_ORIGIN": "https://padiem-google-oauth-state.example.workers.dev"},
             ):
                 environment = self._full_env(data)
                 environment.update(broken)

@@ -194,7 +194,7 @@ jobs:
             curl -fsS "${auth[@]}" \
               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" \
               -o "${deployments}"
-            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" '.success == true and .result.enabled == ($worker == $identity) and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" --arg state "${OAUTH_STATE_WORKER}" '.success == true and .result.enabled == ($worker == $identity or $worker == $state) and .result.previews_enabled == false' "${subdomain}" >/dev/null
             jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
             echo "${output}=present_configured" >> "${GITHUB_OUTPUT}"
           }
@@ -340,7 +340,7 @@ jobs:
             curl -fsS "${auth[@]}" \
               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" \
               -o "${settings}"
-            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" '.success == true and .result.enabled == ($worker == $identity) and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" --arg state "${OAUTH_STATE_WORKER}" '.success == true and .result.enabled == ($worker == $identity or $worker == $state) and .result.previews_enabled == false' "${subdomain}" >/dev/null
             jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
             jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
           done

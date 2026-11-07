@@ -123,7 +123,9 @@ jobs:
           ]
 
           assert state["name"] == "padiem-google-oauth-state"
-          assert state["workers_dev"] is False and state["preview_urls"] is False
+          # The state Worker exposes only the secret-gated /internal/rpc
+          # ingress on workers.dev (identity-authority shape); no previews.
+          assert state["workers_dev"] is True and state["preview_urls"] is False
           assert state["observability"]["enabled"] is False
           assert "route" not in state and "routes" not in state
           assert state["secrets"]["required"] == [
@@ -378,7 +380,7 @@ jobs:
             deployments="${RUNNER_TEMP}/${worker}-deployments.json"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${subdomain}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${deployments}"
-            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" '.success == true and .result.enabled == ($worker == $identity) and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" --arg state "${OAUTH_STATE_WORKER}" '.success == true and .result.enabled == ($worker == $identity or $worker == $state) and .result.previews_enabled == false' "${subdomain}" >/dev/null
             python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}" >/dev/null
             echo "${output_name}=present" >> "${GITHUB_OUTPUT}"
           }
@@ -657,7 +659,7 @@ jobs:
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${sub}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" -o "${settings}"
-            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" '.success == true and .result.enabled == ($worker == $identity) and .result.previews_enabled == false' "${sub}" >/dev/null
+            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" --arg state "${OAUTH_STATE_WORKER}" '.success == true and .result.enabled == ($worker == $identity or $worker == $state) and .result.previews_enabled == false' "${sub}" >/dev/null
             python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${dep}" >/dev/null
           done
 
