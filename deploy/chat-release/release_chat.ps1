@@ -204,19 +204,30 @@ systemd-run --unit="$UNIT" --collect --quiet -p "WorkingDirectory=$OPS" \
 rm -f -- "$0"
 '@
 $remoteSh = $remoteShTemplate.Replace("__SHA__", $shaCommit).Replace("__UNIT__", $unitName)
-$remoteShB64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($remoteSh))
-$remoteShPath = "/tmp/padiem-release-$unitName.sh"
+# LF only: the template inherits this file's CRLF on Windows checkouts and
+# sh would read "set -eu\r". The file goes up with scp (the same path dep17.sh
+# uses) because a pipe or ">" inside the ssh command is parsed by cmd.exe on
+# COM2, not by wsl. It lands in the COM2 user's home and runs with plain
+# "bash <file>", exactly like "ssh ... bash dep17.sh".
+$remoteSh = $remoteSh -replace "`r`n", "`n"
+$remoteShPath = "padiem-release-$unitName.sh"
 
 if ($DryRun) {
     Write-Info "[DRYRUN] launcher sh uploaded to $remoteShPath would be:"
     foreach ($line in ($remoteSh -split "`n")) { Write-Info "    | $line" }
-    Write-Info "[DRYRUN] would run: ssh -i $Script:Com2SshKey -o BatchMode=yes $Script:Com2SshTarget `"wsl -e bash -c `"echo <base64 of the sh above> | base64 -d > $remoteShPath`"`""
-    Write-Info "[DRYRUN] would run: ssh ... `"wsl bash $remoteShPath $shaCommit $unitName`""
+    Write-Info "[DRYRUN] would run: scp -i $Script:Com2SshKey -o BatchMode=yes <local LF copy> $($Script:Com2SshTarget):$remoteShPath"
+    Write-Info "[DRYRUN] would run: ssh ... `"bash $remoteShPath`""
     Write-Info "[DRYRUN] then poll: wsl journalctl -u $unitName -o cat -n 400 (max $($Script:PollMaxRounds)x$($Script:PollSeconds)s) for COM2_DEPLOY_SUMMARY=... chat:PASS"
 }
 else {
-    Invoke-Com2 "wsl -e bash -c `"echo $remoteShB64 | base64 -d > $remoteShPath`""
-    Invoke-Com2 "wsl bash $remoteShPath $shaCommit $unitName"
+    $localSh = Join-Path ([IO.Path]::GetTempPath()) $remoteShPath
+    [IO.File]::WriteAllText($localSh, $remoteSh, (New-Object Text.UTF8Encoding $false))
+    try {
+        & scp -i $Script:Com2SshKey -o BatchMode=yes -o ConnectTimeout=10 $localSh "$($Script:Com2SshTarget):$remoteShPath"
+        if ($LASTEXITCODE -ne 0) { throw "COM2 launcher upload failed (scp exit $LASTEXITCODE)" }
+    }
+    finally { Remove-Item -LiteralPath $localSh -Force -ErrorAction SilentlyContinue }
+    Invoke-Com2 "bash $remoteShPath"
     Write-Info "systemd unit $unitName started; polling the journal (max $($Script:PollMaxRounds)x$($Script:PollSeconds)s)"
     $summaryLine = $null
     for ($round = 0; $round -lt $Script:PollMaxRounds; $round++) {
