@@ -296,3 +296,7 @@ agent-side path is unchanged:
    (`[System.IO.Directory]::GetFiles("\.\pipe\")`) and that the executor
    reaches it (the whoami roundtrip). Rollback = repeat 3-5 with the old
    `python -m ...` action line.
+   - One-shot diagnosis of this whole chain (task, binary, secret-file ACL,
+     pipe, process, agent → VERDICT; read-only, no admin): run
+     `apps/claw-connect/tools/check-user-helper.ps1` (add `-DeviceId <raw
+     device id>` to pin the id; `-PrintPipeNameOnly` for just the name).
