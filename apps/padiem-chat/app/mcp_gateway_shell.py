@@ -191,9 +191,14 @@ def build_pc_shell_command(arguments: Mapping) -> str:
     shell = arguments.get("shell", "powershell")
     script = r"""
 $ErrorActionPreference='Continue';$ProgressPreference='SilentlyContinue'
+# #7068: a Korean-locale console hands the nested process's bytes back in its
+# code page, and this host's reader then fails to parse them as CliXml
+# (ProcessStreamReader_CliXmlError). The console is pinned to UTF-8 so the bytes
+# round-trip, and the nested call below asks for Text output explicitly.
+try{[Console]::OutputEncoding=[Text.Encoding]::UTF8}catch{}
 $c=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:PADIEM_MCP_COMMAND_B64))
 $d=$null;if($env:PADIEM_MCP_CWD_B64){$d=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:PADIEM_MCP_CWD_B64));if(-not(Test-Path -LiteralPath $d -PathType Container)){[Console]::Error.WriteLine('cwd_invalid');exit 126};Set-Location -LiteralPath $d}
-try{if($env:PADIEM_MCP_SHELL -eq 'powershell'){$file='powershell.exe';if(-not(Get-Command $file -ErrorAction SilentlyContinue)){[Console]::Error.WriteLine('shell_unavailable');exit 127};$inner=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($c));& $file -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand $inner;$code=0;if($null -ne $LASTEXITCODE){$code=[int]$LASTEXITCODE};exit $code};$file='cmd.exe';$args=@('/d','/s','/c',$c);if($env:PADIEM_MCP_SHELL -eq 'bash'){$file='bash.exe';$args=@('-lc',$c)};if(-not(Get-Command $file -ErrorAction SilentlyContinue)){[Console]::Error.WriteLine('shell_unavailable');exit 127};& $file @args;$code=0;if($null -ne $LASTEXITCODE){$code=[int]$LASTEXITCODE};exit $code}catch{[Console]::Error.WriteLine($_.Exception.Message);exit 1}
+try{if($env:PADIEM_MCP_SHELL -eq 'powershell'){$file='powershell.exe';if(-not(Get-Command $file -ErrorAction SilentlyContinue)){[Console]::Error.WriteLine('shell_unavailable');exit 127};$inner=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($c));& $file -NoProfile -NonInteractive -ExecutionPolicy Bypass -OutputFormat Text -EncodedCommand $inner;$code=0;if($null -ne $LASTEXITCODE){$code=[int]$LASTEXITCODE};exit $code};$file='cmd.exe';$args=@('/d','/s','/c',$c);if($env:PADIEM_MCP_SHELL -eq 'bash'){$file='bash.exe';$args=@('-lc',$c)};if(-not(Get-Command $file -ErrorAction SilentlyContinue)){[Console]::Error.WriteLine('shell_unavailable');exit 127};& $file @args;$code=0;if($null -ne $LASTEXITCODE){$code=[int]$LASTEXITCODE};exit $code}catch{[Console]::Error.WriteLine($_.Exception.Message);exit 1}
 """.strip()
     script_b64 = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
     # PowerShell command text is fixed, and user values are base64 data only.
