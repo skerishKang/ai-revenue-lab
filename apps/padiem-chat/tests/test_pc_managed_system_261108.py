@@ -8,6 +8,7 @@ role table is provisioned per deployment.
 from __future__ import annotations
 
 import logging
+import sqlite3
 import sys
 from pathlib import Path
 
@@ -150,6 +151,75 @@ def test_mcp_audit_stores_command_bytes_and_never_the_body() -> None:
         assert row["command_bytes"] == 6
         assert row["status"] == "denied"
         assert row["request_digest"]
+        dump = " ".join(str(value) for value in conn.execute(
+            "SELECT * FROM padiem_mcp_audit").fetchone())
+        assert "whoami" not in dump
+    pairing.run(journey())
+
+
+
+def _database_without_103() -> sqlite3.Connection:
+    """Every migration except 103: the queue's own schema stops at 102."""
+    conn = sqlite3.connect(":memory:", isolation_level=None)
+    conn.row_factory = sqlite3.Row
+    for path in sorted(pairing.MIGRATIONS.glob("*.sql")):
+        if path.name.startswith("103"):
+            continue
+        conn.executescript(path.read_text(encoding="utf-8"))
+    return conn
+
+
+def test_existing_link_reads_work_without_migration_103() -> None:
+    async def journey():
+        conn = _database_without_103()
+        store = D1PcPairingStore(pairing.RealSQLiteD1(conn))
+        link = await _adopt(store)
+        listed = await store.list_links(user_id=pairing.OWNER)
+        assert [row["link_id"] for row in listed] == [link["link_id"]]
+        assert "managed" not in listed[0]
+        read = await store._read_link(pairing.OWNER, link["link_id"])
+        assert read is not None and "managed_at" not in read
+        assert await store.is_managed_link(
+            user_id=pairing.OWNER, mesh_node_id=pairing.NODE) is False
+    pairing.run(journey())
+
+
+def test_set_managed_without_migration_103_is_503() -> None:
+    async def journey():
+        conn = _database_without_103()
+        store = D1PcPairingStore(pairing.RealSQLiteD1(conn))
+        link = await _adopt(store)
+        app = _app(conn, admin=True)
+        async with pairing.client(app) as session:
+            refused = await session.post(_url(link["link_id"]), json={"managed": True})
+        assert refused.status_code == 503
+        assert refused.json()["error"]["code"] == "pc_pairing_not_ready"
+        assert await store.is_managed_link(
+            user_id=pairing.OWNER, mesh_node_id=pairing.NODE) is False
+    pairing.run(journey())
+
+
+def test_mcp_audit_records_without_command_bytes_column() -> None:
+    async def journey():
+        conn = _database_without_103()
+        conn.execute("PRAGMA foreign_keys=OFF")
+        store = D1McpGatewayStore(pairing.RealSQLiteD1(conn))
+        await store.audit(
+            identity={"user_id": pairing.OWNER, "device_id": pairing.NODE,
+                      "token_id": "mcp_" + "d" * 32},
+            tool_name="pc_shell",
+            arguments={"command": "whoami", "mode": "system"},
+            status="denied",
+            command_bytes=6,
+        )
+        row = conn.execute(
+            "SELECT status, request_digest FROM padiem_mcp_audit"
+        ).fetchone()
+        assert row["status"] == "denied"
+        assert row["request_digest"]
+        columns = {item[1] for item in conn.execute(
+            "PRAGMA table_info(padiem_mcp_audit)").fetchall()}
+        assert "command_bytes" not in columns
         dump = " ".join(str(value) for value in conn.execute(
             "SELECT * FROM padiem_mcp_audit").fetchone())
         assert "whoami" not in dump

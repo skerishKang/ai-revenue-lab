@@ -530,8 +530,6 @@ def _public_link(row: dict[str, Any]) -> dict[str, Any]:
         "superseded_at": row.get("superseded_at") or None,
         "paused": paused,
         "paused_at": row.get("paused_at"),
-        "managed": bool(row.get("managed_at")),
-        "managed_at": row.get("managed_at"),
         "roots": [
             {
                 "root_ref": root["root_ref"],
@@ -645,11 +643,16 @@ class D1PcPairingStore:
         """Read the managed(contract) mark for this pair, if it is live."""
         owner = _user_id(user_id)
         node = _mesh_node_id(mesh_node_id)
-        row = await self._first(
-            "SELECT managed_at FROM pc_device_links WHERE user_id=? AND mesh_node_id=? "
-            "AND state='active' AND paused_at IS NULL",
-            owner, node,
-        )
+        try:
+            row = await self._first(
+                "SELECT managed_at FROM pc_device_links WHERE user_id=? AND mesh_node_id=? "
+                "AND state='active' AND paused_at IS NULL",
+                owner, node,
+            )
+        except Exception:
+            # Migration 103 is not applied (the queue schema stops at 102):
+            # no column means "not managed", so SYSTEM stays refused.
+            return False
         return isinstance(row, dict) and bool(row.get("managed_at"))
 
     async def set_managed(
@@ -670,22 +673,32 @@ class D1PcPairingStore:
         if row.get("state") != _STATE_ACTIVE or row.get("paused_at"):
             raise PcPairingError("link not active")
         moment = _stamp(now)
-        if managed:
-            await self._run(
-                "UPDATE pc_device_links SET managed_at=?, managed_by=?, updated_at=? "
-                "WHERE link_id=? AND state='active'",
-                moment, actor, moment, link_id,
-            )
-        else:
-            await self._run(
-                "UPDATE pc_device_links SET managed_at=NULL, managed_by=NULL, updated_at=? "
-                "WHERE link_id=? AND state='active'",
-                moment, link_id,
-            )
+        try:
+            if managed:
+                await self._run(
+                    "UPDATE pc_device_links SET managed_at=?, managed_by=?, updated_at=? "
+                    "WHERE link_id=? AND state='active'",
+                    moment, actor, moment, link_id,
+                )
+            else:
+                await self._run(
+                    "UPDATE pc_device_links SET managed_at=NULL, managed_by=NULL, updated_at=? "
+                    "WHERE link_id=? AND state='active'",
+                    moment, link_id,
+                )
+        except Exception as exc:
+            text = str(exc).lower()
+            if "no such column" not in text and "has no column named" not in text:
+                raise
+            raise PcPairingError("managed column missing") from exc
         stored = await self._read_link(row["user_id"], link_id)
         if stored is None:
             raise PcPairingError("link not stored")
-        return _public_link(stored)
+        return {
+            **_public_link(stored),
+            "managed": managed,
+            "managed_at": moment if managed else None,
+        }
 
     async def _first(self, sql: str, *values: Any) -> dict[str, Any] | None:
         statement = self.db.prepare(sql)
@@ -1511,7 +1524,7 @@ class D1PcPairingStore:
         row = await self._first(
             "SELECT link_id, user_id, mesh_node_id, label, state, roots_json, "
             "pairing_code_id, created_at, updated_at, revoked_at, paused_at, "
-            "superseded_at, superseded_by, managed_at, managed_by "
+            "superseded_at, superseded_by "
             "FROM pc_device_links WHERE user_id=? AND link_id=?",
             user_id, link_id,
         )
@@ -1524,7 +1537,7 @@ class D1PcPairingStore:
         owner = _user_id(user_id)
         rows = await self._all(
             "SELECT link_id, user_id, mesh_node_id, label, state, roots_json, "
-            "created_at, updated_at, paused_at, superseded_at, managed_at "
+            "created_at, updated_at, paused_at, superseded_at "
             "FROM pc_device_links WHERE user_id=? "
             "AND (state!='revoked' OR superseded_at IS NOT NULL) "
             "ORDER BY created_at DESC LIMIT 100",

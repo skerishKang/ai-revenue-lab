@@ -172,6 +172,9 @@ _REASONS = {
     "link label invalid": "pc_pairing_body_invalid",
     "link label too long": "pc_pairing_body_invalid",
     "managed flag invalid": "pc_pairing_body_invalid",
+    #: Migration 103 not applied: the mark cannot be written yet, but every
+    #: existing link read still works. Same 준비 중 shape as an absent table.
+    "managed column missing": "pc_pairing_not_ready",
     "link not stored": "pc_pairing_unavailable",
     "pairing link not stored": "pc_pairing_unavailable",
     "user id invalid": "unauthorized",
@@ -205,7 +208,7 @@ def _refused(exc: PcPairingError) -> JSONResponse:
         status = 404
     elif code in {"pc_pairing_link_not_active", "pc_pairing_root_label_taken"}:
         status = 409
-    elif code == "pc_pairing_unavailable":
+    elif code in {"pc_pairing_unavailable", "pc_pairing_not_ready"}:
         status = 503
     else:
         status = 400
