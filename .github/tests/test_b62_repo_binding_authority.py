@@ -43,6 +43,11 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
     #     secret for the signed /internal/password-verify and
     #     /internal/password-register calls. Same deploy-window rule as the
     #     other pending secrets: the Owner stores the value first.
+    #   - #7108 PR-2 declares the optional user-session helper EXE URL and its
+    #     digest in [vars] with empty values. The handoff reads the pair as
+    #     "helper not configured" until a deploy injects the reviewed versioned
+    #     URL and SHA-256; an empty or mismatched pair omits only the helper
+    #     step and leaves the MeshCentral agent install untouched.
     # Each one is named here as a pending addition - never unexplained drift, and
     # never a silent removal of something serving traffic. Each returns to an empty
     # diff as its own deploy lands.
@@ -60,7 +65,9 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
                   {'name': 'PC_AGENT_INSTALL_URL', 'type': 'plain_text'},
                   {'name': 'PC_QUEUE_BACKEND', 'type': 'plain_text'},
                   {'name': 'PC_QUEUE_ORIGIN', 'type': 'plain_text'},
-                  {'name': 'PC_QUEUE_SERVICE_SECRET', 'type': 'secret_text'}],
+                  {'name': 'PC_QUEUE_SERVICE_SECRET', 'type': 'secret_text'},
+                  {'name': 'PC_USER_HELPER_INSTALL_URL', 'type': 'plain_text'},
+                  {'name': 'PC_USER_HELPER_SHA256', 'type': 'plain_text'}],
         'removed': [],
         'changed': [],
     }
