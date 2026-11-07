@@ -534,6 +534,10 @@
     let stopped = false;
     let identityKey = "";
     let identityRefreshSeq = 0;
+    // First screen proves identity once: the module verifies at init and the
+    // auth notification asks again while that read is still open. Reusing the
+    // open read keeps the newest sequence fence without a second round trip.
+    let identityInflight = null;
     const identityListeners = [];
 
     const recordedFactory = createRecognizerFactory({
@@ -626,13 +630,18 @@
     // overwriting the newest account identity.
     function verifyIdentity() {
       if (stopped) return Promise.resolve("");
+      if (identityInflight) return identityInflight;
       const sequence = ++identityRefreshSeq;
       const pending = refreshIdentity().then(function (key) {
         if (stopped || sequence !== identityRefreshSeq) return "";
         announceIdentity(key);
         return key;
       });
-      return pending;
+      const shared = pending.finally(function () {
+        if (identityInflight === shared) identityInflight = null;
+      });
+      identityInflight = shared;
+      return shared;
     }
 
     function listen(target, name, handler) {
@@ -640,7 +649,22 @@
       target.addEventListener(name, handler);
       identityListeners.push([target, name, handler]);
     }
-    const onAuthChange = function () { verifyIdentity(); };
+    // Sign-out and sign-in happen in this page, so an auth notification can be
+    // a different owner. The open read then belongs to the previous answer and
+    // must not announce it: abandon it and ask again. A repeated notification
+    // for the same signed-in state still shares the open read.
+    let lastSignedIn = win.PadiemAuthGate?.authenticated?.() === true;
+    const onAuthChange = function (event) {
+      const next = typeof (event && event.detail && event.detail.authenticated) === "boolean"
+        ? event.detail.authenticated
+        : win.PadiemAuthGate?.authenticated?.() === true;
+      if (next !== lastSignedIn) {
+        lastSignedIn = next;
+        identityInflight = null;
+        identityRefreshSeq += 1;
+      }
+      verifyIdentity();
+    };
     for (const eventName of ["padiem:auth-state", "padiem:auth-changed", "padiem:account-changed"]) {
       listen(win, eventName, onAuthChange);
     }

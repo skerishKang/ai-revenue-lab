@@ -836,10 +836,25 @@
     view.cancelInstallButton.addEventListener("click", () => { void actions.cancelInstall(); });
     view.reprepareInstallButton.addEventListener("click", () => { void actions.reprepareInstall(); });
     view.issueButton.addEventListener("click", () => { void actions.issue(); });
-    window.addEventListener("padiem:auth-state", () => { void load(true); });
-    window.addEventListener("pageshow", () => { void load(); });
+    // This card is not first-screen content: it sits inside the Connectors
+    // dialog (and is moved into the Connectors view on first open). Reading the
+    // pairing list on boot and again on every auth event was one of the
+    // duplicate first-screen round trips. Load when the surface is actually
+    // shown, and keep the usual refresh paths for it while it is.
+    const surfaceOpen = () => {
+      const host = card.closest("dialog");
+      return !host || host.open === true;
+    };
+    const hostDialog = card.closest("dialog");
+    if (hostDialog) {
+      hostDialog.addEventListener("toggle", () => {
+        if (hostDialog.open) void load(true);
+      });
+    }
+    window.addEventListener("padiem:auth-state", () => { if (surfaceOpen()) void load(true); });
+    window.addEventListener("pageshow", () => { if (surfaceOpen()) void load(); });
     document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible") void load(true);
+      if (surfaceOpen() && document.visibilityState === "visible") void load(true);
     });
     new MutationObserver(() => {
       const next = locale();
@@ -858,7 +873,7 @@
     }).observe(document.documentElement, {
       attributes: true, attributeFilter: ["lang"],
     });
-    void load();
+    if (surfaceOpen()) void load();
     return actions;
   }
 

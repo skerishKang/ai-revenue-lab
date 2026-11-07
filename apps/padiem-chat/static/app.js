@@ -2800,6 +2800,60 @@
     return data;
   }
 
+  // The first screen reads /api/claw/runs twice: the sidebar needs the
+  // run -> conversation mapping (limit 30) and Claw's history needs the run
+  // cards (limit 10). The wider answer already contains the narrower one, so
+  // one short-lived in-memory read answers both. It is keyed to the auth
+  // generation and never stored outside memory; the window is short enough
+  // that a run created just after it is seen on the next read.
+  const CLAW_RUNS_READ_WINDOW_MS = 1500;
+  const emptyClawRunsRead = () => ({
+    at: 0, epoch: -1, limit: 0, response: null, data: null, inFlight: null, inFlightLimit: 0,
+  });
+  let clawRunsRead = emptyClawRunsRead();
+
+  // A write that changes a run's status makes every answer in the window
+  // stale, so the next read asks the server again.
+  function invalidateClawRunsRead() {
+    clawRunsRead = emptyClawRunsRead();
+  }
+
+  function readClawRuns(limit, epoch, options) {
+    const force = Boolean(options && options.force === true);
+    const now = Date.now();
+    // An explicit refresh asks the server. A read already open still answers
+    // it, so two rapid clicks stay one request.
+    if (!force && clawRunsRead.epoch === epoch && clawRunsRead.data
+        && clawRunsRead.limit >= limit
+        && now - clawRunsRead.at < CLAW_RUNS_READ_WINDOW_MS) {
+      return Promise.resolve({ response: clawRunsRead.response, data: clawRunsRead.data });
+    }
+    if (clawRunsRead.inFlight && clawRunsRead.epoch === epoch
+        && clawRunsRead.inFlightLimit >= limit) {
+      return clawRunsRead.inFlight;
+    }
+    const run = (async () => {
+      const response = await fetch(`/api/claw/runs?limit=${limit}`, {
+        headers: { "Accept": "application/json" }, cache: "no-store",
+      });
+      const data = await response.json().catch(() => null);
+      if (response.ok && data && data.ok === true && Array.isArray(data.runs)) {
+        clawRunsRead = { at: Date.now(), epoch, limit, response, data, inFlight: null, inFlightLimit: 0 };
+      }
+      return { response, data };
+    })();
+    clawRunsRead.epoch = epoch;
+    clawRunsRead.inFlight = run;
+    clawRunsRead.inFlightLimit = limit;
+    run.finally(() => {
+      if (clawRunsRead.inFlight === run) {
+        clawRunsRead.inFlight = null;
+        clawRunsRead.inFlightLimit = 0;
+      }
+    }).catch(() => {});
+    return run;
+  }
+
   async function loadRecentConversations() {
     if (!authState.authenticated || !authState.history_ready) {
       clearHistoryUI();
@@ -2833,10 +2887,7 @@
         const verifiedClawIds = new Set();
         try {
           const threadRunHistoryLimit = 30;
-          const runsResponse = await fetch(`/api/claw/runs?limit=${threadRunHistoryLimit}`, {
-            headers: { "Accept": "application/json" }, cache: "no-store",
-          });
-          const runsData = await runsResponse.json().catch(() => null);
+          const { response: runsResponse, data: runsData } = await readClawRuns(threadRunHistoryLimit, epoch);
           if (!current()) return;
           if (runsResponse.ok && runsData?.ok === true && Array.isArray(runsData.runs)) {
             runsData.runs.forEach((run) => {
@@ -3934,6 +3985,7 @@
         body: JSON.stringify({ run_id: runId }),
       }).then((response) => (response.ok ? response.json() : null))
         .then((data) => {
+          invalidateClawRunsRead();
           setNote(uiT(data && data.ok === true ? "pc-stop-sent" : "pc-stop-failed"), "status");
         })
         .catch(() => setNote(uiT("pc-stop-failed"), "status"));
@@ -6828,6 +6880,7 @@
         }
         status.hidden = true;
         status.removeAttribute("data-state");
+        invalidateClawRunsRead();
         if (typeof onResolved === "function") await onResolved(data.result);
       } catch (error) {
         if (decisionEpoch !== clawApprovalEpoch || authState.authenticated !== true) return;
@@ -7535,6 +7588,9 @@
   const clawRunHistoryEmpty = document.getElementById("clawRunHistoryEmpty");
 
   let clawRunHistoryInFlight = false;
+  // Set when the workspace is left, so the next reveal reads again instead of
+  // reusing a list read before the person went elsewhere.
+  let clawRunHistoryLeftSurface = false;
   // #3932: server caps owner-scoped history at MAX_CLAW_RUNS=30.
   // Expanding is a read-only, explicit user action, not pagination authority.
   let clawRunHistoryLimit = 10;
@@ -7766,7 +7822,7 @@
   }
 
   // Unguarded fetch: callers hold the single-flight flag while awaiting this.
-  async function fetchClawRunHistory() {
+  async function fetchClawRunHistory(options) {
     if (!clawRunHistory) return;
     const focusRunId = pendingClawRunFocusId;
     pendingClawRunFocusId = "";
@@ -7780,8 +7836,7 @@
     clearClawRunHistoryPdfPreviews();
     if (clawRunHistoryList) clawRunHistoryList.replaceChildren();
     try {
-      const response = await fetch(`/api/claw/runs?limit=${clawRunHistoryLimit}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
-      const data = await response.json().catch(() => null);
+      const { response, data } = await readClawRuns(clawRunHistoryLimit, authViewEpoch, options);
       // A response begun before logout/workspace departure is not a license
       // to paint old owner file cards into a newer authenticated session.
       if (visibilityEpoch !== clawRunHistoryVisibilityEpoch ||
@@ -7823,11 +7878,11 @@
     }
   }
 
-  async function loadClawRunHistory() {
+  async function loadClawRunHistory(options) {
     if (clawRunHistoryInFlight) return;
     clawRunHistoryInFlight = true;
     try {
-      await fetchClawRunHistory();
+      await fetchClawRunHistory(options);
     } finally {
       clawRunHistoryInFlight = false;
     }
@@ -7836,13 +7891,21 @@
   function syncClawRunHistoryVisibility() {
     if (!clawRunHistory) return;
     // Owner-authenticated surface only, and never inside the inbox view.
+    const wasVisible = clawRunHistory.hidden === false;
     const show = authState.authenticated === true
       && shell.dataset.state === "claw"
       && clawWorkspace?.dataset.view !== "inbox";
     clawRunHistory.hidden = !show;
     if (clawRunHistoryDisclosure) clawRunHistoryDisclosure.hidden = !show;
-    if (show) loadClawRunHistory();
+    if (show) {
+      // Coming back to the workspace is a request for the current list; the
+      // first reveal may share the read the sidebar already started.
+      const returning = clawRunHistoryLeftSurface;
+      clawRunHistoryLeftSurface = false;
+      loadClawRunHistory(returning ? { force: true } : undefined);
+    }
     else {
+      if (wasVisible) clawRunHistoryLeftSurface = true;
       clawRunHistoryVisibilityEpoch += 1;
       clawRunHistoryLimit = 10;
       if (clawRunHistoryExpand) clawRunHistoryExpand.hidden = true;
@@ -7851,7 +7914,9 @@
   }
 
   if (clawRunHistoryRefresh) {
-    clawRunHistoryRefresh.addEventListener("click", () => loadClawRunHistory());
+    // A person asked for the current list, so this read is not served from the
+    // short window.
+    clawRunHistoryRefresh.addEventListener("click", () => loadClawRunHistory({ force: true }));
   }
   if (clawRunHistoryExpand) {
     clawRunHistoryExpand.addEventListener("click", () => {
@@ -7859,7 +7924,7 @@
           authState.authenticated !== true || clawRunHistory.hidden) return;
       clawRunHistoryLimit = 30;
       clawRunHistoryExpand.hidden = true;
-      void loadClawRunHistory();
+      void loadClawRunHistory({ force: true });
     });
   }
 

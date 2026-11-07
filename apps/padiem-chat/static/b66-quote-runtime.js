@@ -291,6 +291,29 @@
 
   async function pcLinkedNow() {
     if (window.PadiemAuthGate?.authenticated() === false) return null;
+    // The connect flow already owns this list on the first screen. Reuse its
+    // answer, or the read it has open, instead of a second GET. A refused or
+    // not-ready answer is final here: retrying it would be the duplicate this
+    // reuse exists to remove. The direct read stays for a page where the flow
+    // module is absent.
+    const flow = window.PadiemPcConnectFlow;
+    const sharedRead = flow && (typeof flow.read === "function" ? flow.read : flow.refresh);
+    if (flow && typeof sharedRead === "function" && typeof flow.current === "function") {
+      try {
+        let current = flow.current();
+        if (current && current.read !== "ok" && current.read !== "not_ready"
+            && current.everRead !== true) {
+          await sharedRead();
+          current = flow.current();
+        }
+        if (current && current.read === "ok") {
+          return current.links.some((link) => link && link.state === "active");
+        }
+        return null;
+      } catch (_) {
+        return null;
+      }
+    }
     try {
       let response = await nativeFetch(PC_PAIRINGS_PATH, { credentials: "same-origin", cache: "no-store", headers: { "Accept": "application/json" } });
       // #6460 4-2: the shared access cookie can expire under the screen's

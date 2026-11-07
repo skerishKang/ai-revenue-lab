@@ -13,7 +13,19 @@
     if (section) section.hidden = !authorized;
   }
 
-  async function refresh() {
+  let inFlight = null;
+  // The role cannot change without a new session, so one answered check per
+  // signed-in session is enough. The boot check and the auth notification used
+  // to run back to back on the first screen.
+  let answeredSignedIn = false;
+
+  function refresh() {
+    if (inFlight) return inFlight;
+    inFlight = check().finally(() => { inFlight = null; });
+    return inFlight;
+  }
+
+  async function check() {
     try {
       const response = await fetch("/api/admin/session", {
         headers: { Accept: "application/json" },
@@ -26,7 +38,9 @@
         return;
       }
       const data = await response.json();
-      const authorized = Boolean(data && data.authenticated === true && typeof data.role === "string");
+      const authenticated = Boolean(data && data.authenticated === true);
+      if (authenticated) answeredSignedIn = true;
+      const authorized = authenticated && typeof data.role === "string";
       apply(authorized);
       if (authorized) link.dataset.role = data.role;
       else delete link.dataset.role;
@@ -36,6 +50,16 @@
     }
   }
 
-  window.addEventListener("padiem:auth-state", () => void refresh());
+  window.addEventListener("padiem:auth-state", (event) => {
+    if (event?.detail?.authenticated !== true) {
+      // Sign-out is answered immediately and must never keep a stale entry.
+      answeredSignedIn = false;
+      apply(false);
+      delete link.dataset.role;
+      return;
+    }
+    if (answeredSignedIn) return;
+    void refresh();
+  });
   void refresh();
 })();

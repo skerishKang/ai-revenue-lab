@@ -292,24 +292,66 @@
     paintSurfaces();
   }
 
-  async function readPairings() {
+  // The connect flow, the Connectors card and the quote runtime all ask for
+  // this one owner-scoped list on the first screen. They share a single read:
+  // the in-flight promise while it is open, the just-answered result inside a
+  // short window, and nothing after that. The window is per page and per
+  // owner (an auth event invalidates it), so no answer is shared across
+  // accounts or stored outside memory.
+  const PAIRINGS_READ_WINDOW_MS = 2000;
+  let pairingsInFlight = null;
+  let pairingsReadAt = 0;
+  // A read begun under one signed-in state must never repaint another. The
+  // counter is bumped when the owner can have changed, and the settling read
+  // discards itself.
+  let pairingsGeneration = 0;
+
+  function invalidatePairings() {
+    pairingsReadAt = 0;
+  }
+
+  function answeredPairings() {
+    if (!pairingsReadAt || state.read !== "ok") return null;
+    if (Date.now() - pairingsReadAt >= PAIRINGS_READ_WINDOW_MS) return null;
+    return { ok: true, status: 200, body: { links: state.links.slice() } };
+  }
+
+  async function readPairings(options = {}) {
     if (window.PadiemAuthGate?.authenticated() === false) {
       state.links = []; state.read = "unavailable"; state.everRead = false;
+      invalidatePairings();
       publish();
       return {ok: false, status: 401};
     }
-    const result = await request(PAIRINGS, { method: "GET" });
-    if (result.ok && result.body && Array.isArray(result.body.links)) {
-      state.links = result.body.links;
-      state.read = "ok";
-      state.everRead = true;
-    } else if (result.code === "pc_pairing_not_ready" || result.status === 503) {
-      state.read = "not_ready";
-    } else {
-      state.read = "unavailable";
+    // An explicit refresh is a request for the server's current answer and is
+    // never served from the short window.
+    if (options.force !== true) {
+      const answered = answeredPairings();
+      if (answered) return answered;
+      if (pairingsInFlight) return pairingsInFlight;
     }
-    publish();
-    return result;
+    const generation = ++pairingsGeneration;
+    const run = (async () => {
+      const result = await request(PAIRINGS, { method: "GET" });
+      if (generation !== pairingsGeneration) return result;
+      if (result.ok && result.body && Array.isArray(result.body.links)) {
+        state.links = result.body.links;
+        state.read = "ok";
+        state.everRead = true;
+        pairingsReadAt = Date.now();
+      } else if (result.code === "pc_pairing_not_ready" || result.status === 503) {
+        state.read = "not_ready";
+      } else {
+        state.read = "unavailable";
+      }
+      publish();
+      return result;
+    })();
+    const shared = run.finally(() => {
+      if (pairingsInFlight === shared) pairingsInFlight = null;
+    });
+    pairingsInFlight = shared;
+    return shared;
   }
 
   function refusalMessage(result, t) {
@@ -456,7 +498,8 @@
         return;
       }
       handle.rounds += 1;
-      await readPairings();
+      // The poll exists to observe a change, so it always asks the server.
+      await readPairings({ force: true });
       const fresh = state.links.find((link) =>
         link && link.state === "active" && !baselineIds.has(link.link_id));
       if (fresh) {
@@ -665,7 +708,8 @@
 
   async function open() {
     const t = locale();
-    await readPairings();
+    // A person opened this surface: answer from the server, not a window.
+    await readPairings({ force: true });
     if (classifiedState() === "connected") {
       toast(t.toast);
       return "connected";
@@ -707,12 +751,35 @@
       openModal: () => openModal(),
       closeModal,
       togglePopover,
-      refresh: () => readPairings(),
-      current: () => ({ state: classifiedState(), links: state.links.slice() }),
+      refresh: () => readPairings({ force: true }),
+      read: () => readPairings(),
+      invalidate: invalidatePairings,
+      current: () => ({
+        state: classifiedState(),
+        read: state.read,
+        everRead: state.everRead,
+        links: state.links.slice(),
+      }),
     };
     wireStarter();
     wireLangRepaint();
-    window.addEventListener("padiem:auth-state", () => { void readPairings(); });
+    let lastSignedIn = window.PadiemAuthGate?.authenticated?.() === true;
+    window.addEventListener("padiem:auth-state", () => {
+      // A session event may be a different owner: never answer it from the
+      // window a previous one filled, and never let a read begun before it
+      // repaint. Concurrent callers still share the one read this starts.
+      const signedIn = window.PadiemAuthGate?.authenticated?.() === true;
+      if (signedIn !== lastSignedIn) {
+        lastSignedIn = signedIn;
+        pairingsGeneration += 1;
+        pairingsInFlight = null;
+      }
+      invalidatePairings();
+      state.links = [];
+      state.read = "unavailable";
+      state.everRead = false;
+      void readPairings();
+    });
     void readPairings();
   };
   if (document.readyState === "loading") {

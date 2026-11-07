@@ -223,7 +223,12 @@
       const directory = lastDirectory;
       const snapshot = {
         readCompleted: readCompleted,
+        // `updatedAt` lets a consumer trust this snapshot for a short window
+        // instead of opening a second read to the same endpoint.
+        updatedAt: Date.now(),
+        ownerScoped: Boolean(lastEnvelope && lastEnvelope.ownerScoped),
         available: Boolean(directory && directory.available),
+        usagePaused: Boolean(lastEnvelope && lastEnvelope.usagePaused),
         reason: directory ? directory.reason : null,
         statusCode: stateCode,
         // The server-owned preference and the device it resolves to are both
@@ -238,6 +243,7 @@
           platform: device.platform,
           state: device.state,
           online: device.online === true,
+          usable: device.usable === true,
           revoked: device.revoked === true,
           expired: device.expired === true,
           executable: device.executable === true,
@@ -480,7 +486,20 @@
       return requestSequence === selectionSequence && saved === true;
     }
 
-    async function load(options = {}) {
+    let pendingRead = null;
+
+    // One read at a time, observable. The connection chips share this read
+    // instead of opening a second connection to the same directory endpoint.
+    function load(options = {}) {
+      const run = runLoad(options);
+      pendingRead = run;
+      run.finally(() => {
+        if (pendingRead === run) pendingRead = null;
+      }).catch(() => {});
+      return run;
+    }
+
+    async function runLoad(options = {}) {
       // Opening the panel reads the directory. One authenticated-session
       // restore also reads it without opening, so a new conversation can use
       // the saved target. Only an open visible panel refreshes its inventory.
@@ -574,6 +593,7 @@
         // Keep only the verified, non-secret directory projection.
         lastEnvelope = {
           available: true, ownerScoped: true,
+          usagePaused: payload.usagePaused === true,
           devices: directory.devices.map((d) => ({
             deviceId: d.deviceId,
             deviceName: d.deviceName,
@@ -745,6 +765,17 @@
     );
     window.padiemSelectedDeviceId = selectedDevice;
     window.padiemClawSelectedDeviceId = selectedDevice;
+    // The shared read for this endpoint: settle on the open read, else hand
+    // back the last confirmed snapshot (the caller decides freshness).
+    window.PadiemClawDeviceDirectoryRead = function readDeviceDirectory() {
+      if (pendingRead) {
+        return pendingRead.then(
+          () => window.PadiemClawDeviceDirectory || null,
+          () => null,
+        );
+      }
+      return Promise.resolve(readCompleted ? window.PadiemClawDeviceDirectory || null : null);
+    };
     new MutationObserver(sync).observe(shell, { attributes: true, attributeFilter: ["data-state"] });
     new MutationObserver(translations).observe(document.documentElement, {
       attributes: true, attributeFilter: ["lang"],
