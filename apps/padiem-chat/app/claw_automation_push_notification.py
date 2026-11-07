@@ -1,34 +1,35 @@
-"""#5034 — notify the existing web inbox's devices when an automation run ends.
+"""#5034 — notify the owner's opted-in devices when an automation run ends.
 
-This is a composition seam, not a new notification authority. It runs *after*
-the existing terminal projection has already written the Task/Alert record, and
-its only job is to additionally attempt a Web Push to the devices the same
-account opted in.
+This is a composition seam, not a new notification authority. 대표 결정
+(2026-11-07): the notification is judged directly from the run's terminal
+state — COMPLETED is a success, FAILED/CANCELLED a failure, output presence
+or the Task/Alert projection no longer decides anything — and the click
+target is the automation's own conversation (one rule owns one conversation).
 
 Canonical position in the existing chain:
 
 ```text
 existing terminal run
         |
-        v  existing project_terminal_scheduled_run_to_history()   (#2927)
-        v  existing project_terminal_scheduled_run_to_task_alert() (#2933)
-        |     -> the web inbox record now exists (source of truth)
+        v  existing project_terminal_scheduled_run_to_history()   (#2927,
+        |     now linked to the automation conversation)
+        v  the result message is appended to that conversation (idempotent)
         v  THIS MODULE: deliver_inbox_push()                       (#5034)
               -> an additional device attempt, never a record
 ```
 
 Invariants
 ----------
-* ``INBOX_IS_SOURCE_OF_TRUTH`` — the record already exists before this runs. A
-  push that fails, is unconfigured, or has no subscription changes nothing.
+* ``TERMINAL_DECIDES`` — the run's terminal state alone picks success or
+  failure wording; no projection record, no output contract, no inbox.
 * ``NO_JOB_RERUN`` — a push failure never re-executes the automation, never
   re-opens the run and never retries the P01 dispatch.
-* ``DEDUP_BY_RUN`` — the notification is derived from the run's own terminal
-  identity, so a re-projected run cannot produce a second push for the same
-  event. The existing projection idempotency is what makes this true: a run
-  whose record already existed reports ``created=False`` and is skipped here.
-* ``MINIMAL_LOCK_SCREEN`` — the payload is a short status plus the inbox link.
-  No document content, no ERP data, no secret, no run output.
+* ``DEDUP_BY_RUN`` — the result message append is idempotent per run; a
+  re-projected run reports ``created=False`` and is skipped here, so one
+  terminal event is one device attempt.
+* ``MINIMAL_LOCK_SCREEN`` — the payload is a short status plus the
+  conversation link. No document content, no ERP data, no secret, no run
+  output (대표 결정: 문구는 현행 고정 문구 유지).
 * ``PUSH_NEVER_RAISES`` — every failure is swallowed into the reported outcome
   so the automation lane's own result is unaffected.
 """
@@ -36,21 +37,19 @@ Invariants
 from __future__ import annotations
 
 from dataclasses import dataclass
-import re
 from typing import Any
 
 from .claw_push_subscriptions import deliver_inbox_push
 
-# The existing inbox surface the notification links back to.
+# The inbox surface stays a defensive fallback until the inbox lane (PR2)
+# removes it; the real target is the automation's own conversation.
 INBOX_ALERTS_PATH = "/claw?view=inbox&kind=alerts"
 INBOX_TASKS_PATH = "/claw?view=inbox&kind=tasks"
 
-# #5034: the deep link into the run that produced this result. The reference is
-# the server-derived run id only — no title, no document, no ERP content and no
-# secret ever reaches the lock screen or the URL. An id outside the existing
-# logical-id grammar falls back to the plain inbox surface.
-RUN_LINK_PATH = "/claw?notify=run&run_id={run_id}"
-_RUN_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}\Z")
+# 대표 결정(2026-11-07): 알림 클릭은 그 자동화의 대화를 연다. The reference is
+# the server-derived conversation id only — no title, no document, no ERP
+# content and no secret ever reaches the lock screen or the URL.
+CONVERSATION_LINK_PATH = "/?notify=conversation&conversation_id={conversation_id}"
 
 _COMPLETED_TITLE = "자동화 완료"
 _COMPLETED_BODY = "예약 작업이 완료되었습니다."
@@ -73,19 +72,17 @@ class AutomationPushOutcome:
 
 
 def _notification_text(
-    *, created_kind: str | None, run_status: str, run_id: str | None,
+    *, run_status: str, conversation_url: str | None,
 ) -> tuple[str, str, str]:
-    """The bounded lock-screen text and the result link for one terminal run."""
+    """The bounded lock-screen text and the conversation link for one run."""
 
     failed = str(run_status).upper() not in {"COMPLETED"}
     if failed:
         title, body = _FAILED_TITLE, _FAILED_BODY
     else:
         title, body = _COMPLETED_TITLE, _COMPLETED_BODY
-    if created_kind == "task":
-        return title, body, INBOX_TASKS_PATH
-    if isinstance(run_id, str) and _RUN_ID.match(run_id):
-        return title, body, RUN_LINK_PATH.format(run_id=run_id)
+    if isinstance(conversation_url, str) and conversation_url:
+        return title, body, conversation_url
     return title, body, INBOX_ALERTS_PATH
 
 
@@ -96,27 +93,26 @@ async def notify_terminal_run(
     workspace_id: str,
     member_id: str,
     scope: str,
-    created_kind: str | None,
-    created: bool,
     run_status: str,
-    run_id: str | None = None,
+    created: bool,
+    conversation_url: str | None = None,
 ) -> AutomationPushOutcome:
-    """Attempt one device notification for an already-projected terminal run.
+    """Attempt one device notification for one already-recorded terminal run.
 
-    ``created`` is the existing projection's own idempotency answer. A run whose
-    record already existed is a re-projection, not a new event, so it is skipped
-    and cannot produce a duplicate notification.
+    ``created`` is the result-message append's own idempotency answer: a run
+    whose conversation message already existed is a re-projection, not a new
+    event, so it is skipped and cannot produce a duplicate notification.
     """
 
     if push_store is None:
         return AutomationPushOutcome(state="not_configured")
     if not created:
-        # Re-projection of an existing record: not a new event.
+        # Re-projection of an existing result message: not a new event.
         return AutomationPushOutcome(state="duplicate")
     if not workspace_id or not member_id:
         return AutomationPushOutcome(state="not_configured")
     title, body, url = _notification_text(
-        created_kind=created_kind, run_status=run_status, run_id=run_id
+        run_status=run_status, conversation_url=conversation_url
     )
     try:
         outcome = await deliver_inbox_push(
@@ -141,6 +137,7 @@ async def notify_terminal_run(
 
 
 __all__ = [
+    "CONVERSATION_LINK_PATH",
     "INBOX_ALERTS_PATH",
     "INBOX_TASKS_PATH",
     "AutomationPushOutcome",

@@ -351,15 +351,62 @@ class RaisingAdapter:
 
 
 class RecordingHistoryStore:
-    """Contract double mirroring the existing (user_id, run_id) upsert."""
+    """Contract double mirroring the existing (user_id, run_id) upsert.
+
+    대표 결정(2026-11-07): the automation conversation surface is part of the
+    terminal projection now, so the double mirrors ensure → get → append with
+    the same idempotency the real store shows.
+    """
 
     def __init__(self) -> None:
         self.rows: dict[tuple[str, str], dict] = {}
         self.record_calls: list[dict] = []
+        self.ensure_calls: list[dict] = []
+        self.message_calls: list[dict] = []
+        self._automation_conversation: str | None = None
 
     async def record_claw_run(self, **kwargs) -> None:
         self.record_calls.append(kwargs)
         self.rows[(kwargs["user_id"], kwargs["run_id"])] = dict(kwargs)
+
+    async def ensure_claw_automation_conversation(
+        self, *, user_id: str, rule_id: str, rule_name: str
+    ) -> str:
+        self.ensure_calls.append(
+            {"user_id": user_id, "rule_id": rule_id, "rule_name": rule_name}
+        )
+        if self._automation_conversation is None:
+            import hashlib as _hashlib
+
+            digest = _hashlib.sha256(
+                ("claw-automation-conversation:" + rule_id).encode("utf-8")
+            ).hexdigest()
+            self._automation_conversation = "chat_" + digest[:32]
+        return self._automation_conversation
+
+    async def get_conversation(
+        self, user_id: str, conversation_id: str, *, product_scope: str
+    ) -> dict | None:
+        if self._automation_conversation is not None \
+                and conversation_id == self._automation_conversation:
+            return {"id": conversation_id, "user_id": user_id}
+        return None
+
+    async def append_step_result_message(
+        self, *, user_id: str, run_id: str, message_id: str, content: str
+    ) -> bool:
+        self.message_calls.append(
+            {
+                "user_id": user_id,
+                "run_id": run_id,
+                "message_id": message_id,
+                "content": content,
+            }
+        )
+        created = all(
+            call["message_id"] != message_id for call in self.message_calls[:-1]
+        )
+        return created
 
 
 class RecordingTaskAlertStore:

@@ -107,11 +107,14 @@ from .claw_automation_owner_resolution import (
 )
 from .claw_automation_projection_bridge import ClawTaskAlertProjectionStore
 from .claw_automation_task_alert_bridge import project_terminal_scheduled_run_to_task_alert
-from .claw_automation_push_notification import notify_terminal_run
+from .claw_automation_push_notification import (
+    CONVERSATION_LINK_PATH,
+    notify_terminal_run,
+)
 from .claw_automation_terminal_outcome_bridge import (
     execute_and_project_scheduled_occurrence,
 )
-from .history import HistoryStore
+from .history import MAX_HISTORY_MESSAGE_CHARS, HistoryStore
 
 __all__ = [
     "BackgroundExecutionCompositionError",
@@ -531,6 +534,34 @@ async def _resolve_owner_or_none(
     return owner
 
 
+def _automation_result_message_text(
+    rule: ClawAutomationRule, scheduled_run: ClawScheduledRun
+) -> str:
+    """대표 결정(2026-11-07): the terminal result lands in the automation's own
+    conversation as one truthful, bounded message. The notification stays a
+    fixed short wording; this message is where the detail lives."""
+
+    status = scheduled_run.status
+    if status is ClawScheduledRunStatus.COMPLETED:
+        output = scheduled_run.output
+        if output is not None and isinstance(getattr(output, "content", None), str) \
+                and output.content.strip():
+            header = getattr(output, "title", None) or rule.name
+            return _bounded_result_text(f"{header}\n\n{output.content.strip()}")
+        return _bounded_result_text(f"[{rule.name}] 예약 작업이 완료되었습니다.")
+    if status is ClawScheduledRunStatus.FAILED:
+        detail = str(getattr(scheduled_run, "error_message", "") or "").strip()
+        base = f"[{rule.name}] 예약 작업이 완료되지 못했습니다."
+        return _bounded_result_text(base + ("\n\n" + detail if detail else ""))
+    return _bounded_result_text(f"[{rule.name}] 예약 작업이 취소되었습니다.")
+
+
+def _bounded_result_text(text: str) -> str:
+    if len(text) <= MAX_HISTORY_MESSAGE_CHARS:
+        return text
+    return text[:MAX_HISTORY_MESSAGE_CHARS - 1] + "…"
+
+
 async def _project_terminal_run(
     *,
     rule: ClawAutomationRule,
@@ -544,21 +575,35 @@ async def _project_terminal_run(
 ) -> None:
     """Reuse the existing terminal projections for one already-terminal row.
 
-    Run history first, then Task/Alert. Both authorities own their own
-    idempotency, their own record shape and their own refusal surface, and both
-    are read-only for a row whose output type materializes no record.
+    대표 결정(2026-11-07): one automation owns one conversation. The first
+    terminal projection creates it, every run of the same rule appends its
+    result there as a message, and the run row links to that conversation.
 
-    #5034: after the existing Task/Alert projection has written the inbox
-    record, additionally attempt a Web Push to this account's opted-in devices.
-    The push is strictly additive: it cannot change the record, cannot re-run
-    the job, and cannot raise into this lane.
+    Run history first (now linked), then the idempotent result message, then
+    Task/Alert — the projection stays additive and unchanged; the notification
+    no longer waits for it: the terminal state alone decides, and the result
+    message's own idempotency is what keeps one event to one device attempt.
+    A push cannot change the record, cannot re-run the job and cannot raise
+    into this lane.
     """
 
+    conversation_id = await history_store.ensure_claw_automation_conversation(
+        user_id=owner.product_user_id,
+        rule_id=rule.rule_id,
+        rule_name=rule.name,
+    )
     await project_terminal_scheduled_run_to_history(
         rule=rule,
         scheduled_run=scheduled_run,
         owner=owner,
         store=history_store,
+        conversation_id=conversation_id,
+    )
+    message_created = await history_store.append_step_result_message(
+        user_id=owner.product_user_id,
+        run_id=scheduled_run.run_id,
+        message_id=scheduled_run.run_id + "_result",
+        content=_automation_result_message_text(rule, scheduled_run),
     )
     projection = await project_terminal_scheduled_run_to_task_alert(
         rule=rule,
@@ -567,16 +612,21 @@ async def _project_terminal_run(
         store=task_alert_store,
     )
     if push_store is not None:
+        # The status enum is a (str, Enum): str(member) is the qualified name on
+        # this runtime, so the decision value must be the enum's own value.
+        status_value = getattr(scheduled_run, "status", "")
+        status_value = getattr(status_value, "value", status_value)
         await notify_terminal_run(
             push_store=push_store,
             push_sender=push_sender,
             workspace_id=owner.workspace_id,
             member_id=owner.member_id,
             scope=push_scope,
-            created_kind=getattr(projection, "created_kind", None),
-            created=bool(getattr(projection, "created", False)),
-            run_status=str(getattr(scheduled_run, "status", "")),
-            run_id=getattr(scheduled_run, "run_id", None),
+            run_status=str(status_value),
+            created=message_created,
+            conversation_url=CONVERSATION_LINK_PATH.format(
+                conversation_id=conversation_id
+            ),
         )
 
 
