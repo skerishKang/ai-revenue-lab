@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
 import time
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -357,3 +358,46 @@ def connector_tool_request(tool_name: str, arguments: Mapping[str, Any]) -> dict
         "tool_id": tool_id,
         "arguments": dict(arguments),
     }
+
+
+# Only an explicitly Google-named connector question routes between lanes.
+# "일정" alone stays with the workspace-native calendar and "드라이브" alone
+# stays with the PC lane; "구글 캘린더"/"구글 드라이브" (or the English forms)
+# name this product's Google connector tools.
+_GOOGLE_CONNECTOR_INTENT = re.compile(
+    r"구글\s*캘린더|구글\s*드라이브|google\s*calendar|google\s*drive",
+    re.IGNORECASE,
+)
+
+
+def google_connector_intent(user_text: Any) -> bool:
+    """True only when the turn's own words explicitly name a Google connector."""
+
+    return isinstance(user_text, str) and bool(_GOOGLE_CONNECTOR_INTENT.search(user_text))
+
+
+async def connector_tools_granted_for_fallback(request: Request, *, uid: str | None) -> bool:
+    """The orchestration-path connector-intent guard.
+
+    Reuses the main turn's bounded decision (30s per-user cache, 300ms budget,
+    same journal line): True only when a verified authority said the Drive or
+    Calendar READ grant is connected, so the orchestration lane can hand the
+    turn to the main chat turn that declares the connector tools. Every
+    failure mode answers False — grant-less owners keep the search path
+    exactly as it is.
+    """
+
+    decision, elapsed_ms, _timed_out = await _bounded_grant_decision(request, uid=uid)
+    granted = decision.reason == GRANT_REASON_GRANTED
+    emit_stage_event(
+        stage="chat.connector_tools",
+        outcome="ok" if granted else "error",
+        duration_ms=round(elapsed_ms, 1),
+        code=decision.reason,
+    )
+    _LOG.info(
+        "connector_tools orchestration_fallback=%s reason=%s",
+        granted,
+        decision.reason,
+    )
+    return granted
