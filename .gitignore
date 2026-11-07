@@ -77,5 +77,10 @@ apps/padiem-chat/local_dev_data/
 padiem-connector-standalone-*/
 apps/claw-connect/PADIEM-Connector-Setup-*.exe
 
+# #7108: the user-helper onefile build output. The reviewed artifact travels as
+# the one-click download, not as a second copy in Git.
+padiem-user-helper-*/
+apps/claw-connect/padiem-user-helper-*.exe
+
 # #6724: live browser screenshots, recordings and run summaries contain local test output.
 live-artifacts/
