@@ -414,3 +414,60 @@ class MeshCentralNodeRefAlphabetTest(unittest.TestCase):
         for bad in ("bad node!", "noderef", "", "x" * 300):
             with self.assertRaises(MeshCentralReadRefused):
                 MeshCentralFileReadRequest(node_ref=bad, file_path="notes.txt")
+
+
+class MeshCentralCliLoginKeyFileTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="padiem_mesh_read_key_4139_")
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def test_login_key_file_uses_loginkeyfile_without_loginpass_or_stdin_secret(self):
+        key_path = "C:/mesh/op.key"
+        calls = {}
+        def runner(argv, *, timeout, input):
+            calls["argv"] = list(argv)
+            calls["input"] = input
+            target = argv[argv.index("--target") + 1]
+            with open(target, "wb") as handle:
+                handle.write(LIVE_TRIAL_TEXT.encode("utf-8"))
+            return SimpleNamespace(returncode=0)
+        port = MeshCentralCliFileReadPort(
+            command_runner=runner,
+            meshctrl_js=r"C:\meshcentral-test\node_modules\meshcentral\meshctrl.js",
+            login_user="padiemadmin",
+            password_provider=lambda: (_ for _ in ()).throw(AssertionError("password must not be requested")),
+            url="wss://127.0.0.1:4443",
+            work_dir=self.temp.name,
+            login_key_file=key_path,
+        )
+        raw = port.read_bytes(node_ref=NODE_REF, file_path=FILE_PATH, timeout_seconds=45)
+        self.assertEqual(raw, LIVE_TRIAL_TEXT.encode("utf-8"))
+        argv = calls["argv"]
+        self.assertIn("--loginkeyfile", argv)
+        self.assertEqual(argv[argv.index("--loginkeyfile") + 1], key_path)
+        self.assertNotIn("--loginpass", argv)
+        self.assertIsNone(calls["input"])
+        self.assertNotIn("s3cret-at-call-time", " ".join(argv))
+
+    def test_unset_login_key_file_keeps_loginpass_and_stdin(self):
+        calls = {}
+        def runner(argv, *, timeout, input):
+            calls["argv"] = list(argv); calls["input"] = input
+            target = argv[argv.index("--target") + 1]
+            with open(target, "wb") as handle:
+                handle.write(LIVE_TRIAL_TEXT.encode("utf-8"))
+            return SimpleNamespace(returncode=0)
+        port = MeshCentralCliFileReadPort(
+            command_runner=runner,
+            meshctrl_js=r"C:\meshcentral-test\node_modules\meshcentral\meshctrl.js",
+            login_user="padiemadmin",
+            password_provider=lambda: "s3cret-at-call-time",
+            url="wss://127.0.0.1:4443",
+            work_dir=self.temp.name,
+        )
+        port.read_bytes(node_ref=NODE_REF, file_path=FILE_PATH, timeout_seconds=45)
+        self.assertIn("--loginpass", calls["argv"])
+        self.assertNotIn("--loginkeyfile", calls["argv"])
+        self.assertEqual(calls["input"], "s3cret-at-call-time\n")
