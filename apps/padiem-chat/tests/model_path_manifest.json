@@ -73,6 +73,7 @@
     "test_upstream_busy_diagnostics.py": "B14_MANAGED",
     "test_upstream_error_mapping.py": "B14_MANAGED",
     "test_user_response_privacy_261105.py": "B14_MANAGED",
-    "test_thought_summary_stream_261105.py": "B14_MANAGED"
+    "test_thought_summary_stream_261105.py": "B14_MANAGED",
+    "test_chat_connector_tool_turn.py": "B14_MANAGED"
   }
 }
