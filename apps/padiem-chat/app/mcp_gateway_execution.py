@@ -230,10 +230,18 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     # shell command and the browser call all take their PC from the principal.
     chosen_device = arguments.get("device") if isinstance(arguments, Mapping) else None
     device_chosen = isinstance(chosen_device, str) and bool(chosen_device.strip())
+    settings = getattr(request.app.state, "settings", None)
+    shell_enabled = bool(getattr(settings, "mcp_pc_shell_enabled", False))
+    shell_user_enabled = bool(getattr(settings, "mcp_pc_shell_user_mode_enabled", False))
     if shell:
         if not validate_shell_tool_arguments(tool_name, arguments):
             raise ValueError("Invalid MCP PC arguments")
-        arguments = _SHELL_TOOLS[tool_name](arguments)
+        if tool_name in {PC_SHELL_TOOL_NAME, PC_SHELL_START_TOOL_NAME}:
+            arguments = _SHELL_TOOLS[tool_name](
+                arguments, user_mode_enabled=shell_user_enabled,
+            )
+        else:
+            arguments = _SHELL_TOOLS[tool_name](arguments)
         scope, tool_id, keys = None, None, set()
         browser = False
     else:
@@ -269,9 +277,6 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
             raise ValueError("MCP approval does not match this request")
         approval_id = approval["approval_id"]
 
-    settings = getattr(request.app.state, "settings", None)
-    shell_enabled = bool(getattr(settings, "mcp_pc_shell_enabled", False))
-    shell_user_enabled = bool(getattr(settings, "mcp_pc_shell_user_mode_enabled", False))
     identity = {"user_id": uid, "device_id": device_id, "token_id": token_id}
     if shell and not shell_enabled:
         if tool_name != PC_SHELL_STOP_TOOL_NAME:

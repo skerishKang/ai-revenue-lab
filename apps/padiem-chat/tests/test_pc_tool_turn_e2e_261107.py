@@ -321,6 +321,24 @@ def test_explicit_user_mode_queues_user_mode_and_zero_timeout(
     assert '"timeout_seconds":0' in queued["command_text"]
 
 
+def test_explicit_system_stays_system_when_user_mode_is_on(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    app, history, _ = _app(monkeypatch, user_mode=True, complete_after=1)
+    with TestClient(app) as client:
+        response = _call(
+            client,
+            "pc_shell",
+            {"command": "whoami", "mode": "system", "wait_seconds": 1},
+        )
+
+    assert response.status_code == 200, response.text
+    queued = history.queue[0]
+    assert queued["user_mode"] is False
+    assert "PADIEM_MCP_COMMAND_B64" in queued["command_text"]
+    assert "timeout_seconds" not in queued["command_text"]
+
+
 def test_pc_shell_with_user_mode_off_keeps_the_existing_system_payload(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
