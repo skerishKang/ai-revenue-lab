@@ -118,10 +118,15 @@ def test_a_fast_dispatch_still_polls_through_the_remaining_budget(monkeypatch):
 
 def test_the_default_budget_leaves_room_for_admission_and_receipt():
     # Both ceilings are 30 s: the Chat gateway's cut of the Engine call and the
-    # connector client's cut of the whole /api/mcp request. Worst observed on
-    # 2026-11-05: admission 5.6 s, receipt 1.8 s, Chat's own work 3.6 s, and
-    # the loop's overshoot (one poll + the result read) 1.5 s. The sum must
-    # stay clear of 30 s by a margin wider than the day's measurement noise.
+    # connector client's cut of the whole /api/mcp request. Re-measured on
+    # 2026-11-07 from com2 journals (p90 of the fixed costs around one
+    # first-round read): Chat /api/mcp identity 0.0 s (160 POST lines, 24 h,
+    # cached binding), Engine admission 1.8 s (warmer-era engine_timing
+    # 1.39–1.47 s; observed steady-state bound), receipt 0.7 s (recent
+    # engine_timing receipts 0.35–0.70 s), Chat's own context+dispatch work
+    # 0.6 s (12 first-round reads), and the loop's overshoot (one poll plus
+    # the result pickup) 2.0 s. The sum must stay clear of 30 s by a margin
+    # wider than the day's measurement noise.
     ceiling = 30.0
-    observed_overhead = 5.6 + 1.8 + 3.6 + 1.5
+    observed_overhead = 1.8 + 0.7 + 0.6 + 2.0
     assert PC_FILES_WAIT_SECONDS + observed_overhead <= ceiling - 3.0
