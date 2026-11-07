@@ -60,6 +60,12 @@ $Script:PublicHost = "https://chat.padiem.net"
 $Script:PollMaxRounds = 60
 $Script:PollSeconds = 15
 
+# Every npx call is npx.cmd on purpose: a node install that ships npx.ps1 first
+# on PATH re-parses its arguments with Invoke-Expression in its own scope, so
+# "npx wrangler rollback $Script:PrevFrontVersion" failed and the pages
+# deploy never ran (first real release, 2026-11-08).
+# npx.cmd on Windows (see above); plain npx on the Linux CI runner's pwsh.
+$Script:Npx = if ($env:OS -eq "Windows_NT") { "npx.cmd" } else { "npx" }
 $Script:RepoRoot = (Resolve-Path (Join-Path (Join-Path $PSScriptRoot "..") "..")).Path
 
 $Script:Summary = New-Object System.Collections.Generic.List[string]
@@ -138,7 +144,7 @@ function Get-FrontVersionIds {
         # wrangler's text output has no "Version ID:" label and lists the oldest
         # deployment first, so read --json and take the newest deployment's
         # versions (highest traffic share first). Full 36-char UUIDs.
-        $out = (& npx wrangler deployments list --json 2>$null | Out-String)
+        $out = (& $Script:Npx wrangler deployments list --json 2>$null | Out-String)
         if ($LASTEXITCODE -ne 0) { return @() }
         try { $deps = @($out | ConvertFrom-Json | ForEach-Object { $_ }) } catch { return @() }
         if ($deps.Count -eq 0) { return @() }
@@ -154,7 +160,7 @@ function Invoke-FrontRollbackIfNeeded {
     if ($Script:FrontDeployed -and $Script:PrevFrontVersion) {
         Write-Info "rolling the front back to $($Script:PrevFrontVersion)"
         Push-Location $shaFrontDir
-        try { & npx wrangler rollback $Script:PrevFrontVersion } finally { Pop-Location }
+        try { & $Script:Npx wrangler rollback $Script:PrevFrontVersion } finally { Pop-Location }
         Add-Summary "FRONT_ROLLED_BACK_TO=$($Script:PrevFrontVersion)"
     }
 }
@@ -301,7 +307,7 @@ try {
     }
     else {
         $env:CLOUDFLARE_ACCOUNT_ID = $Script:CloudflareAccountId
-        & npx wrangler deploy --keep-vars
+        & $Script:Npx wrangler deploy --keep-vars
         if ($LASTEXITCODE -ne 0) { throw "STEP3_FAIL: wrangler deploy failed" }
         $Script:FrontDeployed = $true
         $newIds = @(Get-FrontVersionIds)
@@ -332,7 +338,7 @@ try {
         try {
             & node build.mjs
             if ($LASTEXITCODE -ne 0) { throw "STEP4_FAIL: pages build failed" }
-            & npx wrangler pages deploy dist --project-name $Script:PagesProject --branch main
+            & $Script:Npx wrangler pages deploy dist --project-name $Script:PagesProject --branch main
             if ($LASTEXITCODE -ne 0) { throw "STEP4_FAIL: wrangler pages deploy failed" }
         }
         finally { Pop-Location }
