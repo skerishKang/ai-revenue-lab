@@ -590,6 +590,7 @@ class ConnectApp:
         try:
             asyncio.run(enroll_customer_pending_offer(enrollment=self._enrollment, on_stage=self._record_offer_stage))
             self._record_offer_stage("enrollment_published")
+            self._provision_user_helper()
             self.reconcile_autostart()
             if not self._quit.is_set():
                 self.start_registered_resident()
@@ -606,6 +607,19 @@ class ConnectApp:
             if failure is not None:
                 self._record_offer_stage(self._offer_stage, failure=failure)
             self._refresh_tray()
+
+    def _provision_user_helper(self) -> None:
+        # Provision the helper only after a durable enrollment record exists.
+        # A helper failure must never fail enrollment or the PC connection.
+        record = self._enrollment.committed_record()
+        if record is None or not record.is_enrolled():
+            return
+        from .user_helper_provisioning import provision_user_helper
+
+        try:
+            provision_user_helper(device_id=record.device_id, state_dir=self._state_dir)
+        except Exception:
+            pass
 
     def _watch_quit_event(self) -> None:
         next_restart_at = time.monotonic() + 15.0

@@ -268,6 +268,7 @@ $result = [ordered]@{
     tray_launch_requested = $false
     browser_launch_registered = $true
     connected = $false
+    user_helper = 'pending_enrollment'
 }
 
 # A diagnostic is read-only and truthful. Do not declare the agent usable
@@ -316,6 +317,16 @@ try {
     $result.tray_launch_requested = $true
 } catch {
     throw 'Connector installed, but tray startup failed.'
+}
+
+$HelperStatusPath = Join-Path $InstallRoot 'helper-status.json'
+if (Test-Path -LiteralPath $HelperStatusPath) {
+    try {
+        $HelperStatus = Get-Content -LiteralPath $HelperStatusPath -Raw | ConvertFrom-Json
+        if ($HelperStatus.status) { $result.user_helper = [string]$HelperStatus.status }
+    } catch {
+        $result.user_helper = 'status_unreadable'
+    }
 }
 
 Write-Output ($result | ConvertTo-Json -Compress)
