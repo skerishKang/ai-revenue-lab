@@ -36,6 +36,7 @@ def parse_deploy_script(repo: Path) -> dict:
         "B66_EXTRACTION_SOURCE", "B66_EXTRACTION_STAGED",
         "B66_INTAKE_SOURCE", "B66_INTAKE_STAGED",
         "CORE_SOURCE", "CORE_STAGED",
+        "CONTROL_PLANE_SOURCE", "CONTROL_PLANE_STAGED",
     )
     missing = [name for name in required_vars if name not in variables]
     if missing:
@@ -110,6 +111,20 @@ def stage(repo: Path, manifest_path: Path) -> None:
         shutil.copy2(source, destination)
         staged[str(destination.relative_to(app_dir))] = common.sha256_file(destination)
 
+    control_source = (app_dir / variables["CONTROL_PLANE_SOURCE"]).resolve()
+    control_staged = app_dir / variables["CONTROL_PLANE_STAGED"]
+    if not (control_source / "models_registry.py").is_file():
+        raise SystemExit(f"B14_STAGING=FAIL missing control plane loader {control_source}")
+    shutil.rmtree(control_staged, ignore_errors=True)
+    shutil.copytree(
+        control_source,
+        control_staged,
+        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+    )
+    for path in sorted(control_staged.rglob("*")):
+        if path.is_file():
+            staged[str(path.relative_to(app_dir))] = common.sha256_file(path)
+
     init_path = core_staged / "__init__.py"
     init_path.write_text(parsed["init_line"] + "\n", encoding="utf-8")
     staged[str(init_path.relative_to(app_dir))] = common.sha256_file(init_path)
@@ -119,6 +134,7 @@ def stage(repo: Path, manifest_path: Path) -> None:
         "deploy_sh": parsed["deploy_sh"],
         "modules": parsed["modules"],
         "core_staged": variables["CORE_STAGED"],
+        "control_plane_staged": variables["CONTROL_PLANE_STAGED"],
         "files": staged,
     }
     common.write_json(manifest_path, manifest)
@@ -133,6 +149,8 @@ def verify_bundle(bundle: Path, manifest: dict) -> None:
         "asgi.py",
         "app/main.py",
         f"{manifest['core_staged']}/__init__.py",
+        f"{manifest['control_plane_staged']}/__init__.py",
+        f"{manifest['control_plane_staged']}/models_registry.py",
     ] + [f"{manifest['core_staged']}/{name}" for name in manifest["modules"]]
     missing = [name for name in required if not (bundle / name).is_file()]
     if missing:
@@ -149,6 +167,8 @@ def verify_bundle(bundle: Path, manifest: dict) -> None:
 def probe_script(modules: list[str]) -> str:
     names = [
         "padiem_ai_core",
+        "padiem_control_plane",
+        "padiem_control_plane.models_registry",
         "app.main",
         "app.b66_extraction_routing",
         "app.b66_file_intake",
@@ -158,14 +178,13 @@ def probe_script(modules: list[str]) -> str:
         f"names = {names!r}\n"
         "for name in names:\n"
         "    importlib.import_module(name)\n"
-        "import app, padiem_ai_core\n"
+        "import app, padiem_ai_core, padiem_control_plane\n"
         "root = pathlib.Path.cwd().resolve()\n"
-        "for module in (app, padiem_ai_core):\n"
+        "for module in (app, padiem_ai_core, padiem_control_plane):\n"
         "    path = pathlib.Path(module.__file__).resolve()\n"
         "    assert path.is_relative_to(root), (module.__name__, path, root)\n"
         "print('B14_IMPORT=PASS root=' + str(root))\n"
     )
-
 
 def boot(bundle: Path, manifest_path: Path, python: Path) -> None:
     common.require_root()

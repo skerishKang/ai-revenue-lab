@@ -830,7 +830,7 @@ link_b14_app() {
 # runs the installer, and a tree without that module exits on import — so the link,
 # forward or back, has to guarantee it.
 stage_b14_shared_module() {
-  local target=$1 package source root module module_source
+  local target=$1 package source root module module_source cp_package cp_source
   package="$target/padiem_ai_core"
   if [[ ! -f $package/pc_work_metrics.py ]]; then
     source=''
@@ -858,6 +858,22 @@ stage_b14_shared_module() {
     say "B14_SHARED_MODULE=$module SOURCE=$module_source"
   done
   chmod -R a+rX,go-w -- "$package" || return 1
+  # #6828: the private-registry switch imports padiem_control_plane.models_registry
+  # at boot, and the package is not otherwise in this tree. Stage the whole package
+  # so a forward link and a rollback link both import it without a host PYTHONPATH.
+  cp_package="$target/padiem_control_plane"
+  if [[ ! -f $cp_package/models_registry.py ]]; then
+    cp_source=''
+    for root in "$source_stage_dir/$resolved" "$source_stage_dir/$old" "$staged"; do
+      [[ -n $root && -f "$root/packages/padiem-control-plane/padiem_control_plane/models_registry.py" ]]         && { cp_source="$root/packages/padiem-control-plane/padiem_control_plane"; break; }
+    done
+    [[ -n $cp_source ]] || { say 'B14_CONTROL_PLANE_MISSING'; return 1; }
+    rm -rf -- "$cp_package" || return 1
+    cp -a -- "$cp_source" "$cp_package" || return 1
+    find "$cp_package" -name '__pycache__' -type d -prune -exec rm -rf {} + 2>/dev/null || true
+    say "B14_CONTROL_PLANE=$cp_source"
+  fi
+  chmod -R a+rX,go-w -- "$cp_package" || return 1
 }
 
 b14_rollback_source() {  # The newest thing that is provably the previous code, or nothing.
