@@ -57,6 +57,7 @@ from app.pilot.provider_timeout_diagnostics import log_gateway_deadline
 from app.pilot.b14_timeout_policy import (
     DEFAULT_CHAIN_BUDGET_SECONDS,
     GATEWAY_WALL_SECONDS,
+    final_completed_attempt,
     get_timeout_policy,
 )
 from app.pilot.registry import get_registry
@@ -1163,8 +1164,11 @@ async def _handle_alpha_chat(
             attempt_timeout = min(timeout_policy.attempt_seconds, remaining)
             chain_is_limiting_attempt = remaining <= timeout_policy.attempt_seconds
             try:
+                # #7156: the last candidate has no fallback after it, so its
+                # completed answer is not cut at the streaming first-byte bound.
                 async with asyncio.timeout(attempt_timeout):
-                    response_data = await _invoke_upstream(current)
+                    with final_completed_attempt(idx == len(candidates) - 1):
+                        response_data = await _invoke_upstream(current)
             except TimeoutError as exc:
                 # Provider helpers mark first-byte/stream-idle timeouts. The
                 # gateway supplies the fixed attempt-total or chain-budget
