@@ -571,3 +571,109 @@ async def account_delete(request) -> JSONResponse:
 
 async def shared_account_delete(request) -> JSONResponse:
     return await _account_delete(request, delete_all_services=True)
+
+
+_PASSWORD_RPC_DELETE_PATH = "/internal/account-delete"
+_PRODUCT_USER_RE = re.compile(r"usr_[A-Za-z0-9_-]{1,79}")
+
+
+async def chat_account_delete_rpc(request) -> JSONResponse:
+    """Signed server-to-server deletion of one Chat account.
+
+    padiem-auth calls this after its account-delete finalize step commits the
+    identity tombstone. Deleting the Chat user (and its ``password_credentials``
+    row, conversations, projects, files metadata, MCP tokens, PC links and caches)
+    matches self-service account deletion and is idempotent: an unknown product
+    user id is already deleted.
+    """
+    from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+    from .password_rpc import _RPC_BODY_LIMIT, _consume_service_id, _verify_service_proof
+
+    settings = getattr(request.app.state, "settings", None)
+    secret = getattr(settings, "password_rpc_secret", None)
+    store = getattr(request.app.state, "history_store", None)
+    db = getattr(request.app.state, "account_data_db", None)
+    if (
+        not isinstance(secret, str)
+        or len(secret) < 32
+        or store is None
+        or db is None
+        or not callable(getattr(db, "prepare", None))
+        or not callable(getattr(db, "batch", None))
+    ):
+        return JSONResponse({"error": {"code": "not_found"}}, status_code=404)
+    if request.url.path != _PASSWORD_RPC_DELETE_PATH:
+        return JSONResponse({"error": {"code": "not_found"}}, status_code=404)
+    try:
+        body = await read_bounded_request_body(request, max_bytes=_RPC_BODY_LIMIT)
+    except RequestBodyTooLarge:
+        return JSONResponse({"error": {"code": "unauthorized"}}, status_code=401)
+    verified = _verify_service_proof(
+        headers=request.headers,
+        path=_PASSWORD_RPC_DELETE_PATH,
+        body=body,
+        secret=secret,
+        now_epoch=int(time.time()),
+    )
+    if verified is None:
+        return JSONResponse({"error": {"code": "unauthorized"}}, status_code=401)
+    try:
+        if not await _consume_service_id(store, verified["service_id"], verified["at"]):
+            return JSONResponse({"error": {"code": "rpc_replay_detected"}}, status_code=409)
+    except Exception:
+        return JSONResponse({"error": {"code": "account_delete_unavailable"}}, status_code=503)
+    payload = verified["payload"]
+    if (
+        not isinstance(payload, dict)
+        or set(payload) != {"product_user_id"}
+        or not _PRODUCT_USER_RE.fullmatch(payload.get("product_user_id") or "")
+    ):
+        return JSONResponse({"error": {"code": "invalid_request"}}, status_code=400)
+    user_id = payload["product_user_id"]
+    try:
+        row = _row_to_dict(
+            await db.prepare("SELECT id, provider_subject FROM users WHERE id = ?").bind(user_id).first()
+        )
+    except Exception:
+        return JSONResponse({"error": {"code": "account_delete_unavailable"}}, status_code=503)
+
+    queue_client = getattr(request.app.state, "queue_client", None)
+    include_pc_queue_data = queue_client is None
+    if queue_client is not None:
+        pairing_store = getattr(request.app.state, "pc_device_pairing_store", None)
+        cleanup = getattr(pairing_store, "delete_account_pc_data", None)
+        try:
+            if not callable(cleanup) or await cleanup(user_id=user_id) is not True:
+                raise RuntimeError("queue account cleanup unavailable")
+        except Exception:
+            return JSONResponse({"error": {"code": "account_delete_queue_unavailable"}}, status_code=503)
+
+    if row is None:
+        return JSONResponse({"ok": True, "deleted": False, "already_deleted": True})
+
+    try:
+        link_subjects = await _account_link_subjects(db, user_id)
+        subjects = bookai_subjects(row.get("provider_subject"), link_subjects)
+        await db.batch(
+            _delete_batch(
+                db,
+                user_id,
+                include_pc_queue_data=include_pc_queue_data,
+                bookai_subjects=subjects,
+            )
+        )
+    except Exception:
+        return JSONResponse({"error": {"code": "account_delete_failed"}}, status_code=503)
+
+    await _revoke_all_canonical_sessions(request, user_id=user_id, strict=False)
+    try:
+        from .auth_validation_cache import invalidate_auth_cache
+        await invalidate_auth_cache(request, user_id=user_id)
+    except Exception:
+        pass
+    try:
+        from .pc_scope_cache import invalidate_owner_scope
+        invalidate_owner_scope(user_id)
+    except Exception:
+        pass
+    return JSONResponse({"ok": True, "deleted": True, "already_deleted": False})

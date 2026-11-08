@@ -42,6 +42,16 @@ export class AuthState {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS account_deletion_audit (
       account_id_hash TEXT PRIMARY KEY, deleted_at INTEGER NOT NULL
     )`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS identity_deletion_tombstone (
+      fingerprint TEXT PRIMARY KEY, deleted_at INTEGER NOT NULL
+    )`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS account_chat_users (
+      account_id TEXT NOT NULL, product_user_id TEXT NOT NULL,
+      PRIMARY KEY(account_id, product_user_id)
+    )`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS pending_chat_account_deletions (
+      product_user_id TEXT PRIMARY KEY, account_id_hash TEXT NOT NULL, deleted_at INTEGER NOT NULL
+    )`);
   }
 
   accountByFingerprint(fingerprint) {
@@ -52,15 +62,63 @@ export class AuthState {
     return this.sql.exec('SELECT account_id,state FROM google_accounts WHERE account_id=?', accountId).toArray()[0] || null;
   }
 
-  putAccount({ fingerprint, accountId, now = Math.floor(Date.now() / 1000) }) {
+  putAccount({ fingerprint, accountId, productUserId, now = Math.floor(Date.now() / 1000) }) {
     return this.storage.transactionSync(() => {
       if (this.sql.exec('SELECT account_id FROM account_deletion_locks WHERE account_id=? AND expires>?', accountId, now).toArray().length) throw new Error('account_deletion_in_progress');
       if (this.sql.exec('SELECT account_id FROM blocked_accounts WHERE account_id=?', accountId).toArray().length) throw new Error('account_blocked');
       this.sql.exec("INSERT INTO google_accounts(fingerprint,account_id,state) VALUES(?,?,'active') ON CONFLICT(fingerprint) DO NOTHING", fingerprint, accountId);
       const record = this.accountByFingerprint(fingerprint);
       if (!record || record.account_id !== accountId || record.state !== 'active') throw new Error('identity_conflict');
+      if (typeof productUserId === 'string' && /^usr_[A-Za-z0-9_-]{1,79}$/.test(productUserId)) {
+        this.sql.exec('INSERT INTO account_chat_users(account_id,product_user_id) VALUES(?,?) ON CONFLICT DO NOTHING', accountId, productUserId);
+      }
       return record;
     });
+  }
+
+  recordAccountChatUsers({ accountId, productUserIds }) {
+    if (typeof accountId !== 'string' || !Array.isArray(productUserIds)) return 0;
+    return this.storage.transactionSync(() => {
+      let recorded = 0;
+      for (const productUserId of productUserIds) {
+        if (typeof productUserId === 'string' && /^usr_[A-Za-z0-9_-]{1,79}$/.test(productUserId)) {
+          this.sql.exec('INSERT INTO account_chat_users(account_id,product_user_id) VALUES(?,?) ON CONFLICT DO NOTHING', accountId, productUserId);
+          recorded++;
+        }
+      }
+      return recorded;
+    });
+  }
+
+  // A deleted identity must not be re-created by an automatic login. The
+  // tombstone is keyed by the provider fingerprint (email/Google subject hash)
+  // and is removed only by an explicit sign-up.
+  identityIsDeleted({ fingerprint }) {
+    return this.sql.exec('SELECT fingerprint FROM identity_deletion_tombstone WHERE fingerprint=?', fingerprint).toArray().length === 1;
+  }
+
+  clearIdentityDeletion({ fingerprint }) {
+    this.sql.exec('DELETE FROM identity_deletion_tombstone WHERE fingerprint=?', fingerprint);
+    return true;
+  }
+
+  pendingChatAccountDeletions({ accountIdHash } = {}) {
+    if (typeof accountIdHash === 'string' && accountIdHash) {
+      return this.sql.exec(
+        'SELECT product_user_id FROM pending_chat_account_deletions WHERE account_id_hash=? ORDER BY product_user_id',
+        accountIdHash
+      ).toArray().map(row => row.product_user_id);
+    }
+    return this.sql.exec(
+      'SELECT product_user_id FROM pending_chat_account_deletions ORDER BY deleted_at, product_user_id'
+    ).toArray().map(row => row.product_user_id);
+  }
+
+  completeChatAccountDeletion({ productUserId }) {
+    return this.sql.exec(
+      'DELETE FROM pending_chat_account_deletions WHERE product_user_id=? RETURNING product_user_id',
+      productUserId
+    ).toArray().length === 1;
   }
 
   setAccountStatus({ accountId, blocked }) {
@@ -232,11 +290,29 @@ export class AuthState {
 
   finalizeAccountDeletion({ accountId, accountIdHash, lockToken, now }) {
     return this.storage.transactionSync(() => {
+      if (!/^[a-f0-9]{64}$/.test(accountIdHash ?? '')) return false;
       const lock = this.sql.exec(
         'SELECT account_id FROM account_deletion_locks WHERE account_id=? AND lock_token=? AND expires>?',
         accountId, lockToken, now
       ).toArray();
-      if (lock.length !== 1 || !/^[a-f0-9]{64}$/.test(accountIdHash ?? '')) return false;
+      if (lock.length !== 1) {
+        return this.sql.exec(
+          'SELECT account_id_hash FROM account_deletion_audit WHERE account_id_hash=?',
+          accountIdHash
+        ).toArray().length === 1 && this.sql.exec(
+          'SELECT product_user_id FROM pending_chat_account_deletions WHERE account_id_hash=?',
+          accountIdHash
+        ).toArray().length > 0;
+      }
+      this.sql.exec(
+        'INSERT INTO identity_deletion_tombstone(fingerprint,deleted_at) SELECT fingerprint,? FROM google_accounts WHERE account_id=? ON CONFLICT(fingerprint) DO UPDATE SET deleted_at=excluded.deleted_at',
+        now, accountId
+      );
+      this.sql.exec(
+        'INSERT INTO pending_chat_account_deletions(product_user_id,account_id_hash,deleted_at) SELECT product_user_id,?,? FROM account_chat_users WHERE account_id=? ON CONFLICT(product_user_id) DO UPDATE SET account_id_hash=excluded.account_id_hash,deleted_at=excluded.deleted_at',
+        accountIdHash, now, accountId
+      );
+      this.sql.exec('DELETE FROM account_chat_users WHERE account_id=?', accountId);
       this.sql.exec('DELETE FROM google_accounts WHERE account_id=?', accountId);
       this.sql.exec('DELETE FROM auth_session_index WHERE account_id=?', accountId);
       this.sql.exec(
