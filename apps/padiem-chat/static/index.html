@@ -624,10 +624,10 @@
         <header class="util-header">
           <div>
             <p class="standalone-view-kicker" id="utilKicker">Padiem Util</p>
-            <!-- 2026-11-01: 의원3종은 /apps/council/ 로 옮겼다. 이 페이지에 남은
-                 도구는 PDF → Markdown 하나이므로 그 이름으로 시작한다. -->
-            <h2 id="utilTitle" class="standalone-view-title">PDF → Markdown</h2>
-            <p class="standalone-view-tagline" id="utilTagline">PDF·ZIP을 Markdown으로 변환·비교·다운로드</p>
+            <!-- #7172: the first screen is the UTIL page — the PDF tool is one
+                 card below, and the PDF title returns only inside that tool. -->
+            <h2 id="utilTitle" class="standalone-view-title" data-locale-key="util-title">유틸</h2>
+            <p class="standalone-view-tagline" id="utilTagline" data-locale-key="util-tagline">자주 쓰는 문서·홍보 도구 모음</p>
           </div>
         </header>
         <nav class="util-tabs" hidden aria-label="유틸 기능 선택">
