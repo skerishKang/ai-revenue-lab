@@ -251,10 +251,11 @@ def test_session_action_reuses_open_saved_conversation() -> None:
 
 def test_session_action_adds_no_new_route_or_second_store() -> None:
     app = _app_source()
-    # The detail GET template keeps exactly its two pre-existing call sites
-    # (history-row delete + openSavedConversation); the session action itself
-    # contains no fetch at all.
-    assert app.count("api/conversations/${encodeURIComponent(id)}") == 2
+    # The conversation-detail template has three call sites: history-row delete,
+    # openSavedConversation, and the #7175 owner-scoped rename/pin PATCH (same
+    # route family, same history store — no new route path or second store).
+    # The session action itself still contains no fetch at all.
+    assert app.count("api/conversations/${encodeURIComponent(id)}") == 3
     create_at = app.index('sessionBtn = document.createElement("button");')
     append_at = app.index("if (sessionBtn) card.appendChild(sessionBtn);")
     session_block = app[create_at:append_at]

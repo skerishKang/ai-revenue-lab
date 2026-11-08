@@ -89,13 +89,14 @@ const clawConversationIds=new Set(), labels=deferred();
 const id='chat_'+'a'.repeat(32);
 const fetchRecentConversations=async()=>({conversations:[{id,title:'Existing conversation'}]});
 const fetch=()=>labels.promise;
-const el=()=>({children:[],append(...v){this.children.push(...v)},appendChild(v){this.children.push(v)},
+const el=()=>({children:[],dataset:{},append(...v){this.children.push(...v)},appendChild(v){this.children.push(v)},
  replaceChildren(...v){this.children=v},addEventListener(){},setAttribute(){},querySelectorAll(){return[]}});
 const historyList=el(),historySection={},historyEmpty={};
 const document={createElement:el,createTextNode:x=>x};
 const window={};const uiT=x=>x;const sidebarActionIcon=el;
 const renderHistorySkeleton=()=>historyList.replaceChildren();
 const clearHistoryUI=()=>historyList.replaceChildren();
+const clearHistoryActionStatus=()=>{};
 const renderHistoryLoadFailed=()=>{throw Error('unexpected failure')};
 (async()=>{
 let finished=false;const pending=loadRecentConversations().then(()=>{finished=true});

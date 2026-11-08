@@ -45,7 +45,9 @@ def test_project_and_recent_history_keep_accessible_secondary_actions():
         'button.className = "recent-item project-item"',
         'manage.className = "project-manage"',
         "row.append(button, manage)",
-        'row.className = "history-row"',
+        # #7175: the row keeps the history-row cell and adds a pinned modifier;
+        # the secondary action cell (button + actions) is unchanged.
+        'row.className = pinned ? "history-row history-row-pinned" : "history-row";',
         'button.className = "recent-item history-item"',
         'actions.className = "history-actions"',
         'more.className = "history-more"',
