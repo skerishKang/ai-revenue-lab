@@ -64,7 +64,7 @@ def test_exact_modelscope_provider_identity_price_and_future_quota_unknown():
 
 def test_registered_route_manual_no_key_or_model_substitution():
     with TestClient(create_app()) as client:
-        response = client.get("/api/pilot/models")
+        response = client.get("/api/pilot/admin/models")
     assert response.status_code == 200
     routes = response.json()["registered_routes"]
     assert len(routes) == len(read_registry()["models"])

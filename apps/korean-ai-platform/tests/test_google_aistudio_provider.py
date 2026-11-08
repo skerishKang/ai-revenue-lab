@@ -70,7 +70,7 @@ def test_registered_endpoint_is_fixed_compatible_origin_and_provider_is_idempote
         register_google_provider()
     assert set(CATALOG_BY_ID) == ids
     with TestClient(create_app()) as client:
-        data=client.get("/api/pilot/models").json()
+        data=client.get("/api/pilot/admin/models").json()
     routes={v["id"]: v for v in data["registered_routes"]}
     for mid in GOOGLE:
         assert routes[mid]["provider_id"] == "google"

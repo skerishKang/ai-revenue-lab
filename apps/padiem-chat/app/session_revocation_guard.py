@@ -16,11 +16,14 @@ facts without adding a second session store:
 * the logout revokes that exact canonical session in the Control Plane;
 * every cookie-bearing request checks that canonical session and refuses the
   request when it is no longer effective-ACTIVE. The COM2 composition may reuse
-  a successful check for 30 seconds in SQLite, and reloads it shortly before it
-  expires on a background task so the reloading request does not wait for the
-  authority; logout and permission changes invalidate that shared cache before
-  returning success. An expired entry is never served, so the revocation bound
-  stays the cache TTL.
+  a successful check for a bounded window in SQLite - 300 s by default,
+  ``PADIEM_CHAT_AUTH_SESSION_CACHE_SECONDS`` (#7084) - and reloads it shortly
+  before it expires on a background task so the reloading request does not wait
+  for the authority. Every revocation event this host serves (logout, the
+  self-service password change, account deletion, admin membership and role
+  changes) deletes that entry and fences in-flight loads before returning
+  success. An expired entry is never served, so the bound for a revocation made
+  in another product stays the window.
 
 Scope and boundaries
 --------------------
