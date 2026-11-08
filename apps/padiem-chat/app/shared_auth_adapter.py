@@ -76,44 +76,54 @@ class SharedChatAuth:
     async def _ensure_canonical_sessions(self, account_id: str, user_id: str) -> None:
         """Re-establish the expired canonical sessions behind a verified request.
 
-        Fires only when the authority answers ``canonical_auth_session_not_found``
-        for a product — the one condition the bounded renewal can fix. A subject
-        whose link is gone or an authority that is unreachable leaves every
-        consumer exactly where it was: fail-closed. The subject is the
-        verifier's own claim; the product user came from the authority's
-        reverse lookup; nothing here is taken from the request.
+        Strictly an aside: the whole body is contained, so ANY exception it can
+        raise — an authority outage, a missing contract, a broken clock — is
+        journaled and dropped. The verified request's outcome never changes
+        because of the renewal. Fires only when the authority answers
+        ``canonical_auth_session_not_found`` for a product — the one condition
+        the bounded renewal can fix. A subject whose link is gone or an
+        authority that is unreachable leaves every consumer exactly where it
+        was: fail-closed. The subject is the verifier's own claim; the product
+        user came from the authority's reverse lookup; nothing here is taken
+        from the request.
         """
 
         if not self._canonical_lifetime:
             return
-        from padiem_control_plane import CanonicalSubjectRef, SubjectType
+        try:
+            from padiem_control_plane import CanonicalSubjectRef, SubjectType
 
-        started = datetime.fromtimestamp(int(self._clock()), tz=timezone.utc)
-        not_after = started + timedelta(seconds=int(self._canonical_lifetime))
-        for product in _CANONICAL_SESSION_PRODUCTS:
-            try:
-                await self._authority.resolve_current_auth_session(
-                    product_id=product, product_user_id=user_id,
-                )
-                continue
-            except Exception as exc:
-                if getattr(exc, 'code', '') != _CANONICAL_SESSION_NOT_FOUND:
+            started = datetime.fromtimestamp(int(self._clock()), tz=timezone.utc)
+            not_after = started + timedelta(seconds=int(self._canonical_lifetime))
+            for product in _CANONICAL_SESSION_PRODUCTS:
+                try:
+                    await self._authority.resolve_current_auth_session(
+                        product_id=product, product_user_id=user_id,
+                    )
+                    continue
+                except Exception as exc:
+                    if getattr(exc, 'code', '') != _CANONICAL_SESSION_NOT_FOUND:
+                        print('canonical_session_renewal product=%s outcome=%s' % (
+                            product, getattr(exc, 'code', '') or type(exc).__name__), flush=True)
+                        continue
+                try:
+                    await self._authority.establish_auth_session(
+                        product_id=product,
+                        subject=CanonicalSubjectRef(
+                            subject_type=SubjectType.USER, subject_id=account_id,
+                        ),
+                        authenticated_at=started, not_after=not_after,
+                    )
+                    print('canonical_session_renewal product=%s outcome=established' % product,
+                          flush=True)
+                except Exception as exc:
                     print('canonical_session_renewal product=%s outcome=%s' % (
                         product, getattr(exc, 'code', '') or type(exc).__name__), flush=True)
-                    continue
-            try:
-                await self._authority.establish_auth_session(
-                    product_id=product,
-                    subject=CanonicalSubjectRef(
-                        subject_type=SubjectType.USER, subject_id=account_id,
-                    ),
-                    authenticated_at=started, not_after=not_after,
-                )
-                print('canonical_session_renewal product=%s outcome=established' % product,
-                      flush=True)
-            except Exception as exc:
-                print('canonical_session_renewal product=%s outcome=%s' % (
-                    product, getattr(exc, 'code', '') or type(exc).__name__), flush=True)
+        except Exception as exc:
+            # The renewal's own scaffolding (the contract import, the clock)
+            # failing is still not the request's failure.
+            print('canonical_session_renewal product=none outcome=%s' % type(exc).__name__,
+                  flush=True)
 
     async def user_id(self, request: Any, shared_token: str | None) -> str | None:
         if shared_token is None:
@@ -169,24 +179,27 @@ class SharedChatAuth:
                 if cache is not None and isinstance(session_id, str) and session_id:
                     lookup_started = time.perf_counter()
                     try:
-                        user_id, _ = await cache.get_or_load('shared', account_id, session_id, load_link)
+                        user_id = await cache.get_or_load('shared', account_id, session_id, load_link)
                     finally:
                         record_login_timing('shared_session_result_lookup',
                                             (time.perf_counter() - lookup_started) * 1000)
-                    await self._ensure_canonical_sessions(account_id, user_id)
+                    if self._canonical_lifetime:
+                        await self._ensure_canonical_sessions(account_id, user_id)
                     return user_id
                 # Disabled caching and verifier contracts without a signed
                 # session ID fall back to the subject's own cache, or to a fresh
                 # authority lookup when even that is switched off.
                 user_id = (await load_link())[0]
-                await self._ensure_canonical_sessions(account_id, user_id)
+                if self._canonical_lifetime:
+                    await self._ensure_canonical_sessions(account_id, user_id)
                 return user_id
             link_started = time.perf_counter()
             cached = self._mapping.get(account_id)
             if cached and cached[1] > self._clock():
                 record_login_timing('shared_account_link_lookup',
                                     (time.perf_counter() - link_started) * 1000)
-                await self._ensure_canonical_sessions(account_id, cached[0])
+                if self._canonical_lifetime:
+                    await self._ensure_canonical_sessions(account_id, cached[0])
                 return cached[0]
             link_started = time.perf_counter()
             try:
