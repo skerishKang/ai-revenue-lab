@@ -544,7 +544,9 @@ def test_copy_corrections_live_in_locale_keys() -> None:
     assert 'data-locale-key="nav-connectors">앱 연결<' in INDEX
     assert "외부 서비스에 기록할 때는 항상 확인합니다." in INDEX
     assert "채트로 돌아가기" not in HELP
-    assert HELP.count("채팅으로 돌아가기") == 2
+    assert "채팅으로 돌아가기" not in HELP
+    # #7174: the guide returns through the app's own wording, not a web-page back link.
+    assert HELP.count("채팅 화면 열기") == 2
 
 
 def test_stored_conversation_hint_is_a_key_not_a_literal() -> None:

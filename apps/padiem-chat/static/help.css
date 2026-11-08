@@ -6,6 +6,12 @@
    document carries a width the 390px viewport cannot hold. */
 
 .chat-help-body {
+  --help-navy: #355977;
+  --help-navy-line: #294b64;
+  --help-navy-hover: #2e4d67;
+  --help-navy-soft: rgba(53, 89, 119, .08);
+  --help-navy-line-soft: rgba(53, 89, 119, .22);
+  --help-focus: #6a9abc;
   margin: 0;
   min-height: 100vh;
   color: var(--text, #19191d);
@@ -13,6 +19,11 @@
   font-size: 16px;
   line-height: 1.7;
   overflow-wrap: anywhere;
+}
+.chat-help-body a:focus-visible,
+.chat-help-body button:focus-visible {
+  outline: 3px solid var(--help-focus);
+  outline-offset: 2px;
 }
 
 .chat-help-skip {
@@ -34,7 +45,7 @@
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  padding: 14px clamp(16px, 4vw, 40px);
+  padding: 16px clamp(18px, 4vw, 40px);
   background: var(--panel, #fff);
   border-bottom: 1px solid var(--line, #e3e3e9);
 }
@@ -46,7 +57,7 @@
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  background: var(--accent, #6557e8);
+  background: var(--help-navy);
   color: #fff;
   font-weight: 700;
 }
@@ -56,49 +67,75 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 7px;
   min-height: 44px;
-  padding: 8px 14px;
-  border: 1px solid var(--line, #e3e3e9);
+  padding: 8px 16px;
+  border: 1px solid var(--help-navy-line);
   border-radius: 999px;
-  background: var(--panel, #fff);
-  color: var(--text, #19191d);
+  background: var(--help-navy);
+  color: #fff;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 650;
 }
-.chat-help-back:hover { border-color: var(--accent, #6557e8); color: var(--accent-strong, #5546d6); }
+.chat-help-back:hover {
+  background: var(--help-navy-hover);
+  border-color: var(--help-navy-hover);
+  color: #fff;
+}
 
 .chat-help-main {
   max-width: 760px;
   margin: 0 auto;
-  padding: 22px clamp(16px, 4vw, 40px) 60px;
+  padding: 26px clamp(16px, 4vw, 40px) 64px;
 }
 
-.chat-help-main h1 { margin: 0 0 8px; font-size: 28px; line-height: 1.3; }
-.chat-help-lede { margin: 0 0 20px; color: var(--muted, #6f7079); }
+.chat-help-main h1 {
+  margin: 0 0 10px;
+  color: #17212a;
+  font-size: 30px;
+  line-height: 1.28;
+  letter-spacing: -.03em;
+}
+.chat-help-lede { margin: 0 0 22px; color: var(--muted, #6f7079); }
 
 .chat-help-policy {
-  padding: 16px clamp(14px, 3vw, 20px);
-  border: 1px solid var(--line, #e3e3e9);
+  padding: 18px clamp(14px, 3vw, 22px);
+  border: 1px solid var(--help-navy-line-soft);
   border-radius: var(--radius-md, 16px);
-  background: var(--accent-soft, #efedff);
+  background: var(--help-navy-soft);
 }
 .chat-help-policy h2 { margin: 0 0 8px; font-size: 19px; }
 .chat-help-policy p { margin: 0 0 10px; }
 .chat-help-policy p:last-child { margin-bottom: 0; }
 
-.chat-help-toc { margin: 20px 0 8px; }
-.chat-help-toc ul { margin: 0; padding: 0; list-style: none; }
+.chat-help-toc {
+  margin: 20px 0 10px;
+  padding: 18px clamp(14px, 3vw, 22px);
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: var(--radius-md, 16px);
+  background: var(--panel, #fff);
+}
+.chat-help-toc-title { margin: 0 0 10px; color: #17212a; font-size: 19px; line-height: 1.35; }
+.chat-help-toc ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
 .chat-help-toc li { margin: 0; }
 .chat-help-toc a {
   display: flex;
   align-items: center;
   min-height: 44px;
-  padding: 0 12px;
-  border-radius: 12px;
-  color: var(--accent-strong, #5546d6);
+  padding: 0 10px;
+  border-radius: 10px;
+  color: var(--help-navy);
   text-decoration: none;
+  font-weight: 600;
 }
-.chat-help-toc a:hover { text-decoration: underline; }
+.chat-help-toc a:hover { background: var(--help-navy-soft); text-decoration: underline; }
 
 .chat-help-section {
   margin: 22px 0;
@@ -106,9 +143,10 @@
   border: 1px solid var(--line, #e3e3e9);
   border-radius: var(--radius-md, 16px);
   background: var(--panel, #fff);
+  box-shadow: 0 10px 30px rgba(23, 33, 42, .04);
 }
-.chat-help-section h2 { margin: 0 0 10px; font-size: 21px; line-height: 1.35; }
-.chat-help-section h3 { margin: 18px 0 6px; font-size: 17px; }
+.chat-help-section h2 { margin: 0 0 10px; color: #17212a; font-size: 21px; line-height: 1.35; }
+.chat-help-section h3 { margin: 18px 0 6px; color: var(--help-navy); font-size: 17px; }
 .chat-help-section p { margin: 0 0 12px; }
 .chat-help-section p:last-child { margin-bottom: 0; }
 
@@ -143,16 +181,17 @@
   align-items: center;
   min-height: 44px;
   padding: 8px 14px;
-  border: 1px solid var(--accent, #6557e8);
+  border: 1px solid var(--help-navy-line-soft);
   border-radius: 999px;
-  background: var(--accent-soft, #efedff);
-  color: var(--accent-strong, #5546d6);
+  background: rgba(255, 255, 255, .58);
+  color: var(--help-navy);
   text-decoration: none;
   font-weight: 600;
 }
 .chat-help-say:hover,
 .chat-help-say:focus-visible {
-  background: var(--accent, #6557e8);
+  background: var(--help-navy);
+  border-color: var(--help-navy-line);
   color: #fff;
 }
 
@@ -169,7 +208,7 @@
 .chat-help-step h3 {
   margin: 0 0 6px;
   font-size: 17px;
-  color: var(--accent-strong, #5546d6);
+  color: var(--help-navy);
 }
 .chat-help-command {
   margin: 12px 0;
@@ -188,7 +227,7 @@
   font-size: 14px;
 }
 .chat-install-body .chat-help-policy a {
-  color: var(--accent-strong, #5546d6);
+  color: var(--help-navy);
   font-weight: 600;
 }
 /* An inline link inside prose still has to be a 44px press target. inline-flex
@@ -205,7 +244,7 @@
 }
 .chat-install-body .chat-help-toc a { min-width: 44px; }
 
-.chat-help-faq h3 { color: var(--accent-strong, #5546d6); }
+.chat-help-faq h3 { color: var(--help-navy); }
 
 .chat-help-foot {
   margin: 26px 0 0;
@@ -216,12 +255,13 @@
   align-items: center;
   min-height: 44px;
   padding: 0 4px;
-  color: var(--accent-strong, #5546d6);
+  color: var(--help-navy);
 }
 
 @media (max-width: 620px) {
-  .chat-help-main h1 { font-size: 24px; }
+  .chat-help-main h1 { font-size: 26px; }
   .chat-help-section h2 { font-size: 19px; }
+  .chat-help-toc ul { grid-template-columns: 1fr; }
   .chat-help-says { flex-direction: column; }
   .chat-help-says li { width: 100%; }
   .chat-help-say { width: 100%; justify-content: flex-start; }
