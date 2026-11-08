@@ -3,6 +3,8 @@
 Routes:
 - GET  /api/pilot/health      — Pilot health check (multi-provider if configured)
 - GET  /api/pilot/models      — List pilot-available models
+- GET  /api/pilot/admin/health — Proven-caller health detail (server-to-server)
+- GET  /api/pilot/admin/models — Proven-caller model authority (server-to-server)
 - POST /api/pilot/v1/chat/completions — Chat completions via BYOK with routing
 
 Supports multi-provider registry and legacy single-provider fallback.
@@ -1849,10 +1851,55 @@ async def pilot_chat_completions(
         )
 
 
+async def _internal_authority_denial(request: Request) -> JSONResponse | None:
+    """Refuse an unproven caller of the model-authority detail (#6828 stage 2).
+
+    The detail routes name providers and models. They are server-to-server
+    surfaces for the owner's release tooling, so they reuse the existing B14
+    caller proof instead of introducing a second authority. A GET request has
+    no body, so the proof binds to the empty body and to its timestamp.
+    """
+    request_id = f"b14req_{uuid.uuid4().hex[:12]}"
+    from .service_proof import service_proof_denial, service_proof_message
+
+    denial = await service_proof_denial(request, await request.body())
+    if denial is None:
+        return None
+    return JSONResponse(
+        status_code=denial.status_code,
+        content={
+            "error": {
+                "code": denial.code,
+                "message": service_proof_message(),
+                "request_id": request_id,
+            }
+        },
+    )
+
+
+async def pilot_admin_health(request: Request):
+    """Full health detail for a proven caller (provider ids and key presence)."""
+    denial = await _internal_authority_denial(request)
+    if denial is not None:
+        return denial
+    return await pilot_health(request)
+
+
+async def pilot_admin_models(request: Request):
+    """Full model authority for a proven caller (catalog and registered routes)."""
+    denial = await _internal_authority_denial(request)
+    if denial is not None:
+        return denial
+    return await pilot_models(request)
+
+
 router = Router(
     routes=[
         Route("/health", pilot_health, methods=["GET"]),
         Route("/models", pilot_models, methods=["GET"]),
+        # #6828 stage 2: identity-bearing detail, proven callers only.
+        Route("/admin/health", pilot_admin_health, methods=["GET"]),
+        Route("/admin/models", pilot_admin_models, methods=["GET"]),
         Route("/router/resolve", pilot_router_resolve, methods=["POST"]),
         Route("/v1/chat/completions", pilot_chat_completions, methods=["POST"]),
     ]
