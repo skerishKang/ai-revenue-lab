@@ -41,11 +41,15 @@ def test_meeting_transcript_height_is_capped_for_the_first_screen() -> None:
 def test_util_header_joins_the_shared_page_title_contract() -> None:
     html = (ROOT / "static/index.html").read_text(encoding="utf-8")
     header = html[html.index('class="util-header"') : html.index("</header>", html.index('class="util-header"'))]
-    # The util page now starts on the one utility it still hosts.
+    # #7172: the page heading is the UTIL first screen; the one tool's name
+    # (PDF → Markdown) belongs to its card below, and comes back when the
+    # tool itself is open.
     assert 'class="standalone-view-kicker" id="utilKicker"' in header and "Padiem Util" in header
-    assert "PDF → Markdown" in header
+    assert "PDF → Markdown" not in header
     assert 'class="standalone-view-title"' in header
+    assert 'data-locale-key="util-title"' in header and ">유틸</h2>" in header
     assert 'class="standalone-view-tagline" id="utilTagline"' in header
+    assert "자주 쓰는 문서·홍보 도구 모음" in header
     STANDALONE_CSS = (ROOT / "static/standalone-views.css").read_text(encoding="utf-8")
     title_list = STANDALONE_CSS[STANDALONE_CSS.index(".app-shell:is([data-state=\"meeting\"],") : STANDALONE_CSS.index("font-weight: 770")]
     assert '[data-state="util"]' in title_list
@@ -56,8 +60,15 @@ def test_util_header_joins_the_shared_page_title_contract() -> None:
 
 
 def test_the_primary_action_matches_the_chat_claw_send_color() -> None:
-    glass_block = UTIL_CSS[UTIL_CSS.index("#5608: the primary action color matches"):]
-    assert 'html[data-theme="padiem-glass"] .pdfmd-btn-primary {' in glass_block
-    assert "background: #355977;" in glass_block
+    # #7162 absorbed #5608's glass-only navy into the app-wide shared primary
+    # rule — the same #355977 send-button colors, now in every theme.
+    polish = (ROOT / "static/padiem-chat-ui-polish.css").read_text(encoding="utf-8")
+    assert ".claw-inbox-primary, .util-tool-open, .pdfmd-btn-primary, #meetingStart) {" in polish
+    rule = polish[polish.index(".claw-inbox-primary, .util-tool-open"):]
+    rule = rule[:rule.index("}")]
+    assert "background: #355977;" in rule
+    assert "color: #fff;" in rule
+    # The glass-only copy is gone; one rule carries the decision.
+    assert "html[data-theme=\"padiem-glass\"] .pdfmd-btn-primary {" not in UTIL_CSS
     h2_rule = UTIL_CSS[UTIL_CSS.index(".util-header h2") : UTIL_CSS.index(".util-header .standalone-view-tagline")]
     assert "font-size" not in h2_rule
