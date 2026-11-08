@@ -176,6 +176,22 @@ class UtilInAppScreens(unittest.TestCase):
             assert page.locator("#utilQuoteClaw").is_visible()
         self.run_page(checks)
 
+    def test_leaving_the_util_page_drops_its_fragment(self):
+        """A tool's #util/<tool> fragment must not ride another screen's URL."""
+        def checks(page, _calls):
+            self.open_util(page)
+            page.click('[data-util-tool="pdfmd"]')
+            page.wait_for_selector("#utilPdfmdPanel:not([hidden])")
+            page.click("#newChatButton")
+            page.wait_for_timeout(400)
+            assert not page.evaluate("() => location.hash").startswith("#util"), (
+                "the util fragment is cleared when the page leaves for home")
+            # Re-entering the util page starts at the first screen again.
+            self.open_util(page)
+            assert page.locator("#utilTitle").inner_text().strip() == "유틸"
+            assert page.locator("#utilBack").is_hidden()
+        self.run_page(checks)
+
     def test_a_phone_drawer_row_opens_the_screen_and_closes_the_drawer(self):
         def checks(page, _calls):
             page.click("#mobileMenu")
