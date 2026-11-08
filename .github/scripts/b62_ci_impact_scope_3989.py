@@ -3,10 +3,12 @@
 
 Exact static-only edits select static JavaScript parse and DOM/origin/privacy
 audits, with separate path-scoped browser QA; unchanged Python/Worker/Core
-regression and vendoring jobs are skipped. Test-only edits run exactly the
-changed Chat pytest modules; B14-only edits retain Chat pytest and Worker
-packaging but skip unchanged real Worker boots; source/runtime changes retain
-their full applicable gates. Unknown event/API/changes => full.
+regression and vendoring jobs are skipped. Chat tests-tree edits -- test
+modules, helpers those tests import, and plain docs -- run exactly the affected
+modules; a helper nothing imports or conftest.py falls back to the full suite.
+B14-only edits retain Chat pytest and Worker packaging but skip unchanged real
+Worker boots; source/runtime changes retain their full applicable gates.
+Unknown event/API/changes => full.
 """
 from __future__ import annotations
 
@@ -42,6 +44,13 @@ _UI_MIXED_STATIC = re.compile(
     r"apps/padiem-chat/static/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.(?:css|html|js)"
 )
 _UI_MIXED_TEST = re.compile(r"apps/padiem-chat/tests/test_[A-Za-z0-9_]+\.py")
+# #7186: a flat member of Chat's tests tree: a test module, an imported helper
+# or plain documentation. A helper is not runnable on its own, so the changed
+# set is covered by the flat tests that import it. A doc's filename carries no
+# import contract, so it does not have to be an ASCII identifier.
+_TESTS_TREE_PY = re.compile(r"apps/padiem-chat/tests/[A-Za-z0-9_]+\.py")
+_TESTS_TREE_DOC = re.compile(r"apps/padiem-chat/tests/[^/\\]+\.md")
+_TESTS_TREE_CONFTEST = "apps/padiem-chat/tests/conftest.py"
 
 
 def _is_static_segment(node: ast.AST) -> bool:
@@ -158,17 +167,108 @@ def ui_mixed_test_modules(files: object) -> tuple[str, ...]:
     return tuple(sorted(modules)) if static_count and modules else ()
 
 
-def tests_only_modules(files: object) -> tuple[str, ...]:
-    """Safe relative pytest arguments for a strictly test-module-only change.
+def _is_tests_tree_file(path: str) -> bool:
+    """A flat file directly under Chat's tests tree (helpers and docs included)."""
+    return bool(_TESTS_TREE_PY.fullmatch(path) or _TESTS_TREE_DOC.fullmatch(path))
 
-    The scope test above proves every row is a flat ``tests/test_*.py`` module;
-    this helper re-proves the same shapes so a malformed API listing can never
-    turn into a silently empty pytest invocation. An empty tuple means the
-    change set proved no runnable module and the caller must fail closed.
+
+def _is_tests_tree_path(path: str) -> bool:
+    """A flat file directly under Chat's tests tree that a narrow lane can cover.
+
+    ``conftest.py`` is loaded by pytest around every module in the directory, so
+    no reduced module list covers its effect; it stays on the full path.
+    """
+    return _is_tests_tree_file(path) and path != _TESTS_TREE_CONFTEST
+
+
+def _is_tests_tree_change(files: object) -> bool:
+    """True when every changed path is a flat Chat tests-tree file.
+
+    Shape only, mirroring the ``impact_scope`` tests-tree branch, so main() can
+    settle the lane and the runner together. Whether a runnable module set
+    exists is ``tests_only_modules``.
+    """
+    if not isinstance(files, list) or not 0 < len(files) <= MAX_FILES:
+        return False
+    paths: list[str] = []
+    for row in files:
+        if not isinstance(row, dict) or row.get("status") not in {"added", "modified"}:
+            return False
+        path = row.get("filename")
+        if not isinstance(path, str) or "\\" in path or ".." in Path(path).parts:
+            return False
+        if not _is_tests_tree_file(path):
+            return False
+        paths.append(path)
+    return any(path.endswith(".py") for path in paths)
+
+
+def _imported_module_names(tree: ast.AST) -> frozenset[str]:
+    """Module names a test reads: static imports plus literal dynamic imports.
+
+    The dynamic forms are the ones the repository uses; a caller built from a
+    computed string cannot be proven and is not claimed here.
+    """
+    names: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                names.add(alias.name.split(".")[0])
+        elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+            names.add(node.module.split(".")[0])
+        elif isinstance(node, ast.Call):
+            func = node.func
+            target = func.attr if isinstance(func, ast.Attribute) else (
+                func.id if isinstance(func, ast.Name) else "")
+            if target in {"import_module", "__import__"} and node.args:
+                argument = node.args[0]
+                if isinstance(argument, ast.Constant) and isinstance(argument.value, str):
+                    names.add(argument.value.split(".")[0])
+    return frozenset(names)
+
+
+def test_module_importers(module_name: str, repo_root: Path | None = None) -> tuple[str, ...]:
+    """Flat ``tests/test_*.py`` modules that import ``module_name`` directly.
+
+    Transitive importers are deliberately not followed: an unchanged helper
+    between the change and the tests means the module list is not proven, and
+    the caller keeps the full Chat suite instead of guessing.
+    """
+    root = Path(repo_root) if repo_root is not None else REPO_ROOT
+    tests_dir = root / "apps/padiem-chat/tests"
+    try:
+        candidates = sorted(tests_dir.glob("test_*.py"))
+    except OSError:
+        return ()
+    importers: list[str] = []
+    for path in candidates:
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, ValueError):
+            continue
+        if module_name in _imported_module_names(tree):
+            if not re.fullmatch(r"test_[A-Za-z0-9_]+\.py", path.name):
+                # The reduced lane only accepts this exact module shape; never
+                # silently drop a consumer it cannot name.
+                return ()
+            importers.append(f"tests/{path.name}")
+    return tuple(importers)
+
+
+def tests_only_modules(files: object, repo_root: Path | None = None) -> tuple[str, ...]:
+    """Safe relative pytest arguments for a Chat tests-tree-only change.
+
+    A changed ``test_*.py`` runs itself. A changed helper runs every flat test
+    module that imports it. A helper no test imports (or conftest.py) cannot be
+    covered by a reduced lane, so the result is empty and the caller fails
+    closed to the full Chat suite. ``.md`` files carry no executable contract
+    and are ignored. The shape is re-proven here so a malformed API listing can
+    never turn into a silently wrong pytest invocation.
     """
     if not isinstance(files, list) or not 1 <= len(files) <= MAX_FILES:
         return ()
-    modules: list[str] = []
+    modules: set[str] = set()
+    helpers: set[str] = set()
     seen: set[str] = set()
     for row in files:
         if not isinstance(row, dict) or row.get("status") not in {"added", "modified"}:
@@ -176,10 +276,23 @@ def tests_only_modules(files: object) -> tuple[str, ...]:
         path = row.get("filename")
         if not isinstance(path, str) or path in seen or "\\" in path or ".." in Path(path).parts:
             return ()
-        if not _UI_MIXED_TEST.fullmatch(path):
+        if not _is_tests_tree_path(path):
             return ()
         seen.add(path)
-        modules.append(path.removeprefix("apps/padiem-chat/"))
+        if path.endswith(".md"):
+            continue
+        name = path.rsplit("/", 1)[-1]
+        if name.startswith("test_"):
+            modules.add(f"tests/{name}")
+        else:
+            helpers.add(name[: -len(".py")])
+    for helper in sorted(helpers):
+        importers = test_module_importers(helper, repo_root)
+        if not importers:
+            return ()
+        modules.update(importers)
+        if len(modules) > MAX_FILES:
+            return ()
     return tuple(sorted(modules))
 
 
@@ -246,12 +359,16 @@ def impact_scope(files: object, repo_root: Path | None = None) -> str:
         return STATIC_ONLY
     if ui_mixed_test_modules(files):
         return UI_MIXED
-    # #3989: strict test-module-only modifications cannot change the bundled
-    # Worker code or its locked Pyodide dependencies. Run every B62 Chat test,
-    # keep Worker bundling/lock checks, but omit four unchanged live runtimes.
-    # Do NOT classify conftest/helpers, Worker probe entrypoints, or mixed changes.
-    if all(re.fullmatch(r"apps/padiem-chat/tests/test_[^/]+\.py", p) for p in paths):
-        return TESTS_ONLY
+    # #3989/#7186: a Chat tests-tree-only change cannot alter the bundled
+    # Worker code or its locked Pyodide dependencies. Run exactly the affected
+    # test modules -- changed test modules, plus the tests that import a
+    # changed helper. A helper with no importing test, and conftest.py, prove
+    # no reduced set; they must not drift into CHAT_ONLY, which runs no pytest
+    # either, so the answer is the fail-closed full path.
+    if any(path.endswith(".py") for path in paths) and all(
+        _is_tests_tree_file(path) for path in paths
+    ):
+        return TESTS_ONLY if tests_only_modules(files, repo_root) else FULL
     # A B62-only dependency/Worker configuration change can alter the Core
     # execution environment without editing Core sources. Never fast-route it.
     source_roots = ("apps/padiem-chat/app/", "apps/padiem-chat/tests/")
@@ -409,13 +526,19 @@ def main() -> None:
             if event_name != "pull_request" or type(count) is not int or count != len(files):
                 scope = FULL
         ui_tests = ui_mixed_test_modules(files) if scope == UI_MIXED else ()
-        if scope == TESTS_ONLY:
-            # #6810: a tests-only PR used to run no pytest module at all.
-            # Re-prove the exact module list; an empty result never passes a
-            # reduced lane claim, so fall back to the fail-closed FULL path.
-            tests_only_tests = tests_only_modules(files)
-            if not tests_only_tests:
+        if _is_tests_tree_change(files):
+            # #6810: a tests-only PR used to run no pytest module at all; the
+            # affected modules are now the load-bearing check.
+            # #7186: the same proof decides the lane and the runner. When no
+            # runnable set exists (helper nothing imports, conftest.py), the
+            # reduced lane is not evidence and the full Chat suite must run --
+            # the flag below is what selects that job.
+            tests_only_tests = tests_only_modules(files, REPO_ROOT)
+            if tests_only_tests:
+                scope = TESTS_ONLY
+            else:
                 scope = FULL
+                chat_source = True
         if scope == CORE_FOCUSED_ONLY:
             plan = core_focused_plan(REPO_ROOT, files, "b62")
             if plan is None:
