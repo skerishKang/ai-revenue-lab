@@ -274,7 +274,6 @@
             </div>
           </section>
           <section class="settings-section" aria-labelledby="languageTitle">
-            <p class="settings-label" data-locale-key="language">언어</p>
             <h3 id="languageTitle" data-locale-key="language-choice">언어</h3>
             <div class="language-picker" role="group" data-locale-aria-label="language-picker" aria-label="언어 선택" id="languagePicker">
               <button type="button" class="language-option" data-locale-value="ko" aria-pressed="true">KR</button>
@@ -287,122 +286,15 @@
             <button class="settings-action" id="clawPushToggle" type="button" aria-pressed="false" data-locale-key="claw-push-enable">이 기기에서 알림 받기</button>
             <p class="claw-push-status" id="clawPushStatus" aria-live="polite" aria-atomic="true"></p>
           </section>
-          <section class="settings-section pc-delegation-settings" id="pcDelegationSettings" aria-labelledby="pcDelegationTitle">
-            <h3 id="pcDelegationTitle" data-locale-key="pc-delegation-title">PC에 맡길 일</h3>
-            <p data-locale-key="pc-delegation-help">요청한 일 중 정한 폴더와 행동에 맞는 작업을 맡깁니다. 파일이나 웹 안의 지시가 작업 허락이 되지는 않습니다.</p>
-            <p class="pc-delegation-send-note" data-locale-key="pc-delegation-send-note">메일·메시지 보내기와 외부 서비스에 기록할 때는 항상 확인합니다.</p>
-            <p id="pcDelegationStatus" class="pc-delegation-status" role="status" aria-live="polite"></p>
-            <div class="pc-delegation-toolbar">
-              <button type="button" class="settings-action" id="pcDelegationRefresh" data-locale-key="pc-delegation-refresh">목록 새로 보기</button>
-            </div>
-            <ul class="pc-delegation-list" id="pcDelegationList" data-locale-aria-label="pc-delegation-list" aria-label="현재 맡긴 일"></ul>
-            <div class="pc-delegation-editor" id="pcDelegationEditor">
-              <label for="pcDelegationDevice" data-locale-key="pc-delegation-device">어느 PC인가요?</label>
-              <select id="pcDelegationDevice" disabled></select>
-              <label for="pcDelegationFolder" data-locale-key="pc-delegation-folder">어느 폴더인가요?</label>
-              <input id="pcDelegationFolder" type="text" autocomplete="off" spellcheck="false" data-locale-placeholder="pc-delegation-folder-placeholder" placeholder="예: C:/Users/me/Documents" aria-describedby="pcDelegationFolderHelp" disabled />
-              <small id="pcDelegationFolderHelp" data-locale-key="pc-delegation-folder-help">이 폴더와 그 안의 폴더에 적용합니다. 이동은 출발·도착 폴더가 모두 범위 안이어야 합니다.</small>
-              <fieldset id="pcDelegationActions" disabled>
-                <legend data-locale-key="pc-delegation-actions">어떤 일을 맡길까요?</legend>
-                <label><input id="pcDelegationWrite" type="checkbox" value="write" /><span data-locale-key="pc-delegation-write">파일 저장·수정</span></label>
-                <label><input id="pcDelegationMove" type="checkbox" value="move" /><span data-locale-key="pc-delegation-move">파일 정리·이동</span></label>
-                <label><input id="pcDelegationDelete" type="checkbox" value="delete" /><span data-locale-key="pc-delegation-delete">파일 삭제</span></label>
-              </fieldset>
-              <label for="pcDelegationMode" data-locale-key="pc-delegation-mode">어떻게 처리할까요?</label>
-              <select id="pcDelegationMode" disabled>
-                <option value="allow" data-locale-key="pc-delegation-allow">이 범위에서는 다시 묻지 않기</option>
-                <option value="ask" data-locale-key="pc-delegation-ask">항상 물어보기</option>
-              </select>
-              <button type="button" class="settings-action" id="pcDelegationAdd" data-locale-key="pc-delegation-add" disabled>규칙 저장</button>
-            </div>
-          </section>
-          <section class="settings-section mcp-gateway-settings" id="mcpGatewaySettings" aria-labelledby="mcpGatewayTitle">
-            <h3 id="mcpGatewayTitle" data-locale-key="mcp-settings-title">외부 AI 연결</h3>
-            <p data-locale-key="mcp-settings-help">MCP를 지원하는 외부 AI에 연결한 PC의 작업을 맡깁니다. PC에서 허용한 범위와 ‘PC에 맡길 일’ 설정이 그대로 적용됩니다.</p>
-            <label for="mcpGatewayEndpoint" data-locale-key="mcp-settings-endpoint">MCP 연결 주소</label>
-            <input id="mcpGatewayEndpoint" type="url" readonly spellcheck="false" />
-            <p data-locale-key="mcp-settings-client-help">개인 토큰(Bearer)을 지원하는 AI 도구에서 연결 주소와 토큰을 입력하세요.</p>
-            <p id="mcpGatewayStatus" class="mcp-settings-status" role="status" aria-live="polite"></p>
-            <button type="button" class="settings-action" id="mcpGatewayRefresh" data-locale-key="mcp-settings-refresh">목록 새로 보기</button>
-            <h4 data-locale-key="mcp-settings-connections">발급한 연결</h4>
-            <ul class="mcp-settings-list" id="mcpGatewayList" data-locale-aria-label="mcp-settings-connections" aria-label="발급한 연결"></ul>
-            <div class="mcp-settings-editor" id="mcpGatewayEditor">
-              <label for="mcpGatewayName" data-locale-key="mcp-settings-name">어떤 AI에서 쓸까요?</label>
-              <input id="mcpGatewayName" type="text" autocomplete="off" data-locale-placeholder="mcp-settings-name-placeholder" placeholder="예: 내 개발 도구" disabled />
-              <label for="mcpGatewayDevice" data-locale-key="mcp-settings-device">연결할 PC</label>
-              <select id="mcpGatewayDevice" disabled></select>
-              <button type="button" class="settings-action" id="mcpGatewayIssue" data-locale-key="mcp-settings-issue" disabled>개인 토큰 발급</button>
-            </div>
-            <div class="mcp-settings-issued" id="mcpGatewayIssued" hidden>
-              <label for="mcpGatewayToken" data-locale-key="mcp-settings-token">새 개인 토큰</label>
-              <input id="mcpGatewayToken" type="text" readonly autocomplete="off" spellcheck="false" aria-describedby="mcpGatewayTokenHelp" />
-              <p id="mcpGatewayTokenHelp" data-locale-key="mcp-settings-once">이 토큰은 지금 한 번만 볼 수 있습니다. 설정을 닫거나 새로 고치면 다시 표시하지 않습니다. 사용할 AI 도구에 복사해 주세요.</p>
-              <div class="mcp-settings-actions">
-                <button type="button" class="settings-action" id="mcpGatewayCopy" data-locale-key="mcp-settings-copy">토큰 복사</button>
-                <button type="button" class="settings-action" id="mcpGatewayHide" data-locale-key="mcp-settings-hide">복사했어요 · 숨기기</button>
-              </div>
-            </div>
-            <h4 data-locale-key="mcp-settings-approvals">확인이 필요한 작업</h4>
-            <p data-locale-key="mcp-settings-approval-help">아래 PC와 파일 경로, 저장할 내용 등 작업 전체를 확인해 주세요. 승인은 표시된 작업 한 번에만 적용됩니다.</p>
-            <ul class="mcp-settings-list" id="mcpGatewayApprovals" data-locale-aria-label="mcp-settings-approvals" aria-label="확인이 필요한 작업"></ul>
-            <div id="mcpGatewayManagedBlock" hidden>
-              <h4 data-locale-key="pc-managed-title">PC 연결</h4>
-              <p data-locale-key="pc-managed-note">관리 PC에서는 관리자가 SYSTEM 권한으로 명령을 실행할 수 있습니다.</p>
-              <p id="mcpGatewayManagedNotReady" class="mcp-settings-status" role="status" hidden data-locale-key="pc-managed-not-ready">관리 PC 표시를 아직 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.</p>
-              <ul class="mcp-settings-list" id="mcpGatewayManagedList" data-locale-aria-label="pc-managed-list" aria-label="PC 연결"></ul>
-            </div>
-          </section>
-          <section class="settings-section" aria-labelledby="adminSettingsTitle" id="adminSettingsSection" hidden>
-            <p class="settings-label" data-locale-key="admin-section">관리자</p>
-            <h3 id="adminSettingsTitle" data-locale-key="admin-settings-title">관리자</h3>
-            <a class="settings-action settings-link" id="adminHubLink" href="./admin" data-locale-aria-label="admin-hub-aria" data-locale-title="admin-hub-aria" aria-label="총관리자 페이지" title="총관리자 페이지" hidden><span aria-hidden="true">◈</span><span data-locale-key="admin-hub">총관리자</span></a>
-          </section>
-          <section class="settings-section" aria-labelledby="dataSettingsTitle" id="dataSettingsSection">
-            <p class="settings-label" data-locale-key="data-section">데이터</p>
-            <h3 id="dataSettingsTitle" data-locale-key="data-settings-title">데이터 관리</h3>
-            <div class="settings-actions" id="dataSettingsActions"></div>
-          </section>
-          <section class="settings-section" aria-labelledby="accountTitle" id="accountSettingsSection" hidden>
-            <p class="settings-label" data-locale-key="account-section">계정</p>
-            <h3 id="accountTitle" data-locale-key="account-title">계정</h3>
-            <div class="settings-actions" id="accountPasswordActions" hidden>
-              <button class="settings-action" id="passwordChangeOpen" type="button" data-locale-key="password-change-open">비밀번호 변경</button>
-            </div>
-            <div class="settings-actions" id="accountDeleteActions" hidden>
-              <button class="settings-action settings-action-danger" id="accountDeleteOpen" type="button" data-locale-key="account-delete-open">계정 탈퇴</button>
-              <button class="settings-action settings-action-danger" id="accountSharedDeleteOpen" type="button" data-locale-key="account-shared-delete-open">모든 서비스에서 탈퇴</button>
-            </div>
-            <div class="settings-actions settings-delete-confirm" id="accountDeleteConfirm" hidden>
-              <p class="settings-delete-description" data-locale-key="account-delete-description"></p>
-              <input class="settings-delete-input" id="accountDeleteConfirmEmail" type="email" autocomplete="off" spellcheck="false" data-locale-placeholder="account-delete-confirm-placeholder">
-              <button class="settings-action settings-action-danger" id="accountDeleteButton" type="button" data-locale-key="account-delete-button" disabled>영구 탈퇴</button>
-              <p class="auth-error" id="accountDeleteError" role="alert" hidden></p>
-            </div>
-            <div class="settings-actions settings-delete-confirm" id="accountSharedDeleteConfirm" hidden>
-              <p class="settings-delete-description" data-locale-key="account-shared-delete-description"></p>
-              <input class="settings-delete-input" id="accountSharedDeleteConfirmEmail" type="email" autocomplete="off" spellcheck="false" data-locale-placeholder="account-delete-confirm-placeholder">
-              <button class="settings-action settings-action-danger" id="accountSharedDeleteButton" type="button" data-locale-key="account-shared-delete-button" disabled>모든 서비스 탈퇴</button>
-              <p class="auth-error" id="accountSharedDeleteError" role="alert" hidden></p>
-            </div>
+          <section class="settings-section" aria-labelledby="accountTitle" id="accountSettingsSection">
             <div class="settings-actions">
               <button class="settings-action" id="settingsLogoutButton" type="button" data-locale-key="logout">로그아웃</button>
             </div>
           </section>
-          <section class="settings-section settings-help" aria-labelledby="settingsHelpTitle">
-            <p class="settings-label" data-locale-key="help-guide-section">도움말·안내</p>
-            <h3 id="settingsHelpTitle" data-locale-key="settings-help-title">문서·사용 안내</h3>
-            <details class="settings-guide" id="settingsExcelGuide">
-              <summary data-locale-key="settings-help-excel">Excel 원본 보관 방법</summary>
-              <p data-locale-key="settings-help-excel-description">Claw의 Excel 파일 작업에서 파일을 선택하고 원본 보관을 누르세요. 원본은 24시간 보관되며, 읽기·수정은 별도 승인이 필요합니다.</p>
-              <ol>
-                <li data-locale-key="settings-help-excel-step1">왼쪽 메뉴에서 Claw를 선택한 후 Excel 파일 작업을 엽니다.</li>
-                <li data-locale-key="settings-help-excel-step2">XLSX 파일을 선택하고 원본 보관을 누릅니다(최대 1 MiB).</li>
-                <li data-locale-key="settings-help-excel-step3">파일을 읽거나 수정하려면 별도의 승인을 진행합니다.</li>
-              </ol>
-            </details>
-          </section>
-          <div class="settings-footer"><button class="settings-done" type="submit" value="done" data-locale-key="done">완료</button></div>
-        </form>
+          <div class="settings-advanced-entry">
+            <button class="settings-action settings-link" id="settingsAdvancedOpen" type="button" data-locale-key="settings-advanced-open">고급 설정 →</button>
+          </div>
+          </form>
       </dialog>
       <dialog class="auth-dialog" id="passwordChangeDialog" aria-labelledby="passwordChangeDialogTitle">
         <div class="auth-panel">
@@ -826,6 +718,118 @@
              and help text carry the rest where each state is actually shown. -->
         <div class="standalone-view-body" id="connectorsViewBody"></div>
       </section>
+      <section class="standalone-view settings-advanced-view" id="advancedSettingsView" aria-labelledby="advancedSettingsTitle" hidden>
+        <header class="standalone-view-header">
+          <p class="standalone-view-kicker" data-locale-key="settings-kicker">Padiem Chat</p>
+          <h2 id="advancedSettingsTitle" class="standalone-view-title" data-locale-key="settings-advanced-title">고급 설정</h2>
+          <button type="button" class="settings-action" id="advancedSettingsBack" data-locale-key="settings-advanced-back">← 설정으로</button>
+        </header>
+        <div class="advanced-layout">
+          <nav class="advanced-menu" aria-label="고급 설정 메뉴">
+            <button type="button" class="advanced-menu-link selected" data-advanced-menu="pc" data-locale-key="pc-managed-page-pc">내 PC</button>
+            <button type="button" class="advanced-menu-link" data-advanced-menu="ai" data-locale-key="pc-managed-page-ai">연결된 AI</button>
+            <button type="button" class="advanced-menu-link" data-advanced-menu="account" data-locale-key="pc-managed-page-account">계정</button>
+          </nav>
+          <div class="advanced-content">
+            <h3 data-locale-key="pc-managed-page-pc">내 PC</h3>
+            <p class="settings-label" data-locale-key="pc-links-title">연결된 PC</p>
+            <ul class="mcp-settings-list" id="mcpGatewayPcLinks" data-locale-aria-label="pc-links-list" aria-label="연결된 PC"></ul>
+          <section class="settings-section pc-delegation-settings" id="pcDelegationSettings" aria-labelledby="pcDelegationTitle">
+            <h3 id="pcDelegationTitle" data-locale-key="pc-delegation-title">PC에 맡길 일</h3>
+            <p data-locale-key="pc-delegation-help">요청한 일 중 정한 폴더와 행동에 맞는 작업을 맡깁니다. 파일이나 웹 안의 지시가 작업 허락이 되지는 않습니다.</p>
+            <p class="pc-delegation-send-note" data-locale-key="pc-delegation-send-note">메일·메시지 보내기와 외부 서비스에 기록할 때는 항상 확인합니다.</p>
+            <p id="pcDelegationStatus" class="pc-delegation-status" role="status" aria-live="polite"></p>
+            <div class="pc-delegation-toolbar">
+              <button type="button" class="settings-action" id="pcDelegationRefresh" data-locale-key="pc-delegation-refresh">목록 새로 보기</button>
+            </div>
+            <ul class="pc-delegation-list" id="pcDelegationList" data-locale-aria-label="pc-delegation-list" aria-label="현재 맡긴 일"></ul>
+            <div class="pc-delegation-editor" id="pcDelegationEditor">
+              <label for="pcDelegationDevice" data-locale-key="pc-delegation-device">어느 PC인가요?</label>
+              <select id="pcDelegationDevice" disabled></select>
+              <label for="pcDelegationFolder" data-locale-key="pc-delegation-folder">어느 폴더인가요?</label>
+              <input id="pcDelegationFolder" type="text" autocomplete="off" spellcheck="false" data-locale-placeholder="pc-delegation-folder-placeholder" placeholder="예: C:/Users/me/Documents" aria-describedby="pcDelegationFolderHelp" disabled />
+              <small id="pcDelegationFolderHelp" data-locale-key="pc-delegation-folder-help">이 폴더와 그 안의 폴더에 적용합니다. 이동은 출발·도착 폴더가 모두 범위 안이어야 합니다.</small>
+              <fieldset id="pcDelegationActions" disabled>
+                <legend data-locale-key="pc-delegation-actions">어떤 일을 맡길까요?</legend>
+                <label><input id="pcDelegationWrite" type="checkbox" value="write" /><span data-locale-key="pc-delegation-write">파일 저장·수정</span></label>
+                <label><input id="pcDelegationMove" type="checkbox" value="move" /><span data-locale-key="pc-delegation-move">파일 정리·이동</span></label>
+                <label><input id="pcDelegationDelete" type="checkbox" value="delete" /><span data-locale-key="pc-delegation-delete">파일 삭제</span></label>
+              </fieldset>
+              <label for="pcDelegationMode" data-locale-key="pc-delegation-mode">어떻게 처리할까요?</label>
+              <select id="pcDelegationMode" disabled>
+                <option value="allow" data-locale-key="pc-delegation-allow">이 범위에서는 다시 묻지 않기</option>
+                <option value="ask" data-locale-key="pc-delegation-ask">항상 물어보기</option>
+              </select>
+              <button type="button" class="settings-action" id="pcDelegationAdd" data-locale-key="pc-delegation-add" disabled>규칙 저장</button>
+            </div>
+          </section>
+            <h3 data-locale-key="pc-managed-page-ai">연결된 AI</h3>
+          <section class="settings-section mcp-gateway-settings" id="mcpGatewaySettings" aria-labelledby="mcpGatewayTitle">
+            <h3 id="mcpGatewayTitle" data-locale-key="mcp-settings-title">외부 AI 연결</h3>
+            <p data-locale-key="mcp-settings-help">MCP를 지원하는 외부 AI에 연결한 PC의 작업을 맡깁니다. PC에서 허용한 범위와 ‘PC에 맡길 일’ 설정이 그대로 적용됩니다.</p>
+            <label for="mcpGatewayEndpoint" data-locale-key="mcp-settings-endpoint">MCP 연결 주소</label>
+            <input id="mcpGatewayEndpoint" type="url" readonly spellcheck="false" />
+            <p data-locale-key="mcp-settings-client-help">개인 토큰(Bearer)을 지원하는 AI 도구에서 연결 주소와 토큰을 입력하세요.</p>
+            <p id="mcpGatewayStatus" class="mcp-settings-status" role="status" aria-live="polite"></p>
+            <button type="button" class="settings-action" id="mcpGatewayRefresh" data-locale-key="mcp-settings-refresh">목록 새로 보기</button>
+            <h4 data-locale-key="mcp-settings-connections">발급한 연결</h4>
+            <ul class="mcp-settings-list" id="mcpGatewayList" data-locale-aria-label="mcp-settings-connections" aria-label="발급한 연결"></ul>
+            <div class="mcp-settings-editor" id="mcpGatewayEditor">
+              <label for="mcpGatewayName" data-locale-key="mcp-settings-name">어떤 AI에서 쓸까요?</label>
+              <input id="mcpGatewayName" type="text" autocomplete="off" data-locale-placeholder="mcp-settings-name-placeholder" placeholder="예: 내 개발 도구" disabled />
+              <label for="mcpGatewayDevice" data-locale-key="mcp-settings-device">연결할 PC</label>
+              <select id="mcpGatewayDevice" disabled></select>
+              <button type="button" class="settings-action" id="mcpGatewayIssue" data-locale-key="mcp-settings-issue" disabled>개인 토큰 발급</button>
+            </div>
+            <div class="mcp-settings-issued" id="mcpGatewayIssued" hidden>
+              <label for="mcpGatewayToken" data-locale-key="mcp-settings-token">새 개인 토큰</label>
+              <input id="mcpGatewayToken" type="text" readonly autocomplete="off" spellcheck="false" aria-describedby="mcpGatewayTokenHelp" />
+              <p id="mcpGatewayTokenHelp" data-locale-key="mcp-settings-once">이 토큰은 지금 한 번만 볼 수 있습니다. 설정을 닫거나 새로 고치면 다시 표시하지 않습니다. 사용할 AI 도구에 복사해 주세요.</p>
+              <div class="mcp-settings-actions">
+                <button type="button" class="settings-action" id="mcpGatewayCopy" data-locale-key="mcp-settings-copy">토큰 복사</button>
+                <button type="button" class="settings-action" id="mcpGatewayHide" data-locale-key="mcp-settings-hide">복사했어요 · 숨기기</button>
+              </div>
+            </div>
+            <div id="mcpGatewayApprovalsBlock" hidden>
+              <h4 data-locale-key="mcp-settings-approvals">확인이 필요한 작업</h4>
+              <p data-locale-key="mcp-settings-approval-help">아래 PC와 파일 경로, 저장할 내용 등 작업 전체를 확인해 주세요. 승인은 표시된 작업 한 번에만 적용됩니다.</p>
+              <ul class="mcp-settings-list" id="mcpGatewayApprovals" data-locale-aria-label="mcp-settings-approvals" aria-label="확인이 필요한 작업"></ul>
+            </div>
+            <div id="mcpGatewayManagedBlock" hidden>
+              <h4 data-locale-key="pc-managed-title">PC 연결</h4>
+              <p data-locale-key="pc-managed-note">관리 PC에서는 관리자가 SYSTEM 권한으로 명령을 실행할 수 있습니다.</p>
+              <p id="mcpGatewayManagedNotReady" class="mcp-settings-status" role="status" hidden data-locale-key="pc-managed-not-ready">관리 PC 표시를 아직 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.</p>
+              <ul class="mcp-settings-list" id="mcpGatewayManagedList" data-locale-aria-label="pc-managed-list" aria-label="PC 연결"></ul>
+            </div>
+          </section>
+            <h3 data-locale-key="pc-managed-page-account">계정</h3>
+          <section class="settings-section" aria-labelledby="accountTitle" id="accountSettingsSection" hidden>
+            <h3 id="accountTitle" data-locale-key="account-title">계정</h3>
+            <div class="settings-actions" id="accountPasswordActions" hidden>
+              <button class="settings-action" id="passwordChangeOpen" type="button" data-locale-key="password-change-open">비밀번호 변경</button>
+            </div>
+            <div class="settings-actions" id="accountDeleteActions" hidden>
+              <button class="settings-action settings-action-danger" id="accountDeleteOpen" type="button" data-locale-key="account-delete-open">계정 탈퇴</button>
+              <button class="settings-action settings-action-danger" id="accountSharedDeleteOpen" type="button" data-locale-key="account-shared-delete-open">모든 서비스에서 탈퇴</button>
+            </div>
+            <div class="settings-actions settings-delete-confirm" id="accountDeleteConfirm" hidden>
+              <p class="settings-delete-description" data-locale-key="account-delete-description"></p>
+              <input class="settings-delete-input" id="accountDeleteConfirmEmail" type="email" autocomplete="off" spellcheck="false" data-locale-placeholder="account-delete-confirm-placeholder">
+              <button class="settings-action settings-action-danger" id="accountDeleteButton" type="button" data-locale-key="account-delete-button" disabled>영구 탈퇴</button>
+              <p class="auth-error" id="accountDeleteError" role="alert" hidden></p>
+            </div>
+            <div class="settings-actions settings-delete-confirm" id="accountSharedDeleteConfirm" hidden>
+              <p class="settings-delete-description" data-locale-key="account-shared-delete-description"></p>
+              <input class="settings-delete-input" id="accountSharedDeleteConfirmEmail" type="email" autocomplete="off" spellcheck="false" data-locale-placeholder="account-delete-confirm-placeholder">
+              <button class="settings-action settings-action-danger" id="accountSharedDeleteButton" type="button" data-locale-key="account-shared-delete-button" disabled>모든 서비스 탈퇴</button>
+              <p class="auth-error" id="accountSharedDeleteError" role="alert" hidden></p>
+            </div>
+            <div class="settings-actions">
+            </div>
+          </section>
+          </div>
+        </div>
+      </section>
       <!-- Standalone Automation page: the existing #clawAutomation section is
            moved here on first open by the main script. List, create, edit,
            enable/disable, status, alerts and permission checks are reused
@@ -939,6 +943,15 @@
         <section class="claw-web-office" id="clawWebOffice" aria-labelledby="clawWebOfficeTitle">
           <details id="clawWebOfficeDetails">
             <summary id="clawWebOfficeTitle">웹에서 Excel 원본 보관 · 컴퓨터 연결 불필요</summary>
+            <details class="settings-guide" id="settingsExcelGuide">
+              <summary data-locale-key="settings-help-excel">Excel 원본 보관 방법</summary>
+              <p data-locale-key="settings-help-excel-description">Claw의 Excel 파일 작업에서 파일을 선택하고 원본 보관을 누르세요. 원본은 24시간 보관되며, 읽기·수정은 별도 승인이 필요합니다.</p>
+              <ol>
+                <li data-locale-key="settings-help-excel-step1">왼쪽 메뉴에서 Claw를 선택한 후 Excel 파일 작업을 엽니다.</li>
+                <li data-locale-key="settings-help-excel-step2">XLSX 파일을 선택하고 원본 보관을 누릅니다(최대 1 MiB).</li>
+                <li data-locale-key="settings-help-excel-step3">파일을 읽거나 수정하려면 별도의 승인을 진행합니다.</li>
+              </ol>
+            </details>
             <p>웹에서 XLSX를 직접 선택해 원본 그대로 보관합니다(최대 1 MiB, 24시간). 이 단계는 파일을 수정하거나 PDF로 변환하지 않습니다. 실제 처리는 별도의 P01 승인이 필요합니다.</p>
             <div class="claw-web-office-actions">
               <label for="clawWebXlsxInput">XLSX 파일 선택</label>

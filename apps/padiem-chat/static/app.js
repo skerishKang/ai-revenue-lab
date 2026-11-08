@@ -360,10 +360,14 @@
   const CALENDAR_ROUTE_HASH = "#padiem-calendar";
   const LIBRARY_ROUTE_HASH = "#padiem-library";
   const MEETING_ROUTE_HASH = "#padiem-meeting";
+  // 고급 설정: the full-screen settings page the compact modal links to. The
+  // fragment is a destination only, exactly like the three panel routes.
+  const ADVANCED_SETTINGS_ROUTE_HASH = "#padiem-settings";
   const PANEL_ROUTE_HASH_BY_STATE = Object.freeze({
     calendar: CALENDAR_ROUTE_HASH,
     library: LIBRARY_ROUTE_HASH,
     meeting: MEETING_ROUTE_HASH,
+    settings: ADVANCED_SETTINGS_ROUTE_HASH,
   });
   const OWNED_PANEL_HASHES = new Set(Object.values(PANEL_ROUTE_HASH_BY_STATE));
   let automationDestinationReady = false;
@@ -384,6 +388,7 @@
     Object.freeze({ pageId: "meeting", navigationId: "meetingNavButton", layoutVariant: "panel", panelId: "meetingView", heroViews: null }),
     Object.freeze({ pageId: "calendar", navigationId: "calendarNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
     Object.freeze({ pageId: "library", navigationId: "filesNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
+    Object.freeze({ pageId: "settings", navigationId: "settingsButton", layoutVariant: "panel", panelId: null, heroViews: null }),
     Object.freeze({ pageId: "util", navigationId: "utilNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
   ]);
   const PAGE_VIEW_BY_ID = Object.freeze(
@@ -1887,6 +1892,7 @@
       // nodes stay mounted; reopening after sign-in reloads fresh state.
       const connectorsView = document.getElementById("connectorsView");
       if (connectorsView) connectorsView.hidden = true;
+      if (advancedSettingsView) advancedSettingsView.hidden = true;
       const automationView = document.getElementById("automationView");
       if (automationView) automationView.hidden = true;
       if (shell && (shell.dataset.state === "connectors" || shell.dataset.state === "automation")) {
@@ -4319,6 +4325,23 @@
     settingsButton.setAttribute("aria-expanded", "false");
     profileToggle.setAttribute("aria-expanded", "false");
   }
+  const advancedSettingsView = document.getElementById("advancedSettingsView");
+  function openAdvancedSettingsView() {
+    if (!advancedSettingsView) { openSettings(); return; }
+    closeSettings();
+    advancedSettingsView.hidden = false;
+    shell.dataset.state = "settings";
+    setNavActive();
+    selectAdvancedMenu("pc");
+    window.dispatchEvent(new CustomEvent("padiem:advanced-settings-open"));
+  }
+  function closeAdvancedSettingsView() {
+    if (!advancedSettingsView) return;
+    advancedSettingsView.hidden = true;
+    shell.dataset.state = "home";
+    setNavActive();
+    window.dispatchEvent(new CustomEvent("padiem:advanced-settings-close"));
+  }
 
   window.addEventListener("padiem:tierchange", () => {
     if (shell.dataset.state === "claw") shell.dataset.clawTier = selectedProductTier();
@@ -4455,6 +4478,26 @@
     }
     await signOutCurrentAccount();
   });
+  const settingsAdvancedOpen = document.getElementById("settingsAdvancedOpen");
+  if (settingsAdvancedOpen) settingsAdvancedOpen.addEventListener("click", () => {
+    closeSettings();
+    openAdvancedSettingsView();
+  });
+  const advancedSettingsBack = document.getElementById("advancedSettingsBack");
+  if (advancedSettingsBack) advancedSettingsBack.addEventListener("click", () => { closeAdvancedSettingsView(); });
+  const advancedMenuButtons = [...document.querySelectorAll(".advanced-menu-link")];
+  const advancedPageBlocks = [...document.querySelectorAll(".advanced-page-block")];
+  function selectAdvancedMenu(key) {
+    for (const button of advancedMenuButtons) {
+      button.classList.toggle("selected", button.dataset.advancedMenu === key);
+    }
+    for (const block of advancedPageBlocks) {
+      block.hidden = block.dataset.advancedBlock !== key;
+    }
+  }
+  for (const button of advancedMenuButtons) {
+    button.addEventListener("click", () => selectAdvancedMenu(button.dataset.advancedMenu));
+  }
   if (settingsLogoutButton) {
     settingsLogoutButton.addEventListener("click", async () => {
       if (!authState.ready || !authState.authenticated) return;
@@ -7953,6 +7996,7 @@
   if (window.location.hash === AUTOMATION_ROUTE_HASH) openClawAutomation();
   else if (window.location.hash === CLAW_ROUTE_HASH) openClawWorkspace();
   else if (window.location.hash === CONNECTORS_ROUTE_HASH) openConnectorsView();
+  else if (window.location.hash === ADVANCED_SETTINGS_ROUTE_HASH) openAdvancedSettingsView();
   // Calendar, Library and Meeting are reachable only through the menu, so a
   // shared link used to land on Chat with whatever fragment the previous screen
   // left behind. Each of the three now names itself, and the screen that owns
