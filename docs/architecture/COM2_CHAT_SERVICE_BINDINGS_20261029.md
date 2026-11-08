@@ -26,10 +26,10 @@ Worker는 같은 계정의 Service binding으로 형제 Worker를 부른다. 일
   HTTPS로 호출 + 서비스 간 비밀(HMAC proof). 대상 Worker를 Cloudflare Tunnel
   호스트로 노출하고, **대상 쪽이 proof를 검증**해야 완성된다.
 - **RPC형**(Workers RPC 메서드만 있음): `POST /internal/rpc/<method>` +
-  proof 라는 **새 HTTP 표면을 대상이 열어야** 한다. 현재 대상들은
-  `fetch → 404`, `PRIVATE_SERVICE_BINDING_RPC=True`, 공개 라우트 없음이라
-  Chat 쪽 클라이언트만으로는 완성되지 않는다. 이 경우 레인은 지금처럼
-  fail-closed로 남기고, 표에 필요한 결정을 남긴다.
+  proof라는 HTTP 표면이 필요하다. 10월 29일 조사 당시 대상들은
+  `fetch → 404`, `PRIVATE_SERVICE_BINDING_RPC=True`, 공개 라우트 없음이어서
+  클라이언트만으로 완성되지 않았다. Google의 현재 계약은 위 11월 8일
+  정합화와 §7을 따른다.
 
 RPC proof 형식(현재 `HttpRpcBinding` 기본값, `app/local_service_bridge.py`):
 

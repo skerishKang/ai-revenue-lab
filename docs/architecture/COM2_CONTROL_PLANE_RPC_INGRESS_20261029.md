@@ -11,7 +11,8 @@ RELATED=PR #6142(CPython HttpRpcBinding·v1 proof), COM2_CHAT_SERVICE_BINDINGS_2
 
 #7089의 기능은 #7091(배선), #7094(Calendar ingress·설정)에 흡수됐다.
 현재 Chat은 기본 `HttpRpcBinding`의 v2 + 서명된 요청 ID를 사용한다.
-v1은 대상 `PADIEM_RPC_SERVICE_ID_POLICY=optional`일 때만 호환되고,
+v1은 대상 `PADIEM_RPC_SERVICE_ID_POLICY`가 `optional`(현재 기본값) 또는
+`legacy`일 때 호환되고,
 `required`이면 `403 rpc_service_id_required`다. 기존 테스트나 정책을
 낮추지 않고 main의 v2 조립을 유지한다. 실제 배포 여부는 운영 조회로 별도 확인한다.
 
