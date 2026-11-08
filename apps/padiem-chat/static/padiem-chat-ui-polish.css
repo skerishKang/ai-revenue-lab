@@ -537,14 +537,16 @@ html[data-theme="dark"] .auth-panel {
  * outline #6a9abc — measured identical in all four themes; #5608 already
  * reused it for the util toolbox). The glass --accent sky blue stops being a
  * button fill and survives only as dots and selection marks. Shape, size and
- * spacing stay each button's own; the disabled faces are each button's own. */
+ * spacing stay each button's own; the disabled faces are each button's own.
+ * The MCP external-AI page's primary action joins the same navy fill. */
 html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
     .claw-result-action.is-prominent:not(:disabled), .claw-approval-approve,
     .claw-memory-approve, .claw-qc-primary, .calendar-record-submit,
     .claw-inbox-primary, #meetingStart,
     .util-tool-open, .pdfmd-btn-primary,
     .app-shell[data-state="calendar"] .calendar-record-submit,
-    .app-shell[data-state="meeting"] .meeting-controls #meetingStart) {
+    .app-shell[data-state="meeting"] .meeting-controls #meetingStart,
+    .mcp-ai-primary:not(:disabled)) {
   background: #355977;
   border-color: #294b64;
   color: #fff;
@@ -555,7 +557,8 @@ html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
     .claw-inbox-primary, #meetingStart,
     .util-tool-open, .pdfmd-btn-primary,
     .app-shell[data-state="calendar"] .calendar-record-submit,
-    .app-shell[data-state="meeting"] .meeting-controls #meetingStart):not(:disabled):hover {
+    .app-shell[data-state="meeting"] .meeting-controls #meetingStart,
+    .mcp-ai-primary:not(:disabled)):not(:disabled):hover {
   background: #2e4d67;
   border-color: #23445d;
   color: #fff;
@@ -566,7 +569,8 @@ html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
     .claw-inbox-primary, #meetingStart,
     .util-tool-open, .pdfmd-btn-primary,
     .app-shell[data-state="calendar"] .calendar-record-submit,
-    .app-shell[data-state="meeting"] .meeting-controls #meetingStart):focus-visible {
+    .app-shell[data-state="meeting"] .meeting-controls #meetingStart,
+    .mcp-ai-primary:not(:disabled)):focus-visible {
   outline: 3px solid #6a9abc;
   outline-offset: 3px;
 }

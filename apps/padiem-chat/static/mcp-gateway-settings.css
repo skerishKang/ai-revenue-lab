@@ -18,3 +18,47 @@
 .mcp-settings-arguments pre { max-height: 24rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; padding: 10px; background: var(--bg, transparent); border-radius: 8px; }
 .mcp-gateway-settings button { min-height: 40px; }
 .mcp-gateway-settings :focus-visible { outline: 2px solid var(--accent, #487bb5); outline-offset: 3px; }
+
+/* The legacy per-token list stays available, collapsed under 자세히. */
+.mcp-gateway-legacy { margin-top: 12px; }
+.mcp-gateway-legacy > summary { cursor: pointer; font-size: 13px; color: var(--text-secondary, var(--text)); padding: 6px 0; }
+.mcp-gateway-legacy[open] > summary { margin-bottom: 6px; }
+
+/* AI client group cards — #7168 */
+.mcp-gateway-clients { display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; }
+.mcp-gateway-client-card { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px; border: 1px solid var(--border, #ccd2d8); border-radius: 12px; }
+.mcp-gateway-client-info { flex: 1 1 200px; min-width: 0; }
+.mcp-gateway-client-name { font-size: 15px; font-weight: 650; color: var(--text); margin: 0 0 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mcp-gateway-client-meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px; color: var(--text-secondary, var(--text)); }
+.mcp-gateway-client-meta-item + .mcp-gateway-client-meta-item::before { content: "·"; margin-right: 6px; color: var(--border, #ccd2d8); }
+.mcp-gateway-client-meta-item { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+.mcp-gateway-client-count { font-weight: 620; color: var(--text); }
+.mcp-gateway-client-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.mcp-gateway-client-more { font: inherit; font-size: 13px; color: var(--accent, #487bb5); background: none; border: none; padding: 0; cursor: pointer; }
+.mcp-gateway-client-more[aria-expanded="true"] { text-decoration: underline; }
+.mcp-gateway-client-detail { width: 100%; grid-column: 1 / -1; }
+.mcp-gateway-client-detail > summary { list-style: none; cursor: pointer; padding: 6px 0; font-size: 13px; color: var(--text-secondary, var(--text)); }
+.mcp-gateway-client-detail > summary::-webkit-details-marker { display: none; }
+.mcp-gateway-client-detail ul { padding: 0; margin: 8px 0 0; list-style: none; }
+.mcp-gateway-client-detail li { display: flex; flex-wrap: wrap; gap: 10px; padding: 6px 0; border-top: 1px solid var(--border, #ccd2d8); font-size: 12.5px; }
+.mcp-gateway-client-detail li:last-child { border-bottom: 1px solid var(--border, #ccd2d8); }
+.mcp-gateway-client-detail li strong { min-width: 70px; white-space: nowrap; color: var(--text-secondary, var(--text)); }
+.mcp-gateway-client-detail li span { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mcp-gateway-client-revoke { min-height: 40px; padding: 0 16px; }
+/* The shared .settings-action base is a light translucent fill; on the dark and
+ * cinematic themes the danger text is light too, so the revoke action needs its
+ * own tinted surface to stay readable. */
+html[data-theme="dark"] .mcp-gateway-client-revoke,
+html[data-theme="cinematic"] .mcp-gateway-client-revoke {
+  background: color-mix(in srgb, var(--danger, #ff8a80) 16%, transparent);
+  border-color: color-mix(in srgb, var(--danger, #ff8a80) 45%, transparent);
+  color: var(--danger, #ff8a80);
+}
+html[data-theme="dark"] .mcp-gateway-client-revoke:not(:disabled):hover,
+html[data-theme="cinematic"] .mcp-gateway-client-revoke:not(:disabled):hover {
+  background: color-mix(in srgb, var(--danger, #ff8a80) 24%, transparent);
+}
+.mcp-gateway-client-empty,
+.mcp-gateway-client-error,
+.mcp-gateway-client-login { grid-column: 1 / -1; padding: 24px 16px; text-align: center; color: var(--text-secondary, var(--text)); font-size: 14px; line-height: 1.5; }
+.mcp-gateway-client-error .mcp-gateway-client-retry { display: inline-flex; gap: 6px; }

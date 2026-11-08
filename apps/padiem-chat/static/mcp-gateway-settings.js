@@ -1,17 +1,39 @@
-// Personal credentials are displayed only after issuance and cleared when this
-// dialog closes. All PC authority and approval decisions remain on the server.
+// External AI (MCP OAuth) connections are now grouped per AI client:
+// GET /api/account/mcp/oauth/clients returns client_id-based bundles, so
+// repeated connections from the same AI appear as one card. A single
+// "연결 해지" button revokes every active grant that this owner holds for
+// that AI client. The individual token rows survive as a collapsed detail
+// so they can still be inspected later. Personal (PAT) tokens are shown
+// separately below because they have no AI client and are revoked one by one.
 (function (root) {
   "use strict";
   const API = "/api/account/mcp";
-  const state = { tokens: [], approvals: [], links: [], issued: "", ready: false, busy: false, epoch: 0, status: "mcp-settings-help" };
+  const CLIENTS_API = "/api/account/mcp/oauth/clients";
+  const state = {
+    tokens: [], approvals: [], links: [], clients: [],
+    issued: "", ready: false, busy: false, epoch: 0,
+    status: "mcp-settings-loading", clientsReady: false,
+  };
   let nodes;
-  const copy = (key) => root.__padiemLocale?.text(key) || key;
-  function element(tag, className, text) {
+  const copy = (key, variables) => root.__padiemLocale?.text(key, variables) || key;
+  const element = (tag, className, text) => {
     const node = root.document.createElement(tag);
     if (className) node.className = className;
     if (text !== undefined) node.textContent = text;
     return node;
-  }
+  };
+  const formatDateTime = (iso) => {
+    if (!iso) return copy("mcp-settings-never");
+    try {
+      const d = new Date(iso);
+      return d.toLocaleString("ko-KR", {
+        year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit",
+      });
+    } catch (_) {
+      return iso;
+    }
+  };
   async function request(path, method = "GET", payload) {
     const init = {
       method, credentials: "same-origin", cache: "no-store",
@@ -19,8 +41,6 @@
       ...(payload ? { body: JSON.stringify(payload) } : {}),
     };
     let reply = await root.fetch(path, init);
-    // #6460 4-2: one silent shared-session refresh and one retry when the
-    // 15-minute access cookie expired under the screen's 14-minute tick.
     if (reply.status === 401 && window.PadiemSharedSession) {
       if (await window.PadiemSharedSession.refreshOnce()) {
         reply = await root.fetch(path, init);
@@ -28,7 +48,7 @@
     }
     return { status: reply.status, body: await reply.json().catch(() => null) };
   }
-  function clearIssued() { state.issued = ""; nodes.token.value = ""; nodes.issued.hidden = true; }
+  function clearIssued() { state.issued = ""; if (nodes.token) nodes.token.value = ""; if (nodes.issued) nodes.issued.hidden = true; }
   function activeLinks() { return state.links.filter((link) => link.state === "active"); }
   function pcName(id) { return state.links.find((link) => link.mesh_node_id === id)?.label || id; }
   function controls() {
@@ -44,6 +64,14 @@
     button.type = "button";
     button.disabled = !state.ready || state.busy;
     button.addEventListener("click", handler);
+    return button;
+  }
+  function revokeButton(client) {
+    const button = element("button", "settings-action settings-action-danger mcp-gateway-client-revoke", copy("mcp-ai-revoke"));
+    button.type = "button";
+    button.disabled = !state.ready || state.busy;
+    button.dataset.clientId = client.client_id;
+    button.addEventListener("click", () => { void revokeClient(client); });
     return button;
   }
   function field(parent, key, value) {
@@ -84,18 +112,109 @@
       list.append(item);
     }
   }
-  async function disconnectLink(link) {
-    await mutate("/api/pc/pairings/" + encodeURIComponent(link.link_id), "DELETE", undefined, () => true);
-    state.links = state.links.filter((row) => row.link_id !== link.link_id);
-    paintPcLinks();
+  function paintClients() {
+    const list = nodes.clients;
+    if (!list) return;
+    list.replaceChildren();
+    if (!state.clientsReady) {
+      // Empty, failed and signed-out are three different states: a signed-out
+      // visitor must not be told "no AI is connected", and a failed read must
+      // offer a retry instead of pretending the list is empty.
+      if (state.status === "mcp-settings-login") {
+        const row = element("li", "mcp-gateway-client-login");
+        row.append(element("p", "", copy("mcp-settings-login")));
+        list.append(row);
+      } else if (state.status === "mcp-settings-loading" || state.status === "mcp-settings-saving") {
+        const row = element("li", "mcp-gateway-client-empty");
+        row.append(element("p", "", copy("mcp-ai-loading")));
+        list.append(row);
+      } else {
+        const row = element("li", "mcp-gateway-client-error");
+        row.append(element("p", "", copy("mcp-ai-load-error")));
+        const retry = element("button", "settings-action mcp-ai-primary mcp-gateway-client-retry", copy("mcp-ai-retry"));
+        retry.type = "button";
+        retry.addEventListener("click", () => { void load(); });
+        row.append(retry);
+        list.append(row);
+      }
+      return;
+    }
+    if (!state.clients.length) {
+      const row = element("li", "mcp-gateway-client-empty");
+      row.append(element("p", "", copy("mcp-ai-empty")));
+      list.append(row);
+      return;
+    }
+    for (const client of state.clients) {
+      // The grouped API is the authority for counts, devices and the last use:
+      // it stays truthful even when the individual token list is not loaded.
+      const count = Number.isInteger(client.active_grants) ? client.active_grants : 0;
+      const devices = Array.isArray(client.devices) ? client.devices : [];
+      const item = element("li", "mcp-gateway-client-card");
+      const info = element("div", "mcp-gateway-client-info");
+      info.append(element("h4", "mcp-gateway-client-name", client.client_name || client.client_id));
+      const meta = element("div", "mcp-gateway-client-meta");
+      const countItem = element("div", "mcp-gateway-client-meta-item");
+      countItem.append(element("span", "", copy("mcp-ai-connection-count", { count })));
+      meta.append(countItem);
+      const deviceItem = element("div", "mcp-gateway-client-meta-item");
+      deviceItem.append(element("span", "", copy("mcp-ai-device-count", { count: devices.length })));
+      meta.append(deviceItem);
+      const usedItem = element("div", "mcp-gateway-client-meta-item");
+      usedItem.append(element("span", "", copy("mcp-ai-token-used")));
+      usedItem.append(element("span", "", `: ${formatDateTime(client.last_used_at)}`));
+      meta.append(usedItem);
+      info.append(meta);
+      item.append(info);
+      const actions = element("div", "mcp-gateway-client-actions");
+      const more = element("button", "mcp-gateway-client-more", copy("mcp-ai-details"));
+      more.type = "button";
+      more.setAttribute("aria-expanded", "false");
+      more.addEventListener("click", () => {
+        // The grouped API carries the per-client detail (devices, scopes,
+        // first grant, latest grant) — the individual token rows stay in the
+        // collapsed legacy list below, not on the default screen.
+        const existing = item.querySelector(".mcp-gateway-client-detail");
+        if (existing) {
+          existing.remove();
+          more.textContent = copy("mcp-ai-details");
+          more.setAttribute("aria-expanded", "false");
+          return;
+        }
+        const detail = element("details", "mcp-gateway-client-detail");
+        detail.open = true;
+        detail.append(element("summary", "", copy("mcp-ai-show-details")));
+        const ul = element("ul", "");
+        for (const device of devices) {
+          const li = element("li", "");
+          li.append(element("strong", "", copy("mcp-settings-device")));
+          li.append(element("span", "", pcName(device)));
+          ul.append(li);
+        }
+        const createdLi = element("li", "");
+        createdLi.append(element("strong", "", copy("mcp-settings-created")));
+        createdLi.append(element("span", "", formatDateTime(client.created_at)));
+        ul.append(createdLi);
+        const latestLi = element("li", "");
+        latestLi.append(element("strong", "", copy("mcp-ai-token-connected")));
+        latestLi.append(element("span", "", formatDateTime(client.latest_grant_at)));
+        ul.append(latestLi);
+        detail.append(ul);
+        item.append(detail);
+        more.textContent = copy("mcp-ai-hidden-details");
+        more.setAttribute("aria-expanded", "true");
+      });
+      actions.append(more);
+      actions.append(revokeButton(client));
+      item.append(actions);
+      list.append(item);
+    }
   }
   function paintTokens() {
-    // One row per connected AI (client name): the most recently used token
-    // carries the row's timestamp, and 연결 끊기 revokes every token of that
-    // AI in one go.
     nodes.list.replaceChildren();
     const groups = new Map();
     for (const token of state.tokens) {
+      if (token.client_id) continue;
       if (token.revoked_at) continue;
       const group = groups.get(token.name) || { name: token.name, tokens: [] };
       if (!groups.has(token.name)) groups.set(token.name, group);
@@ -120,13 +239,38 @@
       nodes.list.append(item);
     }
   }
+  async function confirmRevoke(message) {
+    // The shared first-party dialog is the product's confirmation surface;
+    // the native confirm stays only as a fallback for a bare module load.
+    const dialog = root.PadiemConfirmDialog;
+    if (dialog && typeof dialog.confirm === "function") {
+      return await dialog.confirm({
+        title: copy("mcp-ai-revoke-title"),
+        message,
+        confirmLabel: copy("mcp-ai-revoke"),
+        cancelLabel: copy("cancel"),
+      });
+    }
+    return Boolean((root.nativeConfirm ?? root.confirm)(message));
+  }
+  async function revokeClient(client) {
+    const count = Number.isInteger(client.active_grants) ? client.active_grants : 0;
+    const confirmText = count > 0
+      ? copy("mcp-ai-revoke-confirm", { count })
+      : copy("mcp-ai-revoke-confirm-default");
+    if (!await confirmRevoke(confirmText)) return;
+    clearIssued();
+    await mutate(CLIENTS_API + "/" + encodeURIComponent(client.client_id), "DELETE", undefined, () => {
+      state.clients = state.clients.filter((c) => c.client_id !== client.client_id);
+      return true;
+    });
+    if (state.ready) state.status = "mcp-ai-revoked";
+    paint();
+  }
   async function revokeGroup(group) {
-    // Revoking the AI retires every issued token and, with them, the pending
-    // approvals that rode on those tokens — the same cleanup one-by-one
-    // revocation did.
     clearIssued();
     for (const token of [...group.tokens]) {
-      await mutate("/api/account/mcp/tokens/" + encodeURIComponent(token.id), "DELETE", undefined, () => {
+      await mutate(API + "/tokens/" + encodeURIComponent(token.id), "DELETE", undefined, () => {
         state.tokens = state.tokens.filter((row) => row.id !== token.id);
         state.approvals = state.approvals.filter((approval) => approval.token_id !== token.id);
         return true;
@@ -137,7 +281,6 @@
   }
   function paintApprovals() {
     nodes.approvals.replaceChildren();
-    // The 확인이 필요한 작업 block only exists while work is waiting.
     const block = nodes.approvalsblock;
     if (block) block.hidden = state.approvals.length === 0;
     if (!state.approvals.length) return;
@@ -147,8 +290,6 @@
       field(item, "mcp-settings-device", pcName(approval.device_id));
       field(item, "mcp-settings-tool", approval.tool_name);
       field(item, "mcp-settings-expires", approval.expires_at);
-      // Show the complete exact request, including write content, move destination,
-      // deletion path and options. A digest alone is not enough to approve a change.
       const args = approval.arguments || {};
       const labels = { path: "mcp-settings-path", source: "mcp-settings-source", source_path: "mcp-settings-source",
         destination: "mcp-settings-destination", destination_path: "mcp-settings-destination", content: "mcp-settings-content" };
@@ -168,27 +309,29 @@
       nodes.approvals.append(item);
     }
   }
-  function paint() { paintDevices(); paintPcLinks(); paintTokens(); paintApprovals(); controls(); }
+  function paint() { paintDevices(); paintPcLinks(); paintClients(); paintTokens(); paintApprovals(); controls(); }
   function reset() {
     ++state.epoch;
-    state.tokens = []; state.approvals = []; state.links = [];
-    state.ready = false; state.busy = false; state.status = "mcp-settings-login";
+    state.tokens = []; state.approvals = []; state.links = []; state.clients = [];
+    state.ready = false; state.busy = false; state.clientsReady = false;
+    state.status = "mcp-settings-login";
     nodes.name.value = "";
     clearIssued(); paint();
   }
   async function load() {
     const epoch = ++state.epoch;
     clearIssued();
-    state.ready = false; state.busy = true; state.status = "mcp-settings-loading";
+    state.ready = false; state.busy = true; state.clientsReady = false;
+    state.status = "mcp-settings-loading";
     paint();
     try {
       const [tokens, approvals, pairings] = await Promise.all([
         request(API + "/tokens"), request(API + "/approvals"), request("/api/pc/pairings").catch(() => null),
       ]);
       if (epoch !== state.epoch) return;
-      state.tokens = []; state.approvals = []; state.links = [];
-      if (tokens.status === 401 || approvals.status === 401) state.status = "mcp-settings-login";
-      else if (tokens.status !== 200 || tokens.body?.ok !== true || !Array.isArray(tokens.body.tokens)
+      if (tokens.status === 401 || approvals.status === 401) {
+        state.status = "mcp-settings-login";
+      } else if (tokens.status !== 200 || tokens.body?.ok !== true || !Array.isArray(tokens.body.tokens)
           || approvals.status !== 200 || approvals.body?.ok !== true || !Array.isArray(approvals.body.approvals)) {
         state.status = "mcp-settings-load-error";
       } else {
@@ -196,11 +339,27 @@
         state.links = pairings?.status === 200 && pairings.body?.ok === true && Array.isArray(pairings.body.links)
           ? pairings.body.links.filter((link) => link && typeof link.mesh_node_id === "string" && link.mesh_node_id) : [];
         state.ready = true;
-        state.status = activeLinks().length ? "mcp-settings-ready" : "mcp-settings-no-pc-help";
+        try {
+          const clients = await request(CLIENTS_API);
+          if (epoch !== state.epoch) return;
+          if (clients.status === 401) {
+            state.status = "mcp-settings-login";
+          } else if (clients.status !== 200 || clients.body?.ok !== true || !Array.isArray(clients.body.clients)) {
+            state.status = "mcp-settings-load-error";
+          } else {
+            state.clients = clients.body.clients;
+            state.clientsReady = true;
+            state.status = activeLinks().length ? "mcp-settings-ready" : "mcp-settings-no-pc-help";
+          }
+        } catch (_) {
+          state.status = "mcp-settings-load-error";
+        }
       }
     } catch (_) {
       if (epoch === state.epoch) {
-        state.tokens = []; state.approvals = []; state.links = []; state.status = "mcp-settings-load-error";
+        state.tokens = []; state.approvals = []; state.links = []; state.clients = [];
+        state.clientsReady = false;
+        state.status = "mcp-settings-load-error";
       }
     } finally { if (epoch === state.epoch) { state.busy = false; paint(); } }
   }
@@ -214,7 +373,7 @@
       if (![200, 201].includes(reply.status) || reply.body?.ok !== true || !accept(reply.body)) {
         state.ready = false;
         state.status = reply.status === 401 ? "mcp-settings-login" : "mcp-settings-save-error";
-        if (reply.status === 401) { state.tokens = []; state.approvals = []; state.links = []; clearIssued(); }
+        if (reply.status === 401) { state.tokens = []; state.approvals = []; state.links = []; state.clients = []; state.clientsReady = false; clearIssued(); }
       }
     } catch (_) {
       if (epoch === state.epoch) { state.ready = false; state.status = "mcp-settings-save-error"; }
@@ -228,10 +387,9 @@
     if (state.issued) return;
     await mutate(API + "/tokens", "POST", { name, device_id }, (body) => {
       if (typeof body.token !== "string" || !body.token || !body.id) return false;
-      // Keep only metadata in the list; the credential never enters a list row.
       state.tokens.unshift({ id: body.id, name: body.name, device_id: body.device_id,
         created_at: body.created_at, last_used_at: body.last_used_at, revoked_at: body.revoked_at });
-      state.issued = body.token; nodes.token.value = state.issued; nodes.issued.hidden = false;
+      state.issued = body.token; nodes.token.value = state.issued; if (nodes.issued) nodes.issued.hidden = false;
       nodes.name.value = ""; state.status = "mcp-settings-issued";
       return true;
     });
@@ -267,10 +425,15 @@
     const byId = (id) => root.document.getElementById(id);
     if (!byId("mcpGatewaySettings")) return;
     nodes = { section: byId("mcpGatewaySettings"),
-      approvalsblock: byId("mcpGatewayApprovalsBlock"), pclinks: byId("mcpGatewayPcLinks") };
-    for (const name of ["Status", "Endpoint", "Device", "Name", "Issue", "Refresh", "List", "Approvals", "ApprovalsBlock", "PcLinks", "Issued", "Token", "Copy", "Hide", "Editor"]) {
-      nodes[name.toLowerCase()] = byId("mcpGateway" + name);
-    }
+      approvalsblock: byId("mcpGatewayApprovalsBlock"), pclinks: byId("mcpGatewayPcLinks"),
+      clients: byId("mcpGatewayClientsList"), status: byId("mcpGatewayStatus"),
+      list: byId("mcpGatewayList"),
+      refresh: byId("mcpGatewayRefresh"),
+      approvals: byId("mcpGatewayApprovals"), issued: byId("mcpGatewayIssued"), token: byId("mcpGatewayToken"),
+      copy: byId("mcpGatewayCopy"), hide: byId("mcpGatewayHide"), editor: byId("mcpGatewayEditor"),
+      name: byId("mcpGatewayName"), device: byId("mcpGatewayDevice"),
+      issue: byId("mcpGatewayIssue"),
+      endpoint: byId("mcpGatewayEndpoint") };
     nodes.endpoint.value = root.location.origin + "/api/mcp";
     nodes.issue.addEventListener("click", () => { void issue(); });
     nodes.refresh.addEventListener("click", () => { void load(); });
@@ -279,8 +442,6 @@
     nodes.editor.addEventListener("keydown", (event) => {
       if (event.key === "Enter" && event.target.tagName === "INPUT") event.preventDefault();
     });
-    // The module lives in the advanced settings page now: the page open event
-    // carries the load, the auth-state reset stays the same.
     root.addEventListener("padiem:advanced-settings-open", () => { void load(); });
     root.addEventListener("padiem:advanced-settings-close", () => { reset(); });
     root.addEventListener("padiem:localechange", paint);
@@ -289,4 +450,4 @@
   }
   if (root.document.readyState === "loading") root.document.addEventListener("DOMContentLoaded", boot, { once: true });
   else boot();
-})(window);
+})(typeof window !== "undefined" ? window : this);

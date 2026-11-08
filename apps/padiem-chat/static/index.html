@@ -782,13 +782,17 @@
             <p id="mcpGatewayStatus" class="mcp-settings-status" role="status" aria-live="polite"></p>
             <button type="button" class="settings-action" id="mcpGatewayRefresh" data-locale-key="mcp-settings-refresh">목록 새로 보기</button>
             <h4 data-locale-key="mcp-settings-connections">발급한 연결</h4>
-            <ul class="mcp-settings-list" id="mcpGatewayList" data-locale-aria-label="mcp-settings-connections" aria-label="발급한 연결"></ul>
+            <ul class="mcp-gateway-clients" id="mcpGatewayClientsList" data-locale-aria-label="mcp-settings-connections" aria-label="발급한 연결"></ul>
+            <details class="mcp-gateway-legacy" id="mcpGatewayLegacyList">
+              <summary data-locale-key="mcp-ai-details">자세히</summary>
+              <ul class="mcp-settings-list" id="mcpGatewayList" data-locale-aria-label="mcp-settings-connections" aria-label="발급한 연결"></ul>
+            </details>
             <div class="mcp-settings-editor" id="mcpGatewayEditor">
               <label for="mcpGatewayName" data-locale-key="mcp-settings-name">어떤 AI에서 쓸까요?</label>
               <input id="mcpGatewayName" type="text" autocomplete="off" data-locale-placeholder="mcp-settings-name-placeholder" placeholder="예: 내 개발 도구" disabled />
               <label for="mcpGatewayDevice" data-locale-key="mcp-settings-device">연결할 PC</label>
               <select id="mcpGatewayDevice" disabled></select>
-              <button type="button" class="settings-action" id="mcpGatewayIssue" data-locale-key="mcp-settings-issue" disabled>개인 토큰 발급</button>
+              <button type="button" class="settings-action mcp-ai-primary" id="mcpGatewayIssue" data-locale-key="mcp-settings-issue" disabled>개인 토큰 발급</button>
             </div>
             <div class="mcp-settings-issued" id="mcpGatewayIssued" hidden>
               <label for="mcpGatewayToken" data-locale-key="mcp-settings-token">새 개인 토큰</label>
