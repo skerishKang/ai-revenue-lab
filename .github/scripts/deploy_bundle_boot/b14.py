@@ -175,7 +175,7 @@ def probe_script(modules: list[str]) -> str:
     ] + [f"padiem_ai_core.{name[:-3]}" for name in modules]
     return (
         "import importlib, pathlib\n"
-        f"names = {names!r}\\n"
+        f"names = {names!r}\n"
         "for name in names:\n"
         "    importlib.import_module(name)\n"
         "import app, padiem_ai_core, padiem_control_plane\n"
