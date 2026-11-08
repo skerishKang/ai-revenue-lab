@@ -225,14 +225,15 @@ def resolve_manual_route(
 
     route_id = f"platform:{cm.model_id}"
 
-    from .tier_fallback import TIER_DEFAULT_B14_MODEL
-    owner_tier_pair = product_tier == "free" and model_id == TIER_DEFAULT_B14_MODEL
+    from .tier_fallback import effective_tier_default, effective_tier_fallback
+    tier_default = effective_tier_default()
+    owner_tier_pair = product_tier == "free" and bool(tier_default) and model_id == tier_default
     fallback_candidates: list[dict[str, str]] = []
     if owner_tier_pair:
-        from .tier_fallback import TIER_FALLBACK_B14_MODELS
-        if product_tier not in TIER_FALLBACK_B14_MODELS:
+        tier_rosters = effective_tier_fallback()
+        if product_tier not in tier_rosters:
             raise NoSafeRoute(reason_code="invalid_product_tier", message="Unsupported product tier.", upstream_called=False)
-        for candidate_id in TIER_FALLBACK_B14_MODELS[product_tier]:
+        for candidate_id in tier_rosters[product_tier]:
             target = get_catalog_by_id(candidate_id)
             if target is not None and target.enabled and not excluded_from_owner_customer_selection(target.model_id) and not free_candidate_excluded_from_execution(target.model_id) and _platform_secret_present(target):
                 fallback_candidates.append({

@@ -5,10 +5,12 @@
   "cloudflare_root_directory": "apps/korean-ai-platform",
   "repository_relative_watch_paths": [
     "apps/korean-ai-platform/*",
-    "packages/padiem-ai-core/*"
+    "packages/padiem-ai-core/*",
+    "packages/padiem-control-plane/*"
   ],
   "shared_monorepo_dependency_paths": [
-    "packages/padiem-ai-core"
+    "packages/padiem-ai-core",
+    "packages/padiem-control-plane"
   ],
   "watch_path_authority": "external_cloudflare_workers_builds",
   "repository_guard_only": true,
