@@ -265,6 +265,7 @@ BASE_FILES = {
     "packages/padiem-ai-core/padiem_ai_core/conversation_bounds.py": "# bounds\n",
     "packages/padiem-ai-core/padiem_ai_core/evidence_blocks.py": "# evidence\n",
     "packages/padiem-control-plane/padiem_control_plane/__init__.py": "# control\n",
+    "packages/padiem-control-plane/padiem_control_plane/models_registry.py": "# registry\n",
     "apps/korean-ai-code-agent/src/kagent/__init__.py": "# kagent\n",
     # The executor imports the Core package, as the real one does.
     "apps/korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py": (
@@ -1412,6 +1413,9 @@ class B14ScenarioTest(DeployHarness):
         # A rollback target that cannot be imported is not a rollback.
         self.assertTrue((self.b14.resolve() / "padiem_ai_core" / "pc_work_metrics.py").is_file())
         self.assertIn("B14_SHARED_MODULE=", result.stdout)
+        # The registry loader is part of the tree the unit boots from.
+        self.assertTrue((self.b14.resolve() / "padiem_control_plane" / "models_registry.py").is_file())
+        self.assertIn("B14_CONTROL_PLANE=", result.stdout)
         # The installer failed before the unit was ever started, so the rollback
         # start is the only one — and the unit must be up after it.
         self.assertEqual(self._started("padiem-b14.service"), 1, self._calls())
