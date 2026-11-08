@@ -166,6 +166,10 @@ class Settings:
     # 공통 로그인(옵트인) 이메일 가입·로그인: padiem-auth가 Chat의 내부 확인
     # 경로를 부를 때 쓰는 서비스 간 v2 증명 시크릿의 수신 값.
     password_rpc_secret: str | None = field(default=None, repr=False)
+    # #7228 recovery: the receiver half of the host→Chat-Worker voice STT RPC.
+    # The host holds the same value as a caller secret; the Worker keeps it as
+    # a secret binding resolved in worker.py.
+    voice_rpc_secret: str | None = field(default=None, repr=False)
 
     @classmethod
     def from_values(
@@ -215,6 +219,7 @@ class Settings:
         public_base_urls: object = None,
         # 공통 로그인 이메일 확인 RPC 시크릿. appended last for the same reason.
         password_rpc_secret: object = None,
+        voice_rpc_secret: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -480,6 +485,9 @@ class Settings:
             password_rpc_secret=_optional_secret(
                 password_rpc_secret, name="PADIEM_CHAT_PASSWORD_RPC_SECRET"
             ),
+            voice_rpc_secret=_optional_secret(
+                voice_rpc_secret, name="PADIEM_CHAT_VOICE_RPC_SECRET"
+            ),
         )
 
     @classmethod
@@ -540,4 +548,5 @@ class Settings:
             lovetree_account_delete_url=os.getenv("PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL"),
             account_delete_rpc_secret=os.getenv("PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET"),
             password_rpc_secret=os.getenv("PADIEM_CHAT_PASSWORD_RPC_SECRET"),
+            voice_rpc_secret=os.getenv("PADIEM_CHAT_VOICE_RPC_SECRET"),
         )

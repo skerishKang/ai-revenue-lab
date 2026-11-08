@@ -1040,6 +1040,10 @@ class Default(WorkerEntrypoint):
         )
         settings = replace(settings, file_lane_ticket_secret=await resolve_secret_binding(
             self.env, "PADIEM_CHAT_FILE_LANE_TICKET_SECRET"))
+        # #7228 recovery: the receiver half of the host→Chat-Worker voice STT
+        # RPC. Unset keeps the route 404 and the host lane fail-closed.
+        settings = replace(settings, voice_rpc_secret=await resolve_secret_binding(
+            self.env, "PADIEM_CHAT_VOICE_RPC_SECRET"))
         db_binding = binding_value(self.env, D1_BINDING_NAME)
         b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
         # B14 spends platform-owned Provider credentials on its catalog

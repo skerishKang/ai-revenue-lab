@@ -160,6 +160,7 @@ from .voice_stt_routes import CLAW_IDENTITY_PATH as CLAW_VOICE_IDENTITY_PATH
 from .voice_stt_routes import CLAW_TRANSCRIBE_PATH as CLAW_VOICE_TRANSCRIBE_PATH
 from .voice_stt_routes import CLAW_LIVE_TOKEN_PATH as CLAW_VOICE_LIVE_TOKEN_PATH
 from .voice_stt_routes import voice_identity, voice_transcribe, voice_live_token
+from .voice_stt_rpc import VOICE_RPC_PATH, voice_stt_rpc
 from .voice_relay import RELAY_WS_PATH as VOICE_RELAY_WS_PATH, voice_relay_ws
 from .chat_routes import api_chat, api_chat_stream
 from .claw_general_routes import claw_general_execute, claw_general_capabilities
@@ -623,6 +624,7 @@ def create_app(
     shared_login_flow=None,
     custom_credential_cipher=None,
     account_delete_rpc_transport=None,
+    voice_stt_transport=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -672,6 +674,10 @@ def create_app(
         Route("/api/auth/password/login", password_login, methods=["POST"]),
         # padiem-auth email signup/login (opt-in) verifies credentials here.
         Route("/internal/password-verify", password_verify_rpc, methods=["POST"]),
+        # #7228 recovery: the COM2 host's authenticated voice STT RPC. The
+        # receiver fails closed (404) unless PADIEM_CHAT_VOICE_RPC_SECRET is
+        # configured, so hosts that only call this route are unaffected.
+        Route(VOICE_RPC_PATH, voice_stt_rpc, methods=["POST"]),
         Route("/internal/password-register", password_register_rpc, methods=["POST"]),
         Route("/internal/account-delete", chat_account_delete_rpc, methods=["POST"]),
         Route("/api/auth/password/change", password_change, methods=["POST"]),
@@ -1231,6 +1237,12 @@ def create_app(
     app.state.request_telemetry_enabled = True
     app.state.settings = resolved
     app.state.account_delete_rpc_transport = account_delete_rpc_transport
+    # #7228 recovery: the host fills this with the Chat-Worker RPC transport;
+    # the Worker composes its own Service-Binding transport after create_app.
+    # Absent injection leaves the attribute unset and every voice lane keeps
+    # its reviewed fail-closed 503.
+    if voice_stt_transport is not None:
+        app.state.voice_stt_transport = voice_stt_transport
     app.state.file_lane_client = file_lane_client or FileLaneClient(
         resolved.file_lane_origin, resolved.file_lane_ticket_secret, transport=web_transport)
     app.state.github_oauth_store = github_oauth_store
