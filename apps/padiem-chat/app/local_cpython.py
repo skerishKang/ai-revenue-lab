@@ -503,7 +503,6 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
         + ("bound" if calendar_read_state_client is not None else "unbound")
         + (" reason=" + calendar_state_diagnostic if calendar_state_diagnostic else "")
     )
-    )
     # The connector READ tool lane reuses the same P01 Engine caller surface
     # over the same loopback binding, restricted to the private tool-execute
     # path. Authority stays Engine-side; an unbound client only means the lane
