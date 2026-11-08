@@ -1,5 +1,40 @@
 (() => {
   "use strict";
+  // #7216 R5 1단계: 설정·사이드바 구역은 모듈 파일이 소유한다. app.js는 같은 이름의
+  // 한 줄 전달 함수만 남겨 호출부와 함수 선언 끌어올림을 그대로 보존한다. deps의
+  // getter/setter는 클로저 변수를 그때그때 읽고 쓰므로 첫 호출 전 변경도 반영된다.
+  let settingsModuleInstance = null;
+  let sidebarModuleInstance = null;
+  function settingsModule() {
+    if (!settingsModuleInstance) {
+      settingsModuleInstance = window.PadiemChatSettingsModule.create({
+        get settingsDialog() { return settingsDialog; },
+        get settingsButton() { return settingsButton; },
+        get profileToggle() { return profileToggle; },
+        get advancedSettingsView() { return advancedSettingsView; },
+        get advancedSettingsReturnState() { return advancedSettingsReturnState; },
+        set advancedSettingsReturnState(value) { advancedSettingsReturnState = value; },
+        get shell() { return shell; },
+        get setNavActive() { return setNavActive; },
+        get selectAdvancedMenu() { return selectAdvancedMenu; },
+      });
+    }
+    return settingsModuleInstance;
+  }
+  function sidebarModule() {
+    if (!sidebarModuleInstance) {
+      sidebarModuleInstance = window.PadiemChatSidebarModule.create({
+        get shell() { return shell; },
+        get sidebarCollapseButton() { return sidebarCollapseButton; },
+        get sidebarRestoreButton() { return sidebarRestoreButton; },
+        get mobileMenu() { return mobileMenu; },
+        get mobileClose() { return mobileClose; },
+        get sidebarScrim() { return sidebarScrim; },
+        get closeProfilePanel() { return closeProfilePanel; },
+      });
+    }
+    return sidebarModuleInstance;
+  }
   const shell = document.querySelector(".app-shell");
   const emptyState = document.getElementById("emptyState");
   const messageList = document.getElementById("messageList");
@@ -1139,48 +1174,7 @@
   }
   // Static, accessible sidebar actions: keep the translated button text
   // and ARIA labels; only replace the low-contrast visual affordance.
-  function sidebarActionIcon(kind) {
-    const ns = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(ns, "svg");
-    svg.setAttribute("viewBox", "0 0 24 24");
-    svg.setAttribute("fill", "none");
-    svg.setAttribute("stroke", "currentColor");
-    svg.setAttribute("stroke-width", "1.9");
-    svg.setAttribute("stroke-linecap", "round");
-    svg.setAttribute("stroke-linejoin", "round");
-    svg.setAttribute("aria-hidden", "true");
-    svg.setAttribute("focusable", "false");
-    if (kind === "more") {
-      for (const cy of [5, 12, 19]) {
-        const dot = document.createElementNS(ns, "circle");
-        dot.setAttribute("cx", "12");
-        dot.setAttribute("cy", String(cy));
-        dot.setAttribute("r", "1.65");
-        dot.setAttribute("fill", "currentColor");
-        dot.setAttribute("stroke", "none");
-        svg.appendChild(dot);
-      }
-      return svg;
-    }
-    const shape = document.createElementNS(ns, "path");
-    const paths = {
-      settings: "M12 2l1.5 2.4 2.8.5 1.9-1.2 2 3.5-1.9 1.9.1 2.9 1.8 1.9-2 3.5-2.8-.5-2.4 1.4L12 21l-3.1-2.7-2.4-1.4-2.8.5-2-3.5 1.8-1.9.1-2.9-1.9-1.9 2-3.5 1.9 1.2 2.8-.5L12 2Z",
-      rename: "M4 20h4.2L19 9.2 14.8 5 4 15.8V20Z M13.6 6.2l4.2 4.2",
-      pin: "M9.5 3.5h5l-.8 5.4 2.9 2.9v1.7H7.4v-1.7l2.9-2.9-.8-5.4Z M12 13.5V21",
-      unpin: "M9.5 3.5h5l-.8 5.4 2.9 2.9v1.7H7.4v-1.7l2.9-2.9-.8-5.4Z M12 13.5V21 M4 3l16 17",
-      trash: "M4 6h16M9 6V4h6v2M6 6l1 15h10l1-15M10 10v7M14 10v7",
-    };
-    shape.setAttribute("d", paths[kind] || paths.trash);
-    svg.appendChild(shape);
-    if (kind === "settings") {
-      const center = document.createElementNS(ns, "circle");
-      center.setAttribute("cx", "12");
-      center.setAttribute("cy", "11.5");
-      center.setAttribute("r", "3.1");
-      svg.appendChild(center);
-    }
-    return svg;
-  }
+  function sidebarActionIcon(...a) { return sidebarModule().sidebarActionIcon(...a); }
   function renderProjects() {
     projectsList.replaceChildren();
     projectsSection.hidden = !projectsReady;
@@ -4113,15 +4107,8 @@
   // account's back. The restored value is always re-validated by the server
   // (member grade + administrator gate) before it is used.
 
-  function selectedProductTier() {
-    // Both Chat and the shared Claw first-use composer honor the visible
-    // PADIEM FREE/PLUS choice. Never silently force Claw to Plus while its
-    // explicit Plus model chooser is hidden. The server validates entitlements.
-    // The administrator entry rides the same payload; only a verified global
-    // model admin passes the server gate, and every other tier keeps its rule.
-    const tier = window.PadiemTierSelection?.get?.();
-    return ["free", "plus", "pro", "max", "admin"].includes(tier) ? tier : "free";
-  }
+  // #7216 R5 1단계: 설정 구역 본문은 chat-settings-module.js가 소유한다.
+  function selectedProductTier(...a) { return settingsModule().selectedProductTier(...a); }
 
   // A failed PADIEM Custom request that needs the customer's key reopens the
   // existing model card. No second dialog and no generic fallback to a PADIEM
@@ -4405,64 +4392,17 @@
     if (success && selectedAttachments === attachmentSnapshot) clearAttachment();
   }
 
-  // Desktop layout preference is ephemeral: never change mobile overlay behavior,
-  // authentication, or per-user server state to store a navigation choice.
-  function setSidebarCollapsed(collapsed) {
-    if (window.matchMedia("(max-width: 920px)").matches) return;
-    shell.classList.toggle("sidebar-collapsed", collapsed);
-    sidebarCollapseButton?.setAttribute("aria-expanded", collapsed ? "false" : "true");
-    sidebarRestoreButton?.setAttribute("aria-expanded", collapsed ? "false" : "true");
-    if (collapsed) sidebarRestoreButton?.focus();
-    else sidebarCollapseButton?.focus();
-  }
-  function closeSidebar() {
-    closeProfilePanel();
-    shell.classList.remove("sidebar-open");
-    mobileMenu.setAttribute("aria-expanded", "false");
-    sidebarScrim.hidden = true;
-  }
-  function openSidebar() {
-    shell.classList.add("sidebar-open");
-    mobileMenu.setAttribute("aria-expanded", "true");
-    sidebarScrim.hidden = false;
-    mobileClose.focus();
-  }
-  function openSettings() {
-    if (typeof settingsDialog.showModal === "function") settingsDialog.showModal();
-    else settingsDialog.setAttribute("open", "");
-    settingsButton.setAttribute("aria-expanded", "true");
-    profileToggle.setAttribute("aria-expanded", "true");
-  }
-  function closeSettings() {
-    if (settingsDialog.open && typeof settingsDialog.close === "function") settingsDialog.close();
-    else settingsDialog.removeAttribute("open");
-    settingsButton.setAttribute("aria-expanded", "false");
-    profileToggle.setAttribute("aria-expanded", "false");
-  }
+  function setSidebarCollapsed(...a) { return sidebarModule().setSidebarCollapsed(...a); }
+  function closeSidebar(...a) { return sidebarModule().closeSidebar(...a); }
+  function openSidebar(...a) { return sidebarModule().openSidebar(...a); }
+  function openSettings(...a) { return settingsModule().openSettings(...a); }
+  function closeSettings(...a) { return settingsModule().closeSettings(...a); }
   const advancedSettingsView = document.getElementById("advancedSettingsView");
   // The full page opens on top of the screen the user came from (home, chat or
   // claw). Its back entry must return there instead of assuming home.
   let advancedSettingsReturnState = null;
-  function openAdvancedSettingsView() {
-    if (!advancedSettingsView) { openSettings(); return; }
-    closeSettings();
-    if (shell.dataset.state && shell.dataset.state !== "settings") {
-      advancedSettingsReturnState = shell.dataset.state;
-    }
-    advancedSettingsView.hidden = false;
-    shell.dataset.state = "settings";
-    setNavActive();
-    selectAdvancedMenu("pc");
-    window.dispatchEvent(new CustomEvent("padiem:advanced-settings-open"));
-  }
-  function closeAdvancedSettingsView() {
-    if (!advancedSettingsView) return;
-    advancedSettingsView.hidden = true;
-    shell.dataset.state = advancedSettingsReturnState || "home";
-    advancedSettingsReturnState = null;
-    setNavActive();
-    window.dispatchEvent(new CustomEvent("padiem:advanced-settings-close"));
-  }
+  function openAdvancedSettingsView(...a) { return settingsModule().openAdvancedSettingsView(...a); }
+  function closeAdvancedSettingsView(...a) { return settingsModule().closeAdvancedSettingsView(...a); }
 
   window.addEventListener("padiem:tierchange", () => {
     if (shell.dataset.state === "claw") shell.dataset.clawTier = selectedProductTier();
