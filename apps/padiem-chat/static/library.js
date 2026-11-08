@@ -460,24 +460,27 @@
     // Treat every new auth projection as a session boundary to avoid showing
     // another owner's previously rendered filenames after a direct switch.
     const nextProjection = auth && typeof auth === "object" ? auth : null;
-    const projectionChanged = nextProjection !== lastAuthProjection;
     lastAuthProjection = nextProjection;
     signedIn = nextSignedIn;
     projectFilesReady = nextProjectFilesReady;
-    const signature = `${nextSignedIn}/${nextProjectFilesReady}`;
+    // #7164: the reload trigger is the SESSION signature (signed-in, storage,
+    // and the visible account name) — not object identity. Every background
+    // auth refresh mints a new frozen projection with the same booleans, and
+    // reloading on identity alone re-fetched page 1 every few seconds and
+    // flickered the list while the user was reading it. A direct account
+    // switch still crosses here: the display name changes with the session.
+    const signature = `${nextSignedIn}/${nextProjectFilesReady}/${nextProjection && nextProjection.displayName || ""}`;
     const changed = signature !== authSignature;
     authSignature = signature;
     // Login as well as logout crosses here, so a new account can never inherit
     // the previous owner's rendered rows.
-    if (changed || projectionChanged) invalidate();
+    if (changed) invalidate();
     if (!signedIn && isOpen()) leaveLibrary();
     // The sidebar no longer lists recent project files, so a signed-in
     // projection must not spend a first-screen read on a page nobody opened.
     if (isOpen()) {
       render();
-      // If the same signed-in state was refreshed while Library is open,
-      // show fresh owner-scoped data instead of retaining an older DOM.
-      if (projectionChanged && signedIn && activeTab === "files") loadFiles();
+      if (changed && signedIn && activeTab === "files") loadFiles();
     }
   }
 
