@@ -1,7 +1,7 @@
 name = "padiem-voice-stt"
 main = "worker.py"
 compatibility_date = "2026-08-25"
-compatibility_flags = ["python_workers"]
+compatibility_flags = ["python_workers", "disable_python_external_sdk"]
 # Private Worker: reachable only by an internal / Service-Binding caller, never
 # from the public internet. Products (Chat/Claw/B66) must not call it directly
 # from the browser.

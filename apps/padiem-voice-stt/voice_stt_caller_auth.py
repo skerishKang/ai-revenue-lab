@@ -564,7 +564,12 @@ class CallerAuthority:
             "product_id": identity.product_id,
             "subject": identity.subject_ref(),
             "request_fingerprint": digest,
-            "trace_id": None,
+            # A service-binding RPC cannot carry Python None across the worker->DO
+            # boundary (it arrives as a JS undefined proxy), so the optional trace
+            # id is sent as the per-dispatch nonce text instead of None. The
+            # authority treats trace_id as bounded opaque text and excludes it
+            # from the replay identity, so this stays byte-neutral for retries.
+            "trace_id": request_nonce,
             "estimated_units": estimated_units,
             "occurred_at": now.isoformat(),
         }

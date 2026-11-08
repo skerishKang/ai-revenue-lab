@@ -6,10 +6,12 @@ compatibility_date = "2026-10-01"
 workers_dev = false
 preview_urls = false
 
-# Nothing is deployed by this file. The `chat.padiem.net` Custom Domain still
-# points at the Python Worker (`padiem-chat`) until the approved cutover: the
-# swap is ONE change and the revert is the reverse ONE change.
-# routes = [{ pattern = "chat.padiem.net", custom_domain = true }]
+# Nothing is deployed by this file beyond the assets binding and the proxy.
+# The 2026-11-08 cutover moved the chat.padiem.net Custom Domain here
+# (docs/operations/CHAT_PADIEM_NET_REQUEST_TOPOLOGY_20261108.md); keeping the
+# route declared pins it on every front deploy, so a Python Worker deploy can
+# never silently re-claim the public hostname again (the 2026-11-09 accident).
+routes = [{ pattern = "chat.padiem.net", custom_domain = true }]
 
 [assets]
 directory = "../padiem-chat/static"
