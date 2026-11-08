@@ -1,0 +1,40 @@
+{
+  "version": "padiem.models.private.v1",
+  "comment": "Test fixture only. Placeholder provider, host, model and binding — never a real registry value.",
+  "providers": {
+    "example-provider": {
+      "base_origin": "https://api.example.invalid/v1",
+      "allowed_hosts": ["api.example.invalid"],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_99"
+    }
+  },
+  "models": [
+    {
+      "id": "example-provider/example-model-1",
+      "provider_id": "example-provider",
+      "upstream_model": "example-model-1",
+      "capabilities": ["chat"],
+      "enabled": true,
+      "display_name": "Example Model 1",
+      "context_window": 128000
+    },
+    {
+      "id": "example-provider/example-model-2",
+      "provider_id": "example-provider",
+      "upstream_model": "example-model-2",
+      "capabilities": ["chat", "tools"],
+      "enabled": true,
+      "display_name": "Example Model 2",
+      "context_window": 128000
+    }
+  ],
+  "tiers": {
+    "free": {
+      "primary": "example-provider/example-model-1",
+      "fallback": ["example-provider/example-model-2"]
+    },
+    "plus": {"primary": "example-provider/example-model-2", "fallback": []},
+    "pro": {"primary": "example-provider/example-model-2", "fallback": []},
+    "max": {"primary": "example-provider/example-model-2", "fallback": []}
+  }
+}
