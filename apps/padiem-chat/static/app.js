@@ -30,6 +30,7 @@
   const settingsDialog = document.getElementById("settingsDialog");
   const settingsCloseButton = document.getElementById("settingsCloseButton");
   const accountSettingsSection = document.getElementById("accountSettingsSection");
+  const advancedAccountSection = document.getElementById("advancedAccountSection");
   const accountPasswordActions = document.getElementById("accountPasswordActions");
   // #6659: account self-deletion. The server owns the authority and
   // the exact-email confirm; the browser only mirrors the same gate.
@@ -366,10 +367,14 @@
   const CALENDAR_ROUTE_HASH = "#padiem-calendar";
   const LIBRARY_ROUTE_HASH = "#padiem-library";
   const MEETING_ROUTE_HASH = "#padiem-meeting";
+  // The full-screen settings page the compact modal links to. The fragment
+  // is a destination only, exactly like the three panel routes.
+  const ADVANCED_SETTINGS_ROUTE_HASH = "#padiem-settings";
   const PANEL_ROUTE_HASH_BY_STATE = Object.freeze({
     calendar: CALENDAR_ROUTE_HASH,
     library: LIBRARY_ROUTE_HASH,
     meeting: MEETING_ROUTE_HASH,
+    settings: ADVANCED_SETTINGS_ROUTE_HASH,
   });
   const OWNED_PANEL_HASHES = new Set(Object.values(PANEL_ROUTE_HASH_BY_STATE));
   let automationDestinationReady = false;
@@ -390,6 +395,7 @@
     Object.freeze({ pageId: "meeting", navigationId: "meetingNavButton", layoutVariant: "panel", panelId: "meetingView", heroViews: null }),
     Object.freeze({ pageId: "calendar", navigationId: "calendarNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
     Object.freeze({ pageId: "library", navigationId: "filesNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
+    Object.freeze({ pageId: "settings", navigationId: "settingsButton", layoutVariant: "panel", panelId: null, heroViews: null }),
     Object.freeze({ pageId: "util", navigationId: "utilNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
   ]);
   const PAGE_VIEW_BY_ID = Object.freeze(
@@ -1835,6 +1841,11 @@
     if (accountSettingsSection) {
       accountSettingsSection.hidden = !authenticated;
     }
+    // The advanced settings page carries the same account entries; its data
+    // export section stays outside this gate so guests can export too.
+    if (advancedAccountSection) {
+      advancedAccountSection.hidden = !authenticated;
+    }
     if (accountPasswordActions) {
       accountPasswordActions.hidden = !(authenticated && authState.account_method === "password");
     }
@@ -1912,9 +1923,12 @@
       // nodes stay mounted; reopening after sign-in reloads fresh state.
       const connectorsView = document.getElementById("connectorsView");
       if (connectorsView) connectorsView.hidden = true;
+      if (advancedSettingsView) advancedSettingsView.hidden = true;
       const automationView = document.getElementById("automationView");
       if (automationView) automationView.hidden = true;
-      if (shell && (shell.dataset.state === "connectors" || shell.dataset.state === "automation")) {
+      if (shell && (shell.dataset.state === "connectors"
+        || shell.dataset.state === "automation"
+        || shell.dataset.state === "settings")) {
         shell.dataset.state = "home";
         setNavActive();
       }
@@ -4340,6 +4354,30 @@
     settingsButton.setAttribute("aria-expanded", "false");
     profileToggle.setAttribute("aria-expanded", "false");
   }
+  const advancedSettingsView = document.getElementById("advancedSettingsView");
+  // The full page opens on top of the screen the user came from (home, chat or
+  // claw). Its back entry must return there instead of assuming home.
+  let advancedSettingsReturnState = null;
+  function openAdvancedSettingsView() {
+    if (!advancedSettingsView) { openSettings(); return; }
+    closeSettings();
+    if (shell.dataset.state && shell.dataset.state !== "settings") {
+      advancedSettingsReturnState = shell.dataset.state;
+    }
+    advancedSettingsView.hidden = false;
+    shell.dataset.state = "settings";
+    setNavActive();
+    selectAdvancedMenu("pc");
+    window.dispatchEvent(new CustomEvent("padiem:advanced-settings-open"));
+  }
+  function closeAdvancedSettingsView() {
+    if (!advancedSettingsView) return;
+    advancedSettingsView.hidden = true;
+    shell.dataset.state = advancedSettingsReturnState || "home";
+    advancedSettingsReturnState = null;
+    setNavActive();
+    window.dispatchEvent(new CustomEvent("padiem:advanced-settings-close"));
+  }
 
   window.addEventListener("padiem:tierchange", () => {
     if (shell.dataset.state === "claw") shell.dataset.clawTier = selectedProductTier();
@@ -4476,6 +4514,34 @@
     }
     await signOutCurrentAccount();
   });
+  const settingsAdvancedOpen = document.getElementById("settingsAdvancedOpen");
+  if (settingsAdvancedOpen) settingsAdvancedOpen.addEventListener("click", () => {
+    closeSettings();
+    openAdvancedSettingsView();
+  });
+  const advancedSettingsBack = document.getElementById("advancedSettingsBack");
+  if (advancedSettingsBack) advancedSettingsBack.addEventListener("click", () => { closeAdvancedSettingsView(); });
+  // Escape takes the same close path as the back entry. An open dialog inside
+  // the page (password change, deletes) keeps Escape for itself.
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || event.isComposing) return;
+    if (!advancedSettingsView || advancedSettingsView.hidden) return;
+    if (document.querySelector("dialog[open]")) return;
+    closeAdvancedSettingsView();
+  });
+  const advancedMenuButtons = [...document.querySelectorAll(".advanced-menu-link")];
+  const advancedPageBlocks = [...document.querySelectorAll(".advanced-page-block")];
+  function selectAdvancedMenu(key) {
+    for (const button of advancedMenuButtons) {
+      button.classList.toggle("selected", button.dataset.advancedMenu === key);
+    }
+    for (const block of advancedPageBlocks) {
+      block.hidden = block.dataset.advancedBlock !== key;
+    }
+  }
+  for (const button of advancedMenuButtons) {
+    button.addEventListener("click", () => selectAdvancedMenu(button.dataset.advancedMenu));
+  }
   if (settingsLogoutButton) {
     settingsLogoutButton.addEventListener("click", async () => {
       if (!authState.ready || !authState.authenticated) return;
@@ -4629,6 +4695,11 @@
   settingsDialog.addEventListener("cancel", (event) => {
     event.preventDefault();
     closeSettings();
+  });
+  // The dialog element is the panel itself, so a backdrop click reports the
+  // dialog as the target. Any click inside the panel hits a descendant first.
+  settingsDialog.addEventListener("click", (event) => {
+    if (event.target === settingsDialog) closeSettings();
   });
   settingsCloseButton.addEventListener("click", closeSettings);
   sidebarCollapseButton?.addEventListener("click", () => setSidebarCollapsed(true));
@@ -7974,6 +8045,7 @@
   if (window.location.hash === AUTOMATION_ROUTE_HASH) openClawAutomation();
   else if (window.location.hash === CLAW_ROUTE_HASH) openClawWorkspace();
   else if (window.location.hash === CONNECTORS_ROUTE_HASH) openConnectorsView();
+  else if (window.location.hash === ADVANCED_SETTINGS_ROUTE_HASH) openAdvancedSettingsView();
   // Calendar, Library and Meeting are reachable only through the menu, so a
   // shared link used to land on Chat with whatever fragment the previous screen
   // left behind. Each of the three now names itself, and the screen that owns

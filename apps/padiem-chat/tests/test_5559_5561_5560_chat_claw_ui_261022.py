@@ -288,15 +288,16 @@ def test_the_sidebar_no_longer_owns_the_three_rows() -> None:
     assert 'class="sidebar-account account-controls"' in bottom
 
 
-def test_settings_owns_the_admin_export_and_sign_out_entries() -> None:
+def test_settings_owns_the_admin_hub_and_sign_out_entries() -> None:
     html = _read("index.html")
+    # The modal keeps the admin hub entry and sign-out; the data section moved
+    # to the advanced settings page (#7136-era split, 2026-11-08 decision).
     assert 'id="adminSettingsSection"' in html
     assert 'id="adminHubLink"' in html
     assert 'href="./admin"' in html
-    assert 'id="dataSettingsSection"' in html
-    assert 'id="dataSettingsActions"' in html
     assert 'id="settingsLogoutButton"' in html
-    # The password change stays a password-account-only entry.
+    # The password change stays a password-account-only entry (the block now
+    # lives in the advanced settings page).
     assert 'id="accountPasswordActions" hidden' in html
     assert 'id="passwordChangeOpen"' in html
 
@@ -660,8 +661,10 @@ def test_the_settings_screen_carries_the_three_entries(browser, server):
         """() => {
           const bottom = document.querySelector('.sidebar-bottom');
           const dialog = document.getElementById('settingsDialog');
+          const advanced = document.getElementById('advancedSettingsView');
           const admin = document.getElementById('adminHubLink');
           const exportButton = document.getElementById('conversationExportButton');
+          const exportSection = document.getElementById('dataSettingsSection');
           const logout = document.getElementById('settingsLogoutButton');
           return {
             adminInSidebar: Boolean(bottom.querySelector('#adminHubLink')),
@@ -669,11 +672,12 @@ def test_the_settings_screen_carries_the_three_entries(browser, server):
             homeInSidebar: Boolean(bottom.querySelector('.home-link')),
             settings: Boolean(dialog),
             adminSection: Boolean(document.getElementById('adminSettingsSection')),
-            dataSection: Boolean(document.getElementById('dataSettingsSection')),
+            dataSection: Boolean(exportSection),
             accountSection: Boolean(document.getElementById('accountSettingsSection')),
             logout: Boolean(logout),
             adminInSettings: Boolean(admin && dialog && dialog.contains(admin)),
-            exportInSettings: Boolean(exportButton && dialog && dialog.contains(exportButton)),
+            exportInSettings: Boolean(exportButton && advanced && advanced.contains(exportButton)
+              && exportSection && exportSection.contains(exportButton)),
             logoutInAccount: Boolean(logout && document.getElementById('accountSettingsSection')
               && document.getElementById('accountSettingsSection').contains(logout)),
           };
@@ -687,10 +691,46 @@ def test_the_settings_screen_carries_the_three_entries(browser, server):
     assert state["dataSection"] is True, state
     assert state["accountSection"] is True, state
     assert state["logout"] is True, state
-    # The three entries live inside the existing settings screen.
+    # The three entries live in the two settings surfaces: admin and sign-out in
+    # the modal, the conversation export on the advanced settings page.
     assert state["adminInSettings"] is True, state
     assert state["exportInSettings"] is True, state
     assert state["logoutInAccount"] is True, state
+    assert not errors, errors
+    page.close()
+
+
+@requires_browser
+def test_advanced_settings_close_restores_the_opening_screen(browser, server):
+    """The back entry and Escape return to the screen the page was opened from."""
+    page = browser.new_page(viewport={"width": 1440, "height": 900})
+    errors: list[str] = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(server, wait_until="domcontentloaded")
+    page.wait_for_timeout(1200)
+
+    def open_from_chat() -> None:
+        page.evaluate(
+            """() => {
+              document.querySelector('.app-shell').dataset.state = 'chat';
+              const dialog = document.getElementById('settingsDialog');
+              if (dialog && !dialog.open && typeof dialog.showModal === 'function') dialog.showModal();
+            }"""
+        )
+        page.locator("#settingsAdvancedOpen").click()
+        page.locator("#advancedSettingsView").wait_for(state="visible")
+
+    open_from_chat()
+    assert page.evaluate("() => document.querySelector('.app-shell').dataset.state") == "settings"
+    page.locator("#advancedSettingsBack").click()
+    page.locator("#advancedSettingsView").wait_for(state="hidden")
+    assert page.evaluate("() => document.querySelector('.app-shell').dataset.state") == "chat"
+
+    open_from_chat()
+    page.keyboard.press("Escape")
+    page.locator("#advancedSettingsView").wait_for(state="hidden")
+    assert page.evaluate("() => document.querySelector('.app-shell').dataset.state") == "chat"
+
     assert not errors, errors
     page.close()
 

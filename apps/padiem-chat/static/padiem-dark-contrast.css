@@ -69,3 +69,72 @@ html[data-theme="dark"] body .app-shell :is(.source-card,.rich-block,.output-car
 }
 html[data-theme="dark"] body .app-shell :is(.error-box,.error-banner) { color: #ffdedb; background: #432b2d; border-color: #a95c62; }
 html[data-theme="dark"] body .app-shell :is(button,input,textarea,select):focus-visible { outline-color: #a2d6f7; outline-offset: 2px; }
+
+/* #7159: the settings modal and the advanced settings page are dark surfaces
+ * in the dark theme. The modal panel used to stay light while this sheet made
+ * its text white; the advanced page kept its light-theme text colours on the
+ * dark shell. Both now use the same surface, muted copy and control palette. */
+html[data-theme="dark"] body .app-shell .settings-panel {
+  background: #16212b;
+  border-color: #3d566b;
+  box-shadow: 0 34px 100px rgba(0, 0, 0, .55);
+}
+html[data-theme="dark"] body .app-shell .settings-dialog :is(.settings-header, .settings-section, .settings-footer) {
+  border-color: rgba(159, 192, 221, .14);
+}
+html[data-theme="dark"] body .app-shell .settings-dialog :is(h2, h3),
+html[data-theme="dark"] body .app-shell .settings-advanced-view :is(h2, h3) {
+  color: #f2f7fb;
+}
+html[data-theme="dark"] body .app-shell .settings-dialog :is(.settings-header p, .settings-label),
+html[data-theme="dark"] body .app-shell .settings-advanced-view :is(.settings-label, small) {
+  color: #9fb3c4;
+}
+html[data-theme="dark"] body .app-shell .settings-dialog :is(.theme-option, .language-option):not([aria-pressed="true"]) {
+  background: rgba(255, 255, 255, .08);
+  border-color: rgba(159, 192, 221, .28);
+  color: #dbe8f3 !important;
+}
+html[data-theme="dark"] body .app-shell .settings-dialog :is(.theme-option, .language-option):not([aria-pressed="true"]):hover {
+  background: rgba(255, 255, 255, .14);
+}
+html[data-theme="dark"] body .app-shell :is(.settings-dialog, .settings-advanced-view) .settings-action:not(.settings-action-danger) {
+  background: rgba(255, 255, 255, .08);
+  border-color: rgba(159, 192, 221, .28);
+  color: #dbe8f3;
+}
+html[data-theme="dark"] body .app-shell :is(.settings-dialog, .settings-advanced-view) .settings-action:not(.settings-action-danger):hover {
+  background: rgba(255, 255, 255, .14);
+}
+html[data-theme="dark"] body .app-shell :is(.settings-dialog, .settings-advanced-view) .settings-action-danger {
+  border-color: rgba(255, 138, 128, .45);
+  color: #ff8a80;
+}
+html[data-theme="dark"] body .app-shell :is(.settings-dialog, .settings-advanced-view) :is(.settings-action, .settings-done, .settings-close, .theme-option, .language-option) :is(span, p, label) {
+  color: inherit;
+}
+html[data-theme="dark"] body .app-shell .settings-dialog .settings-close {
+  background: rgba(255, 255, 255, .08);
+  border-color: rgba(159, 192, 221, .28);
+  color: #dbe8f3;
+}
+html[data-theme="dark"] body .app-shell .settings-advanced-view .advanced-menu-link.selected {
+  background: rgba(159, 192, 221, .16);
+  color: #fff;
+}
+html[data-theme="dark"] body .app-shell .settings-advanced-view :is(.settings-delete-description) {
+  color: #c4aa9f;
+}
+html[data-theme="dark"] body .app-shell .settings-advanced-view .settings-delete-input {
+  background: rgba(255, 255, 255, .06);
+  border-color: rgba(159, 192, 221, .26);
+  color: #e8f1f9;
+}
+html[data-theme="dark"] body .app-shell .sidebar-bottom :is(.home-link, .settings-button) {
+  background: rgba(255, 255, 255, .07);
+  border-color: rgba(159, 192, 221, .24);
+  color: #e8f1f9;
+}
+html[data-theme="dark"] body .app-shell .sidebar-bottom :is(.home-link, .settings-button):hover {
+  background: rgba(255, 255, 255, .13);
+}

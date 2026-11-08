@@ -32,6 +32,45 @@ async def open_settings(page: Page) -> None:
     await page.locator("#settingsDialog").wait_for(state="visible", timeout=5_000)
 
 
+async def open_advanced_settings(page: Page) -> None:
+    """Open Settings, then the 고급 설정 page (the conversation export home)."""
+    await open_settings(page)
+    await page.evaluate(
+        """() => {
+          const advanced = document.getElementById('advancedSettingsView');
+          if (advanced && !advanced.hidden) return;
+          const open = document.getElementById('settingsAdvancedOpen');
+          if (open) open.click();
+        }"""
+    )
+    await page.locator("#advancedSettingsView").wait_for(state="visible", timeout=5_000)
+
+
+async def close_advanced_settings(page: Page) -> None:
+    """Close the advanced settings page through the product's own back entry.
+
+    The back button is the reviewed close path: it hides the view, restores the
+    home shell state and dispatches the same close event the panels reset on.
+    """
+    await page.evaluate(
+        """() => {
+          const view = document.getElementById('advancedSettingsView');
+          if (!view || view.hidden) return;
+          const back = document.getElementById('advancedSettingsBack');
+          if (back) { back.click(); return; }
+          view.hidden = true;
+          window.dispatchEvent(new CustomEvent('padiem:advanced-settings-close'));
+        }"""
+    )
+    await page.locator("#advancedSettingsView").wait_for(state="hidden", timeout=5_000)
+    # A hidden view with a stale shell state would keep the composer hidden;
+    # the close path must also restore the screen the user came from.
+    await page.wait_for_function(
+        "() => { const state = document.querySelector('.app-shell')?.dataset.state; return state && state !== 'settings'; }",
+        timeout=5_000,
+    )
+
+
 async def close_settings(page: Page) -> None:
     """Close the Settings screen again."""
     await page.evaluate(

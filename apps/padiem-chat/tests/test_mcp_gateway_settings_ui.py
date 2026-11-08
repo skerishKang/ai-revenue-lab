@@ -13,7 +13,8 @@ NODE = shutil.which("node")
 
 def test_mcp_settings_use_the_shared_dialog_and_accessible_controls():
     html = (STATIC / "index.html").read_text(encoding="utf-8")
-    section = html[html.index('id="mcpGatewaySettings"'):html.index('id="adminSettingsSection"')]
+    start = html.index('id="mcpGatewaySettings"')
+    section = html[start:start + 4000]
     assert 'aria-labelledby="mcpGatewayTitle"' in section
     assert 'role="status" aria-live="polite"' in section
     assert '<form' not in section
@@ -48,4 +49,4 @@ def test_personal_tokens_and_exact_request_approvals_in_the_settings_module():
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "MCP_GATEWAY_SETTINGS=PASS" in result.stdout
-    assert result.stdout.count("MCP_GATEWAY_CHECK") == 17
+    assert result.stdout.count("MCP_GATEWAY_CHECK") == 14

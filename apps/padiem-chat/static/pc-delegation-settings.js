@@ -164,9 +164,7 @@
     nodes.editor.addEventListener("keydown", (event) => {
       if (event.key === "Enter" && event.target.tagName === "INPUT") event.preventDefault();
     });
-    if (typeof root.MutationObserver === "function") new root.MutationObserver(() => {
-      if (nodes.dialog.open) void load();
-    }).observe(nodes.dialog, { attributes: true, attributeFilter: ["open"] });
+    root.addEventListener("padiem:advanced-settings-open", () => { void load(); });
     root.addEventListener("padiem:localechange", paint);
     root.addEventListener("padiem:auth-state", () => {
       ++state.epoch;

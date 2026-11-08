@@ -159,5 +159,113 @@
   }
 
   $("refreshBtn").addEventListener("click", () => void load());
+
+  const managedState = new Map();
+
+  function managedRow(link) {
+    const item = document.createElement("li");
+    item.className = "mcp-settings-card";
+    const detail = document.createElement("div");
+    detail.className = "mcp-settings-detail";
+    const name = document.createElement("strong");
+    name.textContent = link.label || link.mesh_node_id;
+    detail.append(name);
+    const state = document.createElement("span");
+    state.textContent = managedState.get(link.link_id) ? "관리 PC" : "일반 PC";
+    detail.append(state);
+    const choice = document.createElement("label");
+    choice.className = "mcp-settings-field";
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    box.checked = managedState.get(link.link_id) === true;
+    box.addEventListener("change", () => { void setManaged(link, box); });
+    choice.append(box, document.createTextNode("관리 PC"));
+    item.append(detail, choice);
+    return item;
+  }
+
+  async function setManaged(link, box) {
+    const previous = managedState.get(link.link_id) === true;
+    try {
+      const response = await fetch("/api/pc/devices/" + encodeURIComponent(link.link_id) + "/managed", {
+        method: "POST", credentials: "same-origin", cache: "no-store",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ managed: !previous }),
+      });
+      const body = await response.json().catch(() => null);
+      if (response.status === 200 && body?.ok === true) {
+        managedState.set(link.link_id, body.link.managed === true);
+        $("pcManagedError").hidden = true;
+      } else if (response.status === 503 && body?.error?.code === "pc_pairing_not_ready") {
+        $("pcManagedStatus").textContent = "준비 중";
+        $("pcManagedError").textContent = "관리 PC 표시를 아직 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.";
+        $("pcManagedError").hidden = false;
+      } else {
+        $("pcManagedError").textContent = "관리 PC 표시를 변경하지 못했습니다. 다시 시도해 주세요.";
+        $("pcManagedError").hidden = false;
+      }
+    } catch (_) {
+      $("pcManagedError").textContent = "관리 PC 표시를 변경하는 중 연결이 끊겼습니다.";
+      $("pcManagedError").hidden = false;
+    }
+    box.checked = managedState.get(link.link_id) === true;
+  }
+
+  async function loadManaged() {
+    const list = $("pcManagedList");
+    list.replaceChildren();
+    try {
+      const response = await fetch("/api/pc/pairings", {
+        headers: { Accept: "application/json" }, credentials: "same-origin", cache: "no-store",
+      });
+      const body = await response.json().catch(() => null);
+      const links = body?.ok === true && Array.isArray(body.links) ? body.links : [];
+      const active = links.filter((link) => link && link.state === "active" && link.link_id);
+      if (!active.length) {
+        const empty = document.createElement("li");
+        empty.className = "mcp-settings-card";
+        empty.textContent = "연결된 PC가 없습니다.";
+        list.append(empty);
+        return;
+      }
+      const states = await Promise.allSettled(active.map((link) =>
+        fetch("/api/pc/devices/" + encodeURIComponent(link.link_id) + "/managed", {
+          headers: { Accept: "application/json" }, credentials: "same-origin", cache: "no-store",
+        }).then((reply) => reply.json().then((body) => ({ status: reply.status, body })))
+      ));
+      let notReady = false;
+      active.forEach((link, index) => {
+        const settled = states[index];
+        if (settled.status !== "fulfilled" || settled.value.status === 503) {
+          notReady = true;
+          managedState.delete(link.link_id);
+          return;
+        }
+        if (settled.value.status === 200 && settled.value.body?.ok === true) {
+          managedState.set(link.link_id, settled.value.body.managed === true);
+        }
+      });
+      for (const link of active) list.append(managedRow(link));
+      $("pcManagedError").hidden = !notReady;
+      if (notReady) {
+        $("pcManagedStatus").textContent = "준비 중";
+        $("pcManagedError").textContent = "관리 PC 표시를 아직 사용할 수 없습니다. 잠시 후 새로고침해 주세요.";
+      } else {
+        $("pcManagedStatus").textContent = "";
+      }
+    } catch (_) {
+      $("pcManagedError").textContent = "PC 연결 목록을 불러오지 못했습니다.";
+      $("pcManagedError").hidden = false;
+    }
+  }
+
+  const adminLoad = load;
+  load = async function () {
+    await adminLoad();
+    if (!$("adminContent").hidden) {
+      $("pcManagedPanel").hidden = false;
+      await loadManaged();
+    }
+  };
   void load();
 })();
