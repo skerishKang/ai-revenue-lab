@@ -568,12 +568,21 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
     from .auth_validation_cache import SqliteAuthValidationCache
     cache_seconds = _nonnegative_env('PADIEM_CHAT_AUTH_CACHE_SECONDS', 30)
     link_seconds = _nonnegative_env('PADIEM_CHAT_SHARED_LINK_CACHE_SECONDS', 600)
+    # #7084: the revocation guard's successful session check is reused for a
+    # longer window than the shared account mapping, because the 30 s window kept
+    # expiring between request bursts and every miss paid the ~1.2 s authority
+    # call (COM2 journal: 7,736 checks, 420 upstream calls). Logout, password
+    # change, account deletion and admin membership/role changes delete the row
+    # before they answer, so only a revocation made in another product waits for
+    # this window to end. 0 keeps the mapping window instead of refusing a boot.
+    session_seconds = _nonnegative_env('PADIEM_CHAT_AUTH_SESSION_CACHE_SECONDS', 300)
     # #7084: the revocation guard reloads this entry on a background task just
     # before it expires, so the request that would have waited ~1.2 s for the
     # authority answers from the still-valid entry instead.
     refresh_ahead = _nonnegative_env('PADIEM_CHAT_AUTH_REFRESH_AHEAD_SECONDS', 5)
     app.state.auth_validation_cache = (
         SqliteAuthValidationCache(db, ttl_seconds=cache_seconds,
+                                  session_ttl_seconds=session_seconds or cache_seconds,
                                   refresh_ahead_seconds=refresh_ahead,
                                   link_ttl_seconds=link_seconds) if cache_seconds else None
     )
