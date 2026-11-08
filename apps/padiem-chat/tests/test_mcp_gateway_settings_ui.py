@@ -48,4 +48,4 @@ def test_personal_tokens_and_exact_request_approvals_in_the_settings_module():
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "MCP_GATEWAY_SETTINGS=PASS" in result.stdout
-    assert result.stdout.count("MCP_GATEWAY_CHECK") == 14
+    assert result.stdout.count("MCP_GATEWAY_CHECK") == 17

@@ -182,6 +182,8 @@ class PcPairingStore(Protocol):
 
     async def is_managed_link(self, *, user_id: str, mesh_node_id: str) -> bool: ...
 
+    async def managed_state(self, *, link_id: str) -> dict[str, Any]: ...
+
     async def set_managed(
         self, *, link_id: str, by_user_id: str, managed: bool, now: datetime,
     ) -> dict[str, Any]: ...
@@ -654,6 +656,28 @@ class D1PcPairingStore:
             # no column means "not managed", so SYSTEM stays refused.
             return False
         return isinstance(row, dict) and bool(row.get("managed_at"))
+
+    async def managed_state(self, *, link_id: str) -> dict[str, Any]:
+        """Admin read: whether one live link carries the managed(contract) mark."""
+        if not isinstance(link_id, str) or _LINK_ID_RE.fullmatch(link_id) is None:
+            raise PcPairingError("link id invalid")
+        try:
+            row = await self._first(
+                "SELECT user_id, state, paused_at, managed_at FROM pc_device_links WHERE link_id=?",
+                link_id,
+            )
+        except Exception as exc:
+            # Migration 103 is not applied (the queue schema stops at 102):
+            # the mark cannot be read yet, same 503 shape as writing it.
+            text = str(exc).lower()
+            if "no such column" not in text and "has no column named" not in text:
+                raise
+            raise PcPairingError("managed column missing") from exc
+        if not isinstance(row, dict) or not row.get("user_id"):
+            raise PcPairingError("link not found")
+        if row.get("state") != _STATE_ACTIVE or row.get("paused_at"):
+            raise PcPairingError("link not active")
+        return {"link_id": link_id, "managed": bool(row.get("managed_at"))}
 
     async def set_managed(
         self, *, link_id: str, by_user_id: str, managed: bool, now: datetime,

@@ -383,7 +383,14 @@ async def pc_pairing_list(request: Request) -> JSONResponse:
         view = await _presence_view(presence, device_id=node, now=now)
         link["online"] = view["online"]
         link["last_seen_at"] = view["last_seen_at"]
-    return _json({"ok": True, "links": links, "codes": codes}, 200)
+    # One boolean for the settings screen: the 관리 PC toggle renders only for
+    # the platform administrator (the same verdict the mark route enforces).
+    from .platform_admin_authority import platform_authority_for
+    try:
+        admin = await platform_authority_for(request).is_global_model_admin(user_id=user_id)
+    except Exception:
+        admin = False
+    return _json({"ok": True, "links": links, "codes": codes, "admin": admin is True}, 200)
 
 
 async def pc_pairing_revoke(request: Request) -> JSONResponse:
@@ -521,6 +528,34 @@ async def pc_pairing_managed(request: Request) -> JSONResponse:
         return refused
     _log_managed(actor=user_id, link_id=link_id, managed=body["managed"], result="ok")
     return _json({"ok": True, "link": link}, 200)
+
+
+async def pc_pairing_managed_state(request: Request) -> JSONResponse:
+    """Administrator-only read of one link's managed(contract) mark (2026-11-08).
+
+    A separate query on purpose (#7147 principle): the base link reads never
+    depend on the migration 103 column, so the toggle state travels on its own
+    endpoint and degrades to 503 pc_pairing_not_ready while the column is away.
+    """
+    user_id = current_user_id(request)
+    if not user_id:
+        return _error(401, "unauthorized")
+    store = _store(request)
+    if store is None:
+        return _error(503, "pc_pairing_unavailable")
+    from .platform_admin_authority import platform_authority_for
+    try:
+        admin = await platform_authority_for(request).is_global_model_admin(user_id=user_id)
+    except Exception:
+        admin = False
+    if admin is not True:
+        return _error(403, "pc_pairing_managed_not_admin")
+    state, refused = await _await_store(
+        store.managed_state, link_id=request.path_params.get("link_id"),
+    )
+    if refused is not None:
+        return refused
+    return _json({"ok": True, "link_id": state["link_id"], "managed": state["managed"]}, 200)
 
 
 async def pc_pairing_label(request: Request) -> JSONResponse:

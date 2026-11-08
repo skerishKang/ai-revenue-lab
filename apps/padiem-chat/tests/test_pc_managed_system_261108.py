@@ -17,7 +17,10 @@ sys.path.insert(0, str(Path(__file__).parent))
 import test_5573_pc_device_pairing as pairing  # noqa: E402
 
 from app.mcp_gateway_store import D1McpGatewayStore  # noqa: E402
-from app.pc_device_pairing_routes import PC_PAIRING_MANAGED_PATH  # noqa: E402
+from app.pc_device_pairing_routes import (  # noqa: E402
+    PC_PAIRING_MANAGED_PATH,
+    PC_PAIRING_PATH,
+)
 from app.pc_device_pairing_store import D1PcPairingStore  # noqa: E402
 
 
@@ -223,4 +226,78 @@ def test_mcp_audit_records_without_command_bytes_column() -> None:
         dump = " ".join(str(value) for value in conn.execute(
             "SELECT * FROM padiem_mcp_audit").fetchone())
         assert "whoami" not in dump
+    pairing.run(journey())
+
+
+def test_admin_reads_the_managed_state() -> None:
+    async def journey():
+        conn = pairing.database()
+        store = D1PcPairingStore(pairing.RealSQLiteD1(conn))
+        link = await _adopt(store)
+        app = _app(conn, admin=True)
+        async with pairing.client(app) as session:
+            await session.post(_url(link["link_id"]), json={"managed": True})
+            marked = await session.get(_url(link["link_id"]))
+            assert marked.status_code == 200, marked.text
+            assert marked.json() == {"ok": True, "link_id": link["link_id"], "managed": True}
+            await session.post(_url(link["link_id"]), json={"managed": False})
+            unmarked = await session.get(_url(link["link_id"]))
+            assert unmarked.status_code == 200
+            assert unmarked.json() == {"ok": True, "link_id": link["link_id"], "managed": False}
+    pairing.run(journey())
+
+
+def test_managed_state_refuses_non_admin() -> None:
+    async def journey():
+        conn = pairing.database()
+        store = D1PcPairingStore(pairing.RealSQLiteD1(conn))
+        link = await _adopt(store)
+        app = _app(conn, admin=True)
+        async with pairing.client(app) as session:
+            await session.post(_url(link["link_id"]), json={"managed": True})
+        others = _app(conn, admin=False)
+        async with pairing.client(others) as session:
+            refused = await session.get(_url(link["link_id"]))
+        assert refused.status_code == 403
+        assert refused.json()["error"]["code"] == "pc_pairing_managed_not_admin"
+    pairing.run(journey())
+
+
+def test_managed_state_unknown_link_is_404() -> None:
+    async def journey():
+        conn = pairing.database()
+        app = _app(conn, admin=True)
+        async with pairing.client(app) as session:
+            missing = await session.get(_url("pclink_" + "0" * 32))
+        assert missing.status_code == 404
+        assert missing.json()["error"]["code"] == "pc_pairing_link_not_found"
+    pairing.run(journey())
+
+
+def test_managed_state_without_migration_103_is_503() -> None:
+    async def journey():
+        conn = _database_without_103()
+        store = D1PcPairingStore(pairing.RealSQLiteD1(conn))
+        link = await _adopt(store)
+        app = _app(conn, admin=True)
+        async with pairing.client(app) as session:
+            not_ready = await session.get(_url(link["link_id"]))
+        assert not_ready.status_code == 503
+        assert not_ready.json()["error"]["code"] == "pc_pairing_not_ready"
+    pairing.run(journey())
+
+
+def test_pairings_list_carries_the_admin_flag() -> None:
+    async def journey():
+        conn = pairing.database()
+        admin_app = _app(conn, admin=True)
+        async with pairing.client(admin_app) as session:
+            seen = await session.get(PC_PAIRING_PATH)
+        assert seen.status_code == 200
+        assert seen.json()["admin"] is True
+        others = _app(conn, admin=False)
+        async with pairing.client(others) as session:
+            denied = await session.get(PC_PAIRING_PATH)
+        assert denied.status_code == 200
+        assert denied.json()["admin"] is False
     pairing.run(journey())
