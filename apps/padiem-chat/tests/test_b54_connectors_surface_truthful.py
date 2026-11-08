@@ -21,6 +21,7 @@ APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
 LOCALE_JS = ROOT / "static/locale.js"
 CAPABILITY_CSS = ROOT / "static/capability-nav.css"
+CALENDAR_MODULE = ROOT / "static/chat-calendar-module.js"
 
 NAV_ID = "connectorsNavButton"
 DIALOG_ID = "connectorsDialog"
@@ -126,7 +127,7 @@ def _connector_block() -> str:
     assert marker in app
     end = 'if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);'
     assert end in app
-    return app.split(marker, 1)[1].split(end, 1)[0]
+    return app.split(marker, 1)[1].split(end, 1)[0] + "\n" + CALENDAR_MODULE.read_text(encoding="utf-8").replace("deps.", "")
 
 
 def _pure_mapping_block() -> str:

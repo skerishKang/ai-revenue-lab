@@ -15,7 +15,7 @@ STATIC = ROOT / "apps" / "padiem-chat" / "static"
 APP_JS = STATIC / "app.js"
 
 # R5 1단계 이동 후 app.js 8125 줄 + 100.
-APP_JS_CAP = 8225
+APP_JS_CAP = 8028
 
 FAIL_MSG = ("상한은 커지는 것을 알리는 장치다. 억지로 쪼개지 말고 새 기능은 새 모듈 파일로 만든다. "
             "상한 상향 금지(#7216).")
