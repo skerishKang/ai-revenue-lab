@@ -20,6 +20,32 @@ LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 UTIL_JS = (STATIC / "util-menu.js").read_text(encoding="utf-8")
 
 
+def _selector_group(selector: str) -> str:
+    start = selector.index(":is(") + len(":is(")
+    depth = 1
+    for index in range(start, len(selector)):
+        if selector[index] == "(":
+            depth += 1
+        elif selector[index] == ")":
+            depth -= 1
+            if depth == 0:
+                return " ".join(selector[start:index].split())
+    raise AssertionError("unterminated :is() selector")
+
+
+def _shared_primary_rules(css: str):
+    rules = []
+    position = 0
+    while True:
+        position = css.find("html body :is(", position)
+        if position < 0:
+            return rules
+        brace = css.index("{", position)
+        close = css.index("}", brace)
+        rules.append((css[position:brace].strip(), css[brace + 1:close]))
+        position = close
+
+
 class UtilFirstScreenContract(unittest.TestCase):
     def test_first_screen_heading_is_the_util_page_itself(self):
         start = INDEX.index('id="utilTitle"')
@@ -39,13 +65,25 @@ class UtilFirstScreenContract(unittest.TestCase):
         self.assertIn('"util-tagline": "Everyday document & promo tools"', LOCALE)
 
     def test_open_buttons_reuse_the_shared_primary_rule(self):
-        # #7162's shared primary rule lists .util-tool-open: navy + white.
-        self.assertIn(".claw-inbox-primary, .util-tool-open, .pdfmd-btn-primary, #meetingStart) {", POLISH)
-        rule_start = POLISH.index(".claw-inbox-primary, .util-tool-open, .pdfmd-btn-primary, #meetingStart) {")
-        block = POLISH[rule_start:POLISH.index("}", rule_start)]
-        self.assertIn("background: #355977", block)
-        self.assertIn("border-color: #294b64", block)
-        self.assertIn("color: #fff", block)
+        # #7162's shared primary rule must name both util buttons in every
+        # state block (base, hover, focus-visible), at the same list position.
+        rules = _shared_primary_rules(POLISH)
+        self.assertEqual(len(rules), 3, "base, hover and focus-visible share one selector list")
+        groups = [_selector_group(selector) for selector, _ in rules]
+        self.assertEqual(groups[0], groups[1])
+        self.assertEqual(groups[0], groups[2])
+        members = {part.strip() for part in groups[0].split(",")}
+        self.assertIn(".util-tool-open", members)
+        self.assertIn(".pdfmd-btn-primary", members)
+        base, hover, focus = rules
+        self.assertTrue(base[0].endswith(")"))
+        self.assertTrue(hover[0].endswith(":not(:disabled):hover"))
+        self.assertTrue(focus[0].endswith(":focus-visible"))
+        self.assertIn("background: #355977", base[1])
+        self.assertIn("border-color: #294b64", base[1])
+        self.assertIn("color: #fff", base[1])
+        self.assertIn("background: #2e4d67", hover[1])
+        self.assertIn("outline: 3px solid #6a9abc", focus[1])
         # The pill shape is the util button's own rule.
         self.assertIn("border-radius: 999px", UTIL_CSS)
         # The old glass-only navy override is superseded by the shared rule.

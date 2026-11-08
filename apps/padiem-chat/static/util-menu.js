@@ -63,7 +63,8 @@
       // #7172: returning to the page resets the heading to the UTIL first
       // screen — a tool's own title (e.g. PDF → Markdown) belongs to the
       // moments that tool is actually open, and it comes back with it.
-      const lang = document.documentElement.lang === "en" ? "en" : "ko";
+      const root = document.documentElement;
+      const lang = root && root.lang === "en" ? "en" : "ko";
       if (utilTitleEl) utilTitleEl.textContent = lang === "en" ? "Util" : "유틸";
       if (utilKickerEl) utilKickerEl.textContent = "Padiem Util";
       if (utilTaglineEl) utilTaglineEl.textContent = lang === "en"

@@ -16,6 +16,32 @@ UTIL_CSS = (ROOT / "static/util-menu.css").read_text(encoding="utf-8")
 MEETING_CSS = (ROOT / "static/meeting-capture.css").read_text(encoding="utf-8")
 
 
+def _selector_group(selector: str) -> str:
+    start = selector.index(":is(") + len(":is(")
+    depth = 1
+    for index in range(start, len(selector)):
+        if selector[index] == "(":
+            depth += 1
+        elif selector[index] == ")":
+            depth -= 1
+            if depth == 0:
+                return " ".join(selector[start:index].split())
+    raise AssertionError("unterminated :is() selector")
+
+
+def _shared_primary_rules(css: str) -> list[tuple[str, str]]:
+    rules = []
+    position = 0
+    while True:
+        position = css.find("html body :is(", position)
+        if position < 0:
+            return rules
+        brace = css.index("{", position)
+        close = css.index("}", brace)
+        rules.append((css[position:brace].strip(), css[brace + 1:close]))
+        position = close
+
+
 def test_util_view_joins_every_six_panel_frame_lane() -> None:
     frame_lists = [segment for segment in FRAME.split(":is(") if ".meeting-view" in segment]
     assert len(frame_lists) >= 4, "expected the frame, ultrawide, eyebrow and collapse lanes"
@@ -61,13 +87,24 @@ def test_util_header_joins_the_shared_page_title_contract() -> None:
 
 def test_the_primary_action_matches_the_chat_claw_send_color() -> None:
     # #7162 absorbed #5608's glass-only navy into the app-wide shared primary
-    # rule — the same #355977 send-button colors, now in every theme.
+    # rule ? the same #355977 send-button colors, now in every theme. #7172
+    # adds the util toolbox buttons to every block of that rule; assert the
+    # membership of each block's selector list, not one formatted line.
     polish = (ROOT / "static/padiem-chat-ui-polish.css").read_text(encoding="utf-8")
-    assert ".claw-inbox-primary, .util-tool-open, .pdfmd-btn-primary, #meetingStart) {" in polish
-    rule = polish[polish.index(".claw-inbox-primary, .util-tool-open"):]
-    rule = rule[:rule.index("}")]
-    assert "background: #355977;" in rule
-    assert "color: #fff;" in rule
+    rules = _shared_primary_rules(polish)
+    assert len(rules) == 3, "base, hover and focus-visible share one selector list"
+    groups = [_selector_group(selector) for selector, _ in rules]
+    assert groups[0] == groups[1] == groups[2], groups
+    members = {part.strip() for part in groups[0].split(",")}
+    assert ".util-tool-open" in members
+    assert ".pdfmd-btn-primary" in members
+    base, hover, focus = rules
+    assert base[0].endswith(")") and hover[0].endswith(":not(:disabled):hover")
+    assert focus[0].endswith(":focus-visible")
+    assert "background: #355977;" in base[1]
+    assert "color: #fff;" in base[1]
+    assert "background: #2e4d67;" in hover[1]
+    assert "outline: 3px solid #6a9abc;" in focus[1]
     # The glass-only copy is gone; one rule carries the decision.
     assert "html[data-theme=\"padiem-glass\"] .pdfmd-btn-primary {" not in UTIL_CSS
     h2_rule = UTIL_CSS[UTIL_CSS.index(".util-header h2") : UTIL_CSS.index(".util-header .standalone-view-tagline")]
