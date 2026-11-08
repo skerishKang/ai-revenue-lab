@@ -1659,20 +1659,31 @@ try {@@ARGUMENTS_SOURCE@@
             return ((callable(additional_cancel_probe) and additional_cancel_probe())
                     or owner_cancel())
 
+        # #7177: user-mode dispatches journal the same phase spine as SYSTEM —
+        # without it a silent user job reads as "claimed then nothing", which is
+        # exactly how the 11-08 incident read in the journal.
+        started = time.monotonic()
+        self._trace_command(dispatch, "start", started)
+
+        def phase(phase_name: str) -> None:
+            self._trace_command(dispatch, phase_name, started)
+
         try:
-            observed = self._command_port.run_command(node_ref=node_ref, command=ps, timeout_seconds=None, cancel_probe=cancelled)
+            observed = self._command_port.run_command(node_ref=node_ref, command=ps, timeout_seconds=None, cancel_probe=cancelled, phase_observer=phase)
         except Exception:
+            self._trace_command(dispatch, "error", started, error_type="port_failed")
             return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
                 body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
         term = getattr(observed, "termination", "no_reply")
+        out = getattr(observed, "output", b"") or b""
+        if not isinstance(out, (bytes, bytearray)): out = str(out).encode("utf-8","replace")
+        self._trace_command(dispatch, "result", started, termination=term, output_bytes=len(bytes(out)))
         if term == "cancelled":
             # The #7107 helper ended the user child when this dispatch was stopped.
             return OracleMeshExecutionOutcome(termination="cancelled", exit_code=None, body=b"")
         if term != "exited":
             return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
                 body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
-        out = getattr(observed, "output", b"") or b""
-        if not isinstance(out, (bytes, bytearray)): out = str(out).encode("utf-8","replace")
         return self._parse_user_helper_outcome(bytes(out))
 
     def _execute_command(
