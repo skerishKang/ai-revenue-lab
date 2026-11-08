@@ -292,6 +292,10 @@ def _check_permissions(path: Path) -> None:
         return
     try:
         mode = stat.S_IMODE(path.stat().st_mode)
+    except FileNotFoundError:
+        # A missing file is reported as missing by the read, not as unreadable
+        # here: the two reasons send an operator to different places.
+        return
     except OSError:
         raise _reject("registry_file_unreadable")
     if mode & 0o007:

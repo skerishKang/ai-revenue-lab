@@ -106,6 +106,15 @@ def test_a_missing_file_answers_an_empty_registry(tmp_path):
     assert readiness(load) == {"ok": False, "models": 0, "reason": "registry_file_missing"}
 
 
+def test_a_missing_file_is_reported_missing_even_where_modes_are_checked(
+        tmp_path, monkeypatch):
+    """The 0640 check must not turn a missing file into an unreadable one."""
+    monkeypatch.setattr(os, "name", "posix")
+    load = load_snapshot(tmp_path / "absent.json")
+    assert load.code == "registry_file_missing"
+    assert load.registry.models == ()
+
+
 def test_the_empty_registry_is_never_ready():
     empty = empty_registry()
     assert empty.models == ()
