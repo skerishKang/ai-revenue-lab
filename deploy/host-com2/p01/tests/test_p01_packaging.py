@@ -132,6 +132,11 @@ class P01Packaging(unittest.TestCase):
                 "PADIEM_ENGINE_LOCAL_IDENTITY_SECRET",
                 "PADIEM_ENGINE_LOCAL_ADMISSION_ORIGIN",
                 "PADIEM_ENGINE_LOCAL_ADMISSION_SECRET",
+                # #7229: the Google OAuth state authority the Calendar READ
+                # lane needs on this host. Empty by default, so the shipped
+                # example never activates the lane and the reviewed 503 stays.
+                "PADIEM_ENGINE_LOCAL_GOOGLE_OAUTH_ORIGIN",
+                "PADIEM_ENGINE_LOCAL_GOOGLE_OAUTH_SECRET",
                 "PADIEM_ENGINE_LOCAL_CHAT_ORIGIN",
                 "CLAW_ENGINE_DESKTOP_SECRET",
                 # Non-secret allow-list the shipped example pins on purpose; it

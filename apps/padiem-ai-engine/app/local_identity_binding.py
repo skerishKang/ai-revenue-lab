@@ -1,8 +1,18 @@
-"""Host transport for the existing CONTROL_PLANE_IDENTITY session RPC.
+"""Host transport for the existing CONTROL_PLANE_IDENTITY RPCs.
 
 Use the admission HTTPS transport's existing v2 signature and per-attempt
 service id. This adapter does not issue sessions, grant entitlement, or replace
 the identity authority used by the remote admission Worker.
+
+Two reads travel over the one existing ingress:
+
+* ``resolve_auth_session`` — the session scope authority (#6427 lane).
+* ``resolve_connector_workspace`` — which canonical connector workspace a
+  session owns; the Calendar READ activation lane asks this first
+  (``app/calendar_read_activation.py``). COM2's identity ingress already
+  allows the method (``packages/padiem-control-plane/com2_identity_rpc_ingress.py``
+  ``COM2_IDENTITY_RPC_METHODS``), so no new contract, key or permission is
+  introduced here.
 """
 
 from __future__ import annotations
@@ -34,6 +44,16 @@ class HttpsIdentityBinding:
             return await self._rpc._call("resolve_auth_session", payload)
         except Exception:
             # No URL, upstream envelope, proof or secret escapes the transport.
+            raise RuntimeError("identity authority is unavailable") from None
+
+    async def resolve_connector_workspace(self, payload: dict[str, Any]) -> dict[str, Any]:
+        """The canonical connector-workspace read the Calendar lane starts with."""
+
+        try:
+            return await self._rpc._call("resolve_connector_workspace", payload)
+        except Exception:
+            # Same closed diagnostic as the session read: the caller maps any
+            # failure to its own reviewed denial, never to upstream text.
             raise RuntimeError("identity authority is unavailable") from None
 
 

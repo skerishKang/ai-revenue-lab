@@ -44,6 +44,7 @@ from urllib.parse import urlsplit
 import httpx
 
 from app.local_admission_binding import admission_binding_for
+from app.local_google_oauth_binding import google_oauth_binding_for
 from app.local_identity_binding import identity_binding_for
 from app.local_sqlite_d1 import (
     LocalSqliteD1,
@@ -725,7 +726,15 @@ def _local_bindings(values: Mapping[str, str]) -> dict[str, Any]:
             logger.info("p01_local_chat_service=configured")
     path = str(values.get(DB_PATH_ENV, "")).strip()
     if path:
-        bindings["ENGINE_IDEMPOTENCY"] = _local_database(path)
+        database = _local_database(path)
+        bindings["ENGINE_IDEMPOTENCY"] = database
+        # Cloudflare declares both names over the SAME provisioned D1 database
+        # (wrangler.toml: padiem-engine, migrations/0003 creates the grants
+        # table). This host has one engine database with every migration
+        # applied, so the second name is the same object — not a second store,
+        # not a second schema and not a credential. The Calendar READ lane
+        # writes and reads its grants here.
+        bindings["ENGINE_CONNECTOR_GRANTS"] = database
     # The admission authority stays in Cloudflare. A configured https origin and
     # service secret give this host a binding-shaped stand-in, so the reviewed
     # adapter composes unchanged; without them the binding is absent and every
@@ -735,6 +744,12 @@ def _local_bindings(values: Mapping[str, str]) -> dict[str, Any]:
     # read does not substitute for Chat's canonical-subject resolution or the
     # admission Worker's own authoritative entitlement/session checks.
     bindings.update(identity_binding_for(values))
+    # Same private Google OAuth authority as worker_identity.py's Calendar
+    # composition, over the reviewed v2 HTTPS RPC. Unconfigured keeps the
+    # binding absent, so the Calendar lane answers today's 503 and no host ever
+    # invents a binding selection (see
+    # docs/operations/COM2_P01_CONTROL_PLANE_BINDINGS_20261109.md).
+    bindings.update(google_oauth_binding_for(values))
     # Without a configured path the binding stays absent, so every durable lane
     # keeps the Worker's own fail-closed answer instead of a process-local fake.
     return bindings
