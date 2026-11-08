@@ -133,6 +133,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await _assert_no_horizontal_overflow(page, f"{name}-first-answer")
     # #5560: the export entry lives in Settings > Data management.
     await open_advanced_settings(page)
+    await page.locator('[data-advanced-menu="account"]').click()
     if mobile:
         box = await export_button.bounding_box()
         if box is None or box["width"] < 44 or box["height"] < 44:
@@ -153,6 +154,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await close_advanced_settings(page)
     await _send(page, FOLLOWUP_PROMPT, 2)
     await open_advanced_settings(page)
+    await page.locator('[data-advanced-menu="account"]').click()
     requests_before_second_export = list(api_requests)
     second_filename, second_text = await _download_text(page, f"{name}-second-export")
     if api_requests != requests_before_second_export:
