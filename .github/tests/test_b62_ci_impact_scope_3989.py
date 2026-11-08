@@ -289,6 +289,10 @@ class B62ScopeTests(unittest.TestCase):
                 "css_rules_sample.py": "VALUE = 1\n",
                 "test_from_import.py": "from css_rules_sample import VALUE\n",
                 "test_plain_import.py": "import css_rules_sample\n",
+                "test_dynamic_import.py": (
+                    "import importlib\n"
+                    "MODULE = importlib.import_module('css_rules_sample')\n"
+                ),
                 "test_unrelated.py": "OTHER = 2\n",
             }, docs=("README_테스트작성규칙.md",))
             files = [
@@ -297,6 +301,7 @@ class B62ScopeTests(unittest.TestCase):
             ]
             self.assertEqual(module.impact_scope(files, Path(tmp)), module.TESTS_ONLY)
             self.assertEqual(module.tests_only_modules(files, Path(tmp)), (
+                "tests/test_dynamic_import.py",
                 "tests/test_from_import.py",
                 "tests/test_plain_import.py",
             ))
@@ -304,7 +309,8 @@ class B62ScopeTests(unittest.TestCase):
         self.assertEqual(values["scope"], "tests_only")
         self.assertEqual(values["chat_source_changed"], "false")
         self.assertEqual(values["tests_only_tests"],
-                         "tests/test_from_import.py tests/test_plain_import.py")
+                         "tests/test_dynamic_import.py tests/test_from_import.py "
+                         "tests/test_plain_import.py")
 
     def test_tests_tree_test_module_with_a_doc_still_runs_the_module(self):
         files = [

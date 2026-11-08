@@ -204,6 +204,11 @@ def _is_tests_tree_change(files: object) -> bool:
 
 
 def _imported_module_names(tree: ast.AST) -> frozenset[str]:
+    """Module names a test reads: static imports plus literal dynamic imports.
+
+    The dynamic forms are the ones the repository uses; a caller built from a
+    computed string cannot be proven and is not claimed here.
+    """
     names: set[str] = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
@@ -211,6 +216,14 @@ def _imported_module_names(tree: ast.AST) -> frozenset[str]:
                 names.add(alias.name.split(".")[0])
         elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
             names.add(node.module.split(".")[0])
+        elif isinstance(node, ast.Call):
+            func = node.func
+            target = func.attr if isinstance(func, ast.Attribute) else (
+                func.id if isinstance(func, ast.Name) else "")
+            if target in {"import_module", "__import__"} and node.args:
+                argument = node.args[0]
+                if isinstance(argument, ast.Constant) and isinstance(argument.value, str):
+                    names.add(argument.value.split(".")[0])
     return frozenset(names)
 
 
