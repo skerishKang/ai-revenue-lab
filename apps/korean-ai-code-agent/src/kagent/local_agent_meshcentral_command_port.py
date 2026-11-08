@@ -819,6 +819,101 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
     )
 
 
+#: #7199: how a long multi-line client reaches the PC without stalling the console.
+#: The agent runs a runcommand by writing the script to a ``powershell -command -``
+#: console over an OPEN stdin and replying only when that PowerShell exits. A script
+#: with a block that spans lines (the ``& { ... }`` the SYSTEM envelope uses, a
+#: ``try``/``while`` body, a here-string) leaves the console's line parser waiting for
+#: the block to close, and a single line past the console input limit is truncated
+#: mid-token. Either way the console never returns, and because the agent serves one
+#: command child at a time and drops every later runcommand as "already busy", one
+#: stalled console silences all PC commands (measured 2026-11-07..08, ~19 hours). The
+#: SYSTEM lane never hit this: its wrapped command is a single short line.
+#:
+#: ``_file_dispatch_console_script`` sends the console ONLY complete single-line
+#: statements, none of them an open block and none past the chunk bound: it writes
+#: this dispatch's marker first (the exact two-line format the stop and the reaper
+#: read), rebuilds the real client from base64 chunks held in a session variable,
+#: writes it to a temp ``.ps1`` with a UTF-8 BOM, and runs THAT file with ``-File`` -
+#: the same invocation that already completes in 0.4-2.3s when the script is a file.
+#: The output and exit code return through the identical envelope + sentinel the
+#: SYSTEM lane uses, so ``parse_transcript`` reads a file-delivered reply unchanged.
+#: Delivery never depends on console-input parsing again.
+CONSOLE_CHUNK_CHARS = 1000
+#: The dispatch's own staged script, beside its ``.pid`` marker, in the agent
+#: account's temp folder. Named by the same dispatch id, so the marker's process
+#: tree (which the stop kills with ``taskkill /T``) contains this ``-File`` child.
+PC_DISPATCH_PS1_SUFFIX = ".ps1"
+
+
+def _file_dispatch_console_script(
+    inner: str,
+    dispatch_id: str,
+    host_tag: str | None,
+    chunk_size: int = CONSOLE_CHUNK_CHARS,
+) -> str:
+    """The console lines that stage ``inner`` to a temp file and run it with ``-File``.
+
+    Every element of the returned script is a complete statement on its own line and
+    no line opens a block that the next line must close, so the agent's
+    ``powershell -command -`` console executes each line as it arrives and the agent's
+    appended ``exit`` always runs. ``chunk_size`` keeps each ``$__s+='...'`` line far
+    below the 8191-char console input limit; a script up to this module's single-argv
+    ceiling is carried as a handful of such lines.
+
+    The envelope and the exit sentinel are emitted by runtime string joins
+    (``'PADIEM_'+'B64='``), so no line of this script text ever contains the joined
+    marker a transcript is scanned for - the same guard the wrapped lane uses.
+    """
+    checked = _checked_dispatch_id(dispatch_id)
+    b64 = base64.b64encode(inner.encode("utf-8")).decode("ascii")
+    size = chunk_size if isinstance(chunk_size, int) and chunk_size > 0 else CONSOLE_CHUNK_CHARS
+    chunks = [b64[i:i + size] for i in range(0, len(b64), size)] or [""]
+    marker = _pid_file_literal(checked)
+    ps1 = (
+        "[IO.Path]::GetTempPath()+'" + PC_CANCEL_PID_FILE_PREFIX + checked
+        + PC_DISPATCH_PS1_SUFFIX + "'"
+    )
+    lines = [
+        "[Console]::OutputEncoding=[Text.Encoding]::UTF8",
+        "$ProgressPreference='SilentlyContinue'",
+        "$ConfirmPreference='None'",
+        "$__pp=" + marker,
+        # The marker is written exactly as the wrapped lane writes it: the process id
+        # first (all the stop ever reads), this executor host's tag second (what lets
+        # the reaper tell its own leftover from the failover partner's). The process
+        # is this console PowerShell, and the -File child runs inside its tree, so the
+        # stop's ``taskkill /T /F`` ends the child with it.
+        "Set-Content -LiteralPath $__pp -Value $PID -Encoding ascii",
+    ]
+    if host_tag:
+        lines.append(
+            "Add-Content -LiteralPath $__pp -Value '"
+            + _checked_host_tag(host_tag) + "' -Encoding ascii"
+        )
+    lines.append("$__fp=" + ps1)
+    lines.append("$__s=''")
+    for chunk in chunks:
+        lines.append("$__s+='" + chunk + "'")
+    lines.extend([
+        "$__enc=New-Object System.Text.UTF8Encoding($true)",
+        "[IO.File]::WriteAllText($__fp,[Text.Encoding]::UTF8.GetString("
+        "[Convert]::FromBase64String($__s)),$__enc)",
+        "$__o=''",
+        "try { $__o=(& ($PSHOME+'\\powershell.exe') -NoProfile -NonInteractive"
+        " -ExecutionPolicy Bypass -File $__fp 2>&1 | Out-String) }"
+        " catch { $__o=($_ | Out-String) }",
+        "$__ec=$LASTEXITCODE",
+        "Remove-Item -LiteralPath $__fp -Force -ErrorAction SilentlyContinue",
+        "Remove-Item -LiteralPath $__pp -Force -ErrorAction SilentlyContinue",
+        "Write-Output ('PADIEM_'+'B64='+[Convert]::ToBase64String("
+        "[Text.Encoding]::UTF8.GetBytes([string]$__o)))",
+        "Write-Output ('__PADIEM_'+'EXIT__'+[string]$__ec)",
+        "[Console]::Out.Flush()",
+    ])
+    return "\n".join(lines)
+
+
 def _unwrap_envelope(output: bytes) -> tuple[bytes, bytes] | None:
     """Split one transcript into (text before the envelope, decoded body).
 
@@ -1175,6 +1270,8 @@ class MeshCentralCliCommandPort:
         line_guard: Callable[[], bool] | None = None,
         session_lane: bool | None = None,
         line_probe: bool | None = None,
+        deliver_as_file: bool = False,
+        console_chunk_chars: int | None = None,
     ) -> MeshCentralCommandOutcome:
         def phase(name: str) -> None:
             if callable(phase_observer):
@@ -1216,7 +1313,22 @@ class MeshCentralCliCommandPort:
         # PC. Refusing a malformed id here is also the only thing standing between
         # a caller-supplied string and a PowerShell literal on a customer machine.
         checked_dispatch = None if dispatch_id is None else _checked_dispatch_id(dispatch_id)
-        wrapped = _wrap(body, checked_dispatch, self._host_tag)
+        if deliver_as_file:
+            # #7199: a long multi-line client is staged to a temp file and run with
+            # ``-File`` so the agent's console never parses the client body as stdin.
+            # The marker lives inside the staging script, so this lane always needs a
+            # dispatch id (which the user-mode caller always has) and never routes to
+            # the terminal-session lane, whose own wrapping would reopen the block.
+            if checked_dispatch is None:
+                raise MeshCentralCommandRefused(
+                    "file delivery requires a dispatch id for its marker"
+                )
+            wrapped = _file_dispatch_console_script(
+                body, checked_dispatch, self._host_tag,
+                chunk_size=(console_chunk_chars or CONSOLE_CHUNK_CHARS),
+            )
+        else:
+            wrapped = _wrap(body, checked_dispatch, self._host_tag)
         # The NUL the C execve boundary appends is counted, so a refusal here
         # is the kernel's own limit, not a product rule. The aggregate argv and
         # environment ceiling depends on this host's stack rlimit and is not
@@ -1275,7 +1387,7 @@ class MeshCentralCliCommandPort:
             outcome = self._from_transcript(raw)
             phase("reply")
             return outcome
-        if checked_dispatch is not None and _session_lane_enabled(session_lane):
+        if checked_dispatch is not None and not deliver_as_file and _session_lane_enabled(session_lane):
             # #82 standard 2: the command gets its own terminal session, so another
             # dispatch on this PC is never waiting behind it. No line sweep here - the
             # session is not the queue the sweep exists to unblock.

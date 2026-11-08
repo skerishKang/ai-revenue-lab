@@ -95,9 +95,12 @@ class TheTaskPathMatchesTheInstaller(unittest.TestCase):
 
     def test_the_client_asks_for_that_exact_folder(self):
         script = _client_script()
+        # #7196: that registered folder on disk is %SystemRoot%\System32\Tasks\Padiem,
+        # and the client reads the task FILE there directly instead of calling
+        # Get-ScheduledTask (a Task Scheduler COM call with no timeout of its own).
+        self.assertNotIn("Get-ScheduledTask", script)
         self.assertIn(
-            "Get-ScheduledTask -TaskPath '\\Padiem\\' -TaskName '"
-            + USER_HELPER_TASK_NAME + "'",
+            "System32\\Tasks\\Padiem\\" + USER_HELPER_TASK_NAME,
             script,
         )
 

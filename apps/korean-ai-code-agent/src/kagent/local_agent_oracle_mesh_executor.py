@@ -1481,22 +1481,41 @@ class OracleMeshExecutor:
         }
         req_b64 = _b64.b64encode(_json.dumps(payload, ensure_ascii=True, separators=(",", ":")).encode("utf-8")).decode("ascii")
         if task_arguments is None:
+            # #7196: Get-ScheduledTask reaches the task through the Task Scheduler COM
+            # service, which carries no timeout of its own and was a second way for
+            # this client to wait with no bound. The task's definition is also a file
+            # the installer writes under %SystemRoot%\System32\Tasks, and SYSTEM (this
+            # client's account) reads it directly, so ``--device-id`` and
+            # ``--secret-file`` come from that file's <Arguments> with no service call.
+            # The relative path is the registered task folder plus its name.
+            _rel_parts = [p for p in str(task_path).split("\\") if p]
+            _task_rel = "\\".join(_rel_parts + [str(task_name)]).replace("'", "''")
             arguments_source = (
-                "\n  $task=Get-ScheduledTask -TaskPath '@@TASK_PATH@@' -TaskName '@@TASK_NAME@@' -ErrorAction SilentlyContinue"
-                "\n  if(-not $task){ Fail 'user_session_unavailable' 'helper task is not registered' }"
-                "\n  if(-not $task.Actions -or $task.Actions.Count -lt 1){ Fail 'user_session_unavailable' 'helper task has no action' }"
-                "\n  $arg=[string]$task.Actions[0].Arguments"
-            ).replace("@@TASK_PATH@@", str(task_path).replace("'", "''")).replace(
-                "@@TASK_NAME@@", str(task_name).replace("'", "''")
-            )
+                "\n  $txp=[IO.Path]::Combine($env:SystemRoot,'System32\\Tasks\\@@TASK_REL@@')"
+                "\n  if(-not [IO.File]::Exists($txp)){ Fail 'user_session_unavailable' 'helper task file is not present' }"
+                "\n  $arg=''"
+                "\n  try { $__tx=New-Object System.Xml.XmlDocument; $__tx.Load($txp); $__ex=@($__tx.Task.Actions.Exec); if($__ex.Count -ge 1){ $arg=[string]$__ex[0].Arguments } } catch { $arg='' }"
+                "\n  if(-not $arg){ Fail 'user_session_unavailable' 'helper task arguments are unavailable' }"
+            ).replace("@@TASK_REL@@", _task_rel)
         else:
             arguments_source = (
                 "\n  $arg=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('"
                 + _b64.b64encode(str(task_arguments).encode("utf-8")).decode("ascii")
                 + "'))"
             )
+        # #7196: an overall backstop so a helper that accepts and then neither
+        # finishes nor drops cannot hold forever. The floor is 180s and the request
+        # timeout gets +120s of slack, so a command that finishes within its own
+        # timeout is never cut - this is why the request timeout is NOT used as the
+        # deadline directly (that cut a healthy 32s command, #7107). The operator can
+        # raise it (PADIEM_MESH_USER_HELPER_REPLY_SECONDS > 0) or disable it (< 0).
+        overall_backstop = max(180, int(timeout_seconds) + 120)
         script = r"""
 $ErrorActionPreference='Stop'
+$ProgressPreference='SilentlyContinue'
+$ConfirmPreference='None'
+function Trace($m){ try{ if([IO.File]::Exists('C:\ProgramData\Padiem\client-trace.enabled')){ [IO.File]::AppendAllText('C:\ProgramData\Padiem\client-trace.log',((Get-Date).ToString('o')+' '+[string]$m+"`r`n")) } }catch{} }
+Trace 'client start'
 $mat=[Convert]::FromBase64String('@@MAT_B64@@')
 $reqB64='@@REQ_B64@@'
 # #7182b: never 'exit' from this client. The SYSTEM lane runs it inside
@@ -1511,9 +1530,9 @@ function Fail($code,$msg){ throw [string]($code+': '+$msg) }
 # #7184c: a wait that ran out says which bound ran out, so the executor's reply
 # names the actual stop instead of a generic read timeout.
 function Timeout(){
-  if($__firstBy -gt 0 -and [Environment]::TickCount -ge $__firstBy){ throw 'user_helper_timeout: helper did not answer' }
-  if($__deadline -gt 0 -and [Environment]::TickCount -ge $__deadline){ throw 'user_helper_timeout: helper reply deadline' }
-  throw 'helper read timeout'
+  if($__firstBy -gt 0 -and [Environment]::TickCount -ge $__firstBy){ throw 'user_helper_timeout: first-frame deadline expired' }
+  if($__deadline -gt 0 -and [Environment]::TickCount -ge $__deadline){ throw 'user_helper_timeout: overall deadline expired' }
+  throw 'user_helper_timeout: frame read deadline expired'
 }
 try {@@ARGUMENTS_SOURCE@@
   $deviceId=$null
@@ -1526,6 +1545,7 @@ try {@@ARGUMENTS_SOURCE@@
   $digest=-join ($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($deviceId)) | ForEach-Object { $_.ToString('x2') })
   $pipeName='padiem-user-helper-dev_'+$digest.Substring(0,32)
   $pipePath='\\.\pipe\'+$pipeName
+  Trace 'device id ok, pipe computed'
   $secretFile=$null
   if($arg -match '--secret-file\s+"([^"]+)"'){ $secretFile=$Matches[1] }
   elseif($arg -match "--secret-file\s+'([^']+)'"){ $secretFile=$Matches[1] }
@@ -1548,24 +1568,27 @@ try {@@ARGUMENTS_SOURCE@@
   # per frame, not a command deadline: while a stage-2 command runs the helper
   # sends a heartbeat every 5s, so a long command keeps its lane.
   $client.Connect(5000)
+  Trace 'pipe connected'
   # #7184c: the wait for the helper's FIRST frame is a communication wait and is
   # bounded (30s default, PADIEM_MESH_USER_HELPER_FIRST_FRAME_SECONDS). After
   # that frame the wait is the work itself: the helper heartbeats while the user
-  # child runs, and the owner ends that through pc_shell_stop. An overall cap
-  # exists for operators (PADIEM_MESH_USER_HELPER_REPLY_SECONDS, 0 = off) and is
-  # also taken from a positive request timeout; it is off by default because a
-  # client that leaves ends the helper's child with it (#7107).
+  # child runs, and the owner ends that through pc_shell_stop.
+  # #7196: an overall backstop (PADIEM_MESH_USER_HELPER_REPLY_SECONDS, default
+  # max(180, timeout+120), <0 disables) also bounds the whole wait, so a helper
+  # that accepts and then neither finishes nor drops cannot hold forever.
   $__firstFrame=30; try{ $__v=[int]$env:PADIEM_MESH_USER_HELPER_FIRST_FRAME_SECONDS; if($__v -gt 0){ $__firstFrame=$__v } }catch{}
-  $__replyCap=0; try{ $__replyCap=[int]$env:PADIEM_MESH_USER_HELPER_REPLY_SECONDS }catch{}
+  # #7196: the overall backstop defaults to max(180, timeout+120) (baked below).
+  # The operator switch overrides it: a positive value sets the seconds, a negative
+  # value turns the backstop off. The request timeout is never the deadline itself.
+  $__overall=@@OVERALL_SECONDS@@
+  try{ $__cap=[int]$env:PADIEM_MESH_USER_HELPER_REPLY_SECONDS; if($__cap -gt 0){ $__overall=$__cap } elseif($__cap -lt 0){ $__overall=0 } }catch{}
   $__firstBy=[Environment]::TickCount + ($__firstFrame*1000)
   $__deadline=0
-  # The request's own timeout_seconds is signed material, not a deadline
-  # (#7107): using it here cut a healthy 32s command in the connector
-  # contract test. Only the operator switch bounds the wait.
-  if($__replyCap -gt 0){ $__deadline=[Environment]::TickCount + ($__replyCap*1000) }
+  if($__overall -gt 0){ $__deadline=[Environment]::TickCount + ($__overall*1000) }
   $w=$client.WriteAsync($len,0,4); if(-not $w.Wait(5000)){ throw 'helper write timeout' }
   $w=$client.WriteAsync($body,0,$body.Length); if(-not $w.Wait(5000)){ throw 'helper write timeout' }
   $client.Flush()
+  Trace 'request sent'
   # #7107: the helper streams stdout/stderr as chunks. Accumulate them in
   # memory and emit one reply object; there is no 256 KiB cut and no fixed
   # command deadline. The 15s read window is per frame, and a 5s heartbeat
@@ -1573,8 +1596,8 @@ try {@@ARGUMENTS_SOURCE@@
   $stdout=New-Object System.Collections.Generic.List[byte]
   $stderr=New-Object System.Collections.Generic.List[byte]
   while($true){
-    if($__firstBy -gt 0 -and [Environment]::TickCount -gt $__firstBy){ throw 'user_helper_timeout: helper did not answer' }
-    if($__deadline -gt 0 -and [Environment]::TickCount -gt $__deadline){ throw 'user_helper_timeout: helper reply deadline' }
+    if($__firstBy -gt 0 -and [Environment]::TickCount -gt $__firstBy){ throw 'user_helper_timeout: first-frame deadline expired' }
+    if($__deadline -gt 0 -and [Environment]::TickCount -gt $__deadline){ throw 'user_helper_timeout: overall deadline expired' }
     # A frame window may be shorter than 15s, never longer than the bound that
     # contains it: a 15s read would otherwise swallow a 3s first-frame bound.
     $__wait=15000
@@ -1611,6 +1634,7 @@ try {@@ARGUMENTS_SOURCE@@
       stderr_b64=[Convert]::ToBase64String($stderr.ToArray());
       truncated=$false; error_code=$frame.error_code; duration_ms=$frame.duration_ms
     }
+    Trace ('reply '+[string]$frame.status)
     $client.Dispose()
     Write-Output ($reply | ConvertTo-Json -Compress)
     [Console]::Out.Flush()
@@ -1621,6 +1645,7 @@ try {@@ARGUMENTS_SOURCE@@
   [Console]::Out.Flush()
   $detail=[string]$_.Exception.Message
   if($detail -notmatch '^[a-z_]+: '){ $detail='user_session_unavailable: helper pipe is not available' }
+  Trace ('catch '+$detail)
   Write-Output $detail
   return
 }
@@ -1629,6 +1654,7 @@ try {@@ARGUMENTS_SOURCE@@
             script.replace("@@MAT_B64@@", mat_b64)
             .replace("@@REQ_B64@@", req_b64)
             .replace("@@ARGUMENTS_SOURCE@@", arguments_source)
+            .replace("@@OVERALL_SECONDS@@", str(overall_backstop))
         )
 
     @staticmethod
@@ -1736,6 +1762,13 @@ try {@@ARGUMENTS_SOURCE@@
                 node_ref=node_ref, command=ps, timeout_seconds=None,
                 cancel_probe=cancelled, phase_observer=phase,
                 dispatch_id=getattr(dispatch, "dispatch_id", None),
+                # #7199: the user-mode client is ~7KB of multi-line PowerShell. Sent
+                # as the console body it left the agent's ``powershell -command -``
+                # waiting on an unclosed block and never returned, so the console
+                # held the agent's single command slot and every later PC command was
+                # dropped (measured 2026-11-07..08, ~19 hours). File delivery stages
+                # it and runs it with ``-File``; the SYSTEM lane is untouched.
+                deliver_as_file=True,
             )
         except Exception:
             self._trace_command(dispatch, "error", started, error_type="port_failed")
