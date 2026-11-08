@@ -158,7 +158,7 @@ def test_real_pipe_round_trip_runs_powershell_and_cmd_as_the_helper_user(tmp_pat
     assert not server.is_alive(), "the helper never served all four requests"
 
 
-def _assert_client_failure(text: str, completed: subprocess.CompletedProcess) -> None:
+def _assert_client_failure(text: str, completed: subprocess.CompletedProcess, code: str = "user_session_unavailable") -> None:
     """One failed request, as the shipped client now reports it (#7182b).
 
     The client does not ``exit`` on failure any more. The SYSTEM lane runs this
@@ -171,7 +171,7 @@ def _assert_client_failure(text: str, completed: subprocess.CompletedProcess) ->
     arrives on standard output, and the process ending successfully is not a
     claim that the command succeeded.
     """
-    assert text.startswith("user_session_unavailable: "), text
+    assert text.startswith(code + ": "), text
     assert completed.returncode == 0, completed.stderr.decode("utf-8", "replace")
 
 
@@ -217,7 +217,8 @@ def test_helper_accepts_and_never_answers_fails_within_the_read_window(tmp_path)
             request_id="req_" + "c" * 32, shell="powershell", command="whoami",
             secret_file=secret_file,
         )
-        _assert_client_failure(text, completed)
+        # #7199: a silent helper is now named by the client as a timeout, not as an absent pipe.
+        _assert_client_failure(text, completed, code="user_helper_timeout")
         # The helper accepted the connection but sent no start frame: the 15s
         # per-frame read window is what ends this, not a command deadline.
         assert 10 <= elapsed < 25, elapsed
