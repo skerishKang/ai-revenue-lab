@@ -234,6 +234,12 @@
   let selectedAttachments = [];
   let attachmentKeyCounter = 0;
   let authState = { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
+  // #7171: true once this page has APPLIED a signed-in state. The data wipe
+  // runs only on the real signed-in → guest transition — never on the first
+  // pre-auth application at boot, and never again while the guest stays a
+  // guest (locale re-applications included), or the wipe would clear fresh
+  // drafts and steal focus on unrelated re-renders.
+  let hadSignedInSession = false;
   // UI read generations contain no account identifier. Every verified auth
   // refresh invalidates late sidebar responses from the previous session.
   let authViewEpoch = 0;
@@ -1778,6 +1784,8 @@
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
+    const signedInLost = hadSignedInSession && !authenticated;
+    hadSignedInSession = authenticated;
     if (authenticated && pendingNotificationRunId) {
       const notificationRunId = pendingNotificationRunId;
       pendingNotificationRunId = "";
@@ -1830,6 +1838,15 @@
     if (accountDeleteConfirm) {
       accountDeleteConfirm.hidden = true;
       resetAccountDeleteConfirm();
+    }
+        if (signedInLost) {
+      // #7171: every sign-in → guest path (sign-out button, expiry, status
+      // 401, refresh failure) funnels HERE — and only the real TRANSITION
+      // runs it: the boot's first pre-auth application and repeated guest
+      // re-applications are not session loss, and wiping on them cleared
+      // fresh drafts and stole the initial focus.
+      resetConversationView(false);
+      try { window.sessionStorage.removeItem(ANDROID_HANDOFF_STORAGE_KEY); } catch (_) {}
     }
         if (!authenticated) {
       const automation = document.getElementById("clawAutomation");
