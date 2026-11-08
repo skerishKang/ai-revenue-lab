@@ -158,6 +158,23 @@ def test_real_pipe_round_trip_runs_powershell_and_cmd_as_the_helper_user(tmp_pat
     assert not server.is_alive(), "the helper never served all four requests"
 
 
+def _assert_client_failure(text: str, completed: subprocess.CompletedProcess) -> None:
+    """One failed request, as the shipped client now reports it (#7182b).
+
+    The client does not ``exit`` on failure any more. The SYSTEM lane runs this
+    same script inside ``& { ... } 2>&1 | Out-String`` and prints the reply
+    envelope and the ``__PADIEM_EXIT__`` sentinel only after that block returns,
+    so an ``exit`` deleted the sentinel and turned every outcome - a success as
+    much as this refusal - into "no reply" in the transcript.
+
+    What must still hold is the thing the lane reads: the refusal with its code
+    arrives on standard output, and the process ending successfully is not a
+    claim that the command succeeded.
+    """
+    assert text.startswith("user_session_unavailable: "), text
+    assert completed.returncode == 0, completed.stderr.decode("utf-8", "replace")
+
+
 def test_pipe_absent_fails_within_the_connect_window(tmp_path):
     secret_file = tmp_path / "user-helper.secret"
     secret_file.write_bytes(SECRET + b"\n")
@@ -166,8 +183,7 @@ def test_pipe_absent_fails_within_the_connect_window(tmp_path):
         request_id="req_" + "a" * 32, shell="powershell", command="whoami",
         secret_file=secret_file,
     )
-    assert "user_session_unavailable" in text, text
-    assert completed.returncode != 0
+    _assert_client_failure(text, completed)
     # Connect(5000) is the bound; the process must be gone well before the
     # helper could ever answer a request it never received.
     assert elapsed < 12, elapsed
@@ -178,8 +194,7 @@ def test_secret_file_missing_fails_before_any_pipe_wait(tmp_path):
         request_id="req_" + "b" * 32, shell="powershell", command="whoami",
         secret_file=tmp_path / "absent.secret",
     )
-    assert "user_session_unavailable" in text, text
-    assert completed.returncode != 0
+    _assert_client_failure(text, completed)
     assert elapsed < 8, elapsed
 
 
@@ -202,8 +217,7 @@ def test_helper_accepts_and_never_answers_fails_within_the_read_window(tmp_path)
             request_id="req_" + "c" * 32, shell="powershell", command="whoami",
             secret_file=secret_file,
         )
-        assert "user_session_unavailable" in text, text
-        assert completed.returncode != 0
+        _assert_client_failure(text, completed)
         # The helper accepted the connection but sent no start frame: the 15s
         # per-frame read window is what ends this, not a command deadline.
         assert 10 <= elapsed < 25, elapsed
