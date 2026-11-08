@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator
 from dataclasses import replace
+import contextlib
 import asyncio
 import json
 import logging
@@ -35,6 +36,21 @@ from app.pilot.call_ledger import (
     utc_now_iso,
 )
 from app.pilot.call_ledger_store import record_call
+
+
+@contextlib.asynccontextmanager
+async def _first_token_attempt_scope(timeout_seconds: float, *, final_completed: bool):
+    """One streaming attempt wall, with #7212's rule on the chain's last candidate.
+
+    #7215: while a fallback candidate remains behind this attempt, a slow first
+    token is cut at the streaming first-byte bound and the chain moves on. On the
+    last candidate there is nothing to fall back to, so its first token may use
+    the attempt budget. The attempt wall, the chain budget and the post-first-token
+    idle limit are unchanged.
+    """
+    with final_completed_attempt(final_completed):
+        async with asyncio.timeout(timeout_seconds):
+            yield
 from app.pilot.deferred_writes import enqueue, skipped
 from app.pilot.catalog import get_catalog_by_id
 from app.pilot.errors import (
@@ -52,7 +68,10 @@ from app.pilot.gateway import (
     _validate_body,
 )
 from app.pilot.b14_runtime_config import runtime_config
-from app.pilot.b14_timeout_policy import get_timeout_policy
+from app.pilot.b14_timeout_policy import (
+    final_completed_attempt,
+    get_timeout_policy,
+)
 from app.pilot.stream_types import (
     StreamEvent,
     StreamUsage,
@@ -980,7 +999,10 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                 # candidate. Once a visible token is selected, this route is final.
                 dispatched = True
                 try:
-                    async with asyncio.timeout(attempt_timeout):
+                    async with _first_token_attempt_scope(
+                        attempt_timeout,
+                        final_completed=attempt_index == len(attempt_candidates) - 1,
+                    ):
                         while True:
                             try:
                                 event = await anext(iterator)
