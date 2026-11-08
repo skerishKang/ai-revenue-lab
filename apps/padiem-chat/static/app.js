@@ -1830,10 +1830,7 @@
     // repaint this one, and its still-pending promise must not block the new
     // session from deciding. Auth loss and an account switch both invalidate.
     noteClawApprovalSession(authenticated);
-    // #3790 signed-in change notification contains no identity or credentials.
-    if (typeof window.dispatchEvent === "function" && typeof CustomEvent === "function") {
-      window.dispatchEvent(new CustomEvent("padiem:auth-state", { detail: { authenticated, generation: authViewEpoch } }));
-    }
+    window.PadiemAuthSession.update(authState, authViewEpoch);
     // #5434: the password change is offered only for an account that owns a
     // password credential. The server owns that fact.
     // #5560: the Account section itself carries the sign-out entry for every

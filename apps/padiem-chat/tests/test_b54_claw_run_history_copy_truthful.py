@@ -254,7 +254,7 @@ const shim = {
   AbortController: class { constructor() { this.signal = {}; } abort() {} },
   URL: { createObjectURL: () => "blob:x", revokeObjectURL() {}, revokeURL() {} },
   setTimeout, clearTimeout, setInterval, clearInterval,
-  CustomEvent: class {},
+  CustomEvent: class { constructor(type, init) { this.type = type; this.detail = init.detail; } },
   location: { href: "http://localhost/", assign() {} },
   addEventListener() {},
   __padiemLocale: { text: (key) => (COPY[lang] || COPY.ko)[key] || key },
@@ -328,6 +328,8 @@ shim.document = doc;
 shim.fetch = fetchImpl;
 
 vm.createContext(shim);
+shim.dispatchEvent = shim.dispatchEvent || (() => true);
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), shim, { filename: "auth-session.js" });
 vm.runInContext(APP, shim, { filename: "app.js" });
 
 function walk(root, out) {

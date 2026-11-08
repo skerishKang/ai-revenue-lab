@@ -265,7 +265,7 @@ const sandbox = {
   AbortController: class { constructor() { this.signal = {}; } abort() {} },
   URL: { createObjectURL: () => "blob:x", revokeURL() {} },
   setTimeout, clearTimeout, console,
-  CustomEvent: class {},
+  CustomEvent: class { constructor(type, init) { this.type = type; this.detail = init.detail; } },
   location: { href: "http://localhost/", assign() {} },
   addEventListener() {},
   __padiemLocale: { text: (k) => k },
@@ -292,6 +292,8 @@ if (!sandbox.PadiemProjectFileUpload) {
   console.log(JSON.stringify({ ok: false, error: "TUS_MODULE_NOT_LOADED" }));
   process.exit(0);
 }
+sandbox.dispatchEvent = sandbox.dispatchEvent || (() => true);
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 // index.html ships #attachmentTray and #attachmentThumb with the hidden
 // attribute; the shim's elements default to visible, so model the real

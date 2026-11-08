@@ -376,7 +376,7 @@ const sandbox = {
   AbortController: class { constructor() { this.signal = {}; } abort() {} },
   URL: { createObjectURL: () => "blob:x", revokeURL() {} },
   setTimeout, clearTimeout, console,
-  CustomEvent: class {},
+  CustomEvent: class { constructor(type, init) { this.type = type; this.detail = init.detail; } },
   location: { href: "http://localhost/", assign() {} },
   addEventListener() {},
   __padiemLocale: { text: (k) => k },
@@ -393,6 +393,8 @@ vm.runInContext(TUSLIB, sandbox, { filename: "tus-upload.js" });
 vm.runInContext(TUSMODULE, sandbox, { filename: "project-file-upload.js" });
 if (!sandbox.PadiemBinaryDocuments) { console.log(JSON.stringify({ ok: false, error: "BINARY_HELPER_NOT_LOADED" })); process.exit(0); }
 if (!sandbox.PadiemProjectFileUpload) { console.log(JSON.stringify({ ok: false, error: "TUS_MODULE_NOT_LOADED" })); process.exit(0); }
+sandbox.dispatchEvent = sandbox.dispatchEvent || (() => true);
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 function findButton(root, text) {

@@ -616,16 +616,6 @@
   }
 
   function createModule() {
-    // #7171: the calendar items are signed-in owner data. On session loss the
-    // rendered range clears to the empty state — a guest never reads the
-    // previous account's schedule. renderCalendarVisual is this module's
-    // renderer, so the listener lives here where it is in scope.
-    if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
-      window.addEventListener("padiem:auth-state", (event) => {
-        if (event?.detail?.authenticated === true) return;
-        renderCalendarVisual([]);
-      });
-    }
     const shell = document.querySelector(".app-shell");
     const navButton = document.getElementById("calendarNavButton");
     const view = document.getElementById("calendarView");
@@ -1509,6 +1499,27 @@
       if (lastItems && lastItems.length) renderItems(lastItems);
       if (lastRecordStatus) showRecordStatus(lastRecordStatus);
       if (lastAppointmentStatus) showAppointmentStatus(lastAppointmentStatus);
+    });
+
+    let authSession = window.PadiemAuthSession?.get() || null;
+    window.addEventListener("padiem:auth-state", (event) => {
+      const next = window.PadiemAuthSession?.get() || event.detail;
+      if (!next) return;
+      const changed = !authSession || authSession.authenticated !== next.authenticated
+        || authSession.ownerKey !== next.ownerKey;
+      authSession = next;
+      if (!changed) return;
+      // Both rendered and in-flight data belong to the previous owner.
+      requestToken += 1;
+      detailRequestToken += 1;
+      lastItems = null;
+      activeDetailButton = null;
+      activeDetailPanel = null;
+      list.replaceChildren();
+      renderCalendarVisual([]);
+      closeEditor();
+      setStatus("empty");
+      if (next.authenticated && shell.dataset.state === "calendar") load();
     });
 
     const observer = typeof MutationObserver === "function" ? new MutationObserver(syncVisibility) : null;

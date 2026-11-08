@@ -431,6 +431,7 @@ const sandbox = {
   CustomEvent: class { constructor(type, init) { this.type = type; this.detail = (init || {}).detail; } },
   location: { href: "http://localhost/", assign() {} },
   addEventListener: (type, fn) => { (windowListeners[type] = windowListeners[type] || []).push(fn); },
+  dispatchEvent: (event) => { (windowListeners[event.type] || []).forEach((fn) => fn(event)); },
   __padiemLocale: { text: (k) => k },
   PadiemChatLifecycle: { states: { IDLE: "idle", STREAMING: "streaming", COMPLETED: "completed", FAILED: "failed", CANCELLED: "cancelled", TIMED_OUT: "timed_out" }, set() {} },
   PadiemConfirmDialog: { confirm: async () => true },
@@ -442,6 +443,7 @@ sandbox.window = sandbox;
 vm.createContext(sandbox);
 vm.runInContext(CAPS, sandbox, { filename: "attachment-capabilities.js" });
 vm.runInContext(DOCBIN, sandbox, { filename: "document-binary.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 vm.runInContext(LIBRARY, sandbox, { filename: "library.js" });
 
@@ -580,6 +582,28 @@ const PROJECT_B = { id: "pb", name: "PB", instructions: "", created_at: "2026-09
     if (!s.dialogOpen) fail("MUST_OPEN_PROJECT_DIALOG");
     if (s.dialogTitle !== "project-edit-title") fail("MUST_REUSE_EDIT_FLOW:" + s.dialogTitle);
     if (s.projectFilesPanelHidden) fail("MUST_SHOW_EXISTING_FILES_PANEL");
+  } else if (mode === "auth_session_owner_events") {
+    const status = {ready: true, authenticated: true, project_files_ready: true,
+      user: {email: "a@example.test", name: "Same name"}};
+    sandbox.PadiemAuthSession.update(status, 10);
+    await tick(30);
+    clickEntry();
+    await tick(60);
+    const before = snapshot();
+    if (before.fileRows.length !== 1) fail("FIRST_OWNER_NOT_LOADED");
+    sandbox.PadiemAuthSession.update({...status, user: {...status.user}}, 11);
+    await tick(60);
+    if (snapshot().ownerFileApiCalls !== before.ownerFileApiCalls) fail("SAME_SESSION_RELOADED");
+    if (snapshot().fileRows[0] !== before.fileRows[0]) fail("SAME_SESSION_LOST_ROWS");
+    FIXTURE.activeSession = "b";
+    sandbox.PadiemAuthSession.update({...status, user: {...status.user, email: "b@example.test"}}, 12);
+    if (snapshot().fileRows.length !== 0) fail("OWNER_EVENT_MUST_CLEAR_SYNCHRONOUSLY");
+    await tick(60);
+    const after = snapshot();
+    if (after.fileRows.length !== 1 || after.fileRows[0] === before.fileRows[0]) fail("STALE_OWNER_EVENT_ROWS");
+    if (after.ownerFileApiCalls !== before.ownerFileApiCalls + 1) fail("OWNER_EVENT_MUST_RELOAD_ONCE");
+    sandbox.PadiemAuthSession.update({ready: true, authenticated: false}, 13);
+    if (snapshot().fileRows.length !== 0) fail("LOGOUT_EVENT_MUST_CLEAR_SYNCHRONOUSLY");
   } else if (mode === "account_switch_same_flags") {
     dispatchAuth({ loaded: true, authenticated: true, historyReady: true, projectFilesReady: true });
     await tick(30);
@@ -887,3 +911,7 @@ def test_successful_page_retry_clears_partial_warning_and_can_finish() -> None:
     assert snapshot["hasMore"] is False
     assert len(snapshot["fileRows"]) == 3
     assert snapshot["ownerFileApiCalls"] == 4
+
+
+def test_auth_session_events_clear_owner_rows_once_and_ignore_same_session() -> None:
+    _run_harness("auth_session_owner_events", _SIGNED_IN_AUTH, _SESSIONS)

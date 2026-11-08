@@ -494,6 +494,7 @@
     const changed = signature !== authSignature
       || (unidentifiableOwner && nextProjection !== previousProjection);
     authSignature = signature;
+    if (!changed) return;
     // Login as well as logout crosses here, so a new account can never inherit
     // the previous owner's rendered rows. invalidate() empties the rows before
     // the fresh owner-scoped request below.
@@ -555,19 +556,26 @@
     });
   }
 
-  applyAuthState(readCapabilityAuth());
-  syncVisibility();
-
-  // #7171: the library rows are a signed-in owner's files. The moment the
-  // session is gone (sign-out, expiry, 401), the in-memory rows leave with it
-  // — a guest opening the Library sees the empty state, never the previous
-  // account's list.
-  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
-    window.addEventListener("padiem:auth-state", (event) => {
-      if (event?.detail?.authenticated === true) return;
-      invalidate();
+  function applySession(session) {
+    if (!session) return;
+    applyAuthState({
+      loaded: true,
+      authenticated: session.authenticated === true,
+      projectFilesReady: session.storage === true,
+      ownerKey: session.ownerKey,
+      displayName: session.displayName,
     });
   }
+
+  // Use the same signature for status events and capability refreshes, so
+  // one owner transition clears rows once and identical refreshes do not load.
+  window.addEventListener("padiem:auth-state", (event) => {
+    applySession(window.PadiemAuthSession?.get() || event.detail);
+  });
+  const session = window.PadiemAuthSession?.get();
+  if (session) applySession(session);
+  else applyAuthState(readCapabilityAuth());
+  syncVisibility();
 
   window.PadiemChatLibrary = Object.freeze({
     isOpen,
