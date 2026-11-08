@@ -198,8 +198,12 @@ def test_scope_manifest_matches_current_worker_identity_and_is_non_authoritative
     assert manifest["repository_relative_watch_paths"] == [
         "apps/korean-ai-platform/*",
         "packages/padiem-ai-core/*",
+        "packages/padiem-control-plane/*",
     ]
-    assert manifest["shared_monorepo_dependency_paths"] == ["packages/padiem-ai-core"]
+    assert manifest["shared_monorepo_dependency_paths"] == [
+        "packages/padiem-ai-core",
+        "packages/padiem-control-plane",
+    ]
     assert manifest["watch_path_authority"] == "external_cloudflare_workers_builds"
     assert manifest["repository_guard_only"] is True
     assert manifest["production_deploy_authority"] is False
