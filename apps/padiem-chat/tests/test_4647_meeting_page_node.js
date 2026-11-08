@@ -147,12 +147,24 @@ test("#5028: the meeting page nav lights up and its actions use the shared surfa
   // sliced so the negative assertion cannot reach later, legitimate
   // `background: transparent` panel rules.
   const actionsBlock = meetingCss.slice(
-    meetingCss.indexOf(".meeting-controls button, .meeting-exports button {"),
-    meetingCss.indexOf("}", meetingCss.indexOf(".meeting-controls button, .meeting-exports button {"))
+    meetingCss.indexOf(".meeting-controls button:not(#meetingStart), .meeting-exports button {"),
+    meetingCss.indexOf("}", meetingCss.indexOf(".meeting-controls button:not(#meetingStart), .meeting-exports button {"))
   );
   assert.match(actionsBlock, /background: var\(--panel, #ffffff\); color: var\(--text, #17202a\);/);
   assert.doesNotMatch(actionsBlock, /background:\s*transparent/);
   // The idle transcript area no longer over-expands the bright panel.
   assert.match(meetingCss, /\.meeting-panel textarea \{[\s\S]*?min-height: clamp\(180px, 24vh, 260px\);/);
   assert.doesNotMatch(meetingCss, /min-height: clamp\(200px, 30vh, 330px\)/);
+});
+
+test("the primary start control reuses the settings dialog slate action", () => {
+  // 대표 지정 2026-11-08: var(--accent) is sky blue in the glass theme, so
+  // the start button reuses the settings dialog's dark slate action
+  // (.settings-done) verbatim and no meeting rule paints it blue anymore.
+  assert.match(html, /id="meetingStart" class="settings-done"/);
+  assert.doesNotMatch(meetingCss, /#meetingStart \{ background/);
+  assert.doesNotMatch(views, /\[data-state="meeting"\] \.meeting-controls #meetingStart/);
+  assert.match(meetingCss, /\.meeting-controls button:not\(#meetingStart\), \.meeting-exports button \{/);
+  // The mode radio dots carry the theme's own body ink, not the sky accent.
+  assert.match(meetingCss, /\.meeting-modes input \{ accent-color: var\(--text\);/);
 });

@@ -1190,7 +1190,7 @@
         <label><input type="radio" name="meetingMode" value="transcribe"> 실시간 전사만</label>
         <label><input type="radio" name="meetingMode" value="both"> 녹음 + 실시간 전사</label>
        </fieldset>
-       <div class="meeting-controls"><button type="button" id="meetingStart">회의 시작</button><button type="button" id="meetingStop" disabled>회의 종료</button></div>
+       <div class="meeting-controls"><button type="button" id="meetingStart" class="settings-done">회의 시작</button><button type="button" id="meetingStop" disabled>회의 종료</button></div>
        <p class="meeting-status" id="meetingStatus" role="status" aria-live="polite"><span id="meetingStatusText">대기 중 · 아직 녹음하지 않았습니다.</span><span class="meeting-elapsed" id="meetingElapsed" role="timer" hidden></span></p>
        <div class="meeting-transcript-block" id="meetingTranscriptBlock">
         <label class="meeting-transcript-label" for="meetingTranscript">전사 원문 (편집 가능)</label><textarea id="meetingTranscript" rows="8" placeholder="실시간 전사 내용을 이곳에서 확인할 수 있습니다."></textarea>

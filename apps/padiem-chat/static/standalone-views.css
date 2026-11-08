@@ -396,13 +396,15 @@ html[data-theme="padiem-glass"] body .app-shell:is(
 .app-shell:is([data-state="calendar"],[data-state="connectors"]) :is(.calendar-item,.calendar-record,.capability-card) {
   border-radius: 14px;
 }
-.app-shell[data-state="calendar"] .calendar-record-submit,
-.app-shell[data-state="meeting"] .meeting-controls #meetingStart {
+.app-shell[data-state="calendar"] .calendar-record-submit {
   border-radius: 999px;
   background: var(--accent);
   border-color: var(--accent);
   color: var(--accent-contrast);
 }
+/* The meeting start control left this accent pair on purpose: var(--accent)
+   is sky blue in the glass theme (대표 지적 2026-11-08), so #meetingStart
+   reuses the settings dialog's dark slate action (.settings-done) instead. */
 .app-shell[data-state="calendar"] :is(.calendar-loading,.calendar-empty) {
   color: var(--muted);
   opacity: 1;
