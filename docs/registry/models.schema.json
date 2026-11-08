@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://padiem.net/schemas/models-private-v1.json",
+  "title": "padiem.models.private.v1 — private B14 model registry (format only)",
+  "description": "Format of the private registry file read by B14 and the control plane. The public repository carries this schema and a placeholder example; the values live only on the host (0640). A document that violates this schema is refused with a value-free reason code, never partially applied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "providers", "models", "tiers"],
+  "properties": {
+    "version": { "const": "padiem.models.private.v1" },
+    "comment": { "type": "string" },
+    "providers": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 64,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["base_origin", "allowed_hosts", "credential_binding"],
+        "properties": {
+          "base_origin": {
+            "type": "string",
+            "pattern": "^https://",
+            "description": "https origin of the provider API. Plain http is refused."
+          },
+          "allowed_hosts": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9.:-]*$"
+            },
+            "description": "Hosts this provider may be reached at. No scheme, no path."
+          },
+          "credential_binding": {
+            "type": "string",
+            "pattern": "^PADIEM_B14_CREDENTIAL_[0-9]{2,3}$",
+            "description": "Platform secret NAME only. Values never appear in this file."
+          }
+        }
+      }
+    },
+    "models": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 512,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "provider_id", "upstream_model", "capabilities", "enabled"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$",
+            "description": "Must be provider_id + '/' + upstream model key."
+          },
+          "provider_id": {
+            "type": "string",
+            "description": "Must name a key of providers."
+          },
+          "upstream_model": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "capabilities": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": ["chat", "coding", "free", "image", "long_context", "tools"]
+            }
+          },
+          "enabled": { "type": "boolean" },
+          "display_name": { "type": "string", "minLength": 1 },
+          "context_window": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "tiers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["free", "plus", "pro", "max"],
+      "description": "Owner-pinned primary and recoverable-failure roster per product grade. Every identity must exist in models.",
+      "properties": {
+        "free": { "$ref": "#/definitions/tier" },
+        "plus": { "$ref": "#/definitions/tier" },
+        "pro": { "$ref": "#/definitions/tier" },
+        "max": { "$ref": "#/definitions/tier" },
+        "admin": { "$ref": "#/definitions/tier" }
+      }
+    }
+  },
+  "definitions": {
+    "tier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primary", "fallback"],
+      "properties": {
+        "primary": { "type": "string" },
+        "fallback": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}
