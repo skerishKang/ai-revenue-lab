@@ -1,8 +1,9 @@
 (() => {
   "use strict";
-  // #7216 R5 1단계: 설정·사이드바 구역은 모듈 파일이 소유한다. app.js는 같은 이름의
-  // 한 줄 전달 함수만 남겨 호출부와 함수 선언 끌어올림을 그대로 보존한다. deps의
-  // getter/setter는 클로저 변수를 그때그때 읽고 쓰므로 첫 호출 전 변경도 반영된다.
+  // #7216 R5 step 1: the settings/sidebar modules own those sections. app.js keeps
+  // one-line forwarders with the same names, so call sites and function-declaration
+  // hoisting stay intact. deps getters/setters read the closure variables live, so a
+  // value changed before the first call is still observed.
   let settingsModuleInstance = null;
   let sidebarModuleInstance = null;
   function settingsModule() {
@@ -4107,7 +4108,7 @@
   // account's back. The restored value is always re-validated by the server
   // (member grade + administrator gate) before it is used.
 
-  // #7216 R5 1단계: 설정 구역 본문은 chat-settings-module.js가 소유한다.
+  // #7216 R5 step 1: chat-settings-module.js owns the settings section body.
   function selectedProductTier(...a) { return settingsModule().selectedProductTier(...a); }
 
   // A failed PADIEM Custom request that needs the customer's key reopens the
