@@ -355,7 +355,13 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
     shared_login_flow = None
     if os.getenv("PADIEM_CHAT_SHARED_LOGIN_ENABLED", "").strip().lower() == "true":
         from .cpython_shared_login import create_host_shared_login_flow
-        shared_login_flow = create_host_shared_login_flow(os.environ, identity_authority, settings.public_base_url)
+        # #7161: the shared flow issues cookies only — it never established the
+        # canonical B62/B54 session the Claw/MCP consumers resolve. The adapter
+        # now re-establishes those sessions behind a verified request when the
+        # authority reports them missing, with this deployment's own lifetime.
+        shared_login_flow = create_host_shared_login_flow(
+            os.environ, identity_authority, settings.public_base_url,
+            canonical_session_lifetime_seconds=settings.session_max_age_seconds)
 
     # #4139 Oracle management-host return leg, composed from the SAME env
     # bindings the Worker root composes (worker.py build_oracle_mesh_return_source_from_env).
