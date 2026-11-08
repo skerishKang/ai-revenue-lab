@@ -320,5 +320,84 @@ class TheSelectionDecidesOnThePc(unittest.TestCase):
         self.assertEqual(_idle_console_min_age_seconds(environ={IDLE_CONSOLE_MIN_AGE_ENV: "-5"}), 0)
 
 
+class TheReaperAndTheFinishedClient(unittest.TestCase):
+    """#7184(클라언트 완결)와 #7182(리퍼)가 같은 대기에서 서로를 방해하지 않는다.
+
+    #7184 이후 사용자 모드 클라이언트는 exit 하지 않고 봉투를 인쇄한 뒤 돌아온다.
+    그 답은 $LASTEXITCODE 가 비어 있어 ``no_exit_code`` 로 파싱되는데, 이것이
+    **완결**이라 리퍼가 돌면 안 된다. 반대로 한 바이트도 없는 대기는 여전히
+    timed_out 이며 그때만 고아 콘솔을 한 번 본다.
+    """
+
+    @staticmethod
+    def _client_answered(reply_json: str):
+        class _ClientAnswered(_SilentChild):
+            def __init__(self):
+                super().__init__()
+                self._born = time.monotonic()
+                self._answered = False
+
+            def poll(self):
+                return self.exit_code
+
+        class _AnsweredStream(_Stream):
+            def read(self, _size):
+                child = self._child
+                if child.exit_code is not None:
+                    return b""
+                if (time.monotonic() - child._born) < 0.3:
+                    time.sleep(0.05)
+                    return b""
+                child.exit_code = 0
+                # #7184 실측 표본 그대로: 봉투 안의 답, 센티널 값은 비어 있다.
+                return (ENVELOPE_PREFIX
+                        + base64.b64encode(reply_json.encode("utf-8")).decode("ascii")
+                        + "\r\n" + EXIT_SENTINEL + "\r\n").encode("ascii")
+
+        def popen(argv, **kwargs):
+            if "shell" in argv:
+                return _SilentChild()
+            child = _ClientAnswered()
+            child.stdout = _AnsweredStream(child)
+            return child
+
+        return popen
+
+    def test_the_new_clients_answer_is_a_completion_not_a_reap(self):
+        reply = json.dumps({
+            "request_id": "req_" + "0" * 32, "status": "ok", "exit_code": 0,
+            "stdout_b64": base64.b64encode(b"whoami\r\n").decode("ascii"),
+            "stderr_b64": "", "truncated": False, "error_code": None,
+            "duration_ms": 437,
+        }, separators=(",", ":"))
+        harness = _Harness()
+        harness.popen = self._client_answered(reply)
+        outcome, phases = harness.run()
+        # 빈 센티널 값은 "콘솔이 침묵했다"가 아니라 완결된 답이다(#7184).
+        self.assertEqual(outcome.termination, "no_exit_code")
+        self.assertEqual(outcome.exit_code, None)
+        self.assertIn(b'"status":"ok"', outcome.output)
+        self.assertEqual(harness.sweeps, [], "완결된 답 뒤에는 정리할 고아가 없다")
+        self.assertNotIn("idle_reap", phases)
+
+    def test_an_expired_wait_still_reaps_once_with_the_new_client_in_place(self):
+        # 클라이언트가 새 형태(봉투+빈 센티널)여도, 한 바이트도 없이 끝나는 대기는
+        # 여전히 점유된 콘솔이다 — 정리는 그때만, 한 번, 우리 마커를 보호하며 돈다.
+        harness = _Harness(sweep_answers=[
+            _frame(running=False, found=[], killed=[]),
+        ])
+        outcome, phases = harness.run()
+        self.assertEqual(outcome.termination, "timed_out")
+        self.assertIn("spawn", phases)
+        # 이 harness 는 명시 deadline(1초)으로 끝나는 대기라 timeout 이다;
+        # deadline 없는 lane 이면 같은 자리에서 silent_timeout 이다(#7178).
+        self.assertIn("timeout", phases)
+        self.assertEqual(len(harness.sweeps), 1, "한 번만 본다")
+        self.assertIn(SWEEP_MODE_IDLE_CONSOLE, harness.sweep_scripts[0])
+        # 이 dispatch 의 마커 파일도 보호 목록에 들어간다(살아 있는 우리 작업).
+        self.assertIn("padiem-dispatch-", harness.sweep_scripts[0])
+        self.assertIn("idle_reap", phases)
+
+
 if __name__ == "__main__":
     unittest.main()
