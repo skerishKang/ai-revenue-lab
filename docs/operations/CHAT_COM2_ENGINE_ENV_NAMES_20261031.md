@@ -40,7 +40,7 @@
 | `PADIEM_ENGINE_LOCAL_DB` | 멱등성 SQLite 파일 경로 |
 | `PADIEM_ENGINE_CALLER_ID` | Chat이 보내는 호출자 ID와 같은 값 |
 | `PADIEM_ENGINE_CALLER_SECRET` | Chat이 보내는 자격 증명과 같은 값 |
-| `PADIEM_ENGINE_ALLOWED_APPS` | `padiem-chat` (쉼표 구분 다중 허용) |
+| `PADIEM_ENGINE_ALLOWED_APPS` | `padiem-chat,b61,b54-padiem-claw,b54-padiem-claw-drive,b54-padiem-claw-calendar` (쉼표 구분 다중 허용) |
 | `PADIEM_B14_SERVICE_PROOF_SECRET` | 선택. B14 호출 증명 서명 값(32자 이상). 없으면 증명 헤더 없이 호출 |
 
 `B14_UPSTREAM_MODE`·`B14_UPSTREAM_URL`은 서비스 바인딩 대신 HTTPS로 B14를 부를 때만 씁니다.
