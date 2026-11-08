@@ -71,7 +71,7 @@ def _configure_pilot():
 
 class TestPilotHealth:
     def test_health_not_configured(self, client):
-        resp = client.get("/api/pilot/health")
+        resp = client.get("/api/pilot/admin/health")
         assert resp.status_code == 200
         data = resp.json()
         assert data["status"] == "not_configured"
@@ -79,7 +79,7 @@ class TestPilotHealth:
 
     def test_health_configured(self, client):
         _configure_pilot()
-        resp = client.get("/api/pilot/health")
+        resp = client.get("/api/pilot/admin/health")
         assert resp.status_code == 200
         data = resp.json()
         assert data["status"] == "ok"
@@ -88,7 +88,7 @@ class TestPilotHealth:
 
 class TestPilotNotConfigured:
     def test_models_empty_when_not_configured(self, client):
-        resp = client.get("/api/pilot/models")
+        resp = client.get("/api/pilot/admin/models")
         assert resp.status_code == 200
         assert resp.json()["models"] == []
 
@@ -105,7 +105,7 @@ class TestPilotNotConfigured:
 class TestPilotModels:
     def test_models_list_when_configured(self, client):
         _configure_pilot()
-        resp = client.get("/api/pilot/models")
+        resp = client.get("/api/pilot/admin/models")
         assert resp.status_code == 200
         data = resp.json()
         assert data["configured"] is True
@@ -673,8 +673,8 @@ class TestRouteSmoke:
     def test_access(self, client): assert client.get("/access").status_code == 200
     def test_health(self, client): assert client.get("/health").status_code == 200
     def test_pilot(self, client): assert client.get("/pilot").status_code == 200
-    def test_pilot_health(self, client): assert client.get("/api/pilot/health").status_code == 200
-    def test_pilot_models(self, client): assert client.get("/api/pilot/models").status_code == 200
+    def test_pilot_health(self, client): assert client.get("/api/pilot/admin/health").status_code == 200
+    def test_pilot_models(self, client): assert client.get("/api/pilot/admin/models").status_code == 200
 
 
 # ---------------------------------------------------------------------------

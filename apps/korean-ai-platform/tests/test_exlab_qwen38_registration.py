@@ -45,7 +45,7 @@ def test_exlab_catalog_is_manual_only_and_uses_existing_secret_name():
 
 def test_b14_models_lists_exact_exlab_without_showing_secret():
     with TestClient(create_app()) as client:
-        res=client.get("/api/pilot/models")
+        res=client.get("/api/pilot/admin/models")
     assert res.status_code==200
     rows={r["id"]:r for r in res.json()["registered_routes"]}
     assert len(rows)==len(read_registry()["models"])

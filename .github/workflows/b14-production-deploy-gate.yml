@@ -316,8 +316,21 @@ jobs:
           # (c) Require deployed B14 public catalog AND registered route IDs
           # to equal the owner-authoritative JSON registry from the exact
           # approved SHA, not an obsolete provider-specific marker.
+          # #6828: the public catalog is grade-only now. The id-level
+          # parity check reads the proven server-to-server detail.
+          PROOF_TIME="$(date +%s)"
+          PROOF=$(
+            B14_PROOF_SECRET="${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}" PROOF_TIME="${PROOF_TIME}" python3 - <<'PY_PROOF'
+          import hashlib, hmac, os
+          secret = os.environ['B14_PROOF_SECRET'].encode('utf-8')
+          message = os.environ['PROOF_TIME'].encode('ascii') + b'.'
+          print(hmac.new(secret, message, hashlib.sha256).hexdigest())
+          PY_PROOF
+          )
+          test "${#PROOF}" = '64'
           curl -fsS --max-time 20 \
-            'https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/pilot/models' \
+            -H "x-padiem-b14-proof: ${PROOF}" -H "x-padiem-b14-time: ${PROOF_TIME}" \
+            'https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/pilot/admin/models' \
             -o /tmp/b14-models.json
           python3 - <<'PY'
           import json
@@ -663,8 +676,18 @@ jobs:
           npx wrangler@4 versions list --name ai-revenue-korean-ai-platform --json > "$work/versions.json"
           alias="$(python3 ../../.github/scripts/b14_private_candidate_gate.py --version-id "$B14_VERSION" --main-sha "$B14_SHA" --versions-json "$work/versions.json" --preview-alias-only)"
           preview="https://${alias}-ai-revenue-korean-ai-platform.charliekant.workers.dev"
-          curl -fsS --max-time 20 "$preview/api/pilot/health" -o "$work/health.json"
-          curl -fsS --max-time 20 "$preview/api/pilot/models" -o "$work/models.json"
+          PREVIEW_TIME="$(date +%s)"
+          PREVIEW_PROOF=$(
+            B14_PROOF_SECRET="${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}" PROOF_TIME="${PREVIEW_TIME}" python3 - <<'PY_PROOF'
+          import hashlib, hmac, os
+          secret = os.environ['B14_PROOF_SECRET'].encode('utf-8')
+          message = os.environ['PROOF_TIME'].encode('ascii') + b'.'
+          print(hmac.new(secret, message, hashlib.sha256).hexdigest())
+          PY_PROOF
+          )
+          test "${#PREVIEW_PROOF}" = '64'
+          curl -fsS --max-time 20 -H "x-padiem-b14-proof: ${PREVIEW_PROOF}" -H "x-padiem-b14-time: ${PREVIEW_TIME}" "$preview/api/pilot/admin/health" -o "$work/health.json"
+          curl -fsS --max-time 20 -H "x-padiem-b14-proof: ${PREVIEW_PROOF}" -H "x-padiem-b14-time: ${PREVIEW_TIME}" "$preview/api/pilot/admin/models" -o "$work/models.json"
           python3 ../../.github/scripts/b14_private_candidate_gate.py --version-id "$B14_VERSION" --main-sha "$B14_SHA" --versions-json "$work/versions.json" --health-json "$work/health.json" --models-json "$work/models.json"
           python3 - "$preview" <<'PY_MODEL'
           import json, sys, urllib.request, urllib.error

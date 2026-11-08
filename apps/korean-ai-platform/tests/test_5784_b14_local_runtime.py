@@ -506,7 +506,7 @@ def test_the_catalog_and_assets_are_package_files_not_an_assets_binding() -> Non
 
     assert REGISTRY_PATH.is_file() and REGISTRY_PATH.name == "b14_models.json"
     with TestClient(create_local_app()) as client:
-        catalog = client.get("/api/pilot/models")
+        catalog = client.get("/api/pilot/admin/models")
         stylesheet = client.get("/app.css")
     assert catalog.status_code == 200
     assert catalog.json()["catalog"], "the package registry did not answer the catalog"

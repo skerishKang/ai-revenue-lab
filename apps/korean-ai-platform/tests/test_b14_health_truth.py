@@ -83,11 +83,11 @@ def test_live_with_platform_secret_is_top_level_healthy(client, monkeypatch):
     _set_live()
     monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-sensenova-health-proof-1234567890")
 
-    response = client.get("/api/pilot/health")
+    response = client.get("/api/pilot/admin/health")
 
     assert response.status_code == 200
     data = response.json()
-    active_catalog = client.get("/api/pilot/models").json()["catalog"]
+    active_catalog = client.get("/api/pilot/admin/models").json()["catalog"]
     # Previously health reported 0 because it counted the empty public/auto
     # lane, while the manual exact-model catalog exposed enabled routes.
     assert active_catalog
@@ -110,7 +110,7 @@ def test_live_with_platform_secret_is_top_level_healthy(client, monkeypatch):
 
 def test_live_without_platform_secret_is_not_ready_after_kilo_removal(client):
     _set_live()
-    data = client.get("/api/pilot/health").json()
+    data = client.get("/api/pilot/admin/health").json()
     assert data["status"] == "not_configured"
     assert data["mode"] == "not_configured"
     assert data["business14"]["provider_mode"] == "live"
@@ -118,7 +118,7 @@ def test_live_without_platform_secret_is_not_ready_after_kilo_removal(client):
 
 def test_openrouter_key_alone_never_makes_b14_live_ready(client):
     _set_live()
-    data = client.get("/api/pilot/health").json()
+    data = client.get("/api/pilot/admin/health").json()
     assert data["status"] == "not_configured"
     assert data["mode"] == "not_configured"
     assert data["business14"]["has_key"] is False
@@ -127,7 +127,7 @@ def test_placeholder_platform_secret_is_filtered(client, monkeypatch):
     _set_live()
     monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "test-key")
 
-    data = client.get("/api/pilot/health").json()
+    data = client.get("/api/pilot/admin/health").json()
 
     assert data["business14"]["has_key"] is False
 
@@ -136,7 +136,7 @@ def test_mock_mode_is_never_promoted_by_platform_secret(client, monkeypatch):
     runtime_config.provider_mode = "mock"
     monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-sensenova-health-proof-1234567890")
 
-    data = client.get("/api/pilot/health").json()
+    data = client.get("/api/pilot/admin/health").json()
 
     assert data["status"] == "not_configured"
     assert data["mode"] == "not_configured"
@@ -165,7 +165,7 @@ def test_valid_registry_keeps_existing_health_precedence(client, monkeypatch):
     ])
     reset_registry()
 
-    data = client.get("/api/pilot/health").json()
+    data = client.get("/api/pilot/admin/health").json()
 
     assert data["status"] == "ok"
     assert data["mode"] == "byok-multi-provider-pilot"
@@ -179,7 +179,7 @@ def test_legacy_mode_keeps_existing_health_precedence(client, monkeypatch):
     pilot_settings.pilot_base_url = "https://api.example.com"
     pilot_settings.pilot_model_id = "legacy-model"
 
-    data = client.get("/api/pilot/health").json()
+    data = client.get("/api/pilot/admin/health").json()
 
     assert data["status"] == "ok"
     assert data["mode"] == "byok-pilot"
@@ -193,7 +193,7 @@ def test_health_never_exposes_secrets(client, monkeypatch):
     _set_live()
     monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", platform_secret)
 
-    response = client.get("/api/pilot/health")
+    response = client.get("/api/pilot/admin/health")
 
     assert response.status_code == 200
     assert openrouter_secret not in response.text
@@ -204,7 +204,7 @@ def test_health_never_exposes_secrets(client, monkeypatch):
 def test_business14_providers_reflect_registered_route_owners(client):
     from app.pilot.model_registry_file import read_registry
     _set_live()
-    data = client.get("/api/pilot/health").json()
+    data = client.get("/api/pilot/admin/health").json()
     providers = data["business14"]["providers"]
     assert [p["id"] for p in providers] == sorted({m["provider_id"] for m in read_registry()["models"] if m["enabled"] and read_registry()["providers"][m["provider_id"]]["enabled"]})
     for entry in providers:
@@ -219,8 +219,8 @@ def test_business14_providers_reflect_registered_route_owners(client):
 def test_health_and_models_surfaces_do_not_leak_openrouter_credentials(client):
     _set_live()
 
-    health = client.get("/api/pilot/health")
-    models = client.get("/api/pilot/models")
+    health = client.get("/api/pilot/admin/health")
+    models = client.get("/api/pilot/admin/models")
 
     assert health.status_code == 200
     assert models.status_code == 200
@@ -233,15 +233,15 @@ def test_health_no_longer_reports_an_auto_chain(client):
     """B7: the retired fixed-chain descriptor is gone from public health."""
     _set_live()
 
-    data = client.get("/api/pilot/health").json()
+    data = client.get("/api/pilot/admin/health").json()
 
     assert "routing_policy" not in data["business14"]
-    assert "fixed_chain_v1" not in client.get("/api/pilot/health").text
+    assert "fixed_chain_v1" not in client.get("/api/pilot/admin/health").text
 
 
 def test_catalog_contains_exact_owner_models_not_a_synthetic_auto_choice(client):
     from app.pilot.model_registry_file import read_registry
-    data=client.get("/api/pilot/models").json()
+    data=client.get("/api/pilot/admin/models").json()
     reg = read_registry()
     assert {m["id"] for m in data["catalog"]} == {m["id"] for m in reg["models"] if m["enabled"] and reg["providers"][m["provider_id"]]["enabled"]}
     assert all(m["provider_id"] != "b14" for m in data["catalog"])

@@ -39,7 +39,7 @@ def test_owner_registered_models_keep_five_retired():
 def test_b14_get_models_matches_json_exact():
     reg=read_registry()
     with TestClient(create_app()) as client:
-        resp=client.get("/api/pilot/models")
+        resp=client.get("/api/pilot/admin/models")
     assert resp.status_code==200
     data=resp.json()
     expected={m["id"]:m for m in reg["models"]}
