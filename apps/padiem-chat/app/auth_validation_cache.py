@@ -7,6 +7,17 @@ session keys come only from verified credentials; credential values are not kept
 The account-link cohort keeps the same discipline on a longer clock. It answers
 only "which Chat account is this verified subject", which a new session does not
 change, and it shares this module's revision fence and invalidation calls.
+
+#7084: the revocation guard's canonical-session rows keep a longer window than
+the shared account mapping. A successful session check is reused for
+``session_ttl_seconds`` (300 s by default,
+``PADIEM_CHAT_AUTH_SESSION_CACHE_SECONDS``) because 7 days of COM2 journalling
+showed 7,736 checks paying 420 upstream calls of ~1.2 s each - the 30 s window
+expired between request bursts faster than the short refresh margin could renew
+it. Every revocation event this host serves (logout, self-service password
+change, account deletion, admin membership and role changes) deletes that row and
+bumps the revision fence before it answers, so the window only bounds how late a
+revocation made in another product is observed.
 """
 from __future__ import annotations
 
@@ -90,23 +101,38 @@ async def invalidate_auth_cache(request: Any, *, user_id: str,
         await cache.invalidate_user(user_id)
 
 
+#: Upper bound for the canonical-session window (#7084). Deliberately longer
+#: than the 60 s cap on the shared account mapping: a session row is refused
+#: from the same table it was written to, and every revocation event this host
+#: serves deletes it before answering.
+_MAX_SESSION_TTL_SECONDS = 900
+
+
 class SqliteAuthValidationCache:
     def __init__(self, db, *, ttl_seconds=30, link_ttl_seconds=0,
-                 refresh_ahead_seconds=0, clock=time.time):
+                 refresh_ahead_seconds=0, session_ttl_seconds=None,
+                 clock=time.time):
         if not 0 < ttl_seconds <= 60:
             raise ValueError('invalid_auth_cache_ttl')
+        if session_ttl_seconds is None:
+            session_ttl_seconds = ttl_seconds
+        if not 0 < session_ttl_seconds <= _MAX_SESSION_TTL_SECONDS:
+            raise ValueError('invalid_auth_cache_session_ttl')
         if not 0 <= link_ttl_seconds <= 900:
             raise ValueError('invalid_account_link_ttl')
         if not 0 <= refresh_ahead_seconds:
             raise ValueError('invalid_auth_cache_refresh_ahead')
         self.db, self.ttl_seconds, self.clock = db, float(ttl_seconds), clock
+        # #7084: the guard's 'legacy' session rows use this window; the
+        # 'shared' account mapping keeps ``ttl_seconds``.
+        self.session_ttl_seconds = float(session_ttl_seconds)
         self.link_ttl_seconds = float(link_ttl_seconds)
         # #7084: reload an entry shortly before it expires so the request that
         # would have paid for the reload already has a valid answer. The margin
-        # can never reach the TTL, so no expired answer is ever served and the
-        # revocation bound stays exactly the TTL.
+        # can never reach the window it applies to, so no expired answer is ever
+        # served and the revocation bound stays exactly that window.
         self.refresh_ahead_seconds = min(float(refresh_ahead_seconds),
-                                         float(ttl_seconds) / 2)
+                                         self.session_ttl_seconds / 2)
         # Coordination only, not authority: completed entries live in SQLite.
         self._inflight: dict[tuple[str, ...], asyncio.Task] = {}
 
@@ -278,7 +304,9 @@ class SqliteAuthValidationCache:
         if not isinstance(user_id, str) or not user_id:
             raise ValueError('invalid_auth_cache_result')
         now = self.clock()
-        expiry = min(float(authority_expiry), now + self.ttl_seconds)
+        # #7084: only the guard's session verdict uses the long window.
+        ttl = self.session_ttl_seconds if key[0] == 'legacy' else self.ttl_seconds
+        expiry = min(float(authority_expiry), now + ttl)
         if expiry <= now:
             raise ValueError('expired_auth_cache_result')
         await self._run('DELETE FROM auth_validation_cache WHERE valid_until<=?', now)
