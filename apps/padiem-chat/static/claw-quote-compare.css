@@ -98,9 +98,7 @@
 }
 
 .claw-qc-primary {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--accent-contrast, #fff);
+  /* Primary navy rides the shared rule (padiem-chat-ui-polish.css). */
 }
 
 .claw-qc-secondary,

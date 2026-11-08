@@ -530,3 +530,55 @@ html[data-theme="dark"] .auth-panel {
 .meeting-exports[hidden], .meeting-exports button[hidden],
 .meeting-unsaved-note[hidden], .meeting-elapsed[hidden],
 .meeting-transcript-block[hidden] { display: none !important; }
+
+/* ── Shared primary action — 대표 결정 2026-11-08 ────────────────────────────
+ * Every primary action wears the Chat/Claw composer send-button navy
+ * (voice-composer.css #355977, border #294b64, hover #2e4d67/#23445d, focus
+ * outline #6a9abc — measured identical in all four themes; #5608 already
+ * reused it for the util toolbox). The glass --accent sky blue stops being a
+ * button fill and survives only as dots and selection marks. Shape, size and
+ * spacing stay each button's own; the disabled faces are each button's own. */
+html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
+    .claw-result-action.is-prominent:not(:disabled), .claw-approval-approve,
+    .claw-memory-approve, .claw-qc-primary, .calendar-record-submit,
+    .claw-inbox-primary, #meetingStart) {
+  background: #355977;
+  border-color: #294b64;
+  color: #fff;
+}
+html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
+    .claw-result-action.is-prominent:not(:disabled), .claw-approval-approve,
+    .claw-memory-approve, .claw-qc-primary, .calendar-record-submit,
+    .claw-inbox-primary, #meetingStart):not(:disabled):hover {
+  background: #2e4d67;
+  border-color: #23445d;
+  color: #fff;
+}
+html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
+    .claw-result-action.is-prominent:not(:disabled), .claw-approval-approve,
+    .claw-memory-approve, .claw-qc-primary, .calendar-record-submit,
+    .claw-inbox-primary, #meetingStart):focus-visible {
+  outline: 3px solid #6a9abc;
+  outline-offset: 3px;
+}
+/* The meeting start keeps a send-button-style disabled face so a pending
+   pill is unmistakable next to the disabled 회의 종료 chip. */
+html body #meetingStart:disabled {
+  background: #c9d3dc;
+  border-color: #b9c7d2;
+  color: #fff;
+}
+
+/* The meeting record title input wears the shared form input look (the same
+ * values history.css .auth-form input uses) instead of the browser default. */
+.meeting-records-new input {
+  min-height: 44px;
+  box-sizing: border-box;
+  border: 1px solid rgba(127, 127, 127, 0.3);
+  border-radius: 10px;
+  padding: 0 12px;
+  background: rgba(127, 127, 127, 0.06);
+  color: inherit;
+  font: inherit;
+}
+.meeting-records-new input::placeholder { color: #9b9ca5; }

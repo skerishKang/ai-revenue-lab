@@ -398,9 +398,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
 }
 .app-shell[data-state="calendar"] .calendar-record-submit {
   border-radius: 999px;
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-contrast);
+  /* Primary navy rides the shared rule (padiem-chat-ui-polish.css). */
 }
 /* The meeting start control left this accent pair on purpose: var(--accent)
    is sky blue in the glass theme (대표 지적 2026-11-08), so #meetingStart
@@ -462,14 +460,12 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   justify-content: center;
   min-height: 40px;
   padding: 8px 16px;
-  /* The same primary treatment the Calendar and Meeting actions already use: a
-   * solid accent with the contrast ink. The translucent accent fill left the
-   * label at 3.31:1 on the Glass card, below the 4.5:1 that 13px bold text
-   * needs, because the card artwork showed through the button. */
-  border: 1px solid var(--accent);
+  /* Primary navy rides the shared rule (padiem-chat-ui-polish.css) — the
+   * same send-button navy the Calendar and Meeting actions wear. The
+   * translucent accent fill left the label at 3.31:1 on the Glass card,
+   * below the 4.5:1 that 13px bold text needs, because the card artwork
+   * showed through the button. */
   border-radius: 999px;
-  background: var(--accent);
-  color: var(--accent-contrast);
   font: inherit;
   font-size: 13px;
   font-weight: 700;
