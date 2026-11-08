@@ -32,6 +32,33 @@ async def open_settings(page: Page) -> None:
     await page.locator("#settingsDialog").wait_for(state="visible", timeout=5_000)
 
 
+async def open_advanced_settings(page: Page) -> None:
+    """Open Settings, then the 고급 설정 page (the conversation export home)."""
+    await open_settings(page)
+    await page.evaluate(
+        """() => {
+          const advanced = document.getElementById('advancedSettingsView');
+          if (advanced && !advanced.hidden) return;
+          const open = document.getElementById('settingsAdvancedOpen');
+          if (open) open.click();
+        }"""
+    )
+    await page.locator("#advancedSettingsView").wait_for(state="visible", timeout=5_000)
+
+
+async def close_advanced_settings(page: Page) -> None:
+    """Hide the advanced settings page again (the close event resets state)."""
+    await page.evaluate(
+        """() => {
+          const view = document.getElementById('advancedSettingsView');
+          if (view && !view.hidden) {
+            view.hidden = true;
+            window.dispatchEvent(new CustomEvent('padiem:advanced-settings-close'));
+          }
+        }"""
+    )
+
+
 async def close_settings(page: Page) -> None:
     """Close the Settings screen again."""
     await page.evaluate(

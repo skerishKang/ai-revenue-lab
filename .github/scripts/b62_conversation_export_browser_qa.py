@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 
 from playwright.async_api import Page, Route, async_playwright
 
-from b62_settings_actions import close_settings, open_settings
+from b62_settings_actions import close_advanced_settings, open_advanced_settings
 
 
 BASE_URL = os.environ.get("B62_CONVERSATION_EXPORT_QA_BASE_URL", "http://127.0.0.1:8777")
@@ -132,7 +132,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await _send(page, FIRST_PROMPT, 1)
     await _assert_no_horizontal_overflow(page, f"{name}-first-answer")
     # #5560: the export entry lives in Settings > Data management.
-    await open_settings(page)
+    await open_advanced_settings(page)
     if mobile:
         box = await export_button.bounding_box()
         if box is None or box["width"] < 44 or box["height"] < 44:
@@ -150,15 +150,15 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     if not first_filename.startswith("Padiem-Chat-대화-") or not first_filename.endswith(".txt"):
         raise AssertionError(f"unexpected bounded filename: {first_filename!r}")
 
-    await close_settings(page)
+    await close_advanced_settings(page)
     await _send(page, FOLLOWUP_PROMPT, 2)
-    await open_settings(page)
+    await open_advanced_settings(page)
     requests_before_second_export = list(api_requests)
     second_filename, second_text = await _download_text(page, f"{name}-second-export")
     if api_requests != requests_before_second_export:
         raise AssertionError("second export triggered an API request")
     _assert_export_text(second_text, expect_followup=True)
-    await close_settings(page)
+    await close_advanced_settings(page)
 
     await _assert_no_horizontal_overflow(page, f"{name}-final")
     await page.screenshot(path=str(OUT_DIR / f"{name}-final.png"), full_page=True)
