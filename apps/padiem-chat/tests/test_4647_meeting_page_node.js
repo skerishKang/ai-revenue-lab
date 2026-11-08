@@ -12,6 +12,7 @@ const locale = fs.readFileSync(path.join(root, "locale.js"), "utf8");
 const sidebarCss = fs.readFileSync(path.join(root, "sidebar-utility.css"), "utf8");
 const clawCss = fs.readFileSync(path.join(root, "claw-focus-layout.css"), "utf8");
 const meetingCss = fs.readFileSync(path.join(root, "meeting-capture.css"), "utf8");
+const polish = fs.readFileSync(path.join(root, "padiem-chat-ui-polish.css"), "utf8");
 const frame = fs.readFileSync(path.join(root, "shared-six-panel-frame.css"), "utf8");
 const surfaces = fs.readFileSync(path.join(root, "padiem-surfaces.css"), "utf8");
 const cinematic = fs.readFileSync(path.join(root, "padiem-cinematic-chat.css"), "utf8");
@@ -120,9 +121,18 @@ test("a visitor may open the meeting page while the session guard stays on the c
   assert.match(capture, /shell\.dataset\.state = "meeting";/);
   assert.match(capture, /if \(!signedIn\) say\("Padiem 로그인 후 회의록을 이용할 수 있습니다\."\);/);
   assert.match(capture, /startButton\.disabled = state\.active \|\| state\.pending \|\| !signedIn/);
-  assert.match(capture, /draftInClaw\.disabled = state\.active \|\| !text\.value\.trim\(\) \|\| !signedIn/);
-  assert.match(capture, /driveText\.disabled = state\.active \|\| !text\.value\.trim\(\) \|\| !signedIn \|\| uploadInFlight/);
   assert.match(capture, /startButton\.disabled = !signedIn \|\| controller\.snapshot\(\)\.active/);
+  // 대표 결정 2026-11-08: results that do not exist are HIDDEN, not gray
+  // disabled — the export row appears only after the meeting stops with an
+  // artifact, the record-only mode never shows the transcript panel, and a
+  // Drive upload in flight is the one visible-but-disabled transient.
+  assert.match(capture, /downloadAudio\.hidden = !audioVisible/);
+  assert.match(capture, /downloadText\.hidden = !textVisible/);
+  assert.match(capture, /draftInClaw\.hidden = !textVisible/);
+  assert.match(capture, /exportsRow\.hidden = !anyVisible/);
+  assert.match(capture, /transcriptBlock\.hidden = mode === "record"/);
+  assert.match(capture, /driveAudio\.disabled = !hasAudio \|\| !signedIn \|\| uploadInFlight/);
+  assert.match(capture, /driveText\.disabled = !hasText \|\| !signedIn \|\| uploadInFlight/);
 });
 
 test("#5028: the meeting page nav lights up and its actions use the shared surface family", () => {
@@ -138,12 +148,28 @@ test("#5028: the meeting page nav lights up and its actions use the shared surfa
   // sliced so the negative assertion cannot reach later, legitimate
   // `background: transparent` panel rules.
   const actionsBlock = meetingCss.slice(
-    meetingCss.indexOf(".meeting-controls button, .meeting-exports button {"),
-    meetingCss.indexOf("}", meetingCss.indexOf(".meeting-controls button, .meeting-exports button {"))
+    meetingCss.indexOf(".meeting-controls button, .meeting-exports button, .meeting-records-new button {"),
+    meetingCss.indexOf("}", meetingCss.indexOf(".meeting-controls button, .meeting-exports button, .meeting-records-new button {"))
   );
   assert.match(actionsBlock, /background: var\(--panel, #ffffff\); color: var\(--text, #17202a\);/);
   assert.doesNotMatch(actionsBlock, /background:\s*transparent/);
   // The idle transcript area no longer over-expands the bright panel.
   assert.match(meetingCss, /\.meeting-panel textarea \{[\s\S]*?min-height: clamp\(180px, 24vh, 260px\);/);
   assert.doesNotMatch(meetingCss, /min-height: clamp\(200px, 30vh, 330px\)/);
+});
+
+test("the primary start control keeps its pill and wears the shared navy", () => {
+  // 대표 결정 2026-11-08 (2차): the settings-done swap read as "더 안 예뻐졌다" —
+  // the pill shape came back, and the color now rides the shared primary rule
+  // (the composer send navy, #355977) instead of any meeting-local blue.
+  assert.match(html, /<button type="button" id="meetingStart">회의 시작<\/button>/);
+  assert.match(meetingCss, /#meetingStart \{ border-radius: 999px; \}/);
+  assert.doesNotMatch(views, /\[data-state="meeting"\] \.meeting-controls #meetingStart/);
+  assert.match(polish, /\.claw-inbox-primary, #meetingStart\) \{/);
+  assert.match(polish, /background: #355977;/);
+  assert.match(meetingCss, /\.meeting-modes input \{ accent-color: #355977;/);
+  // The record title input wears the shared form input look, and the save
+  // button the shared secondary chip family.
+  assert.match(polish, /\.meeting-records-new input \{[\s\S]*?border-radius: 10px;/);
+  assert.match(meetingCss, /\.meeting-controls button, \.meeting-exports button, \.meeting-records-new button \{/);
 });

@@ -433,35 +433,49 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
 .settings-guide p, .settings-guide li { font-size: 13px; line-height: 1.65; }
 .settings-guide ol { margin: 8px 0 0; padding-left: 22px; }
 
-/* #6659: the guest (pre-login) screen's legal links, under the starter grid.
- * The accepted base stylesheet stays byte-pinned, so this layer owns the rule.
- * Compact text links only — no layout pressure on the topbar account target. */
-.guest-legal-links {
-  margin: 14px 0 0;
-  font-size: 13px;
+/* 대표 확정 2026-11-08: the legal links moved from under the Chat/Claw starter
+ * grid to the sidebar bottom, right above the account row (guest and signed-in
+ * alike). Same compact gray line, sidebar-local spacing; the collapsed sidebar
+ * hides the whole rail, so the links hide with it.
+ * The accepted base stylesheet stays byte-pinned, so this layer owns the rule. */
+.sidebar-legal-links {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  /* inherit on purpose: each theme tints the sidebar bottom itself (the glass
+     theme paints rgba(255,255,255,.68), the light themes their muted ink). */
+  color: inherit;
+  text-align: left;
+}
+.sidebar-legal-links a {
+  color: inherit;
+  text-decoration: none;
+  display: inline-block;
+  min-height: 24px;
+  padding: 4px 2px;
+  box-sizing: border-box;
+}
+.sidebar-legal-links a:hover { color: var(--accent-strong); text-decoration: underline; }
+
+/* The login dialog carries the one-line consent notice; the two nouns are the
+ * links, the surrounding sentence is plain muted text. */
+.auth-legal-consent {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
   color: var(--muted, #6f7079);
 }
-.guest-legal-links a {
+.auth-legal-consent a {
   color: var(--accent-strong, #5546d6);
   text-decoration: none;
-  margin: 0 10px;
 }
-.guest-legal-links a:hover { text-decoration: underline; }
+.auth-legal-consent a:hover { text-decoration: underline; }
 
 /* CI Linux font metrics render the topbar/sidebar login label at ~43.6px —
  * under the shared 44px touch-target contract the account-session QA
  * enforces. Pin the floor here; the accepted base stylesheet stays pinned. */
 .app-shell .login-button {
   min-width: 44px;
-}
-
-/* #6659: the guest legal links are interactive targets too — keep them at the
- * 24x24 CSS px floor the accessibility QA enforces. */
-.guest-legal-links a {
-  display: inline-block;
-  min-height: 24px;
-  padding: 4px 10px;
-  box-sizing: border-box;
 }
 
 /* ── Auth dialog contrast — 2026-11-08 lane (#7118 후속 화면 점검) ──────────
@@ -490,3 +504,87 @@ html[data-theme="dark"] .auth-panel {
   background: var(--panel, #1a1b1f);
   color: #edf5fc;
 }
+
+/* ── Meeting screen cleanup — 대표 결정 2026-11-08 ───────────────────────────
+ * Results show only when they exist (hidden beats disabled-gray), the help
+ * copy rides the shared chip tooltip beside the title, and the elapsed timer
+ * sits in the status line. New rules only — the meeting sheet keeps its own. */
+.meeting-help-toggle {
+  border: 1px solid var(--line, rgba(26, 34, 48, .16));
+  border-radius: 999px;
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0 6px;
+  font: inherit;
+  font-weight: 700;
+  background: transparent;
+  color: var(--muted, inherit);
+  cursor: help;
+  flex-shrink: 0;
+}
+.meeting-result-row { display: flex; flex-direction: column; gap: 8px; }
+.meeting-unsaved-note { margin: 0; font-size: 13px; line-height: 1.5; color: var(--muted, inherit); font-weight: 550; }
+.meeting-elapsed { margin-left: 8px; font-variant-numeric: tabular-nums; opacity: .8; }
+/* Visibility, not opacity: a result that does not exist is absent, and the
+ * class-level display rules must not resurrect a hidden control. */
+.meeting-exports[hidden], .meeting-exports button[hidden],
+.meeting-unsaved-note[hidden], .meeting-elapsed[hidden],
+.meeting-transcript-block[hidden] { display: none !important; }
+
+/* ── Shared primary action — 대표 결정 2026-11-08 ────────────────────────────
+ * Every primary action wears the Chat/Claw composer send-button navy
+ * (voice-composer.css #355977, border #294b64, hover #2e4d67/#23445d, focus
+ * outline #6a9abc — measured identical in all four themes; #5608 already
+ * reused it for the util toolbox). The glass --accent sky blue stops being a
+ * button fill and survives only as dots and selection marks. Shape, size and
+ * spacing stay each button's own; the disabled faces are each button's own. */
+html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
+    .claw-result-action.is-prominent:not(:disabled), .claw-approval-approve,
+    .claw-memory-approve, .claw-qc-primary, .calendar-record-submit,
+    .claw-inbox-primary, #meetingStart,
+    .app-shell[data-state="calendar"] .calendar-record-submit,
+    .app-shell[data-state="meeting"] .meeting-controls #meetingStart) {
+  background: #355977;
+  border-color: #294b64;
+  color: #fff;
+}
+html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
+    .claw-result-action.is-prominent:not(:disabled), .claw-approval-approve,
+    .claw-memory-approve, .claw-qc-primary, .calendar-record-submit,
+    .claw-inbox-primary, #meetingStart,
+    .app-shell[data-state="calendar"] .calendar-record-submit,
+    .app-shell[data-state="meeting"] .meeting-controls #meetingStart):not(:disabled):hover {
+  background: #2e4d67;
+  border-color: #23445d;
+  color: #fff;
+}
+html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
+    .claw-result-action.is-prominent:not(:disabled), .claw-approval-approve,
+    .claw-memory-approve, .claw-qc-primary, .calendar-record-submit,
+    .claw-inbox-primary, #meetingStart,
+    .app-shell[data-state="calendar"] .calendar-record-submit,
+    .app-shell[data-state="meeting"] .meeting-controls #meetingStart):focus-visible {
+  outline: 3px solid #6a9abc;
+  outline-offset: 3px;
+}
+/* The meeting start keeps a send-button-style disabled face so a pending
+   pill is unmistakable next to the disabled 회의 종료 chip. */
+html body #meetingStart:disabled {
+  background: #c9d3dc;
+  border-color: #b9c7d2;
+  color: #fff;
+}
+
+/* The meeting record title input wears the shared form input look (the same
+ * values history.css .auth-form input uses) instead of the browser default. */
+.meeting-records-new input {
+  min-height: 44px;
+  box-sizing: border-box;
+  border: 1px solid rgba(127, 127, 127, 0.3);
+  border-radius: 10px;
+  padding: 0 12px;
+  background: rgba(127, 127, 127, 0.06);
+  color: inherit;
+  font: inherit;
+}
+.meeting-records-new input::placeholder { color: #9b9ca5; }

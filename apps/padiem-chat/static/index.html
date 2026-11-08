@@ -159,6 +159,7 @@
       <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span data-locale-key="footer">편하게 질문해 보세요</span> <a href="./third-party-licenses.html">오픈소스 고지</a></div>
       <div class="sidebar-bottom" data-locale-aria-label="account-settings" aria-label="서비스, 계정 및 설정">
         <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false" hidden><span aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
+        <p class="sidebar-legal-links"><a href="./privacy.html" data-locale-key="legal-privacy">개인정보처리방침</a> · <a href="./terms.html" data-locale-key="legal-terms">이용약관</a></p>
         <div class="sidebar-account account-controls">
           <span class="account-avatar" id="accountAvatar" aria-hidden="true">?</span>
           <span class="account-name" id="accountName" hidden></span>
@@ -251,6 +252,9 @@
               <button class="auth-primary" id="passwordRegisterSubmit" type="submit" data-locale-key="auth-register">회원가입</button>
             </form>
           </details>
+          <p class="auth-legal-consent">
+            <span data-locale-key="auth-consent-lead">계속하면</span> <a href="./terms.html" data-locale-key="legal-terms">이용약관</a><span data-locale-key="auth-consent-and">및</span><a href="./privacy.html" data-locale-key="legal-privacy">개인정보처리방침</a><span data-locale-key="auth-consent-tail">에 동의하는 것으로 봅니다.</span>
+          </p>
         </div>
       </dialog>
       <dialog class="settings-dialog" id="settingsDialog" aria-labelledby="settingsTitle">
@@ -902,7 +906,6 @@
               <button type="button" class="starter claw-workspace-starter" id="clawWebWorkspace"><span class="starter-icon" aria-hidden="true"><svg class="claw-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"></path></svg></span><span><strong data-locale-key="claw-home-web">웹에서 하기</strong><small data-locale-key="claw-home-web-copy">웹에서 바로 작업하기</small></span></button>
             </div>
           </div>
-          <p class="guest-legal-links"><a href="./privacy.html">개인정보처리방침</a><a href="./terms.html">이용약관</a></p>
           <button type="button" class="claw-history-shortcut" id="clawPreviousConversations"
                   aria-controls="historySection" data-locale-key="claw-home-previous-conversations">이전 대화 보기 →</button>
           <p class="claw-history-feedback" id="clawPreviousConversationsFeedback" role="status" hidden></p>
@@ -1179,19 +1182,24 @@
     <!-- #4647: dedicated meeting workspace within the Chat/Claw shell, not a popup. -->
     <section id="meetingView" class="standalone-view meeting-view" aria-labelledby="meetingTitle" hidden>
       <div class="meeting-panel">
-       <header class="standalone-view-header meeting-header"><div><p class="standalone-view-kicker" data-locale-key="meeting-kicker">Padiem Meeting</p><h2 class="standalone-view-title" id="meetingTitle" data-locale-key="meeting-title">회의록</h2></div></header>
-        <p class="meeting-help">시작을 누르면 마이크 권한을 요청합니다. 선택한 모드로 녹음과 전사가 진행됩니다.</p>
+       <header class="standalone-view-header meeting-header"><div><p class="standalone-view-kicker" data-locale-key="meeting-kicker">Padiem Meeting</p><h2 class="standalone-view-title" id="meetingTitle" data-locale-key="meeting-title">회의록</h2></div>
+        <button type="button" class="meeting-help-toggle" id="meetingHelpToggle" aria-label="회의록 도움말" data-locale-aria-label="meeting-help-label" data-padiem-tooltip="시작을 누르면 마이크 권한을 요청합니다. 선택한 모드로 녹음과 전사가 진행됩니다. Drive 저장은 Google Drive 쓰기 권한 연결이 필요합니다." data-locale-title="meeting-help-tooltip" aria-haspopup="true">?</button>
+       </header>
        <fieldset class="meeting-modes"><legend>회의 방식 선택</legend>
         <label><input type="radio" name="meetingMode" value="record" checked> 녹음만</label>
         <label><input type="radio" name="meetingMode" value="transcribe"> 실시간 전사만</label>
         <label><input type="radio" name="meetingMode" value="both"> 녹음 + 실시간 전사</label>
        </fieldset>
        <div class="meeting-controls"><button type="button" id="meetingStart">회의 시작</button><button type="button" id="meetingStop" disabled>회의 종료</button></div>
-       <p class="meeting-status" id="meetingStatus" role="status" aria-live="polite">대기 중 · 아직 녹음하지 않았습니다.</p>
-       <label for="meetingTranscript">전사 원문 (편집 가능)</label><textarea id="meetingTranscript" rows="8" placeholder="실시간 전사 내용을 이곳에서 확인할 수 있습니다."></textarea>
-       <p id="meetingInterim" role="status" class="meeting-interim"></p>
-       <div class="meeting-exports"><button type="button" id="meetingDownloadAudio" disabled>녹음 파일 다운로드</button><button type="button" id="meetingDownloadText" disabled>전사 TXT 다운로드</button><button type="button" id="meetingSaveAudioDrive" disabled>녹음 Google Drive 저장</button><button type="button" id="meetingSaveTextDrive" disabled>전사 Google Drive 저장</button><button type="button" id="meetingDraftInClaw" disabled>Claw로 회의록 초안 만들기</button></div>
-        <p class="meeting-storage-note">Drive 저장은 쓰기 권한 연결이 필요합니다. 저장되지 않은 기록은 새로고침 시 사라집니다.</p>
+       <p class="meeting-status" id="meetingStatus" role="status" aria-live="polite"><span id="meetingStatusText">대기 중 · 아직 녹음하지 않았습니다.</span><span class="meeting-elapsed" id="meetingElapsed" role="timer" hidden></span></p>
+       <div class="meeting-transcript-block" id="meetingTranscriptBlock">
+        <label class="meeting-transcript-label" for="meetingTranscript">전사 원문 (편집 가능)</label><textarea id="meetingTranscript" rows="8" placeholder="실시간 전사 내용을 이곳에서 확인할 수 있습니다."></textarea>
+        <p id="meetingInterim" role="status" class="meeting-interim"></p>
+       </div>
+       <div class="meeting-result-row">
+        <div class="meeting-exports" id="meetingExports" hidden><button type="button" id="meetingDownloadAudio" hidden>녹음 파일 다운로드</button><button type="button" id="meetingDownloadText" hidden>전사 TXT 다운로드</button><button type="button" id="meetingSaveAudioDrive" hidden>녹음 Google Drive 저장</button><button type="button" id="meetingSaveTextDrive" hidden>전사 Google Drive 저장</button><button type="button" id="meetingDraftInClaw" hidden>Claw로 회의록 초안 만들기</button></div>
+        <p class="meeting-unsaved-note" id="meetingUnsavedNote" hidden data-locale-key="meeting-unsaved-warning">저장되지 않은 기록은 새로고침 시 사라집니다.</p>
+       </div>
        <section class="meeting-records" aria-labelledby="meetingRecordsTitle">
         <h3 id="meetingRecordsTitle" data-locale-key="meeting-records-title">회의 기록</h3>
         <div class="meeting-records-new"><label for="meetingTitleInput" data-locale-key="meeting-record-title-label">회의 제목</label><input id="meetingTitleInput" type="text" maxlength="80" autocomplete="off" placeholder="예: 10월 운영 회의" /><button type="button" id="meetingSaveTitle" disabled>제목 저장</button></div>
