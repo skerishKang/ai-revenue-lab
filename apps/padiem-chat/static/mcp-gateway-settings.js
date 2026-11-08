@@ -3,7 +3,7 @@
 (function (root) {
   "use strict";
   const API = "/api/account/mcp";
-  const state = { tokens: [], approvals: [], links: [], issued: "", ready: false, busy: false, epoch: 0, status: "mcp-settings-help", admin: false, managed: {}, managedReady: false };
+  const state = { tokens: [], approvals: [], links: [], issued: "", ready: false, busy: false, epoch: 0, status: "mcp-settings-help" };
   let nodes;
   const copy = (key) => root.__padiemLocale?.text(key) || key;
   function element(tag, className, text) {
@@ -62,24 +62,85 @@
     }
     if (links.some((link) => link.mesh_node_id === selected)) nodes.device.value = selected;
   }
-  function paintTokens() {
-    nodes.list.replaceChildren();
-    if (!state.tokens.length) nodes.list.append(element("li", "", copy("mcp-settings-empty")));
-    for (const token of state.tokens) {
+  function paintPcLinks() {
+    const list = nodes.pclinks;
+    if (!list) return;
+    list.replaceChildren();
+    if (!activeLinks().length) {
+      const row = element("li", "mcp-settings-card");
+      row.append(element("span", "", copy("pc-links-empty")));
+      list.append(row);
+      return;
+    }
+    for (const link of activeLinks()) {
       const item = element("li", "mcp-settings-card"), detail = element("div", "mcp-settings-detail");
-      detail.append(element("strong", "", token.name));
-      field(detail, "mcp-settings-device", pcName(token.device_id));
-      field(detail, "mcp-settings-created", token.created_at || "—");
-      field(detail, "mcp-settings-used", token.last_used_at || copy("mcp-settings-never"));
+      detail.append(element("strong", "", link.label || link.mesh_node_id));
+      const online = element("span", "mcp-settings-status",
+        copy(link.online === true ? "pc-links-online" : "pc-links-offline"));
+      detail.append(online);
+      const actions = element("div", "mcp-settings-actions");
+      actions.append(actionButton("pc-links-disconnect", () => { void disconnectLink(link); }));
+      item.append(detail, actions);
+      list.append(item);
+    }
+  }
+  async function disconnectLink(link) {
+    await mutate("/api/pc/pairings/" + encodeURIComponent(link.link_id), "DELETE", undefined, () => true);
+    state.links = state.links.filter((row) => row.link_id !== link.link_id);
+    paintPcLinks();
+  }
+  function paintTokens() {
+    // One row per connected AI (client name): the most recently used token
+    // carries the row's timestamp, and 연결 끊기 revokes every token of that
+    // AI in one go.
+    nodes.list.replaceChildren();
+    const groups = new Map();
+    for (const token of state.tokens) {
+      if (token.revoked_at) continue;
+      const group = groups.get(token.name) || { name: token.name, tokens: [] };
+      if (!groups.has(token.name)) groups.set(token.name, group);
+      group.tokens.push(token);
+    }
+    if (!groups.size) {
+      nodes.list.append(element("li", "", copy("mcp-settings-empty")));
+      return;
+    }
+    for (const group of groups.values()) {
+      const latest = [...group.tokens]
+        .filter((token) => token.last_used_at)
+        .sort((a, b) => (a.last_used_at < b.last_used_at ? 1 : -1))[0];
+      const devices = [...new Set(group.tokens.map((token) => pcName(token.device_id)))];
+      const item = element("li", "mcp-settings-card"), detail = element("div", "mcp-settings-detail");
+      detail.append(element("strong", "", group.name));
+      field(detail, "mcp-settings-device", devices.join(", "));
+      field(detail, "mcp-settings-used", latest?.last_used_at || copy("mcp-settings-never"));
+      field(detail, "mcp-settings-tokens", String(group.tokens.length));
       item.append(detail);
-      if (token.revoked_at) item.append(element("span", "", copy("mcp-settings-revoked")));
-      else item.append(actionButton("mcp-settings-revoke", () => { void revoke(token.id); }));
+      item.append(actionButton("mcp-settings-revoke", () => { void revokeGroup(group); }));
       nodes.list.append(item);
     }
   }
+  async function revokeGroup(group) {
+    // Revoking the AI retires every issued token and, with them, the pending
+    // approvals that rode on those tokens — the same cleanup one-by-one
+    // revocation did.
+    clearIssued();
+    for (const token of [...group.tokens]) {
+      await mutate("/api/account/mcp/tokens/" + encodeURIComponent(token.id), "DELETE", undefined, () => {
+        state.tokens = state.tokens.filter((row) => row.id !== token.id);
+        state.approvals = state.approvals.filter((approval) => approval.token_id !== token.id);
+        return true;
+      });
+    }
+    state.status = "mcp-settings-revoked";
+    paint();
+  }
   function paintApprovals() {
     nodes.approvals.replaceChildren();
-    if (!state.approvals.length) nodes.approvals.append(element("li", "", copy("mcp-settings-approvals-empty")));
+    // The 확인이 필요한 작업 block only exists while work is waiting.
+    const block = nodes.approvalsblock;
+    if (block) block.hidden = state.approvals.length === 0;
+    if (!state.approvals.length) return;
     for (const approval of state.approvals) {
       const item = element("li", "mcp-settings-card mcp-settings-approval");
       field(item, "mcp-settings-connection", approval.token_name);
@@ -107,59 +168,7 @@
       nodes.approvals.append(item);
     }
   }
-  function paintManaged() {
-    const visible = state.admin && state.ready && activeLinks().length > 0;
-    nodes.managedblock.hidden = !visible;
-    if (!visible) return;
-    nodes.managednotready.hidden = state.managedReady;
-    nodes.managedlist.replaceChildren();
-    for (const link of activeLinks()) {
-      const item = element("li", "mcp-settings-card"), detail = element("div", "mcp-settings-detail");
-      detail.append(element("strong", "", link.label || link.mesh_node_id));
-      field(detail, "mcp-settings-device", pcName(link.mesh_node_id));
-      const online = link.online === true ? copy("pc-managed-online") : copy("pc-managed-offline");
-      detail.append(element("span", "mcp-settings-status", online));
-      const choice = element("label", "mcp-settings-field");
-      const box = element("input");
-      box.type = "checkbox";
-      box.checked = state.managed[link.link_id] === true;
-      box.disabled = state.busy || !state.managedReady;
-      box.addEventListener("change", () => { void setManaged(link, box); });
-      choice.append(box, element("span", "", copy("pc-managed-toggle")));
-      item.append(detail, choice);
-      nodes.managedlist.append(item);
-    }
-  }
-  async function setManaged(link, box) {
-    if (state.busy) { box.checked = state.managed[link.link_id] === true; return; }
-    const epoch = state.epoch;
-    state.busy = true; paint();
-    try {
-      const reply = await request("/api/pc/devices/" + encodeURIComponent(link.link_id) + "/managed",
-        "POST", { managed: box.checked });
-      if (epoch !== state.epoch) return;
-      if (reply.status === 403) {
-        state.admin = false;
-        nodes.managedblock.hidden = true;
-        state.status = "pc-managed-forbidden"; controls(); return;
-      }
-      if (reply.status === 503 && reply.body?.error?.code === "pc_pairing_not_ready") {
-        state.managedReady = false;
-        nodes.managednotready.hidden = false;
-        state.status = "pc-managed-not-ready"; controls(); return;
-      }
-      if (reply.status === 200 && reply.body?.ok === true && reply.body?.link) {
-        state.managed[link.link_id] = reply.body.link.managed === true;
-        state.status = state.managed[link.link_id] ? "pc-managed-on" : "pc-managed-off";
-      } else {
-        box.checked = state.managed[link.link_id] === true;
-        state.status = "mcp-settings-save-error";
-      }
-    } catch (_) {
-      if (epoch === state.epoch) { box.checked = state.managed[link.link_id] === true; }
-    } finally { if (epoch === state.epoch) { state.busy = false; paint(); } }
-  }
-  function paint() { paintDevices(); paintTokens(); paintApprovals(); paintManaged(); controls(); }
+  function paint() { paintDevices(); paintPcLinks(); paintTokens(); paintApprovals(); controls(); }
   function reset() {
     ++state.epoch;
     state.tokens = []; state.approvals = []; state.links = [];
@@ -186,25 +195,6 @@
         state.tokens = tokens.body.tokens; state.approvals = approvals.body.approvals;
         state.links = pairings?.status === 200 && pairings.body?.ok === true && Array.isArray(pairings.body.links)
           ? pairings.body.links.filter((link) => link && typeof link.mesh_node_id === "string" && link.mesh_node_id) : [];
-        state.admin = pairings?.status === 200 && pairings.body?.admin === true;
-        state.managed = {}; state.managedReady = true;
-        if (state.admin) {
-          const states = await Promise.allSettled(activeLinks().map((link) =>
-            request("/api/pc/devices/" + encodeURIComponent(link.link_id) + "/managed")));
-          if (epoch !== state.epoch) return;
-          activeLinks().forEach((link, index) => {
-            const settled = states[index];
-            if (settled.status !== "fulfilled") return;
-            const reply = settled.value;
-            if (reply.status === 200 && reply.body?.ok === true) {
-              state.managed[link.link_id] = reply.body.managed === true;
-            } else if (reply.status === 503 && reply.body?.error?.code === "pc_pairing_not_ready") {
-              state.managedReady = false;
-            } else if (reply.status === 403) {
-              state.admin = false;
-            }
-          });
-        }
         state.ready = true;
         state.status = activeLinks().length ? "mcp-settings-ready" : "mcp-settings-no-pc-help";
       }
@@ -276,8 +266,9 @@
   function boot() {
     const byId = (id) => root.document.getElementById(id);
     if (!byId("mcpGatewaySettings")) return;
-    nodes = { section: byId("mcpGatewaySettings"), dialog: byId("settingsDialog") };
-    for (const name of ["Status", "Endpoint", "Device", "Name", "Issue", "Refresh", "List", "Approvals", "Issued", "Token", "Copy", "Hide", "Editor", "ManagedBlock", "ManagedList", "ManagedNotReady"]) {
+    nodes = { section: byId("mcpGatewaySettings"),
+      approvalsblock: byId("mcpGatewayApprovalsBlock"), pclinks: byId("mcpGatewayPcLinks") };
+    for (const name of ["Status", "Endpoint", "Device", "Name", "Issue", "Refresh", "List", "Approvals", "ApprovalsBlock", "PcLinks", "Issued", "Token", "Copy", "Hide", "Editor"]) {
       nodes[name.toLowerCase()] = byId("mcpGateway" + name);
     }
     nodes.endpoint.value = root.location.origin + "/api/mcp";
@@ -288,14 +279,13 @@
     nodes.editor.addEventListener("keydown", (event) => {
       if (event.key === "Enter" && event.target.tagName === "INPUT") event.preventDefault();
     });
-    nodes.dialog.addEventListener("close", reset);
-    if (typeof root.MutationObserver === "function") new root.MutationObserver(() => {
-      if (nodes.dialog.open) void load(); else reset();
-    }).observe(nodes.dialog, { attributes: true, attributeFilter: ["open"] });
+    // The module lives in the advanced settings page now: the page open event
+    // carries the load, the auth-state reset stays the same.
+    root.addEventListener("padiem:advanced-settings-open", () => { void load(); });
+    root.addEventListener("padiem:advanced-settings-close", () => { reset(); });
     root.addEventListener("padiem:localechange", paint);
-    root.addEventListener("padiem:auth-state", () => { reset(); if (nodes.dialog.open) void load(); });
+    root.addEventListener("padiem:auth-state", () => { reset(); });
     paint();
-    if (nodes.dialog.open) void load();
   }
   if (root.document.readyState === "loading") root.document.addEventListener("DOMContentLoaded", boot, { once: true });
   else boot();

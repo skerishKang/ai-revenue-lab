@@ -13,7 +13,7 @@ NODE = shutil.which("node")
 
 def test_settings_are_in_the_shared_chat_claw_dialog_with_accessible_localized_controls():
     html = (STATIC / "index.html").read_text()
-    section = html[html.index('id="pcDelegationSettings"'):html.index('id="adminSettingsSection"')]
+    section = html[html.index('id="pcDelegationSettings"'):html.index('id="mcpGatewaySettings"')]
     assert 'aria-labelledby="pcDelegationTitle"' in section
     assert 'role="status" aria-live="polite"' in section
     assert '<form' not in section

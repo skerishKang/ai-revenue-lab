@@ -83,8 +83,8 @@ function setup({ tokens = [], approvals = [], links = [LINK], status = 200, admi
   vm.runInNewContext(source, { window });
   return {
     ids, calls, server, clipboard,
-    async open() { ids.settingsDialog.open = true; observers.forEach((callback) => callback()); await settle(); },
-    async close() { ids.settingsDialog.open = false; observers.forEach((callback) => callback()); await settle(); },
+    async open() { ids.settingsDialog.open = true; (events["padiem:advanced-settings-open"] || []).forEach((callback) => callback()); await settle(); },
+    async close() { ids.settingsDialog.open = false; (events["padiem:advanced-settings-close"] || []).forEach((callback) => callback()); await settle(); },
     async event(name) { for (const callback of events[name] || []) callback(); await settle(); },
     language(value) { locale = value; },
     tokenText() { return ids.mcpGatewayList.textContent; },
@@ -142,32 +142,6 @@ async function main() {
     const app = setup({ approvals: [move, { ...APPROVAL, id: "deletion", tool_name: "pc_delete_file", arguments: { path: "C:/old", recursive: true } }] });
     await app.open();
     for (const value of ["C:/a.txt", "C:/b.txt", "C:/old", '"overwrite": false', '"recursive": true', "mcp-settings-destination"]) assert.ok(app.approvalText().includes(value));
-  });
-  await check("the managed PC block is admin-only and posts the reviewed body", async () => {
-    const app = setup({ admin: true }); await app.open();
-    assert.equal(app.ids.mcpGatewayManagedBlock.hidden, false);
-    assert.equal(app.ids.mcpGatewayManagedNotReady.hidden, true);
-    const box = app.ids.mcpGatewayManagedList.all().find((node) => node.tagName === "INPUT");
-    assert.equal(box.checked, false);
-    box.checked = true;
-    box.listeners.change.forEach((callback) => callback());
-    await settle();
-    const call = app.calls.find((row) => row.method === "POST" && row.url.endsWith("/managed"));
-    assert.deepEqual(JSON.parse(call.body), { managed: true });
-    assert.equal(box.checked, true);
-    assert.equal(app.ids.mcpGatewayManagedNotReady.hidden, true);
-  });
-  await check("the managed block stays hidden for non-admins and never posts", async () => {
-    const app = setup(); await app.open();
-    assert.equal(app.ids.mcpGatewayManagedBlock.hidden, true);
-    assert.equal(app.calls.some((row) => row.url.endsWith("/managed")), false);
-  });
-  await check("503 pc_pairing_not_ready disables the toggles and shows the notice", async () => {
-    const app = setup({ admin: true, managedStatus: 503 }); await app.open();
-    assert.equal(app.ids.mcpGatewayManagedNotReady.hidden, false);
-    const boxes = app.ids.mcpGatewayManagedList.all().filter((node) => node.tagName === "INPUT");
-    assert.equal(boxes.length, 1);
-    assert.equal(boxes.every((node) => node.disabled), true);
   });
   await check("approval sends the displayed digest and requires an external exact retry", async () => {
     const app = setup({ approvals: [APPROVAL] }); await app.open();

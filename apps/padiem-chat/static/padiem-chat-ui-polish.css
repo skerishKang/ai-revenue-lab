@@ -591,3 +591,67 @@ html body #meetingStart:disabled {
   font: inherit;
 }
 .meeting-records-new input::placeholder { color: #9b9ca5; }
+
+/* ── 고급 설정 페이지 (settings-advanced-view) — 2026-11-08 재구성 ─────────
+ * The compact settings dialog keeps 테마·언어·알림·로그아웃 and links here;
+ * everything that needs management lives on this full-screen page with the
+ * standalone-view chrome the Connectors page uses. Desktop: menu left,
+ * content right. Mobile: the menu stacks on top.
+ */
+.settings-advanced-view .advanced-layout {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.settings-advanced-view .advanced-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 168px;
+}
+
+.settings-advanced-view .advanced-menu-link {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.settings-advanced-view .advanced-menu-link.selected {
+  background: var(--accent-soft, #efedff);
+  font-weight: 650;
+}
+
+.settings-advanced-view .advanced-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  gap: 20px;
+}
+
+.settings-advanced-view .advanced-page-block {
+  display: grid;
+  gap: 20px;
+}
+
+.settings-advanced-view .advanced-page-block[hidden] {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .settings-advanced-view .advanced-layout {
+    flex-direction: column;
+  }
+  .settings-advanced-view .advanced-menu {
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+}
+
+

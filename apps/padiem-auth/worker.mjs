@@ -3,6 +3,7 @@ import { verifyGoogleIdToken } from './google-id-token.mjs';
 import { issueAccessToken } from './access-token.mjs';
 import { verifyClientAssertion } from './client-assertion.mjs';
 import { profileClaimAllowlist, verifiedProfile, verifiedIssuedProfile } from './profile-claims.mjs';
+import { AUTH_SKIN_ASSET_PREFIX, authSkinAsset, brandLoginPage, brandSignupPage, padiemAccountLine, resolveBrand, resolveLang, resolveTheme } from './skin.mjs';
 
 const ORIGIN = 'https://auth.padiem.net';
 const CALLBACK = `${ORIGIN}/oauth/google/callback`;
@@ -158,14 +159,14 @@ async function passwordRpcHeaders(secret, path, body) {
 }
 
 const esc = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
-const pageStyle = `*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f6f8;font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif;color:#1c1e21}main{width:100%;max-width:360px;margin:24px;padding:32px 28px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}h1{font-size:20px;margin:0 0 20px;text-align:center}.btn{display:block;width:100%;padding:12px;border-radius:8px;border:1px solid #dadce0;background:#fff;font-size:15px;text-align:center;text-decoration:none;color:#1c1e21;cursor:pointer}.btn+.btn{margin-top:10px}.btn-primary{background:#1a73e8;border-color:#1a73e8;color:#fff}form{margin:0}label{display:block;font-size:13px;margin:12px 0 4px;color:#5f6368}input{width:100%;padding:11px;border:1px solid #dadce0;border-radius:8px;font-size:15px}.message{margin:0 0 12px;padding:10px;border-radius:8px;background:#fce8e6;color:#c5221f;font-size:14px}.link{display:block;margin-top:16px;text-align:center;font-size:14px;color:#1a73e8;text-decoration:none}`;
-const page = (title, body) => `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="referrer" content="no-referrer"><style>${pageStyle}</style></head><body><main>${body}</main></body></html>`;
+const pageStyle = `*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f6f8;font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif;color:#1c1e21}main{width:100%;max-width:360px;margin:24px;padding:32px 28px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}h1{font-size:20px;margin:0 0 20px;text-align:center}.btn{display:block;width:100%;padding:12px;border-radius:8px;border:1px solid #dadce0;background:#fff;font-size:15px;text-align:center;text-decoration:none;color:#1c1e21;cursor:pointer}.btn+.btn{margin-top:10px}.btn-primary{background:#1a73e8;border-color:#1a73e8;color:#fff}form{margin:0}label{display:block;font-size:13px;margin:12px 0 4px;color:#5f6368}input{width:100%;padding:11px;border:1px solid #dadce0;border-radius:8px;font-size:15px}.message{margin:0 0 12px;padding:10px;border-radius:8px;background:#fce8e6;color:#c5221f;font-size:14px}.link{display:block;margin-top:16px;text-align:center;font-size:14px;color:#1a73e8;text-decoration:none}.padiem-account-line{margin:18px 0 0;text-align:center;font-size:11px;line-height:1.6;color:#5f6368}`;
+const page = (title, body, lang = 'ko') => `<!doctype html><html lang="${lang === 'en' ? 'en' : 'ko'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="referrer" content="no-referrer"><style>${pageStyle}</style></head><body><main>${body}<p class="padiem-account-line">${esc(padiemAccountLine(lang))}</p></main></body></html>`;
 const emailFields = (message) => `${message ? `<p class="message">${esc(message)}</p>` : ''}<label for="email">이메일</label><input id="email" name="email" type="email" required maxlength="255" autocomplete="username"><label for="password">비밀번호</label><input id="password" name="password" type="password" required maxlength="128" autocomplete="current-password">`;
-const loginFormPage = (action, message) => page('로그인', `<h1>이메일로 로그인</h1><form method="post" action="${esc(action)}">${emailFields(message)}<button class="btn btn-primary" type="submit">로그인</button></form>`);
-const signupFormPage = (action, message) => page('회원가입', `<h1>이메일로 회원가입</h1><form method="post" action="${esc(action)}">${message ? `<p class="message">${esc(message)}</p>` : ''}<label for="name">이름(선택)</label><input id="name" name="name" type="text" maxlength="160" autocomplete="name">${emailFields('')}<button class="btn btn-primary" type="submit">회원가입</button></form>`);
-const messagePage = (message) => page('안내', `<h1>안내</h1><p class="message" style="background:#e8f0fe;color:#1c1e21">${esc(message)}</p>`);
+const loginFormPage = (action, message, lang = 'ko') => page('로그인', `<h1>이메일로 로그인</h1><form method="post" action="${esc(action)}">${emailFields(message)}<button class="btn btn-primary" type="submit">로그인</button></form>`, lang);
+const signupFormPage = (action, message, lang = 'ko') => page('회원가입', `<h1>이메일로 회원가입</h1><form method="post" action="${esc(action)}">${message ? `<p class="message">${esc(message)}</p>` : ''}<label for="name">이름(선택)</label><input id="name" name="name" type="text" maxlength="160" autocomplete="name">${emailFields('')}<button class="btn btn-primary" type="submit">회원가입</button></form>`, lang);
+const messagePage = (message, lang = 'ko') => page('안내', `<h1>안내</h1><p class="message" style="background:#e8f0fe;color:#1c1e21">${esc(message)}</p>`, lang);
 const htmlPage = (status, body, extra = {}) => new Response(body, { status, headers: { ...headers, 'content-type': 'text/html; charset=utf-8', 'referrer-policy': 'no-referrer', ...extra } });
-const loginChoicePage = (googleHref, formAction, signupHref) => page('로그인', `<h1>PADIEM 로그인</h1><a class="btn" href="${esc(googleHref)}">Google로 계속</a><form method="post" action="${esc(formAction)}">${emailFields('')}<button class="btn" type="submit">이메일로 로그인</button></form><a class="link" href="${esc(signupHref)}">이메일로 회원가입</a>`);
+const loginChoicePage = (googleHref, formAction, signupHref, lang = 'ko') => page('로그인', `<h1>PADIEM 로그인</h1><a class="btn" href="${esc(googleHref)}">Google로 계속</a><form method="post" action="${esc(formAction)}">${emailFields('')}<button class="btn" type="submit">이메일로 로그인</button></form><a class="link" href="${esc(signupHref)}">이메일로 회원가입</a>`, lang);
 
 // Per-IP fixed-minute window for the email form POST. The window uses the
 // replay-memory DO (claimAssertion): N slots per (ip, minute), each claimed at
@@ -267,12 +268,26 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const keys = (jwks?.keys || []).map(({ kty, crv, x, y, kid, use, alg }) => ({ kty, crv, x, y, kid, use, alg }));
       return json(200, { keys });
     }
+    // Login-skin fonts and images. They are part of this Worker (there is no
+    // static-asset binding) and are served from the auth origin so the login
+    // page never makes an external request.
+    if (url.pathname.startsWith(AUTH_SKIN_ASSET_PREFIX) && request.method === 'GET') {
+      const asset = authSkinAsset(url.pathname.slice(AUTH_SKIN_ASSET_PREFIX.length));
+      if (!asset) return json(404, { error: 'not_found' });
+      return new Response(asset.bytes, { headers: { 'cache-control': 'public, max-age=86400', 'content-type': asset.type, 'x-content-type-options': 'nosniff' } });
+    }
     if ((url.pathname === '/login' || url.pathname === '/login/google' || url.pathname === '/signup') && request.method === 'GET') {
       const id = one(url.searchParams, 'client_id'), returnTo = one(url.searchParams, 'redirect_uri');
       const serviceState = one(url.searchParams, 'state'), challenge = one(url.searchParams, 'code_challenge');
       const client = clients[id];
       if (!validClient.test(id) || !client || client.id !== id || !client.redirect_uris.includes(returnTo) ||
           !opaque.test(serviceState) || !opaque.test(challenge) || one(url.searchParams, 'code_challenge_method') !== 'S256') return json(400, { error: 'invalid_request' });
+      // The skin, if any, is fixed by the registered client_id. lt_theme only
+      // picks a registered brand's light/dark variant; it never selects a brand
+      // and an unknown value stays on the brand's default (night).
+      const brand = resolveBrand(id);
+      const theme = resolveTheme(brand, one(url.searchParams, 'lt_theme'));
+      const lang = resolveLang(request.headers.get('accept-language'));
       const fields = profileClaimAllowlist(client);
       const object = random(), stateSecret = random(), browser = random(), nonce = random(), verifier = random();
       await stateFor(object).createLogin({ stateDigest: await digest(stateSecret), browserDigest: await digest(browser), client: id, redirect: returnTo, serviceState, serviceChallenge: challenge, googleNonce: nonce, googleVerifier: verifier, expires: current + 600 });
@@ -283,13 +298,20 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       // in (password_login) and the Chat verification RPC is configured.
       if (passwordChoiceEnabled(client)) {
         const carry = new URLSearchParams({ client_id: id, redirect_uri: returnTo, state: serviceState, code_challenge: challenge, code_challenge_method: 'S256' });
+        if (brand) carry.set('lt_theme', theme);
         if (url.pathname === '/login') {
           const formAction = `/login/password?state=${encodeURIComponent(`${object}.${stateSecret}`)}`;
-          return htmlPage(200, loginChoicePage(`/login/google?${carry}`, formAction, `/signup?${carry}`), { 'set-cookie': cookieSet });
+          const body = brand
+            ? brandLoginPage({ brand, theme, lang, googleHref: `/login/google?${carry}`, formAction, signupHref: `/signup?${carry}` })
+            : loginChoicePage(`/login/google?${carry}`, formAction, `/signup?${carry}`, lang);
+          return htmlPage(200, body, { 'set-cookie': cookieSet });
         }
         if (url.pathname === '/signup') {
           const formAction = `/signup/password?state=${encodeURIComponent(`${object}.${stateSecret}`)}`;
-          return htmlPage(200, signupFormPage(formAction, ''), { 'set-cookie': cookieSet });
+          const body = brand
+            ? brandSignupPage({ brand, theme, lang, formAction, loginHref: `/login?${carry}` })
+            : signupFormPage(formAction, '', lang);
+          return htmlPage(200, body, { 'set-cookie': cookieSet });
         }
       }
       if (url.pathname === '/signup') return json(404, { error: 'not_found' });
@@ -310,20 +332,40 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const password = one(form, 'password');
       const name = one(form, 'name').trim().slice(0, 160);
       const action = `${register ? '/signup/password' : '/login/password'}?state=${encodeURIComponent(state.join('.'))}`;
-      const formError = (message) => htmlPage(200, register ? signupFormPage(action, message) : loginFormPage(action, message));
+      const lang = resolveLang(request.headers.get('accept-language'));
+      const formError = (message) => htmlPage(200, register ? signupFormPage(action, message, lang) : loginFormPage(action, message, lang));
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 255 || password.length < 1 || password.length > 128 ||
           (register && /[\x00-\x1f\x7f]/.test(name))) {
         return formError(register ? '이메일과 비밀번호 형식을 확인해 주세요.' : '이메일 주소와 비밀번호를 입력해 주세요.');
       }
       if (!await allowPasswordAttempt(stateFor, request.headers.get('cf-connecting-ip'), current)) {
-        return htmlPage(429, messagePage('로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.'));
+        return htmlPage(429, messagePage('로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.', lang));
       }
       const attempt = await diagnosed('password_attempt_failed', async () =>
         stateFor(state[0]).beginPasswordAttempt({ stateDigest: await digest(state[1]), browserDigest: await digest(browser), now: current, maxAttempts: 5 }));
       if (!attempt.ok && attempt.reason === 'exhausted') {
-        return htmlPage(429, messagePage('시도 횟수가 초과되었습니다. 처음부터 다시 로그인해 주세요.'));
+        return htmlPage(429, messagePage('시도 횟수가 초과되었습니다. 처음부터 다시 로그인해 주세요.', lang));
       }
       if (!attempt.ok) return json(400, { error: 'invalid_request' });
+      // The pending login record already carries the validated client and its
+      // redirect/PKCE values, so a form error re-renders the same skin without a
+      // new lookup and without trusting anything from the submitted form except
+      // the cosmetic lt_theme value.
+      const brand = resolveBrand(attempt.login?.client);
+      const theme = resolveTheme(brand, one(form, 'lt_theme'));
+      const carry = new URLSearchParams({
+        client_id: attempt.login.client, redirect_uri: attempt.login.redirect,
+        state: attempt.login.service_state, code_challenge: attempt.login.service_challenge,
+        code_challenge_method: 'S256',
+      });
+      if (brand) carry.set('lt_theme', theme);
+      const errorPage = (message) => htmlPage(200, register
+        ? (brand
+          ? brandSignupPage({ brand, theme, lang, formAction: action, loginHref: `/login?${carry}`, message })
+          : signupFormPage(action, message, lang))
+        : (brand
+          ? brandLoginPage({ brand, theme, lang, formAction: action, signupHref: `/signup?${carry}`, message, showGoogle: false })
+          : loginFormPage(action, message, lang)));
       const rpcPath = register ? '/internal/password-register' : '/internal/password-verify';
       const payload = register ? { email, password, name } : { email, password };
       const rpcBody = encoder.encode(JSON.stringify(payload));
@@ -331,20 +373,20 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       try {
         response = await fetcher(passwordRpcOrigin.replace(/\/+$/, '') + rpcPath, { method: 'POST', redirect: 'manual', headers: await passwordRpcHeaders(passwordRpcSecret, rpcPath, rpcBody), body: rpcBody });
       } catch {
-        return htmlPage(503, messagePage('로그인 서비스에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.'));
+        return htmlPage(503, messagePage('로그인 서비스에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.', lang));
       }
       if (response.status !== 200) {
-        if (response.status === 401 && !register) return formError('이메일 또는 비밀번호가 올바르지 않습니다.');
+        if (response.status === 401 && !register) return errorPage('이메일 또는 비밀번호가 올바르지 않습니다.');
         let code = '';
         try { code = String((await response.json())?.error?.code || ''); } catch { /* status-only fallback */ }
-        if (response.status === 409 || code === 'account_exists') return formError('이미 사용 중인 이메일입니다.');
-        if (response.status === 400 && code.startsWith('invalid_')) return formError('입력 정보를 확인해 주세요.');
-        return htmlPage(503, messagePage('지금은 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.'));
+        if (response.status === 409 || code === 'account_exists') return errorPage('이미 사용 중인 이메일입니다.');
+        if (response.status === 400 && code.startsWith('invalid_')) return errorPage('입력 정보를 확인해 주세요.');
+        return htmlPage(503, messagePage('지금은 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.', lang));
       }
       let data;
-      try { data = await response.json(); } catch { return htmlPage(503, messagePage('지금은 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.')); }
+      try { data = await response.json(); } catch { return htmlPage(503, messagePage('지금은 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.', lang)); }
       if (data?.ok !== true || !/^usr_[A-Za-z0-9_-]{1,79}$/.test(data.product_user_id ?? '')) {
-        return htmlPage(503, messagePage('지금은 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.'));
+        return htmlPage(503, messagePage('지금은 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.', lang));
       }
       const pending = await diagnosed('login_state_read_failed', async () =>
         stateFor(state[0]).consumeLogin({ stateDigest: await digest(state[1]), browserDigest: await digest(browser), now: current }));
