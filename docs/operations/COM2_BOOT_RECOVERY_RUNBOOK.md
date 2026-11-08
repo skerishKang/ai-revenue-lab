@@ -28,9 +28,12 @@ Get-CimInstance Win32_BIOS | Select Manufacturer,SMBIOSBIOSVersion,ReleaseDate
 
 ## 3. Windows 측 (Qoder, dry-run 먼저)
 
-1. **활성 시간**(자동 재부팅 회피): 기본 기대값 **활성 00:00–18:00 → 재부팅 가능 창 18:00–24:00**. 야간 백업(04:10~05:10)과 오프사이트 업로드(05:10)를 피한다.
+1. **활성 시간**(자동 재부팅 시각 고정, 대표 결정 2026-11-08): 기본 기대값 **활성 10:00–04:00(18시간, Windows 상한) → 재부팅 가능 창 04:00–10:00**. Windows Update는 활성 시간이 끝난 뒤 첫 기회에 재시작하므로 실제 재시작은 창의 시작(04:00 무렵)에 온다. **1시간 고정은 지원되는 설정이 아니다**(활성 시간 최대 18h → 재시작 창 최소 6h).
+   - 로그인한 콘솔 세션이 있으면 재시작이 보류되므로, 검토된 정책 `NoAutoRebootWithLoggedOnUsers=0`도 함께 맞춘다(2026-11-08 이전 값은 1이었다 — §6 원복).
+   - 야간 백업(chat 04:20, offsite 05:10)은 `Persistent=true`라 재시작으로 놓쳐도 부팅 뒤 따라잡는다. Windows 작업 `PADIEM-COM2-D1-R2-Sync`(04:20)는 따라잡기가 없어, 재시작이 04:20을 넘기면 그날 D1 세대는 하루 전 것이 되지만 offsite 신선도 상한(26h) 안이다.
+   - 상세·복원은 [COM2 재시작·백업 1장](COM2_RESTART_AND_BACKUP_ONE_PAGE_20261108.md).
    ```powershell
-   .\windows\check-active-hours.ps1              # ACTIVE_HOURS=MISSING/MISMATCH면
+   .\windows\check-active-hours.ps1              # ACTIVE_HOURS/RESTART_WINDOW 확인
    .\windows\check-active-hours.ps1 -Apply       # 레지스트리 기록
    ```
 2. **.wslconfig / systemd 점검**:
@@ -76,7 +79,7 @@ sudo systemctl start padiem-boot-recovery.service   # 즉시 1회 점검(선택)
 
 - 예약 작업: `Unregister-ScheduledTask -TaskName PadiemBootRecovery -Confirm:$false`
 - WSL 자가 점검: `systemctl disable --now padiem-boot-recovery.service`; `/opt/padiem/boot-recovery`는 남겨도 무해.
-- 활성 시간: 원래 값으로 되돌리려면 `-StartHour/-EndHour`를 실제 원 값으로 지정해 `-Apply`.
+- 활성 시간: 원래 값으로 되돌리려면 `-StartHour/-EndHour`를 실제 원 값으로 지정해 `-Apply`. 2026-11-08 이전 컴2 값은 `-StartHour 8 -EndHour 17`, 정책 `-NoAutoRebootWithLoggedOnUsers 1`이었다.
 - `.wslconfig`: `-Apply`가 만든 경우에만 파일 삭제(기존 파일은 건드리지 않았다).
 
 ## 7. Qoder 인계 목록
