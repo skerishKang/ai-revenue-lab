@@ -66,6 +66,8 @@ from typing import Any, Mapping
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from .control_plane_identity import IdentityBridgeError
+
 from kagent.claw_automation import (
     ClawAutomationRule,
     ClawAutomationRuleAuthority,
@@ -162,23 +164,68 @@ def _require_owner(request: Request) -> str | None:
     return uid if uid else None
 
 
-async def _resolve_canonical_tenant(request: Request) -> str | None:
+async def _resolve_canonical_owner_pair(request: Request) -> tuple[str, str] | None:
     """Canonical tenant for the signed-in user, or None to fail closed.
 
     This reuses the EXISTING strict canonical tenant resolver
-    (``claw_routes._resolve_canonical_tenant``) — signed-in user -> identity
+    (``claw_routes._resolve_canonical_owner_strict``) — signed-in user -> identity
     shadow -> refreshed canonical session -> ``AuthSessionSnapshot.tenant_id``,
     with every contract check required to pass. It is reused rather than
     reimplemented so #3237 cannot introduce a second tenant authority.
+
+    The resolution is the STRICT variant: the identity bridge's typed failure
+    propagates, so the caller can tell a genuine workspace-permission refusal
+    (``IdentityBridgeError`` 403, e.g. a session mismatch) apart from a
+    resolution failure (503/401 — authority unreachable, session state
+    unreadable). Collapsing both into 403 made every bridge outage read as
+    "권한 없음" on the automation screen (대표 지적 2026-11-08).
 
     The Claw memory resolver is intentionally NOT used: its
     ``f"owner:{user_id}"`` fallback is exactly the non-canonical authority this
     endpoint must not have.
     """
 
-    from .claw_routes import _resolve_canonical_tenant
+    from .claw_routes import _resolve_canonical_owner_strict
 
-    return await _resolve_canonical_tenant(request)
+    return await _resolve_canonical_owner_strict(request)
+
+
+async def _resolve_tenant_or_read_failure(request: Request) -> tuple[str | None, JSONResponse | None]:
+    """(tenant_id, None) on success; (None, 403 refusal) when the identity
+    bridge REFUSES the session; (None, 503 read failure) when the bridge or
+    the session check merely FAILS. The front end words these differently:
+    only the explicit 403 earns the permission notice, everything else gets
+    "불러오지 못했습니다" + retry."""
+    try:
+        owner = await _resolve_canonical_owner_pair(request)
+        tenant_id = owner[1] if owner is not None else None
+    except IdentityBridgeError as exc:
+        status = int(getattr(exc, "status_code", 503) or 503)
+        code = str(getattr(exc, "code", "") or "")
+        # "No canonical session" is the SAME state the mutation lane reports as
+        # current_b54_session_unavailable (403): the identity was never linked,
+        # or the session is expired/revoked. Those stay 403. Only a bridge
+        # outage or a malformed authority answer is the 503 read failure.
+        session_absent = {
+            "control_plane_identity_not_linked",
+            "control_plane_session_inactive",
+        }
+        if status == 403 or code in session_absent:
+            return None, _error(
+                403, "canonical_tenant_unavailable",
+                "워크스페이스 권한을 확인할 수 없습니다.",
+            )
+        return None, _error(
+            503, "automation_rules_read_failed", "자동화 규칙을 불러오지 못했습니다.",
+        )
+    if tenant_id is None:
+        # No canonical tenant -> no catalogue. Fails closed and discloses
+        # nothing; there is intentionally no owner-derived workspace here.
+        return None, _error(
+            403, "canonical_tenant_unavailable",
+            "워크스페이스 권한을 확인할 수 없습니다.",
+        )
+    return tenant_id, None
 
 
 def _bounded_text(value: Any, limit: int = 256) -> str:
@@ -299,11 +346,9 @@ async def claw_automation_rules(request: Request) -> JSONResponse:
     uid = _require_owner(request)
     if uid is None:
         return _error(401, "unauthorized", "인증이 필요합니다.")
-    tenant_id = await _resolve_canonical_tenant(request)
-    if tenant_id is None:
-        # No canonical tenant -> no catalogue. Fails closed and discloses
-        # nothing; there is intentionally no owner-derived workspace here.
-        return _error(403, "canonical_tenant_unavailable", "워크스페이스 권한을 확인할 수 없습니다.")
+    tenant_id, tenant_error = await _resolve_tenant_or_read_failure(request)
+    if tenant_error is not None:
+        return tenant_error
     store = _automation_store(request)
     if store is None:
         return _error(503, "automation_store_unavailable", "자동화 규칙을 사용할 수 없습니다.")

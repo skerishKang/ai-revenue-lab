@@ -605,6 +605,7 @@
     interpretAppointmentResponse,
   });
   if (typeof window !== "undefined") window.PadiemCalendarUI = api;
+
   if (typeof document === "undefined") return;
 
   function el(tag, className, content) {
@@ -615,6 +616,16 @@
   }
 
   function createModule() {
+    // #7171: the calendar items are signed-in owner data. On session loss the
+    // rendered range clears to the empty state — a guest never reads the
+    // previous account's schedule. renderCalendarVisual is this module's
+    // renderer, so the listener lives here where it is in scope.
+    if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+      window.addEventListener("padiem:auth-state", (event) => {
+        if (event?.detail?.authenticated === true) return;
+        renderCalendarVisual([]);
+      });
+    }
     const shell = document.querySelector(".app-shell");
     const navButton = document.getElementById("calendarNavButton");
     const view = document.getElementById("calendarView");

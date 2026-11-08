@@ -545,6 +545,37 @@ def _line_probe_enabled(explicit: bool | None, environ=None) -> bool:
     )
 
 
+#: The silent-wait backstop (#7177, measured 2026-11-08). The work on the PC
+#: carries no ceiling, but the wait for ANY answer must not be infinite: MeshCentral
+#: answers a ``runcommand`` whose console is already held with "already busy" and
+#: drops it — it is not queued — so a wedged console used to leave every later
+#: command's client silent forever (the 11-07 20:05 outage: start and spawn journaled,
+#: not one result for a day). The bound counts TOTAL silence: no byte from the
+#: client at all. Any received byte — output, an error transcript, a progress
+#: echo — restarts it, so a long command that talks stays unlimited and a command
+#: that ends is returned the moment it ends. It touches nothing on the PC: the
+#: client is ended on this host and the dispatch reports ``timed_out`` like any
+#: other expired wait. 0 disables the bound, which is the operator's own choice.
+SILENT_WAIT_ENV = "PADIEM_MESH_SILENT_WAIT_SECONDS"
+SILENT_WAIT_SECONDS_DEFAULT = 600
+
+
+def _silent_wait_seconds(explicit: float | None = None, environ=None) -> float:
+    """The silent-wait bound in seconds, 0 = wait forever, default 600."""
+
+    if explicit is not None:
+        return float(explicit)
+    source = os.environ if environ is None else environ
+    raw = (source.get(SILENT_WAIT_ENV) or "").strip()
+    if not raw:
+        return float(SILENT_WAIT_SECONDS_DEFAULT)
+    try:
+        value = float(raw)
+    except ValueError:
+        return float(SILENT_WAIT_SECONDS_DEFAULT)
+    return max(0.0, value)
+
+
 def _session_payload(raw: bytes) -> bytes:
     """The reply from the last envelope marker onward, with terminal noise dropped.
 
@@ -1341,6 +1372,7 @@ class MeshCentralCliCommandPort:
         keep_dispatch_ids: tuple[str, ...] = (),
         line_watch: bool = False,
         line_guard: Callable[[], bool] | None = None,
+        silent_wait_seconds: float | None = None,
     ) -> tuple[MeshCentralCommandOutcome, MeshCentralLineSweep | None]:
         """Read the child's transcript in chunks and return it whole.
 
@@ -1351,6 +1383,13 @@ class MeshCentralCliCommandPort:
         answers, and only an explicit timeout is killed at its deadline and
         reported as ``timed_out`` — the remote process may still be running, so
         no exit code is claimed.
+
+        #7177: no deadline still does not mean an infinite silent wait. A client
+        that has produced no byte at all for ``PADIEM_MESH_SILENT_WAIT_SECONDS``
+        (default 600, 0 = wait forever) is ended here and reported ``timed_out``:
+        MeshCentral drops — never queues — a ``runcommand`` whose console is
+        already held, so the silence is the wedge itself. Every received byte
+        restarts the bound, so a talking command stays unlimited.
         """
         import subprocess
         import time
@@ -1366,6 +1405,9 @@ class MeshCentralCliCommandPort:
         #: When an answer-less wait becomes a line that is held by something else.
         #: Absolute, and pushed forward every time the PC proves the work is running.
         stall_at = time.monotonic() + LINE_STALL_WAIT_SECONDS
+        silent_bound = _silent_wait_seconds(silent_wait_seconds)
+        #: Total silence so far: any byte from the client restarts this clock.
+        last_byte_at = time.monotonic()
         try:
             if process.stdin is not None:
                 process.stdin.write((password + "\n").encode("utf-8"))
@@ -1409,6 +1451,17 @@ class MeshCentralCliCommandPort:
                         return MeshCentralCommandOutcome(
                             termination="cancelled", exit_code=None, output=b"",
                         ), None
+                    # #7177: a client that never said anything is not work — work
+                    # talks (the helper's stage-2 lane heartbeats every five
+                    # seconds). End the client here, on this host, and let the
+                    # dispatch complete; the owner's stop and the sweep remain the
+                    # PC-side paths.
+                    if silent_bound > 0 and time.monotonic() - last_byte_at >= silent_bound:
+                        process.kill()
+                        phase("silent_timeout")
+                        return MeshCentralCommandOutcome(
+                            termination="timed_out", exit_code=None, output=b"",
+                        ), None
                     if line_watch and time.monotonic() >= stall_at:
                         stall_at = time.monotonic() + LINE_STALL_WAIT_SECONDS
                         if not _may_clear(line_guard, phase):
@@ -1443,6 +1496,8 @@ class MeshCentralCliCommandPort:
                         ), report
                     continue
                 chunks.append(chunk)
+                # A byte arrived: the client is talking, the bound restarts.
+                last_byte_at = time.monotonic()
         except Exception:
             try:
                 process.kill()

@@ -27,6 +27,7 @@ param(
     [string]$Com2Service = "padiem-chat-com2.service",
     [string]$Com2HealthUrl = "http://127.0.0.1:8798/health",
     [string]$CloudflareAccountId = "9be14bb7b8974e65d0afba647ab16932",
+    [string]$SourceSha = "",
     [switch]$DryRun
 )
 
@@ -34,6 +35,16 @@ $ErrorActionPreference = "Stop"
 $Here = $PSScriptRoot
 $RepoRoot = (Resolve-Path (Join-Path $Here "..\..")).Path
 $Builder = Join-Path $Here "build-windows-helper.ps1"
+
+# A snapshot extracted with `git archive` has no .git, so the default discovery
+# below finds nothing. The release evidence still needs the source revision:
+# accept it explicitly and keep the builder/git lookups as fallbacks.
+if ($SourceSha) {
+    if ($SourceSha -notmatch '^[0-9a-fA-F]{40}$') {
+        throw "-SourceSha must be an exact 40-hex commit SHA: $SourceSha"
+    }
+    $SourceSha = $SourceSha.ToLowerInvariant()
+}
 
 function Get-Sha256Hex {
     param([Parameter(Mandatory = $true)][string]$Path)
@@ -87,7 +98,7 @@ if (-not $ArtifactPath) {
         if (-not $build.ok) { throw "helper builder did not report ok" }
         $Exe = [string]$build.exe
         $Version = [string]$build.version
-        $SourceSha = [string]$build.source_sha
+        if (-not $SourceSha) { $SourceSha = [string]$build.source_sha }
     }
     else {
         # DryRun in a foreign work folder: print the topology plan without
@@ -95,16 +106,31 @@ if (-not $ArtifactPath) {
         # the real run.
         if (-not $Version) { $Version = "0.3.0-rc1-dryrun" }
         $Exe = ""
-        $SourceSha = "<pinned-release-sha>"
+        if (-not $SourceSha) { $SourceSha = "<pinned-release-sha>" }
         Write-Output "PLAN_BUILD=SKIPPED_BUILDER_ABSENT_IN_THIS_WORK_FOLDER (run build-windows-helper.ps1 from a branch checkout, or pass -ArtifactPath + -Version)"
     }
 } else {
     if (-not $Version) { throw "-Version is required with -ArtifactPath" }
     $Exe = (Resolve-Path -LiteralPath $ArtifactPath).Path
-    $git = Get-Command git -ErrorAction SilentlyContinue
-    $SourceSha = ""
-    if ($git) {
-        $SourceSha = (& $git.Source -C $RepoRoot rev-parse HEAD 2>$null).Trim()
+    if (-not $SourceSha) {
+        $git = Get-Command git -ErrorAction SilentlyContinue
+        if ($git) {
+            # Under $ErrorActionPreference = "Stop", Windows PowerShell 5.1
+            # turns a native stderr line through 2>$null into a terminating
+            # NativeCommandError. A git-archive folder must reach the UNKNOWN
+            # fallback, not die on the probe.
+            $previousPreference = $ErrorActionPreference
+            $ErrorActionPreference = "Continue"
+            try {
+                $SourceSha = ([string](& $git.Source -C $RepoRoot rev-parse HEAD 2>$null)).Trim()
+            }
+            catch {
+                $SourceSha = ""
+            }
+            finally {
+                $ErrorActionPreference = $previousPreference
+            }
+        }
     }
 }
 if (-not $SourceSha) { $SourceSha = "UNKNOWN" }
@@ -257,10 +283,33 @@ fi
 echo "COM2_SERVICE_ACTIVE=PASS"
 
 command -v curl >/dev/null 2>&1 || fail CURL_MISSING
-health_output="$(runuser -u padiem-chat -- /opt/padiem/chat-com2/venv/bin/python /opt/padiem/chat-com2/health.py --url "$health_url" 2>&1)" || {
-    printf '%s\n' "$health_output" >&2
-    fail HEALTH_FAILED
-}
+# The same readiness ladder as wait_for_health in
+# deploy/host-com2/deploy_from_main.sh: a service that has not finished binding
+# its loopback port is not an unhealthy release. 2026-11-08 real run: the first
+# probe a few seconds after the restart printed CHAT_COM2_HEALTH=FAIL STATUS=0
+# while the service was healthy moments later. So the probe now runs
+# immediately, retries every 2 s for up to 60 s, and prints its attempt count
+# instead of reading one early miss as a failed release.
+health_interval=2
+health_timeout=60
+health_attempt=0
+health_deadline=$((SECONDS + health_timeout))
+while :; do
+    health_attempt=$((health_attempt + 1))
+    if health_output="$(runuser -u padiem-chat -- /opt/padiem/chat-com2/venv/bin/python /opt/padiem/chat-com2/health.py --url "$health_url" 2>&1)"; then
+        break
+    fi
+    health_remaining=$((health_deadline - SECONDS))
+    (( health_remaining > 0 )) || {
+        printf '%s\n' "$health_output" >&2
+        echo "COM2_HEALTH_ATTEMPTS=$health_attempt" >&2
+        fail HEALTH_FAILED
+    }
+    health_pause=$health_interval
+    (( health_pause > health_remaining )) && health_pause=$health_remaining
+    sleep "$health_pause"
+done
+echo "COM2_HEALTH_ATTEMPTS=$health_attempt"
 printf '%s\n' "$health_output"
 echo "COM2_HEALTH=PASS"
 
@@ -307,7 +356,7 @@ if ($DryRun) {
     Write-Output ("PLAN_R2_CHECKSUM=wrangler r2 object put `"$Bucket/$ShaKey`" --file <temporary sha256 file> --content-type text/plain --cache-control `"public, max-age=31536000, immutable`" --remote")
     Write-Output "PLAN_COM2_ENV=backup $Com2EnvFile to $Com2EnvFile.bak-<UTC>; replace PC_USER_HELPER_INSTALL_URL and PC_USER_HELPER_SHA256; chmod 0600 root:root"
     Write-Output "PLAN_COM2_TRANSPORT=scp -i $SshKey ... ${SshTarget}:$planRemoteName; $planSsh"
-    Write-Output "PLAN_COM2_RESTART=systemctl restart $Com2Service; wait active; GET $Com2HealthUrl"
+    Write-Output "PLAN_COM2_RESTART=systemctl restart $Com2Service; wait active; GET $Com2HealthUrl (retry every 2s up to 60s, attempt count printed)"
     Write-Output "PLAN_COM2_ENV_READBACK=/proc/<MainPID>/environ exact URL/SHA"
     Write-Output "PLAN_PAIRING_RESPONSE=POST https://chat.padiem.net/api/pc/pairings/install-file with the owner session; assert PADIEMHELPERURL:$Url and PADIEMHELPERSHA:$Sha"
     Write-Output "PLAN_WORKER_FALLBACK=NOT_UPDATED (padiem-chat-front COM2_CANONICAL=writes makes pairing POST 503, not the Python Worker)"

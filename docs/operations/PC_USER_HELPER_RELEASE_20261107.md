@@ -134,6 +134,24 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -File apps/claw-connect/release-windows-helper.ps1
 ```
 
+From a snapshot extracted with `git archive` there is no `.git`, so the script
+cannot discover the source revision and prints
+`HELPER_RELEASE_SOURCE_SHA=UNKNOWN`. Pass `-SourceSha` explicitly in that case:
+
+```powershell
+git fetch origin main
+$sha = (git rev-parse origin/main)
+git archive --format=tar $sha apps/claw-connect | tar -x -C E:\helper-release-main
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File E:\helper-release-main\apps\claw-connect\release-windows-helper.ps1 `
+  -SourceSha $sha -DryRun
+```
+
+`-SourceSha` accepts only an exact 40-hex commit. When it is omitted the script
+falls back to the builder receipt, then `git rev-parse`, then `UNKNOWN`. Use
+`-ArtifactPath <exe> -Version <version>` as well when the snapshot has no
+builder or Python build environment.
+
 The script does all of the following:
 
 1. Runs `apps/claw-connect/build-windows-helper.ps1` and reads its JSON receipt
@@ -163,8 +181,11 @@ The script does all of the following:
    `PC_USER_HELPER_SHA256`, preserving every other line and deduplicating any
    old copies.
 7. Restarts `padiem-chat-com2.service`, waits for it to become active, runs the
-   loopback health check, and reads `/proc/<MainPID>/environ` to prove the
-   running process received the exact URL and SHA-256.
+   loopback health check with the same readiness ladder as `wait_for_health` in
+   `deploy/host-com2/deploy_from_main.sh` (first probe immediately, then every
+   2 s for up to 60 s, printing `COM2_HEALTH_ATTEMPTS`), and reads
+   `/proc/<MainPID>/environ` to prove the running process received the exact URL
+   and SHA-256.
 8. Checks that the unauthenticated `POST /api/pc/pairings/install-file` route is
    alive and returns `401` (the session gate, not a broken route), then prints
    `PAIRING_RESPONSE_VERIFY=REQUIRED_SIGNED_IN_OWNER`.
@@ -196,6 +217,7 @@ HELPER_RELEASE_R2_VERIFIED=PASS
 COM2_ENV_BACKUP=/opt/padiem/chat-com2/.env.bak-...
 COM2_ENV_VALUES=PASS
 COM2_SERVICE_ACTIVE=PASS
+COM2_HEALTH_ATTEMPTS=<n>
 COM2_HEALTH=PASS
 COM2_PROCESS_ENV=PASS
 COM2_PAIRING_ROUTE=401_UNAUTHENTICATED

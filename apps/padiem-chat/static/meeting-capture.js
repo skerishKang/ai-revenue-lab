@@ -183,15 +183,20 @@
     const dialog = doc.getElementById("meetingView");
     if (!trigger || !dialog) return null;
     const find = (id) => doc.getElementById(id);
-    const status = find("meetingStatus"), text = find("meetingTranscript");
+    const status = find("meetingStatus"), statusText = find("meetingStatusText");
+    const elapsed = find("meetingElapsed");
+    const text = find("meetingTranscript");
     const startButton = find("meetingStart"), stopButton = find("meetingStop");
     const downloadAudio = find("meetingDownloadAudio"), downloadText = find("meetingDownloadText");
     const interim = find("meetingInterim");
     const draftInClaw = find("meetingDraftInClaw");
     const driveAudio = find("meetingSaveAudioDrive"), driveText = find("meetingSaveTextDrive");
+    const exportsRow = find("meetingExports"), unsavedNote = find("meetingUnsavedNote");
+    const transcriptBlock = find("meetingTranscriptBlock");
     let uploadInFlight = false;
     let uploadAbort = null;
     let signedIn = false, audio = null;
+    let elapsedTimer = 0;
     const statuses = {
       recording: "녹음 중 · 마이크가 켜져 있습니다.",
       meeting_active: "회의 진행 중 · 마이크가 켜져 있습니다.",
@@ -204,10 +209,65 @@
       transcription_restart_failed: "실시간 전사가 중단됐습니다. 녹음이 켜져 있다면 계속 기록됩니다.",
     };
     const say = (value) => {
-      status.textContent = statuses[value] || (value.startsWith("transcription_error")
+      // The status paragraph keeps role=status/aria-live; the text lives in a
+      // child span so the elapsed timer beside it never gets wiped.
+      statusText.textContent = statuses[value] || (value.startsWith("transcription_error")
         ? "실시간 전사가 중단됐습니다. 녹음이 켜져 있다면 계속 기록됩니다."
         : value);
     };
+    const currentMode = () => dialog.querySelector('input[name="meetingMode"]:checked')?.value || "record";
+    function formatElapsed(startedAt) {
+      const total = Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
+      const seconds = String(total % 60).padStart(2, "0");
+      const minutes = Math.floor(total / 60);
+      const hours = Math.floor(minutes / 60);
+      return hours > 0
+        ? hours + ":" + String(minutes % 60).padStart(2, "0") + ":" + seconds
+        : minutes + ":" + seconds;
+    }
+    function tickElapsed() {
+      if (!elapsedTimer) return;
+      const startedAt = controller?.snapshot?.().startedAt || 0;
+      if (!startedAt) return;
+      elapsed.textContent = "· " + formatElapsed(startedAt);
+    }
+    function stopElapsed() {
+      win.clearInterval(elapsedTimer);
+      elapsedTimer = 0;
+      elapsed.textContent = "";
+      elapsed.hidden = true;
+    }
+    function startElapsed() {
+      stopElapsed();
+      elapsed.hidden = false;
+      tickElapsed();
+      elapsedTimer = win.setInterval(tickElapsed, 1000);
+    }
+    // Results exist only after the meeting stops: before that the export row
+    // stays hidden entirely (대표 결정 2026-11-08 — disabled gray buttons
+    // read as broken). A Drive upload in flight is the one transient that
+    // keeps its visible-but-disabled state.
+    function applyResultVisibility() {
+      const active = controller.snapshot().active;
+      const hasAudio = Boolean(audio) && !active;
+      const hasText = Boolean(text.value.trim()) && !active;
+      const mode = currentMode();
+      const audioVisible = hasAudio && mode !== "transcribe";
+      const textVisible = hasText && mode !== "record";
+      downloadAudio.hidden = !audioVisible;
+      driveAudio.hidden = !audioVisible;
+      downloadText.hidden = !textVisible;
+      driveText.hidden = !textVisible;
+      draftInClaw.hidden = !textVisible;
+      const anyVisible = audioVisible || textVisible;
+      exportsRow.hidden = !anyVisible;
+      unsavedNote.hidden = !anyVisible;
+      // The editable transcript panel belongs to the transcription modes only;
+      // record-only never shows it, live or otherwise.
+      transcriptBlock.hidden = mode === "record";
+      driveAudio.disabled = !hasAudio || !signedIn || uploadInFlight;
+      driveText.disabled = !hasText || !signedIn || uploadInFlight;
+    }
     const controller = createController({
       MediaRecorder: win.MediaRecorder,
       SpeechRecognition: win.SpeechRecognition || win.webkitSpeechRecognition,
@@ -221,12 +281,12 @@
         // Preserve user edits after stop; the recognizer owns text only while active.
         if (state.active) text.value = state.transcript;
         interim.textContent = state.interim ? "인식 중: " + state.interim : "";
-        downloadAudio.disabled = state.active || !audio;
-        downloadText.disabled = state.active || !text.value.trim();
-        draftInClaw.disabled = state.active || !text.value.trim() || !signedIn;
-        driveAudio.disabled = state.active || !audio || !signedIn || uploadInFlight;
-        driveText.disabled = state.active || !text.value.trim() || !signedIn || uploadInFlight;
+        if (state.active && !elapsedTimer) startElapsed();
+        applyResultVisibility();
       },
+    });
+    dialog.querySelectorAll('input[name="meetingMode"]').forEach((radio) => {
+      radio.addEventListener("change", applyResultVisibility);
     });
     function download(blob, name) {
       const url = win.URL.createObjectURL(blob);
@@ -279,9 +339,8 @@
         dialog.hidden = true;
         trigger.setAttribute("aria-current", "false");
         const discard = () => {
-          audio = null; text.value = ""; downloadAudio.disabled = true; downloadText.disabled = true;
-          draftInClaw.disabled = true;
-          driveAudio.disabled = true; driveText.disabled = true;
+          audio = null; text.value = "";
+          stopElapsed();
           // The ledger is server-side owner data; leaving the browser session must
           // drop the in-page handle so the next sign-in cannot address it.
           meetingRef = "";
@@ -290,6 +349,7 @@
           if (recordsStatus) recordsStatus.textContent = "";
           if (saveTitleButton) saveTitleButton.disabled = true;
           controller.discard();
+          applyResultVisibility();
         };
         if (controller.snapshot().active) void controller.stop().then(discard);
         else discard();
@@ -300,7 +360,9 @@
       if (!signedIn || uploadInFlight) return;
       if ((audio || text.value.trim()) && typeof win.confirm === "function" &&
           !win.confirm("이전 회의 결과가 지워집니다. 파일을 보관했습니까?")) return;
-      audio = null; text.value = ""; downloadAudio.disabled = true; downloadText.disabled = true;
+      audio = null; text.value = "";
+      stopElapsed();
+      applyResultVisibility();
       const selected = dialog.querySelector('input[name="meetingMode"]:checked')?.value;
       startButton.disabled = true;
       try { await controller.start(selected); void startLedger(selected); }
@@ -312,19 +374,11 @@
       const state = await controller.stop();
       text.value = state.transcript;
       audio = state.artifact;
-      downloadAudio.disabled = !audio;
-      downloadText.disabled = !text.value.trim();
-      draftInClaw.disabled = !text.value.trim();
-      driveAudio.disabled = !audio;
-      driveText.disabled = !text.value.trim();
+      stopElapsed();
+      applyResultVisibility();
       void closeLedger();
     });
-    text.addEventListener("input", () => {
-      const unavailable = controller.snapshot().active || !text.value.trim();
-      downloadText.disabled = unavailable;
-      draftInClaw.disabled = unavailable || !signedIn;
-      driveText.disabled = unavailable || !signedIn || uploadInFlight;
-    });
+    text.addEventListener("input", applyResultVisibility);
     draftInClaw.addEventListener("click", () => {
       if (!signedIn || uploadInFlight || controller.snapshot().active || !text.value.trim()) return;
       const composer = find("messageInput");
@@ -546,25 +600,38 @@
         const result = await provider.upload(blob, { signal: uploadAbort.signal });
         if (!signedIn) return;
         // Report success only on real Drive files.create receipt, never on local completion.
-        status.replaceChildren(doc.createTextNode("고객 Google Drive 저장 완료 · "));
+        statusText.replaceChildren(doc.createTextNode("고객 Google Drive 저장 완료 · "));
         const link = doc.createElement("a");
         link.href = "https://drive.google.com/file/d/" + encodeURIComponent(result.fileId) + "/view";
         link.target = "_blank"; link.rel = "noopener noreferrer";
         link.textContent = "Google Drive에서 열기";
-        status.append(link);
+        statusText.append(link);
         void recordArtifact(kind === "text" ? "transcript" : kind, result, blob);
       } catch (error) {
         if (!signedIn) return;
         const code = error?.code || "";
-        say(code === "drive_write_unavailable"
-          ? "Google Drive 쓰기 권한이 아직 연결되지 않았습니다. 파일을 먼저 다운로드하여 보관해 주세요."
-          : "Google Drive 저장에 실패했습니다. 녹음·전사 원본은 이 화면에 남아 있습니다. 파일을 다운로드해 보관해 주세요.");
+        if (code === "drive_write_unavailable") {
+          // The button stays visible by design; a missing Drive write grant
+          // gets a short notice with the connection screen one click away.
+          statusText.replaceChildren(doc.createTextNode(
+            "Google Drive 쓰기 권한이 아직 연결되지 않았습니다. "));
+          const connect = doc.createElement("a");
+          connect.href = "#";
+          connect.textContent = "연결 화면으로 이동";
+          connect.addEventListener("click", (event) => {
+            event.preventDefault();
+            find("connectorsNavButton")?.click();
+          });
+          statusText.append(connect);
+          statusText.append(doc.createTextNode(" · 파일을 먼저 다운로드하여 보관해 주세요."));
+        } else {
+          say("Google Drive 저장에 실패했습니다. 녹음·전사 원본은 이 화면에 남아 있습니다. 파일을 다운로드해 보관해 주세요.");
+        }
       } finally {
         uploadInFlight = false;
         uploadAbort = null;
         startButton.disabled = !signedIn || controller.snapshot().active;
-        driveAudio.disabled = !signedIn || !audio || controller.snapshot().active;
-        driveText.disabled = !signedIn || !text.value.trim() || controller.snapshot().active;
+        applyResultVisibility();
       }
     }
     driveAudio.addEventListener("click", () => { void storeInDrive("audio"); });
@@ -608,6 +675,7 @@
       }, true);
     }
     interceptComposerSubmit();
+    applyResultVisibility();
     return Object.freeze({ open, tryOpenFromClaw, controller });
   }
   return Object.freeze({ MODES, isMeetingIntent, chooseMime, createController, mount });

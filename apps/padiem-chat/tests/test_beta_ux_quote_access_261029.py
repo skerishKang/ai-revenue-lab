@@ -54,9 +54,12 @@ def test_input_border_token_is_defined_per_theme_and_applied_to_inputs():
     assert "--line: rgba(255, 255, 255, .38);" in glass
 
     util = (STATIC / "util-menu.css").read_text(encoding="utf-8")
-    # The quick-run card border keeps the strong token with the shared fallback.
+    # 대표 결정 #7172로 계약 값 갱신: the util first-screen card joins the shared
+    # hairline (var(--line)) so it matches the other first-screen cards; the
+    # input-strength token keeps its job on real inputs (the two checks below).
     card = util[util.index(".util-tool-card {") : util.index(".util-tool-card {") + 400]
-    assert "var(--input-border-strong, var(--line, rgba(26, 34, 48, .12)))" in card
+    assert "border: 1px solid var(--line, rgba(26, 34, 48, .12))" in card
+    assert "--input-border-strong" not in card
     # 2026-11-01: the speech/SNS forms left for /apps/council/ with their own
     # design tokens; this sheet no longer carries those selectors.
     quote = (STATIC / "b66-quote-runtime.css").read_text(encoding="utf-8")

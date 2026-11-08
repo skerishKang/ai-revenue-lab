@@ -103,6 +103,82 @@ class D1McpGatewayStore:
     async def list_tokens(self, *, user_id: str) -> list[dict]:
         return await self._all(f"SELECT {_TOKEN_COLUMNS} FROM padiem_mcp_tokens WHERE user_id=? ORDER BY created_at DESC,id", _owner(user_id))
 
+    async def list_oauth_clients(self, *, user_id: str) -> list[dict]:
+        """Active OAuth grants grouped by the AI client that requested them.
+
+        #7168: one row per authorization, so repeated connections from the same
+        AI used to appear as many separate credentials. This view keeps the
+        grouping server-side and never selects a token/hash column: ids, the
+        client's registered name, device ids, scopes and timestamps only.
+        """
+        owner = _owner(user_id)
+        rows = await self._all(
+            "SELECT t.client_id AS client_id, t.device_id AS device_id, t.scope AS scope, "
+            "t.created_at AS created_at, t.last_used_at AS last_used_at, "
+            "COALESCE(c.client_name, t.client_id) AS client_name "
+            "FROM padiem_mcp_tokens t "
+            "LEFT JOIN padiem_mcp_oauth_clients c ON c.client_id=t.client_id "
+            "WHERE t.user_id=? AND t.kind='oauth' AND t.revoked_at IS NULL "
+            "ORDER BY t.created_at DESC, t.id DESC", owner)
+        grouped: dict[str, dict] = {}
+        for row in rows:
+            client_id = row.get("client_id")
+            if not isinstance(client_id, str) or not client_id:
+                continue
+            group = grouped.setdefault(client_id, {
+                "client_id": client_id,
+                "client_name": row.get("client_name") or client_id,
+                "active_grants": 0,
+                "devices": [],
+                "scopes": [],
+                "created_at": row.get("created_at"),
+                "latest_grant_at": row.get("created_at"),
+                "last_used_at": row.get("last_used_at"),
+            })
+            group["active_grants"] += 1
+            device_id = row.get("device_id")
+            if isinstance(device_id, str) and device_id and device_id not in group["devices"]:
+                group["devices"].append(device_id)
+            scope = row.get("scope")
+            if isinstance(scope, str) and scope and scope not in group["scopes"]:
+                group["scopes"].append(scope)
+            created = row.get("created_at")
+            if isinstance(created, str):
+                if not isinstance(group["created_at"], str) or created < group["created_at"]:
+                    group["created_at"] = created
+                if not isinstance(group["latest_grant_at"], str) or created > group["latest_grant_at"]:
+                    group["latest_grant_at"] = created
+            used = row.get("last_used_at")
+            if isinstance(used, str) and (
+                not isinstance(group["last_used_at"], str) or used > group["last_used_at"]
+            ):
+                group["last_used_at"] = used
+        clients = list(grouped.values())
+        for group in clients:
+            group["devices"].sort()
+            group["scopes"].sort()
+        clients.sort(
+            key=lambda group: (str(group.get("latest_grant_at") or ""), group["client_id"]),
+            reverse=True,
+        )
+        return clients
+
+    async def revoke_oauth_client(self, *, user_id: str, client_id: str, now=None) -> int:
+        """Revoke every active OAuth grant this owner has for one AI client.
+
+        #7168: owner-scoped and idempotent. A foreign or unknown client_id
+        matches no row and returns 0; another account's grants can never be
+        touched because the owner predicate is part of the same UPDATE.
+        """
+        owner = _owner(user_id)
+        if not isinstance(client_id, str) or not _CLIENT.fullmatch(client_id):
+            return 0
+        rows = await self._all(
+            "UPDATE padiem_mcp_tokens SET revoked_at=COALESCE(revoked_at,?) "
+            "WHERE user_id=? AND client_id=? AND kind='oauth' AND revoked_at IS NULL "
+            "RETURNING id", _stamp(now), owner, client_id)
+        return len(rows)
+
     async def authenticate(self, token: str, *, now=None) -> dict | None:
         if not isinstance(token, str) or len(token) > 256 or "." not in token:
             return None

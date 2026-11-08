@@ -82,6 +82,7 @@ from .model_policy import (
 
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .control_plane_identity import IdentityBridgeError
 from .control_plane_identity_shadow import (
     IdentityShadowRecord,
     IdentityShadowStore,
@@ -297,6 +298,49 @@ async def _usage_gate_denial(request: Request) -> JSONResponse | None:
     return _usage_denied_response(decision) if not decision.allowed else None
 
 
+async def _resolve_canonical_owner_strict(request: Request) -> tuple[str, str] | None:
+    """The same flow as :func:`_resolve_canonical_owner`, but the identity
+    bridge's typed failure survives: ``IdentityBridgeError`` (503 infra,
+    403 contract refusal, 401 session state) propagates instead of collapsing
+    into ``None``, so a caller that must tell "no permission" apart from
+    "resolution failed" can — without a second tenant authority, the strict
+    variant is this module's one resolution body.
+    """
+    if not auth_ready(request):
+        return None
+    product_user_id = current_user_id(request)
+    if not product_user_id:
+        return None
+    shadow_store: IdentityShadowStore | None = getattr(
+        request.app.state, "identity_shadow_store", None
+    )
+    authority: CurrentCanonicalSessionAuthority | None = getattr(
+        request.app.state, "control_plane_identity_authority", None
+    )
+    if shadow_store is None and authority is None:
+        # No identity bridge at all: this deployment can never hold a canonical
+        # session, and the mutation lane already reports that state as
+        # current_b54_session_unavailable (403). The read lane keeps the same
+        # fail-closed refusal; only a PARTIALLY wired bridge (or a bridge that
+        # raises) is the 503 infrastructure failure.
+        return None
+    if shadow_store is None or authority is None:
+        raise IdentityBridgeError(
+            503,
+            "identity_bridge_unavailable",
+            "Canonical identity resolution is unavailable.",
+        )
+    session = await resolve_refreshed_session(
+        authority=authority,
+        store=shadow_store,
+        product_user_id=product_user_id,
+    )
+    tenant_id = session.tenant_id
+    if not isinstance(tenant_id, str) or not tenant_id:
+        return None
+    return product_user_id, tenant_id
+
+
 async def _resolve_canonical_owner(request: Request) -> tuple[str, str] | None:
     """Resolve (product user id, canonical tenant id) from the signed-in session.
 
@@ -313,31 +357,10 @@ async def _resolve_canonical_owner(request: Request) -> tuple[str, str] | None:
     from one resolution, so a route can never hold a tenant it proved without
     also holding the user the session proved.
     """
-    if not auth_ready(request):
-        return None
-    product_user_id = current_user_id(request)
-    if not product_user_id:
-        return None
-    shadow_store: IdentityShadowStore | None = getattr(
-        request.app.state, "identity_shadow_store", None
-    )
-    authority: CurrentCanonicalSessionAuthority | None = getattr(
-        request.app.state, "control_plane_identity_authority", None
-    )
-    if shadow_store is None or authority is None:
-        return None
     try:
-        session = await resolve_refreshed_session(
-            authority=authority,
-            store=shadow_store,
-            product_user_id=product_user_id,
-        )
+        return await _resolve_canonical_owner_strict(request)
     except Exception:
         return None
-    tenant_id = session.tenant_id
-    if not isinstance(tenant_id, str) or not tenant_id:
-        return None
-    return product_user_id, tenant_id
 
 
 async def _resolve_canonical_tenant(request: Request) -> str | None:
