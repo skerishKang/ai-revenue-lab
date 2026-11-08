@@ -33,6 +33,7 @@ APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
 LOCALE_JS = ROOT / "static/locale.js"
 CAPABILITY_CSS = ROOT / "static/capability-nav.css"
+CALENDAR_MODULE = ROOT / "static/chat-calendar-module.js"
 
 DIALOG_ID = "connectorsDialog"
 CALENDAR_CARD_ID = "connector:google:calendar@1"
@@ -115,15 +116,15 @@ def _connector_block() -> str:
     assert marker in app
     end = 'if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);'
     assert end in app
-    return app.split(marker, 1)[1].split(end, 1)[0]
+    return app.split(marker, 1)[1].split(end, 1)[0] + "\n" + CALENDAR_MODULE.read_text(encoding="utf-8").replace("deps.", "")
 
 
 def _pure_mapping_block() -> str:
-    app = _app()
-    start = "  function connectorSupportKey(value) {"
-    end = "  function liveConnectorCards() {"
+    app = CALENDAR_MODULE.read_text(encoding="utf-8").replace("deps.", "")
+    start = "const CALENDAR_READ_STATES"
+    end = "function googleCalendarConnectButton() {"
     assert start in app and end in app
-    return start.lstrip() + app.split(start, 1)[1].split(end, 1)[0]
+    return start + app.split(start, 1)[1].split(end, 1)[0]
 
 
 def _rgba_values(rule_text: str, property_name: str) -> tuple[float, float, float, float] | None:
@@ -387,7 +388,7 @@ console.log(JSON.stringify({{ states, transitions, safeErrors, fallbackErrors }}
 
 def test_app_state_machine_is_in_session_scope_and_fail_safe() -> None:
     block = _connector_block()
-    assert 'let googleCalendarReadState = "unknown";' in block
+    assert 'let googleCalendarReadState = "unknown";' in _app()
     # The old request-receipt flags are gone; one closed state remains.
     assert "googleCalendarReadActivationDone" not in block
     assert "googleCalendarReadActivationInFlight" not in block
