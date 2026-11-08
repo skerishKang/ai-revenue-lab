@@ -1774,9 +1774,10 @@
   }
 
   function setLoginButtonCopy(text, title) {
-    // #7164: identical writes are skipped. textContent replaces the child node
-    // even when the value is the same, and every mutation feeds the login-button
-    // MutationObservers (outputs.js, product-capabilities.js) into re-fetches.
+    // #7164: identical writes are skipped. Writing textContent replaces the
+    // child node even when the value is the same, and the login button's
+    // DOM watchers (outputs.js, product-capabilities.js) treat every rewrite
+    // as a signal and re-fetch.
     if (loginButton.textContent !== text) loginButton.textContent = text;
     if (loginButton.getAttribute("title") !== title) loginButton.setAttribute("title", title);
   }
