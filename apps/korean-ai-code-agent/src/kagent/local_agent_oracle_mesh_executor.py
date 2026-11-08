@@ -10,7 +10,15 @@ answered by resending the bytes it already holds.
 from __future__ import annotations
 USER_SESSION_UNAVAILABLE = "user_session_unavailable"
 USER_HELPER_PIPE_PREFIX = "padiem-user-helper-"
-USER_HELPER_TASK_PATH = r"\Padiem"
+#: #7182b: ``Get-ScheduledTask -TaskPath`` matches the folder's own path exactly,
+#: trailing separator included. The installer registers the task under
+#: ``\\Padiem\\`` (``claw_connect.user_helper_registration.TASK_FOLDER``), so a
+#: path without the separator selects nothing and the client stopped at its very
+#: first step with "helper task is not registered" - before any pipe connect.
+#: Measured on 컴1 2026-11-08: the deployed client returned that message in 1s
+#: while the task was Running, and the same script with ``\\Padiem\\`` returned
+#: the command's output in 1.6s.
+USER_HELPER_TASK_PATH = "\\Padiem\\"
 USER_HELPER_TASK_NAME = "PadiemUserSessionHelper"
 
 from .pc_correlation import run_hash as _pc_run_hash
@@ -1491,7 +1499,15 @@ class OracleMeshExecutor:
 $ErrorActionPreference='Stop'
 $mat=[Convert]::FromBase64String('@@MAT_B64@@')
 $reqB64='@@REQ_B64@@'
-function Fail($code,$msg){ Write-Output ($code+': '+$msg); exit 1 }
+# #7182b: never 'exit' from this client. The SYSTEM lane runs it inside
+# ``& { <client> } 2>&1 | Out-String`` and prints the reply envelope and the
+# ``__PADIEM_EXIT__`` sentinel only AFTER that block returns; an 'exit' ends
+# PowerShell first, so the transcript carried no sentinel at all and every
+# user-mode command - a success as much as a refusal - was read back as
+# 'no reply'. Measured on 컴1 2026-11-08: the wrapped client answered 'ok' in
+# 1.7s with an empty stdout for the lane. Fail therefore throws a code-prefixed
+# message, the cable is written on the pipeline, and the script returns.
+function Fail($code,$msg){ throw [string]($code+': '+$msg) }
 try {@@ARGUMENTS_SOURCE@@
   $deviceId=$null
   if($arg -match '--device-id\s+"([^"]+)"'){ $deviceId=$Matches[1] }
@@ -1563,11 +1579,14 @@ try {@@ARGUMENTS_SOURCE@@
       truncated=$false; error_code=$frame.error_code; duration_ms=$frame.duration_ms
     }
     $client.Dispose()
-    [Console]::Out.Write(($reply | ConvertTo-Json -Compress))
-    exit 0
+    Write-Output ($reply | ConvertTo-Json -Compress)
+    return
   }
 } catch {
-  Fail 'user_session_unavailable' 'helper pipe is not available'
+  $detail=[string]$_.Exception.Message
+  if($detail -notmatch '^[a-z_]+: '){ $detail='user_session_unavailable: helper pipe is not available' }
+  Write-Output $detail
+  return
 }
 """.strip()
         return (
@@ -1681,7 +1700,13 @@ try {@@ARGUMENTS_SOURCE@@
         if term == "cancelled":
             # The #7107 helper ended the user child when this dispatch was stopped.
             return OracleMeshExecutionOutcome(termination="cancelled", exit_code=None, body=b"")
-        if term != "exited":
+        # #7182b: the wrapped client ends with cmdlet-only work, so PowerShell
+        # records no $LASTEXITCODE and the sentinel prints an empty value
+        # (``no_exit_code``). That is a completed answer, not a silent console:
+        # the reply frame carries the command's own exit code. Requiring the
+        # literal string "exited" here turned the fix for the missing sentinel
+        # into the same "helper pipe is not available" reply.
+        if term not in ("exited", "no_exit_code"):
             return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
                 body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
         return self._parse_user_helper_outcome(bytes(out))
