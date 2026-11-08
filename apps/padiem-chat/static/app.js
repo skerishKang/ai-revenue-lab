@@ -147,6 +147,7 @@
   }
   const historySection = document.getElementById("historySection");
   const historyList = document.getElementById("historyList");
+  const historyActionStatus = document.getElementById("historyActionStatus");
   const historyEmpty = document.getElementById("historyEmpty");
   const projectsNavButton = document.getElementById("projectsNavButton");
   const projectsBadge = document.getElementById("projectsBadge");
@@ -1104,6 +1105,7 @@
     historyList.replaceChildren();
     historySection.hidden = true;
     historyEmpty.hidden = true;
+    clearHistoryActionStatus();
   }
   // #4489: the Library entry is owned by static/library.js. The old
   // filesNavAvailable()/syncFilesNav() gate that also required project-file
@@ -1161,9 +1163,14 @@
       return svg;
     }
     const shape = document.createElementNS(ns, "path");
-    shape.setAttribute("d", kind === "settings"
-      ? "M12 2l1.5 2.4 2.8.5 1.9-1.2 2 3.5-1.9 1.9.1 2.9 1.8 1.9-2 3.5-2.8-.5-2.4 1.4L12 21l-3.1-2.7-2.4-1.4-2.8.5-2-3.5 1.8-1.9.1-2.9-1.9-1.9 2-3.5 1.9 1.2 2.8-.5L12 2Z"
-      : "M4 6h16M9 6V4h6v2M6 6l1 15h10l1-15M10 10v7M14 10v7");
+    const paths = {
+      settings: "M12 2l1.5 2.4 2.8.5 1.9-1.2 2 3.5-1.9 1.9.1 2.9 1.8 1.9-2 3.5-2.8-.5-2.4 1.4L12 21l-3.1-2.7-2.4-1.4-2.8.5-2-3.5 1.8-1.9.1-2.9-1.9-1.9 2-3.5 1.9 1.2 2.8-.5L12 2Z",
+      rename: "M4 20h4.2L19 9.2 14.8 5 4 15.8V20Z M13.6 6.2l4.2 4.2",
+      pin: "M9.5 3.5h5l-.8 5.4 2.9 2.9v1.7H7.4v-1.7l2.9-2.9-.8-5.4Z M12 13.5V21",
+      unpin: "M9.5 3.5h5l-.8 5.4 2.9 2.9v1.7H7.4v-1.7l2.9-2.9-.8-5.4Z M12 13.5V21 M4 3l16 17",
+      trash: "M4 6h16M9 6V4h6v2M6 6l1 15h10l1-15M10 10v7M14 10v7",
+    };
+    shape.setAttribute("d", paths[kind] || paths.trash);
     svg.appendChild(shape);
     if (kind === "settings") {
       const center = document.createElementNS(ns, "circle");
@@ -2713,6 +2720,7 @@
   // more time — a failure is drawn as one honest retry row, never as an
   // empty list.
   function renderHistorySkeleton() {
+    clearHistoryActionStatus();
     historySection.hidden = false;
     historyEmpty.hidden = true;
     historyList.replaceChildren();
@@ -2857,14 +2865,26 @@
           button.textContent = clawConversationIds.has(id) ? `Claw · ${title}` : title;
         });
       };
+      clearHistoryActionStatus();
       clawConversationIds.clear();
       historyList.replaceChildren();
       historySection.hidden = false;
       historyEmpty.hidden = data.conversations.length !== 0;
+      let pinnedGroupDrawn = false;
       data.conversations.forEach((conversation) => {
         if (!conversation || typeof conversation.id !== "string" || typeof conversation.title !== "string") return;
+        const pinned = conversation.pinned === true;
+        // #7175: one explicit group, then the pinned rows in server order.
+        if (pinned && !pinnedGroupDrawn) {
+          pinnedGroupDrawn = true;
+          const groupLabel = document.createElement("p");
+          groupLabel.className = "history-group-label";
+          groupLabel.textContent = uiT("conversation-pinned-group");
+          historyList.appendChild(groupLabel);
+        }
         const row = document.createElement("div");
-        row.className = "history-row";
+        row.className = pinned ? "history-row history-row-pinned" : "history-row";
+        row.dataset.conversationId = conversation.id;
         const button = document.createElement("button");
         button.type = "button";
         button.className = "recent-item history-item";
@@ -2882,6 +2902,43 @@
         more.append(sidebarActionIcon("more"));
         const menu = document.createElement("div");
         menu.className = "history-actions-menu";
+        // #7175: rename in place. The row is rebuilt from the server answer
+        // after a save, so every label (title, tooltips, menu) moves together.
+        const rename = document.createElement("button");
+        rename.type = "button";
+        rename.className = "history-menu-action history-menu-rename";
+        rename.append(sidebarActionIcon("rename"), document.createTextNode(uiT("conversation-rename")));
+        const renameLabel = uiT("conversation-rename-aria", { title: conversation.title });
+        rename.setAttribute("aria-label", renameLabel);
+        window.PadiemSharedTooltip?.label?.(rename, renameLabel);
+        rename.addEventListener("click", () => {
+          actions.open = false;
+          beginConversationRename(row, button, conversation);
+        });
+        const pin = document.createElement("button");
+        pin.type = "button";
+        pin.className = "history-menu-action history-menu-pin";
+        pin.append(
+          sidebarActionIcon(pinned ? "unpin" : "pin"),
+          document.createTextNode(uiT(pinned ? "conversation-unpin" : "conversation-pin")),
+        );
+        const pinLabel = uiT(pinned ? "conversation-unpin-aria" : "conversation-pin-aria", { title: conversation.title });
+        pin.setAttribute("aria-label", pinLabel);
+        window.PadiemSharedTooltip?.label?.(pin, pinLabel);
+        pin.addEventListener("click", async () => {
+          actions.open = false;
+          pin.disabled = true;
+          try {
+            await patchConversation(conversation.id, { pinned: !pinned });
+            clearHistoryActionStatus();
+            await loadRecentConversations();
+            focusHistoryConversation(conversation.id);
+          } catch (error) {
+            pin.disabled = false;
+            showHistoryActionStatus(error instanceof Error && error.message ? error.message : uiT("conversation-update-failed"));
+            more.focus();
+          }
+        });
         const remove = document.createElement("button");
         remove.type = "button";
         remove.className = "history-delete history-menu-delete";
@@ -2903,7 +2960,7 @@
             if (other !== actions) other.open = false;
           });
         });
-        menu.appendChild(remove);
+        menu.append(rename, pin, remove);
         actions.append(more, menu);
         row.append(button, actions);
         historyList.appendChild(row);
@@ -2931,6 +2988,121 @@
     expanded.querySelector("summary")?.focus();
     event.stopPropagation();
   });
+  // #7175: the server owns both the title and the pin. The sidebar only sends
+  // the two reviewed fields and then re-reads the owner-scoped list, so the
+  // group order and every label come from the same answer.
+  const HISTORY_TITLE_MAX_CHARS = 80;
+
+  function clearHistoryActionStatus() {
+    if (!historyActionStatus) return;
+    historyActionStatus.hidden = true;
+    historyActionStatus.textContent = "";
+  }
+
+  function showHistoryActionStatus(message) {
+    if (!historyActionStatus || !message) return;
+    historyActionStatus.textContent = message;
+    historyActionStatus.hidden = false;
+  }
+
+  async function patchConversation(id, body) {
+    const response = await fetch(`/api/conversations/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      headers: { "Accept": "application/json", "Content-Type": "application/json" },
+      cache: "no-store",
+      body: JSON.stringify(body),
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !data || data.updated !== true || !data.conversation
+        || data.conversation.id !== id) {
+      const message = data && data.error && typeof data.error.message === "string"
+        ? data.error.message
+        : uiT("conversation-update-failed");
+      throw new Error(message);
+    }
+    return data.conversation;
+  }
+
+  function focusHistoryConversation(id) {
+    const row = Array.from(historyList.querySelectorAll(".history-row"))
+      .find((candidate) => candidate.dataset.conversationId === id);
+    const target = row ? (row.querySelector(".history-more") || row.querySelector(".history-item")) : null;
+    if (target && typeof target.focus === "function") target.focus({ preventScroll: true });
+  }
+
+  function beginConversationRename(row, button, conversation) {
+    if (!authState.authenticated || inFlight) return;
+    if (row.querySelector(".history-rename-input")) return;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "history-rename-input";
+    input.maxLength = HISTORY_TITLE_MAX_CHARS;
+    input.value = conversation.title;
+    input.setAttribute("aria-label", uiT("conversation-rename-aria", { title: conversation.title }));
+    input.setAttribute("enterkeyhint", "done");
+    let saving = false;
+    let closed = false;
+    const restore = () => {
+      if (!input.isConnected) return;
+      input.replaceWith(button);
+      button.focus();
+    };
+    const cancel = () => {
+      if (saving || closed) return;
+      closed = true;
+      clearHistoryActionStatus();
+      restore();
+    };
+    const save = async () => {
+      if (saving || closed) return;
+      const title = input.value.trim().replace(/\s+/g, " ");
+      if (!title) {
+        input.setAttribute("aria-invalid", "true");
+        showHistoryActionStatus(uiT("conversation-title-required"));
+        input.focus();
+        return;
+      }
+      saving = true;
+      input.removeAttribute("aria-invalid");
+      input.disabled = true;
+      try {
+        const updated = await patchConversation(conversation.id, { title });
+        conversation.title = updated.title;
+        button.textContent = clawConversationIds.has(conversation.id)
+          ? `Claw · ${updated.title}` : updated.title;
+        clearHistoryActionStatus();
+        if (input.isConnected) input.replaceWith(button);
+        await loadRecentConversations();
+        focusHistoryConversation(conversation.id);
+      } catch (error) {
+        saving = false;
+        input.disabled = false;
+        input.setAttribute("aria-invalid", "true");
+        showHistoryActionStatus(
+          error instanceof Error && error.message ? error.message : uiT("conversation-update-failed"),
+        );
+        input.focus();
+      }
+    };
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        event.stopPropagation();
+        void save();
+      } else if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        cancel();
+      }
+    });
+    input.addEventListener("blur", () => {
+      if (!saving) cancel();
+    });
+    row.replaceChild(input, button);
+    input.focus();
+    input.select();
+  }
+
   async function deleteConversation(id, title) {
     if (!authState.authenticated || inFlight) return;
     const confirmed = await window.PadiemConfirmDialog.confirm({

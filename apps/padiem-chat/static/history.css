@@ -537,3 +537,134 @@ html body .app-shell .sidebar .history-row.history-skeleton {
   font-weight: 650;
   cursor: pointer;
 }
+
+/* #7175: rename / pin in the recent-conversation menu.
+ *
+ * The pinned group has one label above the pinned rows; the rows themselves
+ * keep the existing 44px cell. The rename field replaces the title button in
+ * place and inherits the sidebar's text colour, so all four themes keep the
+ * same geometry and the field is never a separate dialog. */
+.history-group-label {
+  margin: 8px 12px 2px;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .01em;
+  color: var(--muted, #8a8f98);
+}
+
+.history-actions-menu .history-menu-action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 9px;
+  width: 100%;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.history-actions-menu .history-menu-action svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+}
+.history-actions-menu .history-menu-action:is(:hover, :focus-visible) {
+  background: rgba(127, 127, 127, .16);
+}
+.history-actions-menu .history-menu-action:disabled {
+  opacity: .55;
+  cursor: default;
+}
+
+.history-rename-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--accent, #6557e8);
+  border-radius: 9px;
+  background: rgba(127, 127, 127, .14);
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+}
+.history-rename-input:focus-visible {
+  outline: 2px solid var(--accent, #6557e8);
+  outline-offset: 1px;
+}
+.history-rename-input[aria-invalid="true"] {
+  border-color: #b3261e;
+}
+.history-rename-input:disabled {
+  opacity: .7;
+}
+
+/* The failure line inherits the sidebar's own text colour and carries the
+ * error on a tinted surface, so it stays readable in light and dark themes. */
+.history-action-status {
+  margin: 6px 10px 4px;
+  padding: 6px 9px;
+  border: 1px solid var(--line, rgba(210, 220, 230, .25));
+  border-radius: 9px;
+  background: rgba(179, 38, 30, .16);
+  color: inherit;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* #7175: the menu now carries three actions. The base sheet never sized the
+ * popup (the Glass sheet did), so it inherited the 44px trigger width and the
+ * rows could only be read one icon at a time. One explicit popup shape keeps
+ * the three rows on one line in every theme. */
+.history-actions-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  min-width: 148px;
+  padding: 5px;
+  border: 1px solid var(--line, rgba(210, 220, 230, .25));
+  border-radius: 11px;
+  box-shadow: 0 10px 26px rgba(13, 21, 28, .18);
+}
+/* Only an open row draws the menu. An absolutely positioned child of a closed
+ * <details> still gets a hit-test box in Chromium, so it would otherwise sit
+ * invisibly over the rows below it and swallow their clicks. */
+.history-actions:not([open]) > .history-actions-menu {
+  display: none;
+}
+.history-actions[open] > .history-actions-menu {
+  display: flex;
+  flex-direction: column;
+}
+.history-actions-menu .history-menu-delete {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  min-height: 36px;
+  padding: 0 10px;
+  gap: 9px;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 13px;
+  color: inherit;
+}
+.history-actions-menu .history-menu-delete:is(:hover, :focus-visible) {
+  background: rgba(179, 38, 30, .14);
+  color: inherit;
+}
+.history-actions-menu .history-menu-delete svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+}
