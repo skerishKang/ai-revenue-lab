@@ -46,8 +46,19 @@ _ROOT_KEYS = frozenset({"version", "comment", "providers", "models", "tiers"})
 _PROVIDER_KEYS = frozenset({"base_origin", "allowed_hosts", "credential_binding"})
 _MODEL_KEYS = frozenset({
     "id", "provider_id", "upstream_model", "capabilities", "enabled",
-    "display_name", "context_window",
+    "display_name", "context_window", "provider_name",
+    "input_price_usd_per_1m", "output_price_usd_per_1m",
+    "source", "source_checked_at", "reasoning",
 })
+
+#: The B14 install document's per-model evidence. A private row missing any of
+#: these cannot become an installed model: a defaulted price or provenance would
+#: be a value nobody approved.
+INSTALL_MODEL_FIELDS = (
+    "display_name", "provider_name", "context_window",
+    "input_price_usd_per_1m", "output_price_usd_per_1m",
+    "source", "source_checked_at",
+)
 _MAX_BYTES = 512 * 1024
 
 _LOG = logging.getLogger("padiem.models_registry")
@@ -235,6 +246,19 @@ def _validated_models(raw: object, providers: dict) -> tuple:
         if "context_window" in row and (type(row["context_window"]) is not int
                                         or row["context_window"] < 0):
             raise _reject("registry_model_context_window")
+        for price_key in ("input_price_usd_per_1m", "output_price_usd_per_1m"):
+            if price_key in row:
+                price = row[price_key]
+                if price is not None and (
+                        isinstance(price, bool)
+                        or not isinstance(price, (int, float)) or price < 0):
+                    raise _reject("registry_model_price")
+        for text_key in ("provider_name", "source", "source_checked_at"):
+            if text_key in row and (not isinstance(row[text_key], str)
+                                    or not row[text_key].strip()):
+                raise _reject("registry_model_provenance")
+        if "reasoning" in row and not isinstance(row["reasoning"], dict):
+            raise _reject("registry_model_reasoning")
         seen.add(model_id)
         models.append({key: row[key] for key in _MODEL_KEYS if key in row})
     return tuple(models)
@@ -284,6 +308,66 @@ def validate_document(document: object) -> PrivateRegistry:
     return PrivateRegistry(
         version=FORMAT_VERSION, providers=providers, models=models, tiers=tiers,
         source="private")
+
+
+def install_document(registry: PrivateRegistry) -> dict:
+    """The B14 install document (``schema_version: 1``) for one private registry.
+
+    This is the single conversion both consumers use: B14 installs the document,
+    and the control-plane reads the same tiers. A row without its install
+    evidence is refused here instead of being defaulted.
+    """
+    models = []
+    for row in registry.models:
+        if any(key not in row for key in INSTALL_MODEL_FIELDS):
+            raise _reject("registry_model_install_fields")
+        install_row = {
+            "id": row["id"],
+            "provider_id": row["provider_id"],
+            "upstream_model": row["upstream_model"],
+            "display_name": row["display_name"],
+            "provider_name": row["provider_name"],
+            "capabilities": list(row["capabilities"]),
+            "context_window": row["context_window"],
+            "input_price_usd_per_1m": row["input_price_usd_per_1m"],
+            "output_price_usd_per_1m": row["output_price_usd_per_1m"],
+            "source": row["source"],
+            "source_checked_at": row["source_checked_at"],
+            "enabled": row["enabled"],
+        }
+        if "reasoning" in row:
+            install_row["reasoning"] = row["reasoning"]
+        models.append(install_row)
+    return {
+        "schema_version": 1,
+        "comment": "Installed from the private model registry (#6828 2 stage 2).",
+        "providers": {
+            provider_id: {
+                "base_origin": entry["base_origin"],
+                "allowed_hosts": list(entry["allowed_hosts"]),
+                "credential_source": "platform_secret",
+                "credential_binding_name": entry["credential_binding"],
+                "enabled": True,
+            }
+            for provider_id, entry in registry.providers.items()
+        },
+        "models": models,
+        "groups": {"plus": [], "pro": [], "max": []},
+    }
+
+
+def tier_roster(registry: PrivateRegistry, grade: str) -> tuple:
+    """``primary`` followed by its ordered fallback roster, or ``()``."""
+    tier = registry.tiers.get(grade)
+    if tier is None:
+        return ()
+    return (tier["primary"], *tier["fallback"])
+
+
+def private_switch_enabled() -> bool:
+    """Whether this host asked for the private registry instead of the repo."""
+    return bool(os.environ.get(REGISTRY_OVERRIDE_ENV, "").strip()
+                or os.environ.get(REGISTRY_PATH_ENV, "").strip())
 
 
 def _check_permissions(path: Path) -> None:
@@ -367,12 +451,16 @@ __all__ = [
     "REGISTRY_PATH_ENV",
     "REQUIRED_TIER_NAMES",
     "RegistryLoad",
+    "INSTALL_MODEL_FIELDS",
     "empty_registry",
+    "install_document",
     "is_credential_binding_name",
     "load_private_registry",
     "load_snapshot",
+    "private_switch_enabled",
     "readiness",
     "registry_path",
     "registry_source",
+    "tier_roster",
     "validate_document",
 ]

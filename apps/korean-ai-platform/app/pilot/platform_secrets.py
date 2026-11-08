@@ -207,12 +207,14 @@ async def ensure_route_secrets(
     from .catalog import get_catalog_by_id
     from .worker_env import load_request_secret
 
-    from .tier_fallback import TIER_DEFAULT_B14_MODEL, TIER_FALLBACK_B14_MODELS
-    if product_tier == "free" and model_id == TIER_DEFAULT_B14_MODEL:
-        if product_tier not in TIER_FALLBACK_B14_MODELS:
+    from .tier_fallback import effective_tier_default, effective_tier_fallback
+    tier_default = effective_tier_default()
+    tier_rosters = effective_tier_fallback()
+    if product_tier == "free" and tier_default and model_id == tier_default:
+        if product_tier not in tier_rosters:
             from .errors import InvalidRequest
             raise InvalidRequest("Unsupported product tier.")
-        candidates = [model_id, *TIER_FALLBACK_B14_MODELS[product_tier]]
+        candidates = [model_id, *tier_rosters[product_tier]]
     else:
         candidates = [model_id]
 

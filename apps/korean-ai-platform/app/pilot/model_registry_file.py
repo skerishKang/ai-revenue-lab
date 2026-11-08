@@ -5,6 +5,7 @@ The JSON is parsed at boot; invalid registry aborts startup (no stale fallback).
 """
 from __future__ import annotations
 import json
+import logging
 import os
 import re
 import tempfile
@@ -18,6 +19,9 @@ REGISTRY_PATH = Path(__file__).with_name("b14_models.json")
 REGISTRY_PATH_ENV = "B14_REGISTRY_PATH"
 REGISTRY_OVERLAY_PATH_ENV = "B14_REGISTRY_OVERLAY_PATH"
 _OVERLAY_SUFFIX = ".overrides.json"
+_LOG = logging.getLogger(__name__)
+#: One load per process. A failed reload keeps the last good snapshot.
+_PRIVATE_SNAPSHOT = None
 
 
 def registry_path() -> Path:
@@ -45,6 +49,80 @@ def overlay_path(base: Path | None = None) -> Path:
         return Path(raw).expanduser()
     target = base or registry_path()
     return target.with_name(target.stem + _OVERLAY_SUFFIX)
+def private_registry_enabled() -> bool:
+    """Whether this host switched to the private registry file (#6828 2-2)."""
+    return bool(os.environ.get("PADIEM_MODELS_REGISTRY", "").strip()
+                or os.environ.get("PADIEM_MODELS_REGISTRY_OVERRIDE", "").strip())
+
+
+def _private_module():
+    from padiem_control_plane import models_registry
+    return models_registry
+
+
+def private_registry_snapshot(*, refresh: bool = False):
+    """The loaded private snapshot, or ``None`` when it is not usable.
+
+    The loader keeps the last good snapshot on a failed reload, so a half-written
+    file cannot replace a working catalog. Nothing here falls back to the
+    repository values: the switch means the private document is the authority.
+    """
+    global _PRIVATE_SNAPSHOT
+    if _PRIVATE_SNAPSHOT is not None and not refresh:
+        return _PRIVATE_SNAPSHOT if _PRIVATE_SNAPSHOT.ready else None
+    try:
+        loader = _private_module()
+    except ImportError:
+        _LOG.warning("models_registry_unavailable code=registry_loader_unavailable")
+        return None
+    previous = None
+    if _PRIVATE_SNAPSHOT is not None and _PRIVATE_SNAPSHOT.loaded:
+        previous = _PRIVATE_SNAPSHOT.registry
+    _PRIVATE_SNAPSHOT = loader.load_snapshot(previous=previous)
+    if not _PRIVATE_SNAPSHOT.ready:
+        return None
+    try:
+        _install_document(_PRIVATE_SNAPSHOT.registry)
+    except Exception as exc:
+        # A document that validates but cannot become an install document is
+        # just as unusable: report the code and install nothing.
+        code = getattr(exc, "code", None) or "registry_conversion_failed"
+        _LOG.warning("models_registry_unavailable code=%s", code)
+        _PRIVATE_SNAPSHOT = loader.RegistryLoad(
+            registry=_PRIVATE_SNAPSHOT.registry, loaded=False, code=code,
+            path_name=_PRIVATE_SNAPSHOT.path_name, source=_PRIVATE_SNAPSHOT.source)
+        return None
+    return _PRIVATE_SNAPSHOT
+
+
+def private_registry_state() -> dict:
+    """Value-free state for the health surface: enabled, counts, reason code."""
+    if not private_registry_enabled():
+        return {"enabled": False, "ok": True, "models": 0, "reason": None}
+    load = private_registry_snapshot()
+    if load is not None:
+        return {"enabled": True, "ok": True, "models": len(load.registry.models),
+                "reason": None}
+    code = getattr(_PRIVATE_SNAPSHOT, "code", None) or "registry_loader_unavailable"
+    models = len(_PRIVATE_SNAPSHOT.registry.models) if _PRIVATE_SNAPSHOT else 0
+    return {"enabled": True, "ok": False, "models": models, "reason": code}
+
+
+def _install_document(registry) -> dict:
+    """The single private-v1 -> install-document conversion (#6828 2-2)."""
+    try:
+        loader = _private_module()
+    except ImportError as exc:
+        raise ModelRegistryError("private registry loader unavailable") from exc
+    return validate_registry(loader.install_document(registry))
+
+
+def _empty_catalog() -> None:
+    from .catalog import CATALOG_BY_ID, CATALOG_MODELS
+    CATALOG_BY_ID.clear()
+    CATALOG_MODELS.clear()
+
+
 _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$")
 _BINDING = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
 _GROUPS = ("plus", "pro", "max")
@@ -201,7 +279,17 @@ def merge_overlay(base: dict, overlay: dict) -> dict:
 
 
 def read_registry(path: Path | None = None) -> dict:
-    """Return the effective registry: the base document plus the Owner overlay."""
+    """Return the effective registry: the base document plus the Owner overlay.
+
+    #6828 2-2: when the host switched to the private registry, this answers the
+    converted private document and never the repository values. An unusable
+    private document raises instead of silently using the shipped catalog.
+    """
+    if private_registry_enabled():
+        load = private_registry_snapshot()
+        if load is None:
+            raise ModelRegistryError("private registry unavailable")
+        return _install_document(load.registry)
     base = path or registry_path()
     merged = merge_overlay(_read_json(base, "registry"), read_overlay(base))
     return validate_registry(merged)
@@ -476,7 +564,19 @@ def _reasoning_fields(raw: dict) -> tuple[bool, str | None, bool]:
 def install_models(data:dict|None=None) -> None:
     """Install the one canonical registry into existing B14 execution adapters."""
     from .catalog import CATALOG_BY_ID, CATALOG_MODELS, CatalogModel
-    data = read_registry() if data is None else validate_registry(data)
+    if data is None:
+        if private_registry_enabled():
+            load = private_registry_snapshot()
+            if load is None:
+                # Fail closed: an unusable private document installs nothing,
+                # and the repository catalog is never substituted for it.
+                _empty_catalog()
+                return
+            data = _install_document(load.registry)
+        else:
+            data = read_registry()
+    else:
+        data = validate_registry(data)
     # All validation first. Invalid edits must not partially modify in-memory state.
     parsed=[]
     specs=[]
