@@ -360,8 +360,8 @@
   const CALENDAR_ROUTE_HASH = "#padiem-calendar";
   const LIBRARY_ROUTE_HASH = "#padiem-library";
   const MEETING_ROUTE_HASH = "#padiem-meeting";
-  // 고급 설정: the full-screen settings page the compact modal links to. The
-  // fragment is a destination only, exactly like the three panel routes.
+  // The full-screen settings page the compact modal links to. The fragment
+  // is a destination only, exactly like the three panel routes.
   const ADVANCED_SETTINGS_ROUTE_HASH = "#padiem-settings";
   const PANEL_ROUTE_HASH_BY_STATE = Object.freeze({
     calendar: CALENDAR_ROUTE_HASH,
