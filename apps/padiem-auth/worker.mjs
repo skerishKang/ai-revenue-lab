@@ -29,7 +29,8 @@ export async function googleProductUserId(subject) {
 // with a Google-account fingerprint under the same identity key.
 export async function passwordIdentityFingerprint(key, subject) {
   if (!key || key.algorithm?.name !== 'HMAC') throw new Error('identity key unavailable');
-  return b64(new Uint8Array(await crypto.subtle.sign('HMAC', key, encoder.encode(`padiem-auth:password:v1\0${subject}`))));
+  const normalized = String(subject ?? '').trim().toLowerCase();
+  return b64(new Uint8Array(await crypto.subtle.sign('HMAC', key, encoder.encode(`padiem-auth:password:v1\0${normalized}`))));
 }
 const epoch = () => Math.floor(Date.now() / 1000);
 const headers = { 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' };
@@ -140,8 +141,8 @@ async function verifyAccountDeletionRpc(request, secret, current) {
 // credential against Chat's internal password routes with the same v2 service
 // proof envelope the account-delete receiver verifies (fresh UUID bound into
 // the signature, ±300s clock window, ≤512-byte body).
-async function passwordRpcHeaders(secret, path, body) {
-  const at = String(epoch());
+async function passwordRpcHeaders(secret, path, body, current = epoch()) {
+  const at = String(current);
   const serviceId = crypto.randomUUID();
   const key = await crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
   const signed = new Uint8Array([
@@ -162,8 +163,8 @@ const esc = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&
 const pageStyle = `*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f6f8;font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif;color:#1c1e21}main{width:100%;max-width:360px;margin:24px;padding:32px 28px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}h1{font-size:20px;margin:0 0 20px;text-align:center}.btn{display:block;width:100%;padding:12px;border-radius:8px;border:1px solid #dadce0;background:#fff;font-size:15px;text-align:center;text-decoration:none;color:#1c1e21;cursor:pointer}.btn+.btn{margin-top:10px}.btn-primary{background:#1a73e8;border-color:#1a73e8;color:#fff}form{margin:0}label{display:block;font-size:13px;margin:12px 0 4px;color:#5f6368}input{width:100%;padding:11px;border:1px solid #dadce0;border-radius:8px;font-size:15px}.message{margin:0 0 12px;padding:10px;border-radius:8px;background:#fce8e6;color:#c5221f;font-size:14px}.link{display:block;margin-top:16px;text-align:center;font-size:14px;color:#1a73e8;text-decoration:none}.padiem-account-line{margin:18px 0 0;text-align:center;font-size:11px;line-height:1.6;color:#5f6368}`;
 const page = (title, body, lang = 'ko') => `<!doctype html><html lang="${lang === 'en' ? 'en' : 'ko'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="referrer" content="no-referrer"><style>${pageStyle}</style></head><body><main>${body}<p class="padiem-account-line">${esc(padiemAccountLine(lang))}</p></main></body></html>`;
 const emailFields = (message) => `${message ? `<p class="message">${esc(message)}</p>` : ''}<label for="email">이메일</label><input id="email" name="email" type="email" required maxlength="255" autocomplete="username"><label for="password">비밀번호</label><input id="password" name="password" type="password" required maxlength="128" autocomplete="current-password">`;
-const loginFormPage = (action, message, lang = 'ko') => page('로그인', `<h1>이메일로 로그인</h1><form method="post" action="${esc(action)}">${emailFields(message)}<button class="btn btn-primary" type="submit">로그인</button></form>`, lang);
-const signupFormPage = (action, message, lang = 'ko') => page('회원가입', `<h1>이메일로 회원가입</h1><form method="post" action="${esc(action)}">${message ? `<p class="message">${esc(message)}</p>` : ''}<label for="name">이름(선택)</label><input id="name" name="name" type="text" maxlength="160" autocomplete="name">${emailFields('')}<button class="btn btn-primary" type="submit">회원가입</button></form>`, lang);
+const loginFormPage = (action, message, lang = 'ko', signupHref = '') => page('로그인', `<h1>이메일로 로그인</h1><form method="post" action="${esc(action)}">${emailFields(message)}<button class="btn btn-primary" type="submit">로그인</button></form>${signupHref ? `<a class="link" href="${esc(signupHref)}">이메일로 회원가입</a>` : ''}`, lang);
+const signupFormPage = (action, message, lang = 'ko', loginHref = '') => page('회원가입', `<h1>이메일로 회원가입</h1><form method="post" action="${esc(action)}">${message ? `<p class="message">${esc(message)}</p>` : ''}<label for="name">이름(선택)</label><input id="name" name="name" type="text" maxlength="160" autocomplete="name">${emailFields('')}<button class="btn btn-primary" type="submit">회원가입</button></form>${loginHref ? `<a class="link" href="${esc(loginHref)}">이메일로 로그인</a>` : ''}`, lang);
 const messagePage = (message, lang = 'ko') => page('안내', `<h1>안내</h1><p class="message" style="background:#e8f0fe;color:#1c1e21">${esc(message)}</p>`, lang);
 const htmlPage = (status, body, extra = {}) => new Response(body, { status, headers: { ...headers, 'content-type': 'text/html; charset=utf-8', 'referrer-policy': 'no-referrer', ...extra } });
 const loginChoicePage = (googleHref, formAction, signupHref, lang = 'ko') => page('로그인', `<h1>PADIEM 로그인</h1><a class="btn" href="${esc(googleHref)}">Google로 계속</a><form method="post" action="${esc(formAction)}">${emailFields('')}<button class="btn" type="submit">이메일로 로그인</button></form><a class="link" href="${esc(signupHref)}">이메일로 회원가입</a>`, lang);
@@ -186,6 +187,25 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   const passwordRpcConfigured = typeof passwordRpcSecret === 'string' && passwordRpcSecret.length >= 32 &&
     typeof passwordRpcOrigin === 'string' && /^https:\/\/[^/]+\/?$/.test(passwordRpcOrigin);
   const passwordChoiceEnabled = (client) => client?.password_login === true && passwordRpcConfigured;
+  // Last-link deletion must also remove the Chat account that owns the
+  // password credential, AFTER finalizeAccountDeletion commits the tombstone.
+  async function deleteChatAccount(productUserId) {
+    if (!passwordRpcConfigured) return;
+    const path = '/internal/account-delete';
+    const body = encoder.encode(JSON.stringify({ product_user_id: productUserId }));
+    const headers = await passwordRpcHeaders(passwordRpcSecret, path, body, now());
+    const response = await fetcher(passwordRpcOrigin.replace(/\/+$/, '') + path, { method: 'POST', redirect: 'manual', headers, body });
+    if (response.status !== 200) throw new Error('chat account delete failed');
+  }
+  async function flushPendingChatDeletions(registry, accountIdHash) {
+    if (!passwordRpcConfigured) return;
+    const pending = await registry.pendingChatAccountDeletions(accountIdHash ? { accountIdHash } : {});
+    if (!Array.isArray(pending) || !pending.length) return;
+    for (const productUserId of pending) {
+      await deleteChatAccount(productUserId);
+      await registry.completeChatAccountDeletion({ productUserId });
+    }
+  }
   async function verifyClient(params, client, current) {
     const assertion = one(params, 'client_assertion');
     if (one(params, 'client_assertion_type') !== 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer') throw new Error('bad client authentication');
@@ -229,9 +249,13 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       if (url.pathname === '/internal/account-delete/complete') {
         const accountIdHash = await digestHex(accountId);
         const completed = await registry.finalizeAccountDeletion({ accountId, accountIdHash, lockToken, now: current });
-        return completed === true
-          ? json(200, { ok: true, deleted: true })
-          : json(409, { error: 'account_deletion_lock_missing' });
+        if (completed !== true) return json(409, { error: 'account_deletion_lock_missing' });
+        try {
+          await flushPendingChatDeletions(registry, accountIdHash);
+        } catch {
+          return json(503, { error: 'account_deletion_unavailable' });
+        }
+        return json(200, { ok: true, deleted: true });
       }
       const locked = await registry.beginAccountDeletion({ accountId, lockToken, now: current, leaseSeconds: 300 });
       if (locked !== true) return json(409, { error: 'account_deletion_busy' });
@@ -310,7 +334,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
           const formAction = `/signup/password?state=${encodeURIComponent(`${object}.${stateSecret}`)}`;
           const body = brand
             ? brandSignupPage({ brand, theme, lang, formAction, loginHref: `/login?${carry}` })
-            : signupFormPage(formAction, '', lang);
+            : signupFormPage(formAction, '', lang, `/login?${carry}`);
           return htmlPage(200, body, { 'set-cookie': cookieSet });
         }
       }
@@ -362,16 +386,30 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const errorPage = (message) => htmlPage(200, register
         ? (brand
           ? brandSignupPage({ brand, theme, lang, formAction: action, loginHref: `/login?${carry}`, message })
-          : signupFormPage(action, message, lang))
+          : signupFormPage(action, message, lang, `/login?${carry}`))
         : (brand
           ? brandLoginPage({ brand, theme, lang, formAction: action, signupHref: `/signup?${carry}`, message, showGoogle: false })
-          : loginFormPage(action, message, lang)));
+          : loginFormPage(action, message, lang, `/signup?${carry}`)));
+      const registry = stateFor('google-account-registry');
+      const passwordFingerprint = await passwordIdentityFingerprint(identityKey, email);
+      // Prove deletion before touching the credential: a deleted identity is a
+      // distinct outcome from a wrong password, and it must not mint a new sub_.
+      if (!register && await registry.identityIsDeleted({ fingerprint: passwordFingerprint })) {
+        return errorPage('탈퇴한 계정입니다. 같은 이메일로 새로 가입해 주세요.');
+      }
+      if (register) {
+        try {
+          await flushPendingChatDeletions(registry);
+        } catch {
+          return htmlPage(503, messagePage('지금은 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.', lang));
+        }
+      }
       const rpcPath = register ? '/internal/password-register' : '/internal/password-verify';
       const payload = register ? { email, password, name } : { email, password };
       const rpcBody = encoder.encode(JSON.stringify(payload));
       let response;
       try {
-        response = await fetcher(passwordRpcOrigin.replace(/\/+$/, '') + rpcPath, { method: 'POST', redirect: 'manual', headers: await passwordRpcHeaders(passwordRpcSecret, rpcPath, rpcBody), body: rpcBody });
+        response = await fetcher(passwordRpcOrigin.replace(/\/+$/, '') + rpcPath, { method: 'POST', redirect: 'manual', headers: await passwordRpcHeaders(passwordRpcSecret, rpcPath, rpcBody, current), body: rpcBody });
       } catch {
         return htmlPage(503, messagePage('로그인 서비스에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.', lang));
       }
@@ -388,12 +426,13 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       if (data?.ok !== true || !/^usr_[A-Za-z0-9_-]{1,79}$/.test(data.product_user_id ?? '')) {
         return htmlPage(503, messagePage('지금은 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.', lang));
       }
+      if (register) await registry.clearIdentityDeletion({ fingerprint: passwordFingerprint });
       const pending = await diagnosed('login_state_read_failed', async () =>
         stateFor(state[0]).consumeLogin({ stateDigest: await digest(state[1]), browserDigest: await digest(browser), now: current }));
       if (!pending) return json(400, { error: 'invalid_callback' });
       if (!clients[pending.client]?.redirect_uris?.includes(pending.redirect)) return json(400, { error: 'invalid_callback' });
       const account = await diagnosed('identity_lookup_failed', async () => {
-        const result = await stateFor('google-account-registry').resolveAccount({ fingerprint: await passwordIdentityFingerprint(identityKey, email), productId: pending.client, userId: data.product_user_id, subject: email, provider: 'password', now: current });
+        const result = await registry.resolveAccount({ fingerprint: passwordFingerprint, productId: pending.client, userId: data.product_user_id, subject: email, provider: 'password', now: current, allowRecreate: register });
         if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
         return result;
       });
@@ -439,6 +478,9 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         if (!keyResponse.ok) throw new Error('google keys unavailable');
         return verifyGoogleIdToken({ token: googleToken.id_token, jwks: await keyResponse.json(), clientId: googleClientId, nonce: pending.google_nonce, now: now(), profile: profileClaimAllowlist(clients[pending.client]).length > 0 });
       });
+      if (await stateFor('google-account-registry').identityIsDeleted({ fingerprint: await identityFingerprint(identityKey, identity.sub) })) {
+        return htmlPage(403, messagePage('탈퇴한 계정입니다. 다시 시작하려면 새 계정으로 가입해 주세요.', resolveLang(request.headers.get('accept-language'))));
+      }
       const account = await diagnosed('identity_lookup_failed', async () => {
         const userId = await googleProductUserId(identity.sub);
         const fingerprint = await identityFingerprint(identityKey, identity.sub);
@@ -538,7 +580,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'setAccountStatus']);
+const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'pendingChatAccountDeletions', 'completeChatAccountDeletion']);
 export class AuthStateObject extends AuthState {
   constructor(state, env) { super(state); this.state = state; this.env = env; }
   async createCode(input) {
@@ -552,6 +594,18 @@ export class AuthStateObject extends AuthState {
     const next = this.nextAccountDeletionAuditExpiry();
     if (next && typeof this.storage.setAlarm === 'function') await this.storage.setAlarm(Math.max(Date.now() + 1000, next * 1000));
   }
+  async beginAccountDeletion(input) {
+    const locked = super.beginAccountDeletion(input);
+    if (locked && typeof this.env?.IDENTITY_AUTHORITY?.list_active_product_links_for_subject === 'function') {
+      try {
+        const result = plainRpc(await this.env.IDENTITY_AUTHORITY.list_active_product_links_for_subject({ canonical_subject_id: input.accountId }));
+        const links = Array.isArray(result?.links) ? result.links : (Array.isArray(result) ? result : []);
+        const productUserIds = links.map(link => link?.product_user_id).filter(id => typeof id === 'string' && /^usr_[A-Za-z0-9_-]{1,79}$/.test(id));
+        if (productUserIds.length) this.recordAccountChatUsers({ accountId: input.accountId, productUserIds });
+      } catch { /* prepare never fails on optional link snapshot */ }
+    }
+    return locked;
+  }
   async finalizeAccountDeletion(input) {
     const finalized = super.finalizeAccountDeletion(input);
     if (finalized) {
@@ -560,12 +614,18 @@ export class AuthStateObject extends AuthState {
     }
     return finalized;
   }
-  async resolveAccount({ fingerprint, productId, userId, subject, provider = 'google', now = Math.floor(Date.now() / 1000) }) {
+  async resolveAccount({ fingerprint, productId, userId, subject, provider = 'google', now = Math.floor(Date.now() / 1000), allowRecreate = false }) {
     // DO serialization prevents two concurrent first logins from issuing two
     // authority calls or binding one fingerprint to different accounts.
     return this.state.blockConcurrencyWhile(async () => {
+      if (!allowRecreate && this.identityIsDeleted({ fingerprint })) throw new Error('identity_deleted');
       const current = this.accountByFingerprint(fingerprint);
-      if (current && (current.state !== 'active' || productId !== 'b62')) return current;
+      if (current && (current.state !== 'active' || productId !== 'b62')) {
+        if (provider === 'password' && typeof userId === 'string' && /^usr_[A-Za-z0-9_-]{1,79}$/.test(userId)) {
+          this.recordAccountChatUsers({ accountId: current.account_id, productUserIds: [userId] });
+        }
+        return current;
+      }
       const linked = await diagnosed('identity_authority_rpc_failed', async () => {
         const request = { product_id: productId, product_user_id: userId, auth_provider: provider, provider_subject: subject };
         if (current) request.expected_canonical_subject_id = current.account_id;
@@ -581,7 +641,7 @@ export class AuthStateObject extends AuthState {
         return result;
       });
       if (current && current.account_id !== linked.link.canonical_subject_id) throw new Error('identity_conflict');
-      return diagnosed('account_mapping_storage_failed', async () => this.putAccount({ fingerprint, accountId: linked.link.canonical_subject_id, now }));
+      return diagnosed('account_mapping_storage_failed', async () => this.putAccount({ fingerprint, accountId: linked.link.canonical_subject_id, productUserId: provider === 'password' ? userId : undefined, now }));
     });
   }
   async fetch(request) {

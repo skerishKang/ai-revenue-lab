@@ -347,7 +347,7 @@ def seed_db():
     return db, accounts
 
 
-def build_app(db, *, authority=None, rpc_transport=None):
+def build_app(db, *, authority=None, rpc_transport=None, password_rpc_secret=None):
     settings = Settings.from_values(
         runtime_mode="mock",
         auth_mode="password",
@@ -356,6 +356,7 @@ def build_app(db, *, authority=None, rpc_transport=None):
         session_max_age_seconds=3600,
         lovetree_account_delete_url="https://lovetree.example/internal/account/delete",
         account_delete_rpc_secret="chat-test-shared-account-delete-secret-value-000",
+        password_rpc_secret=password_rpc_secret,
     )
     async def default_rpc_transport(**kwargs):
         payload = {"ok": True, "deleted": True}
@@ -1297,3 +1298,143 @@ def test_account_help_describes_both_deletion_paths_and_keeps_brand_wording_guar
     assert "연결 서비스 처리에 실패하면 공통 계정을 유지하고 재시도할 수 있습니다." in common_terms
     assert "CGI 쇼핑몰은 공통 계정과 연결되지 않은 별도 계정" in common_terms
     assert "이 요청은 러브트리 데이터와 러브트리의 공통 계정 연결만 삭제합니다." in lovetree_terms
+
+
+import hmac
+import time
+import uuid
+
+PASSWORD_RPC_SECRET = "chat-test-password-rpc-secret-value-000000"
+
+
+def _signed_internal_delete_call(
+    app,
+    payload: dict | bytes,
+    *,
+    secret: str = PASSWORD_RPC_SECRET,
+    at: int | None = None,
+    service_id: str | None = None,
+    proof: str | None = None,
+):
+    at_val = int(time.time()) if at is None else at
+    sid = str(uuid.uuid4()) if service_id is None else service_id
+    raw_body = (
+        payload
+        if isinstance(payload, bytes)
+        else json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    )
+    signed = b"\n".join(
+        (b"v2", b"POST", b"/internal/account-delete", str(at_val).encode("ascii"), sid.encode("utf-8"), raw_body)
+    )
+    computed = "v2=" + hmac.new(secret.encode("utf-8"), signed, hashlib.sha256).hexdigest()
+    headers = {
+        "content-type": "application/json",
+        "x-padiem-service-at": str(at_val),
+        "x-padiem-service-id": sid,
+        "x-padiem-service-proof": computed if proof is None else proof,
+    }
+
+    async def inner():
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url=BASE
+        ) as client:
+            return await client.post("/internal/account-delete", content=raw_body, headers=headers)
+
+    return asyncio.run(inner())
+
+
+def test_internal_account_delete_rpc_returns_404_when_secret_unconfigured():
+    db, accounts = seed_db()
+    app, _ = build_app(db)
+    resp = _signed_internal_delete_call(app, {"product_user_id": accounts["deleter"]})
+    assert resp.status_code == 404
+    assert resp.json() == {"error": {"code": "not_found"}}
+    assert db.conn.execute("SELECT id FROM users WHERE id=?", (accounts["deleter"],)).fetchone() is not None
+
+
+def test_internal_account_delete_rpc_rejects_bad_signature_stale_clock_replay_and_bad_payload():
+    db, accounts = seed_db()
+    app, _ = build_app(db, password_rpc_secret=PASSWORD_RPC_SECRET)
+    uid = accounts["deleter"]
+
+    bad_sig = _signed_internal_delete_call(
+        app, {"product_user_id": uid}, secret="wrong-password-rpc-secret-32chars-min-00"
+    )
+    assert bad_sig.status_code == 401
+
+    stale = _signed_internal_delete_call(
+        app, {"product_user_id": uid}, at=int(time.time()) - 301
+    )
+    assert stale.status_code == 401
+
+    bad_payload = _signed_internal_delete_call(app, {"product_user_id": "not-a-usr-id"})
+    assert bad_payload.status_code == 400
+    assert bad_payload.json()["error"]["code"] == "invalid_request"
+
+    sid = str(uuid.uuid4())
+    first = _signed_internal_delete_call(
+        app, {"product_user_id": "usr_nonexistent0000000000000000"}, service_id=sid
+    )
+    assert first.status_code == 200
+    assert first.json() == {"ok": True, "deleted": False, "already_deleted": True}
+
+    replayed = _signed_internal_delete_call(
+        app, {"product_user_id": uid}, service_id=sid
+    )
+    assert replayed.status_code == 409
+    assert replayed.json()["error"]["code"] == "rpc_replay_detected"
+    assert db.conn.execute("SELECT id FROM users WHERE id=?", (uid,)).fetchone() is not None
+
+
+def test_internal_account_delete_rpc_deletes_full_account_scope_and_is_idempotent():
+    db, accounts = seed_db()
+    app, _ = build_app(db, password_rpc_secret=PASSWORD_RPC_SECRET)
+    uid = accounts["deleter"]
+    other_before = snapshot(db, accounts)["other"]
+
+    first = _signed_internal_delete_call(app, {"product_user_id": uid})
+    assert first.status_code == 200
+    assert first.json() == {"ok": True, "deleted": True, "already_deleted": False}
+
+    after = snapshot(db, accounts)
+    assert all(count == 0 for count in after["deleter"].values())
+    assert after["other"] == other_before
+    assert db.conn.execute("SELECT id FROM users WHERE id=?", (uid,)).fetchone() is None
+    assert db.conn.execute("SELECT user_id FROM password_credentials WHERE user_id=?", (uid,)).fetchone() is None
+    assert db.conn.execute("SELECT subject FROM bookai_records WHERE subject=?", ("sub_bookai_deleter",)).fetchone() is None
+    audit = db.conn.execute("SELECT user_id_hash FROM account_deletion_audit").fetchone()
+    assert audit["user_id_hash"] == hashlib.sha256(uid.encode("utf-8")).hexdigest()
+
+    second = _signed_internal_delete_call(app, {"product_user_id": uid})
+    assert second.status_code == 200
+    assert second.json() == {"ok": True, "deleted": False, "already_deleted": True}
+
+
+def test_internal_account_delete_rpc_com2_queue_cleanup_and_failure_containment():
+    db, accounts = seed_db()
+    app, _ = build_app(db, password_rpc_secret=PASSWORD_RPC_SECRET)
+    uid = accounts["deleter"]
+    events = []
+    fail_queue = True
+
+    class QueueCleanup:
+        async def delete_account_pc_data(self, *, user_id):
+            events.append(("queue", user_id))
+            if fail_queue:
+                raise RuntimeError("queue down")
+            return True
+
+    app.state.queue_client = object()
+    app.state.pc_device_pairing_store = QueueCleanup()
+
+    failed = _signed_internal_delete_call(app, {"product_user_id": uid})
+    assert failed.status_code == 503
+    assert failed.json()["error"]["code"] == "account_delete_queue_unavailable"
+    assert db.conn.execute("SELECT id FROM users WHERE id=?", (uid,)).fetchone() is not None
+
+    fail_queue = False
+    succeeded = _signed_internal_delete_call(app, {"product_user_id": uid})
+    assert succeeded.status_code == 200
+    assert succeeded.json() == {"ok": True, "deleted": True, "already_deleted": False}
+    assert events == [("queue", uid), ("queue", uid)]
+    assert db.conn.execute("SELECT id FROM users WHERE id=?", (uid,)).fetchone() is None
