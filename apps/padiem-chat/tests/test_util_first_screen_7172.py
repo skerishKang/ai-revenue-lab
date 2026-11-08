@@ -97,10 +97,20 @@ class UtilFirstScreenContract(unittest.TestCase):
     def test_reopening_the_page_resets_the_heading(self):
         # showUtil puts the UTIL first-screen heading back: a tool's title
         # (PDF → Markdown) belongs to the moments that tool is open.
-        self.assertIn("function showUtil", UTIL_JS)
-        reset = UTIL_JS[UTIL_JS.index("function showUtil"):UTIL_JS.index("function setUtilSubmenuOpen")]
-        self.assertIn('"Util"', reset)
-        self.assertIn("자주 쓰는 문서·홍보 도구 모음", reset)
+        # #7173: the reset lives in showUtilHome, the one path the sidebar
+        # entry, ← 유틸 and the shell's util state all return through.
+        self.assertIn("function showUtilHome", UTIL_JS)
+        self.assertIn("function showUtil()", UTIL_JS)
+        enter = UTIL_JS[UTIL_JS.index("function showUtil()"):UTIL_JS.index("function openUtilScreen")]
+        self.assertIn("showUtilHome()", enter)
+        home = UTIL_JS[UTIL_JS.index("function utilHomeCopy"):UTIL_JS.index("function utilScreenCopy")]
+        self.assertIn('"Util"', home)
+        self.assertIn("유틸", home)
+        self.assertIn("자주 쓰는 문서·홍보 도구 모음", home)
+        # The back control returns through the same reset, never history.back.
+        back = UTIL_JS[UTIL_JS.index('utilBack.addEventListener'):]
+        self.assertIn("showUtil()", back[:200])
+        self.assertNotIn("history.back", UTIL_JS)
 
 
 if __name__ == "__main__":

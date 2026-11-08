@@ -542,7 +542,7 @@ html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
     .claw-result-action.is-prominent:not(:disabled), .claw-approval-approve,
     .claw-memory-approve, .claw-qc-primary, .calendar-record-submit,
     .claw-inbox-primary, #meetingStart,
-    .util-tool-open, .pdfmd-btn-primary,
+    .util-tool-open, .pdfmd-btn-primary, .util-generate,
     .app-shell[data-state="calendar"] .calendar-record-submit,
     .app-shell[data-state="meeting"] .meeting-controls #meetingStart) {
   background: #355977;
@@ -553,7 +553,7 @@ html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
     .claw-result-action.is-prominent:not(:disabled), .claw-approval-approve,
     .claw-memory-approve, .claw-qc-primary, .calendar-record-submit,
     .claw-inbox-primary, #meetingStart,
-    .util-tool-open, .pdfmd-btn-primary,
+    .util-tool-open, .pdfmd-btn-primary, .util-generate,
     .app-shell[data-state="calendar"] .calendar-record-submit,
     .app-shell[data-state="meeting"] .meeting-controls #meetingStart):not(:disabled):hover {
   background: #2e4d67;
@@ -564,7 +564,7 @@ html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
     .claw-result-action.is-prominent:not(:disabled), .claw-approval-approve,
     .claw-memory-approve, .claw-qc-primary, .calendar-record-submit,
     .claw-inbox-primary, #meetingStart,
-    .util-tool-open, .pdfmd-btn-primary,
+    .util-tool-open, .pdfmd-btn-primary, .util-generate,
     .app-shell[data-state="calendar"] .calendar-record-submit,
     .app-shell[data-state="meeting"] .meeting-controls #meetingStart):focus-visible {
   outline: 3px solid #6a9abc;

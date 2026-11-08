@@ -520,26 +520,28 @@
       </section>
       <section class="util-view" id="utilView" aria-labelledby="utilTitle" hidden>
         <header class="util-header">
+          <!-- #7173: a tool screen keeps the same page; this returns to the
+               first screen through the one reset path (showUtil). -->
+          <button type="button" class="util-back" id="utilBack" hidden>← 유틸</button>
           <div>
             <p class="standalone-view-kicker" id="utilKicker">Padiem Util</p>
             <!-- #7172: the first screen is the UTIL page — the PDF tool is one
-                 card below, and the PDF title returns only inside that tool. -->
-            <h2 id="utilTitle" class="standalone-view-title" data-locale-key="util-title">유틸</h2>
+                 card below, and the PDF title returns only inside that tool.
+                 #7173: the heading names the open tool while its screen is on. -->
+            <h2 id="utilTitle" class="standalone-view-title" data-locale-key="util-title" tabindex="-1">유틸</h2>
             <p class="standalone-view-tagline" id="utilTagline" data-locale-key="util-tagline">자주 쓰는 문서·홍보 도구 모음</p>
           </div>
         </header>
         <nav class="util-tabs" hidden aria-label="유틸 기능 선택">
-          <button class="util-tab" type="button" data-util="speech" data-kicker="Padiem Speech" data-tagline="의원3종 앱에서 엽니다">축사·인사말</button>
-          <button class="util-tab" type="button" data-util="sns" data-kicker="Padiem SNS" data-tagline="의원3종 앱에서 엽니다">SNS 홍보</button>
-          <button class="util-tab" type="button" data-util="meeting" data-kicker="Padiem Meeting" data-tagline="의원3종 앱에서 엽니다">회의정리·활동집</button>
+          <button class="util-tab" type="button" data-util="speech" data-kicker="Padiem Speech" data-tagline="행사에 맞는 축사·인사말 초안을 준비합니다">축사·인사말</button>
+          <button class="util-tab" type="button" data-util="sns" data-kicker="Padiem SNS" data-tagline="블로그·페이스북·인스타그램 초안">SNS 홍보</button>
+          <button class="util-tab" type="button" data-util="meeting" data-kicker="Padiem Meeting" data-tagline="회의 요약·책/활동집 누적 생성">회의정리·활동집</button>
           <button class="util-tab active" type="button" data-util="pdfmd" data-kicker="Padiem Util" data-tagline="PDF·ZIP을 Markdown으로 변환·비교·다운로드">PDF → Markdown</button>
         </nav>
-        <!-- #5908: the quick-run toolbox. One glanceable card row over the
-             EXISTING panels and flows: the four util cards drive the same
-             activateUtilTab switch, the two Claw cards route to the existing
-             Claw composer (its own chip stays the owner). No second engine,
-             no new routes. Flow-linked cards say so in their buttons — they
-             are not direct-run claims. -->
+        <!-- #5908/#7173: the card row is the util first screen. Every card
+             opens its tool inside this page — no external link, no Claw
+             conversation switch. Excel review is the one tool whose reader is
+             the Claw conversation itself; it opens in a new tab and says so. -->
         <section class="util-tool-grid" id="utilToolGrid" aria-label="빠른 실행 도구함">
           <div class="util-tool-card">
             <span class="util-tool-icon" aria-hidden="true">✎</span>
@@ -563,22 +565,104 @@
             <span class="util-tool-icon" aria-hidden="true">⇩</span>
             <strong class="util-tool-name">PDF → Markdown</strong>
             <span class="util-tool-desc">PDF·ZIP을 Markdown으로 변환·비교·다운로드</span>
-            <button type="button" class="util-tool-open" data-util-tool="pdfmd">이력 열기</button>
+            <button type="button" class="util-tool-open" data-util-tool="pdfmd">열기</button>
           </div>
           <div class="util-tool-card">
             <span class="util-tool-icon" aria-hidden="true">◇</span>
             <strong class="util-tool-name">견적서 초안</strong>
-            <span class="util-tool-desc">요청을 붙이면 견적서·발주서·답장 초안 — 서버에서 생성</span>
-            <button type="button" class="util-tool-open" data-util-tool="claw-quote">Claw에서 작성</button>
+            <span class="util-tool-desc">요청을 붙이면 견적서·발주서·답장 초안 — 이 화면에서 생성</span>
+            <button type="button" class="util-tool-open" data-util-tool="claw-quote">초안 열기</button>
           </div>
           <div class="util-tool-card">
             <span class="util-tool-icon" aria-hidden="true">▦</span>
             <strong class="util-tool-name">Excel 열기/검토</strong>
             <span class="util-tool-desc">XLSX 원본을 Claw 대화에서 열어 검토·작업</span>
-            <button type="button" class="util-tool-open" data-util-tool="claw-excel">Claw에서 진행</button>
+            <button type="button" class="util-tool-open" data-util-tool="claw-excel">새 탭에서 열기</button>
           </div>
         </section>
-        <div class="util-panel" id="utilPdfmdPanel"></div>
+        <p class="util-tool-notice" id="utilToolNotice" role="status" aria-live="polite" hidden></p>
+        <div class="util-panel" id="utilSpeechPanel" hidden>
+          <form class="util-form" id="utilSpeechForm">
+            <!-- 참고 글 leads the form — the SNS tool's #6098 lane language: the
+                 PC reference lives in its own titled fieldset, before 기본 정보.
+                 The #5799 grouping continues below: basics, content, tone. -->
+            <fieldset class="util-fieldset" id="utilSpeechRef">
+              <legend>참고 글</legend>
+              <!-- #5895: the shared "from my PC" picker mounts here. The button,
+                   the preview of what was brought over, and the one-line "connect
+                   your PC" notice all live in this container. -->
+              <div class="util-pc-ref-mount" id="utilSpeechPcRef"></div>
+            </fieldset>
+            <!-- #5799: the speech form follows the meeting-modes grouping
+                 pattern — same legend/border family: basics, content,
+                 tone/reference. Field names and behavior unchanged. -->
+            <fieldset class="util-fieldset">
+              <legend>기본 정보</legend>
+              <label>행사명 <input name="event" type="text" required /></label>
+              <label>행사 날짜 <input name="date" type="date" /></label>
+              <label>장소 <input name="place" type="text" /></label>
+              <label>행사 성격 <input name="nature" type="text" placeholder="예: 창립기념식" /></label>
+              <label>참석 대상 <input name="audience" type="text" /></label>
+              <label>작성자/직책 <input name="author" type="text" /></label>
+            </fieldset>
+            <fieldset class="util-fieldset">
+              <legend>내용</legend>
+              <label>주요 메시지 <textarea name="message" rows="3"></textarea></label>
+              <label>강조 내용 <textarea name="emphasis" rows="2"></textarea></label>
+            </fieldset>
+            <fieldset class="util-fieldset">
+              <legend>분량·말투·참고</legend>
+              <label>분량 <select name="length"><option value="short">짧게</option><option value="medium" selected>보통</option><option value="long">길게</option></select></label>
+              <label>말투 <select name="tone"><option value="formal" selected>공식</option><option value="warm">따뜻한</option><option value="concise">간결</option></select></label>
+              <label>기존 축사 샘플 (말투 반영) <textarea name="style" rows="4" placeholder="기존 축사/인사말 원문 붙여넣기"></textarea></label>
+            </fieldset>
+            <!-- #5727: the form area owns the two authoring actions — generate
+                 and save. The result area below carries only copy/download. -->
+            <div class="util-form-actions">
+              <button type="submit" class="util-generate">초안 생성</button>
+              <button type="button" class="util-save" id="utilSpeechSave">저장</button>
+            </div>
+          </form>
+          <div class="util-result" id="utilSpeechResult" hidden>
+            <h3>생성 결과</h3>
+            <textarea id="utilSpeechOutput" rows="12"></textarea>
+            <!-- #5727: result-area actions are copy/download only. Regenerating
+                 is re-pressing the form's 초안 생성; saving lives in the form. -->
+            <div class="util-actions">
+              <button type="button" id="utilSpeechCopy">복사</button>
+              <button type="button" id="utilSpeechDownload">TXT 다운로드</button>
+              <!-- #5895: the shared "to my PC" dialog, opened with this draft. -->
+              <button type="button" class="util-save" id="utilSpeechPcSave">내 PC에 저장</button>
+            </div>
+          </div>
+        </div>
+        <div class="util-panel" id="utilSnsPanel" hidden></div>
+        <div class="util-panel" id="utilMeetingPanel" hidden></div>
+        <!-- #7173: the quote draft is made and shown here, calling the same
+             manual-intake preview contract Claw's own chips use. -->
+        <div class="util-panel" id="utilQuotePanel" hidden>
+          <form class="util-form util-quote-form" id="utilQuoteForm">
+            <label>견적 요청
+              <textarea name="request" rows="6" required
+                        placeholder="예: ABC건설에 배관 20개, 개당 3만원으로 견적서 만들어줘"></textarea>
+            </label>
+            <div class="util-form-actions">
+              <button type="submit" class="util-generate" id="utilQuoteGenerate">초안 만들기</button>
+            </div>
+            <p class="util-quote-hint">초안은 서버가 평소와 같은 규칙으로 만듭니다. 저장·발송은 결과 아래의 보조 버튼으로 Claw 대화에서 이어갑니다.</p>
+          </form>
+          <p class="util-quote-status" id="utilQuoteStatus" role="status" aria-live="polite" hidden></p>
+          <div class="util-result" id="utilQuoteResult" hidden>
+            <h3>초안 결과</h3>
+            <textarea id="utilQuoteOutput" rows="12" readonly></textarea>
+            <div class="util-actions">
+              <button type="button" id="utilQuoteCopy">복사</button>
+              <button type="button" id="utilQuoteDownload">TXT 다운로드</button>
+              <button type="button" class="util-save" id="utilQuoteClaw">Claw 대화에서 이어가기</button>
+            </div>
+          </div>
+        </div>
+        <div class="util-panel" id="utilPdfmdPanel" hidden></div>
       </section>
       <section class="calendar-view" id="calendarView" aria-labelledby="calendarViewTitle" hidden>
         <header class="calendar-view-header">

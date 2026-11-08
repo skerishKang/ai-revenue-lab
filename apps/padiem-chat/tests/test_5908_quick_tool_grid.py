@@ -2,18 +2,19 @@
 
 The owner-approved scope: six cards (축사·인사말 / SNS 홍보 / 회의정리·활동집 /
 PDF → Markdown / 견적서 초안 / Excel 열기·검토) inside the existing util view.
-The four util cards reuse the same ``activateUtilTab`` switch the sidebar
-submenu drives; the two Claw cards route to the existing Claw workspace and
-its own chip handler. No second engine, no new routes.
+#7173: every card opens its tool's screen inside this page through the one
+``openUtilScreen`` switch, and the authoring screens reuse the existing
+contracts. The single card Chat cannot host is Excel review, whose reader is
+the Claw conversation; it says «새 탭에서 열기» and opens a new tab instead of
+moving the page.
 
-The flow-linked cards must say so in their buttons ("Claw에서 …") — they are
-not direct-run claims. The PDF → Markdown card describes the open conversion
-surface; its only pause sentence is the one the panel shows when the server
-actually answers that new work is blocked (#5710 gate).
+The PDF → Markdown card describes the open conversion surface; its only pause
+sentence is the one the panel shows when the server actually answers that new
+work is blocked (#5710 gate).
 
-Static assertions pin the markup/CSS contracts; the Node harness executes the
-REAL util-menu.js against the same fake-DOM host the #5608/#5785 suites use
-and proves the actual routing.
+Static assertions pin the markup/CSS contracts. The executed routing (screen
+opens, ← 유틸 returns, no navigation) is browser-level in
+browser_util_inapp_screens_7173.py.
 """
 
 from __future__ import annotations
@@ -58,10 +59,11 @@ def test_grid_sits_inside_the_util_view_with_six_cards() -> None:
 
 
 def test_flow_linked_cards_do_not_claim_direct_run() -> None:
-    # The two flow-linked cards name their destination instead of pretending
-    # to execute here; the three direct util cards keep the plain 열기 wording.
-    assert _card_button_label("claw-quote") == "Claw에서 작성"
-    assert _card_button_label("claw-excel") == "Claw에서 진행"
+    # #7173: the quote card now runs in this page (its own screen), so it says
+    # what it opens instead of naming another product. Excel review is the one
+    # surface Chat cannot host, and its button names that destination.
+    assert _card_button_label("claw-quote") == "초안 열기"
+    assert _card_button_label("claw-excel") == "새 탭에서 열기"
     assert _card_button_label("speech") == "열기"
     assert _card_button_label("sns") == "열기"
     assert _card_button_label("meeting") == "열기"
@@ -79,7 +81,7 @@ def test_pdfmd_card_describes_open_conversion() -> None:
     assert "일시 중단" not in pdfmd
     assert "새 업로드는 잠시 멈춤" not in pdfmd
     assert "PDF·ZIP을 Markdown으로 변환·비교·다운로드" in pdfmd
-    assert _card_button_label("pdfmd") == "이력 열기"
+    assert _card_button_label("pdfmd") == "열기"
 
 
 def test_pdfmd_tab_tagline_matches_the_card_copy() -> None:
@@ -101,12 +103,14 @@ def test_util_menu_routes_cards_through_the_existing_switch() -> None:
     js = UTIL_MENU_JS.read_text(encoding="utf-8")
     assert 'document.getElementById("utilToolGrid")' in js
     assert 'querySelectorAll("[data-util-tool]")' in js
-    # The util cards reuse activateUtilTab; the sidebar highlight keeps its
-    # single owner (markActiveUtilSubmenuItem), exactly like the submenu rows.
-    assert "activateUtilTab(tab);" in js
-    assert "markActiveUtilSubmenuItem(key);" in js
-    # The Claw cards go through the existing Claw nav button and the existing
-    # quote chip — no duplicated Claw state inside util-menu.js.
+    # #7173: the cards reuse the one openUtilScreen switch; the sidebar
+    # highlight keeps its single owner (markActiveUtilSubmenuItem), exactly
+    # like the submenu rows.
+    assert "function openUtilScreen(key)" in js
+    assert "openUtilScreen(key === \"claw-quote\" ? \"quote\" : key)" in js
+    assert "markActiveUtilSubmenuItem(key === \"quote\"" in js
+    # The quote result's one Claw bridge uses the existing nav button and
+    # chip — no duplicated Claw state inside util-menu.js.
     assert 'document.getElementById("clawNavButton")' in js
     assert 'document.getElementById("clawQuoteCard")' in js
 

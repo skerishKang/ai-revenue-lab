@@ -1,17 +1,20 @@
-"""2026-11-01: the three 의원3종 tools have one home — /apps/council/.
+"""2026-11-01 unification + 2026-11-08 #7173 reversal of its Chat side.
 
-Chat keeps the util page shell and the PDF → Markdown menu. The council entries
-leave for the independent app with the tool in the fragment (same session
-cookie, no second login), and the retired councillor profile screen is a
-redirect. These tests execute the shipped util-menu.js on a fake DOM for the
-link behaviour and read the shipped route for the redirect.
+The three 의원3종 tools keep ONE product surface, /apps/council/ — that app,
+its store and its PC bridge stay exactly as shipped. What changed is Chat's
+util entry: #6562 made the cards navigate to the council app, and the Owner's
+2026-11-08 request (#7173) is that pressing a util card must not leave the app
+or jump into a Claw conversation. Chat's util page therefore hosts its own
+screens again, calling the same backend contracts (POST /api/chat/stream,
+/api/projects files, /api/claw/manual-intake/preview) without a second store.
+
+These tests pin the static shape. The executed behaviour — a screen opens, ←
+유틸 returns, the document is never replaced — is browser-level in
+browser_util_inapp_screens_7173.py.
 """
 
 from __future__ import annotations
 
-import json
-import shutil
-import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,68 +23,50 @@ UTIL_MENU = STATIC / "util-menu.js"
 INDEX_HTML = STATIC / "index.html"
 UTIL_CSS = STATIC / "util-menu.css"
 APP_JS = STATIC / "app.js"
-HARNESS = ROOT / "tests" / "_council_unify_harness.js"
 
 
-def run_util_menu() -> dict:
-    node = shutil.which("node")
-    assert node, "node runtime is required for the util-menu harness"
-    completed = subprocess.run(
-        [node, str(HARNESS), str(UTIL_MENU)],
-        capture_output=True, text=True, encoding="utf-8", cwd=str(ROOT), check=False,
-    )
-    assert completed.stdout.strip(), completed.stdout + completed.stderr
-    result = json.loads(completed.stdout)
-    assert result["ok"] is True, result
-    return result["observation"]
-
-
-def test_the_three_council_entries_leave_for_the_independent_app() -> None:
-    observed = run_util_menu()
-    assert observed["assigned"] == [
-        "/apps/council/#speech",
-        "/apps/council/#sns",
-        "/apps/council/#meeting",
-        "/apps/council/#sns",
-        "/apps/council/#meeting",
-    ]
-
-
-def test_pdf_to_markdown_still_opens_inside_chat() -> None:
-    observed = run_util_menu()["pdfmd"]
-    assert observed["assigned"] == []
-    assert observed["initialized"] == ["utilPdfmdPanel"]
-    assert observed["panelHidden"] is False
-    assert observed["title"] == "PDF → Markdown"
-
-
-def test_the_council_screens_and_their_code_left_the_chat_bundle() -> None:
+def _util_section() -> str:
     html = INDEX_HTML.read_text(encoding="utf-8")
-    js = UTIL_MENU.read_text(encoding="utf-8")
-    css = UTIL_CSS.read_text(encoding="utf-8")
-    for gone in ("utilSpeechPanel", "utilSnsPanel", "utilMeetingPanel",
-                 "utilSpeechForm", "utilSpeechOutput", "councillor/util-entry-adapter.js"):
-        assert gone not in html, gone
-    for gone in ("utilSpeechForm", "utilSnsPanel", "buildSns", "buildMeeting",
-                 "apiChat(", "PC_REF_COPY", "saveProjectFile"):
-        assert gone not in js, gone
-    for gone in ("#utilSpeechPanel", ".util-photo", ".util-sns-tab", ".util-pc-ref",
-                 ".util-save-choice"):
-        assert gone not in css, gone
-    # The two utilities that still live in Chat keep their surface.
-    assert 'id="utilPdfmdPanel"' in html
-    assert "initPdfMdUtility" in js
-    assert ".pdfmd-shell" in css
+    return html[html.index('id="utilView"') : html.index('id="calendarView"')]
 
 
-def test_the_council_links_are_the_only_destination_and_carry_no_authority() -> None:
+def test_the_util_page_hosts_each_tool_screen() -> None:
+    section = _util_section()
+    for panel in ("utilSpeechPanel", "utilSnsPanel", "utilMeetingPanel",
+                  "utilQuotePanel", "utilPdfmdPanel"):
+        assert f'id="{panel}"' in section, panel
+    # The back control is part of the page, not a browser-history gesture.
+    assert 'id="utilBack"' in section
+    assert "← 유틸" in section
+
+
+def test_the_cards_do_not_leave_the_app() -> None:
     js = UTIL_MENU.read_text(encoding="utf-8")
-    assert 'speech: "/apps/council/#speech"' in js
-    assert 'sns: "/apps/council/#sns"' in js
-    assert 'meeting: "/apps/council/#meeting"' in js
-    # Same-origin navigation only: no token, user id or query parameter.
-    assert "location.assign" in js
-    assert "?" not in js.split("COUNCIL_TOOL_HREF", 1)[1].split("}", 1)[0]
+    # #7173: no link out, whether to the council app or anywhere else.
+    assert "/apps/council" not in js
+    assert "location.assign" not in js
+    assert "location.href" not in js
+    # The one switch that opens a tool screen.
+    assert "function openUtilScreen(key)" in js
+
+
+def test_the_screens_reuse_the_existing_backend_contracts() -> None:
+    js = UTIL_MENU.read_text(encoding="utf-8")
+    # The in-page tool code is the shipped util logic moved back into the page:
+    # generation, storage and the quote preview keep their existing routes.
+    assert '"/api/chat/stream"' in js
+    assert '"/api/projects"' in js
+    assert '"/api/claw/manual-intake/preview"' in js
+    # The Claw conversation is reachable from exactly one place: the quote
+    # result's secondary action.
+    assert js.count("clawNavButton") == 1
+
+
+def test_the_council_app_itself_is_untouched() -> None:
+    council = (ROOT.parent / "padiem-council-apps" / "static" / "council-app.js").read_text(
+        encoding="utf-8")
+    assert 'COMPUTER_CONNECT_HREF = "/#padiem-connectors"' in council
+    assert "/api/chat/stream" in council
 
 
 def test_the_retired_councillor_screen_is_gone_and_the_alias_redirects() -> None:
@@ -105,3 +90,11 @@ def test_the_council_connect_button_has_a_connectors_deep_link() -> None:
     assert "openConnectorsView()" in app_js.split("CONNECTORS_ROUTE_HASH", 1)[1]
     council = (ROOT.parent / "padiem-council-apps" / "static" / "council-app.js").read_text(encoding="utf-8")
     assert 'COMPUTER_CONNECT_HREF = "/#padiem-connectors"' in council
+
+
+def test_the_util_css_keeps_the_legacy_panel_surface() -> None:
+    css = UTIL_CSS.read_text(encoding="utf-8")
+    for selector in ("#utilSpeechPanel", "#utilSnsPanel", "#utilMeetingPanel"):
+        assert selector in css, selector
+    assert ".util-panel {" in css
+    assert ".util-back" in css

@@ -1,9 +1,9 @@
 """#5608 follow-up: the sidebar Util entry expands into its four rows.
 
-2026-11-01: the three 의원3종 rows leave for /apps/council/ with the tool in
-the fragment; only PDF → Markdown stays inside Chat. The disclosure, its
-keyboard/touch styling and the one-active-row highlight are unchanged.
-The executed link behaviour lives in test_council_unification_261101.py.
+#7173 (2026-11-08): every row opens that tool's own screen inside the util
+view — none of them leaves for another app. The disclosure, its keyboard/touch
+styling and the one-active-row highlight are unchanged. The executed
+open/back behaviour is browser-level in browser_util_inapp_screens_7173.py.
 """
 
 from __future__ import annotations
@@ -50,7 +50,10 @@ def test_duplicate_in_page_tabs_are_hidden_not_deleted() -> None:
 
 def test_util_menu_js_routes_the_submenu_through_one_switch() -> None:
     js = UTIL_MENU_JS.read_text(encoding="utf-8")
-    assert "function activateUtilTab(tab)" in js
+    # #7173: one switch opens a tool screen; the submenu, the hidden tabs and
+    # the first-screen cards all go through it and none of them navigates.
+    assert "function openUtilScreen(key)" in js
+    assert "if (openUtilScreen(key))" in js, "the sidebar rows open the tool screen"
     assert "markActiveUtilSubmenuItem" in js
     assert "setUtilSubmenuOpen" in js
     assert 'setAttribute("aria-expanded", open ? "true" : "false")' in js
