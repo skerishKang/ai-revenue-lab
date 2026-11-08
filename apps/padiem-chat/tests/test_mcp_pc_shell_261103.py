@@ -522,9 +522,12 @@ def test_the_shell_wait_poll_interval_grows_and_caps_at_five_seconds(monkeypatch
     ))
 
     assert result["status"] == "running"
-    # The polls start fast and grow 2× up to the 5 s cap.
-    assert sleeps[:4] == [0.5, 1.0, 2.0, 4.0]
-    assert max(sleeps) <= 5.0
+    # #7131: the polls start fast and grow 2× up to the 5 s cap. asyncio.sleep
+    # is process-global, so an unrelated retry cadence (0.1 s) from another
+    # task can land in this list; assert the poll values this loop produces.
+    poll_sleeps = [seconds for seconds in sleeps if seconds >= 0.5]
+    assert poll_sleeps[:4] == [0.5, 1.0, 2.0, 4.0]
+    assert max(poll_sleeps) <= 5.0
 
 
 def test_the_shell_wait_ends_the_moment_the_job_finishes(monkeypatch):
