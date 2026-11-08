@@ -36,6 +36,15 @@ class Packaging(unittest.TestCase):
         hours = (HERE / "windows" / "check-active-hours.ps1").read_text(encoding="utf-8")
         self.assertIn("if (-not $Apply)", hours)
         self.assertLess(hours.index("if (-not $Apply)"), hours.index("New-ItemProperty"))
+        # 대표 결정 2026-11-08: the nightly restart window is 04:00-10:00, the
+        # narrowest the platform allows (active hours are capped at 18h), and a
+        # signed-in session must not hold the restart back.
+        self.assertIn("$StartHour = 10", hours)
+        self.assertIn("$EndHour = 4", hours)
+        self.assertIn("NoAutoRebootWithLoggedOnUsers", hours)
+        self.assertIn("RESTART_WINDOW=PASS", hours)
+        self.assertLess(hours.index("if (-not $Apply)"),
+                        hours.index("-Name NoAutoRebootWithLoggedOnUsers -PropertyType"))
         wsl = (HERE / "windows" / "check-wslconfig.ps1").read_text(encoding="utf-8")
         self.assertIn("vmIdleTimeout", wsl)
         self.assertIn("existing file left untouched", wsl)
@@ -83,6 +92,25 @@ class Packaging(unittest.TestCase):
         for forbidden in ("systemctl restart", "systemctl start", "systemctl stop", "systemctl enable"):
             self.assertNotIn(forbidden, source)
         self.assertNotIn("sqlite3", source)
+
+    def test_restart_window_doc_matches_the_script_and_the_runbook(self):
+        """The one-pager, the script defaults and the runbook state one window."""
+        repo = HERE.parents[2]
+        doc = (repo / "docs" / "operations"
+               / "COM2_RESTART_AND_BACKUP_ONE_PAGE_20261108.md").read_text(encoding="utf-8")
+        runbook = (repo / "docs" / "operations" / "COM2_BOOT_RECOVERY_RUNBOOK.md").read_text(
+            encoding="utf-8")
+        hours = (HERE / "windows" / "check-active-hours.ps1").read_text(encoding="utf-8")
+        for source in (doc, runbook):
+            self.assertIn("10:00–04:00", source)
+            self.assertIn("04:00–10:00", source)
+        self.assertIn("NoAutoRebootWithLoggedOnUsers", doc)
+        self.assertIn("$StartHour = 10", hours)
+        self.assertIn("$EndHour = 4", hours)
+        # The backup the document points at is the shipped one.
+        self.assertIn("/mnt/d/padiem/chat-com2/backups", doc)
+        self.assertIn("padiem-chat-com2-backup.timer", doc)
+        self.assertIn("offsite.py restore", doc)
 
 
 class PowerShellSyntax(unittest.TestCase):
