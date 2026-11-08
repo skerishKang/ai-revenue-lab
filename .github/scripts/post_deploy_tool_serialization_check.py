@@ -85,6 +85,11 @@ def verdict(app_root: Path) -> tuple[str, str]:
     """Return ``(verdict, bounded code)`` for one installed chat app root."""
 
     sys.path.insert(0, str(app_root))
+    # padiem-chat-com2.service runs with WorkingDirectory=<installed root>. An
+    # import that reads a path relative to the process directory has to see the
+    # same files here; the check process exits after this verdict.
+    if app_root.is_dir():
+        os.chdir(app_root)
     sys.modules.pop("app.chat_connector_tools", None)
     sys.modules.pop("app", None)
     try:

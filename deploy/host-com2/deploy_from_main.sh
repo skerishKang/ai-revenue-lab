@@ -2015,10 +2015,19 @@ run_deploy() {
     tools_out=$("$chat_venv_python" "$staged/.github/scripts/post_deploy_tool_serialization_check.py" \
       --app-root "$chat_root" --env-file "$chat_env_file" 2>/dev/null) || true
     say "$tools_out"
-    case "$tools_out" in
+    # #7155's check prints TOOLS_SERIALIZATION_ENV_FILE=... BEFORE the verdict.
+    # Matching the raw multi-line output against a leading PASS*/FAIL* pattern
+    # therefore never matched and every result became tools_serialization:ERROR
+    # (measured on the 10th release, main c523d06a). Read the last bounded
+    # verdict line instead; no verdict line means the check itself did not run.
+    tools_verdict=$(printf '%s\n' "$tools_out" \
+      | grep -E '^TOOLS_SERIALIZATION=(PASS|FAIL|ERROR)([[:space:]]|$)' \
+      | tail -n 1 || true)
+    case "$tools_verdict" in
       TOOLS_SERIALIZATION=PASS*) tools_serialization=PASS ;;
       TOOLS_SERIALIZATION=FAIL*) tools_serialization=FAIL; failed=1 ;;
-      *) tools_serialization=ERROR ;;
+      TOOLS_SERIALIZATION=ERROR*) tools_serialization=ERROR ;;
+      *) tools_serialization=ERROR; say 'TOOLS_SERIALIZATION_ERROR=no_verdict_line' ;;
     esac
   fi
 

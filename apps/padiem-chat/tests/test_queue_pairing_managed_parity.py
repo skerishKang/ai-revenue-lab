@@ -69,9 +69,34 @@ def _db():
     return connection
 
 
+def _queue_service():
+    """Load apps/padiem-mesh-queue/service.py by path, never by bare name.
+
+    A full pytest run already holds a different top-level ``service`` module in
+    ``sys.modules`` (apps/padiem-broker/service.py is imported the same way by
+    test_broker_loopback_v2_roundtrip_261031, and the chat suite has its own
+    ``service`` historical entry points). ``import service`` then returned the
+    wrong module and these two tests died with AttributeError: module 'service'
+    has no attribute 'create_app'. The unique name mirrors the loader the other
+    mesh-queue parity checks use for schema.py and internal_store.py.
+    """
+    name = "mesh_queue_service_managed_parity"
+    module = sys.modules.get(name)
+    if module is not None:
+        return module
+    spec = importlib.util.spec_from_file_location(name, QUEUE / "service.py")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    try:
+        spec.loader.exec_module(module)
+    except BaseException:
+        sys.modules.pop(name, None)
+        raise
+    return module
+
+
 def _queue_app(database):
-    import service
-    return service.create_app(
+    return _queue_service().create_app(
         connection=database, channel_secret=SECRET, mode="mesh",
         ownership_map=json.dumps([{"account_ref": "acct-1", "device_id": "device-1",
                                    "node_ref": "node//NEWPC", "root_ref": "C:",
