@@ -6521,7 +6521,7 @@
   if (connectorsDialogClose) connectorsDialogClose.addEventListener("click", closeConnectorsDialog);
   if (connectorsRetry) connectorsRetry.addEventListener("click", () => void loadConnectorStatus());
   document.addEventListener("padiem:refresh-connector-status", () => void loadConnectorStatus());
-  const calendarConnectButton = googleCalendarConnectButton();
+  const calendarConnectButton = window.PadiemChatCalendarModule ? googleCalendarConnectButton() : null;
   if (calendarConnectButton) calendarConnectButton.addEventListener("click", () => {
     if (calendarConnectButton.dataset.calendarAction === "activate-read") {
       void activateGoogleCalendarRead();
