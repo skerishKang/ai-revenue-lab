@@ -471,8 +471,11 @@ def test_the_account_settings_offer_the_change_in_the_served_markup():
     assert 'name="new_password"' in html
     assert re.search(r'id="passwordChangeNew"[^>]*minlength="8"', html)
     assert re.search(r'id="passwordChangeNew"[^>]*maxlength="128"', html)
-    # The settings entry is hidden until the server reports a password account.
-    assert 'id="accountSettingsSection" hidden' in html
+    # The advanced settings page carries the password block; it stays hidden
+    # until the server reports a password account.
+    assert 'id="advancedAccountSection" hidden' in html
+    assert 'id="accountPasswordActions" hidden' in html
+    assert html.index('id="advancedAccountSection"') < html.index('id="passwordChangeOpen"')
 
 
 def test_the_browser_posts_only_the_two_password_fields():

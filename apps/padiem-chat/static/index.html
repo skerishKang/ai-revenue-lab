@@ -286,7 +286,7 @@
             <button class="settings-action" id="clawPushToggle" type="button" aria-pressed="false" data-locale-key="claw-push-enable">이 기기에서 알림 받기</button>
             <p class="claw-push-status" id="clawPushStatus" aria-live="polite" aria-atomic="true"></p>
           </section>
-          <section class="settings-section" aria-labelledby="accountTitle" id="accountSettingsSection">
+          <section class="settings-section" data-locale-aria-label="account-section" aria-label="계정" id="accountSettingsSection">
             <div class="settings-actions">
               <button class="settings-action" id="settingsLogoutButton" type="button" data-locale-key="logout">로그아웃</button>
             </div>
@@ -737,6 +737,7 @@
             <button type="button" class="advanced-menu-link" data-advanced-menu="account" data-locale-key="pc-managed-page-account">계정</button>
           </nav>
           <div class="advanced-content">
+          <div class="advanced-page-block" data-advanced-block="pc">
             <h3 data-locale-key="pc-managed-page-pc">내 PC</h3>
             <p class="settings-label" data-locale-key="pc-links-title">연결된 PC</p>
             <ul class="mcp-settings-list" id="mcpGatewayPcLinks" data-locale-aria-label="pc-links-list" aria-label="연결된 PC"></ul>
@@ -769,6 +770,8 @@
               <button type="button" class="settings-action" id="pcDelegationAdd" data-locale-key="pc-delegation-add" disabled>규칙 저장</button>
             </div>
           </section>
+          </div>
+          <div class="advanced-page-block" data-advanced-block="ai" hidden>
             <h3 data-locale-key="pc-managed-page-ai">연결된 AI</h3>
           <section class="settings-section mcp-gateway-settings" id="mcpGatewaySettings" aria-labelledby="mcpGatewayTitle">
             <h3 id="mcpGatewayTitle" data-locale-key="mcp-settings-title">외부 AI 연결</h3>
@@ -808,9 +811,14 @@
               <ul class="mcp-settings-list" id="mcpGatewayManagedList" data-locale-aria-label="pc-managed-list" aria-label="PC 연결"></ul>
             </div>
           </section>
-            <h3 data-locale-key="pc-managed-page-account">계정</h3>
-          <section class="settings-section" aria-labelledby="accountTitle" id="accountSettingsSection" hidden>
-            <h3 id="accountTitle" data-locale-key="account-title">계정</h3>
+          </div>
+          <div class="advanced-page-block" data-advanced-block="account" hidden>
+            <h3 id="accountTitle" data-locale-key="pc-managed-page-account">계정</h3>
+          <section class="settings-section" aria-labelledby="dataSettingsTitle" id="dataSettingsSection">
+            <p class="settings-label" id="dataSettingsTitle" data-locale-key="data-settings-title">데이터 관리</p>
+            <div class="settings-actions" id="dataSettingsActions"></div>
+          </section>
+          <section class="settings-section" aria-labelledby="accountTitle" id="advancedAccountSection" hidden>
             <div class="settings-actions" id="accountPasswordActions" hidden>
               <button class="settings-action" id="passwordChangeOpen" type="button" data-locale-key="password-change-open">비밀번호 변경</button>
             </div>
@@ -830,10 +838,8 @@
               <button class="settings-action settings-action-danger" id="accountSharedDeleteButton" type="button" data-locale-key="account-shared-delete-button" disabled>모든 서비스 탈퇴</button>
               <p class="auth-error" id="accountSharedDeleteError" role="alert" hidden></p>
             </div>
-            <div class="settings-actions" id="dataSettingsActions"></div>
-            <div class="settings-actions">
-            </div>
           </section>
+          </div>
           </div>
         </div>
       </section>

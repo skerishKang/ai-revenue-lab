@@ -30,6 +30,7 @@
   const settingsDialog = document.getElementById("settingsDialog");
   const settingsCloseButton = document.getElementById("settingsCloseButton");
   const accountSettingsSection = document.getElementById("accountSettingsSection");
+  const advancedAccountSection = document.getElementById("advancedAccountSection");
   const accountPasswordActions = document.getElementById("accountPasswordActions");
   // #6659: account self-deletion. The server owns the authority and
   // the exact-email confirm; the browser only mirrors the same gate.
@@ -1824,6 +1825,11 @@
     if (accountSettingsSection) {
       accountSettingsSection.hidden = !authenticated;
     }
+    // The advanced settings page carries the same account entries; its data
+    // export section stays outside this gate so guests can export too.
+    if (advancedAccountSection) {
+      advancedAccountSection.hidden = !authenticated;
+    }
     if (accountPasswordActions) {
       accountPasswordActions.hidden = !(authenticated && authState.account_method === "password");
     }
@@ -1895,7 +1901,9 @@
       if (advancedSettingsView) advancedSettingsView.hidden = true;
       const automationView = document.getElementById("automationView");
       if (automationView) automationView.hidden = true;
-      if (shell && (shell.dataset.state === "connectors" || shell.dataset.state === "automation")) {
+      if (shell && (shell.dataset.state === "connectors"
+        || shell.dataset.state === "automation"
+        || shell.dataset.state === "settings")) {
         shell.dataset.state = "home";
         setNavActive();
       }
@@ -4326,9 +4334,15 @@
     profileToggle.setAttribute("aria-expanded", "false");
   }
   const advancedSettingsView = document.getElementById("advancedSettingsView");
+  // The full page opens on top of the screen the user came from (home, chat or
+  // claw). Its back entry must return there instead of assuming home.
+  let advancedSettingsReturnState = null;
   function openAdvancedSettingsView() {
     if (!advancedSettingsView) { openSettings(); return; }
     closeSettings();
+    if (shell.dataset.state && shell.dataset.state !== "settings") {
+      advancedSettingsReturnState = shell.dataset.state;
+    }
     advancedSettingsView.hidden = false;
     shell.dataset.state = "settings";
     setNavActive();
@@ -4338,7 +4352,8 @@
   function closeAdvancedSettingsView() {
     if (!advancedSettingsView) return;
     advancedSettingsView.hidden = true;
-    shell.dataset.state = "home";
+    shell.dataset.state = advancedSettingsReturnState || "home";
+    advancedSettingsReturnState = null;
     setNavActive();
     window.dispatchEvent(new CustomEvent("padiem:advanced-settings-close"));
   }
@@ -4485,6 +4500,14 @@
   });
   const advancedSettingsBack = document.getElementById("advancedSettingsBack");
   if (advancedSettingsBack) advancedSettingsBack.addEventListener("click", () => { closeAdvancedSettingsView(); });
+  // Escape takes the same close path as the back entry. An open dialog inside
+  // the page (password change, deletes) keeps Escape for itself.
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || event.isComposing) return;
+    if (!advancedSettingsView || advancedSettingsView.hidden) return;
+    if (document.querySelector("dialog[open]")) return;
+    closeAdvancedSettingsView();
+  });
   const advancedMenuButtons = [...document.querySelectorAll(".advanced-menu-link")];
   const advancedPageBlocks = [...document.querySelectorAll(".advanced-page-block")];
   function selectAdvancedMenu(key) {
@@ -4651,6 +4674,11 @@
   settingsDialog.addEventListener("cancel", (event) => {
     event.preventDefault();
     closeSettings();
+  });
+  // The dialog element is the panel itself, so a backdrop click reports the
+  // dialog as the target. Any click inside the panel hits a descendant first.
+  settingsDialog.addEventListener("click", (event) => {
+    if (event.target === settingsDialog) closeSettings();
   });
   settingsCloseButton.addEventListener("click", closeSettings);
   sidebarCollapseButton?.addEventListener("click", () => setSidebarCollapsed(true));

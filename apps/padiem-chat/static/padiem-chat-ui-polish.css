@@ -631,6 +631,11 @@ html body #meetingStart:disabled {
   gap: 20px;
 }
 
+.settings-advanced-view .advanced-page-block {
+  display: grid;
+  gap: 20px;
+}
+
 .settings-advanced-view .advanced-page-block[hidden] {
   display: none;
 }
@@ -644,21 +649,6 @@ html body #meetingStart:disabled {
     flex-wrap: wrap;
     min-width: 0;
   }
-}
-
-
-
-/* ── 고급 설정 페이지 표시 규칙 (settings-advanced-view) ─────────────────────
- * standalone-views.css는 data-state별 표시 규칙을 connectors·automation·
- * meeting에만 둔다. 고급 설정(#padiem-settings)도 같은 셸 상태로 표시한다:
- * app.js가 data-state="settings"를 설정하고 이 규칙이 보이게 한다.
- */
-.app-shell[data-state="settings"] .settings-advanced-view {
-  display: flex;
-}
-
-.app-shell:not([data-state="settings"]) .settings-advanced-view {
-  display: none !important;
 }
 
 
