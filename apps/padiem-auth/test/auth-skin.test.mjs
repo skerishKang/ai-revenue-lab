@@ -200,13 +200,26 @@ test('signup uses the same brand card, theme carry and decision line', async () 
   assert.equal(page.response.status, 200);
   assert.ok(page.html.includes('<body class="garden">'));
   assert.ok(page.html.includes('이메일로 회원가입'));
-  assert.ok(page.html.includes('PADIEM 계정 하나로 LoveTree와 Chat을 함께 써요.'));
+  assert.ok(!page.html.includes('PADIEM 계정 하나로 LoveTree와 Chat을 함께 써요.'));
   assert.ok(page.html.includes(ACCOUNT_LINE_KO));
   assert.ok(page.html.includes('name="name"'));
   const loginHref = page.html.match(/class="alt-link" href="([^"]+)"/)?.[1] || '';
   assert.ok(loginHref.startsWith('/login?'));
   assert.ok(loginHref.includes('lt_theme=garden'));
   assertNoExternalRequest(page.html);
+});
+
+test('the brand screens state PADIEM only in the eyebrow and the footer', async () => {
+  const f = await setup();
+  for (const path of ['/login', '/signup']) {
+    const page = await f.begin(path, 'lovetree-4-0');
+    assert.equal(page.response.status, 200, path);
+    assert.ok(page.html.includes('<p class="eyebrow">PADIEM 계정</p>'), path);
+    assert.ok(page.html.includes(ACCOUNT_LINE_KO), path);
+    assert.ok(!page.html.includes('class="lead"'), path);
+    assert.ok(!page.html.includes('PADIEM 계정으로 Chat'), path);
+    assert.ok(!page.html.includes('PADIEM 계정 하나로 LoveTree'), path);
+  }
 });
 
 test('a failed email login re-renders the same brand without trusting the submitted brand', async () => {
@@ -241,6 +254,7 @@ test('the PADIEM account line is present in Korean and English on every screen',
   assert.ok(loginEn.html.includes('Sign in to LoveTree'));
   assert.ok(loginEn.html.includes(ACCOUNT_LINE_EN));
   assert.ok(loginEn.html.includes('Continue with Google'));
+  assert.ok(!loginEn.html.includes('One PADIEM account also works'));
 
   const signupEn = await f.begin('/signup', 'lovetree-4-0', {}, en);
   assert.ok(signupEn.html.includes(ACCOUNT_LINE_EN));

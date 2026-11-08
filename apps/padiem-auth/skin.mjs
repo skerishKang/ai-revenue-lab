@@ -19,9 +19,7 @@ export const AUTH_BRANDS = Object.freeze({
     strings: Object.freeze({
       ko: Object.freeze({
         loginTitle: 'LoveTree에 로그인',
-        loginLead: 'PADIEM 계정으로 Chat 등 다른 서비스도 함께 쓸 수 있어요.',
         signupTitle: '이메일로 회원가입',
-        signupLead: 'PADIEM 계정 하나로 LoveTree와 Chat을 함께 써요.',
         eyebrow: 'PADIEM 계정',
         google: 'Google 계정으로 계속',
         divider: '또는 이메일로',
@@ -36,9 +34,7 @@ export const AUTH_BRANDS = Object.freeze({
       }),
       en: Object.freeze({
         loginTitle: 'Sign in to LoveTree',
-        loginLead: 'One PADIEM account also works for Chat and the other PADIEM services.',
         signupTitle: 'Create your account',
-        signupLead: 'One PADIEM account for LoveTree and Chat.',
         eyebrow: 'PADIEM account',
         google: 'Continue with Google',
         divider: 'or with email',
@@ -129,9 +125,8 @@ body.garden .brand small{color:var(--lt-gold);font-family:var(--lt-ui);letter-sp
 body.garden .auth-card{background:var(--lt-paper);color:var(--lt-ink);border-color:var(--lt-gold-line);box-shadow:var(--lt-garden-shadow),0 0 0 1px var(--lt-gold-line)}
 .eyebrow{margin:0 0 8px;color:var(--lt-muted);font-size:10px;font-weight:700;letter-spacing:.2em}
 body.garden .eyebrow{color:var(--lt-rose-ink)}
-h1{margin:0;font-size:clamp(28px,4vw,34px);line-height:1.25;letter-spacing:-.04em;font-weight:600}
+h1{margin:0 0 24px;font-size:clamp(28px,4vw,34px);line-height:1.25;letter-spacing:-.04em;font-weight:600}
 body.garden h1{font-family:var(--lt-reading);font-size:clamp(30px,4.2vw,36px);font-weight:700;letter-spacing:.01em}
-.lead{margin:10px 0 24px;color:var(--lt-muted);font-size:13px;line-height:1.75;overflow-wrap:anywhere}
 .btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:48px;padding:0 18px;border:1px solid transparent;border-radius:var(--lt-r-pill);font-size:15px;font-weight:600;line-height:1.2;text-align:center;text-decoration:none;cursor:pointer}
 .btn.primary{background:var(--lt-primary);color:var(--lt-primary-ink)}
 .btn.primary:hover{filter:brightness(1.03)}
@@ -154,7 +149,7 @@ body.garden .error{color:var(--lt-rose-ink)}
 .alt-link{display:flex;align-items:center;justify-content:center;min-height:44px;margin-top:12px;color:var(--lt-pearl);font-size:13px;text-decoration:underline;text-underline-offset:4px}
 body.garden .alt-link{color:var(--lt-ink)}
 .foot{position:absolute;z-index:2;bottom:18px;left:50%;transform:translateX(-50%);margin:0;color:var(--lt-muted);font-size:11px;letter-spacing:.04em;white-space:nowrap}
-@media (max-width:680px){.stage{padding:72px 16px 30px;place-items:start center}.brand{left:18px;top:16px}.orbit{width:128px;height:168px;opacity:.34}.o1{left:-26px;top:6%}.o2{right:-28px;top:9%}.o3{right:8%;bottom:2%;width:104px;height:137px}.auth-card{width:100%;padding:25px 22px;border-radius:18px}.lead{margin-bottom:18px}.foot{position:static;transform:none;margin-top:20px;text-align:center;white-space:normal}.divider{margin-top:16px}}
+@media (max-width:680px){.stage{padding:72px 16px 30px;place-items:start center}.brand{left:18px;top:16px}.orbit{width:128px;height:168px;opacity:.34}.o1{left:-26px;top:6%}.o2{right:-28px;top:9%}.o3{right:8%;bottom:2%;width:104px;height:137px}.auth-card{width:100%;padding:25px 22px;border-radius:18px}.auth-card h1{margin-bottom:18px}.foot{position:static;transform:none;margin-top:20px;text-align:center;white-space:normal}.divider{margin-top:16px}}
 `;
 
 export const AUTH_SKIN_CARD_IMAGES = Object.freeze([
@@ -175,12 +170,12 @@ export function brandLoginPage({ brand, theme, lang, googleHref, formAction, sig
   const google = showGoogle && googleHref
     ? `<a class="btn google" href="${esc(googleHref)}"><img class="g-logo" src="/assets/auth-skin/googleg-standard-color.svg" alt="" width="18" height="18">${esc(s.google)}</a><div class="divider"><span>${esc(s.divider)}</span></div>`
     : '';
-  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="login-title">${esc(s.loginTitle)}</h1><p class="lead">${esc(s.loginLead)}</p>${google}<form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}${emailField(s)}${passwordField(s, 'current-password')}<p class="error" role="alert">${esc(message)}</p><button class="btn primary submit" type="submit">${esc(s.loginSubmit)}</button></form><a class="alt-link" href="${esc(signupHref)}">${esc(s.loginAlt)}</a>`;
+  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="login-title">${esc(s.loginTitle)}</h1>${google}<form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}${emailField(s)}${passwordField(s, 'current-password')}<p class="error" role="alert">${esc(message)}</p><button class="btn primary submit" type="submit">${esc(s.loginSubmit)}</button></form><a class="alt-link" href="${esc(signupHref)}">${esc(s.loginAlt)}</a>`;
   return shell({ brand, headingId: 'login-title', title: `${s.loginTitle} · ${brand.wordmark}`, lang, theme, body });
 }
 
 export function brandSignupPage({ brand, theme, lang, formAction, loginHref, message = '' }) {
   const s = brand.strings[lang] || brand.strings.ko;
-  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="signup-title">${esc(s.signupTitle)}</h1><p class="lead">${esc(s.signupLead)}</p><form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}<label class="field" for="name">${esc(s.name)} <small>${esc(s.optional)}</small><input id="name" name="name" type="text" maxlength="160" autocomplete="name"></label>${emailField(s)}${passwordField(s, 'new-password')}<p class="error" role="alert">${esc(message)}</p><button class="btn primary submit" type="submit">${esc(s.signupSubmit)}</button></form><a class="alt-link" href="${esc(loginHref)}">${esc(s.signupAlt)}</a>`;
+  const body = `<p class="eyebrow">${esc(s.eyebrow)}</p><h1 id="signup-title">${esc(s.signupTitle)}</h1><form method="post" action="${esc(formAction)}">${hiddenTheme(theme)}<label class="field" for="name">${esc(s.name)} <small>${esc(s.optional)}</small><input id="name" name="name" type="text" maxlength="160" autocomplete="name"></label>${emailField(s)}${passwordField(s, 'new-password')}<p class="error" role="alert">${esc(message)}</p><button class="btn primary submit" type="submit">${esc(s.signupSubmit)}</button></form><a class="alt-link" href="${esc(loginHref)}">${esc(s.signupAlt)}</a>`;
   return shell({ brand, headingId: 'signup-title', title: `${s.signupTitle} · ${brand.wordmark}`, lang, theme, body });
 }
