@@ -60,6 +60,7 @@ from .local_voice_stt_transport import HostVoiceSttRpcTransport
 from .claw_search_decision import trusted_claw_search_activation
 from .local_p01_engine import (
     build_local_calendar_read_activation_client,
+    build_local_calendar_read_state_client,
     build_local_connector_tool_client,
     build_local_engine_client,
     build_local_p01_lanes,
@@ -485,6 +486,23 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
     print(
         "[local] voice_stt_transport="
         + ("bound" if voice_stt_transport is not None else "unbound")
+    )
+    # #2952 follow-up: the persisted Calendar READ grant state (the read-only
+    # half) reuses the same P01 Engine caller surface the Worker binds over its
+    # Service Binding. Without this the COM2 host never projected
+    # ``calendar_read_grant_state`` and the status surface silently dropped the
+    # third axis while the Worker path answered it.
+    calendar_read_state_client, calendar_state_diagnostic = (
+        build_local_calendar_read_state_client(
+            os.environ, client=outbound_http_client
+        )
+    )
+    app.state.calendar_read_state_engine_client = calendar_read_state_client
+    print(
+        "[local] calendar_read_state="
+        + ("bound" if calendar_read_state_client is not None else "unbound")
+        + (" reason=" + calendar_state_diagnostic if calendar_state_diagnostic else "")
+    )
     )
     # The connector READ tool lane reuses the same P01 Engine caller surface
     # over the same loopback binding, restricted to the private tool-execute

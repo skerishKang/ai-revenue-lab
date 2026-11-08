@@ -34,6 +34,7 @@ from app.model_policy import (
 ROOT = Path(__file__).resolve().parents[1]
 CAPABILITIES = (ROOT / "static" / "product-capabilities.js").read_text(encoding="utf-8")
 APP_JS = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
+SETTINGS_JS = (ROOT / "static" / "chat-settings-module.js").read_text(encoding="utf-8")
 
 MUSE_MODEL_ID = ADMIN_B14_MODEL_ID
 ADMIN_CONTRACT_PROFILE = "free" if ADMIN_B14_MODEL_ID == FREE_B14_MODEL_ID else "high"
@@ -216,7 +217,7 @@ def test_popup_probes_server_admin_and_never_username_matching() -> None:
 
 
 def test_chat_payload_permits_admin_tier_for_the_server_gate() -> None:
-    assert '["free", "plus", "pro", "max", "admin"]' in APP_JS
+    assert '["free", "plus", "pro", "max", "admin"]' in SETTINGS_JS
 
 
 def test_free_plus_pro_max_denial_still_rejects_unknown_admin_claims() -> None:

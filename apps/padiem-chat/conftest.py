@@ -44,6 +44,22 @@ def pytest_configure(config) -> None:
 import pytest
 
 
+# 2026-11-09 · #7216 R5 1단계: app.js는 설정·사이드바 구역을 두 모듈 파일에서
+# 가져온다. 실제 페이지는 index.html이 모듈을 먼저 로드하지만, 기존 Node
+# 하네스 다수는 app.js 한 파일만 vm에 넣는다. 테스트 전용 preload가 하네스의
+# app.js 읽기에 두 모듈을 앞에 붙여 같은 로드 순서를 재현한다(제품 코드 불변).
+_NODE_PRELOAD = Path(__file__).resolve().parent / "tests" / "_node_appjs_modules_preload.js"
+
+
+@pytest.fixture(autouse=True)
+def _r5_node_module_preload(monkeypatch):
+    if not _NODE_PRELOAD.exists():
+        return
+    existing = os.environ.get("NODE_OPTIONS", "").strip()
+    flag = f"--require {_NODE_PRELOAD.as_posix()}"
+    monkeypatch.setenv("NODE_OPTIONS", f"{existing} {flag}".strip())
+
+
 @pytest.fixture(autouse=True)
 def _fresh_identity_subject_cache():
     try:

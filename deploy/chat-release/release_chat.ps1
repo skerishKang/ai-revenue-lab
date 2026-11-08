@@ -108,14 +108,14 @@ function Get-FileSha256Hex([string]$Path) {
 function Invoke-Com2([string]$RemoteCommand) {
     # The SSH session lands in cmd.exe on COM2; every remote command here is a
     # single quote-free line so cmd passes it to wsl untouched.
-    & ssh -i $Script:Com2SshKey -o BatchMode=yes -o ConnectTimeout=10 $Script:Com2SshTarget $RemoteCommand
+    & ssh -i $Script:Com2SshKey -o BatchMode=yes -o LogLevel=ERROR -o ConnectTimeout=10 $Script:Com2SshTarget $RemoteCommand
     if ($LASTEXITCODE -ne 0) {
         throw "COM2 command failed (exit $LASTEXITCODE): $RemoteCommand"
     }
 }
 
 function Get-Com2Journal([string]$UnitName) {
-    $out = & ssh -i $Script:Com2SshKey -o BatchMode=yes -o ConnectTimeout=10 $Script:Com2SshTarget "wsl journalctl -u $UnitName -o cat -n 400" 2>$null
+    $out = & ssh -i $Script:Com2SshKey -o BatchMode=yes -o LogLevel=ERROR -o ConnectTimeout=10 $Script:Com2SshTarget "wsl journalctl -u $UnitName -o cat -n 400" 2>$null
     return ($out -join "`n")
 }
 
@@ -264,7 +264,7 @@ else {
     $localSh = Join-Path ([IO.Path]::GetTempPath()) $remoteShPath
     [IO.File]::WriteAllText($localSh, $remoteSh, (New-Object Text.UTF8Encoding $false))
     try {
-        & scp -i $Script:Com2SshKey -o BatchMode=yes -o ConnectTimeout=10 $localSh "$($Script:Com2SshTarget):$remoteShPath"
+        & scp -i $Script:Com2SshKey -o BatchMode=yes -o LogLevel=ERROR -o ConnectTimeout=10 $localSh "$($Script:Com2SshTarget):$remoteShPath"
         if ($LASTEXITCODE -ne 0) { throw "COM2 launcher upload failed (scp exit $LASTEXITCODE)" }
     }
     finally { Remove-Item -LiteralPath $localSh -Force -ErrorAction SilentlyContinue }

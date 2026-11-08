@@ -6,6 +6,8 @@ HTML = (ROOT / "index.html").read_text(encoding="utf-8")
 FIRST_USE = (ROOT / "padiem-first-use.css").read_text(encoding="utf-8")
 POLISH = (ROOT / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
 APP = (ROOT / "app.js").read_text(encoding="utf-8")
+# R5 1단계: 설정 dialog의 열기/닫기 ARIA는 설정 모듈이 소유한다.
+SETTINGS = (ROOT / "chat-settings-module.js").read_text(encoding="utf-8")
 LOCALE = (ROOT / "locale.js").read_text(encoding="utf-8")
 
 
@@ -47,5 +49,5 @@ def test_name_avatar_opens_one_settings_dialog_no_duplicate_settings_row():
     click = APP.split('profileToggle.addEventListener("click"', 1)[1].split("});", 1)[0]
     assert 'settingsButton.click()' in click
     assert 'profilePanel.hidden = !opening' not in click
-    assert 'profileToggle.setAttribute("aria-expanded", "true")' in APP
-    assert 'profileToggle.setAttribute("aria-expanded", "false")' in APP
+    assert 'profileToggle.setAttribute("aria-expanded", "true")' in SETTINGS
+    assert 'profileToggle.setAttribute("aria-expanded", "false")' in SETTINGS

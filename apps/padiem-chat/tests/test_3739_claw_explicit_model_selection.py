@@ -26,6 +26,7 @@ ORIGINAL_ACTIVE_ROUTE_FOR = product_tier_routes.active_route_for
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
 FRONT = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
+SETTINGS = (ROOT / "static" / "chat-settings-module.js").read_text(encoding="utf-8")
 GENERAL = (ROOT / "app" / "claw_general_routes.py").read_text(encoding="utf-8")
 MODELS = ("agnes-ai/agnes-3.0-flash", "poolside/laguna-s-2.1")
 
@@ -153,7 +154,7 @@ def test_claw_api_server_route_unavailable_refuses_dispatch(monkeypatch):
 def test_claw_browser_sends_grade_without_model_identifier():
     assert 'id="clawModelIdInput"' not in INDEX
     assert 'id="clawVerifiedModelSelect"' not in INDEX
-    assert 'return ["free", "plus", "pro", "max", "admin"].includes(tier) ? tier : "free";' in FRONT
+    assert 'return ["free", "plus", "pro", "max", "admin"].includes(tier) ? tier : "free";' in SETTINGS
     assert "clawGeneralRequestActive()" in FRONT
     assert "payload.model_id = contextSnapshot.selectedModelId" not in FRONT
     assert "if (clawGeneralRequest && contextSnapshot.selectedModelId)" not in FRONT

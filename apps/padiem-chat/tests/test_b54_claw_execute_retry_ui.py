@@ -314,7 +314,10 @@ def test_recovery_roles_inherit_shared_tokens() -> None:
 _HARNESS = r"""
 const fs = require("fs");
 const vm = require("vm");
-const APP = fs.readFileSync(process.argv[2], "utf8");
+const APP_DIR = require("path").dirname(process.argv[2]);
+const APP = ["chat-settings-module.js", "chat-sidebar-module.js"]
+  .map((name) => fs.readFileSync(require("path").join(APP_DIR, name), "utf8"))
+  .join(String.fromCharCode(10)) + String.fromCharCode(10) + fs.readFileSync(process.argv[2], "utf8");
 
 function makeEl(tag) {
   const el = {

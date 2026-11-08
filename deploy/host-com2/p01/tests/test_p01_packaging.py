@@ -134,10 +134,47 @@ class P01Packaging(unittest.TestCase):
                 "PADIEM_ENGINE_LOCAL_ADMISSION_SECRET",
                 "PADIEM_ENGINE_LOCAL_CHAT_ORIGIN",
                 "CLAW_ENGINE_DESKTOP_SECRET",
+                # Non-secret allow-list the shipped example pins on purpose; it
+                # was already present in the file while missing from this
+                # whitelist, so this test failed on main and could not guard the
+                # list it was supposed to guard.
+                "PADIEM_ENGINE_ALLOWED_APPS",
+                # Non-secret path to this service's own 0600 edge-secret copy.
+                # Also already present in the file and missing from the
+                # whitelist; the same pre-existing drift.
+                "PADIEM_COM2_EDGE_SECRET_FILE",
             })
-            if name not in {"P01_HOST", "P01_PORT"}:
+            if name not in {
+                "P01_HOST",
+                "P01_PORT",
+                "PADIEM_ENGINE_ALLOWED_APPS",
+                "PADIEM_COM2_EDGE_SECRET_FILE",
+            }:
                 self.assertEqual(value, "", name)
             self.assertFalse(name.startswith("PADIEM_CHAT_"), name)
+
+    def test_env_example_authorizes_every_app_the_chat_host_sends(self):
+        """A host call for an app left out of this list is a 403 at the Engine.
+
+        The 2026-11-06 b61 incident and the 2026-11-08 Google connector incident
+        were both this omission, so the shipped example is pinned to the caller
+        surface ``apps/padiem-chat/app/local_p01_engine.py`` actually composes.
+        """
+
+        text = (HERE / "p01.env.example").read_text(encoding="utf-8")
+        apps: list[str] = []
+        for line in text.splitlines():
+            if line.startswith("PADIEM_ENGINE_ALLOWED_APPS="):
+                apps = [item.strip() for item in line.partition("=")[2].split(",") if item.strip()]
+        self.assertTrue(apps, "the example lost its Engine app allow-list")
+        for app in (
+            "padiem-chat",
+            "b61",
+            "b54-padiem-claw",
+            "b54-padiem-claw-drive",
+            "b54-padiem-claw-calendar",
+        ):
+            self.assertIn(app, apps)
         # The Chat-side origin is documented here and owned by the chat package.
         self.assertIn("PADIEM_CHAT_LOCAL_P01_ENGINE_ORIGIN=http://127.0.0.1:8811", text)
 
