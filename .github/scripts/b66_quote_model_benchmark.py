@@ -86,12 +86,37 @@ def select_exact_model(model_id: str) -> str:
     return value
 
 
+def _authority_headers() -> dict[str, str]:
+    """The existing B14 caller proof for the identity-bearing live preflight.
+
+    `/api/pilot/admin/models` answers only a proven server-to-server caller. An
+    unset deployment binding sends no proof, and the preflight reports
+    ``UNAVAILABLE`` instead of comparing against a summary it cannot read.
+    """
+    import hashlib
+    import hmac
+    import os
+    import time
+
+    secret = os.environ.get("PADIEM_B14_SERVICE_PROOF_SECRET", "")
+    if not isinstance(secret, str) or len(secret) < 32:
+        return {}
+    timestamp = str(int(time.time()))
+    proof = hmac.new(
+        secret.encode("utf-8"),
+        timestamp.encode("ascii") + b".",
+        hashlib.sha256,
+    ).hexdigest()
+    return {"x-padiem-b14-proof": proof, "x-padiem-b14-time": timestamp}
+
+
 def live_catalog_preflight(*, fetch=None) -> dict[str, Any]:
     """GET only. NEVER run the benchmark against a stale deployed B14 registry."""
     if fetch is None:
         def fetch() -> bytes:
             req = urllib.request.Request(PRODUCTION_MODEL_LIST, method="GET",
-                headers={"Accept": "application/json", "User-Agent": "PADIEM-Source-Eval/1.0"})
+                headers={"Accept": "application/json", "User-Agent": "PADIEM-Source-Eval/1.0",
+                         **_authority_headers()})
             with urllib.request.urlopen(req, timeout=15) as resp:
                 return resp.read(MAX_B14_REGISTRY_BYTES + 1)
     try:

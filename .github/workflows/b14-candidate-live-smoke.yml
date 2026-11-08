@@ -397,12 +397,13 @@ jobs:
           PY
 
       - name: Execute exactly one bounded candidate live smoke request
+        env:
+          PADIEM_B14_SERVICE_PROOF_SECRET: ${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}
         shell: bash
         run: |
           set -euo pipefail
           log="${RUNNER_TEMP}/candidate-live-smoke.log"
           upper="$(echo "${CANDIDATE_ID}" | tr '[:lower:]-' '[:upper:]_')"
-          PADIEM_B14_SERVICE_PROOF_SECRET="${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}" \n            python .github/scripts/b14_candidate_live_smoke.py "${CANDIDATE_ID}" --authorized-live-run --modality="${MODALITY:-text}" --image-case="${IMAGE_CASE:-generic}" | tee "${log}"
           grep -qx "${upper}_PRODUCTION_SMOKE=PASS" "${log}"
           grep -qx "${upper}_PROVIDER_REGISTERED=YES" "${log}"
           grep -qx "${upper}_CREDENTIAL_READY=YES" "${log}"
