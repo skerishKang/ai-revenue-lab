@@ -297,7 +297,7 @@ async def conversation_turn(request: Request) -> JSONResponse:
         return JSONResponse(
             {"ok": True, "answer": state["last_answer"],
              "answer_origin": state["answer_origin"],
-             "model_id": model_id, "revision": state["revision"],
+             "revision": state["revision"],
              "mode": state["mode"], "mode_changed": False,
              "quote": _conversation_state_payload(state, extra={"idempotent_replay": True})},
             headers=_NO_STORE,
@@ -347,7 +347,7 @@ async def conversation_turn(request: Request) -> JSONResponse:
             return _error(503, "conversation_state_write_failed", "대화 상태를 저장하지 못했습니다.")
         body = {
             "ok": True, "answer": answer, "answer_origin": "server_state",
-            "model_id": model_id, "revision": state["revision"],
+            "revision": state["revision"],
             "mode": state["mode"], "mode_changed": False,
             "quote": _conversation_state_payload(state),
         }
@@ -481,12 +481,15 @@ async def conversation_turn(request: Request) -> JSONResponse:
         return _error(503, "conversation_state_write_failed", "대화 상태를 저장하지 못했습니다.")
     return JSONResponse(
         {"ok": True, "answer": reply, "answer_origin": "registered_model_completion",
-         "model_id": route.model_id, "model_origin": "registered_model_completion",
+         "model_origin": "registered_model_completion",
          "revision": state["revision"], "mode": state["mode"],
          "mode_changed": mode_changed,
          "quote": _conversation_state_payload(state)},
         headers=_NO_STORE,
     )
 
+
+# #6828: these replies carry the PADIEM grade only. The quote lane is the
+# managed B14 lane, so no model id travels to the browser.
 
 __all__ = ["conversation_state", "conversation_turn"]

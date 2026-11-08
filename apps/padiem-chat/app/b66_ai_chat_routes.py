@@ -206,20 +206,21 @@ def _replay_response(
     answer: str,
     model_origin: str = "registered_model_completion",
 ) -> JSONResponse:
-    return JSONResponse(
-        {
-            "ok": True,
-            "answer": answer,
-            "model_id": model_id,
-            "saved_quote": False,
-            "model_origin": model_origin,
-            "search": dict(_REPLAY_SEARCH),
-            "conversation_id": conversation_id,
-            "dialogue_saved": True,
-            "dialogue_replay": True,
-        },
-        headers=_NO_STORE,
-    )
+    body: dict[str, Any] = {
+        "ok": True,
+        "answer": answer,
+        "saved_quote": False,
+        "model_origin": model_origin,
+        "search": dict(_REPLAY_SEARCH),
+        "conversation_id": conversation_id,
+        "dialogue_saved": True,
+        "dialogue_replay": True,
+    }
+    # #6828: a managed answer names no model. PADIEM Custom is the customer's
+    # own explicit provider selection, so only that id is theirs to see.
+    if model_origin == "custom_provider_direct":
+        body["model_id"] = model_id
+    return JSONResponse(body, headers=_NO_STORE)
 
 
 def _out_of_sync() -> JSONResponse:
@@ -719,11 +720,14 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
         body: dict[str, Any] = {
             "ok": True,
             "answer": answer,
-            "model_id": response_model_id,
             "saved_quote": False,
             "model_origin": model_origin,
             "search": outcome.public_dict(),
         }
+        # #6828: the managed lane answers with the PADIEM grade only. PADIEM
+        # Custom keeps the id because it is the customer's own selection.
+        if model_origin == "custom_provider_direct":
+            body["model_id"] = response_model_id
         if saved_id is not None:
             body["conversation_id"] = saved_id
             body["dialogue_saved"] = True

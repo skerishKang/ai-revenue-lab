@@ -96,7 +96,8 @@ def test_genuine_dialogue_without_saved_skill_does_not_mutate_quote():
     res = client.post("/api/b66/ai/chat", json=payload())
     assert res.status_code == 200, res.text
     assert res.json() == {
-        "ok": True, "answer": "AI 대화 응답", "model_id": MODEL,
+        # #6828: the managed reply names no model — the grade answers.
+        "ok": True, "answer": "AI 대화 응답",
         "saved_quote": False, "model_origin": "registered_model_completion",
         "search": {"status": "not_needed", "reason": "no_external_evidence_trigger",
                    "sources": []},
