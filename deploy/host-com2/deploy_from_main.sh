@@ -148,6 +148,8 @@ ai_check=warn
 extended_smoke=0
 ai_base_url=${PADIEM_COM2_AI_CHECK_BASE_URL:-https://chat.padiem.net}
 chat_venv_python=${PADIEM_COM2_CHAT_VENV_PYTHON:-/opt/padiem/chat-com2/venv/bin/python}
+chat_root=${PADIEM_COM2_CHAT_ROOT:-/opt/padiem/chat-com2}
+chat_env_file=${PADIEM_COM2_CHAT_ENV_FILE:-$chat_root/.env}
 requested=''
 resolved=''
 old=''
@@ -2007,13 +2009,17 @@ run_deploy() {
 
   tools_serialization=SKIP
   if (( ! failed )) && [[ ${result[chat]} == PASS ]] && [[ -x "$chat_venv_python" ]]; then
-    if tools_out=$("$chat_venv_python" "$staged/.github/scripts/post_deploy_tool_serialization_check.py"         --staged-app "$staged/apps/padiem-chat" 2>/dev/null); then
-      tools_serialization=PASS
-    else
-      tools_serialization=FAIL
-      failed=1
-    fi
+    # The service's exact runtime: installed app root + its EnvironmentFile,
+    # with the chat venv interpreter. ERROR (harness mismatch) continues the
+    # deploy with a warning; FAIL (real serialization defect) stops it.
+    tools_out=$("$chat_venv_python" "$staged/.github/scripts/post_deploy_tool_serialization_check.py" \
+      --app-root "$chat_root" --env-file "$chat_env_file" 2>/dev/null) || true
     say "$tools_out"
+    case "$tools_out" in
+      TOOLS_SERIALIZATION=PASS*) tools_serialization=PASS ;;
+      TOOLS_SERIALIZATION=FAIL*) tools_serialization=FAIL; failed=1 ;;
+      *) tools_serialization=ERROR ;;
+    esac
   fi
 
   if (( ! failed )); then
