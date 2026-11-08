@@ -30,23 +30,22 @@
    *   utils/audioUtils.ts        -> float32ToInt16, arrayBufferToBase64
    *
    * What is NOT copied: the React hook and the upstream SDK. PADIEM's
-   * shell is plain browser JavaScript with no build step, so the SDK's Live
-   * transport is replaced by the very WebSocket that SDK speaks; the endpoint
-   * stays a server-owned constant below and is never named in product copy.
-   * The ephemeral token rides that socket URL as `?access_token=` only.
+   * shell is plain browser JavaScript with no build step. The Live transport
+   * is a same-origin WebSocket to the PADIEM relay (/api/voice/relay); the
+   * provider endpoint, the credential and the model stay server-side (COM2)
+   * and are never named in product copy or in this file.
    *
-   * The server owns the long-lived provider key. The browser only ever holds
-   * the short-lived, model-locked ephemeral token minted by
-   * /api/voice/live-token, exactly like the upstream live-token
-   * function. The model, the activity-detection window and the transcription
-   * mode come from the server's browser-safe session contract; nothing here
-   * selects a provider or a model.
+   * The server owns the long-lived provider key and mints the ephemeral token
+   * itself. The browser only receives the public activity-detection window and
+   * transcription mode from /api/voice/live-token; nothing here selects a
+   * provider or a model.
    */
 
-  const LIVE_WS_BASE = "wss://generativelanguage.googleapis.com";
-  const LIVE_WS_PATH =
-    "/ws/google.ai.generativelanguage.v1alpha.GenerativeService." +
-    "BidiGenerateContentConstrained";
+  // #6828 / voice-relay: the browser only ever knows the same-origin PADIEM
+  // relay path. The provider WebSocket address, the ephemeral token and the
+  // model name live server-side (COM2 relay); none may reach the browser
+  // network path or this static file.
+  const LIVE_WS_PATH = "/api/voice/relay";
   const PCM_MIME = "audio/pcm;rate=16000";
   const SAMPLE_RATE = 16000;
   const PROCESSOR_BUFFER = 1024;
@@ -93,12 +92,11 @@
    */
   function buildLiveSetup(session, authority) {
     const cfg = session || {};
-    const model = cfg.model;
     const modalities = cfg.response_modalities.slice();
     const silenceMs = cfg.vad_silence_ms;
     const mode = cfg.input_audio_transcription_mode;
+    // The model is injected by the COM2 relay, never by the browser (#6828).
     return {
-      model: model ? "models/" + model : model,
       generationConfig: { responseModalities: modalities },
       realtimeInputConfig: {
         automaticActivityDetection: { silenceDurationMs: silenceMs },
@@ -107,8 +105,11 @@
     };
   }
 
-  function buildLiveUrl(token) {
-    return LIVE_WS_BASE + LIVE_WS_PATH + "?access_token=" + encodeURIComponent(token);
+  function buildLiveUrl() {
+    const loc = (typeof location !== "undefined" && location) ||
+      { protocol: "https:", host: "chat.padiem.net" };
+    const scheme = loc.protocol === "http:" ? "ws://" : "wss://";
+    return scheme + loc.host + LIVE_WS_PATH;
   }
 
   /**
@@ -504,17 +505,17 @@
           if (!response || !response.ok) throw new Error("live-token-unavailable");
           return response.json();
         }).then(function (payload) {
-          const token = payload && payload.token ? String(payload.token) : "";
-          if (!token) throw new Error("live-token-unavailable");
+          // The relay owns the token and the model; the browser only receives
+          // the public activity/transcription contract (#6828).
           const config = payload && payload.session;
-          if (!config || typeof config.model !== "string" || !config.model.trim() ||
+          if (!config ||
               !Number.isFinite(config.vad_silence_ms) || !Number.isFinite(config.rotate_after_ms) ||
               !Array.isArray(config.response_modalities) || !config.response_modalities.length ||
               !config.response_modalities.every(function (item) { return typeof item === "string" && item.trim(); }) ||
               typeof config.input_audio_transcription_mode !== "string" || !config.input_audio_transcription_mode.trim()) {
             throw new Error("live-session-invalid");
           }
-          return { token: token, session: config };
+          return { token: "", session: config };
         });
       }
 
@@ -683,7 +684,6 @@
   }
 
   return {
-    LIVE_WS_BASE: LIVE_WS_BASE,
     LIVE_WS_PATH: LIVE_WS_PATH,
     PCM_MIME: PCM_MIME,
     SAMPLE_RATE: SAMPLE_RATE,

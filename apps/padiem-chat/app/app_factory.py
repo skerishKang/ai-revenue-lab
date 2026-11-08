@@ -6,7 +6,7 @@ from pathlib import Path
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse, RedirectResponse
-from starlette.routing import Mount, Route
+from starlette.routing import Mount, Route, WebSocketRoute
 from starlette.staticfiles import StaticFiles
 
 
@@ -160,6 +160,7 @@ from .voice_stt_routes import CLAW_IDENTITY_PATH as CLAW_VOICE_IDENTITY_PATH
 from .voice_stt_routes import CLAW_TRANSCRIBE_PATH as CLAW_VOICE_TRANSCRIBE_PATH
 from .voice_stt_routes import CLAW_LIVE_TOKEN_PATH as CLAW_VOICE_LIVE_TOKEN_PATH
 from .voice_stt_routes import voice_identity, voice_transcribe, voice_live_token
+from .voice_relay import RELAY_WS_PATH as VOICE_RELAY_WS_PATH, voice_relay_ws
 from .chat_routes import api_chat, api_chat_stream
 from .claw_general_routes import claw_general_execute, claw_general_capabilities
 from .claw_office_preview_routes import (
@@ -650,6 +651,8 @@ def create_app(
         Route(VOICE_IDENTITY_PATH, voice_identity, methods=["GET"]),
         Route(VOICE_TRANSCRIBE_PATH, voice_transcribe, methods=["POST"]),
         Route(VOICE_LIVE_TOKEN_PATH, voice_live_token, methods=["POST"]),
+        # #6828 voice-relay: same-origin WebSocket; COM2 relays to the provider.
+        WebSocketRoute(VOICE_RELAY_WS_PATH, voice_relay_ws),
         Route(CLAW_VOICE_IDENTITY_PATH, voice_identity, methods=["GET"]),
         Route(CLAW_VOICE_TRANSCRIBE_PATH, voice_transcribe, methods=["POST"]),
         Route(CLAW_VOICE_LIVE_TOKEN_PATH, voice_live_token, methods=["POST"]),
