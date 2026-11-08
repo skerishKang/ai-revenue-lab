@@ -31,7 +31,7 @@ deploy\host-com2\boot-recovery\windows\check-active-hours.ps1 -Apply
 … -Apply -StartHour 8 -EndHour 17 -NoAutoRebootWithLoggedOnUsers 1
 ```
 
-- **1시간 고정은 지원되지 않는다.** Windows 활성 시간의 상한은 18시간이라 재시작 창의 최소 폭이 6시간이다. 활성 10:00–04:00이 창을 04:00에 시작시키는 가장 가까운 설정이고, Windows Update는 활성 시간이 끝난 뒤 첫 기회에 재시작하므로 실제 재시작은 04:00 무렵에 온다.
+- **1시간 고정은 지원되지 않는다.** Windows 활성 시간의 상한은 18시간이라 재시작 창의 최소 폭이 6시간이다. 활성 10:00–04:00이 창을 04:00에 시작시키는 가장 가까운 설정이고, Windows Update는 활성 시간이 끝난 뒤 첫 기회에 재시작하므로 실제 재시작은 창 시작(04:00 무렵)으로 예상된다 — 이번 작업은 재부팅 실험을 하지 않아 실제 시각은 미측정이다.
 - `NoAutoRebootWithLoggedOnUsers=1`이면 로그인한 콘솔 세션이 있는 한 야간 재시작이 오지 않는다(컴2은 데스크톱 세션이 떠 있다). 그래서 창을 살리려면 `0`이어야 한다.
 - 백업과의 관계: chat 스냅샷 04:20·offsite 05:10은 `Persistent=true`라 재시작으로 놓쳐도 부팅 뒤 따라잡는다. Windows 작업 `PADIEM-COM2-D1-R2-Sync`(04:20)는 따라잡기(`StartWhenAvailable`)가 없어, 재시작이 04:20을 넘긴 날은 그날 D1 세대가 하루 전 것이 된다. offsite는 26시간 신선도 상한 안이라 그 실행은 여전히 통과한다(이 PR은 그 작업을 바꾸지 않았다).
 
