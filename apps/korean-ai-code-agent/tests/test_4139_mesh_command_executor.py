@@ -300,7 +300,10 @@ class CommandPortTests(unittest.TestCase):
             phase_observer=phases.append,
         )
         self.assertEqual(outcome.termination, "timed_out")
-        self.assertEqual(phases, ["spawn", "timeout"])
+        # #7180: the wait's expiry now rides the idle-console reaper, whose own
+        # phases (and the sweep's) follow the two that were always here.
+        self.assertEqual(phases[:2], ["spawn", "timeout"])
+        self.assertIn("idle_reap", phases)
 
     def test_client_failure_is_no_reply(self):
         port = _port(_Completed(1, b""))

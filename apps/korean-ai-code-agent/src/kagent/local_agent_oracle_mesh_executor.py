@@ -1688,7 +1688,12 @@ try {@@ARGUMENTS_SOURCE@@
             self._trace_command(dispatch, phase_name, started)
 
         try:
-            observed = self._command_port.run_command(node_ref=node_ref, command=ps, timeout_seconds=None, cancel_probe=cancelled, phase_observer=phase)
+            # #7180: the client console must name its own dispatch. Without the
+            # id the PC-side PowerShell left no pid marker, so the owner's stop
+            # had nothing to aim at once this dispatch was gone and the orphaned
+            # console held the agent for as long as it lived (measured 19 hours).
+            observed = self._command_port.run_command(node_ref=node_ref, command=ps, timeout_seconds=None, cancel_probe=cancelled, phase_observer=phase,
+                dispatch_id=getattr(dispatch, "dispatch_id", None))
         except Exception:
             self._trace_command(dispatch, "error", started, error_type="port_failed")
             return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
