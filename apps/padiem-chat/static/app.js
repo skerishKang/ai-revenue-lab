@@ -4871,8 +4871,11 @@
       // Executable Claw task authority is validated by the server.
       // No separate pilot-era 4,000-character browser ceiling.
     } else {
-      // Claw general and Chat share the same canonical composer placeholder.
-      input.placeholder = localeOr("input", "Ask anything");
+      // #7166: the general Claw view gets its own one-line placeholder so the
+      // shared composer says what Claw does instead of repeating Chat's.
+      input.placeholder = isClaw
+        ? localeOr("claw-input-placeholder", "What can I do? e.g. tidy files")
+        : localeOr("input", "Ask anything");
       input.removeAttribute("aria-describedby");
       input.removeAttribute("aria-invalid");
       // General Claw and Chat accept provider-native prompts. The distinct

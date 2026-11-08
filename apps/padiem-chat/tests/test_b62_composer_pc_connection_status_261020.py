@@ -276,6 +276,7 @@ MEASURE = """() => {
     state: button ? button.dataset.state : null,
     label: document.querySelector('.composer-pc-status-label')
       ? document.querySelector('.composer-pc-status-label').textContent.trim() : null,
+    dots: document.querySelectorAll('.composer-pc-status-dot').length,
     ariaLabel: button ? button.getAttribute('aria-label') : null,
     tooltip: button ? button.getAttribute('data-padiem-tooltip') : null,
     button: rect(button),
@@ -309,6 +310,13 @@ def _overlaps(a, b) -> bool:
     )
 
 
+def _assert_exactly_one_dot(measured) -> None:
+    """#7166: the pill carries exactly one dot — the state-coloured element —
+    so the shared vocabulary's ●/○ prefix must not also survive in the label."""
+    assert measured["dots"] == 1, measured
+    assert not re.search(r"[●○]", measured["label"] or ""), measured["label"]
+
+
 @requires_browser
 @pytest.mark.parametrize("width", WIDTHS)
 def test_the_control_reports_the_server_truth(browser, server, width) -> None:
@@ -324,7 +332,8 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     measured = page.evaluate(MEASURE)
     assert measured["present"] is True
     assert measured["state"] == "disconnected"
-    assert measured["label"] == "○ 연결 안 됨"
+    assert measured["label"] == "연결 안 됨"
+    _assert_exactly_one_dot(measured)
     assert "컴퓨터" in (measured["ariaLabel"] or "")
     assert measured["tooltip"] == measured["ariaLabel"]
 
@@ -334,7 +343,8 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     _wait_state(page, "connected")
     connected = page.evaluate(MEASURE)
     assert connected["state"] == "connected"
-    assert connected["label"] == "● 연결됨"
+    assert connected["label"] == "연결됨"
+    _assert_exactly_one_dot(connected)
 
     _unroute_directory(page)
     _route_directory(page, _directory([_device("REVOKED", False, revoked=True)]))
@@ -386,7 +396,8 @@ def test_the_claw_execution_target_decides_the_state(browser, server) -> None:
     _wait_state(page, "disconnected")
     measured = page.evaluate(MEASURE)
     assert measured["state"] == "disconnected"
-    assert measured["label"] == "○ 연결 안 됨"
+    assert measured["label"] == "연결 안 됨"
+    _assert_exactly_one_dot(measured)
     assert not errors, errors
     page.close()
 

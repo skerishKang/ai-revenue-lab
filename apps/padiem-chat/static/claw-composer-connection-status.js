@@ -198,6 +198,13 @@
       return t.connectHint;
     }
 
+    // #7166: the pill draws its own state dot, so the shared vocabulary's
+    // leading circle (●/○) would read as a second dot beside it. Other
+    // surfaces keep the prefix; only this chip drops it.
+    function withoutDotMarker(value) {
+      return String(value || "").replace(/^[●○]\s*/, "");
+    }
+
     function labelFor(next) {
       const t = locale();
       if (next === "connected") return vocabStatus("connected", t.connected);
@@ -212,7 +219,7 @@
     function paint(next) {
       state = next;
       button.dataset.state = next;
-      label.textContent = labelFor(next);
+      label.textContent = withoutDotMarker(labelFor(next));
       // #5553: the mark inside the monitor swaps with the state, so the glyph
       // itself — not only the dot colour — names the state.
       const previousMark = icon.querySelector(".composer-pc-status-mark");
