@@ -1037,6 +1037,26 @@ async def oracle_mesh_read_request(request: Request) -> JSONResponse:
     return await dispatch_oracle_mesh_read_intent(request, wire)
 
 
+async def _dispatch_workspace_id(request: Request, uid: str, session: Any) -> str | None:
+    """The workspace one staged dispatch is written under.
+
+    The memory shadow pointer answers first, exactly as it always has. When
+    that non-authoritative local pointer is absent or stale (its session was
+    rotated or expired), the canonical session this request already verified
+    owns the same workspace: its tenant. This is the fallback the PC lane
+    applies in ``chat_pc_drive._resolve_chat_owner``; the engine files lane
+    kept hard-failing on the pointer alone, so a stale row refused every
+    dispatch the authority itself had already answered for (2026-11-09).
+    """
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace_id = None
+    if not isinstance(workspace_id, str) or not workspace_id:
+        workspace_id = getattr(session, "tenant_id", None)
+    return workspace_id if isinstance(workspace_id, str) and workspace_id else None
+
+
 async def dispatch_oracle_mesh_read_intent(
     request: Request, wire: dict[str, Any]
 ) -> JSONResponse:
@@ -1044,10 +1064,7 @@ async def dispatch_oracle_mesh_read_intent(
     if denial is not None or session is None:
         return denial if denial is not None else _error(401, "canonical_session_required")
     uid = current_user_id(request)
-    try:
-        workspace_id = await _resolve_memory_workspace(request, uid)
-    except Exception:
-        return _error(503, "oracle_mesh_workspace_unavailable")
+    workspace_id = await _dispatch_workspace_id(request, uid, session)
     if not workspace_id:
         return _error(503, "oracle_mesh_workspace_unavailable")
 
@@ -1346,10 +1363,7 @@ async def dispatch_oracle_mesh_command_intent(
         if denial is not None or session is None:
             return denial if denial is not None else _error(401, "canonical_session_required")
         uid = current_user_id(request)
-        try:
-            workspace_id = await _resolve_memory_workspace(request, uid)
-        except Exception:
-            return _error(503, "oracle_mesh_workspace_unavailable")
+        workspace_id = await _dispatch_workspace_id(request, uid, session)
     else:
         session, uid, workspace_id = trusted_owner
         if not uid or not workspace_id or not getattr(session, "tenant_id", None):
@@ -1802,10 +1816,7 @@ async def dispatch_oracle_mesh_desktop_intent(
         if denial is not None or session is None:
             return denial if denial is not None else _error(401, "canonical_session_required")
         uid = current_user_id(request)
-        try:
-            workspace_id = await _resolve_memory_workspace(request, uid)
-        except Exception:
-            return _error(503, "oracle_mesh_workspace_unavailable")
+        workspace_id = await _dispatch_workspace_id(request, uid, session)
     else:
         session, uid, workspace_id = trusted_owner
         if not uid or not workspace_id or not getattr(session, "tenant_id", None):
@@ -5090,10 +5101,7 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             or _PC_FILES_SAFE_REF.fullmatch(tool_call_ref) is None
         ):
             return _error(422, "oracle_mesh_file_call_invalid")
-        try:
-            command_workspace = await _resolve_memory_workspace(request, uid)
-        except Exception:
-            return _error(503, "oracle_mesh_workspace_unavailable")
+        command_workspace = await _dispatch_workspace_id(request, uid, session)
         if not command_workspace:
             return _error(503, "oracle_mesh_workspace_unavailable")
         job_operation = {"op": op, "path": payload["path"]} if requested_mode == "job_start" else None
@@ -5626,10 +5634,7 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
             },
         })
     if command_dispatch:
-        try:
-            command_workspace = await _resolve_memory_workspace(request, uid)
-        except Exception:
-            return _error(503, "oracle_mesh_workspace_unavailable")
+        command_workspace = await _dispatch_workspace_id(request, uid, session)
         if not command_workspace:
             return _error(503, "oracle_mesh_workspace_unavailable")
         return await dispatch_oracle_mesh_command_intent(
@@ -5806,10 +5811,7 @@ async def oracle_chat_engine_pc_drive_call(request: Request) -> JSONResponse:
                 "exit_code": dispatch.get("exit_code"),
             },
         })
-    try:
-        command_workspace = await _resolve_memory_workspace(request, uid)
-    except Exception:
-        return _error(503, "oracle_mesh_workspace_unavailable")
+    command_workspace = await _dispatch_workspace_id(request, uid, session)
     if not command_workspace:
         return _error(503, "oracle_mesh_workspace_unavailable")
     try:
