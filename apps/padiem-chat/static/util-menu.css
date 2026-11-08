@@ -24,12 +24,12 @@
  * 6.33:1 (util-capture #6317) instead of --line's 1.03:1 that report flagged
  * for the .pdfmd-* controls. */
 .util-tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin: 0 0 18px; }
-.util-tool-card { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 14px; border: 1px solid var(--input-border-strong, var(--line, rgba(26, 34, 48, .12))); border-radius: var(--radius-md, 16px); background: var(--glass-card-surface, var(--panel, #ffffff)); box-sizing: border-box; }
+.util-tool-card { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: var(--radius-md, 16px); background: var(--glass-card-surface, var(--panel, #ffffff)); box-sizing: border-box; }
 .util-tool-icon { font-size: 16px; line-height: 1; color: var(--accent, #6557e8); }
 .util-tool-name { font-size: 15px; font-weight: 750; color: var(--text, #17202a); }
 .util-tool-desc { font-size: 12.5px; line-height: 1.45; color: var(--text, #17202a); }
 .util-tool-note { font-size: 11.5px; color: var(--muted, #5b6672); }
-.util-tool-open { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; margin-top: auto; border: none; border-radius: 10px; background: var(--accent, #6557e8); color: var(--accent-contrast, #ffffff); cursor: pointer; font: inherit; font-size: 13px; font-weight: 650; }
+.util-tool-open { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; margin-top: auto; border: none; border-radius: 999px; background: var(--accent, #6557e8); color: var(--accent-contrast, #ffffff); cursor: pointer; font: inherit; font-size: 13px; font-weight: 650; }
 .util-tool-open:hover:not(:disabled) { filter: brightness(.96); }
 .util-tool-paused .util-tool-icon { color: var(--muted, #5b6672); }
 .util-tab:focus-visible,
@@ -238,13 +238,10 @@ html[data-theme="cinematic"] .pdfmd-page-review-flag[data-review="true"] { color
   .pdfmd-history-list button .pdfmd-status-chip { flex: 0 0 auto; }
 }
 
-/* #5608: the primary action color matches the Chat/Claw composer's send button
- * (voice-composer.css #355977 on padiem-glass). The council tools left this
- * page on 2026-11-01; the toolbox cards and the PDF/MD primary keep the rule. */
-html[data-theme="padiem-glass"] .util-tool-open,
-html[data-theme="padiem-glass"] .pdfmd-btn-primary {
-  background: #355977;
-}
+/* #5608's glass-only navy became the APP-WIDE shared primary rule
+ * (padiem-chat-ui-polish.css, 대표 결정 2026-11-08): .util-tool-open and
+ * .pdfmd-btn-primary both ride it, in every theme. */
+
 
 /* #5608 follow-up: the sidebar Util entry expands into its four rows and the
  * in-page tab row is the duplicate — hidden everywhere, not only on phones.
