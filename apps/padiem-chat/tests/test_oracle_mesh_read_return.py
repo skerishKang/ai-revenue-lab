@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import hmac
 import inspect
 import json
 from datetime import datetime, timedelta, timezone
@@ -1164,6 +1165,99 @@ def test_the_stop_read_is_channel_only_and_answers_no_when_it_cannot_ask(monkeyp
     # a read failed is the worse of the two mistakes.
     history.cancellation_raises = True
     status, body, _ = _cancel_read(history, dispatch_id)
+    assert status == 200 and body == {"ok": True, "cancelled": False}
+
+
+# ------------------------------------ #7215: the user-mode client reads its own stop
+def _mint_cancel_token(dispatch_id: str, *, secret: str = SECRET) -> str:
+    source = routes.build_oracle_mesh_return_source(
+        _mapping(), secret, routes.EXECUTION_MODE_MESH)
+    assert source is not None
+    return source.cancel_check_token(dispatch_id)
+
+
+def _cancel_poll(history, dispatch_id, *, token, payload=_MISSING):
+    # PUBLIC leg: the PC client carries a per-dispatch token, NOT the channel secret.
+    if payload is _MISSING:
+        payload = {"dispatch_id": dispatch_id, "token": token}
+    return call(
+        routes.oracle_mesh_read_cancel_poll,
+        Request(payload, state(history=history)),
+    )
+
+
+def test_the_user_mode_client_reads_its_own_stop_with_a_per_dispatch_token(monkeypatch):
+    """The token is the whole authority: this dispatch's own stop, nothing else.
+
+    #7215: the user-mode client runs as SYSTEM on the PC and cannot carry the
+    channel secret, so it carries a per-dispatch token and asks only whether THIS
+    dispatch is cancelled. A correct token answers the flag; anything else is a flat
+    404 that reveals nothing - not even whether the dispatch exists.
+    """
+    setup_auth(monkeypatch)
+    history = History()
+    dispatch_id = create_dispatch(history)
+    token = _mint_cancel_token(dispatch_id)
+
+    status, body, _ = _cancel_poll(history, dispatch_id, token=token)
+    assert status == 200 and body == {"ok": True, "cancelled": False}
+
+    history.cancelled_flags = {dispatch_id}
+    status, body, _ = _cancel_poll(history, dispatch_id, token=token)
+    assert status == 200 and body == {"ok": True, "cancelled": True}
+
+    # A wrong token, another dispatch's token, a missing/blank/non-string token:
+    # every one is the same 404 with a fixed body, so a caller learns nothing.
+    other_token = _mint_cancel_token("dsp-other")
+    for bad in (
+        {"dispatch_id": dispatch_id, "token": "deadbeef"},
+        {"dispatch_id": dispatch_id, "token": other_token},
+        {"dispatch_id": dispatch_id, "token": ""},
+        {"dispatch_id": dispatch_id, "token": 123},
+        {"dispatch_id": dispatch_id},
+        {"token": token},
+        {},
+        None,
+    ):
+        status, body, _ = _cancel_poll(history, dispatch_id, token=token, payload=bad)
+        assert status == 404 and body == {"ok": False, "error": {"code": "not_found"}}, bad
+
+
+def test_the_cancel_poll_token_is_a_capability_and_never_the_channel_secret():
+    """A hex capability bound to the secret and the dispatch, not the secret itself."""
+    source = routes.build_oracle_mesh_return_source(
+        _mapping(), SECRET, routes.EXECUTION_MODE_MESH)
+    token = source.cancel_check_token("dsp-7215")
+    assert len(token) == 64 and all(c in "0123456789abcdef" for c in token)
+    # Possessing the token must never leak the channel secret, nor be replayable as it.
+    assert token != SECRET
+    assert not source.check_channel_secret(token)
+    assert source.cancel_check_token_matches("dsp-7215", token)
+    assert not source.cancel_check_token_matches("dsp-other", token)
+    assert not source.cancel_check_token_matches("dsp-7215", token.upper())
+    assert not source.cancel_check_token_matches("dsp-7215", None)
+    assert not source.cancel_check_token_matches("dsp-7215", "")
+    # Domain-separated: it is NOT a bare HMAC of the id, so it cannot stand in for
+    # any other use of the same key, and a different secret yields a different token.
+    bare = hmac.new(SECRET.encode("utf-8"), b"dsp-7215", hashlib.sha256).hexdigest()
+    assert token != bare
+    other_secret = routes.build_oracle_mesh_return_source(
+        _mapping(), "another-channel-secret-value-000000", routes.EXECUTION_MODE_MESH)
+    assert other_secret.cancel_check_token("dsp-7215") != token
+    # Deterministic for the same secret and id, so an executor-minted token also matches.
+    again = routes.build_oracle_mesh_return_source(
+        _mapping(), SECRET, routes.EXECUTION_MODE_MESH)
+    assert again.cancel_check_token("dsp-7215") == token
+
+
+def test_the_cancel_poll_answers_no_when_the_store_cannot_answer(monkeypatch):
+    """A read failure is never an owner's stop - the same safe default as the executor leg."""
+    setup_auth(monkeypatch)
+    history = History()
+    dispatch_id = create_dispatch(history)
+    token = _mint_cancel_token(dispatch_id)
+    history.cancellation_raises = True
+    status, body, _ = _cancel_poll(history, dispatch_id, token=token)
     assert status == 200 and body == {"ok": True, "cancelled": False}
 
 

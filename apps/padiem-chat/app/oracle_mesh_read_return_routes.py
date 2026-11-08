@@ -108,6 +108,12 @@ ORACLE_MESH_READ_CANCEL_PATH = "/api/claw/connector/mesh-reads/cancel"
 #: to sweep, plus its own dispatch id so its own claim is not counted, in; one
 #: boolean out. Nothing is claimed or written here either.
 ORACLE_MESH_READ_BUSY_PATH = "/api/claw/connector/mesh-reads/busy"
+#: #7215: a PUBLIC, per-dispatch-token read of one dispatch's cancel flag. The
+#: user-mode PC client (SYSTEM) polls it so an owner's stop reaches a command that
+#: has already left the queue — the PC's MeshAgent console lane echoes input instead
+#: of running it, so the executor's taskkill never fires (R4 #7188 wires the process
+#: lane). No channel secret (the token is the only authority), no new port.
+ORACLE_MESH_READ_CANCEL_POLL_PATH = "/api/claw/connector/mesh-reads/cancel-poll"
 #: #82 monitoring read: the lane's own counts and ages, plus how recently each named
 #: device last reported its presence beat. Read-only, same channel proof as poll, and
 #: it claims nothing — a monitor may ask every few minutes forever.
@@ -586,6 +592,29 @@ class OracleMeshReturnSource:
         channel_ok = self.check_channel_secret(presented)
         watch_ok = self.check_watch_secret(presented)
         return bool(channel_ok | watch_ok)
+
+    def cancel_check_token(self, dispatch_id: str) -> str:
+        """A per-dispatch capability the PC-side user-mode client carries (#7215).
+
+        The client runs as SYSTEM on the PC and cannot carry the channel secret, so it
+        carries this instead: an HMAC of the dispatch id under the channel secret with
+        its own domain label, so it can never be replayed as channel-secret proof.
+        Possessing it reveals nothing of the secret and authorizes exactly one read —
+        whether THIS dispatch is cancelled — and only while the dispatch exists.
+        """
+        material = b"mesh-cancel-poll:v1:" + str(dispatch_id).encode("utf-8")
+        return hmac.new(self._secret, material, hashlib.sha256).hexdigest()
+
+    def cancel_check_token_matches(self, dispatch_id: str, presented: Any) -> bool:
+        """Constant-time check of a presented per-dispatch cancel token."""
+        if not isinstance(presented, str) or not presented:
+            return False
+        try:
+            candidate = presented.encode("ascii")
+        except (UnicodeEncodeError, ValueError):
+            return False
+        expected = self.cancel_check_token(dispatch_id).encode("ascii")
+        return hmac.compare_digest(candidate, expected)
 
 
 async def _resolve_oracle_store_text(raw: Any) -> Any:
@@ -2344,6 +2373,19 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             except Exception:
                 desktop_text = None
     granted_root = _oracle_mesh_poll_granted_root(pending)
+    # #7215: hand the user-mode client a per-dispatch cancel token and the public URL
+    # to poll it at, so a stop reaches the command after it has left the queue. Only
+    # when a public base is configured; a missing base keeps the exact older response
+    # and the client simply never self-cancels (the backstop still bounds it).
+    cancel_fields: dict[str, Any] = {}
+    if user_mode:
+        public_base = getattr(
+            getattr(request.app.state, "settings", None), "public_base_url", "") or ""
+        if isinstance(public_base, str) and public_base:
+            cancel_fields = {
+                "cancel_poll_url": public_base.rstrip("/") + ORACLE_MESH_READ_CANCEL_POLL_PATH,
+                "cancel_token": mesh_source.cancel_check_token(pending["dispatch_id"]),
+            }
     return _response({
         "ok": True,
         "dispatch": {
@@ -2372,6 +2414,7 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             **({"background": True, "owner_ref": pending["user_id"]}
                if pending.get("background") is True else {}),
             "user_mode": user_mode,
+            **cancel_fields,
         },
     })
 
@@ -2408,6 +2451,47 @@ async def oracle_mesh_read_cancel_check(request: Request) -> JSONResponse:
     reader = getattr(history_store, "oracle_mesh_dispatch_cancellation", None)
     if not callable(reader):
         return _error(503, "oracle_mesh_unconfigured")
+    try:
+        cancelled = await reader(dispatch_id=dispatch_id)
+    except Exception:
+        return _response({"ok": True, "cancelled": False})
+    return _response({"ok": True, "cancelled": cancelled is True})
+
+
+async def oracle_mesh_read_cancel_poll(request: Request) -> JSONResponse:
+    """PUBLIC per-dispatch-token read of one dispatch's stop flag (#7215).
+
+    The user-mode PC client (SYSTEM) carries a per-dispatch token — never the channel
+    secret — and asks every few seconds only whether THIS dispatch is cancelled. It is
+    the one path that reaches a stop to a user-mode command after it has left the
+    queue: the PC's MeshAgent console lane echoes input instead of running it, so the
+    executor's ``taskkill`` never fires (R4 #7188 wires the process lane). Read-only;
+    nothing is claimed or written.
+
+    The token is the whole authority. A request whose token is not this dispatch's own
+    answers 404 with a fixed body, so a caller without it learns nothing — not even
+    whether the dispatch exists. An unreadable store answers ``cancelled: false``
+    (never end a real command on a read failure), exactly like the executor leg.
+    """
+    mesh_source = _channel_source(request)
+    if mesh_source is None:
+        return _error(503, "oracle_mesh_unconfigured")
+    try:
+        body = json.loads((await request.body()).decode("utf-8"))
+    except (UnicodeDecodeError, ValueError):
+        return _error(404, "not_found")
+    if not isinstance(body, dict):
+        return _error(404, "not_found")
+    dispatch_id = _ref(body.get("dispatch_id"), 128)
+    token = body.get("token")
+    if dispatch_id is None or not isinstance(token, str):
+        return _error(404, "not_found")
+    if not mesh_source.cancel_check_token_matches(dispatch_id, token):
+        return _error(404, "not_found")
+    history_store = getattr(request.app.state, "history_store", None)
+    reader = getattr(history_store, "oracle_mesh_dispatch_cancellation", None)
+    if not callable(reader):
+        return _response({"ok": True, "cancelled": False})
     try:
         cancelled = await reader(dispatch_id=dispatch_id)
     except Exception:

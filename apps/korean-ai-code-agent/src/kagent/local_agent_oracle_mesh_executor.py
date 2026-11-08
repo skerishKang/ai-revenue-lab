@@ -360,6 +360,12 @@ class OracleMeshDispatch:
     # #7076c: route command through the PC logged-in user helper (pipe).
     user_mode: bool = False
     device_id: str | None = None
+    # #7215: the user-mode stop channel the PC client polls — a public URL and a
+    # per-dispatch token, both set by the poll response or both absent (older server
+    # or no public base). Absent means the client never self-cancels and the overall
+    # backstop alone bounds the wait; it never carries a long-lived secret.
+    cancel_poll_url: str | None = None
+    cancel_token: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -1004,6 +1010,13 @@ class OracleMeshExecutor:
         user_mode = dispatch.get("user_mode", False)
         if type(user_mode) is not bool or (user_mode and kind != "command"):
             raise OracleMeshChannelRefused("invalid user_mode dispatch", leg=leg)
+        # #7215: the user-mode stop channel, both fields together or not at all.
+        cancel_poll_url = dispatch.get("cancel_poll_url")
+        if cancel_poll_url is not None:
+            cancel_poll_url = _require_text(cancel_poll_url, "cancel_poll_url")
+        cancel_token = dispatch.get("cancel_token")
+        if cancel_token is not None:
+            cancel_token = _require_text(cancel_token, "cancel_token")
         return OracleMeshDispatch(
             dispatch_id=_require_text(dispatch.get("dispatch_id"), "dispatch_id"),
             nonce=_require_text(dispatch.get("nonce"), "nonce"),
@@ -1021,6 +1034,8 @@ class OracleMeshExecutor:
             owner_ref=owner_ref,
             user_mode=user_mode,
             device_id=_require_text(dispatch.get("device_id"), "device_id") if dispatch.get("device_id") is not None else None,
+            cancel_poll_url=cancel_poll_url,
+            cancel_token=cancel_token,
         )
 
     def execute(self, dispatch: OracleMeshDispatch) -> OracleMeshExecutionOutcome:
@@ -1451,7 +1466,10 @@ class OracleMeshExecutor:
                                          distro: str | None,
                                          task_arguments: str | None = None,
                                          task_path: str = USER_HELPER_TASK_PATH,
-                                         task_name: str = USER_HELPER_TASK_NAME) -> str:
+                                         task_name: str = USER_HELPER_TASK_NAME,
+                                         cancel_poll_url: str | None = None,
+                                         cancel_token: str | None = None,
+                                         dispatch_id: str | None = None) -> str:
         """#7076c/#7105: PS pipe client sent via runcommand (SYSTEM) to the PC.
 
         The script runs on the target PC as SYSTEM. It reads the registered
@@ -1510,12 +1528,50 @@ class OracleMeshExecutor:
         # deadline directly (that cut a healthy 32s command, #7107). The operator can
         # raise it (PADIEM_MESH_USER_HELPER_REPLY_SECONDS > 0) or disable it (< 0).
         overall_backstop = max(180, int(timeout_seconds) + 120)
+        # #7215: the user-mode stop channel. All three present enables the client's
+        # cancel poll; any absent (older server / no public base) embeds empty and the
+        # client never self-cancels (the backstop alone bounds it). These are
+        # per-dispatch capabilities, not long-lived secrets. A value carrying a quote
+        # or control char is dropped rather than escaped into a PS literal on a PC.
+        def _ps_literal_safe(value: str | None) -> str:
+            text = str(value or "")
+            if "'" in text or any(ord(ch) < 32 for ch in text):
+                return ""
+            return text
+        cancel_url_lit = _ps_literal_safe(cancel_poll_url)
+        cancel_token_lit = _ps_literal_safe(cancel_token)
+        cancel_dispatch_lit = _ps_literal_safe(dispatch_id)
+        if not (cancel_url_lit and cancel_token_lit and cancel_dispatch_lit):
+            cancel_url_lit = cancel_token_lit = cancel_dispatch_lit = ""
         script = r"""
 $ErrorActionPreference='Stop'
 $ProgressPreference='SilentlyContinue'
 $ConfirmPreference='None'
 function Trace($m){ try{ if([IO.File]::Exists('C:\ProgramData\Padiem\client-trace.enabled')){ [IO.File]::AppendAllText('C:\ProgramData\Padiem\client-trace.log',((Get-Date).ToString('o')+' '+[string]$m+"`r`n")) } }catch{} }
 Trace 'client start'
+# #7215: the owner's stop reaches this command through a public, per-dispatch-token
+# read, polled every few seconds while we wait. The PC's MeshAgent console lane echoes
+# input instead of running it, so the executor's taskkill never fires (R4 #7188 wires
+# the process lane); this is how a stop ends a user-mode command that has left the
+# queue. Empty url disables it. Any request failure is swallowed and the wait
+# continues - a check that cannot be read never cuts a healthy long command.
+$__cancelUrl='@@CANCEL_URL@@'
+$__dispatchId='@@DISPATCH_ID@@'
+$__cancelToken='@@CANCEL_TOKEN@@'
+$__nextCancel=0
+$__slice=2500
+function CancelCheck(){
+  if(-not $__cancelUrl){ return $false }
+  $tc=[Environment]::TickCount
+  if($tc -lt $script:__nextCancel){ return $false }
+  $script:__nextCancel=$tc+3000
+  try {
+    $__cb=@{dispatch_id=$__dispatchId; token=$__cancelToken} | ConvertTo-Json -Compress
+    $__cr=Invoke-RestMethod -Method Post -Uri $__cancelUrl -Body $__cb -ContentType 'application/json' -TimeoutSec 3
+    if($__cr.cancelled -eq $true){ return $true }
+  } catch {}
+  return $false
+}
 $mat=[Convert]::FromBase64String('@@MAT_B64@@')
 $reqB64='@@REQ_B64@@'
 # #7182b: never 'exit' from this client. The SYSTEM lane runs it inside
@@ -1606,14 +1662,16 @@ try {@@ARGUMENTS_SOURCE@@
     if($__wait -lt 1){ $__wait=1 }
     $hdr=New-Object byte[] 4; $read=0
     while($read -lt 4){
-      $t=$client.ReadAsync($hdr,$read,4-$read); if(-not $t.Wait($__wait)){ Timeout }
+      $t=$client.ReadAsync($hdr,$read,4-$read); $__by=[Environment]::TickCount+$__wait
+      while(-not $t.Wait($__slice)){ if([Environment]::TickCount -ge $__by){ Timeout }; if(CancelCheck){ throw 'padiem_cancelled' } }
       $n=$t.Result; if($n -le 0){ throw 'short header' }; $read+=$n
     }
     [Array]::Reverse($hdr); $rlen=[System.BitConverter]::ToInt32($hdr,0)
     if($rlen -lt 0 -or $rlen -gt 2097152){ throw 'bad frame length' }
     $rbody=New-Object byte[] $rlen; $read=0
     while($read -lt $rlen){
-      $t=$client.ReadAsync($rbody,$read,$rlen-$read); if(-not $t.Wait($__wait)){ Timeout }
+      $t=$client.ReadAsync($rbody,$read,$rlen-$read); $__by=[Environment]::TickCount+$__wait
+      while(-not $t.Wait($__slice)){ if([Environment]::TickCount -ge $__by){ Timeout }; if(CancelCheck){ throw 'padiem_cancelled' } }
       $n=$t.Result; if($n -le 0){ throw 'short body' }; $read+=$n
     }
     $text=[System.Text.Encoding]::UTF8.GetString($rbody)
@@ -1644,6 +1702,15 @@ try {@@ARGUMENTS_SOURCE@@
   try { $client.Dispose() } catch {}
   [Console]::Out.Flush()
   $detail=[string]$_.Exception.Message
+  if($detail -eq 'padiem_cancelled'){
+    # #7215: the owner stopped this dispatch. The pipe is now closed, so the helper
+    # ends the limone-session user child; we return a cancelled reply, which the
+    # executor maps to a stop and the console then exits, freeing the agent slot.
+    Trace 'cancelled by owner'
+    $__cid=''; try { $__cid=[string]$req.request_id } catch {}
+    Write-Output (@{request_id=$__cid; status='cancelled'} | ConvertTo-Json -Compress)
+    return
+  }
   if($detail -notmatch '^[a-z_]+: '){ $detail='user_session_unavailable: helper pipe is not available' }
   Trace ('catch '+$detail)
   Write-Output $detail
@@ -1655,6 +1722,9 @@ try {@@ARGUMENTS_SOURCE@@
             .replace("@@REQ_B64@@", req_b64)
             .replace("@@ARGUMENTS_SOURCE@@", arguments_source)
             .replace("@@OVERALL_SECONDS@@", str(overall_backstop))
+            .replace("@@CANCEL_URL@@", cancel_url_lit)
+            .replace("@@DISPATCH_ID@@", cancel_dispatch_lit)
+            .replace("@@CANCEL_TOKEN@@", cancel_token_lit)
         )
 
     @staticmethod
@@ -1726,7 +1796,14 @@ try {@@ARGUMENTS_SOURCE@@
         # lanes hash the same string on the PC. A missing task or argument is
         # reported by the PS client before any pipe wait.
         try:
-            ps = self.build_user_helper_pipe_client_ps(request_id=req_id, shell=shell_name, command=cmd, cwd=cwd, timeout_seconds=timeout_s, distro=distro)
+            ps = self.build_user_helper_pipe_client_ps(
+                request_id=req_id, shell=shell_name, command=cmd, cwd=cwd,
+                timeout_seconds=timeout_s, distro=distro,
+                # #7215: the stop channel for this dispatch, so the client self-cancels.
+                cancel_poll_url=getattr(dispatch, "cancel_poll_url", None),
+                cancel_token=getattr(dispatch, "cancel_token", None),
+                dispatch_id=getattr(dispatch, "dispatch_id", None),
+            )
         except Exception:
             return OracleMeshExecutionOutcome(termination="not_executed", exit_code=None,
                 body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "user mode client unavailable"}, ensure_ascii=True).encode("utf-8"))

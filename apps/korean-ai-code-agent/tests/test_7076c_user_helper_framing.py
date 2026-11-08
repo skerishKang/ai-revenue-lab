@@ -61,7 +61,11 @@ def test_ps_client_bounds_every_pipe_step():
     assert "$w.Wait(5000)" in ps
     # #7184c: 15s is the default frame window, clamped to the bound around it.
     assert "$__wait=15000" in ps
-    assert "if(-not $t.Wait($__wait)){ Timeout }" in ps
+    # #7215: the read now waits in short slices so it can poll the owner's stop
+    # while blocked; the bound is still $__wait ($__by) and still ends in Timeout().
+    assert "$__by=[Environment]::TickCount+$__wait" in ps
+    assert "if([Environment]::TickCount -ge $__by){ Timeout }" in ps
+    assert "if(CancelCheck){ throw 'padiem_cancelled' }" in ps
     # #7196: each wait names its own stage when it expires.
     assert "user_helper_timeout: frame read deadline expired" in ps
     assert "user_helper_timeout: first-frame deadline expired" in ps

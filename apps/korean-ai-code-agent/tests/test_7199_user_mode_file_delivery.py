@@ -35,7 +35,7 @@ DID = "dsp_" + "ab12" * 6          # a well-formed dispatch id
 HOST = "padiem-com2-exec.1"
 NODE = "wYx8HR9Ou4C96Ys63@Dd2cdXxSOwp"
 MESHCTRL = "/opt/meshcentral/meshctrl.js"
-PASSWORD = "op3rator-secret-value"
+FAKE_PASSWORD = "fake-not-a-real-secret"  # test placeholder; not a credential
 
 #: Every console line must sit under the Windows console input ceiling. The chunk
 #: lines are held well below it so the staging never depends on line length.
@@ -153,7 +153,7 @@ def _capturing_port(calls):
         command_runner=runner,
         meshctrl_js=MESHCTRL,
         login_user="padiemadmin",
-        password_provider=lambda: PASSWORD,
+        password_provider=lambda: FAKE_PASSWORD,
         url="wss://127.0.0.1:4443",
     )
 
