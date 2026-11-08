@@ -899,5 +899,64 @@ class StepTimeoutSettingTests(unittest.TestCase):
                 _step_timeout_seconds({"ORACLE_MESH_READ_TIMEOUT_SECONDS": bad})
 
 
+class UserModeCancelProjectionTests(unittest.TestCase):
+    """#7215: the poll carries the user-mode stop channel onto the dispatch.
+
+    The server projects a per-dispatch cancel token and the public URL to poll it
+    at; the executor parses them onto the dispatch so the file-delivery builder can
+    embed them in the SYSTEM-launched user-mode client. Both fields travel together
+    or not at all, and a malformed one is refused rather than silently dropped.
+    """
+
+    def _dispatch_dict(self, **overrides) -> dict:
+        base = {
+            "dispatch_id": "dsp-7215",
+            "nonce": "n" * 32,
+            "node_ref": NODE,
+            "file_path": "C:\\__command__",
+            "command_id": "cmd-1",
+            "run_id": "run-1",
+            "kind": "command",
+            "command_text": "whoami",
+            "user_mode": True,
+        }
+        base.update(overrides)
+        return base
+
+    def _poll(self, dispatch_dict):
+        executor = OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net",
+            channel_secret=SECRET,
+            read_port=_StubPort(),
+            transport=lambda path, payload: (200, {"ok": True, "dispatch": dispatch_dict}),
+        )
+        return executor.poll_once()
+
+    def test_poll_parses_the_cancel_poll_url_and_token_onto_the_dispatch(self):
+        dispatch = self._poll(self._dispatch_dict(
+            cancel_poll_url="https://chat.padiem.net/api/claw/connector/mesh-reads/cancel-poll",
+            cancel_token="a" * 64,
+        ))
+        self.assertIsNotNone(dispatch)
+        self.assertTrue(dispatch.user_mode)
+        self.assertEqual(
+            dispatch.cancel_poll_url,
+            "https://chat.padiem.net/api/claw/connector/mesh-reads/cancel-poll",
+        )
+        self.assertEqual(dispatch.cancel_token, "a" * 64)
+
+    def test_poll_without_the_cancel_fields_leaves_them_none(self):
+        dispatch = self._poll(self._dispatch_dict())
+        self.assertIsNotNone(dispatch)
+        self.assertTrue(dispatch.user_mode)
+        self.assertIsNone(dispatch.cancel_poll_url)
+        self.assertIsNone(dispatch.cancel_token)
+
+    def test_a_malformed_cancel_field_is_refused(self):
+        for bad in ({"cancel_token": 123}, {"cancel_poll_url": ""}, {"cancel_token": None, "cancel_poll_url": 5}):
+            with self.assertRaises(OracleMeshChannelRefused):
+                self._poll(self._dispatch_dict(**bad))
+
+
 if __name__ == "__main__":
     unittest.main()

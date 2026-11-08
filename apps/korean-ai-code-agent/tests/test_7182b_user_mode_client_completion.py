@@ -193,7 +193,11 @@ class TheClientIsBounded(unittest.TestCase):
         # #7184c: the default frame window is still 15s, but it can only be as
         # long as the bound it sits inside (first frame / operator reply cap).
         self.assertIn("$__wait=15000", script)
-        self.assertIn("if(-not $t.Wait($__wait)){ Timeout }", script)
+        # #7215: 프레임 읽기는 이제 짧은 슬라이스로 기다리며 대기 중에도 중지를 폴링한다.
+        # 바운드는 여전히 $__wait($__by)이고 만료 시 Timeout 으로 끝난다.
+        self.assertIn("$__by=[Environment]::TickCount+$__wait", script)
+        self.assertIn("if([Environment]::TickCount -ge $__by){ Timeout }", script)
+        self.assertIn("if(CancelCheck){ throw 'padiem_cancelled' }", script)
         # 그리고 그 실패는 코드가 붙은 한 줄로 돌아온다(침묵이 아니라 결과).
         self.assertIn("helper pipe is not available", script)
 

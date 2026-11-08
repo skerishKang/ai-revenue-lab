@@ -218,17 +218,23 @@ class History:
         return True
 
 
-def _state_with(mapping, *, pairing=None):
+def _state_with(mapping, *, pairing=None, public_base=None):
     source = routes.build_oracle_mesh_return_source(
         mapping, SECRET, routes.EXECUTION_MODE_MESH)
     assert source is not None
-    return SimpleNamespace(
+    ns = SimpleNamespace(
         oracle_mesh_return_source=source,
         control_plane_identity_authority=Identity(),
         history_store=History(),
         connector_txt_read_source=None,
         pc_device_pairing_store=pairing,
     )
+    # #7215: the poll reads the canonical public address from settings to build the
+    # user-mode client's cancel-poll URL. Only attached when a test asks for it, so
+    # every existing poll keeps its exact older response (no cancel fields).
+    if public_base is not None:
+        ns.settings = SimpleNamespace(public_base_url=public_base)
+    return ns
 
 
 def _state(command_exec: bool = True):
@@ -327,6 +333,75 @@ def test_poll_hands_the_command_to_the_executor(monkeypatch):
     dispatch = body["dispatch"]
     assert dispatch["kind"] == "command"
     assert dispatch["command_text"] == COMMAND
+
+
+# ------------------------------------ #7215: the user-mode client's self-cancel wiring
+PUBLIC_BASE = "https://chat.padiem.net"
+
+
+def _dispatch_user_mode(state, command: str = COMMAND):
+    response = asyncio.run(routes.dispatch_oracle_mesh_command_intent(
+        Request({"run_id": RUN, "device_id": None, "confirmed": True}, state),
+        command=command,
+        wire={"run_id": RUN, "device_id": None, "confirmed": True},
+        user_mode=True,
+    ))
+    return response.status_code, json.loads(response.body), response.headers
+
+
+def test_user_mode_poll_projects_the_cancel_poll_url_and_a_per_dispatch_token(monkeypatch):
+    """A user-mode command is handed the public URL and its own token to poll the stop.
+
+    #7215: the PC's console lane echoes input instead of running it, so the executor's
+    ``taskkill`` never reaches a user-mode command that has left the queue. The poll
+    therefore hands the client a per-dispatch token and the canonical public URL, and
+    the client asks that endpoint every few seconds whether this dispatch is cancelled.
+    """
+    setup_auth(monkeypatch)
+    state = _state_with(_mapping(), public_base=PUBLIC_BASE + "/")
+    status, body, _ = _dispatch_user_mode(state)
+    assert status == 200, body
+    status, body, _ = call(
+        routes.oracle_mesh_read_poll, Request({}, state, secret=SECRET))
+    assert status == 200, body
+    dispatch = body["dispatch"]
+    assert dispatch["user_mode"] is True
+    assert dispatch["kind"] == "command"
+    # The canonical public base (trailing slash trimmed) + the one fixed path.
+    assert dispatch["cancel_poll_url"] == PUBLIC_BASE + routes.ORACLE_MESH_READ_CANCEL_POLL_PATH
+    # The token is THIS dispatch's own, verifiable by the same source the server checks with.
+    source = state.oracle_mesh_return_source
+    assert source.cancel_check_token_matches(dispatch["dispatch_id"], dispatch["cancel_token"])
+    assert dispatch["cancel_token"] != SECRET
+
+
+def test_user_mode_poll_without_a_public_base_omits_the_cancel_fields(monkeypatch):
+    """No public base configured keeps the exact older response; the client never self-cancels."""
+    setup_auth(monkeypatch)
+    state = _state()  # no settings.public_base_url
+    status, body, _ = _dispatch_user_mode(state)
+    assert status == 200, body
+    status, body, _ = call(
+        routes.oracle_mesh_read_poll, Request({}, state, secret=SECRET))
+    assert status == 200, body
+    dispatch = body["dispatch"]
+    assert dispatch["user_mode"] is True
+    assert "cancel_poll_url" not in dispatch
+    assert "cancel_token" not in dispatch
+
+
+def test_system_mode_poll_never_carries_the_cancel_fields(monkeypatch):
+    """SYSTEM lane is out of #7215 scope: even with a public base, it is projected as before."""
+    setup_auth(monkeypatch)
+    state = _state_with(_mapping(), public_base=PUBLIC_BASE)
+    _dispatch(state)  # default user_mode=False
+    status, body, _ = call(
+        routes.oracle_mesh_read_poll, Request({}, state, secret=SECRET))
+    assert status == 200, body
+    dispatch = body["dispatch"]
+    assert dispatch["user_mode"] is False
+    assert "cancel_poll_url" not in dispatch
+    assert "cancel_token" not in dispatch
 
 
 def test_clean_command_result_is_delivered_once_with_its_output(monkeypatch):
