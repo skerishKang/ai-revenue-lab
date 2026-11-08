@@ -59,7 +59,9 @@ def test_ps_client_bounds_every_pipe_step():
     )
     assert "$client.Connect(5000)" in ps
     assert "$w.Wait(5000)" in ps
-    assert "$t.Wait(15000)" in ps
+    # #7184c: 15s is the default frame window, clamped to the bound around it.
+    assert "$__wait=15000" in ps
+    assert "if(-not $t.Wait($__wait)){ Timeout }" in ps
     assert "helper read timeout" in ps
     assert "helper write timeout" in ps
 

@@ -43,6 +43,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import sys
 import re
 import time
 from dataclasses import dataclass
@@ -335,7 +336,45 @@ def _keep_id_literals(dispatch_id: str | None, keep_dispatch_ids) -> list[str]:
 #: on 2026-10-29 as a diagnostic PowerShell that survived eleven hours.
 SWEEP_MODE_ABANDONED = "abandoned"
 SWEEP_MODE_HELD = "held"
-SWEEP_MODES = (SWEEP_MODE_ABANDONED, SWEEP_MODE_HELD)
+#: The stale idle console (#7180, measured 2026-11-08): an agent's direct child a
+#: lost dispatch left behind held the console for 19 hours — the agent drops
+#: (never queues) a later runcommand, so one orphan silenced every PC command
+#: for a day. This scope ends only processes matching ALL of: parent = the
+#: agent, older than the configured age, whose own children are nothing but
+#: conhost, while nothing of this connector's is live on the PC. It kills by
+#: explicit process id, never by a name pattern.
+SWEEP_MODE_IDLE_CONSOLE = "idle_console"
+SWEEP_MODES = (SWEEP_MODE_ABANDONED, SWEEP_MODE_HELD, SWEEP_MODE_IDLE_CONSOLE)
+
+#: The reaper's master switch: ON by default, the operator turns it off with
+#: ``PADIEM_MESH_IDLE_CONSOLE_REAP=0`` — the inverse of the opt-in lanes above,
+#: because an orphaned console is exactly the failure this exists to end.
+IDLE_CONSOLE_REAP_ENV = "PADIEM_MESH_IDLE_CONSOLE_REAP"
+#: How old a candidate console must be. Zero or less disables the reaper: an
+#: age bound of zero cannot tell a wedged console from work that just started.
+IDLE_CONSOLE_MIN_AGE_ENV = "PADIEM_MESH_IDLE_CONSOLE_MIN_AGE_SECONDS"
+IDLE_CONSOLE_MIN_AGE_SECONDS_DEFAULT = 900
+
+
+def _idle_console_reap_enabled(explicit: bool | None = None, environ=None) -> bool:
+    if explicit is not None:
+        return explicit is True
+    source = os.environ if environ is None else environ
+    return (source.get(IDLE_CONSOLE_REAP_ENV) or "").strip().lower() not in (
+        "0", "false", "no", "off",
+    )
+
+
+def _idle_console_min_age_seconds(environ=None) -> int:
+    source = os.environ if environ is None else environ
+    raw = (source.get(IDLE_CONSOLE_MIN_AGE_ENV) or "").strip()
+    if not raw:
+        return IDLE_CONSOLE_MIN_AGE_SECONDS_DEFAULT
+    try:
+        value = int(raw)
+    except ValueError:
+        return IDLE_CONSOLE_MIN_AGE_SECONDS_DEFAULT
+    return value if value > 0 else 0
 
 
 def _sweep_head(dispatch_id: str | None, keep: list[str]) -> str:
@@ -364,6 +403,7 @@ def _sweep_head(dispatch_id: str | None, keep: list[str]) -> str:
         '-Filter "ProcessId=$__padiem_ours" };'
         "$__padiem_keep=@(" + ",".join("'" + i + "'" for i in keep) + ");"
         "$__padiem_safe=@($__padiem_self);$__padiem_orphan=@();"
+        "$__padiem_claimed=@();"
         # The agent is named by walking up from this session's own process, so the
         # family chain is protected whatever the agent put between itself and this
         # shell. A sweep that ended its own session would answer nothing, which is
@@ -387,6 +427,7 @@ def _sweep_head(dispatch_id: str | None, keep: list[str]) -> str:
         "$__padiem_v=@((Get-Content -LiteralPath $__padiem_f.FullName "
         "| Select-Object -First 2));"
         "$__padiem_p=[uint32]$__padiem_v[0];$__padiem_h=[string]$__padiem_v[1];"
+        "$__padiem_claimed += $__padiem_p;"
         " if ($__padiem_keep -contains $__padiem_id) {"
         " if ($__padiem_p) { $__padiem_safe += $__padiem_p } }"
         " elseif ($__padiem_p) { $__padiem_orphan +="
@@ -413,6 +454,7 @@ def sweep_script(
     keep_dispatch_ids=(),
     mode: str = SWEEP_MODE_ABANDONED,
     host_tag: str | None = None,
+    min_age_seconds: int = IDLE_CONSOLE_MIN_AGE_SECONDS_DEFAULT,
 ) -> str:
     """Free the PC's serial console from a process that no dispatch owns.
 
@@ -475,6 +517,60 @@ def sweep_script(
             " & taskkill /T /F /PID $__padiem_o.pid | Out-Null;"
             " $__padiem_killed += $__padiem_o.pid };"
             " Remove-Item -LiteralPath $__padiem_o.file -Force }};"
+        )
+    elif mode == SWEEP_MODE_IDLE_CONSOLE:
+        # The stale idle console (#7180): one orphan held the console for 19
+        # hours and the agent dropped every later request. Two reaches, both
+        # ended by explicit pid, never by a name pattern:
+        # (1) a marker of OUR host whose dispatch nobody keeps any more — the
+        #     client of a lost dispatch, still alive on the PC;
+        # (2) a marker-less agent direct child, older than the age bound, whose
+        #     own children are nothing but conhost — a wedged console nobody's
+        #     dispatch claims. A process ANY marker names is skipped here: a
+        #     failover partner's running command is not ours to end.
+        checked_age = int(min_age_seconds)
+        if checked_age <= 0:
+            raise MeshCentralCommandRefused("the idle-console age bound must be positive")
+        if host_tag:
+            ours = (
+                " if ($__padiem_o.host -ne '"
+                + _checked_host_tag(host_tag) + "') { continue };"
+            )
+        else:
+            # Without a tag there is no way to tell our lost dispatch's client
+            # from the failover partner's: the marker pass ends nothing, and
+            # only the structural pass (which every marker protects against)
+            # runs.
+            ours = " continue;"
+        body = (
+            "if (-not $__padiem_live) {"
+            " foreach ($__padiem_o in $__padiem_orphan) {"
+            + ours +
+            ' $__padiem_c=Get-CimInstance Win32_Process -Filter '
+            '"ProcessId=$($__padiem_o.pid)";'
+            " if ($__padiem_safe -contains $__padiem_o.pid) { continue };"
+            " if ($__padiem_c) {"
+            " $__padiem_found += @{pid=$__padiem_o.pid; name=[string]$__padiem_c.Name;"
+            " created=[string]$__padiem_c.CreationDate; dispatch=$__padiem_o.id};"
+            " & taskkill /T /F /PID $__padiem_o.pid | Out-Null;"
+            " $__padiem_killed += $__padiem_o.pid };"
+            " Remove-Item -LiteralPath $__padiem_o.file -Force };"
+            " $__padiem_age=[TimeSpan]::FromSeconds(" + str(checked_age) + ");"
+            " foreach ($__padiem_k in Get-CimInstance Win32_Process -Filter"
+            ' "ParentProcessId=$__padiem_agent") {'
+            " if ($__padiem_safe -contains $__padiem_k.ProcessId) { continue };"
+            " if ($__padiem_claimed -contains $__padiem_k.ProcessId) { continue };"
+            " if (((Get-Date) - $__padiem_k.CreationDate) -lt $__padiem_age) { continue };"
+            ' $__padiem_kids=Get-CimInstance Win32_Process -Filter '
+            '"ParentProcessId=$($__padiem_k.ProcessId)";'
+            " $__padiem_busy=$false;"
+            " foreach ($__padiem_c in $__padiem_kids) {"
+            " if ([string]$__padiem_c.Name -ne 'conhost.exe') { $__padiem_busy=$true } };"
+            " if ($__padiem_busy) { continue };"
+            " $__padiem_found += @{pid=[uint32]$__padiem_k.ProcessId;"
+            " name=[string]$__padiem_k.Name; created=[string]$__padiem_k.CreationDate};"
+            " & taskkill /T /F /PID $__padiem_k.ProcessId | Out-Null;"
+            " $__padiem_killed += [uint32]$__padiem_k.ProcessId }};"
         )
     else:
         # The held-line scope: nothing this connector owns is running, so every
@@ -719,7 +815,7 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
             ' Write-Output ("' + ENVELOPE_PREFIX + '" + '
             "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
             ' Write-Output ("' + EXIT_SENTINEL + '" + $LASTEXITCODE)'
-        )
+        ) + "; [Console]::Out.Flush()"
     )
 
 
@@ -1347,6 +1443,18 @@ class MeshCentralCliCommandPort:
             if attempts >= 2:
                 break
             phase("line_retry")
+        # #7180: an expired wait on a PC whose answer never came is the shape a
+        # lost dispatch's orphan console produces (measured 2026-11-08: one idle
+        # agent child silenced every PC command for 19 hours). The reaper ends
+        # exactly that process — agent's direct child, older than the age bound,
+        # conhost-only children, nothing of ours live — and it rides every
+        # timed_out completion of this wait, so the silent-wait bound reports the
+        # outage AND the lane actually frees.
+        if outcome.termination == "timed_out":
+            self._reap_idle_console(
+                node_ref=node_ref, dispatch_id=dispatch_id,
+                keep_dispatch_ids=keep_dispatch_ids, phase=phase,
+            )
         blocked = sum(
             1 for sweep in sweeps
             if sweep.observed and not sweep.running and sweep.found
@@ -1361,6 +1469,54 @@ class MeshCentralCliCommandPort:
             line_blocked=blocked,
             line_cleared=cleared,
         )
+
+    def _reap_idle_console(
+        self, *, node_ref: str, dispatch_id: str | None,
+        keep_dispatch_ids: tuple[str, ...],
+        phase: Callable[[str], None],
+    ) -> None:
+        """End one stale idle console the lost dispatch left behind (#7180).
+
+        Strictly an aside to the command's own outcome: default on, and the
+        operator turns it off with ``PADIEM_MESH_IDLE_CONSOLE_REAP=0``. The
+        decision of WHAT to end is taken on the PC by ``sweep_script`` — an
+        agent's direct child, older than
+        ``PADIEM_MESH_IDLE_CONSOLE_MIN_AGE_SECONDS`` (default 900), whose own
+        children are nothing but conhost, while no dispatch of this connector's
+        is live on the PC. Killed by explicit process id; the pid and the
+        creation timestamp reach this host's journal, never a name pattern or
+        an output value.
+        """
+        if not _idle_console_reap_enabled():
+            return
+        min_age = _idle_console_min_age_seconds()
+        if min_age <= 0:
+            return
+        if not node_ref:
+            return
+        phase("idle_reap")
+        try:
+            report = self.sweep_agent_children(
+                node_ref=node_ref, dispatch_id=dispatch_id,
+                keep_dispatch_ids=keep_dispatch_ids,
+                mode=SWEEP_MODE_IDLE_CONSOLE, phase_observer=phase,
+                min_age_seconds=min_age,
+            )
+        except Exception:
+            phase("idle_reap_refused")
+            return
+        if report.killed:
+            # OS facts only: pids and creation timestamps, capped so a strange
+            # PC can never turn the journal into a stream.
+            entries = report.found[:8]
+            print(
+                "pc_idle_console_reap killed=%d %s"
+                % (len(report.killed), " ".join(
+                    "pid=%s created=%s" % (entry.get("pid"), entry.get("created"))
+                    for entry in entries if isinstance(entry, dict))),
+                file=sys.stderr, flush=True,
+            )
+            phase("idle_reap_cleared")
 
     def _run_streaming(
         self, argv: list[str], password: str, timeout_seconds: int | None,
@@ -1640,6 +1796,7 @@ class MeshCentralCliCommandPort:
         keep_dispatch_ids=(),
         mode: str = SWEEP_MODE_ABANDONED,
         phase_observer: Callable[[str], None] | None = None,
+        min_age_seconds: int = IDLE_CONSOLE_MIN_AGE_SECONDS_DEFAULT,
     ) -> MeshCentralLineSweep:
         """Free the PC's console line from a process that no dispatch owns.
 
@@ -1659,6 +1816,7 @@ class MeshCentralCliCommandPort:
         script = sweep_script(
             dispatch_id=dispatch_id, keep_dispatch_ids=keep_dispatch_ids,
             mode=mode, host_tag=self._host_tag,
+            min_age_seconds=min_age_seconds,
         )
         phase("line_probe")
         try:
