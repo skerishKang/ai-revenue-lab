@@ -27,6 +27,10 @@ from .calendar_read_activation_engine import (
     CALENDAR_READ_ACTIVATION_PATH,
     CloudflareCalendarReadActivationEngineClient,
 )
+from .calendar_read_state_engine import (
+    CALENDAR_READ_STATE_PATH,
+    CloudflareCalendarReadStateEngineClient,
+)
 from .claw_p01_composition import compose_p01_lanes
 from .connector_tool_engine_client import (
     TOOL_EXECUTE_ENDPOINT,
@@ -318,6 +322,43 @@ def build_local_calendar_read_activation_client(
         return None, P01_DIAG_COMPOSITION_UNAVAILABLE
 
 
+def build_local_calendar_read_state_client(
+    env: Any,
+    *,
+    client: httpx.AsyncClient | None = None,
+) -> tuple[CloudflareCalendarReadStateEngineClient | None, str | None]:
+    """The Worker's Calendar READ state client over the loopback Engine.
+
+    Same client class, same caller surface and the same closed response contract
+    the deployed Worker uses (``worker.py`` binds this exact class over the P01
+    Service Binding); only the transport is the host's loopback binding and only
+    the reviewed read-state path is reachable through it. Unconfigured stays
+    unbound so the status surface keeps omitting the grant field instead of
+    inventing a grant answer.
+    """
+
+    config, diagnostic = local_p01_engine_config_from_env(env)
+    if config is None:
+        return None, diagnostic
+    try:
+        binding = LocalEngineFetchBinding(
+            config.origin, paths=(CALENDAR_READ_STATE_PATH,), client=client
+        )
+        return (
+            CloudflareCalendarReadStateEngineClient(
+                binding,
+                caller_id=config.caller_id,
+                credential=config.credential,
+                request_factory=LocalEngineRequest,
+            ),
+            None,
+        )
+    except (TypeError, ValueError):
+        return None, P01_DIAG_CLIENT_CONSTRUCTOR_ERROR
+    except Exception:
+        return None, P01_DIAG_COMPOSITION_UNAVAILABLE
+
+
 def build_local_connector_tool_client(
     env: Any,
     *,
@@ -365,6 +406,7 @@ __all__ = [
     "LocalEngineRequest",
     "LocalP01EngineConfig",
     "build_local_calendar_read_activation_client",
+    "build_local_calendar_read_state_client",
     "build_local_connector_tool_client",
     "build_local_engine_client",
     "build_local_p01_adapter",
