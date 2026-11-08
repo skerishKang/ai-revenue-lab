@@ -20,7 +20,7 @@ from .b66_registered_model_boundary import (
     B66ModelRouteError,
     B66QuoteTaskRequirements,
 )
-from padiem_control_plane.product_tier_routes import is_free_execution_candidate
+from padiem_control_plane.product_tier_routes_private import effective_is_free_execution_candidate
 
 _MODELS_PATH = "/api/pilot/models"
 _READINESS_PATH = "/api/pilot/provider-readiness"
@@ -54,7 +54,7 @@ def _excluded_free_candidate(model_id: str) -> bool:
     execution candidate, so it is not a customer-selectable B66 route either.
     The rule is the shared contract's, so B66 and the other products agree.
     """
-    return is_free_execution_candidate(model_id)
+    return effective_is_free_execution_candidate(model_id)
 
 
 class B14RegisteredModelView(Protocol):

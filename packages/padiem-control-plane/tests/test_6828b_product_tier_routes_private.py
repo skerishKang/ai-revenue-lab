@@ -39,13 +39,14 @@ def _private(tmp_path: Path) -> Path:
     return target
 
 
-def test_switch_off_answers_the_pure_declaration():
+def test_switch_off_is_fail_closed_like_an_unusable_document():
+    """#6828 3단계: the switch is mandatory. Without it the reader answers the
+    value-free declaration — every grade declared without a route."""
     assert effective_product_tier_routes() is PRODUCT_TIER_ROUTES
-    declared = next(tier for tier in PRODUCT_TIER_ROUTES
-                    if tier.label is ProductTierLabel.PLUS)
-    executable = next(route for route in declared.routes
-                      if route.status.value == "executable")
-    assert effective_active_route_for(ProductTierLabel.PLUS).model_id == executable.model_id
+    assert all(not tier.routes for tier in effective_product_tier_routes())
+    assert effective_active_route_for(ProductTierLabel.FREE) is None
+    assert effective_active_route_for(ProductTierLabel.PLUS) is None
+    assert effective_active_route_for(ProductTierLabel.PRO) is None
 
 
 def test_switch_on_uses_the_private_tiers(tmp_path, monkeypatch):
@@ -62,7 +63,8 @@ def test_switch_on_uses_the_private_tiers(tmp_path, monkeypatch):
     free = effective_active_route_for(ProductTierLabel.FREE)
     assert free.model_id == document["tiers"]["free"]["primary"]
     # A grade the document does not name stays declared without a route.
-    assert effective_active_route_for(ProductTierLabel.ADMIN) is None
+    # The fixture names every grade, so every grade resolves from the document.
+    assert effective_active_route_for(ProductTierLabel.ADMIN) is not None
 
 
 def test_switch_on_without_a_usable_document_is_fail_closed(tmp_path, monkeypatch):

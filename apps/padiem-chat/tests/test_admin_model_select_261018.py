@@ -14,8 +14,8 @@ from types import SimpleNamespace
 
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
-    active_route_for,
 )
+from padiem_control_plane.product_tier_routes_private import effective_active_route_for
 
 from app import tier_identity_client as tier_identity_module
 from app.member_grade_access import selected_admin_denial
@@ -66,7 +66,7 @@ def _run(coro):
 
 
 def test_admin_model_id_is_the_owner_authorized_muse_model() -> None:
-    route = active_route_for(ProductTierLabel.ADMIN)
+    route = effective_active_route_for(ProductTierLabel.ADMIN)
     assert route is not None and route.model_id
     assert ADMIN_B14_MODEL_ID == route.model_id
 

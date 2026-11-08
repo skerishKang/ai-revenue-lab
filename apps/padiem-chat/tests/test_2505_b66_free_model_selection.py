@@ -31,6 +31,20 @@ ALLOWED_MODEL = "test-fixture/quote-capable"
 ALLOWED_PROVIDER = "test-fixture"
 
 
+import pytest as _pytest
+
+
+@_pytest.fixture(autouse=True)
+def _deployment_free_candidate_provider(monkeypatch):
+    """#6828 3단계: the excluded provider is deployment data (private env).
+
+    These tests exercise the exclusion of the deployment's free-candidate
+    provider, so the simulated deployment names the same provider the
+    fixtures already used on main.
+    """
+    monkeypatch.setenv("PADIEM_B14_FREE_CANDIDATE_PROVIDERS", FREE_MODEL.partition("/")[0])
+
+
 def _registry(*, model_ids=(ALLOWED_MODEL,), provider_id=ALLOWED_PROVIDER):
     return {
         "registered_routes": [

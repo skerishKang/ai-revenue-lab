@@ -52,7 +52,8 @@ from app.model_policy import (
     resolve_model_policy,
     resolve_request_model_policy,
 )
-from padiem_control_plane.product_tier_routes import ProductTierLabel, active_route_for
+from padiem_control_plane.product_tier_routes import ProductTierLabel
+from padiem_control_plane.product_tier_routes_private import effective_active_route_for
 from app.orchestration_bridge import B62EngineOrchestrationBridge
 from app.orchestration_routes import install_orchestration_routes
 from padiem_control_plane import (
@@ -182,7 +183,7 @@ def _harness_model_ids() -> set[str]:
                 continue
     for label in ProductTierLabel:
         try:
-            ids.add(active_route_for(label).model_id)
+            ids.add(effective_active_route_for(label).model_id)
         except Exception:
             continue
     return {item for item in ids if isinstance(item, str) and item}

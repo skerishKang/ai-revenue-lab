@@ -11,10 +11,8 @@ from __future__ import annotations
 
 from starlette.requests import Request
 
-from padiem_control_plane.product_tier_routes import (
-    ProductTierLabel,
-    active_route_for,
-)
+from padiem_control_plane.product_tier_routes import ProductTierLabel
+from padiem_control_plane.product_tier_routes_private import effective_active_route_for
 
 B66_GRADES = ("free", "plus", "pro", "max")
 
@@ -24,7 +22,7 @@ B66_GRADE_MODEL_IDS = {
         ("free", ProductTierLabel.FREE), ("plus", ProductTierLabel.PLUS),
         ("pro", ProductTierLabel.PRO), ("max", ProductTierLabel.MAX),
     )
-    if (route := active_route_for(label)) is not None and route.model_id
+    if (route := effective_active_route_for(label)) is not None and route.model_id
 }
 
 B66_GRADE_NAMES = {

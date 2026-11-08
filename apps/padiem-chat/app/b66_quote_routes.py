@@ -46,9 +46,6 @@ from .b66_grade_models import (
     b66_tier_grant_permits,
     b66_verified_admin,
 )
-from padiem_control_plane.product_tier_routes import (
-    FREE_PRIMARY_B14_MODEL_ID,
-)
 from .model_policy import ADMIN_B14_MODEL_ID
 from .claw_memory_routes import _resolve_memory_workspace
 from .dispatch_quota import _clear_reservation, _refund_active_reservation

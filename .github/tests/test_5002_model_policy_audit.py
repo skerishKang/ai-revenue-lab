@@ -38,8 +38,8 @@ def _probed_models() -> list[str]:
 
 def test_the_gate_probes_the_declared_free_primary_and_first_fallback() -> None:
     declaration = PRODUCT_TIERS.read_text(encoding="utf-8")
-    primary = _string_constant(declaration, "FREE_PRIMARY_B14_MODEL_ID")
-    fallback = _string_constant(declaration, "FREE_FALLBACK_B14_MODEL_ID")
+    primary = _string_constant(declaration, "free_primary_model_id")
+    fallback = _string_constant(declaration, "free_fallback_model_id")
     assert primary and fallback, "the shared grade declaration must name both"
 
     probed = _probed_models()

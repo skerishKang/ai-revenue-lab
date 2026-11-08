@@ -20,6 +20,7 @@ import pytest
 
 from app.config import Settings
 from app.dispatch_quota import DispatchAwareB14Client
+import app.model_policy as model_policy_module
 from app.model_policy import (
     current_request_route_model,
     current_request_tier_id,
@@ -30,7 +31,7 @@ from app.model_policy import (
 )
 
 ROUTED_MODEL = "opencode-go/muse-spark-1.2-contributor"
-DECLARED_MODEL = "google/gemini-3.5-flash-lite"
+DECLARED_MODEL = model_policy_module.DEFAULT_B14_MODEL_ID
 NOT_A_ROUTE = "opencode-go/not-a-product-route"
 
 

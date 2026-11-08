@@ -267,15 +267,13 @@ def test_store_based_claw_resolver_serves_the_cron_automation_path():
     assert resolution.source == "central"
 
     # Without a central row the cron path keeps the historical static route.
-    from padiem_control_plane.product_tier_routes import (
-        ProductTierLabel,
-        active_route_for,
-    )
+    from padiem_control_plane.product_tier_routes import ProductTierLabel
+    from padiem_control_plane.product_tier_routes_private import effective_active_route_for
 
     absent = asyncio.run(resolve_claw_tier_model_from_stores(
         RouteStore(TierRouteSnapshot("padiem-global", 0, ())), None, "plus",
     ))
-    static_plus = active_route_for(ProductTierLabel.PLUS)
+    static_plus = effective_active_route_for(ProductTierLabel.PLUS)
     assert (absent.ok, absent.model_id, absent.source) == (
         True, static_plus.model_id, "static",
     )

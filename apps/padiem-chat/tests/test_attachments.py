@@ -13,9 +13,9 @@ from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
 from padiem_ai_core.dispatch_preinstruction import render_product_identity_instruction
 from padiem_control_plane.product_tier_routes import (
-    PRODUCT_TIER_ROUTES,
     ProductRouteStatus,
 )
+from padiem_control_plane.product_tier_routes_private import effective_product_tier_routes
 
 
 JPEG = b"\xff\xd8\xff\xe0phase8"
@@ -151,7 +151,7 @@ async def test_valid_live_image_attachment_fails_closed_without_primary_model(
 
     declared = frozenset(
         route.model_id
-        for tier in PRODUCT_TIER_ROUTES
+        for tier in effective_product_tier_routes()
         for route in tier.routes
         if route.status is ProductRouteStatus.EXECUTABLE
     )

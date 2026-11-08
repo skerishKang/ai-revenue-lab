@@ -59,12 +59,9 @@ def _free_ids_from_owner_registry() -> set[str]:
         ):
             free_ids.add(row["id"])
     return free_ids
-GOOGLE_IDS = {
-    "google/gemini-3.1-flash-lite",
-    "google/gemini-3.5-flash-lite",
-    "google/gemma-4-26b-a4b-it",
-    "google/gemma-4-31b-it",
-}
+# 261109 · #6828 3단계: the repository ships no model value, so the owner
+# route set under test is the placeholder registry document's own ids.
+OWNER_IDS = _registered_ids_from_owner_registry()
 
 # Child process is the B14 package named 'app'; the parent stays B66's
 # same-named 'app'. No import-path collision, credentials, HTML-template dependency or provider calls.
@@ -104,7 +101,10 @@ def b14_source_gets():
     # external network/prod URL. 'live' is a LOCAL B14 config flag ONLY.
     keep = {"path", "systemroot", "windir", "temp", "tmp", "home",
             "userprofile", "appdata", "localappdata", "programfiles",
-            "programfiles(x86)"}
+            "programfiles(x86)",
+            # 261109 · #6828 3단계: the registry switch is mandatory, so the
+            # child must see the same private document the parent resolved.
+            "padiem_models_registry", "padiem_models_registry_override"}
     env = {key: value for key, value in os.environ.items()
            if key.casefold() in keep}
     env["B14_PROVIDER_MODE"] = "live"
@@ -165,7 +165,7 @@ def attempt_selection(payload, model_id=None):
     with pytest.raises(B66ModelRouteError) as result:
         asyncio.run(
             B14FreeFirstQuoteModelResolver(transport).resolve_quote_model(
-                B66QuoteTaskRequirements(selected_model_id=model_id or sorted(GOOGLE_IDS)[0])
+                B66QuoteTaskRequirements(selected_model_id=model_id or sorted(OWNER_IDS)[0])
             )
         )
     assert transport.get_paths == list(B14_GETS)
@@ -179,8 +179,8 @@ def test_real_b14_source_registered_routes_and_google_manual_only(b14_source_get
     rows = registry["registered_routes"]
     by_id = {row["id"]: row for row in rows}
     assert len(by_id) == len(rows)
-    assert GOOGLE_IDS <= by_id.keys(), "Four owner-registered Google routes absent"
-    for mid in GOOGLE_IDS:
+    assert OWNER_IDS <= by_id.keys(), "Owner-registered routes absent"
+    for mid in OWNER_IDS:
         assert by_id[mid]["explicit_only"] is True
         assert by_id[mid]["auto_eligible"] is False
         assert by_id[mid]["owner_excluded"] is False
@@ -188,12 +188,11 @@ def test_real_b14_source_registered_routes_and_google_manual_only(b14_source_get
     assert readiness["provider_mode"] == "live"  # local fixture, not Production
 
     # Removed models must be absent, not merely tagged owner-excluded/public.
+    # Negative control with placeholder identities: a route that was never
+    # registered must stay absent (261109 · #6828 3단계: no real model value).
     removed = {
-        "b-ai/qwen3.8-flash",
-        "experiential/gpt-5.6-luna",
-        "infron/motif/motif-3",
-        "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-        "kilo/poolside-laguna-s-2.1-free",
+        "removed-provider/removed-model-1",
+        "removed-provider/removed-model-2",
     }
     assert set(by_id) == _registered_ids_from_owner_registry()
     assert removed.isdisjoint(by_id)
@@ -225,9 +224,9 @@ def test_all_providers_synthetically_ready_still_fail_closed_for_ambiguous_owner
     # No implicit choice is made; absence of selected_model_id is rejected separately.
     transport = SourceMetadataTransport(data)
     selected = asyncio.run(B14FreeFirstQuoteModelResolver(transport).resolve_quote_model(
-        B66QuoteTaskRequirements(selected_model_id=sorted(GOOGLE_IDS)[0])
+        B66QuoteTaskRequirements(selected_model_id=sorted(OWNER_IDS)[0])
     ))
-    assert selected.model_id == sorted(GOOGLE_IDS)[0]
+    assert selected.model_id == sorted(OWNER_IDS)[0]
 
 
 def test_one_synthetic_ready_google_manual_pin_can_be_validated_without_catalog(
@@ -235,7 +234,7 @@ def test_one_synthetic_ready_google_manual_pin_can_be_validated_without_catalog(
 ):
     """Source only: neither provider credentials nor an actual upstream call."""
     data = json.loads(json.dumps(b14_source_gets))
-    mid = sorted(GOOGLE_IDS)[0]  # fixture only; not a B66 selection policy
+    mid = sorted(OWNER_IDS)[0]  # fixture only; not a B66 selection policy
     assert mid in {route["id"] for route in data["models"]["registered_routes"]}
     # B14 JSON registry may now project ALL registered models in the public
     # display catalog (#3819); the older model registry omitted manual pins.

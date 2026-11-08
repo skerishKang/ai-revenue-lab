@@ -437,7 +437,7 @@ def test_sync_plan_and_async_execute_boundary() -> None:
         "record_claw_run(",
         "project_scheduled_run_output(",
         # NO_DIRECT_PROVIDER_CALL / NO_NEW_MODEL_ROUTER
-        "active_route_for",
+        "effective_active_route_for",
         "model_policy",
         "AgentProfile",
         "urllib",

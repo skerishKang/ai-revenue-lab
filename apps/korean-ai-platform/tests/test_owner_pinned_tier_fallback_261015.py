@@ -231,11 +231,13 @@ def test_owner_test_phase_rosters_pin_the_owner_identities(tier):
 
 
 def test_lane_roster_and_shared_tier_declaration_do_not_drift():
-    """B14 executes what the Control Plane declares, so both rosters must match.
+    """The shared declaration ships no roster values any more.
 
-    Reads the declaration as source text instead of importing the shared
-    package: this suite runs inside the B14 lane, where the Control Plane
-    distribution is not on the path.
+    #6828 3단계 moved the per-grade roster into the private registry
+    document, so the repository declaration must not re-introduce a
+    ``TIER_FALLBACK_B14_MODELS`` value table. Reads the declaration as source
+    text instead of importing the shared package: this suite runs inside the
+    B14 lane, where the Control Plane distribution is not on the path.
     """
     import ast
     from pathlib import Path
@@ -245,14 +247,16 @@ def test_lane_roster_and_shared_tier_declaration_do_not_drift():
         / "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py"
     )
     tree = ast.parse(declaration_path.read_text(encoding="utf-8"))
-    declaration = next(
-        ast.literal_eval(node.value)
+    assignments = [
+        node
         for node in tree.body
         if isinstance(node, ast.Assign)
         and any(
             isinstance(target, ast.Name) and target.id == "TIER_FALLBACK_B14_MODELS"
             for target in node.targets
         )
+    ]
+    assert assignments == [], (
+        "the shared declaration must not ship model values; "
+        "the per-grade roster lives in the private registry document"
     )
-
-    assert declaration == TIER_FALLBACK_B14_MODELS

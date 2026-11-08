@@ -94,9 +94,9 @@ def declared_tier_model(tier: str) -> str:
     if directory not in sys.path:
         sys.path.insert(0, directory)
     try:
-        from padiem_control_plane.product_tier_routes import (
-            ProductTierLabel,
-            active_route_for,
+        from padiem_control_plane.product_tier_routes import ProductTierLabel
+        from padiem_control_plane.product_tier_routes_private import (
+            effective_active_route_for,
         )
     except ImportError:
         return ""
@@ -104,7 +104,7 @@ def declared_tier_model(tier: str) -> str:
     if label is None:
         return ""
     try:
-        route = active_route_for(ProductTierLabel(label))
+        route = effective_active_route_for(ProductTierLabel(label))
     except ValueError:
         return ""
     model = route.model_id if route is not None else None

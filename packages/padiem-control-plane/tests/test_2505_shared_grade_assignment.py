@@ -9,6 +9,10 @@ These are contract tests: no provider call, no D1 and no deployment.
 """
 from __future__ import annotations
 
+import os
+import shutil
+from pathlib import Path
+
 import pytest
 
 from padiem_control_plane.contracts import ControlPlaneContractError
@@ -27,17 +31,19 @@ from padiem_control_plane.model_tier_routes import (
     project_shared_routes,
     static_tier_route,
 )
-from padiem_control_plane.product_tier_routes import (
-    TIER_FALLBACK_B14_MODELS,
-    ProductTierLabel,
-    active_route_for,
-    is_free_execution_candidate,
+from padiem_control_plane.product_tier_routes import ProductTierLabel
+from padiem_control_plane.product_tier_routes_private import (
+    effective_is_free_execution_candidate,
+)
+from padiem_control_plane.product_tier_routes_private import (
+    effective_active_route_for,
+    tier_fallback_rosters,
 )
 
 SHARED = "google/shared-grade-model"
 SHARED_FALLBACK = "google/shared-grade-fallback"
 LEGACY = "google/legacy-claw-model"
-FREE_CANDIDATE = "opencode-go/longcat-2.5-preview-free"
+FREE_CANDIDATE = "example-candidates/example-model-free"
 CATALOG = {
     model_id: CatalogModel(model_id, True, True, True, True, frozenset({"chat"}))
     for model_id in (SHARED, SHARED_FALLBACK, LEGACY, "google/other-grade-model")
@@ -115,7 +121,8 @@ def test_a_shared_product_decision_never_covers_another_product():
     assert product_scope_set("b66") == {"b66"}
 
 
-def test_a_free_candidate_can_never_be_bound_to_a_grade():
+def test_a_free_candidate_can_never_be_bound_to_a_grade(monkeypatch):
+    monkeypatch.setenv("PADIEM_B14_FREE_CANDIDATE_PROVIDERS", "example-candidates")
     change = TierRouteChange("chat", "FREE", "set", FREE_CANDIDATE, None, True)
     with pytest.raises(ControlPlaneContractError) as exc:
         _check_route_changes((change,), dict(CATALOG, **{FREE_CANDIDATE: CatalogModel(
@@ -124,7 +131,8 @@ def test_a_free_candidate_can_never_be_bound_to_a_grade():
     assert exc.value.code == "model_route_free_candidate"
 
 
-def test_a_stored_or_static_free_candidate_is_never_served():
+def test_a_stored_or_static_free_candidate_is_never_served(monkeypatch):
+    monkeypatch.setenv("PADIEM_B14_FREE_CANDIDATE_PROVIDERS", "example-candidates")
     stored = TierRouteSnapshot("padiem-global", 1, (
         TierRoute("chat", "FREE", FREE_CANDIDATE, None, True),
     ))
@@ -137,20 +145,33 @@ def test_a_stored_or_static_free_candidate_is_never_served():
     assert (static.ok, static.reason) == (False, "tier_unavailable")
 
 
-def test_no_designated_grade_roster_offers_a_free_candidate():
-    for tier, roster in TIER_FALLBACK_B14_MODELS.items():
-        assert not any(is_free_execution_candidate(model_id) for model_id in roster), tier
+def test_no_designated_grade_roster_offers_a_free_candidate(tmp_path, monkeypatch):
+    """Fixture-based (#6828 3단계): the rosters come from the private document."""
+    fixture = Path(__file__).parent / "fixtures" / "models_private_fixture.json"
+    target = tmp_path / "models-private.json"
+    shutil.copyfile(fixture, target)
+    os.chmod(target, 0o600)
+    monkeypatch.setenv("PADIEM_MODELS_REGISTRY", str(target))
+    monkeypatch.setenv("PADIEM_B14_FREE_CANDIDATE_PROVIDERS", "example-candidates")
+    for tier, roster in tier_fallback_rosters().items():
+        assert not any(effective_is_free_execution_candidate(model_id) for model_id in roster), tier
     for label in ProductTierLabel:
-        route = active_route_for(label)
-        assert route is not None
-        assert not is_free_execution_candidate(route.model_id)
+        route = effective_active_route_for(label)
+        if route is None:
+            continue
+        assert not effective_is_free_execution_candidate(route.model_id)
 
 
-def test_the_free_candidate_rule_covers_the_owner_free_family_only():
-    assert is_free_execution_candidate(FREE_CANDIDATE)
-    assert is_free_execution_candidate("opencode-go/beam-free")
-    assert not is_free_execution_candidate("opencode-go/muse-spark-1.3-contributor")
-    assert not is_free_execution_candidate("google/gemini-3.1-flash-lite")
-    # Another provider's free lane keeps its own approval status.
-    assert not is_free_execution_candidate("kira/qwen3.8-flash-free")
-    assert not is_free_execution_candidate("tokenharbor/deepseek-v4.1-flash:free")
+def test_the_free_candidate_rule_is_deployment_scoped_and_value_free(monkeypatch):
+    """#6828 3단계: the repository carries no provider or model name. The
+    excluded free family is the deployment's own ``-free`` roster of the
+    providers listed in the private env variable; with the variable unset the
+    rule excludes nothing (a lane such as a free-suffixed direct pilot keeps
+    working), and a provider outside the list is never excluded."""
+    monkeypatch.setenv("PADIEM_B14_FREE_CANDIDATE_PROVIDERS", "example-candidates")
+    assert effective_is_free_execution_candidate(FREE_CANDIDATE)
+    assert effective_is_free_execution_candidate("example-candidates/other-free")
+    assert not effective_is_free_execution_candidate("example-candidates/paid-model")
+    assert not effective_is_free_execution_candidate("other-provider/example-model-free")
+    monkeypatch.delenv("PADIEM_B14_FREE_CANDIDATE_PROVIDERS")
+    assert not effective_is_free_execution_candidate(FREE_CANDIDATE)

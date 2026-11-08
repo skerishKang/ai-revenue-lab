@@ -133,7 +133,10 @@ class FakeCatalog:
         return list(self.rows)
 
 
-FREE_B14_MODEL_ID = "google/gemini-3.1-flash-lite"
+# 261109 · #6828 3단계: the repository ships no model value; the free lane
+# identity comes from the placeholder registry document.
+from padiem_control_plane.product_tier_routes_private import free_primary_model_id
+FREE_B14_MODEL_ID = free_primary_model_id()
 
 
 def _catalog_row(*capabilities: str):
@@ -714,9 +717,13 @@ def test_gemini_35_registry_declaration_exposes_pc_tools_but_gemma_does_not():
         / "apps/korean-ai-platform/app/pilot/b14_models.json"
     )
     models = {row["id"]: row for row in json.loads(registry_path.read_text())["models"]}
+    # 261109 · #6828 3단계: the declaration contract is exercised on the
+    # placeholder document's own rows — one tools-capable, one not.
+    tools_row = next(row for row in models.values() if "tools" in row["capabilities"])
+    plain_row = next(row for row in models.values() if "tools" not in row["capabilities"])
     for model_id, expected in (
-        ("google/gemini-3.5-flash-lite", True),
-        ("google/gemma-4-31b-it", False),
+        (tools_row["id"], True),
+        (plain_row["id"], False),
     ):
         row = models[model_id]
         resolver = B66ExplicitQuoteModelResolver(_RegistryTransport(

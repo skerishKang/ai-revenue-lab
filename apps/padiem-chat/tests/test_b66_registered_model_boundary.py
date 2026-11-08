@@ -15,10 +15,9 @@ from app.b66_registered_model_boundary import (
     validate_authorized_route,
 )
 from padiem_control_plane.product_tier_routes import (
-    FREE_PRIMARY_B14_MODEL_ID,
-    TIER_FALLBACK_B14_MODELS,
     is_free_execution_candidate,
 )
+from padiem_control_plane.product_tier_routes_private import free_primary_model_id, tier_fallback_rosters
 
 
 def approved_route(**overrides) -> B14AuthorizedModelRoute:
@@ -236,7 +235,7 @@ def test_no_hidden_route_substitution_or_broken_response(response, code):
 
 
 def _free_tier_completion(response):
-    resolver = FakeTrustedResolver(approved_route(model_id=FREE_PRIMARY_B14_MODEL_ID))
+    resolver = FakeTrustedResolver(approved_route(model_id=free_primary_model_id()))
     executor = FakeB14Executor(response=response)
     return B66RegisteredModelCompletion(resolver=resolver, executor=executor)
 
@@ -246,14 +245,14 @@ def _run_free_tier(client):
         [{"role": "user", "content": "견적 회신 요청"}],
         additional_system_context="private saved skill prompt",
         attachments=(),
-        model_id=FREE_PRIMARY_B14_MODEL_ID,
+        model_id=free_primary_model_id(),
         product_tier="free",
     ))
 
 
 def test_a_policy_allowed_grade_failover_is_accepted():
     """A B14 failover to a declared roster candidate is not a substitution."""
-    roster = TIER_FALLBACK_B14_MODELS["free"]
+    roster = tier_fallback_rosters()["free"]
     assert roster, "the free grade declares its recovery roster"
     failover = roster[0]
     client = _free_tier_completion({
@@ -267,7 +266,7 @@ def test_the_selected_grade_primary_is_still_accepted():
     """The normal primary path of a graded B66 lane is unchanged."""
     client = _free_tier_completion({
         "answer": "value",
-        "route": {"mode": "manual", "model": FREE_PRIMARY_B14_MODEL_ID},
+        "route": {"mode": "manual", "model": free_primary_model_id()},
     })
     assert _run_free_tier(client) == {"answer": "value"}
 
@@ -285,7 +284,7 @@ def test_a_route_outside_the_selected_model_and_the_roster_is_still_refused():
 
 def test_the_grade_recovery_roster_carries_no_excluded_free_candidate():
     """The widened allowed set can not make a free candidate eligible."""
-    for tier, roster in TIER_FALLBACK_B14_MODELS.items():
+    for tier, roster in tier_fallback_rosters().items():
         assert roster, tier
         for model_id in roster:
             assert not is_free_execution_candidate(model_id), (tier, model_id)

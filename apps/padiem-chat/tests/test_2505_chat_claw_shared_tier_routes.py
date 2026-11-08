@@ -173,8 +173,9 @@ def test_another_product_keeps_its_own_independent_grade_setting():
     )
 
 
-def test_a_free_candidate_is_never_bound_to_the_shared_grade():
+def test_a_free_candidate_is_never_bound_to_the_shared_grade(monkeypatch):
     free_model = "opencode-go/longcat-2.5-preview-free"
+    monkeypatch.setenv("PADIEM_B14_FREE_CANDIDATE_PROVIDERS", free_model.partition("/")[0])
     catalog = dict({
         model_id: CatalogModel(model_id, True, True, True, True, frozenset({"chat"}))
         for model_id in (ALPHA, BETA, free_model)

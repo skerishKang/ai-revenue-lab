@@ -21,8 +21,8 @@ import unittest
 
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
-    active_route_for,
 )
+from padiem_control_plane.product_tier_routes_private import effective_active_route_for
 
 from kagent.contracts import ClawRunStatus, ClawTaskIntent, ExecutionMode
 from kagent.runs import ClawRun
@@ -43,7 +43,7 @@ def _contract_route_models() -> set[str]:
     return {
         route.model_id
         for label in ProductTierLabel
-        for route in [active_route_for(label)]
+        for route in [effective_active_route_for(label)]
         if route is not None and route.model_id is not None
     }
 
@@ -65,7 +65,7 @@ class TierRouteAuthorityPinTests(unittest.TestCase):
     def test_every_tier_route_is_in_the_claw_allowlist(self):
         """A tier the contract calls executable must be dispatchable by Claw."""
         for label in ProductTierLabel:
-            route = active_route_for(label)
+            route = effective_active_route_for(label)
             if route is None or route.model_id is None:
                 continue
             with self.subTest(tier=label.value):

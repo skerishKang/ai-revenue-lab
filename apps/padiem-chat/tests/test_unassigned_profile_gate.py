@@ -17,8 +17,8 @@ from app.usage_gate import UsageDecision
 from padiem_control_plane.product_tier_routes import (
     PLUS_HOLD_MODEL_ID,
     ProductTierLabel,
-    active_route_for,
 )
+from padiem_control_plane.product_tier_routes_private import effective_active_route_for
 
 
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
@@ -92,8 +92,8 @@ def test_live_completed_active_beam_propagates_provider_error_and_refunds():
         assert info.value.status_code == 502
         assert info.value.code == "provider_server_error"
         assert DEFAULT_CHAT_PROFILE == "free"
-        assert DEFAULT_B14_MODEL_ID == active_route_for(ProductTierLabel.FREE).model_id
-        assert LOW_B14_MODEL_ID == active_route_for(ProductTierLabel.PLUS).model_id
+        assert DEFAULT_B14_MODEL_ID == effective_active_route_for(ProductTierLabel.FREE).model_id
+        assert LOW_B14_MODEL_ID == effective_active_route_for(ProductTierLabel.PLUS).model_id
         assert calls == 1
         assert len(store.refunds) == 0
         assert await _refund_active_reservation() is False

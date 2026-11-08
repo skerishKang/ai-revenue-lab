@@ -22,9 +22,10 @@ from padiem_ai_core.dispatch_preinstruction import render_product_identity_instr
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     ProductTierRoutesError,
-    active_route_for,
-    FREE_PRIMARY_B14_MODEL_ID,
-    FREE_FALLBACK_B14_MODEL_ID,
+)
+from padiem_control_plane.product_tier_routes_private import (
+    effective_active_route_for,
+    free_lane_model_ids,
 )
 
 from .contracts import (
@@ -351,7 +352,7 @@ def _agent_profile(
     B14 retains registered-provider authorization. Pro/Max stay HOLD.
     """
     try:
-        route = active_route_for(product_tier)
+        route = effective_active_route_for(product_tier)
     except ProductTierRoutesError as exc:
         raise P01AdapterError(
             "invalid_product_tier",
@@ -367,7 +368,7 @@ def _agent_profile(
         )
     if selected_model_id is not None:
         if product_tier is ProductTierLabel.FREE:
-            if selected_model_id not in (FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID):
+            if selected_model_id not in free_lane_model_ids():
                 raise P01AdapterError(
                     "model_not_available_for_tier",
                     "Free member cannot select a non-Free model.",

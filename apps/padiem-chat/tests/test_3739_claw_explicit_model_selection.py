@@ -38,8 +38,8 @@ def _preserve_real_plus_hold_for_explicit_selection(monkeypatch):
     import kagent.p01_adapter as adapter_module
     import app.central_model_route_runtime as route_runtime
 
-    monkeypatch.setattr(adapter_module, "active_route_for", ORIGINAL_ACTIVE_ROUTE_FOR)
-    monkeypatch.setattr(route_runtime, "active_route_for", ORIGINAL_ACTIVE_ROUTE_FOR)
+    monkeypatch.setattr(adapter_module, "effective_active_route_for", ORIGINAL_ACTIVE_ROUTE_FOR)
+    monkeypatch.setattr(route_runtime, "effective_active_route_for", ORIGINAL_ACTIVE_ROUTE_FOR)
 
 
 class _AuthStore:

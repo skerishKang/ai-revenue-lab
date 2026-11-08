@@ -27,7 +27,10 @@ from test_b66_registered_model_boundary import FakeTrustedResolver, approved_rou
 from test_dispatch_quota_refund import RefundableMemoryStore
 
 
-MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+# 261109 · #6828 3단계: the repository ships no model value; the quote guard
+# fixtures pin the placeholder registry's free-fallback identity.
+from padiem_control_plane.product_tier_routes_private import free_fallback_model_id
+MODEL = free_fallback_model_id()
 MESSAGES = [{"role": "user", "content": "synthetic quotation"}]
 
 
@@ -243,7 +246,7 @@ payload = json.loads(sys.stdin.read())
 # A synthetic route is registered ONLY inside this local subprocess.
 # It cannot turn a real excluded route into a positive customer fixture.
 # Copy the schema of a currently registered model, never a removed model.
-approved = cat.CATALOG_BY_ID["agnes-ai/agnes-3.0-flash"]
+approved = next(iter(cat.CATALOG_BY_ID.values()))
 # Supply a dummy in-memory credential because the provider is always mocked
 # and must not trigger real upstream network calls. The binding name is owned
 # by the canonical b14_models.json registry, not by this test: read it from the
@@ -272,7 +275,13 @@ async def run():
     return results
 print("OFFLINE_RESULT=" + json.dumps(asyncio.run(run())))
 '''
-    paths = [repo / "apps/korean-ai-platform", repo / "packages/padiem-ai-core"]
+    # 261109 · #6828 3단계: the switch is mandatory, so the subprocess loads
+    # the private registry through the control-plane loader too.
+    paths = [
+        repo / "apps/korean-ai-platform",
+        repo / "packages/padiem-ai-core",
+        repo / "packages/padiem-control-plane",
+    ]
     result = subprocess.run(
         [sys.executable, "-c", script], input=json.dumps(payload), text=True, encoding="utf-8",
         capture_output=True, check=True, timeout=30, cwd=repo,

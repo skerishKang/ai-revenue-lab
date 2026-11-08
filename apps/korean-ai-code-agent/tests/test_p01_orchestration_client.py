@@ -28,8 +28,8 @@ from padiem_ai_engine_client import (
 
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
-    active_route_for,
 )
+from padiem_control_plane.product_tier_routes_private import effective_active_route_for
 
 from kagent.contracts import ClawRunStatus, ClawTaskIntent, ExecutionMode
 from kagent.p01_adapter import (
@@ -284,7 +284,7 @@ class P01EngineOrchestrationClientTests(SyntheticPlusRouteTestCase):
         self.assertEqual(
             payload["agent"]["model_policy"],
             {
-                "model": active_route_for(ProductTierLabel.PLUS).model_id,
+                "model": effective_active_route_for(ProductTierLabel.PLUS).model_id,
                 "max_retries": 0,
                 "product_tier": "plus",
             },

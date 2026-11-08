@@ -70,3 +70,10 @@ def _fresh_identity_subject_cache():
     _product_user_cache.clear()
     yield
     _product_user_cache.clear()
+
+
+# 261109 · #6828 3단계: the registry switch is mandatory and the repository
+# ships no model value. An unconfigured test process runs as a switched host
+import _registry_switch_default as _registry_switch
+
+_registry_switch.ensure_default_registry_switch()

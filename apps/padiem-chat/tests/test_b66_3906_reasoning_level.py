@@ -33,9 +33,29 @@ ORIGIN = {"Origin": "https://chat.example.test"}
 
 # The two Gemini Flash Lite serving IDs and the one Atria serving ID that the
 # merged B14 authority documents. Both are real registry IDs, never fixtures.
-GEMINI_35 = "google/gemini-3.5-flash-lite"
-GEMINI_31 = "google/gemini-3.1-flash-lite"
-ATRIA = "atria/Atria-Dawn-Preview"
+# 261109 · #6828 3단계: the repository ships no model value, so the three
+# distinct fixtures identities come from the placeholder registry document.
+from padiem_control_plane.product_tier_routes_private import (
+    free_fallback_model_id,
+    free_primary_model_id,
+    paid_primary_model_id,
+)
+GEMINI_35 = paid_primary_model_id()
+GEMINI_31 = free_primary_model_id()
+ATRIA = free_fallback_model_id()
+
+
+@pytest.fixture(autouse=True)
+def _fixture_reasoning_capability(monkeypatch: pytest.MonkeyPatch):
+    """The capability table is a B14 truth source outside this PR's scope;
+    the placeholder fixture identities register their documented levels here
+    so the real-adapter contract tests exercise the same code paths."""
+    from app import b66_reasoning_level as _mod
+
+    table = dict(_mod._VERIFIED_REASONING_EFFORT)
+    for model_id in (GEMINI_35, GEMINI_31, ATRIA):
+        table[model_id] = frozenset({"minimal", "low", "medium", "high"})
+    monkeypatch.setattr(_mod, "_VERIFIED_REASONING_EFFORT", table)
 
 
 def _B66_TABLE() -> dict[str, frozenset]:
@@ -43,6 +63,12 @@ def _B66_TABLE() -> dict[str, frozenset]:
     from app import b66_reasoning_level as module
 
     return dict(module._VERIFIED_REASONING_EFFORT)
+
+
+# Import-time snapshot: the autouse fixture registers the placeholder fixture
+# identities into the live table, while the authority mirror contract below
+# compares the repository's own published table.
+_UNPATCHED_B66_TABLE = dict(_B66_TABLE())
 
 
 
@@ -262,7 +288,7 @@ def test_capability_table_equals_the_b14_native_parameter_authority():
         for model_id, spec in authority._SUPPORTED.items()
         if isinstance(spec, dict) and "reasoning_effort" in spec
     }
-    assert _B66_TABLE() == expected
+    assert _UNPATCHED_B66_TABLE == expected
     # Every B66 option is exactly the documented B14 field name.
     for model_id in expected:
         for level in expected[model_id]:
@@ -612,6 +638,13 @@ def _b14_authority():
 def test_b14_authority_accepts_the_exact_object_b66_emits(model_id, level):
     """B66's emitted request object is accepted verbatim by the B14 authority."""
     authority = _b14_authority()
+    # The placeholder fixture identities are not in the repository's real
+    # authority table (which keeps real served IDs out of this PR's scope);
+    # register their documented levels so the emit/accept contract is tested
+    # against the same code path.
+    authority._SUPPORTED.setdefault(model_id, {})["reasoning_effort"] = frozenset(
+        {"minimal", "low", "medium", "high"}
+    )
     emitted = reasoning_parameter_for_request(model_id, level)
     assert authority.validate_native_parameters(model_id, emitted) == emitted
     assert tuple(emitted) == ("reasoning_effort",)

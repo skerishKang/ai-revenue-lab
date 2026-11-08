@@ -34,14 +34,14 @@ from app.model_policy import (
     resolve_tier_policy,
 )
 from padiem_control_plane import product_tier_routes as tier_routes
+from padiem_control_plane import product_tier_routes_private as tier_routes_private
 from padiem_control_plane.product_tier_routes import (
     MAX_HOLD_MODEL_ID as CONTRACT_MAX_HOLD_MODEL_ID,
-    TEST_PHASE_PRIMARY_B14_MODEL_ID,
     PLUS_HOLD_MODEL_ID as CONTRACT_PLUS_HOLD_MODEL_ID,
     PRO_HOLD_MODEL_ID as CONTRACT_PRO_HOLD_MODEL_ID,
     ProductTierLabel,
-    active_route_for,
 )
+from padiem_control_plane.product_tier_routes_private import paid_primary_model_id, effective_active_route_for
 
 
 def _declared_executable_model_ids() -> frozenset[str]:
@@ -57,7 +57,7 @@ def _declared_executable_model_ids() -> frozenset[str]:
     return frozenset(
         route.model_id
         for label in ProductTierLabel
-        if (route := active_route_for(label)) is not None and route.model_id
+        if (route := effective_active_route_for(label)) is not None and route.model_id
     )
 
 
@@ -75,8 +75,8 @@ def test_free_beam_and_paid_google_primaries_derive_from_the_shared_contract() -
     policy=resolve_model_policy([{"role":"user","content":"안녕하세요"}])
     assert DEFAULT_CHAT_PROFILE=="free"
     assert policy.profile=="free"
-    assert policy.model_id==DEFAULT_B14_MODEL_ID==FREE_B14_MODEL_ID==active_route_for(ProductTierLabel.FREE).model_id
-    assert {LOW_B14_MODEL_ID,MEDIUM_B14_MODEL_ID,HIGH_B14_MODEL_ID}=={TEST_PHASE_PRIMARY_B14_MODEL_ID}
+    assert policy.model_id==DEFAULT_B14_MODEL_ID==FREE_B14_MODEL_ID==effective_active_route_for(ProductTierLabel.FREE).model_id
+    assert {LOW_B14_MODEL_ID,MEDIUM_B14_MODEL_ID,HIGH_B14_MODEL_ID}=={paid_primary_model_id()}
     assert model_policy_is_executable(policy.model_id)
     assert EXECUTABLE_B14_MODEL_IDS==_declared_executable_model_ids() | {FREE_B14_MODEL_ID}
     assert PRODUCT_TIER_NAMES[CONTRACT_PLUS_HOLD_MODEL_ID]==PADIEM_PLUS
@@ -154,17 +154,17 @@ def test_model_id_is_not_an_identity_for_four_distinct_product_grades() -> None:
     assert PROFILE_MODEL_IDS["free"]==FREE_B14_MODEL_ID
     assert model_policy_is_executable(PROFILE_MODEL_IDS["free"])
     for profile in ("low","medium","high"):
-        assert PROFILE_MODEL_IDS[profile]==TEST_PHASE_PRIMARY_B14_MODEL_ID
+        assert PROFILE_MODEL_IDS[profile]==paid_primary_model_id()
         assert model_policy_is_executable(PROFILE_MODEL_IDS[profile])
     for model_id in ("padiem-profile/medium-unassigned",):
         assert not model_profile_is_assigned(model_id)
         assert not model_policy_is_executable(model_id)
 
 def test_all_profile_routes_are_derived_from_the_shared_contract() -> None:
-    assert LOW_B14_MODEL_ID==active_route_for(ProductTierLabel.PLUS).model_id
-    assert MEDIUM_B14_MODEL_ID==active_route_for(ProductTierLabel.PRO).model_id
-    assert HIGH_B14_MODEL_ID==active_route_for(ProductTierLabel.MAX).model_id
-    assert {LOW_B14_MODEL_ID,MEDIUM_B14_MODEL_ID,HIGH_B14_MODEL_ID}=={TEST_PHASE_PRIMARY_B14_MODEL_ID}
+    assert LOW_B14_MODEL_ID==effective_active_route_for(ProductTierLabel.PLUS).model_id
+    assert MEDIUM_B14_MODEL_ID==effective_active_route_for(ProductTierLabel.PRO).model_id
+    assert HIGH_B14_MODEL_ID==effective_active_route_for(ProductTierLabel.MAX).model_id
+    assert {LOW_B14_MODEL_ID,MEDIUM_B14_MODEL_ID,HIGH_B14_MODEL_ID}=={paid_primary_model_id()}
 
 def test_a_declared_route_is_the_only_thing_that_makes_a_tier_executable(
     monkeypatch: pytest.MonkeyPatch,
@@ -191,9 +191,9 @@ def test_a_declared_route_is_the_only_thing_that_makes_a_tier_executable(
     def _active_route_for(label: tier_routes.ProductTierLabel):
         return synthetic_route if label is tier_routes.ProductTierLabel.PLUS else None
 
-    monkeypatch.setattr(tier_routes, "active_route_for", _active_route_for)
-    monkeypatch.setattr(model_policy_module, "active_route_for", _active_route_for)
-    monkeypatch.setattr(sys.modules[__name__], "active_route_for", _active_route_for)
+    monkeypatch.setattr(tier_routes_private, "effective_active_route_for", _active_route_for)
+    monkeypatch.setattr(model_policy_module, "effective_active_route_for", _active_route_for)
+    monkeypatch.setattr(sys.modules[__name__], "effective_active_route_for", _active_route_for)
 
     assert model_policy_module._contract_executable_ids() == frozenset(
         {synthetic_route.model_id}
@@ -223,7 +223,10 @@ def test_product_profiles_follow_the_canonical_route_declaration() -> None:
     assert DEFAULT_B14_MODEL_ID==FREE_B14_MODEL_ID
     assert DEFAULT_CHAT_PROFILE=="free"
     assert model_policy_is_executable(DEFAULT_B14_MODEL_ID)
-    assert RETIRED_B14_MODEL_IDS==frozenset({"kilo/minimax-minimax-m3-free","kilo/tencent-hy3-free"})
+    # #6828 3단계: the repository ships no retired model value. Retirement
+    # authority is the B14 catalog read from the private registry, so the
+    # public projection is empty and every concrete id lives host-side.
+    assert RETIRED_B14_MODEL_IDS==frozenset()
 
 @pytest.mark.parametrize(
     ("tier_id", "expected_model", "expected_profile"),
@@ -280,21 +283,21 @@ def test_request_tier_context_is_scoped_to_the_selected_grade() -> None:
     assert resolve_request_model_policy(msgs).profile=="free"
     with request_tier_context("plus"):
         result=resolve_request_model_policy(msgs)
-        assert result.model_id==TEST_PHASE_PRIMARY_B14_MODEL_ID
+        assert result.model_id==paid_primary_model_id()
         assert result.profile=="low"
     assert resolve_request_model_policy(msgs).profile=="free"
 
 def test_b62_free_is_the_beam_primary_and_paid_grades_use_google() -> None:
     msgs=[{"role":"user","content":"질문"}]
     free=resolve_tier_policy(msgs,"free")
-    assert free.model_id==FREE_B14_MODEL_ID==active_route_for(ProductTierLabel.FREE).model_id
+    assert free.model_id==FREE_B14_MODEL_ID==effective_active_route_for(ProductTierLabel.FREE).model_id
     assert free.profile=="free"
     assert model_policy_is_executable(free.model_id)
     for tier in (ProductTierLabel.PLUS,ProductTierLabel.PRO,ProductTierLabel.MAX):
-        assert active_route_for(tier).model_id==TEST_PHASE_PRIMARY_B14_MODEL_ID
+        assert effective_active_route_for(tier).model_id==paid_primary_model_id()
 
 def test_free_exact_model_is_not_browser_overridable() -> None:
     with pytest.raises(ModelPolicyError) as exc:
         resolve_tier_policy([{"role": "user", "content": "x"}], "free/custom-model")
     assert exc.value.code == "unknown_product_tier"
-    assert model_policy_is_executable(active_route_for(ProductTierLabel.PLUS).model_id) is True
+    assert model_policy_is_executable(effective_active_route_for(ProductTierLabel.PLUS).model_id) is True

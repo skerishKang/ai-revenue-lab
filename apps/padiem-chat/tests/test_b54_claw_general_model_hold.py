@@ -120,14 +120,14 @@ def _force_executable_route_for_max(monkeypatch: pytest.MonkeyPatch) -> None:
         model_id=model_policy_module.DEFAULT_B14_MODEL_ID,
         evidence="test-only synthetic Max route",
     )
-    previous = route_runtime.active_route_for
+    previous = route_runtime.effective_active_route_for
 
     def _route_for(label):
         if label is tier_routes.ProductTierLabel.MAX:
             return synthetic
         return previous(label)
 
-    monkeypatch.setattr(route_runtime, "active_route_for", _route_for)
+    monkeypatch.setattr(route_runtime, "effective_active_route_for", _route_for)
 
 
 def _hold_error(code: str) -> P01AdapterError:

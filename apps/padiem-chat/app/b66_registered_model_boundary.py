@@ -20,9 +20,9 @@ from .b66_reasoning_level import (
     reasoning_transport_available,
     verified_reasoning_levels_for_model,
 )
-from padiem_control_plane.product_tier_routes import (
-    FREE_PRIMARY_B14_MODEL_ID,
-    is_free_execution_candidate,
+from padiem_control_plane.product_tier_routes_private import (
+    effective_is_free_execution_candidate,
+    free_primary_model_id,
 )
 
 from .b66_grade_models import B66_ADMIN_GRADE, B66_GRADES
@@ -134,7 +134,7 @@ def validate_authorized_route(
         raise B66ModelRouteError("model_not_authorized")
     # #2505: an excluded free candidate is never an execution candidate, so no
     # resolver answer can make one eligible for a customer execution.
-    if is_free_execution_candidate(selection.model_id):
+    if effective_is_free_execution_candidate(selection.model_id):
         raise B66ModelRouteError("model_not_authorized")
     if selection.registered is not True:
         raise B66ModelRouteError("model_not_registered")
@@ -190,7 +190,7 @@ class B14QuoteExactModelExecutor:
             or route.model_id != requirements.selected_model_id
             # #2505: the last B66-side gate before the provider call refuses an
             # excluded free candidate.
-            or is_free_execution_candidate(route.model_id)
+            or effective_is_free_execution_candidate(route.model_id)
         ):
             raise B66ModelRouteError("model_identity_invalid")
         tier_kw = {"product_tier": product_tier} if product_tier is not None else {}
@@ -327,7 +327,7 @@ class B66RegisteredModelCompletion:
         # #2505: an excluded free candidate is refused here, before any B14
         # read or provider dispatch, so a customer cannot force one by sending
         # its exact model id.
-        if is_free_execution_candidate(model_id):
+        if effective_is_free_execution_candidate(model_id):
             await self._refund_before_dispatch()
             raise B66ModelRouteError("model_not_authorized")
         # #3906: an explicit reasoning level is normalized HERE, at the real
@@ -344,7 +344,7 @@ class B66RegisteredModelCompletion:
             if product_tier not in (*B66_GRADES, B66_ADMIN_GRADE):
                 await self._refund_before_dispatch()
                 raise B66ModelRouteError("model_identity_invalid")
-            if product_tier == "free" and model_id != FREE_PRIMARY_B14_MODEL_ID:
+            if product_tier == "free" and model_id != free_primary_model_id():
                 await self._refund_before_dispatch()
                 raise B66ModelRouteError("model_identity_invalid")
         native_parameters = await self._reasoning_parameters(model_id, reasoning_level)
@@ -389,8 +389,8 @@ class B66RegisteredModelCompletion:
         route = result.get("route")
         fallback = None
         if product_tier is not None:
-            from padiem_control_plane.product_tier_routes import TIER_FALLBACK_B14_MODELS
-            fallback = TIER_FALLBACK_B14_MODELS[product_tier]
+            from padiem_control_plane.product_tier_routes_private import tier_fallback_rosters
+            fallback = tier_fallback_rosters().get(product_tier)
         acceptable = {selected.model_id}
         if fallback is not None:
             # The grade roster is the owner-pinned recovery chain: every entry is

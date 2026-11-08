@@ -32,6 +32,7 @@ import pytest
 
 import app.pc_work_context as pc_work_context_module
 from padiem_control_plane import product_tier_routes
+from padiem_control_plane import product_tier_routes_private
 
 import test_b54_claw_general_p01_routing as base
 
@@ -42,7 +43,7 @@ def _route_model_ids() -> list[str]:
     """Every tier's currently declared execution model id."""
     ids: list[str] = []
     for label in product_tier_routes.ProductTierLabel:
-        route = product_tier_routes.active_route_for(label)
+        route = product_tier_routes_private.effective_active_route_for(label)
         for value in (
             getattr(route, "model_id", None),
             getattr(route, "fallback_model_id", None),

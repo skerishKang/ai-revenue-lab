@@ -30,10 +30,12 @@ from padiem_control_plane.model_tier_routes import (
     static_tier_route,
 )
 from padiem_control_plane.product_tier_routes import (
-    FREE_FALLBACK_B14_MODEL_ID,
     ProductTierLabel,
     ProductTierRoutesError,
-    active_route_for,
+)
+from padiem_control_plane.product_tier_routes_private import (
+    effective_active_route_for,
+    free_fallback_model_id,
 )
 
 from .model_policy import (
@@ -206,10 +208,10 @@ async def resolve_tier_route(
 
 def _static_chat_route(tier_id: str) -> tuple[str | None, str | None]:
     if tier_id == "free":
-        return FREE_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
+        return FREE_B14_MODEL_ID, free_fallback_model_id()
     label = _LABEL_BY_ID[tier_id]
     try:
-        route = active_route_for(label)
+        route = effective_active_route_for(label)
     except ProductTierRoutesError:
         return None, None
     return (route.model_id if route is not None else None), None
@@ -272,12 +274,12 @@ async def resolve_claw_tier_model_view_from_stores(
     static_primary: str | None = None
     static_fallback: str | None = None
     try:
-        route = active_route_for(label)
+        route = effective_active_route_for(label)
         static_primary = route.model_id if route is not None else None
     except ProductTierRoutesError:
         static_primary = None
     if tier_id == "free":
-        static_fallback = FREE_FALLBACK_B14_MODEL_ID
+        static_fallback = free_fallback_model_id()
     return await resolve_tier_route_view_from_stores(
         route_store, policy_store, product="claw", tier=_TIER_BY_ID[tier_id],
         static_primary=static_primary, static_fallback=static_fallback,
