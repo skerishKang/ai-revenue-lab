@@ -75,9 +75,11 @@ def _html_source() -> str:
 
 
 def _logout_block(app: str) -> str:
-    start = app.index("if (!authenticated) {")
-    end = app.index("window.PadiemClawPdfPreview?.revokeAll?.()", start)
-    return app[start:end]
+    session = (ROOT / "static" / "claw-session.js").read_text(encoding="utf-8")
+    assert "window.PadiemClawSession.bind({" in app
+    start = session.index("if (authenticated) return;")
+    end = session.index("window.PadiemClawPdfPreview?.revokeAll?.()", start)
+    return session[start:end]
 
 
 def _approval_renderer(app: str) -> str:
