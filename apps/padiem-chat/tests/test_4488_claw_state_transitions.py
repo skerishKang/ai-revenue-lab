@@ -75,9 +75,11 @@ def _html_source() -> str:
 
 
 def _logout_block(app: str) -> str:
-    start = app.index("if (!authenticated) {")
-    end = app.index("window.PadiemClawPdfPreview?.revokeAll?.()", start)
-    return app[start:end]
+    session = (ROOT / "static" / "claw-session.js").read_text(encoding="utf-8")
+    assert "window.PadiemClawSession.bind({" in app
+    start = session.index("if (authenticated) return;")
+    end = session.index("window.PadiemClawPdfPreview?.revokeAll?.()", start)
+    return session[start:end]
 
 
 def _approval_renderer(app: str) -> str:
@@ -419,8 +421,12 @@ function boot(state) {
   sandbox.window = sandbox;
   vm.createContext(sandbox);
   sandbox.CustomEvent = sandbox.CustomEvent || class { constructor(type, init) { this.type = type; this.detail = init.detail; } };
-  sandbox.dispatchEvent = sandbox.dispatchEvent || (() => true);
+  const sessionWindowListeners = {};
+  sandbox.addEventListener = (type, fn) => { (sessionWindowListeners[type] ||= []).push(fn); };
+  sandbox.dispatchEvent = (event) => { (sessionWindowListeners[event.type] || []).forEach(fn => fn(event)); };
   vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
+  vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
+  vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
   vm.runInContext(APP, sandbox, { filename: "app.js" });
   return { byId, shell, doc, requests, fixture, conversationState };
 }
@@ -792,7 +798,10 @@ def test_auth_transitions_invalidate_the_approval_generation() -> None:
     assert app.count("function noteClawApprovalSession(") == 1
     # Auth loss and an account switch funnel through one invalidation point,
     # called from the single auth-state projection.
-    assert app.count("noteClawApprovalSession(authenticated);") == 1
+    session = (ROOT / "static" / "claw-session.js").read_text(encoding="utf-8")
+    assert app.count("noteApprovalSession: noteClawApprovalSession") == 1
+    assert session.count("noteApprovalSession(authenticated);") == 1
+    assert 'window.addEventListener("padiem:auth-state"' in session
     note = app.index("function noteClawApprovalSession")
     note_body = app[note : app.index("\n  }", note)]
     assert "token !== clawApprovalSessionToken" in note_body

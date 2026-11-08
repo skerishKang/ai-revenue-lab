@@ -444,6 +444,8 @@ vm.createContext(sandbox);
 vm.runInContext(CAPS, sandbox, { filename: "attachment-capabilities.js" });
 vm.runInContext(DOCBIN, sandbox, { filename: "document-binary.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 vm.runInContext(LIBRARY, sandbox, { filename: "library.js" });
 

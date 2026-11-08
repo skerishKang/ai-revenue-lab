@@ -387,6 +387,8 @@ sandbox.window = sandbox;
 vm.createContext(sandbox);
 sandbox.dispatchEvent = sandbox.dispatchEvent || (() => true);
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 const tick = (ms) => new Promise((r) => setTimeout(r, ms || 0));

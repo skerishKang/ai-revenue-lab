@@ -138,9 +138,11 @@ def test_single_flight_and_visibility_guards_are_present() -> None:
 
 def test_auth_loss_clears_rendered_run_history_dom() -> None:
     app = _app_source()
-    assert 'const runHistoryList = document.getElementById("clawRunHistoryList");' in app
-    assert "if (runHistoryList) runHistoryList.replaceChildren();" in app
-    assert "if (runHistory) runHistory.hidden = true;" in app
+    assert "window.PadiemClawSession.bind({" in app
+    session = (APP_JS.parent / "claw-session.js").read_text(encoding="utf-8")
+    assert 'const runHistoryList = document.getElementById("clawRunHistoryList");' in session
+    assert "if (runHistoryList) runHistoryList.replaceChildren();" in session
+    assert "if (runHistory) runHistory.hidden = true;" in session
 
 
 def test_locale_keys_are_declared_for_both_languages() -> None:
@@ -415,8 +417,12 @@ const sandbox = {
 };
 sandbox.window = sandbox;
 vm.createContext(sandbox);
-sandbox.dispatchEvent = sandbox.dispatchEvent || (() => true);
+const sessionWindowListeners = {};
+sandbox.addEventListener = (type, fn) => { (sessionWindowListeners[type] ||= []).push(fn); };
+sandbox.dispatchEvent = (event) => { (sessionWindowListeners[event.type] || []).forEach(fn => fn(event)); };
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 function findButton(root, text) {

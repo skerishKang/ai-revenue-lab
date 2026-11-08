@@ -123,7 +123,9 @@ def test_document_download_contract_and_script_order_unchanged():
     assert "clawPdfPreviewController?.clear()" in APP
     assert "downloadClawArtifact(docId, fname)" in APP
     assert "PadiemClawPdfPreview" in SOURCE
-    assert "window.PadiemClawPdfPreview?.revokeAll?.()" in APP
+    session = (STATIC / "claw-session.js").read_text(encoding="utf-8")
+    assert "window.PadiemClawSession.bind({" in APP
+    assert "window.PadiemClawPdfPreview?.revokeAll?.()" in session
     for disallowed in ("innerHTML", "localStorage", "sessionStorage",
                        "window.open(", "location.href", "POST", "XMLHttpRequest"):
         assert disallowed not in SOURCE

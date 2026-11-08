@@ -443,8 +443,12 @@ vm.createContext(sandbox);
 vm.runInContext(STATE, sandbox, { filename: "conversation-state.js" });
 vm.runInContext(TRANSPORT, sandbox, { filename: "chat-transport.js" });
 sandbox.PadiemChatTransport.readSseEvents = sandbox.PadiemChatTransport.readSseEvents;
-sandbox.dispatchEvent = sandbox.dispatchEvent || (() => true);
+const sessionWindowListeners = {};
+sandbox.addEventListener = (type, fn) => { (sessionWindowListeners[type] ||= []).push(fn); };
+sandbox.dispatchEvent = (event) => { (sessionWindowListeners[event.type] || []).forEach(fn => fn(event)); };
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 (async () => {

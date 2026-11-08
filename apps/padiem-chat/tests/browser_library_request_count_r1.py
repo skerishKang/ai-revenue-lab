@@ -20,7 +20,7 @@ AUTH = {"ok": True, "ready": True, "authenticated": True,
         "shared_login_enabled": True, "shared_session_present": True}
 
 
-def test_library_open_request_count_stays_bounded_for_30_seconds():
+def _measure_requests_for_30_seconds(view):
     class Handler(SimpleHTTPRequestHandler):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, directory=str(STATIC), **kwargs)
@@ -68,15 +68,34 @@ def test_library_open_request_count_stays_bounded_for_30_seconds():
             page.wait_for_timeout(1500)
             bootstrap = counts.copy()
             counts.clear()
-            page.locator("#filesNavButton").click()
-            page.wait_for_function("window.PadiemChatLibrary && window.PadiemChatLibrary.isOpen()")
+            if view == "library":
+                page.locator("#filesNavButton").click()
+                page.wait_for_function("window.PadiemChatLibrary && window.PadiemChatLibrary.isOpen()")
             page.wait_for_timeout(30000)
-            assert page.evaluate("window.PadiemChatLibrary.isOpen()"), "Library must stay open"
+            if view == "library":
+                assert page.evaluate("window.PadiemChatLibrary.isOpen()"), "Library must stay open"
+            else:
+                assert page.evaluate("document.querySelector('.app-shell').dataset.state === 'home'")
             assert not errors, errors
-            print(json.dumps({"bootstrap": dict(bootstrap), "library_30s": dict(counts),
-                              "library_total": counts.total(), "all_total": (counts + bootstrap).total()}, sort_keys=True))
-            assert counts.total() <= 15, dict(counts)
+            report = {"view": view, "bootstrap": dict(bootstrap), "window_30s": dict(counts),
+                      "window_total": counts.total(), "all_total": (counts + bootstrap).total()}
+            print(json.dumps(report, sort_keys=True))
             browser.close()
+            return report
     finally:
         httpd.shutdown()
         httpd.server_close()
+
+
+def test_library_open_request_count_stays_bounded_for_30_seconds():
+    report = _measure_requests_for_30_seconds("library")
+    assert report["window_total"] <= 15, report
+    assert report["window_total"] <= 1, report  # Step 1 settled Library baseline.
+    assert report["all_total"] <= 26, report
+
+
+def test_first_screen_requests_do_not_exceed_step1_baseline():
+    report = _measure_requests_for_30_seconds("home")
+    # Step 1 (7599d3c78), same API fixtures: boot 25, settled home 0.
+    assert report["window_total"] == 0, report
+    assert report["all_total"] <= 25, report
