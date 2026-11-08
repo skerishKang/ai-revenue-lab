@@ -532,6 +532,16 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
         "history_turns": len(messages),
         "input_chars": _b14_input_chars(messages, grounding_context),
     })
+    # #7165: this lane (the browser tries it first) must carry the same
+    # tool-presence sentence the plain Chat lane does. Without it a PC-capable
+    # turn still answered "PADIEM is a remote AI, it cannot reach the PC".
+    from .chat_routes import join_system_context, pc_note_applies, pc_turn_note
+
+    pc_offer = pc_context.get("pc_tools") if isinstance(pc_context, Mapping) else None
+    answer_context = join_system_context(
+        grounding_context,
+        pc_turn_note(pc_offer) if pc_note_applies(user_text, pc_offer) else "",
+    )
     if model_first_on and user_credential_ref is None:
         model_first_response = await _answer_model_first(
             request,
@@ -604,7 +614,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             user_id=uid, messages=stream_messages, skill=skill, model_id=policy.model_id,
             user_text=user_text, conversation_id=saved_id,
             pc_tools=pc_context["pc_tools"], subject_id=pc_context["subject_id"],
-            session_id=pc_run_id, additional_system_context=grounding_context,
+            session_id=pc_run_id, additional_system_context=answer_context,
             product_identity=product_identity,
             **({"pc_action_context": action_context} if action_context is not None else {}),
             **({"pc_delegation": pc_delegation} if pc_delegation is not None else {}),
@@ -649,7 +659,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
         base_kwargs = dict(
             user_id=uid, messages=policy.messages, skill=skill, model_id=policy.model_id,
             user_text=user_text, conversation_id=conversation_id,
-            additional_system_context=grounding_context, product_identity=product_identity,
+            additional_system_context=answer_context, product_identity=product_identity,
             timeout_seconds=answer_budget_seconds,
         )
 
@@ -691,7 +701,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
                 model_id=policy.model_id,
                 user_text=user_text,
                 conversation_id=conversation_id,
-                additional_system_context=grounding_context,
+                additional_system_context=answer_context,
                 product_identity=product_identity,
                 timeout_seconds=answer_budget_seconds,
             ),
@@ -887,6 +897,13 @@ async def _answer_model_first(
         context = await model_first_context(
             request, owner_id=uid, grounding_context=grounding_context
         )
+    # #7165: the sentence follows the tool tuple this dispatch actually carries.
+    from .chat_routes import join_system_context, pc_note_applies, pc_turn_note
+
+    context = join_system_context(
+        context,
+        pc_turn_note(tools) if pc_note_applies(user_text, tools) else "",
+    )
     common = dict(
         timing=timing,
         raw=raw,
