@@ -317,6 +317,13 @@ async def _resolve_canonical_owner_strict(request: Request) -> tuple[str, str] |
     authority: CurrentCanonicalSessionAuthority | None = getattr(
         request.app.state, "control_plane_identity_authority", None
     )
+    if shadow_store is None and authority is None:
+        # No identity bridge at all: this deployment can never hold a canonical
+        # session, and the mutation lane already reports that state as
+        # current_b54_session_unavailable (403). The read lane keeps the same
+        # fail-closed refusal; only a PARTIALLY wired bridge (or a bridge that
+        # raises) is the 503 infrastructure failure.
+        return None
     if shadow_store is None or authority is None:
         raise IdentityBridgeError(
             503,

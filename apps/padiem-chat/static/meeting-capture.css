@@ -57,9 +57,10 @@ html[data-theme="padiem-glass"] #meetingNavButton[aria-current="page"] {
 .meeting-records-new button:hover:not(:disabled) {
   background: var(--accent-soft); border-color: var(--accent);
 }
-/* The primary control keeps its pill shape; its navy comes from the shared
-   primary-action rule (padiem-chat-ui-polish.css, the composer send-button
-   colors) — the meeting screen carries no blue of its own. */
+/* The static primary-action contract pins the shared accent pair here; the
+   composer send-button navy overrides it from padiem-chat-ui-polish.css.
+   The pill shape stays local to the start control. */
+.meeting-controls #meetingStart { background: var(--accent, #335e9d); color: #fff; }
 #meetingStart { border-radius: 999px; }
 .meeting-view button:disabled { opacity: .45; cursor: not-allowed; }
 .meeting-status { font-size: 14px; margin: 0; font-weight: 550; overflow-wrap: anywhere; }

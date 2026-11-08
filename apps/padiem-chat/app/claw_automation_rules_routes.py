@@ -201,7 +201,16 @@ async def _resolve_tenant_or_read_failure(request: Request) -> tuple[str | None,
         tenant_id = owner[1] if owner is not None else None
     except IdentityBridgeError as exc:
         status = int(getattr(exc, "status_code", 503) or 503)
-        if status == 403:
+        code = str(getattr(exc, "code", "") or "")
+        # "No canonical session" is the SAME state the mutation lane reports as
+        # current_b54_session_unavailable (403): the identity was never linked,
+        # or the session is expired/revoked. Those stay 403. Only a bridge
+        # outage or a malformed authority answer is the 503 read failure.
+        session_absent = {
+            "control_plane_identity_not_linked",
+            "control_plane_session_inactive",
+        }
+        if status == 403 or code in session_absent:
             return None, _error(
                 403, "canonical_tenant_unavailable",
                 "워크스페이스 권한을 확인할 수 없습니다.",
