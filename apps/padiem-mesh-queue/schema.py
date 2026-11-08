@@ -96,6 +96,9 @@ QUEUE_MIGRATIONS = (
     # database without the table cannot serve either.
     "093_pc_install_tokens.sql",
     "102_oracle_mesh_dispatch_user_mode.sql",
+    # #7147/#7153 follow-up: the managed (contract) mark the pairing store
+    # reads and writes through the queue path.
+    "103_pc_managed_links.sql",
 )
 
 QUEUE_TABLES = (
@@ -180,6 +183,20 @@ def _already_satisfied(message: str) -> bool:
     """Whether a rejected statement describes something the database already has."""
 
     return message.startswith("duplicate column name:") or "already exists" in message
+
+
+def _not_this_database(message: str) -> bool:
+    """Whether a rejected ALTER names a table another database owns.
+
+    The queue replays the Chat migration files onto its own database, so one
+    file may carry statements for both databases (#7128: the managed-mark
+    columns for ``pc_device_links`` here, the ``command_bytes`` audit column
+    for the Chat database there). A statement whose table lives elsewhere is
+    skipped, not failed: the queue database never held that table.
+    """
+
+    lowered = message.lower()
+    return "no such table" in lowered
 
 
 def _table_names(connection: Any) -> set[str]:
@@ -322,8 +339,16 @@ def apply(connection, *, migrations: tuple[str, ...] = QUEUE_MIGRATIONS) -> None
                 try:
                     connection.execute(statement)
                 except sqlite3.OperationalError as exc:
-                    if not _already_satisfied(str(exc)):
-                        raise
+                    message = str(exc)
+                    if _already_satisfied(message):
+                        continue
+                    if _not_this_database(message):
+                        # #7128: one migration file may carry statements for
+                        # both databases — the queue skips the statement whose
+                        # table the Chat database owns (e.g. padiem_mcp_audit)
+                        # instead of failing the whole file.
+                        continue
+                    raise
             _record(connection, name, digest)
         except Exception:
             # Nothing of this file is left behind, so the next open replays it from the

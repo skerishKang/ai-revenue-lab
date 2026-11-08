@@ -133,6 +133,8 @@ def _client(queue_app):
             class Context:
                 async def __aenter__(self):
                     response = await handler(_FakeRequest(headers, json))
+                    if response.status_code != 200:
+                        print("SERVER refusal:", response.status_code, response.body.decode("utf-8", "replace")[:200])
                     return _FakeResponse(response.status_code, _json_loads(response.body))
                 async def __aexit__(self, *exc):
                     return False
@@ -262,3 +264,47 @@ def test_a_name_the_queue_did_not_decline_is_never_answered():
     assert chat_side.QUEUE_PAIRING_METHODS == internal.PAIRING_METHODS
     assert chat_side.QUEUE_PRESENCE_METHODS == internal.PRESENCE_METHODS
     assert chat_side.QUEUE_DRIVE_METHODS == internal.DRIVE_METHODS
+
+
+# ---------------------------------------------------------------- managed mark
+
+
+def _managed_flow(pairing, *, actor):
+    """Pair, then mark and read the link each store created for itself."""
+    issued = _run(pairing.issue_code(user_id=USER, issued_at=NOW))
+    await_run = _run(pairing.complete_claim_from_observation(
+        agent_name="%s [C D] CGI-9" % issued["install_tag"],
+        mesh_node_id="node//NEWPC", now=NOW + timedelta(seconds=40)))
+    links = _run(pairing.list_links(user_id=USER))
+    link_id = links[0]["link_id"]
+    marked = _run(pairing.set_managed(
+        link_id=link_id, by_user_id=actor, managed=True,
+        now=NOW + timedelta(seconds=90)))
+    state = _run(pairing.managed_state(link_id=link_id))
+    gate = _run(pairing.is_managed_link(user_id=USER, mesh_node_id="node//NEWPC"))
+    unmarked = _run(pairing.set_managed(
+        link_id=link_id, by_user_id=actor, managed=False,
+        now=NOW + timedelta(seconds=120)))
+    gate_after = _run(pairing.is_managed_link(user_id=USER, mesh_node_id="node//NEWPC"))
+    return _mask({"marked": marked, "state": state, "gate": gate,
+                  "gate_after_unmark": gate_after, "unmarked": unmarked})
+
+
+def test_the_managed_mark_round_trips_through_the_queue_path():
+    """#7147/#7153의 관리 표식이 queue 경로에서 D1 경로와 동일하게 동작한다.
+
+    set_managed의 now는 datetime — 클라이언트 _wire가 ISO로, 서버 _coerce가
+    datetime으로 되돌리고, 반환값의 datetime은 _json_safe가 ISO로 나르는
+    경계 직렬화도 함께 검증된다.
+    """
+    d1_database = _db()
+    queue_database = _db()
+
+    left = _managed_flow(D1PcPairingStore(d1_database), actor=USER)
+    right = _managed_flow(
+        QueueBackedPairingStore(_client(_queue_app(queue_database))), actor=USER)
+    assert left == right
+    # Not both-empty by accident: the mark really did land and the gate reads it.
+    assert left["state"]["managed"] is True
+    assert left["gate"] is True
+    assert left["gate_after_unmark"] is False

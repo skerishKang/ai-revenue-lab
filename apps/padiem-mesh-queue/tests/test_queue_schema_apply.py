@@ -54,10 +54,24 @@ def _open(tmp_path, name="queue.sqlite3"):
 
 
 def _raw_run(connection, names):
-    """The ledger-less behaviour — used to build "a database from before the ledger". """
+    """The ledger-less behaviour — used to build "a database from before the ledger".
+
+    The pre-ledger queue ran each file as one ``executescript``. A file written
+    after that queue was built can carry a statement for a table the queue
+    database has never owned (#7128: 103's ``padiem_mcp_audit`` lives in the
+    Chat database), so the fixture runs statement by statement and skips
+    exactly those — the same tolerance ``apply()`` itself now has.
+    """
 
     for name in names:
-        connection.executescript((schema.MIGRATION_DIR / name).read_text(encoding="utf-8"))
+        text = (schema.MIGRATION_DIR / name).read_text(encoding="utf-8")
+        for statement in schema._statements(text):
+            try:
+                connection.execute(statement)
+            except sqlite3.OperationalError as exc:
+                if schema._already_satisfied(str(exc)) or schema._not_this_database(str(exc)):
+                    continue
+                raise
 
 
 def _ledger_names(connection):
@@ -123,23 +137,27 @@ def test_a_database_built_without_the_ledger_is_backfilled_not_replayed(tmp_path
 def test_a_migration_that_has_never_run_still_runs(tmp_path, monkeypatch):
     monkeypatch.setattr(schema, "MIGRATION_DIR", _migrations(tmp_path))
     connection = _open(tmp_path)
-    try:
-        schema.apply(connection, migrations=NAMES[:-1])
-    except schema.QueueSchemaIncomplete:
-        pass  # The final migration owns a required table/column.
+    schema.apply(connection, migrations=NAMES[:-1])
     assert NAMES[-1] not in _ledger_names(connection)
 
     counting = _Counting(connection)
     schema.apply(counting)
 
     assert NAMES[-1] in _ledger_names(counting.connection)
+    # The never-run file's queue-side columns arrived...
     columns = {
-        str(r[1]) for r in counting.connection.execute("pragma table_info(oracle_mesh_dispatch)")
+        str(r[1]) for r in counting.connection.execute("pragma table_info(pc_device_links)")
     }
-    assert "claimed_until" in columns
+    assert {"managed_at", "managed_by"} <= columns
+    # ...its chat-only statement (padiem_mcp_audit) was skipped, not failed, and
+    # nothing that had already run was replayed.
+    others = [
+        s
+        for s in counting.statements
+        if "managed_" not in s and "padiem_mcp_audit" not in s
+    ]
+    assert _ddl(others) == []
     assert connection.execute("SELECT count(*) FROM mesh_device_drives").fetchone()[0] == 0
-    replayed = [s for s in counting.statements if "mesh_device_drives" not in s]
-    assert _ddl(replayed) == []
 
 
 def test_086_on_a_pre_ledger_database_does_not_rebuild_or_erase_old_tables(tmp_path):

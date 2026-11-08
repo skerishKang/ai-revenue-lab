@@ -93,6 +93,13 @@ QUEUE_PAIRING_METHODS = frozenset({
     "revoke_link",
     "revoke_root",
     "set_link_label",
+    # #7147/#7153: the managed(contract) mark — read by the SYSTEM gate,
+    # written by the admin toggle. Added here together with the store server
+    # allowlist so the queue path carries the whole pairing surface.
+    "is_managed_link",
+    "list_active_device_ids",
+    "managed_state",
+    "set_managed",
 })
 
 QUEUE_PRESENCE_METHODS = frozenset({"upsert", "load"})
