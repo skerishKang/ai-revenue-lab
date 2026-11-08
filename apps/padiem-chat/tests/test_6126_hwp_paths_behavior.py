@@ -292,8 +292,12 @@ if (!sandbox.PadiemProjectFileUpload) {
   console.log(JSON.stringify({ ok: false, error: "TUS_MODULE_NOT_LOADED" }));
   process.exit(0);
 }
-sandbox.dispatchEvent = sandbox.dispatchEvent || (() => true);
+const sessionWindowListeners = {};
+sandbox.addEventListener = (type, fn) => { (sessionWindowListeners[type] ||= []).push(fn); };
+sandbox.dispatchEvent = (event) => { (sessionWindowListeners[event.type] || []).forEach(fn => fn(event)); };
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 // index.html ships #attachmentTray and #attachmentThumb with the hidden
 // attribute; the shim's elements default to visible, so model the real

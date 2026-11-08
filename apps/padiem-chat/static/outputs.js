@@ -32,6 +32,7 @@
   let activeOutput = null;
   let loadInFlight = false;
   let lastAuthenticated = false;
+  let outputsGeneration = 0;
 
   function setStatus(text, state = "normal") {
     outputStatus.textContent = text || "";
@@ -153,9 +154,11 @@
   async function loadOutputs() {
     if (loadInFlight) return outputsReady;
     loadInFlight = true;
+    const generation = outputsGeneration;
     try {
       const response = await fetch("/api/outputs", { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
+      if (generation !== outputsGeneration) return false;
       if (!response.ok || !data || !Array.isArray(data.outputs)) throw new Error("saved outputs unavailable");
       outputs = data.outputs.filter((item) => item && typeof item.id === "string" && typeof item.title === "string");
       outputsNextCursor = typeof data.next_cursor === "string" && data.next_cursor ? data.next_cursor : null;
@@ -169,16 +172,18 @@
       updateSaveButtons();
       return true;
     } catch (_) {
+      if (generation !== outputsGeneration) return false;
       disableOutputs();
       return false;
     } finally {
-      loadInFlight = false;
+      if (generation === outputsGeneration) loadInFlight = false;
     }
   }
 
   async function loadMoreOutputs() {
     if (!outputsNextCursor || outputsLoadingMore) return false;
     const cursor = outputsNextCursor;
+    const generation = outputsGeneration;
     outputsLoadingMore = true;
     renderOutputs();
     try {
@@ -187,6 +192,7 @@
         { headers: { "Accept": "application/json" }, cache: "no-store" },
       );
       const data = await response.json().catch(() => null);
+      if (generation !== outputsGeneration) return false;
       if (response.status === 400) {
         // 만료·위조 커서: 다시 시도하지 않고 멈춘다.
         outputsNextCursor = null;
@@ -202,8 +208,10 @@
     } catch (_) {
       return false;
     } finally {
-      outputsLoadingMore = false;
-      renderOutputs();
+      if (generation === outputsGeneration) {
+        outputsLoadingMore = false;
+        renderOutputs();
+      }
     }
   }
 
@@ -524,6 +532,7 @@
     save.addEventListener("click", async () => {
       if (!lifecycleApi().isCompleted(article) || !outputsReady || save.dataset.saved === "true") return;
       save.disabled = true;
+      const generation = outputsGeneration;
       try {
         const response = await fetch("/api/outputs", {
           method: "POST",
@@ -531,6 +540,7 @@
           body: JSON.stringify({ title: titleFromText(text), content: text }),
         });
         const data = await response.json().catch(() => null);
+        if (generation !== outputsGeneration) return;
         if (!response.ok || !data || !data.output) {
           const message = data && data.error && typeof data.error.message === "string" ? data.error.message : "답변을 저장하지 못했습니다.";
           throw new Error(message);
@@ -540,6 +550,7 @@
         save.disabled = true;
         await loadOutputs();
       } catch (_) {
+        if (generation !== outputsGeneration) return;
         save.disabled = false;
         feedbackButton(save, "저장 실패", "저장");
       }
@@ -556,9 +567,11 @@
 
   async function openOutput(id) {
     if (!outputsReady) return;
+    const generation = outputsGeneration;
     try {
       const response = await fetch(`/api/outputs/${encodeURIComponent(id)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
+      if (generation !== outputsGeneration) return;
       if (!response.ok || !data || !data.output || typeof data.output.content !== "string") throw new Error("저장한 답변을 불러오지 못했습니다.");
       activeOutput = data.output;
       outputTitleInput.value = typeof activeOutput.title === "string" ? activeOutput.title : "저장한 답변";
@@ -568,6 +581,7 @@
       outputDialog.showModal();
       outputTitleInput.focus();
     } catch (error) {
+      if (generation !== outputsGeneration) return;
       setStatus(error instanceof Error ? error.message : "저장한 답변을 불러오지 못했습니다.", "error");
     }
   }
@@ -581,6 +595,7 @@
 
   async function renameOutput() {
     if (!activeOutput || !outputsReady) return;
+    const generation = outputsGeneration;
     const title = outputTitleInput.value.replace(/\s+/g, " ").trim();
     if (!title || title.length > 100) {
       setStatus("제목은 1자 이상 100자 이하로 입력해 주세요.", "error");
@@ -594,12 +609,14 @@
         body: JSON.stringify({ title }),
       });
       const data = await response.json().catch(() => null);
+      if (generation !== outputsGeneration) return;
       if (!response.ok || !data || !data.output) throw new Error("제목을 바꾸지 못했습니다.");
       activeOutput = data.output;
       outputTitleInput.value = activeOutput.title;
       setStatus("제목을 저장했습니다.");
       await loadOutputs();
     } catch (error) {
+      if (generation !== outputsGeneration) return;
       setStatus(error instanceof Error ? error.message : "제목을 바꾸지 못했습니다.", "error");
     } finally {
       outputRenameButton.disabled = false;
@@ -608,21 +625,24 @@
 
   async function deleteOutput() {
     if (!activeOutput || !outputsReady) return;
+    const generation = outputsGeneration;
     const confirmed = await window.PadiemConfirmDialog.confirm({
       title: "저장한 답변을 삭제할까요?",
       message: "저장한 답변만 삭제합니다. 원래 대화는 삭제되지 않습니다.",
       cancelLabel: "취소",
       confirmLabel: "삭제",
     });
-    if (!confirmed) return;
+    if (!confirmed || generation !== outputsGeneration) return;
     outputDeleteButton.disabled = true;
     try {
       const response = await fetch(`/api/outputs/${encodeURIComponent(activeOutput.id)}`, { method: "DELETE", headers: { "Accept": "application/json" } });
       const data = await response.json().catch(() => null);
+      if (generation !== outputsGeneration) return;
       if (!response.ok || !data || data.deleted !== true) throw new Error("저장한 답변을 삭제하지 못했습니다.");
       closeOutput();
       await loadOutputs();
     } catch (error) {
+      if (generation !== outputsGeneration) return;
       setStatus(error instanceof Error ? error.message : "저장한 답변을 삭제하지 못했습니다.", "error");
     } finally {
       outputDeleteButton.disabled = false;
@@ -684,9 +704,10 @@
   }
 
   function isAuthenticated() {
-    const current = normalizeAuthProjection();
+    const session = window.PadiemAuthSession?.get();
+    const current = session ? session.authenticated : normalizeAuthProjection();
     if (current) lastAuthenticated = true;
-    else if (loginButton && loginButton.dataset.authenticated === "false") lastAuthenticated = false;
+    else if (session || (loginButton && loginButton.dataset.authenticated === "false")) lastAuthenticated = false;
     return current;
   }
 
@@ -699,25 +720,27 @@
     normalizeAuthProjection();
   }
 
-  if (loginButton) {
-    // #7164: the button mutates on every auth projection rewrite, identical
-    // value or not. Reload only when the auth STATE actually changed — the
-    // unguarded version re-fetched /api/outputs in a loop while the page sat
-    // still (10 fetches in 30s measured).
-    let lastOutputsAuthState = null;
-    const authObserver = new MutationObserver(() => {
-      const authed = isAuthenticated();
-      if (authed === lastOutputsAuthState) return;
-      lastOutputsAuthState = authed;
-      if (authed) loadOutputs();
-      else disableOutputs();
-    });
-    authObserver.observe(loginButton, { childList: true, subtree: true, attributes: true });
-    if (isAuthenticated()) loadOutputs();
-    else disableOutputs();
-    window.addEventListener("padiem:localechange", preserveAuthenticatedLocaleProjection);
-  } else {
+  let outputsSession = null;
+  function applyOutputsSession() {
+    const session = window.PadiemAuthSession?.get();
+    const next = session || { authenticated: isAuthenticated(), ownerKey: "" };
+    if (outputsSession && outputsSession.authenticated === next.authenticated
+        && outputsSession.ownerKey === next.ownerKey) return;
+    outputsSession = next;
+    lastAuthenticated = next.authenticated;
+    // A pending read must not restore another owner's list or dialog.
+    outputsGeneration += 1;
+    loadInFlight = false;
+    outputsLoadingMore = false;
+    outputsNextCursor = null;
     disableOutputs();
+    if (next.authenticated) void loadOutputs();
+  }
+
+  window.addEventListener("padiem:auth-state", applyOutputsSession);
+  applyOutputsSession();
+  if (loginButton) {
+    window.addEventListener("padiem:localechange", preserveAuthenticatedLocaleProjection);
   }
 
   enhanceAllAnswers();

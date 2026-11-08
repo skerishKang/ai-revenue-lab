@@ -21,10 +21,12 @@ APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
 
 
 def _logout_block() -> str:
-    start = APP_JS.index("if (!authenticated) {")
-    # The logout cleanup block ends at the auth-loss PDF/timer teardown.
-    end = APP_JS.index("window.PadiemClawPdfPreview?.revokeAll?.()", start)
-    return APP_JS[start:end]
+    session = (STATIC / "claw-session.js").read_text(encoding="utf-8")
+    assert "window.PadiemClawSession.bind({" in APP_JS
+    start = session.index("if (authenticated) return;")
+    # The same signed-out cleanup lives in the session listener after R1.
+    end = session.index("window.PadiemClawPdfPreview?.revokeAll?.()", start)
+    return session[start:end]
 
 
 def test_logout_hides_and_closes_the_approved_memory_disclosure() -> None:
