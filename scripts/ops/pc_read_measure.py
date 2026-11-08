@@ -131,7 +131,29 @@ def send_probe(token: str, path: str) -> dict:
         "elapsed_ms": round((time.perf_counter() - started) * 1000.0, 1),
         "call_status": structured.get("status"),
         "call_code": structured.get("code") or (structured.get("output") or {}).get("stage"),
+        "content_head20": _content_head(structured),
     }
+
+
+#: Result keys that carry prose/diagnostics, never file content.
+_CONTENT_SKIP_KEYS = frozenset({"hint", "stage", "ok", "answer", "content_note"})
+
+
+def _content_head(structured: dict) -> str | None:
+    """The first 20 characters of the received file content, or None.
+
+    Proof-of-delivery only (the owner's pass criterion): exactly the first
+    20 characters are kept, never more, and only from the payload keys that
+    carry the file body.
+    """
+    candidates = [structured.get("output"), structured.get("content")]
+    output = structured.get("output")
+    if isinstance(output, dict):
+        candidates.extend(output.get(key) for key in ("output", "content", "text", "data"))
+    for candidate in candidates:
+        if isinstance(candidate, str) and candidate and not candidate.startswith("{"):
+            return candidate[:20]
+    return None
 
 
 # ----------------------------------------------------------------- journals
@@ -374,7 +396,8 @@ def cmd_run(args) -> int:
         "label": args.label, "http_status": probe["http_status"],
         "call_status": probe["call_status"], "call_code": probe["call_code"],
         "error": probe["error"], "request_id": probe["request_id"],
-        "elapsed_ms": probe["elapsed_ms"], "stages": stages,
+        "elapsed_ms": probe["elapsed_ms"],
+        "content_head20": probe.get("content_head20"), "stages": stages,
     }
     append_row(args.store, row)
     print(json.dumps(row, ensure_ascii=False))
