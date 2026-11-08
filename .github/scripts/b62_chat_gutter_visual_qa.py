@@ -535,9 +535,37 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
     if metrics["scrollWidth"] > metrics["width"] + 1:
         raise AssertionError(f"{name} Claw horizontal overflow: {metrics}")
 
-    if claw_placeholder != home_placeholder:
+    # #7166 (대표 결정): Claw 일반 화면은 Chat과 다른 자기 안내 문구를 쓴다.
+    # 두 문구는 각자 자기 locale 키에서 오고(chat='input', claw='claw-input-placeholder'),
+    # 서로 달라야 하며, 칩이 예약한 오른쪽 여백을 포함한 입력 상자 안에 한 줄로 들어간다.
+    copy = await page.evaluate(
+        """() => {
+          const ta = document.getElementById('messageInput');
+          const locale = window.__padiemLocale;
+          return {
+            chatKey: locale && typeof locale.text === 'function' ? locale.text('input') : null,
+            clawKey: locale && typeof locale.text === 'function'
+              ? locale.text('claw-input-placeholder') : null,
+            scrollHeight: ta.scrollHeight,
+            clientHeight: ta.clientHeight,
+          };
+        }"""
+    )
+    if not home_placeholder or not claw_placeholder:
+        raise AssertionError(f"{name} composer placeholder is empty")
+    if not copy["chatKey"] or home_placeholder != copy["chatKey"]:
         raise AssertionError(
-            f"{name} Claw placeholder diverged from Chat Home: {claw_placeholder!r} vs {home_placeholder!r}"
+            f"{name} Chat Home placeholder is not the 'input' locale line: {home_placeholder!r} vs {copy['chatKey']!r}"
+        )
+    if not copy["clawKey"] or claw_placeholder != copy["clawKey"]:
+        raise AssertionError(
+            f"{name} Claw placeholder is not the 'claw-input-placeholder' locale line: {claw_placeholder!r} vs {copy['clawKey']!r}"
+        )
+    if claw_placeholder == home_placeholder:
+        raise AssertionError(f"{name} Claw placeholder must differ from Chat Home: {claw_placeholder!r}")
+    if copy["scrollHeight"] > copy["clientHeight"] + 1:
+        raise AssertionError(
+            f"{name} Claw placeholder does not fit the input box: {copy['scrollHeight']} > {copy['clientHeight']}"
         )
     # Explicit manual entry only: the document workflow — and its quote
     # action selection — appears after the entry control is clicked, never
@@ -568,7 +596,7 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         "claw_active_workbench_bounded": not shared_landing,
         "claw_composer_bounded": True,
         "claw_viewport_safe": True,
-        "home_claw_placeholder_parity": True,
+        "claw_placeholder_own_locale_key": True,
         "claw_general_default_view": True,
         "claw_manual_hidden_by_default": True,
         "claw_manual_entry_reachable": True,
