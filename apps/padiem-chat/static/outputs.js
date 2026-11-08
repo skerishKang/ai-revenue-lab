@@ -700,16 +700,8 @@
   }
 
   if (loginButton) {
-    // #7164: the button mutates on every auth projection rewrite, identical
-    // value or not. Reload only when the auth STATE actually changed — the
-    // unguarded version re-fetched /api/outputs in a loop while the page sat
-    // still (10 fetches in 30s measured).
-    let lastOutputsAuthState = null;
     const authObserver = new MutationObserver(() => {
-      const authed = isAuthenticated();
-      if (authed === lastOutputsAuthState) return;
-      lastOutputsAuthState = authed;
-      if (authed) loadOutputs();
+      if (isAuthenticated()) loadOutputs();
       else disableOutputs();
     });
     authObserver.observe(loginButton, { childList: true, subtree: true, attributes: true });
