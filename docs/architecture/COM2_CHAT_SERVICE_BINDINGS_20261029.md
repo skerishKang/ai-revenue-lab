@@ -7,6 +7,15 @@ ISSUE=#5573
 RELATED=docs/architecture/COM2_CHAT_CPYTHON_STAGE2_20261029.md (2단계 본편), PR #6130
 ```
 
+## 2026-11-08 Google 연결 정합화
+
+#7089의 COM2 Google truth·Calendar READ 배선은 #7091, Calendar 상태 HTTPS
+allowlist와 workers.dev 설정은 #7094로 main에 흡수됐다. 현재 구현은
+`local_cpython.build_app`의 `CloudflareGoogleOAuthWorkspaceTruth`와
+`build_local_calendar_read_activation_client`를 재사용한다. 별도
+`_google_connector_authorities`나 `LocalEngineFetchBinding`을 추가하지 않는다.
+아래의 다른 서비스 이전 상태는 10월 29일 조사 기록이며 현재 배포 상태의 증거가 아니다.
+
 ## 1. 요약
 
 Worker는 같은 계정의 Service binding으로 형제 Worker를 부른다. 일반 CPython
@@ -22,12 +31,16 @@ Worker는 같은 계정의 Service binding으로 형제 Worker를 부른다. 일
   Chat 쪽 클라이언트만으로는 완성되지 않는다. 이 경우 레인은 지금처럼
   fail-closed로 남기고, 표에 필요한 결정을 남긴다.
 
-proof 형식(양쪽 공유 계약, `app/local_service_bridge.py`):
+RPC proof 형식(현재 `HttpRpcBinding` 기본값, `app/local_service_bridge.py`):
 
 ```text
 x-padiem-service-at:    <unix 초>
-x-padiem-service-proof: v1=hex(hmac_sha256(secret, "v1\n"+method+"\n"+path+"\n"+at+"\n"+body))
+x-padiem-service-id:    <시도마다 새 요청 ID>
+x-padiem-service-proof: v2=hex(hmac_sha256(secret, "v2\n"+method+"\n"+path+"\n"+at+"\n"+service_id+"\n"+body))
 ```
+
+Google RPC는 기본 v2를 유지한다. `sign_request_id=False`로 낮추지 않는다.
+PDF처럼 별도 fetch 계약을 가진 서비스의 proof는 각 클라이언트 계약을 따른다.
 
 ## 2. 8종 대체표
 
@@ -38,16 +51,22 @@ x-padiem-service-proof: v1=hex(hmac_sha256(secret, "v1\n"+method+"\n"+path+"\n"+
 | 3 | `LOCAL_AGENT_BROKER_AUTHORITY_SERVICE` (padiem-local-agent-broker-state) | PC 커넥터 페어링/브로커 상태 (RPC) | RPC 메서드 호출 | **(나) 단계 이전** — 클레임·페어링·presence는 COM2 큐가 진실(`queue_store_proxy.py`, #6121). device/enrollment/session/read는 Stage 2-C로 이전 | Stage 2-C 설계(`COM2_CONTROL_PLANE_RPC_INGRESS_20261029.md` §5). 그 전까지 PC 레인 fail-closed |
 | 4 | `VOICE_STT_SERVICE` (padiem-voice-stt) | 서버 STT | binding transport (`app/voice_stt_routes.py`) | 미구현 — 음성 레인 off 유지 | Tunnel 호스트명 + 대상 proof 검증 + 로컬 클라이언트(PDF와 같은 모양) |
 | 5 | `B66_PDF_RENDERER_SERVICE` (padiem-b66-pdf-renderer) | B66 견적서 PDF 렌더 (fetch `/internal/v1/render`) | binding fetch (worker.py:304-337) | **구현 완료** — `LocalB66PdfRendererClient` (같은 경로·키 집합·32MiB 상한·proof) | Tunnel 호스트명 + 대상 proof 검증, env 쌍 |
-| 6 | `GOOGLE_OAUTH_STATE_SERVICE` (padiem-google-oauth-state) | workspace connector truth RPC (`workspace_connector_state`) | RPC (`app/connector_workspace_truth.py:218`) | 로그인은 무관하게 동작(§3). **대상 입구 구현(미배포·기본 꺼짐)** — allowlist 1개 | 2와 같은 배포·env 절차 |
+| 6 | `GOOGLE_OAUTH_STATE_SERVICE` (padiem-google-oauth-state) | workspace·Calendar 상태 RPC | Worker와 같은 `CloudflareGoogleOAuthWorkspaceTruth` | #7091·#7094 구현 — `workspace_connector_state`, `workspace_calendar_connector_state` 두 read-only RPC만. 기본 Gmail+Drive projection 유지 | §7의 현재 env 쌍 + 대상 secret/배포 확인 |
 | 7 | `P01_ENGINE_SERVICE` (padiem-ai-engine) | P01 웹 XLSX 엔진 호출 (fetch) | binding fetch (`app/web_xlsx_p01_engine_client.py:66-102`) | 미구현 — P01 레인 off 유지 | Tunnel 호스트명 + 호출자 인증 검토 + 로컬 fetch 클라이언트 |
 | 8 | `DOCUMENT_PARSER_SERVICE` (padiem-document-parser) | 격리 바이너리 파싱 | transport 존재하나 `wrangler.toml`에서 **주석 처리** | 해당 없음 — 프로덕션에서도 미배선 | 활성화 결정 시 7과 같은 절차 |
 
 원칙: **대상이 HTTP 계약을 이미 가진 것(1·5)** 부터 닫았다. RPC 전용(2·3·6)은
 대상의 공개 표면을 새로 만드는 보안 결정이라 이 PR에서 만들지 않았고, Chat 쪽
 클라이언트(`HttpRpcBinding`)만 준비했다. 4·7은 로컬 클라이언트가 아직 없고
-대상 호스트명도 없어 레인이 꺼진 채로 둔다(현행과 동일).
+대상 호스트명도 없어 레인이 꺼진 채로 두었다(10월 29일 기록).
+Google(6)은 위 11월 8일 정합화가 우선하며, Calendar READ는 기존 P01
+loopback transport와 Worker의 `CloudflareCalendarReadActivationEngineClient`를 쓴다.
 
-## 3. Google OAuth — 병행 호스트에서 그대로 동작하게 하는 것
+## 3. Google OAuth — 10월 29일 로그인 조사 기록
+
+현재 로그인 기준은 `docs/standards/AUTH_STANDARD.md`다. 아래 옛 로그인
+콘솔 절차는 이번 커넥터 배선 작업의 실행 절차가 아니다. Google 로그인과
+workspace 커넥터 상태/Calendar 연결은 별도 기능이다.
 
 로그인 리다이렉트 URI는 `PADIEM_CHAT_PUBLIC_BASE_URL + "/auth/google/callback"`
 (`app/auth.py:322-325`)이고 state 서명은 세션 시크릿 기반이다. 즉 com2에서
@@ -115,7 +134,15 @@ fail-closed이고 로그인·세션은 동작한다(https 공개 오리진이므
 | `PADIEM_CHAT_RUNTIME_MODE=mock|b14`, `PADIEM_CHAT_LIVE_ENABLED` | 모델·자동검색 게이트 |
 | `B14_UPSTREAM_MODE=https`, `B14_UPSTREAM_URL`, `PADIEM_B14_SERVICE_PROOF_SECRET` | 1번 |
 | `PADIEM_CHAT_LOCAL_IDENTITY_RPC_ORIGIN`, `…_SECRET` | 2번 (클라이언트 준비됨) |
+| `PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_ORIGIN` | 6번 — 배포된 `padiem-google-oauth-state`의 bare HTTPS origin; `/internal/rpc/...`를 붙이지 않음 |
+| `PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_SECRET` | 대상 `PADIEM_GOOGLE_STATE_RPC_INGRESS_SECRET`와 같은 값 |
+| `PADIEM_CHAT_LOCAL_P01_ENGINE_ORIGIN`, `PADIEM_CHAT_LOCAL_P01_CALLER_ID`, `PADIEM_CHAT_LOCAL_P01_ENGINE_CREDENTIAL` | Calendar READ 활성화 — 기존 P01 loopback 호출자 설정 재사용 |
 | `PADIEM_CHAT_LOCAL_B66_PDF_ORIGIN`, `…_SECRET` | 5번 |
 | `PADIEM_CHAT_WEB_PROVIDER`, `TINYFISH_API_KEY`, `PADIEM_CHAT_DAUM_REST_API_KEY` | 웹 검색 |
 
 시크릿은 env 파일(0600)에만 두고 로그·PR·문서에 값을 적지 않는다.
+#7089에 적힌 `PADIEM_CHAT_LOCAL_GOOGLE_OAUTH_RPC_ORIGIN/SECRET`는 현재
+코드가 읽는 이름이 아니다. 기존 현재 이름을 확인하고 중복 변수를 추가하지 않는다.
+
+배포 후 판정과 CTO 적용 순서는
+[Google 연결 확인 절차](COM2_CONTROL_PLANE_RPC_INGRESS_20261029.md#8-google-커넥터-배포-후-확인)를 따른다.
