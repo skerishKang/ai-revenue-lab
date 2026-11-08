@@ -9,11 +9,17 @@ class Element {
   get textContent() { return this.text + this.children.map((child) => child.textContent).join(" "); }
   set value(value) { this._value = String(value); }
   get value() { return this._value === undefined ? (this.tagName === "SELECT" ? this.children[0]?.value || "" : "") : this._value; }
-  append(...children) { this.children.push(...children); }
-  replaceChildren(...children) { this.children = children; this.text = ""; if (this.tagName === "SELECT") delete this._value; }
+  append(...children) { children.forEach((child) => { if (child && typeof child === "object") child.parent = this; }); this.children.push(...children); }
+  replaceChildren(...children) { this.children = children; this.text = ""; children.forEach((child) => { if (child && typeof child === "object") child.parent = this; }); if (this.tagName === "SELECT") delete this._value; }
   setAttribute(key, value) { this.attrs[key] = String(value); }
   addEventListener(name, callback) { (this.listeners[name] ||= []).push(callback); }
   click() { if (!this.disabled) for (const callback of this.listeners.click || []) callback({ target: this }); }
+  remove() { if (this.parent) this.parent.children = this.parent.children.filter((child) => child !== this); }
+  querySelector(selector) {
+    const cls = selector.startsWith(".") ? selector.slice(1) : null;
+    if (!cls) return null;
+    return this.all().find((node) => node !== this && String(node.className || "").split(/\s+/).includes(cls)) || null;
+  }
   all() { return [this, ...this.children.flatMap((child) => child.all())]; }
 }
 
@@ -24,29 +30,50 @@ const TOKEN_PLACEHOLDER = "TEST_ONLY_INVALID_CREDENTIAL";
 const APPROVAL = { id: "approval-one", token_id: TOKEN.id, token_name: TOKEN.name, device_id: LINK.mesh_node_id,
   tool_name: "pc_write_file", arguments: { path: "C:/업무/초안.txt", content: "첫 줄\n<img src=x onerror=alert(1)>" },
   request_digest: "test-request-digest", created_at: TOKEN.created_at, expires_at: "2026-11-01T01:00:00Z", status: "pending" };
+const CLIENT = { client_id: "mcpc_" + "b".repeat(32), client_name: "Claude", active_grants: 0,
+  devices: [], scopes: [], created_at: "2026-11-01T00:00:00Z", latest_grant_at: "2026-11-01T00:00:00Z", last_used_at: null };
 const clone = (value) => JSON.parse(JSON.stringify(value));
 const settle = async () => { for (let i = 0; i < 8; ++i) await new Promise((resolve) => setImmediate(resolve)); };
 
-function setup({ tokens = [], approvals = [], links = [LINK], status = 200, admin = false, managed = false, managedStatus = 200 } = {}) {
+function setup({ tokens = [], approvals = [], links = [LINK], status = 200, clients = [], admin = false, managed = false, managedStatus = 200 } = {}) {
   const ids = {};
-  for (const name of ["Status", "Endpoint", "Name", "Issue", "Refresh", "List", "Approvals", "Issued", "Token", "Copy", "Hide", "Editor", "ManagedBlock", "ManagedList", "ManagedNotReady"]) ids["mcpGateway" + name] = new Element(["Name", "Endpoint", "Token"].includes(name) ? "input" : "div");
+  for (const name of ["Status", "Endpoint", "Name", "Issue", "Refresh", "List", "Clients", "Approvals", "Issued", "Token", "Copy", "Hide", "Editor", "ManagedBlock", "ManagedList", "ManagedNotReady"]) ids["mcpGateway" + name] = new Element(["Name", "Endpoint", "Token"].includes(name) ? "input" : "div");
   ids.mcpGatewayDevice = new Element("select");
+  ids.mcpGatewayClientsList = new Element("ul");
   ids.mcpGatewaySettings = new Element("section");
   ids.settingsDialog = new Element("dialog"); ids.settingsDialog.open = false;
-  const events = {}, observers = [], calls = [], clipboard = [];
-  const server = { tokens: clone(tokens), approvals: clone(approvals), links: clone(links), status, mutationStatus: 200, pending: null, pendingIssue: null, clipboardFails: false, admin, managed, managedStatus };
+  const events = {}, observers = [], calls = [], clipboard = [], confirmations = [];
+  const server = { tokens: clone(tokens), approvals: clone(approvals), links: clone(links), status, mutationStatus: 200, pending: null, pendingIssue: null, clipboardFails: false, admin, managed, managedStatus, clients: clone(clients), confirmResult: true };
   let locale = "ko";
   const response = (status, body) => ({ status, json: async () => clone(body) });
   const window = {
     document: { readyState: "complete", getElementById: (id) => ids[id], createElement: (tag) => new Element(tag) },
     location: { origin: "https://chat.example.invalid" },
     navigator: { clipboard: { writeText: async (value) => { if (server.clipboardFails) throw new Error("blocked"); clipboard.push(value); } } },
-    __padiemLocale: { text: (key) => locale + ":" + key },
+    __padiemLocale: { text: (key, variables) => locale + ":" + key + (variables && variables.count !== undefined ? ":" + variables.count : "") },
+    confirm: (message) => { confirmations.push(String(message)); return server.confirmResult; },
+    PadiemConfirmDialog: {
+      confirm: async (options = {}) => {
+        confirmations.push(String(options.message || ""));
+        confirmations.push(String(options.title || ""));
+        return server.confirmResult;
+      },
+    },
     addEventListener: (name, callback) => { (events[name] ||= []).push(callback); },
     MutationObserver: class { constructor(callback) { observers.push(callback); } observe() {} },
     fetch: async (url, options) => {
       calls.push({ url, ...options });
       if (url === "/api/pc/pairings") return response(200, { ok: true, links: server.links, admin: server.admin });
+      if (url === "/api/account/mcp/oauth/clients" && options.method === "GET") {
+        return response(server.status, { ok: server.status === 200, clients: server.clients });
+      }
+      if (url.startsWith("/api/account/mcp/oauth/clients/") && options.method === "DELETE") {
+        const id = url.slice("/api/account/mcp/oauth/clients/".length);
+        const revoked = server.clients.filter((c) => c.client_id === id).length;
+        server.clients = server.clients.filter((c) => c.client_id !== id);
+        server.tokens = server.tokens.map((t) => (t.client_id === id && !t.revoked_at) ? { ...t, revoked_at: "2026-11-08T00:00:00Z" } : t);
+        return response(200, { ok: true, revoked });
+      }
       if (url.endsWith("/managed")) {
         if (server.managedStatus !== 200) {
           return response(server.managedStatus, { ok: false, error: { code: server.managedStatus === 503 ? "pc_pairing_not_ready" : "pc_pairing_managed_not_admin" } });
@@ -66,7 +93,8 @@ function setup({ tokens = [], approvals = [], links = [LINK], status = 200, admi
       if (server.mutationStatus !== 200) return response(server.mutationStatus, { ok: false });
       if (url === "/api/account/mcp/tokens" && options.method === "POST") {
         if (server.pendingIssue) return server.pendingIssue;
-        const body = JSON.parse(options.body), token = { ...TOKEN, ...body };
+        // A personal token has no AI client; only OAuth grants carry client_id.
+        const body = JSON.parse(options.body), token = { ...TOKEN, ...body, client_id: null };
         server.tokens.unshift(token);
         return response(201, { ok: true, ...token, token: TOKEN_PLACEHOLDER });
       }
@@ -82,14 +110,15 @@ function setup({ tokens = [], approvals = [], links = [LINK], status = 200, admi
   };
   vm.runInNewContext(source, { window });
   return {
-    ids, calls, server, clipboard,
+    ids, calls, server, clipboard, confirmations,
     async open() { ids.settingsDialog.open = true; (events["padiem:advanced-settings-open"] || []).forEach((callback) => callback()); await settle(); },
     async close() { ids.settingsDialog.open = false; (events["padiem:advanced-settings-close"] || []).forEach((callback) => callback()); await settle(); },
     async event(name) { for (const callback of events[name] || []) callback(); await settle(); },
     language(value) { locale = value; },
     tokenText() { return ids.mcpGatewayList.textContent; },
+    clientsText() { return ids.mcpGatewayClientsList.textContent; },
     approvalText() { return ids.mcpGatewayApprovals.textContent; },
-    button(key) { return [...ids.mcpGatewayList.all(), ...ids.mcpGatewayApprovals.all()].find((node) => node.tagName === "BUTTON" && node.textContent.endsWith(key)); },
+    button(key) { return [...ids.mcpGatewayList.all(), ...ids.mcpGatewayClientsList.all(), ...ids.mcpGatewayApprovals.all()].find((node) => node.tagName === "BUTTON" && node.textContent.endsWith(key)); },
     async issue() { ids.mcpGatewayName.value = TOKEN.name; ids.mcpGatewayIssue.click(); await settle(); },
   };
 }
@@ -99,8 +128,9 @@ async function main() {
   async function check(name, callback) { await callback(); checks.push(name); }
   await check("initial settings only read account data and never persist credentials", async () => {
     const app = setup(); assert.equal(app.calls.length, 0); await app.open();
-    assert.equal(app.calls.length, 3);
+    assert.equal(app.calls.length, 4);
     assert.ok(app.calls.every((call) => call.method === "GET" && call.credentials === "same-origin" && call.cache === "no-store"));
+    assert.ok(app.calls.some((call) => call.url === "/api/account/mcp/oauth/clients"));
     assert.equal(app.ids.mcpGatewayEndpoint.value, "https://chat.example.invalid/api/mcp");
     assert.ok(!/localStorage|sessionStorage|innerHTML|console\./.test(source));
     assert.match(app.tokenText(), /mcp-settings-empty/);
@@ -215,6 +245,111 @@ async function main() {
     assert.match(app.ids.mcpGatewayStatus.textContent, /mcp-settings-copy-error/);
     app.ids.mcpGatewayRefresh.click(); await settle();
     assert.equal(app.ids.mcpGatewayToken.value, "");
+  });
+  await check("external AI connections render as AI-client bundles", async () => {
+    const app = setup({ tokens: [], clients: [
+      { client_id: "mcpc_" + "b".repeat(32), client_name: "Claude", active_grants: 3,
+        devices: ["node/test/pc-one", "node/test/pc-two"], scopes: ["work"],
+        created_at: "2026-11-01T00:00:00Z", latest_grant_at: "2026-11-06T10:00:00Z", last_used_at: "2026-11-07T22:30:00Z" },
+      { client_id: "mcpc_" + "c".repeat(32), client_name: "GitHub Copilot", active_grants: 1,
+        devices: ["node/test/pc-one"], scopes: ["work"],
+        created_at: "2026-10-20T00:00:00Z", latest_grant_at: "2026-10-20T00:00:00Z", last_used_at: "2026-10-25T09:15:00Z" },
+      { client_id: "mcpc_" + "d".repeat(32), client_name: "Cursor", active_grants: 5,
+        devices: ["node/test/pc-one"], scopes: ["work"],
+        created_at: "2026-09-01T00:00:00Z", latest_grant_at: "2026-11-08T07:00:00Z", last_used_at: null },
+    ] });
+    await app.open();
+    const listCall = app.calls.find((c) => c.url === "/api/account/mcp/oauth/clients" && c.method === "GET");
+    assert.ok(listCall);
+    assert.equal(listCall.credentials, "same-origin");
+    const text = app.clientsText();
+    assert.ok(text.includes("Claude"));
+    assert.ok(text.includes("GitHub Copilot"));
+    assert.ok(text.includes("Cursor"));
+    assert.ok(text.includes("mcp-ai-connection-count:3"));
+    assert.ok(text.includes("mcp-ai-connection-count:1"));
+    assert.ok(text.includes("mcp-ai-connection-count:5"));
+    assert.ok(text.includes("mcp-ai-device-count:2"));
+    assert.ok(text.includes("mcp-ai-device-count:1"));
+    assert.ok(text.includes("mcp-ai-details"));
+    assert.ok(text.includes("mcp-ai-token-used"));
+  });
+  await check("revoking one AI client bundle removes it and refreshes the list", async () => {
+    const app = setup({ tokens: [], clients: [
+      { client_id: "mcpc_" + "b".repeat(32), client_name: "Claude", active_grants: 2,
+        devices: ["node/test/pc-one"], scopes: ["work"],
+        created_at: "2026-11-01T00:00:00Z", latest_grant_at: "2026-11-06T10:00:00Z", last_used_at: "2026-11-07T22:30:00Z" },
+      { client_id: "mcpc_" + "c".repeat(32), client_name: "GitHub Copilot", active_grants: 1,
+        devices: ["node/test/pc-one"], scopes: ["work"],
+        created_at: "2026-10-20T00:00:00Z", latest_grant_at: "2026-10-20T00:00:00Z", last_used_at: "2026-10-25T09:15:00Z" },
+    ] });
+    await app.open();
+    const revoke = app.button("mcp-ai-revoke");
+    assert.ok(revoke);
+    assert.equal(revoke.dataset.clientId, "mcpc_" + "b".repeat(32));
+    revoke.click(); await settle();
+    assert.equal(app.confirmations.length, 2);
+    assert.ok(app.confirmations[0].includes("mcp-ai-revoke-confirm:2"));
+    assert.ok(app.confirmations[1].includes("mcp-ai-revoke-title"));
+    const delCall = app.calls.find((c) => c.url.startsWith("/api/account/mcp/oauth/clients/"));
+    assert.equal(delCall.method, "DELETE");
+    assert.ok(!app.clientsText().includes("Claude"));
+    assert.ok(app.clientsText().includes("GitHub Copilot"));
+    assert.match(app.ids.mcpGatewayStatus.textContent, /mcp-ai-revoked/);
+  });
+  await check("cancelled confirmation keeps the AI client and sends no DELETE", async () => {
+    const app = setup({ clients: [{ client_id: "mcpc_" + "b".repeat(32), client_name: "Claude", active_grants: 1,
+      devices: ["node/test/pc-one"], scopes: ["work"],
+      created_at: "2026-11-01T00:00:00Z", latest_grant_at: "2026-11-01T00:00:00Z", last_used_at: null }] });
+    await app.open();
+    app.server.confirmResult = false;
+    app.button("mcp-ai-revoke").click(); await settle();
+    assert.equal(app.confirmations.length, 2);
+    assert.ok(!app.calls.some((c) => c.method === "DELETE"));
+    assert.ok(app.clientsText().includes("Claude"));
+  });
+  await check("empty AI list shows the empty state", async () => {
+    const app = setup({ tokens: [], clients: [] });
+    await app.open();
+    assert.match(app.clientsText(), /mcp-ai-empty/);
+  });
+  await check("AI load error renders an error state with retry", async () => {
+    const app = setup({ tokens: [], clients: [], status: 500 });
+    await app.open();
+    assert.match(app.clientsText(), /mcp-ai-load-error/);
+  });
+  await check("401 on clients API shows the login state", async () => {
+    const app = setup({ tokens: [{ id: "fake", name: "x", device_id: "x", revoked_at: null }], clients: [], status: 401 });
+    await app.open();
+    assert.match(app.ids.mcpGatewayStatus.textContent, /mcp-settings-login/);
+  });
+  await check("locale change updates AI card labels", async () => {
+    const app = setup({ clients: [{ client_id: "mcpc_" + "b".repeat(32), client_name: "Claude", active_grants: 1,
+      devices: ["node/test/pc-one"], scopes: ["work"],
+      created_at: "2026-11-01T00:00:00Z", latest_grant_at: "2026-11-01T00:00:00Z", last_used_at: "2026-11-01T00:00:00Z" }] });
+    await app.open();
+    app.language("en"); await app.event("padiem:localechange");
+    const text = app.clientsText();
+    assert.ok(text.includes("en:mcp-ai-connection-count:1"));
+    assert.ok(text.includes("en:mcp-ai-device-count:1"));
+    assert.ok(text.includes("en:mcp-ai-details"));
+    app.language("ko"); await app.event("padiem:localechange");
+    assert.ok(app.clientsText().includes("ko:mcp-ai-connection-count:1"));
+    assert.ok(app.clientsText().includes("ko:mcp-ai-details"));
+  });
+  await check("details toggle opens and closes one per-client detail block", async () => {
+    const app = setup({ clients: [{ client_id: "mcpc_" + "b".repeat(32), client_name: "Claude", active_grants: 2,
+      devices: ["node/test/pc-one"], scopes: ["work"],
+      created_at: "2026-11-01T00:00:00Z", latest_grant_at: "2026-11-02T00:00:00Z", last_used_at: null }] });
+    await app.open();
+    const more = app.ids.mcpGatewayClientsList.all().find((node) => node.tagName === "BUTTON" && node.textContent.endsWith("mcp-ai-details"));
+    assert.ok(more);
+    more.click();
+    assert.equal(more.attrs["aria-expanded"], "true");
+    assert.equal(app.ids.mcpGatewayClientsList.all().filter((node) => String(node.className).includes("mcp-gateway-client-detail")).length, 1);
+    more.click();
+    assert.equal(more.attrs["aria-expanded"], "false");
+    assert.equal(app.ids.mcpGatewayClientsList.all().filter((node) => String(node.className).includes("mcp-gateway-client-detail")).length, 0);
   });
   for (const name of checks) console.log("MCP_GATEWAY_CHECK " + name + " PASS");
   console.log("MCP_GATEWAY_SETTINGS=PASS");
