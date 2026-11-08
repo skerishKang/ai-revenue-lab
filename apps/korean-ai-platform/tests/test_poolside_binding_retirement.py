@@ -88,7 +88,7 @@ def test_no_retired_kilo_route_can_make_poolside_ready(monkeypatch):
     monkeypatch.delenv(POOLSIDE_CREDENTIAL_BINDING,raising=False)
     with TestClient(create_app()) as client:
         readiness=client.get("/api/pilot/provider-readiness")
-        models=client.get("/api/pilot/models")
+        models=client.get("/api/pilot/admin/models")
     assert readiness.status_code == 200
     data=readiness.json()
     assert data["status"] == "not_ready"

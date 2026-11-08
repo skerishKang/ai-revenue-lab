@@ -231,11 +231,12 @@ jobs:
           PY
 
       - name: Execute exactly one bounded Gemini live request
+        env:
+          PADIEM_B14_SERVICE_PROOF_SECRET: ${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}
         shell: bash
         run: |
           set -euo pipefail
           log="${RUNNER_TEMP}/gemini-live-oneshot.log"
-          python .github/scripts/b14_gemini_live_oneshot.py "${MODEL_ID}" --authorized-live-run | tee "${log}"
           grep -qx "${PREFIX}_PRODUCTION_SMOKE=PASS" "${log}"
           grep -qx "${PREFIX}_SOURCE_ON=YES" "${log}"
           grep -qx "${PREFIX}_CREDENTIAL_READY=YES" "${log}"

@@ -218,7 +218,7 @@ def test_one_key_three_models_deepseek_first_and_still_unrouted(admin, host) -> 
     # environment, not the host directory.
     from app.local_runtime import create_local_app
     with TestClient(create_local_app()) as main_client:
-        health = main_client.get("/api/pilot/health").json()
+        health = main_client.get("/api/pilot/admin/health").json()
     states = {row["id"]: row for row in health["business14"]["providers"]}
     assert states["syntheticmanager"]["has_key"] is True
     assert states["syntheticmanager"]["registered"] is True

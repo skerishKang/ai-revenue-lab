@@ -3,6 +3,8 @@
 Routes:
 - GET  /api/pilot/health      — Pilot health check (multi-provider if configured)
 - GET  /api/pilot/models      — List pilot-available models
+- GET  /api/pilot/admin/health — Proven-caller health detail (server-to-server)
+- GET  /api/pilot/admin/models — Proven-caller model authority (server-to-server)
 - POST /api/pilot/v1/chat/completions — Chat completions via BYOK with routing
 
 Supports multi-provider registry and legacy single-provider fallback.
@@ -473,7 +475,7 @@ def _catalog_summary_dicts() -> list[dict]:
     ]
 
 
-async def pilot_health(request: Request):
+async def _pilot_health_detail(request: Request):
     """Pilot health check. Includes Alpha (platform catalog) and BYOK status."""
     from .platform_secrets import ensure_all_platform_secrets
     await ensure_all_platform_secrets()
@@ -544,7 +546,7 @@ async def pilot_health(request: Request):
     })
 
 
-async def pilot_models(request: Request):
+async def _pilot_models_detail(request: Request):
     """List models available for pilot (multi-provider if configured)."""
     state = resolve_configuration()
 
@@ -591,6 +593,80 @@ async def pilot_models(request: Request):
         "catalog": _catalog_summary_dicts(),
         "registered_routes": _registered_route_dicts(),
             "model_groups": group_model_ids(),
+    })
+
+
+_GRADE_NAMES = ("free", "plus", "pro", "max")
+
+
+def _grade_availability(catalog_models: int) -> list[dict[str, Any]]:
+    """PADIEM grade names and whether this deployment can serve them.
+
+    The grades are the product vocabulary a customer sees. A grade is
+    available when at least one executable route exists for it; the routes
+    themselves stay server-side (#6828).
+    """
+    from .tier_fallback import TIER_FALLBACK_B14_MODELS
+
+    available_by_grade = {
+        grade: bool(TIER_FALLBACK_B14_MODELS.get(grade))
+        for grade in _GRADE_NAMES
+    }
+    available_by_grade["free"] = bool(catalog_models)
+    return [
+        {"grade": grade, "available": available_by_grade[grade]}
+        for grade in _GRADE_NAMES
+    ]
+
+
+def _business14_public_summary() -> dict[str, Any]:
+    """Aggregates only: no provider id, no route, no key material."""
+    return {
+        "provider_mode": runtime_config.provider_mode,
+        "has_key": any_platform_secret_present(),
+        "catalog_models": len(_catalog_summary_dicts()),
+        "provider_count": len(_providers_with_registered_routes()),
+    }
+
+
+async def pilot_health(request: Request):
+    """Public health: status and counts only, never a provider name.
+
+    The owning release tooling reads the identity-bearing detail from
+    ``/api/pilot/admin/health`` behind the caller proof.
+    """
+    detail = await _pilot_health_detail(request)
+    if detail.status_code != 200:
+        return detail
+    body = json.loads(detail.body)
+    public: dict[str, Any] = {
+        "status": body.get("status"),
+        "mode": body.get("mode"),
+        "configured_providers": body.get("configured_providers"),
+        "configured_models": body.get("configured_models"),
+        "business14": _business14_public_summary(),
+    }
+    if isinstance(body.get("registered_routes"), int):
+        public["registered_routes"] = body["registered_routes"]
+    return JSONResponse(
+        public, headers={"business14-provider-mode": runtime_config.provider_mode}
+    )
+
+
+async def pilot_models(request: Request):
+    """Public model list: the PADIEM grades, not the routes that serve them."""
+    detail = await _pilot_models_detail(request)
+    if detail.status_code != 200:
+        return detail
+    body = json.loads(detail.body)
+    catalog_models = len(body.get("catalog") or [])
+    return JSONResponse({
+        "status": "ok",
+        "configured": bool(body.get("configured")),
+        "mode": body.get("mode") or "live",
+        "grades": _grade_availability(catalog_models),
+        "catalog_models": catalog_models,
+        "registered_routes": len(body.get("registered_routes") or []),
     })
 
 
@@ -1849,10 +1925,55 @@ async def pilot_chat_completions(
         )
 
 
+async def _internal_authority_denial(request: Request) -> JSONResponse | None:
+    """Refuse an unproven caller of the model-authority detail (#6828 stage 2).
+
+    The detail routes name providers and models. They are server-to-server
+    surfaces for the owner's release tooling, so they reuse the existing B14
+    caller proof instead of introducing a second authority. A GET request has
+    no body, so the proof binds to the empty body and to its timestamp.
+    """
+    request_id = f"b14req_{uuid.uuid4().hex[:12]}"
+    from .service_proof import service_proof_denial, service_proof_message
+
+    denial = await service_proof_denial(request, await request.body())
+    if denial is None:
+        return None
+    return JSONResponse(
+        status_code=denial.status_code,
+        content={
+            "error": {
+                "code": denial.code,
+                "message": service_proof_message(),
+                "request_id": request_id,
+            }
+        },
+    )
+
+
+async def pilot_admin_health(request: Request):
+    """Full health detail for a proven caller (provider ids and key presence)."""
+    denial = await _internal_authority_denial(request)
+    if denial is not None:
+        return denial
+    return await _pilot_health_detail(request)
+
+
+async def pilot_admin_models(request: Request):
+    """Full model authority for a proven caller (catalog and registered routes)."""
+    denial = await _internal_authority_denial(request)
+    if denial is not None:
+        return denial
+    return await _pilot_models_detail(request)
+
+
 router = Router(
     routes=[
         Route("/health", pilot_health, methods=["GET"]),
         Route("/models", pilot_models, methods=["GET"]),
+        # #6828 stage 2: identity-bearing detail, proven callers only.
+        Route("/admin/health", pilot_admin_health, methods=["GET"]),
+        Route("/admin/models", pilot_admin_models, methods=["GET"]),
         Route("/router/resolve", pilot_router_resolve, methods=["POST"]),
         Route("/v1/chat/completions", pilot_chat_completions, methods=["POST"]),
     ]

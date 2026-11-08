@@ -98,7 +98,7 @@ def test_manual_model_catalog_visibility_and_exact_identity(mid, upstream, live_
     assert decision.platform_provider_id == PROVIDER
     assert decision.fallback_allowed is False
     with TestClient(create_app()) as client:
-        resp = client.get("/api/pilot/models")
+        resp = client.get("/api/pilot/admin/models")
     assert resp.status_code == 200
     registered = next(row for row in resp.json()["registered_routes"] if row["id"] == mid)
     assert registered["upstream_model"] == upstream
