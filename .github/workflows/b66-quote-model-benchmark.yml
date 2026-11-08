@@ -53,7 +53,7 @@ jobs:
           set -euo pipefail
           python -m pytest .github/tests/test_b66_quote_model_benchmark.py -q
           python -m pytest .github/tests/test_b66_document_stage_authority.py -q
-          python .github/scripts/b66_quote_model_benchmark.py --list > "$RUNNER_TEMP/models.json"
+          PADIEM_B14_SERVICE_PROOF_SECRET="${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}" \n            python .github/scripts/b66_quote_model_benchmark.py --list > "$RUNNER_TEMP/models.json"
           python - "$RUNNER_TEMP/models.json" <<'PY'
           import json,sys
           with open(sys.argv[1],encoding='utf-8') as f:

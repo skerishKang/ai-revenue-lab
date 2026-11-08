@@ -62,7 +62,7 @@ def test_agnes_is_manual_pin_only_never_public_or_auto():
     assert AGNES_MODEL_ID in CATALOG_BY_ID
 
     with TestClient(create_app()) as client:
-        data = client.get("/api/pilot/models").json()
+        data = client.get("/api/pilot/admin/models").json()
     catalog_ids = [m["id"] for m in data["catalog"]]
     route_ids = [r["id"] for r in data["registered_routes"]]
     agnes_route = next(r for r in data["registered_routes"] if r["id"] == AGNES_MODEL_ID)

@@ -360,7 +360,7 @@ class TestRouting:
 class TestMultiProviderAPI:
     def test_health_multi_provider(self, client):
         _setup_registry()
-        resp = client.get("/api/pilot/health")
+        resp = client.get("/api/pilot/admin/health")
         assert resp.status_code == 200
         data = resp.json()
         assert data["mode"] == "byok-multi-provider-pilot"
@@ -370,7 +370,7 @@ class TestMultiProviderAPI:
 
     def test_health_invalid_registry(self, client):
         _setup_invalid_registry()
-        resp = client.get("/api/pilot/health")
+        resp = client.get("/api/pilot/admin/health")
         assert resp.status_code == 500
         data = resp.json()
         assert data["error"]["code"] == "registry_invalid"
@@ -381,7 +381,7 @@ class TestMultiProviderAPI:
         _setup_invalid_registry()
         pilot_settings.pilot_base_url = "https://legacy.example.com"
         pilot_settings.pilot_model_id = "legacy-model"
-        resp = client.get("/api/pilot/health")
+        resp = client.get("/api/pilot/admin/health")
         assert resp.status_code == 500
         data = resp.json()
         assert data["error"]["code"] == "registry_invalid"
@@ -390,7 +390,7 @@ class TestMultiProviderAPI:
 
     def test_models_multi_provider(self, client):
         _setup_registry()
-        resp = client.get("/api/pilot/models")
+        resp = client.get("/api/pilot/admin/models")
         assert resp.status_code == 200
         data = resp.json()
         assert data["configured"] is True
@@ -399,7 +399,7 @@ class TestMultiProviderAPI:
 
     def test_models_invalid_registry(self, client):
         _setup_invalid_registry()
-        resp = client.get("/api/pilot/models")
+        resp = client.get("/api/pilot/admin/models")
         assert resp.status_code == 500
         data = resp.json()
         assert data["error"]["code"] == "registry_invalid"
@@ -742,7 +742,7 @@ class TestLegacyPhase1Compat:
         pilot_settings.provider_registry_json = ""
         reset_registry()
 
-        resp = client.get("/api/pilot/health")
+        resp = client.get("/api/pilot/admin/health")
         assert resp.status_code == 200
         data = resp.json()
         assert data["status"] == "ok"
@@ -757,7 +757,7 @@ class TestLegacyPhase1Compat:
         pilot_settings.provider_registry_json = ""
         reset_registry()
 
-        resp = client.get("/api/pilot/models")
+        resp = client.get("/api/pilot/admin/models")
         assert resp.status_code == 200
         data = resp.json()
         assert data["configured"] is True
@@ -862,11 +862,11 @@ class TestRegistrySentinelNonExposure:
         self._assert_no_leakage(resp.text, endpoint_name)
 
     def test_health_no_leakage(self, _apply_invalid_registry):
-        resp = _apply_invalid_registry.get("/api/pilot/health")
+        resp = _apply_invalid_registry.get("/api/pilot/admin/health")
         self._assert_invalid_registry_error(resp, "health")
 
     def test_models_no_leakage(self, _apply_invalid_registry):
-        resp = _apply_invalid_registry.get("/api/pilot/models")
+        resp = _apply_invalid_registry.get("/api/pilot/admin/models")
         self._assert_invalid_registry_error(resp, "models")
 
     def test_chat_no_leakage(self, _apply_invalid_registry):
@@ -908,8 +908,8 @@ class TestRouteSmoke:
     def test_pricing(self, client): assert client.get("/pricing").status_code == 200
     def test_access(self, client): assert client.get("/access").status_code == 200
     def test_pilot(self, client): assert client.get("/pilot").status_code == 200
-    def test_pilot_health(self, client): assert client.get("/api/pilot/health").status_code == 200
-    def test_pilot_models(self, client): assert client.get("/api/pilot/models").status_code == 200
+    def test_pilot_health(self, client): assert client.get("/api/pilot/admin/health").status_code == 200
+    def test_pilot_models(self, client): assert client.get("/api/pilot/admin/models").status_code == 200
     def test_phase0_8_models(self, client):
         resp = client.get("/models")
         assert resp.status_code == 200

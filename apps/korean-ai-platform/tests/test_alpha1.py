@@ -767,14 +767,14 @@ class TestMetadataCompleteness:
 
 class TestEndpoints:
     def test_health_includes_b14_info(self, client):
-        resp = client.get("/api/pilot/health")
+        resp = client.get("/api/pilot/admin/health")
         assert resp.status_code == 200
         data = resp.json()
         assert "business14" in data
         assert data["business14"]["provider_mode"] == "mock"
 
     def test_models_includes_catalog(self, client):
-        resp = client.get("/api/pilot/models")
+        resp = client.get("/api/pilot/admin/models")
         assert resp.status_code == 200
         data = resp.json()
         catalog = data.get("catalog", [])
@@ -788,7 +788,7 @@ class TestEndpoints:
         from app.pilot.config import pilot_settings
         pilot_settings.pilot_base_url = "https://api.example.com"
         pilot_settings.pilot_model_id = "test-model-v1"
-        resp = client.get("/api/pilot/models")
+        resp = client.get("/api/pilot/admin/models")
         assert resp.status_code == 200
         assert "test-model-v1" in resp.text
 
@@ -796,7 +796,7 @@ class TestEndpoints:
         from app.pilot.config import pilot_settings
         pilot_settings.pilot_base_url = "https://api.example.com"
         pilot_settings.pilot_model_id = "test-model-v1"
-        resp = client.get("/api/pilot/health")
+        resp = client.get("/api/pilot/admin/health")
         assert resp.status_code == 200
         assert "business14" in resp.json()
 
@@ -850,7 +850,7 @@ class TestLegacyCompat:
         }]
         pilot_settings.provider_registry_json = json.dumps(registry_data)
         reset_registry()
-        resp = client.get("/api/pilot/health")
+        resp = client.get("/api/pilot/admin/health")
         assert resp.status_code == 200
         assert resp.json()["mode"] == "byok-multi-provider-pilot"
 
@@ -1447,7 +1447,7 @@ class TestOwnerEnvWorkflow:
         platform_secret = "sk-sensenova-super-secret-abcdef1234567890"
         _set_live(openrouter_secret)
         monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", platform_secret)
-        resp = client.get("/api/pilot/health")
+        resp = client.get("/api/pilot/admin/health")
         assert resp.status_code == 200
         assert resp.json()["business14"]["has_key"] is True
         for path in ("/api/pilot/health", "/api/pilot/models", "/workspace"):

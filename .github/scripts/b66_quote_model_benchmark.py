@@ -29,7 +29,7 @@ from b14_owner_evaluation_registry import authorize_exact_models, load_current_m
 
 CORPUS_PATH = ROOT / ".github/fixtures/b66_quote_interpret_v1.json"
 B66_NORMALIZER = ROOT / "reference/business-66-padiem-quote-v1/quote-extraction.js"
-PRODUCTION_MODEL_LIST = "https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/pilot/models"
+PRODUCTION_MODEL_LIST = "https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/pilot/admin/models"
 MAX_RESPONSE_FILE_BYTES = 500_000
 MAX_B14_REGISTRY_BYTES = 500_000
 MAX_CASES = 10

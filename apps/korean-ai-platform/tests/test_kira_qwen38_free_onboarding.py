@@ -57,7 +57,7 @@ def test_exact_registry_append_preserves_ten_predecessors():
 
 def test_public_catalog_exact_manual_only_and_secret_free():
     with TestClient(create_app()) as c:
-        r=c.get("/api/pilot/models")
+        r=c.get("/api/pilot/admin/models")
     assert r.status_code==200
     data=r.json()
     catalog={m["id"]:m for m in data["registered_routes"]}
