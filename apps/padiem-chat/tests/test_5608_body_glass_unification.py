@@ -40,6 +40,13 @@ def _by_state(blocks: list) -> dict:
     return states
 
 
+def _targets(rule) -> frozenset:
+    """Every target listed in the block's :is()/``:where()`` groups."""
+    return frozenset(
+        item for selector in rule.selectors for item in is_list_items(selector)
+    )
+
+
 def test_util_view_joins_every_six_panel_frame_lane() -> None:
     frame_lists = [segment for segment in FRAME.split(":is(") if ".meeting-view" in segment]
     assert len(frame_lists) >= 4, "expected the frame, ultrawide, eyebrow and collapse lanes"
@@ -99,7 +106,7 @@ def test_the_primary_action_matches_the_chat_claw_send_color() -> None:
     base, hover, focus = states["base"], states["hover"], states["focus"]
     for block in blocks:
         assert rule_selector_list_contains(block, ".util-tool-open", ".pdfmd-btn-primary")
-    members = {frozenset(is_list_items(rule.selectors[0])) for rule in blocks}
+    members = {_targets(rule) for rule in blocks}
     assert len(members) == 1, "the three state blocks list the same targets"
     assert declaration(base, "background") == "#355977"
     assert declaration(base, "color") == "#fff"

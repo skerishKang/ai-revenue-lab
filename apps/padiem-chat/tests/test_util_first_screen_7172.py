@@ -44,6 +44,13 @@ def _by_state(blocks: list) -> dict:
     return states
 
 
+def _targets(rule) -> frozenset:
+    """Every target listed in the block's :is()/``:where()`` groups."""
+    return frozenset(
+        item for selector in rule.selectors for item in is_list_items(selector)
+    )
+
+
 class UtilFirstScreenContract(unittest.TestCase):
     def test_first_screen_heading_is_the_util_page_itself(self):
         start = INDEX.index('id="utilTitle"')
@@ -75,7 +82,7 @@ class UtilFirstScreenContract(unittest.TestCase):
         base, hover, focus = states["base"], states["hover"], states["focus"]
         for block in blocks:
             self.assertTrue(rule_selector_list_contains(block, ".util-tool-open", ".pdfmd-btn-primary"))
-        members = {frozenset(is_list_items(rule.selectors[0])) for rule in blocks}
+        members = {_targets(rule) for rule in blocks}
         self.assertEqual(len(members), 1, "the three state blocks list the same targets")
         self.assertEqual(declaration(base, "background"), "#355977")
         self.assertEqual(declaration(base, "border-color"), "#294b64")
