@@ -1,0 +1,11 @@
+[Unit]
+Description=Run the pc_read latency monitoring cycle every 30 minutes
+
+[Timer]
+OnCalendar=*-*-* *:00/30:00
+Persistent=true
+RandomizedDelaySec=15
+Unit=padiem-pc-read-metrics.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=PADIEM pc_read latency monitoring cycle (CGI-1 + COM1)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/padiem/pc-read-metrics/run_cycle.sh
+# The probe prints its single PC_READ_METRICS WARN line to stderr on failure
+# or when end-to-end exceeds 30 seconds; that line is the journal warning.
