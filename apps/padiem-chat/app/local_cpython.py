@@ -56,6 +56,7 @@ from .local_service_bridge import (
     LocalB66PdfRendererClient,
     compose_local_b14_transports,
 )
+from .local_voice_stt_transport import HostVoiceSttRpcTransport
 from .claw_search_decision import trusted_claw_search_activation
 from .local_p01_engine import (
     build_local_calendar_read_activation_client,
@@ -314,6 +315,20 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
             client=outbound_http_client,
         ) if google_oauth_origin else None
     )
+    # #7228 recovery: the live STT lane rides the Chat Worker's authenticated
+    # voice RPC (the Worker owns the VOICE_STT_SERVICE binding; the STT Worker
+    # gains no new HTTPS ingress). Same optional-pair rule as above: a
+    # half-configured pair is a boot error, an absent pair keeps the host's
+    # voice_stt_transport unbound and every voice lane fail-closed 503.
+    voice_rpc_origin, voice_rpc_secret = _optional_pair(
+        "PADIEM_CHAT_VOICE_RPC_ORIGIN", "PADIEM_CHAT_VOICE_RPC_SECRET"
+    )
+    voice_stt_transport = (
+        HostVoiceSttRpcTransport(
+            HttpRpcBinding(voice_rpc_origin, voice_rpc_secret, client=outbound_http_client)
+        )
+        if voice_rpc_origin else None
+    )
     # The GitHub App connector ports mirror the Worker composition
     # (worker.py): the store rides this runtime's own SQLite (the same
     # claw_github_* tables migration 046 creates) and the provider needs only
@@ -439,6 +454,7 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
         claw_push_vapid_public_key=os.getenv("PADIEM_PUSH_VAPID_PUBLIC_KEY"),
         claw_push_vapid_subject=os.getenv("PADIEM_PUSH_VAPID_SUBJECT"),
         claw_push_transport=build_host_push_transport(),
+        voice_stt_transport=voice_stt_transport,
     )
 
     from .connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
@@ -464,6 +480,11 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
         "[local] calendar_read_activation="
         + ("bound" if calendar_read_activation_client is not None else "unbound")
         + (" reason=" + calendar_diagnostic if calendar_diagnostic else "")
+    )
+    # #7228 recovery marker: names the lane state only, never a value.
+    print(
+        "[local] voice_stt_transport="
+        + ("bound" if voice_stt_transport is not None else "unbound")
     )
     # The connector READ tool lane reuses the same P01 Engine caller surface
     # over the same loopback binding, restricted to the private tool-execute

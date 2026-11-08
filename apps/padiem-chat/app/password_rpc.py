@@ -79,8 +79,14 @@ def _error(status: int, code: str, message: str) -> JSONResponse:
     return JSONResponse({"error": {"code": code, "message": message}}, status_code=status)
 
 
-def _verify_service_proof(*, headers, path: str, body: bytes, secret: str, now_epoch: int) -> dict | None:
-    """The exact receiver contract of padiem-auth's verifyAccountDeletionRpc."""
+def _verify_service_proof(*, headers, path: str, body: bytes, secret: str, now_epoch: int,
+                          max_body_bytes: int | None = None) -> dict | None:
+    """The exact receiver contract of padiem-auth's verifyAccountDeletionRpc.
+
+    ``max_body_bytes`` lets a receiver with a larger payload contract (the
+    voice STT RPC carries base64 audio) reuse this exact proof check without
+    loosening the password RPC's own 512-byte bound. Default stays 512.
+    """
     content_type = (headers.get("content-type") or "").split(";")[0].strip().lower()
     at_text = headers.get(_PROOF_AT_HEADER) or ""
     service_id = headers.get(_PROOF_ID_HEADER) or ""
@@ -91,7 +97,7 @@ def _verify_service_proof(*, headers, path: str, body: bytes, secret: str, now_e
     at = int(at_text)
     if abs(now_epoch - at) > 300:
         return None
-    if not body or len(body) > _RPC_BODY_LIMIT:
+    if not body or len(body) > (_RPC_BODY_LIMIT if max_body_bytes is None else max_body_bytes):
         return None
     signed = b"\n".join((b"v2", b"POST", path.encode("utf-8"), at_text.encode("ascii"), service_id.encode("utf-8"), body))
     expected = hmac.new(secret.encode("utf-8"), signed, hashlib.sha256).hexdigest()
