@@ -569,7 +569,9 @@
 
   // Use the same signature for status events and capability refreshes, so
   // one owner transition clears rows once and identical refreshes do not load.
-  window.addEventListener("padiem:auth-state", (event) => applySession(event.detail));
+  window.addEventListener("padiem:auth-state", (event) => {
+    applySession(window.PadiemAuthSession?.get() || event.detail);
+  });
   const session = window.PadiemAuthSession?.get();
   if (session) applySession(session);
   else applyAuthState(readCapabilityAuth());

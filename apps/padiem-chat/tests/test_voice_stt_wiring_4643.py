@@ -364,13 +364,19 @@ def test_composer_tracks_an_identity_key_for_account_switch():
     source = (ROOT / "static" / "voice-composer.js").read_text(encoding="utf-8")
     assert "identityKey" in source
     assert "padiem:voice-identity" in source
-    # The boolean-only auth event must stay identity-free (#3790): app.js still
-    # dispatches only `authenticated`.
+    # R1 moves the publisher, not the identity-free event contract (#3790).
     app = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
-    match = re.search(
-        r'new CustomEvent\("padiem:auth-state",\s*\{\s*detail:\s*\{\s*authenticated', app
-    )
-    assert match, "app.js must keep dispatching the identity-free auth-state event"
+    assert "window.PadiemAuthSession.update(authState, authViewEpoch)" in app
+    out = _node(r"""
+        const events = [];
+        global.window = {dispatchEvent: event => events.push(event)};
+        global.CustomEvent = class { constructor(type, init) { this.type = type; this.detail = init.detail; } };
+        require('./static/auth-session.js');
+        window.PadiemAuthSession.update({ready:true, authenticated:true,
+          user:{email:'owner@example.test', name:'Owner'}, project_files_ready:true}, 7);
+        console.log(JSON.stringify({events}));
+    """)
+    assert json.loads(out)["events"] == [{"type": "padiem:auth-state", "detail": {"authenticated": True, "generation": 7}}]
 
 
 def test_4979_voice_idle_event_identity_and_mic_start():

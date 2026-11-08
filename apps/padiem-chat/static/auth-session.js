@@ -17,7 +17,7 @@
     if (session && Object.keys(next).every((key) => session[key] === next[key])) return session;
     session = next;
     window.dispatchEvent(new CustomEvent("padiem:auth-state", {
-      detail: Object.freeze({ ...next, generation }),
+      detail: Object.freeze({ authenticated, generation }),
     }));
     return session;
   }

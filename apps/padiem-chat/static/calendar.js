@@ -1503,7 +1503,7 @@
 
     let authSession = window.PadiemAuthSession?.get() || null;
     window.addEventListener("padiem:auth-state", (event) => {
-      const next = event.detail;
+      const next = window.PadiemAuthSession?.get() || event.detail;
       if (!next) return;
       const changed = !authSession || authSession.authenticated !== next.authenticated
         || authSession.ownerKey !== next.ownerKey;

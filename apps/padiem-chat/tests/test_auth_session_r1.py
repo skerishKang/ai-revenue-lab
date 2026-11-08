@@ -31,6 +31,10 @@ const status = {ready: true, authenticated: true, project_files_ready: true,
 store.update(status, 2);
 const first = store.get();
 assert.equal(events.length, 2);
+assert.equal(first.authenticated, true);
+assert.equal(first.ownerKey, "a@example.test");
+assert.equal(first.storage, true);
+assert.equal(first.displayName, "Same name");
 store.update({...status, user: {...status.user}}, 99);
 assert.equal(store.get(), first);
 assert.equal(events.length, 2, "generation is metadata, not a session change");
@@ -52,6 +56,10 @@ assert.equal(store.get().ownerKey, "");
 assert.equal(store.get().displayName, "");
 store.update({ready: true, authenticated: false}, 7);
 assert.equal(events.length, 6);
+for (const event of events) {
+  assert.deepEqual(Object.keys(event.detail).sort(), ["authenticated", "generation"],
+    "the legacy event carries no owner identity, display name, or storage projection");
+}
 ''', encoding="utf-8")
     result = subprocess.run([shutil.which("node") or "node", str(harness), str(STATIC / "auth-session.js")], capture_output=True, text=True)
     assert result.returncode == 0, result.stdout + result.stderr
