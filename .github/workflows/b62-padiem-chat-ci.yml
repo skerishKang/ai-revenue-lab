@@ -228,7 +228,9 @@ jobs:
 
   # #6810: a tests-only PR used to run no pytest module at all, so a stale or
   # broken assertion could merge green (observed on #6810). Run exactly the
-  # changed modules here; an empty proven list has nothing to run and passes.
+  # changed modules here; #7186 adds the tests that import a changed helper.
+  # A proven-empty list means the classifier already fell back to the full
+  # suite (`chat_source_changed`), so this job never claims an empty lane.
   b62-tests-only-tests:
     name: B62 tests-only changed pytest
     needs: registry-ci-plan
