@@ -91,7 +91,10 @@ def test_claw_default_view_is_general_not_manual() -> None:
     assert "if (clawManualForm) clawManualForm.hidden = false;" in manual
     assert APP.count('clawWorkspace.dataset.view = "general"') == 1
     # With the inbox gone, only the automation fallback still resets to general.
-    assert APP.count('workspace.dataset.view = "general"') == 1
+    session = (STATIC / "claw-session.js").read_text(encoding="utf-8")
+    assert "window.PadiemClawSession.bind({" in APP
+    assert APP.count('workspace.dataset.view = "general"') + session.count('workspace.dataset.view = "general"') == 1
+    assert session.index("if (authenticated) return;") < session.index('workspace.dataset.view = "general"')
     assert APP.count('clawWorkspace.dataset.view = "manual"') == 1
 
 

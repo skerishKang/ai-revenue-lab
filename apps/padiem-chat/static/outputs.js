@@ -632,7 +632,8 @@
       cancelLabel: "취소",
       confirmLabel: "삭제",
     });
-    if (!confirmed || generation !== outputsGeneration) return;
+    if (!confirmed) return;
+    if (generation !== outputsGeneration) return;
     outputDeleteButton.disabled = true;
     try {
       const response = await fetch(`/api/outputs/${encodeURIComponent(activeOutput.id)}`, { method: "DELETE", headers: { "Accept": "application/json" } });
