@@ -54,7 +54,7 @@ function setup({ rules = [], links = [LINK], status = 200 } = {}) {
   vm.runInNewContext(source, { window, console });
   return {
     ids, calls, server,
-    async open() { ids.settingsDialog.open = true; observers.forEach((callback) => callback()); await settle(); },
+    async open() { ids.settingsDialog.open = true; (events["padiem:advanced-settings-open"] || []).forEach((callback) => callback()); await settle(); },
     async event(name) { for (const callback of events[name] || []) callback(); await settle(); },
     language(value) { locale = value; },
     listText() { return ids.pcDelegationList.textContent; },

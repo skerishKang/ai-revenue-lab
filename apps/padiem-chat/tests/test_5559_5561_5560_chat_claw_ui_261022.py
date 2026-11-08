@@ -288,15 +288,16 @@ def test_the_sidebar_no_longer_owns_the_three_rows() -> None:
     assert 'class="sidebar-account account-controls"' in bottom
 
 
-def test_settings_owns_the_admin_export_and_sign_out_entries() -> None:
+def test_settings_owns_the_admin_hub_and_sign_out_entries() -> None:
     html = _read("index.html")
+    # The modal keeps the admin hub entry and sign-out; the data section moved
+    # to the advanced settings page (#7136-era split, 2026-11-08 decision).
     assert 'id="adminSettingsSection"' in html
     assert 'id="adminHubLink"' in html
     assert 'href="./admin"' in html
-    assert 'id="dataSettingsSection"' in html
-    assert 'id="dataSettingsActions"' in html
     assert 'id="settingsLogoutButton"' in html
-    # The password change stays a password-account-only entry.
+    # The password change stays a password-account-only entry (the block now
+    # lives in the advanced settings page).
     assert 'id="accountPasswordActions" hidden' in html
     assert 'id="passwordChangeOpen"' in html
 
