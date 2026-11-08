@@ -532,6 +532,17 @@
   applyAuthState(readCapabilityAuth());
   syncVisibility();
 
+  // #7171: the library rows are a signed-in owner's files. The moment the
+  // session is gone (sign-out, expiry, 401), the in-memory rows leave with it
+  // — a guest opening the Library sees the empty state, never the previous
+  // account's list.
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener("padiem:auth-state", (event) => {
+      if (event?.detail?.authenticated === true) return;
+      invalidate();
+    });
+  }
+
   window.PadiemChatLibrary = Object.freeze({
     isOpen,
     getOutcome: () => outcome,

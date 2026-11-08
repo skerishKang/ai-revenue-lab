@@ -1832,6 +1832,12 @@
       resetAccountDeleteConfirm();
     }
         if (!authenticated) {
+      // #7171: every sign-in → guest path (sign-out button, expiry, status
+      // 401, refresh failure) funnels HERE. The open conversation screen
+      // leaves with the session too — resetConversationView(false) drops the
+      // previous account's thread instead of leaving it on the guest screen.
+      resetConversationView(false);
+      try { window.sessionStorage.removeItem(ANDROID_HANDOFF_STORAGE_KEY); } catch (_) {}
       const automation = document.getElementById("clawAutomation");
       const automationList = document.getElementById("clawAutomationList");
       const workspace = document.getElementById("clawWorkspace");
