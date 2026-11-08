@@ -328,8 +328,12 @@ shim.document = doc;
 shim.fetch = fetchImpl;
 
 vm.createContext(shim);
-shim.dispatchEvent = shim.dispatchEvent || (() => true);
+const sessionWindowListeners = {};
+shim.addEventListener = (type, fn) => { (sessionWindowListeners[type] ||= []).push(fn); };
+shim.dispatchEvent = (event) => { (sessionWindowListeners[event.type] || []).forEach(fn => fn(event)); };
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), shim, { filename: "auth-session.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), shim, { filename: "chat-session.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), shim, { filename: "claw-session.js" });
 vm.runInContext(APP, shim, { filename: "app.js" });
 
 function walk(root, out) {

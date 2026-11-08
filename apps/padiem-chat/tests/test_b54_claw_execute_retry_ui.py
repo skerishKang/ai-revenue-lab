@@ -256,9 +256,10 @@ def test_auth_loss_and_navigation_clear_recovery_state() -> None:
     app = _app_source()
     assert "clearClawRecovery({ syncControls: true });" in app
     # auth loss
-    auth_block = app[app.index("if (!authenticated) {"):]
-    auth_block = auth_block[: auth_block.index("const sessionState")]
-    assert "clearClawRecovery({ syncControls: true });" in auth_block
+    session = (APP_JS.parent / "claw-session.js").read_text(encoding="utf-8")
+    assert "clearRecovery: clearClawRecovery" in app
+    auth_block = session[session.index("if (authenticated) return;"):]
+    assert "clearRecovery({ syncControls: true });" in auth_block
     # home navigation drops any pending Claw execute recovery timer/state.
     assert "// Leaving for home drops any pending Claw execute recovery timer/state." in app
 
@@ -589,6 +590,8 @@ const sandbox = {
 sandbox.window = sandbox;
 vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ type }));

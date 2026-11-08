@@ -235,12 +235,6 @@
   let selectedAttachments = [];
   let attachmentKeyCounter = 0;
   let authState = { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
-  // #7171: true once this page has APPLIED a signed-in state. The data wipe
-  // runs only on the real signed-in → guest transition — never on the first
-  // pre-auth application at boot, and never again while the guest stays a
-  // guest (locale re-applications included), or the wipe would clear fresh
-  // drafts and steal focus on unrelated re-renders.
-  let hadSignedInSession = false;
   // UI read generations contain no account identifier. Every verified auth
   // refresh invalidates late sidebar responses from the previous session.
   let authViewEpoch = 0;
@@ -1788,7 +1782,7 @@
   function setLoginButtonCopy(text, title) {
     // #7164: identical writes are skipped. Writing textContent replaces the
     // child node even when the value is the same, and the login button's
-    // DOM watchers (outputs.js, product-capabilities.js) treat every rewrite
+    // DOM watcher (product-capabilities.js) treats every rewrite
     // as a signal and re-fetch.
     if (loginButton.textContent !== text) loginButton.textContent = text;
     if (loginButton.getAttribute("title") !== title) loginButton.setAttribute("title", title);
@@ -1798,8 +1792,6 @@
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
-    const signedInLost = hadSignedInSession && !authenticated;
-    hadSignedInSession = authenticated;
     if (authenticated && pendingNotificationRunId) {
       const notificationRunId = pendingNotificationRunId;
       pendingNotificationRunId = "";
@@ -1824,12 +1816,6 @@
       );
       openSavedConversation(notificationConversationId);
     }
-    // A completed or concurrent sign-in invalidates any pending Android handoff.
-    if (authenticated && androidHandoff) clearAndroidHandoff();
-    // #4488: a decision that began in a previous session generation must never
-    // repaint this one, and its still-pending promise must not block the new
-    // session from deciding. Auth loss and an account switch both invalidate.
-    noteClawApprovalSession(authenticated);
     window.PadiemAuthSession.update(authState, authViewEpoch);
     // #5434: the password change is offered only for an account that owns a
     // password credential. The server owns that fact.
@@ -1855,66 +1841,7 @@
       accountDeleteConfirm.hidden = true;
       resetAccountDeleteConfirm();
     }
-        if (signedInLost) {
-      // #7171: every sign-in → guest path (sign-out button, expiry, status
-      // 401, refresh failure) funnels HERE — and only the real TRANSITION
-      // runs it: the boot's first pre-auth application and repeated guest
-      // re-applications are not session loss, and wiping on them cleared
-      // fresh drafts and stole the initial focus.
-      resetConversationView(false);
-      try { window.sessionStorage.removeItem(ANDROID_HANDOFF_STORAGE_KEY); } catch (_) {}
-    }
-        if (!authenticated) {
-      const automation = document.getElementById("clawAutomation");
-      const automationList = document.getElementById("clawAutomationList");
-      const workspace = document.getElementById("clawWorkspace");
-      const runHistory = document.getElementById("clawRunHistory");
-      const runHistoryList = document.getElementById("clawRunHistoryList");
-      const runHistoryError = document.getElementById("clawRunHistoryError");
-      // #3237: an Automation view never outlives the session that loaded it.
-      if (automation) automation.hidden = true;
-      if (automationList) automationList.replaceChildren();
-      if (runHistory) runHistory.hidden = true;
-      // #4488 Phase A follow-up: the approved-memory disclosure wrapper must
-      // not outlive the session either (run-history parity).
-      const approvedMemory = document.getElementById("clawApprovedMemory");
-      const approvedDisclosure = document.getElementById("clawApprovedDisclosure");
-      const approvedList = document.getElementById("clawApprovedList");
-      const approvedError = document.getElementById("clawApprovedError");
-      if (approvedMemory) approvedMemory.hidden = true;
-      if (approvedDisclosure) {
-        approvedDisclosure.hidden = true;
-        approvedDisclosure.open = false;
-      }
-      if (approvedList) approvedList.replaceChildren();
-      if (approvedError) {
-        approvedError.hidden = true;
-        approvedError.textContent = "";
-        approvedError.removeAttribute("data-state");
-      }
-      // #4488 re-login: the pending approval decision surface is the one
-      // session-scoped Claw control that carries a specific run_id together
-      // with its approve/deny actions, so it must not outlive the session
-      // either. Otherwise re-entering Claw after an auth loss would re-show a
-      // previous session's decision controls for a run this session never
-      // requested.
-      const approvalActions = document.getElementById("clawApprovalActions");
-      if (approvalActions) {
-        approvalActions.replaceChildren();
-        approvalActions.hidden = true;
-      }
-      // #4488 Phase A: the disclosure wrapper must not outlive the session.
-      const runHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");
-      if (runHistoryDisclosure) runHistoryDisclosure.hidden = true;
-      if (runHistoryList) runHistoryList.replaceChildren();
-      if (runHistoryError) {
-        runHistoryError.hidden = true;
-        runHistoryError.textContent = "";
-        runHistoryError.removeAttribute("data-state");
-      }
-      if (workspace) {
-        if (workspace.dataset.view === "automation") workspace.dataset.view = "general";
-      }
+    if (!authenticated) {
       // Auth loss hides the standalone Connectors/Automation pages the same
       // way the Claw automation panel never outlives its session. The moved
       // nodes stay mounted; reopening after sign-in reloads fresh state.
@@ -1929,11 +1856,6 @@
         shell.dataset.state = "home";
         setNavActive();
       }
-      // Auth loss also closes PDF previews and revokes ephemeral private blobs.
-      window.PadiemClawPdfPreview?.revokeAll?.();
-      // Auth loss tears down any pending execute recovery: no timer outlives the session.
-      clearClawRecovery({ syncControls: true });
-      clearClawWait();
     }
     // #5479: "unreachable" (the status request produced no answer) is a
     // different session state from "unavailable" (the server answered that the
@@ -1969,7 +1891,7 @@
     // #5560: the sign-out entry moved into Settings > Account, so the sidebar
     // keeps only the profile (name and avatar) as the one-step Settings entry.
     // The button element and its text stay: the auth projection and the
-    // outputs feature read them as the session signal.
+    // capability projection reads them as the session signal.
     loginButton.hidden = presentation.loginHidden;
     const pendingLogin = document.getElementById("loginPending");
     if (pendingLogin) { pendingLogin.hidden = true; pendingLogin.style.display = "none"; }
@@ -1981,8 +1903,6 @@
       setLoginButtonCopy(uiT("login"), uiT(sessionState === "unreachable" ? "login-unreachable-title" : "login-unavailable-title"));
       accountName.hidden = presentation.accountNameHidden;
       accountName.textContent = "";
-      clearHistoryUI();
-      clearProjectsUI();
       return;
     }
 
@@ -2000,16 +1920,12 @@
       setLoginButtonCopy(uiT("sign-in-again"), uiT("expired-title"));
       accountName.textContent = uiT("session-expired");
       accountName.hidden = false;
-      clearHistoryUI();
-      clearProjectsUI();
       return;
     }
 
     setLoginButtonCopy(uiT("login"), uiT("login-title"));
     accountName.textContent = uiT("guest");
     accountName.hidden = false;
-    clearHistoryUI();
-    clearProjectsUI();
   }
   function authMethodEnabled(name) {
     return Boolean(authState && authState.methods && authState.methods[name] === true);
@@ -7045,6 +6961,18 @@
       window.history.replaceState(null, "", window.location.pathname);
     } catch (_) {}
   }
+  window.PadiemChatSession.bind({
+    clearHistoryUI, clearProjectsUI, resetConversationView, clearAndroidHandoff,
+    hasAndroidHandoff: () => Boolean(androidHandoff),
+    clearHandoffStorage: () => {
+      try { window.sessionStorage.removeItem(ANDROID_HANDOFF_STORAGE_KEY); } catch (_) {}
+    },
+  });
+  window.PadiemClawSession.bind({
+    noteApprovalSession: noteClawApprovalSession,
+    clearRecovery: clearClawRecovery,
+    clearWait: clearClawWait,
+  });
   // #5481: a mailed one-time link opens the reset confirm view directly, so
   // the member lands on the "set a new password" step without signing in.
   const resetLinkOnLoad = passwordResetTokenFromLocation();

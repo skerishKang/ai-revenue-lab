@@ -75,4 +75,7 @@ def test_auth_session_loads_before_app_and_app_has_no_mutation_observer():
     scripts = Scripts()
     scripts.feed(html)
     assert scripts.paths.index("auth-session.js") < scripts.paths.index("app.js")
+    for module in ("chat-session.js", "claw-session.js"):
+        assert scripts.paths.count(module) == 1
+        assert scripts.paths.index("auth-session.js") < scripts.paths.index(module) < scripts.paths.index("app.js")
     assert "MutationObserver" not in (STATIC / "app.js").read_text(encoding="utf-8")
