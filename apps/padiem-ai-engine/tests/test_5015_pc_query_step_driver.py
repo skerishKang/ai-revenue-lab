@@ -650,6 +650,11 @@ def test_files_target_alias_cannot_authorize_a_different_pc_plan():
     ("oracle_mesh_file_call_invalid", "pc_files_call_invalid"),
     ("oracle_mesh_device_directory_unavailable", "pc_files_owner_unavailable"),
     ("canonical_session_required", "pc_files_owner_unavailable"),
+    # 2026-11-09 workspace seam contract (test_261109_pc_dispatch_workspace_seam
+    # pins the producing side): this exact wire code is what Chat's dispatch
+    # staging refuses with, and it must keep collapsing to the one reviewed
+    # bounded stage here.
+    ("oracle_mesh_workspace_unavailable", "pc_files_workspace_unavailable"),
     ("PRIVATE_DOWNSTREAM_ERROR_FROM_UNTRUSTED_SOURCE", "pc_files_denied"),
 ))
 def test_signed_pc_files_callback_retains_only_reviewed_failure_stage(

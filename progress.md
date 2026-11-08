@@ -60,3 +60,7 @@
 - local A/B (fake B14 0.84s + P01 고정비 9.96s 모사): engine 9973ms → model-first 867ms, engine calls 1→0.
 - docs: docs/operations/CHAT_MODEL_FIRST_20261103.md, deploy/host-com2/chat/.env.example.
 - PR: pending.
+2026-11-09 setup: created isolated worktree E:\PADIEM\pc-read-latency-261109 from origin/main 80779936 on perf/pc-read-latency-261109; measurement tokens (CGI-1/COM1) minted via the owner session through the product settings API, values held only in protected local/COM2 files.
+2026-11-09 measure: pc_read probes x13 (CGI-1 10, COM1 3) all refuse at the engine files dispatch with oracle_mesh_workspace_unavailable; identity 0-1144ms, P01 admission 954-1023ms observed before the refusal.
+2026-11-09 fix: dispatch workspace resolves from the verified canonical session tenant when the non-authoritative memory shadow pointer is stale (the PC lane's #7161 fallback, applied to the engine files lane and the three intent lanes); contract tests pin the seam both sides + diff-proven.
+2026-11-09 tooling: scripts/ops/pc_read_measure.py (probe + journal stage breakdown + 7-day JSONL store) installed on COM2 for the pre/post tables and the 30-minute monitor.
