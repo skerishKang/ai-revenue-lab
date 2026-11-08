@@ -99,6 +99,7 @@ PAIRING_METHODS = frozenset({
     # #7147/#7153: the managed(contract) mark — mirrors the chat-side proxy
     # allowlist so the queue path carries the whole pairing surface.
     "is_managed_link",
+    "list_active_device_ids",
     "managed_state",
     "set_managed",
 })

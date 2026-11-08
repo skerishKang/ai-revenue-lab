@@ -97,6 +97,7 @@ QUEUE_PAIRING_METHODS = frozenset({
     # written by the admin toggle. Added here together with the store server
     # allowlist so the queue path carries the whole pairing surface.
     "is_managed_link",
+    "list_active_device_ids",
     "managed_state",
     "set_managed",
 })
