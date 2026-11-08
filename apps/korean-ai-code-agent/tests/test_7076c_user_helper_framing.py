@@ -96,7 +96,10 @@ def test_production_client_reads_the_registered_task_and_hashes_on_the_pc():
         request_id=REQ_ID, shell="whoami", command="whoami",
         cwd=None, timeout_seconds=30, distro=None,
     )
-    assert "Get-ScheduledTask -TaskPath '\\Padiem' -TaskName 'PadiemUserSessionHelper'" in ps
+    # #7182b: the folder the installer registers is ``\Padiem\``; Get-ScheduledTask
+    # compares it including the trailing separator, so a path without it selects
+    # nothing and the client never reaches the pipe.
+    assert "Get-ScheduledTask -TaskPath '\\Padiem\\' -TaskName 'PadiemUserSessionHelper'" in ps
     assert "$task.Actions[0].Arguments" in ps
     assert "--device-id" in ps
     assert "--secret-file" in ps
