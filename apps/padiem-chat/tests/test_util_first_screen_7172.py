@@ -10,6 +10,15 @@ from pathlib import Path
 import re
 import unittest
 
+from css_rules import (
+    declaration,
+    find_rules_with_selector,
+    is_list_items,
+    parse_rules,
+    rule_selector_list_contains,
+    strip_comments,
+)
+
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.resolve().parents[0]  # apps/padiem-chat
 STATIC = ROOT / "static"
@@ -20,30 +29,26 @@ LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 UTIL_JS = (STATIC / "util-menu.js").read_text(encoding="utf-8")
 
 
-def _selector_group(selector: str) -> str:
-    start = selector.index(":is(") + len(":is(")
-    depth = 1
-    for index in range(start, len(selector)):
-        if selector[index] == "(":
-            depth += 1
-        elif selector[index] == ")":
-            depth -= 1
-            if depth == 0:
-                return " ".join(selector[start:index].split())
-    raise AssertionError("unterminated :is() selector")
+def _by_state(blocks: list) -> dict:
+    """Split the shared primary rule's blocks into base / hover / focus-visible."""
+    states = {}
+    for rule in blocks:
+        state = "base"
+        if any(selector.endswith(":hover") for selector in rule.selectors):
+            state = "hover"
+        elif any(selector.endswith(":focus-visible") for selector in rule.selectors):
+            state = "focus"
+        assert state not in states, f"two {state} blocks in the shared rule"
+        states[state] = rule
+    assert set(states) == {"base", "hover", "focus"}, states
+    return states
 
 
-def _shared_primary_rules(css: str):
-    rules = []
-    position = 0
-    while True:
-        position = css.find("html body :is(", position)
-        if position < 0:
-            return rules
-        brace = css.index("{", position)
-        close = css.index("}", brace)
-        rules.append((css[position:brace].strip(), css[brace + 1:close]))
-        position = close
+def _targets(rule) -> frozenset:
+    """Every target listed in the block's :is()/``:where()`` groups."""
+    return frozenset(
+        item for selector in rule.selectors for item in is_list_items(selector)
+    )
 
 
 class UtilFirstScreenContract(unittest.TestCase):
@@ -65,34 +70,48 @@ class UtilFirstScreenContract(unittest.TestCase):
         self.assertIn('"util-tagline": "Everyday document & promo tools"', LOCALE)
 
     def test_open_buttons_reuse_the_shared_primary_rule(self):
-        # #7162's shared primary rule must name both util buttons in every
-        # state block (base, hover, focus-visible), at the same list position.
-        rules = _shared_primary_rules(POLISH)
-        self.assertEqual(len(rules), 3, "base, hover and focus-visible share one selector list")
-        groups = [_selector_group(selector) for selector, _ in rules]
-        self.assertEqual(groups[0], groups[1])
-        self.assertEqual(groups[0], groups[2])
-        members = {part.strip() for part in groups[0].split(",")}
-        self.assertIn(".util-tool-open", members)
-        self.assertIn(".pdfmd-btn-primary", members)
-        base, hover, focus = rules
-        self.assertTrue(base[0].endswith(")"))
-        self.assertTrue(hover[0].endswith(":not(:disabled):hover"))
-        self.assertTrue(focus[0].endswith(":focus-visible"))
-        self.assertIn("background: #355977", base[1])
-        self.assertIn("border-color: #294b64", base[1])
-        self.assertIn("color: #fff", base[1])
-        self.assertIn("background: #2e4d67", hover[1])
-        self.assertIn("outline: 3px solid #6a9abc", focus[1])
+        """#7162's shared primary rule names both util buttons in every state.
+
+        #7186: the rule is read through css_rules -- selector-list membership
+        and property values, not one formatted line. tests/test_css_rules_helper
+        proves that reading is independent of order, wrapping and comments.
+        """
+        blocks = find_rules_with_selector(parse_rules(POLISH), ".util-tool-open")
+        self.assertEqual(len(blocks), 3, "base, hover and focus-visible share one selector list")
+        states = _by_state(blocks)
+        base, hover, focus = states["base"], states["hover"], states["focus"]
+        for block in blocks:
+            self.assertTrue(rule_selector_list_contains(block, ".util-tool-open", ".pdfmd-btn-primary"))
+        members = {_targets(rule) for rule in blocks}
+        self.assertEqual(len(members), 1, "the three state blocks list the same targets")
+        self.assertEqual(declaration(base, "background"), "#355977")
+        self.assertEqual(declaration(base, "border-color"), "#294b64")
+        self.assertEqual(declaration(base, "color"), "#fff")
+        self.assertEqual(declaration(hover, "background"), "#2e4d67")
+        self.assertEqual(declaration(focus, "outline"), "3px solid #6a9abc")
         # The pill shape is the util button's own rule.
-        self.assertIn("border-radius: 999px", UTIL_CSS)
+        buttons = find_rules_with_selector(parse_rules(UTIL_CSS), ".util-tool-open")
+        self.assertEqual(len(buttons), 1)
+        self.assertEqual(declaration(buttons[0], "border-radius"), "999px")
         # The old glass-only navy override is superseded by the shared rule.
-        self.assertNotIn("html[data-theme=\"padiem-glass\"] .util-tool-open", UTIL_CSS)
+        self.assertNotIn(
+            'html[data-theme="padiem-glass"] .util-tool-open', strip_comments(UTIL_CSS)
+        )
 
     def test_card_border_uses_the_first_screen_token(self):
-        card = UTIL_CSS[UTIL_CSS.index(".util-tool-card {"):UTIL_CSS.index("}", UTIL_CSS.index(".util-tool-card {"))]
-        self.assertIn("border: 1px solid var(--line", card)
-        self.assertNotIn("input-border-strong", card)
+        """#7172: the card wears the shared hairline token, not the input token.
+
+        #7186: the border is the rule's own declaration, so wrapping or moving
+        the block does not change the verdict.
+        """
+        cards = find_rules_with_selector(parse_rules(UTIL_CSS), ".util-tool-card")
+        self.assertEqual(len(cards), 1)
+        border = declaration(cards[0], "border")
+        self.assertTrue(border.startswith("1px solid var(--line"), border)
+        self.assertEqual(
+            [value for value in cards[0].declarations.values() if "input-border-strong" in value],
+            [],
+        )
 
     def test_reopening_the_page_resets_the_heading(self):
         # showUtil puts the UTIL first-screen heading back: a tool's title

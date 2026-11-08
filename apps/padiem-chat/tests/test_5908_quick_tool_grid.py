@@ -21,6 +21,14 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from css_rules import (
+    declaration,
+    find_rules_with_selector,
+    parse_rules,
+    rule_selector_list_contains,
+    strip_comments,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 INDEX_HTML = ROOT / "static/index.html"
 UTIL_MENU_JS = ROOT / "static/util-menu.js"
@@ -115,22 +123,33 @@ def test_util_menu_routes_cards_through_the_existing_switch() -> None:
 
 
 def test_css_uses_the_measured_contrast_token_and_44px_touch_target() -> None:
+    """The card border and the button's size/colour are rule-level contracts.
+
+    #7186: read through css_rules, so a re-wrapped or re-ordered block keeps
+    the same verdict (tests/test_css_rules_helper.py proves the helper).
+    """
     css = UTIL_MENU_CSS.read_text(encoding="utf-8")
     assert ".util-tool-grid" in css
+    rules = parse_rules(css)
     # 대표 결정 #7172로 계약 값 갱신: the first-screen card border is the shared
     # hairline token (var(--line)), not the input-strength token. The contrast
     # floor itself is unchanged and still proven in test_beta_ux_quote_access.
-    card = css[css.index(".util-tool-card {") : css.index(".util-tool-card {") + 400]
-    assert "border: 1px solid var(--line" in card
-    assert "--input-border-strong" not in card
-    button = css[css.index(".util-tool-open {") : css.index(".util-tool-open:hover")]
-    assert "min-height: 44px" in button
+    cards = find_rules_with_selector(rules, ".util-tool-card")
+    assert len(cards) == 1
+    border = declaration(cards[0], "border")
+    assert border.startswith("1px solid var(--line"), border
+    assert [v for v in cards[0].declarations.values() if "input-border-strong" in v] == []
+    buttons = find_rules_with_selector(rules, ".util-tool-open")
+    assert len(buttons) == 1
+    assert declaration(buttons[0], "min-height") == "44px"
     # 대표 결정 #7172로 계약 값 갱신: the glass-only CTA override is superseded
     # by the app-wide shared primary rule; the toolbox button still wears the
     # same #355977 as .pdfmd-btn-primary.
-    assert 'html[data-theme="padiem-glass"] .util-tool-open' not in css
-    polish = (ROOT / "static/padiem-chat-ui-polish.css").read_text(encoding="utf-8")
-    rule = polish[polish.index("html body :is(") :]
-    rule = rule[: rule.index("}")]
-    assert ".util-tool-open" in rule and ".pdfmd-btn-primary" in rule
-    assert "#355977" in rule
+    assert 'html[data-theme="padiem-glass"] .util-tool-open' not in strip_comments(css)
+    polish = parse_rules((ROOT / "static/padiem-chat-ui-polish.css").read_text(encoding="utf-8"))
+    blocks = find_rules_with_selector(polish, ".util-tool-open")
+    assert len(blocks) == 3
+    for block in blocks:
+        assert rule_selector_list_contains(block, ".util-tool-open", ".pdfmd-btn-primary")
+    navy = [block for block in blocks if declaration(block, "background") == "#355977"]
+    assert len(navy) == 1
