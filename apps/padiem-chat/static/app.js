@@ -1779,6 +1779,14 @@
     }
   }
 
+  function setLoginButtonCopy(text, title) {
+    // #7164: identical writes are skipped. Writing textContent replaces the
+    // child node even when the value is the same, and the login button's
+    // DOM watchers (outputs.js, product-capabilities.js) treat every rewrite
+    // as a signal and re-fetch.
+    if (loginButton.textContent !== text) loginButton.textContent = text;
+    if (loginButton.getAttribute("title") !== title) loginButton.setAttribute("title", title);
+  }
   function applyAuthState(data) {
     authViewEpoch += 1;
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
@@ -1959,8 +1967,7 @@
     loginButton.setAttribute("aria-disabled", presentation.loginDisabled ? "true" : "false");
 
     if (sessionState === "unavailable" || sessionState === "unreachable") {
-      loginButton.textContent = uiT("login");
-      loginButton.title = uiT(sessionState === "unreachable" ? "login-unreachable-title" : "login-unavailable-title");
+      setLoginButtonCopy(uiT("login"), uiT(sessionState === "unreachable" ? "login-unreachable-title" : "login-unavailable-title"));
       accountName.hidden = presentation.accountNameHidden;
       accountName.textContent = "";
       clearHistoryUI();
@@ -1969,8 +1976,7 @@
     }
 
     if (sessionState === "signed_in") {
-      loginButton.textContent = uiT("logout");
-      loginButton.title = uiT("logout-title");
+      setLoginButtonCopy(uiT("logout"), uiT("logout-title"));
       const name = authState.user && typeof authState.user.name === "string" ? authState.user.name.trim() : "";
       accountName.textContent = name || uiT("signed-in");
       accountName.hidden = false;
@@ -1980,8 +1986,7 @@
     }
 
     if (sessionState === "expired") {
-      loginButton.textContent = uiT("sign-in-again");
-      loginButton.title = uiT("expired-title");
+      setLoginButtonCopy(uiT("sign-in-again"), uiT("expired-title"));
       accountName.textContent = uiT("session-expired");
       accountName.hidden = false;
       clearHistoryUI();
@@ -1989,8 +1994,7 @@
       return;
     }
 
-    loginButton.textContent = uiT("login");
-    loginButton.title = uiT("login-title");
+    setLoginButtonCopy(uiT("login"), uiT("login-title"));
     accountName.textContent = uiT("guest");
     accountName.hidden = false;
     clearHistoryUI();
