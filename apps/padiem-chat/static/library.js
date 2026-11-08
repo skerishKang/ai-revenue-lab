@@ -451,33 +451,59 @@
 
   // Entry availability follows the canonical capability projection, so it
   // re-checks when that projection changes — never on a timer.
+  // The stable identity of the signed-in account, never the visible name alone:
+  // two accounts may share a display name. product-capabilities.js publishes the
+  // status payload's unique account key, and older/curated projections may still
+  // carry the user object itself, so accept both shapes.
+  function ownerKeyOf(projection) {
+    if (!projection || typeof projection !== "object") return "";
+    for (const name of ["ownerKey", "userId", "user_id", "ownerId", "accountId"]) {
+      const value = projection[name];
+      if (typeof value === "string" && value) return value;
+    }
+    const user = projection.user && typeof projection.user === "object" ? projection.user : null;
+    if (user) {
+      for (const name of ["id", "user_id", "email"]) {
+        const value = user[name];
+        if (typeof value === "string" && value) return value;
+      }
+    }
+    return typeof projection.displayName === "string" ? projection.displayName : "";
+  }
+
   function applyAuthState(auth) {
     const nextSignedIn = Boolean(auth && auth.loaded === true && auth.authenticated === true);
     const nextProjectFilesReady = Boolean(auth && auth.projectFilesReady === true);
-    // The public capability projection intentionally omits the user ID. A
-    // refreshed auth snapshot is a NEW frozen object even when signed-in and
-    // storage-ready booleans (and the visible account name) stay identical.
-    // Treat every new auth projection as a session boundary to avoid showing
-    // another owner's previously rendered filenames after a direct switch.
     const nextProjection = auth && typeof auth === "object" ? auth : null;
-    const projectionChanged = nextProjection !== lastAuthProjection;
+    const previousProjection = lastAuthProjection;
     lastAuthProjection = nextProjection;
     signedIn = nextSignedIn;
     projectFilesReady = nextProjectFilesReady;
-    const signature = `${nextSignedIn}/${nextProjectFilesReady}`;
-    const changed = signature !== authSignature;
+    // #7164: the reload trigger is the SESSION signature (signed-in, storage,
+    // and the owner key) — not object identity. Every background auth refresh
+    // mints a new frozen projection with the same booleans, and reloading on
+    // identity alone re-fetched page 1 every few seconds and flickered the list
+    // while the user was reading it. A direct account switch still crosses here:
+    // the owner key changes with the session even when every boolean does not.
+    const ownerKey = ownerKeyOf(nextProjection);
+    // A signed-in projection that carries no owner identity at all cannot prove
+    // the rows belong to the same account, so each new projection is still a
+    // boundary (fail closed). Named/identified refreshes keep one signature.
+    const unidentifiableOwner = nextSignedIn && ownerKey === "";
+    const signature = `${nextSignedIn}/${nextProjectFilesReady}/${ownerKey}`;
+    const changed = signature !== authSignature
+      || (unidentifiableOwner && nextProjection !== previousProjection);
     authSignature = signature;
     // Login as well as logout crosses here, so a new account can never inherit
-    // the previous owner's rendered rows.
-    if (changed || projectionChanged) invalidate();
+    // the previous owner's rendered rows. invalidate() empties the rows before
+    // the fresh owner-scoped request below.
+    if (changed) invalidate();
     if (!signedIn && isOpen()) leaveLibrary();
     // The sidebar no longer lists recent project files, so a signed-in
     // projection must not spend a first-screen read on a page nobody opened.
     if (isOpen()) {
       render();
-      // If the same signed-in state was refreshed while Library is open,
-      // show fresh owner-scoped data instead of retaining an older DOM.
-      if (projectionChanged && signedIn && activeTab === "files") loadFiles();
+      if (changed && signedIn && activeTab === "files") loadFiles();
     }
   }
 

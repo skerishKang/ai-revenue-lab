@@ -255,6 +255,133 @@ class B62ScopeTests(unittest.TestCase):
             values = dict(line.split("=", 1) for line in output.read_text().splitlines())
         self.assertEqual(values["scope"], "full")
         self.assertEqual(values["tests_only_tests"], "")
+        # #7186: the full path alone runs no Chat pytest; the flag that selects
+        # the full suite must be raised with it.
+        self.assertEqual(values["chat_source_changed"], "true")
+
+    def _run_main(self, files, root):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "output.txt"
+            event = fake_event()
+            event["pull_request"]["changed_files"] = len(files)
+            with patch.dict(os.environ, {"GITHUB_OUTPUT": str(output)}, clear=False), \
+                    patch.object(module, "_load_event_files", return_value=(event, "pull_request", files)), \
+                    patch.object(module, "REPO_ROOT", Path(root)):
+                module.main()
+            return dict(line.split("=", 1) for line in output.read_text().splitlines())
+
+    @staticmethod
+    def _tests_tree(tmp, modules, docs=()):
+        tests = Path(tmp) / "apps/padiem-chat/tests"
+        tests.mkdir(parents=True)
+        for name, source in modules.items():
+            (tests / name).write_text(source, encoding="utf-8")
+        for name in docs:
+            (tests / name).write_text("# note\n", encoding="utf-8")
+        return tests
+
+    def test_tests_tree_helper_change_runs_every_importing_test(self):
+        # #7190: a tests/ helper is not a runnable module. The lane is the flat
+        # test modules that import it, so an unchanged consumer still runs, and
+        # a doc beside it neither adds nor removes a module.
+        with tempfile.TemporaryDirectory() as tmp:
+            self._tests_tree(tmp, {
+                "css_rules_sample.py": "VALUE = 1\n",
+                "test_from_import.py": "from css_rules_sample import VALUE\n",
+                "test_plain_import.py": "import css_rules_sample\n",
+                "test_dynamic_import.py": (
+                    "import importlib\n"
+                    "MODULE = importlib.import_module('css_rules_sample')\n"
+                ),
+                "test_unrelated.py": "OTHER = 2\n",
+            }, docs=("README_테스트작성규칙.md",))
+            files = [
+                file("apps/padiem-chat/tests/css_rules_sample.py"),
+                file("apps/padiem-chat/tests/README_테스트작성규칙.md", "added"),
+            ]
+            self.assertEqual(module.impact_scope(files, Path(tmp)), module.TESTS_ONLY)
+            self.assertEqual(module.tests_only_modules(files, Path(tmp)), (
+                "tests/test_dynamic_import.py",
+                "tests/test_from_import.py",
+                "tests/test_plain_import.py",
+            ))
+            values = self._run_main(files, tmp)
+        self.assertEqual(values["scope"], "tests_only")
+        self.assertEqual(values["chat_source_changed"], "false")
+        self.assertEqual(values["tests_only_tests"],
+                         "tests/test_dynamic_import.py tests/test_from_import.py "
+                         "tests/test_plain_import.py")
+
+    def test_tests_tree_test_module_with_a_doc_still_runs_the_module(self):
+        files = [
+            file("apps/padiem-chat/tests/test_password_auth.py"),
+            file("apps/padiem-chat/tests/README_테스트작성규칙.md", "added"),
+        ]
+        self.assertEqual(module.impact_scope(files), module.TESTS_ONLY)
+        self.assertEqual(module.tests_only_modules(files),
+                         ("tests/test_password_auth.py",))
+
+    def test_tests_tree_helper_without_an_importer_runs_the_full_chat_suite(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._tests_tree(tmp, {"orphan_helper.py": "VALUE = 1\n"})
+            files = [file("apps/padiem-chat/tests/orphan_helper.py")]
+            self.assertEqual(module.impact_scope(files, Path(tmp)), module.FULL)
+            self.assertEqual(module.tests_only_modules(files, Path(tmp)), ())
+            values = self._run_main(files, tmp)
+        self.assertEqual(values["scope"], "full")
+        self.assertEqual(values["chat_source_changed"], "true")
+        self.assertEqual(values["tests_only_tests"], "")
+
+    def test_tests_tree_conftest_is_never_a_reduced_lane(self):
+        files = [
+            file("apps/padiem-chat/tests/test_password_auth.py"),
+            file("apps/padiem-chat/tests/conftest.py"),
+        ]
+        self.assertEqual(module.impact_scope(files), module.FULL)
+        self.assertEqual(module.tests_only_modules(files), ())
+        values = self._run_main(files, ROOT)
+        self.assertEqual(values["scope"], "full")
+        self.assertEqual(values["chat_source_changed"], "true")
+
+    def test_docs_only_change_keeps_the_full_path_and_runs_no_pytest_lane(self):
+        # A doc alone carries no executable contract. It stays on the existing
+        # full path; what must never happen is a doc mixed into a code change
+        # deciding the lane.
+        files = [file("apps/padiem-chat/tests/README_테스트작성규칙.md", "added")]
+        self.assertEqual(module.impact_scope(files), module.FULL)
+        self.assertEqual(module.tests_only_modules(files), ())
+        values = self._run_main(files, ROOT)
+        self.assertEqual(values["scope"], "full")
+        self.assertEqual(values["chat_source_changed"], "false")
+
+    def test_tests_tree_scope_rejects_static_nested_and_unsafe_rows(self):
+        helper = "apps/padiem-chat/tests/style_contract.py"
+        self.assertNotEqual(module.impact_scope(
+            [file(helper), file("apps/padiem-chat/static/app.js")]), module.TESTS_ONLY)
+        for unsafe in (
+            [file("apps/padiem-chat/tests/nested/helper.py")],
+            [file(helper, "removed")],
+            [file(helper), file(helper)],
+            [file(helper)] + [
+                file(f"apps/padiem-chat/tests/test_case{i}.py") for i in range(100)
+            ],
+        ):
+            with self.subTest(unsafe=unsafe):
+                self.assertEqual(module.tests_only_modules(unsafe), ())
+                self.assertNotEqual(module.impact_scope(unsafe), module.TESTS_ONLY)
+
+    def test_repo_helper_change_selects_its_real_importers(self):
+        # Production-shaped: the shipped helper and its real consumers.
+        modules = module.tests_only_modules(
+            [file("apps/padiem-chat/tests/style_contract.py")])
+        self.assertIn("tests/test_attachments.py", modules)
+        self.assertGreater(len(modules), 1)
+        self.assertEqual(module.impact_scope(
+            [file("apps/padiem-chat/tests/style_contract.py")]), module.TESTS_ONLY)
+        self.assertEqual(module.impact_scope(
+            [file("apps/padiem-chat/tests/conftest.py")]), module.FULL)
+        self.assertEqual(module.impact_scope(
+            [file("apps/padiem-chat/tests/worker_runtime_probe_origin.py")]), module.FULL)
 
     def test_workflow_runs_changed_tests_only_modules_and_requires_their_result(self):
         text = (ROOT / ".github/workflows/b62-padiem-chat-ci.yml").read_text(encoding="utf-8")
