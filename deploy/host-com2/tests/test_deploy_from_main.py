@@ -2446,3 +2446,58 @@ class ChatB14RunningCodeTest(DeployHarness):
 
         self.assertIn("COM2_DEPLOY_B14_RUNNING_CODE=MATCH", output)
         self.assertIn("COM2_DEPLOY_DECISION_B14=SKIP reason_files=0", output)
+
+
+class ToolSerializationVerdictTest(DeployHarness):
+    """#7162: #7155's check prints the ENV_FILE line before the verdict.
+
+    The deploy used to prefix-match the whole captured output, so the first
+    line (TOOLS_SERIALIZATION_ENV_FILE=...) never matched PASS* and every
+    result became tools_serialization:ERROR. These tests drive the real apply
+    path with the check's exact two-line shape.
+    """
+
+    scenario = "chat"
+    base_extra = {
+        ".github/scripts/post_deploy_tool_serialization_check.py": (
+            "import os\n"
+            "import sys\n"
+            "print('TOOLS_SERIALIZATION_ENV_FILE=applied_vars=32')\n"
+            "verdict = os.environ.get('FAKE_TOOLS_VERDICT', 'PASS')\n"
+            "if verdict == 'SILENT':\n"
+            "    raise SystemExit(3)\n"
+            "print('TOOLS_SERIALIZATION=' + verdict)\n"
+            "raise SystemExit({'PASS': 0, 'FAIL': 1}.get(verdict, 2))\n"
+        ),
+    }
+
+    def setUp(self) -> None:
+        super().setUp()
+        # The venv interpreter gate: reuse the running interpreter.
+        self.env["PADIEM_COM2_CHAT_VENV_PYTHON"] = Path(sys.executable).as_posix()
+
+    def test_the_env_file_line_does_not_turn_a_pass_into_error(self) -> None:
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("TOOLS_SERIALIZATION=PASS", result.stdout)
+        self.assertIn("tools_serialization:PASS", result.stdout)
+        self.assertNotIn("tools_serialization:ERROR", result.stdout)
+
+    def test_a_fail_verdict_still_stops_the_deploy(self) -> None:
+        self.env["FAKE_TOOLS_VERDICT"] = "FAIL"
+        result = self._run_apply()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("tools_serialization:FAIL", result.stdout)
+
+    def test_an_error_verdict_continues_with_the_warning(self) -> None:
+        self.env["FAKE_TOOLS_VERDICT"] = "ERROR"
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("tools_serialization:ERROR", result.stdout)
+
+    def test_a_crash_without_a_verdict_is_reported_as_a_harness_error(self) -> None:
+        self.env["FAKE_TOOLS_VERDICT"] = "SILENT"
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("TOOLS_SERIALIZATION_ERROR=no_verdict_line", result.stdout)
+        self.assertIn("tools_serialization:ERROR", result.stdout)

@@ -111,3 +111,22 @@ def test_an_empty_declaration_list_is_a_harness_error(tmp_path):
 def test_an_import_failure_in_process_is_an_error(tmp_path):
     verdict_, code = check.verdict(_build_root(tmp_path, BROKEN_IMPORT, [])[0])
     assert verdict_ == "ERROR" and code.startswith("import_failed:")
+
+
+CWD_TOOLS = (
+    "from pathlib import Path" + NL
+    + "Path('cwd_marker.txt').read_text(encoding='utf-8')" + NL
+    + "from padiem_ai_core.tool_channel import ToolDefinition" + NL
+    + "CONNECTOR_TOOL_DECLARATIONS = (ToolDefinition(name='demo_tool'),)" + NL
+)
+
+
+def test_the_import_runs_from_the_service_working_directory(tmp_path):
+    """padiem-chat-com2.service runs with WorkingDirectory=<installed root>; an
+    import that reads a relative path must see that directory, not the
+    operator's current one."""
+    root, _env = _build_root(tmp_path, CWD_TOOLS, [])
+    (root / "cwd_marker.txt").write_text("ok", encoding="utf-8")
+    code, line, _out = _run(["--app-root", str(root)])
+    assert code == 0
+    assert line == "TOOLS_SERIALIZATION=PASS"
