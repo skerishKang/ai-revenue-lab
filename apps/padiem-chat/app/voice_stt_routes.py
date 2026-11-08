@@ -86,6 +86,7 @@ __all__ = [
 IDENTITY_PATH = "/api/voice/identity"
 TRANSCRIBE_PATH = "/api/voice/transcribe"
 LIVE_TOKEN_PATH = "/api/voice/live-token"
+RELAY_WS_PATH = "/api/voice/relay"
 CLAW_IDENTITY_PATH = "/api/claw/voice/identity"
 CLAW_TRANSCRIBE_PATH = "/api/claw/voice/transcribe"
 CLAW_LIVE_TOKEN_PATH = "/api/claw/voice/live-token"
@@ -161,7 +162,7 @@ async def _canonical_session(request: Request) -> Any | None:
     if path in (CLAW_IDENTITY_PATH, CLAW_TRANSCRIBE_PATH, CLAW_LIVE_TOKEN_PATH):
         from .b54_canonical_session import resolve_current_b54_canonical_session
         return await resolve_current_b54_canonical_session(request)
-    if path not in (IDENTITY_PATH, TRANSCRIBE_PATH, LIVE_TOKEN_PATH):
+    if path not in (IDENTITY_PATH, TRANSCRIBE_PATH, LIVE_TOKEN_PATH, RELAY_WS_PATH):
         return None
 
     # B62 must never be billed with a B54 grant merely because both products
@@ -447,17 +448,25 @@ async def voice_live_token(request: Request) -> JSONResponse:
     if not isinstance(token, str) or not token.strip():
         return _error("voice_live_token_unavailable", 502)
 
-    # Only the browser-safe fields cross back. The token itself is the
-    # credential the browser needs; the session block is the public contract
-    # (model, activity-detection window, rotation window, transcription mode).
-    payload_out: dict[str, Any] = {"token": token.strip()}
+    # #6828 / voice-relay: the browser no longer receives the credential or the
+    # model name. The COM2 relay obtains both server-side and injects them into
+    # the provider session. Only the public activity/transcription contract
+    # crosses back to the browser.
+    return JSONResponse(_browser_live_payload(parsed), status_code=200)
+
+
+def _browser_live_payload(parsed: dict) -> dict:
+    """The browser-safe subset of a live-token answer: never token, never model."""
+    payload_out: dict[str, Any] = {}
     expire = parsed.get("expireTime")
     if isinstance(expire, str) and expire:
         payload_out["expireTime"] = expire
     live_session = parsed.get("session")
     if isinstance(live_session, dict):
-        payload_out["session"] = live_session
-    return JSONResponse(payload_out, status_code=200)
+        payload_out["session"] = {
+            key: value for key, value in live_session.items() if key != "model"
+        }
+    return payload_out
 
 
 class CloudflareVoiceSttServiceTransport:

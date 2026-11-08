@@ -77,18 +77,22 @@ def test_engine_never_holds_a_long_lived_provider_key() -> None:
     assert "PADIEM_GROQ_API_KEY" not in code
     assert "x-goog-api-key" not in code
     assert "ai_client" not in code
-    # The provider is reached only with the ephemeral token.
-    assert "access_token=" in source
+    # #6828 voice-relay: the browser holds no credential at all; the relay
+    # presents the ephemeral token server-side. No token or key in the URL.
+    assert "access_token" not in code
     assert "?key=" not in source
 
 
-def test_engine_reads_the_model_and_the_window_from_the_server_contract() -> None:
+def test_engine_reads_the_window_from_the_server_contract_but_never_the_model() -> None:
     source = ENGINE_JS.read_text(encoding="utf-8")
-    # The model, the activity-detection window, the rotation window and the
-    # transcription mode come from the server's browser-safe session block.
-    for field in ("cfg.model", "cfg.vad_silence_ms", "cfg.response_modalities",
+    # #6828 voice-relay: the activity-detection window, rotation window and
+    # transcription mode come from the server's public session block; the model
+    # is injected by the COM2 relay and must NOT be read or sent by the browser.
+    for field in ("cfg.vad_silence_ms", "cfg.response_modalities",
                   "cfg.input_audio_transcription_mode", "liveSession.rotate_after_ms"):
         assert field in source, field
+    assert "cfg.model" not in source, "the browser must not read the model"
+    assert "/api/voice/relay" in source, "the browser only knows the same-origin relay"
     # Model selection belongs solely to the server session response.
     assert 'LIVE_TRANSCRIBE_MODEL' not in source
     literals = re.findall(r'"gemini-[0-9a-z.\-]+"', source)

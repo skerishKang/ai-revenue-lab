@@ -175,32 +175,32 @@ async function settle() {
 /* The engine contract.                                                 */
 /* ------------------------------------------------------------------ */
 
-test("the Live URL is the constrained v1alpha session with the ephemeral token", function () {
+test("the Live URL is the same-origin PADIEM relay, never the provider", function () {
   const url = engine.buildLiveUrl("auth_tokens/abc");
-  assert.ok(url.indexOf("BidiGenerateContentConstrained") !== -1, url);
-  assert.ok(url.indexOf("v1alpha") !== -1, url);
-  assert.ok(url.indexOf("access_token=auth_tokens%2Fabc") !== -1, url);
-  assert.ok(url.indexOf("generativelanguage.googleapis.com") !== -1, url);
+  assert.ok(url.indexOf("/api/voice/relay") !== -1, url);
+  assert.strictEqual(url.indexOf("access_token"), -1, "no credential in the browser URL");
   assert.strictEqual(url.indexOf("key="), -1, "the long-lived key must never be the query");
+  assert.ok(/^wss?:\/\//.test(url), url);
+  assert.ok(url.indexOf("/api/voice/relay") !== -1, "same-origin relay only");
 });
 
-test("the setup message carries the server's session contract", function () {
+test("the setup message carries the public contract but never the model", function () {
   const setup = engine.buildLiveSetup({
     model: "gemini-3.5-transcribe-live",
     vad_silence_ms: 1300,
     response_modalities: ["TEXT"],
     input_audio_transcription_mode: "VERBATIM",
   }, authority);
-  assert.strictEqual(setup.model, "models/gemini-3.5-transcribe-live");
+  assert.strictEqual(setup.model, undefined, "model is injected by the relay, not the browser");
   assert.deepStrictEqual(setup.generationConfig.responseModalities, ["TEXT"]);
   assert.strictEqual(setup.realtimeInputConfig.automaticActivityDetection.silenceDurationMs, 1300);
   assert.deepStrictEqual(setup.inputAudioTranscription, { languageCodes: [], mode: "VERBATIM" });
 });
 
 test("missing live session settings refuse the socket and report an error", async function () {
-  const valid = { model: "test-session-model", vad_silence_ms: 1300, rotate_after_ms: 1000,
+  const valid = { vad_silence_ms: 1300, rotate_after_ms: 1000,
     response_modalities: ["TEXT"], input_audio_transcription_mode: "VERBATIM" };
-  const cases = [["session", null], ["empty model", { ...valid, model: "" }],
+  const cases = [["session", null],
     ...Object.keys(valid).map((key) => { const session = { ...valid }; delete session[key]; return [key, session]; })];
   for (const [key, session] of cases) {
     const win = makeFakeWindow({ session });
@@ -241,7 +241,7 @@ test("a live session streams the microphone and reports interim then final", asy
   await settle();
   const setup = socket.sent[0];
   assert.ok(setup.setup, "the first frame is the setup");
-  assert.strictEqual(setup.setup.model, "models/gemini-3.5-transcribe-live");
+  assert.strictEqual(setup.setup.model, undefined, "model stays server-side");
   // The capture starts and one frame reaches the socket as PCM media.
   win.__processor.onaudioprocess({ inputBuffer: { getChannelData: () => new Float32Array(4) } });
   const media = socket.sent.find((frame) => frame.realtimeInput);
