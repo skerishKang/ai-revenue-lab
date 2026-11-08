@@ -238,14 +238,17 @@ async def test_patch_requires_login_and_rejects_bad_bodies(app_with_pin):
 
 @pytest.mark.asyncio
 async def test_patch_without_browser_origin_is_denied(app_with_pin):
-    from conftest import NO_BROWSER_ORIGIN_MARKER
+    # Same literal the tests/conftest.py autouse browser-origin shim honours.
+    # Kept local (not imported) because a full-suite run can resolve the bare
+    # module name `conftest` to a different directory's conftest.
+    no_origin_marker = "x-test-no-origin"
 
     app, s, db = app_with_pin
     cid = await conversation(s, OWNER, "내 대화")
     async with await signed_in_client(httpx.ASGITransport(app=app), OWNER) as client:
         denied = await client.patch(
             f"/api/conversations/{cid}", json={"title": "x"},
-            headers={NO_BROWSER_ORIGIN_MARKER: "1"},
+            headers={no_origin_marker: "1"},
         )
         assert denied.status_code == 403
     db.close()
