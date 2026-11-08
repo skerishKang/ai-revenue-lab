@@ -28,7 +28,7 @@ def client():
 
 
 def _registered_routes(client) -> list[dict]:
-    return client.get("/api/pilot/models").json()["registered_routes"]
+    return client.get("/api/pilot/admin/models").json()["registered_routes"]
 
 
 def test_registered_routes_match_exact_id_registry(client):
@@ -86,7 +86,7 @@ def test_retired_kilo_models_stay_unregistered_while_crouton_is_registered(clien
     assert not (registered & {m for m in retired_model_ids() if m.startswith("kilo/")})
 
 def test_remaining_models_visible_in_exact_catalog(client):
-    data=client.get("/api/pilot/models").json()
+    data=client.get("/api/pilot/admin/models").json()
     ids={m["id"] for m in data["catalog"]}
     assert ids=={m.model_id for m in CATALOG_BY_ID.values() if m.enabled}
     assert POOLSIDE_MODEL_ID in ids and SENSENOVA_MODEL_ID not in ids

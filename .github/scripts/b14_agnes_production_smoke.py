@@ -8,8 +8,8 @@ from typing import Any, Callable
 
 
 B14_BASE_URL = "https://ai-revenue-korean-ai-platform.charliekant.workers.dev"
-HEALTH_PATH = "/api/pilot/health"
-MODELS_PATH = "/api/pilot/models"
+HEALTH_PATH = "/api/pilot/admin/health"
+MODELS_PATH = "/api/pilot/admin/models"
 CHAT_PATH = "/api/pilot/v1/chat/completions"
 
 MODEL_ID = "agnes-ai/agnes-3.0-flash"
@@ -34,6 +34,35 @@ def _bounded_json(raw: bytes) -> dict[str, Any]:
     return value
 
 
+SERVICE_PROOF_ENV = "PADIEM_B14_SERVICE_PROOF_SECRET"
+PROOF_HEADER = "x-padiem-b14-proof"
+PROOF_TIME_HEADER = "x-padiem-b14-time"
+
+
+def _authority_headers(raw_body: bytes = b"") -> dict[str, str]:
+    """The existing B14 caller proof for the identity-bearing detail reads.
+
+    The detail routes answer only a proven server-to-server caller. When the
+    deployment binding is absent the request goes unsigned, B14 refuses it, and
+    this probe fails closed instead of mistaking a public summary for evidence.
+    """
+    import hashlib
+    import hmac
+    import os
+    import time
+
+    secret = os.environ.get(SERVICE_PROOF_ENV, "")
+    if not isinstance(secret, str) or len(secret) < 32:
+        return {}
+    timestamp = str(int(time.time()))
+    proof = hmac.new(
+        secret.encode("utf-8"),
+        timestamp.encode("ascii") + b"." + bytes(raw_body),
+        hashlib.sha256,
+    ).hexdigest()
+    return {PROOF_HEADER: proof, PROOF_TIME_HEADER: timestamp}
+
+
 def _request(method: str, path: str, body: dict[str, Any] | None) -> tuple[int, bytes]:
     payload = None
     headers = {
@@ -43,6 +72,7 @@ def _request(method: str, path: str, body: dict[str, Any] | None) -> tuple[int, 
     if body is not None:
         payload = json.dumps(body, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
         headers["Content-Type"] = "application/json"
+    headers.update(_authority_headers(payload or b""))
     request = urllib.request.Request(
         f"{B14_BASE_URL}{path}",
         data=payload,

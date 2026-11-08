@@ -77,7 +77,7 @@ def test_candidate_registration_identity_and_manual_pin_only(candidate: Candidat
     with TestClient(create_app()) as client:
         route = next(
             item
-            for item in client.get("/api/pilot/models").json()["registered_routes"]
+            for item in client.get("/api/pilot/admin/models").json()["registered_routes"]
             if item["id"] == candidate.model_id
         )
     assert route["provider_id"] == candidate.provider_id
