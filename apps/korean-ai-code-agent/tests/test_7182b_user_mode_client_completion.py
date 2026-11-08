@@ -89,17 +89,23 @@ def _observed(pc_text: str, exit_value: str = "") -> tuple[str, MeshCentralComma
 
 class TheTaskPathMatchesTheInstaller(unittest.TestCase):
     def test_the_folder_is_the_one_the_installer_registers(self):
-        # Get-ScheduledTask -TaskPath 는 끝 구분자까지 비교한다. 이 값이
+        # 등록된 작업의 폴더는 인스톨러가 쓰는 그 값이다. 이 값이
         # '\Padiem' 이던 동안 사용자 모드 명령은 파이프에 닿지도 못했다.
         self.assertEqual(USER_HELPER_TASK_PATH, REGISTERED_TASK_FOLDER)
 
-    def test_the_client_asks_for_that_exact_folder(self):
+    def test_the_client_reads_that_exact_task_definition(self):
+        # #7182c: Get-ScheduledTask 대신 그 작업 파일을 직접 읽는다. 폴더·이름은
+        # 인스톨러가 등록한 그대로이고, 경로 조립에 COM 호출이 없다.
         script = _client_script()
         self.assertIn(
-            "Get-ScheduledTask -TaskPath '\\Padiem\\' -TaskName '"
-            + USER_HELPER_TASK_NAME + "'",
+            "System32\\Tasks\\"
+            + REGISTERED_TASK_FOLDER.strip("\\")
+            + "\\"
+            + USER_HELPER_TASK_NAME,
             script,
         )
+        self.assertNotIn("Get-ScheduledTask", script)
+        self.assertIn("helper task is not registered", script)
 
 
 class TheClientNeverOutlivesTheEnvelope(unittest.TestCase):
@@ -181,15 +187,29 @@ class TheWrappedTranscriptCompletesTheDispatch(unittest.TestCase):
 
 
 class TheClientIsBounded(unittest.TestCase):
-    def test_every_pipe_step_carries_a_bound(self):
+    def test_every_pipe_step_is_clamped_to_one_deadline(self):
         script = _client_script()
         # 연결 5초, 프레임 쓰기 5초, 프레임 읽기 15초 — 헬퍼가 받고 죽어도
         # executor 의 단일 dispatch 루프가 무기한 열려 있지 않다.
-        self.assertIn("$client.Connect(5000)", script)
-        self.assertIn("if(-not $w.Wait(5000)){ throw 'helper write timeout' }", script)
-        self.assertIn("if(-not $t.Wait(15000)){ throw 'helper read timeout' }", script)
+        self.assertIn("$client.Connect([Math]::Min(5000,$remain))", script)
+        self.assertIn(
+            "if(-not $w.Wait([Math]::Min(5000,$remain))){ throw 'helper write timeout' }",
+            script)
+        # #7182c: 그리고 모든 창은 하나의 전체 기한에 맞춰 줄어든다.
+        self.assertIn("$deadline=[DateTime]::UtcNow.AddSeconds(", script)
+        self.assertIn("$wait=[Math]::Min(15000,$remain)", script)
+        self.assertIn("helper client deadline expired (stage=read)", script)
+        self.assertIn("helper client deadline expired (stage=write)", script)
         # 그리고 그 실패는 코드가 붙은 한 줄로 돌아온다(침묵이 아니라 결과).
         self.assertIn("helper pipe is not available", script)
+
+    def test_the_failure_line_names_the_stage_it_stopped_in(self):
+        # 어느 단계에서 멈췄는지가 답에 남아야 다음 실행이 추적 없이도
+        # 같은 줄을 가리킨다. 비밀값은 어느 단계 이름에도 들어가지 않는다.
+        script = _client_script()
+        self.assertIn("(stage='+$stage+')", script)
+        for stage in ("task_lookup", "secret", "connect", "write", "read", "reply"):
+            self.assertIn("'" + stage + "'", script)
 
 
 if __name__ == "__main__":

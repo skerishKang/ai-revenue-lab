@@ -57,11 +57,18 @@ def test_ps_client_bounds_every_pipe_step():
         task_arguments=_task_args(DEVICE), request_id=REQ_ID, shell="powershell", command="whoami",
         cwd=None, timeout_seconds=30, distro=None,
     )
-    assert "$client.Connect(5000)" in ps
-    assert "$w.Wait(5000)" in ps
-    assert "$t.Wait(15000)" in ps
-    assert "helper read timeout" in ps
-    assert "helper write timeout" in ps
+    # #7106: connect 5s, frame write 5s, frame read 15s.
+    assert "$client.Connect([Math]::Min(5000,$remain))" in ps
+    assert "if(-not $w.Wait([Math]::Min(5000,$remain))){ throw 'helper write timeout' }" in ps
+    assert "$wait=[Math]::Min(15000,$remain)" in ps
+    assert "throw 'helper read timeout'" in ps
+    assert "throw 'helper write timeout'" in ps
+    # #7182c: and every one of those windows is clamped to one wall-clock
+    # deadline, so a helper that keeps heartbeating past a dead child still
+    # produces an answer instead of holding the console.
+    assert "$deadline=[DateTime]::UtcNow.AddSeconds(180)" in ps
+    assert "helper client deadline expired (stage=read)" in ps
+    assert "helper client deadline expired (stage=write)" in ps
 
 
 def test_ps_client_accumulates_streamed_chunks_without_a_256_kib_cut():
@@ -96,11 +103,13 @@ def test_production_client_reads_the_registered_task_and_hashes_on_the_pc():
         request_id=REQ_ID, shell="whoami", command="whoami",
         cwd=None, timeout_seconds=30, distro=None,
     )
-    # #7182b: the folder the installer registers is ``\Padiem\``; Get-ScheduledTask
-    # compares it including the trailing separator, so a path without it selects
-    # nothing and the client never reaches the pipe.
-    assert "Get-ScheduledTask -TaskPath '\\Padiem\\' -TaskName 'PadiemUserSessionHelper'" in ps
-    assert "$task.Actions[0].Arguments" in ps
+    # #7182c: the registered task is read from its own file, not through the
+    # ScheduledTasks module. Get-ScheduledTask is a Task Scheduler COM/RPC call
+    # with no timeout and measured 812 ms on 컴1 - it was the only step in this
+    # client that could wait forever before the pipe is even opened.
+    assert "Get-ScheduledTask" not in ps
+    assert "System32\\Tasks\\Padiem\\PadiemUserSessionHelper" in ps
+    assert "$argMatch.Groups[1].Value" in ps
     assert "--device-id" in ps
     assert "--secret-file" in ps
     assert "padiem-user-helper-dev_" in ps

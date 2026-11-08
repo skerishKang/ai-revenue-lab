@@ -53,7 +53,10 @@ def test_user_mode_dispatch_builds_pipe_client_and_submits_helper_reply():
     assert b"limone" in out.body
     assert out.exit_code == 0
     # no direct whoami-as-system: the pipe client runs; command material is inside request JSON
-    assert "Get-ScheduledTask" in sent  # secret path discovered on PC, not in dispatch
+    # secret path discovered on PC, not in dispatch (#7182c: the task file is
+    # read directly - no ScheduledTasks COM call on the customer machine)
+    assert "System32\\Tasks\\Padiem\\PadiemUserSessionHelper" in sent
+    assert "Get-ScheduledTask" not in sent
 
 
 def test_user_mode_pipe_absent_maps_to_user_session_unavailable_no_fallback():
@@ -68,7 +71,7 @@ def test_user_mode_pipe_absent_maps_to_user_session_unavailable_no_fallback():
     assert body["error_code"] == USER_SESSION_UNAVAILABLE
     # only one run_command (pipe client); no SYSTEM fallback command
     assert len(port.calls) == 1
-    assert "Get-ScheduledTask" in port.calls[0]["command"]
+    assert "PadiemUserSessionHelper" in port.calls[0]["command"]
 
 
 def test_user_mode_missing_dispatch_device_id_still_uses_the_task_arguments():
@@ -85,7 +88,7 @@ def test_user_mode_missing_dispatch_device_id_still_uses_the_task_arguments():
     assert body["error_code"] == USER_SESSION_UNAVAILABLE
     assert len(port.calls) == 1
     sent = port.calls[0]["command"]
-    assert "Get-ScheduledTask" in sent
+    assert "PadiemUserSessionHelper" in sent
     assert "--device-id" in sent
     # no SYSTEM fallback: only the pipe client ran
 

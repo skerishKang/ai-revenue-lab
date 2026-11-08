@@ -59,6 +59,28 @@ def user_helper_pipe_suffix(device_id: str) -> str:
 def user_helper_pipe_name(device_id: str) -> str:
     return USER_HELPER_PIPE_PREFIX + user_helper_pipe_suffix(device_id)
 
+#: Margin the PC-side client keeps behind the helper's own command timeout. The
+#: helper ends the child at that timeout and frames the reply straight after, so
+#: this window is only for the reply to travel; anything still silent after it is
+#: a client that will never answer and must not keep the console.
+USER_HELPER_CLIENT_DEADLINE_MARGIN_SECONDS = 120
+#: Floor for that deadline. A short command still gets long enough for a cold
+#: scheduled task, a slow first pipe connect and a helper that is starting up.
+USER_HELPER_CLIENT_DEADLINE_FLOOR_SECONDS = 180
+
+
+def user_helper_client_deadline_seconds(timeout_seconds) -> int:
+    """#7182c: total wall clock the PC-side client may use, whatever the stage."""
+    try:
+        timeout = int(timeout_seconds or 0)
+    except (TypeError, ValueError):
+        timeout = 0
+    if timeout < 0:
+        timeout = 0
+    return max(USER_HELPER_CLIENT_DEADLINE_FLOOR_SECONDS,
+               timeout + USER_HELPER_CLIENT_DEADLINE_MARGIN_SECONDS)
+
+
 #: Same path the Chat worker mounts. Executor and server must agree exactly.
 POLL_PATH = "/api/claw/connector/mesh-reads/poll"
 RESULT_PATH = "/api/claw/connector/mesh-reads/result"
@@ -1451,7 +1473,8 @@ class OracleMeshExecutor:
                                          distro: str | None,
                                          task_arguments: str | None = None,
                                          task_path: str = USER_HELPER_TASK_PATH,
-                                         task_name: str = USER_HELPER_TASK_NAME) -> str:
+                                         task_name: str = USER_HELPER_TASK_NAME,
+                                         deadline_seconds: int | None = None) -> str:
         """#7076c/#7105: PS pipe client sent via runcommand (SYSTEM) to the PC.
 
         The script runs on the target PC as SYSTEM. It reads the registered
@@ -1465,6 +1488,10 @@ class OracleMeshExecutor:
         task, so a test can supply the exact argument string the installer
         writes. No production caller passes it, and the parsing, hashing, frame
         bytes and nonce are the same either way.
+
+        ``deadline_seconds`` is a test seam for the same reason: a test that
+        proves the client answers when a helper goes quiet cannot wait the real
+        deadline out. No production caller passes it.
 
         Secret value is never printed. A missing task, a missing ``--device-id``,
         or a missing secret file is reported as user_session_unavailable before
@@ -1481,34 +1508,70 @@ class OracleMeshExecutor:
         }
         req_b64 = _b64.b64encode(_json.dumps(payload, ensure_ascii=True, separators=(",", ":")).encode("utf-8")).decode("ascii")
         if task_arguments is None:
+            # #7182c: read the registered task's own file instead of calling
+            # Get-ScheduledTask. That cmdlet is a Task Scheduler COM/RPC round trip
+            # through the ScheduledTasks module and it has no timeout: measured
+            # 812 ms per call on 컴1 as SYSTEM (2026-11-08) and it is the only step
+            # in this client that could wait without a bound before the pipe is
+            # even opened. The task file is plain, bounded file I/O and carries the
+            # same action arguments.
+            _task_file = "\\" + "System32\\Tasks\\" + str(task_path).strip("\\") + "\\" + str(task_name)
             arguments_source = (
-                "\n  $task=Get-ScheduledTask -TaskPath '@@TASK_PATH@@' -TaskName '@@TASK_NAME@@' -ErrorAction SilentlyContinue"
-                "\n  if(-not $task){ Fail 'user_session_unavailable' 'helper task is not registered' }"
-                "\n  if(-not $task.Actions -or $task.Actions.Count -lt 1){ Fail 'user_session_unavailable' 'helper task has no action' }"
-                "\n  $arg=[string]$task.Actions[0].Arguments"
-            ).replace("@@TASK_PATH@@", str(task_path).replace("'", "''")).replace(
-                "@@TASK_NAME@@", str(task_name).replace("'", "''")
-            )
+                "\n  $stage='task_lookup'; T 'task_lookup'"
+                "\n  $taskFile=[string]$env:SystemRoot+'@@TASK_FILE@@'"
+                "\n  if(-not [IO.File]::Exists($taskFile)){ Fail 'user_session_unavailable' 'helper task is not registered' }"
+                "\n  $taskXml=[IO.File]::ReadAllText($taskFile)"
+                "\n  $argMatch=[regex]::Match($taskXml,'(?s)<Arguments>(.*?)</Arguments>')"
+                "\n  if(-not $argMatch.Success){ Fail 'user_session_unavailable' 'helper task has no action' }"
+                "\n  $arg=[System.Net.WebUtility]::HtmlDecode($argMatch.Groups[1].Value)"
+                "\n  $stage='task_parsed'; T 'task_parsed'"
+            ).replace("@@TASK_FILE@@", _task_file.replace("'", "''"))
         else:
             arguments_source = (
+                "\n  $stage='task_arguments'"
                 "\n  $arg=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('"
                 + _b64.b64encode(str(task_arguments).encode("utf-8")).decode("ascii")
                 + "'))"
+                "\n  T 'task_arguments'"
             )
+        # #7182c: the client must answer within a bound no matter which step
+        # stalls, and must never depend on an interactive console. deadline is the
+        # helper's own command timeout plus a margin for the helper to collect and
+        # frame the reply; the executor's silent cap stays a backstop behind it.
+        # The inline comments are deliberate and short: this text is the wire
+        # payload, so every line here is bytes the PC has to receive.
+        if deadline_seconds is None:
+            deadline_seconds = user_helper_client_deadline_seconds(timeout_seconds)
         script = r"""
 $ErrorActionPreference='Stop'
+$ProgressPreference='SilentlyContinue'
+$ConfirmPreference='None'
 $mat=[Convert]::FromBase64String('@@MAT_B64@@')
 $reqB64='@@REQ_B64@@'
-# #7182b: never 'exit' from this client. The SYSTEM lane runs it inside
-# ``& { <client> } 2>&1 | Out-String`` and prints the reply envelope and the
-# ``__PADIEM_EXIT__`` sentinel only AFTER that block returns; an 'exit' ends
-# PowerShell first, so the transcript carried no sentinel at all and every
-# user-mode command - a success as much as a refusal - was read back as
-# 'no reply'. Measured on 컴1 2026-11-08: the wrapped client answered 'ok' in
-# 1.7s with an empty stdout for the lane. Fail therefore throws a code-prefixed
-# message, the answer is written on the pipeline, and the script returns.
+# #7182c: step journal, off unless the operator creates client-trace.enabled.
+# Stage names and timestamps only - no secret, no device id, no command.
+$global:padiemTraceFile=$null
+if([IO.File]::Exists('C:\ProgramData\Padiem\client-trace.enabled')){ $global:padiemTraceFile='C:\ProgramData\Padiem\client-trace.log' }
+if([string]$env:PADIEM_HELPER_CLIENT_TRACE -eq '1'){ $global:padiemTraceFile='C:\ProgramData\Padiem\client-trace.log' }
+function T([string]$s){
+  if(-not $global:padiemTraceFile){ return }
+  try {
+    if([IO.File]::Exists($global:padiemTraceFile)){
+      if((New-Object System.IO.FileInfo($global:padiemTraceFile)).Length -gt 262144){ return }
+    }
+    [IO.File]::AppendAllText($global:padiemTraceFile,([DateTime]::UtcNow.ToString('HH:mm:ss.fff')+' '+$s+"`r`n"),[Text.Encoding]::UTF8)
+  } catch { }
+}
+$stage='start'
+$deadline=[DateTime]::UtcNow.AddSeconds(@@DEADLINE_SECONDS@@)
+T 'start'
+# #7182b: this client must not end the process itself - the SYSTEM lane prints the
+# and the __PADIEM_EXIT__ sentinel only after this block returns (#7184
+# measured that ending the process first loses both). Fail throws a
+# code-prefixed string; the answer travels on the pipeline.
 function Fail($code,$msg){ throw [string]($code+': '+$msg) }
 try {@@ARGUMENTS_SOURCE@@
+  $stage='device_id'; T 'device_id'
   $deviceId=$null
   if($arg -match '--device-id\s+"([^"]+)"'){ $deviceId=$Matches[1] }
   elseif($arg -match "--device-id\s+'([^']+)'"){ $deviceId=$Matches[1] }
@@ -1524,47 +1587,68 @@ try {@@ARGUMENTS_SOURCE@@
   elseif($arg -match "--secret-file\s+'([^']+)'"){ $secretFile=$Matches[1] }
   elseif($arg -match '--secret-file\s+([^\s]+)'){ $secretFile=$Matches[1] }
   if(-not $secretFile){ Fail 'user_session_unavailable' 'helper secret file is not configured' }
+  $stage='secret'
   $raw=[System.IO.File]::ReadAllBytes($secretFile)
   $secretText=[System.Text.Encoding]::UTF8.GetString($raw).Trim()
   $secret=[System.Text.Encoding]::UTF8.GetBytes($secretText)
   if($secret.Length -eq 0){ Fail 'user_session_unavailable' 'helper secret is unavailable' }
+  $stage='hmac'; T 'hmac'
   $hmac=New-Object System.Security.Cryptography.HMACSHA256 -ArgumentList (,$secret)
   $nonce=-join ($hmac.ComputeHash($mat) | ForEach-Object { $_.ToString('x2') })
   $req=[System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($reqB64)) | ConvertFrom-Json
   $req | Add-Member -NotePropertyName nonce -NotePropertyValue $nonce -Force
   $body=[System.Text.Encoding]::UTF8.GetBytes(($req | ConvertTo-Json -Compress -Depth 5))
   $len=[System.BitConverter]::GetBytes([int]$body.Length); [Array]::Reverse($len)
+  $stage='connect'; T 'connect'
   $client=New-Object System.IO.Pipes.NamedPipeClientStream('.',$pipeName,[System.IO.Pipes.PipeDirection]::InOut)
-  # #7106: every pipe step is bounded. Connect 5s, each write 5s, each frame
-  # 15s. A helper that accepted and then died fails here instead of holding
-  # the executor's single dispatch loop open forever. The 15s read window is
-  # per frame, not a command deadline: while a stage-2 command runs the helper
-  # sends a heartbeat every 5s, so a long command keeps its lane.
-  $client.Connect(5000)
-  $w=$client.WriteAsync($len,0,4); if(-not $w.Wait(5000)){ throw 'helper write timeout' }
-  $w=$client.WriteAsync($body,0,$body.Length); if(-not $w.Wait(5000)){ throw 'helper write timeout' }
+  # #7106 + #7182c: connect 5s, write 5s, frame 15s (#7106), and every one of
+  # those windows is clamped to one wall clock deadline, so a step can never
+  # wait past it. A heartbeat keeps a long command alive; the deadline does not.
+  $remain=[int]($deadline-[DateTime]::UtcNow).TotalMilliseconds
+  if($remain -le 0){ throw 'user_session_unavailable: helper client deadline expired (stage=connect)' }
+  $client.Connect([Math]::Min(5000,$remain))
+  T 'connected'
+  $stage='write'
+  $remain=[int]($deadline-[DateTime]::UtcNow).TotalMilliseconds
+  if($remain -le 0){ throw 'user_session_unavailable: helper client deadline expired (stage=write)' }
+  $w=$client.WriteAsync($len,0,4); if(-not $w.Wait([Math]::Min(5000,$remain))){ throw 'helper write timeout' }
+  $w=$client.WriteAsync($body,0,$body.Length); if(-not $w.Wait([Math]::Min(5000,$remain))){ throw 'helper write timeout' }
   $client.Flush()
-  # #7107: the helper streams stdout/stderr as chunks. Accumulate them in
-  # memory and emit one reply object; there is no 256 KiB cut and no fixed
-  # command deadline. The 15s read window is per frame, and a 5s heartbeat
-  # keeps a healthy long command alive.
+  T 'request_written'
+  $stage='read'
+  # #7107: the helper streams chunks; accumulate and emit one reply object.
   $stdout=New-Object System.Collections.Generic.List[byte]
   $stderr=New-Object System.Collections.Generic.List[byte]
   while($true){
     $hdr=New-Object byte[] 4; $read=0
+    $remain=[int]($deadline-[DateTime]::UtcNow).TotalMilliseconds
+    if($remain -le 0){ throw 'user_session_unavailable: helper client deadline expired (stage=read)' }
     while($read -lt 4){
-      $t=$client.ReadAsync($hdr,$read,4-$read); if(-not $t.Wait(15000)){ throw 'helper read timeout' }
+      $t=$client.ReadAsync($hdr,$read,4-$read)
+      $wait=[Math]::Min(15000,$remain)
+      if(-not $t.Wait($wait)){
+        if($wait -lt 15000){ throw 'user_session_unavailable: helper client deadline expired (stage=read)' }
+        throw 'helper read timeout'
+      }
       $n=$t.Result; if($n -le 0){ throw 'short header' }; $read+=$n
     }
     [Array]::Reverse($hdr); $rlen=[System.BitConverter]::ToInt32($hdr,0)
     if($rlen -lt 0 -or $rlen -gt 2097152){ throw 'bad frame length' }
     $rbody=New-Object byte[] $rlen; $read=0
+    $remain=[int]($deadline-[DateTime]::UtcNow).TotalMilliseconds
+    if($remain -le 0){ throw 'user_session_unavailable: helper client deadline expired (stage=read)' }
     while($read -lt $rlen){
-      $t=$client.ReadAsync($rbody,$read,$rlen-$read); if(-not $t.Wait(15000)){ throw 'helper read timeout' }
+      $t=$client.ReadAsync($rbody,$read,$rlen-$read)
+      $wait=[Math]::Min(15000,$remain)
+      if(-not $t.Wait($wait)){
+        if($wait -lt 15000){ throw 'user_session_unavailable: helper client deadline expired (stage=read)' }
+        throw 'helper read timeout'
+      }
       $n=$t.Result; if($n -le 0){ throw 'short body' }; $read+=$n
     }
     $text=[System.Text.Encoding]::UTF8.GetString($rbody)
     $frame=$text | ConvertFrom-Json
+    T ('frame ' + [string]$frame.status)
     if($frame.status -eq 'started' -or $frame.status -eq 'running'){ continue }
     if($frame.status -eq 'stdout'){
       $stdout.AddRange([byte[]][Convert]::FromBase64String([string]$frame.data_b64)); continue
@@ -1578,13 +1662,16 @@ try {@@ARGUMENTS_SOURCE@@
       stderr_b64=[Convert]::ToBase64String($stderr.ToArray());
       truncated=$false; error_code=$frame.error_code; duration_ms=$frame.duration_ms
     }
+    $stage='reply'
     $client.Dispose()
+    T 'reply_ready'
     Write-Output ($reply | ConvertTo-Json -Compress)
     return
   }
 } catch {
   $detail=[string]$_.Exception.Message
-  if($detail -notmatch '^[a-z_]+: '){ $detail='user_session_unavailable: helper pipe is not available' }
+  T ('fail ' + $detail)
+  if($detail -notmatch '^[a-z_]+: '){ $detail='user_session_unavailable: helper pipe is not available (stage='+$stage+')' }
   Write-Output $detail
   return
 }
@@ -1593,6 +1680,7 @@ try {@@ARGUMENTS_SOURCE@@
             script.replace("@@MAT_B64@@", mat_b64)
             .replace("@@REQ_B64@@", req_b64)
             .replace("@@ARGUMENTS_SOURCE@@", arguments_source)
+            .replace("@@DEADLINE_SECONDS@@", str(deadline_seconds))
         )
 
     @staticmethod
