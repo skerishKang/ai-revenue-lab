@@ -26,8 +26,10 @@ from .pc_delegation_routes import PC_DELEGATION_PATH, pc_delegation_get, pc_dele
 from .pc_delegation_store import D1PcDelegationStore
 from .mcp_gateway_account_routes import (
     MCP_TOKENS_PATH, MCP_TOKEN_PATH, MCP_APPROVALS_PATH, MCP_APPROVAL_PATH,
+    MCP_OAUTH_CLIENTS_PATH, MCP_OAUTH_CLIENT_PATH,
     mcp_tokens_get, mcp_tokens_post, mcp_token_delete,
     mcp_approvals_get, mcp_approval_post,
+    mcp_oauth_clients_get, mcp_oauth_client_delete,
 )
 from .mcp_gateway_store import D1McpGatewayStore
 from .mcp_gateway_transport import MCP_GATEWAY_PATH, mcp_gateway_endpoint
@@ -801,6 +803,8 @@ def create_app(
         Route(MCP_TOKENS_PATH, mcp_tokens_get, methods=["GET"]),
         Route(MCP_TOKENS_PATH, mcp_tokens_post, methods=["POST"]),
         Route(MCP_TOKEN_PATH, mcp_token_delete, methods=["DELETE"]),
+        Route(MCP_OAUTH_CLIENTS_PATH, mcp_oauth_clients_get, methods=["GET"]),
+        Route(MCP_OAUTH_CLIENT_PATH, mcp_oauth_client_delete, methods=["DELETE"]),
         Route(MCP_APPROVALS_PATH, mcp_approvals_get, methods=["GET"]),
         Route(MCP_APPROVAL_PATH, mcp_approval_post, methods=["POST"]),
         Route(MCP_GATEWAY_PATH, mcp_gateway_endpoint, methods=["POST", "GET", "DELETE", "OPTIONS"]),

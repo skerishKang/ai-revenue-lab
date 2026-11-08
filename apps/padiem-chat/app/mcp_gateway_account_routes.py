@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 
 from starlette.responses import JSONResponse
 
@@ -146,6 +147,49 @@ async def mcp_token_delete(request):
     if not revoked:
         return _error(404, "mcp_token_not_found", "연결을 찾을 수 없습니다.")
     return _response({"ok": True})
+
+
+MCP_OAUTH_CLIENTS_PATH = "/api/account/mcp/oauth/clients"
+MCP_OAUTH_CLIENT_PATH = MCP_OAUTH_CLIENTS_PATH + "/{client_id}"
+_OAUTH_CLIENT_ID = re.compile(r"mcpc_[0-9a-f]{32}\Z")
+
+
+async def mcp_oauth_clients_get(request):
+    """Active OAuth grants grouped by the AI client, for the signed-in owner.
+
+    #7168: the response carries ids, the client's registered name, device ids,
+    scopes and timestamps only. No token, secret or hash column is selected.
+    """
+    owner = current_user_id(request)
+    if not owner:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+    try:
+        clients = await _store(request).list_oauth_clients(user_id=owner)
+    except Exception:
+        return _unavailable()
+    return _response({"ok": True, "clients": clients})
+
+
+async def mcp_oauth_client_delete(request):
+    """Revoke every active OAuth grant this owner has for one AI client.
+
+    #7168: idempotent (no matching grant -> 0 revoked, still 200) and
+    owner-scoped in the same UPDATE, so a foreign client_id matches nothing.
+    """
+    owner = current_user_id(request)
+    if not owner:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+    denied = _mutation_origin(request)
+    if denied is not None:
+        return denied
+    client_id = request.path_params.get("client_id")
+    if not isinstance(client_id, str) or not _OAUTH_CLIENT_ID.fullmatch(client_id):
+        return _error(404, "mcp_oauth_client_not_found", "연결을 찾을 수 없습니다.")
+    try:
+        revoked = await _store(request).revoke_oauth_client(user_id=owner, client_id=client_id)
+    except Exception:
+        return _unavailable()
+    return _response({"ok": True, "revoked": revoked})
 
 
 async def mcp_approvals_get(request):
