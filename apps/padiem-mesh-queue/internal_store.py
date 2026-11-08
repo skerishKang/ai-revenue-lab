@@ -15,6 +15,7 @@ ever reach a log or an error body.
 from __future__ import annotations
 
 import hashlib
+from datetime import date, datetime
 import re
 import json
 import time
@@ -95,6 +96,11 @@ PAIRING_METHODS = frozenset({
     "revoke_link",
     "revoke_root",
     "set_link_label",
+    # #7147/#7153: the managed(contract) mark — mirrors the chat-side proxy
+    # allowlist so the queue path carries the whole pairing surface.
+    "is_managed_link",
+    "managed_state",
+    "set_managed",
 })
 
 PRESENCE_METHODS = frozenset({"upsert", "load"})
@@ -189,6 +195,33 @@ def _release_transaction(state: Any, facts: dict[str, str]) -> None:
 
 
 def _json_safe(value: Any) -> tuple[bool, Any]:
+    """Return a JSON-serializable copy of the store's answer.
+
+    Instants become the ISO text the client's ``_wire`` parses back — the same
+    boundary conversion in the other direction (#7133 후속: ``set_managed``
+    returns the mark's moment, which JSON cannot carry as a datetime).
+    """
+
+    if isinstance(value, datetime):
+        return True, value.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    if isinstance(value, date):
+        return True, value.isoformat()
+    if isinstance(value, dict):
+        out = {}
+        for key, item in value.items():
+            safe, decoded = _json_safe(item)
+            if not safe:
+                return False, None
+            out[key] = decoded
+        return True, out
+    if isinstance(value, (list, tuple)):
+        out = []
+        for item in value:
+            safe, decoded = _json_safe(item)
+            if not safe:
+                return False, None
+            out.append(decoded)
+        return True, out
     try:
         json.dumps(value)
     except (TypeError, ValueError):
