@@ -51,9 +51,10 @@ class Rule:
     ``"(max-width: 640px)"``), or ``None`` outside any @media. Nested @media
     blocks are joined the way CSS evaluates them: ``"(a) and (b)"``.
 
-    ``declarations`` maps a lowercased property name to its value exactly as
-    authored (whitespace collapsed). A property declared twice in one block
-    keeps the last value, which is the one the cascade applies.
+    ``declarations`` maps a property name to its value exactly as authored
+    (whitespace collapsed). Property names follow CSS: case-insensitive, except
+    ``--custom`` ones which keep their case. A property declared twice in one
+    block keeps the last value, which is the one the cascade applies.
     """
 
     selectors: list[str] = field(default_factory=list)
