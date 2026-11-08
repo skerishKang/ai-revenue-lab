@@ -289,11 +289,18 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
 
 # Fallback-allowable error codes:
 # transport failure, timeout, HTTP 429/5xx and unreadable provider responses.
+# #7156: a provider that completes with no text answer is a provider-side
+# failure too. While a pinned candidate remains, the walk must try it instead
+# of ending the request with 502: the 2026-11-08 grade smoke lost the whole
+# Free chain that way on its second of five candidates. This grants no
+# same-route retry (see gateway._SAME_ROUTE_RETRYABLE_CODES), and the last
+# candidate still ends the walk.
 _FALLBACK_ALLOWED_CODES = frozenset({
     "upstream_timeout",
     "malformed_upstream_response",
     "upstream_server_error",
     "upstream_rate_limited",
+    "upstream_empty_answer",
 })
 
 # Fallback-prohibited error codes:
