@@ -36,7 +36,6 @@ LISTEN_BACKLOG = 128
 
 SIGNED_IN = {"ok": True, "authenticated": True, "ready": True,
              "user": {"name": "대표", "email": "owner@example.com"}}
-PAIRINGS = {"ok": True, "links": []}
 MARKERS = re.compile(r"[●○]")
 
 
@@ -113,9 +112,14 @@ DIRECTORY_ONE_PC = {
 DIRECTORY_EMPTY = {
     "ok": True, "available": True, "ownerScoped": True, "devices": [],
 }
+# 두 서버 진실(디렉터리·페어링)이 서로 다른 상태를 그리면 칩이 마지막에 받은
+# 쪽으로 다시 칠해진다. 실서비스에서는 둘이 같은 PC를 말하므로 여기서도 맞춘다.
+PAIRINGS_ONE_PC = {"ok": True, "links": [
+    {"link_id": "home", "state": "active", "online": True, "name": "집 컴퓨터"}]}
+PAIRINGS_EMPTY = {"ok": True, "links": []}
 
 
-def _serve_page(page, payload):
+def _serve_page(page, payload, pairings):
     # Playwright matches routes last-registered-first, so the generic /api/
     # refusal goes in first and the three real reads go in after it.
     page.route(
@@ -127,7 +131,7 @@ def _serve_page(page, payload):
         re.compile(r".*/api/pc/pairings$"),
         lambda route: route.fulfill(
             status=200, content_type="application/json",
-            body=json.dumps(PAIRINGS, ensure_ascii=False),
+            body=json.dumps(pairings, ensure_ascii=False),
         ),
     )
     page.route(
@@ -227,7 +231,7 @@ def test_a_connected_chip_draws_one_green_dot(browser, server, width) -> None:
     page = browser.new_page(viewport={"width": width, "height": 900})
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
-    _serve_page(page, DIRECTORY_ONE_PC)
+    _serve_page(page, DIRECTORY_ONE_PC, PAIRINGS_ONE_PC)
     _open(page, server)
     _read_directory(page)
     _wait_state(page, "connected")
@@ -247,7 +251,7 @@ def test_a_disconnected_chip_also_draws_one_dot(browser, server, width) -> None:
     page = browser.new_page(viewport={"width": width, "height": 900})
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
-    _serve_page(page, DIRECTORY_EMPTY)
+    _serve_page(page, DIRECTORY_EMPTY, PAIRINGS_EMPTY)
     _open(page, server)
     _read_directory(page)
     _wait_state(page, "disconnected")
@@ -264,7 +268,7 @@ def test_chat_and_claw_show_different_one_line_placeholders(browser, server) -> 
     page = browser.new_page(viewport={"width": 390, "height": 844})
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
-    _serve_page(page, DIRECTORY_ONE_PC)
+    _serve_page(page, DIRECTORY_ONE_PC, PAIRINGS_ONE_PC)
     _open(page, server)
     placeholder = page.evaluate("""() => {
       const ta = document.getElementById('messageInput');
