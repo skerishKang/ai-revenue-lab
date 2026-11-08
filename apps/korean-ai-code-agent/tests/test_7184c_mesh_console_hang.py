@@ -44,6 +44,7 @@ from pathlib import Path
 
 from kagent.local_agent_meshcentral_command_port import (
     MeshCentralCommandOutcome,
+    _file_dispatch_console_script,
     _pid_file_literal,
     _wrap,
     parse_transcript,
@@ -126,27 +127,35 @@ class TheUserModeClientCanBeStopped(unittest.TestCase):
         # PC 쪽 stop 은 이 표식만 읽는다. 없던 동안 pc_shell_stop 은 끝낼 파일을
         # 찾지 못했고, 멈춘 클라이언트는 콘솔을 계속 점유했다.
         self.assertEqual(captured["dispatch_id"], "dsp_abcdabcdabcdabcd")
-        wrapped = _wrap(captured["command"], captured["dispatch_id"], None)
-        self.assertIn(_pid_file_literal("dsp_abcdabcdabcdabcd"), wrapped)
-        self.assertIn("__PADIEM_EXIT__", captured["command"])
+        # #7214: user mode is delivered as a staged file, not the console body. The
+        # marker still lives in what the console runs, so pc_shell_stop finds it; the
+        # staging script writes it before it runs the client with -File.
+        self.assertIs(captured["deliver_as_file"], True)
+        console = _file_dispatch_console_script(
+            captured["command"], captured["dispatch_id"], None)
+        self.assertIn(_pid_file_literal("dsp_abcdabcdabcdabcd"), console)
+        self.assertIn("-File $__fp", console)
 
 
 class EveryWaitInTheClientHasABound(unittest.TestCase):
     def test_the_first_reply_frame_is_bounded(self):
         script = _client_text()
         self.assertIn("PADIEM_MESH_USER_HELPER_FIRST_FRAME_SECONDS", script)
-        self.assertIn("helper did not answer", script)
+        self.assertIn("first-frame deadline expired", script)
         # 첫 프레임 뒤에는 그 상한이 풀린다: 그 뒤의 대기는 작업이다.
         self.assertIn("$__firstBy=0", script)
 
     def test_the_work_wait_keeps_a_separate_operator_cap(self):
         script = _client_text()
         self.assertIn("PADIEM_MESH_USER_HELPER_REPLY_SECONDS", script)
-        self.assertIn("helper reply deadline", script)
-        # 요청 timeout_seconds 는 서명 재료일 뿐 마감이 아니다(#7107). 상한은
-        # 운영자 스위치 하나뿐이고, 기본은 꺼져 있다.
+        self.assertIn("overall deadline expired", script)
+        # 요청 timeout_seconds 는 서명 재료일 뿐 마감이 아니다(#7107): 직접 마감으로
+        # 쓰면 건강한 32초 명령이 잘렸다. 그래서 전체 기한은 max(180, timeout+120)로
+        # 구워 두고(#7196, timeout_seconds=0 이므로 180), 운영자 스위치가 이를
+        # 덮어쓴다 — 양수면 그 초, 음수면 끈다.
         self.assertNotIn("$req.timeout_seconds -gt 0", script)
-        self.assertIn("if($__replyCap -gt 0)", script)
+        self.assertIn("$__overall=180", script)
+        self.assertIn("if($__cap -gt 0)", script)
 
     def test_the_answer_is_flushed_before_the_script_returns(self):
         self.assertIn("[Console]::Out.Flush()", _client_text())
@@ -203,7 +212,7 @@ class TheMeasuredWedgesEndOnTheirOwn(unittest.TestCase):
                 "silent", {"PADIEM_MESH_USER_HELPER_FIRST_FRAME_SECONDS": "3"}, Path(raw))
         self.assertLess(elapsed, 30, f"still waiting after {elapsed:.1f}s")
         _termination, _code, body = parse_transcript(output.encode("utf-8"))
-        self.assertIn(b"helper did not answer", body)
+        self.assertIn(b"first-frame deadline expired", body)
 
     @WINDOWS_ONLY
     def test_heartbeats_cannot_extend_the_wait_past_the_operator_cap(self):
@@ -214,7 +223,7 @@ class TheMeasuredWedgesEndOnTheirOwn(unittest.TestCase):
                 "heartbeat", {"PADIEM_MESH_USER_HELPER_REPLY_SECONDS": "4"}, Path(raw))
         self.assertLess(elapsed, 30, f"still waiting after {elapsed:.1f}s")
         _termination, _code, body = parse_transcript(output.encode("utf-8"))
-        self.assertIn(b"helper reply deadline", body)
+        self.assertIn(b"overall deadline expired", body)
 
 
 if __name__ == "__main__":

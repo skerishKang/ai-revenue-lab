@@ -62,7 +62,10 @@ def test_ps_client_bounds_every_pipe_step():
     # #7184c: 15s is the default frame window, clamped to the bound around it.
     assert "$__wait=15000" in ps
     assert "if(-not $t.Wait($__wait)){ Timeout }" in ps
-    assert "helper read timeout" in ps
+    # #7196: each wait names its own stage when it expires.
+    assert "user_helper_timeout: frame read deadline expired" in ps
+    assert "user_helper_timeout: first-frame deadline expired" in ps
+    assert "user_helper_timeout: overall deadline expired" in ps
     assert "helper write timeout" in ps
 
 
@@ -98,16 +101,19 @@ def test_production_client_reads_the_registered_task_and_hashes_on_the_pc():
         request_id=REQ_ID, shell="whoami", command="whoami",
         cwd=None, timeout_seconds=30, distro=None,
     )
-    # #7182b: the folder the installer registers is ``\Padiem\``; Get-ScheduledTask
-    # compares it including the trailing separator, so a path without it selects
-    # nothing and the client never reaches the pipe.
-    assert "Get-ScheduledTask -TaskPath '\\Padiem\\' -TaskName 'PadiemUserSessionHelper'" in ps
-    assert "$task.Actions[0].Arguments" in ps
+    # #7196: the installer registers the task under the folder ``\Padiem\``, which on
+    # disk is the file %SystemRoot%\System32\Tasks\Padiem\PadiemUserSessionHelper.
+    # SYSTEM reads that file's <Arguments> directly, so there is no Get-ScheduledTask
+    # COM call (which had no timeout of its own) anywhere in the client.
+    assert "Get-ScheduledTask" not in ps
+    assert "System32\\Tasks\\Padiem\\PadiemUserSessionHelper" in ps
+    assert "$__tx.Load($txp)" in ps
+    assert "$__tx.Task.Actions.Exec" in ps
     assert "--device-id" in ps
     assert "--secret-file" in ps
     assert "padiem-user-helper-dev_" in ps
     assert "$digest.Substring(0,32)" in ps
-    assert "helper task is not registered" in ps
+    assert "helper task file is not present" in ps
     assert "helper device id is not configured" in ps
     assert DEVICE not in ps
 
