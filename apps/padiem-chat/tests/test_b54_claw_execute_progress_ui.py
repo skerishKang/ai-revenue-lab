@@ -577,9 +577,10 @@ const sandbox = {
   setInterval: (fn, ms) => vSetTimer(fn, ms, true),
   clearInterval: (id) => vClearTimer(id),
   console,
-  CustomEvent: class {},
+  CustomEvent: class { constructor(type, init) { this.type = type; this.detail = init.detail; } },
   location: { href: "http://localhost/", assign() {} },
   addEventListener: (type, fn) => { (winListeners[type] = winListeners[type] || []).push(fn); },
+  dispatchEvent: (event) => { (winListeners[event.type] || []).forEach((fn) => fn(event)); },
   __padiemLocale: { text: (key, variables) => localeText(key, variables) },
   PadiemChatLifecycle: { states: { IDLE: "idle", STREAMING: "streaming", COMPLETED: "completed", FAILED: "failed", CANCELLED: "cancelled", TIMED_OUT: "timed_out" }, set() {} },
   PadiemConfirmDialog: { confirm: async () => true },
@@ -595,6 +596,8 @@ const sandbox = {
 };
 sandbox.window = sandbox;
 vm.createContext(sandbox);
+sandbox.dispatchEvent = sandbox.dispatchEvent || (() => true);
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ type }));

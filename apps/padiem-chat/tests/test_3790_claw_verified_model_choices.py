@@ -125,7 +125,9 @@ def test_login_refresh_and_logout_keep_status_without_stale_model_choice():
     base = Path(__file__).resolve().parents[1] / "static"
     app = (base / "app.js").read_text(encoding="utf-8")
     js = (base / "claw-verified-model-choice.js").read_text(encoding="utf-8")
-    assert 'new CustomEvent("padiem:auth-state"' in app
+    session = (base / "auth-session.js").read_text(encoding="utf-8")
+    assert "window.PadiemAuthSession.update(authState, authViewEpoch)" in app
+    assert 'new CustomEvent("padiem:auth-state"' in session
     assert 'window.addEventListener("padiem:auth-state"' in js
     assert 'manual.value=""' not in js
 

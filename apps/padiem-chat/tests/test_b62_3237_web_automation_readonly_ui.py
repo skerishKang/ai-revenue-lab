@@ -286,7 +286,7 @@ const sandbox = {
   document: doc,
   fetch: fetchImpl,
   setTimeout, clearTimeout, console,
-  CustomEvent: class {},
+  CustomEvent: class { constructor(type, init) { this.type = type; this.detail = init.detail; } },
   location: { href: "http://localhost/", assign() {} },
   addEventListener() {},
   __padiemLocale: { text: (k) => k },
@@ -300,6 +300,8 @@ sandbox.window = sandbox;
 vm.createContext(sandbox);
 // Real dependency order: app.js reads attachment-capabilities.js at load time.
 vm.runInContext(CAPS, sandbox, { filename: "attachment-capabilities.js" });
+sandbox.dispatchEvent = sandbox.dispatchEvent || (() => true);
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 function collectText(root) {

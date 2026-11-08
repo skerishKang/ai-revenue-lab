@@ -400,7 +400,7 @@ function boot(state) {
     AbortController: class { constructor() { this.signal = {}; } abort() {} },
     URL: { createObjectURL: () => "blob:x", revokeObjectURL() {}, revokeURL() {} },
     setTimeout, clearTimeout, setInterval, clearInterval, console,
-    CustomEvent: class {},
+    CustomEvent: class { constructor(type, init) { this.type = type; this.detail = init.detail; } },
     location: { href: "http://localhost/", assign() {} },
     addEventListener() {},
     __padiemLocale: { text: (k, v) => k },
@@ -418,6 +418,9 @@ function boot(state) {
   };
   sandbox.window = sandbox;
   vm.createContext(sandbox);
+  sandbox.CustomEvent = sandbox.CustomEvent || class { constructor(type, init) { this.type = type; this.detail = init.detail; } };
+  sandbox.dispatchEvent = sandbox.dispatchEvent || (() => true);
+  vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
   vm.runInContext(APP, sandbox, { filename: "app.js" });
   return { byId, shell, doc, requests, fixture, conversationState };
 }
