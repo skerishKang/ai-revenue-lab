@@ -100,6 +100,14 @@ def test_app_js_does_not_observe_dom_mutations() -> None:
 - 검사 강도는 같거나 더 강해야 한다. 약해지는 순간 그 PR은 실패다.
 - 삭제·`skip`·`xfail`·완화 금지. 실패를 통과로 바꾸는 어떤 변경도 계약 이전이 아니다.
 
+### 이전 사례
+
+- #7186 2단계(PR #7194): `test_5608_body_glass_unification.py`·
+  `test_util_first_screen_7172.py`·`test_5908_quick_tool_grid.py`의 공용 주요 버튼
+  3블록과 `.util-tool-card` 테두리를 문자열 슬라이스에서 `parse_rules`·
+  `find_rules_with_selector`·`rule_selector_list_contains`·`declaration`으로 옮겼다.
+  로컬 헬퍼 `_selector_group`·`_shared_primary_rules`는 css_rules가 대신한다.
+
 ## 5. 도구
 
 `tests/css_rules.py` — 표준 라이브러리만 사용한다.
