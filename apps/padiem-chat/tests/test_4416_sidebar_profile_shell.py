@@ -7,6 +7,7 @@ from _android_handoff_storage_guard import assert_session_storage_is_handoff_onl
 BASE = Path(__file__).resolve().parents[1] / "static"
 HTML = (BASE / "index.html").read_text(encoding="utf-8")
 APP = (BASE / "app.js").read_text(encoding="utf-8")
+SIDEBAR = (BASE / "chat-sidebar-module.js").read_text(encoding="utf-8")
 CSS = (BASE / "sidebar-utility.css").read_text(encoding="utf-8")
 LOCALE = (BASE / "locale.js").read_text(encoding="utf-8")
 
@@ -39,15 +40,19 @@ def test_desktop_controls_exist_and_are_keyboard_accessible():
     assert HTML.index('id="sidebarCollapseButton"') < HTML.index('id="newChatButton"') < HTML.index('id="clawNavButton"')
     assert "setSidebarCollapsed(true)" in APP
     assert "setSidebarCollapsed(false)" in APP
-    assert "sidebarRestoreButton?.focus()" in APP
-    assert "sidebarCollapseButton?.focus()" in APP
+    # R5 1단계: 본문은 사이드바 모듈이 소유하고 app.js는 한 줄 전달 함수만 남긴다.
+    assert "sidebarRestoreButton?.focus()" in SIDEBAR
+    assert "sidebarCollapseButton?.focus()" in SIDEBAR
+    assert "function setSidebarCollapsed(...a) { return sidebarModule().setSidebarCollapsed(...a); }" in APP
 
 
 def test_mobile_menu_and_authority_are_unchanged():
-    assert 'window.matchMedia("(max-width: 920px)").matches' in APP
+    assert 'window.matchMedia("(max-width: 920px)").matches' in SIDEBAR
     assert 'mobileMenu.addEventListener("click", openSidebar)' in APP
     assert 'mobileClose.addEventListener("click", closeSidebar)' in APP
     assert "localStorage" not in APP
+    assert "localStorage" not in SIDEBAR
+    assert "sessionStorage" not in SIDEBAR
     assert_session_storage_is_handoff_only(APP)
     assert "fetch(" not in CSS.split("#4416:", 1)[1]
     assert "max-width: 920px" in CSS
