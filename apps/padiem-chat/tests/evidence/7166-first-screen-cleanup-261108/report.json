@@ -1,0 +1,434 @@
+{
+ "measure": [
+  {
+   "state": "home",
+   "chatEntry": {
+    "x": 15,
+    "y": 77,
+    "w": 167,
+    "h": 44,
+    "visible": true
+   },
+   "clawEntry": {
+    "x": 14,
+    "y": 130,
+    "w": 213,
+    "h": 44,
+    "visible": true
+   },
+   "hero": {
+    "x": 284,
+    "y": 110,
+    "w": 930,
+    "h": 105.5,
+    "visible": true
+   },
+   "composer": {
+    "x": 336,
+    "y": 733,
+    "w": 860,
+    "h": 121,
+    "visible": true
+   },
+   "sidebar": {
+    "x": 0,
+    "y": 0,
+    "w": 252,
+    "h": 900,
+    "visible": true
+   },
+   "sidebarOpen": true,
+   "menuButton": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0,
+    "visible": false
+   },
+   "scrollW": 1280,
+   "clientW": 1280,
+   "viewport": "1280x900",
+   "product": "chat"
+  },
+  {
+   "state": "claw",
+   "chatEntry": {
+    "x": 15,
+    "y": 77,
+    "w": 167,
+    "h": 44,
+    "visible": true
+   },
+   "clawEntry": {
+    "x": 14,
+    "y": 130,
+    "w": 213,
+    "h": 44,
+    "visible": true
+   },
+   "hero": {
+    "x": 284,
+    "y": 110,
+    "w": 930,
+    "h": 105.5,
+    "visible": true
+   },
+   "composer": {
+    "x": 336,
+    "y": 686.2,
+    "w": 860,
+    "h": 193.8,
+    "visible": true
+   },
+   "sidebar": {
+    "x": 0,
+    "y": 0,
+    "w": 252,
+    "h": 900,
+    "visible": true
+   },
+   "sidebarOpen": true,
+   "menuButton": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0,
+    "visible": false
+   },
+   "scrollW": 1280,
+   "clientW": 1280,
+   "viewport": "1280x900",
+   "product": "claw"
+  },
+  {
+   "state": "home",
+   "chatEntry": {
+    "x": 15,
+    "y": 77,
+    "w": 167,
+    "h": 44,
+    "visible": true
+   },
+   "clawEntry": {
+    "x": 14,
+    "y": 130,
+    "w": 213,
+    "h": 44,
+    "visible": true
+   },
+   "hero": {
+    "x": 346,
+    "y": 110,
+    "w": 930,
+    "h": 118.7,
+    "visible": true
+   },
+   "composer": {
+    "x": 416,
+    "y": 833,
+    "w": 860,
+    "h": 121,
+    "visible": true
+   },
+   "sidebar": {
+    "x": 0,
+    "y": 0,
+    "w": 252,
+    "h": 1000,
+    "visible": true
+   },
+   "sidebarOpen": true,
+   "menuButton": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0,
+    "visible": false
+   },
+   "scrollW": 1440,
+   "clientW": 1440,
+   "viewport": "1440x1000",
+   "product": "chat"
+  },
+  {
+   "state": "claw",
+   "chatEntry": {
+    "x": 15,
+    "y": 77,
+    "w": 167,
+    "h": 44,
+    "visible": true
+   },
+   "clawEntry": {
+    "x": 14,
+    "y": 130,
+    "w": 213,
+    "h": 44,
+    "visible": true
+   },
+   "hero": {
+    "x": 346,
+    "y": 110,
+    "w": 930,
+    "h": 118.7,
+    "visible": true
+   },
+   "composer": {
+    "x": 416,
+    "y": 786.2,
+    "w": 860,
+    "h": 193.8,
+    "visible": true
+   },
+   "sidebar": {
+    "x": 0,
+    "y": 0,
+    "w": 252,
+    "h": 1000,
+    "visible": true
+   },
+   "sidebarOpen": true,
+   "menuButton": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0,
+    "visible": false
+   },
+   "scrollW": 1440,
+   "clientW": 1440,
+   "viewport": "1440x1000",
+   "product": "claw"
+  },
+  {
+   "state": "home",
+   "chatEntry": {
+    "x": -249,
+    "y": 77,
+    "w": 179,
+    "h": 44,
+    "visible": true
+   },
+   "clawEntry": {
+    "x": -250,
+    "y": 130,
+    "w": 225,
+    "h": 44,
+    "visible": true
+   },
+   "hero": {
+    "x": 13,
+    "y": 115.4,
+    "w": 364,
+    "h": 66.6,
+    "visible": true
+   },
+   "composer": {
+    "x": 14,
+    "y": 676,
+    "w": 362,
+    "h": 112,
+    "visible": true
+   },
+   "sidebar": {
+    "x": -264,
+    "y": 0,
+    "w": 264,
+    "h": 844,
+    "visible": true
+   },
+   "sidebarOpen": false,
+   "menuButton": {
+    "x": 10,
+    "y": 6,
+    "w": 44,
+    "h": 44,
+    "visible": true
+   },
+   "scrollW": 390,
+   "clientW": 390,
+   "viewport": "390x844",
+   "product": "chat"
+  },
+  {
+   "state": "claw",
+   "chatEntry": {
+    "x": -249,
+    "y": 77,
+    "w": 179,
+    "h": 44,
+    "visible": true
+   },
+   "clawEntry": {
+    "x": -250,
+    "y": 130,
+    "w": 225,
+    "h": 44,
+    "visible": true
+   },
+   "hero": {
+    "x": 13,
+    "y": 115.4,
+    "w": 364,
+    "h": 66.6,
+    "visible": true
+   },
+   "composer": {
+    "x": 14,
+    "y": 720,
+    "w": 362,
+    "h": 112,
+    "visible": true
+   },
+   "sidebar": {
+    "x": -264,
+    "y": 0,
+    "w": 264,
+    "h": 844,
+    "visible": true
+   },
+   "sidebarOpen": false,
+   "menuButton": {
+    "x": 10,
+    "y": 6,
+    "w": 44,
+    "h": 44,
+    "visible": true
+   },
+   "scrollW": 390,
+   "clientW": 390,
+   "viewport": "390x844",
+   "product": "claw"
+  }
+ ],
+ "notes": [
+  {
+   "chipState": "connected",
+   "label": "연결됨",
+   "dotColor": "rgb(20, 83, 45)",
+   "chipBox": [
+    1161,
+    876,
+    104,
+    32
+   ],
+   "placeholder": "무엇을 할까요? 예: 견적서 정리",
+   "scrollW": 1440,
+   "clientW": 1440,
+   "theme": "padiem-home",
+   "viewport": "1440x1000"
+  },
+  {
+   "chipState": "connected",
+   "label": "연결됨",
+   "dotColor": "rgb(20, 83, 45)",
+   "chipBox": [
+    321,
+    741,
+    44,
+    32
+   ],
+   "placeholder": "무엇을 할까요? 예: 견적서 정리",
+   "scrollW": 390,
+   "clientW": 390,
+   "theme": "padiem-home",
+   "viewport": "390x844"
+  },
+  {
+   "chipState": "connected",
+   "label": "연결됨",
+   "dotColor": "rgb(26, 107, 58)",
+   "chipBox": [
+    1161,
+    876,
+    104,
+    32
+   ],
+   "placeholder": "무엇을 할까요? 예: 견적서 정리",
+   "scrollW": 1440,
+   "clientW": 1440,
+   "theme": "light",
+   "viewport": "1440x1000"
+  },
+  {
+   "chipState": "connected",
+   "label": "연결됨",
+   "dotColor": "rgb(26, 107, 58)",
+   "chipBox": [
+    321,
+    741,
+    44,
+    32
+   ],
+   "placeholder": "무엇을 할까요? 예: 견적서 정리",
+   "scrollW": 390,
+   "clientW": 390,
+   "theme": "light",
+   "viewport": "390x844"
+  },
+  {
+   "chipState": "connected",
+   "label": "연결됨",
+   "dotColor": "rgb(139, 233, 168)",
+   "chipBox": [
+    1161,
+    876,
+    104,
+    32
+   ],
+   "placeholder": "무엇을 할까요? 예: 견적서 정리",
+   "scrollW": 1440,
+   "clientW": 1440,
+   "theme": "dark",
+   "viewport": "1440x1000"
+  },
+  {
+   "chipState": "connected",
+   "label": "연결됨",
+   "dotColor": "rgb(139, 233, 168)",
+   "chipBox": [
+    321,
+    741,
+    44,
+    32
+   ],
+   "placeholder": "무엇을 할까요? 예: 견적서 정리",
+   "scrollW": 390,
+   "clientW": 390,
+   "theme": "dark",
+   "viewport": "390x844"
+  },
+  {
+   "chipState": "connected",
+   "label": "연결됨",
+   "dotColor": "rgb(139, 233, 168)",
+   "chipBox": [
+    1161,
+    876,
+    104,
+    32
+   ],
+   "placeholder": "무엇을 할까요? 예: 견적서 정리",
+   "scrollW": 1440,
+   "clientW": 1440,
+   "theme": "cinematic",
+   "viewport": "1440x1000"
+  },
+  {
+   "chipState": "connected",
+   "label": "연결됨",
+   "dotColor": "rgb(139, 233, 168)",
+   "chipBox": [
+    321,
+    741,
+    44,
+    32
+   ],
+   "placeholder": "무엇을 할까요? 예: 견적서 정리",
+   "scrollW": 390,
+   "clientW": 390,
+   "theme": "cinematic",
+   "viewport": "390x844"
+  }
+ ]
+}

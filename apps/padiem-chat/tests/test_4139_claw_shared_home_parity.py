@@ -82,7 +82,10 @@ def test_claw_identity_is_two_lines_without_a_duplicate_greeting():
     assert "chat-hero-line" in first
     assert "claw-hero-line" in first
     assert "querySelector(\".claw-hero-line\")" in LOCALE
-    assert 'input.placeholder = localeOr("input", "Ask anything");' in APP
+    # #7166: Claw 일반 화면은 Chat('input')과 구분되는 자기 placeholder 키를 쓰고,
+    # Chat은 기존 키를 그대로 쓴다. 두 분기가 모두 남아 있는지 본다.
+    assert 'localeOr("claw-input-placeholder"' in APP
+    assert 'localeOr("input", "Ask anything")' in APP
     assert "클로에게 작업을 맡겨보세요" in LOCALE
     assert "claw-home-intro" in LOCALE and "Where should we work?" in LOCALE
     assert LOCALE.count('"claw-home-previous-conversations"') == 2
