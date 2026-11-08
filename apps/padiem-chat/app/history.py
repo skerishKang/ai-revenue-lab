@@ -24,6 +24,16 @@ MAX_CONVERSATION_SEARCH_QUERY_CHARS = 80
 MAX_CONVERSATION_SEARCH_RESULTS = 20
 MAX_CONVERSATION_SEARCH_SCAN_ROWS = 2000
 MAX_CONVERSATION_SEARCH_SNIPPET_CHARS = 120
+
+# #7175: the SQLite/D1 refusal a database one migration behind returns when a
+# pinned read is attempted. SQLite names the column as written (`pinned` or
+# `c.pinned`), so the check is on the missing-column wording plus the name.
+_PINNED_COLUMN_MISSING = "no such column: pinned"
+
+
+def _pinned_column_missing(exc: BaseException) -> bool:
+    message = str(exc)
+    return "no such column" in message and "pinned" in message
 MAX_PROJECT_NAME_CHARS = 80
 # 한 페이지 크기. 전체를 가리는 상한이 아니다 — 더 있으면 응답의 next_cursor 로
 # 이어 받는다 (#5882 · #5895-D). 생성은 이 수와 무관하게 계속 허용되고, 51번째부터는
@@ -274,6 +284,15 @@ class HistoryConflict(HistoryError):
     pass
 
 
+class HistoryPinUnavailable(HistoryError):
+    """The pinned column (migration 104) is absent, so only the pin half refuses.
+
+    Renames and every existing read keep working on that database; the route
+    turns this into a 503 with its own code instead of failing the list.
+    """
+    pass
+
+
 @dataclass(frozen=True, slots=True)
 class UserProfile:
     id: str
@@ -325,6 +344,10 @@ class HistoryStore(Protocol):
     async def list_conversations(self, user_id: str, *, product_scope: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
     async def search_conversations(self, user_id: str, query: str, *, product_scope: str, limit: int = MAX_CONVERSATION_SEARCH_RESULTS) -> list[dict[str, Any]]: ...
     async def get_conversation(self, user_id: str, conversation_id: str, *, product_scope: str) -> dict[str, Any] | None: ...
+    async def update_conversation(
+        self, user_id: str, conversation_id: str, *, product_scope: str,
+        title: str | None = None, pinned: bool | None = None,
+    ) -> dict[str, Any] | None: ...
     async def delete_conversation(self, user_id: str, conversation_id: str, *, product_scope: str) -> bool: ...
     async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str, assistant_message_id: str | None = None) -> str: ...
     async def list_projects(self, user_id: str) -> list[ProjectProfile]: ...
@@ -1401,12 +1424,28 @@ class D1HistoryStore:
             str(row.get("picture_url", "")),
         )
 
+    async def _all_with_pinned(self, sql: str, fallback: str, *values: Any) -> list[dict[str, Any]]:
+        """#7175: the pinned projection with a pre-migration-104 fallback.
+
+        A database that has not applied migration 104 still answers the same
+        owner/product-scoped read (pinned reported as false), so the sidebar
+        list never fails because the schema is one migration behind.
+        """
+        try:
+            return await self._all(sql, *values)
+        except Exception as exc:
+            if not _pinned_column_missing(exc):
+                raise
+            return await self._all(fallback, *values)
+
     async def list_conversations(
         self, user_id: str, *, product_scope: str, limit: int = MAX_RECENT_CONVERSATIONS,
     ) -> list[dict[str, Any]]:
         scope = _require_product_scope(product_scope)
         bounded = max(1, min(int(limit), MAX_RECENT_CONVERSATIONS))
-        rows = await self._all(
+        rows = await self._all_with_pinned(
+            "SELECT id, title, project_id, created_at, updated_at, pinned FROM conversations "
+            "WHERE user_id=? AND product_scope=? ORDER BY pinned DESC, updated_at DESC LIMIT ?",
             "SELECT id, title, project_id, created_at, updated_at FROM conversations "
             "WHERE user_id=? AND product_scope=? ORDER BY updated_at DESC LIMIT ?",
             user_id, scope, bounded,
@@ -1415,6 +1454,9 @@ class D1HistoryStore:
             "id": str(row.get("id", "")), "title": str(row.get("title", "")),
             "project_id": str(row.get("project_id")) if row.get("project_id") is not None else None,
             "created_at": str(row.get("created_at", "")), "updated_at": str(row.get("updated_at", "")),
+            # #7175: a database without migration 104 lists every conversation
+            # as unpinned instead of failing the read.
+            "pinned": row.get("pinned") is not None and bool(row.get("pinned")),
         } for row in rows]
 
     async def search_conversations(
@@ -1440,7 +1482,15 @@ class D1HistoryStore:
             return []
         scope = _require_product_scope(product_scope)
         bounded = max(1, min(int(limit), MAX_CONVERSATION_SEARCH_RESULTS))
-        rows = await self._all(
+        rows = await self._all_with_pinned(
+            "SELECT c.id, c.title, c.project_id, c.created_at, c.updated_at, c.pinned, "
+            "(SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
+            " AND instr(lower(m.content), lower(?)) > 0 ORDER BY m.sequence_number ASC LIMIT 1) AS hit "
+            "FROM conversations c "
+            "WHERE c.user_id=? AND c.product_scope=? AND (instr(lower(c.title), lower(?)) > 0 OR EXISTS ("
+            "  SELECT 1 FROM (SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
+            "  ORDER BY m.sequence_number DESC LIMIT ?) scan WHERE instr(lower(scan.content), lower(?)) > 0)) "
+            "ORDER BY c.pinned DESC, c.updated_at DESC LIMIT ?",
             "SELECT c.id, c.title, c.project_id, c.created_at, c.updated_at, "
             "(SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
             " AND instr(lower(m.content), lower(?)) > 0 ORDER BY m.sequence_number ASC LIMIT 1) AS hit "
@@ -1457,6 +1507,7 @@ class D1HistoryStore:
             "project_id": str(row.get("project_id")) if row.get("project_id") is not None else None,
             "created_at": str(row.get("created_at", "")),
             "updated_at": str(row.get("updated_at", "")),
+            "pinned": row.get("pinned") is not None and bool(row.get("pinned")),
             "snippet": _search_snippet(row.get("hit"), query),
         } for row in rows]
 
@@ -1496,6 +1547,73 @@ class D1HistoryStore:
             "project_id": str(conv.get("project_id")) if conv.get("project_id") is not None else None,
             "created_at": str(conv.get("created_at", "")), "updated_at": str(conv.get("updated_at", "")),
             "messages": [{"role": str(row.get("role", "")), "content": str(row.get("content", ""))} for row in messages if row.get("role") in {"user", "assistant"}],
+        }
+
+    async def update_conversation(
+        self, user_id: str, conversation_id: str, *, product_scope: str,
+        title: str | None = None, pinned: bool | None = None,
+    ) -> dict[str, Any] | None:
+        """#7175: rename and/or pin one owner-scoped conversation.
+
+        The owner and product scope are part of the UPDATE predicate, so
+        another account's conversation matches zero rows and the route answers
+        404 without revealing whether it exists. `updated_at` is deliberately
+        untouched: recency is message activity, and a rename must not reorder
+        the sidebar by itself.
+        """
+        scope = _require_product_scope(product_scope)
+        if title is None and pinned is None:
+            raise HistoryError("conversation update requires a title or a pin")
+        assignments: list[str] = []
+        values: list[Any] = []
+        if title is not None:
+            if not isinstance(title, str):
+                raise HistoryError("conversation title must be text")
+            cleaned = " ".join(title.split())
+            if not 1 <= len(cleaned) <= MAX_HISTORY_TITLE_CHARS:
+                raise HistoryError("conversation title is empty or too long")
+            assignments.append("title=?")
+            values.append(cleaned)
+        if pinned is not None:
+            if not isinstance(pinned, bool):
+                raise HistoryError("conversation pin must be a boolean")
+            assignments.append("pinned=?")
+            values.append(1 if pinned else 0)
+        sql = (
+            f"UPDATE conversations SET {', '.join(assignments)} "
+            "WHERE id=? AND user_id=? AND product_scope=?"
+        )
+        try:
+            result = await self._run(sql, *values, conversation_id, user_id, scope)
+        except Exception as exc:
+            if pinned is not None and _pinned_column_missing(exc):
+                raise HistoryPinUnavailable("conversation pin is not available") from exc
+            raise
+        if _changed_rows(result) < 1:
+            return None
+        try:
+            row = await self._first(
+                "SELECT id, title, project_id, created_at, updated_at, pinned FROM conversations "
+                "WHERE id=? AND user_id=? AND product_scope=?",
+                conversation_id, user_id, scope,
+            )
+        except Exception as exc:
+            if not _pinned_column_missing(exc):
+                raise
+            row = await self._first(
+                "SELECT id, title, project_id, created_at, updated_at FROM conversations "
+                "WHERE id=? AND user_id=? AND product_scope=?",
+                conversation_id, user_id, scope,
+            )
+        if row is None:
+            return None
+        return {
+            "id": str(row.get("id", "")),
+            "title": str(row.get("title", "")),
+            "project_id": str(row.get("project_id")) if row.get("project_id") is not None else None,
+            "created_at": str(row.get("created_at", "")),
+            "updated_at": str(row.get("updated_at", "")),
+            "pinned": row.get("pinned") is not None and bool(row.get("pinned")),
         }
 
     async def delete_conversation(

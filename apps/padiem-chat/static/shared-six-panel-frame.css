@@ -312,6 +312,14 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
   color: #831a29 !important;
   outline-offset: 0;
 }
+/* #7175: the glass menu is a light panel on the dark Glass sidebar, so the two
+ * new actions take the same dark ink the delete action already uses. */
+html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-menu-action {
+  color: #1d3240 !important;
+}
+html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-menu-action:is(:hover,:focus-visible) {
+  background: #e6edf3;
+}
 
 
 /* CENTRAL_OWNER_HOME_VISUAL_LOCK_20261015

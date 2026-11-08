@@ -328,7 +328,12 @@ from .b66_drive_routes import (
     b66_drive_status,
 )
 from .calendar_read_activation_routes import activate_google_calendar_read
-from .conversation_routes import api_conversation_detail, api_conversation_search, api_conversations
+from .conversation_routes import (
+    api_conversation_detail,
+    api_conversation_search,
+    api_conversation_update,
+    api_conversations,
+)
 from .desktop_conversation_authority import UnconfiguredDesktopDeviceSessionAuthority
 from .desktop_conversation_routes import (
     DESKTOP_CONVERSATION_DETAIL_PATH,
@@ -765,6 +770,8 @@ def create_app(
         Route("/api/conversations", api_conversations, methods=["GET"]),
         Route("/api/conversations/search", api_conversation_search, methods=["GET"]),
         Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET", "DELETE"]),
+        # #7175: owner-scoped rename/pin. Same path, mutating method only.
+        Route("/api/conversations/{conversation_id}", api_conversation_update, methods=["PATCH"]),
         # #3436 B2c: the GET-only canonical conversation surface for the paired
         # Desktop. Identity is the canonical broker device session, derived
         # server-side; it creates, deletes and writes nothing, and no browser
