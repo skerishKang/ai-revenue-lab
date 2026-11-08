@@ -353,6 +353,23 @@ def _tool_arguments_for_plan(
     return {key: {"device_id": device_id}}
 
 
+def _pc_owner_journal(stage: str, outcome: str) -> None:
+    """One bounded line per failed owner-resolution stage (#7161).
+
+    The stage and the outcome are fixed identifiers — a closed error code from
+    the authority or the exception class name — so the journal says WHICH step
+    failed (authority read, bridge read, local gate) without ever naming a
+    subject, user, session id or tenant.
+    """
+
+    safe_stage = stage if _OWNER_JOURNAL_STAGE_RE.fullmatch(stage) else "other"
+    safe_outcome = outcome if _OWNER_JOURNAL_STAGE_RE.fullmatch(outcome) else "other"
+    print("pc_owner_identity stage=%s outcome=%s" % (safe_stage, safe_outcome), flush=True)
+
+
+_OWNER_JOURNAL_STAGE_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,63}$")
+
+
 async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str]:
     """b62 canonical session, subject and workspace for this lane.
 
@@ -361,11 +378,17 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
     session id is the canonical one the Control Plane owner-scope lookup
     accepts. The former shadow-session path could resolve a different
     session value and fail the owner scope even for the signed-in owner.
+
+    #7161: every failure stage names itself in the journal before the
+    collapsed user error, so an incident like 2026-11-08 13:00 (the shared
+    login flow never established the canonical sessions the lane resolves)
+    reads directly from the journal instead of being inferred.
     """
     authority = getattr(request.app.state, "control_plane_identity_authority", None)
     if authority is None:
         return None, "", f"owner:{uid}"
     if not callable(getattr(authority, "resolve_current_auth_session", None)):
+        _pc_owner_journal("bridge_absent", "resolve_unavailable")
         raise ChatPCDriveError(
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",
@@ -375,6 +398,7 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
             product_id="b62", product_user_id=uid,
         )
     except Exception as exc:
+        _pc_owner_journal("resolve_b62", getattr(exc, "code", "") or type(exc).__name__)
         raise ChatPCDriveError(
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",
@@ -392,6 +416,7 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
         or not isinstance(tenant_id, str)
         or not tenant_id
     ):
+        _pc_owner_journal("gate_b62", "session_invalid")
         raise ChatPCDriveError(
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",
@@ -407,6 +432,7 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
     try:
         bridged = await resolve_b54_session(authority, uid)
     except Exception as exc:
+        _pc_owner_journal("resolve_b54", getattr(exc, "code", "") or type(exc).__name__)
         raise ChatPCDriveError(
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",
@@ -417,6 +443,7 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
         or not isinstance(bridged.auth_session.tenant_id, str)
         or not bridged.auth_session.tenant_id
     ):
+        _pc_owner_journal("gate_b54", "subject_or_tenant_mismatch")
         raise ChatPCDriveError(
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",

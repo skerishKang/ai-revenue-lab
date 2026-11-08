@@ -140,7 +140,8 @@ def _read_secret(env, name):
     return env.get(name) or None
 
 
-def create_host_shared_login_flow(env, authority, public_base_url):
+def create_host_shared_login_flow(env, authority, public_base_url,
+                                  canonical_session_lifetime_seconds=None):
     if str(env.get('PADIEM_CHAT_SHARED_LOGIN_ENABLED') or '').strip().lower() != 'true':
         return None
     if authority is None:
@@ -173,7 +174,8 @@ def create_host_shared_login_flow(env, authority, public_base_url):
         print('shared_login_key_setup outcome=ok read_ms=%d parse_ms=%d key_prepare_ms=%d' % (
             int(round(key_read_ms)), int(round(key_parse_ms)), int(round(key_prepare_ms))), flush=True)
         verifier = NativeTokenVerifier(client_id)
-        auth = SharedChatAuth(verifier=verifier, authority=authority, legacy=current_user_id)
+        auth = SharedChatAuth(verifier=verifier, authority=authority, legacy=current_user_id,
+            canonical_session_lifetime_seconds=canonical_session_lifetime_seconds)
         token_exchange = ReusableHttpxTokenExchange()
         async def provision(request, user, access, tokens):
             from .b66_signup_notifications import deliver_after_signup
