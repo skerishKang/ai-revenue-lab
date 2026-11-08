@@ -1508,6 +1508,13 @@ $reqB64='@@REQ_B64@@'
 # 1.7s with an empty stdout for the lane. Fail therefore throws a code-prefixed
 # message, the answer is written on the pipeline, and the script returns.
 function Fail($code,$msg){ throw [string]($code+': '+$msg) }
+# #7184c: a wait that ran out says which bound ran out, so the executor's reply
+# names the actual stop instead of a generic read timeout.
+function Timeout(){
+  if($__firstBy -gt 0 -and [Environment]::TickCount -ge $__firstBy){ throw 'user_helper_timeout: helper did not answer' }
+  if($__deadline -gt 0 -and [Environment]::TickCount -ge $__deadline){ throw 'user_helper_timeout: helper reply deadline' }
+  throw 'helper read timeout'
+}
 try {@@ARGUMENTS_SOURCE@@
   $deviceId=$null
   if($arg -match '--device-id\s+"([^"]+)"'){ $deviceId=$Matches[1] }
@@ -1541,6 +1548,21 @@ try {@@ARGUMENTS_SOURCE@@
   # per frame, not a command deadline: while a stage-2 command runs the helper
   # sends a heartbeat every 5s, so a long command keeps its lane.
   $client.Connect(5000)
+  # #7184c: the wait for the helper's FIRST frame is a communication wait and is
+  # bounded (30s default, PADIEM_MESH_USER_HELPER_FIRST_FRAME_SECONDS). After
+  # that frame the wait is the work itself: the helper heartbeats while the user
+  # child runs, and the owner ends that through pc_shell_stop. An overall cap
+  # exists for operators (PADIEM_MESH_USER_HELPER_REPLY_SECONDS, 0 = off) and is
+  # also taken from a positive request timeout; it is off by default because a
+  # client that leaves ends the helper's child with it (#7107).
+  $__firstFrame=30; try{ $__v=[int]$env:PADIEM_MESH_USER_HELPER_FIRST_FRAME_SECONDS; if($__v -gt 0){ $__firstFrame=$__v } }catch{}
+  $__replyCap=0; try{ $__replyCap=[int]$env:PADIEM_MESH_USER_HELPER_REPLY_SECONDS }catch{}
+  $__firstBy=[Environment]::TickCount + ($__firstFrame*1000)
+  $__deadline=0
+  # The request's own timeout_seconds is signed material, not a deadline
+  # (#7107): using it here cut a healthy 32s command in the connector
+  # contract test. Only the operator switch bounds the wait.
+  if($__replyCap -gt 0){ $__deadline=[Environment]::TickCount + ($__replyCap*1000) }
   $w=$client.WriteAsync($len,0,4); if(-not $w.Wait(5000)){ throw 'helper write timeout' }
   $w=$client.WriteAsync($body,0,$body.Length); if(-not $w.Wait(5000)){ throw 'helper write timeout' }
   $client.Flush()
@@ -1551,20 +1573,28 @@ try {@@ARGUMENTS_SOURCE@@
   $stdout=New-Object System.Collections.Generic.List[byte]
   $stderr=New-Object System.Collections.Generic.List[byte]
   while($true){
+    if($__firstBy -gt 0 -and [Environment]::TickCount -gt $__firstBy){ throw 'user_helper_timeout: helper did not answer' }
+    if($__deadline -gt 0 -and [Environment]::TickCount -gt $__deadline){ throw 'user_helper_timeout: helper reply deadline' }
+    # A frame window may be shorter than 15s, never longer than the bound that
+    # contains it: a 15s read would otherwise swallow a 3s first-frame bound.
+    $__wait=15000
+    if($__firstBy -gt 0){ $__left=$__firstBy-[Environment]::TickCount; if($__left -lt $__wait){ $__wait=$__left } }
+    if($__deadline -gt 0){ $__left=$__deadline-[Environment]::TickCount; if($__left -lt $__wait){ $__wait=$__left } }
+    if($__wait -lt 1){ $__wait=1 }
     $hdr=New-Object byte[] 4; $read=0
     while($read -lt 4){
-      $t=$client.ReadAsync($hdr,$read,4-$read); if(-not $t.Wait(15000)){ throw 'helper read timeout' }
+      $t=$client.ReadAsync($hdr,$read,4-$read); if(-not $t.Wait($__wait)){ Timeout }
       $n=$t.Result; if($n -le 0){ throw 'short header' }; $read+=$n
     }
     [Array]::Reverse($hdr); $rlen=[System.BitConverter]::ToInt32($hdr,0)
     if($rlen -lt 0 -or $rlen -gt 2097152){ throw 'bad frame length' }
     $rbody=New-Object byte[] $rlen; $read=0
     while($read -lt $rlen){
-      $t=$client.ReadAsync($rbody,$read,$rlen-$read); if(-not $t.Wait(15000)){ throw 'helper read timeout' }
+      $t=$client.ReadAsync($rbody,$read,$rlen-$read); if(-not $t.Wait($__wait)){ Timeout }
       $n=$t.Result; if($n -le 0){ throw 'short body' }; $read+=$n
     }
     $text=[System.Text.Encoding]::UTF8.GetString($rbody)
-    $frame=$text | ConvertFrom-Json
+    $frame=$text | ConvertFrom-Json; $__firstBy=0
     if($frame.status -eq 'started' -or $frame.status -eq 'running'){ continue }
     if($frame.status -eq 'stdout'){
       $stdout.AddRange([byte[]][Convert]::FromBase64String([string]$frame.data_b64)); continue
@@ -1572,6 +1602,9 @@ try {@@ARGUMENTS_SOURCE@@
     if($frame.status -eq 'stderr'){
       $stderr.AddRange([byte[]][Convert]::FromBase64String([string]$frame.data_b64)); continue
     }
+    $__finalOut=[string]$frame.stdout_b64; $__finalErr=[string]$frame.stderr_b64
+    if($stdout.Count -eq 0 -and $__finalOut){ $stdout.AddRange([byte[]][Convert]::FromBase64String($__finalOut)) }
+    if($stderr.Count -eq 0 -and $__finalErr){ $stderr.AddRange([byte[]][Convert]::FromBase64String($__finalErr)) }
     $reply=[ordered]@{
       request_id=$frame.request_id; status=$frame.status; exit_code=$frame.exit_code;
       stdout_b64=[Convert]::ToBase64String($stdout.ToArray());
@@ -1580,9 +1613,12 @@ try {@@ARGUMENTS_SOURCE@@
     }
     $client.Dispose()
     Write-Output ($reply | ConvertTo-Json -Compress)
+    [Console]::Out.Flush()
     return
   }
 } catch {
+  try { $client.Dispose() } catch {}
+  [Console]::Out.Flush()
   $detail=[string]$_.Exception.Message
   if($detail -notmatch '^[a-z_]+: '){ $detail='user_session_unavailable: helper pipe is not available' }
   Write-Output $detail
@@ -1692,8 +1728,15 @@ try {@@ARGUMENTS_SOURCE@@
             # id the PC-side PowerShell left no pid marker, so the owner's stop
             # had nothing to aim at once this dispatch was gone and the orphaned
             # console held the agent for as long as it lived (measured 19 hours).
-            observed = self._command_port.run_command(node_ref=node_ref, command=ps, timeout_seconds=None, cancel_probe=cancelled, phase_observer=phase,
-                dispatch_id=getattr(dispatch, "dispatch_id", None))
+            # #7184c: the same marker is what lets pc_shell_stop end a user-mode
+            # client that is still waiting - measured 2026-11-08 on 컴1: the stop
+            # left the SYSTEM PowerShell alive and every later runcommand on that
+            # console was dropped by MeshCentral, which never queues one.
+            observed = self._command_port.run_command(
+                node_ref=node_ref, command=ps, timeout_seconds=None,
+                cancel_probe=cancelled, phase_observer=phase,
+                dispatch_id=getattr(dispatch, "dispatch_id", None),
+            )
         except Exception:
             self._trace_command(dispatch, "error", started, error_type="port_failed")
             return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
