@@ -20,6 +20,11 @@ The COM2 journal over 7 days recorded 7,736 ``session_revocation_check`` timings
 from __future__ import annotations
 
 import asyncio
+import hashlib
+import hmac
+import json
+import time
+import uuid
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -297,3 +302,137 @@ def test_the_host_wires_the_session_window_from_its_env(
     assert cache.session_ttl_seconds == expected
     assert cache.ttl_seconds == MAPPING_SECONDS
     db.connection.close()
+
+
+# --- #7207: the signed account-delete RPC ends the window too -----------------
+
+PASSWORD_RPC_SECRET = 'chat-test-password-rpc-secret-value-000000'
+NL = bytes((10,))
+
+
+class _Statement:
+    def __init__(self, db, sql, params=()):
+        self.db, self.sql, self.params = db, sql, params
+
+    def bind(self, *params):
+        return _Statement(self.db, self.sql, params)
+
+    async def first(self):
+        if 'FROM users WHERE id' in self.sql:
+            return {'id': self.params[0], 'provider_subject': None}
+        return None
+
+    async def run(self):
+        return SimpleNamespace(results=[], meta={'changes': 0})
+
+
+class _AccountStore:
+    """The account store side of ``/internal/account-delete``.
+
+    The deletion SQL itself is #6659's contract
+    (``tests/test_account_deletion_261103.py``); this stand-in records that the
+    route reached its batch, so the assertions here stay about the cache and the
+    next request.
+    """
+
+    def __init__(self):
+        self.batches = 0
+
+    def prepare(self, sql):
+        return _Statement(self, sql)
+
+    async def batch(self, statements):
+        self.batches += 1
+        return [SimpleNamespace(results=[], meta={'changes': 0}) for _ in statements]
+
+
+class _ServiceIds:
+    async def consume_service_id(self, service_id, expires_at):
+        return True
+
+
+def _rpc_scope(instance, authority, account_store, *, at=None, body=None):
+    raw = json.dumps(
+        body if body is not None else {'product_user_id': UID},
+        separators=(',', ':'), sort_keys=True).encode('utf-8')
+    at_value = int(time.time()) if at is None else at
+    service_id = str(uuid.uuid4())
+    signed = NL.join((
+        b'v2', b'POST', b'/internal/account-delete',
+        str(at_value).encode('ascii'), service_id.encode('utf-8'), raw,
+    ))
+    proof = 'v2=' + hmac.new(
+        PASSWORD_RPC_SECRET.encode('utf-8'), signed, hashlib.sha256).hexdigest()
+    sent = {'done': False}
+
+    async def receive():
+        if sent['done']:
+            return {'type': 'http.disconnect'}
+        sent['done'] = True
+        return {'type': 'http.request', 'body': raw, 'more_body': False}
+
+    config = Settings.from_values(
+        runtime_mode='mock',
+        auth_mode='password',
+        public_base_url='https://chat.example.invalid',
+        session_secret='synthetic-session-window-secret-not-production',
+        password_rpc_secret=PASSWORD_RPC_SECRET,
+    )
+    return {
+        'type': 'http', 'http_version': '1.1', 'method': 'POST',
+        'scheme': 'https', 'server': ('chat.example.test', 443),
+        'path': '/internal/account-delete',
+        'raw_path': b'/internal/account-delete',
+        'query_string': b'',
+        'headers': [
+            (b'content-type', b'application/json'),
+            (b'content-length', str(len(raw)).encode('ascii')),
+            (b'x-padiem-service-at', str(at_value).encode('ascii')),
+            (b'x-padiem-service-id', service_id.encode('utf-8')),
+            (b'x-padiem-service-proof', proof.encode('ascii')),
+        ],
+        'receive': receive,
+        'app': SimpleNamespace(state=SimpleNamespace(
+            settings=config,
+            control_plane_identity_authority=authority,
+            auth_validation_cache=instance,
+            history_store=_ServiceIds(),
+            account_data_db=account_store,
+        )),
+    }
+
+
+@pytest.mark.asyncio
+async def test_the_signed_account_delete_rpc_ends_every_session_at_once(cache):
+    from app.account_deletion import chat_account_delete_rpc
+
+    instance, clock, writer = cache
+    authority = Authority()
+    store = _AccountStore()
+    for sid in (SID, OTHER_SID):
+        assert (await _verdict(instance, authority, sid=sid)).authenticated is True
+    assert authority.calls == 2
+
+    scope = _rpc_scope(instance, authority, store)
+    response = await chat_account_delete_rpc(Request(scope, scope['receive']))
+
+    assert response.status_code == 200
+    assert json.loads(bytes(response.body)) == {
+        'ok': True, 'deleted': True, 'already_deleted': False}
+    assert store.batches == 1
+
+    # The tombstone path deletes the rows; the window cannot keep them alive.
+    remaining = writer.execute(
+        'SELECT COUNT(*) FROM auth_validation_cache WHERE owner_id=?', (UID,)).fetchone()[0]
+    assert remaining == 0
+    revision = writer.execute(
+        'SELECT revision FROM auth_validation_cache_revision WHERE id=1').fetchone()[0]
+    assert revision >= 1
+
+    for sid in (SID, OTHER_SID):
+        authority.sessions[sid] = replace(
+            authority.sessions[sid], state=AuthSessionState.REVOKED, revision=2)
+        verdict = await _verdict(instance, authority, sid=sid)
+        assert verdict.authenticated is False
+        assert verdict.reason == 'revoked'
+    assert authority.calls == 4
