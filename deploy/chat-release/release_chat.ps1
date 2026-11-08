@@ -148,6 +148,9 @@ function Use-WranglerLoginForReadOnlyApi {
 }
 
 function Get-HttpBytes([string]$Url) {
+    # Static hosts answer /index.html with a 308 to "/" and PS 5.1's
+    # Invoke-WebRequest does not follow 308, so fetch the root directly.
+    if ($Url.EndsWith("/index.html")) { $Url = $Url.Substring(0, $Url.Length - "index.html".Length) }
     $tmp = New-TemporaryFile
     try {
         Invoke-WebRequest -Uri $Url -OutFile $tmp -UseBasicParsing -TimeoutSec 40
@@ -486,7 +489,10 @@ try {
         foreach ($asset in @("chat-transport.js", "index.html")) {
             # The pages build stamps dist with the same ?v=<sha8>, so the
             # mirror must serve the STAMPED bytes too.
-            $liveHash = Get-LiveAssetSha256 ($Script:PagesHost + "/" + $asset) $asset
+            # A mirror fetch error must stay a mirror failure; it must never
+            # escape into the catch below that rolls the front back.
+            try { $liveHash = Get-LiveAssetSha256 ($Script:PagesHost + "/" + $asset) $asset }
+            catch { $liveHash = "fetch_error:" + $_.Exception.GetType().Name }
             $pinned = Get-FileSha256Hex (Join-Path $stampStaticDir $asset)
             $ok = $liveHash -eq $pinned
             $verify.Add("padiem-chat.pages.dev/$asset sha256=$(if ($ok) { 'match' } else { 'MISMATCH' })") | Out-Null
@@ -494,7 +500,7 @@ try {
                 $Script:PagesVerifyFailed.Add("$asset sha256 mismatch") | Out-Null
             }
         }
-        $pagesPrivacy = Get-HttpStatus ($Script:PagesHost + "/privacy")
+        try { $pagesPrivacy = Get-HttpStatus ($Script:PagesHost + "/privacy") } catch { $pagesPrivacy = 0 }
         $verify.Add("padiem-chat.pages.dev/privacy=$pagesPrivacy") | Out-Null
         if ($pagesPrivacy -ne 200) {
             $Script:PagesVerifyFailed.Add("/privacy returned $pagesPrivacy") | Out-Null
