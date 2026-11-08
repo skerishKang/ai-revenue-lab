@@ -1506,7 +1506,7 @@ $reqB64='@@REQ_B64@@'
 # user-mode command - a success as much as a refusal - was read back as
 # 'no reply'. Measured on 컴1 2026-11-08: the wrapped client answered 'ok' in
 # 1.7s with an empty stdout for the lane. Fail therefore throws a code-prefixed
-# message, the cable is written on the pipeline, and the script returns.
+# message, the answer is written on the pipeline, and the script returns.
 function Fail($code,$msg){ throw [string]($code+': '+$msg) }
 try {@@ARGUMENTS_SOURCE@@
   $deviceId=$null
