@@ -29,6 +29,10 @@
     projectFilesReady: false,
     sessionState: "unavailable",
     displayName: "",
+    // #7164: the stable account key the Library uses to tell one owner from
+    // another when a direct account switch keeps every boolean identical.
+    // Presentation only: every read is still owner-scoped on the server.
+    ownerKey: "",
     memberGrade: "free",
     // #5479: true while the status endpoint has not answered yet. A request
     // that produced no answer at all sets it to false, which is a different
@@ -375,6 +379,13 @@
     const displayName = authenticated && data.user && typeof data.user === "object"
       ? text(data.user.name)
       : "";
+    // #7164: two accounts can share a display name, so the Library's session
+    // signature needs the account itself. The status payload carries the
+    // signed-in user's email (history.py UserProfile.public_dict) and nothing
+    // else unique; it stays in memory and is never an access authority.
+    const ownerKey = authenticated && data.user && typeof data.user === "object"
+      ? text(data.user.email, 160)
+      : "";
     return Object.freeze({
       loaded: true,
       ready,
@@ -383,6 +394,7 @@
       projectFilesReady: bool(data.project_files_ready),
       sessionState,
       displayName,
+      ownerKey,
       memberGrade: authenticated && TIER_ORDER.includes(data.member_grade) ? data.member_grade : "free",
       statusReachable: true,
     });
