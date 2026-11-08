@@ -815,7 +815,7 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
             ' Write-Output ("' + ENVELOPE_PREFIX + '" + '
             "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
             ' Write-Output ("' + EXIT_SENTINEL + '" + $LASTEXITCODE)'
-        )
+        ) + "; [Console]::Out.Flush()"
     )
 
 

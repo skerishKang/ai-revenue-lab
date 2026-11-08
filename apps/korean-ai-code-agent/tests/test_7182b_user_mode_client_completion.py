@@ -187,7 +187,10 @@ class TheClientIsBounded(unittest.TestCase):
         # executor 의 단일 dispatch 루프가 무기한 열려 있지 않다.
         self.assertIn("$client.Connect(5000)", script)
         self.assertIn("if(-not $w.Wait(5000)){ throw 'helper write timeout' }", script)
-        self.assertIn("if(-not $t.Wait(15000)){ throw 'helper read timeout' }", script)
+        # #7184c: the default frame window is still 15s, but it can only be as
+        # long as the bound it sits inside (first frame / operator reply cap).
+        self.assertIn("$__wait=15000", script)
+        self.assertIn("if(-not $t.Wait($__wait)){ Timeout }", script)
         # 그리고 그 실패는 코드가 붙은 한 줄로 돌아온다(침묵이 아니라 결과).
         self.assertIn("helper pipe is not available", script)
 
