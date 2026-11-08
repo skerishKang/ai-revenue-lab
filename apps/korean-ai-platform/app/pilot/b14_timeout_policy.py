@@ -9,6 +9,8 @@ request remain effective.
 from __future__ import annotations
 
 import asyncio
+import contextlib
+import contextvars
 from dataclasses import dataclass
 import math
 import os
@@ -66,6 +68,42 @@ def get_timeout_policy() -> B14TimeoutPolicy:
     )
 
 
+# #7156: on a completed (non-streaming) response the provider sends its first
+# body byte only once the whole answer, reasoning included, is generated, so the
+# first-byte clock is in effect a total-generation clock there. Cutting early is
+# right while another candidate can still answer (the chain falls back sooner);
+# on the final candidate there is nothing to fall back to, and an early cut only
+# turns a slow answer into a 504. Only that attempt waits up to the attempt
+# budget for its first byte; the connect bound, the attempt-total bound, the
+# chain budget and every streaming call keep their phase limits unchanged.
+_FINAL_COMPLETED_ATTEMPT: contextvars.ContextVar[bool] = contextvars.ContextVar(
+    "b14_final_completed_attempt", default=False,
+)
+
+
+@contextlib.contextmanager
+def final_completed_attempt(active: bool):
+    """Mark the enclosed provider call as the chain's last completed attempt."""
+    token = _FINAL_COMPLETED_ATTEMPT.set(bool(active))
+    try:
+        yield
+    finally:
+        _FINAL_COMPLETED_ATTEMPT.reset(token)
+
+
+def first_byte_bound_is_attempt_total() -> bool:
+    """True when the enclosing call waits for its first byte up to the attempt budget."""
+    return _FINAL_COMPLETED_ATTEMPT.get()
+
+
+def effective_first_byte_seconds(policy: B14TimeoutPolicy | None = None) -> float:
+    """The first-byte limit for the current call (see ``final_completed_attempt``)."""
+    policy = policy or get_timeout_policy()
+    if first_byte_bound_is_attempt_total():
+        return policy.attempt_seconds
+    return policy.first_byte_seconds
+
+
 class ProviderAttemptTimeout(TimeoutError):
     """A bounded upstream wait, classified without preserving vendor text."""
 
@@ -92,8 +130,12 @@ async def send_provider_request(
     policy = get_timeout_policy()
     started_at = time.monotonic()
     request = client.build_request(method, url, **kwargs)
-    first_deadline = min(policy.first_byte_seconds, policy.attempt_seconds)
-    first_byte_is_limiting = policy.first_byte_seconds <= policy.attempt_seconds
+    first_byte_seconds = effective_first_byte_seconds(policy)
+    first_deadline = min(first_byte_seconds, policy.attempt_seconds)
+    first_byte_is_limiting = (
+        not first_byte_bound_is_attempt_total()
+        and first_byte_seconds <= policy.attempt_seconds
+    )
     try:
         async with asyncio.timeout(first_deadline):
             response = await client.send(
@@ -112,6 +154,8 @@ async def iter_provider_response_bytes(
 ):
     """Yield upstream bytes with first-byte, attempt-total and stream-idle limits."""
     policy = get_timeout_policy()
+    first_byte_seconds = effective_first_byte_seconds(policy)
+    final_completed = first_byte_bound_is_attempt_total()
     iterator = response.aiter_bytes().__aiter__()
     first_byte_seen = False
     while True:
@@ -122,8 +166,12 @@ async def iter_provider_response_bytes(
         if first_byte_seen:
             timeout_seconds = min(policy.stream_idle_seconds, attempt_remaining)
             timeout_reason = "attempt_total"
+        elif final_completed:
+            # The whole answer is the first byte; only the attempt budget bounds it.
+            timeout_seconds = attempt_remaining
+            timeout_reason = "attempt_total"
         else:
-            first_remaining = policy.first_byte_seconds - elapsed
+            first_remaining = first_byte_seconds - elapsed
             if first_remaining <= 0:
                 raise ProviderAttemptTimeout("first_byte")
             timeout_seconds = min(first_remaining, attempt_remaining)
@@ -147,10 +195,17 @@ def build_provider_http_timeout(model_id: str | None = None) -> httpx.Timeout:
     """Build phase-specific HTTPX guards; total/idle budgets live in policy helpers."""
     del model_id
     policy = get_timeout_policy()
+    # #7156: a completed final attempt waits for its whole answer; a socket read
+    # must not end that wait before the attempt budget does. Connect stays bound.
+    read_seconds = (
+        max(policy.stream_idle_seconds, policy.attempt_seconds)
+        if first_byte_bound_is_attempt_total()
+        else policy.stream_idle_seconds
+    )
     return httpx.Timeout(
         None,
         connect=policy.first_byte_seconds,
-        read=policy.stream_idle_seconds,
+        read=read_seconds,
         write=WRITE_SECONDS,
         pool=POOL_SECONDS,
     )
