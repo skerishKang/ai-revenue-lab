@@ -819,7 +819,7 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
     )
 
 
-#: #7214: how a long multi-line client reaches the PC without stalling the console.
+#: #7199: how a long multi-line client reaches the PC without stalling the console.
 #: The agent runs a runcommand by writing the script to a ``powershell -command -``
 #: console over an OPEN stdin and replying only when that PowerShell exits. A script
 #: with a block that spans lines (the ``& { ... }`` the SYSTEM envelope uses, a
@@ -1314,7 +1314,7 @@ class MeshCentralCliCommandPort:
         # a caller-supplied string and a PowerShell literal on a customer machine.
         checked_dispatch = None if dispatch_id is None else _checked_dispatch_id(dispatch_id)
         if deliver_as_file:
-            # #7214: a long multi-line client is staged to a temp file and run with
+            # #7199: a long multi-line client is staged to a temp file and run with
             # ``-File`` so the agent's console never parses the client body as stdin.
             # The marker lives inside the staging script, so this lane always needs a
             # dispatch id (which the user-mode caller always has) and never routes to

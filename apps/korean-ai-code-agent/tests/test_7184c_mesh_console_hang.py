@@ -127,7 +127,7 @@ class TheUserModeClientCanBeStopped(unittest.TestCase):
         # PC 쪽 stop 은 이 표식만 읽는다. 없던 동안 pc_shell_stop 은 끝낼 파일을
         # 찾지 못했고, 멈춘 클라이언트는 콘솔을 계속 점유했다.
         self.assertEqual(captured["dispatch_id"], "dsp_abcdabcdabcdabcd")
-        # #7214: user mode is delivered as a staged file, not the console body. The
+        # #7199: user mode is delivered as a staged file, not the console body. The
         # marker still lives in what the console runs, so pc_shell_stop finds it; the
         # staging script writes it before it runs the client with -File.
         self.assertIs(captured["deliver_as_file"], True)

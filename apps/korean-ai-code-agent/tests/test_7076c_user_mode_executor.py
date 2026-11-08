@@ -57,7 +57,7 @@ def test_user_mode_dispatch_builds_pipe_client_and_submits_helper_reply():
     # FILE, not through the Task Scheduler COM service (Get-ScheduledTask removed).
     assert "Get-ScheduledTask" not in sent
     assert "System32\\Tasks\\Padiem\\PadiemUserSessionHelper" in sent
-    # #7214: the client is staged to a temp file and run with -File, never fed to the
+    # #7199: the client is staged to a temp file and run with -File, never fed to the
     # agent console as a multi-line body (which stalled and held the command slot).
     assert port.calls[0]["deliver_as_file"] is True
 

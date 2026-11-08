@@ -1762,7 +1762,7 @@ try {@@ARGUMENTS_SOURCE@@
                 node_ref=node_ref, command=ps, timeout_seconds=None,
                 cancel_probe=cancelled, phase_observer=phase,
                 dispatch_id=getattr(dispatch, "dispatch_id", None),
-                # #7214: the user-mode client is ~7KB of multi-line PowerShell. Sent
+                # #7199: the user-mode client is ~7KB of multi-line PowerShell. Sent
                 # as the console body it left the agent's ``powershell -command -``
                 # waiting on an unclosed block and never returned, so the console
                 # held the agent's single command slot and every later PC command was
