@@ -245,3 +245,7 @@ The compact Issue/PR comment is the complete report in COMPACT mode. LONG mode, 
 - The "NNm left" / remaining-capacity display in a lane is from the session tool (Freebuff). The owner extends sessions on demand.
 - Do not shrink, split, or cut short work because of that indicator, and do not stop a task or a report citing remaining session time. If a session actually ends, the CTO issues a new-session prompt then.
 - 레인 화면의 남은 시간 표시(프리버프)는 대표가 연장한다. 그 표시 때문에 작업을 줄이거나 멈추지 않는다.
+
+## Chat static code module boundary (R5, #7216)
+
+- Chat 정적 코드의 새 기능은 app.js에 넣지 않고 기능별 모듈 파일로 만든다(#7216).
