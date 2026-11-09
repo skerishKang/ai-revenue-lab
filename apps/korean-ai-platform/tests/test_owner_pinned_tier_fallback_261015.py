@@ -31,6 +31,7 @@ def test_google_free_grade_has_exact_owner_backups(monkeypatch):
     assert backups == (
         "kilo/stealth/crouton-alpha",
         "openrouter/stealth/crouton-alpha",
+        "iteracompute/qwen/qwen3.8-27b",
         "google/gemma-4-31b-it",
         "google/gemini-3.5-flash-lite",
     )
@@ -181,10 +182,10 @@ def test_owner_test_phase_rosters_have_the_exact_recovery_order(tier):
 
 @requires_owner_document
 @pytest.mark.parametrize("tier,expected", [
-    ("plus", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
-    ("pro", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
-    ("max", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
-    ("admin", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
+    ("plus", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "iteracompute/qwen/qwen3.8-27b", "google/gemma-4-31b-it")),
+    ("pro", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "iteracompute/qwen/qwen3.8-27b", "google/gemma-4-31b-it")),
+    ("max", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "iteracompute/qwen/qwen3.8-27b", "google/gemma-4-31b-it")),
+    ("admin", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "iteracompute/qwen/qwen3.8-27b", "google/gemma-4-31b-it")),
 ])
 def test_owner_test_phase_rosters_pin_the_owner_identities(tier, expected):
     assert TIER_FALLBACK_B14_MODELS[tier] == expected

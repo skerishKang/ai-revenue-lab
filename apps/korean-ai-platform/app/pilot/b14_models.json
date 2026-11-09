@@ -145,6 +145,15 @@
       "credential_source": "platform_secret",
       "credential_binding_name": "PADIEM_B14_CREDENTIAL_07",
       "enabled": true
+    },
+    "iteracompute": {
+      "base_origin": "https://api.iteracompute.com/v1",
+      "allowed_hosts": [
+        "api.iteracompute.com"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_15",
+      "enabled": true
     }
   },
   "models": [
@@ -634,6 +643,23 @@
       "output_price_usd_per_1m": 0,
       "source": "https://openrouter.ai/api/v1/models (stealth/crouton-alpha; pricing 0/0, context_length 1048576, tools/reasoning/vision declared)",
       "source_checked_at": "2026-11-04",
+      "enabled": true
+    },
+    {
+      "id": "iteracompute/qwen/qwen3.8-27b",
+      "provider_id": "iteracompute",
+      "upstream_model": "qwen/qwen3.8-27b",
+      "display_name": "IteraCompute: Qwen3.8-27B",
+      "provider_name": "IteraCompute",
+      "capabilities": [
+        "chat",
+        "coding"
+      ],
+      "context_window": 131072,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "https://iteracompute.com/docs.html",
+      "source_checked_at": "2026-11-09",
       "enabled": true
     }
   ],
