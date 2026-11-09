@@ -595,7 +595,7 @@ def test_b66_trusted_registry_failure_is_503_not_generic_502():
     assert response.json()["error"]["code"] == "quote_model_unavailable"
     assert response.headers["X-B66-Model-Selection-Status"] == "unavailable"
     assert provider.calls == 0
-    assert reg.calls == ["/api/pilot/models", "/api/pilot/provider-readiness"]
+    assert reg.calls == ["/api/pilot/admin/models", "/api/pilot/provider-readiness"]
     _assert_no_values_leak(response, "CGI 견적 고객 입력")
 
 

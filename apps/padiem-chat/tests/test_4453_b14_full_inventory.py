@@ -40,7 +40,7 @@ class Transport:
 
     async def get_json(self, path):
         self.paths.append(path)
-        assert path == "/api/pilot/models"
+        assert path == "/api/pilot/admin/models"
         return self.status, json.dumps(self.payload).encode("utf8")
 
 
@@ -56,7 +56,7 @@ def test_all_models_including_disabled_and_owner_excluded_are_visible_in_admin_p
     assert next(r for r in rows if r["model_id"] == ENABLED)["b14_enabled"] is True
     assert next(r for r in rows if r["model_id"] == DISABLED)["b14_enabled"] is False
     assert next(r for r in rows if r["model_id"] == EXCLUDED)["owner_excluded"] is True
-    assert transport.paths == ["/api/pilot/models"]
+    assert transport.paths == ["/api/pilot/admin/models"]
     payload = json.dumps(rows)
     assert "api_key" not in payload and "SHOULD_NOT_LEAK" not in payload
     assert "private-upstream" not in payload and "PRIVATE_HOST" not in payload
@@ -96,5 +96,5 @@ def test_unconfigured_transport_denies():
 def test_full_inventory_is_not_an_implicit_b66_selection_or_execution():
     transport = Transport(registry())
     get(transport)
-    assert transport.paths == ["/api/pilot/models"]
+    assert transport.paths == ["/api/pilot/admin/models"]
     # No POST / completions, no tier or membership changes.
