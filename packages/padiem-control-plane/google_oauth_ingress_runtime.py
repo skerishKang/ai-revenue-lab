@@ -42,6 +42,10 @@ from google_oauth_webcrypto_sealer import (
 GOOGLE_AUTHORIZATION_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 GOOGLE_USERINFO_URL = "https://openidconnect.googleapis.com/v1/userinfo"
+# #7248: calendar.readonly carries no OIDC subject, so the Calendar account
+# identity is read from the primary calendar id with the granted scope itself.
+GOOGLE_CALENDAR_PRIMARY_URL = "https://www.googleapis.com/calendar/v3/calendars/primary"
+_CALENDAR_SUBJECT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._%+@-]{2,319}$")
 AUTHORIZATION_SESSION_TTL_SECONDS = 600
 MAX_AUTHORIZATION_CODE_CHARS = 4_096
 MAX_PROVIDER_ERROR_CHARS = 1_024
@@ -418,6 +422,14 @@ class GoogleOAuthTokenExchangePort(Protocol):
 
 
 class GoogleOAuthDestinationVerificationPort(Protocol):
+    async def verify_calendar_destination(
+        self,
+        *,
+        config: GoogleOAuthIngressConfig,
+        access_token: str,
+    ) -> dict[str, Any]:
+        ...
+
     async def verify_destination(
         self,
         *,
@@ -425,6 +437,22 @@ class GoogleOAuthDestinationVerificationPort(Protocol):
         access_token: str,
     ) -> dict[str, Any]:
         ...
+
+
+def _verified_calendar_destination(payload: Any) -> tuple[str, str | None]:
+    if not isinstance(payload, dict):
+        raise ControlPlaneContractError(
+            "google_oauth_destination_unverified",
+            "Google Calendar identity response is invalid",
+        )
+    identifier = payload.get("id")
+    if not isinstance(identifier, str) or _CALENDAR_SUBJECT_RE.fullmatch(identifier) is None:
+        raise ControlPlaneContractError(
+            "google_oauth_destination_unverified",
+            "Google Calendar identity response lacks a bounded primary calendar id",
+        )
+    email = identifier if "@" in identifier else None
+    return identifier, email
 
 
 def _verified_google_destination(payload: Any) -> tuple[str, str | None]:
@@ -453,19 +481,33 @@ def _verified_google_destination(payload: Any) -> tuple[str, str | None]:
 class CloudflareGoogleOAuthDestinationVerificationPort:
     """Worker-native bounded Google destination verification over OIDC userinfo."""
 
-    async def verify_destination(
+    async def verify_calendar_destination(
         self,
         *,
         config: GoogleOAuthIngressConfig,
         access_token: str,
     ) -> dict[str, Any]:
+        return await self._google_json(
+            GOOGLE_CALENDAR_PRIMARY_URL,
+            access_token=access_token,
+            get_only=True,
+        )
+
+    async def _google_json(
+        self,
+        url: str,
+        *,
+        access_token: str,
+        get_only: bool = True,
+    ) -> dict[str, Any]:
         from workers import fetch  # type: ignore[import-not-found]
 
+        del get_only
         token = _bounded_secret(
             access_token, "access_token", max_chars=MAX_ACCESS_TOKEN_CHARS
         )
         response = await fetch(
-            GOOGLE_USERINFO_URL,
+            url,
             method="GET",
             headers={
                 "Accept": "application/json",
@@ -499,10 +541,19 @@ class CloudflareGoogleOAuthDestinationVerificationPort:
             )
         return payload
 
+    async def verify_destination(
+        self,
+        *,
+        config: GoogleOAuthIngressConfig,
+        access_token: str,
+    ) -> dict[str, Any]:
+        return await self._google_json(GOOGLE_USERINFO_URL, access_token=access_token)
+
     def safe_dict(self) -> dict[str, Any]:
         return {
             "cloudflare_worker_fetch": True,
             "userinfo_endpoint": GOOGLE_USERINFO_URL,
+            "calendar_primary_endpoint": GOOGLE_CALENDAR_PRIMARY_URL,
             "get_only": True,
             "no_store": True,
             "response_bytes_bounded": True,
@@ -913,11 +964,32 @@ class GoogleOAuthIngressRuntime:
                     "google_oauth_destination_verification_unavailable",
                     "B66 Google Drive consent requires verified destination verification",
                 )
-            destination_payload = await self._destination_verification.verify_destination(
-                config=self._config,
-                access_token=access_token,
-            )
-            provider_subject, provider_email = _verified_google_destination(destination_payload)
+            if session.connector_id == CALENDAR_OAUTH_REVIEWED_CONNECTOR:
+                # calendar.readonly grants no OIDC userinfo subject, so the verified
+                # account identity is the primary calendar id (calendar.get primary).
+                calendar_verify = getattr(
+                    self._destination_verification, "verify_calendar_destination", None
+                )
+                if not callable(calendar_verify):
+                    raise ControlPlaneContractError(
+                        "google_oauth_destination_verification_unavailable",
+                        "Calendar consent requires verified calendar identity",
+                    )
+                destination_payload = await calendar_verify(
+                    config=self._config,
+                    access_token=access_token,
+                )
+                provider_subject, provider_email = _verified_calendar_destination(
+                    destination_payload
+                )
+            else:
+                destination_payload = await self._destination_verification.verify_destination(
+                    config=self._config,
+                    access_token=access_token,
+                )
+                provider_subject, provider_email = _verified_google_destination(
+                    destination_payload
+                )
 
         binding_ref = _safe_ref(
             f"google-{session.connector_id}-{self._token(24, 'binding_token')}",

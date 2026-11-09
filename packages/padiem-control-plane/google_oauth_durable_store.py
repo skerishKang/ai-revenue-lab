@@ -41,6 +41,7 @@ B66_GOOGLE_DRIVE_CONNECTORS = frozenset({
 })
 _GOOGLE_SUB_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{7,255}$")
 _MAX_PROVIDER_EMAIL_CHARS = 320
+_CALENDAR_SUBJECT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._%+@-]{2,319}$")
 # Internal OAuth-reviewed authority set. It is deliberately WIDER than the
 # public/default workspace-status projection: a connector may be a reviewed
 # OAuth authority without being part of the authorized #2830 B-0 surface.
@@ -153,13 +154,22 @@ def _sealed(value: Any, field_name: str) -> str:
     return value
 
 
-def _provider_subject(value: Any, field_name: str) -> str:
-    if not isinstance(value, str) or _GOOGLE_SUB_RE.fullmatch(value) is None:
-        raise ControlPlaneContractError(
-            "invalid_google_oauth_durable_record",
-            f"{field_name} must be a bounded verified Google subject",
-        )
-    return value
+def _provider_subject(
+    value: Any, field_name: str, *, connector_id: str | None = None
+) -> str:
+    if isinstance(value, str):
+        if connector_id == CALENDAR_OAUTH_REVIEWED_CONNECTOR:
+            # #7248: a Calendar binding carries the account's primary calendar id.
+            # calendar.readonly grants no OIDC subject, so the verified identifier
+            # is the primary calendar id itself (email-shaped), not a `sub` claim.
+            if _CALENDAR_SUBJECT_RE.fullmatch(value) is not None:
+                return value
+        elif _GOOGLE_SUB_RE.fullmatch(value) is not None:
+            return value
+    raise ControlPlaneContractError(
+        "invalid_google_oauth_durable_record",
+        f"{field_name} must be a bounded verified Google subject",
+    )
 
 
 def _provider_email(value: Any, field_name: str) -> str:
@@ -292,7 +302,11 @@ class DurableGoogleOAuthCredential:
             object.__setattr__(
                 self,
                 "provider_subject",
-                _provider_subject(self.provider_subject, "provider_subject"),
+                _provider_subject(
+                    self.provider_subject,
+                    "provider_subject",
+                    connector_id=self.connector_id,
+                ),
             )
             if self.provider_email is not None:
                 object.__setattr__(
@@ -835,7 +849,10 @@ class CloudflareDurableGoogleOAuthStore:
         connector_id = _row_value(row, "connector_id")
         provider_subject: str | None = None
         provider_email: str | None = None
-        if connector_id in B66_GOOGLE_DRIVE_CONNECTORS:
+        if (
+            connector_id in B66_GOOGLE_DRIVE_CONNECTORS
+            or connector_id == CALENDAR_OAUTH_REVIEWED_CONNECTOR
+        ):
             destinations = _rows(
                 self._sql.exec(
                     "SELECT provider_subject, provider_email FROM google_oauth_provider_destination "
@@ -846,10 +863,13 @@ class CloudflareDurableGoogleOAuthStore:
             )
             if len(destinations) != 1:
                 raise RuntimeError(
-                    "B66 Google Drive credential destination is missing or ambiguous"
+                    "B66 Google Drive or Calendar credential destination is missing or"
+                    " ambiguous"
                 )
             provider_subject = _provider_subject(
-                _row_value(destinations[0], "provider_subject"), "provider_subject"
+                _row_value(destinations[0], "provider_subject"),
+                "provider_subject",
+                connector_id=connector_id,
             )
             provider_email_text = _row_value(destinations[0], "provider_email")
             provider_email = (
@@ -1297,7 +1317,11 @@ class CloudflareDurableGoogleOAuthStore:
         """
 
         workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
-        provider_subject = _provider_subject(provider_subject, "provider_subject")
+        provider_subject = _provider_subject(
+            provider_subject,
+            "provider_subject",
+            connector_id=CALENDAR_OAUTH_REVIEWED_CONNECTOR,
+        )
         revoked_at = _utc(revoked_at, "revoked_at")
 
         def operation() -> int:
