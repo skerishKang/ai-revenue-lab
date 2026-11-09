@@ -14,6 +14,13 @@ from app.factory import create_app
 from app.pilot.config import pilot_settings
 from app.pilot.schemas import ChatMessage, PilotChatRequest
 
+from tests._registry_values import a_provider_id, model_rows, registry
+
+
+# A syntactically valid https origin for the legacy lane. It is not a real
+# Provider host: every test stubs the transport, so nothing is ever dialed.
+_PILOT_BASE_ORIGIN = "https://pilot.test.invalid/v1"
+
 
 @pytest.fixture(autouse=True)
 def _enable_archived_auto_route_tests(monkeypatch):
@@ -55,13 +62,35 @@ def _reset_pilot_config(monkeypatch):
     rcfg.provider_mode = saved_mode
 
 
+def _pilot_identity() -> tuple[str, str, str]:
+    """The (provider, model, upstream) identity the legacy BYOK lane serves.
+
+    The BYOK lane carries a caller's own model, so its identity must be one the
+    Business 14 catalog does *not* know: any retired identity qualifies, because
+    a retirement always wins over a registration. The Provider is the effective
+    registry's first Provider, whose origin the configured base URL mirrors.
+    """
+    from app.pilot.catalog import get_catalog_by_id
+    from app.pilot.model_registry_file import retired_model_ids
+
+    provider_id = a_provider_id()
+    model_id = next(
+        (rid for rid in sorted(retired_model_ids()) if get_catalog_by_id(rid) is None),
+        None,
+    )
+    assert model_id is not None, "the registry must retire at least one identity"
+    return provider_id, model_id, model_id
+
+
 def _configure_pilot():
-    pilot_settings.pilot_base_url = "https://api.test-pilot.example.com"
-    pilot_settings.pilot_model_id = "test-model-v1"
-    pilot_settings.pilot_provider_id = "test-provider"
-    pilot_settings.pilot_upstream_model = "upstream-model-v1"
+    provider_id, model_id, upstream = _pilot_identity()
+    pilot_settings.pilot_base_url = _PILOT_BASE_ORIGIN
+    pilot_settings.pilot_model_id = model_id
+    pilot_settings.pilot_provider_id = provider_id
+    pilot_settings.pilot_upstream_model = upstream
     pilot_settings.pilot_timeout_seconds = 10
     pilot_settings.provider_registry_json = ""
+    return model_id
 
 
 # ---------------------------------------------------------------------------
@@ -175,28 +204,28 @@ class TestSchemaValidation:
 
 class TestExtraFieldsRejectedViaAPI:
     def test_base_url_rejected(self, client):
-        _configure_pilot()
+        model = _configure_pilot()
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "test-model-v1", "messages": [{"role": "user", "content": "hi"}], "base_url": "http://evil.com"},
+            json={"model": model, "messages": [{"role": "user", "content": "hi"}], "base_url": "http://evil.com"},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
         assert resp.status_code == 422
 
     def test_api_key_field_rejected(self, client):
-        _configure_pilot()
+        model = _configure_pilot()
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "test-model-v1", "messages": [{"role": "user", "content": "hi"}], "api_key": "sk-test"},
+            json={"model": model, "messages": [{"role": "user", "content": "hi"}], "api_key": "sk-test"},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
         assert resp.status_code == 422
 
     def test_invalid_role_rejected(self, client):
-        _configure_pilot()
+        model = _configure_pilot()
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "test-model-v1", "messages": [{"role": "admin", "content": "hi"}]},
+            json={"model": model, "messages": [{"role": "admin", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
         assert resp.status_code == 422
@@ -209,17 +238,17 @@ class TestExtraFieldsRejectedViaAPI:
 
 class TestPilotChatRequest:
     def test_valid_request(self, client, monkeypatch):
-        _configure_pilot()
+        model = _configure_pilot()
         from app.pilot import provider as prv
         async def fake_call(**kw):
-            return {"id": "test", "object": "chat.completion", "model": "test-model-v1",
+            return {"id": "test", "object": "chat.completion", "model": model,
                     "choices": [{"index": 0, "message": {"role": "assistant", "content": "Hello!"}, "finish_reason": "stop"}],
                     "usage": {"prompt_tokens": 5, "completion_tokens": 10, "total_tokens": 15},
                     "business14": {"mode": "byok-pilot", "provider": "test", "latency_ms": 100, "estimated_krw": None, "request_id": "b14req_test"}}
         monkeypatch.setattr(prv, "call_chat_completions", fake_call)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "test-model-v1", "messages": [{"role": "user", "content": "hi"}], "temperature": 0.2, "max_tokens": 300},
+            json={"model": model, "messages": [{"role": "user", "content": "hi"}], "temperature": 0.2, "max_tokens": 300},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
         assert resp.status_code == 200
@@ -228,19 +257,19 @@ class TestPilotChatRequest:
         assert resp.json()["business14"]["estimated_krw"] is None
 
     def test_no_messages(self, client):
-        _configure_pilot()
+        model = _configure_pilot()
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "test-model-v1", "messages": []},
+            json={"model": model, "messages": []},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
         assert resp.status_code == 422
 
     def test_stream_true_rejected(self, client):
-        _configure_pilot()
+        model = _configure_pilot()
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "test-model-v1", "messages": [{"role": "user", "content": "hi"}], "stream": True},
+            json={"model": model, "messages": [{"role": "user", "content": "hi"}], "stream": True},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
         assert resp.status_code == 400
@@ -250,11 +279,11 @@ class TestPilotChatRequest:
         # #5536: the BYOK lane serves a caller's own provider and model, and
         # B14 holds no capability record for it, so a tool declaration is
         # refused there rather than forwarded unverified.
-        _configure_pilot()
+        model = _configure_pilot()
         resp = client.post(
             "/api/pilot/v1/chat/completions",
             json={
-                "model": "test-model-v1",
+                "model": model,
                 "messages": [{"role": "user", "content": "hi"}],
                 "tools": [
                     {
@@ -274,10 +303,10 @@ class TestPilotChatRequest:
     def test_malformed_tool_declaration_rejected(self, client):
         # #5536: a malformed tool declaration is refused before any provider
         # call, so it never spends a credential.
-        _configure_pilot()
+        model = _configure_pilot()
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "test-model-v1", "messages": [{"role": "user", "content": "hi"}], "tools": [{"name": "test"}]},
+            json={"model": model, "messages": [{"role": "user", "content": "hi"}], "tools": [{"name": "test"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
         assert resp.status_code == 422
@@ -301,10 +330,10 @@ class TestPilotChatRequest:
 
 class TestMissingKey:
     def test_no_key_header(self, client):
-        _configure_pilot()
+        model = _configure_pilot()
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "test-model-v1", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": model, "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 401
         assert resp.json()["error"]["code"] == "missing_provider_key"
@@ -313,13 +342,13 @@ class TestMissingKey:
 class TestPlaceholderKey:
     @pytest.mark.parametrize("bad_key", ["sk-your-key-here", "your-api-key", "test-key", "demo-key", "$KAP_API_KEY", "placeholder", "abc"])
     def test_placeholder_key_rejected(self, client, bad_key, monkeypatch):
-        _configure_pilot()
+        model = _configure_pilot()
         from app.pilot import provider as prv
         async def fake_call(**kw): return {"id": "test", "object": "chat.completion", "model": "test", "choices": [{"index": 0, "message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}]}
         monkeypatch.setattr(prv, "call_chat_completions", fake_call)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "test-model-v1", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": model, "messages": [{"role": "user", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": bad_key},
         )
         assert resp.status_code == 401
@@ -344,14 +373,14 @@ class TestDefaultTemperature:
 
     def test_ui_post_passes_02(self, client, monkeypatch):
         """UI POST with default temperature must pass 0.2 to provider."""
-        _configure_pilot()
+        model = _configure_pilot()
         from app.pilot import provider as prv
         _captured = {}
 
         async def capturing_call(**kw):
             _captured["temperature"] = kw.get("temperature")
             return {
-                "id": "test", "object": "chat.completion", "model": "test-model-v1",
+                "id": "test", "object": "chat.completion", "model": model,
                 "choices": [{"index": 0, "message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}],
                 "usage": {"prompt_tokens": 5, "completion_tokens": 5, "total_tokens": 10},
                 "business14": {"mode": "byok-pilot", "provider": "test", "latency_ms": 50, "estimated_krw": None, "request_id": "b14req_test"},
@@ -362,7 +391,7 @@ class TestDefaultTemperature:
             "/pilot",
             data={
                 "provider_key": "sk-real-key-12345abcdef",
-                "model_id": "test-model-v1",
+                "model_id": model,
                 "prompt": "hello",
                 "temperature": 0.2,
                 "max_tokens": 300,
@@ -380,7 +409,7 @@ class TestDefaultTemperature:
 class TestErrorRedaction:
     def test_api_error_has_fixed_message(self, client, monkeypatch):
         """Generic exception should show fixed message, not str(e)."""
-        _configure_pilot()
+        model = _configure_pilot()
         from app.pilot import provider as prv
         class ExplodingError(Exception):
             def __str__(self):
@@ -392,7 +421,7 @@ class TestErrorRedaction:
         monkeypatch.setattr(prv, "call_chat_completions", exploding_call)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "test-model-v1", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": model, "messages": [{"role": "user", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
         body = resp.text
@@ -403,8 +432,20 @@ class TestErrorRedaction:
     def test_json_body_uses_explicit_asgi_body_boundary(self, client, monkeypatch):
         """The gateway must not depend on Starlette Request.json() in Workers."""
         from app.pilot import gateway
+        from app.pilot.catalog import get_catalog_by_id
+        from app.pilot.platform_secrets import get_platform_provider
 
-        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-test-agnes-route-0123456789")
+        # A catalog model whose platform Provider keeps its credential in a
+        # platform secret: the slot name comes from the Provider's own spec.
+        model_id = next(
+            row["id"]
+            for row in model_rows()
+            if (model := get_catalog_by_id(row["id"])) is not None
+            and (spec := get_platform_provider(model.platform_provider_id)) is not None
+            and getattr(spec.credential_source, "value", spec.credential_source) == "platform_secret"
+        )
+        spec = get_platform_provider(get_catalog_by_id(model_id).platform_provider_id)
+        monkeypatch.setenv(spec.credential_binding_name, "sk-test-route-0123456789")
         original = gateway.Request.json
 
         async def broken_json(_request):
@@ -413,7 +454,7 @@ class TestErrorRedaction:
         monkeypatch.setattr(gateway.Request, "json", broken_json)
         response = client.post(
             "/api/pilot/router/resolve",
-            json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": model_id, "messages": [{"role": "user", "content": "hi"}]},
         )
         assert response.status_code == 200
         assert response.json()["selected_model"]
@@ -429,13 +470,13 @@ class TestErrorRedaction:
         assert resp.json()["error"].get("request_id", "").startswith("b14req_")
 
     def test_secret_not_in_error_response(self, client, monkeypatch):
-        _configure_pilot()
+        model = _configure_pilot()
         from app.pilot import provider as prv
         async def fake_call(**kw): raise Exception("sk-real-key-secret-123")
         monkeypatch.setattr(prv, "call_chat_completions", fake_call)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "test-model-v1", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": model, "messages": [{"role": "user", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-secret-123"},
         )
         assert "sk-real-key-secret-123" not in resp.text
@@ -579,8 +620,13 @@ class TestSSRFValidation:
             _validate_base_url(bad_url)
 
     @pytest.mark.parametrize("good_url", [
-        "https://api.openai.com/v1",
-        "https://api.anthropic.com",
+        # The Provider origins the registry documents; the validator must accept
+        # every one of them, so the case set follows the document.
+        *sorted(
+            entry["base_origin"]
+            for entry in registry()["providers"].values()
+            if entry.get("base_origin")
+        ),
         "https://gateway.example.com/chat",
     ])
     def test_valid_urls_accepted(self, good_url):
@@ -687,7 +733,7 @@ class TestIntegrationFullPath:
 
     def test_api_route_integration(self, client):
         """API route → real provider → MockTransport → 200 + JSON verification."""
-        _configure_pilot()
+        model = _configure_pilot()
         captured_body = {}
 
         async def fake_upstream(request):
@@ -711,7 +757,7 @@ class TestIntegrationFullPath:
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
-                json={"model": "test-model-v1", "messages": [{"role": "user", "content": "hi"}]},
+                json={"model": model, "messages": [{"role": "user", "content": "hi"}]},
                 headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
             )
         finally:
@@ -727,7 +773,7 @@ class TestIntegrationFullPath:
 
     def test_ui_post_integration(self, client):
         """UI POST → real provider → MockTransport → JSON verification."""
-        _configure_pilot()
+        model = _configure_pilot()
         captured_body = {}
 
         async def fake_upstream(request):
@@ -753,7 +799,7 @@ class TestIntegrationFullPath:
                 "/pilot",
                 data={
                     "provider_key": "sk-real-key-12345abcdef",
-                    "model_id": "test-model-v1",
+                    "model_id": model,
                     "prompt": "hi",
                     "temperature": 0.2,
                     "max_tokens": 300,

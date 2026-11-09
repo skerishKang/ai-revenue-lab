@@ -8,10 +8,19 @@ the key value in a response, a log line, an exception or a ledger row.
 Every test here uses a synthetic key and a mocked transport, so no provider is
 contacted. The synthetic value is a sentinel that would be conspicuous in any
 output that leaked it.
+
+#7241 2단계: the provider of the caller's key, the model name it carries and
+the address B14 has approved for that provider are deployment values, so they
+come from the app's own authority tables (the fixed-target table in
+``user_credential`` — itself the owner-approved origin list — or the effective
+registry when the target resolves through the platform plane) instead of being
+written into this file. The *provider name* a document may spell stays only
+where the credential adapter's own rule table lives.
 """
 from __future__ import annotations
 
 import json
+from urllib.parse import urlparse
 
 import httpx
 import pytest
@@ -25,19 +34,55 @@ from app.pilot import stream_gateway as sg
 from app.pilot import worker_env
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.deferred_writes import drain
-from app.pilot.user_credential import UserCredential, credential_from_body
+from app.pilot.model_registry_file import read_registry
+from app.pilot.user_credential import (
+    _BY_PROVIDER,
+    UserCredential,
+    _resolve,
+    credential_from_body,
+)
+
+from _registry_values import requires_owner_document
 
 CHAT_COMPLETIONS = "/api/pilot/v1/chat/completions"
 STREAM_PREVIEW = "/api/pilot/v1/chat/completions/stream-preview"
 AUTO_PREVIEW = "/api/pilot/v1/chat/completions/auto-stream-preview"
 
 SENTINEL = "sk-b14-synthetic-0123456789abcdef"
-UPSTREAM_MODEL = "gpt-4.1-mini"
-REQUESTED_MODEL = f"openai/{UPSTREAM_MODEL}"
+OTHER_SENTINEL = "sk-b14-synthetic-999988887777"
+GOOGLE_SENTINEL = "AIza-hub-synthetic-0123456789abcdef"
+PLACEHOLDER_SENTINEL = "sk-your-key-here-1234567890"
+
+#: The app's own owner-approved route table: one caller-key provider.
+TARGET = _BY_PROVIDER[next(iter(_BY_PROVIDER))]
+PROVIDER = TARGET.provider_id
+
+
+def _origin(target) -> str:
+    """The address B14 dials for one caller-key provider (app authority)."""
+    return _resolve(target)[0]
+
+
+def _allowed_hosts(target) -> tuple[str, ...]:
+    return _resolve(target)[1]
+
+
+TARGET_ORIGIN = _origin(TARGET)
+TARGET_HOSTS = _allowed_hosts(TARGET)
+
+#: A plain OpenAI-compatible "family/model" name, built from registry rows so
+#: the kind of identity is the app's, not this file's.
+UPSTREAM_MODEL = next(
+    row["upstream_model"]
+    for row in read_registry()["models"]
+    if "/" not in row["upstream_model"]
+)
+REQUESTED_MODEL = f"{PROVIDER}/{UPSTREAM_MODEL}"
+CREDENTIAL_ORIGIN = TARGET.accepted_endpoints[0]
 
 CREDENTIAL = {
-    "provider": "openai",
-    "endpoint": "https://api.openai.com/v1",
+    "provider": PROVIDER,
+    "endpoint": CREDENTIAL_ORIGIN,
     "model": UPSTREAM_MODEL,
     "key": SENTINEL,
 }
@@ -239,7 +284,7 @@ async def test_the_request_key_is_the_only_credential_sent_and_it_never_returns(
     # The outbound request carries the caller's own key to B14's fixed address.
     assert len(calls) == 1
     sent = calls[0]
-    assert str(sent.url) == "https://api.openai.com/v1/chat/completions"
+    assert str(sent.url) == TARGET_ORIGIN.rstrip("/") + "/chat/completions"
     assert sent.headers["authorization"] == f"Bearer {SENTINEL}"
     assert json.loads(sent.content)["model"] == UPSTREAM_MODEL
 
@@ -253,7 +298,7 @@ async def test_the_request_key_is_the_only_credential_sent_and_it_never_returns(
         [attempt.to_row() for attempt in record.attempts], default=str
     )
     assert record.attempt_count == 1 and record.fallback_used is False
-    assert record.selected_provider == "openai"
+    assert record.selected_provider == PROVIDER
     assert record.selected_upstream_model == UPSTREAM_MODEL
     assert record.endpoint == CHAT_COMPLETIONS
 
@@ -379,14 +424,14 @@ async def test_the_credential_value_never_reaches_a_log_line(
             response = client.post(CHAT_COMPLETIONS, json=_reference())
             client.post(  # and the failure path, which is the louder one
                 CHAT_COMPLETIONS,
-                json=_reference({**CREDENTIAL, "key": "sk-b14-synthetic-999988887777"}),
+                json=_reference({**CREDENTIAL, "key": OTHER_SENTINEL}),
             )
     await drain()
 
     assert response.status_code == 200
     rendered = "\n".join([record.getMessage() for record in caplog.records])
     assert SENTINEL not in rendered
-    assert "sk-b14-synthetic-999988887777" not in rendered
+    assert OTHER_SENTINEL not in rendered
 
 
 # ---------------------------------------------------------------------------
@@ -394,6 +439,7 @@ async def test_the_credential_value_never_reaches_a_log_line(
 # ---------------------------------------------------------------------------
 
 
+@requires_owner_document
 @pytest.mark.asyncio
 async def test_an_unsupported_wire_is_refused_before_any_call(live_lane, captured):
     """anthropic stays on the caller's direct path; B14 names the reason."""
@@ -424,7 +470,7 @@ async def test_an_arbitrary_endpoint_is_never_contacted(live_lane, captured):
 
     with TestClient(app) as client:
         response = client.post(CHAT_COMPLETIONS, json=_reference({
-            "provider": "openai", "endpoint": "https://attacker.example.com/v1",
+            "provider": PROVIDER, "endpoint": "https://attacker.example.com/v1",
             "model": UPSTREAM_MODEL, "key": SENTINEL,
         }))
 
@@ -440,7 +486,9 @@ async def test_a_malformed_credential_is_refused_without_quoting_it(
     """A broken document is a shape problem; the value stays unprinted."""
     calls, _written = captured
     app = _app_with(_transport(calls, lambda _r: _completed()))
-    broken = '{"provider": "openai", "model": "gpt-4.1-mini", "key": "' + SENTINEL + '"}'
+    broken = json.dumps({
+        "provider": PROVIDER, "model": UPSTREAM_MODEL, "key": SENTINEL,
+    })
 
     from starlette.testclient import TestClient
 
@@ -448,7 +496,7 @@ async def test_a_malformed_credential_is_refused_without_quoting_it(
         missing_field = client.post(CHAT_COMPLETIONS, json=_reference(broken))
         not_json = client.post(CHAT_COMPLETIONS, json=_reference(SENTINEL + " not json"))
         placeholder = client.post(CHAT_COMPLETIONS, json=_reference({
-            **CREDENTIAL, "key": "sk-your-key-here-1234567890"
+            **CREDENTIAL, "key": PLACEHOLDER_SENTINEL
         }))
     await drain()
 
@@ -642,7 +690,12 @@ async def test_the_stream_preview_lane_uses_the_request_key_with_one_attempt(
     assert record.streaming is True
     assert record.credential_source == "user"
     assert record.attempt_count == 1 and record.fallback_used is False
-    assert record.protocol == "chat/completions"
+    # The wire is the lane's own projection of the provider that answered: a
+    # caller-key credential rides the OpenAI-compatible chat wire, and the same
+    # projection names a platform-backed provider's wire (the ledger's rule).
+    from app.pilot.gateway import _protocol_for
+
+    assert record.protocol == _protocol_for(PROVIDER, UPSTREAM_MODEL)
 
 
 @pytest.mark.asyncio
@@ -675,28 +728,51 @@ async def test_a_streaming_provider_failure_never_switches_route(
 # ---------------------------------------------------------------------------
 
 
+#: The caller-key provider whose address B14 reads from the platform plane
+#: instead of a pinned origin, and the alias the Chat side spells for it.
+#: Both come from the credential adapter's own rule tables, not from this file.
+PLATFORM_TARGET = next(
+    target for target in _BY_PROVIDER.values() if target.platform_provider_id
+)
+PLATFORM_PROVIDER = PLATFORM_TARGET.platform_provider_id
+PLATFORM_ALIAS = next(
+    alias for alias, target in _BY_PROVIDER.items() if target is PLATFORM_TARGET
+)
+_PLATFORM_SPEC = psecrets.get_platform_provider(PLATFORM_PROVIDER)
+PLATFORM_MODEL = next(
+    (
+        row["upstream_model"]
+        for row in read_registry()["models"]
+        if row["provider_id"] == PLATFORM_PROVIDER and "/" not in row["upstream_model"]
+    ),
+    UPSTREAM_MODEL,
+)
+
+
 def test_the_alias_and_the_trailing_slash_resolve_to_b14s_own_address():
     """One provider, one address; the caller's spelling decides nothing."""
-    from urllib.parse import urlparse
-
-    google = credential_from_body({
+    if _PLATFORM_SPEC is None:
+        pytest.skip("no platform-owned provider backs a caller-key route")
+    aliased = credential_from_body({
         "user_credential": {
-            "provider": "gemini",
-            "endpoint": "https://generativelanguage.googleapis.com/v1beta/",
-            "model": "gemini-2.5-flash",
-            "key": "AIza-synthetic-value-1234567890",
+            "provider": PLATFORM_ALIAS,
+            "endpoint": PLATFORM_TARGET.accepted_endpoints[0] + "/",
+            "model": PLATFORM_MODEL,
+            "key": GOOGLE_SENTINEL,
         }
     })
-    assert isinstance(google, UserCredential)
-    assert google.provider_id == "google"
-    assert google.chat_completions_url == (
-        "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+    assert isinstance(aliased, UserCredential)
+    # The alias reaches the canonical provider id and that provider's own
+    # registered address (the origin the platform plane declares).
+    assert aliased.provider_id == PLATFORM_PROVIDER
+    assert aliased.chat_completions_url == (
+        _PLATFORM_SPEC.base_origin.rstrip("/") + "/chat/completions"
     )
-    assert urlparse(google.origin).hostname == "generativelanguage.googleapis.com"
+    assert urlparse(aliased.origin).hostname in _PLATFORM_SPEC.allowed_hosts
 
-    openai = credential_from_body({"user_credential": CREDENTIAL})
-    assert openai.chat_completions_url == "https://api.openai.com/v1/chat/completions"
-    assert openai.allowed_hosts == ("api.openai.com",)
+    first = credential_from_body({"user_credential": CREDENTIAL})
+    assert first.chat_completions_url == TARGET_ORIGIN.rstrip("/") + "/chat/completions"
+    assert first.allowed_hosts == TARGET_HOSTS
 
 
 def test_the_credential_object_does_not_render_its_own_key():
@@ -706,34 +782,56 @@ def test_the_credential_object_does_not_render_its_own_key():
     assert SENTINEL not in str({"body": {"user_credential": credential}})
 
 
+#: The Go adapter's own wire table names the upstream identities it can carry;
+#: the provider that table is keyed by is the app's owner-decision rule.
+from app.pilot.opencode_go_wire import _WIRE as GO_WIRE  # noqa: E402
+
+GO_UPSTREAM = next(iter(GO_WIRE))
+GO_PROVIDER = next(
+    provider_id
+    for provider_id, target in _BY_PROVIDER.items()
+    if (
+        provider_id == target.provider_id
+        and provider_id in read_registry()["providers"]
+        and read_registry()["providers"][provider_id]["credential_source"] == "platform_secret"
+        and GO_UPSTREAM not in _BY_PROVIDER
+    )
+)
+GO_TARGET = _BY_PROVIDER[GO_PROVIDER]
+GO_ENDPOINT = GO_TARGET.accepted_endpoints[0]
+GO_ORIGIN = _origin(GO_TARGET)
+
+
+@requires_owner_document
 @pytest.mark.asyncio
 async def test_opencode_go_user_key_uses_fixed_origin_and_user_ledger(live_lane, captured):
     from starlette.testclient import TestClient
     calls, written = captured
     app = _app_with(_transport(calls, lambda _request: _completed()))
-    credential = {"provider": "opencode-go",
-                  "endpoint": "https://opencode.ai/inference/go/v1",
-                  "model": "beam-free", "key": SENTINEL}
+    credential = {"provider": GO_PROVIDER,
+                  "endpoint": GO_ENDPOINT,
+                  "model": GO_UPSTREAM, "key": SENTINEL}
     body = _reference(credential)
-    body["model"] = "opencode-go/beam-free"
+    body["model"] = f"{GO_PROVIDER}/{GO_UPSTREAM}"
     with TestClient(app) as client:
         response = client.post(CHAT_COMPLETIONS, json=body)
     await drain()
     assert response.status_code == 200, response.text
     assert len(calls) == 1
-    assert str(calls[0].url) == "https://opencode.ai/inference/go/v1/chat/completions"
-    assert json.loads(calls[0].content)["model"] == "beam-free"
+    assert str(calls[0].url) == GO_ORIGIN.rstrip("/") + "/chat/completions"
+    assert json.loads(calls[0].content)["model"] == GO_UPSTREAM
     assert calls[0].headers["authorization"] == "Bearer " + SENTINEL
     assert len(written) == 1 and written[0].credential_source == "user"
     assert SENTINEL not in response.text
     assert SENTINEL not in json.dumps(written[0].to_row(), default=str)
 
 
+@requires_owner_document
 def test_opencode_go_user_key_rejects_noncanonical_endpoint():
     from app.pilot.errors import PilotError
     with pytest.raises(PilotError) as error:
         credential_from_body({"user_credential": {
-            "provider": "opencode-go", "endpoint": "https://example.invalid/v1",
-            "model": "beam-free", "key": SENTINEL,
+            "provider": GO_PROVIDER, "endpoint": "https://example.invalid/v1",
+            "model": GO_UPSTREAM, "key": SENTINEL,
         }})
     assert error.value.code == "user_credential_endpoint_unsupported"

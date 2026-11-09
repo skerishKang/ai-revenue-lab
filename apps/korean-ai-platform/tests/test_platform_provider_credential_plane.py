@@ -5,6 +5,17 @@ production. These tests exercise the same credential contracts through a
 synthetic platform_secret provider so the plane stays genuinely validated
 rather than silently passing. No real secret is read, printed, committed,
 or sent. Every test uses a synthetic non-secret key in the environment only.
+
+#7241 2단계: the provider, host, binding slot and model id this suite registers
+are locally generated placeholders (a ``*.invalid`` origin and a test-only
+binding name), so the credential-plane contracts never carry a deployment
+value. Imports, adapter class names and the *code* identifiers of the plane are
+the plane's own vocabulary and stay. Two contracts are owner pins: the Agnes
+re-onboarding decision spells out the owner-approved binding name and origin for
+that lane, and the retired-lane rejection needs a custody roster to name (the
+placeholder document retires nothing). Both are skipped with a documented reason
+on a host that does not read the owner's document; the retired-lane contract
+derives whichever identity it asks about from the app's own retirement table.
 """
 
 from __future__ import annotations
@@ -20,7 +31,10 @@ from app.pilot import platform as plat
 from app.pilot import platform_secrets as ps
 from app.pilot.catalog import get_catalog_by_id
 from app.pilot.errors import NoSafeRoute, PilotNotConfigured, UpstreamAuthFailed
+from app.pilot.model_registry_file import retired_model_ids
 from app.pilot.router_core import resolve_manual_route
+
+from _registry_values import requires_owner_document
 
 TEST_PROVIDER_ID = "test-credential-plane"
 TEST_BINDING = "TEST_CREDENTIAL_PLANE_API_KEY"
@@ -29,6 +43,16 @@ TEST_HOST = "api.test-credential-plane.invalid"
 TEST_MODEL_ID = "test-credential-plane/test-model"
 TEST_UPSTREAM = "test-model"
 TEST_PROVIDER = "Test Credential Plane"
+
+
+def _a_retired_model_id() -> str:
+    """One lane the effective registry retired (never a pin written here).
+
+    The retirement authority names the identity, so the contract keeps following
+    whichever lane the owner retired instead of freezing today's id. An empty
+    roster is the placeholder-document case and is the owner pin's precondition.
+    """
+    return sorted(retired_model_ids())[0]
 
 
 def _ensure_test_provider() -> None:
@@ -122,6 +146,7 @@ def _auto_pool(decision) -> set[str]:
     return pool
 
 
+@requires_owner_document
 def test_agnes_route_reonboarded_as_manual_pin_candidate():
     # #2133 owner decision (#2126 5584200820) re-onboards Agnes as an explicit
     # candidate. The original #1933 S2-b retirement asserted absence; this
@@ -598,11 +623,12 @@ def test_stream_preview_platform_secret_fails_closed_when_secret_missing(monkeyp
     assert TEST_BINDING not in json.dumps(body)
 
 
+@requires_owner_document
 def test_stream_preview_retired_kilo_is_rejected_without_dispatch(monkeypatch):
     monkeypatch.delenv(TEST_BINDING,raising=False)
     client=TestClient(create_app())
     response=client.post(_STREAM_URL,json={
-        "model":"kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+        "model":_a_retired_model_id(),
         "stream":True,
         "messages":[{"role":"user","content":"hi"}],
     })

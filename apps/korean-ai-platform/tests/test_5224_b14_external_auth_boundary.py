@@ -26,21 +26,26 @@ from app.pilot.service_proof import (
     SERVICE_PROOF_BINDING,
     compute_service_proof,
 )
+from app.pilot.tier_fallback import effective_tier_default
+from _registry_values import model_ids, provider_of, provider_row, requires_owner_document
 
-MODEL_ID = "kira/qwen3.8-flash-free"
+MODEL_ID = effective_tier_default()
 SECRET = "b14-test-service-proof-secret-0123456789abcdef"
 STREAM_PREVIEW_PATH = "/api/pilot/v1/chat/completions/stream-preview"
 # A synthetic caller-owned key. It is not an account credential anywhere; the
 # point of the assertions that read it is that it never comes back.
 CALLER_KEY = "synthetic-caller-owned-key-0123456789abcdef"
+# The catalog lane test's model comes from the owner's grade roster, and the
+# credential slot below belongs to that model's provider.
+BINDING = provider_row(provider_of(MODEL_ID))["credential_binding_name"]
 
 
-def _credential_payload(model_id: str = "openai/gpt-4.1-mini") -> dict:
+def _credential_payload(model_id: str = MODEL_ID) -> dict:
     """The body shape the Engine bridge (#5905) writes for a user key."""
     payload = _chat_payload(model_id)
     payload["user_credential_ref"] = json.dumps(
-        {"provider": "openai", "endpoint": "https://api.openai.com/v1",
-         "model": "gpt-4.1-mini", "key": CALLER_KEY},
+        {"provider": provider_of(model_id), "endpoint": provider_row(provider_of(model_id))["base_origin"],
+         "model": model_id.split("/", 1)[1], "key": CALLER_KEY},
         separators=(",", ":"),
     )
     return payload
@@ -76,7 +81,7 @@ def _live_runtime(monkeypatch):
     monkeypatch.setattr(runtime_config, "provider_mode", "live")
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     # Synthetic string; not an account credential. Egress is stubbed below.
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_09", "synthetic-5224-not-a-secret")
+    monkeypatch.setenv(BINDING, "synthetic-5224-not-a-secret")
 
 
 def _stub_provider(monkeypatch):
@@ -226,12 +231,16 @@ def test_unconfigured_proof_secret_fails_closed(monkeypatch):
     assert outbound == []
 
 
+@requires_owner_document
 @pytest.mark.no_b14_service_proof
 def test_byok_lane_is_not_blocked_by_the_platform_caller_proof(monkeypatch):
     """The BYOK contract stays separate: the caller owns that credential."""
     _live_runtime(monkeypatch)
     outbound = _stub_provider(monkeypatch)
+    # A well-formed identity that no registry row answers: the BYOK lane must
+    # answer on its own contract, not as a registered-routes lookup.
     payload = _chat_payload("synthetic/unregistered-model")
+    assert payload["model"] not in model_ids()
     body = _body(payload)
 
     with TestClient(create_app()) as client:
@@ -370,5 +379,5 @@ def test_proven_caller_still_dispatches(monkeypatch):
         )
 
     assert result.status_code == 200
-    assert outbound == [(MODEL_ID, "kira")]
+    assert outbound == [(MODEL_ID, provider_of(MODEL_ID))]
 

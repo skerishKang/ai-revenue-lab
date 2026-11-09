@@ -81,3 +81,17 @@
 261109 #7241 1단계 전환 test_b14_native_parameters.py: 모델 파라미터를 sorted(model_ids())로 확장, reasoning 문서 여부는 서빙 근거 표에서 판독(문서화 라우트는 skip 가드). test_b14_model_registry_file.py: 은퇴 집합을 retired_model_ids()로 유도, 프로바이더 로스터/호스트/바인딩 핀 1건 분리. 95 passed, 3 skipped.
 261109 #7241 1단계 전환 test_owner_excluded_live_dispatch.py: 제외 계열·중립 쌍·바인딩을 등록부/카탈로그에서 유도, 소유자 핀 파라미터는 분리(11건), 식별자에서 프로바이더 이름 제거. test_5318_b14_call_ledger.py: 스트림 프리뷰 대상 행을 등록부에서 동적 선택(_stream_model_row), 바인딩 이름 유도. test_streaming_gateway.py: 모델·툴 문서 여부를 등록부/근거 표에서 유도, 소유자 핀 1건 분리. 503 passed(10파일 합계, 기준선 458 → 506 collected).
 261109 #7241 1단계 완료: 플랫폼 전체 스위트 2164 passed, 3 skipped(main 기준선 2119 passed) — 신규 실패 0. conftest 스위치 주입은 저장소 문서가 값 없는 상태(3단계)에서 자동 활성되도록 게이트. 추가 줄 실값 대조(147토큰, b14_models.json+wrangler.toml 추출) 0건. 계약 시험 test_7241_registry_fixture_contract.py 추가(fixture 유효성·자리표시자 전용·게이트 무동작).
+261109 #7241 2단계 착수: 작업트리 tests-fixture-7241-s2-261109(origin/main, 1단계 병합 후)에서 중형 파일 14개 전환. 기준선 main 2168 passed.
+261109 #7241 2단계 전환 test_pilot.py: 레거시 파일럿 신원은 a_provider_id()+retired_model_ids() 유도(카탈로그 부재=BYOK 차선), SSRF 허용 origin 파라미터는 등록부 프로바이더 전집합. 106 passed(기준선 92).
+261109 #7241 2단계 전환 test_opencode_go_session_bridge_gap.py: Go 로스터를 규칙 상수 소유 행에서 파라미터화, 업스트림/wire는 어댑터 자체 _WIRE 표 판독, 거부 사유는 앱 우선순위 계산. 소유자 핀 4건 분리. 43 passed(기준선 31).
+261109 #7241 2단계 전환 test_google_aistudio_provider.py: 로스터·origin·호스트·바인딩·텍스트전용 행을 등록부 유도, 부정 사례는 등록부 코퍼스에서 생성. 소유자 핀 2건 분리. 60 passed.
+261109 #7241 2단계 전환 test_tokenharbor_two_free_routes.py: 무료 로스터를 구조적 선택(무료 행+`:free` 표식)으로 유도, 은퇴 라우트 거부는 retired 로스터 합집합 단정. 소유자 핀 4건 분리. 60 passed.
+261109 #7241 2단계 전환 test_5824_b14_user_credential.py: 사용자 자격 슬롯 검증을 등록부 프로바이더 행에서 유도. 302 passed(11파일 합계).
+261109 #7241 2단계 전환 test_b62_free_routes.py: 무료 등급 라우트/후보를 effective_tier_default/fallback에서 유도, 자격 환경 슬롯은 프로바이더 행 바인딩 사용.
+261109 #7241 2단계 전환 test_owner_pinned_tier_fallback_261015.py: 순서 계약을 effective_tier_fallback()/effective_tier_default()로 단정(로스터 나열 리터럴 제거).
+261109 #7241 2단계 전환 test_2505_free_candidate_exclusion.py / test_5224_b14_external_auth_boundary.py: 제외·경계 표를 등록부/앱 권위 표 판독으로 대체.
+261109 #7241 2단계 전환 test_4317_free_completed_tier_fallback.py: primary/로스터를 effective_tier_* 유도, 긴 로스터는 등록된 비로스터 행으로 구성(미등록 합성 id는 게이트웨이가 401로 거부). 8 passed.
+261109 #7241 2단계 전환 test_pilot_phase2.py / test_multimodal.py: 레거시 단일 프로바이더 신원을 공용 상수로 통합, 이미지/텍스트 라우트·바인딩은 등록부 행에서 유도. 114 passed(기준선 동일).
+261109 #7241 2단계 전환 test_platform_provider_credential_plane.py / test_b14_uniform_model_first_response_timeout.py: 은퇴 신원은 retired_model_ids() 판독, 타임아웃 파라미터는 등록부+앱 허용 권위(카탈로그 설치·소유자 제외·wire 계열) 필터로 유도. 소유자 핀 2건 분리.
+261109 #7241 2단계 보류 test_b14_provider_onboarding.py: 기대가 "은퇴 후 등록 유지/제거된 프로바이더 선택"이라는 소유자 결정이라 등록부만으로 유도 불가 → main 상태 유지, 3단계(문서 전환)에서 처리.
+261109 #7241 2단계 완료: 플랫폼 전체 스위트 2244 passed, 3 skipped(main 기준선 2168 passed) — 신규 실패 0. 추가 줄 실값 대조(147토큰) 0건.
