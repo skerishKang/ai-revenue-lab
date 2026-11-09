@@ -346,8 +346,11 @@ def flow_voice(flow: Flow, cookie: str) -> None:
     except TimeoutError:
         flow.fail("voice_relay_timeout")
         return
-    except Exception:
-        flow.fail("voice_relay_transport_error")
+    except Exception as exc:
+        # The exception class is public diagnostics: it names the failure layer
+        # (handshake status, DNS, TLS, protocol) without any header, cookie,
+        # token or URL value.
+        flow.fail(f"voice_relay_transport_error_{type(exc).__name__}")
         return
     if close_code in (4401, 4503, 4500, 4429):
         flow.fail(f"voice_relay_closed_{close_code}")
