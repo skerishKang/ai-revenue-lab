@@ -22,6 +22,7 @@ import base64
 import hashlib
 import logging
 import re
+import sys
 import time
 from typing import Any, Callable
 from urllib.parse import urlsplit
@@ -33,6 +34,27 @@ from .pc_correlation import RUN_HASH_HEADER, DISPATCH_ID_HEADER, run_hash, dispa
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+
+def ensure_host_visible() -> None:
+    """Make the ``pc_queue_call`` line reach the COM2 journal.
+
+    Same host fact the other stage lines documented (orchestration_timing,
+    chat_stream_timing, engine_timing): the serving CPython process configures
+    no logging, the root logger has no handler and Python's fallback carries
+    WARNING and above — so this module's INFO records were created and then
+    dropped, and the dispatch timing marker (#6963 era) never reached the
+    journal the latency measurement reads. Bound one message-only stderr
+    handler here, at the single call site that logs; propagation stops so a
+    root handler configured later cannot write the line twice.
+    """
+    if logger.handlers or logging.getLogger().handlers:
+        return
+    handler = logging.StreamHandler(sys.stderr)
+    handler.setFormatter(logging.Formatter("%(message)s"))
+    logger.addHandler(handler)
+    logger.propagate = False
+
 
 INTERNAL_STORE_PATH = "/internal/store"
 QUEUE_SERVICE_SECRET_HEADER = "X-Padiem-Queue-Secret"
@@ -238,6 +260,7 @@ class QueueStoreClient:
 
     @timed_async('queue')
     async def call(self, method: str, **arguments: Any) -> Any:
+        ensure_host_visible()
         if not isinstance(method, str) or not method.isidentifier():
             raise QueueUnavailable("the queue method name is invalid")
         try:
