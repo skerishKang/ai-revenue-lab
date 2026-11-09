@@ -68,6 +68,15 @@ const DEFAULT_AUTH_CALLBACK_TIMEOUT_MS = 30000;
 // is measured, the login write keeps its own window so the cookie the host
 // already made reaches the browser. Every other write keeps the generic window.
 const DEFAULT_AUTH_WRITE_TIMEOUT_MS = 30000;
+// #7293: a voice STT write waits on the STT Worker's own bounded upstream
+// budget (the token mint and the file transcription each allow the upstream
+// 8s/25s inside apps/padiem-voice-stt/voice_stt_contract.py), and the mint
+// rides the host→Chat-Worker RPC on top (measured on the host: 5.7s, 7.1s and
+// 7.6s total on 2026-11-08/09 — the 7.6s one was a 200 the front still cut at
+// the generic 8s window, and the browser lost the same race). Like the login
+// write, these two writes get their own allowance; every other write keeps
+// the generic window.
+const DEFAULT_VOICE_STT_WRITE_TIMEOUT_MS = 30000;
 const TIMED_OUT = Symbol("timed_out");
 const CONNECTION_REFUSED = Symbol("connection_refused");
 const TRANSPORT_FAILED = Symbol("transport_failed");
@@ -276,6 +285,8 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     const bookAIRecords = url.pathname === "/api/bookai/records";
     const authCallback = READ_METHODS.has(request.method) && url.pathname === "/auth/shared/callback";
     const authWrite = !READ_METHODS.has(request.method) && url.pathname.startsWith("/api/auth/");
+    const voiceSttWrite = !READ_METHODS.has(request.method) &&
+      (url.pathname === "/api/voice/live-token" || url.pathname === "/api/voice/transcribe");
     const tusWrite = (request.method === "PATCH" || request.method === "POST") &&
       /^\/api\/projects\/[^/]+\/files\/tus(?:\/|$)/.test(url.pathname);
     const upstreamTimeout = numeric(env.UPSTREAM_TIMEOUT_MS, DEFAULT_TIMEOUT_MS);
@@ -302,6 +313,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
       : authCallback ? numeric(env.AUTH_CALLBACK_TIMEOUT_MS, DEFAULT_AUTH_CALLBACK_TIMEOUT_MS)
       : tusWrite ? numeric(env.TUS_UPLOAD_TIMEOUT_MS, DEFAULT_TUS_TIMEOUT_MS)
       : authWrite ? numeric(env.AUTH_WRITE_TIMEOUT_MS, DEFAULT_AUTH_WRITE_TIMEOUT_MS)
+      : voiceSttWrite ? numeric(env.VOICE_STT_WRITE_TIMEOUT_MS, DEFAULT_VOICE_STT_WRITE_TIMEOUT_MS)
         : upstreamTimeout;
     // 답변 시간 예산: Chat derives the remaining Engine budget from this value. Only an
     // answer request carries it; ordinary writes keep their existing wire shape.

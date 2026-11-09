@@ -65,6 +65,12 @@ CONNECTOR_EXPLICIT_VARS: dict[str, str] = {
 }
 CLAW_SEARCH_FLAG = "PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED"
 REQUIRED_VARS = ("PADIEM_CHAT_RUNTIME_MODE", "PADIEM_CHAT_LIVE_ENABLED")
+# #5784: the repository's HTTPS switch origin is the single authority for the B14
+# address. The legacy base binding stays live-only (the mock guard forbids live
+# values in the repository [vars]), so the plan realigns it instead of inventing it.
+B14_UPSTREAM_MODE_VAR = "B14_UPSTREAM_MODE"
+B14_UPSTREAM_URL_VAR = "B14_UPSTREAM_URL"
+B14_BASE_URL_VAR = "PADIEM_CHAT_B14_BASE_URL"
 PUBLIC_BASE_URL_VAR = "PADIEM_CHAT_PUBLIC_BASE_URL"
 # #3252: a live version_metadata binding is runtime provenance. Exactly one may
 # exist, its name must be a bounded identifier, and it is preserved verbatim —
@@ -245,6 +251,25 @@ from b62_repo_binding_authority import (
 )
 
 
+def _b14_base_pin(values) -> str | None:
+    """Return the #5784 switch origin the legacy base binding must equal.
+
+    The pair being planned is what the deploy serves: the repository supplies it
+    when the Worker does not, and a live pair is preserved. In ``https`` mode
+    ``config.py`` refuses a ``PADIEM_CHAT_B14_BASE_URL`` that disagrees with
+    ``B14_UPSTREAM_URL`` (a half-applied switch), so a stale legacy base would
+    leave the served Worker refusing every B14 request. The plan therefore
+    realigns an existing live value to the switch origin instead of uploading a
+    config that cannot boot that lane. Nothing is invented: a name this Worker
+    does not serve stays absent.
+    """
+    mode = str(values.get(B14_UPSTREAM_MODE_VAR, "")).strip().lower()
+    origin = values.get(B14_UPSTREAM_URL_VAR)
+    if mode != "https" or not isinstance(origin, str) or not origin.strip():
+        return None
+    return origin.strip()
+
+
 def _vars_plan(live, repo, set_var, allow_binding_removal):
     values = dict(live["vars"])
     for name, value in repo.get("vars", {}).items():
@@ -262,6 +287,15 @@ def _vars_plan(live, repo, set_var, allow_binding_removal):
             raise ProductionConfigError("set_var values must be strings or null")
         else:
             values[name] = value
+    pin = _b14_base_pin(values)
+    if pin is not None and B14_BASE_URL_VAR in values:
+        if B14_BASE_URL_VAR in (set_var or {}) and values[B14_BASE_URL_VAR] != pin:
+            # An explicit change that disagrees with the switch is the same
+            # half-applied state config.py refuses; fail closed before upload.
+            raise ProductionConfigError(
+                f"{B14_BASE_URL_VAR} must match {B14_UPSTREAM_URL_VAR} in https mode"
+            )
+        values[B14_BASE_URL_VAR] = pin
     return values
 
 

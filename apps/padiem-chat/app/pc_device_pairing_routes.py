@@ -277,6 +277,29 @@ def _log_managed(*, actor: str, link_id: Any, managed: bool, result: str) -> Non
     _LOGGER.info(json.dumps(event, separators=(",", ":")))
 
 
+def presence_pairing_verifier(presence_store: Any) -> Any:
+    """The claim route's node-existence proof, built from the PR-2 directory.
+
+    #7293 follow-up: the claim route reads ``app.state.pc_pairing_verifier``
+    and no runtime ever injected one, so every typed-code claim landed in
+    ``pending_verification`` forever and no self-service pairing could ever
+    become an executable target. The verifier is exactly what the claim route's
+    own comment says it should be: the same server-recorded Mesh presence
+    receipt the owner's PC list reads — a node the directory currently sees as
+    online. A runtime with no presence store stays fail-closed (never verified).
+    """
+
+    async def verify(*, mesh_node_id: Any, code: Any) -> bool:
+        del code  # the code's possession proof already happened in the route
+        if presence_store is None:
+            return False
+        view = await _presence_view(
+            presence_store, device_id=mesh_node_id, now=_now())
+        return view.get("online") is True
+
+    return verify
+
+
 def _issued_pairing(request: Request, issued: dict[str, Any]) -> dict[str, Any]:
     """One issued (or reissued) install, as the browser may see it.
 
