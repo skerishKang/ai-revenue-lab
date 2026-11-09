@@ -265,6 +265,7 @@ def correlate(lines: list[dict], probe: dict) -> dict:
         "admission_ms": None, "engine_core_ms": None, "engine_total_ms": None,
         "queue_wait_ms": None, "pickup_ms": None, "guard_ms": None,
         "pc_read_ms": None, "read_to_submit_ms": None, "submit_ms": None,
+        "result_ingest_ms": None, "poll_discovery_ms": None,
         "chat_assemble_ms": None, "end_to_end_ms": None,
         "run_hash": None, "dispatch_id": None,
         "slow_identity": [f"{item.get('method')}={item.get('ms')}" for item in slow_identity],
@@ -325,6 +326,25 @@ def correlate(lines: list[dict], probe: dict) -> dict:
             ended = _epoch(chat_event.get("ts"))
             if ended:
                 out["chat_assemble_ms"] = round((ended - submit_t) * 1000.0, 1)
+    # Two assembly sub-spans (the 2026-11-09 follow-up): the result receipt
+    # leg (submit -> Chat's pc_result stage=received) versus the discovery
+    # leg (that receipt -> the /api/mcp response end, the status-poll
+    # overshoot). Both stay None until the pc_result lines reach the journal
+    # (#7239's sibling hook), and chat_assemble_ms above keeps its meaning.
+    result_received = next((row for row in results if row["stage"] == "received"), None)
+    if result_received:
+        # The receipt leg starts at the executor's submit_ok acknowledgement
+        # (the HTTP 200 on the loopback submit), falling back to the submit
+        # marker when an older executor printed no acknowledgement.
+        submit_ok = next((phase for phase in relevant if phase["phase"] == "submit_ok"), None)
+        receipt_start = (submit_ok or submit or {})
+        start_t = _epoch(receipt_start.get("ts")) or receipt_start.get("t")
+        if start_t:
+            out["result_ingest_ms"] = round((result_received["t"] - start_t) * 1000.0, 1)
+            if chat_event is not None:
+                ended = _epoch(chat_event.get("ts"))
+                if ended:
+                    out["poll_discovery_ms"] = round((ended - result_received["t"]) * 1000.0, 1)
     return out
 
 
@@ -364,6 +384,7 @@ STAGES = (
     ("queue_wait", "queue_wait_ms"), ("pickup", "pickup_ms"),
     ("guard", "guard_ms"), ("pc_read", "pc_read_ms"),
     ("read_to_submit", "read_to_submit_ms"), ("submit", "submit_ms"),
+    ("result_ingest", "result_ingest_ms"), ("poll_discovery", "poll_discovery_ms"),
     ("chat_assemble", "chat_assemble_ms"), ("end_to_end", "end_to_end_ms"),
 )
 

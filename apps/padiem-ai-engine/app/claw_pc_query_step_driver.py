@@ -140,6 +140,15 @@ PC_FILES_READ_MAX_BYTES = 20_000_000
 #: next call; nothing is lost, only the first answer arrives sooner.
 PC_FILES_WAIT_SECONDS = 21
 PC_FILES_WAIT_ENV = "PADIEM_PC_FILES_WAIT_SECONDS"
+#: Per-sleep ceiling for the PC FILES command_status ladder (read/list and
+#: search). The PC read answers ~0.6 s after the claim (2026-11-09 automatic
+#: measurements, n=41: pc_read median 0.60 s, read_to_submit median 0.33 s),
+#: so a 5 s cap let the sleep overshoot an already-ready result by up to 2 s
+#: inside the response-assembly window (chat_assemble median 1.7 s, max 3.5 s).
+#: 1 s keeps the discovery gap at or below the measured result latency. The
+#: TOTAL wait budget above is unchanged, and the shell status poll keeps its
+#: own ladder (#7131) untouched.
+_PC_FILES_POLL_SECONDS_CAP = 1.0
 _PC_FILES_JOB_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 
 
@@ -977,7 +986,7 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 # (0.5 → 1 → 2 → …, capped at 5 s) so a waiting caller stops
                 # hammering the host while the PC keeps running.
                 await asyncio.sleep(max(0.0, min(poll_seconds, wait_deadline - time.monotonic())))
-                poll_seconds = min(poll_seconds * 2, 5.0)
+                poll_seconds = min(poll_seconds * 2, _PC_FILES_POLL_SECONDS_CAP)
             observed = await _signed_files_call(
                 service=service, request_factory=request_factory,
                 secret=secret, owner=owner, mode="command_status",
@@ -1399,7 +1408,7 @@ def _make_pc_search_handler(
         poll_seconds = 0.5
         while True:
             await asyncio.sleep(poll_seconds)
-            poll_seconds = min(poll_seconds * 2, 5.0)
+            poll_seconds = min(poll_seconds * 2, _PC_FILES_POLL_SECONDS_CAP)
             observed = await _signed_files_call(
                 service=service, request_factory=request_factory,
                 secret=secret, owner=owner, mode="command_status",

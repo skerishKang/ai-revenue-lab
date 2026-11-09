@@ -45,6 +45,7 @@ import json
 import logging
 import re
 import secrets
+import sys
 import time
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -54,6 +55,34 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
+
+#: The result-leg stage lines (``pc_result stage=…``) and this module's own
+#: bounded warnings share one logger; the host hook below is bound to it.
+_RESULT_LOG = logging.getLogger(__name__)
+
+
+def ensure_result_log_host_visible() -> None:
+    """Make the ``pc_result`` stage lines reach the COM2 journal (#7239 twin).
+
+    Same host fact the queue marker documented: the serving CPython process
+    configures no logging, the root logger has no handler and Python's
+    fallback carries WARNING and above — so the result-ingest INFO records
+    were created and then dropped, and the latency monitor could not split
+    the result-receipt leg from the poll-wait leg. Bind one message-only
+    stderr handler to this module's logger at the one ingest call site;
+    propagation stops so a later root handler cannot write the line twice.
+    """
+    if _RESULT_LOG.handlers or logging.getLogger().handlers:
+        return
+    if _RESULT_LOG.level == logging.NOTSET or _RESULT_LOG.level > logging.INFO:
+        # The same gate that swallowed the queue marker: without an explicit
+        # level the module logger inherits the root's default (WARNING), so
+        # even a bound handler would filter the INFO stage lines out.
+        _RESULT_LOG.setLevel(logging.INFO)
+    handler = logging.StreamHandler(sys.stderr)
+    handler.setFormatter(logging.Formatter("%(message)s"))
+    _RESULT_LOG.addHandler(handler)
+    _RESULT_LOG.propagate = False
 
 from .pc_device_pairing_store import PcPairingError
 
@@ -3150,6 +3179,7 @@ def _command_output_parts(output: str, limit: int) -> list[str]:
 
 async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     """Executor submit: secret + single-use nonce, verified, appended once."""
+    ensure_result_log_host_visible()
     parsed_result = await _read_result_body(request)
     if parsed_result is None:
         return _invalid_body("result")
@@ -3215,7 +3245,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
     from .pc_correlation import run_hash as _result_run_hash, dispatch_id as _result_dispatch_id
     result_run_hash = _result_run_hash(dispatch.get("run_id")) or "none"
     result_dispatch_id = _result_dispatch_id(wire.get("dispatch_id")) or "none"
-    result_log = logging.getLogger(__name__)
+    result_log = _RESULT_LOG
     result_log.info("pc_result stage=received run_hash=%s dispatch_id=%s", result_run_hash, result_dispatch_id)
     claim = dispatch.get("claim")
     if claim not in ("first", "retry"):
