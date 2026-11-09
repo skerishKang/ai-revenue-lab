@@ -56,6 +56,17 @@ _AUTH_SESSION_TTL_DEFAULT = 300
 _AUTH_SESSION_TTL_MAX = 900
 
 
+def _owner_scope_ttl_seconds() -> int:
+    """The PC-lane owner-scope window, shared with the auth-session window.
+
+    The same upper bound (900 s) and default (300 s) as the auth-session
+    window: pairing/disconnect/designation writes drop the entry in the
+    same request (see drop_cached_owner_scope_of), so a longer window never
+    holds a scope the authority no longer answers.
+    """
+    return _auth_session_ttl_seconds()
+
+
 def _auth_session_ttl_seconds() -> int:
     """The auth-session window shared with the SQLite auth/session cache."""
     raw = os.environ.get(_AUTH_SESSION_TTL_ENV, "").strip()
@@ -123,6 +134,23 @@ class CachedIdentityAuthority:
         self._inflight.clear()
         self._entries.pop("ownerscope:" + _hash_key(session_id), None)
         self._entries.pop("authsess:" + _hash_key(session_id), None)
+
+    def invalidate_owner_scope_of_user(self, user_id: str) -> None:
+        """Drop only that user's cached owner-scope answers.
+
+        Pairing, unpairing, disconnect and designation change what the
+        connector may resolve for the account; the entries these answer with
+        are filed under the account ref they resolved. Unlike
+        `invalidate_user`, auth-session answers stay standing, so one
+        pairing does not revoke everybody's cached session reads.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            return
+        self._epoch += 1
+        self._inflight.clear()
+        for key in [k for k, (_, _, user_ref) in self._entries.items()
+                    if k.startswith("ownerscope:") and user_ref == user_id]:
+            self._entries.pop(key, None)
 
     async def _get_or_load(self, key: str, user_ref: str, loader,
                            ttl: float | None = None, ref_of=None) -> Any:
@@ -231,7 +259,7 @@ class CachedIdentityAuthority:
         async def loader() -> Any:
             return await self._inner.resolve_connector_owner_scope(session_id=session_id)
 
-        scope = await self._get_or_load(key, "", loader)
+        scope = await self._get_or_load(key, "", loader, ttl=_owner_scope_ttl_seconds())
         # The scope answers with the account the session belongs to, so a
         # user-level invalidation can find and drop this entry later.
         if isinstance(scope, dict):
