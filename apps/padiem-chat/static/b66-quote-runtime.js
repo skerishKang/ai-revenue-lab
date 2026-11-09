@@ -107,6 +107,18 @@
   let gradeKeys = [];
   let initialized = false;
   let refreshPromise = null;
+  // #7073: the capability event fires once per product-capabilities syncAll
+  // (boot, deployment ready, each auth re-read), and every one of them used to
+  // re-read the runtime config even when nothing about the account changed.
+  // The config read is now shared inside a short window keyed by the signed-in
+  // owner (the #7086 sharing pattern, cf. PAIRINGS_READ_WINDOW_MS in
+  // pc-connect-flow.js): the skills list is still re-read by every refresh,
+  // only the config read is reused, and a different owner never reuses
+  // another owner's config. Save/remember flows call refresh() explicitly
+  // and still re-read skills; their config is unchanged anyway.
+  let b66SessionKey = "";
+  let runtimeConfigCached = null; // {key, at, response, data}
+  const RUNTIME_CONFIG_SHARED_WINDOW_MS = 10000;
   let currentRequestId = null;
   let frameLoadedUrl = "";
   let pcQuerySequence = 0;
@@ -1484,12 +1496,26 @@
     populateSkills();
   }
 
+  async function readRuntimeConfig() {
+    const now = Date.now();
+    if (runtimeConfigCached && runtimeConfigCached.key === b66SessionKey
+        && now - runtimeConfigCached.at < RUNTIME_CONFIG_SHARED_WINDOW_MS) {
+      return { response: runtimeConfigCached.response, data: runtimeConfigCached.data };
+    }
+    const result = await readJson("/api/b66/runtime-config");
+    if (result.response.ok) {
+      runtimeConfigCached = { key: b66SessionKey, at: now,
+        response: result.response, data: result.data };
+    }
+    return result;
+  }
+
   async function refresh() {
     if (refreshPromise) return refreshPromise;
     refreshPromise = (async () => {
       ensureUi();
       try {
-        const configResult = await readJson("/api/b66/runtime-config");
+        const configResult = await readRuntimeConfig();
         if (!configResult.response.ok) {
           runtime = null;
           skills = [];
@@ -1726,6 +1752,9 @@
     // #6100: the event fires at startup too (after /api/auth/status), so the
     // logged-out hint is decided by the product's own signal, never guessed.
     signedIn = !!(auth && auth.authenticated === true);
+    b66SessionKey = signedIn
+      ? "signed_in|" + (auth.ownerKey || "")
+      : "signed_out";
     if (signedIn) refresh();
     else {
       resetPcDirectory();
