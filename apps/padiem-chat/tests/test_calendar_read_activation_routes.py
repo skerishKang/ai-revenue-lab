@@ -14,6 +14,7 @@ from app.calendar_read_activation_engine import (
     CloudflareCalendarReadActivationEngineClient,
     CalendarReadActivationClientError,
 )
+from app import calendar_session_authority as session_authority
 from app.control_plane_identity_shadow import IdentityShadowRecord
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
@@ -23,9 +24,27 @@ _SHADOW_SESSION_ID = "b62-shadow-session-1"
 _SUBJECT_ID = "sub_calendar_owner"
 
 
+class _Profile:
+    def __init__(self, user_id: str = "usr_product_user_1") -> None:
+        self.user_id = user_id
+
+
+_PROFILE = _Profile()
+
+
+class _HistoryStore:
+    """#7261: product authentication is proven inside the shared resolver."""
+
+    def __init__(self, profile=None) -> None:
+        self.profile = _PROFILE if profile is None else profile
+
+    async def get_user(self, user_id: str):
+        return self.profile
+
+
 class _Request:
     def __init__(self, *, body: bytes = b"{}", origin: str = "https://chat.padiem.net", client=None,
-                 authority=None, shadow_store=None, cookies=None):
+                 authority=None, shadow_store=None, cookies=None, profile=_PROFILE):
         self.headers = {
             "origin": origin,
             "content-type": "application/json",
@@ -42,6 +61,7 @@ class _Request:
                 calendar_read_activation_client=client,
                 control_plane_identity_authority=authority,
                 identity_shadow_store=shadow_store,
+                history_store=_HistoryStore(profile),
             )
         )
 
@@ -118,6 +138,10 @@ class _Authority:
 
 def _patch_authenticated(monkeypatch, *, shadow_store=None, authority=None):
     monkeypatch.setattr(routes, "current_user_id", lambda request: "usr_product_user_1")
+    monkeypatch.setattr(session_authority, "auth_ready", lambda request: True)
+    monkeypatch.setattr(
+        session_authority, "current_user_id", lambda request: "usr_product_user_1"
+    )
     return (
         shadow_store if shadow_store is not None else _ShadowStore(),
         authority if authority is not None else _Authority(),
@@ -155,7 +179,7 @@ def test_activation_uses_only_server_resolved_session_and_projects_no_private_re
 def test_activation_refuses_when_only_the_b54_session_exists(monkeypatch):
     """No B62 shadow pointer means no reviewed connector context: refuse."""
 
-    monkeypatch.setattr(routes, "current_user_id", lambda request: "usr_product_user_1")
+    _patch_authenticated(monkeypatch)
 
     class _EmptyShadowStore:
         async def load_projection(self, product_user_id: str):

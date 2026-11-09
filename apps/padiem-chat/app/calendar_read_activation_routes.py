@@ -29,16 +29,17 @@ from starlette.responses import JSONResponse
 from .auth_routes import current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .calendar_read_activation_engine import (
-    GENERIC_CALENDAR_READ_ACTIVATION_CODE,
     CALENDAR_ACTIVATION_SAFE_DIAGNOSTIC_CODES,
+    GENERIC_CALENDAR_READ_ACTIVATION_CODE,
     CalendarReadActivationClientError,
 )
-from .config import Settings
-from .control_plane_identity import IdentityBridgeError
-from .control_plane_identity_shadow import (
-    request_canonical_session_id,
-    resolve_refreshed_session,
+from .calendar_session_authority import (
+    CALENDAR_PATH_ACTIVATION,
+    CALENDAR_SESSION_NO_TRUSTED_AUTHORITY,
+    CALENDAR_SESSION_UNAVAILABLE,
+    resolve_calendar_session,
 )
+from .config import Settings
 from .same_origin_guard import expected_browser_origin
 
 
@@ -113,54 +114,43 @@ async def activate_google_calendar_read(request: Request) -> JSONResponse:
     except ValueError:
         return _error(400, "calendar_read_activation_body_invalid", "활성화 요청 형식이 올바르지 않습니다.")
 
-    # #7247: the reviewed connector context is B62-scoped, so the Engine must
-    # receive the same session the connector ticket route uses
-    # (``connector_ticket_routes`` -> the B62 shadow session). Handing it the
-    # B54 canonical session made the Control Plane reject every activation with
-    # ``connector_context_session_mismatch``. ``resolve_refreshed_session`` is
-    # the existing shared fail-closed contract for that pointer: no shadow row
-    # (B54-only login), a foreign subject, a foreign product or an inactive
-    # session are still refused, and a stale pointer is re-pointed exactly as
-    # it is for every other shared-authority caller.
-    authority = getattr(request.app.state, "control_plane_identity_authority", None)
-    shadow_store = getattr(request.app.state, "identity_shadow_store", None)
+    # #7247/#7261: the reviewed connector context is B62-scoped, so the Engine
+    # receives the one session every calendar path resolves through
+    # ``resolve_calendar_session`` (the B62 shadow contract, not the B54
+    # canonical session). No shadow row, a foreign subject, a foreign product or
+    # an inactive session are still refused, and a stale pointer is re-pointed
+    # exactly as it is for every other shared-authority caller.
     client = getattr(request.app.state, "calendar_read_activation_client", None)
-    if authority is None or shadow_store is None or client is None:
+    if client is None:
         return _error(
             503,
             "calendar_read_activation_unavailable",
             "캘린더 읽기 활성화를 사용할 수 없습니다.",
         )
 
-    try:
-        session = await resolve_refreshed_session(
-            authority=authority,
-            store=shadow_store,
-            product_user_id=uid,
-            current_session_id=request_canonical_session_id(request),
-        )
-    except IdentityBridgeError as exc:
-        # A missing or foreign product identity is a refusal of this browser
-        # session, not a service outage; only genuine authority failures stay 5xx.
-        if exc.status_code >= 500 and exc.code != "control_plane_identity_not_linked":
+    calendar_session = await resolve_calendar_session(
+        request, path=CALENDAR_PATH_ACTIVATION, user_id=uid
+    )
+    if not calendar_session.resolved:
+        if calendar_session.reason in (
+            CALENDAR_SESSION_UNAVAILABLE,
+            CALENDAR_SESSION_NO_TRUSTED_AUTHORITY,
+        ):
             return _error(
-                503,
-                "calendar_read_activation_unavailable",
-                "캘린더 읽기 활성화를 사용할 수 없습니다.",
+                503 if calendar_session.reason == CALENDAR_SESSION_UNAVAILABLE else 403,
+                "calendar_read_activation_unavailable"
+                if calendar_session.reason == CALENDAR_SESSION_UNAVAILABLE
+                else "current_b54_session_unavailable",
+                "캘린더 읽기 활성화를 사용할 수 없습니다."
+                if calendar_session.reason == CALENDAR_SESSION_UNAVAILABLE
+                else "현재 Padiem 세션을 확인할 수 없습니다.",
             )
         return _error(
             403,
             "current_b54_session_unavailable",
             "현재 Padiem 세션을 확인할 수 없습니다.",
         )
-
-    session_id = getattr(session, "session_id", None)
-    if not isinstance(session_id, str) or not session_id:
-        return _error(
-            403,
-            "current_b54_session_unavailable",
-            "현재 Padiem 세션을 확인할 수 없습니다.",
-        )
+    session_id = calendar_session.session_id
     try:
         document = await client.activate(session_id=session_id)
     except CalendarReadActivationClientError as exc:

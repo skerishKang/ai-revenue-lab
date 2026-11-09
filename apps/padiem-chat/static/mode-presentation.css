@@ -154,7 +154,7 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
 /* Available: Google Drive ON (accent) family */
 .mode-option-state--available {
   background: rgba(79, 134, 173, .14);
-  color: var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
   font-weight: 600;
 }
 
@@ -177,13 +177,13 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
 }
 
 .mode-option:not(:disabled):hover {
-  border-color: var(--accent, #79bce7);
+  border-color: var(--accent);
   background: rgba(255, 255, 255, .84);
   box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
 }
 
 .mode-option:focus-visible {
-  outline: 2px solid var(--accent, #79bce7);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -196,7 +196,7 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
 }
 
 .mode-presentation-truth.is-highlighted {
-  color: var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
   font-weight: 600;
   transition: color .2s ease, font-weight .2s ease;
 }
@@ -329,7 +329,7 @@ html[data-theme="padiem-glass"] .mode-option-state {
 .mode-custom-select:focus-visible,
 .mode-custom-action:focus-visible,
 .mode-custom-retry:focus-visible {
-  outline: 2px solid var(--accent, #79bce7);
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
@@ -367,8 +367,8 @@ html[data-theme="padiem-glass"] .mode-option-state {
 }
 
 .mode-custom-save {
-  border-color: var(--accent, #79bce7);
-  background: var(--accent, #79bce7);
+  border-color: var(--accent);
+  background: var(--accent);
   color: #fff;
 }
 
@@ -382,7 +382,7 @@ html[data-theme="padiem-glass"] .mode-option-state {
 }
 
 .mode-custom-status[data-state="ready"] {
-  color: var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
   font-weight: 600;
 }
 
@@ -393,7 +393,7 @@ html[data-theme="padiem-glass"] .mode-option-state {
 }
 
 .mode-custom-message[data-state="ok"] {
-  color: var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
 }
 
 .mode-custom-guest-note[hidden],

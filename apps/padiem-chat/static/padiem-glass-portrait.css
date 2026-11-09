@@ -862,7 +862,7 @@ html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-sta
   background: rgba(17, 26, 34, .07) !important;
 }
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) #messageList .user-message .user-action:focus-visible {
-  outline: 2px solid #6557e8 !important;
+  outline: 2px solid var(--accent) !important;
   outline-offset: 1px !important;
 }
 /* Answer action bar: drop the 40px chrome to 26px textless icons. The

@@ -20,12 +20,9 @@ html[data-theme="padiem-glass"] {
   --sidebar-text: #f7f9fb;
   --text: #17202a;
   --muted: #53606c;
-  /* #7187 R3 2차: this theme's --line, --input-border-strong and
-     --focus-ring live in padiem-tokens.css now (loaded after this sheet, so
-     the html[data-theme="padiem-glass"] block there owns the values). */  --accent: #79bce7;
-  --accent-contrast: #17202a;
-  --accent-soft: rgba(121, 188, 231, .16);
-  --accent-strong: #2f6f99;
+  /* #7187 R3 2차/3차: --line, --input-border-strong, --focus-ring, --accent*,
+     --card-border live in padiem-tokens.css now (loaded after this sheet, so
+     the html[data-theme="padiem-glass"] block there owns the values). */
   --gold: #c7a76b;
   --gold-soft: rgba(199, 167, 107, .14);
   --blue: #79bce7;
@@ -37,7 +34,7 @@ html[data-theme="padiem-glass"] {
   --danger-border: rgba(127, 29, 29, .28);
   --shadow: 0 20px 60px rgba(24, 33, 42, .16);
   --card-bg: rgba(239, 243, 246, .48);
-  --card-border: rgba(255, 255, 255, .42);
+  /* --card-border moved to padiem-tokens.css (#7187 R3 3차). */
   --card-shadow: 0 18px 48px rgba(28, 38, 49, .14), inset 0 1px 0 rgba(255, 255, 255, .58);
   --composer-bg: rgba(244, 247, 249, .58);
   --composer-border: rgba(255, 255, 255, .54);

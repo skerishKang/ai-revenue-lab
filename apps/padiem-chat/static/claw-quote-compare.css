@@ -100,7 +100,7 @@
 .claw-qc-primary {
   border-color: var(--accent);
   background: var(--accent);
-  color: var(--accent-contrast, #fff);
+  color: var(--accent-contrast);
 }
 
 .claw-qc-secondary,

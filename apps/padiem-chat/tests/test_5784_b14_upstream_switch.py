@@ -76,8 +76,11 @@ def test_https_mode_never_falls_back_to_the_binding_it_just_turned_off() -> None
 
 def test_the_allowlist_covers_execution_and_the_two_authority_reads() -> None:
     assert B14_UPSTREAM_POST_PATHS and B14_UPSTREAM_READ_PATHS
-    assert "/api/pilot/models" in B14_UPSTREAM_PATHS
+    # #7272: the rows live behind the proven-caller authority; the public
+    # count summary is no longer a Chat read path.
+    assert "/api/pilot/admin/models" in B14_UPSTREAM_PATHS
     assert "/api/pilot/provider-readiness" in B14_UPSTREAM_PATHS
+    assert "/api/pilot/models" not in B14_UPSTREAM_PATHS
 
 
 def test_https_and_binding_sign_the_same_exact_body_the_same_way() -> None:

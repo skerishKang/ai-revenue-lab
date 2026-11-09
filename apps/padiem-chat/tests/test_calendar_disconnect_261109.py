@@ -18,10 +18,34 @@ DRIVE_PATH = "/api/connectors/google/drive/disconnect"
 ORIGIN = "https://chat.example.test"
 
 
+def _canonical_session(*, session_id: str = "sess_test"):
+    """#7261: the shared resolver re-reads the session from the authority."""
+
+    from datetime import datetime, timedelta, timezone
+
+    from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
+    from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
+
+    now = datetime.now(timezone.utc)
+    return AuthSessionSnapshot(
+        session_id=session_id,
+        product_id="b62",
+        subject=CanonicalSubjectRef(SubjectType.USER, "sub_test"),
+        issued_at=now - timedelta(minutes=5),
+        expires_at=now + timedelta(hours=1),
+        state=AuthSessionState.ACTIVE,
+        revision=1,
+    )
+
+
 class FakeWorkspaceIdentity:
     def __init__(self, workspace: str = "workspace_only_owner_a") -> None:
         self.workspace = workspace
         self.calls: list[str] = []
+
+    async def resolve_auth_session(self, *, session_id):
+        self.asked = list(getattr(self, "asked", [])) + [session_id]
+        return _canonical_session(session_id=session_id)
 
     async def resolve_connector_workspace(self, *, session_id):
         self.calls.append(session_id)

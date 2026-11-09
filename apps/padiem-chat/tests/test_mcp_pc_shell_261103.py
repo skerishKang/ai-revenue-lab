@@ -136,8 +136,9 @@ def test_command_is_encoded_and_uses_the_common_executor_without_mcp_files_or_de
     assert "timeout" not in command.lower() and "taskkill" not in command.lower()
     script_b64 = command.rsplit("-EncodedCommand ", 1)[1]
     script = base64.b64decode(script_b64).decode("utf-16-le")
-    assert "$inner=[Convert]::ToBase64String" in script
-    assert "-EncodedCommand $inner" in script and "& $file @args" in script
+    assert "$inner" not in script
+    assert "$args+=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($c))" in script
+    assert "& $file @args" in script
     assert "Start-Process" not in script
     # The executor wraps this command and reads its envelope from the same
     # PowerShell session; an outer exit would end the wrapper first.
@@ -155,19 +156,24 @@ def test_nested_powershell_asks_for_text_output_and_pins_utf8_output():
     asked for explicitly, and the console encoding is pinned so the answer is not
     read in the code page it was not written in.
     """
+    ps_command = shell.build_pc_shell_command({"command": "Write-Output ok"})
     script = base64.b64decode(
-        shell.build_pc_shell_command({"command": "Write-Output ok"})
-        .rsplit("-EncodedCommand ", 1)[1]
+        ps_command.rsplit("-EncodedCommand ", 1)[1]
     ).decode("utf-16-le")
-    assert "-OutputFormat Text -EncodedCommand $inner" in script
+    # #7188 R4 ②: the launcher arguments travel in the resolved env line, and
+    # the script appends the encoded command after them — the same nested argv
+    # shape (… -OutputFormat Text -EncodedCommand <b64>), no name branch.
+    assert ("$env:PADIEM_MCP_SHELL_ARGS='-NoProfile -NonInteractive "
+            "-ExecutionPolicy Bypass -OutputFormat Text -EncodedCommand';") in ps_command
     assert "[Console]::OutputEncoding=[Text.Encoding]::UTF8" in script
     # The cmd/bash branch keeps the same nested shape; nothing is redirected
     # into a pipeline the console would try to deserialize.
+    cmd_command = shell.build_pc_shell_command({"command": "echo ok", "shell": "cmd"})
     cmd_script = base64.b64decode(
-        shell.build_pc_shell_command({"command": "echo ok", "shell": "cmd"})
-        .rsplit("-EncodedCommand ", 1)[1]
+        cmd_command.rsplit("-EncodedCommand ", 1)[1]
     ).decode("utf-16-le")
-    assert "$file='cmd.exe'" in cmd_script and "& $file @args" in cmd_script
+    assert "$env:PADIEM_MCP_SHELL_FILE='cmd.exe';" in cmd_command
+    assert "& $file @args" in cmd_script
     assert "ConvertTo-CliXml" not in cmd_script and "Export-Clixml" not in cmd_script
 
 

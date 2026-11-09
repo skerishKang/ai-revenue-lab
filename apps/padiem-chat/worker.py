@@ -412,13 +412,17 @@ class CloudflareB14ServiceTransport:
     async def get_json(self, path: str) -> tuple[int, bytes]:
         """Read only two fixed B14 model authority endpoints over Service Binding."""
         if path not in (
-            "/api/pilot/models",
+            "/api/pilot/admin/models",
             "/api/pilot/provider-readiness",
         ):
             raise ValueError("unsupported B14 model-authority read endpoint")
+        # #7272: the rows live on the proven-caller authority, so the GET
+        # carries the same body-bound proof over its empty body that the
+        # dispatch POST carries over its payload.
         request = Request(
             "https://b14.internal" + path,
             method="GET",
+            headers=service_proof_headers(self.proof_secret, b""),
         )
         response = await self.binding.fetch(request.js_object)
         status = int(response.status)

@@ -5,6 +5,7 @@ from .file_lane import file_resolver
 import asyncio
 import base64
 import json
+import logging
 import re
 from collections.abc import Mapping
 from typing import Any
@@ -12,9 +13,11 @@ from typing import Any
 from starlette.requests import Request
 from starlette.responses import JSONResponse, StreamingResponse
 
+
 from .attachments import ImageAttachment
 from .binary_attachment_frame import decode_binary_attachment_frame
 from .auth_routes import auth_ready, current_user_id
+from .journal_host import ensure_journal_visible
 from .drive_general_grounding import DriveGroundingError, drive_general_grounding
 from .auto_grounding import (
     AutoGroundingService,
@@ -24,6 +27,10 @@ from .auto_grounding import (
 from .native_calendar_intent import parse_native_calendar_intent, try_native_calendar_chat
 from .native_calendar_adapter import NativeCalendarAdapterError
 from .chat_connector_tools import (
+    GOOGLE_CALENDAR_CONNECT_NOTE,
+    google_calendar_named,
+    calendar_read_reachable,
+    CALENDAR_READ_TOOL_NAME,
     CONNECTOR_UNAVAILABLE_NOTE,
     google_connector_intent,
     google_connector_turn_for_text,
@@ -72,6 +79,11 @@ from .request_telemetry import emit_stage_event
 from .tool_presentations import get_tool_presentation
 from .usage_gate import UsageGate
 from .web_tools import WebToolError
+
+_LOG = logging.getLogger(__name__)
+
+# The offer/read verdicts below are stage lines: make them reach the journal.
+ensure_journal_visible(_LOG)
 
 
 def _public_evidence(items) -> list[dict[str, Any]]:
@@ -343,10 +355,30 @@ async def _chat_connector_tools_for_turn(
     from .chat_pc_drive import chat_pc_route_declares_tools
 
     if not intent:
+        # A general turn declares nothing. The verdict is still journaled:
+        # silence here is exactly what made a withheld calendar tool
+        # indistinguishable from a broken one in the 11-09 investigation.
+        _LOG.info("calendar_tools_offer intent=%s verdict=no_connector_intent", bool(intent))
         return ()
-    if not await chat_pc_route_declares_tools(request, model_id):
+    route_declares_tools = await chat_pc_route_declares_tools(request, model_id)
+    if not route_declares_tools:
+        # #7261: a dropped offering must be visible in the journal with the
+        # closed reason only — never the model, the owner, or any calendar data.
+        _LOG.info(
+            "calendar_tools_offer intent=%s route_tools=%s verdict=route_without_native_tools",
+            bool(intent),
+            bool(route_declares_tools),
+        )
         return ()
-    return await connector_tools_for_turn(request, uid=uid, intent_turn=intent)
+    tools = await connector_tools_for_turn(request, uid=uid, intent_turn=intent)
+    _LOG.info(
+        "calendar_tools_offer intent=%s route_tools=%s verdict=%s tools=%d",
+        bool(intent),
+        bool(route_declares_tools),
+        "declared" if tools else "dropped",
+        len(tools),
+    )
+    return tools
 
 
 #: The tool output becomes model context; the bound keeps one connector read
@@ -382,6 +414,21 @@ async def _connector_tool_lane(
             {"error": {"code": "connector_tool_unsupported", "message": "요청한 커넥터 도구를 실행할 수 없습니다."}},
         )
         return
+    if tool_name == CALENDAR_READ_TOOL_NAME:
+        # #7261: the READ call is gated by the turn's one Calendar session
+        # resolution (the offer decision), so the offer and the read can never
+        # disagree. A turn that withheld the tool cannot read either.
+        from .chat_connector_tools import calendar_read_reachable
+
+        if not await calendar_read_reachable(request, uid=uid):
+            timing.set_outcome("error")
+            _LOG.info("calendar_read_session verdict=read_not_authorized")
+            yield _public_sse(
+                "error",
+                {"error": {"code": "calendar_session_unavailable",
+                           "message": "캘린더 세션을 확인할 수 없습니다."}},
+            )
+            return
     engine_client = getattr(request.app.state, "connector_tool_engine_client", None)
     if engine_client is None:
         timing.set_outcome("error")
@@ -957,7 +1004,24 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     # grant-gated above), so the native branch steps aside. CREATE asks
     # ("일정 등록해줘") stay with the workspace-native store — the connector
     # is READ-only.
+    # #7273: the internal PADIEM calendar and the external Google calendar are
+    # separate products, so one ask is answered by exactly one of them. Naming
+    # the external one hands the turn to the connector lane (grant active) or
+    # states the missing connection; the internal branch keeps every ask that
+    # does not name it, byte for byte as before.
+    google_calendar_explicit = bool(
+        browser_project_id is None and google_calendar_named(latest_user_text)
+    )
+    recommended_connect_note: str | None = None
     native_read_moved_to_connector = bool(google_connector_turn and native_plan_op == "read")
+    if google_calendar_explicit:
+        if await calendar_read_reachable(request, uid=uid):
+            native_read_moved_to_connector = True
+            _LOG.info("calendar_branch verdict=google_named_granted")
+        else:
+            recommended_connect_note = GOOGLE_CALENDAR_CONNECT_NOTE
+            native_read_moved_to_connector = True
+            _LOG.info("calendar_branch verdict=google_named_no_grant")
     if needs_native_calendar and calendar_store is None and not native_read_moved_to_connector:
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
     if calendar_store is not None and util_scope is None and not native_read_moved_to_connector:
@@ -1008,6 +1072,39 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                 media_type="text/event-stream",
                 headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
             )
+
+    if recommended_connect_note is not None:
+        # The external calendar was named and no READ grant exists. Answer
+        # with the connection guidance instead of dispatching: the model has
+        # no calendar data on this turn and must not describe one.
+        async def connect_note_iterator():
+            yield _public_sse("delta", {"delta": recommended_connect_note})
+            done_payload = {"done": True}
+            if uid is not None and store is not None and latest_user_text:
+                try:
+                    saved_id = await store.append_exchange(
+                        uid, conversation_id, latest_user_text,
+                        recommended_connect_note, product_scope=PRODUCT_SCOPE_CHAT,
+                    )
+                except Exception:
+                    saved_id = None
+                if saved_id is not None:
+                    done_payload["conversation_id"] = saved_id
+            yield _public_sse("done", done_payload)
+
+        async def connect_note_timing_iterator():
+            try:
+                async for chunk in connect_note_iterator():
+                    yield chunk
+            finally:
+                timing.emit()
+
+        return StreamingResponse(
+            connect_note_timing_iterator(),
+            status_code=200,
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
+        )
 
     timing.mark("calendar")
     auto_grounding: AutoGroundingService = request.app.state.auto_grounding
