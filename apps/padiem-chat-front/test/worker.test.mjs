@@ -292,6 +292,10 @@ test("front vars match the verified non-secret production contract", () => {
     // the front answered a cookie-less 504 while the session was created right
     // after it (#6957 lightened that RPC; re-measure before shrinking this).
     AUTH_WRITE_TIMEOUT_MS: "30000",
+    // The voice STT writes wait on the STT Worker's bounded upstream budget
+    // plus the host→Chat-Worker RPC; a healthy mint measured 5.7-7.6s and the
+    // generic 8s window cut a 200 answer (#7293). Same rule as the login write.
+    VOICE_STT_WRITE_TIMEOUT_MS: "30000",
   };
   const config = readFileSync(join(HERE, "..", "wrangler.toml"), "utf8");
   const sections = config.split(/^\[vars\]\s*$/m);
