@@ -333,12 +333,20 @@ def correlate(lines: list[dict], probe: dict) -> dict:
     # (#7239's sibling hook), and chat_assemble_ms above keeps its meaning.
     result_received = next((row for row in results if row["stage"] == "received"), None)
     if result_received:
-        # The receipt leg starts at the executor's submit_ok acknowledgement
-        # (the HTTP 200 on the loopback submit), falling back to the submit
-        # marker when an older executor printed no acknowledgement.
+        # The receipt leg starts when the executor begins its submit, not at its
+        # own acknowledgement: Chat logs ``pc_result stage=received`` while it is
+        # handling that submit, so it prints BEFORE the executor's ``submit_ok``
+        # (measured 2026-11-09: 96–2262 ms earlier). Using the acknowledgement
+        # as the start made the leg negative. The submit marker is the boundary
+        # that precedes both, so submit -> received -> response end partitions
+        # the assembly window exactly (result_ingest + poll_discovery ==
+        # chat_assemble).
         submit_ok = next((phase for phase in relevant if phase["phase"] == "submit_ok"), None)
-        receipt_start = (submit_ok or submit or {})
-        start_t = _epoch(receipt_start.get("ts")) or receipt_start.get("t")
+        start_t = None
+        if submit:
+            start_t = _epoch(submit.get("ts")) or submit.get("t")
+        if start_t is None and submit_ok:
+            start_t = _epoch(submit_ok.get("ts")) or submit_ok.get("t")
         if start_t:
             out["result_ingest_ms"] = round((result_received["t"] - start_t) * 1000.0, 1)
             if chat_event is not None:
