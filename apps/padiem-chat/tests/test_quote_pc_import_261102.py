@@ -149,16 +149,22 @@ byId.clawWebOfficeDetails.appendChild(byId.clawWebXlsxPcPick);
 byId.clawWebOfficeDetails.appendChild(byId.clawWebXlsxSave);
 byId.clawWebOfficeDetails.open = false;
 
+const docListeners = {};
 const doc = {
   documentElement: { lang: "ko" },
   body: makeEl("body"),
   head: makeEl("head"),
   activeElement: null,
+  // Deferred scripts run while readyState is "interactive"; DOMContentLoaded
+  // arrives after them, exactly like a browser. pcLinked waits for the
+  // connect-flow module (a later parser-blocking script) at that point.
+  readyState: "interactive",
   getElementById: (id) => byId[id] || null,
   querySelector: () => null,
   querySelectorAll: () => [],
   createElement: (tag) => makeEl(tag),
-  addEventListener() {},
+  addEventListener(type, fn) { (docListeners[type] = docListeners[type] || []).push(fn); },
+  dispatchDomEvent(type) { (docListeners[type] || []).slice().forEach((fn) => fn({ type })); },
 };
 
 const XLSX_MEDIA = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
@@ -302,6 +308,9 @@ context.globalThis = context;
 (async () => {
   vm.runInContext(TUSLIB, context);
   vm.runInContext(SOURCES, context);
+  doc.dispatchDomEvent("DOMContentLoaded");
+  doc.readyState = "complete";
+  doc.dispatchDomEvent("load");
   const pause = (ms) => new Promise((r) => setTimeout(r, ms));
   const waitUntil = async (check, ms) => {
     for (let waited = 0; waited < ms; waited += 10) {
