@@ -11,6 +11,8 @@ RELATED=docs/operations/CHAT_COM2_FRONT_RUNBOOK.md, docs/architecture/COM2_CHAT_
 
 chat.padiem.net은 Cloudflare Worker **padiem-chat-front**(`apps/padiem-chat-front/wrangler.toml:1-21`)이 받는다. 정적 자산은 front의 `[assets]`(=`../padiem-chat/static`)가 직접 서빙하고(`apps/padiem-chat-front/wrangler.toml:14-16`, `worker.mjs:257-262`), 나머지 전부는 `FRONT_ORIGIN`(`https://chat-com2.padiem.net`, 같은 wrangler.toml `[vars]`)으로 프록시한다. Python Worker `padiem-chat`은 서비스 바인딩 폴백(읽기 전용, `worker.mjs:221-223`)이고, 컴2 `deploy_from_main.sh`는 **API 코드만** 반영한다 — **정적 자산은 front 재배포에서만 바뀐다.** 컴2 배포만으로 화면 수정이 미반영된 #7100·#7102 사고와, D1→컴2 이관 링크의 봉인 키 불일치 #7118 사고가 모두 이 위상에서 나왔다.
 
+**사고 기록 2026-11-09**: padiem-chat 재배포(`ed2952f5`, 19:16:34Z)가 이 파일에 남아 있던 `chat.padiem.net` custom_domain route로 도메인을 재탈취해 공개 표면이 약 16분(19:16:34Z→19:33:03Z, front `172b1a74` 복원) 폴백 Worker(`runtime: mock`, D1 읽기)로 넘어갔다. 영향 창의 D1 신규 계정 2건은 모두 QA 계정(실사용자 쓰기 없음). 재발 방지: padiem-chat wrangler.toml에서 route 제거 + route 선언은 padiem-chat-front에만(`apps/padiem-chat/tests/test_chat_public_domain_pin_261109.py`로 고정).
+
 ## 1. 요청 흐름 (경로별 1줄)
 
 공통: front는 요청을 바꾸지 않는 순수 프록시다 — 본문·상태코드·헤더(다중 Set-Cookie)·SSE·WebSocket을 그대로 통과시키고(`apps/padiem-chat-front/worker.mjs:4-12`), 전달 직전 에지 프루프 헤더 `x-padiem-edge-at/id/tls/proof`를 덧붙인다(`apps/padiem-chat-front/edge-proof.mjs:24-30` — HMAC v1 = `["v1", method, pathname, at, id, tls]`, 시크릿 `PADIEM_COM2_EDGE_SECRET`, TLSv1.2/1.3 요건, 쿼리 문자열 제외). 컴2는 `EdgeProofMiddleware`(`apps/padiem-chat/app/com2_edge_middleware.py:35`)에서 검증해 `EDGE_VERIFY path=… result=ok|reject` 한 줄을 남기고 거절은 403이다(`/health` 면제).
