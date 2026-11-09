@@ -2,15 +2,12 @@ name = "padiem-ai-engine"
 # #4383: preserve existing operator-controlled plain_text feature flags on deploy.
 # Wrangler otherwise replaces dashboard vars with only repo [vars], dropping six
 # already-served WEB_XLSX_P01 / QUOTE_WRITE state flags. Never guess their values.
-# keep_vars = true additionally keeps vars not declared here.
 keep_vars = true
 
 # #7328 combined admission switch: read by worker_identity admission adapter
-# via PADIEM_ENGINE_ADMISSION_COMBINED_RPC (default off in code; this value is
-# the deployment knob). "false" restores the two-call flow.
-
-[vars]
-PADIEM_ENGINE_ADMISSION_COMBINED_RPC = "true"
+# via PADIEM_ENGINE_ADMISSION_COMBINED_RPC (default off in code; "false"
+# restores the two-call flow). Declared in the table at the end of this file
+# so every top-level scalar (including workers_dev) stays top-level.
 
 main = "worker_identity.py"
 compatibility_date = "2026-08-27"
@@ -160,3 +157,8 @@ workers_dev = false
 ENGINE_DEPLOY_ENV = "preview"
 ENGINE_AGENT_PREVIEW_ENABLED = "ENABLE_PREVIEW_AGENT_PILOT"
 
+# #7328 combined admission switch: deployment-owned plain variable.
+# Keep this table last: every top-level scalar must precede a table header in
+# TOML, and workers_dev in particular is asserted by the config contracts.
+[vars]
+PADIEM_ENGINE_ADMISSION_COMBINED_RPC = "true"
