@@ -89,8 +89,12 @@ def _synthetic_candidates(count: int) -> list[dict]:
     return rows
 
 
-def _install_extra_rows(rows: list[dict]) -> tuple[str, ...]:
+def _install_extra_rows(monkeypatch, rows: list[dict]) -> tuple[str, ...]:
     """Install the extra rows into the catalog for this test only.
+
+    Every insertion goes through ``monkeypatch`` so the process-wide catalog is
+    restored afterwards: a leaked row would corrupt later suites that compare
+    the installed catalog against the registry document.
 
     Answers the identities actually installed: a row the effective catalog
     already holds is used as-is rather than replaced.
@@ -108,7 +112,7 @@ def _install_extra_rows(rows: list[dict]) -> tuple[str, ...]:
         if model_id in CATALOG_BY_ID or model_id in registry_ids:
             installed.append(model_id)
             continue
-        CATALOG_BY_ID[model_id] = replace(template, model_id=model_id)
+        monkeypatch.setitem(CATALOG_BY_ID, model_id, replace(template, model_id=model_id))
         installed.append(model_id)
     return tuple(installed)
 
@@ -347,7 +351,7 @@ def test_a_roster_longer_than_four_is_walked_in_full_with_no_numeric_cap(
     # The extra rows are installed first, so the roster below is longer than the
     # effective one on whatever document this host serves.
     extra_rows = _synthetic_candidates(len(FREE_ROSTER) + 1)
-    long_roster = (*LONG_ROSTER, *_install_extra_rows(extra_rows))
+    long_roster = (*LONG_ROSTER, *_install_extra_rows(monkeypatch, extra_rows))
     assert len(long_roster) > len(FREE_ROSTER)
     # The walk is sized by the roster, and each member is one in-process
     # attempt; give the chain the same headroom the effective roster needs so

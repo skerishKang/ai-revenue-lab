@@ -154,3 +154,4 @@
 261109 #7241 3a PR2 test_worker.py: 소유자 핀의 슬롯/프로바이더를 wrangler secrets 표와 어댑터 선언에서 선택, 라우트 집합은 프로바이더 행 기준.
 261109 #7241 3a PR2 test_workspace_phase3.py: chat 표면을 모듈 상수로 1회 판독해 POST 경로 대체.
 261109 #7241 3a PR2 검증: 윈도우에서 변경 30파일만 실행 499 passed, 2 skipped(둘 다 문서화된 가드 skip). 추가 줄 실값 0건, 변경 파일 잔여 실값 줄 0.
+261109 #7241 3a PR2 수정 test_4317_free_completed_tier_fallback.py: 확장 로스터 행 삽입을 monkeypatch.setitem으로 바꿔 프로세스 전역 CATALOG_BY_ID 오염 제거(CI의 test_6828b_registry_wiring 실패 원인). 전체 스위트 재실행 2301 passed, 11 skipped — 이후 test_streaming_gateway chain_budget 1건은 시간 민감 flaky(재실행 시 통과)로 확인.
