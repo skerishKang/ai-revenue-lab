@@ -286,12 +286,23 @@ async def _relay_transcribe(cookie: str, live: dict, pcm: bytes) -> tuple[str, i
         return transcript.strip(), closed_code
 
 
-async def _connect_ws(url: str, headers: dict):
+def _connect_ws(url: str, headers: dict):
+    """릴레이 연결자(connector)를 돌려준다. 여는 일은 호출부의 ``async with`` 다.
+
+    ``websockets.connect`` 자체가 비동기 컨텍스트 매니저인 연결자이므로 이
+    함수는 await 해서 넘기면 안 된다. ``async def`` 로 두면 ``async with`` 가
+    연결자 대신 코루틴을 받아 매 실행
+    ``TypeError: 'coroutine' object does not support the asynchronous context
+    manager protocol`` 로 죽는다(실행 42664572275가 보고한
+    voice_relay_transport_error_TypeError). 연결자를 그대로 넘긴다.
+    """
     import websockets
     try:
-        return await websockets.connect(url, additional_headers=headers, max_size=2**22)
+        return websockets.connect(url, additional_headers=headers, max_size=2**22)
     except TypeError:
-        return await websockets.connect(url, extra_headers=headers, max_size=2**22)
+        # websockets < 14 는 헤더 인자 이름이 extra_headers 다. 연결자는 만들 때
+        # 인자를 검사하므로 여기서 갈라도 실제 연결 전에 결정된다.
+        return websockets.connect(url, extra_headers=headers, max_size=2**22)
 
 
 async def _recv(ws, timeout: float) -> dict | None:
@@ -347,10 +358,12 @@ def flow_voice(flow: Flow, cookie: str) -> None:
         flow.fail("voice_relay_timeout")
         return
     except Exception as exc:
-        # The exception class is public diagnostics: it names the failure layer
-        # (handshake status, DNS, TLS, protocol) without any header, cookie,
-        # token or URL value.
-        flow.fail(f"voice_relay_transport_error_{type(exc).__name__}")
+        # The exception class names the failure layer (handshake status, DNS,
+        # TLS, protocol); the scrubbed message fragment says which. Neither
+        # carries a header, cookie, token or the relay URL's value, and the
+        # whitespace collapse keeps the USAGE_FLOW line parseable.
+        detail = " ".join(str(exc).split())[:120].replace("padiem_session=", "session=")
+        flow.fail(f"voice_relay_transport_error_{type(exc).__name__}_{detail}")
         return
     if close_code in (4401, 4503, 4500, 4429):
         flow.fail(f"voice_relay_closed_{close_code}")
