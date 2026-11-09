@@ -24,7 +24,7 @@ from urllib.request import Request, urlopen
 
 CF_API = "https://api.cloudflare.com/client/v4"
 WORKER_NAME = "padiem-chat"
-B14_HEALTH = "https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/pilot/health"
+B14_HEALTH = "https://b14.padiem.net/api/pilot/health"
 USER_AGENT = "b62-live-readiness/1.3"
 B14_SERVICE_BINDING = "B14_SERVICE"
 

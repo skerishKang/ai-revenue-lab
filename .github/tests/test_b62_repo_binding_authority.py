@@ -57,7 +57,13 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
     # never a silent removal of something serving traffic. Each returns to an empty
     # diff as its own deploy lands.
     assert binding_diff(index(rows), expected) == {
-        'added': [{'name': 'PADIEM_CHAT_FILE_LANE_ORIGIN', 'type': 'plain_text'},
+        # 2026-11-09 COM2-only B14 decision: the Chat Worker now calls the COM2
+        # B14 over HTTPS (#5784 switch), so its two vars are declared in [vars]
+        # and reviewed here like every other pending addition. The Service
+        # Binding and the caller proof secret stay declared untouched.
+        'added': [{'name': 'B14_UPSTREAM_MODE', 'type': 'plain_text'},
+                  {'name': 'B14_UPSTREAM_URL', 'type': 'plain_text'},
+                  {'name': 'PADIEM_CHAT_FILE_LANE_ORIGIN', 'type': 'plain_text'},
                   {'name': 'PADIEM_CHAT_FILE_LANE_TICKET_SECRET',
                    'type': 'secrets_store_secret'},
                   {'name': 'PADIEM_CHAT_PASSWORD_RPC_SECRET',

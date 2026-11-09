@@ -44,7 +44,7 @@ import urllib.request
 from pathlib import Path
 from typing import Any, Callable
 
-SERVED_ORIGIN = "https://ai-revenue-korean-ai-platform.charliekant.workers.dev"
+SERVED_ORIGIN = "https://b14.padiem.net"
 COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
 USER_AGENT = "b14-gate/1.0"
 # Both invocations name a grade's exact declared model; neither keeps a
