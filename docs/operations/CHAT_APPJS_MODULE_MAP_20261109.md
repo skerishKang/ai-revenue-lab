@@ -199,3 +199,24 @@ app.js는 다수 모듈 뒤·일부 모듈 앞에 로드된다. 분리 시 전�
   상한 7,629 → 7,107. 이전 시험 12파일 + 신규 계약 2종
   (`test_r5_step4_auth_module_7216`·`test_r5_step4_auth_browser_7216`).
 
+## 11. 대화 구역 함수 확정 (R5 다음 구역, 대기 중 기록)
+
+다음 이동 대상은 추출기의 구역 분류가 **대화**로 놓은 함수 24개(현재 app.js
+7,012줄 기준 1,115줄)다. §1의 25개·1,201줄에서 앞 단계 이동으로 분류가 조정되었다.
+
+- `attachmentCopy`·`showComposerInlineHint`·`updateComposer`(533-597),
+  `showConversation`(771-806)·`addUserMessage`(818-899)·`renderAnswer`(954-980),
+  `renderStreamError`(1110-1124), 첨부 7개(`clearAttachment`~`attachmentPayload`,
+  1150-1339), `safeLocalUiMessage`(1522-1527), `resetConversationView`·
+  `resetConversation`(1715-1771), `requestCompletedAnswer`·`applyStreamDone`
+  (2601-2686), `requestStreamingAnswer`(2943-3347)·`cancelActiveStream`(3349-3371)·
+  `requestAnswer`(3400-3571), `approvalDecisionErrorMessage`(5814-5820)·
+  `approvedMemoryErrorMessage`(6311-6320) — 괄호는 7,012줄 리비전 기준.
+- **최상위 연결 코드**(app.js 유지 대상): 첨부 트레이/컴포저 리스너(562-572),
+  알림 진입(1968-1976), 전송/문서 형식 리스너(2537-2599, 3597-3607, 3726-3729),
+  종료 시 정리(6933-6968) 등 13개 블록.
+- 클로저 변수: `messageList`·`conversationArtifacts`·`conversationArtifactContext`·
+  `cancelStreamButton`·`attachmentButton`·`attachmentChipList`·`composerInlineHint`·
+  `NOTIFICATION_CONVERSATION_ID`·`composerForm` — getter는 DOM/상수, 다시 대입되는
+  변수는 setter 부여. 이전 시험 후보는 지도 §4의 대화 구역 44개 파일.
+
