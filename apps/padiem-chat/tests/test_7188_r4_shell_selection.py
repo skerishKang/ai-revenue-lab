@@ -10,7 +10,7 @@
 |-------------------------|--------------------------------------------------------|--------------------------------------------------------|
 | SYSTEM × powershell     | 디스패처 분기: powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -OutputFormat Text -EncodedCommand(b64 UTF-16LE) | 동일(SystemShellLaunch)                                |
 | SYSTEM × cmd            | cmd.exe /d /s /c <c>                                   | 동일                                                    |
-| SYSTEM × bash           | bash.exe -lc <c>                                       | 동일                                                    |
+| SYSTEM × bash           | bash.exe -lc <c>(PATH 탐색 → System32 WSL bash가 잡힘) | Git Bash 표준 설치 경로 후보 순서 탐색, 없으면 shell_unavailable(127) |
 | SYSTEM × 셸 생략         | powershell 기본                                        | 동일(PC_SHELL_DEFAULT_NAME)                             |
 | SYSTEM × 미지원 이름     | 채팅 화이트리스트가 도구 오류로 거부(실행기 도달 불가)   | 동일 + 공통 UnknownShellName 예외                       |
 | USER × powershell / cmd | material shell 그대로 통과                              | 동일                                                    |
@@ -31,6 +31,7 @@ import subprocess
 import pytest
 
 from padiem_ai_core.pc_shell_selection import (
+    GIT_BASH_CANDIDATES,
     PC_SHELL_DEFAULT_NAME,
     SystemShellLaunch,
     UnknownShellName,
@@ -61,6 +62,7 @@ def test_system_lane_launch_table_is_pinned():
     )
     assert resolve_shell("bash", lane="system") == SystemShellLaunch(
         file="bash.exe", prefix_args=("-lc",), encode_command=False,
+        candidates=GIT_BASH_CANDIDATES,
     )
 
 
@@ -117,7 +119,9 @@ def test_system_launch_lines_are_exact_and_ordered():
         "bash":
             "$env:PADIEM_MCP_SHELL_FILE='bash.exe';"
             "$env:PADIEM_MCP_SHELL_ARGS='-lc';"
-            "$env:PADIEM_MCP_SHELL_ENC='0';",
+            "$env:PADIEM_MCP_SHELL_ENC='0';"
+            "$env:PADIEM_MCP_SHELL_CANDIDATES='"
+            + ";".join(GIT_BASH_CANDIDATES) + "';",
     }
     for name, lines in expected.items():
         assert system_launch_env_lines(resolve_shell(name, lane="system")) == lines
@@ -133,10 +137,20 @@ def test_system_launch_lines_are_exact_and_ordered():
 @pytest.mark.skipif(shutil.which("powershell") is None,
                     reason="the generic tail is Windows PowerShell behavior")
 def test_generic_tail_runs_each_launcher_like_the_old_branch():
-    """제거된 분기와 같은 결과: 인자 배열·종료 코드·미지원 거부를 실제 PS로."""
-    tail_start = ("try{$file=$env:PADIEM_MCP_SHELL_FILE;"
+    """제거된 분기와 같은 결과: 인자 배열·종료 코드·미지원 거부를 실제 PS로.
+
+    #7188 R4 ③: 꼬리는 후보 목록 분기가 앞에 붙는다. powershell·cmd는
+    후보가 없으므로 else 가지(Get-Command)가 실행되며 그 결과는 변경 전과
+    같다 — 이 시험이 그 세 경로를 실제 PowerShell로 다시 증명한다.
+    """
+    tail_start = ("try{$cands=$env:PADIEM_MCP_SHELL_CANDIDATES;"
+                  "if($cands){$file=$null;"
+                  "foreach($cand in $cands.Split(';')){$p=[Environment]::ExpandEnvironmentVariables($cand);"
+                  "if(Test-Path -LiteralPath $p -PathType Leaf){$file=$p;break}};"
+                  "if(-not $file){[Console]::Error.WriteLine('shell_unavailable');exit 127}}"
+                  "else{$file=$env:PADIEM_MCP_SHELL_FILE;"
                   "if(-not(Get-Command $file -ErrorAction SilentlyContinue))"
-                  "{[Console]::Error.WriteLine('shell_unavailable');exit 127};")
+                  "{[Console]::Error.WriteLine('shell_unavailable');exit 127}};")
     script = _script_of(shell.build_pc_shell_command({"command": "echo ok", "shell": "cmd"}))
     assert tail_start in script
     # cmd: 인자 배열 뒤 명령 본문이 위치 순서로 붙는다(변경 전 @('/d','/s','/c',$c)).
@@ -146,7 +160,7 @@ def test_generic_tail_runs_each_launcher_like_the_old_branch():
         "$env:PADIEM_MCP_SHELL_ENC='0';"
         "$env:PADIEM_MCP_COMMAND_B64='" + base64.b64encode(b"echo 42").decode() + "';"
         "$c=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:PADIEM_MCP_COMMAND_B64));"
-        + script[script.index("try{$file="):]
+        + script[script.index("try{$cands="):]
     )
     done = subprocess.run(
         ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", probe],
@@ -161,7 +175,7 @@ def test_generic_tail_runs_each_launcher_like_the_old_branch():
         "$env:PADIEM_MCP_SHELL_ENC='1';"
         "$env:PADIEM_MCP_COMMAND_B64='" + base64.b64encode(b"Write-Output 43").decode() + "';"
         "$c=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:PADIEM_MCP_COMMAND_B64));"
-        + script[script.index("try{$file="):]
+        + script[script.index("try{$cands="):]
     )
     done_ps = subprocess.run(
         ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", probe_ps],
@@ -176,7 +190,7 @@ def test_generic_tail_runs_each_launcher_like_the_old_branch():
         "$env:PADIEM_MCP_SHELL_ENC='0';"
         "$env:PADIEM_MCP_COMMAND_B64='" + base64.b64encode(b"echo 44").decode() + "';"
         "$c=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:PADIEM_MCP_COMMAND_B64));"
-        + script[script.index("try{$file="):]
+        + script[script.index("try{$cands="):]
     )
     done_missing = subprocess.run(
         ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", probe_missing],
