@@ -31,8 +31,13 @@ from .control_plane_identity_shadow import (
     request_canonical_session_id,
     resolve_refreshed_session,
 )
+from .journal_host import ensure_journal_visible
 
 _LOG = logging.getLogger(__name__)
+
+# The serving host configures no logging, so an application INFO record would be
+# created and dropped. Every stage line this module exists for has to arrive.
+ensure_journal_visible(_LOG)
 
 #: The five reviewed calendar paths. A caller that is not in this set is a
 #: programming error, never a silent fallback.
