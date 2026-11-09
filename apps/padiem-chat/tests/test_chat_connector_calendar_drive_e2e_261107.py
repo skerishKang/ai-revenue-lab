@@ -36,6 +36,7 @@ NOT_CONNECTED = ("not_connected", None)
 CALENDAR_TITLE = "디자인 리뷰"
 DRIVE_FILE = "2026년 견적서.pdf"
 CALENDAR_QUESTION = "내일 일정 뭐야"
+GOOGLE_CALENDAR_QUESTION = "구글 캘린더에서 이번 주 일정 찾아줘"
 DRIVE_QUESTION = "드라이브에서 견적서 찾아줘"
 GENERAL_CALENDAR_QUESTION = "이번 주 회의 몇 개야"
 CREATE_QUESTION = "내일 오전 9시 회의 일정 등록해줘"
@@ -296,7 +297,9 @@ def test_a_max_calendar_turn_declares_serializes_executes_and_answers(
     engine = _GoogleToolEngine()
 
     with _client(gateway, engine) as client:
-        response = _post(client, CALENDAR_QUESTION)
+        # #7273 후속: the connector lane is reached by naming Google; the
+        # unnamed ask belongs to the PADIEM calendar.
+        response = _post(client, GOOGLE_CALENDAR_QUESTION)
 
     assert response.status_code == 200, response.text
     assert "event: done" in response.text

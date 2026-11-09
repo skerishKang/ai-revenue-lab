@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import logging
+import time
 from typing import Any
 
 from .auth_routes import auth_ready, current_user_id
@@ -31,6 +32,7 @@ from .control_plane_identity_shadow import (
     request_canonical_session_id,
     resolve_refreshed_session,
 )
+from .grant_timing import grant_timings, record_ms
 from .journal_host import ensure_journal_visible
 
 _LOG = logging.getLogger(__name__)
@@ -137,7 +139,12 @@ async def resolve_calendar_session(
         history_store = getattr(request.app.state, "history_store", None)
         if history_store is None:
             return _verdict(CALENDAR_SESSION_NO_TRUSTED_AUTHORITY)
-        profile = await _value(history_store.get_user(uid))
+        timings = grant_timings(request)
+        started = time.perf_counter()
+        try:
+            profile = await _value(history_store.get_user(uid))
+        finally:
+            record_ms(timings, "profile_ms", started)
     except Exception:  # noqa: BLE001 - product authentication could not be evaluated
         return _verdict(CALENDAR_SESSION_UNAVAILABLE)
     if profile is None:
@@ -149,12 +156,16 @@ async def resolve_calendar_session(
         return _verdict(CALENDAR_SESSION_UNAVAILABLE)
 
     try:
-        current_session = await resolve_refreshed_session(
-            authority=authority,
-            store=shadow_store,
-            product_user_id=uid,
-            current_session_id=request_canonical_session_id(request),
-        )
+        started = time.perf_counter()
+        try:
+            current_session = await resolve_refreshed_session(
+                authority=authority,
+                store=shadow_store,
+                product_user_id=uid,
+                current_session_id=request_canonical_session_id(request),
+            )
+        finally:
+            record_ms(grant_timings(request), "identity_refresh_ms", started)
     except IdentityBridgeError as exc:
         return _verdict(_verdict_for_error(exc))
     except Exception:  # noqa: BLE001 - an authority fault is never a session

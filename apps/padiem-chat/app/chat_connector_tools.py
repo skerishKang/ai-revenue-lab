@@ -72,8 +72,11 @@ from .connector_status_projection import (
     _reviewed_workspace_truth,
 )
 from .request_telemetry import emit_stage_event
+from .grant_timing import format_field, grant_timings
+from .journal_host import ensure_journal_visible
 
 _LOG = logging.getLogger("padiem_chat.connector_tools")
+ensure_journal_visible(_LOG)
 
 # The Engine pins the canonical connector app/agent provisioning identities in
 # its connector_bindings (DRIVE_REFERENCE_APP_ID / DRIVE_AGENT_ID /
@@ -331,6 +334,65 @@ def invalidate_connector_tool_grant_cache(uid: str | None = None) -> None:
         _GRANT_CACHE.pop(uid, None)
 
 
+_TURN_DECISION_ATTR = "connector_grant_turn_decision"
+
+
+def _turn_memo(request: Request) -> dict[str, object] | None:
+    state = getattr(request, "state", None)
+    memo = getattr(state, _TURN_DECISION_ATTR, None) if state is not None else None
+    return memo if isinstance(memo, dict) else None
+
+
+def _remember_turn_decision(
+    request: Request, *, uid: str, decision: ConnectorToolGrant, timed_out: bool
+) -> None:
+    """Reuse this turn's one truth read; security is not re-decided, re-read.
+
+    The decision is per-user, not per-text, so a second call inside the same
+    request (the tool offer, then the READ guard) reuses the same answer —
+    including a timeout, which still declares and reads nothing.
+    """
+
+    state = getattr(request, "state", None)
+    if state is None:
+        return
+    try:
+        setattr(
+            state,
+            _TURN_DECISION_ATTR,
+            {"uid": uid, "decision": decision, "timed_out": timed_out},
+        )
+    except Exception:  # noqa: BLE001 - reuse is an optimisation, never a gate
+        return
+
+
+def _log_grant_timing(
+    request: Request, *, started: float, budget: float,
+    decision: ConnectorToolGrant, timed_out: bool,
+) -> None:
+    """One itemized line per real check (#7273 후속); the budget is unchanged."""
+
+    timings = grant_timings(request)
+    _LOG.info(
+        "connector_grant_timing total_ms=%.1f budget_ms=%.0f"
+        " profile_ms=%s identity_refresh_ms=%s session_ms=%s"
+        " identity_workspace_ms=%s state_connector_ms=%s state_calendar_ms=%s"
+        " workspace_truth_ms=%s grant_state_ms=%s reason=%s timed_out=%s",
+        (time.perf_counter() - started) * 1000.0,
+        budget * 1000.0,
+        format_field(timings, "profile_ms"),
+        format_field(timings, "identity_refresh_ms"),
+        format_field(timings, "session_ms"),
+        format_field(timings, "identity_workspace_ms"),
+        format_field(timings, "state_connector_ms"),
+        format_field(timings, "state_calendar_ms"),
+        format_field(timings, "workspace_truth_ms"),
+        format_field(timings, "grant_state_ms"),
+        decision.reason,
+        "true" if timed_out else "false",
+    )
+
+
 async def _bounded_grant_decision(
     request: Request, *, uid: str | None,
     budget: float = CONNECTOR_TOOL_GRANT_INTENT_BUDGET_SECONDS,
@@ -339,15 +401,21 @@ async def _bounded_grant_decision(
 
     Returns ``(decision, elapsed_ms, timed_out)``. A timeout and a failed
     check are never cached, so the next turn retries the check instead of
-    staying tool-less for a full TTL after one slow read.
+    staying tool-less for a full TTL after one slow read. Inside one request
+    the first answer is reused, so the offer and the READ guard cannot pay the
+    truth read twice.
     """
 
     started = time.perf_counter()
     if not isinstance(uid, str) or not uid:
         return _UNDECLARED, 0.0, False
+    memo = _turn_memo(request)
+    if memo is not None and memo.get("uid") == uid:
+        return memo["decision"], 0.0, bool(memo.get("timed_out"))
     cached = _GRANT_CACHE.get(uid)
     now = time.monotonic()
     if cached is not None and now - cached[0] < _cache_ttl_for(cached[1]):
+        _remember_turn_decision(request, uid=uid, decision=cached[1], timed_out=False)
         return cached[1], (time.perf_counter() - started) * 1000.0, False
     try:
         decision = await asyncio.wait_for(
@@ -357,18 +425,33 @@ async def _bounded_grant_decision(
     except asyncio.TimeoutError:
         # A slow truth read is never cached: the next turn retries the check.
         elapsed = (time.perf_counter() - started) * 1000.0
-        return (
-            ConnectorToolGrant(reason=GRANT_REASON_TIMEOUT, drive=False, calendar=False),
-            elapsed,
-            True,
+        timed_out_decision = ConnectorToolGrant(
+            reason=GRANT_REASON_TIMEOUT, drive=False, calendar=False
         )
+        _log_grant_timing(
+            request, started=started, budget=budget,
+            decision=timed_out_decision, timed_out=True,
+        )
+        _remember_turn_decision(
+            request, uid=uid, decision=timed_out_decision, timed_out=True
+        )
+        return timed_out_decision, elapsed, True
     except Exception:  # noqa: BLE001 - a failed check declares nothing
         elapsed = (time.perf_counter() - started) * 1000.0
+        _log_grant_timing(
+            request, started=started, budget=budget,
+            decision=_UNDECLARED, timed_out=False,
+        )
+        _remember_turn_decision(request, uid=uid, decision=_UNDECLARED, timed_out=False)
         return _UNDECLARED, elapsed, False
     now = time.monotonic()
     _prune_grant_cache(now)
     if _cache_ttl_for(decision) > 0:
         _GRANT_CACHE[uid] = (now, decision)
+    _log_grant_timing(
+        request, started=started, budget=budget, decision=decision, timed_out=False
+    )
+    _remember_turn_decision(request, uid=uid, decision=decision, timed_out=False)
     return decision, (time.perf_counter() - started) * 1000.0, False
 
 
@@ -650,16 +733,18 @@ async def google_connector_turn_for_text(
     """Whether this chat turn should use the connector READ tools.
 
     Explicit Google naming keeps its existing path; the declaration's own
-    grant check still runs later. A broad read intent is promoted only when
-    the named service is actually granted, so a non-connected owner keeps the
-    native calendar / PC lane. The decision is cached for the declaration call
-    that follows.
+    grant check still runs later. A broad DRIVE read intent is promoted only
+    when its grant is actually granted, so a non-connected owner keeps the PC
+    lane. A broad CALENDAR read intent is never promoted: the representative
+    decision (2026-11-09) keeps every schedule ask that does not name Google
+    on the PADIEM workspace calendar (#7273 후속), so no grant check is paid
+    for it here. The decision is cached for the declaration call that follows.
     """
 
     if google_connector_intent(user_text):
         return True
     service = google_connector_broad_intent(user_text)
-    if service is None or not isinstance(uid, str) or not uid:
+    if service is None or service == "calendar" or not isinstance(uid, str) or not uid:
         return False
     decision, _elapsed_ms, _timed_out = await _bounded_grant_decision(request, uid=uid)
     return decision.reason == GRANT_REASON_GRANTED and bool(getattr(decision, service, False))
