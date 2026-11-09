@@ -554,12 +554,7 @@ async def _connector_tool_lane(
             saved_id = None
         if saved_id is not None:
             done_payload["conversation_id"] = saved_id
-        # #7297: projection of a completed run lives with the run-history
-        # read-model whichever lane answered; best-effort only. It does not
-        # depend on the conversation having been stored, exactly like the
-        # Claw general lane projects even when saving did not take.
-        from .claw_general_run_history import project_completed_chat_turn
-        await project_completed_chat_turn(request, user_text=latest_user, answer=answer)
+        from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=answer)  # #7297 공통 실행 기록 투영
     yield _public_sse("done", done_payload)
 
 
@@ -1659,12 +1654,7 @@ async def api_chat(request: Request) -> JSONResponse:
                 result["conversation_id"] = saved_id
                 if effective_project_id is not None:
                     result["project_id"] = effective_project_id
-
-
-        # #7297: projection of a completed run lives with the run-history
-        # read-model whichever lane answered; best-effort only.
-        from .claw_general_run_history import project_completed_chat_turn
-        await project_completed_chat_turn(request, user_text=latest_user, answer=answer)
+        from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=result["answer"])  # #7297 공통 실행 기록 투영
         return JSONResponse(public_chat_result(result))
 
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
@@ -1854,8 +1844,5 @@ async def api_chat(request: Request) -> JSONResponse:
                 if effective_project_id is not None:
                     result["project_id"] = effective_project_id
                     result["project"] = {"id": project.id, "name": project.name} if project is not None else None
-                # #7297: projection of a completed run lives with the run-history
-                # read-model whichever lane answered; best-effort only.
-                from .claw_general_run_history import project_completed_chat_turn
-                await project_completed_chat_turn(request, user_text=latest_user, answer=result["answer"])
+                from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=result["answer"])  # #7297 공통 실행 기록 투영
     return JSONResponse(public_chat_result(result))
