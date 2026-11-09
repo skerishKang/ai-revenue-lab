@@ -207,6 +207,17 @@ def test_switch_off_keeps_two_calls_even_when_available():
     ]
 
 
+def test_new_engine_combined_on_against_old_worker_without_admit_usage_fails_closed():
+    # An older Control Plane has no admit_usage surface: the combined path must
+    # refuse the admission rather than silently falling back to the two calls
+    # (which would split the round trip again and blur the contract).
+    client = LegacyOnlyClient()
+    with pytest.raises(ExecutionAdmissionError) as caught:
+        run(adapter(client, combined_rpc=True).resolve_admission(request()))
+    assert caught.value.code == "entitlement_unavailable"
+    assert caught.value.status_code == 503
+    assert client.calls == []
+
 def test_switch_on_requires_the_client_capability():
     with pytest.raises(ExecutionAdmissionError):
         adapter(LegacyOnlyClient(), combined_rpc=True)

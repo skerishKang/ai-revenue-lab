@@ -148,3 +148,69 @@ def test_malformed_payload_is_refused_without_a_store_call():
     assert result["ok"] is False
     assert result["error"]["code"] == "invalid_engine_admission_authority_rpc"
     assert store.calls == []
+
+
+class _DeniedStore:
+    """Store-boundary denial: the policy ran, the request was not admitted."""
+
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def reserve_usage(self, reservation, *, now):
+        self.calls += 1
+        return {
+            "reservation_ref": "cp_res_denied_0001",
+            "admitted": False,
+            "expires_at": OCCURRED_AT,
+            "reserved_at": OCCURRED_AT,
+        }
+
+
+def test_admit_usage_snapshot_grant_denied_never_creates_admitted_reservation():
+    store = _DeniedStore()
+    authority, _ensure, _store = _calls_authority(store=store)
+    result = asyncio.run(
+        authority.admit_usage(
+            {
+                "product_id": PRODUCT,
+                "subject": dict(SUBJECT),
+                "reservation": reservation_payload(),
+            }
+        )
+    )
+    assert result["ok"] is True
+    assert result["snapshot"] == _Snapshot().to_policy_dict()
+    assert result["reservation"]["admitted"] is False
+    assert result["reservation"]["reservation_ref"] == "cp_res_denied_0001"
+    assert store.calls == 1
+
+
+def test_admit_usage_response_loss_retry_replays_same_reservation_without_duplicate_insert():
+    # The retry after a lost response carries byte-identical input, so the real
+    # store must replay the committed reservation rather than insert again.
+    store, storage = store_fixture()
+    policy = policy_snapshot(
+        grants=(
+            EntitlementGrant(key="orchestration.run", allowed=True, limit=None),
+        )
+    )
+    store.install_entitlement_snapshot(policy, now=datetime.now(UTC))
+    authority, _ensure, _store = _calls_authority(store=store)
+    payload = {
+        "product_id": PRODUCT,
+        "subject": {"subject_type": "user", "subject_id": "subject-owner"},
+        "reservation": base_reservation(
+            occurred_at=datetime.now(UTC).isoformat(),
+        ),
+    }
+    first = asyncio.run(authority.admit_usage(dict(payload)))
+    # The response is lost in transit; the Engine retries the identical request.
+    second = asyncio.run(authority.admit_usage(dict(payload)))
+
+    assert first["ok"] is True and second["ok"] is True
+    assert first["reservation"] == second["reservation"]
+    assert first["reservation"]["admitted"] is True
+    assert second["reservation"]["admitted"] is True
+    assert storage.count("engine_usage_reservation") == 1
+
+
