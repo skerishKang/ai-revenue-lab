@@ -14,10 +14,11 @@ Guarantees of this stage:
   전체 본문은 예외를 삼키고 한 줄의 기록만 남긴다.
 * 비밀값·토큰·이메일·사용자 원문은 기록하지 않는다. 식별값은 SHA-256 해시 12자리만.
 * 기록은 요청당 한 줄이다. 한 줄 안의 필드는 고정된 이름뿐이며 값은 해시·불리언·개수·ms뿐이다.
-* 요청 경로 지연 추가 목표는 ≤5ms (JWKS 캐시 적중 시 ES256 검증만). 콜드 캐시의
-  JWKS 조회는 요청 경로 밖에서 예열한다 (`local_cpython.py`의 startup 예열).
-  300초 경계에 걸린 요청 1건이 재조회를 지불할 수 있으므로, 그 요청의 지연은
-  별도로 계측해 30분 표본에서 제외하지 않고 보고한다.
+* 요청 경로 지연 추가 목표는 ≤5ms (JWKS 캐시 적중 시 ES256 검증만).
+  요청 경로에서는 원격 JWKS 조회를 절대 하지 않는다 (캐시된 키로만 검증).
+  키 갱신(만료·모르는 kid)은 요청 경로 밖(백그라운드)에서만, 재조회 쿨다운 60초
+  + HTTP 타임아웃 3초로 감싼다. 모르는 kid는 ``unknown_kid``로 기록만.
+  콜드 캐시의 JWKS 조회는 요청 경로 밖에서 예열한다 (`local_cpython.py`의 startup 예열).
 
 Denylist (설계 2판 §2.3): 같은 호스트에서 폐기가 일어나면 폐기된 ``sid``와
 ``account_id``를 로컬 폐기 캐시에 기록한다. 최소 20분(수명 15분 + leeway 60초 + 전파 여유)
@@ -39,6 +40,11 @@ from .shared_login_flow import ACCESS_COOKIE
 DENYLIST_TTL_SECONDS = 20 * 60
 #: Token is "expiring soon" when less than this many seconds remain.
 EXPIRING_SOON_SECONDS = 60
+#: JWKS re-fetch cooldown on the background path (seconds).
+JWKS_REFRESH_COOLDOWN_SECONDS = 60
+#: Short HTTP timeout for background JWKS fetches (seconds). The request
+#: path itself never fetches (cached keys only, verified below).
+JWKS_FETCH_TIMEOUT_SECONDS = 3
 
 _LOCK = threading.Lock()
 _denylist: dict[str, float] = {}  # hash12(sid) or hash12(account_id) -> hold_until (epoch s)
@@ -46,6 +52,11 @@ _denylist_clock = time.time
 
 _VERIFIER: Any = None
 _VERIFIER_LOCK = threading.Lock()
+_REFRESH_LOCK = threading.Lock()
+_refresh_state: dict[str, float] = {"last_attempt": 0.0, "attempts": 0.0}
+# Background refresh threads are part of the production behaviour. Tests may
+# disable thread spawning to observe the cooldown logic deterministically.
+BACKGROUND_REFRESH_ENABLED = True
 
 
 def shadow_enabled() -> bool:
@@ -87,30 +98,26 @@ def record_denylist(session_id: Any = None, account_id: Any = None) -> None:
 
 
 def record_denylist_from_access_cookie(cookies) -> None:
-    """Best-effort denylist recording from the shared access cookie payload.
+    """Record the denylist from a signature-verified access token only.
 
-    The payload is decoded without validation for recording only: the stage-2
-    verifier still validates the signature before any denylist check, so an
-    unverified payload can never grant access. It only seeds a denied
-    candidate for a random-looking opaque ``sid``/``account_id``.
+    The sid/account_id are taken from ``Verifier.verify`` output, never from
+    an unverified payload: a forged cookie logout must never seed another
+    account's id into the denylist (Argon (c)-3 / (b)-3). Verification failure
+    records nothing. Best-effort and judging-free.
     """
     try:
-        import base64
-        import json as _json
-
         raw = None
         try:
             raw = cookies.get(ACCESS_COOKIE)
         except Exception:
             raw = None
-        if not isinstance(raw, str) or raw.count(".") != 2:
+        if not isinstance(raw, str) or not raw:
             return
-        payload_part = raw.split(".")[1]
-        decoded = base64.urlsafe_b64decode(payload_part + "=" * (-len(payload_part) % 4))
-        payload = _json.loads(decoded)
-        if not isinstance(payload, dict):
+        verifier = _get_shadow_verifier()
+        verified = verifier.verify(raw)
+        if not isinstance(verified, dict):
             return
-        record_denylist(payload.get("sid"), payload.get("account_id"))
+        record_denylist(verified.get("sessionId"), verified.get("accountId"))
     except Exception:
         return
 
@@ -137,23 +144,155 @@ def clear_denylist_for_tests() -> None:
 # --- JWKS verifier ---------------------------------------------------------
 
 
+def _short_fetch():
+    """Background JWKS fetcher with a short timeout (never on the request path).
+
+    Mirrors ``padiem_auth_verify._fetch`` (fixed URL, redirects refused) but
+    with a 3 s timeout so a slow endpoint cannot park a background refresh.
+    """
+    import json as _json
+    import urllib.request as _request
+
+    try:
+        from padiem_auth_verify import JWKS_URL as _URL
+    except Exception:
+        _URL = "https://auth.padiem.net/.well-known/jwks.json"
+
+    class NoRedirect(_request.HTTPRedirectHandler):
+        def redirect_request(self, *args, **kwargs):
+            return None
+
+    request = _request.Request(_URL, headers={"User-Agent": "padiem-shadow-verify/1.0"})
+    with _request.build_opener(NoRedirect).open(request, timeout=JWKS_FETCH_TIMEOUT_SECONDS) as response:
+        return _json.load(response)
+
+
 def _get_shadow_verifier() -> Any:
-    """Process-wide ES256 verifier (JWKS cached 300 s, same as shared login)."""
+    """Process-wide ES256 verifier (JWKS cached 300 s, same as shared login).
+
+    The same object is reused for every call (module singleton): the JWKS
+    cache lives on the verifier, so recreating it per request would turn
+    every request into a ~400 ms fetch. Verified by
+    ``test_shadow_verifier_is_singleton``.
+    """
     global _VERIFIER
     with _VERIFIER_LOCK:
         if _VERIFIER is None:
             from padiem_auth_verify import Verifier
 
-            _VERIFIER = Verifier(audience="b62")
+            _VERIFIER = Verifier(audience="b62", fetcher=_short_fetch)
         return _VERIFIER
+
+
+def _schedule_jwks_refresh(verifier: Any, *, now: float | None = None) -> bool:
+    """Schedule an off-path JWKS refresh (cooldown 60 s). Returns whether fired.
+
+    Cooldown- and time-bounded so unknown-``kid`` traffic cannot turn into a
+    remote-fetch storm: at most one refresh attempt per cooldown window is
+    recorded, and when spawning is enabled one daemon thread runs it. Callers
+    on the request path never block on it.
+    """
+    moment = time.time() if now is None else now
+    with _REFRESH_LOCK:
+        if moment - _refresh_state["last_attempt"] < JWKS_REFRESH_COOLDOWN_SECONDS:
+            return False
+        _refresh_state["last_attempt"] = moment
+        _refresh_state["attempts"] += 1
+    if not BACKGROUND_REFRESH_ENABLED:
+        return True
+
+    def _run() -> None:
+        try:
+            keys = getattr(verifier, "_keys", None)
+            if callable(keys):
+                keys(True)
+        except Exception:
+            return
+
+    thread = threading.Thread(target=_run, daemon=True, name="shadow-jwks-refresh")
+    thread.start()
+    return True
+
+
+def reset_jwks_refresh_for_tests() -> None:
+    with _REFRESH_LOCK:
+        _refresh_state["last_attempt"] = 0.0
+        _refresh_state["attempts"] = 0.0
+
+
+def jwks_refresh_attempts() -> int:
+    with _REFRESH_LOCK:
+        return int(_refresh_state["attempts"])
+
+
+def _decode_header_kid(token: Any) -> str | None:
+    """Decode the (untrusted) JWT header ``kid`` for cache-presence check."""
+    try:
+        import base64
+        import json as _json
+
+        if not isinstance(token, str) or token.count(".") != 2:
+            return None
+        part = token.split(".")[0]
+        decoded = base64.urlsafe_b64decode(part + "=" * (-len(part) % 4))
+        header = _json.loads(decoded)
+        kid = header.get("kid") if isinstance(header, dict) else None
+        return kid if isinstance(kid, str) and kid else None
+    except Exception:
+        return None
+
+
+def _cached_kids(verifier: Any) -> list[str] | None:
+    """Kid list from the verifier's JWKS cache, or None when cold/unavailable.
+
+    Reads the cached keys only (no remote fetch). Returns None when the
+    verifier keeps no cache or the cache is not fresh — the caller then
+    records a cold/stale outcome and refreshes off-path instead of blocking.
+    """
+    try:
+        clock = getattr(verifier, "clock", None)
+        now = clock() if callable(clock) else time.time()
+        cached = getattr(verifier, "cached", None)
+        until = getattr(verifier, "until", 0)
+        if cached is None or now >= until:
+            return None
+        return [k.get("kid") for k in cached if isinstance(k, dict) and isinstance(k.get("kid"), str)]
+    except Exception:
+        return None
+
+
+def _verify_cached_only(verifier: Any, token: Any) -> tuple[dict[str, Any] | None, str]:
+    """Verify against cached JWKS keys only. Returns (verified, code).
+
+    Never performs a remote JWKS fetch on the request path:
+    * cold/stale cache -> (None, "jwks_cold"), background refresh scheduled;
+    * unknown ``kid``    -> (None, "unknown_kid"), background refresh scheduled;
+    * fresh cache + known kid -> ``verifier.verify`` (which itself sees a fresh
+      cache and a matching kid, so it will not fetch either).
+
+    Objects without the cache introspection surface (test doubles) fall back
+    to a plain ``verify()`` call so tests keep the existing coverage.
+    """
+    if not hasattr(verifier, "cached") or not hasattr(verifier, "until"):
+        return dict(verifier.verify(token)), ""
+    kids = _cached_kids(verifier)
+    if kids is None:
+        _schedule_jwks_refresh(verifier)
+        return None, "jwks_cold"
+    kid = _decode_header_kid(token)
+    if kid is None or kid not in kids:
+        _schedule_jwks_refresh(verifier)
+        return None, "unknown_kid"
+    return dict(verifier.verify(token)), ""
 
 
 def prewarm_shadow_verifier() -> None:
     """Fetch JWKS once at startup so the first request does not pay it.
 
     Called from the host startup (off the request path) only when the
-    shadow switch is ON. Any failure is swallowed — the request path will
-    simply hit the normal cached-key flow.
+    shadow switch is ON. Any JWKS outage is swallowed and reported on one
+    journal line — the server always starts; the request path simply sees a
+    cold cache until the background refresh succeeds.
     """
     if not shadow_enabled():
         return
@@ -162,7 +301,11 @@ def prewarm_shadow_verifier() -> None:
         _keys = getattr(verifier, "_keys", None)
         if callable(_keys):
             _keys(True)
-    except Exception:
+    except Exception as exc:
+        try:
+            print("shadow_prewarm outcome=fail code=%s" % type(exc).__name__, flush=True)
+        except Exception:
+            return
         return
 
 
@@ -297,13 +440,12 @@ def _run_shadow_compare(scope: Any, verdict: Any, started: float) -> None:
         return
 
     # Shared access token present: verify local + denylist, then compare.
+    # Cached keys only — never a remote JWKS fetch on the request path.
     verify_started = time.perf_counter()
     verified: dict[str, Any] | None = None
     verify_code = ""
     try:
-        verifier = _get_shadow_verifier()
-        result = verifier.verify(raw_shared)
-        verified = dict(result)
+        verified, verify_code = _verify_cached_only(_get_shadow_verifier(), raw_shared)
     except Exception as exc:
         verify_code = str(getattr(exc, "args", [""])[0] if getattr(exc, "args", None) else type(exc).__name__) or type(exc).__name__
         # Bounded code vocabulary: keep only the closed set shape.
@@ -314,8 +456,12 @@ def _run_shadow_compare(scope: Any, verdict: Any, started: float) -> None:
 
     if verified is None:
         code_h = hash12(verify_code)
-        _line("verify_failed", verify_ms=verify_ms, local_ok=False,
-              token="present", code=code_h)
+        if verify_code in ("unknown_kid", "jwks_cold"):
+            _line(verify_code, verify_ms=verify_ms, local_ok=False,
+                  token="present", code=code_h)
+        else:
+            _line("verify_failed", verify_ms=verify_ms, local_ok=False,
+                  token="present", code=code_h)
         return
 
     token_account = verified.get("accountId")
@@ -362,13 +508,18 @@ def _run_shadow_compare(scope: Any, verdict: Any, started: float) -> None:
 
 
 __all__ = [
+    "BACKGROUND_REFRESH_ENABLED",
     "DENYLIST_TTL_SECONDS",
     "EXPIRING_SOON_SECONDS",
+    "JWKS_FETCH_TIMEOUT_SECONDS",
+    "JWKS_REFRESH_COOLDOWN_SECONDS",
     "clear_denylist_for_tests",
     "is_denylisted",
+    "jwks_refresh_attempts",
     "prewarm_shadow_verifier",
     "record_denylist",
     "record_denylist_from_access_cookie",
+    "reset_jwks_refresh_for_tests",
     "run_shadow_compare",
     "shadow_enabled",
 ]
