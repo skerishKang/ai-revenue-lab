@@ -158,7 +158,10 @@ def registry(tmp_path, monkeypatch):
     base = tmp_path / "b14_models.json"
     # The console edits one document — the B14 base file — and the process
     # catalog is read from the switched document, so both name the same file.
+    # The private loader refuses a document other users can read, so the host's
+    # copy carries the deployment's owner-only mode (#7241 3b).
     base.write_text(json.dumps(_base_document()), encoding="utf-8")
+    base.chmod(0o600)
     overlay = tmp_path / "b14_models.overrides.json"
     with process_catalog_restored():
         with monkeypatch.context() as switched:

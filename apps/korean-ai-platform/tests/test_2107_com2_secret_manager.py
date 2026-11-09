@@ -161,6 +161,8 @@ def host(tmp_path, monkeypatch):
         json.dumps(_SyntheticDocument.private_document(registry_file),
                    ensure_ascii=False),
         encoding="utf-8")
+    # The private loader refuses a document other users can read.
+    registry.chmod(0o600)
     token = tmp_path / "admin-token"
     token.write_text("test-admin-token-" + "z" * 40, encoding="utf-8")
     token.chmod(0o600)
