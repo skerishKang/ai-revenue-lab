@@ -200,3 +200,4 @@
 261109 3b 재개: E:\PADIEM\b14-registry-3b-261109, fix/registry-public-value-removal-261109(HEAD 378bcfc55 = #7238 main rebase)에서 git status 74파일(수정 73+신규 test_7241_3b_registry_required.py) 확인 — 현재 상태 그대로 커밋·push.
 261109 3b 수정: 문서 전환 fixture가 env·스냅샷·카탈로그·Provider 표를 모두 원복하도록 공용 process_catalog_restored 적용(admin·retry·2107 2건·6828b·registry_file), 기본 스위치 복사본을 바이트 동일하게 수정, retry/2107/킬로 시험의 실행 시점 문서 기준 유도 수정. 전체 1377 passed, 233 skipped.
 261109 3b 실값: 추가 줄 히트 0, 플랫폼 시험 .py 모델/호스트/바인딩 0(토큰 147). 픽스처 슬롯명은 합성 76-91, 잔여 12파일 55줄은 슬롯/어댑터 유도로 전환. write_registry는 POSIX에서 기존 소유자·그룹 보존(chown) + fsync/replace 실패 시 원자 교체로 기존 파일 보존 시험 2건 추가.
+2026-11-09 3b merge: origin/main 04e935faa를 merge-forward(force 없음). progress.md는 main 개편본을 채택하고 3b 기록 3줄만 덧붙임. app/test 충돌 0.
