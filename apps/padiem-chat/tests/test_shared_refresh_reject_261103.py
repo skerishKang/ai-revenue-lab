@@ -12,7 +12,7 @@ from starlette.requests import Request
 
 from app import httpx_compat
 from app.shared_auth_compare_flow import TOKEN_URL, exchange_with_httpx
-from app.shared_login_flow import ACCESS_COOKIE, REFRESH_COOKIE, SharedLoginFlow
+from app.shared_login_flow import ACCESS_COOKIE, MARKER_COOKIE, REFRESH_COOKIE, SharedLoginFlow
 
 
 class FakeCrypto:
@@ -127,6 +127,7 @@ async def test_refresh_rejection_answers_401_and_clears_shared_cookies(
     cleared = response.headers.getlist('set-cookie')
     assert any(c.startswith(ACCESS_COOKIE + '=') and 'Max-Age=0' in c for c in cleared)
     assert any(c.startswith(REFRESH_COOKIE + '=') and 'Max-Age=0' in c for c in cleared)
+    assert any(c.startswith(MARKER_COOKIE + '=') and 'Max-Age=0' in c for c in cleared)
     out = capsys.readouterr().out
     assert ('shared_refresh_result outcome=rejected stage=refresh_exchange '
             'code=exchange_rejected') in out
