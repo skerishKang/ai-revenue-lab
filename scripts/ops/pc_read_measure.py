@@ -185,8 +185,10 @@ def read_journal(since_epoch: float) -> list[dict]:
 
 _EVENT_RE = re.compile(r'"event":"http_request"')
 _QUEUE_CALL_RE = re.compile(
-    r"pc_queue_call method=(\S+) stage=(\S+) status=(\S+) outcome=(\S+) reason=(\S+) "
-    r"elapsed_ms=(\S+) exception=(\S+) transport_phase=(\S+) run_hash=(\S+) dispatch_id=(\S+)")
+    r"pc_queue_call method=(?P<method>\S+) stage=(?P<stage>\S+) status=(?P<status>\S+) "
+    r"outcome=(?P<outcome>\S+) reason=(?P<reason>\S+) elapsed_ms=(?P<elapsed_ms>\S+) "
+    r"exception=(?P<exception>\S+) transport_phase=(?P<transport_phase>\S+) "
+    r"run_hash=(?P<run_hash>\S+) dispatch_id=(?P<dispatch_id>\S+)")
 _ENGINE_TIMING_RE = re.compile(
     r"engine_timing run_hash=(\S+) trace_id=(\S+) admission_ms=(\S+) core_ms=(\S+) "
     r"b14_ms=(\S+) receipt_ms=(\S+) total_ms=(\S+) outcome=(\S+)")

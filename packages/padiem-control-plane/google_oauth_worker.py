@@ -401,10 +401,16 @@ class Default(WorkerEntrypoint):
     # dedicated Calendar presence slice, the exact pair the composed truth read
     # issues together; everything else stays on the binding, and without the
     # secret the door is not registered at all.
+    # #7229: the P01 Engine host joins with the same secret and now also needs
+    # the binding-only Calendar slice (`select_calendar_binding`) so its
+    # activation path can reach the state authority over HTTPS instead of
+    # failing closed with 503 calendar_activation_unavailable. Still
+    # binding-only: no ticket, lease or callback method is exposed here.
     RPC_INGRESS_SECRET_BINDING = "PADIEM_GOOGLE_STATE_RPC_INGRESS_SECRET"
     RPC_INGRESS_METHODS = frozenset({
         "workspace_connector_state",
         "workspace_calendar_connector_state",
+        "select_calendar_binding",
     })
 
     def _authority_ref(self) -> str:

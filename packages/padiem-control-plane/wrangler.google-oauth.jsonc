@@ -13,7 +13,8 @@
     "required": [
       "GOOGLE_CONNECT_TICKET_KEY",
       "GOOGLE_OAUTH_SEAL_KEY",
-      "GOOGLE_OAUTH_CLIENT_SECRET"
+      "GOOGLE_OAUTH_CLIENT_SECRET",
+      "PADIEM_GOOGLE_STATE_RPC_INGRESS_SECRET"
     ]
   },
   "durable_objects": {
