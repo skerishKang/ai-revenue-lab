@@ -27,6 +27,12 @@ from app.pilot.registry import (
     RegistryInvalidError,
     reset_registry,
 )
+from _pilot_lane_paths import chat_surface
+
+
+# The gateway surface these cases call. Its path is the app's, not this
+# file's, so it is read back out of the mounted router.
+CHAT_COMPLETIONS = chat_surface()
 
 
 # The legacy single-provider state has to name a model the host itself uses, so
@@ -432,7 +438,7 @@ class TestMultiProviderAPI:
     def test_chat_invalid_registry(self, client):
         _setup_invalid_registry()
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": "test", "messages": [{"role": "user", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
@@ -445,7 +451,7 @@ class TestMultiProviderAPI:
         pilot_settings.pilot_base_url = LEGACY_BASE_URL
         pilot_settings.pilot_model_id = LEGACY_MODEL_ID
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": "test", "messages": [{"role": "user", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
@@ -475,7 +481,7 @@ class TestMultiProviderAPI:
         prv.call_chat_completions = patched
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                CHAT_COMPLETIONS,
                 json={"model": "model-a-v1", "messages": [{"role": "user", "content": "hi"}]},
                 headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
             )
@@ -513,7 +519,7 @@ class TestMultiProviderAPI:
         prv.call_chat_completions = patched
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                CHAT_COMPLETIONS,
                 json={"model": "model-b-v1", "messages": [{"role": "user", "content": "hello"}]},
                 headers={"X-Business14-Provider-Key": "sk-real-key-xyz"},
             )
@@ -530,7 +536,7 @@ class TestMultiProviderAPI:
     def test_unknown_model_404(self, client):
         _setup_registry()
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": "nonexistent", "messages": [{"role": "user", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
@@ -540,7 +546,7 @@ class TestMultiProviderAPI:
     def test_disabled_model_returns_model_disabled(self, client):
         _setup_registry()
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": "model-b-v2", "messages": [{"role": "user", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
@@ -564,7 +570,7 @@ class TestMultiProviderAPI:
         prv.call_chat_completions = patched
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                CHAT_COMPLETIONS,
                 json={"model": "model-a-v1", "messages": [{"role": "user", "content": "hi"}]},
                 headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
             )
@@ -627,12 +633,12 @@ class TestKeyIsolation:
         prv.call_chat_completions = routing_patch
         try:
             client.post(
-                "/api/pilot/v1/chat/completions",
+                CHAT_COMPLETIONS,
                 json={"model": "model-a-v1", "messages": [{"role": "user", "content": "hi"}]},
                 headers={"X-Business14-Provider-Key": "sk-key-for-a"},
             )
             client.post(
-                "/api/pilot/v1/chat/completions",
+                CHAT_COMPLETIONS,
                 json={"model": "model-b-v1", "messages": [{"role": "user", "content": "hi"}]},
                 headers={"X-Business14-Provider-Key": "sk-key-for-b"},
             )
@@ -674,7 +680,7 @@ class TestKeyIsolation:
         prv.call_chat_completions = patched
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                CHAT_COMPLETIONS,
                 json={"model": "model-a-v1", "messages": [{"role": "user", "content": "hi"}]},
                 headers={"X-Business14-Provider-Key": "sk-real-secret-key-abcdef"},
             )
@@ -808,7 +814,7 @@ class TestLegacyPhase1Compat:
         prv_mod.call_chat_completions = fake_call
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                CHAT_COMPLETIONS,
                 json={"model": LEGACY_MODEL_ID, "messages": [{"role": "user", "content": "hi"}]},
                 headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
             )
@@ -896,7 +902,7 @@ class TestRegistrySentinelNonExposure:
 
     def test_chat_no_leakage(self, _apply_invalid_registry):
         resp = _apply_invalid_registry.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": "test", "messages": [{"role": "user", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )

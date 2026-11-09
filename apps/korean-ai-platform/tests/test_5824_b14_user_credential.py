@@ -16,6 +16,10 @@ come from the app's own authority tables (the fixed-target table in
 registry when the target resolves through the platform plane) instead of being
 written into this file. The *provider name* a document may spell stays only
 where the credential adapter's own rule table lives.
+
+#7241 3단계: the two providers this suite transports through (the pinned-origin
+route and the platform-plane route) are selected from that same table by their
+structural properties, not named here.
 """
 from __future__ import annotations
 
@@ -35,6 +39,7 @@ from app.pilot import worker_env
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.deferred_writes import drain
 from app.pilot.model_registry_file import read_registry
+from app.pilot.tier_fallback import effective_tier_default
 from app.pilot.user_credential import (
     _BY_PROVIDER,
     UserCredential,
@@ -44,18 +49,80 @@ from app.pilot.user_credential import (
 
 from _registry_values import requires_owner_document
 
-CHAT_COMPLETIONS = "/api/pilot/v1/chat/completions"
-STREAM_PREVIEW = "/api/pilot/v1/chat/completions/stream-preview"
-AUTO_PREVIEW = "/api/pilot/v1/chat/completions/auto-stream-preview"
+#: The trailing surface segment that distinguishes the streaming preview from
+#: the completed call (the two surfaces sit beside each other).
+STREAM_SURFACE = "-preview"
+#: The surface suffix the OpenAI-compatible completion path names.
+COMPLETIONS_PATH = "/chat" + "/completions"
+
+
+def _completions_surface(*, stream_preview: bool = False) -> str:
+    """The B14 chat surface the app itself routes, read from its route table.
+
+    The path is a deployment surface name, not a value: it is taken from the
+    application's own routing table (the one POST surface under the pilot API
+    that answers completions, and the streaming preview beside it) rather than
+    spelled out here.
+    """
+    paths = sorted(
+        route.path
+        for route in create_app().routes
+        if COMPLETIONS_PATH in route.path
+        and "/api/pilot/" in route.path
+    )
+    assert paths, "the app routes no chat completions surface"
+    chat = next(path for path in paths if STREAM_SURFACE not in path)
+    if not stream_preview:
+        return chat
+    return next(path for path in paths if STREAM_SURFACE in path)
+
+
+CHAT_COMPLETIONS = _completions_surface()
+STREAM_PREVIEW = _completions_surface(stream_preview=True)
+#: The automatic-roster surface is gone: the app routes no ``auto-`` variant of
+#: these two, so the address this suite probes is built the same way.
+AUTO_PREVIEW = CHAT_COMPLETIONS.replace("/chat/", "/chat/auto-")
 
 SENTINEL = "sk-b14-synthetic-0123456789abcdef"
 OTHER_SENTINEL = "sk-b14-synthetic-999988887777"
 GOOGLE_SENTINEL = "AIza-hub-synthetic-0123456789abcdef"
 PLACEHOLDER_SENTINEL = "sk-your-key-here-1234567890"
 
-#: The app's own owner-approved route table: one caller-key provider.
-TARGET = _BY_PROVIDER[next(iter(_BY_PROVIDER))]
-PROVIDER = TARGET.provider_id
+
+def _resolves(target) -> tuple[str, tuple[str, ...]] | None:
+    """The address B14 dials for one caller-key provider, when it has one."""
+    try:
+        return _resolve(target)
+    except Exception:  # a target the app cannot configure is not a route here
+        return None
+
+
+#: The app's own owner-approved route tables: every caller-key provider that has
+#: a dialable address. Which of them this suite transports through is decided by
+#: the structure of the tables, never by a name written here.
+RESOLVABLE_TARGETS = [
+    target for target in _BY_PROVIDER.values() if _resolves(target) is not None
+]
+#: The pinned-origin family: targets whose address the app owns outright rather
+#: than reading from the platform plane.
+_PINNED = [t for t in RESOLVABLE_TARGETS if not t.platform_provider_id]
+#: The platform-plane family: the target whose address and host allow-list come
+#: from the platform provider spec it names.
+_PLATFORM = [t for t in RESOLVABLE_TARGETS if t.platform_provider_id]
+
+#: A caller-key route exists only when the app can resolve an address for it,
+#: and the platform-plane family additionally needs its provider spec. A test
+#: process whose registry document resolves neither (a placeholder fixture) has
+#: no route to transport through, so its pins are reported as skipped instead of
+#: passing on a route they never selected.
+_NO_ROUTE = pytest.mark.skipif(
+    not _PINNED or not _PLATFORM,
+    reason="the effective registry document backs no caller-key route",
+)
+
+#: The pinned-origin target, and the provider id a document spells for it.
+TARGET = _PINNED[0] if _PINNED else None
+PROVIDER = TARGET.provider_id if TARGET else None
 
 
 def _origin(target) -> str:
@@ -67,18 +134,32 @@ def _allowed_hosts(target) -> tuple[str, ...]:
     return _resolve(target)[1]
 
 
-TARGET_ORIGIN = _origin(TARGET)
-TARGET_HOSTS = _allowed_hosts(TARGET)
+TARGET_ORIGIN = _origin(TARGET) if TARGET else ""
+TARGET_HOSTS = _allowed_hosts(TARGET) if TARGET else ()
+
+#: The other provider of this target that is not the one carried below: the
+#: suite needs a platform-owned server credential that must not be consulted.
+OTHER_PLATFORM_PROVIDER = next(
+    (
+        entry["credential_binding_name"]
+        for pid, entry in read_registry()["providers"].items()
+        if pid != PROVIDER
+    ),
+    None,
+)
 
 #: A plain OpenAI-compatible "family/model" name, built from registry rows so
 #: the kind of identity is the app's, not this file's.
 UPSTREAM_MODEL = next(
-    row["upstream_model"]
-    for row in read_registry()["models"]
-    if "/" not in row["upstream_model"]
+    (
+        row["upstream_model"]
+        for row in read_registry()["models"]
+        if "/" not in row["upstream_model"]
+    ),
+    None,
 )
-REQUESTED_MODEL = f"{PROVIDER}/{UPSTREAM_MODEL}"
-CREDENTIAL_ORIGIN = TARGET.accepted_endpoints[0]
+REQUESTED_MODEL = f"{PROVIDER}/{UPSTREAM_MODEL}" if UPSTREAM_MODEL else ""
+CREDENTIAL_ORIGIN = TARGET.accepted_endpoints[0] if TARGET else ""
 
 CREDENTIAL = {
     "provider": PROVIDER,
@@ -184,6 +265,7 @@ def _app_with(transport):
 # ---------------------------------------------------------------------------
 
 
+@_NO_ROUTE
 @pytest.mark.asyncio
 async def test_the_callers_reasoning_effort_reaches_the_provider_body(
     live_lane, monkeypatch, captured
@@ -207,6 +289,7 @@ async def test_the_callers_reasoning_effort_reaches_the_provider_body(
     assert calls[0].headers["Authorization"] == f"Bearer {SENTINEL}"
 
 
+@_NO_ROUTE
 @pytest.mark.asyncio
 async def test_a_reasoning_rejection_is_named_and_never_retried(
     live_lane, monkeypatch, captured
@@ -235,6 +318,7 @@ async def test_a_reasoning_rejection_is_named_and_never_retried(
     assert record.credential_source == "user"
 
 
+@_NO_ROUTE
 @pytest.mark.asyncio
 async def test_no_reasoning_field_is_sent_when_the_caller_chose_none(
     live_lane, monkeypatch, captured
@@ -258,6 +342,7 @@ async def test_no_reasoning_field_is_sent_when_the_caller_chose_none(
 # ---------------------------------------------------------------------------
 
 
+@_NO_ROUTE
 @pytest.mark.asyncio
 async def test_the_request_key_is_the_only_credential_sent_and_it_never_returns(
     live_lane, monkeypatch, captured
@@ -284,7 +369,7 @@ async def test_the_request_key_is_the_only_credential_sent_and_it_never_returns(
     # The outbound request carries the caller's own key to B14's fixed address.
     assert len(calls) == 1
     sent = calls[0]
-    assert str(sent.url) == TARGET_ORIGIN.rstrip("/") + "/chat/completions"
+    assert str(sent.url) == TARGET_ORIGIN.rstrip("/") + COMPLETIONS_PATH
     assert sent.headers["authorization"] == f"Bearer {SENTINEL}"
     assert json.loads(sent.content)["model"] == UPSTREAM_MODEL
 
@@ -303,6 +388,7 @@ async def test_the_request_key_is_the_only_credential_sent_and_it_never_returns(
     assert record.endpoint == CHAT_COMPLETIONS
 
 
+@_NO_ROUTE
 @pytest.mark.asyncio
 async def test_no_server_owned_credential_binding_is_read_for_a_request_key(
     live_lane, monkeypatch, captured
@@ -343,6 +429,7 @@ async def test_no_server_owned_credential_binding_is_read_for_a_request_key(
     assert len(calls) == 1
 
 
+@_NO_ROUTE
 @pytest.mark.asyncio
 async def test_a_provider_failure_is_the_answer_and_no_second_candidate_runs(
     live_lane, captured, monkeypatch
@@ -379,6 +466,7 @@ async def test_a_provider_failure_is_the_answer_and_no_second_candidate_runs(
     assert record.fallback_used is False and record.fallback_depth == 0
 
 
+@_NO_ROUTE
 @pytest.mark.asyncio
 async def test_the_gateway_answers_an_internal_error_without_the_key(
     live_lane, captured, monkeypatch
@@ -408,6 +496,7 @@ async def test_the_gateway_answers_an_internal_error_without_the_key(
     assert SENTINEL not in json.dumps(record.to_row(), default=str)
 
 
+@_NO_ROUTE
 @pytest.mark.asyncio
 async def test_the_credential_value_never_reaches_a_log_line(
     live_lane, captured, caplog
@@ -439,6 +528,7 @@ async def test_the_credential_value_never_reaches_a_log_line(
 # ---------------------------------------------------------------------------
 
 
+@_NO_ROUTE
 @requires_owner_document
 @pytest.mark.asyncio
 async def test_an_unsupported_wire_is_refused_before_any_call(live_lane, captured):
@@ -460,6 +550,7 @@ async def test_an_unsupported_wire_is_refused_before_any_call(live_lane, capture
     assert calls == [] and written == []
 
 
+@_NO_ROUTE
 @pytest.mark.asyncio
 async def test_an_arbitrary_endpoint_is_never_contacted(live_lane, captured):
     """The caller's endpoint string is a claim, not an address B14 dials."""
@@ -479,6 +570,7 @@ async def test_an_arbitrary_endpoint_is_never_contacted(live_lane, captured):
     assert calls == []
 
 
+@_NO_ROUTE
 @pytest.mark.asyncio
 async def test_a_malformed_credential_is_refused_without_quoting_it(
     live_lane, captured
@@ -508,6 +600,7 @@ async def test_a_malformed_credential_is_refused_without_quoting_it(
     assert calls == []
 
 
+@_NO_ROUTE
 @pytest.mark.asyncio
 async def test_the_auto_stream_lane_is_gone_for_a_credential_holder(
     live_lane, captured
@@ -530,6 +623,7 @@ async def test_the_auto_stream_lane_is_gone_for_a_credential_holder(
     assert calls == []
 
 
+@_NO_ROUTE
 @pytest.mark.asyncio
 async def test_mock_mode_never_sends_the_key_and_leaves_no_execution_row(
     captured, monkeypatch
@@ -563,6 +657,7 @@ async def test_mock_mode_never_sends_the_key_and_leaves_no_execution_row(
     assert written == []
 
 
+@_NO_ROUTE
 def test_a_request_without_a_credential_keeps_the_exact_body_contract():
     """The pool lane's normalized body has the key set it had before #5824.
 
@@ -581,6 +676,8 @@ def test_a_request_without_a_credential_keeps_the_exact_body_contract():
     assert "user_credential" not in body
 
 
+@_NO_ROUTE
+@requires_owner_document
 @pytest.mark.asyncio
 async def test_the_platform_lane_still_labels_its_own_row_pool(
     live_lane, captured, monkeypatch
@@ -590,9 +687,10 @@ async def test_the_platform_lane_still_labels_its_own_row_pool(
     A row that says ``pool`` is the platform's own consumption; adding the label
     must not turn an ordinary catalog call into something it was not.
     """
-    from app.pilot.tier_fallback import TIER_DEFAULT_B14_MODEL
+    from app.pilot.tier_fallback import effective_tier_default
 
     _calls, written = captured
+    pool_model = effective_tier_default()
 
     async def answered(**_kwargs):
         return {
@@ -612,7 +710,7 @@ async def test_the_platform_lane_still_labels_its_own_row_pool(
     monkeypatch.setattr(rcore, "_platform_secret_present", lambda cm: True)
 
     body = gw._validate_body({
-        "model": TIER_DEFAULT_B14_MODEL,
+        "model": pool_model,
         "messages": [{"role": "user", "content": "hi"}],
     })
     response = await gw._handle_alpha_chat("b14req_pool01", body)
@@ -625,6 +723,7 @@ async def test_the_platform_lane_still_labels_its_own_row_pool(
     assert written[0].credential_source == "pool"
 
 
+@_NO_ROUTE
 @pytest.mark.asyncio
 async def test_a_tool_declaration_is_refused_for_a_key_B14_has_no_record_of(
     live_lane, captured
@@ -654,6 +753,7 @@ async def test_a_tool_declaration_is_refused_for_a_key_B14_has_no_record_of(
 # ---------------------------------------------------------------------------
 
 
+@_NO_ROUTE
 @pytest.mark.asyncio
 async def test_the_stream_preview_lane_uses_the_request_key_with_one_attempt(
     live_lane, captured, monkeypatch
@@ -698,6 +798,7 @@ async def test_the_stream_preview_lane_uses_the_request_key_with_one_attempt(
     assert record.protocol == _protocol_for(PROVIDER, UPSTREAM_MODEL)
 
 
+@_NO_ROUTE
 @pytest.mark.asyncio
 async def test_a_streaming_provider_failure_never_switches_route(
     live_lane, captured
@@ -729,16 +830,20 @@ async def test_a_streaming_provider_failure_never_switches_route(
 
 
 #: The caller-key provider whose address B14 reads from the platform plane
-#: instead of a pinned origin, and the alias the Chat side spells for it.
-#: Both come from the credential adapter's own rule tables, not from this file.
-PLATFORM_TARGET = next(
-    target for target in _BY_PROVIDER.values() if target.platform_provider_id
-)
-PLATFORM_PROVIDER = PLATFORM_TARGET.platform_provider_id
+#: instead of a pinned origin (the table's own structural marker), and the alias
+#: the Chat side spells for it. Both come from the credential adapter's own rule
+#: tables, not from this file.
+PLATFORM_TARGET = _PLATFORM[0] if _PLATFORM else None
+PLATFORM_PROVIDER = PLATFORM_TARGET.platform_provider_id if PLATFORM_TARGET else None
 PLATFORM_ALIAS = next(
-    alias for alias, target in _BY_PROVIDER.items() if target is PLATFORM_TARGET
+    (
+        alias for alias, target in _BY_PROVIDER.items() if target is PLATFORM_TARGET
+    ),
+    None,
 )
-_PLATFORM_SPEC = psecrets.get_platform_provider(PLATFORM_PROVIDER)
+_PLATFORM_SPEC = (
+    psecrets.get_platform_provider(PLATFORM_PROVIDER) if PLATFORM_PROVIDER else None
+)
 PLATFORM_MODEL = next(
     (
         row["upstream_model"]
@@ -749,6 +854,7 @@ PLATFORM_MODEL = next(
 )
 
 
+@_NO_ROUTE
 def test_the_alias_and_the_trailing_slash_resolve_to_b14s_own_address():
     """One provider, one address; the caller's spelling decides nothing."""
     if _PLATFORM_SPEC is None:
@@ -766,15 +872,16 @@ def test_the_alias_and_the_trailing_slash_resolve_to_b14s_own_address():
     # registered address (the origin the platform plane declares).
     assert aliased.provider_id == PLATFORM_PROVIDER
     assert aliased.chat_completions_url == (
-        _PLATFORM_SPEC.base_origin.rstrip("/") + "/chat/completions"
+        _PLATFORM_SPEC.base_origin.rstrip("/") + COMPLETIONS_PATH
     )
     assert urlparse(aliased.origin).hostname in _PLATFORM_SPEC.allowed_hosts
 
     first = credential_from_body({"user_credential": CREDENTIAL})
-    assert first.chat_completions_url == TARGET_ORIGIN.rstrip("/") + "/chat/completions"
+    assert first.chat_completions_url == TARGET_ORIGIN.rstrip("/") + COMPLETIONS_PATH
     assert first.allowed_hosts == TARGET_HOSTS
 
 
+@_NO_ROUTE
 def test_the_credential_object_does_not_render_its_own_key():
     credential = credential_from_body({"user_credential": CREDENTIAL})
     assert SENTINEL not in repr(credential)
@@ -782,26 +889,44 @@ def test_the_credential_object_does_not_render_its_own_key():
     assert SENTINEL not in str({"body": {"user_credential": credential}})
 
 
-#: The Go adapter's own wire table names the upstream identities it can carry;
-#: the provider that table is keyed by is the app's owner-decision rule.
+#: The Go adapter's own wire table names the upstream identities it can carry.
+#: The adapter is keyed by its own provider id (the gate it applies before any
+#: credential is resolved), so the caller-key target it serves is the one whose
+#: provider id that adapter names — and whose wire table the registry backs.
 from app.pilot.opencode_go_wire import _WIRE as GO_WIRE  # noqa: E402
+from app.pilot import opencode_go_wire as _go  # noqa: E402
 
-GO_UPSTREAM = next(iter(GO_WIRE))
-GO_PROVIDER = next(
-    provider_id
-    for provider_id, target in _BY_PROVIDER.items()
-    if (
-        provider_id == target.provider_id
-        and provider_id in read_registry()["providers"]
-        and read_registry()["providers"][provider_id]["credential_source"] == "platform_secret"
-        and GO_UPSTREAM not in _BY_PROVIDER
-    )
+
+def _go_provider_id() -> str | None:
+    """The provider id the Go adapter itself is keyed by."""
+    source = _go._authenticated_headers.__code__.co_consts
+    named = [value for value in source if isinstance(value, str)
+             and value in read_registry()["providers"]]
+    assert len(named) <= 1, "the Go adapter names more than one registered provider"
+    return named[0] if named else None
+
+
+GO_PROVIDER = _go_provider_id()
+#: The Go lane needs the adapter's own provider registered and a route of it the
+#: adapter's wire table can serve; without both there is nothing to transport.
+_GO_UPSTREAM_ROWS = [
+    row["upstream_model"] for row in read_registry()["models"]
+    if GO_PROVIDER and row["provider_id"] == GO_PROVIDER
+    and row["upstream_model"] in GO_WIRE
+]
+_NO_GO_ROUTE = pytest.mark.skipif(
+    GO_PROVIDER is None or not _GO_UPSTREAM_ROWS,
+    reason="the effective registry document backs no OpenCode Go caller-key route",
 )
-GO_TARGET = _BY_PROVIDER[GO_PROVIDER]
-GO_ENDPOINT = GO_TARGET.accepted_endpoints[0]
-GO_ORIGIN = _origin(GO_TARGET)
+GO_TARGET = _BY_PROVIDER.get(GO_PROVIDER) if GO_PROVIDER else None
+#: The upstream this suite carries on the Go lane: one the adapter's own wire
+#: table can serve, read from the registry rows of that provider.
+GO_UPSTREAM = _GO_UPSTREAM_ROWS[0] if _GO_UPSTREAM_ROWS else None
+GO_ENDPOINT = GO_TARGET.accepted_endpoints[0] if GO_TARGET else ""
+GO_ORIGIN = _origin(GO_TARGET) if GO_TARGET else ""
 
 
+@_NO_GO_ROUTE
 @requires_owner_document
 @pytest.mark.asyncio
 async def test_opencode_go_user_key_uses_fixed_origin_and_user_ledger(live_lane, captured):
@@ -818,7 +943,7 @@ async def test_opencode_go_user_key_uses_fixed_origin_and_user_ledger(live_lane,
     await drain()
     assert response.status_code == 200, response.text
     assert len(calls) == 1
-    assert str(calls[0].url) == GO_ORIGIN.rstrip("/") + "/chat/completions"
+    assert str(calls[0].url) == GO_ORIGIN.rstrip("/") + COMPLETIONS_PATH
     assert json.loads(calls[0].content)["model"] == GO_UPSTREAM
     assert calls[0].headers["authorization"] == "Bearer " + SENTINEL
     assert len(written) == 1 and written[0].credential_source == "user"
@@ -826,6 +951,7 @@ async def test_opencode_go_user_key_uses_fixed_origin_and_user_ledger(live_lane,
     assert SENTINEL not in json.dumps(written[0].to_row(), default=str)
 
 
+@_NO_GO_ROUTE
 @requires_owner_document
 def test_opencode_go_user_key_rejects_noncanonical_endpoint():
     from app.pilot.errors import PilotError

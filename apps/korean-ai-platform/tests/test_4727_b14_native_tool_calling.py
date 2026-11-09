@@ -24,15 +24,85 @@ from app.pilot.errors import (
     StreamNotSupported,
     ToolsNotSupported,
 )
-from app.pilot.tool_channel import require_stream_tool_wire
+from app.pilot.tool_channel import GO_PROVIDER_ID, TOOL_CAPABILITY, require_stream_tool_wire
+from app.pilot.model_registry_file import read_registry
 
-MUSE = "opencode-go/muse-spark-1.3-contributor"
-MUSE_UPSTREAM = "muse-spark-1.3-contributor"
+
+def _registered_rows(provider_id: str | None = None) -> list[dict]:
+    rows = list(read_registry()["models"])
+    if provider_id is not None:
+        rows = [row for row in rows if row["provider_id"] == provider_id]
+    return rows
+
+
+def _go_tool_row() -> dict:
+    """The Go route the adapter carries tools for: the registry's tool row.
+
+    The Go provider serves several routes on its own wire; only the row that
+    declares the tool capability may carry a call, so that declaration is the
+    selector rather than a written model id.
+    """
+    candidates = [
+        row for row in _registered_rows(GO_PROVIDER_ID)
+        if TOOL_CAPABILITY in row["capabilities"]
+    ]
+    assert len(candidates) == 1
+    return candidates[0]
+
+
+def _go_sibling_without_tools(row: dict) -> dict:
+    """The Go row on the same wire family that declares no tool capability."""
+    # The wire family is the adapter's own table, so a sibling on the same wire
+    # is one whose upstream name the adapter routes; capability, not wire
+    # family, is the gate this row proves.
+    from app.pilot.opencode_go_wire import _WIRE
+
+    candidates = [
+        other for other in _registered_rows(GO_PROVIDER_ID)
+        if other["id"] != row["id"]
+        and TOOL_CAPABILITY not in other["capabilities"]
+        and _WIRE.get(other["upstream_model"]) == _WIRE.get(row["upstream_model"])
+    ]
+    assert candidates
+    return candidates[0]
+
+
+def _go_sibling_on_another_wire(row: dict) -> dict:
+    """A Go route the adapter serves on a wire other than the tool-carrying one."""
+    from app.pilot.opencode_go_wire import _WIRE
+
+    tool_wire = _WIRE.get(row["upstream_model"])
+    candidates = [
+        other for other in _registered_rows(GO_PROVIDER_ID)
+        if other["id"] != row["id"]
+        and _WIRE.get(other["upstream_model"]) != tool_wire
+    ]
+    assert candidates
+    return candidates[0]
+
+
+#: The provider whose native lane carries tools on a capability of its own and
+#: is not the Go adapter (the Go adapter is gated by its own wire table).
+NATIVE_PROVIDER = next(
+    pid for pid in read_registry()["providers"]
+    if pid != GO_PROVIDER_ID
+    and any(
+        row["provider_id"] == pid and TOOL_CAPABILITY in row["capabilities"]
+        for row in _registered_rows()
+    )
+)
+
+
+GO_ROW = _go_tool_row()
+MUSE = GO_ROW["id"]
+MUSE_UPSTREAM = GO_ROW["upstream_model"]
 #: The sibling Muse model on the same wire. The registry declares no tool
 #: capability for it, so it is the in-repo proof that capability, not wire
 #: family, opens the route.
-MUSE_UNTAGGED = "opencode-go/muse-spark-1.2-contributor"
-LONGCAT = "opencode-go/longcat-2.5-preview-free"
+MUSE_UNTAGGED = _go_sibling_without_tools(GO_ROW)["id"]
+MUSE_UNTAGGED_UPSTREAM = _go_sibling_without_tools(GO_ROW)["upstream_model"]
+LONGCAT = _go_sibling_on_another_wire(GO_ROW)["id"]
+LONGCAT_UPSTREAM = _go_sibling_on_another_wire(GO_ROW)["upstream_model"]
 
 SESSION = "chat_0123456789abcdef0123456789abcdef"
 TURNS = [{"role": "user", "content": "날씨를 알려줘"}]
@@ -309,7 +379,7 @@ def test_a_tool_free_request_keeps_its_exact_previous_body() -> None:
 def test_a_model_without_the_declared_capability_is_refused_before_the_request() -> None:
     with pytest.raises(ToolsNotSupported):
         go.prepare_go_request(
-            model_id=MUSE_UNTAGGED, upstream_model="muse-spark-1.2-contributor",
+            model_id=MUSE_UNTAGGED, upstream_model=MUSE_UNTAGGED_UPSTREAM,
             messages=TURNS, session_id=SESSION, tools=[TOOL],
         )
 
@@ -325,7 +395,7 @@ def test_a_wire_that_carries_no_tool_declaration_is_refused(monkeypatch) -> None
 
     with pytest.raises(InvalidRequest, match="Unverified tool declaration"):
         go.prepare_go_request(
-            model_id=LONGCAT, upstream_model="longcat-2.5-preview-free",
+            model_id=LONGCAT, upstream_model=LONGCAT_UPSTREAM,
             messages=TURNS, session_id=SESSION, tools=[TOOL],
         )
 
@@ -674,13 +744,28 @@ def test_a_completed_call_with_parsed_arguments_is_relayed() -> None:
 
 
 def test_the_streaming_lane_opens_for_the_route_that_carries_a_tool_call() -> None:
-    require_stream_tool_wire(MUSE, "opencode-go")
+    require_stream_tool_wire(MUSE, GO_PROVIDER_ID)
+
+
+def _tool_capable_route_without_a_tool_wire() -> tuple[str, str]:
+    """A route declaring tools on a provider with no tool-carrying wire.
+
+    The Go adapter carries a tool on its own wire table and the native adapter
+    carries one on its own; every other provider answers only on the generic
+    compatible lane, so a tool-capable row there must still be refused.
+    """
+    row = next(
+        row for row in _registered_rows()
+        if TOOL_CAPABILITY in row["capabilities"]
+        and row["provider_id"] not in (GO_PROVIDER_ID, NATIVE_PROVIDER)
+    )
+    return row["id"], row["provider_id"]
 
 
 @pytest.mark.parametrize("model_id,provider_id", [
-    (MUSE_UNTAGGED, "opencode-go"),
-    (LONGCAT, "opencode-go"),
-    ("tokenharbor/deepseek-v4.1-flash:free", "tokenharbor"),
+    (MUSE_UNTAGGED, GO_PROVIDER_ID),
+    (LONGCAT, GO_PROVIDER_ID),
+    _tool_capable_route_without_a_tool_wire(),
 ])
 def test_the_streaming_lane_stays_closed_for_a_route_that_cannot_carry_one(
     model_id, provider_id
@@ -689,32 +774,69 @@ def test_the_streaming_lane_stays_closed_for_a_route_that_cannot_carry_one(
         require_stream_tool_wire(model_id, provider_id)
 
 
-def test_a_google_route_without_the_capability_is_refused_by_the_capability() -> None:
+def _native_tool_rows() -> list[dict]:
+    return [
+        row for row in _registered_rows(NATIVE_PROVIDER)
+        if TOOL_CAPABILITY in row["capabilities"]
+    ]
+
+
+def _native_untagged_row() -> dict:
+    """The native-lane route that declares no tool capability."""
+    candidates = [
+        row for row in _registered_rows(NATIVE_PROVIDER)
+        if TOOL_CAPABILITY not in row["capabilities"]
+    ]
+    assert candidates
+    return candidates[0]
+
+
+def _native_minimal_tool_row() -> dict:
+    """The owner-decided route whose capability is exactly chat plus tools."""
+    candidates = [
+        row for row in _native_tool_rows() if row["capabilities"] == ["chat", TOOL_CAPABILITY]
+    ]
+    assert len(candidates) == 1
+    return candidates[0]
+
+
+def _native_fully_tagged_tool_row() -> dict:
+    """The route whose tool capability rides the full measured feature set."""
+    candidates = [
+        row for row in _native_tool_rows()
+        if row["capabilities"] != ["chat", TOOL_CAPABILITY]
+    ]
+    assert candidates
+    return candidates[0]
+
+
+def test_a_native_route_without_the_capability_is_refused_by_the_capability() -> None:
     from app.pilot.errors import ToolsNotSupported as _ToolsNotSupported
 
-    # Gemma 26B still declares no tools; only the owner-decided 31B does.
+    # The route the owner did not decide carries no tools; only the
+    # owner-decided one does.
     with pytest.raises(_ToolsNotSupported):
-        require_stream_tool_wire("google/gemma-4-26b-a4b-it", "google")
+        require_stream_tool_wire(_native_untagged_row()["id"], NATIVE_PROVIDER)
 
 
-def test_gemma_31b_declares_tools_after_the_owner_decision() -> None:
-    # #6460-5: the capability follows the official Gemma-on-Gemini-API
-    # function-calling documentation, so the same native wire now opens.
-    require_stream_tool_wire("google/gemma-4-31b-it", "google")
+def test_the_owner_decided_route_declares_tools() -> None:
+    # #6460-5: the capability follows the official function-calling
+    # documentation, so the same native wire now opens.
+    require_stream_tool_wire(_native_minimal_tool_row()["id"], NATIVE_PROVIDER)
 
 
-def test_the_tool_capable_google_route_still_streams_through_its_own_wire() -> None:
+def test_the_tool_capable_native_route_still_streams_through_its_own_wire() -> None:
     # The Go route must not displace the lane that already served tools.
-    require_stream_tool_wire("google/gemini-3.1-flash-lite", "google")
+    require_stream_tool_wire(
+        _native_fully_tagged_tool_row()["id"], NATIVE_PROVIDER
+    )
 
 
-def test_gemini_35_declares_tools_and_passes_the_google_capability_gates() -> None:
-    from app.pilot.model_registry_file import read_registry
+def test_the_fully_tagged_tool_route_passes_the_native_capability_gates() -> None:
     from app.pilot.tool_channel import model_supports_tools, require_tool_capability
 
-    model_id = "google/gemini-3.5-flash-lite"
-    row = next(row for row in read_registry()["models"] if row["id"] == model_id)
-    assert row["capabilities"] == ["chat", "coding", "image", "tools"]
-    assert model_supports_tools(model_id) is True
-    require_tool_capability(model_id)
-    require_stream_tool_wire(model_id, "google")
+    row = _native_fully_tagged_tool_row()
+    assert {TOOL_CAPABILITY, "coding", "image"} <= set(row["capabilities"])
+    assert model_supports_tools(row["id"]) is True
+    require_tool_capability(row["id"])
+    require_stream_tool_wire(row["id"], NATIVE_PROVIDER)

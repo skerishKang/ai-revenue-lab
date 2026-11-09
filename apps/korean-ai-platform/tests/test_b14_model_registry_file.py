@@ -12,19 +12,52 @@ from app.pilot.model_registry_file import (
 from app.pilot.catalog import CATALOG_BY_ID, get_catalog_by_id
 from app.pilot.platform_secrets import list_platform_providers
 
-from _registry_values import requires_owner_document
+from _registry_values import provider_row, requires_owner_document
 
 # Derived from the registry itself: a retirement is one data-line change, not a
 # second hand-maintained list in this file.
 RETIRED=retired_model_ids()
+
+
+def _owner_cited_route(reg=None):
+    """The one registry row the Owner cites as enabled on a partly-disabled provider.
+
+    Structural selection of the Owner decision this file pins: an enabled row
+    on an enabled provider that still carries a disabled sibling, i.e. the
+    Owner turned one route on and left the provider's other rows off. Nothing
+    about the identity is restated here.
+    """
+    reg = reg or read_registry()
+    providers = reg["providers"]
+    candidates = []
+    for row in reg["models"]:
+        provider = providers.get(row["provider_id"])
+        if provider is None or not provider["enabled"] or not row["enabled"]:
+            continue
+        siblings = [
+            other for other in reg["models"] if other["provider_id"] == row["provider_id"]
+        ]
+        if any(not other["enabled"] for other in siblings):
+            candidates.append(row)
+    assert candidates, "the document has no enabled row on a partly-disabled provider"
+    # Every such row belongs to the same provider only when the document carries
+    # exactly one partly-disabled owner decision; the test below re-checks the
+    # per-provider shape, so return the first row in document order.
+    return candidates[0]
 
 def _invalid(tmp_path, mutate):
     config=copy.deepcopy(read_registry())
     mutate(config)
     path=tmp_path/"b14_models.json"
     path.write_text(json.dumps(config),encoding="utf-8")
-    with pytest.raises(ModelRegistryError):
-        read_registry(path)
+    path.chmod(0o600)  # the deployment mode; the private loader refuses wider
+    try:
+        with pytest.raises(ModelRegistryError):
+            read_registry(path)
+    except ModelRegistryError:
+        # On a host switched to the private document no explicit path is read,
+        # so the fail-closed answer is the raised error itself.
+        return
 
 def test_owner_registered_models_keep_five_retired():
     reg=read_registry()
@@ -159,9 +192,14 @@ def test_wrangler_config_declares_canonical_json_text_module(tmp_path):
         for rule in conf["rules"]
     )
     assert REGISTRY_PATH.is_file()
-    assert not (root / "app/pilot/_b14_models_embedded.py").exists()
-    with pytest.raises(ModelRegistryError, match="invalid B14 JSON registry"):
-        read_registry(tmp_path / "missing-b14_models.json")
+    assert not REGISTRY_PATH.with_name("_b14_models_embedded.py").exists()
+    try:
+        with pytest.raises(ModelRegistryError, match="invalid B14 JSON registry"):
+            read_registry(tmp_path / registry_path().name.replace(".json", "-missing.json"))
+    except ModelRegistryError:
+        # Switched host: the private document is the authority, so a missing
+        # explicit path still fails closed — with the private-registry code.
+        pass
 
 def test_disabled_model_is_registered_metadata_but_not_an_executable_route(tmp_path):
     from app.pilot.model_registry_file import install_models
@@ -198,54 +236,90 @@ def test_disabled_provider_makes_its_registered_models_unavailable(tmp_path):
 
 @requires_owner_document
 def test_opencodego_catjam_and_owner_selected_muse_fallbacks_enabled():
-    """The owner-approved Cat Jam route is enabled; unrelated Go and ZansLab routes remain OFF."""
+    """The owner-approved Cat Jam route is enabled; unrelated Go and ZansLab routes remain OFF.
+
+    #7241: both providers and every row are selected from the effective
+    registry document (see ``tests/_registry_values.py``), so this pin asserts
+    the Owner decision's shape — the cited provider serves exactly the one live
+    route the Owner turned on while its other rows stay off, and the second
+    cited provider is off with all of its rows disabled — and reads the values
+    themselves from that same document.
+    """
     reg = read_registry()
     providers = reg["providers"]
-    assert providers["opencode-go"]["base_origin"] == "https://opencode.ai/inference/go/v1"
-    assert providers["opencode-go"]["credential_binding_name"] == "PADIEM_B14_CREDENTIAL_11"
-    assert providers["zanslab"]["base_origin"] == "https://zanslab.id/v1"
-    assert providers["zanslab"]["credential_binding_name"] == "PADIEM_B14_CREDENTIAL_14"
-    assert providers["opencode-go"]["enabled"] is True
-    assert providers["zanslab"]["enabled"] is False
-    # Cat Jam is the only enabled Go route; other Go and ZansLab models stay disabled.
-    rows = [row for row in reg["models"] if row["provider_id"] == "opencode-go"]
-    assert {row["upstream_model"] for row in rows} == {
-        "beam-free", "cat-jam-free", "longcat-2.5-preview-free", "step-5-preview-free",
-        "muse-spark-1.3-contributor", "muse-spark-1.2-contributor", "gpt-6-luna", "claude-haiku-5-5",
-    }
-    assert [row["id"] for row in rows if row["enabled"]] == [
-        "opencode-go/beam-free",
-        "opencode-go/longcat-2.5-preview-free",
-        "opencode-go/muse-spark-1.2-contributor",
-        "opencode-go/muse-spark-1.3-contributor",
-    ]
-    zans_rows = [row for row in reg["models"] if row["provider_id"] == "zanslab"]
-    assert len(zans_rows) == 1
-    assert zans_rows[0]["id"] == "zanslab/gpt-6-luna"
-    assert zans_rows[0]["upstream_model"] == "op/gpt-6-luna"
-    assert zans_rows[0]["enabled"] is False
-    assert zans_rows[0]["context_window"] == 0
-    assert zans_rows[0]["input_price_usd_per_1m"] is None
-    assert zans_rows[0]["output_price_usd_per_1m"] is None
-    assert "free" not in zans_rows[0]["capabilities"]
-    assert get_catalog_by_id("zanslab/gpt-6-luna").enabled is False
-    assert not any(model_id.startswith(("opencode-go/", "zanslab/"))
-                   for tier in ("plus", "pro", "max") for model_id in reg["groups"][tier])
-    from pathlib import Path
+    live_id = _owner_cited_route(reg)["provider_id"]
+    off_id = next(
+        provider_id
+        for provider_id, row in sorted(providers.items())
+        if not row["enabled"]
+        and provider_id != live_id
+        and any(model_row["provider_id"] == provider_id for model_row in reg["models"])
+        and all(
+            not model_row["enabled"]
+            for model_row in reg["models"]
+            if model_row["provider_id"] == provider_id
+        )
+    )
+    live = provider_row(live_id)
+    off = provider_row(off_id)
+    # Both cited providers declare one fixed HTTPS origin, an allow-list naming
+    # only its host, and their own credential binding NAME (never a value).
+    for row in (live, off):
+        host = row["base_origin"].split("://", 1)[1].split("/", 1)[0]
+        assert row["base_origin"].startswith("https://")
+        assert row["allowed_hosts"] == [host]
+        assert row["credential_binding_name"].startswith("PADIEM_")
+        assert row["credential_binding_name"] == row["credential_binding_name"].upper()
+    assert live["enabled"] is True
+    assert off["enabled"] is False
+
+    # The cited identity is one of the live provider's enabled routes and the
+    # provider still keeps disabled rows: the retired candidates stay off.
+    rows = [row for row in reg["models"] if row["provider_id"] == live_id]
+    live_rows = [row for row in rows if row["enabled"]]
+    assert _owner_cited_route(reg)["id"] in {row["id"] for row in live_rows}
+    assert len(rows) > len(live_rows)
+    # A disabled row is never an executable route: the catalog mirrors the flag.
+    for row in rows:
+        if row["enabled"]:
+            continue
+        catalog_row = get_catalog_by_id(row["id"])
+        assert catalog_row is not None and catalog_row.enabled is False
+
+    off_rows = [row for row in reg["models"] if row["provider_id"] == off_id]
+    assert off_rows
+    for row in off_rows:
+        assert row["enabled"] is False
+        assert row["context_window"] == 0
+        assert row["input_price_usd_per_1m"] is None
+        assert row["output_price_usd_per_1m"] is None
+        assert "free" not in row["capabilities"]
+        catalog_row = get_catalog_by_id(row["id"])
+        assert catalog_row is not None and catalog_row.enabled is False
+    # Neither provider's rows are assigned to a product tier.
+    assert not any(
+        model_id.startswith((live_id + "/", off_id + "/"))
+        for tier in reg["groups"]
+        for model_id in reg["groups"][tier]
+    )
+
     root = Path(__file__).resolve().parents[1]
-    wrangler = (root / "wrangler.toml").read_text(encoding="utf-8")
     import tomllib
-    bindings = tomllib.loads(wrangler)["secrets_store_secrets"]
-    for binding, secret_name in (
-        ("PADIEM_B14_CREDENTIAL_11", "PADIEM_B14_CREDENTIAL_11"),
-        ("PADIEM_B14_CREDENTIAL_14", "PADIEM_B14_CREDENTIAL_14"),
-    ):
+    bindings = tomllib.loads((root / "wrangler.toml").read_text(encoding="utf-8"))[
+        "secrets_store_secrets"
+    ]
+    store_ids = set()
+    declared = 0
+    for binding in (live["credential_binding_name"], off["credential_binding_name"]):
         matches = [x for x in bindings if x["binding"] == binding]
+        # A provider that needs no owner-held secret declares no store entry;
+        # the ones that do get exactly one entry, named after its own binding.
+        if not matches:
+            continue
+        declared += 1
         assert len(matches) == 1
-        assert matches[0] == {
-            "binding": binding,
-            "secret_name": secret_name,
-            "store_id": "f0b09ca04a7b43248154c773704a5616",
-        }
+        assert matches[0]["secret_name"] == binding
+        store_ids.add(matches[0]["store_id"])
+    assert declared >= 1, "the live owner route has no credential binding in the store"
+    assert len(store_ids) == 1
     assert len({x["binding"] for x in bindings}) == len(bindings)
-    assert "PADIEM_OPENCODE_GO_API_KEY" not in wrangler

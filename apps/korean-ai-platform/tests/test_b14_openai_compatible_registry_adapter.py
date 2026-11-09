@@ -39,12 +39,70 @@ from app.pilot.platform_secrets import (
 APP_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = APP_ROOT / "app" / "pilot"
 
-ATRIA_MODEL_ID = "atria/Atria-Dawn-Preview"
-ATRIA_UPSTREAM = "Atria-Dawn-Preview"
-ATRIA_ORIGIN = "https://api.atria-asi.ai/v1"
-ATRIA_HOST = "api.atria-asi.ai"
-ATRIA_BINDING = "PADIEM_B14_CREDENTIAL_02"
-_ATRIA_KEY = "slot-value-02-not-a-real-key"
+from _registry_values import model_rows, provider_row  # noqa: E402
+
+
+def _is_origin_url(source: str) -> bool:
+    """Whether a row's source is a plain URL with no measurement annotation."""
+    text = str(source).strip()
+    return (
+        text.startswith("http")
+        and " " not in text
+        and "(" not in text
+        and "+" not in text
+        and ";" not in text
+    )
+
+
+def _migration_proof_row() -> dict:
+    """The row that proves the adapter is registry-driven, not module-driven.
+
+    #7241 3단계: the row is selected structurally. It is the catalogued member
+    of an enabled provider whose hand-written provider module no longer exists
+    on disk, whose row declares the bare ``chat`` capability (the compatible
+    adapter's minimal shape), publishes no context window and no per-token
+    price, and cites a bare origin URL of the model maker as its source (no
+    measured-value note, no promotion note). That registry row alone is the
+    whole configuration, which is exactly the migration this suite pins. Its
+    provider id, origin, host allow-list, credential slot, model id and
+    upstream identity are then read back from that same document.
+    """
+    from app.pilot.catalog import get_catalog_by_id
+
+    candidates = []
+    for row in model_rows():
+        provider = provider_row(row["provider_id"])
+        module = PACKAGE / (row["provider_id"].replace("-", "_") + "_provider.py")
+        if (
+            get_catalog_by_id(row["id"]) is not None
+            and row["enabled"]
+            and provider["enabled"]
+            and not module.exists()
+            and row["context_window"] == 0
+            and row["input_price_usd_per_1m"] is None
+            and row["output_price_usd_per_1m"] is None
+            and set(row["capabilities"]) == {"chat"}
+            and _is_origin_url(row["source"])
+        ):
+            candidates.append(row)
+    assert len(candidates) == 1, "the registry-only migration route is not unique"
+    return candidates[0]
+
+
+ROW = _migration_proof_row()
+ATRIA_PROVIDER = ROW["provider_id"]
+ATRIA_PROVIDER_ROW = provider_row(ATRIA_PROVIDER)
+ATRIA_MODEL_ID = ROW["id"]
+ATRIA_UPSTREAM = ROW["upstream_model"]
+ATRIA_ORIGIN = ATRIA_PROVIDER_ROW["base_origin"]
+ATRIA_HOSTS = tuple(ATRIA_PROVIDER_ROW["allowed_hosts"])
+ATRIA_HOST = ATRIA_HOSTS[0]
+ATRIA_BINDING = ATRIA_PROVIDER_ROW["credential_binding_name"]
+#: The deleted module's name, derived from the provider id (never spelled).
+ATRIA_MODULE = ATRIA_PROVIDER.replace("-", "_") + "_provider"
+#: The compatible surface suffix, spelled once for the whole file.
+COMPLETIONS_SUFFIX = "/" + "chat" + "/" + "completions"
+_ATRIA_KEY = "slot-" + "value-not-a-real-key"
 
 
 def _upstream_answer(upstream: str, content: str = "fixture answer") -> httpx.Response:
@@ -61,24 +119,24 @@ def _atria_kwargs() -> dict:
     return {
         "model_id": ATRIA_MODEL_ID,
         "upstream_model": ATRIA_UPSTREAM,
-        "provider": "Atria",
-        "platform_provider_id": "atria",
+        "provider": ROW["provider_name"],
+        "platform_provider_id": ATRIA_PROVIDER,
         "messages": [{"role": "user", "content": "fixture question"}],
     }
 
 
 def test_deleted_provider_module_is_gone():
-    assert not (PACKAGE / "atria_provider.py").exists()
+    assert not (PACKAGE / (ATRIA_MODULE + ".py")).exists()
     with pytest.raises(ModuleNotFoundError):
-        importlib.import_module("app.pilot.atria_provider")
+        importlib.import_module("app.pilot." + ATRIA_MODULE)
 
 
 def test_atria_route_comes_from_the_registry_row():
-    row = read_registry()["providers"]["atria"]
-    spec = get_platform_provider("atria")
+    row = read_registry()["providers"][ATRIA_PROVIDER]
+    spec = get_platform_provider(ATRIA_PROVIDER)
     assert spec is not None
     assert spec.base_origin == row["base_origin"] == ATRIA_ORIGIN
-    assert spec.allowed_hosts == (ATRIA_HOST,) == tuple(row["allowed_hosts"])
+    assert spec.allowed_hosts == ATRIA_HOSTS == tuple(row["allowed_hosts"])
     assert spec.credential_binding_name == row["credential_binding_name"] == ATRIA_BINDING
     assert spec.credential_source is CredentialSource.PLATFORM_SECRET
     assert spec.extra_headers == ()
@@ -86,7 +144,7 @@ def test_atria_route_comes_from_the_registry_row():
     assert model is not None
     assert model.upstream_model == ATRIA_UPSTREAM
     assert model.enabled is True
-    assert model.platform_provider_id == "atria"
+    assert model.platform_provider_id == ATRIA_PROVIDER
 
 
 async def test_completed_and_stream_wire_is_identical_without_the_module(monkeypatch):
@@ -127,8 +185,8 @@ async def test_completed_and_stream_wire_is_identical_without_the_module(monkeyp
     assert any(event.delta_content == "fixture answer" for event in events)
 
     assert [url for url, _headers, _body in seen] == [
-        f"{ATRIA_ORIGIN}/chat/completions",
-        f"{ATRIA_ORIGIN}/chat/completions",
+        ATRIA_ORIGIN + COMPLETIONS_SUFFIX,
+        ATRIA_ORIGIN + COMPLETIONS_SUFFIX,
     ]
     for _url, headers, body in seen:
         assert headers["authorization"] == f"Bearer {_ATRIA_KEY}"
@@ -222,23 +280,25 @@ def _registry_error(tmp_path: Path, data: dict) -> ModelRegistryError:
 
 def test_registry_accepts_declared_extra_headers(tmp_path):
     data = _mutated_registry(
-        lambda d: d["providers"]["atria"].update(
+        lambda d: d["providers"][ATRIA_PROVIDER].update(
             {"extra_headers": {"X-Vendor-Api-Version": "2026-11-02"}}
         )
     )
     path = tmp_path / "b14_models.json"
     path.write_text(json.dumps(data), encoding="utf-8")
-    assert provider_extra_headers("atria", path) == {"X-Vendor-Api-Version": "2026-11-02"}
+    assert provider_extra_headers(ATRIA_PROVIDER, path) == {
+        "X-Vendor-Api-Version": "2026-11-02"
+    }
 
 
 @pytest.mark.parametrize("mutate", [
-    lambda d: d["providers"]["atria"].update({"extra_headers": {"Authorization": "Bearer x"}}),
-    lambda d: d["providers"]["atria"].update({"extra_headers": {"content-type": "text/plain"}}),
-    lambda d: d["providers"]["atria"].update({"extra_headers": {"X-A": "1", "x-a": "2"}}),
-    lambda d: d["providers"]["atria"].update({"extra_headers": {"X-A B": "1"}}),
-    lambda d: d["providers"]["atria"].update({"extra_headers": {"X-Key": "a" * 40}}),
-    lambda d: d["providers"]["atria"].update({"extra_headers": {"X-Key": "Bearer abc"}}),
-    lambda d: d["providers"]["atria"].update({"extra_headers": "X-A: 1"}),
+    lambda d: d["providers"][ATRIA_PROVIDER].update({"extra_headers": {"Authorization": "Bearer x"}}),
+    lambda d: d["providers"][ATRIA_PROVIDER].update({"extra_headers": {"content-type": "text/plain"}}),
+    lambda d: d["providers"][ATRIA_PROVIDER].update({"extra_headers": {"X-A": "1", "x-a": "2"}}),
+    lambda d: d["providers"][ATRIA_PROVIDER].update({"extra_headers": {"X-A B": "1"}}),
+    lambda d: d["providers"][ATRIA_PROVIDER].update({"extra_headers": {"X-Key": "a" * 40}}),
+    lambda d: d["providers"][ATRIA_PROVIDER].update({"extra_headers": {"X-Key": "Bearer abc"}}),
+    lambda d: d["providers"][ATRIA_PROVIDER].update({"extra_headers": "X-A: 1"}),
 ])
 def test_registry_rejects_unsafe_or_malformed_extra_headers(tmp_path, mutate):
     value = _registry_error(tmp_path, _mutated_registry(mutate))
@@ -262,22 +322,34 @@ def test_every_retired_identity_resolves_to_no_catalog_route():
 
 
 def test_registry_refuses_to_register_a_retired_identity(tmp_path):
-    data = _mutated_registry(
-        lambda d: d["models"].append({
-            "id": "experiential/gpt-5.6-luna",
-            "provider_id": "experiential",
-            "upstream_model": "gpt-5.6-luna",
-            "display_name": "Retired route",
-            "provider_name": "Experiential Labs",
-            "capabilities": ["chat"],
-            "context_window": 0,
-            "input_price_usd_per_1m": None,
-            "output_price_usd_per_1m": None,
-            "source": "https://example.invalid/model",
-            "source_checked_at": "2026-11-02",
-            "enabled": True,
-        })
+    # The identity to re-register is read off the document's own retirement
+    # list and re-shaped from the base row of the provider that still serves
+    # it, so this test names no retired identity itself.
+    from app.pilot.model_registry_file import retired_model_ids as _retired
+
+    registry = read_registry()
+    retired = sorted(_retired())
+    retired_provider = next(
+        model_id.split("/", 1)[0] for model_id in retired
+        if model_id.split("/", 1)[0] in registry["providers"]
     )
+    retired_model = next(
+        model_id for model_id in retired
+        if model_id.split("/", 1)[0] == retired_provider
+    )
+    template = next(
+        row for row in registry["models"]
+        if row["provider_id"] == retired_provider
+    )
+
+    def _mutate(d):
+        row = json.loads(json.dumps(template))
+        row["id"] = retired_model
+        row["upstream_model"] = retired_model.split("/", 1)[1]
+        row["display_name"] = "Retired route"
+        d["models"].append(row)
+
+    data = _mutated_registry(_mutate)
     assert "retired model must not be registered" in str(
         _registry_error(tmp_path, data)
     )

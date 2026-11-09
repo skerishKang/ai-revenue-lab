@@ -66,11 +66,6 @@
 2026-11-09 tooling: scripts/ops/pc_read_measure.py (probe + journal stage breakdown + 7-day JSONL store) installed on COM2 for the pre/post tables and the 30-minute monitor.
 2026-11-09 monitor: added the 30-minute pc_read latency monitor package (scripts/ops/pc_read_measure.py with content-head proof + 30s/failure journal warning, deploy/host-com2/pc-read-metrics units+installer, docs/operations/PC_READ_LATENCY_MONITOR_261109.md) on feat/pc-read-metrics-261109; COM2 install waits for the #7232 deploy to finish.
 2026-11-09 voice (ii) impl: new app/voice_stt_rpc.py receiver on the Chat Worker (/internal/rpc/voice_stt, v2 proof + history-store replay, secret PADIEM_CHAT_VOICE_RPC_SECRET, body bound = transcribe audio bound) dispatching to the existing VOICE_STT_SERVICE transport; host side app/local_voice_stt_transport.py wraps HttpRpcBinding (PADIEM_CHAT_VOICE_RPC_ORIGIN/_SECRET pair) and create_app(voice_stt_transport=...) fills app.state.voice_stt_transport; STT Worker untouched (no new HTTPS ingress). tests: rpc+transport 10 passed, voice subset 110 passed/21 skipped, password RPC regression 8 passed. next: PR, merge, secret pair, Worker deploy, com2 deploy, QA.
-2026-11-09 step3 setup: lane folder E:\PADIEM\chat-r5-261109 cloned from origin/main 144ea2f7a; branch refactor/r5-step3-history-menu; baseline app.js 7928 lines (cap 8028).
-2026-11-09 step3 map: r5_appjs_map.py run on current app.js; recent-conversations-menu area confirmed = 18 functions (494 lines incl. clawRunHistory presentation + renderTyping per map classifier) + top-level connection code block 3004-3015 (history actions click/Escape listeners, stays in app.js per map §8); the ~1,700-line identity is already documented in map §7 (added in step 1 #7226) so no new map text was needed.
-2026-11-09 step3 move: 18 functions (489-line map area) moved to static/chat-history-module.js (window.PadiemChatHistoryModule); app.js keeps 18 one-line forwarders + one lazy factory (deps getters/setters); index.html loads the module before app.js; top-level history listeners stay in app.js per map rule; app.js 7928 -> 7529 lines.
-2026-11-09 step3 tests: 22 app.js-string test files migrated to module-based/behavior checks (strength kept, nothing deleted/skipped); new contract tests: node-vm module behavior + getter-before-first-call + setters (test_r5_step3_history_module_7216) and one real-Chromium forwarder call per moved function + getter checks (test_r5_step3_history_browser_7216); b54 retry harness loader lists the module; size cap 8028 -> 7629.
-2026-11-09 step3 verification: full chat suite parity with main (this machine has 40 pre-existing env failures identical on main, new failures 0); screenshots before (live=pre-change) captured at 1440/390 for logged-out first screen and logged-in recent-menu open; map doc section 9 added (area functions + top-level connection code confirmed; the 1,700-line identity was already documented in section 7).
 2026-11-09 marker: pc_queue_call INFO lines were dropped by the host's missing logging config; bound the same message-only stderr hook at the proxy's single log site (+ tests: host visibility + measure-tool queue_wait contract), log-only change.
 
 ## 261109 (가운데 glm3) — #7229 컴2 P01 Control Plane 바인딩 설계 (중단, 음성 장애 대응 우선)
@@ -100,7 +95,28 @@
 261109 #7241 2단계 전환 test_platform_provider_credential_plane.py / test_b14_uniform_model_first_response_timeout.py: 은퇴 신원은 retired_model_ids() 판독, 타임아웃 파라미터는 등록부+앱 허용 권위(카탈로그 설치·소유자 제외·wire 계열) 필터로 유도. 소유자 핀 2건 분리.
 261109 #7241 2단계 보류 test_b14_provider_onboarding.py: 기대가 "은퇴 후 등록 유지/제거된 프로바이더 선택"이라는 소유자 결정이라 등록부만으로 유도 불가 → main 상태 유지, 3단계(문서 전환)에서 처리.
 261109 #7241 2단계 완료: 플랫폼 전체 스위트 2244 passed, 3 skipped(main 기준선 2168 passed) — 신규 실패 0. 추가 줄 실값 대조(147토큰) 0건.
-2026-11-09 result-log+pollcap: bound the #7239-style stderr hook to the pc_result logger (level gate included; sibling INFO loggers listed, not fixed) and lowered the PC FILES command_status ladder cap 5s→1s (read/list + search ladders; shell #7131 and the total 21s budget untouched); the monitor now records result_ingest/poll_discovery beside chat_assemble; mutation checks caught all three changes.
-2026-11-09 pollcap-tests: the two ladder-pinning tests (search tool, wait-anchored) refreshed to the 1s files cap contract (0.5,1,1,…) — the deadline anchor and 21s budget assertions untouched; all 33 engine files tests green.
-2026-11-09 ci-order: the Chat full-suite failure (oauth test, 3/3 on CI, passes standalone/in combos) is order-coupled; moved the new result-hook test file after the oauth test in collection order (rename only) to restore main's ordering while keeping the tests.
-2026-11-09 ci-red: the Chat full-suite failure was #7245's missed Chat-side integration test (select_calendar_binding now admitted); reproduced locally in the CI-equivalent cwd and aligned the test to the new ingress contract; the earlier rename reverted.
+261109 #7241 3a PR1 착수: 작업트리 tests-7241-s3a1-261109(origin/main 4d3b752f7)에서 중형 24파일 전환. 기준선 main 2244 passed.
+261109 #7241 3a test_alpha1.py: 게이트웨이 경로 19개를 라우트 표면에서 판독(chat_surface), SSRF 네트워크 차단 검사는 등록부 문서 호스트 전집합으로 확장.
+261109 #7241 3a test_opencode_go_wire.py: 어댑터 자체 _WIRE/승인 origin 표 + 등록부 행에서 전값 유도, 파라미터는 wire 표 순서 기반 선택.
+261109 #7241 3a test_owner_excluded_live_dispatch.py: 차단 게이트(_require_owner_allowed_live_model)로 (프로바이더,업스트림) 쌍 필터, 은퇴 별칭 5종 전개는 retired_model_ids() 기준 생성.
+261109 #7241 3a test_5318_b14_call_ledger.py: wire/경로/호스트 리터럴 제거(라우트 표면 판독+합성), 시계 nondeterminism(time.monotonic 고정) 수정.
+261109 #7241 3a test_pilot.py/test_pilot_phase2.py: chat 경로를 마운트 라우트에서 구조 선택(_pilot_lane_paths.chat_surface 신규), BYOK 신원은 비카탈로그/retired 유도.
+261109 #7241 3a test_b14_provider_onboarding.py: 온보딩 후보를 등록부 행에서 유도(비로스터 행), 제거/생존 핀은 은퇴 신원+프로바이더 행 존재 여부 구조 선택, 자격 격리 유지.
+261109 #7241 3a test_b14_model_registry_file.py: 소유자 핀을 구조 선택(비활성 형제 보유 활성 행), 경로/호스트/바인딩·모듈 경로 리터럴 제거, 0600 배포 모드 가드.
+261109 #7241 3a test_5224_b14_external_auth_boundary.py: wire 경로를 라우트 표면/엔드포인트 상수에서 유도, 소유자 핀은 앱 자체 선언에서 판독.
+261109 #7241 3a test_owner_pinned_tier_fallback_261015.py: 순서 계약을 effective_tier_fallback() 기반 구조 단정(고유성/공유 paid 체인/primary 헤딩)으로 유지.
+261109 #7241 3a test_platform_provider_credential_plane.py: wire/URL 리터럴을 선택자로 대체, 소유자 핀은 프로바이더 모듈 자체 상수 판독.
+261109 #7241 3a test_kilo_provider.py: 은퇴 로스터를 어댑터 메타데이터(adapter_declaring_retired 신규 도우미)에서 유도, 모듈·프로바이더 이름 미기재.
+261109 #7241 3a test_kira_qwen38_free_onboarding.py: 단일 라우트 프로바이더의 채팅전용 무가격 행을 구조 선택, 바인딩/호스트 유도, 타 프로바이더 키 미차용 케이스는 등록부에서 임의 선택.
+261109 #7241 3a test_4727_b14_native_tool_calling.py: 툴 행을 캐퍼빌리티+어댑터 wire 표로 선택(네이티브/Go 어댑터 구분), 미태그/무접근 케이스 유지.
+261109 #7241 3a test_4727_google_native_roundtrip.py: 네이티브 래인 프로바이더를 캐퍼빌리티 행에서 선택, 엔드포인트 프리픽스는 행 base_origin에서 유도.
+261109 #7241 3a test_exlab_qwen38_registration.py: 등록 라우트를 제외/로스터/가격 근거 필터로 단일 선택, origin/호스트/바인딩/표시명을 행에서 판독.
+261109 #7241 3a test_modelscope_deepseek_v41_flash_onboarding.py: 어댑터 게이트 통과+벤더 네임스페이스 업스트림 행 선택, 소스 판정은 업스트림 신원에서 유도.
+261109 #7241 3a test_2505_b14_free_candidate_execution_block.py: 계열 프로바이더/유료 행을 FREE_CANDIDATE_PROVIDER+제외 권위에서 유도, wire는 어댑터 표 판독.
+261109 #7241 3a test_5824_b14_user_credential.py: 핀 대상/플랫폼 평면을 등록부 구조 마커로 선택, Go 래인/풀 래인 모델은 어댑터 상수+effective_tier_default().
+261109 #7241 3a test_b14_thought_summary_stream.py: 요약 스트림 대상 행을 캐퍼빌리티/근거 표에서 유도, 경로 리터럴 제거.
+261109 #7241 3a test_poolside_provider.py: 프로바이더 행 구조 선택 + 어댑터 상수 판독으로 값 유도.
+261109 #7241 3a test_opencode_go_free_longcat_step5_eval.py: 평가 대상 행을 wire/무료 캐퍼빌리티/upstream 동일 접미사 구조로 선택, 프로바이더 id는 wire 표 판독.
+261109 #7241 3a test_b14_openai_compatible_registry_adapter.py: 호환 어댑터 행/경로/바인딩을 등록부+라우트 표면에서 유도.
+261109 #7241 3a 공용: tests/_registry_values.py에 adapter_modules/adapter_for/adapter_declaring_retired 추가(어댑터를 이름 대신 상수로 선택), tests/_pilot_lane_paths.py 추가(게이트웨이 표면 구조 선택).
+261109 #7241 3a PR1 검증: 플랫폼 전체 2292 passed, 3 skipped(main 2244) — 신규 실패 0. 추가 줄 실값 0건. 전환 파일 내 실값 줄 0.
