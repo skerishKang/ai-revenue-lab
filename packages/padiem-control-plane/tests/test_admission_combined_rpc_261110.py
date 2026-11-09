@@ -12,10 +12,18 @@ from __future__ import annotations
 
 import asyncio
 import types
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 # Same tests directory, same load-the-worker pattern as the ingress contract.
 from test_engine_admission_rpc_ingress_261031 import _load_worker  # noqa: E402
+
+from test_engine_admission_authority import (  # noqa: E402
+    snapshot as policy_snapshot,
+    reservation as base_reservation,
+    store_fixture,
+)
+
+from padiem_control_plane.entitlements import EntitlementGrant  # noqa: E402
 
 from padiem_control_plane.contracts import ControlPlaneContractError
 
@@ -189,10 +197,13 @@ def test_admit_usage_response_loss_retry_replays_same_reservation_without_duplic
     # The retry after a lost response carries byte-identical input, so the real
     # store must replay the committed reservation rather than insert again.
     store, storage = store_fixture()
+    now = datetime.now(UTC)
     policy = policy_snapshot(
         grants=(
             EntitlementGrant(key="orchestration.run", allowed=True, limit=None),
-        )
+        ),
+                    issued_at=now - timedelta(minutes=1),
+                    expires_at=now + timedelta(minutes=15),
     )
     store.install_entitlement_snapshot(policy, now=datetime.now(UTC))
     authority, _ensure, _store = _calls_authority(store=store)
@@ -200,7 +211,7 @@ def test_admit_usage_response_loss_retry_replays_same_reservation_without_duplic
         "product_id": PRODUCT,
         "subject": {"subject_type": "user", "subject_id": "subject-owner"},
         "reservation": base_reservation(
-            occurred_at=datetime.now(UTC).isoformat(),
+            occurred_at=now.isoformat(),
         ),
     }
     first = asyncio.run(authority.admit_usage(dict(payload)))
