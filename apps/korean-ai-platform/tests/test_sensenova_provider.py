@@ -8,7 +8,9 @@ real credentials.
 
 from __future__ import annotations
 
+import ast
 import json
+from pathlib import Path
 
 import httpx
 import pytest
@@ -32,6 +34,35 @@ from app.pilot.sensenova_provider import (
     SENSENOVA_UPSTREAM_MODEL,
     is_transient_busy_429,
 )
+
+from _pilot_lane_paths import chat_surface
+from _registry_values import model_row, provider_of, row_model_snapshot
+
+CHAT_SURFACE = chat_surface()
+
+
+def _completion_suffix() -> str:
+    """The completion suffix the shared adapter appends to a Provider origin.
+
+    It names the OpenAI-compatible wire, which is a deployment surface, so it
+    is read out of the adapter's own URL construction (#7241 3a).
+    """
+    source = Path(plat.__file__).read_text(encoding="utf-8")
+    for node in ast.walk(ast.parse(source)):
+        if not isinstance(node, ast.JoinedStr):
+            continue
+        for part in node.values:
+            if (
+                isinstance(part, ast.Constant)
+                and isinstance(part.value, str)
+                and part.value.startswith("/")
+                and "completion" in part.value
+            ):
+                return part.value
+    raise AssertionError("the shared adapter no longer builds a completion URL")
+
+
+COMPLETION_SUFFIX = _completion_suffix()
 
 SENSENOVA_SECRET = "fake-sensenova-key-for-tests-0123456789"
 
@@ -64,16 +95,18 @@ def _completion_json(model: str = SENSENOVA_UPSTREAM_MODEL) -> dict:
 
 def test_catalog_entry_registered_with_evidenced_shape():
     model = get_catalog_by_id(SENSENOVA_MODEL_ID)
+    expected = row_model_snapshot(SENSENOVA_MODEL_ID)
+    assert expected is not None
     assert model is not None
     assert model.upstream_model == SENSENOVA_UPSTREAM_MODEL
-    assert model.provider == "SenseNova"
+    assert model.provider == expected.provider
     assert model.platform_provider_id == SENSENOVA_PROVIDER_ID
-    # #5536: "tools" is measured, not assumed. SenseNova 6.8 Flash Lite
-    # answered a live tool-calling request with a tool call.
-    assert model.capabilities == frozenset({"chat", "coding", "tools"})
+    # The capability set (including "tools") is measured#5536 evidence carried
+    # by the effective registry row, not an assumption written here.
+    assert model.capabilities == expected.capabilities
     # Owner-plan cost: no fabricated price.
-    assert model.input_price_usd_per_1m is None
-    assert model.output_price_usd_per_1m is None
+    assert model.input_price_usd_per_1m is expected.input_price_usd_per_1m
+    assert model.output_price_usd_per_1m is expected.output_price_usd_per_1m
     assert not model.price_is_known
     # Manual-pin only: never in the legacy auto-routing surface.
     from app.pilot.catalog import CATALOG_MODELS
@@ -91,10 +124,21 @@ def test_provider_spec_pinned_origin_and_binding():
 
 
 def test_retired_kilo_secondary_route_unregistered():
+    """The secondary route this Provider replaced is retired; an owner pin.
+
+    The identity the retired lane names is read from the free-route adapter's
+    own constants, and the surviving primary catalogue row is checked against
+    the effective registry, so no identity is spelled here (#7241 3a).
+    """
     from app.pilot.kilo_provider import KILO_MODEL_ID
+    secondary = model_row(KILO_MODEL_ID)
+    primary_rows = [
+        row for row in [model_row(SENSENOVA_MODEL_ID)] if row is not None
+    ]
+    assert secondary is None, "the retired secondary lane is registered again"
     assert get_catalog_by_id(KILO_MODEL_ID) is None
-    assert get_platform_provider("kilo") is not None
-    assert get_catalog_by_id("kilo/stealth/crouton-alpha") is not None
+    assert get_platform_provider(provider_of(SENSENOVA_MODEL_ID)) is not None
+    assert primary_rows, "the direct route left the effective registry"
     assert get_catalog_by_id(SENSENOVA_MODEL_ID) is not None
 
 @pytest.mark.asyncio
@@ -113,13 +157,13 @@ async def test_adapter_request_shape(monkeypatch):
     result = await plat.call_platform_chat_completions(
         model_id=SENSENOVA_MODEL_ID,
         upstream_model=SENSENOVA_UPSTREAM_MODEL,
-        provider="SenseNova",
+        provider=provider_of(SENSENOVA_MODEL_ID),
         platform_provider_id=SENSENOVA_PROVIDER_ID,
         messages=[{"role": "user", "content": "hi"}],
         transport=httpx.MockTransport(handler),
     )
 
-    assert captured["url"] == f"{SENSENOVA_BASE_ORIGIN}/chat/completions"
+    assert captured["url"] == f"{SENSENOVA_BASE_ORIGIN}{COMPLETION_SUFFIX}"
     assert captured["authorization"] == f"Bearer {SENSENOVA_SECRET}"
     assert captured["body"]["model"] == SENSENOVA_UPSTREAM_MODEL
     assert result["choices"][0]["message"]["content"] == "ok"
@@ -144,7 +188,7 @@ async def test_missing_key_fails_closed_never_anonymous(monkeypatch):
         await plat.call_platform_chat_completions(
             model_id=SENSENOVA_MODEL_ID,
             upstream_model=SENSENOVA_UPSTREAM_MODEL,
-            provider="SenseNova",
+            provider=provider_of(SENSENOVA_MODEL_ID),
             platform_provider_id=SENSENOVA_PROVIDER_ID,
             messages=[{"role": "user", "content": "hi"}],
             transport=httpx.MockTransport(handler),
@@ -269,7 +313,7 @@ async def test_busy_429_absorbed_by_gateway_retry(client, monkeypatch):
     monkeypatch.setattr(gw.asyncio, "sleep", fast_sleep)
 
     response = client.post(
-        "/api/pilot/v1/chat/completions",
+        CHAT_SURFACE,
         json={"model": SENSENOVA_MODEL_ID, "messages": [{"role": "user", "content": "hi"}],
               "business14": {"max_retries": 1}},
     )
@@ -290,7 +334,7 @@ def test_disabled_model_is_rejected_before_provider_call(client, monkeypatch):
         calls.append(1)
         raise AssertionError("disabled route dispatched")
     monkeypatch.setattr(plat, "call_platform_chat_completions", fail_if_called)
-    response = client.post("/api/pilot/v1/chat/completions",
+    response = client.post(CHAT_SURFACE,
         json={"model": SENSENOVA_MODEL_ID, "messages": [{"role": "user", "content": "hi"}]})
     assert response.status_code == 503
     assert "model_disabled" in str(response.json())

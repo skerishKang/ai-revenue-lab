@@ -1,3 +1,14 @@
+"""B14 deployment scope: the Worker identity, its watch paths, and the guard.
+
+#7241 3단계: the deployment identity (repository root, watch paths, shared
+monorepo packages, contract version) is a deployment value, so this suite
+never spells it. Every expectation is read back from the two documents that
+declare it — the checked-in scope manifest and the Worker configuration — so
+the assertion is still exact, it just has no literal to drift.
+
+The synthetic cases below build their own fixtures and address nothing in the
+deployment.
+"""
 from __future__ import annotations
 
 import ast
@@ -12,6 +23,29 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 MANIFEST_PATH = APP_ROOT / "deployment_scope.json"
 PYPROJECT_PATH = APP_ROOT / "pyproject.toml"
 WRANGLER_PATH = APP_ROOT / "wrangler.toml"
+
+
+def _repository_root() -> str:
+    """The application's own path inside the repository, read from the tree."""
+    return APP_ROOT.relative_to(REPO_ROOT).as_posix()
+
+
+def _declared_package_paths(app_root: Path) -> list[str]:
+    """Monorepo packages the application itself imports, as repository paths.
+
+    Derived from the application's own import graph and the monorepo layout,
+    so the watch-path expectation names no package by hand.
+    """
+    monorepo_roots = _monorepo_package_roots(REPO_ROOT)
+    imported = _source_import_roots(app_root)
+    return sorted({path for root, path in monorepo_roots.items() if root in imported})
+
+
+def _watch_paths(app_root: Path) -> list[str]:
+    """One build-watch glob per declared package, plus the application itself."""
+    return [f"{_repository_root()}/*"] + [
+        f"{path}/*" for path in _declared_package_paths(app_root)
+    ]
 
 _SECRET_MARKERS = (
     "api_key=",
@@ -188,22 +222,23 @@ def _flatten_strings(value: object) -> tuple[str, ...]:
 def test_scope_manifest_matches_current_worker_identity_and_is_non_authoritative():
     manifest = _load_manifest()
     wrangler = tomllib.loads(WRANGLER_PATH.read_text(encoding="utf-8"))
-    assert manifest["contract_version"] == "b14-cloudflare-deployment-scope.v1"
-    assert manifest["worker_service_name"] == wrangler["name"] == "ai-revenue-korean-ai-platform"
-    assert manifest["repository_root"] == "apps/korean-ai-platform"
-    assert manifest["cloudflare_root_directory"] == "apps/korean-ai-platform"
-    # B14 shares Core's pc_work_metrics, so the Worker build must watch that
-    # package and the manifest must declare it (the actual Cloudflare Build
-    # Watch Paths live outside this repository).
-    assert manifest["repository_relative_watch_paths"] == [
-        "apps/korean-ai-platform/*",
-        "packages/padiem-ai-core/*",
-        "packages/padiem-control-plane/*",
-    ]
-    assert manifest["shared_monorepo_dependency_paths"] == [
-        "packages/padiem-ai-core",
-        "packages/padiem-control-plane",
-    ]
+    # The contract version identifies the manifest schema the external build
+    # automation reads. It is a version string, not a deployment identity: it
+    # must be non-empty and versioned rather than restated here.
+    version = manifest["contract_version"]
+    assert isinstance(version, str) and version.count(".") >= 1 and version.strip() == version
+    # The service identity has exactly one authority: the Worker configuration.
+    assert manifest["worker_service_name"] == wrangler["name"]
+    assert wrangler["name"]
+    # The repository root and the Cloudflare root directory are the same place:
+    # the application's own directory inside the repository.
+    assert manifest["repository_root"] == _repository_root()
+    assert manifest["cloudflare_root_directory"] == _repository_root()
+    # B14 shares Core's pc_work_metrics, so the Worker build must watch every
+    # monorepo package the app imports and the manifest must declare it (the
+    # actual Cloudflare Build Watch Paths live outside this repository).
+    assert manifest["shared_monorepo_dependency_paths"] == _declared_package_paths(APP_ROOT)
+    assert manifest["repository_relative_watch_paths"] == _watch_paths(APP_ROOT)
     assert manifest["watch_path_authority"] == "external_cloudflare_workers_builds"
     assert manifest["repository_guard_only"] is True
     assert manifest["production_deploy_authority"] is False
@@ -239,19 +274,22 @@ def test_current_b14_has_no_outside_local_dependency_or_sys_path_escape():
 
 
 def test_relative_local_dependency_outside_app_fails_closed():
+    """A synthetic local reference that climbs out of the app fails closed."""
+    package = _declared_package_paths(APP_ROOT)[0]
+    escaped = "../" * len(Path(package).parts) + package
     synthetic = {
-        "project": {"dependencies": ["padiem-ai-core @ file:../../packages/padiem-ai-core"]}
+        "project": {"dependencies": [f"synthetic-local-package @ file:{escaped}"]}
     }
-    assert _outside_app_local_refs(synthetic, APP_ROOT) == (
-        "file:../../packages/padiem-ai-core",
-    )
+    assert _outside_app_local_refs(synthetic, APP_ROOT) == (f"file:{escaped}",)
 
 
 def test_uv_workspace_dependency_fails_closed_until_scope_is_declared():
+    package = _declared_package_paths(APP_ROOT)[0]
+    name = Path(package).name
     synthetic = {
-        "tool": {"uv": {"sources": {"padiem-ai-core": {"workspace": True}}}}
+        "tool": {"uv": {"sources": {name: {"workspace": True}}}}
     }
-    assert _outside_app_local_refs(synthetic, APP_ROOT) == ("workspace:padiem-ai-core",)
+    assert _outside_app_local_refs(synthetic, APP_ROOT) == (f"workspace:{name}",)
 
 
 def test_sys_path_escape_is_detected_even_with_alias():

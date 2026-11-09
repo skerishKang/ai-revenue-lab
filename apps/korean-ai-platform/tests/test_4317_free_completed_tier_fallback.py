@@ -25,6 +25,8 @@ for its long-roster case.
 """
 from __future__ import annotations
 
+from dataclasses import replace
+
 import pytest
 
 from app.pilot import platform_secrets as ps
@@ -32,7 +34,11 @@ from app.pilot import router_core
 from app.pilot.errors import UpstreamAuthFailed, UpstreamServerError
 from app.pilot.tier_fallback import effective_tier_default, effective_tier_fallback
 
+from _pilot_lane_paths import chat_surface
 from _registry_values import model_rows, provider_of, provider_row, registry
+
+#: The gateway's own chat surface, selected from the mounted router.
+CHAT_PATH = chat_surface()
 
 # The effective primary and the effective per-grade rosters: the same source
 # the router resolves a request against, shipped document or private registry.
@@ -49,7 +55,8 @@ COMPLETED_CHAT_OPTIONS = {
 
 # A roster deliberately longer than the effective one, built from registry rows
 # that are already registered (so the walk can visit them) but are not part of
-# the Free roster: no deployment identity is written here.
+# the Free roster, then extended with synthetic identities in the same Provider
+# shape the effective rows use: no deployment identity is written here.
 def _extra_registered_candidates(count: int) -> tuple[str, ...]:
     taken = {FREE_PRIMARY, *FREE_ROSTER}
     extra = [
@@ -57,6 +64,57 @@ def _extra_registered_candidates(count: int) -> tuple[str, ...]:
         if row["id"] not in taken and row.get("enabled", True)
     ]
     return tuple(extra[:count])
+
+
+def _synthetic_candidates(count: int) -> list[dict]:
+    """Additional registry rows for a roster longer than the catalog.
+
+    The walk only visits installed catalog rows, so a longer roster needs more
+    of them. Each row is built from the effective primary's own row shape with
+    an identity of this suite's own: no deployment identity is written here.
+    """
+    from app.pilot.catalog import CATALOG_BY_ID
+
+    primary = next(row for row in model_rows() if row["id"] == FREE_PRIMARY)
+    prefix = provider_of(FREE_PRIMARY)
+    known = {FREE_PRIMARY, *FREE_ROSTER}
+    rows: list[dict] = []
+    index = 0
+    while len(rows) < count:
+        model_id = f"{prefix}/synthetic-walk-candidate-{index:02d}"
+        index += 1
+        if model_id in known:
+            continue
+        rows.append(dict(primary, id=model_id))
+    return rows
+
+
+def _install_extra_rows(monkeypatch, rows: list[dict]) -> tuple[str, ...]:
+    """Install the extra rows into the catalog for this test only.
+
+    Every insertion goes through ``monkeypatch`` so the process-wide catalog is
+    restored afterwards: a leaked row would corrupt later suites that compare
+    the installed catalog against the registry document.
+
+    Answers the identities actually installed: a row the effective catalog
+    already holds is used as-is rather than replaced.
+    """
+    from app.pilot.catalog import CATALOG_BY_ID
+    from app.pilot.tier_fallback import effective_tier_default
+
+    template = CATALOG_BY_ID.get(effective_tier_default())
+    if template is None:
+        pytest.skip("the effective catalog does not hold the primary row")
+    registry_ids = {row["id"] for row in model_rows()}
+    installed: list[str] = []
+    for row in rows:
+        model_id = row["id"]
+        if model_id in CATALOG_BY_ID or model_id in registry_ids:
+            installed.append(model_id)
+            continue
+        monkeypatch.setitem(CATALOG_BY_ID, model_id, replace(template, model_id=model_id))
+        installed.append(model_id)
+    return tuple(installed)
 
 
 def _primary_binding() -> str:
@@ -76,7 +134,20 @@ def _set_registry_credentials(monkeypatch, model_ids) -> None:
             )
 
 
+#: The effective roster plus every other installed row: the roster the long-walk
+#: case drives. It is topped up with rows of this suite's own at call time so it
+#: is always longer than the effective roster, whatever the document holds.
 LONG_ROSTER = (*FREE_ROSTER, *_extra_registered_candidates(3))
+
+
+def _widen_chain_budget(monkeypatch, attempts: int) -> None:
+    """Headroom for a roster wider than the deployment's own."""
+    from app.pilot import gateway
+
+    floor = max(gateway._UPSTREAM_RETRY_BUDGET_SECONDS,
+                gateway.DEFAULT_CHAIN_BUDGET_SECONDS)
+    monkeypatch.setattr(gateway, "_UPSTREAM_RETRY_BUDGET_SECONDS",
+                        floor * (attempts / 2))
 
 
 def _ready(monkeypatch):
@@ -160,7 +231,7 @@ def test_the_gateway_walks_the_owner_roster_after_a_recoverable_failure(client, 
     plat.call_platform_chat_completions = fake
     try:
         response = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_PATH,
             json={
                 "model": FREE_PRIMARY,
                 "messages": [{"role": "user", "content": "hi"}],
@@ -211,7 +282,7 @@ def test_the_owner_roster_walk_terminates_when_every_candidate_fails(client, mon
     plat.call_platform_chat_completions = fake
     try:
         response = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_PATH,
             json={
                 "model": FREE_PRIMARY,
                 "messages": [{"role": "user", "content": "hi"}],
@@ -248,7 +319,7 @@ def test_the_gateway_does_not_advance_on_a_non_recoverable_failure(client, monke
     plat.call_platform_chat_completions = fake
     try:
         response = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_PATH,
             json={
                 "model": FREE_PRIMARY,
                 "messages": [{"role": "user", "content": "hi"}],
@@ -277,11 +348,21 @@ def test_a_roster_longer_than_four_is_walked_in_full_with_no_numeric_cap(
     from app.pilot import platform as plat
     from app.pilot import tier_fallback
 
-    long_roster = LONG_ROSTER
+    # The extra rows are installed first, so the roster below is longer than the
+    # effective one on whatever document this host serves.
+    extra_rows = _synthetic_candidates(len(FREE_ROSTER) + 1)
+    long_roster = (*LONG_ROSTER, *_install_extra_rows(monkeypatch, extra_rows))
     assert len(long_roster) > len(FREE_ROSTER)
+    # The walk is sized by the roster, and each member is one in-process
+    # attempt; give the chain the same headroom the effective roster needs so
+    # a wider roster is not cut by the wall clock instead of a numeric cap.
+    _widen_chain_budget(monkeypatch, len(long_roster) + 1)
+    # The router reads the effective roster, which is the host's own table when
+    # the switch is off and the private document's roster when it is on; the
+    # wider roster replaces that answer for this test only.
     monkeypatch.setattr(
-        tier_fallback, "TIER_FALLBACK_B14_MODELS",
-        {**tier_fallback.TIER_FALLBACK_B14_MODELS, "free": long_roster},
+        tier_fallback, "effective_tier_fallback",
+        lambda: {**effective_tier_fallback(), "free": long_roster},
     )
     _ready(monkeypatch)
 
@@ -317,7 +398,7 @@ def test_a_roster_longer_than_four_is_walked_in_full_with_no_numeric_cap(
     plat.call_platform_chat_completions = fake
     try:
         response = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_PATH,
             json={
                 "model": FREE_PRIMARY,
                 "messages": [{"role": "user", "content": "hi"}],

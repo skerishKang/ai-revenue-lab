@@ -27,7 +27,25 @@ from app.pilot import gateway as gw
 from app.pilot import platform as plat
 from app.pilot.errors import UpstreamAuthFailed, UpstreamServerError, UpstreamTimeout
 
-MODEL_ID = "agnes-ai/agnes-3.0-flash"
+from _pilot_lane_paths import chat_surface
+from _registry_values import (
+    model_row,
+    model_rows,
+    provider_of,
+    provider_row,
+)
+
+#: The direct retry target: an enabled registry row, never a retired identity.
+MODEL_ID = next(row["id"] for row in model_rows() if row["enabled"])
+#: Its own upstream name and display name come from the same row, so the audit
+#: evidence below compares against the row that installed the route (#7241 3a).
+_MODEL_ROW = model_row(MODEL_ID)
+MODEL_UPSTREAM = _MODEL_ROW["upstream_model"]
+MODEL_PROVIDER_NAME = _MODEL_ROW["provider_name"]
+#: The binding slot this suite fills, read from the Provider's own registry row.
+#: A binding *name* is deployment metadata; the value below is a fixture.
+_MODEL_BINDING = provider_row(provider_of(MODEL_ID))["credential_binding_name"]
+FIXTURE_SECRET = "sk-fixture-retry-0123456789"
 
 
 def _ok_response(upstream_model: str) -> dict:
@@ -51,8 +69,8 @@ def _ok_response(upstream_model: str) -> dict:
 
 @pytest.fixture(autouse=True)
 def _approved_manual_model_secret(monkeypatch):
-    """The owner-approved Agnes model is the retry target, never a retired ID."""
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01","sk-fixture-agnes-retry-0123456789")
+    """The owner-approved direct model is the retry target, never a retired ID."""
+    monkeypatch.setenv(_MODEL_BINDING, FIXTURE_SECRET)
     monkeypatch.setenv("B14_PROVIDER_MODE","live")
 
 @pytest.fixture()
@@ -100,7 +118,7 @@ def _post(client, *, business14=None):
         business14 = {"max_retries": gw._UPSTREAM_RETRY_MAX_RETRIES}
     body["business14"] = business14
     return client.post(
-        "/api/pilot/v1/chat/completions",
+        chat_surface(),
         json=body,
     )
 
@@ -109,7 +127,7 @@ def test_default_one_upstream_attempt_without_retry_opt_in(client, monkeypatch):
     """Provider handles its own rate policy; B14 never retries by default."""
     calls = _install_seq(monkeypatch, [UpstreamTimeout(), _ok_response])
     response = client.post(
-        "/api/pilot/v1/chat/completions",
+        chat_surface(),
         json={"model": MODEL_ID, "messages": [{"role": "user", "content": "hi"}]},
     )
     assert response.status_code == 504
@@ -188,8 +206,8 @@ def test_request_max_retries_zero_disables_same_route_retry(client, monkeypatch,
         {
             "attempt": 1,
             "model_id": MODEL_ID,
-            "upstream_model": "agnes-3.0-flash",
-            "provider": "Agnes AI",
+            "upstream_model": MODEL_UPSTREAM,
+            "provider": MODEL_PROVIDER_NAME,
             "route_id": f"platform:{MODEL_ID}",
             "outcome": "error",
             "error_code": "upstream_timeout",

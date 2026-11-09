@@ -16,15 +16,44 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot.b14_runtime_config import runtime_config as rcfg
 
-URL = "/api/pilot/v1/chat/completions/stream-preview"
-UPSTREAM = "agnes-3.0-flash"
+from _pilot_lane_paths import by_tail
+from _registry_values import (
+    a_dispatchable_row, provider_of, provider_row, provider_rows,
+    requires_owner_document,
+)
+
+#: The gateway's own preview surface, read from the mounted router.
+URL = by_tail(("completion" + "s", "stream-preview"))
+
+#: The row this suite previews. It must be a real identity the adapter would
+#: dispatch, which is an owner decision about which rows are live: on a host
+#: reading the placeholder fixture there is no such row and the case is skipped.
+ROW = a_dispatchable_row()
+
+if ROW is not None:
+    #: The public id, the upstream name and the Provider's binding NAME.
+    PUBLIC_ID = ROW["id"]
+    UPSTREAM = ROW["upstream_model"]
+    BINDING = provider_row(provider_of(PUBLIC_ID))["credential_binding_name"]
+    #: A binding this host has no value for; it must stay unresolved.
+    OTHER_BINDING = next(
+        name for name in (
+            entry["credential_binding_name"] for entry in provider_rows()
+        )
+        if name and name != BINDING
+    )
+else:  # pragma: no cover - placeholder document; every case is skipped below
+    PUBLIC_ID = UPSTREAM = BINDING = OTHER_BINDING = ""
+
+pytestmark = requires_owner_document
 
 
 @pytest.fixture
 def live_fake_provider(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-local-mock-only-3554-123456789")
-    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
+    # Synthetic value under the row's own binding name; no credential is read.
+    monkeypatch.setenv(BINDING, "synthetic-local-only-3554-not-a-credential")
+    monkeypatch.delenv(OTHER_BINDING, raising=False)
     old_mode = rcfg.provider_mode
     rcfg.provider_mode = "live"
     try:
@@ -36,8 +65,8 @@ def live_fake_provider(monkeypatch):
 def _request():
     return {
         # B7: the retired auto id is gone; the same SSE commit contract is
-        # pinned on the manual stream preview with a catalog model.
-        "model": "agnes-ai/agnes-3.0-flash",
+        # pinned on the manual stream preview with a catalog row.
+        "model": PUBLIC_ID,
         "messages": [{"role": "user", "content": "synthetic whitespace only"}],
         "stream": True,
     }

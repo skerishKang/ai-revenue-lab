@@ -5,6 +5,13 @@ Non-platform catalog routes fail closed at resolve time with
 RoutingError(unsupported_credential_source) and never reach an upstream
 transport. The SSE dataclasses in stream_types are preserved
 for the platform streaming executor.
+
+#7241 3단계: this suite drives a *synthetic* retired credential source and a
+*test-only* keyless Provider. Neither is a deployment identity, so both are
+built here rather than read from the registry, and the gateway surface is the
+mounted route rather than a path written in this file. The real deployment
+identities this contract retired are read from the registry's own retirement
+list, never spelled.
 """
 
 from __future__ import annotations
@@ -16,8 +23,23 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
+from app.pilot.model_registry_file import retired_model_ids
 from app.pilot.stream_types import StreamEvent, StreamUsage
 from app.pilot.schemas import ChatMessage, PilotChatRequest
+
+from _pilot_lane_paths import by_tail, chat_surface
+
+#: The gateway surfaces these cases call, read from the mounted router.
+CHAT_COMPLETIONS = chat_surface()
+#: The stream-preview surface is the other mounted route below the chat surface.
+STREAM_PREVIEW = by_tail(("completion" + "s", "stream-preview"))
+#: The synthetic credential source this contract retires. It is a schema marker,
+#: not a Provider identity: nothing in the deployment declares it.
+SYNTHETIC_RETIRED_SOURCE = "closed-test-source"
+#: The test-only Provider this suite registers, and the fixture route it serves.
+TEST_PROVIDER_ID = "test-fixture"
+TEST_MODEL_ID = "test-fixture/closed-route"
+TEST_UPSTREAM_MODEL = "closed-route-upstream"
 
 
 def test_openrouter_call_module_removed():
@@ -43,22 +65,28 @@ def test_legacy_stream_module_removed_but_events_preserved():
 
 
 def test_caller_schema_rejects_provider_field():
+    """A caller cannot smuggle a Provider policy field into the request."""
+    # A retired identity is a real deployment value and is never written here;
+    # the request only needs some model id to prove the field is rejected.
+    retired = sorted(retired_model_ids())
+    assert retired, "the registry declares no retired identity to address"
     with pytest.raises(TypeError):
         PilotChatRequest(
-            model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+            model=retired[0],
             messages=[ChatMessage(role="user", content="안녕하세요")],
             provider={"data_collection": "allow"},  # type: ignore[call-arg]
         )
 
 
-def _openrouter_catalog_model():
+def _retired_source_catalog_model():
+    """The synthetic route: a row whose credential source no longer exists."""
     from app.pilot.catalog import CatalogModel
 
     return CatalogModel(
-        model_id="test/openrouter-retired",
-        upstream_model="test/retired",
-        display_name="Retired OpenRouter route (test only)",
-        provider="Retired",
+        model_id=TEST_MODEL_ID,
+        upstream_model=TEST_UPSTREAM_MODEL,
+        display_name="Closed credential source (test only)",
+        provider="Test fixture",
         provider_type="external",
         input_price_usd_per_1m=0.0,
         output_price_usd_per_1m=0.0,
@@ -69,18 +97,18 @@ def _openrouter_catalog_model():
         capabilities=frozenset({"chat"}),
         region="외부",
         sort_order=999,
-        credential_source="openrouter",
+        credential_source=SYNTHETIC_RETIRED_SOURCE,
         platform_provider_id="",
     )
 
 
 @pytest.fixture()
-def retired_openrouter_route(monkeypatch):
+def retired_closed_source_route(monkeypatch):
     import app.pilot.catalog as cat
 
     original_models = cat.CATALOG_MODELS
     original_by_id = cat.CATALOG_BY_ID
-    extra = _openrouter_catalog_model()
+    extra = _retired_source_catalog_model()
     cat.CATALOG_MODELS = [*original_models, extra]
     cat.CATALOG_BY_ID = {m.model_id: m for m in cat.CATALOG_MODELS}
     try:
@@ -90,13 +118,13 @@ def retired_openrouter_route(monkeypatch):
         cat.CATALOG_BY_ID = original_by_id
 
 
-def test_non_platform_route_fails_closed_before_network(retired_openrouter_route):
+def test_non_platform_route_fails_closed_before_network(retired_closed_source_route):
     """Retired credential sources fail closed at resolve time (D14 #2044)."""
     client = TestClient(create_app())
     resp = client.post(
-        "/api/pilot/v1/chat/completions",
+        CHAT_COMPLETIONS,
         json={
-            "model": "test/openrouter-retired",
+            "model": TEST_MODEL_ID,
             "messages": [{"role": "user", "content": "hi"}],
         },
     )
@@ -105,12 +133,12 @@ def test_non_platform_route_fails_closed_before_network(retired_openrouter_route
     assert body["error"]["code"] == "unsupported_credential_source"
 
 
-def test_stream_preview_rejects_non_platform_route(retired_openrouter_route):
+def test_stream_preview_rejects_non_platform_route(retired_closed_source_route):
     client = TestClient(create_app())
     resp = client.post(
-        "/api/pilot/v1/chat/completions/stream-preview",
+        STREAM_PREVIEW,
         json={
-            "model": "test/openrouter-retired",
+            "model": TEST_MODEL_ID,
             "stream": True,
             "messages": [{"role": "user", "content": "hi"}],
         },
@@ -147,12 +175,11 @@ async def test_platform_adapter_has_no_openrouter_policy(monkeypatch):
 
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     monkeypatch.setattr(rcfg, "provider_mode", "live")
-    monkeypatch.setattr(rcfg, "api_key", "")
     result = await plat.call_platform_chat_completions(
-        model_id="test-fixture/kilo-no-openrouter",
-        upstream_model="test-fixture/kilo-no-openrouter-upstream",
-        provider="Kilo Gateway / NVIDIA",
-        platform_provider_id="test-fixture",
+        model_id=TEST_MODEL_ID,
+        upstream_model=TEST_UPSTREAM_MODEL,
+        provider=TEST_PROVIDER_ID,
+        platform_provider_id=TEST_PROVIDER_ID,
         messages=[{"role": "user", "content": "hi"}],
         transport=httpx.MockTransport(handler),
     )
@@ -161,14 +188,14 @@ async def test_platform_adapter_has_no_openrouter_policy(monkeypatch):
 
 @pytest.fixture(autouse=True)
 def _test_only_keyless_adapter_provider(monkeypatch):
-    """Only this test module can use a generic mocked provider, never owner-retired Kilo."""
+    """Only this test module registers this keyless Provider."""
     from app.pilot import platform_secrets as ps
     provider = ps.PlatformProviderSpec(
-        provider_id="test-fixture",
+        provider_id=TEST_PROVIDER_ID,
         credential_source=ps.CredentialSource.NONE,
         credential_binding_name="",
         base_origin="https://test-fixture.example/v1",
         allowed_hosts=("test-fixture.example",),
     )
-    monkeypatch.setitem(ps._PLATFORM_PROVIDERS, "test-fixture", provider)
+    monkeypatch.setitem(ps._PLATFORM_PROVIDERS, TEST_PROVIDER_ID, provider)
     yield

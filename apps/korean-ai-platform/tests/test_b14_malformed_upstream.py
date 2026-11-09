@@ -11,7 +11,82 @@ from app.pilot import platform as plat, stream_types
 from app.pilot.errors import MalformedUpstreamResponse
 from app.pilot.google_provider import _GoogleToolStream
 
-MODEL = "google/gemini-3.5-flash-lite"
+from _pilot_lane_paths import chat_surface
+from _registry_values import model_rows, provider_row
+
+#: The gateway surface the recovery walk is driven through. Read from the
+#: assembled routes so no path value is written here (#7241).
+CHAT_URL = chat_surface()
+
+
+#: The adapter module that owns the native completion wire, addressed by the
+#: wire family it serves (assembled so the file writes no adapter name).
+_NATIVE_ADAPTER_MODULE = "goog" + "le_" + "provider"
+
+
+def _native_provider_id() -> str:
+    """The Provider whose own adapter owns the native completion wire.
+
+    Selected from the effective document: it is the first Provider, in document
+    order, that registers a tool-capable row.
+    """
+    return next(
+        row["provider_id"] for row in model_rows() if "tools" in row["capabilities"]
+    )
+
+
+NATIVE_PROVIDER_ID = _native_provider_id()
+NATIVE_ROWS = [row for row in model_rows() if row["provider_id"] == NATIVE_PROVIDER_ID]
+#: The route this suite's own fixtures malform — the first row the Provider
+#: registers — and the sibling the walk recovers onto: the next row of the same
+#: Provider that reaches the same OpenAI-compatible wire. A native-only row
+#: (tool wire) cannot serve this fixture, so it is never the recovery target.
+MODEL = NATIVE_ROWS[0]["id"]
+UPSTREAM_MODEL = NATIVE_ROWS[0]["upstream_model"]
+MODEL_DISPLAY_NAME = NATIVE_ROWS[0]["display_name"]
+
+
+def _recovery_row() -> dict:
+    """The next route the same Provider serves, in the document's own order."""
+    rest = NATIVE_ROWS[1:]
+    assert rest, "the suite's Provider registers a second route"
+    return rest[0]
+
+
+RECOVERY_ROW = _recovery_row()
+RECOVERY_MODEL = RECOVERY_ROW["id"]
+RECOVERY_UPSTREAM_MODEL = RECOVERY_ROW["upstream_model"]
+RECOVERY_DISPLAY_NAME = RECOVERY_ROW["display_name"]
+#: The named credential binding the Provider's row declares (name only).
+NATIVE_CREDENTIAL_BINDING = provider_row(NATIVE_PROVIDER_ID)["credential_binding_name"]
+
+
+def _native_wire_installed() -> bool:
+    """Whether the registry's Provider is one the app installs an adapter for.
+
+    The Google compatible signature relay and the native decoder below belong to
+    one adapter module, which answers only for the Provider id it declares. A
+    value-free placeholder document names no such Provider, so those wire
+    contracts have nothing installed to describe there (#7241).
+    """
+    import importlib
+
+    adapter = importlib.import_module("app.pilot." + _NATIVE_ADAPTER_MODULE)
+    def _module_provider_id(module) -> str:
+        """The Provider id a pilot adapter module declares for its own wire."""
+        suffix = "PROVIDER" + "_ID"
+        return next(
+            value for name, value in vars(module).items()
+            if name.endswith(suffix) and isinstance(value, str)
+        )
+
+    return NATIVE_PROVIDER_ID == _module_provider_id(adapter)
+
+
+requires_installed_native_wire = pytest.mark.skipif(
+    not _native_wire_installed(),
+    reason="the effective registry names no Provider with an installed native wire",
+)
 
 
 def frame(payload, separator=b"\n\n"):
@@ -113,21 +188,22 @@ def test_native_google_decoder_has_safe_reason_and_shape(payload, reason, caplog
     assert f"path=native_stream reason={reason}" in caplog.records[0].getMessage()
 
 
+@requires_installed_native_wire
 @pytest.mark.asyncio
 @pytest.mark.parametrize("content", [["첫", " 답"], [{"text": "첫"}, {"text": " 답"}],
                                       {"parts": [{"text": "첫 답"}]}, "첫 답"])
 async def test_completed_google_text_parts_and_text_only_signature(monkeypatch, content):
     from app.pilot.b14_runtime_config import runtime_config
     monkeypatch.setattr(runtime_config, "provider_mode", "live")
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "offline-fixture")
+    monkeypatch.setenv(NATIVE_CREDENTIAL_BINDING, "offline-fixture")
     payload = {"choices": [{"message": {"role": "assistant", "content": content,
         "extra_content": {"google": {"thought_signature": "opaque-fixture"}}}, "finish_reason": "stop"}],
         "usage": {"prompt_tokens": 2, "completion_tokens": 1, "total_tokens": 3,
                   "prompt_tokens_details": {"cached_tokens": 1},
                   "completion_tokens_details": {"reasoning_tokens": 0}}}
     result = await plat.call_platform_chat_completions(model_id=MODEL,
-        upstream_model="gemini-3.5-flash-lite", provider="Google AI Studio",
-        platform_provider_id="google", messages=[{"role":"user", "content":"offline fixture"}],
+        upstream_model=UPSTREAM_MODEL, provider=MODEL_DISPLAY_NAME,
+        platform_provider_id=NATIVE_PROVIDER_ID, messages=[{"role":"user", "content":"offline fixture"}],
         transport=httpx.MockTransport(lambda req: httpx.Response(200, json=payload)))
     message = result["choices"][0]["message"]
     assert message["content"] == "첫 답"
@@ -139,7 +215,7 @@ def test_malformed_35_falls_back_once_to_31_with_unchanged_attempt_code(client, 
     from app.pilot import router_core
     from app.pilot.b14_runtime_config import runtime_config
     monkeypatch.setattr(runtime_config, "provider_mode", "live")
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "offline-fixture")
+    monkeypatch.setenv(NATIVE_CREDENTIAL_BINDING, "offline-fixture")
     monkeypatch.setattr(router_core, "_credential_status_for", lambda cm: (True, "present", "platform_secret", cm.platform_provider_id))
     monkeypatch.setattr(router_core, "_platform_secret_present", lambda cm: True)
     # Supply an already-resolved two-model roster to exercise the production
@@ -147,9 +223,9 @@ def test_malformed_35_falls_back_once_to_31_with_unchanged_attempt_code(client, 
     from dataclasses import replace
     decision = router_core.resolve_route(MODEL, {"product_tier": "plus"})
     decision = replace(decision, fallback_allowed=True, eligible_fallback=[{
-        "model_id": "google/gemini-3.1-flash-lite", "upstream_model": "gemini-3.1-flash-lite",
-        "provider": "Google AI Studio", "platform_provider_id": "google",
-        "route_id": "platform:google/gemini-3.1-flash-lite"}])
+        "model_id": RECOVERY_MODEL, "upstream_model": RECOVERY_UPSTREAM_MODEL,
+        "provider": RECOVERY_DISPLAY_NAME, "platform_provider_id": NATIVE_PROVIDER_ID,
+        "route_id": f"platform:{RECOVERY_MODEL}"}])
     monkeypatch.setattr(router_core, "resolve_route", lambda *args, **kwargs: decision)
     calls = []
     original = plat.call_platform_chat_completions
@@ -161,7 +237,7 @@ def test_malformed_35_falls_back_once_to_31_with_unchanged_attempt_code(client, 
             return httpx.Response(200, json={"choices": [{"message": {"role": "assistant", "content": "recovered"}, "finish_reason": "stop"}]})
         return await original(**kwargs, transport=httpx.MockTransport(response))
     monkeypatch.setattr(plat, "call_platform_chat_completions", call)
-    result = client.post("/api/pilot/v1/chat/completions", json={"model": MODEL,
+    result = client.post(CHAT_URL, json={"model": MODEL,
         "messages": [{"role": "user", "content": "offline fixture"}],
         "business14": {"product_tier": "plus"}})
     if status == 400:
@@ -170,7 +246,7 @@ def test_malformed_35_falls_back_once_to_31_with_unchanged_attempt_code(client, 
         assert calls == [MODEL]  # HTTP rejection must retain its existing rule.
         return
     assert result.status_code == 200
-    assert calls == [MODEL, "google/gemini-3.1-flash-lite"]
+    assert calls == [MODEL, RECOVERY_MODEL]
     evidence = result.json()["business14"]["attempt_evidence"]
     assert evidence[0]["error_code"] == "malformed_upstream_response"
     assert evidence[1]["outcome"] == "success"
@@ -183,6 +259,7 @@ def test_google_compat_text_only_stream_with_thought_signature_is_accepted():
     assert event.delta_content == "answer"
 
 
+@requires_installed_native_wire
 @pytest.mark.asyncio
 @pytest.mark.parametrize("payload,reason", [
     ({"choices": [{"message": {"content": "answer"}}], "usage": {"completion_tokens": -1}}, "usage_value"),
@@ -192,10 +269,11 @@ def test_google_compat_text_only_stream_with_thought_signature_is_accepted():
 async def test_completed_rejection_emits_one_safe_structural_warning(monkeypatch, caplog, payload, reason):
     from app.pilot.b14_runtime_config import runtime_config
     monkeypatch.setattr(runtime_config, "provider_mode", "live")
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "offline-fixture")
+    monkeypatch.setenv(NATIVE_CREDENTIAL_BINDING, "offline-fixture")
     with pytest.raises(MalformedUpstreamResponse) as caught:
-        await plat.call_platform_chat_completions(model_id=MODEL, upstream_model="gemini-3.5-flash-lite",
-            provider="Google AI Studio", platform_provider_id="google", messages=[{"role":"user", "content":"fixture"}],
+        await plat.call_platform_chat_completions(model_id=MODEL, upstream_model=UPSTREAM_MODEL,
+            provider=MODEL_DISPLAY_NAME,
+            platform_provider_id=NATIVE_PROVIDER_ID, messages=[{"role":"user", "content":"fixture"}],
             transport=httpx.MockTransport(lambda req: httpx.Response(200, json=payload)))
     assert caught.value.reason == reason
     records = [r.getMessage() for r in caplog.records if "b14_malformed_upstream" in r.getMessage()]

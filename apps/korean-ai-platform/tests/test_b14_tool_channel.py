@@ -3,6 +3,11 @@
 The gateway validates a tool declaration before any provider call, refuses a
 tool request for a model that cannot serve one before execution, and relays the
 tool declaration to the provider that will answer it.
+
+#7241: the chat surface, the registry routes under test and every provider,
+model and credential value come from the app — the mounted router, the
+effective registry document and the registry Provider row — and never from a
+literal in this module.
 """
 
 from __future__ import annotations
@@ -16,14 +21,75 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot import platform as plat
 from app.pilot.catalog import get_catalog_by_id
+from app.pilot.platform_secrets import CredentialSource
+from app.pilot.tool_channel import TOOL_CAPABILITY
 
-CHAT_PATH = "/api/pilot/v1/chat/completions"
+from _pilot_lane_paths import chat_surface
+from _registry_values import model_rows, provider_of, provider_row, requires_owner_document
+
+#: The gateway's own chat surface, selected from the mounted router.
+CHAT_PATH = chat_surface()
+
+
+def _row_candidates(declares_tools: bool) -> list[dict]:
+    """Registry rows on this side of the tool-capability decision.
+
+    A row is eligible when the case can only exercise the tool-capability gate:
+    its capabilities are exactly the chat tag plus (or minus) the tool tag, so
+    no other declared feature participates.
+    """
+    expected = {"chat", TOOL_CAPABILITY}
+    return [
+        row for row in model_rows()
+        if declares_tools is (TOOL_CAPABILITY in row["capabilities"])
+        and set(row["capabilities"]) == (expected if declares_tools else {"chat"})
+        and row.get("enabled", True)
+        and get_catalog_by_id(row["id"]) is not None
+    ]
+
+
+def _row_with(declares_tools: bool) -> dict:
+    candidates = _row_candidates(declares_tools)
+    assert candidates, "the effective registry declares no row for this side"
+    return candidates[0]
+
+
+# The route under test is the owner-decided one: it is selected from the
+# effective registry, so the selection only holds while the owner's document is
+# the authority. The module-level selection is therefore tolerant — on a host
+# reading the placeholder document it resolves to nothing and the owner-pinned
+# cases below skip.
+_TOOL_ROW = next(iter(_row_candidates(True)), None)
+_PLAIN_ROW = next(iter(_row_candidates(False)), None)
 
 #: A registry model that declares the tool capability.
-TOOL_CAPABLE_MODEL = "tokenharbor/deepseek-v4.1-flash:free"
+TOOL_CAPABLE_MODEL = _TOOL_ROW["id"] if _TOOL_ROW else ""
 #: A registry model that does not.
-# Gemma 31B declares tools since #6460-5; 26B is the still-plain route.
-PLAIN_MODEL = "google/gemma-4-26b-a4b-it"
+PLAIN_MODEL = _PLAIN_ROW["id"] if _PLAIN_ROW else ""
+#: The selected route's upstream identity and Provider, for the answer shapes
+#: and the adapter-level calls below. Empty on a placeholder host, which the
+#: owner-pinned cases never reach.
+_UPSTREAM_MODEL = _TOOL_ROW["upstream_model"] if _TOOL_ROW else ""
+_PROVIDER_NAME = _TOOL_ROW["provider_name"] if _TOOL_ROW else ""
+_PROVIDER_ID = _TOOL_ROW["provider_id"] if _TOOL_ROW else ""
+
+
+def _binding_slot(model_id: str) -> str:
+    """The credential slot the model's own Provider reads."""
+    return provider_row(provider_of(model_id))["credential_binding_name"]
+
+
+def _sets_its_own_provider_binding(monkeypatch, model_id: str, value: str) -> None:
+    """Give the row's own Provider a synthetic value, on its own terms.
+
+    A keyless Provider reads no secret at all, so no slot is written for it;
+    every other Provider reads exactly the slot its registry row names.
+    """
+    provider_id = provider_of(model_id)
+    if provider_row(provider_id).get("credential_source") == CredentialSource.NONE.value:
+        return
+    monkeypatch.setenv(_binding_slot(model_id), value)
+
 
 TOOL = {
     "type": "function",
@@ -44,7 +110,7 @@ TOOL = {
 TOOL_CALL_ANSWER = {
     "id": "chatcmpl-tool",
     "object": "chat.completion",
-    "model": "deepseek-v4.1-flash:free",
+    "model": _UPSTREAM_MODEL,
     "choices": [
         {
             "index": 0,
@@ -97,18 +163,20 @@ def _post(client: TestClient, body: dict) -> httpx.Response:
 # ---------------------------------------------------------------------------
 
 
+@requires_owner_document
 def test_the_registry_declares_the_tool_capability_for_a_verified_model() -> None:
-    model = get_catalog_by_id(TOOL_CAPABLE_MODEL)
+    model = get_catalog_by_id(_row_with(True)["id"])
 
     assert model is not None
-    assert "tools" in model.capabilities
+    assert TOOL_CAPABILITY in model.capabilities
 
 
+@requires_owner_document
 def test_the_registry_does_not_declare_the_tool_capability_for_a_plain_model() -> None:
-    model = get_catalog_by_id(PLAIN_MODEL)
+    model = get_catalog_by_id(_row_with(False)["id"])
 
     assert model is not None
-    assert "tools" not in model.capabilities
+    assert TOOL_CAPABILITY not in model.capabilities
 
 
 # ---------------------------------------------------------------------------
@@ -125,6 +193,7 @@ def test_the_registry_does_not_declare_the_tool_capability_for_a_plain_model() -
         [{"type": "function", "function": {"name": "x", "parameters": "nope"}}],
     ],
 )
+@requires_owner_document
 def test_a_malformed_tool_declaration_is_refused(client, tools) -> None:
     response = _post(
         client,
@@ -139,6 +208,7 @@ def test_a_malformed_tool_declaration_is_refused(client, tools) -> None:
     assert response.json()["error"]["code"] == "invalid_body"
 
 
+@requires_owner_document
 def test_a_tool_choice_naming_an_undeclared_tool_is_refused(client) -> None:
     response = _post(
         client,
@@ -154,6 +224,7 @@ def test_a_tool_choice_naming_an_undeclared_tool_is_refused(client) -> None:
     assert response.json()["error"]["code"] == "invalid_body"
 
 
+@requires_owner_document
 def test_a_tool_message_must_carry_a_tool_call_id(client) -> None:
     response = _post(
         client,
@@ -168,6 +239,7 @@ def test_a_tool_message_must_carry_a_tool_call_id(client) -> None:
     assert response.json()["error"]["code"] == "invalid_body"
 
 
+@requires_owner_document
 def test_an_unknown_top_level_field_is_still_refused(client) -> None:
     response = _post(
         client,
@@ -189,6 +261,7 @@ def test_an_unknown_top_level_field_is_still_refused(client) -> None:
 # ---------------------------------------------------------------------------
 
 
+@requires_owner_document
 def test_a_model_without_the_tool_capability_is_refused_before_execution(
     client, monkeypatch
 ) -> None:
@@ -199,7 +272,7 @@ def test_a_model_without_the_tool_capability_is_refused_before_execution(
         return dict(TOOL_CALL_ANSWER)
 
     monkeypatch.setattr(plat, "call_platform_chat_completions", _upstream)
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "synthetic_test_key_01")
+    _sets_its_own_provider_binding(monkeypatch, PLAIN_MODEL, "synthetic_test_key_01")
 
     response = _post(
         client,
@@ -216,6 +289,7 @@ def test_a_model_without_the_tool_capability_is_refused_before_execution(
     assert calls == []
 
 
+@requires_owner_document
 def test_a_tool_capable_model_receives_the_declaration(client, monkeypatch) -> None:
     calls: list[dict] = []
 
@@ -224,7 +298,7 @@ def test_a_tool_capable_model_receives_the_declaration(client, monkeypatch) -> N
         return dict(TOOL_CALL_ANSWER)
 
     monkeypatch.setattr(plat, "call_platform_chat_completions", _upstream)
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_13", "synthetic_test_key_02")
+    _sets_its_own_provider_binding(monkeypatch, TOOL_CAPABLE_MODEL, "synthetic_test_key_02")
 
     response = _post(
         client,
@@ -267,6 +341,7 @@ def test_a_tool_capable_model_receives_the_declaration(client, monkeypatch) -> N
     assert call["function"]["name"] == "generateSandboxedUi"
 
 
+@requires_owner_document
 def test_a_request_without_a_tool_declares_no_tool(client, monkeypatch) -> None:
     calls: list[dict] = []
 
@@ -275,7 +350,7 @@ def test_a_request_without_a_tool_declares_no_tool(client, monkeypatch) -> None:
         return {
             "id": "chatcmpl-text",
             "object": "chat.completion",
-            "model": "deepseek-v4.1-flash:free",
+            "model": _UPSTREAM_MODEL,
             "choices": [
                 {
                     "index": 0,
@@ -286,7 +361,7 @@ def test_a_request_without_a_tool_declares_no_tool(client, monkeypatch) -> None:
         }
 
     monkeypatch.setattr(plat, "call_platform_chat_completions", _upstream)
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_13", "synthetic_test_key_03")
+    _sets_its_own_provider_binding(monkeypatch, TOOL_CAPABLE_MODEL, "synthetic_test_key_03")
 
     response = _post(
         client,
@@ -345,22 +420,23 @@ def live_provider_mode(monkeypatch):
     from app.pilot.b14_runtime_config import runtime_config as rcfg
 
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_13", "synthetic_test_key_04")
+    _sets_its_own_provider_binding(monkeypatch, TOOL_CAPABLE_MODEL, "synthetic_test_key_04")
     saved = rcfg.provider_mode
     rcfg.provider_mode = "live"
     yield
     rcfg.provider_mode = saved
 
 
+@requires_owner_document
 @pytest.mark.asyncio
 async def test_the_adapter_sends_the_tool_declaration_upstream(live_provider_mode) -> None:
     seen: list[dict] = []
 
     await plat.call_platform_chat_completions(
         model_id=TOOL_CAPABLE_MODEL,
-        upstream_model="deepseek-v4.1-flash:free",
-        provider="TokenHarbor",
-        platform_provider_id="tokenharbor",
+        upstream_model=_UPSTREAM_MODEL,
+        provider=_PROVIDER_NAME,
+        platform_provider_id=_PROVIDER_ID,
         messages=[{"role": "user", "content": "화면을 만들어줘"}],
         tools=[
             {
@@ -380,15 +456,16 @@ async def test_the_adapter_sends_the_tool_declaration_upstream(live_provider_mod
     }
 
 
+@requires_owner_document
 @pytest.mark.asyncio
 async def test_the_adapter_accepts_a_tool_call_answer(live_provider_mode) -> None:
     seen: list[dict] = []
 
     result = await plat.call_platform_chat_completions(
         model_id=TOOL_CAPABLE_MODEL,
-        upstream_model="deepseek-v4.1-flash:free",
-        provider="TokenHarbor",
-        platform_provider_id="tokenharbor",
+        upstream_model=_UPSTREAM_MODEL,
+        provider=_PROVIDER_NAME,
+        platform_provider_id=_PROVIDER_ID,
         messages=[{"role": "user", "content": "화면을 만들어줘"}],
         tools=[
             {
@@ -404,6 +481,7 @@ async def test_the_adapter_accepts_a_tool_call_answer(live_provider_mode) -> Non
     assert call["function"]["name"] == "generateSandboxedUi"
 
 
+@requires_owner_document
 @pytest.mark.asyncio
 async def test_an_empty_answer_without_a_tool_is_still_refused(live_provider_mode) -> None:
     from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer
@@ -412,7 +490,7 @@ async def test_an_empty_answer_without_a_tool_is_still_refused(live_provider_mod
     empty = {
         "id": "chatcmpl-empty",
         "object": "chat.completion",
-        "model": "deepseek-v4.1-flash:free",
+        "model": _UPSTREAM_MODEL,
         "choices": [
             {
                 "index": 0,
@@ -425,9 +503,9 @@ async def test_an_empty_answer_without_a_tool_is_still_refused(live_provider_mod
     with pytest.raises(UpstreamEmptyAnswer):
         await plat.call_platform_chat_completions(
             model_id=TOOL_CAPABLE_MODEL,
-            upstream_model="deepseek-v4.1-flash:free",
-            provider="TokenHarbor",
-            platform_provider_id="tokenharbor",
+            upstream_model=_UPSTREAM_MODEL,
+            provider=_PROVIDER_NAME,
+            platform_provider_id=_PROVIDER_ID,
             messages=[{"role": "user", "content": "hi"}],
             transport=_tool_call_transport(seen, empty),
         )

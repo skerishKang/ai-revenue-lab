@@ -16,18 +16,55 @@ Pinned here:
 * when every candidate answers empty, the bounded 502 is surfaced.
 
 No provider is contacted: the platform adapter is patched directly.
+
+#7241 3단계: the roster, the gateway surface and the provider readiness are
+read from the app rather than written here. The grade roster is whatever the
+platform's own tier table (or the private registry once the switch is on)
+pins, the chat surface is the mounted route, and a credential is made present
+for every Provider the roster names instead of for one hard-coded binding.
 """
 from __future__ import annotations
 
 
 from app.pilot import router_core
 from app.pilot.errors import UpstreamAuthFailed
-from app.pilot.tier_fallback import TIER_DEFAULT_B14_MODEL, TIER_FALLBACK_B14_MODELS
+from app.pilot.tier_fallback import effective_tier_default, effective_tier_fallback
 from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer
 
-FREE_ROSTER = TIER_FALLBACK_B14_MODELS["free"]
+from _pilot_lane_paths import chat_surface
+
+#: The graded route these cases drive: the free grade's primary.
+TIER_DEFAULT_MODEL = effective_tier_default()
+#: The free grade's remaining pinned candidates, in the order the walk visits.
+FREE_ROSTER = tuple(effective_tier_fallback()["free"])
 
 COMPLETED_CHAT_OPTIONS = {"product_tier": "free"}
+
+CHAT_COMPLETIONS = chat_surface()
+
+
+def _roster_providers() -> tuple[str, ...]:
+    """The Providers every candidate of the driven route is served by."""
+    return tuple(sorted({
+        model_id.split("/", 1)[0]
+        for model_id in (TIER_DEFAULT_MODEL, *FREE_ROSTER)
+    }))
+
+
+def _present_credentials(monkeypatch) -> None:
+    """Make a platform credential available for each routed Provider.
+
+    The binding slot is whatever the app registered for that Provider, so no
+    credential name is written here; the value only has to be non-empty, since
+    the adapter call itself is patched out below.
+    """
+    from app.pilot import platform_secrets as ps
+
+    for provider_id in _roster_providers():
+        spec = ps.get_platform_provider(provider_id)
+        binding = getattr(spec, "credential_binding_name", "")
+        if binding:
+            monkeypatch.setenv(binding, "synthetic-credential-not-a-secret")
 
 
 def _ready(monkeypatch):
@@ -76,7 +113,7 @@ def test_the_walk_advances_past_an_empty_answer(client, monkeypatch):
     from app.pilot import platform as plat
 
     rcfg.provider_mode = "live"
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_03", "sk-free-google-0123456789abcdef")
+    _present_credentials(monkeypatch)
     _ready(monkeypatch)
 
     original = plat.call_platform_chat_completions
@@ -92,9 +129,9 @@ def test_the_walk_advances_past_an_empty_answer(client, monkeypatch):
     plat.call_platform_chat_completions = fake
     try:
         response = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={
-                "model": TIER_DEFAULT_B14_MODEL,
+                "model": TIER_DEFAULT_MODEL,
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": dict(COMPLETED_CHAT_OPTIONS),
             },
@@ -103,7 +140,7 @@ def test_the_walk_advances_past_an_empty_answer(client, monkeypatch):
         plat.call_platform_chat_completions = original
 
     assert response.status_code == 200
-    assert [call["model_id"] for call in calls] == [TIER_DEFAULT_B14_MODEL, FREE_ROSTER[0]]
+    assert [call["model_id"] for call in calls] == [TIER_DEFAULT_MODEL, FREE_ROSTER[0]]
     business = response.json()["business14"]
     assert business["fallback_used"] is True
     assert business["attempt_count"] == 2
@@ -117,7 +154,7 @@ def test_every_candidate_answering_empty_ends_with_the_bounded_error(client, mon
     from app.pilot import platform as plat
 
     rcfg.provider_mode = "live"
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_03", "sk-free-google-0123456789abcdef")
+    _present_credentials(monkeypatch)
     _ready(monkeypatch)
 
     original = plat.call_platform_chat_completions
@@ -131,9 +168,9 @@ def test_every_candidate_answering_empty_ends_with_the_bounded_error(client, mon
     plat.call_platform_chat_completions = fake
     try:
         response = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={
-                "model": TIER_DEFAULT_B14_MODEL,
+                "model": TIER_DEFAULT_MODEL,
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": dict(COMPLETED_CHAT_OPTIONS),
             },
@@ -141,7 +178,7 @@ def test_every_candidate_answering_empty_ends_with_the_bounded_error(client, mon
     finally:
         plat.call_platform_chat_completions = original
 
-    expected = [TIER_DEFAULT_B14_MODEL, *FREE_ROSTER]
+    expected = [TIER_DEFAULT_MODEL, *FREE_ROSTER]
     assert [call["model_id"] for call in calls] == expected
     assert len({call["model_id"] for call in calls}) == len(calls)
     assert response.status_code == 502
@@ -154,7 +191,7 @@ def test_the_chain_still_stops_at_the_first_non_recoverable_failure(client, monk
     from app.pilot import platform as plat
 
     rcfg.provider_mode = "live"
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_03", "sk-free-google-0123456789abcdef")
+    _present_credentials(monkeypatch)
     _ready(monkeypatch)
 
     original = plat.call_platform_chat_completions
@@ -168,9 +205,9 @@ def test_the_chain_still_stops_at_the_first_non_recoverable_failure(client, monk
     plat.call_platform_chat_completions = fake
     try:
         response = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={
-                "model": TIER_DEFAULT_B14_MODEL,
+                "model": TIER_DEFAULT_MODEL,
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": dict(COMPLETED_CHAT_OPTIONS),
             },

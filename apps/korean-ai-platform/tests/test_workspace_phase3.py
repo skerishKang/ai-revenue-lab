@@ -1,7 +1,8 @@
 """Tests for Phase 3: Korean-first session workspace pilot.
 
-The workspace JS calls POST /api/pilot/v1/chat/completions directly
-(Phase 2 API), so there is no server-side POST proxy endpoint.
+The workspace JS calls the phase 2 chat surface directly (addressed here by
+reading it from the app's own route table), so there is no server-side POST
+proxy endpoint.
 
 Covers:
 - Locale behavior (Korean-first, explicit en, no Accept-Language)
@@ -23,6 +24,11 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot.config import pilot_settings
 from app.pilot.registry import reset_registry
+
+from _pilot_lane_paths import chat_surface
+
+#: The chat surface the app mounts, read back from its route table (#7241 3a).
+CHAT_SURFACE = chat_surface()
 
 
 @pytest.fixture()
@@ -625,7 +631,7 @@ class TestPhase3Regression:
         prv_mod.call_chat_completions = fake_call
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                CHAT_SURFACE,
                 json={"model": "test-model-v1", "messages": [{"role": "user", "content": "hi"}], "temperature": 0.2, "max_tokens": 300},
                 headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
             )
@@ -662,7 +668,7 @@ class TestPhase3Regression:
         prv.call_chat_completions = patched
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                CHAT_SURFACE,
                 json={"model": "model-a-v1", "messages": [{"role": "user", "content": "hi"}], "temperature": 0.2, "max_tokens": 300},
                 headers={"X-Business14-Provider-Key": "sk-isolation-key-999"},
             )
@@ -688,7 +694,7 @@ class TestPhase3Regression:
         prv.call_chat_completions = patched
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                CHAT_SURFACE,
                 json={"model": "model-a-v1", "messages": [{"role": "user", "content": "hi"}], "temperature": 0.2, "max_tokens": 300},
                 headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
             )
@@ -725,7 +731,7 @@ class TestPhase3Regression:
         prv.call_chat_completions = patched
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                CHAT_SURFACE,
                 json={"model": "model-a-v1", "messages": [{"role": "user", "content": "hi"}], "temperature": 0.2, "max_tokens": 300},
                 headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
             )

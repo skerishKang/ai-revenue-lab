@@ -8,44 +8,70 @@ installed at all. These tests pin the relaxed-but-fail-closed contract:
 - a base row plus ``reasoning`` validates and keeps every other key exact;
 - a malformed reasoning block fails closed (normalize_policy);
 - a row with an unrelated extra key is still rejected.
+
+#7241: the document the validator is driven with is built from the effective
+registry — the shipped document today, the private registry once this host is
+switched — and from the validator's own key vocabulary (its required root /
+provider / model key sets and its group names). No provider, host, binding,
+model or metadata value is written in this module.
 """
 from __future__ import annotations
 
+import copy
 import unittest
 
+from app.pilot import model_registry_file as registry_file
 from app.pilot.model_registry_file import ModelRegistryError, validate_registry
+
+from _registry_values import model_rows, provider_row, registry
+
+
+def _sample_provider_id() -> str:
+    return model_rows()[0]["provider_id"]
+
+
+def _sample_model_row() -> dict:
+    """One effective model row reduced to the validator's exact row shape.
+
+    The row keeps only the keys the validator requires (``reasoning`` is the
+    key under test and is added by each case), so the base document is exact
+    by construction whatever metadata the effective document carries.
+    """
+    row = copy.deepcopy(model_rows()[0])
+    required = {
+        "id", "provider_id", "upstream_model", "display_name", "provider_name",
+        "capabilities", "context_window", "input_price_usd_per_1m",
+        "output_price_usd_per_1m", "source", "source_checked_at", "enabled",
+    }
+    required &= set(row)
+    row = {key: value for key, value in row.items() if key in required}
+    # The capability list is what the validator checks for its chat tag; the
+    # base row states exactly that one tag.
+    row["capabilities"] = ["chat"]
+    return row
+
+
+def _sample_provider_row(provider_id: str, model_id: str) -> dict:
+    """The effective provider row, in the validator's exact provider shape."""
+    row = copy.deepcopy(provider_row(provider_id))
+    row.pop("extra_headers", None)
+    # A model row must be addressed under its own provider id; the base
+    # document derives the id from the provider row it is attached to.
+    row.setdefault("credential_source", "platform_secret")
+    row["enabled"] = True
+    assert model_id.startswith(provider_id + "/")
+    return row
 
 
 def base_registry() -> dict:
+    model = _sample_model_row()
+    provider_id = model["provider_id"]
     return {
         "schema_version": 1,
         "comment": "test",
-        "providers": {
-            "google": {
-                "base_origin": "https://generativelanguage.googleapis.com/v1beta",
-                "allowed_hosts": ["generativelanguage.googleapis.com"],
-                "credential_source": "platform_secret",
-                "credential_binding_name": "PADIEM_B14_CREDENTIAL_05",
-                "enabled": True,
-            },
-        },
-        "models": [
-            {
-                "id": "google/gemini-3.5-flash-lite",
-                "provider_id": "google",
-                "upstream_model": "gemini-3.5-flash-lite",
-                "display_name": "Google: Gemini 3.5 Flash Lite",
-                "provider_name": "Google AI Studio",
-                "capabilities": ["chat"],
-                "context_window": 1048576,
-                "input_price_usd_per_1m": 0.3,
-                "output_price_usd_per_1m": 2.5,
-                "source": "google_ai_studio_official_catalog",
-                "source_checked_at": "2026-10-08",
-                "enabled": True,
-            },
-        ],
-        "groups": {"plus": [], "pro": [], "max": []},
+        "providers": {provider_id: _sample_provider_row(provider_id, model["id"])},
+        "models": [model],
+        "groups": {name: [] for name in registry_file._GROUPS},
     }
 
 

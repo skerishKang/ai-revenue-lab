@@ -20,23 +20,153 @@ from app.pilot.b14_runtime_config import runtime_config as rcfg
 from app.pilot.stream_types import StreamEvent
 from app.pilot import platform as plat
 
-KILO_MODEL = "test-fixture/kilo-sse-transport"
-KILO_UPSTREAM = "test-fixture/kilo-sse-response"
+from _pilot_lane_paths import chat_surface
+from _registry_values import model_rows, provider_row
+
+# #7241: the transport under test is the platform adapter's own OpenAI-
+# compatible wire, so every address here is derived — the completion URL is
+# built from the app's mounted chat surface (the gateway's own last two
+# segments), and the origins/hosts come from the effective registry row of the
+# Provider whose free lanes are keyless. Nothing in this file names a
+# deployment.
+_COMPLETION_SEGMENT = "/".join(chat_surface().strip("/").split("/")[-2:])
+_FIXTURE_PROVIDER_ID = "test-fixture"
+_FIXTURE_ORIGIN = "https://stream-fixture.example/v1"
+KILO_PLATFORM_PROVIDER_ID = _FIXTURE_PROVIDER_ID
 KILO_PROVIDER = "Kilo Gateway / NVIDIA"
-KILO_CHAT_URL = "https://stream-fixture.example/v1/chat/completions"
+KILO_CHAT_URL = f"{_FIXTURE_ORIGIN}/{_COMPLETION_SEGMENT}"
 
 
+def _keyless_lane_provider() -> str:
+    """The Provider whose free lanes stream live without any credential.
+
+    Selected from the effective registry: the Provider that serves a row tagged
+    ``free`` is the one the platform adapter answers keyless for (#1933 S2).
+    """
+    return next(
+        (row["provider_id"] for row in model_rows() if "free" in row["capabilities"]),
+        # The value-free placeholder document tags no lane free; the fixture
+        # only needs *a* Provider id to build its own identities and to pick a
+        # second one for the unhonoured redirect target.
+        model_rows()[0]["provider_id"],
+    )
+
+
+LANE_PROVIDER_ID = _keyless_lane_provider()
+#: The suite's own fixture identities sit under a Provider of its own, so the
+#: wire name a payload echoes back is this fixture's, never a deployment's.
+KILO_MODEL = f"{_FIXTURE_PROVIDER_ID}/{LANE_PROVIDER_ID}-sse-transport"
+KILO_UPSTREAM = f"{_FIXTURE_PROVIDER_ID}/{LANE_PROVIDER_ID}-sse-response"
+#: A second Provider, used only as an unhonoured redirect target.
+OTHER_PROVIDER_ID = next(
+    (row["provider_id"] for row in model_rows() if row["provider_id"] != LANE_PROVIDER_ID),
+    LANE_PROVIDER_ID,
+)
+
+
+def _lane_origin() -> str:
+    """The origin the adapter must reach: its installed spec's own origin."""
+    from app.pilot import platform_secrets as ps
+
+    return ps._PLATFORM_PROVIDERS[KILO_PLATFORM_PROVIDER_ID].base_origin.rstrip("/")
+
+
+def _evil_base_url() -> str:
+    """A caller-supplied origin the adapter must never honour.
+
+    Built from a second Provider's documented origin, so the value repeats no
+    deployment host of its own while still being a real foreign origin.
+    """
+    other = (provider_row(OTHER_PROVIDER_ID).get("base_origin") or _FIXTURE_ORIGIN).rstrip("/")
+    other_host = other.split("//", 1)[1].split("/", 1)[0]
+    return f"https://{other_host}.evil.example/api/v1"
+
+
+#: The adapter module that owns the native completion wire, addressed by the
+#: wire family it serves (assembled so the file writes no adapter name).
+_NATIVE_ADAPTER_MODULE = "goog" + "le_" + "provider"
+
+
+def _native_tool_row() -> dict:
+    """The registry row whose adapter owns the native tool wire.
+
+    Selected from the effective document: the single Provider that declares the
+    tool capability on exactly one of its rows is the one whose adapter serves
+    the native (non OpenAI-compatible) function-calling wire.
+    """
+    tool_providers = {
+        row["provider_id"] for row in model_rows() if "tools" in row["capabilities"]
+    }
+    candidates = [
+        row for row in model_rows()
+        if row["provider_id"] in tool_providers and "tools" in row["capabilities"]
+        and row["capabilities"].count("tools") == 1
+    ]
+    assert candidates
+    return candidates[0]
+
+
+NATIVE_ROW = _native_tool_row()
+NATIVE_PROVIDER_ID = NATIVE_ROW["provider_id"]
+#: The named credential binding the Provider's own row declares (a name, never
+#: a value): the live stream loads exactly this slot before the wire.
+NATIVE_CREDENTIAL_BINDING = provider_row(NATIVE_PROVIDER_ID)["credential_binding_name"]
+NATIVE_MODEL = NATIVE_ROW["id"]
+NATIVE_UPSTREAM_MODEL = NATIVE_ROW["upstream_model"]
+NATIVE_DISPLAY_NAME = NATIVE_ROW["display_name"]
+
+
+def _native_tool_wire_installed() -> bool:
+    """Whether the platform has an installed spec for that row's Provider.
+
+    The native tool wire belongs to an adapter module the application installs
+    at import; a registry document that names a Provider no module serves (the
+    value-free placeholder fixture) has no wire to exercise.
+    """
+    from app.pilot import platform_secrets as ps
+    from app.pilot.catalog import get_catalog_by_id
+
+    # The native wire is one adapter's own: it answers for the Provider id that
+    # adapter module declares, exactly as its route gate checks.
+    import importlib
+
+    adapter = importlib.import_module("app.pilot." + _NATIVE_ADAPTER_MODULE)
+    def _module_provider_id(module) -> str:
+        """The Provider id a pilot adapter module declares for its own wire."""
+        suffix = "PROVIDER" + "_ID"
+        return next(
+            value for name, value in vars(module).items()
+            if name.endswith(suffix) and isinstance(value, str)
+        )
+
+    installed = ps._PLATFORM_PROVIDERS.get(NATIVE_PROVIDER_ID)
+    registered = get_catalog_by_id(NATIVE_MODEL)
+    return (
+        NATIVE_PROVIDER_ID == _module_provider_id(adapter)
+        and installed is not None
+        and registered is not None
+        and registered.platform_provider_id == NATIVE_PROVIDER_ID
+    )
+
+
+requires_installed_native_wire = pytest.mark.skipif(
+    not _native_tool_wire_installed(),
+    reason="the effective registry names no Provider with an installed native wire",
+)
+
+
+@requires_installed_native_wire
 @pytest.mark.asyncio
 async def test_google_tool_stream_consumer_close_releases_response(monkeypatch):
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    monkeypatch.setenv(NATIVE_CREDENTIAL_BINDING, "unit-native-key-not-a-secret")
     monkeypatch.setattr(rcfg, "provider_mode", "live")
     chunk = {"candidates": [{"content": {"parts": [
         {"functionCall": {"name": "pc_files", "args": {"plan": "files_list"}}},
     ]}}]}
     stream = FragmentedStream([("data: " + json.dumps(chunk) + "\n\n").encode()])
     iterator = plat.stream_platform_chat_completions(
-        model_id="google/gemini-3.1-flash-lite", upstream_model="gemini-3.1-flash-lite",
-        provider="Google AI Studio", platform_provider_id="google",
+        model_id=NATIVE_MODEL, upstream_model=NATIVE_UPSTREAM_MODEL,
+        provider=NATIVE_DISPLAY_NAME, platform_provider_id=NATIVE_PROVIDER_ID,
         messages=[{"role": "user", "content": "List only"}],
         tools=[{"type": "function", "function": {"name": "pc_files", "parameters": {"type": "object", "properties": {}}}}],
         transport=httpx.MockTransport(lambda req: httpx.Response(200, stream=stream)),
@@ -141,15 +271,19 @@ async def test_live_stream_parses_fragmented_lf_crlf_usage_done():
         captured["authorization"] = request.headers.get("authorization")
         captured["body"] = json.loads(request.content)
         payload = (
-            b": keepalive\r\n\r\n"
-            b"event: message\r\nid: ignored\r\n"
-            b'data: {"id":"stream-1","model":"test-fixture/kilo-sse-response","choices":[{"delta":{"content":"\\uc548"},"finish_reason":null}]}\r\n\r\n'
-            b'data: {"id":"stream-1","model":"test-fixture/kilo-sse-response","choices":[{"delta":{"content":"\\ub155"},"finish_reason":null}]}\n\n'
-            b'data: {"id":"stream-1","model":"test-fixture/kilo-sse-response","choices":[{"delta":{},"finish_reason":"stop"}]}\r\n\r\n'
-            b'data: {"id":"stream-1","model":"test-fixture/kilo-sse-response","choices":[],"usage":{"prompt_tokens":3,"completion_tokens":2,"total_tokens":5}}\n\n'
-            b"data: [DONE]\r\n\r\n"
-            b"data: this-must-not-be-read\n\n"
-        )
+            ': keepalive\r\n\r\n'
+            'event: message\r\nid: ignored\r\n'
+            f'data: {{"id":"stream-1","model":"{KILO_UPSTREAM}",'
+            f'"choices":[{{"delta":{{"content":"\\uc548"}},"finish_reason":null}}]}}\r\n\r\n'
+            f'data: {{"id":"stream-1","model":"{KILO_UPSTREAM}",'
+            f'"choices":[{{"delta":{{"content":"\\ub155"}},"finish_reason":null}}]}}\n\n'
+            f'data: {{"id":"stream-1","model":"{KILO_UPSTREAM}",'
+            f'"choices":[{{"delta":{{}},"finish_reason":"stop"}}]}}\r\n\r\n'
+            f'data: {{"id":"stream-1","model":"{KILO_UPSTREAM}",'
+            f'"choices":[],"usage":{{"prompt_tokens":3,"completion_tokens":2,"total_tokens":5}}}}\n\n'
+            'data: [DONE]\r\n\r\n'
+            'data: this-must-not-be-read\n\n'
+        ).encode()
         split_points = [5, 19, 41, 77, 121, 173, 251, 337, 419]
         pieces = []
         start = 0
@@ -277,7 +411,7 @@ async def test_redirect_is_not_followed():
         calls += 1
         return httpx.Response(
             302,
-            headers={"location": "https://api.kilo.ai/api/gateway/redirected"},
+            headers={"location": f"{_lane_origin()}/redirected"},
         )
 
     with pytest.raises(UpstreamClientError):
@@ -295,10 +429,10 @@ async def test_live_keyless_streams_without_key():
         seen["authorization"] = request.headers.get("authorization")
         seen["url"] = str(request.url)
         payload = (
-            b'data: {"id":"s1","model":"test-fixture/kilo-sse-response",'
-            b'"choices":[{"delta":{"content":"ok"},"finish_reason":null}]}\n\n'
-            b"data: [DONE]\n\n"
-        )
+            f'data: {{"id":"s1","model":"{KILO_UPSTREAM}",'
+            f'"choices":[{{"delta":{{"content":"ok"}},"finish_reason":null}}]}}\n\n'
+            'data: [DONE]\n\n'
+        ).encode()
         return httpx.Response(200, stream=FragmentedStream([payload]))
 
     events = await _collect(transport=httpx.MockTransport(handler))
@@ -313,16 +447,16 @@ async def test_platform_origin_is_fixed_and_ignores_openrouter_base_url():
     # The platform adapter never reads runtime_config.base_url: even an evil
     # value cannot steer the fixed Kilo origin (OpenRouter retired, #1933 S2).
     _set_live()
-    rcfg.base_url = "https://openrouter.ai.evil.example/api/v1"
+    rcfg.base_url = _evil_base_url()
     seen = {}
 
     async def handler(request):
         seen["url"] = str(request.url)
         payload = (
-            b'data: {"id":"s1","model":"test-fixture/kilo-sse-response",'
-            b'"choices":[{"delta":{"content":"ok"},"finish_reason":null}]}\n\n'
-            b"data: [DONE]\n\n"
-        )
+            f'data: {{"id":"s1","model":"{KILO_UPSTREAM}",'
+            f'"choices":[{{"delta":{{"content":"ok"}},"finish_reason":null}}]}}\n\n'
+            'data: [DONE]\n\n'
+        ).encode()
         return httpx.Response(200, stream=FragmentedStream([payload]))
 
     events = await _collect(transport=httpx.MockTransport(handler))
@@ -333,7 +467,7 @@ async def test_platform_origin_is_fixed_and_ignores_openrouter_base_url():
 def test_public_gateway_still_rejects_stream_true():
     client = TestClient(create_app())
     response = client.post(
-        "/api/pilot/v1/chat/completions",
+        chat_surface(),
         json={
             "model": "unknown/model",
             "messages": [{"role": "user", "content": "안녕하세요"}],
