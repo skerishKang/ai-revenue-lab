@@ -1,0 +1,63 @@
+name: Daily Real Usage Check
+
+# #6724 1차 (대표 승인 2026-11-09): 매일 한 번 실제 사용 흐름을 점검한다.
+# GitHub 호스팅 러너에서 운영 사이트를 QA 계정으로 실제로 쓴다. 컴2(운영 서버)
+# 에서는 실행하지 않는다. 캘린더 흐름은 대표 결정으로 1차에서 뺐다.
+#
+# 판정은 "응답이 왔다"가 아니라 실제 결과값이다: 답 글자(10), 파일 내용(20자),
+# 전사 글자(10), 목록 재로드. 결과값 앞부분만 실행 요약에 남는다.
+#
+# 실패하면 이 워크플로가 실패로 끝나고, 기존 nightly-qa-failure-issue 수집기가
+# 이 스크립트가 찍은 USAGE_FLOW 줄을 읽어 이슈를 열거나 기존 이슈에 코멘트한다
+# (값·토큰 없이 실패 단계·코드만).
+#
+# 예약 시각 14:45 UTC(23:45 KST)는 18:00~19:30 UTC 야간 등급 점검 창과 겹치지
+# 않는다.
+
+on:
+  schedule:
+    - cron: "45 14 * * *" # 23:45 Asia/Seoul, once per day
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-real-usage-check
+  cancel-in-progress: false
+
+jobs:
+  real-usage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # The same QA pair the deploy gates use. Read-only use; never printed.
+      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+      # QA connector token for the check PC (provision_qa_pc_token.ps1).
+      PADIEM_QA_PC_TOKEN: ${{ secrets.PADIEM_QA_PC_TOKEN }}
+      # Optional override of the file the pc_read flow reads.
+      PADIEM_QA_PC_READ_PATH: ${{ vars.PADIEM_QA_PC_READ_PATH }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the two QA-only packages (voice flow)
+        run: python -m pip install --quiet websockets gTTS
+      - name: Record a skip when the QA credential is absent
+        if: ${{ env.B66_CGI_ALPHA_USERNAME == '' || env.B66_CGI_ALPHA_PASSWORD == '' }}
+        run: |
+          {
+            echo "### 실사용 점검 (#6724 1차)"
+            echo
+            echo "| 흐름 | 판정 | 소요(ms) | 결과값 앞부분 | 코드 |"
+            echo "|---|---|---|---|---|"
+            echo "| all | SKIPPED | 0 | - | qa_credential_missing |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "USAGE_CHECK verdict=SKIPPED flows=4 failed=0 code=qa_credential_missing"
+      - name: Run the four real-usage flows
+        if: ${{ env.B66_CGI_ALPHA_USERNAME != '' && env.B66_CGI_ALPHA_PASSWORD != '' }}
+        run: python .github/scripts/daily_real_usage_check.py

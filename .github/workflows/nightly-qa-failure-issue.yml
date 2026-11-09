@@ -10,6 +10,7 @@ on:
       - "B62 Padiem Chat CI"
       - "B62 Browser QA Nightly"
       - "Web Desktop Non-Model E2E (3098)"
+      - "Daily Real Usage Check"
     types: [completed]
 
 permissions:
@@ -84,9 +85,27 @@ jobs:
               done
             fi
             grades=$(printf '%s\n%s\n' "${real}" "${synthetic}" | sed '/^$/d' | head -8)
+          elif [ "${WF}" = "Daily Real Usage Check" ]; then
+            # #6724: the check prints one bounded USAGE_FLOW line per flow on
+            # pass and on fail. Read them the same way the grade smokes are
+            # read; a run whose job never started gets one synthetic line.
+            usage_real=$(gh run view --job "$(gh api \
+              "repos/${GH_REPO}/actions/runs/${RUN_ID}/jobs?filter=all&per_page=100" \
+              --jq '.jobs[] | select(.conclusion == "success" or .conclusion == "failure") | .id' | head -1)" \
+              --log 2>/dev/null | grep -o 'USAGE_FLOW name=[a-z_]* verdict=[A-Z]* elapsed_ms=[0-9]* code=[a-z_0-9]* head=[^ ]*' \
+              | sort -u || true)
+            if [ -n "${usage_real}" ]; then
+              grades="${usage_real}"
+            else
+              grades="USAGE_FLOW name=none verdict=SKIPPED code=usage_log_missing"
+            fi
           fi
           if [ -z "${grades}" ]; then
             grades="GRADE_SMOKE tier=none status=0 error_code=smoke_job_not_present verdict=SKIPPED"
+          fi
+          result_label="등급별 결과"
+          if [ "${WF}" = "Daily Real Usage Check" ]; then
+            result_label="흐름별 결과"
           fi
           body=$(printf '%s\n' \
             "야간 검사가 실패했습니다." \
@@ -95,7 +114,7 @@ jobs:
             "- 실행: ${RUN_URL}" \
             "- 커밋: ${SHA}" \
             "" \
-            "등급별 결과:" \
+            "${result_label}:" \
             "${grades}" \
             "" \
             "원인을 고친 뒤 이 이슈를 닫아 주세요.")
