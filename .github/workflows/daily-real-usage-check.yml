@@ -51,6 +51,12 @@ jobs:
           python-version: "3.12"
       - name: Install the two QA-only packages (voice flow)
         run: python -m pip install --quiet websockets gTTS
+      # The voice flow transcodes gTTS's MP3 to 16 kHz mono PCM with ffmpeg.
+      # Run 42635577928 failed with voice_ffmpeg_missing: the hosted runner
+      # image no longer ships ffmpeg on every lane, so install it explicitly
+      # instead of letting the flow degrade into a false FAIL.
+      - name: Install ffmpeg for the voice transcode
+        run: sudo apt-get update --quiet && sudo apt-get install --quiet --yes ffmpeg
       - name: Record a skip when the QA credential is absent
         if: ${{ env.B66_CGI_ALPHA_USERNAME == '' || env.B66_CGI_ALPHA_PASSWORD == '' }}
         run: |
