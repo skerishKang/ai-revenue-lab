@@ -597,6 +597,26 @@ CONNECTOR_UNAVAILABLE_NOTE = (
     "명확히 말하세요."
 )
 
+#: #7273: the two calendars are different products and one ask never mixes
+#: them. Only these expressions name the *external* one; a calendar word on
+#: its own ("이번 주 일정") keeps the PADIEM calendar exactly as it answered
+#: before. The list is deliberately closed so the boundary is testable.
+GOOGLE_CALENDAR_NAMING = re.compile(r"구글\s*캘린더|google\s*calendar", re.IGNORECASE)
+
+#: Stated instead of a calendar answer when the external calendar is named
+#: but no READ grant exists. The user learns the connection is missing; the
+#: turn never falls through to the internal calendar or to an invented list.
+GOOGLE_CALENDAR_CONNECT_NOTE = (
+    "Google 캘린더 연결이 필요합니다. 설정 > 연결에서 Google 캘린더를 연결하고 읽기 권한을 켠 뒤 다시 요청해 주세요."
+)
+
+
+def google_calendar_named(user_text: Any) -> bool:
+    """True only when the turn names the external Google calendar."""
+
+    return isinstance(user_text, str) and bool(GOOGLE_CALENDAR_NAMING.search(user_text))
+
+
 def google_connector_intent(user_text: Any) -> bool:
     """True only when the turn's own words explicitly name a Google connector."""
 
