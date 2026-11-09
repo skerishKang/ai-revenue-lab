@@ -1231,11 +1231,21 @@ chat_matches_previous_release() {
 # running copy, or differs, means the host is behind this commit.
 queue_matches_target() {
   local actual temp item rel result=0 present=0
-  actual=$(readlink -f -- "$queue_root") || return 1
+  # Test the configured path before resolving it: `readlink -f` fails when a
+  # parent directory is absent, and that must read as "not installed" rather
+  # than as an unverifiable tree (the plan would otherwise redeploy the queue
+  # on every documentation-only commit).
+  [[ -d $queue_root ]] || return 2
+  actual=$(readlink -f -- "$queue_root") || return 2
   # A host with no mirror at all is "not installed", exactly like the other
   # services: the plan must not turn an absent tree into a redeploy of every
-  # commit. Only a tree that holds some of the shipped files can be behind.
+  # commit. A tree that is not an install either — the installer always links
+  # the shared modules into the root and the unit always runs service.py — is
+  # the same answer, not a stale copy. Without this check a partial or foreign
+  # directory was reported as "behind" and every documentation-only plan turned
+  # into queue:WOULD_DEPLOY (measured 2026-11-09).
   [[ -d $actual ]] || return 2
+  [[ -e $actual/app && -e $actual/padiem_ai_core && -e $actual/service.py ]] || return 2
   temp=$(mktemp -d) || return 1
   if ! "$git_bin" -C "$ops_checkout" archive "$resolved" apps/padiem-mesh-queue       | tar -x -C "$temp"; then
     rm -rf -- "$temp"
