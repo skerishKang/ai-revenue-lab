@@ -167,6 +167,7 @@ def test_status_poll_interval_grows_and_caps_at_five_seconds(monkeypatch):
 
     assert result["status"] == "running"
     assert modes[0] == "dispatch"
-    # The first wait is 0.5 s and the interval grows 2× up to the 5 s cap.
-    assert sleeps[:4] == [0.5, 1.0, 2.0, 4.0]
-    assert max(sleeps) <= 5.0
+    # The first wait is 0.5 s and the interval grows 2× to the 1 s files cap
+    # (2026-11-09); the deadline anchoring and the 21 s budget stay the same.
+    assert sleeps[:4] == [0.5, 1.0, 1.0, 1.0]
+    assert max(sleeps) <= driver._PC_FILES_POLL_SECONDS_CAP
