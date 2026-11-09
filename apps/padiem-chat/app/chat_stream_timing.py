@@ -7,8 +7,9 @@
 from __future__ import annotations
 
 import logging
-import sys
 from time import perf_counter
+
+from .journal_host import ensure_journal_visible
 
 LOG = logging.getLogger("padiem_chat.chat_stream_timing")
 LOG.setLevel(logging.INFO)
@@ -18,16 +19,10 @@ def ensure_host_visible() -> None:
     """Make the stage line reach the journal on a host that configured no logging.
 
     Uvicorn configures only its own loggers, so on the COM2 host the root logger
-    has no handler and the fallback handler drops INFO records. Same fix as
-    orchestration_timing.ensure_host_visible; propagation stops once this handler
-    exists, so a later root handler cannot write the same line twice.
+    has no handler and the fallback handler drops INFO records. The fix is the
+    shared ``journal_host`` one, so every stage logger binds identically.
     """
-    if LOG.handlers or logging.getLogger().handlers:
-        return
-    handler = logging.StreamHandler(sys.stderr)
-    handler.setFormatter(logging.Formatter("%(message)s"))
-    LOG.addHandler(handler)
-    LOG.propagate = False
+    ensure_journal_visible(LOG)
 
 
 # (필드 이름, 시작 표식, 끝 표식). 표식 사이의 실제 시간만 구간 값이 된다.

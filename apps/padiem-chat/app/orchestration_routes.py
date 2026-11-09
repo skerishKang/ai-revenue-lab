@@ -64,6 +64,8 @@ from .request_contract import BrowserRequestError, _validate_payload_async
 from .pc_correlation import run_hash
 from .usage_gate import UsageGate
 
+from .journal_host import ensure_journal_visible
+
 _PC_TRACE_LOG = logging.getLogger("padiem_chat.pc_correlation")
 _PC_TRACE_LOG.setLevel(logging.INFO)
 
@@ -352,6 +354,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             from .chat_pc_drive import _new_lane_run_id
             trace_run_id = _new_lane_run_id()
         trace_run = run_hash(trace_run_id)
+        ensure_journal_visible(_PC_TRACE_LOG)
         _PC_TRACE_LOG.info("pc_chat stage=request_received run_hash=%s dispatch_id=none", trace_run or "none")
         # ``stream`` is a presentation choice, not a chat payload field. On the
         # model-first lane it is kept out of the browser contract validator while
