@@ -735,6 +735,16 @@ def _local_bindings(values: Mapping[str, str]) -> dict[str, Any]:
         # not a second schema and not a credential. The Calendar READ lane
         # writes and reads its grants here.
         bindings["ENGINE_CONNECTOR_GRANTS"] = database
+        # #7306: the Worker composes three more durable Engine stores over the
+        # ENGINE_IMAGE_STORE / ENGINE_EVIDENCE_STORE / ENGINE_CONTINUATION D1
+        # bindings (worker_identity.py). This host has one engine database with
+        # every migration applied, so the same object answers all three names:
+        # the multimodal image byte store, the document evidence store and the
+        # approval continuation store. Without these names those lanes fail
+        # closed on this host only, while the Worker answers them.
+        bindings["ENGINE_IMAGE_STORE"] = database
+        bindings["ENGINE_EVIDENCE_STORE"] = database
+        bindings["ENGINE_CONTINUATION"] = database
     # The admission authority stays in Cloudflare. A configured https origin and
     # service secret give this host a binding-shaped stand-in, so the reviewed
     # adapter composes unchanged; without them the binding is absent and every
