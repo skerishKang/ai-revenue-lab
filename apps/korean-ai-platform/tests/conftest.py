@@ -34,6 +34,21 @@ if (_core_source / "padiem_ai_core" / "pc_work_metrics.py").is_file():
     if _core_path not in _existing_paths:
         os.environ["PYTHONPATH"] = os.pathsep.join([_core_path, *filter(None, _existing_paths)])
 
+# The private registry loader lives in the sibling control-plane package, which
+# the app consumes from the workspace rather than from an installed wheel. The
+# suites import it directly, and subprocess probes inherit PYTHONPATH, so both
+# get the repository source on Linux CI exactly as they do locally.
+_control_plane_source = (
+    Path(__file__).resolve().parents[3] / "packages" / "padiem-control-plane"
+)
+if (_control_plane_source / "padiem_control_plane" / "models_registry.py").is_file():
+    _cp_path = str(_control_plane_source)
+    if _cp_path not in sys.path:
+        sys.path.insert(0, _cp_path)
+    _existing_paths = os.environ.get("PYTHONPATH", "").split(os.pathsep)
+    if _cp_path not in _existing_paths:
+        os.environ["PYTHONPATH"] = os.pathsep.join([_cp_path, *filter(None, _existing_paths)])
+
 # Suppress known third-party deprecation warnings BEFORE importing TestClient.
 # These are upstream library warnings that our test suite does not control.
 # When running with -W error::Warning (or conftest simplefilter), these
