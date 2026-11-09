@@ -5,9 +5,11 @@
 #   [assets] + the pages mirror); COM2's deploy_from_main.sh never ships them.
 #
 # Steps:
-#   1. -Sha (or the repo's main ref) resolves and equals main. The COM1 work
-#      folder may sit on any branch: everything below releases the pinned SHA
-#      out of git objects, never out of the work folder.
+#   1. fresh `git fetch origin` (COM1's origin/main goes stale between releases),
+#      then -Sha (or the repo's main ref) resolves and equals main. The COM1
+#      work folder may sit on any branch: everything below releases the pinned
+#      SHA out of git objects, never out of the work folder. The pinned SHA is
+#      then compared against COM2's fetched origin/main before any deploy step.
 #   2. COM2 (the dep17.sh shape): ssh uploads a small generated sh, which
 #      fetches origin inside the OPS checkout, verifies the SHA exists there,
 #      then systemd-run --unit=<ts> --collect --quiet -p
@@ -119,6 +121,22 @@ function Get-Com2Journal([string]$UnitName) {
     return ($out -join "`n")
 }
 
+function Get-Com2OriginMain {
+    # Read-only COM2-side freshness probe (the step-2 pin guard): fetch origin
+    # in the OPS checkout, then read origin/main. Same cmd.exe->wsl rule as
+    # Invoke-Com2 (quote-free lines only). Output is a single 40-char SHA;
+    # never secrets (git refs only).
+    $fetch = & ssh -i $Script:Com2SshKey -o BatchMode=yes -o LogLevel=ERROR -o ConnectTimeout=30 $Script:Com2SshTarget "wsl git -C $Script:Com2OpsCheckout fetch -q origin" 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        throw "COM2 origin fetch failed (exit $LASTEXITCODE)"
+    }
+    $out = & ssh -i $Script:Com2SshKey -o BatchMode=yes -o LogLevel=ERROR -o ConnectTimeout=10 $Script:Com2SshTarget "wsl git -C $Script:Com2OpsCheckout rev-parse origin/main" 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        throw "COM2 origin/main read failed (exit $LASTEXITCODE)"
+    }
+    return ((($out -join "`n") -replace "`r","") -replace '\s','').Trim()
+}
+
 function Get-LiveAssetSha256([string]$Url, [string]$Asset) {
     # Cloudflare Web Analytics (zone setting) injects its beacon <script> into
     # served HTML at the edge, so the live index.html never equals the bytes we
@@ -200,8 +218,34 @@ function Invoke-FrontRollbackIfNeeded {
     }
 }
 
+# -- pre-flight freshness (SHA-staleness guard) -----------------------------
+# 2026-11-09: release_49 pinned a stale COM1 origin/main (d4c7316) while COM2's
+# freshly fetched origin/main had already advanced past it; deploy_from_main
+# refused with SHA_NOT_ORIGIN_MAIN deep inside the systemd unit, and the
+# release paid its whole 60x15s poll window before failing. Freshness is now
+# enforced here, before any unit exists: (a) refresh COM1's own origin/main so
+# the pin is taken from fresh refs; (b) compare the pinned SHA against the
+# COM2-side origin/main (which the launcher would fetch anyway) and abort in
+# seconds with an actionable message if COM2 has already moved past us.
+function Fetch-OriginFresh {
+    & git -C $RepoRoot fetch -q origin 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        if ($DryRun) {
+            # No deploy risk in dry-run: pin from the refs we have.
+            Write-Info "[DRYRUN] git fetch origin failed; pinning from the local refs (the COM2 origin/main check still guards every real run)."
+        }
+        else {
+            throw "STEP1_FAIL: git fetch origin failed; refusing to pin from stale refs. Check network/origin, then rerun."
+        }
+    }
+    else {
+        Write-Info "git fetch origin ok (origin/main refreshed)"
+    }
+}
+
 # ── step 1 ───────────────────────────────────────────────────────────────────
 Write-Step "1/6 resolve and pin the release commit"
+Fetch-OriginFresh
 function Resolve-CommitRef([string]$Ref) {
     # CI checkouts (actions/checkout, depth 1) carry no origin/main ref: fall
     # back main -> HEAD so the dry-run contract runs anywhere.
@@ -252,6 +296,17 @@ $remoteSh = $remoteShTemplate.Replace("__SHA__", $shaCommit).Replace("__UNIT__",
 # "bash <file>", exactly like "ssh ... bash dep17.sh".
 $remoteSh = $remoteSh -replace "`r`n", "`n"
 $remoteShPath = "padiem-release-$unitName.sh"
+
+if ($DryRun) {
+    Write-Info "[DRYRUN] would fetch origin on COM2 and compare COM2-side origin/main with the pinned SHA before launching the unit (aborts if COM2 origin/main has advanced past the pin)"
+}
+else {
+    $com2Main = Get-Com2OriginMain
+    Write-Info "COM2 origin/main = $com2Main"
+    if ($com2Main -ne $shaCommit) {
+        throw "STEP2_FAIL: COM2 origin/main ($com2Main) != pinned release SHA ($shaCommit); the pin is stale or COM2 moved ahead. Rerun release_chat.ps1 to re-fetch and re-pin, or pass -Sha $com2Main"
+    }
+}
 
 if ($DryRun) {
     Write-Info "[DRYRUN] launcher sh uploaded to $remoteShPath would be:"

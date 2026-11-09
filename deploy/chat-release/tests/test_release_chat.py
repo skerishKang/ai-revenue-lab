@@ -170,6 +170,30 @@ class ReleaseScriptStaticContract(unittest.TestCase):
         self.assertIn("Join-Path $stampStaticDir $asset", pages)
         self.assertNotIn("Join-Path $shaStaticDir $asset", pages)
 
+    def test_pinned_sha_is_guarded_against_stale_origin_main(self):
+        """2026-11-09: three releases aborted at STEP2 with SHA_NOT_ORIGIN_MAIN
+        because COM1's origin/main was stale while COM2 had already fetched a
+        newer one. The release must (a) refresh COM1's own refs before
+        pinning, and (b) compare the pinned SHA against COM2-side fetched
+        origin/main before launching any deploy unit."""
+        # Local fetch happens before the pin is resolved (order matters).
+        fetch_at = self.text.find("git -C $RepoRoot fetch -q origin")
+        pin_at = self.text.find("$mainCommit = Resolve-CommitRef")
+        self.assertGreaterEqual(fetch_at, 0)
+        self.assertGreaterEqual(pin_at, 0)
+        self.assertLess(fetch_at, pin_at)
+        # COM2-side comparison runs before any systemd unit is created.
+        compare_at = self.text.find("COM2 origin/main")
+        unit_at = self.text.find('Invoke-Com2 "bash $remoteShPath"')
+        self.assertGreaterEqual(compare_at, 0)
+        self.assertGreaterEqual(unit_at, 0)
+        self.assertLess(compare_at, unit_at)
+        self.assertIn("rev-parse origin/main", self.text)
+        self.assertIn("COM2 origin/main ($com2Main) != pinned release SHA", self.text)
+        self.assertIn("Rerun release_chat.ps1 to re-fetch and re-pin", self.text)
+        # A failed fetch must not silently pin stale refs on a real run.
+        self.assertIn("refusing to pin from stale refs", self.text)
+
     def test_dry_run_completes_with_the_plan_contract(self):
         """The CTO's first touch is -DryRun: it must run to completion on a
         plain checkout (no Cloudflare auth, no COM2 access) and print the
