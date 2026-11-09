@@ -7,6 +7,7 @@ import subprocess
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+MODULE = (STATIC / "chat-history-module.js").read_text(encoding="utf-8")
 PDF = (STATIC / "claw-pdf-preview.js").read_text(encoding="utf-8")
 
 NODE = r"""
@@ -45,7 +46,7 @@ ok(!P.validHistoricalArtifact({...legacy,document_id:"../foreign"}),"ID must be 
  ok(!P.validHistoricalArtifact({...legacy,byte_length:0}),"empty known length blocked");
 const app=read("app.js");
 const start=app.indexOf("  function renderClawRunCard(run) {");
-const end=app.indexOf("\n  // Unguarded fetch:",start);
+const end=app.indexOf("\n  function fetchClawRunHistory(",start);
 ok(start>=0&&end>start,"actual run card source must be located");
 const context={document:doc,window:win,clawRunHistoryPdfControllers:sets,
  setClawRunHistoryStatus:msg=>failures.push(msg),clawT:key=>key,clawRunStatusLabel:s=>s,
@@ -101,10 +102,12 @@ def test_real_history_card_pdf_preview_node_vm():
         assert key in proc.stdout
 
 def test_history_cleanup_and_production_script_order():
-    assert "clearClawRunHistoryPdfPreviews();" in APP
-    assert "clawRunHistoryVisibilityEpoch += 1;" in APP
+    # The cleanup/order code moved with fetchClawRunHistory and
+    # syncClawRunHistoryVisibility into chat-history-module.js (#7216 R5 step 3).
+    assert "clearClawRunHistoryPdfPreviews();" in MODULE
+    assert "clawRunHistoryVisibilityEpoch += 1;" in MODULE
     assert "viewer?.setHistorical?.(artifact)" in APP
     assert "history && artifact.byte_length == null" in PDF
     assert "controllers.delete(instance)" in PDF
-    assert "visibilityEpoch !== clawRunHistoryVisibilityEpoch" in APP
-    assert "authState.authenticated !== true || clawRunHistory.hidden" in APP
+    assert "visibilityEpoch !== deps.clawRunHistoryVisibilityEpoch" in MODULE
+    assert "deps.authState.authenticated !== true || deps.clawRunHistory.hidden" in MODULE

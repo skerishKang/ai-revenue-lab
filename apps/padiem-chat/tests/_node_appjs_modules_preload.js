@@ -10,7 +10,7 @@ const fs = require("fs");
 const path = require("path");
 
 const originalReadFileSync = fs.readFileSync;
-const MODULES = ["chat-settings-module.js", "chat-sidebar-module.js"];
+const MODULES = ["chat-settings-module.js", "chat-sidebar-module.js", "chat-history-module.js"];
 
 fs.readFileSync = function readFileSyncWithR5Modules(target, ...rest) {
   const text = originalReadFileSync.call(this, target, ...rest);

@@ -255,7 +255,12 @@ def test_session_action_adds_no_new_route_or_second_store() -> None:
     # openSavedConversation, and the #7175 owner-scoped rename/pin PATCH (same
     # route family, same history store — no new route path or second store).
     # The session action itself still contains no fetch at all.
-    assert app.count("api/conversations/${encodeURIComponent(id)}") == 3
+    module = APP_JS.with_name("chat-history-module.js").read_text(encoding="utf-8")
+    # Two of the three call sites (history-row delete, #7175 rename/pin PATCH)
+    # moved into chat-history-module.js (#7216 R5 step 3); the count spans the
+    # two shipped sources so the "exactly three" contract keeps its strength.
+    route = "api/conversations/${encodeURIComponent(id)}"
+    assert app.count(route) + module.count(route) == 3
     create_at = app.index('sessionBtn = document.createElement("button");')
     append_at = app.index("if (sessionBtn) card.appendChild(sessionBtn);")
     session_block = app[create_at:append_at]

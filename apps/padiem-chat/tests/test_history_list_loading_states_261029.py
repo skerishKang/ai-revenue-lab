@@ -23,21 +23,24 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parents[1] / "static"
 APP = (BASE / "app.js").read_text(encoding="utf-8")
+# The recent-list renderers moved into chat-history-module.js (#7216 R5 step 3);
+# the bodies are pinned against the module source where they now live.
+MODULE = (BASE / "chat-history-module.js").read_text(encoding="utf-8")
 LOCALE = (BASE / "locale.js").read_text(encoding="utf-8")
 CSS = (BASE / "history.css").read_text(encoding="utf-8")
 
 
 def _load_recent_body() -> str:
-    start = APP.index("async function loadRecentConversations() {")
+    start = MODULE.index("async function loadRecentConversations() {")
     depth = 0
-    for index in range(APP.index("{", start), len(APP)):
-        char = APP[index]
+    for index in range(MODULE.index("{", start), len(MODULE)):
+        char = MODULE[index]
         if char == "{":
             depth += 1
         elif char == "}":
             depth -= 1
             if depth == 0:
-                return APP[start : index + 1]
+                return MODULE[start : index + 1]
     raise AssertionError("loadRecentConversations is never closed")
 
 
@@ -51,22 +54,22 @@ def test_the_read_is_asked_twice_before_anything_is_reported():
 
 
 def test_the_second_failure_draws_the_retry_row_and_the_button_reloads():
-    start = APP.index("function renderHistoryLoadFailed() {")
+    start = MODULE.index("function renderHistoryLoadFailed() {")
     depth = 0
-    for index in range(APP.index("{", start), len(APP)):
-        char = APP[index]
+    for index in range(MODULE.index("{", start), len(MODULE)):
+        char = MODULE[index]
         if char == "{":
             depth += 1
         elif char == "}":
             depth -= 1
             if depth == 0:
-                renderer = APP[start : index + 1]
+                renderer = MODULE[start : index + 1]
                 break
     else:
         raise AssertionError("renderHistoryLoadFailed is never closed")
     assert 'row.className = "history-row history-load-failed";' in renderer
-    assert 'text.textContent = uiT("history-load-failed");' in renderer
-    assert 'retry.textContent = uiT("history-retry");' in renderer
+    assert 'text.textContent = deps.uiT("history-load-failed");' in renderer
+    assert 'retry.textContent = deps.uiT("history-retry");' in renderer
     assert "void loadRecentConversations();" in renderer
 
 

@@ -315,7 +315,7 @@ _HARNESS = r"""
 const fs = require("fs");
 const vm = require("vm");
 const APP_DIR = require("path").dirname(process.argv[2]);
-const APP = ["chat-settings-module.js", "chat-sidebar-module.js"]
+const APP = ["chat-settings-module.js", "chat-sidebar-module.js", "chat-history-module.js"]
   .map((name) => fs.readFileSync(require("path").join(APP_DIR, name), "utf8"))
   .join(String.fromCharCode(10)) + String.fromCharCode(10) + fs.readFileSync(process.argv[2], "utf8");
 

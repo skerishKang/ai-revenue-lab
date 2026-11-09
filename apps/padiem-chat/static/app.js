@@ -67,6 +67,64 @@
   function syncGoogleCalendarConnectButton(row = null) { return calendarModule().syncGoogleCalendarConnectButton(row); }
   function beginGoogleCalendarConnect() { return calendarModule().beginGoogleCalendarConnect(); }
   function activateGoogleCalendarRead() { return calendarModule().activateGoogleCalendarRead(); }
+  // #7216 R5 step 3: the recent-conversations-menu module owns the history
+  // list (rename/pin/delete) and the Claw recent-run presentation. app.js keeps
+  // one-line forwarders with the same names. deps getters/setters read the closure
+  // variables live, so a value changed before the first call is still observed.
+  let historyModuleInstance = null;
+  function historyModule() {
+    if (!historyModuleInstance) {
+      historyModuleInstance = window.PadiemChatHistoryModule.create({
+        get historySection() { return historySection; },
+        get historyList() { return historyList; },
+        get historyEmpty() { return historyEmpty; },
+        get historyActionStatus() { return historyActionStatus; },
+        get clawRunHistory() { return clawRunHistory; },
+        get clawRunHistoryDisclosure() { return clawRunHistoryDisclosure; },
+        get clawRunHistoryExpand() { return clawRunHistoryExpand; },
+        get clawRunHistoryError() { return clawRunHistoryError; },
+        get clawRunHistoryLoading() { return clawRunHistoryLoading; },
+        get clawRunHistoryList() { return clawRunHistoryList; },
+        get clawRunHistoryEmpty() { return clawRunHistoryEmpty; },
+        get HISTORY_TITLE_MAX_CHARS() { return HISTORY_TITLE_MAX_CHARS; },
+        get authState() { return authState; },
+        get authViewEpoch() { return authViewEpoch; },
+        get shell() { return shell; },
+        get input() { return input; },
+        get conversationState() { return conversationState; },
+        get inFlight() { return inFlight; },
+        get clawConversationIds() { return clawConversationIds; },
+        get clawRunHistoryPdfControllers() { return clawRunHistoryPdfControllers; },
+        get uiT() { return uiT; },
+        get clawT() { return clawT; },
+        get sidebarActionIcon() { return sidebarActionIcon; },
+        get openSavedConversation() { return openSavedConversation; },
+        get readClawRuns() { return readClawRuns; },
+        get mappedUiError() { return mappedUiError; },
+        get safeLocalUiMessage() { return safeLocalUiMessage; },
+        get failureCodeNote() { return failureCodeNote; },
+        get renderClawRunCard() { return renderClawRunCard; },
+        get resetConversationView() { return resetConversationView; },
+        get setNote() { return setNote; },
+        get idleNote() { return idleNote; },
+        get historyReadSequence() { return historyReadSequence; },
+        set historyReadSequence(value) { historyReadSequence = value; },
+        get clawConversationLabelsRead() { return clawConversationLabelsRead; },
+        set clawConversationLabelsRead(value) { clawConversationLabelsRead = value; },
+        get clawRunHistoryInFlight() { return clawRunHistoryInFlight; },
+        set clawRunHistoryInFlight(value) { clawRunHistoryInFlight = value; },
+        get clawRunHistoryLeftSurface() { return clawRunHistoryLeftSurface; },
+        set clawRunHistoryLeftSurface(value) { clawRunHistoryLeftSurface = value; },
+        get clawRunHistoryLimit() { return clawRunHistoryLimit; },
+        set clawRunHistoryLimit(value) { clawRunHistoryLimit = value; },
+        get clawRunHistoryVisibilityEpoch() { return clawRunHistoryVisibilityEpoch; },
+        set clawRunHistoryVisibilityEpoch(value) { clawRunHistoryVisibilityEpoch = value; },
+        get pendingClawRunFocusId() { return pendingClawRunFocusId; },
+        set pendingClawRunFocusId(value) { pendingClawRunFocusId = value; },
+      });
+    }
+    return historyModuleInstance;
+  }
   const shell = document.querySelector(".app-shell");
   const emptyState = document.getElementById("emptyState");
   const messageList = document.getElementById("messageList");
@@ -731,18 +789,7 @@
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
     return article;
   }
-  function renderTyping(article) {
-    const content = article.querySelector(".assistant-content");
-    content.replaceChildren();
-    // #5559: the waiting state is the status card, so the answer body keeps
-    // only the marker the sources and export flows read. It no longer draws a
-    // second set of waiting dots, and it no longer repeats the status for a
-    // screen reader.
-    const typing = document.createElement("span");
-    typing.className = "typing";
-    typing.setAttribute("aria-hidden", "true");
-    content.appendChild(typing);
-  }
+  function renderTyping(...a) { return historyModule().renderTyping(...a); }
   function renderStoredAssistant(text, stored) {
     const article = addAssistantShell(uiT("stored-conversation"), "status");
     // 11-03 audit: the chip named what it is without saying why it is there.
@@ -1165,14 +1212,7 @@
     });
   }
 
-  function clearHistoryUI() {
-    clawConversationIds.clear();
-    clawConversationLabelsRead = null;
-    historyList.replaceChildren();
-    historySection.hidden = true;
-    historyEmpty.hidden = true;
-    clearHistoryActionStatus();
-  }
+  function clearHistoryUI(...a) { return historyModule().clearHistoryUI(...a); }
   // #4489: the Library entry is owned by static/library.js. The old
   // filesNavAvailable()/syncFilesNav() gate that also required project-file
   // storage was removed, because Library navigation must work for a signed-in
@@ -2740,49 +2780,11 @@
     }
   }
 
-  // #6119: the recent list is loading, never blank. The sidebar shows gray
-  // rows until the answer lands, and a read that produced no answer asks one
-  // more time — a failure is drawn as one honest retry row, never as an
-  // empty list.
-  function renderHistorySkeleton() {
-    clearHistoryActionStatus();
-    historySection.hidden = false;
-    historyEmpty.hidden = true;
-    historyList.replaceChildren();
-    for (let index = 0; index < 4; index += 1) {
-      const row = document.createElement("div");
-      row.className = "history-row history-skeleton";
-      row.setAttribute("aria-hidden", "true");
-      historyList.appendChild(row);
-    }
-  }
+  function renderHistorySkeleton(...a) { return historyModule().renderHistorySkeleton(...a); }
 
-  function renderHistoryLoadFailed() {
-    historySection.hidden = false;
-    historyEmpty.hidden = true;
-    historyList.replaceChildren();
-    const row = document.createElement("div");
-    row.className = "history-row history-load-failed";
-    const text = document.createElement("span");
-    text.className = "history-load-failed-text";
-    text.textContent = uiT("history-load-failed");
-    const retry = document.createElement("button");
-    retry.type = "button";
-    retry.className = "history-retry";
-    retry.textContent = uiT("history-retry");
-    retry.addEventListener("click", () => {
-      void loadRecentConversations();
-    });
-    row.append(text, retry);
-    historyList.appendChild(row);
-  }
+  function renderHistoryLoadFailed(...a) { return historyModule().renderHistoryLoadFailed(...a); }
 
-  async function fetchRecentConversations() {
-    const response = await fetch("/api/conversations", { headers: { "Accept": "application/json" }, cache: "no-store" });
-    const data = await response.json().catch(() => null);
-    if (!response.ok || !data || !Array.isArray(data.conversations)) throw new Error("history unavailable");
-    return data;
-  }
+  function fetchRecentConversations(...a) { return historyModule().fetchRecentConversations(...a); }
 
   // The first screen reads /api/claw/runs twice: the sidebar needs the
   // run -> conversation mapping (limit 30) and Claw's history needs the run
@@ -2838,169 +2840,7 @@
     return run;
   }
 
-  async function loadRecentConversations() {
-    if (!authState.authenticated || !authState.history_ready) {
-      clearHistoryUI();
-      return;
-    }
-    const epoch = authViewEpoch;
-    const sequence = ++historyReadSequence;
-    clawConversationLabelsRead = null;
-    const current = () => epoch === authViewEpoch && sequence === historyReadSequence && authState.authenticated;
-    renderHistorySkeleton();
-    let data = null;
-    for (let attempt = 0; attempt < 2; attempt += 1) {
-      try {
-        data = await fetchRecentConversations();
-        if (!current()) return;
-        break;
-      } catch (_) {
-        if (!current()) return;
-        if (attempt === 1) data = null;
-      }
-    }
-    if (!data) {
-      renderHistoryLoadFailed();
-      return;
-    }
-    try {
-      // Labels are presentation only; run history is owner-filtered by the server.
-      // Never infer a Claw execution authority from a title or browser storage.
-      const historyButtons = new Map();
-      const enrichClawLabels = async () => {
-        const verifiedClawIds = new Set();
-        try {
-          const threadRunHistoryLimit = 30;
-          const { response: runsResponse, data: runsData } = await readClawRuns(threadRunHistoryLimit, epoch);
-          if (!current()) return;
-          if (runsResponse.ok && runsData?.ok === true && Array.isArray(runsData.runs)) {
-            runsData.runs.forEach((run) => {
-              if (run?.channel === "web" && run?.action === "general"
-                  && run?.status === "completed"
-                  && /^chat_[a-f0-9]{32}$/.test(run?.session?.conversation_id || "")) {
-                verifiedClawIds.add(run.session.conversation_id);
-              }
-            });
-          }
-        } catch (_) { /* No Claw authority can be inferred from a failed read. */ }
-        if (!current()) return;
-        clawConversationIds.clear();
-        verifiedClawIds.forEach((id) => clawConversationIds.add(id));
-        historyButtons.forEach(({ button, title }, id) => {
-          button.textContent = clawConversationIds.has(id) ? `Claw · ${title}` : title;
-        });
-      };
-      clearHistoryActionStatus();
-      clawConversationIds.clear();
-      historyList.replaceChildren();
-      historySection.hidden = false;
-      historyEmpty.hidden = data.conversations.length !== 0;
-      let pinnedGroupDrawn = false;
-      data.conversations.forEach((conversation) => {
-        if (!conversation || typeof conversation.id !== "string" || typeof conversation.title !== "string") return;
-        const pinned = conversation.pinned === true;
-        // #7175: one explicit group, then the pinned rows in server order.
-        if (pinned && !pinnedGroupDrawn) {
-          pinnedGroupDrawn = true;
-          const groupLabel = document.createElement("p");
-          groupLabel.className = "history-group-label";
-          groupLabel.textContent = uiT("conversation-pinned-group");
-          historyList.appendChild(groupLabel);
-        }
-        const row = document.createElement("div");
-        row.className = pinned ? "history-row history-row-pinned" : "history-row";
-        row.dataset.conversationId = conversation.id;
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "recent-item history-item";
-        button.textContent = clawConversationIds.has(conversation.id)
-          ? `Claw · ${conversation.title}` : conversation.title;
-        historyButtons.set(conversation.id, { button, title: conversation.title });
-        button.addEventListener("click", () => openSavedConversation(conversation.id));
-        const actions = document.createElement("details");
-        actions.className = "history-actions";
-        const more = document.createElement("summary");
-        more.className = "history-more";
-        const moreLabel = uiT("manage") + ": " + conversation.title;
-        more.setAttribute("aria-label", moreLabel);
-        window.PadiemSharedTooltip?.label?.(more, moreLabel);
-        more.append(sidebarActionIcon("more"));
-        const menu = document.createElement("div");
-        menu.className = "history-actions-menu";
-        // #7175: rename in place. The row is rebuilt from the server answer
-        // after a save, so every label (title, tooltips, menu) moves together.
-        const rename = document.createElement("button");
-        rename.type = "button";
-        rename.className = "history-menu-action history-menu-rename";
-        rename.append(sidebarActionIcon("rename"), document.createTextNode(uiT("conversation-rename")));
-        const renameLabel = uiT("conversation-rename-aria", { title: conversation.title });
-        rename.setAttribute("aria-label", renameLabel);
-        window.PadiemSharedTooltip?.label?.(rename, renameLabel);
-        rename.addEventListener("click", () => {
-          actions.open = false;
-          beginConversationRename(row, button, conversation);
-        });
-        const pin = document.createElement("button");
-        pin.type = "button";
-        pin.className = "history-menu-action history-menu-pin";
-        pin.append(
-          sidebarActionIcon(pinned ? "unpin" : "pin"),
-          document.createTextNode(uiT(pinned ? "conversation-unpin" : "conversation-pin")),
-        );
-        const pinLabel = uiT(pinned ? "conversation-unpin-aria" : "conversation-pin-aria", { title: conversation.title });
-        pin.setAttribute("aria-label", pinLabel);
-        window.PadiemSharedTooltip?.label?.(pin, pinLabel);
-        pin.addEventListener("click", async () => {
-          actions.open = false;
-          pin.disabled = true;
-          try {
-            await patchConversation(conversation.id, { pinned: !pinned });
-            clearHistoryActionStatus();
-            await loadRecentConversations();
-            focusHistoryConversation(conversation.id);
-          } catch (error) {
-            pin.disabled = false;
-            showHistoryActionStatus(error instanceof Error && error.message ? error.message : uiT("conversation-update-failed"));
-            more.focus();
-          }
-        });
-        const remove = document.createElement("button");
-        remove.type = "button";
-        remove.className = "history-delete history-menu-delete";
-        remove.append(sidebarActionIcon("trash"), document.createTextNode(uiT("delete")));
-        remove.setAttribute("aria-label", uiT("conversation-delete-aria", { title: conversation.title }));
-        window.PadiemSharedTooltip?.label?.(remove, uiT("conversation-delete-aria", { title: conversation.title }));
-        remove.addEventListener("click", async () => {
-          await deleteConversation(conversation.id, conversation.title);
-          // Dialog close must return focus to a visible action, not an item
-          // concealed inside a closed native details panel.
-          if (actions.isConnected) {
-            actions.open = false;
-            more.focus();
-          }
-        });
-        actions.addEventListener("toggle", () => {
-          if (!actions.open) return;
-          historyList.querySelectorAll(".history-actions[open]").forEach((other) => {
-            if (other !== actions) other.open = false;
-          });
-        });
-        menu.append(rename, pin, remove);
-        actions.append(more, menu);
-        row.append(button, actions);
-        historyList.appendChild(row);
-      });
-      // Optional thread labels never hold the conversation list behind an
-      // independent identity/Engine read. The list is already usable here.
-      if (data.conversations.length) {
-        clawConversationLabelsRead = { epoch, promise: enrichClawLabels() };
-      }
-    } catch (_) {
-      // #6119: a read that landed but could not render is still a failure —
-      // the retry row says so instead of painting an empty list.
-      renderHistoryLoadFailed();
-    }
-  }
+  function loadRecentConversations(...a) { return historyModule().loadRecentConversations(...a); }
   document.addEventListener("click", (event) => {
     if (event.target instanceof Element && event.target.closest(".history-actions")) return;
     historyList.querySelectorAll(".history-actions[open]").forEach((node) => { node.open = false; });
@@ -3018,150 +2858,17 @@
   // group order and every label come from the same answer.
   const HISTORY_TITLE_MAX_CHARS = 80;
 
-  function clearHistoryActionStatus() {
-    if (!historyActionStatus) return;
-    historyActionStatus.hidden = true;
-    historyActionStatus.textContent = "";
-  }
+  function clearHistoryActionStatus(...a) { return historyModule().clearHistoryActionStatus(...a); }
 
-  function showHistoryActionStatus(message) {
-    if (!historyActionStatus || !message) return;
-    historyActionStatus.textContent = message;
-    historyActionStatus.hidden = false;
-  }
+  function showHistoryActionStatus(...a) { return historyModule().showHistoryActionStatus(...a); }
 
-  async function patchConversation(id, body) {
-    const response = await fetch(`/api/conversations/${encodeURIComponent(id)}`, {
-      method: "PATCH",
-      headers: { "Accept": "application/json", "Content-Type": "application/json" },
-      cache: "no-store",
-      body: JSON.stringify(body),
-    });
-    const data = await response.json().catch(() => null);
-    if (!response.ok || !data || data.updated !== true || !data.conversation
-        || data.conversation.id !== id) {
-      const message = data && data.error && typeof data.error.message === "string"
-        ? data.error.message
-        : uiT("conversation-update-failed");
-      throw new Error(message);
-    }
-    return data.conversation;
-  }
+  function patchConversation(...a) { return historyModule().patchConversation(...a); }
 
-  function focusHistoryConversation(id) {
-    const row = Array.from(historyList.querySelectorAll(".history-row"))
-      .find((candidate) => candidate.dataset.conversationId === id);
-    const target = row ? (row.querySelector(".history-more") || row.querySelector(".history-item")) : null;
-    if (target && typeof target.focus === "function") target.focus({ preventScroll: true });
-  }
+  function focusHistoryConversation(...a) { return historyModule().focusHistoryConversation(...a); }
 
-  function beginConversationRename(row, button, conversation) {
-    if (!authState.authenticated || inFlight) return;
-    if (row.querySelector(".history-rename-input")) return;
-    const input = document.createElement("input");
-    input.type = "text";
-    input.className = "history-rename-input";
-    input.maxLength = HISTORY_TITLE_MAX_CHARS;
-    input.value = conversation.title;
-    input.setAttribute("aria-label", uiT("conversation-rename-aria", { title: conversation.title }));
-    input.setAttribute("enterkeyhint", "done");
-    let saving = false;
-    let closed = false;
-    const restore = () => {
-      if (!input.isConnected) return;
-      input.replaceWith(button);
-      button.focus();
-    };
-    const cancel = () => {
-      if (saving || closed) return;
-      closed = true;
-      clearHistoryActionStatus();
-      restore();
-    };
-    const save = async () => {
-      if (saving || closed) return;
-      const title = input.value.trim().replace(/\s+/g, " ");
-      if (!title) {
-        input.setAttribute("aria-invalid", "true");
-        showHistoryActionStatus(uiT("conversation-title-required"));
-        input.focus();
-        return;
-      }
-      saving = true;
-      input.removeAttribute("aria-invalid");
-      input.disabled = true;
-      try {
-        const updated = await patchConversation(conversation.id, { title });
-        conversation.title = updated.title;
-        button.textContent = clawConversationIds.has(conversation.id)
-          ? `Claw · ${updated.title}` : updated.title;
-        clearHistoryActionStatus();
-        if (input.isConnected) input.replaceWith(button);
-        await loadRecentConversations();
-        focusHistoryConversation(conversation.id);
-      } catch (error) {
-        saving = false;
-        input.disabled = false;
-        input.setAttribute("aria-invalid", "true");
-        showHistoryActionStatus(
-          error instanceof Error && error.message ? error.message : uiT("conversation-update-failed"),
-        );
-        input.focus();
-      }
-    };
-    input.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        event.stopPropagation();
-        void save();
-      } else if (event.key === "Escape") {
-        event.preventDefault();
-        event.stopPropagation();
-        cancel();
-      }
-    });
-    input.addEventListener("blur", () => {
-      if (!saving) cancel();
-    });
-    row.replaceChild(input, button);
-    input.focus();
-    input.select();
-  }
+  function beginConversationRename(...a) { return historyModule().beginConversationRename(...a); }
 
-  async function deleteConversation(id, title) {
-    if (!authState.authenticated || inFlight) return;
-    const confirmed = await window.PadiemConfirmDialog.confirm({
-      title: uiT("conversation-delete-title"),
-      message: uiT("conversation-delete-message", { title }),
-      cancelLabel: uiT("cancel"),
-      confirmLabel: uiT("delete"),
-    });
-    if (!confirmed) return;
-    try {
-      const response = await fetch(`/api/conversations/${encodeURIComponent(id)}`, {
-        method: "DELETE",
-        headers: { "Accept": "application/json" },
-        cache: "no-store",
-      });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || data.deleted !== true || data.conversation_id !== id) {
-        const message = data && data.error && typeof data.error.message === "string"
-          ? data.error.message
-          : uiT("conversation-delete-failed");
-        throw new Error(message);
-      }
-      const deletedActiveConversation = conversationState.getConversationId() === id;
-      if (deletedActiveConversation) resetConversationView(true);
-      await loadRecentConversations();
-      if (deletedActiveConversation) {
-        input.focus();
-      } else {
-        setNote(idleNote());
-      }
-    } catch (error) {
-      setNote(error instanceof Error ? error.message : uiT("conversation-delete-failed"), "error");
-    }
-  }
+  function deleteConversation(...a) { return historyModule().deleteConversation(...a); }
   async function fetchAuthStatusOnce() {
     const response = await fetch("/api/auth/status", { headers: { "Accept": "application/json" }, cache: "no-store" });
     const data = await response.json().catch(() => null);
@@ -7460,32 +7167,11 @@
   let pendingClawRunFocusId = "";
   let clawRunHistoryVisibilityEpoch = 0;
   const clawRunHistoryPdfControllers = new Set();
-  function clearClawRunHistoryPdfPreviews() {
-    for (const controller of clawRunHistoryPdfControllers) controller.destroy();
-    clawRunHistoryPdfControllers.clear();
-  }
+  function clearClawRunHistoryPdfPreviews(...a) { return historyModule().clearClawRunHistoryPdfPreviews(...a); }
 
-  function setClawRunHistoryStatus(message, code = "") {
-    if (!clawRunHistoryError) return;
-    if (!message) {
-      clawRunHistoryError.hidden = true;
-      clawRunHistoryError.textContent = "";
-      clawRunHistoryError.removeAttribute("data-state");
-      return;
-    }
-    clawRunHistoryError.hidden = false;
-    clawRunHistoryError.textContent = message;
-    const reference = failureCodeNote(code, "");
-    if (reference) clawRunHistoryError.appendChild(reference);
-    clawRunHistoryError.dataset.state = "error";
-  }
+  function setClawRunHistoryStatus(...a) { return historyModule().setClawRunHistoryStatus(...a); }
 
-  function clawRunHistoryErrorMessage(data, response) {
-    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
-    const status = response ? response.status : 0;
-    if (code === "unauthorized" || status === 401) return clawT("claw-error-auth-needed");
-    return clawT("claw-runs-error");
-  }
+  function clawRunHistoryErrorMessage(...a) { return historyModule().clawRunHistoryErrorMessage(...a); }
 
   // Unknown status tokens stay raw rather than being invented, so presentation
   // can never claim a completion the server did not report.
@@ -7684,96 +7370,11 @@
     return card;
   }
 
-  // Unguarded fetch: callers hold the single-flight flag while awaiting this.
-  async function fetchClawRunHistory(options) {
-    if (!clawRunHistory) return;
-    const focusRunId = pendingClawRunFocusId;
-    pendingClawRunFocusId = "";
-    const visibilityEpoch = clawRunHistoryVisibilityEpoch;
-    setClawRunHistoryStatus("");
-    if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = false;
-    if (clawRunHistoryList) clawRunHistoryList.hidden = true;
-    if (clawRunHistoryEmpty) clawRunHistoryEmpty.hidden = true;
-    if (clawRunHistoryExpand) clawRunHistoryExpand.hidden = true;
-    // On refresh, retire the old cards before dropping their DOM and PDF Blob.
-    clearClawRunHistoryPdfPreviews();
-    if (clawRunHistoryList) clawRunHistoryList.replaceChildren();
-    try {
-      const { response, data } = await readClawRuns(clawRunHistoryLimit, authViewEpoch, options);
-      // A response begun before logout/workspace departure is not a license
-      // to paint old owner file cards into a newer authenticated session.
-      if (visibilityEpoch !== clawRunHistoryVisibilityEpoch ||
-          authState.authenticated !== true || clawRunHistory.hidden) return;
-      if (!response.ok || !data || data.ok !== true || !Array.isArray(data.runs)) {
-        throw mappedUiError(clawRunHistoryErrorMessage(data, response), data);
-      }
-      if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = true;
-      if (data.runs.length === 0) {
-        // Empty history must not leave an empty list container visible.
-        if (clawRunHistoryEmpty) clawRunHistoryEmpty.hidden = false;
-        return;
-      }
-      if (clawRunHistoryList) clawRunHistoryList.hidden = false;
-      // Equal to the requested limit suggests (but does not prove) older runs.
-      // Never invent a count or claim further runs exist until the next GET.
-      if (clawRunHistoryExpand) clawRunHistoryExpand.hidden =
-        clawRunHistoryLimit !== 10 || data.runs.length < 10;
-      data.runs.forEach((run) => {
-        if (!run || typeof run.run_id !== "string") return;
-        clawRunHistoryList?.appendChild(renderClawRunCard(run));
-      });
-      if (focusRunId && clawRunHistoryList) {
-        const target = Array.from(clawRunHistoryList.children).find((card) => card.dataset && card.dataset.runId === focusRunId);
-        if (target) {
-          // #4488 Phase A: open the disclosure before focusing a specific run.
-          if (clawRunHistoryDisclosure) clawRunHistoryDisclosure.open = true;
-          target.setAttribute("tabindex", "-1");
-          target.focus?.();
-          target.scrollIntoView?.();
-        }
-      }
-    } catch (error) {
-      if (visibilityEpoch !== clawRunHistoryVisibilityEpoch ||
-          authState.authenticated !== true || clawRunHistory.hidden) return;
-      if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = true;
-      if (clawRunHistoryExpand) clawRunHistoryExpand.hidden = true;
-      setClawRunHistoryStatus(safeLocalUiMessage(error, clawT("claw-runs-error")), error?.code);
-    }
-  }
+  function fetchClawRunHistory(...a) { return historyModule().fetchClawRunHistory(...a); }
 
-  async function loadClawRunHistory(options) {
-    if (clawRunHistoryInFlight) return;
-    clawRunHistoryInFlight = true;
-    try {
-      await fetchClawRunHistory(options);
-    } finally {
-      clawRunHistoryInFlight = false;
-    }
-  }
+  function loadClawRunHistory(...a) { return historyModule().loadClawRunHistory(...a); }
 
-  function syncClawRunHistoryVisibility() {
-    if (!clawRunHistory) return;
-    // Owner-authenticated surface only.
-    const wasVisible = clawRunHistory.hidden === false;
-    const show = authState.authenticated === true
-      && shell.dataset.state === "claw";
-    clawRunHistory.hidden = !show;
-    if (clawRunHistoryDisclosure) clawRunHistoryDisclosure.hidden = !show;
-    if (show) {
-      // Coming back to the workspace is a request for the current list; the
-      // first reveal may share the read the sidebar already started.
-      const returning = clawRunHistoryLeftSurface;
-      clawRunHistoryLeftSurface = false;
-      loadClawRunHistory(returning ? { force: true } : undefined);
-    }
-    else {
-      if (wasVisible) clawRunHistoryLeftSurface = true;
-      clawRunHistoryVisibilityEpoch += 1;
-      clawRunHistoryLimit = 10;
-      if (clawRunHistoryExpand) clawRunHistoryExpand.hidden = true;
-      clearClawRunHistoryPdfPreviews();
-    }
-  }
+  function syncClawRunHistoryVisibility(...a) { return historyModule().syncClawRunHistoryVisibility(...a); }
 
   if (clawRunHistoryRefresh) {
     // A person asked for the current list, so this read is not served from the

@@ -59,7 +59,7 @@ def _card_fn() -> str:
     """The whole real renderer, including the closed kind map it owns."""
     app = _app()
     start = app.index("  function renderClawRunCard(run) {")
-    end = app.index("\n  // Unguarded fetch:", start)
+    end = app.index("\n  function fetchClawRunHistory(", start)
     return app[start:end]
 
 
@@ -168,7 +168,7 @@ const vm = require("vm");
 const app = fs.readFileSync(process.argv[2], "utf8");
 
 const start = app.indexOf("  function renderClawRunCard(run) {");
-const end = app.indexOf("\n  // Unguarded fetch:", start);
+const end = app.indexOf("\n  function fetchClawRunHistory(", start);
 if (start < 0 || end <= start) throw new Error("real run-card source must be located");
 
 function el(tag) {

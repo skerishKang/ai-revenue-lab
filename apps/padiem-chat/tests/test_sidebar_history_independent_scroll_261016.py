@@ -4,7 +4,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1] / "static"
 CSS = (ROOT / "sidebar-history-scroll.css").read_text(encoding="utf-8")
 HTML = (ROOT / "index.html").read_text(encoding="utf-8")
-APP = (ROOT / "app.js").read_text(encoding="utf-8")
+APP = ((ROOT / "app.js").read_text(encoding="utf-8")
+       + (ROOT / "chat-history-module.js").read_text(encoding="utf-8"))  # R5 step 3: history rows live in the module too
 
 
 def test_new_scroll_rules_load_last_without_modifying_auth_or_handlers():

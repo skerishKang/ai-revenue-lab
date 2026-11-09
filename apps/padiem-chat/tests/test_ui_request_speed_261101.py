@@ -20,8 +20,9 @@ def literal(path, name):
     return ast.literal_eval(assignment.value)
 
 
-def function(name):
-    source = (STATIC / "app.js").read_text(encoding="utf-8")
+def function(name, source=None):
+    if source is None:
+        source = (STATIC / "app.js").read_text(encoding="utf-8")
     start = source.index("async function " + name + "(")
     depth = 0
     for index in range(source.index("{", start), len(source)):
@@ -82,7 +83,11 @@ console.log(JSON.stringify({parallel:true,panelsStarted:2}));
 
 
 def test_history_is_usable_before_optional_run_labels_and_discards_old_auth_reply():
-    result = run_node(PRELUDE + function("loadRecentConversations") + """
+    # loadRecentConversations moved into chat-history-module.js (#7216 R5 step 3);
+    # the same harness runs the moved body, now reading its closure values
+    # through the deps getters/setters exactly like the shipped factory does.
+    history_module = (STATIC / "chat-history-module.js").read_text(encoding="utf-8")
+    result = run_node(PRELUDE + function("loadRecentConversations", history_module) + """
 let authViewEpoch=1,historyReadSequence=0,clawConversationLabelsRead=null;
 let authState={authenticated:true,history_ready:true};
 const clawConversationIds=new Set(), labels=deferred();
@@ -98,6 +103,14 @@ const renderHistorySkeleton=()=>historyList.replaceChildren();
 const clearHistoryUI=()=>historyList.replaceChildren();
 const clearHistoryActionStatus=()=>{};
 const renderHistoryLoadFailed=()=>{throw Error('unexpected failure')};
+const deps={
+ get authState(){return authState},get authViewEpoch(){return authViewEpoch},
+ get historyReadSequence(){return historyReadSequence},set historyReadSequence(v){historyReadSequence=v},
+ get clawConversationLabelsRead(){return clawConversationLabelsRead},set clawConversationLabelsRead(v){clawConversationLabelsRead=v},
+ get clawConversationIds(){return clawConversationIds},
+ get historyList(){return historyList},get historySection(){return historySection},get historyEmpty(){return historyEmpty},
+ get uiT(){return uiT},get sidebarActionIcon(){return sidebarActionIcon},
+ get openSavedConversation(){return ()=>{}}};
 (async()=>{
 let finished=false;const pending=loadRecentConversations().then(()=>{finished=true});
 await flush();assert.equal(finished,true);assert.equal(historyList.children.length,1);

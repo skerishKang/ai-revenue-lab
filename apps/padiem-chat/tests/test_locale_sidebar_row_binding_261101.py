@@ -22,7 +22,8 @@ ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
+APP = ((STATIC / "app.js").read_text(encoding="utf-8")
+       + (STATIC / "chat-history-module.js").read_text(encoding="utf-8"))  # R5 step 3: history rows live in the module too
 OUTPUTS = (STATIC / "outputs.js").read_text(encoding="utf-8")
 SEARCH = (STATIC / "conversation-search.js").read_text(encoding="utf-8")
 

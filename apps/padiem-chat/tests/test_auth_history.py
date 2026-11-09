@@ -439,6 +439,9 @@ def test_auth_history_frontend_contract_and_phase1_css_unchanged():
     root = Path(__file__).resolve().parents[1]
     html = (root / "static/index.html").read_text(encoding="utf-8")
     js = (root / "static/app.js").read_text(encoding="utf-8")
+    # #7216 R5 step 3: the history list fetch/render moved into
+    # chat-history-module.js; the contract spans both shipped sources.
+    js += (root / "static/chat-history-module.js").read_text(encoding="utf-8")
     locale = (root / "static/locale.js").read_text(encoding="utf-8")
     a11y = (root / "static/a11y.js").read_text(encoding="utf-8")
     assert 'id="loginButton"' in html
