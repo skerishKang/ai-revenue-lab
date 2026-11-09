@@ -102,8 +102,8 @@
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--success, #1a6b3a) 24%, transparent);
 }
 .composer-pc-status[data-state="connecting"] .composer-pc-status-dot {
-  background: var(--accent-strong, #2f6f99);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-strong, #2f6f99) 22%, transparent);
+  background: var(--accent-strong);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-strong) 22%, transparent);
 }
 /* #6694 (A): a linked PC whose agent is offline is a state, not a failure -
    the same neutral grey as disconnected, a different word and mark. */

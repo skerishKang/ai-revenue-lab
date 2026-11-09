@@ -1,6 +1,6 @@
 .capability-kit {
   --capability-surface: color-mix(in srgb, var(--panel, #fff) 88%, transparent);
-  --capability-soft: color-mix(in srgb, var(--accent-soft, #efedff) 74%, transparent);
+  --capability-soft: color-mix(in srgb, var(--accent-soft) 74%, transparent);
   --capability-line: color-mix(in srgb, var(--line) 86%, transparent);
   display: grid;
   gap: 12px;
@@ -102,7 +102,7 @@
 
 .capability-current {
   background: var(--capability-soft);
-  color: var(--accent-strong, var(--accent));
+  color: var(--accent-strong);
 }
 
 /* An emptied status pill must disappear entirely: inline-flex would otherwise
@@ -166,7 +166,7 @@
   place-items: center;
   border-radius: 50%;
   background: var(--capability-soft);
-  color: var(--accent-strong, var(--accent));
+  color: var(--accent-strong);
   font-size: 16px;
   line-height: 1;
 }
@@ -219,9 +219,9 @@
   display: grid;
   gap: 8px;
   padding: 12px;
-  border: 1px solid color-mix(in srgb, var(--accent, #6557e8) 42%, var(--capability-line));
+  border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--capability-line));
   border-radius: 13px;
-  background: color-mix(in srgb, var(--accent-soft, #efedff) 44%, var(--capability-surface));
+  background: color-mix(in srgb, var(--accent-soft) 44%, var(--capability-surface));
 }
 
 .capability-approval > strong {
@@ -256,8 +256,8 @@
 }
 
 .capability-action-primary {
-  border-color: color-mix(in srgb, var(--accent, #6557e8) 54%, var(--capability-line));
-  background: var(--accent, #6557e8);
+  border-color: color-mix(in srgb, var(--accent) 54%, var(--capability-line));
+  background: var(--accent);
   color: #fff;
 }
 
@@ -276,9 +276,9 @@
   z-index: 2;
   margin: 0 0 18px;
   padding: 10px 12px;
-  border: 1px dashed color-mix(in srgb, var(--accent, #6557e8) 48%, var(--line));
+  border: 1px dashed color-mix(in srgb, var(--accent) 48%, var(--line));
   border-radius: 12px;
-  background: color-mix(in srgb, var(--accent-soft, #efedff) 58%, transparent);
+  background: color-mix(in srgb, var(--accent-soft) 58%, transparent);
   color: var(--text);
   font-size: 12px;
   font-weight: 800;

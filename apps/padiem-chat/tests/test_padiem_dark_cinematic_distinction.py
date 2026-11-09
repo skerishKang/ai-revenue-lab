@@ -13,6 +13,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 THEMES_CSS = (ROOT / "static/padiem-themes.css").read_text(encoding="utf-8")
+# #7187 R3 3차: --card-border moved to the token sheet (one owner per theme).
+TOKENS_CSS = (ROOT / "static/padiem-tokens.css").read_text(encoding="utf-8")
 POLISH_CSS = (ROOT / "static/padiem-bright-readability.css").read_text(encoding="utf-8")
 THEME_JS = (ROOT / "static/theme.js").read_text(encoding="utf-8")
 THEME_INIT_JS = (ROOT / "static/theme-init.js").read_text(encoding="utf-8")
@@ -40,7 +42,13 @@ SHARED_SURFACE_TOKENS = (
 def _token_block(theme: str) -> str:
     start = THEMES_CSS.index(f'html[data-theme="{theme}"] {{')
     end = THEMES_CSS.index("\n}", start)
-    return THEMES_CSS[start:end]
+    block = THEMES_CSS[start:end]
+    if "--card-border:" not in block:
+        # #7187 R3 3차: the card border token lives in padiem-tokens.css now.
+        tstart = TOKENS_CSS.index(f'html[data-theme="{theme}"] {{')
+        tend = TOKENS_CSS.index("\n}", tstart)
+        block += TOKENS_CSS[tstart:tend]
+    return block
 
 
 def _rule_section(theme: str) -> str:

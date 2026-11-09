@@ -8,7 +8,7 @@
  */
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] {
   /* Re-point the Claw accent/border/surface onto the shared Chat glass tokens. */
-  --claw-focus-accent: var(--accent-strong, #2f6f99);
+  --claw-focus-accent: var(--accent-strong);
   --claw-focus-border: var(--glass-chat-border, rgba(255, 255, 255, .58));
   --claw-focus-muted: var(--muted, #53606c);
   --claw-focus-surface: var(--glass-card-surface, rgba(244, 247, 249, .72));
@@ -870,7 +870,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
 }
 .claw-home-card > .claw-connection-toggle[data-connection-state="on"] {
-  border-color: var(--accent); color: var(--accent-strong, var(--accent));
+  border-color: var(--accent); color: var(--accent-strong);
 }
 /* An explicit, non-faked ON/OFF switch face. If the server cannot establish
  * authority, both sides remain neutral and the status says "확인 불가". */

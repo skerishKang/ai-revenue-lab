@@ -46,14 +46,17 @@ def test_claw_has_no_padiem_glass_palette_override():
 
 
 def test_all_chat_themes_define_accent_contrast():
-    themes = read("padiem-themes.css")
-    glass = read("padiem-glass.css")
+    # #7187 R3 3차: the theme-level --accent-contrast definitions moved to
+    # padiem-tokens.css (one owner for the whole accent family). The values
+    # are unchanged; the ownership is what this test pins.
+    themes = read("padiem-tokens.css")
 
     expected = {
         "light": "#ffffff",
         "dark": "#131417",
         "cinematic": "#04070d",
         "padiem-home": "#0b0f14",
+        "padiem-glass": "#17202a",
     }
 
     for theme, value in expected.items():
@@ -64,8 +67,6 @@ def test_all_chat_themes_define_accent_contrast():
         )
         assert block_match, theme
         assert f"--accent-contrast: {value};" in block_match.group(1)
-
-    assert "--accent-contrast: #17202a;" in glass
 
 
 def test_claw_does_not_restore_legacy_shared_aliases():

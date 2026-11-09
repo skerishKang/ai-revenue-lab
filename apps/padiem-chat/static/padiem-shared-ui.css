@@ -22,7 +22,7 @@
   inset: 0;
   background: linear-gradient(90deg,
     transparent 40%,
-    var(--padiem-sweep-highlight, color-mix(in srgb, var(--accent, #6557e8) 26%, transparent)) 50%,
+    var(--padiem-sweep-highlight, color-mix(in srgb, var(--accent) 26%, transparent)) 50%,
     transparent 60%);
   background-size: 160% 100%;
   background-repeat: no-repeat;

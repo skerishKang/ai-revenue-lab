@@ -48,7 +48,7 @@
    pages the same way the calendar/library/claw entries already do. */
 #connectorsNavButton[aria-current="page"],
 #automationNavButton[aria-current="page"] {
-  border-color: var(--accent-strong, #2f6f99);
+  border-color: var(--accent-strong);
   background: rgba(121, 188, 231, 0.22);
 }
 

@@ -77,7 +77,7 @@ html body .app-shell .sidebar #projectCreateButton {
   background: rgba(255,255,255,.12);
 }
 .sidebar .sidebar-section-toggle:focus-visible {
-  outline: 2px solid var(--accent, #8fb7d5);
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 /* State lives on each section; ajax rerenders only update the children, so

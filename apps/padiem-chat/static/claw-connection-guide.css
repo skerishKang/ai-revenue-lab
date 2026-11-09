@@ -16,8 +16,8 @@
 .claw-connection-guide-head { display:flex; align-items: flex-start; gap: 12px; }
 .claw-connection-guide-mark {
   flex: 0 0 42px; display:grid; place-items:center; height:42px; border-radius:14px;
-  background: color-mix(in srgb, var(--accent, #4f8aff) 14%, transparent);
-  color: var(--accent-strong, var(--accent, #73a9ff)); font-size:20px; font-weight:700;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent-strong); font-size:20px; font-weight:700;
 }
 .claw-connection-guide-heading { flex:1; min-width:0; }
 .claw-connection-guide-kicker {
@@ -40,8 +40,8 @@
   min-height:42px; padding:9px 15px; border-radius:11px; font:inherit; font-size:13px; font-weight:650; cursor:pointer;
 }
 .claw-connection-guide-cancel { color:var(--text); background:transparent; border:1px solid var(--line); }
-.claw-connection-guide-continue { color:#fff; background:var(--accent, #336dff); border:1px solid transparent; }
-.claw-connection-guide button:focus-visible { outline:3px solid var(--accent, #5b8fff); outline-offset:2px; }
+.claw-connection-guide-continue { color:#fff; background:var(--accent); border:1px solid transparent; }
+.claw-connection-guide button:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
 @media (max-width:480px) {
   .claw-connection-guide-panel { padding:20px; }
   .claw-connection-guide-actions { flex-direction:column-reverse; }

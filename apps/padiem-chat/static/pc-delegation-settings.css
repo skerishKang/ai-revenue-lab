@@ -32,4 +32,4 @@
 .pc-delegation-editor input[type="checkbox"] { width: 18px; height: 18px; margin: 0; }
 .pc-delegation-editor > small { line-height: 1.5; color: var(--text-secondary, var(--text)); }
 .pc-delegation-settings button { min-height: 40px; }
-.pc-delegation-settings :focus-visible { outline: 2px solid var(--accent, #487bb5); outline-offset: 3px; }
+.pc-delegation-settings :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }

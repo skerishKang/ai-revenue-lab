@@ -111,7 +111,7 @@ html[data-theme="padiem-glass"] .sidebar {
 }
 
 .calendar-refresh-button:hover {
-  border-color: var(--accent-strong, #2f6f99);
+  border-color: var(--accent-strong);
 }
 
 .calendar-view-help {
@@ -150,8 +150,8 @@ html[data-theme="padiem-glass"] .sidebar {
 }
 
 .calendar-tab[aria-selected="true"] {
-  border-bottom-color: var(--accent-strong, #2f6f99);
-  color: var(--accent-strong, #2f6f99);
+  border-bottom-color: var(--accent-strong);
+  color: var(--accent-strong);
   font-weight: 700;
   opacity: 1;
 }
@@ -196,7 +196,7 @@ html[data-theme="padiem-glass"] .sidebar {
 }
 
 .calendar-range-button:hover {
-  border-color: var(--accent-strong, #2f6f99);
+  border-color: var(--accent-strong);
 }
 
 .calendar-range-button[disabled] {
@@ -246,7 +246,7 @@ html[data-theme="padiem-glass"] .sidebar {
 }
 
 .calendar-retry-button:hover {
-  border-color: var(--accent-strong, #2f6f99);
+  border-color: var(--accent-strong);
 }
 
 .calendar-empty {
@@ -284,7 +284,7 @@ html[data-theme="padiem-glass"] .sidebar {
   padding: 2px 8px;
   border-radius: 999px;
   background: rgba(47, 111, 153, .14);
-  color: var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
 }
 
 .calendar-item[data-item-type="unknown"] .calendar-item-type {
@@ -354,7 +354,7 @@ html[data-theme="padiem-glass"] .sidebar {
 .calendar-detail-button:hover,
 .calendar-detail-retry:hover,
 .calendar-detail-link:hover {
-  border-color: var(--accent-strong, #2f6f99);
+  border-color: var(--accent-strong);
 }
 
 .calendar-detail-button[disabled],
@@ -425,7 +425,7 @@ html[data-theme="padiem-glass"] .sidebar {
   cursor: pointer;
   font-size: 13px;
   font-weight: 700;
-  color: var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
 }
 
 .calendar-record-hint {
@@ -500,9 +500,9 @@ html[data-theme="padiem-glass"] .sidebar {
 }
 
 .calendar-record-submit {
-  border: 1px solid var(--accent-strong, #2f6f99);
+  border: 1px solid var(--accent-strong);
   background: rgba(121, 188, 231, .18);
-  color: var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
   border-radius: 10px;
   font: inherit;
   font-size: 13px;
@@ -531,7 +531,7 @@ html[data-theme="padiem-glass"] .sidebar {
 }
 
 .calendar-record-status[data-record-status="created"] {
-  color: var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
 }
 
 .calendar-record-status[data-record-status="invalid"],
@@ -552,8 +552,8 @@ html[data-theme="padiem-glass"] .sidebar {
 
 #calendarNavButton[aria-current="page"] {
   font-weight: 700;
-  color: var(--accent-strong, #2f6f99);
-  border: 1px solid var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
+  border: 1px solid var(--accent-strong);
   background: rgba(121, 188, 231, .22);
 }
 

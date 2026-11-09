@@ -4,7 +4,7 @@
 #clawNavButton {
   position: relative;
   font-weight: 700;
-  color: var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
   border: 1px solid rgba(121, 188, 231, .28);
   background: rgba(121, 188, 231, .10);
 }
@@ -16,13 +16,13 @@
   padding: 2px 7px;
   border-radius: 999px;
   background: rgba(47, 111, 153, .18);
-  color: var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
 }
 
 html[data-theme="padiem-glass"] #clawNavButton {
   color: rgba(255, 255, 255, .96);
   border-color: rgba(121, 188, 231, .38);
-  background: rgba(121, 188, 231, .16);
+  background: var(--accent-soft);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14);
 }
 html[data-theme="padiem-glass"] #clawNavButton::after {
@@ -195,7 +195,7 @@ html[data-theme="padiem-glass"] #clawDialog {
 .capability-read {
   font-size: 11px;
   font-weight: 600;
-  color: var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
 }
 
 html[data-theme="padiem-glass"] .capability-read {
@@ -249,7 +249,7 @@ html[data-theme="padiem-glass"] .capability-read {
 /* The computer card and the composer chip share one status vocabulary and
    one colour per state, so the two surfaces read the same. */
 .capability-card[data-connector-status="connecting"] .capability-workspace {
-  color: var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
 }
 
 .capability-card[data-connector-status="unavailable"] .capability-workspace {
@@ -302,7 +302,7 @@ html[data-theme="padiem-glass"] .capability-read {
 
 .capability-card[data-connector-status="connected"] .capability-workspace {
   font-weight: 700;
-  color: var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
 }
 
 .capability-card .capability-read {
