@@ -15,6 +15,7 @@ from .calendar_session_authority import (
     resolve_calendar_session,
 )
 from .same_origin_guard import expected_browser_origin
+from .auth_validation_cache import drop_cached_owner_scope_of
 
 
 _HEADERS = {"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"}
@@ -110,6 +111,7 @@ async def _disconnect(
     from .chat_connector_tools import invalidate_connector_tool_grant_cache
 
     invalidate_connector_tool_grant_cache(uid)
+    drop_cached_owner_scope_of(request, uid)
     return JSONResponse(
         {"ok": True, "state": "off", "revoked": result},
         status_code=200, headers=_HEADERS,

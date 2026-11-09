@@ -97,6 +97,7 @@ _ADOPT_BODY_KEYS = frozenset({
 _MAX_BODY_BYTES = 2048
 _NO_STORE = {"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"}
 from .journal_host import ensure_journal_visible
+from .auth_validation_cache import drop_cached_owner_scope_of
 
 _LOGGER = logging.getLogger("padiem_chat.request")
 
@@ -334,6 +335,7 @@ async def pc_pairing_issue(request: Request) -> JSONResponse:
     issued, refused = await _await_store(store.issue_code, user_id=user_id, issued_at=_now())
     if refused is not None:
         return refused
+    drop_cached_owner_scope_of(request, user_id)
     return _json({"ok": True, "pairing": _issued_pairing(request, issued)}, 201)
 
 
@@ -437,6 +439,7 @@ async def pc_pairing_revoke(request: Request) -> JSONResponse:
         return _error(404, "pc_pairing_link_not_found")
     # #6460: a removed PC changes what this account's connector scope can reach,
     # so the short window is dropped here rather than waited out.
+    drop_cached_owner_scope_of(request, user_id)
     invalidate_owner_scope(user_id)
     return _json({"ok": True, "revoked": True}, 200)
 
@@ -460,6 +463,7 @@ async def pc_pairing_pause(request: Request) -> JSONResponse:
     )
     if refused is not None:
         return refused
+    drop_cached_owner_scope_of(request, user_id)
     return _json({"ok": True, "link": link}, 200)
 
 
@@ -477,6 +481,7 @@ async def pc_pairing_resume(request: Request) -> JSONResponse:
     )
     if refused is not None:
         return refused
+    drop_cached_owner_scope_of(request, user_id)
     return _json({"ok": True, "link": link}, 200)
 
 
@@ -500,6 +505,7 @@ async def pc_pairing_token_revoke(request: Request) -> JSONResponse:
     )
     if refused is not None:
         return refused
+    drop_cached_owner_scope_of(request, user_id)
     return _json({"ok": True, "install": cancelled}, 200)
 
 
@@ -522,6 +528,7 @@ async def pc_pairing_token_reissue(request: Request) -> JSONResponse:
     )
     if refused is not None:
         return refused
+    drop_cached_owner_scope_of(request, user_id)
     return _json({"ok": True, "pairing": _issued_pairing(request, issued)}, 201)
 
 
@@ -553,6 +560,7 @@ async def pc_pairing_managed(request: Request) -> JSONResponse:
         _log_managed(actor=user_id, link_id=link_id, managed=body["managed"], result="refused")
         return refused
     _log_managed(actor=user_id, link_id=link_id, managed=body["managed"], result="ok")
+    drop_cached_owner_scope_of(request, user_id)
     return _json({"ok": True, "link": link}, 200)
 
 
@@ -609,6 +617,7 @@ async def pc_pairing_label(request: Request) -> JSONResponse:
     )
     if refused is not None:
         return refused
+    drop_cached_owner_scope_of(request, user_id)
     return _json({"ok": True, "link": link}, 200)
 
 
@@ -1241,6 +1250,7 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
             logging.getLogger(__name__).warning(
                 "pc_pairing_selection=replacement_not_confirmed",
             )
+    drop_cached_owner_scope_of(request, link.get("user_id"))
     invalidate_owner_scope(link.get("user_id"))
     granted = [root for root in link["roots"] if root["state"] == "active"]
     return _json({
@@ -1357,6 +1367,7 @@ async def pc_pairing_adopt(request: Request) -> JSONResponse:
         return refused
     # #6460: adoption attaches a PC to the target account, so that account's
     # cached connector scope is dropped too (the caller's stays valid).
+    drop_cached_owner_scope_of(request, account_id)
     invalidate_owner_scope(account_id)
     granted = [root for root in adopted["roots"] if root["state"] == "active"]
     return _json({
@@ -1414,6 +1425,7 @@ async def pc_pairing_approve_root(request: Request) -> JSONResponse:
     )
     if refused is not None:
         return refused
+    drop_cached_owner_scope_of(request, user_id)
     return _json({"ok": True, "root": root}, 201)
 
 
@@ -1434,6 +1446,7 @@ async def pc_pairing_revoke_root(request: Request) -> JSONResponse:
         return refused
     if not revoked:
         return _error(404, "pc_pairing_root_not_found")
+    drop_cached_owner_scope_of(request, user_id)
     return _json({"ok": True, "revoked": True}, 200)
 
 
