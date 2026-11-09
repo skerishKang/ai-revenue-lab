@@ -143,6 +143,9 @@ jobs:
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8773 > /tmp/b62-a11y-browser-server.log 2>&1 &
           echo $! > /tmp/b62-a11y-browser-server.pid
           for i in $(seq 1 30); do
@@ -231,6 +234,9 @@ jobs:
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8769 > /tmp/b62-auth-history-server.log 2>&1 &
           echo $! > /tmp/b62-auth-history-server.pid
           for i in $(seq 1 30); do
@@ -362,6 +368,9 @@ jobs:
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8765 > /tmp/b62-browser-server.log 2>&1 &
           echo $! > /tmp/b62-browser-server.pid
           for i in $(seq 1 30); do
@@ -523,6 +532,9 @@ jobs:
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8775 > /tmp/b62-conversation-delete-browser-server.log 2>&1 &
           echo $! > /tmp/b62-conversation-delete-browser-server.pid
           for i in $(seq 1 30); do
@@ -605,6 +617,9 @@ jobs:
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8777 > /tmp/b62-conversation-export-browser-server.log 2>&1 &
           echo $! > /tmp/b62-conversation-export-browser-server.pid
           for i in $(seq 1 30); do
@@ -685,6 +700,9 @@ jobs:
       - name: Start fail-closed mock Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8773 > /tmp/b62-deep-research-browser-server.log 2>&1 &
           echo $! > /tmp/b62-deep-research-browser-server.pid
           for i in $(seq 1 30); do
@@ -761,6 +779,9 @@ jobs:
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8767 > /tmp/b62-document-browser-server.log 2>&1 &
           echo $! > /tmp/b62-document-browser-server.pid
           for i in $(seq 1 30); do
@@ -839,6 +860,9 @@ jobs:
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8773 > /tmp/b62-error-retry-browser-server.log 2>&1 &
           echo $! > /tmp/b62-error-retry-browser-server.pid
           for i in $(seq 1 30); do
@@ -923,6 +947,9 @@ jobs:
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8768 > /tmp/b62-image-browser-server.log 2>&1 &
           echo $! > /tmp/b62-image-browser-server.pid
           for i in $(seq 1 30); do
@@ -1001,6 +1028,9 @@ jobs:
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8784 > /tmp/b62-touch-browser-server.log 2>&1 &
           echo $! > /tmp/b62-touch-browser-server.pid
           for i in $(seq 1 30); do
@@ -1081,6 +1111,9 @@ jobs:
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8773 > /tmp/b62-project-delete-browser-server.log 2>&1 &
           echo $! > /tmp/b62-project-delete-browser-server.pid
           for i in $(seq 1 30); do
@@ -1159,6 +1192,9 @@ jobs:
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8772 > /tmp/b62-project-files-browser-server.log 2>&1 &
           echo $! > /tmp/b62-project-files-browser-server.pid
           for i in $(seq 1 30); do
@@ -1237,6 +1273,9 @@ jobs:
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8770 > /tmp/b62-projects-browser-server.log 2>&1 &
           echo $! > /tmp/b62-projects-browser-server.pid
           for i in $(seq 1 30); do
@@ -1315,6 +1354,9 @@ jobs:
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8771 > /tmp/b62-saved-outputs-browser-server.log 2>&1 &
           echo $! > /tmp/b62-saved-outputs-browser-server.pid
           for i in $(seq 1 30); do
@@ -1393,6 +1435,9 @@ jobs:
       - name: Start fail-closed mock Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8774 > /tmp/b62-structured-browser-server.log 2>&1 &
           echo $! > /tmp/b62-structured-browser-server.pid
           for i in $(seq 1 30); do
@@ -1469,6 +1514,9 @@ jobs:
       - name: Start mock-web Padiem Chat
         run: |
           set -euo pipefail
+          cp tests/fixtures/models_private_fixture.json "$RUNNER_TEMP/b62-qa-registry.json"
+          chmod 600 "$RUNNER_TEMP/b62-qa-registry.json"
+          export PADIEM_MODELS_REGISTRY="$RUNNER_TEMP/b62-qa-registry.json"
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8766 > /tmp/b62-web-browser-server.log 2>&1 &
           echo $! > /tmp/b62-web-browser-server.pid
           for i in $(seq 1 30); do

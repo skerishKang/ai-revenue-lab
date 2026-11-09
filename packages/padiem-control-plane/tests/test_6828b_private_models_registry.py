@@ -74,15 +74,18 @@ def code_of(document: dict) -> str:
 
 def test_the_documented_document_loads_with_every_grade(tmp_path):
     registry = load_private_registry(private_file(tmp_path))
+    document = fixture_document()
 
     assert registry.version == FORMAT_VERSION
     assert registry.ready is True
     assert registry.providers["example-provider"]["credential_binding"] == "PADIEM_B14_CREDENTIAL_99"
+    # The loader answers exactly what the document declares, row for row.
     assert {row["id"] for row in registry.models} == {
-        "example-provider/example-model-1", "example-provider/example-model-2"}
-    assert set(registry.tiers) == {"free", "plus", "pro", "max"}
-    assert registry.tiers["free"]["primary"] == "example-provider/example-model-1"
-    assert registry.tiers["free"]["fallback"] == ("example-provider/example-model-2",)
+        row["id"] for row in document["models"]}
+    assert set(registry.tiers) == set(document["tiers"])
+    assert registry.tiers["free"]["primary"] == document["tiers"]["free"]["primary"]
+    assert registry.tiers["free"]["fallback"] == tuple(
+        document["tiers"]["free"]["fallback"])
 
 
 def test_the_admin_lane_is_optional_but_valid_when_present(tmp_path):
@@ -196,7 +199,8 @@ def test_a_tier_may_only_name_models_that_exist():
 
 def test_a_tier_primary_may_not_repeat_inside_its_roster():
     document = fixture_document()
-    document["tiers"]["plus"]["fallback"] = ["example-provider/example-model-2"]
+    tier = document["tiers"]["plus"]
+    tier["fallback"] = [tier["primary"]]
     assert code_of(document) == "registry_tier_primary_in_fallback"
 
 
