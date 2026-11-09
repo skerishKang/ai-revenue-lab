@@ -30,6 +30,7 @@ from app.config import Settings
 from app.shared_login_flow import (
     ACCESS_COOKIE,
     ACCESS_SECONDS,
+    LOGIN_RETURN_COOKIE,
     MARKER_COOKIE,
     REFRESH_COOKIE,
     REFRESH_SECONDS,
