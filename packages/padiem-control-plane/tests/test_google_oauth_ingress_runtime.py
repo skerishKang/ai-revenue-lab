@@ -14,7 +14,9 @@ from urllib.parse import parse_qs, urlsplit
 import pytest
 
 from google_oauth_durable_store import (
+    CALENDAR_OAUTH_REVIEWED_CONNECTOR,
     GMAIL_READONLY_SCOPE,
+    GOOGLE_CALENDAR_READONLY_SCOPE,
     CloudflareDurableGoogleOAuthStore,
 )
 from google_oauth_ingress_runtime import (
@@ -185,6 +187,33 @@ def ticket(authority: ConnectorConnectTicketAuthority, *, ticket_id: str = "tick
     )
 
 
+class CalendarIdentityVerification:
+    """#7248: calendar.readonly has no OIDC subject; the primary calendar id is the proof."""
+
+    def __init__(self, payload: dict | None = None) -> None:
+        self.payload = payload if payload is not None else {"id": "owner@example.com"}
+        self.calendar_calls: list[dict] = []
+        self.userinfo_calls: list[dict] = []
+
+    async def verify_destination(self, **kwargs):
+        self.userinfo_calls.append(dict(kwargs))
+        raise AssertionError("calendar consent must not read the OIDC userinfo subject")
+
+    async def verify_calendar_destination(self, **kwargs):
+        self.calendar_calls.append(dict(kwargs))
+        if isinstance(self.payload, Exception):
+            raise self.payload
+        return dict(self.payload)
+
+    def safe_dict(self):
+        return {"test_port": True, "raw_access_token_public": False}
+
+
+class UserinfoOnlyVerification:
+    async def verify_destination(self, **kwargs):
+        return {"sub": "1234567890", "email": "owner@example.com"}
+
+
 def fixture(*, exchange: FakeTokenExchange | None = None, destination_verification=None):
     storage = FakeDurableStorage()
     durable_store = CloudflareDurableGoogleOAuthStore(storage)
@@ -211,6 +240,31 @@ def fixture(*, exchange: FakeTokenExchange | None = None, destination_verificati
         random_token=token_source,
     )
     return runtime, storage, durable_store, sealer, authority, token_exchange
+
+
+def calendar_ticket(authority: ConnectorConnectTicketAuthority, *, ticket_id: str = "ticket_c") -> str:
+    return authority.issue(
+        auth_session=auth_session(),
+        ticket_id=ticket_id,
+        connector_id=CALENDAR_OAUTH_REVIEWED_CONNECTOR,
+        actor_ref="actor_1",
+        account_ref="account_1",
+        workspace_ref="workspace_1",
+        scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+        now=NOW,
+        ttl_seconds=180,
+    )
+
+
+def calendar_exchange() -> FakeTokenExchange:
+    return FakeTokenExchange(
+        {
+            "access_token": ACCESS_TOKEN,
+            "refresh_token": REFRESH_TOKEN,
+            "token_type": "Bearer",
+            "scope": GOOGLE_CALENDAR_READONLY_SCOPE,
+        }
+    )
 
 
 def begin(runtime: GoogleOAuthIngressRuntime, authority: ConnectorConnectTicketAuthority, *, ticket_id="ticket_1"):
@@ -556,3 +610,88 @@ def test_cloudflare_token_exchange_reads_with_a_hard_stream_bound(monkeypatch) -
     assert failed.value.code == "google_oauth_token_exchange_failed"
     assert rejected.text_calls == 0
     assert rejected.reader.read_calls == 0
+
+
+def _calendar_connect(runtime, authority, verification, *, ticket_id="ticket_c"):
+    raw_ticket = calendar_ticket(authority, ticket_id=ticket_id)
+    receipt = asyncio.run(runtime.begin(connect_ticket=raw_ticket))
+    state_ref = parse_qs(urlsplit(receipt.authorization_url).query)["state"][0]
+    return asyncio.run(
+        runtime.complete_callback(
+            state_ref=state_ref,
+            authorization_code=AUTH_CODE,
+            provider_error=None,
+        )
+    )
+
+
+def test_calendar_consent_verifies_the_primary_calendar_id_not_userinfo():
+    verification = CalendarIdentityVerification()
+    runtime, storage, durable_store, _, authority, _ = fixture(
+        exchange=calendar_exchange(), destination_verification=verification
+    )
+
+    connected = _calendar_connect(runtime, authority, verification)
+
+    assert connected.provider_subject == "owner@example.com"
+    assert verification.userinfo_calls == []
+    assert len(verification.calendar_calls) == 1
+    assert verification.calendar_calls[0]["access_token"] == ACCESS_TOKEN
+    assert storage.count("google_oauth_refresh_credential") == 1
+    record = durable_store.load_active_credential(binding_ref=connected.binding_ref, now=NOW)
+    assert record.connector_id == CALENDAR_OAUTH_REVIEWED_CONNECTOR
+    assert ACCESS_TOKEN not in storage.all_text()
+    assert REFRESH_TOKEN not in storage.all_text()
+
+
+def test_calendar_reconnect_for_the_same_account_replaces_instead_of_stacking():
+    verification = CalendarIdentityVerification()
+    runtime, storage, _, _, authority, _ = fixture(
+        exchange=calendar_exchange(), destination_verification=verification
+    )
+
+    first = _calendar_connect(runtime, authority, verification, ticket_id="ticket_c1")
+    second = _calendar_connect(runtime, authority, verification, ticket_id="ticket_c2")
+
+    assert first.binding_ref != second.binding_ref
+    rows = [
+        row
+        for row in storage.connection.execute(
+            "SELECT revoked_at FROM google_oauth_refresh_credential"
+        ).fetchall()
+    ]
+    assert len(rows) == 2
+    assert sum(1 for row in rows if row[0] is None) == 1
+
+
+def test_calendar_consent_fails_closed_when_the_calendar_identity_is_unbounded():
+    verification = CalendarIdentityVerification({"id": "not a calendar id"})
+    runtime, storage, _, _, authority, _ = fixture(
+        exchange=calendar_exchange(), destination_verification=verification
+    )
+
+    with pytest.raises(ControlPlaneContractError) as denied:
+        _calendar_connect(runtime, authority, verification)
+    assert denied.value.code == "google_oauth_destination_unverified"
+    assert storage.count("google_oauth_refresh_credential") == 0
+
+
+def test_calendar_consent_never_falls_back_to_the_oidc_userinfo_subject():
+    runtime, storage, _, _, authority, _ = fixture(
+        exchange=calendar_exchange(),
+        destination_verification=UserinfoOnlyVerification(),
+    )
+    raw_ticket = calendar_ticket(authority, ticket_id="ticket_c_oidc")
+    receipt = asyncio.run(runtime.begin(connect_ticket=raw_ticket))
+    state_ref = parse_qs(urlsplit(receipt.authorization_url).query)["state"][0]
+
+    with pytest.raises(ControlPlaneContractError) as denied:
+        asyncio.run(
+            runtime.complete_callback(
+                state_ref=state_ref,
+                authorization_code=AUTH_CODE,
+                provider_error=None,
+            )
+        )
+    assert denied.value.code == "google_oauth_destination_verification_unavailable"
+    assert storage.count("google_oauth_refresh_credential") == 0
