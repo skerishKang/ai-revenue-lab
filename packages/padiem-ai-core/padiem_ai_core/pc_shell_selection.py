@@ -20,7 +20,6 @@ SHELL_BASH = "bash"
 #: #7105 — the helper's stage-1 names. The tool never accepts them; the
 #: identity probe and the helper's own vocabulary use them.
 SHELL_WHOAMI = "whoami"
-SHELL_WSL = "wsl"
 
 #: The tool vocabulary — what ``pc_shell*`` accepts as ``shell``.
 PC_SHELL_NAMES = (SHELL_POWERSHELL, SHELL_CMD, SHELL_BASH)
@@ -87,6 +86,21 @@ GIT_BASH_CANDIDATES = (
 )
 
 
+#: Where a Git for Windows install registers itself (#7188 R4 ④). One source
+#: for both lanes: the SYSTEM dispatcher composes its PowerShell registry
+#: probe from these (hive + provider subkey) and the helper reads the same
+#: pairs through ``winreg``. ``InstallPath`` points at the install root, so
+#: the probed file is always ``<InstallPath>inash.exe``.
+GIT_BASH_REGISTRY_KEYS = (
+    ("HKLM", r"SOFTWARE\GitForWindows"),
+    ("HKLM", r"SOFTWARE\WOW6432Node\GitForWindows"),
+    ("HKCU", r"SOFTWARE\GitForWindows"),
+)
+#: bash locations probed relative to a ``git.exe`` found on PATH. Git for
+#: Windows puts ``cmd\git.exe`` (one ``..``) or ``mingw64in\git.exe``
+#: (two ``..``) on PATH; both resolve to the install root's ``binash.exe``.
+GIT_BASH_PATH_RELATIVES = (r"..\bin\bash.exe", r"..\..\bin\bash.exe")
+
 _SYSTEM_LAUNCHES = {
     SHELL_POWERSHELL: SystemShellLaunch(
         file="powershell.exe",
@@ -111,17 +125,21 @@ def resolve_shell(name: str, *, lane: str):
 
     ``lane="system"`` returns the :class:`SystemShellLaunch` the dispatcher
     runs. ``lane="user"`` returns the helper shell name the request material
-    carries — ``bash`` runs inside the user's WSL, which is #7105's vocabulary
-    meeting, and the Windows shells pass through as the shell the user session
-    runs. An unsupported name raises :class:`UnknownShellName` for both lanes
-    alike, so neither lane grows a private name list or a private default.
+    carries — the same name the tool accepted; the helper stays the final
+    allowlist authority. An unsupported name raises :class:`UnknownShellName`
+    for both lanes alike, so neither lane grows a private name list or a
+    private default.
     """
     if not isinstance(name, str) or name not in PC_SHELL_NAMES:
         raise UnknownShellName(f"shell is not one this lane runs: {name!r}")
     if lane == "system":
         return _SYSTEM_LAUNCHES[name]
     if lane == "user":
-        return SHELL_WSL if name == SHELL_BASH else name
+        # The helper runs the same name the tool accepted. bash used to
+        # translate to the helper's wsl shell (#7105 vocabulary meeting);
+        # the owner banned WSL on the PC, so bash is the helper's Git Bash
+        # stage-2 shell now and no name translates any more.
+        return name
     raise ValueError(f"unknown lane: {lane!r}")
 
 

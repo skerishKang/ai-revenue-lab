@@ -44,8 +44,10 @@ def test_every_tool_shell_name_resolves_into_the_helpers_vocabulary():
     for name in selection.PC_SHELL_NAMES:
         resolved = selection.resolve_shell(name, lane="user")
         assert resolved in helper.SUPPORTED_SHELLS, (name, resolved)
-    # bash resolves to the helper's wsl shell (#7105 vocabulary meeting).
-    assert selection.resolve_shell("bash", lane="user") == helper.SHELL_WSL
+    # bash resolves to itself: the helper's Git Bash stage-2 shell since
+    # #7188 R4 ④ (the owner banned WSL on the PC; the wsl shell is gone).
+    assert selection.resolve_shell("bash", lane="user") == helper.SHELL_BASH
+    assert not hasattr(helper, "SHELL_WSL")
 
 
 def test_helper_build_argv_shape_is_unchanged_per_resolved_name():
@@ -56,9 +58,12 @@ def test_helper_build_argv_shape_is_unchanged_per_resolved_name():
     cmd = helper.build_argv(_request(
         selection.resolve_shell("cmd", lane="user"), "hostname"))
     assert cmd[:4] == ["cmd.exe", "/d", "/s", "/c"] and cmd[4] == "hostname"
-    wsl = helper.build_argv(_request(
+    bash = helper.build_argv(_request(
         selection.resolve_shell("bash", lane="user"), "uname -a"))
-    assert wsl[0] == "wsl.exe" and "bash" in wsl and "-lc" in wsl
+    # bash runs the located Git Bash with the same -lc shape the SYSTEM lane
+    # uses; never wsl.exe, never System32's WSL bash.
+    assert bash[0].endswith("bash.exe") and bash[1] == "-lc" and bash[2] == "uname -a"
+    assert "system32" not in bash[0].lower() and "wsl" not in bash[0].lower()
     whoami = helper.build_argv(_request(
         selection.resolve_user_helper_shell("bash", command="whoami"), "whoami"))
     assert whoami == ["whoami.exe"]
@@ -71,3 +76,61 @@ def test_helper_refuses_what_the_table_refuses():
     with pytest.raises(helper.UserHelperError) as refused:
         helper.build_argv(_request("fish", "hostname"))
     assert refused.value.code == helper.USER_HELPER_REFUSED
+
+
+def test_the_git_bash_candidate_sources_are_one_shared_order():
+    """#7188 R4 ④ — both lanes probe the same sources in the same order.
+
+    The helper's single-file build must not import the Core table, so the
+    copies are pinned equal here: registry keys, PATH relatives and the fixed
+    standard roots.
+    """
+    assert helper.GIT_BASH_REGISTRY_KEYS == selection.GIT_BASH_REGISTRY_KEYS
+    assert helper.GIT_BASH_PATH_RELATIVES == selection.GIT_BASH_PATH_RELATIVES
+    assert helper.GIT_BASH_FIXED_CANDIDATES == selection.GIT_BASH_CANDIDATES
+
+
+def test_locate_git_bash_order_registry_then_path_then_fixed():
+    """The locate order is registry, PATH git.exe relatives, fixed roots."""
+    seen = []
+
+    def open_key(hive, subkey):
+        seen.append(("reg", hive, subkey))
+        return None
+
+    def which(name):
+        seen.append(("which", name))
+        return None
+
+    def expandvars(value):
+        seen.append(("expand", value))
+        return "% definitely not here%\bin\bash.exe"
+
+    found = helper.locate_git_bash(open_key=open_key, which=which,
+                                   expandvars=expandvars, isfile=lambda p: False)
+    assert found is None
+    kinds = [item[0] for item in seen]
+    assert kinds.count("reg") == 3
+    assert kinds.index("which") > max(i for i, k in enumerate(kinds) if k == "reg")
+    assert kinds.index("expand") > kinds.index("which")
+    assert seen[0][0] == "reg"
+
+
+def test_locate_git_bash_never_returns_the_wsl_bash():
+    """A planted System32 path is refused at every probe stage."""
+    planted = "C:\\Windows\\System32\\bash.exe"
+
+    def open_key(hive, subkey):
+        return planted
+
+    assert helper.locate_git_bash(open_key=open_key, which=lambda name: None,
+                                  expandvars=lambda value: planted,
+                                  isfile=lambda p: True) is None
+    # a PATH git.exe whose siblings are planted System32 paths is refused too
+
+    def which(name):
+        return planted
+
+    assert helper.locate_git_bash(open_key=lambda h, k: None, which=which,
+                                  expandvars=lambda value: planted,
+                                  isfile=lambda p: True) is None

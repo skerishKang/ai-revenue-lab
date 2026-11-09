@@ -214,15 +214,19 @@ def test_the_helper_serves_one_request_with_one_process():
     assert connection.closed is True
 
 
-def test_the_helper_runs_a_wsl_observation_through_the_stage_one_contract():
+def test_the_helper_runs_a_bash_command_through_the_stage_two_contract(monkeypatch):
+    # #7188 R4 ④: bash is a stage-2 shell running the located Git Bash; the
+    # wsl shell it used to translate to is gone (owner ban on WSL).
+    monkeypatch.setattr(helper, "locate_git_bash",
+                        lambda: "C:\\Git\\bin\\bash.exe")
     connection = FakeConnection(_signed_frame(
-        shell="wsl", command="systemctl is-active padiem-chat", distro="Ubuntu",
+        shell="bash", command="uname -s",
     ))
-    runner = Runner(stdout=b"active\n")
+    runner = Runner(stdout=b"MINGW64_NT-10.0-19045\n")
     service.handle_connection(connection, secret=SECRET,
                               guard=helper.ReplayGuard(), runner=runner)
     assert runner.calls[0]["argv"] == [
-        "wsl.exe", "-d", "Ubuntu", "--", "bash", "-lc", "systemctl is-active padiem-chat",
+        "C:\\Git\\bin\\bash.exe", "-lc", "uname -s",
     ]
 
 
@@ -235,7 +239,9 @@ def test_the_helper_refuses_a_command_outside_the_allowlist():
     assert runner.calls == []
     reply = _read_reply(connection)
     assert reply["status"] == "error"
-    assert reply["error_code"] == helper.USER_HELPER_NOT_READ_ONLY
+    # wsl is an unsupported shell since #7188 R4 ④ (owner ban on WSL), so the
+    # hostile frame is refused as unknown-shell, not as a read-only violation.
+    assert reply["error_code"] == helper.USER_HELPER_REFUSED
 
 
 def test_the_helper_refuses_a_request_with_a_bad_nonce():

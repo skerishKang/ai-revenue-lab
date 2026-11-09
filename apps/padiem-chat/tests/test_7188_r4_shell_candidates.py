@@ -30,7 +30,7 @@ fallback이 없다.
 | SYSTEM × bash           | bash.exe -lc <c>(PATH 탐색 → System32 WSL bash)        | %ProgramW6432%\\Git\\bin\\bash.exe → %ProgramFiles%\\Git\\bin\\bash.exe → %ProgramFiles%\\Git\\usr\\bin\\bash.exe → %ProgramFiles(x86)%\\Git\\bin\\bash.exe → %LocalAppData%\\Programs\\Git\\bin\\bash.exe 순서 탐색, 첫 존재 파일 실행; 전부 부재면 shell_unavailable(127) |
 | SYSTEM × 셸 생략        | powershell 기본                                        | 변경 0                                                  |
 | SYSTEM × 미지원 이름    | UnknownShellName                                       | 변경 0                                                  |
-| USER × bash             | material shell 'wsl'(헬퍼 관찰 레인, 읽기 전용 게이트) | 변경 0 — 헬퍼가 최종 허용 기관(#7105)이고 이 경로는 bash.exe PATH 탐색을 거치지 않으므로 System32 후보 문제가 없다. 사용자 모드에서 Git Bash를 직접 말게 하는 것은 헬퍼 이름 집합(계약 고정)과 읽기 전용 게이트를 건드리는 별도 배포 단위라 이 PR 대상이 아니다 — 아르곤 패킷 질문 (b)에 명시 |
+| USER × bash             | material shell 'wsl'(헬퍼 관찰 레인, 읽기 전용 게이트) | R4 ④에서 제거: material shell 'bash' 그대로 전달, 헬퍼가 같은 후보 순서(레지스트리 → PATH git.exe → 고정)로 Git Bash를 직접 실행. wsl 셸은 삭제(대표 결정: 컴1에서 WSL 금지). bash.exe PATH 탐색도 없음 — System32 후보 문제는 두 레인 모두 해당 없음 |
 
 저널 문자열(R4 ① 위상 상수)과 stderr의 ``shell_unavailable`` 바이트는 불변.
 """
@@ -77,14 +77,23 @@ def _isolated_root_lines(tmp_path: Path) -> str:
     return "".join(lines)
 
 
-def _run_tail(script: str, env_lines: str, command: bytes, extra_env: str = ""):
+def _run_tail(script: str, env_lines: str, command: bytes, extra_env: str = "",
+              stubs: "str | None" = None):
     probe = (
         extra_env
         + env_lines
         + "$env:PADIEM_MCP_COMMAND_B64='" + base64.b64encode(command).decode() + "';"
         "$c=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String("
         "$env:PADIEM_MCP_COMMAND_B64));"
-        + script[script.index("try{$cands="):]
+        # R4 ④: bash 가지가 쓰는 _padiem_bash_ok 가드 함수 정의도 함께 넣는다.
+        # R4 ④: bash 가지가 쓰는 _padiem_bash_ok 가드 함수 정의도 함께 넣고,
+        # 이 기계의 실제 레지스트리·PATH git.exe 단계는 함수 재정의로 격리한다
+        # (후보 목록 자체만 검증 대상 — Git 설치 여부와 무관하게 결정론적).
+        # 특정 단계를 검증하는 시험은 stubs 인자로 자기 격리를 대체한다.
+        + (stubs if stubs is not None
+           else "function Get-ItemProperty { $null };"
+                "function Get-Command { $null };")
+        + script[script.index("function _padiem_bash_ok"):]
     )
     return subprocess.run(
         ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", probe],
@@ -138,9 +147,15 @@ def test_powershell_and_cmd_keep_no_candidates():
         in bash_lines
 
 
-def test_user_lane_bash_is_still_the_helper_observation_shell():
-    """USER × bash: material shell 'wsl' — 헬퍼가 최종 허용 기관(변경 0)."""
-    assert resolve_shell("bash", lane="user") == "wsl"
+def test_user_lane_bash_passes_through_to_the_helper():
+    """USER × bash: material shell 'bash' — R4 ④에서 wsl 번역 제거.
+
+    헬퍼가 최종 허용 기관이고 이제 같은 후보 순서로 Git Bash를 찾아 실행한다.
+    wsl은 어휘에서 완전히 제거되어 어느 레인에서도 선택되지 않는다.
+    """
+    assert resolve_shell("bash", lane="user") == "bash"
+    import padiem_ai_core.pc_shell_selection as selection
+    assert not hasattr(selection, "SHELL_WSL")
 
 
 def test_bash_dispatch_carries_the_candidate_line_in_order(tmp_path):
@@ -227,6 +242,135 @@ def test_the_table_candidates_never_pick_system32_wsl_bash(tmp_path):
     env_lines = system_launch_env_lines(resolve_shell("bash", lane="system"))
     done = _run_tail(script, env_lines, b"echo ok",
                      extra_env=_isolated_root_lines(tmp_path))
+    assert done.returncode == 127, done.stderr
+    assert "shell_unavailable" in done.stderr
+    assert "ok" not in done.stdout
+
+
+def _real_git_bash() -> "Path | None":
+    """이 기계의 실제 Git Bash(레지스트리 → 표준 루트). 없으면 None.
+
+    레지스트리·PATH 단계 시험은 실행 가능한 bash.exe가 필요하다 — 가짜로는
+    ``& $file``이 실행되지 않는다. 그래서 이 기계의 진짜 Git Bash를 임시
+    루트로 복사해 쓴다. Git for Windows가 없는 기계에서는 이 두 시험을
+    건너뛴다(고정 후보·가드 시험은 건너뛰지 않고 결정론적으로 돈다).
+    """
+    try:
+        import winreg
+    except ImportError:
+        return None
+    for hive, subkey in (("HKEY_LOCAL_MACHINE", r"SOFTWARE\GitForWindows"),
+                         ("HKEY_LOCAL_MACHINE", r"SOFTWARE\WOW6432Node\GitForWindows"),
+                         ("HKEY_CURRENT_USER", r"SOFTWARE\GitForWindows")):
+        try:
+            with winreg.OpenKey(getattr(winreg, hive), subkey) as key:
+                install_path, _ = winreg.QueryValueEx(key, "InstallPath")
+        except OSError:
+            continue
+        if isinstance(install_path, str) and install_path.strip():
+            # usr\\bin\\bash.exe가 자기 위치 기준 재실행을 하지 않는 실체다
+            # (bin\\bash.exe는 복사하면 ..\\usr\\bin을 찾아 실패한다).
+            for leaf in ("usr", "bin"):
+                candidate = Path(install_path) / leaf / "bin" / "bash.exe"
+                if candidate.is_file():
+                    return candidate
+    for root in (r"%ProgramW6432%\Git",
+                 r"%ProgramFiles%\Git",
+                 r"%ProgramFiles(x86)%\Git",
+                 r"%LocalAppData%\Programs\Git"):
+        for leaf in ("usr", "bin"):
+            candidate = Path(os.path.expandvars(root)) / leaf / "bin" / "bash.exe"
+            if candidate.is_file():
+                return candidate
+    return None
+
+
+@pytest.mark.skipif(shutil.which("powershell") is None,
+                    reason="the candidate probe is Windows PowerShell behavior")
+@pytest.mark.skipif(_real_git_bash() is None,
+                    reason="a runnable bash.exe is needed to prove the registry stage ran")
+def test_registry_install_path_candidate_comes_first(tmp_path):
+    """R4 ④ (a): 레지스트리 InstallPath 후보가 첫 단계다.
+
+    Get-ItemProperty를 InstallPath만 돌려주는 함수로 대체하고, PATH
+    git.exe 단계는 Get-Command 재정의로 끝내고, 고정 후보 루트는 빈 폴더로
+    격리한다. 그 상태에서 bash가 실행됐다는 사실 자체가 '레지스트리 단계가
+    고정 후보보다 먼저 잡혔다'는 순서의 증거다.
+    """
+    real_bash = _real_git_bash()
+    assert real_bash is not None
+    git_root = tmp_path / "regroot"
+    bash = git_root / "bin" / "bash.exe"
+    bash.parent.mkdir(parents=True)
+    shutil.copyfile(real_bash, bash)
+    script = _script_of(shell.build_pc_shell_command({"command": "echo ok", "shell": "bash"}))
+    env_lines = system_launch_env_lines(resolve_shell("bash", lane="system"))
+    stubs = ("function Get-ItemProperty { [pscustomobject]@{InstallPath=$env:PADIEM_TEST_GIT_ROOT} };"
+             "function Get-Command { $null };")
+    done = _run_tail(script, env_lines, b"echo ok",
+                     extra_env="$env:PADIEM_TEST_GIT_ROOT='" + str(git_root) + "';"
+                               + _isolated_root_lines(tmp_path),
+                     stubs=stubs)
+    assert done.returncode == 0, done.stderr
+    assert "ok" in done.stdout
+
+
+@pytest.mark.skipif(shutil.which("powershell") is None,
+                    reason="the candidate probe is Windows PowerShell behavior")
+@pytest.mark.skipif(_real_git_bash() is None,
+                    reason="a runnable bash.exe is needed to prove the PATH stage ran")
+def test_path_git_exe_relative_candidate_runs_when_registry_is_silent(tmp_path):
+    """R4 ④ (b): PATH git.exe의 상대 위치 후보가 레지스트리 다음 단계다.
+
+    Get-ItemProperty는 $null(레지스트리 없음), Get-Command는 cmd\git.exe
+    모양의 Source를 돌려준다 — ..\bin\bash.exe 상대 탐색이 그 설치 루트의
+    bin\bash.exe를 집는다. 고정 후보는 격리되어 있으므로 bash가
+    실행됐다는 사실이 PATH 단계의 증거다.
+    """
+    real_bash = _real_git_bash()
+    assert real_bash is not None
+    git_root = tmp_path / "pathroot"
+    (git_root / "cmd").mkdir(parents=True)
+    (git_root / "cmd" / "git.exe").write_bytes(b"fake")
+    bash = git_root / "bin" / "bash.exe"
+    bash.parent.mkdir(parents=True)
+    shutil.copyfile(real_bash, bash)
+    script = _script_of(shell.build_pc_shell_command({"command": "echo ok", "shell": "bash"}))
+    env_lines = system_launch_env_lines(resolve_shell("bash", lane="system"))
+    stubs = ("function Get-ItemProperty { $null };"
+             "function Get-Command { [pscustomobject]@{Source=$env:PADIEM_TEST_GIT_EXE} };")
+    done = _run_tail(script, env_lines, b"echo ok",
+                     extra_env="$env:PADIEM_TEST_GIT_EXE='" + str(git_root / "cmd" / "git.exe") + "';"
+                               + _isolated_root_lines(tmp_path),
+                     stubs=stubs)
+    assert done.returncode == 0, done.stderr
+    assert "ok" in done.stdout
+
+
+@pytest.mark.skipif(shutil.which("powershell") is None,
+                    reason="the candidate probe is Windows PowerShell behavior")
+def test_a_registry_install_path_into_system32_is_refused(tmp_path):
+    """R4 ④ 가드: System32 안의 bash.exe(WSL)는 레지스트리가 가리켜도 거부.
+
+    InstallPath를 ...\Windows\System32로 위조하고 그 안에 bash.exe를
+    심는다. 가드가 이를 거부해 다음 단계(격리된 빈 고정 후보)로 넘어가
+    127이어야 한다 — #7266 결함의 레지스트리 변형 재현 금지. 실제
+    C:\Windows\System32 대신 같은 모양의 임시 경로를 쓰므로 WSL 설치
+    여부와 무관하게 결정론적이다.
+    """
+    # InstallPath → <InstallPath>inash.exe 체계를 그대로 따르므로,
+    # System32 모양 경로 안에 Git 설치 루트를 심는다.
+    fake_root = tmp_path / "Windows" / "System32" / "Git"
+    (fake_root / "bin").mkdir(parents=True)
+    (fake_root / "bin" / "bash.exe").write_text("not a real executable", encoding="ascii")
+    script = _script_of(shell.build_pc_shell_command({"command": "echo ok", "shell": "bash"}))
+    env_lines = system_launch_env_lines(resolve_shell("bash", lane="system"))
+    stubs = ("function Get-ItemProperty { [pscustomobject]@{InstallPath=$env:PADIEM_TEST_SYSROOT} };"
+             "function Get-Command { $null };")
+    done = _run_tail(script, env_lines, b"echo ok",
+                     extra_env="$env:PADIEM_TEST_SYSROOT='" + str(fake_root) + "';"
+                               + _isolated_root_lines(tmp_path),
+                     stubs=stubs)
     assert done.returncode == 127, done.stderr
     assert "shell_unavailable" in done.stderr
     assert "ok" not in done.stdout

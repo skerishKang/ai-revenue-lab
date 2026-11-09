@@ -144,11 +144,13 @@ def test_real_pipe_round_trip_runs_powershell_and_cmd_as_the_helper_user(tmp_pat
         assert exit_ok["exit_code"] == 7
 
         # 4. A refusal crosses the same real pipe as a refusal, with no process.
+        #    wsl is an unsupported shell since #7188 R4 ④ (owner ban on WSL);
+        #    the real-pipe refusal path is what this still proves.
         refused = _run_client(request_id="req_" + "4" * 32, shell="wsl",
                               command="systemctl restart padiem-chat",
                               secret_file=secret_file)
         assert refused["status"] == "error", refused
-        assert refused["error_code"] == helper.USER_HELPER_NOT_READ_ONLY
+        assert refused["error_code"] == helper.USER_HELPER_REFUSED
         assert _stdout(refused) == ""
     finally:
         server.join(timeout=90)
