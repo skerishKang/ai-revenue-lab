@@ -170,3 +170,14 @@ def test_deploy_gate_stages_the_reviewed_b14_https_switch():
     assert '--b14-https-origin "https://b14.padiem.net"' in workflow
     assert "B54_B14_HTTPS_SWITCH_STAGED=YES" in workflow
     assert "uv run pywrangler deploy --keep-vars" in workflow
+
+
+def test_post_deploy_proves_flags_on_served_version():
+    workflow = (ROOT / ".github/workflows/b54-engine-production-deploy-gate.yml").read_text("utf-8")
+    # Production carries no checked-in [vars], so a repository-file grep for the
+    # durable flag can never pass; the gate asserts the served version instead.
+    assert "grep -Fxq 'PADIEM_ENGINE_AGENT_DURABLE_ENABLED" not in workflow
+    assert "grep -Fxq 'binding = \"WEB_XLSX_PRIVATE_B62_D1\"" not in workflow
+    assert "ENGINE_SERVED_DURABLE_FLAG_AND_B62_D1=PASS" in workflow
+    assert "PADIEM_ENGINE_AGENT_DURABLE_ENABLED') or {}).get('text')=='true'" in workflow
+    assert "\"${version_detail}\"" in workflow
