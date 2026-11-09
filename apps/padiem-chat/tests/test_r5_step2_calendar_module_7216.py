@@ -14,6 +14,7 @@ import pytest
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
 MODULE = (STATIC / "chat-calendar-module.js").read_text(encoding="utf-8")
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 
@@ -39,7 +40,7 @@ def test_module_reads_live_deps_getters_and_closed_vocabulary() -> None:
     node = pytest.importorskip("shutil").which("node")
     if not node:
         pytest.skip("node runtime is required")
-    script = """
+    script = STRICT + """
 const moduleSource = %s;
 const appModule = { exports: {} };
 const window = {};
@@ -76,7 +77,7 @@ const deps = {
   fetch: async () => { throw new Error("no network"); },
   reviewedGoogleAuthorizationUrl: () => null,
 };
-const instance = window.PadiemChatCalendarModule.create(deps);
+const instance = window.PadiemChatCalendarModule.create(r5StrictDeps(deps, "step2.deps"));
 const mapping = ["active", "bogus"].map(instance.calendarReadStateKey);
 // The getter must be read at call time: a value set before the first call wins.
 deps.googleCalendarReadState = "active";
@@ -109,7 +110,8 @@ def test_forwarder_runs_in_real_chromium() -> None:
 <div id="scope"><button data-google-connector-connect="google-calendar">연결</button></div>
 <script>__MODULE__</script>
 <script>
-window.__deps = {
+__STRICT__
+window.__deps = r5StrictDeps({
   connectorsScope: () => document.getElementById("scope"),
   authState: { authenticated: false },
   googleConnectorConnectInFlight: false,
@@ -122,13 +124,14 @@ window.__deps = {
   openAuthDialog: () => {},
   fetch: async () => ({}),
   reviewedGoogleAuthorizationUrl: () => null,
-};
+}, "step2.browser.deps");
 window.__instance = window.PadiemChatCalendarModule.create(window.__deps);
 function calendarModule() { return window.__instance; }
 __FORWARDER__
 </script></body></html>
 """
-    harness = harness.replace("__MODULE__", MODULE).replace("__FORWARDER__", forwarder.group(0))
+    harness = (harness.replace("__STRICT__", STRICT).replace("__MODULE__", MODULE)
+               .replace("__FORWARDER__", forwarder.group(0)))
     with playwright.sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page()

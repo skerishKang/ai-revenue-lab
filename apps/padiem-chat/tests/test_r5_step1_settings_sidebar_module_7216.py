@@ -40,6 +40,8 @@ FORWARDERS = {
     "openSidebar": "sidebarModule",
 }
 
+STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+
 _HARNESS = r"""
 const fs = require("fs");
 const vm = require("vm");
@@ -119,7 +121,7 @@ function deps(overrides) {
     sidebarScrim: makeElement("sidebarScrim"),
     closeProfilePanel: () => { base.profileClosed = (base.profileClosed || 0) + 1; },
   };
-  return Object.assign(base, overrides || {});
+  return r5StrictDeps(Object.assign(base, overrides || {}), "step1.deps");
 }
 
 function settingsApi() {
@@ -233,8 +235,8 @@ const getterDeps = {
   get closeProfilePanel() { return () => { live.profileClosed = true; }; },
 };
 live.dialog = makeElement("after");
-const late = ctx.window.PadiemChatSettingsModule.create(getterDeps);
-const lateSidebar = ctx.window.PadiemChatSidebarModule.create(getterDeps);
+const late = ctx.window.PadiemChatSettingsModule.create(r5StrictDeps(getterDeps, "step1.getterDeps"));
+const lateSidebar = ctx.window.PadiemChatSidebarModule.create(r5StrictDeps(getterDeps, "step1.getterDeps"));
 late.openSettings();
 lateSidebar.openSidebar();
 lateSidebar.closeSidebar();
@@ -253,7 +255,7 @@ def _run_harness() -> dict:
     with tempfile.TemporaryDirectory() as tmp:
         harness = Path(tmp) / "harness.js"
         payload = Path(tmp) / "payload.json"
-        harness.write_text(_HARNESS, encoding="utf-8", newline="\n")
+        harness.write_text(STRICT + "\n" + _HARNESS, encoding="utf-8", newline="\n")
         payload.write_text(json.dumps({"static": str(STATIC)}), encoding="utf-8", newline="\n")
         completed = subprocess.run(
             [node, str(harness), str(STATIC / "chat-settings-module.js"),

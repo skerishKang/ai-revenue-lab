@@ -15,6 +15,8 @@ from app.password_auth import PASSWORD_MAX_CHARS, PASSWORD_MIN_CHARS
 BASE = Path(__file__).resolve().parents[1] / "static"
 HTML = (BASE / "index.html").read_text(encoding="utf-8")
 APP = (BASE / "app.js").read_text(encoding="utf-8")
+#7216 R5 step 4: this contract moved into chat-auth-module.js.
+AUTH = (BASE / "chat-auth-module.js").read_text(encoding="utf-8")
 LOCALE = (BASE / "locale.js").read_text(encoding="utf-8")
 
 
@@ -68,13 +70,13 @@ def test_the_form_password_floor_matches_the_server_policy():
 def test_the_browser_payload_carries_the_email_identifier_only():
     payload = re.search(
         r'passwordAuthRequest\("/api/auth/password/register",\s*\{(?P<body>.*?)\}\)',
-        APP,
+        AUTH,
         re.S,
     )
     assert payload is not None, "the registration request must exist"
     body = payload.group("body")
     assert "username" not in body
-    assert "email: passwordRegisterEmail.value" in body
+    assert "email: deps.passwordRegisterEmail.value" in body
 
 
 def test_the_login_screen_presents_the_email_identifier():

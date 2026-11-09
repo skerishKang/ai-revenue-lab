@@ -479,7 +479,8 @@ def test_the_account_settings_offer_the_change_in_the_served_markup():
 
 
 def test_the_browser_posts_only_the_two_password_fields():
-    app_js = (STATIC / "app.js").read_text(encoding="utf-8")
+    #7216 R5 step 4: this contract moved into chat-auth-module.js.
+    app_js = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
     payload = re.search(
         r'passwordAuthRequest\("/api/auth/password/change",\s*\{(?P<body>.*?)\}\)',
         app_js,
@@ -495,7 +496,8 @@ def test_the_browser_posts_only_the_two_password_fields():
 
 def test_the_browser_refuses_a_new_password_equal_to_the_current_one():
     """The same-password guard lives in the browser, so the server stays cheap."""
-    app_js = (STATIC / "app.js").read_text(encoding="utf-8")
+    #7216 R5 step 4: this contract moved into chat-auth-module.js.
+    app_js = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
     assert "password-change-unchanged" in app_js
     assert "newPassword === currentPassword" in app_js
 

@@ -41,7 +41,10 @@ BLOCK_END = 'if (clawNavButton) clawNavButton.addEventListener("click", openClaw
 
 
 def _app() -> str:
-    return APP_JS.read_text(encoding="utf-8")
+    # #7216 R5 step 4: reviewedGoogleAuthorizationUrl moved into
+    # chat-auth-module.js; the one-policy count spans both shipped sources.
+    return (APP_JS.read_text(encoding="utf-8")
+            + APP_JS.with_name("chat-auth-module.js").read_text(encoding="utf-8"))
 
 
 def _index() -> str:
@@ -224,8 +227,13 @@ def test_the_reviewed_authorization_url_policy_is_reused_not_reimplemented() -> 
     assert "url.username || url.password || url.hash" in policy
     block = _connector_block()
     # one policy, one parser: the Drive path adds no second URL authority
-    assert _app().count("function reviewedGoogleAuthorizationUrl(") == 1
-    assert block.count("new URL(") == 1
+    # The forwarder in app.js is the only other spelling of the name.
+    assert _app().count("function reviewedGoogleAuthorizationUrl(") == 2
+    assert _app().count("function reviewedGoogleAuthorizationUrl(value)") == 1
+    # The single parser moved with the policy into chat-auth-module.js; the
+    # connector block must still add no second URL authority.
+    assert policy.count("new URL(") == 1
+    assert block.count("new URL(") == 0
     for forbidden in ("oauth.padiem.net", "javascript:", "data:text/html", "file://", "http://"):
         assert forbidden not in block, forbidden
 

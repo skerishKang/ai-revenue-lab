@@ -314,20 +314,22 @@ def test_the_export_entry_mounts_in_settings_and_keeps_its_scope() -> None:
 
 def test_the_sign_out_has_one_implementation() -> None:
     app = _read("app.js")
-    assert "async function signOutCurrentAccount()" in app
-    assert 'await fetch("/api/auth/logout"' in app
+    #7216 R5 step 4: this contract moved into chat-auth-module.js.
+    module = _read("chat-auth-module.js")
+    assert "async function signOutCurrentAccount()" in module
+    assert 'await fetch("/api/auth/logout"' in module
     # Both entries reach the same implementation.
-    sign_out = app[app.index("async function signOutCurrentAccount()"):]
+    sign_out = module[module.index("async function signOutCurrentAccount()"):]
     sign_out = sign_out[: sign_out.index("\n  }")]
-    assert "resetConversationView(false);" in sign_out
-    assert "await loadAuthStatus();" in sign_out
+    assert "deps.resetConversationView(false);" in sign_out
+    assert "await deps.loadAuthStatus();" in sign_out
     assert "settingsLogoutButton.addEventListener(\"click\"" in app
     assert "await signOutCurrentAccount();" in app
     # The sidebar keeps the sign-in affordance; the signed-in profile is the
     # one-step Settings entry.
     # #5479: the sign-in entry point also survives an unreadable session state,
     # so the hide rule comes from the shared presentation rule.
-    assert 'loginButton.hidden = presentation.loginHidden;' in app
+    assert 'loginButton.hidden = presentation.loginHidden;' in app + module
     assert 'loginButton.hidden = sessionState === "unavailable" || sessionState === "signed_in";' not in app
     capabilities = _read("product-capabilities.js")
     assert "loginButton.hidden = shared.loginHidden;" in capabilities

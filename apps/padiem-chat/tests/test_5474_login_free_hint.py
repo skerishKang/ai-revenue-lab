@@ -61,7 +61,8 @@ def test_the_note_uses_the_panel_typography_and_wraps():
 
 
 def test_the_browser_gate_stops_every_guest_and_keeps_the_mock_flag():
-    client = read_static("app.js")
+    #7216 R5 step 4: this contract moved into chat-auth-module.js.
+    client = read_static("chat-auth-module.js")
     gate = client.split("function requireSessionForModelUse() {", 1)[1].split("return false;", 1)[0]
     assert 'selectedProductTier() === "free"' not in gate
     assert 'authState.model_requires_session !== true' in gate
