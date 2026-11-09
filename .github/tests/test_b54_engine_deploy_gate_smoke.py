@@ -19,6 +19,7 @@ Proves statically that the deploy gate:
 from __future__ import annotations
 
 import re
+import sys
 from pathlib import Path
 
 import yaml
@@ -33,6 +34,10 @@ A10_SMOKE_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a10_continu
 A11_SMOKE_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a11_gmail_tool_runtime_smoke.py"
 A12_SMOKE_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a12_stream_replay_production_smoke.py"
 SMOKE_ONLY_WORKFLOW = ROOT / ".github" / "workflows" / "b54-engine-production-smoke-only-gate.yml"
+AI_CORE_SOURCE = ROOT / "packages" / "padiem-ai-core"
+
+if str(AI_CORE_SOURCE) not in sys.path:
+    sys.path.insert(0, str(AI_CORE_SOURCE))
 
 
 def _workflow_text() -> str:

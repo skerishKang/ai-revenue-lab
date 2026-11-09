@@ -153,10 +153,23 @@ class _ControlPlaneIngress:
             return httpx.Response(
                 200, json={"ok": True, "receipt": {"accepted": True, "event_id": "u-1"}}
             )
+        if method_name == "admit_usage":
+            payload = json.loads(body)
+            assert set(payload) == {"product_id", "subject", "reservation"}
+            return httpx.Response(
+                200,
+                json={
+                    "ok": True,
+                    "snapshot": self.snapshot,
+                    "reservation": {**_reservation(), "admitted": True},
+                },
+            )
         return httpx.Response(404, json={"ok": False, "error": {"code": "rpc_unknown"}})
 
 
-def _adapter(ingress: _ControlPlaneIngress) -> ControlPlaneTenantAdmissionAdapter:
+def _adapter(
+    ingress: _ControlPlaneIngress, *, combined_rpc: bool = False
+) -> ControlPlaneTenantAdmissionAdapter:
     from app.control_plane_trust_client import CloudflareControlPlaneTrustClient
 
     client = httpx.AsyncClient(transport=httpx.MockTransport(ingress))
@@ -164,6 +177,7 @@ def _adapter(ingress: _ControlPlaneIngress) -> ControlPlaneTenantAdmissionAdapte
     return ControlPlaneTenantAdmissionAdapter(
         client=CloudflareControlPlaneTrustClient(binding),
         clock=_now,
+        combined_rpc=combined_rpc,
     )
 
 
@@ -197,6 +211,19 @@ def test_allowed_snapshot_and_reservation_run_the_turn() -> None:
     # Two calls are two requests; the ingress would refuse a repeated id.
     assert len(ingress.service_ids) == 2
     assert len(set(ingress.service_ids)) == 2
+
+
+def test_the_combined_rpc_keeps_one_signed_request_for_both_stages() -> None:
+    ingress = _ControlPlaneIngress()
+    admission = _resolve(_adapter(ingress, combined_rpc=True))
+
+    assert admission.allowed is True
+    assert admission.permission_product_id == PRODUCT
+    assert admission.capability == CAPABILITY
+    assert admission.usage_reservation is not None
+    assert admission.usage_reservation.reservation_ref == RESERVATION_REF
+    assert ingress.calls == ["admit_usage"]
+    assert len(ingress.service_ids) == 1
 
 
 def test_a_replay_refusal_is_retried_under_a_new_id() -> None:
