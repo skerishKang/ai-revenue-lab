@@ -365,8 +365,9 @@ def test_composer_tracks_an_identity_key_for_account_switch():
     assert "identityKey" in source
     assert "padiem:voice-identity" in source
     # R1 moves the publisher, not the identity-free event contract (#3790).
-    app = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
-    assert "window.PadiemAuthSession.update(authState, authViewEpoch)" in app
+    #7216 R5 step 4: this contract moved into chat-auth-module.js.
+    module = (ROOT / "static" / "chat-auth-module.js").read_text(encoding="utf-8")
+    assert "window.PadiemAuthSession.update(deps.authState, deps.authViewEpoch)" in module
     out = _node(r"""
         const events = [];
         global.window = {dispatchEvent: event => events.push(event)};

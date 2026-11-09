@@ -131,7 +131,9 @@ def test_login_refresh_and_logout_keep_status_without_stale_model_choice():
     app = (base / "app.js").read_text(encoding="utf-8")
     js = (base / "claw-verified-model-choice.js").read_text(encoding="utf-8")
     session = (base / "auth-session.js").read_text(encoding="utf-8")
-    assert "window.PadiemAuthSession.update(authState, authViewEpoch)" in app
+    #7216 R5 step 4: this contract moved into chat-auth-module.js.
+    module = (base / "chat-auth-module.js").read_text(encoding="utf-8")
+    assert "window.PadiemAuthSession.update(deps.authState, deps.authViewEpoch)" in module
     assert 'new CustomEvent("padiem:auth-state"' in session
     assert 'window.addEventListener("padiem:auth-state"' in js
     assert 'manual.value=""' not in js

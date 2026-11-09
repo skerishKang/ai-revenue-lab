@@ -74,6 +74,8 @@ def test_module_exposes_one_factory_and_touches_no_dom_at_load() -> None:
         assert f"function {name}(" in MODULE, name
 
 
+STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
+
 _HARNESS = r"""
 const fs = require("fs");
 const vm = require("vm");
@@ -168,7 +170,7 @@ ctx.window.window = ctx.window;
 vm.createContext(ctx);
 const source = fs.readFileSync(process.argv[2], "utf8");
 vm.runInContext(source, ctx, { filename: "chat-history-module.js" });
-const api = ctx.window.PadiemChatHistoryModule.create(deps);
+const api = ctx.window.PadiemChatHistoryModule.create(r5StrictDeps(deps, "step3.history.deps"));
 const results = {};
 
 // 1. skeleton: 4 rows, section shown, empty hidden (before/after reads live deps).
@@ -261,7 +263,7 @@ def _run_harness() -> dict:
         pytest.skip("node is not available for the module harness")
     with tempfile.TemporaryDirectory() as tmp:
         harness = Path(tmp) / "harness.js"
-        harness.write_text(_HARNESS, encoding="utf-8", newline="\n")
+        harness.write_text(STRICT + "\n" + _HARNESS, encoding="utf-8", newline="\n")
         completed = subprocess.run(
             [node, str(harness), str(STATIC / "chat-history-module.js")],
             capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60,

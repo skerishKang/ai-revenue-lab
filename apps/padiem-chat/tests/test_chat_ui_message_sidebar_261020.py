@@ -49,7 +49,10 @@ def test_sidebar_single_cell_sheet_is_linked_and_cascades_last():
 
 
 def test_user_avatar_uses_the_account_initial_and_keeps_name_first():
-    assert "function accountInitial(name)" in APP
+    # #7216 R5 step 4: the helper moved into chat-auth-module.js; the render
+    # call site in app.js keeps calling it through the one-line forwarder.
+    module = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
+    assert "function accountInitial(name)" in module
     assert "avatar.textContent = accountInitial(name)" in APP
     # The DOM order stays name -> avatar.
     template = HTML[HTML.index('id="userMessageTemplate"'):]

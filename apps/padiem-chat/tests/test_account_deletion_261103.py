@@ -1280,6 +1280,8 @@ def test_account_help_describes_both_deletion_paths_and_keeps_brand_wording_guar
     section = help_text.split('id="account"', 1)[1].split('id="faq"', 1)[0]
     html = (app_root / "static" / "index.html").read_text(encoding="utf-8")
     script = (app_root / "static" / "app.js").read_text(encoding="utf-8")
+    #7216 R5 step 4: this contract moved into chat-auth-module.js.
+    auth_module = (app_root / "static" / "chat-auth-module.js").read_text(encoding="utf-8")
     repo_root = app_root.parents[1]
     common_terms = (repo_root / "docs" / "legal" / "drafts" / "terms_common_ko.md").read_text(encoding="utf-8")
     lovetree_terms = (repo_root / "docs" / "legal" / "drafts" / "services" / "lovetree_ko.md").read_text(encoding="utf-8")
@@ -1292,7 +1294,7 @@ def test_account_help_describes_both_deletion_paths_and_keeps_brand_wording_guar
     assert "PADIEM" not in help_text
     assert 'id="accountSharedDeleteOpen"' in html
     assert 'id="accountSharedDeleteConfirm"' in html
-    assert '"/api/account/shared-delete"' in script
+    assert '"/api/account/shared-delete"' in script + auth_module
     assert "다른 서비스 연결이 남아 있으면 공통 계정은 유지합니다." in common_terms
     assert "마지막 연결이 삭제되면 공통 계정과 로그인 세션을 폐기합니다." in common_terms
     assert "연결 서비스 처리에 실패하면 공통 계정을 유지하고 재시도할 수 있습니다." in common_terms

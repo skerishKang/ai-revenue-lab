@@ -175,3 +175,50 @@ app.js는 다수 모듈 뒤·일부 모듈 앞에 로드된다. 분리 시 전�
   `resetConversationView`·`setNote`·`idleNote`)는 deps getter로 호출한다.
 - 결과: `app.js` 7,928 → 7,529줄, 새 파일 `chat-history-module.js`(506줄),
   상한 8,028 → 7,629.
+
+## 10. 로그인 세션 구역 확정 (R5 4단계, #7216)
+
+이동 대상은 추출기의 구역 분류가 **로그인 세션**으로 놓은 함수 41개(현재 app.js
+기준 693줄)다. §1 기준 43개·779줄에서 앞 단계 이동으로 분류가 조정되었다.
+
+- 대표: `applyAuthState`(1862-2001), `loadAuthStatus`(2889-2939),
+  `submitPasswordChange`(2658-2701), `submitPasswordResetConfirm`(2597-2637),
+  `openAuthDialog`(2029-2063), `signOutCurrentAccount`(4242-4260),
+  `reviewedGoogleAuthorizationUrl`(6066-6077) — 괄호는 7,529줄 리비전 기준.
+- **최상위 연결 코드**: 프로필 패널 생성 대입 블록(244-267)과 로그인/계정 리스너
+  블록(2941-2943, 3013-3029, 4263-4279, 4305-4361, 4363-4438, 6587-6598)은
+  §8 규칙대로 app.js에 남는다.
+- **클로저 변수**: DOM 참조·상수는 getter, 다시 대입하는
+  `authState`·`authViewEpoch`·`authDialogView`·`passwordResetToken`·
+  `clawApprovalEpoch`·`clawApprovalInFlight`·`clawApprovalSessionToken`·
+  `pendingNotificationConversationId`·`pendingNotificationRunId`는 getter+setter.
+  deps 113개(getter 113 / 그중 setter 9; 모듈이 읽지 않는 `projects`·
+  `resetConversation` getter 2건은 아르곤 지적 반영으로 제거해 115→113).
+- 다른 구역 함수는 deps getter로, 옮긴 함수끼리의 호출도 deps(→ app.js 전달 함수
+  → 같은 모듈)로 간다. `document`·`window`·`fetch`·`URL` 등 전역은 본문 그대로.
+- 결과: `app.js` 7,529 → 7,012줄, 새 파일 `chat-auth-module.js`(747줄),
+  상한 7,629 → 7,110(실측 7,010+100; PR 초안의 7,107은 7,007 과소 계수였고
+  deps 미사용 getter 2건 제거 뒤 최종개 기준으로 정정). 이전 시험 12파일 +
+  신규 계약 2종(`test_r5_step4_auth_module_7216`·`test_r5_step4_auth_browser_7216`).
+
+## 11. 대화 구역 함수 확정 (R5 다음 구역, 대기 중 기록)
+
+다음 이동 대상은 추출기의 구역 분류가 **대화**로 놓은 함수 24개(현재 app.js
+7,012줄 기준 1,115줄)다. §1의 25개·1,201줄에서 앞 단계 이동으로 분류가 조정되었다.
+
+- `attachmentCopy`·`showComposerInlineHint`·`updateComposer`(533-597),
+  `showConversation`(771-806)·`addUserMessage`(818-899)·`renderAnswer`(954-980),
+  `renderStreamError`(1110-1124), 첨부 7개(`clearAttachment`~`attachmentPayload`,
+  1150-1339), `safeLocalUiMessage`(1522-1527), `resetConversationView`·
+  `resetConversation`(1715-1771), `requestCompletedAnswer`·`applyStreamDone`
+  (2601-2686), `requestStreamingAnswer`(2943-3347)·`cancelActiveStream`(3349-3371)·
+  `requestAnswer`(3400-3571), `approvalDecisionErrorMessage`(5814-5820)·
+  `approvedMemoryErrorMessage`(6311-6320) — 괄호는 7,012줄 리비전 기준.
+- **최상위 연결 코드**(app.js 유지 대상): 첨부 트레이/컴포저 리스너(562-572),
+  알림 진입(1968-1976), 전송/문서 형식 리스너(2537-2599, 3597-3607, 3726-3729),
+  종료 시 정리(6933-6968) 등 13개 블록.
+- 클로저 변수: `messageList`·`conversationArtifacts`·`conversationArtifactContext`·
+  `cancelStreamButton`·`attachmentButton`·`attachmentChipList`·`composerInlineHint`·
+  `NOTIFICATION_CONVERSATION_ID`·`composerForm` — getter는 DOM/상수, 다시 대입되는
+  변수는 setter 부여. 이전 시험 후보는 지도 §4의 대화 구역 44개 파일.
+

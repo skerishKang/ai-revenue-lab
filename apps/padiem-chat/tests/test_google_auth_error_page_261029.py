@@ -91,7 +91,8 @@ def test_the_browser_asks_once_more_before_it_presents_signed_out():
     # The status read that produced no answer (a Worker restart's 1101/1102)
     # gets exactly one silent re-ask in both status consumers; a definitive
     # guest answer is never retried.
-    app_js = _read("app.js")
+    #7216 R5 step 4: this contract moved into chat-auth-module.js.
+    app_js = _read("app.js") + _read("chat-auth-module.js")
     assert "async function fetchAuthStatusOnce()" in app_js
     assert "for (let attempt = 0; attempt < 2; attempt += 1)" in app_js
     capabilities = _read("product-capabilities.js")

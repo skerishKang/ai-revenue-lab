@@ -24,6 +24,7 @@ import vm from "node:vm";
 
 const STATIC = join(fileURLToPath(new URL(".", import.meta.url)), "..", "static");
 const APP = readFileSync(join(STATIC, "app.js"), "utf8");
+const MODULE = readFileSync(join(STATIC, "chat-auth-module.js"), "utf8");
 const LOCALE = readFileSync(join(STATIC, "locale.js"), "utf8");
 
 function blockEnd(source, openIndex) {
@@ -41,16 +42,25 @@ function blockEnd(source, openIndex) {
 function shippedRequest() {
   const start = APP.indexOf("const AUTH_SERVER_UNREACHABLE");
   assert.ok(start >= 0, "the auth transport constants are missing from app.js");
-  const fnStart = APP.indexOf("async function passwordAuthRequest(", start);
-  assert.ok(fnStart > start, "passwordAuthRequest is missing from app.js");
-  const open = APP.indexOf(") {", fnStart) + 2;
-  const block = APP.slice(start, blockEnd(APP, open));
-  // The block runs in a bare context that holds only the three names it may
-  // use; the completion value names the shipped function.
+  const constants = APP.slice(start, APP.indexOf("\n  function ", start));
+  const fnStart = MODULE.indexOf("async function passwordAuthRequest(");
+  assert.ok(fnStart >= 0, "passwordAuthRequest is missing from chat-auth-module.js");
+  // The block runs in a bare context that holds only the names it may use:
+  // the shipped constants, the stubs, and the deps getters the moved body
+  // reads. The completion value names the shipped function.
   return (uiT, fetch, setTimeoutStub) =>
-    vm.runInNewContext(`${block}\npasswordAuthRequest;`, { uiT, fetch, setTimeout: setTimeoutStub }, {
-      filename: "static/app.js#passwordAuthRequest",
-    });
+    vm.runInNewContext(
+      `${constants}\n${MODULE}\n`
+      + "const __deps = {};\n"
+      + "const api = window.PadiemChatAuthModule.create(__deps);\n"
+      + "Object.assign(__deps, { uiT, AUTH_SERVER_UNREACHABLE, AUTH_UNREACHABLE_RETRY_DELAY_MS,"
+      + " authMethodEnabled: () => true,"
+      + " authServerUnreachableError: api.authServerUnreachableError,"
+      + " passwordAuthAnswer: api.passwordAuthAnswer });\n"
+      + "api.passwordAuthRequest;",
+      { uiT, fetch, setTimeout: setTimeoutStub, window: {} },
+      { filename: "static/chat-auth-module.js#passwordAuthRequest" },
+    );
 }
 
 function localeValue(key) {

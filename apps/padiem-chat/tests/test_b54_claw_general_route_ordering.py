@@ -15,6 +15,8 @@ from pathlib import Path
 APP_DIR = Path(__file__).resolve().parents[1]
 APP_JS = APP_DIR / "static" / "app.js"
 SOURCE = APP_JS.read_text(encoding="utf-8")
+#7216 R5 step 4: this contract moved into chat-auth-module.js.
+AUTH_SOURCE = APP_JS.with_name("chat-auth-module.js").read_text(encoding="utf-8")
 
 ROUTING_FUNCTIONS = (
     "showConversation",
@@ -68,7 +70,8 @@ def _harness() -> str:
         [SOURCE[product_start:product_end]]
         + [SOURCE[switch_start:switch_end]]
         + [SOURCE[map_start:map_end]]
-        + [_js_function(SOURCE, name) for name in ROUTING_FUNCTIONS]
+        + [_js_function(AUTH_SOURCE if name == "requireSessionForModelUse" else SOURCE, name)
+           for name in ROUTING_FUNCTIONS]
     )
     return r"""
 // Minimal stub environment: exercises the real routing functions, no DOM needed.
@@ -132,6 +135,15 @@ const chatTransport = {
   requestStreaming: async () => { trace.push("transport:streaming"); return {}; },
   readSseEvents: async () => {},
   errorFor: () => new Error("stub"),
+};
+// The moved auth gate reads its closure values through deps getters.
+const openAuthDialog = () => {};
+const deps = {
+  get authState() { return authState; },
+  get setNote() { return setNote; },
+  get uiT() { return uiT; },
+  get loginButton() { return loginButton; },
+  get openAuthDialog() { return openAuthDialog; },
 };
 
 __EXTRACTED__

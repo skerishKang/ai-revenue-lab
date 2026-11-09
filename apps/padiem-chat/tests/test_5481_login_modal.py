@@ -40,7 +40,10 @@ def html() -> str:
 
 
 def script() -> str:
-    return (STATIC / "app.js").read_text(encoding="utf-8")
+    # #7216 R5 step 4: the auth views moved into chat-auth-module.js; the
+    # client-side contracts below span both shipped sources.
+    return ((STATIC / "app.js").read_text(encoding="utf-8")
+            + (STATIC / "chat-auth-module.js").read_text(encoding="utf-8"))
 
 
 def styles() -> str:
@@ -113,15 +116,15 @@ def test_the_client_reads_the_one_time_token_from_the_url_fragment():
 def test_the_client_posts_only_the_reviewed_reset_fields():
     client = script()
     request_block = client.split(
-        'await passwordAuthRequest("/api/auth/password/reset/request"', 1
+        'await deps.passwordAuthRequest("/api/auth/password/reset/request"', 1
     )[1].split("});", 1)[0]
-    assert "email: passwordResetEmail.value" in request_block
+    assert "email: deps.passwordResetEmail.value" in request_block
     assert "password:" not in request_block
     assert "token:" not in request_block
     confirm_block = client.split(
-        'await passwordAuthRequest("/api/auth/password/reset/confirm"', 1
+        'await deps.passwordAuthRequest("/api/auth/password/reset/confirm"', 1
     )[1].split("});", 1)[0]
-    assert "token: passwordResetToken" in confirm_block
+    assert "token: deps.passwordResetToken" in confirm_block
     assert "new_password: newPassword" in confirm_block
     # The browser never sends the account identifier on the confirm route, and
     # it never sends a current password.
