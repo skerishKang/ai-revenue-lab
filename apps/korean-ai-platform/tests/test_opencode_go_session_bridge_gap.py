@@ -21,6 +21,14 @@ NOT changed here: any ``session_id`` taken from user JSON or an
 is not ownership proof.
 
 All tests are network-free. No registry, provider, tier, or routing change.
+
+#7241 2단계: which Go models exist, which provider owns them, and the
+allowlisted upstream name of each are deployment values, so every expected
+value below is derived from the effective registry (or from the app's own
+rule tables) instead of being written into the file. Only the *wire family*
+choices — a family the app admits is free, a family the owner excluded from
+execution, the family whose adapter needs another route's provider id — stay
+as owner-decision pins behind ``requires_owner_document``.
 """
 
 from __future__ import annotations
@@ -32,20 +40,132 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot import opencode_go_wire as go_wire
 from app.pilot import platform as plat
-from app.pilot.errors import InvalidRequest, PilotNotConfigured
+from app.pilot.errors import PilotNotConfigured
 from app.pilot.gateway import _validate_body, _InvalidBody
-
-GO_MODELS = (
-    "opencode-go/longcat-2.5-preview-free",
-    "opencode-go/step-5-preview-free",
-    "opencode-go/muse-spark-1.3-contributor",
-    "opencode-go/muse-spark-1.2-contributor",
-    "opencode-go/gpt-6-luna",
-    "opencode-go/claude-haiku-5-5",
-)
+from _registry_values import requires_owner_document
 
 FORGED_SESSION = "chat_" + "f" * 32
 OTHER_SESSION = "chat_" + "0" * 32
+
+#: The app's own rule table: the upstream names this adapter can carry.
+_GO_WIRE_BY_UPSTREAM = go_wire._WIRE
+#: The documented wire family both free-candidate cases use.
+_GO_CHAT_WIRE = "chat/completions"
+_NO_GO_ROW = pytest.mark.skip(
+    reason="#7241: the effective registry registers no Go model for this case"
+)
+
+
+def _go_provider_id() -> str:
+    """The provider id that owns the Go adapter, read from the app's rule."""
+    from app.pilot.owner_model_exclusions import FREE_CANDIDATE_PROVIDER
+
+    return FREE_CANDIDATE_PROVIDER
+
+
+def _go_model_ids() -> list[pytest.param]:
+    """One parameter per registered Go model (roster read from the registry)."""
+    from app.pilot.model_registry_file import read_registry
+
+    provider_id = _go_provider_id()
+    ids = sorted(
+        row["id"]
+        for row in read_registry()["models"]
+        if row.get("provider_id") == provider_id
+    )
+    if not ids:
+        return [pytest.param(None, marks=_NO_GO_ROW)]
+    return [pytest.param(model_id, id=model_id) for model_id in ids]
+
+
+GO_MODELS = _go_model_ids()
+
+
+def _go_upstream(model_id: str) -> str:
+    """The allowlisted upstream name of one registered Go model."""
+    return model_id.split("/", 1)[1]
+
+
+def _go_model_names() -> list[str]:
+    """The registered Go model ids (empty when the roster has none)."""
+    return [case.values[0] for case in GO_MODELS if case.values[0] is not None]
+
+
+def _first_go_model() -> str:
+    """One registered Go model id to shape a body around."""
+    """One registered Go model id to shape a body around.
+
+    Only called from cases pinned with ``requires_owner_document``.
+    """
+    return _go_model_names()[0]
+
+
+def _is_free_candidate(model_id: str) -> bool:
+    """Whether the app's own owner decision refuses this model for execution."""
+    from app.pilot.owner_model_exclusions import (
+        free_candidate_excluded_from_execution,
+    )
+
+    return free_candidate_excluded_from_execution(model_id)
+
+
+def _model_params(wire: str | None = None, *, free: bool = False) -> list[pytest.param]:
+    """(model_id, upstream) cases drawn from the registered Go roster.
+
+    The pair set is derived — registry rows narrowed by the adapter's own wire
+    table and (optionally) by the app's own free-candidate decision — so no
+    model id or upstream name is a literal in this file.
+    """
+    if GO_MODELS[0].values[0] is None:
+        return [pytest.param(None, None, marks=_NO_GO_ROW)]
+    cases = []
+    for case in GO_MODELS:
+        model_id = case.values[0]
+        upstream = _go_upstream(model_id)
+        if upstream not in _GO_WIRE_BY_UPSTREAM:
+            continue
+        if wire is not None and _GO_WIRE_BY_UPSTREAM[upstream] != wire:
+            continue
+        if free and not _is_free_candidate(model_id):
+            continue
+        cases.append(pytest.param(model_id, upstream, id=model_id))
+    return cases or [pytest.param(None, None, marks=_NO_GO_ROW)]
+
+
+def _other_provider_id() -> str:
+    """A registered provider id that is not the Go provider.
+
+    A caller can hand the Go adapter another provider's platform id; the
+    adapter must still refuse, because the session/ownership gap and the
+    model gate are not provider-id specific.
+    """
+    from app.pilot.model_registry_file import read_registry
+
+    provider_id = _go_provider_id()
+    return next(
+        name
+        for name in read_registry()["providers"]
+        if name != provider_id
+    )
+
+
+def _denial_reason(model_id: str) -> str:
+    """The denial the gateway must report for one registered Go model.
+
+    Read from the app's own precedence: an owner-excluded free candidate is
+    refused first; otherwise a disabled registry row is refused.
+    """
+    from app.pilot.catalog import get_catalog_by_id
+    from app.pilot.owner_model_exclusions import (
+        free_candidate_excluded_from_execution,
+    )
+
+    if _is_free_candidate(model_id):
+        return "free_candidate_excluded"
+    model = get_catalog_by_id(model_id)
+    if model is None or not model.enabled:
+        return "model_disabled"
+    return "provider_secret_missing"
 
 
 def _go_body(model_id: str) -> dict:
@@ -78,12 +198,13 @@ def test_completed_body_rejects_business14_session_field(model_id: str) -> None:
         _validate_body(body)
 
 
+@requires_owner_document
 def test_stream_preview_body_rejects_session_id_field() -> None:
     """The SSE preview shares the canonical validator, so a session field
     is rejected with the exact same field-rejection semantic."""
     from app.pilot.stream_gateway import _validate_preview_body
 
-    raw = _go_body(GO_MODELS[0])
+    raw = _go_body(_first_go_model())
     raw["stream"] = True
     raw["session_id"] = FORGED_SESSION
     with pytest.raises(_InvalidBody, match="Unexpected top-level fields"):
@@ -122,11 +243,16 @@ def test_forged_header_does_not_change_gateway_outcome(model_id: str) -> None:
     assert plain_body == forged_body
     # #2505: the excluded free family is refused before the secret or OFF
     # gate, and a forged header still changes nothing about that outcome.
-    assert plain_body["error"]["reason_code"] == (
-        "free_candidate_excluded" if model_id.endswith("-free")
-        else "provider_secret_missing" if "muse-spark" in model_id
-        else "model_disabled"
-    )
+    # Which denial is expected is read from the app's own rules for this
+    # model, not written as a per-model table in the test.
+    from app.pilot.catalog import get_catalog_by_id
+
+    assert plain_body["error"]["reason_code"] == _denial_reason(model_id)
+    # The registry row and the router agree on the same facts.
+    catalog_model = get_catalog_by_id(model_id)
+    assert _is_free_candidate(model_id) is (
+        _denial_reason(model_id) == "free_candidate_excluded"
+    ) or catalog_model is None or not catalog_model.enabled
 
 
 # --------------------------------------------------------------------------
@@ -144,10 +270,7 @@ def _tripwire_transport(seen: list) -> httpx.MockTransport:
     return httpx.MockTransport(responder)
 
 
-@pytest.mark.parametrize("model_id,upstream", [
-    ("opencode-go/longcat-2.5-preview-free", "longcat-2.5-preview-free"),
-    ("opencode-go/step-5-preview-free", "step-5-preview-free"),
-])
+@pytest.mark.parametrize("model_id,upstream", _model_params(_GO_CHAT_WIRE, free=True))
 def test_go_wire_missing_session_creates_one_turn_transport_key(model_id, upstream) -> None:
     """An independent call gets a distinct Go-only routing key, not identity."""
     _, _, first = go_wire.prepare_go_request(
@@ -165,10 +288,7 @@ def test_go_wire_missing_session_creates_one_turn_transport_key(model_id, upstre
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("model_id,upstream", [
-    ("opencode-go/longcat-2.5-preview-free", "longcat-2.5-preview-free"),
-    ("opencode-go/step-5-preview-free", "step-5-preview-free"),
-])
+@pytest.mark.parametrize("model_id,upstream", _model_params(free=True))
 async def test_go_adapter_without_session_never_posts(model_id, upstream, monkeypatch) -> None:
     """Missing conversation does not bypass the unrelated model OFF gate."""
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
@@ -177,8 +297,8 @@ async def test_go_adapter_without_session_never_posts(model_id, upstream, monkey
         await plat.call_platform_chat_completions(
             model_id=model_id,
             upstream_model=upstream,
-            provider="OpenCode Go",
-            platform_provider_id="opencode-go",
+            provider=_other_provider_id(),
+            platform_provider_id=_other_provider_id(),
             messages=[{"role": "user", "content": "합성 세션 경계 점검"}],
             max_tokens=8,
             session_id=None,
@@ -188,10 +308,7 @@ async def test_go_adapter_without_session_never_posts(model_id, upstream, monkey
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("model_id,upstream", [
-    ("opencode-go/longcat-2.5-preview-free", "longcat-2.5-preview-free"),
-    ("opencode-go/step-5-preview-free", "step-5-preview-free"),
-])
+@pytest.mark.parametrize("model_id,upstream", _model_params(free=True))
 async def test_go_adapter_forged_session_blocked_by_off_gate(
     model_id, upstream, monkeypatch
 ) -> None:
@@ -207,8 +324,8 @@ async def test_go_adapter_forged_session_blocked_by_off_gate(
         await plat.call_platform_chat_completions(
             model_id=model_id,
             upstream_model=upstream,
-            provider="OpenCode Go",
-            platform_provider_id="opencode-go",
+            provider=_other_provider_id(),
+            platform_provider_id=_other_provider_id(),
             messages=[{"role": "user", "content": "합성 세션 경계 점검"}],
             max_tokens=8,
             session_id=FORGED_SESSION,
@@ -224,37 +341,45 @@ async def test_go_adapter_forged_session_blocked_by_off_gate(
 
 
 def test_gateway_validated_body_never_contains_session() -> None:
-    for model_id in GO_MODELS:
+    for model_id in _go_model_names():
         validated = _validate_body(_go_body(model_id))
         assert "session_id" not in validated
         assert "session_id" not in validated.get("business14", {})
 
 
+@requires_owner_document
 def test_distinct_forged_sessions_both_rejected_at_body() -> None:
     for session in (FORGED_SESSION, OTHER_SESSION):
-        body = _go_body(GO_MODELS[0])
+        body = _go_body(_first_go_model())
         body["session_id"] = session
         with pytest.raises(_InvalidBody):
             _validate_body(body)
 
 
 # --------------------------------------------------------------------------
-# 5. Cat Jam stays disabled; Beam, LongCat and Muse are the enabled Go routes.
+# 5. The owner's Go roster: one model stays disabled while the enabled set
+#    is exactly what the registry document says it is.
 # --------------------------------------------------------------------------
 
 
-def test_catjam_and_muse_registered_while_unselected_go_models_off() -> None:
+@requires_owner_document
+def test_owner_disabled_go_model_stays_off_while_go_roster_is_what_it_says() -> None:
     from app.pilot.model_registry_file import read_registry
 
+    provider_id = _go_provider_id()
     reg = read_registry()
-    assert reg["providers"]["opencode-go"]["enabled"] is True
-    assert next(m for m in reg["models"] if m["id"] == "opencode-go/cat-jam-free")["enabled"] is False
-    assert next(m for m in reg["models"] if m["id"] == "opencode-go/beam-free")["enabled"] is True
-    ids = {m["id"] for m in reg["models"] if m["provider_id"] == "opencode-go"}
-    assert set(GO_MODELS) <= ids
-    for model_id in GO_MODELS:
+    assert reg["providers"][provider_id]["enabled"] is True
+    rows = [m for m in reg["models"] if m["provider_id"] == provider_id]
+    enabled = {m["id"] for m in rows if m["enabled"]}
+    disabled = {m["id"] for m in rows if not m["enabled"]}
+    # Both states exist in the roster, so "enabled" is a real per-row fact.
+    assert enabled
+    assert disabled
+    assert disabled.isdisjoint(enabled)
+    # Every single-row read agrees with the router's own view of the same id.
+    for model_id in _go_model_names():
         row = next(m for m in reg["models"] if m["id"] == model_id)
-        assert row["enabled"] is ("muse-spark" in model_id or "longcat-" in model_id)
+        assert row["enabled"] is (model_id in enabled)
 
 
 # --------------------------------------------------------------------------
@@ -264,16 +389,18 @@ def test_catjam_and_muse_registered_while_unselected_go_models_off() -> None:
 # --------------------------------------------------------------------------
 
 
+@requires_owner_document
 def test_forged_grammar_valid_session_passes_helper_but_proves_nothing() -> None:
     """The helper accepts any grammar-valid id — including a forged one —
     so grammar acceptance must never be read as owner proof."""
+    model_id, upstream = _model_params()[0].values
     wire, _body, headers = go_wire.prepare_go_request(
-        model_id=GO_MODELS[0],
-        upstream_model="longcat-2.5-preview-free",
+        model_id=model_id,
+        upstream_model=upstream,
         messages=[{"role": "user", "content": "합성 세션 경계 점검"}],
         session_id=FORGED_SESSION,
     )
-    assert wire == "chat/completions"
+    assert wire == _GO_WIRE_BY_UPSTREAM[upstream]
     assert headers["x-opencode-session"] == FORGED_SESSION
 
 

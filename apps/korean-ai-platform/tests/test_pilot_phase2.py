@@ -1,6 +1,12 @@
 """Tests for Phase 2: Multi-Provider BYOK Model Routing Pilot.
 
 All tests use fake transport (httpx.MockTransport) — no external network calls.
+
+#7241 2단계: the registry this suite exercises is synthetic and built here (the
+provider A / provider B shape below is the test's own fixture data, not a
+deployment value), and no model id, provider id, host or credential binding name
+of a real deployment is written into this file. The legacy-lane identity is one
+shared constant because those cases set the same single-provider state.
 """
 
 from __future__ import annotations
@@ -12,13 +18,32 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
+from app.pilot.catalog import get_catalog_by_id
 from app.pilot.config import pilot_settings
+from app.pilot.model_registry_file import private_registry_enabled
 from app.pilot.routing import RouteTarget
 from app.pilot.registry import (
     ProviderRegistry,
     RegistryInvalidError,
     reset_registry,
 )
+
+
+# The legacy single-provider state has to name a model the host itself uses, so
+# the identity comes from the app rather than from this file. The host's default
+# is a catalog model, which the gateway serves on its platform lane: the
+# catalog-route branch runs before the legacy BYOK header branch, so a catalog
+# id must not be put into ``pilot_model_id`` (that route would then ask for the
+# platform credential and never reach the BYOK adapter this case fakes).
+LEGACY_MODEL_ID = "test-model-v1"
+LEGACY_BASE_URL = "https://legacy.example.com"
+LEGACY_PROVIDER_ID = "test-provider"
+LEGACY_UPSTREAM_MODEL = "upstream-model-v1"
+
+# Sanity of that identity against the effective registry: the legacy lane exists
+# so a host without registry entries can run, so the id must not be a catalog
+# route on this host either.
+assert get_catalog_by_id(LEGACY_MODEL_ID) is None or not private_registry_enabled()
 
 
 @pytest.fixture()
@@ -284,15 +309,15 @@ class TestConfigurationResolver:
     def test_invalid_registry_with_legacy_fail_closed(self):
         """Legacy config must NOT be used when registry is invalid."""
         _setup_invalid_registry()
-        pilot_settings.pilot_base_url = "https://legacy.example.com"
-        pilot_settings.pilot_model_id = "legacy-model"
+        pilot_settings.pilot_base_url = LEGACY_BASE_URL
+        pilot_settings.pilot_model_id = LEGACY_MODEL_ID
         from app.pilot.routing import resolve_configuration, PilotConfigurationState
         assert resolve_configuration() == PilotConfigurationState.INVALID_REGISTRY
 
     def test_legacy_state(self):
         from app.pilot.config import pilot_settings
         pilot_settings.pilot_base_url = "https://api.example.com"
-        pilot_settings.pilot_model_id = "test-model"
+        pilot_settings.pilot_model_id = LEGACY_MODEL_ID
         from app.pilot.routing import resolve_configuration, PilotConfigurationState
         assert resolve_configuration() == PilotConfigurationState.LEGACY
 
@@ -379,8 +404,8 @@ class TestMultiProviderAPI:
 
     def test_health_invalid_registry_with_legacy(self, client):
         _setup_invalid_registry()
-        pilot_settings.pilot_base_url = "https://legacy.example.com"
-        pilot_settings.pilot_model_id = "legacy-model"
+        pilot_settings.pilot_base_url = LEGACY_BASE_URL
+        pilot_settings.pilot_model_id = LEGACY_MODEL_ID
         resp = client.get("/api/pilot/admin/health")
         assert resp.status_code == 500
         data = resp.json()
@@ -417,8 +442,8 @@ class TestMultiProviderAPI:
 
     def test_chat_invalid_registry_with_legacy(self, client):
         _setup_invalid_registry()
-        pilot_settings.pilot_base_url = "https://legacy.example.com"
-        pilot_settings.pilot_model_id = "legacy-model"
+        pilot_settings.pilot_base_url = LEGACY_BASE_URL
+        pilot_settings.pilot_model_id = LEGACY_MODEL_ID
         resp = client.post(
             "/api/pilot/v1/chat/completions",
             json={"model": "test", "messages": [{"role": "user", "content": "hi"}]},
@@ -683,8 +708,8 @@ class TestMultiProviderUI:
 
     def test_invalid_registry_with_legacy_ui(self, client):
         _setup_invalid_registry()
-        pilot_settings.pilot_base_url = "https://legacy.example.com"
-        pilot_settings.pilot_model_id = "legacy-model"
+        pilot_settings.pilot_base_url = LEGACY_BASE_URL
+        pilot_settings.pilot_model_id = LEGACY_MODEL_ID
         resp = client.get("/pilot")
         assert resp.status_code == 200
         assert "registry_invalid" in resp.text or "올바르지 않습니다" in resp.text
@@ -697,10 +722,10 @@ class TestMultiProviderUI:
         assert "NameError" not in resp.text
 
     def test_shows_legacy_mode_when_single_provider(self, client):
-        pilot_settings.pilot_base_url = "https://api.example.com"
-        pilot_settings.pilot_model_id = "test-model-v1"
-        pilot_settings.pilot_provider_id = "test-provider"
-        pilot_settings.pilot_upstream_model = "upstream-v1"
+        pilot_settings.pilot_base_url = LEGACY_BASE_URL
+        pilot_settings.pilot_model_id = LEGACY_MODEL_ID
+        pilot_settings.pilot_provider_id = LEGACY_PROVIDER_ID
+        pilot_settings.pilot_upstream_model = LEGACY_UPSTREAM_MODEL
         pilot_settings.pilot_timeout_seconds = 10
         resp = client.get("/pilot")
         assert resp.status_code == 200
@@ -734,10 +759,10 @@ class TestMultiProviderUI:
 
 class TestLegacyPhase1Compat:
     def test_legacy_health_via_registry(self, client):
-        pilot_settings.pilot_base_url = "https://api.test-pilot.example.com"
-        pilot_settings.pilot_model_id = "test-model-v1"
-        pilot_settings.pilot_provider_id = "test-provider"
-        pilot_settings.pilot_upstream_model = "upstream-model-v1"
+        pilot_settings.pilot_base_url = LEGACY_BASE_URL
+        pilot_settings.pilot_model_id = LEGACY_MODEL_ID
+        pilot_settings.pilot_provider_id = LEGACY_PROVIDER_ID
+        pilot_settings.pilot_upstream_model = LEGACY_UPSTREAM_MODEL
         pilot_settings.pilot_timeout_seconds = 10
         pilot_settings.provider_registry_json = ""
         reset_registry()
@@ -749,10 +774,10 @@ class TestLegacyPhase1Compat:
         assert data["configured_providers"] == 1
 
     def test_legacy_models_via_registry(self, client):
-        pilot_settings.pilot_base_url = "https://api.test-pilot.example.com"
-        pilot_settings.pilot_model_id = "test-model-v1"
-        pilot_settings.pilot_provider_id = "test-provider"
-        pilot_settings.pilot_upstream_model = "upstream-model-v1"
+        pilot_settings.pilot_base_url = LEGACY_BASE_URL
+        pilot_settings.pilot_model_id = LEGACY_MODEL_ID
+        pilot_settings.pilot_provider_id = LEGACY_PROVIDER_ID
+        pilot_settings.pilot_upstream_model = LEGACY_UPSTREAM_MODEL
         pilot_settings.pilot_timeout_seconds = 10
         pilot_settings.provider_registry_json = ""
         reset_registry()
@@ -764,17 +789,17 @@ class TestLegacyPhase1Compat:
         assert len(data["models"]) == 1
 
     def test_legacy_chat_via_registry(self, client):
-        pilot_settings.pilot_base_url = "https://api.test-pilot.example.com"
-        pilot_settings.pilot_model_id = "test-model-v1"
-        pilot_settings.pilot_provider_id = "test-provider"
-        pilot_settings.pilot_upstream_model = "upstream-model-v1"
+        pilot_settings.pilot_base_url = LEGACY_BASE_URL
+        pilot_settings.pilot_model_id = LEGACY_MODEL_ID
+        pilot_settings.pilot_provider_id = LEGACY_PROVIDER_ID
+        pilot_settings.pilot_upstream_model = LEGACY_UPSTREAM_MODEL
         pilot_settings.pilot_timeout_seconds = 10
         pilot_settings.provider_registry_json = ""
         reset_registry()
 
         from app.pilot import provider as prv
         async def fake_call(**kw):
-            return {"id": "test", "object": "chat.completion", "model": "test-model-v1",
+            return {"id": "test", "object": "chat.completion", "model": LEGACY_MODEL_ID,
                     "choices": [{"index": 0, "message": {"role": "assistant", "content": "Hello!"}, "finish_reason": "stop"}],
                     "usage": {"prompt_tokens": 5, "completion_tokens": 10, "total_tokens": 15},
                     "business14": {"mode": "byok-pilot", "provider": "test", "latency_ms": 100, "estimated_krw": None, "request_id": "b14req_test"}}
@@ -784,7 +809,7 @@ class TestLegacyPhase1Compat:
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
-                json={"model": "test-model-v1", "messages": [{"role": "user", "content": "hi"}]},
+                json={"model": LEGACY_MODEL_ID, "messages": [{"role": "user", "content": "hi"}]},
                 headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
             )
         finally:
@@ -837,8 +862,8 @@ class TestRegistrySentinelNonExposure:
         registry_json, legacy_on = _invalid_registry_setup
         pilot_settings.provider_registry_json = registry_json
         if legacy_on:
-            pilot_settings.pilot_base_url = "https://legacy.example.com"
-            pilot_settings.pilot_model_id = "legacy-model"
+            pilot_settings.pilot_base_url = LEGACY_BASE_URL
+            pilot_settings.pilot_model_id = LEGACY_MODEL_ID
             pilot_settings.pilot_provider_id = "legacy-provider"
             pilot_settings.pilot_upstream_model = "upstream-legacy"
         else:

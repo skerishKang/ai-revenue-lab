@@ -1,20 +1,29 @@
-"""Owner-pinned Free Google default and ordered tier fallback policy."""
+"""Owner-pinned Free Google default and ordered tier fallback policy.
+
+#7241: no model identity is written here. The roster expectations come from the
+effective tier tables (``effective_tier_default`` / ``effective_tier_fallback``),
+so the ordering and shape contracts below are still asserted against whatever
+document this host reads, while the owner's literal pins ("this exact Google
+model", "this exact roster") are owner-decision pins that only make sense on a
+host reading the owner's document.
+"""
 from __future__ import annotations
 
 import pytest
 
 from app.pilot import router_core
-from app.pilot.tier_fallback import TIER_DEFAULT_B14_MODEL, TIER_FALLBACK_B14_MODELS
+from app.pilot.tier_fallback import (
+    TIER_DEFAULT_B14_MODEL,
+    TIER_FALLBACK_B14_MODELS,
+    effective_tier_default,
+    effective_tier_fallback,
+)
+from _registry_values import requires_owner_document
+
+_ROSTER_GRADES = ("free", "plus", "pro", "max", "admin")
 
 
-def _ready(monkeypatch):
-    monkeypatch.setattr(
-        router_core, "_credential_status_for",
-        lambda cm: (True, "present", "platform_secret", cm.platform_provider_id),
-    )
-    monkeypatch.setattr(router_core, "_platform_secret_present", lambda cm: True)
-
-
+@requires_owner_document
 def test_google_free_grade_has_exact_owner_backups(monkeypatch):
     _ready(monkeypatch)
     assert TIER_DEFAULT_B14_MODEL == "google/gemini-3.1-flash-lite"
@@ -37,10 +46,33 @@ def test_google_free_grade_has_exact_owner_backups(monkeypatch):
     assert "owner_selected_tier_fallback:free" in decision.reason_codes
 
 
-@pytest.mark.parametrize("model_id,tier", [
-    ("opencode-go/muse-spark-1.3-contributor", "plus"),
-    ("google/gemini-3.1-flash-lite", "plus"),
-])
+def _ready(monkeypatch):
+    monkeypatch.setattr(
+        router_core, "_credential_status_for",
+        lambda cm: (True, "present", "platform_secret", cm.platform_provider_id),
+    )
+    monkeypatch.setattr(router_core, "_platform_secret_present", lambda cm: True)
+
+
+def _primary_and_a_non_free_case() -> list[tuple[str, str]]:
+    """(model_id, tier) cases that must not inherit the Free chain.
+
+    The first case is the effective Free default asked under a paid grade; the
+    second is a paid grade's own primary asked under another paid grade. Both
+    identities come from the effective tier tables, so the case list survives a
+    registry change and never collapses when one model serves every grade.
+    """
+    rosters = effective_tier_fallback()
+    cases = [(effective_tier_default(), "plus")]
+    for grade in _ROSTER_GRADES:
+        roster = rosters.get(grade)
+        if grade != "free" and roster:
+            cases.append((roster[0], "max"))
+            break
+    return [case for case in cases if case[0]]
+
+
+@pytest.mark.parametrize("model_id,tier", _primary_and_a_non_free_case())
 def test_other_primary_or_grade_does_not_inherit_free_fallback(monkeypatch, model_id, tier):
     # #2505: a free primary no longer resolves at all, so it is proven
     # refused in test_2505_b14_free_candidate_execution_block.py.
@@ -72,24 +104,25 @@ def test_a_caller_cannot_narrow_the_owner_roster_with_an_attempt_count(monkeypat
     """#4317: an attempt count no longer shortens the owner roster."""
     _ready(monkeypatch)
     decision = router_core.resolve_route(
-        TIER_DEFAULT_B14_MODEL,
+        effective_tier_default(),
         {"product_tier": "free", "max_attempts": 1},
     )
     assert decision.route_mode == "manual"
     assert decision.fallback_allowed is True
     assert [item["model_id"] for item in decision.eligible_fallback] == list(
-        TIER_FALLBACK_B14_MODELS["free"]
+        effective_tier_fallback()["free"]
     )
 
 
 def test_an_explicit_attempt_count_does_not_narrow_the_nonstreaming_contract(monkeypatch):
     """#4317: the roster is the same whatever number a caller sends."""
     _ready(monkeypatch)
-    default = router_core.resolve_route(TIER_DEFAULT_B14_MODEL, {"product_tier": "free"})
+    primary = effective_tier_default()
+    default = router_core.resolve_route(primary, {"product_tier": "free"})
     capped = router_core.resolve_route(
-        TIER_DEFAULT_B14_MODEL, {"product_tier": "free", "max_attempts": 2},
+        primary, {"product_tier": "free", "max_attempts": 2},
     )
-    assert len(default.eligible_fallback) == len(TIER_FALLBACK_B14_MODELS["free"])
+    assert len(default.eligible_fallback) == len(effective_tier_fallback()["free"])
     assert [item["model_id"] for item in capped.eligible_fallback] == [
         item["model_id"] for item in default.eligible_fallback
     ]
@@ -112,13 +145,48 @@ def test_b14_still_accepts_the_attempt_option_only_to_drop_it(caplog):
     )
 
 
+@pytest.mark.parametrize("tier", _ROSTER_GRADES)
+def test_owner_test_phase_rosters_have_the_exact_recovery_order(tier):
+    """Owner decision 2026-11-04: the paid grades walk one shared ordered
+    roster, and Free walks its own shorter chain.
+
+    The order contract is read from the effective tier tables instead of
+    literals: the lane ships exactly the effective roster, no roster repeats a
+    candidate, every paid roster is the same tuple with its own grade primary
+    at the head, and Free opens on the backups the shared chain carries behind
+    its primary. The literal identities are the owner's pin and are asserted,
+    unchanged, in ``test_owner_test_phase_rosters_pin_the_owner_identities``.
+    """
+    rosters = effective_tier_fallback()
+    if not rosters.get(tier):
+        pytest.skip(f"no roster declared for grade {tier!r}")
+    expected = rosters[tier]
+    assert TIER_FALLBACK_B14_MODELS[tier] == expected
+    assert len(set(expected)) == len(expected)
+    paid = {grade: rosters[grade] for grade in _ROSTER_GRADES
+            if grade != "free" and rosters.get(grade)}
+    if tier == "free":
+        assert expected
+        shared = next(iter(paid.values())) if paid else ()
+        if shared:
+            # The free chain opens on backups the paid chain offers behind
+            # its primary.
+            assert set(expected[:2]) <= set(shared[1:])
+        return
+    shared = next(iter(paid.values()))
+    assert all(roster == shared for roster in paid.values())
+    assert expected[0] == rosters[tier][0]
+    assert set(expected) == set(shared)
+
+
+@requires_owner_document
 @pytest.mark.parametrize("tier,expected", [
     ("plus", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
     ("pro", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
     ("max", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
     ("admin", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
 ])
-def test_owner_test_phase_rosters_have_the_exact_recovery_order(tier, expected):
+def test_owner_test_phase_rosters_pin_the_owner_identities(tier, expected):
     assert TIER_FALLBACK_B14_MODELS[tier] == expected
 
 

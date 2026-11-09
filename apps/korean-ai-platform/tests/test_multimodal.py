@@ -8,8 +8,42 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
+from app.pilot.catalog import get_catalog_by_id
 from app.pilot.multimodal_contract import MAX_IMAGE_BYTES, validate_image_data_url
 from app.pilot.b14_runtime_config import runtime_config
+
+from _registry_values import model_rows, provider_of, provider_row
+
+
+def _image_model(required: tuple[str, ...] = ("chat", "image")) -> str:
+    """A catalog-routed model that declares the capabilities a case needs.
+
+    #7241: which registered model carries the image capability is the
+    effective registry's answer, not a literal in this suite.
+    """
+    for row in model_rows():
+        catalog_model = get_catalog_by_id(row["id"])
+        if catalog_model is None or not catalog_model.enabled:
+            continue
+        if set(required) <= set(row["capabilities"]):
+            return row["id"]
+    pytest.skip(f"the effective registry declares no enabled model with {required!r}")
+
+
+def _text_only_model() -> str:
+    return _image_model(("chat",))
+
+
+def _provider_binding(model_id: str) -> str:
+    """The credential slot the model's own Provider reads."""
+    return provider_row(provider_of(model_id))["credential_binding_name"]
+
+
+# The image-capable catalog route and the text-only route this suite switches
+# between.
+IMAGE_MODEL = _image_model()
+TEXT_MODEL = _text_only_model()
+IMAGE_BINDING = _provider_binding(IMAGE_MODEL)
 
 
 PNG = b"\x89PNG\r\n\x1a\n" + b"phase8"
@@ -32,16 +66,19 @@ def multimodal_content(url: str | None = None):
 def _mock_openrouter_mode():
     import os
 
-    old_agnes_key = os.environ.get("PADIEM_B14_CREDENTIAL_01")
-    os.environ["PADIEM_B14_CREDENTIAL_01"] = "sk-test-agnes-mm-0123456789"
+    # The default text route's own credential slot, read from the effective
+    # registry; only the synthetic value is written here.
+    default_binding = _provider_binding(TEXT_MODEL)
+    old_agnes_key = os.environ.get(default_binding)
+    os.environ[default_binding] = "sk-test-multimodal-mode-0123456789"
     old_mode = runtime_config.provider_mode
     runtime_config.provider_mode = "mock"
     yield
     runtime_config.provider_mode = old_mode
     if old_agnes_key is None:
-        os.environ.pop("PADIEM_B14_CREDENTIAL_01", None)
+        os.environ.pop(default_binding, None)
     else:
-        os.environ["PADIEM_B14_CREDENTIAL_01"] = old_agnes_key
+        os.environ[default_binding] = old_agnes_key
 
 
 @pytest.fixture()
@@ -50,9 +87,9 @@ def client():
         yield test_client
 
 
-def post_image(client, *, model="google/gemini-3.1-flash-lite", content=None, business14=None):
+def post_image(client, *, model=None, content=None, business14=None):
     payload = {
-        "model": model,
+        "model": model or IMAGE_MODEL,
         "messages": [{"role": "user", "content": content or multimodal_content()}],
     }
     if business14 is not None:
@@ -63,7 +100,7 @@ def post_image(client, *, model="google/gemini-3.1-flash-lite", content=None, bu
 def test_text_chat_contract_remains_backward_compatible(client):
     response = client.post(
         "/api/pilot/v1/chat/completions",
-        json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "안녕"}]},
+        json={"model": TEXT_MODEL, "messages": [{"role": "user", "content": "안녕"}]},
     )
     assert response.status_code == 200
     assert response.json()["business14"]["selected_model"]
@@ -76,7 +113,8 @@ def test_valid_multimodal_manual_route_passes_the_validated_array(
 
     # The image-capable catalog route answers and the validated multimodal
     # array passes through to the platform adapter.
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "sk-chain-unit-google-0123456789")
+    # Synthetic value for the slot the image route's own Provider reads.
+    monkeypatch.setenv(IMAGE_BINDING, "sk-chain-unit-image-0123456789")
     captured = {}
 
     async def fake_call(**kwargs):
@@ -94,7 +132,7 @@ def test_valid_multimodal_manual_route_passes_the_validated_array(
     response = post_image(client, business14={"required_capabilities": ["chat", "image"]})
     assert response.status_code == 200
     body = response.json()
-    assert body["business14"]["selected_model"] == "google/gemini-3.1-flash-lite"
+    assert body["business14"]["selected_model"] == IMAGE_MODEL
     assert "routing_policy" not in body["business14"]
     outbound = captured["messages"]
     assert isinstance(outbound[0]["content"], list)
@@ -107,7 +145,7 @@ def test_valid_multimodal_manual_route_passes_the_validated_array(
 def test_only_user_role_may_use_multimodal_array(client, role):
     response = client.post(
         "/api/pilot/v1/chat/completions",
-        json={"model": "google/gemini-3.1-flash-lite", "messages": [{"role": role, "content": multimodal_content()}]},
+        json={"model": IMAGE_MODEL, "messages": [{"role": role, "content": multimodal_content()}]},
     )
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "invalid_body"
@@ -184,7 +222,7 @@ def test_manual_text_only_model_fails_before_openrouter_call(client, monkeypatch
     monkeypatch.setattr(plat, "call_platform_chat_completions", should_not_call)
     response = post_image(
         client,
-        model="agnes-ai/agnes-3.0-flash",
+        model=_text_only_model(),
     )
     assert response.status_code == 503
     body = response.json()
@@ -195,12 +233,12 @@ def test_manual_text_only_model_fails_before_openrouter_call(client, monkeypatch
 
 def test_retired_scorer_options_are_unknown_fields(client, monkeypatch):
     """B4: scorer-era options are rejected as unknown business14 fields."""
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
-    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
+    text_model = _text_only_model()
+    monkeypatch.setenv(_provider_binding(text_model), "sk-chain-unit-text-0123456789")
     response = client.post(
         "/api/pilot/v1/chat/completions",
         json={
-            "model": "agnes-ai/agnes-3.0-flash",
+            "model": text_model,
             "messages": [{"role": "user", "content": "안녕"}],
             "business14": {"task_type": "coding", "required_capabilities": ["coding"]},
         },

@@ -15,22 +15,68 @@ B14 already owns the whole recovery contract, and this suite pins it:
 * an arbitrary catalog substitution stays disabled.
 
 No provider is contacted: the platform adapter is patched directly.
+
+#7241 2단계: the roster, the primary and the credential slot are never written
+here. The ordering contract is read from ``effective_tier_default()`` /
+``effective_tier_fallback()`` — the app's own authority tables — and every
+expectation that names a specific model is expressed against those tables. A
+synthetic model id replaces the retired stand-in that this suite used to write
+for its long-roster case.
 """
 from __future__ import annotations
 
 import pytest
 
+from app.pilot import platform_secrets as ps
 from app.pilot import router_core
 from app.pilot.errors import UpstreamAuthFailed, UpstreamServerError
-from app.pilot.tier_fallback import TIER_DEFAULT_B14_MODEL, TIER_FALLBACK_B14_MODELS
+from app.pilot.tier_fallback import effective_tier_default, effective_tier_fallback
 
-FREE_ROSTER = TIER_FALLBACK_B14_MODELS["free"]
+from _registry_values import model_rows, provider_of, provider_row, registry
+
+# The effective primary and the effective per-grade rosters: the same source
+# the router resolves a request against, shipped document or private registry.
+FREE_PRIMARY = effective_tier_default()
+FREE_ROSTER = tuple(effective_tier_fallback()["free"])
+
 
 # The exact option set the ordinary completed Chat path sends: the verified
 # product grade, no arbitrary catalog fallback, and no attempt pin.
 COMPLETED_CHAT_OPTIONS = {
     "product_tier": "free",
 }
+
+
+# A roster deliberately longer than the effective one, built from registry rows
+# that are already registered (so the walk can visit them) but are not part of
+# the Free roster: no deployment identity is written here.
+def _extra_registered_candidates(count: int) -> tuple[str, ...]:
+    taken = {FREE_PRIMARY, *FREE_ROSTER}
+    extra = [
+        row["id"] for row in model_rows()
+        if row["id"] not in taken and row.get("enabled", True)
+    ]
+    return tuple(extra[:count])
+
+
+def _primary_binding() -> str:
+    """The credential slot of the registry Provider that owns the primary."""
+    return provider_row(provider_of(FREE_PRIMARY))["credential_binding_name"]
+
+
+def _set_registry_credentials(monkeypatch, model_ids) -> None:
+    """Give every registry Provider the walk may dial a synthetic value."""
+    providers = registry()["providers"]
+    for model_id in model_ids:
+        row = providers.get(provider_of(model_id))
+        if row is not None:
+            monkeypatch.setenv(
+                row["credential_binding_name"],
+                f"synthetic-{provider_of(model_id)}-0123456789abcdef",
+            )
+
+
+LONG_ROSTER = (*FREE_ROSTER, *_extra_registered_candidates(3))
 
 
 def _ready(monkeypatch):
@@ -44,9 +90,9 @@ def _ready(monkeypatch):
 def test_the_completed_chat_option_set_resolves_the_whole_owner_roster(monkeypatch):
     """The allowed candidate list is the whole budget, with no attempt count."""
     _ready(monkeypatch)
-    decision = router_core.resolve_route(TIER_DEFAULT_B14_MODEL, dict(COMPLETED_CHAT_OPTIONS))
+    decision = router_core.resolve_route(FREE_PRIMARY, dict(COMPLETED_CHAT_OPTIONS))
     assert decision.route_mode == "manual"
-    assert decision.selected_model == TIER_DEFAULT_B14_MODEL
+    assert decision.selected_model == FREE_PRIMARY
     assert decision.fallback_allowed is True
     assert [item["model_id"] for item in decision.eligible_fallback] == list(FREE_ROSTER)
     assert "owner_selected_tier_fallback:free" in decision.reason_codes
@@ -58,7 +104,7 @@ def test_an_explicit_attempt_count_cannot_narrow_the_owner_roster(monkeypatch):
     """#4317: a caller-declared count no longer shortens the owner roster."""
     _ready(monkeypatch)
     decision = router_core.resolve_route(
-        TIER_DEFAULT_B14_MODEL, dict(COMPLETED_CHAT_OPTIONS, max_attempts=1),
+        FREE_PRIMARY, dict(COMPLETED_CHAT_OPTIONS, max_attempts=1),
     )
     assert decision.fallback_allowed is True
     assert [item["model_id"] for item in decision.eligible_fallback] == list(FREE_ROSTER)
@@ -67,7 +113,7 @@ def test_an_explicit_attempt_count_cannot_narrow_the_owner_roster(monkeypatch):
 def test_the_owner_roster_never_repeats_a_candidate():
     """A repeated candidate would let the walk loop on the same model."""
     assert len(set(FREE_ROSTER)) == len(FREE_ROSTER)
-    assert TIER_DEFAULT_B14_MODEL not in FREE_ROSTER
+    assert FREE_PRIMARY not in FREE_ROSTER
 
 
 def test_only_recoverable_provider_errors_advance_to_the_next_candidate():
@@ -85,7 +131,7 @@ def test_the_gateway_walks_the_owner_roster_after_a_recoverable_failure(client, 
     from app.pilot import platform as plat
 
     rcfg.provider_mode = "live"
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_03", "sk-free-google-0123456789abcdef")
+    monkeypatch.setenv(_primary_binding(), "sk-free-primary-0123456789abcdef")
     _ready(monkeypatch)
 
     original = plat.call_platform_chat_completions
@@ -116,7 +162,7 @@ def test_the_gateway_walks_the_owner_roster_after_a_recoverable_failure(client, 
         response = client.post(
             "/api/pilot/v1/chat/completions",
             json={
-                "model": TIER_DEFAULT_B14_MODEL,
+                "model": FREE_PRIMARY,
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": dict(COMPLETED_CHAT_OPTIONS),
             },
@@ -127,7 +173,7 @@ def test_the_gateway_walks_the_owner_roster_after_a_recoverable_failure(client, 
     assert response.status_code == 200
     assert len(calls) == 2
     # The primary failed and the next owner-roster candidate answered.
-    assert calls[0]["model_id"] == TIER_DEFAULT_B14_MODEL
+    assert calls[0]["model_id"] == FREE_PRIMARY
     assert calls[1]["model_id"] == FREE_ROSTER[0]
     # Each candidate is visited exactly once.
     assert len({call["model_id"] for call in calls}) == len(calls)
@@ -151,7 +197,7 @@ def test_the_owner_roster_walk_terminates_when_every_candidate_fails(client, mon
     from app.pilot import platform as plat
 
     rcfg.provider_mode = "live"
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_03", "sk-free-google-0123456789abcdef")
+    monkeypatch.setenv(_primary_binding(), "sk-free-primary-0123456789abcdef")
     _ready(monkeypatch)
 
     original = plat.call_platform_chat_completions
@@ -167,7 +213,7 @@ def test_the_owner_roster_walk_terminates_when_every_candidate_fails(client, mon
         response = client.post(
             "/api/pilot/v1/chat/completions",
             json={
-                "model": TIER_DEFAULT_B14_MODEL,
+                "model": FREE_PRIMARY,
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": dict(COMPLETED_CHAT_OPTIONS),
             },
@@ -176,7 +222,7 @@ def test_the_owner_roster_walk_terminates_when_every_candidate_fails(client, mon
         plat.call_platform_chat_completions = original
 
     # The primary plus every roster candidate, each exactly once, and no more.
-    expected = [TIER_DEFAULT_B14_MODEL, *FREE_ROSTER]
+    expected = [FREE_PRIMARY, *FREE_ROSTER]
     assert [call["model_id"] for call in calls] == expected
     assert len({call["model_id"] for call in calls}) == len(calls)
     assert response.status_code >= 400
@@ -188,7 +234,7 @@ def test_the_gateway_does_not_advance_on_a_non_recoverable_failure(client, monke
     from app.pilot import platform as plat
 
     rcfg.provider_mode = "live"
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_03", "sk-free-google-0123456789abcdef")
+    monkeypatch.setenv(_primary_binding(), "sk-free-primary-0123456789abcdef")
     _ready(monkeypatch)
 
     original = plat.call_platform_chat_completions
@@ -204,7 +250,7 @@ def test_the_gateway_does_not_advance_on_a_non_recoverable_failure(client, monke
         response = client.post(
             "/api/pilot/v1/chat/completions",
             json={
-                "model": TIER_DEFAULT_B14_MODEL,
+                "model": FREE_PRIMARY,
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": dict(COMPLETED_CHAT_OPTIONS),
             },
@@ -215,7 +261,7 @@ def test_the_gateway_does_not_advance_on_a_non_recoverable_failure(client, monke
     assert response.status_code >= 400
     # Exactly one provider call: no substitution on a non-recoverable error.
     assert len(calls) == 1
-    assert calls[0]["model_id"] == TIER_DEFAULT_B14_MODEL
+    assert calls[0]["model_id"] == FREE_PRIMARY
 
 
 def test_a_roster_longer_than_four_is_walked_in_full_with_no_numeric_cap(
@@ -231,15 +277,8 @@ def test_a_roster_longer_than_four_is_walked_in_full_with_no_numeric_cap(
     from app.pilot import platform as plat
     from app.pilot import tier_fallback
 
-    long_roster = (
-        "google/gemma-4-26b-a4b-it",
-        "google/gemini-3.5-flash-lite",
-        "google/gemma-4-31b-it",
-        "agnes-ai/agnes-3.0-flash",
-        "poolside/laguna-s-2.1",
-        "inception/mercury-2.5",
-    )
-    assert len(long_roster) > 3
+    long_roster = LONG_ROSTER
+    assert len(long_roster) > len(FREE_ROSTER)
     monkeypatch.setattr(
         tier_fallback, "TIER_FALLBACK_B14_MODELS",
         {**tier_fallback.TIER_FALLBACK_B14_MODELS, "free": long_roster},
@@ -247,10 +286,10 @@ def test_a_roster_longer_than_four_is_walked_in_full_with_no_numeric_cap(
     _ready(monkeypatch)
 
     rcfg.provider_mode = "live"
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_03", "sk-free-google-0123456789abcdef")
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-free-agnes-0123456789abcdef")
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "sk-free-poolside-0123456789abcdef")
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_11", "sk-free-inception-0123456789abcdef")
+    monkeypatch.setenv(_primary_binding(), "sk-free-primary-0123456789abcdef")
+    # Every roster Provider's own slot holds a value, so a missing credential can
+    # never be the reason a candidate is skipped.
+    _set_registry_credentials(monkeypatch, long_roster)
 
     original = plat.call_platform_chat_completions
     calls: list[str] = []
@@ -280,7 +319,7 @@ def test_a_roster_longer_than_four_is_walked_in_full_with_no_numeric_cap(
         response = client.post(
             "/api/pilot/v1/chat/completions",
             json={
-                "model": TIER_DEFAULT_B14_MODEL,
+                "model": FREE_PRIMARY,
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": dict(COMPLETED_CHAT_OPTIONS),
             },
@@ -291,7 +330,7 @@ def test_a_roster_longer_than_four_is_walked_in_full_with_no_numeric_cap(
     assert response.status_code == 200
     # The primary plus every roster candidate, each visited exactly once, and
     # the last one answered.
-    expected = [TIER_DEFAULT_B14_MODEL, *long_roster]
+    expected = [FREE_PRIMARY, *long_roster]
     assert calls == expected
     assert len(set(calls)) == len(calls)
     business = response.json()["business14"]

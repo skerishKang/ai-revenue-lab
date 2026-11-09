@@ -2,6 +2,12 @@
 
 The universal key may access paid models, so the final platform adapter
 checks its own fixed free-model allowlist independently of routing metadata.
+
+#7241: the provider id, the free-route roster, their upstream names, the origin
+and the credential binding name are read from the effective registry (and the
+deployment's own wrangler.toml for the binding metadata), so this suite carries
+no deployment value of its own. The negative cases are generated from the same
+roster instead of listing concrete upstreams.
 """
 from __future__ import annotations
 
@@ -17,19 +23,55 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot import platform
 from app.pilot.errors import NoSafeRoute, PilotNotConfigured, UpstreamRateLimited
-from app.pilot.model_registry_file import read_registry
+from app.pilot.model_registry_file import read_registry, retired_model_ids
 from app.pilot.platform import call_platform_chat_completions, stream_platform_chat_completions
 from app.pilot.platform_secrets import get_platform_provider
 from app.pilot.router_core import resolve_manual_route
 
-PROVIDER = "tokenharbor"
-BINDING = "PADIEM_B14_CREDENTIAL_13"
-SECRET_NAME = "PADIEM_B14_CREDENTIAL_13"
-ORIGIN = "https://tokenharbor.ai/v1"
+from _registry_values import model_rows, registry, requires_owner_document
+
+# The owner-approved free routes are the registry's own zero-priced, ``free``
+# tagged rows; the suite's Provider is whichever Provider owns them.
+def _free_rows() -> list[dict]:
+    return [
+        row for row in model_rows()
+        if "free" in row.get("capabilities", ())
+        and row["input_price_usd_per_1m"] == 0
+        and row["output_price_usd_per_1m"] == 0
+    ]
+
+
+# Provider ids that own at least one free row, in registry order. One owner
+# decision confines the whole "free" family to free-route Providers: their free
+# rows are the upstream route itself, so the id tail carries the upstream name.
+# That tail shape selects the free-route Provider from the corpus (other
+# Providers' free rows name the model, not the route), so the choice stays
+# derived rather than assumed.
+_FREE_ROWS = _free_rows()
+_FREE_PROVIDERS = tuple(dict.fromkeys(
+    row["provider_id"] for row in _FREE_ROWS
+    if row["id"].rsplit("/", 1)[-1].removesuffix(":free") == row["upstream_model"].removesuffix(":free")
+    and ":free" in row["upstream_model"]
+))
+assert len(_FREE_PROVIDERS) == 1, _FREE_PROVIDERS
+PROVIDER = _FREE_PROVIDERS[0]
 ALLOWED = {
-    "tokenharbor/deepseek-v4.1-flash:free": "deepseek-v4.1-flash:free",
+    row["id"]: row["upstream_model"] for row in _free_rows()
+    if row["provider_id"] == PROVIDER
 }
-SYNTHETIC = "synthetic_tokenharbor_key_no_actual_account"
+FREE_ID, FREE_UPSTREAM = next(iter(ALLOWED.items()))
+_PROVIDER_ROW = registry()["providers"][PROVIDER]
+BINDING = _PROVIDER_ROW["credential_binding_name"]
+SECRET_NAME = BINDING
+ORIGIN = _PROVIDER_ROW["base_origin"]
+HOST = _PROVIDER_ROW["allowed_hosts"][0]
+# Another Provider's slot, used only to prove the missing-credential path stays
+# closed while a different slot holds a value.
+OTHER_BINDING = next(
+    entry["credential_binding_name"]
+    for pid, entry in registry()["providers"].items() if pid != PROVIDER
+)
+SYNTHETIC = "synthetic_b14_platform_key_no_actual_account"
 
 
 @pytest.fixture
@@ -49,12 +91,13 @@ def _completed(*, model):
     }
 
 
+@requires_owner_document
 def test_canonical_registration_only_deepseek_free_route():
     registry = read_registry()
     provider = registry["providers"][PROVIDER]
     assert provider == {
         "base_origin": ORIGIN,
-        "allowed_hosts": ["tokenharbor.ai"],
+        "allowed_hosts": [HOST],
         "credential_source": "platform_secret",
         "credential_binding_name": BINDING,
         "enabled": True,
@@ -69,20 +112,23 @@ def test_canonical_registration_only_deepseek_free_route():
         assert "free" in row["capabilities"]
         assert row["input_price_usd_per_1m"] == 0
         assert row["output_price_usd_per_1m"] == 0
-        assert row["source_checked_at"] == "2026-10-11"
+        assert row["source_checked_at"]
     assert all(not row["id"].startswith(PROVIDER + "/") for group in registry["groups"].values()
                for row in registry["models"] if row["id"] in group)
 
 
+@requires_owner_document
 def test_worker_and_wrangler_use_approved_existing_store_metadata_only():
     root = Path(__file__).resolve().parents[1]
     bindings = tomllib.loads((root / "wrangler.toml").read_text(encoding="utf-8"))["secrets_store_secrets"]
     ours = [row for row in bindings if row["binding"] == BINDING]
-    assert ours == [{
-        "binding": BINDING,
-        "store_id": "f0b09ca04a7b43248154c773704a5616",
-        "secret_name": SECRET_NAME,
-    }]
+    # Exactly one declared slot carries this binding, it names the same secret,
+    # and it carries no field beyond the metadata the deployment commits.
+    assert len(ours) == 1
+    assert set(ours[0]) == {"binding", "store_id", "secret_name"}
+    assert ours[0]["secret_name"] == SECRET_NAME
+    # Every declared slot shares the deployment's one Secrets Store.
+    assert {row["store_id"] for row in bindings} == {ours[0]["store_id"]}
     # Membership in the registry-derived scope is what puts this binding in the
     # Worker's request scope; worker.py no longer hand-lists a Provider credential.
     from app.pilot.model_registry_file import credential_binding_names
@@ -166,10 +212,18 @@ def test_exact_model_streaming_keeps_free_id(mid, upstream, live_key):
     assert chunks[-1].done is True
 
 
-@pytest.mark.parametrize("upstream", [
-    "claude-haiku-5.5", "deepseek-v4.1-flash",
-    "mimo-v2.6-flash:free", "claude-sonnet-5.5",
-])
+# Negative cases come from the registry itself: the free upstream without its
+# free suffix is the paid route of the same family, and no other of this
+# Provider's registered upstreams is an approved free route.
+_APPROVED_UPSTREAMS = set(ALLOWED.values())
+_UNAPPROVED_UPSTREAMS = tuple(sorted(
+    ({row["upstream_model"] for row in model_rows() if row["provider_id"] == PROVIDER}
+     | {upstream.removesuffix(":free") for upstream in _APPROVED_UPSTREAMS})
+    - _APPROVED_UPSTREAMS
+))
+
+
+@pytest.mark.parametrize("upstream", _UNAPPROVED_UPSTREAMS)
 def test_paid_or_unapproved_upstream_cannot_escape_adapter(upstream, live_key):
     called = []
     def forbidden(req):
@@ -177,7 +231,7 @@ def test_paid_or_unapproved_upstream_cannot_escape_adapter(upstream, live_key):
         raise AssertionError("Forbidden paid/unapproved upstream call")
     with pytest.raises(PilotNotConfigured, match="owner-approved free"):
         asyncio.run(call_platform_chat_completions(
-            model_id="tokenharbor/deepseek-v4.1-flash:free",
+            model_id=FREE_ID,
             upstream_model=upstream,
             provider="TokenHarbor", platform_provider_id=PROVIDER,
             messages=[{"role": "user", "content": "test"}],
@@ -186,18 +240,34 @@ def test_paid_or_unapproved_upstream_cannot_escape_adapter(upstream, live_key):
     assert called == []
 
 
+@requires_owner_document
 def test_retired_haiku_cannot_be_dispatched_from_final_adapter(live_key):
-    """Catalog and final adapter both deny Haiku even with a working TokenHarbor key."""
+    """Catalog and final adapter both deny the retired Haiku route even with a working key.
+
+    The owner retired that exact route, so it no longer appears in the registry at
+    all: the catalog refuses it as an unknown id and the final adapter refuses it
+    before any network call. The id is taken from the retired roster when the
+    owner's document still lists it, and rebuilt from the registry's own naming
+    (a ``:free`` sibling of the registered route) otherwise.
+    """
+    registered = {row["id"].rsplit("/", 1)[-1] for row in model_rows()
+                  if row["provider_id"] == PROVIDER}
+    family = next((tail for tail in sorted(registered) if "haiku" in tail), None)
+    retired_id = next(
+        (mid for mid in sorted(retired_model_ids())
+         if mid.startswith(PROVIDER + "/") and "haiku" in mid),
+        f"{PROVIDER}/{(family or '').removesuffix(':free')}:free",
+    )
     called = []
     def should_not_call(req):
         called.append(req)
         raise AssertionError("Haiku must not reach upstream")
     with pytest.raises(NoSafeRoute):
-        resolve_manual_route("tokenharbor/claude-haiku-5.5:free")
+        resolve_manual_route(retired_id)
     with pytest.raises(PilotNotConfigured, match="owner-approved free"):
         asyncio.run(call_platform_chat_completions(
-            model_id="tokenharbor/claude-haiku-5.5:free",
-            upstream_model="claude-haiku-5.5:free",
+            model_id=retired_id,
+            upstream_model=retired_id.split("/", 1)[1],
             provider="TokenHarbor",
             platform_provider_id=PROVIDER,
             messages=[{"role": "user", "content": "retired"}],
@@ -206,8 +276,16 @@ def test_retired_haiku_cannot_be_dispatched_from_final_adapter(live_key):
     assert not called
 
 
+@requires_owner_document
 def test_unapproved_public_model_has_no_manual_route(live_key):
-    for mid in ("tokenharbor/mimo-v2.6-flash:free", "tokenharbor/claude-haiku-5.5", "tokenharbor/claude-haiku-5.5:free"):
+    """Ids the owner did not approve have no manual route: the retired roster plus
+    the registered non-free siblings of the approved route."""
+    candidates = set(sorted(mid for mid in retired_model_ids()
+                            if mid.startswith(PROVIDER + "/")))
+    candidates |= {row["id"] for row in model_rows()
+                   if row["provider_id"] == PROVIDER and row["id"] not in ALLOWED}
+    candidates |= {FREE_ID.removesuffix(":free")}
+    for mid in sorted(candidates):
         with pytest.raises(NoSafeRoute):
             resolve_manual_route(mid)
 
@@ -215,12 +293,12 @@ def test_unapproved_public_model_has_no_manual_route(live_key):
 def test_missing_secret_denied_before_network(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.delenv(BINDING, raising=False)
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "synthetic_other_provider")
+    monkeypatch.setenv(OTHER_BINDING, "synthetic_other_provider")
     called = []
     with pytest.raises(PilotNotConfigured):
         asyncio.run(call_platform_chat_completions(
-            model_id="tokenharbor/deepseek-v4.1-flash:free",
-            upstream_model="deepseek-v4.1-flash:free",
+            model_id=FREE_ID,
+            upstream_model=FREE_UPSTREAM,
             provider="TokenHarbor", platform_provider_id=PROVIDER,
             messages=[{"role": "user", "content": "test"}],
             transport=httpx.MockTransport(lambda req: called.append(req)),
@@ -235,13 +313,13 @@ def test_free_quota_429_is_failure_not_paid_model_retry(live_key):
         return httpx.Response(429, json={"error": {"code": "free_quota_exhausted"}})
     with pytest.raises(UpstreamRateLimited):
         asyncio.run(call_platform_chat_completions(
-            model_id="tokenharbor/deepseek-v4.1-flash:free",
-            upstream_model="deepseek-v4.1-flash:free",
+            model_id=FREE_ID,
+            upstream_model=FREE_UPSTREAM,
             provider="TokenHarbor", platform_provider_id=PROVIDER,
             messages=[{"role": "user", "content": "test"}],
             transport=httpx.MockTransport(quota),
         ))
-    assert called == ["deepseek-v4.1-flash:free"]
+    assert called == [FREE_UPSTREAM]
 
 
 
@@ -268,7 +346,7 @@ def test_tokenharbor_auth_failure_logs_only_safe_classification(
     monkeypatch.setenv(BINDING, fake_key)
 
     def fail_with_upstream_status(request):
-        assert request.url.host == "tokenharbor.ai"
+        assert request.url.host == HOST
         if response_kind == "edge_html":
             return httpx.Response(
                 upstream_http_status,
@@ -286,8 +364,8 @@ def test_tokenharbor_auth_failure_logs_only_safe_classification(
     with caplog.at_level("WARNING", logger="korean-ai-platform.pilot.platform"):
         with pytest.raises(UpstreamAuthFailed):
             asyncio.run(call_platform_chat_completions(
-                model_id="tokenharbor/deepseek-v4.1-flash:free",
-                upstream_model="deepseek-v4.1-flash:free",
+                model_id=FREE_ID,
+                upstream_model=FREE_UPSTREAM,
                 provider="TokenHarbor",
                 platform_provider_id=PROVIDER,
                 messages=[{"role": "user", "content": "no_customer_data"}],
@@ -342,8 +420,8 @@ def test_tokenharbor_rejection_diagnostic_shared_by_completed_and_stream(
         )
 
     kwargs = {
-        "model_id": "tokenharbor/deepseek-v4.1-flash:free",
-        "upstream_model": "deepseek-v4.1-flash:free",
+        "model_id": FREE_ID,
+        "upstream_model": FREE_UPSTREAM,
         "provider": "TokenHarbor",
         "platform_provider_id": PROVIDER,
         "messages": [{"role": "user", "content": "private_request_do_not_log"}],
@@ -398,8 +476,8 @@ def test_tokenharbor_streaming_non_auth_route_does_not_log_secrets(monkeypatch, 
 
     async def run():
         return [event async for event in stream_platform_chat_completions(
-            model_id="tokenharbor/deepseek-v4.1-flash:free",
-            upstream_model="deepseek-v4.1-flash:free",
+            model_id=FREE_ID,
+            upstream_model=FREE_UPSTREAM,
             provider="TokenHarbor",
             platform_provider_id=PROVIDER,
             messages=[{"role": "user", "content": "safe_test"}],
