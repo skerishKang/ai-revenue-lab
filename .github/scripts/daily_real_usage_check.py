@@ -347,10 +347,11 @@ def flow_voice(flow: Flow, cookie: str) -> None:
         flow.fail("voice_relay_timeout")
         return
     except Exception as exc:
-        # The exception class is public diagnostics: it names the failure layer
-        # (handshake status, DNS, TLS, protocol) without any header, cookie,
-        # token or URL value.
-        flow.fail(f"voice_relay_transport_error_{type(exc).__name__}")
+        # The class plus a scrubbed message fragment names the failing layer
+        # without echoing credentials: the relay URL carries no token and the
+        # session cookie never appears in these messages.
+        detail = str(exc).replace("padiem_session=", "session=")[:120]
+        flow.fail(f"voice_relay_transport_error_{type(exc).__name__}_{detail}")
         return
     if close_code in (4401, 4503, 4500, 4429):
         flow.fail(f"voice_relay_closed_{close_code}")
