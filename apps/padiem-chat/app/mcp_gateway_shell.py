@@ -15,6 +15,15 @@ import time
 from collections.abc import Mapping
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
+from padiem_ai_core.pc_shell_selection import (
+    PC_SHELL_DEFAULT_NAME,
+    PC_SHELL_NAMES,
+    SHELL_WHOAMI,
+    SHELL_WSL,
+    resolve_shell,
+    resolve_user_helper_shell,
+    system_launch_env_lines,
+)
 
 PC_SHELL_TOOL_NAME = "pc_shell"
 PC_SHELL_START_TOOL_NAME = "pc_shell_start"
@@ -24,7 +33,10 @@ PC_SHELL_TOOL_NAMES = frozenset({
     PC_SHELL_TOOL_NAME, PC_SHELL_START_TOOL_NAME,
     PC_SHELL_READ_TOOL_NAME, PC_SHELL_STOP_TOOL_NAME,
 })
-PC_SHELL_SHELLS = ("powershell", "cmd", "bash")
+#: #7188 R4 ② — the tool's shell vocabulary is the shared table's
+#: (``padiem_ai_core.pc_shell_selection``); the name stays for the schema and
+#: the existing imports.
+PC_SHELL_SHELLS = PC_SHELL_NAMES
 PC_SHELL_DEFAULT_WAIT_SECONDS = 120
 # The edge front door keeps 30 seconds of headroom under its 180-second MCP
 # request ceiling. This limits only the response wait, never the PC process.
@@ -124,7 +136,7 @@ def _command_material(arguments: Mapping) -> bool:
             not isinstance(cwd, str) or not cwd or len(cwd) > PC_SHELL_MAX_CWD_CHARS
             or any(ord(char) < 32 for char in cwd)):
         return False
-    shell = arguments.get("shell", "powershell")
+    shell = arguments.get("shell", PC_SHELL_DEFAULT_NAME)
     return isinstance(shell, str) and shell in PC_SHELL_SHELLS
 
 
@@ -210,7 +222,7 @@ def normalize_pc_shell_arguments(
     if not validate_pc_shell_arguments(arguments):
         raise ValueError("Invalid MCP PC shell arguments")
     return {"command": arguments["command"], "cwd": arguments.get("cwd"),
-            "shell": arguments.get("shell", "powershell"),
+            "shell": arguments.get("shell", PC_SHELL_DEFAULT_NAME),
             "mode": arguments.get("mode", _pc_shell_default_mode(user_mode_enabled)),
             "wait_seconds": arguments.get("wait_seconds", PC_SHELL_DEFAULT_WAIT_SECONDS)}
 
@@ -221,7 +233,7 @@ def normalize_pc_shell_start_arguments(
     if not validate_pc_shell_start_arguments(arguments):
         raise ValueError("Invalid MCP PC shell start arguments")
     return {"command": arguments["command"], "cwd": arguments.get("cwd"),
-            "shell": arguments.get("shell", "powershell"),
+            "shell": arguments.get("shell", PC_SHELL_DEFAULT_NAME),
             "mode": arguments.get("mode", _pc_shell_default_mode(user_mode_enabled))}
 
 
@@ -248,12 +260,19 @@ def build_pc_shell_command(arguments: Mapping) -> str:
 
     The command remains a parameter to the common Claw executor. Long-running
     work is supervised by RemoteBackgroundJobs, not by an MCP-side worker.
+
+    #7188 R4 ② — the script no longer branches on ``$env:PADIEM_MCP_SHELL``.
+    The shared table (``padiem_ai_core.pc_shell_selection.resolve_shell``)
+    resolves the tool's shell name once, and the resolved launcher travels as
+    three env assignments the generic tail executes. The name itself still
+    rides in the command text so a dispatch row says which shell was chosen.
     """
     if not _command_material(arguments):
         raise ValueError("Invalid MCP PC shell arguments")
     command_b64 = _b64(arguments["command"])
     cwd_b64 = _b64(arguments["cwd"]) if arguments.get("cwd") else ""
-    shell = arguments.get("shell", "powershell")
+    shell = arguments.get("shell", PC_SHELL_DEFAULT_NAME)
+    launch = resolve_shell(shell, lane="system")
     script = r"""
 $ErrorActionPreference='Continue';$ProgressPreference='SilentlyContinue'
 # #7068: a Korean-locale console hands the nested process's bytes back in its
@@ -263,7 +282,7 @@ $ErrorActionPreference='Continue';$ProgressPreference='SilentlyContinue'
 try{[Console]::OutputEncoding=[Text.Encoding]::UTF8}catch{}
 $c=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:PADIEM_MCP_COMMAND_B64))
 $d=$null;if($env:PADIEM_MCP_CWD_B64){$d=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:PADIEM_MCP_CWD_B64));if(-not(Test-Path -LiteralPath $d -PathType Container)){[Console]::Error.WriteLine('cwd_invalid');exit 126};Set-Location -LiteralPath $d}
-try{if($env:PADIEM_MCP_SHELL -eq 'powershell'){$file='powershell.exe';if(-not(Get-Command $file -ErrorAction SilentlyContinue)){[Console]::Error.WriteLine('shell_unavailable');exit 127};$inner=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($c));& $file -NoProfile -NonInteractive -ExecutionPolicy Bypass -OutputFormat Text -EncodedCommand $inner;$code=0;if($null -ne $LASTEXITCODE){$code=[int]$LASTEXITCODE};exit $code};$file='cmd.exe';$args=@('/d','/s','/c',$c);if($env:PADIEM_MCP_SHELL -eq 'bash'){$file='bash.exe';$args=@('-lc',$c)};if(-not(Get-Command $file -ErrorAction SilentlyContinue)){[Console]::Error.WriteLine('shell_unavailable');exit 127};& $file @args;$code=0;if($null -ne $LASTEXITCODE){$code=[int]$LASTEXITCODE};exit $code}catch{[Console]::Error.WriteLine($_.Exception.Message);exit 1}
+try{$file=$env:PADIEM_MCP_SHELL_FILE;if(-not(Get-Command $file -ErrorAction SilentlyContinue)){[Console]::Error.WriteLine('shell_unavailable');exit 127};$args=@($env:PADIEM_MCP_SHELL_ARGS.Split(' '));if($env:PADIEM_MCP_SHELL_ENC -eq '1'){$args+=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($c))}else{$args+=$c};& $file @args;$code=0;if($null -ne $LASTEXITCODE){$code=[int]$LASTEXITCODE};exit $code}catch{[Console]::Error.WriteLine($_.Exception.Message);exit 1}
 """.strip()
     script_b64 = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
     # PowerShell command text is fixed, and user values are base64 data only.
@@ -271,25 +290,26 @@ try{if($env:PADIEM_MCP_SHELL -eq 'powershell'){$file='powershell.exe';if(-not(Ge
     # reads the reply marker from that wrapper. An outer exit here would end
     # the wrapper before the envelope is written; the nested shell's code
     # already lands in $LASTEXITCODE, which the executor's sentinel reports.
+    # The launcher lines come from the shared table and are table constants,
+    # so the single-quote wrapping is exact.
     return (
         "$env:PADIEM_MCP_COMMAND_B64='" + command_b64 + "';"
         "$env:PADIEM_MCP_CWD_B64='" + cwd_b64 + "';"
         "$env:PADIEM_MCP_SHELL='" + shell + "';"
-        "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand "
+        + system_launch_env_lines(launch)
+        + "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand "
         + script_b64
     )
 
 
-#: #7076d/#7105 — where this tool's shell vocabulary meets the helper's.
-#: ``bash`` is the same shell the helper runs inside the user's WSL, and the
-#: identity probe is the one command that means the same thing in every shell,
-#: so it maps to the helper's dedicated ``whoami`` shell. ``powershell`` and
-#: ``cmd`` are the helper's own stage-2 shells, so they pass through as the shell
-#: the user session runs. Every other name is passed through unchanged too: the
-#: helper is the final allowlist authority and its own refusal is what the caller
-#: must see, not a second copy of that rule.
-USER_HELPER_SHELL_FOR_BASH = "wsl"
-USER_HELPER_SHELL_FOR_WHOAMI = "whoami"
+#: #7076d/#7105/#7188 R4 ② — where this tool's shell vocabulary meets the
+#: helper's. The meeting itself now lives in the shared table
+#: (``padiem_ai_core.pc_shell_selection``): ``resolve_user_helper_shell`` maps
+#: the identity probe to the helper's dedicated ``whoami`` shell and ``bash``
+#: to the helper's ``wsl`` shell; ``powershell`` and ``cmd`` pass through as
+#: the shell the user session runs. The names stay here for existing imports.
+USER_HELPER_SHELL_FOR_BASH = SHELL_WSL
+USER_HELPER_SHELL_FOR_WHOAMI = SHELL_WHOAMI
 # #7107: request material only. 0 means the helper has no execution deadline;
 # the command runs until it ends and the owner stops it through pc_shell_stop.
 USER_HELPER_TIMEOUT_SECONDS = 0
@@ -314,13 +334,8 @@ def build_pc_shell_user_material(arguments: Mapping) -> str:
     if not _command_material(arguments):
         raise ValueError("Invalid MCP PC shell arguments")
     command = arguments["command"]
-    shell = arguments.get("shell", "powershell")
-    if command.strip() == "whoami":
-        helper_shell = USER_HELPER_SHELL_FOR_WHOAMI
-    elif shell == "bash":
-        helper_shell = USER_HELPER_SHELL_FOR_BASH
-    else:
-        helper_shell = shell
+    shell = arguments.get("shell", PC_SHELL_DEFAULT_NAME)
+    helper_shell = resolve_user_helper_shell(shell, command=command)
     return json.dumps({
         "shell": helper_shell,
         "command": command,
