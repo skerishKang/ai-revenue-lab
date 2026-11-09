@@ -17,6 +17,8 @@ APP_JS = APP_DIR / "static" / "app.js"
 SOURCE = APP_JS.read_text(encoding="utf-8")
 #7216 R5 step 4: this contract moved into chat-auth-module.js.
 AUTH_SOURCE = APP_JS.with_name("chat-auth-module.js").read_text(encoding="utf-8")
+#7216 R5 step 5a: showConversation moved into chat-conversation-module.js.
+CONV_SOURCE = APP_JS.with_name("chat-conversation-module.js").read_text(encoding="utf-8")
 
 ROUTING_FUNCTIONS = (
     "showConversation",
@@ -66,11 +68,18 @@ def _harness() -> str:
     switch_end = SOURCE.index(
         "  // The first user turn extends the original landing panel.", switch_start
     )
+    # Step 5a: showConversation lives in the conversation module with deps.
+    # prefixes; stripping them restores the exact pre-move code this harness
+    # executes against its direct-name stubs.
+    def _conv_function(name):
+        return _js_function(CONV_SOURCE, name).replace("deps.", "")
+
     extracted = "\n\n".join(
         [SOURCE[product_start:product_end]]
         + [SOURCE[switch_start:switch_end]]
         + [SOURCE[map_start:map_end]]
-        + [_js_function(AUTH_SOURCE if name == "requireSessionForModelUse" else SOURCE, name)
+        + [_conv_function(name) if name == "showConversation"
+           else _js_function(AUTH_SOURCE if name == "requireSessionForModelUse" else SOURCE, name)
            for name in ROUTING_FUNCTIONS]
     )
     return r"""

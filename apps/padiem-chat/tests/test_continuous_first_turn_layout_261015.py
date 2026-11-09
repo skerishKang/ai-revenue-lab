@@ -3,22 +3,26 @@ from pathlib import Path
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+#7216 R5 step 5a: showConversation moved into chat-conversation-module.js.
+CONV = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")
 CSS = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
 HTML = (STATIC / "index.html").read_text(encoding="utf-8")
 
 
 def test_first_user_turn_preserves_original_hero_and_appends_messages() -> None:
-    assert 'const startingOnLanding = !restoreSaved' in APP
-    assert 'const continuingLanding = !restoreSaved' in APP
-    assert 'emptyState.hidden = !keepLanding;' in APP
-    assert 'messageList.hidden = false;' in APP
-    assert 'conversationPanel.dataset.continuousThread = "true"' in APP
+    # #7216 R5 step 5a: showConversation moved into chat-conversation-module.js.
+    assert 'const startingOnLanding = !restoreSaved' in CONV
+    assert 'const continuingLanding = !restoreSaved' in CONV
+    assert 'deps.emptyState.hidden = !keepLanding;' in CONV
+    assert 'deps.messageList.hidden = false;' in CONV
+    assert 'conversationPanel.dataset.continuousThread = "true"' in CONV
     assert 'showConversation({ preserveClaw: clawGeneralRequest });' in APP
 
 
 def test_saved_conversation_reopens_without_hero_and_new_chat_resets() -> None:
     assert 'showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true })' in APP
-    assert 'delete messageList.closest(".conversation")?.dataset.continuousThread;' in APP
+    # #7216 R5 step 5a: the body moved with showConversation into the module.
+    assert 'delete deps.messageList.closest(".conversation")?.dataset.continuousThread;' in CONV
     assert 'emptyState.hidden = false;' in APP
 
 

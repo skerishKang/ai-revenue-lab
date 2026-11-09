@@ -4,6 +4,8 @@ from _android_handoff_storage_guard import assert_session_storage_is_handoff_onl
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = (ROOT / "static/app.js").read_text(encoding="utf-8")
+#7216 R5 step 5a: the conversation area moved into chat-conversation-module.js.
+CONV_JS = (ROOT / "static/chat-conversation-module.js").read_text(encoding="utf-8")
 BINARY_JS = (ROOT / "static/document-binary.js").read_text(encoding="utf-8")
 INDEX_HTML = (ROOT / "static/index.html").read_text(encoding="utf-8")
 
@@ -47,23 +49,26 @@ def test_binary_qa_metadata_is_computed_from_file_input_not_stored_state():
 
 
 def test_app_owns_binary_attachment_in_selected_attachment_state():
+    #7216 R5 step 5a: the attachment intake moved into chat-conversation-module.js.
+    conv_js = CONV_JS
     assert "const binaryDocuments = window.PadiemBinaryDocuments;" in APP_JS
-    assert "binaryDocuments.canRead(file)" in APP_JS
-    assert "next = await binaryDocuments.read(file);" in APP_JS
+    assert "binaryDocuments.canRead(file)" in conv_js
+    assert "next = await deps.binaryDocuments.read(file);" in conv_js
     # #261102: the chip list replaced the single attachment slot; the app
     # controller still owns the binary attachment state and re-renders the
     # chips after every intake.
-    assert "selectedAttachments.push({ ...next, key: `att-${attachmentKeyCounter}` });" in APP_JS
-    assert "renderAttachmentChips();" in APP_JS
+    assert "deps.selectedAttachments.push({ ...next, key: `att-${deps.attachmentKeyCounter}` });" in conv_js
+    assert "renderAttachmentChips();" in conv_js
 
 
 def test_binary_attachment_payload_uses_existing_completed_chat_path():
+    conv_js = CONV_JS  # #7216 R5 step 5a
     # #5380 replaced the Base64 attachment body with a binary file intake, so
     # the payload carries the file itself. The completed-chat dispatch path
     # this test protects is unchanged.
     # #261102: the payload is built per chip; a file-carrying chip still
     # carries the file itself through the completed-chat path.
-    assert 'media_type: item.mediaType, file: item.file' in APP_JS
+    assert 'media_type: item.mediaType, file: item.file' in conv_js
     assert "const attachments = attachmentPayload(attachment);" in APP_JS
     assert "if (attachments) payload.attachments = attachments;" in APP_JS
     # #2505: the Chat completed-attachment path is unchanged for Chat; the same

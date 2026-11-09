@@ -8,8 +8,14 @@ global.window = globalThis;
 vm.runInThisContext(fs.readFileSync(path.join(staticDir, "chat-transport.js"), "utf8"));
 const app = fs.readFileSync(path.join(staticDir, "app.js"), "utf8");
 const start = app.indexOf("  const FAILURE_CODE_PATTERN =");
-const end = app.indexOf("\n  function renderCancelled(", start);
+const end = app.indexOf("\n  function renderStreamError(", start);
 assert.ok(start >= 0 && end > start);
+// #7216 R5 step 5a: renderStreamError moved into the conversation module;
+// deps. prefixes strip back to the exact pre-move body this harness executes.
+const conv = fs.readFileSync(path.join(staticDir, "chat-conversation-module.js"), "utf8");
+const convStart = conv.indexOf("  function renderStreamError(");
+const convEnd = conv.indexOf("\n  function clearAttachment(", convStart);
+assert.ok(convStart >= 0 && convEnd > convStart);
 const context = {
   document: {createElement: (tag) => ({tag})},
   uiT: (key) => key === "error-code-reference" ? "참고 코드" : key,
@@ -20,6 +26,7 @@ const context = {
   revealErrorState: () => {},
 };
 const render = vm.runInNewContext("(function(){" + app.slice(start, end) +
+  "\n" + conv.slice(convStart, convEnd).replace(/deps\./g, "") +
   "\nreturn {renderError, renderStreamError};})()", context);
 
 for (const [code, status, expected] of [

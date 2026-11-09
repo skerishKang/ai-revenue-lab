@@ -344,7 +344,9 @@ def test_the_browser_refuses_a_claw_image_before_upload():
     assert "claw-image-attachment-unsupported" in LOCALE_JS
     assert "Claw는 아직 사진 첨부를 모델에 전달할 수 없습니다" in LOCALE_JS
     # #261102: the selection entry point is now the multi-file addAttachmentFiles.
-    select = APP_JS[APP_JS.index("async function addAttachmentFiles("):]
+    # #7216 R5 step 5a: the attachment area moved into chat-conversation-module.js.
+    conv_js = (ROOT / "static/chat-conversation-module.js").read_text(encoding="utf-8")
+    select = conv_js[conv_js.index("async function addAttachmentFiles("): ]
     select = select[: select.index("\n  }")]
-    assert "conversationProduct === PRODUCT_CLAW" in select
-    assert 'uiT("claw-image-attachment-unsupported")' in select
+    assert "deps.conversationProduct === deps.PRODUCT_CLAW" in select
+    assert 'deps.uiT("claw-image-attachment-unsupported")' in select

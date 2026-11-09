@@ -43,9 +43,10 @@ def test_jump_control_has_translations_and_glass_styling():
 
 
 def test_new_and_restored_conversations_reset_shared_follow_state():
-    app = _source("app.js")
+    # #7216 R5 step 5a: follow-state resets live in chat-conversation-module.js.
+    app = _source("chat-conversation-module.js")
     assert "window.__padiemConversationMotion?.reset?.();" in app
-    assert "window.__padiemConversationMotion?.resume?.();" in app
+    assert "window.__padiemConversationMotion?.resume?.();" in _source("app.js")
 
 
 def test_only_stream_deltas_use_the_near_bottom_follow_hooks():
