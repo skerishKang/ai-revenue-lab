@@ -257,3 +257,40 @@ def test_shadow_switch_off_stays_inert_with_token_present(monkeypatch):
     lines = _run_compare(monkeypatch, _scope_with_token(settings), _verdict(True), verifier)
     assert verifier.calls == 0
     assert lines == []
+
+
+def test_callback_cookie_jar_reaches_chat_api_and_shadow_reports_token(monkeypatch):
+    """아르곤 보강 1: 콜백 Set-Cookie -> 쿠키 자 -> Chat /api -> 그림자 token=present.
+
+    TestClient 쿠키 자가 Set-Cookie를 순방향 전달하고, 그림자 비교기가 그 요청의
+    Cookie 헤더에서 토큰을 실제로 읽는지까지 이어 붙인다(주입이 아니라 자 경유).
+    오프라인 한계: 검증기는 픽스처로 대체하며, 레거시 쿠키가 없어 verdict는
+    none -> outcome=verdict_none_local_ok (실서비스 매치 판정은 라이브 표본 소관).
+    """
+    monkeypatch.setenv("PADIEM_AUTH_LOCAL_VERIFY_SHADOW", "true")
+    exchange, issue = _issue_and_exchange()
+    app, _ = make_app(_build_flow(exchange=exchange, issue=issue))
+    verifier = FakeVerifier(
+        result={"accountId": "sub_" + "b" * 20, "sessionId": "s" * 10, "expiresAt": int(time.time()) + 600}
+    )
+    monkeypatch.setattr(shadow, "_get_shadow_verifier", lambda: verifier)
+    with TestClient(app, base_url="https://chat.padiem.net") as client:
+        start = client.get("/auth/shared/start", follow_redirects=False)
+        state = parse_qs(urlparse(start.headers["location"]).query)["state"][0]
+        callback = client.get(
+            "/auth/shared/callback",
+            params={"state": state, "code": "synthetic-code"},
+            follow_redirects=False,
+        )
+        assert callback.status_code == 302
+        payloads = _set_cookie_values(callback)
+        access = _cookie_value(payloads, ACCESS_COOKIE)
+        assert access is not None
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            assert client.get(
+                "/api/auth/status", cookies={ACCESS_COOKIE: access}
+            ).status_code == 200
+    lines = buf.getvalue().strip().splitlines()
+    assert any("shadow_verify" in line and "token=present" in line
+               and "local_ok=yes" in line for line in lines), lines
