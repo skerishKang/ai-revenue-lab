@@ -191,13 +191,14 @@ secret_name = "PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY"
 # the Cloudflare B14 Worker stops serving product traffic. The `B14_SERVICE`
 # binding and `PADIEM_B14_SERVICE_PROOF_SECRET` stay declared until the CTO
 # removes them; the proof secret is also what the HTTPS lane signs with.
-# The live `PADIEM_CHAT_B14_BASE_URL` still names the retired workers.dev origin,
-# and config.py refuses a base that disagrees with B14_UPSTREAM_URL, so that one
-# value is overridden with the same origin at deploy time (`--var`) rather than
-# re-declared here: a changed live value is exactly what the production binding
-# gate must keep flagging.
+# config.py refuses a base that disagrees with B14_UPSTREAM_URL (half-applied
+# switch), so the base is pinned to the same COM2 origin here: the next deploy,
+# by anyone, lands the same value without a command-line override. The single
+# reviewed live-value change this makes is registered in the binding-gate
+# contract test, which still fails on any other value change.
 B14_UPSTREAM_MODE = "https"
 B14_UPSTREAM_URL = "https://b14.padiem.net"
+PADIEM_CHAT_B14_BASE_URL = "https://b14.padiem.net"
 
 PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED = "false"
 PADIEM_CHAT_SHARED_LOGIN_ENABLED = "false"
