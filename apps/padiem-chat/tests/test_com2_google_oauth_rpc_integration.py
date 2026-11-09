@@ -76,6 +76,9 @@ async def test_com2_v2_client_reaches_only_bounded_google_truth(monkeypatch):
             scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
             sealed_refresh_token="sealed:v1:BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
             issued_at=datetime(2026, 1, 1, tzinfo=timezone.utc),
+            # #7248: Calendar bindings always carry the verified Google account
+            # subject (reconnect replacement is account-scoped).
+            provider_subject="google-sub-calendar-owner",
             expires_at=None,
         )
     )
@@ -158,12 +161,21 @@ async def test_com2_v2_client_reaches_only_bounded_google_truth(monkeypatch):
             assert responses[-1].status == 403
             assert json.loads(responses[-1].body)["error"]["code"] == "rpc_service_id_required"
 
-            # Binding selection can expose identity; it remains private even
-            # to a correctly signed HTTPS caller.
-            with pytest.raises(ServiceRpcHttpError):
-                await binding.select_calendar_binding({"workspace_ref": WORKSPACE})
-            assert responses[-1].status == 404
-            assert json.loads(responses[-1].body)["error"]["code"] == "rpc_unknown_method"
+            # Binding selection is a reviewed private ingress method (#7245, the
+            # P01 prerequisite). A correctly signed caller gets the bounded
+            # selection projection and never a credential, scope or sealed token.
+            selection = await binding.select_calendar_binding({"workspace_ref": WORKSPACE})
+            assert selection["ok"] is True
+            assert selection["selection"] == {
+                "status": "resolved",
+                "connector_id": "google-calendar",
+                "workspace_ref": WORKSPACE,
+                "binding_ref": "binding.calendar.com2",
+                "actor_ref": "actor.calendar.com2",
+            }
+            assert "provider_subject" not in selection["selection"]
+            for forbidden in ("sealed_refresh_token", "scopes", "access_token"):
+                assert forbidden not in json.dumps(selection)
 
             # A valid signature cannot turn the read into a caller-selected
             # connector projection.

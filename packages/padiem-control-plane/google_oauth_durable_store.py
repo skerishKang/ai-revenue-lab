@@ -959,6 +959,10 @@ class CloudflareDurableGoogleOAuthStore:
                 workspace_ref=workspace_ref,
             )
         selected = usable[0]
+        # #7248: the verified Google account subject stays inside the store (it
+        # only drives reconnect replacement); the selection projection keeps its
+        # reviewed identity-free shape, so no provider account is echoed to a
+        # private RPC caller.
         return GoogleOAuthBindingSelection(
             status=GoogleOAuthBindingSelectionStatus.RESOLVED,
             connector_id=selected["connector_id"],
