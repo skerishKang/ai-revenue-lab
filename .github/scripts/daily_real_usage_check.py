@@ -60,6 +60,7 @@ from post_deploy_real_chat_smoke import (  # noqa: E402
     turn_payload,
 )
 from pc_read_measure import send_probe  # noqa: E402
+import daily_usage_browser_checks as browser_checks  # noqa: E402
 
 PC_TOKEN_ENV = "PADIEM_QA_PC_TOKEN"
 PC_READ_PATH_ENV = "PADIEM_QA_PC_READ_PATH"
@@ -77,6 +78,15 @@ TRANSCRIPT_WAIT_SECONDS = 25.0
 HEAD_CHAT = 10
 HEAD_PC = 20
 HEAD_VOICE = 10
+
+# 2차 브라우저 흐름. 판정은 daily_usage_browser_checks 의 순수 함수가 한다.
+BROWSER_FLOWS = ("browser_chat", "browser_claw", "browser_stamp")
+EXPECTED_HEAD_ENV = "PADIEM_EXPECTED_HEAD_SHA"
+RECENT_MAIN_ENV = "PADIEM_RECENT_MAIN_SHAS"
+BROWSER_CAPTURE_DIR_ENV = "PADIEM_USAGE_CAPTURE_DIR"
+BROWSER_CAPTURE_DIR_DEFAULT = "usage-browser-captures"
+METRICS_PATH_ENV = "PADIEM_USAGE_METRICS_PATH"
+METRICS_PATH_DEFAULT = "usage-metrics.json"
 
 _HEAD_SANITIZE = re.compile(r"[^\x20-\x7e가-힣ㄱ-ㅎㅏ-ㅣ]")
 
@@ -432,10 +442,85 @@ def _summary(flows: list[Flow]) -> str:
             "|---|---|---|---|---|\n" + rows + "\n")
 
 
+def flow_browser(flows: list[Flow], cookie: str) -> tuple[dict, list[str]]:
+    """브라우저 3흐름. Playwright 가 없으면 FAIL 이 아니라 SKIPPED 다."""
+    by_name = {flow.name: flow for flow in flows}
+    if not cookie:
+        for name in BROWSER_FLOWS:
+            by_name[name].skip("no_session_from_flow_1")
+        return {}, []
+    head_version = os.environ.get(EXPECTED_HEAD_ENV, "")[:8]
+    recent = os.environ.get(RECENT_MAIN_ENV, "").split()
+    out_dir = os.environ.get(BROWSER_CAPTURE_DIR_ENV, "") or BROWSER_CAPTURE_DIR_DEFAULT
+    try:
+        results = browser_checks.run_browser_flows(
+            cookie=cookie,
+            out_dir=out_dir,
+            head_version=head_version,
+            recent_versions=recent,
+            username=os.environ.get(QA_USERNAME_ENV, ""),
+        )
+    except ImportError:
+        for name in BROWSER_FLOWS:
+            by_name[name].skip("playwright_missing")
+        return {}, []
+    except Exception as exc:
+        # 실행기 자체가 죽으면 층 이름만 남긴다(값·쿠키 없음).
+        for name in BROWSER_FLOWS:
+            by_name[name].fail(f"browser_runner_error_{type(exc).__name__}")
+        return {}, []
+    captures: list[str] = []
+    for name in BROWSER_FLOWS:
+        payload = results.get(name) or {}
+        flow = by_name[name]
+        flow.verdict = payload.get("verdict", "FAIL")
+        flow.code = payload.get("code", "browser_flow_missing")
+        flow.head = payload.get("head", "")
+        flow.elapsed_ms = int(payload.get("elapsed_ms", 0))
+        captures.extend(payload.get("captures", []))
+    return results, captures
+
+
+def _recent_history() -> dict[str, list[int]]:
+    """직전 실행들의 흐름별 소요 ms. 없으면 빈 사전(경고 없음)."""
+    if not os.environ.get("GITHUB_RUN_ID"):
+        return {}
+    return browser_checks.fetch_recent_flow_durations(
+        repo=os.environ.get("GITHUB_REPOSITORY", ""),
+        workflow_file="daily-real-usage-check.yml",
+        before_run_id=os.environ.get("GITHUB_RUN_ID", ""),
+        token=os.environ.get("GITHUB_TOKEN", ""),
+    )
+
+
+def _write_metrics(flows: list[Flow], captures: list[str], warnings: list[str],
+                   history: dict[str, list[int]]) -> None:
+    """흐름별 소요 ms 를 JSON 으로 남긴다. 다음 날 느려짐 비교의 입력이다."""
+    path = os.environ.get(METRICS_PATH_ENV, "") or METRICS_PATH_DEFAULT
+    payload = {
+        "schema": "padiem-daily-usage-metrics/1",
+        "flows": {flow.name: {"verdict": flow.verdict, "code": flow.code,
+                              "elapsed_ms": flow.elapsed_ms, "head": flow.head}
+                  for flow in flows},
+        "captures": list(captures),
+        "warnings": list(warnings),
+        "history_samples": {name: len(values) for name, values in history.items()},
+    }
+    try:
+        with open(path, "w", encoding="utf-8") as handle:
+            json.dump(payload, handle, ensure_ascii=False, indent=2)
+    except OSError:
+        print("USAGE_METRICS=NOT_WRITTEN")
+
+
 def main() -> int:
     started = time.monotonic()
     cred_state, cred_code = _credential_verdict()
-    flows = [Flow("chat_turn"), Flow("pc_read"), Flow("voice_relay"), Flow("relogin")]
+    flows = [Flow("chat_turn"), Flow("pc_read"), Flow("voice_relay"),
+             Flow("browser_chat"), Flow("browser_claw"), Flow("browser_stamp"),
+             Flow("relogin")]
+    by_name = {flow.name: flow for flow in flows}
+    browser_captures: list[str] = []
 
     opener = flow_opener()
     cookie = ""
@@ -444,7 +529,10 @@ def main() -> int:
         for flow in flows:
             flow.skip(cred_code)
     else:
-        flow_chat, flow_pc, flow_voice_f, flow_re = flows
+        flow_chat = by_name["chat_turn"]
+        flow_pc = by_name["pc_read"]
+        flow_voice_f = by_name["voice_relay"]
+        flow_re = by_name["relogin"]
         t0 = time.monotonic()
         try:
             cookie = _login(opener)
@@ -474,6 +562,9 @@ def main() -> int:
             flow_voice_f.skip("no_session_from_flow_1")
         flow_voice_f.elapsed_ms = int((time.monotonic() - t0) * 1000)
 
+        # 브라우저 흐름은 반드시 relogin 앞이다. relogin 이 세션을 끊기 때문이다.
+        browser_results, browser_captures = flow_browser(flows, cookie)
+
         t0 = time.monotonic()
         if cookie:
             try:
@@ -488,6 +579,19 @@ def main() -> int:
 
     for flow in flows:
         print(flow.line())
+
+    history = _recent_history()
+    warnings = []
+    for flow in flows:
+        note = browser_checks.slowdown_note(flow.name, flow.elapsed_ms,
+                                           history.get(flow.name, []))
+        if note:
+            warnings.append(note)
+    for note in warnings:
+        print(note)
+
+    _write_metrics(flows, browser_captures, warnings, history)
+
     failed = sum(1 for f in flows if f.verdict == "FAIL")
     total_ms = int((time.monotonic() - started) * 1000)
     verdict = "FAIL" if failed else "PASS"
@@ -497,7 +601,15 @@ def main() -> int:
     summary_path = os.environ.get("GITHUB_STEP_SUMMARY", "")
     if summary_path:
         with open(summary_path, "a", encoding="utf-8") as handle:
-            handle.write("### 실사용 점검 (#6724 1차)\n\n" + _summary(flows))
+            handle.write("### 실사용 점검 (#6724 2차)\n\n" + _summary(flows))
+            if browser_captures:
+                handle.write("\n**캡처** (1440 폭, 14일 보관)\n\n")
+                for name in browser_captures:
+                    handle.write(f"- `{name}`\n")
+            if warnings:
+                handle.write("\n**느려짐 경고** (FAIL 아님)\n\n")
+                for note in warnings:
+                    handle.write(f"- {note}\n")
     return 1 if failed else 0
 
 
