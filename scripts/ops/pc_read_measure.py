@@ -195,6 +195,10 @@ _ENGINE_TIMING_RE = re.compile(
 _PHASE_RE = re.compile(r"oracle-mesh-(?:read|command) phase=(\S+) ts=(\S+) elapsed_ms=(\d+)")
 _RESULT_RE = re.compile(r"pc_result stage=(\S+) run_hash=(\S+) dispatch_id=(\S+)")
 _FILES_CALL_RE = re.compile(r"pc_files_chat_call mode=(\S+) (.*)")
+# The P01 admission host's per-RPC stage lines (one per CP call, method+status+ms only).
+_ADMISSION_RPC_RE = re.compile(
+    r"admission_rpc method=(?P<method>\S+) status=(?P<status>\d+) "
+    r"attempts=(?P<attempts>\d+) ms=(?P<ms>\d+(?:\.\d+)?)")
 
 
 def _fields(text: str) -> dict[str, str]:
@@ -215,6 +219,7 @@ def correlate(lines: list[dict], probe: dict) -> dict:
     phases = []
     results = []
     files_calls = []
+    admission_rpcs = []
     for row in window:
         message = row["m"]
         if request_id and request_id in message:
@@ -258,6 +263,15 @@ def correlate(lines: list[dict], probe: dict) -> dict:
         match = _FILES_CALL_RE.search(message)
         if match:
             files_calls.append({"mode": match.group(1), "rest": match.group(2), "t": row["t"]})
+        match = _ADMISSION_RPC_RE.search(message)
+        if match:
+            admission_rpcs.append({
+                "method": match.group("method"),
+                "status": int(match.group("status")),
+                "attempts": int(match.group("attempts")),
+                "ms": float(match.group("ms")),
+                "t": row["t"],
+            })
 
     out: dict = {
         "chat_duration_ms": None, "identity_ms": None, "auth_ms": None,
@@ -270,6 +284,11 @@ def correlate(lines: list[dict], probe: dict) -> dict:
         "run_hash": None, "dispatch_id": None,
         "slow_identity": [f"{item.get('method')}={item.get('ms')}" for item in slow_identity],
         "files_calls": [f"{item['mode']}:{_stage_of(item['rest'])}" for item in files_calls][-6:],
+        "admission_rpc": [
+            {"method": item["method"], "status": item["status"],
+             "attempts": item["attempts"], "ms": item["ms"]}
+            for item in admission_rpcs
+        ],
     }
     if isinstance(chat_event, dict):
         timings = chat_event.get("timings_ms") or {}
