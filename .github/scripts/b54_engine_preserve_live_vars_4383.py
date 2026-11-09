@@ -11,6 +11,7 @@ import json
 import os
 import tomllib
 from pathlib import Path
+from urllib.parse import urlsplit
 
 REQUIRED = frozenset({
     "PADIEM_WEB_XLSX_P01_DURABLE_TOOL_ENABLED",
@@ -22,8 +23,39 @@ REQUIRED = frozenset({
 })
 
 
+# #5784 switch names. In ``https`` mode the Engine must call the COM2 B14 over
+# its public origin instead of the Cloudflare Service Binding, and the pair has
+# to exist on the uploaded version. Production carries no checked-in [vars]
+# (pilot contract), so the gate stages the reviewed pair into the runner-local
+# config only; the repository file keeps its no-vars shape.
+B14_MODE_NAME = "B14_UPSTREAM_MODE"
+B14_URL_NAME = "B14_UPSTREAM_URL"
+B14_HTTPS_MODE = "https"
+
+
 class PreserveError(ValueError):
     pass
+
+
+def b14_https_switch(origin: str | None) -> dict[str, str]:
+    """Return the #5784 https pair for one bare https origin, or nothing.
+
+    No value is guessed: a malformed origin refuses the staged deploy instead
+    of uploading a Worker that cannot resolve its B14 lane.
+    """
+    if origin is None:
+        return {}
+    value = origin.strip()
+    parsed = urlsplit(value)
+    if (
+        parsed.scheme != B14_HTTPS_MODE
+        or not parsed.netloc
+        or parsed.path not in ("", "/")
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise PreserveError("B14 upstream origin must be a bare https origin")
+    return {B14_MODE_NAME: B14_HTTPS_MODE, B14_URL_NAME: value.rstrip("/")}
 
 
 def verify(repo_text: str, version: object, version_id: str) -> None:
@@ -65,20 +97,32 @@ def verify(repo_text: str, version: object, version_id: str) -> None:
         raise PreserveError("six protected XLSX feature flags are missing or have changed type")
 
 
-def render_exact_served_flags(repo_text: str, version: object, version_id: str) -> str:
+def render_exact_served_flags(
+    repo_text: str,
+    version: object,
+    version_id: str,
+    b14_https_origin: str | None = None,
+) -> str:
     """Stage immutable served plain_text values only into an ephemeral config.
 
     No values are printed, saved in the repository, or taken from user/browser
     input. This is needed because Cloudflare's mutable /settings lost the six
-    flags; --keep-vars alone preserved that *incomplete* settings state.
+    flags; --keep-vars alone preserved that *incomplete* settings state. The
+    reviewed #5784 https switch rides the same runner-local table: production
+    carries no checked-in [vars], so it is staged here and never committed.
     """
     verify(repo_text, version, version_id)
     config = tomllib.loads(repo_text)
+    switch = b14_https_switch(b14_https_origin)
     existing_vars = config.get("vars")
+    if existing_vars is None and switch:
+        existing_vars = {}
     if not isinstance(existing_vars, dict):
         raise PreserveError("Engine Wrangler missing canonical [vars] table")
     if REQUIRED.intersection(existing_vars):
         raise PreserveError("protected flags must not be checked into Wrangler config")
+    if set(switch).intersection(existing_vars):
+        raise PreserveError("B14 switch must not be checked into Wrangler config")
     result = version["result"]
     bindings = result["resources"]["bindings"]
     if isinstance(bindings, dict):
@@ -98,17 +142,22 @@ def render_exact_served_flags(repo_text: str, version: object, version_id: str) 
         exact[name] = value
     if exact.keys() != REQUIRED:
         raise PreserveError("six protected feature flags could not be reconstructed")
+    additions = "".join(
+        f"{name} = {json.dumps(value, ensure_ascii=True)}\n"
+        for name, value in sorted({**exact, **switch}.items())
+    )
     marker = "[vars]\n"
-    if repo_text.count(marker) != 1:
+    if repo_text.count(marker) == 1:
+        generated = repo_text.replace(marker, marker + additions, 1)
+    elif not existing_vars and switch:
+        generated = repo_text.rstrip("\n") + "\n\n[vars]\n" + additions
+    else:
         raise PreserveError("unexpected Engine Wrangler vars table")
-    additions = "".join(f"{name} = {json.dumps(exact[name], ensure_ascii=True)}\n"
-                        for name in sorted(exact))
-    generated = repo_text.replace(marker, marker + additions, 1)
     try:
         parsed = tomllib.loads(generated)
     except tomllib.TOMLDecodeError as exc:
         raise PreserveError("generated temporary Wrangler config invalid") from exc
-    if parsed["vars"] != {**existing_vars, **exact}:
+    if parsed["vars"] != {**existing_vars, **exact, **switch}:
         raise PreserveError("generated Wrangler variables differ from served authoritative values")
     if {k: v for k, v in parsed.items() if k != "vars"} != {
         k: v for k, v in config.items() if k != "vars"
@@ -117,9 +166,14 @@ def render_exact_served_flags(repo_text: str, version: object, version_id: str) 
     return generated
 
 
-def stage_exact_served_vars(path: Path, version: object, version_id: str) -> None:
+def stage_exact_served_vars(
+    path: Path,
+    version: object,
+    version_id: str,
+    b14_https_origin: str | None = None,
+) -> None:
     before = path.read_text(encoding="utf-8")
-    generated = render_exact_served_flags(before, version, version_id)
+    generated = render_exact_served_flags(before, version, version_id, b14_https_origin)
     stage_path = path.with_name(path.name + ".b54-staged")
     # Same-dir atomic replace. Runner-local only, no Cloudflare mutation.
     try:
@@ -137,11 +191,14 @@ def main() -> int:
     p.add_argument("--version-details", required=True)
     p.add_argument("--active-version", required=True)
     p.add_argument("--stage-served-vars", action="store_true")
+    p.add_argument("--b14-https-origin", default=None)
     args = p.parse_args()
     try:
         version = json.loads(Path(args.version_details).read_text(encoding="utf-8"))
         if args.stage_served_vars:
-            stage_exact_served_vars(Path(args.wrangler), version, args.active_version)
+            stage_exact_served_vars(
+                Path(args.wrangler), version, args.active_version, args.b14_https_origin
+            )
         else:
             verify(Path(args.wrangler).read_text(encoding="utf-8"),
                    version, args.active_version)
@@ -157,6 +214,7 @@ def main() -> int:
     print("FEATURE_FLAG_VALUES_EMITTED=0")
     if args.stage_served_vars:
         print("B54_SERVED_SIX_FLAGS_STAGED_FOR_DEPLOY=PASS")
+        print("B54_B14_HTTPS_SWITCH_STAGED=" + ("YES" if args.b14_https_origin else "NO"))
     print("PRODUCTION_MUTATION=0")
     return 0
 

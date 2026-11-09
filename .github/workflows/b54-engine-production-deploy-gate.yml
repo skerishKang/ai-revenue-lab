@@ -180,7 +180,9 @@ jobs:
             --wrangler apps/padiem-ai-engine/wrangler.toml \
             --version-details "${RUNNER_TEMP}/version-pre.json" \
             --active-version "${B54_ENGINE_ACTIVE_VERSION}" \
-            --stage-served-vars
+            --stage-served-vars \
+            --b14-https-origin "https://b14.padiem.net"
+          echo 'B54_B14_HTTPS_SWITCH_STAGED=YES'
           echo 'B54_SERVED_VAR_VALUES_LOGGED=NO'
           echo 'ENGINE_PRODUCTION_MUTATION_BEFORE_ANCHOR=0'
 
