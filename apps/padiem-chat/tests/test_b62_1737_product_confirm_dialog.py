@@ -11,13 +11,18 @@ def read(name: str) -> str:
 
 def test_native_destructive_confirm_is_removed() -> None:
     app = read("app.js")
+    # deleteConversation moved into chat-history-module.js (#7216 R5 step 3);
+    # the native-confirm ban and the confirm-dialog count cover both sources.
+    module = read("chat-history-module.js")
     outputs = read("outputs.js")
     a11y = read("a11y.js")
 
     assert "window.confirm(" not in app
+    assert "window.confirm(" not in module
     assert "window.confirm(" not in outputs
     assert "window.confirm(" not in a11y
-    assert app.count("PadiemConfirmDialog.confirm({") == 3
+    confirm = "PadiemConfirmDialog.confirm({"
+    assert app.count(confirm) + module.count(confirm) == 3
     assert outputs.count("PadiemConfirmDialog.confirm({") == 1
 
 
@@ -42,12 +47,16 @@ def test_shared_first_party_dialog_has_accessible_contract() -> None:
 
 def test_delete_calls_remain_after_explicit_confirmation() -> None:
     app = read("app.js")
+    # deleteConversation moved into chat-history-module.js (#7216 R5 step 3);
+    # its confirm -> guard -> DELETE order is pinned against the module body.
+    module = read("chat-history-module.js")
     outputs = read("outputs.js")
 
     for function_name in ("deleteProjectFile", "deleteProject", "deleteConversation"):
-        start = app.index(f"async function {function_name}")
-        end = app.find("\n  async function ", start + 1)
-        block = app[start:] if end < 0 else app[start:end]
+        source = module if function_name == "deleteConversation" else app
+        start = source.index(f"async function {function_name}")
+        end = source.find("\n  async function ", start + 1)
+        block = source[start:] if end < 0 else source[start:end]
         confirm_at = block.index("await window.PadiemConfirmDialog.confirm")
         guard_at = block.index("if (!confirmed) return")
         delete_at = block.index('method: "DELETE"')

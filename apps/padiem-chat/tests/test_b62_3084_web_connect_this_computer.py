@@ -908,12 +908,17 @@ def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
     assert "/api/" not in _source()
 
     app = _app_source()
+    # #7216 R5 step 3: the run-history consumer moved into chat-history-module.js;
+    # the single-call and route-inventory contracts span both shipped sources.
+    module = APP_PATH.with_name("chat-history-module.js").read_text(encoding="utf-8")
+    shipped = app + module
     # #3932: same existing run-history endpoint, bounded 10/30 on explicit user click.
     # Keep the old baseline route in scope; never admit a new endpoint silently.
-    assert app.count("readClawRuns(clawRunHistoryLimit") == 1
+    assert shipped.count("deps.readClawRuns(deps.clawRunHistoryLimit") == 1
+    assert "readClawRuns(clawRunHistoryLimit" not in shipped
     assert "let clawRunHistoryLimit = 10;" in app
     assert "clawRunHistoryLimit = 30;" in app
-    present = set(re.findall(r'"/api/[^"]+"', app))
+    present = set(re.findall(r'"/api/[^"]+"', shipped))
     # The regex captures the surrounding quotes; the pinned baseline does not.
     present = {value.strip('"') for value in present}
     # A safe template-literal GET replaces the previous literal limit=10 call.

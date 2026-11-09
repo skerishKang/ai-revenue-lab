@@ -325,9 +325,12 @@ def test_history_write_failure_preserves_answer_without_forged_thread_receipt():
 def test_browser_history_bridge_requires_owner_run_link_not_title():
     from pathlib import Path
     app = (Path(__file__).resolve().parents[1] / "static/app.js").read_text(encoding="utf-8")
+    module = (Path(__file__).resolve().parents[1] / "static/chat-history-module.js").read_text(encoding="utf-8")
     assert "const clawConversationIds = new Set();" in app
-    assert 'run?.action === "general"' in app
-    assert "run?.session?.conversation_id" in app
+    # The verified run-link filter moved with loadRecentConversations into
+    # chat-history-module.js (#7216 R5 step 3); the same strings pin it there.
+    assert 'run?.action === "general"' in module
+    assert "run?.session?.conversation_id" in module
     assert "openClawWorkspace();" in app
     # #4806 made the resumed turn continue below the original home content, so
     # the owner-verified Claw bridge now also restores the saved transcript.

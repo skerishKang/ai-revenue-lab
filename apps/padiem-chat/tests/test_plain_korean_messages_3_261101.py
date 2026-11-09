@@ -14,9 +14,14 @@ def test_project_errors_do_not_render_server_message_or_raw_exception():
 
 def test_claw_error_sinks_use_safe_local_messages_and_keep_history_guidance():
     source = (STATIC / "app.js").read_text(encoding="utf-8")
+    # setClawRunHistoryStatus moved into chat-history-module.js (#7216 R5 step 3);
+    # both shipped sources are checked so the raw-error ban keeps its strength.
+    module = (STATIC / "chat-history-module.js").read_text(encoding="utf-8")
     for sink in ("setApprovedMemoryStatus", "setClawRunHistoryStatus"):
         assert sink + "(error instanceof Error ? error.message" not in source
-    assert 'safeLocalUiMessage(error, clawT("claw-runs-error"))' in source
+        assert sink + "(error instanceof Error ? error.message" not in module
+    assert 'safeLocalUiMessage(error, clawT("claw-runs-error"))' not in source
+    assert 'safeLocalUiMessage(error, deps.clawT("claw-runs-error"))' in module
     assert "clawBoundedRefusalCopy" in source
 
 

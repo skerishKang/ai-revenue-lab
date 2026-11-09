@@ -140,3 +140,38 @@ app.js는 다수 모듈 뒤·일부 모듈 앞에 로드된다. 분리 시 전�
 - 최상위 이벤트 연결 줄(예: `settingsButton.addEventListener("click", ...)`, `sidebarCollapseButton?.addEventListener(...)`)은
   **app.js에 남긴다**. 모듈 factory는 첫 호출 때 만들어지므로, 리스너를 모듈로 옮기면 등록
   시점이 바뀌어 동작이 달라진다. 남은 리스너는 전달 함수를 호출한다.
+
+## 9. 최근 대화 메뉴 구역 확정 (R5 3단계, #7216)
+
+이동 대상은 추출기의 구역 분류가 **최근 대화 메뉴**로 놓은 함수 18개(현재 app.js
+기준 494줄)다. 분류 규칙(`history|recent|rename|pin|deleteConversation|patchConversation`)에
+의해 함께 잡힌 것까지 같은 구역으로 취급한다(§1의 489줄 실측과 같은 집계다).
+
+| 함수 | 현재 줄 범위(app.js 7,928줄 시점) | 비고 |
+| --- | --- | --- |
+| `renderTyping` | 734-745 | 이름의 `pin`이 분류 규칙에 매칭된 대기 표시(대화 렌더링) |
+| `clearHistoryUI` | 1168-1175 | 로그아웃 정리 |
+| `renderHistorySkeleton` · `renderHistoryLoadFailed` · `fetchRecentConversations` | 2747-2785 | #6119 스켈레톤·재시도 행 |
+| `loadRecentConversations` | 2841-3003 | 목록 렌더 + 이름 변경/고정/삭제 메뉴 + Claw 라벨 보강 |
+| `clearHistoryActionStatus` · `showHistoryActionStatus` · `patchConversation` · `focusHistoryConversation` | 3021-3056 | PATCH 2필드(제목·고정) 계약 |
+| `beginConversationRename` | 3058-3129 | 제목 길이 상한 `HISTORY_TITLE_MAX_CHARS`(3019) 사용 |
+| `deleteConversation` | 3131-3164 | 확인 대화상자 → DELETE |
+| `clearClawRunHistoryPdfPreviews` · `setClawRunHistoryStatus` · `clawRunHistoryErrorMessage` | 7463-7488 | Claw 최근 실행 카드 상태/오류 표시 |
+| `fetchClawRunHistory` · `loadClawRunHistory` · `syncClawRunHistoryVisibility` | 7688-7776 | Claw 최근 실행 목록(표시 전용) |
+
+- **최상위 연결 코드**: 이 구역의 함수 밖 코드는 `document` click/keydown 리스너
+  블록 하나(3004-3015, 목록 컨테이너의 열린 메뉴 닫기·Escape)뿐이다. §8 규칙대로
+  **app.js에 그대로 남긴다**(모듈은 첫 호출 때 만들어지므로 리스너 등록 시점이
+  달라진다). `clawRunHistoryRefresh`/`clawRunHistoryExpand` 리스너 블록(7778-7791)은
+  추출기가 Claw로 분류한 최상위 코드로, 역시 app.js에 남는다.
+- **클로저 변수**는 선언 위치를 옮기지 않고 deps로 넘긴다. DOM 참조 18개와
+  `HISTORY_TITLE_MAX_CHARS`·`authState`·`authViewEpoch`·`shell`·`input`·`conversationState`·
+  `inFlight`·`clawConversationIds`·`clawRunHistoryPdfControllers`는 getter,
+  다시 대입하는 `historyReadSequence`·`clawConversationLabelsRead`·
+  `clawRunHistoryInFlight`·`clawRunHistoryLeftSurface`·`clawRunHistoryLimit`·
+  `clawRunHistoryVisibilityEpoch`·`pendingClawRunFocusId`는 getter+setter.
+- 다른 구역 함수(`uiT`·`clawT`·`sidebarActionIcon`·`openSavedConversation`·`readClawRuns`·
+  `mappedUiError`·`safeLocalUiMessage`·`failureCodeNote`·`renderClawRunCard`·
+  `resetConversationView`·`setNote`·`idleNote`)는 deps getter로 호출한다.
+- 결과: `app.js` 7,928 → 7,529줄, 새 파일 `chat-history-module.js`(506줄),
+  상한 8,028 → 7,629.

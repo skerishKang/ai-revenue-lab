@@ -134,8 +134,8 @@ def test_the_duplicate_waiting_surfaces_are_gone() -> None:
     assert "statusNode.hidden = next === phases.IDLE || !message;" in polish
     # The waiting dots are not drawn any more. The marker element stays,
     # because the sources and export flows read it.
-    app = _read("app.js")
-    typing_block = app[app.index("function renderTyping(article)"):]
+    module = _read("chat-history-module.js")
+    typing_block = module[module.index("function renderTyping(article)"):]
     typing_block = typing_block[: typing_block.index("\n  }")]
     assert 'typing.className = "typing";' in typing_block
     assert "document.createElement(\"i\")" not in typing_block

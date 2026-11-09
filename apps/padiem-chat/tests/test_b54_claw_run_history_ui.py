@@ -60,7 +60,10 @@ RUN_HISTORY_KEYS = (
 
 
 def _app_source() -> str:
-    return APP_JS.read_text(encoding="utf-8")
+    # #7216 R5 step 3: the run-history panel code moved into
+    # chat-history-module.js; every contract below spans the shipped sources.
+    return (APP_JS.read_text(encoding="utf-8")
+            + APP_JS.with_name("chat-history-module.js").read_text(encoding="utf-8"))
 
 
 # ── static structural contracts ────────────────────────────────────────────
@@ -99,7 +102,8 @@ def test_accessible_loading_error_empty_and_refresh_states() -> None:
 def test_consumes_the_existing_owner_scoped_route_without_new_authority() -> None:
     app = _app_source()
     # The one owner-scoped run-history read, bounded by the same limit.
-    assert 'readClawRuns(clawRunHistoryLimit' in app
+    assert 'deps.readClawRuns(deps.clawRunHistoryLimit' in app
+    assert 'readClawRuns(clawRunHistoryLimit' not in app
     assert '/api/claw/runs?limit=${limit}' in app
     # Reuses the single bounded artifact route rather than a second download path.
     assert "/api/claw/manual-intake/artifact/" in app
@@ -128,10 +132,10 @@ def test_presentation_does_not_mint_run_truth_in_the_browser() -> None:
 def test_single_flight_and_visibility_guards_are_present() -> None:
     app = _app_source()
     assert "let clawRunHistoryInFlight = false;" in app
-    assert "if (clawRunHistoryInFlight) return;" in app
+    assert "if (deps.clawRunHistoryInFlight) return;" in app
     # Unguarded fetch is only reachable through the single-flight wrapper.
     assert app.count("await fetchClawRunHistory(options);") == 1
-    assert 'const show = authState.authenticated === true' in app
+    assert 'const show = deps.authState.authenticated === true' in app
     # The removed inbox must not survive as a run-history visibility gate.
     assert 'clawWorkspace?.dataset.view !== "inbox"' not in app
 

@@ -17,7 +17,7 @@ NODE = r"""
 const fs = require("fs"), vm = require("vm"), assert = require("assert");
 const app = fs.readFileSync(process.argv[1], "utf8");
 const start = app.indexOf("  function renderClawRunCard(run) {");
-const end = app.indexOf("\n  // Unguarded fetch:", start);
+const end = app.indexOf("\n  function fetchClawRunHistory(", start);
 assert(start >= 0 && end > start, "actual run-card source is located");
 function el(tag) {
   return {
@@ -112,6 +112,6 @@ def test_two_locales_and_theme_preserve_warning_without_granting_authority():
     assert "does not prove task success" in en
     assert ".claw-run-card-partial-note" in css
     assert "var(--muted)" in css
-    block = app.split("function renderClawRunCard(run) {", 1)[1].split("// Unguarded fetch:", 1)[0]
+    block = app.split("function renderClawRunCard(run) {", 1)[1].split("\n  function fetchClawRunHistory(", 1)[0]
     for forbidden in ("fetch(", "POST", "localStorage", "sessionStorage", "approve(", "retry("):
         assert forbidden not in block

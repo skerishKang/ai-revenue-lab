@@ -102,7 +102,9 @@ console.log(JSON.stringify({bootRequests:1,sameGradeShared:true}));
 def claw_runs_source():
     source = (STATIC / "app.js").read_text(encoding="utf-8")
     start = source.index("const CLAW_RUNS_READ_WINDOW_MS")
-    end = source.index("async function loadRecentConversations", start)
+    # loadRecentConversations moved into chat-history-module.js (#7216 R5 step 3);
+    # its one-line forwarder is the stable end boundary of the runs-read block.
+    end = source.index("function loadRecentConversations(", start)
     return source[start:end]
 
 

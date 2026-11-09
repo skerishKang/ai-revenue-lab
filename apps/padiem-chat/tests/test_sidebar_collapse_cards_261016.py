@@ -6,7 +6,8 @@ STATIC = Path(__file__).resolve().parents[1] / "static"
 HTML = (STATIC / "index.html").read_text(encoding="utf-8")
 JS = (STATIC / "sidebar-section-collapse.js").read_text(encoding="utf-8")
 CSS = (STATIC / "sidebar-section-polish.css").read_text(encoding="utf-8")
-APP = (STATIC / "app.js").read_text(encoding="utf-8")
+APP = ((STATIC / "app.js").read_text(encoding="utf-8")
+       + (STATIC / "chat-history-module.js").read_text(encoding="utf-8"))  # R5 step 3: history rows live in the module too
 
 
 def test_project_and_recent_have_independent_explicit_collapse_controls():

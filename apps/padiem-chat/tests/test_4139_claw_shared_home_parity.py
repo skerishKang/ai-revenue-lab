@@ -14,6 +14,7 @@ HTML = (STATIC / "index.html").read_text(encoding="utf-8")
 CSS = (STATIC / "claw-focus-layout.css").read_text(encoding="utf-8")
 STYLES = (STATIC / "padiem-shared-ui.css").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+MODULE = (STATIC / "chat-history-module.js").read_text(encoding="utf-8")
 ACTIONS = (STATIC / "claw-home-choices.js").read_text(encoding="utf-8")
 CONNECTION_CHIPS = (STATIC / "claw-connection-chips.js").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
@@ -150,7 +151,7 @@ def test_claw_previous_conversations_reuses_owner_scoped_history():
     assert 'mobileMenu' in ACTIONS
     assert 'history.focus?' in ACTIONS
     assert 'openSavedConversation' in APP
-    assert "clawConversationIds.has(conversation.id)" in APP
+    assert "clawConversationIds.has(conversation.id)" in MODULE
     assert "isVerifiedClawThread" in APP
     assert ".claw-history-shortcut" in CSS
     assert 'claw-runs-title' in LOCALE
