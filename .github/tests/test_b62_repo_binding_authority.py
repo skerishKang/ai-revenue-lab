@@ -48,6 +48,11 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
     #     "helper not configured" until a deploy injects the reviewed versioned
     #     URL and SHA-256; an empty or mismatched pair omits only the helper
     #     step and leaves the MeshCentral agent install untouched.
+    #   - The 2026-11-09 voice recovery (ii) declares
+    #     PADIEM_CHAT_VOICE_RPC_SECRET, the receiver-side proof secret for the
+    #     signed /internal/rpc/voice_stt calls the COM2 host makes. It is
+    #     already stored and served live (2026-11-09); the 2026-10-26 served
+    #     fixture predates it, so it shows here as a pending addition.
     # Each one is named here as a pending addition - never unexplained drift, and
     # never a silent removal of something serving traffic. Each returns to an empty
     # diff as its own deploy lands.
@@ -62,6 +67,7 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
                   {'name': 'PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED', 'type': 'plain_text'},
                   {'name': 'PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY', 'type': 'secrets_store_secret'},
                   {'name': 'PADIEM_CHAT_SHARED_LOGIN_ENABLED', 'type': 'plain_text'},
+                  {'name': 'PADIEM_CHAT_VOICE_RPC_SECRET', 'type': 'secret_text'},
                   {'name': 'PC_AGENT_INSTALL_URL', 'type': 'plain_text'},
                   {'name': 'PC_QUEUE_BACKEND', 'type': 'plain_text'},
                   {'name': 'PC_QUEUE_ORIGIN', 'type': 'plain_text'},
@@ -129,7 +135,11 @@ def test_d1_schema_probes_use_repository_planned_identifiers():
 def test_repository_route_table_cannot_capture_worker_build_fields():
     config = tomllib.loads((ROOT/'apps/padiem-chat/wrangler.toml').read_text())
     assert config['base_dir'] == '.b66-worker-src'
-    assert config['routes'] == [{'pattern': 'chat.padiem.net', 'custom_domain': True}]
+    # 2026-11-08 cutover: the public hostname belongs to padiem-chat-front.
+    # The Python Worker declares no route table at all — a custom_domain route
+    # here made the 2026-11-09 deploy steal chat.padiem.net back (see
+    # apps/padiem-chat/tests/test_chat_public_domain_pin_261109.py).
+    assert 'routes' not in config
 
 
 def test_normal_deploy_has_no_legacy_live_target_or_variable_prerequisite():
