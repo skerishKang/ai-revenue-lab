@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import inspect
 import re
+import uuid
 from typing import Any
 
 from starlette.requests import Request
@@ -100,4 +101,30 @@ async def project_completed_general_run(
     return True
 
 
-__all__ = ["project_completed_general_run"]
+
+
+async def project_completed_chat_turn(
+    request: Request, *, user_text: str, answer: str
+) -> bool:
+    """Project a Chat-lane completed turn into the same claw run-history
+    read-model the Claw general lane posts (#7297).
+
+    The Chat product keeps its own screen; the execution ledger no longer
+    cares which lane answered. A canonical run id is minted the same way as
+    `create_claw_run` does for model-only runs, then the shared projection
+    writes the ledger row — identical shape to a Claw turn with no linked
+    workspace. Best-effort only: a projection failure never fails the turn.
+    """
+    if not isinstance(user_text, str) or not user_text.strip():
+        return False
+    if not isinstance(answer, str) or not answer.strip():
+        return False
+    run_id = f"run_{uuid.uuid4().hex[:24]}"
+    try:
+        return await project_completed_general_run(
+            request, run_id=run_id, user_text=user_text, answer=answer,
+        )
+    except Exception:
+        return False
+
+__all__ = ["project_completed_chat_turn", "project_completed_general_run"]
