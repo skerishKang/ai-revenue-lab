@@ -134,3 +134,13 @@ def test_locate_git_bash_never_returns_the_wsl_bash():
     assert helper.locate_git_bash(open_key=lambda h, k: None, which=which,
                                   expandvars=lambda value: planted,
                                   isfile=lambda p: True) is None
+
+
+def test_the_real_git_bash_guard_refuses_a_wsl_exe_leaf():
+    """가드 3번째 조건(`wsl.exe` leaf 배제)을 직접 고정한다.
+
+    후보 생성식이 모두 ``\\bin\\bash.exe`` 접미사를 강제하므로 상위 탐색
+    흐름에서는 도달 불가한 이중 안전장치다(아르곤 #7302 (c)-5). 향후 리팩터링이
+    이 조건을 지우지 않도록 가드 함수 자체의 계약을 한 줄로 못박는다.
+    """
+    assert helper._is_real_git_bash(r"C:\Temp\wsl.exe", lambda p: True) is False

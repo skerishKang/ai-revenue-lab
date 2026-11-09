@@ -83,6 +83,7 @@ import hmac
 import json
 import os
 import re
+import shutil
 import subprocess
 import time
 from dataclasses import dataclass, field
@@ -236,7 +237,7 @@ def locate_git_bash(*, open_key=None, which=None, expandvars=None, isfile=None) 
     and environment; production uses the defaults.
     """
     open_key = open_key or _winreg_install_path
-    which = which or (lambda name: __import__("shutil").which(name))
+    which = which or shutil.which
     expandvars = expandvars or (lambda value: os.path.expandvars(value))
     isfile = isfile or os.path.isfile
 

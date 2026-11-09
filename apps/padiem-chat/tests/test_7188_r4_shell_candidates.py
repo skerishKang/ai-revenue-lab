@@ -374,3 +374,35 @@ def test_a_registry_install_path_into_system32_is_refused(tmp_path):
     assert done.returncode == 127, done.stderr
     assert "shell_unavailable" in done.stderr
     assert "ok" not in done.stdout
+
+
+@pytest.mark.skipif(shutil.which("powershell") is None,
+                    reason="the bash guard is Windows PowerShell behavior")
+def test_the_bash_guard_normalizes_forward_slashes_before_the_system32_check():
+    r"""가드가 `/`를 `\`로 정규화한 뒤 System32를 검사한다(아르곤 #7302 (b)-3).
+
+    정규화가 없으면 ``C:/Windows/System32/bash.exe``가 substring 검사를
+    통과한다 — Test-Path는 슬래시 혼용 경로를 그대로 받아들이므로 가드가
+    뚫린다. 후보 문자열은 env/레지스트리에서 오고 슬래시가 섞일 수 있다.
+    """
+    script = _script_of(shell.build_pc_shell_command({"command": "echo ok", "shell": "bash"}))
+    start = script.index("function _padiem_bash_ok")
+    guard = script[start:script.index("\n", start)]
+    probe = (
+        # 존재 검사를 통과시켜 substring 가드만 측정 대상으로 남긴다.
+        "function Test-Path { param($LiteralPath,$Path,$PathType) return $true };"
+        + guard
+        + r"if(_padiem_bash_ok 'C:/Windows/System32/bash.exe'){'SLASH_PICKED'}"
+          r"else{'SLASH_REFUSED'};"
+          r"if(_padiem_bash_ok 'C:\Windows\System32\bash.exe'){'BS_PICKED'}"
+          r"else{'BS_REFUSED'};"
+          r"if(_padiem_bash_ok 'C:/Program Files/Git/bin/bash.exe'){'OK_PICKED'}"
+          r"else{'OK_REFUSED'};"
+    )
+    done = subprocess.run(
+        ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", probe],
+        capture_output=True, text=True, timeout=60,
+    )
+    assert "SLASH_REFUSED" in done.stdout, done.stdout + done.stderr
+    assert "BS_REFUSED" in done.stdout, done.stdout + done.stderr
+    assert "OK_PICKED" in done.stdout, done.stdout + done.stderr
