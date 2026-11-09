@@ -114,7 +114,11 @@
     // not exist yet: wait for the document's own boot point (both modules
     // defer to DOMContentLoaded) before falling back to a direct read.
     let flow = window.PadiemPcConnectFlow;
-    if (!flow && document.readyState === "loading") {
+    if (!flow && document.readyState !== "complete") {
+      // Deferred scripts run while readyState is "interactive" and before
+      // DOMContentLoaded fires, so waiting while "loading" alone would miss
+      // the flow entirely. Once DOMContentLoaded has fired readyState is
+      // always "complete" (never the reverse), so this wait cannot stick.
       await new Promise((resolve) => {
         document.addEventListener("DOMContentLoaded", () => resolve(), { once: true });
       });
