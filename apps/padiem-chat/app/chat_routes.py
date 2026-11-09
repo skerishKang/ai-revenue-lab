@@ -27,6 +27,9 @@ from .auto_grounding import (
 from .native_calendar_intent import parse_native_calendar_intent, try_native_calendar_chat
 from .native_calendar_adapter import NativeCalendarAdapterError
 from .chat_connector_tools import (
+    GOOGLE_CALENDAR_CONNECT_NOTE,
+    google_calendar_named,
+    calendar_read_reachable,
     CALENDAR_READ_TOOL_NAME,
     CONNECTOR_UNAVAILABLE_NOTE,
     google_connector_intent,
@@ -1001,7 +1004,24 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     # grant-gated above), so the native branch steps aside. CREATE asks
     # ("일정 등록해줘") stay with the workspace-native store — the connector
     # is READ-only.
+    # #7273: the internal PADIEM calendar and the external Google calendar are
+    # separate products, so one ask is answered by exactly one of them. Naming
+    # the external one hands the turn to the connector lane (grant active) or
+    # states the missing connection; the internal branch keeps every ask that
+    # does not name it, byte for byte as before.
+    google_calendar_explicit = bool(
+        browser_project_id is None and google_calendar_named(latest_user_text)
+    )
+    recommended_connect_note: str | None = None
     native_read_moved_to_connector = bool(google_connector_turn and native_plan_op == "read")
+    if google_calendar_explicit:
+        if await calendar_read_reachable(request, uid=uid):
+            native_read_moved_to_connector = True
+            _LOG.info("calendar_branch verdict=google_named_granted")
+        else:
+            recommended_connect_note = GOOGLE_CALENDAR_CONNECT_NOTE
+            native_read_moved_to_connector = True
+            _LOG.info("calendar_branch verdict=google_named_no_grant")
     if needs_native_calendar and calendar_store is None and not native_read_moved_to_connector:
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
     if calendar_store is not None and util_scope is None and not native_read_moved_to_connector:
@@ -1052,6 +1072,39 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                 media_type="text/event-stream",
                 headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
             )
+
+    if recommended_connect_note is not None:
+        # The external calendar was named and no READ grant exists. Answer
+        # with the connection guidance instead of dispatching: the model has
+        # no calendar data on this turn and must not describe one.
+        async def connect_note_iterator():
+            yield _public_sse("delta", {"delta": recommended_connect_note})
+            done_payload = {"done": True}
+            if uid is not None and store is not None and latest_user_text:
+                try:
+                    saved_id = await store.append_exchange(
+                        uid, conversation_id, latest_user_text,
+                        recommended_connect_note, product_scope=PRODUCT_SCOPE_CHAT,
+                    )
+                except Exception:
+                    saved_id = None
+                if saved_id is not None:
+                    done_payload["conversation_id"] = saved_id
+            yield _public_sse("done", done_payload)
+
+        async def connect_note_timing_iterator():
+            try:
+                async for chunk in connect_note_iterator():
+                    yield chunk
+            finally:
+                timing.emit()
+
+        return StreamingResponse(
+            connect_note_timing_iterator(),
+            status_code=200,
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
+        )
 
     timing.mark("calendar")
     auto_grounding: AutoGroundingService = request.app.state.auto_grounding
