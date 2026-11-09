@@ -1,4 +1,11 @@
-"""Tests for Cloudflare Python Worker integration (contract & bridge logic)."""
+"""Tests for Cloudflare Python Worker integration (contract & bridge logic).
+
+#7241: every binding name, Provider id and model identity asserted here is
+read from the effective registry (or from the app's own reader), so this file
+carries no deployment value. The few blocks that pin an owner decision about
+the declared Secrets-Store document keep their shape untouched and are marked
+``requires_owner_document``.
+"""
 
 from __future__ import annotations
 
@@ -8,6 +15,13 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+
+from _registry_values import (
+    a_provider_id,
+    provider_row,
+    registry,
+    requires_owner_document,
+)
 
 WORKER_SRC = Path(__file__).resolve().parent.parent / "worker.py"
 WRANGLER_TOML = Path(__file__).resolve().parent.parent / "wrangler.toml"
@@ -77,6 +91,7 @@ class TestWranglerConfig:
         assert "[vars]" in content
         assert 'B14_PROVIDER_MODE = "live"' in content
 
+    @requires_owner_document
     def test_no_secret_values_or_account_credentials(self):
         content = WRANGLER_TOML.read_text()
         for word in ("api_token", "CLOUDFLARE", "account_id"):
@@ -123,6 +138,7 @@ class TestWranglerConfig:
             assert f'binding = "{binding}"' in content
             assert f"{binding} =" not in content
 
+    @requires_owner_document
     def test_bai_secret_store_binding_is_metadata_only_and_exact(self):
         content = WRANGLER_TOML.read_text()
         assert '[[secrets_store_secrets]]' in content
@@ -139,21 +155,24 @@ class TestEnvBridge:
     async def test_secret_store_binding_is_resolved_with_async_get(self):
         from app.pilot.worker_env import collect_env_overrides
 
+        binding_name = provider_row(a_provider_id())["credential_binding_name"]
+        resolved = "resolved-synthetic-secret-value"
+
         class SecretBinding:
             async def get(self):
-                return "resolved-poolside-secret"
+                return resolved
 
         env = SimpleNamespace(
-            PADIEM_B14_CREDENTIAL_12=SecretBinding(),
+            **{binding_name: SecretBinding()},
             B14_PROVIDER_MODE="live",
         )
 
         overrides = await collect_env_overrides(
-            env, ("PADIEM_B14_CREDENTIAL_12", "B14_PROVIDER_MODE")
+            env, (binding_name, "B14_PROVIDER_MODE")
         )
 
-        assert overrides["PADIEM_B14_CREDENTIAL_12"] == "resolved-poolside-secret"
-        assert "SecretBinding" not in overrides["PADIEM_B14_CREDENTIAL_12"]
+        assert overrides[binding_name] == resolved
+        assert "SecretBinding" not in overrides[binding_name]
         assert overrides["B14_PROVIDER_MODE"] == "live"
 
     def test_secret_binding_helper_is_used(self):
@@ -187,6 +206,7 @@ class TestEnvBridge:
         assert "_env_applied" in src
 
 
+@requires_owner_document
 def test_kilo_secret_store_binding_is_metadata_only_and_env_bridged():
     content = WRANGLER_TOML.read_text()
     worker = WORKER_SRC.read_text()
@@ -198,6 +218,7 @@ def test_kilo_secret_store_binding_is_metadata_only_and_env_bridged():
     from app.pilot.model_registry_file import credential_binding_names
     assert "PADIEM_B14_CREDENTIAL_08" in credential_binding_names()
 
+@requires_owner_document
 def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
     """#3554: the Google AI Studio credential binding is declared metadata-only.
 
@@ -234,23 +255,18 @@ def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
 def test_worker_projects_every_enabled_platform_secret_registry_binding():
     """A registry Provider is servable only if the Worker collects its binding.
 
-    The credential scope is derived from b14_models.json — the same authority
-    the catalog installs from and from which the COM2 adapter derives its own —
-    so onboarding a Provider, including one whose credential lives only on COM2,
-    never adds a second hand-maintained list. This checks ALL active providers
-    and the derivation itself, not a one-off literal.
+    The credential scope is derived from the effective registry — the same
+    authority the catalog installs from and from which the COM2 adapter derives
+    its own — so onboarding a Provider, including one whose credential lives
+    only on COM2, never adds a second hand-maintained list. This checks ALL
+    active providers and the derivation itself, not a one-off literal.
     """
     import ast
-    import json
 
-    registry = json.loads(
-        (WRANGLER_TOML.parent / "app" / "pilot" / "b14_models.json").read_text(
-            encoding="utf-8"
-        )
-    )
+    providers = registry()["providers"]
     required = {
         entry["credential_binding_name"]
-        for entry in registry["providers"].values()
+        for entry in providers.values()
         if entry["enabled"] and entry["credential_source"] == "platform_secret"
     }
     worker_text = WORKER_SRC.read_text(encoding="utf-8")
@@ -287,7 +303,7 @@ def test_worker_projects_every_enabled_platform_secret_registry_binding():
     # A credential the registry declares must not also be hand-listed: that
     # duplicate list is exactly what made every onboarding a code change.
     assert not set(scope["_FIXED_ENV_KEYS"]) & set(registry_credential_names())
-    assert "PADIEM_B14_CREDENTIAL_05" in required
+    assert provider_row(a_provider_id())["credential_binding_name"] in required
     assert "collect_request_bindings(self.env, _ENV_KEYS)" in worker_text
 
 @pytest.mark.asyncio

@@ -1,0 +1,108 @@
+{
+  "version": "padiem.models.private.v1",
+  "comment": "#7241 placeholder registry for the platform test suite. No real provider, host, model or credential value.",
+  "providers": {
+    "example-provider": {
+      "base_origin": "https://example-provider.invalid/v1",
+      "allowed_hosts": [
+        "example-provider.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_01"
+    },
+    "example-provider-2": {
+      "base_origin": "https://example-provider-2.invalid/v1",
+      "allowed_hosts": [
+        "example-provider-2.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_02"
+    }
+  },
+  "models": [
+    {
+      "id": "example-provider/example-model-1",
+      "provider_id": "example-provider",
+      "upstream_model": "example-model-1",
+      "capabilities": [
+        "chat",
+        "coding",
+        "tools"
+      ],
+      "enabled": true,
+      "display_name": "Example Model One",
+      "provider_name": "Example Provider",
+      "context_window": 1048576,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider/example-model-2",
+      "provider_id": "example-provider",
+      "upstream_model": "example-model-2",
+      "capabilities": [
+        "chat",
+        "image"
+      ],
+      "enabled": true,
+      "display_name": "Example Model Two",
+      "provider_name": "Example Provider",
+      "context_window": 32768,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-2/example-model-3",
+      "provider_id": "example-provider-2",
+      "upstream_model": "example-model-3",
+      "capabilities": [
+        "chat",
+        "coding",
+        "long_context"
+      ],
+      "enabled": true,
+      "display_name": "Example Model Three",
+      "provider_name": "Example Provider Two",
+      "context_window": 262144,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    }
+  ],
+  "tiers": {
+    "free": {
+      "primary": "example-provider/example-model-1",
+      "fallback": [
+        "example-provider-2/example-model-3",
+        "example-provider/example-model-2"
+      ]
+    },
+    "plus": {
+      "primary": "example-provider/example-model-2",
+      "fallback": [
+        "example-provider-2/example-model-3"
+      ]
+    },
+    "pro": {
+      "primary": "example-provider/example-model-2",
+      "fallback": [
+        "example-provider-2/example-model-3"
+      ]
+    },
+    "max": {
+      "primary": "example-provider/example-model-2",
+      "fallback": [
+        "example-provider-2/example-model-3"
+      ]
+    },
+    "admin": {
+      "primary": "example-provider/example-model-2",
+      "fallback": [
+        "example-provider-2/example-model-3"
+      ]
+    }
+  }
+}

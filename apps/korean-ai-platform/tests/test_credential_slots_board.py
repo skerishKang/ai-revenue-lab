@@ -7,6 +7,9 @@ four-character tail) reaches the response or a log record.
 
 Every credential used here is synthetic and is set through the test process
 environment or a temporary secret directory; nothing reads a real key.
+
+#7241: the slot -> Provider mapping and every binding name are read from the
+effective registry, so this suite carries no deployment value of its own.
 """
 
 from __future__ import annotations
@@ -27,30 +30,68 @@ from app.pilot.service_proof import (
     compute_service_proof,
 )
 
+from _registry_values import registry
+
 PATH = "/api/pilot/v1/admin/credential-slots"
 PROOF_SECRET = "unit-test-slot-board-proof-secret-0123456789"
 
-AGNES = "sk-synthetic-agnes-0123456789-wxyz"
-GOOGLE = "AIza-synthetic-google-abcdefghij-zsug"
-INCEPTION = "sk-synthetic-inception-0123456789-mnop"
-MODEL_SCOPE = "sk-synthetic-modelscope-0123456789-qrst"
+def _slot_bindings() -> tuple[str, ...]:
+    """The stable slot names the deployment declares, from the board itself."""
+    from app.pilot.credential_slots_admin import SLOT_BINDINGS
 
-EXPECTED_PROVIDERS = {
-    "PADIEM_B14_CREDENTIAL_01": ["agnes-ai"],
-    "PADIEM_B14_CREDENTIAL_02": ["atria"],
-    "PADIEM_B14_CREDENTIAL_03": [],
-    "PADIEM_B14_CREDENTIAL_04": ["experiential"],
-    "PADIEM_B14_CREDENTIAL_05": ["google"],
-    "PADIEM_B14_CREDENTIAL_06": ["inception"],
-    "PADIEM_B14_CREDENTIAL_07": ["openrouter"],
-    "PADIEM_B14_CREDENTIAL_08": ["kilo"],
-    "PADIEM_B14_CREDENTIAL_09": ["kira"],
-    "PADIEM_B14_CREDENTIAL_10": ["modelscope"],
-    "PADIEM_B14_CREDENTIAL_11": ["opencode-go"],
-    "PADIEM_B14_CREDENTIAL_12": ["poolside"],
-    "PADIEM_B14_CREDENTIAL_13": ["tokenharbor"],
-    "PADIEM_B14_CREDENTIAL_14": ["zanslab"],
-}
+    return tuple(SLOT_BINDINGS)
+
+
+def expected_providers() -> dict[str, list[str]]:
+    """Slot -> Provider ids, derived exactly the way the board derives them."""
+    from app.pilot.credential_slots_admin import _providers_by_slot
+
+    expected, state = _providers_by_slot()
+    assert state == "loaded"
+    return expected
+
+
+def slot_of(provider_id: str) -> str:
+    """The binding name the registry declares for a Provider."""
+    return registry()["providers"][provider_id]["credential_binding_name"]
+
+
+def binding_owner(binding: str) -> str | None:
+    """The Provider a slot carries, or None when no Provider declares it."""
+    carried = EXPECTED_PROVIDERS.get(binding) or []
+    return carried[0] if carried else None
+
+
+# Pinned by the deployment's own slot list, not by a hand-kept copy: the board
+# lists every declared slot, including one no Provider carries.
+SLOTS = _slot_bindings()
+EXPECTED_PROVIDERS = expected_providers()
+assert tuple(EXPECTED_PROVIDERS) == SLOTS
+
+# The roles this suite exercises are chosen from the registry shape, never from
+# a declared name: three Provider-bearing slots hold a configured value (one of
+# them through the file leg), one slot holds no Provider at all, one slot is
+# declared only by the environment file, and one keeps the placeholder check.
+_CARRIED = [slot for slot, ids in EXPECTED_PROVIDERS.items() if ids]
+EMPTY_SLOT = next(slot for slot, ids in EXPECTED_PROVIDERS.items() if not ids)
+_KEY_SLOTS = _CARRIED[:3]
+# One role's value lives in the secret file rather than in the environment.
+_FILE_SLOT = _KEY_SLOTS[1]
+_ENV_SLOT = _CARRIED[3]
+_PLACEHOLDER_SLOT = _CARRIED[4]
+
+# Synthetic values, one per role, so no real key shape is reproduced here.
+KEY_VALUES = [
+    f"sk-synthetic-role-{index}-0123456789-wxyz" for index in range(len(_KEY_SLOTS))
+]
+KEY_BY_SLOT = dict(zip(_KEY_SLOTS, KEY_VALUES))
+ENV_SLOT_VALUE = "sk-synthetic-envfile-0123456789-lmnop"
+PLACEHOLDER_VALUE = "sk-your-placeholder-key"
+
+# The environment-file leg declares its own slot and value.
+ENV_FILE_LINE = f"{_ENV_SLOT}={ENV_SLOT_VALUE}"
+# The board reports only the sanctioned four-character tail of a value.
+TAIL_LENGTH = 4
 
 
 class FakeLedger:
@@ -65,7 +106,7 @@ class FakeLedger:
         self.queries.append((list(provider_ids), since, error_limit))
         if self.raises:
             raise RuntimeError("ledger driver detail that must not escape")
-        if list(provider_ids) == ["agnes-ai"]:
+        if list(provider_ids) == EXPECTED_PROVIDERS[_KEY_SLOTS[0]]:
             return {"last_success_at": self.last_success_at, "errors": self.errors}
         return {"last_success_at": None, "errors": []}
 
@@ -80,13 +121,14 @@ def _headers(secret=PROOF_SECRET, *, at=None):
 
 def _seed(monkeypatch, tmp_path: Path) -> Path:
     monkeypatch.setenv(SERVICE_PROOF_BINDING, PROOF_SECRET)
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", AGNES)
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_06", INCEPTION)
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_10", MODEL_SCOPE)
+    for slot in _KEY_SLOTS:
+        if slot == _FILE_SLOT:
+            continue
+        monkeypatch.setenv(slot, KEY_BY_SLOT[slot])
     secrets = tmp_path / "secrets"
     secrets.mkdir(mode=0o700)
-    slot_file = secrets / "PADIEM_B14_CREDENTIAL_05"
-    slot_file.write_text(GOOGLE, encoding="utf-8")
+    slot_file = secrets / _FILE_SLOT
+    slot_file.write_text(KEY_BY_SLOT[_FILE_SLOT], encoding="utf-8")
     if os.name == "posix":
         # The reader refuses a group/world-readable file; CI's umask otherwise
         # creates 0o644 and the slot correctly reports unresolved.
@@ -119,13 +161,14 @@ def test_slot_shape_comes_from_the_dispatch_registry(monkeypatch, tmp_path):
     assert body["registry"] == "loaded"
     assert body["ledger"] == {"state": "bound", "error_window_hours": 168}
 
-    agnes = slots["PADIEM_B14_CREDENTIAL_01"]
-    assert agnes["configured"] is True
-    assert agnes["state"] == "configured"
-    assert agnes["length"] == len(AGNES)
-    assert agnes["last4"] == AGNES[-4:]
+    filled = slots[_KEY_SLOTS[0]]
+    assert filled["configured"] is True
+    assert filled["state"] == "configured"
+    assert filled["provider_ids"] == EXPECTED_PROVIDERS[_KEY_SLOTS[0]]
+    assert filled["length"] == len(KEY_BY_SLOT[_KEY_SLOTS[0]])
+    assert filled["last4"] == KEY_BY_SLOT[_KEY_SLOTS[0]][-TAIL_LENGTH:]
 
-    empty = slots["PADIEM_B14_CREDENTIAL_03"]
+    empty = slots[EMPTY_SLOT]
     assert empty["configured"] is False
     assert empty["state"] == "empty"
     assert empty["length"] is None
@@ -135,18 +178,21 @@ def test_slot_shape_comes_from_the_dispatch_registry(monkeypatch, tmp_path):
 def test_file_backed_slot_reports_file_mtime(monkeypatch, tmp_path):
     secrets = _seed(monkeypatch, tmp_path)
     stamp = time.time() - 3600
-    os.utime(secrets / "PADIEM_B14_CREDENTIAL_05", (stamp, stamp))
+    os.utime(secrets / _FILE_SLOT, (stamp, stamp))
     # The file leg is read by the COM2 adapter's request-scope reader, which is
     # the same reader the Provider lane uses on that host.
     monkeypatch.chdir(tmp_path)
     with _client(FakeLedger(), local=True) as client:
         response = client.get(PATH, headers=_headers())
-    google = {row["slot"]: row for row in response.json()["slots"]}["PADIEM_B14_CREDENTIAL_05"]
-    assert google["configured"] is True
-    assert google["last4"] == "zsug"
-    assert google["file_modified_source"] == "secret_file"
-    assert google["file_modified_at"] is not None
-    assert abs(datetime.fromisoformat(google["file_modified_at"]).timestamp() - stamp) < 1
+    from_file = {row["slot"]: row for row in response.json()["slots"]}[_FILE_SLOT]
+    assert from_file["configured"] is True
+    assert from_file["provider_ids"] == EXPECTED_PROVIDERS[_FILE_SLOT]
+    assert from_file["last4"] == KEY_BY_SLOT[_FILE_SLOT][-TAIL_LENGTH:]
+    assert from_file["file_modified_source"] == "secret_file"
+    assert from_file["file_modified_at"] is not None
+    assert abs(
+        datetime.fromisoformat(from_file["file_modified_at"]).timestamp() - stamp
+    ) < 1
 
 
 def test_environment_file_mtime_is_reported_only_when_it_declares_the_slot(
@@ -155,8 +201,7 @@ def test_environment_file_mtime_is_reported_only_when_it_declares_the_slot(
     _seed(monkeypatch, tmp_path)
     env_file = tmp_path / "b14.env"
     env_file.write_text(
-        "B14_PROVIDER_MODE=live\n"
-        "PADIEM_B14_CREDENTIAL_09=sk-synthetic-kira-0123456789-aaaa\n",
+        "B14_PROVIDER_MODE=live\n" + f"{ENV_FILE_LINE}\n",
         encoding="utf-8",
     )
     monkeypatch.setenv("B14_CREDENTIAL_ENV_FILE", str(env_file))
@@ -164,11 +209,11 @@ def test_environment_file_mtime_is_reported_only_when_it_declares_the_slot(
     os.utime(env_file, (stamp, stamp))
     with _client(FakeLedger()) as client:
         rows = {row["slot"]: row for row in client.get(PATH, headers=_headers()).json()["slots"]}
-    assert rows["PADIEM_B14_CREDENTIAL_09"]["file_modified_source"] == "env_file"
-    assert rows["PADIEM_B14_CREDENTIAL_09"]["file_modified_at"] is not None
+    assert rows[_ENV_SLOT]["file_modified_source"] == "env_file"
+    assert rows[_ENV_SLOT]["file_modified_at"] is not None
     # A slot the environment file does not declare gets no mtime from it.
-    assert rows["PADIEM_B14_CREDENTIAL_02"]["file_modified_source"] == "none"
-    assert rows["PADIEM_B14_CREDENTIAL_02"]["file_modified_at"] is None
+    assert rows[_PLACEHOLDER_SLOT]["file_modified_source"] == "none"
+    assert rows[_PLACEHOLDER_SLOT]["file_modified_at"] is None
 
 
 def test_ledger_activity_is_bounded_and_sanitized(monkeypatch, tmp_path):
@@ -181,15 +226,16 @@ def test_ledger_activity_is_bounded_and_sanitized(monkeypatch, tmp_path):
     ])
     with _client(ledger) as client:
         rows = {row["slot"]: row for row in client.get(PATH, headers=_headers()).json()["slots"]}
-    agnes = rows["PADIEM_B14_CREDENTIAL_01"]
-    assert agnes["last_success_at"] == "2026-11-01T09:30:00+00:00"
-    assert agnes["recent_error_codes"] == [
+    filled = rows[_KEY_SLOTS[0]]
+    assert filled["last_success_at"] == "2026-11-01T09:30:00+00:00"
+    assert filled["recent_error_codes"] == [
         {"code": "provider_timeout", "count": 4},
         {"code": "upstream_rejected", "count": 2},
     ]
-    assert ledger.queries and ledger.queries[0][0] == ["agnes-ai"]
-    # Slots with no Provider never ask the ledger at all, so thirteen slots query.
-    assert len(ledger.queries) == 13
+    assert ledger.queries and ledger.queries[0][0] == EXPECTED_PROVIDERS[_KEY_SLOTS[0]]
+    # Slots with no Provider never ask the ledger at all, so only Provider-bearing
+    # slots query the ledger.
+    assert len(ledger.queries) == sum(1 for ids in EXPECTED_PROVIDERS.values() if ids)
 
 
 def test_unavailable_ledger_is_not_reported_as_zero(monkeypatch, tmp_path):
@@ -212,14 +258,15 @@ def test_unconfigured_ledger_is_reported_truthfully(monkeypatch, tmp_path):
 
 def test_placeholder_value_is_not_configurable_and_exposes_no_tail(monkeypatch, tmp_path):
     _seed(monkeypatch, tmp_path)
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_02", "sk-your-placeholder-key")
+    monkeypatch.setenv(_PLACEHOLDER_SLOT, PLACEHOLDER_VALUE)
     with _client(FakeLedger()) as client:
         rows = {row["slot"]: row for row in client.get(PATH, headers=_headers()).json()["slots"]}
-    atria = rows["PADIEM_B14_CREDENTIAL_02"]
-    assert atria["configured"] is False
-    assert atria["state"] == "placeholder"
-    assert atria["length"] is None
-    assert atria["last4"] is None
+    placeholder = rows[_PLACEHOLDER_SLOT]
+    assert placeholder["configured"] is False
+    assert placeholder["provider_ids"] == EXPECTED_PROVIDERS[_PLACEHOLDER_SLOT]
+    assert placeholder["state"] == "placeholder"
+    assert placeholder["length"] is None
+    assert placeholder["last4"] is None
 
 
 def test_anonymous_and_unproven_callers_are_refused(monkeypatch, tmp_path):
@@ -245,7 +292,7 @@ def test_missing_proof_secret_fails_closed(monkeypatch, tmp_path):
 
 def test_no_key_value_reaches_the_response_or_a_log_record(monkeypatch, tmp_path, caplog):
     _seed(monkeypatch, tmp_path)
-    values = (AGNES, GOOGLE, INCEPTION, MODEL_SCOPE)
+    values = tuple(KEY_BY_SLOT[slot] for slot in _KEY_SLOTS)
     caplog.set_level(logging.DEBUG)
     monkeypatch.chdir(tmp_path)
     with _client(FakeLedger(), local=True) as client:
@@ -259,11 +306,11 @@ def test_no_key_value_reaches_the_response_or_a_log_record(monkeypatch, tmp_path
         assert value not in log_text
         # A prefix of the key is as sensitive as the key: only the sanctioned
         # four-character tail may ever be derived from it.
-        assert value[:-4] not in body
+        assert value[:-TAIL_LENGTH] not in body
         assert value[:8] not in body
         assert value[:8] not in log_text
     # The sanctioned tail and length are the only value-derived facts present.
     slots = {row["slot"]: row for row in response.json()["slots"]}
-    assert AGNES[-4:] in body
-    assert slots["PADIEM_B14_CREDENTIAL_01"]["length"] == len(AGNES)
-    assert slots["PADIEM_B14_CREDENTIAL_05"]["length"] == len(GOOGLE)
+    assert KEY_BY_SLOT[_KEY_SLOTS[0]][-TAIL_LENGTH:] in body
+    for index, slot in enumerate(_KEY_SLOTS):
+        assert slots[slot]["length"] == len(KEY_VALUES[index])

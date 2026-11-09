@@ -36,10 +36,111 @@ from app.pilot.call_ledger import (
 from app.pilot.call_ledger_store import CallLedgerStore
 from app.pilot.deferred_writes import bind as bind_deferred, drain, reset as reset_deferred
 
+from _registry_values import model_rows
+
+
+def _credential_binding(provider_id: str) -> str:
+    """The binding NAME the registry declares for a provider (never a value)."""
+    from app.pilot.model_registry_file import read_registry
+
+    return read_registry()["providers"][provider_id]["credential_binding_name"]
+
+
+def _stream_model_row() -> dict:
+    """The registered row the stream preview lane is allowed to serve.
+
+    The row carries the public id and the upstream name the wire must use, so
+    neither is written here: both come from the effective registry. A row is
+    served only when its provider binding is set, the row is enabled and not a
+    provider-excluded identity, and its route resolves as one manual route with
+    no cross-model fallback (the preview lane refuses to walk a chain).
+    """
+    import os
+
+    from app.pilot.owner_model_exclusions import (
+        excluded_from_owner_customer_selection,
+        free_candidate_excluded_from_execution,
+    )
+    detected = os.environ.get("B14_PROVIDER_MODE", "").strip().lower()
+    os.environ["B14_PROVIDER_MODE"] = "live"
+    try:
+        from app.pilot.b14_runtime_config import runtime_config
+
+        served, saved = [], runtime_config.provider_mode
+        try:
+            runtime_config.provider_mode = "live"
+            providers = read_registry_providers()
+            for row in model_rows():
+                if not row.get("enabled", True):
+                    continue
+                if excluded_from_owner_customer_selection(row["id"]):
+                    continue
+                if free_candidate_excluded_from_execution(row["id"]):
+                    continue
+                binding = providers.get(row["provider_id"], {}) \
+                    .get("credential_binding_name")
+                if not binding:
+                    continue
+                provided = _served_with_binding(row["id"], binding, "")
+
+                # The lane resolves the route again inside its own request
+                # with an *accepted* credential value, so admission is decided
+                # here with the same shape of value the tests install.
+                if not provided or not _served_with_binding(
+                        row["id"], binding, SERVED_SYNTHETIC_SECRET):
+                    continue
+                served.append(row)
+        finally:
+            runtime_config.provider_mode = saved
+    finally:
+        if detected:
+            os.environ["B14_PROVIDER_MODE"] = detected
+        else:
+            os.environ.pop("B14_PROVIDER_MODE", None)
+    return served[0] if served else model_rows()[0]
+
+
+#: A credential-shaped value that only the provider-presence check reads. It is
+#: not a credential and never leaves this process.
+SERVED_SYNTHETIC_SECRET = "sk-synthetic-unit-0123456789"
+
+
+def _served_with_binding(model_id: str, binding: str, value: str) -> bool:
+    """Whether one manual route with no fallback chain survives admission."""
+    import os
+
+    from app.pilot.router_core import resolve_manual_route
+
+    saved = os.environ.get(binding)
+    os.environ[binding] = value
+    try:
+        decision = resolve_manual_route(model_id)
+    except Exception:
+        return False
+    finally:
+        if saved is None:
+            os.environ.pop(binding, None)
+        else:
+            os.environ[binding] = saved
+    return decision.route_mode == "manual" and not decision.eligible_fallback
+
+
+def read_registry_providers() -> dict:
+    from app.pilot.model_registry_file import read_registry
+
+    return read_registry()["providers"]
+
+
 LIST_PATH = "/api/pilot/v1/admin/model-calls"
 DETAIL_PATH = "/api/pilot/v1/admin/model-calls/{log_id}"
 AGGREGATE_PATH = "/api/pilot/v1/admin/model-calls/aggregate"
-MODEL_ID = "agnes-ai/agnes-3.0-flash"
+_MODEL_ROW = model_rows()[0]
+LISTED_MODEL_ID = _MODEL_ROW["id"]
+LISTED_UPSTREAM_MODEL = _MODEL_ROW["upstream_model"]
+LISTED_CREDENTIAL = _credential_binding(_MODEL_ROW["provider_id"])
+STREAM_MODEL_ID = _stream_model_row()["id"]
+STREAM_UPSTREAM_MODEL = _stream_model_row()["upstream_model"]
+STREAM_CREDENTIAL = _credential_binding(STREAM_MODEL_ID.split("/", 1)[0])
 
 
 # ---------------------------------------------------------------------------
@@ -90,7 +191,7 @@ class ExplodingD1(FakeD1):
 
 def _attempt(**kwargs) -> AttemptRecord:
     base = dict(log_id=new_log_id(), attempt_index=0, provider="Agnes AI",
-                model_id=MODEL_ID, upstream_model="agnes-3.0-flash")
+                model_id=LISTED_MODEL_ID, upstream_model=LISTED_UPSTREAM_MODEL)
     base.update(kwargs)
     return AttemptRecord(**base)
 
@@ -146,10 +247,22 @@ def test_a_skipped_candidate_is_visible_but_is_not_a_provider_call() -> None:
 def test_cost_stays_an_estimate_and_names_its_basis() -> None:
     # The catalog price snapshot, not an invoice: the basis is stored so a
     # reader can tell a configured price from a real bill.
-    usd, krw, basis = cost_estimate("google/gemini-3.1-flash-lite", 1_000_000, 1_000_000)
+    from app.pilot.catalog import get_catalog_by_id
+
+    priced = next(
+        row["id"] for row in model_rows()
+        if get_catalog_by_id(row["id"]) is not None
+        and get_catalog_by_id(row["id"]).price_is_known
+        and get_catalog_by_id(row["id"]).estimate_cost_usd(1, 1)
+    )
+    unpriced = next(
+        row["upstream_model"] for row in model_rows()
+        if get_catalog_by_id(row["upstream_model"]) is None
+    )
+    usd, krw, basis = cost_estimate(priced, 1_000_000, 1_000_000)
     assert basis == "configured_snapshot" and usd and usd > 0 and krw > usd
-    assert cost_estimate("agnes-ai/agnes-3.0-flash", 10, 10) == (None, None, "unknown")
-    assert cost_estimate("google/gemini-3.1-flash-lite", None, 10) == (None, None, "unknown")
+    assert cost_estimate(unpriced, 10, 10) == (None, None, "unknown")
+    assert cost_estimate(priced, None, 10) == (None, None, "unknown")
 
 
 def test_identity_columns_refuse_an_email_and_accept_an_opaque_ref() -> None:
@@ -187,19 +300,19 @@ async def test_one_record_writes_one_parent_and_every_attempt() -> None:
     draft = LedgerDraft(log_id=new_log_id(), request_id="b14req_x",
                         endpoint="/api/pilot/v1/chat/completions",
                         protocol="chat/completions", streaming=False,
-                        requested_model_id=MODEL_ID, started_at=utc_now_iso())
-    draft.record_attempt(provider="Agnes AI", model_id=MODEL_ID, outcome="error",
+                        requested_model_id=LISTED_MODEL_ID, started_at=utc_now_iso())
+    draft.record_attempt(provider="Agnes AI", model_id=LISTED_MODEL_ID, outcome="error",
                          http_status=422, error_code="upstream_client_error",
                          timeout_reason="first_byte",
                          elapsed_ms=12)
-    draft.record_attempt(provider="Agnes AI", model_id=MODEL_ID, outcome="success",
+    draft.record_attempt(provider="Agnes AI", model_id=LISTED_MODEL_ID, outcome="success",
                          elapsed_ms=40, usage={"prompt_tokens": 5,
                          "completion_tokens": 7, "total_tokens": 12},
                          finish_reason="stop")
     record = draft.finish(outcome="success", http_status=200, elapsed_ms=60,
                           usage={"prompt_tokens": 5, "completion_tokens": 7,
                                  "total_tokens": 12},
-                          selected_model_id=MODEL_ID, selected_provider="Agnes AI",
+                          selected_model_id=LISTED_MODEL_ID, selected_provider="Agnes AI",
                           fallback_used=False)
 
     assert await store.record(record) == "written"
@@ -291,12 +404,13 @@ def live_lane(monkeypatch):
     # the environment would still be judged as mock mode by the gateway.
     from app.pilot.b14_runtime_config import runtime_config
 
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-fixture-agnes-0123456789")
+    monkeypatch.setenv(LISTED_CREDENTIAL, "sk-fixture-unit-0123456789")
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setattr(runtime_config, "provider_mode", "live")
 
 
-def _ok(upstream_model="agnes-3.0-flash", tokens=(5, 7, 12)):
+def _ok(upstream_model=None, tokens=(5, 7, 12)):
+    upstream_model = upstream_model or LISTED_UPSTREAM_MODEL
     return {
         "id": "cmpl_fixture", "object": "chat.completion", "model": upstream_model,
         "choices": [{"index": 0, "message": {"role": "assistant", "content": "OK"},
@@ -324,7 +438,7 @@ async def test_a_real_call_appends_one_parent_with_the_answered_model(live_lane,
 
     response = await gw._handle_alpha_chat(
         "b14req_ledger01",
-        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
+        {"model": LISTED_MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
         origin_headers={"x-padiem-product": "engine", "x-request-id": "corr-12345678"},
     )
     await drain()
@@ -333,8 +447,8 @@ async def test_a_real_call_appends_one_parent_with_the_answered_model(live_lane,
     assert len(written) == 1
     record = written[0]
     assert record.outcome == "success" and record.http_status == 200
-    assert record.selected_model_id == MODEL_ID
-    assert record.actual_response_model == "agnes-3.0-flash"
+    assert record.selected_model_id == LISTED_MODEL_ID
+    assert record.actual_response_model == LISTED_UPSTREAM_MODEL
     assert (record.prompt_tokens, record.total_tokens) == (5, 12)
     assert record.token_source == "measured"
     # The physical attempt is a row of its own even when nothing fell back.
@@ -381,7 +495,7 @@ async def test_the_platform_lane_records_the_grade_it_routed_with(
     # ledger records: record and routing must not disagree.
     response = await gw._handle_alpha_chat(
         "b14req_ledger31",
-        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}],
+        {"model": LISTED_MODEL_ID, "messages": [{"role": "user", "content": "ok"}],
          "business14": {"product_tier": "pro"}},
         origin_headers={"x-padiem-product": "chat"},
     )
@@ -393,7 +507,7 @@ async def test_the_platform_lane_records_the_grade_it_routed_with(
     # ensure_route_secrets and resolve_route applied.
     response = await gw._handle_alpha_chat(
         "b14req_ledger32",
-        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
+        {"model": LISTED_MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
         origin_headers={"x-padiem-product": "chat"},
     )
     await drain()
@@ -404,7 +518,7 @@ async def test_the_platform_lane_records_the_grade_it_routed_with(
     # keeps the grade the routing actually applied, which is Free.
     response = await gw._handle_alpha_chat(
         "b14req_ledger33",
-        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
+        {"model": LISTED_MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
         origin_headers={"x-padiem-product": "chat", "x-padiem-tier": "gold"},
     )
     await drain()
@@ -414,7 +528,7 @@ async def test_the_platform_lane_records_the_grade_it_routed_with(
     # The header fallback survives for a header-only sender carrying a grade.
     response = await gw._handle_alpha_chat(
         "b14req_ledger34",
-        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
+        {"model": LISTED_MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
         origin_headers={"x-padiem-product": "chat", "x-padiem-tier": "max"},
     )
     await drain()
@@ -454,7 +568,7 @@ async def test_a_byok_call_records_the_declared_tier_or_nothing(
     )
 
     # This lane applies no grade of its own: no declared tier, no recorded one.
-    body = {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}],
+    body = {"model": LISTED_MODEL_ID, "messages": [{"role": "user", "content": "ok"}],
             "business14": {}, "user_credential": credential}
     response = await gw._handle_user_credential_chat(
         request, "b14req_ledger41", dict(body), origin_headers={},
@@ -495,7 +609,7 @@ async def test_a_retry_keeps_the_failed_attempt_visible(live_lane, monkeypatch):
 
     response = await gw._handle_alpha_chat(
         "b14req_ledger02",
-        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}],
+        {"model": LISTED_MODEL_ID, "messages": [{"role": "user", "content": "ok"}],
          "business14": {"max_retries": 1}},
     )
     await drain()
@@ -529,7 +643,7 @@ async def test_a_failed_call_still_leaves_a_record_with_its_error(live_lane, mon
 
     response = await gw._handle_alpha_chat(
         "b14req_ledger03",
-        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
+        {"model": LISTED_MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
     )
     await drain()
 
@@ -559,7 +673,7 @@ async def test_a_mock_answer_writes_no_execution_record(live_lane, monkeypatch):
 
     response = await gw._handle_alpha_chat(
         "b14req_ledger04",
-        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
+        {"model": LISTED_MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
     )
     await drain()
 
@@ -578,7 +692,7 @@ async def test_a_mock_answer_writes_no_execution_record(live_lane, monkeypatch):
 def store_client():
     binding = FakeD1(rows=[{
         "log_id": "b14call_fixture0000000001", "request_id": "b14req_1",
-        "product": "chat", "outcome": "success", "selected_model_id": MODEL_ID,
+        "product": "chat", "outcome": "success", "selected_model_id": LISTED_MODEL_ID,
         "prompt_tokens": 5, "completion_tokens": 7, "total_tokens": 12,
         "token_source": "measured", "cost_basis": "unknown",
     }])
@@ -716,7 +830,7 @@ async def test_a_simulated_answer_writes_no_row_even_if_the_config_says_live(
 
     response = await gw._handle_alpha_chat(
         "b14req_ledger05",
-        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
+        {"model": LISTED_MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
     )
     await drain()
 
@@ -745,7 +859,7 @@ async def test_a_real_call_writes_a_row_even_if_the_config_still_says_mock(
 
     response = await gw._handle_alpha_chat(
         "b14req_ledger06",
-        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
+        {"model": LISTED_MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
     )
     await drain()
 
@@ -770,7 +884,7 @@ async def test_the_stream_lane_records_ttft_and_the_usage_the_provider_reported(
         written.append(record)
         return "written"
 
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    monkeypatch.setenv(STREAM_CREDENTIAL, "unit-stream-key-not-a-secret")
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     monkeypatch.setattr(runtime_config, "provider_mode", "live")
     monkeypatch.setattr(sg, "record_call", capture)
@@ -779,9 +893,9 @@ async def test_the_stream_lane_records_ttft_and_the_usage_the_provider_reported(
         return f"data: {json.dumps(payload)}\n\n".encode()
 
     sse = [
-        frame({"id": "up_1", "model": "gemini-3.1-flash-lite", "choices": [
+        frame({"id": "up_1", "model": STREAM_UPSTREAM_MODEL, "choices": [
             {"index": 0, "delta": {"content": "답"}, "finish_reason": None}]}),
-        frame({"id": "up_1", "model": "gemini-3.1-flash-lite", "choices": [
+        frame({"id": "up_1", "model": STREAM_UPSTREAM_MODEL, "choices": [
             {"index": 0, "delta": {}, "finish_reason": "stop"}],
             "usage": {"prompt_tokens": 4, "completion_tokens": 6, "total_tokens": 10}}),
         b"data: [DONE]\n\n",
@@ -797,7 +911,7 @@ async def test_the_stream_lane_records_ttft_and_the_usage_the_provider_reported(
     with TestClient(app) as client:
         response = client.post(
             "/api/pilot/v1/chat/completions/stream-preview",
-            json={"model": "google/gemini-3.1-flash-lite", "stream": True,
+            json={"model": STREAM_MODEL_ID, "stream": True,
                   "messages": [{"role": "user", "content": "한 마디만"}]},
         )
         assert response.status_code == 200, response.text
@@ -815,8 +929,8 @@ async def test_the_stream_lane_records_ttft_and_the_usage_the_provider_reported(
     assert record.ttft_ms is not None and record.ttft_ms >= 0
     assert (record.prompt_tokens, record.total_tokens) == (4, 10)
     assert record.token_source == "measured"
-    assert record.actual_response_model == "gemini-3.1-flash-lite"
-    assert record.selected_model_id == "google/gemini-3.1-flash-lite"
+    assert record.actual_response_model == STREAM_UPSTREAM_MODEL
+    assert record.selected_model_id == STREAM_MODEL_ID
 
 
 @pytest.mark.asyncio
@@ -940,7 +1054,7 @@ async def test_a_platform_attempt_carries_a_start_time_on_the_request_timeline(
 
     response = await gw._handle_alpha_chat(
         "b14req_ledgerst1",
-        {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
+        {"model": LISTED_MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
         origin_headers={"x-padiem-product": "engine", "x-request-id": "corr-2a111111"},
     )
     await drain()
@@ -1016,7 +1130,7 @@ async def test_a_stream_attempt_carries_a_start_time_on_the_request_timeline(
         written.append(record)
         return "written"
 
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    monkeypatch.setenv(STREAM_CREDENTIAL, "unit-stream-key-not-a-secret")
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     monkeypatch.setattr(runtime_config, "provider_mode", "live")
     monkeypatch.setattr(sg, "record_call", capture)
@@ -1025,9 +1139,9 @@ async def test_a_stream_attempt_carries_a_start_time_on_the_request_timeline(
         return f"data: {json.dumps(payload)}\n\n".encode()
 
     sse = [
-        frame({"id": "up_1", "model": "gemini-3.1-flash-lite", "choices": [
+        frame({"id": "up_1", "model": STREAM_UPSTREAM_MODEL, "choices": [
             {"index": 0, "delta": {"content": "답"}, "finish_reason": None}]}),
-        frame({"id": "up_1", "model": "gemini-3.1-flash-lite", "choices": [
+        frame({"id": "up_1", "model": STREAM_UPSTREAM_MODEL, "choices": [
             {"index": 0, "delta": {}, "finish_reason": "stop"}],
             "usage": {"prompt_tokens": 4, "completion_tokens": 6, "total_tokens": 10}}),
         b"data: [DONE]\n\n",
@@ -1042,7 +1156,7 @@ async def test_a_stream_attempt_carries_a_start_time_on_the_request_timeline(
     with TestClient(app) as client:
         response = client.post(
             "/api/pilot/v1/chat/completions/stream-preview",
-            json={"model": "google/gemini-3.1-flash-lite", "stream": True,
+            json={"model": STREAM_MODEL_ID, "stream": True,
                   "messages": [{"role": "user", "content": "한 마디만"}]},
         )
     await drain()
@@ -1068,7 +1182,7 @@ async def test_the_stream_lane_records_the_grade_it_routed_with(monkeypatch):
         written.append(record)
         return "written"
 
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    monkeypatch.setenv(STREAM_CREDENTIAL, "unit-stream-key-not-a-secret")
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     monkeypatch.setattr(runtime_config, "provider_mode", "live")
     monkeypatch.setattr(sg, "record_call", capture)
@@ -1077,9 +1191,9 @@ async def test_the_stream_lane_records_the_grade_it_routed_with(monkeypatch):
         return f"data: {json.dumps(payload)}\n\n".encode()
 
     sse = [
-        frame({"id": "up_1", "model": "gemini-3.1-flash-lite", "choices": [
+        frame({"id": "up_1", "model": STREAM_UPSTREAM_MODEL, "choices": [
             {"index": 0, "delta": {"content": "답"}, "finish_reason": None}]}),
-        frame({"id": "up_1", "model": "gemini-3.1-flash-lite", "choices": [
+        frame({"id": "up_1", "model": STREAM_UPSTREAM_MODEL, "choices": [
             {"index": 0, "delta": {}, "finish_reason": "stop"}],
             "usage": {"prompt_tokens": 4, "completion_tokens": 6, "total_tokens": 10}}),
         b"data: [DONE]\n\n",
@@ -1095,7 +1209,7 @@ async def test_the_stream_lane_records_the_grade_it_routed_with(monkeypatch):
     with TestClient(app) as client:
         response = client.post(
             "/api/pilot/v1/chat/completions/stream-preview",
-            json={"model": "google/gemini-3.1-flash-lite", "stream": True,
+            json={"model": STREAM_MODEL_ID, "stream": True,
                   "business14": {"product_tier": "pro"},
                   "messages": [{"role": "user", "content": "한 마디만"}]},
         )
@@ -1120,13 +1234,13 @@ async def test_an_aborted_stream_still_leaves_its_record(monkeypatch):
         written.append(record)
         return "written"
 
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    monkeypatch.setenv(STREAM_CREDENTIAL, "unit-stream-key-not-a-secret")
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     monkeypatch.setattr(runtime_config, "provider_mode", "live")
     monkeypatch.setattr(sg, "record_call", capture)
 
     first = {
-        "id": "up_1", "model": "gemini-3.1-flash-lite",
+        "id": "up_1", "model": STREAM_UPSTREAM_MODEL,
         "choices": [{"index": 0, "delta": {"content": "답"}, "finish_reason": None}],
     }
 
@@ -1153,7 +1267,7 @@ async def test_an_aborted_stream_still_leaves_its_record(monkeypatch):
     with TestClient(app) as client:
         body = client.post(
             "/api/pilot/v1/chat/completions/stream-preview",
-            json={"model": "google/gemini-3.1-flash-lite", "stream": True,
+            json={"model": STREAM_MODEL_ID, "stream": True,
                   "messages": [{"role": "user", "content": "한 마디만"}]},
         ).text
 
@@ -1200,7 +1314,7 @@ async def test_ledger_construction_fault_preserves_status_and_exact_body(
     monkeypatch.setattr(plat, "call_platform_chat_completions", answer)
     monkeypatch.setattr(gw, "record_call", capture)
     monkeypatch.setattr(gw.time, "perf_counter", lambda: 100.0)
-    body = {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]}
+    body = {"model": LISTED_MODEL_ID, "messages": [{"role": "user", "content": "ok"}]}
     baseline = await gw._handle_alpha_chat("b14req_failopen", body)
     await drain()
     written.clear()
@@ -1243,7 +1357,7 @@ async def test_slow_record_call_starts_only_after_answer_and_explicit_drain(
     monkeypatch.setattr(plat, "call_platform_chat_completions", answer)
     monkeypatch.setattr(gw, "record_call", slow)
     response = await gw._handle_alpha_chat(
-        "b14req_deferred", {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
+        "b14req_deferred", {"model": LISTED_MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
     )
     assert response.status_code == 200
     assert not started.is_set()
@@ -1335,14 +1449,14 @@ async def test_stream_ledger_fault_preserves_exact_response(monkeypatch, caplog,
     from app.pilot import stream_gateway as sg
     from app.pilot.b14_runtime_config import runtime_config
 
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    monkeypatch.setenv(STREAM_CREDENTIAL, "unit-stream-key-not-a-secret")
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     monkeypatch.setattr(runtime_config, "provider_mode", "live")
     monkeypatch.setattr(sg, "_request_id", lambda: "b14req_streamguard")
     frames = [
-        {"id": "up_1", "model": "gemini-3.1-flash-lite",
+        {"id": "up_1", "model": STREAM_UPSTREAM_MODEL,
          "choices": [{"index": 0, "delta": {"content": "answer"}, "finish_reason": None}]},
-        {"id": "up_1", "model": "gemini-3.1-flash-lite",
+        {"id": "up_1", "model": STREAM_UPSTREAM_MODEL,
          "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}]},
     ]
     data = b"".join(("data: " + json.dumps(frame) + "\n\n").encode() for frame in frames)
@@ -1354,7 +1468,7 @@ async def test_stream_ledger_fault_preserves_exact_response(monkeypatch, caplog,
             headers={"Content-Type": "text/event-stream" if outcome == "success" else "application/json"},
         )
     )
-    body = {"model": "google/gemini-3.1-flash-lite", "stream": True,
+    body = {"model": STREAM_MODEL_ID, "stream": True,
             "messages": [{"role": "user", "content": "ok"}]}
     with TestClient(app) as client:
         baseline = client.post("/api/pilot/v1/chat/completions/stream-preview", json=body)
@@ -1525,7 +1639,26 @@ async def test_stream_enqueue_after_worker_reset_is_scheduled_on_ctx(monkeypatch
 # ---------------------------------------------------------------------------
 
 _STREAM_PREVIEW = "/api/pilot/v1/chat/completions/stream-preview"
-_GOOGLE_TOOL_MODEL = "google/gemini-3.1-flash-lite"
+def _tool_wire_model_id() -> str:
+    """A served stream row that also carries the native tool wire."""
+    from app.pilot.tool_channel import require_stream_tool_wire
+
+    for row in model_rows():
+        if not row.get("enabled", True) or "tools" not in row.get("capabilities", []):
+            continue
+        try:
+            require_stream_tool_wire(row["id"])
+        except Exception:
+            continue
+        return row["id"]
+    return STREAM_MODEL_ID
+
+
+_GOOGLE_TOOL_MODEL = _tool_wire_model_id()
+_GOOGLE_UPSTREAM_MODEL = next(
+    row["upstream_model"] for row in model_rows() if row["id"] == _GOOGLE_TOOL_MODEL
+)
+_TOOL_CREDENTIAL = _credential_binding(_GOOGLE_TOOL_MODEL.split("/", 1)[0])
 _PC_TOOL = {"type": "function", "function": {
     "name": "pc_files",
     "parameters": {"type": "object", "properties": {"path": {"type": "string"}}},
@@ -1542,7 +1675,7 @@ def _capture_stream_lane(monkeypatch):
         written.append(record)
         return "written"
 
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    monkeypatch.setenv(_TOOL_CREDENTIAL, "unit-stream-key-not-a-secret")
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     monkeypatch.setattr(runtime_config, "provider_mode", "live")
     monkeypatch.setattr(sg, "record_call", capture)
@@ -1554,7 +1687,7 @@ def _native_frame(parts, *, finish=None, usage=None) -> bytes:
     if finish is not None:
         candidate["finishReason"] = finish
     payload = {
-        "responseId": "up_native", "modelVersion": "gemini-3.1-flash-lite",
+        "responseId": "up_native", "modelVersion": STREAM_UPSTREAM_MODEL,
         "candidates": [candidate],
     }
     if usage is not None:
@@ -1634,9 +1767,9 @@ async def test_a_text_stream_keeps_the_compatible_wire_it_used(monkeypatch):
         return ("data: " + json.dumps(payload) + "\n\n").encode()
 
     sse = b"".join([
-        frame({"id": "up_1", "model": "gemini-3.1-flash-lite", "choices": [
+        frame({"id": "up_1", "model": _GOOGLE_UPSTREAM_MODEL, "choices": [
             {"index": 0, "delta": {"content": "답"}, "finish_reason": None}]}),
-        frame({"id": "up_1", "model": "gemini-3.1-flash-lite", "choices": [
+        frame({"id": "up_1", "model": _GOOGLE_UPSTREAM_MODEL, "choices": [
             {"index": 0, "delta": {}, "finish_reason": "stop"}]}),
         b"data: [DONE]\n\n",
     ])

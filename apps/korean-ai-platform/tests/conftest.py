@@ -7,6 +7,21 @@ import sys
 
 import pytest
 
+# #7241: the registry switch must be filled in before anything imports the app,
+# because the model snapshot is cached at import time. The helper adds nothing
+# when the process (or the operator) already chose a registry document.
+# The sibling module and the suites' shared helpers live in this directory: put
+# it on the path (pytest imports this file as ``tests.conftest`` under the
+# app's ``testpaths``, so a bare sibling import needs the entry) and fall back
+# to the package-relative import when it is loaded as that module.
+_TESTS_DIR = str(Path(__file__).resolve().parent)
+if _TESTS_DIR not in sys.path:
+    sys.path.insert(0, _TESTS_DIR)
+
+from _registry_switch_default import ensure_default_registry_switch  # noqa: E402
+
+ensure_default_registry_switch()
+
 # The deployed app stages the canonical counter validator beside B14. Tests
 # use the repository source directly, including subprocess import probes, so
 # the test path never relies on a developer's installed Core package.

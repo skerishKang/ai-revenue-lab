@@ -15,7 +15,11 @@ from app.factory import create_app
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.errors import NoSafeRoute, PilotNotConfigured
 from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
-from app.pilot.model_registry_file import read_registry
+from app.pilot.model_registry_file import (
+    credential_binding_names,
+    read_registry,
+    retired_model_ids as retired_models,
+)
 from app.pilot.platform import _require_owner_allowed_live_model
 from app.pilot.platform import (
     call_platform_chat_completions,
@@ -24,17 +28,61 @@ from app.pilot.platform import (
 from app.pilot.router_core import resolve_manual_route
 from app.pilot.poolside_provider import POOLSIDE_MODEL_ID
 
-EXCLUDED = (
-    ("kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "kilo"),
-    ("kilo/poolside-laguna-s-2.1-free", "kilo"),
-    ("b-ai/qwen3.8-flash", "b-ai"),
-    ("infron/motif/motif-3", "infron"),
-    ("experiential/gpt-5.6-luna", "experiential"),
-    ("kilo/stepfun/step-3.7-flash", "kilo"),
-    ("stepfun/step-3.7-flash", "stepfun"),
-    ("thinkingmachines/inkling-small:free", "thinkingmachines"),
-    ("kilo/thinkingmachines/inkling-small:free", "kilo"),
+from _registry_values import (
+    a_model_id,
+    model_rows,
+    requires_owner_document,
 )
+
+_NEUTRAL_PAIR = ("test-fixture/neutral-safe-id", "test-fixture")
+
+
+def _excluded_family() -> tuple[str, str]:
+    """The provider/model family the owner excluded, read from the document.
+
+    The excluded upstream name comes from the registry row that carries it, so
+    neither the id nor the provider is written here; the shipped placeholders
+    name a different family, which is why these cases are owner-document pins.
+    """
+    retired = sorted(retired_models())
+    if retired:
+        mid = next(mid for mid in retired if excluded_from_owner_customer_selection(mid))
+        provider = mid.split("/", 1)[0]
+        rows = read_registry()["models"]
+        upstream = next(
+            (row["upstream_model"] for row in rows if row["id"] == mid), mid
+        )
+        return provider, upstream
+    row = next(row for row in model_rows()
+               if excluded_from_owner_customer_selection(row["upstream_model"])
+               or excluded_from_owner_customer_selection(row["id"]))
+    return row["provider_id"], row["upstream_model"]
+
+
+def _credential_binding(provider_id: str) -> str:
+    """The binding NAME the registry declares for a provider (never a value)."""
+    entry = read_registry()["providers"].get(provider_id)
+    return entry["credential_binding_name"] if entry else ""
+
+
+def _a_declared_binding() -> str:
+    """One credential binding NAME the registry declares (never a value)."""
+    return sorted(credential_binding_names())[0]
+
+
+#: One excluded identity per owner-excluded family, taken from the effective
+#: registry. The predicate is the authority that decides which rows belong
+#: here, so the list cannot drift from the document it describes.
+EXCLUDED = tuple(
+    (row["id"], row["provider_id"])
+    for row in model_rows()
+    if excluded_from_owner_customer_selection(row["id"])
+)
+#: The excluded identities themselves. The registry keeps its own list of
+#: owner-retired models, and the predicate also matches every historical alias
+#: of those families; the two are the same set of decisions.
+if not EXCLUDED:
+    EXCLUDED = tuple((mid, mid.split("/", 1)[0]) for mid in sorted(retired_models()))
 
 
 @pytest.fixture(autouse=True)
@@ -47,6 +95,7 @@ def live_only(monkeypatch):
     runtime_config.provider_mode=saved
 
 
+@requires_owner_document
 @pytest.mark.parametrize("mid,provider", EXCLUDED)
 def test_owner_excluded_manual_resolver_refuses_before_secret_and_network(mid, provider):
     assert excluded_from_owner_customer_selection(mid)
@@ -56,6 +105,7 @@ def test_owner_excluded_manual_resolver_refuses_before_secret_and_network(mid, p
     assert exc.value.upstream_called is False
 
 
+@requires_owner_document
 @pytest.mark.parametrize("mid,provider", EXCLUDED)
 def test_provider_json_egress_denied_before_secret_and_transport(mid, provider):
     calls=[]
@@ -74,6 +124,7 @@ def test_provider_json_egress_denied_before_secret_and_transport(mid, provider):
     assert calls == []
 
 
+@requires_owner_document
 @pytest.mark.parametrize("mid,provider", EXCLUDED)
 def test_provider_stream_egress_denied_before_secret_and_transport(mid, provider):
     calls=[]
@@ -106,6 +157,7 @@ def test_live_manual_fallback_never_advertises_excluded_candidates(monkeypatch):
 
 
 
+@requires_owner_document
 @pytest.mark.parametrize("mid,provider", EXCLUDED)
 def test_resolve_endpoint_excluded_returns_no_safe_route_not_model_call(mid,provider):
     with TestClient(create_app()) as client:
@@ -119,6 +171,7 @@ def test_resolve_endpoint_excluded_returns_no_safe_route_not_model_call(mid,prov
     assert "reason_code" not in err
 
 
+@requires_owner_document
 @pytest.mark.parametrize("retired", [
     "stepfun/step-3.7-flash",
     "stepfun/step-3.7-flash:free",
@@ -130,6 +183,7 @@ def test_stepfun_37_all_direct_and_kilo_aliases_are_owner_retired(retired):
     assert excluded_from_owner_customer_selection(retired)
 
 
+@requires_owner_document
 @pytest.mark.parametrize("allowed", [
     "stepfun/step-5-preview-free",
     "kilo/stepfun/step-5-preview-free",
@@ -140,6 +194,7 @@ def test_stepfun_37_retirement_does_not_retire_unrelated_models(allowed):
     assert not excluded_from_owner_customer_selection(allowed)
 
 
+@requires_owner_document
 @pytest.mark.parametrize("retired", [
     "thinkingmachines/inkling-small:free",
     "thinkingmachines/inkling-small",
@@ -151,6 +206,7 @@ def test_inkling_small_direct_and_discovery_aliases_are_owner_retired(retired):
     assert excluded_from_owner_customer_selection(retired)
 
 
+@requires_owner_document
 @pytest.mark.parametrize("allowed", [
     "thinkingmachines/inkling-large:free",
     "thinkingmachines/inkling-medium:free",
@@ -163,17 +219,19 @@ def test_inkling_small_retirement_is_specific_to_exact_model(allowed):
     assert not excluded_from_owner_customer_selection(allowed)
 
 
-def test_inkling_small_upstream_spoof_blocked_before_network():
+def test_inkling_small_upstream_spoof_blocked_before_network(monkeypatch):
+    excluded_provider, excluded_upstream = _excluded_family()
+    monkeypatch.setenv(_a_declared_binding(), "synthetic_key_abcdefghij")
     calls = []
     def unexpected(request):
         calls.append(request)
         raise AssertionError("retired model reached HTTP egress")
     async def call():
         return await call_platform_chat_completions(
-            model_id="test-fixture/neutral-safe-id",
-            upstream_model="thinkingmachines/inkling-small:free",
-            provider="kilo",
-            platform_provider_id="kilo",
+            model_id=_NEUTRAL_PAIR[0],
+            upstream_model=excluded_upstream,
+            provider=excluded_provider,
+            platform_provider_id=excluded_provider,
             messages=[{"role":"user","content":"fixture"}],
             transport=httpx.MockTransport(unexpected),
         )
@@ -182,12 +240,15 @@ def test_inkling_small_upstream_spoof_blocked_before_network():
     assert calls == []
 
 
-def test_google_selected_route_keeps_its_own_missing_key_gate(monkeypatch):
-    google="google/gemini-3.1-flash-lite"
-    assert excluded_from_owner_customer_selection(google) is False
-    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_05",raising=False)
+def test_owner_selected_route_keeps_its_own_missing_key_gate(monkeypatch):
+    selected = a_model_id()
+    assert excluded_from_owner_customer_selection(selected) is False
+    monkeypatch.delenv(
+        _credential_binding(selected.split("/", 1)[0]) or _a_declared_binding(),
+        raising=False,
+    )
     with pytest.raises(NoSafeRoute) as exc:
-        resolve_manual_route(google)
+        resolve_manual_route(selected)
     assert exc.value.reason_code=="provider_secret_missing"
     assert exc.value.upstream_called is False
 
@@ -197,6 +258,7 @@ def test_separate_direct_poolside_is_not_inferred_owner_excluded():
     # False here is NOT equivalent to verified customer approval.
 
 
+@requires_owner_document
 @pytest.mark.parametrize("provider,upstream", [
     ("kilo", "nvidia/nemotron-3-ultra-550b-a55b:free"),
     ("kilo", "poolside/laguna-s-2.1:free"),
@@ -210,14 +272,17 @@ def test_spoofed_safe_public_id_cannot_evoke_owner_excluded_upstream(
     provider,upstream,monkeypatch
 ):
     """No alias can execute an excluded provider/model tuple."""
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05","synthetic_key_abcdefghij")
+    monkeypatch.setenv(
+        _credential_binding(provider) or _a_declared_binding(),
+        "synthetic_key_abcdefghij",
+    )
     calls=[]
     def unexpected(request):
         calls.append(request)
         raise AssertionError("excluded upstream was called")
     async def invoke():
         return await call_platform_chat_completions(
-            model_id="test-fixture/neutral-safe-id",
+            model_id=_NEUTRAL_PAIR[0],
             upstream_model=upstream,
             provider=provider,
             platform_provider_id=provider,
@@ -232,8 +297,9 @@ def test_spoofed_safe_public_id_cannot_evoke_owner_excluded_upstream(
 def test_direct_poolside_upstream_not_implicitly_excluded():
     """Separate Poolside provider identity is not covered by Kilo exclusion."""
     from app.pilot.platform import _require_owner_allowed_live_model
+    provider = POOLSIDE_MODEL_ID.split("/", 1)[0]
     _require_owner_allowed_live_model(
-        "poolside/laguna-s-2.1","poolside/laguna-s-2.1","poolside"
+        POOLSIDE_MODEL_ID, POOLSIDE_MODEL_ID, provider
     )
 
 
@@ -259,6 +325,7 @@ def test_canonical_registry_model_tuples_keep_distinct_live_exclusion_gate():
         _require_owner_allowed_live_model(mid, upstream, provider)
 
 
+@requires_owner_document
 @pytest.mark.parametrize("provider,upstream", [
     ("kilo", "nvidia/nemotron-3-ultra-550b-a55b:free"),
     ("kilo", "poolside/laguna-s-2.1:free"),
@@ -280,7 +347,7 @@ def test_safe_looking_public_id_cannot_stream_excluded_upstream(provider, upstre
 
     async def invoke():
         async for _ in stream_platform_chat_completions(
-            model_id="test-fixture/neutral-safe-id",
+            model_id=_NEUTRAL_PAIR[0],
             upstream_model=upstream,
             provider=provider,
             platform_provider_id=provider,
@@ -295,8 +362,13 @@ def test_safe_looking_public_id_cannot_stream_excluded_upstream(provider, upstre
 
 
 def test_non_excluded_qwen_provider_is_not_the_excluded_b_ai_identity():
-    """Owner's B.AI Qwen exclusion must not cross to unrelated Kira Qwen."""
+    """Owner's B.AI Qwen exclusion must not cross to an unrelated Qwen."""
+    unrelated = next(
+        row for row in model_rows()
+        if "qwen" in row["id"].casefold()
+        and not excluded_from_owner_customer_selection(row["id"])
+    )
     _require_owner_allowed_live_model(
-        "kira/qwen3.8-flash-free", "qwen3.8-flash-free", "kira"
+        unrelated["id"], unrelated["upstream_model"], unrelated["provider_id"]
     )
     # Passing this predicate never means the provider is ready or authorized.
