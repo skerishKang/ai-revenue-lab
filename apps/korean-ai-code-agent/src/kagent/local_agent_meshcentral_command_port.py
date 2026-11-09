@@ -50,6 +50,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from .contracts import ContractError
+from . import local_agent_mesh_command_phases as phases
 from .local_agent_meshcentral_private_reader import (
     _MESHCTRL_LOGINKEY_BOOTSTRAP,
     _MESHCTRL_STDIN_BOOTSTRAP,
@@ -710,14 +711,14 @@ def _may_clear(line_guard: Callable[[], bool] | None,
     out or answers anything other than ``True`` is the same "no".
     """
     if line_guard is None:
-        phase("line_gate_closed")
+        phase(phases.LINE_GATE_CLOSED)
         return False
     try:
         allowed = line_guard() is True
     except Exception:
         allowed = False
     if not allowed:
-        phase("line_gate_busy")
+        phase(phases.LINE_GATE_BUSY)
     return allowed
 
 
@@ -1362,14 +1363,14 @@ class MeshCentralCliCommandPort:
         password, login_input = self._login_input()
         if self._popen_factory is None:
             # Buffered fallback for callers that only inject a command runner.
-            phase("spawn")
+            phase(phases.SPAWN)
             try:
                 completed = self._run(
                     argv, input=login_input, timeout=timeout_seconds,
                 )
             except Exception as exc:
                 if type(exc).__name__ == "TimeoutExpired":
-                    phase("timeout")
+                    phase(phases.TIMEOUT)
                     return MeshCentralCommandOutcome(
                         termination="timed_out", exit_code=None, output=b"",
                     )
@@ -1377,7 +1378,7 @@ class MeshCentralCliCommandPort:
                     "the official meshcentral client failed"
                 ) from exc
             if getattr(completed, "returncode", None) != 0:
-                phase("reply")
+                phase(phases.REPLY)
                 return MeshCentralCommandOutcome(
                     termination="no_reply", exit_code=None, output=b"",
                 )
@@ -1385,13 +1386,13 @@ class MeshCentralCliCommandPort:
             if isinstance(raw, str):
                 raw = raw.encode("utf-8", errors="replace")
             outcome = self._from_transcript(raw)
-            phase("reply")
+            phase(phases.REPLY)
             return outcome
         if checked_dispatch is not None and not deliver_as_file and _session_lane_enabled(session_lane):
             # #82 standard 2: the command gets its own terminal session, so another
             # dispatch on this PC is never waiting behind it. No line sweep here - the
             # session is not the queue the sweep exists to unblock.
-            phase("session_lane")
+            phase(phases.SESSION_LANE)
             session_outcome = self._run_command_on_a_session(
                 node_ref=node_ref.strip(), command=body, dispatch_id=checked_dispatch,
                 password=password, phase=phase, cancelled=cancelled,
@@ -1401,7 +1402,7 @@ class MeshCentralCliCommandPort:
                 return session_outcome
             # A session that never opened is not a failed command: send it the way the
             # lane has always sent it. Phase names which happened.
-            phase("session_fallback")
+            phase(phases.SESSION_FALLBACK)
         return self._stream_with_line_selfheal(
             argv, password, timeout_seconds, phase, cancelled,
             node_ref=node_ref.strip(), dispatch_id=checked_dispatch,
@@ -1453,7 +1454,7 @@ class MeshCentralCliCommandPort:
                 _terminal_payload(self._terminal_password(password), wrapped),
             )
         except Exception:
-            phase("session_open_refused")
+            phase(phases.SESSION_OPEN_REFUSED)
             return None
         child = self._popen_factory(
             argv, stdin=handoff.slave, stdout=handoff.slave, stderr=handoff.slave,
@@ -1474,10 +1475,10 @@ class MeshCentralCliCommandPort:
                 if child.poll() is not None:
                     break
                 if not seen and time.monotonic() - opened > SESSION_OPEN_TIMEOUT_SECONDS:
-                    phase("session_open_timeout")
+                    phase(phases.SESSION_OPEN_TIMEOUT)
                     return None
                 if timeout_seconds is not None and time.monotonic() - opened > timeout_seconds:
-                    phase("timeout")
+                    phase(phases.TIMEOUT)
                     return MeshCentralCommandOutcome(
                         termination="timed_out", exit_code=None, output=b"",
                     )
@@ -1485,7 +1486,7 @@ class MeshCentralCliCommandPort:
                     # Ending the session alone would leave the PC process running, so the
                     # owner's stop travels the same kill path the queue lane uses.
                     self._stop_on_pc(node_ref, dispatch_id, phase)
-                    phase("cancel")
+                    phase(phases.CANCEL)
                     return MeshCentralCommandOutcome(
                         termination="cancelled", exit_code=None, output=b"",
                     )
@@ -1501,7 +1502,7 @@ class MeshCentralCliCommandPort:
             # caller may still send the command the old way.
             return None
         outcome = self._from_transcript(_session_payload(raw))
-        phase("reply")
+        phase(phases.REPLY)
         return outcome
 
     # ---- streaming execution -------------------------------------------
@@ -1554,7 +1555,7 @@ class MeshCentralCliCommandPort:
             sweeps.append(report)
             if attempts >= 2:
                 break
-            phase("line_retry")
+            phase(phases.LINE_RETRY)
         # #7180: an expired wait on a PC whose answer never came is the shape a
         # lost dispatch's orphan console produces (measured 2026-11-08: one idle
         # agent child silenced every PC command for 19 hours). The reaper ends
@@ -1606,7 +1607,7 @@ class MeshCentralCliCommandPort:
             return
         if not node_ref:
             return
-        phase("idle_reap")
+        phase(phases.IDLE_REAP)
         try:
             report = self.sweep_agent_children(
                 node_ref=node_ref, dispatch_id=dispatch_id,
@@ -1615,7 +1616,7 @@ class MeshCentralCliCommandPort:
                 min_age_seconds=min_age,
             )
         except Exception:
-            phase("idle_reap_refused")
+            phase(phases.IDLE_REAP_REFUSED)
             return
         if report.killed:
             # OS facts only: pids and creation timestamps, capped so a strange
@@ -1628,7 +1629,7 @@ class MeshCentralCliCommandPort:
                     for entry in entries if isinstance(entry, dict))),
                 file=sys.stderr, flush=True,
             )
-            phase("idle_reap_cleared")
+            phase(phases.IDLE_REAP_CLEARED)
 
     def _run_streaming(
         self, argv: list[str], password: str, timeout_seconds: int | None,
@@ -1668,7 +1669,7 @@ class MeshCentralCliCommandPort:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        phase("spawn")
+        phase(phases.SPAWN)
         chunks: list[bytes] = []
         #: When an answer-less wait becomes a line that is held by something else.
         #: Absolute, and pushed forward every time the PC proves the work is running.
@@ -1685,7 +1686,7 @@ class MeshCentralCliCommandPort:
             while True:
                 if deadline is not None and time.monotonic() > deadline:
                     process.kill()
-                    phase("timeout")
+                    phase(phases.TIMEOUT)
                     return MeshCentralCommandOutcome(
                         termination="timed_out", exit_code=None, output=b"",
                     ), None
@@ -1694,7 +1695,7 @@ class MeshCentralCliCommandPort:
                 remaining = 1.0 if deadline is None else deadline - time.monotonic()
                 if deadline is not None and remaining <= 0:
                     process.kill()
-                    phase("timeout")
+                    phase(phases.TIMEOUT)
                     return MeshCentralCommandOutcome(
                         termination="timed_out", exit_code=None, output=b"",
                     ), None
@@ -1715,7 +1716,7 @@ class MeshCentralCliCommandPort:
                         # operation on that PC after a stop (measured 2026-10-28).
                         self._stop_on_pc(node_ref, dispatch_id, phase)
                         process.kill()
-                        phase("cancel")
+                        phase(phases.CANCEL)
                         return MeshCentralCommandOutcome(
                             termination="cancelled", exit_code=None, output=b"",
                         ), None
@@ -1726,7 +1727,7 @@ class MeshCentralCliCommandPort:
                     # PC-side paths.
                     if silent_bound > 0 and time.monotonic() - last_byte_at >= silent_bound:
                         process.kill()
-                        phase("silent_timeout")
+                        phase(phases.SILENT_TIMEOUT)
                         return MeshCentralCommandOutcome(
                             termination="timed_out", exit_code=None, output=b"",
                         ), None
@@ -1757,7 +1758,7 @@ class MeshCentralCliCommandPort:
                             # no ceiling: ask again after another window, touch
                             # nothing.
                             continue
-                        phase("line_stalled")
+                        phase(phases.LINE_STALLED)
                         process.kill()
                         return MeshCentralCommandOutcome(
                             termination="no_reply", exit_code=None, output=b"",
@@ -1774,7 +1775,7 @@ class MeshCentralCliCommandPort:
             raise MeshCentralCommandRefused("the official meshcentral client failed") from None
         raw = b"".join(chunks)
         outcome = self._from_transcript(raw)
-        phase("reply")
+        phase(phases.REPLY)
         return outcome, None
 
     def _stop_on_pc(
@@ -1793,13 +1794,13 @@ class MeshCentralCliCommandPort:
         except MeshCentralStopUnconfirmed as exc:
             if getattr(exc, "verdict", None):
                 # Which answer came back, in our own words and never the PC's.
-                phase("cancel_kill_" + str(exc.verdict))
-            phase("cancel_kill_unverified")
+                phase(phases.CANCEL_KILL_PREFIX + str(exc.verdict))
+            phase(phases.CANCEL_KILL_UNVERIFIED)
             return False
         except Exception:
-            phase("cancel_kill_refused")
+            phase(phases.CANCEL_KILL_REFUSED)
             return False
-        phase("cancel_kill")
+        phase(phases.CANCEL_KILL)
         return True
 
     def _run_shell_session(
@@ -1930,7 +1931,7 @@ class MeshCentralCliCommandPort:
             mode=mode, host_tag=self._host_tag,
             min_age_seconds=min_age_seconds,
         )
-        phase("line_probe")
+        phase(phases.LINE_PROBE)
         try:
             raw = self._run_shell_session(
                 node_ref, script,
@@ -1938,7 +1939,7 @@ class MeshCentralCliCommandPort:
                 wait_seconds=LINE_SWEEP_WAIT_SECONDS,
             )
         except Exception:
-            phase("line_probe_refused")
+            phase(phases.LINE_PROBE_REFUSED)
             return MeshCentralLineSweep(
                 mode=mode, ran=False, observed=False, running=False,
                 error="the terminal channel refused the sweep",
@@ -1947,7 +1948,7 @@ class MeshCentralCliCommandPort:
         if verdict is None:
             # The session ran; its answer did not come back. Say so instead of
             # calling an unreadable console a clean one.
-            phase("line_probe_unobserved")
+            phase(phases.LINE_PROBE_UNOBSERVED)
             return MeshCentralLineSweep(
                 mode=mode, ran=True, observed=False, running=False,
                 error="the sweep answer was not readable",
@@ -1964,9 +1965,9 @@ class MeshCentralCliCommandPort:
             if str(entry).isdigit()
         )
         if ended:
-            phase("line_cleared")
+            phase(phases.LINE_CLEARED)
         elif running:
-            phase("line_running")
+            phase(phases.LINE_RUNNING)
         return MeshCentralLineSweep(
             mode=mode, ran=True, observed=True, running=running,
             found=reports, killed=ended,
