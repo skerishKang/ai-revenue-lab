@@ -18,6 +18,7 @@ ALLOWED = {
     "workspace_connector_state",
     "workspace_calendar_connector_state",
     "select_calendar_binding",
+    "disconnect_calendar",
 }
 
 # 티켓·리스·콜백·Drive/B66 슬라이스는 HTTPS ingress로 열지 않는다(바인딩 전용 유지).
@@ -34,7 +35,7 @@ FORBIDDEN = {
 }
 
 
-def test_ingress_allowlist_is_exactly_the_three_read_methods() -> None:
+def test_ingress_allowlist_is_exactly_the_reviewed_methods() -> None:
     source = WORKER.read_text(encoding="utf-8")
     assert 'RPC_INGRESS_SECRET_BINDING = "PADIEM_GOOGLE_STATE_RPC_INGRESS_SECRET"' in source
     block = source.split("RPC_INGRESS_METHODS = frozenset({", 1)[1].split("})", 1)[0]

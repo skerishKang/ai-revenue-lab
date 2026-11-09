@@ -443,6 +443,7 @@ class Default(WorkerEntrypoint):
         "workspace_connector_state",
         "workspace_calendar_connector_state",
         "select_calendar_binding",
+        "disconnect_calendar",
     })
 
     def _authority_ref(self) -> str:
