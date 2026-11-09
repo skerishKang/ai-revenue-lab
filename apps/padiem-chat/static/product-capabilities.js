@@ -335,6 +335,23 @@
   let auth = EMPTY_AUTH;
   let authRefreshQueued = false;
   let authRefreshTail = Promise.resolve();
+  // #7073: one screen load must not read the same session several times. The
+  // boot read, the auth-state re-read and the pageshow re-read used to queue
+  // behind each other even when they asked the server for the very same
+  // session. refreshAuth is now a single-flight: a caller that arrives while
+  // a read is in flight shares its promise, and a caller that arrives just
+  // after the same session was answered reuses it inside a short window
+  // (the #7086 sharing pattern, cf. PAIRINGS_READ_WINDOW_MS in
+  // pc-connect-flow.js). Session signals a server answer pushed (401/403)
+  // pass {force} so the window can never mask them, and {background}
+  // refreshes (window focus, login-button mismatch) keep their re-read so
+  // expiry detection stands. The session key never crosses accounts: a
+  // different owner or a different authenticated state is never answered
+  // from the window.
+  let authReadInFlight = null;
+  let authReadAt = 0;
+  let authReadKey = "";
+  const AUTH_READ_SHARED_WINDOW_MS = 10000;
   // #5554: the tier restore of the CURRENT auth generation. The outgoing
   // request waits for this one, not for every refresh that was queued after it
   // (a window focus queues one), so a background refresh can no longer hold a
@@ -635,7 +652,7 @@
         // The server refused this tier for this account. The central policy
         // wins: re-read the authoritative state instead of keeping a tier the
         // account may not use.
-        void refreshAuth();
+        void refreshAuth({ force: true });
         return false;
       }
       if (!response.ok) return false;
@@ -1128,7 +1145,7 @@
           customTestState = "idle";
           clearCustomState();
           setCustomMessage(copy.authExpired, "error");
-          void refreshAuth();
+          void refreshAuth({ force: true });
           return;
         }
         customTestState = "idle";
@@ -1183,7 +1200,7 @@
         // the server keeps reporting an unusable session.
         if (Date.now() - customAuthRefreshAt > 30000) {
           customAuthRefreshAt = Date.now();
-          void refreshAuth();
+          void refreshAuth({ force: true });
         }
         syncModeCopy();
         return;
@@ -1379,7 +1396,7 @@
           customMutation = null;
           clearCustomState();
           setCustomMessage(copy.authExpired, "error");
-          void refreshAuth();
+          void refreshAuth({ force: true });
           return;
         }
         setCustomMessage(errorMessage(data) || copy.saveFailed, "error");
@@ -1431,7 +1448,7 @@
           customMutation = null;
           clearCustomState();
           setCustomMessage(copy.authExpired, "error");
-          void refreshAuth();
+          void refreshAuth({ force: true });
           return;
         }
         setCustomMessage(errorMessage(data) || copy.deleteFailed, "error");
@@ -1944,7 +1961,7 @@
     adminProbeRetryTimer = window.setTimeout(() => {
       adminProbeRetryTimer = null;
       if (!auth.authenticated) return;
-      void refreshAuth();
+      void refreshAuth({ force: true });
     }, ADMIN_PROBE_RETRY_MS);
   }
 
@@ -2056,6 +2073,10 @@
     return { ok: false, data: null };
   }
 
+  function currentAuthKey() {
+    return String(auth.authenticated === true) + "|" + (auth.ownerKey || "") + "|" + (auth.sessionState || "");
+  }
+
   async function readAuthFresh() {
     let nextAuth = EMPTY_AUTH;
     try {
@@ -2067,6 +2088,13 @@
     auth = nextAuth;
     authEpoch += 1;
     const epoch = authEpoch;
+    // #7073: record just-answered sessions so a follow-up refresh inside the
+    // window is answered from memory. An unreachable answer (no server
+    // answer at all) is never marked: the next caller must ask again.
+    if (auth.loaded === true) {
+      authReadAt = Date.now();
+      authReadKey = currentAuthKey();
+    }
     if (!auth.authenticated) clearCustomState();
     // #5554: the administrator probe and this account's stored model selection
     // are two INDEPENDENT reads of the same signed-in session. They used to run
@@ -2102,8 +2130,29 @@
 
   function refreshAuth(options) {
     const background = !!(options && options.background);
-    const run = authRefreshTail.then(readAuthFresh, readAuthFresh);
-    authRefreshTail = run.catch(() => EMPTY_AUTH);
+    const force = !!(options && options.force);
+    // A caller that arrives while a read is in flight shares that read: the
+    // same session one load later arrives still in flight (boot read + the
+    // auth-state event that follows the app's own status read).
+    if (authReadInFlight) {
+      if (!background) tierRestoreTail = authReadInFlight;
+      return authReadInFlight;
+    }
+    // The pageshow and public refreshers arrive right after the boot read
+    // (initial-load pageshow, or the app surface inviting a refresh) asking
+    // for the identical session: answer from the just-finished read.
+    if (!background && !force && authReadAt > 0
+        && Date.now() - authReadAt < AUTH_READ_SHARED_WINDOW_MS
+        && authReadKey === currentAuthKey()) {
+      return Promise.resolve(auth);
+    }
+    const run = readAuthFresh();
+    const flight = run.catch(() => EMPTY_AUTH);
+    authReadInFlight = flight;
+    flight.finally(() => {
+      if (authReadInFlight === flight) authReadInFlight = null;
+    });
+    authRefreshTail = flight;
     // #5554: an outgoing request waits for the restore of the generation it
     // depends on. A BACKGROUND refresh (window focus, a UI text mismatch) only
     // refreshes the state; it must never become the prerequisite of a request
@@ -2172,13 +2221,16 @@
       commitTier("free");
       clearCustomState();
       syncCustomSection();
-      void refreshAuth();
+      // A real flip is forced: the window never masks a session change.
+      void refreshAuth({ force: true });
       return;
     }
-    void refreshCustomStatus();
     // A new sign-in is a different account: re-read the server state so this
     // account's own stored preference is restored, never the previous one.
-    void refreshAuth();
+    // The re-read itself refreshes the custom credential list at its end, so
+    // a direct refreshCustomStatus here would read the same list twice
+    // (#7073).
+    void refreshAuth({ force: true });
   });
 
   window.PadiemProductCapabilities = Object.freeze({
