@@ -2,6 +2,8 @@
 from pathlib import Path
 import tomllib
 
+from _registry_values import credential_binding_slot
+
 WORKER_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -13,7 +15,7 @@ def test_b14_observability_enabled_with_full_sampling_and_no_new_secret():
     # Avoid accidentally changing the provider-secret registry when enabling logs.
     secrets = cfg["secrets_store_secrets"]
     assert len({row["binding"] for row in secrets}) == len(secrets)
-    assert "PADIEM_B14_CREDENTIAL_09" in {row["binding"] for row in secrets}
+    assert credential_binding_slot(9) in {row["binding"] for row in secrets}
     assert all(set(row) == {"binding", "store_id", "secret_name"} for row in secrets)
 
 

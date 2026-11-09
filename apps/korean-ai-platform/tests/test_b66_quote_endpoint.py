@@ -15,6 +15,8 @@ from app.factory import create_app
 from app import b66_quote_endpoint as endpoint
 from app.pilot import gateway as pilot_gateway
 
+from _registry_values import credential_binding_slot
+
 ROOT = Path(__file__).resolve().parents[3]
 AUTHORITY_PATH = ROOT / "apps" / "b66-quote-adapter" / "app" / "extraction_routing.py"
 INTAKE_PATH = ROOT / "apps" / "b66-quote-adapter" / "app" / "file_intake.py"
@@ -325,7 +327,7 @@ def test_scanned_pdf_stays_manual_when_native_text_is_absent(monkeypatch):
 
 def test_route_source_owns_no_browser_provider_or_secret_surface():
     source = Path(endpoint.__file__).read_text(encoding="utf-8")
-    assert "PADIEM_B14_CREDENTIAL_08" not in source
+    assert credential_binding_slot(8) not in source
     assert "Authorization" not in source
     assert "api_key" not in source.lower()
     assert "build_image_extraction_request" in source

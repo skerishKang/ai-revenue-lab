@@ -21,7 +21,9 @@ from app.pilot.model_registry_file import (
 from app.pilot.catalog import CATALOG_BY_ID, get_catalog_by_id
 from app.pilot.platform_secrets import list_platform_providers
 
-from _registry_values import provider_row, require_owner_document
+from _registry_values import (
+    process_catalog_restored, provider_row, require_owner_document,
+)
 
 # The pins in this module describe the owner's document: the effective registry
 # it names, the retired identities it keeps off, the partly-disabled Provider
@@ -59,16 +61,17 @@ def _switch_to(path: Path) -> Path:
 @pytest.fixture
 def restore():
     """Put the process registry back: these cases mutate process-wide state."""
-    try:
-        yield _switch_to
-    finally:
-        for name, value in _SAVED_SWITCH.items():
-            if value is None:
-                os.environ.pop(name, None)
-            else:
-                os.environ[name] = value
-        _reset()
-        model_registry_file.install_models()
+    with process_catalog_restored():
+        try:
+            yield _switch_to
+        finally:
+            for name, value in _SAVED_SWITCH.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
+            _reset()
+            model_registry_file.install_models()
 
 
 def _private(path: Path, document: dict) -> Path:

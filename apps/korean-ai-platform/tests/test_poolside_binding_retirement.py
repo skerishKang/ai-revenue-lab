@@ -1,8 +1,8 @@
 """Owner decision 2026-09-18 — Poolside binding re-registered metadata-only.
 
-The ``PADIEM_B14_CREDENTIAL_12`` Secrets Store binding is declared again in
-wrangler.toml as metadata only (binding + store_id + secret_name, no secret
-value); the old ``[[unsafe.bindings]]`` form stays prohibited. Poolside
+The Poolside Secrets Store binding is declared again in wrangler.toml as
+metadata only (binding + store_id + secret_name, no secret value); the old
+``[[unsafe.bindings]]`` form stays prohibited. Poolside
 provider code stays registered, but with the key absent the Worker must
 still degrade to an explicit not-ready readiness report — never a crash,
 never a silent fallback — and the Kilo route must be unaffected.
@@ -49,9 +49,9 @@ def test_wrangler_toml_declares_no_unsafe_bindings():
     config = tomllib.loads(WRANGLER_TOML.read_text(encoding="utf-8"))
     assert "unsafe" not in config
     text = WRANGLER_TOML.read_text(encoding="utf-8")
-    assert 'binding = "PADIEM_B14_CREDENTIAL_12"' in text
-    assert 'secret_name = "PADIEM_B14_CREDENTIAL_12"' in text
-    assert "PADIEM_B14_CREDENTIAL_12 =" not in text
+    assert f'binding = "{POOLSIDE_CREDENTIAL_BINDING}"' in text
+    assert f'secret_name = "{POOLSIDE_CREDENTIAL_BINDING}"' in text
+    assert f"{POOLSIDE_CREDENTIAL_BINDING} =" not in text
 
 
 def test_startup_and_registration_succeed_without_poolside_binding(monkeypatch):

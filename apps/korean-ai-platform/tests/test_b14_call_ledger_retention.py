@@ -19,6 +19,8 @@ from app.pilot.call_ledger_retention import (
 )
 
 NOW = datetime(2026, 11, 3, 12, 0, 0, tzinfo=timezone.utc)
+#: A synthetic identity: the status line must name tables and counts only.
+RETENTION_MODEL = "fixture/retention-model"
 # 90 days before NOW is 2026-08-05T12:00:00Z.
 INSIDE = "2026-08-06T00:00:00Z"
 PAST = "2026-08-04T00:00:00Z"
@@ -53,7 +55,7 @@ def _add(db, log_id: str, started_at, attempts: int = 1) -> None:
     connection.execute(
         f"INSERT INTO {CALL_TABLE} (log_id, started_at, selected_model_id, subject_ref)"
         " VALUES (?, ?, ?, ?)",
-        (log_id, started_at, "gemini-3.1-flash-lite", f"subject-{log_id}"),
+        (log_id, started_at, RETENTION_MODEL, f"subject-{log_id}"),
     )
     for index in range(attempts):
         connection.execute(
@@ -165,4 +167,4 @@ def test_the_status_line_names_tables_and_counts_only(db, capsys):
     # because the shorter name is a prefix of the longer one.
     assert out == f"{STATUS_PREFIX}ok {CALL_TABLE}=1 {ATTEMPT_TABLE}=1"
     assert "subject-past" not in out
-    assert "gemini" not in out
+    assert RETENTION_MODEL not in out

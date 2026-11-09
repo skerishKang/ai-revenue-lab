@@ -33,13 +33,16 @@ from app.pilot.errors import NoSafeRoute, PilotNotConfigured, UpstreamTimeout
 from app.pilot.b14_runtime_config import runtime_config as rcfg
 from _registry_values import (
     a_model_id,
+    credential_binding_slot,
     model_ids,
     model_rows,
     provider_row,
     registry,
     requires_owner_document,
 )
-from app.pilot.model_registry_file import installed_model_ids, retired_model_ids
+from app.pilot.model_registry_file import (
+    credential_binding_names, installed_model_ids, retired_model_ids,
+)
 from _pilot_lane_paths import chat_surface
 
 
@@ -1566,7 +1569,9 @@ class TestOwnerEnvWorkflow:
         openrouter_secret = "sk-or-v1-super-secret-abcdef1234567890"
         platform_secret = "sk-sensenova-super-secret-abcdef1234567890"
         _set_live(openrouter_secret)
-        monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", platform_secret)
+        # A platform-owned slot the document declares: the health surface must
+        # see the key without either value reaching a page.
+        monkeypatch.setenv(sorted(credential_binding_names())[0], platform_secret)
         resp = client.get("/api/pilot/admin/health")
         assert resp.status_code == 200
         assert resp.json()["business14"]["has_key"] is True
@@ -1900,7 +1905,7 @@ class TestActualRouteId:
         from app.pilot import router_core
         _set_live()
         rcfg.provider_mode = "live"
-        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_03", "sk-free-google-0123456789abcdef")
+        monkeypatch.setenv(credential_binding_slot(3), "sk-free-route-0123456789abcdef")
         monkeypatch.setattr(router_core, "_credential_status_for",
                             lambda cm: (True, "present", "platform_secret", cm.platform_provider_id))
         monkeypatch.setattr(router_core, "_platform_secret_present", lambda cm: True)

@@ -37,7 +37,7 @@ from app.pilot import platform as plat
 from app.pilot.errors import UpstreamAuthFailed, UpstreamServerError, UpstreamTimeout
 
 from _pilot_lane_paths import chat_surface
-from _registry_values import model_row, model_rows, provider_row, provider_of
+from _registry_values import process_catalog_restored
 
 
 #: The direct retry target: an enabled registry row, never a retired identity.
@@ -106,24 +106,23 @@ _SWITCH_NAMES = (registry_file.REGISTRY_SWITCH_ENV, registry_file.REGISTRY_OVERR
 @pytest.fixture(scope="module", autouse=True)
 def _retry_route_document(tmp_path_factory):
     """Install this suite's registry for the module, then put the process back."""
-    saved = {name: os.environ.get(name) for name in _SWITCH_NAMES}
-    _install_retry_registry(tmp_path_factory.mktemp("retry-registry"))
-    try:
-        yield
-    finally:
-        _restore_registry(saved)
+    with process_catalog_restored():
+        saved = {name: os.environ.get(name) for name in _SWITCH_NAMES}
+        _install_retry_registry(tmp_path_factory.mktemp("retry-registry"))
+        try:
+            yield
+        finally:
+            _restore_registry(saved)
 
 
-#: The direct retry target: the enabled row this module's document serves.
-MODEL_ID = next(row["id"] for row in model_rows() if row["enabled"])
+#: The direct retry target: the row this module's own document installs. It is
+#: derived from that document rather than the process default, because the
+#: module fixture replaces the default for the whole run (#7241 3b).
+MODEL_ID = _RETRY_ROW["id"]
 #: Its own upstream name and display name come from the same row, so the audit
 #: evidence below compares against the row that installed the route (#7241 3a).
-_MODEL_ROW = model_row(MODEL_ID)
-MODEL_UPSTREAM = _MODEL_ROW["upstream_model"]
-MODEL_PROVIDER_NAME = _MODEL_ROW["provider_name"]
-#: The binding slot this suite fills, read from the Provider's own registry row:
-#: the value installed above is a fixture, the *name* is the document's.
-_MODEL_BINDING = provider_row(provider_of(MODEL_ID))["credential_binding_name"]
+MODEL_UPSTREAM = _RETRY_ROW["upstream_model"]
+MODEL_PROVIDER_NAME = _RETRY_ROW["provider_name"]
 FIXTURE_SECRET = "sk-fixture-retry-0123456789"
 
 

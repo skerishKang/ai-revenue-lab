@@ -26,6 +26,8 @@ from app.pilot.worker_env import (
     secret_status,
 )
 
+from _registry_values import requires_owner_document
+
 
 #: Two synthetic Providers this suite rotates independently. Their binding
 #: NAMES are generated from the same placeholder identity as the Provider, so
@@ -84,56 +86,56 @@ def _model_for_spec(provider_spec: PlatformProviderSpec) -> str:
 
 @pytest.mark.asyncio
 async def test_rotation_during_same_isolate_does_not_use_stale_global(monkeypatch):
-    exlab = spec(FIRST_PROVIDER)
-    monkeypatch.setenv(exlab.credential_binding_name, "synthetic_previous_secret")
-    first = bind_request_env({exlab.credential_binding_name: "synthetic_first_secret"})
+    gamma = spec(FIRST_PROVIDER)
+    monkeypatch.setenv(gamma.credential_binding_name, "synthetic_previous_secret")
+    first = bind_request_env({gamma.credential_binding_name: "synthetic_first_secret"})
     try:
-        assert resolve_secret(exlab) == "synthetic_first_secret"
-        assert platform._request_headers(exlab)["Authorization"] == "Bearer synthetic_first_secret"
+        assert resolve_secret(gamma) == "synthetic_first_secret"
+        assert platform._request_headers(gamma)["Authorization"] == "Bearer synthetic_first_secret"
     finally:
         reset_request_env(first)
 
-    second = bind_request_env({exlab.credential_binding_name: "synthetic_rotated_secret"})
+    second = bind_request_env({gamma.credential_binding_name: "synthetic_rotated_secret"})
     try:
-        assert resolve_secret(exlab) == "synthetic_rotated_secret"
-        assert platform._request_headers(exlab)["Authorization"] == "Bearer synthetic_rotated_secret"
+        assert resolve_secret(gamma) == "synthetic_rotated_secret"
+        assert platform._request_headers(gamma)["Authorization"] == "Bearer synthetic_rotated_secret"
     finally:
         reset_request_env(second)
 
     # CLI/test (outside Worker) retains the old environment contract.
-    assert resolve_secret(exlab) == "synthetic_previous_secret"
-    assert scoped_secret(exlab.credential_binding_name) is None
+    assert resolve_secret(gamma) == "synthetic_previous_secret"
+    assert scoped_secret(gamma.credential_binding_name) is None
 
 
 @pytest.mark.asyncio
 async def test_missing_worker_secret_fails_closed_even_if_global_has_stale_key(monkeypatch):
-    exlab = spec(FIRST_PROVIDER)
-    gemini = spec(SECOND_PROVIDER)
-    monkeypatch.setenv(exlab.credential_binding_name, "synthetic_global_exlab_key")
-    monkeypatch.setenv(gemini.credential_binding_name, "synthetic_global_gemini_key")
-    token = bind_request_env({gemini.credential_binding_name: "synthetic_worker_gemini"})
+    gamma = spec(FIRST_PROVIDER)
+    alpha = spec(SECOND_PROVIDER)
+    monkeypatch.setenv(gamma.credential_binding_name, "synthetic_global_gamma_key")
+    monkeypatch.setenv(alpha.credential_binding_name, "synthetic_global_alpha_key")
+    token = bind_request_env({alpha.credential_binding_name: "synthetic_worker_alpha"})
     try:
-        assert resolve_secret(exlab) == ""
-        assert resolve_secret(gemini) == "synthetic_worker_gemini"
+        assert resolve_secret(gamma) == ""
+        assert resolve_secret(alpha) == "synthetic_worker_alpha"
         from app.pilot.errors import PilotNotConfigured
 
         with pytest.raises(PilotNotConfigured):
-            platform._request_headers(exlab)
+            platform._request_headers(gamma)
     finally:
         reset_request_env(token)
 
 
 @pytest.mark.asyncio
-async def test_two_overlapping_requests_keep_independent_exlab_and_gemini_keys():
-    exlab, gemini = spec(FIRST_PROVIDER), spec(SECOND_PROVIDER)
+async def test_two_overlapping_requests_keep_independent_gamma_and_alpha_keys():
+    gamma, alpha = spec(FIRST_PROVIDER), spec(SECOND_PROVIDER)
     ready = 0
     both = asyncio.Event()
 
-    async def one_request(exlab_key, gemini_key):
+    async def one_request(gamma_key, alpha_key):
         nonlocal ready
         token = bind_request_env({
-            exlab.credential_binding_name: exlab_key,
-            gemini.credential_binding_name: gemini_key,
+            gamma.credential_binding_name: gamma_key,
+            alpha.credential_binding_name: alpha_key,
         })
         try:
             ready += 1
@@ -142,36 +144,36 @@ async def test_two_overlapping_requests_keep_independent_exlab_and_gemini_keys()
             await both.wait()
             await asyncio.sleep(0)
             return (
-                platform._request_headers(exlab)["Authorization"],
-                platform._request_headers(gemini)["Authorization"],
+                platform._request_headers(gamma)["Authorization"],
+                platform._request_headers(alpha)["Authorization"],
             )
         finally:
             reset_request_env(token)
 
     results = await asyncio.gather(
-        one_request("synthetic_exlab_alpha", "synthetic_gemini_alpha"),
-        one_request("synthetic_exlab_beta", "synthetic_gemini_beta"),
+        one_request("synthetic_gamma_alpha", "synthetic_alpha_alpha"),
+        one_request("synthetic_gamma_beta", "synthetic_alpha_beta"),
     )
     assert results == [
-        ("Bearer synthetic_exlab_alpha", "Bearer synthetic_gemini_alpha"),
-        ("Bearer synthetic_exlab_beta", "Bearer synthetic_gemini_beta"),
+        ("Bearer synthetic_gamma_alpha", "Bearer synthetic_alpha_alpha"),
+        ("Bearer synthetic_gamma_beta", "Bearer synthetic_alpha_beta"),
     ]
-    assert scoped_secret(exlab.credential_binding_name) is None
+    assert scoped_secret(gamma.credential_binding_name) is None
 
 
 @pytest.mark.asyncio
 async def test_worker_scope_cleanup_on_error():
-    exlab = spec(FIRST_PROVIDER)
+    gamma = spec(FIRST_PROVIDER)
     async def failing_handler():
-        token = bind_request_env({exlab.credential_binding_name: "synthetic_key"})
+        token = bind_request_env({gamma.credential_binding_name: "synthetic_key"})
         try:
-            assert resolve_secret(exlab) == "synthetic_key"
+            assert resolve_secret(gamma) == "synthetic_key"
             raise RuntimeError("synthetic_failure")
         finally:
             reset_request_env(token)
     with pytest.raises(RuntimeError, match="synthetic_failure"):
         await failing_handler()
-    assert scoped_secret(exlab.credential_binding_name) is None
+    assert scoped_secret(gamma.credential_binding_name) is None
 
 
 @pytest.mark.asyncio
@@ -190,14 +192,14 @@ async def test_resolve_fresh_secret_binding_get_each_request():
 
     environment = Env()
     setattr(environment, attribute, RotatableBinding())
-    spec_exlab = spec(FIRST_PROVIDER)
+    spec_gamma = spec(FIRST_PROVIDER)
     values = []
     for _ in range(2):
-        overrides = collect_request_bindings(environment, (spec_exlab.credential_binding_name,))
+        overrides = collect_request_bindings(environment, (spec_gamma.credential_binding_name,))
         token = bind_request_env(overrides)
         try:
-            await load_request_secret(spec_exlab.credential_binding_name)
-            values.append(resolve_secret(spec_exlab))
+            await load_request_secret(spec_gamma.credential_binding_name)
+            values.append(resolve_secret(spec_gamma))
         finally:
             reset_request_env(token)
     assert values == ["synthetic_rotation_01", "synthetic_rotation_02"]
@@ -310,7 +312,7 @@ async def test_actual_worker_fetch_scopes_and_resets_overlapping_requests(monkey
 
 
 @pytest.mark.asyncio
-async def test_lazy_gemini_does_not_fetch_unrelated_provider():
+async def test_lazy_alpha_does_not_fetch_unrelated_provider():
     from types import SimpleNamespace
     from app.pilot import platform as _registration  # noqa: F401
     from app.pilot.platform_secrets import ensure_route_secrets
@@ -324,9 +326,9 @@ async def test_lazy_gemini_does_not_fetch_unrelated_provider():
             self.calls += 1
             return self.value
 
-    gemini = CountingSecret("synthetic_gemini_new")
-    kira = CountingSecret("synthetic_kira_unrelated")
-    exlab = CountingSecret("synthetic_exlab_unrelated")
+    alpha = CountingSecret("synthetic_alpha_new")
+    beta = CountingSecret("synthetic_beta_unrelated")
+    gamma = CountingSecret("synthetic_gamma_unrelated")
     # The bindings this scope collects are the effective document's own names;
     # only the selected route's own Provider may be fetched (#7241 3\ub2e8\uacc4).
     from app.pilot.model_registry_file import read_registry
@@ -362,32 +364,32 @@ async def test_lazy_gemini_does_not_fetch_unrelated_provider():
     unrelated = [binding for binding, _row in distinct[1:]][:2]
     while len(unrelated) < 2:
         unrelated.append(unrelated[0] + "_UNRELATED")
-    gemini_binding, kira_binding, exlab_binding = (
+    alpha_binding, beta_binding, gamma_binding = (
         selected_binding, unrelated[0], unrelated[1]
     )
     env = SimpleNamespace(**{
-        gemini_binding: gemini, kira_binding: kira, exlab_binding: exlab,
+        alpha_binding: alpha, beta_binding: beta, gamma_binding: gamma,
     })
-    handles = collect_request_bindings(env, (gemini_binding, kira_binding, exlab_binding))
-    assert (gemini.calls, kira.calls, exlab.calls) == (0, 0, 0)
+    handles = collect_request_bindings(env, (alpha_binding, beta_binding, gamma_binding))
+    assert (alpha.calls, beta.calls, gamma.calls) == (0, 0, 0)
     token = bind_request_env(handles)
     try:
         model_id = selected_model
         await ensure_route_secrets(model_id, product_tier=grade)
         await ensure_route_secrets(model_id, product_tier=grade)
-        assert scoped_secret(gemini_binding) == "synthetic_gemini_new"
-        assert (gemini.calls, kira.calls, exlab.calls) == (1, 0, 0)
-        assert scoped_secret(kira_binding) == ""
+        assert scoped_secret(alpha_binding) == "synthetic_alpha_new"
+        assert (alpha.calls, beta.calls, gamma.calls) == (1, 0, 0)
+        assert scoped_secret(beta_binding) == ""
     finally:
         reset_request_env(token)
-    assert scoped_secret(gemini_binding) is None
+    assert scoped_secret(alpha_binding) is None
 
 
 @pytest.mark.asyncio
 async def test_lazy_revoke_rotation_and_failed_get_are_fail_closed(monkeypatch):
     from types import SimpleNamespace
-    spec_gemini = spec(SECOND_PROVIDER)
-    key = spec_gemini.credential_binding_name
+    spec_alpha = spec(SECOND_PROVIDER)
+    key = spec_alpha.credential_binding_name
     monkeypatch.setenv(key, "synthetic_global_must_not_be_used")
 
     class MutableSecret:
@@ -412,10 +414,10 @@ async def test_lazy_revoke_rotation_and_failed_get_are_fail_closed(monkeypatch):
             SimpleNamespace(**{key: secret}), (key,)
         ))
         try:
-            assert resolve_secret(spec_gemini) == ""
+            assert resolve_secret(spec_alpha) == ""
             await load_request_secret(key)
             await load_request_secret(key)
-            assert resolve_secret(spec_gemini) == expected
+            assert resolve_secret(spec_alpha) == expected
         finally:
             reset_request_env(token)
     assert secret.calls == 4
@@ -485,8 +487,14 @@ async def test_same_request_concurrent_loads_share_inflight_read():
         reset_request_env(token)
 
 
+@requires_owner_document
 def test_every_neutral_wrangler_secret_is_collected_by_worker():
-    """Keep declared Secrets Store handles accessible in the request scope."""
+    """Keep declared Secrets Store handles accessible in the request scope.
+
+    The pin compares the deployment's declared slots with the names the effective
+    document declares, so it needs the owner document: the placeholder fixture
+    declares synthetic slots the deployment does not bind (#7241 3b).
+    """
     import ast
     import tomllib
 

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import os
+from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
@@ -46,6 +47,28 @@ def registry() -> dict:
     from app.pilot.model_registry_file import read_registry
 
     return read_registry()
+
+
+@contextmanager
+def process_catalog_restored():
+    """Put every process-wide registry global back after a suite switches.
+
+    A document switch changes two things: the cached snapshot plus installed
+    catalog, and the accumulated platform Provider table ``install_models``
+    fills by registration. Restoring only the environment leaves both answering
+    the test document, so a suite that runs later reads identities it never
+    declared (#7241 3b).
+    """
+    from app.pilot import model_registry_file, platform_secrets
+
+    providers = dict(platform_secrets._PLATFORM_PROVIDERS)
+    try:
+        yield
+    finally:
+        platform_secrets._PLATFORM_PROVIDERS.clear()
+        platform_secrets._PLATFORM_PROVIDERS.update(providers)
+        model_registry_file._PRIVATE_SNAPSHOT = None
+        model_registry_file.install_models()
 
 
 def model_rows() -> list[dict]:
@@ -308,27 +331,58 @@ def timeout_log_allowlist_excluding() -> list[str]:
     return keep
 
 
-def native_wire_owner() -> str:
-    """The Provider id the native (method-style) wire adapter itself serves.
+def specialized_timeout_logger():
+    """The log entry point that carries this Provider's own timeout phase contract.
 
-    The native lane compares an incoming Provider id against the constant the
-    adapter module declares, so a suite that drives that lane must adopt the
-    same identity. The constant is read off the adapter rather than written in
-    the test (#7241 3b).
+    The module names its function after the Provider it filters — a deployment
+    identity — so the callable is selected structurally: the one ``log_*_timeout``
+    function whose name carries the allow-listed Provider (#7241 3b).
     """
-    from app.pilot import google_provider
+    import importlib
+    import pkgutil
 
-    for name, value in vars(google_provider).items():
-        if name.endswith("PROVIDER_ID") and isinstance(value, str) and value:
-            return value
-    raise AssertionError("the native wire adapter declares no Provider id")
+    import app.pilot as pilot_package
+
+    provider = specialized_timeout_log_provider()
+    for info in pkgutil.iter_modules(pilot_package.__path__):
+        module = importlib.import_module(f"{pilot_package.__name__}.{info.name}")
+        for name, value in vars(module).items():
+            if (callable(value) and name.startswith("log_")
+                    and name.endswith("_timeout") and provider in name):
+                return value
+    raise AssertionError("no specialized timeout logger for the selected Provider")
+
+
+def _native_wire_adapter():
+    """The one adapter that declares a native wire family, selected structurally.
+
+    The adapter's own ``*_WIRE_FAMILY`` constant is what makes it the native
+    (method-style) wire; selecting on that constant keeps the module name and
+    the Provider id — both deployment identities — out of the test (#7241 3b).
+    """
+    found = []
+    for provider_id, module in adapter_modules().items():
+        if any(
+            name.endswith("WIRE_FAMILY") and isinstance(value, str) and value
+            for name, value in vars(module).items()
+        ):
+            found.append((provider_id, module))
+    assert len(found) == 1, (
+        "expected exactly one adapter to declare a native wire family"
+    )
+    return found[0]
+
+
+def native_wire_owner() -> str:
+    """The Provider id the native (method-style) wire adapter itself serves."""
+    provider_id, _module = _native_wire_adapter()
+    return provider_id
 
 
 def native_wire_origin() -> str:
     """The origin the native wire adapter requires its route to be served from."""
-    from app.pilot import google_provider
-
-    for name, value in vars(google_provider).items():
+    _provider_id, module = _native_wire_adapter()
+    for name, value in vars(module).items():
         if name.endswith("BASE_ORIGIN") and isinstance(value, str) and value:
             return value
     raise AssertionError("the native wire adapter declares no base origin")

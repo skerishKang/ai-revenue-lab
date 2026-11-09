@@ -39,6 +39,8 @@ from app.pilot.worker_env import (
 )
 from padiem_control_plane import models_registry
 
+from _registry_values import process_catalog_restored
+
 WORKER_SRC = (APP_ROOT / "worker.py").read_text(encoding="utf-8")
 #: A credential NAME in the private document's own naming shape (the loader
 #: owns that rule), for a Provider nothing has ever registered (#7241 3단계).
@@ -152,15 +154,17 @@ def switched_to(tmp_path):
         os.environ[SWITCH_ENVS[0]] = str(path)
         model_registry_file._PRIVATE_SNAPSHOT = None
 
-    yield _swap
-
-    for name, value in _SAVED.items():
-        if value is None:
-            os.environ.pop(name, None)
-        else:
-            os.environ[name] = value
-    model_registry_file._PRIVATE_SNAPSHOT = None
-    model_registry_file.install_models()
+    with process_catalog_restored():
+        try:
+            yield _swap
+        finally:
+            for name, value in _SAVED.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
+            model_registry_file._PRIVATE_SNAPSHOT = None
+            model_registry_file.install_models()
 
 
 def _worker_env_keys(registry_path: Path | None = None) -> set[str]:

@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import os
+import stat
 from pathlib import Path
 
 import pytest
@@ -28,7 +29,7 @@ from app.pilot import model_registry_file
 from app.pilot.catalog import CATALOG_BY_ID, CATALOG_MODELS
 from app.pilot.tier_fallback import effective_tier_default, effective_tier_fallback
 
-from _registry_values import registry
+from _registry_values import process_catalog_restored, registry
 
 SWITCH_ENVS = ("PADIEM_MODELS_REGISTRY", "PADIEM_MODELS_REGISTRY_OVERRIDE")
 GRADES = ("free", "plus", "pro", "max")
@@ -267,6 +268,101 @@ def test_fail_closed_document_unreadable(clear_switch, tmp_path):
         document.chmod(0o600)
         clear_switch.undo()
         _reset_snapshot()
+
+
+# ---------------------------------------------------------------------------
+# Item 3b: the private document is replaced atomically and keeps its owner.
+# ---------------------------------------------------------------------------
+@pytest.fixture()
+def writable_private_document(tmp_path):
+    """A host switched to its own copy of the fixture document.
+
+    The switch, the cached snapshot and the accumulated Provider table are all
+    restored afterwards, including when the test fails (#7241 3b).
+    """
+    fixture = json.loads(
+        (Path(__file__).resolve().parent / "fixtures" / "models_private_fixture.json")
+        .read_text(encoding="utf-8")
+    )
+    target = tmp_path / "models-private.json"
+    target.write_text(json.dumps(fixture), encoding="utf-8")
+    target.chmod(0o600)
+    previous = {name: os.environ.get(name) for name in SWITCH_ENVS}
+    with process_catalog_restored():
+        os.environ[SWITCH_ENVS[0]] = str(target)
+        os.environ.pop(SWITCH_ENVS[1], None)
+        _reset_snapshot()
+        try:
+            yield target
+        finally:
+            for name, value in previous.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
+            _reset_snapshot()
+
+
+def test_private_rewrite_keeps_the_existing_owner_group_and_mode(
+        writable_private_document):
+    """A console rewrite must not hand the document to another account.
+
+    The replacement is written to a fresh inode, so its owner and group would
+    otherwise be the writer's own. The host's document sometimes belongs to the
+    service account's group; the rewrite has to keep it.
+    """
+    target = writable_private_document
+    if os.name != "posix":
+        pytest.skip("POSIX ownership is not observable on this host")
+    before = target.stat()
+    # Prove the group is preserved by giving the document a group the writer's
+    # own temporary file will not carry: one of the process's supplementary
+    # groups, which the owner may assign to its own file.
+    candidates = [
+        gid for gid in os.getgroups()
+        if gid not in {before.st_gid, os.getegid()}
+    ]
+    if not candidates:
+        pytest.skip("no supplementary group available to vary the document group")
+    os.chown(target, -1, candidates[0])
+    before = target.stat()
+
+    model_registry_file.write_registry(model_registry_file.read_registry())
+
+    after = target.stat()
+    assert (after.st_uid, after.st_gid) == (before.st_uid, before.st_gid)
+    assert stat.S_IMODE(after.st_mode) == 0o600
+    assert model_registry_file.read_registry()["models"]
+
+
+@pytest.mark.parametrize("failing_call", ["fsync", "replace"])
+def test_private_write_failure_keeps_the_existing_document(
+        writable_private_document, monkeypatch, failing_call):
+    """A write that fails mid-way leaves the last good document in place.
+
+    The new content is written to a temporary file in the same directory and
+    moved into place with one rename, so a failing flush or rename is rejected
+    without touching — and without leaving a stray temporary beside — the
+    document the next boot reads.
+    """
+    target = writable_private_document
+    before = target.read_bytes()
+    document = model_registry_file.read_registry()
+
+    def fail(*_args, **_kwargs):
+        raise OSError("simulated write failure in " + failing_call)
+
+    monkeypatch.setattr(model_registry_file.os, failing_call, fail)
+
+    with pytest.raises(model_registry_file.ModelRegistryError):
+        model_registry_file.write_registry(document)
+
+    assert target.read_bytes() == before
+    leftovers = [
+        path for path in target.parent.iterdir()
+        if path.name.startswith(target.name + ".")
+    ]
+    assert leftovers == []
 
 
 def test_fail_closed_document_world_readable(clear_switch, tmp_path):

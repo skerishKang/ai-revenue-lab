@@ -22,6 +22,8 @@ from app.pilot import model_registry_file as registry_file
 from app.pilot import tier_fallback
 from app.pilot.catalog import CATALOG_BY_ID, CATALOG_MODELS
 
+from _registry_values import process_catalog_restored
+
 SWITCH = "PADIEM_MODELS_REGISTRY"
 OVERRIDE = "PADIEM_MODELS_REGISTRY_OVERRIDE"
 MODEL_A = "example-provider/example-model-1"
@@ -76,14 +78,17 @@ def restore():
     catalog at all.
     """
     saved = {name: os.environ.get(name) for name in (SWITCH, OVERRIDE)}
-    yield
-    for name, value in saved.items():
-        if value is None:
-            os.environ.pop(name, None)
-        else:
-            os.environ[name] = value
-    registry_file._PRIVATE_SNAPSHOT = None
-    registry_file.install_models()
+    with process_catalog_restored():
+        try:
+            yield
+        finally:
+            for name, value in saved.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
+            registry_file._PRIVATE_SNAPSHOT = None
+            registry_file.install_models()
 
 
 def _private(tmp_path: Path, document: dict | None = None) -> Path:

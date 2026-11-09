@@ -1,9 +1,9 @@
 """#2003 — SenseNova direct route: catalog entry, adapter shape, retryable
 busy-429 normalization, and fail-closed key handling.
 
-The owner-provisioned key lives ONLY in the Worker env binding
-``PADIEM_SENSENOVA_API_KEY``; these tests use fake values and never assert on
-real credentials.
+The owner-provisioned key lives ONLY in the Worker env binding the Provider's
+adapter names; these tests use fake values and never assert on real
+credentials.
 """
 
 from __future__ import annotations

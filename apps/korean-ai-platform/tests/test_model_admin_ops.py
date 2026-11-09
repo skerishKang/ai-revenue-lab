@@ -30,6 +30,8 @@ from app.pilot import model_admin_ops as ops
 from app.pilot.model_registry_file import read_overlay, read_registry, write_overlay
 from app.pilot.service_proof import PROOF_HEADER, PROOF_TIME_HEADER, compute_service_proof
 
+from _registry_values import credential_binding_slot, process_catalog_restored
+
 PREFIX = "/api/pilot"
 REGISTRY = PREFIX + ops.REGISTRY_PATH
 PROBE = PREFIX + ops.PROBE_PATH
@@ -43,12 +45,17 @@ PROOF_SECRET = "unit-test-model-admin-proof-secret-0123456789"
 SYNTHETIC_VALUE = "sk-synthetic-owner-value-0123456789-wxyz"
 EXISTING_LINE_VALUE = "sk-synthetic-previous-0123456789-abcd"
 
+SLOT_5 = credential_binding_slot(5)
+SLOT_6 = credential_binding_slot(6)
+SLOT_7 = credential_binding_slot(7)
+SLOT_14 = credential_binding_slot(14)
+
 PROVIDER = {
     "provider_id": "example",
     "base_origin": "https://api.example.com",
     "allowed_hosts": ["api.example.com"],
     "credential_source": "platform_secret",
-    "credential_binding_name": "PADIEM_B14_CREDENTIAL_07",
+    "credential_binding_name": SLOT_7,
     "enabled": True,
 }
 
@@ -141,9 +148,10 @@ def _base_document() -> dict:
 def registry(tmp_path, monkeypatch):
     """A host switched to its own synthetic catalog, with a writable overlay.
 
-    The switch is redirected (never cleared) for the duration of the test, and
-    the process snapshot is reloaded on the way in and out so the shared reader
-    answers this document and then the process default again (#7241 3b).
+    The switch lives in a ``monkeypatch.context()`` that exits *before* the
+    catalog is reinstalled (#7241 3b): restoring the environment afterwards
+    would leave the snapshot and the installed catalog pointing at this
+    temporary document, and every suite that ran later would read it too.
     """
     from app.pilot import model_registry_file
 
@@ -152,21 +160,25 @@ def registry(tmp_path, monkeypatch):
     # catalog is read from the switched document, so both name the same file.
     base.write_text(json.dumps(_base_document()), encoding="utf-8")
     overlay = tmp_path / "b14_models.overrides.json"
-    monkeypatch.setenv("PADIEM_MODELS_REGISTRY", str(base))
-    # The private loader prefers OVERRIDE, and a process may already carry one;
-    # clear it so the switched document is unambiguously this host's file.
-    monkeypatch.delenv("PADIEM_MODELS_REGISTRY_OVERRIDE", raising=False)
-    monkeypatch.setenv("B14_REGISTRY_PATH", str(base))
-    # Two readers see this host. The console's writer reads the base file the
-    # process was switched to, so that is where the overlay lands; the env
-    # override the suite pins is the same file, keeping the edit and the read
-    # on one document (#7241 3b).
-    monkeypatch.setenv("B14_REGISTRY_OVERLAY_PATH", str(overlay))
-    model_registry_file._PRIVATE_SNAPSHOT = None
-    model_registry_file.install_models()
-    yield base
-    model_registry_file._PRIVATE_SNAPSHOT = None
-    model_registry_file.install_models()
+    with process_catalog_restored():
+        with monkeypatch.context() as switched:
+            switched.setenv("PADIEM_MODELS_REGISTRY", str(base))
+            # The private loader prefers OVERRIDE, and a process may already
+            # carry one; clear it so the switched document is this host's file.
+            switched.delenv("PADIEM_MODELS_REGISTRY_OVERRIDE", raising=False)
+            switched.setenv("B14_REGISTRY_PATH", str(base))
+            # Two readers see this host. The console's writer reads the base
+            # file the process was switched to, so that is where the overlay
+            # lands; the env override the suite pins is the same file, keeping
+            # the edit and the read on one document (#7241 3b).
+            switched.setenv("B14_REGISTRY_OVERLAY_PATH", str(overlay))
+            model_registry_file._PRIVATE_SNAPSHOT = None
+            model_registry_file.install_models()
+            yield base
+        # The switch is the process default again: rebuild from it, never from
+        # the temporary document the test had installed.
+        model_registry_file._PRIVATE_SNAPSHOT = None
+        model_registry_file.install_models()
 
 
 @pytest.fixture
@@ -174,12 +186,12 @@ def client(registry, monkeypatch, tmp_path):
     monkeypatch.setenv("PADIEM_B14_SERVICE_PROOF_SECRET", PROOF_SECRET)
     monkeypatch.delenv("B14_CREDENTIAL_ENV_FILE", raising=False)
     monkeypatch.delenv("B14_SECRET_DIR", raising=False)
-    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_07", raising=False)
+    monkeypatch.delenv(SLOT_7, raising=False)
     # A write also mirrors the value into os.environ for the running process.
     # Absent keys are recorded via setenv so teardown really removes them and
     # the next test (which asserts on slot truth) sees the real environment.
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "")
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_06", "")
+    monkeypatch.setenv(SLOT_5, "")
+    monkeypatch.setenv(SLOT_6, "")
     ops._RECEIPTS.clear()
     app = create_app()
     installed: list[dict] = []
@@ -295,13 +307,13 @@ def test_provider_apply_refuses_a_full_slot(client):
             "base_origin": f"https://filler{index}.example.com",
             "allowed_hosts": [f"filler{index}.example.com"],
             "credential_source": "platform_secret",
-            "credential_binding_name": "PADIEM_B14_CREDENTIAL_14",
+            "credential_binding_name": SLOT_14,
             "enabled": False,
         }
         for index in range(8)
     }
     write_overlay({"providers": filler})
-    payload = {"provider": {**PROVIDER, "credential_binding_name": "PADIEM_B14_CREDENTIAL_14"}}
+    payload = {"provider": {**PROVIDER, "credential_binding_name": SLOT_14}}
     response = post(client, PROVIDER_APPLY, payload)
     assert response.status_code == 409
     assert response.json()["error"]["code"] == "credential_slot_full"
@@ -477,7 +489,7 @@ def test_credential_write_refuses_a_placeholder_value(client, tmp_path, monkeypa
 def test_credential_write_refuses_when_the_store_manages_the_slot(client, tmp_path, monkeypatch):
     from app.pilot import worker_env
 
-    slot_binding = "PADIEM_B14_CREDENTIAL_05"
+    slot_binding = SLOT_5
     env_file = tmp_path / "b14.env"
     monkeypatch.setenv("B14_CREDENTIAL_ENV_FILE", str(env_file))
 
@@ -507,7 +519,7 @@ def test_env_file_write_preserves_other_lines_backs_up_and_never_echoes(
 ):
     env_file = tmp_path / "b14.env"
     env_file.write_text(
-        "OTHER_SETTING=keep-me\nPADIEM_B14_CREDENTIAL_05=" + EXISTING_LINE_VALUE + "\n",
+        f"OTHER_SETTING=keep-me\n{SLOT_5}=" + EXISTING_LINE_VALUE + "\n",
         encoding="utf-8",
     )
     monkeypatch.setenv("B14_CREDENTIAL_ENV_FILE", str(env_file))
@@ -515,7 +527,7 @@ def test_env_file_write_preserves_other_lines_backs_up_and_never_echoes(
     response = post(client, CREDENTIAL_WRITE, {"slot_number": 5, "value": SYNTHETIC_VALUE})
     assert response.status_code == 200, response.text
     body = response.json()
-    assert body["slot"] == "PADIEM_B14_CREDENTIAL_05"
+    assert body["slot"] == SLOT_5
     assert body["length"] == len(SYNTHETIC_VALUE)
     assert body["last4"] == SYNTHETIC_VALUE[-4:]
     assert body["target"] == "env_file"
@@ -524,9 +536,9 @@ def test_env_file_write_preserves_other_lines_backs_up_and_never_echoes(
 
     text = env_file.read_text(encoding="utf-8")
     assert "OTHER_SETTING=keep-me" in text
-    assert "PADIEM_B14_CREDENTIAL_05=" + SYNTHETIC_VALUE in text
+    assert SLOT_5 + "=" + SYNTHETIC_VALUE in text
     assert EXISTING_LINE_VALUE not in text
-    assert os.environ["PADIEM_B14_CREDENTIAL_05"] == SYNTHETIC_VALUE
+    assert os.environ[SLOT_5] == SYNTHETIC_VALUE
 
     backups = list(tmp_path.glob("b14.env.bak.*"))
     assert len(backups) == 1
@@ -544,10 +556,10 @@ def test_secret_file_write_targets_one_slot_file(client, tmp_path, monkeypatch):
     response = post(client, CREDENTIAL_WRITE, {"slot_number": 6, "value": SYNTHETIC_VALUE})
     assert response.status_code == 200, response.text
     assert response.json()["target"] == "secret_file"
-    written = secrets / "PADIEM_B14_CREDENTIAL_06"
+    written = secrets / SLOT_6
     assert written.read_text(encoding="utf-8").strip() == SYNTHETIC_VALUE
     assert [p.name for p in secrets.iterdir() if p.name.startswith("PADIEM_")] == [
-        "PADIEM_B14_CREDENTIAL_06"
+        SLOT_6
     ]
 
 

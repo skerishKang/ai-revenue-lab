@@ -25,17 +25,19 @@ from app.com2_admin_runtime import create_admin_app
 from app.pilot import com2_admin, com2_secret_store
 from app.pilot.model_registry_file import REGISTRY_PATH, read_registry
 
-from _registry_values import credential_binding_slot, native_wire_owner, registry
-
-#: The slot NAME this suite registers a key on, read from the list the admin
-#: surface publishes — a slot name is a deployment value, so it is asked for.
-_SLOT_BINDING = credential_binding_slot(14)
+from _registry_values import (
+    credential_binding_slot, native_wire_owner, process_catalog_restored, registry,
+)
 
 APP_ROOT = REGISTRY_PATH.parents[2]
 SECRETS = "/com2/admin/secrets"
 PROVIDER_NEW = "/com2/admin/providers/new"
 PROVIDER = "/com2/admin/providers"
 SYNTHETIC = "PADIEM_SYNTHETIC_MANAGER_API_KEY"
+#: A slot-shaped name the Cloudflare deployment does not declare: the private
+#: format requires the ``PADIEM_B14_CREDENTIAL_`` prefix, and a fresh Provider
+#: may only take a name that is not already a Cloudflare binding.
+_SYNTHETIC_BINDING = "PADIEM_B14_CREDENTIAL_99"
 SECRET_VALUE = "synthetic-manager-value-9f3c1a7d"
 BASE_ORIGIN = "https://api.synthetic-manager.example/v1"
 #: A synthetic Provider id for the one-key/many-models screen exercise. Nothing
@@ -168,21 +170,26 @@ def host(tmp_path, monkeypatch):
     monkeypatch.delenv(SYNTHETIC, raising=False)
     com2_admin.TEST_TRANSPORT = None
     # The screen reads the document the switch names, so the fixture switches
-    # this process to the host's copy and installs it.
-    monkeypatch.setenv(registry_file.REGISTRY_SWITCH_ENV, str(registry))
-    monkeypatch.delenv(registry_file.REGISTRY_OVERRIDE_ENV, raising=False)
-    registry_file._PRIVATE_SNAPSHOT = None
-    registry_file.install_models()
-    yield {"secrets": secret_dir, "registry": registry}
-    # install_models() mutates the live catalog; put this host's registry back.
-    monkeypatch.delenv("B14_REGISTRY_PATH")
-    for name, value in saved_switch.items():
-        if value is None:
-            os.environ.pop(name, None)
-        else:
-            os.environ[name] = value
-    registry_file._PRIVATE_SNAPSHOT = None
-    registry_file.install_models()
+    # this process to the host's copy and installs it. The switch, the cached
+    # snapshot and the Provider table all outlive the test, so every one of
+    # them is put back — including when the test itself fails (#7241 3b).
+    with process_catalog_restored():
+        monkeypatch.setenv(registry_file.REGISTRY_SWITCH_ENV, str(registry))
+        monkeypatch.delenv(registry_file.REGISTRY_OVERRIDE_ENV, raising=False)
+        registry_file._PRIVATE_SNAPSHOT = None
+        registry_file.install_models()
+        try:
+            yield {"secrets": secret_dir, "registry": registry}
+        finally:
+            # install_models() mutates the live catalog; put the host back.
+            monkeypatch.delenv("B14_REGISTRY_PATH")
+            for name, value in saved_switch.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
+            registry_file._PRIVATE_SNAPSHOT = None
+            registry_file.install_models()
 
 
 class LoggedInAdmin(TestClient):
@@ -309,18 +316,16 @@ def test_a_name_cloudflare_already_binds_is_refused(admin, host) -> None:
 
 
 def test_one_key_three_models_deepseek_first_and_still_unrouted(admin, host) -> None:
-    # One key, three models, one Provider: the name the Owner types is a slot the
-    # Cloudflare deployment already binds, and every slot name is on that list.
-    # The screen therefore refuses it as a *new* Provider — the reserved-name
-    # rule pinned above — so this exercise goes through the app's own settings
-    # layer, which is the same writer the screen calls after that check. The slot
-    # NAME comes from the list the admin surface publishes, and the three
-    # upstream identities are the screen's own input, never deployment values
-    # (#7241 3b).
+    # One key, three models, one Provider. Every governed slot name is already
+    # declared as a Cloudflare binding, so a *new* Provider is refused that
+    # name; this exercise therefore takes the suite's own undeclared name
+    # through the app's settings layer, the same writer the screen calls after
+    # its reserved-name check. The name and the upstream identities are test
+    # inputs, never deployment values (#7241 3b).
     from app.local_runtime import create_local_app
     from app.pilot import com2_provider_settings as settings
 
-    binding = _SLOT_BINDING
+    binding = _SYNTHETIC_BINDING
     models = [
         ("synthetic-upstream-one", 0.08, 0.35, 0.01, 1000000),
         ("synthetic-upstream-two", 0.08, 0.42, 0.03, 262000),

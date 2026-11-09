@@ -11,11 +11,14 @@ This module points an unconfigured process at a 0600 copy of
 a world-readable document, and a checked-in file cannot carry the mode). It
 fills the switch only when it is unset, so a suite or an operator that sets its
 own document always wins; the copy is removed at exit.
+
+The copy is byte-identical to the fixture: suites decide whether the process
+reads the placeholder document by comparing those bytes, so re-serializing the
+JSON here would silently turn every owner-decision pin on.
 """
 from __future__ import annotations
 
 import atexit
-import json
 import os
 import tempfile
 from pathlib import Path
@@ -30,10 +33,9 @@ def ensure_default_registry_switch() -> str | None:
         return None
     if not FIXTURE_PATH.is_file():
         return None
-    document = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
     handle = tempfile.NamedTemporaryFile(
         prefix="padiem-models-fixture-", suffix=".json", delete=False)
-    handle.write(json.dumps(document).encode("utf-8"))
+    handle.write(FIXTURE_PATH.read_bytes())
     handle.close()
     os.chmod(handle.name, 0o600)
     os.environ["PADIEM_MODELS_REGISTRY"] = handle.name

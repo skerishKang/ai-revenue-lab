@@ -12,6 +12,8 @@ from pathlib import Path
 
 import pytest
 
+from _registry_values import credential_binding_slot
+
 APP_ROOT = Path(__file__).resolve().parents[1]
 TOOL = APP_ROOT / "tools" / "b14_overlay_draft.py"
 MODEL_ID = "vendor-a/chat-1"
@@ -24,7 +26,7 @@ BASE_REGISTRY = {
             "base_origin": "https://api.vendor-a.example",
             "allowed_hosts": ["api.vendor-a.example"],
             "credential_source": "platform_secret",
-            "credential_binding_name": "PADIEM_B14_CREDENTIAL_05",
+            "credential_binding_name": credential_binding_slot(5),
             "enabled": True,
         },
     },

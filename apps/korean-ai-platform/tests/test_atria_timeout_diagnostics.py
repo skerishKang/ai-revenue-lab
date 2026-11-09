@@ -14,6 +14,7 @@ from _registry_values import (
     registry,
     require_owner_document,
     specialized_timeout_log_provider,
+    specialized_timeout_logger,
     timeout_log_allowlist,
     timeout_log_allowlist_excluding,
 )
@@ -47,7 +48,7 @@ LANE_PROVIDER_NAME = next(
 ])
 def test_only_fixed_atria_phase_logged(caplog,exc,phase):
     with caplog.at_level(logging.WARNING):
-        log_atria_timeout(plt.logger,LOG_PROVIDER,exc,"completed")
+        specialized_timeout_logger()(plt.logger,LOG_PROVIDER,exc,"completed")
     assert f"phase={phase}" in caplog.text
     assert "mode=completed" in caplog.text
     assert "SECRET_" not in caplog.text

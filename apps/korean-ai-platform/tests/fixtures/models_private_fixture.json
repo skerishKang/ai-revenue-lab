@@ -7,112 +7,112 @@
       "allowed_hosts": [
         "example-provider-01.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_01"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_76"
     },
     "example-provider-02": {
       "base_origin": "https://example-provider-02.example.invalid/v1",
       "allowed_hosts": [
         "example-provider-02.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_02"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_77"
     },
     "example-provider-03": {
       "base_origin": "https://example-provider-03.example.invalid/v1",
       "allowed_hosts": [
         "example-provider-03.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_03"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_78"
     },
     "example-provider-04": {
       "base_origin": "https://example-provider-04.example.invalid/v1",
       "allowed_hosts": [
         "example-provider-04.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_04"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_79"
     },
     "example-provider-05": {
       "base_origin": "https://example-provider-05.example.invalid/v1",
       "allowed_hosts": [
         "example-provider-05.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_05"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_80"
     },
     "example-provider-06": {
       "base_origin": "https://example-provider-06.example.invalid/v1",
       "allowed_hosts": [
         "example-provider-06.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_06"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_81"
     },
     "example-provider-07": {
       "base_origin": "https://example-provider-07.example.invalid/v1",
       "allowed_hosts": [
         "example-provider-07.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_07"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_82"
     },
     "example-provider-08": {
       "base_origin": "https://example-provider-08.example.invalid/v1",
       "allowed_hosts": [
         "example-provider-08.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_08"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_83"
     },
     "example-provider-09": {
       "base_origin": "https://example-provider-09.example.invalid/v1",
       "allowed_hosts": [
         "example-provider-09.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_09"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_84"
     },
     "example-provider-10": {
       "base_origin": "https://example-provider-10.example.invalid/v1",
       "allowed_hosts": [
         "example-provider-10.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_10"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_85"
     },
     "example-provider-11": {
       "base_origin": "https://example-provider-11.example.invalid/v1",
       "allowed_hosts": [
         "example-provider-11.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_11"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_86"
     },
     "example-provider-12": {
       "base_origin": "https://example-provider-12.example.invalid/v1",
       "allowed_hosts": [
         "example-provider-12.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_12"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_87"
     },
     "example-provider-13": {
       "base_origin": "https://example-provider-13.example.invalid/v1",
       "allowed_hosts": [
         "example-provider-13.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_13"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_88"
     },
     "example-provider-14": {
       "base_origin": "https://example-provider-14.example.invalid/v1",
       "allowed_hosts": [
         "example-provider-14.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_14"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_89"
     },
     "example-provider-15": {
       "base_origin": "https://example-provider-15.example.invalid/v1",
       "allowed_hosts": [
         "example-provider-15.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_15"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_90"
     },
     "example-provider-16": {
       "base_origin": "https://example-provider-16.example.invalid/v1",
       "allowed_hosts": [
         "example-provider-16.example.invalid"
       ],
-      "credential_binding": "PADIEM_B14_CREDENTIAL_16"
+      "credential_binding": "PADIEM_B14_CREDENTIAL_91"
     }
   },
   "models": [

@@ -536,13 +536,27 @@ def write_registry(data: dict, path: Path | None = None) -> None:
         document = data
         mode = 0o644
     text = json.dumps(document, ensure_ascii=False, indent=2) + "\n"
-    handle, temp_path = tempfile.mkstemp(dir=str(target.parent), prefix=target.name + ".")
+    try:
+        handle, temp_path = tempfile.mkstemp(dir=str(target.parent), prefix=target.name + ".")
+    except OSError as exc:
+        raise ModelRegistryError("registry write failed") from exc
     try:
         with os.fdopen(handle, "w", encoding="utf-8", newline="\n") as stream:
             stream.write(text)
             stream.flush()
             os.fsync(stream.fileno())
         os.chmod(temp_path, mode)
+        if os.name == "posix":
+            # The replacement is a fresh inode owned by this process. The
+            # document belongs to the service account and its group, so keep
+            # them: otherwise the first console write silently changes who can
+            # read the host's registry.
+            try:
+                previous = target.stat()
+            except OSError:
+                previous = None
+            if previous is not None:
+                os.chown(temp_path, previous.st_uid, previous.st_gid)
         os.replace(temp_path, target)
     except OSError as exc:
         try:
@@ -550,6 +564,12 @@ def write_registry(data: dict, path: Path | None = None) -> None:
         except OSError:
             pass
         raise ModelRegistryError("registry write failed") from exc
+    except BaseException:
+        try:
+            os.unlink(temp_path)
+        except OSError:
+            pass
+        raise
     if switched:
         global _PRIVATE_SNAPSHOT
         _PRIVATE_SNAPSHOT = None
