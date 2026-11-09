@@ -11,6 +11,7 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -306,6 +307,43 @@ class SplitTimingTest(unittest.TestCase):
         self.assertIsNone(checks.history_sample({}))
 
 
+class AnswerErrorTextTest(unittest.TestCase):
+    """오류 문구가 답 자리에 있으면 FAIL (실행 42680137340 의 오판을 막는다)."""
+
+    def test_the_list_comes_from_the_screen_copy(self):
+        phrases = checks.static_error_texts()
+        self.assertTrue(phrases, "static/locale.js 에서 오류 문구를 읽지 못했다")
+        self.assertIn("답변을 불러오지 못했습니다.", phrases)
+
+    def test_the_observed_screen_text_is_rejected(self):
+        # 실행 42680137340 의 browser_chat 이 이 문장을 답으로 인정해 PASS 했다.
+        self.assertEqual(
+            checks.answer_verdict("답변을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.")[:2],
+            ("FAIL", "answer_is_error_text"),
+        )
+
+    def test_a_normal_answer_still_passes(self):
+        self.assertEqual(checks.answer_verdict("현재 화면은 정상 동작하고 있습니다.")[:2],
+                         ("PASS", "none"))
+
+    def test_a_new_phrase_is_picked_up_without_editing_the_checker(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            Path(tmp, "locale.js").write_text(
+                'const copy = { ko: { "answer-load-failed": "답변을 불러오지 못했습니다.",'
+                ' "service-unavailable": "지금은 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.",'
+                ' "copy-failed": "복사 실패", "greeting": "안녕하세요" } };',
+                encoding="utf-8",
+            )
+            phrases = checks.static_error_texts(tmp)
+            self.assertEqual(len(phrases), 2, phrases)
+            self.assertIn("지금은 서비스를 이용할 수 없습니다.", "".join(phrases))
+            # 짧은 값("복사 실패")은 답변 부분 일치로 오판을 만들므로 목록에서 빠진다.
+            self.assertNotIn("복사 실패", phrases)
+            self.assertTrue(checks.answer_is_error_text(
+                "지금은 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.", phrases))
+            self.assertFalse(checks.answer_is_error_text("현재 화면은 정상 동작하고 있습니다.", phrases))
+
+
 class MutationProbeTest(unittest.TestCase):
     """규칙을 뒤집으면 시험이 실제로 실패하는지 확인한다.
 
@@ -357,6 +395,16 @@ class MutationProbeTest(unittest.TestCase):
             return row.get("answer_ms") or row.get("elapsed_ms")
 
         self.assertEqual(broken(legacy), 38_000)
+
+    def test_error_text_mutation_is_detected(self):
+        observed = "답변을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요."
+        self.assertEqual(checks.answer_verdict(observed)[:2], ("FAIL", "answer_is_error_text"))
+
+        def broken(text):
+            # 깨진 규칙: 글자 수만 센다(오류 문구를 답으로 인정).
+            return ("PASS", "none") if len(text) >= 10 else ("FAIL", "screen_answer_too_short")
+
+        self.assertEqual(broken(observed)[0], "PASS")
 
     def test_allowlist_mutation_is_detected(self):
         def broken(url):

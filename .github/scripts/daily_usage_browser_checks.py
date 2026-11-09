@@ -13,8 +13,9 @@
 
 이 파일은 두 층으로 나뉜다.
 
-  * 판정 함수(answer_verdict, console_ok, stamp_verdict, slowdown_note,
-    artifact_filename …)는 브라우저 없이 직접 호출할 수 있는 순수 함수다.
+  * 판정 함수(answer_verdict, answer_is_error_text, console_ok, stamp_verdict,
+    slowdown_note, artifact_filename …)는 브라우저 없이 직접 호출할 수 있는
+    순수 함수다. 오류 문구 목록은 static/locale.js 에서 읽는다(하드코딩 없음).
     시험은 이 함수들을 직접 부른다(`.github/tests/test_daily_usage_browser_helpers_261110.py`).
   * 실행기(run_browser_flows)는 그 판정에 입력을 모으는 얇은 층이다.
     Playwright 는 함수 안에서만 import 하므로 순수 함수 시험은 브라우저를
@@ -32,6 +33,7 @@
 
 from __future__ import annotations
 
+import functools
 import io
 import json
 import os
@@ -58,6 +60,18 @@ CLAW_PROMPT = CHAT_PROMPT
 
 HEAD_CHAT = 10
 ANSWER_WAIT_SECONDS = 90.0
+
+# 오류 문구 거부 목록은 화면 문구 정의에서 읽는다(하드코딩 금지).
+# 오류일 때 답 자리에 뜨는 글자는 static/locale.js 의 문구이고, app.js 의 오류
+# 상자(buildRetryBox, app.js:938)가 같은 키를 쓴다. 실행 42680137340 은
+# "답변을 불러오지 못했습니다. ..." 를 12자 넘는 답으로 오인해 PASS 로 기록했다.
+STATIC_DIR = Path(__file__).resolve().parents[2] / "apps" / "padiem-chat" / "static"
+ERROR_TEXT_KEY = re.compile(
+    r"(load-failed|read-failed|save-failed|delete-failed|failed|error|unavailable|expired|rejected|invalid|cancelled)",
+    re.I,
+)
+# 너무 짧은 값(?세션 만료?)은 정상 답변에도 부분 일치해 오판을 만든다.
+ERROR_TEXT_MIN_CHARS = 10
 NAVIGATE_TIMEOUT_MS = 60_000
 SELECTOR_TIMEOUT_MS = 30_000
 
@@ -139,11 +153,52 @@ def _resource_code(url: str) -> str:
 
 
 # ------------------------------------------------------------------ 답 판정
-def answer_verdict(text: str | None, minimum: int = HEAD_CHAT) -> tuple[str, str, str]:
+@functools.lru_cache(maxsize=8)
+def static_error_texts(static_dir: str | None = None) -> tuple[str, ...]:
+    """화면이 오류를 표시할 때 쓰는 문구 — static 문구 정의에서 읽는다.
+
+    문구를 이 파일에 적어 두지 않는다. 제품이 문구를 바꾸면 목록도 같이
+    따라가야 하고, 두 곳에 적으면 한쪽만 낡는다.
+    """
+    root = Path(static_dir) if static_dir else STATIC_DIR
+    try:
+        source = (root / "locale.js").read_text(encoding="utf-8")
+    except OSError:
+        return ()
+    found: list[str] = []
+    for key, value in re.findall(r'"([^"]+)"\s*:\s*"((?:[^"\\]|\\.)*)"', source):
+        if not ERROR_TEXT_KEY.search(key):
+            continue
+        cleaned = re.sub(r"\s+", " ", value.replace('\\"', '"').replace("\\n", " ")).strip()
+        if len(cleaned) >= ERROR_TEXT_MIN_CHARS:
+            found.append(cleaned)
+    return tuple(dict.fromkeys(found))
+
+
+def answer_is_error_text(text: str | None, phrases: tuple[str, ...] | None = None) -> bool:
+    """답 자리에 오류 문구가 있으면 True. 정상 답변에는 나타나지 않는 문장이다."""
+    flat = re.sub(r"\s+", " ", (text or "")).strip()
+    if not flat:
+        return False
+    corpus = static_error_texts() if phrases is None else phrases
+    for phrase in corpus:
+        needle = re.sub(r"\s+", " ", phrase).strip().rstrip(".")
+        if needle and needle in flat:
+            return True
+    return False
+
+
+def answer_verdict(
+    text: str | None,
+    minimum: int = HEAD_CHAT,
+    phrases: tuple[str, ...] | None = None,
+) -> tuple[str, str, str]:
     """(판정, 코드, 앞부분). 화면에 뜬 글자가 기준이다."""
     flat = re.sub(r"\s+", " ", (text or "")).strip()
     if len(flat) < minimum:
         return "FAIL", "screen_answer_too_short", flat[:minimum]
+    if answer_is_error_text(flat, phrases):
+        return "FAIL", "answer_is_error_text", flat[:minimum]
     return "PASS", "none", flat[:minimum]
 
 
