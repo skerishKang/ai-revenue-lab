@@ -17,6 +17,7 @@ from starlette.responses import JSONResponse, StreamingResponse
 from .attachments import ImageAttachment
 from .binary_attachment_frame import decode_binary_attachment_frame
 from .auth_routes import auth_ready, current_user_id
+from .journal_host import ensure_journal_visible
 from .drive_general_grounding import DriveGroundingError, drive_general_grounding
 from .auto_grounding import (
     AutoGroundingService,
@@ -77,6 +78,9 @@ from .usage_gate import UsageGate
 from .web_tools import WebToolError
 
 _LOG = logging.getLogger(__name__)
+
+# The offer/read verdicts below are stage lines: make them reach the journal.
+ensure_journal_visible(_LOG)
 
 
 def _public_evidence(items) -> list[dict[str, Any]]:
