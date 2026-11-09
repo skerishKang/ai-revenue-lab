@@ -196,12 +196,13 @@ def test_wait_timer_lifecycle_is_closed() -> None:
     # cleared wait.
     assert app.count("function clearClawWait()") == 1
     session = (APP_JS.parent / "claw-session.js").read_text(encoding="utf-8")
-    assert app.count("clearClawWait();") + session.count("clearWait();") == 5
+    conv = (APP_JS.parent / "chat-conversation-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5a
+    assert app.count("clearClawWait();") + conv.count("clearClawWait();") + session.count("clearWait();") == 5
     assert app.count("clearWait: clearClawWait") == 1
     finally_block = app[app.index("    } finally {\n      // The owning request always tears its wait timer down"):]
     finally_block = finally_block[: finally_block.index("setClawButtonsBusy(false);")]
     assert "clearClawWait();" in finally_block
-    reset = app[app.index("function resetConversationView("):]
+    reset = conv[conv.index("function resetConversationView("):]
     reset = reset[: reset.index("function resetConversation(")]
     assert "clearClawWait();" in reset
     auth = session[session.index("if (authenticated) return;"):]
@@ -604,6 +605,9 @@ sandbox.dispatchEvent = sandbox.dispatchEvent || (() => true);
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
+// #7216 R5 step 5a: showConversation & friends live in the conversation module now;
+// load it ahead of app.js exactly like index.html does.
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ type }));

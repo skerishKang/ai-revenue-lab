@@ -222,3 +222,50 @@ app.js는 다수 모듈 뒤·일부 모듈 앞에 로드된다. 분리 시 전�
   `NOTIFICATION_CONVERSATION_ID`·`composerForm` — getter는 DOM/상수, 다시 대입되는
   변수는 setter 부여. 이전 시험 후보는 지도 §4의 대화 구역 44개 파일.
 
+
+## 12. 대화 구역 확정 (R5 5단계, #7216) — 5a/5b 2개 PR로 분할
+
+대화 구역 24개 함수·1,115줄은 한 PR보다 크므로 §11의 예시(목록·불러오기 /
+전송·스트리밍 표시)로 2개로 나눈다.
+
+- **5a 목록·표시·첨부·리셋 19개**(1,046줄 중 본문 약 640줄): `attachmentCopy`·
+  `showComposerInlineHint`·`updateComposer`, `showConversation`·`addUserMessage`·
+  `renderAnswer`·`renderStreamError`, 첨부 7개(`clearAttachment`~`attachmentPayload`),
+  `safeLocalUiMessage`, `resetConversationView`·`resetConversation`,
+  `approvalDecisionErrorMessage`·`approvedMemoryErrorMessage`. 동기 DOM/렌더링만 —
+  요청 수명·컨트롤러·에포크를 만지지 않음.
+- **5b 전송·스트리밍 5개**: `requestCompletedAnswer`·`applyStreamDone`·
+  `requestStreamingAnswer`·`cancelActiveStream`·`requestAnswer`. 비동기 요청 수명,
+  AbortController·진행 중 요청·에포크 재대입이 집중된 구간이라 5a와 분리.
+- 분할 기준: 클로저 재대입(특히 요청/스트리밍 상태)의 유무와 시험 겹침.
+  5a는 동기 표시/첨부만, 5b는 전송·스트리밍 변수가 모인 곳.
+- 5a 결과: `chat-conversation-module.js`(462줄), `app.js` 7,010 → 6,691줄,
+  상한 7,110 → **6,791**. deps getter 68개 · setter 13개(재대입 변수:
+  `conversationEpoch` 포함 요청·스트리밍 북키핑). 이전 시험 이전 — 대화
+  함수명을 참조하는 40개 파일 중 영향을 받는 25개 + 전체 app.js 실행 하네스
+  17개에 모듈 로더 1줄 추가(index.html 순서와 동일). 신규 계약 2종
+  (`test_r5_step5_conversation_module_7216` 19함수 vm 동작·getter·setter /
+  `test_r5_step5_conversation_browser_7216` 19개 전달 직접 호출 + getter·동작).
+  뮤테이션 검증: 본문 복제 → 전달 개수 실패, `deps.` 제거 → moved-bodies 실패.
+  전후 스크린샷(1440·390): 목록·새 대화 거의 동일(0.22% 이하), 스트리밍·답변
+  차이는 실시간 응답 내용 차이로 레이아웃 동일(blur 평균차 1.3~4.5).
+- 5b 예약: 위 5개 함수 이동 + 스트리밍 시험 이전 + 상한 재계산. 머지 후
+  `app.js` 최종 줄 수는 5b 시점에 확정.
+
+## 13. R5 다음 구역 후보 조사 (대기 중 기록 — Claw 제외)
+
+Claw는 열린 PR #7197 정리 뒤로 제외. 공통 구역(77개 함수·1,388줄)은 허브라
+한 번에 옮기지 않고 씨(cluster)로 나누는 것이 후보. 씨 목록은 추출기
+`top_level_functions`의 `area == "공통"` 기준이다.
+
+| 후보 씨 | 함수 수(대략) | 비고 |
+|---|---|---|
+| 프로젝트 파일·대화 | 17 | `loadProjects`·`projectById`·`ensureProject`·`addProjectFile`·`saveProject`·`deleteProject`·`selectProject` 등 |
+| Android 핸드오프 | 11 | `readStoredAndroidHandoff`·`claimAndroidHandoff`·`pollAndroidHandoff`·`startAndroidHandoff` 등 |
+| 승인·메모리 카드 | 15 | `applyImmediateApprovalDecision`·`approveProposal`·`renderApprovedMemoryCard` 등 |
+| 오류·재시도 표면 | 14 | `buildRetryBox`·`renderError`·`renderCancelled`·`lifecycleForError`·`formatBytes` 등 |
+| 잔여 허브 | 20 | `setNavActive`(93줄)·`addAssistantShell`·`renderWebGroundingNotice`·룰편집·Gmail 연결 등. 마지막 |
+
+- 이 중 오류·재시도 표면(14)은 대화·스트리밍 추후 단계와 접촉이 많아
+  5b 이후에 이어 붙는 자연 후보로 보인다. 나머지는 각 씨의 호출 엣지를
+  추출기로 세어 순서 확정 후 진행한다(조사 기록만).

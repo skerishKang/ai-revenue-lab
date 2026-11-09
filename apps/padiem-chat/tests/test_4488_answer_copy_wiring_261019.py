@@ -61,8 +61,10 @@ def test_b62_copy_actions_stay_on_completed_assistant_answers():
 
 def test_b62_user_copy_calls_shared_first():
     app = _read("apps/padiem-chat/static/app.js")
-    assert "window.PadiemAnswerCopy || window.SharedAnswerCopy" in app
-    assert app.index("shared.copyText(plain)") < app.index(
+    # #7216 R5 step 5a: renderAnswer moved into chat-conversation-module.js.
+    conv = _read("apps/padiem-chat/static/chat-conversation-module.js")
+    assert "window.PadiemAnswerCopy || window.SharedAnswerCopy" in conv
+    assert conv.index("shared.copyText(plain)") < conv.index(
         "navigator.clipboard.writeText(plain).then(flash, () => {});"
     )
 
