@@ -478,6 +478,9 @@ def flow_browser(flows: list[Flow], cookie: str) -> tuple[dict, list[str]]:
         flow.head = payload.get("head", "")
         flow.elapsed_ms = int(payload.get("elapsed_ms", 0))
         captures.extend(payload.get("captures", []))
+        # 허용 목록 밖 콘솔 오류는 안전 코드뿐이다(값·URL 쿼리 없음).
+        for code in (payload.get("console_errors") or [])[:3]:
+            print(f"USAGE_BROWSER name={name} console_error={code}")
     return results, captures
 
 

@@ -63,7 +63,6 @@ SLOWDOWN_FACTOR = 2.0
 SLOWDOWN_HISTORY = 7
 SLOWDOWN_LABEL = "SLOWDOWN_WARNING"
 
-_SAFE_CODE = re.compile(r"^[a-z][a-z0-9_]{0,80}$")
 _VERSION_IN_URL = re.compile(r"[?&]v=([A-Za-z0-9_.-]{1,64})")
 
 # 콘솔 오류 허용 목록: (URL 정규식, 이유). URL 은 메시지가 가리키는 리소스다.
@@ -151,6 +150,33 @@ def screen_parity(chat_verdict: str, claw_verdict: str) -> tuple[bool, str]:
     if chat_verdict == "PASS":
         return False, "screen_parity_chat_only"
     return True, "none"
+
+
+def parity_target(code: str) -> str:
+    """parity 실패 코드가 지목하는 흐름.
+
+    `screen_parity_chat_only` 는 "Chat 만 답했다"이므로 잘못한 화면은 Claw 다.
+    지목을 뒤집으면 멀쩡한 화면을 FAIL 로 기록한다(실제로 실행 42668928406 에서
+    그렇게 기록됐다).
+    """
+    return "browser_claw" if code == "screen_parity_chat_only" else "browser_chat"
+
+
+_MAX_CODE = 80
+
+
+def safe_code(value: str) -> str:
+    """어떤 문자열이든 소문자·숫자·밑줄의 안전 코드로 바꾼다.
+
+    예외 클래스 이름에는 대문자가 섞인다(`browser_claw_Error`). 그대로 쓰면
+    `_SAFE_CODE` 검사를 통과하지 못해 진단 정보가 `unsafe_code` 로 사라진다.
+    """
+    cleaned = re.sub(r"[^a-z0-9]+", "_", (value or "").lower()).strip("_")
+    if not cleaned:
+        return "unknown"
+    if not cleaned[0].isalpha():
+        cleaned = f"e_{cleaned}"
+    return cleaned[:_MAX_CODE]
 
 
 # ------------------------------------------------------------------ 스탬프
@@ -383,7 +409,7 @@ class BrowserFlowResult:
         return {
             "name": self.name,
             "verdict": self.verdict,
-            "code": self.code if _SAFE_CODE.match(self.code or "") else "unsafe_code",
+            "code": safe_code(self.code),
             "head": self.head,
             "elapsed_ms": self.elapsed_ms,
             "captures": list(self.captures),
@@ -419,6 +445,38 @@ def _console_events(page, sink: list[tuple[str, str, str]]) -> None:
 
     page.on("console", on_console)
     page.on("pageerror", on_pageerror)
+
+
+# 컴포저와 Claw 작업영역은 hidden 속성으로 열린다. CSS 레이아웃(offsetParent)
+# 보다 hidden 이 실제 상태에 가깐다.
+COMPOSER_VISIBLE_JS = """() => {
+  const el = document.getElementById('composerForm');
+  return !!el && el.offsetParent !== null;
+}"""
+
+CLAW_VISIBLE_JS = """() => {
+  const el = document.getElementById('clawWorkspace');
+  return !!el && !el.hidden;
+}"""
+
+CLICK_TIMEOUT_MS = 15_000
+
+
+def _claw_visible(page) -> bool:
+    try:
+        page.wait_for_function(CLAW_VISIBLE_JS, timeout=SELECTOR_TIMEOUT_MS)
+        return True
+    except Exception:
+        return False
+
+
+def _finish(flow: BrowserFlowResult, started: float,
+            sink: list[tuple[str, str, str]], mark: int) -> None:
+    """소요 시간을 확정하고, 허용 목록 밖 콘솔 오류가 있으면 FAIL 로 내린다."""
+    flow.elapsed_ms = int((time.monotonic() - started) * 1000)
+    flow.console_errors = _error_codes(sink[mark:])
+    if flow.verdict == "PASS" and flow.console_errors:
+        flow.fail(flow.console_errors[0])
 
 
 def _submit(page, prompt: str) -> None:
@@ -485,12 +543,15 @@ def run_browser_flows(
             chat = results["browser_chat"]
             started = time.monotonic()
             mark = len(sink)
+            stage = "open"
             try:
                 page.goto(CHAT_URL, wait_until="domcontentloaded", timeout=NAVIGATE_TIMEOUT_MS)
-                page.wait_for_selector("#composerForm", state="visible")
+                page.wait_for_function(COMPOSER_VISIBLE_JS)
                 _capture(page, out_path, chat, 1, "open", username)
+                stage = "question"
                 _submit(page, CHAT_PROMPT)
                 _capture(page, out_path, chat, 2, "question", username)
+                stage = "answer"
                 answer = _wait_answer(page)
                 _capture(page, out_path, chat, 3, "answer", username)
                 verdict, code, head = answer_verdict(answer.get("text"))
@@ -499,35 +560,44 @@ def run_browser_flows(
                 else:
                     chat.fail(code)
             except Exception as exc:
-                chat.fail(f"browser_chat_{type(exc).__name__}")
-            chat.elapsed_ms = int((time.monotonic() - started) * 1000)
-            chat.console_errors = _error_codes(sink[mark:])
-            if chat.verdict == "PASS" and chat.console_errors:
-                # 콘솔 오류 0 이 이 흐름의 판정 조건이다. 답이 와도 오류가 있으면 FAIL.
-                chat.fail(chat.console_errors[0])
+                # 어느 단계에서 깨졌는지가 진단의 전부다.
+                chat.fail(safe_code(f"{chat.name}_{stage}_{type(exc).__name__}"))
+            _finish(chat, started, sink, mark)
 
             claw = results["browser_claw"]
             started = time.monotonic()
             claw_mark = len(sink)
+            stage = "open"
             try:
-                page.click("#clawNavButton")
-                page.wait_for_selector("#clawWorkspace", state="visible")
+                # 해시 경로가 대표 결정의 Claw 화면이다. 테마·폭에 따라 사이드바가
+                # 접혀 클릭이 actionability 를 기다리다 30초를 태우므로, 먼저 해시로
+                # 열고 열리지 않을 때만 사이드바 항목을 누른다(실행 42668928406).
+                page.goto(CHAT_URL + CLAW_HASH, wait_until="domcontentloaded",
+                          timeout=NAVIGATE_TIMEOUT_MS)
+                if not _claw_visible(page):
+                    page.click("#clawNavButton", timeout=CLICK_TIMEOUT_MS)
+                    if not _claw_visible(page):
+                        raise RuntimeError("claw_workspace_not_shown")
                 _capture(page, out_path, claw, 1, "open", username)
+                stage = "question"
                 _submit(page, CLAW_PROMPT)
                 _capture(page, out_path, claw, 2, "question", username)
+                stage = "answer"
                 answer = _wait_answer(page)
                 _capture(page, out_path, claw, 3, "answer", username)
                 verdict, code, head = answer_verdict(answer.get("text"))
-                if verdict == "PASS":
-                    claw.pass_(head, code)
-                else:
+                if verdict != "PASS":
                     claw.fail(code)
+                else:
+                    product = (answer.get("product") or "").strip()
+                    if product and "claw" not in product.lower():
+                        # 같은 셸을 쓰지만 답한 제품은 분리해 기록한다.
+                        claw.fail("screen_wrong_product")
+                    else:
+                        claw.pass_(head, code)
             except Exception as exc:
-                claw.fail(f"browser_claw_{type(exc).__name__}")
-            claw.elapsed_ms = int((time.monotonic() - started) * 1000)
-            claw.console_errors = _error_codes(sink[claw_mark:])
-            if claw.verdict == "PASS" and claw.console_errors:
-                claw.fail(claw.console_errors[0])
+                claw.fail(safe_code(f"{claw.name}_{stage}_{type(exc).__name__}"))
+            _finish(claw, started, sink, claw_mark)
 
             stamp = results["browser_stamp"]
             started = time.monotonic()
@@ -540,7 +610,13 @@ def run_browser_flows(
                         break
                 _capture(page, out_path, stamp, 1, "app-version", username)
                 verdict, code = stamp_verdict(observed, head_version, recent_versions)
-                stamp.pass_(observed, code) if verdict == "PASS" else stamp.fail(code)
+                if verdict == "PASS":
+                    stamp.pass_(observed, code)
+                else:
+                    # 스탬프는 배포 SHA 앞 8자리 조각이다. 쿠키·토큰이 아니므로
+                    # 어느 커밋 화면인지 진단에 남긴다.
+                    stamp.head = observed
+                    stamp.fail(code)
             except Exception as exc:
                 stamp.fail(f"browser_stamp_{type(exc).__name__}")
             stamp.elapsed_ms = int((time.monotonic() - started) * 1000)
@@ -552,7 +628,9 @@ def run_browser_flows(
     if chat.verdict in ("PASS", "FAIL") and claw.verdict in ("PASS", "FAIL"):
         ok, code = screen_parity(chat.verdict, claw.verdict)
         if not ok:
-            target = claw if "claw_only" in code else chat
-            target.fail(code)
+            # 한쪽만 답한 경우다. 원인 코드를 이미 가진 흐름은 덮어쓰지 않는다.
+            target = results[parity_target(code)]
+            if target.verdict != "FAIL":
+                target.fail(code)
 
     return {name: flow.as_dict() for name, flow in results.items()}

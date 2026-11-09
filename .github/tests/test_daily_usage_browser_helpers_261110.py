@@ -89,6 +89,27 @@ class AnswerVerdictTest(unittest.TestCase):
                          (False, "screen_parity_claw_only"))
 
 
+class ParityTargetTest(unittest.TestCase):
+    def test_only_the_failing_screen_is_blamed(self):
+        # 실행 42668928406 은 이 지목을 뒤집어, 답한 화면을 FAIL 로 적었다.
+        self.assertEqual(checks.parity_target("screen_parity_chat_only"), "browser_claw")
+        self.assertEqual(checks.parity_target("screen_parity_claw_only"), "browser_chat")
+
+
+class SafeCodeTest(unittest.TestCase):
+    def test_exception_class_names_become_safe_codes(self):
+        # 대문자가 섞인 예외 이름이 unsafe_code 로 사라지지 않아야 한다.
+        self.assertEqual(checks.safe_code("browser_claw_Error"), "browser_claw_error")
+        self.assertEqual(checks.safe_code("browser_claw_open_TimeoutError"),
+                         "browser_claw_open_timeouterror")
+
+    def test_edge_cases_stay_safe(self):
+        self.assertEqual(checks.safe_code(""), "unknown")
+        self.assertEqual(checks.safe_code("123"), "e_123")
+        self.assertLessEqual(len(checks.safe_code("x" * 300)), 80)
+        self.assertNotIn(" ", checks.safe_code("a b/c?d=e"))
+
+
 class StampTest(unittest.TestCase):
     RECENT = ["33d88da1", "5848191a", "496b2347"]
 
@@ -203,6 +224,11 @@ class MutationProbeTest(unittest.TestCase):
         history = [1_000, 41_500, 41_000, 42_000]
         self.assertIsNone(checks.slowdown_note("voice_relay", 3_000, history))
         self.assertIsNotNone(broken(3_000, history))
+
+    def test_reported_codes_are_safe(self):
+        flow = checks.BrowserFlowResult("browser_claw")
+        flow.fail("browser_claw_Error")
+        self.assertEqual(flow.as_dict()["code"], "browser_claw_error")
 
     def test_parity_mutation_is_detected(self):
         def broken(chat, claw):
