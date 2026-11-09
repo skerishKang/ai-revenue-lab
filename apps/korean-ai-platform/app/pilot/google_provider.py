@@ -58,6 +58,13 @@ GOOGLE_BASE_ORIGIN = "https://generativelanguage.googleapis.com/v1beta/openai"
 GOOGLE_ALLOWED_HOST = "generativelanguage.googleapis.com"
 GOOGLE_CREDENTIAL_BINDING = "PADIEM_B14_CREDENTIAL_05"
 
+#: The OpenAI-compatible wire this Provider is served on, read back off its own
+#: base origin (an API-version segment plus a wire family). Published as
+#: segments so a consumer can rebuild the endpoint without writing a path.
+_ORIGIN_SEGMENTS = GOOGLE_BASE_ORIGIN.split("//", 1)[1].split("/")[1:]
+GOOGLE_NATIVE_API_VERSION = _ORIGIN_SEGMENTS[0]
+GOOGLE_WIRE_FAMILY = _ORIGIN_SEGMENTS[-1]
+
 # Authority date of the catalog read and the measurements this registration cites.
 GOOGLE_SOURCE_CHECKED_AT = "2026-10-08"
 

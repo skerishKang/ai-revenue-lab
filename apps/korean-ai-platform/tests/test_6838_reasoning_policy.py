@@ -11,6 +11,13 @@ from app.pilot import reasoning_policy as policy
 from app.pilot.call_ledger import CallLedgerError, LedgerDraft, new_log_id
 from app.pilot.model_registry_file import read_registry
 
+from _pilot_lane_paths import chat_surface
+
+# The ledger records the endpoint the gateway mounted, so the suite reads that
+# surface from the router instead of writing the path (it is the same kind of
+# deployment value as a model id).
+ENDPOINT = chat_surface()
+
 _REGISTRY = read_registry()
 _CANDIDATES = [
     model for model in _REGISTRY["models"]
@@ -23,7 +30,7 @@ _CANDIDATES = [
 def _ledger() -> LedgerDraft:
     return LedgerDraft(
         log_id=new_log_id(), request_id="b14req_reasoning",
-        endpoint="/v1/chat/completions", protocol="unknown",
+        endpoint=ENDPOINT, protocol="unknown",
         streaming=False, requested_model_id=None,
         started_at="2026-11-05T00:00:00Z",
     )

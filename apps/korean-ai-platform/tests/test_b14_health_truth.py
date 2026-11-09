@@ -20,6 +20,8 @@ from app.pilot.config import pilot_settings
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.registry import reset_registry
 
+from _registry_values import registry as effective_registry
+
 PLATFORM_SECRET_ENV_KEYS = (
     "KILO_API_KEY",
     "AGNES_API_KEY",
@@ -224,7 +226,18 @@ def test_health_and_models_surfaces_do_not_leak_openrouter_credentials(client):
 
     assert health.status_code == 200
     assert models.status_code == 200
-    assert "openrouter/stealth/crouton-alpha" in models.text
+    # The models surface serves the identities the effective document installs
+    # under an enabled Provider: the suite asks the document for that set
+    # instead of naming one route in the test (#7241 3a).
+    document = effective_registry()
+    served = {row["id"] for row in models.json()["catalog"]}
+    installed = {
+        row["id"] for row in document["models"]
+        if row["enabled"] and document["providers"][row["provider_id"]]["enabled"]
+    }
+    assert served == installed
+    for model_id in installed:
+        assert model_id in models.text
     assert "sk-or-" not in health.text.lower()
     assert "sk-or-" not in models.text.lower()
 

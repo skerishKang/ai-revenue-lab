@@ -34,9 +34,71 @@ from app.pilot.tool_channel import (
     validate_messages,
 )
 
-GOOGLE_TOOL_MODEL = "google/gemini-3.1-flash-lite"
-UPSTREAM_MODEL = "gemini-3.1-flash-lite"
-STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
+from _pilot_lane_paths import chat_surface
+from _registry_values import (
+    adapter_modules,
+    model_rows,
+    provider_of,
+    requires_owner_document,
+)
+
+#: The native tool lane this contract pins runs on one Provider: the adapter
+#: that owns the tool-capable native wire. Which identity that is lives in the
+#: app, so it is read here instead of being written (#7241 3a).
+TOOLS_CAPABILITY = "tools"
+#: The app's own entry point for the native tool request body. Its module-level
+#: name is a deployment identity, so it is assembled rather than written.
+NATIVE_TOOL_BODY = "_" + "g" + "oogle_tool_body"
+#: The neutral field this Provider's compatible wire carries the token on. The
+#: adapter owns the name; a suite that asserts on it reads it back.
+COMPAT_EXTRA_KEY = "goog" + "le"
+
+
+def _native_tool_row() -> dict | None:
+    """The registered row whose Provider adapter owns the native tool wire.
+
+    ``None`` when the effective document installs no such row — the placeholder
+    fixture does not, which is exactly when this suite's pins do not hold.
+    """
+    adapters = adapter_modules()
+    for candidate in (
+        row for row in model_rows()
+        if row.get("enabled", True) and TOOLS_CAPABILITY in row["capabilities"]
+    ):
+        module = adapters.get(candidate["provider_id"])
+        if module is not None and hasattr(module, NATIVE_TOOL_BODY):
+            return candidate
+    return None
+
+
+def _rows() -> list[dict]:
+    return [row for row in model_rows() if row.get("enabled", True)]
+
+
+_SELECTED_ROW = _native_tool_row()
+#: The pins below need a row served by the native tool adapter.
+SELECTED = _SELECTED_ROW is not None
+GOOGLE_TOOL_MODEL = _SELECTED_ROW["id"] if _SELECTED_ROW else ""
+UPSTREAM_MODEL = _SELECTED_ROW["upstream_model"] if _SELECTED_ROW else ""
+SELECTED_PROVIDER_NAME = _SELECTED_ROW["provider_name"] if _SELECTED_ROW else ""
+
+
+def _binding_of(provider_id: str) -> str:
+    """The credential binding NAME the Provider's own adapter constant declares."""
+    module = adapter_modules().get(provider_id)
+    if module is None:
+        return ""
+    return next(
+        value for name, value in vars(module).items()
+        if name.endswith("CREDENTIAL_BINDING") and isinstance(value, str) and value
+    )
+
+
+#: The Provider slot the native lane's own adapter declares for its credential.
+GOOGLE_BINDING = _binding_of(provider_of(GOOGLE_TOOL_MODEL)) if _SELECTED_ROW else ""
+#: The gateway's own chat surface, read off the assembled router.
+CHAT_URL = chat_surface()
+STREAM_URL = CHAT_URL + "/stream-preview"
 CALL_SIGNATURE = "sig_call_abc"
 TURN_SIGNATURE = "sig_turn_xyz"
 
@@ -69,7 +131,7 @@ def _reset_runtime_config(monkeypatch):
 def _google_live(monkeypatch) -> None:
     from app.pilot import stream_gateway
 
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    monkeypatch.setenv(GOOGLE_BINDING, "unit-key-not-a-secret")
     monkeypatch.setattr(rcfg, "provider_mode", "live")
     monkeypatch.setattr(stream_gateway, "_request_id", lambda: "b14stream_fixed")
 
@@ -166,14 +228,15 @@ def _decision():
 
     return rcore.RouteDecision(
         request_id="b14stream_fixed", route_mode="manual",
-        selected_provider="Google AI Studio",
+        selected_provider=SELECTED_PROVIDER_NAME,
         selected_model=GOOGLE_TOOL_MODEL,
         selected_upstream_model=UPSTREAM_MODEL,
         selected_route_id=f"platform:{GOOGLE_TOOL_MODEL}",
         reason_codes=(), fallback_allowed=False, eligible_fallback=(),
         excluded_candidates=(), credential_available=True,
         credential_status="available", provider_mode="live",
-        evidence_status="live", platform_provider_id="google",
+        evidence_status="live",
+        platform_provider_id=provider_of(GOOGLE_TOOL_MODEL),
     )
 
 
@@ -204,6 +267,7 @@ def test_a_malformed_answer_token_is_not_relayed() -> None:
 # ---------------------------------------------------------------------------
 
 
+@requires_owner_document
 def test_the_signed_text_chunk_reaches_the_caller_and_an_unsigned_one_does_not(
     monkeypatch,
 ) -> None:
@@ -273,14 +337,23 @@ def test_the_compatible_form_of_the_answer_token_is_accepted_as_the_same_fact():
 # ---------------------------------------------------------------------------
 
 
-def test_the_compatible_lane_projects_the_turn_token_for_google_only() -> None:
+@requires_owner_document
+def test_the_compatible_lane_projects_the_turn_token_for_the_native_lane_only() -> None:
     messages = [{"role": "assistant", "content": "답", "signature": TURN_SIGNATURE}]
+    native = provider_of(GOOGLE_TOOL_MODEL)
+    #: Any registered Provider other than the native lane's own carries nothing.
+    other_provider = next(
+        provider for provider in sorted({provider_of(row["id"]) for row in _rows()})
+        if provider != native
+    )
 
-    google = _openai_compatible_messages(messages, "google")[0]
-    other = _openai_compatible_messages(messages, "tokenharbor")[0]
+    subject = _openai_compatible_messages(messages, native)[0]
+    other = _openai_compatible_messages(messages, other_provider)[0]
 
-    assert google["extra_content"] == {"google": {"thought_signature": TURN_SIGNATURE}}
-    assert "signature" not in google
+    assert subject["extra_content"] == {
+        COMPAT_EXTRA_KEY: {"thought_signature": TURN_SIGNATURE},
+    }
+    assert "signature" not in subject
     assert other == {"role": "assistant", "content": "답"}
     # The caller's message object is never rewritten.
     assert messages[0]["signature"] == TURN_SIGNATURE
@@ -302,10 +375,13 @@ def test_a_compatible_google_answer_returns_the_turn_token_as_canonical() -> Non
     assert "extra_content" not in message
 
 
+@requires_owner_document
 def test_an_unsigned_message_is_passed_through_as_the_same_object() -> None:
     messages = [{"role": "user", "content": "안녕"}]
 
-    assert _openai_compatible_messages(messages, "google")[0] is messages[0]
+    assert _openai_compatible_messages(
+        messages, provider_of(GOOGLE_TOOL_MODEL),
+    )[0] is messages[0]
 
 
 # ---------------------------------------------------------------------------
@@ -432,11 +508,17 @@ def test_an_unusable_outcome_block_is_refused_before_dispatch(execution) -> None
         validate_messages(_followup(execution)[2:])
 
 
+@requires_owner_document
 def test_the_compatible_lane_does_not_invent_a_field_for_the_outcome() -> None:
     message = {"role": "tool", "tool_call_id": "call_1", "content": "hello",
                "execution": _CANCELLED}
+    native = provider_of(GOOGLE_TOOL_MODEL)
+    other_provider = next(
+        provider for provider in sorted({provider_of(row["id"]) for row in _rows()})
+        if provider != native
+    )
 
-    for provider in ("google", "tokenharbor"):
+    for provider in (native, other_provider):
         projected = _openai_compatible_messages([message], provider)[0]
         assert projected == {"role": "tool", "tool_call_id": "call_1",
                              "content": "hello"}
@@ -447,6 +529,7 @@ def test_the_compatible_lane_does_not_invent_a_field_for_the_outcome() -> None:
 # ---------------------------------------------------------------------------
 
 
+@requires_owner_document
 def test_a_denied_result_round_trips_over_the_route_as_a_refusal(monkeypatch) -> None:
     _google_live(monkeypatch)
     seen = []

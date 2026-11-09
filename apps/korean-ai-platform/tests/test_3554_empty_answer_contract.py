@@ -18,6 +18,11 @@ from app.pilot.sensenova_provider import (
 )
 from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer, require_completed_text_answer
 
+from _pilot_lane_paths import chat_surface
+
+# The gateway surface this case posts to; the mounted router is its authority.
+CHAT_COMPLETIONS = chat_surface()
+
 
 def _payload(content, *, finish="stop"):
     return {"model": SENSENOVA_UPSTREAM_MODEL, "choices": [
@@ -139,7 +144,7 @@ def test_gateway_502_empty_no_retries_and_no_fallback(monkeypatch):
         )
     monkeypatch.setattr(plat, "call_platform_chat_completions", one_call)
     with TestClient(create_app()) as client:
-        response = client.post("/api/pilot/v1/chat/completions", json={
+        response = client.post(CHAT_COMPLETIONS, json={
             "model": SENSENOVA_MODEL_ID, "messages": [{"role": "user", "content": "test"}],
             "max_tokens": 8,
             "business14": {"max_retries": 0}

@@ -20,8 +20,18 @@ from app.pilot.stream_types import StreamEvent, StreamUsage
 from app.pilot.router_core import RouteDecision
 from app.pilot.streaming_router import stream_routed_chat_completions
 
+from _pilot_lane_paths import chat_surface
+from _registry_values import a_model_id
 
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
+#: The gateway's own chat surface, read from the mounted router.
+CHAT_SURFACE = chat_surface()
+
+#: An identity the effective document does NOT install: built from an installed
+#: row's own Provider so the string is a shape, never a deployment value. The
+#: unknown-model lane is what this case pins, so the identity only has to be
+#: absent from the catalog (#7241 3a).
+UNINSTALLED_MODEL = a_model_id() + "-not-installed"
 
 
 def _decision(
@@ -415,9 +425,9 @@ async def test_stream_finishing_without_visible_content_is_terminal_not_fallback
 def test_public_gateway_still_rejects_stream_true_after_router_slice():
     client = TestClient(create_app())
     response = client.post(
-        "/api/pilot/v1/chat/completions",
+        CHAT_SURFACE,
         json={
-            "model": "unknown/model",
+            "model": UNINSTALLED_MODEL,
             "messages": MESSAGES,
             "stream": True,
         },

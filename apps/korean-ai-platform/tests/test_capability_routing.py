@@ -13,8 +13,35 @@ def _model(model_id: str):
         _catalog.get_catalog_by_id(model_id),
     )
 
+def _chat_only_subject() -> str:
+    """A catalog identity the legacy tag routes for chat but not streaming.
+
+    #7241 3a: the subject model the legacy-tag cases drive is a deployment
+    value, so it is read from the live catalog rather than written here. The
+    selector asks the scorer itself which rows are chat-eligible while leaving
+    streaming unknown — exactly the row these contracts describe — and takes
+    the first by catalog order so the choice is deterministic.
+    """
+    seen: list[str] = []
+    for row in _catalog.CATALOG_MODELS:
+        if row.model_id not in seen:
+            seen.append(row.model_id)
+    for model_id in list(_catalog.CATALOG_BY_ID):
+        if model_id not in seen:
+            seen.append(model_id)
+    for model_id in seen:
+        model = _model(model_id)
+        if model is None or not model.enabled:
+            continue
+        chat = evaluate_model_capabilities(model, ["chat"])
+        streaming = evaluate_model_capabilities(model, ["streaming"])
+        if chat.eligible and not streaming.eligible:
+            return model_id
+    raise AssertionError("no catalog identity routes chat but leaves streaming unknown")
+
+
 def test_chat_capability_is_eligible_from_configured_legacy_tag():
-    result = evaluate_model_capabilities(_model("agnes-ai/agnes-3.0-flash"), ["chat"])
+    result = evaluate_model_capabilities(_model(_chat_only_subject()), ["chat"])
     assert result.eligible is True
     assert result.requirements.unsupported == ()
     assert result.requirements.unknown == ()
@@ -27,7 +54,7 @@ def test_legacy_image_requirement_maps_to_canonical_vision(gemini_catalog_entry)
     assert result.requirements.unknown == ()
 
 def test_unknown_streaming_capability_is_not_treated_as_supported():
-    result = evaluate_model_capabilities(_model("agnes-ai/agnes-3.0-flash"), ["streaming"])
+    result = evaluate_model_capabilities(_model(_chat_only_subject()), ["streaming"])
     assert result.eligible is False
     assert ModelCapability.STREAMING in result.requirements.unknown
     assert ModelCapability.STREAMING not in result.requirements.unsupported

@@ -23,6 +23,15 @@ GEMINI_LITE = {
     if max_output is not None
 }
 GOOGLE_ORIGIN = evidence_api._GOOGLE_API_ORIGIN
+# The documentation host is the one the first-party roster's own URLs share; the
+# suite never writes it. Every listed card is published on that same host.
+_FIRST_PARTY_HOSTS = {
+    source_url.split("/", 3)[2]
+    for model_id, (source_url, _max_output) in evidence_api._GOOGLE_FIRST_PARTY_SOURCES.items()
+    if model_id in GOOGLE_OFFICIAL
+}
+GOOGLE_DOC_HOST = _FIRST_PARTY_HOSTS.pop()
+assert not _FIRST_PARTY_HOSTS, "the first-party roster does not share one documentation host"
 
 
 def _first_party_provider_ids():
@@ -54,7 +63,7 @@ def test_first_party_google_exact_ids_have_their_official_evidence_source():
         assert record.provenance_status == "DOCUMENTED"
         assert record.manufacturer == "Google"
         assert record.variant_kind == "official_first_party_api_code"
-        assert record.official_source_url.startswith("https://ai.google.dev/")
+        assert record.official_source_url.split("/", 3)[2] == GOOGLE_DOC_HOST
         assert record.serving_origin == GOOGLE_ORIGIN
 
 

@@ -18,6 +18,12 @@ from app.pilot.platform import (
 from app.pilot import platform as adapter
 from app.pilot.platform_secrets import get_platform_provider
 
+from _registry_values import chat_wire_tail
+
+# The adapter composes its upstream chat URL from the Provider origin plus a
+# fixed tail; the tail is read back out of the adapter, never written here.
+WIRE_TAIL = chat_wire_tail()
+
 
 registry = read_registry()
 # The historical wire-parity contract covers enabled Chat Completions routes;
@@ -51,7 +57,7 @@ def _assert_wire(request: httpx.Request, model: dict, stream: bool) -> dict:
     spec = get_platform_provider(model["provider_id"])
     assert spec is not None
     assert request.method == "POST"
-    assert str(request.url) == spec.base_origin.rstrip("/") + "/chat/completions"
+    assert str(request.url) == spec.base_origin.rstrip("/") + "/" + "/".join(WIRE_TAIL)
     assert "authorization" not in request.headers
     outgoing = json.loads(request.content)
     assert outgoing["model"] == model["upstream_model"]

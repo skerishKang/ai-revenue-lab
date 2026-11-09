@@ -30,6 +30,15 @@ from app.pilot.stream_usage_option import (
     stream_usage_option_enabled,
 )
 
+from _pilot_lane_paths import CHAT_SURFACE_TAIL, chat_surface
+
+#: The ledger records the endpoint a call arrived on: the gateway's own chat
+#: surface, read from the mounted router (#7241 3a).
+CHAT_SURFACE = chat_surface()
+#: The wire family the gateway names for this lane. The gateway's own chat
+#: surface ends in the wire's two segments, so it is derived rather than written.
+COMPATIBLE_WIRE = "/".join(CHAT_SURFACE_TAIL)
+
 MODEL_ID = "test-model"
 UPSTREAM_MODEL = "test-upstream"
 PROVIDER_ID = "test-route"
@@ -157,8 +166,8 @@ def test_usage_frame_reaches_the_ledger(monkeypatch) -> None:
     ledger = LedgerDraft(
         log_id=new_log_id(),
         request_id="req-6812",
-        endpoint="/api/pilot/v1/chat/completions/stream-preview",
-        protocol="chat/completions",
+        endpoint=CHAT_SURFACE,
+        protocol=COMPATIBLE_WIRE,
         streaming=True,
         requested_model_id=MODEL_ID,
         started_at=utc_now_iso(),

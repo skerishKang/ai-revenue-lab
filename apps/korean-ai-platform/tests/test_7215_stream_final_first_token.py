@@ -41,8 +41,38 @@ from app.pilot.b14_timeout_policy import (
     send_provider_request,
 )
 from app.pilot.errors import UpstreamServerError
-URL = "/api/pilot/v1/chat/completions/stream-preview"
-MODEL = "agnes-ai/agnes-3.0-flash"
+
+from _pilot_lane_paths import chat_surface
+from _registry_values import (
+    a_dispatchable_row,
+    provider_of,
+    provider_row,
+    registry,
+)
+
+
+def provider_ids_in_registry() -> set[str]:
+    return set(registry()["providers"])
+
+
+#: The gateway's own preview surface, read from the mounted router.
+URL = chat_surface() + "/stream-preview"
+
+#: The streamed route this contract drives: a registered row whose Provider
+#: credential can be supplied from an environment binding, so the lane's own
+#: readiness gate is satisfied without dialing anything. Which identity that is
+#: lives in the effective registry, not in this file (#7241 3a).
+ROW = a_dispatchable_row()
+assert ROW is not None, "the effective registry serves no dispatchable row"
+MODEL = ROW["id"]
+PROVIDER_ID = provider_of(MODEL)
+BINDING = provider_row(PROVIDER_ID)["credential_binding_name"]
+#: A second declared slot, cleared so the case never inherits an operator key.
+OTHER_BINDING = next(
+    provider_row(provider_id)["credential_binding_name"]
+    for provider_id in sorted(provider_ids_in_registry())
+    if provider_id != PROVIDER_ID
+)
 
 
 class _DelayedStream(httpx.AsyncByteStream):
@@ -66,8 +96,8 @@ def _policy(monkeypatch):
     old_mode = rcfg.provider_mode
     rcfg.provider_mode = "live"
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-local-mock-only-7215-123456789")
-    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
+    monkeypatch.setenv(BINDING, "synthetic-credential-not-a-secret")
+    monkeypatch.delenv(OTHER_BINDING, raising=False)
     yield
     rcfg.provider_mode = old_mode
 

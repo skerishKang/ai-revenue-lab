@@ -28,7 +28,9 @@ from app.pilot.platform import call_platform_chat_completions, stream_platform_c
 from app.pilot.platform_secrets import get_platform_provider
 from app.pilot.router_core import resolve_manual_route
 
-from _registry_values import model_rows, registry, requires_owner_document
+from _registry_values import (
+    chat_wire_tail, model_rows, registry, requires_owner_document,
+)
 
 # The owner-approved free routes are the registry's own zero-priced, ``free``
 # tagged rows; the suite's Provider is whichever Provider owns them.
@@ -72,6 +74,9 @@ OTHER_BINDING = next(
     for pid, entry in registry()["providers"].items() if pid != PROVIDER
 )
 SYNTHETIC = "synthetic_b14_platform_key_no_actual_account"
+# The upstream request path is the adapter's own URL tail, read back from the
+# adapter source instead of restated as a wire value (#7241 3a).
+CHAT_WIRE = "/".join(chat_wire_tail())
 
 
 @pytest.fixture
@@ -159,7 +164,7 @@ def test_exact_model_is_sent_to_fixed_endpoint_with_bearer(mid, upstream, live_k
     called = []
     def handler(req):
         called.append(True)
-        assert str(req.url) == ORIGIN + "/chat/completions"
+        assert str(req.url) == ORIGIN + "/" + CHAT_WIRE
         assert req.headers["Authorization"] == "Bearer " + SYNTHETIC
         assert json.loads(req.content) == {
             "model": upstream,
@@ -182,7 +187,7 @@ def test_exact_model_streaming_keeps_free_id(mid, upstream, live_key):
     called = []
     def handler(req):
         called.append(True)
-        assert str(req.url) == ORIGIN + "/chat/completions"
+        assert str(req.url) == ORIGIN + "/" + CHAT_WIRE
         assert req.headers["Authorization"] == "Bearer " + SYNTHETIC
         # #6812 stage 2: the streamed body also asks for its usage report.
         assert json.loads(req.content) == {

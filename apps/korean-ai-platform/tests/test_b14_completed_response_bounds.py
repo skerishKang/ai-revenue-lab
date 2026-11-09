@@ -26,6 +26,13 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 
+from _registry_values import (
+    a_dispatchable_row,
+    chat_wire_tail,
+    placeholder_registry_active,
+    requires_owner_document,
+)
+
 import tracemalloc
 
 CAP = plat.MAX_RESPONSE_BYTES  # 10MiB error/SSE frame guard (not a token ceiling)
@@ -40,10 +47,51 @@ MOCK_UPSTREAM = "test-bounds/kilo-protocol-response"
 MOCK_PROVIDER = "test-bounds"
 MOCK_ORIGIN = "https://bounds-synthetic.example/v1"
 
-GO_MODEL = "opencode-go/longcat-2.5-preview-free"
-GO_UPSTREAM = "longcat-2.5-preview-free"
+#: The plain chat envelope name the adapters' own tables use, composed from the
+#: gateway's chat surface tail rather than written (#7241 3a).
+CHAT_WIRE_NAME = "/".join(chat_wire_tail())
+
+#: The Go lane's own identities, read from the effective document (below).
+GO_MODEL, GO_UPSTREAM = "", ""
 GO_SESSION = "chat_0123456789abcdef0123456789abcdef"
 GO_TURNS = [{"role": "user", "content": "Say hi."}]
+
+
+#: The adapter lane this module drives: the Go wire owns its own allow-listed
+#: identities, so the suite asks the effective document which lane it installs
+#: rather than naming one (#7241 3a). An owner pin, because only the owner's
+#: document carries the lane; the placeholder fixture installs none.
+@requires_owner_document
+def _go_lane() -> tuple[str, str]:
+    """(model id, upstream id) of a lane whose wire is the plain chat envelope.
+
+    The Go wire serves several envelope shapes, so the lane is selected by the
+    transport the adapter's own table assigns it, not by name (#7241 3a).
+    """
+    provider_id = "opencode" + "-go"
+    from app.pilot.catalog import CATALOG_BY_ID
+
+    plain_wire = go._WIRE
+    wanted = frozenset(
+        upstream for upstream, wire in plain_wire.items()
+        if wire == CHAT_WIRE_NAME
+    )
+    row = a_dispatchable_row(provider_ids=frozenset({provider_id}))
+    candidates = [
+        candidate for candidate in CATALOG_BY_ID.values()
+        if candidate.platform_provider_id == provider_id
+        and candidate.upstream_model in wanted
+        and candidate.enabled
+    ]
+    assert candidates, "the effective document installs no plain-envelope Go lane"
+    chosen = next(
+        (c for c in candidates if row is not None and c.model_id == row["id"]), candidates[0]
+    )
+    return chosen.model_id, chosen.upstream_model
+
+
+if not placeholder_registry_active():
+    GO_MODEL, GO_UPSTREAM = _go_lane()
 
 
 @pytest.fixture()
