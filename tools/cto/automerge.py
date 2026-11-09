@@ -3,6 +3,13 @@
 흐름: 시작 지연(--delay) → PR 확인(드래프트면 ready) → CI 검사 폴링(40초 주기) →
 실패 잡 1회 재실행 → 검사가 1개 이상 등록되고 전부 끝났으면 squash 머지.
 
+2026-11-09 체크 읽기 교체 (#7246 머지 때 TIMEOUT으로 관측):
+- `gh pr checks --json`은 gh 2.49에서 추가된 옵션이다. 이 머신의 gh 2.45.0에는
+  없어서 폴링이 계속 실패해 TIMEOUT으로 끝났다. 폴링을 `gh pr view --json
+  statusCheckRollup`(2.45에도 있음)으로 바꾸고, 항목 분류는 rollup_bucket()이
+  기존 버킷 어휘(pass/pending/fail)로 한다. 실패 잽 재실행 조회도 폴링이
+  이미 가져온 rollup을 재활용해 같은 상태를 두 번 묻지 않는다.
+
 2026-11-01 안정화 (#6556 / #6557 / #6560 사례 반영):
 - 검사 미등록 방어: PR 직후에는 검사가 0개라 "pending=0 fail=0"으로 보여 바로 머지하다
   "base branch policy prohibits the merge"로 실패했다. → 검사가 1개 이상 등록되고 전부
@@ -55,6 +62,39 @@ def _now():
 
 def _one_line(s):
     return " ".join((s or "").split())
+
+
+def rollup_bucket(entry):
+    """statusCheckRollup 한 항목을 기존 checks 버킷(pass/pending/fail)으로 분류한다.
+
+    gh 2.45.0에는 `gh pr checks --json`이 없다(2.49에서 추가). 그래서 폴링도
+    `gh pr view --json statusCheckRollup`으로 읽고, 그 항목을 이 함수로
+    기존 버킷 어휘에 맞춘다. CheckRun은 status/conclusion, StatusContext는
+    state를 본다. 모르는 값은 대기로 본다 — 판단이 서지 않는 상태에서
+    머지하지 않는 것이 이 도구의 기본값이다.
+    """
+    name = entry.get("name") or entry.get("context") or "(unknown)"
+    if entry.get("__typename") == "StatusContext":
+        state = (entry.get("state") or "").upper()
+        if state in {"SUCCESS", "NEUTRAL"}:
+            return {"name": name, "bucket": "pass"}
+        if state in {"FAILURE", "ERROR"}:
+            return {"name": name, "bucket": "fail"}
+        return {"name": name, "bucket": "pending"}
+    status = (entry.get("status") or "").upper()
+    if status != "COMPLETED":
+        return {"name": name, "bucket": "pending"}
+    conclusion = (entry.get("conclusion") or "").upper()
+    if conclusion in {"SUCCESS", "NEUTRAL", "SKIPPED"}:
+        return {"name": name, "bucket": "pass"}
+    if conclusion in {"FAILURE", "TIMED_OUT", "ACTION_REQUIRED", "CANCELLED",
+                      "STARTUP_FAILURE", "STALE"}:
+        return {"name": name, "bucket": "fail"}
+    return {"name": name, "bucket": "pending"}
+
+
+def rollup_buckets(rollup):
+    return [rollup_bucket(e) for e in (rollup or [])]
 
 
 def classify_merge_error(stderr):
@@ -132,8 +172,10 @@ def main(argv=None):
 
     for i in range(MAX_POLLS):
         try:
-            data = json.loads(run(["gh", "pr", "checks", pr, "--repo", REPO,
-                                   "--json", "name,bucket"]).stdout)
+            rollup = run_json(["gh", "pr", "view", pr, "--repo", REPO,
+                               "--json", "statusCheckRollup"],
+                              tries=2, gap=10).get("statusCheckRollup", [])
+            data = rollup_buckets(rollup)
         except Exception:
             print(f"[{i}] checks query failed, retrying", flush=True)
             _sleep(POLL_INTERVAL)
@@ -161,11 +203,10 @@ def main(argv=None):
             print("FAILED:", [c.get("name") for c in fail], flush=True)
             if not rerun_done:
                 try:
-                    roll = run_json(["gh", "pr", "view", pr, "--repo", REPO,
-                                     "--json", "statusCheckRollup"], tries=2, gap=10).get(
-                        "statusCheckRollup", [])
+                    # 폴링이 이미 가져온 rollup을 그대로 쓴다 — 같은 상태를
+                    # 두 번 묻지 않는다.
                     ids = {c["detailsUrl"].split("/actions/runs/")[1].split("/")[0]
-                           for c in roll
+                           for c in rollup
                            if c.get("conclusion") == "FAILURE"
                            and "/actions/runs/" in (c.get("detailsUrl") or "")}
                     for r in ids:
