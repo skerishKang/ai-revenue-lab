@@ -12,10 +12,6 @@ from app.config import Settings
 from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
 from padiem_ai_core.dispatch_preinstruction import render_product_identity_instruction
-from padiem_control_plane.product_tier_routes import (
-    PRODUCT_TIER_ROUTES,
-    ProductRouteStatus,
-)
 
 
 JPEG = b"\xff\xd8\xff\xe0phase8"
@@ -121,14 +117,13 @@ async def test_no_attachment_keeps_text_chat_contract_on_explicit_agnes():
         ("image/webp", WEBP, "photo.webp"),
     ],
 )
-async def test_valid_live_image_attachment_fails_closed_without_primary_model(
+async def test_valid_live_image_attachment_dispatches_the_image_capable_free_primary(
     media_type, data, name
 ):
-    calls = 0
+    seen = {}
 
     async def handler(request):
-        nonlocal calls
-        calls += 1
+        seen["body"] = json.loads(request.content)
         return httpx.Response(200, json=b14_success())
 
     app = create_app(
@@ -149,13 +144,42 @@ async def test_valid_live_image_attachment_fails_closed_without_primary_model(
             },
         )
 
-    declared = frozenset(
-        route.model_id
-        for tier in PRODUCT_TIER_ROUTES
-        for route in tier.routes
-        if route.status is ProductRouteStatus.EXECUTABLE
+    assert response.status_code == 200
+    body = seen["body"]
+    assert body["model"] == DEFAULT_B14_MODEL_ID
+    assert body["business14"]["required_capabilities"] == ["chat", "image"]
+    last = body["messages"][-1]
+    assert last["role"] == "user"
+    assert last["content"][0] == {"type": "text", "text": "이 사진을 설명해줘"}
+    image_part = last["content"][1]
+    assert image_part["type"] == "image_url"
+    assert image_part["image_url"]["url"].startswith(f"data:{media_type};base64,")
+    assert encoded(data) in image_part["image_url"]["url"]
+
+
+@pytest.mark.asyncio
+async def test_image_attachment_on_a_model_without_image_capability_fails_closed():
+    calls = 0
+
+    async def handler(request):
+        nonlocal calls
+        calls += 1
+        return httpx.Response(200, json=b14_success())
+
+    app = create_app(
+        Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
+        transport=httpx.MockTransport(handler),
     )
-    assert EXECUTABLE_B14_MODEL_IDS == declared
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.post(
+            "/api/chat",
+            json={
+                "tier": "plus",
+                "messages": [{"role": "user", "content": "이 사진을 설명해줘"}],
+                "attachments": [attachment()],
+            },
+        )
+
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "image_model_unavailable"
     assert calls == 0

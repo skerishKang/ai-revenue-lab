@@ -1513,7 +1513,12 @@ async def api_chat(request: Request) -> JSONResponse:
         return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
 
     settings: Settings = request.app.state.settings
-    if selected_model == FREE_B14_MODEL_ID and any(isinstance(item, ImageAttachment) for item in attachments):
+    if (
+        selected_model == FREE_B14_MODEL_ID
+        and any(isinstance(item, ImageAttachment) for item in attachments)
+        and not model_supports(selected_model, "image")
+        and model_supports(FREE_FALLBACK_B14_MODEL_ID, "image")
+    ):
         selected_model = FREE_FALLBACK_B14_MODEL_ID
     if settings.runtime_mode == "b14" and any(isinstance(item, ImageAttachment) for item in attachments):
         if not model_supports(selected_model, "image"):
