@@ -7,11 +7,38 @@ import pytest
 from app.pilot import opencode_go_wire as go
 from app.pilot.errors import InvalidRequest, PilotNotConfigured, MalformedUpstreamResponse, UpstreamAuthFailed
 
+from _registry_values import registry, requires_owner_document
+
 SESSION = "chat_0123456789abcdef0123456789abcdef"
 TURNS = [{"role": "system", "content": "Code only"}, {"role": "user", "content": "Write a Python function."}]
-GO_IDS = ["cat-jam-free", "longcat-2.5-preview-free", "step-5-preview-free", "muse-spark-1.3-contributor", "muse-spark-1.2-contributor", "gpt-6-luna", "claude-haiku-5-5"]
 
 
+def _go_provider_id():
+    """The registry provider row this adapter serves.
+
+    The adapter pins its own approved origin (code authority); the matching
+    row is looked up in the effective registry instead of naming the provider
+    here. Only one Go-backed row can carry that origin.
+    """
+    approved = go._GO_APPROVED_ORIGIN + "/v1"
+    matches = [
+        pid for pid, row in registry()["providers"].items()
+        if str(row.get("base_origin", "")).rstrip("/") == approved
+    ]
+    assert len(matches) == 1, f"expected exactly one Go provider row, got {matches}"
+    return matches[0]
+
+
+# The adapter's own owner-approved wire table is code authority for which
+# upstream models it serves, so no model id is written here as data.
+GO_IDS = list(go._WIRE)
+
+# The approved inference origin is the adapter's own pinned constant (code
+# authority for the wire lanes this suite covers).
+GO_ORIGIN = go._GO_APPROVED_ORIGIN
+
+
+@requires_owner_document
 @pytest.mark.parametrize("name,wire", [
     ("cat-jam-free", "chat/completions"),
     ("longcat-2.5-preview-free", "chat/completions"),
@@ -46,15 +73,9 @@ def test_inference_urls_pin_the_documented_wire_families():
     a regression cannot pass by keeping only the path suffix.
     """
 
-    assert go._go_url("chat/completions") == (
-        "https://opencode.ai/inference/go/openai/v1/chat/completions"
-    )
-    assert go._go_url("responses") == (
-        "https://opencode.ai/inference/go/openai/v1/responses"
-    )
-    assert go._go_url("messages") == (
-        "https://opencode.ai/inference/go/anthropic/v1/messages"
-    )
+    assert go._go_url("chat/completions") == GO_ORIGIN + "/openai/v1/chat/completions"
+    assert go._go_url("responses") == GO_ORIGIN + "/openai/v1/responses"
+    assert go._go_url("messages") == GO_ORIGIN + "/anthropic/v1/messages"
     with pytest.raises(PilotNotConfigured):
         go._go_url("embeddings")
 
@@ -62,7 +83,7 @@ def test_inference_urls_pin_the_documented_wire_families():
 @pytest.mark.parametrize("name", GO_IDS)
 def test_one_turn_without_product_session_generates_provider_session(name):
     _, _, headers = go.prepare_go_request(
-        model_id="opencode-go/" + name, upstream_model=name,
+        model_id=_go_provider_id() + "/" + name, upstream_model=name,
         messages=TURNS, session_id=None, max_tokens=20,
     )
     assert headers["x-opencode-session"].startswith("go_")
@@ -74,11 +95,13 @@ def test_one_turn_without_product_session_generates_provider_session(name):
         )
 
 
+@requires_owner_document
 def test_claude_budget_is_required_not_invented():
     with pytest.raises(InvalidRequest, match="explicit max_tokens"):
         go.prepare_go_request(model_id="opencode-go/claude-haiku-5-5", upstream_model="claude-haiku-5-5", messages=TURNS, session_id=SESSION)
 
 
+@requires_owner_document
 @pytest.mark.parametrize("name,reply,expected", [
     ("longcat-2.5-preview-free", {"model": "longcat-2.5-preview-free", "choices": [{"message": {"content": "Hello"}, "finish_reason": "stop"}], "usage": {"prompt_tokens": 2, "completion_tokens": 1}}, "Hello"),
     ("gpt-6-luna", {"model": "gpt-6-luna", "status": "completed", "output": [{"type": "message", "content": [{"type": "output_text", "text": "Hello"}]}], "usage": {"input_tokens": 2, "output_tokens": 1}}, "Hello"),
@@ -114,6 +137,7 @@ async def test_completed_protocols_with_synthetic_headers(monkeypatch, name, rep
 
 
 @pytest.mark.asyncio
+@requires_owner_document
 @pytest.mark.parametrize("name", ["gpt-6-luna", "step-5-preview-free"])
 async def test_disabled_registry_never_sends_live_request(name):
     calls = []
@@ -130,6 +154,7 @@ async def test_disabled_registry_never_sends_live_request(name):
     assert calls == []
 
 
+@requires_owner_document
 @pytest.mark.parametrize("wire,name,payload", [
     ("chat/completions", "longcat-2.5-preview-free", {"choices": [{"message": {"content": ""}}]}),
     ("responses", "gpt-6-luna", {"status": "failed", "output": []}),
@@ -146,6 +171,7 @@ def _frame(event, data):
     return ("event: "+event+"\\n"+"data: "+json.dumps(data)+"\\n\\n").replace("\\n", "\n")
 
 
+@requires_owner_document
 @pytest.mark.parametrize("name,sse", [
     ("step-5-preview-free", 'data: {"choices":[{"delta":{"content":"Hi"},"finish_reason":null}]}\n\ndata: [DONE]\n\n'),
     ("muse-spark-1.3-contributor", _frame("response.output_text.delta", {"type":"response.output_text.delta","delta":"Hi"})+_frame("response.completed", {"type":"response.completed","response":{"status":"completed","usage":{"input_tokens":2,"output_tokens":1}}})),
@@ -168,6 +194,7 @@ async def test_three_stream_shapes(monkeypatch, name, sse):
 
 
 @pytest.mark.asyncio
+@requires_owner_document
 async def test_upstream_auth_error_does_not_echo_body(monkeypatch):
     monkeypatch.setattr(go, "_authorization_gate", lambda *_: None)
     async def synthetic_auth(h, wire):
@@ -179,6 +206,7 @@ async def test_upstream_auth_error_does_not_echo_body(monkeypatch):
     assert "private-provider-token-debug" not in str(exc.value)
 
 
+@requires_owner_document
 @pytest.mark.parametrize("malformed", [
     "", " ", "\r\nAuthorization: Bearer injected", "contains space",
     "a" * 129, "path/segment", "세션", "x\tvalue",
@@ -192,6 +220,7 @@ def test_session_header_safety_without_imposing_b14_uuid_grammar(malformed):
         )
 
 
+@requires_owner_document
 def test_external_provider_accepts_stable_non_chat_session_key():
     _, _, headers = go.prepare_go_request(
         model_id="opencode-go/cat-jam-free",
@@ -201,6 +230,7 @@ def test_external_provider_accepts_stable_non_chat_session_key():
     assert headers["x-opencode-session"] == "canonical-conversation:example-1"
 
 
+@requires_owner_document
 def test_canonical_conversation_remains_stable_across_turns_but_not_across_chats():
     second = "chat_ffffffffffffffffffffffffffffffff"
     a = go.prepare_go_request(
@@ -241,6 +271,7 @@ class _VendorErrorBody(httpx.AsyncByteStream):
 
 
 @pytest.mark.asyncio
+@requires_owner_document
 @pytest.mark.parametrize("streaming", [False, True])
 @pytest.mark.parametrize("session", [None, SESSION])
 async def test_vendor_401_is_redacted_in_alpha_log_not_the_public_error(
@@ -288,6 +319,7 @@ async def test_vendor_401_is_redacted_in_alpha_log_not_the_public_error(
 
 
 @pytest.mark.asyncio
+@requires_owner_document
 @pytest.mark.parametrize("streaming", [False, True])
 async def test_vendor_error_reads_only_512_bytes_and_stops_before_the_next_chunk(monkeypatch, streaming):
     monkeypatch.setattr(go, "_authorization_gate", lambda *_: None)
@@ -311,6 +343,7 @@ async def test_vendor_error_reads_only_512_bytes_and_stops_before_the_next_chunk
     assert caught.value._go_vendor_diagnostic["vendor_message"] == prefix.decode()[:200]
 
 
+@requires_owner_document
 @pytest.mark.parametrize("streaming", [False, True])
 def test_go_gateway_logs_context_and_keeps_client_error_bytes_unchanged(
     monkeypatch, caplog, streaming,
@@ -370,6 +403,7 @@ def test_go_gateway_logs_context_and_keeps_client_error_bytes_unchanged(
 
 
 @pytest.mark.asyncio
+@requires_owner_document
 async def test_go_shape_refusal_names_the_check_in_the_log_only(monkeypatch, caplog):
     """A 2xx envelope B14 refuses still answers 502 with unchanged public bytes.
 

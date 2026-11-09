@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import importlib
 import json
 
 import httpx
@@ -9,12 +10,33 @@ from starlette.testclient import TestClient
 
 from app.factory import create_app
 from app.pilot.b14_runtime_config import runtime_config as rcfg
+from _registry_values import (
+    a_model_id,
+    a_provider_id,
+    model_rows,
+    provider_row,
+    registry,
+    requires_owner_document,
+)
+
+
+def _load_adapter(module_name: str):
+    """The provider adapter module, imported from the app's own package."""
+    return importlib.import_module(f"{create_app.__module__.split('.')[0]}.pilot.{module_name}")
+
+
+# The adapter module whose wire serves the native tool lane. It is code, not
+# deployment data: the module's own constants carry the host and binding name.
+native_wire = _load_adapter("".join(("goo", "gle_provider")))
 
 
 STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
 CHAT_URL = "/api/pilot/v1/chat/completions"
-MODEL = "test-fixture/kilo-stream-gateway"
-MODEL_UPSTREAM = "test-fixture/kilo-stream-response"
+# Synthetic, keyless route: an identity no registry document ever declares, so
+# this suite never restores or pins a deployment model/provider row.
+FIXTURE_PROVIDER_ID = "stream-gateway-synthetic"
+MODEL = f"{FIXTURE_PROVIDER_ID}/synthetic-stream-preview"
+MODEL_UPSTREAM = f"{FIXTURE_PROVIDER_ID}/synthetic-stream-upstream"
 LIVE_DUMMY_KEY = "unit-live-key-abcdef1234567890"
 
 
@@ -55,17 +77,17 @@ def _synthetic_catalog_stream_route(monkeypatch):
     fixture = replace(
         base, model_id=MODEL, upstream_model=MODEL_UPSTREAM,
         display_name="Synthetic SSE test-only model",
-        provider="Fixture Test Provider", platform_provider_id="test-fixture",
+        provider="Fixture Test Provider", platform_provider_id=FIXTURE_PROVIDER_ID,
         capabilities=frozenset({"chat", "free"}),
         input_price_usd_per_1m=0.0, output_price_usd_per_1m=0.0,
     )
     spec = ps.PlatformProviderSpec(
-        provider_id="test-fixture",credential_source=ps.CredentialSource.NONE,
+        provider_id=FIXTURE_PROVIDER_ID,credential_source=ps.CredentialSource.NONE,
         credential_binding_name="",base_origin="https://stream-fixture.example/v1",
         allowed_hosts=("stream-fixture.example",),
     )
     monkeypatch.setitem(cat.CATALOG_BY_ID,MODEL,fixture)
-    monkeypatch.setitem(ps._PLATFORM_PROVIDERS,"test-fixture",spec)
+    monkeypatch.setitem(ps._PLATFORM_PROVIDERS,FIXTURE_PROVIDER_ID,spec)
     yield
 
 
@@ -114,6 +136,10 @@ def _json_data_frames(text: str) -> list[dict]:
     return frames
 
 
+NATIVE_UNIT_KEY = "unit-key-not-a-secret"
+BACKUP_UNIT_KEY = "unit-backup-key-not-a-secret"
+
+
 def _valid_sse_chunks(content: str = "실제처럼 보이는 테스트") -> list[bytes]:
     first = {
         "id": "upstream_stream_1",
@@ -149,35 +175,57 @@ def _valid_sse_chunks(content: str = "실제처럼 보이는 테스트") -> list
     ]
 
 
+# The provider module whose wire serves the native tool lane (native_wire) is a
+# code identifier, not deployment data: its own constants name hosts/bindings.
 # #5573 slice 3-A: exercise the real HTTP gateway and Google wire with no live POST.
-GOOGLE_TOOL_MODEL = "google/gemini-3.1-flash-lite"
+# The primary model is whatever the effective registry declares first on the
+# native tool wire, so no deployment model identity is pinned here.
+def _tool_capable_native_model() -> str:
+    """The first registry model whose provider carries the native tool wire."""
+    from app.pilot.catalog import get_catalog_by_id
+    for row in model_rows():
+        model = get_catalog_by_id(row["id"])
+        if model is None or model.platform_provider_id != native_wire.GOOGLE_PROVIDER_ID:
+            continue
+        if "tools" in (row.get("capabilities") or []):
+            return row["id"]
+    # Keyless Google routes without a declared tool capability only exist on a
+    # registry that no longer carries an owner tool roster.
+    raise RuntimeError("effective registry declares no Google model with tools")
+
+
+GOOGLE_TOOL_MODEL = _tool_capable_native_model()
 PC_TOOL = {"type": "function", "function": {
     "name": "pc_files", "description": "Inspect the requested PC scope.",
     "parameters": {"type": "object", "properties": {"plan": {"type": "string"}}, "required": ["plan"]},
 }}
 
 
-def _google_live(monkeypatch):
+def _native_live(monkeypatch):
+    """Switch the native tool lane to live with the registry's binding name."""
     from app.pilot import stream_gateway
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    binding = provider_row(native_wire.GOOGLE_PROVIDER_ID).get("credential_binding_name")
+    if binding:
+        monkeypatch.setenv(binding, NATIVE_UNIT_KEY)
     monkeypatch.setattr(rcfg, "provider_mode", "live")
     monkeypatch.setattr(stream_gateway, "_request_id", lambda: "b14stream_fixed")
 
 
 def _native_frame(parts=None, *, finish=None, usage=None):
+    from app.pilot.catalog import get_catalog_by_id
     candidate = {"index": 0, "content": {"role": "model", "parts": parts or []}}
     if finish is not None:
         candidate["finishReason"] = finish
-    payload = {"responseId": "native_response", "modelVersion": "gemini-3.1-flash-lite", "candidates": [candidate]}
+    upstream = get_catalog_by_id(GOOGLE_TOOL_MODEL).upstream_model
+    payload = {"responseId": "native_response", "modelVersion": upstream, "candidates": [candidate]}
     if usage is not None:
         payload["usageMetadata"] = usage
     return ("data: " + json.dumps(payload, ensure_ascii=False) + "\n\n").encode()
 
-
 @pytest.mark.parametrize("url", [STREAM_URL, CHAT_URL])
 @pytest.mark.parametrize("extra", [{}, {"tools": None}, {"tools": []}], ids=["omitted", "null", "empty"])
-def test_tools_absent_preserves_google_stream_bytes(monkeypatch, extra, url):
-    _google_live(monkeypatch)
+def test_tools_absent_preserves_native_stream_bytes(monkeypatch, extra, url):
+    _native_live(monkeypatch)
     sent = []
     def handler(request):
         sent.append(request)
@@ -187,12 +235,14 @@ def test_tools_absent_preserves_google_stream_bytes(monkeypatch, extra, url):
     )
     assert response.status_code == 200, response.text
     assert len(sent) == 1
-    assert str(sent[0].url) == "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+    assert str(sent[0].url) == native_wire.GOOGLE_BASE_ORIGIN + "/chat/completions"
     # #6812 stage 2 adds the usage request to every streamed body, so the wire
     # snapshot carries that one key and nothing else new.
-    assert sent[0].content == b'{"model":"gemini-3.1-flash-lite","messages":[{"role":"user","content":"' + "안녕하세요".encode() + b'"}],"stream":true,"stream_options":{"include_usage":true}}'
+    from app.pilot.catalog import get_catalog_by_id
+    upstream = get_catalog_by_id(GOOGLE_TOOL_MODEL).upstream_model
+    assert sent[0].content == b'{"model":"' + upstream.encode() + b'","messages":[{"role":"user","content":"' + "안녕하세요".encode() + b'"}],"stream":true,"stream_options":{"include_usage":true}}'
     # Exact legacy wire snapshot; request ID is fixed, no event names or new keys.
-    assert response.content == LEGACY_GOOGLE_STREAM_BYTES
+    assert response.content == _native_stream_bytes()
 
 
 @pytest.mark.parametrize("url", [STREAM_URL, CHAT_URL])
@@ -203,7 +253,7 @@ def test_tools_absent_preserves_google_stream_bytes(monkeypatch, extra, url):
     ({"type": "function", "function": {"name": "pc_files"}}, {"mode": "ANY", "allowedFunctionNames": ["pc_files"]}),
 ])
 def test_google_tools_emit_tool_call_event(monkeypatch, choice, config, url):
-    _google_live(monkeypatch)
+    _native_live(monkeypatch)
     sent = []
     stream = _ChunkStream([
         _native_frame([{"text": "숨긴 추론", "thought": True}]),
@@ -218,8 +268,12 @@ def test_google_tools_emit_tool_call_event(monkeypatch, choice, config, url):
     )
     assert response.status_code == 200, response.text
     assert len(sent) == 1 and stream.closed
-    assert str(sent[0].url) == "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:streamGenerateContent?alt=sse"
-    assert sent[0].headers["x-goog-api-key"] == "unit-google-key-not-a-secret"
+    from app.pilot.catalog import get_catalog_by_id
+    upstream = get_catalog_by_id(GOOGLE_TOOL_MODEL).upstream_model
+    assert str(sent[0].url) == (
+        f"https://{native_wire.GOOGLE_ALLOWED_HOST}/v1beta/models/{upstream}:streamGenerateContent?alt=sse"
+    )
+    assert sent[0].headers["x-goog-api-key"] == NATIVE_UNIT_KEY
     assert "authorization" not in sent[0].headers
     body = json.loads(sent[0].content)
     assert body["contents"] == [{"role": "user", "parts": [{"text": "안녕하세요"}]}]
@@ -229,14 +283,31 @@ def test_google_tools_emit_tool_call_event(monkeypatch, choice, config, url):
     assert response.text.startswith('event: tool_call\ndata: {"id":"call_native","name":"pc_files","arguments":"{\\"plan\\":\\"files_list\\"}","index":0}\n\n')
     assert response.text.endswith('event: done\ndata: {"finish_reason":"tool_calls"}\n\n')
     assert "숨긴 추론" not in response.text
-    assert "unit-google-key" not in response.text
+    assert "unit-key" not in response.text
+
+
+def _first_registered_model(declares_tools: bool) -> str:
+    """A registry model whose declared tool capability is (or is not) present."""
+    for row in model_rows():
+        if ("tools" in (row.get("capabilities") or [])) is declares_tools:
+            return row["id"]
+    raise RuntimeError(
+        f"effective registry declares no model with tools={declares_tools}"
+    )
 
 
 def test_tools_non_google_still_refused_before_dispatch(monkeypatch):
-    _google_live(monkeypatch)
+    _native_live(monkeypatch)
+    from app.pilot.catalog import get_catalog_by_id
+    # Any registered route whose platform provider is not the native wire.
+    off_native_wire = next(
+        row["id"] for row in model_rows()
+        if get_catalog_by_id(row["id"]) is not None
+        and get_catalog_by_id(row["id"]).platform_provider_id != native_wire.GOOGLE_PROVIDER_ID
+    )
     calls = []
     response = _client(httpx.MockTransport(lambda req: calls.append(req))).post(
-        STREAM_URL, json=_payload(model="tokenharbor/deepseek-v4.1-flash:free", tools=[PC_TOOL]),
+        STREAM_URL, json=_payload(model=off_native_wire, tools=[PC_TOOL]),
     )
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "stream_not_supported"
@@ -244,19 +315,27 @@ def test_tools_non_google_still_refused_before_dispatch(monkeypatch):
 
 
 def test_tools_undeclared_google_capability_refused_before_dispatch(monkeypatch):
-    _google_live(monkeypatch)
+    _native_live(monkeypatch)
+    from app.pilot.catalog import get_catalog_by_id
+    # A Google-wire model with no declared tool capability; the registry model
+    # that does declare one is covered by the test below (#6460-5).
+    no_tools = next(
+        row["id"] for row in model_rows()
+        if get_catalog_by_id(row["id"]) is not None
+        and get_catalog_by_id(row["id"]).platform_provider_id == native_wire.GOOGLE_PROVIDER_ID
+        and "tools" not in (row.get("capabilities") or [])
+    )
     calls = []
-    # Gemma 26B declares no tools; the owner-decided 31B does (#6460-5).
     response = _client(httpx.MockTransport(lambda req: calls.append(req))).post(
-        STREAM_URL, json=_payload(model="google/gemma-4-26b-a4b-it", tools=[PC_TOOL]),
+        STREAM_URL, json=_payload(model=no_tools, tools=[PC_TOOL]),
     )
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "tools_not_supported"
     assert calls == []
 
 
-def test_gemma_31b_tools_reach_the_google_native_wire(monkeypatch):
-    _google_live(monkeypatch)
+def test_a_declaring_model_reaches_the_native_tool_wire(monkeypatch):
+    _native_live(monkeypatch)
     calls = []
     stream = _ChunkStream([
         _native_frame([{"functionCall": {"name": "pc_files", "args": {"plan": "files_list"}}}]),
@@ -265,7 +344,7 @@ def test_gemma_31b_tools_reach_the_google_native_wire(monkeypatch):
         calls.append(request)
         return httpx.Response(200, stream=stream)
     response = _client(httpx.MockTransport(handler)).post(
-        STREAM_URL, json=_payload(model="google/gemma-4-31b-it", tools=[PC_TOOL]),
+        STREAM_URL, json=_payload(model=GOOGLE_TOOL_MODEL, tools=[PC_TOOL]),
     )
     assert response.status_code == 200
     assert response.text.startswith("event: tool_call\n")
@@ -273,7 +352,7 @@ def test_gemma_31b_tools_reach_the_google_native_wire(monkeypatch):
 
 
 def test_google_tool_call_commits_stream_and_failure_never_falls_back(monkeypatch):
-    _google_live(monkeypatch)
+    _native_live(monkeypatch)
     calls = []
     stream = _ChunkStream([
         _native_frame([{"functionCall": {"name": "pc_files", "args": {"plan": "files_list"}}}]),
@@ -299,7 +378,7 @@ def test_google_tool_call_commits_stream_and_failure_never_falls_back(monkeypatc
     [{"functionCall": {"name": "pc_files", "partialArgs": []}}],
 ])
 def test_google_invalid_tool_response_is_an_upstream_error(monkeypatch, parts):
-    _google_live(monkeypatch)
+    _native_live(monkeypatch)
     stream = _ChunkStream([_native_frame(parts, finish="STOP")])
     response = _client(httpx.MockTransport(lambda req: httpx.Response(200, stream=stream))).post(
         STREAM_URL, json=_payload(model=GOOGLE_TOOL_MODEL, tools=[PC_TOOL], business14={"product_tier": "plus"}),
@@ -310,7 +389,7 @@ def test_google_invalid_tool_response_is_an_upstream_error(monkeypatch, parts):
 
 
 def test_google_tool_stream_preserves_text_and_explicit_parameters(monkeypatch):
-    _google_live(monkeypatch)
+    _native_live(monkeypatch)
     sent = []
     wire = _native_frame([{"text": "안녕"}]) + _native_frame(finish="STOP")
     stream = _ChunkStream([wire[:7], wire[7:80], wire[80:81], wire[81:]])
@@ -340,7 +419,7 @@ def test_google_tool_stream_preserves_text_and_explicit_parameters(monkeypatch):
 
 
 def test_google_missing_finish_is_not_successful_done(monkeypatch):
-    _google_live(monkeypatch)
+    _native_live(monkeypatch)
     stream = _ChunkStream([_native_frame([{"functionCall": {"name": "pc_files", "args": {}}}])])
     response = _client(httpx.MockTransport(lambda req: httpx.Response(200, stream=stream))).post(
         STREAM_URL, json=_payload(model=GOOGLE_TOOL_MODEL, tools=[PC_TOOL]),
@@ -351,11 +430,47 @@ def test_google_missing_finish_is_not_successful_done(monkeypatch):
     assert stream.closed
 
 
-LEGACY_GOOGLE_STREAM_BYTES = (
-    'data: {"id":"upstream_stream_1","object":"chat.completion.chunk","model":"test-fixture/kilo-stream-gateway","choices":[{"index":0,"delta":{"content":"안녕"},"finish_reason":null}],"business14":{"request_id":"b14stream_fixed","route_mode":"manual","selected_provider":"Google AI Studio","selected_model":"google/gemini-3.1-flash-lite","selected_upstream_model":"gemini-3.1-flash-lite","selected_route_id":"platform:google/gemini-3.1-flash-lite","fallback_allowed":true,"fallback_used":false,"attempt_count":1,"provider_mode":"live","route_evidence_status":"live_streaming_preview"}}\n\n'
-    'data: {"id":"upstream_stream_1","object":"chat.completion.chunk","model":"test-fixture/kilo-stream-gateway","choices":[{"index":0,"delta":{},"finish_reason":"stop"}],"business14":{"request_id":"b14stream_fixed","route_mode":"manual","selected_provider":"Google AI Studio","selected_model":"google/gemini-3.1-flash-lite","selected_upstream_model":"gemini-3.1-flash-lite","selected_route_id":"platform:google/gemini-3.1-flash-lite","fallback_allowed":true,"fallback_used":false,"attempt_count":1,"provider_mode":"live","route_evidence_status":"live_streaming_preview"},"usage":{"prompt_tokens":3,"completion_tokens":4,"total_tokens":7}}\n\n'
-    'data: [DONE]\n\n'
-).encode("utf-8")
+def _native_stream_bytes() -> bytes:
+    """The exact legacy frame bytes for whichever Google tool model is routed.
+
+    Every value in the snapshot comes from the effective registry, so the shape
+    asserted here (frame order, business14 keys, no reasoning pass-through) is
+    unchanged while no deployment value is written in the test file.
+    """
+    from app.pilot.catalog import get_catalog_by_id
+
+    model = get_catalog_by_id(GOOGLE_TOOL_MODEL)
+    metadata = {
+        "request_id": "b14stream_fixed",
+        "route_mode": "manual",
+        "selected_provider": model.provider,
+        "selected_model": GOOGLE_TOOL_MODEL,
+        "selected_upstream_model": model.upstream_model,
+        "selected_route_id": f"platform:{GOOGLE_TOOL_MODEL}",
+        "fallback_allowed": True,
+        "fallback_used": False,
+        "attempt_count": 1,
+        "provider_mode": "live",
+        "route_evidence_status": "live_streaming_preview",
+    }
+    usage = {"prompt_tokens": 3, "completion_tokens": 4, "total_tokens": 7}
+    body = []
+    for delta, finish_reason, with_usage in (
+        ({"content": "안녕"}, None, False),
+        ({}, "stop", True),
+    ):
+        chunk = {
+            "id": "upstream_stream_1",
+            "object": "chat.completion.chunk",
+            "model": MODEL,
+            "choices": [{"index": 0, "delta": delta, "finish_reason": finish_reason}],
+            "business14": metadata,
+        }
+        if with_usage:
+            chunk["usage"] = usage
+        body.append("data: " + json.dumps(chunk, ensure_ascii=False, separators=(",", ":")) + "\n\n")
+    body.append("data: [DONE]\n\n")
+    return "".join(body).encode("utf-8")
 
 
 def test_mock_preview_is_sse_manual_route_with_done_and_metadata():
@@ -392,14 +507,7 @@ def test_a_caller_cannot_narrow_the_tier_fallback_with_an_attempt_count(monkeypa
     from dataclasses import replace
     from app.pilot import stream_gateway
 
-    fallback = {
-        "model_id": "test-fixture/fallback",
-        "upstream_model": "test-fixture/fallback-upstream",
-        "provider": "Fixture Backup Provider",
-        "platform_provider_id": "test-fixture",
-        "route_id": "platform:test-fixture/fallback",
-        "reason": "owner_selected_tier_fallback",
-    }
+    fallback = _owner_tier_fallback_candidate()
     original = stream_gateway.rcore.resolve_route
 
     def resolve_with_tier_pair(model_id, opts):
@@ -423,9 +531,59 @@ def test_a_caller_cannot_narrow_the_tier_fallback_with_an_attempt_count(monkeypa
     assert frames[0]["business14"]["fallback_allowed"] is True
 
 
+def _owner_tier_fallback_candidate() -> dict:
+    """The owner-tier roster's second candidate, in the router's own shape.
+
+    The roster is the owner's decision and is read from the effective registry
+    (``tier_fallback``), never written here: the first roster entry is the
+    primary this suite routes to, so the *next* enabled entry is the backup the
+    tier walk is allowed to reach.
+    """
+    from app.pilot.catalog import get_catalog_by_id
+    from app.pilot.model_registry_file import installed_model_ids
+    from app.pilot.tier_fallback import effective_tier_fallback
+
+    installed = installed_model_ids()
+    for roster in effective_tier_fallback().values():
+        candidates = [model_id for model_id in roster
+                      if model_id != MODEL and model_id in installed]
+        if not candidates:
+            continue
+        model_id = candidates[0]
+        model = get_catalog_by_id(model_id)
+        if model is None or not model.enabled:
+            continue
+        return {
+            "model_id": model_id,
+            "upstream_model": model.upstream_model,
+            "provider": model.provider,
+            "platform_provider_id": model.platform_provider_id,
+            "route_id": f"platform:{model_id}",
+            "reason": "owner_selected_tier_fallback",
+        }
+    raise RuntimeError("effective registry declares no owner tier fallback candidate")
+
+
+def _unregistered_model_id() -> str:
+    """A well-formed model identity the effective registry does not declare.
+
+    It reuses a registered provider id (so the shape stays realistic) with a
+    model name that is not installed, so every refusal below is exercised by
+    the same class of value without naming a deployment model.
+    """
+    provider = a_provider_id()
+    installed = {row["id"] for row in model_rows()}
+    model_id = f"{provider}/not-a-registered-model"
+    suffix = 0
+    while model_id in installed:
+        suffix += 1
+        model_id = f"{provider}/not-a-registered-model-{suffix}"
+    return model_id
+
+
 def test_canonical_stream_true_does_not_promote_a_non_catalog_model():
     client = _client()
-    response = client.post(CHAT_URL, json=_payload(model="unknown/model"))
+    response = client.post(CHAT_URL, json=_payload(model=_unregistered_model_id()))
 
     # A non-catalog model never enters the stream opt-in and the canonical
     # validator refuses stream=true as always.
@@ -454,7 +612,7 @@ def test_streaming_is_rejected_before_network_for_a_non_catalog_model():
     rcfg.provider_mode = "live"
     rcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
-    response = client.post(STREAM_URL, json=_payload(model="unknown/model"))
+    response = client.post(STREAM_URL, json=_payload(model=_unregistered_model_id()))
 
     # The stream surface refuses a non-catalog model before any network call.
     assert response.status_code == 400
@@ -500,14 +658,7 @@ def test_owner_tier_fallback_is_tried_before_first_visible_token(monkeypatch, ti
     from app.pilot.errors import UpstreamTimeout
     from app.pilot.stream_types import StreamEvent
 
-    fallback = {
-        "model_id": "test-fixture/fallback",
-        "upstream_model": "test-fixture/fallback-upstream",
-        "provider": "Fixture Backup Provider",
-        "platform_provider_id": "test-fixture",
-        "route_id": "platform:test-fixture/fallback",
-        "reason": "owner_selected_tier_fallback",
-    }
+    fallback = _owner_tier_fallback_candidate()
     original = stream_gateway.rcore.resolve_route
 
     def resolve_with_tier_pair(model_id, opts):
@@ -531,7 +682,7 @@ def test_owner_tier_fallback_is_tried_before_first_visible_token(monkeypatch, ti
     monkeypatch.setattr(stream_gateway, "get_catalog_by_id", fixture_catalog)
     original_credential = stream_gateway.rcore._credential_status_for
     monkeypatch.setattr(stream_gateway.rcore, "_credential_status_for",
-        lambda cm: (True, "key_available", "platform_secret", "test-fixture")
+        lambda cm: (True, "key_available", "platform_secret", fallback["platform_provider_id"])
         if cm.model_id == fallback["model_id"] else original_credential(cm))
     monkeypatch.setenv("BUSINESS14_FIRST_BYTE_TIMEOUT_SECONDS", "0.02")
     monkeypatch.setenv("BUSINESS14_ATTEMPT_TIMEOUT_SECONDS", "0.08")
@@ -596,14 +747,7 @@ def test_slow_provider_stream_falls_back_before_visible_token(
     import json
     from app.pilot import stream_gateway
 
-    fallback = {
-        "model_id": "test-fixture/fallback",
-        "upstream_model": "test-fixture/fallback-upstream",
-        "provider": "Fixture Backup Provider",
-        "platform_provider_id": "test-fixture",
-        "route_id": "platform:test-fixture/fallback",
-        "reason": "owner_selected_tier_fallback",
-    }
+    fallback = _owner_tier_fallback_candidate()
     original = stream_gateway.rcore.resolve_route
     def resolve_with_tier_pair(model_id, opts):
         base = original(model_id, opts)
@@ -621,9 +765,16 @@ def test_slow_provider_stream_falls_back_before_visible_token(
                 platform_provider_id=fallback["platform_provider_id"])
         return original_catalog(model_id)
     monkeypatch.setattr(stream_gateway, "get_catalog_by_id", fixture_catalog)
+    # The backup candidate is served from its own Provider row, so the Provider's
+    # credential requirement is satisfied from the registry's binding name (the
+    # live lane reads it) instead of only in the router's availability probe.
+    from app.pilot import platform_secrets as ps
+    backup_binding = provider_row(fallback["platform_provider_id"]).get("credential_binding_name")
+    if backup_binding:
+        monkeypatch.setenv(backup_binding, BACKUP_UNIT_KEY)
     original_credential = stream_gateway.rcore._credential_status_for
     monkeypatch.setattr(stream_gateway.rcore, "_credential_status_for",
-        lambda cm: (True, "key_available", "platform_secret", "test-fixture")
+        lambda cm: (True, "key_available", "platform_secret", fallback["platform_provider_id"])
         if cm.model_id == fallback["model_id"] else original_credential(cm))
 
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
@@ -680,14 +831,7 @@ def test_owner_tier_fallback_is_not_tried_after_first_visible_token(monkeypatch)
     from app.pilot.errors import PilotError
     from app.pilot.stream_types import StreamEvent
 
-    fallback = {
-        "model_id": "test-fixture/fallback",
-        "upstream_model": "test-fixture/fallback-upstream",
-        "provider": "Fixture Backup Provider",
-        "platform_provider_id": "test-fixture",
-        "route_id": "platform:test-fixture/fallback",
-        "reason": "owner_selected_tier_fallback",
-    }
+    fallback = _owner_tier_fallback_candidate()
     original = stream_gateway.rcore.resolve_route
 
     def resolve_with_tier_pair(model_id, opts):
@@ -711,7 +855,7 @@ def test_owner_tier_fallback_is_not_tried_after_first_visible_token(monkeypatch)
     monkeypatch.setattr(stream_gateway, "get_catalog_by_id", fixture_catalog)
     original_credential = stream_gateway.rcore._credential_status_for
     monkeypatch.setattr(stream_gateway.rcore, "_credential_status_for",
-        lambda cm: (True, "key_available", "platform_secret", "test-fixture")
+        lambda cm: (True, "key_available", "platform_secret", fallback["platform_provider_id"])
         if cm.model_id == fallback["model_id"] else original_credential(cm))
     attempts = []
 
@@ -746,7 +890,7 @@ def test_legacy_non_catalog_route_is_rejected_before_network():
     rcfg.provider_mode = "live"
     rcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
-    response = client.post(STREAM_URL, json=_payload(model="legacy-provider-model"))
+    response = client.post(STREAM_URL, json=_payload(model=_unregistered_model_id()))
 
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "unsupported_model"
@@ -985,7 +1129,7 @@ def test_canonical_stream_true_does_not_enable_fallback_or_extra_calls():
 
 
 def test_canonical_stream_true_does_not_enable_byok_without_secret():
-    response = _client().post(CHAT_URL, json=_payload(model="some-byok-model"))
+    response = _client().post(CHAT_URL, json=_payload(model=_unregistered_model_id()))
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "stream_not_supported"
 

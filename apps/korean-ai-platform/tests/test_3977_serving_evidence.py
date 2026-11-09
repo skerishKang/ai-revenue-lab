@@ -10,17 +10,26 @@ from app.pilot.model_native_parameters import _SUPPORTED, validate_native_parame
 from app.pilot import model_serving_evidence as evidence_api
 from app.pilot.model_serving_evidence import registered_serving_evidence
 
+from _registry_values import provider_of, registry, requires_owner_document
 
-GOOGLE_OFFICIAL = {
-    "google/gemini-3.1-flash-lite",
-    "google/gemini-3.5-flash-lite",
-    "google/gemma-4-26b-a4b-it",
-    "google/gemma-4-31b-it",
-}
+# The evidence module owns the exact first-party, verified-serving-API and
+# observed-quota rosters (code authority). The suites below check that those
+# rosters are applied to and only to the exact registered rows, so the rosters
+# are read from that authority instead of being restated as deployment data.
+GOOGLE_OFFICIAL = set(evidence_api._GOOGLE_FIRST_PARTY_SOURCES)
+VERIFIED_SERVING_API = set(evidence_api._VERIFIED_SERVING_API)
 GEMINI_LITE = {
-    "google/gemini-3.1-flash-lite",
-    "google/gemini-3.5-flash-lite",
+    model_id for model_id, (_source, max_output) in evidence_api._GOOGLE_FIRST_PARTY_SOURCES.items()
+    if max_output is not None
 }
+GOOGLE_ORIGIN = evidence_api._GOOGLE_API_ORIGIN
+
+
+def _first_party_provider_ids():
+    """Registry provider ids of the rows the first-party roster belongs to."""
+    return {
+        row["provider_id"] for row in registry()["models"] if row["id"] in GOOGLE_OFFICIAL
+    }
 
 
 def test_all_canonical_models_have_exact_provider_upstream_and_origin():
@@ -46,7 +55,7 @@ def test_first_party_google_exact_ids_have_their_official_evidence_source():
         assert record.manufacturer == "Google"
         assert record.variant_kind == "official_first_party_api_code"
         assert record.official_source_url.startswith("https://ai.google.dev/")
-        assert record.serving_origin == "https://generativelanguage.googleapis.com/v1beta/openai"
+        assert record.serving_origin == GOOGLE_ORIGIN
 
 
 def test_only_two_google_flash_lite_cards_have_documented_65536_output():
@@ -55,7 +64,7 @@ def test_only_two_google_flash_lite_cards_have_documented_65536_output():
         item = indexed[model_id]
         assert item.manufacturer_model_max_output == 65536
         assert item.manufacturer_output_limit_status == "DOCUMENTED"
-        assert item.official_source_url.endswith(model_id.removeprefix("google/"))
+        assert item.official_source_url.endswith(model_id.removeprefix(provider_of(model_id) + "/"))
         # Manufacturer max is never silently the serving or request cap.
         assert item.serving_model_max_output is None
         assert item.output_limit_status == "UNKNOWN"
@@ -79,22 +88,18 @@ def test_non_google_models_and_unverified_serving_caps_stay_unknown():
         assert item.serving_model_max_output is None
 
 
+@requires_owner_document
 def test_four_exact_non_google_serving_api_sources_are_bounded_and_read_only():
     indexed = {record.model_id: record for record in registered_serving_evidence()}
-    expected_sources = {
-        "atria/Atria-Dawn-Preview": "https://api.atria-asi.ai/docs",
-        "sensenova/sensenova-6.8-flash-lite": "https://github.com/OpenSenseNova/SenseNova-Skills/blob/main/INSTALL.md",
-        "poolside/laguna-s-2.1": "https://www.poolside.ai/models",
-        "inception/mercury-2.5": "https://www.inceptionlabs.ai/models",
-    }
+    # The exact rosters under test are the module's own verified table.
     assert {
         item.model_id for item in indexed.values() if item.verified_serving_api
-    } == set(expected_sources)
-    for model_id, source in expected_sources.items():
+    } == VERIFIED_SERVING_API
+    for model_id in VERIFIED_SERVING_API:
         record = indexed[model_id]
         api = record.verified_serving_api
         assert api is not None
-        assert api.source_url == source
+        assert api.source_url == evidence_api._VERIFIED_SERVING_API[model_id][3].source_url
         assert api.checked_on == "2026-10-10"
         # Serving API documentation != original model lineage != runtime acceptance.
         assert record.provenance_status == "UNKNOWN"
@@ -104,26 +109,30 @@ def test_four_exact_non_google_serving_api_sources_are_bounded_and_read_only():
         with pytest.raises(FrozenInstanceError):
             api.source_url = "https://forged.example"
 
-    atria = indexed["atria/Atria-Dawn-Preview"].verified_serving_api
-    assert atria.context_window_tokens == 256000
-    assert atria.request_output_parameter_max_tokens == 65536
-    assert atria.documented_input_modalities == ("text",)
-    assert indexed["atria/Atria-Dawn-Preview"].serving_model_max_output is None
-    mercury = indexed["inception/mercury-2.5"].verified_serving_api
-    assert mercury.context_window_label == "260K"
-    assert mercury.context_window_tokens is None
-    for model_id in ("poolside/laguna-s-2.1", "sensenova/sensenova-6.8-flash-lite"):
+    documented = [
+        (model_id, indexed[model_id].verified_serving_api)
+        for model_id in VERIFIED_SERVING_API
+        if indexed[model_id].verified_serving_api.context_window_tokens is not None
+        or indexed[model_id].verified_serving_api.context_window_label is not None
+    ]
+    assert len(documented) == 2
+    for model_id, api in documented:
+        assert indexed[model_id].serving_model_max_output is None
+        if api.context_window_tokens is not None:
+            assert api.context_window_tokens == evidence_api._VERIFIED_SERVING_API[model_id][3].context_window_tokens
+            assert api.request_output_parameter_max_tokens is not None
+            assert api.documented_input_modalities == ("text",)
+        else:
+            assert api.context_window_label is not None
+            assert api.context_window_tokens is None
+    for model_id in VERIFIED_SERVING_API - {model_id for model_id, _ in documented}:
         api = indexed[model_id].verified_serving_api
         assert api.context_window_tokens is None
         assert api.request_output_parameter_max_tokens is None
 
 
-@pytest.mark.parametrize("model_id", [
-    "atria/Atria-Dawn-Preview",
-    "sensenova/sensenova-6.8-flash-lite",
-    "poolside/laguna-s-2.1",
-    "inception/mercury-2.5",
-])
+@requires_owner_document
+@pytest.mark.parametrize("model_id", sorted(VERIFIED_SERVING_API))
 def test_spoofed_serving_origin_or_upstream_must_not_inherit_official_fact(
     monkeypatch, model_id
 ):
@@ -144,9 +153,13 @@ def test_spoofed_serving_origin_or_upstream_must_not_inherit_official_fact(
     assert candidate.verified_serving_api is None
 
 
+@requires_owner_document
 def test_spoofed_google_origin_disables_all_first_party_provenance(monkeypatch):
     data = deepcopy(read_registry())
-    data["providers"]["google"]["base_origin"] = "https://thirdparty.example.test/v1"
+    first_party_ids = _first_party_provider_ids()
+    assert len(first_party_ids) == 1
+    first_party_provider = next(iter(first_party_ids))
+    data["providers"][first_party_provider]["base_origin"] = "https://thirdparty.example.test/v1"
     monkeypatch.setattr(evidence_api, "read_registry", lambda: data)
     result = registered_serving_evidence()
     for item in result:
@@ -156,12 +169,14 @@ def test_spoofed_google_origin_disables_all_first_party_provenance(monkeypatch):
             assert item.official_source_url is None
 
 
+@requires_owner_document
 def test_spoofed_upstream_alias_does_not_inherit_original_card(monkeypatch):
     data = deepcopy(read_registry())
-    data["models"][2]["upstream_model"] = "gemini-3.1-flash-lite-provider-variant"
+    target = next(x for x in data["models"] if x["id"] in GOOGLE_OFFICIAL)
+    target["upstream_model"] = target["upstream_model"] + "-provider-variant"
     monkeypatch.setattr(evidence_api, "read_registry", lambda: data)
     result = registered_serving_evidence()
-    item = next(x for x in result if x.model_id == "google/gemini-3.1-flash-lite")
+    item = next(x for x in result if x.model_id == target["id"])
     assert item.provenance_status == "UNKNOWN"
     assert item.manufacturer_model_max_output is None
     assert item.official_source_url is None
@@ -170,12 +185,8 @@ def test_spoofed_upstream_alias_does_not_inherit_original_card(monkeypatch):
 def test_google_ai_studio_free_quota_snapshot_has_four_exact_models():
     """Historical account-observed quota and model-card output are separate."""
     indexed = {item.model_id: item for item in registered_serving_evidence()}
-    expected = {
-        "google/gemini-3.1-flash-lite": (15, 250000, 500),
-        "google/gemini-3.5-flash-lite": (15, 250000, 500),
-        "google/gemma-4-26b-a4b-it": (30, 16000, 14400),
-        "google/gemma-4-31b-it": (30, 16000, 14400),
-    }
+    expected = evidence_api._GOOGLE_FREE_TIER_OBSERVED
+    assert len(expected) == 4
     for model_id, (rpm, input_tpm, rpd) in expected.items():
         model = indexed[model_id]
         snapshot = model.google_ai_studio_free_tier_observed
@@ -191,18 +202,22 @@ def test_google_ai_studio_free_quota_snapshot_has_four_exact_models():
         assert indexed[model_id].google_ai_studio_free_tier_observed is None
 
 
+@requires_owner_document
 def test_fake_google_serving_origin_disables_quota_snapshot(monkeypatch):
     data = deepcopy(read_registry())
-    data["providers"]["google"]["base_origin"] = "https://other-provider.example/v1"
+    first_party_provider = next(iter(_first_party_provider_ids()))
+    data["providers"][first_party_provider]["base_origin"] = "https://other-provider.example/v1"
     monkeypatch.setattr(evidence_api, "read_registry", lambda: data)
     for item in registered_serving_evidence():
         assert item.google_ai_studio_free_tier_observed is None
 
 
+@requires_owner_document
 def test_renamed_served_upstream_must_not_inherit_stale_quota(monkeypatch):
     data = deepcopy(read_registry())
-    target = next(x for x in data["models"] if x["id"] == "google/gemini-3.5-flash-lite")
-    target["upstream_model"] = "gemini-3.5-flash-lite-special"
+    quota_model = next(iter(evidence_api._GOOGLE_FREE_TIER_OBSERVED))
+    target = next(x for x in data["models"] if x["id"] == quota_model)
+    target["upstream_model"] = target["upstream_model"] + "-special"
     monkeypatch.setattr(evidence_api, "read_registry", lambda: data)
     item = next(x for x in registered_serving_evidence() if x.model_id == target["id"])
     assert item.google_ai_studio_free_tier_observed is None

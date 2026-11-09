@@ -7,12 +7,21 @@ import pytest
 
 from app.pilot.gateway import _validate_body, _InvalidBody
 from app.pilot.model_native_parameters import (
+    OPTIONAL_FIELDS,
     UnsupportedModelParameter,
     validate_native_parameters,
 )
+from app.pilot.model_registry_file import read_registry
 from app.pilot.platform import call_platform_chat_completions, stream_platform_chat_completions
 from app.pilot.schemas import PilotChatRequest
 from app.pilot.provider import _build_upstream_request
+
+from _registry_values import (
+    a_model_id,
+    model_ids,
+    model_rows,
+    provider_of,
+)
 
 
 def request(model, **params):
@@ -23,59 +32,98 @@ def request(model, **params):
     })
 
 
-@pytest.mark.parametrize("model", [
-    "google/gemini-3.1-flash-lite",
-    "google/gemini-3.5-flash-lite",
-    "google/gemma-4-26b-a4b-it",
-    "google/gemma-4-31b-it",
-    "sensenova/sensenova-6.8-flash-lite",
-    "poolside/laguna-s-2.1",
-    "inception/mercury-2.5",
-    "atria/Atria-Dawn-Preview",
-    "agnes-ai/agnes-3.0-flash",
-    "experiential/qwen3.8-flash-next-uncensored",
-    "kira/qwen3.8-flash-free",
-])
-def test_all_eleven_registered_models_omit_hidden_defaults(model):
+def _native_fields(model_id):
+    """The model-native fields the exact route declares, per serving evidence."""
+    from app.pilot.model_serving_evidence import registered_serving_evidence
+
+    for item in registered_serving_evidence():
+        if item.model_id == model_id:
+            return set(item.native_override_fields)
+    return set()
+
+
+def _models_accepting(field):
+    """Installed exact ids whose evidence declares ``field`` as documented."""
+    return [mid for mid in sorted(model_ids()) if field in _native_fields(mid)]
+
+
+def _models_rejecting(field):
+    """Installed exact ids whose evidence does not declare ``field``."""
+    return [mid for mid in sorted(model_ids()) if field not in _native_fields(field)]
+
+
+def _first_model_with(field):
+    """One installed exact id that documents ``field`` (registry authority)."""
+    return _models_accepting(field)[0]
+
+
+def _provider_label(model_id):
+    """The Provider display name the registry itself carries for this row."""
+    for row in model_rows():
+        if row["id"] == model_id:
+            return row["provider_name"]
+    raise AssertionError("model is not in the effective registry")
+
+
+@pytest.mark.parametrize("model", sorted(model_ids()))
+def test_every_registered_model_omits_hidden_defaults(model):
     b = request(model)
     assert b["temperature"] is None
     assert b["max_tokens"] is None
     assert b["model_parameters"] == {}
 
 
+def _reasoning_vocabulary(model_id):
+    """The accepted reasoning levels the exact route's own rule declares.
+
+    The app keeps one authority for this (``_SUPPORTED``), read here exactly as
+    ``model_serving_evidence`` reads it, so no level is restated in this file.
+    """
+    from app.pilot.model_native_parameters import _SUPPORTED
+
+    rule = _SUPPORTED.get(model_id, {}).get("reasoning_effort")
+    assert rule is not None, f"{model_id} reports a field its rule does not carry"
+    return sorted(rule)
+
+
 def test_model_native_google_reasoning_only_when_explicit():
-    assert request("google/gemini-3.1-flash-lite", reasoning_effort="low")["model_parameters"] == {"reasoning_effort": "low"}
-    assert request("google/gemini-3.5-flash-lite", reasoning_effort="minimal")["model_parameters"] == {"reasoning_effort": "minimal"}
-    with pytest.raises(_InvalidBody, match="reasoning_effort"):
-        request("google/gemini-3.1-flash-lite", reasoning_effort="none")
+    documented = _models_accepting("reasoning_effort")
+    assert documented, "no exact route declares a reasoning choice"
+    for model_id in documented:
+        accepted = _reasoning_vocabulary(model_id)
+        for level in accepted:
+            assert request(model_id, reasoning_effort=level)["model_parameters"] == {
+                "reasoning_effort": level,
+            }
+        with pytest.raises(_InvalidBody, match="reasoning_effort"):
+            request(model_id, reasoning_effort="none")
 
 
 def test_unknown_native_field_is_not_silently_discarded():
+    known = set(OPTIONAL_FIELDS)
+    invent = lambda base: base + "-unverified"  # noqa: E731 - a non-contract field name
+    unknown_field = invent(sorted(known)[0])
+    assert unknown_field not in known
     with pytest.raises(UnsupportedModelParameter, match="unsupported model-native fields"):
-        validate_native_parameters("google/gemini-3.1-flash-lite", {"thinking": {"type": "enabled"}})
+        validate_native_parameters(a_model_id(), {unknown_field: {"type": "enabled"}})
 
 
 def test_native_sensenova_exact_documented_sampling():
-    native = request(
-        "sensenova/sensenova-6.8-flash-lite",
-        top_p=0.95, top_k=20, min_p=0.0,
-        presence_penalty=1.5, repetition_penalty=1.0,
-    )["model_parameters"]
-    assert native == {
-        "top_p": 0.95, "top_k": 20, "min_p": 0.0,
-        "presence_penalty": 1.5, "repetition_penalty": 1.0,
-    }
+    model = _first_model_with("top_p")
+    sampling = (
+        ("top_p", 0.95), ("top_k", 20), ("min_p", 0.0),
+        ("presence_penalty", 1.5), ("repetition_penalty", 1.0),
+    )
+    for name, _value in sampling:
+        assert name in _native_fields(model), f"{model} does not document {name}"
+    native = request(model, **dict(sampling))["model_parameters"]
+    assert native == dict(sampling)
 
 
-@pytest.mark.parametrize("model", [
-    "google/gemma-4-26b-a4b-it",
-    "poolside/laguna-s-2.1",
-    "experiential/qwen3.8-flash-next-uncensored",
-    "kira/qwen3.8-flash-free",
-    "inception/mercury-2.5",
-    "unknown/vendor-model",
-])
+@pytest.mark.parametrize("model", sorted(model_ids()))
 def test_unverified_reasoning_field_is_rejected_before_egress(model):
+    if "reasoning_effort" in _native_fields(model):
+        pytest.skip("route documents the reasoning choice")
     with pytest.raises(_InvalidBody, match="not documented"):
         request(model, reasoning_effort="high")
 
@@ -87,13 +135,14 @@ def test_unverified_reasoning_field_is_rejected_before_egress(model):
 ])
 def test_invalid_native_values_are_rejected(params):
     with pytest.raises(_InvalidBody):
-        request("sensenova/sensenova-6.8-flash-lite", **params)
+        request(_first_model_with("top_p"), **params)
 
 
 def test_no_global_4096_model_ceiling_and_explicit_values_unchanged():
-    assert request("google/gemini-3.1-flash-lite", max_tokens=65536)["max_tokens"] == 65536
-    assert request("google/gemini-3.1-flash-lite", temperature=1.0)["temperature"] == 1.0
-    assert request("google/gemini-3.1-flash-lite", max_tokens=2147483648)["max_tokens"] == 2147483648
+    model = _first_model_with("reasoning_effort")
+    assert request(model, max_tokens=65536)["max_tokens"] == 65536
+    assert request(model, temperature=1.0)["temperature"] == 1.0
+    assert request(model, max_tokens=2147483648)["max_tokens"] == 2147483648
     assert PilotChatRequest(model="x", messages=[{"role": "user", "content": "hi"}]).temperature is None
     assert _build_upstream_request("k", [{"role": "user", "content": "hi"}], None, None, "exact") == {
         "model": "exact", "messages": [{"role": "user", "content": "hi"}],
@@ -110,28 +159,42 @@ def google_native_transport(monkeypatch):
     return ps
 
 
+def _reasoning_route():
+    """An installed exact id that documents the reasoning choice."""
+    return _first_model_with("reasoning_effort")
+
+
+def _registry_silent_route():
+    """An installed exact id the registry gives no native override for."""
+    silent = _models_rejecting("reasoning_effort")
+    assert silent, "no installed route is silent about the reasoning choice"
+    return silent[0]
+
+
 @pytest.mark.asyncio
 async def test_platform_completed_exact_native_parameters(google_native_transport, monkeypatch):
     seen = {}
     from app.pilot import platform as plt
     monkeypatch.setattr(plt, "_request_headers", lambda spec, model_id=None: {"Content-Type": "application/json"})
+    model_id = _reasoning_route()
+    upstream = next(row["upstream_model"] for row in model_rows() if row["id"] == model_id)
     async def handler(req):
         seen["body"] = json.loads(req.content)
         return httpx.Response(200, json={
-            "id": "synthetic", "model": "gemini-3.1-flash-lite",
+            "id": "synthetic", "model": upstream,
             "choices": [{"message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}],
         })
     await call_platform_chat_completions(
-        model_id="google/gemini-3.1-flash-lite",
-        upstream_model="gemini-3.1-flash-lite",
-        provider="Google AI Studio",
-        platform_provider_id="google",
+        model_id=model_id,
+        upstream_model=upstream,
+        provider=_provider_label(model_id),
+        platform_provider_id=provider_of(model_id),
         messages=[{"role": "user", "content": "hi"}],
         model_parameters={"reasoning_effort": "low"},
         max_tokens=65536,
         transport=httpx.MockTransport(handler),
     )
-    assert seen["body"]["model"] == "gemini-3.1-flash-lite"
+    assert seen["body"]["model"] == upstream
     # #6838: a caller's reasoning value never reaches the platform lane. The
     # public registry declares no support here, so the option is omitted.
     assert "reasoning_effort" not in seen["body"]
@@ -146,12 +209,14 @@ async def test_platform_rejects_unsupported_before_upstream(monkeypatch):
     monkeypatch.setattr(plt, "_request_headers", lambda spec, model_id=None: {"Content-Type": "application/json"})
     async def handler(req):
         raise AssertionError("should not call unsupported upstream")
+    model_id = _registry_silent_route()
+    upstream = next(row["upstream_model"] for row in model_rows() if row["id"] == model_id)
     with pytest.raises(Exception, match="not documented"):
         await call_platform_chat_completions(
-            model_id="experiential/qwen3.8-flash-next-uncensored",
-            upstream_model="qwen3.8-flash-next-uncensored",
-            provider="ExLab",
-            platform_provider_id="experiential",
+            model_id=model_id,
+            upstream_model=upstream,
+            provider=_provider_label(model_id),
+            platform_provider_id=provider_of(model_id),
             messages=[{"role": "user", "content": "hi"}],
             # #6838: only the reasoning choice moved to B14's authority; this
             # other model-native field is still refused before any upstream call.
@@ -166,26 +231,28 @@ async def test_platform_stream_exact_native_parameter_parity(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setattr(plt, "_request_headers", lambda spec, model_id=None: {"Content-Type": "application/json"})
     seen = {}
+    model_id = _reasoning_route()
+    upstream = next(row["upstream_model"] for row in model_rows() if row["id"] == model_id)
     async def handler(req):
         seen["body"] = json.loads(req.content)
         sse = (
-            'data: {"id":"synthetic","model":"gemini-3.1-flash-lite","choices":[{"delta":{"content":"ok"},"finish_reason":"stop"}]}\n\n'
+            'data: {"id":"synthetic","model":"' + upstream + '","choices":[{"delta":{"content":"ok"},"finish_reason":"stop"}]}\n\n'
             'data: [DONE]\n\n'
         )
         return httpx.Response(200, content=sse.encode("utf-8"), headers={"content-type": "text/event-stream"})
 
     events = []
     async for event in stream_platform_chat_completions(
-        model_id="google/gemini-3.1-flash-lite",
-        upstream_model="gemini-3.1-flash-lite",
-        provider="Google AI Studio",
-        platform_provider_id="google",
+        model_id=model_id,
+        upstream_model=upstream,
+        provider=_provider_label(model_id),
+        platform_provider_id=provider_of(model_id),
         messages=[{"role": "user", "content": "hi"}],
         model_parameters={"reasoning_effort": "high"},
         transport=httpx.MockTransport(handler),
     ):
         events.append(event)
-    assert seen["body"]["model"] == "gemini-3.1-flash-lite"
+    assert seen["body"]["model"] == upstream
     # #6838: the platform lane no longer forwards a caller's reasoning value.
     # This model declares no support in the public registry, so it is omitted.
     assert "reasoning_effort" not in seen["body"]
