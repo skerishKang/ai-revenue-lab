@@ -124,7 +124,7 @@ html[data-theme="padiem-glass"] #clawDialog {
   align-content: start;
   gap: 4px;
   padding: 14px;
-  border: 1px solid var(--line, #e3e3e9);
+  border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--card-bg, #fafafa);
   text-align: left;
@@ -165,7 +165,7 @@ html[data-theme="padiem-glass"] #clawDialog {
   justify-content: center;
   width: 28px;
   height: 28px;
-  border: 1px solid var(--line, #e3e3e9);
+  border: 1px solid var(--line);
   border-radius: 9px;
   background: var(--panel, #fff);
   color: var(--muted, #53606c);
@@ -218,7 +218,7 @@ html[data-theme="padiem-glass"] .capability-read {
 .connector-retry {
   min-height: 32px;
   padding: 5px 10px;
-  border: 1px solid var(--line, #e3e3e9);
+  border: 1px solid var(--line);
   border-radius: 9px;
   background: var(--panel, #fff);
   color: inherit;

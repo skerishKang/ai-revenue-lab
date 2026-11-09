@@ -3,7 +3,7 @@
 .claw-local {
   margin: 12px 0 4px;
   padding: 16px;
-  border: 1px solid var(--line, rgba(17, 24, 39, 0.12));
+  border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--surface, rgba(255, 255, 255, 0.72));
 }
@@ -113,7 +113,7 @@
 .claw-local-block {
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px dashed var(--line, rgba(17, 24, 39, 0.12));
+  border-top: 1px dashed var(--line);
 }
 
 .claw-local-block[hidden] {
@@ -231,7 +231,7 @@
   width: 100%;
   text-align: left;
   overflow-wrap: anywhere;
-  border: 1px solid var(--line, rgba(17, 24, 39, 0.12));
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 9px 12px;
   color: inherit;

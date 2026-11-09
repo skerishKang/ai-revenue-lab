@@ -35,7 +35,7 @@
 .composer-pc-status-face {
   --pc-status-surface: rgba(255, 255, 255, .72);
   --pc-status-text: var(--muted, #53606c);
-  --pc-status-line: var(--line, rgba(66, 106, 135, .26));
+  --pc-status-line: var(--line);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -60,7 +60,7 @@
   --pc-status-surface: rgba(255, 255, 255, 1);
 }
 .composer-pc-status:focus-visible {
-  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
+  outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
   border-radius: 999px;
 }

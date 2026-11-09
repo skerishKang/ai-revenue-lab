@@ -77,9 +77,14 @@ def test_themes_css_extensibility_and_tokens():
     # each theme must define data-theme selector
     for t in VALID_THEMES:
         assert f'html[data-theme="{t}"]' in THEMES_CSS, f"missing CSS for {t}"
-    # shared tokens coverage per spec
-    for token in ["--bg", "--text", "--muted", "--line", "--accent", "--panel", "--sidebar", "--gold"]:
+    # shared tokens coverage per spec. #7187 R3 2차: --line (and the input
+    # border / focus-ring tokens) moved to padiem-tokens.css, so the theme
+    # sheet keeps the surface tokens only.
+    for token in ["--bg", "--text", "--muted", "--accent", "--panel", "--sidebar", "--gold"]:
         assert token in THEMES_CSS
+    tokens_css = (ROOT / "static/padiem-tokens.css").read_text(encoding="utf-8")
+    for token in ("--line", "--input-border-strong", "--focus-ring"):
+        assert token in tokens_css, token
     # extensibility comment
     assert "NEW_THEME_ADDITION" in THEMES_CSS or "new theme" in THEMES_CSS.lower()
     # must not duplicate business logic, only tokens

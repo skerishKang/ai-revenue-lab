@@ -21,7 +21,7 @@
 }
 
 #connectorsGrid .capability-card.connector-tile:focus-visible {
-  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
+  outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -63,7 +63,7 @@
   align-self: flex-start;
   min-height: 44px;
   padding: 0 12px;
-  border: 1px solid var(--line, rgba(26, 34, 48, .12));
+  border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--panel, #ffffff);
   color: var(--text, #17202a);
@@ -149,7 +149,7 @@
  * summary so the page leads with the PC list and one action. */
 .pc-connector-advanced {
   margin-top: 12px;
-  border-top: 1px solid var(--line, rgba(26, 34, 48, .12));
+  border-top: 1px solid var(--line);
   padding-top: 10px;
 }
 
@@ -300,7 +300,7 @@
     min-height: 0;
     gap: 0;
     background: var(--card-bg, #fff);
-    border: 1px solid var(--line, rgba(26, 34, 48, .12));
+    border: 1px solid var(--line);
     border-radius: 12px;
     overflow: hidden;
   }

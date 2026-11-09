@@ -510,7 +510,7 @@ html[data-theme="dark"] .auth-panel {
  * copy rides the shared chip tooltip beside the title, and the elapsed timer
  * sits in the status line. New rules only — the meeting sheet keeps its own. */
 .meeting-help-toggle {
-  border: 1px solid var(--line, rgba(26, 34, 48, .16));
+  border: 1px solid var(--line);
   border-radius: 999px;
   min-width: 30px;
   min-height: 30px;

@@ -46,8 +46,14 @@ class TestPrimaryTokens(unittest.TestCase):
         props = _custom_properties(roots[0])
         for name, number in PRIMARY_NUMBERS.items():
             self.assertEqual(props.get(name), number, name)
-        self.assertEqual(set(props), set(PRIMARY_NUMBERS),
-                         "no stray token: the file holds the primary family only")
+        # #7187 R3 2차: the line / input-border / focus-ring / surface-border
+        # tokens joined the same file; their values are pinned by
+        # test_261109_line_input_focus_tokens_7187.py.
+        self.assertEqual(
+            set(props),
+            set(PRIMARY_NUMBERS)
+            | {"--line", "--input-border-strong", "--focus-ring", "--surface-border"},
+            "no stray token: the file holds the documented families only")
 
     def test_no_other_sheet_carries_the_primary_numbers(self) -> None:
         """The completion criterion: the numbers exist in one file only.

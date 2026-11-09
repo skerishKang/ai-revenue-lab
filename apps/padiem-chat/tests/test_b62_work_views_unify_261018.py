@@ -34,7 +34,8 @@ def test_work_view_kickers_share_one_expression():
 
 
 def test_work_view_cards_use_shared_tokens():
-    assert ".library-item {\n  border-color: var(--line, #e3e3e9);" in FRAME
+    # #7187 R3 2차: the fallback went away — the token sheet always defines --line.
+    assert ".library-item {\n  border-color: var(--line);" in FRAME
     assert ":is(.calendar-item,.calendar-record,.capability-card) {" in FRAME
     assert ".app-shell[data-state=\"automation\"] #clawAutomation {\n  border-color: var(--line);" in FRAME
     assert ".app-shell[data-state=\"meeting\"] .meeting-panel {\n  border-radius: 16px;" in FRAME

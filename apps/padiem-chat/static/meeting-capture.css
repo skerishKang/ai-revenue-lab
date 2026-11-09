@@ -47,7 +47,7 @@ html[data-theme="padiem-glass"] #meetingNavButton[aria-current="page"] {
    bordered chip on the shared tokens instead of a near-invisible ghost. */
 .meeting-controls button, .meeting-exports button, .meeting-records-new button {
   display: inline-flex; align-items: center; justify-content: center;
-  border: 1px solid var(--line, rgba(26, 34, 48, .12));
+  border: 1px solid var(--line);
   border-radius: 10px; padding: 10px 14px; min-height: 44px;
   background: var(--panel, #ffffff); color: var(--text, #17202a);
   cursor: pointer; font: inherit;

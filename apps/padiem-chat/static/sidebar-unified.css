@@ -8,7 +8,7 @@
   gap: 0;
   min-height: 44px;
   min-width: 0;
-  border: 1px solid var(--line, rgba(127,127,127,.25));
+  border: 1px solid var(--line);
   border-radius: 11px;
   background: rgba(255,255,255,.10);
   overflow: hidden;

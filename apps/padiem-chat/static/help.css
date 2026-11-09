@@ -35,7 +35,7 @@
   min-height: 44px;
   padding: 10px 14px;
   background: var(--panel, #fff);
-  border: 1px solid var(--line, #e3e3e9);
+  border: 1px solid var(--line);
   border-radius: 8px;
   z-index: 50;
 }
@@ -49,7 +49,7 @@
   flex-wrap: wrap;
   padding: 16px clamp(18px, 4vw, 40px);
   background: var(--panel, #fff);
-  border-bottom: 1px solid var(--line, #e3e3e9);
+  border-bottom: 1px solid var(--line);
 }
 
 .chat-help-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
@@ -113,7 +113,7 @@
 .chat-help-toc {
   margin: 20px 0 10px;
   padding: 18px clamp(14px, 3vw, 22px);
-  border: 1px solid var(--line, #e3e3e9);
+  border: 1px solid var(--line);
   border-radius: var(--radius-md, 16px);
   background: var(--panel, #fff);
 }
@@ -142,7 +142,7 @@
 .chat-help-section {
   margin: 22px 0;
   padding: 18px clamp(14px, 3vw, 22px);
-  border: 1px solid var(--line, #e3e3e9);
+  border: 1px solid var(--line);
   border-radius: var(--radius-md, 16px);
   background: var(--panel, #fff);
   box-shadow: 0 10px 30px rgba(23, 33, 42, .04);
@@ -215,7 +215,7 @@
 .chat-help-command {
   margin: 12px 0;
   padding: 12px 14px;
-  border: 1px solid var(--line, #e3e3e9);
+  border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--bg, #f8f8fb);
   white-space: pre-wrap;

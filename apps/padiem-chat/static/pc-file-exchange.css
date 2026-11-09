@@ -22,7 +22,7 @@
   max-height: min(80vh, 720px);
   padding: 18px;
   border-radius: 16px;
-  border: 1px solid var(--line, rgba(66, 106, 135, 0.26));
+  border: 1px solid var(--line);
   background: var(--surface, rgba(255, 255, 255, 0.94));
   box-shadow: 0 12px 40px rgba(20, 51, 73, 0.16);
   color: var(--text, #243f53);
@@ -69,7 +69,7 @@
   min-height: 44px;
   padding: 8px 16px;
   border-radius: 999px;
-  border: 1px solid var(--line, rgba(66, 106, 135, 0.28));
+  border: 1px solid var(--line);
   background: var(--surface, rgba(255, 255, 255, 0.8));
   cursor: pointer;
 }
@@ -94,7 +94,7 @@
   min-height: 44px;
   padding: 8px 14px;
   border-radius: 999px;
-  border: 1px solid var(--line, rgba(66, 106, 135, 0.28));
+  border: 1px solid var(--line);
   background: var(--surface, rgba(255, 255, 255, 0.8));
   cursor: pointer;
 }
@@ -146,7 +146,7 @@
   border-radius: 12px;
   /* #6100: these are inputs too — the input-only border token, not the card
      hairline the glass theme draws at 38% white. */
-  border: 1px solid var(--input-border-strong, var(--line, rgba(66, 106, 135, 0.28)));
+  border: 1px solid var(--input-border-strong);
   background: var(--field, #fff);
   color: inherit;
 }
@@ -198,7 +198,7 @@
 
 .pc-exchange-entry:hover,
 .pc-exchange-entry:focus-visible {
-  border-color: var(--line, rgba(66, 106, 135, 0.3));
+  border-color: var(--line);
   background: var(--tint, rgba(66, 106, 135, 0.07));
 }
 
