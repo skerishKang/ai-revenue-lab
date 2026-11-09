@@ -14,6 +14,8 @@ from .mcp_gateway_shell import PC_SHELL_TOOL_NAMES
 from .same_origin_guard import expected_browser_origin
 
 
+from .journal_host import ensure_journal_visible
+
 APPROVAL_META_KEY = "net.padiem/approval_id"
 PC_DEVICES_TOOL_NAME = "pc_devices"
 _LOGGER = logging.getLogger("padiem_chat.request")
@@ -81,6 +83,7 @@ def _log_operation(audit, status, *, outcome=None):
             event["output_truncated"] = metadata["output_truncated"]
     if (outcome or {}).get("audit_status") == "unavailable":
         event["audit_status"] = "unavailable"
+    ensure_journal_visible(_LOGGER)
     _LOGGER.info(json.dumps(event, separators=(",", ":")))
 
 

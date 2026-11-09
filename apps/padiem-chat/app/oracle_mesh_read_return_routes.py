@@ -45,7 +45,6 @@ import json
 import logging
 import re
 import secrets
-import sys
 import time
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -64,30 +63,18 @@ _RESULT_LOG = logging.getLogger(__name__)
 def ensure_result_log_host_visible() -> None:
     """Make the ``pc_result`` stage lines reach the COM2 journal (#7239 twin).
 
-    Same host fact the queue marker documented: the serving CPython process
-    configures no logging, the root logger has no handler and Python's
-    fallback carries WARNING and above — so the result-ingest INFO records
-    were created and then dropped, and the latency monitor could not split
-    the result-receipt leg from the poll-wait leg. Bind one message-only
-    stderr handler to this module's logger at the one ingest call site;
-    propagation stops so a later root handler cannot write the line twice.
+    Without it the result-ingest INFO records were created and then dropped,
+    and the latency monitor could not split the result-receipt leg from the
+    poll-wait leg. The fix lives in ``journal_host`` so every stage logger
+    shares it (handler + INFO level gate + stand-aside).
     """
-    if _RESULT_LOG.handlers or logging.getLogger().handlers:
-        return
-    if _RESULT_LOG.level == logging.NOTSET or _RESULT_LOG.level > logging.INFO:
-        # The same gate that swallowed the queue marker: without an explicit
-        # level the module logger inherits the root's default (WARNING), so
-        # even a bound handler would filter the INFO stage lines out.
-        _RESULT_LOG.setLevel(logging.INFO)
-    handler = logging.StreamHandler(sys.stderr)
-    handler.setFormatter(logging.Formatter("%(message)s"))
-    _RESULT_LOG.addHandler(handler)
-    _RESULT_LOG.propagate = False
+    ensure_journal_visible(_RESULT_LOG)
 
 from .pc_device_pairing_store import PcPairingError
 
 from .auth_routes import current_user_id
 from .claw_connector_enrollment_routes import _verified_owner_request
+from .journal_host import ensure_journal_visible
 from .claw_memory_routes import _resolve_memory_workspace
 from .claw_pc_read_command import (
     pc_read_chunk_command,
