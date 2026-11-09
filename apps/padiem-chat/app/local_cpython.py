@@ -812,6 +812,23 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
                 adapter=app.state.claw_p01_adapter,
                 usage_gate=app.state.usage_gate,
             )
+        # #7306: worker.py composes the Claw live SSE switch from the deployment
+        # flag PADIEM_CLAW_P01_LIVE_SSE_ENABLED; the CPython host hardcoded
+        # False, so the lane stayed off here even when the deployment armed it.
+        # Compose the SAME flag with the SAME judgment worker.py applies: the
+        # runtime is B14, the flag is exactly "true", and the composed P01
+        # adapter has a verified canonical subject lane.
+        app.state.claw_live_sse_enabled = (
+            settings.runtime_mode == "b14"
+            and binding_value(
+                os.environ, "PADIEM_CLAW_P01_LIVE_SSE_ENABLED"
+            ) == "true"
+            and getattr(
+                getattr(app.state, "claw_p01_adapter", None),
+                "subject_identity_lane",
+                False,
+            ) is True
+        )
         quote_model_resolver = B66ExplicitQuoteModelResolver(completion_transport)
         app.state.b66_quote_model_resolver = quote_model_resolver
         app.state.b14_model_choice_resolver = quote_model_resolver
