@@ -799,6 +799,13 @@ def test_auth_transitions_invalidate_the_approval_generation() -> None:
     assert "let clawApprovalEpoch = 0;" in app
     assert module.count("function invalidateClawApprovalSession()") == 1
     assert module.count("function noteClawApprovalSession(") == 1
+    # app.js itself keeps exactly one one-line forwarder per helper and no
+    # second implementation body (body duplication would raise this count,
+    # a deleted forwarder would drop it to zero).
+    assert app.count("function invalidateClawApprovalSession(") == 1
+    assert app.count("function noteClawApprovalSession(") == 1
+    assert "function invalidateClawApprovalSession(...a) { return authModule().invalidateClawApprovalSession(...a); }" in app
+    assert "function noteClawApprovalSession(...a) { return authModule().noteClawApprovalSession(...a); }" in app
     # Auth loss and an account switch funnel through one invalidation point,
     # called from the single auth-state projection.
     session = (ROOT / "static" / "claw-session.js").read_text(encoding="utf-8")

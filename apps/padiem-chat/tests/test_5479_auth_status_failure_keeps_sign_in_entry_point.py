@@ -156,13 +156,17 @@ def test_the_rule_is_read_from_the_table_and_shared_with_the_other_projections()
     assert ("deps.SESSION_PRESENTATION[sessionState] || deps.SESSION_PRESENTATION.unreachable"
             in AUTH)
     assert "window.PadiemSessionPresentation = resolveSessionPresentation;" in APP
-    assert "loginButton.hidden = presentation.loginHidden;" in APP + AUTH
-    assert "loginButton.disabled = presentation.loginDisabled;" in APP + AUTH
-    assert "accountContainer.hidden = presentation.accountHidden;" in APP + AUTH
+    assert "deps.loginButton.hidden = presentation.loginHidden;" in AUTH
+    assert "deps.loginButton.disabled = presentation.loginDisabled;" in AUTH
+    assert "deps.accountContainer.hidden = presentation.accountHidden;" in AUTH
+    assert "loginButton.hidden = presentation.loginHidden;" not in APP
+    assert "loginButton.disabled = presentation.loginDisabled;" not in APP
+    assert "accountContainer.hidden = presentation.accountHidden;" not in APP
     # The second projection reads the same rule instead of its own copy.
     assert "window.PadiemSessionPresentation(state)" in CAPABILITIES
     assert "loginButton.hidden = shared.loginHidden;" in CAPABILITIES
-    assert "loginButton.hidden = shared.loginHidden;" not in APP + AUTH
+    assert "loginButton.hidden = shared.loginHidden;" not in APP
+    assert "loginButton.hidden = shared.loginHidden;" not in AUTH
     assert "loginButton.hidden = shared.loginHidden;" in CAPABILITIES
     # And the self-check compares the DOM against that same rule.
     assert "loginButton.hidden !== shared.loginHidden" in CAPABILITIES
@@ -171,7 +175,8 @@ def test_the_rule_is_read_from_the_table_and_shared_with_the_other_projections()
 def test_an_unreadable_status_is_a_distinct_session_state():
     """``unreachable`` is the client's word; ``unavailable`` stays the server's."""
     assert 'authState.status_reachable === false ? "unreachable" : "unavailable"' in AUTH
-    assert "status_reachable: false" in APP + AUTH
+    assert "status_reachable: false" in AUTH
+    assert "status_reachable: false" not in APP
     # The flag is read in the session-state rule and in the retry handler, and
     # it is set in exactly one place: the failed status request.
     assert APP.count("status_reachable") + AUTH.count("status_reachable") == 3
@@ -237,7 +242,8 @@ def test_the_session_contract_is_not_weakened():
         encoding="utf-8"
     )
     # The server still owns the session verdict.
-    assert 'authState.authenticated === true' in APP + AUTH
+    assert "deps.authState.authenticated === true" in AUTH
+    assert "deps.authState.authenticated === true" not in APP
     assert "authenticated = ready && deps.authState.authenticated === true" in AUTH
     # A failed read is still not an authenticated account.
     assert "authenticated: false" in APP

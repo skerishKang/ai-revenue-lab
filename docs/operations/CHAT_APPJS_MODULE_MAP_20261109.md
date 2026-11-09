@@ -192,12 +192,14 @@ app.js는 다수 모듈 뒤·일부 모듈 앞에 로드된다. 분리 시 전�
   `authState`·`authViewEpoch`·`authDialogView`·`passwordResetToken`·
   `clawApprovalEpoch`·`clawApprovalInFlight`·`clawApprovalSessionToken`·
   `pendingNotificationConversationId`·`pendingNotificationRunId`는 getter+setter.
-  deps 115개(getter 115 / 그중 setter 9).
+  deps 113개(getter 113 / 그중 setter 9; 모듈이 읽지 않는 `projects`·
+  `resetConversation` getter 2건은 아르곤 지적 반영으로 제거해 115→113).
 - 다른 구역 함수는 deps getter로, 옮긴 함수끼리의 호출도 deps(→ app.js 전달 함수
   → 같은 모듈)로 간다. `document`·`window`·`fetch`·`URL` 등 전역은 본문 그대로.
 - 결과: `app.js` 7,529 → 7,012줄, 새 파일 `chat-auth-module.js`(747줄),
-  상한 7,629 → 7,107. 이전 시험 12파일 + 신규 계약 2종
-  (`test_r5_step4_auth_module_7216`·`test_r5_step4_auth_browser_7216`).
+  상한 7,629 → 7,110(실측 7,010+100; PR 초안의 7,107은 7,007 과소 계수였고
+  deps 미사용 getter 2건 제거 뒤 최종개 기준으로 정정). 이전 시험 12파일 +
+  신규 계약 2종(`test_r5_step4_auth_module_7216`·`test_r5_step4_auth_browser_7216`).
 
 ## 11. 대화 구역 함수 확정 (R5 다음 구역, 대기 중 기록)
 
