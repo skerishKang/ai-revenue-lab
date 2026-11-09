@@ -11,6 +11,8 @@ from __future__ import annotations
 import importlib.util
 import pathlib
 
+import pytest
+
 REPO = pathlib.Path(__file__).resolve().parents[3]
 
 
@@ -64,12 +66,13 @@ def test_the_two_legs_sum_to_the_whole_assembly_window():
     out = measure.correlate(lines, probe)
     # Whole window keeps its meaning (submit -> response end).
     assert abs(out["chat_assemble_ms"] - 1900.0) < 2.0
-    assert abs(out["result_ingest_ms"] - 180.0) < 2.0
+    assert abs(out["result_ingest_ms"] - 300.0) < 2.0
     assert abs(out["poll_discovery_ms"] - 1600.0) < 2.0
-    # The legs partition everything after the submit acknowledgement: the
-    # 120 ms the executor's own submit round trip took sits outside them.
-    assert abs((out["result_ingest_ms"] + out["poll_discovery_ms"] + 120.0)
+    # The legs partition the whole window: submit start -> receipt -> end.
+    assert abs((out["result_ingest_ms"] + out["poll_discovery_ms"])
                - out["chat_assemble_ms"]) < 2.0
+    # A receipt always follows the submit start (never negative).
+    assert out["result_ingest_ms"] > 0
 
 
 def test_without_the_receipt_markers_both_legs_stay_none():
@@ -85,12 +88,30 @@ def test_without_the_receipt_markers_both_legs_stay_none():
     assert out["poll_discovery_ms"] is None
 
 
-def test_the_legacy_submit_only_marker_still_fills_the_receipt_leg():
-    """An executor without submit_ok falls back to the submit marker."""
+def test_a_receipt_printed_before_the_executor_ack_stays_positive():
+    """Chat logs ``received`` while handling the submit, i.e. before the
+    executor's own ``submit_ok``; the leg must still measure forward from the
+    submit start (the 2026-11-09 defect made it negative)."""
+    measure = _load_measure()
+    t_submit, t_received, t_event, lines = _window()
+    # The acknowledgement is stamped AFTER the receipt, as production does.
+    for row in lines:
+        if "submit_ok" in row["m"]:
+            row["t"] = t_received + 0.15
+            row["m"] = row["m"].replace("00:00:00.120000", "00:00:00.450000")
+    probe = {"started_epoch": t_submit - 2.0, "ended_epoch": t_event, "request_id": "rid"}
+    out = measure.correlate(lines, probe)
+    assert out["result_ingest_ms"] == pytest.approx(300.0, abs=2.0)
+    assert out["result_ingest_ms"] > 0
+    assert abs((out["result_ingest_ms"] + out["poll_discovery_ms"])
+               - out["chat_assemble_ms"]) < 2.0
+
+
+def test_an_executor_that_logs_no_submit_marker_falls_back_to_the_ack():
     measure = _load_measure()
     t_submit, t_received, t_event, lines = _window()
     probe = {"started_epoch": t_submit - 2.0, "ended_epoch": t_event, "request_id": "rid"}
-    without_ack = [row for row in lines if "submit_ok" not in row["m"]]
-    out = measure.correlate(without_ack, probe)
-    assert abs(out["result_ingest_ms"] - 300.0) < 2.0
+    without_submit = [row for row in lines if "phase=submit " not in row["m"]]
+    out = measure.correlate(without_submit, probe)
+    assert abs(out["result_ingest_ms"] - 180.0) < 2.0
     assert abs(out["poll_discovery_ms"] - 1600.0) < 2.0
