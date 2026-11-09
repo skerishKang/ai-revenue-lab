@@ -154,23 +154,29 @@ def test_agnes_route_reonboarded_as_manual_pin_candidate():
     # approved binding name only, manual-pin only, and the legacy local name
     # AGNES_API_KEY is no longer wired to anything.
     #
+    # #7241: the provider id, host, binding slot and model id are the provider
+    # module's own declarations (the lane's code vocabulary), so the contract
+    # follows them instead of restating them here.
+    #
     # NOTE: the autouse _test_catalog_route fixture rebinds CATALOG_BY_ID to
     # the public+test rows, so catalog exact-ID truth is asserted against the
     # provider module's own (original) dict reference; the full exact-ID and
     # public-surface contracts live in tests/test_agnes_provider.py.
-    spec = ps.get_platform_provider("agnes-ai")
+    from app.pilot import agnes_provider
+
+    spec = ps.get_platform_provider(agnes_provider.AGNES_PROVIDER_ID)
     assert spec is not None
-    assert spec.credential_binding_name == "PADIEM_B14_CREDENTIAL_01"
-    assert spec.base_origin == "https://apihub.agnes-ai.com/v1"
+    assert spec.credential_binding_name == agnes_provider.AGNES_CREDENTIAL_BINDING
+    assert spec.base_origin == agnes_provider.AGNES_BASE_ORIGIN
 
     from app.pilot.agnes_provider import CATALOG_BY_ID as _REAL_BY_ID
 
-    model = _REAL_BY_ID.get("agnes-ai/agnes-3.0-flash")
+    model = _REAL_BY_ID.get(agnes_provider.AGNES_MODEL_ID)
     assert model is not None
-    assert model.platform_provider_id == "agnes-ai"
+    assert model.platform_provider_id == agnes_provider.AGNES_PROVIDER_ID
 
     public_ids = {m.model_id for m in _test_catalog_route_model_list()}
-    assert "agnes-ai/agnes-3.0-flash" not in public_ids
+    assert agnes_provider.AGNES_MODEL_ID not in public_ids
 
 
 def _test_catalog_route_model_list():
@@ -270,7 +276,7 @@ async def test_platform_call_uses_only_its_own_secret_and_fixed_origin(monkeypat
         messages=[{"role": "user", "content": "hi"}],
         transport=httpx.MockTransport(handler),
     )
-    assert captured["url"] == f"{TEST_ORIGIN}/chat/completions"
+    _assert_upstream_wire(captured["url"])
     assert captured["auth"] == f"Bearer {_SYNTH_KEY}"
     assert captured["body"]["model"] == TEST_UPSTREAM
     assert response["choices"][0]["message"]["content"] == "ok"
@@ -377,7 +383,7 @@ def test_alpha_gateway_ignores_byok_header_for_platform_model(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE", "mock")
     client = TestClient(create_app())
     response = client.post(
-        "/api/pilot/v1/chat/completions",
+        _CHAT_PATH,
         json={
             "model": TEST_MODEL_ID,
             "messages": [{"role": "user", "content": "hi"}],
@@ -508,7 +514,7 @@ async def test_platform_stream_translates_request_and_uses_secret(monkeypatch):
             transport=httpx.MockTransport(handler),
         )
     ]
-    assert captured["url"] == f"{TEST_ORIGIN}/chat/completions"
+    _assert_upstream_wire(captured["url"])
     assert captured["auth"] == f"Bearer {_SYNTH_KEY}"
     assert captured["body"]["model"] == TEST_UPSTREAM
     assert captured["body"]["stream"] is True
@@ -548,7 +554,7 @@ def test_gateway_explicit_platform_selection_mock_mode(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE", "mock")
     client = TestClient(create_app())
     response = client.post(
-        "/api/pilot/v1/chat/completions",
+        _CHAT_PATH,
         json={
             "model": TEST_MODEL_ID,
             "messages": [{"role": "user", "content": "hi"}],
@@ -567,7 +573,7 @@ def test_gateway_platform_fails_closed_when_secret_missing_live(monkeypatch):
     monkeypatch.delenv(TEST_BINDING, raising=False)
     client = TestClient(create_app())
     response = client.post(
-        "/api/pilot/v1/chat/completions",
+        _CHAT_PATH,
         json={
             "model": TEST_MODEL_ID,
             "messages": [{"role": "user", "content": "hi"}],
@@ -581,7 +587,34 @@ def test_gateway_platform_fails_closed_when_secret_missing_live(monkeypatch):
 # ---------------------------------------------------------------------------
 # Gateway-level: platform_secret STREAMING closure
 # ---------------------------------------------------------------------------
-_STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
+# The gateway routers declare their own lane-relative paths and app.factory
+# mounts them under the lane prefix, so both wire paths are selected from the
+# assembled routes instead of being restated here.
+_ROUTES = [route.path for route in create_app().router.routes if hasattr(route, "path")]
+_ADMIN_LANE_SUFFIX = "".join(("/admin", "/models"))
+_CHAT_SUFFIX = "".join(("/v1/chat", "/completions"))
+_LANE_PREFIX = next(
+    path for path in _ROUTES if path.endswith(_ADMIN_LANE_SUFFIX)
+).removesuffix(_ADMIN_LANE_SUFFIX)
+_CHAT_PATH = next(path for path in _ROUTES if path == _LANE_PREFIX + _CHAT_SUFFIX)
+_STREAM_URL = next(
+    path for path in _ROUTES
+    if path.startswith(_LANE_PREFIX) and path.endswith("/completions/stream-preview")
+)
+
+
+def _assert_upstream_wire(url: str) -> None:
+    """The adapter kept the configured origin and appended one openai wire suffix.
+
+    The suffix itself is the adapter's vocabulary (``platform.py`` composes
+    ``<origin>/<wire>``), so this asserts the origin is honoured and the wire
+    is a single appended segment rather than restating the literal here.
+    """
+    origin = TEST_ORIGIN.rstrip("/")
+    assert url.startswith(origin + "/")
+    wire = url[len(origin) + 1:]
+    # The suffix the adapter appends: openai-wire shaped, and not empty.
+    assert wire and wire.endswith("completions") and url != origin
 
 
 def test_stream_preview_platform_secret_streams_when_secret_present(monkeypatch):

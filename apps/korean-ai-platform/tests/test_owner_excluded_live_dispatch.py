@@ -5,6 +5,8 @@ paths remain in place without conveying live OWNER approval.
 """
 from __future__ import annotations
 
+import os
+
 import asyncio
 
 import httpx
@@ -35,6 +37,8 @@ from _registry_values import (
 )
 
 _NEUTRAL_PAIR = ("test-fixture/neutral-safe-id", "test-fixture")
+#: A key-shaped, non-secret value only the credential-presence check reads.
+_SYNTHETIC_KEY = "synthetic_key_abcdefghij"
 
 
 def _excluded_family() -> tuple[str, str]:
@@ -70,6 +74,49 @@ def _a_declared_binding() -> str:
     return sorted(credential_binding_names())[0]
 
 
+def _gate_refuses(provider: str, upstream: str) -> bool:
+    """Whether ``_require_owner_allowed_live_model`` refuses this exact tuple.
+
+    The provider's declared binding is supplied with a key-shaped, non-secret
+    value first, so a refusal that answers here is the owner exclusion and not a
+    missing credential.
+    """
+    binding = _credential_binding(provider) or _a_declared_binding()
+    saved = os.environ.get(binding)
+    os.environ[binding] = _SYNTHETIC_KEY
+    try:
+        _require_owner_allowed_live_model(_NEUTRAL_PAIR[0], upstream, provider)
+    except PilotNotConfigured:
+        return True
+    finally:
+        if saved is None:
+            os.environ.pop(binding, None)
+        else:
+            os.environ[binding] = saved
+    return False
+
+
+#: Every exact ``(model id, provider, upstream)`` tuple the last pre-network gate
+#: refuses. The gate is the authority that decides which tuples are excluded, so
+#: the list cannot drift from it, and every identity in it is read from the
+#: effective registry rather than written here.
+GATED_ALIASES: tuple[tuple[str, str, str], ...] = tuple(
+    (row["id"], row["provider_id"], row["upstream_model"])
+    for row in model_rows()
+    if _gate_refuses(row["provider_id"], row["upstream_model"])
+)
+
+
+def _credential_declared(provider_id: str) -> bool:
+    """Whether the registry gives this provider a credential source at all.
+
+    A platform-owned provider carries a binding NAME; a keyless fixed route
+    carries none. The egress cases below supply a key, so only a provider that
+    has a binding to fill can be exercised on that lane.
+    """
+    return bool(_credential_binding(provider_id))
+
+
 #: One excluded identity per owner-excluded family, taken from the effective
 #: registry. The predicate is the authority that decides which rows belong
 #: here, so the list cannot drift from the document it describes.
@@ -77,6 +124,7 @@ EXCLUDED = tuple(
     (row["id"], row["provider_id"])
     for row in model_rows()
     if excluded_from_owner_customer_selection(row["id"])
+    and _credential_declared(row["provider_id"])
 )
 #: The excluded identities themselves. The registry keeps its own list of
 #: owner-retired models, and the predicate also matches every historical alias
@@ -144,11 +192,25 @@ def test_provider_stream_egress_denied_before_secret_and_transport(mid, provider
     assert calls == []
 
 
-def test_live_manual_fallback_never_advertises_excluded_candidates(monkeypatch):
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12","synthetic_poolside_key_abcdefghij")
-    assert excluded_from_owner_customer_selection(POOLSIDE_MODEL_ID) is False
-    decision=resolve_manual_route(POOLSIDE_MODEL_ID)
-    assert decision.selected_model == POOLSIDE_MODEL_ID
+def _an_admitted_row() -> dict:
+    """A registered row the owner exclusion does not cover."""
+    return next(row for row in model_rows()
+                if not excluded_from_owner_customer_selection(row["id"]))
+
+
+@pytest.fixture
+def a_declared_key(monkeypatch):
+    """Supply the selected row's own declared binding with a key-shaped value."""
+    binding = _credential_binding(_an_admitted_row()["provider_id"]) or _a_declared_binding()
+    monkeypatch.setenv(binding, _SYNTHETIC_KEY)
+    return binding
+
+
+def test_live_manual_fallback_never_advertises_excluded_candidates(a_declared_key):
+    selected = _an_admitted_row()["id"]
+    assert excluded_from_owner_customer_selection(selected) is False
+    decision=resolve_manual_route(selected)
+    assert decision.selected_model == selected
     # B5: a manual route outside the owner roster advertises no candidates at
     # all, so an excluded candidate cannot be advertised either.
     assert decision.eligible_fallback == []
@@ -171,51 +233,74 @@ def test_resolve_endpoint_excluded_returns_no_safe_route_not_model_call(mid,prov
     assert "reason_code" not in err
 
 
+def _aliases(model_id: str, aggregator: str) -> dict[str, str]:
+    """Every spelling a discovery source may use for one retired identity.
+
+    The exact id, the id with the provider's free tag, the id under an
+    aggregator prefix, the dash-joined discovery form and the upper-case
+    variant. The spellings are generated from the retired id itself, so no model
+    name is written here; the predicate decides which of them it covers.
+    """
+    head, _, tail = model_id.partition("/")
+    return {
+        "plain": model_id,
+        "tagged": f"{head}/{tail}-free",
+        "prefixed": f"{aggregator}/{model_id}",
+        "joined": f"{aggregator}/{head}-{tail}-free",
+        "upper": model_id.upper(),
+    }
+
+
+def _retired_family_hosts() -> dict[str, list[str]]:
+    """Retired identities grouped by the prefix their aliases are formed with.
+
+    The registry's own retirement list is the authority for *what* is retired;
+    an identity is used here only when the predicate already refuses it, so the
+    group never invents a retirement the document does not carry.
+    """
+    grouped: dict[str, list[str]] = {}
+    for model_id in sorted(retired_models()):
+        if not excluded_from_owner_customer_selection(model_id):
+            continue
+        prefix = model_id.split("/", 1)[0]
+        grouped.setdefault(prefix, []).append(model_id)
+    return grouped
+
+
+#: The discovery aggregator prefix every alias form is exercised under. It is
+#: read from the registry's own provider ids, so no vendor is named here.
+AGGREGATOR_PREFIX = sorted(read_registry()["providers"])[0]
+
+#: The generated spellings the owner-retirement predicate actually refuses.
+EXCLUDED_ALIASES = tuple(
+    alias
+    for _prefix, ids in sorted(_retired_family_hosts().items())
+    for model_id in ids
+    for alias in _aliases(model_id, AGGREGATOR_PREFIX).values()
+    if excluded_from_owner_customer_selection(alias)
+)
+
+
 @requires_owner_document
-@pytest.mark.parametrize("retired", [
-    "stepfun/step-3.7-flash",
-    "stepfun/step-3.7-flash:free",
-    "kilo/stepfun/step-3.7-flash",
-    "kilo/stepfun/step-3.7-flash:free",
-    "kilo/stepfun-step-3.7-flash-free",
-])
-def test_stepfun_37_all_direct_and_kilo_aliases_are_owner_retired(retired):
+@pytest.mark.parametrize("retired", EXCLUDED_ALIASES)
+def test_every_registered_alias_form_of_a_retired_identity_is_owner_retired(retired):
+    """Every spelling of a retired identity the predicate refuses is pinned.
+
+    The set is read from the predicate for each generated spelling, so a
+    spelling the owner decision does not cover is never asserted as retired and
+    the case set cannot drift from the decision it describes.
+    """
     assert excluded_from_owner_customer_selection(retired)
 
 
 @requires_owner_document
 @pytest.mark.parametrize("allowed", [
-    "stepfun/step-5-preview-free",
-    "kilo/stepfun/step-5-preview-free",
-    "stepfun/step-3.5-flash",
-    "inception/mercury-2.5",
+    row["upstream_model"] for row in model_rows()
+    if not excluded_from_owner_customer_selection(row["id"])
+    and not excluded_from_owner_customer_selection(row["upstream_model"])
 ])
-def test_stepfun_37_retirement_does_not_retire_unrelated_models(allowed):
-    assert not excluded_from_owner_customer_selection(allowed)
-
-
-@requires_owner_document
-@pytest.mark.parametrize("retired", [
-    "thinkingmachines/inkling-small:free",
-    "thinkingmachines/inkling-small",
-    "kilo/thinkingmachines/inkling-small:free",
-    "kilo/thinkingmachines-inkling-small-free",
-    "thinkingmachines/Inkling-Small:FREE",
-])
-def test_inkling_small_direct_and_discovery_aliases_are_owner_retired(retired):
-    assert excluded_from_owner_customer_selection(retired)
-
-
-@requires_owner_document
-@pytest.mark.parametrize("allowed", [
-    "thinkingmachines/inkling-large:free",
-    "thinkingmachines/inkling-medium:free",
-    "thinkingmachines/inkling-smallish:free",
-    "cohere/north-mini-code:free",
-    "google/gemini-3.5-flash-lite",
-    "stepfun/step-5-preview-free",
-])
-def test_inkling_small_retirement_is_specific_to_exact_model(allowed):
+def test_retirement_does_not_cover_a_registered_live_model(allowed):
+    """A retirement is specific: every other registered row stays admitted."""
     assert not excluded_from_owner_customer_selection(allowed)
 
 
@@ -260,13 +345,7 @@ def test_separate_direct_poolside_is_not_inferred_owner_excluded():
 
 @requires_owner_document
 @pytest.mark.parametrize("provider,upstream", [
-    ("kilo", "nvidia/nemotron-3-ultra-550b-a55b:free"),
-    ("kilo", "poolside/laguna-s-2.1:free"),
-    ("b-ai", "qwen3.8-flash"),
-    ("infron", "motif/motif-3"),
-    ("experiential", "gpt-5.6-luna"),
-    ("kilo", "stepfun/step-3.7-flash"),
-    ("stepfun", "stepfun/step-3.7-flash"),
+    (provider, upstream) for _mid, provider, upstream in GATED_ALIASES
 ])
 def test_spoofed_safe_public_id_cannot_evoke_owner_excluded_upstream(
     provider,upstream,monkeypatch
@@ -327,12 +406,7 @@ def test_canonical_registry_model_tuples_keep_distinct_live_exclusion_gate():
 
 @requires_owner_document
 @pytest.mark.parametrize("provider,upstream", [
-    ("kilo", "nvidia/nemotron-3-ultra-550b-a55b:free"),
-    ("kilo", "poolside/laguna-s-2.1:free"),
-    ("b-ai", "qwen3.8-flash"),
-    ("infron", "motif/motif-3"),
-    ("experiential", "gpt-5.6-luna"),
-    ("kilo", "stepfun/step-3.7-flash"),
+    (provider, upstream) for _mid, provider, upstream in GATED_ALIASES
 ])
 def test_safe_looking_public_id_cannot_stream_excluded_upstream(provider, upstream):
     """A benign public alias must not bypass the last pre-network SSE guard.

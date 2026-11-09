@@ -74,3 +74,56 @@ def a_provider_id() -> str:
 
 def a_model_id() -> str:
     return model_rows()[0]["id"]
+
+
+def adapter_modules() -> dict[str, object]:
+    """Every pilot adapter module, keyed by the Provider id it declares.
+
+    A suite that drives one provider's own wire needs that adapter, but naming
+    the module would restate a deployment identity, so the module is selected
+    from the package by the constant it declares (#7241).
+    """
+    import importlib
+    import pkgutil
+
+    import app.pilot as pilot_package
+
+    found: dict[str, object] = {}
+    for info in pkgutil.iter_modules(pilot_package.__path__):
+        module = importlib.import_module(f"{pilot_package.__name__}.{info.name}")
+        for name, value in vars(module).items():
+            if name.endswith("PROVIDER_ID") and isinstance(value, str) and value:
+                found.setdefault(value, module)
+                break
+    return found
+
+
+def adapter_for(provider_id: str):
+    """The adapter module that declares this Provider id."""
+    module = adapter_modules().get(provider_id)
+    assert module is not None, "no pilot adapter declares the selected Provider"
+    return module
+
+
+def adapter_declaring_retired(marker: str = "RETIRED"):
+    """The adapter that owns retirement metadata for identities it no longer serves.
+
+    Returns ``(provider_id, module, retired_ids)``: the ids the adapter marks as
+    retired plus every identity its own constants retain for that roster. The
+    adapter is selected by that metadata rather than by name (#7241).
+    """
+    matches = []
+    for provider_id, module in adapter_modules().items():
+        declared: set[str] = set()
+        retained: set[str] = set()
+        has_marker = False
+        for name, value in vars(module).items():
+            if isinstance(value, frozenset) and marker in name:
+                has_marker = True
+                declared |= {item for item in value if isinstance(item, str)}
+            if name.endswith("_MODEL_ID") and isinstance(value, str):
+                retained.add(value)
+        if has_marker and declared:
+            matches.append((provider_id, module, frozenset(declared | retained)))
+    assert len(matches) == 1, "expected exactly one adapter to own a retirement roster"
+    return matches[0]

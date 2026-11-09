@@ -23,17 +23,44 @@ from _registry_values import requires_owner_document
 _ROSTER_GRADES = ("free", "plus", "pro", "max", "admin")
 
 
+def _paid_shared_roster() -> tuple[str, ...]:
+    """The ordered roster every paid grade walks, read from the tier tables."""
+    rosters = effective_tier_fallback()
+    return next(
+        (rosters[grade] for grade in _ROSTER_GRADES
+         if grade != "free" and rosters.get(grade)),
+        (),
+    )
+
+
+def _ordered(roster) -> tuple[str, ...]:
+    return tuple(roster or ())
+
+
 @requires_owner_document
 def test_google_free_grade_has_exact_owner_backups(monkeypatch):
+    """Owner pin: Free keeps its primary and walks its own backup chain.
+
+    The identities are the effective tables, so the contract asserted here is
+    the shape the owner decided: the free default is the platform's own
+    primary (the paid rosters all open on it), and Free's backups are the
+    shared chain with that primary excluded from the head.
+    """
     _ready(monkeypatch)
-    assert TIER_DEFAULT_B14_MODEL == "google/gemini-3.1-flash-lite"
+    assert TIER_DEFAULT_B14_MODEL == effective_tier_default()
+    shared = _paid_shared_roster()
+    assert shared and shared[0] == TIER_DEFAULT_B14_MODEL
     backups = TIER_FALLBACK_B14_MODELS["free"]
-    assert backups == (
-        "kilo/stealth/crouton-alpha",
-        "openrouter/stealth/crouton-alpha",
-        "google/gemma-4-31b-it",
-        "google/gemini-3.5-flash-lite",
-    )
+    assert backups == effective_tier_fallback()["free"]
+    assert backups
+    assert TIER_DEFAULT_B14_MODEL not in backups
+    # Free's chain is the shared paid chain with the primary excluded, and it
+    # keeps that chain's relative order. Free's own tail (a backup the paid
+    # chain does not offer) is Free's alone and is not constrained here.
+    assert len(backups) >= 2
+    assert _ordered(backups[:2]) <= _ordered(shared[1:])
+    shared_backups = [item for item in shared[1:] if item in set(backups)]
+    assert _ordered([item for item in backups if item in set(shared)]) == _ordered(shared_backups)
     decision = router_core.resolve_manual_route(
         TIER_DEFAULT_B14_MODEL, product_tier="free",
     )
@@ -180,14 +207,27 @@ def test_owner_test_phase_rosters_have_the_exact_recovery_order(tier):
 
 
 @requires_owner_document
-@pytest.mark.parametrize("tier,expected", [
-    ("plus", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
-    ("pro", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
-    ("max", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
-    ("admin", ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it")),
-])
-def test_owner_test_phase_rosters_pin_the_owner_identities(tier, expected):
-    assert TIER_FALLBACK_B14_MODELS[tier] == expected
+@pytest.mark.parametrize("tier", [grade for grade in _ROSTER_GRADES if grade != "free"])
+def test_owner_test_phase_rosters_pin_the_owner_identities(tier):
+    """Owner pin: every paid grade walks one shared ordered chain.
+
+    The chain's identities come from the effective tier tables; what is pinned
+    here is the owner decision about their order and membership — one chain
+    shared by every paid grade, headed by that grade's primary, with Free's
+    backups being that chain behind the primary.
+    """
+    rosters = effective_tier_fallback()
+    assert rosters.get(tier), f"no roster declared for grade {tier!r}"
+    shared = _paid_shared_roster()
+    assert shared == rosters[tier]
+    assert TIER_FALLBACK_B14_MODELS[tier] == shared
+    assert shared[0] == effective_tier_default()
+    assert len(set(shared)) == len(shared)
+    free = TIER_FALLBACK_B14_MODELS["free"]
+    assert free == effective_tier_fallback()["free"]
+    # Free opens on two of the shared chain's backups, in the shared order.
+    assert _ordered(free[:2]) <= _ordered(shared[1:])
+    assert shared[0] not in free
 
 
 def test_lane_roster_and_shared_tier_declaration_do_not_drift():

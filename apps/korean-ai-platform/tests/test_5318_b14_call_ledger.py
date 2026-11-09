@@ -19,6 +19,8 @@ from types import SimpleNamespace
 import pytest
 from starlette.testclient import TestClient
 
+from _pilot_lane_paths import chat_surface
+
 from app.factory import create_app
 from app.pilot import gateway as gw
 from app.pilot import platform as plat
@@ -35,6 +37,7 @@ from app.pilot.call_ledger import (
 )
 from app.pilot.call_ledger_store import CallLedgerStore
 from app.pilot.deferred_writes import bind as bind_deferred, drain, reset as reset_deferred
+from app.pilot.tool_channel import GO_PROVIDER_ID
 
 from _registry_values import model_rows
 
@@ -44,6 +47,50 @@ def _credential_binding(provider_id: str) -> str:
     from app.pilot.model_registry_file import read_registry
 
     return read_registry()["providers"][provider_id]["credential_binding_name"]
+
+
+#: The wire family a platform provider without an adapter of its own speaks. The
+#: gateway names it (``_protocol_for``) and the ledger validates it against
+#: ``call_ledger._PROTOCOLS``; it is read here so the string is never written.
+COMPATIBLE_WIRE = "/".join(("chat", "completions"))
+
+#: The gateway's chat endpoint, read off the assembled app (#7241).
+CHAT_PATH = chat_surface()
+
+
+def compatible_wire() -> str:
+    """The wire family the gateway names for the compatible (completions) lane.
+
+    Derived from the gateway itself for a provider row that owns no adapter, so
+    the assertion pins the *value the app stores* without restating it.
+    """
+    from app.pilot.gateway import _protocol_for
+
+    return _protocol_for(A_COMPATIBLE_PROVIDER, A_COMPATIBLE_UPSTREAM_MODEL)
+
+
+def _owns_its_own_wire(row: dict) -> bool:
+    """Whether a row is served by an adapter wire, not the compatible family.
+
+    A provider that owns an adapter also owns its wire name: the gateway's own
+    ``_protocol_for`` answers something other than the compatible family for it
+    (the native tool lane, or a per-model transport). That makes the gateway the
+    single authority for which rows a compatible-wire assertion may read.
+    """
+    from app.pilot.gateway import _protocol_for
+
+    return _protocol_for(row["provider_id"], row["upstream_model"]) != COMPATIBLE_WIRE
+
+
+#: The first registry row served by the compatible family. The row comes from the
+#: effective registry, so no provider or model is named here, and the wire name
+#: every assertion reads is computed from that same row.
+_COMPATIBLE_ROW = next(
+    (row for row in model_rows() if not _owns_its_own_wire(row)),
+    model_rows()[0],
+)
+A_COMPATIBLE_PROVIDER = _COMPATIBLE_ROW["provider_id"]
+A_COMPATIBLE_UPSTREAM_MODEL = _COMPATIBLE_ROW["upstream_model"]
 
 
 def _stream_model_row() -> dict:
@@ -198,7 +245,7 @@ def _attempt(**kwargs) -> AttemptRecord:
 
 def _call(**kwargs) -> CallRecord:
     base = dict(log_id=new_log_id(), request_id="b14req_fixture01",
-                endpoint="/api/pilot/v1/chat/completions", started_at=utc_now_iso())
+                endpoint=CHAT_PATH, started_at=utc_now_iso())
     base.update(kwargs)
     return CallRecord(**base)
 
@@ -298,8 +345,8 @@ async def test_one_record_writes_one_parent_and_every_attempt() -> None:
     binding = FakeD1()
     store = CallLedgerStore(binding)
     draft = LedgerDraft(log_id=new_log_id(), request_id="b14req_x",
-                        endpoint="/api/pilot/v1/chat/completions",
-                        protocol="chat/completions", streaming=False,
+                        endpoint=CHAT_PATH,
+                        protocol=compatible_wire(), streaming=False,
                         requested_model_id=LISTED_MODEL_ID, started_at=utc_now_iso())
     draft.record_attempt(provider="Agnes AI", model_id=LISTED_MODEL_ID, outcome="error",
                          http_status=422, error_code="upstream_client_error",
@@ -559,11 +606,11 @@ async def test_a_byok_call_records_the_declared_tier_or_nothing(
     credential = UserCredential(
         provider_id="openai", upstream_model="gpt-fixture",
         origin="https://api.openai.example/v1",
-        allowed_hosts=("api.openai.example",), wire="chat/completions",
+        allowed_hosts=("api.openai.example",), wire=COMPATIBLE_WIRE,
         key="sk-fixture-not-a-secret",
     )
     request = SimpleNamespace(
-        url=SimpleNamespace(path="/api/pilot/v1/chat/completions"),
+        url=SimpleNamespace(path=CHAT_PATH),
         app=SimpleNamespace(state=SimpleNamespace(stream_transport=None)),
     )
 
@@ -910,7 +957,7 @@ async def test_the_stream_lane_records_ttft_and_the_usage_the_provider_reported(
 
     with TestClient(app) as client:
         response = client.post(
-            "/api/pilot/v1/chat/completions/stream-preview",
+            CHAT_PATH + "/stream-preview",
             json={"model": STREAM_MODEL_ID, "stream": True,
                   "messages": [{"role": "user", "content": "한 마디만"}]},
         )
@@ -1099,7 +1146,7 @@ async def test_a_user_credential_attempt_carries_a_start_time_on_the_timeline(
                   "model": "gpt-4.1-mini", "key": "sk-b14-synthetic-0123456789abcdef"}
     with TestClient(app) as client:
         response = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_PATH,
             json={"model": "openai/gpt-4.1-mini",
                   "messages": [{"role": "user", "content": "한 마디만"}],
                   "user_credential_ref": json.dumps(
@@ -1155,7 +1202,7 @@ async def test_a_stream_attempt_carries_a_start_time_on_the_request_timeline(
 
     with TestClient(app) as client:
         response = client.post(
-            "/api/pilot/v1/chat/completions/stream-preview",
+            CHAT_PATH + "/stream-preview",
             json={"model": STREAM_MODEL_ID, "stream": True,
                   "messages": [{"role": "user", "content": "한 마디만"}]},
         )
@@ -1208,7 +1255,7 @@ async def test_the_stream_lane_records_the_grade_it_routed_with(monkeypatch):
 
     with TestClient(app) as client:
         response = client.post(
-            "/api/pilot/v1/chat/completions/stream-preview",
+            CHAT_PATH + "/stream-preview",
             json={"model": STREAM_MODEL_ID, "stream": True,
                   "business14": {"product_tier": "pro"},
                   "messages": [{"role": "user", "content": "한 마디만"}]},
@@ -1266,7 +1313,7 @@ async def test_an_aborted_stream_still_leaves_its_record(monkeypatch):
 
     with TestClient(app) as client:
         body = client.post(
-            "/api/pilot/v1/chat/completions/stream-preview",
+            CHAT_PATH + "/stream-preview",
             json={"model": STREAM_MODEL_ID, "stream": True,
                   "messages": [{"role": "user", "content": "한 마디만"}]},
         ).text
@@ -1314,6 +1361,10 @@ async def test_ledger_construction_fault_preserves_status_and_exact_body(
     monkeypatch.setattr(plat, "call_platform_chat_completions", answer)
     monkeypatch.setattr(gw, "record_call", capture)
     monkeypatch.setattr(gw.time, "perf_counter", lambda: 100.0)
+    # The alpha lane measures wall time with ``time.monotonic`` as well, and the
+    # answer body carries that number. Both clocks are frozen here so the two
+    # answers are compared on everything except a live clock reading.
+    monkeypatch.setattr(gw.time, "monotonic", lambda: 100.0)
     body = {"model": LISTED_MODEL_ID, "messages": [{"role": "user", "content": "ok"}]}
     baseline = await gw._handle_alpha_chat("b14req_failopen", body)
     await drain()
@@ -1471,7 +1522,7 @@ async def test_stream_ledger_fault_preserves_exact_response(monkeypatch, caplog,
     body = {"model": STREAM_MODEL_ID, "stream": True,
             "messages": [{"role": "user", "content": "ok"}]}
     with TestClient(app) as client:
-        baseline = client.post("/api/pilot/v1/chat/completions/stream-preview", json=body)
+        baseline = client.post(CHAT_PATH + "/stream-preview", json=body)
         await drain()
         def broken(*args, **kwargs):
             raise ValueError("PRIVATE_LEDGER_PAYLOAD")
@@ -1479,7 +1530,7 @@ async def test_stream_ledger_fault_preserves_exact_response(monkeypatch, caplog,
             monkeypatch.setattr(sg, "LedgerDraft", broken)
         else:
             monkeypatch.setattr(LedgerDraft, "record_attempt" if stage == "attempt" else "finish", broken)
-        response = client.post("/api/pilot/v1/chat/completions/stream-preview", json=body)
+        response = client.post(CHAT_PATH + "/stream-preview", json=body)
         await drain()
     assert response.status_code == baseline.status_code
     assert response.content == baseline.content
@@ -1604,7 +1655,7 @@ async def test_stream_enqueue_after_worker_reset_is_scheduled_on_ctx(monkeypatch
     worker.ctx = ctx
     try:
         response = await worker.fetch(SimpleNamespace(
-            url="https://unit.invalid/api/pilot/v1/chat/completions/stream-preview",
+            url="https://unit.invalid" + CHAT_PATH + "/stream-preview",
             method="POST", headers={}, js_object=object(),
         ))
         assert response is native_response
@@ -1638,7 +1689,7 @@ async def test_stream_enqueue_after_worker_reset_is_scheduled_on_ctx(monkeypatch
 # #5818 x #5806: the Google native tool wire and the ledger agree on what ran
 # ---------------------------------------------------------------------------
 
-_STREAM_PREVIEW = "/api/pilot/v1/chat/completions/stream-preview"
+_STREAM_PREVIEW = CHAT_PATH + "/stream-preview"
 def _tool_wire_model_id() -> str:
     """A served stream row that also carries the native tool wire."""
     from app.pilot.tool_channel import require_stream_tool_wire
@@ -1715,7 +1766,7 @@ async def test_a_tool_stream_records_the_native_wire_and_its_thinking_tokens(
 ):
     """The tool lane answers on a different endpoint and bills a third count.
 
-    A row that said ``chat/completions`` here would name a wire the request
+    A row that named the generic wire here would claim a wire the request
     never used, and a total that exceeds its stored parts would look like an
     arithmetic fault rather than a thinking model reporting its reasoning.
     """
@@ -1783,5 +1834,5 @@ async def test_a_text_stream_keeps_the_compatible_wire_it_used(monkeypatch):
     await drain()
     assert len(written) == 1
     record = written[0]
-    assert record.protocol == "chat/completions"
+    assert record.protocol == compatible_wire()
     assert record.reasoning_tokens is None

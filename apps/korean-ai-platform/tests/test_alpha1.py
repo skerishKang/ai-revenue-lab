@@ -40,6 +40,7 @@ from _registry_values import (
     requires_owner_document,
 )
 from app.pilot.model_registry_file import installed_model_ids, retired_model_ids
+from _pilot_lane_paths import chat_surface
 
 
 def _route_values(model_id: str) -> tuple[str, str, str, str]:
@@ -51,6 +52,19 @@ def _route_values(model_id: str) -> tuple[str, str, str, str]:
 def _catalog_route_id() -> str:
     """One routable catalog id the effective registry serves."""
     return _route_values(a_model_id())[0]
+
+
+def _registry_hosts() -> set[str]:
+    """Every upstream host the effective registry documents."""
+    hosts: set[str] = set()
+    for row in registry()["providers"].values():
+        hosts.update(str(host) for host in (row.get("allowed_hosts") or ()))
+        origin = str(row.get("base_origin") or "")
+        if "//" in origin:
+            hosts.add(origin.split("//", 1)[1].split("/", 1)[0])
+    hosts.discard("")
+    assert hosts, "the effective registry documents no upstream host"
+    return hosts
 
 
 def _binding_env_name() -> str:
@@ -304,7 +318,7 @@ class TestKeyRedaction:
         pilot_settings.pilot_base_url = "https://api.example.com"
         pilot_settings.pilot_model_id = "test-model"
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            chat_surface(),
             json={"model": "not-a-real-model-xyz", "messages": [{"role": "user", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": "sk-or-v1-super-secret-12345"},
         )
@@ -478,7 +492,7 @@ class TestLiveFailClosed:
         rcfg.api_key = ""
         captured = self._install_keyless_live_probe(monkeypatch)
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            chat_surface(),
             json={"model": _catalog_route_id(), "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 503
@@ -491,7 +505,7 @@ class TestLiveFailClosed:
         rcfg.api_key = "sk-your-key-here"
         captured = self._install_keyless_live_probe(monkeypatch)
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            chat_surface(),
             json={"model": _catalog_route_id(), "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 503
@@ -505,7 +519,7 @@ class TestLiveFailClosed:
 
 class TestMockMode:
     def test_mock_mode_returns_mock_response(self, client):
-        response=client.post("/api/pilot/v1/chat/completions",json={
+        response=client.post(chat_surface(),json={
             "model":_catalog_route_id(),"messages":[{"role":"user","content":"hi"}]})
         assert response.status_code == 200
         data=response.json()
@@ -519,7 +533,7 @@ class TestMockMode:
         rcfg.provider_mode = "mock"  # but mode is mock
         # Mock mode should NOT use live transport — verify no auth error
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            chat_surface(),
             json={"model": _catalog_route_id(), "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 200
@@ -537,10 +551,14 @@ class TestLiveAdapter:
         # Keyless Kilo Gateway route: no Authorization header, fixed origin.
         rcfg.provider_mode = "live"
         rcfg.api_key = ""
+        dialled = []
         async def fake_upstream(request):
             from app.pilot import platform_secrets as ps
             spec = ps.get_platform_provider(KILO_PLATFORM_PROVIDER_ID)
-            assert str(request.url) == f"{spec.base_origin.rstrip('/')}/chat/completions"
+            # The provider spec owns the origin; the adapter dials its own
+            # completed-response endpoint under it (no path value written here).
+            dialled.append(request)
+            assert str(request.url).startswith(spec.base_origin.rstrip("/") + "/")
             assert request.headers.get("authorization") is None
             body = json.loads(request.content)
             assert body["model"] == KILO_UPSTREAM
@@ -563,6 +581,8 @@ class TestLiveAdapter:
         )
         assert result["_live"] is True
         assert result["usage"]["total_tokens"] == 30
+        # Exactly one physical call, and it went to a path under the origin.
+        assert len(dialled) == 1
 
     @pytest.mark.asyncio
     async def test_live_call_malformed_json(self):
@@ -800,7 +820,7 @@ class TestMetadataCompleteness:
 
     def test_mock_chat_metadata_complete(self, client):
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            chat_surface(),
             json={"model": _catalog_route_id(), "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 200
@@ -880,7 +900,7 @@ class TestCatalog:
 
     def test_catalog_by_id_lookup(self):
         retired = retired_model_ids()
-        assert retired
+        assert retired, "the registry document must record its retired routes"
         for retired_id in retired:
             assert get_catalog_by_id(retired_id) is None
         assert get_catalog_by_id(a_model_id()) is not None
@@ -941,7 +961,7 @@ class TestLegacyCompat:
         prv.call_chat_completions = fake_call
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                chat_surface(),
                 json={"model": "model-a-v1", "messages": [{"role": "user", "content": "hi"}]},
                 headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
             )
@@ -1063,7 +1083,7 @@ class TestNoExternalNetwork:
         plat.call_platform_chat_completions = spy
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                chat_surface(),
                 json={"model": _catalog_route_id(), "messages": [{"role": "user", "content": "hi"}]},
             )
         finally:
@@ -1090,7 +1110,9 @@ class TestNoExternalNetwork:
                 # Keep the exception narrow so it can never become an upstream-network test.
                 assert "http://127.0.0.1:" in content
                 assert "https://" not in content
-                assert "openrouter.ai" not in content
+                # No provider host may appear: every host comes from the registry.
+                for host in _registry_hosts():
+                    assert host not in content
                 assert "requests." not in content
                 assert "httpx." not in content
                 continue
@@ -1158,7 +1180,7 @@ def _ok_upstream_json(model: str) -> dict:
 class TestFreeRouterExactRoute:
     def test_free_router_catalog_exact_upstream_id(self):
         retired = retired_model_ids()
-        assert retired
+        assert retired, "the registry document must record its retired routes"
         for retired_id in retired:
             assert get_catalog_by_id(retired_id) is None
         # The exact-id lane answers only ids installed by the effective registry.
@@ -1251,7 +1273,7 @@ class TestFallbackFailClosed:
         plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                chat_surface(),
                 json={
                     "model": _catalog_route_id(),
                     "messages": [{"role": "user", "content": "hi"}],
@@ -1283,7 +1305,7 @@ class TestOptionEnforcement:
         with caplog.at_level(logging.WARNING, logger="korean-ai-platform.pilot"):
             for value in (False, True):
                 resp = client.post(
-                    "/api/pilot/v1/chat/completions",
+                    chat_surface(),
                     json={
                         "model": _catalog_route_id(),
                         "messages": [{"role": "user", "content": "hi"}],
@@ -1628,7 +1650,7 @@ class TestManualRouteDefaultFallback:
         plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                chat_surface(),
                 json={"model": KILO_MODEL, "messages": [{"role": "user", "content": "hi"}]},
             )
         finally:
@@ -1656,7 +1678,7 @@ class TestManualRouteDefaultFallback:
         plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                chat_surface(),
                 json={
                     "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
@@ -1686,7 +1708,7 @@ class TestManualRouteDefaultFallback:
         plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                chat_surface(),
                 json={
                     "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
@@ -1715,7 +1737,7 @@ class TestManualRouteDefaultFallback:
         plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                chat_surface(),
                 json={
                     "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
@@ -1744,7 +1766,7 @@ class TestManualRouteDefaultFallback:
         plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                chat_surface(),
                 json={
                     "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
@@ -1772,7 +1794,7 @@ class TestManualRouteDefaultFallback:
         plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                chat_surface(),
                 json={
                     "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
@@ -1834,7 +1856,7 @@ class TestActualRouteId:
         plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                chat_surface(),
                 json={"model": _catalog_route_id(), "messages": [{"role": "user", "content": "hi"}]},
             )
         finally:
@@ -1879,7 +1901,7 @@ class TestActualRouteId:
         plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                chat_surface(),
                 json={
                     "model": TIER_DEFAULT_B14_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
@@ -1922,7 +1944,7 @@ class TestActualRouteId:
         plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                chat_surface(),
                 json={"model": _catalog_route_id(), "messages": [{"role": "user", "content": "hi"}]},
             )
         finally:

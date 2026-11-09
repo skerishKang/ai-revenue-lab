@@ -14,7 +14,13 @@ from app.factory import create_app
 from app.pilot.config import pilot_settings
 from app.pilot.schemas import ChatMessage, PilotChatRequest
 
+from _pilot_lane_paths import chat_surface
 from tests._registry_values import a_provider_id, model_rows, registry
+
+
+# The gateway surface these cases call. Its path is the app's, not this
+# file's, so it is read back out of the mounted router.
+CHAT_COMPLETIONS = chat_surface()
 
 
 # A syntactically valid https origin for the legacy lane. It is not a real
@@ -123,7 +129,7 @@ class TestPilotNotConfigured:
 
     def test_chat_fails_when_not_configured(self, client):
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": "test", "messages": [{"role": "user", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
@@ -206,7 +212,7 @@ class TestExtraFieldsRejectedViaAPI:
     def test_base_url_rejected(self, client):
         model = _configure_pilot()
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": model, "messages": [{"role": "user", "content": "hi"}], "base_url": "http://evil.com"},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
@@ -215,7 +221,7 @@ class TestExtraFieldsRejectedViaAPI:
     def test_api_key_field_rejected(self, client):
         model = _configure_pilot()
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": model, "messages": [{"role": "user", "content": "hi"}], "api_key": "sk-test"},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
@@ -224,7 +230,7 @@ class TestExtraFieldsRejectedViaAPI:
     def test_invalid_role_rejected(self, client):
         model = _configure_pilot()
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": model, "messages": [{"role": "admin", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
@@ -247,7 +253,7 @@ class TestPilotChatRequest:
                     "business14": {"mode": "byok-pilot", "provider": "test", "latency_ms": 100, "estimated_krw": None, "request_id": "b14req_test"}}
         monkeypatch.setattr(prv, "call_chat_completions", fake_call)
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": model, "messages": [{"role": "user", "content": "hi"}], "temperature": 0.2, "max_tokens": 300},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
@@ -259,7 +265,7 @@ class TestPilotChatRequest:
     def test_no_messages(self, client):
         model = _configure_pilot()
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": model, "messages": []},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
@@ -268,7 +274,7 @@ class TestPilotChatRequest:
     def test_stream_true_rejected(self, client):
         model = _configure_pilot()
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": model, "messages": [{"role": "user", "content": "hi"}], "stream": True},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
@@ -281,7 +287,7 @@ class TestPilotChatRequest:
         # refused there rather than forwarded unverified.
         model = _configure_pilot()
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={
                 "model": model,
                 "messages": [{"role": "user", "content": "hi"}],
@@ -305,7 +311,7 @@ class TestPilotChatRequest:
         # call, so it never spends a credential.
         model = _configure_pilot()
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": model, "messages": [{"role": "user", "content": "hi"}], "tools": [{"name": "test"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
@@ -315,7 +321,7 @@ class TestPilotChatRequest:
     def test_unknown_model_rejected(self, client):
         _configure_pilot()
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": "nonexistent", "messages": [{"role": "user", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
@@ -332,7 +338,7 @@ class TestMissingKey:
     def test_no_key_header(self, client):
         model = _configure_pilot()
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": model, "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 401
@@ -347,7 +353,7 @@ class TestPlaceholderKey:
         async def fake_call(**kw): return {"id": "test", "object": "chat.completion", "model": "test", "choices": [{"index": 0, "message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}]}
         monkeypatch.setattr(prv, "call_chat_completions", fake_call)
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": model, "messages": [{"role": "user", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": bad_key},
         )
@@ -420,7 +426,7 @@ class TestErrorRedaction:
 
         monkeypatch.setattr(prv, "call_chat_completions", exploding_call)
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": model, "messages": [{"role": "user", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
         )
@@ -463,7 +469,7 @@ class TestErrorRedaction:
     def test_api_error_has_request_id(self, client):
         _configure_pilot()
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": "test", "messages": [{"role": "user", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": "sk-test-key"},
         )
@@ -475,7 +481,7 @@ class TestErrorRedaction:
         async def fake_call(**kw): raise Exception("sk-real-key-secret-123")
         monkeypatch.setattr(prv, "call_chat_completions", fake_call)
         resp = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_COMPLETIONS,
             json={"model": model, "messages": [{"role": "user", "content": "hi"}]},
             headers={"X-Business14-Provider-Key": "sk-real-key-secret-123"},
         )
@@ -756,7 +762,7 @@ class TestIntegrationFullPath:
         prv.call_chat_completions = patched_call
         try:
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                CHAT_COMPLETIONS,
                 json={"model": model, "messages": [{"role": "user", "content": "hi"}]},
                 headers={"X-Business14-Provider-Key": "sk-real-key-12345abcdef"},
             )

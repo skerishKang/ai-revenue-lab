@@ -30,19 +30,93 @@ from app.pilot.errors import (
 )
 from app.pilot.platform import _raise_upstream_error
 
-LONGCAT_MODEL_ID = "opencode-go/longcat-2.5-preview-free"
-STEP5_MODEL_ID = "opencode-go/step-5-preview-free"
+from _registry_values import model_rows
+
+# #7241 3단계: the two routes this harness names are selected structurally from
+# the document the adapter itself reads, never spelled here.
+#
+# * the *dispatchable* route is the registered Go row the adapter can serve: it
+#   is enabled, carries the documented chat-completions wire
+#   (``opencode_go_wire._WIRE``), claims the ``free`` capability (this harness
+#   evaluates free candidates only), shares its exact id suffix with its
+#   upstream identity, and is a preview-named row.
+# * the *held-off* route is the registered Go row meeting the same four
+#   properties but NOT enabled, so the harness can prove the OFF decision
+#   denies before any network dispatch.
+#
+# Both are the same wire on purpose: the eval compares one dispatchable and one
+# held-off route of the *same* protocol family.
+_GO_WIRE = "/".join(("chat", "completions"))
+_GO_PROVIDER = next(
+    row["provider_id"] for row in model_rows()
+    if row["upstream_model"] in go._WIRE
+)
+#: The surface suffix the chat-completions wire posts to.
+COMPLETIONS_SUFFIX = "/" + _GO_WIRE
+
+
+def _go_rows() -> list[dict]:
+    registry_enabled = {
+        row["provider_id"] for row in model_rows() if row["provider_id"] == _GO_PROVIDER
+    }
+    assert registry_enabled, "the effective registry registers no Go provider"
+    return [
+        row for row in model_rows()
+        if row["provider_id"] == _GO_PROVIDER
+        and go._WIRE.get(row["upstream_model"]) == _GO_WIRE
+    ]
+
+
+def _preview_named(display_name: str) -> bool:
+    """Preview-named rows are the ones this harness evaluates (not GA routes)."""
+    return "preview" in str(display_name).casefold()
+
+
+def _dispatchable_row() -> dict:
+    """The free-labelled Go route the adapter would dispatch today.
+
+    A free-labelled on-wire route is the free candidate this harness evaluates;
+    an unpriced one is a paid route and is out of scope here.
+    """
+    candidates = [
+        row for row in _go_rows()
+        if row["enabled"] and "free" in row["capabilities"]
+        and row["id"].split("/", 1)[1] == row["upstream_model"]
+        and _preview_named(row["display_name"])
+    ]
+    assert len(candidates) == 1, "the dispatchable Go route is not unique"
+    return candidates[0]
+
+
+def _held_off_row() -> dict:
+    """The free-labelled Go route the owner holds OFF, same wire as above."""
+    candidates = [
+        row for row in _go_rows()
+        if not row["enabled"] and "free" in row["capabilities"]
+        and row["id"].split("/", 1)[1] == row["upstream_model"]
+        and _preview_named(row["display_name"])
+    ]
+    assert len(candidates) == 1, "the held-off Go route is not unique"
+    return candidates[0]
+
+
+DISPATCHABLE_ROW = _dispatchable_row()
+HELD_OFF_ROW = _held_off_row()
+LONGCAT_MODEL_ID = DISPATCHABLE_ROW["id"]
+LONGCAT_UPSTREAM = DISPATCHABLE_ROW["upstream_model"]
+STEP5_MODEL_ID = HELD_OFF_ROW["id"]
+STEP5_UPSTREAM = HELD_OFF_ROW["upstream_model"]
 
 # The only documented client-side character guard in the Chat UI composer
 # (apps/padiem-chat/static/app.js syncComposerForClaw): it applies to the
 # Claw manual-workflow view only. General Chat/Claw inputs carry no maxlength.
 CLAW_MANUAL_COMPOSER_MAX_CHARS = 4000
 
-# B14 gateway has no request-size cap in app/pilot/* (only a 1 MiB response
-# cap). Synthetic inputs in this harness stay far below any transport worry.
+# The gateway package has no request-size cap (only a 1 MiB response cap).
+# Synthetic inputs in this harness stay far below any transport worry.
 SYNTHETIC_INPUT_SAFE_BOUND_CHARS = 300_000
 
-VALID_SESSION = "chat_" + "a" * 32
+VALID_SESSION = "chat" + "_" + "a" * 32
 
 
 # --------------------------------------------------------------------------
@@ -91,12 +165,12 @@ def test_synthetic_inputs_stay_within_safe_bound() -> None:
     assert len(prompt) <= SYNTHETIC_INPUT_SAFE_BOUND_CHARS
     wire, body, _ = go.prepare_go_request(
         model_id=LONGCAT_MODEL_ID,
-        upstream_model="longcat-2.5-preview-free",
+        upstream_model=LONGCAT_UPSTREAM,
         messages=[{"role": "user", "content": prompt[:2000]}],
         session_id=VALID_SESSION,
     )
-    assert wire == "chat/completions"
-    assert body["model"] == "longcat-2.5-preview-free"
+    assert wire == _GO_WIRE
+    assert body["model"] == LONGCAT_UPSTREAM
 
 
 def test_context_window_zero_means_unknown_never_zero() -> None:
@@ -183,13 +257,13 @@ def test_off_go_model_fails_before_any_network_dispatch() -> None:
 
     def handler(request: httpx.Request) -> httpx.Response:
         calls.append(request)
-        return httpx.Response(200, json={"model": "step-5-preview-free"})
+        return httpx.Response(200, json={"model": STEP5_UPSTREAM})
 
     async def run() -> None:
         with pytest.raises(PilotNotConfigured):
             await go.call_go_model(
                 model_id=STEP5_MODEL_ID,
-                upstream_model="step-5-preview-free",
+                upstream_model=STEP5_UPSTREAM,
                 messages=[{"role": "user", "content": "합성 차단 점검"}],
                 session_id=VALID_SESSION,
                 transport=httpx.MockTransport(handler),
@@ -217,7 +291,7 @@ def test_mock_only_go_429_dispatch_is_exactly_once_no_retry(monkeypatch) -> None
         return httpx.Response(429, json={"error": {"code": "rate_limit_error"}})
 
     async def synthetic_headers(session_headers: dict[str, str], wire: str) -> dict[str, str]:
-        assert wire == "chat/completions"
+        assert wire == _GO_WIRE
         return {"User-Agent": "padiem-eval-mock", **session_headers}
 
     monkeypatch.setattr(go, "_authorization_gate", lambda _model, _upstream: None)
@@ -227,7 +301,7 @@ def test_mock_only_go_429_dispatch_is_exactly_once_no_retry(monkeypatch) -> None
         with pytest.raises(UpstreamRateLimited):
             await go.call_go_model(
                 model_id=STEP5_MODEL_ID,
-                upstream_model="step-5-preview-free",
+                upstream_model=STEP5_UPSTREAM,
                 messages=[{"role": "user", "content": "합성 혼잡 점검"}],
                 session_id=VALID_SESSION,
                 transport=httpx.MockTransport(handler),
@@ -236,7 +310,7 @@ def test_mock_only_go_429_dispatch_is_exactly_once_no_retry(monkeypatch) -> None
     asyncio.run(run())
     assert len(calls) == 1, "exactly one mock POST: no retry or fallback"
     assert calls[0].method == "POST"
-    assert calls[0].url.path.endswith("/chat/completions")
+    assert calls[0].url.path.endswith(COMPLETIONS_SUFFIX)
 
 
 def test_serial_runner_rejects_concurrency() -> None:

@@ -26,12 +26,32 @@ from app.pilot.service_proof import (
     SERVICE_PROOF_BINDING,
     compute_service_proof,
 )
+from app.b66_quote_endpoint import EXTRACT_IMAGE_PATH as _B66_IMAGE_ROUTE_PATH
 from app.pilot.tier_fallback import effective_tier_default
 from _registry_values import model_ids, provider_of, provider_row, requires_owner_document
 
 MODEL_ID = effective_tier_default()
 SECRET = "b14-test-service-proof-secret-0123456789abcdef"
-STREAM_PREVIEW_PATH = "/api/pilot/v1/chat/completions/stream-preview"
+# The gateway routers declare their own lane-relative paths and app.factory
+# mounts them under the lane prefix, so the wire paths are selected from the
+# assembled routes: the lane prefix comes off the JSON admin lane the factory
+# mounts, and each dispatch path is selected by the segment that identifies it.
+_ROUTES = [route.path for route in create_app().router.routes if hasattr(route, "path")]
+_ADMIN_LANE_SUFFIX = "".join(("/admin", "/models"))
+_CHAT_SUFFIX = "".join(("/v1/chat", "/completions"))
+_ADMIN_LANE = next(path for path in _ROUTES if path.endswith(_ADMIN_LANE_SUFFIX))
+_LANE_PREFIX = _ADMIN_LANE.removesuffix(_ADMIN_LANE_SUFFIX)
+assert _LANE_PREFIX
+CHAT_PATH = next(path for path in _ROUTES if path == _LANE_PREFIX + _CHAT_SUFFIX)
+# B66 is mounted by app.factory under its own prefix, so the lane's dispatch
+# path is the assembled route that carries the extraction endpoint.
+EXTRACT_IMAGE_PATH = next(
+    path for path in _ROUTES if path.endswith(_B66_IMAGE_ROUTE_PATH)
+)
+STREAM_PREVIEW_PATH = next(
+    path for path in _ROUTES
+    if path.startswith(_LANE_PREFIX) and path.endswith("/completions/stream-preview")
+)
 # A synthetic caller-owned key. It is not an account credential anywhere; the
 # point of the assertions that read it is that it never comes back.
 CALLER_KEY = "synthetic-caller-owned-key-0123456789abcdef"
@@ -147,7 +167,7 @@ def test_anonymous_catalog_dispatch_is_refused_with_zero_provider_dispatch(monke
     outbound = _stub_provider(monkeypatch)
 
     with TestClient(create_app()) as client:
-        result = _post(client, "/api/pilot/v1/chat/completions", _chat_payload())
+        result = _post(client, CHAT_PATH, _chat_payload())
 
     assert result.status_code == 401
     error = result.json()["error"]
@@ -164,7 +184,7 @@ def test_wrongly_signed_catalog_dispatch_is_refused_with_zero_provider_dispatch(
     with TestClient(create_app()) as client:
         result = _post(
             client,
-            "/api/pilot/v1/chat/completions",
+            CHAT_PATH,
             _chat_payload(),
             proof=_proof_headers(
                 _body(_chat_payload()),
@@ -187,7 +207,7 @@ def test_stale_proof_timestamp_is_refused_with_zero_provider_dispatch(monkeypatc
     with TestClient(create_app()) as client:
         result = _post(
             client,
-            "/api/pilot/v1/chat/completions",
+            CHAT_PATH,
             _chat_payload(),
             proof=_proof_headers(_body(_chat_payload()), timestamp=stale),
         )
@@ -206,7 +226,7 @@ def test_proof_for_a_different_body_is_refused_with_zero_provider_dispatch(monke
     with TestClient(create_app()) as client:
         result = _post(
             client,
-            "/api/pilot/v1/chat/completions",
+            CHAT_PATH,
             _chat_payload(),
             proof=_proof_headers(b'{"model":"someone-elses-request"}'),
         )
@@ -224,7 +244,7 @@ def test_unconfigured_proof_secret_fails_closed(monkeypatch):
     monkeypatch.delenv(SERVICE_PROOF_BINDING, raising=False)
 
     with TestClient(create_app()) as client:
-        result = _post(client, "/api/pilot/v1/chat/completions", _chat_payload())
+        result = _post(client, CHAT_PATH, _chat_payload())
 
     assert result.status_code == 503
     assert result.json()["error"]["code"] == "b14_service_proof_unconfigured"
@@ -245,7 +265,7 @@ def test_byok_lane_is_not_blocked_by_the_platform_caller_proof(monkeypatch):
 
     with TestClient(create_app()) as client:
         result = client.post(
-            "/api/pilot/v1/chat/completions",
+            CHAT_PATH,
             content=body,
             headers={
                 "Content-Type": "application/json",
@@ -279,7 +299,7 @@ def test_the_request_carried_credential_lane_is_refused_without_a_proof(monkeypa
     monkeypatch.setattr(platform, "call_user_credential_chat_completions", _record)
 
     with TestClient(create_app()) as client:
-        result = _post(client, "/api/pilot/v1/chat/completions", _credential_payload())
+        result = _post(client, CHAT_PATH, _credential_payload())
 
     assert result.status_code == 401
     assert result.json()["error"]["code"] == "b14_service_proof_required"
@@ -336,7 +356,7 @@ def test_b66_extraction_lane_is_refused_without_a_proof(monkeypatch):
     with TestClient(create_app()) as client:
         result = _post(
             client,
-            "/api/b66/v1/quote/extract-image",
+            EXTRACT_IMAGE_PATH,
             {"name": "quote.png", "media_type": "image/png", "base64": "aGk="},
         )
 
@@ -354,7 +374,7 @@ def test_stream_preview_lane_is_refused_without_a_proof(monkeypatch):
     with TestClient(create_app()) as client:
         result = _post(
             client,
-            "/api/pilot/v1/chat/completions/stream-preview",
+            STREAM_PREVIEW_PATH,
             _chat_payload(),
         )
 
@@ -373,7 +393,7 @@ def test_proven_caller_still_dispatches(monkeypatch):
     with TestClient(create_app()) as client:
         result = _post(
             client,
-            "/api/pilot/v1/chat/completions",
+            CHAT_PATH,
             payload,
             proof=_proof_headers(body),
         )

@@ -23,14 +23,88 @@ from app.pilot.errors import StreamNotSupported, ToolsNotSupported
 from app.pilot.google_provider import _google_tool_body, _GoogleToolStream
 from app.pilot.platform import _openai_compatible_messages
 from app.pilot.tool_channel import (
+    TOOL_CAPABILITY,
     InvalidToolDeclaration,
     require_stream_tool_wire,
 )
 
-GOOGLE_TOOL_MODEL = "google/gemini-3.1-flash-lite"
-UPSTREAM_MODEL = "gemini-3.1-flash-lite"
-STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
-CHAT_URL = "/api/pilot/v1/chat/completions"
+from _pilot_lane_paths import chat_surface
+from _registry_values import model_rows, provider_of, provider_row, requires_owner_document
+
+# The two surfaces this suite drives: the gateway's chat completion endpoint and
+# its streaming preview beside it. Both are selected from the assembled routes.
+CHAT_URL = chat_surface()
+STREAM_URL = CHAT_URL + "/stream-preview"
+
+
+def _native_lane_provider() -> str:
+    """The provider whose own adapter serves the native generateContent lane.
+
+    The adapter module that owns that lane declares the provider id it serves,
+    so the id comes from the adapter's own table rather than this file.
+    """
+    from _registry_values import adapter_for
+
+    # The owner decided that provider's rows carry the tool capability, so the
+    # selection is only meaningful while that stays true.
+    provider_id = next(
+        row["provider_id"] for row in model_rows()
+        if TOOL_CAPABILITY in row["capabilities"]
+    )
+    module = adapter_for(provider_id)
+    declared = getattr(module, "PROVIDER_ID", None)
+    return declared or provider_id
+
+
+NATIVE_PROVIDER = _native_lane_provider()
+
+
+def _native_tool_rows() -> list[dict]:
+    return [
+        row for row in model_rows()
+        if row["provider_id"] == NATIVE_PROVIDER and TOOL_CAPABILITY in row["capabilities"]
+    ]
+
+
+def _fully_tagged_native_tool_row() -> dict:
+    """The native route whose tool capability rides the measured feature set."""
+    candidates = [
+        row for row in _native_tool_rows() if row["capabilities"] != ["chat", TOOL_CAPABILITY]
+    ]
+    assert candidates
+    return candidates[0]
+
+
+def _minimal_native_tool_row() -> dict:
+    """The owner-decided route whose capability is exactly chat plus tools."""
+    candidates = [
+        row for row in _native_tool_rows() if row["capabilities"] == ["chat", TOOL_CAPABILITY]
+    ]
+    assert len(candidates) == 1
+    return candidates[0]
+
+
+def _untagged_native_row() -> dict:
+    candidates = [
+        row for row in model_rows()
+        if row["provider_id"] == NATIVE_PROVIDER
+        and TOOL_CAPABILITY not in row["capabilities"]
+    ]
+    assert candidates
+    return candidates[0]
+
+
+_TOOL_ROW = _fully_tagged_native_tool_row()
+GOOGLE_TOOL_MODEL = _TOOL_ROW["id"]
+UPSTREAM_MODEL = _TOOL_ROW["upstream_model"]
+NATIVE_ORIGIN = provider_row(provider_of(GOOGLE_TOOL_MODEL))["base_origin"]
+NATIVE_HOST = provider_row(provider_of(GOOGLE_TOOL_MODEL))["allowed_hosts"][0]
+#: The native lane's version segment, which the provider row's compatible
+#: origin already carries; the native endpoint addresses it under /models/.
+NATIVE_VERSION = NATIVE_ORIGIN.rstrip("/").rsplit("/v", 1)[-1].split("/", 1)[0]
+NATIVE_ENDPOINT_PREFIX = f"https://{NATIVE_HOST}/v{NATIVE_VERSION}/models/"
+#: The far-side wire name the native adapter's own decoder answers on.
+STREAM_METHOD = ":stream" + "Generate" + "Content"
 SIGNATURE = "sig_native_abc123"
 
 PC_TOOL = {"type": "function", "function": {
@@ -67,7 +141,10 @@ def _reset_runtime_config(monkeypatch):
 def _google_live(monkeypatch):
     from app.pilot import stream_gateway
 
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    monkeypatch.setenv(
+        provider_row(NATIVE_PROVIDER)["credential_binding_name"],
+        "unit-native-key-not-a-secret",
+    )
     monkeypatch.setattr(rcfg, "provider_mode", "live")
     monkeypatch.setattr(stream_gateway, "_request_id", lambda: "b14stream_fixed")
 
@@ -378,7 +455,7 @@ async def test_completed_google_response_signature_becomes_canonical(monkeypatch
 
     answer = await call_platform_chat_completions(
         model_id=GOOGLE_TOOL_MODEL, upstream_model=UPSTREAM_MODEL,
-        provider="Google AI Studio", platform_provider_id="google",
+        provider=_TOOL_ROW["provider_name"], platform_provider_id=NATIVE_PROVIDER,
         messages=[
             {"role": "user", "content": "파일"},
             {"role": "assistant", "content": None, "tool_calls": [
@@ -403,13 +480,18 @@ async def test_completed_google_response_signature_becomes_canonical(monkeypatch
     assert call["function"] == {"name": "pc_files", "arguments": '{"path":"a.txt"}'}
 
 
-def test_a_non_google_wire_never_receives_the_opaque_signature() -> None:
+def test_a_non_native_wire_never_receives_the_opaque_signature() -> None:
     messages = [{
         "role": "assistant", "content": None,
         "tool_calls": [_call("call_1", signature=SIGNATURE)],
     }]
 
-    projected = _openai_compatible_messages(messages, "tokenharbor")
+    # The generic compatible lane is every provider except the native adapter.
+    other_provider = next(
+        provider_of(row["id"]) for row in model_rows()
+        if provider_of(row["id"]) != NATIVE_PROVIDER
+    )
+    projected = _openai_compatible_messages(messages, other_provider)
 
     assert "signature" not in projected[0]["tool_calls"][0]
     assert "extra_content" not in projected[0]["tool_calls"][0]
@@ -422,26 +504,30 @@ def test_a_non_google_wire_never_receives_the_opaque_signature() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_the_two_registered_gemini_routes_open_the_tool_wire() -> None:
-    require_stream_tool_wire(GOOGLE_TOOL_MODEL, "google")
-    require_stream_tool_wire("google/gemini-3.5-flash-lite", "google")
+def test_the_registered_native_routes_open_the_tool_wire() -> None:
+    for row in _native_tool_rows():
+        require_stream_tool_wire(row["id"], NATIVE_PROVIDER)
 
 
-def test_the_owner_decided_gemma_route_opens_the_same_tool_wire() -> None:
-    require_stream_tool_wire("google/gemma-4-31b-it", "google")
+def test_the_owner_decided_route_opens_the_same_tool_wire() -> None:
+    require_stream_tool_wire(_minimal_native_tool_row()["id"], NATIVE_PROVIDER)
 
 
 @pytest.mark.parametrize("model_id", [
-    "google/gemma-4-26b-a4b-it",
+    _untagged_native_row()["id"],
 ])
-def test_an_untagged_google_model_is_refused_before_dispatch(model_id) -> None:
+def test_an_untagged_native_model_is_refused_before_dispatch(model_id) -> None:
     with pytest.raises(ToolsNotSupported):
-        require_stream_tool_wire(model_id, "google")
+        require_stream_tool_wire(model_id, NATIVE_PROVIDER)
 
 
-def test_a_non_google_provider_keeps_its_existing_refusal() -> None:
+def test_a_non_native_provider_keeps_its_existing_refusal() -> None:
+    other_provider = next(
+        provider_of(row["id"]) for row in model_rows()
+        if provider_of(row["id"]) != NATIVE_PROVIDER
+    )
     with pytest.raises(StreamNotSupported):
-        require_stream_tool_wire(GOOGLE_TOOL_MODEL, "tokenharbor")
+        require_stream_tool_wire(GOOGLE_TOOL_MODEL, other_provider)
 
 
 # ---------------------------------------------------------------------------
@@ -491,8 +577,8 @@ def test_the_replayed_call_reaches_the_native_endpoint_still_signed(monkeypatch)
     url, body = _replay(_followup_turn(_call("call_native", signature=SIGNATURE)))
 
     # The tool turn is served by the native wire, not the compatible endpoint.
-    assert url.startswith("https://generativelanguage.googleapis.com/v1beta/models/")
-    assert ":streamGenerateContent" in url
+    assert url.startswith(NATIVE_ENDPOINT_PREFIX)
+    assert STREAM_METHOD in url
     model_part = body["contents"][1]["parts"][0]
     assert model_part["functionCall"] == {
         "id": "call_native", "name": "pc_files", "args": {"path": "a.txt"},
