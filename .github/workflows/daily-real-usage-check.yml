@@ -52,6 +52,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          # 스탬프 판정은 "스탬프 커밋..main" 사이의 화면 경로 변경을 git 으로
+          # 본다. 스탬프 커밋이 이 범위 밖이면 스크립트가 --deepen/--unshallow 로
+          # 필요한 만큼만 더 받는다
+          # (실행 42668928406: 얕은 클론 때문에 정상 배포 지연이 FAIL 이 됐다).
+          fetch-depth: 30
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -80,10 +85,6 @@ jobs:
       - name: Install Chromium browser
         if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
         run: python -m playwright install --only-shell chromium
-      # 배포 스탬프는 배포 커밋의 앞 8자리다(release_chat.ps1). 앞선 병합 직후
-      # 배포 전 창을 구분하려고 최근 main 커밋 앞 8자리를 함께 넘긴다.
-      - name: Record recent main commits for the stamp comparison
-        run: echo "PADIEM_RECENT_MAIN_SHAS=$(git log --abbrev=8 --format=%h -30 | tr '\n' ' ')" >> "$GITHUB_ENV"
       - name: Record a skip when the QA credential is absent
         if: ${{ env.B66_CGI_ALPHA_USERNAME == '' || env.B66_CGI_ALPHA_PASSWORD == '' }}
         run: |

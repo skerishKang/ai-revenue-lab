@@ -82,7 +82,6 @@ HEAD_VOICE = 10
 # 2차 브라우저 흐름. 판정은 daily_usage_browser_checks 의 순수 함수가 한다.
 BROWSER_FLOWS = ("browser_chat", "browser_claw", "browser_stamp")
 EXPECTED_HEAD_ENV = "PADIEM_EXPECTED_HEAD_SHA"
-RECENT_MAIN_ENV = "PADIEM_RECENT_MAIN_SHAS"
 BROWSER_CAPTURE_DIR_ENV = "PADIEM_USAGE_CAPTURE_DIR"
 BROWSER_CAPTURE_DIR_DEFAULT = "usage-browser-captures"
 METRICS_PATH_ENV = "PADIEM_USAGE_METRICS_PATH"
@@ -450,14 +449,12 @@ def flow_browser(flows: list[Flow], cookie: str) -> tuple[dict, list[str]]:
             by_name[name].skip("no_session_from_flow_1")
         return {}, []
     head_version = os.environ.get(EXPECTED_HEAD_ENV, "")[:8]
-    recent = os.environ.get(RECENT_MAIN_ENV, "").split()
     out_dir = os.environ.get(BROWSER_CAPTURE_DIR_ENV, "") or BROWSER_CAPTURE_DIR_DEFAULT
     try:
         results = browser_checks.run_browser_flows(
             cookie=cookie,
             out_dir=out_dir,
             head_version=head_version,
-            recent_versions=recent,
             username=os.environ.get(QA_USERNAME_ENV, ""),
         )
     except ImportError:
@@ -478,6 +475,9 @@ def flow_browser(flows: list[Flow], cookie: str) -> tuple[dict, list[str]]:
         flow.head = payload.get("head", "")
         flow.elapsed_ms = int(payload.get("elapsed_ms", 0))
         captures.extend(payload.get("captures", []))
+        # 허용 목록 밖 콘솔 오류는 안전 코드뿐이다(값·URL 쿼리 없음).
+        for code in (payload.get("console_errors") or [])[:3]:
+            print(f"USAGE_BROWSER name={name} console_error={code}")
     return results, captures
 
 

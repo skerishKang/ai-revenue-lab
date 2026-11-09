@@ -8,7 +8,8 @@
   browser_chat   로그인된 화면에서 질문 1개 → 답 글자 10자 이상 + 콘솔 오류 0
   browser_claw   같은 계정으로 Claw 화면에서 질문 1개 → 답 표시
                  (Chat 과 Claw 는 기능이 같다는 대표 결정: 한쪽만 되면 FAIL)
-  browser_stamp  화면이 실제로 불러온 app.js 의 ?v= 스탬프가 배포 SHA 앞 8자리인지
+  browser_stamp  화면이 실제로 불러온 app.js 의 ?v= 스탬프 커밋 이후에 화면 배포
+                 대상 경로가 바뀌었는지(6시간 배포 창을 넘겼는지)
 
 이 파일은 두 층으로 나뉜다.
 
@@ -36,6 +37,7 @@ import json
 import os
 import re
 import statistics
+import subprocess
 import time
 import urllib.error
 import urllib.request
@@ -63,7 +65,6 @@ SLOWDOWN_FACTOR = 2.0
 SLOWDOWN_HISTORY = 7
 SLOWDOWN_LABEL = "SLOWDOWN_WARNING"
 
-_SAFE_CODE = re.compile(r"^[a-z][a-z0-9_]{0,80}$")
 _VERSION_IN_URL = re.compile(r"[?&]v=([A-Za-z0-9_.-]{1,64})")
 
 # 콘솔 오류 허용 목록: (URL 정규식, 이유). URL 은 메시지가 가리키는 리소스다.
@@ -153,6 +154,33 @@ def screen_parity(chat_verdict: str, claw_verdict: str) -> tuple[bool, str]:
     return True, "none"
 
 
+def parity_target(code: str) -> str:
+    """parity 실패 코드가 지목하는 흐름.
+
+    `screen_parity_chat_only` 는 "Chat 만 답했다"이므로 잘못한 화면은 Claw 다.
+    지목을 뒤집으면 멀쩡한 화면을 FAIL 로 기록한다(실제로 실행 42668928406 에서
+    그렇게 기록됐다).
+    """
+    return "browser_claw" if code == "screen_parity_chat_only" else "browser_chat"
+
+
+_MAX_CODE = 80
+
+
+def safe_code(value: str) -> str:
+    """어떤 문자열이든 소문자·숫자·밑줄의 안전 코드로 바꾼다.
+
+    예외 클래스 이름에는 대문자가 섞인다(`browser_claw_Error`). 그대로 쓰면
+    `_SAFE_CODE` 검사를 통과하지 못해 진단 정보가 `unsafe_code` 로 사라진다.
+    """
+    cleaned = re.sub(r"[^a-z0-9]+", "_", (value or "").lower()).strip("_")
+    if not cleaned:
+        return "unknown"
+    if not cleaned[0].isalpha():
+        cleaned = f"e_{cleaned}"
+    return cleaned[:_MAX_CODE]
+
+
 # ------------------------------------------------------------------ 스탬프
 def stamp_from_url(url: str | None) -> str:
     """app.js URL 의 ?v= 값. 없으면 빈 문자열."""
@@ -160,31 +188,154 @@ def stamp_from_url(url: str | None) -> str:
     return match.group(1) if match else ""
 
 
+# 화면 배포 대상 경로. `deploy/chat-release/release_chat.ps1` 3단계의
+# `git archive … -- apps/padiem-chat-front apps/padiem-chat/static apps/padiem-chat-pages`
+# 와 같은 목록이다. 그 스크립트 헤더가 "화면 변경은 이 스크립트로만 배포된다"고
+# 적고 있고, COM2 의 deploy_from_main.sh 는 채팅 런타임만 올린다. 목록이 갈라지면
+# 이 판정이 조용히 틀리므로 시험이 release_chat.ps1 을 읽어 같음을 확인한다.
+SCREEN_RELEASE_PATHS: tuple[str, ...] = (
+    "apps/padiem-chat-front",
+    "apps/padiem-chat/static",
+    "apps/padiem-chat-pages",
+)
+
+# 스탬프 커밋 이후 화면 경로가 바뀐 커밋의 시각부터 이만큼까지는 배포가 진행 중인
+# 창으로 본다. 넘으면 화면 배포 누락이다(#6724 CTO 지시).
+SCREEN_LAG_LIMIT_SECONDS = 6 * 3600
+
+
 def stamp_verdict(
     observed: str,
-    head_version: str,
-    recent_versions: list[str] | tuple[str, ...] = (),
-) -> tuple[str, str]:
-    """(판정, 코드). 화면이 부른 app.js 스탬프와 배포 SHA 앞 8자리를 비교한다.
+    head_sha: str,
+    *,
+    stamp_sha: str = "",
+    screen_changes: list[tuple[str, int]] | None = None,
+    ancestor: bool = True,
+    now_epoch: int | None = None,
+) -> tuple[str, str, str]:
+    """(판정, 코드, 기록할 커밋).
 
-    release_chat.ps1 은 배포 직전 커밋의 앞 8자리로 정적 자산을 스탬프한다.
-    그래서 화면의 스탬프는 "이 화면이 어느 커밋에서 나왔는가"다.
+    release_chat.ps1 은 배포 커밋의 앞 8자리로 정적 자산을 스탬프한다. 그래서
+    화면의 스탬프는 "이 화면이 어느 커밋에서 나왔는가"다.
 
-    - 스탬프가 없으면 FAIL: 배포가 스탬프를 거치지 않았다.
-    - 스탬프가 현재 main 앞 8자리면 PASS.
-    - main 의 최근 커밋 중 하나면 PASS + deploy_lag: 병합 직후 배포 전 창.
-    - 그 밖(오래된 커밋·알 수 없는 값)이면 FAIL screen_deploy_missing:
-      화면 배포가 누락됐다.
+    이전 규칙(main 최근 30커밋 안이면 deploy_lag)은 화면 파일을 바꾼 PR 이
+    머지되고 release 가 빠져도 30커밋 동안 잡지 못했다. 이제 스탬프 커밋과
+    main 사이에서 **화면 배포 대상 경로**(SCREEN_RELEASE_PATHS)를 바꾼 커밋을
+    센다.
+
+    - 화면 경로를 바꾼 커밋이 없으면 PASS up_to_date: 화면은 최신이다.
+    - 있으면 그중 가장 이른 커밋의 커밋(머지) 시각부터 지난 시간으로,
+      6시간 이하면 PASS deploy_lag, 넘으면 FAIL screen_deploy_missing.
+      기록에는 그 커밋의 앞 8자리를 남긴다(어느 변경이 배포에서 빠졌는지).
+    - 스탬프 커밋을 저장소에서 찾지 못하면 FAIL screen_stamp_unknown.
+    - 스탬프 커밋이 main 조상이 아니면 FAIL screen_stamp_not_on_main.
+    - 이력을 읽지 못했으면(None) FAIL screen_history_unavailable:
+      모르는 것을 통과시키지 않는다.
     """
     value = (observed or "").strip()
     if not value:
-        return "FAIL", "screen_stamp_missing"
-    expected = (head_version or "").strip()
-    if expected and value == expected:
-        return "PASS", "none"
-    if value in {str(item).strip() for item in recent_versions if str(item).strip()}:
-        return "PASS", "deploy_lag"
-    return "FAIL", "screen_deploy_missing"
+        return "FAIL", "screen_stamp_missing", ""
+    if not re.fullmatch(r"[0-9a-fA-F]{7,40}", value):
+        # 배포 스크립트는 SHA 앞 8자리를 넣는다. 그 모양이 아니면 다른 값이다.
+        return "FAIL", "screen_stamp_malformed", value[:8]
+    head = (head_sha or "").strip()[:8]
+    if len(value) == 8 and head and value.lower() == head.lower():
+        # 화면 스탬프가 main 그 자체다. 비교할 커밋이 없다.
+        return "PASS", "up_to_date", value[:8]
+    stamp = (stamp_sha or "").strip()
+    if not stamp:
+        return "FAIL", "screen_stamp_unknown", value[:8]
+    if not ancestor:
+        return "FAIL", "screen_stamp_not_on_main", stamp[:8]
+    if screen_changes is None:
+        return "FAIL", "screen_history_unavailable", stamp[:8]
+    rollup = sorted(((str(sha).strip(), int(ts)) for sha, ts in screen_changes
+                     if str(sha).strip()),
+                    key=lambda item: item[1])
+    if not rollup:
+        return "PASS", "up_to_date", stamp[:8]
+    first_sha, first_ts = rollup[0]
+    clock = int(now_epoch if now_epoch is not None else time.time())
+    if clock - first_ts <= SCREEN_LAG_LIMIT_SECONDS:
+        return "PASS", "deploy_lag", first_sha[:8]
+    return "FAIL", "screen_deploy_missing", first_sha[:8]
+
+
+def _git(args: list[str], cwd: str | None = None) -> tuple[int, str]:
+    """(종료 코드, 표준출력). git 이 없거나 실패해도 예외를 올리지 않는다."""
+    try:
+        done = subprocess.run(["git", *args], cwd=cwd, capture_output=True,
+                              text=True, timeout=120, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return 1, ""
+    return done.returncode, (done.stdout or "").strip()
+
+
+def resolve_stamp_commit(prefix: str, cwd: str | None = None) -> str:
+    """스탬프 앞 8자리 → 전체 SHA. 얕은 클론 밖이면 더 받아서 다시 찾는다.
+
+    checkout 은 fetch-depth 30 이다. 스탬프 커밋이 그 밖이면 저장소에 객체가
+    없으므로, 판정에 필요한 만큼만 더 받는다(--deepen, 안 되면 --unshallow).
+    """
+    value = (prefix or "").strip()
+    if not value:
+        return ""
+    code, out = _git(["rev-parse", "--verify", "--quiet", f"{value}^{{commit}}"], cwd)
+    if code == 0 and out:
+        return out.splitlines()[0].strip()
+    for fetch in (["fetch", "--deepen=500", "origin", "main"],
+                  ["fetch", "--unshallow", "origin"]):
+        _git(fetch, cwd)
+        code, out = _git(["rev-parse", "--verify", "--quiet", f"{value}^{{commit}}"], cwd)
+        if code == 0 and out:
+            return out.splitlines()[0].strip()
+    return ""
+
+
+def screen_commits_since(stamp_sha: str, head: str = "HEAD",
+                         cwd: str | None = None) -> list[tuple[str, int]] | None:
+    """스탬프 커밋..head 사이에서 화면 배포 대상 경로를 바꾼 커밋 (오래된 순).
+
+    각 항목은 (전체 SHA, 커밋 시각 epoch) 이다. squash 병합이면 커밋 시각이
+    곧 머지 시각이다. None 은 "이력을 읽지 못했다"이며, 화면 최신 여부를 모르는
+    상태이므로 판정에서 FAIL 로 다룬다.
+    """
+    if not (stamp_sha or "").strip():
+        return None
+    args = ["log", "--reverse", "--format=%H%x09%ct", f"{stamp_sha.strip()}..{head}",
+            "--", *SCREEN_RELEASE_PATHS]
+    code, out = _git(args, cwd)
+    if code != 0:
+        # 얕은 경계에 걸려 이력을 못 읽는 경우다. 한 번 전체 이력으로 재시도한다.
+        _git(["fetch", "--unshallow", "origin"], cwd)
+        code, out = _git(args, cwd)
+        if code != 0:
+            return None
+    rows: list[tuple[str, int]] = []
+    for line in out.splitlines():
+        sha, _, stamp = line.partition("\t")
+        if sha.strip() and stamp.strip().isdigit():
+            rows.append((sha.strip(), int(stamp.strip())))
+    return rows
+
+
+def stamp_evidence(observed: str, head: str = "HEAD",
+                   cwd: str | None = None) -> dict:
+    """stamp_verdict 에 넘길 저장소 쪽 입력을 모은다(판정은 순수 함수가 한다)."""
+    stamp_sha = resolve_stamp_commit(observed, cwd)
+    ancestor = False
+    screen_changes: list[tuple[str, int]] | None = None
+    if stamp_sha:
+        code, _ = _git(["merge-base", "--is-ancestor", stamp_sha, head], cwd)
+        if code != 0:
+            # 얕은 클론 경계는 조상 관계 증명을 막는다. 전체 이력으로 한 번 더.
+            _git(["fetch", "--unshallow", "origin"], cwd)
+            code, _ = _git(["merge-base", "--is-ancestor", stamp_sha, head], cwd)
+        ancestor = code == 0
+        if ancestor:
+            screen_changes = screen_commits_since(stamp_sha, head, cwd)
+    return {"stamp_sha": stamp_sha, "ancestor": ancestor,
+            "screen_changes": screen_changes}
 
 
 # ------------------------------------------------------------------ 느려짐
@@ -383,7 +534,7 @@ class BrowserFlowResult:
         return {
             "name": self.name,
             "verdict": self.verdict,
-            "code": self.code if _SAFE_CODE.match(self.code or "") else "unsafe_code",
+            "code": safe_code(self.code),
             "head": self.head,
             "elapsed_ms": self.elapsed_ms,
             "captures": list(self.captures),
@@ -421,6 +572,38 @@ def _console_events(page, sink: list[tuple[str, str, str]]) -> None:
     page.on("pageerror", on_pageerror)
 
 
+# 컴포저와 Claw 작업영역은 hidden 속성으로 열린다. CSS 레이아웃(offsetParent)
+# 보다 hidden 이 실제 상태에 가깐다.
+COMPOSER_VISIBLE_JS = """() => {
+  const el = document.getElementById('composerForm');
+  return !!el && el.offsetParent !== null;
+}"""
+
+CLAW_VISIBLE_JS = """() => {
+  const el = document.getElementById('clawWorkspace');
+  return !!el && !el.hidden;
+}"""
+
+CLICK_TIMEOUT_MS = 15_000
+
+
+def _claw_visible(page) -> bool:
+    try:
+        page.wait_for_function(CLAW_VISIBLE_JS, timeout=SELECTOR_TIMEOUT_MS)
+        return True
+    except Exception:
+        return False
+
+
+def _finish(flow: BrowserFlowResult, started: float,
+            sink: list[tuple[str, str, str]], mark: int) -> None:
+    """소요 시간을 확정하고, 허용 목록 밖 콘솔 오류가 있으면 FAIL 로 내린다."""
+    flow.elapsed_ms = int((time.monotonic() - started) * 1000)
+    flow.console_errors = _error_codes(sink[mark:])
+    if flow.verdict == "PASS" and flow.console_errors:
+        flow.fail(flow.console_errors[0])
+
+
 def _submit(page, prompt: str) -> None:
     page.fill("#messageInput", prompt)
     page.click("#sendButton")
@@ -446,7 +629,6 @@ def run_browser_flows(
     cookie: str,
     out_dir: str | os.PathLike[str],
     head_version: str,
-    recent_versions: list[str] | tuple[str, ...] = (),
     username: str = "",
 ) -> dict[str, dict]:
     """세 흐름을 실제 화면에서 돌리고 결과를 돌려준다.
@@ -485,12 +667,15 @@ def run_browser_flows(
             chat = results["browser_chat"]
             started = time.monotonic()
             mark = len(sink)
+            stage = "open"
             try:
                 page.goto(CHAT_URL, wait_until="domcontentloaded", timeout=NAVIGATE_TIMEOUT_MS)
-                page.wait_for_selector("#composerForm", state="visible")
+                page.wait_for_function(COMPOSER_VISIBLE_JS)
                 _capture(page, out_path, chat, 1, "open", username)
+                stage = "question"
                 _submit(page, CHAT_PROMPT)
                 _capture(page, out_path, chat, 2, "question", username)
+                stage = "answer"
                 answer = _wait_answer(page)
                 _capture(page, out_path, chat, 3, "answer", username)
                 verdict, code, head = answer_verdict(answer.get("text"))
@@ -499,35 +684,44 @@ def run_browser_flows(
                 else:
                     chat.fail(code)
             except Exception as exc:
-                chat.fail(f"browser_chat_{type(exc).__name__}")
-            chat.elapsed_ms = int((time.monotonic() - started) * 1000)
-            chat.console_errors = _error_codes(sink[mark:])
-            if chat.verdict == "PASS" and chat.console_errors:
-                # 콘솔 오류 0 이 이 흐름의 판정 조건이다. 답이 와도 오류가 있으면 FAIL.
-                chat.fail(chat.console_errors[0])
+                # 어느 단계에서 깨졌는지가 진단의 전부다.
+                chat.fail(safe_code(f"{chat.name}_{stage}_{type(exc).__name__}"))
+            _finish(chat, started, sink, mark)
 
             claw = results["browser_claw"]
             started = time.monotonic()
             claw_mark = len(sink)
+            stage = "open"
             try:
-                page.click("#clawNavButton")
-                page.wait_for_selector("#clawWorkspace", state="visible")
+                # 해시 경로가 대표 결정의 Claw 화면이다. 테마·폭에 따라 사이드바가
+                # 접혀 클릭이 actionability 를 기다리다 30초를 태우므로, 먼저 해시로
+                # 열고 열리지 않을 때만 사이드바 항목을 누른다(실행 42668928406).
+                page.goto(CHAT_URL + CLAW_HASH, wait_until="domcontentloaded",
+                          timeout=NAVIGATE_TIMEOUT_MS)
+                if not _claw_visible(page):
+                    page.click("#clawNavButton", timeout=CLICK_TIMEOUT_MS)
+                    if not _claw_visible(page):
+                        raise RuntimeError("claw_workspace_not_shown")
                 _capture(page, out_path, claw, 1, "open", username)
+                stage = "question"
                 _submit(page, CLAW_PROMPT)
                 _capture(page, out_path, claw, 2, "question", username)
+                stage = "answer"
                 answer = _wait_answer(page)
                 _capture(page, out_path, claw, 3, "answer", username)
                 verdict, code, head = answer_verdict(answer.get("text"))
-                if verdict == "PASS":
-                    claw.pass_(head, code)
-                else:
+                if verdict != "PASS":
                     claw.fail(code)
+                else:
+                    product = (answer.get("product") or "").strip()
+                    if product and "claw" not in product.lower():
+                        # 같은 셸을 쓰지만 답한 제품은 분리해 기록한다.
+                        claw.fail("screen_wrong_product")
+                    else:
+                        claw.pass_(head, code)
             except Exception as exc:
-                claw.fail(f"browser_claw_{type(exc).__name__}")
-            claw.elapsed_ms = int((time.monotonic() - started) * 1000)
-            claw.console_errors = _error_codes(sink[claw_mark:])
-            if claw.verdict == "PASS" and claw.console_errors:
-                claw.fail(claw.console_errors[0])
+                claw.fail(safe_code(f"{claw.name}_{stage}_{type(exc).__name__}"))
+            _finish(claw, started, sink, claw_mark)
 
             stamp = results["browser_stamp"]
             started = time.monotonic()
@@ -539,8 +733,15 @@ def run_browser_flows(
                     if observed:
                         break
                 _capture(page, out_path, stamp, 1, "app-version", username)
-                verdict, code = stamp_verdict(observed, head_version, recent_versions)
-                stamp.pass_(observed, code) if verdict == "PASS" else stamp.fail(code)
+                evidence = stamp_evidence(observed)
+                verdict, code, blame = stamp_verdict(observed, head_version, **evidence)
+                if verdict == "PASS":
+                    stamp.pass_(blame or observed, code)
+                else:
+                    # 스탬프는 배포 SHA 앞 8자리 조각이다. 쿠키·토큰이 아니므로
+                    # 어느 커밋 화면인지(지목된 커밋) 진단에 남긴다.
+                    stamp.head = blame or observed
+                    stamp.fail(code)
             except Exception as exc:
                 stamp.fail(f"browser_stamp_{type(exc).__name__}")
             stamp.elapsed_ms = int((time.monotonic() - started) * 1000)
@@ -552,7 +753,9 @@ def run_browser_flows(
     if chat.verdict in ("PASS", "FAIL") and claw.verdict in ("PASS", "FAIL"):
         ok, code = screen_parity(chat.verdict, claw.verdict)
         if not ok:
-            target = claw if "claw_only" in code else chat
-            target.fail(code)
+            # 한쪽만 답한 경우다. 원인 코드를 이미 가진 흐름은 덮어쓰지 않는다.
+            target = results[parity_target(code)]
+            if target.verdict != "FAIL":
+                target.fail(code)
 
     return {name: flow.as_dict() for name, flow in results.items()}
