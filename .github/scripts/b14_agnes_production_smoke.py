@@ -7,7 +7,7 @@ import urllib.request
 from typing import Any, Callable
 
 
-B14_BASE_URL = "https://ai-revenue-korean-ai-platform.charliekant.workers.dev"
+B14_BASE_URL = "https://b14.padiem.net"
 HEALTH_PATH = "/api/pilot/admin/health"
 MODELS_PATH = "/api/pilot/admin/models"
 CHAT_PATH = "/api/pilot/v1/chat/completions"
