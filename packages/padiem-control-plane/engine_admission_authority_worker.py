@@ -36,14 +36,20 @@ _FETCH_KEYS = frozenset({"product_id", "subject"})
 _RESERVE_KEYS = frozenset({"reservation"})
 _RECORD_KEYS = frozenset({"usage_event"})
 _INSTALL_KEYS = frozenset({"snapshot"})
+# One round trip carrying the entitlement decision and the usage reservation
+# behind it. The snapshot stage runs the same policy lookup as
+# fetch_entitlement_snapshot; the reservation runs the same evaluation as the
+# reserve RPC. A refusal from either stage never becomes an admitted
+# reservation.
+_ADMIT_KEYS = frozenset({"product_id", "subject", "reservation"})
 
-# #5573 A2: default-off HTTPS ingress for the COM2 Engine host. Only the three
-# calls the Engine actually makes are reachable, the proof is the same v1
-# contract and the same verifier the identity ingress uses (clock window and
-# constant-time compare included), and nothing is registered at all without the
-# secret binding. ``install_entitlement_snapshot`` is deliberately absent:
-# installing entitlement is a CP-owned producer step the Engine gateway has
-# never been able to call, and it stays binding-only.
+# #5573 A2: default-off HTTPS ingress for the COM2 Engine host. Only the Engine
+# calls are reachable, the proof is the same v1 contract and the same verifier
+# the identity ingress uses (clock window and constant-time compare included),
+# and nothing is registered at all without the secret binding.
+# ``install_entitlement_snapshot`` is deliberately absent: installing
+# entitlement is a CP-owned producer step the Engine gateway has never been
+# able to call, and it stays binding-only.
 ENGINE_ADMISSION_RPC_INGRESS_SECRET_BINDING = (
     "PADIEM_ENGINE_ADMISSION_RPC_INGRESS_SECRET"
 )
@@ -52,6 +58,7 @@ ENGINE_ADMISSION_RPC_INGRESS_METHODS: frozenset[str] = frozenset(
         "fetch_entitlement_snapshot",
         "reserve_usage",
         "record_usage",
+        "admit_usage",
     }
 )
 
@@ -219,6 +226,40 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_error(exc, method="fetch_entitlement_snapshot")
 
+    async def admit_usage(
+        self,
+        payload: dict,
+    ) -> dict:
+        # One round trip for a trusted admission: the entitlement policy first
+        # (exactly the fetch RPC semantics), then the reservation (exactly the
+        # reserve RPC semantics, including its own current-snapshot
+        # revalidation and grant decision). Either stage refusing returns the
+        # same error envelope the individual RPC would; a refusal never
+        # produces an admitted reservation.
+        try:
+            wire = _closed(
+                payload,
+                _ADMIT_KEYS,
+                "usage admission RPC",
+            )
+            now = datetime.now(UTC)
+            snapshot = await self._ensure_current_entitlement(
+                product_id=wire["product_id"],
+                subject=wire["subject"],
+                now=now,
+            )
+            reservation = self._store.reserve_usage(
+                wire["reservation"],
+                now=now,
+            )
+            return {
+                "ok": True,
+                "snapshot": snapshot.to_policy_dict(),
+                "reservation": reservation,
+            }
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc, method="admit_usage")
+
     async def reserve_usage(
         self,
         payload: dict,
@@ -338,6 +379,14 @@ class Default(WorkerEntrypoint):
         payload: dict,
     ) -> dict:
         return await self._stub().fetch_entitlement_snapshot(
+            payload
+        )
+
+    async def admit_usage(
+        self,
+        payload: dict,
+    ) -> dict:
+        return await self._stub().admit_usage(
             payload
         )
 

@@ -86,6 +86,11 @@ class ControlPlaneTrustClient(Protocol):
 
     def reserve_usage(self, *, reservation: Mapping[str, Any]) -> Any: ...
 
+    def admit_usage(
+        self, *, product_id: str, subject: Mapping[str, str],
+        reservation: Mapping[str, Any],
+    ) -> Any: ...
+
     def record_usage(self, *, usage_event: Mapping[str, Any]) -> Any: ...
 
 
@@ -342,6 +347,7 @@ class ControlPlaneTenantAdmissionAdapter:
         max_admission_ttl: timedelta = DEFAULT_MAX_ADMISSION_TTL,
         require_usage_reservation: bool = True,
         estimated_units: int = 1,
+        combined_rpc: bool = False,
     ) -> None:
         if client is None or not callable(getattr(client, "fetch_entitlement_snapshot", None)):
             raise ExecutionAdmissionError(
@@ -353,6 +359,12 @@ class ControlPlaneTenantAdmissionAdapter:
             raise ExecutionAdmissionError(
                 "entitlement_unavailable",
                 "Control Plane usage reservation authority is unavailable.",
+                status_code=503,
+            )
+        if combined_rpc and not callable(getattr(client, "admit_usage", None)):
+            raise ExecutionAdmissionError(
+                "entitlement_unavailable",
+                "Control Plane combined admission authority is unavailable.",
                 status_code=503,
             )
         if (
@@ -368,22 +380,63 @@ class ControlPlaneTenantAdmissionAdapter:
         self._max_admission_ttl = max_admission_ttl
         self._require_usage_reservation = require_usage_reservation
         self._estimated_units = estimated_units
+        self.combined_rpc = bool(combined_rpc)
 
     async def resolve_admission(self, request: ExecutionAdmissionRequest) -> TrustedExecutionAdmission:
         now = self._clock()
         _timestamp_value(now, "now")
         tenant = identify_tenant(request)
 
-        snapshot = parse_entitlement_snapshot(
-            await _maybe_await(
-                self._client.fetch_entitlement_snapshot(
+        should_reserve = request.capability != "orchestration.resume"
+        usage_reservation: TrustedUsageReservation | None = None
+        if (
+            self.combined_rpc
+            and self._require_usage_reservation
+            and should_reserve
+        ):
+            # One round trip: the authority resolves the entitlement policy and
+            # adjudicates this request's reservation in the same call, so no
+            # snapshot RPC and no reservation RPC are sent separately. The
+            # local grant gate below applies the same terms to the policy
+            # returned inside the combined response.
+            if request.usage_reservation_identity is None:
+                raise ExecutionAdmissionError(
+                    "entitlement_unavailable",
+                    "Server-owned usage reservation identity is unavailable.",
+                    status_code=503,
+                )
+            reservation = self._build_reservation(request, tenant, now)
+            reservation_observed_at = self._clock()
+            _timestamp_value(reservation_observed_at, "reservation_observed_at")
+            combined = await _maybe_await(
+                self._client.admit_usage(
                     product_id=tenant.product_id,
                     subject=tenant.subject_ref(),
+                    reservation=reservation.to_public_dict(),
                 )
-            ),
-            expected=tenant,
-            now=now,
-        )
+            )
+            snapshot = parse_entitlement_snapshot(
+                combined["snapshot"],
+                expected=tenant,
+                now=now,
+            )
+            decision = parse_usage_reservation(
+                combined["reservation"],
+                reservation=reservation,
+                now=reservation_observed_at,
+            )
+        else:
+            snapshot = parse_entitlement_snapshot(
+                await _maybe_await(
+                    self._client.fetch_entitlement_snapshot(
+                        product_id=tenant.product_id,
+                        subject=tenant.subject_ref(),
+                    )
+                ),
+                expected=tenant,
+                now=now,
+            )
+            decision = None
 
         grant = snapshot.grants.get(request.capability)
         allowed = bool(
@@ -395,12 +448,10 @@ class ControlPlaneTenantAdmissionAdapter:
             )
         )
         authority_ref = f"control-plane:entitlement:{snapshot.snapshot_id}"
-        usage_reservation: TrustedUsageReservation | None = None
 
-        # Resume revalidates entitlement but continues the original run's
-        # reservation; a second reservation would split one logical execution.
-        should_reserve = request.capability != "orchestration.resume"
-        if allowed and self._require_usage_reservation and should_reserve:
+        if decision is None and allowed and self._require_usage_reservation and should_reserve:
+            # Resume revalidates entitlement but continues the original run's
+            # reservation; a second reservation would split one logical execution.
             if request.usage_reservation_identity is None:
                 raise ExecutionAdmissionError(
                     "entitlement_unavailable",
@@ -422,12 +473,17 @@ class ControlPlaneTenantAdmissionAdapter:
                 reservation=reservation,
                 now=reservation_observed_at,
             )
+        if decision is not None:
             if not decision["admitted"]:
                 allowed = False
-            else:
+            elif allowed:
                 authority_ref = f"{authority_ref}@{decision['reservation_ref']}"
                 if reservation.request_fingerprint is None:
-                    raise ExecutionAdmissionError("entitlement_request_mismatch", "Usage reservation must bind the execution request.", status_code=403)
+                    raise ExecutionAdmissionError(
+                        "entitlement_request_mismatch",
+                        "Usage reservation must bind the execution request.",
+                        status_code=403,
+                    )
                 usage_reservation = TrustedUsageReservation(
                     reservation_ref=decision["reservation_ref"],
                     idempotency_key=reservation.idempotency_key,
@@ -550,6 +606,33 @@ def parse_usage_reservation(payload: Any, *, reservation: UsageReservation, now:
         "expires_at": expires_at,
         "reserved_at": reserved_at,
     }
+
+
+#: Opt-in switch for the combined admission round trip. Default false keeps the
+#: two-call flow; an unrecognized value reads as false, the fail-safe side.
+COMBINED_ADMISSION_RPC_ENV = "PADIEM_ENGINE_ADMISSION_COMBINED_RPC"
+
+
+def admission_combined_rpc_enabled(source: Any) -> bool:
+    """Read the combined-RPC switch defensively.
+
+    Accepts the common true spellings; anything else (including an unreadable
+    source) leaves the two-call flow in place.
+    """
+    raw = None
+    getter = getattr(source, "get", None)
+    if callable(getter):
+        try:
+            raw = getter(COMBINED_ADMISSION_RPC_ENV)
+        except Exception:  # noqa: BLE001 - a read failure reads as "off"
+            raw = None
+    else:
+        raw = getattr(source, COMBINED_ADMISSION_RPC_ENV, None)
+    if raw is True:
+        return True
+    if not isinstance(raw, str):
+        return False
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
 def build_control_plane_admission_adapter(
