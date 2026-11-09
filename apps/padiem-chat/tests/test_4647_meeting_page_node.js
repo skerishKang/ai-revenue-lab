@@ -161,13 +161,14 @@ test("#5028: the meeting page nav lights up and its actions use the shared surfa
 test("the primary start control keeps its pill and wears the shared navy", () => {
   // 대표 결정 2026-11-08 (2차): the settings-done swap read as "더 안 예뻐졌다" —
   // the pill shape came back, and the color now rides the shared primary rule
-  // (the composer send navy, #355977) instead of any meeting-local blue.
+  // (the composer send navy token, #7187 R3: the number lives in
+  // padiem-tokens.css) instead of any meeting-local blue.
   assert.match(html, /<button type="button" id="meetingStart">회의 시작<\/button>/);
   assert.match(meetingCss, /#meetingStart \{ border-radius: 999px; \}/);
   assert.doesNotMatch(views, /\[data-state="meeting"\] \.meeting-controls #meetingStart/);
   assert.match(polish, /\.claw-inbox-primary, #meetingStart\) \{/);
-  assert.match(polish, /background: #355977;/);
-  assert.match(meetingCss, /\.meeting-modes input \{ accent-color: #355977;/);
+  assert.match(polish, /background: var\(--primary-bg\);/);
+  assert.match(meetingCss, /\.meeting-modes input \{ accent-color: var\(--primary-bg\);/);
   // The record title input wears the shared form input look, and the save
   // button the shared secondary chip family.
   assert.match(polish, /\.meeting-records-new input \{[\s\S]*?border-radius: 10px;/);

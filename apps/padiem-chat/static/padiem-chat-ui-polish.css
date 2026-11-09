@@ -533,9 +533,9 @@ html[data-theme="dark"] .auth-panel {
 
 /* ── Shared primary action — 대표 결정 2026-11-08 ────────────────────────────
  * Every primary action wears the Chat/Claw composer send-button navy
- * (voice-composer.css #355977, border #294b64, hover #2e4d67/#23445d, focus
- * outline #6a9abc — measured identical in all four themes; #5608 already
- * reused it for the util toolbox). The glass --accent sky blue stops being a
+ * the numbers live in padiem-tokens.css (--primary-bg, --primary-border,
+ * --primary-hover-bg, --primary-hover-border, --primary-focus) — measured
+ * identical in all four themes; #5608 already reused it for the util toolbox). The glass --accent sky blue stops being a
  * button fill and survives only as dots and selection marks. Shape, size and
  * spacing stay each button's own; the disabled faces are each button's own.
  * The MCP external-AI page's primary action joins the same navy fill. */
@@ -547,8 +547,8 @@ html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
     .app-shell[data-state="calendar"] .calendar-record-submit,
     .app-shell[data-state="meeting"] .meeting-controls #meetingStart,
     .mcp-ai-primary:not(:disabled)) {
-  background: #355977;
-  border-color: #294b64;
+  background: var(--primary-bg);
+  border-color: var(--primary-border);
   color: #fff;
 }
 html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
@@ -559,8 +559,8 @@ html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
     .app-shell[data-state="calendar"] .calendar-record-submit,
     .app-shell[data-state="meeting"] .meeting-controls #meetingStart,
     .mcp-ai-primary:not(:disabled)):not(:disabled):hover {
-  background: #2e4d67;
-  border-color: #23445d;
+  background: var(--primary-hover-bg);
+  border-color: var(--primary-hover-border);
   color: #fff;
 }
 html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
@@ -571,7 +571,7 @@ html body :is(.claw-generate-button, .claw-retry-button:not(:disabled),
     .app-shell[data-state="calendar"] .calendar-record-submit,
     .app-shell[data-state="meeting"] .meeting-controls #meetingStart,
     .mcp-ai-primary:not(:disabled)):focus-visible {
-  outline: 3px solid #6a9abc;
+  outline: 3px solid var(--primary-focus);
   outline-offset: 3px;
 }
 /* The meeting start keeps a send-button-style disabled face so a pending

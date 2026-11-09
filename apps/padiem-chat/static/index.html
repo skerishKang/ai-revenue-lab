@@ -18,6 +18,9 @@
   <script src="./theme-init.js"></script>
   <meta name="description" data-locale-content="meta-description" content="누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스" />
   <link rel="stylesheet" href="./styles.css" />
+  <!-- #7187 R3: the shared color tokens load first, so every later
+       sheet consumes var(--primary-…) and the numbers live in one file. -->
+  <link rel="stylesheet" href="./padiem-tokens.css" />
   <link rel="stylesheet" href="./attachments.css" />
   <link rel="stylesheet" href="./history.css" />
   <link rel="stylesheet" href="./projects.css" />

@@ -68,7 +68,7 @@
   cursor: not-allowed;
 }
 #voiceMicButton:focus-visible {
-  outline: 3px solid #6a9abc;
+  outline: 3px solid var(--primary-focus);
   outline-offset: 3px;
 }
 /* Unify Chat and Claw send affordances. */
@@ -81,10 +81,10 @@
   min-width: 44px;
   min-height: 44px;
   padding: 0;
-  border: 1px solid #294b64;
+  border: 1px solid var(--primary-border);
   border-radius: 14px;
   color: #fff;
-  background: #355977;
+  background: var(--primary-bg);
   box-shadow: 0 3px 10px rgba(34, 72, 104, .15);
   cursor: pointer;
   transition: background-color .18s ease, box-shadow .18s ease;
@@ -108,8 +108,8 @@
 }
 #composerForm .send-button:not(:disabled):hover {
   color: #fff;
-  background: #2e4d67;
-  border-color: #23445d;
+  background: var(--primary-hover-bg);
+  border-color: var(--primary-hover-border);
   box-shadow: 0 4px 13px rgba(34, 72, 104, .22);
   transform: none;
 }
@@ -121,13 +121,13 @@
   cursor: default;
 }
 #composerForm .send-button:focus-visible {
-  outline: 3px solid #6a9abc;
+  outline: 3px solid var(--primary-focus);
   outline-offset: 3px;
 }
 /* Override legacy Claw white-fill styling without changing shell layout. */
 #composerForm .send-button:not(:disabled) {
   color: #fff !important;
-  background: #355977 !important;
+  background: var(--primary-bg) !important;
 }
 .voice-interim-preview {
   margin: 2px 0 0;
@@ -244,7 +244,7 @@
   cursor: pointer;
 }
 .starter-grid .document-formats-toggle:hover { background: #edf3f9; }
-.starter-grid .document-formats-toggle:focus-visible { outline: 2px solid #6a9abc; outline-offset: 2px; }
+.starter-grid .document-formats-toggle:focus-visible { outline: 2px solid var(--primary-focus); outline-offset: 2px; }
 .starter-grid .document-formats-panel {
   position: absolute;
   z-index: 30;

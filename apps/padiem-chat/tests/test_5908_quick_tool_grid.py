@@ -143,13 +143,14 @@ def test_css_uses_the_measured_contrast_token_and_44px_touch_target() -> None:
     assert len(buttons) == 1
     assert declaration(buttons[0], "min-height") == "44px"
     # 대표 결정 #7172로 계약 값 갱신: the glass-only CTA override is superseded
-    # by the app-wide shared primary rule; the toolbox button still wears the
-    # same #355977 as .pdfmd-btn-primary.
+    # by the app-wide shared primary rule; the toolbox button wears the same
+    # primary token as .pdfmd-btn-primary (#7187 R3: the number lives in
+    # padiem-tokens.css).
     assert 'html[data-theme="padiem-glass"] .util-tool-open' not in strip_comments(css)
     polish = parse_rules((ROOT / "static/padiem-chat-ui-polish.css").read_text(encoding="utf-8"))
     blocks = find_rules_with_selector(polish, ".util-tool-open")
     assert len(blocks) == 3
     for block in blocks:
         assert rule_selector_list_contains(block, ".util-tool-open", ".pdfmd-btn-primary")
-    navy = [block for block in blocks if declaration(block, "background") == "#355977"]
+    navy = [block for block in blocks if declaration(block, "background") == "var(--primary-bg)"]
     assert len(navy) == 1

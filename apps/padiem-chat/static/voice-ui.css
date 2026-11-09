@@ -52,7 +52,7 @@
 }
 #voiceWaveformButton:focus-visible,
 .voice-mode-menu-item:focus-visible {
-  outline: 3px solid #6a9abc;
+  outline: 3px solid var(--primary-focus);
   outline-offset: 3px;
 }
 /* Narrow screens cannot hold the tier pill, the attach tool and three 44px
