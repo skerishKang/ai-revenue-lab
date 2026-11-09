@@ -335,7 +335,7 @@ def build_recovery_config(live, repo_config_path):
     # hostname belongs to padiem-chat-front only. Re-adding a custom_domain
     # route here would make the recovered worker steal the public hostname on
     # its first deploy (the 2026-11-09 accident, ~16 min of fallback serving).
-    # apps/padiem-chat/tests/test_chat_public_domain_pin_261109.py pins this.
+    # The repository domain-ownership pin test in the chat app pins this.
     for entry in live["entries"]:
         kind, name = entry["type"], entry["name"]
         if kind in {"assets", "plain_text", "secret_text"}: continue
