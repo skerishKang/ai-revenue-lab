@@ -28,6 +28,34 @@ async def disconnect_google_drive(request: Request) -> JSONResponse:
     This revokes PADIEM's stored Drive credential, NOT the user's Google account.
     The canonical workspace is resolved from a real PADIEM product session.
     """
+    return await _disconnect(
+        request,
+        binding_method="disconnect_drive",
+        unavailable_code="connector_disconnect_unavailable",
+    )
+
+
+async def disconnect_google_calendar(request: Request) -> JSONResponse:
+    """#7248: same Drive disconnect path, for the reviewed Calendar connector.
+
+    The whole Calendar binding family of the trusted workspace is retired, which
+    is also the only recovery from duplicates accumulated by older reconnects.
+    Client input stays empty: workspace, binding and scopes are all server-derived.
+    """
+    return await _disconnect(
+        request,
+        binding_method="disconnect_calendar",
+        unavailable_code="calendar_disconnect_unavailable",
+    )
+
+
+async def _disconnect(
+    request: Request,
+    *,
+    binding_method: str,
+    unavailable_code: str,
+) -> JSONResponse:
+    """Shared owner-authenticated disconnect path (Drive + Calendar)."""
     if request.query_params:
         return _reply(400, "connector_disconnect_query_not_allowed")
     expected = expected_browser_origin(request.app.state.settings)
@@ -47,7 +75,7 @@ async def disconnect_google_drive(request: Request) -> JSONResponse:
     identity = getattr(request.app.state, "control_plane_identity_authority", None)
     google = getattr(request.app.state, "google_oauth_workspace_truth", None)
     if not all((history, shadow_store, identity, google)):
-        return _reply(503, "connector_disconnect_unavailable")
+        return _reply(503, unavailable_code)
     try:
         profile = await _value(history.get_user(uid))
         if profile is None:
@@ -59,13 +87,18 @@ async def disconnect_google_drive(request: Request) -> JSONResponse:
         workspace = await _value(identity.resolve_connector_workspace(session_id=session_id))
         if not isinstance(workspace, str) or not workspace:
             return _reply(503, "canonical_workspace_unavailable")
-        result = await _value(google.disconnect_drive(workspace_ref=workspace))
-        if result not in (True, False):
+        result = await _value(
+            getattr(google, binding_method)(workspace_ref=workspace)
+        )
+        # Drive answers a bool, Calendar a bounded revocation count.
+        if not isinstance(result, bool) and (
+            not isinstance(result, int) or not 0 <= result <= 32
+        ):
             return _reply(503, "connector_disconnect_unverified")
     except Exception:
-        return _reply(503, "connector_disconnect_unavailable")
+        return _reply(503, unavailable_code)
     # The connector tool offer is cached per user for one short window; a
-    # revoked Drive grant must stop being declared at once.
+    # revoked grant must stop being declared at once.
     from .chat_connector_tools import invalidate_connector_tool_grant_cache
 
     invalidate_connector_tool_grant_cache(uid)

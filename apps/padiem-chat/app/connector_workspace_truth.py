@@ -340,6 +340,33 @@ class CloudflareGoogleOAuthWorkspaceTruth:
             raise _invalid()
         return result["revoked"]
 
+    async def disconnect_calendar(self, *, workspace_ref: str) -> int:
+        """Reset the trusted workspace's Calendar bindings over the same private RPC family.
+
+        #7248: Drive's ``disconnect_drive`` shape, one connector over. The whole
+        Calendar family of the workspace is retired, so duplicates left by older
+        reconnects clear in one step instead of staying ``ambiguous``. Only the
+        server-derived workspace is sent; no credential, account, scope or token.
+        """
+        method = getattr(self._binding, "disconnect_calendar", None)
+        if not callable(method):
+            raise _unavailable()
+        try:
+            result = _as_dict(await _maybe_await(method({"workspace_ref": workspace_ref})))
+        except Exception as exc:
+            raise _unavailable() from exc
+        if result is None or not isinstance(result.get("ok"), bool):
+            raise _invalid()
+        if result["ok"] is False:
+            if set(result) != {"ok", "error"}:
+                raise _invalid()
+            raise _unavailable()
+        if set(result) != {"ok", "revoked"} or type(result["revoked"]) is not int:
+            raise _invalid()
+        if not 0 <= result["revoked"] <= 32:
+            raise _invalid()
+        return result["revoked"]
+
     async def begin_b66_drive_connect(
         self,
         *,

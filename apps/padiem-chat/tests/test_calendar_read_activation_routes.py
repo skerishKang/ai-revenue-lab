@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 
 import pytest
@@ -13,19 +14,34 @@ from app.calendar_read_activation_engine import (
     CloudflareCalendarReadActivationEngineClient,
     CalendarReadActivationClientError,
 )
+from app.control_plane_identity_shadow import IdentityShadowRecord
+from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
+from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
+
+_NOW = datetime.now(timezone.utc)
+_SHADOW_SESSION_ID = "b62-shadow-session-1"
+_SUBJECT_ID = "sub_calendar_owner"
 
 
 class _Request:
-    def __init__(self, *, body: bytes = b"{}", origin: str = "https://chat.padiem.net", client=None):
+    def __init__(self, *, body: bytes = b"{}", origin: str = "https://chat.padiem.net", client=None,
+                 authority=None, shadow_store=None, cookies=None):
         self.headers = {
             "origin": origin,
             "content-type": "application/json",
         }
         self._body = body
+        self.cookies = dict(cookies or {})
         self.app = SimpleNamespace(
             state=SimpleNamespace(
-                settings=SimpleNamespace(public_base_url="https://chat.padiem.net"),
+                settings=SimpleNamespace(
+                    public_base_url="https://chat.padiem.net",
+                    session_cookie_name="padiem_session",
+                    session_cookie_secret="",
+                ),
                 calendar_read_activation_client=client,
+                control_plane_identity_authority=authority,
+                identity_shadow_store=shadow_store,
             )
         )
 
@@ -54,22 +70,78 @@ def _json(response):
     return json.loads(response.body.decode("utf-8"))
 
 
-def _patch_authenticated(monkeypatch, session_id: str = "sess_calendar_1"):
-    monkeypatch.setattr(routes, "current_user_id", lambda request: "product_user_1")
+class _ShadowStore:
+    """Pointer row the reviewed connector context is scoped to (B62)."""
 
-    async def _current(request):
-        return SimpleNamespace(auth_session=SimpleNamespace(session_id=session_id))
+    def __init__(self, session_id: str = _SHADOW_SESSION_ID, subject_id: str = _SUBJECT_ID) -> None:
+        self.session_id = session_id
+        self.subject_id = subject_id
+        self.saved = 0
 
-    monkeypatch.setattr(routes, "resolve_current_b54_canonical_session", _current)
+    async def load_projection(self, product_user_id: str):
+        return IdentityShadowRecord(
+            product_user_id=product_user_id,
+            canonical_subject_id=self.subject_id,
+            auth_session_id=self.session_id,
+            session_revision=1,
+            session_state="active",
+            session_expires_at=_NOW + timedelta(hours=1),
+            observed_at=_NOW,
+        )
+
+    async def save_projection(self, bridged) -> None:
+        self.saved += 1
+
+
+class _Authority:
+    """Canonical authority: the shadow pointer resolves to a B62 session."""
+
+    def __init__(self, *, product_id: str = "b62", subject_id: str = _SUBJECT_ID,
+                 state: AuthSessionState = AuthSessionState.ACTIVE) -> None:
+        self.product_id = product_id
+        self.subject_id = subject_id
+        self.state = state
+        self.asked: list[str] = []
+
+    async def resolve_auth_session(self, *, session_id: str):
+        self.asked.append(session_id)
+        return AuthSessionSnapshot(
+            session_id=session_id,
+            product_id=self.product_id,
+            subject=CanonicalSubjectRef(SubjectType.USER, self.subject_id),
+            issued_at=_NOW - timedelta(minutes=5),
+            expires_at=_NOW + timedelta(hours=1),
+            state=self.state,
+            revision=1,
+        )
+
+
+def _patch_authenticated(monkeypatch, *, shadow_store=None, authority=None):
+    monkeypatch.setattr(routes, "current_user_id", lambda request: "usr_product_user_1")
+    return (
+        shadow_store if shadow_store is not None else _ShadowStore(),
+        authority if authority is not None else _Authority(),
+    )
+
+
+def _activate(client, *, shadow_store=None, authority=None, **kwargs):
+    return asyncio.run(
+        routes.activate_google_calendar_read(
+            _Request(client=client, shadow_store=shadow_store, authority=authority, **kwargs)
+        )
+    )
 
 
 def test_activation_uses_only_server_resolved_session_and_projects_no_private_refs(monkeypatch):
-    _patch_authenticated(monkeypatch)
+    shadow, authority = _patch_authenticated(monkeypatch)
     client = _Client()
-    response = asyncio.run(routes.activate_google_calendar_read(_Request(client=client)))
+    response = _activate(client, shadow_store=shadow, authority=authority)
 
     assert response.status_code == 200
-    assert client.sessions == ["sess_calendar_1"]
+    # #7247: the Engine receives the B62 session the connector context is
+    # scoped to, never a B54 session.
+    assert client.sessions == [_SHADOW_SESSION_ID]
+    assert authority.asked == [_SHADOW_SESSION_ID]
     assert _json(response) == {
         "ok": True,
         "calendar_read_grant": "active",
@@ -78,6 +150,73 @@ def test_activation_uses_only_server_resolved_session_and_projects_no_private_re
     text = response.body.decode("utf-8")
     for forbidden in ("binding_ref", "actor_ref", "workspace_ref", "session_id"):
         assert forbidden not in text
+
+
+def test_activation_refuses_when_only_the_b54_session_exists(monkeypatch):
+    """No B62 shadow pointer means no reviewed connector context: refuse."""
+
+    monkeypatch.setattr(routes, "current_user_id", lambda request: "usr_product_user_1")
+
+    class _EmptyShadowStore:
+        async def load_projection(self, product_user_id: str):
+            return None
+
+        async def save_projection(self, bridged) -> None:
+            raise AssertionError("must not write")
+
+    client = _Client()
+    response = _activate(client, shadow_store=_EmptyShadowStore(), authority=_Authority())
+
+    assert response.status_code == 403
+    assert client.sessions == []
+    assert _json(response)["error"]["code"] == "current_b54_session_unavailable"
+
+
+def test_activation_refuses_when_the_shadow_belongs_to_another_subject(monkeypatch):
+    shadow, authority = _patch_authenticated(monkeypatch)
+    shadow.subject_id = "sub_someone_else"
+    client = _Client()
+    response = _activate(client, shadow_store=shadow, authority=authority)
+
+    assert response.status_code == 403
+    assert client.sessions == []
+    assert _json(response)["error"]["code"] == "current_b54_session_unavailable"
+
+
+def test_activation_refuses_a_foreign_product_session(monkeypatch):
+    shadow, _ = _patch_authenticated(monkeypatch)
+    client = _Client()
+    response = _activate(
+        client, shadow_store=shadow, authority=_Authority(product_id="b54-padiem-claw")
+    )
+
+    assert response.status_code == 403
+    assert client.sessions == []
+
+
+def test_activation_fails_closed_when_the_canonical_session_is_inactive(monkeypatch):
+    shadow, _ = _patch_authenticated(monkeypatch)
+    client = _Client()
+    response = _activate(
+        client, shadow_store=shadow, authority=_Authority(state=AuthSessionState.EXPIRED)
+    )
+
+    assert response.status_code == 403
+    assert client.sessions == []
+
+
+def test_activation_fails_closed_when_the_authority_is_unavailable(monkeypatch):
+    monkeypatch.setattr(routes, "current_user_id", lambda request: "usr_product_user_1")
+
+    class _BrokenAuthority:
+        async def resolve_auth_session(self, *, session_id: str):
+            raise RuntimeError("authority down")
+
+    client = _Client()
+    response = _activate(client, shadow_store=_ShadowStore(), authority=_BrokenAuthority())
+
+    assert response.status_code == 503
+    assert client.sessions == []
 
 
 def test_activation_rejects_client_supplied_authority_before_engine_call(monkeypatch):
@@ -108,18 +247,14 @@ def test_activation_rejects_foreign_origin_before_engine_call(monkeypatch):
 
 
 def test_activation_fails_closed_when_current_b54_session_is_missing(monkeypatch):
-    monkeypatch.setattr(routes, "current_user_id", lambda request: "product_user_1")
-
-    async def _missing(request):
-        return None
-
-    monkeypatch.setattr(routes, "resolve_current_b54_canonical_session", _missing)
+    monkeypatch.setattr(routes, "current_user_id", lambda request: "usr_product_user_1")
     client = _Client()
-    response = asyncio.run(routes.activate_google_calendar_read(_Request(client=client)))
+    response = _activate(client)
 
-    assert response.status_code == 403
+    # No authority/shadow wiring at all: the route refuses before the Engine.
+    assert response.status_code == 503
     assert client.sessions == []
-    assert _json(response)["error"]["code"] == "current_b54_session_unavailable"
+    assert _json(response)["error"]["code"] == "calendar_read_activation_unavailable"
 
 
 def test_activation_maps_engine_failure_to_bounded_503(monkeypatch):
@@ -303,15 +438,13 @@ def test_safe_diagnostic_vocabulary_is_closed():
 
 
 def _patched_route_with_error(error: CalendarReadActivationClientError, monkeypatch):
-    _patch_authenticated(monkeypatch)
+    shadow, authority = _patch_authenticated(monkeypatch)
 
     class _ErroringClient:
         async def activate(self, *, session_id: str):
             raise error
 
-    return asyncio.run(
-        routes.activate_google_calendar_read(_Request(client=_ErroringClient()))
-    )
+    return _activate(_ErroringClient(), shadow_store=shadow, authority=authority)
 
 
 @pytest.mark.parametrize(
@@ -392,9 +525,9 @@ def test_route_failure_response_leaks_no_private_references_or_raw_prose(monkeyp
 
 
 def test_route_write_authority_remains_zero(monkeypatch):
-    _patch_authenticated(monkeypatch)
+    shadow, authority = _patch_authenticated(monkeypatch)
     client = _Client()
-    response = asyncio.run(routes.activate_google_calendar_read(_Request(client=client)))
+    response = _activate(client, shadow_store=shadow, authority=authority)
 
     payload = _json(response)
     assert response.status_code == 200

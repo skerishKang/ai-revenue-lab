@@ -91,11 +91,15 @@ def _credential(
     expires_at: datetime | None = None,
 ) -> DurableGoogleOAuthCredential:
     scope = GOOGLE_DRIVE_READONLY_SCOPE
+    # #7248: Calendar bindings always carry their verified Google account subject.
+    provider_subject = None
     if connector_id == "google-calendar":
         scope = GOOGLE_CALENDAR_READONLY_SCOPE
+        provider_subject = "google-sub-calendar-owner"
     return DurableGoogleOAuthCredential(
         binding_ref=binding_ref,
         connector_id=connector_id,
+        provider_subject=provider_subject,
         actor_ref=f"actor.{binding_ref}",
         account_ref=f"account.{binding_ref}",
         workspace_ref=workspace_ref,

@@ -279,11 +279,15 @@ class DurableGoogleOAuthCredential:
             "sealed_refresh_token",
             _sealed(self.sealed_refresh_token, "sealed_refresh_token"),
         )
-        if self.connector_id in B66_GOOGLE_DRIVE_CONNECTORS:
+        if (
+            self.connector_id in B66_GOOGLE_DRIVE_CONNECTORS
+            or self.connector_id == CALENDAR_OAUTH_REVIEWED_CONNECTOR
+        ):
             if self.provider_subject is None:
                 raise ControlPlaneContractError(
                     "invalid_google_oauth_durable_record",
-                    "B66 Google Drive binding requires a verified destination subject",
+                    "B66 Google Drive and Calendar bindings require a verified"
+                    " destination subject",
                 )
             object.__setattr__(
                 self,
@@ -299,7 +303,8 @@ class DurableGoogleOAuthCredential:
         elif self.provider_subject is not None or self.provider_email is not None:
             raise ControlPlaneContractError(
                 "invalid_google_oauth_durable_record",
-                "only B66 Google Drive bindings may carry a verified destination",
+                "only B66 Google Drive and Calendar bindings may carry a verified"
+                " destination",
             )
         issued_at = _utc(self.issued_at, "issued_at")
         expires_at = _utc(self.expires_at, "expires_at") if self.expires_at is not None else None
@@ -739,6 +744,23 @@ class CloudflareDurableGoogleOAuthStore:
                 "invalid_google_oauth_durable_record",
                 "B66 Google Drive binding requires a verified destination subject",
             )
+        if (
+            record.connector_id == CALENDAR_OAUTH_REVIEWED_CONNECTOR
+            and record.provider_subject is None
+        ):
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_durable_record",
+                "Calendar binding requires a verified Google account subject",
+            )
+        if record.connector_id == CALENDAR_OAUTH_REVIEWED_CONNECTOR:
+            # #7248: a reconnect for the same workspace and the same Google
+            # account replaces the older binding instead of stacking a second
+            # usable row (which the selector rejects as ambiguous).
+            self.revoke_calendar_bindings_for_provider_subject(
+                workspace_ref=record.workspace_ref,
+                provider_subject=record.provider_subject,
+                revoked_at=record.issued_at,
+            )
         destination_verified_at = (
             _iso(_utc(verified_at, "verified_at")) if verified_at is not None else _iso(record.issued_at)
         )
@@ -937,6 +959,10 @@ class CloudflareDurableGoogleOAuthStore:
                 workspace_ref=workspace_ref,
             )
         selected = usable[0]
+        # #7248: the verified Google account subject stays inside the store (it
+        # only drives reconnect replacement); the selection projection keeps its
+        # reviewed identity-free shape, so no provider account is echoed to a
+        # private RPC caller.
         return GoogleOAuthBindingSelection(
             status=GoogleOAuthBindingSelectionStatus.RESOLVED,
             connector_id=selected["connector_id"],
@@ -1203,6 +1229,110 @@ class CloudflareDurableGoogleOAuthStore:
                 raise RuntimeError("Google OAuth credential disappeared during revocation")
 
         self.transaction(operation)
+
+    def revoke_calendar_bindings(
+        self,
+        *,
+        workspace_ref: str,
+        revoked_at: datetime,
+    ) -> int:
+        """Revoke every usable Calendar credential of one trusted workspace.
+
+        #7248: the Calendar connector has no per-binding disconnect surface, so
+        a user who reconnected twice was left with duplicate usable rows and
+        ``ambiguous_fail_closed`` with no way back. Disconnect therefore revokes
+        the whole connector family for the trusted workspace (0 usable rows
+        afterwards); a single reconnect then recreates exactly one row.
+
+        Returns the number of rows revoked. Only identity-free metadata changes:
+        no sealed material is read, unsealed or returned.
+        """
+
+        workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
+        revoked_at = _utc(revoked_at, "revoked_at")
+
+        def operation() -> int:
+            rows = _rows(
+                self._sql.exec(
+                    "SELECT binding_ref, issued_at, expires_at, revoked_at "
+                    "FROM google_oauth_refresh_credential "
+                    "WHERE workspace_ref = ? AND connector_id = ?",
+                    workspace_ref,
+                    CALENDAR_OAUTH_REVIEWED_CONNECTOR,
+                )
+            )
+            revoked = 0
+            for row in rows:
+                if _row_value(row, "revoked_at") is not None:
+                    continue
+                if _parse_iso(_row_value(row, "issued_at"), "issued_at") > revoked_at:
+                    raise ControlPlaneContractError(
+                        "invalid_google_oauth_durable_record",
+                        "credential revocation cannot predate issue time",
+                    )
+                cursor = self._sql.exec(
+                    "UPDATE google_oauth_refresh_credential SET revoked_at = ? "
+                    "WHERE binding_ref = ? AND revoked_at IS NULL",
+                    _iso(revoked_at),
+                    _row_value(row, "binding_ref"),
+                )
+                revoked += _rows_written(cursor)
+            return revoked
+
+        return self.transaction(operation)
+
+    def revoke_calendar_bindings_for_provider_subject(
+        self,
+        *,
+        workspace_ref: str,
+        provider_subject: str,
+        revoked_at: datetime,
+    ) -> int:
+        """Retire the same-account Calendar rows a reconnect is replacing.
+
+        #7248: reconnect must not create a second usable binding for the same
+        workspace and the same Google account; the newest consent supersedes the
+        older one. A *different* Google account is deliberately left untouched so
+        the selector keeps failing closed as ``ambiguous_google_oauth_binding``.
+        """
+
+        workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
+        provider_subject = _provider_subject(provider_subject, "provider_subject")
+        revoked_at = _utc(revoked_at, "revoked_at")
+
+        def operation() -> int:
+            rows = _rows(
+                self._sql.exec(
+                    "SELECT c.binding_ref, c.issued_at, c.revoked_at "
+                    "FROM google_oauth_refresh_credential c "
+                    "JOIN google_oauth_provider_destination d "
+                    "ON d.binding_ref = c.binding_ref "
+                    "WHERE c.workspace_ref = ? AND c.connector_id = ? "
+                    "AND d.provider_subject = ?",
+                    workspace_ref,
+                    CALENDAR_OAUTH_REVIEWED_CONNECTOR,
+                    provider_subject,
+                )
+            )
+            revoked = 0
+            for row in rows:
+                if _row_value(row, "revoked_at") is not None:
+                    continue
+                if _parse_iso(_row_value(row, "issued_at"), "issued_at") > revoked_at:
+                    raise ControlPlaneContractError(
+                        "invalid_google_oauth_durable_record",
+                        "credential revocation cannot predate issue time",
+                    )
+                cursor = self._sql.exec(
+                    "UPDATE google_oauth_refresh_credential SET revoked_at = ? "
+                    "WHERE binding_ref = ? AND revoked_at IS NULL",
+                    _iso(revoked_at),
+                    _row_value(row, "binding_ref"),
+                )
+                revoked += _rows_written(cursor)
+            return revoked
+
+        return self.transaction(operation)
 
     def list_workspace_connector_state(
         self,

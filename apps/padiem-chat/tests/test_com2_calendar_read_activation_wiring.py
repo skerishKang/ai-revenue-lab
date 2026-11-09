@@ -86,15 +86,20 @@ async def test_the_com2_assembly_answers_the_activation_route_instead_of_503(
         # The assembly, not the test, produced the client.
         assert app.state.calendar_read_activation_client is not None
 
-        async def _current_session(request):
-            return SimpleNamespace(
-                auth_session=SimpleNamespace(session_id=SESSION_ID)
-            )
+        # #7247: the route now resolves the B62 shadow session (the reviewed
+        # connector context scope) through the shared shadow contract.
+        async def _current_session(*, authority, store, product_user_id,
+                                  now=None, current_session_id=None):
+            return SimpleNamespace(session_id=SESSION_ID)
 
         monkeypatch.setattr(
-            "app.calendar_read_activation_routes.resolve_current_b54_canonical_session",
+            "app.calendar_read_activation_routes.resolve_refreshed_session",
             _current_session,
         )
+        # The mock assembly leaves the canonical identity surfaces unbound; the
+        # route requires both before it will talk to the Engine.
+        app.state.control_plane_identity_authority = SimpleNamespace()
+        app.state.identity_shadow_store = SimpleNamespace()
         token = create_session_token(app.state.settings, USER_ID)
 
         async with httpx.AsyncClient(

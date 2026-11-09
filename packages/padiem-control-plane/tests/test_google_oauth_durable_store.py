@@ -102,17 +102,20 @@ def credential(
     sealed_refresh_token: str = SEALED_REFRESH,
     issued_at: datetime = NOW,
     expires_at: datetime | None = None,
+    provider_subject: str | None = None,
+    workspace_ref: str = "workspace_1",
 ) -> DurableGoogleOAuthCredential:
     return DurableGoogleOAuthCredential(
         binding_ref=binding_ref,
         connector_id=connector_id,
         actor_ref="actor_1",
         account_ref="account_1",
-        workspace_ref="workspace_1",
+        workspace_ref=workspace_ref,
         scopes=scopes,
         sealed_refresh_token=sealed_refresh_token,
         issued_at=issued_at,
         expires_at=expires_at,
+        provider_subject=provider_subject,
     )
 
 
@@ -325,6 +328,7 @@ def test_calendar_binding_selection_one_usable_row_resolves_exact_private_identi
         credential(
             binding_ref="calendar-binding-1",
             connector_id="google-calendar",
+            provider_subject="google-sub-1",
             scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
         )
     )
@@ -347,11 +351,18 @@ def test_calendar_binding_selection_one_usable_row_resolves_exact_private_identi
 
 
 def test_calendar_binding_selection_two_usable_rows_is_ambiguous_fail_closed():
+    """#7248: ambiguity now only means two *different* Google accounts.
+
+    A repeat connect with the same account replaces its own binding instead
+    (``test_calendar_reconnect_for_the_same_account_replaces_its_binding``), so
+    two usable rows of the same account can no longer be produced.
+    """
     oauth_store, _ = store()
     oauth_store.save_credential(
         credential(
             binding_ref="calendar-binding-1",
             connector_id="google-calendar",
+            provider_subject="google-sub-1",
             scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
         )
     )
@@ -359,6 +370,7 @@ def test_calendar_binding_selection_two_usable_rows_is_ambiguous_fail_closed():
         credential(
             binding_ref="calendar-binding-2",
             connector_id="google-calendar",
+            provider_subject="google-sub-2",
             scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
         )
     )
@@ -377,11 +389,13 @@ def test_calendar_binding_selection_ignores_revoked_and_expired_rows():
     revoked = credential(
         binding_ref="calendar-revoked",
         connector_id="google-calendar",
+        provider_subject="google-sub-1",
         scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
     )
     expired = credential(
         binding_ref="calendar-expired",
         connector_id="google-calendar",
+        provider_subject="google-sub-2",
         scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
         expires_at=NOW + timedelta(seconds=10),
     )
@@ -406,6 +420,7 @@ def test_calendar_binding_selection_is_workspace_scoped():
         credential(
             binding_ref="calendar-workspace-1",
             connector_id="google-calendar",
+            provider_subject="google-sub-1",
             scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
         )
     )
@@ -479,6 +494,7 @@ def test_calendar_binding_selection_keeps_public_workspace_status_identity_free(
         credential(
             binding_ref="calendar-public-check",
             connector_id="google-calendar",
+            provider_subject="google-sub-1",
             scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
         )
     )
@@ -512,3 +528,177 @@ def test_calendar_binding_selector_has_no_second_store_or_credential_authority()
     assert safe["raw_pkce_verifier_persisted"] is False
     assert safe["production_deployment"] is False
     assert safe["production_ready"] is False
+
+
+# ---------------------------------------------------------------------------
+# #7248: reconnect replacement, calendar disconnect and duplicate cleanup
+# ---------------------------------------------------------------------------
+
+
+def test_calendar_reconnect_for_the_same_account_replaces_its_binding():
+    """Reconnect 2x in one workspace/account leaves exactly one usable row."""
+
+    oauth_store, _ = store()
+    oauth_store.save_credential(
+        credential(
+            binding_ref="calendar-binding-1",
+            connector_id="google-calendar",
+            provider_subject="google-sub-1",
+            scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+        )
+    )
+    oauth_store.save_credential(
+        credential(
+            binding_ref="calendar-binding-2",
+            connector_id="google-calendar",
+            provider_subject="google-sub-1",
+            scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+            issued_at=NOW + timedelta(minutes=5),
+        )
+    )
+
+    selection = oauth_store.select_active_calendar_binding(
+        workspace_ref="workspace_1",
+        now=NOW + timedelta(minutes=6),
+    )
+
+    assert selection.status is GoogleOAuthBindingSelectionStatus.RESOLVED
+    assert selection.binding_ref == "calendar-binding-2"
+
+
+def test_calendar_reconnect_for_a_different_account_stays_ambiguous():
+    """A second Google account never silently replaces the first one."""
+
+    oauth_store, _ = store()
+    oauth_store.save_credential(
+        credential(
+            binding_ref="calendar-binding-1",
+            connector_id="google-calendar",
+            provider_subject="google-sub-1",
+            scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+        )
+    )
+    oauth_store.save_credential(
+        credential(
+            binding_ref="calendar-binding-2",
+            connector_id="google-calendar",
+            provider_subject="google-sub-2",
+            scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+            issued_at=NOW + timedelta(minutes=5),
+        )
+    )
+
+    with pytest.raises(ControlPlaneContractError) as caught:
+        oauth_store.select_active_calendar_binding(
+            workspace_ref="workspace_1",
+            now=NOW + timedelta(minutes=6),
+        )
+
+    assert caught.value.code == "ambiguous_google_oauth_binding"
+
+
+def test_calendar_disconnect_revokes_every_binding_of_the_workspace():
+    oauth_store, _ = store()
+    for index, subject in enumerate(("google-sub-1", "google-sub-2"), start=1):
+        oauth_store.save_credential(
+            credential(
+                binding_ref=f"calendar-binding-{index}",
+                connector_id="google-calendar",
+                provider_subject=subject,
+                scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+            )
+        )
+    # A different workspace and a different connector must survive untouched.
+    oauth_store.save_credential(
+        credential(
+            binding_ref="calendar-other-workspace",
+            connector_id="google-calendar",
+            provider_subject="google-sub-1",
+            scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+            workspace_ref="workspace_2",
+        )
+    )
+    oauth_store.save_credential(
+        credential(binding_ref="drive-binding-1", connector_id="google-drive",
+                   scopes=(GOOGLE_DRIVE_READONLY_SCOPE,))
+    )
+
+    revoked = oauth_store.revoke_calendar_bindings(
+        workspace_ref="workspace_1",
+        revoked_at=NOW + timedelta(minutes=1),
+    )
+
+    assert revoked == 2
+    selection = oauth_store.select_active_calendar_binding(
+        workspace_ref="workspace_1",
+        now=NOW + timedelta(minutes=2),
+    )
+    assert selection.status is GoogleOAuthBindingSelectionStatus.NOT_CONNECTED
+
+    # Untouched neighbours are still selectable.
+    other = oauth_store.select_active_calendar_binding(
+        workspace_ref="workspace_2",
+        now=NOW + timedelta(minutes=2),
+    )
+    assert other.status is GoogleOAuthBindingSelectionStatus.RESOLVED
+    drive = oauth_store.select_active_drive_binding(
+        workspace_ref="workspace_1",
+        now=NOW + timedelta(minutes=2),
+    )
+    assert drive.status is GoogleOAuthBindingSelectionStatus.RESOLVED
+
+
+def test_calendar_duplicate_backlog_clears_with_disconnect_then_one_reconnect():
+    """Legacy rows without a verified subject: three duplicates -> 0 -> 1."""
+
+    oauth_store, storage = store()
+    scope_json = json.dumps([GOOGLE_CALENDAR_READONLY_SCOPE], separators=(",", ":"))
+    for index in range(1, 4):
+        storage.connection.execute(
+            "INSERT INTO google_oauth_refresh_credential "
+            "(binding_ref, connector_id, actor_ref, account_ref, workspace_ref, "
+            " scopes_json, sealed_refresh_token, issued_at, expires_at, revoked_at) "
+            "VALUES (?, 'google-calendar', 'actor_1', 'account_1', 'workspace_1', "
+            " ?, ?, ?, NULL, NULL)",
+            (
+                f"legacy-calendar-{index}",
+                scope_json,
+                SEALED_REFRESH,
+                (NOW - timedelta(minutes=10) + timedelta(minutes=index)).isoformat(),
+            ),
+        )
+    storage.connection.commit()
+
+    with pytest.raises(ControlPlaneContractError) as caught:
+        oauth_store.select_active_calendar_binding(
+            workspace_ref="workspace_1",
+            now=NOW + timedelta(minutes=10),
+        )
+    assert caught.value.code == "ambiguous_google_oauth_binding"
+
+    revoked = oauth_store.revoke_calendar_bindings(
+        workspace_ref="workspace_1",
+        revoked_at=NOW + timedelta(minutes=10),
+    )
+    assert revoked == 3
+    assert oauth_store.select_active_calendar_binding(
+        workspace_ref="workspace_1",
+        now=NOW + timedelta(minutes=11),
+    ).status is GoogleOAuthBindingSelectionStatus.NOT_CONNECTED
+
+    oauth_store.save_credential(
+        credential(
+            binding_ref="calendar-binding-fresh",
+            connector_id="google-calendar",
+            provider_subject="google-sub-1",
+            scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+            issued_at=NOW + timedelta(minutes=12),
+        )
+    )
+
+    selection = oauth_store.select_active_calendar_binding(
+        workspace_ref="workspace_1",
+        now=NOW + timedelta(minutes=13),
+    )
+    assert selection.status is GoogleOAuthBindingSelectionStatus.RESOLVED
+    assert selection.binding_ref == "calendar-binding-fresh"
