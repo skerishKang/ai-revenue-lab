@@ -30,6 +30,10 @@ jobs:
   real-usage:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # The QA pair lives in the production environment (the same pair the
+    # deploy gates and the logout-reuse check read). The environment has no
+    # protection rules, so scheduled runs are not held for approval.
+    environment: production
     env:
       # The same QA pair the deploy gates use. Read-only use; never printed.
       B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
