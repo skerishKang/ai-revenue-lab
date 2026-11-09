@@ -28,6 +28,7 @@ import asyncio
 import hashlib
 import hmac
 import json
+import logging
 import re
 import time
 import uuid
@@ -37,6 +38,7 @@ import httpx
 
 from .b14_upstream_composition import compose_b14_transports
 from .config import ConfigError
+from .journal_host import ensure_journal_visible
 from .orchestration_timing import LOG as _IDENTITY_KEEPWARM_LOG
 
 __all__ = [
@@ -164,6 +166,46 @@ def service_proof_headers(
     }
 
 
+_IDENTITY_RPC_LOG = logging.getLogger("padiem_chat.identity_rpc_client")
+
+
+def _colo_of(response: Any) -> str:
+    """The Cloudflare edge location from ``cf-ray`` (``<hex>-<COLO>``).
+
+    Only the three-letter location code is kept: it names the POP that answered,
+    never a request id, a token or a client address.
+    """
+    try:
+        ray = response.headers.get("cf-ray", "")
+    except Exception:
+        return "none"
+    if not isinstance(ray, str) or "-" not in ray:
+        return "none"
+    colo = ray.rsplit("-", 1)[-1].strip()
+    return colo if re.fullmatch(r"[A-Za-z]{3}\Z", colo) else "none"
+
+
+def _connection_reused(response: Any, previous: int | None) -> tuple[str, int | None]:
+    """Whether this response reused a pooled TLS connection, and its marker.
+
+    httpcore exposes the underlying stream; a reused connection hands back the
+    same ``SSLObject``. When the runtime does not expose it (Cloudflare's Python
+    runtime, an injected transport), the answer is ``unknown`` rather than a
+    guess — the metric must never invent a fact.
+    """
+    try:
+        stream = (response.extensions or {}).get("network_stream")
+        ssl_object = stream.get_extra_info("ssl_object") if stream is not None else None
+    except Exception:
+        return "unknown", previous
+    if ssl_object is None:
+        return "unknown", previous
+    marker = id(ssl_object)
+    if previous is None:
+        return "first", marker
+    return ("true" if marker == previous else "false"), marker
+
+
 class HttpRpcBinding:
     """A Binding-shaped RPC surface over HTTPS.
 
@@ -182,6 +224,9 @@ class HttpRpcBinding:
     _warm_timer: asyncio.TimerHandle | None = None
     _warm_task: asyncio.Task[Any] | None = None
     _warm_stopped = False
+    # Class-level default: subclasses that bypass __init__ (the loopback COM2
+    # port binding) must not trip the attribute guard in ``__getattr__``.
+    _ssl_marker: int | None = None
 
     def __init__(
         self,
@@ -212,6 +257,7 @@ class HttpRpcBinding:
         self._warm_timer: asyncio.TimerHandle | None = None
         self._warm_task: asyncio.Task[Any] | None = None
         self._warm_stopped = False
+        self._ssl_marker: int | None = None
         self._arm_warmer()
 
     def arm_warmer(self) -> None:
@@ -346,8 +392,21 @@ class HttpRpcBinding:
                 self._secret, method="POST", path=path, body=body,
                 service_id=new_service_id() if self._sign_request_id else None,
             ))
+            started = time.perf_counter()
             response = await client.post(
                 self._origin + path, content=body, headers=headers
+            )
+            # One line per identity RPC: the client-side time to first byte, the
+            # edge location that answered, and whether a pooled TLS connection
+            # was reused. No payload, token, session or address is recorded.
+            reused, self._ssl_marker = _connection_reused(response, self._ssl_marker)
+            ensure_journal_visible(_IDENTITY_RPC_LOG)
+            _IDENTITY_RPC_LOG.info(
+                "identity_rpc_client method=%s status=%s ttfb_ms=%d reused=%s colo=%s attempt=%d",
+                method, response.status_code,
+                int((time.perf_counter() - started) * 1000.0),
+                reused, _colo_of(response),
+                1 if attempts == 1 else attempts,
             )
             if response.status_code != RPC_REPLAY_STATUS:
                 break

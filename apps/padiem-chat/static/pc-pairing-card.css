@@ -69,7 +69,7 @@
 .pc-pairing-wait {
   margin: 6px 0 0;
   font-size: 11px;
-  color: var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
 }
 
 .pc-pairing-wait[hidden] {
@@ -177,7 +177,7 @@
 }
 
 .pc-pairing-state[data-state="pending_verification"] {
-  color: var(--accent-strong, #2f6f99);
+  color: var(--accent-strong);
   border-color: rgba(47, 111, 153, .35);
   background: rgba(47, 111, 153, .08);
 }

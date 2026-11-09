@@ -90,7 +90,7 @@ class FakeB14ReadOnlyRegistry:
 
     async def get_json(self, path):
         self.paths.append(path)
-        if path == "/api/pilot/models":
+        if path == "/api/pilot/admin/models":
             return 200, json.dumps(self.models).encode("utf-8")
         if path == "/api/pilot/provider-readiness":
             return 200, json.dumps(self.readiness).encode("utf-8")

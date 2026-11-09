@@ -8,8 +8,8 @@
 }
 
 .composer[data-interaction-phase]:not([data-interaction-phase="idle"]) {
-  border-color: color-mix(in srgb, var(--accent, #6557e8) 46%, var(--line));
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, #6557e8) 10%, transparent), var(--shadow-soft, 0 8px 30px rgba(0,0,0,.08));
+  border-color: color-mix(in srgb, var(--accent) 46%, var(--line));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 10%, transparent), var(--shadow-soft, 0 8px 30px rgba(0,0,0,.08));
 }
 
 .composer[data-interaction-phase="attachment_loading"] .tool-button,
@@ -83,7 +83,7 @@
 
 .composer :is(button, textarea):focus-visible,
 .error-box .retry-button:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--accent, #6557e8) 52%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--accent) 52%, transparent);
   outline-offset: 2px;
 }
 

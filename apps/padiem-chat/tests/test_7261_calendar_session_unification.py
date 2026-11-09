@@ -40,7 +40,8 @@ from app.calendar_session_authority import (
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
 
-NOW = datetime(2026, 11, 9, 9, 0, tzinfo=timezone.utc)
+# Relative to the wall clock: a fixed instant would expire mid-run.
+NOW = datetime.now(timezone.utc) - timedelta(minutes=5)
 SUBJECT = "sub_calendar_owner"
 SHADOW_SESSION = "authsession:b62:calendar"
 B54_SESSION = "authsession:b54:legacy"
@@ -278,6 +279,23 @@ def test_the_journal_line_names_path_product_and_verdict_only(caplog):
     assert "verdict=ok" in line
     for forbidden in (SHADOW_SESSION, SUBJECT, "usr_calendar_owner"):
         assert forbidden not in line
+
+
+def test_a_general_turn_still_journals_its_offer_verdict():
+    """A withheld tool must be distinguishable from a broken one in the log."""
+
+    source = inspect.getsource(chat_routes._chat_connector_tools_for_turn)
+    assert "verdict=no_connector_intent" in source
+    assert "verdict=route_without_native_tools" in source
+    assert 'verdict=%s' in source
+
+
+def test_the_verdict_lines_are_made_journal_visible():
+    """The host configures no logging: an unbound INFO line would be dropped."""
+
+    for module in (authority_module, chat_routes):
+        source = inspect.getsource(module)
+        assert "ensure_journal_visible(_LOG)" in source
 
 
 def test_an_unknown_path_is_a_programming_error():

@@ -3,7 +3,7 @@
 /* #5028: the meeting sidebar entry lights up on this page the same way the
    calendar/library/claw entries do (aria-current is already set by app.js). */
 #meetingNavButton[aria-current="page"] {
-  border-color: var(--accent-strong, #2f6f99);
+  border-color: var(--accent-strong);
   background: rgba(121, 188, 231, 0.22);
 }
 
@@ -60,7 +60,7 @@ html[data-theme="padiem-glass"] #meetingNavButton[aria-current="page"] {
 /* The static primary-action contract pins the shared accent pair here; the
    composer send-button navy overrides it from padiem-chat-ui-polish.css.
    The pill shape stays local to the start control. */
-.meeting-controls #meetingStart { background: var(--accent, #335e9d); color: #fff; }
+.meeting-controls #meetingStart { background: var(--accent); color: #fff; }
 #meetingStart { border-radius: 999px; }
 .meeting-view button:disabled { opacity: .45; cursor: not-allowed; }
 .meeting-status { font-size: 14px; margin: 0; font-weight: 550; overflow-wrap: anywhere; }

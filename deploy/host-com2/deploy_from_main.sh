@@ -1223,6 +1223,59 @@ chat_matches_previous_release() {
   [[ -n $expected ]] && [[ $actual == "$expected" ]]
 }
 
+# The queue is a mirror, not a link: stage_queue_code rsyncs the tree into
+# $queue_root, so "is the running copy this commit" can only be answered by
+# comparing the files. Only the code the repository ships is compared — the
+# root also holds runtime state (the database, queue.env, secrets, backups)
+# that the deploy deliberately never touches. A file that is missing in the
+# running copy, or differs, means the host is behind this commit.
+queue_matches_target() {
+  local actual temp item rel result=0 present=0
+  # Test the configured path before resolving it: `readlink -f` fails when a
+  # parent directory is absent, and that must read as "not installed" rather
+  # than as an unverifiable tree (the plan would otherwise redeploy the queue
+  # on every documentation-only commit).
+  [[ -d $queue_root ]] || return 2
+  actual=$(readlink -f -- "$queue_root") || return 2
+  # A host with no mirror at all is "not installed", exactly like the other
+  # services: the plan must not turn an absent tree into a redeploy of every
+  # commit. A tree that is not an install either — the installer always links
+  # the shared modules into the root and the unit always runs service.py — is
+  # the same answer, not a stale copy. Without this check a partial or foreign
+  # directory was reported as "behind" and every documentation-only plan turned
+  # into queue:WOULD_DEPLOY (measured 2026-11-09).
+  [[ -d $actual ]] || return 2
+  [[ -e $actual/app && -e $actual/padiem_ai_core && -e $actual/service.py ]] || return 2
+  temp=$(mktemp -d) || return 1
+  if ! "$git_bin" -C "$ops_checkout" archive "$resolved" apps/padiem-mesh-queue       | tar -x -C "$temp"; then
+    rm -rf -- "$temp"
+    return 1
+  fi
+  while IFS= read -r rel; do
+    [[ -n $rel ]] || continue
+    case "$rel" in
+      # Tests, docs and the installer-managed root copies are not the running
+      # service code; the deploy handles them separately.
+      tests/*|*/tests/*|*.md|deploy/host-com2/*) continue ;;
+    esac
+    if [[ ! -f $actual/$rel ]]; then
+      continue
+    fi
+    present=$((present + 1))
+    if ! cmp -s -- "$temp/apps/padiem-mesh-queue/$rel" "$actual/$rel"; then
+      say "QUEUE_RUNNING_CODE_DIFF=$rel"
+      result=1
+      break
+    fi
+  done < <(cd "$temp/apps/padiem-mesh-queue" && find . -type f -printf '%P
+' 2>/dev/null)
+  rm -rf -- "$temp"
+  if (( result == 0 )) && (( present == 0 )); then
+    return 2
+  fi
+  return "$result"
+}
+
 b14_matches_previous_release() {
   local actual expected
   if [[ ! -L $b14_app && ! -e $b14_app ]]; then
@@ -1740,6 +1793,7 @@ run_deploy() {
   local mismatch=0 p01_mismatch=0 excluded_test=0 excluded_docs=0 excluded_example=0 excluded_meta=0 excluded_unmapped=0
   local executor_mismatch=0 executor_code=0
   local chat_mismatch=0 chat_code=0 b14_mismatch=0 b14_code=0
+  local queue_mismatch=0 queue_code=0
   local deploy_script_changed=0
   declare -A wanted=([chat]=0 [p01]=0 [b14]=0 [queue]=0 [executor]=0)
   declare -A reason_files=([chat]=0 [p01]=0 [b14]=0 [queue]=0 [executor]=0)
@@ -1827,6 +1881,22 @@ run_deploy() {
       say 'B14_RUNNING_CODE=DIFF_OR_UNVERIFIABLE'
       wanted[b14]=1
       b14_mismatch=1
+      ;;
+  esac
+
+  # Same rule for the queue: its mirror is rsynced, so a rollback or a stale
+  # copy cannot be seen through the checkout diff alone. Without this the plan
+  # read queue:SKIP reason_files=0 whenever the checkout already sat at the
+  # target, even though the running tree was behind.
+  queue_code=0
+  queue_matches_target || queue_code=$?
+  case $queue_code in
+    0) say 'QUEUE_RUNNING_CODE=MATCH' ;;
+    2) say 'QUEUE_RUNNING_CODE=NOT_INSTALLED' ;;
+    *)
+      say 'QUEUE_RUNNING_CODE=DIFF_OR_UNVERIFIABLE'
+      wanted[queue]=1
+      queue_mismatch=1
       ;;
   esac
 
@@ -1921,6 +1991,7 @@ run_deploy() {
       executor) mismatch=$executor_mismatch ;;
       chat) mismatch=$chat_mismatch ;;
       b14) mismatch=$b14_mismatch ;;
+      queue) mismatch=$queue_mismatch ;;
     esac
     if (( mismatch )); then
       if (( reason_files[$line] )); then

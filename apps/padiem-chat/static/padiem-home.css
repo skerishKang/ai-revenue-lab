@@ -38,7 +38,7 @@
   display: grid;
   place-items: center;
   border-radius: 10px;
-  background: var(--accent, #6557e8);
+  background: var(--accent);
   color: #fff;
   font-weight: 700;
 }
@@ -107,7 +107,7 @@
   min-height: 44px;
   padding: 10px 20px;
   border-radius: 10px;
-  background: var(--accent, #6557e8);
+  background: var(--accent);
   color: #fff;
   font-weight: 650;
   font-size: .9rem;
@@ -148,8 +148,8 @@
   display: grid;
   place-items: center;
   border-radius: 11px;
-  background: var(--accent-soft, #efedff);
-  color: var(--accent-strong, #5546d6);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
   font-weight: 700;
 }
 .padiem-home-card-name { margin: 0; font-size: .98rem; }
@@ -183,8 +183,8 @@
   text-decoration: none;
 }
 .padiem-home-card-action {
-  background: var(--accent, #6557e8);
-  border-color: var(--accent, #6557e8);
+  background: var(--accent);
+  border-color: var(--accent);
   color: #fff;
   font-weight: 650;
 }

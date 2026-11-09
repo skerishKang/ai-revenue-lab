@@ -466,7 +466,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
   color: var(--muted, #6f7079);
 }
 .auth-legal-consent a {
-  color: var(--accent-strong, #5546d6);
+  color: var(--accent-strong);
   text-decoration: none;
 }
 .auth-legal-consent a:hover { text-decoration: underline; }
@@ -627,7 +627,7 @@ html body #meetingStart:disabled {
 }
 
 .settings-advanced-view .advanced-menu-link.selected {
-  background: var(--accent-soft, #efedff);
+  background: var(--accent-soft);
   font-weight: 650;
 }
 

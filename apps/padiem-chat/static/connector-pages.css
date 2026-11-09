@@ -17,7 +17,7 @@
 
 #connectorsGrid .capability-card.connector-tile:hover,
 #connectorsGrid .capability-card.connector-tile:focus-visible {
-  border-color: var(--accent, #6557e8);
+  border-color: var(--accent);
 }
 
 #connectorsGrid .capability-card.connector-tile:focus-visible {
@@ -74,7 +74,7 @@
 }
 
 .connector-back:hover {
-  border-color: var(--accent, #6557e8);
+  border-color: var(--accent);
 }
 
 .connector-detail-head {
@@ -90,8 +90,8 @@
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: var(--accent-soft, #efedff);
-  color: var(--accent-strong, #2f6f99);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
   font-size: 13px;
   font-weight: 700;
 }
@@ -119,9 +119,9 @@
 .connector-detail-connect {
   min-height: 44px;
   padding: 0 16px;
-  border: 1px solid var(--accent, #6557e8);
+  border: 1px solid var(--accent);
   border-radius: 10px;
-  background: var(--accent-soft, #efedff);
+  background: var(--accent-soft);
   color: var(--text, #17202a);
   font: inherit;
   font-size: 14px;

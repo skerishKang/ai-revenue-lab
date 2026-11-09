@@ -92,3 +92,79 @@ class P01PathCoverageTest(unittest.TestCase):
         mapping = script.split("service_for_path()", 1)[1].split("p01_matches_target()", 1)[0]
         assert "apps/padiem-ai-engine/*" in mapping
         assert "apps/padiem-ai-engine/*|deploy/host-com2/p01/*" in mapping
+
+
+class QueueRunningCodeTest(DeployHarness):
+    """The queue mirror is compared by file, so a stale copy cannot be skipped."""
+
+    scenario = "queue"
+
+    def setUp(self) -> None:
+        super().setUp()
+        # The plan reads the mirror from this variable; the apply wrapper uses
+        # QUEUE_ROOT. Point both at the harness tree.
+        self.env["PADIEM_COM2_MESH_QUEUE_APP"] = self.queue.as_posix()
+
+    def test_a_stale_queue_file_is_not_skipped(self) -> None:
+        # The plan must catch a running tree that differs from this commit even
+        # when the checkout already sits at the target (empty diff). The tree
+        # must look installed first: an install always carries the shared-module
+        # links and service.py (an unmarked directory is "not installed").
+        (self.queue / "app").mkdir(exist_ok=True)
+        (self.queue / "padiem_ai_core").mkdir(exist_ok=True)
+        running = self.queue / "service.py"
+        running.parent.mkdir(parents=True, exist_ok=True)
+        running.write_text("# stale queue", encoding="utf-8")
+        self._git(str(self.ops), "checkout", "-q", "--detach", self.second)
+        result = _plan(self, self.second)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("QUEUE_RUNNING_CODE=DIFF_OR_UNVERIFIABLE", result.stdout)
+        self.assertIn("DECISION_QUEUE=REDEPLOY", result.stdout)
+        self.assertIn("queue:WOULD_DEPLOY", result.stdout)
+
+    def test_the_queue_comparison_is_wired_like_the_other_services(self) -> None:
+        """A queue mismatch must reach the plan, not only a printed line."""
+        script = (Path(__file__).resolve().parents[1] / "deploy_from_main.sh").read_text(
+            encoding="utf-8",
+        )
+        assert "queue_matches_target()" in script
+        assert "QUEUE_RUNNING_CODE=DIFF_OR_UNVERIFIABLE" in script
+        assert "wanted[queue]=1" in script
+        # The mismatch must also name its reason in the decision line.
+        assert "queue) mismatch=$queue_mismatch" in script
+
+
+class QueueNotInstalledTest(DeployHarness):
+    """A directory that is not an install is never reported as behind."""
+
+    scenario = "docs_only"
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.env["PADIEM_COM2_MESH_QUEUE_APP"] = self.queue.as_posix()
+
+    def test_a_plain_directory_is_not_installed(self) -> None:
+        # The harness's queue root holds no app/core links and no service.py.
+        (self.queue / "leftover.txt").write_text("x", encoding="utf-8")
+        _record_applied(self, self.first)
+        self._git(str(self.ops), "checkout", "-q", "--detach", self.second)
+        result = _plan(self, self.second)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("QUEUE_RUNNING_CODE=NOT_INSTALLED", result.stdout)
+        self.assertIn("queue:SKIP", result.stdout)
+        self.assertIn("COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP", result.stdout)
+
+    def test_a_directory_without_the_install_links_is_not_a_stale_mirror(self) -> None:
+        """A foreign directory that happens to hold a file is not "behind".
+
+        An install always carries the shared-module links and service.py; a
+        directory without them is not this service, so the plan must say
+        NOT_INSTALLED rather than redeploy the queue for every commit.
+        """
+        (self.queue / "service.py").write_text("# stale queue", encoding="utf-8")
+        _record_applied(self, self.first)
+        self._git(str(self.ops), "checkout", "-q", "--detach", self.second)
+        result = _plan(self, self.second)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("QUEUE_RUNNING_CODE=NOT_INSTALLED", result.stdout)
+        self.assertIn("queue:SKIP", result.stdout)

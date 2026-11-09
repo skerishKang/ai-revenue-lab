@@ -22,7 +22,7 @@
   display: grid;
   place-items: center;
   background: rgba(101, 87, 232, 0.12);
-  color: #6557e8;
+  color: var(--accent);
   border: 1px solid rgba(101, 87, 232, 0.28);
   font-family: var(--font-label, "SUIT Variable", system-ui, sans-serif);
   font-size: 13px;
@@ -74,12 +74,12 @@
   border-color: rgba(101, 87, 232, 0.45);
 }
 .answer-action:focus-visible {
-  outline: 2px solid #6557e8;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 .answer-action[aria-pressed="true"] {
   background: rgba(101, 87, 232, 0.16);
-  border-color: #6557e8;
+  border-color: var(--accent);
 }
 .answer-action:disabled {
   opacity: 0.45;

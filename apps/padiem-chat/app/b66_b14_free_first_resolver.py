@@ -22,7 +22,12 @@ from .b66_registered_model_boundary import (
 )
 from padiem_control_plane.product_tier_routes_private import effective_is_free_execution_candidate
 
-_MODELS_PATH = "/api/pilot/models"
+# #7272: since #6828 stage 2 the public ``/api/pilot/models`` is a count
+# summary, so ``registered_routes``/``catalog`` rows only exist behind the
+# proven-caller authority. Chat's transports sign this GET with the same
+# deployment proof the dispatch lane already carries; the browser never
+# requests this path.
+_MODELS_PATH = "/api/pilot/admin/models"
 _READINESS_PATH = "/api/pilot/provider-readiness"
 _OWNER_POLICY = "OWNER_REGISTERED_AND_ALLOWED"
 # #4379: the B14 registry body and row count are no longer capped here.

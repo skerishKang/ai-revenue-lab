@@ -24,10 +24,8 @@ html[data-theme="light"] {
   --sidebar-text: #19191d;
   --text: #19191d;
   --muted: #6f7079;
-  --accent: #6557e8;
-  --accent-contrast: #ffffff;
-  --accent-soft: #efedff;
-  --accent-strong: #5546d6;
+  /* #7187 R3 3차: --accent*는 padiem-tokens.css가 소유한다(이 시트의
+     테마 수준 정의는 거기로 옮겼다). */
   --gold: #b8923a;
   --gold-soft: rgba(184,146,58,.10);
   --blue: #6557e8;
@@ -43,7 +41,7 @@ html[data-theme="light"] {
   --font-display: Pretendard, "Noto Sans KR", ui-sans-serif;
   --font-label: Inter, Pretendard, system-ui, sans-serif;
   --card-bg: #ffffff;
-  --card-border: #e3e3e9;
+  /* --card-border도 padiem-tokens.css 소유(#7187 R3 3차). */
   --card-shadow: 0 3px 10px rgba(33,33,49,.04);
   --composer-bg: #ffffff;
   --composer-border: #e3e3e9;
@@ -161,10 +159,7 @@ html[data-theme="dark"] {
   --sidebar: #101114;
   --text: #e9eaec;
   --muted: rgba(255,255,255,.56);
-  --accent: #9fc0dd;
-  --accent-contrast: #131417;
-  --accent-soft: rgba(159,192,221,.08);
-  --accent-strong: #cfe0ee;
+  /* #7187 R3 3차: --accent*는 padiem-tokens.css가 소유한다. */
   --gold: #c9b28a;
   --gold-soft: rgba(201,178,138,.07);
   --blue: #9fc0dd;
@@ -176,7 +171,7 @@ html[data-theme="dark"] {
   --danger-border: rgba(220, 62, 62, 0.16);
   --shadow: 0 10px 28px rgba(0,0,0,.28);
   --card-bg: #181a1e;
-  --card-border: rgba(255,255,255,.09);
+  /* --card-border도 padiem-tokens.css 소유(#7187 R3 3차). */
   --composer-bg: #17181c;
   --composer-border: rgba(255,255,255,.12);
   --user-bubble-bg: #1c1e22;
@@ -277,10 +272,7 @@ html[data-theme="cinematic"] {
   --sidebar: rgba(6,9,15,.88);
   --text: #f7f8fa;
   --muted: rgba(255,255,255,.68);
-  --accent: #88c9ff;
-  --accent-contrast: #04070d;
-  --accent-soft: rgba(136,201,255,.10);
-  --accent-strong: #d7ebfa;
+  /* #7187 R3 3차: --accent*는 padiem-tokens.css가 소유한다. */
   --gold: #efc984;
   --gold-soft: rgba(239,201,132,.14);
   --blue: #88c9ff;
@@ -292,7 +284,7 @@ html[data-theme="cinematic"] {
   --danger-border: rgba(220, 62, 62, 0.16);
   --shadow: 0 24px 80px rgba(0,0,0,.42);
   --card-bg: rgba(8,12,19,.52);
-  --card-border: rgba(136,201,255,.16);
+  /* --card-border도 padiem-tokens.css 소유(#7187 R3 3차). */
   --composer-bg: rgba(10,14,22,.68);
   --composer-border: rgba(136,201,255,.22);
   --user-bubble-bg: rgba(255,255,255,.085);
@@ -394,10 +386,7 @@ html[data-theme="padiem-home"] {
   --sidebar: rgba(255,255,255,.62);
   --text: #1a2230;
   --muted: #5a6578;
-  --accent: #3a7bd5;
-  --accent-contrast: #0b0f14;
-  --accent-soft: rgba(58,123,213,.10);
-  --accent-strong: #2a5fa8;
+  /* #7187 R3 3차: --accent*는 padiem-tokens.css가 소유한다. */
   --gold: #c9a85c;
   --gold-soft: rgba(201,168,92,.12);
   --blue: #5aa0e6;
@@ -409,7 +398,7 @@ html[data-theme="padiem-home"] {
   --danger-border: rgba(220, 62, 62, 0.16);
   --shadow: 0 18px 50px rgba(26,34,48,.10);
   --card-bg: rgba(255,255,255,.68);
-  --card-border: rgba(26,34,48,.10);
+  /* --card-border도 padiem-tokens.css 소유(#7187 R3 3차). */
   --composer-bg: rgba(255,255,255,.82);
   --composer-border: rgba(26,34,48,.13);
   --user-bubble-bg: #1a2230;
@@ -478,8 +467,8 @@ html[data-theme="padiem-home"] .model-pill,
 html[data-theme="padiem-home"] .login-button {
   background: rgba(255,255,255,.68); border-color: var(--line); color: #2a3446;
 }
-html[data-theme="padiem-home"] .eyebrow { color: #3a7bd5; letter-spacing: .14em; }
-html[data-theme="padiem-home"] .eyebrow::before { background: #3a7bd5; box-shadow: 0 0 10px rgba(58,123,213,.32); }
+html[data-theme="padiem-home"] .eyebrow { color: var(--accent); letter-spacing: .14em; }
+html[data-theme="padiem-home"] .eyebrow::before { background: var(--accent); box-shadow: 0 0 10px rgba(58,123,213,.32); }
 html[data-theme="padiem-home"] .empty-state h1 { color: #1a2230; text-shadow: 0 6px 18px rgba(26,34,48,.08); }
 html[data-theme="padiem-home"] .empty-copy { color: #5a6578; }
 html[data-theme="padiem-home"] .starter {

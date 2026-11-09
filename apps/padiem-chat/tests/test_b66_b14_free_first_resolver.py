@@ -65,7 +65,7 @@ class FakeB14ReadOnlyRegistry:
         self.paths.append(path)
         if self.raises:
             raise RuntimeError("PRIVATE B14 READ ERROR: token=secret")
-        if path == "/api/pilot/models":
+        if path == "/api/pilot/admin/models":
             return self.first_status, json.dumps(self.models).encode("utf-8")
         if path == "/api/pilot/provider-readiness":
             return self.second_status, json.dumps(self.readiness).encode("utf-8")
@@ -108,7 +108,7 @@ def test_owner_excluded_registered_free_ready_route_never_selected(
     readiness["providers"][0]["models"] = [excluded_model]
     fake = FakeB14ReadOnlyRegistry(registry, readiness)
     deny(fake, "selection_unavailable")
-    assert fake.paths == ["/api/pilot/models", "/api/pilot/provider-readiness"]
+    assert fake.paths == ["/api/pilot/admin/models", "/api/pilot/provider-readiness"]
 
 
 def test_excluded_candidate_cannot_poison_single_allowed_fixture_selection():
@@ -143,7 +143,7 @@ def test_one_owner_allowed_registered_chat_and_live_credential_selects_exact_id(
     assert selected.credential_ready is True
     assert selected.capabilities.issuperset(frozenset(("chat",)))
     assert fake.paths == [
-        "/api/pilot/models", "/api/pilot/provider-readiness",
+        "/api/pilot/admin/models", "/api/pilot/provider-readiness",
     ]
     assert fake.provider_execution_calls == 0
 
@@ -260,7 +260,7 @@ def test_registry_and_readiness_must_both_be_http_200(first_status, second_statu
 def test_b14_service_read_exception_does_not_leak_or_retry():
     fake = FakeB14ReadOnlyRegistry(*records(), raises=True)
     deny(fake)
-    assert fake.paths == ["/api/pilot/models"]
+    assert fake.paths == ["/api/pilot/admin/models"]
 
 
 def test_unconfigured_resolver_never_dispatches():
@@ -297,6 +297,16 @@ def test_cloudflare_service_binding_uses_only_two_exact_get_read_paths():
         and item.name == "CloudflareB14ServiceTransport"
     )
     captured = []
+    secret = "a-deployment-proof-secret-0123456789ab"
+    signed = {
+        "X-Padiem-B14-Proof": "a" * 64,
+        "X-Padiem-B14-Time": "1760000000",
+    }
+
+    def service_proof_headers(proof_secret, raw_body):
+        assert proof_secret == secret
+        assert raw_body == b"", "a GET proves its empty body"
+        return dict(signed)
 
     class Request:
         def __init__(self, url, **kwargs):
@@ -332,22 +342,28 @@ def test_cloudflare_service_binding_uses_only_two_exact_get_read_paths():
         "read_bounded_service_binding_body": read_body,
         "ServiceBindingResponseTooLarge": TooLarge,
         "ServiceBindingResponseError": BadRead,
+        "service_proof_headers": service_proof_headers,
     }
     exec(compile(ast.fix_missing_locations(module), str(worker_path), "exec"), ns)
-    transport = ns["CloudflareB14ServiceTransport"](Binding())
+    transport = ns["CloudflareB14ServiceTransport"](Binding(), secret)
 
     async def scenario():
-        for path in ("/api/pilot/models", "/api/pilot/provider-readiness"):
+        for path in ("/api/pilot/admin/models", "/api/pilot/provider-readiness"):
             status, raw = await transport.get_json(path)
             assert status == 200
             assert b"registered_routes" in raw
-        for path in ("https://attacker.invalid", "/api/pilot/admin", "/"):
+        # The public count summary is not a row source and stays refused, as
+        # does anything outside the fixed pair.
+        for path in ("https://attacker.invalid", "/api/pilot/admin",
+                     "/api/pilot/models", "/"):
             with pytest.raises(ValueError):
                 await transport.get_json(path)
     asyncio.run(scenario())
     assert captured == [
-        ("https://b14.internal/api/pilot/models", {"method": "GET"}),
-        ("https://b14.internal/api/pilot/provider-readiness", {"method": "GET"}),
+        ("https://b14.internal/api/pilot/admin/models",
+         {"method": "GET", "headers": signed}),
+        ("https://b14.internal/api/pilot/provider-readiness",
+         {"method": "GET", "headers": signed}),
     ]
 
 

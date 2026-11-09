@@ -1352,9 +1352,11 @@ class MeshCentralCliCommandPort:
         ])
         # #7065. The envelope below is PowerShell text, so ``--powershell`` is not a
         # caller choice: the ``shell`` a tool asks for (powershell/cmd/bash) is
-        # already carried INSIDE that text as ``$env:PADIEM_MCP_SHELL`` and dispatched
-        # by the script itself (``mcp_gateway_shell.build_pc_shell_command``). Dropping
-        # this flag would hand PowerShell syntax to cmd.exe and break every command.
+        # carried INSIDE that text as ``$env:PADIEM_MCP_SHELL`` plus the launcher
+        # lines the shared table resolved at build time
+        # (``padiem_ai_core.pc_shell_selection``); since #7188 R4 ② the script
+        # itself no longer branches on the name. Dropping this flag would hand
+        # PowerShell syntax to cmd.exe and break every command.
         if self._run_as_user:
             argv.append("--runasuser")
         if self._run_as_user_only:

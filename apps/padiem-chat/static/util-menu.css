@@ -16,7 +16,7 @@
 .util-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
 .util-tab { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
 .util-tab:hover { background: var(--accent-soft); border-color: var(--accent); }
-.util-tab.active { background: var(--accent, #6557e8); color: var(--accent-contrast, #ffffff); border-color: var(--accent, #6557e8); }
+.util-tab.active { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
 /* #5908: the quick-run toolbox — one glanceable card row above the panels.
  * Entry surface only: every card button drives the existing activateUtilTab
  * switch or the existing Claw entry; no new tokens. The card border reads
@@ -25,11 +25,11 @@
  * for the .pdfmd-* controls. */
 .util-tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin: 0 0 18px; }
 .util-tool-card { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-md, 16px); background: var(--glass-card-surface, var(--panel, #ffffff)); box-sizing: border-box; }
-.util-tool-icon { font-size: 16px; line-height: 1; color: var(--accent, #6557e8); }
+.util-tool-icon { font-size: 16px; line-height: 1; color: var(--accent); }
 .util-tool-name { font-size: 15px; font-weight: 750; color: var(--text, #17202a); }
 .util-tool-desc { font-size: 12.5px; line-height: 1.45; color: var(--text, #17202a); }
 .util-tool-note { font-size: 11.5px; color: var(--muted, #5b6672); }
-.util-tool-open { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; margin-top: auto; border: none; border-radius: 999px; background: var(--accent, #6557e8); color: var(--accent-contrast, #ffffff); cursor: pointer; font: inherit; font-size: 13px; font-weight: 650; }
+.util-tool-open { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; margin-top: auto; border: none; border-radius: 999px; background: var(--accent); color: var(--accent-contrast); cursor: pointer; font: inherit; font-size: 13px; font-weight: 650; }
 .util-tool-open:hover:not(:disabled) { filter: brightness(.96); }
 .util-tool-paused .util-tool-icon { color: var(--muted, #5b6672); }
 .util-tab:focus-visible,
@@ -42,7 +42,7 @@
  * without adding per-field cards. Tokens come from the active Chat theme. */
 .pdfmd-shell {
   padding: 18px;
-  border: 1px solid var(--card-border, rgba(255, 255, 255, .42));
+  border: 1px solid var(--card-border);
   border-radius: var(--radius-md, 16px);
   background: var(--card-bg, rgba(239, 243, 246, .48));
   box-shadow: var(--shadow, 0 18px 48px rgba(28, 38, 49, .14));
@@ -103,8 +103,8 @@
 }
 .pdfmd-btn-primary {
   border-color: transparent;
-  background: var(--accent, #6557e8);
-  color: var(--accent-contrast, #ffffff);
+  background: var(--accent);
+  color: var(--accent-contrast);
 }
 .pdfmd-btn-primary:hover:not(:disabled) { filter: brightness(.96); border-color: transparent; }
 .pdfmd-btn:disabled { opacity: .5; cursor: not-allowed; }
@@ -124,8 +124,8 @@
 .pdfmd-drop-cta {
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 44px; margin-top: 8px; padding: 0 18px;
-  border-radius: 999px; background: var(--accent, #6557e8);
-  color: var(--accent-contrast, #ffffff); font-size: 14px; font-weight: 700;
+  border-radius: 999px; background: var(--accent);
+  color: var(--accent-contrast); font-size: 14px; font-weight: 700;
 }
 .pdfmd-status { min-height: 0; margin: 8px 0 10px; color: var(--muted, #53606c); font-size: 13px; line-height: 1.5; }
 .pdfmd-status:empty { display: none; }
@@ -252,8 +252,8 @@ html[data-theme="cinematic"] .pdfmd-page-review-flag[data-review="true"] { color
 /* The util parent mirrors the Claw row's unmistakable active treatment while
  * any of its tools is open (claw-workspace.css #clawNavButton contract). */
 #utilNavButton[aria-current="page"] {
-  background: var(--accent-soft, rgba(101, 87, 232, .12));
-  box-shadow: inset 3px 0 0 var(--accent, #6557e8);
+  background: var(--accent-soft);
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 .side-item .side-chevron { margin-left: auto; color: var(--muted, #5b6672); font-size: 15px; line-height: 1; }
 .util-submenu { display: grid; gap: 2px; padding-left: 30px; }
@@ -269,8 +269,8 @@ html[data-theme="cinematic"] .pdfmd-page-review-flag[data-review="true"] { color
   outline-offset: 2px;
 }
 .util-submenu-item.active {
-  background: var(--accent-soft, rgba(101, 87, 232, .12));
-  color: var(--accent-strong, var(--accent, #6557e8));
+  background: var(--accent-soft);
+  color: var(--accent-strong);
   font-weight: 750;
 }
 html[data-theme="padiem-glass"] .util-submenu-item { color: rgba(255, 255, 255, .78); }
