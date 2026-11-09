@@ -23,6 +23,7 @@ from playwright.sync_api import sync_playwright  # noqa: E402
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+STRICT = (Path(__file__).resolve().parent / "_r5_strict_deps.js").read_text(encoding="utf-8")
 
 NAMES = (
     "renderTyping", "clearHistoryUI", "renderHistorySkeleton",
@@ -51,6 +52,7 @@ HARNESS = """<!doctype html>
 <div class="app-shell" id="shell"></div>
 <script src="/static/chat-history-module.js"></script>
 <script>
+__STRICT__
 window.__log = [];
 window.__calls = [];
 window.__live = {
@@ -101,6 +103,8 @@ for (const key of Object.keys(window.__live)) {
     set(value) { window.__live[key] = value; },
   });
 }
+// Argon review of PR #7249 (d): fail fast on any deps read the fake omits.
+window.__deps = r5StrictDeps(window.__deps, "step3.history.browser.deps");
 window.__readClawRuns = async () => ({ response: { ok: true }, data: { ok: true, runs: [] } });
 window.__fetchLog = [];
 window.fetch = async (url, options) => {
@@ -184,7 +188,7 @@ class _StaticHandler(SimpleHTTPRequestHandler):
 @pytest.fixture(scope="module")
 def page_url():
     harness = STATIC / "_r5_history_forwarder_harness.html"
-    harness.write_text(HARNESS.replace("__FORWARDERS__", _forwarder_lines()),
+    harness.write_text(HARNESS.replace("__STRICT__", STRICT).replace("__FORWARDERS__", _forwarder_lines()),
                        encoding="utf-8", newline="\n")
     server = ThreadingHTTPServer(("127.0.0.1", 0), _StaticHandler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)

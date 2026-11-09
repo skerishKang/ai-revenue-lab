@@ -125,6 +125,141 @@
     }
     return historyModuleInstance;
   }
+  // #7216 R5: the auth module owns those sections. app.js keeps one-line
+  // forwarders with the same names. deps getters/setters read the closure
+  // variables live, so a value changed before the first call is still observed.
+  let authModuleInstance = null;
+  function authModule() {
+    if (!authModuleInstance) {
+      authModuleInstance = window.PadiemChatAuthModule.create({
+        get AUTH_SERVER_UNREACHABLE() { return AUTH_SERVER_UNREACHABLE; },
+        get AUTH_UNREACHABLE_RETRY_DELAY_MS() { return AUTH_UNREACHABLE_RETRY_DELAY_MS; },
+        get SESSION_PRESENTATION() { return SESSION_PRESENTATION; },
+        get accountAvatar() { return accountAvatar; },
+        get accountContainer() { return accountContainer; },
+        get accountDeleteActions() { return accountDeleteActions; },
+        get accountDeleteButton() { return accountDeleteButton; },
+        get accountDeleteConfirm() { return accountDeleteConfirm; },
+        get accountDeleteConfirmEmail() { return accountDeleteConfirmEmail; },
+        get accountDeleteError() { return accountDeleteError; },
+        get accountName() { return accountName; },
+        get accountPasswordActions() { return accountPasswordActions; },
+        get accountSettingsSection() { return accountSettingsSection; },
+        get accountSharedDeleteButton() { return accountSharedDeleteButton; },
+        get accountSharedDeleteConfirm() { return accountSharedDeleteConfirm; },
+        get accountSharedDeleteConfirmEmail() { return accountSharedDeleteConfirmEmail; },
+        get accountSharedDeleteError() { return accountSharedDeleteError; },
+        get advancedAccountSection() { return advancedAccountSection; },
+        get advancedSettingsView() { return advancedSettingsView; },
+        get applyAuthState() { return applyAuthState; },
+        get authDialog() { return authDialog; },
+        get authDialogView() { return authDialogView; },
+        set authDialogView(value) { authDialogView = value; },
+        get authDivider() { return authDivider; },
+        get authHandoff() { return authHandoff; },
+        get authMethodEnabled() { return authMethodEnabled; },
+        get authServerUnreachableError() { return authServerUnreachableError; },
+        get authState() { return authState; },
+        set authState(value) { authState = value; },
+        get authViewEpoch() { return authViewEpoch; },
+        set authViewEpoch(value) { authViewEpoch = value; },
+        get clawApprovalEpoch() { return clawApprovalEpoch; },
+        set clawApprovalEpoch(value) { clawApprovalEpoch = value; },
+        get clawApprovalInFlight() { return clawApprovalInFlight; },
+        set clawApprovalInFlight(value) { clawApprovalInFlight = value; },
+        get clawApprovalSessionToken() { return clawApprovalSessionToken; },
+        set clawApprovalSessionToken(value) { clawApprovalSessionToken = value; },
+        get clearPasswordResetFragment() { return clearPasswordResetFragment; },
+        get clearProjectsUI() { return clearProjectsUI; },
+        get closeAuthDialog() { return closeAuthDialog; },
+        get closePasswordChangeDialog() { return closePasswordChangeDialog; },
+        get closeProfilePanel() { return closeProfilePanel; },
+        get closeSettings() { return closeSettings; },
+        get fetchAuthStatusOnce() { return fetchAuthStatusOnce; },
+        get googleLoginButton() { return googleLoginButton; },
+        get hidePasswordResetViews() { return hidePasswordResetViews; },
+        get historySection() { return historySection; },
+        get invalidateClawApprovalSession() { return invalidateClawApprovalSession; },
+        get isAndroidWebView() { return isAndroidWebView; },
+        get loadAuthStatus() { return loadAuthStatus; },
+        get loadProjects() { return loadProjects; },
+        get loadRecentConversations() { return loadRecentConversations; },
+        get loginButton() { return loginButton; },
+        get loveTreeHandoffFromLocation() { return loveTreeHandoffFromLocation; },
+        get openAuthDialog() { return openAuthDialog; },
+        get openClawRunTarget() { return openClawRunTarget; },
+        get openSavedConversation() { return openSavedConversation; },
+        get passwordAuthAnswer() { return passwordAuthAnswer; },
+        get passwordAuthRequest() { return passwordAuthRequest; },
+        get passwordChangeConfirm() { return passwordChangeConfirm; },
+        get passwordChangeCurrent() { return passwordChangeCurrent; },
+        get passwordChangeDialog() { return passwordChangeDialog; },
+        get passwordChangeError() { return passwordChangeError; },
+        get passwordChangeForm() { return passwordChangeForm; },
+        get passwordChangeNew() { return passwordChangeNew; },
+        get passwordChangeSubmit() { return passwordChangeSubmit; },
+        get passwordLoginError() { return passwordLoginError; },
+        get passwordLoginForm() { return passwordLoginForm; },
+        get passwordLoginIdentifier() { return passwordLoginIdentifier; },
+        get passwordLoginPassword() { return passwordLoginPassword; },
+        get passwordLoginSubmit() { return passwordLoginSubmit; },
+        get passwordRegisterEmail() { return passwordRegisterEmail; },
+        get passwordRegisterError() { return passwordRegisterError; },
+        get passwordRegisterForm() { return passwordRegisterForm; },
+        get passwordRegisterName() { return passwordRegisterName; },
+        get passwordRegisterPassword() { return passwordRegisterPassword; },
+        get passwordRegisterSection() { return passwordRegisterSection; },
+        get passwordRegisterSubmit() { return passwordRegisterSubmit; },
+        get passwordResetConfirm() { return passwordResetConfirm; },
+        get passwordResetConfirmError() { return passwordResetConfirmError; },
+        get passwordResetConfirmForm() { return passwordResetConfirmForm; },
+        get passwordResetConfirmStatus() { return passwordResetConfirmStatus; },
+        get passwordResetConfirmSubmit() { return passwordResetConfirmSubmit; },
+        get passwordResetConfirmView() { return passwordResetConfirmView; },
+        get passwordResetEmail() { return passwordResetEmail; },
+        get passwordResetNew() { return passwordResetNew; },
+        get passwordResetOpen() { return passwordResetOpen; },
+        get passwordResetPanel() { return passwordResetPanel; },
+        get passwordResetRequestError() { return passwordResetRequestError; },
+        get passwordResetRequestForm() { return passwordResetRequestForm; },
+        get passwordResetRequestStatus() { return passwordResetRequestStatus; },
+        get passwordResetRequestSubmit() { return passwordResetRequestSubmit; },
+        get passwordResetRequestView() { return passwordResetRequestView; },
+        get passwordResetToken() { return passwordResetToken; },
+        set passwordResetToken(value) { passwordResetToken = value; },
+        get passwordResetTokenFromLocation() { return passwordResetTokenFromLocation; },
+        get pendingNotificationConversationId() { return pendingNotificationConversationId; },
+        set pendingNotificationConversationId(value) { pendingNotificationConversationId = value; },
+        get pendingNotificationRunId() { return pendingNotificationRunId; },
+        set pendingNotificationRunId(value) { pendingNotificationRunId = value; },
+        get profilePanel() { return profilePanel; },
+        get profileToggle() { return profileToggle; },
+        get projects() { return projects; },
+        get projectsBadge() { return projectsBadge; },
+        get renderAndroidHandoff() { return renderAndroidHandoff; },
+        get resetAccountDeleteConfirm() { return resetAccountDeleteConfirm; },
+        get resetAccountSharedDeleteConfirm() { return resetAccountSharedDeleteConfirm; },
+        get resetConversation() { return resetConversation; },
+        get resetConversationView() { return resetConversationView; },
+        get resolveSessionPresentation() { return resolveSessionPresentation; },
+        get scheduleSharedRefresh() { return scheduleSharedRefresh; },
+        get setAuthFormError() { return setAuthFormError; },
+        get setAuthStatusMessage() { return setAuthStatusMessage; },
+        get setLoginButtonCopy() { return setLoginButtonCopy; },
+        get setNavActive() { return setNavActive; },
+        get setNote() { return setNote; },
+        get shell() { return shell; },
+        get showPasswordResetView() { return showPasswordResetView; },
+        get startAndroidHandoff() { return startAndroidHandoff; },
+        get syncApprovedMemoryVisibility() { return syncApprovedMemoryVisibility; },
+        get syncAuthDialogMethods() { return syncAuthDialogMethods; },
+        get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
+        get syncDeleteButton() { return syncDeleteButton; },
+        get uiT() { return uiT; },
+      });
+    }
+    return authModuleInstance;
+  }
   const shell = document.querySelector(".app-shell");
   const emptyState = document.getElementById("emptyState");
   const messageList = document.getElementById("messageList");
@@ -265,11 +400,7 @@
   profileSettingsAction.textContent = uiT("account-profile-settings");
   profilePanel.append(profileSettingsAction);
   accountContainer?.append(profilePanel);
-  function closeProfilePanel(restoreFocus = false) {
-    profilePanel.hidden = true;
-    profileToggle.setAttribute("aria-expanded", "false");
-    if (restoreFocus && !accountContainer?.hidden) profileToggle.focus();
-  }
+  function closeProfilePanel(...a) { return authModule().closeProfilePanel(...a); }
   const historySection = document.getElementById("historySection");
   const historyList = document.getElementById("historyList");
   const historyActionStatus = document.getElementById("historyActionStatus");
@@ -676,12 +807,7 @@
   /* Owner 2026-10-20: the user avatar shows the first character of the
    * signed-in account name. The name -> avatar order is unchanged and the
    * initial is read from the live account display name, never hardcoded. */
-  function accountInitial(name) {
-    const text = String(name || "").trim();
-    if (!text) return "";
-    const first = Array.from(text)[0] || "";
-    return first.toLocaleUpperCase();
-  }
+  function accountInitial(...a) { return authModule().accountInitial(...a); }
 
   /* One clock format for both turns: the user turn and the answer row. */
   function formatClockTime(value) {
@@ -1806,9 +1932,7 @@
     "unavailable": { "accountHidden": true, "loginHidden": true, "loginDisabled": true, "accountNameHidden": true },
     "unreachable": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": true }
   };
-  function resolveSessionPresentation(sessionState) {
-    return SESSION_PRESENTATION[sessionState] || SESSION_PRESENTATION.unreachable;
-  }
+  function resolveSessionPresentation(...a) { return authModule().resolveSessionPresentation(...a); }
   // The other projections read the same rule so they cannot drift apart.
   window.PadiemSessionPresentation = resolveSessionPresentation;
 
@@ -1851,216 +1975,15 @@
     }
   }
 
-  function setLoginButtonCopy(text, title) {
-    // #7164: identical writes are skipped. Writing textContent replaces the
-    // child node even when the value is the same, and the login button's
-    // DOM watcher (product-capabilities.js) treats every rewrite
-    // as a signal and re-fetch.
-    if (loginButton.textContent !== text) loginButton.textContent = text;
-    if (loginButton.getAttribute("title") !== title) loginButton.setAttribute("title", title);
-  }
-  function applyAuthState(data) {
-    authViewEpoch += 1;
-    authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
-    const ready = authState.ready === true;
-    const authenticated = ready && authState.authenticated === true;
-    if (authenticated && pendingNotificationRunId) {
-      const notificationRunId = pendingNotificationRunId;
-      pendingNotificationRunId = "";
-      const remaining = String((window.location && window.location.search) || "")
-        .replace(/^\?/, "").split("&").filter(Boolean)
-        .filter((part) => part !== "notify=run" && !part.startsWith("run_id="));
-      window.history.replaceState(
-        null, "",
-        window.location.pathname + (remaining.length ? `?${remaining.join("&")}` : "") + (window.location.hash || ""),
-      );
-      openClawRunTarget(notificationRunId);
-    }
-    if (authenticated && pendingNotificationConversationId) {
-      const notificationConversationId = pendingNotificationConversationId;
-      pendingNotificationConversationId = "";
-      const remaining = String((window.location && window.location.search) || "")
-        .replace(/^\?/, "").split("&").filter(Boolean)
-        .filter((part) => part !== "notify=conversation" && !part.startsWith("conversation_id="));
-      window.history.replaceState(
-        null, "",
-        window.location.pathname + (remaining.length ? `?${remaining.join("&")}` : "") + (window.location.hash || ""),
-      );
-      openSavedConversation(notificationConversationId);
-    }
-    window.PadiemAuthSession.update(authState, authViewEpoch);
-    // #5434: the password change is offered only for an account that owns a
-    // password credential. The server owns that fact.
-    // #5560: the Account section itself carries the sign-out entry for every
-    // signed-in account; only the password change is method-specific.
-    if (accountSettingsSection) {
-      accountSettingsSection.hidden = !authenticated;
-    }
-    // The advanced settings page carries the same account entries; its data
-    // export section stays outside this gate so guests can export too.
-    if (advancedAccountSection) {
-      advancedAccountSection.hidden = !authenticated;
-    }
-    if (accountPasswordActions) {
-      accountPasswordActions.hidden = !(authenticated && authState.account_method === "password");
-    }
-    // The deletion entry follows the account section itself (every signed-in
-    // account); the confirm block always resets when the auth state moves.
-    if (accountDeleteActions) {
-      accountDeleteActions.hidden = !authenticated;
-    }
-    if (accountDeleteConfirm) {
-      accountDeleteConfirm.hidden = true;
-      resetAccountDeleteConfirm();
-    }
-    if (!authenticated) {
-      // Auth loss hides the standalone Connectors/Automation pages the same
-      // way the Claw automation panel never outlives its session. The moved
-      // nodes stay mounted; reopening after sign-in reloads fresh state.
-      const connectorsView = document.getElementById("connectorsView");
-      if (connectorsView) connectorsView.hidden = true;
-      if (advancedSettingsView) advancedSettingsView.hidden = true;
-      const automationView = document.getElementById("automationView");
-      if (automationView) automationView.hidden = true;
-      if (shell && (shell.dataset.state === "connectors"
-        || shell.dataset.state === "automation"
-        || shell.dataset.state === "settings")) {
-        shell.dataset.state = "home";
-        setNavActive();
-      }
-    }
-    // #5479: "unreachable" (the status request produced no answer) is a
-    // different session state from "unavailable" (the server answered that the
-    // session store is not ready). Only the latter is the server's own word.
-    const sessionState = !ready
-      ? (authState.status_reachable === false ? "unreachable" : "unavailable")
-      : authenticated
-        ? "signed_in"
-        : authState.session_state === "expired"
-          ? "expired"
-          : "guest";
-    const presentation = resolveSessionPresentation(sessionState);
-    // Owner decision 2026-11-05: invite a guest to sign in with one quiet line
-    // on the first screen. The flag keeps this off the network-free CI mock.
-    const guestLoginHint = document.getElementById("guestLoginHint");
-    if (guestLoginHint) {
-      guestLoginHint.hidden = !(sessionState === "guest" && authState.model_requires_session === true);
-    }
+  function setLoginButtonCopy(...a) { return authModule().setLoginButtonCopy(...a); }
+  function applyAuthState(...a) { return authModule().applyAuthState(...a); }
+  function authMethodEnabled(...a) { return authModule().authMethodEnabled(...a); }
 
-    if (accountContainer) {
-      accountContainer.dataset.accountState = sessionState;
-      accountContainer.hidden = presentation.accountHidden;
-    }
-    closeProfilePanel();
-    if (accountAvatar) {
-      const displayName = sessionState === "signed_in" && typeof authState.user?.name === "string"
-        ? authState.user.name.trim() : "";
-      const firstCharacter = displayName ? Array.from(displayName)[0] : "";
-      accountAvatar.textContent = sessionState === "signed_in"
-        ? (firstCharacter ? firstCharacter.toLocaleUpperCase() : "●")
-        : sessionState === "expired" ? "!" : "●";
-    }
-    // #5560: the sign-out entry moved into Settings > Account, so the sidebar
-    // keeps only the profile (name and avatar) as the one-step Settings entry.
-    // The button element and its text stay: the auth projection and the
-    // capability projection reads them as the session signal.
-    loginButton.hidden = presentation.loginHidden;
-    const pendingLogin = document.getElementById("loginPending");
-    if (pendingLogin) { pendingLogin.hidden = true; pendingLogin.style.display = "none"; }
-    loginButton.disabled = presentation.loginDisabled;
-    syncAuthDialogMethods();
-    loginButton.setAttribute("aria-disabled", presentation.loginDisabled ? "true" : "false");
+  function setAuthFormError(...a) { return authModule().setAuthFormError(...a); }
 
-    if (sessionState === "unavailable" || sessionState === "unreachable") {
-      setLoginButtonCopy(uiT("login"), uiT(sessionState === "unreachable" ? "login-unreachable-title" : "login-unavailable-title"));
-      accountName.hidden = presentation.accountNameHidden;
-      accountName.textContent = "";
-      return;
-    }
+  function syncAuthDialogMethods(...a) { return authModule().syncAuthDialogMethods(...a); }
 
-    if (sessionState === "signed_in") {
-      setLoginButtonCopy(uiT("logout"), uiT("logout-title"));
-      const name = authState.user && typeof authState.user.name === "string" ? authState.user.name.trim() : "";
-      accountName.textContent = name || uiT("signed-in");
-      accountName.hidden = false;
-      historySection.hidden = false;
-      if (projectsBadge) projectsBadge.textContent = uiT("checking");
-      return;
-    }
-
-    if (sessionState === "expired") {
-      setLoginButtonCopy(uiT("sign-in-again"), uiT("expired-title"));
-      accountName.textContent = uiT("session-expired");
-      accountName.hidden = false;
-      return;
-    }
-
-    setLoginButtonCopy(uiT("login"), uiT("login-title"));
-    accountName.textContent = uiT("guest");
-    accountName.hidden = false;
-  }
-  function authMethodEnabled(name) {
-    return Boolean(authState && authState.methods && authState.methods[name] === true);
-  }
-
-  function setAuthFormError(node, message = "") {
-    if (!node) return;
-    node.textContent = message;
-    node.hidden = !message;
-  }
-
-  function syncAuthDialogMethods() {
-    if (!authDialog) return;
-    const googleEnabled = authMethodEnabled("google");
-    const passwordEnabled = authMethodEnabled("password");
-    if (googleLoginButton) googleLoginButton.hidden = !googleEnabled;
-    if (authDivider) authDivider.hidden = !(googleEnabled && passwordEnabled);
-    // #5481: the login view and the two reset views are mutually exclusive.
-    const showLogin = passwordEnabled && authDialogView === "login";
-    if (passwordLoginForm) passwordLoginForm.hidden = !showLogin;
-    if (passwordRegisterSection) passwordRegisterSection.hidden = !showLogin;
-    if (passwordResetOpen) passwordResetOpen.hidden = !passwordEnabled || authDialogView !== "login";
-    if (passwordResetPanel) passwordResetPanel.hidden = authDialogView === "login";
-    if (passwordResetRequestView) passwordResetRequestView.hidden = authDialogView !== "request";
-    if (passwordResetConfirmView) passwordResetConfirmView.hidden = authDialogView !== "confirm";
-    renderAndroidHandoff();
-  }
-
-  function openAuthDialog() {
-    if (!authDialog) {
-      if (authMethodEnabled("google")) {
-        if (isAndroidWebView()) startAndroidHandoff();
-        else window.location.assign("/auth/google/start");
-      }
-      return;
-    }
-    if (authHandoff && !authHandoff.value) {
-      authHandoff.value = loveTreeHandoffFromLocation();
-    }
-    // #5481: a mailed one-time link opens the reset confirm view directly.
-    const token = passwordResetTokenFromLocation();
-    if (token) {
-      authDialogView = "confirm";
-      passwordResetToken = token;
-    } else {
-      authDialogView = "login";
-    }
-    syncAuthDialogMethods();
-    setAuthFormError(passwordLoginError);
-    setAuthFormError(passwordRegisterError);
-    setAuthFormError(passwordResetRequestError);
-    setAuthFormError(passwordResetConfirmError);
-    setAuthStatusMessage(passwordResetRequestStatus);
-    setAuthStatusMessage(passwordResetConfirmStatus);
-    if (typeof authDialog.showModal === "function") {
-      authDialog.showModal();
-    } else {
-      authDialog.setAttribute("open", "");
-    }
-    if (authDialogView === "confirm") passwordResetNew?.focus();
-    else if (authDialogView === "request") passwordResetEmail?.focus();
-    else if (authMethodEnabled("password") && passwordLoginIdentifier) passwordLoginIdentifier.focus();
-  }
+  function openAuthDialog(...a) { return authModule().openAuthDialog(...a); }
 
   function isAndroidWebView() {
     if (typeof navigator === "undefined") return false;
@@ -2331,11 +2254,7 @@
     pollAndroidHandoff();
   }
 
-  function closeAuthDialog() {
-    if (!authDialog) return;
-    if (typeof authDialog.close === "function") authDialog.close();
-    else authDialog.removeAttribute("open");
-  }
+  function closeAuthDialog(...a) { return authModule().closeAuthDialog(...a); }
 
   // #5664: the Chat Python Worker can fail isolate startup with
   // `NoGilError: Attempted to use PyProxy when Python GIL not held`
@@ -2349,120 +2268,21 @@
   // keeps its single attempt.
   const AUTH_UNREACHABLE_RETRY_DELAY_MS = 600;
 
-  function authServerUnreachableError() {
-    const error = new Error(uiT("auth-server-unreachable"));
-    error.code = AUTH_SERVER_UNREACHABLE;
-    return error;
-  }
+  function authServerUnreachableError(...a) { return authModule().authServerUnreachableError(...a); }
 
-  function passwordAuthAnswer(data) {
-    return data !== null && typeof data === "object" && !Array.isArray(data);
-  }
+  function passwordAuthAnswer(...a) { return authModule().passwordAuthAnswer(...a); }
 
-  async function passwordAuthRequest(path, payload, options = {}) {
-    const attempts = options.retryUnreachable ? 2 : 1;
-    let response = null;
-    let data = null;
-    let answered = false;
-    for (let attempt = 0; attempt < attempts; attempt += 1) {
-      if (attempt > 0) {
-        await new Promise((resolve) => setTimeout(resolve, AUTH_UNREACHABLE_RETRY_DELAY_MS));
-      }
-      response = await fetch(path, {
-        method: "POST",
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-      data = null;
-      try {
-        data = await response.json();
-      } catch (_) {}
-      answered = passwordAuthAnswer(data);
-      // A route answer, success or refusal, is final: replaying it would
-      // repeat a write. Only a body no route produced is worth the one replay.
-      if (response.ok || answered) break;
-    }
-    if (!response.ok) {
-      if (!answered) throw authServerUnreachableError();
-      const message = data.error && typeof data.error.message === "string"
-        ? data.error.message
-        : uiT("auth-error-generic");
-      const error = new Error(message);
-      error.code = data.error && typeof data.error.code === "string" ? data.error.code : "auth_error";
-      throw error;
-    }
-    // A 2xx without a route answer is not a success: reporting one here would
-    // claim a password was set that the server never stored.
-    if (!answered) throw authServerUnreachableError();
-    return data;
-  }
+  function passwordAuthRequest(...a) { return authModule().passwordAuthRequest(...a); }
 
-  async function submitPasswordLogin(event) {
-    event.preventDefault();
-    if (!authMethodEnabled("password") || !passwordLoginForm) return;
-    setAuthFormError(passwordLoginError);
-    passwordLoginSubmit.disabled = true;
-    try {
-      const result = await passwordAuthRequest("/api/auth/password/login", {
-        identifier: passwordLoginIdentifier.value,
-        password: passwordLoginPassword.value,
-        // A pending LoveTree sign-in travels back exactly as it arrived. The server
-        // binds it only after a verified login and answers with the hop it owns.
-        ...(authHandoff && authHandoff.value ? { handoff: authHandoff.value } : {}),
-      });
-      if (result && typeof result.handoff_return === "string" && /^https?:\/\//.test(result.handoff_return)) {
-        window.location.assign(result.handoff_return);
-        return;
-      }
-      passwordLoginPassword.value = "";
-      closeAuthDialog();
-      await loadAuthStatus();
-    } catch (error) {
-      setAuthFormError(
-        passwordLoginError,
-        error instanceof Error ? error.message : uiT("auth-error-generic"),
-      );
-    } finally {
-      passwordLoginSubmit.disabled = false;
-    }
-  }
+  function submitPasswordLogin(...a) { return authModule().submitPasswordLogin(...a); }
 
-  async function submitPasswordRegister(event) {
-    event.preventDefault();
-    if (!authMethodEnabled("password") || !passwordRegisterForm) return;
-    setAuthFormError(passwordRegisterError);
-    passwordRegisterSubmit.disabled = true;
-    try {
-      await passwordAuthRequest("/api/auth/password/register", {
-        email: passwordRegisterEmail.value,
-        name: passwordRegisterName.value,
-        password: passwordRegisterPassword.value,
-      });
-      passwordRegisterPassword.value = "";
-      closeAuthDialog();
-      await loadAuthStatus();
-    } catch (error) {
-      setAuthFormError(
-        passwordRegisterError,
-        error instanceof Error ? error.message : uiT("auth-error-generic"),
-      );
-    } finally {
-      passwordRegisterSubmit.disabled = false;
-    }
-  }
+  function submitPasswordRegister(...a) { return authModule().submitPasswordRegister(...a); }
 
   // #5481: the lost-password flow. The entry link opens the request view, the
   // mailed one-time link opens the confirm view, and both keep the email the
   // member already typed. The token never travels in a query string: it
   // arrives in the URL fragment, which the browser does not send to the server.
-  function setAuthStatusMessage(node, message = "") {
-    if (!node) return;
-    node.textContent = message;
-    node.hidden = !message;
-  }
+  function setAuthStatusMessage(...a) { return authModule().setAuthStatusMessage(...a); }
 
   // A LoveTree sign-in that arrived here hands its pending ticket to the form the dialog
   // already submits. Same shape and same caution as the reset-link read below: the app shell
@@ -2493,244 +2313,41 @@
     }
   }
 
-  function passwordResetTokenFromLocation() {
-    try {
-      const raw = window.location.hash || "";
-      const match = /^#reset=([A-Za-z0-9_-]{16,256})$/.exec(raw);
-      return match ? match[1] : "";
-    } catch (_) {
-      return "";
-    }
-  }
+  function passwordResetTokenFromLocation(...a) { return authModule().passwordResetTokenFromLocation(...a); }
 
-  function clearPasswordResetFragment() {
-    // The one-time token leaves the address bar as soon as the member leaves
-    // the reset view, so a shared link never lingers in the browser history
-    // of the next person who opens this window.
-    try {
-      if (!window.location.hash) return;
-      window.history.replaceState(null, "", window.location.pathname + window.location.search);
-    } catch (_) {}
-  }
+  function clearPasswordResetFragment(...a) { return authModule().clearPasswordResetFragment(...a); }
 
-  function showPasswordResetView(view) {
-    authDialogView = view;
-    if (passwordResetPanel) passwordResetPanel.hidden = false;
-    if (passwordLoginForm) passwordLoginForm.hidden = view !== "login";
-    if (passwordRegisterSection) passwordRegisterSection.hidden = view !== "login";
-    if (passwordResetRequestView) passwordResetRequestView.hidden = view !== "request";
-    if (passwordResetConfirmView) passwordResetConfirmView.hidden = view !== "confirm";
-  }
+  function showPasswordResetView(...a) { return authModule().showPasswordResetView(...a); }
 
-  function hidePasswordResetViews() {
-    passwordResetToken = "";
-    authDialogView = "login";
-    clearPasswordResetFragment();
-    if (passwordResetPanel) passwordResetPanel.hidden = true;
-    if (passwordResetRequestView) passwordResetRequestView.hidden = true;
-    if (passwordResetConfirmView) passwordResetConfirmView.hidden = true;
-    if (passwordResetOpen) passwordResetOpen.hidden = !authMethodEnabled("password");
-    if (passwordResetEmail) passwordResetEmail.value = "";
-    if (passwordResetNew) passwordResetNew.value = "";
-    if (passwordResetConfirm) passwordResetConfirm.value = "";
-    setAuthFormError(passwordResetRequestError);
-    setAuthFormError(passwordResetConfirmError);
-    setAuthStatusMessage(passwordResetRequestStatus);
-    setAuthStatusMessage(passwordResetConfirmStatus);
-  }
+  function hidePasswordResetViews(...a) { return authModule().hidePasswordResetViews(...a); }
 
-  function openPasswordResetRequest() {
-    if (!authMethodEnabled("password")) return;
-    setAuthFormError(passwordResetRequestError);
-    setAuthStatusMessage(passwordResetRequestStatus);
-    showPasswordResetView("request");
-    if (passwordResetEmail && passwordLoginIdentifier && !passwordResetEmail.value) {
-      passwordResetEmail.value = passwordLoginIdentifier.value.trim();
-    }
-    passwordResetEmail?.focus();
-  }
+  function openPasswordResetRequest(...a) { return authModule().openPasswordResetRequest(...a); }
 
-  function openPasswordResetConfirm(token) {
-    if (!authMethodEnabled("password")) return;
-    passwordResetToken = typeof token === "string" ? token : "";
-    setAuthFormError(passwordResetConfirmError);
-    setAuthStatusMessage(passwordResetConfirmStatus);
-    showPasswordResetView("confirm");
-    passwordResetNew?.focus();
-  }
+  function openPasswordResetConfirm(...a) { return authModule().openPasswordResetConfirm(...a); }
 
-  function closePasswordResetViews() {
-    passwordResetToken = "";
-    hidePasswordResetViews();
-    if (passwordResetEmail) passwordResetEmail.value = "";
-    if (passwordResetNew) passwordResetNew.value = "";
-    if (passwordResetConfirm) passwordResetConfirm.value = "";
-    setAuthFormError(passwordResetRequestError);
-    setAuthFormError(passwordResetConfirmError);
-    setAuthStatusMessage(passwordResetRequestStatus);
-    setAuthStatusMessage(passwordResetConfirmStatus);
-  }
+  function closePasswordResetViews(...a) { return authModule().closePasswordResetViews(...a); }
 
-  async function submitPasswordResetRequest(event) {
-    event.preventDefault();
-    if (!authMethodEnabled("password") || !passwordResetRequestForm) return;
-    setAuthFormError(passwordResetRequestError);
-    setAuthStatusMessage(passwordResetRequestStatus);
-    passwordResetRequestSubmit.disabled = true;
-    try {
-      await passwordAuthRequest("/api/auth/password/reset/request", {
-        email: passwordResetEmail.value,
-      });
-      // The server answers the same way for every address, so the browser
-      // shows the same confirmation either way.
-      setAuthStatusMessage(passwordResetRequestStatus, uiT("auth-reset-request-sent"));
-    } catch (error) {
-      setAuthFormError(
-        passwordResetRequestError,
-        error instanceof Error ? error.message : uiT("auth-error-generic"),
-      );
-    } finally {
-      passwordResetRequestSubmit.disabled = false;
-    }
-  }
+  function submitPasswordResetRequest(...a) { return authModule().submitPasswordResetRequest(...a); }
 
-  async function submitPasswordResetConfirm(event) {
-    event.preventDefault();
-    if (!authMethodEnabled("password") || !passwordResetConfirmForm) return;
-    setAuthFormError(passwordResetConfirmError);
-    setAuthStatusMessage(passwordResetConfirmStatus);
-    const newPassword = passwordResetNew?.value || "";
-    const confirmPassword = passwordResetConfirm?.value || "";
-    if (!newPassword || !confirmPassword) {
-      setAuthFormError(passwordResetConfirmError, uiT("auth-reset-confirm-incomplete"));
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setAuthFormError(passwordResetConfirmError, uiT("auth-reset-confirm-mismatch"));
-      return;
-    }
-    if (!passwordResetToken) {
-      setAuthFormError(passwordResetConfirmError, uiT("auth-reset-expired"));
-      return;
-    }
-    passwordResetConfirmSubmit.disabled = true;
-    try {
-      await passwordAuthRequest("/api/auth/password/reset/confirm", {
-        token: passwordResetToken,
-        new_password: newPassword,
-      }, { retryUnreachable: true });
-      passwordResetToken = "";
-      clearPasswordResetFragment();
-      if (passwordResetNew) passwordResetNew.value = "";
-      if (passwordResetConfirm) passwordResetConfirm.value = "";
-      setAuthStatusMessage(passwordResetConfirmStatus, uiT("auth-reset-confirm-done"));
-      closeAuthDialog();
-      await loadAuthStatus();
-    } catch (error) {
-      setAuthFormError(
-        passwordResetConfirmError,
-        error instanceof Error ? error.message : uiT("auth-error-generic"),
-      );
-    } finally {
-      passwordResetConfirmSubmit.disabled = false;
-    }
-  }
+  function submitPasswordResetConfirm(...a) { return authModule().submitPasswordResetConfirm(...a); }
 
   // #5434: the signed-in account changes its own password. The account is
   // never named by the browser: the server resolves it from the session.
-  function openPasswordChangeDialog() {
-    if (!passwordChangeDialog) return;
-    setAuthFormError(passwordChangeError);
-    if (passwordChangeCurrent) passwordChangeCurrent.value = "";
-    if (passwordChangeNew) passwordChangeNew.value = "";
-    if (passwordChangeConfirm) passwordChangeConfirm.value = "";
-    if (typeof passwordChangeDialog.showModal === "function") passwordChangeDialog.showModal();
-    else passwordChangeDialog.setAttribute("open", "");
-    passwordChangeCurrent?.focus();
-  }
+  function openPasswordChangeDialog(...a) { return authModule().openPasswordChangeDialog(...a); }
 
-  function closePasswordChangeDialog() {
-    if (!passwordChangeDialog) return;
-    if (passwordChangeDialog.open && typeof passwordChangeDialog.close === "function") passwordChangeDialog.close();
-    else passwordChangeDialog.removeAttribute("open");
-  }
+  function closePasswordChangeDialog(...a) { return authModule().closePasswordChangeDialog(...a); }
 
-  async function submitPasswordChange(event) {
-    event.preventDefault();
-    if (!passwordChangeForm) return;
-    setAuthFormError(passwordChangeError);
-    const currentPassword = passwordChangeCurrent?.value || "";
-    const newPassword = passwordChangeNew?.value || "";
-    const confirmPassword = passwordChangeConfirm?.value || "";
-    if (!currentPassword || !newPassword) {
-      setAuthFormError(passwordChangeError, uiT("password-change-incomplete"));
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setAuthFormError(passwordChangeError, uiT("password-change-mismatch"));
-      return;
-    }
-    if (newPassword === currentPassword) {
-      setAuthFormError(passwordChangeError, uiT("password-change-unchanged"));
-      return;
-    }
-    passwordChangeSubmit.disabled = true;
-    try {
-      await passwordAuthRequest("/api/auth/password/change", {
-        current_password: currentPassword,
-        new_password: newPassword,
-      });
-      // The server ends the session it changed the credential for, so the
-      // browser signs in again with the new password.
-      if (passwordChangeCurrent) passwordChangeCurrent.value = "";
-      if (passwordChangeNew) passwordChangeNew.value = "";
-      if (passwordChangeConfirm) passwordChangeConfirm.value = "";
-      closePasswordChangeDialog();
-      closeSettings();
-      await loadAuthStatus();
-      if (authDialog && !authDialog.open) openAuthDialog();
-      setAuthFormError(passwordLoginError, uiT("password-change-done"));
-    } catch (error) {
-      setAuthFormError(
-        passwordChangeError,
-        error instanceof Error ? error.message : uiT("auth-error-generic"),
-      );
-    } finally {
-      passwordChangeSubmit.disabled = false;
-    }
-  }
+  function submitPasswordChange(...a) { return authModule().submitPasswordChange(...a); }
 
   // Service-only and all-service deletion both require the exact account email
   // in the UI; the server repeats every session, origin, identity and admin check.
-  function resetAccountDeleteConfirm() {
-    if (accountDeleteConfirmEmail) accountDeleteConfirmEmail.value = "";
-    if (accountDeleteButton) accountDeleteButton.disabled = true;
-    setAuthFormError(accountDeleteError);
-  }
+  function resetAccountDeleteConfirm(...a) { return authModule().resetAccountDeleteConfirm(...a); }
 
-  function resetAccountSharedDeleteConfirm() {
-    if (accountSharedDeleteConfirmEmail) accountSharedDeleteConfirmEmail.value = "";
-    if (accountSharedDeleteButton) accountSharedDeleteButton.disabled = true;
-    setAuthFormError(accountSharedDeleteError);
-  }
+  function resetAccountSharedDeleteConfirm(...a) { return authModule().resetAccountSharedDeleteConfirm(...a); }
 
-  function openAccountDeleteConfirm() {
-    if (!accountDeleteConfirm) return;
-    resetAccountDeleteConfirm();
-    resetAccountSharedDeleteConfirm();
-    if (accountSharedDeleteConfirm) accountSharedDeleteConfirm.hidden = true;
-    accountDeleteConfirm.hidden = false;
-    accountDeleteConfirmEmail?.focus();
-  }
+  function openAccountDeleteConfirm(...a) { return authModule().openAccountDeleteConfirm(...a); }
 
-  function openAccountSharedDeleteConfirm() {
-    if (!accountSharedDeleteConfirm) return;
-    resetAccountDeleteConfirm();
-    resetAccountSharedDeleteConfirm();
-    if (accountDeleteConfirm) accountDeleteConfirm.hidden = true;
-    accountSharedDeleteConfirm.hidden = false;
-    accountSharedDeleteConfirmEmail?.focus();
-  }
+  function openAccountSharedDeleteConfirm(...a) { return authModule().openAccountSharedDeleteConfirm(...a); }
 
   function syncDeleteButton(button, inputElement) {
     if (!button) return;
@@ -2740,45 +2357,11 @@
     button.disabled = !email || typed !== email;
   }
 
-  function syncAccountDeleteButton() {
-    syncDeleteButton(accountDeleteButton, accountDeleteConfirmEmail);
-  }
+  function syncAccountDeleteButton(...a) { return authModule().syncAccountDeleteButton(...a); }
 
-  function syncAccountSharedDeleteButton() {
-    syncDeleteButton(accountSharedDeleteButton, accountSharedDeleteConfirmEmail);
-  }
+  function syncAccountSharedDeleteButton(...a) { return authModule().syncAccountSharedDeleteButton(...a); }
 
-  async function submitAccountDelete(deleteAllServices = false) {
-    const button = deleteAllServices ? accountSharedDeleteButton : accountDeleteButton;
-    const inputElement = deleteAllServices ? accountSharedDeleteConfirmEmail : accountDeleteConfirmEmail;
-    const errorElement = deleteAllServices ? accountSharedDeleteError : accountDeleteError;
-    if (!button || button.disabled) return;
-    setAuthFormError(errorElement);
-    const typed = inputElement?.value || "";
-    button.disabled = true;
-    try {
-      const endpoint = deleteAllServices ? "/api/account/shared-delete" : "/api/account/delete";
-      await passwordAuthRequest(endpoint, { confirm: typed });
-      resetAccountDeleteConfirm();
-      resetAccountSharedDeleteConfirm();
-      if (accountDeleteConfirm) accountDeleteConfirm.hidden = true;
-      if (accountSharedDeleteConfirm) accountSharedDeleteConfirm.hidden = true;
-      // Successful deletion revokes this service session and clears its cookie.
-      closeSettings();
-      await loadAuthStatus();
-      if (authDialog && !authDialog.open) openAuthDialog();
-      setAuthFormError(
-        passwordLoginError,
-        uiT(deleteAllServices ? "account-shared-delete-done" : "account-delete-done"),
-      );
-    } catch (error) {
-      setAuthFormError(
-        errorElement,
-        error instanceof Error ? error.message : uiT("auth-error-generic"),
-      );
-      button.disabled = false;
-    }
-  }
+  function submitAccountDelete(...a) { return authModule().submitAccountDelete(...a); }
 
   function renderHistorySkeleton(...a) { return historyModule().renderHistorySkeleton(...a); }
 
@@ -2886,57 +2469,7 @@
       } catch (_) { /* The next status read retries without treating failure as sign-out. */ }
     }, 14 * 60 * 1000);
   }
-  async function loadAuthStatus() {
-    // #6114: a Python Worker restart can eat the first status read (1101/1102).
-    // A request that produced NO answer is never a signed-out answer: ask once
-    // more before the browser presents unreachable. A definitive guest answer
-    // (a 200 that says ready and not authenticated) is never re-asked.
-    let data = null;
-    for (let attempt = 0; attempt < 2; attempt += 1) {
-      try {
-        data = await fetchAuthStatusOnce();
-        // The server reports a display-only hint; cookies remain HttpOnly.
-        if (data.shared_login_enabled === true && data.ready === true && !data.authenticated &&
-            (data.session_state === "guest" || data.session_state === "expired") && data.shared_session_present === true) {
-          // #6679: a stale shared-session cookie makes the refresh endpooint
-          // answer 503/401 while /api/auth/status still answers definitively.
-          // A refresh failure is not "unreachable": the status above is a real
-          // server answer naming this browser a guest, and the login entry
-          // must act on it instead of hiding behind a failed renewal. The
-          // server clears a rejected shared cookie itself (401 path), so the
-          // next status read converges on a plain guest.
-          try {
-            const renewed = await fetch("/auth/shared/refresh", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
-            if (renewed.ok) {
-              data = await fetchAuthStatusOnce();
-            }
-          } catch (_) { /* keep the definitive guest status; never mask it as unreachable */ }
-        }
-        break;
-      } catch (_) {
-        if (attempt === 1) data = null;
-      }
-    }
-    try {
-      if (!data) throw new Error("auth status unavailable");
-      applyAuthState(data);
-      scheduleSharedRefresh();
-      const sidebarReads = [];
-      if (authState.authenticated) {
-        sidebarReads.push(loadProjects(), loadRecentConversations());
-      }
-      syncApprovedMemoryVisibility();
-      syncClawRunHistoryVisibility();
-      await Promise.allSettled(sidebarReads);
-    } catch (_) {
-      // #5479: a status request that never produced an answer is "unreachable",
-      // not "signed out". The Chat Worker can fail every route, /api/auth/status
-      // included, when the runtime loses the GIL while it starts a Python
-      // instance (NoGilError, cloudflare/workerd#6624). The sign-in entry point
-      // stays visible and the login button retries the status.
-      applyAuthState({ ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false, status_reachable: false });
-    }
-  }
+  function loadAuthStatus(...a) { return authModule().loadAuthStatus(...a); }
   // Background tabs may have their timers suspended beyond access expiry.
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible" && authState.shared_login_enabled === true) void loadAuthStatus();
@@ -4079,14 +3612,7 @@
   // The server is the final authority and answers a bypassing guest with 401
   // login_required. A mock/preview deployment that cannot authenticate keeps
   // its CI harness behavior through the server-owned flag.
-  function requireSessionForModelUse() {
-    if (authState.authenticated === true) return true;
-    if (authState.model_requires_session !== true) return true;
-    setNote(uiT("model-requires-login"), "error");
-    if (loginButton && !loginButton.hidden && !loginButton.disabled) loginButton.click();
-    else openAuthDialog();
-    return false;
-  }
+  function requireSessionForModelUse(...a) { return authModule().requireSessionForModelUse(...a); }
 
   async function submitPrompt(text, selectedSkill) {
     const prompt = text.trim();
@@ -4239,25 +3765,7 @@
   // #5560: one sign-out implementation, reached from the sidebar session
   // button and from Settings > Account. The server session invalidation and
   // the local conversation reset are the same in both paths.
-  async function signOutCurrentAccount() {
-    try {
-      if (authState.shared_login_enabled === true && authState.shared_session_present === true) {
-        const sharedLogout = await fetch("/auth/shared/logout", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
-        if (!sharedLogout.ok) throw new Error("shared logout unavailable");
-      }
-      await fetch("/api/auth/logout", { method: "POST", headers: { "Accept": "application/json" } });
-    } finally {
-      // #5034: drop this device's Web Push subscription on sign-out so a
-      // signed-out browser stops receiving this account's task notifications.
-      // Never blocks the sign-out itself.
-      if (window.PadiemPush && typeof window.PadiemPush.clearOnSignOut === "function") {
-        await window.PadiemPush.clearOnSignOut();
-      }
-      resetConversationView(false);
-      clearProjectsUI();
-      await loadAuthStatus();
-    }
-  }
+  function signOutCurrentAccount(...a) { return authModule().signOutCurrentAccount(...a); }
   const guestLoginEntryButton = document.getElementById("guestLoginEntryButton");
   if (guestLoginEntryButton) guestLoginEntryButton.addEventListener("click", openAuthDialog);
   loginButton.addEventListener("click", async () => {
@@ -4603,23 +4111,9 @@
   // user id, so the account display name is the only switch signal available.
   let clawApprovalSessionToken = "unset";
 
-  function invalidateClawApprovalSession() {
-    clawApprovalEpoch += 1;
-    // Release the shared single-flight flag so the next session can decide at
-    // all. The stale promise's own finally is epoch-guarded, so it can never
-    // release a newer session's busy state instead.
-    clawApprovalInFlight = false;
-  }
+  function invalidateClawApprovalSession(...a) { return authModule().invalidateClawApprovalSession(...a); }
 
-  function noteClawApprovalSession(authenticated) {
-    const token = authenticated
-      ? "in:" + (typeof authState.user?.name === "string" ? authState.user.name.trim() : "")
-      : "out";
-    if (token !== clawApprovalSessionToken) {
-      clawApprovalSessionToken = token;
-      invalidateClawApprovalSession();
-    }
-  }
+  function noteClawApprovalSession(...a) { return authModule().noteClawApprovalSession(...a); }
 
   const clawFallbackCopy = {
     "claw-result-badge": "Preview",
@@ -6063,18 +5557,7 @@
    *  is one of the four closed session states, rendered through the bounded
    *  textContent sink. */
 
-  function reviewedGoogleAuthorizationUrl(value) {
-    if (typeof value !== "string" || !value) return null;
-    let url;
-    try {
-      url = new URL(value);
-    } catch (_) {
-      return null;
-    }
-    if (url.protocol !== "https:" || url.hostname !== "accounts.google.com") return null;
-    if (url.pathname !== "/o/oauth2/v2/auth" || url.username || url.password || url.hash) return null;
-    return url.toString();
-  }
+  function reviewedGoogleAuthorizationUrl(...a) { return authModule().reviewedGoogleAuthorizationUrl(...a); }
 
   function setConnectorCardsLoading() {
     liveConnectorCards().forEach((card) => {

@@ -10,6 +10,9 @@ import subprocess
 
 TESTS = Path(__file__).parent
 STATIC = TESTS.parent / "static"
+# Argon review of PR #7249 (d): a fake deps that omits a used property hides the
+# call inside a swallowed TypeError. The shared strict Proxy fails on the read.
+STRICT = (TESTS / "_r5_strict_deps.js").read_text(encoding="utf-8")
 
 
 def literal(path, name):
@@ -62,7 +65,10 @@ const expireReads=()=>{for(const callback of [...readTimers.values()])callback()
 
 
 def test_projects_and_history_start_in_parallel_without_holding_claw_panels():
-    result = run_node(PRELUDE + function("loadAuthStatus") + """
+    # loadAuthStatus moved into chat-auth-module.js (#7216 R5 step 4); the same
+    # harness runs the moved body against the same stubs through strict deps.
+    auth_module = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
+    result = run_node(PRELUDE + STRICT + function("loadAuthStatus", auth_module) + """
 let authState={};
 const events=[], projects=deferred(), history=deferred();
 const fetchAuthStatusOnce=async()=>({authenticated:true});
@@ -72,6 +78,15 @@ const loadProjects=()=>{events.push('projects');return projects.promise};
 const loadRecentConversations=()=>{events.push('history');return history.promise};
 const syncApprovedMemoryVisibility=()=>events.push('memory');
 const syncClawRunHistoryVisibility=()=>events.push('runs');
+const deps=r5StrictDeps({
+ get authState(){return authState},
+ get fetchAuthStatusOnce(){return fetchAuthStatusOnce},
+ get applyAuthState(){return applyAuthState},
+ get scheduleSharedRefresh(){return scheduleSharedRefresh},
+ get loadProjects(){return loadProjects},
+ get loadRecentConversations(){return loadRecentConversations},
+ get syncApprovedMemoryVisibility(){return syncApprovedMemoryVisibility},
+ get syncClawRunHistoryVisibility(){return syncClawRunHistoryVisibility}}, "ui_request_speed.loadAuthStatus");
 (async()=>{
 const pending=loadAuthStatus();await flush();
 assert.deepEqual(events,['projects','history','memory','runs']);
@@ -87,13 +102,18 @@ def test_history_is_usable_before_optional_run_labels_and_discards_old_auth_repl
     # the same harness runs the moved body, now reading its closure values
     # through the deps getters/setters exactly like the shipped factory does.
     history_module = (STATIC / "chat-history-module.js").read_text(encoding="utf-8")
-    result = run_node(PRELUDE + function("loadRecentConversations", history_module) + """
+    result = run_node(PRELUDE + STRICT + function("loadRecentConversations", history_module) + """
 let authViewEpoch=1,historyReadSequence=0,clawConversationLabelsRead=null;
 let authState={authenticated:true,history_ready:true};
 const clawConversationIds=new Set(), labels=deferred();
 const id='chat_'+'a'.repeat(32);
 const fetchRecentConversations=async()=>({conversations:[{id,title:'Existing conversation'}]});
 const fetch=()=>labels.promise;
+let readClawRunsCalls=0;
+const readClawRuns=async(limit)=>{readClawRunsCalls+=1;
+ const response=await fetch('/api/claw/runs?limit='+limit);
+ const data=await response.json().catch(()=>null);
+ return {response,data};};
 const el=()=>({children:[],dataset:{},append(...v){this.children.push(...v)},appendChild(v){this.children.push(v)},
  replaceChildren(...v){this.children=v},addEventListener(){},setAttribute(){},querySelectorAll(){return[]}});
 const historyList=el(),historySection={},historyEmpty={};
@@ -103,14 +123,15 @@ const renderHistorySkeleton=()=>historyList.replaceChildren();
 const clearHistoryUI=()=>historyList.replaceChildren();
 const clearHistoryActionStatus=()=>{};
 const renderHistoryLoadFailed=()=>{throw Error('unexpected failure')};
-const deps={
+const deps=r5StrictDeps({
  get authState(){return authState},get authViewEpoch(){return authViewEpoch},
  get historyReadSequence(){return historyReadSequence},set historyReadSequence(v){historyReadSequence=v},
  get clawConversationLabelsRead(){return clawConversationLabelsRead},set clawConversationLabelsRead(v){clawConversationLabelsRead=v},
  get clawConversationIds(){return clawConversationIds},
  get historyList(){return historyList},get historySection(){return historySection},get historyEmpty(){return historyEmpty},
  get uiT(){return uiT},get sidebarActionIcon(){return sidebarActionIcon},
- get openSavedConversation(){return ()=>{}}};
+ get readClawRuns(){return readClawRuns},
+ get openSavedConversation(){return ()=>{}}}, "ui_request_speed.deps");
 (async()=>{
 let finished=false;const pending=loadRecentConversations().then(()=>{finished=true});
 await flush();assert.equal(finished,true);assert.equal(historyList.children.length,1);
@@ -120,10 +141,13 @@ labels.resolve({ok:true,json:async()=>({ok:true,runs:[{channel:'web',action:'gen
 await flush();await pending;
 assert.equal(clawConversationIds.size,0);assert.equal(historyList.children.length,0);
 assert.equal(button.textContent,'Existing conversation');
-console.log(JSON.stringify({renderedBeforeLabels:true,oldAuthReplyDiscarded:true}));
+console.log(JSON.stringify({renderedBeforeLabels:true,oldAuthReplyDiscarded:true,runsRead:readClawRunsCalls}));
 })().catch(e=>{console.error(e);process.exitCode=1});
 """)
     assert result["renderedBeforeLabels"] and result["oldAuthReplyDiscarded"]
+    # Argon review of PR #7249 (d): the optional run-label read must really be
+    # driven; a missing deps getter used to swallow a TypeError and skip it.
+    assert result["runsRead"] == 1, "readClawRuns stub must be called exactly once"
 
 
 def chip_harness():

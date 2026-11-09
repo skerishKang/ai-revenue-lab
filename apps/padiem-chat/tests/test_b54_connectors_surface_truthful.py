@@ -230,6 +230,8 @@ def test_live_status_locale_keys_are_complete_in_ko_and_en() -> None:
 
 def test_reviewed_google_connector_connection_actions_are_calendar_drive_and_gmail() -> None:
     block = _connector_block()
+    #7216 R5 step 4: this contract moved into chat-auth-module.js.
+    auth_module = (ROOT / "static" / "chat-auth-module.js").read_text(encoding="utf-8")
     assert block.count('fetch("/api/connectors/status"') == 1
     assert 'GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket"' in block
     assert 'fetch(GOOGLE_CALENDAR_TICKET_ENDPOINT' in block
@@ -255,8 +257,8 @@ def test_reviewed_google_connector_connection_actions_are_calendar_drive_and_gma
     assert block.count('method: "POST"') == 4
     assert "oauth.padiem.net" not in block
     assert "connect_ticket" not in block
-    assert 'url.hostname !== "accounts.google.com"' in block
-    assert 'url.pathname !== "/o/oauth2/v2/auth"' in block
+    assert 'url.hostname !== "accounts.google.com"' in auth_module
+    assert 'url.pathname !== "/o/oauth2/v2/auth"' in auth_module
     assert 'window.location.assign(redirect)' in block
     assert "googleCalendarReadActivationAfterConnectReturn = true" in block
     assert 'calendarButton?.dataset.calendarAction === "activate-read"' in block
