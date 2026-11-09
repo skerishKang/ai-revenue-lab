@@ -1,11 +1,11 @@
 """Free-route registration rules for the B14 catalog.
 
-#7241 2단계: which model is retired, which rows carry the free tag and which
+#7241 3a: which model is retired, which rows carry the free tag and which
 provider owns a route are deployment values, so every expected value below is
 derived from the effective registry (or from the app's own catalog) instead of
-being written into the file. Only the retired identities that a *promotional*
-route must never regain stay as owner-decision pins behind
-``requires_owner_document``.
+being written into the file. The promotional free-roster retirement is
+selected structurally from the adapter that owns a retirement roster, so no
+identity is spelled here.
 """
 from __future__ import annotations
 
@@ -25,6 +25,7 @@ from app.pilot.errors import NoSafeRoute
 from app.pilot.b14_runtime_config import runtime_config
 
 from _registry_values import (
+    adapter_declaring_retired,
     model_rows,
     provider_of,
     registry,
@@ -61,6 +62,17 @@ def _route_model(provider_id: str) -> str:
     pytest.skip(f"no registered model for Provider {provider_id!r}")
 
 
+def _retired_free_routes() -> frozenset[str]:
+    """The promotional free lanes that must never regain a catalog entry.
+
+    #7241 3a: the identities are the retirement roster the free-route adapter
+    owns (its declared retired ids plus the identities its own constants
+    retain), read out of the package rather than restated here.
+    """
+    _provider_id, _module, retired = adapter_declaring_retired()
+    return retired
+
+
 def _free_rows() -> list[dict]:
     """Every enabled registry row tagged free whose Provider is enabled too."""
     providers = registry()["providers"]
@@ -80,8 +92,8 @@ def _restore_runtime_config():
 
 @requires_owner_document
 def test_kilo_nemotron_is_permanently_unregistered():
-    assert get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free") is None
-    assert get_catalog_by_id("kilo/poolside-laguna-s-2.1-free") is None
+    for retired_id in sorted(_retired_free_routes()):
+        assert get_catalog_by_id(retired_id) is None
 
 
 def test_removed_free_models_not_in_public_or_exact_catalog():
@@ -94,10 +106,7 @@ def test_removed_free_models_not_in_public_or_exact_catalog():
     assert {m.model_id for m in CATALOG_BY_ID.values() if "free" in m.capabilities and m.enabled} == {
         row["id"] for row in _free_rows()
     }
-    assert all(m not in CATALOG_BY_ID for m in [
-        "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-        "kilo/poolside-laguna-s-2.1-free",
-    ])
+    assert all(m not in CATALOG_BY_ID for m in _retired_free_routes())
 
 
 

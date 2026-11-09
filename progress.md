@@ -122,3 +122,35 @@
 261109 #7241 3a PR1 검증: 플랫폼 전체 2292 passed, 3 skipped(main 2244) — 신규 실패 0. 추가 줄 실값 0건. 전환 파일 내 실값 줄 0.
 2026-11-09 journal-host: one shared helper (app/journal_host.py) owns the host-visibility fix (handler + INFO level gate + stand-aside); the four earlier copies delegate and the five audited loggers bind at their call sites — 18 tests pin one stderr line per logger and forbid a private copy.
 2026-11-09 measure-leg: the receipt leg started at the executor's submit_ok, but Chat prints pc_result received BEFORE that ack (measured -96..-2262ms), so the leg was negative; it now starts at the submit marker and the two legs partition the assembly window exactly (contract tests updated + new ack-after-receipt case).
+261109 #7241 3a PR2 상태 확인(윈도우 경로 E:\PADIEM\tests-7241-s3a2-261109, 브랜치 test/7241-stage3a-pr2-261109): main 8310c4152 위에서 시험 30파일 + _registry_values.py 도우미 변경 미커밋. 이어서 윈도우에서 해당 30파일만 시험하고 PR로 마무리한다.
+261109 #7241 3a PR2 test_3554_kira_504_envelope_fingerprint.py: 모델·프로바이더를 등록부/어댑터 표에서 유도, 경로는 라우트 표면 판독.
+261109 #7241 3a PR2 test_3554_kira_connect_timeout_scope.py: 타임아웃 계약 대상 행을 등록부에서 구조 선택.
+261109 #7241 3a PR2 test_3554_provider_timeout_phase.py: 페이즈 표 대상을 등록부 행에서 유도.
+261109 #7241 3a PR2 test_3554_whitespace_stream_commit.py: 스트림 공백 커밋 케이스를 어댑터 wire 표에서 유도.
+261109 #7241 3a PR2 test_4176_modelscope_timeout_scope.py: 타임아웃 스코프 대상을 등록부 행+어댑터 게이트로 선택.
+261109 #7241 3a PR2 test_4317_free_completed_tier_fallback.py: primary/로스터를 effective_tier_* 유도, 긴 로스터는 등록된 비로스터 행으로 구성.
+261109 #7241 3a PR2 test_5784_b14_local_runtime.py: 엔드포인트 chat_surface(), 원장 프로토콜은 _PROTOCOLS 바인딩 사용.
+261109 #7241 3a PR2 test_6460_gemini_native_tools.py: 네이티브 툴 행을 캐퍼빌리티+어댑터 표로 선택.
+261109 #7241 3a PR2 test_6858_overlay_reasoning_validation.py: 추론 오버레이 검증 대상을 등록부 행에서 유도.
+261109 #7241 3a PR2 test_7156_empty_answer_chain_advance.py: 로스터는 effective_tier_*, 자격은 라우트된 프로바이더 스펙에서 확인.
+261109 #7241 3a PR2 test_7156_final_completed_first_byte.py: 타임아웃 핀은 get_timeout_policy(), 단일 후보 라우트는 등록부 구조 선택(없으면 skip).
+261109 #7241 3a PR2 test_b14_malformed_upstream.py: 모델/업스트림/프로바이더/바인딩을 등록부 행에서 유도, 네이티브 계약은 설치된 wire 가드.
+261109 #7241 3a PR2 test_b14_shared_timeout_policy.py: 케이스를 등록부(어댑터 보유·비제외·공유 wire)에서 파라미터화, wire 접미사는 어댑터 AST 판독.
+261109 #7241 3a PR2 test_b14_tool_channel.py: 툴 채널 대상 행을 어댑터 wire 표와 캐퍼빌리티에서 유도.
+261109 #7241 3a PR2 test_b62_free_routes.py: 은퇴 무료 로스터는 adapter_declaring_retired(), 소유자 핀 유지.
+261109 #7241 3a PR2 test_capability_evidence.py: 채팅 전용 등록 행을 등록부에서 구조 선택.
+261109 #7241 3a PR2 test_deployment_scope.py: 리포 루트·감시 경로·공유 패키지 목록을 앱 자체 임포트 그래프와 모노레포 배치에서 유도.
+261109 #7241 3a PR2 test_exlab_429_diagnostics.py: 프로바이더 id/호스트/표시명을 어댑터+등록부 행에서 유도, 분류 케이스는 유도 id로 파라미터화.
+261109 #7241 3a PR2 test_multimodal.py: 이미지/텍스트 라우트와 바인딩을 등록부 행에서 유도.
+261109 #7241 3a PR2 test_openrouter_retired.py: chat/스트림 표면은 라우트 표면 판독, 은퇴 신원은 retired_model_ids().
+261109 #7241 3a PR2 test_registered_routes_truth.py: 라우트 id를 등록부 유도, 은퇴 프로바이더는 adapter_declaring_retired().
+261109 #7241 3a PR2 test_routing_evidence.py: 라우트 id 2건을 등록부 model_ids()에서 유도.
+261109 #7241 3a PR2 test_sensenova_provider.py: 프로바이더/캐퍼빌리티/가격을 등록부 행 스냅샷으로 단정, 은퇴 차선은 어댑터 상수.
+261109 #7241 3a PR2 test_space_bunny_vision_primary.py: 은퇴 차선 신원·업스트림·바인딩을 adapter_declaring_retired()로 유도.
+261109 #7241 3a PR2 test_stream_error_contract_5263.py: 스트림 표면을 마운트 라우트에서 판독.
+261109 #7241 3a PR2 test_streaming_gateway.py: CHAT/STREAM 표면과 네이티브 엔드포인트 프리픽스를 등록부 행에서 유도.
+261109 #7241 3a PR2 test_streaming_provider.py: 완료 URL은 chat_surface() 꼬리+합성 픽스처, 네이티브 wire 시험은 설치 wire 가드.
+261109 #7241 3a PR2 test_upstream_retry.py: 모델/업스트림/프로바이더/바인딩을 첫 활성 등록부 행에서 유도(재시도 정책은 프로바이더 무관).
+261109 #7241 3a PR2 test_worker.py: 소유자 핀의 슬롯/프로바이더를 wrangler secrets 표와 어댑터 선언에서 선택, 라우트 집합은 프로바이더 행 기준.
+261109 #7241 3a PR2 test_workspace_phase3.py: chat 표면을 모듈 상수로 1회 판독해 POST 경로 대체.
+261109 #7241 3a PR2 검증: 윈도우에서 변경 30파일만 실행 499 passed, 2 skipped(둘 다 문서화된 가드 skip). 추가 줄 실값 0건, 변경 파일 잔여 실값 줄 0.

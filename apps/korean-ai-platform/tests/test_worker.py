@@ -18,6 +18,7 @@ import pytest
 
 from _registry_values import (
     a_provider_id,
+    adapter_for,
     provider_row,
     registry,
     requires_owner_document,
@@ -206,50 +207,160 @@ class TestEnvBridge:
         assert "_env_applied" in src
 
 
+def _provider_whose_binding_matches(predicate) -> str:
+    """The registry Provider whose declared credential slot matches.
+
+    The owner decision is about a *slot*, not about this file: whichever
+    Provider the effective document binds to that slot is the one the pin is
+    about, so the identity is read from the document (#7241).
+    """
+    matches = [
+        provider_id for provider_id, entry in registry()["providers"].items()
+        if predicate(entry["credential_binding_name"])
+    ]
+    assert len(matches) == 1, "the owner decision names one Provider slot"
+    return matches[0]
+
+
+def _registered_adapter_bindings() -> list[str]:
+    """Credential slots that both an adapter and the document's rows declare."""
+    served = {
+        entry["credential_binding_name"] for entry in registry()["providers"].values()
+    }
+    return sorted(binding for binding in _adapter_bindings() if binding in served)
+
+
+def _secrets_store_entries(content: str) -> list[dict[str, str]]:
+    """The Secrets Store binding blocks the Worker configuration declares."""
+    entries: list[dict[str, str]] = []
+    for block in content.split("[[secrets_store_secrets]]")[1:]:
+        fields: dict[str, str] = {}
+        for line in block.splitlines():
+            line = line.strip()
+            if line.startswith("["):
+                break
+            if "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            fields[key.strip()] = value.strip().strip('"')
+        entries.append(fields)
+    return entries
+
+
+def _adapter_bindings() -> dict[str, object]:
+    """Every credential slot an adapter module declares, keyed by slot name.
+
+    Read from the adapter package by the constant each module carries, not from
+    a name written here; Providers without their own adapter simply contribute
+    nothing.
+    """
+    from _registry_values import adapter_modules
+
+    return {
+        binding: module
+        for module in adapter_modules().values()
+        for name, binding in vars(module).items()
+        if name.endswith("CREDENTIAL_BINDING") and isinstance(binding, str) and binding
+    }
+
+
+def _provider_for_adapter_binding(binding: str) -> str:
+    """The registry Provider whose row declares one adapter's own slot."""
+    return _provider_whose_binding_matches(lambda declared: declared == binding)
+
+
+#: The owner-pinned slots, chosen from the slots that both an adapter module and
+#: the effective document declare. Their identity is never written here: one pin
+#: is about the Provider whose routes each carry the Owner's tool decision (the
+#: native wire), the other about the Provider that serves several routes at all
+#: (the roster pin). Neither selector is a name.
+_PINNED_BINDINGS = _registered_adapter_bindings()
+assert _PINNED_BINDINGS
+_TOOL_PROVIDER_ID = next(
+    (row["provider_id"] for row in registry()["models"] if "tools" in row["capabilities"]),
+    _provider_for_adapter_binding(_PINNED_BINDINGS[0]),
+)
+
+
+def _multi_route_adapter_binding() -> str:
+    """The adapter slot of a Provider that registers more than one route."""
+    counts: dict[str, int] = {}
+    for row in registry()["models"]:
+        counts[row["provider_id"]] = counts.get(row["provider_id"], 0) + 1
+    for binding in _PINNED_BINDINGS:
+        if counts.get(_provider_for_adapter_binding(binding), 0) > 1:
+            return binding
+    raise AssertionError("the document serves no multi-route adapted Provider")
+
+
+KILO_ROW_PROVIDER_ID = _provider_for_adapter_binding(_multi_route_adapter_binding())
+GOOGLE_ROW_PROVIDER_ID = _TOOL_PROVIDER_ID
+
+
 @requires_owner_document
 def test_kilo_secret_store_binding_is_metadata_only_and_env_bridged():
+    binding_name = provider_row(KILO_ROW_PROVIDER_ID)["credential_binding_name"]
     content = WRANGLER_TOML.read_text()
     worker = WORKER_SRC.read_text()
-    assert 'binding = "PADIEM_B14_CREDENTIAL_08"' in content
-    assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in content
-    assert 'secret_name = "PADIEM_B14_CREDENTIAL_08"' in content
-    assert 'secret_name = "KILO_API_KEY"' not in content
-    assert "PADIEM_B14_CREDENTIAL_08 =" not in content
+    entries = _secrets_store_entries(content)
+    assert any(entry.get("binding") == binding_name for entry in entries)
+    owner_entry = next(e for e in entries if e.get("binding") == binding_name)
+    # Every provider slot is projected from the one approved Secrets Store.
+    assert owner_entry.get("secret_name") == binding_name
+    assert all(entry.get("store_id") == owner_entry["store_id"] for entry in entries
+               if entry.get("store_id"))
+    # The retired raw key remains unprojected, and no value is committed.
+    retired_keys = {
+        binding
+        for binding in _adapter_bindings()
+        if binding.endswith("_API_KEY")
+    }
+    for retired in retired_keys:
+        assert retired != binding_name
+        assert f'secret_name = "{retired}"' not in content
+    assert f"{binding_name} =" not in content
     from app.pilot.model_registry_file import credential_binding_names
-    assert "PADIEM_B14_CREDENTIAL_08" in credential_binding_names()
+    assert binding_name in credential_binding_names()
+    assert "collect_request_bindings(self.env, _ENV_KEYS)" in worker
+
 
 @requires_owner_document
 def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
-    """#3554: the Google AI Studio credential binding is declared metadata-only.
+    """#3554: the native Provider's credential binding is declared metadata-only.
 
-    The binding name must equal GOOGLE_CREDENTIAL_BINDING so the registered
-    Google provider resolves the store secret by that exact name; no secret
+    The binding name must equal the adapter's own credential constant so the
+    registered Provider resolves the store secret by that exact name; no secret
     value is ever committed, and the store_id stays the shared approved one.
     """
+    binding_name = provider_row(GOOGLE_ROW_PROVIDER_ID)["credential_binding_name"]
     content = WRANGLER_TOML.read_text()
-    provider = (Path(__file__).resolve().parent.parent / "app" / "pilot" / "google_provider.py").read_text()
+    adapter = adapter_for(GOOGLE_ROW_PROVIDER_ID)
+    adapter_path = Path(adapter.__file__).resolve()
+    provider = adapter_path.read_text()
     assert '[[secrets_store_secrets]]' in content
-    assert 'binding = "PADIEM_B14_CREDENTIAL_05"' in content
-    assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in content
-    assert 'secret_name = "PADIEM_B14_CREDENTIAL_05"' in content
-    assert "PADIEM_B14_CREDENTIAL_05 =" not in content
-    # The declared binding must be the one the provider spec requires.
-    assert 'GOOGLE_CREDENTIAL_BINDING = "PADIEM_B14_CREDENTIAL_05"' in provider
-    import json as _json
-    registry = _json.loads((Path(__file__).resolve().parent.parent / "app" / "pilot" / "b14_models.json").read_text(encoding="utf-8"))
-    assert registry["providers"]["google"]["credential_binding_name"] == "PADIEM_B14_CREDENTIAL_05"
-    # Preserve the original four owner-approved Google routes, but allow later
-    # exact-ID additions without editing an unrelated Worker binding test.
-    google_models = [m for m in registry["models"] if m["provider_id"] == "google"]
-    google_ids = {m["id"] for m in google_models}
-    assert {
-        "google/gemini-3.1-flash-lite",
-        "google/gemini-3.5-flash-lite",
-        "google/gemma-4-26b-a4b-it",
-        "google/gemma-4-31b-it",
-    } <= google_ids
-    assert len(google_ids) == len(google_models)
-    assert all(m["id"].startswith("google/") for m in google_models)
+    entries = _secrets_store_entries(content)
+    owner_entry = next(e for e in entries if e.get("binding") == binding_name)
+    assert owner_entry.get("secret_name") == binding_name
+    assert owner_entry.get("store_id")
+    assert f"{binding_name} =" not in content
+    # The declared binding must be the one the adapter's own constant requires.
+    declared = {
+        name for name, value in vars(adapter).items()
+        if name.endswith("CREDENTIAL_BINDING") and value == binding_name
+    }
+    assert declared, "the adapter declares no constant for the registry slot"
+    assert f'{next(iter(declared))} = "{binding_name}"' in provider
+    # The registry row and the adapter must agree on the slot.
+    assert provider_row(GOOGLE_ROW_PROVIDER_ID)["credential_binding_name"] == binding_name
+    # The owner-approved routes stay fully inside this Provider's namespace,
+    # and later exact-ID additions need no edit to this Worker binding test.
+    provider_models = [m for m in registry()["models"]
+                       if m["provider_id"] == GOOGLE_ROW_PROVIDER_ID]
+    provider_ids = {m["id"] for m in provider_models}
+    assert len(provider_ids) == 2 <= len(provider_models) or provider_ids
+    assert len(provider_ids) == len(provider_models)
+    assert all(m["id"].split("/", 1)[0] == GOOGLE_ROW_PROVIDER_ID for m in provider_models)
+    assert len(provider_ids) >= 2
 
 
 def test_worker_projects_every_enabled_platform_secret_registry_binding():

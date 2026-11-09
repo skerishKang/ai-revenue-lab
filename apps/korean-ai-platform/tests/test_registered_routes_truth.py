@@ -12,13 +12,47 @@ from starlette.testclient import TestClient
 
 from app.factory import create_app
 from app.pilot.catalog import CATALOG_BY_ID, CATALOG_MODELS
-from app.pilot.kilo_provider import KILO_NEMOTRON_MODEL_ID
 from app.pilot.model_registry_file import retired_model_ids
 from app.pilot.poolside_provider import POOLSIDE_MODEL_ID
 from app.pilot.sensenova_provider import SENSENOVA_MODEL_ID
 
+from _registry_values import adapter_declaring_retired, model_row, model_rows, provider_of
+
 # Owner retirement is read from the same registry that installs the routes.
 RETIRED = retired_model_ids()
+
+
+def _sole_registered_id(provider_id: str) -> str:
+    """The one *installed* identity this provider serves, read from the registry.
+
+    Retired and disabled rows are excluded, so the expectation is the effective
+    roster rather than a copy of a deployment name (#7241 3a).
+    """
+    live = [
+        row["id"]
+        for row in model_rows()
+        if provider_of(row["id"]) == provider_id
+        and row["id"] not in RETIRED
+        and row["enabled"]
+    ]
+    assert len(live) == 1, "expected exactly one installed identity for this Provider"
+    return live[0]
+
+
+#: The Provider whose other identities are retired while one is still served,
+#: read from the adapter that owns that retirement roster.
+_RETIRING_PROVIDER, _, _RETAINED = adapter_declaring_retired()
+#: Its one installed identity, and the Provider serving the identical upstream
+#: identity: the same upstream model as a *different* Provider's own row, which
+#: is what makes the two routes sibling registrations rather than one route.
+_INSTALLED_ID = _sole_registered_id(_RETIRING_PROVIDER)
+_UPSTREAM_MODEL = model_row(_INSTALLED_ID)["upstream_model"]
+_MIRROR_PROVIDER = next(
+    provider_of(row["id"])
+    for row in model_rows()
+    if provider_of(row["id"]) != _RETIRING_PROVIDER
+    and row["upstream_model"] == _UPSTREAM_MODEL
+)
 
 
 @pytest.fixture()
@@ -77,13 +111,15 @@ def test_only_owner_registered_manual_models(client):
 
 def test_retired_kilo_models_stay_unregistered_while_crouton_is_registered(client):
     routes = _registered_routes(client)
-    kilo = [r for r in routes if r["provider_id"] == "kilo"]
-    assert [r["id"] for r in kilo] == ["kilo/stealth/crouton-alpha"]
-    openrouter = [r for r in routes if r["provider_id"] == "openrouter"]
-    assert [r["id"] for r in openrouter] == ["openrouter/stealth/crouton-alpha"]
-    from app.pilot.model_registry_file import retired_model_ids
+    primary = [r for r in routes if r["provider_id"] == _RETIRING_PROVIDER]
+    assert [r["id"] for r in primary] == [_INSTALLED_ID]
+    mirror = [r for r in routes if r["provider_id"] == _MIRROR_PROVIDER]
+    assert [r["id"] for r in mirror] == [_MIRROR_PROVIDER + "/" + _UPSTREAM_MODEL]
     registered = {r["id"] for r in routes}
-    assert not (registered & {m for m in retired_model_ids() if m.startswith("kilo/")})
+    assert not (
+        registered
+        & {m for m in retired_model_ids() if provider_of(m) == _RETIRING_PROVIDER}
+    )
 
 def test_remaining_models_visible_in_exact_catalog(client):
     data=client.get("/api/pilot/admin/models").json()

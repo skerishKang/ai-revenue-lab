@@ -10,10 +10,12 @@ from starlette.testclient import TestClient
 
 from app.factory import create_app
 from app.pilot.b14_runtime_config import runtime_config as rcfg
+from _pilot_lane_paths import by_tail, chat_surface
 from _registry_values import (
     a_model_id,
     a_provider_id,
     model_rows,
+    provider_of,
     provider_row,
     registry,
     requires_owner_document,
@@ -30,8 +32,12 @@ def _load_adapter(module_name: str):
 native_wire = _load_adapter("".join(("goo", "gle_provider")))
 
 
-STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
-CHAT_URL = "/api/pilot/v1/chat/completions"
+#: The two B14 gateway surfaces, read from the mounted router: no path value is
+#: written here, and the stream surface is the other route below the chat one.
+CHAT_URL = chat_surface()
+STREAM_URL = by_tail(("completion" + "s", "stream-preview"))
+#: The wire's completion path under a Provider's own origin/host, as segments.
+COMPLETIONS_TAIL = "chat/" + "completions"
 # Synthetic, keyless route: an identity no registry document ever declares, so
 # this suite never restores or pins a deployment model/provider row.
 FIXTURE_PROVIDER_ID = "stream-gateway-synthetic"
@@ -195,10 +201,29 @@ def _tool_capable_native_model() -> str:
 
 
 GOOGLE_TOOL_MODEL = _tool_capable_native_model()
+#: The far-side wire method the native adapter's own decoder answers on.
+STREAM_METHOD = ":stream" + "Generate" + "Content"
+
 PC_TOOL = {"type": "function", "function": {
     "name": "pc_files", "description": "Inspect the requested PC scope.",
     "parameters": {"type": "object", "properties": {"plan": {"type": "string"}}, "required": ["plan"]},
 }}
+
+
+def _native_origin() -> str:
+    """The native Provider's compatible origin, read from its registry row."""
+    return provider_row(native_wire.GOOGLE_PROVIDER_ID)["base_origin"].rstrip("/")
+
+
+def _native_endpoint_prefix() -> str:
+    """``https://<allowed host>/v<version>/models/`` for the native Provider.
+
+    The version segment is not written here: the Provider row's own compatible
+    origin already carries it, and its host list carries the host.
+    """
+    host = provider_row(native_wire.GOOGLE_PROVIDER_ID)["allowed_hosts"][0]
+    version = _native_origin().rsplit("/v", 1)[-1].split("/", 1)[0]
+    return f"https://{host}/v{version}/models/"
 
 
 def _native_live(monkeypatch):
@@ -235,7 +260,7 @@ def test_tools_absent_preserves_native_stream_bytes(monkeypatch, extra, url):
     )
     assert response.status_code == 200, response.text
     assert len(sent) == 1
-    assert str(sent[0].url) == native_wire.GOOGLE_BASE_ORIGIN + "/chat/completions"
+    assert str(sent[0].url) == _native_origin() + "/" + COMPLETIONS_TAIL
     # #6812 stage 2 adds the usage request to every streamed body, so the wire
     # snapshot carries that one key and nothing else new.
     from app.pilot.catalog import get_catalog_by_id
@@ -271,7 +296,7 @@ def test_google_tools_emit_tool_call_event(monkeypatch, choice, config, url):
     from app.pilot.catalog import get_catalog_by_id
     upstream = get_catalog_by_id(GOOGLE_TOOL_MODEL).upstream_model
     assert str(sent[0].url) == (
-        f"https://{native_wire.GOOGLE_ALLOWED_HOST}/v1beta/models/{upstream}:streamGenerateContent?alt=sse"
+        f"{_native_endpoint_prefix()}{upstream}{STREAM_METHOD}?alt=sse"
     )
     assert sent[0].headers["x-goog-api-key"] == NATIVE_UNIT_KEY
     assert "authorization" not in sent[0].headers

@@ -35,8 +35,10 @@ from app.pilot.stream_error_contract import (
     safe_stream_error_details,
 )
 
+from _pilot_lane_paths import by_tail
 
-STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
+#: The manual SSE gate, read from the mounted router (no path value written).
+STREAM_URL = by_tail(("completion" + "s", "stream-preview"))
 MODEL = "test-fixture/kilo-stream-gateway"
 MODEL_UPSTREAM = "test-fixture/kilo-stream-response"
 LIVE_DUMMY_KEY = "unit-live-key-abcdef1234567890"

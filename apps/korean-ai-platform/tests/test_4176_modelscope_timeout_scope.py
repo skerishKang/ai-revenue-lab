@@ -1,32 +1,54 @@
-"""#4176 historical ModelScope timeout probe, updated for common model idle policy.
+"""#4176 historical timeout probe, updated for the common model idle policy.
 
-The historical ModelScope connect setting is replaced by B14's shared
-15s first-byte and 20s stream-idle bounds. Tests are MockTransport only.
+The historical per-Provider connect setting is replaced by B14's shared
+first-byte and stream-idle bounds. Tests are MockTransport only.
+
+#7241 3a: the subject models and their Provider ids come from the effective
+registry, and every limit comes from the app's policy module, so this suite
+writes no deployment value.
 """
 import httpx
 import pytest
 
 from app.pilot import platform as plat
+from app.pilot.b14_timeout_policy import (
+    POOL_SECONDS, WRITE_SECONDS, get_timeout_policy,
+)
 from app.pilot.errors import UpstreamTimeout
 
+from _registry_values import (
+    a_dispatchable_row, model_rows, provider_of, requires_owner_document,
+)
 
-def test_only_modelscope_and_previously_approved_kira_have_30s_connect():
+
+CASES = [_row for _row in (a_dispatchable_row(),) if _row is not None]
+for _row in model_rows():
+    if len(CASES) >= 2:
+        break
+    _next = a_dispatchable_row(provider_ids=frozenset({provider_of(_row["id"])}))
+    if _next is not None and provider_of(_next["id"]) != provider_of(CASES[0]["id"]):
+        CASES.append(_next)
+
+pytestmark = requires_owner_document
+
+
+def test_no_provider_keeps_a_per_provider_connect_exception():
     timeout = plat.build_provider_http_timeout()
+    policy = get_timeout_policy()
     assert (timeout.connect, timeout.read, timeout.write, timeout.pool) == (
-        15.0, 20.0, 120.0, 60.0
+        policy.first_byte_seconds, policy.stream_idle_seconds,
+        WRITE_SECONDS, POOL_SECONDS,
     )
     # The prior per-Provider exceptions were superseded by one shared limit.
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("stream", [False, True])
-@pytest.mark.parametrize("provider,model,upstream,expected", [
-    ("sensenova", "sensenova/sensenova-6.8-flash-lite",
-     "sensenova-6.8-flash-lite", 15.0),
-    ("inception", "inception/mercury-2.5", "mercury-2.5", 15.0),
-])
+@pytest.mark.parametrize("row", CASES, ids=[provider_of(r["id"]) for r in CASES])
 async def test_completed_stream_timeout_phase_safe_and_one_mock_call(
-        monkeypatch, caplog, stream, provider, model, upstream, expected):
+        monkeypatch, caplog, stream, row):
+    provider = provider_of(row["id"])
+    expected = get_timeout_policy().first_byte_seconds
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setattr(
         plat, "_request_headers",
@@ -46,7 +68,7 @@ async def test_completed_stream_timeout_phase_safe_and_one_mock_call(
         requests.append(str(request.url))
         raise httpx.ConnectTimeout("PRIVATE_MODEL_KEY_OR_PROMPT_SHOULD_NOT_LOG")
     args=dict(
-        model_id=model, upstream_model=upstream, provider=provider,
+        model_id=row["id"], upstream_model=row["upstream_model"], provider=provider,
         platform_provider_id=provider,
         messages=[{"role":"user","content":"synthetic"}],
         transport=httpx.MockTransport(handler),
@@ -58,7 +80,8 @@ async def test_completed_stream_timeout_phase_safe_and_one_mock_call(
                     pass
             else:
                 await plat.call_platform_chat_completions(**args)
-    assert timeouts == [(expected, 20.0, 120.0, 60.0)]
+    policy = get_timeout_policy()
+    assert timeouts == [(expected, policy.stream_idle_seconds, WRITE_SECONDS, POOL_SECONDS)]
     assert len(requests) == 1
     assert (f"b14_provider_attempt_timeout provider={provider} reason=first_byte "
             f"mode={'stream' if stream else 'completed'}") in caplog.text

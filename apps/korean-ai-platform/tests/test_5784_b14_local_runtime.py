@@ -31,10 +31,27 @@ from app.local_runtime import (
     create_local_app,
     credential_binding_names,
 )
-from app.pilot.call_ledger import AttemptRecord, CallRecord, new_log_id, utc_now_iso
+from app.pilot.call_ledger import (
+    AttemptRecord,
+    CallRecord,
+    new_log_id,
+    utc_now_iso,
+)
+from app.pilot.call_ledger import _PROTOCOLS as _LEDGER_PROTOCOLS
 from app.pilot.call_ledger_store import CallLedgerStore, storage_state
 from app.pilot.deployment_entry import PRODUCT_ENTRY_PATH
 from app.pilot import model_registry_file
+
+from _pilot_lane_paths import chat_surface
+from _registry_values import model_rows
+
+#: The gateway surface this host serves and the wire a B14 row may name: both
+#: are read out of the app (its mounted routes and its ledger vocabulary)
+#: instead of being spelled here (#7241 3a).
+CHAT_SURFACE = chat_surface()
+COMPATIBLE_WIRE = next(
+    wire for wire in _LEDGER_PROTOCOLS if "/" in wire and wire != "unknown"
+)
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 WORKER_SRC = (APP_ROOT / "worker.py").read_text(encoding="utf-8")
@@ -102,7 +119,7 @@ def _call(**overrides) -> CallRecord:
     base = dict(
         log_id=new_log_id(),
         request_id="b14req_local01",
-        endpoint="/api/pilot/v1/chat/completions",
+        endpoint=CHAT_SURFACE,
         started_at=utc_now_iso(),
     )
     base.update(overrides)
@@ -110,12 +127,13 @@ def _call(**overrides) -> CallRecord:
 
 
 def _attempt(log_id: str, index: int) -> AttemptRecord:
+    row = model_rows()[0]
     return AttemptRecord(
         log_id=log_id,
         attempt_index=index,
-        provider="Agnes AI",
-        model_id="agnes-ai/agnes-3.0-flash",
-        upstream_model="agnes-3.0-flash",
+        provider=row["provider_name"],
+        model_id=row["id"],
+        upstream_model=row["upstream_model"],
         outcome="success" if index else "error",
         http_status=None if index else 422,
         error_code=None if index else "upstream_client_error",
@@ -241,10 +259,10 @@ def test_the_credential_source_column_names_two_states_and_defaults_to_pool(host
         minimum = (
             "INSERT INTO b14_model_call (log_id, request_id, product, origin_source,"
             " protocol, outcome, latency_source, token_source, cost_basis)"
-            " VALUES ('log_a12345678','r1','chat','b14_observed','chat/completions',"
+            " VALUES ('log_a12345678','r1','chat','b14_observed',?, "
             " 'success','unknown','missing','unknown')"
         )
-        connection.execute(minimum)
+        connection.execute(minimum, (COMPATIBLE_WIRE,))
         assert connection.execute(
             "SELECT credential_source FROM b14_model_call WHERE log_id = 'log_a12345678'"
         ).fetchone()[0] == "pool"
@@ -254,15 +272,17 @@ def test_the_credential_source_column_names_two_states_and_defaults_to_pool(host
                 " protocol, outcome, latency_source, token_source, cost_basis,"
                 " credential_source)"
                 " VALUES ('log_b12345678','r2','chat','b14_observed',"
-                " 'chat/completions','success','unknown','missing','unknown',"
-                " 'service_account')"
+                " ?,'success','unknown','missing','unknown',"
+                " 'service_account')",
+                (COMPATIBLE_WIRE,),
             )
         connection.execute(
             "INSERT INTO b14_model_call (log_id, request_id, product, origin_source,"
             " protocol, outcome, latency_source, token_source, cost_basis,"
             " credential_source)"
             " VALUES ('log_c12345678','r3','chat','b14_observed',"
-            " 'chat/completions','success','unknown','missing','unknown','user')"
+            " ?,'success','unknown','missing','unknown','user')",
+            (COMPATIBLE_WIRE,),
         )
     finally:
         connection.close()

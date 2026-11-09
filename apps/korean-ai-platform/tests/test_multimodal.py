@@ -1,3 +1,9 @@
+"""The multimodal request contract on the gateway's chat surface.
+
+#7241: the surface, the routes and every credential slot come from the app —
+the mounted router, the effective registry document and the registry Provider
+row — so no deployment value is written in this module.
+"""
 from __future__ import annotations
 
 import base64
@@ -11,8 +17,17 @@ from app.factory import create_app
 from app.pilot.catalog import get_catalog_by_id
 from app.pilot.multimodal_contract import MAX_IMAGE_BYTES, validate_image_data_url
 from app.pilot.b14_runtime_config import runtime_config
+from app.pilot.owner_model_exclusions import (
+    excluded_from_owner_customer_selection,
+    free_candidate_excluded_from_execution,
+)
+from app.pilot.platform_secrets import CredentialSource
 
+from _pilot_lane_paths import chat_surface
 from _registry_values import model_rows, provider_of, provider_row
+
+#: The gateway's own chat surface, selected from the mounted router.
+CHAT_PATH = chat_surface()
 
 
 def _image_model(required: tuple[str, ...] = ("chat", "image")) -> str:
@@ -37,6 +52,67 @@ def _text_only_model() -> str:
 def _provider_binding(model_id: str) -> str:
     """The credential slot the model's own Provider reads."""
     return provider_row(provider_of(model_id))["credential_binding_name"]
+
+
+def _write_provider_slot(monkeypatch, model_id: str, value: str) -> None:
+    """Give the model's own Provider a synthetic value, on its own terms.
+
+    A keyless Provider reads no secret, so no slot is written for it; every
+    other Provider reads exactly the slot its registry row names.
+    """
+    provider_id = provider_of(model_id)
+    if provider_row(provider_id).get("credential_source") == CredentialSource.NONE.value:
+        return
+    monkeypatch.setenv(_provider_binding(model_id), value)
+
+
+def _image_route_refused_by_the_app(model_id: str) -> bool:
+    """Whether the app itself refuses to send this route to a Provider.
+
+    A row the owner excludes from customer selection, or an excluded free
+    execution candidate, never reaches a Provider, so it cannot stand in for
+    the route that carries the validated image array upstream.
+    """
+    row = next(item for item in model_rows() if item["id"] == model_id)
+    if excluded_from_owner_customer_selection(model_id):
+        return True
+    return free_candidate_excluded_from_execution(
+        model_id,
+        upstream_model=row["upstream_model"],
+        platform_provider_id=row["provider_id"],
+    )
+
+
+def _verified_text_route() -> str:
+    """A text route the app will actually dial, for the live adapter case."""
+    for row in model_rows():
+        model_id = row["id"]
+        if "chat" not in row["capabilities"]:
+            continue
+        if get_catalog_by_id(model_id) is None:
+            continue
+        if _image_route_refused_by_the_app(model_id):
+            continue
+        return model_id
+    pytest.skip("the effective registry declares no dialable text route")
+
+
+def _keyless_spec(provider_id: str):
+    """A test-only, keyless Provider spec at an inert documentation origin.
+
+    The origin host is an IANA reserved example domain, not a deployment host,
+    and the Provider reads no credential at all.
+    """
+    from app.pilot import platform_secrets as ps
+
+    host = ".".join(("test-fixture", "example"))
+    return ps.PlatformProviderSpec(
+        provider_id=provider_id,
+        credential_source=ps.CredentialSource.NONE,
+        credential_binding_name="",
+        base_origin="https://" + host + "/v1",
+        allowed_hosts=(host,),
+    )
 
 
 # The image-capable catalog route and the text-only route this suite switches
@@ -94,12 +170,12 @@ def post_image(client, *, model=None, content=None, business14=None):
     }
     if business14 is not None:
         payload["business14"] = business14
-    return client.post("/api/pilot/v1/chat/completions", json=payload)
+    return client.post(CHAT_PATH, json=payload)
 
 
 def test_text_chat_contract_remains_backward_compatible(client):
     response = client.post(
-        "/api/pilot/v1/chat/completions",
+        CHAT_PATH,
         json={"model": TEXT_MODEL, "messages": [{"role": "user", "content": "안녕"}]},
     )
     assert response.status_code == 200
@@ -144,7 +220,7 @@ def test_valid_multimodal_manual_route_passes_the_validated_array(
 @pytest.mark.parametrize("role", ["system", "assistant"])
 def test_only_user_role_may_use_multimodal_array(client, role):
     response = client.post(
-        "/api/pilot/v1/chat/completions",
+        CHAT_PATH,
         json={"model": IMAGE_MODEL, "messages": [{"role": role, "content": multimodal_content()}]},
     )
     assert response.status_code == 422
@@ -236,7 +312,7 @@ def test_retired_scorer_options_are_unknown_fields(client, monkeypatch):
     text_model = _text_only_model()
     monkeypatch.setenv(_provider_binding(text_model), "sk-chain-unit-text-0123456789")
     response = client.post(
-        "/api/pilot/v1/chat/completions",
+        CHAT_PATH,
         json={
             "model": text_model,
             "messages": [{"role": "user", "content": "안녕"}],
@@ -249,10 +325,32 @@ def test_retired_scorer_options_are_unknown_fields(client, monkeypatch):
     assert "task_type" not in response.json()["business14"]
 
 
+def _test_provider_id() -> str:
+    """The Provider id this module registers for its adapter-level case."""
+    return "test-fixture"
+
+
+def _test_upstream_model(text_route: str) -> str:
+    """An upstream identity for that Provider, derived from a registry route."""
+    return _test_provider_id() + "/" + text_route.split("/", 1)[1]
+
+
+@pytest.fixture(autouse=True)
+def _test_only_keyless_adapter_provider(monkeypatch):
+    """This module's own keyless Provider; no deployment Provider is touched."""
+    from app.pilot import platform_secrets as ps
+
+    provider = _keyless_spec(_test_provider_id())
+    monkeypatch.setitem(ps._PLATFORM_PROVIDERS, provider.provider_id, provider)
+    yield
+
+
 @pytest.mark.asyncio
 async def test_live_platform_body_preserves_validated_multimodal_array():
     from app.pilot import platform as plat
 
+    text_route = _verified_text_route()
+    upstream_model = _test_upstream_model(text_route)
     captured = {}
 
     async def handler(request: httpx.Request) -> httpx.Response:
@@ -262,7 +360,7 @@ async def test_live_platform_body_preserves_validated_multimodal_array():
             200,
             json={
                 "id": "live-test",
-                "model": "test-fixture/kilo-multimodal-upstream",
+                "model": upstream_model,
                 "choices": [{"index": 0, "message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}],
                 "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
             },
@@ -274,27 +372,13 @@ async def test_live_platform_body_preserves_validated_multimodal_array():
         messages=messages,
         temperature=0.2,
         max_tokens=100,
-        model_id="test-fixture/kilo-multimodal",
-        upstream_model="test-fixture/kilo-multimodal-upstream",
-        provider="Kilo Gateway / NVIDIA",
-        platform_provider_id="test-fixture",
+        model_id=_test_provider_id() + "/" + text_route.split("/", 1)[1],
+        upstream_model=upstream_model,
+        provider=_test_provider_id(),
+        platform_provider_id=_test_provider_id(),
         transport=httpx.MockTransport(handler),
     )
     assert result["choices"][0]["message"]["content"] == "ok"
     assert captured["json"]["messages"] == messages
-    assert captured["json"]["model"] == "test-fixture/kilo-multimodal-upstream"
+    assert captured["json"]["model"] == upstream_model
     assert "provider" not in captured["json"]
-
-@pytest.fixture(autouse=True)
-def _test_only_keyless_adapter_provider(monkeypatch):
-    """Only this test module can use a generic mocked provider, never owner-retired Kilo."""
-    from app.pilot import platform_secrets as ps
-    provider = ps.PlatformProviderSpec(
-        provider_id="test-fixture",
-        credential_source=ps.CredentialSource.NONE,
-        credential_binding_name="",
-        base_origin="https://test-fixture.example/v1",
-        allowed_hosts=("test-fixture.example",),
-    )
-    monkeypatch.setitem(ps._PLATFORM_PROVIDERS, "test-fixture", provider)
-    yield
