@@ -540,6 +540,13 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
                 trace_id=trace_token,
                 b14_ms=last_b14_duration_ms(),
                 outcome=outcome,
+                combined=bool(
+                    getattr(
+                        getattr(self, "_admission_adapter", None),
+                        "combined_rpc",
+                        False,
+                    )
+                ),
             )
 
 
