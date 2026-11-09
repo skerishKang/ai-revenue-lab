@@ -54,8 +54,9 @@ def test_plus_chat_executes_declared_google_route_without_a_provider_capability_
     assert LOW_B14_MODEL_ID not in MODEL_CAPABILITIES
     assert model_supports(LOW_B14_MODEL_ID, "chat") is False
     assert model_supports(LOW_B14_MODEL_ID, "image") is False
-    assert MODEL_CAPABILITIES[FREE_MODEL] == frozenset({"chat", "coding"})
+    assert MODEL_CAPABILITIES[FREE_MODEL] == frozenset({"chat", "coding", "image"})
     assert model_supports(FREE_MODEL, "chat")
+    assert model_supports(FREE_MODEL, "image")
     default = resolve_model_policy([{"role": "user", "content": "hello"}])
     plus = resolve_tier_policy([{"role": "user", "content": "hello"}], "plus")
     assert default.model_id == FREE_MODEL and default.profile == "free"

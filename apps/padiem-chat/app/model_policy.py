@@ -246,8 +246,8 @@ DEFAULT_B14_MODEL_ID = PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
 # raw provider model ids are deliberately not catalog rows. A fallback entry
 # does not grant model execution.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
-    FREE_B14_MODEL_ID: frozenset({"chat", "coding"}),
-    FREE_FALLBACK_B14_MODEL_ID: frozenset({"chat", "image"}),
+    FREE_B14_MODEL_ID: frozenset({"chat", "coding", "image"}),
+    FREE_FALLBACK_B14_MODEL_ID: frozenset({"chat"}),
 }
 
 
