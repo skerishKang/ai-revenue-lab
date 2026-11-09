@@ -186,3 +186,4 @@
 261109 #7241 3a PR3 test_tokenharbor_two_free_routes.py: 업스트림 요청 경로를 origin+chat_wire_tail() 조합으로 대체.
 261109 #7241 3a PR3 공용: _registry_values.py에 registered_model_id_within()/chat_wire_tail() 추가(읽기 전용 도우미), 문서 문구에서 경로 리터럴 제거.
 261109 #7241 3a PR3 검증: 윈도우 변경 29파일 491 passed, 4 skipped. 전체 스위트 2303 passed, 11 skipped. 추가 줄 실값 0건. 시험 잔여 실값 conftest.py 1줄만 남김(3b 범위).
+2026-11-09 diff-base: the plan diffs the ops checkout HEAD against the target; a dry run or earlier run of the same sha left HEAD at the target so the diff was empty and a #7243 deploy printed p01:SKIP reason_files=0 (the P01 path mapping at :331 was correct and the cap was already installed). The plan now falls back to state/last_applied_sha then the parent commit, prints DIFF_BASE, and records last_applied_sha on a clean apply — 5 tests (P01-only selects, docs-only skips, stale release still not skipped) + mutation check.

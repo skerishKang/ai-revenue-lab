@@ -1830,7 +1830,30 @@ run_deploy() {
       ;;
   esac
 
-  changed=$("$git_bin" -C "$ops_checkout" diff --name-only "$old" "$resolved") \
+  # The diff base must be the code the host is running, not "whatever the ops
+  # checkout HEAD happens to be". A dry run, an operator checkout or an earlier
+  # run of the SAME sha leaves HEAD at $resolved; the diff is then empty and
+  # every service reads reason_files=0 / NO_DEPLOY_PATHS even when the host is
+  # still behind. Measured 2026-11-09: a #7243 plan printed p01:SKIP
+  # reason_files=0 for exactly this reason. Fall back to the last applied sha,
+  # then to the parent commit, and say which base was used.
+  diff_base=$old
+  if [[ $diff_base == "$resolved" ]]; then
+    if [[ -s $state_dir/last_applied_sha ]]; then
+      candidate=$(tr -d '\r\n' < "$state_dir/last_applied_sha") || candidate=''
+      if [[ -n $candidate ]] \
+        && "$git_bin" -C "$ops_checkout" rev-parse --verify --quiet "$candidate^{commit}" >/dev/null; then
+        diff_base=$candidate
+        say 'DIFF_BASE=LAST_APPLIED_SHA'
+      fi
+    fi
+    if [[ $diff_base == "$resolved" ]]; then
+      say 'DIFF_BASE=CHECKOUT_AT_TARGET'
+    fi
+  fi
+  say "DIFF_BASE_SHA=$diff_base"
+
+  changed=$("$git_bin" -C "$ops_checkout" diff --name-only "$diff_base" "$resolved") \
     || fail GIT_DIFF_FAILED
   while IFS= read -r line; do
     [[ -n $line ]] || continue
