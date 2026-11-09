@@ -31,6 +31,18 @@ LEVEL_OPTION = {"value": "default", "label": "기본(제공자 기본값)"}
 BODY = {"saved_skill_id": SAVED_ID, "message": "synthetic quote"}
 ORIGIN = {"Origin": "https://chat.example.test"}
 
+# The transport probe runs a real interpreter against apps/korean-ai-platform,
+# so pass this checkout's package sources explicitly (same set as #7322)
+# instead of relying on ambient interpreter paths.
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_SUBPROCESS_SOURCE_PATHS = (
+    _REPO_ROOT / "apps" / "padiem-chat",
+    _REPO_ROOT / "apps" / "korean-ai-code-agent" / "src",
+    _REPO_ROOT / "packages" / "padiem-ai-core",
+    _REPO_ROOT / "packages" / "padiem-control-plane",
+    _REPO_ROOT / "apps" / "padiem-ai-engine" / "clients" / "python",
+)
+
 # The two Gemini Flash Lite serving IDs and the one Atria serving ID that the
 # merged B14 authority documents. Both are real registry IDs, never fixtures.
 GEMINI_35 = "google/gemini-3.5-flash-lite"
@@ -727,6 +739,7 @@ def test_b66_level_never_leaks_into_the_platform_request_json():
     the rest of the request shape stays unchanged.
     """
     import json
+    import os
     import subprocess
     import sys
     import tempfile
@@ -749,9 +762,14 @@ def test_b66_level_never_leaks_into_the_platform_request_json():
         driver = Path(tmpdir) / "b66_reasoning_transport_probe.py"
         try:
             driver.write_text(_B14_DRIVER, encoding="utf-8")
+            env = os.environ.copy()
+            existing_path = env.get("PYTHONPATH")
+            env["PYTHONPATH"] = os.pathsep.join(str(p) for p in _SUBPROCESS_SOURCE_PATHS) + (
+                os.pathsep + existing_path if existing_path else "")
             completed = subprocess.run(
                 [sys.executable, str(driver), json.dumps(emitted)],
                 cwd=platform,
+                env=env,
                 capture_output=True,
                 text=True, encoding="utf-8",
                 timeout=120,

@@ -54,7 +54,9 @@ def test_leaving_claw_strips_the_route() -> None:
     assert 'state !== "claw" && isClawRoute' in src
     # An explicit Chat switch flips the shell to "chat" in showConversation(),
     # which then runs setNavActive(); that is the strip path.
-    assert 'shell.dataset.state = "chat";' in src
+    # #7216 R5 step 5a: showConversation moved into chat-conversation-module.js.
+    conv = APP_JS.with_name("chat-conversation-module.js").read_text(encoding="utf-8")
+    assert 'deps.shell.dataset.state = "chat";' in conv
 
 
 def test_boot_restores_both_routes() -> None:

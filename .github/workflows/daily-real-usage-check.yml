@@ -21,6 +21,8 @@ on:
 
 permissions:
   contents: read
+  # 2차: 직전 7회 실행의 소요 ms 를 읽어 느려짐 경고를 낸다(읽기 전용).
+  actions: read
 
 concurrency:
   group: daily-real-usage-check
@@ -29,7 +31,7 @@ concurrency:
 jobs:
   real-usage:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     # The QA pair lives in the production environment (the same pair the
     # deploy gates and the logout-reuse check read). The environment has no
     # protection rules, so scheduled runs are not held for approval.
@@ -42,10 +44,18 @@ jobs:
       PADIEM_QA_PC_TOKEN: ${{ secrets.PADIEM_QA_PC_TOKEN }}
       # Optional override of the file the pc_read flow reads.
       PADIEM_QA_PC_READ_PATH: ${{ vars.PADIEM_QA_PC_READ_PATH }}
+      # 2차: 배포 스탬프 비교 기준과 캡처·지표 경로.
+      PADIEM_EXPECTED_HEAD_SHA: ${{ github.sha }}
+      PADIEM_USAGE_CAPTURE_DIR: usage-browser-captures
+      PADIEM_USAGE_METRICS_PATH: usage-metrics.json
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          # 배포 스탬프를 최근 main 커밋과 비교한다. 기본 얕은 클론(fetch-depth 1)
+          # 에서는 `git log` 가 한 줄만 나와 정상적인 배포 지연도 FAIL 이 됐다
+          # (실행 42668928406: 화면 스탬프 33d88dad, main 1844ec9d).
+          fetch-depth: 30
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -57,6 +67,27 @@ jobs:
       # instead of letting the flow degrade into a false FAIL.
       - name: Install ffmpeg for the voice transcode
         run: sudo apt-get update --quiet && sudo apt-get install --quiet --yes ffmpeg
+      # 2차 브라우저 흐름: 저장소가 이미 쓰는 고정 버전·캐시 키·APT 미러 교체를
+      # 그대로 재사용한다(b62-browser-qa-unified.yml 과 같은 방식).
+      - name: Install the pinned Playwright for the browser flows
+        run: python -m pip install --quiet 'playwright==1.55.0'
+      - name: Cache pinned Playwright Chromium
+        id: playwright-browser-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash .github/scripts/b62_playwright_apt_mirror_3989.sh
+      - name: Install Chromium system libraries
+        run: python -m playwright install-deps chromium
+      - name: Install Chromium browser
+        if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
+        run: python -m playwright install --only-shell chromium
+      # 배포 스탬프는 배포 커밋의 앞 8자리다(release_chat.ps1). 앞선 병합 직후
+      # 배포 전 창을 구분하려고 최근 main 커밋 앞 8자리를 함께 넘긴다.
+      - name: Record recent main commits for the stamp comparison
+        run: echo "PADIEM_RECENT_MAIN_SHAS=$(git log --abbrev=8 --format=%h -30 | tr '\n' ' ')" >> "$GITHUB_ENV"
       - name: Record a skip when the QA credential is absent
         if: ${{ env.B66_CGI_ALPHA_USERNAME == '' || env.B66_CGI_ALPHA_PASSWORD == '' }}
         run: |
@@ -67,7 +98,29 @@ jobs:
             echo "|---|---|---|---|---|"
             echo "| all | SKIPPED | 0 | - | qa_credential_missing |"
           } >> "$GITHUB_STEP_SUMMARY"
-          echo "USAGE_CHECK verdict=SKIPPED flows=4 failed=0 code=qa_credential_missing"
-      - name: Run the four real-usage flows
+          echo "USAGE_CHECK verdict=SKIPPED flows=7 failed=0 code=qa_credential_missing"
+      - name: Run the seven real-usage flows
         if: ${{ env.B66_CGI_ALPHA_USERNAME != '' && env.B66_CGI_ALPHA_PASSWORD != '' }}
+        env:
+          # 느려짐 비교용 직전 실행 이력(읽기 전용).
+          GITHUB_TOKEN: ${{ github.token }}
         run: python .github/scripts/daily_real_usage_check.py
+      # 캡처는 판정이 FAIL 이어도 진단 자료로 남긴다. 계정 표시는 찍기 전에
+      # 가리므로, 캡처에는 대화 내용만 남는다.
+      - name: Upload the browser captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-usage-browser-captures
+          path: usage-browser-captures
+          if-no-files-found: warn
+          retention-days: 14
+      # 다음 날의 느려짐 비교 입력이다. 이 파일이 없으면 경고 없이 넘어간다.
+      - name: Upload the flow timings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-usage-metrics
+          path: usage-metrics.json
+          if-no-files-found: warn
+          retention-days: 14

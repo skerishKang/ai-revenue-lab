@@ -180,7 +180,9 @@ const assert = require("node:assert/strict");
     app = (static / "app.js").read_text()
     # #261102: the payload builder maps every pending chip to its item; a
     # file-lane attachment still becomes exactly { type: "file", file_id }.
-    assert 'if (item.fileId) return { type: "file", file_id: item.fileId };' in app
+    # #7216 R5 step 5a: the payload builder moved into chat-conversation-module.js.
+    conv = (static / "chat-conversation-module.js").read_text()
+    assert 'if (item.fileId) return { type: "file", file_id: item.fileId };' in conv
     # #6579 3단계 adds a progress callback after the signal; the guarded
     # contract (the same lane upload, same abort signal) is unchanged, now
     # applied per attachment in the multi-attach loop.

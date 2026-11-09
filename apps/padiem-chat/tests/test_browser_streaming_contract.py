@@ -17,6 +17,17 @@ def _source() -> str:
     return APP_PATH.read_text(encoding="utf-8")
 
 
+def _conv_source() -> str:
+    # #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js.
+    return APP_PATH.with_name("chat-conversation-module.js").read_text(encoding="utf-8")
+
+
+def _next_fn_end(source: str, start: int) -> int:
+    ends = [i for i in (source.find("\n  function ", start + 1),
+                        source.find("\n  async function ", start + 1)) if i != -1]
+    return min(ends) if ends else len(source)
+
+
 def _transport_source() -> str:
     return TRANSPORT_PATH.read_text(encoding="utf-8")
 
@@ -218,26 +229,26 @@ def test_stream_state_commits_only_on_done_and_partial_error_is_preserved() -> N
 
 
 def test_new_chat_aborts_active_stream_and_epoch_blocks_stale_mutation() -> None:
-    source = _source()
+    source = _conv_source()  # #7216 R5 step 5a
     reset_start = source.index("  function resetConversationView(")
-    reset_end = source.index("  function resetConversation(", reset_start)
+    reset_end = _next_fn_end(source, reset_start)
     reset_source = source[reset_start:reset_end]
 
-    assert "conversationEpoch += 1;" in reset_source
-    assert "activeRequestController.abort();" in reset_source
-    assert "activeRequestController = null;" in reset_source
+    assert "deps.conversationEpoch += 1;" in reset_source
+    assert "deps.activeRequestController.abort();" in reset_source
+    assert "deps.activeRequestController = null;" in reset_source
 
     # Chat/Claw separation: the sidebar Chat entry returns to the Chat conversation while the
     # Claw workspace is open, and otherwise starts a new Chat conversation.
     entry_start = source.index("  function resetConversation(")
-    entry_end = source.index("  function selectProject(", entry_start)
+    entry_end = _next_fn_end(source, entry_start)
     entry_source = source[entry_start:entry_end]
-    assert "switchConversationProduct(PRODUCT_CHAT);" in entry_source
-    assert "resetConversationView(preserveProject);" in entry_source
+    assert "deps.switchConversationProduct(deps.PRODUCT_CHAT);" in entry_source
+    assert "deps.resetConversationView(preserveProject);" in entry_source
 
-    request_start = source.index("  async function requestAnswer(")
-    request_end = source.index("  async function submitPrompt(", request_start)
-    request_source = source[request_start:request_end]
+    request_start = _source().index("  async function requestAnswer(")
+    request_end = _source().index("  async function submitPrompt(", request_start)
+    request_source = _source()[request_start:request_end]
     assert "const requestEpoch = conversationEpoch;" in request_source
     assert "const controller = new AbortController();" in request_source
     assert 'error.name === "AbortError"' in request_source
@@ -319,7 +330,7 @@ def test_cancel_control_has_mobile_safe_target_and_accessibility_contract() -> N
     html = INDEX_PATH.read_text(encoding="utf-8")
     css = (APP_PATH.parent / "padiem-cinematic-chat.css").read_text(encoding="utf-8")
     assert 'aria-label="답변 생성 취소"' in html
-    assert 'cancelStreamButton.hidden = !inFlight' in source
+    assert 'deps.cancelStreamButton.hidden = !deps.inFlight' in _conv_source()
     assert 'min-width: 64px' in css
     assert 'min-height: 42px' in css
 
@@ -330,11 +341,14 @@ def test_terminal_error_records_render_before_first_token_without_pc_recovery() 
 const fs = require("fs");
 const vm = require("vm");
 const assert = require("node:assert/strict");
+// #7216 R5 step 5a: renderStreamError moved into the conversation module; the
+// stream consumer still lives in app.js this step.
 const app = fs.readFileSync(process.argv[process.argv.length - 1], "utf8");
+const conv = fs.readFileSync(process.argv[process.argv.length - 1].replace(/app\.js$/, "chat-conversation-module.js"), "utf8");
 const streamStart = app.indexOf("  async function requestStreamingAnswer(");
 const streamEnd = app.indexOf("\n  function cancelActiveStream(", streamStart);
-const renderStart = app.indexOf("  function renderStreamError(");
-const renderEnd = app.indexOf("\n  function renderCancelled(", renderStart);
+const renderStart = conv.indexOf("  function renderStreamError(");
+const renderEnd = conv.indexOf("\n  function clearAttachment(", renderStart);
 (async () => {
   for (const wire of ["sse", "message", "ndjson", "ndjson-eof"]) {
     for (const message of ["드라이브 입력을 확인해 주세요. <script>unsafe()</script>", ""]) {
@@ -380,7 +394,7 @@ const renderEnd = app.indexOf("\n  function renderCancelled(", renderStart);
         fetch:()=>{throw Error("terminal refusal must not poll pending-result");},
       };
       const consume = vm.runInNewContext(
-        `(function(){${app.slice(renderStart,renderEnd)}\n${app.slice(streamStart,streamEnd)}\nreturn requestStreamingAnswer;})()`, context);
+        `(function(){${conv.slice(renderStart,renderEnd).replace(/deps\./g,"")}\n${app.slice(streamStart,streamEnd)}\nreturn requestStreamingAnswer;})()`, context);
       const result = await consume(article,{},[],null,{pcRunId:"chat_pcq_test"},new AbortController().signal,null);
       assert.equal(result,false); // no throw to requestAnswer's recovery catch
       assert.equal(state,"failed");
