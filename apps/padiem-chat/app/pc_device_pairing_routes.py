@@ -96,6 +96,8 @@ _ADOPT_BODY_KEYS = frozenset({
 
 _MAX_BODY_BYTES = 2048
 _NO_STORE = {"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"}
+from .journal_host import ensure_journal_visible
+
 _LOGGER = logging.getLogger("padiem_chat.request")
 
 #: Refusal codes this surface can produce, and the browser-visible sentence for
@@ -271,6 +273,7 @@ def _log_managed(*, actor: str, link_id: Any, managed: bool, result: str) -> Non
     for key, value in (("actor", actor), ("link_id", link_id)):
         if isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9_.:-]{1,64}", value):
             event[key] = value
+    ensure_journal_visible(_LOGGER)
     _LOGGER.info(json.dumps(event, separators=(",", ":")))
 
 

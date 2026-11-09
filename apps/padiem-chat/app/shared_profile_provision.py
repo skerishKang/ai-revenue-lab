@@ -6,6 +6,7 @@ import re
 import time
 
 from .history import HistoryConflict
+from .journal_host import ensure_journal_visible
 from .shared_login_timing import record_login_timing
 
 logger = logging.getLogger(__name__)
@@ -53,6 +54,7 @@ async def provision_shared_profile(request, user_id, access_token, tokens, *, ve
     stated = next((tokens[key] for key in ('account_id', 'accountId')
                    if tokens.get(key) is not None), None)
     if stated is None:
+        ensure_journal_visible(logger)
         logger.info('shared_login_account_cross_check=absent verified=%s', _shape(account_id))
     elif stated != account_id:
         logger.warning('shared_login_account_rejected condition=exchange_mismatch stated=%s verified=%s',

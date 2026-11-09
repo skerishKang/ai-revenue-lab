@@ -120,3 +120,4 @@
 261109 #7241 3a test_b14_openai_compatible_registry_adapter.py: 호환 어댑터 행/경로/바인딩을 등록부+라우트 표면에서 유도.
 261109 #7241 3a 공용: tests/_registry_values.py에 adapter_modules/adapter_for/adapter_declaring_retired 추가(어댑터를 이름 대신 상수로 선택), tests/_pilot_lane_paths.py 추가(게이트웨이 표면 구조 선택).
 261109 #7241 3a PR1 검증: 플랫폼 전체 2292 passed, 3 skipped(main 2244) — 신규 실패 0. 추가 줄 실값 0건. 전환 파일 내 실값 줄 0.
+2026-11-09 journal-host: one shared helper (app/journal_host.py) owns the host-visibility fix (handler + INFO level gate + stand-aside); the four earlier copies delegate and the five audited loggers bind at their call sites — 18 tests pin one stderr line per logger and forbid a private copy.

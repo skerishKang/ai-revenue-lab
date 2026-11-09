@@ -22,12 +22,12 @@ import base64
 import hashlib
 import logging
 import re
-import sys
 import time
 from typing import Any, Callable
 from urllib.parse import urlsplit
 
 from .history import VerifiedDispatch, _tagged
+from .journal_host import ensure_journal_visible
 from . import httpx_compat as httpx
 from .request_timing import timed_async
 from .pc_correlation import RUN_HASH_HEADER, DISPATCH_ID_HEADER, run_hash, dispatch_id
@@ -39,21 +39,12 @@ logger.setLevel(logging.INFO)
 def ensure_host_visible() -> None:
     """Make the ``pc_queue_call`` line reach the COM2 journal.
 
-    Same host fact the other stage lines documented (orchestration_timing,
-    chat_stream_timing, engine_timing): the serving CPython process configures
-    no logging, the root logger has no handler and Python's fallback carries
-    WARNING and above — so this module's INFO records were created and then
-    dropped, and the dispatch timing marker (#6963 era) never reached the
-    journal the latency measurement reads. Bound one message-only stderr
-    handler here, at the single call site that logs; propagation stops so a
-    root handler configured later cannot write the line twice.
+    The host configures no logging, so the dispatch timing marker (#6963 era)
+    was created and then dropped and the latency measurement read no marker.
+    One shared implementation now owns that fix (``journal_host``), so this and
+    every other stage logger cannot drift apart.
     """
-    if logger.handlers or logging.getLogger().handlers:
-        return
-    handler = logging.StreamHandler(sys.stderr)
-    handler.setFormatter(logging.Formatter("%(message)s"))
-    logger.addHandler(handler)
-    logger.propagate = False
+    ensure_journal_visible(logger)
 
 
 INTERNAL_STORE_PATH = "/internal/store"

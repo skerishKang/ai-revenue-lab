@@ -22,6 +22,7 @@ import time
 from typing import Any, AsyncIterator
 
 from .orchestration_bridge import B62OrchestrationError
+from .journal_host import ensure_journal_visible
 from .orchestration_timing import OrchestrationTiming
 from .worker_config import binding_value
 
@@ -310,6 +311,8 @@ async def ndjson_answer(
                 return
             # A non-timeout Engine refusal before the first token keeps the
             # existing one-shot buffered fallback.
+            ensure_journal_visible(_LOG)
+            ensure_journal_visible(_LOG)
             _LOG.info("orchestration_stream_fallback stage=start")
         except Exception:
             if text_seen:
