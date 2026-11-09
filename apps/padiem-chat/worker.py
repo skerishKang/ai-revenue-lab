@@ -1690,7 +1690,9 @@ class Default(WorkerEntrypoint):
         # claim landed in pending_verification forever. Wire it from whichever
         # presence store this runtime selected above; no store stays
         # fail-closed (never verified).
-        from .pc_device_pairing_routes import presence_pairing_verifier
+        # worker.py loads as a top-level script in the Workers runtime, so
+        # this import is the absolute app.* form the rest of this file uses.
+        from app.pc_device_pairing_routes import presence_pairing_verifier
         worker_app.state.pc_pairing_verifier = presence_pairing_verifier(
             getattr(worker_app.state, "mesh_device_presence_store", None))
         # #5573 PC pairing handoff: the ONE Windows installer value, read
