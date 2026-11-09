@@ -127,5 +127,12 @@ def test_the_legal_layer_uses_the_accepted_palette_and_leaves_styles_css_alone()
     # The accepted stylesheet is byte-pinned by the style contract; the legal
     # pages must not depend on touching it.
     assert "legal-pages.css" in PRIVACY and "legal-pages.css" in TERMS
-    for token in ("#f8f8fb", "#19191d", "#6557e8", "#e3e3e9"):
+    for token in ("#f8f8fb", "#19191d", "#6557e8"):
         assert token in LEGAL_CSS
+    # #7187 R3 2차: the shared hairline number lives in the token sheet and the
+    # legal layer consumes it (the pages load padiem-tokens.css first).
+    tokens_css = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
+    assert "#e3e3e9" in tokens_css
+    assert "--legal-line: var(--line);" in LEGAL_CSS
+    for page in (PRIVACY, TERMS):
+        assert page.index("padiem-tokens.css") < page.index("legal-pages.css")

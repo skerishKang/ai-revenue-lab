@@ -203,7 +203,7 @@ html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data
 
 .confirm-dialog-panel {
   padding: 22px;
-  border: 1px solid var(--line, #e3e3e9);
+  border: 1px solid var(--line);
   border-radius: 20px;
   background: var(--panel, #ffffff);
   color: var(--text, #19191d);
@@ -252,7 +252,7 @@ html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data
 }
 
 .confirm-dialog-cancel {
-  border: 1px solid var(--line, #e3e3e9);
+  border: 1px solid var(--line);
   background: var(--panel, #ffffff);
   color: inherit;
 }

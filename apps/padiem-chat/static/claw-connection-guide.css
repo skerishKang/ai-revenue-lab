@@ -2,7 +2,7 @@
 .claw-connection-guide {
   color: var(--text);
   background: var(--card-bg, #101827);
-  border: 1px solid var(--line, rgba(255,255,255,.2));
+  border: 1px solid var(--line);
   border-radius: 20px;
   box-shadow: 0 24px 72px rgba(0,0,0,.34);
   width: min(390px, calc(100vw - 32px));
@@ -39,7 +39,7 @@
 .claw-connection-guide-actions button {
   min-height:42px; padding:9px 15px; border-radius:11px; font:inherit; font-size:13px; font-weight:650; cursor:pointer;
 }
-.claw-connection-guide-cancel { color:var(--text); background:transparent; border:1px solid var(--line, #354154); }
+.claw-connection-guide-cancel { color:var(--text); background:transparent; border:1px solid var(--line); }
 .claw-connection-guide-continue { color:#fff; background:var(--accent, #336dff); border:1px solid transparent; }
 .claw-connection-guide button:focus-visible { outline:3px solid var(--accent, #5b8fff); outline-offset:2px; }
 @media (max-width:480px) {

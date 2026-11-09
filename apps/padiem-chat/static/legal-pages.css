@@ -8,7 +8,8 @@
   --legal-panel: #ffffff;
   --legal-text: #19191d;
   --legal-muted: #6f7079;
-  --legal-line: #e3e3e9;
+  /* #7187 R3 2차: the shared hairline value lives in padiem-tokens.css. */
+  --legal-line: var(--line);
   --legal-accent: #6557e8;
   --legal-accent-strong: #5546d6;
 }

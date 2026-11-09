@@ -253,8 +253,9 @@ def test_the_page_adds_no_new_visual_language() -> None:
     # had before left the label at 3.31:1 on the Glass card.
     assert "background: var(--accent);" in css
     assert "color: var(--accent-contrast);" in css
-    assert "var(--line, rgba(66, 106, 135, .28))" in css
-    assert "var(--focus-ring, rgba(101, 87, 232, .24))" in css
+    # #7187 R3 2차: fallback-less token references (the token sheet defines both).
+    assert "var(--line)" in css
+    assert "var(--focus-ring)" in css
     # The page stays inside the existing standalone-view frame.
     assert '.app-shell[data-state="automation"] #clawAutomation' in css
 

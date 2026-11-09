@@ -36,36 +36,40 @@ def test_logged_out_quote_dialog_names_what_signing_in_unlocks():
 
 
 def test_input_border_token_is_defined_per_theme_and_applied_to_inputs():
-    themes = (STATIC / "padiem-themes.css").read_text(encoding="utf-8")
-    glass = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
+    # #7187 R3 2차: the per-theme definitions moved to padiem-tokens.css; the
+    # values are the same numbers the theme sheet used to carry.
+    tokens = (STATIC / "padiem-tokens.css").read_text(encoding="utf-8")
     for theme, token in (
         ("light", "--input-border-strong: #767e8a;"),
         ("dark", "--input-border-strong: rgba(255,255,255,.45);"),
         ("cinematic", "--input-border-strong: rgba(255,255,255,.45);"),
         ("padiem-home", "--input-border-strong: #767e8a;"),
+        ("padiem-glass", "--input-border-strong: #56616b;"),
     ):
-        start = themes.index(f'html[data-theme="{theme}"]')
-        nxt = themes.find("html[data-theme=", start + 1)
-        section = themes[start: nxt if nxt != -1 else len(themes)]
+        start = tokens.index(f'html[data-theme="{theme}"]')
+        nxt = tokens.find("html[data-theme=", start + 1)
+        section = tokens[start: nxt if nxt != -1 else len(tokens)]
         assert token in section, theme
-    assert "--input-border-strong: #56616b;" in glass
     # The shared hairline values are untouched: glass still draws cards in
     # 38% white, the connection screen keeps its own language.
-    assert "--line: rgba(255, 255, 255, .38);" in glass
+    assert "--line: rgba(255, 255, 255, .38);" in tokens
+    # The dark theme's effective hairline is the contrast-layer value.
+    assert "--line: #405365;" in tokens
 
     util = (STATIC / "util-menu.css").read_text(encoding="utf-8")
     # 대표 결정 #7172로 계약 값 갱신: the util first-screen card joins the shared
     # hairline (var(--line)) so it matches the other first-screen cards; the
     # input-strength token keeps its job on real inputs (the two checks below).
     card = util[util.index(".util-tool-card {") : util.index(".util-tool-card {") + 400]
-    assert "border: 1px solid var(--line, rgba(26, 34, 48, .12))" in card
+    # #7187 R3 2차: fallback-less — the token sheet always defines --line.
+    assert "border: 1px solid var(--line)" in card
     assert "--input-border-strong" not in card
     # 2026-11-01: the speech/SNS forms left for /apps/council/ with their own
     # design tokens; this sheet no longer carries those selectors.
     quote = (STATIC / "b66-quote-runtime.css").read_text(encoding="utf-8")
-    assert quote.count("var(--input-border-strong, var(--border,") >= 2
+    assert quote.count("var(--input-border-strong)") >= 2
     dialog = (STATIC / "pc-file-exchange.css").read_text(encoding="utf-8")
-    assert "var(--input-border-strong, var(--line, rgba(66, 106, 135, 0.28)))" in dialog
+    assert "var(--input-border-strong)" in dialog
 
 
 def _srgb_channel(value: float) -> float:

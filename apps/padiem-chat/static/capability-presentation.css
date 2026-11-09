@@ -1,7 +1,7 @@
 .capability-kit {
   --capability-surface: color-mix(in srgb, var(--panel, #fff) 88%, transparent);
   --capability-soft: color-mix(in srgb, var(--accent-soft, #efedff) 74%, transparent);
-  --capability-line: color-mix(in srgb, var(--line, #e3e3e9) 86%, transparent);
+  --capability-line: color-mix(in srgb, var(--line) 86%, transparent);
   display: grid;
   gap: 12px;
   margin: 6px 0 14px;
@@ -55,7 +55,7 @@
 }
 
 .capability-kit-disclosure > .capability-kit-header:focus-visible {
-  outline: 2px solid var(--focus-ring, var(--accent, #6557e8));
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
   border-radius: 8px;
 }
@@ -276,7 +276,7 @@
   z-index: 2;
   margin: 0 0 18px;
   padding: 10px 12px;
-  border: 1px dashed color-mix(in srgb, var(--accent, #6557e8) 48%, var(--line, #e3e3e9));
+  border: 1px dashed color-mix(in srgb, var(--accent, #6557e8) 48%, var(--line));
   border-radius: 12px;
   background: color-mix(in srgb, var(--accent-soft, #efedff) 58%, transparent);
   color: var(--text);

@@ -2,7 +2,7 @@
  * action pair; separate native controls retain keyboard, click and menu roles. */
 html body .app-shell .sidebar :is(.project-row, .history-row) {
   background: rgba(255, 255, 255, .10) !important;
-  border: 1px solid var(--line, rgba(210, 220, 230, .25)) !important;
+  border: 1px solid var(--line) !important;
   border-radius: 11px;
   overflow: visible;
 }
@@ -118,7 +118,7 @@ html body .app-shell .sidebar :is(.project-row, .history-row) {
   min-height: 46px;
   padding: 0;
   background: rgba(255,255,255,.10) !important;
-  border: 1px solid var(--line, rgba(210,220,230,.25)) !important;
+  border: 1px solid var(--line) !important;
   border-radius: 11px;
 }
 html body .app-shell .sidebar :is(.project-row, .history-row)

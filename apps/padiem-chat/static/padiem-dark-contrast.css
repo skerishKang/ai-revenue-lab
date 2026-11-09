@@ -2,7 +2,7 @@
  * Existing light, glass, cinematic and image layers intentionally untouched. */
 html[data-theme="dark"] {
   --bg: #10151c; --page-bg: #10151c; --panel: #1a232d; --sidebar: #0e141b;
-  --text: #edf4fa; --muted: #b4c2d0; --line: #405365;
+  --text: #edf4fa; --muted: #b4c2d0; /* --line moved to padiem-tokens.css (#7187 R3 2차) */
   --composer-bg: #242e3a; --composer-border: #536778;
   --user-bubble-bg: #263545; --user-bubble-text: #f2f7fc;
   --assistant-surface-bg: #1c2835; --card-bg: #202d3a; --card-border: #455b70;

@@ -394,7 +394,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   align-items: flex-start;
 }
 .library-item {
-  border-color: var(--line, #e3e3e9);
+  border-color: var(--line);
   background: var(--card-bg, #fafafa);
 }
 .app-shell:is([data-state="calendar"],[data-state="connectors"]) :is(.calendar-item,.calendar-record,.capability-card) {
@@ -481,13 +481,13 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   filter: brightness(1.04);
 }
 .app-shell[data-state="automation"] #clawAutomation .claw-inbox-primary:focus-visible {
-  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
+  outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
 }
 .app-shell[data-state="automation"] #clawAutomation .claw-inbox-secondary {
   min-height: 40px;
   padding: 8px 14px;
-  border: 1px solid var(--line, rgba(66, 106, 135, .28));
+  border: 1px solid var(--line);
   border-radius: 999px;
   background: transparent;
   color: var(--muted, #5b6672);
@@ -500,7 +500,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   background: var(--surface, rgba(255, 255, 255, .76));
 }
 .app-shell[data-state="automation"] #clawAutomation .claw-inbox-secondary:focus-visible {
-  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
+  outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
 }
 

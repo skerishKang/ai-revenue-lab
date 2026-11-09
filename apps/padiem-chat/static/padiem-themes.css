@@ -9,11 +9,11 @@
   /* populated per theme; keep declarations here minimal so data-theme wins */
 }
 
-/* #6100: input borders have their own floor. The shared --line doubles as
-   the card hairline the connection screen is being rebuilt on, so its
-   value stays put; input controls take --input-border-strong instead,
-   defined per theme to clear the 3:1 non-text floor against each theme's
-   own fill (numbers: padiem-reports/2026-10-29). */
+/* #7187 R3 2차: --line, --input-border-strong and --focus-ring now live in
+   padiem-themes.css's sibling token sheet padiem-tokens.css (loaded earlier in
+   the head). #6100: input borders keep their own 3:1 floor token there; the
+   shared --line stays the card hairline. Component-scoped overrides (for
+   example claw-device-guidance's dark surfaces) remain in their own sheets. */
 /* ---- LIGHT — historical Phase 1 restrained light/violet (PR #714, 6c9f1a4) ---- */
 html[data-theme="light"] {
   color-scheme: light;
@@ -24,8 +24,6 @@ html[data-theme="light"] {
   --sidebar-text: #19191d;
   --text: #19191d;
   --muted: #6f7079;
-  --line: #e3e3e9;
-  --input-border-strong: #767e8a;
   --accent: #6557e8;
   --accent-contrast: #ffffff;
   --accent-soft: #efedff;
@@ -57,7 +55,6 @@ html[data-theme="light"] {
   --assistant-surface-border: #e3e3e9;
   --input-text: #19191d;
   --placeholder: #9b9ca5;
-  --focus-ring: rgba(101,87,232,.24);
   --topbar-bg: rgba(248,248,251,.86);
   --glass: rgba(255,255,255,.72);
 }
@@ -164,8 +161,6 @@ html[data-theme="dark"] {
   --sidebar: #101114;
   --text: #e9eaec;
   --muted: rgba(255,255,255,.56);
-  --line: rgba(255,255,255,.10);
-  --input-border-strong: rgba(255,255,255,.45);
   --accent: #9fc0dd;
   --accent-contrast: #131417;
   --accent-soft: rgba(159,192,221,.08);
@@ -187,7 +182,6 @@ html[data-theme="dark"] {
   --user-bubble-bg: #1c1e22;
   --user-bubble-text: #f2f3f4;
   --assistant-surface-bg: #181a1e;
-  --focus-ring: rgba(159,192,221,.32);
   --topbar-bg: rgba(19,20,23,.92);
   /* utility-only tokens — flat surface discipline, intentionally absent from CINEMATIC */
   --utility-surface: #1a1b1f;
@@ -283,8 +277,6 @@ html[data-theme="cinematic"] {
   --sidebar: rgba(6,9,15,.88);
   --text: #f7f8fa;
   --muted: rgba(255,255,255,.68);
-  --line: rgba(255,255,255,.14);
-  --input-border-strong: rgba(255,255,255,.45);
   --accent: #88c9ff;
   --accent-contrast: #04070d;
   --accent-soft: rgba(136,201,255,.10);
@@ -306,7 +298,6 @@ html[data-theme="cinematic"] {
   --user-bubble-bg: rgba(255,255,255,.085);
   --user-bubble-text: rgba(255,255,255,.92);
   --assistant-surface-bg: rgba(255,255,255,.045);
-  --focus-ring: rgba(136,201,255,.70);
   --topbar-bg: linear-gradient(180deg, rgba(7,11,19,.72), rgba(6,9,15,.14));
   /* filmic-only tokens — intentionally absent from DARK */
   --film-blue-glow: rgba(108,190,255,.16);
@@ -403,8 +394,6 @@ html[data-theme="padiem-home"] {
   --sidebar: rgba(255,255,255,.62);
   --text: #1a2230;
   --muted: #5a6578;
-  --line: rgba(26,34,48,.12);
-  --input-border-strong: #767e8a;
   --accent: #3a7bd5;
   --accent-contrast: #0b0f14;
   --accent-soft: rgba(58,123,213,.10);
@@ -426,7 +415,6 @@ html[data-theme="padiem-home"] {
   --user-bubble-bg: #1a2230;
   --user-bubble-text: #ffffff;
   --assistant-surface-bg: rgba(255,255,255,.62);
-  --focus-ring: rgba(58,123,213,.28);
   --topbar-bg: rgba(255,255,255,.55);
 }
 
@@ -467,7 +455,7 @@ html[data-theme="padiem-home"] .brand { color: #1a2230; letter-spacing: .02em; f
 html[data-theme="padiem-home"] .brand-mark,
 html[data-theme="padiem-home"] .assistant-avatar {
   background: rgba(255,255,255,.72);
-  border: 1px solid rgba(26,34,48,.12);
+  border: 1px solid var(--line);
   color: #1a2230;
   box-shadow: 0 6px 18px rgba(26,34,48,.08);
 }
@@ -476,7 +464,7 @@ html[data-theme="padiem-home"] .assistant-avatar::after {
   background: rgba(90,160,230,.28);
 }
 html[data-theme="padiem-home"] .new-chat {
-  background: rgba(255,255,255,.72); border-color: rgba(26,34,48,.12); color: #1a2230;
+  background: rgba(255,255,255,.72); border-color: var(--line); color: #1a2230;
   box-shadow: 0 3px 10px rgba(26,34,48,.05);
   backdrop-filter: blur(12px);
 }
@@ -488,7 +476,7 @@ html[data-theme="padiem-home"] .topbar {
 }
 html[data-theme="padiem-home"] .model-pill,
 html[data-theme="padiem-home"] .login-button {
-  background: rgba(255,255,255,.68); border-color: rgba(26,34,48,.12); color: #2a3446;
+  background: rgba(255,255,255,.68); border-color: var(--line); color: #2a3446;
 }
 html[data-theme="padiem-home"] .eyebrow { color: #3a7bd5; letter-spacing: .14em; }
 html[data-theme="padiem-home"] .eyebrow::before { background: #3a7bd5; box-shadow: 0 0 10px rgba(58,123,213,.32); }
@@ -519,7 +507,7 @@ html[data-theme="padiem-home"] .composer-wrap { background: linear-gradient(to b
 html[data-theme="padiem-home"] .composer-note { color: var(--muted) !important; }
 /* PADIEM_HOME chat-state — override dark cinematic chat selectors */
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .message-bubble { background: var(--user-bubble-bg) !important; color: var(--user-bubble-text) !important; border-color: transparent !important; box-shadow: 0 4px 16px rgba(26,34,48,.10) !important; }
-html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-avatar { background: rgba(255,255,255,.72) !important; border: 1px solid rgba(26,34,48,.12) !important; color: #1a2230 !important; box-shadow: 0 6px 18px rgba(26,34,48,.08) !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-avatar { background: rgba(255,255,255,.72) !important; border: 1px solid var(--line) !important; color: #1a2230 !important; box-shadow: 0 6px 18px rgba(26,34,48,.08) !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-meta { color: var(--muted) !important; }
 html[data-theme="padiem-home"] .app-shell:is([data-state="chat"],[data-state="claw"]) .demo-label { background: rgba(255,255,255,.62) !important; border-color: rgba(26,34,48,.10) !important; color: var(--muted) !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content { color: #1e2a3a !important; }

@@ -60,7 +60,7 @@
   box-sizing: border-box;
   /* #6100: inputs take the input-only border token; the themes define it to
      clear the 3:1 non-text floor where the shared --border hairline does not. */
-  border: 1px solid var(--input-border-strong, var(--border, rgba(127, 127, 127, 0.28)));
+  border: 1px solid var(--input-border-strong);
   border-radius: 10px;
   background: var(--surface, rgba(255, 255, 255, 0.05));
   color: inherit;
@@ -108,7 +108,7 @@
   min-height: 40px;
   padding: 8px 14px;
   border-radius: 999px;
-  border: 1px solid var(--input-border-strong, var(--border, rgba(127, 127, 127, 0.3)));
+  border: 1px solid var(--input-border-strong);
   background: transparent;
   color: inherit;
   cursor: pointer;
@@ -203,7 +203,7 @@
   font: inherit;
   color: inherit;
   background: transparent;
-  border: 1px solid var(--input-border-strong, var(--border, rgba(127,127,127,.3)));
+  border: 1px solid var(--input-border-strong);
   border-radius: 9px;
   padding: 8px 10px;
   min-height: 40px;
@@ -253,7 +253,7 @@
   min-height: 44px;
   padding: 8px 14px;
   border-radius: 999px;
-  border: 1px solid var(--line, rgba(66, 106, 135, 0.28));
+  border: 1px solid var(--line);
   background: var(--surface, rgba(255, 255, 255, 0.8));
   color: inherit;
   cursor: pointer;
@@ -274,7 +274,7 @@
   flex-direction: column;
   gap: 4px;
   padding: 8px 10px;
-  border: 1px solid var(--line, rgba(66, 106, 135, 0.28));
+  border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--surface, rgba(255, 255, 255, 0.7));
 }

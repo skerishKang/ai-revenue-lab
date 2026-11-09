@@ -29,7 +29,7 @@
   padding: 8px 14px;
   color: var(--text, #24435a);
   background: var(--surface, rgba(255,255,255,.76));
-  border: 1px solid var(--line, rgba(66,106,135,.28));
+  border: 1px solid var(--line);
   border-radius: 999px;
   cursor: pointer;
 }
@@ -69,7 +69,7 @@
   overflow-y: auto;
   pointer-events: none;
   border-radius: 14px;
-  border: 1px solid var(--line, rgba(66,106,135,.26));
+  border: 1px solid var(--line);
   background: var(--surface, rgba(255,255,255,.86));
   box-shadow: 0 7px 30px rgba(20,51,73,.06);
 }
@@ -115,7 +115,7 @@
   font-size: .8rem;
   min-height: 44px;
   border-radius: 9px;
-  border: 1px solid var(--line, rgba(66,106,135,.3));
+  border: 1px solid var(--line);
   background: var(--surface, #fff);
   color: var(--text, #24435a);
   padding: 8px 12px;
@@ -124,7 +124,7 @@
 .claw-device-manager-connect {
   margin-top: 12px;
   padding: 12px;
-  border: 1px solid var(--line, rgba(66,106,135,.22));
+  border: 1px solid var(--line);
   border-radius: 11px;
   background: var(--surface, rgba(250,253,255,.5));
 }
@@ -148,7 +148,7 @@
   min-height: 44px;
   padding: 9px 14px;
   border-radius: 10px;
-  border: 1px solid var(--line, rgba(66,106,135,.3));
+  border: 1px solid var(--line);
   background: var(--surface, #fff);
   color: var(--text, #24435a);
   cursor: pointer;
@@ -161,7 +161,7 @@
   flex-wrap: wrap;
   gap: 12px;
   padding: 12px;
-  border: 1px solid var(--line, rgba(66,106,135,.22));
+  border: 1px solid var(--line);
   border-radius: 11px;
   background: var(--surface, rgba(250,253,255,.5));
 }
