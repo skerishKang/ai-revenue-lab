@@ -22,6 +22,7 @@ USER_HELPER_TASK_PATH = "\\Padiem\\"
 USER_HELPER_TASK_NAME = "PadiemUserSessionHelper"
 
 from .pc_correlation import run_hash as _pc_run_hash
+from . import local_agent_mesh_command_phases as phases
 
 import base64
 import hashlib
@@ -1261,8 +1262,7 @@ class OracleMeshExecutor:
                 if value is not None and isinstance(value, (str, int, bool))
             )
             print(
-                "oracle-mesh-command"
-                f" phase={phase}"
+                f"{phases.COMMAND_JOURNAL_MARKER} phase={phase}"
                 f" ts={datetime.now(timezone.utc).isoformat()}"
                 f" elapsed_ms={elapsed_ms}"
                 f" dispatch_id={dispatch.dispatch_id}"
@@ -1821,7 +1821,7 @@ try {@@ARGUMENTS_SOURCE@@
         # without it a silent user job reads as "claimed then nothing", which is
         # exactly how the 11-08 incident read in the journal.
         started = time.monotonic()
-        self._trace_command(dispatch, "start", started)
+        self._trace_command(dispatch, phases.START, started)
 
         def phase(phase_name: str) -> None:
             self._trace_command(dispatch, phase_name, started)
@@ -1848,13 +1848,13 @@ try {@@ARGUMENTS_SOURCE@@
                 deliver_as_file=True,
             )
         except Exception:
-            self._trace_command(dispatch, "error", started, error_type="port_failed")
+            self._trace_command(dispatch, phases.ERROR, started, error_type="port_failed")
             return OracleMeshExecutionOutcome(termination="exited", exit_code=1,
                 body=_json.dumps({"ok": False, "error_code": USER_SESSION_UNAVAILABLE, "detail": "helper pipe is not available"}, ensure_ascii=True).encode("utf-8"))
         term = getattr(observed, "termination", "no_reply")
         out = getattr(observed, "output", b"") or b""
         if not isinstance(out, (bytes, bytearray)): out = str(out).encode("utf-8","replace")
-        self._trace_command(dispatch, "result", started, termination=term, output_bytes=len(bytes(out)))
+        self._trace_command(dispatch, phases.RESULT, started, termination=term, output_bytes=len(bytes(out)))
         if term == "cancelled":
             # The #7107 helper ended the user child when this dispatch was stopped.
             return OracleMeshExecutionOutcome(termination="cancelled", exit_code=None, body=b"")
@@ -1887,7 +1887,7 @@ try {@@ARGUMENTS_SOURCE@@
             # command port is a misconfiguration, not a silent no-op.
             raise OracleMeshChannelRefused("command execution is not configured")
         started = time.monotonic()
-        self._trace_command(dispatch, "start", started)
+        self._trace_command(dispatch, phases.START, started)
 
         def phase(phase_name: str) -> None:
             self._trace_command(dispatch, phase_name, started)
@@ -1921,12 +1921,12 @@ try {@@ARGUMENTS_SOURCE@@
                 # The port refused before the PC was asked. Collapsing that into
                 # ``no_reply`` would report a silent console for a command that
                 # never ran, so the two observations stay separate.
-                self._trace_command(dispatch, "refused", started, reason="port")
+                self._trace_command(dispatch, phases.REFUSED, started, reason="port")
                 return OracleMeshExecutionOutcome(
                     termination="not_executed", exit_code=None, body=b"",
                 )
             self._trace_command(
-                dispatch, "error", started, error_type=type(exc).__name__,
+                dispatch, phases.ERROR, started, error_type=type(exc).__name__,
             )
             return OracleMeshExecutionOutcome(termination="no_reply", exit_code=None, body=b"")
         termination = getattr(observed, "termination", "no_reply")
@@ -1953,7 +1953,7 @@ try {@@ARGUMENTS_SOURCE@@
         self._line_blocked += max(0, blocked)
         self._line_cleared += max(0, cleared)
         self._trace_command(
-            dispatch, "result", started, termination=termination,
+            dispatch, phases.RESULT, started, termination=termination,
             output_bytes=len(raw),
             line_blocked=blocked or None,
             line_cleared=cleared or None,
@@ -2571,9 +2571,9 @@ try {@@ARGUMENTS_SOURCE@@
         # The read_ok→submit gap suspects the persist (it owns the fsyncs): one
         # phase line in the existing format names how long it took. It carries
         # no values and no paths — instrumentation only, never a behaviour.
-        self._trace_command(dispatch, "persisted", persist_started)
+        self._trace_command(dispatch, phases.PERSISTED, persist_started)
         submit_started = time.monotonic()
-        self._trace_command(dispatch, "submit", submit_started)
+        self._trace_command(dispatch, phases.SUBMIT, submit_started)
         try:
             status, data = self._post(RESULT_PATH, payload)
         except OracleMeshChannelRefused:
@@ -2775,7 +2775,7 @@ try {@@ARGUMENTS_SOURCE@@
         # The claim is its own instant. A round used to be observable only at its ends,
         # so "the queue was slow to hand this over" and "this PC took that long to
         # answer" printed as one number and the journal could not tell them apart.
-        self._trace_command(dispatch, "claimed", time.monotonic())
+        self._trace_command(dispatch, phases.CLAIMED, time.monotonic())
         if dispatch.background:
             from dataclasses import asdict
             started = self._background_manager().start(
