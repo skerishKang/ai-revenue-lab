@@ -454,8 +454,10 @@ jobs:
           # deployment-owned B14 caller-proof reference the Engine signs its
           # B14 dispatch with (metadata only, never the value). This compares
           # immutable served versions, not mutable /settings.
-          grep -Fxq 'PADIEM_ENGINE_AGENT_DURABLE_ENABLED = "true"' apps/padiem-ai-engine/wrangler.toml
-          grep -Fxq 'binding = "WEB_XLSX_PRIVATE_B62_D1"' apps/padiem-ai-engine/wrangler.toml
+          # Production carries no checked-in [vars] (the six flags are staged at
+          # deploy time), so the durable flag and the B62 D1 binding are proven
+          # on the served version itself, not by text in the repository file.
+          python3 -c "import json,sys; b=json.load(open(sys.argv[1],encoding='utf-8'))['result']['resources']['bindings']; b=[dict(v,name=k) for k,v in b.items()] if isinstance(b,dict) else b; m={x.get('name'):x for x in b}; assert (m.get('PADIEM_ENGINE_AGENT_DURABLE_ENABLED') or {}).get('text')=='true','durable flag'; assert (m.get('WEB_XLSX_PRIVATE_B62_D1') or {}).get('type')=='d1','b62 d1'; print('ENGINE_SERVED_DURABLE_FLAG_AND_B62_D1=PASS')" "${version_detail}"
           python3 .github/scripts/b62_binding_state_guard.py \
             --before "${RUNNER_TEMP}/version-pre.json" \
             --after "${version_detail}" \
