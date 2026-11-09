@@ -997,6 +997,14 @@ async def _revoke_canonical_session(request: Request) -> str | None:
     # both end a session here).
     from .pc_scope_cache import invalidate_owner_scope
     invalidate_owner_scope(claims.user_id)
+    # Design 2판 §2.3: seed the local denylist (record-only at stage 1).
+    try:
+        from .auth_shadow_verify import record_denylist, record_denylist_from_access_cookie
+
+        record_denylist(canonical_session_id, None)
+        record_denylist_from_access_cookie(request.cookies)
+    except Exception:
+        pass
     return None
 
 

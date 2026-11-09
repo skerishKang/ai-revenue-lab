@@ -378,6 +378,11 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
         shared_login_flow = create_host_shared_login_flow(
             os.environ, identity_authority, settings.public_base_url,
             canonical_session_lifetime_seconds=settings.session_max_age_seconds)
+        # Stage 1 shadow (#7078): warm the JWKS cache once at startup (off
+        # the request path) so the first verified request does not pay the
+        # ~400 ms JWKS fetch. No-op unless the shadow switch is ON.
+        from .auth_shadow_verify import prewarm_shadow_verifier
+        prewarm_shadow_verifier()
 
     # #4139 Oracle management-host return leg, composed from the SAME env
     # bindings the Worker root composes (worker.py build_oracle_mesh_return_source_from_env).

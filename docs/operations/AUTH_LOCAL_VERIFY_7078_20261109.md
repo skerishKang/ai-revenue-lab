@@ -2,6 +2,10 @@
 
 - 상태: 설계 문서 (운영 코드·설정 변경 없음). 대표 결정(2026-11-09): 보류 해제·최우선.
   PC 명령 지연의 주원인이 요청마다의 Cloudflare identity 왕복(거점 LAX, 호출당 약 400ms)으로 확인됨.
+- 2판 (2026-11-09, 아르곤 검토 + CTO 지시 반영): (a) 같은 호스트 폐기는 로컬 검증 뒤 로컬 폐기 캐시
+  (denylist: 기존 `auth_validation_cache` 또는 새 표) 대조로 0초 차단. (b) leeway 60초(타 제품 최악 16분).
+  (c) 1.5단계(padiem-auth 폐기 연동) 신설, 단계 2는 구 HMAC 쿠키(`sid` 유무 모두) guard 유지·토큰만 로컬 검증.
+  (d) 단계 3 로그인 시 B62·B54 권위 세션 수립 유지. (e) §1 표 보충. 1판 §2.3·§2.4·§4·§5는 2판으로 대체된다.
 - 범위: Chat 요청 시점 세션 확인(`session_revocation_guard`) 대체 + 이메일(비밀번호) 로그인 padiem-auth 이전.
   서버 은퇴·RPC 25개 중 19개(계정·테넌트·커넥터 권위)는 범위 밖(2026-11-07 결정).
 - 읽은 근거: 이슈 #7078 본문·코멘트, `docs/standards/AUTH_STANDARD.md` §9 이후, 아래 표의 코드 위치만 필요 구간 읽음.
@@ -35,9 +39,11 @@
 | 경로 | 요청당 identity 호출 (method) | 코드 위치 | 캐시 적용 여부 |
 | --- | --- | --- | --- |
 | Chat 일반 요청 (보호 API, 브라우저 쿠키) | `resolve_auth_session` ×1 (`sid` 기준) | guard `session_revocation_guard.py:209` → `control_plane_identity_worker.py:389` | 있음: SQLite 세션 캐시 300초(#7191) + `CachedIdentityAuthority` 300초(#7284). 캐시 적중이면 0회 상향. 미적중이 LAX 왕복 (~400ms~1.2s) |
-| PC 명령 턴 (채팅 턴·파일/브라우저 lane) | `resolve_current_auth_session` ×1 + `resolve_connector_owner_scope` ×1 + B54 `resolve_current_b54_canonical_session`(내부 `resolve_current_auth_session`) ×1 → 최대 ×3 | `chat_pc_drive.py:374 _resolve_chat_owner:406` + `:518` + `:444`; 소유 경로 `oracle_mesh_read_return_routes.py:4532,4555,5475` | 부분 있음: `CachedIdentityAuthority` 60초(`identity_call_cache.py:75`). 턴 내 중복은 1회로 합쳐지나 턴 간(60초 초과)은 재호출. PC 폴링(`/internal/chat/engine-pc-files`)은 매 폴링마다 재호출됨 |
+| PC 명령 턴 (채팅 턴·파일/브라우저 lane) | `resolve_current_auth_session` ×1 + `resolve_connector_owner_scope` ×1 + B54 `resolve_current_b54_canonical_session`(내부 `resolve_current_auth_session`) ×1 + `resolve_product_user_for_subject` ×1 → 최대 ×4 | `chat_pc_drive.py:374 _resolve_chat_owner:406` + `:518` + `:444`; 소유 경로 `oracle_mesh_read_return_routes.py:4532,4555,5475` (여기의 `resolve_product_user_for_subject`는 PC 폴링·소유 해석의 실제 주범: 11-09 22시 20분 n=27, TTFB 중앙 911ms, LAX) | 부분 있음: `CachedIdentityAuthority` 60초(`identity_call_cache.py:75`). 턴 내 중복은 1회로 합쳐지나 턴 간(60초 초과)은 재호출. PC 폴링(`/internal/chat/engine-pc-files`)은 매 폴링마다 재호출됨 |
 | Claw (자동화·커넥터·MCP) | `resolve_current_b54_canonical_session` ×1 (+ 경우에 따라 `resolve_product_user_for_subject` ×1, `resolve_connector_owner_scope` ×1) | `b54_canonical_session.py:212` → authority `:244`; `claw_automation_owner_resolution.py:461`; `mcp_oauth.py:603,630` | B54/current은 `CachedIdentityAuthority` 60초. `product_user`는 과정 캐시 60초(§3). MCP OAuth(`/oauth/authorize`)는 옛 경로 30회/7일(점검 기준) |
 | 북AI | 옛 identity `resolve_*` 0회. 이미 padiem-auth 토큰을 JWKS 로컬 검증 | `apps/bookai/public/bookai-auth-verify.mjs:2` (JWKS fetch `:13`), `packages/padiem-auth-verify/verify.mjs` | JWKS 캐시. 정본 모델 — 변경 대상 아님 |
+| 개인회생 내부 검증 | padiem-auth → Chat `POST /internal/password-verify` | `apps/padiem-auth/worker.mjs:407` (Chat 내측 수신). 7일 579회(점검 기준) — 직접 로그인 126회보다 큼 | 없음. padiem-auth 경유 시 이 경로는 Chat→padiem-auth 방향으로 뒤집어짐 + `POST /internal/account-block`(`worker.mjs:278`)는 옛 권위→padiem-auth 차단 전달로 운영 0건 |
+| 새 방식의 refresh (단계 2 이후, §2) | Chat → padiem-auth `/token` refresh ×1. 활성 세션당 만료 5분 전(10분마다 1회) + 만료 시 재시도 | `shared_login_flow.refresh`(`shared_login_flow.py:395`) | `padiem-auth` 내부 `resolveAccount` 재호출은 없도록(refresh는 DO `rotate` 검사만) 설계 확인 — 있으면 10분마다 1회 추가 상향 소스 |
 | 로그인 — Google | padiem-auth 교환·refresh (신규 경로). 구 전화면 `bridge_trusted_product_auth` → `resolve_or_create_product_link` ×1 + `establish_auth_session` ×1 (+ B54 ×1) | `auth_routes.py:359 _write_identity_shadow_after_login` (호출 `:538`), `worker.py:332,367` | 없음 (로그인 시 1회성). 7일 `/auth/shared/start 39·/callback 30·/refresh 406` / `/auth/google/* 56·6` 중 신규 성공 19건 |
 | 로그인 — 이메일(구: Chat 직접) | `resolve_or_create_product_link` ×1 + `establish_auth_session` ×1 (+ B54 ×1) + shadow 저장 | `auth_routes.py:834 password_login:924`, `establish_b54...:418` | 없음. 7일 126회. padiem-auth 경유 시 내부 `/internal/password-verify` 579회(점검 기준)가 뒤집혀 Chat→padiem-auth 1회 |
 | 로그아웃 | `revoke_auth_session` ×1 (해당 `sid` 하나만) | `auth_routes.py:1256 logout` → `:957 _revoke_canonical_session:978` | 없음. guard 면제 경로이므로 guard 비용 0. 7일 15회 |
@@ -74,7 +80,7 @@
 
 | 후보 | access 수명 | 갱신 | 장점 | 단점 |
 | --- | --- | --- | --- | --- |
-| A (추천) | 15분 (표준값 그대로, `access-token.mjs:2`) | Chat이 만료 전에 padiem-auth `/token` refresh 호출(30일 회전형 refresh, §8·§10 30초 유예). 프론트 `session-retry` 이미 있음 | 표준·북AI·러브트리 동일 규약. JWKS 캐시(300초)와 정합. 시계 차이 5분 흡수(§5) | 타 제품 폐기의 최악 지연 최대 15분(§2.3) |
+| A (추천) | 15분 (표준값 그대로, `access-token.mjs:2`) | Chat이 만료 전에 padiem-auth `/token` refresh 호출(30일 회전형 refresh, §8·§10 30초 유예). 프론트 `session-retry` 이미 있음 | 표준·북AI·러브트리 동일 규약. JWKS 캐시(300초)와 정합. 시계 차이 60초 흡수(§5) | 타 제품 폐기의 최악 지연 최대 16분(15분+leeway 60초, §2.3) |
 | B | 10분 | refresh 시점만 5분 앞당김 | 지연 10분 | 표준과 어긋남, 이득 작음 |
 | C | 5분 | refresh 빈도 3배 | 지연 5분 | refresh 상향 3배, 갱신 실패 재로그인 증가 |
 
@@ -83,21 +89,39 @@
   (`shared_login_flow.py:395`)가 이미 refresh→신규 access 교환을 한다.
   서버 측에서는 만료 5분 전 백그라운드 갱신을 guard의 refresh-ahead(#7191)와 같은 패턴으로 둔다.
 
-### 2.3 폐기 — 갱신 때 확인 + 즉시 끊어야 하는 경우
+refresh가 새 지연원이 되지 않는 방법: refresh 호출은 요청 경로 밖에서 수행한다.
+활성 세션당 10분마다 1회 예상되는 refresh는 응답 후 백그라운드 태스크 또는 프론트의
+`session-retry`(401 후 1회)로 처리하고, 만료된 access로 들어온 요청은 먼저 refresh를
+기다리는 대신 기존 guard 판정(또는 refresh 대기 대신 401 후 프론트가 refresh하고 재시도)을
+선택한다. 어느 쪽이든 요청 경로에 `/token` 왕복(LAX ~400ms)이 인라인되지 않게 한다.
+JWKS 재조회도 캐시 만료 시 요청 경로에서 하지 않고 기동 시 예열 + 만료 수 분 전
+백그라운드 갱신을 병행한다 (§5 키 교체 순서와 정합).
+
+### 2.3 폐기 — 갱신 때 확인 + 로컬 denylist + 같은 호스트 즉시 끊기 (2판)
 
 기본: **갱신 때 확인**. refresh는 padiem-auth에서 수행되므로
 `worker.mjs:520 exchangeCode`/`rotate`가 차단·탈퇴·폐기된 세션을 거부한다.
-이미 발급된 access는 만료까지 로컬 유효하므로, "15분 안에"가 상한이다
-(§4 "최대 차단 지연은 15분"과 일치).
+이미 발급된 access는 서명 검증만으로는 막을 수 없으므로, **로컬 검증 뒤 denylist를 대조**한다.
+
+- denylist (2판, 아르곤 (a) 결함 수정): 같은 호스트에서 폐기가 일어나면
+  (`logout`, `password_change`, `password_reset_confirm`, 계정 탈퇴, 관리자 차단)
+  Chat이 폐기된 `sid`(및 해당 `account_id`)를 **로컬 폐기 캐시에 기록**한다.
+  기록은 최소 20분(수명 15분 + leeway 60초 + 전파 여유) 유지한다.
+  저장소는 기존 `auth_validation_cache`에 새 표를 붙이거나 별도 denylist 표를 쓴다
+  (한 호스트가 여러 워커를 쓰면 워커 간 공유가 필요한 표로 둔다 — 인메모리 단독은 부족).
+  이후의 로컬 검증은 `Verifier.verify(token)` 성공 뒤 denylist를 대조하고,
+  적중하면 그 요청은 거부로 취급한다 (단계 2 이후의 판정, 단계 1 그림자는 기록만).
+- 타 제품에서 폐기된 access는 denylist에 없으므로 남은 수명만큼 유효하다.
+  최악은 leeway 60초를 포함해 **16분** (15분 + 60초).
 
 즉시 끊어야 하는 경우(로그아웃·비밀번호 변경·탈퇴·관리자 차단)에 대한 선택지는 둘 중 하나다:
 
 | 방안 | 동작 | 비용 | 추천 |
 | --- | --- | --- | --- |
-| (i) 짧은 TTL (추천) | access 15분 + 같은 호스트 폐기 시 즉시 캐시 무효화. 별도 푸시 없음 | 없음. 표준대로 | **이 문서의 추천.** 이미 있는 무효화 인프라(`invalidate_auth_cache`)가 이 몫을 한다 |
+| (i) 짧은 TTL (추천) | access 15분 + 같은 호스트 폐기 시 denylist 기록·즉시 대조 무효화. 별도 푸시 없음 | 없음. 표준대로 | **이 문서의 추천.** 무상태 검증만으로는 잔여 access를 못 막으므로 denylist가 0초 차단을 만든다 |
 | (ii) 폐기 목록 푸시 | padiem-auth가 폐기 시 Chat(및 각 제품)에 무효화 요청 푸시 | DO→제품 푸시 경로·재전송·감시·구독 키 신규 구축. §9 경고("발신·내구성 있는 재전송과 실패 감시가 연결되기 전에는 15분 안에 차단이 반영된다고 주장하지 않는다")가 바로 이 경우 | 표준 감시·재전송이 갖춰지기 전까지는 채택하지 않는다. 필요해지면 별도 설계 후 추가 |
 
-즉, 폐기는 **"갱신 때 확인 + 같은 호스트 즉시 무효화 + 15분 상한"**이 기본이다.
+즉, 폐기는 **"갱신 때 확인 + 같은 호스트 denylist 즉시 차단 + 타 제품 16분 상한"**이 기본이다.
 푸시는 지금 만들지 않는다.
 
 ### 2.4 경우별 최악 지연 (폐기 후 끊기는 시각)
@@ -106,16 +130,18 @@
 
 | 사건 | 이 호스트(Chat)에서 수행 | 타 제품에서 수행 |
 | --- | --- | --- |
-| 로그아웃(그 브라우저) | 0초: 쿠키 제거 + `revoke`→access 즉시 무효(같은 `sid` 폐기 경로, `auth_routes.py:957`). 새 access 없음 | 15분: 남은 access 만료까지 유효. refresh 시도 시 거부 |
-| 비밀번호 변경 | 0초(같은 호스트): `revoke`+`revoke_all` 후 access 폐기. `password_change:1061,1072` | 15분 (refresh 시 거부). 단, 변경 직후 기존 refresh도 무효이므로 그 논의 refresh는 실패 |
-| 비밀번호 재설정(링크) | 0초: `revoke_all strict` 후 비번 변경(`password_reset_confirm:1227`) | 15분 |
-| 탈퇴 | 0초: `finalizeAccountDeletion` + tombstone(`worker.mjs:608`) 후 refresh 거부 + Chat 무효화 | 15분까지 유효. 단, tombstone 확정 후 refresh·재로그인은 거부(`identityIsDeleted:621`). refresh가 15분 주기여도 이 수명을 넘지 않는다 |
-| 관리자 차단(`account-block`) | 0초(같은 호스트 경유 시): `worker.mjs:278 setAccountStatus` + 무효화 | 15분: 차단 표식 후 refresh 거부(`setAccountStatus`→`rotate` 검사). 푸시를 하지 않으므로 15분 상한 |
+| 로그아웃(그 브라우저) | 0초: 쿠키 제거 + `revoke`→ denylist 기록으로 다음 요청부터 거부(`auth_routes.py:957`). 새 access 없음 | 16분: 남은 access 만료까지 유효. refresh 시도 시 거부 |
+| 비밀번호 변경 | 0초(같은 호스트): `revoke`+`revoke_all` + denylist 기록. `password_change:1061,1072` | 16분 (refresh 시 거부). 단, 변경 직후 기존 refresh도 무효이므로 그 논의 refresh는 실패 |
+| 비밀번호 재설정(링크) | 0초: `revoke_all strict` + denylist 기록 후 비번 변경(`password_reset_confirm:1227`) | 16분 |
+| 탈퇴 | 0초: `finalizeAccountDeletion` + tombstone(`worker.mjs:608`) + denylist 기록 후 refresh 거부 + Chat 무효화 | 16분까지 유효. 단, tombstone 확정 후 refresh·재로그인은 거부(`identityIsDeleted:621`). refresh가 15분 주기여도 이 수명을 넘지 않는다 |
+| 관리자 차단(`account-block`) | 0초(같은 호스트 경유 시): `worker.mjs:278 setAccountStatus` + denylist 기록 | 16분: 차단 표식 후 refresh 거부(`setAccountStatus`→`rotate` 검사). 푸시를 하지 않으므로 16분 상한 |
+| 전환 기간 구 HMAC 쿠키 (`sid` 없음) | 단계 2에서도 기존 guard 처리 유지(§4) — 최대 7일은 아님. 없음이면 쿠키 자체 만료(7일)까지 guard 대상 밖이므로 그대로 만료까지 허용 | — |
+| 전환 기간 구 HMAC 쿠키 (`sid` 있음) | 단계 2에서도 guard 유지 — 캐시 窓 300초가 상한 (1.5단계 후 토큰 경로는 denylist 0초) | — |
 
 구 guard와 비교: 구 guard의 타 제품 폐기 최악은 300초(캐시 창)와 같다.
-새 방식은 같은 호스트 즉시(0초) + 타 제품 15분이다.
+새 방식은 같은 호스트 denylist 0초 + 타 제품 16분이다 (2판: leeway 60초).
 §9의 "15분 안에 차단이 반영된다고 주장하지 않는다"는 푸시를 주장하지 않는다는 뜻이며,
-이 설계는 refresh-거부 경로를 실제로 연결하므로 "refresh 시도 시 0초, 발급분은 최대 15분"으로 명시한다.
+이 설계는 refresh-거부 경로를 실제로 연결하므로 "refresh 시도 시 0초, 발급분은 최대 16분"으로 명시한다.
 즉시 반영이 꼭 필요하면 그때 푸시(방안 ii)를 별도 추진한다.
 
 ## 3. 사라지는 호출과 남는 호출
@@ -124,8 +150,8 @@
 
 | 사라지는 호출 | 대체 | 비고 |
 | --- | --- | --- |
-| 요청마다 `resolve_auth_session` (§715) | access 로컬 검증(§2). JWKS 캐시 300초 | PC 턴·Claw의 세션 확인분도 이 자리를 대체하면 사라진다(§3.2 제외) |
-| 로그인 시 구 `resolve_or_create_product_link`+`establish_auth_session` (B62·B54) | padiem-auth `resolveAccount`(`worker.mjs:617`) + access 발급 | 단, `resolveAccount` 내부가 여전히 옛 권위를 부를 수 있다(§5·§9). Chat 측 호출은 사라지나 권위 자체는 유지 |
+| 요청마다 `resolve_auth_session` (§715) | access 로컬 검증(§2) + denylist 대조. JWKS 캐시 300초 | PC 턴·Claw의 세션 확인분도 토큰 경로는 이 자리를 대체하나, B54·소유 범위는 §3.2대로 남음 |
+| 로그인 시 구 `resolve_or_create_product_link`+`establish_auth_session` (B62·B54) | 2판: 단계 3에서도 **유지**. padiem-auth `resolveAccount`(`worker.mjs:617`)의 매핑은 병행하고, 제거 전에 PC 턴·Claw의 세션 조회 의존을 account_id 기반으로 개편해야 한다 | `establish_auth_session`을 없애면 권위에 `sid`가 생성되지 않아 `resolve_current_auth_session`·`resolve_connector_owner_scope(session_id)`가 깨진다(아르곤 (e) 결함) |
 | 로그아웃·비번 변경·재설정 시 구 `revoke_*` (Chat→옛 권위) | padiem-auth 세션 폐기(`/token` revoke·refresh 거부) + 로컬 무효화 | refresh 거부 경로가 갖춰지면 대체 가능. Chat→권위 직접 호출은 사라진다 |
 
 ### 3.2 남는 호출 (토큰 직접 검증 뒤에도 남음)
@@ -134,7 +160,7 @@
 | --- | --- | --- | --- |
 | `resolve_product_user_for_subject` (주제→제품 사용자 매핑, 역방향) | access의 `account_id/sub`와 Chat `usr_…`를 잇는 다리. access만으로 Chat 소유자 ID를 못 만든다 | `control_plane_identity_worker.py:486`, DO `identity_authority_durable.py:1289`, 호출 `mcp_oauth.py:630`, `oracle_mesh_read_return_routes.py:4532,5475`, 부캐시 `identity_call_cache.py:178` | **긴 캐시 + 변경 시 무효화 (추천).** §3.3 |
 | `resolve_connector_owner_scope` (PC lane owner 범위) | 파일·데스크톱 소유권(`account_ref/workspace_ref`)은 토큰에 없음 | `chat_pc_drive.py:518`, `control_plane_identity_worker.py:593` | 현행 동작 유지: 60초 `CachedIdentityAuthority` + 같은 호스트 폐기 시 즉시 무효화. 토큰의 `account_id`로 대체 가능한 범위는 단계 3에서 검토 |
-| `resolve_current_auth_session` (PC 턴·Claw B54) | "지금 활성 세션"은 토큰의 `sid`와 다름. B54 제품 범위(`b54`)는 토큰 aud와 분리 | `chat_pc_drive.py:406`, `b54_canonical_session.py:212,244` | access 검증이 `sid`를 주면 PC 턴의 세션 존재 확인은 토큰으로 대체 가능. B54는 제품 스코프가 달라 별도 유지. PC 턴은 토큰 검증 + 60초 캐시로 단계적 대체 |
+| `resolve_current_auth_session` (PC 턴) | "지금 활성 세션"(권위 `current_auth_session`)은 토큰의 `sid`와 다름 — 토큰 `sid`로 대체 불가. 토큰 `sid`로 owner_scope를 부르면 권위에 그 세션이 없을 때 실패한다 | `chat_pc_drive.py:406` | **토큰 대체 대상 아님(2판).** access가 `sid`를 준다는 사실은 B62 세션 유효성 확인용일 뿐, PC 턴의 current 조회·매쉬 승인 경로는 권위 조회를 유지한다. 현 60초 캐시 유지 |
 | `resolve_connector_workspace/context/enrollment`, `issue_google_connect_ticket`, 테넌트·멤버십 RPC (19개) | 커넥터 권위. §1대로 서버에 남음 | `identity_authority_worker.py` DO 메서드, `claw_connector_enrollment_routes.py` | 그대로 유지. 범위 밖 |
 | padiem-auth `resolveAccount` 내 `resolve_or_create_product_link` | 첫 로그인 매핑(§9: 최초 검증 로그인에서만). `worker.mjs:617` | `worker.mjs:617,632` | 남음. "매 로그인마다" → "최초·미매핑 시만"으로 이미 좁혀졌으나 `b62` 처리로 로그인마다 닿을 수 있다(점검 기준). §5 항목 |
 
@@ -183,14 +209,27 @@
 - 확인: 그림자 로그 `shadow_mismatch=0` 24시간 유지. JWKS fetch 실패·`kid` unknown 0건.
   `/auth/status`의 `session_state` 분포가 그림자 전과 동일.
 
-### 단계 2 — 스위치 전환 (즉시 되돌리기 가능)
+### 단계 1.5 — padiem-auth 폐기 연동 (단계 2 앞, 2판 신설)
 
-- 하는 일: 인증 결정을 새 로컬 검증으로 바꾼다. `session_revocation_guard`는 그대로 두되
-  **스위치 OFF면 구 경로, ON이면 새 경로**로 결정한다. guard의 `resolve_auth_session` 호출은
-  스위치 ON에서는 생략하고, access 만료·서명 오류·`kid` unknown은 거부(재로그인 유도)한다.
-- 바뀌는 파일: `session_revocation_guard.py` (스위치 분기), `shared_auth_adapter.py` (새 검증 본체),
-  `auth_validation_cache.py` + `identity_call_cache.py` (새 캐시 창 = JWKS 캐시와 같은 300초),
-  `local_cpython.py` (스위치 환경값 배선). 그 외 라우트 무변경.
+- 하는 일: Chat의 폐기 지점(`logout`, `password_change`, `password_reset_confirm`, 계정 탈퇴,
+  관리자 차단)이 padiem-auth 세션/refresh 폐기까지 닿게 한다. Chat은 옛 권위 폐기(기존)
+  + padiem-auth 세션 폐기(HTTP/SDK — 어떤 Transport인지 단계 1.5 PR에서 확정) + **denylist 기록**
+  (폐기된 `sid`·`account_id`, 최소 20분)을 한 묶음으로 수행한다. 어느 쪽이 실패하면
+  현재 로그아웃·비번 변경처럼 실패로 처리한다 (쿠키·비번을 함부로 앞당기지 않는다).
+- 바뀌는 파일: `auth_routes.py` (폐기 지점), `account_deletion.py`, denylist 표
+  (`auth_validation_cache.py`에 새 표 또는 별도 표 — 워커 공유), `local_cpython.py` 배선.
+  padiem-auth 쪽이 필요한 API는 이 문서가 아니라 해당 PR에서 계약으로 남긴다.
+- 순서 이유: 단계 2를 먼저 켜면 비밀번호 변경·재설정 뒤에도 padiem-auth refresh가 살아
+  새 access를 계속 발급하는 공백이 생긴다 (아르곤 (c) 치명적 위험). 이 단계를 앞에 둔다.
+- 확인: 단계 2 전 스모크 — 폐기 후 refresh 시도 0건 성공, denylist 적중 시 로컬 거부.
+
+### 단계 2 — 스위치 전환 (즉시 되돌리기 가능, 2판 수정)
+
+- 하는 일: **padiem-auth access 토큰이 있는 요청만** 로컬 검증으로 판정한다.
+  **옛 HMAC 쿠키(`sid` 유무 모두)는 단계 3 완료 전까지 기존 guard(`resolve_auth_session`)를 그대로 탄다.**
+  토큰 있는 요청의 `resolve_auth_session`만 생략하는 분기를 둔다. 한쪽의 실패로 다른 쪽을 우회하지 않는다.
+- 바뀌는 파일: `session_revocation_guard.py` (스위치 분기 + 토큰 유무 분기), `shared_auth_adapter.py` (새 검증 본체),
+  denylist 표 (1.5에서 준비), `local_cpython.py` (스위치 환경값 배선). 그 외 라우트 무변경.
 - 서비스: Chat만. 배포는 `PADIEM_CHAT_LOCAL_VERIFY_ENABLED=false(기본) → true` 순.
 - 되돌리기: 스위치 OFF → 구 guard 즉시 복귀. 이미 새 access만으로 로그인한 사용자는
   롤백 후 구 로그인이 필요할 수 있음을 고지한다(§6과 같은 원칙).
@@ -204,8 +243,9 @@
   (`worker.mjs:407`)로 검증하고, access를 발급한 뒤 Chat은 콜백으로 세션을 만든다
   (Google과 같은 흐름). Chat의 직접 검증(`find_password_credential`+`verify_password_async`)은
   내측 RPC 전용으로 남거나 단계 3 후 제거한다.
-  이후 `_write_identity_shadow_after_login`(`auth_routes.py:359`)의 B62·B54 생성은
-  padiem-auth `resolveAccount`(`worker.mjs:617`)의 매핑으로 대체되고, Chat 측 2회 RPC는 사라진다.
+  이후에도 `_write_identity_shadow_after_login`(`auth_routes.py:359`)의 B62·B54 **권위 세션 수립은 유지**한다 (2판: 제거하지 않음).
+  제거 전에 PC 턴·Claw의 `resolve_current_*`·`resolve_connector_owner_scope(session_id)`가
+  `session_id` 대신 `account_id`로 조회하도록 개편해야 하며, 그 개편 전까지 토큰 대체로 쓰지 않는다.
 - 바뀌는 파일: `apps/padiem-chat/app/auth_routes.py` (`password_login` 스위치·내측 RPC),
   `apps/padiem-auth/worker.mjs` (`password_login` 허용·gate), `local_cpython.py`(배선).
   `password_change`·`password_reset_confirm`의 `revoke*`는 padiem-auth 세션 폐기로 교차 적용한다.
@@ -220,7 +260,7 @@
 
 | 위험 | 내용 | 대응 |
 | --- | --- | --- |
-| 시계 차이 | COM2·Cloudflare·클라이언트 시계 차가 `iat/exp`를 어긋낸다. 구 쿠키는 Chat 비밀만으로 만료 판정 | `Verifier`는 `iat>now` 거부. 허용 여유(leeway)는 5분 이내로 제한한다. 그림자 모드에서 시계 차이로 인한 불일치를 먼저 잰다. 허용 여유를 5분 초과로 늦추면 지연이 그만큼 늘어난다(§2.4) |
+| 시계 차이 | COM2·Cloudflare·클라이언트 시계 차가 `iat/exp`를 어긋낸다. 구 쿠키는 Chat 비밀만으로 만료 판정 | `Verifier`는 `iat>now` 거부. 허용 여유(leeway)는 **60초**(2판)로 제한한다. 그림자 모드에서 시계 차이로 인한 불일치를 먼저 잰다. 허용 여유를 늘리면 타 제품 폐기 최악(16분)이 그만큼 늘어난다(§2.4) |
 | JWKS 갱신·캐시·키 교체 | §8 순서(새 공개키 게시 → 캐시 전파 확인 → 서명 전환 → 만료+캐시 후 구키 제거). 잘못된 순서는 전원 거부 | 캐시 300초 + `kid` unknown 시 1회 강제 재조회(`verify.py:37`). 키 교체 전 새 키를 JWKS에 먼저 올리고 300초 이상 확인한 뒤 전환한다. 키 유출은 긴급 교체(사전 배포 불가) |
 | 컴2와 Cloudflare front 양쪽 검증 | 앞단 `padiem-chat-front/worker.mjs`는 브라우저→COM2 중계이며 자체 인증을 하지 않는다. COM2 Chat이 로컬 검증을 담당한다. 북AI·러브트리 등 다른 제품은 이미 JWKS/refresh 경로를 쓴다 | Chat은 `aud=b62`만 검증. 다른 제품의 access(`aud=b61` 등)는 `aud` 불일치로 거부된다. front는 토큰을 쪼개지 않는다 |
 | Claw·북AI 등 다른 제품 | Claw(B54)는 제품 스코프(`b54`)가 분리되어 있어 B62 access로 대체할 수 없다. 북AI는 이미 로컬 검증이라 영향 없음. 러브트리는 handoff 경로(handoff 0건, 점검 기준) | Claw는 B54 세션을 유지하고 B62 access는 병행 사용. 북AI·러브트리는 이 단계에서 무변경 |
