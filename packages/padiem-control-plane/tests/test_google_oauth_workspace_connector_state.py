@@ -93,8 +93,14 @@ def _credential(
     workspace_ref: str = WORKSPACE_A,
     issued_at: datetime = NOW,
     expires_at: datetime | None = None,
+    provider_subject: str | None = None,
 ) -> DurableGoogleOAuthCredential:
-    scope = GMAIL_READONLY_SCOPE if connector_id == "gmail" else GOOGLE_DRIVE_READONLY_SCOPE
+    if connector_id == "google-calendar":
+        scope = GOOGLE_CALENDAR_READONLY_SCOPE
+    elif connector_id == "gmail":
+        scope = GMAIL_READONLY_SCOPE
+    else:
+        scope = GOOGLE_DRIVE_READONLY_SCOPE
     return DurableGoogleOAuthCredential(
         binding_ref=binding_ref,
         connector_id=connector_id,
@@ -105,6 +111,7 @@ def _credential(
         sealed_refresh_token=SEALED_REFRESH,
         issued_at=issued_at,
         expires_at=expires_at,
+        provider_subject=provider_subject,
     )
 
 
@@ -937,7 +944,10 @@ CALENDAR_CONNECTOR_ID = "google-calendar"
 CALENDAR_RPC_KEYS = frozenset({"workspace_ref"})
 
 
-def _calendar_credential(*, binding_ref, workspace_ref=WORKSPACE_A, expires_at=None):
+def _calendar_credential(
+    *, binding_ref, workspace_ref=WORKSPACE_A, expires_at=None,
+    provider_subject="google-sub-calendar-owner",
+):
     return DurableGoogleOAuthCredential(
         binding_ref=binding_ref,
         connector_id=CALENDAR_CONNECTOR_ID,
@@ -948,6 +958,7 @@ def _calendar_credential(*, binding_ref, workspace_ref=WORKSPACE_A, expires_at=N
         sealed_refresh_token=SEALED_REFRESH,
         issued_at=NOW,
         expires_at=expires_at,
+        provider_subject=provider_subject,
     )
 
 
@@ -1034,9 +1045,13 @@ def test_E_one_usable_calendar_row_reports_connected() -> None:
 
 
 def test_F_duplicate_usable_calendar_rows_report_ambiguous() -> None:
+    # #7248: ambiguity means two *different* Google accounts on one workspace;
+    # a same-account reconnect replaces its own row instead.
     store, _ = _store()
-    store.save_credential(_calendar_credential(binding_ref="binding.a.calendar.one"))
-    store.save_credential(_calendar_credential(binding_ref="binding.a.calendar.two"))
+    store.save_credential(_calendar_credential(
+        binding_ref="binding.a.calendar.one", provider_subject="google-sub-calendar-one"))
+    store.save_credential(_calendar_credential(
+        binding_ref="binding.a.calendar.two", provider_subject="google-sub-calendar-two"))
 
     states = _calendar_read(store)
 
@@ -1242,7 +1257,10 @@ def test_calendar_tri_state_invariants_hold() -> None:
     assert not (connected.state == "connected" and connected.usable is False)
     assert not (connected.state == "not_connected" and connected.usable is True)
 
-    store.save_credential(_calendar_credential(binding_ref="binding.a.calendar.two"))
+    # #7248: a second *account* is what makes the workspace ambiguous; the same
+    # account reconnecting replaces its own row.
+    store.save_credential(_calendar_credential(
+        binding_ref="binding.a.calendar.two", provider_subject="google-sub-calendar-two"))
     ambiguous = _calendar_read(store)[CALENDAR_CONNECTOR_ID]
     assert ambiguous.state == "ambiguous" and ambiguous.ambiguous is True
     assert not (ambiguous.state == "ambiguous" and ambiguous.ambiguous is False)
@@ -1304,8 +1322,10 @@ def test_calendar_binding_rpc_rejects_caller_connector_or_identity_authority() -
 def test_calendar_binding_rpc_duplicate_binding_fails_closed() -> None:
     storage, durable_object = _durable_object()
     store = CloudflareDurableGoogleOAuthStore(storage)
-    store.save_credential(_calendar_credential(binding_ref="binding.a.calendar.one"))
-    store.save_credential(_calendar_credential(binding_ref="binding.a.calendar.two"))
+    store.save_credential(_calendar_credential(
+        binding_ref="binding.a.calendar.one", provider_subject="google-sub-calendar-one"))
+    store.save_credential(_calendar_credential(
+        binding_ref="binding.a.calendar.two", provider_subject="google-sub-calendar-two"))
 
     result = _calendar_binding_rpc(durable_object, {"workspace_ref": WORKSPACE_A})
 
@@ -1342,6 +1362,90 @@ def test_private_drive_disconnect_revokes_only_selected_workspace_and_is_idempot
     assert store.select_active_drive_binding(workspace_ref=WORKSPACE_A, now=datetime.now(timezone.utc)).status.value == "not_connected"
     assert store.select_active_drive_binding(workspace_ref=WORKSPACE_B, now=datetime.now(timezone.utc)).status.value == "resolved"
     assert asyncio.run(durable.disconnect_drive({"workspace_ref": WORKSPACE_A})) == {"ok": True, "revoked": False}
+
+
+def test_private_calendar_disconnect_revokes_the_whole_workspace_family():
+    """#7248: same private disconnect path as Drive, closed to ``workspace_ref``."""
+
+    storage, durable = _durable_object()
+    store = CloudflareDurableGoogleOAuthStore(storage)
+    store.save_credential(_credential(
+        binding_ref="calendar.owner.a1", connector_id="google-calendar",
+        workspace_ref=WORKSPACE_A, provider_subject="google-sub-owner-1",
+    ))
+    store.save_credential(_credential(
+        binding_ref="calendar.owner.a2", connector_id="google-calendar",
+        workspace_ref=WORKSPACE_A, provider_subject="google-sub-owner-2",
+    ))
+    store.save_credential(_credential(
+        binding_ref="calendar.owner.b", connector_id="google-calendar",
+        workspace_ref=WORKSPACE_B, provider_subject="google-sub-owner-1",
+    ))
+
+    # Two different accounts make the workspace ambiguous before the reset.
+    denied = asyncio.run(durable.select_calendar_binding({"workspace_ref": WORKSPACE_A}))
+    assert denied["ok"] is False
+    assert denied["error"]["code"] == "ambiguous_google_oauth_binding"
+
+    result = asyncio.run(durable.disconnect_calendar({"workspace_ref": WORKSPACE_A}))
+    assert result == {"ok": True, "revoked": 2}
+
+    cleared = asyncio.run(durable.select_calendar_binding({"workspace_ref": WORKSPACE_A}))
+    assert cleared["ok"] is True
+    assert cleared["selection"]["status"] == "not_connected"
+
+    untouched = asyncio.run(durable.select_calendar_binding({"workspace_ref": WORKSPACE_B}))
+    assert untouched["ok"] is True
+    assert untouched["selection"]["binding_ref"] == "calendar.owner.b"
+
+    # Idempotent second call revokes nothing.
+    assert asyncio.run(durable.disconnect_calendar({"workspace_ref": WORKSPACE_A})) == {
+        "ok": True, "revoked": 0,
+    }
+
+
+def test_private_calendar_disconnect_denies_browser_supplied_authority():
+    storage, durable = _durable_object()
+    store = CloudflareDurableGoogleOAuthStore(storage)
+    store.save_credential(_credential(
+        binding_ref="calendar.owner.a", connector_id="google-calendar",
+        workspace_ref=WORKSPACE_A, provider_subject="google-sub-owner-1",
+    ))
+
+    for payload in (
+        {"workspace_ref": WORKSPACE_A, "binding_ref": "calendar.owner.a"},
+        {"workspace_ref": WORKSPACE_A, "connector_id": "google-drive"},
+        {"workspace_ref": WORKSPACE_A, "account_ref": "account.attacker"},
+        {},
+    ):
+        denied = asyncio.run(durable.disconnect_calendar(payload))
+        assert denied["ok"] is False
+
+    still_there = asyncio.run(durable.select_calendar_binding({"workspace_ref": WORKSPACE_A}))
+    assert still_there["ok"] is True
+    assert still_there["selection"]["status"] == "resolved"
+
+
+def test_calendar_reconnect_through_the_worker_replaces_instead_of_stacking():
+    """#7248: the same account reconnecting twice leaves one selectable binding."""
+
+    storage, durable = _durable_object()
+    store = CloudflareDurableGoogleOAuthStore(storage)
+    store.save_credential(_credential(
+        binding_ref="calendar.first", connector_id="google-calendar",
+        workspace_ref=WORKSPACE_A, provider_subject="google-sub-owner-1",
+        issued_at=NOW,
+    ))
+    store.save_credential(_credential(
+        binding_ref="calendar.second", connector_id="google-calendar",
+        workspace_ref=WORKSPACE_A, provider_subject="google-sub-owner-1",
+        issued_at=NOW + timedelta(minutes=5),
+    ))
+
+    selection = asyncio.run(durable.select_calendar_binding({"workspace_ref": WORKSPACE_A}))
+    assert selection["ok"] is True
+    assert selection["selection"]["status"] == "resolved"
+    assert selection["selection"]["binding_ref"] == "calendar.second"
 
 
 def test_private_drive_disconnect_denies_browser_supplied_binding_and_ambiguous_rows():

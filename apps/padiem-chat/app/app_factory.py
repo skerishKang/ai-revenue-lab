@@ -301,7 +301,7 @@ from .claw_automation_rule_edit_routes import claw_automation_rule_edit
 from .claw_automation_rule_enabled_routes import claw_automation_rule_set_enabled
 from .config import Settings
 from .connector_status_projection import connectors_status
-from .connector_disconnect_routes import disconnect_google_drive
+from .connector_disconnect_routes import disconnect_google_calendar, disconnect_google_drive
 from .github_oauth_routes import (github_start, github_callback, github_status,
                                   github_repositories, github_disconnect, github_pause, github_resume,
                                   github_installation_settings)
@@ -702,6 +702,11 @@ def create_app(
         Route("/api/connectors/google/calendar/activate-read", activate_google_calendar_read, methods=["POST"]),
         Route("/api/connectors/status", connectors_status, methods=["GET"]),
         Route("/api/connectors/google/drive/disconnect", disconnect_google_drive, methods=["POST"]),
+        Route(
+            "/api/connectors/google/calendar/disconnect",
+            disconnect_google_calendar,
+            methods=["POST"],
+        ),
         Route("/api/b66/drive/status", b66_drive_status, methods=["GET"]),
         Route("/api/b66/drive/connect", b66_drive_connect, methods=["POST"]),
         Route("/api/b66/drive/connect/callback", b66_drive_connect_callback_return, methods=["GET"]),

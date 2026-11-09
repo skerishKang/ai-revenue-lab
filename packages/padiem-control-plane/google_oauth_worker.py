@@ -47,6 +47,11 @@ _WORKSPACE_CALENDAR_BINDING_KEYS = frozenset({"workspace_ref"})
 _WORKSPACE_DRIVE_BINDING_KEYS = frozenset({"workspace_ref"})
 # Private server-to-server disconnect: never accept a browser binding_ref.
 _WORKSPACE_DRIVE_DISCONNECT_KEYS = frozenset({"workspace_ref"})
+# #7248: same private disconnect shape for the reviewed Calendar authority. The
+# whole connector family of the trusted workspace is retired, so a workspace
+# that stacked duplicate bindings can be reset instead of staying ambiguous.
+_WORKSPACE_CALENDAR_DISCONNECT_KEYS = frozenset({"workspace_ref"})
+_MAX_CALENDAR_DISCONNECT_REVOCATIONS = 32
 WORKSPACE_DRIVE_CONNECTOR_ID = "google-drive"
 B66_GOOGLE_DRIVE_FILE_CONNECTOR_ID = "b66-google-drive-file"
 B66_GOOGLE_DRIVE_FULL_CONNECTOR_ID = "b66-google-drive-full"
@@ -290,6 +295,33 @@ class GoogleOAuthDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_rpc_error(exc)
 
+    async def disconnect_calendar(self, payload: dict) -> dict:
+        """Revoke every usable Calendar credential of one trusted workspace.
+
+        #7248: mirrors ``disconnect_drive`` for the reviewed Calendar connector.
+        The payload is closed to ``workspace_ref``; no binding_ref, account,
+        scope or provider token can be supplied. Returns the bounded number of
+        revoked bindings so a product host can report the reset exactly.
+        """
+        try:
+            payload = _closed_payload(
+                payload,
+                _WORKSPACE_CALENDAR_DISCONNECT_KEYS,
+                "Calendar disconnect RPC",
+            )
+            revoked = self._store.revoke_calendar_bindings(
+                workspace_ref=payload["workspace_ref"],
+                revoked_at=datetime.now(timezone.utc),
+            )
+            if type(revoked) is not int or not 0 <= revoked <= _MAX_CALENDAR_DISCONNECT_REVOCATIONS:
+                raise ControlPlaneContractError(
+                    "invalid_calendar_disconnect_result",
+                    "Calendar disconnect result is out of bounds",
+                )
+            return {"ok": True, "revoked": revoked}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
     async def select_b66_drive_binding(self, payload: dict) -> dict:
         """Private B66 Drive-file binding selection for one trusted workspace.
 
@@ -447,6 +479,9 @@ class Default(WorkerEntrypoint):
 
     async def disconnect_drive(self, payload: dict) -> dict:
         return await self._stub().disconnect_drive(payload)
+
+    async def disconnect_calendar(self, payload: dict) -> dict:
+        return await self._stub().disconnect_calendar(payload)
 
     async def select_b66_drive_binding(self, payload: dict) -> dict:
         return await self._stub().select_b66_drive_binding(payload)

@@ -19,6 +19,7 @@ from padiem_control_plane.contracts import ControlPlaneContractError
 
 from google_oauth_durable_store import (
     B66_GOOGLE_DRIVE_CONNECTORS,
+    CALENDAR_OAUTH_REVIEWED_CONNECTOR,
     B66_GOOGLE_DRIVE_FILE_CONNECTOR,
     B66_GOOGLE_DRIVE_FULL_CONNECTOR,
     B66_GOOGLE_DRIVE_OIDC_SCOPES,
@@ -899,7 +900,14 @@ class GoogleOAuthIngressRuntime:
 
         provider_subject = ""
         provider_email = None
-        if session.connector_id in B66_GOOGLE_DRIVE_CONNECTORS:
+        # #7248: Calendar bindings carry the verified Google account subject too,
+        # so a reconnect for the same account replaces its own older binding while
+        # a *different* account still surfaces as ambiguous instead of silently
+        # replacing a user's connection.
+        if (
+            session.connector_id in B66_GOOGLE_DRIVE_CONNECTORS
+            or session.connector_id == CALENDAR_OAUTH_REVIEWED_CONNECTOR
+        ):
             if self._destination_verification is None:
                 raise ControlPlaneContractError(
                     "google_oauth_destination_verification_unavailable",

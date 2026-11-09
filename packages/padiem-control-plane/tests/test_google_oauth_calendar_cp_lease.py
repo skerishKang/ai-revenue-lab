@@ -217,6 +217,7 @@ def calendar_credential(**overrides) -> DurableGoogleOAuthCredential:
         scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
         sealed_refresh_token=SEALED_REFRESH,
         issued_at=NOW - timedelta(minutes=1),
+        provider_subject="google-sub-calendar-owner",
     )
     values.update(overrides)
     return DurableGoogleOAuthCredential(**values)
