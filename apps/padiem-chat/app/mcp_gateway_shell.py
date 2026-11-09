@@ -266,6 +266,11 @@ def build_pc_shell_command(arguments: Mapping) -> str:
     resolves the tool's shell name once, and the resolved launcher travels as
     three env assignments the generic tail executes. The name itself still
     rides in the command text so a dispatch row says which shell was chosen.
+    #7188 R4 ③ — when the table carries candidates (bash: the Git Bash
+    roots), the tail probes them in order instead of trusting the PATH: the
+    bare ``bash.exe`` hunt picks ``C:\Windows\System32\bash.exe`` (WSL)
+    first, which measured as a failed run on COM1 (#7266 manual check). No
+    hit means the same ``shell_unavailable`` exit 127, with no PATH fallback.
     """
     if not _command_material(arguments):
         raise ValueError("Invalid MCP PC shell arguments")
@@ -282,7 +287,7 @@ $ErrorActionPreference='Continue';$ProgressPreference='SilentlyContinue'
 try{[Console]::OutputEncoding=[Text.Encoding]::UTF8}catch{}
 $c=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:PADIEM_MCP_COMMAND_B64))
 $d=$null;if($env:PADIEM_MCP_CWD_B64){$d=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:PADIEM_MCP_CWD_B64));if(-not(Test-Path -LiteralPath $d -PathType Container)){[Console]::Error.WriteLine('cwd_invalid');exit 126};Set-Location -LiteralPath $d}
-try{$file=$env:PADIEM_MCP_SHELL_FILE;if(-not(Get-Command $file -ErrorAction SilentlyContinue)){[Console]::Error.WriteLine('shell_unavailable');exit 127};$args=@($env:PADIEM_MCP_SHELL_ARGS.Split(' '));if($env:PADIEM_MCP_SHELL_ENC -eq '1'){$args+=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($c))}else{$args+=$c};& $file @args;$code=0;if($null -ne $LASTEXITCODE){$code=[int]$LASTEXITCODE};exit $code}catch{[Console]::Error.WriteLine($_.Exception.Message);exit 1}
+try{$cands=$env:PADIEM_MCP_SHELL_CANDIDATES;if($cands){$file=$null;foreach($cand in $cands.Split(';')){$p=[Environment]::ExpandEnvironmentVariables($cand);if(Test-Path -LiteralPath $p -PathType Leaf){$file=$p;break}};if(-not $file){[Console]::Error.WriteLine('shell_unavailable');exit 127}}else{$file=$env:PADIEM_MCP_SHELL_FILE;if(-not(Get-Command $file -ErrorAction SilentlyContinue)){[Console]::Error.WriteLine('shell_unavailable');exit 127}};$args=@($env:PADIEM_MCP_SHELL_ARGS.Split(' '));if($env:PADIEM_MCP_SHELL_ENC -eq '1'){$args+=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($c))}else{$args+=$c};& $file @args;$code=0;if($null -ne $LASTEXITCODE){$code=[int]$LASTEXITCODE};exit $code}catch{[Console]::Error.WriteLine($_.Exception.Message);exit 1}
 """.strip()
     script_b64 = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
     # PowerShell command text is fixed, and user values are base64 data only.

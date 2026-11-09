@@ -44,11 +44,37 @@ class SystemShellLaunch:
     the command Base64(UTF-16LE) — the shape the nested PowerShell needs
     (#7068 pins the console encoding, the encoded command avoids every
     quoting rule).
+
+    ``candidates`` (#7188 R4 ③) replaces the PATH hunt for shells whose bare
+    name resolves to the wrong program. When it is non-empty the dispatcher
+    ignores ``file`` entirely: it expands ``%...%`` in each candidate, probes
+    them in order with ``Test-Path``, runs the first hit, and reports the same
+    ``shell_unavailable`` exit 127 when none exists. bash carries the Git Bash
+    roots — ``C:\\Windows\\System32\\bash.exe`` (WSL) is deliberately not a
+    candidate: measured on COM1 (#7266 manual check), PATH resolution picked it
+    and the run failed (exit 1, no output); on a customer PC the same name is
+    WSL's bash. powershell and cmd keep ``candidates=()`` — their PATH
+    resolution is the pinned behavior, unchanged.
     """
 
     file: str
     prefix_args: tuple[str, ...]
     encode_command: bool
+    candidates: tuple[str, ...] = ()
+
+
+#: #7188 R4 ③ — bash means Git Bash, in both modes' terms: the SYSTEM lane
+#: probes these Git for Windows standard install roots in order and fails with
+#: ``shell_unavailable`` exit 127 when none exists. The values carry ``%...%``
+#: so one static list covers system-wide (``ProgramFiles``, both architectures)
+#: and per-user (``LocalAppData``) installs; the PC expands them at dispatch
+#: time because the chat side cannot know the PC's filesystem.
+GIT_BASH_CANDIDATES = (
+    r"%ProgramFiles%\Git\bin\bash.exe",
+    r"%ProgramFiles%\Git\usr\bin\bash.exe",
+    r"%ProgramFiles(x86)%\Git\bin\bash.exe",
+    r"%LocalAppData%\Programs\Git\bin\bash.exe",
+)
 
 
 _SYSTEM_LAUNCHES = {
@@ -65,6 +91,7 @@ _SYSTEM_LAUNCHES = {
     ),
     SHELL_BASH: SystemShellLaunch(
         file="bash.exe", prefix_args=("-lc",), encode_command=False,
+        candidates=GIT_BASH_CANDIDATES,
     ),
 }
 
@@ -105,12 +132,18 @@ def system_launch_env_lines(launch: SystemShellLaunch) -> str:
     """The env lines that carry a resolved launcher into the dispatcher script.
 
     The script is static PowerShell text with no shell branch left (#7188 R4
-    ②); these three assignments are the only shell-specific bytes in one
-    dispatch, and they come from this table, not from a call site. The values
-    are table constants, so the single-quote wrapping is exact.
+    ②); these assignments are the only shell-specific bytes in one dispatch,
+    and they come from this table, not from a call site. The values are table
+    constants, so the single-quote wrapping is exact. The candidate line
+    (#7188 R4 ③) is emitted only for launches that carry candidates —
+    powershell and cmd keep the exact three lines they always had.
     """
-    return (
+    lines = (
         "$env:PADIEM_MCP_SHELL_FILE='" + launch.file + "';"
         "$env:PADIEM_MCP_SHELL_ARGS='" + " ".join(launch.prefix_args) + "';"
         "$env:PADIEM_MCP_SHELL_ENC='" + ("1" if launch.encode_command else "0") + "';"
     )
+    if launch.candidates:
+        lines += ("$env:PADIEM_MCP_SHELL_CANDIDATES='"
+                  + ";".join(launch.candidates) + "';")
+    return lines
