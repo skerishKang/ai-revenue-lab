@@ -40,7 +40,10 @@ from .b66_saved_skill_candidate_store import (
     CANDIDATE_STATUS_PENDING,
     validate_candidate_row_id,
 )
-from .control_plane_identity_shadow import resolve_refreshed_session
+from .control_plane_identity_shadow import (
+    request_canonical_session_id,
+    resolve_refreshed_session,
+)
 
 _MAX_GRANT_MINUTES = 15
 _DEFAULT_GRANT_MINUTES = 5
@@ -186,6 +189,7 @@ class B66CanonicalCandidateTargetResolver:
                 store=shadow_store,
                 product_user_id=user_id,
                 now=self._now(),
+                current_session_id=request_canonical_session_id(request),
             )
         except Exception:
             return None

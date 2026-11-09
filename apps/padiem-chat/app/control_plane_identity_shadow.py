@@ -13,7 +13,15 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Protocol
 
-from padiem_control_plane import AuthSessionSnapshot, AuthSessionState, SubjectType
+from padiem_control_plane import (
+    AuthSessionSnapshot,
+    AuthSessionState,
+    IdentityLinkState,
+    ProductIdentityLink,
+    SubjectType,
+)
+
+from .auth import SESSION_COOKIE, decode_session_claims
 
 from .control_plane_identity import (
     BridgedIdentitySession,
@@ -186,12 +194,127 @@ class RefreshingCanonicalSubjectResolver:
         return current.subject.subject_id
 
 
+def request_canonical_session_id(request: Any) -> str | None:
+    """The canonical session id the request's *signed* cookie carries, if any.
+
+    This is the handle of the session the current login actually established
+    (#5225 cookie ``sid`` claim). It is only a candidate pointer refresh
+    source: ``resolve_refreshed_session`` re-reads it from the trusted
+    authority and fail-closes exactly like the pointer path before anything
+    is trusted.
+    """
+
+    try:
+        cookie = request.cookies.get(SESSION_COOKIE)
+        settings = request.app.state.settings
+    except AttributeError:
+        return None
+    if not cookie:
+        return None
+    claims = decode_session_claims(settings, cookie)
+    if claims is None:
+        return None
+    return claims.canonical_session_id
+
+
+async def _validated_snapshot(
+    authority: CurrentCanonicalSessionAuthority,
+    *,
+    session_id: str,
+    now: datetime | None,
+) -> AuthSessionSnapshot:
+    """One authority round trip plus the shared snapshot/state validation."""
+
+    try:
+        current = await _maybe_await(authority.resolve_auth_session(session_id=session_id))
+    except Exception as exc:
+        raise IdentityBridgeError(
+            503,
+            "control_plane_session_unavailable",
+            "Canonical auth session is unavailable.",
+        ) from exc
+    if not isinstance(current, AuthSessionSnapshot):
+        raise IdentityBridgeError(
+            503,
+            "control_plane_session_invalid",
+            "Canonical auth authority returned an invalid session.",
+        )
+    effective_now = now if now is not None else datetime.now(timezone.utc)
+    if effective_now.tzinfo is None or effective_now.utcoffset() is None:
+        raise ValueError("now must be timezone-aware")
+    if current.effective_state(now=effective_now) is not AuthSessionState.ACTIVE:
+        raise IdentityBridgeError(
+            401,
+            "control_plane_session_inactive",
+            "Canonical auth session is expired or revoked.",
+        )
+    return current
+
+
+async def _refresh_stale_pointer(
+    authority: CurrentCanonicalSessionAuthority,
+    store: IdentityShadowStore,
+    shadow: IdentityShadowRecord,
+    *,
+    current_session_id: str,
+    now: datetime | None,
+) -> AuthSessionSnapshot:
+    """Re-point the stale shadow row at the request's own verified session.
+
+    #7233: the pointer stores one login's session id. After that session
+    expires or rotates, every shared-authority resolution kept failing on the
+    dead pointer even though the request carried a fresh, independently
+    verifiable canonical session. The refresh reuses the pointer's own
+    fail-closed checks against the *current* session and keeps every
+    refusal: a session for another user (different canonical subject) or
+    another product is still a 403 mismatch, an inactive session is still a
+    401, and an authority failure is still a 503. Only a session that passes
+    all of them may rewrite the pointer, and the rewrite itself is
+    best-effort -- the row is non-authoritative, so a failed write never
+    blocks an authority-validated session. The pointer's stale
+    ``session_revision`` is deliberately not compared here: a freshly issued
+    login session does not carry the dead session's revision counter
+    forward, so the pointer is simply overwritten with the current
+    session's own revision.
+    """
+
+    current = await _validated_snapshot(authority, session_id=current_session_id, now=now)
+    if (
+        current.product_id != PADIEM_CHAT_PRODUCT_ID
+        or current.subject.subject_type is not SubjectType.USER
+        or current.subject.subject_id != shadow.canonical_subject_id
+    ):
+        raise IdentityBridgeError(
+            403,
+            "control_plane_session_mismatch",
+            "Canonical auth session does not match the linked product identity.",
+        )
+    try:
+        await store.save_projection(BridgedIdentitySession(
+            product_user_id=shadow.product_user_id,
+            identity_link=ProductIdentityLink(
+                product_id=PADIEM_CHAT_PRODUCT_ID,
+                product_user_id=shadow.product_user_id,
+                canonical_subject_id=current.subject.subject_id,
+                state=IdentityLinkState.ACTIVE,
+            ),
+            auth_session=current,
+        ))
+    except Exception:
+        # The projection is a non-authoritative cache of authority-issued
+        # state. Failing to refresh it must not fail an authority-validated
+        # session; the next request retries the write.
+        pass
+    return current
+
+
 async def resolve_refreshed_session(
     *,
     authority: CurrentCanonicalSessionAuthority,
     store: IdentityShadowStore,
     product_user_id: str,
     now: datetime | None = None,
+    current_session_id: str | None = None,
 ) -> AuthSessionSnapshot:
     """Refresh and validate the canonical auth session behind a product user.
 
@@ -205,6 +328,16 @@ async def resolve_refreshed_session(
        USER subject type, canonical subject id, monotonic revision);
     5. the effective session state must be ACTIVE at ``now``.
 
+    When the pointer's own session is expired or revoked and the caller passes
+    the request's current canonical session id (``current_session_id``, the
+    signed cookie ``sid``), the pointer is re-validated against that session
+    and rewritten to it (#7233). Every refusal condition is unchanged: another
+    user's session or another product's session is still a 403, an inactive
+    session is still a 401, and an authority failure is still a 503. When no
+    current session id is offered, or the refreshed session also fails
+    validation, the original error is raised unchanged so downstream
+    fallbacks (#7232 verified-session tenant) keep working.
+
     Raises ``IdentityBridgeError`` (503/403/401) on any violation; returns the
     validated snapshot only when every check passes.
     """
@@ -216,20 +349,21 @@ async def resolve_refreshed_session(
             "Canonical identity is not linked for this product session.",
         )
     try:
-        current = await _maybe_await(
-            authority.resolve_auth_session(session_id=shadow.auth_session_id)
-        )
-    except Exception as exc:
-        raise IdentityBridgeError(
-            503,
-            "control_plane_session_unavailable",
-            "Canonical auth session is unavailable.",
-        ) from exc
-    if not isinstance(current, AuthSessionSnapshot):
-        raise IdentityBridgeError(
-            503,
-            "control_plane_session_invalid",
-            "Canonical auth authority returned an invalid session.",
+        current = await _validated_snapshot(
+            authority, session_id=shadow.auth_session_id, now=now)
+    except IdentityBridgeError as exc:
+        if (
+            exc.code != "control_plane_session_inactive"
+            or not current_session_id
+            or current_session_id == shadow.auth_session_id
+        ):
+            raise
+        # The pointer names a dead session. The request's own session is the
+        # only honest refresh source: re-validate it against the same
+        # fail-closed contract, then re-point the row at it.
+        return await _refresh_stale_pointer(
+            authority, store, shadow,
+            current_session_id=current_session_id, now=now,
         )
     if (
         current.session_id != shadow.auth_session_id
@@ -242,14 +376,5 @@ async def resolve_refreshed_session(
             403,
             "control_plane_session_mismatch",
             "Canonical auth session does not match the linked product identity.",
-        )
-    effective_now = now if now is not None else datetime.now(timezone.utc)
-    if effective_now.tzinfo is None or effective_now.utcoffset() is None:
-        raise ValueError("now must be timezone-aware")
-    if current.effective_state(now=effective_now) is not AuthSessionState.ACTIVE:
-        raise IdentityBridgeError(
-            401,
-            "control_plane_session_inactive",
-            "Canonical auth session is expired or revoked.",
         )
     return current

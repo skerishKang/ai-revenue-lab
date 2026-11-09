@@ -32,7 +32,10 @@ from .approved_memory import (
 )
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
-from .control_plane_identity_shadow import resolve_refreshed_session
+from .control_plane_identity_shadow import (
+    request_canonical_session_id,
+    resolve_refreshed_session,
+)
 
 MAX_MEMORY_BODY_BYTES = 64 * 1024
 
@@ -77,6 +80,7 @@ async def _resolve_memory_workspace(request: Request, user_id: str) -> str | Non
             authority=authority,
             store=shadow_store,
             product_user_id=user_id,
+            current_session_id=request_canonical_session_id(request),
         )
     except Exception as exc:
         # Shared-login users have a current canonical session but may not have

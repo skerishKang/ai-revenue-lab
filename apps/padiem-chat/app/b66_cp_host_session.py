@@ -165,7 +165,10 @@ async def resolve_b66_cp_drive_owner_from_padiem_session(
         ProductIdentityLink, IdentityLinkState,
     )
     from .auth_routes import auth_ready, current_user_id
-    from .control_plane_identity_shadow import resolve_refreshed_session
+    from .control_plane_identity_shadow import (
+        request_canonical_session_id,
+        resolve_refreshed_session,
+    )
 
     if now is None:
         now = datetime.now(timezone.utc)
@@ -201,6 +204,7 @@ async def resolve_b66_cp_drive_owner_from_padiem_session(
             store=identity_shadow_store,
             product_user_id=uid,
             now=now,
+            current_session_id=request_canonical_session_id(request),
         )
         linked_uid = reverse_lookup(
             product_id="b62", canonical_subject_id=session.subject.subject_id
