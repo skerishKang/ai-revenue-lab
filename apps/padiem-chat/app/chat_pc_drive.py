@@ -21,6 +21,7 @@ explicit code; nothing is ever claimed about an unverified PC.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import re
 import uuid
@@ -393,6 +394,14 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",
         )
+    # The b62 product session must be read first: its gate decides whether this
+    # identity is usable at all, and the old lane never asked the Control Plane
+    # for anything else when that gate refused (2026-11-09 contract test). What
+    # follows the gate — the B54 bridge session and the memory workspace — are
+    # independent of each other, so they are issued together instead of back to
+    # back: one PC turn paid their sum, and the measured cost is dominated by
+    # the round trip to the Control Plane (396–1,368 ms per call against a
+    # 16–87 ms Worker-internal read).
     try:
         session = await authority.resolve_current_auth_session(
             product_id="b62", product_user_id=uid,
@@ -422,21 +431,29 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
             "사용자 확인 정보를 사용할 수 없습니다.",
         )
     # #5088/#5015: the Control Plane owner-scope lookup accepts the shared
-    # B54 canonical session, not a product-local shadow session. Resolve the
-    # same bridge the signed Claw/Chat endpoint uses; the Chat product identity
-    # above and the b62 subject sent to the Engine stay unchanged.
+    # B54 canonical session, not a product-local shadow session. Both remaining
+    # reads are issued here, together, and their verdicts are applied in the
+    # original order below so every refusal condition and its precedence is
+    # unchanged.
     from padiem_control_plane.b54_identity_bridge import (
         resolve_current_b54_canonical_session as resolve_b54_session,
     )
+    from .claw_memory_routes import _resolve_memory_workspace
 
-    try:
-        bridged = await resolve_b54_session(authority, uid)
-    except Exception as exc:
-        _pc_owner_journal("resolve_b54", getattr(exc, "code", "") or type(exc).__name__)
+    b54_result, workspace_result = await asyncio.gather(
+        resolve_b54_session(authority, uid),
+        _resolve_memory_workspace(request, uid),
+        return_exceptions=True,
+    )
+    if isinstance(b54_result, BaseException):
+        _pc_owner_journal(
+            "resolve_b54", getattr(b54_result, "code", "") or type(b54_result).__name__,
+        )
         raise ChatPCDriveError(
             "chat_pc_identity_unavailable",
             "사용자 확인 정보를 사용할 수 없습니다.",
-        ) from exc
+        ) from b54_result
+    bridged = b54_result
     if (
         bridged is None
         or bridged.auth_session.subject.subject_id != subject_id
@@ -450,12 +467,10 @@ async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str
         )
     session = bridged.auth_session
     tenant_id = session.tenant_id
-    from .claw_memory_routes import _resolve_memory_workspace
-
-    try:
-        workspace_id = await _resolve_memory_workspace(request, uid)
-    except Exception:
-        workspace_id = None
+    # The workspace read was issued with the two session reads; its failure was
+    # always tolerated (the verified tenant is the fallback), and that is
+    # unchanged.
+    workspace_id = None if isinstance(workspace_result, BaseException) else workspace_result
     if not isinstance(workspace_id, str) or not workspace_id:
         workspace_id = tenant_id
     return session, subject_id, workspace_id
