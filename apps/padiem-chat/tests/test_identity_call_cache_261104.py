@@ -294,18 +294,18 @@ def test_a_logout_drops_the_product_user_entry_by_the_uid_it_resolved() -> None:
     assert inner.product_user_calls == ["b62:sub_fixture", "b62:sub_fixture"]
 
 
-def test_the_session_read_is_cached_for_twenty_seconds() -> None:
+def test_the_session_read_uses_the_unified_auth_session_window() -> None:
     inner = FakeAuthority()
     clock = [100.0]
     wrapped = CachedIdentityAuthority(inner, ttl_seconds=60, clock=lambda: clock[0])
 
     first = asyncio.run(wrapped.resolve_auth_session(session_id=SESSION))
-    clock[0] += 19.0
+    clock[0] += 250.0
     second = asyncio.run(wrapped.resolve_auth_session(session_id=SESSION))
     assert first is second is inner.auth_session_result
     assert inner.session_calls == ["guard:" + SESSION]
 
-    clock[0] += 2.0  # 21 s after the load: the 20 s window is over
+    clock[0] += 51.0  # 301 s after the load: the unified window is over
     asyncio.run(wrapped.resolve_auth_session(session_id=SESSION))
     assert inner.session_calls == ["guard:" + SESSION, "guard:" + SESSION]
 
@@ -341,3 +341,56 @@ def test_a_logout_drops_every_cached_session_answer() -> None:
     asyncio.run(wrapped.resolve_auth_session(session_id=OTHER_SESSION))
     assert inner.session_calls == ["guard:" + SESSION, "guard:" + OTHER_SESSION,
                                    "guard:" + SESSION, "guard:" + OTHER_SESSION]
+
+
+def test_revocation_events_drop_the_pc_path_session_cache_immediately() -> None:
+    # The unified window shares its invalidation with the Chat general
+    # request cache: every revocation event that reaches
+    # `invalidate_auth_cache` (logout, password change, account deletion,
+    # admin membership/role change — all call it) must drop the PC-path
+    # auth-session entries at once, not at window expiry.
+    inner = FakeAuthority()
+    clock = [100.0]
+    wrapped = CachedIdentityAuthority(inner, ttl_seconds=60, clock=lambda: clock[0])
+
+    class State:
+        control_plane_identity_authority = wrapped
+        auth_validation_cache = None
+
+    class Request:
+        app = type("App", (), {"state": State()})()
+
+    asyncio.run(wrapped.resolve_auth_session(session_id=SESSION))
+    asyncio.run(wrapped.resolve_auth_session(session_id=OTHER_SESSION))
+    # 250 s in: both entries are still inside the unified window...
+    clock[0] += 250.0
+    assert inner.session_calls == ["guard:" + SESSION, "guard:" + OTHER_SESSION]
+    # ...until a revocation event passes through `invalidate_auth_cache`.
+    asyncio.run(invalidate_auth_cache(
+        Request(), user_id=UID, session_id=SESSION))
+    asyncio.run(wrapped.resolve_auth_session(session_id=SESSION))
+    assert inner.session_calls == ["guard:" + SESSION, "guard:" + OTHER_SESSION,
+                                   "guard:" + SESSION]
+    # A user-only invalidation (no session id: the other revocation sites)
+    # drops every auth-session entry regardless of user.
+    asyncio.run(invalidate_auth_cache(Request(), user_id=UID))
+    asyncio.run(wrapped.resolve_auth_session(session_id=OTHER_SESSION))
+    assert inner.session_calls[-1] == "guard:" + OTHER_SESSION
+    assert inner.session_calls.count("guard:" + OTHER_SESSION) == 2
+
+
+def test_auth_session_window_matches_the_session_cache_env() -> None:
+    import os
+    from app.identity_call_cache import _auth_session_ttl_seconds
+
+    os.environ["PADIEM_CHAT_AUTH_SESSION_CACHE_SECONDS"] = "45"
+    try:
+        assert _auth_session_ttl_seconds() == 45
+    finally:
+        del os.environ["PADIEM_CHAT_AUTH_SESSION_CACHE_SECONDS"]
+    assert _auth_session_ttl_seconds() == 300
+    os.environ["PADIEM_CHAT_AUTH_SESSION_CACHE_SECONDS"] = "99999"
+    try:
+        assert _auth_session_ttl_seconds() == 300  # over cap: default, never above 900
+    finally:
+        del os.environ["PADIEM_CHAT_AUTH_SESSION_CACHE_SECONDS"]
