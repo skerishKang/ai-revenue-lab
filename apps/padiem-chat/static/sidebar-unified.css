@@ -167,6 +167,6 @@ html body .app-shell .sidebar #projectsSection .section-heading-row h2 { margin:
 /* Keep focused action elements accessible without changing the theme. */
 .sidebar .sidebar-unified-row :is(button):focus-visible,
 .sidebar :is(.project-row, .history-row) :is(button, summary):focus-visible {
-  outline: 2px solid var(--accent, #6557e8);
+  outline: 2px solid var(--accent);
   outline-offset: -2px;
 }

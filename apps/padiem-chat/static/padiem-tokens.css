@@ -20,6 +20,17 @@
  * 토큰만이 유일한 숫자 출처다. 토큰이 항상 정의되므로 소비 규칙은
  * var(--line)처럼 fallback 없이 쓴다(기존 var(--line, 숫자) fallback은
  * 2차에서 제거했다 — fallback은 정의가 없을 때만 쓰이므로 화면 결과는 같다).
+ *
+ * accent 계열·카드 테두리(3차): --accent/--accent-contrast/--accent-soft/
+ * --accent-strong/--card-border의 테마별 값도 이 파일로 모았다. 원래
+ * padiem-themes.css의 네 테마 블록, padiem-glass.css, padiem-dark-contrast.css
+ * 가 나눠 정의했던 값을 #6100 계열 측정값 그대로 옮겼고, dark의 실제 값은
+ * padiem-dark-contrast.css가 덮어쓰던 것(#9bcdf0·#d1ebfb·#455b70)이다.
+ * styles.css의 :root도 --accent/--accent-soft/--accent-strong을 정의하지만
+ * 바이트 고정이라 그대로 두고, 이 파일이 같은 값을 다시 선언해 유일한
+ * 수정 지점 역할을 한다(--accent-contrast는 styles.css에 없어서 여기가
+ * 유일한 정의다). padiem-foundation.css는 채팅 5테마 체계 밖의 별개
+ * 화면 기본값이라 옮기지 않는다(그 시트의 지역 결정).
  */
 :root {
   /* 주요 버튼 면 */
@@ -44,6 +55,15 @@
      fallback이 실제 값이었다. --border를 정의하면 다른 시트의
      var(--border, …) fallback까지 함께 바뀌므로 새 이름을 쓴다. */
   --surface-border: #ccd2d8;
+
+  /* accent 계열·카드 테두리(3차, light 기본값 = styles.css :root와 같은 값).
+     --accent-contrast는 styles.css :root에 없는 이름이라 여기가 유일한
+     기본 정의다. --card-border는 원래 padiem-themes.css light 블록의 값. */
+  --accent: #6557e8;
+  --accent-contrast: #ffffff;
+  --accent-soft: #efedff;
+  --accent-strong: #5546d6;
+  --card-border: #e3e3e9;
 }
 
 /* ---- 테마별 값 ---- */
@@ -53,6 +73,11 @@ html[data-theme="light"] {
   --line: #e3e3e9;
   --input-border-strong: #767e8a;
   --focus-ring: rgba(101, 87, 232, .24);
+  --accent: #6557e8;
+  --accent-contrast: #ffffff;
+  --accent-soft: #efedff;
+  --accent-strong: #5546d6;
+  --card-border: #e3e3e9;
 }
 
 html[data-theme="dark"] {
@@ -61,18 +86,36 @@ html[data-theme="dark"] {
   --line: #405365;
   --input-border-strong: rgba(255,255,255,.45);
   --focus-ring: rgba(159,192,221,.32);
+  /* --accent·--accent-strong·--card-border는 padiem-dark-contrast.css가
+     덮어쓰던 실제 값이다(그 시트의 테마 수준 정의는 이쪽으로 옮김).
+     --accent-contrast·--accent-soft는 padiem-themes.css dark 블록의 값. */
+  --accent: #9bcdf0;
+  --accent-contrast: #131417;
+  --accent-soft: rgba(159,192,221,.08);
+  --accent-strong: #d1ebfb;
+  --card-border: #455b70;
 }
 
 html[data-theme="cinematic"] {
   --line: rgba(255,255,255,.14);
   --input-border-strong: rgba(255,255,255,.45);
   --focus-ring: rgba(136,201,255,.70);
+  --accent: #88c9ff;
+  --accent-contrast: #04070d;
+  --accent-soft: rgba(136,201,255,.10);
+  --accent-strong: #d7ebfa;
+  --card-border: rgba(136,201,255,.16);
 }
 
 html[data-theme="padiem-home"] {
   --line: rgba(26,34,48,.12);
   --input-border-strong: #767e8a;
   --focus-ring: rgba(58,123,213,.28);
+  --accent: #3a7bd5;
+  --accent-contrast: #0b0f14;
+  --accent-soft: rgba(58,123,213,.10);
+  --accent-strong: #2a5fa8;
+  --card-border: rgba(26,34,48,.10);
 }
 
 html[data-theme="padiem-glass"] {
@@ -82,4 +125,9 @@ html[data-theme="padiem-glass"] {
   --line: rgba(255, 255, 255, .38);
   --input-border-strong: #56616b;
   --focus-ring: rgba(121, 188, 231, .42);
+  --accent: #79bce7;
+  --accent-contrast: #17202a;
+  --accent-soft: rgba(121, 188, 231, .16);
+  --accent-strong: #2f6f99;
+  --card-border: rgba(255, 255, 255, .42);
 }

@@ -147,8 +147,8 @@
 }
 .claw-pc-consent-confirm {
   color: #fff;
-  background: var(--accent, #2f6f9f);
-  border: 1px solid var(--accent, #2f6f9f);
+  background: var(--accent);
+  border: 1px solid var(--accent);
 }
 .claw-pc-consent-confirm:disabled {
   cursor: not-allowed;

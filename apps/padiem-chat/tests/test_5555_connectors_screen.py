@@ -217,7 +217,9 @@ def test_every_card_keeps_the_same_padding_and_a_44px_action_target():
 
 def test_the_glass_tokens_and_the_existing_status_colours_are_reused():
     # No new palette: the existing tokens and the existing state selectors stay.
-    assert "var(--accent-strong, #2f6f99)" in CSS
+    # (#7187 R3 3차 removed the fallback — the token is always defined now.)
+    assert "var(--accent-strong)" in CSS
+    assert "var(--accent-strong," not in CSS
     assert '.capability-card[data-connector-status="connected"] .capability-workspace' in CSS
     assert "padiem-glass" in CSS
 

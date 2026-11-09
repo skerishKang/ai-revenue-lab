@@ -589,7 +589,7 @@ html body .app-shell .sidebar .history-row.history-skeleton {
   min-width: 0;
   height: 36px;
   padding: 0 10px;
-  border: 1px solid var(--accent, #6557e8);
+  border: 1px solid var(--accent);
   border-radius: 9px;
   background: rgba(127, 127, 127, .14);
   color: inherit;
@@ -597,7 +597,7 @@ html body .app-shell .sidebar .history-row.history-skeleton {
   font-size: 13px;
 }
 .history-rename-input:focus-visible {
-  outline: 2px solid var(--accent, #6557e8);
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 .history-rename-input[aria-invalid="true"] {
