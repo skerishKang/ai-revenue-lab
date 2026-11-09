@@ -22,7 +22,10 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
-from .control_plane_identity_shadow import resolve_refreshed_session
+from .control_plane_identity_shadow import (
+    request_canonical_session_id,
+    resolve_refreshed_session,
+)
 
 
 ACCESS_PATH = "/api/home/product-access"
@@ -88,6 +91,7 @@ async def home_product_access(request: Request) -> JSONResponse:
         now = datetime.now(timezone.utc)
         current = await resolve_refreshed_session(
             authority=authority, store=shadow, product_user_id=user_id, now=now,
+            current_session_id=request_canonical_session_id(request),
         )
         if not isinstance(current, AuthSessionSnapshot):
             raise ValueError("non-canonical session")
