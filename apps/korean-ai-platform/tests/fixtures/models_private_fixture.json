@@ -1,35 +1,582 @@
 {
   "version": "padiem.models.private.v1",
-  "comment": "#7241 placeholder registry for the platform test suite. No real provider, host, model or credential value.",
+  "comment": "#7241 placeholder registry shaped like the deployment document. No real provider, host, model or credential value.",
   "providers": {
-    "example-provider": {
-      "base_origin": "https://example-provider.invalid/v1",
+    "example-provider-01": {
+      "base_origin": "https://example-provider-01.example.invalid/v1",
       "allowed_hosts": [
-        "example-provider.invalid"
+        "example-provider-01.example.invalid"
       ],
       "credential_binding": "PADIEM_B14_CREDENTIAL_01"
     },
-    "example-provider-2": {
-      "base_origin": "https://example-provider-2.invalid/v1",
+    "example-provider-02": {
+      "base_origin": "https://example-provider-02.example.invalid/v1",
       "allowed_hosts": [
-        "example-provider-2.invalid"
+        "example-provider-02.example.invalid"
       ],
       "credential_binding": "PADIEM_B14_CREDENTIAL_02"
+    },
+    "example-provider-03": {
+      "base_origin": "https://example-provider-03.example.invalid/v1",
+      "allowed_hosts": [
+        "example-provider-03.example.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_03"
+    },
+    "example-provider-04": {
+      "base_origin": "https://example-provider-04.example.invalid/v1",
+      "allowed_hosts": [
+        "example-provider-04.example.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_04"
+    },
+    "example-provider-05": {
+      "base_origin": "https://example-provider-05.example.invalid/v1",
+      "allowed_hosts": [
+        "example-provider-05.example.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_05"
+    },
+    "example-provider-06": {
+      "base_origin": "https://example-provider-06.example.invalid/v1",
+      "allowed_hosts": [
+        "example-provider-06.example.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_06"
+    },
+    "example-provider-07": {
+      "base_origin": "https://example-provider-07.example.invalid/v1",
+      "allowed_hosts": [
+        "example-provider-07.example.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_07"
+    },
+    "example-provider-08": {
+      "base_origin": "https://example-provider-08.example.invalid/v1",
+      "allowed_hosts": [
+        "example-provider-08.example.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_08"
+    },
+    "example-provider-09": {
+      "base_origin": "https://example-provider-09.example.invalid/v1",
+      "allowed_hosts": [
+        "example-provider-09.example.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_09"
+    },
+    "example-provider-10": {
+      "base_origin": "https://example-provider-10.example.invalid/v1",
+      "allowed_hosts": [
+        "example-provider-10.example.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_10"
+    },
+    "example-provider-11": {
+      "base_origin": "https://example-provider-11.example.invalid/v1",
+      "allowed_hosts": [
+        "example-provider-11.example.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_11"
+    },
+    "example-provider-12": {
+      "base_origin": "https://example-provider-12.example.invalid/v1",
+      "allowed_hosts": [
+        "example-provider-12.example.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_12"
+    },
+    "example-provider-13": {
+      "base_origin": "https://example-provider-13.example.invalid/v1",
+      "allowed_hosts": [
+        "example-provider-13.example.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_13"
+    },
+    "example-provider-14": {
+      "base_origin": "https://example-provider-14.example.invalid/v1",
+      "allowed_hosts": [
+        "example-provider-14.example.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_14"
+    },
+    "example-provider-15": {
+      "base_origin": "https://example-provider-15.example.invalid/v1",
+      "allowed_hosts": [
+        "example-provider-15.example.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_15"
+    },
+    "example-provider-16": {
+      "base_origin": "https://example-provider-16.example.invalid/v1",
+      "allowed_hosts": [
+        "example-provider-16.example.invalid"
+      ],
+      "credential_binding": "PADIEM_B14_CREDENTIAL_16"
     }
   },
   "models": [
     {
-      "id": "example-provider/example-model-1",
-      "provider_id": "example-provider",
-      "upstream_model": "example-model-1",
+      "id": "example-provider-01/example-model-01",
+      "provider_id": "example-provider-01",
+      "upstream_model": "example-model-01",
+      "capabilities": [
+        "chat",
+        "coding"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 01",
+      "provider_name": "Example Provider 01",
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-02/example-model-02",
+      "provider_id": "example-provider-02",
+      "upstream_model": "example-model-02",
+      "capabilities": [
+        "chat"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 02",
+      "provider_name": "Example Provider 02",
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-04/example-model-03",
+      "provider_id": "example-provider-04",
+      "upstream_model": "example-model-03",
+      "capabilities": [
+        "chat",
+        "coding",
+        "image",
+        "tools"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 03",
+      "provider_name": "Example Provider 03",
+      "context_window": 1048576,
+      "input_price_usd_per_1m": 0.25,
+      "output_price_usd_per_1m": 1.5,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-04/example-model-04",
+      "provider_id": "example-provider-04",
+      "upstream_model": "example-model-04",
+      "capabilities": [
+        "chat",
+        "coding",
+        "image",
+        "tools"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 04",
+      "provider_name": "Example Provider 04",
+      "context_window": 1048576,
+      "input_price_usd_per_1m": 0.3,
+      "output_price_usd_per_1m": 2.5,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-04/example-model-05",
+      "provider_id": "example-provider-04",
+      "upstream_model": "example-model-05",
+      "capabilities": [
+        "chat",
+        "image"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 05",
+      "provider_name": "Example Provider 05",
+      "context_window": 262144,
+      "input_price_usd_per_1m": 0.09,
+      "output_price_usd_per_1m": 0.3,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-04/example-model-06",
+      "provider_id": "example-provider-04",
+      "upstream_model": "example-model-06",
+      "capabilities": [
+        "chat",
+        "tools"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 06",
+      "provider_name": "Example Provider 06",
+      "context_window": 262144,
+      "input_price_usd_per_1m": 0.09,
+      "output_price_usd_per_1m": 0.34,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-05/example-model-07",
+      "provider_id": "example-provider-05",
+      "upstream_model": "example-model-07",
+      "capabilities": [
+        "chat",
+        "tools"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 07",
+      "provider_name": "Example Provider 07",
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-11/example-model-08",
+      "provider_id": "example-provider-11",
+      "upstream_model": "example-model-08",
+      "capabilities": [
+        "chat",
+        "coding",
+        "long_context"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 08",
+      "provider_name": "Example Provider 08",
+      "context_window": 1000000,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-13/example-model-09",
+      "provider_id": "example-provider-13",
+      "upstream_model": "example-model-09",
+      "capabilities": [
+        "chat",
+        "coding",
+        "tools"
+      ],
+      "enabled": false,
+      "display_name": "Example Model 09",
+      "provider_name": "Example Provider 09",
+      "context_window": 256000,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-03/example-model-10",
+      "provider_id": "example-provider-03",
+      "upstream_model": "example-model-10",
+      "capabilities": [
+        "chat",
+        "coding"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 10",
+      "provider_name": "Example Provider 10",
+      "context_window": 262144,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-07/example-model-11",
+      "provider_id": "example-provider-07",
+      "upstream_model": "example-model-11",
+      "capabilities": [
+        "chat"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 11",
+      "provider_name": "Example Provider 11",
+      "context_window": 1000000,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-08/example-model-12",
+      "provider_id": "example-provider-08",
+      "upstream_model": "example-model-12",
+      "capabilities": [
+        "chat"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 12",
+      "provider_name": "Example Provider 12",
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-14/example-model-13",
+      "provider_id": "example-provider-14",
+      "upstream_model": "example-model-13",
+      "capabilities": [
+        "chat",
+        "free",
+        "tools"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 13",
+      "provider_name": "Example Provider 13",
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-09/example-model-14",
+      "provider_id": "example-provider-09",
+      "upstream_model": "example-model-14",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 14",
+      "provider_name": "Example Provider 14",
+      "context_window": 0,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-09/example-model-15",
+      "provider_id": "example-provider-09",
+      "upstream_model": "example-model-15",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "enabled": false,
+      "display_name": "Example Model 15",
+      "provider_name": "Example Provider 15",
+      "context_window": 0,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-09/example-model-16",
+      "provider_id": "example-provider-09",
+      "upstream_model": "example-model-16",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 16",
+      "provider_name": "Example Provider 16",
+      "context_window": 0,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-09/example-model-17",
+      "provider_id": "example-provider-09",
+      "upstream_model": "example-model-17",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "enabled": false,
+      "display_name": "Example Model 17",
+      "provider_name": "Example Provider 17",
+      "context_window": 0,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-09/example-model-18",
+      "provider_id": "example-provider-09",
+      "upstream_model": "example-model-18",
+      "capabilities": [
+        "chat",
+        "coding"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 18",
+      "provider_name": "Example Provider 18",
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-09/example-model-19",
+      "provider_id": "example-provider-09",
+      "upstream_model": "example-model-19",
       "capabilities": [
         "chat",
         "coding",
         "tools"
       ],
       "enabled": true,
-      "display_name": "Example Model One",
-      "provider_name": "Example Provider",
+      "display_name": "Example Model 19",
+      "provider_name": "Example Provider 19",
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-09/example-model-20",
+      "provider_id": "example-provider-09",
+      "upstream_model": "example-model-20",
+      "capabilities": [
+        "chat",
+        "coding"
+      ],
+      "enabled": false,
+      "display_name": "Example Model 20",
+      "provider_name": "Example Provider 20",
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-09/example-model-21",
+      "provider_id": "example-provider-09",
+      "upstream_model": "example-model-21",
+      "capabilities": [
+        "chat",
+        "coding"
+      ],
+      "enabled": false,
+      "display_name": "Example Model 21",
+      "provider_name": "Example Provider 21",
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-16/example-model-22",
+      "provider_id": "example-provider-16",
+      "upstream_model": "example-model-22",
+      "capabilities": [
+        "chat"
+      ],
+      "enabled": false,
+      "display_name": "Example Model 22",
+      "provider_name": "Example Provider 22",
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-12/example-model-23",
+      "provider_id": "example-provider-12",
+      "upstream_model": "example-model-23",
+      "capabilities": [
+        "chat"
+      ],
+      "enabled": false,
+      "display_name": "Example Model 23",
+      "provider_name": "Example Provider 23",
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-15/example-model-24",
+      "provider_id": "example-provider-15",
+      "upstream_model": "example-model-24",
+      "capabilities": [
+        "chat"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 24",
+      "provider_name": "Example Provider 24",
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0.08,
+      "output_price_usd_per_1m": 0.35,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-15/example-model-25",
+      "provider_id": "example-provider-15",
+      "upstream_model": "example-model-25",
+      "capabilities": [
+        "chat"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 25",
+      "provider_name": "Example Provider 25",
+      "context_window": 262000,
+      "input_price_usd_per_1m": 0.08,
+      "output_price_usd_per_1m": 0.42,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-15/example-model-26",
+      "provider_id": "example-provider-15",
+      "upstream_model": "example-model-26",
+      "capabilities": [
+        "chat"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 26",
+      "provider_name": "Example Provider 26",
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0.08,
+      "output_price_usd_per_1m": 0.35,
+      "source": "Placeholder fixture (#7241)",
+      "source_checked_at": "2026-11-09"
+    },
+    {
+      "id": "example-provider-06/example-model-27",
+      "provider_id": "example-provider-06",
+      "upstream_model": "example-model-27",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free",
+        "image",
+        "long_context",
+        "tools"
+      ],
+      "enabled": true,
+      "display_name": "Example Model 27",
+      "provider_name": "Example Provider 27",
       "context_window": 1048576,
       "input_price_usd_per_1m": 0,
       "output_price_usd_per_1m": 0,
@@ -37,35 +584,21 @@
       "source_checked_at": "2026-11-09"
     },
     {
-      "id": "example-provider/example-model-2",
-      "provider_id": "example-provider",
-      "upstream_model": "example-model-2",
-      "capabilities": [
-        "chat",
-        "image"
-      ],
-      "enabled": true,
-      "display_name": "Example Model Two",
-      "provider_name": "Example Provider",
-      "context_window": 32768,
-      "input_price_usd_per_1m": 0,
-      "output_price_usd_per_1m": 0,
-      "source": "Placeholder fixture (#7241)",
-      "source_checked_at": "2026-11-09"
-    },
-    {
-      "id": "example-provider-2/example-model-3",
-      "provider_id": "example-provider-2",
-      "upstream_model": "example-model-3",
+      "id": "example-provider-10/example-model-28",
+      "provider_id": "example-provider-10",
+      "upstream_model": "example-model-28",
       "capabilities": [
         "chat",
         "coding",
-        "long_context"
+        "free",
+        "image",
+        "long_context",
+        "tools"
       ],
       "enabled": true,
-      "display_name": "Example Model Three",
-      "provider_name": "Example Provider Two",
-      "context_window": 262144,
+      "display_name": "Example Model 28",
+      "provider_name": "Example Provider 28",
+      "context_window": 1048576,
       "input_price_usd_per_1m": 0,
       "output_price_usd_per_1m": 0,
       "source": "Placeholder fixture (#7241)",
@@ -74,35 +607,56 @@
   ],
   "tiers": {
     "free": {
-      "primary": "example-provider/example-model-1",
+      "primary": "example-provider-01/example-model-01",
       "fallback": [
-        "example-provider-2/example-model-3",
-        "example-provider/example-model-2"
+        "example-provider-02/example-model-02",
+        "example-provider-04/example-model-05"
       ]
     },
     "plus": {
-      "primary": "example-provider/example-model-2",
+      "primary": "example-provider-02/example-model-02",
       "fallback": [
-        "example-provider-2/example-model-3"
+        "example-provider-11/example-model-08",
+        "example-provider-08/example-model-12",
+        "example-provider-09/example-model-16"
       ]
     },
     "pro": {
-      "primary": "example-provider/example-model-2",
+      "primary": "example-provider-02/example-model-02",
       "fallback": [
-        "example-provider-2/example-model-3"
+        "example-provider-11/example-model-08",
+        "example-provider-08/example-model-12",
+        "example-provider-09/example-model-16"
       ]
     },
     "max": {
-      "primary": "example-provider/example-model-2",
+      "primary": "example-provider-02/example-model-02",
       "fallback": [
-        "example-provider-2/example-model-3"
+        "example-provider-11/example-model-08",
+        "example-provider-08/example-model-12",
+        "example-provider-09/example-model-16"
       ]
     },
     "admin": {
-      "primary": "example-provider/example-model-2",
+      "primary": "example-provider-02/example-model-02",
       "fallback": [
-        "example-provider-2/example-model-3"
+        "example-provider-11/example-model-08",
+        "example-provider-08/example-model-12",
+        "example-provider-09/example-model-16"
       ]
     }
-  }
+  },
+  "retired_models": [
+    "example-provider-01/example-retired-01",
+    "example-provider-02/example-retired-02",
+    "example-provider-03/example-retired-03",
+    "example-provider-04/example-retired-04",
+    "example-provider-05/example-retired-05",
+    "example-provider-06/example-retired-06",
+    "example-provider-07/example-retired-07",
+    "example-provider-08/example-retired-08",
+    "example-provider-09/example-retired-09",
+    "example-provider-10/example-retired-10",
+    "example-provider-11/example-retired-11"
+  ]
 }

@@ -1,13 +1,17 @@
 """Owner model-console writes on B14: overlay, probe gate, key file hygiene.
 
-The base registry stays the shipped catalog; the Owner writes an overlay next to
-it. These tests pin the four promises the screen depends on: the overlay is what
-the next read (and the next boot) sees, a model can only be registered after a
-probe receipt for that exact row, retirement removes the model from the effective
-catalog while remaining reversible, and a credential write touches only its own
-governed slot file while never returning, logging or auditing the value.
+The base registry is the host's own document; the Owner writes an overlay next
+to it. These tests pin the four promises the screen depends on: the overlay is
+what the next read (and the next boot) sees, a model can only be registered
+after a probe receipt for that exact row, retirement removes the model from the
+effective catalog while remaining reversible, and a credential write touches
+only its own governed slot file while never returning, logging or auditing the
+value.
 
-Every credential here is synthetic and lives in a temporary directory.
+#7241 3단계: the repository no longer carries a catalog, so the base document
+this suite edits is a minimal synthetic one built from placeholder identities
+(``example-a``/``example-b``) at test time. Every credential here is synthetic
+and lives in a temporary directory.
 """
 
 from __future__ import annotations
@@ -64,16 +68,105 @@ MODEL = {
 }
 
 
+def _synthetic_session_keys() -> list[str]:
+    """Distinct governed slot NAMEs, read from the admin surface, not written."""
+    from app.pilot.credential_slots_admin import SLOT_BINDINGS
+
+    names = list(SLOT_BINDINGS)
+    assert len(names) >= 3, "the deployment governs too few credential slots"
+    return names
+
+
+def _synthetic_model_row(provider_id: str, upstream: str, **over) -> dict:
+    row = {
+        "id": f"{provider_id}/{upstream}",
+        "provider_id": provider_id,
+        "upstream_model": upstream,
+        "display_name": upstream.upper(),
+        "provider_name": provider_id.upper(),
+        "capabilities": ["chat"],
+        "context_window": 1000,
+        "input_price_usd_per_1m": 0.0,
+        "output_price_usd_per_1m": 0.0,
+        "source": "synthetic",
+        "source_checked_at": "2026-11-03",
+        "enabled": True,
+    }
+    row.update(over)
+    return row
+
+
+def _base_document() -> dict:
+    """The minimal catalog this host serves, in the private registry format.
+
+    #7241 3단계: the repository ships only a schema-shaped placeholder, and the
+    document the switch names is the single authority. This suite therefore
+    gives the host its own three-model document — built from placeholder
+    identities (``example-a``/``example-b``) — so the console's writes are
+    exercised against a catalog the host really serves. The shape is the private
+    format (``version``/``tiers``) because that is the only document the app's
+    reader accepts now.
+    """
+    first, second = _synthetic_session_keys()[:2]
+    return {
+        "version": "padiem.models.private.v1",
+        "comment": "Synthetic owner catalog for the model-console suite (#7241).",
+        "providers": {
+            "example-a": {
+                "base_origin": "https://example-a.example.invalid/v1",
+                "allowed_hosts": ["example-a.example.invalid"],
+                "credential_binding": first,
+            },
+            "example-b": {
+                "base_origin": "https://example-b.example.invalid/v1",
+                "allowed_hosts": ["example-b.example.invalid"],
+                "credential_binding": second,
+            },
+        },
+        "models": [
+            _synthetic_model_row("example-a", "m1"),
+            _synthetic_model_row("example-b", "m2"),
+            _synthetic_model_row("example-b", "m3"),
+        ],
+        "tiers": {
+            "free": {"primary": "example-a/m1", "fallback": ["example-b/m2"]},
+            "plus": {"primary": "example-a/m1", "fallback": ["example-b/m2"]},
+            "pro": {"primary": "example-b/m2", "fallback": ["example-b/m3"]},
+            "max": {"primary": "example-b/m3", "fallback": ["example-b/m2"]},
+        },
+    }
+
+
 @pytest.fixture
 def registry(tmp_path, monkeypatch):
+    """A host switched to its own synthetic catalog, with a writable overlay.
+
+    The switch is redirected (never cleared) for the duration of the test, and
+    the process snapshot is reloaded on the way in and out so the shared reader
+    answers this document and then the process default again (#7241 3b).
+    """
+    from app.pilot import model_registry_file
+
     base = tmp_path / "b14_models.json"
-    base.write_bytes(
-        (Path(ops.__file__).parent / "b14_models.json").read_bytes()
-    )
+    # The console edits one document — the B14 base file — and the process
+    # catalog is read from the switched document, so both name the same file.
+    base.write_text(json.dumps(_base_document()), encoding="utf-8")
     overlay = tmp_path / "b14_models.overrides.json"
+    monkeypatch.setenv("PADIEM_MODELS_REGISTRY", str(base))
+    # The private loader prefers OVERRIDE, and a process may already carry one;
+    # clear it so the switched document is unambiguously this host's file.
+    monkeypatch.delenv("PADIEM_MODELS_REGISTRY_OVERRIDE", raising=False)
     monkeypatch.setenv("B14_REGISTRY_PATH", str(base))
+    # Two readers see this host. The console's writer reads the base file the
+    # process was switched to, so that is where the overlay lands; the env
+    # override the suite pins is the same file, keeping the edit and the read
+    # on one document (#7241 3b).
     monkeypatch.setenv("B14_REGISTRY_OVERLAY_PATH", str(overlay))
-    return base
+    model_registry_file._PRIVATE_SNAPSHOT = None
+    model_registry_file.install_models()
+    yield base
+    model_registry_file._PRIVATE_SNAPSHOT = None
+    model_registry_file.install_models()
 
 
 @pytest.fixture

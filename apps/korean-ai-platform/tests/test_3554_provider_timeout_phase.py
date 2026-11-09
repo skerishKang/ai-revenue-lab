@@ -17,10 +17,14 @@ from app.pilot.provider_timeout_diagnostics import (
 )
 
 from _registry_values import (
-    a_dispatchable_row, provider_of, requires_owner_document,
+    a_dispatchable_row, provider_of, require_owner_document,
     specialized_timeout_log_provider, timeout_log_allowlist,
     timeout_log_allowlist_excluding,
 )
+
+# The dispatched subject is a live row of a Provider on the log allow-list;
+# which rows are live belongs to the owner's document (#7241 3b).
+require_owner_document()
 
 #: The Provider ids the log surface accepts, and the ones on the generic path.
 ALLOWED = sorted(timeout_log_allowlist())
@@ -75,7 +79,6 @@ def test_specialized_legacy_log_preserved_and_unknown_provider_silenced(caplog):
     assert "PRIVATE" not in caplog.text
 
 
-@requires_owner_document
 def test_gateway_deadline_classification_is_distinct_and_safe(caplog):
     with caplog.at_level(logging.WARNING):
         log_gateway_deadline(plt.logger, PROVIDER_ID)
@@ -85,7 +88,6 @@ def test_gateway_deadline_classification_is_distinct_and_safe(caplog):
 
 
 @pytest.mark.asyncio
-@requires_owner_document
 @pytest.mark.parametrize("exception,reason", [
     (httpx.ConnectTimeout("PRIVATE_VENDOR_SECRET"), "first_byte"),
     # Before response headers/body arrive, a read timeout is still a first-byte
@@ -121,7 +123,6 @@ async def test_real_platform_adapter_classifies_without_real_provider(
 
 
 @pytest.mark.asyncio
-@requires_owner_document
 async def test_successful_response_does_not_log_timeout_or_retry(monkeypatch, caplog):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setattr(plt, "_request_headers",

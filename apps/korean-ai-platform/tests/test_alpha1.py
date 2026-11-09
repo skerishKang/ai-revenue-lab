@@ -54,6 +54,29 @@ def _catalog_route_id() -> str:
     return _route_values(a_model_id())[0]
 
 
+def _route_id_outside_the_free_default() -> str:
+    """A routable id that is not the free grade's owner-selected primary.
+
+    The resolver adds one preselected grade fallback for that primary, so a
+    test about the plain manual route has to name a different row.
+    """
+    from app.pilot.tier_fallback import effective_tier_default
+
+    default = effective_tier_default()
+    for row in model_rows():
+        if not row.get("enabled", True) or row["id"] == default:
+            continue
+        if get_catalog_by_id(row["id"]) is None:
+            continue
+        try:
+            decision = resolve_manual_route(row["id"])
+        except NoSafeRoute:
+            continue
+        if decision.reason_codes == ["manual_selection"]:
+            return row["id"]
+    pytest.skip("the effective registry serves no plain manual route")
+
+
 def _registry_hosts() -> set[str]:
     """Every upstream host the effective registry documents."""
     hosts: set[str] = set()
@@ -355,7 +378,7 @@ class TestManualRoute:
         assert d.evidence_status == "resolved_not_called"
 
     def test_manual_route_no_fallback_by_default(self):
-        d = resolve_manual_route(_catalog_route_id())
+        d = resolve_manual_route(_route_id_outside_the_free_default())
         assert d.fallback_allowed is False
         assert d.eligible_fallback == []
         # B5: there is no external-fallback knob at all; a manual route only
@@ -1873,7 +1896,7 @@ class TestActualRouteId:
 
         The surviving multi-candidate walk is the owner-pinned free-tier roster.
         """
-        from app.pilot.tier_fallback import TIER_DEFAULT_B14_MODEL, TIER_FALLBACK_B14_MODELS
+        from app.pilot.tier_fallback import effective_tier_default
         from app.pilot import router_core
         _set_live()
         rcfg.provider_mode = "live"
@@ -1903,7 +1926,7 @@ class TestActualRouteId:
             resp = client.post(
                 chat_surface(),
                 json={
-                    "model": TIER_DEFAULT_B14_MODEL,
+                    "model": effective_tier_default(),
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"product_tier": "free"},
                 },

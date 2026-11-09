@@ -24,6 +24,14 @@ from app.pilot.poolside_provider import (
     POOLSIDE_PROVIDER_ID,
 )
 
+from _registry_values import require_owner_document
+
+# #7241 3단계: Poolside registration and the Kilo route beside it are owner
+# decisions about rows only the owner's registry document registers. This host
+# reads the placeholder fixture unless an owner document is named, so the whole
+# module skips there instead of failing on a lane no document installs.
+require_owner_document()
+
 WRANGLER_TOML = Path(__file__).resolve().parent.parent / "wrangler.toml"
 
 

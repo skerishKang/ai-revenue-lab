@@ -27,6 +27,10 @@ from app.pilot.errors import (
 from app.pilot.tool_channel import GO_PROVIDER_ID, TOOL_CAPABILITY, require_stream_tool_wire
 from app.pilot.model_registry_file import read_registry
 
+from _registry_values import require_owner_document
+
+require_owner_document()
+
 
 def _registered_rows(provider_id: str | None = None) -> list[dict]:
     rows = list(read_registry()["models"])

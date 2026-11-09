@@ -31,6 +31,10 @@ from app.pilot.tool_channel import (
 from _pilot_lane_paths import chat_surface
 from _registry_values import model_rows, provider_of, provider_row, requires_owner_document
 
+from _registry_values import require_owner_document
+
+require_owner_document()
+
 # The two surfaces this suite drives: the gateway's chat completion endpoint and
 # its streaming preview beside it. Both are selected from the assembled routes.
 CHAT_URL = chat_surface()

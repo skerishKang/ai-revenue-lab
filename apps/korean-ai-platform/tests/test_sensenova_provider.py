@@ -36,7 +36,13 @@ from app.pilot.sensenova_provider import (
 )
 
 from _pilot_lane_paths import chat_surface
-from _registry_values import model_row, provider_of, row_model_snapshot
+from _registry_values import model_row, provider_of, require_owner_document, row_model_snapshot
+
+# This Provider's served lane, its fixed origin and its credential slot are all
+# owner-document rows: the placeholder fixture registers none of them, so the
+# whole suite skips as a module on a host that reads no owner document (#7241
+# 3b) instead of asserting against rows nobody serves.
+require_owner_document()
 
 CHAT_SURFACE = chat_surface()
 

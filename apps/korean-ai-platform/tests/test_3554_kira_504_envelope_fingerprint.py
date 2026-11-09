@@ -20,7 +20,12 @@ from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.errors import UpstreamTimeout
 
 from _pilot_lane_paths import chat_surface
-from _registry_values import a_dispatchable_row, provider_of, provider_row, requires_owner_document
+from _registry_values import (
+    a_dispatchable_row,
+    owner_document_present,
+    provider_of,
+    provider_row,
+)
 
 #: The gateway's own chat surface, selected from the mounted router.
 CHAT_PATH = chat_surface()
@@ -44,7 +49,16 @@ else:  # pragma: no cover - placeholder document; the case is skipped below
 #: reconcile and document before changing it when the serializer moves.
 OBSERVED_ENVELOPE_BYTES = 518
 
-pytestmark = requires_owner_document
+#: Which identity the gateway dispatches is the owner document's answer, and the
+#: envelope length below was reconciled against that identity alone: the case is
+#: a lane pin (#7241 3b). `placeholder_registry_active()` compares the *bytes*
+#: of the switch document, and the loader's 0600 copy is re-serialized, so the
+#: document's own shape is the authority here.
+if not owner_document_present():
+    pytest.skip(
+        "no owner registry document is in effect (placeholder fixture)",
+        allow_module_level=True,
+    )
 
 
 def test_exact_single_attempt_504_has_observed_b14_fingerprint(monkeypatch):

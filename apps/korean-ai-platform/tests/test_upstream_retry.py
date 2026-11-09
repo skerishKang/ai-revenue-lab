@@ -13,37 +13,116 @@ retryable. These tests pin the retry policy:
 - non-retryable classes (auth, bad request) still fail on the first attempt;
 - the first manual model attempt may exceed 45s without being aborted;
 - automatic fallback chains and later retries retain the 45s budget.
+
+#7241 3단계: the route under test is a live catalog row, so it is read from the
+effective registry document through a fixture of this suite's own. The fixture
+is installed for the duration of a run and the process is always put back
+(switch restored, snapshot dropped, catalog reinstalled), because a suite that
+leaves an empty catalog fails every suite that runs after it.
 """
 
 from __future__ import annotations
 
 import asyncio
+import json
+import os
 
 import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
 from app.pilot import gateway as gw
+from app.pilot import model_registry_file as registry_file
 from app.pilot import platform as plat
 from app.pilot.errors import UpstreamAuthFailed, UpstreamServerError, UpstreamTimeout
 
 from _pilot_lane_paths import chat_surface
-from _registry_values import (
-    model_row,
-    model_rows,
-    provider_of,
-    provider_row,
-)
+from _registry_values import model_row, model_rows, provider_row, provider_of
+
 
 #: The direct retry target: an enabled registry row, never a retired identity.
+#: A suite that drives one live route needs an identity, so it serves one from
+#: a document of its own: the placeholder Provider, one enabled row, the tier
+#: block the loader requires, and a credential slot left unset so the keyless
+#: lane is the one exercised (#7241 3단계).
+_RETRY_PROVIDER_ID = "example-provider"
+_MODEL_BINDING = "PADIEM_B14_CREDENTIAL_99"
+_RETRY_ROW = {
+    "id": "example-provider/legacy-retry-chat",
+    "provider_id": _RETRY_PROVIDER_ID,
+    "upstream_model": "legacy-retry-chat-upstream",
+    "capabilities": ["chat"],
+    "enabled": True,
+    "display_name": "Example: Legacy Retry Chat",
+    "provider_name": "Example Provider",
+    "context_window": 128000,
+    "input_price_usd_per_1m": 0.0,
+    "output_price_usd_per_1m": 0.0,
+    "source": "fixture",
+    "source_checked_at": "2026-11-09",
+}
+
+
+def _retry_document() -> dict:
+    tier = {"primary": _RETRY_ROW["id"], "fallback": []}
+    return {
+        "version": "padiem.models.private.v1",
+        "providers": {
+            _RETRY_PROVIDER_ID: {
+                "base_origin": "https://example.invalid/v1",
+                "allowed_hosts": ["example.invalid"],
+                "credential_binding": _MODEL_BINDING,
+            }
+        },
+        "models": [_RETRY_ROW],
+        "tiers": {name: dict(tier) for name in ("free", "plus", "pro", "max")},
+    }
+
+
+def _install_retry_registry(tmp_path) -> None:
+    """Point the process registry at this suite's document, once per module."""
+    target = tmp_path / "retry-models-private.json"
+    target.write_text(json.dumps(_retry_document()), encoding="utf-8")
+    os.chmod(target, 0o600)
+    os.environ[registry_file.REGISTRY_SWITCH_ENV] = str(target)
+    registry_file._PRIVATE_SNAPSHOT = None
+    registry_file.install_models()
+
+
+def _restore_registry(saved: dict[str, str | None]) -> None:
+    """Put the process back: switch restored, snapshot dropped, catalog reinstalled."""
+    for name, value in saved.items():
+        if value is None:
+            os.environ.pop(name, None)
+        else:
+            os.environ[name] = value
+    registry_file._PRIVATE_SNAPSHOT = None
+    registry_file.install_models()
+
+
+_SWITCH_NAMES = (registry_file.REGISTRY_SWITCH_ENV, registry_file.REGISTRY_OVERRIDE_ENV)
+
+
+@pytest.fixture(scope="module", autouse=True)
+def _retry_route_document(tmp_path_factory):
+    """Install this suite's registry for the module, then put the process back."""
+    saved = {name: os.environ.get(name) for name in _SWITCH_NAMES}
+    _install_retry_registry(tmp_path_factory.mktemp("retry-registry"))
+    try:
+        yield
+    finally:
+        _restore_registry(saved)
+
+
+#: The direct retry target: the enabled row this module's document serves.
 MODEL_ID = next(row["id"] for row in model_rows() if row["enabled"])
 #: Its own upstream name and display name come from the same row, so the audit
 #: evidence below compares against the row that installed the route (#7241 3a).
 _MODEL_ROW = model_row(MODEL_ID)
 MODEL_UPSTREAM = _MODEL_ROW["upstream_model"]
 MODEL_PROVIDER_NAME = _MODEL_ROW["provider_name"]
-#: The binding slot this suite fills, read from the Provider's own registry row.
-#: A binding *name* is deployment metadata; the value below is a fixture.
+#: The binding slot this suite fills, read from the Provider's own registry row:
+#: the value installed above is a fixture, the *name* is the document's.
 _MODEL_BINDING = provider_row(provider_of(MODEL_ID))["credential_binding_name"]
 FIXTURE_SECRET = "sk-fixture-retry-0123456789"
 
@@ -69,9 +148,14 @@ def _ok_response(upstream_model: str) -> dict:
 
 @pytest.fixture(autouse=True)
 def _approved_manual_model_secret(monkeypatch):
-    """The owner-approved direct model is the retry target, never a retired ID."""
+    """The direct model is the retry target, never a retired ID.
+
+    The document above declares one credential slot; this suite fills it with
+    a synthetic value so the lane is ready to dispatch, and the value is never
+    a real credential.
+    """
     monkeypatch.setenv(_MODEL_BINDING, FIXTURE_SECRET)
-    monkeypatch.setenv("B14_PROVIDER_MODE","live")
+    monkeypatch.setenv("B14_PROVIDER_MODE", "live")
 
 @pytest.fixture()
 def client():

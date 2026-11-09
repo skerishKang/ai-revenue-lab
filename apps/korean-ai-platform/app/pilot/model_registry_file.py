@@ -1,7 +1,10 @@
 """Validated, owner-maintained B14 model registry. Only metadata, never secret values.
 
-Edit b14_models.json to add/remove an existing compatible provider model.
-The JSON is parsed at boot; invalid registry aborts startup (no stale fallback).
+The catalog is read from the private registry document this host names in
+PADIEM_MODELS_REGISTRY (#7241 3단계). ``b14_models.json`` stays in the tree as a
+schema-shaped placeholder only: it carries no model, provider, host or credential
+names, and nothing reads it as data any more. A host without the switch, or with
+an unreadable document, serves an empty catalog and logs a reason code.
 """
 from __future__ import annotations
 import json
@@ -47,12 +50,37 @@ def overlay_path(base: Path | None = None) -> Path:
     raw = os.environ.get(REGISTRY_OVERLAY_PATH_ENV, "").strip()
     if raw:
         return Path(raw).expanduser()
-    target = base or registry_path()
+    # #7241 3단계: the Owner overlay sits next to the document this host reads.
+    # On a switched host that is the private registry, so a write and the next
+    # boot agree about which file the overlay amends.
+    selection = registry_switch_selection()
+    target = base or (Path(selection).expanduser() if selection else registry_path())
     return target.with_name(target.stem + _OVERLAY_SUFFIX)
+REGISTRY_SWITCH_ENV = "PADIEM_MODELS_REGISTRY"
+REGISTRY_OVERRIDE_ENV = "PADIEM_MODELS_REGISTRY_OVERRIDE"
+#: Reason codes for the fail-closed path. They are logged; no value is logged.
+SWITCH_MISSING = "registry_switch_missing"
+SWITCH_UNUSABLE = "private registry unavailable"
+
+
+def registry_switch_selection() -> str:
+    """The registry document this host was told to read, or ``""``.
+
+    The switch is required for B14 (#7241 3단계): the repository no longer
+    carries model, provider or host values, so a host that names no document
+    cannot serve a catalog at all.
+    """
+    return (os.environ.get(REGISTRY_SWITCH_ENV, "").strip()
+            or os.environ.get(REGISTRY_OVERRIDE_ENV, "").strip())
+
+
 def private_registry_enabled() -> bool:
-    """Whether this host switched to the private registry file (#6828 2-2)."""
-    return bool(os.environ.get("PADIEM_MODELS_REGISTRY", "").strip()
-                or os.environ.get("PADIEM_MODELS_REGISTRY_OVERRIDE", "").strip())
+    """Whether this host named a private registry document (#6828 2-2).
+
+    ``False`` is no longer a working mode: it answers "no catalog" from every
+    reader below instead of the repository values (#7241 3단계).
+    """
+    return bool(registry_switch_selection())
 
 
 def _private_module():
@@ -98,7 +126,9 @@ def private_registry_snapshot(*, refresh: bool = False):
 def private_registry_state() -> dict:
     """Value-free state for the health surface: enabled, counts, reason code."""
     if not private_registry_enabled():
-        return {"enabled": False, "ok": True, "models": 0, "reason": None}
+        # Fail closed: a host without the switch serves nothing, and says why.
+        _LOG.warning("models_registry_unavailable code=%s", SWITCH_MISSING)
+        return {"enabled": False, "ok": False, "models": 0, "reason": SWITCH_MISSING}
     load = private_registry_snapshot()
     if load is not None:
         return {"enabled": True, "ok": True, "models": len(load.registry.models),
@@ -278,6 +308,23 @@ def merge_overlay(base: dict, overlay: dict) -> dict:
     return merged
 
 
+def effective_private_document() -> dict:
+    """The installed document the switch names, with the Owner overlay applied.
+
+    The overlay keeps working on a switched host (#7241 3단계): it is read from
+    beside the private document and merged before validation, exactly as it was
+    merged on top of the shipped file before.
+    """
+    load = private_registry_snapshot()
+    if load is None:
+        raise ModelRegistryError(SWITCH_UNUSABLE)
+    installed = _install_document(load.registry)
+    overlay = read_overlay()
+    if not overlay:
+        return installed
+    return validate_registry(merge_overlay(installed, overlay))
+
+
 def read_registry(path: Path | None = None) -> dict:
     """Return the effective registry: the base document plus the Owner overlay.
 
@@ -285,14 +332,13 @@ def read_registry(path: Path | None = None) -> dict:
     converted private document and never the repository values. An unusable
     private document raises instead of silently using the shipped catalog.
     """
-    if private_registry_enabled():
-        load = private_registry_snapshot()
-        if load is None:
-            raise ModelRegistryError("private registry unavailable")
-        return _install_document(load.registry)
-    base = path or registry_path()
-    merged = merge_overlay(_read_json(base, "registry"), read_overlay(base))
-    return validate_registry(merged)
+    if not private_registry_enabled():
+        # #7241 3단계: no switch means no authority. The repository document is
+        # a schema-shaped placeholder now, so reading it would answer rows this
+        # deployment never approved — refused here instead.
+        _LOG.warning("models_registry_unavailable code=%s", SWITCH_MISSING)
+        raise ModelRegistryError(SWITCH_MISSING)
+    return effective_private_document()
 
 
 def read_overlay(path: Path | None = None) -> dict:
@@ -317,6 +363,23 @@ def overlay_state(path: Path | None = None) -> dict:
         "models": len(overlay.get("models") or []),
         "retired_models": len(overlay.get("retired_models") or []),
     }
+
+
+def _current_base_document(path: Path | None = None) -> dict:
+    """The document the overlay amends: the private one on a switched host.
+
+    #7241 3단계: the shipped file is a placeholder, so an overlay validated
+    against it would be merged onto a catalog nobody serves. The base this
+    function answers is the same document ``read_registry()`` answers, without
+    the overlay itself (which the caller is about to extend).
+    """
+    if private_registry_enabled() and path is None:
+        load = private_registry_snapshot()
+        if load is None:
+            raise ModelRegistryError(SWITCH_UNUSABLE)
+        return _install_document(load.registry)
+    target = path or registry_path()
+    return _read_json(target, "registry")
 
 
 def write_overlay(update: dict, path: Path | None = None) -> dict:
@@ -359,7 +422,7 @@ def write_overlay(update: dict, path: Path | None = None) -> dict:
     if not merged_overlay["retired_models"]:
         merged_overlay.pop("retired_models")
 
-    effective = merge_overlay(_read_json(base, "registry"), merged_overlay)
+    effective = merge_overlay(_current_base_document(path), merged_overlay)
     validate_registry(effective)
     target = overlay_path(base)
     text = json.dumps(merged_overlay, ensure_ascii=False, indent=2) + "\n"
@@ -393,6 +456,58 @@ def install_registry() -> dict:
     install_models(data)
     return data
 
+def private_document_from_install(data: dict) -> dict:
+    """The private-v1 form of an install document (#7241 3단계 write path).
+
+    On a switched host the Owner's registration screen writes the document the
+    host reads. The tiers are carried over unchanged: this write adds or removes
+    a Provider row, it never re-decides a grade roster.
+    """
+    data = validate_registry(data)
+    tiers = {}
+    load = private_registry_snapshot()
+    if load is not None:
+        tiers = {name: {"primary": tier["primary"],
+                        "fallback": list(tier["fallback"])}
+                 for name, tier in load.registry.tiers.items()}
+    providers = {}
+    for provider_id, entry in data["providers"].items():
+        if entry["credential_source"] != CredentialSource.PLATFORM_SECRET.value:
+            continue
+        providers[provider_id] = {
+            "base_origin": entry["base_origin"],
+            "allowed_hosts": list(entry["allowed_hosts"]),
+            "credential_binding": entry["credential_binding_name"],
+        }
+    models = []
+    for row in data["models"]:
+        model = {
+            "id": row["id"],
+            "provider_id": row["provider_id"],
+            "upstream_model": row["upstream_model"],
+            "capabilities": list(row["capabilities"]),
+            "enabled": row["enabled"],
+            "display_name": row["display_name"],
+            "provider_name": row["provider_name"],
+            "context_window": row["context_window"],
+            "input_price_usd_per_1m": row["input_price_usd_per_1m"],
+            "output_price_usd_per_1m": row["output_price_usd_per_1m"],
+            "source": row["source"],
+            "source_checked_at": row["source_checked_at"],
+        }
+        if "reasoning" in row:
+            model["reasoning"] = row["reasoning"]
+        models.append(model)
+    return {
+        "version": "padiem.models.private.v1",
+        "comment": "Written by the B14 owner console (#7241 3\ub2e8\uacc4).",
+        "providers": providers,
+        "models": models,
+        "tiers": tiers,
+        "retired_models": list(data.get("retired_models") or []),
+    }
+
+
 def write_registry(data: dict, path: Path | None = None) -> None:
     """Validate fully, then replace the file in one step.
 
@@ -400,17 +515,34 @@ def write_registry(data: dict, path: Path | None = None) -> None:
     registry — which would abort the next boot — is not reachable: the new
     content is validated before anything is written and moved into place with a
     single rename inside the same directory.
+
+    On a switched host the target is the private document this host reads, and
+    it is written in that document's own format with the private owner-only mode
+    (#7241 3단계). The next read sees the new rows without a restart.
     """
-    target = path or registry_path()
     validate_registry(data)
-    text = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
+    switched = private_registry_enabled() and path is None
+    if switched:
+        selection = registry_switch_selection()
+        target = Path(selection).expanduser()
+        document = private_document_from_install(data)
+        # The private loader refuses a document it cannot use, so the written
+        # file is validated with that same validator before it replaces one that
+        # works: a bad tier or binding never reaches the host's boot path.
+        _private_module().validate_document(document)
+        mode = 0o600
+    else:
+        target = path or registry_path()
+        document = data
+        mode = 0o644
+    text = json.dumps(document, ensure_ascii=False, indent=2) + "\n"
     handle, temp_path = tempfile.mkstemp(dir=str(target.parent), prefix=target.name + ".")
     try:
         with os.fdopen(handle, "w", encoding="utf-8", newline="\n") as stream:
             stream.write(text)
             stream.flush()
             os.fsync(stream.fileno())
-        os.chmod(temp_path, 0o644)
+        os.chmod(temp_path, mode)
         os.replace(temp_path, target)
     except OSError as exc:
         try:
@@ -418,6 +550,9 @@ def write_registry(data: dict, path: Path | None = None) -> None:
         except OSError:
             pass
         raise ModelRegistryError("registry write failed") from exc
+    if switched:
+        global _PRIVATE_SNAPSHOT
+        _PRIVATE_SNAPSHOT = None
 
 def validate_registry(data: dict) -> dict:
     """Validate any trusted source before modifying the active catalog."""
@@ -565,16 +700,15 @@ def install_models(data:dict|None=None) -> None:
     """Install the one canonical registry into existing B14 execution adapters."""
     from .catalog import CATALOG_BY_ID, CATALOG_MODELS, CatalogModel
     if data is None:
-        if private_registry_enabled():
-            load = private_registry_snapshot()
-            if load is None:
-                # Fail closed: an unusable private document installs nothing,
-                # and the repository catalog is never substituted for it.
-                _empty_catalog()
-                return
-            data = _install_document(load.registry)
-        else:
-            data = read_registry()
+        load = private_registry_snapshot() if private_registry_enabled() else None
+        if load is None:
+            # Fail closed: no switch or an unusable document installs nothing.
+            # The repository catalog is never substituted for either case.
+            code = SWITCH_MISSING if not private_registry_enabled() else SWITCH_UNUSABLE
+            _LOG.warning("models_registry_unavailable code=%s", code)
+            _empty_catalog()
+            return
+        data = effective_private_document()
     else:
         data = validate_registry(data)
     # All validation first. Invalid edits must not partially modify in-memory state.

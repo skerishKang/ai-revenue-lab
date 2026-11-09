@@ -105,12 +105,15 @@ def demo_home_client():
 # #1933 reduced the production catalog to a single Kilo Gateway route. Several
 # contracts (legacy capability tags, hard privacy policy, platform-owned
 # credential plane, provider readiness) were written against the wider catalog.
-# These fixtures reinstall the historical entries inside a single test so those
+# These fixtures reinstall a historical entry inside a single test so those
 # contracts stay genuinely validated instead of silently collapsing to a single
 # candidate. They never alter the committed catalog.
+#
+# #7241 3단계: the identities are placeholder shapes, not deployment values. A
+# suite that needs a real registered lane asks for the owner document instead.
 # ---------------------------------------------------------------------------
-GEMINI_MODEL_ID = "google/gemini-2.5-flash"
-AGNES_MODEL_ID = "agnes-ai/agnes-3.0-flash"
+GEMINI_MODEL_ID = "example-provider/legacy-image-chat"
+AGNES_MODEL_ID = "example-provider-2/legacy-platform-chat"
 
 
 def _gemini_catalog_model():
@@ -119,8 +122,8 @@ def _gemini_catalog_model():
     return CatalogModel(
         model_id=GEMINI_MODEL_ID,
         upstream_model=GEMINI_MODEL_ID,
-        display_name="Google: Gemini 2.5 Flash",
-        provider="Google",
+        display_name="Example: Legacy Image Chat",
+        provider="Example Provider",
         provider_type="external",
         input_price_usd_per_1m=0.30,
         output_price_usd_per_1m=2.50,
@@ -141,9 +144,9 @@ def _agnes_catalog_model():
 
     return CatalogModel(
         model_id=AGNES_MODEL_ID,
-        upstream_model="agnes-3.0-flash",
-        display_name="Agnes AI: Agnes 3.0 Flash",
-        provider="Agnes AI",
+        upstream_model="legacy-platform-chat-upstream",
+        display_name="Example: Legacy Platform Chat",
+        provider="Example Provider 2",
         provider_type="platform",
         input_price_usd_per_1m=None,
         output_price_usd_per_1m=None,
@@ -155,7 +158,7 @@ def _agnes_catalog_model():
         region="외부",
         sort_order=70,
         credential_source="platform_secret",
-        platform_provider_id="agnes-ai",
+        platform_provider_id="example-provider-2",
     )
 
 

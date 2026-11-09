@@ -13,6 +13,13 @@ from app.pilot.platform_secrets import get_platform_provider
 from app.pilot.router_core import resolve_manual_route
 from app.pilot.errors import NoSafeRoute
 
+from _registry_values import require_owner_document
+
+# The removal this suite pins is the owner document's own retirement list: a
+# retired identity whose Provider no longer has a platform row. The placeholder
+# fixture retires nothing of the owner's, so the module skips there (#7241 3b).
+require_owner_document()
+
 
 def _removed_identity() -> tuple[str, str]:
     """(model_id, provider_id) of a retired identity with no platform Provider.

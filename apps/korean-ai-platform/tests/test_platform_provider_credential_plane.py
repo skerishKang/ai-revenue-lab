@@ -52,7 +52,22 @@ def _a_retired_model_id() -> str:
     whichever lane the owner retired instead of freezing today's id. An empty
     roster is the placeholder-document case and is the owner pin's precondition.
     """
-    return sorted(retired_model_ids())[0]
+    retired = sorted(retired_model_ids())
+    assert retired, "the effective document retires no identity"
+    return retired[0]
+
+
+def _a_synthetic_stream_refusal_id() -> str:
+    """An identity the stream-preview surface refuses before any dispatch.
+
+    The placeholder document registers no lane of its own, so the surface's
+    "unsupported model" answer is exercised on an identity that is not in the
+    catalog at all. It carries no deployment value: it is the test Provider's
+    own synthetic prefix.
+    """
+    unknown = TEST_PROVIDER_ID + "/not-a-registered-route"
+    assert get_catalog_by_id(unknown) is None
+    return unknown
 
 
 def _ensure_test_provider() -> None:
@@ -139,6 +154,19 @@ def _test_env(monkeypatch):
     monkeypatch.delenv(TEST_BINDING, raising=False)
 
 
+def _lane_is_registered() -> bool:
+    """Whether the served lane this suite pins is installed in this process.
+
+    That Provider row is registered only by the owner's registry document; the
+    placeholder fixture names none, which is exactly when the owner-lane pin
+    below has no subject. The lane is addressed by its own module's id
+    declaration (the lane's code vocabulary), never by a literal here.
+    """
+    from app.pilot import agnes_provider
+
+    return ps.get_platform_provider(agnes_provider.AGNES_PROVIDER_ID) is not None
+
+
 def _auto_pool(decision) -> set[str]:
     pool = {decision.selected_model}
     for fb in decision.eligible_fallback:
@@ -146,7 +174,10 @@ def _auto_pool(decision) -> set[str]:
     return pool
 
 
-@requires_owner_document
+@pytest.mark.skipif(
+    not _lane_is_registered(),
+    reason="served lane: only the owner's registry document registers this Provider",
+)
 def test_agnes_route_reonboarded_as_manual_pin_candidate():
     # #2133 owner decision (#2126 5584200820) re-onboards Agnes as an explicit
     # candidate. The original #1933 S2-b retirement asserted absence; this
@@ -656,19 +687,37 @@ def test_stream_preview_platform_secret_fails_closed_when_secret_missing(monkeyp
     assert TEST_BINDING not in json.dumps(body)
 
 
-@requires_owner_document
-def test_stream_preview_retired_kilo_is_rejected_without_dispatch(monkeypatch):
-    monkeypatch.delenv(TEST_BINDING,raising=False)
-    client=TestClient(create_app())
-    response=client.post(_STREAM_URL,json={
-        "model":_a_retired_model_id(),
-        "stream":True,
-        "messages":[{"role":"user","content":"hi"}],
+def _assert_stream_preview_refuses(model_id: str) -> None:
+    client = TestClient(create_app())
+    response = client.post(_STREAM_URL, json={
+        "model": model_id,
+        "stream": True,
+        "messages": [{"role": "user", "content": "hi"}],
     })
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "unsupported_model"
     assert TEST_BINDING not in response.text
     assert _SYNTH_KEY not in response.text
+
+
+def test_stream_preview_unregistered_route_is_rejected_without_dispatch(monkeypatch):
+    """No document registers this identity, so the surface refuses it."""
+    monkeypatch.delenv(TEST_BINDING, raising=False)
+    _assert_stream_preview_refuses(_a_synthetic_stream_refusal_id())
+
+
+def test_stream_preview_retired_lane_is_rejected_without_dispatch(monkeypatch):
+    """An owner-retired identity is refused by the same surface answer.
+
+    The identity is requested through the retirement authority, so the contract
+    follows whichever lane the owner retired. The placeholder document retires
+    nothing, in which case any identity it does not register is the subject of
+    the same "no dispatch" answer.
+    """
+    monkeypatch.delenv(TEST_BINDING,raising=False)
+    retired = sorted(retired_model_ids())
+    model_id = retired[0] if retired else _a_synthetic_stream_refusal_id()
+    _assert_stream_preview_refuses(model_id)
 
 
 @pytest.mark.asyncio

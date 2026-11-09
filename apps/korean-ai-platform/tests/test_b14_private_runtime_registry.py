@@ -1,8 +1,15 @@
-"""Private B14 registry contract: immutable pin, isolation and fail closed."""
+"""Private B14 registry contract: immutable pin, isolation and fail closed.
+
+#7241 3단계: the object a deployment pins is the *installed* document shape —
+``install_document`` of the private registry — because the repository file is a
+schema-shaped placeholder with no model, provider or host value. The bytes the
+suite pins are therefore composed here from that same conversion of the
+effective document, so no deployment value is written into this file.
+"""
 from __future__ import annotations
 
 import hashlib
-from pathlib import Path
+import json
 from types import SimpleNamespace
 
 import pytest
@@ -10,7 +17,7 @@ import pytest
 from app.pilot import model_registry_file
 from app.pilot import private_runtime_registry as private
 
-REGISTRY = Path(__file__).resolve().parents[1] / "app" / "pilot" / "b14_models.json"
+from padiem_control_plane import models_registry
 
 
 class Blob:
@@ -36,9 +43,24 @@ def reset_marker(monkeypatch):
     monkeypatch.setattr(private, "_loaded_sha256", None)
 
 
+def _installed_document_text() -> str:
+    """The private document in the shape the Worker installs, as JSON text.
+
+    A pinned object is an ``install_document`` of a private registry (#6828),
+    and the effective document of this process is the private registry the host
+    reads. Converting it here keeps every identity in the registry, never in
+    this file.
+    """
+    load = models_registry.load_snapshot()
+    assert load.ready, load.code
+    document = models_registry.install_document(load.registry)
+    assert document["models"], "the effective document registers no model"
+    return json.dumps(document, ensure_ascii=False, indent=2) + "\n"
+
+
 @pytest.mark.asyncio
 async def test_private_config_loads_exact_pinned_version_only_once(monkeypatch):
-    source = REGISTRY.read_text(encoding="utf-8")
+    source = _installed_document_text()
     digest = hashlib.sha256(source.encode()).hexdigest()
     bucket = Bucket(source)
     installed = []
@@ -56,7 +78,7 @@ async def test_private_config_loads_exact_pinned_version_only_once(monkeypatch):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("case", ["missing_binding", "missing_object", "wrong_hash", "bad_pin"])
 async def test_private_config_never_falls_back_on_missing_or_tampered_data(monkeypatch, case):
-    source = REGISTRY.read_text(encoding="utf-8")
+    source = _installed_document_text()
     digest = hashlib.sha256(source.encode()).hexdigest()
     installed = []
     monkeypatch.setattr(model_registry_file, "install_models", lambda data: installed.append(data))

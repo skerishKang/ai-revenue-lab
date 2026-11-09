@@ -14,6 +14,7 @@ from padiem_control_plane.product_tier_routes_private import (
     effective_active_route_for,
     free_fallback_model_id,
     free_primary_model_id,
+    paid_primary_model_id,
 )
 from padiem_control_plane.product_tier_routes import (
     MAX_HOLD_MODEL_ID as _CONTRACT_MAX_HOLD_MODEL_ID,
@@ -67,8 +68,16 @@ PADIEM_FREE = "Padiem Free"
 # hold model below applies only while that route is absent. Provisioned by
 # the verified global model admin gate in member_grade_access/chat_routes;
 # never part of the Free..Max product-tier routes, aliases, or hold lanes.
+#: Last-resort marker. It is never dispatched to: it only names the lane when
+#: the registry document declares neither an admin route nor a paid primary.
+_ADMIN_LAST_RESORT_HOLD_ID = "padiem-profile/admin-hold"
+# #7238 issue: a registry document without an admin grade used to leave this
+# lane on the marker, which the dispatcher cannot resolve. The fallback is now
+# the registry's own paid primary, so an admin request runs on a provisioned
+# route; the marker survives only when the document is unusable altogether
+# (where every lane fails closed).
 ADMIN_B14_MODEL_ID = _contract_route_or_hold_id(
-    ProductTierLabel.ADMIN, "padiem-profile/admin-hold"
+    ProductTierLabel.ADMIN, paid_primary_model_id() or _ADMIN_LAST_RESORT_HOLD_ID
 )
 
 TIER_ID_TO_LABEL: dict[str, ProductTierLabel] = {

@@ -36,6 +36,10 @@ from app.pilot.platform_secrets import (
     get_platform_provider,
 )
 
+from _registry_values import require_owner_document
+
+require_owner_document()
+
 APP_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = APP_ROOT / "app" / "pilot"
 

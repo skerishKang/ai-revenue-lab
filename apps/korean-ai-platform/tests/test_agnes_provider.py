@@ -27,7 +27,11 @@ from app.pilot.errors import PilotNotConfigured
 from app.pilot.platform import call_platform_chat_completions, stream_platform_chat_completions
 from app.pilot.platform_secrets import get_platform_provider
 
-from _registry_values import chat_wire_tail
+from _registry_values import chat_wire_tail, require_owner_document
+
+# This Provider is a lane only the owner's registry document registers, so the
+# whole module's subject is absent under the placeholder fixture (#7241 3단계).
+require_owner_document()
 
 #: The wire the adapter's own URL table appends to this Provider's fixed origin.
 #: Reading it back keeps the address composed rather than written (#7241 3a).

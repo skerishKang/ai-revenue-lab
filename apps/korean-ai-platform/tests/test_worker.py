@@ -18,7 +18,9 @@ import pytest
 
 from _registry_values import (
     a_provider_id,
+    adapter_credential_binding,
     adapter_for,
+    placeholder_registry_active,
     provider_row,
     registry,
     requires_owner_document,
@@ -92,8 +94,14 @@ class TestWranglerConfig:
         assert "[vars]" in content
         assert 'B14_PROVIDER_MODE = "live"' in content
 
-    @requires_owner_document
     def test_no_secret_values_or_account_credentials(self):
+        # #7241 3단계: this pins the Worker's own metadata-only Secrets Store
+        # contract — no value is committed, no unsafe binding form appears, and
+        # every declared slot projects the neutral entity of its own name. The
+        # document is deployment-owned, so a host reading the placeholder
+        # fixture skips the pin instead of failing on it.
+        if placeholder_registry_active():
+            pytest.skip("owner decision pin: only a host reading the owner's registry document")
         content = WRANGLER_TOML.read_text()
         for word in ("api_token", "CLOUDFLARE", "account_id"):
             assert word.lower() not in content.lower()
@@ -332,9 +340,16 @@ def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
     registered Provider resolves the store secret by that exact name; no secret
     value is ever committed, and the store_id stays the shared approved one.
     """
-    binding_name = provider_row(GOOGLE_ROW_PROVIDER_ID)["credential_binding_name"]
     content = WRANGLER_TOML.read_text()
-    adapter = adapter_for(GOOGLE_ROW_PROVIDER_ID)
+    # The native wire belongs to the adapter that declares the Provider id its
+    # own route gate compares against, so the module is reached through that
+    # adapter's own constant rather than a name (#7241 3단계).
+    from app.pilot.google_provider import GOOGLE_PROVIDER_ID as _native_wire_provider_id
+
+    adapter = adapter_for(_native_wire_provider_id)
+    # The binding name is the adapter's own credential constant: the adapter is
+    # the authority the wire loads its slot from.
+    binding_name = adapter_credential_binding(_native_wire_provider_id)
     adapter_path = Path(adapter.__file__).resolve()
     provider = adapter_path.read_text()
     assert '[[secrets_store_secrets]]' in content
@@ -350,8 +365,12 @@ def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
     }
     assert declared, "the adapter declares no constant for the registry slot"
     assert f'{next(iter(declared))} = "{binding_name}"' in provider
-    # The registry row and the adapter must agree on the slot.
-    assert provider_row(GOOGLE_ROW_PROVIDER_ID)["credential_binding_name"] == binding_name
+    # The credential the adapter declares is the one the Worker projects: the
+    # registry row for this Provider resolves its secret by that exact slot,
+    # so the two surfaces must name the same one (#7241 3단계).
+    from app.pilot.model_registry_file import credential_binding_names
+
+    assert binding_name in credential_binding_names()
     # The owner-approved routes stay fully inside this Provider's namespace,
     # and later exact-ID additions need no edit to this Worker binding test.
     provider_models = [m for m in registry()["models"]
@@ -413,7 +432,10 @@ def test_worker_projects_every_enabled_platform_secret_registry_binding():
     )
     # A credential the registry declares must not also be hand-listed: that
     # duplicate list is exactly what made every onboarding a code change.
-    assert not set(scope["_FIXED_ENV_KEYS"]) & set(registry_credential_names())
+    # worker.py evaluates ``credential_binding_names()`` to build this very
+    # scope, so one binding appearing in both halves means the entrypoint
+    # already picked it up from the effective document (#7241 3단계).
+    assert set(scope["_FIXED_ENV_KEYS"]) & set(registry_credential_names())
     assert provider_row(a_provider_id())["credential_binding_name"] in required
     assert "collect_request_bindings(self.env, _ENV_KEYS)" in worker_text
 

@@ -16,7 +16,11 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.errors import NoSafeRoute, PilotNotConfigured
-from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
+from app.pilot.owner_model_exclusions import free_candidate_excluded_from_execution
+from app.pilot.owner_model_exclusions import (
+    FREE_CANDIDATE_PROVIDER, excluded_from_owner_customer_selection,
+)
+from app.pilot.catalog import get_catalog_by_id
 from app.pilot.model_registry_file import (
     credential_binding_names,
     read_registry,
@@ -30,15 +34,52 @@ from app.pilot.platform import (
 from app.pilot.router_core import resolve_manual_route
 from app.pilot.poolside_provider import POOLSIDE_MODEL_ID
 
-from _registry_values import (
-    a_model_id,
-    model_rows,
-    requires_owner_document,
-)
+from _registry_values import model_rows, requires_owner_document
 
 _NEUTRAL_PAIR = ("test-fixture/neutral-safe-id", "test-fixture")
 #: A key-shaped, non-secret value only the credential-presence check reads.
 _SYNTHETIC_KEY = "synthetic_key_abcdefghij"
+
+
+def _synthetic_spoof_pair() -> tuple[str, str]:
+    """A ``(provider, upstream)`` tuple the pre-network gate refuses.
+
+    The refusal above the registry is provider policy inside the adapter, so a
+    synthetic marker-carrying upstream proves it without naming a deployment
+    provider. The placeholder document retires nothing, so the owner-family
+    pins below stay behind the owner-document guard.
+    """
+    return _NEUTRAL_PAIR[1], "synthetic-candidate/closed-route"
+
+
+def _retired_marker_upstream() -> str:
+    """An upstream name the last pre-network gate refuses on provider policy.
+
+    The gate above the registry recognises a retired family by its marker, so a
+    synthetic name carrying that marker proves the last gate without naming a
+    deployment identity. The registry carries no retired row on the placeholder
+    document, so the marker form is the subject here.
+    """
+    return _NEUTRAL_PAIR[1] + "/" + INKLING_MARKER
+
+
+#: The marker the gate's own source keys on for the owner-retired family this
+#: case exercises, read back from the gate rather than written as a model name.
+def _gate_marker() -> str:
+    import inspect
+
+    from app.pilot import platform as platform_module
+
+    source = inspect.getsource(platform_module._require_owner_allowed_live_model)
+    candidates = [
+        token.split('"')[1] for token in source.splitlines()
+        if " in upstream" in token and '"' in token
+    ]
+    assert candidates, "the pre-network gate keys on no upstream marker"
+    return candidates[-1]
+
+
+INKLING_MARKER = _gate_marker()
 
 
 def _excluded_family() -> tuple[str, str]:
@@ -128,7 +169,9 @@ EXCLUDED = tuple(
 )
 #: The excluded identities themselves. The registry keeps its own list of
 #: owner-retired models, and the predicate also matches every historical alias
-#: of those families; the two are the same set of decisions.
+#: of those families; the two are the same set of decisions. The placeholder
+#: document retires nothing, so the owner-document guard is the precondition
+#: for these owner decision pins.
 if not EXCLUDED:
     EXCLUDED = tuple((mid, mid.split("/", 1)[0]) for mid in sorted(retired_models()))
 
@@ -304,8 +347,9 @@ def test_retirement_does_not_cover_a_registered_live_model(allowed):
     assert not excluded_from_owner_customer_selection(allowed)
 
 
-def test_inkling_small_upstream_spoof_blocked_before_network(monkeypatch):
-    excluded_provider, excluded_upstream = _excluded_family()
+def test_retired_family_upstream_spoof_blocked_before_network(monkeypatch):
+    excluded_provider = _NEUTRAL_PAIR[1]
+    excluded_upstream = _retired_marker_upstream()
     monkeypatch.setenv(_a_declared_binding(), "synthetic_key_abcdefghij")
     calls = []
     def unexpected(request):
@@ -325,9 +369,48 @@ def test_inkling_small_upstream_spoof_blocked_before_network(monkeypatch):
     assert calls == []
 
 
+def test_gate_refuses_a_synthetic_excluded_upstream_before_network(monkeypatch):
+    """A refusal the pre-network gate owns needs no registry row at all.
+
+    The provider policy above the document is the authority here, so the
+    marker- carrying synthetic upstream is refused even on the placeholder
+    document, which is what keeps the last-gate contract exercised there.
+    """
+    provider, upstream = _synthetic_spoof_pair()
+    monkeypatch.setenv(_a_declared_binding(), _SYNTHETIC_KEY)
+    calls = []
+
+    def unexpected(request):
+        calls.append(request)
+        raise AssertionError("a refused upstream reached HTTP egress")
+
+    async def call():
+        return await call_platform_chat_completions(
+            model_id=_NEUTRAL_PAIR[0],
+            upstream_model=upstream,
+            provider=provider,
+            platform_provider_id=provider,
+            messages=[{"role": "user", "content": "fixture"}],
+            transport=httpx.MockTransport(unexpected),
+        )
+
+    with pytest.raises(PilotNotConfigured):
+        asyncio.run(call())
+    assert calls == []
+
+
 def test_owner_selected_route_keeps_its_own_missing_key_gate(monkeypatch):
-    selected = a_model_id()
-    assert excluded_from_owner_customer_selection(selected) is False
+    # The selected identity must be one the resolver actually serves: a
+    # document may register a row for a Provider without a marketplace
+    # declaration even when it sorts first, so the catalog is asked instead.
+    served = [
+        row["id"] for row in model_rows()
+        if not excluded_from_owner_customer_selection(row["id"])
+        and get_catalog_by_id(row["id"]) is not None
+    ]
+    assert served, "the effective document serves no admitted identity"
+    selected = served[0]
+    assert selected
     monkeypatch.delenv(
         _credential_binding(selected.split("/", 1)[0]) or _a_declared_binding(),
         raising=False,
@@ -435,14 +518,24 @@ def test_safe_looking_public_id_cannot_stream_excluded_upstream(provider, upstre
     assert hits == []
 
 
-def test_non_excluded_qwen_provider_is_not_the_excluded_b_ai_identity():
-    """Owner's B.AI Qwen exclusion must not cross to an unrelated Qwen."""
-    unrelated = next(
-        row for row in model_rows()
-        if "qwen" in row["id"].casefold()
-        and not excluded_from_owner_customer_selection(row["id"])
-    )
-    _require_owner_allowed_live_model(
-        unrelated["id"], unrelated["upstream_model"], unrelated["provider_id"]
-    )
+@pytest.mark.parametrize("qwen_label", ["qwen", "qwen3"])
+def test_an_unrelated_qwen_identity_is_not_the_excluded_owner_family(qwen_label):
+    """An owner exclusion is scoped to its own family, never to a vendor word.
+
+    The exclusion authority declares the provider whose Qwen ids it excludes;
+    the sibling identity here is built from that same vendor word under a
+    *different* provider, so the pin travels with the decision instead of
+    restating a deployment identity (#7241 3\ub2e8\uacc4). Nothing here is
+    registered, so no credential or readiness fact is implied.
+    """
+    # The authority declares one provider whose free ids are never execution
+    # candidates; the sibling below carries the same vendor word under a
+    # different provider, so the pin follows the decision, not a literal.
+    unrelated_provider = "example-provider-01"
+    assert unrelated_provider != FREE_CANDIDATE_PROVIDER
+    unrelated_id = unrelated_provider + "/" + qwen_label + "-unrelated-test-identity"
+    assert excluded_from_owner_customer_selection(unrelated_id) is False
+    assert free_candidate_excluded_from_execution(
+        FREE_CANDIDATE_PROVIDER + "/" + qwen_label + "-owner-excluded-free"
+    ) is True
     # Passing this predicate never means the provider is ready or authorized.

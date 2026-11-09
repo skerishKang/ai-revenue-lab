@@ -29,6 +29,10 @@ from app.pilot.owner_model_exclusions import free_candidate_excluded_from_execut
 from app.pilot.gateway import _protocol_for
 from _registry_values import adapter_for, model_rows
 
+from _registry_values import require_owner_document
+
+require_owner_document()
+
 FIXED = (15.0, 20.0, 120.0, 60.0)
 
 

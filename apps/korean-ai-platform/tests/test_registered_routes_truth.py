@@ -18,6 +18,10 @@ from app.pilot.sensenova_provider import SENSENOVA_MODEL_ID
 
 from _registry_values import adapter_declaring_retired, model_row, model_rows, provider_of
 
+from _registry_values import require_owner_document
+
+require_owner_document()
+
 # Owner retirement is read from the same registry that installs the routes.
 RETIRED = retired_model_ids()
 

@@ -308,6 +308,52 @@ def timeout_log_allowlist_excluding() -> list[str]:
     return keep
 
 
+def native_wire_owner() -> str:
+    """The Provider id the native (method-style) wire adapter itself serves.
+
+    The native lane compares an incoming Provider id against the constant the
+    adapter module declares, so a suite that drives that lane must adopt the
+    same identity. The constant is read off the adapter rather than written in
+    the test (#7241 3b).
+    """
+    from app.pilot import google_provider
+
+    for name, value in vars(google_provider).items():
+        if name.endswith("PROVIDER_ID") and isinstance(value, str) and value:
+            return value
+    raise AssertionError("the native wire adapter declares no Provider id")
+
+
+def native_wire_origin() -> str:
+    """The origin the native wire adapter requires its route to be served from."""
+    from app.pilot import google_provider
+
+    for name, value in vars(google_provider).items():
+        if name.endswith("BASE_ORIGIN") and isinstance(value, str) and value:
+            return value
+    raise AssertionError("the native wire adapter declares no base origin")
+
+
+def adapter_constants(provider_id: str, *suffixes: str) -> dict[str, str]:
+    """The string constants a Provider's own adapter declares, by suffix.
+
+    A suite that drives one Provider's wire has to know that Provider's fixed
+    origin, host, binding NAME and identities, but every one of them is a
+    deployment value. The adapter module is the authority, so the suite reads
+    them off it instead of writing them (#7241 3b).
+    """
+    module = adapter_for(provider_id)
+    found: dict[str, str] = {}
+    for suffix in suffixes:
+        for name, value in vars(module).items():
+            if name.endswith(suffix) and isinstance(value, str) and value:
+                found[suffix] = value
+                break
+        else:
+            raise AssertionError(f"the selected adapter declares no {suffix} constant")
+    return found
+
+
 def provider_ids_excluding(markers: tuple[str, ...]) -> list[str]:
     """Registry Provider ids that carry none of ``markers`` in their identity."""
     out = [
@@ -321,3 +367,29 @@ def provider_ids_excluding(markers: tuple[str, ...]) -> list[str]:
 def provider_rows() -> list[dict]:
     """Every Provider row of the effective document."""
     return list(registry()["providers"].values())
+
+
+def owner_document_present() -> bool:
+    """Whether the effective registry document carries owner rows (#7241 3b).
+
+    The repository ships a schema-shaped placeholder now, so a test process that
+    names no owner document reads placeholder-only rows. Suites whose subject is
+    a served lane (a Provider that only the owner document registers) cannot run
+    there; they skip as a module instead of failing at import.
+    """
+    models = registry().get("models") or []
+    if not models:
+        return False
+    return not all(str(row.get("id", "")).startswith("example-") for row in models)
+
+
+def require_owner_document(*, reason: str = "") -> None:
+    """Skip the calling module when no owner registry document is in effect."""
+    import pytest
+
+    if owner_document_present():
+        return
+    pytest.skip(
+        reason or "no owner registry document is in effect (placeholder fixture)",
+        allow_module_level=True,
+    )
