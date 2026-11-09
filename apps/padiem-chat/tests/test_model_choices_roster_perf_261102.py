@@ -20,7 +20,7 @@ from app import owner_model_preview_routes as models
 from app.b66_b14_free_first_resolver import B14FreeFirstQuoteModelResolver
 from test_b66_b14_free_first_resolver import records
 
-_MODELS_PATH = "/api/pilot/models"
+_MODELS_PATH = "/api/pilot/admin/models"
 _READINESS_PATH = "/api/pilot/provider-readiness"
 
 

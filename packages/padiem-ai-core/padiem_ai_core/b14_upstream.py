@@ -137,7 +137,8 @@ class B14HttpsTransport(httpx.AsyncBaseTransport):
     here: Chat and the Engine each already own one signer with its own pinned
     tests, and a third copy in Core would be a second authority over the same
     credential contract. The construction it must produce is documented once, in
-    the B14 server-side verifier.
+    the B14 server-side verifier. It signs every accepted method: a GET has no
+    body, so its proof binds to the empty body (#7272).
 
     The target is pinned twice over: the origin comes from the validated switch,
     and only the caller's fixed path allowlist is accepted, so a value that
@@ -188,8 +189,10 @@ class B14HttpsTransport(httpx.AsyncBaseTransport):
         body = b""
         if request.method == "POST":
             body = bytes(await request.aread())
-            if self._headers_for_body is not None:
-                headers.update(dict(self._headers_for_body(body)))
+        # #7272: a GET proves the same body-bound caller contract over its
+        # empty body, so B14's proven-caller reads verify it like a POST.
+        if self._headers_for_body is not None:
+            headers.update(dict(self._headers_for_body(body)))
         if self._correlation_headers is not None:
             for name, value in dict(self._correlation_headers()).items():
                 headers.setdefault(name, value)

@@ -1,7 +1,7 @@
 """#3760/#3751: B66 against REAL B14 source GET metadata (zero upstream).
 
 Unlike hand-written registry fixtures, these tests execute the real source
-metadata builders behind B14's /api/pilot/models and
+metadata builders behind B14's /api/pilot/admin/models and
 /api/pilot/provider-readiness GET endpoints in an isolated child process,
 then invoke the genuine B66 quote resolver. No TestClient/HTTP GET is issued.
 
@@ -24,7 +24,7 @@ from app.b66_registered_model_boundary import B66ModelRouteError, B66QuoteTaskRe
 
 REPO = Path(__file__).resolve().parents[3]
 B14_APP_DIR = REPO / "apps" / "korean-ai-platform"
-B14_GETS = ("/api/pilot/models", "/api/pilot/provider-readiness")
+B14_GETS = ("/api/pilot/admin/models", "/api/pilot/provider-readiness")
 
 
 def _registered_ids_from_owner_registry() -> set[str]:

@@ -40,8 +40,10 @@ B14_UPSTREAM_POST_PATHS = frozenset({
     B14_CHAT_COMPLETIONS_PATH,
     B14_STREAM_PREVIEW_PATH,
 })
+# #7272: the model rows live on B14's proven-caller authority; the public
+# ``/api/pilot/models`` is a count summary since #6828 stage 2.
 B14_UPSTREAM_READ_PATHS = frozenset({
-    "/api/pilot/models",
+    "/api/pilot/admin/models",
     "/api/pilot/provider-readiness",
 })
 B14_UPSTREAM_PATHS = B14_UPSTREAM_POST_PATHS | B14_UPSTREAM_READ_PATHS
