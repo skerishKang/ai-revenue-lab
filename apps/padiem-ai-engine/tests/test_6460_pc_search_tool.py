@@ -463,6 +463,8 @@ def test_the_search_status_poll_interval_grows_and_caps_at_five_seconds(monkeypa
     # The verified result ends the wait as soon as a poll observes it.
     assert result["output"].startswith('{"ok":true')
     assert calls.count("command_status") == 6
-    # The polls start fast and grow 2× up to the 5 s cap.
-    assert sleeps[:5] == [0.5, 1.0, 2.0, 4.0, 5.0]
-    assert max(sleeps) <= 5.0
+    # The polls start fast and grow 2× up to the 1 s files cap (2026-11-09:
+    # the PC result is ready ~0.9 s after the claim, so a taller ladder only
+    # delayed the answer in the response-assembly window).
+    assert sleeps[:5] == [0.5, 1.0, 1.0, 1.0, 1.0]
+    assert max(sleeps) <= driver._PC_FILES_POLL_SECONDS_CAP
