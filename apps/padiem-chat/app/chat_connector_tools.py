@@ -52,6 +52,9 @@ from padiem_ai_core.connectors import (
     GMAIL_SEARCH_MESSAGES_TOOL_ID,
     gmail_read_tool_specs,
 )
+from .calendar_session_authority import (
+    CALENDAR_PATH_TOOL_GRANT,
+)
 from padiem_ai_core.drive_capability import (
     DRIVE_CANONICAL_TOOL_IDS,
     DRIVE_READ_TOOL_IDS,
@@ -275,7 +278,11 @@ async def _grant_decision_for_uid(request: Request, *, uid: str) -> ConnectorToo
     workspace answer: an unavailable check is not ``not_connected``.
     """
 
-    overrides, _fallback_reason, authority, session_id = await _reviewed_workspace_truth(request)
+    # #7261: the tool offer resolves the session through the same function the
+    # status, activation, disconnect and READ paths use.
+    overrides, _fallback_reason, authority, session_id = await _reviewed_workspace_truth(
+        request, path=CALENDAR_PATH_TOOL_GRANT
+    )
     if not authority:
         return _UNDECLARED
     drive_state = (overrides.get("drive") or (None,))[0]
@@ -363,6 +370,22 @@ async def _bounded_grant_decision(
     if _cache_ttl_for(decision) > 0:
         _GRANT_CACHE[uid] = (now, decision)
     return decision, (time.perf_counter() - started) * 1000.0, False
+
+
+async def calendar_read_reachable(request: Request, *, uid: str | None) -> bool:
+    """#7261: the READ dispatch guard reads the decision the offer produced.
+
+    The grant decision is the single place a Calendar session is resolved for a
+    turn (``_reviewed_workspace_truth`` -> ``resolve_calendar_session``), so the
+    READ call re-reads that decision instead of resolving the session a second
+    time. A turn whose offer withheld the tool therefore cannot read either,
+    and the two can never disagree inside one turn.
+    """
+
+    if not uid:
+        return False
+    decision, _elapsed_ms, _cached = await _bounded_grant_decision(request, uid=uid)
+    return decision.reason == GRANT_REASON_GRANTED and decision.calendar
 
 
 def seed_connector_grant_cache(uid: str | None, decision: ConnectorToolGrant) -> None:

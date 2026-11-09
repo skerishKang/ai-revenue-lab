@@ -7,7 +7,13 @@ from typing import Any
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from .auth_routes import auth_ready, current_user_id
+from .auth_routes import current_user_id
+from .calendar_session_authority import (
+    CALENDAR_PATH_DISCONNECT,
+    CALENDAR_SESSION_NO_TRUSTED_AUTHORITY,
+    CALENDAR_SESSION_UNAVAILABLE,
+    resolve_calendar_session,
+)
 from .same_origin_guard import expected_browser_origin
 
 
@@ -67,23 +73,25 @@ async def _disconnect(
         return _reply(400, "connector_disconnect_body_not_allowed")
     if request.headers.get("transfer-encoding"):
         return _reply(400, "connector_disconnect_body_not_allowed")
-    uid = current_user_id(request) if auth_ready(request) else None
-    if not uid:
-        return _reply(401, "authentication_required")
-    history = getattr(request.app.state, "history_store", None)
-    shadow_store = getattr(request.app.state, "identity_shadow_store", None)
+    # #7261: the workspace this revoke names is derived from the one session
+    # every calendar path resolves through, never from the shadow pointer read
+    # on its own (two readings is how a screen and a turn disagreed before).
+    calendar_session = await resolve_calendar_session(
+        request, path=CALENDAR_PATH_DISCONNECT
+    )
+    if not calendar_session.resolved:
+        if calendar_session.reason == CALENDAR_SESSION_NO_TRUSTED_AUTHORITY:
+            return _reply(401, "authentication_required")
+        if calendar_session.reason == CALENDAR_SESSION_UNAVAILABLE:
+            return _reply(503, unavailable_code)
+        return _reply(503, "canonical_session_unavailable")
+    uid = current_user_id(request)
     identity = getattr(request.app.state, "control_plane_identity_authority", None)
     google = getattr(request.app.state, "google_oauth_workspace_truth", None)
-    if not all((history, shadow_store, identity, google)):
+    if identity is None or google is None:
         return _reply(503, unavailable_code)
     try:
-        profile = await _value(history.get_user(uid))
-        if profile is None:
-            return _reply(401, "authentication_required")
-        shadow = await _value(shadow_store.load_projection(uid))
-        session_id = getattr(shadow, "auth_session_id", None)
-        if not isinstance(session_id, str) or not session_id:
-            return _reply(503, "canonical_session_unavailable")
+        session_id = calendar_session.session_id
         workspace = await _value(identity.resolve_connector_workspace(session_id=session_id))
         if not isinstance(workspace, str) or not workspace:
             return _reply(503, "canonical_workspace_unavailable")

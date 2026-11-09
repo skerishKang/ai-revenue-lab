@@ -221,7 +221,7 @@ class _GoogleToolEngine:
 
 
 def _patch_grant(monkeypatch: pytest.MonkeyPatch, *, drive: bool, calendar: bool) -> None:
-    async def truth(_request: Any):
+    async def truth(_request: Any, path=None):
         overrides = {
             "drive": CONNECTED if drive else NOT_CONNECTED,
             "calendar": CONNECTED if calendar else NOT_CONNECTED,

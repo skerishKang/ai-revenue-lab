@@ -75,6 +75,15 @@ from padiem_ai_core.telegram_capability import (
 )
 
 from .auth_routes import auth_ready, current_user_id
+from .calendar_session_authority import (
+    CALENDAR_PATH_STATUS,
+    CALENDAR_SESSION_INACTIVE,
+    CALENDAR_SESSION_NOT_LINKED,
+    CALENDAR_SESSION_NO_TRUSTED_AUTHORITY,
+    CALENDAR_SESSION_REJECTED,
+    CALENDAR_SESSION_UNAVAILABLE,
+    resolve_calendar_session,
+)
 from .connector_workspace_truth import (
     REVIEWED_WORKSPACE_TRUTH_CONNECTORS,
     compose_workspace_connector_truth,
@@ -306,8 +315,19 @@ def _composed_overrides(connectors: Any) -> dict[str, tuple[str, str | None]] | 
     return overrides
 
 
+_CALENDAR_SESSION_TO_WORKSPACE_REASON = {
+    CALENDAR_SESSION_NO_TRUSTED_AUTHORITY: WORKSPACE_REASON_NO_TRUSTED_AUTHORITY,
+    CALENDAR_SESSION_NOT_LINKED: WORKSPACE_REASON_IDENTITY_NOT_LINKED,
+    CALENDAR_SESSION_INACTIVE: WORKSPACE_REASON_NO_TRUSTED_AUTHORITY,
+    CALENDAR_SESSION_REJECTED: WORKSPACE_REASON_NO_TRUSTED_AUTHORITY,
+    CALENDAR_SESSION_UNAVAILABLE: WORKSPACE_REASON_TRUTH_UNAVAILABLE,
+}
+
+
 async def _reviewed_workspace_truth(
     request: Request,
+    *,
+    path: str = CALENDAR_PATH_STATUS,
 ) -> tuple[dict[str, tuple[str, str | None]], str, bool, str | None]:
     """Compose reviewed workspace truth for the signed-in B62 product user.
 
@@ -341,56 +361,32 @@ async def _reviewed_workspace_truth(
     ready, absent, or cannot be evaluated, no private call is made at all.
     """
 
-    # The canonical shadow session, once product authentication and the shadow
-    # both prove out. Returned to the caller so the persisted Calendar READ
-    # grant projection reuses the single profile/shadow read below.
-    shadow_session_id: str | None = None
+    # #7261: one session resolution for every calendar path. The product
+    # profile, the shadow pointer and the authority refresh all live behind
+    # ``resolve_calendar_session`` so the status screen, the activation route,
+    # the disconnect route, the model-turn tool offer and the READ dispatch can
+    # never disagree about which canonical session they are answering for.
+    session = await resolve_calendar_session(request, path=path)
+    if not session.resolved:
+        return (
+            {},
+            _CALENDAR_SESSION_TO_WORKSPACE_REASON.get(
+                session.reason, WORKSPACE_REASON_TRUTH_UNAVAILABLE
+            ),
+            False,
+            None,
+        )
+    session_id = session.session_id
+    shadow_session_id = session_id
 
-    # 1. Prove B62 product authentication before reaching any canonical private
-    #    authority. A stale or deleted product user must never be able to read
-    #    canonical workspace truth through the shadow.
-    try:
-        if not auth_ready(request):
-            # auth_mode="off", or no product history store: not authenticated.
-            return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False, None
-        user_id = current_user_id(request)
-        if user_id is None:
-            # No valid signed product cookie.
-            return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False, None
-        history_store = getattr(request.app.state, "history_store", None)
-        if history_store is None:
-            return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False, None
-        profile = await history_store.get_user(user_id)
-    except Exception:  # noqa: BLE001 - product authentication could not be evaluated
-        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False, None
-    if profile is None:
-        # The cookie decodes to a uid that no longer has a product user. That is
-        # the B62 "expired / not authenticated" state, so degrade exactly to the
-        # anonymous Phase-A projection instead of reaching the canonical shadow.
-        return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False, None
-
-    # 2. Only now may the canonical private authorities be reached.
     try:
         _require_reviewed_targets()
     except RuntimeError:
         return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False, None
-
     identity_authority = getattr(request.app.state, "control_plane_identity_authority", None)
-    shadow_store = getattr(request.app.state, "identity_shadow_store", None)
     google_oauth_authority = getattr(request.app.state, "google_oauth_workspace_truth", None)
-    if identity_authority is None or shadow_store is None or google_oauth_authority is None:
+    if identity_authority is None or google_oauth_authority is None:
         return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False, None
-
-    try:
-        shadow = await shadow_store.load_projection(user_id)
-    except Exception:  # noqa: BLE001 - a shadow read fault is never a workspace state
-        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False, None
-    if shadow is None:
-        return {}, WORKSPACE_REASON_IDENTITY_NOT_LINKED, False, None
-    session_id = getattr(shadow, "auth_session_id", None)
-    if not isinstance(session_id, str) or not session_id:
-        return {}, WORKSPACE_REASON_IDENTITY_NOT_LINKED, False, None
-    shadow_session_id = session_id
 
     try:
         result = await compose_workspace_connector_truth(
