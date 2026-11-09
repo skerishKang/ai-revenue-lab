@@ -49,7 +49,7 @@ STATIC = TESTS.parent / "static"
 
 
 def _patch_truth(monkeypatch, *, overrides, authority, calendar_state=None):
-    async def _reviewed_workspace_truth(request):
+    async def _reviewed_workspace_truth(request, path=None):
         return overrides, "canonical_workspace_connector_not_reported", authority, "authsession:test"
 
     async def _reviewed_calendar_state(request, sid):
@@ -301,7 +301,7 @@ async def test_the_connectors_status_answer_fills_the_grant_cache(monkeypatch):
 
     truth_calls: list[str] = []
 
-    async def _trusted_truth(request):
+    async def _trusted_truth(request, path=None):
         return {"drive": CONNECTED, "calendar": CONNECTED}, None, True, "authsession:test"
 
     async def _active_state(request, sid):

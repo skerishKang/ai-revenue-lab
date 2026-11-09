@@ -58,7 +58,7 @@ _GMAIL_GET_SPEC = {spec.id: spec for spec in gmail_read_tool_specs()}[GMAIL_GET_
 
 def _patch_truth(monkeypatch, *, overrides, authority, session_id="authsession:test",
                  calendar_state=None, calls=None):
-    async def _reviewed_workspace_truth(request):
+    async def _reviewed_workspace_truth(request, path=None):
         if calls is not None:
             calls.append("truth")
         return overrides, "canonical_workspace_connector_not_reported", authority, session_id
@@ -186,7 +186,7 @@ async def test_unverified_not_connected_and_failed_checks_declare_nothing(monkey
     assert tools_module._tools_for_decision(decision) == ()
 
     # A failed truth read declares nothing instead of failing the turn.
-    async def _broken_truth(request):
+    async def _broken_truth(request, path=None):
         raise RuntimeError("truth unavailable")
 
     monkeypatch.setattr(tools_module, "_reviewed_workspace_truth", _broken_truth)
@@ -201,7 +201,7 @@ async def test_a_general_turn_never_pays_the_grant_check(monkeypatch):
     """일반 턴은 확인 0회: 커넥터 도구는 명시적 Google 의도 턴에만 선언된다."""
     calls: list[str] = []
 
-    async def _counting_truth(request):
+    async def _counting_truth(request, path=None):
         calls.append("truth")
         return {"drive": _CONNECTED, "calendar": _CONNECTED}, None, True, "s"
 
@@ -218,7 +218,7 @@ async def test_an_intent_turn_waits_for_the_slow_truth_and_reaches_the_tools(mon
     """명시적 의도 턴은 1~3초 확인을 기다려 커넥터 경로로 간다(3초 상한)."""
     calls: list[str] = []
 
-    async def _measured_truth(request):
+    async def _measured_truth(request, path=None):
         calls.append("truth")
         await asyncio.sleep(0.8)  # the production path took ~2.7s: inside the budget
         return {"drive": _CONNECTED, "calendar": _CONNECTED}, None, True, "s"
@@ -238,7 +238,7 @@ async def test_an_intent_turn_waits_for_the_slow_truth_and_reaches_the_tools(mon
     assert elapsed < 3.0, "the answer arrived inside the 3s budget"
 
     # A read slower than the intent budget times out at ~3s and is not cached.
-    async def _too_slow_truth(request):
+    async def _too_slow_truth(request, path=None):
         calls.append("truth")
         await asyncio.sleep(3.6)
         return {"drive": _CONNECTED, "calendar": _CONNECTED}, None, True, "s"

@@ -153,6 +153,24 @@ FORBIDDEN_KEYS = (
 # --------------------------------------------------------------------------
 
 
+def _canonical_session_wire(*, session_id: str | None = None) -> dict[str, Any]:
+    """#7261: the canonical session envelope every calendar path resolves."""
+
+    now = datetime.now(timezone.utc)
+    return {
+        "ok": True,
+        "session": {
+            "session_id": session_id or CANONICAL_SESSION_ID,
+            "product_id": "b62",
+            "subject": {"subject_type": "user", "subject_id": CANONICAL_SUBJECT_ID},
+            "issued_at": (now - timedelta(minutes=5)).isoformat(),
+            "expires_at": (now + timedelta(hours=1)).isoformat(),
+            "state": "active",
+            "revision": 3,
+        },
+    }
+
+
 class _IdentityBinding:
     """Fake Identity Authority Service Binding honouring the B-1A contract."""
 
@@ -160,6 +178,12 @@ class _IdentityBinding:
         self.present = present
         self.workspace_ref = workspace_ref
         self.calls: list[dict[str, Any]] = []
+
+    async def resolve_auth_session(self, payload: dict[str, Any]) -> dict[str, Any]:
+        # #7261: every calendar path resolves the session through the shared
+        # authority contract, so the fake answers the canonical session wire.
+        self.calls.append(dict(payload))
+        return _canonical_session_wire(session_id=payload.get("session_id"))
 
     async def resolve_connector_workspace(self, payload: dict[str, Any]) -> dict[str, Any]:
         self.calls.append(dict(payload))
@@ -178,6 +202,10 @@ class _IdentityErrorBinding:
         self.code = code
         self.message = message
         self.calls: list[dict[str, Any]] = []
+
+    async def resolve_auth_session(self, payload: dict[str, Any]) -> dict[str, Any]:
+        self.calls.append(dict(payload))
+        return _canonical_session_wire(session_id=payload.get("session_id"))
 
     async def resolve_connector_workspace(self, payload: dict[str, Any]) -> dict[str, Any]:
         self.calls.append(dict(payload))

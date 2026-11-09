@@ -5,12 +5,14 @@ from .file_lane import file_resolver
 import asyncio
 import base64
 import json
+import logging
 import re
 from collections.abc import Mapping
 from typing import Any
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse, StreamingResponse
+
 
 from .attachments import ImageAttachment
 from .binary_attachment_frame import decode_binary_attachment_frame
@@ -24,6 +26,7 @@ from .auto_grounding import (
 from .native_calendar_intent import parse_native_calendar_intent, try_native_calendar_chat
 from .native_calendar_adapter import NativeCalendarAdapterError
 from .chat_connector_tools import (
+    CALENDAR_READ_TOOL_NAME,
     CONNECTOR_UNAVAILABLE_NOTE,
     google_connector_intent,
     google_connector_turn_for_text,
@@ -72,6 +75,8 @@ from .request_telemetry import emit_stage_event
 from .tool_presentations import get_tool_presentation
 from .usage_gate import UsageGate
 from .web_tools import WebToolError
+
+_LOG = logging.getLogger(__name__)
 
 
 def _public_evidence(items) -> list[dict[str, Any]]:
@@ -344,9 +349,25 @@ async def _chat_connector_tools_for_turn(
 
     if not intent:
         return ()
-    if not await chat_pc_route_declares_tools(request, model_id):
+    route_declares_tools = await chat_pc_route_declares_tools(request, model_id)
+    if not route_declares_tools:
+        # #7261: a dropped offering must be visible in the journal with the
+        # closed reason only — never the model, the owner, or any calendar data.
+        _LOG.info(
+            "calendar_tools_offer intent=%s route_tools=%s verdict=route_without_native_tools",
+            bool(intent),
+            bool(route_declares_tools),
+        )
         return ()
-    return await connector_tools_for_turn(request, uid=uid, intent_turn=intent)
+    tools = await connector_tools_for_turn(request, uid=uid, intent_turn=intent)
+    _LOG.info(
+        "calendar_tools_offer intent=%s route_tools=%s verdict=%s tools=%d",
+        bool(intent),
+        bool(route_declares_tools),
+        "declared" if tools else "dropped",
+        len(tools),
+    )
+    return tools
 
 
 #: The tool output becomes model context; the bound keeps one connector read
@@ -382,6 +403,21 @@ async def _connector_tool_lane(
             {"error": {"code": "connector_tool_unsupported", "message": "요청한 커넥터 도구를 실행할 수 없습니다."}},
         )
         return
+    if tool_name == CALENDAR_READ_TOOL_NAME:
+        # #7261: the READ call is gated by the turn's one Calendar session
+        # resolution (the offer decision), so the offer and the read can never
+        # disagree. A turn that withheld the tool cannot read either.
+        from .chat_connector_tools import calendar_read_reachable
+
+        if not await calendar_read_reachable(request, uid=uid):
+            timing.set_outcome("error")
+            _LOG.info("calendar_read_session verdict=read_not_authorized")
+            yield _public_sse(
+                "error",
+                {"error": {"code": "calendar_session_unavailable",
+                           "message": "캘린더 세션을 확인할 수 없습니다."}},
+            )
+            return
     engine_client = getattr(request.app.state, "connector_tool_engine_client", None)
     if engine_client is None:
         timing.set_outcome("error")
