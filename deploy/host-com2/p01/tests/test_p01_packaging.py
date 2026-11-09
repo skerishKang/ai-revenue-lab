@@ -148,6 +148,15 @@ class P01Packaging(unittest.TestCase):
                 # Also already present in the file and missing from the
                 # whitelist; the same pre-existing drift.
                 "PADIEM_COM2_EDGE_SECRET_FILE",
+                # #7306: the Engine web research provider names the Engine
+                # worker reads. Empty by default; the host operator fills the
+                # authorized values from the Chat host's own env.
+                "PADIEM_ENGINE_WEB_PROVIDER",
+                "PADIEM_ENGINE_FIRECRAWL_API_KEY",
+                "PADIEM_ENGINE_DAUM_REST_API_KEY",
+                "PADIEM_ENGINE_TINYFISH_API_KEY",
+                "PADIEM_ENGINE_DAUM_SEARCH_SORT",
+                "PADIEM_ENGINE_WEB_TIMEOUT_SECONDS",
             })
             if name not in {
                 "P01_HOST",

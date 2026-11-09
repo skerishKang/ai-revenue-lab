@@ -230,6 +230,12 @@ async def _relay_transcribe(cookie: str, live: dict, pcm: bytes) -> tuple[str, i
         "inputAudioTranscription": {"languageCodes": [],
                                     "mode": live.get("input_audio_transcription_mode", "")},
     }
+    # Google answers the setup with {"setupComplete": {}} — an EMPTY message
+    # object, which is falsy in Python. Presence of the key is the completion
+    # fact (the same test the browser makes); a truthiness test silently
+    # discarded the completed setup and made every healthy relay look broken
+    # (run 42638392269). The same trap applies to inputTranscription.finished.
+    setup_done = lambda frame: isinstance(frame, dict) and "setupComplete" in frame
     chunk_bytes = int(SAMPLE_RATE * CHUNK_SECONDS) * 2
     chunks = [pcm[i:i + chunk_bytes] for i in range(0, len(pcm), chunk_bytes)]
     headers = {"Origin": ORIGIN, "User-Agent": "PADIEM-QA-real-usage-check/1.0"}
@@ -247,7 +253,7 @@ async def _relay_transcribe(cookie: str, live: dict, pcm: bytes) -> tuple[str, i
                 frame = await _recv(ws, max(0.5, deadline - time.monotonic()))
             except Exception:
                 break
-            if frame is not None and frame.get("setupComplete"):
+            if frame is not None and setup_done(frame):
                 break
             frame = None
         if frame is None:
@@ -272,8 +278,8 @@ async def _relay_transcribe(cookie: str, live: dict, pcm: bytes) -> tuple[str, i
             if isinstance(content, dict):
                 final = content.get("inputTranscription")
                 if isinstance(final, dict) and isinstance(final.get("text"), str):
-                    transcript = _merge_chunk(transcript, final.text.strip())
-                if (isinstance(final, dict) and final.get("finished") and transcript.strip()):
+                    transcript = _merge_chunk(transcript, final["text"].strip())
+                if (isinstance(final, dict) and "finished" in final and transcript.strip()):
                     break
                 if content.get("turnComplete") and transcript.strip():
                     break
@@ -340,8 +346,11 @@ def flow_voice(flow: Flow, cookie: str) -> None:
     except TimeoutError:
         flow.fail("voice_relay_timeout")
         return
-    except Exception:
-        flow.fail("voice_relay_transport_error")
+    except Exception as exc:
+        # The exception class is public diagnostics: it names the failure layer
+        # (handshake status, DNS, TLS, protocol) without any header, cookie,
+        # token or URL value.
+        flow.fail(f"voice_relay_transport_error_{type(exc).__name__}")
         return
     if close_code in (4401, 4503, 4500, 4429):
         flow.fail(f"voice_relay_closed_{close_code}")

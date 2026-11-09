@@ -126,3 +126,58 @@ def test_deploy_gate_stages_immutable_vars_before_published_rollback_anchor():
     assert 'if uv run pywrangler deploy --keep-vars >"${RUNNER_TEMP}/b54-engine-deploy.log" 2>&1; then' in workflow
     assert 'tee "${RUNNER_TEMP}/b54-engine-deploy.log"' not in workflow
     assert "umask 077" in workflow
+
+
+def test_b14_https_switch_is_staged_runner_local_only():
+    import tomllib
+    rendered = guard.render_exact_served_flags(
+        GOOD_TOML, served(flags()), "good-version", b14_https_origin="https://b14.padiem.net"
+    )
+    parsed = tomllib.loads(rendered)
+    assert parsed["vars"] == {
+        **{item["name"]: item["text"] for item in flags()},
+        "B14_UPSTREAM_MODE": "https",
+        "B14_UPSTREAM_URL": "https://b14.padiem.net",
+    }
+    # The repository file keeps its no-vars shape; only the runner copy gained one.
+    assert "vars" not in tomllib.loads(GOOD_TOML)
+
+
+@pytest.mark.parametrize("origin", [
+    "http://b14.padiem.net",
+    "https://b14.padiem.net/api",
+    "https://b14.padiem.net?x=1",
+    "not-a-url",
+])
+def test_b14_origin_must_be_a_bare_https_origin(origin):
+    with pytest.raises(guard.PreserveError, match="bare https origin"):
+        guard.render_exact_served_flags(GOOD_TOML, served(flags()), "good-version", origin)
+
+
+def test_checked_in_b14_switch_refuses_staging():
+    config = GOOD_TOML + '\n[vars]\nB14_UPSTREAM_MODE = "binding"\n'
+    with pytest.raises(guard.PreserveError, match="B14 switch must not be checked"):
+        guard.render_exact_served_flags(
+            config, served(flags()), "good-version", b14_https_origin="https://b14.padiem.net"
+        )
+    # Without the reviewed switch the missing-table refusal is unchanged.
+    with pytest.raises(guard.PreserveError, match="canonical \\[vars\\]"):
+        guard.render_exact_served_flags(GOOD_TOML, served(flags()), "good-version")
+
+
+def test_deploy_gate_stages_the_reviewed_b14_https_switch():
+    workflow = (ROOT / ".github/workflows/b54-engine-production-deploy-gate.yml").read_text("utf-8")
+    assert '--b14-https-origin "https://b14.padiem.net"' in workflow
+    assert "B54_B14_HTTPS_SWITCH_STAGED=YES" in workflow
+    assert "uv run pywrangler deploy --keep-vars" in workflow
+
+
+def test_post_deploy_proves_flags_on_served_version():
+    workflow = (ROOT / ".github/workflows/b54-engine-production-deploy-gate.yml").read_text("utf-8")
+    # Production carries no checked-in [vars], so a repository-file grep for the
+    # durable flag can never pass; the gate asserts the served version instead.
+    assert "grep -Fxq 'PADIEM_ENGINE_AGENT_DURABLE_ENABLED" not in workflow
+    assert "grep -Fxq 'binding = \"WEB_XLSX_PRIVATE_B62_D1\"" not in workflow
+    assert "ENGINE_SERVED_DURABLE_FLAG_AND_B62_D1=PASS" in workflow
+    assert "PADIEM_ENGINE_AGENT_DURABLE_ENABLED') or {}).get('text')=='true'" in workflow
+    assert "\"${version_detail}\"" in workflow
