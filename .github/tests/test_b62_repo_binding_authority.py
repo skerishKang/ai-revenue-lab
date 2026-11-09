@@ -81,13 +81,16 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
                   {'name': 'PC_USER_HELPER_INSTALL_URL', 'type': 'plain_text'},
                   {'name': 'PC_USER_HELPER_SHA256', 'type': 'plain_text'}],
         'removed': [],
-        # 2026-11-09 COM2-only B14 decision: PADIEM_CHAT_B14_BASE_URL is now
-        # declared in [vars] beside the #5784 switch vars, so a direct deploy
-        # lands https://b14.padiem.net without a command-line override. The gate
-        # plan keeps the live value for a name it already serves, so this
-        # reviewed declaration adds no binding and changes no served value here.
+        # 2026-11-09 COM2-only B14 decision: PADIEM_CHAT_B14_BASE_URL stays a
+        # live-only binding (the mock deploy guard forbids live values in the
+        # repository [vars]), and the plan realigns it to the one repository
+        # authority, B14_UPSTREAM_URL, instead of keeping a stale retired origin
+        # that config.py refuses beside a flipped switch. The name and type are
+        # unchanged; only the value follows the switch.
         'changed': [],
     }
+    assert values['PADIEM_CHAT_B14_BASE_URL'] == 'https://b14.padiem.net'
+    assert values['B14_UPSTREAM_URL'] == 'https://b14.padiem.net'
     assert '<synthetic-private-value>' not in capsys.readouterr().out
 
 
