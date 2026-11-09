@@ -281,6 +281,15 @@ def test_the_journal_line_names_path_product_and_verdict_only(caplog):
         assert forbidden not in line
 
 
+def test_a_general_turn_still_journals_its_offer_verdict():
+    """A withheld tool must be distinguishable from a broken one in the log."""
+
+    source = inspect.getsource(chat_routes._chat_connector_tools_for_turn)
+    assert "verdict=no_connector_intent" in source
+    assert "verdict=route_without_native_tools" in source
+    assert 'verdict=%s' in source
+
+
 def test_the_verdict_lines_are_made_journal_visible():
     """The host configures no logging: an unbound INFO line would be dropped."""
 

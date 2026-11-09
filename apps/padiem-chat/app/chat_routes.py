@@ -352,6 +352,10 @@ async def _chat_connector_tools_for_turn(
     from .chat_pc_drive import chat_pc_route_declares_tools
 
     if not intent:
+        # A general turn declares nothing. The verdict is still journaled:
+        # silence here is exactly what made a withheld calendar tool
+        # indistinguishable from a broken one in the 11-09 investigation.
+        _LOG.info("calendar_tools_offer intent=%s verdict=no_connector_intent", bool(intent))
         return ()
     route_declares_tools = await chat_pc_route_declares_tools(request, model_id)
     if not route_declares_tools:
