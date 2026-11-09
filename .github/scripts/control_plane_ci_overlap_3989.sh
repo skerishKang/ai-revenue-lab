@@ -75,6 +75,7 @@ def key():
 print(f'GOOGLE_CONNECT_TICKET_KEY={key()}')
 print(f'GOOGLE_OAUTH_SEAL_KEY={key()}')
 print('GOOGLE_OAUTH_CLIENT_SECRET=ci-only-placeholder-not-production')
+print('PADIEM_GOOGLE_STATE_RPC_INGRESS_SECRET=ci-only-placeholder-not-production')
 PY
   chmod 600 "$oauth_secrets"
   run_package wrangler.google-oauth.jsonc b54-google-oauth-state-dry-run "$oauth_secrets"

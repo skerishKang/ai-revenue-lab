@@ -49,6 +49,9 @@ def test_google_oauth_worker_configs_keep_reviewed_topology_and_observability_of
         "GOOGLE_CONNECT_TICKET_KEY",
         "GOOGLE_OAUTH_SEAL_KEY",
         "GOOGLE_OAUTH_CLIENT_SECRET",
+        # #7229: the /internal/rpc ingress door secret must stay declared so
+        # the preservation preflight never HOLDs on the deployed value.
+        "PADIEM_GOOGLE_STATE_RPC_INGRESS_SECRET",
     ]
 
     assert edge["name"] == "padiem-google-oauth-edge"
