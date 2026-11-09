@@ -54,7 +54,11 @@ class SystemShellLaunch:
     candidate: measured on COM1 (#7266 manual check), PATH resolution picked it
     and the run failed (exit 1, no output); on a customer PC the same name is
     WSL's bash. powershell and cmd keep ``candidates=()`` — their PATH
-    resolution is the pinned behavior, unchanged.
+    resolution is the pinned behavior, unchanged; the candidate env line is
+    only emitted for launches that carry candidates, so their three env lines
+    and the tail's ``else`` branch stay the exact R4 ② bytes (argon #7287 (a);
+    the residual risk — a parent process polluting
+    ``PADIEM_MCP_SHELL_CANDIDATES`` — is a #7188 later item).
     """
 
     file: str
@@ -69,7 +73,13 @@ class SystemShellLaunch:
 #: so one static list covers system-wide (``ProgramFiles``, both architectures)
 #: and per-user (``LocalAppData``) installs; the PC expands them at dispatch
 #: time because the chat side cannot know the PC's filesystem.
+#: ``%ProgramW6432%`` leads (argon #7287 (b) B-1): a 32-bit (WOW64) dispatcher
+#: PowerShell redirects ``%ProgramFiles%`` to the x86 tree, so the 64-bit
+#: standard install is only reachable through ``%ProgramW6432%``; on a 64-bit
+#: PowerShell the first two candidates resolve to the same path and the
+#: duplicate probe is a harmless ``Test-Path``.
 GIT_BASH_CANDIDATES = (
+    r"%ProgramW6432%\Git\bin\bash.exe",
     r"%ProgramFiles%\Git\bin\bash.exe",
     r"%ProgramFiles%\Git\usr\bin\bash.exe",
     r"%ProgramFiles(x86)%\Git\bin\bash.exe",
