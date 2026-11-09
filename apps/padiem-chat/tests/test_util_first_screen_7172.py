@@ -84,11 +84,12 @@ class UtilFirstScreenContract(unittest.TestCase):
             self.assertTrue(rule_selector_list_contains(block, ".util-tool-open", ".pdfmd-btn-primary"))
         members = {_targets(rule) for rule in blocks}
         self.assertEqual(len(members), 1, "the three state blocks list the same targets")
-        self.assertEqual(declaration(base, "background"), "#355977")
-        self.assertEqual(declaration(base, "border-color"), "#294b64")
+        # #7187 R3: the rule names the tokens; the token file pins the numbers.
+        self.assertEqual(declaration(base, "background"), "var(--primary-bg)")
+        self.assertEqual(declaration(base, "border-color"), "var(--primary-border)")
         self.assertEqual(declaration(base, "color"), "#fff")
-        self.assertEqual(declaration(hover, "background"), "#2e4d67")
-        self.assertEqual(declaration(focus, "outline"), "3px solid #6a9abc")
+        self.assertEqual(declaration(hover, "background"), "var(--primary-hover-bg)")
+        self.assertEqual(declaration(focus, "outline"), "3px solid var(--primary-focus)")
         # The pill shape is the util button's own rule.
         buttons = find_rules_with_selector(parse_rules(UTIL_CSS), ".util-tool-open")
         self.assertEqual(len(buttons), 1)

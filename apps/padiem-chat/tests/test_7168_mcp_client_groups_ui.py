@@ -91,8 +91,9 @@ def test_primary_action_reuses_the_shared_primary_navy_rule() -> None:
         rule for rule in primary
         if not any(s.endswith((":hover", ":focus-visible")) for s in rule.selectors)
     )
-    assert declaration(base, "background") == "#355977"
-    assert declaration(base, "border-color") == "#294b64"
+    # #7187 R3: the numbers live in padiem-tokens.css.
+    assert declaration(base, "background") == "var(--primary-bg)"
+    assert declaration(base, "border-color") == "var(--primary-border)"
     assert declaration(base, "color") == "#fff"
     html = READ(HTML)
     assert re.search(r'class="settings-action mcp-ai-primary" id="mcpGatewayIssue"', html)

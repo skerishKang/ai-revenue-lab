@@ -8,7 +8,7 @@ helpers below answer the questions a contract actually means::
     rules = parse_rules(css_text)
     blocks = find_rules_with_selector(rules, ".claw-generate-button")
     assert rule_selector_list_contains(blocks[0], "#meetingStart")
-    assert declaration(blocks[0], "background") == "#355977"
+    assert declaration(blocks[0], "background") == "var(--primary-bg)"
 
 The parser uses the standard library only and understands the shapes this
 product ships: comments, quoted strings, attribute selectors, commas nested

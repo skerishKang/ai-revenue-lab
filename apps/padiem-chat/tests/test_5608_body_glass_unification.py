@@ -108,10 +108,14 @@ def test_the_primary_action_matches_the_chat_claw_send_color() -> None:
         assert rule_selector_list_contains(block, ".util-tool-open", ".pdfmd-btn-primary")
     members = {_targets(rule) for rule in blocks}
     assert len(members) == 1, "the three state blocks list the same targets"
-    assert declaration(base, "background") == "#355977"
+    # #7187 R3: the numbers moved to padiem-tokens.css, so the rule now names
+    # the tokens. The token file pins the literal values these asserts kept.
+    assert declaration(base, "background") == "var(--primary-bg)"
     assert declaration(base, "color") == "#fff"
-    assert declaration(hover, "background") == "#2e4d67"
-    assert declaration(focus, "outline") == "3px solid #6a9abc"
+    assert declaration(base, "border-color") == "var(--primary-border)"
+    assert declaration(hover, "background") == "var(--primary-hover-bg)"
+    assert declaration(hover, "border-color") == "var(--primary-hover-border)"
+    assert declaration(focus, "outline") == "3px solid var(--primary-focus)"
     # The glass-only copy is gone; one rule carries the decision.
     assert 'html[data-theme="padiem-glass"] .pdfmd-btn-primary' not in strip_comments(UTIL_CSS)
     h2_rule = UTIL_CSS[UTIL_CSS.index(".util-header h2") : UTIL_CSS.index(".util-header .standalone-view-tagline")]

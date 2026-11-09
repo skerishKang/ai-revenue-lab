@@ -66,7 +66,8 @@ def test_primary_base_selector_list_includes_send_button_and_meeting_start() -> 
 def test_primary_base_background_is_the_composer_send_navy() -> None:
     base = _base_block(_primary_blocks(_rules()))
 
-    assert declaration(base, "background") == "#355977"
+    # #7187 R3: the numbers live in padiem-tokens.css.
+    assert declaration(base, "background") == "var(--primary-bg)"
     assert declaration(base, "color") == "#fff"
 
 
@@ -75,8 +76,8 @@ def test_primary_state_blocks_keep_their_own_declarations() -> None:
     hover = next(r for r in blocks if any(s.endswith(":hover") for s in r.selectors))
     focus = next(r for r in blocks if any(s.endswith(":focus-visible") for s in r.selectors))
 
-    assert declaration(hover, "background") == "#2e4d67"
-    assert declaration(focus, "outline") == "3px solid #6a9abc"
+    assert declaration(hover, "background") == "var(--primary-hover-bg)"
+    assert declaration(focus, "outline") == "3px solid var(--primary-focus)"
     assert rule_selector_list_contains(hover, ".claw-generate-button", "#meetingStart")
     assert rule_selector_list_contains(focus, ".claw-generate-button", "#meetingStart")
 
