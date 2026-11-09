@@ -65,6 +65,14 @@ SLOWDOWN_FACTOR = 2.0
 SLOWDOWN_HISTORY = 7
 SLOWDOWN_LABEL = "SLOWDOWN_WARNING"
 
+# Claw 진입 예산. #padiem-claw 해시만으로는 #clawWorkspace 가 hidden 인 채로
+# 남고, 사이드바 클릭이 있어야 열린다. 예전에는 보임 확인이 30초를 기다린 뒤
+# 클릭해서 Claw 소요가 통째로 30초 늘었다(실측: 클라이언트 대기 32~34초, 그 구간
+# HTTP 0건). 이제 해시 이동 → 안 보이면 즉시 클릭 → 5초 안에 확인하고, 안 되면
+# claw_entry_timeout 으로 FAIL 한다. 예산을 조용히 늘리지 않는다.
+CLAW_ENTRY_BUDGET_MS = 5_000
+ENTRY_IMMEDIATE_MS = 250
+
 _VERSION_IN_URL = re.compile(r"[?&]v=([A-Za-z0-9_.-]{1,64})")
 
 # 콘솔 오류 허용 목록: (URL 정규식, 이유). URL 은 메시지가 가리키는 리소스다.
@@ -426,8 +434,8 @@ def fetch_recent_flow_durations(
                 continue
             payload = json.loads(archive.read(member).decode("utf-8"))
             for name, row in (payload.get("flows") or {}).items():
-                value = row.get("elapsed_ms") if isinstance(row, dict) else None
-                if isinstance(value, int) and value > 0:
+                value = history_sample(row)
+                if value is not None:
                     collected.setdefault(str(name), []).append(value)
     except (urllib.error.URLError, TimeoutError, OSError, ValueError, KeyError, zipfile.BadZipFile):
         return {name: values[-limit:] for name, values in collected.items()}
@@ -435,6 +443,44 @@ def fetch_recent_flow_durations(
 
 
 # ------------------------------------------------------------------ 캡처 이름
+def entry_verdict(waited_ms: int | None,
+                  budget_ms: int = CLAW_ENTRY_BUDGET_MS) -> tuple[str, str, int]:
+    """(판정, 코드, 진입 ms). None 은 "예산 안에 안 보였다"이다.
+
+    Claw 진입은 화면이 뜨는 시간만 본다. 예산을 넘기면 FAIL claw_entry_timeout
+    이며, 기다리는 시간을 늘려 통과시키지 않는다.
+    """
+    if waited_ms is None:
+        return "FAIL", "claw_entry_timeout", int(budget_ms)
+    value = int(waited_ms)
+    if value > budget_ms:
+        return "FAIL", "claw_entry_timeout", value
+    if value <= ENTRY_IMMEDIATE_MS:
+        return "OK", "immediate", max(0, value)
+    return "OK", "waited", max(0, value)
+
+
+def history_sample(row: object) -> int | None:
+    """느려짐 이력 표본. 행이 밝힌 기준(basis)만 쓴다.
+
+    브라우저 흐름은 answer 구간(answer_ms)이 기준이고, 나머지 흐름은 총합이다.
+    기준이 없는 옛 실행(총합만 있던 스키마)은 섞지 않는다 — 30초 진입 대기 같은
+    옛 값이 새 answer 기준의 중앙값을 오염시키면 경고가 영영 안 울린다.
+    """
+    if not isinstance(row, dict):
+        return None
+    basis = row.get("basis")
+    if basis == "answer":
+        value = row.get("answer_ms")
+    elif basis == "total":
+        value = row.get("elapsed_ms")
+    else:
+        return None
+    if isinstance(value, int) and value > 0:
+        return value
+    return None
+
+
 def artifact_filename(flow: str, step: int, name: str) -> str:
     """흐름_단계번호_단계이름.png — 예: browser_chat_01_open.png"""
     safe_flow = re.sub(r"[^a-z0-9_]+", "_", flow.strip().lower()).strip("_")
@@ -518,6 +564,9 @@ class BrowserFlowResult:
         self.code = "flow_not_run"
         self.head = ""
         self.elapsed_ms = 0
+        # 진입(화면이 뜨기까지)과 질문 전송~답 표시를 나눠 남긴다(#6724).
+        self.entry_ms = 0
+        self.answer_ms = 0
         self.captures: list[str] = []
         self.console_errors: list[str] = []
 
@@ -537,6 +586,8 @@ class BrowserFlowResult:
             "code": safe_code(self.code),
             "head": self.head,
             "elapsed_ms": self.elapsed_ms,
+            "entry_ms": self.entry_ms,
+            "answer_ms": self.answer_ms,
             "captures": list(self.captures),
             "console_errors": list(self.console_errors),
         }
@@ -584,15 +635,43 @@ CLAW_VISIBLE_JS = """() => {
   return !!el && !el.hidden;
 }"""
 
-CLICK_TIMEOUT_MS = 15_000
 
 
-def _claw_visible(page) -> bool:
+def _visible_now(page, script: str) -> bool:
     try:
-        page.wait_for_function(CLAW_VISIBLE_JS, timeout=SELECTOR_TIMEOUT_MS)
-        return True
+        return bool(page.evaluate(script))
     except Exception:
         return False
+
+
+def _wait_visible(page, script: str, started: float, budget_ms: int) -> int | None:
+    """예산 안에 보이면 기다린 ms, 끝내 안 보이면 None."""
+    deadline = started + budget_ms / 1000.0
+    while time.monotonic() < deadline:
+        if _visible_now(page, script):
+            return int((time.monotonic() - started) * 1000)
+        page.wait_for_timeout(100)
+    return None
+
+
+def _open_claw(page, url: str, budget_ms: int = CLAW_ENTRY_BUDGET_MS) -> int | None:
+    """Claw 화면 진입: 해시 이동 → 안 보이면 클릭 → 짧은 예산 안에서 확인.
+
+    `#padiem-claw` 해시만으로는 `#clawWorkspace` 가 hidden 인 채로 남는다(실측:
+    그 상태로 30초를 기다린 뒤 클릭해야 열렸고, 그동안 HTTP 요청은 0건이었다).
+    그래서 이동 직후 보이지 않으면 곧바로 사이드바를 누르고, 예산은 짧게 둔다.
+    """
+    started = time.monotonic()
+    page.goto(url, wait_until="domcontentloaded", timeout=NAVIGATE_TIMEOUT_MS)
+    if _visible_now(page, CLAW_VISIBLE_JS):
+        return int((time.monotonic() - started) * 1000)
+    remaining = budget_ms - int((time.monotonic() - started) * 1000)
+    if remaining > 0:
+        try:
+            page.click("#clawNavButton", timeout=remaining)
+        except Exception:
+            pass
+    return _wait_visible(page, CLAW_VISIBLE_JS, started, budget_ms)
 
 
 def _finish(flow: BrowserFlowResult, started: float,
@@ -668,15 +747,19 @@ def run_browser_flows(
             started = time.monotonic()
             mark = len(sink)
             stage = "open"
+            answer_started = None
             try:
                 page.goto(CHAT_URL, wait_until="domcontentloaded", timeout=NAVIGATE_TIMEOUT_MS)
                 page.wait_for_function(COMPOSER_VISIBLE_JS)
+                chat.entry_ms = int((time.monotonic() - started) * 1000)
                 _capture(page, out_path, chat, 1, "open", username)
                 stage = "question"
+                answer_started = time.monotonic()
                 _submit(page, CHAT_PROMPT)
                 _capture(page, out_path, chat, 2, "question", username)
                 stage = "answer"
                 answer = _wait_answer(page)
+                chat.answer_ms = int((time.monotonic() - answer_started) * 1000)
                 _capture(page, out_path, chat, 3, "answer", username)
                 verdict, code, head = answer_verdict(answer.get("text"))
                 if verdict == "PASS":
@@ -684,6 +767,8 @@ def run_browser_flows(
                 else:
                     chat.fail(code)
             except Exception as exc:
+                if answer_started is not None:
+                    chat.answer_ms = int((time.monotonic() - answer_started) * 1000)
                 # 어느 단계에서 깨졌는지가 진단의 전부다.
                 chat.fail(safe_code(f"{chat.name}_{stage}_{type(exc).__name__}"))
             _finish(chat, started, sink, mark)
@@ -692,34 +777,39 @@ def run_browser_flows(
             started = time.monotonic()
             claw_mark = len(sink)
             stage = "open"
+            answer_started = None
             try:
-                # 해시 경로가 대표 결정의 Claw 화면이다. 테마·폭에 따라 사이드바가
-                # 접혀 클릭이 actionability 를 기다리다 30초를 태우므로, 먼저 해시로
-                # 열고 열리지 않을 때만 사이드바 항목을 누른다(실행 42668928406).
-                page.goto(CHAT_URL + CLAW_HASH, wait_until="domcontentloaded",
-                          timeout=NAVIGATE_TIMEOUT_MS)
-                if not _claw_visible(page):
-                    page.click("#clawNavButton", timeout=CLICK_TIMEOUT_MS)
-                    if not _claw_visible(page):
-                        raise RuntimeError("claw_workspace_not_shown")
+                # 해시로 먼저 들어가고, 안 보이면 곧바로 사이드바를 누른다. 그 뒤
+                # 5초 예산 안에서만 보임을 확인한다 — 예산을 조용히 늘리지 않는다.
+                waited = _open_claw(page, CHAT_URL + CLAW_HASH)
+                claw.entry_ms = int((time.monotonic() - started) * 1000)
+                state, entry_code, _ = entry_verdict(waited)
                 _capture(page, out_path, claw, 1, "open", username)
-                stage = "question"
-                _submit(page, CLAW_PROMPT)
-                _capture(page, out_path, claw, 2, "question", username)
-                stage = "answer"
-                answer = _wait_answer(page)
-                _capture(page, out_path, claw, 3, "answer", username)
-                verdict, code, head = answer_verdict(answer.get("text"))
-                if verdict != "PASS":
-                    claw.fail(code)
+                if state != "OK":
+                    # 작업영역이 열리지 않았다. 화면 상태를 캡처해 두고 FAIL 한다.
+                    claw.fail(entry_code)
                 else:
-                    product = (answer.get("product") or "").strip()
-                    if product and "claw" not in product.lower():
-                        # 같은 셸을 쓰지만 답한 제품은 분리해 기록한다.
-                        claw.fail("screen_wrong_product")
+                    stage = "question"
+                    answer_started = time.monotonic()
+                    _submit(page, CLAW_PROMPT)
+                    _capture(page, out_path, claw, 2, "question", username)
+                    stage = "answer"
+                    answer = _wait_answer(page)
+                    claw.answer_ms = int((time.monotonic() - answer_started) * 1000)
+                    _capture(page, out_path, claw, 3, "answer", username)
+                    verdict, code, head = answer_verdict(answer.get("text"))
+                    if verdict != "PASS":
+                        claw.fail(code)
                     else:
-                        claw.pass_(head, code)
+                        product = (answer.get("product") or "").strip()
+                        if product and "claw" not in product.lower():
+                            # 같은 셸을 쓰지만 답한 제품은 분리해 기록한다.
+                            claw.fail("screen_wrong_product")
+                        else:
+                            claw.pass_(head, code)
             except Exception as exc:
+                if answer_started is not None:
+                    claw.answer_ms = int((time.monotonic() - answer_started) * 1000)
                 claw.fail(safe_code(f"{claw.name}_{stage}_{type(exc).__name__}"))
             _finish(claw, started, sink, claw_mark)
 
