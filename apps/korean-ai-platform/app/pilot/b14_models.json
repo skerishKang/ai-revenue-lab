@@ -145,6 +145,15 @@
       "credential_source": "platform_secret",
       "credential_binding_name": "PADIEM_B14_CREDENTIAL_07",
       "enabled": true
+    },
+    "exaone": {
+      "base_origin": "https://api.exaone.ai/v1",
+      "allowed_hosts": [
+        "api.exaone.ai"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_16",
+      "enabled": true
     }
   },
   "models": [
@@ -634,6 +643,23 @@
       "output_price_usd_per_1m": 0,
       "source": "https://openrouter.ai/api/v1/models (stealth/crouton-alpha; pricing 0/0, context_length 1048576, tools/reasoning/vision declared)",
       "source_checked_at": "2026-11-04",
+      "enabled": true
+    },
+    {
+      "id": "exaone/k-exaone_v2.5",
+      "provider_id": "exaone",
+      "upstream_model": "k-exaone_v2.5",
+      "display_name": "EXAONE: K-EXAONE 2.5",
+      "provider_name": "EXAONE",
+      "capabilities": [
+        "chat",
+        "coding"
+      ],
+      "context_window": 524288,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "https://docs.exaone.ai/en/docs/k-exaone-2.5",
+      "source_checked_at": "2026-11-10",
       "enabled": true
     }
   ],
