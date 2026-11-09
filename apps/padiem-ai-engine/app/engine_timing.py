@@ -70,11 +70,13 @@ class EngineTiming:
         trace_id: object,
         b14_ms: int,
         outcome: str,
+        combined: bool = False,
     ) -> str:
         admission = _ms(self._marks.get("admission_start"), self._marks.get("admission_end"))
         core = _ms(self._marks.get("core_start"), self._marks.get("core_end"))
         total = _ms(self._started, perf_counter())
         safe_outcome = outcome if outcome in _OUTCOMES else "error"
+        combined_field = " combined=true" if combined else ""
         return (
             "engine_timing"
             f" run_hash={_token(run_hash)}"
@@ -85,9 +87,24 @@ class EngineTiming:
             f" receipt_ms={self._receipt_ms:.1f}"
             f" total_ms={total:.1f}"
             f" outcome={safe_outcome}"
+            f"{combined_field}"
         )
 
-    def emit(self, *, run_hash: object, trace_id: object, b14_ms: int, outcome: str) -> None:
+    def emit(
+        self,
+        *,
+        run_hash: object,
+        trace_id: object,
+        b14_ms: int,
+        outcome: str,
+        combined: bool = False,
+    ) -> None:
         LOG.info(
-            self.line(run_hash=run_hash, trace_id=trace_id, b14_ms=b14_ms, outcome=outcome)
+            self.line(
+                run_hash=run_hash,
+                trace_id=trace_id,
+                b14_ms=b14_ms,
+                outcome=outcome,
+                combined=combined,
+            )
         )

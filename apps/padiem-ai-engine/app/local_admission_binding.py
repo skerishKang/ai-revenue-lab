@@ -472,6 +472,9 @@ class HttpsAdmissionBinding:
     async def record_usage(self, payload: dict[str, Any]) -> dict[str, Any]:
         return await self._call("record_usage", payload)
 
+    async def admit_usage(self, payload: dict[str, Any]) -> dict[str, Any]:
+        return await self._call("admit_usage", payload)
+
 
 def start_admission_warmers() -> None:
     """The host lifespan startup hook: fire every live binding's first warm cycle.
