@@ -7,11 +7,44 @@ from app.pilot.kilo_activation import (
     evaluate_kilo_activation,
 )
 
+from _registry_values import (
+    adapter_declaring_retired,
+    placeholder_registry_active,
+    requires_owner_document,
+)
 
-LAGUNA = "poolside/laguna-s-2.1:free"
-NEMOTRON = "nvidia/nemotron-3-ultra-550b-a55b:free"
-HY3 = "tencent/hy3:free"
-ALLOWLIST = (LAGUNA, NEMOTRON, HY3)
+
+#: The volatile free roster this contract evaluates: the first three identities
+#: the adapter keeps as its retirement metadata (the lanes it declares
+#: unregistered). Read from the app rather than written here (#7241 3a). An owner
+#: pin: the placeholder fixture carries no such roster, so B14 activation is not
+#: exercised there.
+@requires_owner_document
+def _free_roster() -> tuple[str, ...]:
+    provider_id, module, _retained = adapter_declaring_retired()
+    own = {
+        value
+        for name, value in vars(module).items()
+        if name.endswith("_MODEL_ID")
+        and isinstance(value, str)
+        and value.split("/", 1)[0] == provider_id
+    }
+    for value in vars(module).values():
+        if isinstance(value, frozenset):
+            own |= {
+                identity for identity in value
+                if isinstance(identity, str)
+                and identity.split("/", 1)[0] == provider_id
+            }
+    declared = tuple(sorted(own)[:3])
+    assert len(declared) == 3, "the selected adapter declares fewer lanes than this contract"
+    return declared
+
+
+ALLOWLIST: tuple[str, ...] = () if placeholder_registry_active() else _free_roster()
+#: The roster's three lanes, in the adapter's own order: the pair that proves
+#: live callability and the lane held at contract-verified state.
+LAGUNA, NEMOTRON, HY3 = (ALLOWLIST + ("", "", ""))[:3]
 
 
 def _model(model_id: str, prompt: object = "0", completion: object = "0") -> dict:

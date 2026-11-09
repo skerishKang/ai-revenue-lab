@@ -13,6 +13,12 @@ from app.pilot.model_registry_file import read_registry
 from app.pilot import platform
 from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer
 
+from _registry_values import chat_wire_tail
+
+# The adapter composes the upstream chat tail itself, so the expected URLs are
+# matched against the adapter's own segments rather than a written path.
+WIRE_TAIL = chat_wire_tail()
+
 
 _REGISTRY = read_registry()
 # Historical Chat Completions parity applies to executable provider routes.
@@ -81,7 +87,7 @@ async def test_all_exact_models_omit_defaults_and_reject_empty_upstream(
     assert any(event.delta_content == "fixture answer" for event in events)
     assert len(seen) == 2
     for url, payload in seen:
-        assert url.endswith("/chat/completions")
+        assert tuple(url.split("?")[0].rstrip("/").split("/")[-len(WIRE_TAIL):]) == WIRE_TAIL
         assert payload["model"] == upstream
         assert payload["messages"] == kwargs["messages"]
         assert not ({"temperature", "max_tokens", "reasoning_effort", "top_p", "top_k"}

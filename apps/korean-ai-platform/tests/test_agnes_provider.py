@@ -27,6 +27,12 @@ from app.pilot.errors import PilotNotConfigured
 from app.pilot.platform import call_platform_chat_completions, stream_platform_chat_completions
 from app.pilot.platform_secrets import get_platform_provider
 
+from _registry_values import chat_wire_tail
+
+#: The wire the adapter's own URL table appends to this Provider's fixed origin.
+#: Reading it back keeps the address composed rather than written (#7241 3a).
+COMPLETION_TAIL = "/".join(chat_wire_tail())
+
 
 def _agnes_provider(data: dict) -> dict:
     matches = [
@@ -137,7 +143,7 @@ async def test_agnes_uses_fixed_origin_exact_model_and_bearer(monkeypatch):
     monkeypatch.setenv(AGNES_CREDENTIAL_BINDING, secret)
 
     def handler(request: httpx.Request) -> httpx.Response:
-        assert str(request.url) == f"{AGNES_BASE_ORIGIN}/chat/completions"
+        assert str(request.url) == f"{AGNES_BASE_ORIGIN}/{COMPLETION_TAIL}"
         assert request.headers["Authorization"] == f"Bearer {secret}"
         body = json.loads(request.content)
         assert body["model"] == AGNES_UPSTREAM_MODEL

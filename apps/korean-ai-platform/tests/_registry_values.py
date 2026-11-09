@@ -174,6 +174,46 @@ def a_model_id() -> str:
     return model_rows()[0]["id"]
 
 
+def registered_model_id_within(provider_id: str) -> str:
+    """An identity the effective document registers under this Provider.
+
+    A suite that has to prove one Provider is still servable needs an
+    identity, and an identity is a deployment value. The document already
+    names the ones it installs, so the suite asks for one instead of writing
+    it (#7241 3a).
+    """
+    ids = sorted(row["id"] for row in model_rows() if row["provider_id"] == provider_id)
+    assert ids, "the effective document registers no identity for this Provider"
+    return ids[0]
+
+
+def chat_wire_tail() -> tuple[str, ...]:
+    """The wire segments the platform adapter's own request URL ends with.
+
+    ``platform.py`` builds the upstream chat URL from the Provider's origin
+    plus a fixed tail, so the tail is composed by the adapter and cannot be
+    written in a test. The table is read from the adapter source
+    (the origin plus the adapter's own completion tail) rather than restated
+    here (#7241 3a).
+    """
+    import inspect
+    import re
+
+    from app.pilot import platform as platform_module
+
+    for name, function in vars(platform_module).items():
+        if not inspect.isfunction(function):
+            continue
+        try:
+            body = inspect.getsource(function)
+        except (OSError, TypeError):
+            continue
+        match = re.search(r"chat_url\s*=\s*f\"[^\"]*\}" + r"(/[^\"]+)\"", body)
+        if match:
+            return tuple(segment for segment in match.group(1).split("/") if segment)
+    raise AssertionError("the platform adapter composes no chat URL tail")
+
+
 def adapter_modules() -> dict[str, object]:
     """Every pilot adapter module, keyed by the Provider id it declares.
 

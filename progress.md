@@ -155,3 +155,34 @@
 261109 #7241 3a PR2 test_workspace_phase3.py: chat 표면을 모듈 상수로 1회 판독해 POST 경로 대체.
 261109 #7241 3a PR2 검증: 윈도우에서 변경 30파일만 실행 499 passed, 2 skipped(둘 다 문서화된 가드 skip). 추가 줄 실값 0건, 변경 파일 잔여 실값 줄 0.
 261109 #7241 3a PR2 수정 test_4317_free_completed_tier_fallback.py: 확장 로스터 행 삽입을 monkeypatch.setitem으로 바꿔 프로세스 전역 CATALOG_BY_ID 오염 제거(CI의 test_6828b_registry_wiring 실패 원인). 전체 스위트 재실행 2301 passed, 11 skipped — 이후 test_streaming_gateway chain_budget 1건은 시간 민감 flaky(재실행 시 통과)로 확인.
+261109 #7241 3a PR3 test_2107_com2_admin_auth_boundary.py: 관리 진입점을 앱 디렉터리 기준 상대경로로 참조(리포 경로 리터럴 제거).
+261109 #7241 3a PR3 test_3554_canonical_wire_parity.py: 기대 업스트림 URL을 chat_wire_tail()(어댑터 자체 조합 표)로 유도.
+261109 #7241 3a PR3 test_3554_empty_answer_contract.py: 게이트웨이 POST 대상을 마운트 라우트(chat_surface)에서 판독.
+261109 #7241 3a PR3 test_3977_eleven_model_wire_parity.py: URL 단정을 chat_wire_tail() 말단 세그먼트 비교로 전환.
+261109 #7241 3a PR3 test_3977_serving_evidence.py: 문서화 호스트를 근거 모듈 자체 1차 출처 로스터에서 유도, 소유자 핀 유지.
+261109 #7241 3a PR3 test_4727_signature_and_outcome_contract.py: 모델/업스트림/바인딩을 네이티브 툴 wire 어댑터가 서빙하는 등록 행에서 유도.
+261109 #7241 3a PR3 test_6812_stream_usage_option.py: 원장 endpoint는 chat_surface(), protocol은 표면 말단에서 유도.
+261109 #7241 3a PR3 test_6838_reasoning_policy.py: 원장 endpoint를 chat_surface()로 대체.
+261109 #7241 3a PR3 test_7215_stream_final_first_token.py: URL/대상 행/자격 슬롯을 라우트 표면+등록부 행에서 유도.
+261109 #7241 3a PR3 test_agnes_429_diagnostics.py: 프로바이더/모델/업스트림/표시명을 어댑터 선언+등록부 행에서 유도.
+261109 #7241 3a PR3 test_agnes_provider.py: 완료 URL을 chat_wire_tail()로 조립(경로 리터럴 제거).
+261109 #7241 3a PR3 test_atria_stream_optin.py: UI 요소/DOM 핸들/모델 가드/폴백 플래그/표면을 템플릿·스크립트·마운트 라우트에서 판독.
+261109 #7241 3a PR3 test_b14_add_model_tool.py: 기존 프로바이더/바인딩/표시명을 등록부+어댑터에서 유도, 신규 픽스처는 합성(.invalid).
+261109 #7241 3a PR3 test_b14_completed_response_bounds.py: 대상 행을 어댑터 wire 표·플레인 채팅 봉투로 구조 선택(소유자 핀).
+261109 #7241 3a PR3 test_b14_health_truth.py: models 표면 신원을 유효 등록부의 설치/활성 집합과 대조.
+261109 #7241 3a PR3 test_b14_uniform_model_first_response_timeout.py: chat wire를 공유 표면 말단 조합으로 유도, 문서 문구 중립화.
+261109 #7241 3a PR3 test_b14_worker_secret_rotation.py: 대상 모델 id를 프로바이더 바인딩과 일치하는 등록부 행에서 유도.
+261109 #7241 3a PR3 test_bai_provider.py: 은퇴 신원을 retired_model_ids()에서 구조 선택(프로바이더 미등록 조건).
+261109 #7241 3a PR3 test_capability_routing.py: 채팅 전용 대상 행을 카탈로그+라우터 판정으로 선택.
+261109 #7241 3a PR3 test_google_aistudio_provider.py: 경로를 어댑터 자체 origin 세그먼트+공유 chat tail로 조립.
+261109 #7241 3a PR3 test_kilo_activation.py: 활성 로스터를 adapter_declaring_retired()로 구조 선택(소유자 핀).
+261109 #7241 3a PR3 test_kilo_route_retirement.py: 은퇴 로스터를 어댑터 메타데이터에서, 서빙 신원을 registered_model_id_within으로 유도.
+261109 #7241 3a PR3 test_opencode_go_session_bridge_gap.py: chat wire를 표면 말단 조합으로, POST 경로를 chat_surface()로 대체.
+261109 #7241 3a PR3 test_pc_work_metrics.py: endpoint는 chat_surface(), 배포 스크립트는 앱 디렉터리 기준 경로.
+261109 #7241 3a PR3 test_pc_work_metrics_com2_staging.py: APP_DIR/APP_REL을 시험 파일 위치에서 유도.
+261109 #7241 3a PR3 test_space_bunny_text_route.py: 은퇴 로스터/무료 라우트/금지 토큰을 어댑터 선언+등록부에서 유도, 소유자 핀 유지.
+261109 #7241 3a PR3 test_streaming_router.py: endpoint는 chat_surface(), 미설치 신원은 a_model_id()+접미사 합성.
+261109 #7241 3a PR3 test_tier_route_consumer_coverage.py: B14 앱 경로를 리포 루트 대비 상대경로로 유도.
+261109 #7241 3a PR3 test_tokenharbor_two_free_routes.py: 업스트림 요청 경로를 origin+chat_wire_tail() 조합으로 대체.
+261109 #7241 3a PR3 공용: _registry_values.py에 registered_model_id_within()/chat_wire_tail() 추가(읽기 전용 도우미), 문서 문구에서 경로 리터럴 제거.
+261109 #7241 3a PR3 검증: 윈도우 변경 29파일 491 passed, 4 skipped. 전체 스위트 2303 passed, 11 skipped. 추가 줄 실값 0건. 시험 잔여 실값 conftest.py 1줄만 남김(3b 범위).

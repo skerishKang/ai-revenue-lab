@@ -67,8 +67,11 @@ def test_main_and_worker_do_not_mount_management():
                 assert client.post(path).status_code == 404
 
 def test_unit_fixed_loopback_and_tunnel_examples_exclude_admin():
-    root = Path(__file__).resolve().parents[3]
-    entry = (root / "apps/korean-ai-platform/admin_asgi.py").read_text(encoding="utf-8")
+    # The admin entry point sits beside this suite's own app root, so it is
+    # addressed from the test location rather than a written repo path (#7241).
+    app_dir = Path(__file__).resolve().parents[1]
+    root = app_dir.parents[1]
+    entry = (app_dir / "admin_asgi.py").read_text(encoding="utf-8")
     assert 'host="127.0.0.1", port=8781' in entry and '0.0.0.0' not in entry
     unit = (root / "deploy/host-com2/b14/padiem-b14-admin.service.example").read_text(encoding="utf-8")
     assert "User=padiem-b14" in unit and "admin_asgi.py" in unit

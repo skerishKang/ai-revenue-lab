@@ -3,7 +3,7 @@
 `product_tier_routes.py` declares which provider/model backs Padiem Plus/Pro/Max, and B14
 decides whether that route can actually execute. The drift guard for exactly that risk lives
 in `test_product_tier_routes.py::test_active_tier_routes_match_the_current_b14_model_registry`.
-Before this child, `Validate B14 Alpha` triggered only on `apps/korean-ai-platform/**`, so a
+Before this child, `Validate B14 Alpha` triggered only on the B14 app tree, so a
 PR that changed nothing but the declaration shipped without ever running it — the one change
 where the guard matters most.
 
@@ -28,7 +28,12 @@ DECLARATION_PATH = (
     "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py"
 )
 SELF_PATH = ".github/workflows/validate-b14-alpha.yml"
-B14_APP_PATH = "apps/korean-ai-platform/**"
+# The B14 app trigger the workflow keeps: the app directory this suite lives in,
+# relative to the repository root, as a recursive glob. Derived from the test
+# location so the deployment path is not written here (#7241 3a).
+B14_APP_PATH = (
+    Path(__file__).resolve().parents[1].relative_to(REPO_ROOT).as_posix() + "/**"
+)
 
 
 def _pull_request_path_filters(text: str) -> list[str]:

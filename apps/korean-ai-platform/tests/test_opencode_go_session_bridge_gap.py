@@ -42,6 +42,7 @@ from app.pilot import opencode_go_wire as go_wire
 from app.pilot import platform as plat
 from app.pilot.errors import PilotNotConfigured
 from app.pilot.gateway import _validate_body, _InvalidBody
+from _pilot_lane_paths import CHAT_SURFACE_TAIL, chat_surface
 from _registry_values import requires_owner_document
 
 FORGED_SESSION = "chat_" + "f" * 32
@@ -49,8 +50,10 @@ OTHER_SESSION = "chat_" + "0" * 32
 
 #: The app's own rule table: the upstream names this adapter can carry.
 _GO_WIRE_BY_UPSTREAM = go_wire._WIRE
-#: The documented wire family both free-candidate cases use.
-_GO_CHAT_WIRE = "chat/completions"
+#: The documented wire family both free-candidate cases use: the plain
+#: OpenAI-compatible lane, read from the gateway's own mounted chat surface so
+#: no wire or path literal is written here (#7241 3a).
+_GO_CHAT_WIRE = "/".join(CHAT_SURFACE_TAIL)
 _NO_GO_ROW = pytest.mark.skip(
     reason="#7241: the effective registry registers no Go model for this case"
 )
@@ -218,7 +221,7 @@ def test_stream_preview_body_rejects_session_id_field() -> None:
 
 def _post_completed(client: TestClient, model_id: str, headers: dict | None = None):
     return client.post(
-        "/api/pilot/v1/chat/completions",
+        chat_surface(),
         json=_go_body(model_id),
         headers=headers or {},
     )

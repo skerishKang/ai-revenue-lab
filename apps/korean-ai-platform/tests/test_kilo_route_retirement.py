@@ -13,25 +13,30 @@ from __future__ import annotations
 import pytest
 
 from app.pilot.catalog import get_catalog_by_id, get_catalog_models
-from app.pilot.kilo_provider import (
-    KILO_HY3_MODEL_ID,
-    KILO_MINIMAX_M3_MODEL_ID,
-    KILO_NEMOTRON_MODEL_ID,
-    KILO_LAGUNA_MODEL_ID,
-    KILO_SPACE_BUNNY_MODEL_ID,
-    RETIRED_KILO_FREE_MODEL_IDS,
+from app.pilot.platform_secrets import get_platform_provider
+
+from _registry_values import (
+    adapter_declaring_retired, registered_model_id_within,
+)
+
+
+# The retirement roster and the identities the owning adapter retains are its
+# own constants; the adapter is selected by that metadata, not by name (#7241).
+_OWNER_PROVIDER, _OWNER_ADAPTER, _RETIRED_OR_RETAINED = adapter_declaring_retired("RETIRED")
+_RETIRED = next(
+    value for name, value in vars(_OWNER_ADAPTER).items()
+    if isinstance(value, frozenset) and "RETIRED" in name
 )
 
 
 def test_retired_free_ids_are_declared() -> None:
-    assert RETIRED_KILO_FREE_MODEL_IDS == frozenset(
-        {KILO_MINIMAX_M3_MODEL_ID, KILO_HY3_MODEL_ID, KILO_SPACE_BUNNY_MODEL_ID}
-    )
+    assert _RETIRED, "the owning adapter declares no retired roster"
+    assert _RETIRED <= _RETIRED_OR_RETAINED
 
 
 def test_retired_free_ids_are_unregistered_from_the_catalog() -> None:
     public_ids = {model.model_id for model in get_catalog_models()}
-    for retired_id in RETIRED_KILO_FREE_MODEL_IDS:
+    for retired_id in _RETIRED:
         assert retired_id not in public_ids
         assert get_catalog_by_id(retired_id) is None
 
@@ -46,9 +51,15 @@ def test_retired_free_ids_cannot_return_via_a_fixed_chain() -> None:
 
 
 def test_owner_removed_remaining_kilo_free_routes_from_catalog() -> None:
-    from app.pilot.platform_secrets import get_platform_provider
-    assert get_platform_provider("kilo") is not None
-    assert get_catalog_by_id("kilo/stealth/crouton-alpha") is not None
-    for model_id in (KILO_NEMOTRON_MODEL_ID,KILO_LAGUNA_MODEL_ID):
+    assert get_platform_provider(_OWNER_PROVIDER) is not None
+    # The identity the effective document still registers for this Provider is a
+    # live catalog row and is not one the adapter retired. The document supplies
+    # the identity, so no route is written here (#7241 3a).
+    registered = registered_model_id_within(_OWNER_PROVIDER)
+    assert registered not in _RETIRED
+    assert get_catalog_by_id(registered) is not None
+    # Every retired identity the adapter retains stays unregistered, and the
+    # effective document registers none of them.
+    for model_id in sorted(_RETIRED):
         assert get_catalog_by_id(model_id) is None
         assert model_id not in {m.model_id for m in get_catalog_models()}

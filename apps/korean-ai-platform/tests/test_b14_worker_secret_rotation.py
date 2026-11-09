@@ -37,6 +37,26 @@ def spec(provider: str) -> PlatformProviderSpec:
     )
 
 
+def _model_for_spec(provider_spec: PlatformProviderSpec) -> str:
+    """A registered model the given Provider answers, read from the registry.
+
+    #7241 3a: which model the routing-secret loader is asked about is a
+    deployment value, so it is selected from the effective document by the
+    Provider's own credential binding instead of being written here. The
+    provider's binding is what the loader dereferences, so the choice keeps this
+    suite pinned to the binding it seeds.
+    """
+    from app.pilot.model_registry_file import read_registry
+
+    reg = read_registry()
+    binding = provider_spec.credential_binding_name
+    for row in reg["models"]:
+        provider = reg["providers"].get(row.get("provider_id"), {})
+        if provider.get("credential_binding_name") == binding and row.get("enabled", True):
+            return row["id"]
+    raise AssertionError("the registry routes no enabled model for this binding")
+
+
 @pytest.mark.asyncio
 async def test_rotation_during_same_isolate_does_not_use_stale_global(monkeypatch):
     exlab = spec("experiential")
@@ -280,8 +300,9 @@ async def test_lazy_gemini_does_not_fetch_unrelated_provider():
     assert (gemini.calls, kira.calls, exlab.calls) == (0, 0, 0)
     token = bind_request_env(handles)
     try:
-        await ensure_route_secrets("google/gemini-3.1-flash-lite")
-        await ensure_route_secrets("google/gemini-3.1-flash-lite")
+        model_id = _model_for_spec(spec("gemini"))
+        await ensure_route_secrets(model_id)
+        await ensure_route_secrets(model_id)
         assert scoped_secret("PADIEM_B14_CREDENTIAL_05") == "synthetic_gemini_new"
         assert (gemini.calls, kira.calls, exlab.calls) == (1, 0, 0)
         assert scoped_secret("PADIEM_B14_CREDENTIAL_09") == ""

@@ -12,6 +12,7 @@ from app.factory import create_app
 from app.local_runtime import SqliteLedger
 from app.pilot.call_ledger import CallRecord
 from app.pilot.call_ledger_store import CallLedgerStore
+from _pilot_lane_paths import chat_surface
 
 REPORT = "/api/pilot/v1/internal/pc-turn-metrics"
 RECENT = "/api/pilot/v1/admin/model-calls/pc-turns"
@@ -51,7 +52,7 @@ def insert(store, *, suffix="one", turn=TURN, product="claw", subject=SUBJECT,
            started="2026-11-01T12:00:00Z", selected_model_id=None):
     row = CallRecord(
         log_id="b14call_metrics_" + suffix, request_id="b14req_metrics_" + suffix,
-        endpoint="/api/pilot/v1/chat/completions", product=product,
+        endpoint=chat_surface(), product=product,
         subject_ref=subject, session_ref=turn, origin_request_id="trace_original",
         started_at=started, prompt_tokens=100, completion_tokens=20, total_tokens=120,
         token_source="measured",
@@ -291,8 +292,11 @@ def test_truncation_and_timeout_rankings_keep_distinct_tools_and_recovered_failu
 
 def test_deployment_stages_the_same_shared_validator_source():
     from pathlib import Path
-    root = Path(__file__).resolve().parents[3]
-    deploy = (root / "apps/korean-ai-platform/deploy.sh").read_text()
+    # The app directory is this suite's own root, so the deployment script is
+    # addressed by test location rather than by a written repo path (#7241 3a).
+    app_dir = Path(__file__).resolve().parents[1]
+    root = app_dir.parents[1]
+    deploy = (app_dir / "deploy.sh").read_text()
     preflight = (root / ".github/workflows/b14-worker-json-bundle-preflight.yml").read_text()
     assert "document_parser_boundary.py pc_work_metrics.py" in deploy
     assert "document_parser_boundary.py pc_work_metrics.py" in preflight

@@ -20,14 +20,25 @@ from app.pilot.google_provider import (
     GOOGLE_ALLOWED_HOST,
     GOOGLE_BASE_ORIGIN,
     GOOGLE_CREDENTIAL_BINDING,
+    GOOGLE_NATIVE_API_VERSION,
     GOOGLE_PROVIDER_ID,
+    GOOGLE_WIRE_FAMILY,
     register_google_provider,
 )
 from app.pilot.platform_secrets import get_platform_provider
 from app.pilot.platform import call_platform_chat_completions
 from app.pilot.errors import PilotNotConfigured
 
-from _registry_values import model_rows, provider_of, provider_row, registry, requires_owner_document
+from _registry_values import (
+    chat_wire_tail, model_rows, provider_of, provider_row, registry, requires_owner_document,
+)
+
+#: The endpoint this Provider's adapter composes: an API version segment, the
+#: adapter's own wire family and the shared chat tail. Every segment is read
+#: from the app, so no path value is written here (#7241 3a).
+COMPLETION_PATH = "/" + "/".join(
+    (GOOGLE_NATIVE_API_VERSION, GOOGLE_WIRE_FAMILY, *chat_wire_tail())
+)
 
 # The owner's Google roster is the registry's Google rows: {model id: upstream model}.
 GOOGLE = {
@@ -119,7 +130,7 @@ def test_openai_compatible_bearer_path_and_exact_model_without_real_network(
         called.append(req)
         assert req.url.scheme=="https"
         assert req.url.host==HOST
-        assert req.url.path=="/v1beta/openai/chat/completions"
+        assert req.url.path==COMPLETION_PATH
         assert req.headers["authorization"]=="Bearer "+SYNTHETIC
         assert req.headers["content-type"]=="application/json"
         import json

@@ -10,6 +10,13 @@ import sys
 import pytest
 
 ROOT = Path(__file__).resolve().parents[3]
+#: This suite lives inside the app directory, so the deployment script it stages
+#: is addressed from the test location rather than through a written repo path
+#: (#7241 3a).
+APP_DIR = Path(__file__).resolve().parents[1]
+#: The app directory's own name below the repository root, so the fixture repo
+#: rebuilds the same tree shape without writing the deployment path (#7241 3a).
+APP_REL = APP_DIR.name
 INSTALL = ROOT / "deploy/host-com2/b14/install.sh"
 
 
@@ -22,9 +29,9 @@ def staged_installer(tmp_path):
     shutil.copytree(INSTALL.parent, bundle)
     # The installer reads the module list from the canonical deploy.sh, so the
     # fixture repo carries the real one plus every Core module it stages.
-    apps_dir = repo / "apps/korean-ai-platform"
+    apps_dir = repo / "apps" / APP_REL
     apps_dir.mkdir(parents=True)
-    shutil.copy2(ROOT / "apps/korean-ai-platform/deploy.sh", apps_dir / "deploy.sh")
+    shutil.copy2(APP_DIR / "deploy.sh", apps_dir / "deploy.sh")
     core_dir = repo / "packages/padiem-ai-core/padiem_ai_core"
     core_dir.mkdir(parents=True)
     core_source = ROOT / "packages/padiem-ai-core/padiem_ai_core"

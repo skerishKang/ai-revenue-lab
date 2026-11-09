@@ -27,11 +27,14 @@ from app.pilot.owner_model_exclusions import (
     free_candidate_excluded_from_execution,
 )
 
+from _pilot_lane_paths import CHAT_SURFACE_TAIL
 from _registry_values import model_rows, provider_of
 
-#: The endpoint lane these transports model: the plain OpenAI-compatible chat
-#: completions wire every platform provider serves.
-_CHAT_WIRE = "chat/completions"
+#: The endpoint lane these transports model: the plain OpenAI-compatible wire
+#: every platform provider serves. Read from the gateway's own mounted chat
+#: surface — the last two segments of the mounted path *are* the wire name — so
+#: no path or wire literal is written here (#7241 3a).
+_CHAT_WIRE = "/".join(CHAT_SURFACE_TAIL)
 
 
 def _row(row: dict) -> tuple[str, str, str]:
@@ -56,7 +59,7 @@ def _adapter_cases() -> list[tuple[str, str, str]]:
 
     A row takes this contract when the app would actually route it to the chat
     lane: an installed, enabled catalog row that the owner's exclusion rules do
-    not refuse and whose adapter wire is chat/completions. A vendor-specific
+    not refuse and whose adapter wire is the plain chat lane. A vendor-specific
     wire envelope is that adapter's own suite, not a uniform-timeout question,
     and an excluded or uninstalled row never reaches a provider at all — both are
     asked as their own contracts elsewhere. ``max_tokens`` is supplied below so
