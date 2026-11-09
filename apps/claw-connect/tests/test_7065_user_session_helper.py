@@ -134,87 +134,68 @@ def test_whoami_shell_runs_whoami_only():
     assert refused.value.code == helper.USER_HELPER_REFUSED
 
 
-@pytest.mark.parametrize("shell", ["bash", "fish", "pwsh", "Powershell"])
+@pytest.mark.parametrize("shell", ["wsl", "fish", "pwsh", "Powershell"])
 def test_a_shell_the_helper_does_not_run_is_refused(shell):
     with pytest.raises(helper.UserHelperError) as refused:
         helper.parse_request(_request(shell=shell, command="whoami"))
     assert refused.value.code == helper.USER_HELPER_REFUSED
 
 
-def test_distro_belongs_to_the_wsl_shell_only():
-    with pytest.raises(helper.UserHelperError):
-        helper.parse_request(_request(shell="whoami", distro="Ubuntu"))
+@pytest.mark.parametrize("shell", ["whoami", "bash", "powershell", "cmd"])
+def test_distro_belongs_to_no_shell_any_more(shell):
+    """#7188 R4 ④: the wsl shell is gone, so any distro value is a bad request.
 
-
-@pytest.mark.parametrize("distro", ["Ubuntu-22.04", "Debian", "Ubuntu_24.04"])
-def test_distro_names_are_accepted(distro):
-    request = helper.parse_request(_request(shell="wsl", command="whoami", distro=distro))
-    assert request.distro == distro
-
-
-@pytest.mark.parametrize("distro", ["Ubuntu; rm -rf /", "../x", "-d", "a b"])
-def test_distro_cannot_carry_a_shell_word(distro):
-    with pytest.raises(helper.UserHelperError):
-        helper.parse_request(_request(shell="wsl", command="whoami", distro=distro))
-
-
-# ---------------------------------------------------------------------------
-# Stage 1 is read-only
-# ---------------------------------------------------------------------------
-@pytest.mark.parametrize("command", [
-    "whoami",
-    "id",
-    "uname -a",
-    "hostname",
-    "uptime",
-    "ps aux",
-    "pwd",
-    "systemctl is-active padiem-chat",
-    "systemctl status b14",
-    "systemctl is-failed p01",
-])
-def test_read_only_observations_are_allowed(command):
-    assert helper.is_read_only_command(command) is True
-
-
-@pytest.mark.parametrize("command", [
-    "systemctl restart padiem-chat",
-    "systemctl stop b14",
-    "rm -rf /tmp/x",
-    "whoami; rm -rf /",
-    "whoami && id",
-    "whoami | tee /tmp/x",
-    "whoami > /tmp/x",
-    "echo $(whoami)",
-    "echo `id`",
-    "cat /etc/passwd",
-    "whoami\nid",
-    "",
-    "   ",
-])
-def test_anything_that_is_not_an_observation_is_refused(command):
-    assert helper.is_read_only_command(command) is False
-
-
-def test_wsl_command_must_be_read_only():
+    The field itself stays in the wire contract — the executor's pipe client
+    always sends it, as ``null`` — and ``null`` stays valid.
+    """
+    command = "whoami" if shell == "whoami" else "echo ok"
     with pytest.raises(helper.UserHelperError) as refused:
-        helper.parse_request(_request(shell="wsl", command="systemctl restart b14"))
-    assert refused.value.code == helper.USER_HELPER_NOT_READ_ONLY
+        helper.parse_request(_request(shell=shell, command=command, distro="Ubuntu"))
+    assert refused.value.code == helper.USER_HELPER_BAD_REQUEST
+
+
+def test_distro_null_stays_valid_for_every_shell():
+    for shell in ("whoami", "bash", "powershell", "cmd"):
+        command = "whoami" if shell == "whoami" else "echo ok"
+        request = helper.parse_request(_request(shell=shell, command=command, distro=None))
+        assert request.distro is None
+
+
+# ---------------------------------------------------------------------------
+# bash is a stage-2 shell now (#7188 R4 ④) — the read-only gate is gone with
+# the wsl shell it guarded, so `echo $BASH_VERSION; uname -s` runs instead of
+# the user_helper_not_read_only refusal the CTO measured on COM1.
+# ---------------------------------------------------------------------------
+def test_bash_takes_the_stage_two_gate_not_the_read_only_gate():
+    request = helper.parse_request(
+        _request(shell="bash", command="echo $BASH_VERSION; uname -s"))
+    assert request.shell == "bash"
+    assert request.command == "echo $BASH_VERSION; uname -s"
+
+
+@pytest.mark.parametrize("command", ["", "   ", "a\x00b", "a\x07b"])
+def test_bash_stage_two_command_must_be_a_bounded_line(command):
+    assert helper.is_windows_shell_command(command) is False
+
 
 
 # ---------------------------------------------------------------------------
 # argv: the command is one element, never a shell string
 # ---------------------------------------------------------------------------
-def test_wsl_argv_uses_the_documented_shape():
-    request = _signed(shell="wsl", command="systemctl is-active padiem-chat", distro="Ubuntu")
-    assert helper.build_argv(request) == [
-        "wsl.exe", "-d", "Ubuntu", "--", "bash", "-lc", "systemctl is-active padiem-chat",
-    ]
+def test_bash_argv_runs_the_located_git_bash(monkeypatch):
+    monkeypatch.setattr(helper, "locate_git_bash",
+                        lambda: "C:\Git\bin\bash.exe")
+    request = _signed(shell="bash", command="uname -s")
+    argv = helper.build_argv(request)
+    assert argv == ["C:\Git\bin\bash.exe", "-lc", "uname -s"]
 
 
-def test_wsl_argv_without_a_distro_uses_the_default_one():
-    request = _signed(shell="wsl", command="whoami")
-    assert helper.build_argv(request) == ["wsl.exe", "--", "bash", "-lc", "whoami"]
+def test_bash_argv_without_a_located_git_bash_is_a_bounded_refusal(monkeypatch):
+    monkeypatch.setattr(helper, "locate_git_bash", lambda: None)
+    request = _signed(shell="bash", command="uname -s")
+    with pytest.raises(helper.UserHelperError) as missing:
+        helper.build_argv(request)
+    assert missing.value.code == helper.USER_HELPER_BASH_MISSING
 
 
 def test_whoami_argv_is_one_executable():
@@ -260,15 +241,12 @@ def test_stage_two_command_keeps_newlines_for_a_real_script():
     assert helper.is_windows_shell_command("Get-Location\nWrite-Output 'x'") is True
 
 
-def test_stage_two_shell_does_not_get_the_wsl_read_only_gate():
-    # `systemctl restart` is refused on wsl; on a Windows shell it is just text.
-    request = helper.parse_request(_request(shell="cmd", command="systemctl restart x"))
-    assert request.command == "systemctl restart x"
-
-
-def test_distro_still_belongs_to_the_wsl_shell_only_on_stage_two():
-    with pytest.raises(helper.UserHelperError):
-        helper.parse_request(_request(shell="powershell", command="whoami", distro="Ubuntu"))
+def test_stage_two_shells_do_not_get_a_read_only_gate():
+    # `systemctl restart` used to be refused on the wsl shell; on the stage-2
+    # shells (bash included) it is just text the approved dispatch authorizes.
+    for shell_name in ("bash", "cmd"):
+        request = helper.parse_request(_request(shell=shell_name, command="systemctl restart x"))
+        assert request.command == "systemctl restart x"
 
 
 # ---------------------------------------------------------------------------

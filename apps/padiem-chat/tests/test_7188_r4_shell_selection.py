@@ -4,7 +4,9 @@
 세 곳에 흩어져 있었다: 채팅 화이트리스트(PC_SHELL_SHELLS), SYSTEM 디스패처
 스크립트 안의 ``$env:PADIEM_MCP_SHELL`` 분기, 사용자 material의 bash→wsl
 수동 매핑. 변경 후에는 전부 ``padiem_ai_core.pc_shell_selection`` 한 표를
-거치고, 각 경로가 고르는 결과는 아래 표와 같다.
+거치고, 각 경로가 고르는 결과는 아래 표와 같다. R4 ④(#7188 후속)에서 사용자
+bash는 wsl 번역 없이 그대로 전달되고, 헬퍼가 같은 후보 순서로 Git Bash를
+찾아 실행한다(대표 결정: 컴1에서 WSL 금지, bash는 Git Bash만).
 
 | 경로                    | 변경 전 선택(흩어진 코드)                              | 변경 후 선택(resolve_shell)                            |
 |-------------------------|--------------------------------------------------------|--------------------------------------------------------|
@@ -14,7 +16,7 @@
 | SYSTEM × 셸 생략         | powershell 기본                                        | 동일(PC_SHELL_DEFAULT_NAME)                             |
 | SYSTEM × 미지원 이름     | 채팅 화이트리스트가 도구 오류로 거부(실행기 도달 불가)   | 동일 + 공통 UnknownShellName 예외                       |
 | USER × powershell / cmd | material shell 그대로 통과                              | 동일                                                    |
-| USER × bash             | material shell 'wsl'                                   | 동일                                                    |
+| USER × bash             | material shell 'wsl'(R4 ④에서 제거)                     | material shell 'bash' — 헬퍼가 Git Bash를 직접 실행      |
 | USER × whoami 명령       | material shell 'whoami'(명령 우선)                      | 동일                                                    |
 | USER × 셸 생략           | powershell 기본                                        | 동일                                                    |
 | USER × 미지원 이름       | 채팅 거부(도달 불가), 헬퍼가 최종 거절 유지              | 동일                                                    |
@@ -70,7 +72,7 @@ def test_user_lane_helper_names_are_pinned():
     """USER × {powershell, cmd, bash, whoami 명령}: 변경 전 material 매핑과 같은 값."""
     assert resolve_shell("powershell", lane="user") == "powershell"
     assert resolve_shell("cmd", lane="user") == "cmd"
-    assert resolve_shell("bash", lane="user") == "wsl"
+    assert resolve_shell("bash", lane="user") == "bash"
     # whoami 명령은 셸 이름보다 우선한다 — 변경 전 build_pc_shell_user_material과
     # 같은 순서, 같은 strip 규칙.
     for name in ("powershell", "cmd", "bash"):
@@ -143,14 +145,11 @@ def test_generic_tail_runs_each_launcher_like_the_old_branch():
     후보가 없으므로 else 가지(Get-Command)가 실행되며 그 결과는 변경 전과
     같다 — 이 시험이 그 세 경로를 실제 PowerShell로 다시 증명한다.
     """
-    tail_start = ("try{$cands=$env:PADIEM_MCP_SHELL_CANDIDATES;"
-                  "if($cands){$file=$null;"
-                  "foreach($cand in $cands.Split(';')){$p=[Environment]::ExpandEnvironmentVariables($cand);"
-                  "if(Test-Path -LiteralPath $p -PathType Leaf){$file=$p;break}};"
-                  "if(-not $file){[Console]::Error.WriteLine('shell_unavailable');exit 127}}"
-                  "else{$file=$env:PADIEM_MCP_SHELL_FILE;"
-                  "if(-not(Get-Command $file -ErrorAction SilentlyContinue))"
-                  "{[Console]::Error.WriteLine('shell_unavailable');exit 127}};")
+    # R4 ④: bash 가지는 레지스트리 → PATH git.exe → 고정 후보 순서가 앞에 붙는다.
+    # cmd·powershell은 $cands가 비어 있으므로 else 가지가 그대로 실행된다.
+    # R4 ④: bash 가지는 레지스트리 → PATH git.exe → 고정 후보 순서가 앞에 붙는다.
+    # cmd·powershell은 $cands가 비어 있으므로 else 가지가 그대로 실행된다.
+    tail_start = "try{$cands=$env:PADIEM_MCP_SHELL_CANDIDATES;if($cands){$file=$null;foreach($k in 'HKLM:\\SOFTWARE\\GitForWindows','HKLM:\\SOFTWARE\\WOW6432Node\\GitForWindows','HKCU:\\SOFTWARE\\GitForWindows'){$ip=(Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).InstallPath;if($ip){$p=Join-Path $ip 'bin\\bash.exe';if(_padiem_bash_ok $p){$file=$p;break}}};"
     script = _script_of(shell.build_pc_shell_command({"command": "echo ok", "shell": "cmd"}))
     assert tail_start in script
     # cmd: 인자 배열 뒤 명령 본문이 위치 순서로 붙는다(변경 전 @('/d','/s','/c',$c)).
@@ -227,9 +226,9 @@ def test_user_material_mapping_is_unchanged():
     assert json.loads(shell.build_pc_shell_user_material(
         {"command": "hostname", "shell": "cmd"}))["shell"] == "cmd"
     assert json.loads(shell.build_pc_shell_user_material(
-        {"command": "systemctl is-active padiem", "shell": "bash"}))["shell"] == "wsl"
+        {"command": "systemctl is-active padiem", "shell": "bash"}))["shell"] == "bash"
     assert json.loads(shell.build_pc_shell_user_material(
         {"command": "whoami", "shell": "bash"}))["shell"] == "whoami"
     # 셸 이름 별칭도 같은 값을 가리킨다(기존 import 보존).
-    assert shell.USER_HELPER_SHELL_FOR_BASH == "wsl"
+    assert shell.USER_HELPER_SHELL_FOR_BASH == "bash"
     assert shell.USER_HELPER_SHELL_FOR_WHOAMI == "whoami"

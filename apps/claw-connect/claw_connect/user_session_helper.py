@@ -17,9 +17,6 @@ interactive user), which is the safe direction.
 Stage 1 scope
 -------------
 * ``whoami`` — the identity check that proves the helper is in the user session.
-* ``wsl.exe -d <distro> -- bash -lc <command>`` — observation only, and only for
-  a read-only verb allowlist. This is the path that unblocks Chat/B14/P01/queue
-  status checks on COM2 without going around the session.
 * One request = one process. No reuse, no pooling, no long-lived child.
 * A logged-out user is reported as ``user_session_unavailable``. The SYSTEM agent
   never silently runs the command instead.
@@ -27,16 +24,22 @@ Stage 1 scope
 Stage 2 scope (#7105)
 ---------------------
 The owner's decision (2026-11-07) is that an ordinary user request runs as the
-logged-in Windows user, so the helper also runs the two Windows shells:
-``powershell`` (``powershell.exe -EncodedCommand``) and ``cmd`` (``cmd.exe /c``).
-The wire format, the nonce, the replay guard and the one-process rule are
-unchanged: stage 2 adds shell values, not a second protocol.
+logged-in Windows user, so the helper runs the Windows shells ``powershell``
+(``powershell.exe -EncodedCommand``), ``cmd`` (``cmd.exe /c``) and — since
+#7188 R4 ④ — ``bash`` (the located Git Bash, ``bash.exe -lc``). The wire
+format, the nonce, the replay guard and the one-process rule are unchanged:
+stage 2 adds shell values, not a second protocol.
 
-The read-only allowlist stays where it was — on ``wsl``. It exists because WSL
-was the observation lane; a Windows command is not restricted to observations
-because the dispatch itself is the authorization and authority still moves
-DOWN (SYSTEM → the logged-in user). The command text is still checked before a
-process exists: bounded length, no NUL, no control characters.
+There is no read-only allowlist any more. It guarded the removed ``wsl``
+observation lane; the dispatch itself is the authorization and authority still
+moves DOWN (SYSTEM → the logged-in user). The command text is still checked
+before a process exists: bounded length, no NUL, no control characters.
+
+The wsl shell is gone (#7188 R4 ④): the owner banned WSL on the PC, so bash
+runs the Git Bash that :func:`locate_git_bash` finds — the same candidate
+order (registry ``InstallPath``, PATH ``git.exe`` relatives, fixed standard
+roots) the SYSTEM dispatcher uses — and reports ``user_helper_bash_missing``
+when none exists. A ``distro`` field in a request is refused.
 
 Not here: file writes through an editor, find/replace editing, interactive
 stdin, and the switch that makes ``user`` the default mode (that is a separate
@@ -46,8 +49,12 @@ Wire format
 -----------
 Request (JSON, UTF-8)::
 
-    {"request_id": "req_<32 hex>", "nonce": "<hex hmac>", "shell": "wsl"|"whoami",
+    {"request_id": "req_<32 hex>", "nonce": "<hex hmac>",
+     "shell": "bash"|"powershell"|"cmd"|"whoami",
      "cwd": null|str, "command": str, "timeout_seconds": int, "distro": null|str}
+
+``distro`` stays in the frame for wire compatibility but must be ``null``: the
+``wsl`` shell it belonged to was removed (#7188 R4 ④, owner ban on WSL).
 
 Reply (JSON, UTF-8)::
 
@@ -76,7 +83,7 @@ import hmac
 import json
 import os
 import re
-import shlex
+import shutil
 import subprocess
 import time
 from dataclasses import dataclass, field
@@ -92,15 +99,21 @@ USER_HELPER_REFUSED = "user_helper_refused"
 USER_HELPER_BAD_REQUEST = "user_helper_bad_request"
 USER_HELPER_BAD_REPLY = "user_helper_bad_reply"
 USER_HELPER_NOT_READ_ONLY = "user_helper_not_read_only"
+#: #7188 R4 ④ — user-mode bash found no Git Bash through the shared
+#: candidate order (registry, PATH git.exe relatives, fixed standard
+#: roots). The same fact the SYSTEM lane reports as shell_unavailable 127.
+USER_HELPER_BASH_MISSING = "user_helper_bash_missing"
 
 SHELL_WHOAMI = "whoami"
-SHELL_WSL = "wsl"
+SHELL_BASH = "bash"
 SHELL_POWERSHELL = "powershell"
 SHELL_CMD = "cmd"
-STAGE1_SHELLS = (SHELL_WHOAMI, SHELL_WSL)
-#: #7105 stage 2 — the Windows shells that run as the logged-in user.
-STAGE2_SHELLS = (SHELL_POWERSHELL, SHELL_CMD)
-SUPPORTED_SHELLS = STAGE1_SHELLS + STAGE2_SHELLS
+#: #7105 stage 2 — the shells that run as the logged-in user. bash joined
+#: in #7188 R4 ④: it runs the located Git Bash, never WSL (the owner
+#: banned WSL on the PC), and it takes the stage-2 gate, not a read-only
+#: allowlist.
+STAGE2_SHELLS = (SHELL_BASH, SHELL_POWERSHELL, SHELL_CMD)
+SUPPORTED_SHELLS = (SHELL_WHOAMI,) + STAGE2_SHELLS
 
 PIPE_PREFIX = "padiem-user-helper-"
 DEFAULT_TIMEOUT_SECONDS = 30
@@ -120,23 +133,7 @@ _REQUEST_ID = re.compile(r"req_[0-9a-f]{32}\Z")
 #: The pipe name is derived as a stable hash so arbitrary safe raw ids map to the
 #: same pipe across helper/install/executor. Validate minimally (no whitespace/control/path separators).
 _DEVICE_ID_RAW = re.compile(r"^[A-Za-z0-9_.$:@+\-]{1,256}\Z")
-#: A WSL distribution name is an argv element, never a shell word.
-_DISTRO = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
-
-#: Stage 1 runs observations only. The first token must be one of these, and the
-#: whole command must be free of anything that could chain, redirect or expand.
-READ_ONLY_VERBS = frozenset({
-    "whoami", "id", "uname", "hostname", "uptime", "ps", "systemctl", "pwd",
-})
-#: ``systemctl`` is only read-only for these subcommands. ``restart``/``stop``
-#: are the reason this list exists.
-READ_ONLY_SYSTEMCTL_SUBCOMMANDS = frozenset({
-    "is-active", "is-failed", "is-enabled", "status", "list-units",
-    "list-unit-files", "show", "cat",
-})
 #: Anything that could start a second command, write a file or expand a
-#: substitution. A read-only observation needs none of it.
-_SHELL_METACHARACTERS = (";", "&", "|", ">", "<", "`", "$(", "${", "\n", "\r", "\x00")
 
 
 class UserHelperError(RuntimeError):
@@ -146,6 +143,125 @@ class UserHelperError(RuntimeError):
         super().__init__(detail or code)
         self.code = code
         self.detail = detail
+
+
+#: #7188 R4 ④ — where a Git for Windows install registers itself. One
+#: source for both lanes: the SYSTEM dispatcher probes these same keys in
+#: PowerShell and the helper reads them here through ``winreg``. The pairs
+#: mirror ``padiem_ai_core.pc_shell_selection.GIT_BASH_REGISTRY_KEYS``; the
+#: helper's single-file build must not import the Core table, so the
+#: contract test pins the two copies equal.
+GIT_BASH_REGISTRY_KEYS = (
+    ("HKLM", "SOFTWARE\\GitForWindows"),
+    ("HKLM", "SOFTWARE\\WOW6432Node\\GitForWindows"),
+    ("HKCU", "SOFTWARE\\GitForWindows"),
+)
+#: Fixed standard-install roots, expanded on this PC. Mirrors
+#: ``padiem_ai_core.pc_shell_selection.GIT_BASH_CANDIDATES``
+#: (contract-pinned).
+GIT_BASH_FIXED_CANDIDATES = (
+    r"%ProgramW6432%\Git\bin\bash.exe",
+    r"%ProgramFiles%\Git\bin\bash.exe",
+    r"%ProgramFiles%\Git\usr\bin\bash.exe",
+    r"%ProgramFiles(x86)%\Git\bin\bash.exe",
+    r"%LocalAppData%\Programs\Git\bin\bash.exe",
+)
+#: bash locations probed relative to a ``git.exe`` found on PATH. Mirrors
+#: ``padiem_ai_core.pc_shell_selection.GIT_BASH_PATH_RELATIVES``.
+GIT_BASH_PATH_RELATIVES = (r"..\bin\bash.exe", r"..\..\bin\bash.exe")
+
+
+def _winreg_install_path(hive: str, subkey: str) -> str | None:
+    """``InstallPath`` from one Git for Windows registry key, or None.
+
+    Non-Windows hosts and missing keys are the same "not here" answer; a
+    present-but-empty value is not a location.
+    """
+    try:
+        import winreg
+    except ImportError:
+        return None
+    hive_const = {"HKLM": winreg.HKEY_LOCAL_MACHINE,
+                  "HKCU": winreg.HKEY_CURRENT_USER}.get(hive)
+    if hive_const is None:
+        return None
+    try:
+        with winreg.OpenKey(hive_const, subkey) as key:
+            value, _ = winreg.QueryValueEx(key, "InstallPath")
+    except OSError:
+        return None
+    if isinstance(value, str) and value.strip():
+        return value
+    return None
+
+
+def _is_real_git_bash(candidate: str, isfile) -> bool:
+    """One candidate path names an existing bash.exe that is not WSL's.
+
+    ``C:\\Windows\\System32\\bash.exe`` is the WSL bash every Windows
+    machine ships; picking it is exactly the #7266 defect. The guard runs on
+    every probe stage, so a manipulated registry value or a planted PATH
+    entry cannot smuggle it in either.
+    """
+    if not isfile(candidate):
+        return False
+    lowered = candidate.lower()
+    if "\\windows\\system32\\" in lowered:
+        return False
+    if lowered.endswith("\\wsl.exe"):
+        return False
+    return True
+
+
+def locate_git_bash(*, open_key=None, which=None, expandvars=None, isfile=None) -> str | None:
+    """The Git Bash this PC runs for bash requests, or None.
+
+    One candidate order for both lanes (#7188 R4 ④), probed in this order:
+
+    1. registry ``InstallPath`` — HKLM, HKLM\\WOW6432Node, HKCU
+       ``SOFTWARE\\GitForWindows``; the file is ``<InstallPath>\bin\bash.exe``.
+    2. ``git.exe`` on PATH — ``<git dir>\..\bin\bash.exe`` and
+       ``<git dir>\..\..\bin\bash.exe`` cover the ``cmd\`` and
+       ``mingw64\bin\`` PATH layouts.
+    3. the fixed standard roots (``%ProgramW6432%`` first for the 32-bit
+       PowerShell redirect, then ``%ProgramFiles%``, ``%ProgramFiles(x86)%``,
+       ``%LocalAppData%``).
+
+    There is deliberately no ``bash.exe`` PATH fallback and no WSL step: the
+    owner banned WSL on the PC, and a bare PATH hunt is what picked
+    ``System32\bash.exe`` on COM1 (#7266). Every stage passes
+    :func:`_is_real_git_bash`, so the WSL bash is never returned even when a
+    registry value or PATH entry points at it.
+
+    The probes are parameters so tests can isolate the host's registry, PATH
+    and environment; production uses the defaults.
+    """
+    open_key = open_key or _winreg_install_path
+    which = which or shutil.which
+    expandvars = expandvars or (lambda value: os.path.expandvars(value))
+    isfile = isfile or os.path.isfile
+
+    for hive, subkey in GIT_BASH_REGISTRY_KEYS:
+        install_path = open_key(hive, subkey)
+        if install_path:
+            candidate = os.path.normpath(os.path.join(install_path, "bin", "bash.exe"))
+            if _is_real_git_bash(candidate, isfile):
+                return candidate
+    git = which("git.exe")
+    if git:
+        git_dir = os.path.dirname(os.path.abspath(git))
+        # A git.exe under System32 is WSL's or a planted one; its siblings
+        # are Windows system directories, never a Git for Windows install.
+        if "\\windows\\system32" not in git_dir.lower():
+            for relative in GIT_BASH_PATH_RELATIVES:
+                candidate = os.path.normpath(os.path.join(git_dir, relative))
+                if _is_real_git_bash(candidate, isfile):
+                    return candidate
+    for template in GIT_BASH_FIXED_CANDIDATES:
+        candidate = os.path.normpath(expandvars(template))
+        if _is_real_git_bash(candidate, isfile):
+            return candidate
+    return None
 
 
 def device_id_pipe_suffix(device_id: str) -> str:
@@ -231,33 +347,6 @@ def _bounded_text(value: Any, limit: int) -> str | None:
     return value
 
 
-def is_read_only_command(command: str) -> bool:
-    """Whether one bash command is a stage-1 observation.
-
-    Two independent gates, because either alone is too weak: no metacharacter
-    anywhere (so nothing can be chained or redirected), and a first token from
-    the read-only verb list. ``systemctl`` additionally has to name a read-only
-    subcommand, which is what keeps ``systemctl restart`` out.
-    """
-    if not isinstance(command, str) or not command.strip():
-        return False
-    if len(command) > MAX_COMMAND_CHARS:
-        return False
-    for token in _SHELL_METACHARACTERS:
-        if token in command:
-            return False
-    try:
-        argv = shlex.split(command)
-    except ValueError:
-        return False
-    if not argv or argv[0] not in READ_ONLY_VERBS:
-        return False
-    if argv[0] == "systemctl":
-        if len(argv) < 2 or argv[1] not in READ_ONLY_SYSTEMCTL_SUBCOMMANDS:
-            return False
-    return True
-
-
 def is_windows_shell_command(command: str) -> bool:
     """Whether one stage-2 command is a runnable Windows command line.
 
@@ -319,21 +408,16 @@ def parse_request(payload: Mapping[str, Any]) -> HelperRequest:
         raise UserHelperError(USER_HELPER_BAD_REQUEST, "cwd is not a usable path")
 
     distro = payload.get("distro")
+    # The field stays in the wire contract (the executor's pipe client always
+    # sends it, possibly ``null``) but no shell consumes it any more: the wsl
+    # shell was removed with the owner's WSL ban.
     if distro is not None:
-        if not isinstance(distro, str) or _DISTRO.fullmatch(distro) is None:
-            raise UserHelperError(USER_HELPER_BAD_REQUEST, "distro is not a distribution name")
-        if shell != SHELL_WSL:
-            raise UserHelperError(USER_HELPER_BAD_REQUEST, "distro belongs to the wsl shell")
+        raise UserHelperError(USER_HELPER_BAD_REQUEST, "distro belongs to the removed wsl shell")
 
     if shell == SHELL_WHOAMI:
         # The identity probe is one exact command. It is not a general shell.
         if command.strip() != "whoami":
             raise UserHelperError(USER_HELPER_REFUSED, "the whoami shell runs whoami only")
-        if distro is not None:
-            raise UserHelperError(USER_HELPER_BAD_REQUEST, "distro belongs to the wsl shell")
-    elif shell == SHELL_WSL:
-        if not is_read_only_command(command):
-            raise UserHelperError(USER_HELPER_NOT_READ_ONLY, "command is not a read-only observation")
     elif not is_windows_shell_command(command):
         raise UserHelperError(USER_HELPER_BAD_REQUEST,
                               "command is not a runnable Windows command line")
@@ -383,9 +467,9 @@ def build_argv(request: HelperRequest) -> list[str]:
     """The argv for exactly one process, built from validated parts only.
 
     The command travels as its own argv element, never as a shell string, so a
-    quote or a space in it cannot become a second command. For WSL the element
-    after ``--`` is handed to bash by WSL itself, which is the documented
-    behaviour of ``wsl.exe -d <distro> -- <argv>``. PowerShell receives the
+    quote or a space in it cannot become a second command. bash runs the Git
+    Bash :func:`locate_git_bash` found — never ``wsl.exe`` and never
+    ``System32\\bash.exe``. PowerShell receives the
     script Base64-encoded (UTF-16LE), the same shape the SYSTEM lane uses, so no
     quoting rule of any caller can rewrite it.
     """
@@ -401,15 +485,16 @@ def build_argv(request: HelperRequest) -> list[str]:
         ]
     if request.shell == SHELL_CMD:
         return ["cmd.exe", "/d", "/s", "/c", request.command]
-    if request.shell != SHELL_WSL:
+    if request.shell != SHELL_BASH:
         raise UserHelperError(USER_HELPER_REFUSED, "shell is not one this helper runs")
-    if not is_read_only_command(request.command):
-        raise UserHelperError(USER_HELPER_NOT_READ_ONLY, "command is not a read-only observation")
-    argv = ["wsl.exe"]
-    if request.distro:
-        argv += ["-d", request.distro]
-    argv += ["--", "bash", "-lc", request.command]
-    return argv
+    if not is_windows_shell_command(request.command):
+        raise UserHelperError(USER_HELPER_BAD_REQUEST,
+                              "command is not a runnable Windows command line")
+    bash = locate_git_bash()
+    if bash is None:
+        raise UserHelperError(USER_HELPER_BASH_MISSING,
+                              "no Git Bash through registry, PATH git.exe or standard roots")
+    return [bash, "-lc", request.command]
 
 
 @dataclass(frozen=True, slots=True)
