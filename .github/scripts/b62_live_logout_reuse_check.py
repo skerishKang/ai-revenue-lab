@@ -110,6 +110,27 @@ def error_code(payload) -> str:
     return code if isinstance(code, str) and _CODE.fullmatch(code) else "no_safe_error_code"
 
 
+def login_bounded(opener, username: str, password: str):
+    """Email login that survives the #7078 switch.
+
+    Direct first (switch OFF keeps today's exact request); when the server says
+    409 ``email_login_moved`` the common login flow is used and its Chat
+    session cookie is returned in the same shape the old response header had.
+    """
+    status, body, cookie = bounded_call(
+        opener, LOGIN, method="POST",
+        payload={"identifier": username, "password": password},
+    )
+    if status == 409 and error_code(body) == "email_login_moved":
+        from shared_login_client import SharedLoginError, shared_login_session_cookie
+        try:
+            cookie = shared_login_session_cookie(ORIGIN, username, password)
+        except SharedLoginError as exc:
+            raise CanaryError(exc.public_code) from exc
+        return 200, {"ok": True}, cookie
+    return status, body, cookie
+
+
 def run() -> int:
     username = os.environ.get("B66_CGI_ALPHA_USERNAME", "")
     password = os.environ.get("B66_CGI_ALPHA_PASSWORD", "")
@@ -123,17 +144,11 @@ def run() -> int:
     try:
         # 1. Two independent logins of the same account: the first session and a
         #    second "device" session. Both are normal, unaffected logins.
-        status, body, device_a = bounded_call(
-            opener, LOGIN, method="POST",
-            payload={"identifier": username, "password": password},
-        )
+        status, body, device_a = login_bounded(opener, username, password)
         if status != 200 or body.get("ok") is not True or not device_a:
             print("B62_LOGOUT_REUSE_LOGIN_A=FAILED", "HTTP=" + str(status))
             return 4
-        status, body, device_b = bounded_call(
-            opener, LOGIN, method="POST",
-            payload={"identifier": username, "password": password},
-        )
+        status, body, device_b = login_bounded(opener, username, password)
         if status != 200 or body.get("ok") is not True or not device_b:
             print("B62_LOGOUT_REUSE_LOGIN_B=FAILED", "HTTP=" + str(status))
             return 4
@@ -171,10 +186,7 @@ def run() -> int:
         print("B62_LOGOUT_REUSE_OTHER_SESSION_KEPT=PASS")
 
         # 6. A fresh login after the logout works again.
-        status, body, device_c = bounded_call(
-            opener, LOGIN, method="POST",
-            payload={"identifier": username, "password": password},
-        )
+        status, body, device_c = login_bounded(opener, username, password)
         if status != 200 or body.get("ok") is not True or not device_c:
             print("B62_LOGOUT_REUSE_RELOGIN=FAILED", "HTTP=" + str(status))
             return 9
