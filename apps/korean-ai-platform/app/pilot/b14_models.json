@@ -635,6 +635,23 @@
       "source": "https://openrouter.ai/api/v1/models (stealth/crouton-alpha; pricing 0/0, context_length 1048576, tools/reasoning/vision declared)",
       "source_checked_at": "2026-11-04",
       "enabled": true
+    },
+    {
+      "id": "experiential/claude-fable-5.2:free",
+      "provider_id": "experiential",
+      "upstream_model": "claude-fable-5.2:free",
+      "display_name": "Experiential: Claude Fable 5.2 (free)",
+      "provider_name": "Experiential Labs",
+      "capabilities": [
+        "chat",
+        "coding"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "https://platform.experientiallabs.ai/models/claude-fable-5.2/",
+      "source_checked_at": "2026-11-10",
+      "enabled": true
     }
   ],
   "groups": {
