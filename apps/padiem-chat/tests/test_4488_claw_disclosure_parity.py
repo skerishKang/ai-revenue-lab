@@ -16,6 +16,9 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+# R5 0단계(R-01): 함수 경계는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import combined_source
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
 
@@ -44,9 +47,10 @@ def test_logout_clears_the_approved_memory_list_and_error() -> None:
 
 
 def test_memory_detail_opens_its_disclosure_like_run_history_focus() -> None:
-    start = APP_JS.index("async function loadApprovedMemoryDetail")
-    end = APP_JS.index("function syncApprovedMemoryVisibility", start)
-    body = APP_JS[start:end]
+    shipped = combined_source()
+    start = shipped.index("async function loadApprovedMemoryDetail")
+    end = shipped.index("function syncApprovedMemoryVisibility", start)
+    body = shipped[start:end]
     assert "renderApprovedMemoryDetail(data.memory)" in body
     assert "clawApprovedDisclosure) clawApprovedDisclosure.open = true" in body
 

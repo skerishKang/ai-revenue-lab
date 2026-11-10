@@ -176,6 +176,10 @@ class Settings:
     # calls Chat's internal /internal/password-verify. The internal RPC stays
     # available either way; nothing changes until a deployment opts in.
     email_login_via_shared: bool = False
+    # External AI personal tokens live at most this many days. Newly minted
+    # tokens carry expires_at; a pre-existing token without one is treated as
+    # created_at + this many days instead of living forever.
+    mcp_pat_ttl_days: int = 90
 
     @classmethod
     def from_values(
@@ -228,6 +232,8 @@ class Settings:
         voice_rpc_secret: object = None,
         # #7078 step 3: appended last; default OFF keeps today's behavior.
         email_login_via_shared: object = None,
+        # External AI personal token TTL; appended last for the same reason.
+        mcp_pat_ttl_days: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -504,6 +510,11 @@ class Settings:
                 if email_login_via_shared is not None
                 else False
             ),
+            mcp_pat_ttl_days=(
+                _bounded_int(mcp_pat_ttl_days, name="PADIEM_MCP_PAT_TTL_DAYS", minimum=1, maximum=3650)
+                if mcp_pat_ttl_days is not None
+                else 90
+            ),
         )
 
     @classmethod
@@ -562,6 +573,7 @@ class Settings:
             mcp_pc_shell_enabled=os.getenv("PADIEM_MCP_PC_SHELL_ENABLED"),
             mcp_pc_shell_user_mode_enabled=os.getenv("PADIEM_MCP_PC_SHELL_USER_MODE"),
             email_login_via_shared=os.getenv("PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED"),
+            mcp_pat_ttl_days=os.getenv("PADIEM_MCP_PAT_TTL_DAYS", "90"),
             lovetree_account_delete_url=os.getenv("PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL"),
             account_delete_rpc_secret=os.getenv("PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET"),
             password_rpc_secret=os.getenv("PADIEM_CHAT_PASSWORD_RPC_SECRET"),

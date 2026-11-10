@@ -37,6 +37,9 @@ from pathlib import Path
 
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 
+# R5 0단계(R-01): 함수 선언은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_source
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
@@ -125,7 +128,7 @@ def test_presentation_does_not_mint_run_truth_in_the_browser() -> None:
     for token in ("user_id", "workspace_id", "tenant_id"):
         assert token not in app
     # The client never derives run status: unknown tokens stay raw, never "completed".
-    assert "function clawRunStatusLabel(status)" in app
+    assert "function clawRunStatusLabel(status)" in definition_source("clawRunStatusLabel")
     assert "return text === key ? raw : text;" in app
 
 
@@ -427,9 +430,6 @@ sandbox.dispatchEvent = (event) => { (sessionWindowListeners[event.type] || []).
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
-// #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), sandbox, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 function findButton(root, text) {

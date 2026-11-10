@@ -94,7 +94,7 @@ printf '%s' "$COM2_BACKUP_WRITE_TOKEN" | wrangler secret put COM2_BACKUP_WRITE_T
 
 The COM2 recovery assessment that records this status and the adjacent
 Cloudflare asset snapshot procedure is
-[docs/operations/CLOUDFLARE_ASSET_RECOVERY_AND_SYNC_20261019.md](../../docs/operations/CLOUDFLARE_ASSET_RECOVERY_AND_SYNC_20261019.md).
+Cloudflare 자산 동기화·복구 점검 기록은 비공개 운영 기록(거버넌스 폴더, 같은 상대 경로)로 이동했다(2026-11-11, CLOUDFLARE_ASSET_RECOVERY_AND_SYNC_20261019.md).
 
 ## Focused tests
 

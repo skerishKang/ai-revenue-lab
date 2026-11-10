@@ -16,6 +16,7 @@ import os
 from typing import Any, Protocol
 
 from .voice_stt_routes import RELAY_WS_PATH, _canonical_session
+from .same_origin_guard import expected_browser_origins
 
 MAX_CONCURRENT_RELAYS = 8
 PROVIDER_ORIGIN_ENV = "PADIEM_VOICE_RELAY_WS_ORIGIN"
@@ -99,6 +100,20 @@ async def voice_relay_ws(ws: Any, session_resolver=_canonical_session) -> None:
     """Same-origin WebSocket relay. ``ws`` is a Starlette WebSocket (or a test
     double). The resolver is injectable so unit tests need no live identity."""
     global _active
+    # Same-origin handshake: the HTTP middleware never sees a websocket scope,
+    # so the relay is its own origin authority. Only an exact reviewed public
+    # origin may open the relay; anything else is refused before the accept.
+    expected = expected_browser_origins(
+        getattr(getattr(ws.app, "state", None), "settings", None)
+    )
+    origin = ""
+    try:
+        origin = (ws.headers.get("origin") or "").strip()
+    except Exception:
+        origin = ""
+    if not expected or origin not in expected:
+        await ws.close(code=1008)  # policy violation: cross-origin handshake
+        return
     await ws.accept()
     try:
         session = await session_resolver(ws)

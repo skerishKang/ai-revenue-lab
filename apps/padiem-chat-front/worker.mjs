@@ -23,6 +23,47 @@
 import { newRequestId, signedRequestHeaders } from "./edge-proof.mjs";
 import { errorPageHtml, wantsHtml } from "./error-copy.mjs";
 
+// Security response headers, attached to every front answer (proxied upstream,
+// static asset, maintenance page and front-generated error alike). The values
+// mirror the reviewed Worker configuration (apps/padiem-chat/app/worker_config.py):
+// the microphone stays same-origin because the voice composer's getUserMedia
+// runs on this origin (static/voice-stt-wiring.js, static/voice-live-session.js),
+// and every script/style origin in the report-only policy is one the static
+// files actually load (same-origin assets, cdn.jsdelivr.net + Google Fonts
+// stylesheets imported by static/padiem-foundation.css, www.googleapis.com for
+// the meeting Drive resumable upload). The body policy rides Report-Only so a
+// real page breakage is observed, never caused; frame-ancestors alone is
+// enforced because it cannot affect how a top-level page renders.
+const PERMISSIONS_POLICY = "camera=(), microphone=(self), geolocation=()";
+const FRAME_ANCESTORS_CSP = "frame-ancestors 'none'";
+// Kept as one literal string: the python contract test pins this exact text
+// back onto worker.mjs so the front and the legacy entry cannot drift apart.
+const CSP_REPORT_ONLY = `default-src 'self'; base-uri 'none'; object-src 'none'; frame-src blob:; frame-ancestors 'none'; script-src 'self'; connect-src 'self' https://www.googleapis.com; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; form-action 'self'`;
+const SECURITY_RESPONSE_HEADERS = {
+  "x-content-type-options": "nosniff",
+  "referrer-policy": "strict-origin-when-cross-origin",
+  "permissions-policy": PERMISSIONS_POLICY,
+  "x-frame-options": "DENY",
+  "content-security-policy": FRAME_ANCESTORS_CSP,
+  "content-security-policy-report-only": CSP_REPORT_ONLY,
+};
+
+function withSecurityHeaders(response) {
+  // WebSocket upgrades pass through untouched: rebuilding the response would
+  // break the 101 protocol pairing, and a socket exchange is not a document
+  // the header set addresses.
+  if (response.status === 101 || response.webSocket) return response;
+  const headers = new Headers(response.headers);
+  for (const [name, value] of Object.entries(SECURITY_RESPONSE_HEADERS)) {
+    headers.set(name, value);
+  }
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const DEFAULT_HEALTH_TTL_MS = 10000;
 const DEFAULT_TIMEOUT_MS = 8000;
@@ -267,7 +308,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     });
   }
 
-  return async function handle(request, env) {
+  async function route(request, env) {
     const url = new URL(request.url);
     const requestId = requestIdFor(request);
     // Transport only: the single voice-RPC path, POST, and only when the host
@@ -392,6 +433,12 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     }
     if (bookAIRecords) return maintenanceResponse("bookai_records_com2_unavailable", requestId);
     return fallback(request, env, false, requestId);
+  };
+
+  // One exit: every front answer — proxied, static, maintenance or error —
+  // carries the same security header set (see withSecurityHeaders).
+  return async function handle(request, env) {
+    return withSecurityHeaders(await route(request, env));
   };
 }
 

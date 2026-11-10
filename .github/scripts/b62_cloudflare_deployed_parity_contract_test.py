@@ -11,8 +11,18 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import b62_cloudflare_deployed_parity as parity
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+
 
 class MethodAwareParityTest(unittest.TestCase):
+    def test_every_shipped_chat_module_is_a_parity_asset(self) -> None:
+        """R5 0단계(0-2): static의 chat-*-module.js는 전부 일치 검사 대상이다."""
+        public_paths = {public_path for _, public_path, _ in parity.ASSETS}
+        modules = sorted((_REPO_ROOT / "apps/padiem-chat/static").glob("chat-*-module.js"))
+        assert modules, "chat-*-module.js 자산이 static에 있어야 한다"
+        for module in modules:
+            assert f"/{module.name}" in public_paths, module.name
+
     def test_invalid_post_422_proves_b62_route(self) -> None:
         calls: list[str] = []
 
@@ -48,10 +58,16 @@ class MethodAwareParityTest(unittest.TestCase):
             )
 
     def test_audit_is_ready_with_b62_get_404_and_invalid_post_422(self) -> None:
+        # R5 0단계(0-2): 분리 모듈(chat-*-module.js)도 자산 일치 대상이다.
         bodies = {
             "/app.js": b"app",
             "/search-sources.js": b"search",
             "/rich-response.js": b"rich",
+            **{
+                public_path: f"module:{public_path}".encode()
+                for _, public_path, _ in parity.ASSETS
+                if public_path.startswith("/chat-")
+            },
         }
 
         def fetcher(url: str) -> parity.HTTPResult:

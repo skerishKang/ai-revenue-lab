@@ -42,6 +42,7 @@ policy change, auto-retry, or Engine/P01 retry semantics are introduced.
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -50,6 +51,14 @@ from pathlib import Path
 import pytest
 
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
+
+# R5 0단계(R-01): 함수 정의·본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import (
+    combined_source,
+    definition_count,
+    definition_source,
+    function_body,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
@@ -110,7 +119,8 @@ def test_consumes_the_existing_retry_after_header_without_new_authority() -> Non
 
 def test_retry_after_parsing_is_closed_and_bounded() -> None:
     app = _app_source()
-    assert "function parseClawRetryAfter(value)" in app
+    parser_source = definition_source("parseClawRetryAfter")
+    assert "function parseClawRetryAfter(value)" in parser_source
     assert 'if (!/^[0-9]+$/.test(raw)) return null;' in app
     assert "if (!Number.isFinite(seconds) || seconds < 1) return null;" in app
     # #5882 A-15: the client's second 900s ceiling was removed. usage_gate only
@@ -119,7 +129,7 @@ def test_retry_after_parsing_is_closed_and_bounded() -> None:
     # side instead (next test) and the parsed value is followed as sent.
     assert "CLAW_RETRY_AFTER_MAX_SECONDS" not in app
     assert "Math.min(seconds" not in app
-    assert re.search(r"function parseClawRetryAfter[\s\S]{0,400}?return seconds;", app)
+    assert re.search(r"function parseClawRetryAfter[\s\S]{0,400}?return seconds;", parser_source)
     # No HTML/copy injection: the parsed integer is only ever used as a number.
     assert "innerHTML" not in app
 
@@ -147,7 +157,7 @@ def test_no_automatic_or_timer_driven_execution() -> None:
     app = _app_source()
     # Both the primary button and the retry button funnel through one function.
     assert app.count("void runClawExecution();") == 2
-    assert app.count("async function runClawExecution()") == 1
+    assert definition_count("runClawExecution") == 1
     # The cooldown ticker only re-renders copy and control state.
     ticker = app[app.index("clawRetryTimer = setInterval("):]
     ticker = ticker[: ticker.index("}, 1000);")]
@@ -169,8 +179,9 @@ def test_no_automatic_or_timer_driven_execution() -> None:
 
 def test_uncertain_latch_keys_on_wire_content_not_unused_form_fields() -> None:
     app = _app_source()
-    start = app.index("function clawVisibleExecutePayload()")
-    builder = app[start: app.index("function noteClawContentEdited(", start)]
+    builder_source = definition_source("clawVisibleExecutePayload")
+    start = builder_source.index("function clawVisibleExecutePayload()")
+    builder = builder_source[start: builder_source.index("function noteClawContentEdited(", start)]
     # One shape, shared by the dispatch and the duplicate comparison.
     assert builder.count("function clawVisibleExecutePayload()") == 1
     assert builder.count("function clawExecuteWireKey(") == 1
@@ -195,7 +206,8 @@ def test_uncertain_latch_keys_on_wire_content_not_unused_form_fields() -> None:
 
 def test_ambiguous_failures_get_guidance_instead_of_a_retry_affordance() -> None:
     app = _app_source()
-    assert "function isAmbiguousClawFailure(data, response)" in app
+    classifier_source = definition_source("isAmbiguousClawFailure")
+    assert "function isAmbiguousClawFailure(data, response)" in classifier_source
     assert 'return status === 502 || code === "engine_execution_failed";' in app
     # #3933: a bounded pre-dispatch refusal (model HOLD) is a proven non-dispatch,
     # so it is excluded at the call site as well as in the classifier above.
@@ -204,7 +216,7 @@ def test_ambiguous_failures_get_guidance_instead_of_a_retry_affordance() -> None
     # Closed allowlist: no other bounded failure on this route may claim that a
     # dispatch possibly happened. Pre-dispatch denials and post-run persistence
     # failures keep their own bounded copy and never enter recovery state.
-    classifier = app[app.index("function isAmbiguousClawFailure"):]
+    classifier = classifier_source[classifier_source.index("function isAmbiguousClawFailure"):]
     classifier = classifier[: classifier.index("\n  }")]
     for code in (
         "rate_limited",
@@ -231,15 +243,15 @@ def test_retry_target_is_the_visible_form_not_a_hidden_snapshot() -> None:
     # so no snapshot variable exists to replay.
     assert "clawRetryPayload" not in app
     assert "clawRetrySnapshot" not in app
-    body = app[app.index("async function runClawExecution()"):]
+    shipped = combined_source()
+    body = shipped[shipped.index("async function runClawExecution()"):]
     body = body[: body.index("if (clawExecuteButton) {")]
     # #3382 moved request assembly into one builder shared with the duplicate
     # check, so the live-DOM reads are asserted on the builder itself. The entry
     # point must still derive everything at click time and hold no snapshot.
     assert "const executePayload = clawVisibleExecutePayload();" in body
     assert "const body = executePayload.content;" in body
-    builder = app[app.index("function clawVisibleExecutePayload()"):]
-    builder = builder[: builder.index("\n  }")]
+    builder = function_body("clawVisibleExecutePayload")
     for live_read in (
         "(input.value || \"\").trim()",
         "clawChannel?.value || \"other\"",
@@ -316,10 +328,9 @@ def test_recovery_roles_inherit_shared_tokens() -> None:
 _HARNESS = r"""
 const fs = require("fs");
 const vm = require("vm");
-const APP_DIR = require("path").dirname(process.argv[2]);
-const APP = ["chat-settings-module.js", "chat-sidebar-module.js", "chat-history-module.js", "chat-auth-module.js"]
-  .map((name) => fs.readFileSync(require("path").join(APP_DIR, name), "utf8"))
-  .join(String.fromCharCode(10)) + String.fromCharCode(10) + fs.readFileSync(process.argv[2], "utf8");
+// R5 0단계(0-1): app.js 앞 모듈은 preload(_node_appjs_modules_preload.js)가
+// index.html 순서대로 붙여 준다. 하네스별 모듈 목록은 두지 않는다.
+const APP = fs.readFileSync(process.argv[2], "utf8");
 
 function makeEl(tag) {
   const el = {
@@ -597,9 +608,6 @@ vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
-// #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), sandbox, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ type }));
@@ -1092,6 +1100,18 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
 """
 
 
+def _node_env_with_module_preload() -> dict:
+    """이 하네스는 모듈 스코프 픽스처에서 실행되므로 conftest의 autouse
+    NODE_OPTIONS(monkeypatch)보다 먼저 노드를 띄운다. 통일된 모듈 preload를
+    여기서 명시적으로 건다(R5 0단계 0-1)."""
+    preload = ROOT / "tests" / "_node_appjs_modules_preload.js"
+    existing = os.environ.get("NODE_OPTIONS", "").strip()
+    env = dict(os.environ)
+    if preload.as_posix() not in existing:
+        env["NODE_OPTIONS"] = f"{existing} --require {preload.as_posix()}".strip()
+    return env
+
+
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"
@@ -1103,6 +1123,7 @@ def _run_harness() -> dict:
             capture_output=True,
             text=True, encoding="utf-8",
             timeout=120,
+            env=_node_env_with_module_preload(),
         )
     finally:
         harness_path.unlink(missing_ok=True)

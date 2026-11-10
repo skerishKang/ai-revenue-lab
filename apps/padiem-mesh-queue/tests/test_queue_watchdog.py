@@ -247,18 +247,17 @@ def test_the_watchdog_is_wired_to_end_the_process_not_only_its_thread():
 def test_the_unit_and_installer_name_the_keys_the_code_reads():
     unit = (DEPLOY / "padiem-mesh-queue.service").read_text(encoding="utf-8")
     installer = (DEPLOY / "install.sh").read_text(encoding="utf-8")
-    runbook = (DOCS / "COM2_PC_DISPATCH_QUEUE_CUTOVER_20261029.md").read_text(
-        encoding="utf-8")
 
     assert "EnvironmentFile=/opt/padiem/mesh-queue/queue.env" in unit
     assert "Restart=always" in unit and "StartLimitIntervalSec=0" in unit
     assert re.search(r"^User=padiem-mesh$", unit, re.M)
     assert "UMask=0077" in unit
 
-    named = set(re.findall(r"\bMESH_QUEUE_[A-Z_]+", installer + runbook))
+    named = set(re.findall(r"\bMESH_QUEUE_[A-Z_]+", installer))
     # Line kinds are not environment keys, but they look exactly like them to a scan of the
-    # deploy text - the runbook has to name the line an operator greps for. The exemption is
-    # read from the code that prints it, so it cannot be invented here to hide a real key.
+    # deploy text. The exemption is read from the code that prints it, so it cannot be
+    # invented here to hide a real key. (#7404: the runbook leg moved to the private
+    # operations records.)
     markers = {internal_store.log_line("p", "q", 200, 0, "ok").split()[0],
                internal_store.STORE_FAILURE_PREFIX, internal_store.TXN_RECOVERY_PREFIX}
     read = code_keys()

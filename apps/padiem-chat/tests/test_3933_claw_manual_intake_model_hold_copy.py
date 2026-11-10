@@ -37,6 +37,9 @@ from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 
+# R5 0단계(R-01): 함수·상수 경계는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import combined_source
+
 APP_DIR = Path(__file__).resolve().parents[1]
 STATIC = APP_DIR / "static"
 APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -136,8 +139,9 @@ def test_execute_route_projects_the_tier_config_failure_as_tier_unavailable(
 
 
 def _safe_message_source() -> str:
-    start = APP_JS.index("  function safeClawErrorMessage(")
-    return APP_JS[start : APP_JS.index("\n  }", start) + 4]
+    shipped = combined_source()
+    start = shipped.index("  function safeClawErrorMessage(")
+    return shipped[start : shipped.index("\n  }", start) + 4]
 
 
 def test_safe_message_mapper_consults_the_shared_bounded_refusal_authority() -> None:
@@ -151,7 +155,8 @@ def test_safe_message_mapper_consults_the_shared_bounded_refusal_authority() -> 
 
 
 def test_the_execute_failure_branch_shows_the_not_executed_guidance() -> None:
-    body = APP_JS[APP_JS.index("async function runClawExecution()"):]
+    shipped = combined_source()
+    body = shipped[shipped.index("async function runClawExecution()"):]
     body = body[: body.index("if (clawExecuteButton) {")]
     assert "const boundedFailure = clawBoundedRefusalCopy(" in body
     assert "`${boundedFailure.message} ${boundedFailure.hint}`" in body
@@ -164,7 +169,8 @@ def test_no_second_wording_or_locale_key_is_introduced() -> None:
         # Exactly one Korean and one English label per key: reused, not added.
         assert LOCALE_JS.count(f'"{key}":') == 2, key
     # The one code→copy map holds only the public refusal code.
-    region = APP_JS[APP_JS.index("  const CLAW_BOUNDED_REFUSAL_COPY"):]
+    shipped = combined_source()
+    region = shipped[shipped.index("  const CLAW_BOUNDED_REFUSAL_COPY"):]
     region = region[: region.index("\n  function buildRetryBox(")]
     assert "tier_unavailable: Object.freeze({" in region
     for internal in ("tier_hold", "max_tier_hold", "engine_execution_failed"):

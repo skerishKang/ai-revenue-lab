@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 TRANSITION_PATH = ROOT / "scripts" / "ops" / "byok_key_transition.py"
 READINESS_PATH = ROOT / "apps" / "padiem-chat" / "scripts" / "byok_predeploy_readiness.py"
-RUNBOOK = ROOT / "docs" / "operations" / "BYOK_KEY_TRANSITION_RUNBOOK_20261019.md"
+READINESS = ROOT / "apps" / "padiem-chat" / "scripts" / "byok_predeploy_readiness.py"
 
 
 def _load(name: str, path: Path):
@@ -98,13 +98,16 @@ def test_plan_reports_steps_in_execution_order(capsys):
     assert positions == sorted(positions)
 
 
-def test_runbook_wires_both_tools_and_distinct_failure_states():
-    text = RUNBOOK.read_text(encoding="utf-8")
+def test_both_tools_wire_the_transition_and_distinct_failure_states():
+    text = "\n".join(
+        part.read_text(encoding="utf-8")
+        for part in (ROOT / "scripts" / "ops" / "byok_key_transition.py", READINESS)
+    )
 
     for command in (
-        "scripts/ops/byok_key_transition.py preflight",
-        "byok_predeploy_readiness.py check-d1",
-        "byok_predeploy_readiness.py check ",
+        "preflight",
+        "check-d1",
+        "check",
         "--require-ready",
         "--inspect-local-key",
     ):

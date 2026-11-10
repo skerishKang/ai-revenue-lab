@@ -2,7 +2,7 @@ name = "padiem-chat-front"
 main = "worker.mjs"
 compatibility_date = "2026-10-01"
 # No workers.dev and no preview URLs: the only way in is the custom domain the
-# cutover moves here (see docs/operations/CHAT_COM2_FRONT_RUNBOOK.md).
+# cutover moves here (see the 비공개 운영 기록(거버넌스 폴더, 같은 상대 경로), CHAT_COM2_FRONT_RUNBOOK.md).
 workers_dev = false
 preview_urls = false
 
