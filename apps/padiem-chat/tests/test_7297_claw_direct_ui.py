@@ -68,6 +68,18 @@ def test_run_history_filter_control_and_shared_chat_claw_css_exist() -> None:
     assert '.app-shell[data-state="chat"] .empty-state[hidden]' in FRAME_CSS
 
 
+def test_stream_route_projection_tags_action_from_answer_status() -> None:
+    # #7297: the default run-history filter hides action="general" runs, so the
+    # stream completion must carry the same action tag the JSON route uses —
+    # a web-search evidence turn must not be recorded as a general turn and
+    # disappear from the default view.
+    routes = (ROOT / "app" / "chat_routes.py").read_text(encoding="utf-8")
+    stream_tag = 'user_text=latest_user, answer=answer, conversation_id=saved_id, action=("web_search" if done_payload.get("answer_status") == "answered_with_evidence" else "general")'
+    assert stream_tag in routes
+    json_tag = 'action=(tool_request.tool.id if tool_request else "web_search" if result.get("answer_status") == "answered_with_evidence" else "general")'
+    assert json_tag in routes
+
+
 _NODE_HARNESS = r"""
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
