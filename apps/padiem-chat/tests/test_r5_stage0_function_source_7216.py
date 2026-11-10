@@ -26,14 +26,14 @@ from _r5_function_source import (
 # A1~A7에서 옮겨질 app.js 구역 함수(이동 전)와 이미 분리된 모듈 함수(이동 후).
 APP_SIDE_NAMES = (
     "submitPrompt",
-    "openClawAutomation",
     "runClawExecution",
     "renderClawRunCard",
     "buildRetryBox",
-    "loadClawAutomationRules",
     "readAsText",
 )
 MODULE_SIDE_NAMES = (
+    "openClawAutomation",       # chat-automation-module.js (R5 A1)
+    "loadClawAutomationRules",  # chat-automation-module.js (R5 A1)
     "openAuthDialog",       # chat-auth-module.js (R5 4단계)
     "closeSidebar",         # chat-sidebar-module.js (R5 1단계)
     "showConversation",     # chat-conversation-module.js (R5 5a)

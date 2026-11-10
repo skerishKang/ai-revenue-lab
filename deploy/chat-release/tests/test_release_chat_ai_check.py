@@ -51,9 +51,9 @@ def _run_driver(code):
         result = subprocess.run(
             [exe, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
              "-File", script_arg],
-            capture_output=True, text=True, timeout=120,
+            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
         )
-        return result.returncode, result.stdout + result.stderr
+        return result.returncode, (result.stdout or "") + (result.stderr or "")
 
 
 class AiCheckGateStaticContract(unittest.TestCase):
@@ -100,6 +100,30 @@ class AiCheckGateStaticContract(unittest.TestCase):
 
 
 class AiCheckRuntime(unittest.TestCase):
+    @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
+    def test_quoted_qa_values_lose_their_shell_quotes(self):
+        """qa-smoke.env quotes its values for the shell; the child process must
+        receive the bare value or the login answers invalid_credentials
+        (release_114/117: ai:FAIL qa_login_refused)."""
+        code = (
+            "$raw = @'\n"
+            "B66_CGI_ALPHA_USERNAME='qa-user'\n"
+            "B66_CGI_ALPHA_PASSWORD='qa-pass'\n"
+            "OTHER=plain\n"
+            "'@\n"
+            "function Invoke-Com2Capture { return $raw }\n"
+            "$creds = Get-Com2QaCredentials\n"
+            "Write-Output ('U=' + $creds['B66_CGI_ALPHA_USERNAME'])\n"
+            "Write-Output ('P=' + $creds['B66_CGI_ALPHA_PASSWORD'])\n"
+            "Write-Output ('O=' + $creds['OTHER'])\n"
+        )
+        rc, combined = _run_driver(_extract_functions_block() + code)
+        self.assertEqual(rc, 0, combined)
+        self.assertIn("U=qa-user", combined)
+        self.assertIn("P=qa-pass", combined)
+        self.assertIn("O=plain", combined)
+        self.assertNotIn("U='qa-user'", combined)
+
     @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
     def test_resolve_post_deploy_ai_need(self):
         code = (

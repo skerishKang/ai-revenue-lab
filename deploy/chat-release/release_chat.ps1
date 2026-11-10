@@ -332,7 +332,19 @@ function Get-Com2QaCredentials {
     $credentials = @{}
     foreach ($line in ($raw -split "`r?`n")) {
         if ($line -match '^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$') {
-            $credentials[$Matches[1]] = $Matches[2].Trim()
+            # /etc/padiem/qa-smoke.env keeps the values single-quoted for the
+            # shell that sources it. The check process needs the raw value: a
+            # quoted password reached the login as a wrong password and the
+            # release stopped at ai:FAIL qa_login_refused (release_114/117).
+            $value = $Matches[2].Trim()
+            if ($value.Length -ge 2) {
+                $first = $value.Substring(0, 1)
+                $last = $value.Substring($value.Length - 1, 1)
+                if (($first -eq "'" -and $last -eq "'") -or ($first -eq '"' -and $last -eq '"')) {
+                    $value = $value.Substring(1, $value.Length - 2)
+                }
+            }
+            $credentials[$Matches[1]] = $value
         }
     }
     if (-not $credentials.ContainsKey("B66_CGI_ALPHA_USERNAME") -or

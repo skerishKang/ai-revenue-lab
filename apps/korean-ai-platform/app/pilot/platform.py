@@ -1020,6 +1020,7 @@ async def stream_platform_chat_completions(
     tool_choice: Any = None,
     transport: httpx.AsyncBaseTransport | None = None,
     session_id: str | None = None,
+    native_plain_first: bool = False,
 ) -> Any:
     """Streaming call to a fixed platform Provider (OpenAI-compatible SSE).
 
@@ -1093,7 +1094,12 @@ async def stream_platform_chat_completions(
         model_id, upstream_model, platform_provider_id
     )
     native_thought_fallback = False
-    if tools or (platform_provider_id == "google" and thought_summary_enabled):
+    # #7430: on the owner-tier plain surface the native adapter answers first.
+    # The compatible endpoint behind the plain wire was the lane that degraded
+    # (503/500/timeout/malformed) while the native streamGenerateContent
+    # adapter kept answering, so the product chat surface waited out three
+    # failing candidates for an outage it could ride through.
+    if tools or native_plain_first or (platform_provider_id == "google" and thought_summary_enabled):
         from .google_provider import NativeThoughtRejected, stream_google_tool_calls
         # The tool wire receives the same decision as the plain wire.
         tool_model_parameters = dict(model_parameters or {})
@@ -1110,15 +1116,29 @@ async def stream_platform_chat_completions(
             include_thoughts=request_thoughts,
             policy_effort=reasoning_effort if request_thoughts else None,
         )
+        saw_first_byte = False
         try:
             async for event in tool_stream:
+                # After the first byte the no-fallback contract stands: a later
+                # failure must not silently rewrite the wire mid-answer.
+                saw_first_byte = True
                 yield event
         except NativeThoughtRejected as exc:
             logger.warning("native_thought_rejected status=%d fallback=compatible", exc.status_code)
             native_thought_fallback = True
         except PilotError as exc:
             exc.wire_protocol = "native"
-            raise
+            # #7430: a pre-byte native failure (5xx, timeout, connect error) on
+            # the owner-tier plain surface earns exactly one compatible retry on
+            # the SAME candidate; the caller's candidate loop then walks the
+            # next candidate as before. A failure after the first byte raises.
+            if native_plain_first and not saw_first_byte:
+                logger.warning(
+                    "native_plain_prebyte_failed code=%s fallback=compatible",
+                    getattr(exc, "code", "") or "unknown",
+                )
+            else:
+                raise
         else:
             return
         finally:
