@@ -74,7 +74,7 @@ def run_probes(base, opener=None):
     project = None
     rows = []
     try:
-        username, password = os.environ.get('B66_CGI_ALPHA_USERNAME'), os.environ.get('B66_CGI_ALPHA_PASSWORD')
+        username, password = os.environ.get('QA_DEPLOY_USERNAME'), os.environ.get('QA_DEPLOY_PASSWORD')
         require(username and password, '시험 계정 정보 없음')
         status, body = call_json(opener, base + '/api/auth/password/login', 'POST', {'identifier':username,'password':password})
         require(status == 200 and body.get('ok') is True, '시험 계정 로그인 실패')

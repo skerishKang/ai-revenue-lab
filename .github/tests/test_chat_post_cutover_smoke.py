@@ -22,8 +22,8 @@ def test_origin_and_cookie_validation():
 
 
 def test_guest_browser_blocks_writes_and_reports_status(monkeypatch):
-    monkeypatch.delenv("B66_CGI_ALPHA_USERNAME", raising=False)
-    monkeypatch.delenv("B66_CGI_ALPHA_PASSWORD", raising=False)
+    monkeypatch.delenv("QA_DEPLOY_USERNAME", raising=False)
+    monkeypatch.delenv("QA_DEPLOY_PASSWORD", raising=False)
     chrome = Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
     if not chrome.exists():
         pytest.skip("local Chrome unavailable")

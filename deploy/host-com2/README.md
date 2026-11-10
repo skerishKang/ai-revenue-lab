@@ -99,7 +99,7 @@ sudo env PADIEM_COM2_OPS_CHECKOUT=/mnt/d/work/ai-revenue-lab-ops \
 
 `SUMMARY`에는 AI 답변 확인 값도 붙는다. 확인이 실제로 답변을 측정해서 틀렸으면 `ai:FAIL error_code=…`,
 확인 자격이 없어서 요청조차 보내지 못했으면 `ai:SKIP reason=…`(기본 `--ai-check=warn`). SKIP을 FAIL로
-적지 않는 이유는 그 확인이 쓰는 QA 로그인(`B66_CGI_ALPHA_USERNAME`·`B66_CGI_ALPHA_PASSWORD`)이 GitHub
+적지 않는 이유는 그 확인이 쓰는 QA 로그인(`QA_DEPLOY_USERNAME`·`QA_DEPLOY_PASSWORD`)이 GitHub
 `grade-smoke` 환경에만 있고 컴2 호스트에는 없기 때문이다 — 그때 `ai:FAIL`은 깨진 답변 레인과 구분되지
 않는다. `--ai-check=required`에서는 SKIP이 나오지 않는다: 같은 코드도 `ai:FAIL`이고 exit 1·되돌림이다.
 확인이 실행 자체를 못 한 `ai_check_unavailable`은 자격 문제가 아니라 고장이라 warn에서도 `ai:FAIL`로 남는다.

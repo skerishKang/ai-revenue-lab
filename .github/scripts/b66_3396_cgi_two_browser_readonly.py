@@ -158,8 +158,8 @@ def self_test() -> int:
 
 
 def run_live() -> int:
-    username = os.getenv("B66_CGI_ALPHA_USERNAME", "")
-    password = os.getenv("B66_CGI_ALPHA_PASSWORD", "")
+    username = os.getenv("QA_MANUAL_USERNAME", "")
+    password = os.getenv("QA_MANUAL_PASSWORD", "")
     if not username or not password:
         print("B66_3396_CGI_READONLY=FAIL_CREDENTIAL_UNAVAILABLE")
         return 2
@@ -325,8 +325,8 @@ def run_live_synthetic(*, foreign_window: bool = False) -> int:
     The same account must have an empty slot before making one PUT.
     Always attempt guarded exact-marker cleanup prior to two logouts.
     """
-    username = os.getenv("B66_CGI_ALPHA_USERNAME", "")
-    password = os.getenv("B66_CGI_ALPHA_PASSWORD", "")
+    username = os.getenv("QA_MANUAL_USERNAME", "")
+    password = os.getenv("QA_MANUAL_PASSWORD", "")
     if not username or not password:
         print("B66_3396_CGI_SYNTHETIC=FAIL_CREDENTIAL_UNAVAILABLE")
         return 2
