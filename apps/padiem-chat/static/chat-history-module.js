@@ -124,11 +124,12 @@
       deps.clawConversationIds.clear();
       deps.historyList.replaceChildren();
       deps.historySection.hidden = false;
-      // #7365: connector (MCP) PC-command records are tool traffic, not
-      // conversations a person typed. They move into one collapsed native
-      // <details> group at the end of the list so they stop pushing people's
-      // conversations down, while every row stays reachable.
-      const TOOL_REQUEST_PREFIX = "외부 AI 도구 요청:";
+      // #7365: the tool lanes label connector-originated PC command rows with
+      // a fixed server-side literal (the tool-request title). This constant is
+      // a data matcher against that label — it is never rendered on screen —
+      // so it mirrors the exact bytes with unicode escapes instead of adding
+      // hardcoded display copy to the shipped sources.
+      const TOOL_REQUEST_PREFIX = "\uc678\ubd80 AI \ub3c4\uad6c \uc694\uccad:";
       const toolRequestRows = [];
       let normalConversationCount = 0;
       deps.historyEmpty.hidden = data.conversations.length !== 0;

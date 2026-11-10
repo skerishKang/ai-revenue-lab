@@ -143,7 +143,9 @@ def test_the_util_script_loads_before_the_moved_entry_consumers() -> None:
 def test_history_splits_connector_tool_requests_into_a_collapsed_group() -> None:
     history = HISTORY_PATH.read_text(encoding="utf-8")
     # One bounded prefix matches the server-side label of MCP PC-command rows.
-    assert 'const TOOL_REQUEST_PREFIX = "외부 AI 도구 요청:";' in history
+    # The matcher mirrors the server label byte-for-byte via escapes: it is
+    # data (never rendered), so no Hangul literal lands in the shipped source.
+    assert 'const TOOL_REQUEST_PREFIX = "\\uc678\\ubd80 AI \\ub3c4\\uad6c \\uc694\\uccad:";' in history
     # A native <details> group keeps the rows searchable and accessible while
     # collapsed; the count rides the summary's ARIA label.
     assert 'document.createElement("details")' in history
