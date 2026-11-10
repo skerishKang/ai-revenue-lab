@@ -141,12 +141,20 @@ def tap_sidebar(page, width):
 @pytest.mark.parametrize("width", [1440, 390])
 def test_util_and_library_are_still_reachable_from_their_own_menus(browser, site, width):
     page, _ = open_chat(browser, site, width)
-    page.locator("#utilNavButton").click()
-    page.wait_for_timeout(300)
-    page.locator('.util-submenu-item[data-util="pdfmd"]').click()
-    page.wait_for_timeout(600)
-    assert page.locator("#utilPdfmdPanel").is_visible()
+    # #7173: the top app switch is the util entry; a whole card opens its screen.
+    # On the phone the sidebar starts open over the topbar, so close it first.
+    if width < 700 and page.evaluate(
+            "() => document.querySelector('.app-shell').classList.contains('sidebar-open')"):
+        page.locator("#mobileClose").click()
+        page.wait_for_timeout(300)
+    page.locator('[data-app="util"]').click()
+    page.wait_for_timeout(400)
     assert page.locator(".app-shell").get_attribute("data-state") == "util"
+    assert page.locator(".util-card-grid").is_visible()
+    page.locator('[data-util-route="#util/pdfmd"]').click()
+    page.wait_for_timeout(700)
+    assert page.locator('.util-tool-screen[data-util-tool="pdfmd"]').is_visible()
+    assert page.locator("#utilPdfmdPanel").is_visible()
 
     tap_sidebar(page, width)
     page.locator("#filesNavButton").click()
