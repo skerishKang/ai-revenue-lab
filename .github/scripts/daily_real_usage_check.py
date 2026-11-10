@@ -107,6 +107,9 @@ class Flow:
         self.code = "flow_not_run"
         self.head = ""
         self.elapsed_ms = 0
+        # 브라우저 흐름은 진입(entry)과 질문~답(answer)을 나눠 기록한다(#6724).
+        self.entry_ms = 0
+        self.answer_ms = 0
 
     def pass_(self, head: str = "", code: str = "none") -> None:
         self.verdict, self.code, self.head = "PASS", code, head
@@ -119,7 +122,8 @@ class Flow:
 
     def line(self) -> str:
         return (f"USAGE_FLOW name={self.name} verdict={self.verdict} "
-                f"elapsed_ms={self.elapsed_ms} code={self.code} head={self.head}")
+                f"elapsed_ms={self.elapsed_ms} entry_ms={self.entry_ms} "
+                f"answer_ms={self.answer_ms} code={self.code} head={self.head}")
 
 
 def _credential_verdict() -> tuple[str, str]:
@@ -435,10 +439,11 @@ def flow_relogin(flow: Flow, old_cookie: str, saved_conversation: str | None) ->
 # ------------------------------------------------------------------ report
 def _summary(flows: list[Flow]) -> str:
     rows = "\n".join(
-        f"| {f.name} | {f.verdict} | {f.elapsed_ms} | {f.head or '-'} | {f.code} |"
+        f"| {f.name} | {f.verdict} | {f.elapsed_ms} | {f.entry_ms} | {f.answer_ms} "
+        f"| {f.head or '-'} | {f.code} |"
         for f in flows)
-    return ("| 흐름 | 판정 | 소요(ms) | 결과값 앞부분 | 코드 |\n"
-            "|---|---|---|---|---|\n" + rows + "\n")
+    return ("| 흐름 | 판정 | 소요(ms) | 진입(ms) | 답변(ms) | 결과값 앞부분 | 코드 |\n"
+            "|---|---|---|---|---|---|---|\n" + rows + "\n")
 
 
 def flow_browser(flows: list[Flow], cookie: str) -> tuple[dict, list[str]]:
@@ -474,6 +479,8 @@ def flow_browser(flows: list[Flow], cookie: str) -> tuple[dict, list[str]]:
         flow.code = payload.get("code", "browser_flow_missing")
         flow.head = payload.get("head", "")
         flow.elapsed_ms = int(payload.get("elapsed_ms", 0))
+        flow.entry_ms = int(payload.get("entry_ms", 0) or 0)
+        flow.answer_ms = int(payload.get("answer_ms", 0) or 0)
         captures.extend(payload.get("captures", []))
         # 허용 목록 밖 콘솔 오류는 안전 코드뿐이다(값·URL 쿼리 없음).
         for code in (payload.get("console_errors") or [])[:3]:
@@ -500,7 +507,10 @@ def _write_metrics(flows: list[Flow], captures: list[str], warnings: list[str],
     payload = {
         "schema": "padiem-daily-usage-metrics/1",
         "flows": {flow.name: {"verdict": flow.verdict, "code": flow.code,
-                              "elapsed_ms": flow.elapsed_ms, "head": flow.head}
+                              "elapsed_ms": flow.elapsed_ms,
+                              "entry_ms": flow.entry_ms, "answer_ms": flow.answer_ms,
+                              "basis": "answer" if flow.name in BROWSER_FLOWS else "total",
+                              "head": flow.head}
                   for flow in flows},
         "captures": list(captures),
         "warnings": list(warnings),
@@ -583,7 +593,9 @@ def main() -> int:
     history = _recent_history()
     warnings = []
     for flow in flows:
-        note = browser_checks.slowdown_note(flow.name, flow.elapsed_ms,
+        # 브라우저 흐름의 느려짐은 답변 구간만 본다. 진입 대기는 제품 속도가 아니다.
+        basis_ms = flow.answer_ms if flow.name in BROWSER_FLOWS else flow.elapsed_ms
+        note = browser_checks.slowdown_note(flow.name, basis_ms,
                                            history.get(flow.name, []))
         if note:
             warnings.append(note)

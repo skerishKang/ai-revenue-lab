@@ -170,6 +170,44 @@ class ReleaseScriptStaticContract(unittest.TestCase):
         self.assertIn("Join-Path $stampStaticDir $asset", pages)
         self.assertNotIn("Join-Path $shaStaticDir $asset", pages)
 
+
+    def test_npx_is_pinned_to_the_cmd_application_full_path(self):
+        """npm's npx.ps1 runs Set-StrictMode and re-parses $MyInvocation.Line,
+        re-evaluating the ORIGINAL command text in its own scope: a call
+        argument carrying a $Script:-qualified variable dies there with
+        "cannot be retrieved" (2026-11-10: the release lost its pages step and
+        then its rollback to exactly that; a bare "npx" on PATH prefers
+        npx.ps1 in pwsh, and the exec launcher env carried no $env:OS). The
+        script must pin the npx.cmd APPLICATION by full path on Windows."""
+        self.assertIn("Get-Command npx.cmd -CommandType Application", self.text)
+        self.assertNotIn(
+            '$Script:Npx = if ($env:OS -eq "Windows_NT") { "npx.cmd" } else { "npx" }',
+            self.text)
+        self.assertNotIn("wrangler rollback $Script:PrevFrontVersion", self.text)
+        self.assertIn("wrangler rollback $rollbackVersion", self.text)
+
+    def test_rollback_resolves_a_missing_recorded_version(self):
+        """The rollback point can be unset when the failure lands before step 3
+        stored it. The helper must re-read the deployments list once, travel
+        the version in a LOCAL variable, and skip with an explicit summary
+        line when nothing resolves — never crash the reporting path."""
+        fn = self.text.split("function Invoke-FrontRollbackIfNeeded", 1)[1]
+        fn = fn.split("\nfunction ", 1)[0]
+        self.assertIn("if (-not $Script:FrontDeployed) { return }", fn)
+        self.assertIn("$rollbackVersion = $Script:PrevFrontVersion", fn)
+        self.assertIn("Get-FrontVersionIds", fn)
+        self.assertIn("FRONT_ROLLBACK_SKIPPED", fn)
+
+    def test_a_failed_rollback_keeps_the_step_failure_in_the_log(self):
+        """2026-11-10: the rollback crash replaced the STEP4 pages failure, so
+        the release ended without any failure reason. The step-4/5 catch must
+        store the original error, record a rollback failure without raising
+        it, and re-throw the ORIGINAL failure."""
+        self.assertIn("$releaseFailure = $_", self.text)
+        self.assertIn("try { Invoke-FrontRollbackIfNeeded }", self.text)
+        self.assertIn("FRONT_ROLLBACK_FAILED", self.text)
+        self.assertIn("throw $releaseFailure", self.text)
+        self.assertNotIn("catch {\n    Invoke-FrontRollbackIfNeeded\n    throw\n}", self.text)
     def test_pinned_sha_is_guarded_against_stale_origin_main(self):
         """2026-11-09: three releases aborted at STEP2 with SHA_NOT_ORIGIN_MAIN
         because COM1's origin/main was stale while COM2 had already fetched a

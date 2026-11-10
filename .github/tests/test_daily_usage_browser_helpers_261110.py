@@ -11,6 +11,7 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -257,6 +258,92 @@ class CaptureNameTest(unittest.TestCase):
         self.assertNotIn("..", name)
 
 
+class ClawEntryTest(unittest.TestCase):
+    """Claw 진입: 즉시 보임 / 5초 안에 보임 / 안 보임 (#6724 CTO 지시)."""
+
+    def test_visible_immediately(self):
+        self.assertEqual(checks.entry_verdict(120), ("OK", "immediate", 120))
+
+    def test_visible_within_the_budget(self):
+        self.assertEqual(checks.entry_verdict(4_200), ("OK", "waited", 4_200))
+
+    def test_not_visible_within_the_budget_is_a_failure(self):
+        self.assertEqual(checks.entry_verdict(None), ("FAIL", "claw_entry_timeout", 5_000))
+
+    def test_the_budget_is_five_seconds_and_never_widened(self):
+        self.assertEqual(checks.CLAW_ENTRY_BUDGET_MS, 5_000)
+        self.assertEqual(checks.entry_verdict(5_000)[0], "OK")
+        self.assertEqual(checks.entry_verdict(5_001)[0], "FAIL")
+
+    def test_a_slow_navigation_cannot_pass_as_an_entry(self):
+        # 화면이 6초에 뜨면 진입 예산을 넘은 것이다(옛 30초 대기를 되살리지 않는다).
+        self.assertEqual(checks.entry_verdict(6_000), ("FAIL", "claw_entry_timeout", 6_000))
+
+
+class SplitTimingTest(unittest.TestCase):
+    """진입과 답변을 나눠 기록하고, 느려짐은 답변 기준으로만 센다."""
+
+    def test_a_browser_result_records_both_segments(self):
+        flow = checks.BrowserFlowResult("browser_claw")
+        flow.entry_ms, flow.answer_ms, flow.elapsed_ms = 900, 4_400, 5_300
+        payload = flow.as_dict()
+        self.assertEqual((payload["entry_ms"], payload["answer_ms"]), (900, 4_400))
+        self.assertEqual(payload["elapsed_ms"], 5_300)
+
+    def test_history_uses_the_answer_segment(self):
+        self.assertEqual(
+            checks.history_sample({"basis": "answer", "answer_ms": 4_400, "elapsed_ms": 38_000}),
+            4_400,
+        )
+
+    def test_a_total_basis_flow_keeps_its_total(self):
+        self.assertEqual(checks.history_sample({"basis": "total", "elapsed_ms": 41_307}),
+                         41_307)
+
+    def test_old_rows_without_a_basis_are_not_mixed_in(self):
+        # 진입 30초가 섞인 옛 총합이 중앙값을 오염시키면 경고가 영영 안 울린다.
+        self.assertIsNone(checks.history_sample({"elapsed_ms": 38_000}))
+        self.assertIsNone(checks.history_sample({"basis": "answer", "answer_ms": 0}))
+        self.assertIsNone(checks.history_sample({}))
+
+
+class AnswerErrorTextTest(unittest.TestCase):
+    """오류 문구가 답 자리에 있으면 FAIL (실행 42680137340 의 오판을 막는다)."""
+
+    def test_the_list_comes_from_the_screen_copy(self):
+        phrases = checks.static_error_texts()
+        self.assertTrue(phrases, "static/locale.js 에서 오류 문구를 읽지 못했다")
+        self.assertIn("답변을 불러오지 못했습니다.", phrases)
+
+    def test_the_observed_screen_text_is_rejected(self):
+        # 실행 42680137340 의 browser_chat 이 이 문장을 답으로 인정해 PASS 했다.
+        self.assertEqual(
+            checks.answer_verdict("답변을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.")[:2],
+            ("FAIL", "answer_is_error_text"),
+        )
+
+    def test_a_normal_answer_still_passes(self):
+        self.assertEqual(checks.answer_verdict("현재 화면은 정상 동작하고 있습니다.")[:2],
+                         ("PASS", "none"))
+
+    def test_a_new_phrase_is_picked_up_without_editing_the_checker(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            Path(tmp, "locale.js").write_text(
+                'const copy = { ko: { "answer-load-failed": "답변을 불러오지 못했습니다.",'
+                ' "service-unavailable": "지금은 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.",'
+                ' "copy-failed": "복사 실패", "greeting": "안녕하세요" } };',
+                encoding="utf-8",
+            )
+            phrases = checks.static_error_texts(tmp)
+            self.assertEqual(len(phrases), 2, phrases)
+            self.assertIn("지금은 서비스를 이용할 수 없습니다.", "".join(phrases))
+            # 짧은 값("복사 실패")은 답변 부분 일치로 오판을 만들므로 목록에서 빠진다.
+            self.assertNotIn("복사 실패", phrases)
+            self.assertTrue(checks.answer_is_error_text(
+                "지금은 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.", phrases))
+            self.assertFalse(checks.answer_is_error_text("현재 화면은 정상 동작하고 있습니다.", phrases))
+
+
 class MutationProbeTest(unittest.TestCase):
     """규칙을 뒤집으면 시험이 실제로 실패하는지 확인한다.
 
@@ -288,6 +375,36 @@ class MutationProbeTest(unittest.TestCase):
             screen_changes=[("b" * 40, now - age)], now_epoch=now)
         self.assertEqual(verdict[0], "FAIL")
         self.assertLessEqual(age, 12 * 3600)
+
+    def test_claw_entry_mutation_is_detected(self):
+        def broken(waited_ms):
+            # 깨진 규칙: 예산을 30초로 늘리고, 못 보여도 통과시킨다(옛 동작).
+            return ("OK", "waited", waited_ms or 30_000)
+
+        self.assertEqual(checks.entry_verdict(6_000)[0], "FAIL")
+        self.assertEqual(broken(6_000)[0], "OK")
+        self.assertEqual(checks.entry_verdict(None)[0], "FAIL")
+        self.assertEqual(broken(None)[0], "OK")
+
+    def test_history_basis_mutation_is_detected(self):
+        legacy = {"elapsed_ms": 38_000}
+        self.assertIsNone(checks.history_sample(legacy))
+
+        def broken(row):
+            # 깨진 규칙: answer 가 없으면 총합으로 대신한다(옛 값 섞임).
+            return row.get("answer_ms") or row.get("elapsed_ms")
+
+        self.assertEqual(broken(legacy), 38_000)
+
+    def test_error_text_mutation_is_detected(self):
+        observed = "답변을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요."
+        self.assertEqual(checks.answer_verdict(observed)[:2], ("FAIL", "answer_is_error_text"))
+
+        def broken(text):
+            # 깨진 규칙: 글자 수만 센다(오류 문구를 답으로 인정).
+            return ("PASS", "none") if len(text) >= 10 else ("FAIL", "screen_answer_too_short")
+
+        self.assertEqual(broken(observed)[0], "PASS")
 
     def test_allowlist_mutation_is_detected(self):
         def broken(url):

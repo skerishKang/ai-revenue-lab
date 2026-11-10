@@ -62,12 +62,18 @@ $Script:PublicHost = "https://chat.padiem.net"
 $Script:PollMaxRounds = 60
 $Script:PollSeconds = 15
 
-# Every npx call is npx.cmd on purpose: a node install that ships npx.ps1 first
-# on PATH re-parses its arguments with Invoke-Expression in its own scope, so
-# "npx wrangler rollback $Script:PrevFrontVersion" failed and the pages
-# deploy never ran (first real release, 2026-11-08).
-# npx.cmd on Windows (see above); plain npx on the Linux CI runner's pwsh.
-$Script:Npx = if ($env:OS -eq "Windows_NT") { "npx.cmd" } else { "npx" }
+# Every npx call is npx.cmd on purpose: npm ships an npx.ps1 that runs
+# Set-StrictMode and re-parses $MyInvocation.Line, re-evaluating the ORIGINAL
+# command text in its own scope — any call argument carrying a
+# $Script:-qualified variable dies there with "cannot be retrieved"
+# (2026-11-10: the pages step and then the rollback both died that way, and a
+# bare "npx" on PATH prefers npx.ps1 in pwsh). Pin the npx.cmd APPLICATION by
+# full path on Windows; plain npx stays for the Linux CI runner's pwsh.
+$Script:Npx = if ($env:OS -eq "Windows_NT" -or $IsWindows) {
+    $npxCmd = Get-Command npx.cmd -CommandType Application -ErrorAction SilentlyContinue |
+        Select-Object -First 1 -ExpandProperty Source
+    if ($npxCmd) { $npxCmd } else { "npx.cmd" }
+} else { "npx" }
 
 # The asset stamper (deploy/chat-release/stamp_index_html.mjs) versions the
 # deploy COPY of index.html; the repository file is never modified here.
@@ -209,13 +215,25 @@ function Get-FrontVersionIds {
 
 function Invoke-FrontRollbackIfNeeded {
     # Step 6: any failure after the front deploy puts the previous Version
-    # back; the summary records it.
-    if ($Script:FrontDeployed -and $Script:PrevFrontVersion) {
-        Write-Info "rolling the front back to $($Script:PrevFrontVersion)"
-        Push-Location $shaFrontDir
-        try { & $Script:Npx wrangler rollback $Script:PrevFrontVersion } finally { Pop-Location }
-        Add-Summary "FRONT_ROLLED_BACK_TO=$($Script:PrevFrontVersion)"
+    # back; the summary records it. The recorded version can be missing when
+    # the failure lands before step 3 stored it — re-read the deployments list
+    # once instead of silently skipping the rollback. The version travels in a
+    # LOCAL variable: no call argument may carry a $Script:-qualified variable
+    # (the npx.ps1 re-parse trap, see $Script:Npx above).
+    if (-not $Script:FrontDeployed) { return }
+    $rollbackVersion = $Script:PrevFrontVersion
+    if (-not $rollbackVersion) {
+        $rollbackVersion = @(Get-FrontVersionIds)[0]
     }
+    if (-not $rollbackVersion) {
+        Write-Info "FRONT_ROLLBACK_SKIPPED: no previous Version ID resolvable"
+        Add-Summary "FRONT_ROLLBACK_SKIPPED=no_version_id"
+        return
+    }
+    Write-Info "rolling the front back to $rollbackVersion"
+    Push-Location $shaFrontDir
+    try { & $Script:Npx wrangler rollback $rollbackVersion } finally { Pop-Location }
+    Add-Summary "FRONT_ROLLED_BACK_TO=$rollbackVersion"
 }
 
 # -- pre-flight freshness (SHA-staleness guard) -----------------------------
@@ -563,8 +581,17 @@ try {
     }
 }
 catch {
-    Invoke-FrontRollbackIfNeeded
-    throw
+    # Store the ORIGINAL failure first, then roll back: a rollback failure must
+    # never replace the step failure in the log (2026-11-10: the rollback
+    # crash hid the STEP4 pages failure completely and the release ended
+    # without any failure reason).
+    $releaseFailure = $_
+    try { Invoke-FrontRollbackIfNeeded }
+    catch {
+        Write-Host "FRONT_ROLLBACK_FAILED: $($_.Exception.Message)"
+        Add-Summary "FRONT_ROLLBACK_FAILED"
+    }
+    throw $releaseFailure
 }
 
 foreach ($line in $verify) { Write-Info $line; Add-Summary "VERIFY $line" }

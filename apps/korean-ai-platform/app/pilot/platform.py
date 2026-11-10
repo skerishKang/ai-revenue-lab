@@ -52,7 +52,7 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 from app.pilot.sensenova_provider import is_transient_busy_429
-from app.pilot.provider_timeout_diagnostics import log_provider_timeout
+from app.pilot.provider_timeout_diagnostics import log_provider_timeout, timeout_phase_of
 from app.pilot.b14_timeout_policy import (
     ProviderAttemptTimeout,
     build_provider_http_timeout,
@@ -876,10 +876,16 @@ async def call_platform_chat_completions(
             "b14_provider_attempt_timeout provider=%s reason=%s mode=completed",
             platform_provider_id, exc.reason,
         )
-        raise UpstreamTimeout(timeout_reason=exc.reason) from exc
+        raise UpstreamTimeout(
+            timeout_reason=exc.reason,
+            timeout_phase=getattr(exc, "timeout_phase", None),
+        ) from exc
     except httpx.TimeoutException as exc:
         log_provider_timeout(logger, platform_provider_id, exc, "completed")
-        raise UpstreamTimeout(timeout_reason="first_byte") from exc
+        raise UpstreamTimeout(
+            timeout_reason="first_byte",
+            timeout_phase=timeout_phase_of(exc),
+        ) from exc
     except httpx.RequestError as e:
         logger.error(
             "platform_request_error provider=%s error=%s",
@@ -940,7 +946,10 @@ async def call_platform_chat_completions(
             except ProviderAttemptTimeout as retry_exc:
                 raise UpstreamTimeout(timeout_reason=retry_exc.reason) from retry_exc
             except httpx.TimeoutException as retry_exc:
-                raise UpstreamTimeout(timeout_reason="first_byte") from retry_exc
+                raise UpstreamTimeout(
+                    timeout_reason="first_byte",
+                    timeout_phase=timeout_phase_of(retry_exc),
+                ) from retry_exc
             except httpx.RequestError as retry_exc:
                 raise UpstreamServerError() from retry_exc
             try:
@@ -1316,10 +1325,16 @@ async def stream_platform_chat_completions(
             "b14_provider_attempt_timeout provider=%s reason=%s mode=stream",
             platform_provider_id, exc.reason,
         )
-        raise UpstreamTimeout(timeout_reason=exc.reason) from exc
+        raise UpstreamTimeout(
+            timeout_reason=exc.reason,
+            timeout_phase=getattr(exc, "timeout_phase", None),
+        ) from exc
     except httpx.TimeoutException as exc:
         log_provider_timeout(logger, platform_provider_id, exc, "stream")
-        raise UpstreamTimeout(timeout_reason="first_byte") from exc
+        raise UpstreamTimeout(
+            timeout_reason="first_byte",
+            timeout_phase=timeout_phase_of(exc),
+        ) from exc
     except httpx.RequestError as exc:
         logger.error(
             "platform_stream_error provider=%s error=%s",
@@ -1477,10 +1492,16 @@ async def call_user_credential_chat_completions(
             "b14_provider_attempt_timeout provider=%s reason=%s mode=completed",
             credential.provider_id, exc.reason,
         )
-        raise UpstreamTimeout(timeout_reason=exc.reason) from exc
+        raise UpstreamTimeout(
+            timeout_reason=exc.reason,
+            timeout_phase=getattr(exc, "timeout_phase", None),
+        ) from exc
     except httpx.TimeoutException as exc:
         log_provider_timeout(logger, credential.provider_id, exc, "completed")
-        raise UpstreamTimeout(timeout_reason="first_byte") from exc
+        raise UpstreamTimeout(
+            timeout_reason="first_byte",
+            timeout_phase=timeout_phase_of(exc),
+        ) from exc
     except httpx.RequestError as exc:
         logger.error(
             "user_credential_request_error provider=%s error=%s",
@@ -1662,10 +1683,16 @@ async def stream_user_credential_chat_completions(
             "b14_provider_attempt_timeout provider=%s reason=%s mode=stream",
             credential.provider_id, exc.reason,
         )
-        raise UpstreamTimeout(timeout_reason=exc.reason) from exc
+        raise UpstreamTimeout(
+            timeout_reason=exc.reason,
+            timeout_phase=getattr(exc, "timeout_phase", None),
+        ) from exc
     except httpx.TimeoutException as exc:
         log_provider_timeout(logger, credential.provider_id, exc, "stream")
-        raise UpstreamTimeout(timeout_reason="first_byte") from exc
+        raise UpstreamTimeout(
+            timeout_reason="first_byte",
+            timeout_phase=timeout_phase_of(exc),
+        ) from exc
     except httpx.RequestError as exc:
         logger.error(
             "user_credential_stream_error provider=%s error=%s",

@@ -5,7 +5,7 @@ The Engine on Cloudflare calls this Worker through the private
 binding, so it signs the same #5573 A2 proof the identity ingress already
 verifies. Three properties are pinned here:
 
-* only the three Engine calls are reachable over HTTPS; the CP-owned
+* only the Engine calls are reachable over HTTPS; the CP-owned
   ``install_entitlement_snapshot`` seam stays binding-only, because installing
   entitlement is not something the Engine gateway has ever been able to do;
 * without the secret binding the door is not registered at all — every path,
@@ -33,7 +33,12 @@ if str(ADAPTER_ROOT) not in sys.path:
     sys.path.insert(0, str(ADAPTER_ROOT))
 
 SECRET = "engine-admission-ingress-secret-0123456789abcdef"
-ENGINE_CALLS = ("fetch_entitlement_snapshot", "reserve_usage", "record_usage")
+ENGINE_CALLS = (
+    "fetch_entitlement_snapshot",
+    "reserve_usage",
+    "record_usage",
+    "admit_usage",
+)
 FETCH_BODY = (
     b'{"product_id":"b62","subject":{"subject_type":"user",'
     b'"subject_id":"subject:padiem:user:com2"}}'
@@ -182,7 +187,7 @@ def test_the_door_is_not_registered_without_the_secret() -> None:
     assert stub.calls == []
 
 
-def test_the_three_engine_calls_round_trip_over_https() -> None:
+def test_the_engine_calls_round_trip_over_https() -> None:
     module, stub, env = _module_with_stub()
     env.PADIEM_ENGINE_ADMISSION_RPC_INGRESS_SECRET = SECRET
     default = module.Default(env=env)

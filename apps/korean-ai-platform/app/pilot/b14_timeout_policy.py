@@ -18,6 +18,8 @@ import time
 
 import httpx
 
+from .provider_timeout_diagnostics import timeout_phase_of
+
 FIRST_BYTE_TIMEOUT_ENV = "BUSINESS14_FIRST_BYTE_TIMEOUT_SECONDS"
 ATTEMPT_TIMEOUT_ENV = "BUSINESS14_ATTEMPT_TIMEOUT_SECONDS"
 STREAM_IDLE_TIMEOUT_ENV = "BUSINESS14_STREAM_IDLE_TIMEOUT_SECONDS"
@@ -107,11 +109,15 @@ def effective_first_byte_seconds(policy: B14TimeoutPolicy | None = None) -> floa
 class ProviderAttemptTimeout(TimeoutError):
     """A bounded upstream wait, classified without preserving vendor text."""
 
-    def __init__(self, reason: str) -> None:
+    def __init__(self, reason: str, *, phase: str | None = None) -> None:
         if reason not in {"first_byte", "attempt_total"}:
             raise ValueError("unknown provider timeout reason")
         self.reason = reason
         self.timeout_reason = reason
+        # #6724: the transport phase the wait was in, when the cause names one.
+        # A connect/pool/write expiry never reached the provider; a read expiry
+        # did, so only the former may be retried on the same route.
+        self.timeout_phase = phase
         super().__init__(reason)
 
 
@@ -143,7 +149,9 @@ async def send_provider_request(
             )
     except (TimeoutError, httpx.TimeoutException) as exc:
         reason = "first_byte" if first_byte_is_limiting else "attempt_total"
-        raise ProviderAttemptTimeout(reason) from exc
+        raise ProviderAttemptTimeout(
+            reason, phase=timeout_phase_of(exc),
+        ) from exc
     return response, started_at
 
 
@@ -184,7 +192,9 @@ async def iter_provider_response_bytes(
         except StopAsyncIteration:
             return
         except (TimeoutError, httpx.TimeoutException) as exc:
-            raise ProviderAttemptTimeout(timeout_reason) from exc
+            raise ProviderAttemptTimeout(
+                timeout_reason, phase=timeout_phase_of(exc),
+            ) from exc
         if not chunk:
             continue
         first_byte_seen = True
