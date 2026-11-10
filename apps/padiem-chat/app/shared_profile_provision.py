@@ -29,24 +29,32 @@ def _shape(value):
 PROFILE_FIELDS = frozenset({'email', 'email_verified', 'name', 'picture'})
 
 
-def _verified_email_ok(profile) -> bool:
+def _verified_email_ok(profile, amr=None) -> bool:
     """email_verified 요구를 만족하는가. 그 외 필드 검사와 무관하게 값만 본다.
 
-    Google 경로는 ID 토큰 검증 시점에만 email_verified=true를 발행하므로,
-    false는 Google 계정이 아니다. padiem-auth 비밀번호 경로는 Chat 자신의
-    내부 비밀번호 확인(/internal/password-verify)으로 계정을 증명한 뒤
-    `email_verified:false, name:'', picture:''`를 하드코딩으로 발행한다. 그
-    하드코딩 모양 그대로일 때만 면제한다 — Google 본문 모양(name/picture가
-    찬 경우)과 섞일 수 없고, 비밀번호 계정은 Chat이 증명했으므로 남의 메일을
-    자기 것처럼 연결할 수 없다.
+    1) 서명 검증된 액세스 토큰에 `amr` 클레임이 있으면 `amr`을 우선 신뢰한다:
+       `amr`에 `'pwd'`가 있으면 Chat 내부 비밀번호 확인(/internal/password-verify)을
+       거친 계정이므로 `email_verified=False`를 면제하고, `'google'` 등 다른 값이면
+       프로필 모양과 무관하게 거절한다.
+    2) 서명 검증된 토큰에 `amr`이 없을 때만 기존 발행 모양(`email_verified:false,
+       name:'', picture:''`)으로 판별한다.
     """
     if 'email_verified' not in profile:
         return True
     if profile['email_verified'] is True:
         return True
+    if profile['email_verified'] is not False:
+        return False
+    if amr is not None:
+        return (
+            isinstance(amr, (list, tuple))
+            and len(amr) > 0
+            and all(isinstance(item, str) and item for item in amr)
+            and 'pwd' in amr
+            and 'google' not in amr
+        )
     return (
-        profile['email_verified'] is False
-        and profile.get('name') == ''
+        profile.get('name') == ''
         and profile.get('picture') == ''
     )
 
@@ -60,6 +68,7 @@ async def provision_shared_profile(request, user_id, access_token, tokens, *, ve
     finally:
         record_login_timing('profile_token_verify', (time.perf_counter() - verify_started) * 1000)
     account_id = verified.get('accountId') if isinstance(verified, dict) else None
+    verified_amr = verified.get('amr') if isinstance(verified, dict) else None
     # Three different things failed under one code. The verified access token — not
     # the exchange body — is the authority for which account this login is, and a
     # conforming OAuth /token body states no account id at all; when the body does
@@ -103,7 +112,7 @@ async def provision_shared_profile(request, user_id, access_token, tokens, *, ve
         raise ValueError('invalid_profile')
     email, name, picture = profile['email'], profile.get('name', ''), profile.get('picture', '')
     if (not isinstance(email, str) or not email.strip() or len(email) > 320
-            or not _verified_email_ok(profile)
+            or not _verified_email_ok(profile, verified_amr)
             or not isinstance(name, str) or len(name) > 160
             or not isinstance(picture, str) or len(picture) > 1000):
         # The verification flag is only required when the client asked for it: the

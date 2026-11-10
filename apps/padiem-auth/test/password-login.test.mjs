@@ -99,6 +99,13 @@ test('default stays a straight Google redirect; opting in shows the choice scree
   assert.ok(chosen.html.includes('Google로 계속'));
   assert.ok(chosen.html.includes('이메일로 로그인'));
   assert.ok(chosen.cookie.startsWith('__Host-padiem-auth-state='));
+  // provider=google skips the choice screen even for a password-enabled client.
+  const verifier = rand(), state = rand();
+  const googleQuery = new URLSearchParams({ client_id: 'lovetree-pw', redirect_uri: REDIRECT, state, code_challenge: await sum(verifier), code_challenge_method: 'S256', provider: 'google' });
+  const directGoogle = await f.app.fetch(new Request(`${url}/login?${googleQuery}`));
+  assert.equal(directGoogle.status, 302);
+  assert.ok(directGoogle.headers.get('location').startsWith('https://accounts.google.com/o/oauth2/v2/auth'));
+  assert.ok(directGoogle.headers.get('set-cookie').startsWith('__Host-padiem-auth-state='));
   const signup = await f.begin('/signup', 'lovetree-pw');
   assert.equal(signup.response.status, 200);
   assert.ok(signup.html.includes('이메일로 회원가입'));
@@ -127,6 +134,9 @@ test('email login verifies through the signed Chat RPC and finishes the shared c
   assert.equal(done.headers.get('set-cookie').includes('Max-Age=0'), true);
   const minted = await (await f.post({ grant_type: 'authorization_code', code: target.searchParams.get('code'), code_verifier: begun.verifier, redirect_uri: REDIRECT })).json();
   assert.equal(minted.access_token.split('.').length, 3);
+  assert.deepEqual(JSON.parse(Buffer.from(minted.access_token.split('.')[1], 'base64url')).amr, ['pwd']);
+  const refreshed = await (await f.post({ grant_type: 'refresh_token', refresh_token: minted.refresh_token })).json();
+  assert.deepEqual(JSON.parse(Buffer.from(refreshed.access_token.split('.')[1], 'base64url')).amr, ['pwd']);
 });
 
 test('password accounts disclose the login identifier without claiming a verified mailbox', async () => {

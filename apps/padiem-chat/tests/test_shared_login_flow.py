@@ -247,3 +247,30 @@ async def test_missing_shared_login_configuration_logs_only_missing_names(capsys
     assert 'PADIEM_CHAT_SHARED_AUTH_CLIENT_KID' in out.out
     assert 'PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK' not in out.out
     assert marker not in out.out + out.err
+
+
+@pytest.mark.asyncio
+async def test_provider_google_is_forwarded_from_query_and_google_start():
+    from app.auth_routes import google_start
+    from types import SimpleNamespace
+
+    flow = make_flow(lambda *args: None, lambda *args: None, lambda *args: None)
+    plain = await flow.start_login(request())
+    plain_q = parse_qs(urlparse(plain.headers['location']).query)
+    assert 'provider' not in plain_q
+
+    explicit = await flow.start_login(request('provider=google'))
+    explicit_q = parse_qs(urlparse(explicit.headers['location']).query)
+    assert explicit_q['provider'] == ['google']
+
+    ignored = await flow.start_login(request('provider=other'))
+    ignored_q = parse_qs(urlparse(ignored.headers['location']).query)
+    assert 'provider' not in ignored_q
+
+    req = Request({
+        'type': 'http', 'method': 'GET', 'path': '/auth/google/start', 'query_string': b'',
+        'headers': [], 'app': SimpleNamespace(state=SimpleNamespace(shared_login_flow=flow)),
+    })
+    via_google_start = await google_start(req)
+    google_start_q = parse_qs(urlparse(via_google_start.headers['location']).query)
+    assert google_start_q['provider'] == ['google']

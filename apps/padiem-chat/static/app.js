@@ -4451,6 +4451,20 @@
     return "connectors-workspace-unverified";
   }
 
+  // connector_status_projection.py keeps the Telegram and Slack workspace rows
+  // "unverified" BY DESIGN (no trusted workspace authority exists for them), so
+  // when the status check itself fails those two cards keep their by-design
+  // preparing copy (connectors-workspace-unverified) on both slots. Every
+  // other card keeps the check-failed copy: for the reviewed connectors a
+  // failed status read is a real error the retry button addresses, never a
+  // state.
+  function connectorUnavailableCopyKeys(connectorId) {
+    if (connectorId === "connector:telegram:bot@1" || connectorId === "connector:slack:workspace@1") {
+      return { support: "connectors-workspace-unverified", workspace: "connectors-workspace-unverified" };
+    }
+    return { support: "connectors-status-unavailable", workspace: "connectors-workspace-unavailable" };
+  }
+
   // Google Calendar has a second, independent axis: the READ grant activation
   // (#2952). "Google account connected" (the OAuth/workspace axis) must never
   // read as "Calendar read is ready" — they are separate truths. The session
@@ -4647,8 +4661,9 @@
   function setConnectorCardsUnavailable() {
     liveConnectorCards().forEach((card) => {
       card.dataset.connectorStatus = "unavailable";
-      setConnectorCopy(card.querySelector("[data-connector-support]"), "connectors-status-unavailable");
-      setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-unavailable");
+      const keys = connectorUnavailableCopyKeys(card.dataset.connectorId);
+      setConnectorCopy(card.querySelector("[data-connector-support]"), keys.support);
+      setConnectorCopy(card.querySelector("[data-connector-workspace]"), keys.workspace);
     });
     syncGoogleCalendarConnectButton();
     syncGoogleDriveConnectButton();

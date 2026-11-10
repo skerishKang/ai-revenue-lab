@@ -335,7 +335,10 @@ async def google_start(request: Request) -> Response:
     shared_flow = getattr(request.app.state, 'shared_login_flow', None)
     # Preserve existing handoffs and explicit return targets during migration.
     if shared_flow is not None and not request.query_params:
-        return await shared_flow.start_login(request)
+        try:
+            return await shared_flow.start_login(request, provider="google")
+        except TypeError:
+            return await shared_flow.start_login(request)
     if not google_auth_ready(request):
         return _auth_failure(request, 503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
     settings: Settings = request.app.state.settings

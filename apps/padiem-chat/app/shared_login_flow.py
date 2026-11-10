@@ -284,13 +284,25 @@ class SharedLoginFlow(ComparisonFlow):
         origin = request.headers.get('origin')
         return isinstance(origin, str) and origin.strip() in self.allowed_origins
 
-    async def start_login(self, request):
+    async def start_login(self, request, *, provider: str | None = None):
         state, verifier = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
         data = _encoded({'state': state, 'verifier': verifier, 'exp': int(self.clock()) + 600})
         cookie = data + '.' + _b64(self._mac(b'shared-login', data.encode('ascii')))
-        query = urlencode({'client_id': self.client_id, 'redirect_uri': self.callback_for(request), 'state': state,
-                           'code_challenge': _b64(hashlib.sha256(verifier.encode('ascii')).digest()),
-                           'code_challenge_method': 'S256'})
+        params = {
+            'client_id': self.client_id,
+            'redirect_uri': self.callback_for(request),
+            'state': state,
+            'code_challenge': _b64(hashlib.sha256(verifier.encode('ascii')).digest()),
+            'code_challenge_method': 'S256',
+        }
+        requested_provider = provider
+        if requested_provider is None:
+            query_params = getattr(request, 'query_params', None)
+            if query_params is not None and hasattr(query_params, 'get'):
+                requested_provider = query_params.get('provider')
+        if requested_provider == 'google':
+            params['provider'] = 'google'
+        query = urlencode(params)
         response = RedirectResponse(AUTH + '/login?' + query, status_code=302,
                                     headers={'cache-control': 'no-store', 'referrer-policy': 'no-referrer'})
         response.set_cookie(STATE_COOKIE, cookie, secure=True, httponly=True, samesite='lax', path='/', max_age=600)
