@@ -996,6 +996,22 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                                 skipped(request_id, ledger_exc)
                         raise
 
+                # #7430: the owner-tier plain surface (no declared tools) rides
+                # the native adapter first on this provider family; the
+                # compatible endpoint behind the plain wire was the lane that
+                # degraded while the native adapter kept answering. Manual
+                # preview routes keep today's exact wire.
+                native_plain_first = (
+                    not tools_declared
+                    and platform_provider_id == "google"
+                    and (
+                        attempt_candidate.get("reason") == "owner_selected_tier_fallback"
+                        or any(
+                            code.startswith("owner_selected_tier_fallback:")
+                            for code in decision.reason_codes
+                        )
+                    )
+                )
                 iterator = stream_platform_chat_completions(
                     model_id=selected_model,
                     upstream_model=upstream_model,
@@ -1009,6 +1025,7 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                     **({"tools": body["tools"], "tool_choice": body.get("tool_choice")}
                        if body.get("tools") else {}),
                     transport=transport,
+                    native_plain_first=native_plain_first,
                 )
 
                 initial_events: list[StreamEvent] = []
