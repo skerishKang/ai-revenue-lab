@@ -148,6 +148,26 @@ async def _exercise(scenario):
             return {"ok": True, "snapshot": snapshot.to_policy_dict()}
 
         @record_fixture_errors
+        async def admit_usage(self, payload):
+            # #7338 made the combined RPC the code default. This fixture keeps the
+            # legacy two-call stubs above for the emergency path and answers the
+            # combined call with exactly the same snapshot + reservation semantics.
+            records["admission_subjects"].append(payload["subject"]["subject_id"])
+            try:
+                current = await resolve_authenticated_user_session(
+                    identity, product_id=payload["product_id"],
+                    subject=canonical_user_subject_from_wire(payload["subject"]), now=now,
+                )
+                snapshot = produce_authenticated_user_engine_entitlement(current, now=now)
+            except ControlPlaneContractError as exc:
+                records["producer_codes"].append(exc.code)
+                return {"ok": False, "error": {"code": exc.code}}
+            return {"ok": True, "snapshot": snapshot.to_policy_dict(),
+                    "reservation": {"reservation_ref": "res-p01-roundtrip", "admitted": True,
+                                    "reserved_at": now.isoformat(),
+                                    "expires_at": (now + timedelta(minutes=10)).isoformat()}}
+
+        @record_fixture_errors
         async def reserve_usage(self, payload):
             assert payload["reservation"]["subject"]["subject_id"] == subject
             return {"ok": True, "reservation": {
@@ -182,7 +202,7 @@ async def _exercise(scenario):
 
     authorities = {
         "identity.example.invalid": (identity, identity_secret, Replay(), frozenset({"resolve_current_auth_session", "resolve_product_user_for_subject"})),
-        "admission.example.invalid": (Admission(), admission_secret, Replay(), frozenset({"fetch_entitlement_snapshot", "reserve_usage", "record_usage"})),
+        "admission.example.invalid": (Admission(), admission_secret, Replay(), frozenset({"fetch_entitlement_snapshot", "reserve_usage", "record_usage", "admit_usage"})),
     }
 
     @record_fixture_errors
