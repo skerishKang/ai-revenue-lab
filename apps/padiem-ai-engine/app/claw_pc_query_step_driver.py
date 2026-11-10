@@ -166,9 +166,9 @@ def _pc_image_projection(output: str) -> tuple[str, dict[str, str] | None]:
         buf = io.BytesIO()
         image.save(buf, format=fmt)
         if len(buf.getvalue()) > PC_IMAGE_BYTE_CAP:
-            # #7447: one pass is rarely enough for a noisy capture; at most
-            # three bounded steps (JPEG quality, then the long edge) walk the
-            # size down, and the note reports wherever this actually landed.
+            # One pass is rarely enough for a noisy capture; at most three
+            # bounded steps (JPEG quality, then the long edge) walk the size
+            # down, and the note reports wherever this actually landed.
             converted = image.convert("RGB")
             for quality, edge in ((80, None), (50, 1280), (35, 800)):
                 buf = io.BytesIO()
@@ -198,7 +198,52 @@ def _pc_image_projection(output: str) -> tuple[str, dict[str, str] | None]:
     return note, {"type": "image", "mimeType": out_mime,
                   "data": base64.b64encode(data).decode("ascii")}
 
+#: 2026-11-04: the first answer waits this long for the PC and then hands the
+#: dispatch id back instead of holding one MCP request open. It bounds only the
+#: wait for an answer, never the PC command: the same tool reads the finished
+#: result when it is called again with the job id.
+#:
+#: #6919: the budget counts from the moment the handler is entered, so the
+#: context read and the dispatch itself spend it too. Two 30 s ceilings sit
+#: around it: the Chat gateway cuts its call to the Engine at 30 s
+#: (local_engine_transport), and the connector client cuts the whole
+#: /api/mcp request at 30 s.
+#:
+#: Re-measured on 2026-11-07 from com2 journals, p90 of the fixed costs
+#: around one first-round read. Chat /api/mcp identity 0.0 ms (160 POST
+#: lines over 24 h; the binding is cached). Engine admission 1.8 s — the
+#: warmer-era engine_timing lines on com2 run 1.39–1.47 s and the observed
+#: steady-state bound is 1.8 s — and receipt 0.7 s (recent engine_timing
+#: receipts 0.35–0.70 s; the loopback submit brought the pre-warmer 1.7 s
+#: down). Chat's own context+dispatch work around the call 0.6 s (12
+#: first-round reads: queue, sqlite, edge). The loop below still overshoots
+#: the budget by one status poll plus the result pickup, 2.0 s. The sum is
+#: 5.1 s, so 21 s keeps 21 + 5.1 = 26.1 s inside the 30 s − 3 s margin. A
+#: read the PC finishes later is handed back as running and answered by the
+#: next call; nothing is lost, only the first answer arrives sooner.
+PC_FILES_WAIT_SECONDS = 21
+PC_FILES_WAIT_ENV = "PADIEM_PC_FILES_WAIT_SECONDS"
+#: Per-sleep ceiling for the PC FILES command_status ladder (read/list and
+#: search). The PC read answers ~0.6 s after the claim (2026-11-09 automatic
+#: measurements, n=41: pc_read median 0.60 s, read_to_submit median 0.33 s),
+#: so a 5 s cap let the sleep overshoot an already-ready result by up to 2 s
+#: inside the response-assembly window (chat_assemble median 1.7 s, max 3.5 s).
+#: 1 s keeps the discovery gap at or below the measured result latency. The
+#: TOTAL wait budget above is unchanged, and the shell status poll keeps its
+#: own ladder (#7131) untouched.
+_PC_FILES_POLL_SECONDS_CAP = 1.0
+_PC_FILES_JOB_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
 
+
+def _pc_files_wait_seconds() -> float:
+    """The bounded first wait; a deployment may name its own, within limits."""
+    raw = (os.environ.get(PC_FILES_WAIT_ENV) or "").strip()
+    if raw:
+        try:
+            return float(min(max(int(raw), 1), 120))
+        except ValueError:
+            pass
+    return float(PC_FILES_WAIT_SECONDS)
 
 
 def _pc_files_resume_dispatch(arguments) -> str | None:
