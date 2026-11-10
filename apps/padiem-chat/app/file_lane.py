@@ -139,6 +139,26 @@ class FileLaneClient:
             raise AttachmentValidationError("파일 서버가 아직 연결되지 않았습니다.")
         return ticket_headers(self._secret, user_id, 1)
 
+    async def purge_user(self, user_id):
+        """Delete the owner's whole lane directory (account deletion sweep).
+
+        The signed ticket carries only this user's identity, and the lane keeps
+        every file under one per-owner directory, so the request removes
+        exactly the prefix minted for the withdrawing account — attachments,
+        originals and parsed caches together. Failures surface to the caller,
+        which runs this best-effort after the account batch.
+        """
+        if not self.ready:
+            raise AttachmentValidationError("파일 서버가 아직 연결되지 않았습니다.")
+        headers, _ = self.read_ticket(user_id)
+        try:
+            async with httpx.AsyncClient(transport=self._transport, timeout=10.0, follow_redirects=False, trust_env=False) as client:
+                response = await client.post(self.origin + "/users/purge", headers=headers)
+        except Exception:
+            raise AttachmentValidationError("파일 서버 정리를 지금 완료할 수 없습니다.") from None
+        if response.status_code != 200:
+            raise AttachmentValidationError("파일 서버 정리를 지금 완료할 수 없습니다.")
+
     async def meta(self, user_id, file_id):
         """Small metadata for one uploaded file; never the file body."""
         if (not isinstance(file_id, str) or not FILE_ID.fullmatch(file_id)):

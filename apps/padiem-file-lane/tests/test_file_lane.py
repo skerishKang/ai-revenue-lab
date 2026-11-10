@@ -249,3 +249,42 @@ def test_upload_above_worker_scale_is_stored_without_a_fixed_ten_mb_ceiling(clie
     assert response.status_code == 201
     assert response.json()["size_bytes"] == len(data)
     assert response.json()["sha256"] == hashlib.sha256(data).hexdigest()
+
+
+# ---------------------------------------------------------------------------
+# Account deletion sweep (2026-11-11): one signed request removes the whole
+# per-owner directory, and only that one.
+# ---------------------------------------------------------------------------
+
+
+def test_purge_removes_the_whole_owner_directory_and_no_other_owner(client, tmp_path):
+    import hashlib
+
+    alice_id = upload(client).json()["file_id"]
+    bob_headers = ticket(user="usr_bob")
+    bob_id = upload(client, headers=bob_headers).json()["file_id"]
+
+    response = client.post("/users/purge", headers=ticket())
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["ok"] is True
+    assert body["removed"] >= 1
+    assert client.get(f"/files/{alice_id}/meta", headers=ticket()).status_code == 404
+    # The other owner's file is untouched.
+    assert client.get(f"/files/{bob_id}/meta", headers=bob_headers).status_code == 200
+    assert not (tmp_path / hashlib.sha256(b"usr_alice").hexdigest()).exists()
+    assert (tmp_path / hashlib.sha256(b"usr_bob").hexdigest()).is_dir()
+
+
+def test_purge_refuses_a_missing_or_invalid_ticket(client):
+    assert client.post("/users/purge").status_code == 401
+    response = client.post("/users/purge", headers=ticket(user="usr_alice"))
+    response.headers[TICKET_HEADER] = ticket(user="usr_other")[TICKET_HEADER]
+    assert client.post("/users/purge", headers=response.headers).status_code == 401
+
+
+def test_purge_of_an_unknown_owner_is_a_counted_noop(client):
+    response = client.post("/users/purge", headers=ticket(user="usr_nobody"))
+    assert response.status_code == 200, response.text
+    assert response.json() == {"ok": True, "removed": 0}
