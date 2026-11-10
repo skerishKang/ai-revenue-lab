@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 PDFMD = (STATIC / "util-pdfmd.js").read_text(encoding="utf-8")
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
+UTIL_APP = (STATIC / "util-app.js").read_text(encoding="utf-8")
 ROUTES = (ROOT / "app" / "document_convert_routes.py").read_text(encoding="utf-8")
 CPYTHON = (ROOT / "app" / "local_cpython.py").read_text(encoding="utf-8")
 
@@ -43,7 +44,8 @@ def test_the_pause_still_says_what_is_and_is_not_possible() -> None:
     # enabled, so the pause sentence belongs to the panel's server answer.
     assert "새 업로드는 잠시 멈춤" not in INDEX
     assert "일시 중단" not in INDEX
-    assert "PDF·ZIP을 Markdown으로 변환·비교·다운로드" in INDEX
+    # #7173: the card copy moved with the card into the util module.
+    assert "PDF·ZIP을 Markdown으로 변환·비교·다운로드" in UTIL_APP
 
 
 def test_the_owner_pause_contract_is_untouched() -> None:
