@@ -124,7 +124,11 @@ def test_active_canonical_user_gets_chat_and_claw_bundle_without_second_login():
     assert "no-store" in a.headers["cache-control"]
     assert a.headers["vary"].lower()=="cookie"
     assert all(x not in a.text.lower() for x in ("subject_a","tenant_a","usr_","b66","credential","session_test"))
-    assert history.reads == [UID_A,UID_A]
+    # Internal audit H2 (2026-11-10): the request-time guard checks the user
+    # row once per compatibility-cookie request (no canonical session id here)
+    # before the projection's own read, so each of the two requests adds one
+    # guard read on top of the projection read.
+    assert history.reads == [UID_A]*4
     assert shadow.reads == [UID_A,UID_A]
     assert authority.calls==["session_test_a","session_test_a"]
 

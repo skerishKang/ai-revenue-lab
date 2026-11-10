@@ -216,27 +216,6 @@ class SessionRevocationGuardMiddleware:
             # No canonical authority bound: this deployment has no canonical
             # sessions, so there is nothing to revoke and nothing to refuse.
             return None
-        # Internal audit H2 (2026-11-10): on an authority-backed deployment the
-        # cookie's user must still be a row in this product's own store.
-        # Account deletion revokes canonical sessions server-side, but a
-        # compatibility cookie without a canonical session id has nothing to
-        # revoke, so the row is the last guard against reusing a deleted
-        # account's cookie. A store that cannot answer right now must not
-        # widen this check into an outage of its own, so only a clean "no such
-        # row" refuses.
-        get_user = getattr(getattr(state, "history_store", None), "get_user", None)
-        if callable(get_user):
-            try:
-                user_row = await get_user(claims.user_id)
-            except Exception:
-                user_row = object()
-            if user_row is None:
-                return SessionVerdict(
-                    authenticated=False,
-                    user_id=claims.user_id,
-                    canonical_session_id=claims.canonical_session_id,
-                    reason="user_row_missing",
-                )
         resolve = getattr(authority, "resolve_auth_session", None)
         if not callable(resolve):
             return None
@@ -252,11 +231,29 @@ class SessionRevocationGuardMiddleware:
             #
             # Internal audit H2 (2026-11-10): an authority-backed deployment
             # now mints every session cookie with a canonical session id and
-            # refuses issuances it cannot bind. Compatibility cookies like
-            # this one keep working only through the fixed 7-day transition
-            # window (auth.sideless_session_cutoff_passed); afterwards the
-            # guard refuses them instead of extending an unrevocable session
-            # indefinitely.
+            # refuses issuances it cannot bind. A compatibility cookie like
+            # this one has no canonical session for account deletion to
+            # revoke, so its user row is the last guard against reusing a
+            # deleted account's cookie; it also keeps working only through the
+            # fixed 7-day transition window
+            # (auth.sidless_session_cutoff_passed), after which the guard
+            # refuses it instead of extending an unrevocable session
+            # indefinitely. A store that cannot answer right now must not
+            # widen the row check into an outage of its own, so only a clean
+            # "no such row" refuses.
+            get_user = getattr(getattr(state, "history_store", None), "get_user", None)
+            if callable(get_user):
+                try:
+                    user_row = await get_user(claims.user_id)
+                except Exception:
+                    user_row = object()
+                if user_row is None:
+                    return SessionVerdict(
+                        authenticated=False,
+                        user_id=claims.user_id,
+                        canonical_session_id=None,
+                        reason="user_row_missing",
+                    )
             if sidless_session_cutoff_passed():
                 return SessionVerdict(
                     authenticated=False,
