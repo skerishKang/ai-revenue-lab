@@ -226,6 +226,11 @@ _B14_SERVICE_PROOF_APPROVED_ADDITIONS = frozenset(
     (b["type"], b["name"], b["store_id"], b["secret_name"])
     for b in expected_b14_service_proof_bindings().values()
 )
+# 2026-11-10 Cloudflare B14 Worker retirement (Refs #7400): the Engine's
+# reviewed removal of the B14_SERVICE service binding. This identity is the
+# ONLY tolerated removal, and only when the deploy is run with the explicit
+# reviewed-removal authority; every other prior binding stays byte-identical.
+_RETIRED_B14_SERVICE_IDENTITY = ("service", "B14_SERVICE", "ai-revenue-korean-ai-platform")
 # #5441: the one Owner-registered transactional-mail reference, never its value.
 _RESEND_ALERT_APPROVED_ADDITIONS = frozenset(
     (b["type"], b["name"], b["store_id"], b["secret_name"])
@@ -351,12 +356,18 @@ def assert_exact_resend_alert_added_only(before: object, after: object) -> None:
 def assert_engine_4194_exact_rollout(
     before: object, after: object, *, allow_4139_desktop_bindings: bool = False,
     allow_5224_service_proof_binding: bool = False,
+    allow_reviewed_b14_service_removal: bool = False,
 ) -> None:
     """Preserve ALL previous bindings; permit only exact reviewed additions.
 
     Already-commissioned bindings may be present in the before version, to
     keep later no-drift code redeploys valid. The after version MUST contain
     every approved identity for the selected rollout and no unreviewed changes.
+
+    With ``allow_reviewed_b14_service_removal`` the one reviewed retirement
+    removal — the B14_SERVICE service binding targeting the retired Cloudflare
+    B14 Worker (2026-11-10, Refs #7400) — is tolerated. Any other removal,
+    and any re-addition of that binding, still fails closed.
     """
     prior, current = set(canonical_state(before)), set(canonical_state(after))
     required = _ENGINE_4194_APPROVED_ADDITIONS
@@ -370,6 +381,10 @@ def assert_engine_4194_exact_rollout(
     if not required.issubset(current):
         raise BindingStateError("Engine #4194 required exact binding identities missing")
     removed = prior - current
+    if allow_reviewed_b14_service_removal:
+        removed = {
+            entry for entry in removed if entry[:3] != _RETIRED_B14_SERVICE_IDENTITY
+        }
     added = current - prior
     if removed or not added.issubset(allowed):
         raise BindingStateError(
@@ -657,6 +672,10 @@ def main(argv: list[str] | None = None) -> int:
                         help="#4139: #4194 identities plus the exact Engine->Chat desktop service and secret reference")
     parser.add_argument("--expected-engine-desktop-rollout-5224-proof", action="store_true",
                         help="#5224: #4139 identities plus the one Engine B14 caller-proof reference")
+    parser.add_argument("--allow-reviewed-b14-service-removal", action="store_true",
+                        help="2026-11-10 retirement (Refs #7400): tolerate exactly the reviewed "
+                             "B14_SERVICE service binding removal; only valid with the "
+                             "Engine #5224 proof mode")
     parser.add_argument("--expected-add-grafana-telemetry", action="store_true",
                         help="only one canonical Grafana Secrets Store binding, no values")
     parser.add_argument("--expected-add-oracle-mesh", action="store_true",
@@ -699,6 +718,11 @@ def main(argv: list[str] | None = None) -> int:
             args.expected_add_b66_membership_secret,
         )) > 1:
             raise BindingStateError("multiple additive authority modes prohibited")
+        if (args.allow_reviewed_b14_service_removal
+                and not args.expected_engine_desktop_rollout_5224_proof):
+            raise BindingStateError(
+                "the reviewed B14_SERVICE removal authority requires the Engine #5224 proof mode"
+            )
         if args.expected_engine_4139_desktop_rollout:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Engine #4139 mode refuses unrelated authorization arguments")
@@ -712,6 +736,7 @@ def main(argv: list[str] | None = None) -> int:
                 _load(args.before), _load(args.after),
                 allow_4139_desktop_bindings=True,
                 allow_5224_service_proof_binding=True,
+                allow_reviewed_b14_service_removal=args.allow_reviewed_b14_service_removal,
             )
         elif args.expected_engine_4194_rollout:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
