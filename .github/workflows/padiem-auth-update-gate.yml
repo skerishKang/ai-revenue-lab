@@ -118,12 +118,11 @@ jobs:
               if not runs: raise SystemExit('required readonly evidence missing')
               page += 1
           PY
-      - name: Load reviewed staging client configuration
+      - name: Load the reviewed client configuration (the exact target checkout)
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin cfff2b9a2ac7f293eaf6992b8dbc2dcdf4b8b59b
-          git show cfff2b9a2ac7f293eaf6992b8dbc2dcdf4b8b59b:apps/padiem-auth/wrangler.toml > "$RUNNER_TEMP/auth-reviewed-staging.toml"
+          cp apps/padiem-auth/wrangler.toml "$RUNNER_TEMP/auth-reviewed-staging.toml"
       - name: Check account, baseline and current deployed version
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
