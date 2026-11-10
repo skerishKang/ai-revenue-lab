@@ -84,6 +84,10 @@ on:
       - ".github/scripts/cloudflare_served_version.py"
       - ".github/tests/test_b54_engine_caller_registry_overlay_rotation_gate.py"
       - ".github/tests/test_b54_p01_overlay_caller_id_parity.py"
+      # #7346: the overlay parity contract reads these sources directly.
+      - "apps/padiem-ai-engine/app/identity_enforcement.py"
+      - "apps/padiem-ai-engine/app/service_identity.py"
+      - "apps/padiem-chat/app/web_xlsx_p01_engine_client.py"
   workflow_dispatch:
     inputs:
       mode:

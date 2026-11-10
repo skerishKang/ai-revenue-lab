@@ -83,6 +83,9 @@ on:
       - ".github/scripts/b54_engine_credential_equivalence_diagnostic.py"
       - "apps/padiem-ai-engine/app/authority_diagnostic.py"
       - "apps/padiem-ai-engine/app/auth_boundary_diagnostic.py"
+      # #7346: the P01 parity/order contracts read these names directly.
+      - "apps/padiem-ai-engine/app/identity_enforcement.py"
+      - "apps/padiem-ai-engine/app/service_identity.py"
       - ".github/workflows/b54-engine-production-smoke-only-gate.yml"
       - ".github/workflows/b54-engine-production-deploy-gate.yml"
       # F2 (#2523): the executable Engine-first cutover order contract and the

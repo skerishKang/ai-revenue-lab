@@ -5,6 +5,12 @@ on:
     paths:
       - 'apps/padiem-ai-engine/**'
       - 'packages/padiem-ai-core/**'
+      # #7346: Core's source-audit tests read these deployed app files and the
+      # Chat worker config. A change there must run the Core suite here instead
+      # of waiting for the nightly full suite (#7336 -> #7340).
+      - 'apps/korean-ai-platform/app/pilot/b14_timeout_policy.py'
+      - 'apps/korean-ai-platform/app/pilot/provider_timeout_diagnostics.py'
+      - 'apps/padiem-chat/app/worker_config.py'
       # Living Learning-only source is independently covered by its dedicated
       # CI below. Engine depends on Core, not Living Learning product code.
       # Keep Core changes here and retain the full LL regression within

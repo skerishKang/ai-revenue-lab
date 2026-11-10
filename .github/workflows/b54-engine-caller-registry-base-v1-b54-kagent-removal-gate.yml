@@ -53,6 +53,8 @@ on:
       - ".github/workflows/b54-engine-caller-registry-base-v1-b54-kagent-removal-gate.yml"
       - ".github/scripts/b54_engine_caller_registry_base_v1_b54_kagent_removal.py"
       - ".github/tests/test_b54_engine_caller_registry_base_v1_b54_kagent_removal_gate.py"
+      # #7346: the removal-gate contract reads this Engine source directly.
+      - "apps/padiem-ai-engine/app/identity_enforcement.py"
   workflow_dispatch:
     inputs:
       mode:
