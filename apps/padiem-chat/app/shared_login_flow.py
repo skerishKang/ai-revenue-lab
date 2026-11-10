@@ -7,10 +7,12 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import inspect
 import json
 import logging
 import secrets
 import time
+from datetime import datetime, timedelta, timezone
 from urllib.parse import urlencode, urlsplit
 
 from .auth import SESSION_COOKIE
@@ -204,6 +206,60 @@ def clear_all_local_cookies(response):
     return response
 
 
+async def attach_chat_default_session(
+    response, request, *, user_id, access, verifier,
+):
+    """Issue the Chat default session for a verified common login (#7364).
+
+    The common login callback used to issue only the shared access/refresh
+    cookies. A shared-login-only account therefore had no Chat session cookie
+    and no identity shadow row, so the first shadow consumer (connectors,
+    calendar, PC device directory) failed closed as soon as the account's last
+    legacy session expired — even though this login was still verified.
+
+    The verified access claims are re-read here (JWKS is cached), the canonical
+    subject is bound to one B62 session, its shadow pointer is written, and the
+    signed Chat session cookie is set on the response. The canonical session is
+    the one the logout paths revoke (#5225/#7334). Any failure leaves the
+    response untouched: the shared login still succeeds with its own cookies
+    (the pre-existing cookie-only compatibility mode).
+    """
+
+    try:
+        claims = verifier.verify(access)
+        if inspect.isawaitable(claims):
+            claims = await claims
+        account_id = claims.get("accountId") if isinstance(claims, dict) else None
+        if not isinstance(account_id, str) or not account_id.startswith("sub_"):
+            return None
+        settings = getattr(getattr(request, "app", None), "state", None)
+        settings = getattr(settings, "settings", None)
+        if settings is None or not getattr(settings, "session_secret", None):
+            return None
+        from .auth import SESSION_COOKIE, create_session_token, session_cookie_kwargs
+        from .auth_routes import _write_shared_identity_shadow_after_login
+
+        authenticated_at = datetime.now(timezone.utc)
+        expires_at = authenticated_at + timedelta(seconds=settings.session_max_age_seconds)
+        canonical_session_id = await _write_shared_identity_shadow_after_login(
+            request,
+            product_user_id=user_id,
+            canonical_subject_id=account_id,
+            authenticated_at=authenticated_at,
+            expires_at=expires_at,
+        )
+        token = create_session_token(
+            settings,
+            user_id,
+            now=int(authenticated_at.timestamp()),
+            canonical_session_id=canonical_session_id,
+        )
+        response.set_cookie(SESSION_COOKIE, token, **session_cookie_kwargs(settings))
+        return canonical_session_id
+    except Exception:
+        return None
+
+
 def safe_login_return(value):
     """Only a same-origin absolute path may become the post-login Location."""
     if not isinstance(value, str):
@@ -284,13 +340,25 @@ class SharedLoginFlow(ComparisonFlow):
         origin = request.headers.get('origin')
         return isinstance(origin, str) and origin.strip() in self.allowed_origins
 
-    async def start_login(self, request):
+    async def start_login(self, request, *, provider: str | None = None):
         state, verifier = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
         data = _encoded({'state': state, 'verifier': verifier, 'exp': int(self.clock()) + 600})
         cookie = data + '.' + _b64(self._mac(b'shared-login', data.encode('ascii')))
-        query = urlencode({'client_id': self.client_id, 'redirect_uri': self.callback_for(request), 'state': state,
-                           'code_challenge': _b64(hashlib.sha256(verifier.encode('ascii')).digest()),
-                           'code_challenge_method': 'S256'})
+        params = {
+            'client_id': self.client_id,
+            'redirect_uri': self.callback_for(request),
+            'state': state,
+            'code_challenge': _b64(hashlib.sha256(verifier.encode('ascii')).digest()),
+            'code_challenge_method': 'S256',
+        }
+        requested_provider = provider
+        if requested_provider is None:
+            query_params = getattr(request, 'query_params', None)
+            if query_params is not None and hasattr(query_params, 'get'):
+                requested_provider = query_params.get('provider')
+        if requested_provider == 'google':
+            params['provider'] = 'google'
+        query = urlencode(params)
         response = RedirectResponse(AUTH + '/login?' + query, status_code=302,
                                     headers={'cache-control': 'no-store', 'referrer-policy': 'no-referrer'})
         response.set_cookie(STATE_COOKIE, cookie, secure=True, httponly=True, samesite='lax', path='/', max_age=600)
@@ -556,6 +624,9 @@ async def create_worker_shared_login_flow(env, authority):
 
         async def issue(request, user, access, refresh):
             response = RedirectResponse(login_return_target(request), status_code=302)
+            await attach_chat_default_session(
+                response, request, user_id=user, access=access, verifier=verifier,
+            )
             issue_shared_cookies(response, access, refresh)
             return clear_login_return_cookie(response)
 

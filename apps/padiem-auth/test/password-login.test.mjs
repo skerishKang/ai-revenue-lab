@@ -99,6 +99,13 @@ test('default stays a straight Google redirect; opting in shows the choice scree
   assert.ok(chosen.html.includes('Google로 계속'));
   assert.ok(chosen.html.includes('이메일로 로그인'));
   assert.ok(chosen.cookie.startsWith('__Host-padiem-auth-state='));
+  // provider=google skips the choice screen even for a password-enabled client.
+  const verifier = rand(), state = rand();
+  const googleQuery = new URLSearchParams({ client_id: 'lovetree-pw', redirect_uri: REDIRECT, state, code_challenge: await sum(verifier), code_challenge_method: 'S256', provider: 'google' });
+  const directGoogle = await f.app.fetch(new Request(`${url}/login?${googleQuery}`));
+  assert.equal(directGoogle.status, 302);
+  assert.ok(directGoogle.headers.get('location').startsWith('https://accounts.google.com/o/oauth2/v2/auth'));
+  assert.ok(directGoogle.headers.get('set-cookie').startsWith('__Host-padiem-auth-state='));
   const signup = await f.begin('/signup', 'lovetree-pw');
   assert.equal(signup.response.status, 200);
   assert.ok(signup.html.includes('이메일로 회원가입'));
