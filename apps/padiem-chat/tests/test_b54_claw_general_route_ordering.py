@@ -148,7 +148,10 @@ const addAssistantShell = () => ({ querySelector: () => ({ replaceChildren() {},
 const addUserMessage = () => {};
 const chatTransport = {
   requestClawGeneral: async () => { trace.push("transport:clawGeneral"); return {}; },
-  requestStreaming: async () => { trace.push("transport:streaming"); return {}; },
+  requestStreaming: async (payload) => {
+    trace.push(payload && payload.product === "claw" ? "transport:streaming:claw" : "transport:streaming");
+    return {};
+  },
   readSseEvents: async () => {},
   errorFor: () => new Error("stub"),
 };
@@ -226,8 +229,8 @@ def test_claw_general_submit_keeps_claw_workspace_and_canonical_lane() -> None:
     assert trace[1] == "showConversation:state_before=claw", trace
     assert trace[2] == "showConversation:state_after=claw", trace
     assert claw["finalState"] == "claw"
-    assert _count(trace, "transport:clawGeneral") == 1, trace
-    assert _count(trace, "transport:streaming") == 0, trace
+    assert _count(trace, "transport:streaming:claw") == 1, trace
+    assert _count(trace, "transport:clawGeneral") == 0, trace
 
 
 def test_standalone_chat_path_keeps_stream_transport() -> None:

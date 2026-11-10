@@ -298,9 +298,10 @@ async def test_hwpx_upload_real_lane_extraction_reaches_chat_context(file_app, m
         assert response.json()["attachments"][0]["file_id"] == ref["file_id"]
         assert response.json()["answer"] == "synthetic answer from document"
         assert observed and "HWPX synthetic context 261101" in observed[0]
-        # The normal Chat composer deliberately sends attachments to /api/chat.
+        # The composer sends attachments through the shared completed path.
         source = (Path(__file__).resolve().parents[1] / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
-        assert "if (attachments && !clawGeneralRequest)" in source
+        # #7297: Chat and Claw share the completed-attachment route.
+        assert "if (attachments) {" in source
         assert "deps.requestCompletedAnswer(article, payload" in source
         with pytest.raises(AttachmentValidationError):
             await lane.resolve(OTHER, ref)

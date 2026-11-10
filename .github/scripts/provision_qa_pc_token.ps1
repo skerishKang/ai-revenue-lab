@@ -83,6 +83,26 @@ function Read-JsonBody([object]$Response) {
     return ($Response.Content | ConvertFrom-Json)
 }
 
+function Get-SharedLoginSession([string]$Email, [string]$Password) {
+    # #7078: the common login screen owns email login when the switch is ON.
+    $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+    $start = Invoke-WebRequest -Uri ($BaseUrl + '/auth/shared/start') `
+        -UseBasicParsing -WebSession $session -MaximumRedirection 10 -TimeoutSec 30
+    $match = [regex]::Match([string]$start.Content, '<form[^>]+action="([^"]*/login/password\?state=[^"]+)"')
+    if (-not $match.Success) { throw 'shared login form missing' }
+    $action = [System.Net.WebUtility]::HtmlDecode($match.Groups[1].Value)
+    if ($action -notmatch '^https?://') {
+        $pageUri = $start.BaseResponse.RequestMessage.RequestUri
+        if ($null -eq $pageUri) { $pageUri = [Uri]$BaseUrl }
+        $action = ([Uri]::new([Uri]$pageUri, $action)).AbsoluteUri
+    }
+    $formBody = 'email=' + [Uri]::EscapeDataString($Email) + '&password=' + [Uri]::EscapeDataString($Password)
+    Invoke-WebRequest -Uri $action -Method Post `
+        -ContentType 'application/x-www-form-urlencoded' -Body $formBody `
+        -WebSession $session -MaximumRedirection 10 -UseBasicParsing -TimeoutSec 30 | Out-Null
+    return $session
+}
+
 function Select-PcLink([object]$Links, [string]$Label) {
     # Only an active, unpaused link can carry a token. Prefer the label match;
     # refuse to guess when the match is ambiguous or absent.
@@ -127,7 +147,17 @@ try {
     $login = Invoke-Api 'Post' '/api/auth/password/login' `
         -Body @{ identifier = $email; password = $plain } -Session $session
     $loginBody = Read-JsonBody $login
-    if ($loginBody.ok -ne $true) { throw 'login refused' }
+    if ($loginBody.ok -ne $true) {
+        if ($loginBody.error.code -eq 'email_login_moved') {
+            $session = Get-SharedLoginSession $email $plain
+            $status = Invoke-Api 'Get' '/api/auth/status' $null $session
+            if ((Read-JsonBody $status).authenticated -ne $true) { throw 'shared login refused' }
+            Out-Line 'LOGIN_PATH' 'shared'
+        }
+        else {
+            throw 'login refused'
+        }
+    }
 } finally {
     if ($plain) { $plain = $null }
 }

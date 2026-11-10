@@ -128,7 +128,7 @@ def _legacy_live_transport_synthetic_model(request, monkeypatch):
     migrate=(
         cls in {"TestLiveAdapter","TestStreamedResponseLimit","TestKeylessLiveSmoke"}
         or (cls=="TestFreeRouterExactRoute" and name=="test_free_router_request_body_exact_and_actual_model_preserved")
-        or (cls=="TestFallbackFailClosed" and name=="test_client_errors_raise_and_no_fallback")
+        or (cls=="TestFallbackFailClosed" and name=="test_client_errors_raise_and_policy_matches_status")
         or (cls=="TestManualRouteDefaultFallback" and name in {
             "test_manual_model_no_business14_chat_one_attempt",
             "test_manual_model_429_stays_single_attempt",
@@ -457,11 +457,13 @@ class TestFallbackLogic:
     def test_server_error_fallback_allowed(self):
         assert is_error_fallback_allowed("upstream_server_error") is True
 
-    def test_401_no_fallback(self):
-        assert is_error_fallback_allowed("upstream_auth_failed") is False
+    def test_401_falls_back_to_the_next_candidate(self):
+        # #7389: a candidate-level auth rejection advances; a request-content
+        # rejection still stops (see test_malformed_request_no_fallback).
+        assert is_error_fallback_allowed("upstream_auth_failed") is True
 
-    def test_403_no_fallback(self):
-        assert is_error_fallback_allowed("upstream_auth_failed") is False
+    def test_403_falls_back_to_the_next_candidate(self):
+        assert is_error_fallback_allowed("upstream_auth_failed") is True
 
     def test_missing_key_no_fallback(self):
         assert is_error_fallback_allowed("missing_provider_key") is False
@@ -1261,12 +1263,14 @@ class TestCatalogSourceContract:
 
 class TestFallbackFailClosed:
     @pytest.mark.asyncio
-    @pytest.mark.parametrize("status,expected_code", [
-        (400, "malformed_upstream_response"),
-        (404, "upstream_client_error"),
-        (422, "upstream_client_error"),
+    @pytest.mark.parametrize("status,expected_code,allowed", [
+        (400, "malformed_upstream_response", False),
+        # #7389: 404 means this candidate cannot serve, so it advances; 422 is
+        # a request-content rejection and stays terminal.
+        (404, "upstream_client_error", True),
+        (422, "upstream_client_error", False),
     ])
-    async def test_client_errors_raise_and_no_fallback(self, status, expected_code):
+    async def test_client_errors_raise_and_policy_matches_status(self, status, expected_code, allowed):
         _set_live()
         from app.pilot.errors import PilotError
 
@@ -1285,7 +1289,8 @@ class TestFallbackFailClosed:
                 transport=httpx.MockTransport(handler),
             )
         assert exc_info.value.code == expected_code
-        assert is_error_fallback_allowed(exc_info.value.code, reason=getattr(exc_info.value, "reason", None)) is False
+        assert is_error_fallback_allowed(
+            exc_info.value.code, reason=getattr(exc_info.value, "reason", None)) is allowed
 
     def test_unknown_exception_no_fallback_in_gateway(self, client):
         _set_live()

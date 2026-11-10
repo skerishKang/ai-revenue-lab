@@ -1,5 +1,12 @@
 # COM2 PC dispatch queue — installation, cutover and rollback (#5573 / #5881)
 
+> **2026-11-10 — public ingress removed.** The queue host no longer has a tunnel
+> route: the internal path (`/internal/store`) is reachable on the 컴2 host's
+> loopback only (`127.0.0.1:8797`), which is where the Chat host and the executor
+> already pointed. Any step below that adds or verifies a public hostname for this
+> service is historical; do not re-add one. See
+> [the loopback-only record](PC_QUEUE_INTERNAL_PATH_LOOPBACK_ONLY_20261110.md).
+
 Code/runbook only. Nothing below has been executed against 컴2 or Cloudflare by
 this PR; the installation and the backend switch each need the Owner's instruction.
 The queue exists to move one thing — the atomic claim lane — off the Cloudflare

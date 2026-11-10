@@ -3260,6 +3260,12 @@
         }),
       });
       const data = await res.json().catch(() => null);
+      if (!res.ok && res.status === 409 && data && data.error &&
+          data.error.code === "email_login_moved" && typeof data.login_url === "string") {
+        setStatus("로그인 방식이 바뀌었어요. 공통 로그인으로 이동합니다");
+        window.location.assign(data.login_url);
+        return false;
+      }
       const message = data && data.error && typeof data.error.message === "string" ? data.error.message : "";
       outcome = { ok: res.ok, message: res.ok ? "" : (message || "이메일 또는 비밀번호가 올바르지 않습니다.") };
     } catch (_) {

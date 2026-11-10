@@ -181,12 +181,15 @@ class MalformedUpstreamResponse(PilotError):
 class UpstreamClientError(PilotError):
     """Upstream rejected the request with a non-auth 4xx status (404/409/422/…).
 
-    Never fallback-allowed: the request itself was rejected, so repeating it
-    against another model would hide a real configuration/schema problem.
+    The status travels in ``reason`` so the fallback policy can tell a missing
+    route/model (404: this candidate cannot serve) from a request-content
+    rejection (409/413/422: repeating it elsewhere would hide the defect).
+    #7389: 404 advances to the next candidate; the other 4xx stay terminal.
     """
 
     def __init__(self, upstream_status: int = 400) -> None:
         self.upstream_status = upstream_status
+        self.reason = f"upstream_http_{upstream_status}"
         super().__init__(
             code="upstream_client_error",
             message=f"Provider가 요청을 거부했습니다 (upstream HTTP {upstream_status}).",

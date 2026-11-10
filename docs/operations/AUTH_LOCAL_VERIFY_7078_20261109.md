@@ -266,6 +266,19 @@ JWKS 재조회도 캐시 만료 시 요청 경로에서 하지 않고 기동 시
   받는다. 시험이 b62의 `password_login`·공유 콜백 등록을 핀으로 고정한다.
 - 켜는 순서: Chat(이 PR) 배포 → padiem-auth 재배포(`--keep-vars`) → `PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED=true`
   → Chat 재배포. 끄는 순서: 스위치 false → Chat 재배포(직접 로그인 복귀).
+- (2026-11-10 후속) 비밀번호 변경·재설정은 Chat canonical 세션 폐기와 같은 시점에
+  padiem-auth 내측 RPC(`/internal/account-sessions/revoke`)로 그 Chat 사용자의 공유
+  세션(refresh 포함)을 폐기한다. 폐기 실패는 자격 변경을 실패시키지 않고, 구조화 로그와
+  `shared_session_revoke_pending` 재시도 행을 남겨 다음 로그인/refresh·변경에서 다시
+  시도한다. 따라서 스위치 ON 직후 “padiem-auth refresh가 살아 있을 수 있다(최대 16분)”는
+  서술은 틀렸고, 이 경로에서는 refresh가 폐기된다. 남는 것은 **이미 발급된 access의 로컬
+  검증 잔여(≤15분+leeway 60초, 시계 차 포함 최악 17분)**뿐이다. 다른 제품에서 수행된
+  폐기의 전파 공백(§7.3의 refresh 수명 위험)은 단계 1.5 전까지 그대로다.
+- (2026-11-10 읽기 전용 집계, 컴2 Chat DB) 비밀번호 자격 56건 중 로그인 아이디에
+  `@`가 없는 계정은 32건이며, 32건 모두 `users.email`에 이메일이 있다. 공통 로그인
+  화면은 이메일을 받으므로 이 사용자들은 등록된 이메일로 로그인할 수 있다. 공통
+  화면에서 기존 아이디 입력을 허용하거나 이메일 등록을 유도하는 UX는 후속 결정으로
+  남긴다(이번 변경에서 구현하지 않음).
 
 ## 5. 위험 목록
 

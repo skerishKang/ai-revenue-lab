@@ -76,4 +76,55 @@ describe("React clone sign-in path", () => {
       password: "wrong-password",
     });
   });
+
+  it("shows the shared login link when the server says email_login_moved", async () => {
+    globalThis.fetch = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      const json = (body: unknown, status = 200) =>
+        new Response(JSON.stringify(body), {
+          status,
+          headers: { "content-type": "application/json" },
+        });
+      if (url.includes("/api/auth/password/login")) {
+        return json(
+          {
+            error: { code: "email_login_moved", message: "moved" },
+            login_url: "/auth/shared/start",
+          },
+          409,
+        );
+      }
+      if (url.includes("/api/auth/status")) {
+        return json({
+          ready: true,
+          authenticated: false,
+          history_ready: true,
+          user: null,
+          model_requires_session: true,
+          session_state: "guest",
+          methods: { password: true },
+        });
+      }
+      return json({ error: { code: "not_found", message: "not found" } }, 404);
+    }) as typeof fetch;
+
+    const user = userEvent.setup();
+    render(<App />);
+    await waitFor(() => {
+      expect(screen.getByText("실제 API 연결")).toBeInTheDocument();
+    });
+    await user.click(document.getElementById("loginButton") as HTMLElement);
+    await user.type(screen.getByLabelText("이메일"), "clone@example.com");
+    await user.type(screen.getByLabelText("비밀번호"), "any-password");
+    await user.click(document.getElementById("passwordLoginSubmit") as HTMLElement);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("로그인 방식이 바뀌었어요. 공통 로그인으로 이동합니다"),
+      ).toBeInTheDocument();
+    });
+    expect(
+      document.getElementById("passwordLoginMovedLink")?.getAttribute("href"),
+    ).toBe("/auth/shared/start");
+  });
 });

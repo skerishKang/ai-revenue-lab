@@ -31,7 +31,7 @@ import pytest
 
 from app.pilot import platform_secrets as ps
 from app.pilot import router_core
-from app.pilot.errors import UpstreamAuthFailed, UpstreamServerError
+from app.pilot.errors import UpstreamClientError, UpstreamServerError
 from app.pilot.tier_fallback import effective_tier_default, effective_tier_fallback
 
 from _pilot_lane_paths import chat_surface
@@ -191,8 +191,14 @@ def test_only_recoverable_provider_errors_advance_to_the_next_candidate():
     assert router_core.is_error_fallback_allowed("upstream_server_error") is True
     assert router_core.is_error_fallback_allowed("upstream_rate_limited") is True
     assert router_core.is_error_fallback_allowed("upstream_timeout") is True
-    assert router_core.is_error_fallback_allowed("upstream_auth_failed") is False
+    # #7389: a candidate-level rejection (401/403/404/429) advances; a bare
+    # client error without a status reason stays terminal (fail closed).
+    assert router_core.is_error_fallback_allowed("upstream_auth_failed") is True
     assert router_core.is_error_fallback_allowed("upstream_client_error") is False
+    assert router_core.is_error_fallback_allowed(
+        "upstream_client_error", reason="upstream_http_404") is True
+    assert router_core.is_error_fallback_allowed(
+        "upstream_client_error", reason="upstream_http_422") is False
     assert router_core.is_error_fallback_allowed("internal_error") is False
 
 
@@ -316,7 +322,9 @@ def test_the_gateway_does_not_advance_on_a_non_recoverable_failure(client, monke
     async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages,
                    temperature=0.2, max_tokens=300, transport=None):
         calls.append({"model_id": model_id})
-        raise UpstreamAuthFailed()
+        # #7389: a request-content rejection (422) is not a candidate failure,
+        # so the walk must stop here (401/404 now advance).
+        raise UpstreamClientError(422)
 
     plat.call_platform_chat_completions = fake
     try:

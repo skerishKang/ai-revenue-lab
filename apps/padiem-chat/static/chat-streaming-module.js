@@ -25,6 +25,7 @@
     if (deps.authState.authenticated) {
       deps.loadRecentConversations();
       if (deps.projectsReady) deps.loadProjects();
+      window.PadiemChatMemoryReview?.sync?.();
     }
     article.scrollIntoView({ block: "nearest", behavior: "smooth" });
     return true;
@@ -78,10 +79,14 @@
       article.querySelector(".assistant-content"),
       data.scope_notice,
     );
+    if (Array.isArray(data.memory_proposals)) {
+      window.PadiemChatMemoryReview?.render?.(data.memory_proposals);
+    }
     deps.renderProjectState();
     if (deps.authState.authenticated) {
       deps.loadRecentConversations();
       if (deps.projectsReady) deps.loadProjects();
+      window.PadiemChatMemoryReview?.sync?.();
     }
     // Owner 2026-10-20: the answer carries the moment it completed. It is
     // turn metadata on the rendered message, not a second storage structure,
@@ -183,14 +188,14 @@
       const paragraph = details.querySelector("p");
       if (paragraph) paragraph.textContent = summaryText;
     }
-    const response = clawGeneralRequest
-      ? await deps.chatTransport.requestClawGeneral(payload, signal)
-      : await deps.chatTransport.requestStreaming(payload, signal);
+    // #7297: Chat and Claw share the Chat direct execution path; only the
+    // product label differs.
+    const response = await deps.chatTransport.requestStreaming(payload, signal);
     const responseContentType = response.headers?.get?.("content-type") || "";
     const shouldFollowStream = !/\bapplication\/json\b/i.test(responseContentType);
     const pcProgressRunId = window.PadiemPcBrowserSurface?.runIdForProgress?.(
       response, payload, clawGeneralRequest
-    ) ?? (clawGeneralRequest ? null : payload.pc_run_id);
+    ) ?? payload.pc_run_id ?? null;
     deps.activeClawRunId = clawGeneralRequest && typeof pcProgressRunId === "string"
       ? pcProgressRunId : null;
 
@@ -401,7 +406,7 @@
           // executing on the server and its answer is persisted, so keep this
           // turn in its processing state and let the owner-scoped pending-result
           // recovery below read the stored answer instead of claiming a failure.
-          if (!clawGeneralRequest && contextSnapshot?.pcRunId && deps.chatTransport.isStreamLoss?.(data)) {
+          if (contextSnapshot?.pcRunId && deps.chatTransport.isStreamLoss?.(data)) {
             PadiemChatLifecycle.set(article, deps.MESSAGE_LIFECYCLE.STREAMING);
             window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, deps.uiT("pc-processing-note"), "status");
             throw deps.chatTransport.errorFor(data, message);
@@ -424,7 +429,7 @@
         window.PadiemChatThoughtPanel?.settle?.(
           article, deps.uiT("orchestration-thinking-done-label"),
         );
-        if (clawGeneralRequest && data.pc_pending === true
+        if (data.pc_pending === true
             && typeof data.run_id === "string"
             && typeof data.conversation_id === "string") {
           const pendingConversationId = data.conversation_id;
@@ -471,7 +476,7 @@
       // The PC lane may already have persisted its answer. Let the outer
       // request catch perform the owner-scoped recovery instead of rendering a
       // premature connection error from the incomplete stream.
-      if (!clawGeneralRequest && contextSnapshot?.pcRunId && !terminalError) throw error;
+      if (contextSnapshot?.pcRunId && !terminalError) throw error;
       if (paragraph) {
         if (clawGeneralRequest) {
           const clawFailure = deps.clawGeneralFailure(error && error.code);
@@ -542,6 +547,7 @@
       // for this account yet.
       await window.PadiemTierSelection?.ready?.();
       const payload = { messages: outboundMessages, tier: deps.selectedProductTier(), skill };
+      if (clawGeneralRequest || contextSnapshot?.product === "claw") payload.product = "claw";
       // #4745: retain the exact user-turn claim for a manual retry. A new
       // submitPrompt receives a new contextSnapshot, so a separate identical
       // request obtains a distinct key; explicit retry reuses this snapshot.
@@ -552,7 +558,7 @@
       // PADIEM Custom is the customer-owned key lane: it replaces the PADIEM
       // tier for this request (the server rejects tier+custom) and stays on the
       // direct provider path, never through B14 orchestration.
-      const customSelection = !clawGeneralRequest && window.PadiemCustomSelection?.get?.();
+      const customSelection = window.PadiemCustomSelection?.get?.();
       if (customSelection) {
         delete payload.tier;
         payload.custom = { provider: customSelection.provider, model: customSelection.model };
@@ -566,7 +572,7 @@
       // An explicit retry reuses the failed request's handle; the server
       // refuses to rewrite an existing run, so a retry cannot silently start a
       // second PC execution. A new submit gets a new snapshot/handle.
-      const pcRunId = !clawGeneralRequest && !customSelection
+      const pcRunId = !customSelection
         ? (contextSnapshot.pcRunId || deps.chatTransport.createChatPcRunId?.()) : null;
       if (pcRunId) {
         contextSnapshot.pcRunId = pcRunId;
@@ -610,7 +616,7 @@
       // Chat keeps its existing completed-attachment request unchanged; a Claw
       // submit stays on the canonical P01 Engine lane and never falls back to
       // the standalone direct-B14 /api/chat route (#3539).
-      if (attachments && !clawGeneralRequest) {
+      if (attachments) {
         const completedOk = await deps.requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, controller.signal);
         if (completedOk) {
           deps.lastCompletedAnswerRequest = { outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest: Boolean(clawGeneralRequest), article };
@@ -651,7 +657,7 @@
       // server refuses it, no stored result can exist. Either way a failed
       // retry ends here, in its own failure card with its own retry action,
       // instead of sitting in the streaming state with a running clock.
-      if (!clawGeneralRequest && contextSnapshot?.pcRunId && !error?.terminalRecord
+      if (contextSnapshot?.pcRunId && !error?.terminalRecord
           && !error?.submissionRejected && !explicitRetry) {
         try {
           const recovered = await deps.recoverStoredPcResult(

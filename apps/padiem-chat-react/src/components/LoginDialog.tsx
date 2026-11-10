@@ -22,18 +22,22 @@ export function LoginDialog({ open, onClose, onSignedIn }: LoginDialogProps) {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [movedUrl, setMovedUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     setBusy(true);
     setError(null);
+    setMovedUrl(null);
     try {
       await loginWithPassword(identifier.trim(), password);
       setPassword("");
       onSignedIn();
       onClose();
     } catch (failure) {
+      const loginUrl = (failure as { loginUrl?: unknown } | null)?.loginUrl;
+      if (typeof loginUrl === "string" && loginUrl) setMovedUrl(loginUrl);
       setError(
         failure instanceof Error && failure.message
           ? failure.message
@@ -97,6 +101,11 @@ export function LoginDialog({ open, onClose, onSignedIn }: LoginDialogProps) {
             <p className="auth-error" id="passwordLoginError" role="alert">
               {error}
             </p>
+          ) : null}
+          {movedUrl ? (
+            <a className="auth-primary" id="passwordLoginMovedLink" href={movedUrl}>
+              공통 로그인으로 이동
+            </a>
           ) : null}
           <button className="auth-primary" id="passwordLoginSubmit" type="submit" disabled={busy}>
             {t("auth-login") || "로그인"}

@@ -2,9 +2,16 @@
 
 The targets are only the rows whose whole meaning dies with their deadline:
 sign-in handoffs, reset tokens, pairing codes, approval handoffs, dispatch
-receipts, OAuth states. Conversation/message/attachment/bookAI records, PC work
-records, audit and consent ledgers keep their own retention — the owner has not
-decided those retention periods yet, so this module never touches them.
+receipts, OAuth states. Attachment/bookAI records, PC work records, audit and
+consent ledgers keep their own retention — the owner has not decided those
+retention periods yet, so this module never touches them.
+
+Conversations are a separate, decided retention (#7388): the owner deletes a
+conversation, the row is marked and disappears from every product surface, and
+``app.conversation_purge`` deletes the messages, the row and the R2 originals
+once the 30-day window closes. That pass is the second one this daily run makes;
+it is not a table in ``PURGE_TARGETS`` because it needs three stores in one
+transaction, not a single-table column cutoff.
 
 Repositories that already delete their own expired rows are not purged twice
 here: ``claw_coding_conversation_grant`` is cleaned by its own store
@@ -38,6 +45,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
+from .conversation_purge import retention_days_from_env as conversation_retention_days_from_env
 from .local_cron import _entry_mode
 
 STATUS_PREFIX = "CHAT_EXPIRED_PURGE="
@@ -74,8 +82,10 @@ class PurgeTarget:
 # Stage-1 survey (docs/operations/EXPIRED_PURGE_20261103.md): one-shot data
 # whose deadline already passed. Deliberately absent from this list:
 # claw_coding_conversation_grant (self-cleaning store), oracle_mesh_dispatch
-# (never deleted by the application), every audit/consent/identity/connection/
-# conversation table (owner retention decision pending).
+# (never deleted by the application), every audit/consent/identity/connection
+# table, and conversations/messages (decided separately, #7388: the marked-row
+# pass in app.conversation_purge, which must remove messages and R2 originals
+# with the row instead of shedding a single table by column cutoff).
 PURGE_TARGETS: tuple[PurgeTarget, ...] = (
     PurgeTarget("claw_approval_handoff", "pause_expires_at", "text"),
     PurgeTarget("claw_github_oauth_states", "expires_at", "epoch_seconds"),
@@ -196,11 +206,33 @@ async def purge_expired_rows(
     return result
 
 
+def _full_key_deleter(bucket: Any):
+    """Delete stored full originals, tolerating an absent object.
+
+    The rows are already committed at this point, so a failed object delete is a
+    leaked object, never a restored conversation. It is reported by count only
+    when it succeeds; the retention pass never turns a storage hiccup into a
+    red daily unit.
+    """
+
+    async def delete(keys: list[str]) -> None:
+        for key in keys:
+            try:
+                result = bucket.delete(key)
+                if hasattr(result, "__await__"):
+                    await result
+            except Exception:
+                pass
+
+    return delete
+
+
 async def _run_once_async(environ: dict[str, str], *, dry_run: bool) -> str:
-    """One guarded run: entry flags, local SQLite binding, one bounded pass."""
+    """One guarded run: entry flags, one SQLite binding, two bounded passes."""
     _entry_mode(environ)  # same entry contract as app.local_cron
     grace_days = grace_days_from_env(environ)
     batch_size = batch_size_from_env(environ)
+    conversation_retention_days = conversation_retention_days_from_env(environ)
 
     from .d1_sqlite import SqliteD1, connect
     from .local_cpython import local_data_dir
@@ -211,14 +243,35 @@ async def _run_once_async(environ: dict[str, str], *, dry_run: bool) -> str:
     data_dir.mkdir(parents=True, exist_ok=True)
     connection = connect(str(data_dir / "chat.sqlite3"))
     try:
+        binding = SqliteD1(connection)
         counts = await purge_expired_rows(
-            SqliteD1(connection),
+            binding,
             grace_days=grace_days,
             batch_size=batch_size,
             dry_run=dry_run,
         )
+        # #7388 second pass: conversations whose marked window has closed. The
+        # R2 originals live in the same data directory the serving process uses.
+        from .conversation_purge import (
+            DEFAULT_BATCH as CONVERSATION_BATCH,
+            purge_deleted_conversations,
+        )
+        from .local_r2 import ThreadedLocalDiskR2
+
+        purged = await purge_deleted_conversations(
+            binding,
+            retention_days=conversation_retention_days,
+            batch_size=CONVERSATION_BATCH,
+            dry_run=dry_run,
+            delete_full_keys=_full_key_deleter(
+                ThreadedLocalDiskR2(data_dir / "objects")
+            ),
+        )
     finally:
         connection.close()
+    counts["deleted_conversations"] = purged["conversations"]
+    counts["deleted_messages"] = purged["messages"]
+    counts["deleted_r2_keys"] = purged["r2_keys"]
     detail = json.dumps(counts, sort_keys=True, separators=(",", ":"))
     mode = "dry_run" if dry_run else "ok"
     return f"{STATUS_PREFIX}{mode} detail={detail}"

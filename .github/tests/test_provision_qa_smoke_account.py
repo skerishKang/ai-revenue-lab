@@ -50,13 +50,15 @@ class ParserAndHygiene(unittest.TestCase):
         self.assertIn("PARSE_OK", result.stdout)
 
     def test_password_never_reaches_output_or_disk(self):
-        # The plaintext pair exists only in the three in-memory consumers:
-        # the two HTTPS bodies and the env content piped into ssh stdin.
+        # The plaintext pair exists only in the in-memory consumers: the two
+        # HTTPS bodies, the #7078 shared-login form, and the env content piped
+        # into ssh stdin.
         allowed = re.compile(
             r"(\$plainPassword\s*=|\$securePassword\s*=|Get-SecureStringPlainText \$securePassword"
             r"|\$plainPassword\.Length"
             r"|@\s*\{ email = \$email; password = \$plainPassword \}"
             r"|@\s*\{ identifier = \$email; password = \$plainPassword \}"
+            r"|Invoke-SharedLogin \$email \$plainPassword"
             r"|ConvertTo-EnvSingleQuoted \$plainPassword"
             r"|@\s*\{ name = \$Script:PasswordEnv; value = \$plainPassword \})"
         )

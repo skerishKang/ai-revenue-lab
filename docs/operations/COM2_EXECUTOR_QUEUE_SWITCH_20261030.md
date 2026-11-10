@@ -1,5 +1,12 @@
 # 컴2 queue switch — the executor side (prepared 2026-10-30, not executed)
 
+> **2026-11-10 — public ingress removed.** The queue host no longer has a tunnel
+> route: the internal path (`/internal/store`) is reachable on the 컴2 host's
+> loopback only (`127.0.0.1:8797`), which is where the Chat host and the executor
+> already pointed. Any step below that adds or verifies a public hostname for this
+> service is historical; do not re-add one. See
+> [the loopback-only record](PC_QUEUE_INTERNAL_PATH_LOOPBACK_ONLY_20261110.md).
+
 One page for the half of the 대기열 전환 that lives on this host: pointing the executor's
 queue legs at the loopback service. Nothing in this file has been run. The Chat half
 (`PC_QUEUE_BACKEND`, `PC_QUEUE_ORIGIN`, #6216 and its secret) is 아스트라2's, and the
