@@ -253,9 +253,14 @@ _PC_WRITE_INTENT = re.compile(
 #: Engine admission can fail the whole turn (503 entitlement_unavailable) when
 #: the deployment's Control Plane admission authority is unavailable. Reusing
 #: this one matcher keeps the PC lane for the turns that asked for it.
+#: #7165: ``컴퓨터``/``명령`` are PC words too. Without them an owner who asked
+#: "내 컴퓨터에서 whoami 실행해" on a connected PC attached no PC context at
+#: all, so the turn carried the "not connected" sentence and the model invented
+#: a remote-AI limit.
 _PC_EXPLICIT_REQUEST = re.compile(
-    r"(드라이브|파일|폴더|바탕화면|문서|다운로드|브라우저|PC\s*(조회|확인|검색)?"
-    r"|\b(drive|files?|folder|desktop|browser|pc)\b)",
+    r"(드라이브|파일|폴더|바탕화면|문서|다운로드|브라우저|컴퓨터|명령"
+    r"|PC\s*(조회|확인|검색)?"
+    r"|\b(drive|files?|folder|desktop|browser|pc)\w*\b)",
     re.IGNORECASE,
 )
 
@@ -627,6 +632,49 @@ async def chat_pc_tools_available(request: Request, *, uid: str | None) -> bool:
         return False
     return await _check_mesh_grant(request, session, device_id=device_id,
                                    owner_ref=uid)
+
+async def chat_pc_connection_available(
+    request: Request, *, uid: str | None, requested_device_id: str | None = None,
+) -> bool:
+    """Whether this account has a server-verified, executable PC right now.
+
+    This is the connection half of ``chat_pc_tools_available`` without the
+    turn's intent: the Chat sentence has to know the PC is connected even on a
+    turn that carries no tool (#7165). It grants nothing - every tool and
+    command still re-verifies the owner, grant and target when it runs.
+    """
+    if not uid:
+        return False
+    try:
+        session, _subject_id, workspace_id = await _resolve_chat_owner(request, uid)
+        from .pc_work_context import (
+            SAVED_SELECTION_SELECTED,
+            read_saved_device_selection,
+            resolve_pc_work_context,
+        )
+
+        selection = await read_saved_device_selection(
+            request, owner_id=uid, workspace_id=workspace_id,
+        )
+        device_id = (
+            selection.device_id
+            if selection.status == SAVED_SELECTION_SELECTED
+            else None
+        )
+        if requested_device_id is not None:
+            device_id = requested_device_id
+        context = await resolve_pc_work_context(
+            request, owner_id=uid, workspace_id=workspace_id,
+            session_id=getattr(session, "session_id", None),
+            selected_device_id=device_id,
+        )
+    except Exception:
+        return False
+    if not getattr(context, "tool_available", False):
+        return False
+    return await _check_mesh_grant(request, session, device_id=device_id,
+                                   owner_ref=uid)
+
 
 async def resolve_chat_pc_stream_context(
     request: Request, *, uid: str, requested_device_id: str | None = None,
