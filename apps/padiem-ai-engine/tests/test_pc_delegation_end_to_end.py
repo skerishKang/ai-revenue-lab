@@ -64,7 +64,12 @@ def run_turn(monkeypatch, root, *, route, settings, op="delete", path=PATH,
     payload = deepcopy(_payload(records, write=op != "read"))
     # Material appended after a user turn remains tool data in the side channel.
     payload["messages"] = [next(record for record in reversed(records) if record["role"] == "user")]
-    if settings is not None:
+    # The shared _payload now carries a stored allow rule for the other
+    # suites; here the scenario's own settings must win, so "missing" strips
+    # the key entirely (the same fact a store with no row produces).
+    if settings is None:
+        payload.pop("pc_delegation", None)
+    else:
         payload["pc_delegation"] = settings
     if route.startswith("native"):
         native_scope = "files" if op == "read" else "files_write"
