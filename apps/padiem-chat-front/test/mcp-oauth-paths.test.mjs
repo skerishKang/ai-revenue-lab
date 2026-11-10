@@ -98,7 +98,6 @@ test("OAuth POST body and the upstream response headers pass through", async () 
     headers: { "content-type": "application/x-www-form-urlencoded" },
     body: "grant_type=authorization_code&code=fixture",
   }), baseEnv());
-  assert.equal(response, upstream);
   assert.equal(seenBody, "grant_type=authorization_code&code=fixture");
   assert.equal(response.headers.get("cache-control"), "no-store");
 });
@@ -114,7 +113,8 @@ test("OAuth 302 and Set-Cookie reach the browser unchanged", async () => {
   const response = await handle(new Request(
     BASE + "/oauth/authorize?response_type=code&client_id=mcpc_x",
   ), baseEnv());
-  assert.equal(response, upstream);
+  // A header-attached copy must keep the redirect and the single Set-Cookie
+  // value exactly as the upstream wrote them.
   assert.equal(response.status, 302);
   assert.equal(response.headers.get("location"), "/auth/shared/start");
   assert.deepEqual(response.headers.getSetCookie(), [

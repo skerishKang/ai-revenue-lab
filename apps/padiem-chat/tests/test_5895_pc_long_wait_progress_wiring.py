@@ -16,6 +16,9 @@ from pathlib import Path
 
 import pytest
 
+# R5 0단계(R-01): 함수 경계는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import combined_source
+
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 NODE_TEST = ROOT / "tests" / "test_5895_pc_long_wait_progress.mjs"
@@ -48,20 +51,20 @@ def test_the_read_back_has_no_client_side_give_up():
     assert "Date.now" not in recovery
     assert "deadline" not in recovery
 
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
-    resume = app[app.index("async function resumeUnfinishedPcRun("):]
+    shipped = combined_source()
+    resume = shipped[shipped.index("async function resumeUnfinishedPcRun("):]
     resume = resume[:resume.index("\n  function renderStoredPcAnswer(")]
     for give_up in ("maxAttempts", "intervalMs", "setTimeout", "AbortController"):
         assert give_up not in resume, give_up
     # The wait is handed the caller's own refresh, so the elapsed time is the
     # shipped clock re-read on each poll rather than a second timer.
     assert "onPending: showWait," in resume
-    assert "window.PadiemChatLifecycle?.elapsedClockText" in app
+    assert "window.PadiemChatLifecycle?.elapsedClockText" in shipped
 
 
 def test_resume_reads_the_owner_history_and_reopens_the_same_conversation():
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
-    lookup = app[app.index("async function findUnfinishedPcRun("):]
+    shipped = combined_source()
+    lookup = shipped[shipped.index("async function findUnfinishedPcRun("):]
     lookup = lookup[:lookup.index("async function resumeUnfinishedPcRun(")]
 
     # One read of the existing owner-scoped history, with no client page size
@@ -73,7 +76,7 @@ def test_resume_reads_the_owner_history_and_reopens_the_same_conversation():
     assert '(run.status === "pending" || run.status === "running")' in lookup
     assert "run.session?.conversation_id === conversationId" in lookup
 
-    resume = app[app.index("async function resumeUnfinishedPcRun("):]
+    resume = shipped[shipped.index("async function resumeUnfinishedPcRun("):]
     resume = resume[:resume.index("\n  function renderStoredPcAnswer(")]
     assert "resolvedPcRuns.has(unfinished.run_id)" in resume
     assert "resolvedPcRuns.add(unfinished.run_id);" in resume
@@ -89,7 +92,7 @@ def test_resume_reads_the_owner_history_and_reopens_the_same_conversation():
     # The only call site is the restored conversation itself, after its saved
     # messages are rendered and before the motion resume. It is fire-and-forget:
     # the restore does not wait on the unfinished run.
-    restore = app[app.index("async function openSavedConversation("):]
+    restore = shipped[shipped.index("async function openSavedConversation("):]
     restore = restore[:restore.index("  // #4471:")]
     call = restore.index("void resumeUnfinishedPcRun(data.conversation.id);")
     assert restore.index("data.conversation.messages.forEach") < call

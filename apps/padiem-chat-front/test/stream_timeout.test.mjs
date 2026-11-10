@@ -105,8 +105,8 @@ test("a 5xx response passes through without mixing origins", async () => {
   const response = await handle(
     new Request("https://chat.padiem.net/api/conversations"), baseEnv(),
   );
-  assert.equal(response, upstream);
   assert.equal(response.status, 502);
+  assert.equal(response.headers.get("x-padiem-front"), null);
   assert.equal(await response.text(), "partial-upstream");
 });
 

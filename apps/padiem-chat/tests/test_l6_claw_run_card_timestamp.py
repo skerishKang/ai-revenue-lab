@@ -34,6 +34,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
+# R5 0단계(R-01): 카드 렌더러는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_source
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 ISO_INSTANT = "2026-09-19T01:00:00Z"
@@ -44,10 +47,11 @@ def _app() -> str:
 
 
 def _card_fn() -> str:
-    app = _app()
-    start = app.index("  function renderClawRunCard(run) {")
-    end = app.index("\n  function fetchClawRunHistory(", start)
-    return app[start:end]
+    # R5 0단계(R-01): 카드 렌더러는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+    card = definition_source("renderClawRunCard")
+    start = card.index("  function renderClawRunCard(run) {")
+    end = card.index("\n  function fetchClawRunHistory(", start)
+    return card[start:end]
 
 
 # ── static contracts ───────────────────────────────────────────────────────

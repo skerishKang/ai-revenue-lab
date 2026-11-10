@@ -38,6 +38,9 @@ STATIC = APP_ROOT / "static"
 VIEWS_CSS = STATIC / "standalone-views.css"
 APP_JS = STATIC / "app.js"
 
+# R5 0단계(R-01): 함수 선언은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_source  # noqa: E402
+
 AUTH_ENDPOINT = "/api/auth/status"
 RULES_ENDPOINT = "/api/claw/automation/rules"
 
@@ -174,7 +177,9 @@ def test_the_wide_screen_order_is_untouched() -> None:
 
 def test_the_create_form_scrolls_into_view_when_it_opens() -> None:
     source = APP_JS.read_text(encoding="utf-8")
-    assert "function scrollClawAutomationCreateIntoView()" in source
+    assert "function scrollClawAutomationCreateIntoView()" in definition_source(
+        "scrollClawAutomationCreateIntoView"
+    )
     handler = source.split("clawAutomationCreateOpen.addEventListener", 1)[1].split("});", 1)[0]
     assert "clawAutomationCreate.open = !clawAutomationCreate.open;" in handler
     assert "scrollClawAutomationCreateIntoView();" in handler

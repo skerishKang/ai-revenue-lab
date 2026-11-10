@@ -42,6 +42,7 @@ from app.claw_web_push_sender import (
     build_push_payload,
     build_vapid_authorization,
     encrypt_payload,
+    push_endpoint_refusal,
 )
 
 # --------------------------------------------------------------------------
@@ -420,3 +421,85 @@ async def test_transport_exception_never_raises() -> None:
     result = await sender.send(subscription=_Subscription(), title="t", body="b")
     assert result.delivered is False
     assert result.reason == "transport_failed"
+
+
+# --------------------------------------------------------------------------
+# the endpoint contract (outbound destination fail-closed)
+# --------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "endpoint",
+    [
+        "https://fcm.googleapis.com/wp/device-1",
+        "https://android.googleapis.com/gcm/send/legacy-id",
+        "https://updates.push.services.mozilla.com/wpush/v2/token",
+        "https://web.push.apple.com/p/abc123",
+        "https://xx.push.apple.com/p/abc123",
+        "https://wns.notify.windows.com/token",
+        "https://wns2-par2p.notify.windows.com/token",
+    ],
+)
+def test_a_reviewed_push_service_endpoint_is_allowed(endpoint):
+    assert push_endpoint_refusal(endpoint) is None
+
+
+@pytest.mark.parametrize(
+    ("endpoint", "refusal"),
+    [
+        ("http://fcm.googleapis.com/wp/device-1", "endpoint_scheme_not_https"),
+        ("https://127.0.0.1/wp/device-1", "endpoint_ip_literal"),
+        ("https://10.1.2.3/wp/device-1", "endpoint_ip_literal"),
+        ("https://169.254.169.254/latest", "endpoint_ip_literal"),
+        ("https://192.168.1.50/wp/device-1", "endpoint_ip_literal"),
+        ("https://[::1]/wp/device-1", "endpoint_ip_literal"),
+        ("https://[fe80::1]/wp/device-1", "endpoint_ip_literal"),
+        ("https://push.example.test/device-1", "endpoint_host_not_allowed"),
+        ("https://fcm.googleapis.com.evil.test/wp/device-1", "endpoint_host_not_allowed"),
+        ("https://evil.test/fcm.googleapis.com", "endpoint_host_not_allowed"),
+        ("https://webpush.apple.com/p/abc123", "endpoint_host_not_allowed"),
+        ("https://evilpush.apple.com.attacker.com/p/abc123", "endpoint_host_not_allowed"),
+        ("https://fcm.googleapis.com:8443/wp/device-1", "endpoint_port_not_allowed"),
+        ("", "endpoint_missing"),
+        ("not-a-url", "endpoint_scheme_not_https"),
+    ],
+)
+def test_an_endpoint_outside_the_reviewed_contract_is_refused(endpoint, refusal):
+    """Non-https schemes, IP literals (loopback, private, link-local) and
+    unreviewed hosts are refused with a bounded, endpoint-free reason."""
+    reason = push_endpoint_refusal(endpoint)
+    assert reason == refusal
+
+
+@pytest.mark.asyncio
+async def test_send_time_recheck_refuses_a_non_contract_endpoint_without_a_post() -> None:
+    """The delivery path re-checks the endpoint before any crypto or transport
+    work: a stored subscription outside the contract is never POSTed to."""
+    sender, transport = _sender(201)
+    subscription = _Subscription()
+    subscription.endpoint = "https://push.example.test/device-1"
+    result = await sender.send(subscription=subscription, title="t", body="b")
+    assert result.delivered is False
+    assert result.reason == "endpoint_host_not_allowed"
+    assert result.gone is False
+    assert transport.calls == []
+
+
+@pytest.mark.asyncio
+async def test_send_time_recheck_refuses_an_ip_literal_endpoint() -> None:
+    sender, transport = _sender(201)
+    subscription = _Subscription()
+    subscription.endpoint = "https://127.0.0.1/wp/device-1"
+    result = await sender.send(subscription=subscription, title="t", body="b")
+    assert result.delivered is False
+    assert result.reason == "endpoint_ip_literal"
+    assert transport.calls == []
+
+
+@pytest.mark.asyncio
+async def test_send_time_recheck_keeps_a_reviewed_endpoint_delivering() -> None:
+    """The re-check changes nothing for a real browser push endpoint."""
+    sender, transport = _sender(201)
+    result = await sender.send(subscription=_Subscription(), title="t", body="b")
+    assert result.delivered is True
+    assert len(transport.calls) == 1

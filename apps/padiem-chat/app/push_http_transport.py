@@ -19,7 +19,14 @@ import httpx
 
 
 class PushHttpTransport:
-    """The bounded single-POST surface the Web Push sender needs."""
+    """The bounded single-POST surface the Web Push sender needs.
+
+    Exactly one POST, and never a redirect hop: the raw transport layer below
+    this class does not follow redirects (the Worker's fetch adapter runs with
+    ``redirect: "manual"``), so a push service's 3xx answer is surfaced as a
+    status code instead of becoming a second outbound request to a
+    subscription-controlled destination.
+    """
 
     def __init__(self, transport: Any, *, timeout_seconds: float = 10.0) -> None:
         self._transport = transport

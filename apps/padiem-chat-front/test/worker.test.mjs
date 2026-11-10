@@ -39,7 +39,7 @@ const reader = () => new Request("https://chat.padiem.net/api/conversations", {
   headers: { cookie: "padiem_session=abc", "cf-connecting-ip": "203.0.113.9" },
 });
 
-test("normal GET proxies to the tunnel origin with the exact response object", async () => {
+test("normal GET proxies to the tunnel origin and answers with the reviewed header set", async () => {
   const upstream = new Response("{\"conversations\":[]}", {
     status: 200,
     headers: { "content-type": "application/json" },
@@ -48,7 +48,12 @@ test("normal GET proxies to the tunnel origin with the exact response object", a
   const handle = createFront({ fetchImpl });
   const response = await handle(reader(), baseEnv());
 
-  assert.equal(response, upstream); // untouched body/status/headers object
+  // A header-attached copy: status, body and content type unchanged, the
+  // security header set added.
+  assert.equal(response.status, 200);
+  assert.equal(await response.text(), "{\"conversations\":[]}");
+  assert.equal(response.headers.get("content-type"), "application/json");
+  assert.equal(response.headers.get("x-frame-options"), "DENY");
   assert.equal(fetchImpl.calls.length, 1);
   const forwarded = fetchImpl.calls[0];
   assert.equal(forwarded.url, `${ORIGIN}/api/conversations`);
@@ -133,7 +138,8 @@ test("com2 down: reads fall back to the Python Worker in service mode", async ()
   const fetchImpl = recordingFetch(() => { throw new Error("connect failed"); });
   const handle = createFront({ fetchImpl });
   const response = await handle(reader(), baseEnv({ FALLBACK_MODE: "service", CHAT_WORKER: chatWorker }));
-  assert.equal(response, fallbackResponse);
+  assert.equal(await response.text(), "python");
+  assert.equal(response.headers.get("x-frame-options"), "DENY");
   assert.equal(chatWorker.calls, 1);
 });
 
@@ -239,7 +245,7 @@ test("a canonical write returns the upstream 5xx unchanged", async () => {
   const response = await handle(new Request("https://chat.padiem.net/api/projects", {
     method: "POST", body: "{}",
   }), baseEnv({ COM2_CANONICAL: "writes", FALLBACK_MODE: "service", CHAT_WORKER: chatWorker }));
-  assert.equal(response, upstream);
+  assert.equal(response.status, 500);
   assert.equal(await response.text(), '{"error":"unavailable"}');
   assert.equal(chatWorker.calls, 0);
 });

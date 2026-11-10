@@ -18,6 +18,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
+# R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_source
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 CAPABILITIES_JS = ROOT / "static/attachment-capabilities.js"
@@ -84,7 +87,9 @@ def test_ui_reads_only_the_read_only_endpoint() -> None:
     source = APP_JS.read_text(encoding="utf-8")
     assert f'fetch("{RULES_PATH}"' in source
     # The automation loader must never use a write verb.
-    loader = source.split("async function loadClawAutomationRules()")[1].split("\n  }")[0]
+    # R5 0단계(R-01): loadClawAutomationRules의 실제 정의 소스에서 잘라낸다.
+    loader_source = definition_source("loadClawAutomationRules")
+    loader = loader_source.split("async function loadClawAutomationRules()")[1].split("\n  }")[0]
     assert "method:" not in loader
     assert RULES_PATH in loader
 
@@ -306,9 +311,6 @@ sandbox.dispatchEvent = (event) => { (sessionWindowListeners[event.type] || []).
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
-// #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), sandbox, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 function collectText(root) {

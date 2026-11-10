@@ -9,6 +9,9 @@ import json
 import subprocess
 from pathlib import Path
 
+# R5 0단계(R-01): 함수 선언은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_source
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 STREAM_JS = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
@@ -172,7 +175,8 @@ def test_actual_renderer_terminal_and_raw_body_with_node_vm():
 
 
 def test_separate_generic_chat_retry_policy_preserved():
-    assert "function buildRetryBox(" in APP
+    # R5 0단계(R-01): buildRetryBox의 실제 정의는 app.js든 모듈이든 도우미로 찾는다.
+    assert "function buildRetryBox(" in definition_source("buildRetryBox")
     assert "if (clawGeneralRequest)" in APP
     assert 'hint.textContent = uiT("claw-general-check-runs")' in APP
     assert 'requestAnswer(retryMessages, retrySkill' in APP

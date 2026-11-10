@@ -40,6 +40,8 @@
   <link rel="stylesheet" href="./claw-manual-intake.css" />
   <link rel="stylesheet" href="./claw-workspace.css" />
   <link rel="stylesheet" href="./util-menu.css" />
+  <link rel="stylesheet" href="./util-app.css" />
+  <link rel="stylesheet" href="./util-tools.css" />
   <link rel="stylesheet" href="./claw-quote-compare.css" />
   <link rel="stylesheet" href="./b66-quote-runtime.css" />
   <link rel="stylesheet" href="./claw-local-handoff.css" />
@@ -178,6 +180,13 @@
       <header class="topbar">
         <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="open-menu" aria-label="메뉴 열기">☰</button>
         <button class="sidebar-restore-button" id="sidebarRestoreButton" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="sidebar-expand" aria-label="사이드바 펼치기" data-locale-title="sidebar-expand" title="사이드바 펼치기"><span aria-hidden="true">☰</span></button>
+        <!-- #7173 대표 결정: 상단 앱 전환 Chat | Claw | 유틸. The Util app's own
+             shell and routing live in the util module (its own two static files). -->
+        <nav class="app-switch" id="appSwitch" aria-label="앱 전환" data-locale-aria-label="app-switch-label">
+          <button type="button" class="app-switch-item" data-app="chat" aria-current="page">Chat</button>
+          <button type="button" class="app-switch-item" data-app="claw" aria-current="false">Claw</button>
+          <button type="button" class="app-switch-item" data-app="util" aria-current="false"><span data-locale-key="nav-util">유틸</span></button>
+        </nav>
       </header>
       <dialog class="auth-dialog" id="authDialog" aria-labelledby="authDialogTitle">
         <div class="auth-panel">
@@ -532,57 +541,15 @@
             <p class="standalone-view-tagline" id="utilTagline" data-locale-key="util-tagline">자주 쓰는 문서·홍보 도구 모음</p>
           </div>
         </header>
-        <nav class="util-tabs" hidden aria-label="유틸 기능 선택">
-          <button class="util-tab" type="button" data-util="speech" data-kicker="Padiem Speech" data-tagline="의원3종 앱에서 엽니다">축사·인사말</button>
-          <button class="util-tab" type="button" data-util="sns" data-kicker="Padiem SNS" data-tagline="의원3종 앱에서 엽니다">SNS 홍보</button>
-          <button class="util-tab" type="button" data-util="meeting" data-kicker="Padiem Meeting" data-tagline="의원3종 앱에서 엽니다">회의정리·활동집</button>
-          <button class="util-tab active" type="button" data-util="pdfmd" data-kicker="Padiem Util" data-tagline="PDF·ZIP을 Markdown으로 변환·비교·다운로드">PDF → Markdown</button>
-        </nav>
-        <!-- #5908: the quick-run toolbox. One glanceable card row over the
-             EXISTING panels and flows: the four util cards drive the same
-             activateUtilTab switch, the two Claw cards route to the existing
-             Claw composer (its own chip stays the owner). No second engine,
-             no new routes. Flow-linked cards say so in their buttons — they
-             are not direct-run claims. -->
-        <section class="util-tool-grid" id="utilToolGrid" aria-label="빠른 실행 도구함">
-          <div class="util-tool-card">
-            <span class="util-tool-icon" aria-hidden="true">✎</span>
-            <strong class="util-tool-name">축사·인사말</strong>
-            <span class="util-tool-desc">행사 축사·인사말 초안 생성·저장</span>
-            <button type="button" class="util-tool-open" data-util-tool="speech">열기</button>
-          </div>
-          <div class="util-tool-card">
-            <span class="util-tool-icon" aria-hidden="true">✦</span>
-            <strong class="util-tool-name">SNS 홍보</strong>
-            <span class="util-tool-desc">블로그·페이스북·인스타그램 초안</span>
-            <button type="button" class="util-tool-open" data-util-tool="sns">열기</button>
-          </div>
-          <div class="util-tool-card">
-            <span class="util-tool-icon" aria-hidden="true">▥</span>
-            <strong class="util-tool-name">회의정리·활동집</strong>
-            <span class="util-tool-desc">회의 요약·책/활동집 누적 생성</span>
-            <button type="button" class="util-tool-open" data-util-tool="meeting">열기</button>
-          </div>
-          <div class="util-tool-card">
-            <span class="util-tool-icon" aria-hidden="true">⇩</span>
-            <strong class="util-tool-name">PDF → Markdown</strong>
-            <span class="util-tool-desc">PDF·ZIP을 Markdown으로 변환·비교·다운로드</span>
-            <button type="button" class="util-tool-open" data-util-tool="pdfmd">이력 열기</button>
-          </div>
-          <div class="util-tool-card">
-            <span class="util-tool-icon" aria-hidden="true">◇</span>
-            <strong class="util-tool-name">견적서 초안</strong>
-            <span class="util-tool-desc">요청을 붙이면 견적서·발주서·답장 초안 — 서버에서 생성</span>
-            <button type="button" class="util-tool-open" data-util-tool="claw-quote">Claw에서 작성</button>
-          </div>
-          <div class="util-tool-card">
-            <span class="util-tool-icon" aria-hidden="true">▦</span>
-            <strong class="util-tool-name">Excel 열기/검토</strong>
-            <span class="util-tool-desc">XLSX 원본을 Claw 대화에서 열어 검토·작업</span>
-            <button type="button" class="util-tool-open" data-util-tool="claw-excel">Claw에서 진행</button>
-          </div>
-        </section>
-        <div class="util-panel" id="utilPdfmdPanel"></div>
+        <!-- #7173: the first screen is the card list; picking a card opens the
+             tool's own screen inside the Util app (hash #util/<id>). All of the
+             list/tool markup is rendered by the util module; the main bundle
+             holds none of it. -->
+        <div class="util-app-root" id="utilAppRoot"></div>
+        <!-- The existing PDF → Markdown panel keeps its node parked here. The
+             PDF tool screen mounts it inside its own body (the util module); PR3
+             moves the panel's own markup into that screen. No second copy. -->
+        <div id="utilPdfmdHost" hidden><div class="util-panel" id="utilPdfmdPanel" hidden></div></div>
       </section>
       <section class="calendar-view" id="calendarView" aria-labelledby="calendarViewTitle" hidden>
         <header class="calendar-view-header">
@@ -1422,6 +1389,13 @@
   <script src="./claw-connection-state.js"></script>
   <script src="./claw-composer-connection-status.js"></script>
   <script src="./util-menu.js" defer></script>
+  <!-- #7173 PR2: the tool modules load before util-app.js, whose boot renders
+       the initial route right away (defer scripts run at readyState
+       "interactive", so a later module would miss the first paint). -->
+  <script src="./util-tools-markdown.js" defer></script>
+  <script src="./util-tools-contract.js" defer></script>
+  <script src="./util-tools.js" defer></script>
+  <script src="./util-app.js" defer></script>
 <script src="./util-pdfmd.js" defer></script>
   <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
        presentation-only: never reads the directory endpoint or a raw payload. -->

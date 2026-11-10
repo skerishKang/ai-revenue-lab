@@ -70,7 +70,13 @@ def _issue_and_exchange():
 
 def make_app(flow=None, *, history_store=None):
     settings = Settings.from_values(
-        runtime_mode="mock", auth_mode="off", session_secret="test-secret-for-session"
+        runtime_mode="mock",
+        auth_mode="off",
+        session_secret="test-secret-for-session",
+        # The refresh/logout mutations are cookie-authenticated browser POSTs,
+        # so the same-origin guard needs the reviewed origin these tests
+        # already send as their Origin header.
+        public_base_url="https://chat.padiem.net",
     )
     app = create_app(settings=settings, shared_login_flow=flow, history_store=history_store)
     return app, settings

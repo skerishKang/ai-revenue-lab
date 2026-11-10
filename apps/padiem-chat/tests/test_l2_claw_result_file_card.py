@@ -50,25 +50,32 @@ XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 PDF = "application/pdf"
 
+# R5 0단계(R-01): 카드 렌더러는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_count, definition_source  # noqa: E402
+
 
 def _app() -> str:
     return APP_JS.read_text(encoding="utf-8")
 
 
+def _card_source() -> str:
+    return definition_source("renderClawRunCard")
+
+
 def _card_fn() -> str:
     """The whole real renderer, including the closed kind map it owns."""
-    app = _app()
-    start = app.index("  function renderClawRunCard(run) {")
-    end = app.index("\n  function fetchClawRunHistory(", start)
-    return app[start:end]
+    card = _card_source()
+    start = card.index("  function renderClawRunCard(run) {")
+    end = card.index("\n  function fetchClawRunHistory(", start)
+    return card[start:end]
 
 
 def _card_block() -> str:
     """The artifact row only, so the one-button guard still sees one button."""
-    app = _app()
-    marker = app.index('artifactRow.className = "claw-run-card-artifact";')
-    end = app.index("function fetchClawRunHistory", marker)
-    return app[marker:end]
+    card = _card_source()
+    marker = card.index('artifactRow.className = "claw-run-card-artifact";')
+    end = card.index("function fetchClawRunHistory", marker)
+    return card[marker:end]
 
 
 # ── static contracts ───────────────────────────────────────────────────────
@@ -113,7 +120,7 @@ def test_card_still_has_exactly_one_document_action() -> None:
         assert forbidden not in block, forbidden
     app = _app()
     assert app.count("/api/claw/manual-intake/artifact/") == 1
-    assert app.count("function downloadClawArtifact(") == 1
+    assert definition_count("downloadClawArtifact") == 1
 
 
 def test_download_only_note_is_stated_only_when_no_verified_preview_exists() -> None:

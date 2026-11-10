@@ -237,6 +237,11 @@
       field(detail, "mcp-settings-device", devices.join(", "));
       field(detail, "mcp-settings-used", latest?.last_used_at || copy("mcp-settings-never"));
       field(detail, "mcp-settings-tokens", String(group.tokens.length));
+      const expiry = group.tokens
+        .map((token) => token.expires_at)
+        .filter((value) => typeof value === "string" && value)
+        .sort()[0];
+      if (expiry) field(detail, "mcp-settings-token-expires", formatDateTime(expiry));
       item.append(detail);
       item.append(actionButton("mcp-settings-revoke", () => { void revokeGroup(group); }));
       nodes.list.append(item);
@@ -391,7 +396,8 @@
     await mutate(API + "/tokens", "POST", { name, device_id }, (body) => {
       if (typeof body.token !== "string" || !body.token || !body.id) return false;
       state.tokens.unshift({ id: body.id, name: body.name, device_id: body.device_id,
-        created_at: body.created_at, last_used_at: body.last_used_at, revoked_at: body.revoked_at });
+        created_at: body.created_at, expires_at: body.expires_at,
+        last_used_at: body.last_used_at, revoked_at: body.revoked_at });
       state.issued = body.token; nodes.token.value = state.issued; if (nodes.issued) nodes.issued.hidden = false;
       nodes.name.value = ""; state.status = "mcp-settings-issued";
       return true;
