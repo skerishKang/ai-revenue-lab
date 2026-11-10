@@ -166,7 +166,7 @@ def test_claw_browser_sends_grade_without_model_identifier():
     # A Claw request with an attachment must not silently switch to direct B14.
     # #2505: the attachment now travels on the Claw lane itself, so the guard is
     # the product check on the completed-attachment path, not a refusal.
-    assert "if (attachments && !clawGeneralRequest)" in STREAM
+    assert "if (attachments) {" in STREAM
     assert "if (clawGeneralRequest && attachments)" not in FRONT
     assert "if (clawGeneralRequest && attachments)" not in STREAM
 

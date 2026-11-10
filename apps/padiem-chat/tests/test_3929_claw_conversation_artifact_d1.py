@@ -81,7 +81,8 @@ def setup_database(*, with_index=True):
     db.execute("PRAGMA foreign_keys=ON")
     for mig in ("001_auth_history.sql", "009_claw_run_history.sql",
                 "014_claw_run_history_conversation.sql",
-                "015_claw_run_history_workspace.sql"):
+                "015_claw_run_history_workspace.sql",
+                "105_conversation_soft_delete.sql"):
         db.executescript((MIGRATIONS / mig).read_text(encoding="utf8"))
     if with_index:
         db.executescript(

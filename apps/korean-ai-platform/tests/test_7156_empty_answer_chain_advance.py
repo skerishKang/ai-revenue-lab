@@ -27,7 +27,7 @@ from __future__ import annotations
 
 
 from app.pilot import router_core
-from app.pilot.errors import UpstreamAuthFailed
+from app.pilot.errors import UpstreamClientError
 from app.pilot.tier_fallback import effective_tier_default, effective_tier_fallback
 from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer
 
@@ -104,7 +104,8 @@ def test_an_empty_answer_grants_no_same_route_retry():
 
 
 def test_a_non_recoverable_failure_still_does_not_advance():
-    assert router_core.is_error_fallback_allowed("upstream_auth_failed") is False
+    # #7389: 401/403/404/429 now advance; a request-content rejection does not.
+    assert router_core.is_error_fallback_allowed("invalid_request") is False
 
 
 def test_the_walk_advances_past_an_empty_answer(client, monkeypatch):
@@ -200,7 +201,9 @@ def test_the_chain_still_stops_at_the_first_non_recoverable_failure(client, monk
     async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages,
                    temperature=0.2, max_tokens=300, transport=None):
         calls.append({"model_id": model_id})
-        raise UpstreamAuthFailed()
+        # #7389: 401/403/404/429 now advance; a request-content rejection (422)
+        # is the remaining non-recoverable class this test pins.
+        raise UpstreamClientError(422)
 
     plat.call_platform_chat_completions = fake
     try:

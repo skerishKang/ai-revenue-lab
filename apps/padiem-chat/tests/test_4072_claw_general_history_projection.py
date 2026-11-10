@@ -352,7 +352,8 @@ def test_real_d1_owner_conversation_created_only_after_completed_claw():
     db.row_factory = sqlite3.Row
     db.executescript(
         "CREATE TABLE conversations (id TEXT PRIMARY KEY, user_id TEXT, "
-        "project_id TEXT, title TEXT, product_scope TEXT NOT NULL DEFAULT 'b62-chat', created_at TEXT, updated_at TEXT);"
+        "project_id TEXT, title TEXT, product_scope TEXT NOT NULL DEFAULT 'b62-chat', created_at TEXT, updated_at TEXT, "
+        "deleted_at TEXT);"
         "CREATE TABLE messages (id TEXT PRIMARY KEY, conversation_id TEXT, "
         "sequence_number INTEGER, role TEXT, content TEXT, created_at TEXT);"
     )

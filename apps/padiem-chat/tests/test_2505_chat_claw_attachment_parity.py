@@ -325,8 +325,8 @@ def test_a_claw_submit_sends_the_attachment_on_the_claw_lane():
     assert "claw-model-text-only-error" not in APP_JS
     assert "claw-model-text-only-error" not in STREAM_JS
     assert "claw-model-text-only-error" not in LOCALE_JS
-    # …and the attachment never silently moves to the Chat route.
-    assert "if (attachments && !clawGeneralRequest)" in submit
+    # #7297: Chat and Claw share the same completed attachment route.
+    assert "if (attachments) {" in submit
     assert "if (clawGeneralRequest && attachments)" not in APP_JS
     assert "if (clawGeneralRequest && attachments)" not in STREAM_JS
     assert "payload.attachments = attachments;" in submit
@@ -344,12 +344,9 @@ def test_the_two_lanes_share_one_attachment_request_body():
 
 
 def test_the_browser_refuses_a_claw_image_before_upload():
-    assert "claw-image-attachment-unsupported" in LOCALE_JS
-    assert "Claw는 아직 사진 첨부를 모델에 전달할 수 없습니다" in LOCALE_JS
-    # #261102: the selection entry point is now the multi-file addAttachmentFiles.
-    # #7216 R5 step 5a: the attachment area moved into chat-conversation-module.js.
+    # #7297: Claw image attachment parity with Chat — no client-side image refusal.
     conv_js = (ROOT / "static/chat-conversation-module.js").read_text(encoding="utf-8")
     select = conv_js[conv_js.index("async function addAttachmentFiles("): ]
     select = select[: select.index("\n  }")]
-    assert "deps.conversationProduct === deps.PRODUCT_CLAW" in select
-    assert 'deps.uiT("claw-image-attachment-unsupported")' in select
+    assert 'deps.uiT("claw-image-attachment-unsupported")' not in select
+    assert "deps.ALLOWED_IMAGE_TYPES.has(file.type)" in select

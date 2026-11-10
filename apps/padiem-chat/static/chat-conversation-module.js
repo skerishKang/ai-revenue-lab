@@ -70,12 +70,17 @@
       // Switching from Claw to ordinary Chat must not carry the Claw
       // execution-history disclosure into a customer conversation.
       // Do not erase the server-owned history, only reset this view.
-      for (const id of ("clawRunHistoryDisclosure", "clawRunHistory",
-                        "clawApprovedDisclosure", "clawApprovedMemory")) {
+      for (const id of ["clawRunHistoryDisclosure", "clawRunHistory",
+                        "clawApprovedDisclosure", "clawApprovedMemory"]) {
         const node = document.getElementById(id);
         if (!node) continue;
         node.hidden = true;
         if (node.tagName === "DETAILS") node.open = false;
+      }
+    } else if (restoreSaved && typeof document.getElementById === "function") {
+      for (const id of ["clawRunHistoryDisclosure", "clawApprovedDisclosure"]) {
+        const node = document.getElementById(id);
+        if (node && node.tagName === "DETAILS") node.open = false;
       }
     }
     deps.setNavActive();
@@ -187,6 +192,9 @@
     // A completed answer carries no runtime status: the chip is released
     // instead of staying on "answer preparing".
     window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, answerLabel, "status");
+    if (Array.isArray(result.memory_proposals)) {
+      window.PadiemChatMemoryReview?.render?.(result.memory_proposals);
+    }
     PadiemChatLifecycle.set(article, deps.MESSAGE_LIFECYCLE.COMPLETED);
   }
   function renderStreamError(article, message, retryMessages, retrySkill, retryContext, clawGeneralRequest = false, lifecycle = deps.MESSAGE_LIFECYCLE.FAILED, clawFailure = null, errorCode = "") {
@@ -296,13 +304,6 @@
           throw new Error(deps.uiT("attachment-count-limit", { count: limit }));
         }
         let next;
-        // #2505: the Claw turn reads attached documents through the same path as
-        // Chat, but the P01 Engine execution request has no image input yet. The
-        // image is refused here, before any upload, instead of being sent and
-        // answered as if nothing had been read. Chat keeps images unchanged.
-        if (deps.ALLOWED_IMAGE_TYPES.has(file.type) && deps.conversationProduct === deps.PRODUCT_CLAW) {
-          throw new Error(deps.uiT("claw-image-attachment-unsupported"));
-        }
         // #6126: an uploaded .hwp is judged by its own bytes, not its name.
         // The older OLE2 binary Hangul format is refused with the save-as-
         // HWPX guidance on this chip only; a mislabeled file whose bytes are
@@ -395,6 +396,16 @@
     deps.conversationArtifactContext?.clear?.();
     deps.emptyState.hidden = false;
     deps.shell.dataset.state = "home";
+    if (typeof document.getElementById === "function") {
+      for (const id of ["clawRunHistoryDisclosure", "clawRunHistory",
+                        "clawApprovedDisclosure", "clawApprovedMemory", "clawMemoryReview"]) {
+        const node = document.getElementById(id);
+        if (!node) continue;
+        node.hidden = true;
+        if (node.tagName === "DETAILS") node.open = false;
+      }
+    }
+    window.PadiemChatMemoryReview?.sync?.();
     // One shared follow state for Chat and Claw: a new conversation starts
     // from "latest" and hides the jump control.
     window.__padiemConversationMotion?.reset?.();
@@ -413,6 +424,7 @@
       deps.switchConversationProduct(deps.PRODUCT_CHAT);
       deps.shell.dataset.state = "chat";
       deps.setNavActive();
+      window.PadiemChatMemoryReview?.sync?.();
       deps.closeSidebar();
       deps.input.focus();
       return;

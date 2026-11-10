@@ -134,7 +134,9 @@ def test_other_primary_or_grade_does_not_inherit_free_fallback(monkeypatch, mode
     ("upstream_server_error", True),
     ("upstream_rate_limited", True),
     ("upstream_timeout", True),
-    ("upstream_auth_failed", False),
+    # #7389: a candidate-level 401/403 advances; a bare client error without a
+    # status reason stays terminal (fail closed).
+    ("upstream_auth_failed", True),
     ("upstream_client_error", False),
     ("internal_error", False),
     ("malformed_upstream_response", True),

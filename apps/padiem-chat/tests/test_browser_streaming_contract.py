@@ -89,9 +89,8 @@ def test_text_only_streams_but_attachment_keeps_completed_json() -> None:
 
     assert "deps.chatTransport.requestStreaming(payload, signal)" in stream_source
     assert "deps.chatTransport.requestCompleted(payload, signal)" in stream_source
-    # #2505: Chat keeps the completed JSON path for an attachment; the same
-    # guard now also keeps a Claw attachment on its own P01 lane.
-    assert "if (attachments && !clawGeneralRequest) {" in stream_source
+    # #7297: Chat and Claw share the completed JSON path for an attachment.
+    assert "if (attachments) {" in stream_source
     # Success recording for one-click regenerate keeps the same dispatch
     # shape: completed JSON for attachments, streaming otherwise.
     assert "await deps.requestCompletedAnswer(" in stream_source

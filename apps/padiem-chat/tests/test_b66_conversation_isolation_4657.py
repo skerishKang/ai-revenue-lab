@@ -62,6 +62,7 @@ def setup_database():
         "001_auth_history.sql",
         "002_projects.sql",
         "042_conversation_product_scope.sql",
+        "105_conversation_soft_delete.sql",
     ):
         db.executescript((MIGRATIONS / migration).read_text(encoding="utf8"))
     for owner in (OWNER, OTHER_OWNER):

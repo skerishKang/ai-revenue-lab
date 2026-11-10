@@ -519,7 +519,7 @@ async def _connector_tool_lane(
             saved_id = None
         if saved_id is not None:
             done_payload["conversation_id"] = saved_id
-        from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=answer, conversation_id=saved_id)  # #7297 공통 실행 기록 투영
+        from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=answer, conversation_id=saved_id, action="connector")  # #7297 공통 실행 기록 투영
     yield _public_sse("done", done_payload)
 
 
@@ -1405,7 +1405,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                                             if project is not None
                                             else None
                                         )
-                                from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=answer, conversation_id=saved_id)
+                                from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=answer, conversation_id=saved_id, action=("web_search" if done_payload.get("answer_status") == "answered_with_evidence" else "general"))  # #7297 공통 실행 기록 투영
                             if project_files_used:
                                 done_payload["project_files_used"] = project_files_used
                             yield _public_sse("done", done_payload)
@@ -1818,5 +1818,5 @@ async def api_chat(request: Request) -> JSONResponse:
                 if effective_project_id is not None:
                     result["project_id"] = effective_project_id
                     result["project"] = {"id": project.id, "name": project.name} if project is not None else None
-            from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=result["answer"], conversation_id=saved_id)  # #7297 공통 실행 기록 투영
+            from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=result["answer"], conversation_id=saved_id, action=(tool_request.tool.id if tool_request else "web_search" if result.get("answer_status") == "answered_with_evidence" else "general"))  # #7297 공통 실행 기록 투영
     return JSONResponse(public_chat_result(result))
