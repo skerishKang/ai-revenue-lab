@@ -102,15 +102,15 @@ def demo_home_client():
 # ---------------------------------------------------------------------------
 # Legacy catalog entries for tests written before decision #1933.
 #
-# #1933 reduced the production catalog to a single Kilo Gateway route. Several
+# #1933 reduced the production catalog to a single pinned route. Several
 # contracts (legacy capability tags, hard privacy policy, platform-owned
 # credential plane, provider readiness) were written against the wider catalog.
 # These fixtures reinstall the historical entries inside a single test so those
 # contracts stay genuinely validated instead of silently collapsing to a single
 # candidate. They never alter the committed catalog.
 # ---------------------------------------------------------------------------
-GEMINI_MODEL_ID = "google/gemini-2.5-flash"
-AGNES_MODEL_ID = "agnes-ai/agnes-3.0-flash"
+GEMINI_MODEL_ID = "example-provider/legacy-synthetic-gemini"
+AGNES_MODEL_ID = "example-provider/legacy-synthetic-agnes"
 
 
 def _gemini_catalog_model():
@@ -119,8 +119,8 @@ def _gemini_catalog_model():
     return CatalogModel(
         model_id=GEMINI_MODEL_ID,
         upstream_model=GEMINI_MODEL_ID,
-        display_name="Google: Gemini 2.5 Flash",
-        provider="Google",
+        display_name="Synthetic Legacy External Route",
+        provider="Synthetic",
         provider_type="external",
         input_price_usd_per_1m=0.30,
         output_price_usd_per_1m=2.50,
@@ -141,9 +141,9 @@ def _agnes_catalog_model():
 
     return CatalogModel(
         model_id=AGNES_MODEL_ID,
-        upstream_model="agnes-3.0-flash",
-        display_name="Agnes AI: Agnes 3.0 Flash",
-        provider="Agnes AI",
+        upstream_model="synthetic-legacy-agnes-upstream",
+        display_name="Synthetic Legacy Platform Route",
+        provider="Synthetic",
         provider_type="platform",
         input_price_usd_per_1m=None,
         output_price_usd_per_1m=None,
@@ -155,7 +155,7 @@ def _agnes_catalog_model():
         region="외부",
         sort_order=70,
         credential_source="platform_secret",
-        platform_provider_id="agnes-ai",
+        platform_provider_id="synthetic-legacy-platform",
     )
 
 
@@ -195,11 +195,13 @@ def _install_catalog_models(monkeypatch, *models):
 
 @pytest.fixture()
 def gemini_catalog_entry(monkeypatch):
-    """Install the historical Gemini route (paid, image-capable)."""
+    """Install the synthetic paid image-capable legacy route."""
     return _install_catalog_models(monkeypatch, _gemini_catalog_model())
+
+
 @pytest.fixture()
 def agnes_catalog_entry(monkeypatch):
-    """Install the historical Agnes route (platform_secret, no free tag)."""
+    """Install the synthetic platform_secret legacy route (no free tag)."""
     return _install_catalog_models(monkeypatch, _agnes_catalog_model())
 
 
