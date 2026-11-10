@@ -15,6 +15,9 @@ from pathlib import Path
 
 import pytest
 
+# R5 0단계(R-01): 함수 선언은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_source
+
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 CAPABILITIES = (STATIC / "product-capabilities.js").read_text(encoding="utf-8")
@@ -240,7 +243,9 @@ def test_selected_custom_provider_model_goes_to_the_custom_field_without_tier() 
 
 
 def test_custom_failures_reopen_the_existing_model_card() -> None:
-    assert "function handleCustomRequestFailure(error)" in APP
+    assert "function handleCustomRequestFailure(error)" in definition_source(
+        "handleCustomRequestFailure"
+    )
     assert 'const CUSTOM_AUTH_FAILURE_CODE = "custom_provider_auth_failed";' in APP
     assert 'code === "custom_credential_required" || code === CUSTOM_AUTH_FAILURE_CODE' in APP
     assert "window.PadiemCustomSelection?.open?.();" in APP

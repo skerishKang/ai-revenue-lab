@@ -19,6 +19,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+# R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_source, function_body
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -67,7 +70,9 @@ def test_general_chat_transport_untouched() -> None:
     assert "async function requestAnswer(" in APP
     assert "async function requestAnswer(" in STREAM
     assert "deps.requestStreamingAnswer(\n        article,\n        payload," in STREAM
-    assert "async function submitPrompt(text, selectedSkill)" in APP
+    assert "async function submitPrompt(text, selectedSkill)" in definition_source(
+        "submitPrompt", prefix="async function "
+    )
 
 
 WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
@@ -75,20 +80,14 @@ STYLES_CSS = (STATIC / "styles.css").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 
 
-def _function_body(name: str) -> str:
-    start = APP.index(f"function {name}() {{")
-    end = APP.index("\n  }", start)
-    return APP[start:end]
-
-
 def test_claw_default_view_is_general_not_manual() -> None:
     # #3531 UI hierarchy: opening Claw lands on the general conversation
     # view. The document workflow is a separate explicit view, never the
     # default. Auth loss also falls back to general, never to manual.
-    general = _function_body("openClawWorkspace")
+    general = function_body("openClawWorkspace")
     assert 'clawWorkspace.dataset.view = "general"' in general
     assert "if (clawManualForm) clawManualForm.hidden = true;" in general
-    manual = _function_body("openClawManual")
+    manual = function_body("openClawManual")
     assert 'clawWorkspace.dataset.view = "manual"' in manual
     assert "if (clawManualForm) clawManualForm.hidden = false;" in manual
     assert APP.count('clawWorkspace.dataset.view = "general"') == 1

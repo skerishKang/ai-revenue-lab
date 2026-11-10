@@ -50,6 +50,9 @@ from pathlib import Path
 
 from _android_handoff_storage_guard import assert_session_storage_is_handoff_only
 
+# R5 0단계(R-01): 함수 정의·본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import combined_source, definition_count, definition_source, function_body
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 LOCALE_JS = ROOT / "static/locale.js"
@@ -85,14 +88,14 @@ def _locale_table() -> dict[str, dict[str, str]]:
 
 
 def _execute_body(app: str) -> str:
-    body = app[app.index("async function runClawExecution()") :]
+    shipped = combined_source()
+    body = shipped[shipped.index("async function runClawExecution()") :]
     return body[: body.index("if (clawExecuteButton) {")]
 
 
 def _payload_source(app: str) -> str:
     """The single place the execute request shape is assembled."""
-    start = app.index("function clawVisibleExecutePayload()")
-    return app[start : app.index("\n  }", start)]
+    return function_body("clawVisibleExecutePayload")
 
 
 # ── static structural contracts: execute payload ───────────────────────────
@@ -228,7 +231,7 @@ def test_session_action_reuses_open_saved_conversation() -> None:
     app = _app_source()
     # One call site, through the existing owner, keyed by the projected handle.
     assert app.count("openSavedConversation(sessionConversationId);") == 1
-    assert app.count("async function openSavedConversation(") == 1
+    assert definition_count("openSavedConversation") == 1
     assert app.count('clawT("claw-runs-open-session")') == 1
     assert (
         app.count(
@@ -274,7 +277,10 @@ def test_session_action_adds_no_new_route_or_second_store() -> None:
 def test_session_action_stays_b54_static_slice_safe() -> None:
     """Defense in depth: the B54 historical-artifact contract must still hold."""
     app = _app_source()
-    card_block = app.split("claw-run-card-artifact", 1)[1].split("function fetchClawRunHistory", 1)[0]
+    # R5 0단계(R-01): 카드 본문은 renderClawRunCard의 실제 정의가 있는 소스에서
+    # 잘라낸다(app.js → 이후 실행 기록 모듈).
+    card_source = definition_source("renderClawRunCard")
+    card_block = card_source.split("claw-run-card-artifact", 1)[1].split("function fetchClawRunHistory", 1)[0]
     assert card_block.count('createElement("button")') == 1
     assert "claw-run-card-download" in card_block
     # #3932 adds a PDF-only read/preview controller, not a session reopening
@@ -323,7 +329,7 @@ def test_b54_harness_exemption_is_pinned() -> None:
 def test_execute_entry_anchors_are_unchanged() -> None:
     app = _app_source()
     # Pre-existing dispatch/anchors this issue must not disturb.
-    assert app.count("async function runClawExecution()") == 1
+    assert definition_count("runClawExecution") == 1
     assert app.count("void runClawExecution();") == 2
     assert app.count("beginClawWait();") == 1
     assert "// explicit retry only after the pre-dispatch cooldown" in app
@@ -573,9 +579,6 @@ sandbox.dispatchEvent = (event) => { (sessionWindowListeners[event.type] || []).
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
-// #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), sandbox, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 function collectButtons(root) {
