@@ -61,8 +61,8 @@ def routing_decision(method,url):
     return "abort"
 
 def run():
-    username=os.getenv("B66_CGI_ALPHA_USERNAME","")
-    password=os.getenv("B66_CGI_ALPHA_PASSWORD","")
+    username=os.getenv("QA_MANUAL_USERNAME","")
+    password=os.getenv("QA_MANUAL_PASSWORD","")
     if not username or not password:
         print("B66_GUIDED_ISOLATED=FAIL_CREDENTIAL_MISSING",flush=True)
         return 2

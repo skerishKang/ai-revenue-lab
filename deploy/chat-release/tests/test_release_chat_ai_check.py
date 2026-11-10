@@ -93,8 +93,8 @@ class AiCheckGateStaticContract(unittest.TestCase):
         prints nothing — the values go straight into env:."""
         loader = _extract_function("Get-Com2QaCredentials")
         self.assertIn("qa-smoke.env", loader)
-        self.assertIn("B66_CGI_ALPHA_USERNAME", loader)
-        self.assertIn("B66_CGI_ALPHA_PASSWORD", loader)
+        self.assertIn("QA_DEPLOY_USERNAME", loader)
+        self.assertIn("QA_DEPLOY_PASSWORD", loader)
         for banned in ("Write-Host", "Write-Output", "Write-Info", "Write-Step", "echo"):
             self.assertNotIn(banned, loader)
 

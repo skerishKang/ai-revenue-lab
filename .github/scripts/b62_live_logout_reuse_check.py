@@ -132,8 +132,8 @@ def login_bounded(opener, username: str, password: str):
 
 
 def run() -> int:
-    username = os.environ.get("B66_CGI_ALPHA_USERNAME", "")
-    password = os.environ.get("B66_CGI_ALPHA_PASSWORD", "")
+    username = os.environ.get("QA_MANUAL_USERNAME", "")
+    password = os.environ.get("QA_MANUAL_PASSWORD", "")
     if not username or not password:
         print("B62_LOGOUT_REUSE_CHECK=BLOCKED_NO_APPROVED_QA_CREDENTIAL")
         return 3

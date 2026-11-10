@@ -574,8 +574,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     return run_live(
-        os.getenv("B66_CGI_ALPHA_USERNAME", ""),
-        os.getenv("B66_CGI_ALPHA_PASSWORD", ""),
+        os.getenv("QA_MANUAL_USERNAME", ""),
+        os.getenv("QA_MANUAL_PASSWORD", ""),
     )
 
 

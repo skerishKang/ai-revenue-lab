@@ -68,8 +68,8 @@ jobs:
     environment: production
     env:
       TARGET_SHA: ${{ inputs.target_sha }}
-      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
-      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+      QA_MANUAL_USERNAME: ${{ vars.QA_MANUAL_USERNAME }}
+      QA_MANUAL_PASSWORD: ${{ secrets.QA_MANUAL_PASSWORD }}
       EXEC_MODE: ${{ inputs.mode }}
     steps:
       - uses: actions/checkout@v4
@@ -84,8 +84,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "$TARGET_SHA"
           git fetch --no-tags --depth=1 origin main
           test "$(git rev-parse origin/main)" = "$TARGET_SHA"
-          test -n "$B66_CGI_ALPHA_USERNAME"
-          test -n "$B66_CGI_ALPHA_PASSWORD"
+          test -n "$QA_MANUAL_USERNAME"
+          test -n "$QA_MANUAL_PASSWORD"
           echo "B66_4229_OWNER_PRECALL=PASS"
       - uses: actions/setup-python@v5
         with:

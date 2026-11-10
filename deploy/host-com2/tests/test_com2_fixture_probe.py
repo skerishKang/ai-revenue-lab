@@ -45,8 +45,8 @@ class Fake:
 
 @pytest.mark.parametrize('absent', [True, False])
 def test_all_checks_and_cleanup(monkeypatch, absent):
-    monkeypatch.setenv('B66_CGI_ALPHA_USERNAME','test')
-    monkeypatch.setenv('B66_CGI_ALPHA_PASSWORD','test')
+    monkeypatch.setenv('QA_DEPLOY_USERNAME','test')
+    monkeypatch.setenv('QA_DEPLOY_PASSWORD','test')
     fake=Fake(hwpx_absent=absent)
     rows=m.run_probes('https://chat.padiem.net',fake)
     assert [r[1] for r in rows] == ['PASS','SKIP' if absent else 'PASS','PASS','PASS']
@@ -54,8 +54,8 @@ def test_all_checks_and_cleanup(monkeypatch, absent):
     assert ('DELETE','https://chat.padiem.net/api/document-conversions/items/item_1') in fake.events
 
 def test_cleanup_on_conversion_failure(monkeypatch):
-    monkeypatch.setenv('B66_CGI_ALPHA_USERNAME','test')
-    monkeypatch.setenv('B66_CGI_ALPHA_PASSWORD','test')
+    monkeypatch.setenv('QA_DEPLOY_USERNAME','test')
+    monkeypatch.setenv('QA_DEPLOY_PASSWORD','test')
     fake=Fake(fail_convert=True)
     rows=m.run_probes('https://chat.padiem.net',fake)
     assert rows[2][1]=='FAIL'

@@ -59,7 +59,7 @@
 #   PADIEM_COM2_SYSTEMCTL        systemctl wrapper
 #   PADIEM_COM2_PYTHON           python3
 #   PADIEM_COM2_GIT              git
-#   B66_CGI_ALPHA_USERNAME / B66_CGI_ALPHA_PASSWORD  existing QA account
+#   QA_DEPLOY_USERNAME / QA_DEPLOY_PASSWORD  existing QA account
 #                                (also auto-loaded from the root-only
 #                                /etc/padiem/qa-smoke.env below)
 #   PADIEM_COM2_CHAT_VENV_PYTHON  the chat service's own venv interpreter
@@ -74,7 +74,7 @@ export PYTHONDONTWRITEBYTECODE=1
 
 # The QA smoke account (provision_qa_smoke_account.ps1 writes it root-only
 # 0600) reaches this systemd-run script only through the environment, so one
-# source line connects the file to the AI answer gate's B66_CGI_ALPHA_* pair.
+# source line connects the file to the AI answer gate's QA_DEPLOY_* pair.
 qa_smoke_env=${PADIEM_COM2_QA_SMOKE_ENV:-/etc/padiem/qa-smoke.env}
 if [[ -r $qa_smoke_env ]]; then
   set -a
@@ -2072,7 +2072,7 @@ run_deploy() {
   # Check the required QA capability before touching the checkout or services.
   # The operator can explicitly select --ai-check=warn on the next run.
   if (( apply )) && [[ $ai_check == required ]] && {
-      [[ -z ${B66_CGI_ALPHA_USERNAME:-} ]] || [[ -z ${B66_CGI_ALPHA_PASSWORD:-} ]];
+      [[ -z ${QA_DEPLOY_USERNAME:-} ]] || [[ -z ${QA_DEPLOY_PASSWORD:-} ]];
   }; then
     printf '%s\n' 'COM2_DEPLOY_AI_CHECK=REQUIRED_UNAVAILABLE' \
       'COM2_DEPLOY_AI_CHECK_ACTION=RERUN_WITH_CREDENTIALS_OR_EXPLICIT_WARN' >&2

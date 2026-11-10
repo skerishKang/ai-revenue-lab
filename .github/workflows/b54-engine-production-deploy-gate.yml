@@ -523,8 +523,8 @@ jobs:
       - name: Post-deploy real chat
         shell: bash
         env:
-          B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
-          B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+          QA_SMOKE_USERNAME: ${{ secrets.QA_SMOKE_USERNAME }}
+          QA_SMOKE_PASSWORD: ${{ secrets.QA_SMOKE_PASSWORD }}
         run: |
           set -euo pipefail
           python3 .github/scripts/post_deploy_real_chat_smoke.py --lane engine

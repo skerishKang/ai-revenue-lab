@@ -127,8 +127,8 @@ jobs:
     environment: production
     env:
       TARGET_SHA: ${{ needs.source-contract.outputs.target_sha }}
-      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
-      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+      QA_MANUAL_USERNAME: ${{ vars.QA_MANUAL_USERNAME }}
+      QA_MANUAL_PASSWORD: ${{ secrets.QA_MANUAL_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -142,8 +142,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
           git fetch --no-tags --depth=1 origin main
           test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
-          test -n "${B66_CGI_ALPHA_USERNAME}"
-          test -n "${B66_CGI_ALPHA_PASSWORD}"
+          test -n "${QA_MANUAL_USERNAME}"
+          test -n "${QA_MANUAL_PASSWORD}"
           echo 'B62_LOGOUT_REUSE_QA_AUTH_PREFLIGHT=PASS'
           echo 'CREDENTIAL_VALUES_LOGGED=0'
       - uses: actions/setup-python@v5

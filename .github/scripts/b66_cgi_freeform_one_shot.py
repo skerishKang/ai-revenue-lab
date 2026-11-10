@@ -20,8 +20,8 @@ def allowed(method,url):
     return method=="POST" and p.scheme=="https" and p.netloc=="quick-quote-kr.pages.dev" and p.path in POSTS
 
 def run():
-    user=os.getenv("B66_CGI_ALPHA_USERNAME","")
-    password=os.getenv("B66_CGI_ALPHA_PASSWORD","")
+    user=os.getenv("QA_MANUAL_USERNAME","")
+    password=os.getenv("QA_MANUAL_PASSWORD","")
     model=os.getenv("B66_CGI_SELECTED_MODEL_ID","")
     flow=os.getenv("B66_CGI_FLOW_MODE","complete")
     if flow not in ("complete","partial_followup"):

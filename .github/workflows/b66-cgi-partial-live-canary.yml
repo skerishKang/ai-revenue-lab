@@ -114,10 +114,10 @@ jobs:
     environment: production
     env:
       TARGET_SHA: ${{ inputs.target_sha }}
-      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+      QA_MANUAL_USERNAME: ${{ vars.QA_MANUAL_USERNAME }}
       B66_CGI_CANARY_SELECTED_TIER: ${{ inputs.selected_tier }}
       B66_CGI_CANARY_CASE: ${{ inputs.quote_case }}
-      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+      QA_MANUAL_PASSWORD: ${{ secrets.QA_MANUAL_PASSWORD }}
     steps:
       - name: Checkout exact approved main
         uses: actions/checkout@v4
@@ -132,9 +132,9 @@ jobs:
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
           git fetch origin main
           test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
-          test -n "${B66_CGI_ALPHA_USERNAME}"
+          test -n "${QA_MANUAL_USERNAME}"
           test -n "${B66_CGI_CANARY_SELECTED_TIER}"
-          test -n "${B66_CGI_ALPHA_PASSWORD}"
+          test -n "${QA_MANUAL_PASSWORD}"
           echo 'PRECALL_EXACT_MAIN=PASS'
           echo 'CGI_CREDENTIAL_PRESENT=YES'
           echo 'SECRET_VALUE_OUTPUT=0'

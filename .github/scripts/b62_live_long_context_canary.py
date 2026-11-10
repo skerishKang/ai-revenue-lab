@@ -204,8 +204,8 @@ def bounded_stream_call(opener, path: str, *, payload, timeout=CHAT_TIMEOUT_SECO
 
 
 def run() -> int:
-    username = os.environ.get("B66_CGI_ALPHA_USERNAME", "")
-    password = os.environ.get("B66_CGI_ALPHA_PASSWORD", "")
+    username = os.environ.get("QA_MANUAL_USERNAME", "")
+    password = os.environ.get("QA_MANUAL_PASSWORD", "")
     run_id = os.environ.get("GITHUB_RUN_ID", "")
     if not username or not password or not run_id:
         print("B62_LONG_CONTEXT_CANARY=BLOCKED_NO_APPROVED_QA_CREDENTIAL")
