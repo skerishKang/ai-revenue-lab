@@ -4,10 +4,6 @@
   "source_served_version": "e281d358-7486-4aed-9771-07a17738d6d6",
   "bindings": [
     {
-      "name": "B14_SERVICE",
-      "type": "service"
-    },
-    {
       "name": "CLAW_ENGINE_DESKTOP_SECRET",
       "type": "secrets_store_secret"
     },

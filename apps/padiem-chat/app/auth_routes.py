@@ -1050,6 +1050,13 @@ async def password_login(request: Request) -> JSONResponse:
     except Exception:
         pass
 
+    # Same retry point for a failed external AI credential revocation.
+    try:
+        from .external_token_revoke import flush_pending as flush_external_tokens
+        await flush_external_tokens(request, credential.user.id)
+    except Exception:
+        pass
+
     settings: Settings = request.app.state.settings
     authenticated_epoch = int(now.timestamp())
     authenticated_at = datetime.fromtimestamp(authenticated_epoch, tz=timezone.utc)
@@ -1235,6 +1242,16 @@ async def password_change(request: Request) -> JSONResponse:
     except Exception:
         pass
 
+    # A changed credential also ends every external AI credential of this
+    # account: personal tokens and OAuth grants alike. Best-effort by product
+    # decision: a failed revocation never fails the change; it is journaled
+    # and a durable marker retries on the next login/refresh/change.
+    try:
+        from .external_token_revoke import revoke_after_credential_change
+        await revoke_after_credential_change(request, user_id)
+    except Exception:
+        pass
+
     response = JSONResponse({"ok": True})
     response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
     return response
@@ -1411,6 +1428,16 @@ async def password_reset_confirm(request: Request) -> JSONResponse:
     # #7078: same revocation point as the password change above.
     try:
         from .shared_session_revoke import revoke_after_credential_change
+        await revoke_after_credential_change(request, user_id)
+    except Exception:
+        pass
+
+    # A changed credential also ends every external AI credential of this
+    # account: personal tokens and OAuth grants alike. Best-effort by product
+    # decision: a failed revocation never fails the change; it is journaled
+    # and a durable marker retries on the next login/refresh/change.
+    try:
+        from .external_token_revoke import revoke_after_credential_change
         await revoke_after_credential_change(request, user_id)
     except Exception:
         pass

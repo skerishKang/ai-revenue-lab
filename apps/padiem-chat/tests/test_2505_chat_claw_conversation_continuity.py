@@ -45,6 +45,9 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.history import PRODUCT_SCOPE_CHAT
 
+# R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import function_body, from_definition
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 STATE_JS = ROOT / "static/conversation-state.js"
@@ -53,12 +56,6 @@ HISTORY_PY = ROOT / "app/history.py"
 
 def _app_source() -> str:
     return APP_JS.read_text(encoding="utf-8")
-
-
-def _function_body(source: str, name: str) -> str:
-    start = source.index(f"function {name}(")
-    end = source.index("\n  }", start)
-    return source[start:end]
 
 
 # ── static contracts ─────────────────────────────────────────────────────────
@@ -93,7 +90,7 @@ def test_the_panel_no_longer_parks_one_screen_to_show_the_other() -> None:
     assert "parkProductTurns" not in app
     assert "restoreProductTurns" not in app
     assert "productViews" not in app
-    switch = _function_body(app, "switchConversationProduct")
+    switch = function_body("switchConversationProduct")
     # The lane changes; the transcript does not.
     assert "conversationState.setProduct?.(target);" in switch
     assert "messageList.replaceChildren()" not in switch
@@ -103,14 +100,14 @@ def test_the_panel_no_longer_parks_one_screen_to_show_the_other() -> None:
 
 def test_a_claw_submit_carries_the_chat_conversation_id() -> None:
     app = _app_source()
-    submit = app[app.index("async function submitPrompt("):]
+    submit = from_definition("submitPrompt", prefix="async function ")
     submit = submit[: submit.index("\n  }")]
     # The lane is still decided per submit…
     assert "const product = clawGeneralRequest ? PRODUCT_CLAW : PRODUCT_CHAT;" in submit
     # …and the conversation comes from the one shared store.
     assert "conversationState.getConversationId(product)" in submit
     # A saved thread is loaded into that same store, whichever lane owns it.
-    open_saved = _function_body(app, "openSavedConversation")
+    open_saved = function_body("openSavedConversation")
     assert "conversationState.resetProduct?.(targetProduct);" in open_saved
     assert "conversationState.setConversationId(data.conversation.id, targetProduct);" in open_saved
 
@@ -449,9 +446,6 @@ sandbox.dispatchEvent = (event) => { (sessionWindowListeners[event.type] || []).
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
-// #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), sandbox, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 (async () => {

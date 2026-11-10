@@ -60,7 +60,9 @@
   }
 
   async function json(url, options = {}) {
-    const response = await fetch(url, {
+    // #7368: GET 상태 조회는 앞단 손실(502/503/504)·네트워크 오류일 때 한 번만
+    // 다시 묻는다. 쓰기(POST)는 재시도 없이 한 번만 나간다.
+    const response = await window.PadiemChatTransport.fetchStatusWithRetry(url, {
       credentials: "same-origin", cache: "no-store",
       headers: {Accept:"application/json"}, ...options
     });

@@ -198,10 +198,12 @@ def chat_url():
 
 def _open_pdfmd(page, url):
     page.goto(url, wait_until="domcontentloaded")
-    # The sidebar submenu entry is the path that opens the util screen itself;
-    # the quick-launch tile only switches the tab when the screen is already up.
-    page.wait_for_selector('.util-submenu-item[data-util="pdfmd"]', state="attached")
-    page.evaluate("() => document.querySelector('.util-submenu-item[data-util=\"pdfmd\"]').click()")
+    # #7173: top app switch → the PDF card opens the tool's own screen, and the
+    # existing panel mounts inside it (PR3 moves the panel markup there).
+    page.wait_for_selector('[data-app="util"]', state="visible")
+    page.locator('[data-app="util"]').click()
+    page.wait_for_selector('[data-util-route="#util/pdfmd"]', state="visible")
+    page.locator('[data-util-route="#util/pdfmd"]').click()
     page.wait_for_selector("#pdfmdPcPick", state="visible")
     page.wait_for_timeout(400)
 

@@ -758,7 +758,7 @@ def _local_bindings(values: Mapping[str, str]) -> dict[str, Any]:
     # composition, over the reviewed v2 HTTPS RPC. Unconfigured keeps the
     # binding absent, so the Calendar lane answers today's 503 and no host ever
     # invents a binding selection (see
-    # docs/operations/COM2_P01_CONTROL_PLANE_BINDINGS_20261109.md).
+    # the 비공개 운영 기록(거버넌스 폴더, 같은 상대 경로), COM2_P01_CONTROL_PLANE_BINDINGS_20261109.md).
     bindings.update(google_oauth_binding_for(values))
     # Without a configured path the binding stays absent, so every durable lane
     # keeps the Worker's own fail-closed answer instead of a process-local fake.

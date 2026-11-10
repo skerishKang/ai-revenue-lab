@@ -23,6 +23,47 @@
 import { newRequestId, signedRequestHeaders } from "./edge-proof.mjs";
 import { errorPageHtml, wantsHtml } from "./error-copy.mjs";
 
+// Security response headers, attached to every front answer (proxied upstream,
+// static asset, maintenance page and front-generated error alike). The values
+// mirror the reviewed Worker configuration (apps/padiem-chat/app/worker_config.py):
+// the microphone stays same-origin because the voice composer's getUserMedia
+// runs on this origin (static/voice-stt-wiring.js, static/voice-live-session.js),
+// and every script/style origin in the report-only policy is one the static
+// files actually load (same-origin assets, cdn.jsdelivr.net + Google Fonts
+// stylesheets imported by static/padiem-foundation.css, www.googleapis.com for
+// the meeting Drive resumable upload). The body policy rides Report-Only so a
+// real page breakage is observed, never caused; frame-ancestors alone is
+// enforced because it cannot affect how a top-level page renders.
+const PERMISSIONS_POLICY = "camera=(), microphone=(self), geolocation=()";
+const FRAME_ANCESTORS_CSP = "frame-ancestors 'none'";
+// Kept as one literal string: the python contract test pins this exact text
+// back onto worker.mjs so the front and the legacy entry cannot drift apart.
+const CSP_REPORT_ONLY = `default-src 'self'; base-uri 'none'; object-src 'none'; frame-src blob:; frame-ancestors 'none'; script-src 'self'; connect-src 'self' https://www.googleapis.com; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; form-action 'self'`;
+const SECURITY_RESPONSE_HEADERS = {
+  "x-content-type-options": "nosniff",
+  "referrer-policy": "strict-origin-when-cross-origin",
+  "permissions-policy": PERMISSIONS_POLICY,
+  "x-frame-options": "DENY",
+  "content-security-policy": FRAME_ANCESTORS_CSP,
+  "content-security-policy-report-only": CSP_REPORT_ONLY,
+};
+
+function withSecurityHeaders(response) {
+  // WebSocket upgrades pass through untouched: rebuilding the response would
+  // break the 101 protocol pairing, and a socket exchange is not a document
+  // the header set addresses.
+  if (response.status === 101 || response.webSocket) return response;
+  const headers = new Headers(response.headers);
+  for (const [name, value] of Object.entries(SECURITY_RESPONSE_HEADERS)) {
+    headers.set(name, value);
+  }
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const DEFAULT_HEALTH_TTL_MS = 10000;
 const DEFAULT_TIMEOUT_MS = 8000;
@@ -50,6 +91,10 @@ const ANSWER_GENERATION_PATHS = new Set([
   "/api/b66/ai/chat",
 ]);
 const DEFAULT_API_READ_TIMEOUT_MS = 30000;
+// The host→Chat-Worker voice RPC (#7228) has exactly one edge route. It goes
+// straight to the CHAT_WORKER service binding so that lane needs no public
+// hostname of its own; the Worker still verifies the host's service proof.
+const VOICE_RPC_PATH = "/internal/rpc/voice_stt";
 // Resumable chunked uploads (tus, /api/projects/*/files/tus) hold the request
 // open while a ≤90MB chunk drains to COM2 — a healthy upload must not die on
 // the plain write deadline. PATCH/POST on those paths get their own allowance
@@ -263,9 +308,23 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     });
   }
 
-  return async function handle(request, env) {
+  async function route(request, env) {
     const url = new URL(request.url);
     const requestId = requestIdFor(request);
+    // Transport only: the single voice-RPC path, POST, and only when the host
+    // already attached its service proof. Authorization stays with the Worker,
+    // which checks that signature against its own secret.
+    if (request.method === "POST" && url.pathname === VOICE_RPC_PATH &&
+        request.headers.has("x-padiem-service-proof")) {
+      if (!env.CHAT_WORKER || typeof env.CHAT_WORKER.fetch !== "function") {
+        return requestFailure(request, 503, "voice_rpc_unbound", requestId);
+      }
+      try {
+        return await env.CHAT_WORKER.fetch(request);
+      } catch {
+        return requestFailure(request, 502, "voice_rpc_transport_failed", requestId);
+      }
+    }
     // MCP OAuth endpoints and metadata are dynamic, no-store responses. Keep
     // them out of the static asset/cache branch and give them the API-read
     // budget (DB + redirect work) instead of the generic proxy deadline.
@@ -374,6 +433,12 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     }
     if (bookAIRecords) return maintenanceResponse("bookai_records_com2_unavailable", requestId);
     return fallback(request, env, false, requestId);
+  };
+
+  // One exit: every front answer — proxied, static, maintenance or error —
+  // carries the same security header set (see withSecurityHeaders).
+  return async function handle(request, env) {
+    return withSecurityHeaders(await route(request, env));
   };
 }
 

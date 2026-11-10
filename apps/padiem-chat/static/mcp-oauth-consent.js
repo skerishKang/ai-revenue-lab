@@ -46,6 +46,16 @@
       : "/";
   }
 
+  // 계정 전환은 세션을 폐기하는 변경 요청이라 POST로만 받는다. 링크 클릭을
+  // 같은 주소의 폼 POST로 바꿔 제출한다(브라우저가 이동하며 쿠키를 실어 보낸다).
+  function submitSwitchAccount(url) {
+    const form = document.createElement("form");
+    form.method = "post";
+    form.action = url;
+    document.body.append(form);
+    form.submit();
+  }
+
   function showLogin(url) {
     if (loading) loading.hidden = true;
     if (content) content.hidden = true;
@@ -82,7 +92,17 @@
       accountLine.hidden = !account;
     }
     if (switchLink) {
-      switchLink.setAttribute("href", safeLoginUrl(info.switch_account_url || ""));
+      const target = safeLoginUrl(info.switch_account_url || "");
+      switchLink.setAttribute("href", target);
+      // 세션 폐기는 POST 변경 요청: 평시 링크 이동 대신 폼 제출로 보낸다.
+      // render()는 정보 갱신 때 다시 불릴 수 있으므로 리스너는 한 번만 붙인다.
+      if (!switchLink.dataset.switchBound) {
+        switchLink.dataset.switchBound = "1";
+        switchLink.addEventListener("click", (event) => {
+          event.preventDefault();
+          submitSwitchAccount(safeLoginUrl(info && info.switch_account_url || ""));
+        });
+      }
     }
     if (intro) {
       intro.replaceChildren();

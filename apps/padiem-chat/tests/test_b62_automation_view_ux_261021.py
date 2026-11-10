@@ -27,6 +27,9 @@ from pathlib import Path
 
 import pytest
 
+# R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_source
+
 try:  # pragma: no cover - environment dependent
     from playwright.sync_api import sync_playwright
 except ImportError:  # pragma: no cover - environment dependent
@@ -198,18 +201,21 @@ def test_the_list_load_tells_a_permission_refusal_from_a_failed_load() -> None:
     assert "owner_role_required" in source
     # The retry belongs to the failure state and is hidden by the reset.
     reset = re.search(
-        r"function resetClawAutomationState\(\) \{(?P<body>.*?)\n  \}", source, re.S
+        r"function resetClawAutomationState\(\) \{(?P<body>.*?)\n  \}",
+        definition_source("resetClawAutomationState"), re.S
     )
     assert reset is not None
     assert "setClawAutomationRetryVisible(false)" in reset.group("body")
     failure = re.search(
-        r"function setClawAutomationError\(\) \{(?P<body>.*?)\n  \}", source, re.S
+        r"function setClawAutomationError\(\) \{(?P<body>.*?)\n  \}",
+        definition_source("setClawAutomationError"), re.S
     )
     assert failure is not None
     assert "setClawAutomationRetryVisible(true)" in failure.group("body")
     # A permission refusal offers no retry, because a retry cannot change it.
     refusal = re.search(
-        r"function setClawAutomationForbidden\(\) \{(?P<body>.*?)\n  \}", source, re.S
+        r"function setClawAutomationForbidden\(\) \{(?P<body>.*?)\n  \}",
+        definition_source("setClawAutomationForbidden"), re.S
     )
     assert refusal is not None
     assert "setClawAutomationRetryVisible(true)" not in refusal.group("body")
@@ -218,7 +224,8 @@ def test_the_list_load_tells_a_permission_refusal_from_a_failed_load() -> None:
 def test_the_page_header_owns_the_title_of_the_moved_section() -> None:
     source = APP_JS.read_text(encoding="utf-8")
     mount = re.search(
-        r"function mountAutomationView\(\) \{(?P<body>.*?)\n  \}", source, re.S
+        r"function mountAutomationView\(\) \{(?P<body>.*?)\n  \}",
+        definition_source("mountAutomationView"), re.S
     )
     assert mount is not None
     assert 'setAttribute("aria-labelledby", "automationViewTitle")' in mount.group("body")

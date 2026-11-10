@@ -92,3 +92,24 @@ def test_api_and_auth_no_store_remains_additive_to_security_policy():
         assert headers["X-Content-Type-Options"] == "nosniff"
         assert headers["X-Frame-Options"] == "DENY"
         assert headers["Referrer-Policy"] == "no-referrer"
+
+
+def test_front_door_mirrors_the_reviewed_policy():
+    """The front worker is the real public entry, so it must carry the exact
+    reviewed header set: the body policy rides Report-Only there, and
+    frame-ancestors 'none' is the one enforced CSP directive."""
+    front = (
+        Path(__file__).resolve().parents[2]
+        / "padiem-chat-front"
+        / "worker.mjs"
+    ).read_text(encoding="utf-8")
+
+    # The report-only body policy stays byte-identical to the reviewed
+    # configuration (the front test pins the same text from the other side).
+    assert CONTENT_SECURITY_POLICY in front
+    assert PERMISSIONS_POLICY in front
+    assert '"content-security-policy-report-only"' in front
+    assert '"content-security-policy": FRAME_ANCESTORS_CSP' in front
+    assert '"x-frame-options": "DENY"' in front
+    assert '"x-content-type-options": "nosniff"' in front
+    assert '"referrer-policy": "strict-origin-when-cross-origin"' in front

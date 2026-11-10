@@ -208,6 +208,8 @@ async def test_info_names_the_signed_in_account_and_offers_a_switch(owner_ctx):
 
 @pytest.mark.asyncio
 async def test_switch_account_signs_out_and_returns_to_the_same_request(owner_ctx):
+    """Revoking the session is a browser mutation: the consent screen POSTs it
+    with an exact reviewed-origin Origin."""
     app, _db, _link_owner, session_user = owner_ctx
     params = {
         "response_type": "code", "client_id": "mcpc_" + "a" * 32,
@@ -217,7 +219,8 @@ async def test_switch_account_signs_out_and_returns_to_the_same_request(owner_ct
     authorize_url = "/oauth/authorize?" + urlencode(params)
     async with client_for(app) as ui:
         ui.cookies.update(session(app, session_user))
-        switched = await ui.get("/oauth/switch-account", params={"next": authorize_url})
+        switched = await ui.post("/oauth/switch-account", params={"next": authorize_url},
+                                 headers={"Origin": BASE})
         assert switched.status_code == 302
         assert switched.headers["location"] == authorize_url
         assert "st_switch" in switched.headers["location"]
@@ -225,6 +228,35 @@ async def test_switch_account_signs_out_and_returns_to_the_same_request(owner_ct
         sets = " ".join(switched.headers.get_list("set-cookie"))
         assert SESSION_COOKIE + "=" in sets and "Max-Age=0" in sets
         # A target that is not this host's authorize path is refused.
-        escaped = await ui.get("/oauth/switch-account", params={"next": "//evil.example/x"})
+        escaped = await ui.post("/oauth/switch-account", params={"next": "//evil.example/x"},
+                                headers={"Origin": BASE})
         assert escaped.status_code == 302
         assert escaped.headers["location"] == "/oauth/authorize"
+
+
+@pytest.mark.asyncio
+async def test_switch_account_is_a_post_only_same_origin_mutation(owner_ctx):
+    """A plain link (GET) can no longer revoke the session, and a POST from
+    another origin — or with no Origin at all — is refused before any
+    revocation happens."""
+    app, _db, _link_owner, session_user = owner_ctx
+    async with client_for(app) as ui:
+        ui.cookies.update(session(app, session_user))
+        got = await ui.get("/oauth/switch-account")
+        # A plain link can no longer reach the revocation (the mount answers
+        # the missing method honestly); the session stays untouched.
+        assert got.status_code in (404, 405)
+
+        cross = await ui.post("/oauth/switch-account",
+                              headers={"Origin": "https://evil.example"})
+        assert cross.status_code == 403
+        assert cross.json()["error"]["code"] == "origin_rejected"
+
+        missing = await ui.post("/oauth/switch-account",
+                                headers={"X-Test-No-Origin": "1"})
+        assert missing.status_code == 403
+        assert missing.json()["error"]["code"] == "origin_rejected"
+        # A refusal happens before any revocation: no session-clearing cookie.
+        for refused in (cross, missing):
+            sets = " ".join(refused.headers.get_list("set-cookie"))
+            assert "Max-Age=0" not in sets

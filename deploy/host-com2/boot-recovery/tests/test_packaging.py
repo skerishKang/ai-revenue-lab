@@ -93,24 +93,24 @@ class Packaging(unittest.TestCase):
             self.assertNotIn(forbidden, source)
         self.assertNotIn("sqlite3", source)
 
-    def test_restart_window_doc_matches_the_script_and_the_runbook(self):
-        """The one-pager, the script defaults and the runbook state one window."""
-        repo = HERE.parents[2]
-        doc = (repo / "docs" / "operations"
-               / "COM2_RESTART_AND_BACKUP_ONE_PAGE_20261108.md").read_text(encoding="utf-8")
-        runbook = (repo / "docs" / "operations" / "COM2_BOOT_RECOVERY_RUNBOOK.md").read_text(
-            encoding="utf-8")
+    def test_restart_and_backup_defaults_match_the_shipped_files(self):
+        """The window policy and the backup anchors live in the shipped files.
+
+        #7404: the one-pager and the runbook moved to the private operations
+        records, so the window/backup rules are asserted against the deploy
+        files that actually run them.
+        """
         hours = (HERE / "windows" / "check-active-hours.ps1").read_text(encoding="utf-8")
-        for source in (doc, runbook):
-            self.assertIn("10:00–04:00", source)
-            self.assertIn("04:00–10:00", source)
-        self.assertIn("NoAutoRebootWithLoggedOnUsers", doc)
         self.assertIn("$StartHour = 10", hours)
         self.assertIn("$EndHour = 4", hours)
-        # The backup the document points at is the shipped one.
-        self.assertIn("/mnt/d/padiem/chat-com2/backups", doc)
-        self.assertIn("padiem-chat-com2-backup.timer", doc)
-        self.assertIn("offsite.py restore", doc)
+        self.assertIn("NoAutoRebootWithLoggedOnUsers", hours)
+        boot = (HERE / "wsl" / "boot_recovery.py").read_text(encoding="utf-8")
+        self.assertIn("padiem-chat-com2-backup.timer", boot)
+        offsite = (HERE.parent / "offsite-backup" / "offsite.py").read_text(encoding="utf-8")
+        self.assertIn('"/mnt/d/padiem/chat-com2/backups"', offsite)
+        restore = (HERE.parent / "offsite-backup" / "run_live_chat_restore.sh").read_text(
+            encoding="utf-8")
+        self.assertIn("offsite.py restore", restore)
 
 
 class PowerShellSyntax(unittest.TestCase):

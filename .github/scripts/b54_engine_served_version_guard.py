@@ -79,11 +79,10 @@ ENGINE_DOCUMENT_STORE_BINDING_NAME = "ENGINE_DOCUMENT_STORE"
 
 # Shared E9 activation read-only authorities (#3314).  These constants are
 # comparison-only; identifiers/targets are never emitted as raw values.
+# 2026-11-10: the B14_SERVICE served-binding requirement is gone with the
+# Cloudflare B14 Worker retirement — the Engine Worker no longer declares it.
 ENGINE_CONTINUATION_BINDING_NAME = "ENGINE_CONTINUATION"
 ENGINE_CONTINUATION_BINDING_TYPE = "d1"
-B14_SERVICE_BINDING_NAME = "B14_SERVICE"
-B14_SERVICE_BINDING_TYPE = "service"
-B14_SERVICE_TARGET = "ai-revenue-korean-ai-platform"
 CONTROL_PLANE_IDENTITY_BINDING_NAME = "CONTROL_PLANE_IDENTITY"
 CONTROL_PLANE_IDENTITY_BINDING_TYPE = "service"
 CONTROL_PLANE_IDENTITY_SERVICE = "padiem-control-plane-identity"
@@ -289,14 +288,13 @@ def _verify_a6_runtime_bindings(bindings: list[dict]) -> dict[str, str]:
 
 
 def _require_shared_engine_service_bindings(bindings: list[dict]) -> dict[str, str]:
-    """Require exact B14 + Control Plane identity service authorities."""
+    """Require the exact Control Plane identity service authority.
+
+    The B14_SERVICE served-binding requirement was removed with the Cloudflare
+    B14 Worker retirement (2026-11-10); only the Control Plane identity
+    authority remains a shared requirement.
+    """
     expected = (
-        (
-            B14_SERVICE_BINDING_NAME,
-            B14_SERVICE_BINDING_TYPE,
-            B14_SERVICE_TARGET,
-            "B14_SERVICE_SERVED_BINDING",
-        ),
         (
             CONTROL_PLANE_IDENTITY_BINDING_NAME,
             CONTROL_PLANE_IDENTITY_BINDING_TYPE,
@@ -476,7 +474,6 @@ def _run_verify(args: argparse.Namespace) -> int:
         "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING",
         "ENGINE_ADMISSION_BINDING_TARGET_VALIDATED",
         "ENGINE_CONTINUATION_SERVED_BINDING",
-        "B14_SERVICE_SERVED_BINDING",
         "CONTROL_PLANE_IDENTITY_SERVED_BINDING",
         "APPROVAL_RUNTIME_BINDINGS_VALIDATED",
         "A6_ACTIVATION_RUNTIME_BINDINGS_VALIDATED",

@@ -16,6 +16,9 @@ import subprocess
 from html.parser import HTMLParser
 from pathlib import Path
 
+# R5 0단계(R-01): 모듈로 옮겨진 정의도 함께 본다(index.html 로드 순서).
+from _r5_function_source import combined_source, definition_source
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
@@ -71,7 +74,8 @@ def _index() -> str:
 
 
 def _app() -> str:
-    return APP_JS.read_text(encoding="utf-8")
+    # R5 0단계(R-01): 모듈로 옮겨진 정의도 함께 본다(index.html 로드 순서).
+    return combined_source()
 
 
 def _dialog_element() -> str:
@@ -232,7 +236,7 @@ def test_reviewed_google_connector_connection_actions_are_calendar_drive_and_gma
     block = _connector_block()
     #7216 R5 step 4: this contract moved into chat-auth-module.js.
     auth_module = (ROOT / "static" / "chat-auth-module.js").read_text(encoding="utf-8")
-    assert block.count('fetch("/api/connectors/status"') == 1
+    assert block.count('PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status"') == 1
     assert 'GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket"' in block
     assert 'fetch(GOOGLE_CALENDAR_TICKET_ENDPOINT' in block
     assert 'connector_id: GOOGLE_CALENDAR_CONNECTOR, begin_oauth: true' in block
@@ -435,7 +439,7 @@ def test_status_styles_keep_support_and_workspace_visually_separate() -> None:
 
 def test_web_claw_connector_acceptance_markers() -> None:
     # Compact report-oriented pins for CENTRAL / CI logs.
-    assert 'fetch("/api/connectors/status"' in _connector_block()
+    assert 'PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status"' in _connector_block()
     assert set(LIVE_CONNECTORS.values()) == {
         "connector:google:drive@1",
         "connector:google:gmail@1",

@@ -8,7 +8,7 @@
 # padiem-chat-front; the Python Worker fallback is deliberately not touched.
 #
 # The R2 bucket and its custom domain are one-time infrastructure. See
-# docs/operations/PC_USER_HELPER_RELEASE_20261107.md for the exact prerequisite,
+# the 비공개 운영 기록(거버넌스 폴더, 같은 상대 경로) (PC_USER_HELPER_RELEASE_20261107.md) for the exact prerequisite,
 # the owner-session pairing check and the rollback procedure.
 [CmdletBinding()]
 param(

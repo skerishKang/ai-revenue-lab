@@ -138,6 +138,9 @@ def _load_mock_smoke_module():
 
 
 def _mock_smoke_transport(*, live_enabled: bool):
+    """The public /health answers the bounded liveness contract only; whether
+    the deployment is the mock-only one shows functionally in the chat answer
+    (the mock answer, no provider call behind it)."""
     api_headers = {
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY",
@@ -147,39 +150,37 @@ def _mock_smoke_transport(*, live_enabled: bool):
 
     def fake_request(url: str, *, method: str = "GET", payload: dict | None = None):
         if url.endswith("/health"):
-            body = {
-                "status": "ok",
-                "app": "padiem-chat",
-                "runtime": "mock",
-                "b14_configured": False,
-                "live_enabled": live_enabled,
-                "deep_research_ready": False,
-            }
+            body = {"status": "ok", "app": "padiem-chat"}
             return 200, api_headers, json.dumps(body).encode("utf-8")
         if url.endswith("/api/chat"):
-            body = {
-                "runtime": "mock",
-                "answer": "현재는 데모 모드이며 실제 모델을 호출하지 않았습니다.",
-            }
+            if live_enabled:
+                body = {
+                    "runtime": "b14",
+                    "answer": "실제 모델 응답",
+                }
+            else:
+                body = {
+                    "runtime": "mock",
+                    "answer": "현재는 데모 모드이며 실제 모델을 호출하지 않았습니다.",
+                }
             return 200, api_headers, json.dumps(body, ensure_ascii=False).encode("utf-8")
         return 200, {}, "Padiem Chat 무엇을 도와드릴까요".encode("utf-8")
 
     return fake_request
 
 
-def test_mock_deploy_smoke_requires_http_live_enabled_false(monkeypatch, capsys):
+def test_mock_deploy_smoke_requires_the_mock_chat_answer(monkeypatch, capsys):
     module = _load_mock_smoke_module()
     monkeypatch.setenv("B62_BASE_URL", "https://padiem-chat.example.test")
     monkeypatch.setattr(module, "request_with_retry", _mock_smoke_transport(live_enabled=False))
 
     assert module.main() == 0
     output = capsys.readouterr().out
-    assert "LIVE_ENABLED=false" in output
-    assert "DEEP_RESEARCH_READY=false" in output
+    assert "MOCK_CHAT_HTTP=200" in output
     assert "REAL_PROVIDER_CALLS=0" in output
 
 
-def test_mock_deploy_smoke_fails_closed_if_http_reports_live_enabled(monkeypatch):
+def test_mock_deploy_smoke_fails_closed_on_a_live_answer(monkeypatch):
     module = _load_mock_smoke_module()
     monkeypatch.setenv("B62_BASE_URL", "https://padiem-chat.example.test")
     monkeypatch.setattr(module, "request_with_retry", _mock_smoke_transport(live_enabled=True))

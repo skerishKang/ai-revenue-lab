@@ -4351,6 +4351,24 @@
     syncClawRunHistoryVisibility();
   }
 
+  function openChatWorkspace() {
+    // #7173: back to the Chat lane on the same conversation (#2505); the Util
+    // screen owns its own state and hash, and hides itself before this runs.
+    shell.dataset.state = "home";
+    switchConversationProduct(PRODUCT_CHAT);
+    setNavActive();
+    if (input) input.focus();
+    closeSidebar();
+  }
+
+  // #7173: the Chat | Claw | Util app switch reuses the two existing screen
+  // entries so the Util screen never re-implements shell state. Kept next to
+  // the functions it names (some Node harnesses evaluate a source slice).
+  window.PadiemAppSwitch = Object.freeze({
+    openChat: openChatWorkspace,
+    openClaw: openClawWorkspace,
+  });
+
   function openClawManual() {
     // Explicit entry into the document/quotation workflow only. The manual
     // form and its workflow chrome are never shown by default.
@@ -4714,7 +4732,10 @@
     }
     setConnectorCardsLoading();
     try {
-      const response = await fetch("/api/connectors/status", {
+      // #7368: a front-edge loss (502/503/504) or a network error asks one
+      // more time after 0.8s. The checking state persists through the retry,
+      // and a second failure keeps the same unavailable answer as before.
+      const response = await window.PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status", {
         headers: { "Accept": "application/json" },
         cache: "no-store",
       });

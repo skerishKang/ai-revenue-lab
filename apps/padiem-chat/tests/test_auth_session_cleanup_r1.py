@@ -3,6 +3,9 @@ from pathlib import Path
 import shutil
 import subprocess
 
+# R5 0단계(R-01): 함수 경계는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_source
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
 
 
@@ -87,10 +90,13 @@ assert.deepEqual(calls.approval,[false,true,false,true]);
 def test_cleanup_bindings_are_bootstrap_only_not_auth_dialog_handlers():
     app = (STATIC / "app.js").read_text(encoding="utf-8")
     # Binding on each dialog open would accumulate listeners and reset twice.
-    start = app.index("function openAuthDialog(")
-    end = app.index("function closeAuthDialog(", start)
-    assert "PadiemChatSession.bind" not in app[start:end]
-    assert "PadiemClawSession.bind" not in app[start:end]
+    # R5 0단계(R-01): openAuthDialog/closeAuthDialog의 실제 정의는 모듈에 있을 수
+    # 있으므로 도우미로 정의 파일을 찾아 그 소스에서 경계를 잡는다.
+    dialogs = definition_source("openAuthDialog")
+    start = dialogs.index("function openAuthDialog(")
+    end = dialogs.index("function closeAuthDialog(", start)
+    assert "PadiemChatSession.bind" not in dialogs[start:end]
+    assert "PadiemClawSession.bind" not in dialogs[start:end]
     for name in ["PadiemChatSession", "PadiemClawSession"]:
         assert app.count(f"window.{name}.bind({{") == 1
         assert app.index(f"window.{name}.bind({{") < app.index("const resetLinkOnLoad =")

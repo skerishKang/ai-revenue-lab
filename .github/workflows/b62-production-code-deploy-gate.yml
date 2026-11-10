@@ -106,7 +106,6 @@ on:
       - ".github/workflows/b54-owner-d1-controlled-connection.yml"
       - ".github/scripts/b62_owner_d1_release_transaction.py"
       - ".github/tests/test_b62_owner_d1_release_transaction.py"
-      - "docs/operations/OWNER_P01_D1_PROTECTED_RELEASE_RUNBOOK.md"
       - ".github/tests/test_b62_deploy_prereq_rollback_contracts.py"
       - ".github/tests/test_b62_served_version_secret_guard.py"
       - "apps/padiem-chat/tests/test_b62_production_deploy_config.py"
@@ -776,9 +775,9 @@ jobs:
             '[.result.bindings[] | select(.name == $name)] as $b |
              ($b | length) == 1 and $b[0].type == "service" and $b[0].service == $service' "${settings}" >/dev/null
           echo "IDENTITY_BINDING=PRESENT_EXPECTED"
-          jq -e --arg name "B14_SERVICE" --arg service "${B14_WORKER}" \
-            '[.result.bindings[] | select(.name == $name)] as $b |
-             ($b | length) == 1 and $b[0].service == $service' "${settings}" >/dev/null
+          # 2026-11-10 Cloudflare B14 Worker retirement: the B14_SERVICE service
+          # binding was removed from this Worker with the reviewed baseline
+          # update, so there is nothing left to assert here.
           jq -e '[.result.bindings[] | select(.type == "d1" and .name == "PADIEM_CHAT_DB")] | length == 1' "${settings}" >/dev/null
           jq -e '[.result.bindings[] | select(.type == "assets" and .name == "ASSETS")] | length == 1' "${settings}" >/dev/null
           jq -e --arg name "${IDENTITY_BINDING}" '[.result.bindings[] | .name] | length == (unique | length)' "${settings}" >/dev/null
@@ -1651,7 +1650,11 @@ jobs:
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains?hostname=chat.padiem.net" \
             "${domain_after}"
-          jq -e --arg host "chat.padiem.net" --arg service "${B62_WORKER}" \
+          # 2026-11-10: the front Worker owns chat.padiem.net (#7398/#7399/#7407
+          # cutover). The preflight above already proved FRONT ownership; the
+          # readback asserts the same reviewed owner so the domain cannot
+          # silently move or detach between the two reads.
+          jq -e --arg host "chat.padiem.net" --arg service "padiem-chat-front" \
             '.success == true and
              ([.result[] | select(.hostname == $host)] | length == 1) and
              ([.result[] | select(.hostname == $host and .service == $service and .zone_name == "padiem.net" and .enabled == true and .previews_enabled == false)] | length == 1)' \

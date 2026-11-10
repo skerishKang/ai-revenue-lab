@@ -26,9 +26,6 @@ STAGING_UNIT = HERE / "padiem-chat-staging.service"
 TUNNEL_EXAMPLE = HERE / "cloudflared-chat-com2.example.yml"
 TUNNEL_PORT = "8798"
 FRONT_WRANGLER = Path(__file__).resolve().parents[4] / "apps" / "padiem-chat-front" / "wrangler.toml"
-FRONT_RUNBOOK = (
-    Path(__file__).resolve().parents[4] / "docs" / "operations" / "CHAT_COM2_FRONT_RUNBOOK.md"
-)
 
 
 def ingress_entries(path):
@@ -90,13 +87,6 @@ class NoPublicHostnameInTunnelExamples(unittest.TestCase):
             [],
             "a tunnel that binds chat.padiem.net bypasses padiem-chat-front",
         )
-
-    def test_the_runbook_and_front_own_the_public_hostname(self):
-        # The only place the public hostname may appear is the front's own
-        # files: its route is declared there, not in a tunnel config.
-        if FRONT_RUNBOOK.is_file():
-            self.assertIn(PUBLIC_HOSTNAME, FRONT_RUNBOOK.read_text("utf-8"))
-
 
 class TunnelOriginHop(unittest.TestCase):
     def test_the_tunnel_binds_the_origin_hostname_and_production_port(self):

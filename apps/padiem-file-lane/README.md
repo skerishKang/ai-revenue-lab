@@ -1,7 +1,7 @@
 # COM2 file lane — parser phase 2 (#5881)
 
 Local CPython ASGI service for the Chat/Claw file lane, following
-`docs/architecture/FILE_LANE_COM2_MIGRATION_20261026.md`. No Worker receives the
+the 비공개 운영 기록(거버넌스 폴더, 같은 상대 경로) (FILE_LANE_COM2_MIGRATION_20261026.md). No Worker receives the
 upload bytes. Authentication/session authority remains at Cloudflare; the
 service validates a short-lived Chat-signed file capability, never a user's
 password or Cloudflare credential.

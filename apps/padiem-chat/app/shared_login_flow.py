@@ -492,6 +492,12 @@ class SharedLoginFlow(ComparisonFlow):
                 await flush_pending(request, user)
             except Exception:
                 pass
+            # Same retry point for a failed external AI credential revocation.
+            try:
+                from .external_token_revoke import flush_pending as flush_external_tokens
+                await flush_external_tokens(request, user)
+            except Exception:
+                pass
             # This module's logger has no handler in the host, so INFO never
             # reaches the journal and a successful login left no stage record.
             # The line is the one ops reads, in the failed line's own shape.
@@ -543,6 +549,12 @@ class SharedLoginFlow(ComparisonFlow):
             try:
                 from .shared_session_revoke import flush_pending
                 await flush_pending(request, user)
+            except Exception:
+                pass
+            # Same retry point for a failed external AI credential revocation.
+            try:
+                from .external_token_revoke import flush_pending as flush_external_tokens
+                await flush_external_tokens(request, user)
             except Exception:
                 pass
             stage = 'refresh_issue'

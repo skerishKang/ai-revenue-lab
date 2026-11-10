@@ -28,6 +28,9 @@ import subprocess
 
 import pytest
 from pathlib import Path
+
+# R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_source
 from types import SimpleNamespace
 
 from starlette.requests import Request
@@ -377,7 +380,9 @@ def test_grounding_notice_crosses_synthetic_sse_and_renders_once_above_answer():
     conv = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5a
     stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5b
     transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-    render = app[app.index("  function renderWebGroundingNotice("):app.index("  function renderAnswer(")]
+    # R5 0단계(R-01): renderWebGroundingNotice의 실제 정의가 있는 소스에서 잘라낸다.
+    notice_source = definition_source("renderWebGroundingNotice")
+    render = notice_source[notice_source.index("  function renderWebGroundingNotice("):notice_source.index("  function renderAnswer(")]
     synthetic = transport[transport.index("  function syntheticSseResponse("):transport.index("  async function tryOrchestration(")]
     script = render + synthetic + r"""
 (async () => {

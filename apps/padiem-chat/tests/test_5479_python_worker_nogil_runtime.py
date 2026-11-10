@@ -168,11 +168,8 @@ def test_the_production_deploy_config_carries_the_deployed_compatibility_date(
         "result": {
             "bindings": [
                 {"type": "assets", "name": "ASSETS"},
-                {
-                    "type": "service",
-                    "name": "B14_SERVICE",
-                    "service": "ai-revenue-korean-ai-platform",
-                },
+                # 2026-11-10: the live B14_SERVICE binding is retired with the
+                # Cloudflare B14 Worker, so the served state matches the repo.
                 {
                     "type": "service",
                     "name": "IDENTITY_AUTHORITY_SERVICE",

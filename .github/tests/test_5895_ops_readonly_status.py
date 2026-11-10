@@ -169,14 +169,19 @@ def test_served_version_selection_stays_on_the_canonical_resolver() -> None:
     assert "(.result.deployments[0].versions | length) == 1" not in body_text
 
 
-def test_three_lanes_and_two_public_hosts_are_reported() -> None:
+def test_two_lanes_and_two_public_hosts_are_reported() -> None:
+    # 2026-11-10: the Cloudflare B14 Worker is retired — the readout covers the
+    # two remaining Workers only.
     env = _document()["env"]
     assert env["CHAT_WORKER"] == "padiem-chat"
     assert env["ENGINE_WORKER"] == "padiem-ai-engine"
-    assert env["B14_WORKER"] == "ai-revenue-korean-ai-platform"
+    assert "B14_WORKER" not in env
     assert env["CHAT_HEALTH_URL"] == "https://chat.padiem.net/health"
     assert env["FILES_HEALTH_URL"] == "https://files.padiem.net/health"
-    assert "for lane in chat engine b14; do" in _text()
+    assert "for lane in chat engine; do" in _text()
+    assert "B14_WORKER" not in _text()
+    assert "[b14]" not in _text()
+    assert "OPS_SERVED_B14" not in _text()
 
 
 def test_public_health_probe_reports_a_code_and_never_a_request_body() -> None:
@@ -189,8 +194,9 @@ def test_public_health_probe_reports_a_code_and_never_a_request_body() -> None:
 
 def test_results_reach_stdout_and_the_step_summary() -> None:
     body_text = _text()
-    for marker in ("OPS_SERVED_CHAT", "OPS_SERVED_ENGINE", "OPS_SERVED_B14"):
+    for marker in ("OPS_SERVED_CHAT", "OPS_SERVED_ENGINE"):
         assert f'"{marker}"' in body_text, marker
+    assert "OPS_SERVED_B14" not in body_text
     assert '_VERSION={served}"' in body_text
     assert '_DEPLOYED_AT={deployed_at}"' in body_text
     assert "=BLOCKED" in body_text and "_REASON={exc.reason}" in body_text
@@ -215,6 +221,5 @@ def test_every_job_prints_the_no_mutation_marker() -> None:
     for job in _jobs(_document()).values():
         job_bodies = [str(step.get("run", "")) for step in job.get("steps", [])]
         assert any("PRODUCTION_MUTATION=0" in body for body in job_bodies), job
-    assert "B14_DEPLOY=0" in "\n".join(bodies)
     assert "D1_MUTATION=0" in "\n".join(bodies)
     assert "LIVE_PROVIDER_POST_COUNT=0" in "\n".join(bodies)

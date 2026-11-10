@@ -44,12 +44,26 @@ def test_a_control_plane_that_never_answered_is_named_apart_from_an_http_error()
 
 
 def test_disabled_malformed_and_failed_metadata_never_accepted():
-    refuse(("200", DISABLED, "200", HEALTH, "200", HEALTH), "SUBDOMAIN_DISABLED_EXPLICIT")
+    # #7407 reviewed the workers.dev direct address off, so a disabled
+    # subdomain is the expected state — but then the address must not answer.
+    refuse(("200", DISABLED, "200", HEALTH, "200", HEALTH),
+           "SUBDOMAIN_DISABLED_BUT_RESPONDING")
     refuse(("200", '{"success":false,"result":{"enabled":true}}', "200", HEALTH, "200", HEALTH),
            "METADATA_SUCCESS_NOT_TRUE")
     refuse(("200", "not json", "200", HEALTH, "200", HEALTH), "METADATA_NOT_JSON")
     refuse(("200", '{"success":true,"result":"charliekant"}', "200", HEALTH, "200", HEALTH),
            "SUBDOMAIN_RESULT_NOT_OBJECT")
+
+
+def test_the_reviewed_disabled_subdomain_accepts_only_the_absent_address():
+    """#7407: disabled subdomain + absent workers.dev address = the expected
+    state; the production origin still proves itself with the exact envelope."""
+    assert gate.prove("200", DISABLED, "404", "no route", "200", HEALTH) == "CONTROL_AND_DATA_PLANE"
+    # A lost connection is never the disabled signature; it stays a refusal.
+    refuse(("200", DISABLED, "000", "", "200", HEALTH), "HEALTH_WORKERS_DEV_NO_RESPONSE")
+    # An enabled subdomain still demands a healthy workers.dev plane.
+    refuse(("200", METADATA, "404", "no route", "200", HEALTH),
+           "HEALTH_WORKERS_DEV_HTTP_404")
 
 
 def test_an_absent_enabled_flag_is_an_anomaly_and_never_a_pass():
@@ -92,6 +106,9 @@ def test_the_504_fallback_still_requires_both_live_origins():
     assert gate.prove("504", "gateway timeout", "200", HEALTH, "200", HEALTH) == "DATAPLANE_504_FALLBACK"
     refuse(("504", "gateway timeout", "503", HEALTH, "200", HEALTH),
            "HEALTH_WORKERS_DEV_HTTP_503")
+    # With the subdomain state unknowable, the disabled 404 stays acceptable —
+    # the production origin carries the proof on its own.
+    assert gate.prove("504", "gateway timeout", "404", "no route", "200", HEALTH) == "DATAPLANE_504_FALLBACK"
 
 
 def test_every_refusal_prints_one_cause_line_and_no_response_content() -> None:
@@ -110,7 +127,7 @@ def test_every_refusal_prints_one_cause_line_and_no_response_content() -> None:
         root = Path(workdir)
 
         def run(metadata_body: str, workers_body: str = HEALTH, custom_body: str = HEALTH,
-                metadata_status: str = "200") -> tuple[int, str]:
+                metadata_status: str = "200", workers_status: str = "200") -> tuple[int, str]:
             paths = {}
             for name, content in (("m", metadata_body), ("w", workers_body), ("c", custom_body)):
                 paths[name] = root / f"{name}.json"
@@ -118,7 +135,7 @@ def test_every_refusal_prints_one_cause_line_and_no_response_content() -> None:
             done = subprocess.run([
                 sys.executable, str(HELPER),
                 "--metadata-status", metadata_status, "--metadata-body", str(paths["m"]),
-                "--workers-status", "200", "--workers-body", str(paths["w"]),
+                "--workers-status", workers_status, "--workers-body", str(paths["w"]),
                 "--custom-status", "200", "--custom-body", str(paths["c"]),
             ], capture_output=True, text=True, encoding="utf-8", check=False)
             return done.returncode, done.stdout
@@ -126,9 +143,12 @@ def test_every_refusal_prints_one_cause_line_and_no_response_content() -> None:
         rc, out = run(METADATA)
         assert rc == 0 and "B62_PUBLIC_ORIGIN_PROOF=PASS" in out
 
+        rc, out = run(DISABLED, workers_status="404", workers_body="no route")
+        assert rc == 0 and "B62_PUBLIC_ORIGIN_PROOF=PASS" in out
+
         rc, out = run(DISABLED)
         assert rc == 1 and "B62_PUBLIC_ORIGIN_PROOF=BLOCKED" in out
-        assert "B62_PUBLIC_ORIGIN_PROOF_CAUSE=SUBDOMAIN_DISABLED_EXPLICIT" in out
+        assert "B62_PUBLIC_ORIGIN_PROOF_CAUSE=SUBDOMAIN_DISABLED_BUT_RESPONDING" in out
 
         rc, out = run(json.dumps({"success": True, "result": {"previews_enabled": True}}))
         assert rc == 1 and "B62_PUBLIC_ORIGIN_PROOF_CAUSE=SUBDOMAIN_FLAG_ABSENT" in out

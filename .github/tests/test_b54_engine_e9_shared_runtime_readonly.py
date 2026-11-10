@@ -85,7 +85,9 @@ def test_approval_runtime_bindings_are_exact_and_bounded() -> None:
     code, out = _invoke("--require-approval-runtime-bindings")
     assert code == 0
     assert "ENGINE_CONTINUATION_SERVED_BINDING=PRESENT:d1" in out
-    assert "B14_SERVICE_SERVED_BINDING=PRESENT:service" in out
+    # 2026-11-10 Cloudflare B14 Worker retirement: the B14_SERVICE served-binding
+    # requirement is gone from the guard.
+    assert "B14_SERVICE_SERVED_BINDING" not in out
     assert "CONTROL_PLANE_IDENTITY_SERVED_BINDING=PRESENT:service" in out
     assert "APPROVAL_RUNTIME_BINDINGS_VALIDATED=YES" in out
     assert DB not in out
@@ -96,7 +98,7 @@ def test_a6_activation_runtime_bindings_are_exact_and_bounded() -> None:
     code, out = _invoke("--require-a6-activation-runtime-bindings")
     assert code == 0
     assert "ENGINE_IMAGE_STORE_SERVED_BINDING=PRESENT:d1" in out
-    assert "B14_SERVICE_SERVED_BINDING=PRESENT:service" in out
+    assert "B14_SERVICE_SERVED_BINDING" not in out
     assert "CONTROL_PLANE_IDENTITY_SERVED_BINDING=PRESENT:service" in out
     assert "A6_ACTIVATION_RUNTIME_BINDINGS_VALIDATED=YES" in out
     assert DB not in out

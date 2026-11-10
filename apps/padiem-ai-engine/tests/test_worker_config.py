@@ -24,10 +24,12 @@ def test_wrangler_is_service_binding_only_and_not_public() -> None:
     assert "routes" not in config
 
 
-def test_worker_config_declares_b14_service_binding() -> None:
+def test_worker_config_no_longer_declares_the_retired_b14_service_binding() -> None:
+    # 2026-11-10 Cloudflare B14 Worker retirement: the B14_SERVICE binding was
+    # removed from the Engine Worker's wrangler.toml.
     config = _load_config()
     bindings = _service_bindings(config)
-    assert {"binding": "B14_SERVICE", "service": "ai-revenue-korean-ai-platform"} in bindings
+    assert {"binding": "B14_SERVICE", "service": "ai-revenue-korean-ai-platform"} not in bindings
 
 
 def test_worker_config_declares_control_plane_identity_binding() -> None:
@@ -54,7 +56,7 @@ def test_no_duplicate_service_bindings() -> None:
 def test_existing_engine_config_regression_passes() -> None:
     config = _load_config()
     bindings = _service_bindings(config)
-    assert {"binding": "B14_SERVICE", "service": "ai-revenue-korean-ai-platform"} in bindings
+    assert {"binding": "CONTROL_PLANE_IDENTITY", "service": "padiem-control-plane-identity"} in bindings
 
 
 def test_worker_source_has_no_browser_cors_or_public_b14_fallback() -> None:

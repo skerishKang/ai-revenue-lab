@@ -78,7 +78,11 @@ test("tus PATCH keeps Upload-* headers and passes the chunk body through untouch
 
   const response = await handle(tusPatchRequest("CHUNK-BYTES-90MB"), baseEnv());
 
-  assert.equal(response, upstream); // the exact upstream object, untouched
+  // A header-attached copy: the tus answer headers survive, the security
+  // header set rides along.
+  assert.equal(response.status, 204);
+  assert.equal(response.headers.get("upload-offset"), "188743680");
+  assert.equal(response.headers.get("x-frame-options"), "DENY");
   const forwarded = fetchImpl.calls[0];
   assert.equal(forwarded.url, `${ORIGIN}/api/projects/proj_1/files/tus/up_1`);
   assert.equal(forwarded.method, "PATCH");
@@ -108,7 +112,8 @@ test("tus POST creation keeps Upload-Length and Upload-Metadata", async () => {
   });
   const response = await handle(request, baseEnv());
 
-  assert.equal(response, upstream);
+  assert.equal(response.status, 201);
+  assert.equal(response.headers.get("location"), "/api/projects/proj_1/files/tus/up_9");
   const forwarded = fetchImpl.calls[0];
   assert.equal(forwarded.method, "POST");
   assert.equal(forwarded.headers.get("upload-length"), "1073741824");
