@@ -324,6 +324,7 @@ def settings_from_worker_bindings(
         global_daily_limit=binding_value(env, "PADIEM_CHAT_GLOBAL_DAILY_LIMIT") or "1000",
         lovetree_account_delete_url=binding_value(env, "PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL"),
         account_delete_rpc_secret=binding_value(env, "PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET"),
+        email_login_via_shared=binding_value(env, "PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED"),
     )
 
 
