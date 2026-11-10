@@ -303,6 +303,66 @@ function Get-RecentReleaseLogs([string]$Dir) {
         Where-Object { $_.LastWriteTime -ge $cutoff -and $_.Name -match '^release_\d+(\.failed)?\.log$' })
 }
 
+function Invoke-Com2Capture([string]$RemoteCommand) {
+    # Get-Com2Journal's shape for arbitrary capture: output travels back as
+    # lines, failures throw. Used only for non-secret reads (git refs, env
+    # NAMES); the AI-check credential VALUES move straight into the child
+    # process environment and are never printed or written anywhere.
+    $out = & ssh -i $Script:Com2SshKey -o BatchMode=yes -o LogLevel=ERROR -o ConnectTimeout=10 $Script:Com2SshTarget $RemoteCommand 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        throw "COM2 command failed (exit $LASTEXITCODE): $RemoteCommand"
+    }
+    return ($out -join "`n")
+}
+
+function Resolve-PostDeployAiNeed([string]$SummaryLine) {
+    # 'already-verified' only when the COM2 deploy unit itself produced the
+    # AI verdict (ai:PASS). A skipped unit reports ai:SKIP — and the
+    # checkout-only summaries carry no ai token at all — so the release
+    # cannot end without a fresh verdict.
+    if ($SummaryLine -match 'ai:PASS') { return 'already-verified' }
+    return 'run-check'
+}
+
+function Get-Com2QaCredentials {
+    # The AI check authenticates the public origin with the QA pair from
+    # COM2's /etc/padiem/qa-smoke.env — the same file the deploy unit sources.
+    # The values land in the child process environment only.
+    $raw = Invoke-Com2Capture "wsl cat /etc/padiem/qa-smoke.env"
+    $credentials = @{}
+    foreach ($line in ($raw -split "`r?`n")) {
+        if ($line -match '^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$') {
+            $credentials[$Matches[1]] = $Matches[2].Trim()
+        }
+    }
+    if (-not $credentials.ContainsKey("B66_CGI_ALPHA_USERNAME") -or
+        -not $credentials.ContainsKey("B66_CGI_ALPHA_PASSWORD")) {
+        throw "STEP2_FAIL: the COM2 qa-smoke env does not carry the AI-check credentials (B66_CGI_ALPHA_USERNAME/PASSWORD)"
+    }
+    return $credentials
+}
+
+function Invoke-PostDeployAiCheck {
+    # Runs the release's post_deploy_ai_answer_check.py from COM1 against the
+    # public origin and requires ai:PASS. Every failure mode — non-200, empty
+    # answer, any error code — stops the release; -Force has no path into
+    # this function's callers.
+    param(
+        [string]$ScriptPath,
+        [string]$BaseUrl,
+        [scriptblock]$CredentialLoader
+    )
+    $credentials = & $CredentialLoader
+    foreach ($key in $credentials.Keys) { Set-Item -Path ("env:" + $key) -Value $credentials[$key] }
+    $output = (& python $ScriptPath --base-url $BaseUrl 2>&1 | Out-String).Trim()
+    if ($output -match 'ai:PASS') {
+        Write-Info "post-deploy AI check = PASS"
+        return
+    }
+    $head = $output.Substring(0, [Math]::Min(200, $output.Length))
+    throw "STEP2_FAIL: post-deploy AI check did not pass (output: $head)"
+}
+
 $Script:LogDir = $env:USERPROFILE
 if (-not $Script:LogDir) { $Script:LogDir = $env:HOME }
 if (-not $Script:LogDir) {
@@ -413,6 +473,7 @@ $remoteShPath = "padiem-release-$unitName.sh"
 
 if ($DryRun) {
     Write-Info "[DRYRUN] would fetch origin on COM2 and compare COM2-side origin/main with the pinned SHA before launching the unit (aborts if COM2 origin/main has advanced past the pin)"
+    Write-Info "[DRYRUN] after the COM2 summary, the post-deploy AI check runs unconditionally — an ai:SKIP unit (same-SHA rerun, -Force or not) cannot end the release without a fresh AI verdict"
 }
 else {
     $com2Main = Get-Com2OriginMain
@@ -458,6 +519,24 @@ else {
     # release). Any :FAIL, or a chat state other than PASS/SKIP, aborts.
     if ($summaryLine -match ":FAIL" -or $summaryLine -notmatch "chat:(PASS|SKIP)") {
         throw "STEP2_FAIL: COM2 deploy did not end chat:PASS/SKIP without FAIL ($summaryLine)"
+    }
+    # (release_70/71 hole): a -Force rerun lands on the same COM2 SHA, the
+    # deploy unit reports ai:SKIP — or a checkout-only summary carries no ai
+    # token at all — and the release went green without a single AI verdict.
+    # The post-deploy AI check is unconditional on this side: -Force lifts
+    # only the 10-minute guard, never this check. When the COM2 unit already
+    # produced ai:PASS, that verdict stands and no second AI call is spent.
+    if ((Resolve-PostDeployAiNeed $summaryLine) -eq 'run-check') {
+        $aiScript = Join-Path $RepoRoot (Join-Path ".github" (Join-Path "scripts" "post_deploy_ai_answer_check.py"))
+        if (-not (Test-Path -LiteralPath $aiScript)) {
+            throw "STEP2_FAIL: the post-deploy AI check script is missing from the release checkout ($aiScript)"
+        }
+        Invoke-PostDeployAiCheck -ScriptPath $aiScript -BaseUrl "https://chat.padiem.net" -CredentialLoader ${function:Get-Com2QaCredentials}
+        Add-Summary "AI_CHECK=PASS (COM1 side)"
+    }
+    else {
+        Write-Info "post-deploy AI check = PASS (the COM2 deploy unit produced the verdict)"
+        Add-Summary "AI_CHECK=PASS (COM2 unit)"
     }
 }
 
