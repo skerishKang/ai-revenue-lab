@@ -10,6 +10,10 @@
                  (Chat 과 Claw 는 기능이 같다는 대표 결정: 한쪽만 되면 FAIL)
   browser_stamp  화면이 실제로 불러온 app.js 의 ?v= 스탬프 커밋 이후에 화면 배포
                  대상 경로가 바뀌었는지(6시간 배포 창을 넘겼는지)
+  browser_shared_login  공통 로그인(padiem-auth 이메일) → /api → 공통 로그아웃
+                 (#7078 양성 표본. 쿠키 이름만 보고, 값은 읽지도 적지도 않음.
+                 로그아웃 판정은 #7334가 운영에 실렸을 때만 의미가 있으므로
+                 padiem_session을 심어 배포 여부를 흐름 안에서 판별한다)
 
 이 파일은 두 층으로 나뉜다.
 
@@ -543,6 +547,69 @@ def artifact_filename(flow: str, step: int, name: str) -> str:
     return f"{safe_flow}_{int(step):02d}_{safe_name or 'step'}.png"
 
 
+# ------------------------------------------------------------------ 공통 로그인
+# 브라우저 흐름 browser_shared_login (#7078): 공통 로그인(padiem-auth 이메일
+# 로그인)으로 실제로 로그인하고, 쿠키 "이름"만으로 공통 3종을 확인한다.
+# 쿠키 값은 읽지도 적지도 않는다. 로그아웃 판정은 #7334(공통 로그아웃이
+# padiem_session도 지운다)가 운영에 실렸을 때만 의미가 있으므로, 흐름 안에서
+# 배포 여부를 판별한다. 스탬프(?v=)·버전 엔드포인트로는 런타임 배포를 알 수
+# 없다 — `?v=` 스탬프는 화면 배포만 가리키고 `/health`·응답 헤더·
+# `/api/auth/status` 어디에도 런타임 SHA가 없다. 그래서 padiem_session을
+# 일부러 심어 공통 로그아웃이 그 쿠키도 지우는지로 판별한다. 판별에 쓴
+# padiem_session은 같은 흐름 안에서 반드시 정리(레거시 로그아웃)한다.
+SHARED_ACCESS_COOKIE = "__Host-padiem-shared-access"
+SHARED_REFRESH_COOKIE = "padiem_shared_refresh"
+SHARED_MARKER_COOKIE = "__Host-padiem-shared-marker"
+SHARED_COOKIE_NAMES = (SHARED_ACCESS_COOKIE, SHARED_REFRESH_COOKIE, SHARED_MARKER_COOKIE)
+PADIEM_SESSION_COOKIE = "padiem_session"
+SHARED_LOGOUT_PATH = "/auth/shared/logout"
+LEGACY_LOGOUT_PATH = "/api/auth/logout"
+SHARED_STATUS_PATH = "/api/auth/status"
+SHARED_AUTH_HOST = "auth.padiem.net"
+
+
+def _name_set(names) -> set[str]:
+    return {str(name) for name in (names or ()) if isinstance(name, str) and name}
+
+
+def shared_access_cookie_verdict(names) -> tuple[str, str]:
+    """(판정, 코드). 쿠키 "이름" 목록에 공통 access 쿠키가 있는가."""
+    present = _name_set(names)
+    if SHARED_ACCESS_COOKIE in present:
+        return "PASS", "none"
+    return "FAIL", "shared_cookie_missing"
+
+
+def shared_status_verdict(authenticated, stage: str) -> tuple[str, str]:
+    """(판정, 코드). stage는 after_login(참이어야) 또는 after_logout(거짓이어야)."""
+    flag = bool(authenticated)
+    if stage == "after_login":
+        return ("PASS", "none") if flag else ("FAIL", "shared_api_unauthenticated")
+    if stage == "after_logout":
+        return ("PASS", "none") if not flag else ("FAIL", "logout_still_authenticated")
+    raise ValueError("unknown_shared_stage")
+
+
+def shared_logout_verdict(names) -> tuple[str, str, str]:
+    """(판정, 코드, head). 공통 로그아웃 직후 쿠키 "이름" 목록으로 판정한다.
+
+    - 공통 3종 중 하나라도 남았으면 FAIL logout_residue. head에 남은 "이름"만
+      남긴다(값 아님).
+    - 공통 3종은 지워졌고 padiem_session만 남았으면 SKIPPED not_deployed.
+      운영 런타임이 #7334 이전이라는 뜻이다.
+    - 모두 없으면 PASS none.
+    """
+    present = _name_set(names)
+    residue = [name for name in SHARED_COOKIE_NAMES if name in present]
+    if PADIEM_SESSION_COOKIE in present:
+        residue.append(PADIEM_SESSION_COOKIE)
+    if any(name in SHARED_COOKIE_NAMES for name in residue):
+        return "FAIL", "logout_residue", "remaining=" + ",".join(residue)
+    if residue:
+        return "SKIPPED", "not_deployed", ""
+    return "PASS", "none", ""
+
+
 # ------------------------------------------------------------------ 실행기
 _MASK_SCRIPT = """
 (username) => {
@@ -597,6 +664,27 @@ _APP_JS_URLS_JS = """
   });
   return Array.from(seen);
 }
+"""
+
+_AUTH_MASK_JS = """
+() => {
+  ['email', 'password', 'name'].forEach((id) => {
+    const node = document.getElementById(id) || document.querySelector('input[name="' + id + '"]');
+    if (node) node.style.filter = 'blur(7px)';
+  });
+}
+"""
+
+_STATUS_JS = """
+() => fetch('/api/auth/status', { headers: { Accept: 'application/json' }, cache: 'no-store' })
+  .then((response) => response.json())
+  .catch(() => null)
+"""
+
+_LOGOUT_JS = """
+(path) => fetch(path, { method: 'POST', headers: { Accept: 'application/json' } })
+  .then((response) => response.status)
+  .catch(() => 0)
 """
 
 
@@ -758,6 +846,151 @@ def _wait_answer(page) -> dict:
     return payload
 
 
+def _shared_cookie_names(context) -> list[str]:
+    """chat.padiem.net 쿠키의 "이름"만. 값은 읽지 않고 로그에도 남기지 않는다."""
+    names: list[str] = []
+    try:
+        cookies = context.cookies()
+    except Exception:
+        return names
+    for cookie in cookies:
+        domain = str(cookie.get("domain", ""))
+        name = cookie.get("name")
+        if domain.endswith("chat.padiem.net") and isinstance(name, str) and name:
+            names.append(name)
+    return names
+
+
+def _plant_legacy_session(context) -> None:
+    """Flow 1과 같은 QA 자격으로 레거시 로그인해 padiem_session을 심는다.
+
+    로그아웃 판정을 공허한 통과로 기록하지 않기 위한 배포 판별 장치다.
+    padiem-auth가 아닌 같은 호스트의 레거시 API 로그인이며, 판별 후 같은
+    흐름 안에서 레거시 로그아웃으로 정리한다.
+    """
+    import urllib.request
+
+    from b62_live_logout_reuse_check import LOGIN, bounded_call
+
+    username = os.environ.get("B66_CGI_ALPHA_USERNAME", "")
+    password = os.environ.get("B66_CGI_ALPHA_PASSWORD", "")
+    opener = urllib.request.build_opener()
+    status, body, cookie = bounded_call(
+        opener, LOGIN, method="POST",
+        payload={"identifier": username, "password": password},
+    )
+    if status != 200 or not isinstance(body, dict) or body.get("ok") is not True or not cookie:
+        raise RuntimeError("legacy_plant_login_refused")
+    context.add_cookies([{
+        "name": PADIEM_SESSION_COOKIE,
+        "value": cookie,
+        "domain": "chat.padiem.net",
+        "path": "/",
+        "httpOnly": True,
+        "secure": True,
+        "sameSite": "Lax",
+    }])
+
+
+def _run_shared_login_flow(browser, chat_url: str, out_path: Path,
+                           flow: "BrowserFlowResult", username: str,
+                           console_sink: list) -> None:
+    """공통 로그인(padiem-auth 이메일) 한 바퀴. 판정은 위의 순수 함수가 한다.
+
+    캡처·가리기·콘솔 오류 규칙은 기존 브라우저 흐름과 같다. 공통 로그인은
+    padiem_session을 만들지 않으므로 판별 전 브라우저에는 padiem_session이
+    없다. 공통 로그아웃만 호출한다(UI 로그아웃은 레거시 경로까지 부르므로
+    판별이 공허해진다).
+    """
+    qa_username = os.environ.get("B66_CGI_ALPHA_USERNAME", "")
+    qa_password = os.environ.get("B66_CGI_ALPHA_PASSWORD", "")
+    if not qa_username or not qa_password:
+        flow.skip("qa_credential_missing")
+        return
+
+    started = time.monotonic()
+    context = browser.new_context(viewport=VIEWPORT, locale="ko-KR")
+    page = context.new_page()
+    page.set_default_timeout(SELECTOR_TIMEOUT_MS)
+    _console_events(page, console_sink)
+    stage = "open"
+    try:
+        page.goto(chat_url, wait_until="domcontentloaded", timeout=NAVIGATE_TIMEOUT_MS)
+        _capture(page, out_path, flow, 1, "open", username)
+        stage = "entry"
+        page.click("#loginButton")
+        page.click("#googleLoginButton")
+        page.wait_for_url(lambda url: url.startswith(f"https://{SHARED_AUTH_HOST}/"),
+                          timeout=NAVIGATE_TIMEOUT_MS)
+        flow.entry_ms = int((time.monotonic() - started) * 1000)
+        stage = "email"
+        page.evaluate(_AUTH_MASK_JS)
+        page.fill('input[name="email"]', qa_username)
+        page.fill('input[name="password"]', qa_password)
+        _capture(page, out_path, flow, 2, "padiem-auth", username)
+        stage = "callback"
+        page.click('form[action^="/login/password"] button[type="submit"]')
+        page.wait_for_load_state("load", timeout=NAVIGATE_TIMEOUT_MS)
+        deadline = time.monotonic() + 30.0
+        names: list[str] = []
+        while time.monotonic() < deadline:
+            names = _shared_cookie_names(context)
+            if SHARED_ACCESS_COOKIE in names:
+                break
+            page.wait_for_timeout(500)
+        _capture(page, out_path, flow, 3, "callback", username)
+        verdict, code = shared_access_cookie_verdict(names)
+        if verdict != "PASS":
+            flow.fail(code)
+            return
+        stage = "api"
+        answer_started = time.monotonic()
+        api = page.evaluate(_STATUS_JS)
+        flow.answer_ms = int((time.monotonic() - answer_started) * 1000)
+        verdict, code = shared_status_verdict(
+            bool(api and api.get("authenticated")), "after_login")
+        if verdict != "PASS":
+            flow.fail(code)
+            return
+        stage = "logout"
+        _plant_legacy_session(context)
+        page.evaluate(_LOGOUT_JS, SHARED_LOGOUT_PATH)
+        names = _shared_cookie_names(context)
+        verdict, code, head = shared_logout_verdict(names)
+        if verdict == "FAIL":
+            flow.head = head
+            flow.fail(code)
+            return
+        if verdict == "SKIPPED":
+            # 판별에 쓴 레거시 세션을 같은 흐름 안에서 정리한다.
+            page.evaluate(_LOGOUT_JS, LEGACY_LOGOUT_PATH)
+            api = page.evaluate(_STATUS_JS)
+            recheck, recheck_code = shared_status_verdict(
+                bool(api and api.get("authenticated")), "after_logout")
+            if recheck != "PASS":
+                flow.fail(recheck_code)
+                return
+            flow.head = "login=ok api=ok logout=not_deployed"
+            flow.skip(code)
+            return
+        stage = "recheck"
+        api = page.evaluate(_STATUS_JS)
+        verdict, code = shared_status_verdict(
+            bool(api and api.get("authenticated")), "after_logout")
+        if verdict != "PASS":
+            flow.fail(code)
+            return
+        flow.head = "login=ok api=ok logout=ok"
+        flow.pass_(flow.head, "shared_login_ok")
+    except Exception as exc:
+        flow.fail(safe_code(f"shared_{stage}_{type(exc).__name__}"))
+    finally:
+        try:
+            context.close()
+        except Exception:
+            pass
+
+
 def run_browser_flows(
     *,
     cookie: str,
@@ -778,6 +1011,7 @@ def run_browser_flows(
         "browser_chat": BrowserFlowResult("browser_chat"),
         "browser_claw": BrowserFlowResult("browser_claw"),
         "browser_stamp": BrowserFlowResult("browser_stamp"),
+        "browser_shared_login": BrowserFlowResult("browser_shared_login"),
     }
     sink: list[tuple[str, str, str]] = []
 
@@ -890,6 +1124,15 @@ def run_browser_flows(
             except Exception as exc:
                 stamp.fail(f"browser_stamp_{type(exc).__name__}")
             stamp.elapsed_ms = int((time.monotonic() - started) * 1000)
+
+            shared = results["browser_shared_login"]
+            shared_started = time.monotonic()
+            shared_mark = len(sink)
+            try:
+                _run_shared_login_flow(browser, CHAT_URL, out_path, shared, username, sink)
+            except Exception as exc:
+                shared.fail(safe_code(f"shared_runner_error_{type(exc).__name__}"))
+            _finish(shared, shared_started, sink, shared_mark)
         finally:
             browser.close()
 
