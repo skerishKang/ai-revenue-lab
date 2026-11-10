@@ -251,7 +251,10 @@ test("the worker stays inside a proxy-only CPU shape", () => {
   }
   // One upstream fetch call site; the service fallback has its own binding call.
   assert.equal((source.match(/await fetchImpl\(/g) || []).length, 1);
-  assert.equal((source.match(/await env\.CHAT_WORKER\.fetch\(/g) || []).length, 1);
+  // Two binding call sites, both pass-through with no body read: the read
+  // fallback, and the single voice-RPC path (#7228) whose authorization stays
+  // with the Worker's service-proof check.
+  assert.equal((source.match(/await env\.CHAT_WORKER\.fetch\(/g) || []).length, 2);
 });
 
 test("static assets stay on Cloudflare and dynamic requests use real signing", async () => {
