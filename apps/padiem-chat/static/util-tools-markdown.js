@@ -17,7 +17,10 @@
   const HEADING = /^(#{1,4})\s+(.+)$/;
   const BULLET = /^\s*[-*•]\s+(.+)$/;
   const ORDERED = /^\s*\d+[.)]\s+(.+)$/;
-  const BOLD = /\*\*([^*]+)\*\*/;
+  // Non-greedy across a whole paragraph: a pair the model broke over a line
+  // break still renders. A pair that never closes falls through to the
+  // residual strip below, so no "**" reaches the screen.
+  const BOLD = /\*\*([\s\S]+?)\*\*/;
 
   function appendInline(host, value) {
     let rest = String(value == null ? "" : value);
@@ -30,7 +33,7 @@
       rest = rest.slice(match.index + match[0].length);
       match = BOLD.exec(rest);
     }
-    if (rest) host.appendChild(document.createTextNode(rest));
+    if (rest) host.appendChild(document.createTextNode(rest.replace(/\*\*/g, "")));
   }
 
   function startsBlock(line) {
@@ -100,7 +103,8 @@
 
   function stripInline(value) {
     return String(value == null ? "" : value)
-      .replace(/\*\*([^*]+)\*\*/g, "$1")
+      .replace(/\*\*([\s\S]+?)\*\*/g, "$1")
+      .replace(/\*\*/g, "")
       .replace(/`([^`]+)`/g, "$1");
   }
 
