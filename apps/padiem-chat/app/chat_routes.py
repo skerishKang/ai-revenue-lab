@@ -554,6 +554,7 @@ async def _connector_tool_lane(
             saved_id = None
         if saved_id is not None:
             done_payload["conversation_id"] = saved_id
+        from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=answer)  # #7297 공통 실행 기록 투영
     yield _public_sse("done", done_payload)
 
 
@@ -1512,7 +1513,7 @@ async def api_chat(request: Request) -> JSONResponse:
         return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
 
     settings: Settings = request.app.state.settings
-    if selected_model == FREE_B14_MODEL_ID and any(isinstance(item, ImageAttachment) for item in attachments):
+    if selected_model == FREE_B14_MODEL_ID and any(isinstance(item, ImageAttachment) for item in attachments) and not model_supports(selected_model, "image") and model_supports(FREE_FALLBACK_B14_MODEL_ID, "image"):
         selected_model = FREE_FALLBACK_B14_MODEL_ID
     if settings.runtime_mode == "b14" and any(isinstance(item, ImageAttachment) for item in attachments):
         if not model_supports(selected_model, "image"):
@@ -1653,6 +1654,7 @@ async def api_chat(request: Request) -> JSONResponse:
                 result["conversation_id"] = saved_id
                 if effective_project_id is not None:
                     result["project_id"] = effective_project_id
+        from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=result["answer"])  # #7297 공통 실행 기록 투영
         return JSONResponse(public_chat_result(result))
 
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
@@ -1842,4 +1844,5 @@ async def api_chat(request: Request) -> JSONResponse:
                 if effective_project_id is not None:
                     result["project_id"] = effective_project_id
                     result["project"] = {"id": project.id, "name": project.name} if project is not None else None
+                from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=result["answer"])  # #7297 공통 실행 기록 투영
     return JSONResponse(public_chat_result(result))

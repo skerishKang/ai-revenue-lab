@@ -53,7 +53,9 @@ def test_user_avatar_uses_the_account_initial_and_keeps_name_first():
     # call site in app.js keeps calling it through the one-line forwarder.
     module = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
     assert "function accountInitial(name)" in module
-    assert "avatar.textContent = accountInitial(name)" in APP
+    # #7216 R5 step 5a: addUserMessage moved into chat-conversation-module.js.
+    conv = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")
+    assert "avatar.textContent = deps.accountInitial(name)" in conv
     # The DOM order stays name -> avatar.
     template = HTML[HTML.index('id="userMessageTemplate"'):]
     template = template[: template.index("</template>")]
@@ -85,7 +87,8 @@ def test_answer_carries_a_completion_time_and_restored_turns_invent_none():
     assert "const completedAt = article.dataset.completedAt" in OUTPUTS
     # A restored conversation is rendered without a live stamp.
     assert "addUserMessage(item.content, null, { restored: true })" in APP
-    assert "if (restored) {" in APP
+    conv = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5a
+    assert "if (restored) {" in conv
 
 
 def test_hover_hints_use_the_shared_chip_tooltip_not_the_native_title():

@@ -262,8 +262,8 @@ DEFAULT_B14_MODEL_ID = PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
     model_id: caps
     for model_id, caps in (
-        (free_primary_model_id(), frozenset({"chat", "coding"})),
-        (free_fallback_model_id(), frozenset({"chat", "image"})),
+        (free_primary_model_id(), frozenset({"chat", "coding", "image"})),
+        (free_fallback_model_id(), frozenset({"chat"})),
     )
     if model_id
 }

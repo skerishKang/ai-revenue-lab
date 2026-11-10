@@ -77,7 +77,7 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 CF_API = "https://api.cloudflare.com/client/v4"
-B14_HEALTH = "https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/pilot/health"
+B14_HEALTH = "https://b14.padiem.net/api/pilot/health"
 WORKER_NAME = "padiem-chat"
 USER_AGENT = "b62-preflight/1.0"
 

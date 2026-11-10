@@ -1,10 +1,18 @@
-"""Strict post-deploy QA: authenticated orchestration must return an answer."""
+"""Strict post-deploy QA: authenticated orchestration must return an answer.
+
+A transport-class blip (URLError/timeout/OSError reaching the public origin) is
+retried a bounded number of times: the same request succeeds seconds later on
+identical code, and one blip must not redden the deploy gate as a broken answer
+lane. Every other failure code, and a transport failure on every attempt, fail
+exactly as before — the verdict contract is unchanged.
+"""
 from __future__ import annotations
 
 import argparse
 import contextlib
 import io
 import sys
+import time
 from http.cookiejar import CookieJar
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
@@ -15,6 +23,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from post_deploy_real_chat_smoke import (
     CanaryError, CONVERSATION, bounded_call, conversation_id, engine_lane, error_code,
 )
+
+#: The one failure class that says nothing about the answer lane. Measured on
+#: 11-09 (#7277 release: ai:FAIL http_transport_unavailable, then ai:PASS on a
+#: standalone rerun with unchanged code) and once before by a sibling lane.
+TRANSPORT_CODE = "http_transport_unavailable"
+#: Three attempts total, ten seconds apart: the deploy window already budgets
+#: minutes for service readiness, so +20s worst case is bounded and small.
+TRANSPORT_ATTEMPTS = 3
+TRANSPORT_RETRY_SECONDS = 10.0
 
 
 def origin(value: str) -> str:
@@ -29,7 +46,7 @@ def origin(value: str) -> str:
     return urlunsplit((u.scheme, u.netloc, "", "", ""))
 
 
-def check(base_url: str) -> tuple[str, str]:
+def _check_once(base_url: str) -> tuple[str, str]:
     opener = build_opener(HTTPCookieProcessor(CookieJar()))
     saved_id = None
     try:
@@ -56,6 +73,19 @@ def check(base_url: str) -> tuple[str, str]:
                 bounded_call(opener, CONVERSATION + saved_id, method="DELETE", origin=target)
             except Exception:
                 pass
+
+
+def check(base_url: str) -> tuple[str, str]:
+    # _check_once converts every failure into a FAIL tuple, so the retry reads
+    # the verdict rather than catching exceptions.
+    verdict: tuple[str, str] = ("FAIL", "ai_check_unavailable")
+    for attempt in range(1, TRANSPORT_ATTEMPTS + 1):
+        verdict = _check_once(base_url)
+        if verdict[0] != "FAIL" or verdict[1] != TRANSPORT_CODE \
+                or attempt == TRANSPORT_ATTEMPTS:
+            return verdict
+        time.sleep(TRANSPORT_RETRY_SECONDS)
+    return verdict  # pragma: no cover
 
 
 def main() -> int:

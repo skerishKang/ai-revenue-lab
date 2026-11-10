@@ -20,14 +20,20 @@ also fences every in-flight load, so a lookup that started before the logout
 cannot repopulate the cache after it.
 
 Residual staleness is bounded: the session revocation guard reads through
-`resolve_auth_session`, so a revoked session may still be honoured for up to
-20 s — the same shape the existing auth validation cache already has (30 s).
-The 60 s entries only affect which PC tools the lane offers.
+`resolve_auth_session`, so a revoked session may be honoured for up to
+the unified auth-session window (300 s by default, the same
+`PADIEM_CHAT_AUTH_SESSION_CACHE_SECONDS` the general request cache uses) —
+but every revocation event this host serves (logout, password change,
+account deletion, admin membership/role changes, session rotation) removes
+the entry immediately, so the window only bounds how late a revocation made
+in another product is observed. The 60-second entries only affect which PC
+tools the lane offers.
 """
 from __future__ import annotations
 
 import asyncio
 import hashlib
+import os
 import time
 from typing import Any, Callable
 from .identity_cache_metrics import record
@@ -36,9 +42,41 @@ _MAX_TTL_SECONDS = 60
 #: Same window as the existing per-turn reads: the product user of a verified
 #: subject cannot change while that subject stays signed in.
 _PRODUCT_USER_TTL_SECONDS = 60
-#: Long enough to collapse the repeated reads inside one request and a 2 s
-#: poll, short enough that a revoked session stops being honoured.
-_AUTH_SESSION_TTL_SECONDS = 20
+#: Unified auth-session window (#7084): the SAME
+#: `PADIEM_CHAT_AUTH_SESSION_CACHE_SECONDS` the SQLite auth/session cache
+#: uses (default 300 s, capped at 900 s), so the revocation guard's
+#: `resolve_auth_session` read and the Chat general request cache can no
+#: longer expire independently. Every revocation event removes the entry
+#: immediately through `invalidate_auth_cache`, which is the same
+#: invalidation both caches share. The previous 20 s window expired between
+#: request bursts faster than the SQLite layer could refresh, so the guard
+#: paid the authority RPC anyway.
+_AUTH_SESSION_TTL_ENV = "PADIEM_CHAT_AUTH_SESSION_CACHE_SECONDS"
+_AUTH_SESSION_TTL_DEFAULT = 300
+_AUTH_SESSION_TTL_MAX = 900
+
+
+def _owner_scope_ttl_seconds() -> int:
+    """The PC-lane owner-scope window, shared with the auth-session window.
+
+    The same upper bound (900 s) and default (300 s) as the auth-session
+    window: pairing/disconnect/designation writes drop the entry in the
+    same request (see drop_cached_owner_scope_of), so a longer window never
+    holds a scope the authority no longer answers.
+    """
+    return _auth_session_ttl_seconds()
+
+
+def _auth_session_ttl_seconds() -> int:
+    """The auth-session window shared with the SQLite auth/session cache."""
+    raw = os.environ.get(_AUTH_SESSION_TTL_ENV, "").strip()
+    try:
+        ttl = int(raw) if raw else _AUTH_SESSION_TTL_DEFAULT
+    except ValueError:
+        ttl = _AUTH_SESSION_TTL_DEFAULT
+    if ttl < 1 or ttl > _AUTH_SESSION_TTL_MAX:
+        ttl = _AUTH_SESSION_TTL_DEFAULT
+    return ttl
 
 
 def _hash_key(value: str) -> str:
@@ -50,10 +88,12 @@ class CachedIdentityAuthority:
 
     ``resolve_current_auth_session`` (60 s), ``resolve_connector_owner_scope``
     (60 s), ``resolve_product_user_for_subject`` (60 s) and
-    ``resolve_auth_session`` (20 s) are the per-request reads; they repeat
-    inside one request and, for the Engine PC-files poll, once per poll. The
-    revoke/delete/membership calls and the schema helpers delegate untouched.
-    Session revocation therefore lands within 20 s rather than instantly.
+    ``resolve_auth_session`` (unified auth-session window, 300 s default,
+    shared with the SQLite session cache) are the per-request reads; they
+    repeat inside one request and, for the Engine PC-files poll, once per
+    poll. The revoke/delete/membership calls and the schema helpers delegate
+    untouched. Session revocation therefore lands immediately on revocation
+    events rather than at window expiry.
     """
 
     def __init__(self, inner: Any, *, ttl_seconds: int = 60,
@@ -94,6 +134,23 @@ class CachedIdentityAuthority:
         self._inflight.clear()
         self._entries.pop("ownerscope:" + _hash_key(session_id), None)
         self._entries.pop("authsess:" + _hash_key(session_id), None)
+
+    def invalidate_owner_scope_of_user(self, user_id: str) -> None:
+        """Drop only that user's cached owner-scope answers.
+
+        Pairing, unpairing, disconnect and designation change what the
+        connector may resolve for the account; the entries these answer with
+        are filed under the account ref they resolved. Unlike
+        `invalidate_user`, auth-session answers stay standing, so one
+        pairing does not revoke everybody's cached session reads.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            return
+        self._epoch += 1
+        self._inflight.clear()
+        for key in [k for k, (_, _, user_ref) in self._entries.items()
+                    if k.startswith("ownerscope:") and user_ref == user_id]:
+            self._entries.pop(key, None)
 
     async def _get_or_load(self, key: str, user_ref: str, loader,
                            ttl: float | None = None, ref_of=None) -> Any:
@@ -173,11 +230,14 @@ class CachedIdentityAuthority:
         return uid
 
     async def resolve_auth_session(self, *, session_id: str) -> Any:
-        """The request-path session read, cached per session id for 20 s.
+        """The request-path session read, cached per session id.
 
         The revocation guard calls this method too, so a revoked session is
-        honoured within the TTL instead of instantly — the same shape the
-        existing auth validation cache already has (30 s). A refusal is never
+        honoured within the unified auth-session window (300 s default, same
+        env as the SQLite session cache) instead of instantly — but every
+        revocation event this host serves removes this entry immediately
+        through `invalidate_auth_cache`, so the window only bounds how late a
+        revocation made in another product is observed. A refusal is never
         stored: the authority is asked again on the next call.
         """
         key = "authsess:" + _hash_key(session_id)
@@ -186,7 +246,7 @@ class CachedIdentityAuthority:
             return await self._inner.resolve_auth_session(session_id=session_id)
 
         session = await self._get_or_load(
-            key, "", loader, ttl=_AUTH_SESSION_TTL_SECONDS,
+            key, "", loader, ttl=_auth_session_ttl_seconds(),
         )
         if session is None:
             self._entries.pop(key, None)
@@ -199,7 +259,7 @@ class CachedIdentityAuthority:
         async def loader() -> Any:
             return await self._inner.resolve_connector_owner_scope(session_id=session_id)
 
-        scope = await self._get_or_load(key, "", loader)
+        scope = await self._get_or_load(key, "", loader, ttl=_owner_scope_ttl_seconds())
         # The scope answers with the account the session belongs to, so a
         # user-level invalidation can find and drop this entry later.
         if isinstance(scope, dict):

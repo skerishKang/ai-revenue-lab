@@ -378,6 +378,15 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
         shared_login_flow = create_host_shared_login_flow(
             os.environ, identity_authority, settings.public_base_url,
             canonical_session_lifetime_seconds=settings.session_max_age_seconds)
+        # Stage 1 shadow (#7078): warm the JWKS cache once at startup (off
+        # the request path) so the first verified request does not pay the
+        # ~400 ms JWKS fetch. No-op unless the shadow switch is ON. Wrapped so
+        # a JWKS outage can never fail server startup (Argon (a)-2).
+        try:
+            from .auth_shadow_verify import prewarm_shadow_verifier
+            prewarm_shadow_verifier()
+        except Exception as exc:
+            print("shadow_prewarm outcome=fail code=%s" % type(exc).__name__, flush=True)
 
     # #4139 Oracle management-host return leg, composed from the SAME env
     # bindings the Worker root composes (worker.py build_oracle_mesh_return_source_from_env).
@@ -724,6 +733,14 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
         app.state.history_store = QueueForwardingHistoryStore(
             app.state.history_store, queue_client
         )
+    # #7293 follow-up: the claim route's node-existence proof — the PR-2 Mesh
+    # presence directory — was never injected, so every typed-code claim landed
+    # in pending_verification forever. Wire it from whichever presence store
+    # this runtime selected above; no store stays fail-closed (never verified).
+    from .pc_device_pairing_routes import presence_pairing_verifier
+    app.state.pc_pairing_verifier = presence_pairing_verifier(
+        app.state.mesh_device_presence_store
+    )
 
     # The same server-owned v2 loopback authority as the connector gateway.
     # Missing configuration leaves the existing unconfigured source in place.
@@ -795,6 +812,23 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
                 adapter=app.state.claw_p01_adapter,
                 usage_gate=app.state.usage_gate,
             )
+        # #7306: worker.py composes the Claw live SSE switch from the deployment
+        # flag PADIEM_CLAW_P01_LIVE_SSE_ENABLED; the CPython host hardcoded
+        # False, so the lane stayed off here even when the deployment armed it.
+        # Compose the SAME flag with the SAME judgment worker.py applies: the
+        # runtime is B14, the flag is exactly "true", and the composed P01
+        # adapter has a verified canonical subject lane.
+        app.state.claw_live_sse_enabled = (
+            settings.runtime_mode == "b14"
+            and binding_value(
+                os.environ, "PADIEM_CLAW_P01_LIVE_SSE_ENABLED"
+            ) == "true"
+            and getattr(
+                getattr(app.state, "claw_p01_adapter", None),
+                "subject_identity_lane",
+                False,
+            ) is True
+        )
         quote_model_resolver = B66ExplicitQuoteModelResolver(completion_transport)
         app.state.b66_quote_model_resolver = quote_model_resolver
         app.state.b14_model_choice_resolver = quote_model_resolver

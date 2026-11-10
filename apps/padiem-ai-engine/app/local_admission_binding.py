@@ -433,10 +433,26 @@ class HttpsAdmissionBinding:
         body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
         path = RPC_PATH_PREFIX + method
         response = None
+        started = time.perf_counter()
+        attempts = 0
         for _ in range(RPC_MAX_ATTEMPTS):
+            attempts += 1
             response = await self._post_signed(path, body)
             if response.status_code != RPC_REPLAY_STATUS:
                 break
+        # One journal line per call names the method, the status, attempt
+        # count and elapsed milliseconds only — no subject, no payload, no
+        # secret — the same shape the keepwarm line uses (engine_timing
+        # journal stream), so the per-turn admission split can be read back.
+        # A raised transport failure (no response yet) emits nothing.
+        if response is not None:
+            _KEEPWARM_LOG.info(
+                "admission_rpc method=%s status=%d attempts=%d ms=%.1f",
+                method,
+                response.status_code,
+                attempts,
+                (time.perf_counter() - started) * 1000.0,
+            )
         if response.status_code != 200:
             raise RuntimeError("admission authority answered a non-success status")
         try:
@@ -455,6 +471,9 @@ class HttpsAdmissionBinding:
 
     async def record_usage(self, payload: dict[str, Any]) -> dict[str, Any]:
         return await self._call("record_usage", payload)
+
+    async def admit_usage(self, payload: dict[str, Any]) -> dict[str, Any]:
+        return await self._call("admit_usage", payload)
 
 
 def start_admission_warmers() -> None:

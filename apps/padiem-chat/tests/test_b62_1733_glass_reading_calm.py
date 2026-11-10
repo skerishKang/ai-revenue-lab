@@ -9,6 +9,8 @@ THEME = (STATIC / "theme.js").read_text(encoding="utf-8")
 READING = (STATIC / "padiem-glass-reading.css").read_text(encoding="utf-8")
 PORTRAIT = (STATIC / "padiem-glass-portrait.css").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+#7216 R5 step 5a: showConversation moved into chat-conversation-module.js.
+CONV = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")
 
 
 def test_glass_mode_is_projected_from_explicit_app_conversation_state() -> None:
@@ -21,8 +23,8 @@ def test_glass_mode_is_projected_from_explicit_app_conversation_state() -> None:
     assert 'return "home";' in THEME
     assert 'root.setAttribute("data-glass-mode",mode);' in THEME
     assert 'attributeFilter:["data-state"]' in THEME
-    assert 'shell.dataset.state = "chat";' in APP
-    assert 'shell.dataset.state = "home";' in APP
+    assert 'deps.shell.dataset.state = "chat";' in CONV
+    assert 'deps.shell.dataset.state = "home";' in CONV
 
 
 def test_glass_reading_suppresses_old_scroll_travel_but_accepts_answer_activity() -> None:

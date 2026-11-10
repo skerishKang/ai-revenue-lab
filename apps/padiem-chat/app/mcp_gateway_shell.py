@@ -18,8 +18,8 @@ from padiem_ai_core.pc_device_identity import is_pc_device_id
 from padiem_ai_core.pc_shell_selection import (
     PC_SHELL_DEFAULT_NAME,
     PC_SHELL_NAMES,
+    SHELL_BASH,
     SHELL_WHOAMI,
-    SHELL_WSL,
     resolve_shell,
     resolve_user_helper_shell,
     system_launch_env_lines,
@@ -266,6 +266,11 @@ def build_pc_shell_command(arguments: Mapping) -> str:
     resolves the tool's shell name once, and the resolved launcher travels as
     three env assignments the generic tail executes. The name itself still
     rides in the command text so a dispatch row says which shell was chosen.
+    #7188 R4 ③ — when the table carries candidates (bash: the Git Bash
+    roots), the tail probes them in order instead of trusting the PATH: the
+    bare ``bash.exe`` hunt picks ``C:\Windows\System32\bash.exe`` (WSL)
+    first, which measured as a failed run on COM1 (#7266 manual check). No
+    hit means the same ``shell_unavailable`` exit 127, with no PATH fallback.
     """
     if not _command_material(arguments):
         raise ValueError("Invalid MCP PC shell arguments")
@@ -280,9 +285,10 @@ $ErrorActionPreference='Continue';$ProgressPreference='SilentlyContinue'
 # (ProcessStreamReader_CliXmlError). The console is pinned to UTF-8 so the bytes
 # round-trip, and the nested call below asks for Text output explicitly.
 try{[Console]::OutputEncoding=[Text.Encoding]::UTF8}catch{}
+function _padiem_bash_ok($p){if(-not $p){return $false};$p=([string]$p).Replace('/','\');if(-not (Test-Path -LiteralPath $p -PathType Leaf)){return $false};if($p -imatch [regex]::Escape('\windows\system32\')){return $false};if((Split-Path $p -Leaf) -ieq 'wsl.exe'){return $false};return $true}
 $c=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:PADIEM_MCP_COMMAND_B64))
 $d=$null;if($env:PADIEM_MCP_CWD_B64){$d=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:PADIEM_MCP_CWD_B64));if(-not(Test-Path -LiteralPath $d -PathType Container)){[Console]::Error.WriteLine('cwd_invalid');exit 126};Set-Location -LiteralPath $d}
-try{$file=$env:PADIEM_MCP_SHELL_FILE;if(-not(Get-Command $file -ErrorAction SilentlyContinue)){[Console]::Error.WriteLine('shell_unavailable');exit 127};$args=@($env:PADIEM_MCP_SHELL_ARGS.Split(' '));if($env:PADIEM_MCP_SHELL_ENC -eq '1'){$args+=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($c))}else{$args+=$c};& $file @args;$code=0;if($null -ne $LASTEXITCODE){$code=[int]$LASTEXITCODE};exit $code}catch{[Console]::Error.WriteLine($_.Exception.Message);exit 1}
+try{$cands=$env:PADIEM_MCP_SHELL_CANDIDATES;if($cands){$file=$null;foreach($k in 'HKLM:\SOFTWARE\GitForWindows','HKLM:\SOFTWARE\WOW6432Node\GitForWindows','HKCU:\SOFTWARE\GitForWindows'){$ip=(Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).InstallPath;if($ip){$p=Join-Path $ip 'bin\bash.exe';if(_padiem_bash_ok $p){$file=$p;break}}};if(-not $file){$g=Get-Command git.exe -ErrorAction SilentlyContinue;if($g){$d=Split-Path $g.Source;foreach($rel in '..\bin\bash.exe','..\..\bin\bash.exe'){$p=[IO.Path]::GetFullPath((Join-Path $d $rel));if(_padiem_bash_ok $p){$file=$p;break}}}};if(-not $file){foreach($cand in $cands.Split(';')){$p=[Environment]::ExpandEnvironmentVariables($cand);if(_padiem_bash_ok $p){$file=$p;break}}};if(-not $file){[Console]::Error.WriteLine('shell_unavailable');exit 127}}else{$file=$env:PADIEM_MCP_SHELL_FILE;if(-not(Get-Command $file -ErrorAction SilentlyContinue)){[Console]::Error.WriteLine('shell_unavailable');exit 127}};$args=@($env:PADIEM_MCP_SHELL_ARGS.Split(' '));if($env:PADIEM_MCP_SHELL_ENC -eq '1'){$args+=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($c))}else{$args+=$c};& $file @args;$code=0;if($null -ne $LASTEXITCODE){$code=[int]$LASTEXITCODE};exit $code}catch{[Console]::Error.WriteLine($_.Exception.Message);exit 1}
 """.strip()
     script_b64 = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
     # PowerShell command text is fixed, and user values are base64 data only.
@@ -305,10 +311,12 @@ try{$file=$env:PADIEM_MCP_SHELL_FILE;if(-not(Get-Command $file -ErrorAction Sile
 #: #7076d/#7105/#7188 R4 ② — where this tool's shell vocabulary meets the
 #: helper's. The meeting itself now lives in the shared table
 #: (``padiem_ai_core.pc_shell_selection``): ``resolve_user_helper_shell`` maps
-#: the identity probe to the helper's dedicated ``whoami`` shell and ``bash``
-#: to the helper's ``wsl`` shell; ``powershell`` and ``cmd`` pass through as
-#: the shell the user session runs. The names stay here for existing imports.
-USER_HELPER_SHELL_FOR_BASH = SHELL_WSL
+#: the identity probe to the helper's dedicated ``whoami`` shell; ``bash``,
+#: ``powershell`` and ``cmd`` pass through as the shell the user session
+#: runs — bash is the helper's Git Bash stage-2 shell now (the owner banned
+#: WSL on the PC; the helper's ``wsl`` shell is gone). The names stay here
+#: for existing imports.
+USER_HELPER_SHELL_FOR_BASH = SHELL_BASH
 USER_HELPER_SHELL_FOR_WHOAMI = SHELL_WHOAMI
 # #7107: request material only. 0 means the helper has no execution deadline;
 # the command runs until it ends and the owner stops it through pc_shell_stop.

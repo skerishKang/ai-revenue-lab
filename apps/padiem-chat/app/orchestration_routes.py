@@ -209,11 +209,17 @@ async def _save_terminal_history(
     if store is None:
         return conversation_id
     try:
-        return await store.append_exchange(user_id, conversation_id, user_text, answer, product_scope=PRODUCT_SCOPE_CHAT)
+        saved = await store.append_exchange(user_id, conversation_id, user_text, answer, product_scope=PRODUCT_SCOPE_CHAT)
     except HistoryForbidden:
         return None
     except Exception:
         return conversation_id
+    if saved is not None:
+        # #7297: the record the Claw lane keeps for a completed turn lives in the
+        # same claw_run_history read-model whichever path answered it.
+        from .claw_general_run_history import project_completed_chat_turn
+        await project_completed_chat_turn(request, user_text=user_text, answer=answer)
+    return saved
 
 
 def public_grounding_evidence(items: Any) -> list[dict[str, Any]]:

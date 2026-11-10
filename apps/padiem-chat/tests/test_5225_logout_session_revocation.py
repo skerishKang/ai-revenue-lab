@@ -39,7 +39,13 @@ from app.config import Settings
 from app.control_plane_identity import IdentityBridgeError
 from app.history import HistoryConflict, PasswordCredential, UserProfile
 from app.main import create_app
-
+from app.shared_login_flow import (
+    ACCESS_COOKIE,
+    LOGIN_RETURN_COOKIE,
+    MARKER_COOKIE,
+    REFRESH_COOKIE,
+    STATE_COOKIE,
+)
 SESSION_SECRET = "logout-revocation-session-secret-not-real-000000"
 BASE_URL = "https://chat.example.test"
 
@@ -227,6 +233,20 @@ def _cookie_header(value: str) -> dict[str, str]:
     return {"Cookie": f"{SESSION_COOKIE}={value}"}
 
 
+def _set_cookie_headers(response: httpx.Response) -> list[str]:
+    """Multi-value Set-Cookie extraction across httpx versions."""
+    getter = getattr(response.headers, "getlist", None)
+    if callable(getter):
+        return getter("set-cookie")
+    getter = getattr(response.headers, "get_list", None)
+    if callable(getter):
+        return getter("set-cookie")
+    multi = getattr(response.headers, "multi_items", None)
+    if callable(multi):
+        return [v for k, v in multi() if k.lower() == "set-cookie"]
+    return []
+
+
 def _session_cookie(response: httpx.Response) -> str:
     raw = response.headers.get("set-cookie", "")
     assert SESSION_COOKIE in raw
@@ -373,10 +393,12 @@ async def test_failed_revocation_is_reported_as_a_failure_not_a_successful_logou
 
     assert logout.status_code == 503
     assert logout.json()["error"]["code"] == "session_revocation_failed"
-    # The cookie was not deleted: the session was not ended, so the logout must
-    # not be presented as successful.
-    assert "Max-Age=0" not in logout.headers.get("set-cookie", "")
-
+    # The failure is still reported (never a false success), but the local
+    # cookies of both families are deleted regardless: the browser-local
+    # sign-out is owned by the device, and a remote failure must not keep a
+    # credential behind it (design §7 (5)).
+    cleared = _set_cookie_headers(logout)
+    assert any(c.startswith(SESSION_COOKIE + "=") and "Max-Age=0" in c for c in cleared)
 
 @pytest.mark.asyncio
 async def test_unavailable_canonical_authority_is_not_reported_as_signed_out():
@@ -478,3 +500,34 @@ def test_a_malformed_canonical_session_claim_invalidates_the_cookie():
 
     assert decode_session_claims(settings, token) is None
     assert decode_session_token(settings, token) is None
+
+
+
+@pytest.mark.asyncio
+async def test_logout_clears_the_shared_login_cookies_too():
+    """Cross-family local sign-out: the legacy logout drops shared cookies too.
+
+    A browser may hold both families during the transition; the legacy logout
+    must not leave a working shared-login credential (or its state cookie)
+    behind. Each path ends both families locally.
+    """
+    store = MemoryStore()
+    authority = CanonicalAuthority()
+    app = build_app(store=store, authority=authority, shadow=ShadowStore())
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as client:
+        registered = await _register(client)
+        legacy = _session_cookie(registered)
+        headers = {"Cookie": "; ".join([
+            f"{SESSION_COOKIE}={legacy}",
+            f"{ACCESS_COOKIE}=synthetic",
+            f"{REFRESH_COOKIE}=synthetic",
+            f"{MARKER_COOKIE}=synthetic",
+            f"{STATE_COOKIE}=synthetic",
+            f"{LOGIN_RETURN_COOKIE}=synthetic",
+        ])}
+        logout = await client.post("/api/auth/logout", headers=headers)
+        assert logout.status_code == 200
+        cleared = _set_cookie_headers(logout)
+        for name in (SESSION_COOKIE, ACCESS_COOKIE, REFRESH_COOKIE,
+                     MARKER_COOKIE, STATE_COOKIE, LOGIN_RETURN_COOKIE):
+            assert any(c.startswith(name + "=") and "Max-Age=0" in c for c in cleared), name

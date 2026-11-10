@@ -4,17 +4,19 @@
 세 곳에 흩어져 있었다: 채팅 화이트리스트(PC_SHELL_SHELLS), SYSTEM 디스패처
 스크립트 안의 ``$env:PADIEM_MCP_SHELL`` 분기, 사용자 material의 bash→wsl
 수동 매핑. 변경 후에는 전부 ``padiem_ai_core.pc_shell_selection`` 한 표를
-거치고, 각 경로가 고르는 결과는 아래 표와 같다.
+거치고, 각 경로가 고르는 결과는 아래 표와 같다. R4 ④(#7188 후속)에서 사용자
+bash는 wsl 번역 없이 그대로 전달되고, 헬퍼가 같은 후보 순서로 Git Bash를
+찾아 실행한다(대표 결정: 컴1에서 WSL 금지, bash는 Git Bash만).
 
 | 경로                    | 변경 전 선택(흩어진 코드)                              | 변경 후 선택(resolve_shell)                            |
 |-------------------------|--------------------------------------------------------|--------------------------------------------------------|
 | SYSTEM × powershell     | 디스패처 분기: powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -OutputFormat Text -EncodedCommand(b64 UTF-16LE) | 동일(SystemShellLaunch)                                |
 | SYSTEM × cmd            | cmd.exe /d /s /c <c>                                   | 동일                                                    |
-| SYSTEM × bash           | bash.exe -lc <c>                                       | 동일                                                    |
+| SYSTEM × bash           | bash.exe -lc <c>(PATH 탐색 → System32 WSL bash가 잡힘) | Git Bash 표준 설치 경로 후보 순서 탐색, 없으면 shell_unavailable(127) |
 | SYSTEM × 셸 생략         | powershell 기본                                        | 동일(PC_SHELL_DEFAULT_NAME)                             |
 | SYSTEM × 미지원 이름     | 채팅 화이트리스트가 도구 오류로 거부(실행기 도달 불가)   | 동일 + 공통 UnknownShellName 예외                       |
 | USER × powershell / cmd | material shell 그대로 통과                              | 동일                                                    |
-| USER × bash             | material shell 'wsl'                                   | 동일                                                    |
+| USER × bash             | material shell 'wsl'(R4 ④에서 제거)                     | material shell 'bash' — 헬퍼가 Git Bash를 직접 실행      |
 | USER × whoami 명령       | material shell 'whoami'(명령 우선)                      | 동일                                                    |
 | USER × 셸 생략           | powershell 기본                                        | 동일                                                    |
 | USER × 미지원 이름       | 채팅 거부(도달 불가), 헬퍼가 최종 거절 유지              | 동일                                                    |
@@ -31,6 +33,7 @@ import subprocess
 import pytest
 
 from padiem_ai_core.pc_shell_selection import (
+    GIT_BASH_CANDIDATES,
     PC_SHELL_DEFAULT_NAME,
     SystemShellLaunch,
     UnknownShellName,
@@ -61,6 +64,7 @@ def test_system_lane_launch_table_is_pinned():
     )
     assert resolve_shell("bash", lane="system") == SystemShellLaunch(
         file="bash.exe", prefix_args=("-lc",), encode_command=False,
+        candidates=GIT_BASH_CANDIDATES,
     )
 
 
@@ -68,7 +72,7 @@ def test_user_lane_helper_names_are_pinned():
     """USER × {powershell, cmd, bash, whoami 명령}: 변경 전 material 매핑과 같은 값."""
     assert resolve_shell("powershell", lane="user") == "powershell"
     assert resolve_shell("cmd", lane="user") == "cmd"
-    assert resolve_shell("bash", lane="user") == "wsl"
+    assert resolve_shell("bash", lane="user") == "bash"
     # whoami 명령은 셸 이름보다 우선한다 — 변경 전 build_pc_shell_user_material과
     # 같은 순서, 같은 strip 규칙.
     for name in ("powershell", "cmd", "bash"):
@@ -117,7 +121,9 @@ def test_system_launch_lines_are_exact_and_ordered():
         "bash":
             "$env:PADIEM_MCP_SHELL_FILE='bash.exe';"
             "$env:PADIEM_MCP_SHELL_ARGS='-lc';"
-            "$env:PADIEM_MCP_SHELL_ENC='0';",
+            "$env:PADIEM_MCP_SHELL_ENC='0';"
+            "$env:PADIEM_MCP_SHELL_CANDIDATES='"
+            + ";".join(GIT_BASH_CANDIDATES) + "';",
     }
     for name, lines in expected.items():
         assert system_launch_env_lines(resolve_shell(name, lane="system")) == lines
@@ -133,10 +139,17 @@ def test_system_launch_lines_are_exact_and_ordered():
 @pytest.mark.skipif(shutil.which("powershell") is None,
                     reason="the generic tail is Windows PowerShell behavior")
 def test_generic_tail_runs_each_launcher_like_the_old_branch():
-    """제거된 분기와 같은 결과: 인자 배열·종료 코드·미지원 거부를 실제 PS로."""
-    tail_start = ("try{$file=$env:PADIEM_MCP_SHELL_FILE;"
-                  "if(-not(Get-Command $file -ErrorAction SilentlyContinue))"
-                  "{[Console]::Error.WriteLine('shell_unavailable');exit 127};")
+    """제거된 분기와 같은 결과: 인자 배열·종료 코드·미지원 거부를 실제 PS로.
+
+    #7188 R4 ③: 꼬리는 후보 목록 분기가 앞에 붙는다. powershell·cmd는
+    후보가 없으므로 else 가지(Get-Command)가 실행되며 그 결과는 변경 전과
+    같다 — 이 시험이 그 세 경로를 실제 PowerShell로 다시 증명한다.
+    """
+    # R4 ④: bash 가지는 레지스트리 → PATH git.exe → 고정 후보 순서가 앞에 붙는다.
+    # cmd·powershell은 $cands가 비어 있으므로 else 가지가 그대로 실행된다.
+    # R4 ④: bash 가지는 레지스트리 → PATH git.exe → 고정 후보 순서가 앞에 붙는다.
+    # cmd·powershell은 $cands가 비어 있으므로 else 가지가 그대로 실행된다.
+    tail_start = "try{$cands=$env:PADIEM_MCP_SHELL_CANDIDATES;if($cands){$file=$null;foreach($k in 'HKLM:\\SOFTWARE\\GitForWindows','HKLM:\\SOFTWARE\\WOW6432Node\\GitForWindows','HKCU:\\SOFTWARE\\GitForWindows'){$ip=(Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).InstallPath;if($ip){$p=Join-Path $ip 'bin\\bash.exe';if(_padiem_bash_ok $p){$file=$p;break}}};"
     script = _script_of(shell.build_pc_shell_command({"command": "echo ok", "shell": "cmd"}))
     assert tail_start in script
     # cmd: 인자 배열 뒤 명령 본문이 위치 순서로 붙는다(변경 전 @('/d','/s','/c',$c)).
@@ -146,7 +159,7 @@ def test_generic_tail_runs_each_launcher_like_the_old_branch():
         "$env:PADIEM_MCP_SHELL_ENC='0';"
         "$env:PADIEM_MCP_COMMAND_B64='" + base64.b64encode(b"echo 42").decode() + "';"
         "$c=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:PADIEM_MCP_COMMAND_B64));"
-        + script[script.index("try{$file="):]
+        + script[script.index("try{$cands="):]
     )
     done = subprocess.run(
         ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", probe],
@@ -161,7 +174,7 @@ def test_generic_tail_runs_each_launcher_like_the_old_branch():
         "$env:PADIEM_MCP_SHELL_ENC='1';"
         "$env:PADIEM_MCP_COMMAND_B64='" + base64.b64encode(b"Write-Output 43").decode() + "';"
         "$c=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:PADIEM_MCP_COMMAND_B64));"
-        + script[script.index("try{$file="):]
+        + script[script.index("try{$cands="):]
     )
     done_ps = subprocess.run(
         ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", probe_ps],
@@ -176,7 +189,7 @@ def test_generic_tail_runs_each_launcher_like_the_old_branch():
         "$env:PADIEM_MCP_SHELL_ENC='0';"
         "$env:PADIEM_MCP_COMMAND_B64='" + base64.b64encode(b"echo 44").decode() + "';"
         "$c=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:PADIEM_MCP_COMMAND_B64));"
-        + script[script.index("try{$file="):]
+        + script[script.index("try{$cands="):]
     )
     done_missing = subprocess.run(
         ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", probe_missing],
@@ -213,9 +226,9 @@ def test_user_material_mapping_is_unchanged():
     assert json.loads(shell.build_pc_shell_user_material(
         {"command": "hostname", "shell": "cmd"}))["shell"] == "cmd"
     assert json.loads(shell.build_pc_shell_user_material(
-        {"command": "systemctl is-active padiem", "shell": "bash"}))["shell"] == "wsl"
+        {"command": "systemctl is-active padiem", "shell": "bash"}))["shell"] == "bash"
     assert json.loads(shell.build_pc_shell_user_material(
         {"command": "whoami", "shell": "bash"}))["shell"] == "whoami"
     # 셸 이름 별칭도 같은 값을 가리킨다(기존 import 보존).
-    assert shell.USER_HELPER_SHELL_FOR_BASH == "wsl"
+    assert shell.USER_HELPER_SHELL_FOR_BASH == "bash"
     assert shell.USER_HELPER_SHELL_FOR_WHOAMI == "whoami"

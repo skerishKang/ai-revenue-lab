@@ -258,6 +258,98 @@
     }
     return authModuleInstance;
   }
+  // #7216 R5: the conversation module owns those sections. app.js keeps one-line
+  // forwarders with the same names. deps getters/setters read the closure
+  // variables live, so a value changed before the first call is still observed.
+  let conversationModuleInstance = null;
+  function conversationModule() {
+    if (!conversationModuleInstance) {
+      conversationModuleInstance = window.PadiemChatConversationModule.create({
+        get ALLOWED_IMAGE_TYPES() { return ALLOWED_IMAGE_TYPES; },
+        get MESSAGE_LIFECYCLE() { return MESSAGE_LIFECYCLE; },
+        get PRODUCT_CHAT() { return PRODUCT_CHAT; },
+        get PRODUCT_CLAW() { return PRODUCT_CLAW; },
+        get accountInitial() { return accountInitial; },
+        get accountName() { return accountName; },
+        get activeClawRunId() { return activeClawRunId; },
+        set activeClawRunId(value) { activeClawRunId = value; },
+        get activeProject() { return activeProject; },
+        set activeProject(value) { activeProject = value; },
+        get activeProjectFileCount() { return activeProjectFileCount; },
+        set activeProjectFileCount(value) { activeProjectFileCount = value; },
+        get activeRequestArticle() { return activeRequestArticle; },
+        set activeRequestArticle(value) { activeRequestArticle = value; },
+        get activeRequestCancelReason() { return activeRequestCancelReason; },
+        set activeRequestCancelReason(value) { activeRequestCancelReason = value; },
+        get activeRequestController() { return activeRequestController; },
+        set activeRequestController(value) { activeRequestController = value; },
+        get attachmentButton() { return attachmentButton; },
+        get attachmentCapabilities() { return attachmentCapabilities; },
+        get attachmentChipList() { return attachmentChipList; },
+        get attachmentCopy() { return attachmentCopy; },
+        get attachmentCountLimit() { return attachmentCountLimit; },
+        get attachmentFileInput() { return attachmentFileInput; },
+        get attachmentKeyCounter() { return attachmentKeyCounter; },
+        set attachmentKeyCounter(value) { attachmentKeyCounter = value; },
+        get attachmentTray() { return attachmentTray; },
+        get attachmentTrayNote() { return attachmentTrayNote; },
+        get binaryDocuments() { return binaryDocuments; },
+        get buildRetryBox() { return buildRetryBox; },
+        get cancelStreamButton() { return cancelStreamButton; },
+        get clawArtifactShownFor() { return clawArtifactShownFor; },
+        set clawArtifactShownFor(value) { clawArtifactShownFor = value; },
+        get clawT() { return clawT; },
+        get clearAttachment() { return clearAttachment; },
+        get clearClawRecovery() { return clearClawRecovery; },
+        get clearClawWait() { return clearClawWait; },
+        get closeSidebar() { return closeSidebar; },
+        get composerInlineHint() { return composerInlineHint; },
+        get composerInlineHintTimer() { return composerInlineHintTimer; },
+        set composerInlineHintTimer(value) { composerInlineHintTimer = value; },
+        get conversationArtifactContext() { return conversationArtifactContext; },
+        get conversationEpoch() { return conversationEpoch; },
+        set conversationEpoch(value) { conversationEpoch = value; },
+        get conversationProduct() { return conversationProduct; },
+        get conversationState() { return conversationState; },
+        get editProjectButton() { return editProjectButton; },
+        get emptyState() { return emptyState; },
+        get exitProject() { return exitProject; },
+        get exitProjectButton() { return exitProjectButton; },
+        get extensionOf() { return extensionOf; },
+        get failureCodeNote() { return failureCodeNote; },
+        get failureStatusLabel() { return failureStatusLabel; },
+        get form() { return form; },
+        get formatBytes() { return formatBytes; },
+        get formatClockTime() { return formatClockTime; },
+        get idleNote() { return idleNote; },
+        get inFlight() { return inFlight; },
+        set inFlight(value) { inFlight = value; },
+        get input() { return input; },
+        get lastCompletedAnswerRequest() { return lastCompletedAnswerRequest; },
+        set lastCompletedAnswerRequest(value) { lastCompletedAnswerRequest = value; },
+        get messageList() { return messageList; },
+        get readDocumentFile() { return readDocumentFile; },
+        get removeAttachmentItem() { return removeAttachmentItem; },
+        get renderAttachmentChips() { return renderAttachmentChips; },
+        get renderProjectState() { return renderProjectState; },
+        get renderWebGroundingNotice() { return renderWebGroundingNotice; },
+        get resetConversation() { return resetConversation; },
+        get resetConversationView() { return resetConversationView; },
+        get revealErrorState() { return revealErrorState; },
+        get selectImage() { return selectImage; },
+        get selectedAttachments() { return selectedAttachments; },
+        set selectedAttachments(value) { selectedAttachments = value; },
+        get sendButton() { return sendButton; },
+        get setNavActive() { return setNavActive; },
+        get setNote() { return setNote; },
+        get shell() { return shell; },
+        get switchConversationProduct() { return switchConversationProduct; },
+        get uiT() { return uiT; },
+        get updateComposer() { return updateComposer; },
+      });
+    }
+    return conversationModuleInstance;
+  }
   const shell = document.querySelector(".app-shell");
   const emptyState = document.getElementById("emptyState");
   const messageList = document.getElementById("messageList");
@@ -528,9 +620,7 @@
     } catch (_) {}
     return key;
   }
-  function attachmentCopy() {
-    return attachmentCapabilities.copy(document.documentElement.lang);
-  }
+  function attachmentCopy(...a) { return conversationModule().attachmentCopy(...a); }
   function idleNote() {
     return activeProject ? uiT("active-project-note", { name: activeProject.name }) : attachmentCopy().idleNote;
   }
@@ -546,17 +636,7 @@
   // Short-lived overlay, not a new composer row.
   const composerInlineHint = document.getElementById("composerInlineHint");
   let composerInlineHintTimer = null;
-  function showComposerInlineHint(key) {
-    if (!composerInlineHint) return;
-    composerInlineHint.textContent = uiT(key);
-    composerInlineHint.hidden = false;
-    if (composerInlineHintTimer !== null) window.clearTimeout(composerInlineHintTimer);
-    composerInlineHintTimer = window.setTimeout(() => {
-      composerInlineHint.hidden = true;
-      composerInlineHint.textContent = "";
-      composerInlineHintTimer = null;
-    }, 3000);
-  }
+  function showComposerInlineHint(...a) { return conversationModule().showComposerInlineHint(...a); }
   window.addEventListener("padiem:composer-hint", (event) => {
     if (event && event.detail && typeof event.detail.key === "string") {
       showComposerInlineHint(event.detail.key);
@@ -569,30 +649,7 @@
     if (!input.value.trim() && !inFlight) showComposerInlineHint("composer-empty-message");
   });
 
-  function updateComposer() {
-    // Empty clicks are allowed; submitPrompt() already ignores blank or busy submissions.
-    sendButton.disabled = false;
-    input.disabled = inFlight;
-    attachmentButton.disabled = inFlight;
-    attachmentChipList?.querySelectorAll(".attachment-remove").forEach((button) => {
-      button.disabled = inFlight;
-    });
-    editProjectButton.disabled = inFlight;
-    exitProjectButton.disabled = inFlight;
-    cancelStreamButton.hidden = !inFlight;
-    cancelStreamButton.disabled = !inFlight;
-    cancelStreamButton.setAttribute("aria-disabled", inFlight ? "false" : "true");
-    // #5561: the primary action slot shows the voice waveform for an empty
-    // composer and the send arrow once there is text. The composer is the
-    // authority for the input value, so it asks the voice module to re-read it.
-    window.PadiemVoiceMenu?.syncPrimaryAction?.();
-    if (window.PadiemConversationComposer?.resizeTextarea) {
-      window.PadiemConversationComposer.resizeTextarea(input, { maxHeight: 180 });
-    } else {
-      input.style.height = "auto";
-      input.style.height = `${Math.min(input.scrollHeight, 180)}px`;
-    }
-  }
+  function updateComposer(...a) { return conversationModule().updateComposer(...a); }
   function lifecycleForError(error) {
     return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
   }
@@ -766,42 +823,7 @@
   }
   // The first user turn extends the original landing panel. Older saved
   // threads still open directly on messages instead of replaying the hero.
-  function showConversation({ preserveClaw = false, restoreSaved = false } = {}) {
-    const conversationPanel = messageList.closest(".conversation");
-    // #2505: a Chat send moves to the Chat lane. The switch happens before the
-    // landing rule is read, and it keeps the shared conversation.
-    if (!preserveClaw) switchConversationProduct(PRODUCT_CHAT);
-    const startingOnLanding = !restoreSaved
-      && !emptyState.hidden
-      && messageList.childElementCount === 0
-      && (shell.dataset.state === "home"
-        || (preserveClaw && shell.dataset.state === "claw"));
-    const continuingLanding = !restoreSaved
-      && conversationPanel?.dataset.continuousThread === "true";
-    const keepLanding = startingOnLanding || continuingLanding;
-    if (conversationPanel) {
-      if (keepLanding) conversationPanel.dataset.continuousThread = "true";
-      else delete conversationPanel.dataset.continuousThread;
-    }
-    emptyState.hidden = !keepLanding;
-    messageList.hidden = false;
-    // #3931: Keep an in-flight Claw conversation in the Claw workspace.
-    // Saved Chat conversations and ordinary Chat sends still use Chat.
-    if (!preserveClaw) {
-      shell.dataset.state = "chat";
-      // Switching from Claw to ordinary Chat must not carry the Claw
-      // execution-history disclosure into a customer conversation.
-      // Do not erase the server-owned history, only reset this view.
-      for (const id of ("clawRunHistoryDisclosure", "clawRunHistory",
-                        "clawApprovedDisclosure", "clawApprovedMemory")) {
-        const node = document.getElementById(id);
-        if (!node) continue;
-        node.hidden = true;
-        if (node.tagName === "DETAILS") node.open = false;
-      }
-    }
-    setNavActive();
-  }
+  function showConversation(...a) { return conversationModule().showConversation(...a); }
   /* Owner 2026-10-20: the user avatar shows the first character of the
    * signed-in account name. The name -> avatar order is unchanged and the
    * initial is read from the live account display name, never hardcoded. */
@@ -813,88 +835,7 @@
     return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
   }
 
-  function addUserMessage(text, attachment, options) {
-    const restored = Boolean(options && options.restored);
-    const fragment = document.getElementById("userMessageTemplate").content.cloneNode(true);
-    const bubble = fragment.querySelector(".message-bubble");
-    bubble.textContent = text;
-    const attachmentItems = Array.isArray(attachment) ? attachment : (attachment ? [attachment] : []);
-    for (const item of attachmentItems) {
-      const meta = document.createElement("span");
-      meta.className = "message-attachment-meta";
-      const label = item.type === "image" ? uiT("attachment-photo") : uiT("attachment-document");
-      meta.textContent = `${label} · ${item.name} · ${formatBytes(item.byteSize)}`;
-      bubble.appendChild(meta);
-    }
-    // Plan 4 (Glass only, shown via CSS): profile chip mirrors the signed-in
-    // account name at send time; hidden account (signed out) drops the chip.
-    const chip = fragment.querySelector(".user-profile-chip");
-    const avatar = fragment.querySelector(".user-avatar");
-    if (chip) {
-      const name = accountName && !accountName.hidden ? accountName.textContent.trim() : "";
-      if (name) {
-        chip.textContent = name;
-        // The small person glyph becomes the account-name initial in the
-        // same 32x32 plate the Padiem "P" avatar uses.
-        if (avatar) avatar.textContent = accountInitial(name);
-      } else {
-        chip.remove();
-      }
-    }
-    // Owner 2026-10-20: the stamp belongs to the live turn. A restored
-    // conversation carries no stored per-message time, so no time is
-    // invented for it.
-    const clock = fragment.querySelector(".user-action-time");
-    if (clock) {
-      if (restored) {
-        clock.remove();
-      } else {
-        const now = new Date();
-        const stamp = formatClockTime(now);
-        clock.textContent = stamp;
-        clock.setAttribute("datetime", now.toISOString());
-        clock.setAttribute("data-padiem-tooltip", stamp);
-      }
-    }
-    const copyBtn = fragment.querySelector(".user-action-copy");
-    if (copyBtn) {
-      copyBtn.setAttribute("aria-label", uiT("answer-copy"));
-      copyBtn.setAttribute("data-padiem-tooltip", uiT("answer-copy"));
-      copyBtn.addEventListener("click", () => {
-        const done = copyBtn.querySelector("span") || copyBtn;
-        const prev = done.textContent;
-        const flash = () => { done.textContent = "✓"; setTimeout(() => { done.textContent = prev; }, 900); };
-        const plain = bubble ? bubble.textContent : text;
-        /* #4488: shared clipboard path; legacy branches stay only as the
-         * fallback when the shared script is unavailable. */
-        const shared = window.PadiemAnswerCopy || window.SharedAnswerCopy;
-        if (shared && typeof shared.copyText === "function") {
-          shared.copyText(plain).then((ok) => { if (ok) flash(); });
-        } else if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(plain).then(flash, () => {});
-        } else {
-          const ta = document.createElement("textarea");
-          ta.value = plain;
-          document.body.appendChild(ta);
-          ta.select();
-          try { document.execCommand("copy"); flash(); } catch (e) {}
-          ta.remove();
-        }
-      });
-    }
-    const editBtn = fragment.querySelector(".user-action-edit");
-    if (editBtn) {
-      editBtn.setAttribute("data-padiem-tooltip", editBtn.getAttribute("aria-label") || "");
-      editBtn.addEventListener("click", () => {
-        input.value = text;
-        input.focus();
-        input.dispatchEvent(new Event("input", { bubbles: true }));
-      });
-    }
-    // One shared chip tooltip for every hint on this turn.
-    window.PadiemSharedTooltip?.bind?.(fragment);
-    messageList.appendChild(fragment);
-  }
+  function addUserMessage(...a) { return conversationModule().addUserMessage(...a); }
   // The runtime status chip has one owner (message-lifecycle.js). A finished
   // answer releases the "answer preparing" chip, and a real status (a Claw P01
   // stage, a failure) is never removed by accident. The calls go through the
@@ -949,33 +890,7 @@
     note.dataset.localeKey = key;
     note.textContent = uiT(key);
   }
-  function renderAnswer(article, result) {
-    const content = article.querySelector(".assistant-content");
-    content.replaceChildren();
-    renderWebGroundingNotice(content, result.notice, result.metadata);
-    // #5573: the live PC scope notice is its own line above the answer.
-    window.PadiemChatPcScopeNotice?.render?.(content, window.PadiemChatPcScopeNotice?.value?.(result));
-    const paragraph = document.createElement("p");
-    paragraph.textContent = result.answer;
-    content.appendChild(paragraph);
-    if (Number.isInteger(result.project_files_used) && result.project_files_used > 0) {
-      const used = document.createElement("small");
-      used.className = "reference-note";
-      used.textContent = uiT("project-files-used", { count: result.project_files_used });
-      content.appendChild(used);
-    }
-    const skillTitle = result.skill && result.skill.id !== "auto" && typeof result.skill.title === "string" ? result.skill.title : "";
-    // The brand (Padiem Chat / Padiem Claw) stays in [data-assistant-product].
-    // The repetitive runtime line is removed: only a truthful non-default
-    // state (mock preview) or an explicit skill title is shown.
-    const runtimeLabel = result.runtime === "mock" ? uiT("mock-response") : "";
-    const answerLabel = skillTitle ? (runtimeLabel ? `${runtimeLabel} · ${skillTitle}` : skillTitle) : runtimeLabel;
-    article.querySelector("[data-runtime-label]").textContent = answerLabel;
-    // A completed answer carries no runtime status: the chip is released
-    // instead of staying on "answer preparing".
-    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, answerLabel, "status");
-    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
-  }
+  function renderAnswer(...a) { return conversationModule().renderAnswer(...a); }
   // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
   // must not wear the generic "this run may already have started" state. Closed
   // code→copy map only: a raw server, Engine or provider string is never shown.
@@ -1105,21 +1020,7 @@
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null, errorCode = "") {
-    const content = article.querySelector(".assistant-content");
-    const typing = content.querySelector(".typing");
-    if (typing) typing.remove();
-    const statusLabel = failureStatusLabel(lifecycle);
-    article.querySelector("[data-runtime-label]").textContent = statusLabel;
-    // A failure is a real status: the chip stays visible with its own copy.
-    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, statusLabel, "status");
-    const box = buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, undefined, clawFailure);
-    const codeNote = clawGeneralRequest ? null : failureCodeNote(errorCode, statusLabel);
-    if (codeNote) box.appendChild(codeNote);
-    content.appendChild(box);
-    PadiemChatLifecycle.set(article, lifecycle);
-    revealErrorState(article);
-  }
+  function renderStreamError(...a) { return conversationModule().renderStreamError(...a); }
   function renderCancelled(article, retryMessages, retrySkill, retryContext, clawGeneralRequest = false) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
@@ -1145,83 +1046,11 @@
     if (ALLOWED_DOCUMENT_TYPES.has(file.type)) return file.type;
     return DOCUMENT_EXTENSION_TYPES.get(extensionOf(file.name)) || null;
   }
-  function clearAttachment() {
-    for (const item of selectedAttachments) {
-      if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
-    }
-    selectedAttachments = [];
-    attachmentFileInput.value = "";
-    renderAttachmentChips();
-    setNote(idleNote());
-    updateComposer();
-  }
-  function attachmentCountLimit() {
-    const configured = Number(window.PadiemAttachmentCapabilities?.maxPerMessage);
-    return Number.isSafeInteger(configured) && configured >= 1
-      ? Math.min(configured, 10) : 5;
-  }
-  function attachmentTrayNote() {
-    const valid = selectedAttachments.filter((item) => !item.invalid);
-    if (!valid.length) return idleNote();
-    // #6126: a .hwp name whose bytes are a real HWPX (ZIP) package is read as
-    // HWPX, so the tray note follows the actual media type, not only the name.
-    if (valid.some((item) => item.mediaType === "application/hwp+zip"
-        || String(item.name || "").toLowerCase().endsWith(".hwpx"))) {
-      return uiT("attachment-hwpx-note");
-    }
-    return valid.length === 1 && valid[0].type === "image"
-      ? uiT("attachment-image-note")
-      : uiT("attachment-document-note");
-  }
-  function removeAttachmentItem(item) {
-    if (inFlight) return;
-    const index = selectedAttachments.indexOf(item);
-    if (index < 0) return;
-    if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
-    selectedAttachments.splice(index, 1);
-    renderAttachmentChips();
-    setNote(attachmentTrayNote());
-    updateComposer();
-  }
-  function renderAttachmentChips() {
-    if (!attachmentChipList) return;
-    attachmentChipList.replaceChildren();
-    if (!selectedAttachments.length) {
-      attachmentTray.hidden = true;
-      return;
-    }
-    // The chip row belongs to the multi-attachment tray: one entry per file,
-    // removal button included. Single-attachment thumbnail code (pre-#1727)
-    // is gone; per-file notes live in attachmentTrayNote().
-    for (const item of selectedAttachments) {
-      const chip = document.createElement("li");
-      chip.className = "attachment-chip" + (item.invalid ? " attachment-chip-invalid" : "");
-      const icon = document.createElement("span");
-      icon.className = "attachment-chip-icon";
-      icon.setAttribute("aria-hidden", "true");
-      icon.textContent = item.type === "image"
-        ? "IMG"
-        : (extensionOf(item.name).replace(".", "").toUpperCase() || "DOC");
-      const copy = document.createElement("div");
-      copy.className = "attachment-chip-copy";
-      const name = document.createElement("strong");
-      name.textContent = item.name;
-      const detail = document.createElement("small");
-      detail.textContent = item.invalid ? (item.error || uiT("file-read-failed")) : formatBytes(item.byteSize);
-      copy.append(name, detail);
-      const remove = document.createElement("button");
-      remove.type = "button";
-      remove.className = "attachment-remove";
-      remove.textContent = "×";
-      remove.setAttribute("data-locale-aria-label", "attachment-remove");
-      remove.setAttribute("aria-label", uiT("attachment-remove"));
-      remove.disabled = inFlight;
-      remove.addEventListener("click", () => removeAttachmentItem(item));
-      chip.append(icon, copy, remove);
-      attachmentChipList.appendChild(chip);
-    }
-    attachmentTray.hidden = false;
-  }
+  function clearAttachment(...a) { return conversationModule().clearAttachment(...a); }
+  function attachmentCountLimit(...a) { return conversationModule().attachmentCountLimit(...a); }
+  function attachmentTrayNote(...a) { return conversationModule().attachmentTrayNote(...a); }
+  function removeAttachmentItem(...a) { return conversationModule().removeAttachmentItem(...a); }
+  function renderAttachmentChips(...a) { return conversationModule().renderAttachmentChips(...a); }
   function readAsText(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -1255,86 +1084,8 @@
     if (file.size < 1) throw new Error(uiT("image-data-empty"));
     return { type: "image", name: file.name || "image", mediaType: file.type, file, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
   }
-  async function addAttachmentFiles(files) {
-    // #261102 multi-attachment: picking or dropping several files at once
-    // turns each file into an independent chip. A per-file refusal (e.g. the
-    // legacy hwp guidance) shows on that chip only, and only valid chips
-    // reach the send payload.
-    const list = Array.from(files || []);
-    if (!list.length) return;
-    const limit = attachmentCountLimit();
-    for (const file of list) {
-      const validCount = selectedAttachments.filter((item) => !item.invalid).length;
-      try {
-        if (validCount >= limit) {
-          throw new Error(uiT("attachment-count-limit", { count: limit }));
-        }
-        let next;
-        // #2505: the Claw turn reads attached documents through the same path as
-        // Chat, but the P01 Engine execution request has no image input yet. The
-        // image is refused here, before any upload, instead of being sent and
-        // answered as if nothing had been read. Chat keeps images unchanged.
-        if (ALLOWED_IMAGE_TYPES.has(file.type) && conversationProduct === PRODUCT_CLAW) {
-          throw new Error(uiT("claw-image-attachment-unsupported"));
-        }
-        // #6126: an uploaded .hwp is judged by its own bytes, not its name.
-        // The older OLE2 binary Hangul format is refused with the save-as-
-        // HWPX guidance on this chip only; a mislabeled file whose bytes are
-        // a real HWPX (ZIP) package keeps working as HWPX below.
-        const hwpFamily = extensionOf(file.name) === ".hwp"
-          ? (await binaryDocuments?.headerFamily?.(file)) || null
-          : null;
-        if (hwpFamily === "ole") throw new Error(uiT("hwp-legacy-guidance"));
-        const useFileLane = window.PadiemFileLane?.shouldUse(file);
-        const fileLaneAvailable = useFileLane && await window.PadiemFileLane.available();
-        if (useFileLane && fileLaneAvailable) {
-          next = window.PadiemFileLane.pending(file);
-        } else if (useFileLane && window.PadiemFileLane.isBinary(file)) {
-          throw new Error(uiT("file-lane-unavailable"));
-        } else if (ALLOWED_IMAGE_TYPES.has(file.type)) next = await selectImage(file);
-        else if (hwpFamily === "zip" && binaryDocuments?.hwpxMedia) next = await binaryDocuments.read(file, { mediaType: binaryDocuments.hwpxMedia });
-        else if (binaryDocuments && typeof binaryDocuments.canRead === "function" && binaryDocuments.canRead(file)) next = await binaryDocuments.read(file);
-        else next = await readDocumentFile(file);
-        // Photos and original documents read by the browser fit only one
-        // request frame, so a single attachment alone is allowed. Multiple
-        // documents (tus/text) combine freely.
-        const rawByteAttachment = Boolean(next.file);
-        const mixedWithExisting = validCount > 0;
-        if (mixedWithExisting && (rawByteAttachment
-            || selectedAttachments.some((item) => !item.invalid && item.file))) {
-          throw new Error(uiT("attachment-raw-single"));
-        }
-        attachmentKeyCounter += 1;
-        selectedAttachments.push({ ...next, key: `att-${attachmentKeyCounter}` });
-      } catch (error) {
-        attachmentKeyCounter += 1;
-        selectedAttachments.push({
-          key: `att-${attachmentKeyCounter}`,
-          invalid: true,
-          type: "document",
-          name: file && file.name ? file.name : "file",
-          byteSize: file && typeof file.size === "number" ? file.size : 0,
-          error: error instanceof Error ? error.message : uiT("file-read-failed"),
-        });
-      }
-    }
-    attachmentFileInput.value = "";
-    renderAttachmentChips();
-    setNote(attachmentTrayNote());
-    updateComposer();
-  }
-  function attachmentPayload(list) {
-    const items = (Array.isArray(list) ? list : list ? [list] : [])
-      .filter((item) => item && !item.invalid);
-    if (!items.length) return undefined;
-    return items.map((item) => {
-      if (item.fileId) return { type: "file", file_id: item.fileId };
-      if (item.file) {
-        return { type: item.type, name: item.name, media_type: item.mediaType, file: item.file };
-      }
-      return { type: item.type, name: item.name, media_type: item.mediaType, text: item.text };
-    });
-  }
+  function addAttachmentFiles(...a) { return conversationModule().addAttachmentFiles(...a); }
+  function attachmentPayload(...a) { return conversationModule().attachmentPayload(...a); }
 
   function clearHistoryUI(...a) { return historyModule().clearHistoryUI(...a); }
   // #4489: the Library entry is owned by static/library.js. The old
@@ -1517,12 +1268,7 @@
     if (typeof code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(code)) error.code = code;
     return error;
   }
-  function safeLocalUiMessage(error, fallback) {
-    if (error?.uiMessageSafe) return error.message;
-    const localFileErrors = [attachmentCopy().unsupportedFormat, uiT("empty-document"),
-      uiT("document-read-failed"), uiT("binary-document")];
-    return error instanceof Error && localFileErrors.includes(error.message) ? error.message : fallback;
-  }
+  function safeLocalUiMessage(...a) { return conversationModule().safeLocalUiMessage(...a); }
   function showProjectError(error, fallback) {
     projectFormError.textContent = safeLocalUiMessage(error, fallback);
     const note = failureCodeNote(error?.code, "");
@@ -1710,63 +1456,13 @@
     }
   }
 
-  function resetConversationView(preserveProject = true) {
-    conversationEpoch += 1;
-    lastCompletedAnswerRequest = null;
-    if (activeRequestController) {
-      activeRequestCancelReason = "conversation_reset";
-      activeRequestController.abort();
-      activeRequestController = null;
-      activeRequestArticle = null;
-    }
-    activeClawRunId = null;
-    inFlight = false;
-    // #2505: a new conversation always starts a new one, on either screen: the
-    // single shared conversation is cleared. Server-owned records are never
-    // deleted here.
-    conversationState.setProduct?.(conversationProduct);
-    conversationState.reset();
-    if (!preserveProject) {
-      activeProject = null;
-      activeProjectFileCount = 0;
-    }
-    clearAttachment();
-    messageList.replaceChildren();
-    messageList.hidden = true;
-    delete messageList.closest(".conversation")?.dataset.continuousThread;
-    clawArtifactShownFor = "";
-    conversationArtifactContext?.clear?.();
-    emptyState.hidden = false;
-    shell.dataset.state = "home";
-    // One shared follow state for Chat and Claw: a new conversation starts
-    // from "latest" and hides the jump control.
-    window.__padiemConversationMotion?.reset?.();
-    // Leaving for home drops any pending Claw execute recovery timer/state.
-    clearClawRecovery({ syncControls: true });
-    clearClawWait();
-    setNavActive();
-    input.value = "";
-    renderProjectState();
-    updateComposer();
-    closeSidebar();
-    input.focus();
-  }
+  function resetConversationView(...a) { return conversationModule().resetConversationView(...a); }
   // #2505: the sidebar Chat entry returns to the Chat lane while the user is in
   // the Claw workspace. Inside the Chat state the same entry starts a new
   // conversation. Every other caller resets the view directly, because a
   // sign-out, a project change or a delete must clear the conversation no
   // matter which product is on screen.
-  function resetConversation(preserveProject = true) {
-    if (conversationProduct === PRODUCT_CLAW && shell.dataset.state === "claw") {
-      switchConversationProduct(PRODUCT_CHAT);
-      shell.dataset.state = "chat";
-      setNavActive();
-      closeSidebar();
-      input.focus();
-      return;
-    }
-    resetConversationView(preserveProject);
-  }
+  function resetConversation(...a) { return conversationModule().resetConversation(...a); }
   function selectProject(project) {
     if (!projectsReady || !project || inFlight) return;
     activeProject = project;
@@ -5809,13 +5505,7 @@
     }
   }
 
-  function approvalDecisionErrorMessage(data, response) {
-    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
-    const status = response ? response.status : 0;
-    if (code === "unauthorized" || status === 401) return clawT("claw-error-auth-needed");
-    if (code === "approval_not_available" || status === 404) return clawT("claw-approval-not-available");
-    return clawT("claw-approval-error");
-  }
+  function approvalDecisionErrorMessage(...a) { return conversationModule().approvalDecisionErrorMessage(...a); }
 
   function setApprovalControlsBusy(container, busy) {
     if (!container) return;
@@ -6306,16 +5996,7 @@
     else clawApprovedError.removeAttribute("data-state");
   }
 
-  function approvedMemoryErrorMessage(data, response) {
-    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
-    const status = response ? response.status : 0;
-    if (code === "explicit_approval_required") return clawT("claw-memory-error-approval");
-    if (code === "invalid_proposal" || code === "invalid_payload" || code === "forbidden_owner_field") return clawT("claw-memory-error-invalid");
-    if (code === "unauthorized" || status === 401) return clawT("claw-memory-error-auth");
-    if (code === "approved_memory_unavailable" || code === "approved_memory_write_failed" || code === "approved_memory_read_failed" || status === 503) return clawT("claw-memory-error-unavailable");
-    if (code === "approved_memory_not_found" || status === 404) return clawT("claw-memory-error-not-found");
-    return clawT("claw-memory-error-generic");
-  }
+  function approvedMemoryErrorMessage(...a) { return conversationModule().approvedMemoryErrorMessage(...a); }
 
   // Proposal review surface: rendered from preview memory_proposals. Approve is
   // impossible until the user explicitly approves; reject never persists.

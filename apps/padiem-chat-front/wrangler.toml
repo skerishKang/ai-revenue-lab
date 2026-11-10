@@ -38,6 +38,11 @@ ORCHESTRATION_TIMEOUT_MS = "60000"
 # over 3 days where the identity RPC alone ran past the 5s live window and the
 # front answered a cookie-less 504 while the session was created right after.
 AUTH_WRITE_TIMEOUT_MS = "30000"
+# Voice STT writes (live-token mint, file transcription) wait on the STT
+# Worker's own bounded upstream budget plus the host→Chat-Worker RPC. Measured
+# on the host: 5.7-7.6s for a healthy mint — the generic 8s window cut a 200
+# answer at 7.6s (#7293). Same rule as the login write: 30s, configurable.
+VOICE_STT_WRITE_TIMEOUT_MS = "30000"
 
 # Read-path fallback target. Declared here so the binding exists in both modes;
 # static mode simply never calls it.

@@ -254,14 +254,16 @@ def test_retry_target_is_the_visible_form_not_a_hidden_snapshot() -> None:
 
 def test_auth_loss_and_navigation_clear_recovery_state() -> None:
     app = _app_source()
-    assert "clearClawRecovery({ syncControls: true });" in app
+    # #7216 R5 step 5a: resetConversationView moved into chat-conversation-module.js.
+    conv = (APP_JS.parent / "chat-conversation-module.js").read_text(encoding="utf-8")
+    assert "deps.clearClawRecovery({ syncControls: true });" in conv
     # auth loss
     session = (APP_JS.parent / "claw-session.js").read_text(encoding="utf-8")
     assert "clearRecovery: clearClawRecovery" in app
     auth_block = session[session.index("if (authenticated) return;"):]
     assert "clearRecovery({ syncControls: true });" in auth_block
     # home navigation drops any pending Claw execute recovery timer/state.
-    assert "// Leaving for home drops any pending Claw execute recovery timer/state." in app
+    assert "// Leaving for home drops any pending Claw execute recovery timer/state." in conv
 
 
 def test_locale_keys_are_declared_for_both_languages() -> None:
@@ -595,6 +597,8 @@ vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
+// #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ type }));
