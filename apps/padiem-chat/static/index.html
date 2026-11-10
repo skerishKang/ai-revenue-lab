@@ -180,7 +180,7 @@
         <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="open-menu" aria-label="메뉴 열기">☰</button>
         <button class="sidebar-restore-button" id="sidebarRestoreButton" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="sidebar-expand" aria-label="사이드바 펼치기" data-locale-title="sidebar-expand" title="사이드바 펼치기"><span aria-hidden="true">☰</span></button>
         <!-- #7173 대표 결정: 상단 앱 전환 Chat | Claw | 유틸. The Util app's own
-             shell and routing live in util-app.js/util-app.css. -->
+             shell and routing live in the util module (its own two static files). -->
         <nav class="app-switch" id="appSwitch" aria-label="앱 전환" data-locale-aria-label="app-switch-label">
           <button type="button" class="app-switch-item" data-app="chat" aria-current="page">Chat</button>
           <button type="button" class="app-switch-item" data-app="claw" aria-current="false">Claw</button>
@@ -542,10 +542,11 @@
         </header>
         <!-- #7173: the first screen is the card list; picking a card opens the
              tool's own screen inside the Util app (hash #util/<id>). All of the
-             list/tool markup is rendered by util-app.js — app.js holds none of it. -->
+             list/tool markup is rendered by the util module; the main bundle
+             holds none of it. -->
         <div class="util-app-root" id="utilAppRoot"></div>
         <!-- The existing PDF → Markdown panel keeps its node parked here. The
-             PDF tool screen mounts it inside its own body (util-app.js); PR3
+             PDF tool screen mounts it inside its own body (the util module); PR3
              moves the panel's own markup into that screen. No second copy. -->
         <div id="utilPdfmdHost" hidden><div class="util-panel" id="utilPdfmdPanel" hidden></div></div>
       </section>

@@ -189,9 +189,22 @@
 /* ── phone: clear the absolutely positioned hamburger, one column ───────── */
 @media (max-width: 920px) {
   /* mobile-header-collapse.css takes #mobileMenu out of the row (absolute,
-   * left:10px); the app switch keeps its own flow position so the two never
-   * overlap. */
-  .app-shell .main-panel > .topbar .app-switch { margin-left: 48px; }
+   * left:10px) so the row can shrink to zero while a primary surface scrolls.
+   * The app switch follows the same rule, anchored next to the circle, and it
+   * hides while the header is collapsed — the row must keep the 56px expanded
+   * height and the 0px collapsed height the adopted phone header pins. */
+  .app-shell .main-panel > .topbar .app-switch {
+    position: absolute;
+    top: calc(env(safe-area-inset-top, 0px) + 6px);
+    left: 62px;
+    margin-left: 0;
+    transition: opacity .22s ease;
+  }
+  .app-shell[data-header-collapsed] .app-switch {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
 }
 
 @media (max-width: 720px) {

@@ -790,12 +790,6 @@
     }
   }
   window.PadiemChatRouting = Object.freeze({ syncRouteHash });
-  // #7173: the Chat | Claw | Util app switch reuses the two existing screen
-  // entries so the Util screen (util-app.js) never re-implements shell state.
-  window.PadiemAppSwitch = Object.freeze({
-    openChat: openChatWorkspace,
-    openClaw: openClawWorkspace,
-  });
   function setNavActive() {
     const state = shell.dataset.state;
     const page = pageViewFor(state);
@@ -4366,6 +4360,14 @@
     if (input) input.focus();
     closeSidebar();
   }
+
+  // #7173: the Chat | Claw | Util app switch reuses the two existing screen
+  // entries so the Util screen never re-implements shell state. Kept next to
+  // the functions it names (some Node harnesses evaluate a source slice).
+  window.PadiemAppSwitch = Object.freeze({
+    openChat: openChatWorkspace,
+    openClaw: openClawWorkspace,
+  });
 
   function openClawManual() {
     // Explicit entry into the document/quotation workflow only. The manual
