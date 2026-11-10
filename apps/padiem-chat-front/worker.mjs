@@ -50,6 +50,10 @@ const ANSWER_GENERATION_PATHS = new Set([
   "/api/b66/ai/chat",
 ]);
 const DEFAULT_API_READ_TIMEOUT_MS = 30000;
+// The host→Chat-Worker voice RPC (#7228) has exactly one edge route. It goes
+// straight to the CHAT_WORKER service binding so that lane needs no public
+// hostname of its own; the Worker still verifies the host's service proof.
+const VOICE_RPC_PATH = "/internal/rpc/voice_stt";
 // Resumable chunked uploads (tus, /api/projects/*/files/tus) hold the request
 // open while a ≤90MB chunk drains to COM2 — a healthy upload must not die on
 // the plain write deadline. PATCH/POST on those paths get their own allowance
@@ -266,6 +270,20 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
   return async function handle(request, env) {
     const url = new URL(request.url);
     const requestId = requestIdFor(request);
+    // Transport only: the single voice-RPC path, POST, and only when the host
+    // already attached its service proof. Authorization stays with the Worker,
+    // which checks that signature against its own secret.
+    if (request.method === "POST" && url.pathname === VOICE_RPC_PATH &&
+        request.headers.has("x-padiem-service-proof")) {
+      if (!env.CHAT_WORKER || typeof env.CHAT_WORKER.fetch !== "function") {
+        return requestFailure(request, 503, "voice_rpc_unbound", requestId);
+      }
+      try {
+        return await env.CHAT_WORKER.fetch(request);
+      } catch {
+        return requestFailure(request, 502, "voice_rpc_transport_failed", requestId);
+      }
+    }
     // MCP OAuth endpoints and metadata are dynamic, no-store responses. Keep
     // them out of the static asset/cache branch and give them the API-read
     // budget (DB + redirect work) instead of the generic proxy deadline.
