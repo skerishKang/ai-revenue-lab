@@ -108,6 +108,15 @@ class ReleaseAccountAndLogStaticContract(unittest.TestCase):
         self.assertIn("$n = (Get-ReleaseLogMaxNumber $Dir) + 1", resolve)
         self.assertIn("while (Test-Path -LiteralPath $candidate)", resolve)
 
+    def test_log_dir_exists_on_windows_and_linux_runners(self):
+        """(나) the audit-log directory resolves on a Windows host (USERPROFILE)
+        and on the Linux CI dry-run runners (HOME) — the PR #7351 first run
+        died on a null Join-Path argument before any step could run."""
+        block = self.text.split("$Script:LogDir = $env:USERPROFILE", 1)[1]
+        block = block.split("$recentLogs = Get-RecentReleaseLogs", 1)[0]
+        self.assertIn("$Script:LogDir = $env:HOME", block)
+        self.assertIn("RELEASE_LOG_FAIL: no user profile directory", block)
+
     def test_real_run_stops_on_a_recent_log_unless_forced(self):
         """(다) a release log written in the last 10 minutes stops a real run
         unless -Force; the dry-run branch only warns."""

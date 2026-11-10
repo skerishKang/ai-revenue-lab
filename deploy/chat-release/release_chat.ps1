@@ -290,6 +290,10 @@ function Get-RecentReleaseLogs([string]$Dir) {
 }
 
 $Script:LogDir = $env:USERPROFILE
+if (-not $Script:LogDir) { $Script:LogDir = $env:HOME }
+if (-not $Script:LogDir) {
+    throw "RELEASE_LOG_FAIL: no user profile directory (USERPROFILE/HOME) to hold the release audit log"
+}
 $recentLogs = Get-RecentReleaseLogs $Script:LogDir
 if ($recentLogs.Count -gt 0) {
     $recentNames = ($recentLogs | ForEach-Object { $_.Name }) -join ', '
