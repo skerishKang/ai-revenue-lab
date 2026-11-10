@@ -321,6 +321,7 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     # Identity-result caches name the product user; clear every session's row.
     ("auth_validation_cache", "product_user_id = ?"),
     ("auth_account_link_cache", "product_user_id = ?"),
+    ("control_plane_identity_shadow", "product_user_id = ?"),
 )
 
 #: Replay-prevention history keeps its rows and loses the person: the batch

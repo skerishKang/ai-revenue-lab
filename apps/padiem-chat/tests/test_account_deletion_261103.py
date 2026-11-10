@@ -236,6 +236,7 @@ _OVERRIDES = {
     ("padiem_mcp_approvals", "status"): "pending",
     ("padiem_pc_delegations", "settings_json"): "{}",
     ("auth_validation_cache", "kind"): "legacy",
+    ("control_plane_identity_shadow", "session_state"): "active",
 }
 
 
@@ -1440,3 +1441,36 @@ def test_internal_account_delete_rpc_com2_queue_cleanup_and_failure_containment(
     assert succeeded.json() == {"ok": True, "deleted": True, "already_deleted": False}
     assert events == [("queue", uid), ("queue", uid)]
     assert db.conn.execute("SELECT id FROM users WHERE id=?", (uid,)).fetchone() is None
+
+
+def test_account_delete_batch_removes_the_identity_shadow_row_in_the_same_transaction():
+    db, accounts = seed_db()
+    app, settings = build_app(db)
+    uid = accounts["deleter"]
+    other = accounts["other"]
+    assert user_count(db, "control_plane_identity_shadow", "product_user_id = ?", uid) == 1
+    assert user_count(db, "control_plane_identity_shadow", "product_user_id = ?", other) == 1
+
+    response = call(
+        app, settings, "POST", "/api/account/delete",
+        token=token_for(settings, uid),
+        body={"confirm": DELETER_EMAIL},
+        origin=BASE,
+    )
+    assert response.status_code == 200, response.text
+    assert user_count(db, "control_plane_identity_shadow", "product_user_id = ?", uid) == 0
+    assert user_count(db, "control_plane_identity_shadow", "product_user_id = ?", other) == 1
+
+    db2, accounts2 = seed_db()
+    app2, settings2 = build_app(db2)
+    uid2 = accounts2["deleter"]
+    before = user_count(db2, "control_plane_identity_shadow", "product_user_id = ?", uid2)
+    db2.conn.execute("DROP TABLE claw_meetings")
+    failed = call(
+        app2, settings2, "POST", "/api/account/delete",
+        token=token_for(settings2, uid2),
+        body={"confirm": DELETER_EMAIL},
+        origin=BASE,
+    )
+    assert failed.status_code == 503
+    assert user_count(db2, "control_plane_identity_shadow", "product_user_id = ?", uid2) == before
