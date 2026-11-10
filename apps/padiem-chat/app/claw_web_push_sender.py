@@ -77,17 +77,19 @@ MAX_PUSH_PAYLOAD_BYTES = 2048
 # services of the major browsers are admitted: anything else (an arbitrary
 # https host, an IP literal, a non-https scheme) is refused at registration and
 # skipped at delivery. Regional WNS frontends (``wns``, ``wns2-<region>``) are
-# admitted through the reviewed ``notify.windows.com`` suffix.
+# admitted through the reviewed ``notify.windows.com`` suffix, and Apple's
+# web push endpoints through the reviewed ``push.apple.com`` suffix (Apple's
+# published guidance admits every subdomain of ``push.apple.com``).
 ALLOWED_PUSH_ENDPOINT_HOSTS: frozenset[str] = frozenset(
     {
         "fcm.googleapis.com",  # Chrome/Chromium (FCM web push)
         "android.googleapis.com",  # legacy Chromium endpoints
         "updates.push.services.mozilla.com",  # Firefox autopush
-        "webpush.apple.com",  # Safari / WebKit
     }
 )
 ALLOWED_PUSH_ENDPOINT_HOST_SUFFIXES: tuple[str, ...] = (
     ".notify.windows.com",  # Edge (WNS regional frontends)
+    ".push.apple.com",  # Safari / WebKit (every push.apple.com subdomain)
 )
 
 
