@@ -124,10 +124,10 @@
       deps.clawConversationIds.clear();
       deps.historyList.replaceChildren();
       deps.historySection.hidden = false;
-      // #7365: connector (MCP) PC-command records ("외부 AI 도구 요청: pc_…")
-      // are tool traffic, not conversations a person typed. They move into one
-      // collapsed native <details> group at the end of the list so they stop
-      // pushing people's conversations down, while every row stays reachable.
+      // #7365: connector (MCP) PC-command records are tool traffic, not
+      // conversations a person typed. They move into one collapsed native
+      // <details> group at the end of the list so they stop pushing people's
+      // conversations down, while every row stays reachable.
       const TOOL_REQUEST_PREFIX = "외부 AI 도구 요청:";
       const toolRequestRows = [];
       let normalConversationCount = 0;
