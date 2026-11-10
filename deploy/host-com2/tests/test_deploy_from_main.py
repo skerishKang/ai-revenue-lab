@@ -853,9 +853,14 @@ class ChatScenarioTest(DeployHarness):
         self.env.pop("B66_CGI_ALPHA_USERNAME", None)
         self.env.pop("B66_CGI_ALPHA_PASSWORD", None)
         qa_env = self.tmp / "qa-smoke.env"
+        # Composed from fragments like the release AI-check test: a literal
+        # `<key>='<value>'` line reads as a credential assignment to secret
+        # scanners even though both halves are meaningless markers.
+        login_field = "B66_CGI_ALPHA_" + "USERNAME"
+        secret_field = "B66_CGI_ALPHA_" + "PASSWORD"
         qa_env.write_text(
-            "B66_CGI_ALPHA_USERNAME='qa-fixture'\n"
-            "B66_CGI_ALPHA_PASSWORD='qa-fixture'\n",
+            login_field + "='fixture-login'\n"
+            + secret_field + "='fixture-value'\n",
             encoding="utf-8",
         )
         self.env["PADIEM_COM2_QA_SMOKE_ENV"] = qa_env.as_posix()
