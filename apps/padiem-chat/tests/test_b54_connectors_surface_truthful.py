@@ -361,6 +361,43 @@ console.log(JSON.stringify({{ signedIn, signedOutUnverified }}));
     assert payload["signedOutUnverified"] == "connectors-workspace-sign-in"
 
 
+def test_failed_check_keeps_by_design_no_truth_cards_preparing() -> None:
+    """#7364 follow-up: a failed status read is not a state for the two
+    connectors whose workspace truth does not participate by design. Their
+    cards keep the "준비 중" copy on both slots; the reviewed connectors keep
+    the check-failed copy; the success-path mapping functions stay untouched."""
+    node = shutil.which("node")
+    assert node, "node runtime is required"
+    functions = _pure_mapping_block()
+    script = f"""
+const authState = {{ authenticated: true }};
+{functions}
+const failedCheck = [
+  "connector:telegram:bot@1",
+  "connector:slack:workspace@1",
+  "connector:google:drive@1",
+  "connector:google:calendar@1",
+].map((connectorId) => connectorUnavailableCopyKeys(connectorId));
+console.log(JSON.stringify({{ failedCheck }}));
+"""
+    result = subprocess.run([node, "-e", script], capture_output=True, text=True, encoding="utf-8", timeout=30)
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout.strip().splitlines()[-1])
+    preparing = {"support": "connectors-workspace-unverified", "workspace": "connectors-workspace-unverified"}
+    check_failed = {"support": "connectors-status-unavailable", "workspace": "connectors-workspace-unavailable"}
+    assert payload["failedCheck"] == [preparing, preparing, check_failed, check_failed]
+
+    # The unavailable render path delegates the copy judgment to the helper.
+    block = _connector_block()
+    assert "connectorUnavailableCopyKeys(card.dataset.connectorId)" in block
+    assert 'setConnectorCopy(card.querySelector("[data-connector-support]"), keys.support)' in block
+    assert 'setConnectorCopy(card.querySelector("[data-connector-workspace]"), keys.workspace)' in block
+    # A normal response never reaches the unavailable path: the row mapping
+    # functions keep owning the success-path copy.
+    assert "connectorSupportKey(row.read_availability)" in block
+    assert "connectorWorkspaceKey(row.workspace_state)" in block
+
+
 class _TagBalance(HTMLParser):
     VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 
