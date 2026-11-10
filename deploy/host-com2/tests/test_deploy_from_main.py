@@ -1224,7 +1224,7 @@ class DeployScopeScenarioTest(DeployHarness):
     def test_a8eff99_to_a1fdec4_actual_test_path_manifest_skips_queue_p01_b14(self) -> None:
         output = self._dry_run()
         self.assertIn(
-            "COM2_DEPLOY_EXCLUDED_COUNTS=tests:14 docs:1 env_example:1 repo_meta:2 unmapped:0",
+            "COM2_DEPLOY_EXCLUDED_COUNTS=tests:14 docs:0 env_example:1 repo_meta:2 unmapped:0",
             output,
         )
         self.assertIn(

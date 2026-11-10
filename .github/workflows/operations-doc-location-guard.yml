@@ -26,19 +26,15 @@ jobs:
           fetch-depth: 0
 
       - name: List newly added docs files
-        id: added
         run: |
           base="origin/${{ github.base_ref }}"
           git fetch --no-tags origin "${{ github.base_ref }}"
-          added=$(git diff --name-only --diff-filter=A "$base...HEAD" -- docs/ || true)
-          {
-            echo "files<<EOF"
-            echo "$added"
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
+          added=$(git diff --name-only --diff-filter=A "$base...HEAD" -- docs/ | tr '
+' ' ' || true)
+          echo "ADDED_DOCS=$added" >> "$GITHUB_ENV"
 
       - name: Warn about new operational records in public paths
-        if: steps.added.outputs.files != ''
+        if: env.ADDED_DOCS != ''
         run: |
-          python .github/scripts/operations_doc_location_guard.py ${{ steps.added.outputs.files }}
+          python .github/scripts/operations_doc_location_guard.py $ADDED_DOCS
           echo "guard finished (warn-only, never fails)"
