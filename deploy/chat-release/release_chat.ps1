@@ -35,6 +35,18 @@
 # read from the environment for the read-only domains check; wrangler uses its
 # own stored login. COM2 access is key-based (BatchMode, no passwords).
 #
+# Audit log (#7350): the script writes its own release_<n>.log in the user
+# profile directory and owns the number — highest existing release_*.log
+# number (.dryrun.log and .failed.log included) + 1; an existing file is
+# never overwritten. A dry-run writes release_<n>.dryrun.log (shared number
+# sequence) and never trips the 10-minute guard — only release_<n>.log and
+# release_<n>.failed.log count there, so the standard “dry-run first, then
+# the real deploy” flow never needs -Force. -LogPath overrides and is
+# refused when the file already exists. A release log written in the last
+# 10 minutes stops a real run unless -Force (a dry-run only warns). The
+# Cloudflare account is resolved at start, before any wrangler
+# deployments-list call.
+#
 # The first real run belongs to the CTO; -DryRun prints this plan and runs
 # only read-only pre-checks.
 
@@ -44,7 +56,15 @@ param(
     # (origin/main, else main, else HEAD); step 1 enforces the equality.
     [string]$Sha = "",
     # Print the plan and run read-only pre-checks only. Never deploys.
-    [switch]$DryRun
+    [switch]$DryRun,
+    # Audit log path. Empty: the script picks the user-profile
+    # release_<n>.log itself — highest existing release_*.log number
+    # (.failed.log included) + 1; an existing file is never overwritten.
+    # Given: refused when the file already exists.
+    [string]$LogPath = "",
+    # Release anyway when a release log was written in the last 10 minutes
+    # (another release may be in progress). A dry-run only warns.
+    [switch]$Force
 )
 
 $ErrorActionPreference = "Stop"
@@ -235,6 +255,82 @@ function Invoke-FrontRollbackIfNeeded {
     try { & $Script:Npx wrangler rollback $rollbackVersion } finally { Pop-Location }
     Add-Summary "FRONT_ROLLED_BACK_TO=$rollbackVersion"
 }
+
+# -- release audit log: the script owns the number (#7350) -------------------
+# The runner used to pick the release_NN.log number by hand and two
+# same-numbered writes on 2026-11-10 destroyed existing audit logs.
+function Get-ReleaseLogMaxNumber([string]$Dir) {
+    # The number sequence is shared by all three log kinds: the next release
+    # takes max(existing .log, .dryrun.log, .failed.log) + 1.
+    $max = 0
+    Get-ChildItem -Path (Join-Path $Dir "release_*.log") -File -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -match '^release_(\d+)(\.dryrun|\.failed)?\.log$' } |
+        ForEach-Object { $n = [int]$Matches[1]; if ($n -gt $max) { $max = $n } }
+    return $max
+}
+
+function Resolve-ReleaseLogPath([string]$Given, [string]$Dir, [switch]$DryRun) {
+    if ($Given) {
+        if (Test-Path -LiteralPath $Given) {
+            throw "RELEASE_LOG_FAIL: -LogPath '$Given' already exists; a release log is never overwritten (pick another name or omit -LogPath)"
+        }
+        $parent = Split-Path -Parent $Given
+        if (-not (Test-Path -LiteralPath $parent)) {
+            throw "RELEASE_LOG_FAIL: -LogPath directory does not exist: $parent"
+        }
+        return $Given
+    }
+    # A dry-run transcript carries the .dryrun marker so the 10-minute guard
+    # can tell it apart from a real release attempt (see Get-RecentReleaseLogs).
+    $suffix = ""
+    if ($DryRun) { $suffix = ".dryrun" }
+    $n = (Get-ReleaseLogMaxNumber $Dir) + 1
+    $candidate = Join-Path $Dir ("release_{0}{1}.log" -f $n, $suffix)
+    while (Test-Path -LiteralPath $candidate) {
+        $n = $n + 1
+        $candidate = Join-Path $Dir ("release_{0}{1}.log" -f $n, $suffix)
+    }
+    return $candidate
+}
+
+function Get-RecentReleaseLogs([string]$Dir) {
+    # Only real-run logs (.log) and failed real runs (.failed.log) count:
+    # a dry-run writes release_<n>.dryrun.log and must never block the real
+    # deploy that immediately follows it (#7350 follow-up — otherwise every
+    # lane learns to pass -Force and the guard is disarmed).
+    $cutoff = (Get-Date).AddMinutes(-10)
+    return @(Get-ChildItem -Path (Join-Path $Dir "release_*.log") -File -ErrorAction SilentlyContinue |
+        Where-Object { $_.LastWriteTime -ge $cutoff -and $_.Name -match '^release_\d+(\.failed)?\.log$' })
+}
+
+$Script:LogDir = $env:USERPROFILE
+if (-not $Script:LogDir) { $Script:LogDir = $env:HOME }
+if (-not $Script:LogDir) {
+    throw "RELEASE_LOG_FAIL: no user profile directory (USERPROFILE/HOME) to hold the release audit log"
+}
+$recentLogs = Get-RecentReleaseLogs $Script:LogDir
+if ($recentLogs.Count -gt 0) {
+    $recentNames = ($recentLogs | ForEach-Object { $_.Name }) -join ', '
+    if ($DryRun) {
+        Write-Info "WARNING: release log(s) written in the last 10 minutes ($recentNames) — another release may be in progress; a real run stops here unless -Force (a dry-run only warns)"
+    }
+    elseif (-not $Force) {
+        throw "RELEASE_LOG_FAIL: release log(s) written in the last 10 minutes ($recentNames) — another release may be in progress. Pass -Force to release anyway."
+    }
+    else {
+        Write-Info "release log(s) written in the last 10 minutes ($recentNames) — continuing on -Force"
+    }
+}
+$Script:ReleaseLogPath = Resolve-ReleaseLogPath $LogPath $Script:LogDir -DryRun:$DryRun
+$null = Start-Transcript -Path $Script:ReleaseLogPath
+Write-Info "release log = $Script:ReleaseLogPath (the script owns the number; existing files are never overwritten)"
+
+# (가): resolve the Cloudflare account BEFORE any wrangler deployments-list
+# call. Get-FrontVersionIds runs in step 3; with more than one account in the
+# stored wrangler login a bare call fails there and the release stops without
+# a rollback point (release_32, 2026-11-10). The value stays local to this
+# process and is never printed.
+$env:CLOUDFLARE_ACCOUNT_ID = $Script:CloudflareAccountId
 
 # -- pre-flight freshness (SHA-staleness guard) -----------------------------
 # 2026-11-09: release_49 pinned a stale COM1 origin/main (d4c7316) while COM2's
@@ -612,4 +708,5 @@ Show-Summary
 if ($DryRun) {
     Write-Host "DRYRUN: nothing was deployed."
 }
+try { Stop-Transcript | Out-Null } catch { }
 if ($Script:PagesVerifyFailed.Count -gt 0) { exit 1 }
