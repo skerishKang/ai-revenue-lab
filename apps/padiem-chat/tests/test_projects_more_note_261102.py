@@ -9,6 +9,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+# R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_source
+
 CHAT = Path(__file__).resolve().parents[1]
 STATIC = CHAT / "static"
 
@@ -31,7 +34,9 @@ def test_the_project_list_owns_a_status_note_next_to_the_more_button() -> None:
 
 def test_a_rejected_cursor_reports_into_that_note() -> None:
     source = read("app.js")
-    body = source.split("async function loadMoreProjects()", 1)[1].split("async function loadProjects()", 1)[0]
+    # R5 0단계(R-01): loadMoreProjects의 실제 정의 소스에서 잘라낸다.
+    more_source = definition_source("loadMoreProjects")
+    body = more_source.split("async function loadMoreProjects()", 1)[1].split("async function loadProjects()", 1)[0]
     assert "response.status === 400" in body
     stale = body.split("response.status === 400", 1)[1]
     assert 'setProjectsListNote(uiT("projects-more-stale"))' in stale
@@ -39,7 +44,8 @@ def test_a_rejected_cursor_reports_into_that_note() -> None:
     assert "setNote(uiT(\"projects-more-stale\"))" not in source
     # A successful page clears the notice so it never outlives the failure.
     assert 'setProjectsListNote("");' in body
-    clear = source.split("function clearProjectsUI()", 1)[1].split("function ", 1)[0]
+    clear_source = definition_source("clearProjectsUI")
+    clear = clear_source.split("function clearProjectsUI()", 1)[1].split("function ", 1)[0]
     assert 'setProjectsListNote("");' in clear
 
 

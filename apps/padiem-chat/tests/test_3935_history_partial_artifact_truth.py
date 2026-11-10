@@ -8,6 +8,9 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
+# R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_source
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = STATIC / "app.js"
 LOCALE = STATIC / "locale.js"
@@ -112,6 +115,8 @@ def test_two_locales_and_theme_preserve_warning_without_granting_authority():
     assert "does not prove task success" in en
     assert ".claw-run-card-partial-note" in css
     assert "var(--muted)" in css
-    block = app.split("function renderClawRunCard(run) {", 1)[1].split("\n  function fetchClawRunHistory(", 1)[0]
+    # R5 0단계(R-01): renderClawRunCard의 실제 정의가 있는 소스에서 잘라낸다.
+    card_source = definition_source("renderClawRunCard")
+    block = card_source.split("function renderClawRunCard(run) {", 1)[1].split("\n  function fetchClawRunHistory(", 1)[0]
     for forbidden in ("fetch(", "POST", "localStorage", "sessionStorage", "approve(", "retry("):
         assert forbidden not in block

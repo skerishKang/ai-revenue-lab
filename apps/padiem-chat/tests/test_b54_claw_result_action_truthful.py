@@ -26,6 +26,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
+# R5 0단계(R-01): 함수 정의 개수는 app.js든 분리 모듈이든 같은 도우미로 센다.
+from _r5_function_source import definition_count
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
@@ -154,7 +157,7 @@ def test_one_wiring_path_reuses_the_existing_bounded_route() -> None:
     assert app.count("/api/claw/manual-intake/artifact/") == 1
     assert "/api/claw/manual-intake/artifact/${encodeURIComponent(documentId)}" in app
     # One authority for the action state, used by both the clear and render paths.
-    assert app.count("function setClawDocumentAction(") == 1
+    assert definition_count("setClawDocumentAction") == 1
     assert app.count("setClawDocumentAction(false)") == 1
     assert app.count("setClawDocumentAction(true,") == 1
     # The trusted callers are the result action, run-history re-download, and
@@ -411,9 +414,6 @@ sandbox.dispatchEvent = sandbox.dispatchEvent || (() => true);
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
-// #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), sandbox, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 (async () => {

@@ -16,6 +16,9 @@ import subprocess
 from html.parser import HTMLParser
 from pathlib import Path
 
+# R5 0단계(R-01): 모듈로 옮겨진 정의도 함께 본다(index.html 로드 순서).
+from _r5_function_source import combined_source, definition_source
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
@@ -71,7 +74,8 @@ def _index() -> str:
 
 
 def _app() -> str:
-    return APP_JS.read_text(encoding="utf-8")
+    # R5 0단계(R-01): 모듈로 옮겨진 정의도 함께 본다(index.html 로드 순서).
+    return combined_source()
 
 
 def _dialog_element() -> str:
