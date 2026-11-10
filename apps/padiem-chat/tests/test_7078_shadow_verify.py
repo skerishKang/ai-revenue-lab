@@ -232,6 +232,7 @@ def test_shadow_verifier_is_singleton(monkeypatch):
 def test_prewarm_swallows_jwks_failure(monkeypatch):
     """JWKS outage at startup leaves the server able to start (Argon (a)-2)."""
     monkeypatch.setenv("PADIEM_AUTH_LOCAL_VERIFY_SHADOW", "true")
+    monkeypatch.setattr(shadow, "PREWARM_RETRY_ENABLED", False)
 
     def _boom():
         raise RuntimeError("jwks down")
@@ -243,6 +244,69 @@ def test_prewarm_swallows_jwks_failure(monkeypatch):
     lines = buf.getvalue().strip().splitlines()
     assert len(lines) == 1
     assert "shadow_prewarm outcome=fail" in lines[0]
+
+
+def test_prewarm_retries_a_transient_boot_timeout(monkeypatch):
+    """A boot-time JWKS timeout must not leave the cache cold for minutes.
+
+    COM2 2026-11-10: every boot prewarm timed out at the old 3 s bound while
+    the first shared-token requests paid a cold cache. The retry thread is
+    off-path and bounded; this test pins that a transient failure recovers.
+    """
+    monkeypatch.setenv("PADIEM_AUTH_LOCAL_VERIFY_SHADOW", "true")
+    calls = {"n": 0}
+
+    class Verifier:
+        def _keys(self, force=False):
+            calls["n"] += 1
+            if calls["n"] < 3:
+                raise TimeoutError("cold dns")
+
+    monkeypatch.setattr(shadow, "_get_shadow_verifier", lambda: Verifier())
+    monkeypatch.setattr(shadow, "PREWARM_RETRY_ENABLED", True)
+    monkeypatch.setattr(shadow, "PREWARM_RETRY_ATTEMPTS", 4)
+    monkeypatch.setattr(shadow, "PREWARM_RETRY_DELAY_SECONDS", 0.0)
+    buf = io.StringIO()
+    with redirect_stdout(buf):
+        shadow.prewarm_shadow_verifier()
+        deadline = time.time() + 3
+        while calls["n"] < 3 and time.time() < deadline:
+            time.sleep(0.01)
+    output = buf.getvalue()
+    assert calls["n"] == 3
+    assert "shadow_prewarm outcome=fail attempt=1" in output
+    assert "shadow_prewarm outcome=ok attempt=3" in output
+
+
+def test_prewarm_retries_are_bounded(monkeypatch):
+    """A permanent outage stops after the attempt budget, without judging."""
+    monkeypatch.setenv("PADIEM_AUTH_LOCAL_VERIFY_SHADOW", "true")
+    calls = {"n": 0}
+
+    class Verifier:
+        def _keys(self, force=False):
+            calls["n"] += 1
+            raise TimeoutError("still cold")
+
+    monkeypatch.setattr(shadow, "_get_shadow_verifier", lambda: Verifier())
+    monkeypatch.setattr(shadow, "PREWARM_RETRY_ENABLED", True)
+    monkeypatch.setattr(shadow, "PREWARM_RETRY_ATTEMPTS", 3)
+    monkeypatch.setattr(shadow, "PREWARM_RETRY_DELAY_SECONDS", 0.0)
+    buf = io.StringIO()
+    with redirect_stdout(buf):
+        shadow.prewarm_shadow_verifier()
+        deadline = time.time() + 3
+        while calls["n"] < 3 and time.time() < deadline:
+            time.sleep(0.01)
+    output = buf.getvalue()
+    assert calls["n"] == 3
+    assert "outcome=ok" not in output
+    assert "shadow_prewarm outcome=fail attempt=3" in output
+
+
+def test_the_off_path_jwks_budget_covers_a_cold_com2_boot():
+    """The request path never fetches; the background budget must be real."""
+    assert shadow.JWKS_FETCH_TIMEOUT_SECONDS >= 10
 
 
 def _load_real_verifier_class():
