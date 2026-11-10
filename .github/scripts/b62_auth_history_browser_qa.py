@@ -365,8 +365,12 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     # #5560: the sign-out control moved into Settings > Account. The session
     # invalidation and the guest projection are the same.
     await sign_out_via_settings(page, label=f"{name}-logout")
+    # #7365: after logout the guest keeps the 내 자료 group visible, honestly
+    # empty — the section and its empty-state note stay rendered.
     await page.wait_for_function(
-        "() => document.getElementById('loginButton')?.textContent.trim() === '로그인' && document.getElementById('historySection')?.hidden === true",
+        "() => document.getElementById('loginButton')?.textContent.trim() === '로그인'"
+        " && document.getElementById('historySection')?.hidden === false"
+        " && document.getElementById('historyEmpty')?.hidden === false",
         timeout=5_000,
     )
     if state.logout_posts != 1:
@@ -377,8 +381,10 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
         raise AssertionError("logout must return account presentation to guest")
     if await page.locator(".sidebar-account").get_attribute("data-account-state") != "guest":
         raise AssertionError("logout must project guest account state")
-    if not await page.locator("#historySection").is_hidden():
-        raise AssertionError("history must be hidden after logout")
+    if await page.locator("#historySection").is_hidden():
+        raise AssertionError("#7365: the history section must stay visible (empty) after logout")
+    if await page.locator("#historyEmpty").is_hidden():
+        raise AssertionError("#7365: the empty-state note must show after logout")
     await _assert_no_horizontal_overflow(page, f"{name}-logout")
     await page.screenshot(path=str(OUT_DIR / f"{name}-history-logout.png"), full_page=True)
 
