@@ -299,7 +299,7 @@ from .claw_automation_rules_routes import claw_automation_rules
 from .claw_automation_rule_create_routes import claw_automation_rule_create
 from .claw_automation_rule_edit_routes import claw_automation_rule_edit
 from .claw_automation_rule_enabled_routes import claw_automation_rule_set_enabled
-from .config import Settings
+from .config import Settings, session_user_row_check_enabled
 from .connector_status_projection import connectors_status
 from .connector_disconnect_routes import disconnect_google_calendar, disconnect_google_drive
 from .github_oauth_routes import (github_start, github_callback, github_status,
@@ -1291,6 +1291,7 @@ def create_app(
     # compatibility cookies instead of skipping the check.
     if (
         str(resolved.runtime_mode).strip().lower() == "b14"
+        and session_user_row_check_enabled(resolved)
         and history_store is not None
         and not callable(getattr(history_store, "user_row_exists", None))
     ):
