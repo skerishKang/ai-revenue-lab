@@ -76,14 +76,35 @@ def _closed(
     return dict(payload)
 
 
+# #7286: padiem-ai-engine keepwarm pings this authority with a documented
+# synthetic subject on a ~45s cadence; its design-expected entitlement denial
+# is health telemetry, not a request failure. Keep it off the failure line.
+_SYNTHETIC_KEEPWARM_SUBJECT_ID = "padiem-engine-keepwarm-synthetic"
+
+
+def _is_synthetic_keepwarm_subject(subject: Any) -> bool:
+    subject_id = getattr(subject, "subject_id", None)
+    if subject_id is None and isinstance(subject, dict):
+        try:
+            subject_id = canonical_subject_from_wire(subject).subject_id
+        except ControlPlaneContractError:
+            return False
+    return subject_id == _SYNTHETIC_KEEPWARM_SUBJECT_ID
+
+
 def _safe_error(
     exc: ControlPlaneContractError,
     method: str | None = None,
+    subject: Any = None,
 ) -> dict[str, Any]:
     # #6679: the ingress wraps this as a 200 ok:false body, so tail logs never
     # saw WHY a turn was refused. One closed line — method name and the
     # contract error code only; no message body, key or token ever lands here.
-    print("pc_admission_rpc_error", method or "unknown_method", exc.code)
+    # #7286: an expected keepwarm denial gets a separate info event instead.
+    if _is_synthetic_keepwarm_subject(subject):
+        print("keepwarm_probe", method or "unknown_method", exc.code)
+    else:
+        print("pc_admission_rpc_error", method or "unknown_method", exc.code)
     return {
         "ok": False,
         "error": {
@@ -207,12 +228,14 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
         self,
         payload: dict,
     ) -> dict:
+        subject: Any = None
         try:
             wire = _closed(
                 payload,
                 _FETCH_KEYS,
                 "entitlement fetch RPC",
             )
+            subject = wire["subject"]
             now = datetime.now(UTC)
             snapshot = await self._ensure_current_entitlement(
                 product_id=wire["product_id"],
@@ -224,7 +247,11 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
                 "snapshot": snapshot.to_policy_dict(),
             }
         except ControlPlaneContractError as exc:
-            return _safe_error(exc, method="fetch_entitlement_snapshot")
+            return _safe_error(
+                exc,
+                method="fetch_entitlement_snapshot",
+                subject=subject,
+            )
 
     async def admit_usage(
         self,
@@ -236,12 +263,14 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
         # revalidation and grant decision). Either stage refusing returns the
         # same error envelope the individual RPC would; a refusal never
         # produces an admitted reservation.
+        subject: Any = None
         try:
             wire = _closed(
                 payload,
                 _ADMIT_KEYS,
                 "usage admission RPC",
             )
+            subject = wire["subject"]
             now = datetime.now(UTC)
             snapshot = await self._ensure_current_entitlement(
                 product_id=wire["product_id"],
@@ -258,12 +287,13 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
                 "reservation": reservation,
             }
         except ControlPlaneContractError as exc:
-            return _safe_error(exc, method="admit_usage")
+            return _safe_error(exc, method="admit_usage", subject=subject)
 
     async def reserve_usage(
         self,
         payload: dict,
     ) -> dict:
+        subject: Any = None
         try:
             wire = _closed(
                 payload,
@@ -291,7 +321,7 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
                 "reservation": reservation,
             }
         except ControlPlaneContractError as exc:
-            return _safe_error(exc, method="reserve_usage")
+            return _safe_error(exc, method="reserve_usage", subject=subject)
 
     async def record_usage(
         self,
