@@ -29,6 +29,7 @@ STATIC = ROOT / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 TOOLS_JS = (STATIC / "util-tools.js").read_text(encoding="utf-8")
 CONTRACT_JS = (STATIC / "util-tools-contract.js").read_text(encoding="utf-8")
+MARKDOWN_JS = (STATIC / "util-tools-markdown.js").read_text(encoding="utf-8")
 TOOLS_CSS = (STATIC / "util-tools.css").read_text(encoding="utf-8")
 UTIL_JS = (STATIC / "util-app.js").read_text(encoding="utf-8")
 APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -42,11 +43,27 @@ TOOL_IDS = ("speech", "sns", "meeting")
 
 def test_the_page_loads_the_tool_module_and_sheet() -> None:
     assert '<link rel="stylesheet" href="./util-tools.css" />' in INDEX
+    assert '<script src="./util-tools-markdown.js" defer></script>' in INDEX
     assert '<script src="./util-tools-contract.js" defer></script>' in INDEX
     assert '<script src="./util-tools.js" defer></script>' in INDEX
     # The tool modules load first: util-app.js renders the first route at
     # readyState "interactive", so a module loaded after it misses that paint.
-    assert INDEX.index("./util-tools-contract.js") < INDEX.index("./util-tools.js") < INDEX.index("./util-app.js")
+    assert (INDEX.index("./util-tools-markdown.js") < INDEX.index("./util-tools-contract.js")
+            < INDEX.index("./util-tools.js") < INDEX.index("./util-app.js"))
+
+
+def test_the_result_is_formatted_and_the_copy_is_plain() -> None:
+    # The formatter builds nodes; nothing assembles HTML.
+    for sink in (".innerHTML", ".outerHTML", "insertAdjacentHTML", "document.write"):
+        assert sink not in MARKDOWN_JS, sink
+    assert "document.createElement" in MARKDOWN_JS and "document.createTextNode" in MARKDOWN_JS
+    assert "const HEADING = /^(#{1,4})\\s+(.+)$/;" in MARKDOWN_JS
+    assert 'out.push("• " + stripInline(bullet[1]).trim());' in MARKDOWN_JS
+    assert "window.PadiemUtilMarkdown = Object.freeze({ render: render, plain: plain });" in MARKDOWN_JS
+    # The screen renders; the copy path projects plain text from the answer.
+    assert "function renderAnswer(host, value)" in TOOLS_JS
+    assert "markdown.render(host, value)" in TOOLS_JS
+    assert "const text = plainAnswer(lastAnswer).trim();" in TOOLS_JS
 
 
 def test_app_js_gains_no_tool_logic() -> None:
@@ -134,6 +151,7 @@ HARNESS = r'''
 const fs = require("fs"), vm = require("vm");
 const source = fs.readFileSync(process.argv[2], "utf8");
 const contractSource = fs.readFileSync(process.argv[3], "utf8");
+const markdownSource = fs.readFileSync(process.argv[4], "utf8");
 const scenario = JSON.parse(process.env.SCENARIO || "{}");
 const calls = [], copies = [];
 let authState = scenario.signedOut ? { authenticated: false }
@@ -183,10 +201,12 @@ loginButton.addEventListener("click", () => calls.push("login-button"));
 const document = {
   readyState: "complete",
   documentElement: { lang: scenario.lang || "ko" },
-  createElement: (tag) => El(tag),
+  createElement: (tag) => { createdTags.push(String(tag).toLowerCase()); return El(tag); },
+  createTextNode: (value) => { const node = El("#text"); node.textContent = String(value); return node; },
   getElementById: (id) => (id === "loginButton" ? loginButton : null),
   addEventListener: () => {},
 };
+const createdTags = [];
 const requests = [];
 const responses = Array.isArray(scenario.responses) ? scenario.responses.slice() : [];
 function nextResponse() {
@@ -224,6 +244,7 @@ const windowObj = {
 const sandbox = { document: document, window: windowObj, console: console, setTimeout: () => 0, clearTimeout: () => {} };
 sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
+vm.runInContext(markdownSource, sandbox, { filename: "util-tools-markdown.js" });
 vm.runInContext(contractSource, sandbox, { filename: "util-tools-contract.js" });
 vm.runInContext(source, sandbox, { filename: "util-tools.js" });
 
@@ -301,12 +322,32 @@ function tick() { return new Promise((resolve) => setImmediate(resolve)); }
     check("error_is_a_korean_sentence", /[가-힣]/.test(text(host)));
   } else {
     const output = find(host, ".util-result-output");
-    check("result_painted", output && output.textContent === "초안 본문");
+    check("result_painted", output && (scenario.markdown
+      ? /오늘의 요약/.test(text(output)) : text(output).indexOf("초안 본문") >= 0));
+    if (scenario.markdown) {
+      check("md_heading", Boolean(find(output, "h5")) && /오늘의 요약/.test(text(output)));
+      const list = find(output, "ul");
+      check("md_list", Boolean(list) && findAll(list, "li").length === 2);
+      check("md_bold", Boolean(find(output, "strong")) && /중요/.test(text(find(output, "strong"))));
+      check("md_no_markers_on_screen", text(output).indexOf("##") < 0 && text(output).indexOf("**") < 0);
+      check("md_script_not_inserted", createdTags.indexOf("script") < 0
+        && text(output).indexOf("<script>") >= 0);
+    }
     const res = find(host, ".util-result");
     check("result_visible", res && res.hidden === false);
     find(host, "[data-util-copy]").click();
     await tick();
-    check("copy_uses_the_shared_module", copies.length === 1 && copies[0] === "초안 본문");
+    if (scenario.markdown) {
+      const copied = copies[0] || "";
+      check("copy_plain_no_markers", copied.indexOf("##") < 0 && copied.indexOf("**") < 0);
+      check("copy_plain_heading_line", copied.indexOf("오늘의 요약\n") === 0);
+      check("copy_plain_bullets", copied.indexOf("• 중요") >= 0);
+      check("copy_keeps_hashtag", copied.indexOf("#주민정원") >= 0);
+      check("copy_keeps_line_breaks", copied.split("\n").length >= 4);
+      check("copy_plain_blank_line", copied.indexOf("\n\n") >= 0);
+    } else {
+      check("copy_uses_the_shared_module", copies.length === 1 && copies[0] === "초안 본문");
+    }
     check("copy_feedback", /복사됨/.test(text(host)));
     find(host, "[data-util-regenerate]").click();
     await tick();
@@ -327,7 +368,8 @@ def _run_harness(scenario: dict) -> dict:
         env = dict(os.environ)
         env["SCENARIO"] = json.dumps(scenario)
         completed = subprocess.run(
-            [node, str(harness), str(STATIC / "util-tools.js"), str(STATIC / "util-tools-contract.js")],
+            [node, str(harness), str(STATIC / "util-tools.js"), str(STATIC / "util-tools-contract.js"),
+             str(STATIC / "util-tools-markdown.js")],
             capture_output=True, text=True, encoding="utf-8", env=env, check=False,
         )
     assert completed.stdout.strip(), completed.stdout + completed.stderr
@@ -362,6 +404,25 @@ def test_behaviour_meeting_summary() -> None:
     result = _run_harness({"tool": "meeting"})
     _assert_checks(result, ("required_field_is_native_required", "meeting_prompt",
                             "declares_the_util_scope", "result_painted"))
+
+
+MARKDOWN_ANSWER = (
+    "## 오늘의 요약\n\n"
+    "- **중요** 안건을 먼저 봅니다\n"
+    "- 정원 사업 신청 #주민정원\n\n"
+    "<script>alert(1)</script>"
+)
+
+
+def test_behaviour_markdown_renders_and_copy_is_plain() -> None:
+    result = _run_harness({"tool": "speech", "markdown": True,
+                           "responses": [{"status": 200, "answer": MARKDOWN_ANSWER}]})
+    _assert_checks(result, (
+        "md_heading", "md_list", "md_bold", "md_no_markers_on_screen",
+        "md_script_not_inserted", "copy_plain_no_markers", "copy_plain_heading_line",
+        "copy_plain_bullets", "copy_keeps_hashtag", "copy_keeps_line_breaks",
+        "copy_plain_blank_line", "copy_feedback",
+    ))
 
 
 def test_behaviour_signed_out_shows_the_login_gate() -> None:

@@ -1392,6 +1392,7 @@
   <!-- #7173 PR2: the tool modules load before util-app.js, whose boot renders
        the initial route right away (defer scripts run at readyState
        "interactive", so a later module would miss the first paint). -->
+  <script src="./util-tools-markdown.js" defer></script>
   <script src="./util-tools-contract.js" defer></script>
   <script src="./util-tools.js" defer></script>
   <script src="./util-app.js" defer></script>

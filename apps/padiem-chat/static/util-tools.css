@@ -217,6 +217,35 @@ textarea.util-input {
   outline-offset: 1px;
 }
 
+/* Light markdown inside a result: headings, lists, bold. Nothing else. */
+.util-md-heading {
+  margin: 14px 0 6px;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.util-result-output > .util-md-heading:first-child { margin-top: 0; }
+
+.util-md-paragraph {
+  margin: 0 0 10px;
+}
+
+.util-md-paragraph:last-child { margin-bottom: 0; }
+
+.util-md-list {
+  margin: 0 0 10px;
+  padding-left: 20px;
+}
+
+.util-md-list:last-child { margin-bottom: 0; }
+
+.util-md-list li { margin: 0 0 4px; }
+.util-md-list li:last-child { margin-bottom: 0; }
+
+.util-result-output strong { font-weight: 750; }
+
 .util-result-actions {
   display: flex;
   flex-wrap: wrap;

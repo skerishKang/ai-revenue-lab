@@ -75,6 +75,25 @@
     return node;
   }
 
+  // The screen paints light markdown; the copy button hands over the plain
+  // projection (util-tools-markdown.js). A missing module leaves both paths on
+  // the raw text rather than printing a broken page.
+  function renderAnswer(host, value) {
+    const markdown = window.PadiemUtilMarkdown;
+    if (markdown && typeof markdown.render === "function") {
+      markdown.render(host, value);
+      return;
+    }
+    host.textContent = value;
+  }
+
+  function plainAnswer(value) {
+    const markdown = window.PadiemUtilMarkdown;
+    return markdown && typeof markdown.plain === "function"
+      ? markdown.plain(value)
+      : String(value == null ? "" : value);
+  }
+
   // ── session ──────────────────────────────────────────────────────────────
 
   function authSession() {
@@ -287,6 +306,7 @@
     }
 
     let busy = false;
+    let lastAnswer = "";
 
     async function runGeneration() {
       if (busy) return;
@@ -307,15 +327,20 @@
       againBtn.disabled = true;
       setStatus(t("generating"), "busy");
       result.hidden = false;
-      output.textContent = "";
+      lastAnswer = "";
+      output.replaceChildren();
       try {
-        const answer = await contract().apiChat(prompt, toolId, (partial) => { output.textContent = partial; });
-        output.textContent = answer;
+        const answer = await contract().apiChat(prompt, toolId, (partial) => {
+          lastAnswer = partial;
+          renderAnswer(output, partial);
+        });
+        lastAnswer = answer;
+        renderAnswer(output, answer);
         result.hidden = false;
         setStatus("", null);
       } catch (err) {
         setStatus(contract().errorMessage(err), "error");
-        if (!String(output.textContent || "").trim()) result.hidden = true;
+        if (!String(lastAnswer || "").trim()) result.hidden = true;
       } finally {
         busy = false;
         primary.disabled = false;
@@ -330,7 +355,7 @@
     });
     againBtn.addEventListener("click", () => { void runGeneration(); });
     copyBtn.addEventListener("click", () => {
-      const text = String(output.textContent || "").trim();
+      const text = plainAnswer(lastAnswer).trim();
       if (!text) return;
       const copier = window.PadiemAnswerCopy && typeof window.PadiemAnswerCopy.copyText === "function"
         ? window.PadiemAnswerCopy.copyText
