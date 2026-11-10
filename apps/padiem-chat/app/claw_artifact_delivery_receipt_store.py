@@ -240,7 +240,7 @@ class D1ArtifactDeliveryReceiptStore:
             "SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ? "
             "FROM conversations c INNER JOIN claw_run_history r "
             "ON r.conversation_id=c.id AND r.user_id=c.user_id "
-            "WHERE c.id=? AND c.user_id=? AND r.run_id=? "
+            "WHERE c.id=? AND c.user_id=? AND c.deleted_at IS NULL AND r.run_id=? "
             "AND r.workspace_id=? AND r.status='completed'",
             reservation_id, owner, conversation, workspace, run_ref, artifact,
             integrity, kind, connector, intent_id, attempt,

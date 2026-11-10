@@ -45,6 +45,7 @@ MIGRATION_NAMES = (
     # #5731: the store selects the kind/version columns, so the schema under
     # test is the one the release actually runs — migration 078 included.
     "078_project_files_doc_kind.sql",
+    "105_conversation_soft_delete.sql",
 )
 
 OWNER = "usr_" + "a" * 32

@@ -147,6 +147,7 @@ async def test_actual_history_store_mints_owner_conversation_and_run_without_fak
         "014_claw_run_history_conversation.sql",
         "015_claw_run_history_workspace.sql",
         "042_conversation_product_scope.sql",
+        "105_conversation_soft_delete.sql",
     ):
         conn.executescript((folder / filename).read_text(encoding="utf-8"))
     now = datetime.now(timezone.utc).isoformat()

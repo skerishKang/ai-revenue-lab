@@ -47,6 +47,7 @@ MIGRATION_NAMES = (
     "020_claw_local_task_correlation.sql",
     "042_conversation_product_scope.sql",
     "047_oracle_mesh_dispatch.sql",
+    "105_conversation_soft_delete.sql",
 )
 
 OWNER = "usr_" + "a" * 32
