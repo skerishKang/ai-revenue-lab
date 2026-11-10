@@ -790,6 +790,12 @@
     }
   }
   window.PadiemChatRouting = Object.freeze({ syncRouteHash });
+  // #7173: the Chat | Claw | Util app switch reuses the two existing screen
+  // entries so the Util screen (util-app.js) never re-implements shell state.
+  window.PadiemAppSwitch = Object.freeze({
+    openChat: openChatWorkspace,
+    openClaw: openClawWorkspace,
+  });
   function setNavActive() {
     const state = shell.dataset.state;
     const page = pageViewFor(state);
@@ -4349,6 +4355,16 @@
     closeSidebar();
     syncApprovedMemoryVisibility();
     syncClawRunHistoryVisibility();
+  }
+
+  function openChatWorkspace() {
+    // #7173: back to the Chat lane on the same conversation (#2505); the Util
+    // screen owns its own state and hash, and hides itself before this runs.
+    shell.dataset.state = "home";
+    switchConversationProduct(PRODUCT_CHAT);
+    setNavActive();
+    if (input) input.focus();
+    closeSidebar();
   }
 
   function openClawManual() {

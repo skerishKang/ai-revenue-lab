@@ -1,156 +1,76 @@
-"""#5908 — the quick-run toolbox cards over the EXISTING panels and flows.
+"""#5908 (갱신 #7173) — 유틸 첫 화면의 여섯 카드.
 
-The owner-approved scope: six cards (축사·인사말 / SNS 홍보 / 회의정리·활동집 /
-PDF → Markdown / 견적서 초안 / Excel 열기·검토) inside the existing util view.
-The four util cards reuse the same ``activateUtilTab`` switch the sidebar
-submenu drives; the two Claw cards route to the existing Claw workspace and
-its own chip handler. No second engine, no new routes.
-
-The flow-linked cards must say so in their buttons ("Claw에서 …") — they are
-not direct-run claims. The PDF → Markdown card describes the open conversion
-surface; its only pause sentence is the one the panel shows when the server
-actually answers that new work is blocked (#5710 gate).
-
-Static assertions pin the markup/CSS contracts; the Node harness executes the
-REAL util-menu.js against the same fake-DOM host the #5608/#5785 suites use
-and proves the actual routing.
+2026-11-10 대표 결정: 카드마다 붙어 있던 "열기 / 이력 열기 / Claw에서 작성 /
+Claw에서 진행" 버튼을 없애고, **카드 전체**가 유틸 앱 안의 그 도구 화면을 연다.
+견적서 초안·Excel도 Claw 대화로 보내지 않는다(도구 화면에서 입력·결과).
 """
-
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
-from css_rules import (
-    declaration,
-    find_rules_with_selector,
-    parse_rules,
-    rule_selector_list_contains,
-    strip_comments,
-)
+from css_rules import declaration, find_rules_with_selector, parse_rules
 
 ROOT = Path(__file__).resolve().parents[1]
-INDEX_HTML = ROOT / "static/index.html"
-UTIL_MENU_JS = ROOT / "static/util-menu.js"
-UTIL_MENU_CSS = ROOT / "static/util-menu.css"
+STATIC = ROOT / "static"
+INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
+UTIL_APP_JS = (STATIC / "util-app.js").read_text(encoding="utf-8")
+UTIL_APP_CSS = (STATIC / "util-app.css").read_text(encoding="utf-8")
 
-TOOL_KEYS = ("speech", "sns", "meeting", "pdfmd", "claw-quote", "claw-excel")
-
-
-def _html() -> str:
-    return INDEX_HTML.read_text(encoding="utf-8")
-
-
-def _grid() -> str:
-    html = _html()
-    return html[html.index('id="utilToolGrid"') : html.index('id="calendarView"')]
-
-
-def _card_button_label(key: str) -> str:
-    match = re.search(
-        r'<button[^>]*data-util-tool="' + key + r'"[^>]*>([^<]*)</button>', _grid()
-    )
-    assert match, f"missing tool card button: {key}"
-    return match.group(1).strip()
+TOOLS = (
+    ("speech", "축사·인사말", "행사 축사·인사말 초안 생성·저장"),
+    ("sns", "SNS 홍보", "블로그·페이스북·인스타그램 초안"),
+    ("meeting", "회의정리·활동집", "회의 요약·책/활동집 누적 생성"),
+    ("pdfmd", "PDF → Markdown", "PDF·ZIP을 Markdown으로 변환·비교·다운로드"),
+    ("quote", "견적서 초안", "요청을 붙이면 견적서·발주서·답장 초안"),
+    ("excel", "Excel 열기/검토", "XLSX 원본을 이 화면에서 열어 검토·작업"),
+)
 
 
-# ── markup contract ─────────────────────────────────────────────────────────
+# ── markup boundary ────────────────────────────────────────────────────────
 
 
-def test_grid_sits_inside_the_util_view_with_six_cards() -> None:
-    grid = _grid()
-    assert 'aria-label="빠른 실행 도구함"' in grid
-    assert grid.count("util-tool-card") == 6
-    for key in TOOL_KEYS:
-        assert f'data-util-tool="{key}"' in grid, f"missing tool card: {key}"
+def test_the_six_cards_live_in_the_util_app_module() -> None:
+    for tool_id, title, desc in TOOLS:
+        assert f'id: "{tool_id}"' in UTIL_APP_JS, tool_id
+        assert f'"{title}"' in UTIL_APP_JS, title
+        assert desc in UTIL_APP_JS, desc
+    # The old in-page grid is retired: the list is rendered from the manifest.
+    assert 'id="utilToolGrid"' not in INDEX
+    assert "data-quick-util" not in INDEX
 
 
-def test_flow_linked_cards_do_not_claim_direct_run() -> None:
-    # The two flow-linked cards name their destination instead of pretending
-    # to execute here; the three direct util cards keep the plain 열기 wording.
-    assert _card_button_label("claw-quote") == "Claw에서 작성"
-    assert _card_button_label("claw-excel") == "Claw에서 진행"
-    assert _card_button_label("speech") == "열기"
-    assert _card_button_label("sns") == "열기"
-    assert _card_button_label("meeting") == "열기"
+def test_cards_are_whole_clickable_buttons_without_secondary_actions() -> None:
+    assert '<button type="button" class="util-card"' in UTIL_APP_JS
+    assert 'data-util-route="' in UTIL_APP_JS
+    for gone in ("util-tool-open", "이력 열기", "Claw에서 작성", "Claw에서 진행"):
+        assert gone not in UTIL_APP_JS, gone
+    # No Claw handoff: opening a card never clicks a claw nav or quote chip.
+    assert "clawQuoteCard" not in UTIL_APP_JS
+    assert "clawNavButton.click" not in UTIL_APP_JS
 
 
-def test_pdfmd_card_describes_open_conversion() -> None:
-    """#5710's static paused note is gone: new work is enabled, and the only
-    pause sentence left is the one the panel itself shows when the server
-    actually answers that new work is blocked."""
-    grid = _grid()
-    pdfmd = grid[grid.index('data-util-tool="meeting"') : grid.index('data-util-tool="claw-quote"')]
-    assert "PDF → Markdown" in pdfmd
-    assert "util-tool-paused" not in pdfmd
-    assert "util-tool-note" not in pdfmd
-    assert "일시 중단" not in pdfmd
-    assert "새 업로드는 잠시 멈춤" not in pdfmd
-    assert "PDF·ZIP을 Markdown으로 변환·비교·다운로드" in pdfmd
-    assert _card_button_label("pdfmd") == "이력 열기"
+def test_card_copy_does_not_claim_a_claw_flow_for_quote_or_excel() -> None:
+    quote = UTIL_APP_JS[UTIL_APP_JS.index('id: "quote"'):UTIL_APP_JS.index('id: "excel"')]
+    excel = UTIL_APP_JS[UTIL_APP_JS.index('id: "excel"'):UTIL_APP_JS.index("]);")]
+    assert "Claw" not in quote
+    assert "Claw" not in excel
+    assert "견적서·발주서·답장 초안" in quote
+    assert "이 화면에서 열어" in excel
 
 
-def test_pdfmd_tab_tagline_matches_the_card_copy() -> None:
-    html = _html()
-    tagline = 'data-tagline="PDF·ZIP을 Markdown으로 변환·비교·다운로드"'
-    assert tagline in html
-    # 대표 결정 #7172로 계약 값 갱신: the first screen heading is '유틸', so the
-    # page tagline is the util collection copy. The PDF copy stays on its tab
-    # (data-tagline above) and on the card, not on the page heading.
-    assert 'id="utilTagline" data-locale-key="util-tagline">자주 쓰는 문서·홍보 도구 모음</p>' in html
-    assert 'id="utilTagline">PDF·ZIP을 Markdown으로 변환·비교·다운로드</p>' not in html
-    assert "기존 작업 이력·결과 다운로드" not in html
+# ── CSS contract ───────────────────────────────────────────────────────────
 
 
-# ── behaviour contract in util-menu.js ──────────────────────────────────────
-
-
-def test_util_menu_routes_cards_through_the_existing_switch() -> None:
-    js = UTIL_MENU_JS.read_text(encoding="utf-8")
-    assert 'document.getElementById("utilToolGrid")' in js
-    assert 'querySelectorAll("[data-util-tool]")' in js
-    # The util cards reuse activateUtilTab; the sidebar highlight keeps its
-    # single owner (markActiveUtilSubmenuItem), exactly like the submenu rows.
-    assert "activateUtilTab(tab);" in js
-    assert "markActiveUtilSubmenuItem(key);" in js
-    # The Claw cards go through the existing Claw nav button and the existing
-    # quote chip — no duplicated Claw state inside util-menu.js.
-    assert 'document.getElementById("clawNavButton")' in js
-    assert 'document.getElementById("clawQuoteCard")' in js
-
-
-# ── CSS contract ────────────────────────────────────────────────────────────
-
-
-def test_css_uses_the_measured_contrast_token_and_44px_touch_target() -> None:
-    """The card border and the button's size/colour are rule-level contracts.
-
-    #7186: read through css_rules, so a re-wrapped or re-ordered block keeps
-    the same verdict (tests/test_css_rules_helper.py proves the helper).
-    """
-    css = UTIL_MENU_CSS.read_text(encoding="utf-8")
-    assert ".util-tool-grid" in css
-    rules = parse_rules(css)
-    # 대표 결정 #7172로 계약 값 갱신: the first-screen card border is the shared
-    # hairline token (var(--line)), not the input-strength token. The contrast
-    # floor itself is unchanged and still proven in test_beta_ux_quote_access.
-    cards = find_rules_with_selector(rules, ".util-tool-card")
-    assert len(cards) == 1
-    border = declaration(cards[0], "border")
-    assert border.startswith("1px solid var(--line"), border
-    assert [v for v in cards[0].declarations.values() if "input-border-strong" in v] == []
-    buttons = find_rules_with_selector(rules, ".util-tool-open")
-    assert len(buttons) == 1
-    assert declaration(buttons[0], "min-height") == "44px"
-    # 대표 결정 #7172로 계약 값 갱신: the glass-only CTA override is superseded
-    # by the app-wide shared primary rule; the toolbox button wears the same
-    # primary token as .pdfmd-btn-primary (#7187 R3: the number lives in
-    # padiem-tokens.css).
-    assert 'html[data-theme="padiem-glass"] .util-tool-open' not in strip_comments(css)
-    polish = parse_rules((ROOT / "static/padiem-chat-ui-polish.css").read_text(encoding="utf-8"))
-    blocks = find_rules_with_selector(polish, ".util-tool-open")
-    assert len(blocks) == 3
-    for block in blocks:
-        assert rule_selector_list_contains(block, ".util-tool-open", ".pdfmd-btn-primary")
-    navy = [block for block in blocks if declaration(block, "background") == "var(--primary-bg)"]
-    assert len(navy) == 1
+def test_card_css_keeps_the_shared_tokens_hover_and_44px_floor() -> None:
+    rules = parse_rules(UTIL_APP_CSS)
+    cards = find_rules_with_selector(rules, ".util-card")
+    assert cards
+    assert any((declaration(rule, "border") or "").startswith("1px solid var(--line")
+               for rule in cards)
+    assert any(declaration(rule, "cursor") == "pointer" for rule in cards)
+    assert ".util-card-grid" in UTIL_APP_CSS
+    focus = find_rules_with_selector(rules, ".util-card:focus-visible")
+    assert focus and declaration(focus[0], "outline") == "3px solid var(--primary-focus)"
+    # Phone targets keep the app floor for the top switch.
+    assert "@media (max-width: 720px)" in UTIL_APP_CSS
+    assert ".app-switch-item { min-height: 44px;" in UTIL_APP_CSS
