@@ -219,3 +219,5 @@ def build_provider_http_timeout(model_id: str | None = None) -> httpx.Timeout:
         write=WRITE_SECONDS,
         pool=POOL_SECONDS,
     )
+
+# #7346 verification: harmless comment to prove the new path trigger; this PR is closed, not merged.
