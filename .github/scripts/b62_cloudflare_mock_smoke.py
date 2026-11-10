@@ -70,12 +70,12 @@ def main() -> int:
         assert health_status == 200
         require_security(health_headers, api=True)
         health = json.loads(health_raw.decode("utf-8"))
+        # The public /health answers the bounded liveness contract only; the
+        # readiness detail is the machine's own view. That the deployment is
+        # the mock-only one is proven functionally below: the chat answer is
+        # the mock answer, with no provider call behind it.
         assert health.get("status") == "ok"
         assert health.get("app") == "padiem-chat"
-        assert health.get("runtime") == "mock"
-        assert health.get("b14_configured") is False
-        assert health.get("live_enabled") is False
-        assert health.get("deep_research_ready") is False
 
         chat_status, chat_headers, chat_raw = request_with_retry(
             base + "/api/chat",
@@ -91,10 +91,6 @@ def main() -> int:
         print(f"B62_BASE_URL={base}")
         print("ROOT_HTTP=200")
         print("HEALTH_HTTP=200")
-        print("RUNTIME=mock")
-        print("B14_CONFIGURED=false")
-        print("LIVE_ENABLED=false")
-        print("DEEP_RESEARCH_READY=false")
         print("MOCK_CHAT_HTTP=200")
         print("REAL_PROVIDER_CALLS=0")
         append_summary([
@@ -102,9 +98,8 @@ def main() -> int:
             "",
             f"- URL: `{base}`",
             "- Root: PASS",
-            "- Health: PASS (`runtime=mock`, `b14_configured=false`, `live_enabled=false`)",
-            "- Deep Research readiness: `false`",
-            "- Mock chat: PASS",
+            "- Health: PASS (bounded liveness contract)",
+            "- Mock chat: PASS (mock answer, no provider call)",
             "- API security headers: PASS",
             "- Real provider/model calls: `0`",
         ])

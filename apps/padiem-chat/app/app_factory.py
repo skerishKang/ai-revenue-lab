@@ -299,7 +299,7 @@ from .claw_automation_rules_routes import claw_automation_rules
 from .claw_automation_rule_create_routes import claw_automation_rule_create
 from .claw_automation_rule_edit_routes import claw_automation_rule_edit
 from .claw_automation_rule_enabled_routes import claw_automation_rule_set_enabled
-from .config import Settings
+from .config import LOCAL_DEV_LOOPBACK_HOSTS, Settings
 from .connector_status_projection import connectors_status
 from .connector_disconnect_routes import disconnect_google_calendar, disconnect_google_drive
 from .github_oauth_routes import (github_start, github_callback, github_status,
@@ -471,6 +471,47 @@ async def councillor_redirect(request: Request) -> RedirectResponse:
 
 
 async def health(request: Request) -> JSONResponse:
+    """The public health answer carries no configuration detail.
+
+    Readiness booleans describe how this deployment is composed (what is
+    bound, which modes are on) and are none of an anonymous caller's
+    business. The public body is the bounded liveness answer; the detail view
+    stays available to the machine's own view — direct loopback callers
+    (the local QA and monitor lanes), the in-process test harness and a
+    signed-in admin — and never to a request forwarded through the public
+    edge.
+    """
+    if not await _health_detail_allowed(request):
+        return JSONResponse({"status": "ok", "app": "padiem-chat"})
+    return JSONResponse(_health_detail(request))
+
+
+async def _health_detail_allowed(request: Request) -> bool:
+    # The machine's own view: a direct loopback caller (the local QA and
+    # monitor lanes) or the in-process test harness, neither carrying a
+    # forwarding header. Anything forwarded through the public edge — and any
+    # other direct caller — only passes as a signed-in admin.
+    forwarded = bool(request.headers.get("x-forwarded-for") or request.headers.get("x-real-ip"))
+    client_host = (request.client.host if request.client else "") or ""
+    if not forwarded and (
+        client_host in LOCAL_DEV_LOOPBACK_HOSTS or client_host == "testclient"
+    ):
+        return True
+    from .auth_routes import current_user_id
+
+    uid = current_user_id(request)
+    if not uid:
+        return False
+    store = getattr(request.app.state, "b66_member_admin_store", None)
+    if store is None:
+        return False
+    try:
+        return bool(await store.is_google_admin(uid))
+    except Exception:
+        return False
+
+
+def _health_detail(request: Request) -> dict:
     settings: Settings = request.app.state.settings
     usage_gate: UsageGate = request.app.state.usage_gate
     # Config validation already requires keys for live web providers. This is
@@ -478,7 +519,7 @@ async def health(request: Request) -> JSONResponse:
     web_ready = settings.web_provider in {"mock", "firecrawl", "daum", "tinyfish", "tinyfish_daum"}
     research_ready = settings.runtime_mode == "b14" and settings.web_provider in {"mock", "firecrawl"}
     abuse_ready = usage_gate.ready
-    return JSONResponse({
+    return {
         "status": "ok", "app": "padiem-chat", "runtime": settings.runtime_mode,
         "b14_configured": bool(settings.b14_base_url),
         "web_tools_ready": web_ready,
@@ -505,7 +546,7 @@ async def health(request: Request) -> JSONResponse:
             request.app.state, "request_telemetry_enabled", False
         ),
         "voice_stt_available": getattr(request.app.state, "voice_stt_transport", None) is not None,
-    })
+    }
 
 
 class CachedStaticFiles(StaticFiles):
