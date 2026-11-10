@@ -258,10 +258,11 @@ def test_frontend_claw_branch_uses_claw_route_without_chat_stream_fallback() -> 
     # No B62 stream target of any kind is reachable from the claw lane.
     assert '"/api/chat/stream"' not in claw_fn
     assert 'fetch("/api/chat/stream"' not in claw_fn
-    # app.js selects the claw lane from product state and returns it directly;
+    # chat-streaming-module.js selects the claw lane from product state and returns it directly;
     # there is no fallthrough to the B62 stream for a Claw general request.
-    assert "requestClawGeneral(payload, signal)" in APP_JS_SOURCE
-    assert "route && route.clawGeneral" in APP_JS_SOURCE
+    stream_source = (APP_DIR / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
+    assert "deps.chatTransport.requestClawGeneral(payload, signal)" in stream_source
+    assert "route && route.clawGeneral" in stream_source
 
 
 def test_b62_chat_general_path_unchanged() -> None:
@@ -269,16 +270,17 @@ def test_b62_chat_general_path_unchanged() -> None:
     streaming_fn = _js_function(TRANSPORT_SOURCE, "requestStreaming")
     assert '"/api/chat/stream"' in streaming_fn
     assert '"/api/orchestration"' in TRANSPORT_SOURCE
+    stream_source = (APP_DIR / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
     # The Claw decision is state-scoped in app.js and only annotates the route.
     assert "clawGeneralRequest" in APP_JS_SOURCE
-    assert "clawGeneral: true" in APP_JS_SOURCE
+    assert "clawGeneral: true" in stream_source
     # The flag is derived from product state: the Claw shell with the explicit
     # manual form hidden (i.e. the generic composer).
     assert 'shell.dataset.state === "claw"' in APP_JS_SOURCE
     # The standalone transport call stays byte-for-byte (also pinned by
     # tests/test_browser_streaming_contract.py).
-    assert "chatTransport.requestStreaming(payload, signal)" in APP_JS_SOURCE
-    assert "chatTransport.requestCompleted(payload, signal)" in APP_JS_SOURCE
+    assert "deps.chatTransport.requestStreaming(payload, signal)" in stream_source
+    assert "deps.chatTransport.requestCompleted(payload, signal)" in stream_source
 
 
 def test_b66_product_boundary_unchanged() -> None:

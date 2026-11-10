@@ -908,11 +908,13 @@ def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
     assert "/api/" not in _source()
 
     app = _app_source()
-    # #7216 R5 step 3: the run-history consumer moved into chat-history-module.js;
-    # the single-call and route-inventory contracts span both shipped sources.
+    # #7216 R5 step 3/4/5b: the run-history, auth, and streaming consumers moved
+    # into their respective modules; the single-call and route-inventory
+    # contracts span the shipped sources.
     module = APP_PATH.with_name("chat-history-module.js").read_text(encoding="utf-8")
     shipped = (app + module
-               + APP_PATH.with_name("chat-auth-module.js").read_text(encoding="utf-8"))
+               + APP_PATH.with_name("chat-auth-module.js").read_text(encoding="utf-8")
+               + APP_PATH.with_name("chat-streaming-module.js").read_text(encoding="utf-8"))
     # #3932: same existing run-history endpoint, bounded 10/30 on explicit user click.
     # Keep the old baseline route in scope; never admit a new endpoint silently.
     assert shipped.count("deps.readClawRuns(deps.clawRunHistoryLimit") == 1

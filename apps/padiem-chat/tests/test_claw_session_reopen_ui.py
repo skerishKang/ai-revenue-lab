@@ -198,11 +198,12 @@ def test_success_echo_reuses_only_the_server_conversation_id() -> None:
 def test_chat_conversation_path_is_unchanged() -> None:
     """Regression=0: the Chat authority writes keep their exact call sites."""
     app = _app_source()
-    assert app.count("conversationState.setConversationId(data.conversation_id);") == 2
+    stream = (ROOT / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
+    assert stream.count("deps.conversationState.setConversationId(data.conversation_id);") == 2
     assert app.count("conversationState.setConversationId(retryContext.conversationId);") == 1
     # Chat still owns its streaming/completed echo; Claw gained a parallel
     # gated write without touching these.
-    assert 'if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id);' in app
+    assert 'if (typeof data.conversation_id === "string") deps.conversationState.setConversationId(data.conversation_id);' in stream
 
 
 def test_browser_never_mints_a_conversation_id() -> None:
@@ -574,6 +575,7 @@ vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(pro
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
 // #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), sandbox, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 function collectButtons(root) {

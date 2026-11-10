@@ -39,11 +39,12 @@ def test_frontend_recovery_controller_contract():
 
 def test_pc_run_handle_and_recovery_are_wired_to_the_real_consumer():
     app_js = APP_JS.read_text(encoding="utf-8")
+    stream_js = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
     transport = TRANSPORT_JS.read_text(encoding="utf-8")
     index = INDEX_HTML.read_text(encoding="utf-8")
     assert "createChatPcRunId" in transport
-    assert "payload.pc_run_id = pcRunId" in app_js
-    assert "contextSnapshot.pcRunId || chatTransport.createChatPcRunId" in app_js
+    assert "payload.pc_run_id = pcRunId" in stream_js
+    assert "contextSnapshot.pcRunId || deps.chatTransport.createChatPcRunId" in stream_js
     assert "PadiemChatPcRecovery?.create" in app_js
     assert "recoverStoredPcResult(" in app_js
     assert "recoverOnce({" in app_js
@@ -53,10 +54,9 @@ def test_pc_run_handle_and_recovery_are_wired_to_the_real_consumer():
     assert "chat-pc-result-recovery.js" in index
     # The recovery call is in the outer request catch, before the generic
     # renderError. A stream-incomplete error is handed to that catch.
-    outer = app_js.split("async function requestAnswer(", 1)[1]
-    outer = outer.split("function clawGeneralRequestActive(", 1)[0]
-    assert outer.index("recoverStoredPcResult(") < outer.index("renderError(")
-    assert "!clawGeneralRequest && contextSnapshot?.pcRunId && !terminalError" in app_js
+    outer = stream_js.split("async function requestAnswer(", 1)[1]
+    assert outer.index("deps.recoverStoredPcResult(") < outer.index("deps.renderError(")
+    assert "!clawGeneralRequest && contextSnapshot?.pcRunId && !terminalError" in stream_js
     recovery = RECOVERY_JS.read_text(encoding="utf-8")
     assert "method: \"GET\"" in recovery
     assert "resolved.add(runId)" in recovery
