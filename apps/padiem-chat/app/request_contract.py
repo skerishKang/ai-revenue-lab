@@ -31,6 +31,8 @@ _ALLOWED_ROLES = {"user", "assistant"}
 # Routing label for the three 의원3종 utilities. It grants no identity, tier,
 # entitlement or tool scope, and it is not an authentication input.
 _UTIL_SCOPES = frozenset({"speech", "sns", "meeting"})
+# #7297: surface label (Chat vs Claw) on the shared Chat direct execution path.
+_PRODUCT_SURFACES = frozenset({"chat", "claw"})
 # #6046: the content-country vocabulary shared with project files. The chat
 # request no longer accepts a `country` key (B3): it was validated here and then
 # never read. `project_file_routes` still uses this set for the project-file
@@ -171,6 +173,26 @@ def declared_util_scope(raw: Any) -> str | None:
     return scope if isinstance(scope, str) and scope in _UTIL_SCOPES else None
 
 
+def declared_product_surface(raw: Any = None, request: Any = None) -> str:
+    """Return the origin screen label ('chat' or 'claw') for a Chat direct turn (#7297)."""
+    if isinstance(raw, dict):
+        for key in ("product", "surface"):
+            candidate = raw.get(key)
+            if isinstance(candidate, str) and candidate in _PRODUCT_SURFACES:
+                return candidate
+    state = getattr(request, "state", None)
+    cached = getattr(state, "chat_product_surface", None)
+    if isinstance(cached, str) and cached in _PRODUCT_SURFACES:
+        return cached
+    headers = getattr(request, "headers", None)
+    if headers is not None and callable(getattr(headers, "get", None)):
+        for header_name in ("x-padiem-product", "x-padiem-surface"):
+            candidate = headers.get(header_name)
+            if isinstance(candidate, str) and candidate.strip().lower() in _PRODUCT_SURFACES:
+                return candidate.strip().lower()
+    return "chat"
+
+
 _KEY_LABEL = re.compile(r"^[A-Za-z0-9_]{1,32}$")
 
 
@@ -202,9 +224,19 @@ def _validate_payload_parts(
     # can grow a mode-shaped promise again.
     # The tail order below is a load-bearing literal: test_5015 pins
     # `"pc_run_id", "web_search"}` as the end of this set.
-    unsupported = set(raw) - {"messages", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "util", "pc_run_id", "web_search"}
+    unsupported = set(raw) - {"messages", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "util", "product", "surface", "pc_run_id", "web_search"}
     if unsupported:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.", reason=_unsupported_key_reason(unsupported))
+    if "product" in raw:
+        product_val = raw["product"]
+        if not isinstance(product_val, str) or product_val not in _PRODUCT_SURFACES:
+            raise BrowserRequestError("제품 화면 식별자가 올바르지 않습니다.", reason="product_scope_invalid")
+    if "surface" in raw:
+        surface_val = raw["surface"]
+        if not isinstance(surface_val, str) or surface_val not in _PRODUCT_SURFACES:
+            raise BrowserRequestError("제품 화면 식별자가 올바르지 않습니다.", reason="product_scope_invalid")
+    if "product" in raw and "surface" in raw and raw["product"] != raw["surface"]:
+        raise BrowserRequestError("제품 화면 식별자가 올바르지 않습니다.", reason="product_scope_invalid")
     if "util" in raw:
         util_scope = raw["util"]
         if not isinstance(util_scope, str) or util_scope not in _UTIL_SCOPES:

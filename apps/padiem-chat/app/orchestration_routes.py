@@ -215,10 +215,13 @@ async def _save_terminal_history(
     except Exception:
         return conversation_id
     if saved is not None:
-        # #7297: the record the Claw lane keeps for a completed turn lives in the
-        # same claw_run_history read-model whichever path answered it.
-        from .claw_general_run_history import project_completed_chat_turn
-        await project_completed_chat_turn(request, user_text=user_text, answer=answer)
+        request.state.chat_saved_conversation_id = saved
+    # #7297: the record the Claw lane keeps for a completed turn lives in the
+    # same claw_run_history read-model whichever path answered it.
+    from .claw_general_run_history import project_completed_chat_turn
+    await project_completed_chat_turn(
+        request, user_text=user_text, answer=answer, conversation_id=saved,
+    )
     return saved
 
 
@@ -373,6 +376,8 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             else raw
         )
         messages, skill, tool_request, attachments, conversation_id, project_id, custom = await _validate_payload_async(validation_raw, file_resolver=file_resolver(request))
+        from .request_contract import declared_product_surface
+        request.state.chat_product_surface = declared_product_surface(raw, request)
         _PC_TRACE_LOG.info("pc_chat stage=contract_accepted run_hash=%s dispatch_id=none", trace_run or "none")
         timing.mark("validated")
         user_credential_ref = None
@@ -669,6 +674,11 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             fields = {"conversation_id": saved_id}
             try:
                 await finish(user_id=uid, run_id=pc_run_id, answer=result.answer)
+                if pc_context["pc_tools"] is None:
+                    from .claw_general_run_history import project_completed_chat_turn
+                    await project_completed_chat_turn(
+                        request, user_text=user_text, answer=result.answer, conversation_id=saved_id,
+                    )
             except Exception:
                 # Match normal history-save behavior: a verified answer remains
                 # visible even if optional history projection is unavailable.

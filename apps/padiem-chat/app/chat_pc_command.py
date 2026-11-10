@@ -78,6 +78,8 @@ def _pending_response(*, run_id: str, conversation_id: str | None) -> Any:
         "orchestration": {"events": [], "approval_pause": None,
                           "continuation_ref": None},
         "decision_status": PENDING_DECISION,
+        "pc_pending": True,
+        "run_id": run_id,
         "pc_run_id": run_id,
     }
     if conversation_id is not None:
@@ -128,6 +130,27 @@ async def dispatch_chat_pc_command(
         return _error("chat_pc_run_id_conflict", "이미 사용한 PC 작업 실행 ID입니다.", 409)
     except Exception:
         return _error("chat_pc_store_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
+
+    record_run = getattr(store, "record_claw_run", None)
+    if callable(record_run):
+        from .history import MAX_HISTORY_TITLE_CHARS
+        from .request_contract import declared_product_surface
+
+        prefix = "Claw: " if declared_product_surface(raw, request) == "claw" else "Chat: "
+        title = (prefix + " ".join(user_text.strip().split()))[:MAX_HISTORY_TITLE_CHARS]
+        try:
+            await record_run(
+                user_id=uid,
+                run_id=run_id,
+                channel="web",
+                action="pc_command",
+                title=title,
+                status="pending",
+                conversation_id=saved_id,
+                workspace_id=pc_context["workspace_id"],
+            )
+        except Exception:
+            pass
 
     pc_tools = pc_context.get("pc_tools") if isinstance(pc_context, Mapping) else None
     device_id = pc_tools.get("device_id") if isinstance(pc_tools, Mapping) else None

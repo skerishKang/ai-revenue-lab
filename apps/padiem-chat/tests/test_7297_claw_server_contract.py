@@ -171,9 +171,11 @@ def test_chat_lane_projects_through_the_d1_store_like_claw():
     assert history.status_code == 200, history.text
     rows = history.json()["runs"]
     print("D1-ROWS", rows)
-    assert len(rows) >= 1
+    assert len(rows) == 2
     assert all(r["status"] == "completed" for r in rows)
-    assert all(r["title"].startswith("Claw:") for r in rows)
+    titles = [r["title"] for r in rows]
+    assert any(t.startswith("Chat: ") for t in titles), titles
+    assert any(t.startswith("Claw: ") for t in titles), titles
 
 
 def test_chat_lane_projection_skips_incomplete_or_anonymous_turns():
@@ -219,3 +221,290 @@ def test_chat_lane_regression_gates_stay_in_place():
     assert '"thought"' in ROUTES_SRC
     assert "web_search" in ROUTES_SRC
     assert "api_chat_stream" in ROUTES_SRC or "api_chat" in ROUTES_SRC
+
+
+# ---------------------------------------------------------------------------
+# PR 2 (#7297): Claw surface on Chat direct path — server contract
+# ---------------------------------------------------------------------------
+
+
+class _ThreadStore(RecordingStore):
+    """In-memory store that persists conversation rows like D1HistoryStore."""
+
+    def __init__(self):
+        super().__init__()
+        self.conversations = {}
+
+    async def get_conversation(self, user_id, conversation_id, *, product_scope: str):
+        row = self.conversations.get(conversation_id)
+        if row and row["user_id"] == user_id and row["product_scope"] == product_scope:
+            return dict(row)
+        return None
+
+    async def append_exchange(self, user_id, conversation_id, user_text, answer, *args, **kwargs):
+        cid = await super().append_exchange(user_id, conversation_id, user_text, answer, *args, **kwargs)
+        scope = kwargs.get("product_scope", "b62-chat")
+        row = self.conversations.setdefault(
+            cid,
+            {"id": cid, "user_id": user_id, "product_scope": scope, "project_id": None, "messages": []},
+        )
+        row["messages"].extend([
+            {"role": "user", "content": user_text},
+            {"role": "assistant", "content": answer},
+        ])
+        return cid
+
+    async def list_recent_claw_runs(self, user_id, limit=30):
+        from app.history import _run_history_public
+
+        out = []
+        for idx, run in enumerate(reversed(self.runs), start=1):
+            if run.get("user_id") != user_id:
+                continue
+            out.append(
+                _run_history_public({
+                    **run,
+                    "created_at": f"2026-11-10T00:00:{idx:02d}Z",
+                    "updated_at": f"2026-11-10T00:00:{idx:02d}Z",
+                })
+            )
+            if len(out) >= limit:
+                break
+        return out
+
+
+def test_direct_path_accepts_claw_surface_and_projects_claw_title_and_session_link():
+    from types import SimpleNamespace
+    from app.orchestration_bridge import B62EngineOrchestrationBridge
+    from app.orchestration_routes import install_orchestration_routes
+
+    class _Bridge(B62EngineOrchestrationBridge):
+        def __init__(self):
+            super().__init__(client=object(), store=object())
+
+        async def start(self, **kwargs):
+            return SimpleNamespace(
+                orchestration={"events": [], "approval_pause": None, "continuation_ref": None, "answer": "Claw 직행 답변"},
+                answer="Claw 직행 답변",
+                decision_status="completed",
+                user_text=kwargs.get("user_text"),
+                conversation_id=kwargs.get("conversation_id"),
+            )
+
+        async def start_stream(self, **kwargs):
+            yield {"text_delta": {"delta": "Claw 스트림 답변"}}
+            yield {
+                "result": SimpleNamespace(
+                    orchestration={"events": [], "approval_pause": None, "continuation_ref": None, "answer": "Claw 스트림 답변"},
+                    answer="Claw 스트림 답변",
+                    decision_status="completed",
+                    user_text=kwargs.get("user_text"),
+                    conversation_id=kwargs.get("conversation_id"),
+                )
+            }
+
+    store = _ThreadStore()
+    settings = base._settings()
+    app = create_app(settings=settings, history_store=store)
+    install_orchestration_routes(
+        app,
+        _Bridge(),
+        stream_enabled=True,
+        stream_users=frozenset({base.SIGNED_IN_USER_ID}),
+    )
+    app.state.b14_client = _B14Mock()
+    token = create_session_token(settings, base.SIGNED_IN_USER_ID)
+    with TestClient(app, base_url="https://chat.example.test") as client:
+        client.cookies.set(SESSION_COOKIE, token, domain="chat.example.test", path="/")
+
+        # 1) Chat turn -> 'Chat: ' prefix, no Claw session link
+        chat_res = client.post(
+            "/api/orchestration",
+            json={"messages": [{"role": "user", "content": "일반 채팅 질문"}], "tier": "free", "product": "chat"},
+        )
+        assert chat_res.status_code == 200, chat_res.text
+
+        # 2) Claw turn on /api/orchestration (NDJSON) -> 'Claw: ' prefix + linked session.conversation_id
+        claw_res = client.post(
+            "/api/orchestration",
+            json={"messages": [{"role": "user", "content": "Claw 오케스트레이션 질문"}], "tier": "free", "product": "claw"},
+            headers={"Accept": "application/x-ndjson"},
+        )
+        assert claw_res.status_code == 200, claw_res.text
+
+        # 3) Claw turn on /api/chat (surface="claw") -> 'Claw: ' prefix + linked session.conversation_id
+        claw_chat_res = client.post(
+            "/api/chat",
+            json={"messages": [{"role": "user", "content": "Claw 완료 질문"}], "tier": "free", "surface": "claw"},
+        )
+        assert claw_chat_res.status_code == 200, claw_chat_res.text
+        claw_cid = claw_chat_res.json()["conversation_id"]
+
+        runs_res = client.get("/api/claw/runs?limit=10")
+        assert runs_res.status_code == 200, runs_res.text
+        runs = runs_res.json()["runs"]
+
+    by_title = {r["title"]: r for r in runs}
+    assert "Chat: 일반 채팅 질문" in by_title
+    assert by_title["Chat: 일반 채팅 질문"]["session"] is None
+
+    assert "Claw: Claw 오케스트레이션 질문" in by_title
+    assert by_title["Claw: Claw 오케스트레이션 질문"]["session"]["conversation_id"].startswith("chat_")
+
+    assert "Claw: Claw 완료 질문" in by_title
+    assert by_title["Claw: Claw 완료 질문"]["session"] == {"conversation_id": claw_cid}
+
+
+def test_claw_surface_allows_image_and_custom_input_on_direct_path():
+    import base64
+    from app.byok_client import CustomProviderClient
+    from app.byok_credentials import CUSTOM_PROVIDERS
+    import httpx
+
+    spec = next(iter(CUSTOM_PROVIDERS.values()))
+    provider_id = spec.provider_id
+    model_id = spec.model_id
+    upstream_model = spec.upstream_model(model_id)
+
+    class _CredStore:
+        async def credential(self, user_id, requested_provider):
+            assert user_id == base.SIGNED_IN_USER_ID
+            assert requested_provider == provider_id
+            return ("sk-test-credential-7297-key", None)
+
+    store = _ThreadStore()
+    settings = base._settings()
+    custom_client = CustomProviderClient(
+        transport=httpx.MockTransport(
+            lambda req: httpx.Response(
+                200,
+                json={"model": upstream_model, "choices": [{"message": {"content": "Claw Custom 답변"}}]},
+            )
+        )
+    )
+    app = create_app(
+        settings=settings,
+        history_store=store,
+        custom_credential_store=_CredStore(),
+        custom_provider_client=custom_client,
+    )
+    b14 = _B14Mock()
+    app.state.b14_client = b14
+    token = create_session_token(settings, base.SIGNED_IN_USER_ID)
+
+    # 1x1 PNG base64
+    png_b64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
+
+    with TestClient(app, base_url="https://chat.example.test") as client:
+        client.cookies.set(SESSION_COOKIE, token, domain="chat.example.test", path="/")
+
+        # (A) Image attachment with product="claw" succeeds on /api/chat (same rules as Chat)
+        img_res = client.post(
+            "/api/chat",
+            json={
+                "messages": [{"role": "user", "content": "이 사진 설명해줘"}],
+                "tier": "plus",
+                "product": "claw",
+                "attachments": [
+                    {
+                        "type": "image",
+                        "name": "sample.png",
+                        "media_type": "image/png",
+                        "base64": png_b64,
+                    }
+                ],
+            },
+        )
+        assert img_res.status_code == 200, img_res.text
+        assert img_res.json()["answer"] == "Chat 직행 결과"
+        assert img_res.json()["conversation_id"].startswith("chat_")
+
+        # (B) Custom (BYOK) input with product="claw" succeeds on /api/chat and /api/chat/stream
+        custom_res = client.post(
+            "/api/chat",
+            json={
+                "messages": [{"role": "user", "content": "Claw에서 내 키로 질문"}],
+                "product": "claw",
+                "custom": {"provider": provider_id, "model": model_id},
+            },
+        )
+        assert custom_res.status_code == 200, custom_res.text
+        assert custom_res.json()["answer"] == "Claw Custom 답변"
+
+        stream_res = client.post(
+            "/api/chat/stream",
+            json={
+                "messages": [{"role": "user", "content": "Claw에서 내 키 스트림 질문"}],
+                "product": "claw",
+                "custom": {"provider": provider_id, "model": model_id},
+            },
+        )
+        assert stream_res.status_code == 200, stream_res.text
+        assert "Claw Custom 답변" in stream_res.text
+
+        # (C) /api/claw/general endpoint remains mounted for rollback
+        cap_res = client.get("/api/claw/general/capabilities")
+        assert cap_res.status_code == 200
+
+    titles = [r["title"] for r in store.runs]
+    assert "Claw: 이 사진 설명해줘" in titles
+    assert "Claw: Claw에서 내 키로 질문" in titles
+    assert "Claw: Claw에서 내 키 스트림 질문" in titles
+
+
+def test_memory_review_approve_reject_and_list_are_path_agnostic():
+    class _MemoryStore(ApprovedStore):
+        def approve_memory(self, *, user_id, workspace_id, proposal):
+            item = {
+                "memory_id": "mem_" + "1" * 32,
+                "workspace_id": workspace_id,
+                "memory_type": proposal.memory_type,
+                "name": proposal.name,
+                "note": proposal.note,
+                "source_channel": proposal.source_channel,
+                "status": "approved",
+                "created_at": "2026-11-10T00:00:00Z",
+                "updated_at": "2026-11-10T00:00:00Z",
+            }
+            self.memories.append(item)
+            return item
+
+    mem_store = _MemoryStore([])
+    with _app(RecordingStore(), approved=mem_store) as client:
+        # Web-originated proposal approval works without product/surface restriction
+        approve_res = client.post(
+            "/api/claw/memory/approve",
+            json={
+                "approved": True,
+                "proposal": {
+                    "type": "preference",
+                    "name": "보고서 요약 형식",
+                    "note": "핵심 3줄 먼저",
+                    "source_channel": "web",
+                },
+            },
+            headers={"Origin": "https://chat.example.test"},
+        )
+        assert approve_res.status_code == 200, approve_res.text
+        assert approve_res.json()["ok"] is True
+        assert approve_res.json()["memory"]["source_channel"] == "web"
+
+        reject_res = client.post(
+            "/api/claw/memory/reject",
+            json={
+                "proposal": {
+                    "type": "preference",
+                    "name": "임시 메모",
+                    "note": "저장 안 함",
+                    "source_channel": "web",
+                },
+            },
+            headers={"Origin": "https://chat.example.test"},
+        )
+        assert reject_res.status_code == 200, reject_res.text
+        assert reject_res.json() == {"ok": True, "persisted": False}
+
+        list_res = client.get("/api/claw/memory")
+        assert list_res.status_code == 200
+        assert len(list_res.json()["memories"]) == 1
+        assert list_res.json()["memories"][0]["name"] == "보고서 요약 형식"

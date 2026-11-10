@@ -39,7 +39,7 @@ MAX_MEMORY_TYPE_CHARS = 64
 MAX_MEMORY_NAME_CHARS = 120
 MAX_MEMORY_NOTE_CHARS = 500
 
-_ALLOWED_CHANNELS = frozenset({"kakao", "sms", "email", "telegram", "discord", "other"})
+_ALLOWED_CHANNELS = frozenset({"kakao", "sms", "email", "telegram", "discord", "web", "other"})
 _MEMORY_TYPE_RE = re.compile(r"^[A-Za-z0-9_]{1,64}$")
 _MEMORY_ID_RE = re.compile(r"^mem_[0-9a-f]{32}$")
 _CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
