@@ -1209,7 +1209,19 @@ class D1HistoryStore:
         if not re.fullmatch(r'usr_[0-9a-f]{32}', user_id) or not re.fullmatch(r'sub_[A-Za-z0-9_-]+', account_id):
             raise HistoryError('invalid shared identity')
         now = _now_iso()
-        display = (name.strip() or email.split('@', 1)[0])[:160]
+        incoming_name = name.strip()[:160]
+        if incoming_name:
+            display = incoming_name
+        else:
+            # #7348: an account that already carries its own display name (a
+            # password signup, for example) keeps it when the common login
+            # publishes a profile with an empty name. The email prefix stays a
+            # presentation default only for a row that has no name yet.
+            existing = await self._all(
+                "SELECT display_name FROM users WHERE id=?", user_id,
+            )
+            stored = existing[0].get("display_name") if existing else None
+            display = (str(stored) if stored else email.split('@', 1)[0])[:160]
         pic = picture.strip()[:1000]
         marker = 'shared:' + account_id
         rows = await self._all(
