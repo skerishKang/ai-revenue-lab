@@ -33,6 +33,7 @@ from starlette import testclient as starlette_testclient
 import app.model_policy as model_policy_module
 from app.same_origin_guard import MUTATING_METHODS, expected_browser_origin
 from padiem_control_plane import product_tier_routes as tier_routes
+from padiem_control_plane import product_tier_routes_private
 
 # A real same-origin browser always attaches Origin to a mutation, so an ASGI
 # test client that omits it is not representing the traffic #3476 guards. The
@@ -137,6 +138,7 @@ _HOLD_POLICY_MODULES = {
     "test_saved_outputs.py",
     "test_tier_route_consumer_coverage.py",
     "test_unassigned_profile_gate.py",
+    "test_b54_claw_general_hold_quota_and_evidence.py",
     # Derivation/identity tests that pin the real shared declaration, plus the
     # admin-gate tests that need the real executable set, must not run against
     # the synthetic Plus route.
@@ -188,11 +190,25 @@ def _synthetic_plus_route_for_non_policy_contracts(
     )
 
     real_active_route_for = tier_routes.active_route_for
+    real_effective_active_route_for = (
+        product_tier_routes_private.effective_active_route_for
+    )
 
     def _active_route_for(label: tier_routes.ProductTierLabel):
         if label is tier_routes.ProductTierLabel.PLUS:
             return synthetic_route
         return real_active_route_for(label)
+
+    def _effective_route_for(label: tier_routes.ProductTierLabel):
+        if label is tier_routes.ProductTierLabel.PLUS:
+            return synthetic_route
+        return real_effective_active_route_for(label)
+
+    monkeypatch.setattr(
+        product_tier_routes_private,
+        "effective_active_route_for",
+        _effective_route_for,
+    )
 
     monkeypatch.setattr(
         model_policy_module,
@@ -220,6 +236,12 @@ def _synthetic_plus_route_for_non_policy_contracts(
                 module_to_patch,
                 "active_route_for",
                 _active_route_for,
+            )
+        if hasattr(module_to_patch, "effective_active_route_for"):
+            monkeypatch.setattr(
+                module_to_patch,
+                "effective_active_route_for",
+                _effective_route_for,
             )
 
     for module_name_to_patch in (

@@ -30,17 +30,19 @@ def test_conversation_state_helper_has_no_model_input_tail_and_no_network() -> N
 
 def test_app_delegates_conversation_data_but_keeps_request_lifecycle() -> None:
     source = APP_PATH.read_text(encoding="utf-8")
+    conv = APP_PATH.with_name("chat-conversation-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5a
+    stream = APP_PATH.with_name("chat-streaming-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5b
     assert 'const conversationState = window.PadiemChatConversationState;' in source
     assert 'let messages = [];' not in source
     assert 'let conversationSkill = "auto";' not in source
     assert 'let conversationId = null;' not in source
     assert 'let conversationEpoch = 0;' in source
     assert 'let activeRequestController = null;' in source
-    assert 'activeRequestCancelReason = "user_cancel";' in source
-    assert 'conversationState.reset();' in source
+    assert 'deps.activeRequestCancelReason = "user_cancel";' in stream
+    assert 'deps.conversationState.reset();' in conv
     assert 'conversationState.outboundWithUser(prompt)' in source
-    assert 'conversationState.commitAssistant(outboundMessages, data.answer);' in source
-    assert 'conversationState.commitAssistant(outboundMessages, answer);' in source
+    assert 'deps.conversationState.commitAssistant(outboundMessages, data.answer);' in stream
+    assert 'deps.conversationState.commitAssistant(outboundMessages, answer);' in stream
     assert 'conversationState.setConversationId(retryContext.conversationId);' in source
 
 

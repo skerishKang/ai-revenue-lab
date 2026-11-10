@@ -23,23 +23,71 @@ from pathlib import Path
 
 import pytest
 
+import os
+
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / ".github/scripts/b14_real_model_call_smoke.py"
 ROUTES_DIR = ROOT / "packages/padiem-control-plane"
 WORKFLOW = ROOT / ".github/workflows/b62-padiem-chat-ci.yml"
+
+# 261109: the repository ships no model values, so the smoke contract runs as
+# a switched host against the placeholder fixture unless the operator chose a
+# registry. The resolved model id is derived from the same source below. The
+# variable is scoped to this module: an autouse fixture re-applies it per test
+# and the process environment is restored afterwards, so unrelated suites in
+# the same pytest process keep reading the repository documents.
+_PREV_REGISTRY = os.environ.get("PADIEM_MODELS_REGISTRY")
+_FIXTURE = ROOT / "packages/padiem-control-plane/tests/fixtures/models_private_fixture.json"
+
+
+def _apply_switch() -> None:
+    if (os.environ.get("PADIEM_MODELS_REGISTRY", "").strip()
+            or os.environ.get("PADIEM_MODELS_REGISTRY_OVERRIDE", "").strip()):
+        return
+    if not _FIXTURE.is_file():
+        return
+    # The loader refuses a world-readable document, so stage a private copy.
+    import tempfile
+    _handle = tempfile.NamedTemporaryFile(
+        prefix="padiem-models-fixture-", suffix=".json", delete=False)
+    _handle.write(_FIXTURE.read_bytes())
+    _handle.close()
+    os.chmod(_handle.name, 0o600)
+    os.environ["PADIEM_MODELS_REGISTRY"] = _handle.name
+
+
+def _restore_switch() -> None:
+    if _PREV_REGISTRY is None:
+        os.environ.pop("PADIEM_MODELS_REGISTRY", None)
+    else:
+        os.environ["PADIEM_MODELS_REGISTRY"] = _PREV_REGISTRY
+
+
+_apply_switch()
 
 spec = importlib.util.spec_from_file_location("b14_real_model_call_smoke", SCRIPT)
 smoke = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(smoke)
 
 sys.path.insert(0, str(ROUTES_DIR))
-from padiem_control_plane.product_tier_routes import (  # noqa: E402
-    FREE_PRIMARY_B14_MODEL_ID,
-    TEST_PHASE_PRIMARY_B14_MODEL_ID,
+from padiem_control_plane.product_tier_routes_private import (  # noqa: E402
+    free_primary_model_id,
+    paid_primary_model_id,
 )
 
+RESOLVED_MODEL = free_primary_model_id()
+_restore_switch()
 
-def _ok(model="google/gemini-3.1-flash-lite", text="pong"):
+
+@pytest.fixture(autouse=True)
+def _switched_registry_for_this_module():
+    """Run every test here as a switched host, then restore the process env."""
+    _apply_switch()
+    yield
+    _restore_switch()
+
+
+def _ok(model=RESOLVED_MODEL, text="pong"):
     body = {
         "id": "chatcmpl-synthetic",
         "model": model,
@@ -60,7 +108,7 @@ def test_a_real_answer_is_a_pass_and_names_the_resolved_model() -> None:
     status, raw = _ok()
     transport = _transport(status, raw)
     verdict, model = smoke.run(base_url="https://b14.example.test", transport=transport)
-    assert (verdict, model) == ("PASS", "google/gemini-3.1-flash-lite")
+    assert (verdict, model) == ("PASS", RESOLVED_MODEL)
 
 
 @pytest.mark.parametrize("limit", sorted(smoke.PROVIDER_LIMIT_STATUSES))
@@ -70,7 +118,7 @@ def test_provider_limit_statuses_pass_with_a_marker(limit) -> None:
         transport=_transport(limit, json.dumps({"error": {"code": "rate_limited"}}).encode()),
     )
     assert verdict == "PASS_PROVIDER_LIMIT"
-    assert model == FREE_PRIMARY_B14_MODEL_ID
+    assert model == free_primary_model_id()
 
 
 def test_any_other_status_fails() -> None:
@@ -109,7 +157,7 @@ def test_an_oversized_response_fails() -> None:
 
 def test_the_default_request_names_the_free_grade_model_of_its_own() -> None:
     body = json.loads(smoke.request_body(model=smoke.declared_tier_model(smoke.PRODUCT_TIER)))
-    assert body["model"] == smoke.declared_tier_model("free") == FREE_PRIMARY_B14_MODEL_ID
+    assert body["model"] == smoke.declared_tier_model("free") == free_primary_model_id()
     assert not hasattr(smoke, "REQUESTED_ROUTE")
     assert body["business14"]["product_tier"] == smoke.PRODUCT_TIER
     assert body["business14"]["max_retries"] == 0
@@ -121,9 +169,9 @@ def test_the_default_request_names_the_free_grade_model_of_its_own() -> None:
 
 def test_each_grade_resolves_the_declared_executable_model() -> None:
     # The smoke reads the shared declaration; it never keeps a second list.
-    assert smoke.declared_tier_model("free") == FREE_PRIMARY_B14_MODEL_ID
+    assert smoke.declared_tier_model("free") == free_primary_model_id()
     for tier in ("plus", "pro", "max"):
-        assert smoke.declared_tier_model(tier) == TEST_PHASE_PRIMARY_B14_MODEL_ID
+        assert smoke.declared_tier_model(tier) == paid_primary_model_id()
     assert smoke.declared_tier_model("gold") == ""
 
 
@@ -239,7 +287,7 @@ def test_main_reports_a_pass_without_the_provider_text(monkeypatch, capsys) -> N
     monkeypatch.setattr(smoke, "urlopen_transport", lambda *a, **k: _transport(status, raw))
     assert smoke.main(["--base-url", "https://b14.example.test"]) == 0
     out = capsys.readouterr().out
-    assert out.strip() == "REAL_MODEL_CALL=PASS model=google/gemini-3.1-flash-lite"
+    assert out.strip() == f"REAL_MODEL_CALL=PASS model={RESOLVED_MODEL}"
 
 
 def test_main_reports_and_exits_zero_on_a_pass(monkeypatch, capsys) -> None:
@@ -247,7 +295,7 @@ def test_main_reports_and_exits_zero_on_a_pass(monkeypatch, capsys) -> None:
     monkeypatch.setattr(smoke, "urlopen_transport", lambda *a, **k: _transport(status, raw))
     assert smoke.main(["--base-url", "https://b14.example.test"]) == 0
     out = capsys.readouterr().out
-    assert out.strip() == "REAL_MODEL_CALL=PASS model=google/gemini-3.1-flash-lite"
+    assert out.strip() == f"REAL_MODEL_CALL=PASS model={RESOLVED_MODEL}"
 
 
 def test_main_reports_and_exits_one_on_a_fail(monkeypatch, capsys) -> None:
@@ -301,7 +349,7 @@ def test_report_prints_one_bounded_grade_line_with_status_and_error_code(
                        "--tier", "pro", "--report"]) == 1
     lines = capsys.readouterr().out.strip().splitlines()
     assert lines[0] == (
-        "REAL_MODEL_CALL=FAIL model=google/gemini-3.5-flash-lite"
+        f"REAL_MODEL_CALL=FAIL model={paid_primary_model_id()}"
     )
     assert lines[1] == (
         "GRADE_SMOKE tier=pro status=503 error_code=entitlement_unavailable verdict=FAIL")

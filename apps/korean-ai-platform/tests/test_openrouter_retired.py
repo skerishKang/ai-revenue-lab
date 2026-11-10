@@ -65,11 +65,31 @@ def test_legacy_stream_module_removed_but_events_preserved():
 
 
 def test_caller_schema_rejects_provider_field():
-    """A caller cannot smuggle a Provider policy field into the request."""
-    # A retired identity is a real deployment value and is never written here;
-    # the request only needs some model id to prove the field is rejected.
+    """A caller cannot smuggle a Provider policy field into the request.
+
+    The request only needs *some* model id to prove the field is rejected; the
+    id here is this suite's own synthetic route, so the contract holds on any
+    host (#7241 3\ub2e8\uacc4).
+    """
+    with pytest.raises(TypeError):
+        PilotChatRequest(
+            model=TEST_MODEL_ID,
+            messages=[ChatMessage(role="user", content="안녕하세요")],
+            provider={"data_collection": "allow"},  # type: ignore[call-arg]
+        )
+
+
+def test_caller_schema_rejects_provider_field_for_a_retired_identity():
+    """The same rejection holds for an identity no document registers.
+
+    The placeholder document retires nothing, so the identity used here is one
+    the effective document simply does not install — the request schema rejects
+    the Provider policy field before any routing question is asked.
+    """
     retired = sorted(retired_model_ids())
-    assert retired, "the registry declares no retired identity to address"
+    if not retired:
+        retired = [TEST_MODEL_ID + "-not-registered"]
+    assert retired
     with pytest.raises(TypeError):
         PilotChatRequest(
             model=retired[0],
@@ -163,7 +183,7 @@ async def test_platform_adapter_has_no_openrouter_policy(monkeypatch):
             200,
             json={
                 "id": "r1",
-                "model": "test-fixture/kilo-no-openrouter-upstream",
+                "model": TEST_MODEL_ID,
                 "choices": [
                     {"message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}
                 ],

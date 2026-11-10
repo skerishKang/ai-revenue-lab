@@ -105,6 +105,9 @@
       detail.append(element("strong", "", link.label || link.mesh_node_id));
       const online = element("span", "mcp-settings-status",
         copy(link.online === true ? "pc-links-online" : "pc-links-offline"));
+      /* #7366: the chip carries its state so the CSS can draw the same state
+       * dot the Chat composer PC chip uses (green online, grey offline). */
+      online.dataset.state = link.online === true ? "online" : "offline";
       detail.append(online);
       const actions = element("div", "mcp-settings-actions");
       actions.append(actionButton("pc-links-disconnect", () => { void disconnectLink(link); }));

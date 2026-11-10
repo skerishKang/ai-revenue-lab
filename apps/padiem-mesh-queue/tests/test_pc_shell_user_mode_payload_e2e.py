@@ -261,11 +261,13 @@ def test_mcp_user_mode_material_survives_dispatch_queue_and_reaches_the_pipe_cli
     assert outcome.exit_code == 0
 
 
-def test_bash_maps_to_the_helpers_wsl_shell_and_never_to_a_system_shell():
+def test_bash_passes_through_and_never_maps_to_a_system_shell():
+    # #7188 R4 ④: bash passes through as itself — the helper runs the located
+    # Git Bash; the wsl translation is gone (owner ban on WSL on the PC).
     material = json.loads(shell.build_pc_shell_user_material(
-        {"command": "systemctl is-active padiem", "shell": "bash"}))
-    assert material["shell"] == "wsl"
-    assert material["command"] == "systemctl is-active padiem"
+        {"command": "uname -s", "shell": "bash"}))
+    assert material["shell"] == "bash"
+    assert material["command"] == "uname -s"
     assert material["distro"] is None
 
     # #7105: powershell and cmd are the helper's own stage-2 shells, so they are

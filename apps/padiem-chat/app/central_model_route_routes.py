@@ -88,7 +88,10 @@ def _change_from_body(body: dict) -> TierRouteChange | None:
 
 def _static_contract() -> dict[str, dict[str, object]]:
     from padiem_control_plane.product_tier_routes import (
-        FREE_FALLBACK_B14_MODEL_ID, ProductTierLabel, ProductTierRoutesError, active_route_for,
+        ProductTierLabel, ProductTierRoutesError,
+    )
+    from padiem_control_plane.product_tier_routes_private import (
+        effective_active_route_for, free_fallback_model_id,
     )
     from .b66_grade_models import B66_GRADE_MODEL_IDS
 
@@ -101,12 +104,12 @@ def _static_contract() -> dict[str, dict[str, object]]:
         result[product] = {}
         for tier, label in labels.items():
             try:
-                route = active_route_for(label)
+                route = effective_active_route_for(label)
             except ProductTierRoutesError:
                 route = None
             result[product][tier] = {
                 "primary_model_id": route.model_id if route is not None else None,
-                "fallback_model_id": FREE_FALLBACK_B14_MODEL_ID if tier == "FREE" else None,
+                "fallback_model_id": free_fallback_model_id() if tier == "FREE" else None,
             }
     result["b66"] = {
         tier.upper(): {"primary_model_id": model_id, "fallback_model_id": None}

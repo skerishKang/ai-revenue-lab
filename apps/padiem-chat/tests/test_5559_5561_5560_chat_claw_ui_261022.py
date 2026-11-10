@@ -105,9 +105,9 @@ def test_the_status_card_is_the_one_status_surface() -> None:
     assert "if (!model.valid) {" in lifecycle
     assert "renderTaskStatus(article, handlers);" in lifecycle
     # The card is rendered from the first moment of the turn, not after it.
-    app = _read("app.js")
-    assert "window.PadiemChatLifecycle?.renderTaskStatus?.(article);" in app
-    assert "window.PadiemChatLifecycle?.recordTaskEvent?.(article, \"request_sent\");" in app
+    stream = _read("chat-streaming-module.js")
+    assert "window.PadiemChatLifecycle?.renderTaskStatus?.(article);" in stream
+    assert "window.PadiemChatLifecycle?.recordTaskEvent?.(article, \"request_sent\");" in stream
 
 
 def test_the_meta_badge_does_not_repeat_the_card_status() -> None:
@@ -173,13 +173,13 @@ def test_no_stage_is_invented() -> None:
     assert "recordTaskEvent" not in sources
     # The web-search step is recorded only when the completed answer carries
     # the real server tool and its evidence.
-    app = _read("app.js")
-    assert 'if (Array.isArray(data.evidence) && data.evidence.length) {' in app
-    assert 'if (data.tool && data.tool.id === "web_search") {' in app
-    assert 'window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");' in app
-    assert app.index(
+    stream = _read("chat-streaming-module.js")
+    assert 'if (Array.isArray(data.evidence) && data.evidence.length) {' in stream
+    assert 'if (data.tool && data.tool.id === "web_search") {' in stream
+    assert 'window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");' in stream
+    assert stream.index(
         'if (Array.isArray(data.evidence) && data.evidence.length) {'
-    ) < app.index('if (data.tool && data.tool.id === "web_search") {')
+    ) < stream.index('if (data.tool && data.tool.id === "web_search") {')
 
 
 # ── #4816 / Owner 2026-10-31: two persistent icons (A안) ───────────────────
@@ -314,20 +314,22 @@ def test_the_export_entry_mounts_in_settings_and_keeps_its_scope() -> None:
 
 def test_the_sign_out_has_one_implementation() -> None:
     app = _read("app.js")
-    assert "async function signOutCurrentAccount()" in app
-    assert 'await fetch("/api/auth/logout"' in app
+    #7216 R5 step 4: this contract moved into chat-auth-module.js.
+    module = _read("chat-auth-module.js")
+    assert "async function signOutCurrentAccount()" in module
+    assert 'await fetch("/api/auth/logout"' in module
     # Both entries reach the same implementation.
-    sign_out = app[app.index("async function signOutCurrentAccount()"):]
+    sign_out = module[module.index("async function signOutCurrentAccount()"):]
     sign_out = sign_out[: sign_out.index("\n  }")]
-    assert "resetConversationView(false);" in sign_out
-    assert "await loadAuthStatus();" in sign_out
+    assert "deps.resetConversationView(false);" in sign_out
+    assert "await deps.loadAuthStatus();" in sign_out
     assert "settingsLogoutButton.addEventListener(\"click\"" in app
     assert "await signOutCurrentAccount();" in app
     # The sidebar keeps the sign-in affordance; the signed-in profile is the
     # one-step Settings entry.
     # #5479: the sign-in entry point also survives an unreadable session state,
     # so the hide rule comes from the shared presentation rule.
-    assert 'loginButton.hidden = presentation.loginHidden;' in app
+    assert 'loginButton.hidden = presentation.loginHidden;' in app + module
     assert 'loginButton.hidden = sessionState === "unavailable" || sessionState === "signed_in";' not in app
     capabilities = _read("product-capabilities.js")
     assert "loginButton.hidden = shared.loginHidden;" in capabilities

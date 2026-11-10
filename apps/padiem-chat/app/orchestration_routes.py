@@ -209,11 +209,20 @@ async def _save_terminal_history(
     if store is None:
         return conversation_id
     try:
-        return await store.append_exchange(user_id, conversation_id, user_text, answer, product_scope=PRODUCT_SCOPE_CHAT)
+        saved = await store.append_exchange(user_id, conversation_id, user_text, answer, product_scope=PRODUCT_SCOPE_CHAT)
     except HistoryForbidden:
         return None
     except Exception:
         return conversation_id
+    if saved is not None:
+        request.state.chat_saved_conversation_id = saved
+    # #7297: the record the Claw lane keeps for a completed turn lives in the
+    # same claw_run_history read-model whichever path answered it.
+    from .claw_general_run_history import project_completed_chat_turn
+    await project_completed_chat_turn(
+        request, user_text=user_text, answer=answer, conversation_id=saved,
+    )
+    return saved
 
 
 def public_grounding_evidence(items: Any) -> list[dict[str, Any]]:
@@ -367,6 +376,8 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             else raw
         )
         messages, skill, tool_request, attachments, conversation_id, project_id, custom = await _validate_payload_async(validation_raw, file_resolver=file_resolver(request))
+        from .request_contract import declared_product_surface
+        request.state.chat_product_surface = declared_product_surface(raw, request)
         _PC_TRACE_LOG.info("pc_chat stage=contract_accepted run_hash=%s dispatch_id=none", trace_run or "none")
         timing.mark("validated")
         user_credential_ref = None
@@ -483,6 +494,23 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
         user_text=user_text,
     )
     timing.mark("pc_context")
+    # #7165: the owner's own explicit command on a verified PC runs through
+    # Claw's composer rule and dispatch (same markers, same backtick span, same
+    # confirmation). Chat therefore runs the command instead of answering that
+    # a remote AI cannot reach the computer, and nothing model-written can
+    # authorize one: the model has no shell tool here.
+    if pc_context is not None and isinstance(raw, Mapping):
+        from .chat_pc_command import chat_pc_command_for_turn, dispatch_chat_pc_command
+
+        command = chat_pc_command_for_turn(user_text)
+        if command is not None:
+            store = request.app.state.history_store
+            if store is None:
+                return _error("history_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
+            return await dispatch_chat_pc_command(
+                request, uid=uid, raw=raw, user_text=user_text, command=command,
+                pc_context=pc_context, conversation_id=conversation_id, store=store,
+            )
     # #4469: in production the PADIEM Chat composer is answered by THIS lane
     # (the browser tries the orchestration route first), so the shared public
     # web search has to run here as well. The existing Core search decision,
@@ -541,9 +569,19 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
     from .chat_routes import join_system_context, pc_note_applies, pc_turn_note
 
     pc_offer = pc_context.get("pc_tools") if isinstance(pc_context, Mapping) else None
+    note_applies = pc_note_applies(user_text, pc_offer)
+    pc_connected = bool(pc_offer)
+    if note_applies and not pc_connected:
+        from .chat_pc_drive import chat_pc_connection_available
+
+        pc_connected = await chat_pc_connection_available(
+            request, uid=uid,
+            requested_device_id=(raw.get("device_id")
+                                 if isinstance(raw, Mapping) else None),
+        )
     answer_context = join_system_context(
         grounding_context,
-        pc_turn_note(pc_offer) if pc_note_applies(user_text, pc_offer) else "",
+        pc_turn_note(pc_offer, pc_connected=pc_connected) if note_applies else "",
     )
     if model_first_on and user_credential_ref is None:
         model_first_response = await _answer_model_first(
@@ -636,6 +674,11 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             fields = {"conversation_id": saved_id}
             try:
                 await finish(user_id=uid, run_id=pc_run_id, answer=result.answer)
+                if pc_context["pc_tools"] is None:
+                    from .claw_general_run_history import project_completed_chat_turn
+                    await project_completed_chat_turn(
+                        request, user_text=user_text, answer=result.answer, conversation_id=saved_id,
+                    )
             except Exception:
                 # Match normal history-save behavior: a verified answer remains
                 # visible even if optional history projection is unavailable.

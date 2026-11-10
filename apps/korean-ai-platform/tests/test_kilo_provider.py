@@ -7,8 +7,13 @@ from app.pilot.errors import NoSafeRoute
 
 from _registry_values import (
     adapter_declaring_retired, model_rows, provider_row, registry,
-    requires_owner_document,
+    require_owner_document, requires_owner_document,
 )
+
+# The one route this Provider kept after its retirement is an owner-document row.
+# The placeholder fixture serves placeholder Providers only, so the module skips
+# on a host that reads no owner document (#7241 3b).
+require_owner_document()
 
 # The retired roster is the adapter's own retirement metadata: the ids its
 # frozenset retires plus every id its constants retain as retirement metadata.

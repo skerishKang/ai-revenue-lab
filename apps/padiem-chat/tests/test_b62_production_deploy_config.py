@@ -100,6 +100,53 @@ def test_vars_preserved_added_changed_removed_without_value_output(tmp_path, cap
     assert 'never-log' not in capsys.readouterr().out
 
 
+def test_served_https_switch_pins_the_legacy_b14_base(tmp_path):
+    import tomllib
+    m = _load_module()
+    bindings = _production_bindings() + [
+        {'name': 'B14_UPSTREAM_MODE', 'type': 'plain_text', 'text': 'https'},
+        {'name': 'B14_UPSTREAM_URL', 'type': 'plain_text', 'text': 'https://b14.padiem.net'},
+        {'name': 'PADIEM_CHAT_B14_BASE_URL', 'type': 'plain_text', 'text': 'https://retired.invalid'},
+    ]
+    live = m.parse_live_bindings(_settings_payload(bindings))
+    repo = _write_repo_config(tmp_path)
+    config = tomllib.loads(m.build_production_config(live, repo, PUBLIC_URL))
+    # A stale legacy base beside the served https switch is the half-applied
+    # state config.py refuses; the plan realigns it so no --var is needed.
+    assert config['vars']['B14_UPSTREAM_MODE'] == 'https'
+    assert config['vars']['PADIEM_CHAT_B14_BASE_URL'] == 'https://b14.padiem.net'
+    # An explicit change that contradicts the switch fails closed before upload.
+    with pytest.raises(m.ProductionConfigError, match='B14_UPSTREAM_URL'):
+        m.build_production_config(
+            live, repo, PUBLIC_URL,
+            set_var={'PADIEM_CHAT_B14_BASE_URL': 'https://other.invalid'},
+        )
+    # Binding mode leaves the existing live value untouched, and no name is invented.
+    binding_live = m.parse_live_bindings(_settings_payload(_production_bindings() + [
+        {'name': 'PADIEM_CHAT_B14_BASE_URL', 'type': 'plain_text', 'text': 'https://retired.invalid'},
+    ]))
+    config = tomllib.loads(m.build_production_config(binding_live, _write_repo_config(tmp_path), PUBLIC_URL))
+    assert config['vars']['PADIEM_CHAT_B14_BASE_URL'] == 'https://retired.invalid'
+    assert 'B14_UPSTREAM_MODE' not in config['vars']
+
+
+def test_repository_switch_declaration_lands_the_pin_without_a_live_pair(tmp_path):
+    import tomllib
+    m = _load_module()
+    live = m.parse_live_bindings(_settings_payload(_production_bindings() + [
+        {'name': 'PADIEM_CHAT_B14_BASE_URL', 'type': 'plain_text', 'text': 'https://retired.invalid'},
+    ]))
+    repo = _write_repo_config(tmp_path)
+    with repo.open('a') as f:
+        f.write('B14_UPSTREAM_MODE = "https"\nB14_UPSTREAM_URL = "https://b14.padiem.net"\n')
+    config = tomllib.loads(m.build_production_config(live, repo, PUBLIC_URL))
+    # #7291 declared the switch pair in the repository, so the next deploy lands
+    # it and the legacy base follows in the same upload.
+    assert config['vars']['B14_UPSTREAM_MODE'] == 'https'
+    assert config['vars']['B14_UPSTREAM_URL'] == 'https://b14.padiem.net'
+    assert config['vars']['PADIEM_CHAT_B14_BASE_URL'] == 'https://b14.padiem.net' 
+
+
 def test_all_repository_d1_ids_are_validated(tmp_path):
     m = _load_module(); repo = _write_repo_config(tmp_path)
     with repo.open('a') as f: f.write('\n[[d1_databases]]\nbinding="DB"\ndatabase_id="not-a-uuid"\n')

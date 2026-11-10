@@ -256,8 +256,9 @@ def test_the_browser_forwards_the_grounded_evidence_into_the_stream() -> None:
     assert "donePayload.answer_status = data.answer_status;" in transport
 
     app = (STATIC / "app.js").read_text(encoding="utf-8")
-    assert "window.PadiemSearchSources?.render?.(article, data.evidence);" in app
-    assert 'recordTaskEvent?.(article, "web_search")' in app
+    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
+    assert "window.PadiemSearchSources?.render?.(article, data.evidence);" in stream
+    assert 'window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search")' in stream
 
     sources = (STATIC / "search-sources.js").read_text(encoding="utf-8")
     assert "window.PadiemSearchSources = Object.freeze({" in sources
@@ -373,6 +374,8 @@ def test_public_grounding_metadata_is_closed_and_does_not_expose_extra_keys():
 
 def test_grounding_notice_crosses_synthetic_sse_and_renders_once_above_answer():
     app = (STATIC / "app.js").read_text(encoding="utf-8")
+    conv = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5a
+    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5b
     transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
     render = app[app.index("  function renderWebGroundingNotice("):app.index("  function renderAnswer(")]
     synthetic = transport[transport.index("  function syntheticSseResponse("):transport.index("  async function tryOrchestration(")]
@@ -401,5 +404,6 @@ def test_grounding_notice_crosses_synthetic_sse_and_renders_once_above_answer():
   assert.ok(appSource.includes('renderWebGroundingNotice(article.querySelector'));
 })().catch(e=>{console.error(e);process.exitCode=1;});
 """
-    script = "const appSource=" + json.dumps(app) + ";\n" + script
+    # Notice call sites moved into the conversation and streaming modules (deps. form).
+    script = "const appSource=" + json.dumps(app + "\n" + conv + "\n" + stream) + ";\n" + script
     subprocess.run(["node"], input=script, check=True, capture_output=True, text=True, encoding="utf-8")

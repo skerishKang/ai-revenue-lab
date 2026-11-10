@@ -442,15 +442,17 @@ def test_frontend_selects_and_drops_multiple_files_with_per_chip_removal():
     assert 'composerForm.addEventListener("drop"' in app_js
     assert 'composerForm.addEventListener("dragover"' in app_js
     # 칩 목록 + 개별 제거
-    assert "function addAttachmentFiles(" in app_js
-    assert "function removeAttachmentItem(" in app_js
-    assert "function renderAttachmentChips(" in app_js
-    assert 'data-locale-aria-label", "attachment-remove"' in app_js
+    # #7216 R5 step 5a: the attachment area moved into chat-conversation-module.js.
+    conv_js = (ROOT / "static/chat-conversation-module.js").read_text(encoding="utf-8")
+    assert "function addAttachmentFiles(" in conv_js
+    assert "function removeAttachmentItem(" in conv_js
+    assert "function renderAttachmentChips(" in conv_js
+    assert 'data-locale-aria-label", "attachment-remove"' in conv_js
     assert ".attachment-chip" in css and ".attachment-chip-invalid" in css
     # 파일별 거부는 그 칩에만: 오류 칩은 페이로드에서 제외된다
-    assert "uiT(\"attachment-raw-single\")" in app_js
-    assert "uiT(\"attachment-count-limit\"" in app_js
-    assert ".filter((item) => item && !item.invalid)" in app_js
+    assert "uiT(\"attachment-raw-single\")" in conv_js
+    assert "uiT(\"attachment-count-limit\"" in conv_js
+    assert ".filter((item) => item && !item.invalid)" in conv_js
     # 프레임 표시 DOM 제거 + 구현 고정 회귀 방지
     assert 'id="attachmentThumb"' not in html
     assert 'id="removeAttachment"' not in html
@@ -476,8 +478,8 @@ def test_file_lane_upload_contract_is_untouched_for_every_file():
     assert "RESUMABLE" in lane_js
     # 역량 응답의 개수 한도를 미리 반영한다(서버가 최종 판정).
     assert "setMaxPerMessage?.(data?.max_per_message)" in lane_js
-    app_js = (ROOT / "static/app.js").read_text(encoding="utf-8")
+    stream_js = (ROOT / "static/chat-streaming-module.js").read_text(encoding="utf-8")
     # 전송 시 칩마다 기존 업로드 경로를 그대로 호출한다(동일 abort signal).
-    assert "window.PadiemFileLane.upload(current.file, controller.signal," in app_js
+    assert "window.PadiemFileLane.upload(current.file, controller.signal," in stream_js
     caps_js = (ROOT / "static/attachment-capabilities.js").read_text(encoding="utf-8")
     assert "setMaxPerMessage" in caps_js

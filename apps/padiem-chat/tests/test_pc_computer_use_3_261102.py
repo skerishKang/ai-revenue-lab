@@ -317,12 +317,12 @@ def test_the_capture_step_carries_its_screenshot_reference():
 
 
 def test_the_composer_stop_reaches_the_server_with_the_run_id():
-    source = Path(__file__).parents[1].joinpath("static/app.js").read_text("utf-8")
+    source = Path(__file__).parents[1].joinpath("static/chat-streaming-module.js").read_text("utf-8")
     start = source.index("function cancelActiveStream(")
-    end = source.index("\n  function ", start + 1)
+    end = source.index("\n  async function requestAnswer(", start + 1)
     body = source[start:end]
     assert "/api/pc/cancel" in body
-    assert "activeClawRunId" in body
+    assert "deps.activeClawRunId" in body
     assert "pc-stop-sent" in body and "pc-stop-failed" in body
     locale = Path(__file__).parents[1].joinpath("static/locale.js").read_text("utf-8")
     assert locale.count('"pc-stop-sent"') == 2

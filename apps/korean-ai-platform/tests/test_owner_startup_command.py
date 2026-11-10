@@ -63,14 +63,22 @@ def test_documented_owner_startup_loads_dotenv_end_to_end(tmp_path: Path) -> Non
     env.pop("OPENROUTER_API_KEY", None)
     env.pop("KILO_API_KEY", None)
     env.pop("AGNES_API_KEY", None)
-    env.pop("PADIEM_B14_CREDENTIAL_12", None)
-    env.pop("PADIEM_SENSENOVA_API_KEY", None)
-    env.pop("PADIEM_B14_CREDENTIAL_01", None)
-    env.pop("PADIEM_B14_CREDENTIAL_03", None)
-    env.pop("PADIEM_B14_CREDENTIAL_07", None)
-    env.pop("PADIEM_B14_CREDENTIAL_06", None)
-    env.pop("PADIEM_B14_CREDENTIAL_02", None)
-    env.pop("PADIEM_B14_CREDENTIAL_04", None)
+    # Every credential NAME the app can ask for: the document's bindings plus
+    # every adapter's own constant. A value this host holds must never reach
+    # the child process, and no slot name is written here (#7241 3b).
+    from app.pilot.model_registry_file import credential_binding_names
+
+    from _registry_values import adapter_modules
+
+    credential_names = set(credential_binding_names())
+    for module in adapter_modules().values():
+        credential_names |= {
+            value for name, value in vars(module).items()
+            if name.endswith("CREDENTIAL_BINDING")
+            and isinstance(value, str) and value
+        }
+    for name in credential_names:
+        env.pop(name, None)
     env.pop("PYTHONWARNINGS", None)
     existing_pythonpath = env.get("PYTHONPATH", "")
     env["PYTHONPATH"] = (

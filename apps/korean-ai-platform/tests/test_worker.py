@@ -18,7 +18,12 @@ import pytest
 
 from _registry_values import (
     a_provider_id,
+    adapter_credential_binding,
     adapter_for,
+    credential_binding_slot,
+    native_wire_owner,
+    owner_document_present,
+    placeholder_registry_active,
     provider_row,
     registry,
     requires_owner_document,
@@ -92,16 +97,22 @@ class TestWranglerConfig:
         assert "[vars]" in content
         assert 'B14_PROVIDER_MODE = "live"' in content
 
-    @requires_owner_document
     def test_no_secret_values_or_account_credentials(self):
+        # #7241 3단계: this pins the Worker's own metadata-only Secrets Store
+        # contract — no value is committed, no unsafe binding form appears, and
+        # every declared slot projects the neutral entity of its own name. The
+        # document is deployment-owned, so a host reading the placeholder
+        # fixture skips the pin instead of failing on it.
+        if placeholder_registry_active():
+            pytest.skip("owner decision pin: only a host reading the owner's registry document")
         content = WRANGLER_TOML.read_text()
         for word in ("api_token", "CLOUDFLARE", "account_id"):
             assert word.lower() not in content.lower()
-        # Owner decision 2026-09-18: Agnes+Poolside Secrets Store bindings
-        # re-registered; both declarations are metadata-only (store_id,
-        # secret_name) with no secret values committed here.
-        # #3554: the PADIEM_B14_CREDENTIAL_05 binding follows the same
-        # metadata-only contract, raising the declared store binding count to 9.
+        # Owner decision 2026-09-18: the Provider Secrets Store bindings were
+        # re-registered; every declaration is metadata-only (store_id,
+        # secret_name) with no secret value committed here.
+        # #3554: the additional credential binding follows the same
+        # metadata-only contract, raising the declared store binding count.
         assert "[[unsafe.bindings]]" not in content
         assert 'type = "secrets_store_secret"' not in content
         import tomllib
@@ -110,30 +121,19 @@ class TestWranglerConfig:
         assert len(bindings) >= 10
         assert all(b["store_id"] == "f0b09ca04a7b43248154c773704a5616" for b in bindings)
         assert len({b["binding"] for b in bindings}) == len(bindings)
-        expected_secret_targets = {
-            # Owner decision 2026-10-25: every B14 slot points at the neutral
-            # Secrets Store entity of the same name; the provider-alias
-            # originals are retained in the store but are no longer referenced
-            # by this Worker's bindings.
-            "PADIEM_B14_CREDENTIAL_01": "PADIEM_B14_CREDENTIAL_01",
-            "PADIEM_B14_CREDENTIAL_02": "PADIEM_B14_CREDENTIAL_02",
-            "PADIEM_B14_CREDENTIAL_03": "PADIEM_B14_CREDENTIAL_03",
-            "PADIEM_B14_CREDENTIAL_04": "PADIEM_B14_CREDENTIAL_04",
-            "PADIEM_B14_CREDENTIAL_05": "PADIEM_B14_CREDENTIAL_05",
-            "PADIEM_B14_CREDENTIAL_06": "PADIEM_B14_CREDENTIAL_06",
-            "PADIEM_B14_CREDENTIAL_07": "PADIEM_B14_CREDENTIAL_07",
-            "PADIEM_B14_CREDENTIAL_08": "PADIEM_B14_CREDENTIAL_08",
-            "PADIEM_B14_CREDENTIAL_09": "PADIEM_B14_CREDENTIAL_09",
-            "PADIEM_B14_CREDENTIAL_10": "PADIEM_B14_CREDENTIAL_10",
-            "PADIEM_B14_CREDENTIAL_11": "PADIEM_B14_CREDENTIAL_11",
-            "PADIEM_B14_CREDENTIAL_12": "PADIEM_B14_CREDENTIAL_12",
-            "PADIEM_B14_CREDENTIAL_13": "PADIEM_B14_CREDENTIAL_13",
-            "PADIEM_B14_CREDENTIAL_14": "PADIEM_B14_CREDENTIAL_14",
-            "PADIEM_GRAFANA_OTLP_TOKEN": "PADIEM_GRAFANA_OTLP_TOKEN",
-            # #5224 deployment-owned server-to-server caller proof for the
-            # platform-credential execution lane. Metadata only, like the rest.
-            "PADIEM_B14_SERVICE_PROOF_SECRET": "PADIEM_B14_SERVICE_PROOF_SECRET",
-        }
+        from app.pilot.credential_slots_admin import SLOT_BINDINGS
+
+        # Owner decision 2026-10-25: every B14 slot points at the neutral
+        # Secrets Store entity of the same name; the provider-alias originals
+        # are retained in the store but are no longer referenced by this
+        # Worker's bindings. The slot list is the admin surface's own.
+        expected_secret_targets = {name: name for name in SLOT_BINDINGS}
+        expected_secret_targets["PADIEM_GRAFANA_OTLP_TOKEN"] = (
+            "PADIEM_GRAFANA_OTLP_TOKEN")
+        # #5224 deployment-owned server-to-server caller proof for the
+        # platform-credential execution lane. Metadata only, like the rest.
+        expected_secret_targets["PADIEM_B14_SERVICE_PROOF_SECRET"] = (
+            "PADIEM_B14_SERVICE_PROOF_SECRET")
         assert {b["binding"]: b["secret_name"] for b in bindings} == expected_secret_targets
         for binding in expected_secret_targets:
             assert f'binding = "{binding}"' in content
@@ -143,10 +143,10 @@ class TestWranglerConfig:
     def test_bai_secret_store_binding_is_metadata_only_and_exact(self):
         content = WRANGLER_TOML.read_text()
         assert '[[secrets_store_secrets]]' in content
-        assert 'binding = "PADIEM_B14_CREDENTIAL_03"' in content
+        assert f'binding = "{credential_binding_slot(3)}"' in content
         assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in content
-        assert 'secret_name = "PADIEM_B14_CREDENTIAL_03"' in content
-        assert "PADIEM_B14_CREDENTIAL_03 =" not in content
+        assert f'secret_name = "{credential_binding_slot(3)}"' in content
+        assert f"{credential_binding_slot(3)} =" not in content
 
 
 class TestEnvBridge:
@@ -274,12 +274,19 @@ def _provider_for_adapter_binding(binding: str) -> str:
 #: is about the Provider whose routes each carry the Owner's tool decision (the
 #: native wire), the other about the Provider that serves several routes at all
 #: (the roster pin). Neither selector is a name.
-_PINNED_BINDINGS = _registered_adapter_bindings()
-assert _PINNED_BINDINGS
-_TOOL_PROVIDER_ID = next(
-    (row["provider_id"] for row in registry()["models"] if "tools" in row["capabilities"]),
-    _provider_for_adapter_binding(_PINNED_BINDINGS[0]),
+#: Empty on the placeholder fixture: it declares no slot an adapter owns, and
+#: the owner pins that read these values are skipped there (#7241 3b).
+_PINNED_BINDINGS = (
+    _registered_adapter_bindings() if owner_document_present() else ()
 )
+if _PINNED_BINDINGS:
+    _TOOL_PROVIDER_ID = next(
+        (row["provider_id"] for row in registry()["models"]
+         if "tools" in row["capabilities"]),
+        _provider_for_adapter_binding(_PINNED_BINDINGS[0]),
+    )
+else:
+    _TOOL_PROVIDER_ID = ""
 
 
 def _multi_route_adapter_binding() -> str:
@@ -293,7 +300,10 @@ def _multi_route_adapter_binding() -> str:
     raise AssertionError("the document serves no multi-route adapted Provider")
 
 
-KILO_ROW_PROVIDER_ID = _provider_for_adapter_binding(_multi_route_adapter_binding())
+KILO_ROW_PROVIDER_ID = (
+    _provider_for_adapter_binding(_multi_route_adapter_binding())
+    if _PINNED_BINDINGS else ""
+)
 GOOGLE_ROW_PROVIDER_ID = _TOOL_PROVIDER_ID
 
 
@@ -332,9 +342,16 @@ def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
     registered Provider resolves the store secret by that exact name; no secret
     value is ever committed, and the store_id stays the shared approved one.
     """
-    binding_name = provider_row(GOOGLE_ROW_PROVIDER_ID)["credential_binding_name"]
     content = WRANGLER_TOML.read_text()
-    adapter = adapter_for(GOOGLE_ROW_PROVIDER_ID)
+    # The native wire belongs to the adapter that declares the Provider id its
+    # own route gate compares against, so the module is reached through that
+    # adapter's own constant rather than a name (#7241 3단계).
+    _native_wire_provider_id = native_wire_owner()
+
+    adapter = adapter_for(_native_wire_provider_id)
+    # The binding name is the adapter's own credential constant: the adapter is
+    # the authority the wire loads its slot from.
+    binding_name = adapter_credential_binding(_native_wire_provider_id)
     adapter_path = Path(adapter.__file__).resolve()
     provider = adapter_path.read_text()
     assert '[[secrets_store_secrets]]' in content
@@ -350,8 +367,12 @@ def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
     }
     assert declared, "the adapter declares no constant for the registry slot"
     assert f'{next(iter(declared))} = "{binding_name}"' in provider
-    # The registry row and the adapter must agree on the slot.
-    assert provider_row(GOOGLE_ROW_PROVIDER_ID)["credential_binding_name"] == binding_name
+    # The credential the adapter declares is the one the Worker projects: the
+    # registry row for this Provider resolves its secret by that exact slot,
+    # so the two surfaces must name the same one (#7241 3단계).
+    from app.pilot.model_registry_file import credential_binding_names
+
+    assert binding_name in credential_binding_names()
     # The owner-approved routes stay fully inside this Provider's namespace,
     # and later exact-ID additions need no edit to this Worker binding test.
     provider_models = [m for m in registry()["models"]
@@ -413,7 +434,14 @@ def test_worker_projects_every_enabled_platform_secret_registry_binding():
     )
     # A credential the registry declares must not also be hand-listed: that
     # duplicate list is exactly what made every onboarding a code change.
-    assert not set(scope["_FIXED_ENV_KEYS"]) & set(registry_credential_names())
+    # worker.py evaluates ``credential_binding_names()`` to build this very
+    # scope, so one binding appearing in both halves means the entrypoint
+    # already picked it up from the effective document (#7241 3단계).
+    # The scope is exactly the fixed half plus the registry's answer: no other
+    # source, and the registry really is one of the two halves.
+    assert set(scope["_ENV_KEYS"]) == (
+        set(scope["_FIXED_ENV_KEYS"]) | set(registry_credential_names())
+    )
     assert provider_row(a_provider_id())["credential_binding_name"] in required
     assert "collect_request_bindings(self.env, _ENV_KEYS)" in worker_text
 

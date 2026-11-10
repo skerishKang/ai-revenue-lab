@@ -125,6 +125,293 @@
     }
     return historyModuleInstance;
   }
+  // #7216 R5: the auth module owns those sections. app.js keeps one-line
+  // forwarders with the same names. deps getters/setters read the closure
+  // variables live, so a value changed before the first call is still observed.
+  let authModuleInstance = null;
+  function authModule() {
+    if (!authModuleInstance) {
+      authModuleInstance = window.PadiemChatAuthModule.create({
+        get AUTH_SERVER_UNREACHABLE() { return AUTH_SERVER_UNREACHABLE; },
+        get AUTH_UNREACHABLE_RETRY_DELAY_MS() { return AUTH_UNREACHABLE_RETRY_DELAY_MS; },
+        get SESSION_PRESENTATION() { return SESSION_PRESENTATION; },
+        get accountAvatar() { return accountAvatar; },
+        get accountContainer() { return accountContainer; },
+        get accountDeleteActions() { return accountDeleteActions; },
+        get accountDeleteButton() { return accountDeleteButton; },
+        get accountDeleteConfirm() { return accountDeleteConfirm; },
+        get accountDeleteConfirmEmail() { return accountDeleteConfirmEmail; },
+        get accountDeleteError() { return accountDeleteError; },
+        get accountName() { return accountName; },
+        get accountPasswordActions() { return accountPasswordActions; },
+        get accountSettingsSection() { return accountSettingsSection; },
+        get accountSharedDeleteButton() { return accountSharedDeleteButton; },
+        get accountSharedDeleteConfirm() { return accountSharedDeleteConfirm; },
+        get accountSharedDeleteConfirmEmail() { return accountSharedDeleteConfirmEmail; },
+        get accountSharedDeleteError() { return accountSharedDeleteError; },
+        get advancedAccountSection() { return advancedAccountSection; },
+        get advancedSettingsView() { return advancedSettingsView; },
+        get applyAuthState() { return applyAuthState; },
+        get authDialog() { return authDialog; },
+        get authDialogView() { return authDialogView; },
+        set authDialogView(value) { authDialogView = value; },
+        get authDivider() { return authDivider; },
+        get authHandoff() { return authHandoff; },
+        get authMethodEnabled() { return authMethodEnabled; },
+        get authServerUnreachableError() { return authServerUnreachableError; },
+        get authState() { return authState; },
+        set authState(value) { authState = value; },
+        get authViewEpoch() { return authViewEpoch; },
+        set authViewEpoch(value) { authViewEpoch = value; },
+        get clawApprovalEpoch() { return clawApprovalEpoch; },
+        set clawApprovalEpoch(value) { clawApprovalEpoch = value; },
+        get clawApprovalInFlight() { return clawApprovalInFlight; },
+        set clawApprovalInFlight(value) { clawApprovalInFlight = value; },
+        get clawApprovalSessionToken() { return clawApprovalSessionToken; },
+        set clawApprovalSessionToken(value) { clawApprovalSessionToken = value; },
+        get clearPasswordResetFragment() { return clearPasswordResetFragment; },
+        get clearProjectsUI() { return clearProjectsUI; },
+        get closeAuthDialog() { return closeAuthDialog; },
+        get closePasswordChangeDialog() { return closePasswordChangeDialog; },
+        get closeProfilePanel() { return closeProfilePanel; },
+        get closeSettings() { return closeSettings; },
+        get fetchAuthStatusOnce() { return fetchAuthStatusOnce; },
+        get googleLoginButton() { return googleLoginButton; },
+        get hidePasswordResetViews() { return hidePasswordResetViews; },
+        get historySection() { return historySection; },
+        get invalidateClawApprovalSession() { return invalidateClawApprovalSession; },
+        get isAndroidWebView() { return isAndroidWebView; },
+        get loadAuthStatus() { return loadAuthStatus; },
+        get loadProjects() { return loadProjects; },
+        get loadRecentConversations() { return loadRecentConversations; },
+        get loginButton() { return loginButton; },
+        get loveTreeHandoffFromLocation() { return loveTreeHandoffFromLocation; },
+        get openAuthDialog() { return openAuthDialog; },
+        get openClawRunTarget() { return openClawRunTarget; },
+        get openSavedConversation() { return openSavedConversation; },
+        get passwordAuthAnswer() { return passwordAuthAnswer; },
+        get passwordAuthRequest() { return passwordAuthRequest; },
+        get passwordChangeConfirm() { return passwordChangeConfirm; },
+        get passwordChangeCurrent() { return passwordChangeCurrent; },
+        get passwordChangeDialog() { return passwordChangeDialog; },
+        get passwordChangeError() { return passwordChangeError; },
+        get passwordChangeForm() { return passwordChangeForm; },
+        get passwordChangeNew() { return passwordChangeNew; },
+        get passwordChangeSubmit() { return passwordChangeSubmit; },
+        get passwordLoginError() { return passwordLoginError; },
+        get passwordLoginForm() { return passwordLoginForm; },
+        get passwordLoginIdentifier() { return passwordLoginIdentifier; },
+        get passwordLoginPassword() { return passwordLoginPassword; },
+        get passwordLoginSubmit() { return passwordLoginSubmit; },
+        get passwordRegisterEmail() { return passwordRegisterEmail; },
+        get passwordRegisterError() { return passwordRegisterError; },
+        get passwordRegisterForm() { return passwordRegisterForm; },
+        get passwordRegisterName() { return passwordRegisterName; },
+        get passwordRegisterPassword() { return passwordRegisterPassword; },
+        get passwordRegisterSection() { return passwordRegisterSection; },
+        get passwordRegisterSubmit() { return passwordRegisterSubmit; },
+        get passwordResetConfirm() { return passwordResetConfirm; },
+        get passwordResetConfirmError() { return passwordResetConfirmError; },
+        get passwordResetConfirmForm() { return passwordResetConfirmForm; },
+        get passwordResetConfirmStatus() { return passwordResetConfirmStatus; },
+        get passwordResetConfirmSubmit() { return passwordResetConfirmSubmit; },
+        get passwordResetConfirmView() { return passwordResetConfirmView; },
+        get passwordResetEmail() { return passwordResetEmail; },
+        get passwordResetNew() { return passwordResetNew; },
+        get passwordResetOpen() { return passwordResetOpen; },
+        get passwordResetPanel() { return passwordResetPanel; },
+        get passwordResetRequestError() { return passwordResetRequestError; },
+        get passwordResetRequestForm() { return passwordResetRequestForm; },
+        get passwordResetRequestStatus() { return passwordResetRequestStatus; },
+        get passwordResetRequestSubmit() { return passwordResetRequestSubmit; },
+        get passwordResetRequestView() { return passwordResetRequestView; },
+        get passwordResetToken() { return passwordResetToken; },
+        set passwordResetToken(value) { passwordResetToken = value; },
+        get passwordResetTokenFromLocation() { return passwordResetTokenFromLocation; },
+        get pendingNotificationConversationId() { return pendingNotificationConversationId; },
+        set pendingNotificationConversationId(value) { pendingNotificationConversationId = value; },
+        get pendingNotificationRunId() { return pendingNotificationRunId; },
+        set pendingNotificationRunId(value) { pendingNotificationRunId = value; },
+        get profilePanel() { return profilePanel; },
+        get profileToggle() { return profileToggle; },
+        get projectsBadge() { return projectsBadge; },
+        get renderAndroidHandoff() { return renderAndroidHandoff; },
+        get resetAccountDeleteConfirm() { return resetAccountDeleteConfirm; },
+        get resetAccountSharedDeleteConfirm() { return resetAccountSharedDeleteConfirm; },
+        get resetConversationView() { return resetConversationView; },
+        get resolveSessionPresentation() { return resolveSessionPresentation; },
+        get scheduleSharedRefresh() { return scheduleSharedRefresh; },
+        get setAuthFormError() { return setAuthFormError; },
+        get setAuthStatusMessage() { return setAuthStatusMessage; },
+        get setLoginButtonCopy() { return setLoginButtonCopy; },
+        get setNavActive() { return setNavActive; },
+        get setNote() { return setNote; },
+        get shell() { return shell; },
+        get showPasswordResetView() { return showPasswordResetView; },
+        get startAndroidHandoff() { return startAndroidHandoff; },
+        get syncApprovedMemoryVisibility() { return syncApprovedMemoryVisibility; },
+        get syncAuthDialogMethods() { return syncAuthDialogMethods; },
+        get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
+        get syncDeleteButton() { return syncDeleteButton; },
+        get uiT() { return uiT; },
+      });
+    }
+    return authModuleInstance;
+  }
+  // #7216 R5: the conversation module owns those sections. app.js keeps one-line
+  // forwarders with the same names. deps getters/setters read the closure
+  // variables live, so a value changed before the first call is still observed.
+  let conversationModuleInstance = null;
+  function conversationModule() {
+    if (!conversationModuleInstance) {
+      conversationModuleInstance = window.PadiemChatConversationModule.create({
+        get ALLOWED_IMAGE_TYPES() { return ALLOWED_IMAGE_TYPES; },
+        get MESSAGE_LIFECYCLE() { return MESSAGE_LIFECYCLE; },
+        get PRODUCT_CHAT() { return PRODUCT_CHAT; },
+        get PRODUCT_CLAW() { return PRODUCT_CLAW; },
+        get accountInitial() { return accountInitial; },
+        get accountName() { return accountName; },
+        get activeClawRunId() { return activeClawRunId; },
+        set activeClawRunId(value) { activeClawRunId = value; },
+        get activeProject() { return activeProject; },
+        set activeProject(value) { activeProject = value; },
+        get activeProjectFileCount() { return activeProjectFileCount; },
+        set activeProjectFileCount(value) { activeProjectFileCount = value; },
+        get activeRequestArticle() { return activeRequestArticle; },
+        set activeRequestArticle(value) { activeRequestArticle = value; },
+        get activeRequestCancelReason() { return activeRequestCancelReason; },
+        set activeRequestCancelReason(value) { activeRequestCancelReason = value; },
+        get activeRequestController() { return activeRequestController; },
+        set activeRequestController(value) { activeRequestController = value; },
+        get attachmentButton() { return attachmentButton; },
+        get attachmentCapabilities() { return attachmentCapabilities; },
+        get attachmentChipList() { return attachmentChipList; },
+        get attachmentCopy() { return attachmentCopy; },
+        get attachmentCountLimit() { return attachmentCountLimit; },
+        get attachmentFileInput() { return attachmentFileInput; },
+        get attachmentKeyCounter() { return attachmentKeyCounter; },
+        set attachmentKeyCounter(value) { attachmentKeyCounter = value; },
+        get attachmentTray() { return attachmentTray; },
+        get attachmentTrayNote() { return attachmentTrayNote; },
+        get binaryDocuments() { return binaryDocuments; },
+        get buildRetryBox() { return buildRetryBox; },
+        get cancelStreamButton() { return cancelStreamButton; },
+        get clawArtifactShownFor() { return clawArtifactShownFor; },
+        set clawArtifactShownFor(value) { clawArtifactShownFor = value; },
+        get clawT() { return clawT; },
+        get clearAttachment() { return clearAttachment; },
+        get clearClawRecovery() { return clearClawRecovery; },
+        get clearClawWait() { return clearClawWait; },
+        get closeSidebar() { return closeSidebar; },
+        get composerInlineHint() { return composerInlineHint; },
+        get composerInlineHintTimer() { return composerInlineHintTimer; },
+        set composerInlineHintTimer(value) { composerInlineHintTimer = value; },
+        get conversationArtifactContext() { return conversationArtifactContext; },
+        get conversationEpoch() { return conversationEpoch; },
+        set conversationEpoch(value) { conversationEpoch = value; },
+        get conversationProduct() { return conversationProduct; },
+        get conversationState() { return conversationState; },
+        get editProjectButton() { return editProjectButton; },
+        get emptyState() { return emptyState; },
+        get exitProject() { return exitProject; },
+        get exitProjectButton() { return exitProjectButton; },
+        get extensionOf() { return extensionOf; },
+        get failureCodeNote() { return failureCodeNote; },
+        get failureStatusLabel() { return failureStatusLabel; },
+        get form() { return form; },
+        get formatBytes() { return formatBytes; },
+        get formatClockTime() { return formatClockTime; },
+        get idleNote() { return idleNote; },
+        get inFlight() { return inFlight; },
+        set inFlight(value) { inFlight = value; },
+        get input() { return input; },
+        get lastCompletedAnswerRequest() { return lastCompletedAnswerRequest; },
+        set lastCompletedAnswerRequest(value) { lastCompletedAnswerRequest = value; },
+        get messageList() { return messageList; },
+        get readDocumentFile() { return readDocumentFile; },
+        get removeAttachmentItem() { return removeAttachmentItem; },
+        get renderAttachmentChips() { return renderAttachmentChips; },
+        get renderProjectState() { return renderProjectState; },
+        get renderWebGroundingNotice() { return renderWebGroundingNotice; },
+        get resetConversation() { return resetConversation; },
+        get resetConversationView() { return resetConversationView; },
+        get revealErrorState() { return revealErrorState; },
+        get selectImage() { return selectImage; },
+        get selectedAttachments() { return selectedAttachments; },
+        set selectedAttachments(value) { selectedAttachments = value; },
+        get sendButton() { return sendButton; },
+        get setNavActive() { return setNavActive; },
+        get setNote() { return setNote; },
+        get shell() { return shell; },
+        get switchConversationProduct() { return switchConversationProduct; },
+        get uiT() { return uiT; },
+        get updateComposer() { return updateComposer; },
+      });
+    }
+    return conversationModuleInstance;
+  }
+  // #7216 R5 5b: the streaming section owns the async request lifetime.
+  // app.js keeps one-line forwarders with the same names. deps
+  // getters/setters read the closure variables live, so a value changed
+  // before the first call is still observed.
+  let streamingModuleInstance = null;
+  function streamingModule() {
+    if (!streamingModuleInstance) {
+      streamingModuleInstance = window.PadiemChatStreamingModule.create({
+        get MESSAGE_LIFECYCLE() { return MESSAGE_LIFECYCLE; },
+        get activeClawRunId() { return activeClawRunId; },
+        set activeClawRunId(value) { activeClawRunId = value; },
+        get activeProject() { return activeProject; },
+        set activeProject(value) { activeProject = value; },
+        get activeRequestArticle() { return activeRequestArticle; },
+        set activeRequestArticle(value) { activeRequestArticle = value; },
+        get activeRequestCancelReason() { return activeRequestCancelReason; },
+        set activeRequestCancelReason(value) { activeRequestCancelReason = value; },
+        get activeRequestController() { return activeRequestController; },
+        set activeRequestController(value) { activeRequestController = value; },
+        get addAssistantShell() { return addAssistantShell; },
+        get applyStreamDone() { return applyStreamDone; },
+        get attachmentPayload() { return attachmentPayload; },
+        get authState() { return authState; },
+        get chatTransport() { return chatTransport; },
+        get clawGeneralFailure() { return clawGeneralFailure; },
+        get conversationEpoch() { return conversationEpoch; },
+        get conversationProduct() { return conversationProduct; },
+        get conversationState() { return conversationState; },
+        get handleCustomRequestFailure() { return handleCustomRequestFailure; },
+        get inFlight() { return inFlight; },
+        set inFlight(value) { inFlight = value; },
+        get input() { return input; },
+        get invalidateClawRunsRead() { return invalidateClawRunsRead; },
+        get lastCompletedAnswerRequest() { return lastCompletedAnswerRequest; },
+        set lastCompletedAnswerRequest(value) { lastCompletedAnswerRequest = value; },
+        get lifecycleForError() { return lifecycleForError; },
+        get loadProjects() { return loadProjects; },
+        get loadRecentConversations() { return loadRecentConversations; },
+        get openAuthDialog() { return openAuthDialog; },
+        get projectById() { return projectById; },
+        get projectFileStatus() { return projectFileStatus; },
+        get projectsReady() { return projectsReady; },
+        get recoverStoredPcResult() { return recoverStoredPcResult; },
+        get renderAnswer() { return renderAnswer; },
+        get renderCancelled() { return renderCancelled; },
+        get renderError() { return renderError; },
+        get renderProjectState() { return renderProjectState; },
+        get renderStreamError() { return renderStreamError; },
+        get renderTyping() { return renderTyping; },
+        get renderWebGroundingNotice() { return renderWebGroundingNotice; },
+        get requestCompletedAnswer() { return requestCompletedAnswer; },
+        get requestStreamingAnswer() { return requestStreamingAnswer; },
+        get revealErrorState() { return revealErrorState; },
+        get selectedProductTier() { return selectedProductTier; },
+        get setNote() { return setNote; },
+        get uiT() { return uiT; },
+        get updateComposer() { return updateComposer; },
+        get waitForAcceptedPcRun() { return waitForAcceptedPcRun; },
+      });
+    }
+    return streamingModuleInstance;
+  }
   const shell = document.querySelector(".app-shell");
   const emptyState = document.getElementById("emptyState");
   const messageList = document.getElementById("messageList");
@@ -265,11 +552,7 @@
   profileSettingsAction.textContent = uiT("account-profile-settings");
   profilePanel.append(profileSettingsAction);
   accountContainer?.append(profilePanel);
-  function closeProfilePanel(restoreFocus = false) {
-    profilePanel.hidden = true;
-    profileToggle.setAttribute("aria-expanded", "false");
-    if (restoreFocus && !accountContainer?.hidden) profileToggle.focus();
-  }
+  function closeProfilePanel(...a) { return authModule().closeProfilePanel(...a); }
   const historySection = document.getElementById("historySection");
   const historyList = document.getElementById("historyList");
   const historyActionStatus = document.getElementById("historyActionStatus");
@@ -399,9 +682,7 @@
     } catch (_) {}
     return key;
   }
-  function attachmentCopy() {
-    return attachmentCapabilities.copy(document.documentElement.lang);
-  }
+  function attachmentCopy(...a) { return conversationModule().attachmentCopy(...a); }
   function idleNote() {
     return activeProject ? uiT("active-project-note", { name: activeProject.name }) : attachmentCopy().idleNote;
   }
@@ -417,17 +698,7 @@
   // Short-lived overlay, not a new composer row.
   const composerInlineHint = document.getElementById("composerInlineHint");
   let composerInlineHintTimer = null;
-  function showComposerInlineHint(key) {
-    if (!composerInlineHint) return;
-    composerInlineHint.textContent = uiT(key);
-    composerInlineHint.hidden = false;
-    if (composerInlineHintTimer !== null) window.clearTimeout(composerInlineHintTimer);
-    composerInlineHintTimer = window.setTimeout(() => {
-      composerInlineHint.hidden = true;
-      composerInlineHint.textContent = "";
-      composerInlineHintTimer = null;
-    }, 3000);
-  }
+  function showComposerInlineHint(...a) { return conversationModule().showComposerInlineHint(...a); }
   window.addEventListener("padiem:composer-hint", (event) => {
     if (event && event.detail && typeof event.detail.key === "string") {
       showComposerInlineHint(event.detail.key);
@@ -440,30 +711,7 @@
     if (!input.value.trim() && !inFlight) showComposerInlineHint("composer-empty-message");
   });
 
-  function updateComposer() {
-    // Empty clicks are allowed; submitPrompt() already ignores blank or busy submissions.
-    sendButton.disabled = false;
-    input.disabled = inFlight;
-    attachmentButton.disabled = inFlight;
-    attachmentChipList?.querySelectorAll(".attachment-remove").forEach((button) => {
-      button.disabled = inFlight;
-    });
-    editProjectButton.disabled = inFlight;
-    exitProjectButton.disabled = inFlight;
-    cancelStreamButton.hidden = !inFlight;
-    cancelStreamButton.disabled = !inFlight;
-    cancelStreamButton.setAttribute("aria-disabled", inFlight ? "false" : "true");
-    // #5561: the primary action slot shows the voice waveform for an empty
-    // composer and the send arrow once there is text. The composer is the
-    // authority for the input value, so it asks the voice module to re-read it.
-    window.PadiemVoiceMenu?.syncPrimaryAction?.();
-    if (window.PadiemConversationComposer?.resizeTextarea) {
-      window.PadiemConversationComposer.resizeTextarea(input, { maxHeight: 180 });
-    } else {
-      input.style.height = "auto";
-      input.style.height = `${Math.min(input.scrollHeight, 180)}px`;
-    }
-  }
+  function updateComposer(...a) { return conversationModule().updateComposer(...a); }
   function lifecycleForError(error) {
     return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
   }
@@ -637,51 +885,11 @@
   }
   // The first user turn extends the original landing panel. Older saved
   // threads still open directly on messages instead of replaying the hero.
-  function showConversation({ preserveClaw = false, restoreSaved = false } = {}) {
-    const conversationPanel = messageList.closest(".conversation");
-    // #2505: a Chat send moves to the Chat lane. The switch happens before the
-    // landing rule is read, and it keeps the shared conversation.
-    if (!preserveClaw) switchConversationProduct(PRODUCT_CHAT);
-    const startingOnLanding = !restoreSaved
-      && !emptyState.hidden
-      && messageList.childElementCount === 0
-      && (shell.dataset.state === "home"
-        || (preserveClaw && shell.dataset.state === "claw"));
-    const continuingLanding = !restoreSaved
-      && conversationPanel?.dataset.continuousThread === "true";
-    const keepLanding = startingOnLanding || continuingLanding;
-    if (conversationPanel) {
-      if (keepLanding) conversationPanel.dataset.continuousThread = "true";
-      else delete conversationPanel.dataset.continuousThread;
-    }
-    emptyState.hidden = !keepLanding;
-    messageList.hidden = false;
-    // #3931: Keep an in-flight Claw conversation in the Claw workspace.
-    // Saved Chat conversations and ordinary Chat sends still use Chat.
-    if (!preserveClaw) {
-      shell.dataset.state = "chat";
-      // Switching from Claw to ordinary Chat must not carry the Claw
-      // execution-history disclosure into a customer conversation.
-      // Do not erase the server-owned history, only reset this view.
-      for (const id of ("clawRunHistoryDisclosure", "clawRunHistory",
-                        "clawApprovedDisclosure", "clawApprovedMemory")) {
-        const node = document.getElementById(id);
-        if (!node) continue;
-        node.hidden = true;
-        if (node.tagName === "DETAILS") node.open = false;
-      }
-    }
-    setNavActive();
-  }
+  function showConversation(...a) { return conversationModule().showConversation(...a); }
   /* Owner 2026-10-20: the user avatar shows the first character of the
    * signed-in account name. The name -> avatar order is unchanged and the
    * initial is read from the live account display name, never hardcoded. */
-  function accountInitial(name) {
-    const text = String(name || "").trim();
-    if (!text) return "";
-    const first = Array.from(text)[0] || "";
-    return first.toLocaleUpperCase();
-  }
+  function accountInitial(...a) { return authModule().accountInitial(...a); }
 
   /* One clock format for both turns: the user turn and the answer row. */
   function formatClockTime(value) {
@@ -689,88 +897,7 @@
     return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
   }
 
-  function addUserMessage(text, attachment, options) {
-    const restored = Boolean(options && options.restored);
-    const fragment = document.getElementById("userMessageTemplate").content.cloneNode(true);
-    const bubble = fragment.querySelector(".message-bubble");
-    bubble.textContent = text;
-    const attachmentItems = Array.isArray(attachment) ? attachment : (attachment ? [attachment] : []);
-    for (const item of attachmentItems) {
-      const meta = document.createElement("span");
-      meta.className = "message-attachment-meta";
-      const label = item.type === "image" ? uiT("attachment-photo") : uiT("attachment-document");
-      meta.textContent = `${label} · ${item.name} · ${formatBytes(item.byteSize)}`;
-      bubble.appendChild(meta);
-    }
-    // Plan 4 (Glass only, shown via CSS): profile chip mirrors the signed-in
-    // account name at send time; hidden account (signed out) drops the chip.
-    const chip = fragment.querySelector(".user-profile-chip");
-    const avatar = fragment.querySelector(".user-avatar");
-    if (chip) {
-      const name = accountName && !accountName.hidden ? accountName.textContent.trim() : "";
-      if (name) {
-        chip.textContent = name;
-        // The small person glyph becomes the account-name initial in the
-        // same 32x32 plate the Padiem "P" avatar uses.
-        if (avatar) avatar.textContent = accountInitial(name);
-      } else {
-        chip.remove();
-      }
-    }
-    // Owner 2026-10-20: the stamp belongs to the live turn. A restored
-    // conversation carries no stored per-message time, so no time is
-    // invented for it.
-    const clock = fragment.querySelector(".user-action-time");
-    if (clock) {
-      if (restored) {
-        clock.remove();
-      } else {
-        const now = new Date();
-        const stamp = formatClockTime(now);
-        clock.textContent = stamp;
-        clock.setAttribute("datetime", now.toISOString());
-        clock.setAttribute("data-padiem-tooltip", stamp);
-      }
-    }
-    const copyBtn = fragment.querySelector(".user-action-copy");
-    if (copyBtn) {
-      copyBtn.setAttribute("aria-label", uiT("answer-copy"));
-      copyBtn.setAttribute("data-padiem-tooltip", uiT("answer-copy"));
-      copyBtn.addEventListener("click", () => {
-        const done = copyBtn.querySelector("span") || copyBtn;
-        const prev = done.textContent;
-        const flash = () => { done.textContent = "✓"; setTimeout(() => { done.textContent = prev; }, 900); };
-        const plain = bubble ? bubble.textContent : text;
-        /* #4488: shared clipboard path; legacy branches stay only as the
-         * fallback when the shared script is unavailable. */
-        const shared = window.PadiemAnswerCopy || window.SharedAnswerCopy;
-        if (shared && typeof shared.copyText === "function") {
-          shared.copyText(plain).then((ok) => { if (ok) flash(); });
-        } else if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(plain).then(flash, () => {});
-        } else {
-          const ta = document.createElement("textarea");
-          ta.value = plain;
-          document.body.appendChild(ta);
-          ta.select();
-          try { document.execCommand("copy"); flash(); } catch (e) {}
-          ta.remove();
-        }
-      });
-    }
-    const editBtn = fragment.querySelector(".user-action-edit");
-    if (editBtn) {
-      editBtn.setAttribute("data-padiem-tooltip", editBtn.getAttribute("aria-label") || "");
-      editBtn.addEventListener("click", () => {
-        input.value = text;
-        input.focus();
-        input.dispatchEvent(new Event("input", { bubbles: true }));
-      });
-    }
-    // One shared chip tooltip for every hint on this turn.
-    window.PadiemSharedTooltip?.bind?.(fragment);
-    messageList.appendChild(fragment);
-  }
+  function addUserMessage(...a) { return conversationModule().addUserMessage(...a); }
   // The runtime status chip has one owner (message-lifecycle.js). A finished
   // answer releases the "answer preparing" chip, and a real status (a Claw P01
   // stage, a failure) is never removed by accident. The calls go through the
@@ -825,33 +952,7 @@
     note.dataset.localeKey = key;
     note.textContent = uiT(key);
   }
-  function renderAnswer(article, result) {
-    const content = article.querySelector(".assistant-content");
-    content.replaceChildren();
-    renderWebGroundingNotice(content, result.notice, result.metadata);
-    // #5573: the live PC scope notice is its own line above the answer.
-    window.PadiemChatPcScopeNotice?.render?.(content, window.PadiemChatPcScopeNotice?.value?.(result));
-    const paragraph = document.createElement("p");
-    paragraph.textContent = result.answer;
-    content.appendChild(paragraph);
-    if (Number.isInteger(result.project_files_used) && result.project_files_used > 0) {
-      const used = document.createElement("small");
-      used.className = "reference-note";
-      used.textContent = uiT("project-files-used", { count: result.project_files_used });
-      content.appendChild(used);
-    }
-    const skillTitle = result.skill && result.skill.id !== "auto" && typeof result.skill.title === "string" ? result.skill.title : "";
-    // The brand (Padiem Chat / Padiem Claw) stays in [data-assistant-product].
-    // The repetitive runtime line is removed: only a truthful non-default
-    // state (mock preview) or an explicit skill title is shown.
-    const runtimeLabel = result.runtime === "mock" ? uiT("mock-response") : "";
-    const answerLabel = skillTitle ? (runtimeLabel ? `${runtimeLabel} · ${skillTitle}` : skillTitle) : runtimeLabel;
-    article.querySelector("[data-runtime-label]").textContent = answerLabel;
-    // A completed answer carries no runtime status: the chip is released
-    // instead of staying on "answer preparing".
-    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, answerLabel, "status");
-    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
-  }
+  function renderAnswer(...a) { return conversationModule().renderAnswer(...a); }
   // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
   // must not wear the generic "this run may already have started" state. Closed
   // code→copy map only: a raw server, Engine or provider string is never shown.
@@ -981,21 +1082,7 @@
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null, errorCode = "") {
-    const content = article.querySelector(".assistant-content");
-    const typing = content.querySelector(".typing");
-    if (typing) typing.remove();
-    const statusLabel = failureStatusLabel(lifecycle);
-    article.querySelector("[data-runtime-label]").textContent = statusLabel;
-    // A failure is a real status: the chip stays visible with its own copy.
-    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, statusLabel, "status");
-    const box = buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, undefined, clawFailure);
-    const codeNote = clawGeneralRequest ? null : failureCodeNote(errorCode, statusLabel);
-    if (codeNote) box.appendChild(codeNote);
-    content.appendChild(box);
-    PadiemChatLifecycle.set(article, lifecycle);
-    revealErrorState(article);
-  }
+  function renderStreamError(...a) { return conversationModule().renderStreamError(...a); }
   function renderCancelled(article, retryMessages, retrySkill, retryContext, clawGeneralRequest = false) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
@@ -1021,83 +1108,11 @@
     if (ALLOWED_DOCUMENT_TYPES.has(file.type)) return file.type;
     return DOCUMENT_EXTENSION_TYPES.get(extensionOf(file.name)) || null;
   }
-  function clearAttachment() {
-    for (const item of selectedAttachments) {
-      if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
-    }
-    selectedAttachments = [];
-    attachmentFileInput.value = "";
-    renderAttachmentChips();
-    setNote(idleNote());
-    updateComposer();
-  }
-  function attachmentCountLimit() {
-    const configured = Number(window.PadiemAttachmentCapabilities?.maxPerMessage);
-    return Number.isSafeInteger(configured) && configured >= 1
-      ? Math.min(configured, 10) : 5;
-  }
-  function attachmentTrayNote() {
-    const valid = selectedAttachments.filter((item) => !item.invalid);
-    if (!valid.length) return idleNote();
-    // #6126: a .hwp name whose bytes are a real HWPX (ZIP) package is read as
-    // HWPX, so the tray note follows the actual media type, not only the name.
-    if (valid.some((item) => item.mediaType === "application/hwp+zip"
-        || String(item.name || "").toLowerCase().endsWith(".hwpx"))) {
-      return uiT("attachment-hwpx-note");
-    }
-    return valid.length === 1 && valid[0].type === "image"
-      ? uiT("attachment-image-note")
-      : uiT("attachment-document-note");
-  }
-  function removeAttachmentItem(item) {
-    if (inFlight) return;
-    const index = selectedAttachments.indexOf(item);
-    if (index < 0) return;
-    if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
-    selectedAttachments.splice(index, 1);
-    renderAttachmentChips();
-    setNote(attachmentTrayNote());
-    updateComposer();
-  }
-  function renderAttachmentChips() {
-    if (!attachmentChipList) return;
-    attachmentChipList.replaceChildren();
-    if (!selectedAttachments.length) {
-      attachmentTray.hidden = true;
-      return;
-    }
-    // The chip row belongs to the multi-attachment tray: one entry per file,
-    // removal button included. Single-attachment thumbnail code (pre-#1727)
-    // is gone; per-file notes live in attachmentTrayNote().
-    for (const item of selectedAttachments) {
-      const chip = document.createElement("li");
-      chip.className = "attachment-chip" + (item.invalid ? " attachment-chip-invalid" : "");
-      const icon = document.createElement("span");
-      icon.className = "attachment-chip-icon";
-      icon.setAttribute("aria-hidden", "true");
-      icon.textContent = item.type === "image"
-        ? "IMG"
-        : (extensionOf(item.name).replace(".", "").toUpperCase() || "DOC");
-      const copy = document.createElement("div");
-      copy.className = "attachment-chip-copy";
-      const name = document.createElement("strong");
-      name.textContent = item.name;
-      const detail = document.createElement("small");
-      detail.textContent = item.invalid ? (item.error || uiT("file-read-failed")) : formatBytes(item.byteSize);
-      copy.append(name, detail);
-      const remove = document.createElement("button");
-      remove.type = "button";
-      remove.className = "attachment-remove";
-      remove.textContent = "×";
-      remove.setAttribute("data-locale-aria-label", "attachment-remove");
-      remove.setAttribute("aria-label", uiT("attachment-remove"));
-      remove.disabled = inFlight;
-      remove.addEventListener("click", () => removeAttachmentItem(item));
-      chip.append(icon, copy, remove);
-      attachmentChipList.appendChild(chip);
-    }
-    attachmentTray.hidden = false;
-  }
+  function clearAttachment(...a) { return conversationModule().clearAttachment(...a); }
+  function attachmentCountLimit(...a) { return conversationModule().attachmentCountLimit(...a); }
+  function attachmentTrayNote(...a) { return conversationModule().attachmentTrayNote(...a); }
+  function removeAttachmentItem(...a) { return conversationModule().removeAttachmentItem(...a); }
+  function renderAttachmentChips(...a) { return conversationModule().renderAttachmentChips(...a); }
   function readAsText(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -1131,86 +1146,8 @@
     if (file.size < 1) throw new Error(uiT("image-data-empty"));
     return { type: "image", name: file.name || "image", mediaType: file.type, file, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
   }
-  async function addAttachmentFiles(files) {
-    // #261102 multi-attachment: picking or dropping several files at once
-    // turns each file into an independent chip. A per-file refusal (e.g. the
-    // legacy hwp guidance) shows on that chip only, and only valid chips
-    // reach the send payload.
-    const list = Array.from(files || []);
-    if (!list.length) return;
-    const limit = attachmentCountLimit();
-    for (const file of list) {
-      const validCount = selectedAttachments.filter((item) => !item.invalid).length;
-      try {
-        if (validCount >= limit) {
-          throw new Error(uiT("attachment-count-limit", { count: limit }));
-        }
-        let next;
-        // #2505: the Claw turn reads attached documents through the same path as
-        // Chat, but the P01 Engine execution request has no image input yet. The
-        // image is refused here, before any upload, instead of being sent and
-        // answered as if nothing had been read. Chat keeps images unchanged.
-        if (ALLOWED_IMAGE_TYPES.has(file.type) && conversationProduct === PRODUCT_CLAW) {
-          throw new Error(uiT("claw-image-attachment-unsupported"));
-        }
-        // #6126: an uploaded .hwp is judged by its own bytes, not its name.
-        // The older OLE2 binary Hangul format is refused with the save-as-
-        // HWPX guidance on this chip only; a mislabeled file whose bytes are
-        // a real HWPX (ZIP) package keeps working as HWPX below.
-        const hwpFamily = extensionOf(file.name) === ".hwp"
-          ? (await binaryDocuments?.headerFamily?.(file)) || null
-          : null;
-        if (hwpFamily === "ole") throw new Error(uiT("hwp-legacy-guidance"));
-        const useFileLane = window.PadiemFileLane?.shouldUse(file);
-        const fileLaneAvailable = useFileLane && await window.PadiemFileLane.available();
-        if (useFileLane && fileLaneAvailable) {
-          next = window.PadiemFileLane.pending(file);
-        } else if (useFileLane && window.PadiemFileLane.isBinary(file)) {
-          throw new Error(uiT("file-lane-unavailable"));
-        } else if (ALLOWED_IMAGE_TYPES.has(file.type)) next = await selectImage(file);
-        else if (hwpFamily === "zip" && binaryDocuments?.hwpxMedia) next = await binaryDocuments.read(file, { mediaType: binaryDocuments.hwpxMedia });
-        else if (binaryDocuments && typeof binaryDocuments.canRead === "function" && binaryDocuments.canRead(file)) next = await binaryDocuments.read(file);
-        else next = await readDocumentFile(file);
-        // Photos and original documents read by the browser fit only one
-        // request frame, so a single attachment alone is allowed. Multiple
-        // documents (tus/text) combine freely.
-        const rawByteAttachment = Boolean(next.file);
-        const mixedWithExisting = validCount > 0;
-        if (mixedWithExisting && (rawByteAttachment
-            || selectedAttachments.some((item) => !item.invalid && item.file))) {
-          throw new Error(uiT("attachment-raw-single"));
-        }
-        attachmentKeyCounter += 1;
-        selectedAttachments.push({ ...next, key: `att-${attachmentKeyCounter}` });
-      } catch (error) {
-        attachmentKeyCounter += 1;
-        selectedAttachments.push({
-          key: `att-${attachmentKeyCounter}`,
-          invalid: true,
-          type: "document",
-          name: file && file.name ? file.name : "file",
-          byteSize: file && typeof file.size === "number" ? file.size : 0,
-          error: error instanceof Error ? error.message : uiT("file-read-failed"),
-        });
-      }
-    }
-    attachmentFileInput.value = "";
-    renderAttachmentChips();
-    setNote(attachmentTrayNote());
-    updateComposer();
-  }
-  function attachmentPayload(list) {
-    const items = (Array.isArray(list) ? list : list ? [list] : [])
-      .filter((item) => item && !item.invalid);
-    if (!items.length) return undefined;
-    return items.map((item) => {
-      if (item.fileId) return { type: "file", file_id: item.fileId };
-      if (item.file) {
-        return { type: item.type, name: item.name, media_type: item.mediaType, file: item.file };
-      }
-      return { type: item.type, name: item.name, media_type: item.mediaType, text: item.text };
-    });
-  }
+  function addAttachmentFiles(...a) { return conversationModule().addAttachmentFiles(...a); }
+  function attachmentPayload(...a) { return conversationModule().attachmentPayload(...a); }
 
   function clearHistoryUI(...a) { return historyModule().clearHistoryUI(...a); }
   // #4489: the Library entry is owned by static/library.js. The old
@@ -1393,12 +1330,7 @@
     if (typeof code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(code)) error.code = code;
     return error;
   }
-  function safeLocalUiMessage(error, fallback) {
-    if (error?.uiMessageSafe) return error.message;
-    const localFileErrors = [attachmentCopy().unsupportedFormat, uiT("empty-document"),
-      uiT("document-read-failed"), uiT("binary-document")];
-    return error instanceof Error && localFileErrors.includes(error.message) ? error.message : fallback;
-  }
+  function safeLocalUiMessage(...a) { return conversationModule().safeLocalUiMessage(...a); }
   function showProjectError(error, fallback) {
     projectFormError.textContent = safeLocalUiMessage(error, fallback);
     const note = failureCodeNote(error?.code, "");
@@ -1586,63 +1518,13 @@
     }
   }
 
-  function resetConversationView(preserveProject = true) {
-    conversationEpoch += 1;
-    lastCompletedAnswerRequest = null;
-    if (activeRequestController) {
-      activeRequestCancelReason = "conversation_reset";
-      activeRequestController.abort();
-      activeRequestController = null;
-      activeRequestArticle = null;
-    }
-    activeClawRunId = null;
-    inFlight = false;
-    // #2505: a new conversation always starts a new one, on either screen: the
-    // single shared conversation is cleared. Server-owned records are never
-    // deleted here.
-    conversationState.setProduct?.(conversationProduct);
-    conversationState.reset();
-    if (!preserveProject) {
-      activeProject = null;
-      activeProjectFileCount = 0;
-    }
-    clearAttachment();
-    messageList.replaceChildren();
-    messageList.hidden = true;
-    delete messageList.closest(".conversation")?.dataset.continuousThread;
-    clawArtifactShownFor = "";
-    conversationArtifactContext?.clear?.();
-    emptyState.hidden = false;
-    shell.dataset.state = "home";
-    // One shared follow state for Chat and Claw: a new conversation starts
-    // from "latest" and hides the jump control.
-    window.__padiemConversationMotion?.reset?.();
-    // Leaving for home drops any pending Claw execute recovery timer/state.
-    clearClawRecovery({ syncControls: true });
-    clearClawWait();
-    setNavActive();
-    input.value = "";
-    renderProjectState();
-    updateComposer();
-    closeSidebar();
-    input.focus();
-  }
+  function resetConversationView(...a) { return conversationModule().resetConversationView(...a); }
   // #2505: the sidebar Chat entry returns to the Chat lane while the user is in
   // the Claw workspace. Inside the Chat state the same entry starts a new
   // conversation. Every other caller resets the view directly, because a
   // sign-out, a project change or a delete must clear the conversation no
   // matter which product is on screen.
-  function resetConversation(preserveProject = true) {
-    if (conversationProduct === PRODUCT_CLAW && shell.dataset.state === "claw") {
-      switchConversationProduct(PRODUCT_CHAT);
-      shell.dataset.state = "chat";
-      setNavActive();
-      closeSidebar();
-      input.focus();
-      return;
-    }
-    resetConversationView(preserveProject);
-  }
+  function resetConversation(...a) { return conversationModule().resetConversation(...a); }
   function selectProject(project) {
     if (!projectsReady || !project || inFlight) return;
     activeProject = project;
@@ -1806,9 +1688,7 @@
     "unavailable": { "accountHidden": true, "loginHidden": true, "loginDisabled": true, "accountNameHidden": true },
     "unreachable": { "accountHidden": false, "loginHidden": false, "loginDisabled": false, "accountNameHidden": true }
   };
-  function resolveSessionPresentation(sessionState) {
-    return SESSION_PRESENTATION[sessionState] || SESSION_PRESENTATION.unreachable;
-  }
+  function resolveSessionPresentation(...a) { return authModule().resolveSessionPresentation(...a); }
   // The other projections read the same rule so they cannot drift apart.
   window.PadiemSessionPresentation = resolveSessionPresentation;
 
@@ -1851,216 +1731,15 @@
     }
   }
 
-  function setLoginButtonCopy(text, title) {
-    // #7164: identical writes are skipped. Writing textContent replaces the
-    // child node even when the value is the same, and the login button's
-    // DOM watcher (product-capabilities.js) treats every rewrite
-    // as a signal and re-fetch.
-    if (loginButton.textContent !== text) loginButton.textContent = text;
-    if (loginButton.getAttribute("title") !== title) loginButton.setAttribute("title", title);
-  }
-  function applyAuthState(data) {
-    authViewEpoch += 1;
-    authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
-    const ready = authState.ready === true;
-    const authenticated = ready && authState.authenticated === true;
-    if (authenticated && pendingNotificationRunId) {
-      const notificationRunId = pendingNotificationRunId;
-      pendingNotificationRunId = "";
-      const remaining = String((window.location && window.location.search) || "")
-        .replace(/^\?/, "").split("&").filter(Boolean)
-        .filter((part) => part !== "notify=run" && !part.startsWith("run_id="));
-      window.history.replaceState(
-        null, "",
-        window.location.pathname + (remaining.length ? `?${remaining.join("&")}` : "") + (window.location.hash || ""),
-      );
-      openClawRunTarget(notificationRunId);
-    }
-    if (authenticated && pendingNotificationConversationId) {
-      const notificationConversationId = pendingNotificationConversationId;
-      pendingNotificationConversationId = "";
-      const remaining = String((window.location && window.location.search) || "")
-        .replace(/^\?/, "").split("&").filter(Boolean)
-        .filter((part) => part !== "notify=conversation" && !part.startsWith("conversation_id="));
-      window.history.replaceState(
-        null, "",
-        window.location.pathname + (remaining.length ? `?${remaining.join("&")}` : "") + (window.location.hash || ""),
-      );
-      openSavedConversation(notificationConversationId);
-    }
-    window.PadiemAuthSession.update(authState, authViewEpoch);
-    // #5434: the password change is offered only for an account that owns a
-    // password credential. The server owns that fact.
-    // #5560: the Account section itself carries the sign-out entry for every
-    // signed-in account; only the password change is method-specific.
-    if (accountSettingsSection) {
-      accountSettingsSection.hidden = !authenticated;
-    }
-    // The advanced settings page carries the same account entries; its data
-    // export section stays outside this gate so guests can export too.
-    if (advancedAccountSection) {
-      advancedAccountSection.hidden = !authenticated;
-    }
-    if (accountPasswordActions) {
-      accountPasswordActions.hidden = !(authenticated && authState.account_method === "password");
-    }
-    // The deletion entry follows the account section itself (every signed-in
-    // account); the confirm block always resets when the auth state moves.
-    if (accountDeleteActions) {
-      accountDeleteActions.hidden = !authenticated;
-    }
-    if (accountDeleteConfirm) {
-      accountDeleteConfirm.hidden = true;
-      resetAccountDeleteConfirm();
-    }
-    if (!authenticated) {
-      // Auth loss hides the standalone Connectors/Automation pages the same
-      // way the Claw automation panel never outlives its session. The moved
-      // nodes stay mounted; reopening after sign-in reloads fresh state.
-      const connectorsView = document.getElementById("connectorsView");
-      if (connectorsView) connectorsView.hidden = true;
-      if (advancedSettingsView) advancedSettingsView.hidden = true;
-      const automationView = document.getElementById("automationView");
-      if (automationView) automationView.hidden = true;
-      if (shell && (shell.dataset.state === "connectors"
-        || shell.dataset.state === "automation"
-        || shell.dataset.state === "settings")) {
-        shell.dataset.state = "home";
-        setNavActive();
-      }
-    }
-    // #5479: "unreachable" (the status request produced no answer) is a
-    // different session state from "unavailable" (the server answered that the
-    // session store is not ready). Only the latter is the server's own word.
-    const sessionState = !ready
-      ? (authState.status_reachable === false ? "unreachable" : "unavailable")
-      : authenticated
-        ? "signed_in"
-        : authState.session_state === "expired"
-          ? "expired"
-          : "guest";
-    const presentation = resolveSessionPresentation(sessionState);
-    // Owner decision 2026-11-05: invite a guest to sign in with one quiet line
-    // on the first screen. The flag keeps this off the network-free CI mock.
-    const guestLoginHint = document.getElementById("guestLoginHint");
-    if (guestLoginHint) {
-      guestLoginHint.hidden = !(sessionState === "guest" && authState.model_requires_session === true);
-    }
+  function setLoginButtonCopy(...a) { return authModule().setLoginButtonCopy(...a); }
+  function applyAuthState(...a) { return authModule().applyAuthState(...a); }
+  function authMethodEnabled(...a) { return authModule().authMethodEnabled(...a); }
 
-    if (accountContainer) {
-      accountContainer.dataset.accountState = sessionState;
-      accountContainer.hidden = presentation.accountHidden;
-    }
-    closeProfilePanel();
-    if (accountAvatar) {
-      const displayName = sessionState === "signed_in" && typeof authState.user?.name === "string"
-        ? authState.user.name.trim() : "";
-      const firstCharacter = displayName ? Array.from(displayName)[0] : "";
-      accountAvatar.textContent = sessionState === "signed_in"
-        ? (firstCharacter ? firstCharacter.toLocaleUpperCase() : "●")
-        : sessionState === "expired" ? "!" : "●";
-    }
-    // #5560: the sign-out entry moved into Settings > Account, so the sidebar
-    // keeps only the profile (name and avatar) as the one-step Settings entry.
-    // The button element and its text stay: the auth projection and the
-    // capability projection reads them as the session signal.
-    loginButton.hidden = presentation.loginHidden;
-    const pendingLogin = document.getElementById("loginPending");
-    if (pendingLogin) { pendingLogin.hidden = true; pendingLogin.style.display = "none"; }
-    loginButton.disabled = presentation.loginDisabled;
-    syncAuthDialogMethods();
-    loginButton.setAttribute("aria-disabled", presentation.loginDisabled ? "true" : "false");
+  function setAuthFormError(...a) { return authModule().setAuthFormError(...a); }
 
-    if (sessionState === "unavailable" || sessionState === "unreachable") {
-      setLoginButtonCopy(uiT("login"), uiT(sessionState === "unreachable" ? "login-unreachable-title" : "login-unavailable-title"));
-      accountName.hidden = presentation.accountNameHidden;
-      accountName.textContent = "";
-      return;
-    }
+  function syncAuthDialogMethods(...a) { return authModule().syncAuthDialogMethods(...a); }
 
-    if (sessionState === "signed_in") {
-      setLoginButtonCopy(uiT("logout"), uiT("logout-title"));
-      const name = authState.user && typeof authState.user.name === "string" ? authState.user.name.trim() : "";
-      accountName.textContent = name || uiT("signed-in");
-      accountName.hidden = false;
-      historySection.hidden = false;
-      if (projectsBadge) projectsBadge.textContent = uiT("checking");
-      return;
-    }
-
-    if (sessionState === "expired") {
-      setLoginButtonCopy(uiT("sign-in-again"), uiT("expired-title"));
-      accountName.textContent = uiT("session-expired");
-      accountName.hidden = false;
-      return;
-    }
-
-    setLoginButtonCopy(uiT("login"), uiT("login-title"));
-    accountName.textContent = uiT("guest");
-    accountName.hidden = false;
-  }
-  function authMethodEnabled(name) {
-    return Boolean(authState && authState.methods && authState.methods[name] === true);
-  }
-
-  function setAuthFormError(node, message = "") {
-    if (!node) return;
-    node.textContent = message;
-    node.hidden = !message;
-  }
-
-  function syncAuthDialogMethods() {
-    if (!authDialog) return;
-    const googleEnabled = authMethodEnabled("google");
-    const passwordEnabled = authMethodEnabled("password");
-    if (googleLoginButton) googleLoginButton.hidden = !googleEnabled;
-    if (authDivider) authDivider.hidden = !(googleEnabled && passwordEnabled);
-    // #5481: the login view and the two reset views are mutually exclusive.
-    const showLogin = passwordEnabled && authDialogView === "login";
-    if (passwordLoginForm) passwordLoginForm.hidden = !showLogin;
-    if (passwordRegisterSection) passwordRegisterSection.hidden = !showLogin;
-    if (passwordResetOpen) passwordResetOpen.hidden = !passwordEnabled || authDialogView !== "login";
-    if (passwordResetPanel) passwordResetPanel.hidden = authDialogView === "login";
-    if (passwordResetRequestView) passwordResetRequestView.hidden = authDialogView !== "request";
-    if (passwordResetConfirmView) passwordResetConfirmView.hidden = authDialogView !== "confirm";
-    renderAndroidHandoff();
-  }
-
-  function openAuthDialog() {
-    if (!authDialog) {
-      if (authMethodEnabled("google")) {
-        if (isAndroidWebView()) startAndroidHandoff();
-        else window.location.assign("/auth/google/start");
-      }
-      return;
-    }
-    if (authHandoff && !authHandoff.value) {
-      authHandoff.value = loveTreeHandoffFromLocation();
-    }
-    // #5481: a mailed one-time link opens the reset confirm view directly.
-    const token = passwordResetTokenFromLocation();
-    if (token) {
-      authDialogView = "confirm";
-      passwordResetToken = token;
-    } else {
-      authDialogView = "login";
-    }
-    syncAuthDialogMethods();
-    setAuthFormError(passwordLoginError);
-    setAuthFormError(passwordRegisterError);
-    setAuthFormError(passwordResetRequestError);
-    setAuthFormError(passwordResetConfirmError);
-    setAuthStatusMessage(passwordResetRequestStatus);
-    setAuthStatusMessage(passwordResetConfirmStatus);
-    if (typeof authDialog.showModal === "function") {
-      authDialog.showModal();
-    } else {
-      authDialog.setAttribute("open", "");
-    }
-    if (authDialogView === "confirm") passwordResetNew?.focus();
-    else if (authDialogView === "request") passwordResetEmail?.focus();
-    else if (authMethodEnabled("password") && passwordLoginIdentifier) passwordLoginIdentifier.focus();
-  }
+  function openAuthDialog(...a) { return authModule().openAuthDialog(...a); }
 
   function isAndroidWebView() {
     if (typeof navigator === "undefined") return false;
@@ -2331,11 +2010,7 @@
     pollAndroidHandoff();
   }
 
-  function closeAuthDialog() {
-    if (!authDialog) return;
-    if (typeof authDialog.close === "function") authDialog.close();
-    else authDialog.removeAttribute("open");
-  }
+  function closeAuthDialog(...a) { return authModule().closeAuthDialog(...a); }
 
   // #5664: the Chat Python Worker can fail isolate startup with
   // `NoGilError: Attempted to use PyProxy when Python GIL not held`
@@ -2349,120 +2024,21 @@
   // keeps its single attempt.
   const AUTH_UNREACHABLE_RETRY_DELAY_MS = 600;
 
-  function authServerUnreachableError() {
-    const error = new Error(uiT("auth-server-unreachable"));
-    error.code = AUTH_SERVER_UNREACHABLE;
-    return error;
-  }
+  function authServerUnreachableError(...a) { return authModule().authServerUnreachableError(...a); }
 
-  function passwordAuthAnswer(data) {
-    return data !== null && typeof data === "object" && !Array.isArray(data);
-  }
+  function passwordAuthAnswer(...a) { return authModule().passwordAuthAnswer(...a); }
 
-  async function passwordAuthRequest(path, payload, options = {}) {
-    const attempts = options.retryUnreachable ? 2 : 1;
-    let response = null;
-    let data = null;
-    let answered = false;
-    for (let attempt = 0; attempt < attempts; attempt += 1) {
-      if (attempt > 0) {
-        await new Promise((resolve) => setTimeout(resolve, AUTH_UNREACHABLE_RETRY_DELAY_MS));
-      }
-      response = await fetch(path, {
-        method: "POST",
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-      data = null;
-      try {
-        data = await response.json();
-      } catch (_) {}
-      answered = passwordAuthAnswer(data);
-      // A route answer, success or refusal, is final: replaying it would
-      // repeat a write. Only a body no route produced is worth the one replay.
-      if (response.ok || answered) break;
-    }
-    if (!response.ok) {
-      if (!answered) throw authServerUnreachableError();
-      const message = data.error && typeof data.error.message === "string"
-        ? data.error.message
-        : uiT("auth-error-generic");
-      const error = new Error(message);
-      error.code = data.error && typeof data.error.code === "string" ? data.error.code : "auth_error";
-      throw error;
-    }
-    // A 2xx without a route answer is not a success: reporting one here would
-    // claim a password was set that the server never stored.
-    if (!answered) throw authServerUnreachableError();
-    return data;
-  }
+  function passwordAuthRequest(...a) { return authModule().passwordAuthRequest(...a); }
 
-  async function submitPasswordLogin(event) {
-    event.preventDefault();
-    if (!authMethodEnabled("password") || !passwordLoginForm) return;
-    setAuthFormError(passwordLoginError);
-    passwordLoginSubmit.disabled = true;
-    try {
-      const result = await passwordAuthRequest("/api/auth/password/login", {
-        identifier: passwordLoginIdentifier.value,
-        password: passwordLoginPassword.value,
-        // A pending LoveTree sign-in travels back exactly as it arrived. The server
-        // binds it only after a verified login and answers with the hop it owns.
-        ...(authHandoff && authHandoff.value ? { handoff: authHandoff.value } : {}),
-      });
-      if (result && typeof result.handoff_return === "string" && /^https?:\/\//.test(result.handoff_return)) {
-        window.location.assign(result.handoff_return);
-        return;
-      }
-      passwordLoginPassword.value = "";
-      closeAuthDialog();
-      await loadAuthStatus();
-    } catch (error) {
-      setAuthFormError(
-        passwordLoginError,
-        error instanceof Error ? error.message : uiT("auth-error-generic"),
-      );
-    } finally {
-      passwordLoginSubmit.disabled = false;
-    }
-  }
+  function submitPasswordLogin(...a) { return authModule().submitPasswordLogin(...a); }
 
-  async function submitPasswordRegister(event) {
-    event.preventDefault();
-    if (!authMethodEnabled("password") || !passwordRegisterForm) return;
-    setAuthFormError(passwordRegisterError);
-    passwordRegisterSubmit.disabled = true;
-    try {
-      await passwordAuthRequest("/api/auth/password/register", {
-        email: passwordRegisterEmail.value,
-        name: passwordRegisterName.value,
-        password: passwordRegisterPassword.value,
-      });
-      passwordRegisterPassword.value = "";
-      closeAuthDialog();
-      await loadAuthStatus();
-    } catch (error) {
-      setAuthFormError(
-        passwordRegisterError,
-        error instanceof Error ? error.message : uiT("auth-error-generic"),
-      );
-    } finally {
-      passwordRegisterSubmit.disabled = false;
-    }
-  }
+  function submitPasswordRegister(...a) { return authModule().submitPasswordRegister(...a); }
 
   // #5481: the lost-password flow. The entry link opens the request view, the
   // mailed one-time link opens the confirm view, and both keep the email the
   // member already typed. The token never travels in a query string: it
   // arrives in the URL fragment, which the browser does not send to the server.
-  function setAuthStatusMessage(node, message = "") {
-    if (!node) return;
-    node.textContent = message;
-    node.hidden = !message;
-  }
+  function setAuthStatusMessage(...a) { return authModule().setAuthStatusMessage(...a); }
 
   // A LoveTree sign-in that arrived here hands its pending ticket to the form the dialog
   // already submits. Same shape and same caution as the reset-link read below: the app shell
@@ -2493,244 +2069,41 @@
     }
   }
 
-  function passwordResetTokenFromLocation() {
-    try {
-      const raw = window.location.hash || "";
-      const match = /^#reset=([A-Za-z0-9_-]{16,256})$/.exec(raw);
-      return match ? match[1] : "";
-    } catch (_) {
-      return "";
-    }
-  }
+  function passwordResetTokenFromLocation(...a) { return authModule().passwordResetTokenFromLocation(...a); }
 
-  function clearPasswordResetFragment() {
-    // The one-time token leaves the address bar as soon as the member leaves
-    // the reset view, so a shared link never lingers in the browser history
-    // of the next person who opens this window.
-    try {
-      if (!window.location.hash) return;
-      window.history.replaceState(null, "", window.location.pathname + window.location.search);
-    } catch (_) {}
-  }
+  function clearPasswordResetFragment(...a) { return authModule().clearPasswordResetFragment(...a); }
 
-  function showPasswordResetView(view) {
-    authDialogView = view;
-    if (passwordResetPanel) passwordResetPanel.hidden = false;
-    if (passwordLoginForm) passwordLoginForm.hidden = view !== "login";
-    if (passwordRegisterSection) passwordRegisterSection.hidden = view !== "login";
-    if (passwordResetRequestView) passwordResetRequestView.hidden = view !== "request";
-    if (passwordResetConfirmView) passwordResetConfirmView.hidden = view !== "confirm";
-  }
+  function showPasswordResetView(...a) { return authModule().showPasswordResetView(...a); }
 
-  function hidePasswordResetViews() {
-    passwordResetToken = "";
-    authDialogView = "login";
-    clearPasswordResetFragment();
-    if (passwordResetPanel) passwordResetPanel.hidden = true;
-    if (passwordResetRequestView) passwordResetRequestView.hidden = true;
-    if (passwordResetConfirmView) passwordResetConfirmView.hidden = true;
-    if (passwordResetOpen) passwordResetOpen.hidden = !authMethodEnabled("password");
-    if (passwordResetEmail) passwordResetEmail.value = "";
-    if (passwordResetNew) passwordResetNew.value = "";
-    if (passwordResetConfirm) passwordResetConfirm.value = "";
-    setAuthFormError(passwordResetRequestError);
-    setAuthFormError(passwordResetConfirmError);
-    setAuthStatusMessage(passwordResetRequestStatus);
-    setAuthStatusMessage(passwordResetConfirmStatus);
-  }
+  function hidePasswordResetViews(...a) { return authModule().hidePasswordResetViews(...a); }
 
-  function openPasswordResetRequest() {
-    if (!authMethodEnabled("password")) return;
-    setAuthFormError(passwordResetRequestError);
-    setAuthStatusMessage(passwordResetRequestStatus);
-    showPasswordResetView("request");
-    if (passwordResetEmail && passwordLoginIdentifier && !passwordResetEmail.value) {
-      passwordResetEmail.value = passwordLoginIdentifier.value.trim();
-    }
-    passwordResetEmail?.focus();
-  }
+  function openPasswordResetRequest(...a) { return authModule().openPasswordResetRequest(...a); }
 
-  function openPasswordResetConfirm(token) {
-    if (!authMethodEnabled("password")) return;
-    passwordResetToken = typeof token === "string" ? token : "";
-    setAuthFormError(passwordResetConfirmError);
-    setAuthStatusMessage(passwordResetConfirmStatus);
-    showPasswordResetView("confirm");
-    passwordResetNew?.focus();
-  }
+  function openPasswordResetConfirm(...a) { return authModule().openPasswordResetConfirm(...a); }
 
-  function closePasswordResetViews() {
-    passwordResetToken = "";
-    hidePasswordResetViews();
-    if (passwordResetEmail) passwordResetEmail.value = "";
-    if (passwordResetNew) passwordResetNew.value = "";
-    if (passwordResetConfirm) passwordResetConfirm.value = "";
-    setAuthFormError(passwordResetRequestError);
-    setAuthFormError(passwordResetConfirmError);
-    setAuthStatusMessage(passwordResetRequestStatus);
-    setAuthStatusMessage(passwordResetConfirmStatus);
-  }
+  function closePasswordResetViews(...a) { return authModule().closePasswordResetViews(...a); }
 
-  async function submitPasswordResetRequest(event) {
-    event.preventDefault();
-    if (!authMethodEnabled("password") || !passwordResetRequestForm) return;
-    setAuthFormError(passwordResetRequestError);
-    setAuthStatusMessage(passwordResetRequestStatus);
-    passwordResetRequestSubmit.disabled = true;
-    try {
-      await passwordAuthRequest("/api/auth/password/reset/request", {
-        email: passwordResetEmail.value,
-      });
-      // The server answers the same way for every address, so the browser
-      // shows the same confirmation either way.
-      setAuthStatusMessage(passwordResetRequestStatus, uiT("auth-reset-request-sent"));
-    } catch (error) {
-      setAuthFormError(
-        passwordResetRequestError,
-        error instanceof Error ? error.message : uiT("auth-error-generic"),
-      );
-    } finally {
-      passwordResetRequestSubmit.disabled = false;
-    }
-  }
+  function submitPasswordResetRequest(...a) { return authModule().submitPasswordResetRequest(...a); }
 
-  async function submitPasswordResetConfirm(event) {
-    event.preventDefault();
-    if (!authMethodEnabled("password") || !passwordResetConfirmForm) return;
-    setAuthFormError(passwordResetConfirmError);
-    setAuthStatusMessage(passwordResetConfirmStatus);
-    const newPassword = passwordResetNew?.value || "";
-    const confirmPassword = passwordResetConfirm?.value || "";
-    if (!newPassword || !confirmPassword) {
-      setAuthFormError(passwordResetConfirmError, uiT("auth-reset-confirm-incomplete"));
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setAuthFormError(passwordResetConfirmError, uiT("auth-reset-confirm-mismatch"));
-      return;
-    }
-    if (!passwordResetToken) {
-      setAuthFormError(passwordResetConfirmError, uiT("auth-reset-expired"));
-      return;
-    }
-    passwordResetConfirmSubmit.disabled = true;
-    try {
-      await passwordAuthRequest("/api/auth/password/reset/confirm", {
-        token: passwordResetToken,
-        new_password: newPassword,
-      }, { retryUnreachable: true });
-      passwordResetToken = "";
-      clearPasswordResetFragment();
-      if (passwordResetNew) passwordResetNew.value = "";
-      if (passwordResetConfirm) passwordResetConfirm.value = "";
-      setAuthStatusMessage(passwordResetConfirmStatus, uiT("auth-reset-confirm-done"));
-      closeAuthDialog();
-      await loadAuthStatus();
-    } catch (error) {
-      setAuthFormError(
-        passwordResetConfirmError,
-        error instanceof Error ? error.message : uiT("auth-error-generic"),
-      );
-    } finally {
-      passwordResetConfirmSubmit.disabled = false;
-    }
-  }
+  function submitPasswordResetConfirm(...a) { return authModule().submitPasswordResetConfirm(...a); }
 
   // #5434: the signed-in account changes its own password. The account is
   // never named by the browser: the server resolves it from the session.
-  function openPasswordChangeDialog() {
-    if (!passwordChangeDialog) return;
-    setAuthFormError(passwordChangeError);
-    if (passwordChangeCurrent) passwordChangeCurrent.value = "";
-    if (passwordChangeNew) passwordChangeNew.value = "";
-    if (passwordChangeConfirm) passwordChangeConfirm.value = "";
-    if (typeof passwordChangeDialog.showModal === "function") passwordChangeDialog.showModal();
-    else passwordChangeDialog.setAttribute("open", "");
-    passwordChangeCurrent?.focus();
-  }
+  function openPasswordChangeDialog(...a) { return authModule().openPasswordChangeDialog(...a); }
 
-  function closePasswordChangeDialog() {
-    if (!passwordChangeDialog) return;
-    if (passwordChangeDialog.open && typeof passwordChangeDialog.close === "function") passwordChangeDialog.close();
-    else passwordChangeDialog.removeAttribute("open");
-  }
+  function closePasswordChangeDialog(...a) { return authModule().closePasswordChangeDialog(...a); }
 
-  async function submitPasswordChange(event) {
-    event.preventDefault();
-    if (!passwordChangeForm) return;
-    setAuthFormError(passwordChangeError);
-    const currentPassword = passwordChangeCurrent?.value || "";
-    const newPassword = passwordChangeNew?.value || "";
-    const confirmPassword = passwordChangeConfirm?.value || "";
-    if (!currentPassword || !newPassword) {
-      setAuthFormError(passwordChangeError, uiT("password-change-incomplete"));
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setAuthFormError(passwordChangeError, uiT("password-change-mismatch"));
-      return;
-    }
-    if (newPassword === currentPassword) {
-      setAuthFormError(passwordChangeError, uiT("password-change-unchanged"));
-      return;
-    }
-    passwordChangeSubmit.disabled = true;
-    try {
-      await passwordAuthRequest("/api/auth/password/change", {
-        current_password: currentPassword,
-        new_password: newPassword,
-      });
-      // The server ends the session it changed the credential for, so the
-      // browser signs in again with the new password.
-      if (passwordChangeCurrent) passwordChangeCurrent.value = "";
-      if (passwordChangeNew) passwordChangeNew.value = "";
-      if (passwordChangeConfirm) passwordChangeConfirm.value = "";
-      closePasswordChangeDialog();
-      closeSettings();
-      await loadAuthStatus();
-      if (authDialog && !authDialog.open) openAuthDialog();
-      setAuthFormError(passwordLoginError, uiT("password-change-done"));
-    } catch (error) {
-      setAuthFormError(
-        passwordChangeError,
-        error instanceof Error ? error.message : uiT("auth-error-generic"),
-      );
-    } finally {
-      passwordChangeSubmit.disabled = false;
-    }
-  }
+  function submitPasswordChange(...a) { return authModule().submitPasswordChange(...a); }
 
   // Service-only and all-service deletion both require the exact account email
   // in the UI; the server repeats every session, origin, identity and admin check.
-  function resetAccountDeleteConfirm() {
-    if (accountDeleteConfirmEmail) accountDeleteConfirmEmail.value = "";
-    if (accountDeleteButton) accountDeleteButton.disabled = true;
-    setAuthFormError(accountDeleteError);
-  }
+  function resetAccountDeleteConfirm(...a) { return authModule().resetAccountDeleteConfirm(...a); }
 
-  function resetAccountSharedDeleteConfirm() {
-    if (accountSharedDeleteConfirmEmail) accountSharedDeleteConfirmEmail.value = "";
-    if (accountSharedDeleteButton) accountSharedDeleteButton.disabled = true;
-    setAuthFormError(accountSharedDeleteError);
-  }
+  function resetAccountSharedDeleteConfirm(...a) { return authModule().resetAccountSharedDeleteConfirm(...a); }
 
-  function openAccountDeleteConfirm() {
-    if (!accountDeleteConfirm) return;
-    resetAccountDeleteConfirm();
-    resetAccountSharedDeleteConfirm();
-    if (accountSharedDeleteConfirm) accountSharedDeleteConfirm.hidden = true;
-    accountDeleteConfirm.hidden = false;
-    accountDeleteConfirmEmail?.focus();
-  }
+  function openAccountDeleteConfirm(...a) { return authModule().openAccountDeleteConfirm(...a); }
 
-  function openAccountSharedDeleteConfirm() {
-    if (!accountSharedDeleteConfirm) return;
-    resetAccountDeleteConfirm();
-    resetAccountSharedDeleteConfirm();
-    if (accountDeleteConfirm) accountDeleteConfirm.hidden = true;
-    accountSharedDeleteConfirm.hidden = false;
-    accountSharedDeleteConfirmEmail?.focus();
-  }
+  function openAccountSharedDeleteConfirm(...a) { return authModule().openAccountSharedDeleteConfirm(...a); }
 
   function syncDeleteButton(button, inputElement) {
     if (!button) return;
@@ -2740,45 +2113,11 @@
     button.disabled = !email || typed !== email;
   }
 
-  function syncAccountDeleteButton() {
-    syncDeleteButton(accountDeleteButton, accountDeleteConfirmEmail);
-  }
+  function syncAccountDeleteButton(...a) { return authModule().syncAccountDeleteButton(...a); }
 
-  function syncAccountSharedDeleteButton() {
-    syncDeleteButton(accountSharedDeleteButton, accountSharedDeleteConfirmEmail);
-  }
+  function syncAccountSharedDeleteButton(...a) { return authModule().syncAccountSharedDeleteButton(...a); }
 
-  async function submitAccountDelete(deleteAllServices = false) {
-    const button = deleteAllServices ? accountSharedDeleteButton : accountDeleteButton;
-    const inputElement = deleteAllServices ? accountSharedDeleteConfirmEmail : accountDeleteConfirmEmail;
-    const errorElement = deleteAllServices ? accountSharedDeleteError : accountDeleteError;
-    if (!button || button.disabled) return;
-    setAuthFormError(errorElement);
-    const typed = inputElement?.value || "";
-    button.disabled = true;
-    try {
-      const endpoint = deleteAllServices ? "/api/account/shared-delete" : "/api/account/delete";
-      await passwordAuthRequest(endpoint, { confirm: typed });
-      resetAccountDeleteConfirm();
-      resetAccountSharedDeleteConfirm();
-      if (accountDeleteConfirm) accountDeleteConfirm.hidden = true;
-      if (accountSharedDeleteConfirm) accountSharedDeleteConfirm.hidden = true;
-      // Successful deletion revokes this service session and clears its cookie.
-      closeSettings();
-      await loadAuthStatus();
-      if (authDialog && !authDialog.open) openAuthDialog();
-      setAuthFormError(
-        passwordLoginError,
-        uiT(deleteAllServices ? "account-shared-delete-done" : "account-delete-done"),
-      );
-    } catch (error) {
-      setAuthFormError(
-        errorElement,
-        error instanceof Error ? error.message : uiT("auth-error-generic"),
-      );
-      button.disabled = false;
-    }
-  }
+  function submitAccountDelete(...a) { return authModule().submitAccountDelete(...a); }
 
   function renderHistorySkeleton(...a) { return historyModule().renderHistorySkeleton(...a); }
 
@@ -2886,57 +2225,7 @@
       } catch (_) { /* The next status read retries without treating failure as sign-out. */ }
     }, 14 * 60 * 1000);
   }
-  async function loadAuthStatus() {
-    // #6114: a Python Worker restart can eat the first status read (1101/1102).
-    // A request that produced NO answer is never a signed-out answer: ask once
-    // more before the browser presents unreachable. A definitive guest answer
-    // (a 200 that says ready and not authenticated) is never re-asked.
-    let data = null;
-    for (let attempt = 0; attempt < 2; attempt += 1) {
-      try {
-        data = await fetchAuthStatusOnce();
-        // The server reports a display-only hint; cookies remain HttpOnly.
-        if (data.shared_login_enabled === true && data.ready === true && !data.authenticated &&
-            (data.session_state === "guest" || data.session_state === "expired") && data.shared_session_present === true) {
-          // #6679: a stale shared-session cookie makes the refresh endpooint
-          // answer 503/401 while /api/auth/status still answers definitively.
-          // A refresh failure is not "unreachable": the status above is a real
-          // server answer naming this browser a guest, and the login entry
-          // must act on it instead of hiding behind a failed renewal. The
-          // server clears a rejected shared cookie itself (401 path), so the
-          // next status read converges on a plain guest.
-          try {
-            const renewed = await fetch("/auth/shared/refresh", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
-            if (renewed.ok) {
-              data = await fetchAuthStatusOnce();
-            }
-          } catch (_) { /* keep the definitive guest status; never mask it as unreachable */ }
-        }
-        break;
-      } catch (_) {
-        if (attempt === 1) data = null;
-      }
-    }
-    try {
-      if (!data) throw new Error("auth status unavailable");
-      applyAuthState(data);
-      scheduleSharedRefresh();
-      const sidebarReads = [];
-      if (authState.authenticated) {
-        sidebarReads.push(loadProjects(), loadRecentConversations());
-      }
-      syncApprovedMemoryVisibility();
-      syncClawRunHistoryVisibility();
-      await Promise.allSettled(sidebarReads);
-    } catch (_) {
-      // #5479: a status request that never produced an answer is "unreachable",
-      // not "signed out". The Chat Worker can fail every route, /api/auth/status
-      // included, when the runtime loses the GIL while it starts a Python
-      // instance (NoGilError, cloudflare/workerd#6624). The sign-in entry point
-      // stays visible and the login button retries the status.
-      applyAuthState({ ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false, status_reachable: false });
-    }
-  }
+  function loadAuthStatus(...a) { return authModule().loadAuthStatus(...a); }
   // Background tabs may have their timers suspended beyond access expiry.
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible" && authState.shared_login_enabled === true) void loadAuthStatus();
@@ -3065,92 +2354,9 @@
     setNote(uiT("claw-web-work-conversation-note"));
   });
 
-  async function requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, signal) {
-    window.PadiemChatLifecycle?.startTurnClock?.(article);
-    const data = await chatTransport.requestCompleted(payload, signal);
-    renderAnswer(article, data);
-    // Chat/Claw separation: the completion belongs to the product that submitted it, even
-    // when the user navigated to the other product while it was in flight.
-    conversationState.setProduct?.(contextSnapshot.product);
-    conversationState.commitAssistant(outboundMessages, data.answer);
-    if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id);
-    conversationState.setProduct?.(conversationProduct);
-    if (typeof data.project_id === "string") {
-      const resolvedProject = projectById(data.project_id) || contextSnapshot.project;
-      if (resolvedProject) activeProject = resolvedProject;
-    }
-    renderProjectState();
-    if (authState.authenticated) {
-      loadRecentConversations();
-      if (projectsReady) loadProjects();
-    }
-    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
-    return true;
-  }
+  async function requestCompletedAnswer(...a) { return streamingModule().requestCompletedAnswer(...a); }
 
-  function applyStreamDone(article, data, answer, outboundMessages, contextSnapshot) {
-    // The answer is complete: the "answer preparing" chip is released here.
-    // A chip that already carries a real status (a Claw P01 stage, a skill
-    // title) is kept, and a failure keeps its own status.
-    window.PadiemChatLifecycle?.releasePreparingRuntimeLabel?.(article);
-    // Chat/Claw separation: the completion belongs to the product that submitted it, even
-    // when the user navigated to the other product while it was in flight.
-    conversationState.setProduct?.(contextSnapshot.product);
-    conversationState.commitAssistant(outboundMessages, answer);
-    if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id);
-    conversationState.setProduct?.(conversationProduct);
-    // #4469: render the terminal sources the backend already validated and sent
-    // (https url + title + retrieved_at). Nothing here trusts or re-requests
-    // them; the bounded renderer in claw-answer-sources.js stays the single
-    // display authority, and a frame without sources leaves the answer surface
-    // unchanged — a model-only answer is never shown as a searched answer.
-    if (Array.isArray(data.sources) && data.sources.length) {
-      window.PadiemClawAnswerSources?.render(article, data.sources);
-    }
-    // #4469: an automatic public search answers on the P01 lane and returns
-    // its evidence in the same browser contract an explicit search uses. The
-    // same bounded renderer shows the sources, so a searched answer is never
-    // shown as a model-only answer.
-    if (Array.isArray(data.evidence) && data.evidence.length) {
-      window.PadiemSearchSources?.render?.(article, data.evidence);
-      if (data.tool && data.tool.id === "web_search") {
-        window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");
-      }
-      article.dataset.taskEvidence = "true";
-      window.PadiemChatLifecycle?.recordTaskEvent?.(article, "evidence");
-    }
-    if (typeof data.project_id === "string") {
-      const snapshotProject = contextSnapshot.project && contextSnapshot.project.id === data.project_id ? contextSnapshot.project : null;
-      const boundedProject = data.project && data.project.id === data.project_id && typeof data.project.name === "string" ? data.project : null;
-      const resolvedProject = projectById(data.project_id) || snapshotProject || boundedProject;
-      if (resolvedProject) activeProject = resolvedProject;
-    }
-    if (Number.isInteger(data.project_files_used) && data.project_files_used > 0) {
-      const used = document.createElement("small");
-      used.className = "reference-note";
-      used.textContent = uiT("project-files-used", { count: data.project_files_used });
-      article.querySelector(".assistant-content").appendChild(used);
-    }
-    renderWebGroundingNotice(article.querySelector(".assistant-content"), data.notice, data.metadata);
-    // #5573: the live PC scope notice is its own line above the answer.
-    window.PadiemChatPcScopeNotice?.render?.(
-      article.querySelector(".assistant-content"),
-      data.scope_notice,
-    );
-    renderProjectState();
-    if (authState.authenticated) {
-      loadRecentConversations();
-      if (projectsReady) loadProjects();
-    }
-    // Owner 2026-10-20: the answer carries the moment it completed. It is
-    // turn metadata on the rendered message, not a second storage structure,
-    // and it is stamped once the stream is done.
-    if (!article.dataset.completedAt) {
-      article.dataset.completedAt = new Date().toISOString();
-    }
-    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
-    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }
+  function applyStreamDone(...a) { return streamingModule().applyStreamDone(...a); }
 
   // Transport completion does not imply a completed durable PC run.
   const resolvedPcRuns = new Set();
@@ -3407,435 +2613,9 @@
     return true;
   }
 
-  async function requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, signal, route) {
-    // #5573 §7: the elapsed clock starts with the request, not with the first
-    // frame. It reports only how long the turn has been in flight.
-    window.PadiemChatLifecycle?.startTurnClock?.(article);
-    // #3539: product-state-aware routing. A generic B54 Claw submit runs on the
-    // canonical P01 Engine lane; the standalone Padiem Chat path keeps the
-    // existing /api/chat/stream transport call byte-for-byte.
-    // The decision is an immutable snapshot taken before showConversation()
-    // mutates shell.dataset.state, so it is never re-derived from live state.
-    const clawGeneralRequest = !!(route && route.clawGeneral);
-    // #3930: no fabricated stages. Only validated server-emitted P01 envelopes
-    // can change the runtime label; a legacy delta/done stream retains its
-    // existing truthful response status.
-    const canonicalEventProjection = clawGeneralRequest ? window.PadiemClawRunEventProjection?.create?.() : null;
-    const verifiedClawRecovery = clawGeneralRequest ? window.PadiemClawRecoveryTruth?.create?.() : null;
-    const historicalStages = [];
-    // #5221: the accepted canonical envelopes of this run, so the shared work
-    // card can show the real stages of the run while it happens. Only an
-    // envelope the canonical projection accepted is collected, and the card
-    // validates the list again before it renders anything.
-    const liveOrchestrationEvents = [];
-    const stageForOrchestrationKind = Object.freeze({
-      run_started: "request_accepted",
-      context_prepared: "question_checked",
-      memory_read: "reference_context",
-      plan_created: "planning",
-      skill_resolved: "planning",
-      tool_resolution: "tool_check",
-      tool_started: "tool_started",
-      tool_completed: "tool_completed",
-      tool_failed: "tool_failed",
-      evidence_attached: "evidence",
-      verification_completed: "evidence",
-      run_resumed: "question_checked",
-      recovery_started: "tool_started",
-      recovery_decided: "tool_check",
-      retry_started: "tool_started",
-      retry_completed: "tool_completed",
-    });
-    let streamStatusOpened = false;
-    function revealStreamStatus() {
-      if (streamStatusOpened) return;
-      const disclosure = article.querySelector(".capability-kit-disclosure");
-      if (!disclosure) return;
-      disclosure.open = true;
-      streamStatusOpened = true;
-    }
-    function safeThoughtSummary(value) {
-      if (typeof value !== "string") return "";
-      let summary = value.trim().slice(0, 2000);
-      const userPrompts = Array.isArray(payload?.messages)
-        ? payload.messages.filter((item) => item?.role === "user" && typeof item.content === "string")
-            .map((item) => item.content.trim()).filter(Boolean).sort((left, right) => right.length - left.length)
-        : [];
-      for (const prompt of userPrompts) {
-        if (prompt.length <= 3 && summary.includes(prompt)) return "";
-        summary = summary.replaceAll(prompt, "[user prompt omitted]");
-      }
-      return summary
-        .replace(/\bBearer\s+[A-Za-z0-9._~+\/-]{8,}/gi, "Bearer [secret redacted]")
-        .replace(/\b(?:sk-[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9_]{12,}|xox[baprs]-[A-Za-z0-9-]{12,}|AIza[A-Za-z0-9_-]{20,})\b/g, "[secret redacted]")
-        .replace(/\b(api[_ -]?key|access[_ -]?token|token|password|secret)\s*[:=]\s*["']?[^,\s"'`]+/gi, "$1: [redacted]")
-        .replace(/\b([A-Za-z][A-Za-z0-9_-]*_id)\s*[:=]\s*["']?[A-Za-z0-9_.:-]+/gi, "$1: [internal ID redacted]")
-        .replace(/\b(?:run|trace|dsp|pcr|evt|event|dispatch|pc|conversation|request|tenant|user|session|continuation|message|turn|chat|app)_[A-Za-z0-9][A-Za-z0-9_.:-]*\b/gi, "[internal ID redacted]")
-        .replace(/\b[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\b/gi, "[internal ID redacted]")
-        .replace(/\b[0-9a-f]{16,}\b/gi, "[internal ID redacted]")
-        .replace(/(https?:\/\/[^\s"'`<>?#]+)\?[^\s"'`<>#]*/gi, "$1?[query redacted]")
-        .replace(/\b[A-Za-z]:[\\/][^\s"'`<>?#]*/g, "[file path redacted]")
-        .replace(/\\\\[^\\/\s]+[\\/][^\s"'`<>?#]*/g, "[file path redacted]")
-        .replace(/(^|[\s("'`=,:;])~\/[^\s"'`<>?#]*/gm, "$1[file path redacted]")
-        .replace(/(^|[\s("'`=,:;])\/(?!\/)[^\s"'`<>?#]*/gm, "$1[file path redacted]");
-    }
-    function renderThoughtSummary(value) {
-      const summaryText = safeThoughtSummary(value);
-      if (!summaryText) return;
-      const body = article.querySelector(".assistant-body");
-      const content = article.querySelector(".assistant-content");
-      if (!body || !content) return;
-      let details = body.querySelector(".orchestration-thought-summary");
-      if (!details) {
-        details = document.createElement("details");
-        details.className = "orchestration-thought-summary";
-        const label = document.createElement("summary");
-        label.textContent = uiT("orchestration-thought-summary-label");
-        const paragraph = document.createElement("p");
-        details.append(label, paragraph);
-        body.insertBefore(details, content);
-      }
-      const paragraph = details.querySelector("p");
-      if (paragraph) paragraph.textContent = summaryText;
-    }
-    const response = clawGeneralRequest
-      ? await chatTransport.requestClawGeneral(payload, signal)
-      : await chatTransport.requestStreaming(payload, signal);
-    const responseContentType = response.headers?.get?.("content-type") || "";
-    const shouldFollowStream = !/\bapplication\/json\b/i.test(responseContentType);
-    const pcProgressRunId = window.PadiemPcBrowserSurface?.runIdForProgress?.(
-      response, payload, clawGeneralRequest
-    ) ?? (clawGeneralRequest ? null : payload.pc_run_id);
-    activeClawRunId = clawGeneralRequest && typeof pcProgressRunId === "string"
-      ? pcProgressRunId : null;
+  async function requestStreamingAnswer(...a) { return streamingModule().requestStreamingAnswer(...a); }
 
-    let answer = "";
-    let paragraph = null;
-    let answerTextNode = null;
-    let streamScrollTrackingStarted = false;
-    let done = false;
-    let terminalError = false;
-    // #3935: terminal P01 events outrank a later transport done/connection
-    // loss. Keep any partial text, show bounded status, never mint an approval
-    // button or silently submit a second request.
-    function showVerifiedClawRecovery(state) {
-      const content = article.querySelector(".assistant-content");
-      const typing = content?.querySelector(".typing");
-      if (typing) typing.remove();
-      const status = document.createElement("p");
-      status.className = "claw-recovery-truth";
-      status.setAttribute("role", "status");
-      status.textContent = window.PadiemClawRecoveryTruth.copy(state, document.documentElement.lang);
-      content?.appendChild(status);
-      const marker = article.querySelector("[data-runtime-label]");
-      if (marker) {
-        marker.textContent = status.textContent;
-        window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, status.textContent, "status");
-      }
-      PadiemChatLifecycle.set(article, state === "waiting_for_approval"
-        ? MESSAGE_LIFECYCLE.WAITING_APPROVAL
-        : state === "cancelled" ? MESSAGE_LIFECYCLE.CANCELLED : MESSAGE_LIFECYCLE.FAILED);
-      revealErrorState(article);
-    }
-    try {
-      await chatTransport.readSseEvents(response, async (frame) => {
-        if (frame.event === "meta") {
-          revealStreamStatus();
-          window.PadiemChatLifecycle?.recordTaskEvent?.(article, "request_accepted");
-          return false;
-        }
-        if (frame.event === "progress") {
-          let value;
-          try { value = JSON.parse(frame.data); } catch (_) { return false; }
-          if (window.PadiemChatLifecycle?.recordProgressFrame?.(article, value)) revealStreamStatus();
-          return false;
-        }
-        if (frame.event === "thought_summary") {
-          let value;
-          try { value = JSON.parse(frame.data); } catch (_) { return false; }
-          renderThoughtSummary(value && value.summary);
-          return false;
-        }
-        if (window.PadiemChatThoughtPanel?.handleFrame?.(article, frame, {
-          activeLabel: uiT("orchestration-thinking-label"),
-          sanitize: safeThoughtSummary,
-        })) return false;
-        if (frame.event === "orchestration_event") {
-          revealStreamStatus();
-          let value;
-          try { value = JSON.parse(frame.data); } catch (_) { return false; }
-          const kind = value && typeof value.kind === "string" ? value.kind : "";
-          const metadata = value && value.metadata && typeof value.metadata === "object" ? value.metadata : {};
-          const toolId = metadata.tool_id === "web_search" || metadata.tool_id === "pc_tool"
-            ? metadata.tool_id : "";
-          if (kind === "thought_summary") renderThoughtSummary(value.summary);
-          if (toolId === "web_search") window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");
-          if (toolId === "pc_tool") window.PadiemChatLifecycle?.recordTaskEvent?.(article, "pc_work");
-          const stage = stageForOrchestrationKind[kind];
-          if (stage) window.PadiemChatLifecycle?.recordTaskEvent?.(article, stage);
-          return false;
-        }
-        if (frame.event === "tool") {
-          revealStreamStatus();
-          let value;
-          try { value = JSON.parse(frame.data); } catch (_) { return false; }
-          if (value && (value.id === "web_search" || value.tool_id === "web_search")) {
-            window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");
-          } else if (value && (value.id === "pc_tool" || value.tool_id === "pc_tool")) {
-            window.PadiemChatLifecycle?.recordTaskEvent?.(article, "pc_work");
-          }
-          const stage = value && value.status === "completed" ? "tool_completed"
-            : value && value.status === "failed" ? "tool_failed" : "tool_started";
-          window.PadiemChatLifecycle?.recordTaskEvent?.(article, stage);
-          return false;
-        }
-        if (["pc_progress", "heartbeat", "scope_notice"].includes(frame.event)) {
-          let value;
-          try { value = JSON.parse(frame.data); } catch (_) { return false; }
-          if (frame.event === "pc_progress") {
-            if (window.PadiemChatLifecycle?.recordPcProgress?.(article, value, pcProgressRunId)) {
-              revealStreamStatus();
-              window.PadiemChatLifecycle?.recordTaskEvent?.(article, "pc_work");
-            }
-          } else if (frame.event === "heartbeat") {
-            window.PadiemChatLifecycle?.recordPcHeartbeat?.(article, value);
-          } else {
-            window.PadiemChatPcScopeNotice?.render?.(article.querySelector(".assistant-content"), value.scope_notice);
-          }
-          return false;
-        }
-        if (frame.event === "p01_event") {
-          if (!clawGeneralRequest || !canonicalEventProjection) return false;
-          let envelope;
-          try { envelope = JSON.parse(frame.data); } catch (_) { return false; }
-          if (envelope.delivery !== "live" && envelope.delivery !== "post_execution") return false;
-          const projected = canonicalEventProjection.consume(envelope);
-          if (!projected.accepted) return false;
-          // #3935: only an accepted canonical event can affect terminal truth.
-          verifiedClawRecovery?.observe(projected.kind);
-          const label = window.PadiemClawRunEventProjection.label(projected.kind, document.documentElement.lang);
-          if (envelope.delivery === "post_execution") {
-            // The Engine returned a completed run, not an actual live event.
-            // Preserve truth: show these labels only as a retrospective log.
-            if (label && historicalStages.length < 12) historicalStages.push(label);
-            return false;
-          }
-          const marker = article.querySelector("[data-runtime-label]");
-          // A Claw P01 stage is a real status: it replaces the preparing chip
-          // and is kept when the run completes.
-          if (label && marker) {
-            marker.textContent = label;
-            window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, label, "status");
-          }
-          // #5221: the shared work card shows the real stages of this run.
-          // The card re-validates the list, so an envelope that does not
-          // belong to this run is not rendered. The card is a presentation
-          // extra: the stage labels are already on the status chip, and
-          // drawing the card must never break the answer stream.
-          liveOrchestrationEvents.push(envelope);
-          try {
-            window.PadiemChatOrchestrationUI?.render?.(article, { events: liveOrchestrationEvents }, {});
-          } catch (_) {
-            // The answer does not depend on the card.
-          }
-          return false;
-        }
-        if (!["delta", "done", "error"].includes(frame.event)) return false;
-        let data;
-        try {
-          data = JSON.parse(frame.data);
-        } catch (_) {
-          throw new Error(uiT("stream-format-invalid"));
-        }
-        if (frame.event === "delta") {
-          // Never append new content after a verified P01 failure, cancellation
-          // or approval pause; a later delta cannot revive a stopped run.
-          if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) return false;
-          if (!data || typeof data.delta !== "string") throw new Error(uiT("stream-format-invalid"));
-          if (!data.delta) return false;
-          let streamScrollIntent = null;
-          if (shouldFollowStream) {
-            try {
-              streamScrollIntent = window.__padiemConversationMotion?.beforeStreamingDelta?.() ?? null;
-              if (typeof streamScrollIntent === "boolean") streamScrollTrackingStarted = true;
-            } catch (_) {
-              // Scrolling is presentation-only; it must never interrupt a reply.
-            }
-          }
-          if (!paragraph) {
-            const content = article.querySelector(".assistant-content");
-            content.replaceChildren();
-            paragraph = document.createElement("p");
-            if (typeof document.createTextNode === "function") {
-              answerTextNode = document.createTextNode("");
-            } else {
-              // Minimal fallback for older DOM shims. Browsers take the native
-              // Text.appendData path, while test hosts keep the legacy text view.
-              answerTextNode = {
-                data: "",
-                appendData(value) {
-                  this.data += value;
-                  paragraph.textContent = this.data;
-                },
-              };
-            }
-            paragraph.appendChild(answerTextNode);
-            content.appendChild(paragraph);
-            // #5559: the first token is a real fact. The status moves from
-            // "preparing" to "generating" and the step is recorded.
-            article.dataset.answerStarted = "true";
-            window.PadiemChatLifecycle?.recordTaskEvent?.(article, "answer_started");
-          }
-          answer += data.delta;
-          if (!window.PadiemChatLifecycle?.appendStreamDelta?.(answerTextNode, data.delta)) {
-            answerTextNode.appendData(data.delta);
-          }
-          if (typeof streamScrollIntent === "boolean") {
-            try {
-              window.__padiemConversationMotion?.afterStreamingDelta?.(streamScrollIntent);
-            } catch (_) {
-              // Scrolling is presentation-only; it must never interrupt a reply.
-            }
-          }
-          return false;
-        }
-        if (frame.event === "error") {
-          if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
-            terminalError = true;
-            showVerifiedClawRecovery(verifiedClawRecovery.state());
-            return true;
-          }
-          const clawFailure = clawGeneralRequest
-            ? clawGeneralFailure(data && data.error ? data.error.code : "")
-            : null;
-          const message = clawGeneralRequest
-            ? clawFailure.message
-            : chatTransport.streamErrorMessage(data);
-          if (clawGeneralRequest && !paragraph) throw chatTransport.errorFor(data, message);
-          // #5895: on the PC lane a cut stream is not a refusal. The run keeps
-          // executing on the server and its answer is persisted, so keep this
-          // turn in its processing state and let the owner-scoped pending-result
-          // recovery below read the stored answer instead of claiming a failure.
-          if (!clawGeneralRequest && contextSnapshot?.pcRunId && chatTransport.isStreamLoss?.(data)) {
-            PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
-            window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, uiT("pc-processing-note"), "status");
-            throw chatTransport.errorFor(data, message);
-          }
-          // An explicit refusal is terminal even before the first token.
-          // Handle it here so the outer catch never starts pending-result GETs.
-          terminalError = true;
-          const terminalFailure = chatTransport.errorFor(data, message);
-          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(terminalFailure), clawFailure, terminalFailure.code);
-          return true;
-        }
-        if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
-          terminalError = true;
-          showVerifiedClawRecovery(verifiedClawRecovery.state());
-          return true;
-        }
-        if (!data || data.done !== true || !paragraph || !answer) throw new Error(uiT("stream-complete-invalid"));
-        if (done) throw new Error(uiT("stream-done-duplicate"));
-        done = true;
-        window.PadiemChatThoughtPanel?.settle?.(
-          article, uiT("orchestration-thinking-done-label"),
-        );
-        if (clawGeneralRequest && data.pc_pending === true
-            && typeof data.run_id === "string"
-            && typeof data.conversation_id === "string") {
-          const pendingConversationId = data.conversation_id;
-          conversationState.setConversationId(pendingConversationId, contextSnapshot.product);
-          PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
-          void waitForAcceptedPcRun(article, data, outboundMessages, signal, contextSnapshot.product)
-            .catch(() => { if (article.isConnected && !signal.aborted) {
-              PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.FAILED);
-            } });
-          return true;
-        }
-        applyStreamDone(article, data, answer, outboundMessages, contextSnapshot);
-        if (historicalStages.length) {
-          const details = document.createElement("details");
-          details.className = "claw-event-history";
-          const summary = document.createElement("summary");
-          summary.textContent = uiT("claw-event-history-post-execution");
-          const stages = document.createElement("ul");
-          for (const label of historicalStages) {
-            const item = document.createElement("li");
-            item.textContent = label;
-            stages.appendChild(item);
-          }
-          details.append(summary, stages);
-          article.querySelector(".assistant-body")?.appendChild(details);
-        }
-        return true;
-      });
-      if (done) return true;
-      if (terminalError) return false;
-      // No transport done: a *verified* P01 failure/cancellation/approval pause
-      // still has to be represented truthfully, not replaced with "completed".
-      if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
-        showVerifiedClawRecovery(verifiedClawRecovery.state());
-        return false;
-      }
-      throw new Error(uiT("stream-incomplete"));
-    } catch (error) {
-      if (error && error.name === "AbortError") throw error;
-      if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
-        showVerifiedClawRecovery(verifiedClawRecovery.state());
-        return false;
-      }
-      // The PC lane may already have persisted its answer. Let the outer
-      // request catch perform the owner-scoped recovery instead of rendering a
-      // premature connection error from the incomplete stream.
-      if (!clawGeneralRequest && contextSnapshot?.pcRunId && !terminalError) throw error;
-      if (paragraph) {
-        if (clawGeneralRequest) {
-          const clawFailure = clawGeneralFailure(error && error.code);
-          renderStreamError(article, clawFailure.message,
-            outboundMessages, skill, contextSnapshot, true, MESSAGE_LIFECYCLE.FAILED, clawFailure);
-        } else {
-          // Preserve the original standalone Chat catch path and its existing
-          // rich-stream/browser contract. Only Claw uses bounded safe copy.
-          renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"),
-            outboundMessages, skill, contextSnapshot, false, MESSAGE_LIFECYCLE.FAILED, null,
-            error && typeof error.code === "string" ? error.code : "");
-        }
-        return false;
-      }
-      throw error;
-    } finally {
-      if (streamScrollTrackingStarted) {
-        try {
-          window.__padiemConversationMotion?.endStreaming?.();
-        } catch (_) {
-          // Keep stream cleanup independent from the scroll presentation.
-        }
-      }
-    }
-  }
-
-  function cancelActiveStream() {
-    if (!inFlight || !activeRequestController || !activeRequestArticle) return;
-    activeRequestCancelReason = "user_cancel";
-    const runId = activeClawRunId;
-    if (runId) {
-      // The stop is a server-side fact, not only a dropped stream: the server
-      // records the stop time and refuses any PC action created after it, so
-      // an action the loop had not sent yet is never sent, and an action that
-      // was already sent is never sent again.
-      fetch("/api/pc/cancel", {
-        method: "POST", credentials: "same-origin", cache: "no-store",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ run_id: runId }),
-      }).then((response) => (response.ok ? response.json() : null))
-        .then((data) => {
-          invalidateClawRunsRead();
-          setNote(uiT(data && data.ok === true ? "pc-stop-sent" : "pc-stop-failed"), "status");
-        })
-        .catch(() => setNote(uiT("pc-stop-failed"), "status"));
-    }
-    activeRequestController.abort();
-    if (!runId) setNote(uiT("answer-cancelled-note"), "error");
-  }
+  function cancelActiveStream(...a) { return streamingModule().cancelActiveStream(...a); }
 
   // #4317: product-capabilities.js is loaded AFTER app.js and owns the tier
   // state. The universally available signed-in Free lane stays the default for
@@ -3864,178 +2644,7 @@
     }
   }
 
-  async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest, explicitRetry = false) {
-    if (inFlight) return false;
-    inFlight = true;
-    activeRequestCancelReason = null;
-    const requestEpoch = conversationEpoch;
-    const controller = new AbortController();
-    activeRequestController = controller;
-    updateComposer();
-    const article = addAssistantShell(uiT("answer-preparing"), "preparing");
-    activeRequestArticle = article;
-    // #5559: the status card is the one status surface of this turn. It is
-    // rendered from the first moment, so the reader sees the real state while
-    // the answer is still being produced.
-    window.PadiemChatLifecycle?.recordTaskEvent?.(article, "request_sent");
-    window.PadiemChatLifecycle?.renderTaskStatus?.(article);
-    renderTyping(article);
-    try {
-      // #5222: wait for the account's tier restore to settle before the tier
-      // is read, so a request never leaves with a tier that was not verified
-      // for this account yet.
-      await window.PadiemTierSelection?.ready?.();
-      const payload = { messages: outboundMessages, tier: selectedProductTier(), skill };
-      // #4745: retain the exact user-turn claim for a manual retry. A new
-      // submitPrompt receives a new contextSnapshot, so a separate identical
-      // request obtains a distinct key; explicit retry reuses this snapshot.
-      if (!contextSnapshot.calendarTurnId) {
-        contextSnapshot.calendarTurnId = chatTransport.createCalendarTurnId?.() || null;
-      }
-      if (contextSnapshot.calendarTurnId) payload.calendar_turn_id = contextSnapshot.calendarTurnId;
-      // PADIEM Custom is the customer-owned key lane: it replaces the PADIEM
-      // tier for this request (the server rejects tier+custom) and stays on the
-      // direct provider path, never through B14 orchestration.
-      const customSelection = !clawGeneralRequest && window.PadiemCustomSelection?.get?.();
-      if (customSelection) {
-        delete payload.tier;
-        payload.custom = { provider: customSelection.provider, model: customSelection.model };
-        if (customSelection.reasoning_effort) {
-          payload.custom.reasoning_effort = customSelection.reasoning_effort;
-        }
-      }
-      // The long PC lane can outlive the browser's request. Generate the
-      // canonical run handle before submit so a dropped response can be
-      // recovered by an owner-scoped GET instead of resubmitting the PC turn.
-      // An explicit retry reuses the failed request's handle; the server
-      // refuses to rewrite an existing run, so a retry cannot silently start a
-      // second PC execution. A new submit gets a new snapshot/handle.
-      const pcRunId = !clawGeneralRequest && !customSelection
-        ? (contextSnapshot.pcRunId || chatTransport.createChatPcRunId?.()) : null;
-      if (pcRunId) {
-        contextSnapshot.pcRunId = pcRunId;
-        payload.pc_run_id = pcRunId;
-      }
-      // #6828: grade-only Claw execution. No per-request model id is sent;
-      // the server resolves the grade route. BYOK remains a separate Chat lane.
-
-      // #3539: the routing decision arrives as a submit-time snapshot. It is
-      // NEVER re-derived from live shell state here, because showConversation()
-      // has already flipped shell.dataset.state to "chat" by the time this runs
-      // (re-deriving it silently rerouted the generic Claw composer onto the
-      // standalone /api/chat/stream lane in Production).
-      // A generic B54 Claw submit runs on the canonical P01 Engine lane with no
-      // direct-B14 /api/chat/stream fallback; the standalone Padiem Chat composer
-      // keeps /api/chat/stream unchanged, and the explicit manual form submits
-      // through clawManualForm below, never here.
-      const attachmentItems = Array.isArray(attachment) ? attachment : (attachment ? [attachment] : []);
-      const uploadedItems = [];
-      for (const item of attachmentItems) {
-        let current = item;
-        if (current.fileLane && !current.fileId) {
-          // #6579 step 3: chunk progress rides the same status line; the shared
-          // module resumes a drop and owns the guidance shown on failure.
-          const reference = await window.PadiemFileLane.upload(current.file, controller.signal, (state) => {
-            if (!projectFileStatus) return;
-            setNote(state.phase === "finalizing"
-              ? uiT("document-saving")
-              : `${uiT("document-saving")} ${state.percent}%`, "normal");
-          });
-          current = { ...current, ...reference };
-        }
-        uploadedItems.push(current);
-      }
-      attachment = uploadedItems;
-      const attachments = attachmentPayload(attachment);
-      if (attachments) payload.attachments = attachments;
-      if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
-      if (contextSnapshot.project) payload.project_id = contextSnapshot.project.id;
-      // #2505: an attached document travels on the lane the product selected.
-      // Chat keeps its existing completed-attachment request unchanged; a Claw
-      // submit stays on the canonical P01 Engine lane and never falls back to
-      // the standalone direct-B14 /api/chat route (#3539).
-      if (attachments && !clawGeneralRequest) {
-        const completedOk = await requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, controller.signal);
-        if (completedOk) {
-          lastCompletedAnswerRequest = { outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest: Boolean(clawGeneralRequest), article };
-        }
-        return completedOk;
-      }
-      const streamOk = await requestStreamingAnswer(
-        article,
-        payload,
-        outboundMessages,
-        skill,
-        contextSnapshot,
-        controller.signal,
-        clawGeneralRequest ? { clawGeneral: true } : null,
-      );
-      if (streamOk) {
-        lastCompletedAnswerRequest = { outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest: Boolean(clawGeneralRequest), article };
-      }
-      return streamOk;
-    } catch (error) {
-      if (error && error.name === "AbortError") {
-        if (activeRequestCancelReason === "user_cancel" && requestEpoch === conversationEpoch) {
-          renderCancelled(article, outboundMessages, skill, contextSnapshot, clawGeneralRequest);
-        }
-        return false;
-      }
-      if (requestEpoch !== conversationEpoch) return false;
-      handleCustomRequestFailure(error);
-      // A guest that bypassed the pre-send gate (stale auth state) still gets
-      // the login path, never a raw provider error.
-      if (error && error.code === "login_required") {
-        setNote(uiT("model-requires-login"), "error");
-        openAuthDialog();
-      }
-      // An explicit retry replays the failed turn with that turn's own run
-      // handle. When the server accepts it, reading the inherited handle back
-      // reports it as still processing and never ends the retry turn; when the
-      // server refuses it, no stored result can exist. Either way a failed
-      // retry ends here, in its own failure card with its own retry action,
-      // instead of sitting in the streaming state with a running clock.
-      if (!clawGeneralRequest && contextSnapshot?.pcRunId && !error?.terminalRecord
-          && !error?.submissionRejected && !explicitRetry) {
-        try {
-          const recovered = await recoverStoredPcResult(
-            article, contextSnapshot, outboundMessages, skill, controller.signal,
-          );
-          if (recovered) return true;
-        } catch (recoveryError) {
-          if (recoveryError && recoveryError.name === "AbortError") return false;
-        }
-      }
-      const clawFailure = clawGeneralRequest ? clawGeneralFailure(error && error.code) : null;
-      renderError(
-        article,
-        clawGeneralRequest && error?.clawFailureDetail === "engine_provider_rate_limited"
-          ? uiT("claw-general-provider-limit")
-          : clawGeneralRequest
-            ? clawFailure.message
-            : (error instanceof Error ? error.message : uiT("try-again")),
-        outboundMessages,
-        skill,
-        attachment,
-        contextSnapshot,
-        clawGeneralRequest,
-        lifecycleForError(error),
-        clawFailure,
-        error && typeof error.code === "string" ? error.code : "",
-      );
-      return false;
-    } finally {
-      if (activeRequestController === controller) {
-        activeRequestController = null;
-        activeRequestArticle = null;
-        activeRequestCancelReason = null;
-        activeClawRunId = null;
-        inFlight = false;
-        updateComposer();
-        input.focus();
-      }
-    }
-  }
+  async function requestAnswer(...a) { return streamingModule().requestAnswer(...a); }
   // #3539: the generic B54 Claw composer runs on the canonical P01 Engine lane.
   // This predicate documents the product state that selects the lane: the Claw
   // shell with the explicit manual form hidden. It must be read at submit time,
@@ -4079,14 +2688,7 @@
   // The server is the final authority and answers a bypassing guest with 401
   // login_required. A mock/preview deployment that cannot authenticate keeps
   // its CI harness behavior through the server-owned flag.
-  function requireSessionForModelUse() {
-    if (authState.authenticated === true) return true;
-    if (authState.model_requires_session !== true) return true;
-    setNote(uiT("model-requires-login"), "error");
-    if (loginButton && !loginButton.hidden && !loginButton.disabled) loginButton.click();
-    else openAuthDialog();
-    return false;
-  }
+  function requireSessionForModelUse(...a) { return authModule().requireSessionForModelUse(...a); }
 
   async function submitPrompt(text, selectedSkill) {
     const prompt = text.trim();
@@ -4239,25 +2841,7 @@
   // #5560: one sign-out implementation, reached from the sidebar session
   // button and from Settings > Account. The server session invalidation and
   // the local conversation reset are the same in both paths.
-  async function signOutCurrentAccount() {
-    try {
-      if (authState.shared_login_enabled === true && authState.shared_session_present === true) {
-        const sharedLogout = await fetch("/auth/shared/logout", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
-        if (!sharedLogout.ok) throw new Error("shared logout unavailable");
-      }
-      await fetch("/api/auth/logout", { method: "POST", headers: { "Accept": "application/json" } });
-    } finally {
-      // #5034: drop this device's Web Push subscription on sign-out so a
-      // signed-out browser stops receiving this account's task notifications.
-      // Never blocks the sign-out itself.
-      if (window.PadiemPush && typeof window.PadiemPush.clearOnSignOut === "function") {
-        await window.PadiemPush.clearOnSignOut();
-      }
-      resetConversationView(false);
-      clearProjectsUI();
-      await loadAuthStatus();
-    }
-  }
+  function signOutCurrentAccount(...a) { return authModule().signOutCurrentAccount(...a); }
   const guestLoginEntryButton = document.getElementById("guestLoginEntryButton");
   if (guestLoginEntryButton) guestLoginEntryButton.addEventListener("click", openAuthDialog);
   loginButton.addEventListener("click", async () => {
@@ -4603,23 +3187,9 @@
   // user id, so the account display name is the only switch signal available.
   let clawApprovalSessionToken = "unset";
 
-  function invalidateClawApprovalSession() {
-    clawApprovalEpoch += 1;
-    // Release the shared single-flight flag so the next session can decide at
-    // all. The stale promise's own finally is epoch-guarded, so it can never
-    // release a newer session's busy state instead.
-    clawApprovalInFlight = false;
-  }
+  function invalidateClawApprovalSession(...a) { return authModule().invalidateClawApprovalSession(...a); }
 
-  function noteClawApprovalSession(authenticated) {
-    const token = authenticated
-      ? "in:" + (typeof authState.user?.name === "string" ? authState.user.name.trim() : "")
-      : "out";
-    if (token !== clawApprovalSessionToken) {
-      clawApprovalSessionToken = token;
-      invalidateClawApprovalSession();
-    }
-  }
+  function noteClawApprovalSession(...a) { return authModule().noteClawApprovalSession(...a); }
 
   const clawFallbackCopy = {
     "claw-result-badge": "Preview",
@@ -6063,18 +4633,7 @@
    *  is one of the four closed session states, rendered through the bounded
    *  textContent sink. */
 
-  function reviewedGoogleAuthorizationUrl(value) {
-    if (typeof value !== "string" || !value) return null;
-    let url;
-    try {
-      url = new URL(value);
-    } catch (_) {
-      return null;
-    }
-    if (url.protocol !== "https:" || url.hostname !== "accounts.google.com") return null;
-    if (url.pathname !== "/o/oauth2/v2/auth" || url.username || url.password || url.hash) return null;
-    return url.toString();
-  }
+  function reviewedGoogleAuthorizationUrl(...a) { return authModule().reviewedGoogleAuthorizationUrl(...a); }
 
   function setConnectorCardsLoading() {
     liveConnectorCards().forEach((card) => {
@@ -6328,13 +4887,7 @@
     }
   }
 
-  function approvalDecisionErrorMessage(data, response) {
-    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
-    const status = response ? response.status : 0;
-    if (code === "unauthorized" || status === 401) return clawT("claw-error-auth-needed");
-    if (code === "approval_not_available" || status === 404) return clawT("claw-approval-not-available");
-    return clawT("claw-approval-error");
-  }
+  function approvalDecisionErrorMessage(...a) { return conversationModule().approvalDecisionErrorMessage(...a); }
 
   function setApprovalControlsBusy(container, busy) {
     if (!container) return;
@@ -6825,16 +5378,7 @@
     else clawApprovedError.removeAttribute("data-state");
   }
 
-  function approvedMemoryErrorMessage(data, response) {
-    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
-    const status = response ? response.status : 0;
-    if (code === "explicit_approval_required") return clawT("claw-memory-error-approval");
-    if (code === "invalid_proposal" || code === "invalid_payload" || code === "forbidden_owner_field") return clawT("claw-memory-error-invalid");
-    if (code === "unauthorized" || status === 401) return clawT("claw-memory-error-auth");
-    if (code === "approved_memory_unavailable" || code === "approved_memory_write_failed" || code === "approved_memory_read_failed" || status === 503) return clawT("claw-memory-error-unavailable");
-    if (code === "approved_memory_not_found" || status === 404) return clawT("claw-memory-error-not-found");
-    return clawT("claw-memory-error-generic");
-  }
+  function approvedMemoryErrorMessage(...a) { return conversationModule().approvedMemoryErrorMessage(...a); }
 
   // Proposal review surface: rendered from preview memory_proposals. Approve is
   // impossible until the user explicitly approves; reject never persists.
@@ -7526,4 +6070,3 @@
   }
   automationDestinationReady = true;
 })();
-

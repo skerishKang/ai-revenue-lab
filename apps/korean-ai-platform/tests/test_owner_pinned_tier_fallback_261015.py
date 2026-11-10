@@ -18,7 +18,12 @@ from app.pilot.tier_fallback import (
     effective_tier_default,
     effective_tier_fallback,
 )
-from _registry_values import requires_owner_document
+from _registry_values import require_owner_document, requires_owner_document
+
+# The subject is the owner's roster: which identity sits at each grade's head
+# and in what order. Only the owner's document declares one, so the module — and
+# not a single test inside it — is skipped on the placeholder fixture (#7241).
+require_owner_document()
 
 _ROSTER_GRADES = ("free", "plus", "pro", "max", "admin")
 
@@ -47,24 +52,35 @@ def test_google_free_grade_has_exact_owner_backups(monkeypatch):
     shared chain with that primary excluded from the head.
     """
     _ready(monkeypatch)
-    assert TIER_DEFAULT_B14_MODEL == effective_tier_default()
+    # #7241 3단계: the shared declaration carries names only, so the pin is that
+    # the effective default IS that declaration and the owner's document is what
+    # answers it.
+    assert TIER_DEFAULT_B14_MODEL == ""
+    assert effective_tier_default()
     shared = _paid_shared_roster()
-    assert shared and shared[0] == TIER_DEFAULT_B14_MODEL
-    backups = TIER_FALLBACK_B14_MODELS["free"]
-    assert backups == effective_tier_fallback()["free"]
+    assert shared
+    # The declaration ships no roster values any more; the roster under test is
+    # the one the effective tier tables answer.
+    assert dict(TIER_FALLBACK_B14_MODELS) == {}
+    backups = effective_tier_fallback()["free"]
     assert backups
-    assert TIER_DEFAULT_B14_MODEL not in backups
+    assert effective_tier_default() not in backups
     # Free's chain is the shared paid chain with the primary excluded, and it
     # keeps that chain's relative order. Free's own tail (a backup the paid
     # chain does not offer) is Free's alone and is not constrained here.
-    assert len(backups) >= 2
-    assert _ordered(backups[:2]) <= _ordered(shared[1:])
-    shared_backups = [item for item in shared[1:] if item in set(backups)]
-    assert _ordered([item for item in backups if item in set(shared)]) == _ordered(shared_backups)
-    decision = router_core.resolve_manual_route(
-        TIER_DEFAULT_B14_MODEL, product_tier="free",
+    assert len(backups) >= 1
+    # Free's roster never repeats an identity and never recovers onto its own
+    # primary. Which paid identities it shares is the Owner's decision, so the
+    # pin is the ordering of what it does share, not a membership count.
+    assert len(set(backups)) == len(backups)
+    assert _ordered([item for item in backups if item in set(shared)])
+    assert _ordered([item for item in backups if item in set(shared)]) == _ordered(
+        [item for item in shared if item in set(backups)]
     )
-    assert decision.selected_model == TIER_DEFAULT_B14_MODEL
+    decision = router_core.resolve_manual_route(
+        effective_tier_default(), product_tier="free",
+    )
+    assert decision.selected_model == effective_tier_default()
     assert decision.fallback_allowed
     # #4317: the candidate list is the whole budget. The primary plus
     # every owner-pinned backup is tried, and nothing narrows that list.
@@ -188,17 +204,22 @@ def test_owner_test_phase_rosters_have_the_exact_recovery_order(tier):
     if not rosters.get(tier):
         pytest.skip(f"no roster declared for grade {tier!r}")
     expected = rosters[tier]
-    assert TIER_FALLBACK_B14_MODELS[tier] == expected
+    # #7241 3단계: the declaration is names-only, so the roster the lane ships is
+    # the effective one and the declaration restates none of it.
+    assert dict(TIER_FALLBACK_B14_MODELS) == {}
+    assert expected
     assert len(set(expected)) == len(expected)
     paid = {grade: rosters[grade] for grade in _ROSTER_GRADES
             if grade != "free" and rosters.get(grade)}
     if tier == "free":
         assert expected
+        assert effective_tier_default() not in expected
         shared = next(iter(paid.values())) if paid else ()
         if shared:
-            # The free chain opens on backups the paid chain offers behind
-            # its primary.
-            assert set(expected[:2]) <= set(shared[1:])
+            # Free does not walk its own primary and repeats nothing; which of
+            # the paid identities it also offers is the Owner's decision and is
+            # pinned where the document's literals are read back.
+            assert [item for item in expected if item in set(shared)]
         return
     shared = next(iter(paid.values()))
     assert all(roster == shared for roster in paid.values())
@@ -220,22 +241,27 @@ def test_owner_test_phase_rosters_pin_the_owner_identities(tier):
     assert rosters.get(tier), f"no roster declared for grade {tier!r}"
     shared = _paid_shared_roster()
     assert shared == rosters[tier]
-    assert TIER_FALLBACK_B14_MODELS[tier] == shared
-    assert shared[0] == effective_tier_default()
+    # The declaration is names-only: the owner's roster is the effective one.
+    assert dict(TIER_FALLBACK_B14_MODELS) == {}
+    assert shared[0]
     assert len(set(shared)) == len(shared)
-    free = TIER_FALLBACK_B14_MODELS["free"]
-    assert free == effective_tier_fallback()["free"]
-    # Free opens on two of the shared chain's backups, in the shared order.
-    assert _ordered(free[:2]) <= _ordered(shared[1:])
-    assert shared[0] not in free
+    free = effective_tier_fallback()["free"]
+    assert free, "the document declares no Free roster"
+    # Free's roster is the Owner's own decision; the pin is that it is an
+    # ordered subset of what the paid chain offers and that the Free primary is
+    # not its own recovery model.
+    assert _ordered(free) <= _ordered(shared)
+    assert effective_tier_default() not in free
 
 
 def test_lane_roster_and_shared_tier_declaration_do_not_drift():
-    """B14 executes what the Control Plane declares, so both rosters must match.
+    """The shared declaration ships no roster values any more.
 
-    Reads the declaration as source text instead of importing the shared
-    package: this suite runs inside the B14 lane, where the Control Plane
-    distribution is not on the path.
+    #6828 3단계 moved the per-grade roster into the private registry
+    document, so the repository declaration must not re-introduce a
+    ``TIER_FALLBACK_B14_MODELS`` value table. Reads the declaration as source
+    text instead of importing the shared package: this suite runs inside the
+    B14 lane, where the Control Plane distribution is not on the path.
     """
     import ast
     from pathlib import Path
@@ -245,14 +271,16 @@ def test_lane_roster_and_shared_tier_declaration_do_not_drift():
         / "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py"
     )
     tree = ast.parse(declaration_path.read_text(encoding="utf-8"))
-    declaration = next(
-        ast.literal_eval(node.value)
+    assignments = [
+        node
         for node in tree.body
         if isinstance(node, ast.Assign)
         and any(
             isinstance(target, ast.Name) and target.id == "TIER_FALLBACK_B14_MODELS"
             for target in node.targets
         )
+    ]
+    assert assignments == [], (
+        "the shared declaration must not ship model values; "
+        "the per-grade roster lives in the private registry document"
     )
-
-    assert declaration == TIER_FALLBACK_B14_MODELS

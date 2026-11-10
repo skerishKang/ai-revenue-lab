@@ -36,7 +36,9 @@ from padiem_ai_engine_client import PadiemAiEngineClientError
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     ProductTierRoutesError,
-    active_route_for,
+)
+from padiem_control_plane.product_tier_routes_private import (
+    effective_active_route_for,
 )
 
 from .p01_adapter import (
@@ -81,7 +83,7 @@ def _padiem_executable_route_ids() -> frozenset[str]:
     ids: set[str] = set()
     for label in ProductTierLabel:
         try:
-            route = active_route_for(label)
+            route = effective_active_route_for(label)
         except ProductTierRoutesError as exc:
             raise P01AdapterError(
                 "invalid_product_tier",

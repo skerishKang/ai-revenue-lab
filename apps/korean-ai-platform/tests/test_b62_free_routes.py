@@ -27,6 +27,7 @@ from app.pilot.b14_runtime_config import runtime_config
 from _registry_values import (
     adapter_declaring_retired,
     model_rows,
+    owner_document_present,
     provider_of,
     registry,
     requires_owner_document,
@@ -90,12 +91,26 @@ def _restore_runtime_config():
     runtime_config.provider_mode = saved_mode
 
 
-@requires_owner_document
 def test_kilo_nemotron_is_permanently_unregistered():
-    for retired_id in sorted(_retired_free_routes()):
+    """The retirement roster the Owner decided on is absent from the catalog.
+
+    The roster is the adapter's own declaration, so it holds on any host; what
+    only an owner host can show is that the roster is non-empty and that the
+    document does not re-register one of those identities (#7241 3단계).
+    """
+    retired = _retired_free_routes()
+    for retired_id in sorted(retired):
         assert get_catalog_by_id(retired_id) is None
+    if not owner_document_present():
+        # The placeholder document names no free lane, so there is nothing on
+        # this host for the retirement decision to be about.
+        assert retired, "the adapter declares no retirement roster"
+        return
+    assert retired
+    assert {row["id"] for row in model_rows()}.isdisjoint(retired)
 
 
+@requires_owner_document
 def test_removed_free_models_not_in_public_or_exact_catalog():
     from app.pilot.catalog import CATALOG_BY_ID
     assert CATALOG_MODELS == []

@@ -13,6 +13,8 @@ on:
       - '.github/scripts/padiem_auth_update_served.py'
       - '.github/scripts/padiem_auth_update_rollback_check.py'
       - '.github/tests/test_padiem_auth_binding_check.py'
+      # #7346: the update preflight/workflow contracts read this binding file.
+      - 'apps/padiem-auth/wrangler.toml'
       - '.github/tests/test_padiem_auth_post_update_guard.py'
       - '.github/tests/test_padiem_auth_client_delta.py'
       - '.github/tests/test_padiem_auth_update_preflight.py'

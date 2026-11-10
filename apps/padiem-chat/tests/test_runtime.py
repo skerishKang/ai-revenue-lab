@@ -364,6 +364,8 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     root = Path(__file__).resolve().parents[1]
     html = (root / "static/index.html").read_text(encoding="utf-8")
     js = (root / "static/app.js").read_text(encoding="utf-8")
+    conv_js = (root / "static/chat-conversation-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5a
+    stream_js = (root / "static/chat-streaming-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5b
     locale = (root / "static/locale.js").read_text(encoding="utf-8")
     capabilities = (root / "static/attachment-capabilities.js").read_text(encoding="utf-8")
     product_capabilities = (root / "static/product-capabilities.js").read_text(encoding="utf-8")
@@ -392,9 +394,9 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     assert "웹 검색 · 준비 중" not in html
     for identifier in ("webSearchButton", "deepResearchButton", "webSearchStarterButton"):
         assert f'id="{identifier}"' not in html
-    assert 'uiT("mock-response")' in js
+    assert 'uiT("mock-response")' in conv_js
     assert '"mock-response": "모의 응답 · 실제 모델 호출 없음"' in locale
-    assert "chatTransport.requestCompleted(payload, signal)" in js
+    assert "deps.chatTransport.requestCompleted(payload, signal)" in stream_js
     assert 'fetch("/api/chat"' in transport
     assert "conversationState.setSkill(selectedSkill)" in js
     assert 'skill: "auto"' in conversation_state

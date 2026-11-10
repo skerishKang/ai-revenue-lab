@@ -110,7 +110,10 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   [data-state="meeting"], [data-state="calendar"], [data-state="library"],
   /* #5799: the util header joins the same brand eyebrow — the header is one
    * shared surface for every tool, so the dot lands with the page state. */
-  [data-state="util"]
+  [data-state="util"],
+  /* #7366: the advanced-settings page is the same Glass page as the others;
+   * without the state its kicker lost the shared dot and read as stray text. */
+  [data-state="settings"]
 ) :is(.standalone-view-kicker, .calendar-view-kicker, .library-kicker, .claw-workspace-kicker) {
   display: inline-flex;
   align-items: center;
@@ -125,7 +128,7 @@ html[data-theme="padiem-glass"] body .app-shell:is(
 html[data-theme="padiem-glass"] body .app-shell:is(
   [data-state="claw"], [data-state="connectors"], [data-state="automation"],
   [data-state="meeting"], [data-state="calendar"], [data-state="library"],
-  [data-state="util"]
+  [data-state="util"], [data-state="settings"]
 ) :is(.standalone-view-kicker, .calendar-view-kicker, .library-kicker, .claw-workspace-kicker)::before {
   content: "";
   display: inline-block;
@@ -561,4 +564,60 @@ html[data-theme="padiem-glass"] body .app-shell:is(
  * not shown, so the rule list reads as the surface. */
 .app-shell[data-state="automation"] #clawAutomation #clawAutomationSchedulerNote {
   display: none;
+}
+
+/* ── #7366: the advanced-settings page joins the Glass six-panel family ─────
+ * padiem-glass-portrait.css paints the portrait art on .main-panel::before at
+ * z-index 1; shared-six-panel-frame.css lifts the readable pages (.conversation,
+ * .connectors-view, .calendar-view …) onto a frosted plate at z-index 2 — but
+ * its :is() lists predate the 2026-11-08 advanced-settings page, so this page
+ * alone kept transparent cards and inputs and the portrait art showed straight
+ * through them (the "image covers the content" report). The frame sheet is a
+ * common file owned by another lane (#7297), so the plate is mirrored HERE,
+ * in this view-dedicated sheet, from the SAME tokens (--padiem-six-panel-*),
+ * instead of editing the frame. The connectors plate exists already; its fixed
+ * frame height left an empty half-plate under its cards, so its height relaxes
+ * to the content by a higher-specificity rule (the frame keeps the scroll
+ * ceiling and every other frame property). Moving both rules into
+ * shared-six-panel-frame.css is the follow-up reported to the owner. */
+@media (min-width: 921px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="settings"] .settings-advanced-view {
+    box-sizing: border-box;
+    width: var(--padiem-six-panel-width);
+    min-width: 0;
+    max-width: none;
+    height: var(--padiem-six-panel-height);
+    min-height: 0;
+    max-height: var(--padiem-six-panel-height);
+    margin: 16px 0 16px var(--padiem-six-panel-left);
+    border: 1px solid rgba(255, 255, 255, .70);
+    border-radius: 30px;
+    background: linear-gradient(155deg, rgba(248, 250, 251, .88), rgba(233, 238, 241, .84));
+    box-shadow: 0 24px 70px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .72);
+    backdrop-filter: blur(30px) saturate(106%);
+    -webkit-backdrop-filter: blur(30px) saturate(106%);
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+    padding: calc(var(--padiem-first-screen-inset) - 7px) var(--padiem-six-panel-pad-x) 36px;
+  }
+  html[data-theme="padiem-glass"] body .app-shell[data-state="connectors"] .connectors-view {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: var(--padiem-six-panel-height) !important;
+  }
+}
+
+/* Below 921px the frame sheet is desktop-only, so both pages take the same
+ * frosted plate from here, content-sized. */
+@media (max-width: 920px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="settings"] .settings-advanced-view,
+  html[data-theme="padiem-glass"] body .app-shell[data-state="connectors"] .connectors-view {
+    background: linear-gradient(155deg, rgba(248, 250, 251, .88), rgba(233, 238, 241, .84));
+    border: 1px solid rgba(255, 255, 255, .70);
+    border-radius: 30px;
+    box-shadow: 0 24px 70px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .72);
+    backdrop-filter: blur(30px) saturate(106%);
+    -webkit-backdrop-filter: blur(30px) saturate(106%);
+  }
 }

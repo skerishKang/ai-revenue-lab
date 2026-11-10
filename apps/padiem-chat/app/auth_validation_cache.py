@@ -101,6 +101,26 @@ async def invalidate_auth_cache(request: Any, *, user_id: str,
         await cache.invalidate_user(user_id)
 
 
+def drop_cached_owner_scope_of(request: Any, user_id: Any) -> None:
+    """Drop one user's cached connector-owner scope answers (no session kill).
+
+    Pairing, unpairing/disconnect and PC designation mutate answer spaces
+    other than the session itself; this single dropped answer cold-checks
+    the authority on the next read. In contrast with `invalidate_auth_cache`
+    (logout/deletion/admin change — sessions die too) this touches no
+    auth-session row: the user stays signed in, only the stale scope
+    answer goes.
+    """
+    from .identity_call_cache import CachedIdentityAuthority
+
+    if not isinstance(user_id, str) or not user_id:
+        return
+    authority = getattr(_state_for_request(request),
+                        'control_plane_identity_authority', None)
+    if isinstance(authority, CachedIdentityAuthority):
+        authority.invalidate_owner_scope_of_user(user_id)
+
+
 #: Upper bound for the canonical-session window (#7084). Deliberately longer
 #: than the 60 s cap on the shared account mapping: a session row is refused
 #: from the same table it was written to, and every revocation event this host

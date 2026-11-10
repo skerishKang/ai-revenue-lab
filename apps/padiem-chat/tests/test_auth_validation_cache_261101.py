@@ -6,6 +6,7 @@ from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -30,6 +31,15 @@ OTHER_UID = 'usr_' + 'b' * 32
 SID = 'sess_' + '1' * 32
 OTHER_SID = 'sess_' + '2' * 32
 SUBJECT = 'sub_' + 'c' * 32
+
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_SUBPROCESS_SOURCE_PATHS = (
+    _REPO_ROOT / 'apps' / 'padiem-chat',
+    _REPO_ROOT / 'apps' / 'korean-ai-code-agent' / 'src',
+    _REPO_ROOT / 'packages' / 'padiem-ai-core',
+    _REPO_ROOT / 'packages' / 'padiem-control-plane',
+    _REPO_ROOT / 'apps' / 'padiem-ai-engine' / 'clients' / 'python',
+)
 
 
 @pytest.fixture
@@ -229,8 +239,13 @@ asyncio.run(check())
 connection.close()
 print('shared_cache=pass')
 '''
+    env = os.environ.copy()
+    existing_path = env.get('PYTHONPATH')
+    env['PYTHONPATH'] = os.pathsep.join(str(p) for p in _SUBPROCESS_SOURCE_PATHS) + (
+        os.pathsep + existing_path if existing_path else '')
     result = subprocess.run([sys.executable, '-c', script, path, str(clock[0])],
-                            capture_output=True, text=True, encoding="utf-8", check=False)
+                            capture_output=True, text=True, encoding="utf-8",
+                            check=False, env=env)
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == 'shared_cache=pass'
 

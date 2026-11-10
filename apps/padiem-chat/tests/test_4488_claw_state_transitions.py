@@ -427,7 +427,10 @@ function boot(state) {
   vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
   vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
   vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
-  vm.runInContext(APP, sandbox, { filename: "app.js" });
+  // #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), sandbox, { filename: "chat-streaming-module.js" });
+vm.runInContext(APP, sandbox, { filename: "app.js" });
   return { byId, shell, doc, requests, fixture, conversationState };
 }
 
@@ -793,23 +796,33 @@ def test_the_decision_captures_a_session_generation_before_awaiting() -> None:
 
 def test_auth_transitions_invalidate_the_approval_generation() -> None:
     app = _app_source()
+    # The two session-token helpers moved into chat-auth-module.js (#7216 R5
+    # step 4); the one-implementation count spans the shipped sources.
+    module = (ROOT / "static" / "chat-auth-module.js").read_text(encoding="utf-8")
     assert "let clawApprovalEpoch = 0;" in app
-    assert app.count("function invalidateClawApprovalSession()") == 1
+    assert module.count("function invalidateClawApprovalSession()") == 1
+    assert module.count("function noteClawApprovalSession(") == 1
+    # app.js itself keeps exactly one one-line forwarder per helper and no
+    # second implementation body (body duplication would raise this count,
+    # a deleted forwarder would drop it to zero).
+    assert app.count("function invalidateClawApprovalSession(") == 1
     assert app.count("function noteClawApprovalSession(") == 1
+    assert "function invalidateClawApprovalSession(...a) { return authModule().invalidateClawApprovalSession(...a); }" in app
+    assert "function noteClawApprovalSession(...a) { return authModule().noteClawApprovalSession(...a); }" in app
     # Auth loss and an account switch funnel through one invalidation point,
     # called from the single auth-state projection.
     session = (ROOT / "static" / "claw-session.js").read_text(encoding="utf-8")
     assert app.count("noteApprovalSession: noteClawApprovalSession") == 1
     assert session.count("noteApprovalSession(authenticated);") == 1
     assert 'window.addEventListener("padiem:auth-state"' in session
-    note = app.index("function noteClawApprovalSession")
-    note_body = app[note : app.index("\n  }", note)]
-    assert "token !== clawApprovalSessionToken" in note_body
+    note = module.index("function noteClawApprovalSession")
+    note_body = module[note : module.index("\n  }", note)]
+    assert "token !== deps.clawApprovalSessionToken" in note_body
     assert "invalidateClawApprovalSession();" in note_body
     # Invalidation bumps the generation and releases the shared single-flight
     # flag, otherwise the next session could never decide.
-    inv = app.index("function invalidateClawApprovalSession")
-    inv_body = app[inv : app.index("\n  }", inv)]
+    inv = module.index("function invalidateClawApprovalSession")
+    inv_body = module[inv : module.index("\n  }", inv)]
     assert "clawApprovalEpoch += 1;" in inv_body
     assert "clawApprovalInFlight = false;" in inv_body
 

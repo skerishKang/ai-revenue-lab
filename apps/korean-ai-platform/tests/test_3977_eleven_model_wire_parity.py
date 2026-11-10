@@ -15,6 +15,10 @@ from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer
 
 from _registry_values import chat_wire_tail
 
+from _registry_values import require_owner_document
+
+require_owner_document()
+
 # The adapter composes the upstream chat tail itself, so the expected URLs are
 # matched against the adapter's own segments rather than a written path.
 WIRE_TAIL = chat_wire_tail()

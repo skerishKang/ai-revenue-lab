@@ -24,6 +24,7 @@ _PUBLIC_TOP_LEVEL_KEYS = frozenset(
         "project_id",
         "project",
         "scope_notice",
+        "memory_proposals",
     }
 )
 

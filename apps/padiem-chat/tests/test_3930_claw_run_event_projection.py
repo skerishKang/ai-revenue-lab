@@ -29,7 +29,7 @@ def test_source_loads_only_in_existing_chat_shell_before_app() -> None:
     html = INDEX.read_text(encoding="utf-8")
     assert html.count('<script src="./claw-run-event-projection.js"></script>') == 1
     assert html.index("claw-run-event-projection.js") < html.index('<script src="./app.js">')
-    source = APP.read_text(encoding="utf-8")
+    source = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
     assert 'frame.event === "p01_event"' in source
     assert 'canonicalEventProjection.consume(envelope)' in source
     assert 'const canonicalEventProjection = clawGeneralRequest ?' in source

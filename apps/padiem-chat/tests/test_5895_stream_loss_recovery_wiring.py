@@ -35,7 +35,7 @@ def test_stream_loss_recovery_contract_runs_under_node():
 
 def test_app_hands_a_cut_pc_stream_to_the_stored_result_recovery():
     transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
+    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
     locale = (STATIC / "locale.js").read_text(encoding="utf-8")
 
     # The classifier exists, names only the two stream-loss codes and is exported.
@@ -44,11 +44,11 @@ def test_app_hands_a_cut_pc_stream_to_the_stored_result_recovery():
 
     # The error-frame path defers to recovery before it can mark anything
     # terminal, and the deferral sits above the "explicit refusal" branch.
-    deferral = app.index("chatTransport.isStreamLoss?.(data)")
-    terminal = app.index("// An explicit refusal is terminal even before the first token.")
+    deferral = stream.index("deps.chatTransport.isStreamLoss?.(data)")
+    terminal = stream.index("// An explicit refusal is terminal even before the first token.")
     assert deferral < terminal
-    assert app.count("isStreamLoss?.(data)") == 1
-    assert "MESSAGE_LIFECYCLE.STREAMING" in app[deferral:terminal]
+    assert stream.count("isStreamLoss?.(data)") == 1
+    assert "deps.MESSAGE_LIFECYCLE.STREAMING" in stream[deferral:terminal]
 
     # The screen says what is true while the run is unfinished, in both
     # languages, and no new retry instruction is added.

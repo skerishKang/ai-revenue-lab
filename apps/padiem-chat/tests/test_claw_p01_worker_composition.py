@@ -26,8 +26,8 @@ from padiem_ai_core.orchestration_events import (
 )
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
-    active_route_for,
 )
+from padiem_control_plane import product_tier_routes_private
 
 from app.claw_p01_composition import (
     build_claw_p01_adapter,
@@ -212,7 +212,7 @@ def test_plus_production_composition_reaches_engine_service_binding_once() -> No
     # retry ceiling to zero, so the production composition must carry that
     # ceiling to the wire. The suspension of this test had hidden the drift.
     assert payload["agent"]["model_policy"] == {
-        "model": active_route_for(ProductTierLabel.PLUS).model_id,
+        "model": product_tier_routes_private.effective_active_route_for(ProductTierLabel.PLUS).model_id,
         "max_retries": 0,
         "product_tier": "plus",
     }

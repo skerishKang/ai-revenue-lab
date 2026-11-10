@@ -18,6 +18,15 @@ from _pilot_lane_paths import chat_surface
 from tests._registry_values import a_provider_id, model_rows, registry
 
 
+def retired_model_ids() -> frozenset[str]:
+    """The exact identities the effective document declares retired, if any.
+
+    ``retired_models`` is an optional root key (#7241 3단계): a document need
+    not retire anything, so an absent roster reads as empty rather than raising.
+    """
+    return frozenset(registry().get("retired_models") or ())
+
+
 # The gateway surface these cases call. Its path is the app's, not this
 # file's, so it is read back out of the mounted router.
 CHAT_COMPLETIONS = chat_surface()
@@ -53,9 +62,9 @@ def _reset_pilot_config(monkeypatch):
         "model_id": pilot_settings.pilot_model_id,
         "registry_json": pilot_settings.provider_registry_json,
     }
-    # B14 gateway is live-ready via the keyless Kilo route whenever
-    # B14_PROVIDER_MODE=live (#1933 S2). Force mock so legacy BYOK
-    # not_configured assertions stay isolated from B14 mode leaks.
+    # The B14 gateway becomes live-ready whenever B14_PROVIDER_MODE=live
+    # (#1933 S2). Force mock so legacy BYOK not_configured assertions stay
+    # isolated from B14 mode leaks.
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     from app.pilot.b14_runtime_config import runtime_config as rcfg
 
@@ -72,19 +81,27 @@ def _pilot_identity() -> tuple[str, str, str]:
     """The (provider, model, upstream) identity the legacy BYOK lane serves.
 
     The BYOK lane carries a caller's own model, so its identity must be one the
-    Business 14 catalog does *not* know: any retired identity qualifies, because
-    a retirement always wins over a registration. The Provider is the effective
-    registry's first Provider, whose origin the configured base URL mirrors.
+    Business 14 catalog does *not* install. A retirement is the strongest such
+    identity, but a document need not retire anything (#7241 3단계: the retired
+    roster is optional), so the first fallback is any identity the effective
+    document does not register. The Provider is the effective registry's first
+    Provider, whose origin the configured base URL mirrors.
     """
     from app.pilot.catalog import get_catalog_by_id
-    from app.pilot.model_registry_file import retired_model_ids
 
     provider_id = a_provider_id()
+    retired = sorted(retired_model_ids())
     model_id = next(
-        (rid for rid in sorted(retired_model_ids()) if get_catalog_by_id(rid) is None),
+        (rid for rid in retired if get_catalog_by_id(rid) is None),
         None,
     )
-    assert model_id is not None, "the registry must retire at least one identity"
+    if model_id is None:
+        # No usable retirement: an identity of the lane's own Provider that the
+        # catalog does not install is equally unknown to Business 14.
+        registered = {row["id"] for row in model_rows()}
+        model_id = f"{provider_id}/legacy-byok-lane"
+        assert model_id not in registered
+        assert get_catalog_by_id(model_id) is None
     return provider_id, model_id, model_id
 
 
@@ -633,7 +650,7 @@ class TestSSRFValidation:
             for entry in registry()["providers"].values()
             if entry.get("base_origin")
         ),
-        "https://gateway.example.com/chat",
+        _PILOT_BASE_ORIGIN,
     ])
     def test_valid_urls_accepted(self, good_url):
         from app.pilot.provider import _validate_base_url

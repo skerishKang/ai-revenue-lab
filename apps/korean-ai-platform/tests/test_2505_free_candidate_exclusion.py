@@ -134,38 +134,40 @@ def test_the_free_candidate_rule_covers_the_owner_free_family_only():
 
 
 def _shared_declaration_roster():
-    """The shared Control Plane declaration of the same per-grade roster.
+    """The shared Control Plane reader of the same per-grade roster.
 
-    The declaration is stdlib-only, so it is read by path: the platform app
-    does not depend on the Control Plane package, and this contract only has
-    to compare the two declarations.
+    The Control Plane declares the shape only; since #7241 3단계 it carries no
+    values of its own, and the switch-aware reader beside the declaration
+    (``product_tier_routes_private``) resolves the roster from the same document
+    B14 installs from, so that is the answer this contract compares.
     """
-    import importlib.util
     import sys
     from pathlib import Path
 
-    path = (
-        Path(__file__).resolve().parents[3]
-        / "packages" / "padiem-control-plane" / "padiem_control_plane"
-        / "product_tier_routes.py"
-    )
-    spec = importlib.util.spec_from_file_location("shared_product_tier_routes", path)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    # The declaration uses dataclasses, which resolve through sys.modules.
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module.TIER_FALLBACK_B14_MODELS
+    root = Path(__file__).resolve().parents[3] / "packages" / "padiem-control-plane"
+    # The reader imports its siblings inside the control-plane package, so the
+    # package root goes on the import path for this lookup only.
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from padiem_control_plane import product_tier_routes_private
+
+    return product_tier_routes_private.tier_fallback_rosters()
 
 
 @requires_owner_document
 def test_the_execution_roster_matches_the_shared_declaration():
-    """The B14 execution roster and the shared product declaration stay equal.
+    """The B14 execution roster and the shared product reader stay equal.
 
     A drift between them would let the product declare a recovery option that
-    B14 never executes, or the other way round, with no test noticing.
+    B14 never executes, or the other way round, with no test noticing. Since
+    #7241 3단계 the roster is the effective answer both products read from the
+    one document, so the module's own declaration is compared with it as well.
     """
-    assert dict(TIER_FALLBACK_B14_MODELS) == dict(_shared_declaration_roster())
+    shared = _shared_declaration_roster()
+    assert dict(effective_tier_fallback()) == dict(shared)
+    # The repository declaration carries no values any more; it may only be
+    # empty, never a second roster that could disagree with the document.
+    assert not TIER_FALLBACK_B14_MODELS
 
 
 def test_every_declared_grade_candidate_is_in_the_real_b14_allow_list():

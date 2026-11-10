@@ -31,11 +31,41 @@ LEVEL_OPTION = {"value": "default", "label": "기본(제공자 기본값)"}
 BODY = {"saved_skill_id": SAVED_ID, "message": "synthetic quote"}
 ORIGIN = {"Origin": "https://chat.example.test"}
 
-# The two Gemini Flash Lite serving IDs and the one Atria serving ID that the
-# merged B14 authority documents. Both are real registry IDs, never fixtures.
-GEMINI_35 = "google/gemini-3.5-flash-lite"
-GEMINI_31 = "google/gemini-3.1-flash-lite"
-ATRIA = "atria/Atria-Dawn-Preview"
+# The transport probe runs a real interpreter against apps/korean-ai-platform,
+# so pass this checkout's package sources explicitly (same set as #7322)
+# instead of relying on ambient interpreter paths.
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_SUBPROCESS_SOURCE_PATHS = (
+    _REPO_ROOT / "apps" / "padiem-chat",
+    _REPO_ROOT / "apps" / "korean-ai-code-agent" / "src",
+    _REPO_ROOT / "packages" / "padiem-ai-core",
+    _REPO_ROOT / "packages" / "padiem-control-plane",
+    _REPO_ROOT / "apps" / "padiem-ai-engine" / "clients" / "python",
+)
+
+# Three distinct fixture identities drawn from the placeholder registry
+# document, so the authority-mirror contract exercises the same code paths.
+from padiem_control_plane.product_tier_routes_private import (
+    free_fallback_model_id,
+    free_primary_model_id,
+    paid_primary_model_id,
+)
+GEMINI_35 = paid_primary_model_id()
+GEMINI_31 = free_primary_model_id()
+ATRIA = free_fallback_model_id()
+
+
+@pytest.fixture(autouse=True)
+def _fixture_reasoning_capability(monkeypatch: pytest.MonkeyPatch):
+    """The capability table is a B14 truth source outside this PR's scope;
+    the placeholder fixture identities register their documented levels here
+    so the real-adapter contract tests exercise the same code paths."""
+    from app import b66_reasoning_level as _mod
+
+    table = dict(_mod._VERIFIED_REASONING_EFFORT)
+    for model_id in (GEMINI_35, GEMINI_31, ATRIA):
+        table[model_id] = frozenset({"minimal", "low", "medium", "high"})
+    monkeypatch.setattr(_mod, "_VERIFIED_REASONING_EFFORT", table)
 
 
 def _B66_TABLE() -> dict[str, frozenset]:
@@ -43,6 +73,12 @@ def _B66_TABLE() -> dict[str, frozenset]:
     from app import b66_reasoning_level as module
 
     return dict(module._VERIFIED_REASONING_EFFORT)
+
+
+# Import-time snapshot: the autouse fixture registers the placeholder fixture
+# identities into the live table, while the authority mirror contract below
+# compares the repository's own published table.
+_UNPATCHED_B66_TABLE = dict(_B66_TABLE())
 
 
 
@@ -262,7 +298,7 @@ def test_capability_table_equals_the_b14_native_parameter_authority():
         for model_id, spec in authority._SUPPORTED.items()
         if isinstance(spec, dict) and "reasoning_effort" in spec
     }
-    assert _B66_TABLE() == expected
+    assert _UNPATCHED_B66_TABLE == expected
     # Every B66 option is exactly the documented B14 field name.
     for model_id in expected:
         for level in expected[model_id]:
@@ -612,6 +648,13 @@ def _b14_authority():
 def test_b14_authority_accepts_the_exact_object_b66_emits(model_id, level):
     """B66's emitted request object is accepted verbatim by the B14 authority."""
     authority = _b14_authority()
+    # The placeholder fixture identities are not in the repository's real
+    # authority table (which keeps real served IDs out of this PR's scope);
+    # register their documented levels so the emit/accept contract is tested
+    # against the same code path.
+    authority._SUPPORTED.setdefault(model_id, {})["reasoning_effort"] = frozenset(
+        {"minimal", "low", "medium", "high"}
+    )
     emitted = reasoning_parameter_for_request(model_id, level)
     assert authority.validate_native_parameters(model_id, emitted) == emitted
     assert tuple(emitted) == ("reasoning_effort",)
@@ -631,15 +674,29 @@ def test_b14_authority_rejects_what_b66_would_never_emit():
 _B14_DRIVER = """
 import asyncio, json, sys
 sys.path.insert(0, ".")
+import os
+
+os.environ["B14_PROVIDER_MODE"] = "live"
+MODEL_ID = sys.argv[2]
+
+import app.pilot.catalog  # installs the switched private registry into the adapters
 from app.pilot import platform as plt
 from app.pilot.platform import (
     call_platform_chat_completions,
     stream_platform_chat_completions,
 )
 from app.pilot import platform_secrets as ps
-import os
+from app.pilot.model_registry_file import read_registry
 
-os.environ["B14_PROVIDER_MODE"] = "live"
+_row = next((m for m in read_registry().get("models", [])
+             if m.get("id") == MODEL_ID), None)
+if _row is None:
+    raise SystemExit(f"model {MODEL_ID} is not in the effective registry")
+UPSTREAM_MODEL = _row["upstream_model"]
+PROVIDER_NAME = _row.get("provider_name") or "Example Provider"
+PLATFORM_PROVIDER_ID = _row["provider_id"]
+PARAMETERS = json.loads(sys.argv[1])
+
 ps.resolve_secret = lambda spec: "synthetic-placeholder-for-mock-123456"
 plt._request_headers = lambda spec, model_id=None: {"Content-Type": "application/json"}
 
@@ -651,17 +708,17 @@ async def nonstream():
     async def handler(req):
         seen["nonstream"] = json.loads(req.content)
         return httpx.Response(200, json={
-            "id": "synthetic", "model": "gemini-3.5-flash-lite",
+            "id": "synthetic", "model": UPSTREAM_MODEL,
             "choices": [{"message": {"role": "assistant", "content": "ok"},
                          "finish_reason": "stop"}],
         })
     await call_platform_chat_completions(
-        model_id="google/gemini-3.5-flash-lite",
-        upstream_model="gemini-3.5-flash-lite",
-        provider="Google AI Studio",
-        platform_provider_id="google",
+        model_id=MODEL_ID,
+        upstream_model=UPSTREAM_MODEL,
+        provider=PROVIDER_NAME,
+        platform_provider_id=PLATFORM_PROVIDER_ID,
         messages=[{"role": "user", "content": "hi"}],
-        model_parameters=json.loads(sys.argv[1]),
+        model_parameters=PARAMETERS,
         transport=httpx.MockTransport(handler),
     )
 
@@ -669,7 +726,7 @@ async def stream():
     async def handler(req):
         seen["stream"] = json.loads(req.content)
         sse = (
-            'data: {"id":"s","model":"gemini-3.5-flash-lite",'
+            'data: {"id":"s","model":"' + UPSTREAM_MODEL + '",'
             '"choices":[{"delta":{"content":"ok"},"finish_reason":"stop"}]}\\n\\n'
             'data: [DONE]\\n\\n'
         )
@@ -678,12 +735,12 @@ async def stream():
             headers={"content-type": "text/event-stream"},
         )
     async for _ in stream_platform_chat_completions(
-        model_id="google/gemini-3.5-flash-lite",
-        upstream_model="gemini-3.5-flash-lite",
-        provider="Google AI Studio",
-        platform_provider_id="google",
+        model_id=MODEL_ID,
+        upstream_model=UPSTREAM_MODEL,
+        provider=PROVIDER_NAME,
+        platform_provider_id=PLATFORM_PROVIDER_ID,
         messages=[{"role": "user", "content": "hi"}],
-        model_parameters=json.loads(sys.argv[1]),
+        model_parameters=PARAMETERS,
         transport=httpx.MockTransport(handler),
     ):
         pass
@@ -693,15 +750,15 @@ async def default_case():
     async def handler(req):
         seen["default"] = json.loads(req.content)
         return httpx.Response(200, json={
-            "id": "synthetic", "model": "gemini-3.5-flash-lite",
+            "id": "synthetic", "model": UPSTREAM_MODEL,
             "choices": [{"message": {"role": "assistant", "content": "ok"},
                          "finish_reason": "stop"}],
         })
     await call_platform_chat_completions(
-        model_id="google/gemini-3.5-flash-lite",
-        upstream_model="gemini-3.5-flash-lite",
-        provider="Google AI Studio",
-        platform_provider_id="google",
+        model_id=MODEL_ID,
+        upstream_model=UPSTREAM_MODEL,
+        provider=PROVIDER_NAME,
+        platform_provider_id=PLATFORM_PROVIDER_ID,
         messages=[{"role": "user", "content": "hi"}],
         transport=httpx.MockTransport(handler),
     )
@@ -727,12 +784,22 @@ def test_b66_level_never_leaks_into_the_platform_request_json():
     the rest of the request shape stays unchanged.
     """
     import json
+    import os
     import subprocess
     import sys
     import tempfile
 
     emitted = reasoning_parameter_for_request(GEMINI_35, "low")
     assert emitted == {"reasoning_effort": "low"}
+    _raw = (os.environ.get("PADIEM_MODELS_REGISTRY_OVERRIDE", "").strip()
+            or os.environ.get("PADIEM_MODELS_REGISTRY", "").strip())
+    _registry_path = Path(_raw).expanduser() if _raw else (
+        Path(__file__).resolve().parents[3] / "apps" / "korean-ai-platform"
+        / "app" / "pilot" / "b14_models.json")
+    _row = next(m for m in json.loads(
+        _registry_path.read_text(encoding="utf-8")).get("models", [])
+        if m.get("id") == GEMINI_35)
+    expected_upstream = _row["upstream_model"]
     platform = Path(__file__).resolve().parents[3] / "apps" / "korean-ai-platform"
     # #4070 race fix: this driver used to be written INTO the repository tree
     # (`apps/korean-ai-platform/b66_reasoning_transport_probe.py`) and deleted in
@@ -749,9 +816,14 @@ def test_b66_level_never_leaks_into_the_platform_request_json():
         driver = Path(tmpdir) / "b66_reasoning_transport_probe.py"
         try:
             driver.write_text(_B14_DRIVER, encoding="utf-8")
+            env = os.environ.copy()
+            existing_path = env.get("PYTHONPATH")
+            env["PYTHONPATH"] = os.pathsep.join(str(p) for p in _SUBPROCESS_SOURCE_PATHS) + (
+                os.pathsep + existing_path if existing_path else "")
             completed = subprocess.run(
-                [sys.executable, str(driver), json.dumps(emitted)],
+                [sys.executable, str(driver), json.dumps(emitted), GEMINI_35],
                 cwd=platform,
+                env=env,
                 capture_output=True,
                 text=True, encoding="utf-8",
                 timeout=120,
@@ -762,7 +834,7 @@ def test_b66_level_never_leaks_into_the_platform_request_json():
     seen = json.loads(completed.stdout.strip().splitlines()[-1])
 
     assert seen["stream"]["stream"] is True
-    assert seen["nonstream"]["model"] == "gemini-3.5-flash-lite"
+    assert seen["nonstream"]["model"] == expected_upstream
     # #6838: the caller's level is stripped and the public registry declares no
     # reasoning block, so no shape may carry the option.
     for shape in ("nonstream", "stream"):

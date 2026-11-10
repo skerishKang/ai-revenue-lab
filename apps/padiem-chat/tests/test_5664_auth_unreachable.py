@@ -66,7 +66,8 @@ def test_the_shipped_auth_transport_contract():
 
 
 def test_only_the_reset_confirm_may_replay_a_platform_failure():
-    app_js = APP_JS.read_text(encoding="utf-8")
+    #7216 R5 step 4: this contract moved into chat-auth-module.js.
+    app_js = APP_JS.with_name("chat-auth-module.js").read_text(encoding="utf-8")
     confirm = app_js.split('passwordAuthRequest("/api/auth/password/reset/confirm"', 1)
     assert len(confirm) == 2, "the reset confirm call site is missing"
     assert "{ retryUnreachable: true }" in confirm[1].split(");", 1)[0]

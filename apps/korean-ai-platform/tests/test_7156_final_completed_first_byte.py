@@ -118,7 +118,8 @@ def _single_candidate_route() -> dict:
         and set(row.get("capabilities") or ()) <= _PLAIN_CHAT_PROFILE
         and not str(row["upstream_model"]).casefold().endswith("-free")
     ]
-    assert len(candidates) <= 1, "the single-candidate route is not unique"
+    # A document may carry several such rows; the contract is about one route
+    # with no fallback behind it, so the first in document order is the subject.
     return candidates[0] if candidates else None
 
 

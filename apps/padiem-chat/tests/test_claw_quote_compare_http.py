@@ -512,7 +512,7 @@ class TestRouteSourceBoundary:
                 "_clear_reservation",
                 "_record_claw_run_history",
                 "_build_execute_task",
-                "active_route_for",
+                "effective_active_route_for",
                 "ProductTierLabel",
                 "ManualIntakeRouter",
                 "execute",

@@ -21,6 +21,7 @@ from app.pilot.b14_timeout_policy import (
     build_provider_http_timeout,
     send_provider_request,
 )
+from app.pilot.provider_timeout_diagnostics import timeout_phase_of
 from app.pilot.errors import (
     MalformedUpstreamResponse,
     PilotNotConfigured,
@@ -200,8 +201,11 @@ async def call_chat_completions(
                 )
         except ProviderAttemptTimeout as exc:
             raise UpstreamTimeout(timeout_reason=exc.reason) from exc
-        except httpx.TimeoutException:
-            raise UpstreamTimeout(timeout_reason="attempt_total")
+        except httpx.TimeoutException as timeout_exc:
+            raise UpstreamTimeout(
+                timeout_reason="attempt_total",
+                timeout_phase=timeout_phase_of(timeout_exc),
+            )
         except httpx.RequestError as e:
             logger.error(
                 "upstream_request_error request_id=%s error=%s",

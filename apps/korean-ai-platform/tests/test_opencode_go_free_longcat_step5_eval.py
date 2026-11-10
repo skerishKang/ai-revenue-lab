@@ -32,6 +32,10 @@ from app.pilot.platform import _raise_upstream_error
 
 from _registry_values import model_rows
 
+from _registry_values import require_owner_document
+
+require_owner_document()
+
 # #7241 3단계: the two routes this harness names are selected structurally from
 # the document the adapter itself reads, never spelled here.
 #

@@ -41,6 +41,7 @@ from .calendar_session_authority import (
 )
 from .config import Settings
 from .same_origin_guard import expected_browser_origin
+from .auth_validation_cache import drop_cached_owner_scope_of
 
 
 _NO_STORE_HEADERS = {
@@ -170,6 +171,7 @@ async def activate_google_calendar_read(request: Request) -> JSONResponse:
     from .chat_connector_tools import invalidate_connector_tool_grant_cache
 
     invalidate_connector_tool_grant_cache(uid)
+    drop_cached_owner_scope_of(request, uid)
     return JSONResponse(
         {
             "ok": document["ok"],

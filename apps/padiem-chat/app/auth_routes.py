@@ -997,6 +997,14 @@ async def _revoke_canonical_session(request: Request) -> str | None:
     # both end a session here).
     from .pc_scope_cache import invalidate_owner_scope
     invalidate_owner_scope(claims.user_id)
+    # Design 2판 §2.3: seed the local denylist (record-only at stage 1).
+    try:
+        from .auth_shadow_verify import record_denylist, record_denylist_from_access_cookie
+
+        record_denylist(canonical_session_id, None)
+        record_denylist_from_access_cookie(request.cookies)
+    except Exception:
+        pass
     return None
 
 
@@ -1254,30 +1262,50 @@ async def password_reset_confirm(request: Request) -> JSONResponse:
 
 
 async def logout(request: Request) -> JSONResponse:
-    """Revoke the canonical session behind this cookie, then clear the cookie.
+    """Revoke the canonical session behind this cookie, then clear cookies.
 
     #5225: deleting the browser cookie alone left the signed session token
     usable on every protected Chat/Claw API until it expired. The canonical
     Control Plane session is therefore revoked server-side first, so a stored
-    copy of the cookie is refused by the protected APIs immediately after a
-    successful logout.
+    copy of the cookie stops working immediately after a successful logout.
 
     Exactly one canonical session is revoked. A second device that signed in
-    normally owns a different canonical session and keeps it.
-
-    A revocation the canonical authority could not confirm is reported as a
-    failure and the cookie is kept: the session was not ended, so the logout
-    must not be reported as successful.
+    normally owns a different canonical session and keeps it. A revocation the
+    canonical authority could not confirm is still reported as a failure, but
+    the local cookies of both families are deleted regardless: a local
+    sign-out is owned by the browser even when the remote call fails (design
+    §7 (5)), and the two families must not leave each other's credential
+    behind.
     """
+
+    from .shared_login_flow import (
+        ACCESS_COOKIE,
+        LOGIN_RETURN_COOKIE,
+        MARKER_COOKIE,
+        REFRESH_COOKIE,
+        REFRESH_PATH,
+        STATE_COOKIE,
+    )
+
+    def _clear_shared_family(response):
+        response.delete_cookie(ACCESS_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
+        response.delete_cookie(REFRESH_COOKIE, path=REFRESH_PATH, secure=True, httponly=True, samesite="lax")
+        response.delete_cookie(MARKER_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
+        response.delete_cookie(STATE_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
+        response.delete_cookie(LOGIN_RETURN_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
 
     failure = await _revoke_canonical_session(request)
     if failure is not None:
-        return _auth_error(
+        response = _auth_error(
             503,
             failure,
             "로그아웃을 완료하지 못했습니다. 다시 시도해 주세요.",
         )
+        _clear_shared_family(response)
+        response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
+        return response
     response = JSONResponse({"ok": True})
+    _clear_shared_family(response)
     response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
     return response
 

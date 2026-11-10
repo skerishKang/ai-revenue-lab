@@ -1,8 +1,8 @@
 """Owner decision 2026-09-18 — Poolside binding re-registered metadata-only.
 
-The ``PADIEM_B14_CREDENTIAL_12`` Secrets Store binding is declared again in
-wrangler.toml as metadata only (binding + store_id + secret_name, no secret
-value); the old ``[[unsafe.bindings]]`` form stays prohibited. Poolside
+The Poolside Secrets Store binding is declared again in wrangler.toml as
+metadata only (binding + store_id + secret_name, no secret value); the old
+``[[unsafe.bindings]]`` form stays prohibited. Poolside
 provider code stays registered, but with the key absent the Worker must
 still degrade to an explicit not-ready readiness report — never a crash,
 never a silent fallback — and the Kilo route must be unaffected.
@@ -24,6 +24,14 @@ from app.pilot.poolside_provider import (
     POOLSIDE_PROVIDER_ID,
 )
 
+from _registry_values import require_owner_document
+
+# #7241 3단계: Poolside registration and the Kilo route beside it are owner
+# decisions about rows only the owner's registry document registers. This host
+# reads the placeholder fixture unless an owner document is named, so the whole
+# module skips there instead of failing on a lane no document installs.
+require_owner_document()
+
 WRANGLER_TOML = Path(__file__).resolve().parent.parent / "wrangler.toml"
 
 
@@ -41,9 +49,9 @@ def test_wrangler_toml_declares_no_unsafe_bindings():
     config = tomllib.loads(WRANGLER_TOML.read_text(encoding="utf-8"))
     assert "unsafe" not in config
     text = WRANGLER_TOML.read_text(encoding="utf-8")
-    assert 'binding = "PADIEM_B14_CREDENTIAL_12"' in text
-    assert 'secret_name = "PADIEM_B14_CREDENTIAL_12"' in text
-    assert "PADIEM_B14_CREDENTIAL_12 =" not in text
+    assert f'binding = "{POOLSIDE_CREDENTIAL_BINDING}"' in text
+    assert f'secret_name = "{POOLSIDE_CREDENTIAL_BINDING}"' in text
+    assert f"{POOLSIDE_CREDENTIAL_BINDING} =" not in text
 
 
 def test_startup_and_registration_succeed_without_poolside_binding(monkeypatch):

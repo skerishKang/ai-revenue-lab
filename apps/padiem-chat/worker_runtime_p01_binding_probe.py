@@ -82,8 +82,11 @@ class Default(WorkerEntrypoint):
         }
 
         executable = frozenset({_SYNTHETIC_PLUS_MODEL_ID})
-        p01_adapter_module.active_route_for = _active_route_for
-        p01_client_module.active_route_for = _active_route_for
+        # #6828 3단계: the fail-closed switch renamed the runtime authority, so
+        # pin the current resolver and the executable-set name this probe's
+        # synthetic route must satisfy.
+        p01_adapter_module.effective_active_route_for = _active_route_for
+        p01_client_module.effective_active_route_for = _active_route_for
         p01_client_module.PADIEM_EXECUTABLE_MODEL_IDS = executable
 
         try:

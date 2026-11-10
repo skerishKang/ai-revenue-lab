@@ -40,6 +40,13 @@ from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
 from .byok_client import CustomProviderError, complete_owner_custom
 from .byok_credentials import CustomProviderSelectionError
+from .chat_pc_note import (
+    PC_TOOLS_ABSENT_NOTE,
+    PC_TOOLS_CONNECTED_NOTE,
+    PC_TOOLS_PRESENT_NOTE,
+    pc_note_applies,
+    pc_turn_note,
+)
 from .chat_stream_timing import ChatStreamTiming
 from .config import Settings
 from .conversation_routes import _history_unavailable
@@ -73,6 +80,7 @@ from .request_contract import (
     CustomModelSelection,
     _apply_b62_model_policy,
     _validate_payload_async,
+    declared_product_surface,
     declared_util_scope,
 )
 from .request_telemetry import emit_stage_event
@@ -283,49 +291,6 @@ async def _no_connector_tools() -> tuple[Any, ...]:
     return ()
 
 
-# #7165: the model's system context has to agree with the tools this turn
-# actually carries. Without this sentence a PC-connected turn still answered
-# "PADIEM is a remote AI, it cannot access your computer" while the PC tools
-# were on the wire. The branch is chosen from the offered tool tuple, never
-# from a fixed "always/never connected" assumption.
-PC_TOOLS_PRESENT_NOTE = (
-    "[PC 연결] 이번 턴에는 연결된 PC 도구가 함께 제공됩니다. 사용자가 PC·컴퓨터 "
-    "작업을 요청하면 연결된 PC에서 드라이브·파일·브라우저 작업을 수행할 수 있습니다. "
-    "이 대화에 없는 셸 명령 실행은 약속하지 말고 Claw의 PC 명령 실행으로 안내하세요. "
-    "'원격 AI라 컴퓨터에 접속할 수 없다'고 답하지 마세요. 실제 결과는 도구 실행 "
-    "결과로만 답하세요."
-)
-PC_TOOLS_ABSENT_NOTE = (
-    "[PC 연결] 이번 턴에는 PC 도구가 제공되지 않았습니다. PC가 연결되지 않았거나 "
-    "이 대화에서 PC 작업을 실행할 수 없는 상태입니다. '원격 AI라 컴퓨터에 접속할 수 "
-    "없다'고 단정하지 말고, 사용자가 PC 작업을 요청하면 내 컴퓨터(Claw)에서 PC를 "
-    "연결하는 방법을 안내하세요."
-)
-
-
-def pc_turn_note(pc_tools: Any) -> str:
-    """The PC sentence for this turn, decided by the tools actually offered."""
-
-    return PC_TOOLS_PRESENT_NOTE if pc_tools else PC_TOOLS_ABSENT_NOTE
-
-
-#: Presentation-only trigger for the PC sentence. It never opens the PC lane or
-#: a tool: it only decides whether a turn that talks about the computer should
-#: receive the tool-presence sentence (#7165). The wording itself is chosen by
-#: the offered tools, never by this pattern.
-_PC_MENTION = re.compile(
-    r"(컴퓨터|내\s*PC|로컬\s*PC|\bpc\b|whoami|명령|실행해|드라이브|파일|폴더"
-    r"|바탕화면|다운로드)",
-    re.IGNORECASE,
-)
-
-
-def pc_note_applies(user_text: Any, pc_tools: Any) -> bool:
-    """Whether this turn should carry the PC sentence at all."""
-
-    if pc_tools:
-        return True
-    return isinstance(user_text, str) and bool(_PC_MENTION.search(user_text))
 
 
 def join_system_context(*parts: Any) -> str | None:
@@ -554,6 +519,7 @@ async def _connector_tool_lane(
             saved_id = None
         if saved_id is not None:
             done_payload["conversation_id"] = saved_id
+        from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=answer, conversation_id=saved_id)  # #7297 공통 실행 기록 투영
     yield _public_sse("done", done_payload)
 
 
@@ -725,6 +691,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     try:
         raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
+        request.state.chat_product_surface = declared_product_surface(raw, request)
         if custom is None:
             # No-tier browser clients resolve the Free product tier; an
             # explicit browser tier rides the request context.
@@ -904,6 +871,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                     custom_done["conversation_id"] = saved_id
                     if effective_project_id is not None:
                         custom_done["project_id"] = effective_project_id
+                from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=custom_user, answer=custom_answer, conversation_id=saved_id)
             yield _public_sse("done", custom_done)
 
         async def custom_timing_iterator():
@@ -1173,8 +1141,13 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
         # reach the computer" on a PC-capable turn, and never invents PC
         # capability on a turn without the tools.
         turn_user_text = _last_user_text(messages)
+        note_applies = pc_note_applies(turn_user_text, pc_tools)
+        pc_connected = bool(pc_tools)
+        if note_applies and not pc_connected:
+            from .chat_pc_drive import chat_pc_connection_available
+            pc_connected = await chat_pc_connection_available(request, uid=uid)
         pc_note = (
-            pc_turn_note(pc_tools) if pc_note_applies(turn_user_text, pc_tools) else ""
+            pc_turn_note(pc_tools, pc_connected=pc_connected) if note_applies else ""
         )
         # #5573 (3-B-2): only a verified PC account on a tools-declaring route
         # receives the PC tools; every other turn keeps the request bytes it
@@ -1432,6 +1405,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                                             if project is not None
                                             else None
                                         )
+                                from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=answer, conversation_id=saved_id)
                             if project_files_used:
                                 done_payload["project_files_used"] = project_files_used
                             yield _public_sse("done", done_payload)
@@ -1497,6 +1471,7 @@ async def api_chat(request: Request) -> JSONResponse:
     try:
         raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
+        request.state.chat_product_surface = declared_product_surface(raw, request)
         if custom is None:
             # No-tier browser clients resolve the Free product tier; an
             # explicit browser tier rides the request context.
@@ -1512,7 +1487,7 @@ async def api_chat(request: Request) -> JSONResponse:
         return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
 
     settings: Settings = request.app.state.settings
-    if selected_model == FREE_B14_MODEL_ID and any(isinstance(item, ImageAttachment) for item in attachments):
+    if selected_model == FREE_B14_MODEL_ID and any(isinstance(item, ImageAttachment) for item in attachments) and not model_supports(selected_model, "image") and model_supports(FREE_FALLBACK_B14_MODEL_ID, "image"):
         selected_model = FREE_FALLBACK_B14_MODEL_ID
     if settings.runtime_mode == "b14" and any(isinstance(item, ImageAttachment) for item in attachments):
         if not model_supports(selected_model, "image"):
@@ -1630,7 +1605,7 @@ async def api_chat(request: Request) -> JSONResponse:
             return _custom_selection_unsupported(exc)
         except CustomProviderError as exc:
             return _custom_error_response(exc)
-        result = {"answer": custom_result["answer"]}
+        result, saved_id = {"answer": custom_result["answer"]}, None
         latest_user = next((m["content"] for m in reversed(messages) if m["role"] == "user"), None)
         if latest_user:
             try:
@@ -1653,6 +1628,7 @@ async def api_chat(request: Request) -> JSONResponse:
                 result["conversation_id"] = saved_id
                 if effective_project_id is not None:
                     result["project_id"] = effective_project_id
+        from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=result["answer"], conversation_id=saved_id)  # #7297 공통 실행 기록 투영
         return JSONResponse(public_chat_result(result))
 
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
@@ -1842,4 +1818,5 @@ async def api_chat(request: Request) -> JSONResponse:
                 if effective_project_id is not None:
                     result["project_id"] = effective_project_id
                     result["project"] = {"id": project.id, "name": project.name} if project is not None else None
+            from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=result["answer"], conversation_id=saved_id)  # #7297 공통 실행 기록 투영
     return JSONResponse(public_chat_result(result))

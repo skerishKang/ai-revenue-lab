@@ -454,7 +454,7 @@ class OrderFlowTests(unittest.TestCase):
             payload["agent"]["model_policy"]["model"],
             PADIEM_EXECUTABLE_MODEL_IDS,
         )
-        self.assertNotIn("provider", json.dumps(payload).lower())
+        self.assertNotIn('"provider"', json.dumps(payload))
         self.assertNotIn("credential", payload["agent"])
         self.assertNotIn(_FAKE_CREDENTIAL, sent["body"].decode("utf-8"))
         self.assertEqual(

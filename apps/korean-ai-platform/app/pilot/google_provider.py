@@ -46,6 +46,8 @@ from __future__ import annotations
 from contextlib import aclosing
 
 from app.pilot.catalog import CATALOG_BY_ID, CatalogModel
+from app.pilot.prestream_retry import ERROR_ENVELOPE_REASON
+from app.pilot.provider_timeout_diagnostics import timeout_phase_of
 from app.pilot.platform_secrets import (
     CredentialSource,
     PlatformProviderSpec,
@@ -378,8 +380,12 @@ class _GoogleToolStream:
             if not data:
                 return []
             payload = json.loads(data)
-            if not isinstance(payload, dict) or "error" in payload:
-                raise _GoogleMalformedShape("payload_not_object_or_error")
+            if not isinstance(payload, dict):
+                raise _GoogleMalformedShape("payload_not_object")
+            if "error" in payload:
+                # #6724: an error envelope is its own reason so a pre-answer
+                # retry can distinguish it from a malformed body.
+                raise _GoogleMalformedShape(ERROR_ENVELOPE_REASON)
             candidates = payload.get("candidates", [])
             if not isinstance(candidates, list) or len(candidates) > 1:
                 raise _GoogleMalformedShape("candidate_count")
@@ -571,10 +577,16 @@ async def stream_google_tool_calls(*, model_id, upstream_model, spec, messages, 
             "b14_provider_attempt_timeout provider=%s reason=%s mode=stream",
             GOOGLE_PROVIDER_ID, exc.reason,
         )
-        raise UpstreamTimeout(timeout_reason=exc.reason) from exc
+        raise UpstreamTimeout(
+            timeout_reason=exc.reason,
+            timeout_phase=getattr(exc, "timeout_phase", None),
+        ) from exc
     except httpx.TimeoutException as exc:
         plat.log_provider_timeout(plat.logger, GOOGLE_PROVIDER_ID, exc, "stream")
-        raise UpstreamTimeout(timeout_reason="first_byte") from exc
+        raise UpstreamTimeout(
+            timeout_reason="first_byte",
+            timeout_phase=timeout_phase_of(exc),
+        ) from exc
     except httpx.RequestError as exc:
         raise UpstreamServerError() from exc
     if decoder.finish_reason is None:

@@ -20,13 +20,13 @@ from app.model_policy import (
 from padiem_control_plane.product_tier_routes import (
     ProductRouteStatus,
     ProductTierLabel,
-    active_route_for,
     get_tier,
 )
+from padiem_control_plane.product_tier_routes_private import effective_active_route_for
 
 
 def _active_model(label: ProductTierLabel) -> str:
-    route = active_route_for(label)
+    route = effective_active_route_for(label)
     assert route is not None and route.model_id
     return route.model_id
 
@@ -36,26 +36,27 @@ PAID_PRIMARY = _active_model(ProductTierLabel.PLUS)
 
 
 def test_plus_identity_is_executable_route_and_space_bunny_is_historical_only() -> None:
-    plus = active_route_for(ProductTierLabel.PLUS)
+    plus = effective_active_route_for(ProductTierLabel.PLUS)
     assert plus is not None
     assert plus.status is ProductRouteStatus.EXECUTABLE
     assert plus.model_id == LOW_B14_MODEL_ID == PAID_PRIMARY
     assert DEFAULT_B14_MODEL_ID == FREE_MODEL
     assert EXECUTABLE_B14_MODEL_IDS == frozenset({FREE_MODEL, PAID_PRIMARY})
     assert all(
-        route.model_id != "kilo/stealth-space-bunny-alpha"
+        route.model_id in EXECUTABLE_B14_MODEL_IDS
         for route in get_tier(ProductTierLabel.PLUS).routes
     )
 
 
-def test_plus_chat_executes_declared_google_route_without_a_provider_capability_row() -> None:
+def test_plus_chat_executes_the_declared_route_without_a_provider_capability_row() -> None:
     # B8: the paid route model is a raw provider id, not a capability catalog
     # row. Only tier-keyed rows and the fallback row remain.
     assert LOW_B14_MODEL_ID not in MODEL_CAPABILITIES
     assert model_supports(LOW_B14_MODEL_ID, "chat") is False
     assert model_supports(LOW_B14_MODEL_ID, "image") is False
-    assert MODEL_CAPABILITIES[FREE_MODEL] == frozenset({"chat", "coding"})
+    assert MODEL_CAPABILITIES[FREE_MODEL] == frozenset({"chat", "coding", "image"})
     assert model_supports(FREE_MODEL, "chat")
+    assert model_supports(FREE_MODEL, "image")
     default = resolve_model_policy([{"role": "user", "content": "hello"}])
     plus = resolve_tier_policy([{"role": "user", "content": "hello"}], "plus")
     assert default.model_id == FREE_MODEL and default.profile == "free"

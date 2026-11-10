@@ -25,8 +25,11 @@ from app.model_policy import (
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     ProductRouteStatus,
-    active_route_for,
     get_tier,
+)
+from padiem_control_plane.product_tier_routes_private import (
+    effective_active_route_for,
+    effective_product_tier_routes,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -80,15 +83,15 @@ def test_chat_current_route_expectation_is_derived_not_restated() -> None:
     # A successor-pending product may have zero executable routes. Chat must mirror
     # that declaration instead of retaining a stale provider/model literal.
     # #5009: Free stays Beam, Plus/Pro/Max resolve Muse Spark from the same table.
-    assert active_route_for(ProductTierLabel.PLUS) is not None
-    assert DEFAULT_B14_MODEL_ID == active_route_for(ProductTierLabel.FREE).model_id
-    assert LOW_B14_MODEL_ID == active_route_for(ProductTierLabel.PLUS).model_id
+    assert effective_active_route_for(ProductTierLabel.PLUS) is not None
+    assert DEFAULT_B14_MODEL_ID == effective_active_route_for(ProductTierLabel.FREE).model_id
+    assert LOW_B14_MODEL_ID == effective_active_route_for(ProductTierLabel.PLUS).model_id
     # The separate B62 Free model is a product-local executable route;
     # Plus/Pro/Max follow the shared cross-product declaration.
     assert set(EXECUTABLE_B14_MODEL_IDS) == {
         route.model_id
-        for tier in ProductTierLabel
-        for route in get_tier(tier).routes
+        for tier in effective_product_tier_routes()
+        for route in tier.routes
         if route.status is ProductRouteStatus.EXECUTABLE
     }
     # #3767: the frozen ``== frozenset()`` restatement below used to duplicate the

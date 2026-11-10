@@ -239,7 +239,7 @@ def test_stream_on_carries_thought_as_its_own_frame_and_saves_the_clean_answer(m
 # Browser contract
 # ---------------------------------------------------------------------------
 def test_ui_mounts_an_incremental_thinking_panel_outside_the_answer():
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
+    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
     transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
     locale = (STATIC / "locale.js").read_text(encoding="utf-8")
     css = (STATIC / "capability-presentation.css").read_text(encoding="utf-8")
@@ -248,8 +248,8 @@ def test_ui_mounts_an_incremental_thinking_panel_outside_the_answer():
     index = (STATIC / "index.html").read_text(encoding="utf-8")
     panel = (STATIC / "thought-panel.js").read_text(encoding="utf-8")
 
-    assert "window.PadiemChatThoughtPanel?.handleFrame?.(article, frame" in app
-    assert "window.PadiemChatThoughtPanel?.settle?.(" in app
+    assert "window.PadiemChatThoughtPanel?.handleFrame?.(article, frame" in stream
+    assert "window.PadiemChatThoughtPanel?.settle?.(" in stream
     assert "body.insertBefore(details, content)" in panel
     assert "details.open = true;" not in panel
     assert "details.open = false;" in panel
@@ -267,14 +267,14 @@ def test_ui_mounts_an_incremental_thinking_panel_outside_the_answer():
 
 
 def test_thought_frames_are_redacted_and_bounded_like_the_legacy_summary():
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
+    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
     panel = (STATIC / "thought-panel.js").read_text(encoding="utf-8")
 
-    assert "sanitize: safeThoughtSummary" in app
+    assert "sanitize: safeThoughtSummary" in stream
     assert "paragraph.textContent = sanitize(state.text);" in panel
-    assert 'value.trim().slice(0, 2000)' in app
-    assert "[user prompt omitted]" in app
-    assert "[secret redacted]" in app
+    assert 'value.trim().slice(0, 2000)' in stream
+    assert "[user prompt omitted]" in stream
+    assert "[secret redacted]" in stream
 
 
 # ---------------------------------------------------------------------------

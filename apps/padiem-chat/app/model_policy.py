@@ -9,9 +9,12 @@ from padiem_control_plane.product_tier_routes import (
     RETIRED_PRODUCT_MODEL_IDS,
     ProductTierLabel,
     ProductTierRoutesError,
-    active_route_for,
-    FREE_PRIMARY_B14_MODEL_ID,
-    FREE_FALLBACK_B14_MODEL_ID,
+)
+from padiem_control_plane.product_tier_routes_private import (
+    effective_active_route_for,
+    free_fallback_model_id,
+    free_primary_model_id,
+    paid_primary_model_id,
 )
 from padiem_control_plane.product_tier_routes import (
     MAX_HOLD_MODEL_ID as _CONTRACT_MAX_HOLD_MODEL_ID,
@@ -31,7 +34,7 @@ def _contract_route_or_hold_id(
     hold_model_id: str,
 ) -> str:
     try:
-        route = active_route_for(label)
+        route = effective_active_route_for(label)
     except ProductTierRoutesError as exc:  # fail closed before any dispatch
         raise RuntimeError(f"product tier route contract is invalid: {exc}") from exc
     if route is None or not route.model_id:
@@ -43,7 +46,7 @@ def _contract_executable_ids() -> frozenset[str]:
     model_ids: set[str] = set()
     for label in ProductTierLabel:
         try:
-            route = active_route_for(label)
+            route = effective_active_route_for(label)
         except ProductTierRoutesError as exc:
             raise RuntimeError(f"product tier route contract is invalid: {exc}") from exc
         if route is not None and route.model_id:
@@ -55,15 +58,26 @@ DEFAULT_CHAT_PROFILE = "free"
 # The Free, Plus, Pro and Max primary model is declared per tier in the
 # shared Control Plane. A shared upstream model ID does not grant a higher
 # membership tier; the request's verified tier remains authoritative.
-FREE_B14_MODEL_ID = FREE_PRIMARY_B14_MODEL_ID
+FREE_B14_MODEL_ID = free_primary_model_id()
+# Kept as a name for the lanes that import it from here; the value is the
+# private registry's answer at import time, never a repository literal.
+FREE_FALLBACK_B14_MODEL_ID = free_fallback_model_id()
 PADIEM_FREE = "Padiem Free"
 # Administrator lane model follows the shared Control Plane declaration:
 # #5685 declares an interim ADMIN route (the Free Google route), so the Muse
 # hold model below applies only while that route is absent. Provisioned by
 # the verified global model admin gate in member_grade_access/chat_routes;
 # never part of the Free..Max product-tier routes, aliases, or hold lanes.
+#: Last-resort marker. It is never dispatched to: it only names the lane when
+#: the registry document declares neither an admin route nor a paid primary.
+_ADMIN_LAST_RESORT_HOLD_ID = "padiem-profile/admin-hold"
+# #7238 issue: a registry document without an admin grade used to leave this
+# lane on the marker, which the dispatcher cannot resolve. The fallback is now
+# the registry's own paid primary, so an admin request runs on a provisioned
+# route; the marker survives only when the document is unusable altogether
+# (where every lane fails closed).
 ADMIN_B14_MODEL_ID = _contract_route_or_hold_id(
-    ProductTierLabel.ADMIN, "opencode-go/muse-spark-1.3-contributor"
+    ProductTierLabel.ADMIN, paid_primary_model_id() or _ADMIN_LAST_RESORT_HOLD_ID
 )
 
 TIER_ID_TO_LABEL: dict[str, ProductTierLabel] = {
@@ -246,8 +260,12 @@ DEFAULT_B14_MODEL_ID = PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
 # raw provider model ids are deliberately not catalog rows. A fallback entry
 # does not grant model execution.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
-    FREE_B14_MODEL_ID: frozenset({"chat", "coding"}),
-    FREE_FALLBACK_B14_MODEL_ID: frozenset({"chat", "image"}),
+    model_id: caps
+    for model_id, caps in (
+        (free_primary_model_id(), frozenset({"chat", "coding", "image"})),
+        (free_fallback_model_id(), frozenset({"chat"})),
+    )
+    if model_id
 }
 
 
@@ -324,7 +342,7 @@ def resolve_tier_policy(
         )
 
     try:
-        route = active_route_for(label)
+        route = effective_active_route_for(label)
     except ProductTierRoutesError as exc:
         raise ModelPolicyError(
             "invalid_product_tier",

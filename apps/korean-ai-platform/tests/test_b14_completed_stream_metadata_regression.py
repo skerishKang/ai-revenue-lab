@@ -4,6 +4,10 @@ import json
 import sys
 from pathlib import Path
 
+from _registry_values import require_owner_document
+
+require_owner_document()
+
 # Reuse the canonical synthetic chunk transport without copying test scaffolding.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 

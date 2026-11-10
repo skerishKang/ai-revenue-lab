@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import inspect
 import re
+import uuid
 from typing import Any
 
 from starlette.requests import Request
@@ -22,6 +23,7 @@ _CANONICAL_RUN = re.compile(r"^run_[0-9a-f]{24}$")
 async def project_completed_general_run(
     request: Request, *, run_id: str, user_text: str, answer: str,
     conversation_id: str | None = None, workspace_id: str | None = None,
+    product: str = "claw", action: str = "general",
 ) -> bool:
     """Return whether a canonical owner history row was actually committed.
 
@@ -69,19 +71,25 @@ async def project_completed_general_run(
         if not isinstance(owned, dict) or owned.get("id") != cid:
             return False
 
-    title = "Claw: " + " ".join(user_text.strip().split())
+    prefix = "Chat: " if product == "chat" else "Claw: "
+    title = prefix + " ".join(user_text.strip().split())
     title = title[:MAX_HISTORY_TITLE_CHARS]
     summary = answer[:MAX_RUN_RESULT_SUMMARY_CHARS]
+    resolved_action = action if isinstance(action, str) and action.strip() else "general"
     try:
         scoped_kwargs = (
             {"workspace_id": workspace_id}
             if conversation_id is not None else {}
         )
+        if resolved_action != "general":
+            scoped_kwargs["action"] = resolved_action
+        else:
+            scoped_kwargs.pop("action", None)
         result: Any = record(
             user_id=uid,
             run_id=run_id,
             channel="web",
-            action="general",
+            action=scoped_kwargs.pop("action", "general"),
             title=title,
             status="completed",
             result_summary=summary,
@@ -100,4 +108,78 @@ async def project_completed_general_run(
     return True
 
 
-__all__ = ["project_completed_general_run"]
+
+
+async def project_completed_chat_turn(
+    request: Request,
+    *,
+    user_text: str,
+    answer: str,
+    conversation_id: str | None = None,
+    workspace_id: str | None = None,
+    product: str | None = None,
+    action="general",
+) -> bool:
+    """Project a Chat-direct completed turn into the shared claw_run_history
+    read-model (#7297).
+
+    Title prefix follows the origin screen label ('Chat: ' vs 'Claw: '). When
+    the turn originated on the Claw screen, its verified saved conversation id
+    is linked so the recent-conversation list and session reopen continue to
+    recognize the thread as a Claw conversation. Best-effort only: a projection
+    failure never fails the turn.
+    """
+    if not isinstance(user_text, str) or not user_text.strip():
+        return False
+    if not isinstance(answer, str) or not answer.strip():
+        return False
+    from .request_contract import declared_product_surface
+
+    resolved_product = (
+        product if product in ("chat", "claw") else declared_product_surface(None, request)
+    )
+    resolved_cid = conversation_id
+    if resolved_cid is None:
+        state = getattr(request, "state", None)
+        saved_cid = getattr(state, "chat_saved_conversation_id", None)
+        if isinstance(saved_cid, str) and saved_cid:
+            resolved_cid = saved_cid
+    run_id = f"run_{uuid.uuid4().hex[:24]}"
+    try:
+        if resolved_product == "claw" and isinstance(resolved_cid, str) and resolved_cid:
+            ws_id = workspace_id
+            if not isinstance(ws_id, str) or not ws_id:
+                uid = current_user_id(request) if auth_ready(request) else None
+                if isinstance(uid, str) and uid:
+                    try:
+                        from .claw_memory_routes import _resolve_memory_workspace
+
+                        ws_id = await _resolve_memory_workspace(request, uid)
+                    except Exception:
+                        ws_id = None
+                if not isinstance(ws_id, str) or not ws_id:
+                    ws_id = "personal"
+            linked = await project_completed_general_run(
+                request,
+                run_id=run_id,
+                user_text=user_text,
+                answer=answer,
+                conversation_id=resolved_cid,
+                workspace_id=ws_id,
+                product="claw",
+                action=action,
+            )
+            if linked:
+                return True
+        return await project_completed_general_run(
+            request,
+            run_id=run_id,
+            user_text=user_text,
+            answer=answer,
+            product=resolved_product,
+            action=action,
+        )
+    except Exception:
+        return False
+
+__all__ = ["project_completed_chat_turn", "project_completed_general_run"]

@@ -106,6 +106,41 @@
   async function pcLinked() {
     // PDF·MD와 같은 판정: 서버의 pairings 기록만이 연결을 말할 수 있다.
     if (window.PadiemAuthGate?.authenticated() === false) return null;
+    // The connect flow already owns this list on the first screen. Reuse its
+    // answer, or the read it has open, instead of a second GET (#7073, same
+    // pattern as b66-quote's pcLinkedNow). A refused or not-ready answer is
+    // final here: retrying it would be the duplicate this reuse removes.
+    // This module is evaluated just before the flow module, so the flow may
+    // not exist yet: wait for the document's own boot point (both modules
+    // defer to DOMContentLoaded) before falling back to a direct read.
+    let flow = window.PadiemPcConnectFlow;
+    if (!flow && document.readyState !== "complete") {
+      // Deferred scripts run while readyState is "interactive" and before
+      // DOMContentLoaded fires, so waiting while "loading" alone would miss
+      // the flow entirely. Once DOMContentLoaded has fired readyState is
+      // always "complete" (never the reverse), so this wait cannot stick.
+      await new Promise((resolve) => {
+        document.addEventListener("DOMContentLoaded", () => resolve(), { once: true });
+      });
+      flow = window.PadiemPcConnectFlow;
+    }
+    const sharedRead = flow && (typeof flow.read === "function" ? flow.read : flow.refresh);
+    if (flow && typeof sharedRead === "function" && typeof flow.current === "function") {
+      try {
+        let current = flow.current();
+        if (current && current.read !== "ok" && current.read !== "not_ready"
+            && current.everRead !== true) {
+          await sharedRead();
+          current = flow.current();
+        }
+        if (current && current.read === "ok") {
+          return current.links.some((link) => link && link.state === "active");
+        }
+        return null;
+      } catch (_) {
+        return null;
+      }
+    }
     try {
       let response = await fetch(PC_PAIRINGS, {
         credentials: "same-origin", cache: "no-store", headers: { Accept: "application/json" },

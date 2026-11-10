@@ -101,7 +101,7 @@ def test_execute_route_refuses_model_unavailable_pre_dispatch_as_tier_unavailabl
 
     # No executable route for the selected tier -> the route's own pre-dispatch
     # refusal, exactly as a real unrouted tier behaves. Nothing is dispatched.
-    monkeypatch.setattr(route_runtime, "active_route_for", lambda label: None)
+    monkeypatch.setattr(route_runtime, "effective_active_route_for", lambda label: None)
     with _client() as client:
         response = client.post(EXECUTE_PATH, json=_payload())
 
@@ -124,7 +124,7 @@ def test_execute_route_projects_the_tier_config_failure_as_tier_unavailable(
     def _raise(label):
         raise ProductTierRoutesError("no reviewed tier route table")
 
-    monkeypatch.setattr(route_runtime, "active_route_for", _raise)
+    monkeypatch.setattr(route_runtime, "effective_active_route_for", _raise)
     with _client() as client:
         response = client.post(EXECUTE_PATH, json=_payload())
 

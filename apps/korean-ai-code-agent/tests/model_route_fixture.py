@@ -41,6 +41,15 @@ from typing import Any
 from unittest import mock
 
 from padiem_control_plane import product_tier_routes as tier_routes
+from padiem_control_plane import product_tier_routes_private as tier_routes_private
+
+# The isolated contract-test runners (validate-b54-kagent.yml) discover with
+# unittest, which never imports pytest's conftest, so the test-time registry
+# switch would never engage there. This helper is the single import every
+# switched-world test module funnels through, so engage it here exactly once.
+from _registry_switch_default import ensure_default_registry_switch  # noqa: E402
+
+ensure_default_registry_switch()
 
 SYNTHETIC_ROUTE_ID = "test.plus.synthetic.v1"
 SYNTHETIC_PROVIDER_ID = "test"
@@ -75,11 +84,15 @@ def synthetic_model_id() -> str:
 def canonical_plus_route_model() -> str | None:
     """The model id the untouched canonical declaration resolves Plus to.
 
-    ``None`` while the product keeps Plus on HOLD, which is the state the
-    synthetic route stands in for.
+    Reads the same private-registry authority the runtime resolves from
+    (``effective_active_route_for``), so the switched world and the
+    all-HOLD declaration both answer coherently: an empty declaration only
+    ever answers ``None``.
     """
 
-    route = tier_routes.active_route_for(tier_routes.ProductTierLabel.PLUS)
+    route = tier_routes_private.effective_active_route_for(
+        tier_routes.ProductTierLabel.PLUS
+    )
     if route is None or not route.model_id:
         return None
     return route.model_id
@@ -117,12 +130,19 @@ def synthetic_plus_route_installed(
     Everything the patch touched is restored on exit, including module-level
     constants that were computed at import time. ``extra_module_names`` names the
     calling test module, whose own ``from ... import active_route_for`` binding
-    would otherwise keep answering from the untouched declaration.
+    would otherwise keep answering from the untouched declaration. Patches both
+    resolver authorities: the declaration module and the private-registry
+    reader, which is what the runtime actually calls in the switched world.
     """
 
     route = synthetic_plus_route()
     resolver = _resolver(route)
-    patchers: list[Any] = [mock.patch.object(tier_routes, "active_route_for", resolver)]
+    patchers: list[Any] = [
+        mock.patch.object(tier_routes, "active_route_for", resolver),
+        mock.patch.object(
+            tier_routes_private, "effective_active_route_for", resolver
+        ),
+    ]
     for module_name in (*_ROUTE_RESOLVER_MODULES, *extra_module_names):
         try:
             module = importlib.import_module(module_name)
@@ -130,6 +150,10 @@ def synthetic_plus_route_installed(
             continue
         if hasattr(module, "active_route_for"):
             patchers.append(mock.patch.object(module, "active_route_for", resolver))
+        if hasattr(module, "effective_active_route_for"):
+            patchers.append(
+                mock.patch.object(module, "effective_active_route_for", resolver)
+            )
         if hasattr(module, "PADIEM_EXECUTABLE_MODEL_IDS"):
             patchers.append(
                 mock.patch.object(

@@ -193,8 +193,10 @@ def test_the_gateway_marks_only_the_last_streaming_candidate(monkeypatch):
 
     assert response.status_code == 502
     # A route whose roster has one candidate is its own last candidate; a chain
-    # marks every candidate before it as non-final.
-    assert seen == [False] * (len(seen) - 1) + [True], seen
+    # marks every candidate before it as non-final. #6724 retries that final
+    # attempt once, so it is observed twice and both are final.
+    assert seen[-2:] == [True, True], seen
+    assert not any(seen[:-2]), seen
     # The flag never leaks past the attempt.
     assert first_byte_bound_is_attempt_total() is False
 
@@ -203,7 +205,8 @@ def test_the_last_candidate_uses_the_attempt_budget_for_its_first_token(monkeypa
     seen, _ = _run(monkeypatch)
 
     assert seen[-1] is True
-    assert not any(seen[:-1])
+    # #6724: the final attempt's same-route retry is final too.
+    assert not any(seen[:-2])
 
 
 def test_the_error_contract_is_unchanged_for_a_first_byte_timeout(monkeypatch):

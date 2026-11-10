@@ -3,14 +3,16 @@ from pathlib import Path
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+#7216 R5 step 5a: showConversation moved into chat-conversation-module.js.
+CONV = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")
 CSS = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
 
 
 def test_show_chat_resets_stale_claw_disclosures_without_destroying_runs():
-    start = APP.index("function showConversation(")
-    end = APP.index("function addUserMessage(", start)
-    chunk = APP[start:end]
-    assert 'shell.dataset.state = "chat";' in chunk
+    start = CONV.index("function showConversation(")
+    end = CONV.index("function addUserMessage(", start)
+    chunk = CONV[start:end]
+    assert 'deps.shell.dataset.state = "chat";' in chunk
     for identity in ("clawRunHistoryDisclosure", "clawRunHistory",
                      "clawApprovedDisclosure", "clawApprovedMemory"):
         assert identity in chunk

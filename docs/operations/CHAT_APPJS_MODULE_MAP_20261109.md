@@ -175,3 +175,102 @@ app.js는 다수 모듈 뒤·일부 모듈 앞에 로드된다. 분리 시 전�
   `resetConversationView`·`setNote`·`idleNote`)는 deps getter로 호출한다.
 - 결과: `app.js` 7,928 → 7,529줄, 새 파일 `chat-history-module.js`(506줄),
   상한 8,028 → 7,629.
+
+## 10. 로그인 세션 구역 확정 (R5 4단계, #7216)
+
+이동 대상은 추출기의 구역 분류가 **로그인 세션**으로 놓은 함수 41개(현재 app.js
+기준 693줄)다. §1 기준 43개·779줄에서 앞 단계 이동으로 분류가 조정되었다.
+
+- 대표: `applyAuthState`(1862-2001), `loadAuthStatus`(2889-2939),
+  `submitPasswordChange`(2658-2701), `submitPasswordResetConfirm`(2597-2637),
+  `openAuthDialog`(2029-2063), `signOutCurrentAccount`(4242-4260),
+  `reviewedGoogleAuthorizationUrl`(6066-6077) — 괄호는 7,529줄 리비전 기준.
+- **최상위 연결 코드**: 프로필 패널 생성 대입 블록(244-267)과 로그인/계정 리스너
+  블록(2941-2943, 3013-3029, 4263-4279, 4305-4361, 4363-4438, 6587-6598)은
+  §8 규칙대로 app.js에 남는다.
+- **클로저 변수**: DOM 참조·상수는 getter, 다시 대입하는
+  `authState`·`authViewEpoch`·`authDialogView`·`passwordResetToken`·
+  `clawApprovalEpoch`·`clawApprovalInFlight`·`clawApprovalSessionToken`·
+  `pendingNotificationConversationId`·`pendingNotificationRunId`는 getter+setter.
+  deps 113개(getter 113 / 그중 setter 9; 모듈이 읽지 않는 `projects`·
+  `resetConversation` getter 2건은 아르곤 지적 반영으로 제거해 115→113).
+- 다른 구역 함수는 deps getter로, 옮긴 함수끼리의 호출도 deps(→ app.js 전달 함수
+  → 같은 모듈)로 간다. `document`·`window`·`fetch`·`URL` 등 전역은 본문 그대로.
+- 결과: `app.js` 7,529 → 7,012줄, 새 파일 `chat-auth-module.js`(747줄),
+  상한 7,629 → 7,110(실측 7,010+100; PR 초안의 7,107은 7,007 과소 계수였고
+  deps 미사용 getter 2건 제거 뒤 최종개 기준으로 정정). 이전 시험 12파일 +
+  신규 계약 2종(`test_r5_step4_auth_module_7216`·`test_r5_step4_auth_browser_7216`).
+
+## 11. 대화 구역 함수 확정 (R5 다음 구역, 대기 중 기록)
+
+다음 이동 대상은 추출기의 구역 분류가 **대화**로 놓은 함수 24개(현재 app.js
+7,012줄 기준 1,115줄)다. §1의 25개·1,201줄에서 앞 단계 이동으로 분류가 조정되었다.
+
+- `attachmentCopy`·`showComposerInlineHint`·`updateComposer`(533-597),
+  `showConversation`(771-806)·`addUserMessage`(818-899)·`renderAnswer`(954-980),
+  `renderStreamError`(1110-1124), 첨부 7개(`clearAttachment`~`attachmentPayload`,
+  1150-1339), `safeLocalUiMessage`(1522-1527), `resetConversationView`·
+  `resetConversation`(1715-1771), `requestCompletedAnswer`·`applyStreamDone`
+  (2601-2686), `requestStreamingAnswer`(2943-3347)·`cancelActiveStream`(3349-3371)·
+  `requestAnswer`(3400-3571), `approvalDecisionErrorMessage`(5814-5820)·
+  `approvedMemoryErrorMessage`(6311-6320) — 괄호는 7,012줄 리비전 기준.
+- **최상위 연결 코드**(app.js 유지 대상): 첨부 트레이/컴포저 리스너(562-572),
+  알림 진입(1968-1976), 전송/문서 형식 리스너(2537-2599, 3597-3607, 3726-3729),
+  종료 시 정리(6933-6968) 등 13개 블록.
+- 클로저 변수: `messageList`·`conversationArtifacts`·`conversationArtifactContext`·
+  `cancelStreamButton`·`attachmentButton`·`attachmentChipList`·`composerInlineHint`·
+  `NOTIFICATION_CONVERSATION_ID`·`composerForm` — getter는 DOM/상수, 다시 대입되는
+  변수는 setter 부여. 이전 시험 후보는 지도 §4의 대화 구역 44개 파일.
+
+
+## 12. 대화 구역 확정 (R5 5단계, #7216) — 5a/5b 2개 PR로 분할
+
+대화 구역 24개 함수·1,115줄은 한 PR보다 크므로 §11의 예시(목록·불러오기 /
+전송·스트리밍 표시)로 2개로 나눈다.
+
+- **5a 목록·표시·첨부·리셋 19개**(1,046줄 중 본문 약 640줄): `attachmentCopy`·
+  `showComposerInlineHint`·`updateComposer`, `showConversation`·`addUserMessage`·
+  `renderAnswer`·`renderStreamError`, 첨부 7개(`clearAttachment`~`attachmentPayload`),
+  `safeLocalUiMessage`, `resetConversationView`·`resetConversation`,
+  `approvalDecisionErrorMessage`·`approvedMemoryErrorMessage`. 동기 DOM/렌더링만 —
+  요청 수명·컨트롤러·에포크를 만지지 않음.
+- **5b 전송·스트리밍 5개**: `requestCompletedAnswer`·`applyStreamDone`·
+  `requestStreamingAnswer`·`cancelActiveStream`·`requestAnswer`. 비동기 요청 수명,
+  AbortController·진행 중 요청·에포크 재대입이 집중된 구간이라 5a와 분리.
+- 분할 기준: 클로저 재대입(특히 요청/스트리밍 상태)의 유무와 시험 겹침.
+  5a는 동기 표시/첨부만, 5b는 전송·스트리밍 변수가 모인 곳.
+- 5a 결과: `chat-conversation-module.js`(462줄), `app.js` 7,010 → 6,691줄,
+  상한 7,110 → **6,791**. deps getter 68개 · setter 13개(재대입 변수:
+  `conversationEpoch` 포함 요청·스트리밍 북키핑). 이전 시험 이전 — 대화
+  함수명을 참조하는 40개 파일 중 영향을 받는 25개 + 전체 app.js 실행 하네스
+  17개에 모듈 로더 1줄 추가(index.html 순서와 동일). 신규 계약 2종
+  (`test_r5_step5_conversation_module_7216` 19함수 vm 동작·getter·setter /
+  `test_r5_step5_conversation_browser_7216` 19개 전달 직접 호출 + getter·동작).
+  뮤테이션 검증: 본문 복제 → 전달 개수 실패, `deps.` 제거 → moved-bodies 실패.
+  전후 스크린샷(1440·390): 목록·새 대화 거의 동일(0.22% 이하), 스트리밍·답변
+  차이는 실시간 응답 내용 차이로 레이아웃 동일(blur 평균차 1.3~4.5).
+- 5b 결과: `chat-streaming-module.js`(704줄, 5개 함수), `app.js` 6,691 → **6,072줄**,
+  상한 6,791 → **6,172**. deps getter 43개 · setter 7개(`activeClawRunId`·
+  `activeProject`·`activeRequestArticle`·`activeRequestCancelReason`·
+  `activeRequestController`·`inFlight`·`lastCompletedAnswerRequest`). 이전 시험
+  55개 파일 이전 + 신규 계약 2종(`test_r5_step5b_streaming_module_7216` 5함수 vm
+  동작·getter·setter / `test_r5_step5b_streaming_browser_7216` 5개 전달 직접 호출
+  + getter·setter).
+
+## 13. R5 다음 구역 후보 조사 (대기 중 기록 — Claw 제외)
+
+Claw는 열린 PR #7197 정리 뒤로 제외. 공통 구역(77개 함수·1,388줄)은 허브라
+한 번에 옮기지 않고 씨(cluster)로 나누는 것이 후보. 씨 목록은 추출기
+`top_level_functions`의 `area == "공통"` 기준이다.
+
+| 후보 씨 | 함수 수(대략) | 비고 |
+|---|---|---|
+| 프로젝트 파일·대화 | 17 | `loadProjects`·`projectById`·`ensureProject`·`addProjectFile`·`saveProject`·`deleteProject`·`selectProject` 등 |
+| Android 핸드오프 | 11 | `readStoredAndroidHandoff`·`claimAndroidHandoff`·`pollAndroidHandoff`·`startAndroidHandoff` 등 |
+| 승인·메모리 카드 | 15 | `applyImmediateApprovalDecision`·`approveProposal`·`renderApprovedMemoryCard` 등 |
+| 오류·재시도 표면 | 14 | `buildRetryBox`·`renderError`·`renderCancelled`·`lifecycleForError`·`formatBytes` 등 |
+| 잔여 허브 | 20 | `setNavActive`(93줄)·`addAssistantShell`·`renderWebGroundingNotice`·룰편집·Gmail 연결 등. 마지막 |
+
+- 이 중 오류·재시도 표면(14)은 대화·스트리밍 추후 단계와 접촉이 많아
+  5b 이후에 이어 붙는 자연 후보로 보인다. 나머지는 각 씨의 호출 엣지를
+  추출기로 세어 순서 확정 후 진행한다(조사 기록만).

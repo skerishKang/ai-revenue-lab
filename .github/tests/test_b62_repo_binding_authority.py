@@ -57,7 +57,13 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
     # never a silent removal of something serving traffic. Each returns to an empty
     # diff as its own deploy lands.
     assert binding_diff(index(rows), expected) == {
-        'added': [{'name': 'PADIEM_CHAT_FILE_LANE_ORIGIN', 'type': 'plain_text'},
+        # 2026-11-09 COM2-only B14 decision: the Chat Worker now calls the COM2
+        # B14 over HTTPS (#5784 switch), so its two vars are declared in [vars]
+        # and reviewed here like every other pending addition. The Service
+        # Binding and the caller proof secret stay declared untouched.
+        'added': [{'name': 'B14_UPSTREAM_MODE', 'type': 'plain_text'},
+                  {'name': 'B14_UPSTREAM_URL', 'type': 'plain_text'},
+                  {'name': 'PADIEM_CHAT_FILE_LANE_ORIGIN', 'type': 'plain_text'},
                   {'name': 'PADIEM_CHAT_FILE_LANE_TICKET_SECRET',
                    'type': 'secrets_store_secret'},
                   {'name': 'PADIEM_CHAT_PASSWORD_RPC_SECRET',
@@ -75,8 +81,16 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
                   {'name': 'PC_USER_HELPER_INSTALL_URL', 'type': 'plain_text'},
                   {'name': 'PC_USER_HELPER_SHA256', 'type': 'plain_text'}],
         'removed': [],
+        # 2026-11-09 COM2-only B14 decision: PADIEM_CHAT_B14_BASE_URL stays a
+        # live-only binding (the mock deploy guard forbids live values in the
+        # repository [vars]), and the plan realigns it to the one repository
+        # authority, B14_UPSTREAM_URL, instead of keeping a stale retired origin
+        # that config.py refuses beside a flipped switch. The name and type are
+        # unchanged; only the value follows the switch.
         'changed': [],
     }
+    assert values['PADIEM_CHAT_B14_BASE_URL'] == 'https://b14.padiem.net'
+    assert values['B14_UPSTREAM_URL'] == 'https://b14.padiem.net'
     assert '<synthetic-private-value>' not in capsys.readouterr().out
 
 

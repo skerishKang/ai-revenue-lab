@@ -157,6 +157,7 @@ from app.control_plane_trust_client import (
 )
 from app.tenant_auth import (
     ControlPlaneTenantAdmissionAdapter,
+    admission_combined_rpc_enabled,
     build_control_plane_admission_adapter,
 )
 from app.service import (
@@ -898,7 +899,8 @@ def _admission_adapter_for_env(
             env
         )
         return build_control_plane_admission_adapter(
-            client
+            client,
+            combined_rpc=admission_combined_rpc_enabled(env),
         )
     except (
         ControlPlaneTrustClientError,

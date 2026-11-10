@@ -20,18 +20,20 @@ def _subprocess_registry_probe(bundle_dir: Path, should_exist: bool) -> None:
     # source-tree module already cached in sys.modules can mask a missing file.
     script = r"""
 from pathlib import Path
-from app.pilot.model_registry_file import ModelRegistryError, REGISTRY_PATH, read_registry
+from app.pilot.model_registry_file import (
+    ModelRegistryError, REGISTRY_PATH, SWITCH_MISSING, read_registry,
+)
 expected = Path.cwd() / "app" / "pilot" / "b14_models.json"
 assert REGISTRY_PATH.resolve() == expected.resolve(), (REGISTRY_PATH, expected)
+assert REGISTRY_PATH.is_file() is SHOULD_EXIST, "bundled JSON presence does not match"
+# The bundle carries the placeholder document and names no registry switch, so
+# the catalog half of the contract is fail-closed here.
 try:
-    data = read_registry()
-except ModelRegistryError:
-    assert not SHOULD_EXIST, "JSON was present but registry could not load"
+    read_registry()
+except ModelRegistryError as exc:
+    assert SWITCH_MISSING in str(exc), exc
 else:
-    assert SHOULD_EXIST, "missing JSON silently loaded from elsewhere"
-    ids = {m["id"] for m in data["models"]}
-    assert len(ids) == len(data["models"]), "duplicate model in bundled source"
-    assert all(m["provider_id"] in data["providers"] for m in data["models"])
+    raise AssertionError("an unswitched bundle served a catalog")
 """
     script = "SHOULD_EXIST = " + repr(should_exist) + "\n" + script
     env = os.environ.copy()
@@ -66,7 +68,8 @@ def verify(source: Path, bundle_dir: Path) -> None:
     built = packaged.read_bytes()
     assert built == before, "bundled JSON differs from canonical source"
     registry = json.loads(built)
-    assert registry["models"], "empty bundled registry"
+    # The shipped document is a schema-shaped placeholder: it may carry no
+    # models, but every row it does carry must be consistent.
     assert registry["providers"], "empty bundled providers"
     assert len({m["id"] for m in registry["models"]}) == len(registry["models"]), "duplicate bundled model"
     assert all(m["provider_id"] in registry["providers"] for m in registry["models"])

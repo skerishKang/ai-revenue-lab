@@ -6,6 +6,11 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from padiem_control_plane.product_tier_routes_private import (
+    free_primary_model_id,
+    paid_primary_model_id,
+)
+
 from app.b66_b14_free_first_resolver import B14FreeFirstQuoteModelResolver
 from app.b66_registered_model_boundary import (
     B66ModelRouteError,
@@ -166,7 +171,7 @@ def test_b66_customer_dropdown_shows_grades_with_grade_models_not_provider_names
 
     class GeminiOnly:
         async def list_selectable_models(self):
-            return [{"model_id": "google/gemini-3.1-flash-lite", "name": "Gemini 3.1 Flash Lite"}]
+            return [{"model_id": free_primary_model_id(), "name": "Free primary"}]
     client.app.state.b66_quote_model_resolver = GeminiOnly()
     only_free = client.get("/api/b66/quote/models")
     assert only_free.status_code == 200
@@ -180,8 +185,8 @@ def test_b66_customer_dropdown_shows_grades_with_grade_models_not_provider_names
     class GoogleGradeModels:
         async def list_selectable_models(self):
             return [
-                {"model_id": "google/gemini-3.1-flash-lite", "name": "Gemini 3.1 Flash Lite"},
-                {"model_id": "google/gemini-3.5-flash-lite", "name": "Gemini 3.5 Flash Lite"},
+                {"model_id": free_primary_model_id(), "name": "Free primary"},
+                {"model_id": paid_primary_model_id(), "name": "Paid primary"},
             ]
     client.app.state.b66_quote_model_resolver = GoogleGradeModels()
     response = client.get("/api/b66/quote/models")
@@ -227,7 +232,7 @@ def test_b66_admin_option_needs_central_verification_and_uses_the_shared_admin_r
     denied = ordinary.post(
         "/api/b66/quote/interpret",
         json={"saved_skill_id": SAVED_ID, "message": "synthetic",
-              "tier": B66_ADMIN_GRADE, "model_id": "google/gemini-3.5-flash-lite"},
+              "tier": B66_ADMIN_GRADE, "model_id": paid_primary_model_id()},
     )
     assert denied.status_code == 403
 
@@ -265,24 +270,22 @@ def test_b66_admin_option_needs_central_verification_and_uses_the_shared_admin_r
 class _GoogleGradeModels:
     async def list_selectable_models(self):
         return [
-            {"model_id": "google/gemini-3.1-flash-lite", "name": "Gemini 3.1 Flash Lite"},
-            {"model_id": "google/gemini-3.5-flash-lite", "name": "Gemini 3.5 Flash Lite"},
+            {"model_id": free_primary_model_id(), "name": "Free primary"},
+            {"model_id": paid_primary_model_id(), "name": "Paid primary"},
         ]
 
 
 def test_b66_grade_map_tracks_the_active_product_routes():
     from app.b66_grade_models import B66_GRADE_MODEL_IDS
-    from padiem_control_plane.product_tier_routes import (
-        ProductTierLabel,
-        active_route_for,
-    )
+    from padiem_control_plane.product_tier_routes import ProductTierLabel
+    from padiem_control_plane.product_tier_routes_private import effective_active_route_for
     for tier, label in (
         ("free", ProductTierLabel.FREE),
         ("plus", ProductTierLabel.PLUS),
         ("pro", ProductTierLabel.PRO),
         ("max", ProductTierLabel.MAX),
     ):
-        route = active_route_for(label)
+        route = effective_active_route_for(label)
         assert route is not None and route.model_id
         assert B66_GRADE_MODEL_IDS[tier] == route.model_id
 

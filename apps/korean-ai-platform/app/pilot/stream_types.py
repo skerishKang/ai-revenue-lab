@@ -15,6 +15,7 @@ from typing import Any
 
 from app.pilot.errors import MalformedUpstreamResponse
 from .malformed_diagnostics import malformed, text_content
+from .prestream_retry import ERROR_ENVELOPE_REASON
 
 
 @dataclass(frozen=True, slots=True)
@@ -205,6 +206,11 @@ def _parse_sse_frame(frame: bytes, *, provider="unknown", model_id="unknown") ->
         raise fail("json_decode") from None
     if not isinstance(payload, dict):
         raise fail("payload_not_object")
+    if set(payload) == {"error"}:
+        # #6724: an error envelope instead of a frame. It has its own reason so
+        # the pre-answer retry can tell the provider refusing the call apart
+        # from a genuinely malformed body (which is never retried).
+        raise fail(ERROR_ENVELOPE_REASON)
 
     response_id = payload.get("id")
     model = payload.get("model")

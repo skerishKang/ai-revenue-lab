@@ -1,9 +1,10 @@
 """Network-free health truth regressions for the Business 14 runtime (#1933 S2).
 
-Since S2 the live-readiness truth is the platform credential plane, not the
-OpenRouter key: the gateway is live-ready when provider mode is ``live`` and
-either a platform secret is configured or the keyless Kilo route is registered.
-``business14.has_key`` reports ``any_platform_secret_present()``.
+Since S2 the live-readiness truth is the platform credential plane, not a
+BYOK gateway key: the gateway is live-ready when provider mode is ``live`` and a
+platform secret is configured. ``business14.has_key`` reports
+``any_platform_secret_present()`` (#7241 3b: the credential NAME is read from
+the effective registry document, never written here).
 """
 
 from __future__ import annotations
@@ -22,20 +23,19 @@ from app.pilot.registry import reset_registry
 
 from _registry_values import registry as effective_registry
 
-PLATFORM_SECRET_ENV_KEYS = (
-    "KILO_API_KEY",
-    "AGNES_API_KEY",
-    "PADIEM_B14_CREDENTIAL_12",
-    "PADIEM_SENSENOVA_API_KEY",
-    "PADIEM_B14_CREDENTIAL_01",
-    "PADIEM_B14_CREDENTIAL_03",
-    "PADIEM_B14_CREDENTIAL_07",
-    "PADIEM_B14_CREDENTIAL_06",
-    "PADIEM_B14_CREDENTIAL_02",
-    "PADIEM_B14_CREDENTIAL_04",
-    "PADIEM_B14_CREDENTIAL_09",
-    "PADIEM_B14_CREDENTIAL_10",
-)
+#: The credential NAME of the first Provider row of the effective document.
+#: Seeding a synthetic value under it is what makes the platform credential
+#: plane report "has_key"; the name is the row's own column, never written here.
+SUBJECT_BINDING = next(iter(effective_registry()["providers"].values()))["credential_binding_name"]
+
+
+def _platform_secret_env_keys() -> tuple[str, ...]:
+    """Every binding NAME the effective document declares (values never read)."""
+    return tuple(
+        entry["credential_binding_name"]
+        for entry in effective_registry()["providers"].values()
+        if entry.get("credential_binding_name")
+    )
 
 
 @pytest.fixture()
@@ -57,7 +57,7 @@ def _reset_runtime_state(monkeypatch):
         "provider_registry_json": pilot_settings.provider_registry_json,
     }
 
-    for key in PLATFORM_SECRET_ENV_KEYS:
+    for key in _platform_secret_env_keys():
         monkeypatch.delenv(key, raising=False)
     runtime_config.provider_mode = "mock"
     pilot_settings.pilot_base_url = ""
@@ -83,7 +83,7 @@ def _set_live() -> None:
 
 def test_live_with_platform_secret_is_top_level_healthy(client, monkeypatch):
     _set_live()
-    monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-sensenova-health-proof-1234567890")
+    monkeypatch.setenv(SUBJECT_BINDING, "sk-synthetic-health-proof-1234567890")
 
     response = client.get("/api/pilot/admin/health")
 
@@ -94,10 +94,11 @@ def test_live_with_platform_secret_is_top_level_healthy(client, monkeypatch):
     # lane, while the manual exact-model catalog exposed enabled routes.
     assert active_catalog
     registry = read_registry()
-    assert len(active_catalog) == sum(
-        bool(model["enabled"] and registry["providers"][model["provider_id"]]["enabled"])
-        for model in registry["models"]
-    )
+    # The models surface publishes exactly the enabled rows of the effective
+    # document (the app's own rule), so the count is read back from the
+    # document rather than from a deployment roster (#7241 3b).
+    enabled_rows = [model for model in registry["models"] if model["enabled"]]
+    assert len(active_catalog) == len(enabled_rows)
     assert data["status"] == "ok"
     assert data["mode"] == "b14-live"
     assert data["configured_providers"] == len({m["provider_id"] for m in read_registry()["models"] if m["enabled"] and read_registry()["providers"][m["provider_id"]]["enabled"]})
@@ -110,7 +111,7 @@ def test_live_with_platform_secret_is_top_level_healthy(client, monkeypatch):
     assert "site_name" not in data["business14"]
 
 
-def test_live_without_platform_secret_is_not_ready_after_kilo_removal(client):
+def test_live_without_platform_secret_is_not_ready(client):
     _set_live()
     data = client.get("/api/pilot/admin/health").json()
     assert data["status"] == "not_configured"
@@ -118,7 +119,7 @@ def test_live_without_platform_secret_is_not_ready_after_kilo_removal(client):
     assert data["business14"]["provider_mode"] == "live"
     assert data["business14"]["has_key"] is False
 
-def test_openrouter_key_alone_never_makes_b14_live_ready(client):
+def test_a_gateway_key_alone_never_makes_b14_live_ready(client):
     _set_live()
     data = client.get("/api/pilot/admin/health").json()
     assert data["status"] == "not_configured"
@@ -127,7 +128,7 @@ def test_openrouter_key_alone_never_makes_b14_live_ready(client):
 
 def test_placeholder_platform_secret_is_filtered(client, monkeypatch):
     _set_live()
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "test-key")
+    monkeypatch.setenv(SUBJECT_BINDING, "test-key")
 
     data = client.get("/api/pilot/admin/health").json()
 
@@ -136,7 +137,7 @@ def test_placeholder_platform_secret_is_filtered(client, monkeypatch):
 
 def test_mock_mode_is_never_promoted_by_platform_secret(client, monkeypatch):
     runtime_config.provider_mode = "mock"
-    monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-sensenova-health-proof-1234567890")
+    monkeypatch.setenv(SUBJECT_BINDING, "sk-synthetic-health-proof-1234567890")
 
     data = client.get("/api/pilot/admin/health").json()
 
@@ -148,18 +149,18 @@ def test_mock_mode_is_never_promoted_by_platform_secret(client, monkeypatch):
 
 def test_valid_registry_keeps_existing_health_precedence(client, monkeypatch):
     _set_live()
-    monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-sensenova-health-proof-1234567890")
+    monkeypatch.setenv(SUBJECT_BINDING, "sk-synthetic-health-proof-1234567890")
     pilot_settings.provider_registry_json = json.dumps([
         {
-            "provider_id": "provider-a",
-            "display_name": "Provider A",
-            "base_url": "https://api.provider-a.example",
+            "provider_id": "example-byok-provider",
+            "display_name": "Example BYOK Provider",
+            "base_url": "https://api.example.invalid/v1",
             "timeout_seconds": 30,
             "models": [
                 {
-                    "model_id": "model-a-v1",
-                    "upstream_model": "upstream-a",
-                    "display_name": "Model A",
+                    "model_id": "example-byok-provider/example-byok-model",
+                    "upstream_model": "example-byok-upstream",
+                    "display_name": "Example BYOK Model",
                     "enabled": True,
                 }
             ],
@@ -177,9 +178,11 @@ def test_valid_registry_keeps_existing_health_precedence(client, monkeypatch):
 
 def test_legacy_mode_keeps_existing_health_precedence(client, monkeypatch):
     _set_live()
-    monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-sensenova-health-proof-1234567890")
-    pilot_settings.pilot_base_url = "https://api.example.com"
-    pilot_settings.pilot_model_id = "legacy-model"
+    monkeypatch.setenv(SUBJECT_BINDING, "sk-synthetic-health-proof-1234567890")
+    # A syntactically valid https origin and a caller-chosen model: this case is
+    # about health precedence, not about a Provider host (#7241 3b).
+    pilot_settings.pilot_base_url = "https://byok.example.invalid/v1"
+    pilot_settings.pilot_model_id = "caller-chosen-model"
 
     data = client.get("/api/pilot/admin/health").json()
 
@@ -190,15 +193,15 @@ def test_legacy_mode_keeps_existing_health_precedence(client, monkeypatch):
 
 
 def test_health_never_exposes_secrets(client, monkeypatch):
-    openrouter_secret = "sk-or-v1-health-secret-should-never-appear-abcdef"
-    platform_secret = "sk-sensenova-never-expose-abcdef1234567890"
+    gateway_secret = "sk-or-v1-health-secret-should-never-appear-abcdef"
+    platform_secret = "sk-synthetic-never-expose-abcdef1234567890"
     _set_live()
-    monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", platform_secret)
+    monkeypatch.setenv(SUBJECT_BINDING, platform_secret)
 
     response = client.get("/api/pilot/admin/health")
 
     assert response.status_code == 200
-    assert openrouter_secret not in response.text
+    assert gateway_secret not in response.text
     assert platform_secret not in response.text
     assert "Authorization" not in response.text
 
@@ -213,12 +216,17 @@ def test_business14_providers_reflect_registered_route_owners(client):
         assert set(entry.keys()) == {"id", "registered", "has_key"}
         assert entry["registered"] is True
         assert isinstance(entry["has_key"], bool)
-    assert not set(("b-ai", "infron")) & {p["id"] for p in providers}
-    assert "kilo" in {p["id"] for p in providers}
-    assert "openrouter" in {p["id"] for p in providers}
-    assert "experiential" in {p["id"] for p in providers}
+    # Every Provider the surface lists owns at least one route the effective
+    # document registers, and no Provider outside that set appears: both sides
+    # are read from the document, so no roster literal is written here (#7241 3b).
+    listed = {p["id"] for p in providers}
+    owned = {
+        m["provider_id"] for m in read_registry()["models"]
+        if m["enabled"] and read_registry()["providers"][m["provider_id"]]["enabled"]
+    }
+    assert listed == owned
 
-def test_health_and_models_surfaces_do_not_leak_openrouter_credentials(client):
+def test_health_and_models_surfaces_do_not_leak_gateway_credentials(client):
     _set_live()
 
     health = client.get("/api/pilot/admin/health")

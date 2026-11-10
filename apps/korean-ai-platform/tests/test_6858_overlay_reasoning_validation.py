@@ -23,7 +23,7 @@ import unittest
 from app.pilot import model_registry_file as registry_file
 from app.pilot.model_registry_file import ModelRegistryError, validate_registry
 
-from _registry_values import model_rows, provider_row, registry
+from _registry_values import model_rows, provider_row
 
 
 def _sample_provider_id() -> str:

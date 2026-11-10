@@ -186,6 +186,20 @@ secret_name = "PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY"
 
 # Public endpoint and numeric OTLP username. Never put token values in [vars].
 [vars]
+# 2026-11-09 CTO order: B14 runs on COM2 only. "https" makes this Worker call
+# the COM2 B14 over its documented public origin with the same caller proof, so
+# the Cloudflare B14 Worker stops serving product traffic. The `B14_SERVICE`
+# binding and `PADIEM_B14_SERVICE_PROOF_SECRET` stay declared until the CTO
+# removes them; the proof secret is also what the HTTPS lane signs with.
+# config.py refuses a base that disagrees with B14_UPSTREAM_URL (half-applied
+# switch), so B14_UPSTREAM_URL is the one repository authority for the address.
+# The legacy PADIEM_CHAT_B14_BASE_URL stays a live binding and is never declared
+# here: the mock deploy guard forbids live values in this [vars] table, and the
+# production generator aligns that live value to this origin on every deploy.
+# No deploy needs a --var override.
+B14_UPSTREAM_MODE = "https"
+B14_UPSTREAM_URL = "https://b14.padiem.net"
+
 PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED = "false"
 PADIEM_CHAT_SHARED_LOGIN_ENABLED = "false"
 PADIEM_CHAT_SHARED_AUTH_CLIENT_KID = "b62-42c57a6725c907f7f3cf"

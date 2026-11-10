@@ -43,7 +43,7 @@ from app.pilot.deployment_entry import PRODUCT_ENTRY_PATH
 from app.pilot import model_registry_file
 
 from _pilot_lane_paths import chat_surface
-from _registry_values import model_rows
+from _registry_values import credential_binding_slot, model_rows
 
 #: The gateway surface this host serves and the wire a B14 row may name: both
 #: are read out of the app (its mounted routes and its ledger vocabulary)
@@ -394,7 +394,7 @@ async def test_environment_wins_and_the_named_file_is_the_fallback(host_dirs, mo
     from app.local_runtime import FileOrEnvSecret
 
     _, secrets = host_dirs
-    binding = "PADIEM_B14_CREDENTIAL_01"
+    binding = credential_binding_slot(1)
     path = secrets / binding
     path.write_text("file-value\n", encoding="utf-8")
     os.chmod(path, stat.S_IRUSR | stat.S_IWUSR)
@@ -411,7 +411,7 @@ async def test_a_secret_the_whole_host_can_read_is_refused(host_dirs) -> None:
     from app.local_runtime import FileOrEnvSecret
 
     _, secrets = host_dirs
-    binding = "PADIEM_B14_CREDENTIAL_02"
+    binding = credential_binding_slot(2)
     path = secrets / binding
     path.write_text("exposed-value", encoding="utf-8")
     os.chmod(path, 0o644)

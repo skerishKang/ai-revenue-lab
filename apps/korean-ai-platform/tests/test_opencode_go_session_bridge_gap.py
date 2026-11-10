@@ -43,7 +43,14 @@ from app.pilot import platform as plat
 from app.pilot.errors import PilotNotConfigured
 from app.pilot.gateway import _validate_body, _InvalidBody
 from _pilot_lane_paths import CHAT_SURFACE_TAIL, chat_surface
-from _registry_values import requires_owner_document
+from _registry_values import require_owner_document, requires_owner_document
+
+# #7241 3단계: the Go session boundary is one served lane's own contract, and
+# which rows that lane carries is an owner decision recorded in the registry
+# document. This host reads the placeholder fixture unless an owner document is
+# named, so the module skips there instead of failing on a lane no document
+# installs.
+require_owner_document()
 
 FORGED_SESSION = "chat_" + "f" * 32
 OTHER_SESSION = "chat_" + "0" * 32

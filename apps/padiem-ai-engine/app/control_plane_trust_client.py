@@ -133,6 +133,47 @@ class CloudflareControlPlaneTrustClient:
             key="reservation",
         )
 
+    async def admit_usage(
+        self,
+        *,
+        product_id: str,
+        subject: Mapping[str, str],
+        reservation: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        binding_method = getattr(self._binding, "admit_usage", None)
+        if not callable(binding_method):
+            raise ControlPlaneTrustClientError(
+                "control_plane_binding_unavailable"
+            )
+        result = await _maybe_await(
+            binding_method(
+                {
+                    "product_id": product_id,
+                    "subject": dict(subject),
+                    "reservation": dict(reservation),
+                }
+            )
+        )
+        wire = _closed_mapping(result, label="admit_usage")
+        if frozenset(wire) != frozenset({"ok", "snapshot", "reservation"}):
+            raise ControlPlaneTrustClientError(
+                "invalid_admit_usage_response"
+            )
+        if wire.get("ok") is not True:
+            error = wire.get("error")
+            code = (
+                error.get("code")
+                if isinstance(error, Mapping)
+                else None
+            )
+            if not isinstance(code, str) or not code:
+                code = "control_plane_authority_error"
+            raise ControlPlaneTrustClientError(code)
+        return {
+            "snapshot": _closed_mapping(wire["snapshot"], label="snapshot"),
+            "reservation": _closed_mapping(wire["reservation"], label="reservation"),
+        }
+
     async def record_usage(
         self,
         *,

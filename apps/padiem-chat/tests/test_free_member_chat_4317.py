@@ -74,9 +74,10 @@ def test_free_selection_stays_independent_of_the_google_paid_primary() -> None:
     free = resolve_tier_policy([{"role": "user", "content": "hello"}], "free")
     assert free.model_id == FREE_B14_MODEL_ID
     assert free.profile == "free"
-    assert model_policy_is_executable("google/gemini-3.5-flash-lite")
+    from padiem_control_plane.product_tier_routes_private import paid_primary_model_id
+    assert model_policy_is_executable(paid_primary_model_id())
     # A paid executable route never replaces Free's requested grade or model.
-    assert free.model_id != "google/gemini-3.5-flash-lite"
+    assert free.model_id != paid_primary_model_id()
 
 @pytest.mark.asyncio
 async def test_signed_in_free_dispatches_exact_model_through_existing_b14_client() -> None:

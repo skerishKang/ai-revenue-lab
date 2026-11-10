@@ -10,7 +10,12 @@ from app.pilot.model_native_parameters import _SUPPORTED, validate_native_parame
 from app.pilot import model_serving_evidence as evidence_api
 from app.pilot.model_serving_evidence import registered_serving_evidence
 
-from _registry_values import provider_of, registry, requires_owner_document
+from _registry_values import provider_of, registry, require_owner_document, requires_owner_document
+
+# Which rows exist and whether they are first-party or verified is a property of
+# the owner's registry document: the placeholder document registers none of the
+# exact rostered identities this suite applies its evidence tables to (#7241 3b).
+require_owner_document()
 
 # The evidence module owns the exact first-party, verified-serving-API and
 # observed-quota rosters (code authority). The suites below check that those

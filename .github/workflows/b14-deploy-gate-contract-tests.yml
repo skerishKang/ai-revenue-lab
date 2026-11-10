@@ -26,6 +26,9 @@ on:
       # The nightly grade mode of that script resolves its exact model id from
       # the shared declaration, so a change there re-runs this contract.
       - "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py"
+      # The smoke contract test stages the placeholder registry switch from
+      # this fixture, so a change there re-runs this contract (#7346).
+      - "packages/padiem-control-plane/tests/fixtures/models_private_fixture.json"
       - ".github/tests/test_cloudflare_served_version_cli.py"
       - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/scripts/cloudflare_served_version.py"

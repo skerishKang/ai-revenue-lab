@@ -17,6 +17,7 @@ Verdict contract (CTO 2026-11-08):
 from __future__ import annotations
 
 import importlib.util
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -30,6 +31,17 @@ check = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(check)
 
 CHAT_APP_ROOT = ROOT / "apps" / "padiem-chat"
+
+# The check script runs a real interpreter against an installed app root whose
+# tool declarations import the repo's canonical packages, so pass this
+# checkout's package sources explicitly (same set as #7322).
+_SUBPROCESS_SOURCE_PATHS = (
+    ROOT / "apps" / "padiem-chat",
+    ROOT / "apps" / "korean-ai-code-agent" / "src",
+    ROOT / "packages" / "padiem-ai-core",
+    ROOT / "packages" / "padiem-control-plane",
+    ROOT / "apps" / "padiem-ai-engine" / "clients" / "python",
+)
 
 NL = chr(10)
 
@@ -65,8 +77,13 @@ def _build_root(tmp_path: Path, tools_body: str, env_lines: list[str]) -> tuple[
 
 
 def _run(script_args: list[str]) -> tuple[int, str, str]:
+    env = os.environ.copy()
+    existing_path = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = os.pathsep.join(str(p) for p in _SUBPROCESS_SOURCE_PATHS) + (
+        os.pathsep + existing_path if existing_path else "")
     process = subprocess.run(
         [sys.executable, str(SCRIPT), *script_args],
+        env=env,
         capture_output=True, text=True, encoding="utf-8", timeout=60,
     )
     lines = [l for l in process.stdout.splitlines() if l.startswith("TOOLS_SERIALIZATION=")]

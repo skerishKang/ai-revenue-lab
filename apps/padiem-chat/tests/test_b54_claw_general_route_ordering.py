@@ -15,6 +15,12 @@ from pathlib import Path
 APP_DIR = Path(__file__).resolve().parents[1]
 APP_JS = APP_DIR / "static" / "app.js"
 SOURCE = APP_JS.read_text(encoding="utf-8")
+#7216 R5 step 4: this contract moved into chat-auth-module.js.
+AUTH_SOURCE = APP_JS.with_name("chat-auth-module.js").read_text(encoding="utf-8")
+#7216 R5 step 5a: showConversation moved into chat-conversation-module.js.
+CONV_SOURCE = APP_JS.with_name("chat-conversation-module.js").read_text(encoding="utf-8")
+#7216 R5 step 5b: requestAnswer / requestStreamingAnswer moved into chat-streaming-module.js.
+STREAM_SOURCE = APP_JS.with_name("chat-streaming-module.js").read_text(encoding="utf-8")
 
 ROUTING_FUNCTIONS = (
     "showConversation",
@@ -41,6 +47,7 @@ def _js_function(source: str, name: str) -> str:
         for i in (
             rest.find("\n  async function "),
             rest.find("\n  function "),
+            rest.find("\n      return {"),
             rest.find("\n  window.PadiemChatTransport"),
             rest.find("\n})();"),
         )
@@ -64,11 +71,23 @@ def _harness() -> str:
     switch_end = SOURCE.index(
         "  // The first user turn extends the original landing panel.", switch_start
     )
+    # Step 5a/5b: showConversation and requestAnswer/requestStreamingAnswer live in
+    # their modules with deps. prefixes; stripping them restores the exact pre-move
+    # code this harness executes against its direct-name stubs.
+    def _conv_function(name):
+        return _js_function(CONV_SOURCE, name).replace("deps.", "")
+
+    def _stream_function(name):
+        return _js_function(STREAM_SOURCE, name).replace("deps.", "")
+
     extracted = "\n\n".join(
         [SOURCE[product_start:product_end]]
         + [SOURCE[switch_start:switch_end]]
         + [SOURCE[map_start:map_end]]
-        + [_js_function(SOURCE, name) for name in ROUTING_FUNCTIONS]
+        + [_conv_function(name) if name == "showConversation"
+           else _stream_function(name) if name in ("requestAnswer", "requestStreamingAnswer")
+           else _js_function(AUTH_SOURCE if name == "requireSessionForModelUse" else SOURCE, name)
+           for name in ROUTING_FUNCTIONS]
     )
     return r"""
 // Minimal stub environment: exercises the real routing functions, no DOM needed.
@@ -132,6 +151,15 @@ const chatTransport = {
   requestStreaming: async () => { trace.push("transport:streaming"); return {}; },
   readSseEvents: async () => {},
   errorFor: () => new Error("stub"),
+};
+// The moved auth gate reads its closure values through deps getters.
+const openAuthDialog = () => {};
+const deps = {
+  get authState() { return authState; },
+  get setNote() { return setNote; },
+  get uiT() { return uiT; },
+  get loginButton() { return loginButton; },
+  get openAuthDialog() { return openAuthDialog; },
 };
 
 __EXTRACTED__
@@ -226,9 +254,10 @@ def test_claw_shell_with_visible_manual_form_does_not_use_general_lane() -> None
 
 
 def test_request_answer_no_longer_derives_route_from_live_shell_state() -> None:
-    block = _js_function(SOURCE, "requestAnswer")
+    block = _js_function(STREAM_SOURCE, "requestAnswer")
     # The live-state predicate must be gone from requestAnswer: re-deriving it
     # there is exactly the Production regression (#3539).
     assert 'shell.dataset.state === "claw"' not in block
+    assert 'deps.shell.dataset.state === "claw"' not in block
     # The snapshot arrives as a parameter and is threaded to the transport layer.
     assert "clawGeneralRequest" in block

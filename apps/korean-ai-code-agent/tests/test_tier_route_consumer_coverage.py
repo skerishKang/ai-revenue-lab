@@ -1,7 +1,7 @@
 """#2800: the shared tier declaration must not be able to change without running Claw.
 
 Claw owns no route literal: `p01_adapter` and `p01_orchestration_client` ask
-`active_route_for()` what each product tier resolves to, so a declaration edit alone moves Claw's
+`effective_active_route_for()` what each product tier resolves to, so a declaration edit alone moves Claw's
 live behaviour. Before this child, `Validate B54 KAgent` listed only two broker modules under
 `packages/padiem-control-plane`, so that edit ran no Claw test at all.
 
@@ -19,10 +19,15 @@ from pathlib import Path
 import unittest
 
 from padiem_control_plane.product_tier_routes import (
-    TEST_PHASE_PRIMARY_B14_MODEL_ID,
     ProductTierLabel,
-    active_route_for,
 )
+from padiem_control_plane.product_tier_routes_private import paid_primary_model_id, effective_active_route_for
+
+# Engage the test-time registry switch here as well: the isolated
+# contract-test runner uses unittest discovery, which never loads pytest conftest.
+from _registry_switch_default import ensure_default_registry_switch  # noqa: E402
+
+ensure_default_registry_switch()
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 WORKFLOW = REPO_ROOT / ".github/workflows/validate-b54-kagent.yml"
@@ -90,25 +95,25 @@ class TierRouteConsumerCoverageTests(unittest.TestCase):
         expected = {
             route.model_id
             for label in ProductTierLabel
-            for route in [active_route_for(label)]
+            for route in [effective_active_route_for(label)]
             if route is not None and route.model_id is not None
         }
         self.assertEqual(set(PADIEM_EXECUTABLE_MODEL_IDS), expected)
         # Owner #5009: Plus and Pro share the Muse Spark 1.3 primary.
         self.assertEqual(
             {
-                active_route_for(ProductTierLabel.PLUS).model_id,
-                active_route_for(ProductTierLabel.PRO).model_id,
+                effective_active_route_for(ProductTierLabel.PLUS).model_id,
+                effective_active_route_for(ProductTierLabel.PRO).model_id,
             },
-            {TEST_PHASE_PRIMARY_B14_MODEL_ID},
+            {paid_primary_model_id()},
         )
 
     def test_owner_policy_invariants_hold_while_consumers_derive(self):
         # Asserted rather than assumed, because this child makes Claw lean harder on them.
         from padiem_control_plane.product_tier_routes import (
-            PRODUCT_TIER_ROUTES,
-            ProductRouteStatus,
-        )
+    PRODUCT_TIER_ROUTES,
+    ProductRouteStatus,
+)
 
         for tier in PRODUCT_TIER_ROUTES:
             self.assertFalse(tier.silent_fallback_allowed, tier.label.value)
@@ -118,7 +123,7 @@ class TierRouteConsumerCoverageTests(unittest.TestCase):
             ]
             self.assertLessEqual(len(executable), 1, tier.label.value)
             if executable:
-                self.assertIs(active_route_for(tier.label), executable[0])
+                self.assertIs(effective_active_route_for(tier.label), executable[0])
 
 
 if __name__ == "__main__":

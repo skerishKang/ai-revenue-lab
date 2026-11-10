@@ -140,10 +140,18 @@ class UpstreamBusyRateLimited(PilotError):
 
 
 class UpstreamTimeout(PilotError):
-    def __init__(self, timeout_reason: str | None = None) -> None:
+    def __init__(
+        self, timeout_reason: str | None = None, *,
+        timeout_phase: str | None = None,
+    ) -> None:
         if timeout_reason not in (None, "first_byte", "attempt_total", "chain_budget"):
             raise ValueError("unknown provider timeout reason")
         self.timeout_reason = timeout_reason
+        # #6724: which transport phase expired (connect/read/write/pool). The
+        # reason stays the bounded vocabulary above; the phase only decides
+        # whether the failure happened before the provider had the request,
+        # and is never echoed to callers or logs.
+        self.timeout_phase = timeout_phase
         super().__init__(
             code="upstream_timeout",
             message="Provider 요청 시간이 초과되었습니다. 나중에 다시 시도하십시오.",

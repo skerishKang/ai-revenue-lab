@@ -1,0 +1,125 @@
+name: Daily Real Usage Check
+
+# #6724 1차 (대표 승인 2026-11-09): 매일 한 번 실제 사용 흐름을 점검한다.
+# GitHub 호스팅 러너에서 운영 사이트를 QA 계정으로 실제로 쓴다. 컴2(운영 서버)
+# 에서는 실행하지 않는다. 캘린더 흐름은 대표 결정으로 1차에서 뺐다.
+#
+# 판정은 "응답이 왔다"가 아니라 실제 결과값이다: 답 글자(10), 파일 내용(20자),
+# 전사 글자(10), 목록 재로드. 결과값 앞부분만 실행 요약에 남는다.
+#
+# 실패하면 이 워크플로가 실패로 끝나고, 기존 nightly-qa-failure-issue 수집기가
+# 이 스크립트가 찍은 USAGE_FLOW 줄을 읽어 이슈를 열거나 기존 이슈에 코멘트한다
+# (값·토큰 없이 실패 단계·코드만).
+#
+# 예약 시각 14:45 UTC(23:45 KST)는 18:00~19:30 UTC 야간 등급 점검 창과 겹치지
+# 않는다.
+
+on:
+  schedule:
+    - cron: "45 14 * * *" # 23:45 Asia/Seoul, once per day
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # 2차: 직전 7회 실행의 소요 ms 를 읽어 느려짐 경고를 낸다(읽기 전용).
+  actions: read
+
+concurrency:
+  group: daily-real-usage-check
+  cancel-in-progress: false
+
+jobs:
+  real-usage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    # The QA pair lives in the production environment (the same pair the
+    # deploy gates and the logout-reuse check read). The environment has no
+    # protection rules, so scheduled runs are not held for approval.
+    environment: production
+    env:
+      # The same QA pair the deploy gates use. Read-only use; never printed.
+      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+      # QA connector token for the check PC (provision_qa_pc_token.ps1).
+      PADIEM_QA_PC_TOKEN: ${{ secrets.PADIEM_QA_PC_TOKEN }}
+      # Optional override of the file the pc_read flow reads.
+      PADIEM_QA_PC_READ_PATH: ${{ vars.PADIEM_QA_PC_READ_PATH }}
+      # 2차: 배포 스탬프 비교 기준과 캡처·지표 경로.
+      PADIEM_EXPECTED_HEAD_SHA: ${{ github.sha }}
+      PADIEM_USAGE_CAPTURE_DIR: usage-browser-captures
+      PADIEM_USAGE_METRICS_PATH: usage-metrics.json
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          # 스탬프 판정은 "스탬프 커밋..main" 사이의 화면 경로 변경을 git 으로
+          # 본다. 스탬프 커밋이 이 범위 밖이면 스크립트가 --deepen/--unshallow 로
+          # 필요한 만큼만 더 받는다
+          # (실행 42668928406: 얕은 클론 때문에 정상 배포 지연이 FAIL 이 됐다).
+          fetch-depth: 30
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the two QA-only packages (voice flow)
+        run: python -m pip install --quiet websockets gTTS
+      # The voice flow transcodes gTTS's MP3 to 16 kHz mono PCM with ffmpeg.
+      # Run 42635577928 failed with voice_ffmpeg_missing: the hosted runner
+      # image no longer ships ffmpeg on every lane, so install it explicitly
+      # instead of letting the flow degrade into a false FAIL.
+      - name: Install ffmpeg for the voice transcode
+        run: sudo apt-get update --quiet && sudo apt-get install --quiet --yes ffmpeg
+      # 2차 브라우저 흐름: 저장소가 이미 쓰는 고정 버전·캐시 키·APT 미러 교체를
+      # 그대로 재사용한다(b62-browser-qa-unified.yml 과 같은 방식).
+      - name: Install the pinned Playwright for the browser flows
+        run: python -m pip install --quiet 'playwright==1.55.0'
+      - name: Cache pinned Playwright Chromium
+        id: playwright-browser-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash .github/scripts/b62_playwright_apt_mirror_3989.sh
+      - name: Install Chromium system libraries
+        run: python -m playwright install-deps chromium
+      - name: Install Chromium browser
+        if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
+        run: python -m playwright install --only-shell chromium
+      - name: Record a skip when the QA credential is absent
+        if: ${{ env.B66_CGI_ALPHA_USERNAME == '' || env.B66_CGI_ALPHA_PASSWORD == '' }}
+        run: |
+          {
+            echo "### 실사용 점검 (#6724 1차)"
+            echo
+            echo "| 흐름 | 판정 | 소요(ms) | 결과값 앞부분 | 코드 |"
+            echo "|---|---|---|---|---|"
+            echo "| all | SKIPPED | 0 | - | qa_credential_missing |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "USAGE_CHECK verdict=SKIPPED flows=8 failed=0 code=qa_credential_missing"
+      # #7078: browser_shared_login 흐름이 같은 비밀로 공통 로그인을 실제로
+      # 한 번 돌린다(쿠키 값은 읽지도 적지도 않음). 판정은 스크립트의 순수 함수.
+      - name: Run the eight real-usage flows
+        if: ${{ env.B66_CGI_ALPHA_USERNAME != '' && env.B66_CGI_ALPHA_PASSWORD != '' }}
+        env:
+          # 느려짐 비교용 직전 실행 이력(읽기 전용).
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python .github/scripts/daily_real_usage_check.py
+      # 캡처는 판정이 FAIL 이어도 진단 자료로 남긴다. 계정 표시는 찍기 전에
+      # 가리므로, 캡처에는 대화 내용만 남는다.
+      - name: Upload the browser captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-usage-browser-captures
+          path: usage-browser-captures
+          if-no-files-found: warn
+          retention-days: 14
+      # 다음 날의 느려짐 비교 입력이다. 이 파일이 없으면 경고 없이 넘어간다.
+      - name: Upload the flow timings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-usage-metrics
+          path: usage-metrics.json
+          if-no-files-found: warn
+          retention-days: 14

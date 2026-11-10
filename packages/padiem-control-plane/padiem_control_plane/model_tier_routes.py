@@ -26,6 +26,17 @@ from .model_assignment_policy import (
 )
 from .product_tier_routes import is_free_execution_candidate
 
+
+def _excluded_free_candidate_providers() -> frozenset[str]:
+    # Deployment data (private env), read lazily so the contract module stays
+    # side-effect free. #6828 3단계.
+    import os
+
+    raw = os.environ.get("PADIEM_B14_FREE_CANDIDATE_PROVIDERS", "")
+    return frozenset(
+        part.strip().casefold() for part in raw.split(",") if part.strip()
+    )
+
 ROUTE_PRODUCTS = frozenset({"chat", "claw", "b66"})
 ROUTE_ACTIONS = frozenset({"set", "reset"})
 MAX_ROUTES = 3 * len(TIERS)
@@ -189,19 +200,19 @@ def static_tier_route(
     *, blocked_model_ids: frozenset[str] = frozenset(),
 ) -> TierRouteResolution:
     """Apply explicit model blocks even when no central route row exists."""
-    if static_primary is None or is_free_execution_candidate(static_primary):
+    if static_primary is None or is_free_execution_candidate(static_primary, excluded_providers=_excluded_free_candidate_providers()):
         return TierRouteResolution(False, None, None, "static", "tier_unavailable")
     if static_primary not in blocked_model_ids:
         fallback = (
             static_fallback
             if static_fallback not in blocked_model_ids
-            and not is_free_execution_candidate(static_fallback) else None
+            and not is_free_execution_candidate(static_fallback, excluded_providers=_excluded_free_candidate_providers()) else None
         )
         return TierRouteResolution(True, static_primary, fallback, "static", "allowed")
     if (
         static_fallback is not None
         and static_fallback not in blocked_model_ids
-        and not is_free_execution_candidate(static_fallback)
+        and not is_free_execution_candidate(static_fallback, excluded_providers=_excluded_free_candidate_providers())
     ):
         return TierRouteResolution(True, static_fallback, None, "static", "allowed")
     return TierRouteResolution(False, None, None, "static", "tier_unavailable")
@@ -239,12 +250,12 @@ def effective_tier_route(
         if (
             candidate is not None
             and candidate not in blocked_model_ids
-            and not is_free_execution_candidate(candidate)
+            and not is_free_execution_candidate(candidate, excluded_providers=_excluded_free_candidate_providers())
         ):
             safe_fallback = (
                 fallback
                 if fallback not in blocked_model_ids
-                and not is_free_execution_candidate(fallback) else None
+                and not is_free_execution_candidate(fallback, excluded_providers=_excluded_free_candidate_providers()) else None
             )
             return TierRouteResolution(True, candidate, safe_fallback, "central", "allowed")
     return TierRouteResolution(False, None, None, "central", "central_route_unavailable")
@@ -265,7 +276,7 @@ def _check_route_changes(
         for model_id in (row.primary_model_id, row.fallback_model_id):
             if model_id is None:
                 continue
-            if is_free_execution_candidate(model_id):
+            if is_free_execution_candidate(model_id, excluded_providers=_excluded_free_candidate_providers()):
                 raise _err("model_route_free_candidate")
             found = catalog.get(model_id)
             if found is None or not isinstance(found, CatalogModel) or not found.registered:

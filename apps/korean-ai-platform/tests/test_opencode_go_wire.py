@@ -8,7 +8,12 @@ from app.pilot import opencode_go_wire as go
 from app.pilot.errors import InvalidRequest, PilotNotConfigured, MalformedUpstreamResponse, UpstreamAuthFailed
 
 from _pilot_lane_paths import chat_surface
-from _registry_values import registry, requires_owner_document
+from _registry_values import registry, require_owner_document, requires_owner_document
+
+# The Go wire lane is registered only by the owner's registry document: the
+# adapter pins its own approved origin, and the Provider row that origin
+# belongs to exists nowhere in the placeholder fixture.
+require_owner_document()
 
 SESSION = "chat_0123456789abcdef0123456789abcdef"
 TURNS = [{"role": "system", "content": "Code only"}, {"role": "user", "content": "Write a Python function."}]

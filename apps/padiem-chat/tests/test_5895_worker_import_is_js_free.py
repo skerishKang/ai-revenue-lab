@@ -21,12 +21,24 @@ The check runs in a subprocess on purpose: the tripwire replaces ``js``/``pyodid
 """
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 
+# The probe runs a real interpreter, so give it this checkout's own package
+# sources (same set as the suite conftest / #7322) instead of relying on
+# ambient interpreter paths.
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_SUBPROCESS_SOURCE_PATHS = (
+    _REPO_ROOT / 'apps' / 'padiem-chat',
+    _REPO_ROOT / 'apps' / 'korean-ai-code-agent' / 'src',
+    _REPO_ROOT / 'packages' / 'padiem-ai-core',
+    _REPO_ROOT / 'packages' / 'padiem-control-plane',
+    _REPO_ROOT / 'apps' / 'padiem-ai-engine' / 'clients' / 'python',
+)
 #: Import the app exactly the way the Worker entry does, with `js` and `pyodide`
 #: replaced by tripwires that fail on any attribute access at all.
 _PROBE = r"""
@@ -64,9 +76,14 @@ print("IMPORT_TIME_CLEAN")
 
 
 def test_importing_the_chat_app_never_touches_js_or_pyodide():
+    env = os.environ.copy()
+    existing_path = env.get('PYTHONPATH')
+    env['PYTHONPATH'] = os.pathsep.join(str(p) for p in _SUBPROCESS_SOURCE_PATHS) + (
+        os.pathsep + existing_path if existing_path else '')
     completed = subprocess.run(
         [sys.executable, "-c", _PROBE],
         cwd=APP_ROOT,
+        env=env,
         capture_output=True,
         text=True,
         encoding="utf-8",

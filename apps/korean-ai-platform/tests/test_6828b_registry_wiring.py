@@ -22,6 +22,8 @@ from app.pilot import model_registry_file as registry_file
 from app.pilot import tier_fallback
 from app.pilot.catalog import CATALOG_BY_ID, CATALOG_MODELS
 
+from _registry_values import process_catalog_restored
+
 SWITCH = "PADIEM_MODELS_REGISTRY"
 OVERRIDE = "PADIEM_MODELS_REGISTRY_OVERRIDE"
 MODEL_A = "example-provider/example-model-1"
@@ -69,12 +71,24 @@ def _document() -> dict:
 
 @pytest.fixture
 def restore():
-    """Put the repository catalog back: these tests mutate process-wide state."""
-    yield
-    for name in (SWITCH, OVERRIDE):
-        os.environ.pop(name, None)
-    registry_file._PRIVATE_SNAPSHOT = None
-    registry_file.install_models()
+    """Put the process registry back: these tests mutate process-wide state.
+
+    The switch this process started with is restored verbatim (#7241 3단계): it
+    is no longer optional, so clearing it would leave every later suite with no
+    catalog at all.
+    """
+    saved = {name: os.environ.get(name) for name in (SWITCH, OVERRIDE)}
+    with process_catalog_restored():
+        try:
+            yield
+        finally:
+            for name, value in saved.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
+            registry_file._PRIVATE_SNAPSHOT = None
+            registry_file.install_models()
 
 
 def _private(tmp_path: Path, document: dict | None = None) -> Path:
@@ -84,14 +98,26 @@ def _private(tmp_path: Path, document: dict | None = None) -> Path:
     return target
 
 
-def test_switch_off_keeps_the_repository_catalog(restore):
+def test_switch_off_serves_no_catalog(restore, monkeypatch):
+    """#7241 3단계: without the switch the repository answers nothing at all.
+
+    The shipped document is a schema-shaped placeholder, so "no switch" is a
+    fail-closed state, not a working mode: no catalog, no tier, and a reason
+    code on the health surface.
+    """
+    for name in (SWITCH, OVERRIDE):
+        monkeypatch.delenv(name, raising=False)
+    registry_file._PRIVATE_SNAPSHOT = None
     assert registry_file.private_registry_enabled() is False
-    assert tier_fallback.effective_tier_default() == tier_fallback.TIER_DEFAULT_B14_MODEL
-    assert tier_fallback.effective_tier_fallback() is tier_fallback.TIER_FALLBACK_B14_MODELS
-    assert len(registry_file.read_registry()["models"]) == 28
-    assert set(CATALOG_BY_ID) == {row["id"] for row in registry_file.read_registry()["models"]}
+    assert tier_fallback.effective_tier_default() == ""
+    assert tier_fallback.effective_tier_fallback() == {}
+    with pytest.raises(registry_file.ModelRegistryError):
+        registry_file.read_registry()
+    registry_file.install_models()
+    assert CATALOG_BY_ID == {}
     assert registry_file.private_registry_state() == {
-        "enabled": False, "ok": True, "models": 0, "reason": None}
+        "enabled": False, "ok": False, "models": 0,
+        "reason": registry_file.SWITCH_MISSING}
 
 
 def test_switch_on_installs_the_private_catalog(restore, tmp_path, monkeypatch):

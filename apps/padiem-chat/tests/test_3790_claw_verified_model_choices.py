@@ -37,10 +37,15 @@ def test_guest_cannot_read_models_or_contact_authority(monkeypatch):
 
 
 def test_free_member_receives_grade_readiness_without_identity(monkeypatch):
+    from padiem_control_plane.product_tier_routes_private import (
+        free_fallback_model_id,
+        free_primary_model_id,
+        paid_primary_model_id,
+    )
     rows = [
-        {"model_id": "opencode-go/beam-free", "name": "Beam Free"},
-        {"model_id": "google/gemini-3.1-flash-lite", "name": "Gemini 3.1 Flash Lite"},
-        {"model_id": "google/gemini-3.5-flash-lite", "name": "Gemini 3.5"},
+        {"model_id": free_primary_model_id(), "name": "Free primary"},
+        {"model_id": free_fallback_model_id(), "name": "Free fallback"},
+        {"model_id": paid_primary_model_id(), "name": "Paid primary"},
     ]
     catalog = Catalog(rows)
     with client_with(monkeypatch, catalog=catalog) as client:
@@ -126,7 +131,9 @@ def test_login_refresh_and_logout_keep_status_without_stale_model_choice():
     app = (base / "app.js").read_text(encoding="utf-8")
     js = (base / "claw-verified-model-choice.js").read_text(encoding="utf-8")
     session = (base / "auth-session.js").read_text(encoding="utf-8")
-    assert "window.PadiemAuthSession.update(authState, authViewEpoch)" in app
+    #7216 R5 step 4: this contract moved into chat-auth-module.js.
+    module = (base / "chat-auth-module.js").read_text(encoding="utf-8")
+    assert "window.PadiemAuthSession.update(deps.authState, deps.authViewEpoch)" in module
     assert 'new CustomEvent("padiem:auth-state"' in session
     assert 'window.addEventListener("padiem:auth-state"' in js
     assert 'manual.value=""' not in js
@@ -143,10 +150,14 @@ def test_admin_model_choices_require_server_verified_admin(monkeypatch):
             assert user_id == "usr_fixture"
             return self.approved
 
-    assert ADMIN_B14_MODEL_ID == "google/gemini-3.5-flash-lite"
+    from padiem_control_plane.product_tier_routes_private import (
+        free_primary_model_id,
+        paid_primary_model_id,
+    )
+    assert ADMIN_B14_MODEL_ID == paid_primary_model_id()
     catalog = Catalog([
         {"model_id": ADMIN_B14_MODEL_ID, "name": "Admin model"},
-        {"model_id": "opencode-go/beam-free", "name": "Free model"},
+        {"model_id": free_primary_model_id(), "name": "Free model"},
     ])
     with client_with(monkeypatch, catalog=catalog) as client:
         client.app.state.b66_member_admin_store = AdminStore(False)

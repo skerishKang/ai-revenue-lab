@@ -434,7 +434,7 @@ def test_source_contains_no_new_authority_or_side_effect_surface():
         "urllib",
         "httpx",
         "PadiemAiEngineClient",
-        "active_route_for",
+        "effective_active_route_for",
         "model_policy",
     ):
         assert forbidden not in source

@@ -35,6 +35,10 @@ from _registry_values import (
 
 import tracemalloc
 
+from _registry_values import require_owner_document
+
+require_owner_document()
+
 CAP = plat.MAX_RESPONSE_BYTES  # 10MiB error/SSE frame guard (not a token ceiling)
 COMPLETED_CAP = plat.MAX_COMPLETED_RESPONSE_BYTES  # finite Worker JSON resource budget
 CHUNK = 64 * 1024

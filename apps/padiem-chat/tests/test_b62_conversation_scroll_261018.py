@@ -43,20 +43,21 @@ def test_jump_control_has_translations_and_glass_styling():
 
 
 def test_new_and_restored_conversations_reset_shared_follow_state():
-    app = _source("app.js")
+    # #7216 R5 step 5a: follow-state resets live in chat-conversation-module.js.
+    app = _source("chat-conversation-module.js")
     assert "window.__padiemConversationMotion?.reset?.();" in app
-    assert "window.__padiemConversationMotion?.resume?.();" in app
+    assert "window.__padiemConversationMotion?.resume?.();" in _source("app.js")
 
 
 def test_only_stream_deltas_use_the_near_bottom_follow_hooks():
     motion = _source("conversation-motion.js")
-    app = _source("app.js")
+    stream = _source("chat-streaming-module.js")
     assert "STREAM_FOLLOW_THRESHOLD = 80" in motion
     assert "beforeStreamingDelta: beforeStreamingDelta" in motion
     assert "afterStreamingDelta: afterStreamingDelta" in motion
     assert "endStreaming: endStreaming" in motion
-    assert "beforeStreamingDelta?.()" in app
-    assert "afterStreamingDelta?.(streamScrollIntent)" in app
-    assert "endStreaming?.()" in app
-    assert "const shouldFollowStream = !/\\bapplication\\/json\\b/i.test(responseContentType);" in app
-    assert "const completedOk = await requestCompletedAnswer" in app
+    assert "beforeStreamingDelta?.()" in stream
+    assert "afterStreamingDelta?.(streamScrollIntent)" in stream
+    assert "endStreaming?.()" in stream
+    assert "const shouldFollowStream = !/\\bapplication\\/json\\b/i.test(responseContentType);" in stream
+    assert "const completedOk = await deps.requestCompletedAnswer" in stream

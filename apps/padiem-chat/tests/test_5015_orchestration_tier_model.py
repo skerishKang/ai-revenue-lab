@@ -20,8 +20,8 @@ from app.model_policy import ADMIN_B14_MODEL_ID
 from app.orchestration_bridge import B62EngineOrchestrationBridge
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
-    active_route_for,
 )
+from padiem_control_plane.product_tier_routes_private import effective_active_route_for
 
 OWNER = "usr_" + "a" * 32
 SUBJECT = "sub_" + "a" * 32
@@ -226,7 +226,7 @@ def test_a_pc_capable_turn_defers_only_after_the_administrator_gate(monkeypatch)
 
 def test_plus_tier_reaches_the_engine_request(monkeypatch) -> None:
     bridge, history, admin_store = _install(monkeypatch, is_admin=False)
-    expected = active_route_for(ProductTierLabel.PLUS).model_id
+    expected = effective_active_route_for(ProductTierLabel.PLUS).model_id
 
     response = asyncio.run(routes.api_orchestration(
         _request(_payload("plus"), bridge, history, admin_store),
@@ -238,7 +238,7 @@ def test_plus_tier_reaches_the_engine_request(monkeypatch) -> None:
         "model": expected, "max_retries": 1,
     }
     assert bridge.requests[0]["agent"]["model_policy"]["model"] != (
-        active_route_for(ProductTierLabel.FREE).model_id
+        effective_active_route_for(ProductTierLabel.FREE).model_id
     )
 
 
@@ -246,7 +246,7 @@ def test_slash_text_without_tier_keeps_the_default_model_and_prompt(
     monkeypatch,
 ) -> None:
     bridge, history, admin_store = _install(monkeypatch, is_admin=False)
-    expected = active_route_for(ProductTierLabel.FREE).model_id
+    expected = effective_active_route_for(ProductTierLabel.FREE).model_id
 
     response = asyncio.run(routes.api_orchestration(
         _request(

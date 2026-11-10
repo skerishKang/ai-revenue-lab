@@ -322,6 +322,13 @@ class SessionRevocationGuardMiddleware:
             return
         with measure('auth'):
             verdict = await self.resolve_verdict(scope)
+        # Stage 1 shadow (#7078): record-only comparison. Never judges.
+        try:
+            from .auth_shadow_verify import run_shadow_compare as _run_shadow
+
+            _run_shadow(scope, verdict)
+        except Exception:
+            pass
         if verdict is None:
             await self.app(scope, receive, send)
             return

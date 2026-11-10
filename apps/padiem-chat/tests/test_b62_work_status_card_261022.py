@@ -208,9 +208,9 @@ def test_the_claw_and_b66_statuses_sweep_only_while_they_run():
 
 def test_the_live_claw_events_reach_the_shared_card():
     """The real stage events of a run reach the card, and only those."""
-    app = APP_JS.read_text(encoding="utf-8")
-    assert "liveOrchestrationEvents" in app
-    assert "PadiemChatOrchestrationUI?.render?.(article, { events: liveOrchestrationEvents }, {})" in app
+    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
+    assert "liveOrchestrationEvents" in stream
+    assert "PadiemChatOrchestrationUI?.render?.(article, { events: liveOrchestrationEvents }, {})" in stream
 
 
 def _lifecycle_function(name: str, next_name: str) -> str:

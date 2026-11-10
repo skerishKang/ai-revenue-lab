@@ -74,8 +74,10 @@ def test_repetitive_ai_response_line_is_removed_brand_kept() -> None:
     assert 'textContent = uiT("ai-response")' not in app
     assert 'label.textContent = "AI 응답"' not in lifecycle
     # Truthful non-default states stay: mock preview, skill title, failures.
-    assert 'uiT("mock-response")' in app
-    assert "skillTitle" in app
+    # #7216 R5 step 5a: renderAnswer moved into chat-conversation-module.js.
+    conv = _read("chat-conversation-module.js")
+    assert 'uiT("mock-response")' in conv
+    assert "skillTitle" in conv
     html = _read("index.html")
     assert "data-assistant-product" in html
     assert "Padiem Chat" in html

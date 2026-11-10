@@ -26,6 +26,7 @@ ORIGINAL_ACTIVE_ROUTE_FOR = product_tier_routes.active_route_for
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
 FRONT = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
+STREAM = (ROOT / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
 SETTINGS = (ROOT / "static" / "chat-settings-module.js").read_text(encoding="utf-8")
 GENERAL = (ROOT / "app" / "claw_general_routes.py").read_text(encoding="utf-8")
 MODELS = ("agnes-ai/agnes-3.0-flash", "poolside/laguna-s-2.1")
@@ -38,8 +39,8 @@ def _preserve_real_plus_hold_for_explicit_selection(monkeypatch):
     import kagent.p01_adapter as adapter_module
     import app.central_model_route_runtime as route_runtime
 
-    monkeypatch.setattr(adapter_module, "active_route_for", ORIGINAL_ACTIVE_ROUTE_FOR)
-    monkeypatch.setattr(route_runtime, "active_route_for", ORIGINAL_ACTIVE_ROUTE_FOR)
+    monkeypatch.setattr(adapter_module, "effective_active_route_for", ORIGINAL_ACTIVE_ROUTE_FOR)
+    monkeypatch.setattr(route_runtime, "effective_active_route_for", ORIGINAL_ACTIVE_ROUTE_FOR)
 
 
 class _AuthStore:
@@ -165,8 +166,9 @@ def test_claw_browser_sends_grade_without_model_identifier():
     # A Claw request with an attachment must not silently switch to direct B14.
     # #2505: the attachment now travels on the Claw lane itself, so the guard is
     # the product check on the completed-attachment path, not a refusal.
-    assert "if (attachments && !clawGeneralRequest)" in FRONT
+    assert "if (attachments && !clawGeneralRequest)" in STREAM
     assert "if (clawGeneralRequest && attachments)" not in FRONT
+    assert "if (clawGeneralRequest && attachments)" not in STREAM
 
 def test_claw_runtime_fails_closed_when_route_catalog_unavailable():
     from types import SimpleNamespace

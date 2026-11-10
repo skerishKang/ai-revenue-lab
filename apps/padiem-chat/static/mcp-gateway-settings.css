@@ -4,6 +4,50 @@
 .mcp-settings-list { display: grid; gap: 12px; padding: 0; list-style: none; }
 .mcp-settings-card { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--surface-border); border-radius: 12px; }
 .mcp-settings-detail { flex: 1 1 180px; min-width: 0; }
+
+/* ── #7366: the PC name and its state are two elements in one detail row, but
+ * nothing separated them, so the card read as "PADIEM-COMMAND-온라인". The
+ * state renders as the same chip the Chat composer uses for the PC
+ * connection (claw-composer-connection-status.css): a pill with a state dot —
+ * green online, neutral grey offline. Scoped to the PC-links list: the
+ * .mcp-settings-status class also carries the gateway status message
+ * (#mcpGatewayStatus), which stays a plain paragraph. */
+#mcpGatewayPcLinks .mcp-settings-detail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+}
+#mcpGatewayPcLinks .mcp-settings-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  min-height: 24px;
+  padding: 0 10px;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card-bg, rgba(239, 243, 246, .48));
+  color: var(--text-secondary, var(--text));
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+}
+#mcpGatewayPcLinks .mcp-settings-status::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: var(--muted, #53606c);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--muted, #53606c) 22%, transparent);
+}
+#mcpGatewayPcLinks .mcp-settings-status[data-state="online"]::before {
+  background: var(--success, #1a6b3a);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--success, #1a6b3a) 24%, transparent);
+}
 .mcp-settings-field { display: grid; gap: 3px; margin: 6px 0; min-width: 0; }
 .mcp-settings-field strong { color: var(--text-secondary, var(--text)); font-size: .85rem; }
 .mcp-settings-field span { white-space: pre-wrap; overflow-wrap: anywhere; }
