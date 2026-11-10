@@ -2,7 +2,7 @@
 """One-command staging rehearsal for the Chat D1 cutover (#5115 step ③).
 
 The rehearsal document
-(``docs/operations/CHAT_D1_CUTOVER_WRITE_FREEZE_AND_REHEARSAL_20261031.md``) §5
+(the 비공개 운영 기록(거버넌스 폴더, 같은 상대 경로), CHAT_D1_CUTOVER_WRITE_FREEZE_AND_REHEARSAL_20261031.md) §5
 lists the steps. Run by hand, a step can be skipped or its verdict misread, so
 this runner calls the *existing* tools in that order and records nothing but
 their own exit codes and verdict lines:

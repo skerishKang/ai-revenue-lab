@@ -360,7 +360,6 @@ EXTRA_CHANGES = {
         ("deploy/host-com2/tests/test_deploy_from_main.py", "test fixture\\n"),
         ("packages/padiem-ai-core/tests/test_pillow_wheel_receipts.py", "test fixture\\n"),
         ("deploy/host-com2/chat/.env.example", "EXAMPLE_SETTING=changed\\n"),
-        ("docs/operations/CHAT_MODEL_FIRST_20261103.md", "documentation\\n"),
         (".gitignore", "generated\\n"),
         ("progress.md", "checkpoint\\n"),
     ],

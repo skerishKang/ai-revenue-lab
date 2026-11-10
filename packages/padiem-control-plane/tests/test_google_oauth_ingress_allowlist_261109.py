@@ -1,7 +1,7 @@
 """#7229 후속: state Worker HTTPS ingress가 P01 Engine의 Calendar 바인딩 조회를 허용하는지 고정.
 
 P01 활성화 경로가 `select_calendar_binding`을 `/internal/rpc/select_calendar_binding`으로
-호출한다(docs/operations/COM2_P01_CONTROL_PLANE_BINDINGS_20261109.md §2.2). 허용 목록에서
+호출한다(비공개 운영 기록(거버넌스 폴더, 같은 상대 경로), COM2_P01_CONTROL_PLANE_BINDINGS_20261109.md §2.2). 허용 목록에서
 빠지면 P01은 계속 503으로 남는다. 반대로 티켓·리스·콜백류가 목록에 새어 나가면 안 된다.
 구성 파일의 `secrets.required`에 ingress secret이 선언되어야 보존 검사가 HOLD 내지 않는다.
 """

@@ -1,10 +1,11 @@
-"""#5784 PR-3: the B14 COM2 bundle and its runbook stay consistent.
+"""#5784 PR-3: the B14 COM2 bundle stays internally consistent.
 
 These are host artifacts, so the failure mode worth preventing is quiet
 inconsistency: a unit that starts the port the ingress does not publish, a log
 rotation path that no longer matches the unit, an install script that gained a
-`systemctl start`, a secret value that arrived in a committed file, or a runbook
-that lost the step-ownership split. Each is asserted here rather than trusted.
+`systemctl start`, or a secret value that arrived in a committed file. Each is
+asserted here rather than trusted. (#7404: the runbook/inventory cross-checks
+moved to the private operations records.)
 """
 
 from __future__ import annotations
@@ -20,8 +21,6 @@ ROOT = Path(__file__).resolve().parents[3]
 # open. The repository is worked on from Windows machines, so the bundle lives
 # under a name every platform can read.
 BUNDLE = ROOT / "deploy" / "host-com2" / "b14"
-RUNBOOK = ROOT / "docs/operations/B14_COM2_RUNBOOK.md"
-INVENTORY = ROOT / "docs/architecture/COM2_MIGRATION_INVENTORY_20261025.md"
 ENV_EXAMPLE = ROOT / "apps/korean-ai-platform/b14.env.example"
 
 CREDENTIAL_NAMES = tuple(
@@ -39,7 +38,6 @@ class B14Com2Bundle(unittest.TestCase):
         cls.ingress = (BUNDLE / "cloudflared-config.example.yml").read_text(encoding="utf-8")
         cls.install = (BUNDLE / "install.sh").read_text(encoding="utf-8")
         cls.health = (BUNDLE / "health.py").read_text(encoding="utf-8")
-        cls.runbook = RUNBOOK.read_text(encoding="utf-8")
 
     def test_unit_runs_the_adapter_entry_on_the_declared_port(self):
         self.assertIn("ExecStart=/opt/padiem/b14/venv/bin/python /opt/padiem/b14/app/asgi.py", self.unit)
@@ -116,36 +114,11 @@ class B14Com2Bundle(unittest.TestCase):
         # A demo-mode answer is reported as a problem, never as a healthy B14.
         self.assertIn("demo_mode_true", self.health)
 
-    def test_runbook_names_the_owners_and_the_inventoried_secret_names(self):
-        self.assertIn("docs/architecture/COM2_MIGRATION_INVENTORY_20261025.md", self.runbook)
-        for step in range(1, 6):
-            self.assertIn("## Step %d — " % step, self.runbook)
-        for actor in ("컴2 아스트라", "Owner", "게이트"):
-            self.assertIn(actor, self.runbook)
-        self.assertIn("PADIEM_B14_CREDENTIAL_01", self.runbook)
-        self.assertIn("PADIEM_B14_CREDENTIAL_14", self.runbook)
-        self.assertIn("PADIEM_B14_SERVICE_PROOF_SECRET", self.runbook)
-        self.assertIn("B14_UPSTREAM_MODE", self.runbook)
-        self.assertIn("cloudflared tunnel --config", self.runbook)
-        self.assertIn("`PUBLIC_SERVICES`를 확장", self.runbook)
-
-    def test_inventory_row_records_the_pr_progress(self):
-        inventory = INVENTORY.read_text(encoding="utf-8")
-        row = next(line for line in inventory.splitlines()
-                   if line.startswith("| `ai-revenue-korean-ai-platform`") and "진행:" in line)
-        self.assertIn("#5897", row)
-        self.assertIn("#5900", row)
-
-    def test_the_inventory_row_is_the_name_source_the_bundle_follows(self):
-        inventory = INVENTORY.read_text(encoding="utf-8")
-        row = next(line for line in inventory.splitlines()
-                   if "`ai-revenue-korean-ai-platform`" in line and "Secrets Store" in line)
-        for name in CREDENTIAL_NAMES:
-            self.assertIn("`%s`" % name, row)
+    def test_the_env_example_carries_name_only_credentials(self):
+        # The credential names are pinned here as the source the bundle follows.
+        # (#7404: the inventory row that used to carry the names moved to the
+        # private operations records.)
         self.assertEqual(16, len(CREDENTIAL_NAMES))
-        # PR-1 (#5897) ships the name-only example. Asserting it when present keeps
-        # this bundle reviewable on its own branch while still pinning the coupling
-        # once both land.
         if ENV_EXAMPLE.is_file():
             env_example = ENV_EXAMPLE.read_text(encoding="utf-8")
             for name in CREDENTIAL_NAMES:

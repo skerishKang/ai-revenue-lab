@@ -106,7 +106,6 @@ on:
       - ".github/workflows/b54-owner-d1-controlled-connection.yml"
       - ".github/scripts/b62_owner_d1_release_transaction.py"
       - ".github/tests/test_b62_owner_d1_release_transaction.py"
-      - "docs/operations/OWNER_P01_D1_PROTECTED_RELEASE_RUNBOOK.md"
       - ".github/tests/test_b62_deploy_prereq_rollback_contracts.py"
       - ".github/tests/test_b62_served_version_secret_guard.py"
       - "apps/padiem-chat/tests/test_b62_production_deploy_config.py"

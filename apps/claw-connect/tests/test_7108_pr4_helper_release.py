@@ -16,7 +16,6 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[3]
 SCRIPT = ROOT / "apps" / "claw-connect" / "release-windows-helper.ps1"
-DOC = ROOT / "docs" / "operations" / "PC_USER_HELPER_RELEASE_20261107.md"
 
 
 def test_release_script_targets_com2_env_not_the_worker_gate() -> None:
@@ -43,25 +42,19 @@ def test_release_script_targets_com2_env_not_the_worker_gate() -> None:
     assert "PC_AGENT_INSTALL_URL" not in text
 
 
-def test_release_procedure_names_com2_as_authority_and_exact_locations() -> None:
-    text = DOC.read_text(encoding="utf-8")
+def test_release_script_names_com2_as_authority_and_exact_locations() -> None:
+    # #7404: the step-by-step procedure moved to the private operations records.
+    # The script itself must still name the authority (COM2 env + service), the
+    # public bucket/host and the signed pairing guard.
+    text = SCRIPT.read_text(encoding="utf-8")
     for needle in (
         "padiem-pc-helper-releases",
         "downloads.padiem.net",
         "9be14bb7b8974e65d0afba647ab16932",
-        "wrangler r2 bucket create",
-        "wrangler r2 bucket domain add",
         "PC_USER_HELPER_INSTALL_URL",
         "PC_USER_HELPER_SHA256",
-        "deploy/host-com2/chat/padiem-chat-com2.service:15",
-        "apps/padiem-chat/app/local_cpython.py:642-647",
-        "apps/padiem-chat-front/wrangler.toml:24",
-        "apps/padiem-chat-front/worker.mjs:335-351",
         "COM2_CANONICAL=writes",
         "PAIRING_RESPONSE_VERIFY=REQUIRED_SIGNED_IN_OWNER",
-        "HELPER_RELEASE_UPLOAD=NOT_RUN",
-        "HELPER_RELEASE_ENV_SET=NOT_RUN",
-        "PRODUCTION_MUTATION=0",
     ):
         assert needle in text, needle
     assert "not the production authority" not in text
@@ -277,11 +270,12 @@ def test_source_sha_falls_back_to_unknown_in_a_gitless_folder(tmp_path: Path) ->
     assert "HELPER_RELEASE_SOURCE_SHA=UNKNOWN" in done.stdout
 
 
-def test_release_procedure_documents_the_archive_and_retry_paths() -> None:
-    text = DOC.read_text(encoding="utf-8")
+def test_release_script_documents_the_archive_and_retry_paths() -> None:
+    # #7404: the procedure document moved to the private operations records;
+    # the archive/retry anchors the script itself carries stay asserted here.
+    text = SCRIPT.read_text(encoding="utf-8")
     assert "git archive" in text
     assert "-SourceSha" in text
-    assert "HELPER_RELEASE_SOURCE_SHA=UNKNOWN" in text
     assert "wait_for_health" in text
     assert "COM2_HEALTH_ATTEMPTS" in text
 
