@@ -29,13 +29,15 @@ def test_browser_lists_all_four_tiers_but_only_plus_is_selectable() -> None:
 
 
 def test_plus_is_default_and_selection_is_shared_by_chat_and_claw() -> None:
+    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
     assert 'let selectedTier = "free";' in CAPABILITIES
     assert 'window.PadiemTierSelection = Object.freeze({' in CAPABILITIES
-    assert 'tier: selectedProductTier()' in APP
-    assert 'const payload = { messages: outboundMessages, tier: selectedProductTier(), skill };' in APP
+    assert 'tier: deps.selectedProductTier()' in stream
+    assert 'const payload = { messages: outboundMessages, tier: deps.selectedProductTier(), skill };' in stream
     # The chat `mode` request key is gone with the remnant it came from: no client
     # sends it, and the contract refuses it as an unknown item.
     assert 'mode: "auto"' not in APP
+    assert 'mode: "auto"' not in stream
 
 
 def test_tier_copy_contains_no_provider_or_model_authority() -> None:

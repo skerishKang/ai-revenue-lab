@@ -470,6 +470,7 @@ def test_project_frontend_and_migration_contract_keep_phase1_css_unchanged():
     root = Path(__file__).resolve().parents[1]
     html = (root / "static/index.html").read_text(encoding="utf-8")
     js = (root / "static/app.js").read_text(encoding="utf-8")
+    stream_js = (root / "static/chat-streaming-module.js").read_text(encoding="utf-8")
     migration = (root / "migrations/002_projects.sql").read_text(encoding="utf-8")
     # #4462: the duplicate sidebar Projects button is removed; the lower
     # projects section + create button remain the single project surface.
@@ -478,7 +479,7 @@ def test_project_frontend_and_migration_contract_keep_phase1_css_unchanged():
     assert 'id="projectDialog"' in html
     assert 'id="projectBanner"' in html
     assert 'href="./projects.css"' in html
-    assert 'payload.project_id = contextSnapshot.project.id' in js
+    assert 'payload.project_id = contextSnapshot.project.id' in stream_js
     assert 'newChatButton.addEventListener("click", () => resetConversation(true))' in js
     assert 'exitProjectButton.addEventListener("click", exitProject)' in js
     assert 'projectDeleteButton.addEventListener("click", deleteProject)' in js

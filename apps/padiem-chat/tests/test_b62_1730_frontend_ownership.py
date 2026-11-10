@@ -6,6 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+STREAM = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
 TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
 LIFECYCLE = (STATIC / "message-lifecycle.js").read_text(encoding="utf-8")
 RICH = (STATIC / "rich-response.js").read_text(encoding="utf-8")
@@ -72,8 +73,8 @@ def test_conversation_request_state_has_one_authority() -> None:
         assert marker not in RICH
         assert marker not in CONVERSATION
 
-    assert "conversationState.commitAssistant(outboundMessages, answer);" in APP
-    assert "conversationState.setConversationId(data.conversation_id);" in APP
+    assert "deps.conversationState.commitAssistant(outboundMessages, answer);" in STREAM
+    assert "deps.conversationState.setConversationId(data.conversation_id);" in STREAM
 
 
 def test_attachment_state_remains_single_owned_by_app_controller() -> None:

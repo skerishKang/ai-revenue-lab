@@ -22,6 +22,11 @@ def _conv_source() -> str:
     return APP_PATH.with_name("chat-conversation-module.js").read_text(encoding="utf-8")
 
 
+def _stream_source() -> str:
+    # #7216 R5 step 5b: the streaming area moved into chat-streaming-module.js.
+    return APP_PATH.with_name("chat-streaming-module.js").read_text(encoding="utf-8")
+
+
 def _next_fn_end(source: str, start: int) -> int:
     ends = [i for i in (source.find("\n  function ", start + 1),
                         source.find("\n  async function ", start + 1)) if i != -1]
@@ -78,24 +83,27 @@ def _transport_runtime() -> str:
 
 def test_text_only_streams_but_attachment_keeps_completed_json() -> None:
     source = _source()
+    stream_source = _stream_source()
     transport = _transport_source()
     html = INDEX_PATH.read_text(encoding="utf-8")
 
-    assert "chatTransport.requestStreaming(payload, signal)" in source
-    assert "chatTransport.requestCompleted(payload, signal)" in source
+    assert "deps.chatTransport.requestStreaming(payload, signal)" in stream_source
+    assert "deps.chatTransport.requestCompleted(payload, signal)" in stream_source
     # #2505: Chat keeps the completed JSON path for an attachment; the same
     # guard now also keeps a Claw attachment on its own P01 lane.
-    assert "if (attachments && !clawGeneralRequest) {" in source
+    assert "if (attachments && !clawGeneralRequest) {" in stream_source
     # Success recording for one-click regenerate keeps the same dispatch
     # shape: completed JSON for attachments, streaming otherwise.
-    assert "await requestCompletedAnswer(" in source
-    assert "await requestStreamingAnswer(" in source
+    assert "await deps.requestCompletedAnswer(" in stream_source
+    assert "await deps.requestStreamingAnswer(" in stream_source
     assert 'fetch("/api/chat/stream"' in transport
     assert 'fetch("/api/chat"' in transport
     assert '"Accept": "text/event-stream"' in transport
     assert '"Accept": "application/json"' in transport
     assert 'fetch("/api/chat/stream"' not in source
     assert 'fetch("/api/chat"' not in source
+    assert 'fetch("/api/chat/stream"' not in stream_source
+    assert 'fetch("/api/chat"' not in stream_source
     assert html.index('<script src="./document-binary.js"></script>') < html.index('<script src="./chat-transport.js"></script>')
     assert html.index('<script src="./chat-transport.js"></script>') < html.index('<script src="./conversation-state.js"></script>')
     assert html.index('<script src="./conversation-state.js"></script>') < html.index('<script src="./message-lifecycle.js"></script>')
@@ -204,28 +212,34 @@ const response = {
 
 
 def test_stream_state_commits_only_on_done_and_partial_error_is_preserved() -> None:
-    source = _source()
+    source = _stream_source()
+    conv = _conv_source()
     stream_start = source.index("  async function requestStreamingAnswer(")
     stream_end = source.index("  async function requestAnswer(", stream_start)
     stream_source = source[stream_start:stream_end]
 
     assert 'appendStreamDelta?.(answerTextNode, data.delta)' in stream_source
-    assert 'renderStreamError(article, message' in stream_source
-    assert 'applyStreamDone(article, data, answer' in stream_source
+    assert 'deps.renderStreamError(article, message' in stream_source
+    assert 'deps.applyStreamDone(article, data, answer' in stream_source
     assert 'messages = outboundMessages.concat' not in stream_source
 
     done_start = source.index("  function applyStreamDone(")
     done_end = source.index("  async function requestStreamingAnswer(", done_start)
     done_source = source[done_start:done_end]
-    assert "conversationState.commitAssistant(outboundMessages, answer);" in done_source
-    assert "conversationState.setConversationId(data.conversation_id);" in done_source
+    assert "deps.conversationState.commitAssistant(outboundMessages, answer);" in done_source
+    assert "deps.conversationState.setConversationId(data.conversation_id);" in done_source
     assert "project_files_used" in done_source
 
-    partial_start = source.index("  function renderStreamError(")
-    partial_end = source.index("  function formatBytes(", partial_start)
-    partial_source = source[partial_start:partial_end]
+    partial_start = _source().index("  function renderStreamError(")
+    partial_end = _source().index("  function formatBytes(", partial_start)
+    partial_source = _source()[partial_start:partial_end]
+    conv_partial_start = conv.index("  function renderStreamError(")
+    conv_partial = conv[conv_partial_start:_next_fn_end(conv, conv_partial_start)]
     assert "content.replaceChildren()" not in partial_source
+    assert "content.replaceChildren()" not in conv_partial
     assert "content.appendChild(buildRetryBox" in partial_source
+    assert "deps.buildRetryBox(" in conv_partial
+    assert "content.appendChild(box);" in conv_partial
 
 
 def test_new_chat_aborts_active_stream_and_epoch_blocks_stale_mutation() -> None:
@@ -246,18 +260,19 @@ def test_new_chat_aborts_active_stream_and_epoch_blocks_stale_mutation() -> None
     assert "deps.switchConversationProduct(deps.PRODUCT_CHAT);" in entry_source
     assert "deps.resetConversationView(preserveProject);" in entry_source
 
-    request_start = _source().index("  async function requestAnswer(")
-    request_end = _source().index("  async function submitPrompt(", request_start)
-    request_source = _source()[request_start:request_end]
-    assert "const requestEpoch = conversationEpoch;" in request_source
+    stream = _stream_source()
+    request_start = stream.index("  async function requestAnswer(")
+    request_end = _next_fn_end(stream, request_start)
+    request_source = stream[request_start:request_end]
+    assert "const requestEpoch = deps.conversationEpoch;" in request_source
     assert "const controller = new AbortController();" in request_source
     assert 'error.name === "AbortError"' in request_source
-    assert "requestEpoch !== conversationEpoch" in request_source
-    assert "if (activeRequestController === controller)" in request_source
+    assert "requestEpoch !== deps.conversationEpoch" in request_source
+    assert "if (deps.activeRequestController === controller)" in request_source
 
 
 def test_streamed_browser_path_never_renders_provider_route_details() -> None:
-    source = _source()
+    source = _stream_source()
     stream_start = source.index("  async function requestStreamingAnswer(")
     stream_end = source.index("  async function requestAnswer(", stream_start)
     stream_source = source[stream_start:stream_end]
@@ -267,6 +282,7 @@ def test_streamed_browser_path_never_renders_provider_route_details() -> None:
     # Completed/streaming answers keep the brand label only; the repetitive
     # "AI 응답" line is not rendered. The locale key stays for compatibility.
     assert 'textContent = uiT("ai-response")' not in stream_source
+    assert 'textContent = deps.uiT("ai-response")' not in stream_source
     assert '"ai-response": "AI 응답"' in LOCALE_PATH.read_text(encoding="utf-8")
 
 
@@ -300,19 +316,21 @@ def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -
 
 def test_cancel_and_retry_are_product_surface_only_and_preserve_stream_boundary() -> None:
     source = _source()
+    stream = _stream_source()
     transport = _transport_source()
     assert 'id="cancelStreamButton"' in INDEX_PATH.read_text(encoding="utf-8")
     assert "cancelActiveStream" in source
-    assert 'activeRequestCancelReason = "user_cancel"' in source
-    assert "renderCancelled(article" in source
+    assert "cancelActiveStream" in stream
+    assert 'deps.activeRequestCancelReason = "user_cancel"' in stream
+    assert "deps.renderCancelled(article" in stream
     assert 'textContent = uiT("generation-cancelled")' in source
     assert 'uiT("regenerate")' in source
     locale = LOCALE_PATH.read_text(encoding="utf-8")
     assert '"generation-cancelled": "생성 취소됨"' in locale
     assert '"regenerate": "다시 생성"' in locale
     assert 'retry.textContent = actionLabel' in source
-    assert "requestStreamingAnswer(article" in source
-    assert "chatTransport.requestStreaming(payload, signal)" in source
+    assert "deps.requestStreamingAnswer(\n        article" in stream
+    assert "deps.chatTransport.requestStreaming(payload, signal)" in stream
     assert 'fetch("/api/chat/stream"' in transport
 
 
@@ -341,12 +359,12 @@ def test_terminal_error_records_render_before_first_token_without_pc_recovery() 
 const fs = require("fs");
 const vm = require("vm");
 const assert = require("node:assert/strict");
-// #7216 R5 step 5a: renderStreamError moved into the conversation module; the
-// stream consumer still lives in app.js this step.
-const app = fs.readFileSync(process.argv[process.argv.length - 1], "utf8");
+// #7216 R5 step 5a/5b: renderStreamError moved into the conversation module;
+// the stream consumer moved into the streaming module.
 const conv = fs.readFileSync(process.argv[process.argv.length - 1].replace(/app\.js$/, "chat-conversation-module.js"), "utf8");
-const streamStart = app.indexOf("  async function requestStreamingAnswer(");
-const streamEnd = app.indexOf("\n  function cancelActiveStream(", streamStart);
+const streamMod = fs.readFileSync(process.argv[process.argv.length - 1].replace(/app\.js$/, "chat-streaming-module.js"), "utf8");
+const streamStart = streamMod.indexOf("  async function requestStreamingAnswer(");
+const streamEnd = streamMod.indexOf("\n  function cancelActiveStream(", streamStart);
 const renderStart = conv.indexOf("  function renderStreamError(");
 const renderEnd = conv.indexOf("\n  function clearAttachment(", renderStart);
 (async () => {
@@ -394,7 +412,7 @@ const renderEnd = conv.indexOf("\n  function clearAttachment(", renderStart);
         fetch:()=>{throw Error("terminal refusal must not poll pending-result");},
       };
       const consume = vm.runInNewContext(
-        `(function(){${conv.slice(renderStart,renderEnd).replace(/deps\./g,"")}\n${app.slice(streamStart,streamEnd)}\nreturn requestStreamingAnswer;})()`, context);
+        `(function(){${conv.slice(renderStart,renderEnd).replace(/deps\./g,"")}\n${streamMod.slice(streamStart,streamEnd).replace(/deps\./g,"")}\nreturn requestStreamingAnswer;})()`, context);
       const result = await consume(article,{},[],null,{pcRunId:"chat_pcq_test"},new AbortController().signal,null);
       assert.equal(result,false); // no throw to requestAnswer's recovery catch
       assert.equal(state,"failed");

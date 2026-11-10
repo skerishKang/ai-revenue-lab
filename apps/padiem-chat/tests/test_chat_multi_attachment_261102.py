@@ -478,8 +478,8 @@ def test_file_lane_upload_contract_is_untouched_for_every_file():
     assert "RESUMABLE" in lane_js
     # 역량 응답의 개수 한도를 미리 반영한다(서버가 최종 판정).
     assert "setMaxPerMessage?.(data?.max_per_message)" in lane_js
-    app_js = (ROOT / "static/app.js").read_text(encoding="utf-8")
+    stream_js = (ROOT / "static/chat-streaming-module.js").read_text(encoding="utf-8")
     # 전송 시 칩마다 기존 업로드 경로를 그대로 호출한다(동일 abort signal).
-    assert "window.PadiemFileLane.upload(current.file, controller.signal," in app_js
+    assert "window.PadiemFileLane.upload(current.file, controller.signal," in stream_js
     caps_js = (ROOT / "static/attachment-capabilities.js").read_text(encoding="utf-8")
     assert "setMaxPerMessage" in caps_js

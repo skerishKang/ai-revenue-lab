@@ -44,6 +44,7 @@ from app.attachments import AttachmentValidationError, parse_attachments
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
+STREAM_JS = (ROOT / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
 LOCALE_JS = (ROOT / "static" / "locale.js").read_text(encoding="utf-8")
 TRANSPORT_JS = (ROOT / "static" / "chat-transport.js").read_text(encoding="utf-8")
 CHAT_ROUTES = (ROOT / "app" / "chat_routes.py").read_text(encoding="utf-8")
@@ -318,15 +319,17 @@ def test_the_claw_route_reuses_the_shared_parser_and_builder():
 
 
 def test_a_claw_submit_sends_the_attachment_on_the_claw_lane():
-    submit = APP_JS[APP_JS.index("async function requestAnswer("):]
+    submit = STREAM_JS[STREAM_JS.index("async function requestAnswer("):]
     submit = submit[: submit.index("\n  }")]
     # The Claw lane no longer refuses an attachment…
     assert "claw-model-text-only-error" not in APP_JS
+    assert "claw-model-text-only-error" not in STREAM_JS
     assert "claw-model-text-only-error" not in LOCALE_JS
     # …and the attachment never silently moves to the Chat route.
-    assert "if (attachments && !clawGeneralRequest)" in APP_JS
+    assert "if (attachments && !clawGeneralRequest)" in submit
     assert "if (clawGeneralRequest && attachments)" not in APP_JS
-    assert "payload.attachments = attachments;" in APP_JS
+    assert "if (clawGeneralRequest && attachments)" not in STREAM_JS
+    assert "payload.attachments = attachments;" in submit
 
 
 def test_the_two_lanes_share_one_attachment_request_body():
