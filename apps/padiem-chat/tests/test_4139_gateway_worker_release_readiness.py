@@ -161,7 +161,9 @@ def test_checked_in_worker_cannot_be_misrepresented_as_production_ready():
     assert receipt.missing_required_bindings == ()
     assert IDENTITY_AUTHORITY_SERVICE_BINDING_NAME in receipt.declared_bindings
     assert LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME in receipt.declared_bindings
-    assert "B14_SERVICE" in receipt.declared_bindings
+    # 2026-11-10 Cloudflare B14 Worker retirement: the B14_SERVICE binding is
+    # no longer part of the declared set.
+    assert "B14_SERVICE" not in receipt.declared_bindings
     assert "required_private_service_bindings_not_declared" not in receipt.blockers
     assert "worker_tls_ingress_provenance_not_verified" in receipt.blockers
     assert "public_worker_wss_route_not_mounted" in receipt.blockers

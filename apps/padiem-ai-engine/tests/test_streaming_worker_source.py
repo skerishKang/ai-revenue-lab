@@ -70,10 +70,6 @@ def test_wrangler_remains_internal_service_binding_only() -> None:
             "service": "padiem-chat",
         },
         {
-            "binding": "B14_SERVICE",
-            "service": "ai-revenue-korean-ai-platform",
-        },
-        {
             "binding": "CONTROL_PLANE_IDENTITY",
             "service": "padiem-control-plane-identity",
         },

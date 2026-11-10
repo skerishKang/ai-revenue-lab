@@ -236,8 +236,14 @@ def candidate_preservation(live_settings: object, repo_config: Path = REPO_CONFI
     live = parse_live_bindings(live_settings)
     # A structural plan of repository declarations must not print the
     # production-named diff; the deploy gate's source-contract step prints the
-    # baseline-named comparison once.
-    expected, _ = production_plan(live, tomllib.loads(repo_config.read_text()), emit=False)
+    # baseline-named comparison once. The structural plan itself carries the
+    # reviewed removal (2026-11-10 Cloudflare B14 Worker retirement: the
+    # B14_SERVICE binding), so the plan allows removals read-only — the deploy
+    # gate still enforces its own removal authorization at deploy time.
+    expected, _ = production_plan(
+        live, tomllib.loads(repo_config.read_text()), emit=False,
+        allow_binding_removal=True,
+    )
     diff = binding_diff(index(live["entries"]), expected)
     return {
         "status": "REPOSITORY_BINDING_PLAN_STRUCTURAL_PASS",

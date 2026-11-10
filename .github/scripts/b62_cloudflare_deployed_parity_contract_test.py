@@ -60,8 +60,8 @@ class MethodAwareParityTest(unittest.TestCase):
                     return parity.HTTPResult(200, {}, body)
             if url.endswith(parity.B62_STREAM_PATH):
                 return parity.HTTPResult(404, {}, b"")
-            if url.endswith(parity.B14_AUTO_STREAM_PATH):
-                return parity.HTTPResult(405, {"allow": "POST"}, b"")
+            # The retired Cloudflare B14 Worker is no longer probed: any other
+            # GET is unexpected.
             raise AssertionError(f"unexpected GET {url}")
 
         def poster(url: str) -> parity.HTTPResult:
@@ -81,7 +81,6 @@ class MethodAwareParityTest(unittest.TestCase):
 
             result = parity.audit(
                 base_url="https://padiem-chat.example.workers.dev",
-                b14_base_url="https://b14.example.workers.dev",
                 repo_root=root,
                 fetcher=fetcher,
                 poster=poster,

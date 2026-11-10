@@ -43,12 +43,38 @@ def _exact_health_envelope(body: str) -> bool:
             and obj.get("runtime") == "b14")
 
 
+def _workers_verdict(code: str, body: str, subdomain_enabled: bool | None) -> None:
+    """workers.dev plane verdict; the subdomain flag decides its duty.
+
+    - subdomain enabled: the fallback direct address must answer with the
+      exact health envelope (the pre-2026-11-10 contract, unchanged).
+    - subdomain explicitly disabled (#7407 reviewed the direct address off):
+      absence — HTTP 404 or no response — is the expected state; a live
+      200 answers against the reviewed state and is refused by name.
+    - subdomain state unknown (metadata plane was a 504): the production
+      origin carries the proof on its own, so only a healthy envelope or
+      the disabled 404 is accepted; anything else is named and refused.
+    """
+    if code == "200":
+        if not _exact_health_envelope(body):
+            raise OriginProofError("HEALTH_WORKERS_DEV_ENVELOPE_MISMATCH")
+        if subdomain_enabled is False:
+            raise OriginProofError("SUBDOMAIN_DISABLED_BUT_RESPONDING")
+        return
+    if code == "404" and subdomain_enabled is not True:
+        return
+    if code in NO_RESPONSE:
+        raise OriginProofError("HEALTH_WORKERS_DEV_NO_RESPONSE")
+    raise OriginProofError(f"HEALTH_WORKERS_DEV_HTTP_{code}")
+
+
 def prove(meta_code: str, meta_body: str,
           workers_code: str, workers_body: str,
           custom_code: str, custom_body: str) -> str:
-    health_verdict(PLANES["workers"], workers_code, workers_body)
+    # The production origin is the load-bearing proof in every mode.
     health_verdict(PLANES["custom"], custom_code, custom_body)
     if meta_code == "504":
+        _workers_verdict(workers_code, workers_body, subdomain_enabled=None)
         return "DATAPLANE_504_FALLBACK"
     if meta_code in NO_RESPONSE:
         raise OriginProofError("METADATA_NO_RESPONSE")
@@ -67,8 +93,8 @@ def prove(meta_code: str, meta_body: str,
         # The per-Worker /subdomain contract carries `enabled`, verified against
         # the live account. Its absence is an anomaly and never a pass.
         raise OriginProofError("SUBDOMAIN_FLAG_ABSENT")
-    if result["enabled"] is not True:
-        raise OriginProofError("SUBDOMAIN_DISABLED_EXPLICIT")
+    subdomain_enabled = result["enabled"] is True
+    _workers_verdict(workers_code, workers_body, subdomain_enabled)
     return "CONTROL_AND_DATA_PLANE"
 
 
