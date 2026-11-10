@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from datetime import datetime, timedelta, timezone
 import html as html_module
+import inspect
 import json
 
 from starlette.requests import Request
@@ -416,6 +417,93 @@ async def _write_identity_shadow_after_login(
         # projection/current canonical session cannot later be resolved.
         return None
     return bridged.auth_session.session_id
+
+
+async def _write_shared_identity_shadow_after_login(
+    request: Request,
+    *,
+    product_user_id: str,
+    canonical_subject_id: str,
+    authenticated_at: datetime,
+    expires_at: datetime,
+) -> str | None:
+    """Establish the canonical B62 session behind a verified shared login.
+
+    #7364: the common login (padiem-auth) proves two server facts — the
+    ``account_id`` claim is signed by the common auth authority, and that
+    subject maps to this product user (the reverse lookup that resolved the
+    login). This binds that verified subject to one canonical B62 session and
+    writes the local shadow pointer, in the same shape the Google callback
+    writes from its own verified evidence. Without it a shared-login-only
+    account has no shadow row, so every shadow consumer (connectors, calendar,
+    PC device directory) fails closed after the legacy login's session expires.
+
+    Returns the canonical session id to bind into the Chat session cookie, or
+    ``None`` when this deployment has no canonical authority/shadow (the
+    cookie-only compatibility mode) or the authority could not establish the
+    session. A shadow failure never fails the login.
+    """
+
+    authority = getattr(request.app.state, "control_plane_identity_authority", None)
+    shadow_store = getattr(request.app.state, "identity_shadow_store", None)
+    if authority is None or shadow_store is None:
+        return None
+    if (not isinstance(product_user_id, str)
+            or not product_user_id.startswith("usr_")
+            or len(product_user_id) > 80):
+        return None
+    if (not isinstance(canonical_subject_id, str)
+            or not canonical_subject_id.startswith("sub_")
+            or len(canonical_subject_id) > 136):
+        return None
+    try:
+        from padiem_control_plane import (
+            AuthSessionSnapshot,
+            CanonicalSubjectRef,
+            ProductIdentityLink,
+            SubjectType,
+        )
+
+        from .control_plane_identity import (
+            BridgedIdentitySession,
+            IdentityLinkState,
+            PADIEM_CHAT_PRODUCT_ID,
+            ensure_personal_tenant_membership,
+        )
+
+        subject = CanonicalSubjectRef(
+            subject_type=SubjectType.USER, subject_id=canonical_subject_id,
+        )
+        await ensure_personal_tenant_membership(authority, subject=subject, now=authenticated_at)
+        session = authority.establish_auth_session(
+            product_id=PADIEM_CHAT_PRODUCT_ID,
+            subject=subject,
+            authenticated_at=authenticated_at,
+            not_after=expires_at,
+        )
+        if inspect.isawaitable(session):
+            session = await session
+        if not isinstance(session, AuthSessionSnapshot):
+            return None
+        if session.product_id != PADIEM_CHAT_PRODUCT_ID or session.subject != subject:
+            return None
+        if session.issued_at < authenticated_at or session.expires_at > expires_at:
+            return None
+        if not session.is_active(now=authenticated_at):
+            return None
+        await shadow_store.save_projection(BridgedIdentitySession(
+            product_user_id=product_user_id,
+            identity_link=ProductIdentityLink(
+                product_id=PADIEM_CHAT_PRODUCT_ID,
+                product_user_id=product_user_id,
+                canonical_subject_id=canonical_subject_id,
+                state=IdentityLinkState.ACTIVE,
+            ),
+            auth_session=session,
+        ))
+        return session.session_id
+    except Exception:
+        return None
 
 
 async def establish_b54_canonical_session_after_login(
