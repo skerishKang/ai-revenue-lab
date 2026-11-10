@@ -7,6 +7,8 @@ on:
       - ".github/scripts/b62_d1_migration_049_schema.py"
       - ".github/tests/test_b62_d1_migration_049_gate.py"
       - "apps/padiem-chat/migrations/049_oracle_mesh_command_result_meta.sql"
+      # #7346: the 049 gate test also reads the 047 dispatch migration.
+      - "apps/padiem-chat/migrations/047_oracle_mesh_dispatch.sql"
   workflow_dispatch:
     inputs:
       mode:

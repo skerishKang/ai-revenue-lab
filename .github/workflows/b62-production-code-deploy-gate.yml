@@ -6,6 +6,8 @@ on:
       - ".github/workflows/b62-production-code-deploy-gate.yml"
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
       - ".github/scripts/b62_repo_binding_authority.py"
+      # #7346: test_b62_binding_baseline reads the B14 wrangler binding file.
+      - "apps/korean-ai-platform/wrangler.toml"
       - ".github/tests/fixtures/b62_served_binding_inventory_20261026.json"
       - ".github/tests/test_b62_observability_deploy_contract.py"
       - ".github/scripts/b62_connector_broker_additive_preflight.py"
