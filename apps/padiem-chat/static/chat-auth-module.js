@@ -273,6 +273,7 @@
         : deps.uiT("auth-error-generic");
       const error = new Error(message);
       error.code = data.error && typeof data.error.code === "string" ? data.error.code : "auth_error";
+      if (typeof data.login_url === "string" && data.login_url) error.loginUrl = data.login_url;
       throw error;
     }
     // A 2xx without a route answer is not a success: reporting one here would
@@ -301,6 +302,11 @@
       deps.closeAuthDialog();
       await deps.loadAuthStatus();
     } catch (error) {
+      if (error && error.code === "email_login_moved" && typeof error.loginUrl === "string") {
+        deps.setAuthFormError(deps.passwordLoginError, deps.uiT("auth-email-login-moved"));
+        window.location.assign(error.loginUrl);
+        return;
+      }
       deps.setAuthFormError(
         deps.passwordLoginError,
         error instanceof Error ? error.message : deps.uiT("auth-error-generic"),
@@ -324,6 +330,11 @@
       deps.closeAuthDialog();
       await deps.loadAuthStatus();
     } catch (error) {
+      if (error && error.code === "email_login_moved" && typeof error.loginUrl === "string") {
+        deps.setAuthFormError(deps.passwordRegisterError, deps.uiT("auth-email-login-moved"));
+        window.location.assign(error.loginUrl);
+        return;
+      }
       deps.setAuthFormError(
         deps.passwordRegisterError,
         error instanceof Error ? error.message : deps.uiT("auth-error-generic"),

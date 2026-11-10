@@ -11,6 +11,7 @@ import {Linking} from 'react-native';
 
 import {
   ANDROID_HANDOFF_SECRET_HEADER,
+  DEFAULT_API_BASE_URL,
   ENDPOINTS,
 } from '../api/config';
 import {ApiError, apiRequest, apiRequestRaw} from '../api/http';
@@ -137,17 +138,38 @@ export function AuthProvider({children}: {children: React.ReactNode}): React.JSX
         anonymous: true,
       });
       const text = await response.text();
+      let parsed: {
+        error?: {code?: string; message?: string};
+        login_url?: string;
+      } | null = null;
+      try {
+        parsed = JSON.parse(text) as typeof parsed;
+      } catch {
+        parsed = null;
+      }
       if (!response.ok) {
-        let message = '로그인에 실패했습니다.';
-        try {
-          const parsed = JSON.parse(text) as {error?: {message?: string}};
-          if (parsed?.error?.message) {
-            message = parsed.error.message;
+        if (
+          response.status === 409 &&
+          parsed?.error?.code === 'email_login_moved' &&
+          typeof parsed.login_url === 'string' &&
+          parsed.login_url
+        ) {
+          try {
+            await Linking.openURL(new URL(parsed.login_url, DEFAULT_API_BASE_URL).toString());
+          } catch {
+            // The visible message below still tells the person where to sign in.
           }
-        } catch {
-          // keep the fallback message
+          throw new ApiError(
+            409,
+            'email_login_moved',
+            '로그인 방식이 바뀌었어요. 공통 로그인으로 이동합니다',
+          );
         }
-        throw new ApiError(response.status, 'invalid_credentials', message);
+        const message =
+          typeof parsed?.error?.message === 'string' && parsed.error.message
+            ? parsed.error.message
+            : '로그인에 실패했습니다.';
+        throw new ApiError(response.status, parsed?.error?.code || 'invalid_credentials', message);
       }
       const adopted = await adoptSessionCookie(response);
       if (!adopted) {

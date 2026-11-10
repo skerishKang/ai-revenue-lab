@@ -104,6 +104,37 @@ function Get-ServerErrorCode([string]$Body) {
     return 'no_json_body'
 }
 
+function Invoke-SharedLogin([string]$Email, [string]$Password) {
+    # #7078: the common login screen owns email login when the switch is ON.
+    # Invoke-WebRequest follows the state/PKCE redirects and keeps the cookies
+    # in memory; nothing here is echoed.
+    $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+    try {
+        $start = Invoke-WebRequest -Uri ($BaseUrl + '/auth/shared/start') `
+            -UseBasicParsing -WebSession $session -MaximumRedirection 10 -TimeoutSec 30
+        $html = [string]$start.Content
+        $match = [regex]::Match($html, '<form[^>]+action="([^"]*/login/password\?state=[^"]+)"')
+        if (-not $match.Success) { return @{ ok = $false; code = 'shared_login_form_missing' } }
+        $action = [System.Net.WebUtility]::HtmlDecode($match.Groups[1].Value)
+        if ($action -notmatch '^https?://') {
+            $pageUri = $start.BaseResponse.RequestMessage.RequestUri
+            if ($null -eq $pageUri) { $pageUri = [Uri]$BaseUrl }
+            $action = ([Uri]::new([Uri]$pageUri, $action)).AbsoluteUri
+        }
+        $formBody = 'email=' + [Uri]::EscapeDataString($Email) + '&password=' + [Uri]::EscapeDataString($Password)
+        Invoke-WebRequest -Uri $action -Method Post `
+            -ContentType 'application/x-www-form-urlencoded' -Body $formBody `
+            -WebSession $session -MaximumRedirection 10 -UseBasicParsing -TimeoutSec 30 | Out-Null
+        $status = Invoke-WebRequest -Uri ($BaseUrl + '/api/auth/status') `
+            -UseBasicParsing -WebSession $session -TimeoutSec 30
+        if ([string]$status.Content -match '"authenticated"\s*:\s*true') {
+            return @{ ok = $true; code = 'none' }
+        }
+        return @{ ok = $false; code = 'shared_session_unverified' }
+    }
+    catch { return @{ ok = $false; code = 'shared_login_unreachable' } }
+}
+
 function Mask-Email([string]$Email) {
     $at = $Email.IndexOf('@')
     if ($at -lt 1) { return '***' }
@@ -178,6 +209,11 @@ $register = Invoke-AuthPost '/api/auth/password/register' $registerBody
 if ($register.status -eq 200) {
     Out-Line 'SIGNUP' 'created'
 }
+elseif ($register.status -eq 409 -and (Get-ServerErrorCode $register.body) -eq 'email_login_moved') {
+    # #7078 switch ON: signup moved to the common screen. The smoke account is
+    # normally pre-existing; the login verify below proves the shared path.
+    Out-Line 'SIGNUP' 'shared_login_required'
+}
 elseif ($register.status -eq 409) {
     Out-Line 'SIGNUP' ("already_exists code={0}" -f (Get-ServerErrorCode $register.body))
 }
@@ -191,11 +227,22 @@ else {
 $loginBody = @{ identifier = $email; password = $plainPassword } | ConvertTo-Json -Compress
 $login = Invoke-AuthPost '/api/auth/password/login' $loginBody
 $loginOk = ($login.status -eq 200 -and $login.body -match '"ok"\s*:\s*true')
+$loginCode = Get-ServerErrorCode $login.body
+if ($login.status -eq 409 -and $loginCode -eq 'email_login_moved') {
+    $shared = Invoke-SharedLogin $email $plainPassword
+    if ($shared.ok) {
+        $loginOk = $true
+        Out-Line 'LOGIN_PATH' 'shared'
+    }
+    else {
+        Out-Line 'LOGIN_PATH' ('shared_failed code=' + $shared.code)
+    }
+}
 if ($loginOk) {
     Out-Line 'LOGIN_VERIFY' 'PASS'
 }
 else {
-    Out-Line 'LOGIN_VERIFY' ("FAIL http={0} server_code={1}" -f $login.status, (Get-ServerErrorCode $login.body))
+    Out-Line 'LOGIN_VERIFY' ("FAIL http={0} server_code={1}" -f $login.status, $loginCode)
     Out-Line 'RESULT' 'INCOMPLETE'
     exit 2
 }

@@ -1000,6 +1000,14 @@ async def password_login(request: Request) -> JSONResponse:
     except Exception:
         return _auth_error(503, "auth_storage_error", "로그인 정보를 갱신하지 못했습니다.")
 
+    # #7078: a credential change whose shared-session revoke failed leaves a
+    # durable marker; a successful email login is the next safe retry point.
+    try:
+        from .shared_session_revoke import flush_pending
+        await flush_pending(request, credential.user.id)
+    except Exception:
+        pass
+
     settings: Settings = request.app.state.settings
     authenticated_epoch = int(now.timestamp())
     authenticated_at = datetime.fromtimestamp(authenticated_epoch, tz=timezone.utc)
@@ -1166,6 +1174,15 @@ async def password_change(request: Request) -> JSONResponse:
         await store.update_password_credential(user_id, encoded)
     except Exception:
         return _auth_error(503, "auth_storage_error", "비밀번호를 저장하지 못했습니다.")
+
+    # #7078: the shared login surface owns the sessions behind this credential.
+    # Best-effort by product decision: a failed revoke never fails the change;
+    # it is journaled and a durable marker retries on the next login/refresh.
+    try:
+        from .shared_session_revoke import revoke_after_credential_change
+        await revoke_after_credential_change(request, user_id)
+    except Exception:
+        pass
 
     response = JSONResponse({"ok": True})
     response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
@@ -1339,6 +1356,13 @@ async def password_reset_confirm(request: Request) -> JSONResponse:
         await store.update_password_credential(user_id, encoded)
     except Exception:
         return _auth_error(503, "auth_storage_error", "비밀번호를 저장하지 못했습니다.")
+
+    # #7078: same revocation point as the password change above.
+    try:
+        from .shared_session_revoke import revoke_after_credential_change
+        await revoke_after_credential_change(request, user_id)
+    except Exception:
+        pass
 
     response = JSONResponse({"ok": True})
     response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")

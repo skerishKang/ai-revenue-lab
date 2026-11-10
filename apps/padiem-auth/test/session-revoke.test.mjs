@@ -1,0 +1,158 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createHmac, randomUUID } from 'node:crypto';
+import { DatabaseSync } from 'node:sqlite';
+import { AuthState } from '../state.mjs';
+import { createApp, AuthStateObject } from '../worker.mjs';
+
+const origin = 'https://auth.padiem.net';
+const SECRET = 'synthetic-account-delete-secret-32chars';
+const PATH = '/internal/account-sessions/revoke';
+const SESSION_ONE = 'A'.repeat(43);
+const SESSION_TWO = 'B'.repeat(43);
+const OBJ_ONE = 'O'.repeat(43);
+const OBJ_TWO = 'P'.repeat(43);
+
+function storage() {
+  const db = new DatabaseSync(':memory:');
+  return {
+    sql: {
+      exec(q, ...p) {
+        const stmt = db.prepare(q);
+        if (stmt.columns().length) return { toArray: () => stmt.all(...p) };
+        stmt.run(...p);
+        return { toArray: () => [] };
+      },
+    },
+    transactionSync(fn) {
+      db.exec('BEGIN');
+      try { const out = fn(); db.exec('COMMIT'); return out; } catch (error) { db.exec('ROLLBACK'); throw error; }
+    },
+  };
+}
+
+async function setup() {
+  const signing = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+  const refreshKey = await crypto.subtle.importKey('raw', new Uint8Array(32).fill(8), 'AES-GCM', false, ['encrypt', 'decrypt']);
+  const identityKey = await crypto.subtle.importKey('raw', new Uint8Array(32).fill(9), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const publicSigning = await crypto.subtle.exportKey('jwk', signing.publicKey);
+  publicSigning.kid = 'auth';
+  const objects = new Map();
+  let queue = Promise.resolve();
+  const stateFor = (id) => {
+    if (!objects.has(id)) {
+      const state = {
+        storage: storage(),
+        blockConcurrencyWhile(fn) { const next = queue.then(fn); queue = next.catch(() => {}); return next; },
+      };
+      objects.set(id, id === 'google-account-registry' ? new AuthStateObject(state, {}) : new AuthState(state));
+    }
+    return objects.get(id);
+  };
+  const app = createApp({
+    clients: {},
+    googleClientId: 'google-client',
+    googleClientSecret: 'synthetic',
+    identityKey,
+    refreshKey,
+    adminSecret: 'synthetic-admin-secret',
+    accountDeleteRpcSecret: SECRET,
+    passwordRpcSecret: 'synthetic-password-rpc-secret-32chars-min',
+    passwordRpcOrigin: 'https://chat.padiem.net',
+    signingKey: signing.privateKey,
+    signingKid: 'auth',
+    jwks: { keys: [publicSigning] },
+    stateFor,
+    now: () => 1000,
+    fetcher: async () => { throw new Error('no fetch expected'); },
+  });
+  return { app, stateFor, objects };
+}
+
+function signedHeaders(body) {
+  const at = '1000';
+  const serviceId = randomUUID();
+  const raw = Buffer.from(JSON.stringify(body));
+  const canonical = Buffer.concat([
+    Buffer.from(`v2\nPOST\n${PATH}\n${at}\n${serviceId}\n`, 'utf8'),
+    raw,
+  ]);
+  const proof = 'v2=' + createHmac('sha256', SECRET).update(canonical).digest('hex');
+  return {
+    headers: {
+      'content-type': 'application/json',
+      'content-length': String(raw.length),
+      'x-padiem-service-at': at,
+      'x-padiem-service-id': serviceId,
+      'x-padiem-service-proof': proof,
+    },
+    raw,
+  };
+}
+
+async function seed(stateFor) {
+  const registry = stateFor('google-account-registry');
+  registry.putAccount({ fingerprint: 'fp1', accountId: 'sub_one', productUserId: 'usr_one', now: 900 });
+  registry.putAccount({ fingerprint: 'fp2', accountId: 'sub_two', productUserId: 'usr_two', now: 900 });
+  const one = stateFor(OBJ_ONE);
+  const two = stateFor(OBJ_TWO);
+  one.createSession({ id: SESSION_ONE, client: 'b62', subject: 'sub_one', accountId: 'sub_one', expires: 5000, digest: 'digest-one' });
+  two.createSession({ id: SESSION_TWO, client: 'b62', subject: 'sub_two', accountId: 'sub_two', expires: 5000, digest: 'digest-two' });
+  registry.indexAccountSession({ accountId: 'sub_one', objectId: OBJ_ONE, sessionId: SESSION_ONE, expires: 5000, now: 1000 });
+  registry.indexAccountSession({ accountId: 'sub_two', objectId: OBJ_TWO, sessionId: SESSION_TWO, expires: 5000, now: 1000 });
+}
+
+function revoked(state, id) {
+  return state.sql.exec('SELECT revoked FROM sessions WHERE id=?', id).toArray()[0]?.revoked === 1;
+}
+
+test('revokes only the mapped Chat user sessions and reports the count', async () => {
+  const { app, stateFor } = await setup();
+  await seed(stateFor);
+  const signed = signedHeaders({ product_id: 'b62', product_user_id: 'usr_one' });
+  const response = await app.fetch(new Request(origin + PATH, {
+    method: 'POST', headers: signed.headers, body: signed.raw,
+  }));
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true, accounts: 1, revoked_sessions: 1 });
+  assert.equal(revoked(stateFor(OBJ_ONE), SESSION_ONE), true);
+  assert.equal(revoked(stateFor(OBJ_TWO), SESSION_TWO), false);
+});
+
+test('unknown Chat user is a bounded no-op', async () => {
+  const { app, stateFor } = await setup();
+  await seed(stateFor);
+  const signed = signedHeaders({ product_id: 'b62', product_user_id: 'usr_unknown' });
+  const response = await app.fetch(new Request(origin + PATH, {
+    method: 'POST', headers: signed.headers, body: signed.raw,
+  }));
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true, accounts: 0, revoked_sessions: 0 });
+});
+
+test('refuses unsigned calls and non-Chat product payloads', async () => {
+  const { app } = await setup();
+  const unsigned = await app.fetch(new Request(origin + PATH, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}',
+  }));
+  assert.equal(unsigned.status, 401);
+  const signed = signedHeaders({ product_id: 'b61', product_user_id: 'usr_one' });
+  const invalid = await app.fetch(new Request(origin + PATH, {
+    method: 'POST', headers: signed.headers, body: signed.raw,
+  }));
+  assert.equal(invalid.status, 400);
+});
+
+test('the same signed call cannot be replayed', async () => {
+  const { app, stateFor } = await setup();
+  await seed(stateFor);
+  const signed = signedHeaders({ product_id: 'b62', product_user_id: 'usr_one' });
+  const first = await app.fetch(new Request(origin + PATH, {
+    method: 'POST', headers: signed.headers, body: signed.raw,
+  }));
+  assert.equal(first.status, 200);
+  const second = await app.fetch(new Request(origin + PATH, {
+    method: 'POST', headers: signed.headers, body: signed.raw,
+  }));
+  assert.equal(second.status, 409);
+});

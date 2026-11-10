@@ -60,7 +60,24 @@ export async function loginWithPassword(
     credentials: "same-origin",
   });
   if (!response.ok) {
-    throw await readError(response, "로그인 정보를 확인해 주세요.");
+    const data = (await response.json().catch(() => null)) as
+      | { error?: { code?: string; message?: string }; login_url?: string }
+      | null;
+    const code = typeof data?.error?.code === "string" ? data.error.code : "";
+    if (code === "email_login_moved") {
+      const moved = new Error("로그인 방식이 바뀌었어요. 공통 로그인으로 이동합니다") as Error & {
+        code?: string;
+        loginUrl?: string;
+      };
+      moved.code = code;
+      if (typeof data?.login_url === "string" && data.login_url) moved.loginUrl = data.login_url;
+      throw moved;
+    }
+    const message =
+      typeof data?.error?.message === "string" ? data.error.message : "로그인 정보를 확인해 주세요.";
+    const error = new Error(message) as Error & { code?: string };
+    if (code) error.code = code;
+    throw error;
   }
   return fetchAuthStatus();
 }
