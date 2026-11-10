@@ -36,7 +36,7 @@ def test_pending_poll_stop_contract_runs_under_node():
 
 def test_app_skips_the_result_check_when_the_submit_was_refused():
     transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
+    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
 
     # The transport marks HTTP-level refusals of the submit call itself, and
     # only when an HTTP status was passed (a cut stream has none).
@@ -44,9 +44,9 @@ def test_app_skips_the_result_check_when_the_submit_was_refused():
     assert "Number.isInteger(status) && status >= 400" in transport
 
     # The catch that starts pending-result recovery refuses that error kind.
-    assert app.count("!error?.submissionRejected") == 1
-    guard_at = app.index("!error?.submissionRejected")
-    guard_line = app[app.rindex("if (", 0, guard_at):guard_at]
+    assert stream.count("!error?.submissionRejected") == 1
+    guard_at = stream.index("!error?.submissionRejected")
+    guard_line = stream[stream.rindex("if (", 0, guard_at):guard_at]
     assert "contextSnapshot?.pcRunId" in guard_line
     assert "!error?.terminalRecord" in guard_line
 
@@ -67,9 +67,9 @@ def test_app_drops_a_gone_run_from_any_further_checking():
 
 
 def test_cut_stream_recovery_stays_allowed():
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
+    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
     # #5895 deferral above the terminal-refusal branch is untouched.
-    deferral = app.index("chatTransport.isStreamLoss?.(data)")
-    terminal = app.index("// An explicit refusal is terminal even before the first token.")
+    deferral = stream.index("deps.chatTransport.isStreamLoss?.(data)")
+    terminal = stream.index("// An explicit refusal is terminal even before the first token.")
     assert deferral < terminal
-    assert app.count("isStreamLoss?.(data)") == 1
+    assert stream.count("isStreamLoss?.(data)") == 1

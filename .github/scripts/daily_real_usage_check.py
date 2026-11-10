@@ -8,6 +8,8 @@ GitHub 러너에서 운영 사이트(chat.padiem.net)를 실제 사용자처럼 
   2. pc_read        PC 파일 읽기(커넥터 경로) : 실제 파일 내용 수신(앞 20자)
   3. voice_relay    실시간 음성 전사          : 전사 글자 수신(앞 10글자)
   4. relogin        로그아웃 → 다시 로그인    : 대화 목록 재로드
+  5. browser_shared_login 공통 로그인 → 로그아웃 : #7078 양성 표본
+  6. browser_chat / browser_claw / browser_stamp : 브라우저 2차 흐름
 
 캘린더 흐름은 대표 결정으로 1차에서 뺀다. 튜토리얼 자동 생성은 2차다.
 
@@ -80,7 +82,7 @@ HEAD_PC = 20
 HEAD_VOICE = 10
 
 # 2차 브라우저 흐름. 판정은 daily_usage_browser_checks 의 순수 함수가 한다.
-BROWSER_FLOWS = ("browser_chat", "browser_claw", "browser_stamp")
+BROWSER_FLOWS = ("browser_chat", "browser_claw", "browser_stamp", "browser_shared_login")
 EXPECTED_HEAD_ENV = "PADIEM_EXPECTED_HEAD_SHA"
 BROWSER_CAPTURE_DIR_ENV = "PADIEM_USAGE_CAPTURE_DIR"
 BROWSER_CAPTURE_DIR_DEFAULT = "usage-browser-captures"
@@ -528,6 +530,7 @@ def main() -> int:
     cred_state, cred_code = _credential_verdict()
     flows = [Flow("chat_turn"), Flow("pc_read"), Flow("voice_relay"),
              Flow("browser_chat"), Flow("browser_claw"), Flow("browser_stamp"),
+             Flow("browser_shared_login"),
              Flow("relogin")]
     by_name = {flow.name: flow for flow in flows}
     browser_captures: list[str] = []

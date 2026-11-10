@@ -49,8 +49,10 @@ process.stdout.write(JSON.stringify([
     result = subprocess.run([node, "-e", script, str(SOURCE)], capture_output=True, text=True, encoding="utf-8", check=True)
     assert json.loads(result.stdout) == ["run_" + "a" * 24, None, None, "chat_pcq_" + "b" * 32]
     app = (STATIC / "app.js").read_text(encoding="utf-8")
-    assert 'recordPcProgress?.(article, value, pcProgressRunId)' in app
+    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
+    assert 'recordPcProgress?.(article, value, pcProgressRunId)' in stream
     assert 'if (!clawGeneralRequest && ["pc_progress"' not in app
+    assert 'if (!clawGeneralRequest && ["pc_progress"' not in stream
     index = (STATIC / "index.html").read_text(encoding="utf-8")
     assert index.index('./pc-browser-progress.js') < index.index('./app.js')
 

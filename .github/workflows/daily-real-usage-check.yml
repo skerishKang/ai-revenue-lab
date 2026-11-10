@@ -95,8 +95,10 @@ jobs:
             echo "|---|---|---|---|---|"
             echo "| all | SKIPPED | 0 | - | qa_credential_missing |"
           } >> "$GITHUB_STEP_SUMMARY"
-          echo "USAGE_CHECK verdict=SKIPPED flows=7 failed=0 code=qa_credential_missing"
-      - name: Run the seven real-usage flows
+          echo "USAGE_CHECK verdict=SKIPPED flows=8 failed=0 code=qa_credential_missing"
+      # #7078: browser_shared_login 흐름이 같은 비밀로 공통 로그인을 실제로
+      # 한 번 돌린다(쿠키 값은 읽지도 적지도 않음). 판정은 스크립트의 순수 함수.
+      - name: Run the eight real-usage flows
         if: ${{ env.B66_CGI_ALPHA_USERNAME != '' && env.B66_CGI_ALPHA_PASSWORD != '' }}
         env:
           # 느려짐 비교용 직전 실행 이력(읽기 전용).

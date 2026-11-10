@@ -8,6 +8,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RICH_PATH = ROOT / "static" / "rich-response.js"
 APP_PATH = ROOT / "static" / "app.js"
+CONV_PATH = ROOT / "static" / "chat-conversation-module.js"
+STREAM_PATH = ROOT / "static" / "chat-streaming-module.js"
 SEARCH_PATH = ROOT / "static" / "search-sources.js"
 TRANSPORT_PATH = ROOT / "static" / "chat-transport.js"
 
@@ -252,14 +254,16 @@ def test_request_state_remains_single_owned_by_app_controller() -> None:
 def test_stream_error_guard_and_completed_paths_remain_present() -> None:
     rich = _source(RICH_PATH)
     app = _source(APP_PATH)
+    conv = _source(CONV_PATH)
+    stream_mod = _source(STREAM_PATH)
 
     assert 'content.querySelector(".error-box")' in rich
-    stream_start = app.index("  async function requestStreamingAnswer(")
-    stream_end = app.index("  async function requestAnswer(", stream_start)
-    stream = app[stream_start:stream_end]
-    assert "renderStreamError(article, message" in stream
-    assert "renderStreamError(article, error instanceof Error" in stream
-    assert 'paragraph.textContent = result.answer;' in app
+    stream_start = stream_mod.index("  async function requestStreamingAnswer(")
+    stream_end = stream_mod.index("  async function requestAnswer(", stream_start)
+    stream = stream_mod[stream_start:stream_end]
+    assert "deps.renderStreamError(article, message" in stream
+    assert "deps.renderStreamError(article, error instanceof Error" in stream
+    assert 'paragraph.textContent = result.answer;' in conv
     assert 'paragraph.textContent = text;' in app
 
 
@@ -293,10 +297,10 @@ def test_chat_transport_stays_out_of_response_renderers() -> None:
 
 
 def test_thought_summary_redacts_identifiers_paths_and_url_queries() -> None:
-    app = _source(APP_PATH)
-    start = app.index("    function safeThoughtSummary(value) {")
-    end = app.index("\n    function renderThoughtSummary", start)
-    sanitizer = app[start:end]
+    stream_mod = _source(STREAM_PATH)
+    start = stream_mod.index("    function safeThoughtSummary(value) {")
+    end = stream_mod.index("\n    function renderThoughtSummary", start)
+    sanitizer = stream_mod[start:end]
     raw = (
         "run_id=run_123 trace_ID=trace_ABC dsp_456 pcr_789 evt_ABC "
         "UUID 123e4567-e89b-12d3-a456-426614174000 "
@@ -325,11 +329,11 @@ def test_thought_summary_redacts_identifiers_paths_and_url_queries() -> None:
 
 
 def test_streaming_delta_uses_incremental_text_node_updates() -> None:
-    app = _source(APP_PATH)
+    stream_mod = _source(STREAM_PATH)
     lifecycle = _source(ROOT / "static" / "message-lifecycle.js")
-    stream_start = app.index("  async function requestStreamingAnswer(")
-    stream_end = app.index("  async function requestAnswer(", stream_start)
-    stream = app[stream_start:stream_end]
+    stream_start = stream_mod.index("  async function requestStreamingAnswer(")
+    stream_end = stream_mod.index("  async function requestAnswer(", stream_start)
+    stream = stream_mod[stream_start:stream_end]
 
     assert "appendStreamDelta?.(answerTextNode, data.delta)" in stream
     assert "paragraph.textContent = answer;" not in stream

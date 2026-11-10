@@ -1,7 +1,9 @@
-"""Combined admission RPC on the Engine side: opt-in switch, one round trip.
+"""Combined admission RPC on the Engine side: default-on switch, one round trip.
 
-The switch defaults off so the two-call flow keeps its existing shape; when on,
-the adapter issues a single ``admit_usage`` request and validates the returned
+The combined path is the code default: the PADIEM_ENGINE_ADMISSION_COMBINED_RPC
+variable only turns it off, and only the exact spellings "false" / "0" / "off"
+restore the legacy two-call flow (kept as the emergency path). When on, the
+adapter issues a single ``admit_usage`` request and validates the returned
 policy and reservation with the same parsers as before. The admission stage log
 keeps its name (admission_ms) and carries ``combined=true`` only on this path.
 """
@@ -19,6 +21,7 @@ from app.execution_admission import ExecutionAdmissionError, ExecutionAdmissionR
 from app.tenant_auth import (
     ControlPlaneTenantAdmissionAdapter,
     admission_combined_rpc_enabled,
+    build_control_plane_admission_adapter,
 )
 
 NOW = datetime(2026, 2, 1, 12, 0, tzinfo=UTC)
@@ -226,19 +229,27 @@ def test_switch_on_requires_the_client_capability():
 @pytest.mark.parametrize(
     "raw,expected",
     [
+        (None, True),  # absent variable: the combined path is the default
+        ("", True),  # empty: not an off spelling
         ("1", True),
         ("true", True),
         ("TRUE", True),
         (" yes ", True),
         ("on", True),
+        ("enabled", True),  # unrecognized spelling: on
+        ("nope", True),
+        (5, True),  # a non-string value that is not False: on
+        (True, True),
         ("0", False),
         ("false", False),
-        ("", False),
-        (None, False),
-        (5, False),
+        ("FALSE", False),
+        ("false ", False),
+        ("off", False),
+        (" Off ", False),
+        (False, False),
     ],
 )
-def test_switch_reader_accepts_only_explicit_truthy_values(raw, expected):
+def test_switch_reader_defaults_on_and_only_off_spellings_disable(raw, expected):
     source = {"PADIEM_ENGINE_ADMISSION_COMBINED_RPC": raw}
     assert admission_combined_rpc_enabled(source) is expected
 
@@ -250,7 +261,49 @@ def test_switch_reader_handles_attribute_sources_and_garbage():
         )
         is True
     )
-    assert admission_combined_rpc_enabled(object()) is False
+    assert (
+        admission_combined_rpc_enabled(
+            SimpleNamespace(PADIEM_ENGINE_ADMISSION_COMBINED_RPC="false")
+        )
+        is False
+    )
+    # A source without the variable keeps the combined default on.
+    assert admission_combined_rpc_enabled(object()) is True
+    assert admission_combined_rpc_enabled({}) is True
+
+
+def test_env_absent_composition_uses_the_combined_path():
+    # Load-bearing regression: production composes the adapter from the env
+    # switch (worker_identity._admission_adapter_for_env). With the variable
+    # absent -- exactly the deployed production state -- the composed adapter
+    # must issue the single combined round trip, not the two legacy calls.
+    client = FakeControlPlaneClient()
+    built = build_control_plane_admission_adapter(
+        client,
+        clock=lambda: NOW,
+        combined_rpc=admission_combined_rpc_enabled({}),
+    )
+    result = run(built.resolve_admission(request()))
+    assert result.allowed is True
+    assert [call[0] for call in client.calls] == ["admit_usage"]
+
+
+def test_off_spelling_composition_restores_the_two_call_flow():
+    # The emergency off spelling composes the legacy two-call adapter.
+    client = FakeControlPlaneClient()
+    built = build_control_plane_admission_adapter(
+        client,
+        clock=lambda: NOW,
+        combined_rpc=admission_combined_rpc_enabled(
+            {"PADIEM_ENGINE_ADMISSION_COMBINED_RPC": "false"}
+        ),
+    )
+    result = run(built.resolve_admission(request()))
+    assert result.allowed is True
+    assert [call[0] for call in client.calls] == [
+        "fetch_entitlement_snapshot",
+        "reserve_usage",
+    ]
 
 
 def test_engine_timing_keeps_admission_ms_and_marks_combined():

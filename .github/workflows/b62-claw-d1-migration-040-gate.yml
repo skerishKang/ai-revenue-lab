@@ -14,6 +14,8 @@ on:
       - ".github/scripts/b62_d1_migration_040_schema.py"
       - ".github/tests/test_b62_d1_migration_040_gate.py"
       - "apps/padiem-chat/migrations/040_claw_web_xlsx_p01_decision_release.sql"
+      # #7346: the 040 gate test also reads the 031 receipt migration.
+      - "apps/padiem-chat/migrations/031_claw_web_xlsx_p01_decision_receipts.sql"
   workflow_dispatch:
     inputs:
       mode:

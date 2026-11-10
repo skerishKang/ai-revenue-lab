@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 CAPABILITIES = (STATIC / "product-capabilities.js").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+STREAM = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
 TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
 CSS = (STATIC / "mode-presentation.css").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
@@ -221,14 +222,14 @@ def test_custom_endpoint_and_provider_model_controls_follow_server_capabilities(
 
 def test_selected_custom_provider_model_goes_to_the_custom_field_without_tier() -> None:
     assert (
-        'const payload = { messages: outboundMessages, tier: selectedProductTier(), skill };'
-        in APP
+        'const payload = { messages: outboundMessages, tier: deps.selectedProductTier(), skill };'
+        in STREAM
     )
-    assert "const customSelection = !clawGeneralRequest && window.PadiemCustomSelection?.get?.();" in APP
-    assert "delete payload.tier;" in APP
-    assert "payload.custom = { provider: customSelection.provider, model: customSelection.model };" in APP
-    assert "if (customSelection.reasoning_effort) {" in APP
-    assert "payload.custom.reasoning_effort = customSelection.reasoning_effort;" in APP
+    assert "const customSelection = !clawGeneralRequest && window.PadiemCustomSelection?.get?.();" in STREAM
+    assert "delete payload.tier;" in STREAM
+    assert "payload.custom = { provider: customSelection.provider, model: customSelection.model };" in STREAM
+    assert "if (customSelection.reasoning_effort) {" in STREAM
+    assert "payload.custom.reasoning_effort = customSelection.reasoning_effort;" in STREAM
     assert "window.PadiemCustomSelection = Object.freeze({" in CAPABILITIES
     assert 'Object.freeze({ provider: customSelection.provider, model: customSelection.model,' in CAPABILITIES
     assert 'reasoning_effort: customSelection.reasoning_effort || null })' in CAPABILITIES
@@ -245,7 +246,7 @@ def test_custom_failures_reopen_the_existing_model_card() -> None:
     assert 'code === "custom_credential_required" || code === CUSTOM_AUTH_FAILURE_CODE' in APP
     assert "window.PadiemCustomSelection?.open?.();" in APP
     assert 'code === "unauthorized" && window.PadiemCustomSelection?.get?.()' in APP
-    assert "handleCustomRequestFailure(error);" in APP
+    assert "deps.handleCustomRequestFailure(error);" in STREAM
 
 
 def test_custom_lane_keeps_direct_path_without_server_owned_byok_opt_in() -> None:

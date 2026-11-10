@@ -22,6 +22,7 @@ from pathlib import Path
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+STREAM = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
 TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
 
 
@@ -64,7 +65,8 @@ def test_general_chat_transport_untouched() -> None:
     assert 'fetch("/api/chat/stream"' in TRANSPORT
     assert 'fetch("/api/chat"' in TRANSPORT
     assert "async function requestAnswer(" in APP
-    assert "requestStreamingAnswer(article, payload" in APP
+    assert "async function requestAnswer(" in STREAM
+    assert "deps.requestStreamingAnswer(\n        article,\n        payload," in STREAM
     assert "async function submitPrompt(text, selectedSkill)" in APP
 
 

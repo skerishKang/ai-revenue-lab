@@ -23,6 +23,7 @@ const vm = require("vm");
 const path = require("path");
 const root = process.argv[1];
 const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
+const stream = fs.readFileSync(path.join(root, "chat-streaming-module.js"), "utf8");
 const transport = fs.readFileSync(path.join(root, "chat-transport.js"), "utf8");
 
 function assert(condition, label) { if (!condition) throw Error(label); }
@@ -130,9 +131,9 @@ async function run() {
       "exactly one P01 POST, never direct B14, B62 Chat, or retry");
   }
   // The exact localized message is chosen in the actual Claw-only catch.
-  assert(app.includes('clawGeneralRequest && error?.clawFailureDetail === "engine_provider_rate_limited"'),
+  assert(stream.includes('clawGeneralRequest && error?.clawFailureDetail === "engine_provider_rate_limited"'),
     "P01 detail rendered only for Claw general");
-  assert(app.includes('uiT("claw-general-provider-limit")'), "localized bounded message");
+  assert(stream.includes('deps.uiT("claw-general-provider-limit")'), "localized bounded message");
   console.log("CLAW_NO_ONE_CLICK_REPLAY=PASS");
   console.log("B62_CHAT_RETRY_UNCHANGED=PASS");
   console.log("CLOSED_PROVIDER_RATE_LIMIT_CLASS=PASS");

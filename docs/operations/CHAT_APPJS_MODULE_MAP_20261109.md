@@ -249,8 +249,13 @@ app.js는 다수 모듈 뒤·일부 모듈 앞에 로드된다. 분리 시 전�
   뮤테이션 검증: 본문 복제 → 전달 개수 실패, `deps.` 제거 → moved-bodies 실패.
   전후 스크린샷(1440·390): 목록·새 대화 거의 동일(0.22% 이하), 스트리밍·답변
   차이는 실시간 응답 내용 차이로 레이아웃 동일(blur 평균차 1.3~4.5).
-- 5b 예약: 위 5개 함수 이동 + 스트리밍 시험 이전 + 상한 재계산. 머지 후
-  `app.js` 최종 줄 수는 5b 시점에 확정.
+- 5b 결과: `chat-streaming-module.js`(704줄, 5개 함수), `app.js` 6,691 → **6,072줄**,
+  상한 6,791 → **6,172**. deps getter 43개 · setter 7개(`activeClawRunId`·
+  `activeProject`·`activeRequestArticle`·`activeRequestCancelReason`·
+  `activeRequestController`·`inFlight`·`lastCompletedAnswerRequest`). 이전 시험
+  55개 파일 이전 + 신규 계약 2종(`test_r5_step5b_streaming_module_7216` 5함수 vm
+  동작·getter·setter / `test_r5_step5b_streaming_browser_7216` 5개 전달 직접 호출
+  + getter·setter).
 
 ## 13. R5 다음 구역 후보 조사 (대기 중 기록 — Claw 제외)
 

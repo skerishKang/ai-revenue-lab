@@ -336,6 +336,7 @@ vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(pro
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), shim, { filename: "claw-session.js" });
 // #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), shim, { filename: "chat-conversation-module.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), shim, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, shim, { filename: "app.js" });
 
 function walk(root, out) {

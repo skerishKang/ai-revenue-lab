@@ -11,6 +11,7 @@ from pathlib import Path
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+STREAM_JS = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
 INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
 LIFECYCLE = (STATIC / "message-lifecycle.js").read_text(encoding="utf-8")
 RECOVERY = (STATIC / "claw-recovery-truth.js").read_text(encoding="utf-8")
@@ -47,8 +48,9 @@ assert(c.state()==="cancelled"&&!c.completionAllowed(),"cancellation terminal");
 assert(P.copy("unknown","en").includes("may already have executed"),"safe uncertainty");
 assert(!P.copy("failed","ko").includes("PASSWORD"),"no external body");
 const app=read("app.js");
-const start=app.indexOf("  async function requestStreamingAnswer(");
-const end=app.indexOf("\n  function cancelActiveStream(",start);
+const stream=read("chat-streaming-module.js");
+const start=stream.indexOf("  async function requestStreamingAnswer(");
+const end=stream.indexOf("\n  function cancelActiveStream(",start);
 assert(start>=0&&end>start,"actual SSE handler located");
 let sent=[],count=0,doneCalls=0;
 function element(type){
@@ -95,7 +97,7 @@ const helperEnd=app.indexOf("\n  function buildRetryBox(",helperStart);
 assert(helperStart>=0&&helperEnd>helperStart,"#3936 failure-copy helper located");
 const scope=vm.createContext(fake);
 vm.runInContext(app.slice(helperStart,helperEnd),scope);
-const fn=vm.runInContext("("+app.slice(start,end)+")",scope);
+const fn=vm.runInContext("("+stream.slice(start,end).replace(/deps\./g,"")+")",scope);
 async function scenario(name,frames,expected,partial,success=false){
  const article=Object.assign({},actor,{content:element("div"),marker:element("small"),body:element("div"),dataset:{},events:[]});
  sent=frames;
@@ -145,12 +147,12 @@ async function scenario(name,frames,expected,partial,success=false){
 def test_recovery_source_loaded_before_application_and_no_retry_authority():
     assert INDEX.count('<script src="./claw-recovery-truth.js"></script>') == 1
     assert INDEX.index("claw-run-event-projection.js") < INDEX.index("claw-recovery-truth.js") < INDEX.index('<script src="./app.js">')
-    assert 'PadiemClawRecoveryTruth?.create?.()' in APP
-    assert 'verifiedClawRecovery?.observe(projected.kind)' in APP
-    assert 'verifiedClawRecovery.completionAllowed()' in APP
-    assert 'MESSAGE_LIFECYCLE.WAITING_APPROVAL' in APP
+    assert 'PadiemClawRecoveryTruth?.create?.()' in STREAM_JS
+    assert 'verifiedClawRecovery?.observe(projected.kind)' in STREAM_JS
+    assert 'verifiedClawRecovery.completionAllowed()' in STREAM_JS
+    assert 'deps.MESSAGE_LIFECYCLE.WAITING_APPROVAL' in STREAM_JS
     assert 'WAITING_APPROVAL: "waiting_for_approval"' in LIFECYCLE
-    assert "PadiemClawRecoveryTruth.copy" in APP
+    assert "PadiemClawRecoveryTruth.copy" in STREAM_JS
     for forbidden in ("fetch(", "setTimeout(", "setInterval(", "localStorage", "sessionStorage", "innerHTML", "EventSource", "new WebSocket", "approve(", "retry("):
         assert forbidden not in RECOVERY
 

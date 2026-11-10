@@ -40,6 +40,13 @@ from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
 from .byok_client import CustomProviderError, complete_owner_custom
 from .byok_credentials import CustomProviderSelectionError
+from .chat_pc_note import (
+    PC_TOOLS_ABSENT_NOTE,
+    PC_TOOLS_CONNECTED_NOTE,
+    PC_TOOLS_PRESENT_NOTE,
+    pc_note_applies,
+    pc_turn_note,
+)
 from .chat_stream_timing import ChatStreamTiming
 from .config import Settings
 from .conversation_routes import _history_unavailable
@@ -283,49 +290,6 @@ async def _no_connector_tools() -> tuple[Any, ...]:
     return ()
 
 
-# #7165: the model's system context has to agree with the tools this turn
-# actually carries. Without this sentence a PC-connected turn still answered
-# "PADIEM is a remote AI, it cannot access your computer" while the PC tools
-# were on the wire. The branch is chosen from the offered tool tuple, never
-# from a fixed "always/never connected" assumption.
-PC_TOOLS_PRESENT_NOTE = (
-    "[PC 연결] 이번 턴에는 연결된 PC 도구가 함께 제공됩니다. 사용자가 PC·컴퓨터 "
-    "작업을 요청하면 연결된 PC에서 드라이브·파일·브라우저 작업을 수행할 수 있습니다. "
-    "이 대화에 없는 셸 명령 실행은 약속하지 말고 Claw의 PC 명령 실행으로 안내하세요. "
-    "'원격 AI라 컴퓨터에 접속할 수 없다'고 답하지 마세요. 실제 결과는 도구 실행 "
-    "결과로만 답하세요."
-)
-PC_TOOLS_ABSENT_NOTE = (
-    "[PC 연결] 이번 턴에는 PC 도구가 제공되지 않았습니다. PC가 연결되지 않았거나 "
-    "이 대화에서 PC 작업을 실행할 수 없는 상태입니다. '원격 AI라 컴퓨터에 접속할 수 "
-    "없다'고 단정하지 말고, 사용자가 PC 작업을 요청하면 내 컴퓨터(Claw)에서 PC를 "
-    "연결하는 방법을 안내하세요."
-)
-
-
-def pc_turn_note(pc_tools: Any) -> str:
-    """The PC sentence for this turn, decided by the tools actually offered."""
-
-    return PC_TOOLS_PRESENT_NOTE if pc_tools else PC_TOOLS_ABSENT_NOTE
-
-
-#: Presentation-only trigger for the PC sentence. It never opens the PC lane or
-#: a tool: it only decides whether a turn that talks about the computer should
-#: receive the tool-presence sentence (#7165). The wording itself is chosen by
-#: the offered tools, never by this pattern.
-_PC_MENTION = re.compile(
-    r"(컴퓨터|내\s*PC|로컬\s*PC|\bpc\b|whoami|명령|실행해|드라이브|파일|폴더"
-    r"|바탕화면|다운로드)",
-    re.IGNORECASE,
-)
-
-
-def pc_note_applies(user_text: Any, pc_tools: Any) -> bool:
-    """Whether this turn should carry the PC sentence at all."""
-
-    if pc_tools:
-        return True
-    return isinstance(user_text, str) and bool(_PC_MENTION.search(user_text))
 
 
 def join_system_context(*parts: Any) -> str | None:
@@ -1174,8 +1138,13 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
         # reach the computer" on a PC-capable turn, and never invents PC
         # capability on a turn without the tools.
         turn_user_text = _last_user_text(messages)
+        note_applies = pc_note_applies(turn_user_text, pc_tools)
+        pc_connected = bool(pc_tools)
+        if note_applies and not pc_connected:
+            from .chat_pc_drive import chat_pc_connection_available
+            pc_connected = await chat_pc_connection_available(request, uid=uid)
         pc_note = (
-            pc_turn_note(pc_tools) if pc_note_applies(turn_user_text, pc_tools) else ""
+            pc_turn_note(pc_tools, pc_connected=pc_connected) if note_applies else ""
         )
         # #5573 (3-B-2): only a verified PC account on a tools-declaring route
         # receives the PC tools; every other turn keeps the request bytes it
