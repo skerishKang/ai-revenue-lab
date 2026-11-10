@@ -22,10 +22,14 @@ main = "worker.py"
 # 5479-py314-runtime-incident-20261024.md §8.
 compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
-workers_dev = true
+
+# 2026-11-10: front is the only public entry (see the route note below). This
+# fallback Worker is reached through bindings, never through a public hostname,
+# so its own direct addresses (workers.dev, preview) are switched off.
+workers_dev = false
 
 base_dir = ".b66-worker-src"
-preview_urls = true
+preview_urls = false
 
 # Daily expiry pass for hash-and-time account deletion audit rows.
 [triggers]

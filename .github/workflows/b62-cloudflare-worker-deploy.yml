@@ -156,7 +156,24 @@ jobs:
         env:
           B62_BASE_URL: https://padiem-chat.${{ steps.preflight.outputs.subdomain }}.workers.dev
           B14_BASE_URL: https://ai-revenue-korean-ai-platform.${{ steps.preflight.outputs.subdomain }}.workers.dev
-        run: python .github/scripts/b62_cloudflare_deployed_parity.py
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          # The parity probe compares the deployed bundle against a public
+          # workers.dev origin. Since 2026-11-10 that origin is switched off for
+          # this Worker (wrangler.toml `workers_dev = false`), so the probe has
+          # no address to read. Read the served flag and report a skip with its
+          # reason instead of a pass; a still-enabled subdomain keeps the probe.
+          subdomain_flag="$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-chat/subdomain" \
+            | python3 -c 'import json,sys; print(str(json.load(sys.stdin)["result"].get("enabled")).lower())')"
+          if [ "${subdomain_flag}" != "true" ]; then
+            echo "B62_DEPLOYED_PARITY=SKIPPED_SUBDOMAIN_DISABLED"
+            echo "B62_DEPLOYED_PARITY_REASON=NO_PUBLIC_WORKERS_DEV_ORIGIN"
+            exit 0
+          fi
+          python .github/scripts/b62_cloudflare_deployed_parity.py
 
   deploy-mock:
     needs: preflight
