@@ -24,6 +24,8 @@ CHAT_ROOT = REPO_ROOT / "apps" / "padiem-chat"
 STATIC = CHAT_ROOT / "static"
 INDEX_HTML = STATIC / "index.html"
 APP_JS = STATIC / "app.js"
+CONVERSATION_JS = STATIC / "chat-conversation-module.js"
+STREAMING_JS = STATIC / "chat-streaming-module.js"
 TRANSPORT_JS = STATIC / "chat-transport.js"
 RECOVERY_JS = STATIC / "chat-pc-result-recovery.js"
 NOTICE_JS = STATIC / "pc-scope-notice.js"
@@ -138,10 +140,14 @@ def test_every_live_render_point_hands_the_notice_to_the_surface():
 
     app_js = APP_JS.read_text(encoding="utf-8")
     # Completed JSON answer (/api/chat) — cleared container, notice first.
-    assert "window.PadiemChatPcScopeNotice?.render?.(content, window.PadiemChatPcScopeNotice?.value?.(result));" in app_js
+    # #7216 R5 step 5a moved the completed render into chat-conversation-module.js.
+    conversation_js = CONVERSATION_JS.read_text(encoding="utf-8")
+    assert "window.PadiemChatPcScopeNotice?.render?.(content, window.PadiemChatPcScopeNotice?.value?.(result));" in conversation_js
     # Stream completion (the browser's live orchestration path).
-    apply_done = app_js.split("function applyStreamDone(", 1)[1]
-    apply_done = apply_done.split("function waitForAcceptedPcRun(", 1)[0]
+    # #7216 R5 step 5b moved applyStreamDone into chat-streaming-module.js.
+    stream_js = STREAMING_JS.read_text(encoding="utf-8")
+    apply_done = stream_js.split("function applyStreamDone(", 1)[1]
+    apply_done = apply_done.split("async function requestStreamingAnswer(", 1)[0]
     assert "data.scope_notice" in apply_done
     assert "window.PadiemChatPcScopeNotice?.render?.(content, result.scope_notice);" in app_js
     # Owner-scoped recovery render.
