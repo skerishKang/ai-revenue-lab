@@ -114,7 +114,7 @@ jobs:
     environment: production
     env:
       TARGET_SHA: ${{ inputs.target_sha }}
-      QA_MANUAL_USERNAME: ${{ vars.QA_MANUAL_USERNAME }}
+      QA_MANUAL_USERNAME: ${{ secrets.QA_MANUAL_USERNAME }}
       B66_CGI_CANARY_SELECTED_TIER: ${{ inputs.selected_tier }}
       B66_CGI_CANARY_CASE: ${{ inputs.quote_case }}
       QA_MANUAL_PASSWORD: ${{ secrets.QA_MANUAL_PASSWORD }}

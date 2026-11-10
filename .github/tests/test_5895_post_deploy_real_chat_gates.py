@@ -120,4 +120,4 @@ def test_engine_gate_consumes_the_existing_qa_identity_by_name_only() -> None:
     assert set(env) == {"QA_SMOKE_USERNAME", "QA_SMOKE_PASSWORD"}
     for source in (CHAT_GATE, ENGINE_GATE):
         text = source.read_text(encoding="utf-8")
-        assert not re.search(r"B66_CGI_ALPHA_(USERNAME|PASSWORD):\s*(?![$\[{])[A-Za-z0-9]", text)
+        assert not re.search(r"(?:B66_CGI_ALPHA|QA_SMOKE|QA_DEPLOY|QA_MANUAL)_(USERNAME|PASSWORD):\s*(?![$\[{])[A-Za-z0-9]", text)

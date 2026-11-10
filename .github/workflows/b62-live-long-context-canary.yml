@@ -119,7 +119,7 @@ jobs:
     environment: production
     env:
       TARGET_SHA: ${{ needs.source-contract.outputs.target_sha }}
-      QA_MANUAL_USERNAME: ${{ vars.QA_MANUAL_USERNAME }}
+      QA_MANUAL_USERNAME: ${{ secrets.QA_MANUAL_USERNAME }}
       QA_MANUAL_PASSWORD: ${{ secrets.QA_MANUAL_PASSWORD }}
     steps:
       - uses: actions/checkout@v4

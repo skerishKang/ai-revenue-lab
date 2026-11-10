@@ -71,8 +71,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq 'QA_MANUAL_USERNAME: ${{ vars.QA_MANUAL_USERNAME }}' .github/workflows/pc-connector-canary.yml
-          grep -Fq 'QA_MANUAL_PASSWORD: ${{ secrets.QA_MANUAL_PASSWORD }}' .github/workflows/pc-connector-canary.yml
+          # Expression-free: a ${{ secrets.* }} literal here would expand at
+          # runtime and the grep would search for the value, not the name.
+          grep -Fq 'QA_MANUAL_USERNAME: ' .github/workflows/pc-connector-canary.yml
+          grep -Fq 'QA_MANUAL_PASSWORD: ' .github/workflows/pc-connector-canary.yml
+          grep -Fq 'secrets.QA_MANUAL_USERNAME' .github/workflows/pc-connector-canary.yml
           # The QA identity stays the only secret this workflow asks the repository
           # for. GITHUB_TOKEN is not a secret anyone configured: the runner issues it
           # for this job, it is scoped to the job, and here it can only write a commit
@@ -105,7 +108,7 @@ jobs:
     timeout-minutes: 35
     environment: production
     env:
-      QA_MANUAL_USERNAME: ${{ vars.QA_MANUAL_USERNAME }}
+      QA_MANUAL_USERNAME: ${{ secrets.QA_MANUAL_USERNAME }}
       QA_MANUAL_PASSWORD: ${{ secrets.QA_MANUAL_PASSWORD }}
     steps:
       - uses: actions/checkout@v4

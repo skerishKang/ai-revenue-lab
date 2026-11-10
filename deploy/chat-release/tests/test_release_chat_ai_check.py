@@ -107,14 +107,14 @@ class AiCheckRuntime(unittest.TestCase):
         (release_114/117: ai:FAIL qa_login_refused)."""
         code = (
             "$raw = @'\n"
-            "B66_CGI_ALPHA_USERNAME='qa-user'\n"
-            "B66_CGI_ALPHA_PASSWORD='qa-pass'\n"
+            "QA_DEPLOY_USERNAME='qa-user'\n"
+            "QA_DEPLOY_PASSWORD='qa-pass'\n"
             "OTHER=plain\n"
             "'@\n"
             "function Invoke-Com2Capture { return $raw }\n"
             "$creds = Get-Com2QaCredentials\n"
-            "Write-Output ('U=' + $creds['B66_CGI_ALPHA_USERNAME'])\n"
-            "Write-Output ('P=' + $creds['B66_CGI_ALPHA_PASSWORD'])\n"
+            "Write-Output ('U=' + $creds['QA_DEPLOY_USERNAME'])\n"
+            "Write-Output ('P=' + $creds['QA_DEPLOY_PASSWORD'])\n"
             "Write-Output ('O=' + $creds['OTHER'])\n"
         )
         rc, combined = _run_driver(_extract_functions_block() + code)

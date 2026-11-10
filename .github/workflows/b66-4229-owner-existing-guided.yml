@@ -68,7 +68,7 @@ jobs:
     environment: production
     env:
       TARGET_SHA: ${{ inputs.target_sha }}
-      QA_MANUAL_USERNAME: ${{ vars.QA_MANUAL_USERNAME }}
+      QA_MANUAL_USERNAME: ${{ secrets.QA_MANUAL_USERNAME }}
       QA_MANUAL_PASSWORD: ${{ secrets.QA_MANUAL_PASSWORD }}
       EXEC_MODE: ${{ inputs.mode }}
     steps:

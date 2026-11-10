@@ -27,7 +27,7 @@ jobs:
     env:
       TARGET_SHA: ${{ inputs.target_sha }}
       CONFIRMATION: ${{ inputs.confirmation }}
-      QA_MANUAL_USERNAME: ${{ vars.QA_MANUAL_USERNAME }}
+      QA_MANUAL_USERNAME: ${{ secrets.QA_MANUAL_USERNAME }}
       QA_MANUAL_PASSWORD: ${{ secrets.QA_MANUAL_PASSWORD }}
     steps:
       - name: Checkout exact source

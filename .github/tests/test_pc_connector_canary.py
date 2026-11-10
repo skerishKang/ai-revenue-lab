@@ -463,7 +463,9 @@ class PcConnectorCanaryWorkflowTests(unittest.TestCase):
                        SCRIPT_PATH.read_text(encoding="utf-8"))
 
     def test_it_uses_existing_authority_names_only_and_prints_one_line(self) -> None:
-        self.assertIn("QA_MANUAL_USERNAME: ${{ vars.QA_MANUAL_USERNAME }}", self.workflow)
+        # 2026-11-11 QA purpose split: the identifier is an email, so both the
+        # username and the password ride GitHub secrets — never a public var.
+        self.assertIn("QA_MANUAL_USERNAME: ${{ secrets.QA_MANUAL_USERNAME }}", self.workflow)
         self.assertIn("QA_MANUAL_PASSWORD: ${{ secrets.QA_MANUAL_PASSWORD }}", self.workflow)
         self.assertIn("environment: production", self.workflow)
         self.assertIn('tee -a "${GITHUB_STEP_SUMMARY}"', self.workflow)

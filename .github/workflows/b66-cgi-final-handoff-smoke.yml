@@ -120,7 +120,7 @@ jobs:
       TARGET_SHA: ${{ inputs.target_sha }}
       B66_CGI_SELECTED_MODEL_ID: ${{ inputs.selected_model_id }}
       B66_CGI_FLOW_MODE: ${{ inputs.mode == 'b66_partial_followup_one_shot' && 'partial_followup' || 'complete' }}
-      QA_MANUAL_USERNAME: ${{ vars.QA_MANUAL_USERNAME }}
+      QA_MANUAL_USERNAME: ${{ secrets.QA_MANUAL_USERNAME }}
       QA_MANUAL_PASSWORD: ${{ secrets.QA_MANUAL_PASSWORD }}
     steps:
       - name: Checkout exact approved main
