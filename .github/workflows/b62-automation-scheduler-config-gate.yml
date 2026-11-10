@@ -6,8 +6,6 @@ on:
       - ".github/workflows/b62-automation-scheduler-config-gate.yml"
       - ".github/scripts/b62_automation_scheduler_config.py"
       - ".github/tests/test_b62_automation_scheduler_config.py"
-      # #7346: the scheduler config contract reads the Chat binding file.
-      - "apps/padiem-chat/wrangler.toml"
   workflow_dispatch:
     inputs:
       mode:

@@ -53,6 +53,10 @@ class TestEngineLLPathOwnership:
         assert declared == (
             "apps/padiem-ai-engine/**",
             "packages/padiem-ai-core/**",
+            # #7346: Core's source-audit tests read these deployed app files.
+            "apps/korean-ai-platform/app/pilot/b14_timeout_policy.py",
+            "apps/korean-ai-platform/app/pilot/provider_timeout_diagnostics.py",
+            "apps/padiem-chat/app/worker_config.py",
             SELF_PATH,
             # #5341: the shared Core import-scope proof decides whether a Core
             # change reaches the Engine runtime at all.

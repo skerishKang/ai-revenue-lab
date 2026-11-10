@@ -26,14 +26,36 @@ survey_module = importlib.util.module_from_spec(_spec)
 sys.modules[_spec.name] = survey_module
 _spec.loader.exec_module(survey_module)
 
-#: Pairs that cannot be mapped yet, each with the reason it is accepted.
-#: (reading bundle, read bundle) -> reason
+#: (reading test file, read path) -> reason the pair is accepted unmapped.
 ALLOWLIST: dict[tuple[str, str], str] = {
-    ("packages/padiem-control-plane", "apps/korean-ai-platform"): (
+    (
+        "packages/padiem-control-plane/tests/test_owner_model_name_parts.py",
+        "apps/korean-ai-platform/app/pilot/google_provider.py",
+    ): (
         "No pull-request workflow runs the Control Plane unit suite at all "
         "(padiem-control-plane-ci.yml runs only .github contracts), so there is "
         "no PR lane to attach the path to; the suite is nightly-only. Adding a "
         "Control Plane unit job is a new suite, not a paths mapping."
+    ),
+    (
+        ".github/tests/test_b54_p01_overlay_caller_id_parity.py",
+        "apps/padiem-chat/app/web_xlsx_p01_engine_client.py",
+    ): (
+        "The two B54 caller-registry gates that run this parity contract pin a "
+        "gate-decoupling invariant: their workflow code must never name "
+        "padiem-chat. Adding the Chat path would trip that invariant, so the "
+        "read stays nightly-only until the gate ownership is redesigned."
+    ),
+    (
+        ".github/tests/test_b62_automation_scheduler_config.py",
+        "apps/padiem-chat/wrangler.toml",
+    ): (
+        "Adding the Chat binding file to this gate's paths exposes a "
+        "pre-existing stale contract on main: #6773 added [triggers] to "
+        "apps/padiem-chat/wrangler.toml while "
+        "test_repository_scheduler_source_stays_inert still asserts it is "
+        "inert. Repairing that contract is a separate decision; mapping it "
+        "here would turn an unrelated PR red."
     ),
 }
 
@@ -42,35 +64,33 @@ def _pairs() -> dict[tuple[str, str], dict]:
     return {(row["suite"], row["reads"]): row for row in survey_module.survey()["pairs"]}
 
 
-def _render(pair: dict) -> str:
-    lines = [f"{pair['suite']} -> {pair['reads']} is unpaired:"]
-    for entry in pair["files"]:
-        if entry["verdict"] == "paired":
-            continue
-        lines.append(
-            f"  {entry['test']}:{entry['line']} reads {entry['read_path']} "
-            f"(runners: {', '.join(entry['runners']) or 'none'})"
-        )
-    return "\n".join(lines)
-
-
 def test_every_cross_bundle_read_runs_in_the_read_paths_pr_check():
-    pairs = _pairs()
-    violations = [
-        _render(pair)
-        for key, pair in pairs.items()
-        if pair["verdict"] == "unpaired" and key not in ALLOWLIST
-    ]
+    violations = []
+    for pair in _pairs().values():
+        for entry in pair["files"]:
+            if entry["verdict"] != "unpaired":
+                continue
+            if (entry["test"], entry["read_path"]) in ALLOWLIST:
+                continue
+            violations.append(
+                f"{entry['test']}:{entry['line']} reads {entry['read_path']} "
+                f"but no PR workflow that runs it triggers on that path "
+                f"(runners: {', '.join(entry['runners']) or 'none'})"
+            )
     assert violations == [], (
-        "A test reads another bundle's file but no PR workflow that runs it "
-        "triggers on that path; add the pair to the workflow paths or record "
-        "an allowlist reason.\n" + "\n".join(violations)
+        "Map the read path into the workflow paths that run the reading test, "
+        "or record an allowlist reason.\n" + "\n".join(violations)
     )
 
 
 def test_allowlist_entries_are_still_required():
-    pairs = _pairs()
-    stale = [key for key in ALLOWLIST if pairs.get(key, {}).get("verdict") == "paired"]
+    unpaired = {
+        (entry["test"], entry["read_path"])
+        for pair in _pairs().values()
+        for entry in pair["files"]
+        if entry["verdict"] == "unpaired"
+    }
+    stale = [key for key in ALLOWLIST if key not in unpaired]
     assert stale == [], (
         "These allowlist entries are now covered; delete them from ALLOWLIST: "
         f"{stale}"
