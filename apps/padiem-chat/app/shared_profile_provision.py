@@ -40,7 +40,12 @@ def _verified_email_ok(profile, amr=None) -> bool:
        name:'', picture:''`)으로 판별한다.
     """
     if 'email_verified' not in profile:
-        return True
+        # #7348 (2026-11-10 review): every issuing path states the flag —
+        # Google profiles carry true, the password contract carries false with
+        # its own empty-name shape. A profile that omits the key is not an
+        # issuer this module knows, so it fails closed instead of being read
+        # as verified.
+        return False
     if profile['email_verified'] is True:
         return True
     if profile['email_verified'] is not False:

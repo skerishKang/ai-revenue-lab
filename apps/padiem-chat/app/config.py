@@ -73,6 +73,23 @@ def _strict_bool(value: object, *, name: str) -> bool:
     raise ConfigError(f"{name} must be true or false")
 
 
+def session_user_row_check_enabled(settings: "Settings") -> bool:
+    """Whether the audit H2 compatibility-cookie enforcement is on.
+
+    ``None`` (the unset default) follows PADIEM_CHAT_SESSION_USER_ROW_CHECK,
+    whose absence keeps the enforcement on; an explicit ``False`` — the test
+    suite's own switch — turns it off.
+    """
+
+    value = getattr(settings, "session_user_row_check", None)
+    if value is not None:
+        return bool(value)
+    raw = os.getenv("PADIEM_CHAT_SESSION_USER_ROW_CHECK")
+    if raw is None or not str(raw).strip():
+        return True
+    return _strict_bool(raw, name="PADIEM_CHAT_SESSION_USER_ROW_CHECK")
+
+
 def _optional_secret(value: object, *, name: str, minimum: int = 32) -> str | None:
     raw = "" if value is None else str(value).strip()
     if not raw:
@@ -180,6 +197,13 @@ class Settings:
     # tokens carry expires_at; a pre-existing token without one is treated as
     # created_at + this many days instead of living forever.
     mcp_pat_ttl_days: int = 90
+    # Internal audit H2 (2026-11-10): the request-time guard refuses a
+    # compatibility cookie (no canonical session id) whose user row no longer
+    # exists, and a production composition fails the start when its history
+    # store cannot answer that check. Unset follows
+    # PADIEM_CHAT_SESSION_USER_ROW_CHECK (unset = enforced); the test suite
+    # turns it off explicitly in its own conftest.
+    session_user_row_check: bool | None = None
 
     @classmethod
     def from_values(
@@ -232,6 +256,7 @@ class Settings:
         voice_rpc_secret: object = None,
         # #7078 step 3: appended last; default OFF keeps today's behavior.
         email_login_via_shared: object = None,
+        session_user_row_check: object = None,
         # External AI personal token TTL; appended last for the same reason.
         mcp_pat_ttl_days: object = None,
     ) -> "Settings":
@@ -509,6 +534,14 @@ class Settings:
                 )
                 if email_login_via_shared is not None
                 else False
+            ),
+            session_user_row_check=(
+                _strict_bool(
+                    session_user_row_check,
+                    name="PADIEM_CHAT_SESSION_USER_ROW_CHECK",
+                )
+                if session_user_row_check is not None
+                else None
             ),
             mcp_pat_ttl_days=(
                 _bounded_int(mcp_pat_ttl_days, name="PADIEM_MCP_PAT_TTL_DAYS", minimum=1, maximum=3650)

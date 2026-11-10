@@ -164,8 +164,12 @@ async def test_shadow_authority_failure_does_not_break_compatibility_login() -> 
 
     callback, status = await perform_login(app)
 
-    assert callback.status_code == 302
-    assert status.json()["authenticated"] is True
+    # Internal audit H2 (2026-11-10): the authority is bound here, so a login
+    # it could not confirm refuses the session issuance instead of degrading
+    # to an unbound cookie. #3240's "a shadow failure does not break the
+    # login" keeps applying to deployments without the authority.
+    assert callback.status_code == 503
+    assert status.json()["authenticated"] is False
     assert shadow.saved == []
     # #3240: the B62 shadow attempt still fails exactly as before (one B62-scoped
     # link call, nothing saved). The additional B54 canonical-session attempt is a
