@@ -15,6 +15,8 @@ import os
 from pathlib import Path
 import subprocess
 
+# R5 0단계(R-01): app.js와 분리 모듈을 같은 도우미로 본다.
+from _r5_function_source import combined_source
 
 TESTS = Path(__file__).parent
 STATIC = TESTS.parent / "static"
@@ -100,7 +102,8 @@ console.log(JSON.stringify({bootRequests:1,sameGradeShared:true}));
 
 
 def claw_runs_source():
-    source = (STATIC / "app.js").read_text(encoding="utf-8")
+    # R5 0단계(R-01): 구역 상수·모듈 전달 함수 경계는 결합 소스에서 찾는다.
+    source = combined_source()
     start = source.index("const CLAW_RUNS_READ_WINDOW_MS")
     # loadRecentConversations moved into chat-history-module.js (#7216 R5 step 3);
     # its one-line forwarder is the stable end boundary of the runs-read block.

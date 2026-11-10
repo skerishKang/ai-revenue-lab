@@ -55,6 +55,9 @@ import tempfile
 from functools import lru_cache
 from pathlib import Path
 
+# R5 0단계(R-01): 함수 경계는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import combined_source, function_body
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
@@ -83,9 +86,10 @@ def _logout_block(app: str) -> str:
 
 
 def _approval_renderer(app: str) -> str:
-    start = app.index("function renderClawApprovalControls")
-    end = app.index("async function applyImmediateApprovalDecision", start)
-    return app[start:end]
+    shipped = combined_source()
+    start = shipped.index("function renderClawApprovalControls")
+    end = shipped.index("async function applyImmediateApprovalDecision", start)
+    return shipped[start:end]
 
 
 # ── static contracts: the approval decision surface ──────────────────────────
@@ -132,8 +136,7 @@ def test_the_approval_decision_is_single_flight() -> None:
 def test_the_approval_busy_state_is_exposed_to_assistive_tech() -> None:
     """``disabled`` alone is not reliably announced; ``aria-disabled`` is set too."""
     app = _app_source()
-    start = app.index("function setApprovalControlsBusy")
-    body = app[start : app.index("\n  }", start)]
+    body = function_body("setApprovalControlsBusy")
     assert 'String(child.tagName || "").toUpperCase() === "BUTTON"' in body
     assert "child.disabled = busy;" in body
     assert 'child.setAttribute("aria-disabled", String(busy));' in body
@@ -196,9 +199,7 @@ def test_the_memory_panel_is_labelled_by_its_own_heading() -> None:
 
 def test_the_memory_visibility_gate_requires_an_owner_session_in_claw() -> None:
     """The panel is owner-gated: anonymous and non-Claw views never load it."""
-    app = _app_source()
-    start = app.index("function syncApprovedMemoryVisibility")
-    body = app[start : app.index("\n  }", start)]
+    body = function_body("syncApprovedMemoryVisibility")
     assert "authState.authenticated === true" in body
     assert 'shell.dataset.state === "claw"' in body
     # 작업함(Claw Inbox) 제거(#7109, 대표 결정 2026-11-07)로 inbox 뷰 제외
@@ -427,9 +428,6 @@ function boot(state) {
   vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
   vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
   vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
-  // #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), sandbox, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
   return { byId, shell, doc, requests, fixture, conversationState };
 }

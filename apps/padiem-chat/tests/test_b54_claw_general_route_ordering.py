@@ -12,9 +12,12 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+# R5 0단계(R-01): app.js 구역 경계는 모듈로 옮겨진 뒤에도 도우미로 찾는다.
+from _r5_function_source import combined_source
+
 APP_DIR = Path(__file__).resolve().parents[1]
 APP_JS = APP_DIR / "static" / "app.js"
-SOURCE = APP_JS.read_text(encoding="utf-8")
+SOURCE = combined_source()
 #7216 R5 step 4: this contract moved into chat-auth-module.js.
 AUTH_SOURCE = APP_JS.with_name("chat-auth-module.js").read_text(encoding="utf-8")
 #7216 R5 step 5a: showConversation moved into chat-conversation-module.js.

@@ -360,7 +360,6 @@ EXTRA_CHANGES = {
         ("deploy/host-com2/tests/test_deploy_from_main.py", "test fixture\\n"),
         ("packages/padiem-ai-core/tests/test_pillow_wheel_receipts.py", "test fixture\\n"),
         ("deploy/host-com2/chat/.env.example", "EXAMPLE_SETTING=changed\\n"),
-        ("docs/operations/CHAT_MODEL_FIRST_20261103.md", "documentation\\n"),
         (".gitignore", "generated\\n"),
         ("progress.md", "checkpoint\\n"),
     ],
@@ -1225,7 +1224,7 @@ class DeployScopeScenarioTest(DeployHarness):
     def test_a8eff99_to_a1fdec4_actual_test_path_manifest_skips_queue_p01_b14(self) -> None:
         output = self._dry_run()
         self.assertIn(
-            "COM2_DEPLOY_EXCLUDED_COUNTS=tests:14 docs:1 env_example:1 repo_meta:2 unmapped:0",
+            "COM2_DEPLOY_EXCLUDED_COUNTS=tests:14 docs:0 env_example:1 repo_meta:2 unmapped:0",
             output,
         )
         self.assertIn(

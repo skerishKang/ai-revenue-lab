@@ -1,7 +1,7 @@
 # COM2 Chat staging package (port 8801)
 
 This package is the execution base for plan ①-1 in
-`docs/operations/CHAT_COM2_MIGRATION_RESUME_PLAN_20261031.md`. It is a staging
+the 비공개 운영 기록(거버넌스 폴더, 같은 상대 경로) (CHAT_COM2_MIGRATION_RESUME_PLAN_20261031.md). It is a staging
 profile of the existing `deploy/host-com2/chat` package, not a second app.
 
 **Status: package only.** This PR does not install, start, enable, or expose

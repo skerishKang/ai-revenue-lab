@@ -3,6 +3,11 @@ name: B62 Security Headers
 on:
   pull_request:
     paths:
+      # The front worker is the real public entry, so the header contract is
+      # read from its responses first; the legacy Worker configuration keeps
+      # its python contract tests as the second basis.
+      - 'apps/padiem-chat-front/worker.mjs'
+      - 'apps/padiem-chat-front/test/security-headers.test.mjs'
       - 'apps/padiem-chat/app/worker_config.py'
       - 'apps/padiem-chat/tests/test_worker_config.py'
       - 'apps/padiem-chat/tests/test_security_headers_contract.py'
@@ -21,6 +26,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify front response security headers
+        run: node --test apps/padiem-chat-front/test/security-headers.test.mjs
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'

@@ -1,9 +1,13 @@
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+# R5 0단계(0-2): app.js에서 chat-*-module.js로 옮겨진 문구도 같은 감사 대상이다.
+# 새 모듈(chat-*-module.js)은 index.html에 script 줄만 추가되면 여기에 자동으로 들어온다.
+STATIC = ROOT / "apps/padiem-chat/static"
 TARGETS = [
     ROOT / "apps/padiem-chat/app/b14_client.py",
-    ROOT / "apps/padiem-chat/static/app.js",
+    STATIC / "app.js",
+    *sorted(STATIC.glob("chat-*-module.js")),
 ]
 FORBIDDEN = (
     "승인된 기본 모델 경로",

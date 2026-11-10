@@ -27,6 +27,9 @@ MCP_APPROVAL_TTL_SECONDS = int(MAX_APPROVAL_WINDOW.total_seconds())
 MCP_OAUTH_ACCESS_SECONDS = 3600
 MCP_OAUTH_REFRESH_SECONDS = 30 * 24 * 60 * 60
 MCP_OAUTH_CODE_SECONDS = 600
+#: Default lifetime of a newly issued personal token. Deployments can move it
+#: with PADIEM_MCP_PAT_TTL_DAYS; the value is never read from a request body.
+MCP_PAT_TTL_DAYS = 90
 _OWNER = re.compile(r"usr_[0-9a-f]{32}\Z")
 _TOKEN = re.compile(r"mcp_[0-9a-f]{32}\Z")
 _CLIENT = re.compile(r"mcpc_[0-9a-f]{32}\Z")
@@ -70,12 +73,23 @@ def _public_approval(row):
 
 
 class D1McpGatewayStore:
-    def __init__(self, db: Any, *, secret_factory=None):
+    def __init__(self, db: Any, *, secret_factory=None, pat_ttl_days=None):
         if not callable(getattr(db, "prepare", None)):
             raise ValueError("MCP database binding is missing")
         self._db = db
         # Injectable only at application construction, never from an HTTP body.
         self._secret_factory = secret_factory or (lambda: secrets.token_urlsafe(32))
+        ttl = MCP_PAT_TTL_DAYS if pat_ttl_days is None else int(pat_ttl_days)
+        if ttl < 1:
+            raise ValueError("MCP personal token TTL must be at least 1 day")
+        self._pat_ttl_days = ttl
+
+    def _pat_expiry(self, moment) -> str:
+        return _stamp(moment + timedelta(days=self._pat_ttl_days))
+
+    def _pat_cutoff(self, moment) -> str:
+        """A pre-expiry personal token counts as live until created_at + TTL."""
+        return _stamp(moment - timedelta(days=self._pat_ttl_days))
 
     async def _first(self, sql, *values):
         return _row_to_dict(await self._db.prepare(sql).bind(*values).first())
@@ -94,11 +108,12 @@ class D1McpGatewayStore:
         token_id = "mcp_" + uuid4().hex
         token = token_id + "." + self._secret_factory()
         moment = _stamp(now)
-        await self._run("INSERT INTO padiem_mcp_tokens (id,user_id,device_id,name,token_sha256,created_at,kind) VALUES (?,?,?,?,?,?,'pat')",
-                        token_id, owner, device_id, name.strip(), hashlib.sha256(token.encode()).hexdigest(), moment)
+        expires_at = self._pat_expiry(now or datetime.now(timezone.utc))
+        await self._run("INSERT INTO padiem_mcp_tokens (id,user_id,device_id,name,token_sha256,created_at,kind,expires_at) VALUES (?,?,?,?,?,?,'pat',?)",
+                        token_id, owner, device_id, name.strip(), hashlib.sha256(token.encode()).hexdigest(), moment, expires_at)
         # The only return containing the credential. Neither list nor audit uses it.
         return {"id": token_id, "name": name.strip(), "device_id": device_id, "created_at": moment,
-                "last_used_at": None, "revoked_at": None, "token": token}
+                "expires_at": expires_at, "last_used_at": None, "revoked_at": None, "token": token}
 
     async def list_tokens(self, *, user_id: str) -> list[dict]:
         return await self._all(f"SELECT {_TOKEN_COLUMNS} FROM padiem_mcp_tokens WHERE user_id=? ORDER BY created_at DESC,id", _owner(user_id))
@@ -187,7 +202,7 @@ class D1McpGatewayStore:
             return None
         moment = now or datetime.now(timezone.utc)
         stamp = _stamp(moment)
-        row = await self._first("SELECT id,user_id,device_id,name,token_sha256,kind,expires_at,resource,scope,"
+        row = await self._first("SELECT id,user_id,device_id,name,token_sha256,kind,expires_at,created_at,resource,scope,"
                                 "device_scope,device_scope_json "
                                 "FROM padiem_mcp_tokens WHERE id=? AND revoked_at IS NULL", token_id)
         if not row or not hmac.compare_digest(row["token_sha256"], hashlib.sha256(token.encode()).hexdigest()):
@@ -196,10 +211,19 @@ class D1McpGatewayStore:
         if row.get("kind") == "oauth" and (
                 not isinstance(expires_at, str) or expires_at <= stamp):
             return None
+        cutoff = self._pat_cutoff(moment)
+        if row.get("kind") != "oauth" and expires_at is None:
+            # Transition rule: a personal token minted before expiry existed
+            # carries no expires_at and is treated as created_at + TTL, never
+            # as living forever. A row already past that point is rejected
+            # here; nothing is deleted in bulk.
+            created = row.get("created_at")
+            if isinstance(created, str) and created <= cutoff:
+                return None
         active = await self._first(
             "UPDATE padiem_mcp_tokens SET last_used_at=? WHERE id=? AND revoked_at IS NULL "
-            "AND (expires_at IS NULL OR expires_at>?) RETURNING id",
-            stamp, token_id, stamp)
+            "AND (expires_at>? OR (expires_at IS NULL AND created_at>?)) RETURNING id",
+            stamp, token_id, stamp, cutoff)
         if active is None:
             return None
         return {"token_id": row["id"], "user_id": row["user_id"], "device_id": row["device_id"],
@@ -219,6 +243,20 @@ class D1McpGatewayStore:
             return False
         await self._run("UPDATE padiem_mcp_tokens SET revoked_at=COALESCE(revoked_at,?) WHERE id=? AND user_id=?", _stamp(now), token_id, owner)
         return True
+
+    async def revoke_all_tokens(self, *, user_id: str, now=None) -> int:
+        """Revoke every live credential of one owner: personal tokens and the
+        OAuth grants (access hash plus rotating refresh hash) alike.
+
+        The owner predicate is part of the same UPDATE, so another account's
+        rows can never be touched, and the write is idempotent: rows already
+        revoked stay revoked and are not counted.
+        """
+        owner = _owner(user_id)
+        rows = await self._all(
+            "UPDATE padiem_mcp_tokens SET revoked_at=COALESCE(revoked_at,?) "
+            "WHERE user_id=? AND revoked_at IS NULL RETURNING id", _stamp(now), owner)
+        return len(rows)
 
     # --- OAuth 2.1 clients, authorization codes and refreshable grants -----
 

@@ -1,6 +1,6 @@
 """#6695 PR-2 — presence·장치 목록은 로그인한 계정의 소유 장치만 다룬다.
 
-격리 설계 문서(docs/architecture/PC_MESH_TENANT_ISOLATION_20261102.md)의
+격리 설계(비공개 운영 기록(거버넌스 폴더, 같은 상대 경로), PC_MESH_TENANT_ISOLATION_20261102.md)의
 PR-2 계약을 고정한다:
 
 (A) presence 영수증이 기록되는 순간 소유 계정 목록을 함께 저장한다 — 디렉터리가

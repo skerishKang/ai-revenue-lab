@@ -27,6 +27,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
+# R5 0단계(R-01): 함수 정의·본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_count, definition_source
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
@@ -151,12 +154,14 @@ def test_historical_artifact_action_stays_one_bounded_download() -> None:
     # Ownership did not widen: one route string and one download owner, with the
     # active result action, historical card, and validated Calendar link-back.
     assert app.count("/api/claw/manual-intake/artifact/") == 1
-    assert app.count("function downloadClawArtifact(") == 1
+    assert definition_count("downloadClawArtifact") == 1
     assert len(re.findall(r"(?<!function )\bdownloadClawArtifact\(", app)) == 3
     # Historical cards still create just ONE direct download button. #3932 may
     # add a separate, explicitly checked PDF viewer via the existing same-origin
     # authenticated byte route; this must never become a second download owner.
-    card_block = app.split("claw-run-card-artifact", 1)[1].split("function fetchClawRunHistory", 1)[0]
+    # R5 0단계(R-01): 카드 본문은 renderClawRunCard의 실제 정의 소스에서 잘라낸다.
+    card_source = definition_source("renderClawRunCard")
+    card_block = card_source.split("claw-run-card-artifact", 1)[1].split("function fetchClawRunHistory", 1)[0]
     assert card_block.count('createElement("button")') == 1
     assert "claw-run-card-download" in card_block
     assert card_block.count("downloadClawArtifact(artifact.document_id") == 1
@@ -334,9 +339,6 @@ shim.dispatchEvent = (event) => { (sessionWindowListeners[event.type] || []).for
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), shim, { filename: "auth-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), shim, { filename: "chat-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), shim, { filename: "claw-session.js" });
-// #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), shim, { filename: "chat-conversation-module.js" });
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), shim, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, shim, { filename: "app.js" });
 
 function walk(root, out) {

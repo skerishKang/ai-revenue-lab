@@ -103,6 +103,14 @@ def test_exact_assets_b62_get_404_and_invalid_post_422_make_chain_ready(tmp_path
         "APP_JS": True,
         "SEARCH_SOURCES_JS": True,
         "RICH_RESPONSE_JS": True,
+        # R5 0단계(0-2): app.js에서 분리된 chat-*-module.js도 같은 일치 검사를 받는다.
+        "CHAT_MODULE_CHAT_SETTINGS_MODULE": True,
+        "CHAT_MODULE_CHAT_SIDEBAR_MODULE": True,
+        "CHAT_MODULE_CHAT_CALENDAR_MODULE": True,
+        "CHAT_MODULE_CHAT_HISTORY_MODULE": True,
+        "CHAT_MODULE_CHAT_AUTH_MODULE": True,
+        "CHAT_MODULE_CHAT_CONVERSATION_MODULE": True,
+        "CHAT_MODULE_CHAT_STREAMING_MODULE": True,
     }
     assert result.stream_route_present is True
     assert result.stream_get_status == 404
