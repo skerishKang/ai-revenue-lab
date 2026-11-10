@@ -104,7 +104,8 @@
           if (!current()) return;
           if (runsResponse.ok && runsData?.ok === true && Array.isArray(runsData.runs)) {
             runsData.runs.forEach((run) => {
-              if (run?.channel === "web" && run?.action === "general"
+              if (run?.channel === "web"
+                  && (run?.action === "general" || String(run?.title || "").startsWith("Claw:"))
                   && run?.status === "completed"
                   && /^chat_[a-f0-9]{32}$/.test(run?.session?.conversation_id || "")) {
                 verifiedClawIds.add(run.session.conversation_id);
@@ -417,7 +418,14 @@
         throw deps.mappedUiError(clawRunHistoryErrorMessage(data, response), data);
       }
       if (deps.clawRunHistoryLoading) deps.clawRunHistoryLoading.hidden = true;
-      if (data.runs.length === 0) {
+      const includeGeneral = typeof window !== "undefined"
+        && window.__padiemClawRunHistoryIncludeGeneral === true;
+      const visibleRuns = data.runs.filter((run) => {
+        if (!run || typeof run.run_id !== "string") return false;
+        if (includeGeneral || (focusRunId && run.run_id === focusRunId)) return true;
+        return !(run.action === "general" && !run.artifact && (run.status === "completed" || !run.status));
+      });
+      if (visibleRuns.length === 0) {
         // Empty history must not leave an empty list container visible.
         if (deps.clawRunHistoryEmpty) deps.clawRunHistoryEmpty.hidden = false;
         return;
@@ -427,8 +435,7 @@
       // Never invent a count or claim further runs exist until the next GET.
       if (deps.clawRunHistoryExpand) deps.clawRunHistoryExpand.hidden =
         deps.clawRunHistoryLimit !== 10 || data.runs.length < 10;
-      data.runs.forEach((run) => {
-        if (!run || typeof run.run_id !== "string") return;
+      visibleRuns.forEach((run) => {
         deps.clawRunHistoryList?.appendChild(deps.renderClawRunCard(run));
       });
       if (focusRunId && deps.clawRunHistoryList) {
@@ -463,7 +470,7 @@
     // Owner-authenticated surface only.
     const wasVisible = deps.clawRunHistory.hidden === false;
     const show = deps.authState.authenticated === true
-      && deps.shell.dataset.state === "claw";
+      && (deps.shell.dataset.state === "claw" || deps.shell.dataset.state === "chat");
     deps.clawRunHistory.hidden = !show;
     if (deps.clawRunHistoryDisclosure) deps.clawRunHistoryDisclosure.hidden = !show;
     if (show) {
@@ -477,6 +484,7 @@
       if (wasVisible) deps.clawRunHistoryLeftSurface = true;
       deps.clawRunHistoryVisibilityEpoch += 1;
       deps.clawRunHistoryLimit = 10;
+      if (typeof window !== "undefined") window.__padiemClawRunHistoryIncludeGeneral = false;
       if (deps.clawRunHistoryExpand) deps.clawRunHistoryExpand.hidden = true;
       clearClawRunHistoryPdfPreviews();
     }

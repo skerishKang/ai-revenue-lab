@@ -296,21 +296,36 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
 # Free chain that way on its second of five candidates. This grants no
 # same-route retry (see gateway._SAME_ROUTE_RETRYABLE_CODES), and the last
 # candidate still ends the walk.
+# #7389 (2026-11-10): an upstream 401/403/404/429 before the first answer byte
+# is a failure of THAT candidate, not of the request. One unverified registry
+# row (or one expired key) must not take down the whole grade chain, so these
+# advance to the next candidate. A request-content rejection
+# (400/409/413/422/...) stays terminal through the reason check below.
 _FALLBACK_ALLOWED_CODES = frozenset({
     "upstream_timeout",
     "malformed_upstream_response",
     "upstream_server_error",
     "upstream_rate_limited",
+    "upstream_rate_limited_busy",
+    "kilo_free_rate_limited",
+    "upstream_auth_failed",
     "upstream_empty_answer",
 })
 
+#: HTTP statuses that mean "this candidate cannot serve" rather than "this
+#: request is invalid". They travel as UpstreamClientError reasons so the
+#: 404 case can advance while 409/413/422 cannot.
+_FALLBACK_ALLOWED_STATUS_REASONS = frozenset({
+    "upstream_http_401",
+    "upstream_http_403",
+    "upstream_http_404",
+    "upstream_http_429",
+})
+
 # Fallback-prohibited error codes:
-# HTTP 400/401/403/404/409/422/any other 4xx, malformed request,
-# oversize response, missing key,
-# unsupported feature, internal errors.
+# HTTP 400/409/413/422/any other request-content 4xx, malformed request,
+# oversize response, missing key, unsupported feature, internal errors.
 _FALLBACK_PROHIBITED_CODES = frozenset({
-    "upstream_auth_failed",
-    "upstream_client_error",
     "upstream_response_too_large",
     "missing_provider_key",
     "placeholder_key_rejected",
@@ -335,5 +350,7 @@ def is_error_fallback_allowed(code: str, *, reason: str | None = None) -> bool:
     if reason in {"upstream_http_400", "unexpected_http_status"}:
         return False
     if code in _FALLBACK_ALLOWED_CODES:
+        return True
+    if reason in _FALLBACK_ALLOWED_STATUS_REASONS:
         return True
     return False

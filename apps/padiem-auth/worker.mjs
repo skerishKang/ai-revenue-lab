@@ -104,7 +104,7 @@ async function verifyAccountDeletionRpc(request, secret, current) {
   const atText = request.headers.get('x-padiem-service-at') || '';
   const serviceId = request.headers.get('x-padiem-service-id') || '';
   const presented = request.headers.get('x-padiem-service-proof') || '';
-  if (!new Set(['/internal/account-delete/prepare', '/internal/account-delete/complete', '/internal/account-delete/abort']).has(path) ||
+  if (!new Set(['/internal/account-delete/prepare', '/internal/account-delete/complete', '/internal/account-delete/abort', '/internal/account-sessions/revoke']).has(path) ||
       request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json' ||
       !/^(0|[1-9][0-9]{0,10})$/.test(atText) ||
       !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(serviceId) ||
@@ -273,6 +273,52 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       } catch {
         try { await registry.releaseAccountDeletion({ accountId, lockToken }); } catch { /* the lease expires */ }
         return json(503, { error: 'account_deletion_unavailable' });
+      }
+    }
+    // #7078: Chat password change/reset revokes this user's padiem-auth
+    // sessions (refresh included) through the same signed internal envelope.
+    // The mapping is Chat user id -> canonical account(s); an account with no
+    // shared login simply resolves to zero rows and the call is a no-op.
+    if (url.pathname === '/internal/account-sessions/revoke' && request.method === 'POST') {
+      if (!accountDeleteRpcSecret) return json(404, { error: 'not_found' });
+      const verified = await verifyAccountDeletionRpc(request, accountDeleteRpcSecret, current);
+      if (!verified) return json(401, { error: 'unauthorized' });
+      const payload = verified.payload;
+      if (!payload || typeof payload !== 'object' || Array.isArray(payload) ||
+          Object.keys(payload).length !== 2 ||
+          payload.product_id !== 'b62' ||
+          !/^usr_[A-Za-z0-9_-]{1,79}$/.test(payload.product_user_id ?? '')) {
+        return json(400, { error: 'invalid_request' });
+      }
+      const registry = stateFor('google-account-registry');
+      const claimed = await registry.claimAssertion({
+        key: `account-sessions-revoke:${verified.serviceId}`,
+        expires: verified.at + 600,
+        now: current,
+      });
+      if (claimed !== true) return json(409, { error: 'request_replayed' });
+      try {
+        const accountIds = await registry.accountIdsForChatUser({ productUserId: payload.product_user_id });
+        if (!Array.isArray(accountIds)) throw new Error('account_index_unavailable');
+        let revokedSessions = 0;
+        let accounts = 0;
+        for (const accountId of accountIds) {
+          if (!/^sub_[A-Za-z0-9_-]+$/.test(accountId ?? '')) continue;
+          const account = await registry.accountById(accountId);
+          if (!account || account.state !== 'active') continue;
+          const sessions = await registry.indexedAccountSessions({ accountId });
+          if (!Array.isArray(sessions)) throw new Error('session_index_unavailable');
+          accounts++;
+          for (const row of sessions) {
+            if (!row || !opaque.test(row.object_id ?? '') || !opaque.test(row.session_id ?? '')) throw new Error('invalid_session_index');
+            const revoked = await stateFor(row.object_id).forceRevokeForAccountDeletion({ id: row.session_id });
+            if (revoked !== true) throw new Error('session_revoke_failed');
+            revokedSessions++;
+          }
+        }
+        return json(200, { ok: true, accounts, revoked_sessions: revokedSessions });
+      } catch {
+        return json(503, { error: 'session_revoke_unavailable' });
       }
     }
     if (url.pathname === '/internal/account-block' && request.method === 'POST') {
@@ -582,7 +628,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'pendingChatAccountDeletions', 'completeChatAccountDeletion']);
+const methods = new Set(['createLogin', 'consumeLogin', 'beginPasswordAttempt', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'forceRevokeForAccountDeletion', 'indexAccountSession', 'beginAccountDeletion', 'indexedAccountSessions', 'releaseAccountDeletion', 'finalizeAccountDeletion', 'pruneAccountDeletionAudit', 'nextAccountDeletionAuditExpiry', 'resolveAccount', 'accountById', 'setAccountStatus', 'identityIsDeleted', 'clearIdentityDeletion', 'recordAccountChatUsers', 'accountIdsForChatUser', 'pendingChatAccountDeletions', 'completeChatAccountDeletion']);
 export class AuthStateObject extends AuthState {
   constructor(state, env) { super(state); this.state = state; this.env = env; }
   async createCode(input) {

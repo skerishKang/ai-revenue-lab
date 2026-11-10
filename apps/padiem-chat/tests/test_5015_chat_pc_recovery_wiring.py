@@ -56,7 +56,9 @@ def test_pc_run_handle_and_recovery_are_wired_to_the_real_consumer():
     # renderError. A stream-incomplete error is handed to that catch.
     outer = stream_js.split("async function requestAnswer(", 1)[1]
     assert outer.index("deps.recoverStoredPcResult(") < outer.index("deps.renderError(")
-    assert "!clawGeneralRequest && contextSnapshot?.pcRunId && !terminalError" in stream_js
+    # #7297: the recovery condition no longer excludes the Claw screen — Chat
+    # and Claw share the same owner-scoped PC recovery gate.
+    assert "contextSnapshot?.pcRunId && !terminalError" in stream_js
     recovery = RECOVERY_JS.read_text(encoding="utf-8")
     assert "method: \"GET\"" in recovery
     assert "resolved.add(runId)" in recovery

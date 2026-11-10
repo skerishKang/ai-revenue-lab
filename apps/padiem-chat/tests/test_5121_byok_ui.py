@@ -225,7 +225,7 @@ def test_selected_custom_provider_model_goes_to_the_custom_field_without_tier() 
         'const payload = { messages: outboundMessages, tier: deps.selectedProductTier(), skill };'
         in STREAM
     )
-    assert "const customSelection = !clawGeneralRequest && window.PadiemCustomSelection?.get?.();" in STREAM
+    assert "const customSelection = window.PadiemCustomSelection?.get?.();" in STREAM
     assert "delete payload.tier;" in STREAM
     assert "payload.custom = { provider: customSelection.provider, model: customSelection.model };" in STREAM
     assert "if (customSelection.reasoning_effort) {" in STREAM
@@ -233,10 +233,9 @@ def test_selected_custom_provider_model_goes_to_the_custom_field_without_tier() 
     assert "window.PadiemCustomSelection = Object.freeze({" in CAPABILITIES
     assert 'Object.freeze({ provider: customSelection.provider, model: customSelection.model,' in CAPABILITIES
     assert 'reasoning_effort: customSelection.reasoning_effort || null })' in CAPABILITIES
-    # Custom is Chat-only and text-only; both refusals preserve the typed prompt.
-    assert 'setNote(uiT("custom-chat-only"), "error");' in APP
+    # #7297: Custom is shared between Chat and Claw; text-only refusal preserves the typed prompt.
+    assert 'setNote(uiT("custom-chat-only"), "error");' not in APP
     assert 'setNote(uiT("custom-text-only"), "error");' in APP
-    assert LOCALE.count('"custom-chat-only":') == 2
     assert LOCALE.count('"custom-text-only":') == 2
 
 

@@ -451,6 +451,13 @@ class SharedLoginFlow(ComparisonFlow):
                 raise ValueError('invalid_session_response')
             response.headers.update(headers)
             mark('issue_session')
+            # #7078: a previous password change/reset may have failed to revoke
+            # the shared sessions; this successful login is a safe retry point.
+            try:
+                from .shared_session_revoke import flush_pending
+                await flush_pending(request, user)
+            except Exception:
+                pass
             # This module's logger has no handler in the host, so INFO never
             # reaches the journal and a successful login left no stage record.
             # The line is the one ops reads, in the failed line's own shape.
@@ -498,6 +505,12 @@ class SharedLoginFlow(ComparisonFlow):
             user = await _await(self.resolve_account(request, access))
             if not isinstance(user, str) or not user:
                 raise ValueError('unknown_account')
+            # #7078: keep retrying a pending credential-change revocation.
+            try:
+                from .shared_session_revoke import flush_pending
+                await flush_pending(request, user)
+            except Exception:
+                pass
             stage = 'refresh_issue'
             return issue_shared_cookies(JSONResponse({'ok': True}, headers=headers), access, refresh)
         except Exception as exc:

@@ -498,6 +498,12 @@
       });
       if (!response.ok) {
         const data = await response.json().catch(() => null);
+        if (response.status === 409 && data?.error?.code === "email_login_moved" &&
+            typeof data.login_url === "string" && data.login_url) {
+          show(box, "로그인 방식이 바뀌었어요. 공통 로그인으로 이동합니다", "info");
+          window.location.assign(data.login_url);
+          return;
+        }
         const code = typeof data?.error?.code === "string" ? data.error.code : "http_" + response.status;
         throw new Error(code === "invalid_credentials" ? "invalid_credentials" : code);
       }

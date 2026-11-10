@@ -542,3 +542,23 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspa
 ) {
   display: none !important;
 }
+.app-shell[data-state="chat"] .empty-state[hidden] ~ :is(
+  #clawRunHistoryDisclosure,
+  #clawApprovedDisclosure,
+  #clawMemoryReview
+):not([hidden]),
+.app-shell[data-state="chat"] .empty-state[hidden] ~ details :is(
+  #clawRunHistory,
+  #clawApprovedMemory
+):not([hidden]),
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state[hidden] ~ :is(
+  #clawRunHistoryDisclosure,
+  #clawApprovedDisclosure,
+  #clawMemoryReview
+):not([hidden]),
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state[hidden] ~ details :is(
+  #clawRunHistory,
+  #clawApprovedMemory
+):not([hidden]) {
+  display: block !important;
+}
