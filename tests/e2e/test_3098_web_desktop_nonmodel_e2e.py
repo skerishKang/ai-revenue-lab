@@ -826,12 +826,20 @@ def test_chat_failure_notice_surfaces_the_bounded_orchestration_error_code(tmp_p
     runs in a network-free DOM shim. The notice shows the server-owned code the
     orchestration response carries; Claw keeps its existing presentation, and an
     unexpected string is never echoed into the visible failure.
+
+    index.html loads ``chat-conversation-module.js`` ahead of ``app.js``, and the
+    app.js ``renderStreamError`` forwarder resolves ``conversationModule()``
+    through it (#7216 R5 step 5a), so the sandbox loads the same module first
+    and mirrors the app.js factory with the deps the failure-render path uses.
     """
-    app_path = Path(__file__).resolve().parents[2] / "apps" / "padiem-chat" / "static" / "app.js"
+    static_dir = Path(__file__).resolve().parents[2] / "apps" / "padiem-chat" / "static"
+    app_path = static_dir / "app.js"
+    conversation_path = static_dir / "chat-conversation-module.js"
     script = r"""
 const fs = require("fs");
 const vm = require("vm");
 const app = fs.readFileSync(process.argv[1], "utf8");
+const conversationModuleSource = fs.readFileSync(process.argv[2], "utf8");
 
 function assert(condition, label) { if (!condition) throw Error(label); }
 function element(tag) {
@@ -889,9 +897,23 @@ const context = {
   PadiemChatLifecycle: { set(target, lifecycle) { target.dataset.lifecycle = lifecycle; } },
 };
 const api = vm.runInNewContext(
-  "(function(){" + app.slice(start, end) + "\nreturn { renderError, renderStreamError };\n})()",
+  "(function(){" + app.slice(start, end) +
+  "\n// Mirror of the app.js factory narrowed to the deps the failure-render" +
+  "\n// path touches; the module itself is the real chat-conversation-module.js." +
+  "\nconst conversationDeps = {" +
+  " get MESSAGE_LIFECYCLE() { return MESSAGE_LIFECYCLE; }," +
+  " get buildRetryBox() { return buildRetryBox; }," +
+  " get failureCodeNote() { return failureCodeNote; }," +
+  " get failureStatusLabel() { return failureStatusLabel; }," +
+  " get revealErrorState() { return revealErrorState; } };" +
+  "\nlet conversationModuleInstance = null;" +
+  "\nfunction conversationModule() { if (!conversationModuleInstance) conversationModuleInstance = window.PadiemChatConversationModule.create(conversationDeps); return conversationModuleInstance; }" +
+  "\nreturn { renderError, renderStreamError };\n})()",
   context,
 );
+// index.html loads the conversation module ahead of app.js; the sandbox does
+// the same so the renderStreamError forwarder resolves conversationModule().
+vm.runInNewContext(conversationModuleSource, context);
 const contextArg = { conversationId: null, project: null };
 function codeLine(entry) {
   const box = entry.content.children[0];
@@ -933,7 +955,7 @@ console.log(JSON.stringify({
 }));
 """
     completed = subprocess.run(
-        ["node", "-e", script, str(app_path)],
+        ["node", "-e", script, str(app_path), str(conversation_path)],
         capture_output=True,
         text=True,
         encoding="utf-8",
