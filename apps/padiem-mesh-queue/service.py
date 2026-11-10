@@ -52,9 +52,12 @@ Configuration is files and environment, mirroring the executor's own unit:
                                     and MESH_QUEUE_TXN_RECOVERED (a transaction found open
                                     and closed before the call).
 
-The service binds 127.0.0.1:8797. The executor reaches it there with
-`ORACLE_MESH_QUEUE_ORIGIN`; the Chat Worker reaches it through the tunnel. Neither
-address is published anywhere else, and the queue never listens on a public interface.
+The service binds 127.0.0.1:8797 and is loopback-only. The executor reaches it
+there with `ORACLE_MESH_QUEUE_ORIGIN`, and the Chat host reaches it there with
+`PC_QUEUE_ORIGIN=http://127.0.0.1:8797`. Since 2026-11-10 the tunnel carries no
+route for this host at all, so the internal path has no public address: it is not
+merely unlisted, it is unroutable from outside the host, and the queue never
+listens on a public interface.
 """
 from __future__ import annotations
 
