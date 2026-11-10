@@ -86,11 +86,18 @@ def test_rendered_config_contains_only_scheduler_shape() -> None:
     assert "must-not-render" not in rendered
 
 
-def test_repository_scheduler_source_stays_inert() -> None:
+def test_repository_wrangler_declares_exactly_the_retention_cron() -> None:
+    """#7355: the real binding file must carry exactly the allowed cron.
+
+    #6773 (2059acf68) added the daily account-deletion audit-retention cron;
+    #7349 left this read allowlisted because the previous expectation (no
+    triggers at all) was stale. This repairs that expectation as a closed
+    exact set: a missing, renamed or additional cron entry still fails.
+    """
     config = tomllib.loads(
         (ROOT / "apps/padiem-chat/wrangler.toml").read_text(encoding="utf-8")
     )
-    assert "triggers" not in config
+    assert list(config.get("triggers", {}).get("crons", [])) == ["17 3 * * *"]
     assert config["vars"].get("PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED", "false") == "false"
     inert = module.parse_snapshot(
         {"variables": {module.SCHEDULER_VAR: "false"}, "triggers": []}
