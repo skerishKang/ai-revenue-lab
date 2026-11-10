@@ -24,9 +24,26 @@ def question(rules, *, path="docs/a.txt", destination=None, context=None, record
         MOVE if destination else DELETE, arguments, records=records, device_id=device, context=context)
 
 
-@pytest.mark.parametrize("policy", [None, {"version": 1, "rules": []}])
-def test_unconfigured_policy_keeps_existing_first_stage_behavior(policy):
-    assert PcActionDelegation(policy).question(DELETE, {"path": "docs/a.txt"}, records=(), device_id=DEVICE) is None
+@pytest.mark.parametrize("policy", [None, {"version": 1, "rules": []}], ids=["missing", "empty"])
+def test_without_a_stored_rule_a_deletion_defaults_to_asking(policy):
+    asked = PcActionDelegation(policy).question(
+        DELETE, {"path": "docs/a.txt"}, records=(), device_id=DEVICE)
+    assert asked is not None and "위임 범위 밖" in asked and "?" in asked
+    # Reads never reach the delegation step, configured or not.
+    assert PcActionDelegation(policy).question(
+        "claw.pc.read_file", {"path": "docs/a.txt"}, records=(), device_id=DEVICE) is None
+
+
+@pytest.mark.parametrize("policy", [None, {"version": 1, "rules": []}], ids=["missing", "empty"])
+def test_the_no_rule_question_is_confirmable_by_the_next_affirmative_turn(policy):
+    asked = PcActionDelegation(policy).question(
+        DELETE, {"path": "docs/a.txt"}, records=(), device_id=DEVICE)
+    records = [{"role": "assistant", "content": asked}, {"role": "user", "content": "네"}]
+    assert confirmed_delegation_action(DELETE, {"path": "docs/a.txt"}, records)
+
+
+def test_a_stored_rule_keeps_its_existing_allow_behavior():
+    assert question([rule()]) is None
 
 
 def test_folder_boundary_is_not_a_string_prefix_or_a_traversal():
