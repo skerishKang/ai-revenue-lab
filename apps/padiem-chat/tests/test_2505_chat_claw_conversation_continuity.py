@@ -375,10 +375,10 @@ async function fetchImpl(url, opts) {
   opts = opts || {};
   requests.push({ url: String(url), method: (opts.method || "GET").toUpperCase() });
   const u = String(url);
-  if (u.startsWith("/api/claw/general/capabilities")) {
-    return jsonResponse(200, { live_events_available: false });
+  if (u.startsWith("/api/orchestration/status")) {
+    return jsonResponse(200, { orchestration_ready: false, authenticated: true });
   }
-  if (u.startsWith("/api/claw/general")) {
+  if (u.startsWith("/api/chat/stream") || u.startsWith("/api/orchestration") || u.startsWith("/api/claw/general")) {
     const sent = typeof opts.body === "string" ? JSON.parse(opts.body) : {};
     clawPayloads.push(sent);
     return sseResponse("claw answer", sent.conversation_id);
@@ -480,7 +480,7 @@ vm.runInContext(APP, sandbox, { filename: "app.js" });
   await new Promise((resolve) => setTimeout(resolve, 300));
   checks.CLAW_SUBMIT_CARRIED_ID = clawPayloads.length === 1
     && clawPayloads[0].conversation_id === CONV
-    && !clawPayloads[0].pc_run_id;
+    && clawPayloads[0].product === "claw";
   checks.CLAW_TURN_RENDERED = byId.messageList.children.length > 1;
 
   // Returning to Chat keeps everything: same transcript, same id.

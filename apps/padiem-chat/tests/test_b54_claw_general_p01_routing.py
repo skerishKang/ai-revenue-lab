@@ -255,13 +255,13 @@ def test_claw_general_route_is_registered() -> None:
 def test_frontend_claw_branch_uses_claw_route_without_chat_stream_fallback() -> None:
     claw_fn = _js_function(TRANSPORT_SOURCE, "requestClawGeneral")
     assert '"/api/claw/general"' in claw_fn
-    # No B62 stream target of any kind is reachable from the claw lane.
     assert '"/api/chat/stream"' not in claw_fn
     assert 'fetch("/api/chat/stream"' not in claw_fn
-    # chat-streaming-module.js selects the claw lane from product state and returns it directly;
-    # there is no fallthrough to the B62 stream for a Claw general request.
+    # #7297: chat-streaming-module.js sends Claw general turns through the shared
+    # Chat direct streaming path with payload.product = "claw".
     stream_source = (APP_DIR / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
-    assert "deps.chatTransport.requestClawGeneral(payload, signal)" in stream_source
+    assert "deps.chatTransport.requestStreaming(payload, signal)" in stream_source
+    assert 'payload.product = "claw"' in stream_source
     assert "route && route.clawGeneral" in stream_source
 
 

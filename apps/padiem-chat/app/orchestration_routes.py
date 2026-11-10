@@ -202,6 +202,7 @@ async def _save_terminal_history(
     conversation_id: str | None,
     user_text: str,
     answer: str | None,
+    action: str = "general",
 ) -> str | None:
     if not answer:
         return conversation_id
@@ -220,7 +221,7 @@ async def _save_terminal_history(
     # same claw_run_history read-model whichever path answered it.
     from .claw_general_run_history import project_completed_chat_turn
     await project_completed_chat_turn(
-        request, user_text=user_text, answer=answer, conversation_id=saved,
+        request, user_text=user_text, answer=answer, conversation_id=saved, action=action,
     )
     return saved
 
@@ -713,6 +714,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
             saved = await _save_terminal_history(
                 request, user_id=uid, conversation_id=result.conversation_id,
                 user_text=result.user_text, answer=result.answer,
+                action="web_search" if grounded_evidence else "general",
             )
             fields = {
                 "conversation_id": saved or result.conversation_id,
@@ -765,6 +767,7 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
         conversation_id=result.conversation_id,
         user_text=result.user_text,
         answer=result.answer,
+        action="web_search" if grounded_evidence else "general",
     )
     timing.mark("save")
     payload: dict[str, Any] = {

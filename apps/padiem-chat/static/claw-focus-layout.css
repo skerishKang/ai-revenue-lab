@@ -782,7 +782,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
  * on the first-use landing. Their underlying histories remain available
  * when the user enters the corresponding workflow, not deleted.
  */
-.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation :is(#clawApprovedMemory,#clawRunHistory) {
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation > .empty-state:not([hidden]) ~ :is(#clawApprovedMemory,#clawRunHistory) {
   display: none !important;
 }
 /* Same model-free first-use composer as Chat. Existing advanced Claw model
@@ -976,7 +976,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
   font-size: 9px;
   line-height: 1.1;
 }
-.app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation) :is(#clawApprovedMemory,#clawRunHistory,#clawMemoryReview,#clawRunHistoryDisclosure) {
+.app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation > .empty-state:not([hidden])) :is(#clawApprovedMemory,#clawRunHistory,#clawMemoryReview,#clawRunHistoryDisclosure) {
   display: none !important;
 }
 
