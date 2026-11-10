@@ -10,6 +10,7 @@ import importlib.util
 from pathlib import Path
 import re
 import sys
+import types
 
 import pytest
 
@@ -17,8 +18,15 @@ REPO = Path(__file__).resolve().parents[3]
 
 # #6788에서 timeout이 정책 함수로 바뀜 — the policy module is loaded from the
 # owning app so these assertions exercise the deployed source, not a copy.
+# #7336 gave the policy module a sibling-relative import, so it can no longer
+# load as a bare file module: it is loaded as a child of a synthetic parent
+# package that maps to the owning app's pilot directory. The loaded source is
+# still the exact deployed file; only the loader's package context changed.
+_pilot_pkg = types.ModuleType("_b14_policy_loader_pkg")
+_pilot_pkg.__path__ = [str(REPO / "apps/korean-ai-platform/app/pilot")]
+sys.modules["_b14_policy_loader_pkg"] = _pilot_pkg
 _policy_spec = importlib.util.spec_from_file_location(
-    "_b14_timeout_policy_actual",
+    "_b14_policy_loader_pkg.b14_timeout_policy_actual",
     REPO / "apps/korean-ai-platform/app/pilot/b14_timeout_policy.py",
 )
 assert _policy_spec and _policy_spec.loader
