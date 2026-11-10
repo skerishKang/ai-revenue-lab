@@ -8,46 +8,60 @@
   "use strict";
   window.PadiemChatAutomationModule = {
     create(deps) {
+      // #3237: canonical automation rule catalogue. #3257 adds the first Create
+    // surface: the browser submits only the seven product fields, while rule id,
+    // owner provenance, workspace/subject and the execution target (repository +
+    // exact revision) are minted or derived server-side. Editing, deleting,
+    // enabling/disabling and run-now remain out of scope.
+    const automationNavButton = document.getElementById("automationNavButton");
+    const clawAutomationLoading = document.getElementById("clawAutomationLoading");
+    const clawAutomationError = document.getElementById("clawAutomationError");
+    const clawAutomationForbidden = document.getElementById("clawAutomationForbidden");
+    const clawAutomationEmpty = document.getElementById("clawAutomationEmpty");
+    const clawAutomationRetry = document.getElementById("clawAutomationRetry");
+    const clawAutomationToggleStatus = document.getElementById("clawAutomationToggleStatus");
+    const clawAutomationInFlightRules = new Set();
+    let automationViewMounted = false;
     // --- #3237 read-only automation rule catalogue -----------------------------
   function resetClawAutomationState() {
-    if (deps.clawAutomationLoading) deps.clawAutomationLoading.hidden = true;
-    if (deps.clawAutomationError) deps.clawAutomationError.hidden = true;
-    if (deps.clawAutomationForbidden) deps.clawAutomationForbidden.hidden = true;
-    if (deps.clawAutomationEmpty) deps.clawAutomationEmpty.hidden = true;
+    if (clawAutomationLoading) clawAutomationLoading.hidden = true;
+    if (clawAutomationError) clawAutomationError.hidden = true;
+    if (clawAutomationForbidden) clawAutomationForbidden.hidden = true;
+    if (clawAutomationEmpty) clawAutomationEmpty.hidden = true;
     // A retry belongs to a failed load. It is never a permanent control.
-    deps.setClawAutomationRetryVisible(false);
+    setClawAutomationRetryVisible(false);
   }
 
   function setClawAutomationLoading() {
-    deps.resetClawAutomationState();
+    resetClawAutomationState();
     if (deps.clawAutomationList) deps.clawAutomationList.replaceChildren();
-    if (deps.clawAutomationLoading) {
-      deps.clawAutomationLoading.hidden = false;
-      deps.clawAutomationLoading.textContent = deps.uiT("claw-automation-loading");
+    if (clawAutomationLoading) {
+      clawAutomationLoading.hidden = false;
+      clawAutomationLoading.textContent = deps.uiT("claw-automation-loading");
     }
   }
 
   function setClawAutomationError() {
-    deps.resetClawAutomationState();
+    resetClawAutomationState();
     if (deps.clawAutomationList) deps.clawAutomationList.replaceChildren();
-    if (deps.clawAutomationError) {
-      deps.clawAutomationError.hidden = false;
-      deps.clawAutomationError.textContent = deps.uiT("claw-automation-error");
+    if (clawAutomationError) {
+      clawAutomationError.hidden = false;
+      clawAutomationError.textContent = deps.uiT("claw-automation-error");
     }
     // The load failed, so the one action that can change the outcome is
     // offered here and nowhere else.
-    deps.setClawAutomationRetryVisible(true);
+    setClawAutomationRetryVisible(true);
   }
 
   function setClawAutomationForbidden() {
     // A permission refusal is not a transient failure. It says what it is
     // instead of claiming the rules could not be loaded, and it offers no
     // retry, because a retry would not change the answer.
-    deps.resetClawAutomationState();
+    resetClawAutomationState();
     if (deps.clawAutomationList) deps.clawAutomationList.replaceChildren();
-    if (deps.clawAutomationForbidden) {
-      deps.clawAutomationForbidden.hidden = false;
-      deps.clawAutomationForbidden.textContent = deps.uiT("claw-automation-forbidden");
+    if (clawAutomationForbidden) {
+      clawAutomationForbidden.hidden = false;
+      clawAutomationForbidden.textContent = deps.uiT("claw-automation-forbidden");
     }
   }
 
@@ -55,9 +69,9 @@
     if (!deps.clawAutomationList) return;
     deps.clawAutomationList.replaceChildren();
     if (!rules.length) {
-      if (deps.clawAutomationEmpty) {
-        deps.clawAutomationEmpty.hidden = false;
-        deps.clawAutomationEmpty.textContent = deps.uiT("claw-automation-empty");
+      if (clawAutomationEmpty) {
+        clawAutomationEmpty.hidden = false;
+        clawAutomationEmpty.textContent = deps.uiT("claw-automation-empty");
       }
       return;
     }
@@ -100,7 +114,7 @@
         toggle.dataset.localeKey = rule.enabled === true ? "claw-automation-rule-turn-off" : "claw-automation-rule-turn-on";
         toggle.textContent = deps.uiT(toggle.dataset.localeKey);
         toggle.addEventListener("click", () => {
-          void deps.toggleClawAutomationRule(rule.rule_id, rule.enabled !== true, toggle);
+          void toggleClawAutomationRule(rule.rule_id, rule.enabled !== true, toggle);
         });
         row.appendChild(toggle);
         // #3270: Edit is offered on the same eligible rows only, and edits
@@ -124,7 +138,7 @@
     if (!deps.clawAutomation || !deps.authState.authenticated) return;
     const signedOutNote = document.getElementById("automationViewSignedOut");
     if (signedOutNote) signedOutNote.hidden = true;
-    deps.setClawAutomationLoading();
+    setClawAutomationLoading();
     try {
       const response = await fetch("/api/claw/automation/rules", {
         headers: { "Accept": "application/json" },
@@ -133,16 +147,16 @@
       const data = await response.json().catch(() => null);
       const code = data && typeof data.code === "string" ? data.code : "";
       if (response.status === 403 || code === "owner_role_required") {
-        deps.setClawAutomationForbidden();
+        setClawAutomationForbidden();
         return;
       }
       if (!response.ok || !data || data.ok !== true || !Array.isArray(data.rules)) {
         throw new Error("automation rules unavailable");
       }
-      deps.resetClawAutomationState();
-      deps.renderClawAutomationRules(data.rules);
+      resetClawAutomationState();
+      renderClawAutomationRules(data.rules);
     } catch (_) {
-      deps.setClawAutomationError();
+      setClawAutomationError();
     }
   }
 
@@ -151,14 +165,14 @@
   // going live. No optimistic flip — the row is never changed locally; the
   // canonical list is reloaded after the server answers 200.
   function setClawAutomationToggleStatus(messageKey) {
-    if (!deps.clawAutomationToggleStatus) return;
+    if (!clawAutomationToggleStatus) return;
     if (!messageKey) {
-      deps.clawAutomationToggleStatus.hidden = true;
-      deps.clawAutomationToggleStatus.textContent = "";
+      clawAutomationToggleStatus.hidden = true;
+      clawAutomationToggleStatus.textContent = "";
       return;
     }
-    deps.clawAutomationToggleStatus.hidden = false;
-    deps.clawAutomationToggleStatus.textContent = deps.uiT(messageKey);
+    clawAutomationToggleStatus.hidden = false;
+    clawAutomationToggleStatus.textContent = deps.uiT(messageKey);
   }
 
   function findRuleToggleButton(ruleId) {
@@ -172,7 +186,7 @@
   }
 
   function focusRuleToggleAfterReload(ruleId) {
-    const button = deps.findRuleToggleButton(ruleId);
+    const button = findRuleToggleButton(ruleId);
     if (button) {
       button.focus();
       return;
@@ -181,8 +195,8 @@
   }
 
   async function toggleClawAutomationRule(ruleId, nextEnabled, button) {
-    if (!ruleId || deps.clawAutomationInFlightRules.has(ruleId)) return;
-    deps.clawAutomationInFlightRules.add(ruleId);
+    if (!ruleId || clawAutomationInFlightRules.has(ruleId)) return;
+    clawAutomationInFlightRules.add(ruleId);
     if (button) button.disabled = true;
     try {
       const response = await fetch(
@@ -196,35 +210,35 @@
       );
       const data = await response.json().catch(() => null);
       if (response.status === 200 && data && data.ok === true) {
-        deps.setClawAutomationToggleStatus("claw-automation-toggle-saved");
-        await deps.loadClawAutomationRules();
-        deps.focusRuleToggleAfterReload(ruleId);
+        setClawAutomationToggleStatus("claw-automation-toggle-saved");
+        await loadClawAutomationRules();
+        focusRuleToggleAfterReload(ruleId);
         return;
       }
       const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
       if (response.status === 403 || code === "owner_role_required") {
-        deps.setClawAutomationToggleStatus("claw-automation-toggle-forbidden");
+        setClawAutomationToggleStatus("claw-automation-toggle-forbidden");
       } else if (response.status === 404 || code === "automation_rule_not_found") {
-        deps.setClawAutomationToggleStatus("claw-automation-toggle-not-found");
+        setClawAutomationToggleStatus("claw-automation-toggle-not-found");
       } else if (code === "automation_rule_not_mutable") {
-        deps.setClawAutomationToggleStatus("claw-automation-toggle-not-mutable");
+        setClawAutomationToggleStatus("claw-automation-toggle-not-mutable");
       } else if (code === "automation_rule_not_execution_ready") {
-        deps.setClawAutomationToggleStatus("claw-automation-toggle-not-ready");
+        setClawAutomationToggleStatus("claw-automation-toggle-not-ready");
       } else if (response.status === 400 || response.status === 413) {
-        deps.setClawAutomationToggleStatus("claw-automation-toggle-invalid");
+        setClawAutomationToggleStatus("claw-automation-toggle-invalid");
       } else {
-        deps.setClawAutomationToggleStatus("claw-automation-toggle-failed");
+        setClawAutomationToggleStatus("claw-automation-toggle-failed");
       }
     } catch (_) {
-      deps.setClawAutomationToggleStatus("claw-automation-toggle-failed");
+      setClawAutomationToggleStatus("claw-automation-toggle-failed");
     } finally {
-      deps.clawAutomationInFlightRules.delete(ruleId);
+      clawAutomationInFlightRules.delete(ruleId);
       if (button) button.disabled = false;
     }
   }
 
   function mountAutomationView() {
-    if (deps.automationViewMounted) return;
+    if (automationViewMounted) return;
     let body = null;
     let panel = null;
     try {
@@ -240,12 +254,12 @@
     // page already shows.
     const pageTitle = document.getElementById("automationViewTitle");
     if (pageTitle) panel.setAttribute("aria-labelledby", "automationViewTitle");
-    deps.automationViewMounted = true;
+    automationViewMounted = true;
   }
 
   function openClawAutomation() {
     if (!deps.clawWorkspace || !deps.clawAutomation) return;
-    deps.mountAutomationView();
+    mountAutomationView();
     const view = document.getElementById("automationView");
     if (view) view.hidden = false;
     deps.shell.dataset.state = "automation";
@@ -266,13 +280,23 @@
     }
     if (signedOut) signedOut.hidden = true;
     deps.clawAutomation.hidden = false;
-    deps.loadClawAutomationRules();
+    loadClawAutomationRules();
   }
 
   // The retry is a failure-only control. It lives here, next to the loader
   // it retries, and it is never part of the permanent header.
   function setClawAutomationRetryVisible(visible) {
-    if (deps.clawAutomationRetry) deps.clawAutomationRetry.hidden = !visible;
+    if (clawAutomationRetry) clawAutomationRetry.hidden = !visible;
+  }
+
+
+  // R5 B1 (rule (b)): the view listeners register from app.js at the
+  // original block position; see automation.wireViewListeners().
+  function wireViewListeners() {
+    if (automationNavButton) automationNavButton.addEventListener("click", openClawAutomation);
+    // #4462: automation-related run/completion/failure alerts stay reachable
+    // from the automation view after the standalone sidebar Alerts entry is gone.
+    if (clawAutomationRetry) clawAutomationRetry.addEventListener("click", () => void loadClawAutomationRules());
   }
 
       return {
@@ -289,6 +313,7 @@
         mountAutomationView,
         openClawAutomation,
         setClawAutomationRetryVisible,
+        wireViewListeners,
       };
     },
   };

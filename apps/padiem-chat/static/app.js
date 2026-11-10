@@ -1,5 +1,20 @@
 (() => {
   "use strict";
+
+  // R5 B1: the shared app context — the module registry (rule (d)) and the
+  // namespace the pilot zones read shared state through (rule (c)). app.js
+  // keeps owning authState/shell/clawWorkspace and the shared functions
+  // until R5 B6; they are mounted here as live accessors.
+  const app = window.PadiemChatAppContext.create({
+    get authState() { return authState; },
+    get shell() { return shell; },
+    get clawWorkspace() { return clawWorkspace; },
+    get uiT() { return uiT; },
+    get setNavActive() { return setNavActive; },
+    get closeSidebar() { return closeSidebar; },
+    get clearClawWait() { return clearClawWait; },
+    get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
+  });
   // #7216 R5 step 1: the settings/sidebar modules own those sections. app.js keeps
   // one-line forwarders with the same names, so call sites and function-declaration
   // hoisting stay intact. deps getters/setters read the closure variables live, so a
@@ -413,108 +428,6 @@
     return streamingModuleInstance;
   }
 
-  // R5 A1: the automation modules own the rule list/read-only catalogue/toggle
-  // and the edit+create forms. The declaration block and the top-level listener
-  // registrations stay in app.js (R5 B1 moves them); the moved bodies read and
-  // write them only through the deps getters/setters below.
-  let automationModuleInstance = null;
-  function automationModule() {
-    if (!automationModuleInstance) {
-      automationModuleInstance = window.PadiemChatAutomationModule.create({
-        get authState() { return authState; },
-        get automationViewMounted() { return automationViewMounted; },
-        set automationViewMounted(value) { automationViewMounted = value; },
-        get clawAutomation() { return clawAutomation; },
-        get clawAutomationEmpty() { return clawAutomationEmpty; },
-        get clawAutomationError() { return clawAutomationError; },
-        get clawAutomationForbidden() { return clawAutomationForbidden; },
-        get clawAutomationInFlightRules() { return clawAutomationInFlightRules; },
-        get clawAutomationList() { return clawAutomationList; },
-        get clawAutomationLoading() { return clawAutomationLoading; },
-        get clawAutomationRetry() { return clawAutomationRetry; },
-        get clawAutomationToggleStatus() { return clawAutomationToggleStatus; },
-        get clawWorkspace() { return clawWorkspace; },
-        get clearClawWait() { return clearClawWait; },
-        get closeSidebar() { return closeSidebar; },
-        get findRuleToggleButton() { return findRuleToggleButton; },
-        get focusRuleToggleAfterReload() { return focusRuleToggleAfterReload; },
-        get loadClawAutomationRules() { return loadClawAutomationRules; },
-        get mountAutomationView() { return mountAutomationView; },
-        get openClawAutomationEdit() { return openClawAutomationEdit; },
-        get renderClawAutomationRules() { return renderClawAutomationRules; },
-        get resetClawAutomationState() { return resetClawAutomationState; },
-        get setClawAutomationError() { return setClawAutomationError; },
-        get setClawAutomationForbidden() { return setClawAutomationForbidden; },
-        get setClawAutomationLoading() { return setClawAutomationLoading; },
-        get setClawAutomationRetryVisible() { return setClawAutomationRetryVisible; },
-        get setClawAutomationToggleStatus() { return setClawAutomationToggleStatus; },
-        get setNavActive() { return setNavActive; },
-        get shell() { return shell; },
-        get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
-        get toggleClawAutomationRule() { return toggleClawAutomationRule; },
-        get uiT() { return uiT; },
-      });
-    }
-    return automationModuleInstance;
-  }
-  let automationFormModuleInstance = null;
-  function automationFormModule() {
-    if (!automationFormModuleInstance) {
-      automationFormModuleInstance = window.PadiemChatAutomationFormModule.create({
-        get clawAutomation() { return clawAutomation; },
-        get clawAutomationCreate() { return clawAutomationCreate; },
-        get clawAutomationCreateCron() { return clawAutomationCreateCron; },
-        get clawAutomationCreateCronField() { return clawAutomationCreateCronField; },
-        get clawAutomationCreateDaypart() { return clawAutomationCreateDaypart; },
-        get clawAutomationCreateDaypartField() { return clawAutomationCreateDaypartField; },
-        get clawAutomationCreateExpression() { return clawAutomationCreateExpression; },
-        get clawAutomationCreateForm() { return clawAutomationCreateForm; },
-        get clawAutomationCreateInFlight() { return clawAutomationCreateInFlight; },
-        set clawAutomationCreateInFlight(value) { clawAutomationCreateInFlight = value; },
-        get clawAutomationCreateInterval() { return clawAutomationCreateInterval; },
-        get clawAutomationCreateIntervalField() { return clawAutomationCreateIntervalField; },
-        get clawAutomationCreateKind() { return clawAutomationCreateKind; },
-        get clawAutomationCreateName() { return clawAutomationCreateName; },
-        get clawAutomationCreateOpen() { return clawAutomationCreateOpen; },
-        get clawAutomationCreateOutput() { return clawAutomationCreateOutput; },
-        get clawAutomationCreateStatus() { return clawAutomationCreateStatus; },
-        get clawAutomationCreateSubmit() { return clawAutomationCreateSubmit; },
-        get clawAutomationCreateTarget() { return clawAutomationCreateTarget; },
-        get clawAutomationCreateTask() { return clawAutomationCreateTask; },
-        get clawAutomationCreateTimezone() { return clawAutomationCreateTimezone; },
-        get clawAutomationCreateToggle() { return clawAutomationCreateToggle; },
-        get clawAutomationEditCron() { return clawAutomationEditCron; },
-        get clawAutomationEditCronField() { return clawAutomationEditCronField; },
-        get clawAutomationEditDaypart() { return clawAutomationEditDaypart; },
-        get clawAutomationEditDaypartField() { return clawAutomationEditDaypartField; },
-        get clawAutomationEditExpression() { return clawAutomationEditExpression; },
-        get clawAutomationEditForm() { return clawAutomationEditForm; },
-        get clawAutomationEditInFlight() { return clawAutomationEditInFlight; },
-        set clawAutomationEditInFlight(value) { clawAutomationEditInFlight = value; },
-        get clawAutomationEditInterval() { return clawAutomationEditInterval; },
-        get clawAutomationEditIntervalField() { return clawAutomationEditIntervalField; },
-        get clawAutomationEditKind() { return clawAutomationEditKind; },
-        get clawAutomationEditName() { return clawAutomationEditName; },
-        get clawAutomationEditStatus() { return clawAutomationEditStatus; },
-        get clawAutomationEditSubmit() { return clawAutomationEditSubmit; },
-        get clawAutomationEditTimezone() { return clawAutomationEditTimezone; },
-        get clawAutomationEditingRuleId() { return clawAutomationEditingRuleId; },
-        set clawAutomationEditingRuleId(value) { clawAutomationEditingRuleId = value; },
-        get clawAutomationList() { return clawAutomationList; },
-        get closeClawAutomationCreate() { return closeClawAutomationCreate; },
-        get closeClawAutomationEdit() { return closeClawAutomationEdit; },
-        get findRuleEditButton() { return findRuleEditButton; },
-        get loadClawAutomationRules() { return loadClawAutomationRules; },
-        get resetClawAutomationCreateForm() { return resetClawAutomationCreateForm; },
-        get setClawAutomationCreateStatus() { return setClawAutomationCreateStatus; },
-        get setClawAutomationEditStatus() { return setClawAutomationEditStatus; },
-        get syncClawAutomationCreateFields() { return syncClawAutomationCreateFields; },
-        get syncClawAutomationEditFields() { return syncClawAutomationEditFields; },
-        get uiT() { return uiT; },
-      });
-    }
-    return automationFormModuleInstance;
-  }
   const shell = document.querySelector(".app-shell");
   const emptyState = document.getElementById("emptyState");
   const messageList = document.getElementById("messageList");
@@ -3178,57 +3091,12 @@
   // Claw first-class workspace & MVP usability wiring (#2299)
   const clawNavButton = document.getElementById("clawNavButton");
   const clawWorkspace = document.getElementById("clawWorkspace");
-    // #3237: canonical automation rule catalogue. #3257 adds the first Create
-  // surface: the browser submits only the seven product fields, while rule id,
-  // owner provenance, workspace/subject and the execution target (repository +
-  // exact revision) are minted or derived server-side. Editing, deleting,
-  // enabling/disabling and run-now remain out of scope.
-  const automationNavButton = document.getElementById("automationNavButton");
-  const clawAutomation = document.getElementById("clawAutomation");
-  const clawAutomationLoading = document.getElementById("clawAutomationLoading");
-  const clawAutomationError = document.getElementById("clawAutomationError");
-  const clawAutomationForbidden = document.getElementById("clawAutomationForbidden");
-  const clawAutomationEmpty = document.getElementById("clawAutomationEmpty");
-  const clawAutomationList = document.getElementById("clawAutomationList");
-  const clawAutomationRetry = document.getElementById("clawAutomationRetry");
-  const clawAutomationCreate = document.getElementById("clawAutomationCreate");
-  const clawAutomationCreateToggle = document.getElementById("clawAutomationCreateToggle");
-  const clawAutomationCreateOpen = document.getElementById("clawAutomationCreateOpen");
-  const clawAutomationCreateForm = document.getElementById("clawAutomationCreateForm");
-  const clawAutomationCreateName = document.getElementById("clawAutomationCreateName");
-  const clawAutomationCreateTask = document.getElementById("clawAutomationCreateTask");
-  const clawAutomationCreateKind = document.getElementById("clawAutomationCreateKind");
-  const clawAutomationCreateDaypartField = document.getElementById("clawAutomationCreateDaypartField");
-  const clawAutomationCreateDaypart = document.getElementById("clawAutomationCreateDaypart");
-  const clawAutomationCreateIntervalField = document.getElementById("clawAutomationCreateIntervalField");
-  const clawAutomationCreateInterval = document.getElementById("clawAutomationCreateInterval");
-  const clawAutomationCreateCronField = document.getElementById("clawAutomationCreateCronField");
-  const clawAutomationCreateCron = document.getElementById("clawAutomationCreateCron");
-  const clawAutomationCreateTimezone = document.getElementById("clawAutomationCreateTimezone");
-  const clawAutomationCreateTarget = document.getElementById("clawAutomationCreateTarget");
-  const clawAutomationCreateOutput = document.getElementById("clawAutomationCreateOutput");
-  const clawAutomationCreateStatus = document.getElementById("clawAutomationCreateStatus");
-  const clawAutomationCreateSubmit = document.getElementById("clawAutomationCreateSubmit");
-  const clawAutomationCreateCancel = document.getElementById("clawAutomationCreateCancel");
-  // #3262: enable/disable toggle state for one canonical rule.
-  const clawAutomationToggleStatus = document.getElementById("clawAutomationToggleStatus");
-  const clawAutomationInFlightRules = new Set();
-  // #3270: bounded Edit (name + schedule) on a canonical, execution-ready rule.
-  const clawAutomationEditForm = document.getElementById("clawAutomationEditForm");
-  const clawAutomationEditName = document.getElementById("clawAutomationEditName");
-  const clawAutomationEditKind = document.getElementById("clawAutomationEditKind");
-  const clawAutomationEditDaypartField = document.getElementById("clawAutomationEditDaypartField");
-  const clawAutomationEditDaypart = document.getElementById("clawAutomationEditDaypart");
-  const clawAutomationEditIntervalField = document.getElementById("clawAutomationEditIntervalField");
-  const clawAutomationEditInterval = document.getElementById("clawAutomationEditInterval");
-  const clawAutomationEditCronField = document.getElementById("clawAutomationEditCronField");
-  const clawAutomationEditCron = document.getElementById("clawAutomationEditCron");
-  const clawAutomationEditTimezone = document.getElementById("clawAutomationEditTimezone");
-  const clawAutomationEditStatus = document.getElementById("clawAutomationEditStatus");
-  const clawAutomationEditSubmit = document.getElementById("clawAutomationEditSubmit");
-  const clawAutomationEditCancel = document.getElementById("clawAutomationEditCancel");
-  let clawAutomationEditingRuleId = null;
-  let clawAutomationEditInFlight = false;
+  // R5 B1: the automation modules own their declarations (rule (a)) and are
+  // created here, at the original declaration position (lookup timing kept).
+  const automation = app.provide("automation",
+    window.PadiemChatAutomationModule.create(app));
+  const automationForm = app.provide("automationForm",
+    window.PadiemChatAutomationFormModule.create(app));
   const clawManualForm = document.getElementById("clawManualForm");
   const clawChannel = document.getElementById("clawChannel");
   const clawAction = document.getElementById("clawAction");
@@ -3841,135 +3709,14 @@
     }
   }
 
-  function resetClawAutomationState(...a) { return automationModule().resetClawAutomationState(...a); }
 
-  function setClawAutomationLoading(...a) { return automationModule().setClawAutomationLoading(...a); }
-
-  function setClawAutomationError(...a) { return automationModule().setClawAutomationError(...a); }
-
-  function setClawAutomationForbidden(...a) { return automationModule().setClawAutomationForbidden(...a); }
-
-  function renderClawAutomationRules(...a) { return automationModule().renderClawAutomationRules(...a); }
-
-  async function loadClawAutomationRules(...a) { return automationModule().loadClawAutomationRules(...a); }
-
-  function setClawAutomationEditStatus(...a) { return automationFormModule().setClawAutomationEditStatus(...a); }
-
-  function syncClawAutomationEditFields(...a) { return automationFormModule().syncClawAutomationEditFields(...a); }
-
-  function clawAutomationEditExpression(...a) { return automationFormModule().clawAutomationEditExpression(...a); }
-
-  function findRuleEditButton(...a) { return automationFormModule().findRuleEditButton(...a); }
+  automationForm.wireEditListeners();
 
 
-  function openClawAutomationEdit(...a) { return automationFormModule().openClawAutomationEdit(...a); }
+  automationForm.wireCreateListeners();
 
-  function closeClawAutomationEdit(...a) { return automationFormModule().closeClawAutomationEdit(...a); }
 
-  async function submitClawAutomationEdit(...a) { return automationFormModule().submitClawAutomationEdit(...a); }
-
-  if (clawAutomationEditForm) {
-    clawAutomationEditForm.addEventListener("submit", (event) => {
-      void submitClawAutomationEdit(event);
-    });
-  }
-  if (clawAutomationEditKind) {
-    clawAutomationEditKind.addEventListener("change", syncClawAutomationEditFields);
-  }
-  if (clawAutomationEditCancel) {
-    clawAutomationEditCancel.addEventListener("click", () => closeClawAutomationEdit());
-  }
-
-  function setClawAutomationToggleStatus(...a) { return automationModule().setClawAutomationToggleStatus(...a); }
-
-  function findRuleToggleButton(...a) { return automationModule().findRuleToggleButton(...a); }
-
-  function focusRuleToggleAfterReload(...a) { return automationModule().focusRuleToggleAfterReload(...a); }
-
-  async function toggleClawAutomationRule(...a) { return automationModule().toggleClawAutomationRule(...a); }
-
-  // --- #3257 Web Automation Create -------------------------------------------
-  // Seven product fields only; the server rejects any authority field and owns
-  // rule id, owner provenance, membership role and the execution target.
-  let clawAutomationCreateInFlight = false;
-
-  function setClawAutomationCreateStatus(...a) { return automationFormModule().setClawAutomationCreateStatus(...a); }
-
-  function syncClawAutomationCreateFields(...a) { return automationFormModule().syncClawAutomationCreateFields(...a); }
-
-  function clawAutomationCreateExpression(...a) { return automationFormModule().clawAutomationCreateExpression(...a); }
-
-  function resetClawAutomationCreateForm(...a) { return automationFormModule().resetClawAutomationCreateForm(...a); }
-
-  function closeClawAutomationCreate(...a) { return automationFormModule().closeClawAutomationCreate(...a); }
-
-  function scrollClawAutomationCreateIntoView(...a) { return automationFormModule().scrollClawAutomationCreateIntoView(...a); }
-
-  async function submitClawAutomationCreate(...a) { return automationFormModule().submitClawAutomationCreate(...a); }
-
-  if (clawAutomationCreateForm) {
-    clawAutomationCreateForm.addEventListener("submit", (event) => {
-      void submitClawAutomationCreate(event);
-    });
-  }
-  if (clawAutomationCreateKind) {
-    clawAutomationCreateKind.addEventListener("change", syncClawAutomationCreateFields);
-  }
-  if (clawAutomationCreateCancel) {
-    clawAutomationCreateCancel.addEventListener("click", () => {
-      resetClawAutomationCreateForm();
-      closeClawAutomationCreate();
-    });
-  }
-  if (clawAutomationCreate) {
-    clawAutomationCreate.addEventListener("toggle", () => {
-      // The header button owns the disclosure, so it carries the state.
-      if (clawAutomationCreateOpen) {
-        clawAutomationCreateOpen.setAttribute(
-          "aria-expanded", clawAutomationCreate.open ? "true" : "false",
-        );
-      }
-      if (clawAutomationCreate.open) {
-        setClawAutomationCreateStatus(null);
-        if (clawAutomationCreateName) clawAutomationCreateName.focus();
-      } else if (clawAutomationCreateOpen) {
-        clawAutomationCreateOpen.focus();
-      }
-    });
-  }
-  if (clawAutomationCreateOpen) {
-    if (!clawAutomationCreate) {
-      // No form to open, so the control is not offered at all.
-      clawAutomationCreateOpen.hidden = true;
-    } else {
-      clawAutomationCreateOpen.addEventListener("click", () => {
-        clawAutomationCreate.open = !clawAutomationCreate.open;
-        // On a narrow window the form sits below the rule list, so the view
-        // follows the user to it instead of leaving the input off-screen.
-        if (clawAutomationCreate.open) {
-          scrollClawAutomationCreateIntoView();
-        }
-      });
-    }
-  }
-
-  // Standalone Automation page: the existing #clawAutomation section is moved
-  // once into #automationViewBody. Moving (not cloning) preserves every bound
-  // listener and all getElementById handles, so list/create/edit/toggle/
-  // status/alerts and the permission/workspace checks run against the same
-  // APIs and store. An enabled rule list never claims the scheduler itself
-  // is running; the existing scheduler note stays verbatim.
-  let automationViewMounted = false;
-  function mountAutomationView(...a) { return automationModule().mountAutomationView(...a); }
-
-  function openClawAutomation(...a) { return automationModule().openClawAutomation(...a); }
-
-  if (automationNavButton) automationNavButton.addEventListener("click", openClawAutomation);
-  // #4462: automation-related run/completion/failure alerts stay reachable
-  // from the automation view after the standalone sidebar Alerts entry is gone.
-    if (clawAutomationRetry) clawAutomationRetry.addEventListener("click", () => void loadClawAutomationRules());
-  function setClawAutomationRetryVisible(...a) { return automationModule().setClawAutomationRetryVisible(...a); }
-
+  automation.wireViewListeners();
   function openClawWorkspace() {
     // #3531: Claw opens on the general conversation view. The document
     // workflow (manual form, workflow chrome) stays hidden until the user
@@ -3983,7 +3730,7 @@
     // The shared Chat first-use hero also introduces Claw when the
     // existing conversation has not started. Do not reset live messages.
     if (messageList.hidden && messageList.children.length === 0) emptyState.hidden = false;
-    if (clawAutomation) clawAutomation.hidden = true;
+    if (app.clawAutomation) app.clawAutomation.hidden = true;
     if (clawManualForm) clawManualForm.hidden = true;
     if (clawResultArea) clawResultArea.hidden = false;
     setNavActive();
@@ -4019,7 +3766,7 @@
     // Chat/Claw separation: the document workflow belongs to the Claw conversation.
     switchConversationProduct(PRODUCT_CLAW);
     clawWorkspace.dataset.view = "manual";
-    if (clawAutomation) clawAutomation.hidden = true;
+    if (app.clawAutomation) app.clawAutomation.hidden = true;
     if (clawManualForm) clawManualForm.hidden = false;
     if (clawResultArea) clawResultArea.hidden = false;
     setNavActive();
@@ -5631,103 +5378,17 @@
     });
   }
 
-  // ---------------------------------------------------------------------------
-  // #3084 — Claw "Connect this computer" handoff panel.
-  //
-  // This is presentation only. It renders a projection that some upstream
-  // authority already decided, and it holds none of the following:
-  //   - pairing token minting/parsing/storage
-  //   - a device-session store
-  //   - a transport client (no fetch/WebSocket/polling to any broker)
-  //   - task admission or approval decisions
-  // The CTA therefore does NOT navigate or open a deep link here. It emits a
-  // custom event carrying the opaque handoff value; the #3080 adapter (not yet
-  // in this branch) is the only thing allowed to act on it.
-  // ---------------------------------------------------------------------------
-  const localHandoff = window.PadiemClawLocalHandoff;
-  const localHandoffPanel = document.getElementById("clawLocalHandoff");
-  const localHandoffRefs = localHandoffPanel
-    ? {
-        panel: localHandoffPanel,
-        title: document.getElementById("clawLocalTitle"),
-        body: document.getElementById("clawLocalBody"),
-        state: document.getElementById("clawLocalState"),
-        cta: document.getElementById("clawLocalCta"),
-        installNote: document.getElementById("clawLocalInstallNote"),
-        openNote: document.getElementById("clawLocalOpenNote"),
-        identity: document.getElementById("clawLocalIdentity"),
-        approval: document.getElementById("clawLocalApproval"),
-        approvalTitle: document.getElementById("clawLocalApprovalTitle"),
-        approvalBody: document.getElementById("clawLocalApprovalBody"),
-        status: document.getElementById("clawLocalStatus"),
-        statusTitle: document.getElementById("clawLocalStatusTitle"),
-        statusBody: document.getElementById("clawLocalStatusBody"),
-        result: document.getElementById("clawLocalResult"),
-        resultTitle: document.getElementById("clawLocalResultTitle"),
-        resultBody: document.getElementById("clawLocalResultBody"),
-        evidence: document.getElementById("clawLocalEvidence"),
-        evidenceTitle: document.getElementById("clawLocalEvidenceTitle"),
-        evidenceList: document.getElementById("clawLocalEvidenceList"),
-      }
-    : null;
-  const localHandoffCta = localHandoffRefs ? localHandoffRefs.cta : null;
-
-  let localHandoffViewModel = null;
-
-  function projectLocalHandoff(projection) {
-    if (!localHandoff || !localHandoffRefs) return null;
-    const model = localHandoff.deriveHandoffViewModel(projection || {});
-    localHandoffViewModel = model;
-    localHandoff.projectHandoffPanel(localHandoffRefs, model, window.__padiemLocale?.getCurrent?.() || "ko");
-    return model;
-  }
-
-  if (localHandoffCta) {
-    localHandoffCta.addEventListener("click", () => {
-      const model = localHandoffViewModel;
-      // Never act unless the projection is genuinely usable. This is the
-      // false-connected guard at the interaction layer, not just the view.
-      if (!model || !model.canProceed) return;
-      window.dispatchEvent(
-        new CustomEvent("padiem:claw-local-connect-requested", {
-          detail: {
-            handoffValue: model.handoff.value,
-            conversationId: model.identity.conversationId,
-            runId: model.identity.runId,
-            taskId: model.identity.taskId,
-          },
-        }),
-      );
-    });
-  }
-
-  // Re-render on locale change so KO/EN copy stays truthful.
-  window.addEventListener("padiem:localechange", () => {
-    if (!localHandoffViewModel || !localHandoffRefs) return;
-    localHandoff.projectHandoffPanel(
-      localHandoffRefs,
-      localHandoffViewModel,
-      window.__padiemLocale?.getCurrent?.() || "ko",
-    );
-  });
-
-  // Narrow injection seam for the #3080 contract. Until that authority lands,
-  // the deterministic fixtures are the only source. No network call exists here.
-  window.__padiemClawLocalHandoff = Object.freeze({
-    contractVersion: localHandoff?.CONTRACT_VERSION || null,
-    project: projectLocalHandoff,
-    getViewModel: () => localHandoffViewModel,
-    fixtures: localHandoff?.FIXTURES || null,
-    // #3094: the live conversation id, so the guarded adapter correlates the
-    // projection it fetches with the conversation the user is actually in.
-    // Read-only: this exposes no pairing, session or transport authority.
-    getConversationId: () => window.PadiemChatConversationState?.getConversationId?.() || null,
-  });
+  // R5 B1: the local PC panel owns its declarations (rule (a)) and registers
+  // its listeners at this original position (rule (b)); the window contract
+  // exposure keeps its original timing inside wire().
+  const localPcPanel = app.provide("localPcPanel",
+    window.PadiemChatLocalPcPanelModule.create(app));
+  localPcPanel.wire();
   // Restore the Automation surface only after all handlers are registered.
   // It remains read-only for signed-out sessions through openClawAutomation().
   // #4862: restore Claw the same way. An unknown or tampered fragment matches
   // neither route, so the shell keeps its default Chat home.
-  if (window.location.hash === AUTOMATION_ROUTE_HASH) openClawAutomation();
+  if (window.location.hash === AUTOMATION_ROUTE_HASH) app.openClawAutomation();
   else if (window.location.hash === CLAW_ROUTE_HASH) openClawWorkspace();
   else if (window.location.hash === CONNECTORS_ROUTE_HASH) openConnectorsView();
   else if (window.location.hash === ADVANCED_SETTINGS_ROUTE_HASH) openAdvancedSettingsView();

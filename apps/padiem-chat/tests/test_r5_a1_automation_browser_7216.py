@@ -39,7 +39,10 @@ B_NAMES = (
     "resetClawAutomationCreateForm", "closeClawAutomationCreate",
     "scrollClawAutomationCreateIntoView", "submitClawAutomationCreate",
 )
-FORWARDER_NAMES = tuple(sorted(set(A_NAMES) | (set(B_NAMES) - {"focusRuleEditAfterReload"})))
+SHARED_BROWSER_READS = (
+    "authState", "shell", "clawWorkspace", "clawAutomation", "clawAutomationList", "uiT",
+    "setNavActive", "closeSidebar", "clearClawWait", "syncClawRunHistoryVisibility",
+)
 
 CALLS = {
     "resetClawAutomationState": "[]",
@@ -105,10 +108,10 @@ HARNESS = """<!doctype html>
   </div>
 </section>
 <script src="/static/chat-automation-module.js"></script>
+<script src="/static/chat-app-context.js"></script>
 <script src="/static/chat-automation-form-module.js"></script>
 <script>
 __STRICT__
-const MOVED_NAMES = __MOVED_NAMES_JSON__;
 window.__calls = [];
 window.__writes = [];
 window.fetch = async (url, init) => ({ ok: true, status: 200, json: async () => ({ ok: true, rules: [] }) });
@@ -140,13 +143,10 @@ for (const id of ["clawAutomation", "clawAutomationList", "clawAutomationLoading
 window.__state = state;
 window.__depsA = {};
 window.__depsB = {};
-const MOVED = new Set(MOVED_NAMES);
 function liveDeps(names, target) {
   for (const key of names) {
     Object.defineProperty(target, key, {
       get() {
-        // 옮긴 함수는 전달 함수(같은 이름)를 거쳐 모듈 API로 돌아온다 — 5b 관례.
-        if (MOVED.has(key)) return globalThis[key];
         const v = window.__state[key];
         return typeof v === "function" ? v.bind(window.__state) : v;
       },
@@ -159,32 +159,26 @@ const A_DEPS = __A_DEPS__;
 const B_DEPS = __B_DEPS__;
 liveDeps(A_DEPS, window.__depsA);
 liveDeps(B_DEPS, window.__depsB);
-window.__instanceA = null;
-window.__instanceB = null;
-function automationModule() {
-  if (!window.__instanceA) window.__instanceA = window.PadiemChatAutomationModule.create(r5StrictDeps(window.__depsA, "a1.browser.A"));
-  return window.__instanceA;
+// R5 B1 (rule (d)): app.js와 같이 컨텍스트에 모듈 API를 제공한다 — 전달 함수
+// 주입 대신 등록부 경로로 호출을 기록한다.
+window.__app = window.PadiemChatAppContext.create(window.__depsA);  // 공유 읽기는 라이브 getter, 컨텍스트가 자기 속성을 붙인다
+// 제공 전에 기록 래퍼로 감싼다 — 평탄화된 컨텍스트 키(app[name])도 기록을 거친다.
+function recorded(piece) {
+  const out = {};
+  for (const key of Object.keys(piece)) {
+    out[key] = (...args) => { window.__calls.push({ name: key, argc: args.length }); return piece[key](...args); };
+  }
+  return out;
 }
-function automationFormModule() {
-  if (!window.__instanceB) window.__instanceB = window.PadiemChatAutomationFormModule.create(r5StrictDeps(window.__depsB, "a1.browser.B"));
-  return window.__instanceB;
-}
-window.automationModule = automationModule;
-window.automationFormModule = automationFormModule;
-const __realA = automationModule();
-for (const key of Object.keys(__realA)) {
-  const real = __realA[key];
-  __realA[key] = (...args) => { window.__calls.push({ name: key, argc: args.length }); return real(...args); };
-}
-const __realB = automationFormModule();
-for (const key of Object.keys(__realB)) {
-  const real = __realB[key];
-  __realB[key] = (...args) => { window.__calls.push({ name: key, argc: args.length }); return real(...args); };
-}
-__FORWARDERS__
+const realA = window.PadiemChatAutomationModule.create(window.__app);
+const realB = window.PadiemChatAutomationFormModule.create(window.__app);
+window.__realA = realA;
+window.__realB = realB;
+window.__app.provide("automation", recorded(realA));
+window.__app.provide("automationForm", recorded(realB));
 window.__call = async (name, args) => {
   window.__calls = [];
-  const out = await globalThis[name](...args);
+  const out = await window.__app[name](...args);
   return { last: window.__calls[0] || null, writes: window.__writes.slice() };
 };
 </script>
@@ -192,49 +186,11 @@ window.__call = async (name, args) => {
 """
 
 
-def _forwarder_lines() -> str:
-    lines = []
-    for name in FORWARDER_NAMES:
-        prefix = "async function" if name in ASYNC_NAMES else "function"
-        mod = "automationFormModule()" if name in B_NAMES else "automationModule()"
-        line = f"{prefix} {name}(...a) {{ return {mod}.{name}(...a); }}"
-        assert line in APP, name
-        lines.append(f"  {line}")
-    return "\n".join(lines)
-
-
 def _build_harness() -> str:
     return (HARNESS
             .replace("__STRICT__", STRICT)
-            .replace("__A_DEPS__", json.dumps(sorted(A_GETTERS := {
-                "resetClawAutomationState", "setClawAutomationLoading", "setClawAutomationError",
-                "setClawAutomationForbidden", "renderClawAutomationRules", "loadClawAutomationRules",
-                "setClawAutomationToggleStatus", "findRuleToggleButton", "focusRuleToggleAfterReload",
-                "toggleClawAutomationRule", "mountAutomationView", "setClawAutomationRetryVisible",
-                "openClawAutomationEdit", "authState", "automationViewMounted", "clawAutomation",
-                "clawAutomationEmpty", "clawAutomationError", "clawAutomationForbidden",
-                "clawAutomationInFlightRules", "clawAutomationList", "clawAutomationLoading",
-                "clawAutomationRetry", "clawAutomationToggleStatus", "clawWorkspace", "clearClawWait",
-                "closeSidebar", "setNavActive", "shell", "syncClawRunHistoryVisibility", "uiT"})))
-            .replace("__B_DEPS__", json.dumps(sorted({
-                "setClawAutomationEditStatus", "syncClawAutomationEditFields", "clawAutomationEditExpression",
-                "findRuleEditButton", "closeClawAutomationCreate", "closeClawAutomationEdit",
-                "resetClawAutomationCreateForm", "setClawAutomationCreateStatus",
-                "syncClawAutomationCreateFields", "clawAutomationCreateExpression", "loadClawAutomationRules",
-                "clawAutomation", "clawAutomationCreate", "clawAutomationCreateCron",
-                "clawAutomationCreateCronField", "clawAutomationCreateDaypart", "clawAutomationCreateDaypartField",
-                "clawAutomationCreateForm", "clawAutomationCreateInFlight", "clawAutomationCreateInterval",
-                "clawAutomationCreateIntervalField", "clawAutomationCreateKind", "clawAutomationCreateName",
-                "clawAutomationCreateOpen", "clawAutomationCreateOutput", "clawAutomationCreateStatus",
-                "clawAutomationCreateSubmit", "clawAutomationCreateTarget", "clawAutomationCreateTask",
-                "clawAutomationCreateTimezone", "clawAutomationCreateToggle", "clawAutomationEditCron",
-                "clawAutomationEditCronField", "clawAutomationEditDaypart", "clawAutomationEditDaypartField",
-                "clawAutomationEditForm", "clawAutomationEditInFlight", "clawAutomationEditInterval",
-                "clawAutomationEditIntervalField", "clawAutomationEditKind", "clawAutomationEditName",
-                "clawAutomationEditStatus", "clawAutomationEditSubmit", "clawAutomationEditTimezone",
-                "clawAutomationEditingRuleId", "clawAutomationList", "uiT"})))
-            .replace("__MOVED_NAMES_JSON__", json.dumps(sorted(set(A_NAMES) | set(B_NAMES))))
-            .replace("__FORWARDERS__", _forwarder_lines()))
+            .replace("__A_DEPS__", json.dumps(sorted(SHARED_BROWSER_READS)))
+            .replace("__B_DEPS__", json.dumps(sorted(SHARED_BROWSER_READS))))
 
 
 def test_forwarders_reach_the_real_modules_in_chromium() -> None:
@@ -263,21 +219,23 @@ def test_forwarders_reach_the_real_modules_in_chromium() -> None:
             page.goto(base + "/tests/_a1_browser_harness.html", wait_until="load")
             # 27개 전달 함수를 전부 직접 호출한다. 편집 제출은 열기가 선행한다.
             page.evaluate("() => window.__call('openClawAutomationEdit', " + CALLS["openClawAutomationEdit"] + ")")
-            assert set(CALLS) == set(FORWARDER_NAMES), "호출 목록은 주입된 전달 함수 27개와 일치해야 한다"
+            assert set(CALLS) == set(A_NAMES) | (set(B_NAMES) - {"focusRuleEditAfterReload"}),                 "호출 목록은 등록부로 도달하는 27개 함수와 일치해야 한다"
             routing = {}
             editing_rule_id_at_open = None
             for name, args in CALLS.items():
                 result = page.evaluate(f"() => window.__call('{name}', {args})")
                 routing[name] = result["last"]
                 if name == "openClawAutomationEdit":
-                    # 대표 setter: openClawAutomationEdit가 deps setter로
-                    # clawAutomationEditingRuleId에 쓴다(뒤의 close가 null로 지우기 전에).
-                    assert "clawAutomationEditingRuleId" in result["writes"], result["writes"]
-                    editing_rule_id_at_open = page.evaluate("() => window.__state.clawAutomationEditingRuleId")
+                    # 대표 상태 쓰기: 이제 모듈 클로저 소유(보강 가)이므로 행위로
+                    # 검증한다 — 폼이 열리고 이름이 채워진다.
+                    opened = page.evaluate("""() => ({
+                      hidden: document.getElementById('clawAutomationEditForm').hidden,
+                      name: document.getElementById('clawAutomationEditName').value,
+                    })""")
+                    assert opened["hidden"] is False and opened["name"] == "n", opened
             # 라우팅: 모든 전달 함수가 실제 모듈 API를 호출했다.
             missing = [n for n in CALLS if not routing.get(n)]
             assert not missing, f"전달 함수가 모듈 API에 닿지 않았다: {missing}"
-            assert editing_rule_id_at_open == "r1", editing_rule_id_at_open
             # 라이브 getter: 게스트 상태에서 openClawAutomation은 섹션을 숨긴다.
             page.evaluate("""() => {
               window.__state.authState.authenticated = false;

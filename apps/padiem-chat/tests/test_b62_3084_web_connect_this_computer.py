@@ -715,7 +715,9 @@ def test_composer_uses_the_shared_ime_guard() -> None:
 
 
 def test_app_exposes_a_narrow_injection_seam_with_no_transport() -> None:
-    app = _app_source()
+    # R5 B1: 패널 창 계약은 chat-local-pc-panel-module.js로 이동했다.
+    app = (_app_source()
+           + (APP_PATH.parent / "chat-local-pc-panel-module.js").read_text(encoding="utf-8"))
     assert "window.__padiemClawLocalHandoff" in app
     assert "projectLocalHandoff" in app
     assert "padiem:claw-local-connect-requested" in app
@@ -732,12 +734,16 @@ def test_app_exposes_a_narrow_injection_seam_with_no_transport() -> None:
 
 
 def test_app_cta_handler_refuses_when_the_projection_is_not_proceedable() -> None:
-    app = _app_source()
+    # R5 B1: CTA 핸들러는 패널 모듈로 이동했다.
+    app = (_app_source()
+           + (APP_PATH.parent / "chat-local-pc-panel-module.js").read_text(encoding="utf-8"))
     assert "if (!model || !model.canProceed) return;" in app
 
 
 def test_app_reprojects_on_locale_change() -> None:
-    app = _app_source()
+    # R5 B1: localechange 재렌더는 패널 모듈의 wire로 이동했다.
+    app = (_app_source()
+           + (APP_PATH.parent / "chat-local-pc-panel-module.js").read_text(encoding="utf-8"))
     assert 'window.addEventListener("padiem:localechange"' in app
 
 
