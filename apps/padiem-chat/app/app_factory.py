@@ -1281,6 +1281,22 @@ def create_app(
         timeout_seconds=min(600.0, resolved.completed_timeout_seconds)
     )
     app.state.history_store = history_store
+    # Internal audit H2 (2026-11-10): a production composition must not boot
+    # with a history store that cannot answer the compatibility-cookie user
+    # row check — "declared nowhere" would silently skip the deleted-account
+    # refusal (fail-open). Both production stores (the COM2 host SQLite store
+    # and the Worker D1 store) are D1HistoryStore and declare the capability;
+    # a bound store without it fails the start. A composition that binds no
+    # store at all keeps booting, and the request-time guard then refuses
+    # compatibility cookies instead of skipping the check.
+    if (
+        str(resolved.runtime_mode).strip().lower() == "b14"
+        and history_store is not None
+        and not callable(getattr(history_store, "user_row_exists", None))
+    ):
+        raise RuntimeError(
+            "history store must declare user_row_exists in production mode"
+        )
     # #6659 3번 1단계: the account self-deletion route deletes rows through the
     # same canonical Chat D1 binding the stores were built on. It stays None on
     # a host that supplies no D1, and the route answers 503 there.
