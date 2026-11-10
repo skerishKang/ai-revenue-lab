@@ -41,7 +41,6 @@ import httpx
 import pytest
 
 from app.auth import SESSION_COOKIE, create_session_token
-from app.b14_client import ChatStreamEvent
 from app.byok_client import CustomProviderClient
 from app.byok_credentials import CUSTOM_PROVIDERS, D1CustomProviderCredentialStore
 from app.config import Settings
@@ -304,9 +303,9 @@ class _RecordingB14Client:
     async def stream_text_auto(self, messages: list[dict[str, str]], **kwargs: Any):
         self.stream_calls.append({"messages": list(messages), **kwargs})
         if self.thought:
-            yield ChatStreamEvent(delta_thought=self.thought)
-        yield ChatStreamEvent(delta_content=self.answer)
-        yield ChatStreamEvent(done=True)
+            yield SimpleNamespace(delta_thought=self.thought, delta_content=None, done=False, tool_call=None)
+        yield SimpleNamespace(delta_thought=None, delta_content=self.answer, done=False, tool_call=None)
+        yield SimpleNamespace(delta_thought=None, delta_content=None, done=True, tool_call=None)
 
 
 class _RecordingAutoGrounding:
