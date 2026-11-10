@@ -8,10 +8,6 @@
       "type": "assets"
     },
     {
-      "name": "B14_SERVICE",
-      "type": "service"
-    },
-    {
       "name": "B66_ADMIN_GOOGLE_EMAIL",
       "type": "secret_text"
     },

@@ -24,9 +24,11 @@ from urllib.request import Request, urlopen
 
 CF_API = "https://api.cloudflare.com/client/v4"
 WORKER_NAME = "padiem-chat"
+# 2026-11-10: B14 runs on COM2 only; the Cloudflare B14 Worker is retired, so
+# the health watch below targets the COM2 public origin and the chat Worker's
+# B14_SERVICE service binding no longer exists (nor is asserted).
 B14_HEALTH = "https://b14.padiem.net/api/pilot/health"
 USER_AGENT = "b62-live-readiness/1.3"
-B14_SERVICE_BINDING = "B14_SERVICE"
 
 QUOTA_TABLE = "live_usage_buckets"
 QUOTA_INDEX = "idx_live_usage_buckets_updated_at"
@@ -67,7 +69,6 @@ class Readiness:
     quota_salt_secret_bound: bool
     finite_limits_configured: bool
     b14_base_bound: bool
-    b14_service_bound: bool
     b14_live: bool
     b14_has_key: bool
     runtime_mode: str
@@ -83,7 +84,6 @@ class Readiness:
                 self.quota_salt_secret_bound,
                 self.finite_limits_configured,
                 self.b14_base_bound,
-                self.b14_service_bound,
                 self.b14_live,
                 self.b14_has_key,
             )
@@ -352,7 +352,6 @@ def evaluate(
         quota_salt_secret_bound=types.get("PADIEM_CHAT_QUOTA_SALT") == "secret_text",
         finite_limits_configured=finite_limits_configured(safe_text),
         b14_base_bound=bool(safe_text.get("PADIEM_CHAT_B14_BASE_URL")),
-        b14_service_bound=types.get(B14_SERVICE_BINDING) == "service",
         b14_live=b14_live,
         b14_has_key=b14_has_key,
         runtime_mode=safe_text.get("PADIEM_CHAT_RUNTIME_MODE", "unknown").lower(),
@@ -371,7 +370,6 @@ def emit(readiness: Readiness) -> None:
         "QUOTA_SALT_SECRET_BOUND": readiness.quota_salt_secret_bound,
         "FINITE_QUOTA_LIMITS_CONFIGURED": readiness.finite_limits_configured,
         "B14_BASE_BOUND": readiness.b14_base_bound,
-        "B14_SERVICE_BOUND": readiness.b14_service_bound,
         "B14_PROVIDER_LIVE": readiness.b14_live,
         "B14_HAS_KEY": readiness.b14_has_key,
         "PUBLIC_LIVE_ARMED": readiness.public_live_armed,

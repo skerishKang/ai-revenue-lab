@@ -155,7 +155,6 @@ jobs:
       - name: Read-only deployed progressive-SSE chain parity
         env:
           B62_BASE_URL: https://padiem-chat.${{ steps.preflight.outputs.subdomain }}.workers.dev
-          B14_BASE_URL: https://ai-revenue-korean-ai-platform.${{ steps.preflight.outputs.subdomain }}.workers.dev
         run: python .github/scripts/b62_cloudflare_deployed_parity.py
 
   deploy-mock:
