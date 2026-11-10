@@ -1,0 +1,317 @@
+/*
+ * #7173 PR2 · Util tool screens (speech / sns / meeting) inside the Util app.
+ *
+ * Tokens only (padiem-tokens.css): no new colours, no fallback on the
+ * line/input/focus families. The generate button is the shared primary
+ * surface (--primary-bg + white label), like the composer send button.
+ */
+
+.util-tool-body[data-util-mounted="form"] {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.util-tool-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 720px;
+}
+
+.util-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md, 16px);
+  background: var(--glass-card-surface, var(--panel));
+}
+
+.util-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.util-field-label {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.util-input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--input-border-strong);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+textarea.util-input {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.util-input:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 1px;
+  border-color: var(--primary-focus);
+}
+
+.util-more {
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.util-more-summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.util-more-summary:focus-visible {
+  outline: 3px solid var(--primary-focus);
+  outline-offset: 2px;
+}
+
+.util-more-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.util-field-tabs {
+  gap: 8px;
+}
+
+.util-platform-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.util-platform-tab {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.util-platform-tab:hover {
+  border-color: var(--primary-focus);
+}
+
+.util-platform-tab[aria-pressed="true"] {
+  background: var(--primary-bg);
+  border-color: var(--primary-border);
+  color: #fff;
+}
+
+.util-platform-tab:focus-visible {
+  outline: 3px solid var(--primary-focus);
+  outline-offset: 2px;
+}
+
+.util-form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.util-generate {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1px solid var(--primary-border);
+  border-radius: 999px;
+  background: var(--primary-bg);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.util-generate:hover:not(:disabled) {
+  background: var(--primary-hover-bg);
+  border-color: var(--primary-hover-border);
+}
+
+.util-generate:focus-visible {
+  outline: 3px solid var(--primary-focus);
+  outline-offset: 2px;
+}
+
+.util-generate:disabled {
+  opacity: .6;
+  cursor: progress;
+}
+
+.util-status {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.util-status[data-tone="error"] {
+  color: var(--text);
+  border-color: var(--input-border-strong);
+}
+
+.util-result {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md, 16px);
+  background: var(--glass-card-surface, var(--panel));
+}
+
+.util-result-title {
+  margin: 0;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.util-result-output {
+  min-height: 96px;
+  max-height: 460px;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.util-result-output:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.util-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.util-result-button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.util-result-button:hover:not(:disabled) {
+  border-color: var(--primary-focus);
+}
+
+.util-result-button:focus-visible {
+  outline: 3px solid var(--primary-focus);
+  outline-offset: 2px;
+}
+
+.util-result-generate {
+  background: var(--primary-bg);
+  border-color: var(--primary-border);
+  color: #fff;
+}
+
+.util-result-generate:hover:not(:disabled) {
+  background: var(--primary-hover-bg);
+  border-color: var(--primary-hover-border);
+}
+
+.util-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md, 16px);
+  background: var(--glass-card-surface, var(--panel));
+}
+
+.util-gate-text {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.util-gate-login {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1px solid var(--primary-border);
+  border-radius: 999px;
+  background: var(--primary-bg);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.util-gate-login:focus-visible {
+  outline: 3px solid var(--primary-focus);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .util-form,
+  .util-result {
+    padding: 14px;
+  }
+  .util-form-actions {
+    justify-content: stretch;
+  }
+  .util-generate {
+    width: 100%;
+  }
+  .util-result-button {
+    flex: 1 1 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .util-platform-tab,
+  .util-generate,
+  .util-result-button {
+    transition: none;
+  }
+}

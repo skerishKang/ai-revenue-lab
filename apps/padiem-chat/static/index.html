@@ -41,6 +41,7 @@
   <link rel="stylesheet" href="./claw-workspace.css" />
   <link rel="stylesheet" href="./util-menu.css" />
   <link rel="stylesheet" href="./util-app.css" />
+  <link rel="stylesheet" href="./util-tools.css" />
   <link rel="stylesheet" href="./claw-quote-compare.css" />
   <link rel="stylesheet" href="./b66-quote-runtime.css" />
   <link rel="stylesheet" href="./claw-local-handoff.css" />
@@ -1388,6 +1389,11 @@
   <script src="./claw-connection-state.js"></script>
   <script src="./claw-composer-connection-status.js"></script>
   <script src="./util-menu.js" defer></script>
+  <!-- #7173 PR2: the tool modules load before util-app.js, whose boot renders
+       the initial route right away (defer scripts run at readyState
+       "interactive", so a later module would miss the first paint). -->
+  <script src="./util-tools-contract.js" defer></script>
+  <script src="./util-tools.js" defer></script>
   <script src="./util-app.js" defer></script>
 <script src="./util-pdfmd.js" defer></script>
   <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
