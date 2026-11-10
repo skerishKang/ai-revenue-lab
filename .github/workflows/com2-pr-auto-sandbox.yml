@@ -118,6 +118,7 @@ jobs:
             .github/tests/test_b62_pr_preview_trigger_scope.py \
             .github/tests/test_b62_worker_deploy_trigger_scope.py \
             .github/tests/test_cross_lane_test_dependency_guard.py \
+            .github/tests/test_7346_cross_path_test_reads.py \
             .github/tests/test_frozen_source_checkout_byte_guard.py \
             .github/tests/test_verify_import_origin.py \
             tools/b66_generic/tests/test_b66_generic_archive_bounds.py \

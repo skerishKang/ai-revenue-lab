@@ -17,8 +17,8 @@ test("claw answer sources module exists, is wired into the page and into the don
   assert.match(module, /https:/, "display must refuse non-https URLs");
   const html = fs.readFileSync(path.join(staticDir, "index.html"), "utf8");
   assert.match(html, /<script src="\.\/claw-answer-sources\.js"><\/script>/);
-  const app = fs.readFileSync(path.join(staticDir, "app.js"), "utf8");
-  assert.match(app, /PadiemClawAnswerSources\?\.render/);
+  const stream = fs.readFileSync(path.join(staticDir, "chat-streaming-module.js"), "utf8");
+  assert.match(stream, /PadiemClawAnswerSources\?\.render/);
 });
 
 test("the renderer refuses malformed, non-https and missing provenance", () => {

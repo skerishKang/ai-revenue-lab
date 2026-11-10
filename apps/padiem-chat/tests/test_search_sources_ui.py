@@ -81,13 +81,15 @@ def test_search_renderer_is_a_read_only_result_surface():
 def test_model_selected_search_evidence_uses_the_existing_result_renderer():
     # #6776 chooses tools on the server. Keep its browser result contract while
     # removing the former client-side button and request-selection path.
-    _, _, js, _, app = sources()
+    root, _, js, _, app = sources()
+    stream = (root / "static/chat-streaming-module.js").read_text(encoding="utf-8")
     assert "function renderSources(article, evidence, research = null)" in js
     assert "window.PadiemSearchSources = Object.freeze({ render: renderSources });" in js
-    assert "window.PadiemSearchSources?.render?.(article, data.evidence);" in app
-    assert 'if (Array.isArray(data.evidence) && data.evidence.length)' in app
-    assert 'data.tool.id === "web_search"' in app
+    assert "window.PadiemSearchSources?.render?.(article, data.evidence);" in stream
+    assert 'if (Array.isArray(data.evidence) && data.evidence.length)' in stream
+    assert 'data.tool.id === "web_search"' in stream
     assert "payload.web_search" not in app
+    assert "payload.web_search" not in stream
 
 
 def test_streaming_chat_is_not_rewritten_by_the_removed_search_modes():

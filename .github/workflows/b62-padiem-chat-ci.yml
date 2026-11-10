@@ -10,6 +10,19 @@ on:
       - "apps/padiem-chat/**"
       - "apps/korean-ai-platform/**"
       - "packages/padiem-ai-core/**"
+      # #7346: Chat tests read these sibling-bundle sources directly, so a
+      # change there must run the Chat suite even though no Chat file moves.
+      - "apps/claw-connect/claw_connect/menu_model.py"
+      - "apps/claw-connect/claw_connect/runtime.py"
+      - "apps/padiem-voice-stt/voice_stt_contract.py"
+      - "packages/padiem-auth-verify/verify.py"
+      - "packages/padiem-auth-verify/tests/vectors.json"
+      - "packages/padiem-control-plane/identity_authority_durable.py"
+      - "packages/padiem-control-plane/google_oauth_durable_store.py"
+      - "packages/padiem-control-plane/google_oauth_ingress_runtime.py"
+      - "packages/padiem-conversation-ui/answer-copy.js"
+      - "packages/padiem-conversation-ui/scroll-follow.js"
+      - "packages/padiem-conversation-ui/composer-core.js"
       # Chat resolves every Plus/Pro/Max request through the shared product-tier
       # declaration, so a declaration change has to run this suite even when no
       # Chat file moves.

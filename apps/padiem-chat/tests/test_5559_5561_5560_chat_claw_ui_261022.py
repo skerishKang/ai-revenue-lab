@@ -105,9 +105,9 @@ def test_the_status_card_is_the_one_status_surface() -> None:
     assert "if (!model.valid) {" in lifecycle
     assert "renderTaskStatus(article, handlers);" in lifecycle
     # The card is rendered from the first moment of the turn, not after it.
-    app = _read("app.js")
-    assert "window.PadiemChatLifecycle?.renderTaskStatus?.(article);" in app
-    assert "window.PadiemChatLifecycle?.recordTaskEvent?.(article, \"request_sent\");" in app
+    stream = _read("chat-streaming-module.js")
+    assert "window.PadiemChatLifecycle?.renderTaskStatus?.(article);" in stream
+    assert "window.PadiemChatLifecycle?.recordTaskEvent?.(article, \"request_sent\");" in stream
 
 
 def test_the_meta_badge_does_not_repeat_the_card_status() -> None:
@@ -173,13 +173,13 @@ def test_no_stage_is_invented() -> None:
     assert "recordTaskEvent" not in sources
     # The web-search step is recorded only when the completed answer carries
     # the real server tool and its evidence.
-    app = _read("app.js")
-    assert 'if (Array.isArray(data.evidence) && data.evidence.length) {' in app
-    assert 'if (data.tool && data.tool.id === "web_search") {' in app
-    assert 'window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");' in app
-    assert app.index(
+    stream = _read("chat-streaming-module.js")
+    assert 'if (Array.isArray(data.evidence) && data.evidence.length) {' in stream
+    assert 'if (data.tool && data.tool.id === "web_search") {' in stream
+    assert 'window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");' in stream
+    assert stream.index(
         'if (Array.isArray(data.evidence) && data.evidence.length) {'
-    ) < app.index('if (data.tool && data.tool.id === "web_search") {')
+    ) < stream.index('if (data.tool && data.tool.id === "web_search") {')
 
 
 # ── #4816 / Owner 2026-10-31: two persistent icons (A안) ───────────────────

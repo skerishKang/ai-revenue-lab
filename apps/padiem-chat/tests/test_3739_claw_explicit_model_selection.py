@@ -26,6 +26,7 @@ ORIGINAL_ACTIVE_ROUTE_FOR = product_tier_routes.active_route_for
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
 FRONT = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
+STREAM = (ROOT / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
 SETTINGS = (ROOT / "static" / "chat-settings-module.js").read_text(encoding="utf-8")
 GENERAL = (ROOT / "app" / "claw_general_routes.py").read_text(encoding="utf-8")
 MODELS = ("agnes-ai/agnes-3.0-flash", "poolside/laguna-s-2.1")
@@ -165,8 +166,9 @@ def test_claw_browser_sends_grade_without_model_identifier():
     # A Claw request with an attachment must not silently switch to direct B14.
     # #2505: the attachment now travels on the Claw lane itself, so the guard is
     # the product check on the completed-attachment path, not a refusal.
-    assert "if (attachments && !clawGeneralRequest)" in FRONT
+    assert "if (attachments && !clawGeneralRequest)" in STREAM
     assert "if (clawGeneralRequest && attachments)" not in FRONT
+    assert "if (clawGeneralRequest && attachments)" not in STREAM
 
 def test_claw_runtime_fails_closed_when_route_catalog_unavailable():
     from types import SimpleNamespace

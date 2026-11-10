@@ -29,6 +29,8 @@ on:
       # client against the real helper, so a change to that client is a
       # claw-connect surface. It is imported from source, not installed.
       - "apps/korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py"
+      # #7346: the brand-compat test reads the resident agent module directly.
+      - "apps/korean-ai-code-agent/src/padiem_agent/resident.py"
       # #6265 retroactive guard: the contract tests install the shared Core
       # with pip install -e, so a Core source change is a claw-connect
       # surface change even when no claw-connect file moves.

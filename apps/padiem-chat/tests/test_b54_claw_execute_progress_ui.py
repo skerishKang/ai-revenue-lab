@@ -608,6 +608,7 @@ vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(pro
 // #7216 R5 step 5a: showConversation & friends live in the conversation module now;
 // load it ahead of app.js exactly like index.html does.
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
+vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), sandbox, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ type }));

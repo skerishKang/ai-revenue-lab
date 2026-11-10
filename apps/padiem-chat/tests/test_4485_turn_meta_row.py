@@ -153,16 +153,17 @@ def test_the_runtime_chip_has_one_owner() -> None:
 
 def test_every_completion_path_releases_the_preparing_chip() -> None:
     app = _app()
+    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
     # The answering shell starts in the preparing state.
-    assert 'addAssistantShell(uiT("answer-preparing"), "preparing")' in app
+    assert 'deps.addAssistantShell(deps.uiT("answer-preparing"), "preparing")' in stream
     # The stream done path releases it.
-    stream_done = app[app.index("function applyStreamDone("):]
+    stream_done = stream[stream.index("function applyStreamDone("):]
     stream_done = stream_done[: stream_done.index("\n  }")]
     assert "releasePreparingRuntimeLabel?.(article);" in stream_done
     # The durable PC run answer releases it as well.
     assert "releasePreparingRuntimeLabel?.(article);" in app
     # A real status is never removed by the release.
-    assert 'applyRuntimeLabel?.(article, label, "status");' in app
+    assert 'applyRuntimeLabel?.(article, label, "status");' in stream
     # A failure keeps its own status and stays visible.
     assert 'return lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");' in app
     assert "const statusLabel = failureStatusLabel(lifecycle);" in app
