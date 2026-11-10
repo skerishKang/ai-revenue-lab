@@ -15,8 +15,9 @@ from .shared_auth_adapter import SharedChatAuth
 from .shared_auth_compare_flow import _un64, exchange_with_httpx
 from . import httpx_compat as httpx
 from .shared_login_flow import (
-    SharedLoginFlow, clear_login_return_cookie, issue_shared_cookies,
-    login_return_target, parse_extra_origins, revoke_with_httpx,
+    SharedLoginFlow, attach_chat_default_session, clear_login_return_cookie,
+    issue_shared_cookies, login_return_target, parse_extra_origins,
+    revoke_with_httpx,
 )
 from .shared_login_timing import record_login_timing
 
@@ -187,6 +188,9 @@ def create_host_shared_login_flow(env, authority, public_base_url,
                 store=store, legacy_user=current_user_id, notify=deliver_after_signup)
         async def issue(request, user, access, refresh):
             response = RedirectResponse(login_return_target(request), status_code=302)
+            await attach_chat_default_session(
+                response, request, user_id=user, access=access, verifier=verifier,
+            )
             issue_shared_cookies(response, access, refresh)
             return clear_login_return_cookie(response)
         flow = SharedLoginFlow(state_key=_un64(state), client_id=client_id,

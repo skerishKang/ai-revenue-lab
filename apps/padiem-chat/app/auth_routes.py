@@ -418,6 +418,52 @@ async def _write_identity_shadow_after_login(
     return bridged.auth_session.session_id
 
 
+async def _write_shared_identity_shadow_after_login(
+    request: Request,
+    *,
+    product_user_id: str,
+    canonical_subject_id: str,
+    authenticated_at: datetime,
+    expires_at: datetime,
+) -> str | None:
+    """Establish the canonical B62 session behind a verified shared login.
+
+    #7364: the common login (padiem-auth) proves two server facts — the
+    ``account_id`` claim is signed by the common auth authority, and that
+    subject maps to this product user (the reverse lookup that resolved the
+    login). The bridge module binds that verified subject to one canonical B62
+    session (the only place a canonical session is minted), and this function
+    writes the local shadow pointer in the same shape the Google callback
+    writes from its own verified evidence. Without it a shared-login-only
+    account has no shadow row, so every shadow consumer (connectors, calendar,
+    PC device directory) fails closed after the legacy login's session expires.
+
+    Returns the canonical session id to bind into the Chat session cookie, or
+    ``None`` when this deployment has no canonical authority/shadow (the
+    cookie-only compatibility mode) or the authority could not establish the
+    session. A shadow failure never fails the login.
+    """
+
+    authority = getattr(request.app.state, "control_plane_identity_authority", None)
+    shadow_store = getattr(request.app.state, "identity_shadow_store", None)
+    if authority is None or shadow_store is None:
+        return None
+    try:
+        from .control_plane_identity import bridge_verified_canonical_subject
+
+        bridged = await bridge_verified_canonical_subject(
+            authority,
+            product_user_id=product_user_id,
+            canonical_subject_id=canonical_subject_id,
+            authenticated_at=authenticated_at,
+            expires_at=expires_at,
+        )
+        await shadow_store.save_projection(bridged)
+        return bridged.auth_session.session_id
+    except Exception:
+        return None
+
+
 async def establish_b54_canonical_session_after_login(
     request: Request, credential: PasswordCredential
 ) -> B54BridgedIdentitySession | None:
