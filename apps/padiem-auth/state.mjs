@@ -92,6 +92,17 @@ export class AuthState {
     });
   }
 
+  // #7078: password change/reset revokes the user's padiem-auth sessions.
+  // account_chat_users is the only product-user -> canonical-account map here,
+  // so a user with no shared login yet simply has nothing to revoke.
+  accountIdsForChatUser({ productUserId }) {
+    if (typeof productUserId !== 'string' || !/^usr_[A-Za-z0-9_-]{1,79}$/.test(productUserId)) return [];
+    return this.sql.exec(
+      'SELECT DISTINCT account_id FROM account_chat_users WHERE product_user_id=? ORDER BY account_id',
+      productUserId,
+    ).toArray().map((row) => row.account_id);
+  }
+
   // A deleted identity must not be re-created by an automatic login. The
   // tombstone is keyed by the provider fingerprint (email/Google subject hash)
   // and is removed only by an explicit sign-up.

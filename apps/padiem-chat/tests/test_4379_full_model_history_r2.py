@@ -106,7 +106,9 @@ def test_full_long_exchange_r2_round_trip_and_owner_only(monkeypatch):
     assert "::USER_TAIL" in context and "::ANSWER_TAIL" in context
     assert context.endswith("후속 질문")
     assert asyncio.run(store.delete_conversation(OWNER, CID, product_scope=PRODUCT_SCOPE_CHAT))
-    assert not bucket.objects
+    # #7388: the delete is a marker; the stored originals are part of what the
+    # 30-day window keeps and app.conversation_purge removes them with the rows.
+    assert bucket.objects
 
 
 def test_missing_private_full_context_fails_closed():

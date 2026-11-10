@@ -58,6 +58,7 @@ MIGRATIONS = (
     Path(__file__).resolve().parents[1] / "migrations" / "001_auth_history.sql",
     Path(__file__).resolve().parents[1] / "migrations" / "002_projects.sql",
     Path(__file__).resolve().parents[1] / "migrations" / "042_conversation_product_scope.sql",
+    Path(__file__).resolve().parents[1] / "migrations" / "105_conversation_soft_delete.sql",
 )
 
 # Long, but deliberately far below the transport envelope so each assertion is

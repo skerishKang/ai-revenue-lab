@@ -50,6 +50,7 @@ MIGRATIONS = (
     "002_projects.sql",
     "042_conversation_product_scope.sql",
     "053_chat_custom_provider_credentials.sql",
+    "105_conversation_soft_delete.sql",
 )
 
 

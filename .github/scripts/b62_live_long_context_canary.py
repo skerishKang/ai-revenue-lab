@@ -107,6 +107,14 @@ def error_code(payload) -> str:
     return code if isinstance(code, str) and _CODE.fullmatch(code) else "no_safe_error_code"
 
 
+def _session_cookie(origin: str, value: str) -> http.cookiejar.Cookie:
+    host = urlsplit(origin).hostname or ""
+    return http.cookiejar.Cookie(
+        0, "padiem_session", value, None, False, host, True, False,
+        "/", True, True, None, False, None, None, {},
+    )
+
+
 def parse_stream(lines) -> dict:
     """Bounded SSE reader for the composer route contract (delta/done/error)."""
     delta_events = 0
@@ -212,6 +220,17 @@ def run() -> int:
             opener, LOGIN, method="POST",
             payload={"identifier": username, "password": password},
         )
+        if code == 409 and error_code(body) == "email_login_moved":
+            # #7078: the switch moved email login to the common screen. The
+            # same QA identity signs in there and the session is put into the
+            # same cookie jar so every later request keeps its old shape.
+            from shared_login_client import SharedLoginError, shared_login_session_cookie
+            try:
+                shared_cookie = shared_login_session_cookie(ORIGIN, username, password)
+            except SharedLoginError as exc:
+                raise CanaryError(exc.public_code) from exc
+            jar.set_cookie(_session_cookie(ORIGIN, shared_cookie))
+            code, body = 200, {"ok": True}
         if code != 200 or body.get("ok") is not True:
             print("B62_LOGIN=FAILED", "HTTP=" + str(code), "CODE=" + error_code(body))
             return 4

@@ -45,13 +45,13 @@ sys.path.insert(0, str(_HERE.parent.parent / "scripts" / "ops"))
 
 from b62_live_logout_reuse_check import (  # noqa: E402
     CONVERSATIONS,
-    LOGIN,
     LOGOUT,
     ORIGIN,
     STATUS,
     CanaryError,
     bounded_call,
     error_code,
+    login_bounded,
 )
 from post_deploy_real_chat_smoke import (  # noqa: E402
     ORCHESTRATION,
@@ -140,10 +140,7 @@ def _login(opener) -> str:
     """로그인하고 세션 쿠키 값을 돌려준다. 값은 절대 출력하지 않는다."""
     username = os.environ.get(QA_USERNAME_ENV, "")
     password = os.environ.get(QA_PASSWORD_ENV, "")
-    status, body, cookie = bounded_call(
-        opener, LOGIN, method="POST",
-        payload={"identifier": username, "password": password},
-    )
+    status, body, cookie = login_bounded(opener, username, password)
     if status != 200 or body.get("ok") is not True or not cookie:
         code = error_code(body) if isinstance(body, dict) else "no_json_body"
         raise CanaryError(f"login_refused_http_{status}_{code}")

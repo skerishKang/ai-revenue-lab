@@ -213,11 +213,11 @@ def test_scope_notice_is_persistent_owner_scoped_and_cannot_be_replaced():
         for column in ("status", "result_summary", "conversation_id", "workspace_id", "updated_at", "action"):
             connection.execute("ALTER TABLE claw_run_history ADD COLUMN " + column + " TEXT")
         connection.executescript(
-            "CREATE TABLE conversations (id TEXT PRIMARY KEY, user_id TEXT);"
+            "CREATE TABLE conversations (id TEXT PRIMARY KEY, user_id TEXT, deleted_at TEXT);"
             "CREATE TABLE messages (id TEXT PRIMARY KEY, conversation_id TEXT, role TEXT, content TEXT, "
             "created_at TEXT, sequence_number INTEGER, UNIQUE(conversation_id,sequence_number));"
         )
-        connection.execute("INSERT INTO conversations VALUES (?,?)", ("chat_scope", OWNER))
+        connection.execute("INSERT INTO conversations (id,user_id) VALUES (?,?)", ("chat_scope", OWNER))
         connection.execute("UPDATE claw_run_history SET conversation_id='chat_scope',status='running',action='pc_files_query'")
         connection.commit()
         claim = {"version": 1, "requested": "files", "admitted": "files_list", "source": "declared",

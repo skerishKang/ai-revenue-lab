@@ -1404,7 +1404,21 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
                 timeout=30000,
             ) as login_info:
                 page.locator("#passwordLoginSubmit").click()
-            if login_info.value.status != 200:
+            if login_info.value.status == 409:
+                # #7078: the switch moved email login to the common screen.
+                # The web client redirects there; this smoke follows the same
+                # form and waits for the callback to return to Chat.
+                page.wait_for_url(
+                    re.compile(r"^https://auth\.padiem\.net/login"), timeout=30000
+                )
+                form = 'form[action^="/login/password"]'
+                page.locator(form + ' input[name="email"]').fill(username)
+                page.locator(form + ' input[name="password"]').fill(password)
+                page.locator(form + ' button[type="submit"]').click()
+                page.wait_for_url(
+                    re.compile(r"^https://chat\.padiem\.net/"), timeout=30000
+                )
+            elif login_info.value.status != 200:
                 _fail("owner_login_http_" + str(login_info.value.status))
 
             page.locator("#authDialog").wait_for(state="hidden", timeout=20000)
