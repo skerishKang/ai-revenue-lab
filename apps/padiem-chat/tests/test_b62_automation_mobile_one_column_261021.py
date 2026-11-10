@@ -176,7 +176,8 @@ def test_the_wide_screen_order_is_untouched() -> None:
 
 
 def test_the_create_form_scrolls_into_view_when_it_opens() -> None:
-    source = APP_JS.read_text(encoding="utf-8")
+    # R5 B1: 생성 열기 핸들러는 폼 모듈의 wireCreateListeners로 이동했다.
+    source = (APP_JS.parent / "chat-automation-form-module.js").read_text(encoding="utf-8")
     assert "function scrollClawAutomationCreateIntoView()" in definition_source(
         "scrollClawAutomationCreateIntoView"
     )

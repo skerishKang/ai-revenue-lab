@@ -7,6 +7,7 @@ STATIC = ROOT / "apps/padiem-chat/static"
 TARGETS = [
     ROOT / "apps/padiem-chat/app/b14_client.py",
     STATIC / "app.js",
+    STATIC / "chat-app-context.js",
     *sorted(STATIC.glob("chat-*-module.js")),
 ]
 FORBIDDEN = (

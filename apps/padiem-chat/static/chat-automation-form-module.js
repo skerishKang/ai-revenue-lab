@@ -7,34 +7,72 @@
   "use strict";
   window.PadiemChatAutomationFormModule = {
     create(deps) {
+    // --- #3257 Web Automation Create -------------------------------------------
+    // Seven product fields only; the server rejects any authority field and owns
+    // rule id, owner provenance, membership role and the execution target.
+    let clawAutomationCreateInFlight = false;
+    const clawAutomationCreate = document.getElementById("clawAutomationCreate");
+    const clawAutomationCreateToggle = document.getElementById("clawAutomationCreateToggle");
+    const clawAutomationCreateOpen = document.getElementById("clawAutomationCreateOpen");
+    const clawAutomationCreateForm = document.getElementById("clawAutomationCreateForm");
+    const clawAutomationCreateName = document.getElementById("clawAutomationCreateName");
+    const clawAutomationCreateTask = document.getElementById("clawAutomationCreateTask");
+    const clawAutomationCreateKind = document.getElementById("clawAutomationCreateKind");
+    const clawAutomationCreateDaypartField = document.getElementById("clawAutomationCreateDaypartField");
+    const clawAutomationCreateDaypart = document.getElementById("clawAutomationCreateDaypart");
+    const clawAutomationCreateIntervalField = document.getElementById("clawAutomationCreateIntervalField");
+    const clawAutomationCreateInterval = document.getElementById("clawAutomationCreateInterval");
+    const clawAutomationCreateCronField = document.getElementById("clawAutomationCreateCronField");
+    const clawAutomationCreateCron = document.getElementById("clawAutomationCreateCron");
+    const clawAutomationCreateTimezone = document.getElementById("clawAutomationCreateTimezone");
+    const clawAutomationCreateTarget = document.getElementById("clawAutomationCreateTarget");
+    const clawAutomationCreateOutput = document.getElementById("clawAutomationCreateOutput");
+    const clawAutomationCreateStatus = document.getElementById("clawAutomationCreateStatus");
+    const clawAutomationCreateSubmit = document.getElementById("clawAutomationCreateSubmit");
+    const clawAutomationCreateCancel = document.getElementById("clawAutomationCreateCancel");
+    const clawAutomationEditForm = document.getElementById("clawAutomationEditForm");
+    const clawAutomationEditName = document.getElementById("clawAutomationEditName");
+    const clawAutomationEditKind = document.getElementById("clawAutomationEditKind");
+    const clawAutomationEditDaypartField = document.getElementById("clawAutomationEditDaypartField");
+    const clawAutomationEditDaypart = document.getElementById("clawAutomationEditDaypart");
+    const clawAutomationEditIntervalField = document.getElementById("clawAutomationEditIntervalField");
+    const clawAutomationEditInterval = document.getElementById("clawAutomationEditInterval");
+    const clawAutomationEditCronField = document.getElementById("clawAutomationEditCronField");
+    const clawAutomationEditCron = document.getElementById("clawAutomationEditCron");
+    const clawAutomationEditTimezone = document.getElementById("clawAutomationEditTimezone");
+    const clawAutomationEditStatus = document.getElementById("clawAutomationEditStatus");
+    const clawAutomationEditSubmit = document.getElementById("clawAutomationEditSubmit");
+    const clawAutomationEditCancel = document.getElementById("clawAutomationEditCancel");
+    let clawAutomationEditingRuleId = null;
+    let clawAutomationEditInFlight = false;
   // --- #3270 bounded edit (name + schedule only) -----------------------------
   // The form is prefilled ONLY from the existing safe projection, so the
   // browser never sees task/execution material. The PATCH carries exactly the
   // four editable fields; nothing is changed locally before the server answers
   // 200 and the canonical list is reloaded.
   function setClawAutomationEditStatus(messageKey) {
-    if (!deps.clawAutomationEditStatus) return;
+    if (!clawAutomationEditStatus) return;
     if (!messageKey) {
-      deps.clawAutomationEditStatus.hidden = true;
-      deps.clawAutomationEditStatus.textContent = "";
+      clawAutomationEditStatus.hidden = true;
+      clawAutomationEditStatus.textContent = "";
       return;
     }
-    deps.clawAutomationEditStatus.hidden = false;
-    deps.clawAutomationEditStatus.textContent = deps.uiT(messageKey);
+    clawAutomationEditStatus.hidden = false;
+    clawAutomationEditStatus.textContent = deps.uiT(messageKey);
   }
 
   function syncClawAutomationEditFields() {
-    const kind = deps.clawAutomationEditKind ? deps.clawAutomationEditKind.value : "daypart";
-    if (deps.clawAutomationEditDaypartField) deps.clawAutomationEditDaypartField.hidden = kind !== "daypart";
-    if (deps.clawAutomationEditIntervalField) deps.clawAutomationEditIntervalField.hidden = kind !== "interval";
-    if (deps.clawAutomationEditCronField) deps.clawAutomationEditCronField.hidden = kind !== "cron";
+    const kind = clawAutomationEditKind ? clawAutomationEditKind.value : "daypart";
+    if (clawAutomationEditDaypartField) clawAutomationEditDaypartField.hidden = kind !== "daypart";
+    if (clawAutomationEditIntervalField) clawAutomationEditIntervalField.hidden = kind !== "interval";
+    if (clawAutomationEditCronField) clawAutomationEditCronField.hidden = kind !== "cron";
   }
 
   function clawAutomationEditExpression() {
-    const kind = deps.clawAutomationEditKind ? deps.clawAutomationEditKind.value : "daypart";
-    if (kind === "interval") return deps.clawAutomationEditInterval ? deps.clawAutomationEditInterval.value : "";
-    if (kind === "cron") return deps.clawAutomationEditCron ? deps.clawAutomationEditCron.value : "";
-    return deps.clawAutomationEditDaypart ? deps.clawAutomationEditDaypart.value : "";
+    const kind = clawAutomationEditKind ? clawAutomationEditKind.value : "daypart";
+    if (kind === "interval") return clawAutomationEditInterval ? clawAutomationEditInterval.value : "";
+    if (kind === "cron") return clawAutomationEditCron ? clawAutomationEditCron.value : "";
+    return clawAutomationEditDaypart ? clawAutomationEditDaypart.value : "";
   }
 
   function findRuleEditButton(ruleId) {
@@ -48,7 +86,7 @@
   }
 
   function focusRuleEditAfterReload(ruleId) {
-    const button = deps.findRuleEditButton(ruleId);
+    const button = findRuleEditButton(ruleId);
     if (button) {
       button.focus();
       return;
@@ -57,32 +95,32 @@
   }
 
   function openClawAutomationEdit(rule) {
-    if (!deps.clawAutomationEditForm) return;
-    deps.clawAutomationEditingRuleId = rule.rule_id;
-    if (deps.clawAutomationEditName) deps.clawAutomationEditName.value = rule.name || "";
-    if (deps.clawAutomationEditKind) deps.clawAutomationEditKind.value = rule.schedule_kind || "daypart";
-    if (deps.clawAutomationEditTimezone) deps.clawAutomationEditTimezone.value = rule.schedule_timezone || "";
+    if (!clawAutomationEditForm) return;
+    clawAutomationEditingRuleId = rule.rule_id;
+    if (clawAutomationEditName) clawAutomationEditName.value = rule.name || "";
+    if (clawAutomationEditKind) clawAutomationEditKind.value = rule.schedule_kind || "daypart";
+    if (clawAutomationEditTimezone) clawAutomationEditTimezone.value = rule.schedule_timezone || "";
     // Prefill the kind-aware expression control from the projected schedule.
     const expression = rule.schedule_expression || "";
     if (rule.schedule_kind === "interval") {
-      if (deps.clawAutomationEditInterval) deps.clawAutomationEditInterval.value = expression;
+      if (clawAutomationEditInterval) clawAutomationEditInterval.value = expression;
     } else if (rule.schedule_kind === "cron") {
-      if (deps.clawAutomationEditCron) deps.clawAutomationEditCron.value = expression;
-    } else if (deps.clawAutomationEditDaypart) {
-      deps.clawAutomationEditDaypart.value = expression;
+      if (clawAutomationEditCron) clawAutomationEditCron.value = expression;
+    } else if (clawAutomationEditDaypart) {
+      clawAutomationEditDaypart.value = expression;
     }
-    deps.syncClawAutomationEditFields();
-    deps.setClawAutomationEditStatus(null);
-    deps.clawAutomationEditForm.hidden = false;
-    if (deps.clawAutomationEditName) deps.clawAutomationEditName.focus();
+    syncClawAutomationEditFields();
+    setClawAutomationEditStatus(null);
+    clawAutomationEditForm.hidden = false;
+    if (clawAutomationEditName) clawAutomationEditName.focus();
   }
 
   function closeClawAutomationEdit() {
-    const ruleId = deps.clawAutomationEditingRuleId;
-    deps.clawAutomationEditingRuleId = null;
-    if (deps.clawAutomationEditForm) deps.clawAutomationEditForm.hidden = true;
+    const ruleId = clawAutomationEditingRuleId;
+    clawAutomationEditingRuleId = null;
+    if (clawAutomationEditForm) clawAutomationEditForm.hidden = true;
     if (ruleId) {
-      const button = deps.findRuleEditButton(ruleId);
+      const button = findRuleEditButton(ruleId);
       if (button) {
         button.focus();
         return;
@@ -93,17 +131,17 @@
 
   async function submitClawAutomationEdit(event) {
     event.preventDefault();
-    const ruleId = deps.clawAutomationEditingRuleId;
-    if (!deps.clawAutomationEditForm || deps.clawAutomationEditInFlight || !ruleId) return;
+    const ruleId = clawAutomationEditingRuleId;
+    if (!clawAutomationEditForm || clawAutomationEditInFlight || !ruleId) return;
     // Exactly the four editable fields — no authority or immutable field.
     const payload = {
-      name: deps.clawAutomationEditName ? deps.clawAutomationEditName.value : "",
-      schedule_kind: deps.clawAutomationEditKind ? deps.clawAutomationEditKind.value : "",
-      schedule_expression: deps.clawAutomationEditExpression(),
-      schedule_timezone: deps.clawAutomationEditTimezone ? deps.clawAutomationEditTimezone.value : "",
+      name: clawAutomationEditName ? clawAutomationEditName.value : "",
+      schedule_kind: clawAutomationEditKind ? clawAutomationEditKind.value : "",
+      schedule_expression: clawAutomationEditExpression(),
+      schedule_timezone: clawAutomationEditTimezone ? clawAutomationEditTimezone.value : "",
     };
-    deps.clawAutomationEditInFlight = true;
-    if (deps.clawAutomationEditSubmit) deps.clawAutomationEditSubmit.disabled = true;
+    clawAutomationEditInFlight = true;
+    if (clawAutomationEditSubmit) clawAutomationEditSubmit.disabled = true;
     try {
       const response = await fetch(
         `/api/claw/automation/rules/${encodeURIComponent(ruleId)}`,
@@ -115,83 +153,83 @@
       );
       const data = await response.json().catch(() => null);
       if (response.status === 200 && data && data.ok === true) {
-        deps.setClawAutomationEditStatus("claw-automation-edit-saved");
+        setClawAutomationEditStatus("claw-automation-edit-saved");
         await deps.loadClawAutomationRules();
-        deps.closeClawAutomationEdit();
+        closeClawAutomationEdit();
         return;
       }
       const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
       if (response.status === 403 || code === "owner_role_required") {
-        deps.setClawAutomationEditStatus("claw-automation-toggle-forbidden");
+        setClawAutomationEditStatus("claw-automation-toggle-forbidden");
       } else if (response.status === 404 || code === "automation_rule_not_found") {
-        deps.setClawAutomationEditStatus("claw-automation-toggle-not-found");
+        setClawAutomationEditStatus("claw-automation-toggle-not-found");
       } else if (code === "automation_rule_not_mutable") {
-        deps.setClawAutomationEditStatus("claw-automation-toggle-not-mutable");
+        setClawAutomationEditStatus("claw-automation-toggle-not-mutable");
       } else if (code === "automation_rule_not_execution_ready") {
-        deps.setClawAutomationEditStatus("claw-automation-toggle-not-ready");
+        setClawAutomationEditStatus("claw-automation-toggle-not-ready");
       } else if (response.status === 400 || response.status === 413) {
-        deps.setClawAutomationEditStatus("claw-automation-edit-invalid");
+        setClawAutomationEditStatus("claw-automation-edit-invalid");
       } else {
-        deps.setClawAutomationEditStatus("claw-automation-edit-failed");
+        setClawAutomationEditStatus("claw-automation-edit-failed");
       }
       // Failure: the form stays open with the entered values untouched and the
       // rendered rows unchanged — nothing is optimistically edited.
     } catch (_) {
-      deps.setClawAutomationEditStatus("claw-automation-edit-failed");
+      setClawAutomationEditStatus("claw-automation-edit-failed");
     } finally {
-      deps.clawAutomationEditInFlight = false;
-      if (deps.clawAutomationEditSubmit) deps.clawAutomationEditSubmit.disabled = false;
+      clawAutomationEditInFlight = false;
+      if (clawAutomationEditSubmit) clawAutomationEditSubmit.disabled = false;
     }
   }
 
   function setClawAutomationCreateStatus(messageKey) {
-    if (!deps.clawAutomationCreateStatus) return;
+    if (!clawAutomationCreateStatus) return;
     if (!messageKey) {
-      deps.clawAutomationCreateStatus.hidden = true;
-      deps.clawAutomationCreateStatus.textContent = "";
+      clawAutomationCreateStatus.hidden = true;
+      clawAutomationCreateStatus.textContent = "";
       return;
     }
-    deps.clawAutomationCreateStatus.hidden = false;
-    deps.clawAutomationCreateStatus.textContent = deps.uiT(messageKey);
+    clawAutomationCreateStatus.hidden = false;
+    clawAutomationCreateStatus.textContent = deps.uiT(messageKey);
   }
 
   function syncClawAutomationCreateFields() {
-    const kind = deps.clawAutomationCreateKind ? deps.clawAutomationCreateKind.value : "daypart";
-    if (deps.clawAutomationCreateDaypartField) deps.clawAutomationCreateDaypartField.hidden = kind !== "daypart";
-    if (deps.clawAutomationCreateIntervalField) deps.clawAutomationCreateIntervalField.hidden = kind !== "interval";
-    if (deps.clawAutomationCreateCronField) deps.clawAutomationCreateCronField.hidden = kind !== "cron";
+    const kind = clawAutomationCreateKind ? clawAutomationCreateKind.value : "daypart";
+    if (clawAutomationCreateDaypartField) clawAutomationCreateDaypartField.hidden = kind !== "daypart";
+    if (clawAutomationCreateIntervalField) clawAutomationCreateIntervalField.hidden = kind !== "interval";
+    if (clawAutomationCreateCronField) clawAutomationCreateCronField.hidden = kind !== "cron";
   }
 
   function clawAutomationCreateExpression() {
-    const kind = deps.clawAutomationCreateKind ? deps.clawAutomationCreateKind.value : "daypart";
-    if (kind === "interval") return deps.clawAutomationCreateInterval ? deps.clawAutomationCreateInterval.value : "";
-    if (kind === "cron") return deps.clawAutomationCreateCron ? deps.clawAutomationCreateCron.value : "";
-    return deps.clawAutomationCreateDaypart ? deps.clawAutomationCreateDaypart.value : "";
+    const kind = clawAutomationCreateKind ? clawAutomationCreateKind.value : "daypart";
+    if (kind === "interval") return clawAutomationCreateInterval ? clawAutomationCreateInterval.value : "";
+    if (kind === "cron") return clawAutomationCreateCron ? clawAutomationCreateCron.value : "";
+    return clawAutomationCreateDaypart ? clawAutomationCreateDaypart.value : "";
   }
 
   function resetClawAutomationCreateForm() {
-    if (deps.clawAutomationCreateForm) deps.clawAutomationCreateForm.reset();
-    deps.syncClawAutomationCreateFields();
-    deps.setClawAutomationCreateStatus(null);
+    if (clawAutomationCreateForm) clawAutomationCreateForm.reset();
+    syncClawAutomationCreateFields();
+    setClawAutomationCreateStatus(null);
   }
 
   function closeClawAutomationCreate() {
-    if (deps.clawAutomationCreate && typeof deps.clawAutomationCreate.open === "boolean") {
-      deps.clawAutomationCreate.open = false;
+    if (clawAutomationCreate && typeof clawAutomationCreate.open === "boolean") {
+      clawAutomationCreate.open = false;
     }
     // The visible control is the header button, so the focus goes there.
-    if (deps.clawAutomationCreateOpen) deps.clawAutomationCreateOpen.focus();
-    else if (deps.clawAutomationCreateToggle) deps.clawAutomationCreateToggle.focus();
+    if (clawAutomationCreateOpen) clawAutomationCreateOpen.focus();
+    else if (clawAutomationCreateToggle) clawAutomationCreateToggle.focus();
   }
 
   function scrollClawAutomationCreateIntoView() {
     // The narrow-window layout puts the rule list before the create form, so
     // opening the form has to bring it into view. A form that is already
     // visible stays where it is, and the wide-screen layout never moves.
-    if (!deps.clawAutomationCreate) return;
+    if (!clawAutomationCreate) return;
     const host = deps.clawAutomation.closest(".automation-view");
     if (!host) return;
-    const form = deps.clawAutomationCreate.getBoundingClientRect();
+    const form = clawAutomationCreate.getBoundingClientRect();
     const area = host.getBoundingClientRect();
     // A form whose top is already on screen stays where it is: the view only
     // moves when the form would otherwise open below the fold.
@@ -204,21 +242,21 @@
 
   async function submitClawAutomationCreate(event) {
     event.preventDefault();
-    if (!deps.clawAutomationCreateForm || deps.clawAutomationCreateInFlight) return;
+    if (!clawAutomationCreateForm || clawAutomationCreateInFlight) return;
     // The exact seven keys the server accepts — nothing else is ever sent, so
     // an authority field cannot leak into the payload through the form.
     const payload = {
-      name: deps.clawAutomationCreateName ? deps.clawAutomationCreateName.value : "",
-      task: deps.clawAutomationCreateTask ? deps.clawAutomationCreateTask.value : "",
-      schedule_kind: deps.clawAutomationCreateKind ? deps.clawAutomationCreateKind.value : "",
-      schedule_expression: deps.clawAutomationCreateExpression(),
-      schedule_timezone: deps.clawAutomationCreateTimezone ? deps.clawAutomationCreateTimezone.value : "",
-      target_source: deps.clawAutomationCreateTarget ? deps.clawAutomationCreateTarget.value : "",
-      output_type: deps.clawAutomationCreateOutput ? deps.clawAutomationCreateOutput.value : "",
+      name: clawAutomationCreateName ? clawAutomationCreateName.value : "",
+      task: clawAutomationCreateTask ? clawAutomationCreateTask.value : "",
+      schedule_kind: clawAutomationCreateKind ? clawAutomationCreateKind.value : "",
+      schedule_expression: clawAutomationCreateExpression(),
+      schedule_timezone: clawAutomationCreateTimezone ? clawAutomationCreateTimezone.value : "",
+      target_source: clawAutomationCreateTarget ? clawAutomationCreateTarget.value : "",
+      output_type: clawAutomationCreateOutput ? clawAutomationCreateOutput.value : "",
     };
-    deps.clawAutomationCreateInFlight = true;
-    if (deps.clawAutomationCreateSubmit) deps.clawAutomationCreateSubmit.disabled = true;
-    deps.setClawAutomationCreateStatus("claw-automation-create-saving");
+    clawAutomationCreateInFlight = true;
+    if (clawAutomationCreateSubmit) clawAutomationCreateSubmit.disabled = true;
+    setClawAutomationCreateStatus("claw-automation-create-saving");
     try {
       const response = await fetch("/api/claw/automation/rules", {
         method: "POST",
@@ -229,30 +267,96 @@
       if (response.status === 201 && data && data.ok === true && data.rule) {
         // Success is the reloaded canonical list; no optimistic fake row is
         // ever inserted locally.
-        deps.resetClawAutomationCreateForm();
+        resetClawAutomationCreateForm();
         await deps.loadClawAutomationRules();
-        deps.closeClawAutomationCreate();
+        closeClawAutomationCreate();
         return;
       }
       const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
       if (response.status === 401) {
-        deps.setClawAutomationCreateStatus("claw-automation-create-unauthorized");
+        setClawAutomationCreateStatus("claw-automation-create-unauthorized");
       } else if (response.status === 403 || code === "owner_role_required") {
         // Bounded denial: never names or reveals another user's role/identity.
-        deps.setClawAutomationCreateStatus("claw-automation-create-forbidden");
+        setClawAutomationCreateStatus("claw-automation-create-forbidden");
       } else if (code === "automation_execution_target_unavailable") {
         // Truthful: nothing was saved; creation is not runtime-ready yet.
-        deps.setClawAutomationCreateStatus("claw-automation-create-runtime-unavailable");
+        setClawAutomationCreateStatus("claw-automation-create-runtime-unavailable");
       } else if (response.status === 400 || response.status === 413) {
-        deps.setClawAutomationCreateStatus("claw-automation-create-invalid");
+        setClawAutomationCreateStatus("claw-automation-create-invalid");
       } else {
-        deps.setClawAutomationCreateStatus("claw-automation-create-failed");
+        setClawAutomationCreateStatus("claw-automation-create-failed");
       }
     } catch (_) {
-      deps.setClawAutomationCreateStatus("claw-automation-create-failed");
+      setClawAutomationCreateStatus("claw-automation-create-failed");
     } finally {
-      deps.clawAutomationCreateInFlight = false;
-      if (deps.clawAutomationCreateSubmit) deps.clawAutomationCreateSubmit.disabled = false;
+      clawAutomationCreateInFlight = false;
+      if (clawAutomationCreateSubmit) clawAutomationCreateSubmit.disabled = false;
+    }
+  }
+
+
+  // R5 B1 (rule (b)): the edit and create listeners register from app.js at
+  // the original block positions; see automationForm.wireEditListeners() and
+  // automationForm.wireCreateListeners().
+  function wireEditListeners() {
+    if (clawAutomationEditForm) {
+      clawAutomationEditForm.addEventListener("submit", (event) => {
+        void submitClawAutomationEdit(event);
+      });
+    }
+    if (clawAutomationEditKind) {
+      clawAutomationEditKind.addEventListener("change", syncClawAutomationEditFields);
+    }
+    if (clawAutomationEditCancel) {
+      clawAutomationEditCancel.addEventListener("click", () => closeClawAutomationEdit());
+    }
+  }
+
+  function wireCreateListeners() {
+    if (clawAutomationCreateForm) {
+      clawAutomationCreateForm.addEventListener("submit", (event) => {
+        void submitClawAutomationCreate(event);
+      });
+    }
+    if (clawAutomationCreateKind) {
+      clawAutomationCreateKind.addEventListener("change", syncClawAutomationCreateFields);
+    }
+    if (clawAutomationCreateCancel) {
+      clawAutomationCreateCancel.addEventListener("click", () => {
+        resetClawAutomationCreateForm();
+        closeClawAutomationCreate();
+      });
+    }
+    if (clawAutomationCreate) {
+      clawAutomationCreate.addEventListener("toggle", () => {
+        // The header button owns the disclosure, so it carries the state.
+        if (clawAutomationCreateOpen) {
+          clawAutomationCreateOpen.setAttribute(
+            "aria-expanded", clawAutomationCreate.open ? "true" : "false",
+          );
+        }
+        if (clawAutomationCreate.open) {
+          setClawAutomationCreateStatus(null);
+          if (clawAutomationCreateName) clawAutomationCreateName.focus();
+        } else if (clawAutomationCreateOpen) {
+          clawAutomationCreateOpen.focus();
+        }
+      });
+    }
+    if (clawAutomationCreateOpen) {
+      if (!clawAutomationCreate) {
+        // No form to open, so the control is not offered at all.
+        clawAutomationCreateOpen.hidden = true;
+      } else {
+        clawAutomationCreateOpen.addEventListener("click", () => {
+          clawAutomationCreate.open = !clawAutomationCreate.open;
+          // On a narrow window the form sits below the rule list, so the view
+          // follows the user to it instead of leaving the input off-screen.
+          if (clawAutomationCreate.open) {
+            scrollClawAutomationCreateIntoView();
+          }
+        });
+      }
     }
   }
 
@@ -272,6 +376,8 @@
         closeClawAutomationCreate,
         scrollClawAutomationCreateIntoView,
         submitClawAutomationCreate,
+        wireEditListeners,
+        wireCreateListeners,
       };
     },
   };

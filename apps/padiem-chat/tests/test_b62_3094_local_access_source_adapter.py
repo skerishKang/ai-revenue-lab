@@ -1102,7 +1102,9 @@ def test_the_adapter_is_wired_last_and_holds_no_state_of_its_own() -> None:
     assert adapter.count(f'"{CLAW_LOCAL_ACCESS_PATH}"') == 1
 
     # The panel surface keeps owning rendering and never learns to fetch truth.
-    app_js = APP_JS_PATH.read_text(encoding="utf-8")
+    # R5 B1: the panel (and its CTA event) moved to chat-local-pc-panel-module.js.
+    app_js = (APP_JS_PATH.read_text(encoding="utf-8")
+              + APP_JS_PATH.parent.joinpath("chat-local-pc-panel-module.js").read_text(encoding="utf-8"))
     assert CLAW_LOCAL_ACCESS_PATH not in app_js
     assert "padiem:claw-local-connect-requested" in app_js
 

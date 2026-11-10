@@ -28,7 +28,10 @@ B62_STREAM_PATH = "/api/chat/stream"
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 # R5 0단계(0-2): app.js에서 분리된 chat-*-module.js도 같은 배포 일치 검사 대상이다.
 # 새 모듈은 index.html에 script 줄만 추가되면 여기에 자동으로 들어온다.
-_CHAT_MODULES = sorted((_REPO_ROOT / "apps/padiem-chat/static").glob("chat-*-module.js"))
+_CHAT_MODULES = sorted(
+    list((_REPO_ROOT / "apps/padiem-chat/static").glob("chat-*-module.js"))
+    + [_REPO_ROOT / "apps/padiem-chat/static/chat-app-context.js"]
+)
 _MODULE_ASSETS = tuple(
     (
         f"CHAT_MODULE_{path.stem.replace('-', '_').upper()}",
