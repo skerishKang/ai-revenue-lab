@@ -39,7 +39,7 @@ from app.pilot.platform import call_platform_chat_completions, stream_platform_c
 from app.pilot.platform_secrets import get_platform_provider
 from app.pilot.router_core import resolve_manual_route
 
-from _registry_values import require_owner_document
+from _registry_values import require_owner_document, requires_owner_document
 
 # The subject is the Owner's retirement roster: which providers and identities
 # were removed is a property of the owner's registry document (#7241 3b).
