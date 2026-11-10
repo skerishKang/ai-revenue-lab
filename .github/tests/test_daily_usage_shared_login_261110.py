@@ -105,5 +105,45 @@ class SharedLogoutVerdictTest(unittest.TestCase):
         self.assertNotIn("=", head.split("remaining=", 1)[1].replace(",", ""))
 
 
+class SharedEndpointVerdictTest(unittest.TestCase):
+    """#7364: shared login must resolve devices and the three workspace rows."""
+
+    ROWS = checks.SHARED_GOOGLE_ROWS
+
+    def _rows(self, states):
+        return [
+            {"connector_id": cid, "workspace_state": state}
+            for cid, state in zip(self.ROWS, states)
+        ]
+
+    def test_verified_rows_pass(self):
+        rows = self._rows(["connected", "not_connected", "ambiguous"])
+        self.assertEqual(
+            checks.shared_endpoint_verdict(200, rows),
+            ("PASS", "none", "devices=200 rows=3"),
+        )
+
+    def test_an_unverified_row_fails(self):
+        rows = self._rows(["connected", "unverified", "not_connected"])
+        verdict, code, head = checks.shared_endpoint_verdict(200, rows)
+        self.assertEqual((verdict, code), ("FAIL", "shared_connectors_unverified"))
+        self.assertEqual(head, "devices=200 rows=3")
+
+    def test_missing_rows_fail(self):
+        verdict, code, _ = checks.shared_endpoint_verdict(200, [])
+        self.assertEqual((verdict, code), ("FAIL", "shared_connector_rows_missing"))
+
+    def test_devices_status_fails(self):
+        verdict, code, head = checks.shared_endpoint_verdict(503, [])
+        self.assertEqual((verdict, code), ("FAIL", "shared_devices_503"))
+        self.assertEqual(head, "devices=503")
+
+    def test_head_carries_no_identifiers(self):
+        rows = self._rows(["connected", "connected", "connected"])
+        _, _, head = checks.shared_endpoint_verdict(200, rows)
+        for needle in self.ROWS:
+            self.assertNotIn(needle, head)
+
+
 if __name__ == "__main__":
     unittest.main()
