@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 from dataclasses import dataclass
 from types import SimpleNamespace
+from pathlib import Path
 
 import httpx
 import pytest
@@ -20,6 +22,16 @@ from app.config import Settings
 from app.history import ProjectProfile
 from app.main import api_chat_stream, create_app
 from app.usage_gate import UsageDecision
+
+
+def _effective_registry_document() -> dict:
+    """The document a switched host actually answers from, not the placeholder."""
+    raw = (os.environ.get("PADIEM_MODELS_REGISTRY_OVERRIDE", "").strip()
+           or os.environ.get("PADIEM_MODELS_REGISTRY", "").strip())
+    path = Path(raw).expanduser() if raw else (
+        Path(__file__).resolve().parents[3]
+        / "apps" / "korean-ai-platform" / "app" / "pilot" / "b14_models.json")
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 SESSION_SECRET = "slice18-session-secret-not-a-real-credential-000000"
@@ -712,13 +724,9 @@ def test_gemini_35_registry_declaration_exposes_pc_tools_but_gemma_does_not():
     from pathlib import Path
     from app.b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
 
-    registry_path = (
-        Path(__file__).resolve().parents[3]
-        / "apps/korean-ai-platform/app/pilot/b14_models.json"
-    )
-    models = {row["id"]: row for row in json.loads(registry_path.read_text())["models"]}
+    models = {row["id"]: row for row in _effective_registry_document().get("models", [])}
     # 261109 · #6828 3단계: the declaration contract is exercised on the
-    # placeholder document's own rows — one tools-capable, one not.
+    # switch document's own rows — one tools-capable, one not.
     tools_row = next(row for row in models.values() if "tools" in row["capabilities"])
     plain_row = next(row for row in models.values() if "tools" not in row["capabilities"])
     for model_id, expected in (

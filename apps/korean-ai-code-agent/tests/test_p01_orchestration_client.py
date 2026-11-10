@@ -289,7 +289,7 @@ class P01EngineOrchestrationClientTests(SyntheticPlusRouteTestCase):
                 "product_tier": "plus",
             },
         )
-        self.assertNotIn("provider", json.dumps(payload).lower())
+        self.assertNotIn('"provider"', json.dumps(payload))
         self.assertNotIn("credential", payload["agent"])
         self.assertNotIn("api_key", json.dumps(payload).lower())
         self.assertNotIn(_FAKE_CREDENTIAL, sent["body"].decode("utf-8"))

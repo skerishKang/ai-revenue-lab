@@ -768,7 +768,7 @@ class SyntheticPlusRouteBoundaryTests(unittest.TestCase):
         with synthetic_plus_route_installed() as model_id:
             self.assertEqual(model_id, synthetic_model_id())
             self.assertEqual(
-                p01_adapter_module.active_route_for(ProductTierLabel.PLUS).model_id,
+                p01_adapter_module.effective_active_route_for(ProductTierLabel.PLUS).model_id,
                 model_id,
             )
             # The injected entry is a legal executable route for the canonical

@@ -27,11 +27,24 @@ B14_APP_DIR = REPO / "apps" / "korean-ai-platform"
 B14_GETS = ("/api/pilot/admin/models", "/api/pilot/provider-readiness")
 
 
+def _effective_registry_document() -> dict:
+    """The document a switched host actually answers from, not the placeholder.
+
+    The repository ships an empty placeholder, so the owner route set under
+    test is read from the same private-registry switch the child B14 process
+    uses (PADIEM_MODELS_REGISTRY / OVERRIDE). On a host without the switch
+    the placeholder file is the fallback.
+    """
+    raw = (os.environ.get("PADIEM_MODELS_REGISTRY_OVERRIDE", "").strip()
+           or os.environ.get("PADIEM_MODELS_REGISTRY", "").strip())
+    path = Path(raw).expanduser() if raw else (
+        B14_APP_DIR / "app" / "pilot" / "b14_models.json")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def _registered_ids_from_owner_registry() -> set[str]:
-    """Follow B14's current owner-approved JSON, not a stale fixed model count."""
-    registry_path = B14_APP_DIR / "app" / "pilot" / "b14_models.json"
-    payload = json.loads(registry_path.read_text(encoding="utf-8"))
-    models = payload["models"]
+    """Follow the effective registry document, not a stale fixed model count."""
+    models = _effective_registry_document().get("models") or []
     ids = {row["id"] for row in models}
     assert len(ids) == len(models), "Owner registry contains duplicate model IDs"
     return ids
@@ -43,10 +56,8 @@ def _free_ids_from_owner_registry() -> set[str]:
     This mirrors the source's own evidenced-free rule, so a roster change does
     not strand a fixed snapshot here.
     """
-    registry_path = B14_APP_DIR / "app" / "pilot" / "b14_models.json"
-    payload = json.loads(registry_path.read_text(encoding="utf-8"))
     free_ids: set[str] = set()
-    for row in payload["models"]:
+    for row in (_effective_registry_document().get("models") or []):
         capabilities = row.get("capabilities") or ()
         input_price = row.get("input_price_usd_per_1m")
         output_price = row.get("output_price_usd_per_1m")
@@ -60,7 +71,7 @@ def _free_ids_from_owner_registry() -> set[str]:
             free_ids.add(row["id"])
     return free_ids
 # 261109 · #6828 3단계: the repository ships no model value, so the owner
-# route set under test is the placeholder registry document's own ids.
+# route set under test is the switch document's own ids.
 OWNER_IDS = _registered_ids_from_owner_registry()
 
 # Child process is the B14 package named 'app'; the parent stays B66's

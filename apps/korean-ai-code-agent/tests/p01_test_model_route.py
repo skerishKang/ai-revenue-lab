@@ -5,6 +5,7 @@ from unittest import mock
 from kagent import p01_adapter as p01_adapter_module
 from kagent import p01_orchestration_client as p01_client_module
 from padiem_control_plane import product_tier_routes as tier_routes
+from padiem_control_plane import product_tier_routes_private as tier_routes_private
 
 
 SYNTHETIC_PLUS_MODEL_ID = "test/plus-synthetic"
@@ -28,8 +29,15 @@ class SyntheticPlusRouteMixin:
         super().setUp()
         executable = frozenset({SYNTHETIC_PLUS_MODEL_ID})
         patchers = [
-            mock.patch.object(p01_adapter_module, "active_route_for", _active_route_for),
-            mock.patch.object(p01_client_module, "active_route_for", _active_route_for),
+            mock.patch.object(
+                p01_adapter_module, "effective_active_route_for", _active_route_for
+            ),
+            mock.patch.object(
+                p01_client_module, "effective_active_route_for", _active_route_for
+            ),
+            mock.patch.object(
+                tier_routes_private, "effective_active_route_for", _active_route_for
+            ),
             mock.patch.object(
                 p01_client_module,
                 "PADIEM_EXECUTABLE_MODEL_IDS",
