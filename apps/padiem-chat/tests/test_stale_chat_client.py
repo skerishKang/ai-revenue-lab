@@ -43,9 +43,9 @@ async def test_real_orchestration_contract_and_other_unknowns(monkeypatch):
 
 def test_http_422_is_terminal_and_shows_refresh(tmp_path):
     transport = (Path(__file__).parents[1] / "static" / "chat-transport.js").read_text(encoding="utf-8")
-    app = (Path(__file__).parents[1] / "static" / "app.js").read_text(encoding="utf-8")
+    stream = (Path(__file__).parents[1] / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
     # The real outer catch suppresses recovery when transport marks a terminal refusal.
-    assert "!error?.terminalRecord" in app
+    assert "!error?.terminalRecord" in stream
     js = r"""
 global.window = globalThis;
 let calls = [];

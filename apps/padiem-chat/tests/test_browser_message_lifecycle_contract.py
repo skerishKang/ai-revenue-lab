@@ -36,6 +36,7 @@ def _run_node(script: str) -> dict:
 def test_lifecycle_helper_load_order_and_app_ownership() -> None:
     html = INDEX_PATH.read_text(encoding="utf-8")
     app = APP_PATH.read_text(encoding="utf-8")
+    stream = APP_PATH.with_name("chat-streaming-module.js").read_text(encoding="utf-8")
 
     assert html.index('<script src="./conversation-state.js"></script>') < html.index('<script src="./message-lifecycle.js"></script>')
     assert html.index('<script src="./message-lifecycle.js"></script>') < html.index('<script src="./app.js"></script>')
@@ -45,9 +46,11 @@ def test_lifecycle_helper_load_order_and_app_ownership() -> None:
     assert 'let activeRequestController = null;' in app
     assert 'let activeRequestCancelReason = null;' in app
     assert 'let conversationEpoch = 0;' in app
-    assert 'activeRequestCancelReason = "user_cancel"' in app
+    assert 'deps.activeRequestCancelReason = "user_cancel"' in stream
     assert 'PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING)' in app
+    assert 'PadiemChatLifecycle.set(article, deps.MESSAGE_LIFECYCLE.STREAMING)' in stream
     assert 'PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED)' in app
+    assert 'PadiemChatLifecycle.set(article, deps.MESSAGE_LIFECYCLE.COMPLETED)' in stream
     assert 'PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED)' in app
 
 

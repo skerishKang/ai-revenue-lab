@@ -178,6 +178,7 @@ const assert = require("node:assert/strict");
     result = subprocess.run(["node", "-e", script], text=True, encoding="utf-8", capture_output=True)
     assert result.returncode == 0, result.stderr
     app = (static / "app.js").read_text()
+    STREAM_JS = (static / "chat-streaming-module.js").read_text()
     # #261102: the payload builder maps every pending chip to its item; a
     # file-lane attachment still becomes exactly { type: "file", file_id }.
     # #7216 R5 step 5a: the payload builder moved into chat-conversation-module.js.
@@ -186,7 +187,7 @@ const assert = require("node:assert/strict");
     # #6579 3단계 adds a progress callback after the signal; the guarded
     # contract (the same lane upload, same abort signal) is unchanged, now
     # applied per attachment in the multi-attach loop.
-    assert 'window.PadiemFileLane.upload(current.file, controller.signal,' in app
+    assert 'window.PadiemFileLane.upload(current.file, controller.signal,' in STREAM_JS
 
 
 def test_worker_config_never_borrows_a_process_secret(monkeypatch):
@@ -298,9 +299,9 @@ async def test_hwpx_upload_real_lane_extraction_reaches_chat_context(file_app, m
         assert response.json()["answer"] == "synthetic answer from document"
         assert observed and "HWPX synthetic context 261101" in observed[0]
         # The normal Chat composer deliberately sends attachments to /api/chat.
-        source = (Path(__file__).resolve().parents[1] / "static" / "app.js").read_text(encoding="utf-8")
+        source = (Path(__file__).resolve().parents[1] / "static" / "chat-streaming-module.js").read_text(encoding="utf-8")
         assert "if (attachments && !clawGeneralRequest)" in source
-        assert "requestCompletedAnswer(article, payload" in source
+        assert "deps.requestCompletedAnswer(article, payload" in source
         with pytest.raises(AttachmentValidationError):
             await lane.resolve(OTHER, ref)
 

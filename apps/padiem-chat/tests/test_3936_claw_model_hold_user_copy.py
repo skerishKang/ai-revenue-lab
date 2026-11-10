@@ -23,6 +23,7 @@ from app.claw_general_routes import _MODEL_HOLD_USER_MESSAGE
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
+STREAM = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
 TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 
@@ -32,6 +33,7 @@ const vm = require("vm");
 const path = require("path");
 const root = process.argv[1];
 const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
+const stream = fs.readFileSync(path.join(root, "chat-streaming-module.js"), "utf8");
 
 function assert(condition, label) { if (!condition) throw Error(label); }
 function element(type) {
@@ -115,7 +117,7 @@ assert(replays === 1, "explicit B62 retry remains once only");
 
 // 6. A HOLD frame from the live relay is classified by code only: the transport
 //    never forwards a raw server string as the Claw category.
-assert(app.includes('clawGeneralFailure(data && data.error ? data.error.code : "")'),
+assert(stream.includes('deps.clawGeneralFailure(data && data.error ? data.error.code : "")'),
   "live SSE error frame classified by closed code");
 console.log("CLAW_HOLD_BOUNDED_COPY=PASS");
 console.log("ENGINE_FAILURE_COPY_UNCHANGED=PASS");
@@ -127,17 +129,17 @@ console.log("B62_CHAT_RETRY_UNCHANGED=PASS");
 
 def _claw_frame_handler_source() -> str:
     """The live `error` frame branch, up to the sibling guard that follows it."""
-    start = APP.index('        if (frame.event === "error") {')
-    selection = APP.index('clawGeneralFailure(data && data.error', start)
-    end = APP.index("\n        if (clawGeneralRequest && verifiedClawRecovery", selection)
-    return APP[start:end]
+    start = STREAM.index('        if (frame.event === "error") {')
+    selection = STREAM.index('deps.clawGeneralFailure(data && data.error', start)
+    end = STREAM.index("\n        if (clawGeneralRequest && verifiedClawRecovery", selection)
+    return STREAM[start:end]
 
 
 def test_hold_copy_is_selected_only_after_a_verified_terminal_outranks_it():
     """#3935 recovery truth must keep priority over the #3936 bounded copy."""
     frame = _claw_frame_handler_source()
     guard = frame.index("verifiedClawRecovery.completionAllowed()")
-    selection = frame.index('clawGeneralFailure(data && data.error')
+    selection = frame.index('deps.clawGeneralFailure(data && data.error')
     assert guard < selection, "verified failure/cancel/approval state still wins"
     # The verified-terminal guard returns before the classification is reached.
     outrank = frame[guard:selection]
@@ -145,7 +147,7 @@ def test_hold_copy_is_selected_only_after_a_verified_terminal_outranks_it():
     assert "return true;" in outrank
     assert "const message = clawGeneralRequest" in frame
     # Standalone Chat maps the code to safe copy; Claw keeps its own refusal copy.
-    assert "chatTransport.streamErrorMessage(data)" in frame[frame.index("const message"):]
+    assert "deps.chatTransport.streamErrorMessage(data)" in frame[frame.index("const message"):]
     assert "data.error.message" not in frame[frame.index("const message"):]
 
 
@@ -182,14 +184,15 @@ def test_hold_copy_locale_parity_and_single_wording_authority():
 def test_bounded_copy_is_applied_at_every_claw_failure_surface():
     # Live SSE error frame, streamed-partial catch, and the caller catch are the
     # three places that previously collapsed every Claw failure to unknown.
-    assert APP.count("clawGeneralFailure(") == 4  # 1 definition body reference + 3 call sites
-    assert "const terminalFailure = chatTransport.errorFor(data, message);" in APP
-    assert "renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(terminalFailure), clawFailure, terminalFailure.code)" in APP
-    assert "renderStreamError(article, clawFailure.message," in APP
-    assert "clawGeneralRequest && error?.clawFailureDetail === \"engine_provider_rate_limited\"" in APP
+    assert APP.count("clawGeneralFailure(") == 2  # 1 definition + 1 streamingModule deps getter in app.js
+    assert STREAM.count("deps.clawGeneralFailure(") == 3  # 3 call sites in chat-streaming-module.js
+    assert "const terminalFailure = deps.chatTransport.errorFor(data, message);" in STREAM
+    assert "deps.renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, deps.lifecycleForError(terminalFailure), clawFailure, terminalFailure.code)" in STREAM
+    assert "deps.renderStreamError(article, clawFailure.message," in STREAM
+    assert "clawGeneralRequest && error?.clawFailureDetail === \"engine_provider_rate_limited\"" in STREAM
     # Standalone Chat's own path and message remain byte-for-byte what they were.
-    assert "renderStreamError(article, error instanceof Error ? error.message : uiT(\"stream-continue-failed\")," in APP
-    assert "(error instanceof Error ? error.message : uiT(\"try-again\"))" in APP
+    assert "deps.renderStreamError(article, error instanceof Error ? error.message : deps.uiT(\"stream-continue-failed\")," in STREAM
+    assert "(error instanceof Error ? error.message : deps.uiT(\"try-again\"))" in STREAM
 
 
 def test_claw_hold_copy_network_free_browser_behavior():
@@ -247,8 +250,9 @@ const lifeEnd=app.indexOf("\n  function setNavActive(",lifeStart);
 assert(lifeStart>=0&&lifeEnd>lifeStart,"lifecycle mapper located");
 vm.runInContext(app.slice(lifeStart,lifeEnd),ctx);
 
-const fnStart=app.indexOf("  async function requestStreamingAnswer(");
-const fnEnd=app.indexOf("\n  function cancelActiveStream(",fnStart);
+const stream=read("chat-streaming-module.js");
+const fnStart=stream.indexOf("  async function requestStreamingAnswer(");
+const fnEnd=stream.indexOf("\n  function cancelActiveStream(",fnStart);
 assert(fnStart>=0&&fnEnd>fnStart,"renderer located");
 
 // Keep the transport's real errorFor (it owns the closed code); replace only I/O.
@@ -274,7 +278,7 @@ ctx.renderStreamError=(a,message,_rm,_rs,_rc,claw,lifecycle,clawFailure)=>{
     failureMessage:clawFailure?clawFailure.message:null,
     failureHint:clawFailure?clawFailure.hint:null});
 };
-const renderer=vm.runInContext("("+app.slice(fnStart,fnEnd)+")",ctx);
+const renderer=vm.runInContext("("+stream.slice(fnStart,fnEnd).replace(/deps\./g,"")+")",ctx);
 assert(typeof renderer==="function","real renderer in scope");
 assert(vm.runInContext("typeof clawGeneralFailure",ctx)==="function","real selector in scope");
 

@@ -22,6 +22,7 @@ APPS = Path(__file__).resolve().parents[2]
 
 LIFECYCLE = (STATIC / "message-lifecycle.js").read_text(encoding="utf-8")
 APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
+STREAM_JS = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
 TRANSPORT = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
 STYLES = (STATIC / "capability-presentation.css").read_text(encoding="utf-8")
 CHAT_ROUTES = (APP / "chat_routes.py").read_text(encoding="utf-8")
@@ -67,10 +68,10 @@ def test_the_elapsed_clock_follows_the_request_and_never_ends_the_turn():
     pc_status = _function_source(LIFECYCLE, "function taskStatusFor(")
     assert 'Math.floor(pc.elapsed / 1000)' in pc_status
     # Started where the request starts, and stopped by the terminal state itself.
-    streaming = _function_source(APP_JS, "async function requestStreamingAnswer(")
-    completed = _function_source(APP_JS, "async function requestCompletedAnswer(")
-    assert streaming.index("startTurnClock") < streaming.index("chatTransport.request")
-    assert completed.index("startTurnClock") < completed.index("chatTransport.requestCompleted")
+    streaming = _function_source(STREAM_JS, "async function requestStreamingAnswer(")
+    completed = _function_source(STREAM_JS, "async function requestCompletedAnswer(")
+    assert streaming.index("startTurnClock") < streaming.index("deps.chatTransport.request")
+    assert completed.index("startTurnClock") < completed.index("deps.chatTransport.requestCompleted")
     assert "if (terminalCatalog[state]) stopTurnClock(article);" in LIFECYCLE
     # The clock ticks; it never aborts, rejects or counts down to a limit.
     assert "abort" not in _function_source(LIFECYCLE, "function startTurnClock(")
