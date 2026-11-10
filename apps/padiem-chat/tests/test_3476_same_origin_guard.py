@@ -20,6 +20,7 @@ from app.orchestration_routes import install_orchestration_routes
 from app.request_telemetry import RequestTelemetryMiddleware
 from app.session_revocation_guard import SessionRevocationGuardMiddleware
 from app.same_origin_guard import (
+    AUTHORITY_COOKIE_NAMES,
     JSON_CONTENT_TYPE_REQUIRED_CODE,
     ORIGIN_GUARD_UNAVAILABLE_CODE,
     ORIGIN_REJECTED_CODE,
@@ -27,6 +28,7 @@ from app.same_origin_guard import (
     expected_browser_origin,
     is_local_runner_result_ingress,
 )
+from app.shared_login_flow import ACCESS_COOKIE, MARKER_COOKIE, REFRESH_COOKIE
 
 ORIGIN = "https://chat.example.test"
 # Same registrable domain, different origin: must be denied.
@@ -156,6 +158,102 @@ async def test_non_json_content_type_on_json_mutation_is_denied() -> None:
         )
     assert response.status_code == 415
     assert _code(response) == JSON_CONTENT_TYPE_REQUIRED_CODE
+
+
+def _common_login_client(app) -> httpx.AsyncClient:
+    """A browser holding only the common-login cookies (no legacy session).
+
+    Production scopes the refresh cookie to the refresh path, so on API
+    mutations a real browser sends the access and marker cookies only; each
+    test below names the family it exercises.
+    """
+    client = _client(app)
+    client.cookies.set(ACCESS_COOKIE, "synthetic-shared-access", domain="chat.example.test", path="/")
+    client.cookies.set(MARKER_COOKIE, "1", domain="chat.example.test", path="/")
+    return client
+
+
+async def test_common_login_cookie_only_cross_origin_text_plain_mutation_is_denied() -> None:
+    """A common-login browser without a legacy session cookie is equally a
+    CSRF subject: the guard applies its origin rule to that family too."""
+    app = _app()
+    async with _common_login_client(app) as client:
+        response = await client.post(
+            "/api/auth/logout",
+            headers={"Origin": CROSS_SITE_ORIGIN, "Content-Type": "text/plain"},
+            content=b"{}",
+        )
+    assert response.status_code == 403
+    assert _code(response) == ORIGIN_REJECTED_CODE
+
+
+async def test_common_login_marker_cookie_only_cross_origin_mutation_is_denied() -> None:
+    """Each authority cookie family alone triggers the guard."""
+    app = _app()
+    async with _client(app) as client:
+        client.cookies.set(MARKER_COOKIE, "1", domain="chat.example.test", path="/")
+        response = await client.post(
+            "/api/auth/logout",
+            headers={"Origin": CROSS_SITE_ORIGIN},
+            json={},
+        )
+    assert response.status_code == 403
+    assert _code(response) == ORIGIN_REJECTED_CODE
+
+
+async def test_common_login_refresh_cookie_only_cross_origin_mutation_is_denied() -> None:
+    app = _app()
+    async with _client(app) as client:
+        client.cookies.set(
+            REFRESH_COOKIE,
+            "synthetic-shared-refresh",
+            domain="chat.example.test",
+            path="/auth/shared",
+        )
+        response = await client.post(
+            "/auth/shared/refresh",
+            headers={"Origin": CROSS_SITE_ORIGIN},
+        )
+    assert response.status_code == 403
+    assert _code(response) == ORIGIN_REJECTED_CODE
+
+
+async def test_common_login_cookie_only_same_origin_json_mutation_reaches_the_route() -> None:
+    """A legitimate common-login mutation keeps its route semantics: the guard
+    passes it and the logout route answers with its own vocabulary."""
+    app = _app()
+    async with _common_login_client(app) as client:
+        response = await client.post(
+            "/api/auth/logout",
+            headers={"Origin": ORIGIN},
+            json={},
+        )
+    assert response.status_code == 200
+    assert response.json() == {"ok": True}
+
+
+async def test_common_login_cookie_only_same_origin_text_plain_mutation_is_denied() -> None:
+    """The JSON content-type binding covers the common-login family too."""
+    app = _app()
+    async with _common_login_client(app) as client:
+        response = await client.post(
+            "/api/auth/logout",
+            headers={"Origin": ORIGIN, "Content-Type": "text/plain"},
+            content=b"{}",
+        )
+    assert response.status_code == 415
+    assert _code(response) == JSON_CONTENT_TYPE_REQUIRED_CODE
+
+
+async def test_every_authority_cookie_family_is_pinned_to_a_real_cookie_name() -> None:
+    """The authority set stays exactly the legacy session cookie plus the
+    common-login access/refresh/marker trio — no flow cookie joins it."""
+    assert AUTHORITY_COOKIE_NAMES == frozenset({
+        SESSION_COOKIE,
+        ACCESS_COOKIE,
+        REFRESH_COOKIE,
+        MARKER_COOKIE,
+    })
 
 
 async def test_server_to_server_telegram_ingress_is_explicitly_exempt() -> None:

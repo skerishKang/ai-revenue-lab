@@ -5,9 +5,11 @@ Both production gates already proved the promoted version is served and that
 which is the check a person used to do by hand right after the deploy. This is
 that check: one free-grade chat turn on the route the product itself serves.
 
-    --lane chat    POST /api/chat - the free composer a visitor uses without a
-                   login (Owner decision 2026-10-24, #5474), so this lane needs
-                   no credential at all
+    --lane chat    POST /api/chat - the composer route the product serves.
+                   Owner decision 2026-11-05 made the AI answers signed-in
+                   only ("free without a login" is gone), so this lane now
+                   signs in as the production QA account first, exactly like
+                   the engine lane
     --lane engine  POST /api/orchestration behind the existing production QA
                    session - the lane the browser composer tries first (#4469)
                    and the one that is answered by the Engine
@@ -84,13 +86,6 @@ def conversation_id(payload: Any) -> str | None:
     return value if isinstance(value, str) and CONVERSATION_ID.fullmatch(value) else None
 
 
-def chat_lane(opener) -> tuple[int, Any]:
-    return bounded_call(
-        opener, CHAT, method="POST", timeout=CHAT_TIMEOUT_SECONDS,
-        payload=turn_payload(),
-    )
-
-
 def _engine_call(opener, path: str, *, stage: str, **kwargs):
     """Report only the fixed stage when the bounded transport cannot parse a reply."""
     try:
@@ -100,7 +95,9 @@ def _engine_call(opener, path: str, *, stage: str, **kwargs):
         raise
 
 
-def engine_lane(opener, *, base_url=None) -> tuple[int, Any]:
+def sign_in(opener, *, base_url=None) -> None:
+    """Sign the QA account in; Owner decision 2026-11-05 made every AI answer
+    lane signed-in only, so both lanes share this one entrance."""
     target = {"origin": base_url} if base_url else {}
     username = os.environ.get(QA_USERNAME_ENV, "")
     password = os.environ.get(QA_PASSWORD_ENV, "")
@@ -126,9 +123,21 @@ def engine_lane(opener, *, base_url=None) -> tuple[int, Any]:
         state_code = error_code(state) if isinstance(state, dict) else "no_json_body"
         print(f"QA_SESSION_DIAGNOSTIC status_http_status={status} server_error_code={state_code}")
         raise CanaryError("qa_session_unverified")
+
+
+def chat_lane(opener, *, base_url=None) -> tuple[int, Any]:
+    sign_in(opener, base_url=base_url)
+    return _engine_call(
+        opener, CHAT, stage="chat", method="POST", timeout=CHAT_TIMEOUT_SECONDS,
+        payload=turn_payload(),
+    )
+
+
+def engine_lane(opener, *, base_url=None) -> tuple[int, Any]:
+    sign_in(opener, base_url=base_url)
     return _engine_call(
         opener, ORCHESTRATION, stage="orchestration", method="POST", timeout=CHAT_TIMEOUT_SECONDS,
-        payload=turn_payload(), **target,
+        payload=turn_payload(),
     )
 
 
@@ -144,10 +153,10 @@ def run(lane: str) -> int:
     print(f"REAL_CHAT={verdict} lane={lane} code={code}")
     print("REAL_CHAT_MODEL_NAME_CHECKED=NO")
     print("REAL_CHAT_ANSWER_TEXT_LOGGED=0")
-    # Only the signed-in lane leaves a conversation behind; the anonymous free
-    # turn is never written to history.
+    # Both lanes sign in now (Owner decision 2026-11-05), so both can leave a
+    # conversation behind; the QA turn is cleaned up either way.
     try:
-        if lane == "engine" and saved_id is not None:
+        if saved_id is not None:
             bounded_call(opener, CONVERSATION + saved_id, method="DELETE")
             print("REAL_CHAT_QA_CONVERSATION_CLEANUP=PASS")
     except Exception:
