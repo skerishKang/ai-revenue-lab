@@ -126,6 +126,56 @@ async def test_an_allowlist_subset_of_the_profile_is_valid_and_the_rest_defaults
     assert notified == [USER]
 
 
+PASSWORD_BODY = {'email': 'user@example.invalid', 'email_verified': False, 'name': '', 'picture': ''}
+GOOGLE_FALSE_BODY = {'email': 'user@example.invalid', 'email_verified': False, 'name': 'Real Name', 'picture': 'https://example.invalid/p.png'}
+
+
+@pytest.mark.asyncio
+async def test_password_login_profile_is_provisioned():
+    # padiem-auth의 비밀번호 경로는 Chat 내부 비밀번호 확인으로 계정을 증명한 뒤
+    # email_verified=false, name='', picture='' 를 하드코딩으로 발행한다.
+    # 그 발행 계약 그대로인 프로필만 면제한다.
+    store, notified = Recorded(), []
+    await provide(store, notified, {'account_id': 'sub_known', 'profile': dict(PASSWORD_BODY)})
+    assert store.calls[0] == (USER, 'sub_known', 'user@example.invalid', '', '')
+    assert notified == [USER]
+
+
+@pytest.mark.asyncio
+async def test_password_contract_without_picture_key_is_not_exempted():
+    # 발행 계약은 name/picture 키가 둘 다 있는 모양이다. 키가 빠지면 면제가 아니라 거절.
+    with pytest.raises(ValueError):
+        await provide(Recorded(), [], {'profile': {'email': 'user@example.invalid',
+                                                   'email_verified': False}})
+    with pytest.raises(ValueError):
+        await provide(Recorded(), [], {'profile': {'email': 'user@example.invalid',
+                                                   'email_verified': False,
+                                                   'name': ''}})
+
+
+@pytest.mark.asyncio
+async def test_password_contract_with_mismatched_subject_is_rejected():
+    # 토큰의 주체와 일치하지 않으면 비밀번호 모양이어도 거절한다.
+    store = Recorded()
+    with pytest.raises(ValueError):
+        await provide(store, [], {'account_id': 'sub_other', 'profile': dict(PASSWORD_BODY)})
+    assert store.calls == []
+
+
+@pytest.mark.asyncio
+async def test_google_shaped_profile_with_unverified_email_is_rejected():
+    with pytest.raises(ValueError):
+        await provide(Recorded(), [], {'profile': dict(GOOGLE_FALSE_BODY)})
+
+
+@pytest.mark.asyncio
+async def test_google_verified_profile_is_provisioned():
+    store, notified = Recorded(), []
+    await provide(store, notified, {'profile': dict(PROFILE_BODY)})
+    assert store.calls[0] == (USER, 'sub_known', 'user@example.invalid', 'Name', '')
+    assert notified == [USER]
+
+
 @pytest.mark.asyncio
 async def test_a_profile_field_the_client_never_asked_for_is_still_rejected():
     with pytest.raises(ValueError):
