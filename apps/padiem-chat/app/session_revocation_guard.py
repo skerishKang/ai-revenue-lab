@@ -62,6 +62,16 @@ SESSION_VERDICT_STATE_KEY = "padiem_session_verdict"
 SESSION_AUTHORITY_UNAVAILABLE_CODE = "session_authority_unavailable"
 SESSION_AUTHORITY_UNAVAILABLE_MESSAGE = "세션 확인을 사용할 수 없습니다. 잠시 후 다시 시도해 주세요."
 
+# Internal audit H1 (2026-11-10): this guard reads the first session cookie in
+# the Cookie header, while a route that re-parses the header would read the
+# last one. Two or more same-name cookies make that ordering an identity
+# confusion, so such a request is refused outright instead of being resolved
+# from either copy.
+SESSION_COOKIE_DUPLICATED_CODE = "session_cookie_duplicated"
+SESSION_COOKIE_DUPLICATED_MESSAGE = (
+    "세션 쿠키가 두 개 이상 감지되었습니다. 브라우저의 쿠키를 정리한 뒤 다시 시도해 주세요."
+)
+
 # Paths that carry no ambient browser session authority and therefore must not
 # be refused by the guard.  They are exact paths, never prefixes.
 #   * the Google OAuth callback — it re-issues a session instead of using one;
@@ -311,6 +321,24 @@ class SessionRevocationGuardMiddleware:
             emit_identity_timing(request_id, started, details)
             end_login_timings(token_context)
 
+    @staticmethod
+    def _duplicate_session_cookie_count(scope: MutableMapping[str, Any]) -> int:
+        """How many times the session cookie name appears in the Cookie header.
+
+        Counts raw occurrences, not the collapsed mapping a request object
+        builds: the whole point (internal audit H1, 2026-11-10) is that the
+        first and the last occurrence can disagree.
+        """
+
+        cookie_header = _header(scope, b"cookie")
+        if not cookie_header:
+            return 0
+        return sum(
+            1
+            for part in cookie_header.split(";")
+            if part.partition("=")[0].strip() == SESSION_COOKIE
+        )
+
     async def __call__(
         self,
         scope: MutableMapping[str, Any],
@@ -320,6 +348,17 @@ class SessionRevocationGuardMiddleware:
         if scope.get("type") != "http":
             await self.app(scope, receive, send)
             return
+        state = getattr(scope.get("app"), "state", None)
+        if getattr(state, "settings", None) is not None:
+            path = str(scope.get("path") or "")
+            if (path not in SESSION_GUARD_EXEMPT_PATHS
+                    and self._duplicate_session_cookie_count(scope) > 1):
+                await _error(
+                    401,
+                    SESSION_COOKIE_DUPLICATED_CODE,
+                    SESSION_COOKIE_DUPLICATED_MESSAGE,
+                )(scope, receive, send)
+                return
         with measure('auth'):
             verdict = await self.resolve_verdict(scope)
         # Stage 1 shadow (#7078): record-only comparison. Never judges.
@@ -350,6 +389,8 @@ class SessionRevocationGuardMiddleware:
 __all__ = [
     "SESSION_AUTHORITY_UNAVAILABLE_CODE",
     "SESSION_AUTHORITY_UNAVAILABLE_MESSAGE",
+    "SESSION_COOKIE_DUPLICATED_CODE",
+    "SESSION_COOKIE_DUPLICATED_MESSAGE",
     "SESSION_GUARD_EXEMPT_PATHS",
     "SESSION_VERDICT_STATE_KEY",
     "SessionRevocationGuardMiddleware",

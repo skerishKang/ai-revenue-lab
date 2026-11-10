@@ -110,18 +110,29 @@ def current_user_id(request: Request) -> str | None:
     request, that verdict is the authority. A revoked, unknown or unbound
     canonical session never yields a user id, so every protected Chat/Claw API
     refuses a stored session cookie right after the logout that revoked it.
+    The verdict's claims were resolved against the canonical session the guard
+    verified, so an authenticated verdict is reused as-is and the Cookie header
+    is never re-parsed here: this guard reads the first same-name cookie while
+    a re-parse would read the last one, and two same-name cookies are refused
+    outright by the guard (internal audit H1, 2026-11-10).
     Without a verdict — a deployment without the canonical identity authority,
     or a directly invoked route handler — the pre-existing cookie-only
     behaviour is unchanged.
     """
 
     verdict = session_verdict(request)
+    if verdict is not None:
+        if verdict.authenticated and isinstance(verdict.user_id, str) and verdict.user_id:
+            return verdict.user_id
+        # Set only by SharedSessionMiddleware after ES256 verification and
+        # mapping. It is an independent lane, so a refused session cookie does
+        # not withhold it.
+        shared_user = getattr(getattr(request, 'state', None), 'padiem_shared_user_id', None)
+        return shared_user if isinstance(shared_user, str) and shared_user else None
     settings: Settings = request.app.state.settings
-    if verdict is None or verdict.authenticated:
-        legacy_user = decode_session_token(settings, request.cookies.get(SESSION_COOKIE))
-        if legacy_user:
-            return legacy_user
-    # Set only by SharedSessionMiddleware after ES256 verification and mapping.
+    legacy_user = decode_session_token(settings, request.cookies.get(SESSION_COOKIE))
+    if legacy_user:
+        return legacy_user
     shared_user = getattr(getattr(request, 'state', None), 'padiem_shared_user_id', None)
     return shared_user if isinstance(shared_user, str) and shared_user else None
 
