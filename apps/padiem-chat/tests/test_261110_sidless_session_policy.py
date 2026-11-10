@@ -339,14 +339,16 @@ async def test_sidless_cookie_keeps_working_during_the_transition_window(
 
 @pytest.mark.asyncio
 async def test_a_cookie_for_a_deleted_user_row_is_refused():
+    """A compatibility cookie has no canonical session for account deletion to
+    revoke, so the user row is the last guard against its reuse."""
     store, authority = MemoryStore(), CanonicalAuthority()
     app = build_app(store=store, authority=authority, shadow=ShadowStore())
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as device:
-        registered = await _register(device)
-    cookie = _session_cookies(registered)[0]
+        await _register(device)
+    user_id = next(iter(store.users))
+    cookie = create_session_token(password_settings(), user_id)  # no canonical id
 
     # The account is gone; only the browser-held cookie remains.
-    user_id = next(iter(store.users))
     del store.users[user_id]
     del store.credentials[next(iter(store.credentials))]
 
@@ -362,8 +364,9 @@ async def test_a_store_outage_does_not_refuse_a_valid_cookie():
     store, authority = MemoryStore(), CanonicalAuthority()
     app = build_app(store=store, authority=authority, shadow=ShadowStore())
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as device:
-        registered = await _register(device)
-    cookie = _session_cookies(registered)[0]
+        await _register(device)
+    user_id = next(iter(store.users))
+    cookie = create_session_token(password_settings(), user_id)  # no canonical id
 
     async def broken_get_user(user_id):
         raise RuntimeError("synthetic store outage")

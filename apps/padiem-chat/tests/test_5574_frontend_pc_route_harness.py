@@ -532,6 +532,19 @@ class _IdentityAuthority:
     async def resolve_auth_session(self, *, session_id):
         return self.session_by_id(session_id)
 
+    def b62_session_id(self) -> str | None:
+        """The canonical B62 session this harness's seeded identity established.
+
+        The real login binds the established canonical session id into the
+        signed cookie, so the harness cookie carries it too instead of a
+        compatibility session without one.
+        """
+
+        for session in self.sessions.values():
+            if session.product_id == "b62":
+                return session.session_id
+        return None
+
     async def resolve_connector_owner_scope(self, *, session_id):
         if session_id not in self.session_ids:
             raise RuntimeError("unknown canonical session")
@@ -946,7 +959,10 @@ async def _run_flow(harness: _PcHarness, steps: list[dict[str, Any]], *,
                     orchestration: bool) -> dict[str, Any]:
     await harness.seed_identity()
     app, config = harness.create_app(orchestration=orchestration)
-    cookie_token = create_session_token(config, OWNER)
+    cookie_token = create_session_token(
+        config, OWNER,
+        canonical_session_id=harness.authority.b62_session_id(),
+    )
 
     port, server_and_task = await _serve(app)
 
@@ -1314,7 +1330,10 @@ def test_bring_your_own_key_turn_never_reads_padiem_orchestration() -> None:
         app, config = harness.create_app(orchestration=False)
         app.state.custom_credential_store = _CredentialStore()
         app.state.custom_provider_client = _ProviderClient()
-        cookie_token = create_session_token(config, OWNER)
+        cookie_token = create_session_token(
+        config, OWNER,
+        canonical_session_id=harness.authority.b62_session_id(),
+    )
         port, server_and_task = await _serve(app)
         env = {
             **os.environ,
