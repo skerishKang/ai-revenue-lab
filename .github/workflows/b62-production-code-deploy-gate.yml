@@ -1651,7 +1651,11 @@ jobs:
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains?hostname=chat.padiem.net" \
             "${domain_after}"
-          jq -e --arg host "chat.padiem.net" --arg service "${B62_WORKER}" \
+          # 2026-11-10: the front Worker owns chat.padiem.net (#7398/#7399/#7407
+          # cutover). The preflight above already proved FRONT ownership; the
+          # readback asserts the same reviewed owner so the domain cannot
+          # silently move or detach between the two reads.
+          jq -e --arg host "chat.padiem.net" --arg service "padiem-chat-front" \
             '.success == true and
              ([.result[] | select(.hostname == $host)] | length == 1) and
              ([.result[] | select(.hostname == $host and .service == $service and .zone_name == "padiem.net" and .enabled == true and .previews_enabled == false)] | length == 1)' \
