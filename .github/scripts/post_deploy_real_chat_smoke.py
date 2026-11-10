@@ -50,6 +50,11 @@ from b62_live_long_context_canary import (  # noqa: E402  (sibling script import
     error_code,
 )
 from b62_live_long_context_canary import _ID as CONVERSATION_ID  # noqa: E402
+from shared_login_client import (  # noqa: E402  (sibling script import)
+    SESSION_COOKIE,
+    SharedLoginError,
+    login_session_cookie,
+)
 
 ORCHESTRATION = "/api/orchestration"
 # 2026-11-11 CTO decision: the QA accounts are split by purpose so no single
@@ -100,10 +105,31 @@ def _engine_call(opener, path: str, *, stage: str, **kwargs):
         raise
 
 
+def _attach_session_cookie(opener, cookie: str) -> None:
+    """Carry the shared-login cookie on the gate's existing opener."""
+    opener.addheaders = [
+        (name, value) for name, value in opener.addheaders
+        if name.lower() != "cookie"
+    ]
+    opener.addheaders.append(("Cookie", f"{SESSION_COOKIE}={cookie}"))
+
+
+def _sign_in_shared(opener, origin: str, username: str, password: str) -> None:
+    """The common login form is the only email entrance since the migration."""
+    try:
+        cookie = login_session_cookie(origin, username, password)
+    except SharedLoginError:
+        raise CanaryError("qa_login_refused") from None
+    if not cookie:
+        raise CanaryError("qa_login_refused")
+    _attach_session_cookie(opener, cookie)
+
+
 def sign_in(opener, *, base_url=None) -> None:
     """Sign the QA account in; Owner decision 2026-11-05 made every AI answer
     lane signed-in only, so both lanes share this one entrance."""
     target = {"origin": base_url} if base_url else {}
+    origin = base_url or "https://chat.padiem.net"
     username = os.environ.get(QA_USERNAME_ENV, "")
     password = os.environ.get(QA_PASSWORD_ENV, "")
     if not username or not password:
@@ -115,12 +141,22 @@ def sign_in(opener, *, base_url=None) -> None:
         payload={"identifier": username, "password": password}, **target,
     )
     if status != 200 or body.get("ok") is not True:
+        # The direct email entrance answers 409 after the common-login move.
+        # Fall back to that one form instead of calling a working account bad.
+        server_code = error_code(body) if isinstance(body, dict) else "no_json_body"
+        if status == 409 and server_code == "email_login_moved":
+            _sign_in_shared(opener, origin, username, password)
+            status, state = _engine_call(opener, STATUS, stage="session", **target)
+            if status != 200 or state.get("authenticated") is not True:
+                state_code = error_code(state) if isinstance(state, dict) else "no_json_body"
+                print(f"QA_SESSION_DIAGNOSTIC status_http_status={status} server_error_code={state_code}")
+                raise CanaryError("qa_session_unverified")
+            return
         # Diagnosis without discretion: the same 401 is a wrong password, a
         # missing identifier and an active lock by design (#3501/#3508), and the
         # client cannot tell them apart. Print the HTTP status and the server's
         # error code NAME only — never the body, never a credential — and keep
         # the verdict exactly as before.
-        server_code = error_code(body) if isinstance(body, dict) else "no_json_body"
         print(f"QA_LOGIN_DIAGNOSTIC login_http_status={status} server_error_code={server_code}")
         raise CanaryError("qa_login_refused")
     status, state = _engine_call(opener, STATUS, stage="session", **target)
