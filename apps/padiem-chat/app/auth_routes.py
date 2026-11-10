@@ -799,7 +799,39 @@ def _session_response(
     return response
 
 
+_EMAIL_LOGIN_MOVED_CODE = "email_login_moved"
+_EMAIL_LOGIN_MOVED_MESSAGE = "이메일 로그인은 공통 로그인 화면에서 진행해 주세요."
+
+
+def _email_login_moved(request: Request) -> JSONResponse | None:
+    """#7078 step 3 switch (default OFF): Chat stops accepting email credentials.
+
+    When a deployment opts in, the browser is sent to the common login screen
+    where padiem-auth owns the email flow and calls this app's internal
+    ``/internal/password-verify`` / ``/internal/password-register``. The
+    decision happens before any identifier lookup, so the answer cannot reveal
+    whether an account exists. The internal RPC routes are not gated here.
+    """
+
+    settings = getattr(request.app.state, "settings", None)
+    if not getattr(settings, "email_login_via_shared", False):
+        return None
+    return JSONResponse(
+        {
+            "error": {
+                "code": _EMAIL_LOGIN_MOVED_CODE,
+                "message": _EMAIL_LOGIN_MOVED_MESSAGE,
+            },
+            "login_url": "/auth/shared/start",
+        },
+        status_code=409,
+    )
+
+
 async def password_register(request: Request) -> JSONResponse:
+    moved = _email_login_moved(request)
+    if moved is not None:
+        return moved
     if not password_auth_ready(request):
         return _unavailable()
     data = await _json_body(request)
@@ -881,6 +913,9 @@ async def password_register(request: Request) -> JSONResponse:
 
 
 async def password_login(request: Request) -> JSONResponse:
+    moved = _email_login_moved(request)
+    if moved is not None:
+        return moved
     if not password_auth_ready(request):
         return _unavailable()
     data = await _json_body(request)

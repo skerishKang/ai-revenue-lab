@@ -170,6 +170,12 @@ class Settings:
     # The host holds the same value as a caller secret; the Worker keeps it as
     # a secret binding resolved in worker.py.
     voice_rpc_secret: str | None = field(default=None, repr=False)
+    # #7078 step 3 (default OFF): when ON, Chat's own email password
+    # login/registration endpoints stop accepting credentials and direct the
+    # browser to the common login screen, where padiem-auth owns the flow and
+    # calls Chat's internal /internal/password-verify. The internal RPC stays
+    # available either way; nothing changes until a deployment opts in.
+    email_login_via_shared: bool = False
 
     @classmethod
     def from_values(
@@ -220,6 +226,8 @@ class Settings:
         # 공통 로그인 이메일 확인 RPC 시크릿. appended last for the same reason.
         password_rpc_secret: object = None,
         voice_rpc_secret: object = None,
+        # #7078 step 3: appended last; default OFF keeps today's behavior.
+        email_login_via_shared: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -488,6 +496,14 @@ class Settings:
             voice_rpc_secret=_optional_secret(
                 voice_rpc_secret, name="PADIEM_CHAT_VOICE_RPC_SECRET"
             ),
+            email_login_via_shared=(
+                _strict_bool(
+                    email_login_via_shared,
+                    name="PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED",
+                )
+                if email_login_via_shared is not None
+                else False
+            ),
         )
 
     @classmethod
@@ -545,6 +561,7 @@ class Settings:
             local_dev=os.getenv("PADIEM_LOCAL_DEV"),
             mcp_pc_shell_enabled=os.getenv("PADIEM_MCP_PC_SHELL_ENABLED"),
             mcp_pc_shell_user_mode_enabled=os.getenv("PADIEM_MCP_PC_SHELL_USER_MODE"),
+            email_login_via_shared=os.getenv("PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED"),
             lovetree_account_delete_url=os.getenv("PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL"),
             account_delete_rpc_secret=os.getenv("PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET"),
             password_rpc_secret=os.getenv("PADIEM_CHAT_PASSWORD_RPC_SECRET"),
