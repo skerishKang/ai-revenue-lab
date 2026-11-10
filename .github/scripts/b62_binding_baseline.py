@@ -39,7 +39,9 @@ from pathlib import Path
 BASELINE_DIR = Path(__file__).resolve().parents[1] / "binding_baselines"
 
 # The Workers this baseline covers.  The key is the Worker script name.
-SUPPORTED_WORKERS = ("ai-revenue-korean-ai-platform", "padiem-ai-engine", "padiem-chat")
+# (2026-11-10: ai-revenue-korean-ai-platform retired — its baseline file was
+# removed with the Cloudflare B14 Worker retirement.)
+SUPPORTED_WORKERS = ("padiem-ai-engine", "padiem-chat")
 
 
 class BindingBaselineError(RuntimeError):

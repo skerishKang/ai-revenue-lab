@@ -84,10 +84,6 @@ binding = "B66_ALERT_RESEND_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "B66_ALERT_RESEND_API_KEY"
 
-[[services]]
-binding = "B14_SERVICE"
-service = "ai-revenue-korean-ai-platform"
-
 # Deployment-owned server-to-server proof secret for the B14 platform-credential
 # execution lane. B14 spends platform-owned Provider credentials there, so this
 # Worker proves it is an approved PADIEM caller before the dispatch is built.
@@ -188,15 +184,17 @@ secret_name = "PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY"
 [vars]
 # 2026-11-09 CTO order: B14 runs on COM2 only. "https" makes this Worker call
 # the COM2 B14 over its documented public origin with the same caller proof, so
-# the Cloudflare B14 Worker stops serving product traffic. The `B14_SERVICE`
-# binding and `PADIEM_B14_SERVICE_PROOF_SECRET` stay declared until the CTO
-# removes them; the proof secret is also what the HTTPS lane signs with.
-# config.py refuses a base that disagrees with B14_UPSTREAM_URL (half-applied
-# switch), so B14_UPSTREAM_URL is the one repository authority for the address.
-# The legacy PADIEM_CHAT_B14_BASE_URL stays a live binding and is never declared
-# here: the mock deploy guard forbids live values in this [vars] table, and the
-# production generator aligns that live value to this origin on every deploy.
-# No deploy needs a --var override.
+# the Cloudflare B14 Worker stops serving product traffic.
+# 2026-11-10 CTO order: the Cloudflare B14 Worker is retired. The `B14_SERVICE`
+# service binding is removed with that retirement; the proof secret stays
+# declared because the HTTPS lane signs with the same value, and the COM2 B14
+# registry is untouched. config.py refuses a base that disagrees with
+# B14_UPSTREAM_URL (half-applied switch), so B14_UPSTREAM_URL is the one
+# repository authority for the address. The legacy PADIEM_CHAT_B14_BASE_URL
+# stays a live binding and is never declared here: the mock deploy guard
+# forbids live values in this [vars] table, and the production generator
+# aligns that live value to this origin on every deploy. No deploy needs a
+# --var override.
 B14_UPSTREAM_MODE = "https"
 B14_UPSTREAM_URL = "https://b14.padiem.net"
 
