@@ -2263,6 +2263,8 @@
       if (activeProject) refreshActiveProjectFileCount();
       if (isVerifiedClawThread) openClawWorkspace();
       showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });
+      syncApprovedMemoryVisibility();
+      syncClawRunHistoryVisibility();
       conversationArtifactContext?.show?.(data.conversation.id);
       if (isVerifiedClawThread) clawArtifactShownFor = data.conversation.id;
       data.conversation.messages.forEach((item) => {
@@ -2707,13 +2709,9 @@
     if (selectedSkill) conversationState.setSkill(selectedSkill);
     const attachmentSnapshot = selectedAttachments;
     const contextSnapshot = { product, conversationId: conversationState.getConversationId(product), project: activeProject };
-    // PADIEM Custom is Chat-only and text-only. Refuse here, with the typed
-    // prompt preserved, instead of letting the server reject a mixed request.
+    // PADIEM Custom is text-only on both Chat and Claw. Refuse attachments
+    // here, with the typed prompt preserved.
     const customSelected = Boolean(window.PadiemCustomSelection?.get?.());
-    if (customSelected && clawGeneralRequest) {
-      setNote(uiT("custom-chat-only"), "error");
-      return;
-    }
     if (customSelected && attachmentSnapshot.length) {
       setNote(uiT("custom-text-only"), "error");
       return;
@@ -5676,8 +5674,9 @@
     // Owner-authenticated surface only: anonymous Phase A flow is unchanged.
     const onLanding = clawWorkspace?.dataset.view === "general"
       && !emptyState.hidden;
+    const inActiveChat = shell.dataset.state === "chat" && emptyState.hidden;
     const show = authState.authenticated === true
-      && shell.dataset.state === "claw"
+      && (shell.dataset.state === "claw" || inActiveChat)
       && !onLanding;
     clawApprovedMemory.hidden = !show;
     if (clawApprovedDisclosure) clawApprovedDisclosure.hidden = !show;
@@ -5695,6 +5694,7 @@
   // #4488 Phase A: recent runs are progressive disclosure on the Claw entry.
   const clawRunHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");
   const clawRunHistoryRefresh = document.getElementById("clawRunHistoryRefresh");
+  const clawRunHistoryFilter = document.getElementById("clawRunHistoryFilter");
   const clawRunHistoryExpand = document.getElementById("clawRunHistoryExpand");
   const clawRunHistoryLoading = document.getElementById("clawRunHistoryLoading");
   const clawRunHistoryError = document.getElementById("clawRunHistoryError");
@@ -5920,6 +5920,24 @@
 
   function syncClawRunHistoryVisibility(...a) { return historyModule().syncClawRunHistoryVisibility(...a); }
 
+  window.PadiemChatMemoryReview = Object.freeze({
+    render: renderMemoryProposalReview,
+    sync: () => {
+      syncApprovedMemoryVisibility();
+      syncClawRunHistoryVisibility();
+    },
+  });
+  if (clawRunHistoryFilter) {
+    clawRunHistoryFilter.addEventListener("click", () => {
+      const next = window.__padiemClawRunHistoryIncludeGeneral !== true;
+      window.__padiemClawRunHistoryIncludeGeneral = next;
+      clawRunHistoryFilter.dataset.runFilter = next ? "all" : "tools";
+      clawRunHistoryFilter.setAttribute("aria-pressed", next ? "true" : "false");
+      clawRunHistoryFilter.setAttribute("data-locale-key", next ? "claw-runs-filter-all" : "claw-runs-filter-tools");
+      clawRunHistoryFilter.textContent = uiT(next ? "claw-runs-filter-all" : "claw-runs-filter-tools");
+      void loadClawRunHistory({ force: true });
+    });
+  }
   if (clawRunHistoryRefresh) {
     // A person asked for the current list, so this read is not served from the
     // short window.

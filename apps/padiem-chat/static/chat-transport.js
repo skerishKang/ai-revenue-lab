@@ -417,6 +417,12 @@
     if (typeof data.scope_notice === "string" && data.scope_notice) donePayload.scope_notice = data.scope_notice;
     if (Array.isArray(data.evidence) && data.evidence.length) donePayload.evidence = data.evidence;
     if (data.tool && typeof data.tool === "object") donePayload.tool = data.tool;
+    if (data.pc_pending === true || data.decision_status === "pc_command_pending") {
+      donePayload.pc_pending = true;
+      const pendingId = typeof data.run_id === "string" ? data.run_id : data.pc_run_id;
+      if (typeof pendingId === "string" && pendingId) donePayload.run_id = pendingId;
+    }
+    if (Array.isArray(data.memory_proposals)) donePayload.memory_proposals = data.memory_proposals;
     const done = `event: done\ndata: ${JSON.stringify(donePayload)}\n\n`;
     return new Response(delta + done, {
       status: 200,
@@ -542,7 +548,12 @@
     const contentType = (response.headers.get("content-type") || "").toLowerCase();
     if (!response.ok || !contentType.startsWith("text/event-stream")) {
       const data = await response.json().catch(() => null);
-      throw errorFor(data, "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.", response.status);
+      const error = errorFor(data, "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.", response.status);
+      if (response.status === 502 && data?.error?.code === "engine_execution_failed" &&
+          data?.error?.detail === "engine_provider_rate_limited") {
+        error.clawFailureDetail = "engine_provider_rate_limited";
+      }
+      throw error;
     }
     return response;
   }

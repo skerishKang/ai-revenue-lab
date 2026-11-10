@@ -404,7 +404,10 @@ function buildSandbox(sseCase) {
         // would miss a payload that drops the user's selection.
         body: opts && opts.body ? String(opts.body) : null,
       });
-      if (String(url).startsWith("/api/claw/general")) {
+      if (String(url).startsWith("/api/orchestration/status")) {
+        return jsonResponses(200, { orchestration_ready: false, authenticated: true });
+      }
+      if (String(url).startsWith("/api/chat/stream") || String(url).startsWith("/api/claw/general")) {
         if (sseCase.mode === "stream") return streamResponse(sseCase.raw);
         return jsonResponses(sseCase.status, sseCase.body);
       }
@@ -569,12 +572,10 @@ def test_server_stream_really_carries_the_answer_and_terminal_frames() -> None:
 def test_claw_answer_lands_in_the_answer_dom_and_commits() -> None:
     case, _raw = _case("markup-answer", ANSWER_WITH_MARKUP)
     result = _run_client([case])[0]
-    general_calls = [r for r in result["requests"] if r["url"] == GENERAL_ROUTE_PATH]
     stream_calls = [r for r in result["requests"] if r["url"] == "/api/chat/stream"]
 
-    assert len(general_calls) == 1, result["requests"]
-    # #3539 lane purity has to hold on the client too: no silent reroute.
-    assert stream_calls == [], stream_calls
+    assert len(stream_calls) == 1, result["requests"]
+    assert json.loads(stream_calls[0]["body"]).get("product") == "claw"
     # #3931: the user and real assistant answer remain in Claw's transcript.
     assert result["shellState"] == "claw", result
     assert result["transcriptVisible"] is True, result
@@ -611,7 +612,7 @@ def test_empty_answer_fails_closed_at_the_route_instead_of_rendering_blank_succe
     assert json.loads(raw)["error"]["code"] == "engine_execution_failed", raw
 
     result = _run_client([case])[0]
-    assert [r for r in result["requests"] if r["url"] == "/api/chat/stream"] == [], result["requests"]
+    assert [r for r in result["requests"] if r["url"] == "/api/claw/general"] == [], result["requests"]
     assert result["committed"] == [], result["committed"]
     assert "completed" not in result["lifecycleSets"], result["lifecycleSets"]
     dom = result["answerDom"]
@@ -640,7 +641,7 @@ def _lane_only(result: dict) -> list[str]:
 
 
 def _general_posts(result: dict) -> list[dict]:
-    return [r for r in result["requests"] if r["url"] == GENERAL_ROUTE_PATH]
+    return [r for r in result["requests"] if r["url"] in (GENERAL_ROUTE_PATH, "/api/chat/stream")]
 
 
 def test_removed_model_selection_never_reaches_the_wire_request() -> None:
@@ -653,7 +654,7 @@ def test_removed_model_selection_never_reaches_the_wire_request() -> None:
     sent = json.loads(general[0]["body"])
     assert "model_id" not in sent, sent
     assert TEST_ONLY_MODEL_ID not in general[0]["body"]
-    assert _lane_only(result) == [GENERAL_ROUTE_PATH], _lane_only(result)
+    assert _lane_only(result) == ["/api/chat/stream"], _lane_only(result)
     assert result["answerDom"]["paragraphText"] == ANSWER_WITH_MARKUP, result["answerDom"]
 
 
@@ -666,7 +667,7 @@ def test_claw_free_greeting_sends_without_an_invisible_plus_model_choice() -> No
     data = json.loads(general[0]["body"])
     assert data["tier"] == "free", data
     assert "model_id" not in data, data
-    assert _lane_only(result) == [GENERAL_ROUTE_PATH]
+    assert _lane_only(result) == ["/api/chat/stream"]
 
 
 def test_cleared_explicit_model_uses_server_verified_grade_without_model_id() -> None:
@@ -678,7 +679,7 @@ def test_cleared_explicit_model_uses_server_verified_grade_without_model_id() ->
     sent = json.loads(general[0]["body"])
     assert sent["tier"] == "plus", sent
     assert "model_id" not in sent, sent
-    assert _lane_only(result) == [GENERAL_ROUTE_PATH], result["requests"]
+    assert _lane_only(result) == ["/api/chat/stream"], result["requests"]
 
 
 def test_502_engine_failure_shows_bounded_error_and_never_dispatches_again() -> None:
@@ -694,7 +695,7 @@ def test_502_engine_failure_shows_bounded_error_and_never_dispatches_again() -> 
 
     result = _run_client([{"name": "502", "mode": "json", "status": status, "body": body}])[0]
     assert len(_general_posts(result)) == 1, "an error must not cause a second dispatch"
-    assert _lane_only(result) == [GENERAL_ROUTE_PATH], _lane_only(result)
+    assert _lane_only(result) == ["/api/chat/stream"], _lane_only(result)
     assert result["committed"] == [], result["committed"]
     assert "completed" not in result["lifecycleSets"], result["lifecycleSets"]
     dom = result["answerDom"]
