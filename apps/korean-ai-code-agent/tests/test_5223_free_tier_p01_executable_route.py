@@ -37,6 +37,12 @@ from kagent.p01_orchestration_client import (
 
 from test_p01_orchestration_client import _client, _ok_transport, _public_result
 
+# Engage the test-time registry switch here as well: the isolated
+# contract-test runner uses unittest discovery, which never loads pytest conftest.
+from _registry_switch_default import ensure_default_registry_switch  # noqa: E402
+
+ensure_default_registry_switch()
+
 
 def _contract_route_models() -> set[str]:
     """Every model the shared contract declares executable, per tier."""

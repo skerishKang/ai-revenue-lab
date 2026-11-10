@@ -23,6 +23,12 @@ from padiem_control_plane.product_tier_routes import (
 )
 from padiem_control_plane.product_tier_routes_private import paid_primary_model_id, effective_active_route_for
 
+# Engage the test-time registry switch here as well: the isolated
+# contract-test runner uses unittest discovery, which never loads pytest conftest.
+from _registry_switch_default import ensure_default_registry_switch  # noqa: E402
+
+ensure_default_registry_switch()
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 WORKFLOW = REPO_ROOT / ".github/workflows/validate-b54-kagent.yml"
 CONTRACT_PATH = "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py"

@@ -43,6 +43,14 @@ from unittest import mock
 from padiem_control_plane import product_tier_routes as tier_routes
 from padiem_control_plane import product_tier_routes_private as tier_routes_private
 
+# The isolated contract-test runners (validate-b54-kagent.yml) discover with
+# unittest, which never imports pytest's conftest, so the test-time registry
+# switch would never engage there. This helper is the single import every
+# switched-world test module funnels through, so engage it here exactly once.
+from _registry_switch_default import ensure_default_registry_switch  # noqa: E402
+
+ensure_default_registry_switch()
+
 SYNTHETIC_ROUTE_ID = "test.plus.synthetic.v1"
 SYNTHETIC_PROVIDER_ID = "test"
 
