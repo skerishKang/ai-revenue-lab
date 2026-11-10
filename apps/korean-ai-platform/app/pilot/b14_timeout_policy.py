@@ -7,6 +7,7 @@ effective policy at request time so Worker env bindings collected on the first
 request remain effective.
 """
 from __future__ import annotations
+# verify-7346-trigger: no-op comment to prove cross-path PR trigger wiring.
 
 import asyncio
 import contextlib
