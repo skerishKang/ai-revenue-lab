@@ -77,12 +77,29 @@ def test_a_non_dict_body_fails() -> None:
     assert smoke.decide(200, ["not", "a", "body"])[0] == "FAIL"
 
 
-def test_the_chat_lane_is_one_free_grade_turn_and_needs_no_credential(monkeypatch) -> None:
-    fake = _install(monkeypatch, {("POST", smoke.CHAT): (200, {"answer": ANSWER})})
+def test_the_chat_lane_signs_in_then_sends_one_free_grade_turn(monkeypatch) -> None:
+    """Owner decision 2026-11-05: AI answers are signed-in only ("free without
+    a login" is gone). The chat lane signs in as the QA account and then sends
+    exactly one free-grade turn — login, session check, one POST, nothing else.
+    """
+    fake = _install(monkeypatch, {
+        ("POST", smoke.LOGIN): (200, {"ok": True}),
+        ("GET", smoke.STATUS): (200, {"authenticated": True}),
+        ("POST", smoke.CHAT): (200, {"answer": ANSWER}),
+    })
+    monkeypatch.setenv(smoke.QA_USERNAME_ENV, "synthetic-qa")
+    monkeypatch.setenv(smoke.QA_PASSWORD_ENV, "synthetic-password")
+    assert smoke.run("chat") == 0
+    assert [path for _, path in fake.calls] == [smoke.LOGIN, smoke.STATUS, smoke.CHAT]
+
+
+def test_the_chat_lane_without_a_qa_credential_fails_closed(monkeypatch, capsys) -> None:
+    fake = _install(monkeypatch, {})
     monkeypatch.delenv(smoke.QA_USERNAME_ENV, raising=False)
     monkeypatch.delenv(smoke.QA_PASSWORD_ENV, raising=False)
-    assert smoke.run("chat") == 0
-    assert [path for _, path in fake.calls] == [smoke.CHAT]
+    assert smoke.run("chat") == 1
+    assert fake.calls == []
+    assert "REAL_CHAT=FAIL lane=chat code=qa_credential_missing" in capsys.readouterr().out
 
 
 def test_the_engine_lane_signs_in_then_uses_the_browser_orchestration_lane(monkeypatch) -> None:
@@ -138,16 +155,42 @@ def test_an_empty_answer_on_the_orchestration_lane_fails_the_gate(monkeypatch) -
     assert smoke.run("engine") == 1
 
 
-def test_the_never_saved_conversation_of_anonymous_lane_is_not_deleted(monkeypatch) -> None:
+def test_both_signed_in_lanes_clean_up_the_qa_conversation(monkeypatch) -> None:
+    """Both lanes sign in now (Owner decision 2026-11-05), so a saved QA turn
+    is the QA account's data either way and gets deleted after the verdict."""
+    conv = "chat_" + "c" * 32
     fake = _install(monkeypatch, {
-        ("POST", smoke.CHAT): (200, {"answer": ANSWER, "conversation_id": "chat_" + "c" * 32}),
+        ("POST", smoke.LOGIN): (200, {"ok": True}),
+        ("GET", smoke.STATUS): (200, {"authenticated": True}),
+        ("POST", smoke.CHAT): (200, {"answer": ANSWER, "conversation_id": conv}),
+        ("DELETE", smoke.CONVERSATION + conv): (200, {"deleted": True}),
     })
+    monkeypatch.setenv(smoke.QA_USERNAME_ENV, "synthetic-qa")
+    monkeypatch.setenv(smoke.QA_PASSWORD_ENV, "synthetic-password")
+    assert smoke.run("chat") == 0
+    assert ("DELETE", smoke.CONVERSATION + conv) in fake.calls
+
+
+def test_a_turn_that_saves_no_conversation_deletes_nothing(monkeypatch) -> None:
+    fake = _install(monkeypatch, {
+        ("POST", smoke.LOGIN): (200, {"ok": True}),
+        ("GET", smoke.STATUS): (200, {"authenticated": True}),
+        ("POST", smoke.CHAT): (200, {"answer": ANSWER}),
+    })
+    monkeypatch.setenv(smoke.QA_USERNAME_ENV, "synthetic-qa")
+    monkeypatch.setenv(smoke.QA_PASSWORD_ENV, "synthetic-password")
     assert smoke.run("chat") == 0
     assert all(method != "DELETE" for method, _ in fake.calls)
 
 
 def test_main_prints_only_the_verdict_lines_and_never_the_answer(monkeypatch, capsys) -> None:
-    _install(monkeypatch, {("POST", smoke.CHAT): (200, {"answer": ANSWER})})
+    _install(monkeypatch, {
+        ("POST", smoke.LOGIN): (200, {"ok": True}),
+        ("GET", smoke.STATUS): (200, {"authenticated": True}),
+        ("POST", smoke.CHAT): (200, {"answer": ANSWER}),
+    })
+    monkeypatch.setenv(smoke.QA_USERNAME_ENV, "synthetic-qa")
+    monkeypatch.setenv(smoke.QA_PASSWORD_ENV, "synthetic-password")
     assert smoke.main(["--lane", "chat"]) == 0
     lines = capsys.readouterr().out.splitlines()
     assert lines[0] == "REAL_CHAT=PASS lane=chat code=none"
@@ -156,7 +199,13 @@ def test_main_prints_only_the_verdict_lines_and_never_the_answer(monkeypatch, ca
 
 
 def test_main_exits_one_on_a_fail(monkeypatch, capsys) -> None:
-    _install(monkeypatch, {("POST", smoke.CHAT): (500, {"error": {"code": "boom"}})})
+    _install(monkeypatch, {
+        ("POST", smoke.LOGIN): (200, {"ok": True}),
+        ("GET", smoke.STATUS): (200, {"authenticated": True}),
+        ("POST", smoke.CHAT): (500, {"error": {"code": "boom"}}),
+    })
+    monkeypatch.setenv(smoke.QA_USERNAME_ENV, "synthetic-qa")
+    monkeypatch.setenv(smoke.QA_PASSWORD_ENV, "synthetic-password")
     assert smoke.main(["--lane", "chat"]) == 1
     assert "REAL_CHAT=FAIL lane=chat code=boom" in capsys.readouterr().out
 
@@ -204,7 +253,11 @@ def test_the_turn_is_one_free_grade_message_on_both_lanes() -> None:
 
 
 def test_a_credential_value_never_reaches_the_output(monkeypatch, capsys) -> None:
-    _install(monkeypatch, {("POST", smoke.CHAT): (500, {"error": {"code": "boom"}})})
+    _install(monkeypatch, {
+        ("POST", smoke.LOGIN): (200, {"ok": True}),
+        ("GET", smoke.STATUS): (200, {"authenticated": True}),
+        ("POST", smoke.CHAT): (500, {"error": {"code": "boom"}}),
+    })
     monkeypatch.setenv(smoke.QA_USERNAME_ENV, "synthetic-qa-user")
     monkeypatch.setenv(smoke.QA_PASSWORD_ENV, "synthetic-qa-password")
     assert smoke.main(["--lane", "chat"]) == 1

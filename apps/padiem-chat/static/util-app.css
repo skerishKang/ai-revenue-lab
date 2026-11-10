@@ -1,0 +1,229 @@
+/*
+ * #7173 · Util app styling. Tokens only (padiem-tokens.css); no new colours.
+ *
+ * - The top app switch (Chat | Claw | Util) is a segmented nav that uses the
+ *   shared primary tokens for the current app.
+ * - A util card is one native button: the pointer, Tab + Enter/Space and a
+ *   screen reader all get the same whole-card target. Focus-visible ring and
+ *   hover lift are separate so a keyboard user sees the same affordance.
+ * - Card height follows content (no stretched empty panel), per the
+ *   representative decision on 2026-11-10.
+ */
+
+/* ── top app switch ─────────────────────────────────────────────────────── */
+.app-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  margin-left: 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--glass-card-surface, var(--panel, #fff));
+}
+
+.app-switch-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text, #19191d);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.app-switch-item:hover:not([aria-current="page"]) {
+  background: var(--brand-soft, rgba(52, 104, 214, .10));
+}
+
+.app-switch-item[aria-current="page"] {
+  background: var(--primary-bg);
+  border-color: var(--primary-border);
+  color: #fff;
+}
+
+.app-switch-item:focus-visible {
+  outline: 3px solid var(--primary-focus);
+  outline-offset: 2px;
+}
+
+/* ── util first screen: whole-card buttons ──────────────────────────────── */
+.util-app-root { margin-top: 6px; }
+
+.util-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  align-items: start;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.util-card-item { margin: 0; padding: 0; }
+
+.util-card {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  grid-template-areas:
+    "icon title cta"
+    "icon desc  cta";
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 3px;
+  width: 100%;
+  padding: 16px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md, 16px);
+  background: var(--glass-card-surface, var(--panel, #ffffff));
+  color: var(--text, #19191d);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+
+.util-card-icon {
+  grid-area: icon;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--brand-soft, rgba(52, 104, 214, .10));
+  font-size: 16px;
+}
+
+.util-card-title {
+  grid-area: title;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.util-card-desc {
+  grid-area: desc;
+  color: var(--muted, #5a6578);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.util-card-cta {
+  grid-area: cta;
+  color: var(--muted, #5a6578);
+  font-size: 16px;
+  transition: transform .12s ease;
+}
+
+.util-card:hover {
+  border-color: var(--primary-focus);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px var(--focus-ring);
+}
+
+.util-card:hover .util-card-cta { transform: translateX(2px); }
+
+.util-card:focus-visible {
+  outline: 3px solid var(--primary-focus);
+  outline-offset: 2px;
+  border-color: var(--primary-focus);
+}
+
+.util-card:active { transform: none; }
+
+/* ── a tool's own screen inside the Util app ────────────────────────────── */
+.util-tool-screen { max-width: 760px; }
+
+.util-tool-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-bottom: 4px;
+  color: var(--muted, #5a6578);
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.util-tool-back:hover { color: var(--text, #19191d); }
+.util-tool-back:focus-visible { outline: 3px solid var(--primary-focus); outline-offset: 2px; }
+
+.util-tool-heading {
+  margin: 0 0 4px;
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.util-tool-desc {
+  margin: 0 0 16px;
+  color: var(--muted, #5a6578);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.util-tool-body {
+  padding: 18px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-md, 16px);
+  background: var(--glass-card-surface, var(--panel, #ffffff));
+}
+
+.util-tool-placeholder {
+  margin: 0;
+  color: var(--muted, #5a6578);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* ── legacy sidebar util entry: the top app switch owns util now ────────── */
+#utilNavGroup { display: none; }
+
+/* ── phone: clear the absolutely positioned hamburger, one column ───────── */
+@media (max-width: 920px) {
+  /* mobile-header-collapse.css takes #mobileMenu out of the row (absolute,
+   * left:10px) so the row can shrink to zero while a primary surface scrolls.
+   * The app switch follows the same rule, anchored next to the circle, and it
+   * hides while the header is collapsed — the row must keep the 56px expanded
+   * height and the 0px collapsed height the adopted phone header pins. */
+  .app-shell .main-panel > .topbar .app-switch {
+    position: absolute;
+    top: calc(env(safe-area-inset-top, 0px) + 6px);
+    left: 62px;
+    margin-left: 0;
+    transition: opacity .22s ease;
+  }
+  .app-shell[data-header-collapsed] .app-switch {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 720px) {
+  /* The adopted phone header is 56px tall (6 + 44 + 6). Drop the switch's own
+     padding/border so the 44px targets fit that row instead of growing it. */
+  .app-switch {
+    margin-left: 4px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    gap: 6px;
+  }
+  .app-switch-item { min-height: 44px; padding: 0 12px; }
+  .util-card-grid { grid-template-columns: 1fr; }
+  .util-card { padding: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .util-card, .util-card-cta { transition: none; }
+  .util-card:hover { transform: none; }
+  .util-card:hover .util-card-cta { transform: none; }
+}

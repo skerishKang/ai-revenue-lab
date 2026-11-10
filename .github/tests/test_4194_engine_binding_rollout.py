@@ -234,6 +234,85 @@ def test_5224_engine_proof_mode_rejects_unreviewed_mutations(change):
         )
 
 
+B14_SERVICE_BINDING = {
+    "type": "service", "name": "B14_SERVICE",
+    "service": "ai-revenue-korean-ai-platform", "environment": "production",
+}
+
+
+def test_reviewed_b14_service_removal_is_the_only_tolerated_removal():
+    """2026-11-10 retirement (Refs #7400): the Engine drop of B14_SERVICE.
+
+    The removal is tolerated only with the explicit reviewed authority; any
+    other removal, and the binding's re-addition, still fail closed.
+    """
+    before = version(*original(), *ADDITIONS, *DESKTOP_ADDITIONS,
+                     SERVICE_PROOF_ADDITION, B14_SERVICE_BINDING)
+    after = version(*original(), *ADDITIONS, *DESKTOP_ADDITIONS,
+                    SERVICE_PROOF_ADDITION, id="post")
+
+    with pytest.raises(guard.BindingStateError):
+        guard.assert_engine_4194_exact_rollout(before, after)
+    guard.assert_engine_4194_exact_rollout(
+        before, after, allow_4139_desktop_bindings=True,
+        allow_5224_service_proof_binding=True,
+        allow_reviewed_b14_service_removal=True,
+    )
+    # Idempotent once removed: a no-drift redeploy needs no authority.
+    guard.assert_engine_4194_exact_rollout(
+        after, after, allow_4139_desktop_bindings=True,
+        allow_5224_service_proof_binding=True,
+        allow_reviewed_b14_service_removal=True,
+    )
+    # Any other removal stays forbidden even with the reviewed authority.
+    stripped = version(*original()[:-1], *ADDITIONS, *DESKTOP_ADDITIONS,
+                       SERVICE_PROOF_ADDITION, id="post")
+    with pytest.raises(guard.BindingStateError):
+        guard.assert_engine_4194_exact_rollout(
+            version(*original(), *ADDITIONS, *DESKTOP_ADDITIONS,
+                    SERVICE_PROOF_ADDITION, B14_SERVICE_BINDING),
+            stripped,
+            allow_4139_desktop_bindings=True,
+            allow_5224_service_proof_binding=True,
+            allow_reviewed_b14_service_removal=True,
+        )
+    # Re-adding the retired binding stays forbidden too.
+    with pytest.raises(guard.BindingStateError):
+        guard.assert_engine_4194_exact_rollout(
+            after, before, allow_4139_desktop_bindings=True,
+            allow_5224_service_proof_binding=True,
+            allow_reviewed_b14_service_removal=True,
+        )
+
+
+def test_reviewed_b14_service_removal_cli_requires_the_5224_mode(tmp_path):
+    old = tmp_path / "old.json"
+    new = tmp_path / "new.json"
+    old.write_text(
+        json.dumps(version(*original(), *ADDITIONS, *DESKTOP_ADDITIONS,
+                           SERVICE_PROOF_ADDITION, B14_SERVICE_BINDING)),
+        encoding="utf-8",
+    )
+    new.write_text(
+        json.dumps(version(*original(), *ADDITIONS, *DESKTOP_ADDITIONS,
+                           SERVICE_PROOF_ADDITION, id="post")),
+        encoding="utf-8",
+    )
+    base = ["--before", str(old), "--after", str(new)]
+    # Standalone use of the removal authority is refused.
+    assert guard.main(base + ["--allow-reviewed-b14-service-removal"]) == 1
+    assert guard.main(base + [
+        "--expected-engine-4194-rollout", "--allow-reviewed-b14-service-removal",
+    ]) == 1
+    # With the Engine #5224 proof mode it is the exact reviewed transition.
+    assert guard.main(base + [
+        "--expected-engine-desktop-rollout-5224-proof",
+        "--allow-reviewed-b14-service-removal",
+    ]) == 0
+    # Without the authority the same transition still fails.
+    assert guard.main(base + ["--expected-engine-desktop-rollout-5224-proof"]) == 1
+
+
 def test_5224_engine_proof_cli_mode_and_exclusivity(tmp_path, capsys):
     old = tmp_path / "old.json"
     new = tmp_path / "new.json"
