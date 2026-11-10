@@ -239,6 +239,48 @@
       ? crypto.randomUUID() : null;
   }
 
+  // #7368: 연결 화면 상태 조회의 앞단 손실 1회 자동 재시도. 화면 최초 로드
+  // burst에서 앞단(front)이 스스로 만든 실패로 상태 조회가 놓치면, 사용자가
+  // 수동으로 다시 시도하기 전에 짧은 지연 뒤 한 번만 다시 묻는다.
+  const STATUS_RETRY_DELAY_MS = 800;
+
+  function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  // front가 스스로 만든 실패(앞단 손실)는 x-padiem-front 응답 헤더로 표시된다.
+  // Chat 서버가 직접 낸 4xx·5xx에는 이 표시가 없으므로 재시도 대상이 아니다.
+  function isFrontLoss(response) {
+    return Boolean(response && response.headers && response.headers.get("x-padiem-front") != null);
+  }
+
+  function isRetryableFrontLoss(response) {
+    if (!isFrontLoss(response)) return false;
+    return response.status === 502 || response.status === 503 || response.status === 504;
+  }
+
+  async function fetchStatusWithRetry(url, options = {}, hooks = null) {
+    // 읽기 상태 조회(GET/HEAD)만 재시도한다. 쓰기 요청은 항상 한 번만 나가며,
+    // 이 함수로 보내도 재시도 경로에 들어가지 않는다.
+    const method = String(options?.method ?? "GET").toUpperCase();
+    const retryable = method === "GET" || method === "HEAD";
+    const delayMs = Number.isFinite(hooks?.delayMs) ? hooks.delayMs : STATUS_RETRY_DELAY_MS;
+    let response;
+    try {
+      response = await fetch(url, options);
+    } catch (error) {
+      // 호출자가 의도한 중단(패널 닫기·계정 전환)은 재시도하지 않는다.
+      if (!retryable || error?.name === "AbortError" || options?.signal?.aborted) throw error;
+      if (typeof hooks?.onRetry === "function") hooks.onRetry();
+      await delay(delayMs);
+      return fetch(url, options);
+    }
+    if (!retryable || !isRetryableFrontLoss(response)) return response;
+    if (typeof hooks?.onRetry === "function") hooks.onRetry();
+    await delay(delayMs);
+    return fetch(url, options);
+  }
+
   // #7133: one neutral random request handle for idempotency-style keys.
   // Same fallback chain as createChatPcRunId; the caller owns the prefix, so
   // the shape stays honest for whichever surface mints it.
@@ -652,6 +694,7 @@
     createChatPcRunId,
     createRequestId,
     errorFor,
+    fetchStatusWithRetry,
     streamErrorMessage,
     isStreamLoss,
     parseSseFrame,

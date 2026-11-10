@@ -73,6 +73,16 @@ class SharedChatAuth:
         self._canonical_lifetime = canonical_session_lifetime_seconds
         self._mapping: dict[str, tuple[str, float]] = {}
 
+    @property
+    def verifier(self):
+        """The composed shared-token verifier this adapter authenticates with.
+
+        The common-login refresh re-attachment (#7381) re-verifies the renewed
+        access token through the same verifier instance the login used, so it
+        reads the adapter's composition instead of reaching into private state.
+        """
+        return self._verifier
+
     async def _ensure_canonical_sessions(self, account_id: str, user_id: str) -> None:
         """Re-establish the expired canonical sessions behind a verified request.
 
