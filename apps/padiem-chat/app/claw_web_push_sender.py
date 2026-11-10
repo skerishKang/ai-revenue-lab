@@ -32,16 +32,24 @@ Invariants
   device is gone, and the caller is told to drop the row.
 * ``PUSH_FAILURE_IS_NOT_A_JOB_FAILURE`` — every failure is reported as a
   delivery outcome, never raised into the automation path.
+* ``ENDPOINT_IS_AN_OUTBOUND_DESTINATION`` — the server itself POSTs to the
+  subscription endpoint, so that URL is an outbound-fetch destination the
+  subscribing browser chose. It is accepted only as an ``https`` URL on a
+  reviewed browser push-service host, checked both when the subscription is
+  saved (:mod:`app.claw_push_subscriptions`) and again on every delivery
+  attempt; the two transports behind the sender never follow redirects.
 """
 
 from __future__ import annotations
 
 import base64
 import inspect
+import ipaddress
 import json
 import time
 from dataclasses import dataclass
 from typing import Any, Callable, Protocol
+from urllib.parse import urlsplit
 
 # RFC 8291 §4: one record, 4096-byte record size, 16-byte salt, 65-byte key id.
 _RECORD_SIZE = 4096
@@ -64,9 +72,71 @@ _LAST_RECORD_DELIMITER = b"\x02"
 
 MAX_PUSH_PAYLOAD_BYTES = 2048
 
+# The reviewed browser web-push service hosts a subscription endpoint may name.
+# The endpoint is an outbound destination the server POSTs to, so only the push
+# services of the major browsers are admitted: anything else (an arbitrary
+# https host, an IP literal, a non-https scheme) is refused at registration and
+# skipped at delivery. Regional WNS frontends (``wns``, ``wns2-<region>``) are
+# admitted through the reviewed ``notify.windows.com`` suffix.
+ALLOWED_PUSH_ENDPOINT_HOSTS: frozenset[str] = frozenset(
+    {
+        "fcm.googleapis.com",  # Chrome/Chromium (FCM web push)
+        "android.googleapis.com",  # legacy Chromium endpoints
+        "updates.push.services.mozilla.com",  # Firefox autopush
+        "webpush.apple.com",  # Safari / WebKit
+    }
+)
+ALLOWED_PUSH_ENDPOINT_HOST_SUFFIXES: tuple[str, ...] = (
+    ".notify.windows.com",  # Edge (WNS regional frontends)
+)
+
 
 class PushSendError(RuntimeError):
     """A bounded, non-secret-bearing push send failure."""
+
+
+def push_endpoint_refusal(endpoint: Any) -> str | None:
+    """The bounded reason a push endpoint must not be used, or ``None``.
+
+    The endpoint URL is an outbound-fetch destination controlled by the
+    subscribing browser (the server POSTs to it on every delivery), so it is
+    fail-closed: ``https`` only, a reviewed browser push-service host only,
+    no explicit port other than the https default, and never an IP literal —
+    loopback, private and link-local addresses arrive in exactly that shape.
+    The returned reason carries no endpoint content (``NO_ENDPOINT_IN_LOG``).
+    """
+
+    if not isinstance(endpoint, str) or not endpoint.strip():
+        return "endpoint_missing"
+    try:
+        parsed = urlsplit(endpoint)
+    except ValueError:
+        return "endpoint_unparsable"
+    if parsed.scheme != "https":
+        return "endpoint_scheme_not_https"
+    host = (parsed.hostname or "").rstrip(".").lower()
+    if not host:
+        return "endpoint_host_missing"
+    try:
+        ipaddress.ip_address(host)
+    except ValueError:
+        pass
+    else:
+        # An IP literal — including every loopback, private and link-local
+        # address — can never name a reviewed push service.
+        return "endpoint_ip_literal"
+    try:
+        explicit_port = parsed.port
+    except ValueError:
+        # An unparsable port is not the https default; refuse it.
+        explicit_port = 0
+    if explicit_port not in (None, 443):
+        return "endpoint_port_not_allowed"
+    if host in ALLOWED_PUSH_ENDPOINT_HOSTS:
+        return None
+    if host.endswith(ALLOWED_PUSH_ENDPOINT_HOST_SUFFIXES):
+        return None
+    return "endpoint_host_not_allowed"
 
 
 @dataclass(frozen=True, slots=True)
@@ -271,6 +341,13 @@ class WebPushSender:
             auth = getattr(subscription, "auth", "")
             if not endpoint or not p256dh or not auth:
                 return PushSendResult(delivered=False, reason="invalid_subscription")
+            # Send-time re-check of the endpoint contract: a subscription saved
+            # before the endpoint rules existed (or corrupted since) must not
+            # become an outbound POST to an unreviewed destination. The refusal
+            # reason is bounded and carries no endpoint content.
+            refusal = push_endpoint_refusal(endpoint)
+            if refusal is not None:
+                return PushSendResult(delivered=False, reason=refusal)
             crypto = self._crypto_factory()
             payload = build_push_payload(
                 title=title,
@@ -467,6 +544,8 @@ class WorkerWebCrypto:
 
 
 __all__ = [
+    "ALLOWED_PUSH_ENDPOINT_HOSTS",
+    "ALLOWED_PUSH_ENDPOINT_HOST_SUFFIXES",
     "MAX_PUSH_PAYLOAD_BYTES",
     "PushCryptoPort",
     "PushSendError",
@@ -477,4 +556,5 @@ __all__ = [
     "build_push_payload",
     "build_vapid_authorization",
     "encrypt_payload",
+    "push_endpoint_refusal",
 ]
