@@ -2,7 +2,7 @@
 # helper chain on a Windows PC (PS 5.1, no admin needed, changes nothing).
 #
 # Use it before/after swapping the scheduled task to the single-file EXE
-# (docs/operations/PC_USER_HELPER_RELEASE_20261107.md, step 6) and whenever
+# (the 비공개 운영 기록(거버넌스 폴더, 같은 상대 경로), PC_USER_HELPER_RELEASE_20261107.md, step 6) and whenever
 # the user mode breaks: it prints where the chain is still whole and where it
 # first breaks, one KEY=VALUE line at a time, with no secret material.
 #

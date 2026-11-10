@@ -19,7 +19,7 @@ main = "worker.py"
 # broader Python-async-bridge failure replaced it. Production was rolled back
 # to the recorded 3.13 version and verified clean, so this date stays here
 # until the platform fixes that path. Evidence: docs/operations/
-# 5479-py314-runtime-incident-20261024.md §8.
+# the measured 3.14 rollback evidence (비공개 운영 기록(거버넌스 폴더, 같은 상대 경로), 문서 5479-py314-runtime-incident-20261024 §8).
 compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
 

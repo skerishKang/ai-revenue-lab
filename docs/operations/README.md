@@ -128,3 +128,5 @@ For visual work, the work order and final review must explicitly record the curr
 ## Approval rule
 
 `OWNER_UI_APPROVED` is never inferred from CI, technical readiness, anchor lock, archetype pass, merge, deployment, or a historical UI approval. Only an explicit current owner decision creates it.
+
+운영 기록(런북·사고·컷오버·상태 보고)은 비공개 운영 기록 위치(거버넌스 폴더, 같은 상대 경로)로 이동했다(2026-11-11, #7404).

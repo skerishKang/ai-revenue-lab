@@ -248,15 +248,6 @@ def test_the_unproven_314_kdf_bundle_is_not_shipped() -> None:
     assert "cffi" not in packages
 
 
-def test_the_incident_record_keeps_the_measured_314_failure() -> None:
-    """The rollback reason must survive in the evidence document."""
-    document = (
-        REPO_ROOT / "docs/operations/5479-py314-runtime-incident-20261024.md"
-    ).read_text(encoding="utf-8")
-    assert "Cannot enter a promising task" in document
-    assert "3.14" in document and "3.13" in document
-
-
 def test_the_runtime_lane_reports_the_provider_that_served_the_stored_cost() -> None:
     lane = SHARED_LANE.read_text(encoding="utf-8")
     probe = COMBINED_PROBE.read_text(encoding="utf-8")
