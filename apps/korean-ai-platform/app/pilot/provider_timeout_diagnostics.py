@@ -34,6 +34,18 @@ def classify_timeout_phase(exc: BaseException) -> str | None:
     return "other"
 
 
+def timeout_phase_of(exc: BaseException) -> str | None:
+    """The transport phase of a timeout, for the #6724 pre-stream retry.
+
+    Derived from the httpx exception type only. An ``asyncio`` deadline (the
+    policy's own wall) belongs to no phase and returns None, which the retry
+    policy treats as "not a connect failure".
+    """
+    if not isinstance(exc, httpx.TimeoutException):
+        return None
+    return classify_timeout_phase(exc)
+
+
 def log_provider_timeout(
     logger: logging.Logger, provider_id: str, exc: BaseException, mode: str,
 ) -> None:

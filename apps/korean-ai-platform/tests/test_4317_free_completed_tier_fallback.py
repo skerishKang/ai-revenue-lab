@@ -292,10 +292,12 @@ def test_the_owner_roster_walk_terminates_when_every_candidate_fails(client, mon
     finally:
         plat.call_platform_chat_completions = original
 
-    # The primary plus every roster candidate, each exactly once, and no more.
-    expected = [FREE_PRIMARY, *FREE_ROSTER]
+    # The primary plus every roster candidate, each once, and no more — except
+    # the chain's final attempt, which #6724 retries once on the same route
+    # because there is no candidate left behind it.
+    expected = [FREE_PRIMARY, *FREE_ROSTER, FREE_ROSTER[-1]]
     assert [call["model_id"] for call in calls] == expected
-    assert len({call["model_id"] for call in calls}) == len(calls)
+    assert len({call["model_id"] for call in calls}) == len(FREE_ROSTER) + 1
     assert response.status_code >= 400
     assert response.json()["error"]["attempt_count"] == len(expected)
 

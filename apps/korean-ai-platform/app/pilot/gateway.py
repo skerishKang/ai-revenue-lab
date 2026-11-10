@@ -54,6 +54,10 @@ from app.pilot.tool_channel import (
     validate_tools,
 )
 from app.pilot.provider_timeout_diagnostics import log_gateway_deadline
+from app.pilot.prestream_retry import (
+    PRESTREAM_RETRY_LIMIT,
+    is_prestream_retryable,
+)
 from app.pilot.b14_timeout_policy import (
     DEFAULT_CHAIN_BUDGET_SECONDS,
     GATEWAY_WALL_SECONDS,
@@ -957,8 +961,11 @@ async def _handle_alpha_chat(
     # declared product grade allows is tried, in order, and nothing narrows
     # that list.
     # B14 does not duplicate provider requests by default. Optional retries
-    # require explicit caller opt-in and never widen the configured maximum.
-    same_route_retry_limit = b14_opts.get("max_retries", 0)
+    # #6724 (CTO decision 2026-11-10): one same-route retry is the default for
+    # a call that produced no answer. The caller may still opt out with
+    # max_retries=0 and may never widen the configured maximum.
+    same_route_retry_limit = b14_opts.get("max_retries", PRESTREAM_RETRY_LIMIT)
+    explicit_retry_opt_in = "max_retries" in b14_opts
 
     start_time = time.monotonic()
     timeout_policy = get_timeout_policy()
@@ -1319,12 +1326,24 @@ async def _handle_alpha_chat(
             # Non-retryable classes (auth, bad request) never reach a retry:
             # they are not in _SAME_ROUTE_RETRYABLE_CODES and the
             # fallback-prohibited check below breaks on the first attempt.
+            # #6724: a completed call that never produced an answer is the
+            # pre-answer case by definition, so the connect/5xx/error-envelope
+            # policy applies to it. The older opt-in classes keep their own
+            # contract for callers that asked for them explicitly.
+            retry_allowed = is_prestream_retryable(error) or (
+                explicit_retry_opt_in
+                and error.code in _SAME_ROUTE_RETRYABLE_CODES
+                and not getattr(error, "timeout_reason", None)
+            )
             if (
                 decision.route_mode != "auto"
-                and
-                error.code in _SAME_ROUTE_RETRYABLE_CODES
-                and not getattr(error, "timeout_reason", None)
+                and retry_allowed
                 and retry_index < same_route_retry_limit
+                # #6724: only the attempt with no successor left is retried.
+                # A candidate that still has an owner-roster candidate behind
+                # it keeps #4317's one-call-per-candidate walk, which is the
+                # grade decision this change does not reopen.
+                and idx == len(candidates) - 1
             ):
                 backoff = _UPSTREAM_RETRY_BACKOFF_SECONDS[
                     min(retry_index, len(_UPSTREAM_RETRY_BACKOFF_SECONDS) - 1)
