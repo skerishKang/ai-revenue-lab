@@ -42,6 +42,20 @@ class SharedAccessCookieVerdictTest(unittest.TestCase):
         self.assertEqual((verdict, code), ("FAIL", "shared_cookie_missing"))
 
 
+class SharedCredentialOkTest(unittest.TestCase):
+    def test_email_shape_passes(self):
+        self.assertTrue(checks.shared_credential_ok("qa@example.com"))
+        self.assertTrue(checks.shared_credential_ok("  qa@example.com  "))
+
+    def test_non_email_shape_fails(self):
+        self.assertFalse(checks.shared_credential_ok("cgi1003"))
+        self.assertFalse(checks.shared_credential_ok(""))
+        self.assertFalse(checks.shared_credential_ok(None))
+        self.assertFalse(checks.shared_credential_ok("qa@"))
+        self.assertFalse(checks.shared_credential_ok("@example.com"))
+        self.assertFalse(checks.shared_credential_ok("qa example.com"))
+
+
 class SharedStatusVerdictTest(unittest.TestCase):
     def test_after_login_requires_authenticated(self):
         self.assertEqual(checks.shared_status_verdict(True, "after_login"), ("PASS", "none"))
