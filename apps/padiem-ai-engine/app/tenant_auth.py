@@ -608,31 +608,41 @@ def parse_usage_reservation(payload: Any, *, reservation: UsageReservation, now:
     }
 
 
-#: Opt-in switch for the combined admission round trip. Default false keeps the
-#: two-call flow; an unrecognized value reads as false, the fail-safe side.
+#: Switch for the combined admission round trip. The combined RPC is the code
+#: default (one round trip instead of two): the variable only turns it off,
+#: and only the exact off spellings restore the legacy two-call flow, which
+#: stays as the emergency path.
 COMBINED_ADMISSION_RPC_ENV = "PADIEM_ENGINE_ADMISSION_COMBINED_RPC"
+
+#: The exact off spellings. Anything else -- absent, empty, or unrecognized --
+#: keeps the combined path on, so a typo can no longer silently re-split the
+#: round trip.
+_COMBINED_ADMISSION_OFF_SPELLINGS = frozenset({"false", "0", "off"})
 
 
 def admission_combined_rpc_enabled(source: Any) -> bool:
     """Read the combined-RPC switch defensively.
 
-    Accepts the common true spellings; anything else (including an unreadable
-    source) leaves the two-call flow in place.
+    The combined path is the default: an absent variable, an unreadable
+    source, or any unrecognized value keeps the single ``admit_usage`` round
+    trip. The exact spellings "false", "0" and "off" (case- and
+    whitespace-tolerant), or a boolean False, restore the legacy two-call
+    flow kept as the emergency path.
     """
     raw = None
     getter = getattr(source, "get", None)
     if callable(getter):
         try:
             raw = getter(COMBINED_ADMISSION_RPC_ENV)
-        except Exception:  # noqa: BLE001 - a read failure reads as "off"
+        except Exception:  # noqa: BLE001 - a read failure keeps the default (on)
             raw = None
     else:
         raw = getattr(source, COMBINED_ADMISSION_RPC_ENV, None)
-    if raw is True:
-        return True
-    if not isinstance(raw, str):
+    if raw is False:
         return False
-    return raw.strip().lower() in {"1", "true", "yes", "on"}
+    if isinstance(raw, str):
+        return raw.strip().lower() not in _COMBINED_ADMISSION_OFF_SPELLINGS
+    return True
 
 
 def build_control_plane_admission_adapter(
