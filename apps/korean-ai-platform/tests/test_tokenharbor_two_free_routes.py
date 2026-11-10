@@ -32,6 +32,10 @@ from _registry_values import (
     chat_wire_tail, model_rows, registry, requires_owner_document,
 )
 
+from _registry_values import require_owner_document
+
+require_owner_document()
+
 # The owner-approved free routes are the registry's own zero-priced, ``free``
 # tagged rows; the suite's Provider is whichever Provider owns them.
 def _free_rows() -> list[dict]:

@@ -21,6 +21,10 @@ from _registry_values import (
     requires_owner_document,
 )
 
+from _registry_values import require_owner_document
+
+require_owner_document()
+
 
 def _load_adapter(module_name: str):
     """The provider adapter module, imported from the app's own package."""

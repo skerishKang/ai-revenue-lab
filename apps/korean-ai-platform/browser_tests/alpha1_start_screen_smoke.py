@@ -16,6 +16,8 @@ assertion, console/page error, external request, overflow) exits with code 1.
 
 from __future__ import annotations
 
+import atexit
+import json
 import os
 import subprocess
 import sys
@@ -56,10 +58,62 @@ def _check_chromium_available() -> None:
         browser.close()
 
 
+def _fixture_registry_switch(env: dict[str, str]) -> None:
+    """Point the mock server at the placeholder registry when none is named.
+
+    The repository document is a schema-shaped placeholder now, so a host that
+    names no document serves an empty catalog and the start screen has nothing
+    to list. A deployment run passes its own switch through the environment.
+    """
+    if (env.get("PADIEM_MODELS_REGISTRY", "").strip()
+            or env.get("PADIEM_MODELS_REGISTRY_OVERRIDE", "").strip()):
+        return
+    fixture = os.path.join(APP_ROOT, "tests", "fixtures", "models_private_fixture.json")
+    if not os.path.isfile(fixture):
+        return
+    with open(fixture, "rb") as source:
+        document = json.loads(source.read())
+    # The manual-pin contract needs a route that is in no grade roster, which
+    # the placeholder fixture does not carry. One synthetic row at the front
+    # keeps that premise without a deployment identity.
+    providers = document.get("providers", {})
+    if providers and document.get("models"):
+        provider_id = next(iter(providers))
+        document["models"].insert(0, {
+            "id": provider_id + "/smoke-manual-pin",
+            "provider_id": provider_id,
+            "upstream_model": "smoke-manual-pin",
+            "capabilities": ["chat"],
+            "enabled": True,
+            "display_name": "Smoke Manual Pin",
+            "provider_name": "Example Smoke",
+            "context_window": 8192,
+            "input_price_usd_per_1m": 0.0,
+            "output_price_usd_per_1m": 0.0,
+            "source": "fixture",
+            "source_checked_at": "2026-11-09",
+        })
+    payload = json.dumps(document, ensure_ascii=False).encode("utf-8")
+    handle = tempfile.NamedTemporaryFile(
+        prefix="b14-smoke-registry-", suffix=".json", delete=False)
+    handle.write(payload)
+    handle.close()
+    os.chmod(handle.name, 0o600)
+    atexit.register(os.unlink, handle.name)
+    env["PADIEM_MODELS_REGISTRY"] = handle.name
+    # A mock journey still passes the readiness gate: give every binding the
+    # fixture declares a synthetic value, never an upstream credential.
+    for entry in document.get("providers", {}).values():
+        binding = entry.get("credential_binding")
+        if isinstance(binding, str) and binding:
+            env.setdefault(binding, "sk-fixture-browser-only-0123456789")
+
+
 def start_server() -> subprocess.Popen[bytes]:
     global _SERVER_LOG
     env = os.environ.copy()
     env["B14_PROVIDER_MODE"] = "mock"
+    _fixture_registry_switch(env)
     # The chosen Agnes exact model is secret-gated even in mock. Provide a
     # synthetic test-only value to this mock child; never call an upstream.
     env["PADIEM_B14_CREDENTIAL_01"] = "sk-fixture-browser-only-0123456789"
@@ -121,9 +175,9 @@ def _step(name: str, fn: Any, results: dict) -> None:
     try:
         fn()
         results["passed"] += 1
-    except AssertionError:
+    except AssertionError as exc:
         results["failed"] += 1
-        results["errors"].append(name)
+        results["errors"].append(f"{name}: {exc}" if str(exc) else name)
     except Exception as e:  # noqa: BLE001 - any interaction failure fails the step
         results["failed"] += 1
         results["errors"].append(f"{name}: {type(e).__name__}: {e}")
@@ -164,6 +218,19 @@ def run_desktop(p: Any) -> dict:
     page.on("response", lambda resp: failed_local.append(resp.url) if resp.status >= 400 and resp.url.startswith(BASE_URL) else None)
     external = _capture_requests(page)
     chat_responses = _open_chat_response_tracker(page)
+    selected_model: dict[str, str] = {}
+
+    def first_model_option() -> str:
+        """The first selectable model the start screen lists.
+
+        The catalog is deployment data, so the journey takes the model the
+        screen offers instead of naming one; the network assertions still check
+        that this exact selection reached the response.
+        """
+        options = page.locator("#start_model option").evaluate_all(
+            "els => els.map(e => e.value).filter(Boolean)")
+        assert options, "the start screen lists no selectable model"
+        return options[0]
 
     def nav_click(href: str) -> None:
         page.locator(f'.sidebar-nav .nav-link[href="{href}"]').first.click()
@@ -221,9 +288,11 @@ def run_desktop(p: Any) -> dict:
 
     # ── 9. Explicit model selection ──
     def s9():
-        page.locator("#start_model").select_option("agnes-ai/agnes-3.0-flash")
+        model_id = first_model_option()
+        selected_model["id"] = model_id
+        page.locator("#start_model").select_option(model_id)
         page.wait_for_timeout(200)
-        assert page.locator("#start_model").input_value() == "agnes-ai/agnes-3.0-flash"
+        assert page.locator("#start_model").input_value() == model_id
         assert page.locator('input[name="start_route_mode"][value="manual"]').is_checked()
         assert page.locator("#start_route_preview").count() > 0
     _step("9. explicit model selected", s9, results)
@@ -317,9 +386,11 @@ def run_desktop(p: Any) -> dict:
 
     # ── 20. Manual model selection ──
     def s20():
-        page.locator("#start_model").select_option("agnes-ai/agnes-3.0-flash")
+        model_id = selected_model.get("id") or first_model_option()
+        selected_model["id"] = model_id
+        page.locator("#start_model").select_option(model_id)
         page.wait_for_timeout(200)
-        assert page.locator("#start_model").input_value() == "agnes-ai/agnes-3.0-flash"
+        assert page.locator("#start_model").input_value() == model_id
         radio = page.locator('input[name="start_route_mode"][value="manual"]')
         radio.check()
         page.wait_for_timeout(200)
@@ -348,8 +419,9 @@ def run_desktop(p: Any) -> dict:
         page.wait_for_timeout(1500)
         assert len(chat_responses) > before, "no second chat/completions network response"
         biz = chat_responses[-1].get("business14", {})
-        assert biz.get("selected_model") == "agnes-ai/agnes-3.0-flash", (
-            f"expected manual model, got {biz.get('selected_model')}"
+        expected = selected_model.get("id")
+        assert expected and biz.get("selected_model") == expected, (
+            f"expected manual model {expected!r}, got {biz.get('selected_model')!r}"
         )
         assert biz.get("fallback_allowed") is False, "manual generic fallback must remain OFF"
     _step("23. second manual request without generic fallback", s23, results)

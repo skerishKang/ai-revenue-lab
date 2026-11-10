@@ -14,8 +14,15 @@ from app.pilot.errors import UpstreamRateLimited
 from _registry_values import (
     a_dispatchable_row,
     provider_ids_excluding,
+    require_owner_document,
     requires_owner_document,
 )
+
+# #7241 3단계: the 429 provenance log is one Provider adapter's own contract,
+# and this host's effective document is the placeholder fixture until an owner
+# document is named. Skip the module rather than fail on a lane no document
+# registers.
+require_owner_document()
 
 #: The Provider whose own adapter owns the 429 provenance log, and the row the
 #: adapter's wire is driven with. Both are read from the app (#7241 3a).

@@ -31,6 +31,15 @@ Credential fields carry binding NAMES only (platform secret identifiers),
 never secret values. This module performs no I/O or provider dispatch;
 Chat and Claw read its route definitions and B14 separately owns
 registration, upstream execution and recoverable-error failover.
+
+#6828 3단계: the repository ships no model or provider value. This
+declaration carries the tier STRUCTURE only — every grade is declared without
+an executable route, so a host that has not switched to the private registry
+(``PADIEM_MODELS_REGISTRY``) or whose document is unusable has nothing to
+dispatch (fail closed). The switch-aware reader beside this module
+(``product_tier_routes_private``) resolves the real routes from the private
+registry and is the consumer-facing answer; the legacy per-name helpers live
+there too.
 """
 
 from __future__ import annotations
@@ -48,46 +57,34 @@ _FORBIDDEN_VISIBLE_TOKENS = ("auto", "fallback")
 class ProductTierRoutesError(ValueError):
     """Raised when the contract violates the #2085/#2099 policy (fail closed)."""
 
-FREE_PRIMARY_B14_MODEL_ID = "google/gemini-3.1-flash-lite"
-FREE_FALLBACK_B14_MODEL_ID = "google/gemma-4-31b-it"
-# #5009: the existing Muse identities are retained as data-only routes.
-# Owner decision 2026-10-25: the test-phase paid/admin primary is Google.
-# Owner instruction 2026-11-04 aligns Free's Gemma backup with the 31B ledger choice.
-TEST_PHASE_PRIMARY_B14_MODEL_ID = "google/gemini-3.5-flash-lite"
-MUSE_B14_MODEL_ID = "opencode-go/muse-spark-1.3-contributor"
-MUSE_B14_UPSTREAM_MODEL = "muse-spark-1.3-contributor"
-# Owner decision 2026-10-25: test-phase Google recovery order for the
-# Plus/Pro/Max/admin lanes.
-# Owner decision 2026-11-04: Plus/Pro/Max/admin insert TokenHarbor DeepSeek
-# as the first fallback, then Kilo Crouton Alpha and OpenRouter Crouton Alpha,
-# keeping Gemma as the last. Free inserts Kilo Crouton Alpha as its first
-# fallback and OpenRouter Crouton Alpha as its second, ahead of Gemma and
-# Gemini 3.5.
-TIER_FALLBACK_B14_MODELS = {
-    "max": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it"),
-    "pro": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it"),
-    "plus": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it"),
-    "free": ("kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it", "google/gemini-3.5-flash-lite"),
-    "admin": ("google/gemini-3.1-flash-lite", "tokenharbor/deepseek-v4.1-flash:free", "kilo/stealth/crouton-alpha", "openrouter/stealth/crouton-alpha", "google/gemma-4-31b-it"),
-}
-
-# Owner decision 2026-10-21 (#2505): OpenCode Go free models are not execution
-# candidates. The provider prefix and the ``-free`` suffix identify the
-# family; no other provider's free model is affected by this decision.
-FREE_CANDIDATE_PROVIDER = "opencode-go"
+# Owner decision 2026-10-21 (#2505): one provider family's free models are
+# not execution candidates. The ``-free`` suffix identifies the family; the
+# rule is provider-agnostic so the repository carries no provider name.
 
 
-def is_free_execution_candidate(model_id: str | None) -> bool:
+def is_free_execution_candidate(
+    model_id: str | None,
+    *,
+    excluded_providers: frozenset[str] = frozenset(),
+) -> bool:
     """Whether one model identity is an excluded free execution candidate.
 
     Used by the shared grade route contract so an administrator can never
     bind an excluded free model to a grade, and so a stored row can never
     serve one either.
+
+    #6828 3단계: the excluded provider set is deployment data, not a public
+    repository value. The contract stays pure: callers pass the deployment's
+    excluded provider IDs (the private reader loads them from the
+    ``PADIEM_B14_FREE_CANDIDATE_PROVIDERS`` env variable). An empty set
+    excludes nothing, so a free-suffixed direct-pilot lane keeps working.
     """
     if not isinstance(model_id, str) or not model_id:
         return False
     provider, separator, tail = model_id.strip().casefold().partition("/")
-    return bool(separator) and provider == FREE_CANDIDATE_PROVIDER and tail.endswith("-free")
+    if not separator or not tail.endswith("-free"):
+        return False
+    return provider in (excluded_providers or frozenset())
 
 
 class ProductTierLabel(str, Enum):
@@ -102,31 +99,25 @@ class ProductRouteStatus(str, Enum):
     HOLD_AS_DATA_ONLY = "hold_as_data_only"
     RETIRED_AS_DATA_ONLY = "retired_as_data_only"
 
-# One shared primary-route switch for a separately approved Muse return.
-# HOLD -> EXECUTABLE here reactivates Muse for all four lanes and holds Google.
-MUSE_ROUTE_STATUS = ProductRouteStatus.HOLD_AS_DATA_ONLY
-_TEST_PHASE_GOOGLE_ROUTE_STATUS = ProductRouteStatus.EXECUTABLE
+# One shared primary-route switch for a separately approved hold return is
+# decided in the private registry; the repository carries no route values.
 
 class ProductCredentialMode(str, Enum):
     ANONYMOUS = "anonymous"
     PLATFORM_SECRET_BINDING = "platform_secret_binding"
 
 # Historical HOLD sentinels are identity markers, not active B14 model IDs.
-# Current executable routes select Google during the test phase; Muse routes
-# remain explicit HOLD data rather than being removed from the declaration.
 PLUS_HOLD_MODEL_ID = "padiem-profile/plus-hold"
 PRO_HOLD_MODEL_ID = "padiem-profile/pro-hold"
 MAX_HOLD_MODEL_ID = "padiem-profile/max-hold"
 
 # Retired upstream free lanes (#2094 gateway-list evidence, #2096/#2097
 # repair + unregistration). They may never appear as an executable product
-# route in any consumer.
-RETIRED_PRODUCT_MODEL_IDS = frozenset(
-    {
-        "kilo/minimax-minimax-m3-free",
-        "kilo/tencent-hy3-free",
-    }
-)
+# route in any consumer. The repository carries no model value: retirement
+# authority is the B14 catalog's retired list read from the private registry,
+# so this set stays empty here and the route validator's check is a
+# belt-and-braces guard that costs nothing when empty.
+RETIRED_PRODUCT_MODEL_IDS = frozenset()
 
 @dataclass(frozen=True, slots=True)
 class ProductTierRoute:
@@ -234,59 +225,16 @@ def validate_product_tier_routes(tiers: tuple[ProductTierDefinition, ...]) -> No
                     f"{tier.label.value}: route_id must not contain {token!r}",
                 )
 
-PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
-    ProductTierDefinition(
-        label=ProductTierLabel.FREE,
-        routes=(ProductTierRoute(
-            route_id="free.gemini-3.1-flash-lite.v1",
-            status=ProductRouteStatus.EXECUTABLE,
-            model_family="gemini-3.1-flash-lite",
-            provider_id="google",
-            model_id=FREE_PRIMARY_B14_MODEL_ID,
-            upstream_model="gemini-3.1-flash-lite",
-            credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-            credential_binding="PADIEM_B14_CREDENTIAL_03",
-            evidence="Owner Free Google model priority decision 2026-10-20.",
-        ),),
-    ),
-    *(
-        ProductTierDefinition(
-            label=label,
-            routes=(
-                ProductTierRoute(
-                    route_id=f"{tier}.gemini-3.5-flash-lite.v1",
-                    status=_TEST_PHASE_GOOGLE_ROUTE_STATUS,
-                    model_family="gemini-3.5-flash-lite",
-                    provider_id="google",
-                    model_id=TEST_PHASE_PRIMARY_B14_MODEL_ID,
-                    upstream_model="gemini-3.5-flash-lite",
-                    credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-                    credential_binding="PADIEM_B14_CREDENTIAL_05",
-                    hold_reason="Held when the separately approved Muse primary is restored.",
-                    evidence="Owner test-phase Google primary decision 2026-10-25.",
-                ),
-                ProductTierRoute(
-                    route_id=("admin.muse-spark-1.3-contributor.v1"
-                              if label is ProductTierLabel.ADMIN else f"{tier}.muse-spark.v1"),
-                    status=MUSE_ROUTE_STATUS,
-                    model_family="muse-spark",
-                    provider_id="opencode-go",
-                    model_id=MUSE_B14_MODEL_ID,
-                    upstream_model=MUSE_B14_UPSTREAM_MODEL,
-                    credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-                    credential_binding="PADIEM_B14_CREDENTIAL_11",
-                    hold_reason="Owner decision 2026-10-25: retain Muse as data during the Google test phase.",
-                    evidence="Owner Plus/Pro/Max Muse primary #5009; admin decision 2026-10-24.",
-                ),
-            ),
-        )
-        for label, tier in (
-            (ProductTierLabel.PLUS, "plus"),
-            (ProductTierLabel.PRO, "pro"),
-            (ProductTierLabel.MAX, "max"),
-            (ProductTierLabel.ADMIN, "admin"),
-        )
-    ),
+# --- value-free declaration (#6828 3단계) ---
+#
+# The declaration itself carries no model or provider value: every grade is
+# declared without an executable route, so a host that has not switched to
+# the private registry — or whose document is unusable — has nothing to
+# dispatch. The switch-aware reader beside this module
+# (``product_tier_routes_private``) resolves the real routes from
+# ``PADIEM_MODELS_REGISTRY`` and is the consumer-facing answer.
+PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = tuple(
+    ProductTierDefinition(label=label, routes=()) for label in ProductTierLabel
 )
 validate_product_tier_routes(PRODUCT_TIER_ROUTES)
 

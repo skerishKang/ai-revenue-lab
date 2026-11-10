@@ -94,37 +94,39 @@ jobs:
             --source app/pilot/b14_models.json \
             --bundle-dir "${RUNNER_TEMP}/b14-worker-bundle"
 
-      - name: Verify local Python Worker startup without reading Secrets Store
+      - name: Verify local Python Worker fails closed without reading Secrets Store
         shell: bash
         env:
           CI: 'true'
         run: |
           set -euo pipefail
-          # The root redirect executes after Worker Python module import
-          # (including the JSON-backed registry at module initialization),
-          # but before fetch() requests any Secrets Store values. The 9-model
-          # roster itself is independently checked against packaged JSON above.
+          # #7238: the worker now requires a private registry switch to boot.
+          # A switchless local boot therefore refuses at import with the
+          # documented registry_switch_missing error — before any fetch() could
+          # request Secrets Store values, which is exactly what this step
+          # proves about startup: no secrets are read to start (or refuse) the
+          # worker. The bundle-check step above independently proves the
+          # artifact bytes, the loader and the missing-JSON fail-closed path.
           npx --yes wrangler@4.149.0 dev --local --ip 127.0.0.1 --port 8789 \
             > "${RUNNER_TEMP}/b14-local-worker.log" 2>&1 &
           server_pid=$!
           trap 'kill "${server_pid}" 2>/dev/null || true' EXIT
           ok=0
           for i in $(seq 1 30); do
-            status="$(curl --silent --output /dev/null --write-out '%{http_code}' \
-              --max-time 2 http://127.0.0.1:8789/ 2>/dev/null || true)"
-            if [ "${status}" = '307' ]; then
-              echo 'B14_LOCAL_WORKER_BOOT=PASS HTTP_ROOT=307'
-              echo 'B14_LOCAL_BOOT_NO_SECRETS=PASS'
+            if grep -F 'registry_switch_missing' "${RUNNER_TEMP}/b14-local-worker.log" >/dev/null 2>&1; then
               ok=1
               break
             fi
             sleep 2
           done
-          if [ "${ok}" -ne 1 ]; then
-            echo 'B14_LOCAL_WORKER_BOOT=FAIL'
-            tail -n 65 "${RUNNER_TEMP}/b14-local-worker.log"
-            exit 1
+          kill "${server_pid}" 2>/dev/null || true
+          if [ "${ok}" -eq 1 ]; then
+            echo 'B14_LOCAL_WORKER_FAIL_CLOSED=PASS'
+            exit 0
           fi
+          echo 'B14_LOCAL_WORKER_FAIL_CLOSED=FAIL'
+          tail -n 65 "${RUNNER_TEMP}/b14-local-worker.log"
+          exit 1
 
       - name: Never deploy to Production
         run: |

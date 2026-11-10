@@ -120,48 +120,41 @@ def test_legacy_tier_registry_module_is_removed() -> None:
     assert PRODUCT_TIERS.is_file(), "the live product-tier contract must remain"
 
 
-def test_live_product_tier_contract_uses_google_and_holds_muse_without_the_legacy_plus_hold() -> None:
-    """The live route contract carries the owner-decided routes only.
+def test_live_product_tier_contract_ships_no_route_values() -> None:
+    """The shared declaration carries no model, provider or route values.
 
-    Owner decision 2026-10-25: one executable Google route per tier with
-    Muse held as data. The successor-pending Plus hold and superseded Space
-    Bunny / Agnes routes are not live routes and must not reappear in the
-    route table.
+    #6828 3단계 moved the owner-decided routes into the private registry
+    document, so the repository declaration must stay value-free: no route
+    id, model id or provider id may reappear in the shipped source. The
+    owner route decisions live in the private document now, not in the
+    shipped source.
     """
     text = PRODUCT_TIERS.read_text(encoding="utf-8")
 
-    # The owner-decided Google route is explicit; Muse is preserved as HOLD.
-    assert 'route_id=f"{tier}.gemini-3.5-flash-lite.v1"' in text
-    assert "model_id=TEST_PHASE_PRIMARY_B14_MODEL_ID" in text
-    assert 'provider_id="google"' in text
-    assert 'evidence="Owner test-phase Google primary decision 2026-10-25."' in text
-    assert "MUSE_ROUTE_STATUS = ProductRouteStatus.HOLD_AS_DATA_ONLY" in text
-    assert "status=MUSE_ROUTE_STATUS" in text
-
-    # The historical HOLD identity survives as an identity marker only, and
-    # the data-only status is still part of the contract vocabulary.
+    # No executable route values are shipped any more.
+    assert "TIER_FALLBACK_B14_MODELS" not in text
+    assert "provider_id=" not in text
+    assert "MUSE_ROUTE_STATUS" not in text
+    # The HOLD identity markers are synthetic padiem-profile ids, not real
+    # provider values; they survive as data-only identity markers.
     assert 'PLUS_HOLD_MODEL_ID = "padiem-profile/plus-hold"' in text
-    assert "HOLD_AS_DATA_ONLY" in text
 
-    # The authority boundary is explicit: the live contract is the only source.
+    # The authority boundary is explicit: the private registry document is
+    # the only source of live routes.
     assert "single product-tier route authority" in text
     assert "tier_registry_v1" not in text
 
-    table = _live_route_table(text)
-    assert 'route_id="plus.hold.v1"' not in table, (
-        "the legacy successor-pending Plus hold route must not be a live route"
-    )
-    assert "model_id=PLUS_HOLD_MODEL_ID" not in table, (
-        "a HOLD identity marker must not be declared as a live route model"
-    )
-    assert "kilo/stealth-space-bunny-alpha" not in table, (
-        "Space Bunny is historical data only and must not be a live route"
-    )
-    assert "stealth/space-bunny-alpha" not in table
-    assert "agnes-ai/agnes-3.0-flash" not in table, (
-        "the superseded Agnes route must not be a live route"
-    )
-
+    # Every declared tier carries an empty route tuple: nothing dispatches
+    # without the private registry document.
+    import importlib.util
+    import sys
+    spec = importlib.util.spec_from_file_location("shared_ptr_b67", PRODUCT_TIERS)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    for label in module.ProductTierLabel:
+        assert module.get_tier(label).routes == ()
 
 def test_a9_and_a12_smokes_source_the_canonical_pin() -> None:
     for path in (A9_SCRIPT, A12_SCRIPT):

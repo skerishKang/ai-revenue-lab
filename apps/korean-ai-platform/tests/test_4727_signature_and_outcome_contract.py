@@ -39,8 +39,15 @@ from _registry_values import (
     adapter_modules,
     model_rows,
     provider_of,
+    require_owner_document,
     requires_owner_document,
 )
+
+# The lane this contract pins is the native tool wire of one Provider's own
+# adapter, and the compatible projection belongs to that same adapter. Which
+# Provider that is lives in the owner's registry document, so the placeholder
+# fixture leaves the module without its subject (#7241 3단계).
+require_owner_document()
 
 #: The native tool lane this contract pins runs on one Provider: the adapter
 #: that owns the tool-capable native wire. Which identity that is lives in the
@@ -54,19 +61,38 @@ NATIVE_TOOL_BODY = "_" + "g" + "oogle_tool_body"
 COMPAT_EXTRA_KEY = "goog" + "le"
 
 
-def _native_tool_row() -> dict | None:
-    """The registered row whose Provider adapter owns the native tool wire.
+def _native_wire_provider_id() -> str:
+    """The Provider id the native adapter's own body builder is keyed by."""
+    for _provider_id, module in adapter_modules().items():
+        if hasattr(module, NATIVE_TOOL_BODY):
+            for name, value in vars(module).items():
+                if name.endswith("PROVIDER_ID") and isinstance(value, str) and value:
+                    return value
+    return ""
 
+
+#: The identity the compatible lane compares against before projecting the
+#: native token. It is the adapter's own constant, never a written literal.
+NATIVE_WIRE_PROVIDER_ID = _native_wire_provider_id()
+
+
+def _native_tool_row() -> dict | None:
+    """The registered row served by the adapter that owns the native tool wire.
+
+    The owning Provider is the one whose adapter declares the native body
+    builder, so the row is selected by that identity rather than by scanning
+    every tool-capable row (a row of another Provider never rides this wire).
     ``None`` when the effective document installs no such row — the placeholder
     fixture does not, which is exactly when this suite's pins do not hold.
     """
-    adapters = adapter_modules()
-    for candidate in (
-        row for row in model_rows()
-        if row.get("enabled", True) and TOOLS_CAPABILITY in row["capabilities"]
-    ):
-        module = adapters.get(candidate["provider_id"])
-        if module is not None and hasattr(module, NATIVE_TOOL_BODY):
+    if not NATIVE_WIRE_PROVIDER_ID:
+        return None
+    for candidate in model_rows():
+        if (
+            candidate.get("enabled", True)
+            and TOOLS_CAPABILITY in candidate["capabilities"]
+            and candidate["provider_id"] == NATIVE_WIRE_PROVIDER_ID
+        ):
             return candidate
     return None
 
@@ -95,7 +121,9 @@ def _binding_of(provider_id: str) -> str:
 
 
 #: The Provider slot the native lane's own adapter declares for its credential.
-GOOGLE_BINDING = _binding_of(provider_of(GOOGLE_TOOL_MODEL)) if _SELECTED_ROW else ""
+#: The credential slot the native lane's own adapter declares, read off that
+#: adapter rather than the row (a row's Provider is not the wire's identity).
+GOOGLE_BINDING = _binding_of(NATIVE_WIRE_PROVIDER_ID) if NATIVE_WIRE_PROVIDER_ID else ""
 #: The gateway's own chat surface, read off the assembled router.
 CHAT_URL = chat_surface()
 STREAM_URL = CHAT_URL + "/stream-preview"
@@ -340,7 +368,7 @@ def test_the_compatible_form_of_the_answer_token_is_accepted_as_the_same_fact():
 @requires_owner_document
 def test_the_compatible_lane_projects_the_turn_token_for_the_native_lane_only() -> None:
     messages = [{"role": "assistant", "content": "답", "signature": TURN_SIGNATURE}]
-    native = provider_of(GOOGLE_TOOL_MODEL)
+    native = NATIVE_WIRE_PROVIDER_ID
     #: Any registered Provider other than the native lane's own carries nothing.
     other_provider = next(
         provider for provider in sorted({provider_of(row["id"]) for row in _rows()})
@@ -512,7 +540,7 @@ def test_an_unusable_outcome_block_is_refused_before_dispatch(execution) -> None
 def test_the_compatible_lane_does_not_invent_a_field_for_the_outcome() -> None:
     message = {"role": "tool", "tool_call_id": "call_1", "content": "hello",
                "execution": _CANCELLED}
-    native = provider_of(GOOGLE_TOOL_MODEL)
+    native = NATIVE_WIRE_PROVIDER_ID
     other_provider = next(
         provider for provider in sorted({provider_of(row["id"]) for row in _rows()})
         if provider != native

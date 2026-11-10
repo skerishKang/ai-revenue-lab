@@ -33,6 +33,10 @@ from _registry_values import (
     chat_wire_tail, model_rows, provider_of, provider_row, registry, requires_owner_document,
 )
 
+from _registry_values import require_owner_document
+
+require_owner_document()
+
 #: The endpoint this Provider's adapter composes: an API version segment, the
 #: adapter's own wire family and the shared chat tail. Every segment is read
 #: from the app, so no path value is written here (#7241 3a).

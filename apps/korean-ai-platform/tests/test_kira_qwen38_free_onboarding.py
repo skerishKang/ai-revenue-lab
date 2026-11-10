@@ -32,6 +32,10 @@ from app.pilot.errors import PilotNotConfigured, UpstreamRateLimited
 
 from _registry_values import model_rows, provider_row, requires_owner_document
 
+from _registry_values import require_owner_document
+
+require_owner_document()
+
 
 def _single_route_provider_models() -> list[dict]:
     """The one model of every provider registered with exactly one route."""

@@ -103,7 +103,7 @@ from .history import HistoryContextIncomplete, validate_conversation_id
 from .request_contract import MAX_BROWSER_BODY_BYTES
 from .member_grade_access import verified_member_grade, GRADES
 from .model_policy import current_verified_member_grade
-from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
+from padiem_control_plane.product_tier_routes_private import free_primary_model_id
 
 _ALLOWED_FIELDS = {
     "model_id", "tier", "messages", "reasoning_level", "conversation_id",
@@ -319,7 +319,7 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
         # id stays accepted for the transition window only as a claim that must
         # match the grade.
         declared_model_id = data.get("model_id")
-        model_id = declared_model_id or FREE_PRIMARY_B14_MODEL_ID
+        model_id = declared_model_id or free_primary_model_id()
         if requested_tier is not None:
             if not isinstance(requested_tier, str) or requested_tier not in B66_GRADES + (B66_ADMIN_GRADE,):
                 return _error(400, "invalid_tier", "지원하지 않는 AI 등급입니다.")

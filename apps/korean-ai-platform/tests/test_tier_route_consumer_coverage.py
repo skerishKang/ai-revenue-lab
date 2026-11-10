@@ -2,7 +2,9 @@
 
 `product_tier_routes.py` declares which provider/model backs Padiem Plus/Pro/Max, and B14
 decides whether that route can actually execute. The drift guard for exactly that risk lives
-in `test_product_tier_routes.py::test_active_tier_routes_match_the_current_b14_model_registry`.
+in `test_product_tier_routes.py` — since #7241 3단계 as
+`test_active_tier_routes_are_enabled_rows_of_the_private_document`, which asserts every
+effective tier route names an *enabled* row of the registry document the host reads.
 Before this child, `Validate B14 Alpha` triggered only on the B14 app tree, so a
 PR that changed nothing but the declaration shipped without ever running it — the one change
 where the guard matters most.
@@ -100,6 +102,14 @@ def test_workflow_still_pins_its_own_file_so_the_guard_is_self_enforcing() -> No
 def test_the_drift_guard_this_trigger_exists_to_run_is_still_present() -> None:
     # The trigger is pointless if the check it protects goes away: this names the live
     # contract's B14 catalog drift guard so deleting it has to pass through this file too.
+    #
+    # #7241 3단계 moved the guard from the repository catalog to the registry document
+    # ("enabled rows of the private document"); the guard's subject is unchanged, so the
+    # pin follows the successor rather than the retired helper's name.
     source = LIVE_CONTRACT_TEST.read_text(encoding="utf-8")
-    assert "def test_active_tier_routes_match_the_current_b14_model_registry" in source
-    assert 'models[route.model_id]["enabled"] is True' in source
+    assert (
+        "def test_active_tier_routes_are_enabled_rows_of_the_private_document" in source
+    ), "the B14 registry drift guard this trigger exists to run is missing"
+    assert 'models[route.model_id]["enabled"] is True' in source, (
+        "the drift guard must still assert every declared route is an enabled row"
+    )

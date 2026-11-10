@@ -98,7 +98,7 @@ else:
     HOSTS = PROVIDER_ROW["allowed_hosts"]
     BINDING = PROVIDER_ROW["credential_binding_name"]
     #: The retired identities the owner removed, read from the same document.
-    RETIRED = read_registry()["retired_models"]
+    RETIRED = tuple(read_registry().get("retired_models", ()))
 #: The surface suffix the OpenAI-compatible completion path names.
 COMPLETIONS_PATH = "/chat" + "/completions"
 CHAT_URL = (ORIGIN or "").rstrip("/") + COMPLETIONS_PATH

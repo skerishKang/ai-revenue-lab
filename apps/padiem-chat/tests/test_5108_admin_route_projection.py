@@ -21,10 +21,7 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.owner_model_preview_routes import claw_verified_model_choices
 from padiem_control_plane.model_tier_routes import TierRoute, TierRouteSnapshot
-from padiem_control_plane.product_tier_routes import (
-    FREE_FALLBACK_B14_MODEL_ID,
-    FREE_PRIMARY_B14_MODEL_ID,
-)
+from padiem_control_plane.product_tier_routes_private import free_fallback_model_id, free_primary_model_id
 
 BASE = "https://chat.example.test"
 USER = "usr_" + "a" * 32
@@ -104,8 +101,8 @@ def test_claw_grade_status_is_available_for_applied_central_route(monkeypatch):
     with _claw_choice_client(monkeypatch, routes=routes, rows=[
         {"model_id": APPLIED, "name": "Applied"},
         {"model_id": SECONDARY, "name": "Secondary"},
-        {"model_id": FREE_PRIMARY_B14_MODEL_ID, "name": "Static free"},
-        {"model_id": FREE_FALLBACK_B14_MODEL_ID, "name": "Static fallback"},
+        {"model_id": free_primary_model_id(), "name": "Static free"},
+        {"model_id": free_fallback_model_id(), "name": "Static fallback"},
         {"model_id": UNRELATED, "name": "Unrelated"},
     ]) as client:
         response = client.get("/choices?tier=free")
@@ -122,8 +119,8 @@ def test_claw_grade_status_is_available_for_applied_central_route(monkeypatch):
 def test_claw_grade_status_checks_static_route_without_exposing_it(monkeypatch):
     """No stored row keeps the shared static route contract without exposing identity."""
     with _claw_choice_client(monkeypatch, rows=[
-        {"model_id": FREE_PRIMARY_B14_MODEL_ID, "name": "Static free"},
-        {"model_id": FREE_FALLBACK_B14_MODEL_ID, "name": "Static fallback"},
+        {"model_id": free_primary_model_id(), "name": "Static free"},
+        {"model_id": free_fallback_model_id(), "name": "Static fallback"},
         {"model_id": UNRELATED, "name": "Unrelated"},
     ]) as client:
         response = client.get("/choices?tier=free")
@@ -140,7 +137,7 @@ def test_claw_model_list_fails_closed_on_an_unreadable_route_ledger(monkeypatch)
     """A ledger read failure keeps the historical static contract, not a wider set."""
     routes = _RouteStore(RuntimeError("no such table"))
     with _claw_choice_client(monkeypatch, routes=routes, rows=[
-        {"model_id": FREE_PRIMARY_B14_MODEL_ID, "name": "Static free"},
+        {"model_id": free_primary_model_id(), "name": "Static free"},
         {"model_id": UNRELATED, "name": "Unrelated"},
     ]) as client:
         response = client.get("/choices?tier=free")
@@ -162,7 +159,7 @@ def test_claw_model_list_reports_a_disabled_applied_route_instead_of_falling_bac
     )))
     with _claw_choice_client(monkeypatch, routes=routes, rows=[
         {"model_id": APPLIED, "name": "Applied"},
-        {"model_id": FREE_PRIMARY_B14_MODEL_ID, "name": "Static free"},
+        {"model_id": free_primary_model_id(), "name": "Static free"},
     ]) as client:
         response = client.get("/choices?tier=free")
     assert response.status_code == 503
@@ -222,7 +219,7 @@ def test_claw_dispatch_uses_the_applied_route_and_rejects_legacy_mismatch():
     )))
     rows = [
         {"model_id": APPLIED, "name": "Applied"},
-        {"model_id": FREE_PRIMARY_B14_MODEL_ID, "name": "Static free"},
+        {"model_id": free_primary_model_id(), "name": "Static free"},
     ]
     adapter = _adapter()
     with _claw_dispatch_client(adapter, routes=routes, rows=rows) as client:
@@ -231,7 +228,7 @@ def test_claw_dispatch_uses_the_applied_route_and_rejects_legacy_mismatch():
             "messages": [{"role": "user", "content": "안녕하세요"}],
         })
         replaced = client.post("/api/claw/general", json={
-            "tier": "free", "model_id": FREE_PRIMARY_B14_MODEL_ID,
+            "tier": "free", "model_id": free_primary_model_id(),
             "messages": [{"role": "user", "content": "안녕하세요"}],
         })
     assert applied.status_code == 200

@@ -12,7 +12,39 @@ spec = importlib.util.spec_from_file_location("b14_model_registry_lane", MODULE)
 lane = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(lane)
 
-BASE = json.loads((ROOT / lane.REGISTRY).read_text(encoding="utf8"))
+#: The shipped document is a schema-shaped placeholder now, so the classifier
+#: is exercised against a synthetic document with the same shape. Every identity
+#: here is a placeholder.
+BASE = {
+    "schema_version": 1,
+    "comment": "synthetic classifier base",
+    "providers": {
+        "example-provider-01": {
+            "base_origin": "https://example-provider-01.example.invalid/v1",
+            "allowed_hosts": ["example-provider-01.example.invalid"],
+            "credential_source": "platform_secret",
+            "credential_binding_name": "PADIEM_EXAMPLE_BASE_API_KEY",
+            "enabled": True,
+        },
+        "example-provider-02": {
+            "base_origin": "https://example-provider-02.example.invalid/v1",
+            "allowed_hosts": ["example-provider-02.example.invalid"],
+            "credential_source": "platform_secret",
+            "credential_binding_name": "PADIEM_EXAMPLE_OTHER_API_KEY",
+            "enabled": True,
+        },
+    },
+    "models": [
+        {
+            "id": "example-provider-01/example-model-01",
+            "provider_id": "example-provider-01",
+            "upstream_model": "example-model-01",
+            "enabled": True,
+        },
+    ],
+    "groups": {"plus": [], "pro": [], "max": []},
+    "retired_models": [],
+}
 
 def appended():
     old = copy.deepcopy(BASE)
@@ -54,7 +86,7 @@ class TestRegistryChangeSet(unittest.TestCase):
         bad["models"].append(copy.deepcopy(bad["models"][0]))
         self.assertFalse(lane.exact_append_only(a,bad))
         bad=copy.deepcopy(b)
-        bad["providers"]["google"]["base_origin"]="https://evil.invalid"
+        bad["providers"]["example-provider-01"]["base_origin"]="https://evil.invalid"
         self.assertFalse(lane.exact_append_only(a,bad))
         bad=copy.deepcopy(b)
         bad["providers"]["example-provider"]["enabled"]="false"
@@ -108,7 +140,9 @@ class TestRegistryChangeSet(unittest.TestCase):
         old,new=appended()
         new["providers"].pop("example-provider")
         new["models"][-1].update(
-            id="google/new-exact-model", provider_id="google", upstream_model="new-exact-model"
+            id="example-provider-01/new-exact-model",
+            provider_id="example-provider-01",
+            upstream_model="new-exact-model",
         )
         changed=files(lane.REGISTRY,lane.WRANGLER,lane.WORKER)
         changed[1]["patch"]=(
@@ -162,15 +196,17 @@ class TestRegistryChangeSet(unittest.TestCase):
         self.assertFalse(lane.model_registration_only(incomplete,old,new))
         unused_provider=copy.deepcopy(new)
         unused_provider["models"][-1].update(
-            id="google/new-exact-model",provider_id="google",upstream_model="new-exact-model"
+            id="example-provider-01/new-exact-model",
+            provider_id="example-provider-01",
+            upstream_model="new-exact-model",
         )
         self.assertFalse(lane.model_registration_only(changed,old,unused_provider))
 
     def test_existing_provider_can_append_without_new_secret(self):
         a,b=appended()
         b["providers"].pop("example-provider")
-        b["models"][-1]["provider_id"]="google"
-        b["models"][-1]["id"]="google/test-new-manual-model"
+        b["models"][-1]["provider_id"]="example-provider-01"
+        b["models"][-1]["id"]="example-provider-01/test-new-manual-model"
         self.assertTrue(lane.model_registration_only(files(lane.REGISTRY),a,b))
 
     def test_staged_disabled_new_model_still_uses_fast_source_only_gate(self):

@@ -16,8 +16,12 @@ from app.pilot.catalog import get_catalog_by_id, get_catalog_models
 from app.pilot.platform_secrets import get_platform_provider
 
 from _registry_values import (
-    adapter_declaring_retired, registered_model_id_within,
+    adapter_declaring_retired, registered_model_id_within, require_owner_document,
 )
+
+# The subject is the served lane owning the retirement roster: only the owner's
+# document registers that Provider's remaining route (#7241 3b).
+require_owner_document()
 
 
 # The retirement roster and the identities the owning adapter retains are its

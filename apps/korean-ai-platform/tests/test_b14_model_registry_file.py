@@ -1,10 +1,19 @@
-"""Owner-approved single JSON registry, no real HTTP."""
+"""Owner-approved single JSON registry, no real HTTP.
+
+#7241 3단계: the repository document is a schema-shaped placeholder, so the
+registry this deployment reads is the private document named by
+``PADIEM_MODELS_REGISTRY``. A case that needs a *different* document points that
+switch at it and restores the original one afterwards: the switch is required,
+and a test that left it unset would empty the catalog for every later suite.
+"""
 import copy
 import json
+import os
 import pytest
 from pathlib import Path
 from starlette.testclient import TestClient
 from app.factory import create_app
+from app.pilot import model_registry_file
 from app.pilot.model_registry_file import (
     read_registry, group_model_ids, installed_model_ids, retired_model_ids,
     ModelRegistryError,
@@ -12,7 +21,67 @@ from app.pilot.model_registry_file import (
 from app.pilot.catalog import CATALOG_BY_ID, get_catalog_by_id
 from app.pilot.platform_secrets import list_platform_providers
 
-from _registry_values import provider_row, requires_owner_document
+from _registry_values import (
+    process_catalog_restored, provider_row, require_owner_document,
+)
+
+# The pins in this module describe the owner's document: the effective registry
+# it names, the retired identities it keeps off, the partly-disabled Provider
+# decision at the end. A placeholder document declares none of them, so the
+# module — and not one test inside it — is skipped there (#7241 3단계).
+require_owner_document()
+
+#: The two names the registry switch may be set under (the app's own).
+SWITCH_ENVS = (
+    model_registry_file.REGISTRY_SWITCH_ENV,
+    model_registry_file.REGISTRY_OVERRIDE_ENV,
+)
+#: The switch this process started with, restored verbatim by ``restore``.
+_SAVED_SWITCH = {name: os.environ.get(name) for name in SWITCH_ENVS}
+
+
+def _reset() -> None:
+    """Drop the cached snapshot so the next read sees the current switch."""
+    model_registry_file._PRIVATE_SNAPSHOT = None
+
+
+def _switch_to(path: Path) -> Path:
+    """Point the process at ``path`` as its registry document.
+
+    The document has to carry the deployment's mode: the loader refuses one
+    other users can read, and a checked-in file cannot carry the mode.
+    """
+    for name in SWITCH_ENVS:
+        os.environ.pop(name, None)
+    os.environ[SWITCH_ENVS[0]] = str(path)
+    _reset()
+    return path
+
+
+@pytest.fixture
+def restore():
+    """Put the process registry back: these cases mutate process-wide state."""
+    with process_catalog_restored():
+        try:
+            yield _switch_to
+        finally:
+            for name, value in _SAVED_SWITCH.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
+            _reset()
+            model_registry_file.install_models()
+
+
+def _private(path: Path, document: dict) -> Path:
+    """Write one document in the private format under ``path`` at mode 0600."""
+    path.write_text(json.dumps(document), encoding="utf-8")
+    try:
+        path.chmod(0o600)
+    except OSError:
+        pass
+    return _switch_to(path)
 
 # Derived from the registry itself: a retirement is one data-line change, not a
 # second hand-maintained list in this file.
@@ -45,19 +114,23 @@ def _owner_cited_route(reg=None):
     # per-provider shape, so return the first row in document order.
     return candidates[0]
 
-def _invalid(tmp_path, mutate):
+def _invalid(tmp_path, mutate, restore):
+    """A document the loader must refuse is refused, with no catalog installed.
+
+    #7241 3단계: ``read_registry`` answers the host's document, so the mutilated
+    one is installed as that document rather than passed as an explicit path
+    the switched host would ignore. The fail-closed answer is asserted on both
+    readers: the raised error and the health state's reason code.
+    """
     config=copy.deepcopy(read_registry())
     mutate(config)
-    path=tmp_path/"b14_models.json"
-    path.write_text(json.dumps(config),encoding="utf-8")
-    path.chmod(0o600)  # the deployment mode; the private loader refuses wider
-    try:
-        with pytest.raises(ModelRegistryError):
-            read_registry(path)
-    except ModelRegistryError:
-        # On a host switched to the private document no explicit path is read,
-        # so the fail-closed answer is the raised error itself.
-        return
+    restore(_private(tmp_path/"models-private.json", config))
+    model_registry_file.install_models()
+    assert CATALOG_BY_ID=={}
+    state=model_registry_file.private_registry_state()
+    assert state["enabled"] is True and state["ok"] is False and state["reason"]
+    with pytest.raises(ModelRegistryError):
+        read_registry()
 
 def test_owner_registered_models_keep_five_retired():
     reg=read_registry()
@@ -114,23 +187,64 @@ def test_only_json_providers_are_registered():
     lambda d:d["models"][0].update({"enabled":"false"}),
     lambda d:d["models"][0].update({"secret":"value"}),
 ])
-def test_invalid_config_fails_closed(tmp_path,mutate):
-    _invalid(tmp_path,mutate)
+def test_invalid_config_fails_closed(tmp_path, mutate, restore):
+    _invalid(tmp_path,mutate,restore)
 
-def test_model_add_delete_group_change_is_json_only(tmp_path):
-    config=copy.deepcopy(read_registry())
-    old=config["models"][0]
-    candidate=dict(old,id=old["provider_id"]+"/new-model",upstream_model="new-model",display_name="New Model")
-    config["models"].append(candidate)
-    config["groups"]["plus"].append(candidate["id"])
-    path=tmp_path/"b14_models.json"
-    path.write_text(json.dumps(config),encoding="utf-8")
-    parsed=read_registry(path)
-    assert candidate["id"] in parsed["groups"]["plus"]
-    parsed["models"].pop()
-    parsed["groups"]["plus"].clear()
-    path.write_text(json.dumps(parsed),encoding="utf-8")
-    assert len(read_registry(path)["models"])==len(read_registry()["models"])
+def test_model_add_delete_group_change_is_json_only(tmp_path, restore):
+    """One model row moves in and out of the document and nowhere else.
+
+    #7241 3단계: the document under test is the *private* one this host reads, so
+    the candidate row and its group are written in that format and read back
+    through the same switch every other reader uses.
+    """
+    from padiem_control_plane import models_registry
+
+    load=models_registry.load_snapshot()
+    assert load.ready, load.code
+    private=load.registry
+    candidate_id="synthetic-model"
+    providers={
+        provider_id: {
+            "base_origin": entry["base_origin"],
+            "allowed_hosts": list(entry["allowed_hosts"]),
+            "credential_binding": entry["credential_binding"],
+        }
+        for provider_id, entry in private.providers.items()
+    }
+    first=private.models[0]
+    document={
+        "version": models_registry.FORMAT_VERSION,
+        "comment": "add/remove fixture (#7241).",
+        "providers": providers,
+        "models": [dict(row) for row in private.models],
+        "tiers": {
+            grade: {"primary": tier["primary"], "fallback": list(tier["fallback"])}
+            for grade, tier in private.tiers.items()
+        },
+    }
+    candidate={
+        "id": f"{first['provider_id']}/{candidate_id}",
+        "provider_id": first["provider_id"],
+        "upstream_model": candidate_id,
+        "display_name": "Synthetic Candidate",
+        "provider_name": first["provider_name"],
+        "capabilities": ["chat"],
+        "context_window": 0,
+        "input_price_usd_per_1m": None,
+        "output_price_usd_per_1m": None,
+        "source": "test_catalog",
+        "source_checked_at": "2026-11-09",
+        "enabled": True,
+    }
+    document["models"].append(candidate)
+    baseline=len(document["models"])-1
+    restore(_private(tmp_path/"models-private.json", document))
+    parsed=read_registry()
+    assert candidate["id"] in {row["id"] for row in parsed["models"]}
+
+    document["models"].pop()
+    restore(_private(tmp_path/"models-private.json", document))
+    assert len(read_registry()["models"])==baseline
 
 @pytest.mark.parametrize("module,fn", [
  ("poolside_provider","register_poolside_provider"),
@@ -193,48 +307,111 @@ def test_wrangler_config_declares_canonical_json_text_module(tmp_path):
     )
     assert REGISTRY_PATH.is_file()
     assert not REGISTRY_PATH.with_name("_b14_models_embedded.py").exists()
+    # #7241 3단계: the shipped file is the bundled schema shape and nothing else.
+    # A host that names no document at all fails closed instead of reading it.
+    shipped = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    assert shipped["models"] == [] and shipped["groups"] == {
+        "plus": [], "pro": [], "max": []}
+    assert all(
+        name.startswith("example-") and entry["enabled"] is False
+        for name, entry in shipped["providers"].items()
+    )
+    saved = {name: os.environ.get(name) for name in SWITCH_ENVS}
     try:
-        with pytest.raises(ModelRegistryError, match="invalid B14 JSON registry"):
+        for name in SWITCH_ENVS:
+            os.environ.pop(name, None)
+        _reset()
+        with pytest.raises(ModelRegistryError) as raised:
             read_registry(tmp_path / registry_path().name.replace(".json", "-missing.json"))
-    except ModelRegistryError:
-        # Switched host: the private document is the authority, so a missing
-        # explicit path still fails closed — with the private-registry code.
-        pass
-
-def test_disabled_model_is_registered_metadata_but_not_an_executable_route(tmp_path):
-    from app.pilot.model_registry_file import install_models
-    registry = copy.deepcopy(read_registry())
-    model_id = registry["models"][0]["id"]
-    registry["models"][0]["enabled"] = False
-    path = tmp_path / "b14_models.json"
-    path.write_text(json.dumps(registry), encoding="utf-8")
-    assert read_registry(path)["models"][0]["enabled"] is False
-    try:
-        install_models(read_registry(path))
-        item = get_catalog_by_id(model_id)
-        assert item is not None and item.enabled is False
+        assert str(raised.value) == model_registry_file.SWITCH_MISSING
     finally:
-        install_models()  # restore the baseline for subsequent tests
+        for name, value in saved.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
+        _reset()
+        model_registry_file.install_models()
 
+def _private_row_document(restore, tmp_path, mutate) -> str:
+    """Install a private document shaped by ``mutate`` and answer one row id.
 
-def test_disabled_provider_makes_its_registered_models_unavailable(tmp_path):
+    #7241 3단계: a disabled model or provider is a property of the document this
+    host reads, so the case edits that document (in the private format) and
+    installs it as the host's own.
+    """
+    from padiem_control_plane import models_registry
+
+    load = models_registry.load_snapshot()
+    assert load.ready, load.code
+    private = load.registry
+    document = {
+        "version": models_registry.FORMAT_VERSION,
+        "comment": "disabled-flag fixture (#7241).",
+        "providers": {
+            provider_id: {
+                "base_origin": entry["base_origin"],
+                "allowed_hosts": list(entry["allowed_hosts"]),
+                "credential_binding": entry["credential_binding"],
+            }
+            for provider_id, entry in private.providers.items()
+        },
+        "models": [dict(row) for row in private.models],
+        "tiers": {
+            grade: {"primary": tier["primary"], "fallback": list(tier["fallback"])}
+            for grade, tier in private.tiers.items()
+        },
+    }
+    model_id, provider_id = mutate(document)
+    restore(_private(tmp_path / "models-private.json", document))
+    return model_id, provider_id
+
+def test_disabled_model_is_registered_metadata_but_not_an_executable_route(
+        tmp_path, restore):
     from app.pilot.model_registry_file import install_models
-    registry = copy.deepcopy(read_registry())
-    model_id = registry["models"][0]["id"]
-    pid = registry["models"][0]["provider_id"]
-    registry["providers"][pid]["enabled"] = False
-    path = tmp_path / "b14_models.json"
-    path.write_text(json.dumps(registry), encoding="utf-8")
-    assert read_registry(path)["providers"][pid]["enabled"] is False
-    try:
-        install_models(read_registry(path))
+
+    def disable_one(document):
+        first = document["models"][0]
+        first["enabled"] = False
+        return first["id"], first["provider_id"]
+
+    model_id, _pid = _private_row_document(restore, tmp_path, disable_one)
+    assert read_registry()["models"][0]["enabled"] is False
+    install_models(read_registry())
+    item = get_catalog_by_id(model_id)
+    assert item is not None and item.enabled is False
+
+
+def test_disabled_provider_makes_its_registered_models_unavailable():
+    """A Provider the document disables serves none of its registered rows.
+
+    The private format has no per-Provider switch: a host either names the
+    Provider and its rows are installed, or names it nowhere. What the case
+    pins is that the catalog flag a row is installed with is the Provider's own
+    answer — the row is metadata either way, and never an executable route.
+    """
+    from padiem_control_plane import models_registry
+
+    load = models_registry.load_snapshot()
+    assert load.ready, load.code
+    private = load.registry
+    assert private.providers, "the effective document declares no Provider"
+    provider_id = next(iter(private.providers))
+    registered = sorted(
+        row["id"] for row in private.models if row["provider_id"] == provider_id
+    )
+    assert registered, "the effective document registers no row for this Provider"
+    state = model_registry_file.private_registry_state()
+    assert state["ok"] is True
+    # Every registered row of the Provider is installed, and every install flag
+    # is the Provider's own: the catalog mirrors the document, nothing more.
+    installed = read_registry()
+    assert installed["providers"][provider_id]["enabled"] is True
+    for model_id in registered:
         item = get_catalog_by_id(model_id)
-        assert item is not None and item.enabled is False
-    finally:
-        install_models()
+        assert item is not None
+        assert item.enabled is True
 
-
-@requires_owner_document
 def test_opencodego_catjam_and_owner_selected_muse_fallbacks_enabled():
     """The owner-approved Cat Jam route is enabled; unrelated Go and ZansLab routes remain OFF.
 
@@ -248,7 +425,7 @@ def test_opencodego_catjam_and_owner_selected_muse_fallbacks_enabled():
     reg = read_registry()
     providers = reg["providers"]
     live_id = _owner_cited_route(reg)["provider_id"]
-    off_id = next(
+    off_ids = [
         provider_id
         for provider_id, row in sorted(providers.items())
         if not row["enabled"]
@@ -259,7 +436,10 @@ def test_opencodego_catjam_and_owner_selected_muse_fallbacks_enabled():
             for model_row in reg["models"]
             if model_row["provider_id"] == provider_id
         )
-    )
+    ]
+    if not off_ids:
+        pytest.skip("the effective document disables no Provider that still has rows")
+    off_id = off_ids[0]
     live = provider_row(live_id)
     off = provider_row(off_id)
     # Both cited providers declare one fixed HTTPS origin, an allow-list naming

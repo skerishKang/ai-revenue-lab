@@ -21,8 +21,8 @@ import unittest
 
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
-    active_route_for,
 )
+from padiem_control_plane.product_tier_routes_private import effective_active_route_for
 
 from kagent.contracts import ClawRunStatus, ClawTaskIntent, ExecutionMode
 from kagent.runs import ClawRun
@@ -37,13 +37,19 @@ from kagent.p01_orchestration_client import (
 
 from test_p01_orchestration_client import _client, _ok_transport, _public_result
 
+# Engage the test-time registry switch here as well: the isolated
+# contract-test runner uses unittest discovery, which never loads pytest conftest.
+from _registry_switch_default import ensure_default_registry_switch  # noqa: E402
+
+ensure_default_registry_switch()
+
 
 def _contract_route_models() -> set[str]:
     """Every model the shared contract declares executable, per tier."""
     return {
         route.model_id
         for label in ProductTierLabel
-        for route in [active_route_for(label)]
+        for route in [effective_active_route_for(label)]
         if route is not None and route.model_id is not None
     }
 
@@ -65,7 +71,7 @@ class TierRouteAuthorityPinTests(unittest.TestCase):
     def test_every_tier_route_is_in_the_claw_allowlist(self):
         """A tier the contract calls executable must be dispatchable by Claw."""
         for label in ProductTierLabel:
-            route = active_route_for(label)
+            route = effective_active_route_for(label)
             if route is None or route.model_id is None:
                 continue
             with self.subTest(tier=label.value):

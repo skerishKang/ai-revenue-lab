@@ -91,7 +91,7 @@ from .final_dispatch_guard_wiring import (
 from .request_contract import MAX_BROWSER_BODY_BYTES
 from .member_grade_access import verified_member_grade, GRADES
 from .model_policy import current_verified_member_grade
-from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
+from padiem_control_plane.product_tier_routes_private import free_primary_model_id
 
 _MODEL_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}")
 _ALLOWED_FIELDS = frozenset(
@@ -199,7 +199,7 @@ async def conversation_turn(request: Request) -> JSONResponse:
     # stays accepted during the transition only as a claim that must match the
     # grade, and it is never written back to the browser as a choice it needs.
     declared_model_id = data.get("model_id")
-    model_id = declared_model_id or FREE_PRIMARY_B14_MODEL_ID
+    model_id = declared_model_id or free_primary_model_id()
     requested_tier = data.get("tier")
     grade_model_id: str | None = None
     if requested_tier is not None:

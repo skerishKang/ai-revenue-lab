@@ -43,6 +43,7 @@ from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from padiem_control_plane import product_tier_routes
+from padiem_control_plane import product_tier_routes_private
 
 # Capture the route module's real mint entry point before any test patches it,
 # so the spy can delegate (the seam stays behavioural, not just a counter).
@@ -80,8 +81,8 @@ def module_hold_resolver(monkeypatch: pytest.MonkeyPatch) -> None:
     def _hold_route_for(label: product_tier_routes.ProductTierLabel):
         return None
 
-    monkeypatch.setattr(product_tier_routes, "active_route_for", _hold_route_for)
-    monkeypatch.setattr(route_runtime_module, "active_route_for", _hold_route_for)
+    monkeypatch.setattr(product_tier_routes_private, "effective_active_route_for", _hold_route_for)
+    monkeypatch.setattr(route_runtime_module, "effective_active_route_for", _hold_route_for)
 
 
 def _settings() -> Settings:
@@ -137,7 +138,7 @@ def _payload(**extra) -> dict:
 def test_module_hold_resolver_reproduces_no_executable_route() -> None:
     """The injected resolver itself yields no executable route for any tier."""
     for label in _HOLDABLE_TIERS:
-        assert route_runtime_module.active_route_for(label) is None
+        assert route_runtime_module.effective_active_route_for(label) is None
         assert product_tier_routes.active_route_for(label) is None
 
 

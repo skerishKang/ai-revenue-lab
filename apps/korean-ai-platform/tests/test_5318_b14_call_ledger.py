@@ -1706,6 +1706,30 @@ def _tool_wire_model_id() -> str:
 
 
 _GOOGLE_TOOL_MODEL = _tool_wire_model_id()
+#: Whether the effective document registers a row the native tool wire serves.
+#: The placeholder fixture declares no ``tools`` capability on any row, so the
+#: native tool-lane pins below skip there instead of driving the generic lane
+#: under a name that promises the native one (#7241 3단계).
+def _native_tool_wire_present() -> bool:
+    """Whether any registered row is served by the native tool wire.
+
+    Read from the app's own gate: a row the stream tool channel refuses has no
+    native tool wire behind it. The placeholder fixture refuses every row.
+    """
+    from app.pilot.tool_channel import require_stream_tool_wire
+
+    for row in model_rows():
+        if not row.get("enabled", True) or "tools" not in row.get("capabilities", []):
+            continue
+        try:
+            require_stream_tool_wire(row["id"])
+        except Exception:
+            continue
+        return True
+    return False
+
+
+_TOOL_WIRE_PRESENT = _native_tool_wire_present()
 _GOOGLE_UPSTREAM_MODEL = next(
     row["upstream_model"] for row in model_rows() if row["id"] == _GOOGLE_TOOL_MODEL
 )
@@ -1761,6 +1785,10 @@ def _stream_record(sse: bytes, payload: dict):
 
 
 @pytest.mark.asyncio
+@pytest.mark.skipif(
+    not _TOOL_WIRE_PRESENT,
+    reason="#7241: the effective registry registers no row on the native tool wire",
+)
 async def test_a_tool_stream_records_the_native_wire_and_its_thinking_tokens(
     monkeypatch,
 ):

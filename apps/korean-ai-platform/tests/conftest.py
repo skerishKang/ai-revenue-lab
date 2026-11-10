@@ -34,6 +34,21 @@ if (_core_source / "padiem_ai_core" / "pc_work_metrics.py").is_file():
     if _core_path not in _existing_paths:
         os.environ["PYTHONPATH"] = os.pathsep.join([_core_path, *filter(None, _existing_paths)])
 
+# The private registry loader lives in the sibling control-plane package, which
+# the app consumes from the workspace rather than from an installed wheel. The
+# suites import it directly, and subprocess probes inherit PYTHONPATH, so both
+# get the repository source on Linux CI exactly as they do locally.
+_control_plane_source = (
+    Path(__file__).resolve().parents[3] / "packages" / "padiem-control-plane"
+)
+if (_control_plane_source / "padiem_control_plane" / "models_registry.py").is_file():
+    _cp_path = str(_control_plane_source)
+    if _cp_path not in sys.path:
+        sys.path.insert(0, _cp_path)
+    _existing_paths = os.environ.get("PYTHONPATH", "").split(os.pathsep)
+    if _cp_path not in _existing_paths:
+        os.environ["PYTHONPATH"] = os.pathsep.join([_cp_path, *filter(None, _existing_paths)])
+
 # Suppress known third-party deprecation warnings BEFORE importing TestClient.
 # These are upstream library warnings that our test suite does not control.
 # When running with -W error::Warning (or conftest simplefilter), these
@@ -105,12 +120,15 @@ def demo_home_client():
 # #1933 reduced the production catalog to a single pinned route. Several
 # contracts (legacy capability tags, hard privacy policy, platform-owned
 # credential plane, provider readiness) were written against the wider catalog.
-# These fixtures reinstall the historical entries inside a single test so those
+# These fixtures reinstall a historical entry inside a single test so those
 # contracts stay genuinely validated instead of silently collapsing to a single
 # candidate. They never alter the committed catalog.
+#
+# #7241 3단계: the identities are placeholder shapes, not deployment values. A
+# suite that needs a real registered lane asks for the owner document instead.
 # ---------------------------------------------------------------------------
-GEMINI_MODEL_ID = "example-provider/legacy-synthetic-gemini"
-AGNES_MODEL_ID = "example-provider/legacy-synthetic-agnes"
+GEMINI_MODEL_ID = "example-provider/legacy-image-chat"
+AGNES_MODEL_ID = "example-provider-2/legacy-platform-chat"
 
 
 def _gemini_catalog_model():
@@ -119,8 +137,8 @@ def _gemini_catalog_model():
     return CatalogModel(
         model_id=GEMINI_MODEL_ID,
         upstream_model=GEMINI_MODEL_ID,
-        display_name="Synthetic Legacy External Route",
-        provider="Synthetic",
+        display_name="Example: Legacy Image Chat",
+        provider="Example Provider",
         provider_type="external",
         input_price_usd_per_1m=0.30,
         output_price_usd_per_1m=2.50,
@@ -141,9 +159,9 @@ def _agnes_catalog_model():
 
     return CatalogModel(
         model_id=AGNES_MODEL_ID,
-        upstream_model="synthetic-legacy-agnes-upstream",
-        display_name="Synthetic Legacy Platform Route",
-        provider="Synthetic",
+        upstream_model="legacy-platform-chat-upstream",
+        display_name="Example: Legacy Platform Chat",
+        provider="Example Provider 2",
         provider_type="platform",
         input_price_usd_per_1m=None,
         output_price_usd_per_1m=None,
@@ -155,7 +173,7 @@ def _agnes_catalog_model():
         region="외부",
         sort_order=70,
         credential_source="platform_secret",
-        platform_provider_id="synthetic-legacy-platform",
+        platform_provider_id="example-provider-2",
     )
 
 

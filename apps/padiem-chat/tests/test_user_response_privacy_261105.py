@@ -26,6 +26,7 @@ Scope decisions recorded here so the next sweep does not re-litigate them:
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 
@@ -45,6 +46,15 @@ REGISTRY_PATH = (
     / "korean-ai-platform" / "app" / "pilot" / "b14_models.json"
 )
 
+
+def _register_document() -> dict:
+    """The document a switched host actually answers from, not the placeholder."""
+    raw = (os.environ.get("PADIEM_MODELS_REGISTRY_OVERRIDE", "").strip()
+           or os.environ.get("PADIEM_MODELS_REGISTRY", "").strip())
+    path = Path(raw).expanduser() if raw else REGISTRY_PATH
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 #: The login-method brand shares its name with one registered provider id.
 #: The brand is user-facing by design (sign-in button, Drive connector), so it
 #: is not a model identity leak; everything else in the register is a needle.
@@ -52,7 +62,7 @@ LOGIN_BRAND_EXCEPTIONS = frozenset({"google"})
 
 
 def _needles() -> list[str]:
-    register = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    register = _register_document()
     model_ids = [model["id"] for model in register.get("models", [])]
     upstream_names = [
         model["upstream_model"]
@@ -138,7 +148,7 @@ def test_voice_error_responses_carry_only_their_bounded_code() -> None:
 
 def test_public_chat_projection_strips_registry_identities_nested() -> None:
     """#6878's boundary holds against the register's real values, nested deep."""
-    register = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    register = _register_document()
     first = register["models"][0]
     provider_id = first["provider_id"]
     leaky = {

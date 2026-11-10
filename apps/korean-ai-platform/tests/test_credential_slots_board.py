@@ -32,6 +32,10 @@ from app.pilot.service_proof import (
 
 from _registry_values import registry
 
+from _registry_values import require_owner_document
+
+require_owner_document()
+
 PATH = "/api/pilot/v1/admin/credential-slots"
 PROOF_SECRET = "unit-test-slot-board-proof-secret-0123456789"
 

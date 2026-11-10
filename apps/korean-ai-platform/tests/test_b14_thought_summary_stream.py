@@ -21,17 +21,30 @@ from app.pilot import catalog as cat
 from app.pilot import platform as plat
 from app.pilot import reasoning_policy as policy
 from app.pilot.call_ledger import CallLedgerError, LedgerDraft, new_log_id, utc_now_iso
-from app.pilot.model_registry_file import ModelRegistryError, install_models, retired_model_ids
+from app.pilot.model_registry_file import install_models, retired_model_ids
 from app.pilot.router_core import RouteDecision
 from app.pilot.stream_gateway import _encode_event, _stream_body
 from app.pilot.stream_types import _parse_sse_frame, StreamEvent
 from app.pilot.errors import MalformedUpstreamResponse
 
-from _registry_values import model_rows, provider_row
+from _registry_values import (
+    adapter_modules, model_rows, native_wire_origin, native_wire_owner,
+    provider_row, registry, require_owner_document,
+)
+
+# The native thought lane below is one Provider's own wire (its adapter owns the
+# ``streamGenerateContent`` surface and the tool-capability table), and only the
+# owner's registry document registers that Provider. The placeholder fixture
+# names none of them, so the module skips rather than pinning a lane that is not
+# installed here (#7241 3단계).
+require_owner_document()
 
 MODEL_ID = "test-model"
 UPSTREAM_MODEL = "test-upstream"
-PROVIDER_ID = "test-route"
+#: The synthetic Provider this suite's own row rides. It is deliberately not a
+#: registry identity, so the catalog row below can never shadow, or be shadowed
+#: by, a route the host's document installs (#7241 3단계).
+PROVIDER_ID = "test-route-only"
 
 def _sse_frame(delta: dict) -> bytes:
     chunk = {
@@ -330,7 +343,7 @@ def test_compatible_route_does_not_send_thought_options(monkeypatch) -> None:
     events = run(_collect(_stream(_wire(monkeypatch, handler))))
 
     assert "extra_body" not in bodies[0]
-    assert _NATIVE_PROVIDER not in bodies[0]
+    assert NATIVE_PROVIDER_ID not in bodies[0]
     thoughts = [event for event in events if event.delta_thought is not None]
     assert [event.delta_thought for event in thoughts] == ["생각 조각"]
     assert any(event.delta_content == "답" for event in events)
@@ -372,7 +385,7 @@ def test_compatible_route_does_not_retry_a_thought_rejection(monkeypatch) -> Non
 
     assert len(bodies) == 1
     assert "extra_body" not in bodies[0]
-    assert _NATIVE_PROVIDER not in bodies[0]
+    assert NATIVE_PROVIDER_ID not in bodies[0]
 
 
 def test_unrelated_request_error_never_retries_for_thoughts(monkeypatch) -> None:
@@ -404,6 +417,21 @@ def test_only_a_rejection_naming_the_thought_option_is_a_retry_signal():
 
 
 
+def _adapter_identities(module) -> frozenset[str]:
+    """Every model identity an adapter module's own tables declare."""
+    found: set[str] = set()
+    for value in vars(module).values():
+        if isinstance(value, (tuple, set, frozenset)):
+            for item in value:
+                if isinstance(item, str) and "/" in item:
+                    found.add(item)
+                elif isinstance(item, tuple) and item and isinstance(item[0], str):
+                    found.add(item[0])
+        elif isinstance(value, dict):
+            found |= {key for key in value if isinstance(key, str) and "/" in key}
+    return frozenset(found)
+
+
 def _native_row() -> dict:
     """The one serving-evidenced route whose provider serves the native wire.
 
@@ -417,6 +445,8 @@ def _native_row() -> dict:
     * exposes ``tools`` as a capability while making no free claim and no
       multimodal (``image``) claim — the tool lane is reachable, and the code
       is the text-only serving variant, and
+    * is the exact route whose adapter declares tool support for the native
+      surface (the adapter's own table is the answer, not this file), and
     * is the cheapest priced code among the documented rows, which is the
       serving code the native draft pins (a value-free placeholder document
       prices nothing, so that last filter simply drops out).
@@ -442,6 +472,13 @@ def _native_row() -> dict:
         row["id"] for row in model_rows()
         if "tools" in row["capabilities"] and "free" not in row["capabilities"]
     }
+    # The wire is the adapter's, so the identities its own table declares are
+    # the only ones this lane can drive. The file name is composed from the
+    # provider-independent prefix, never read as a name here.
+    adapter = adapter_modules().get(native_wire_owner())
+    declared = _adapter_identities(adapter) if adapter is not None else frozenset()
+    if declared:
+        evidenced &= declared
     priced = [
         row["input_price_usd_per_1m"]
         for row in model_rows()
@@ -460,15 +497,25 @@ def _native_row() -> dict:
     return candidates[0]
 
 
-_NATIVE_ROW = _native_row()
-_NATIVE_PROVIDER = _NATIVE_ROW["provider_id"]
-_NATIVE_PROVIDER_ROW = provider_row(_NATIVE_PROVIDER)
-_NATIVE_MODEL = _NATIVE_ROW["id"]
-_NATIVE_UPSTREAM = _NATIVE_ROW["upstream_model"]
-_NATIVE_PROVIDER_NAME = _NATIVE_ROW["provider_name"]
-_NATIVE_ORIGIN = _NATIVE_PROVIDER_ROW["base_origin"]
-_NATIVE_HOSTS = tuple(_NATIVE_PROVIDER_ROW["allowed_hosts"])
-_NATIVE_BINDING = _NATIVE_PROVIDER_ROW["credential_binding_name"]
+#: The identity the native wire adapter itself serves. Chosen from the
+#: registry, never restated: the adapter refuses any other route.
+NATIVE_PROVIDER_ID = native_wire_owner()
+NATIVE_ORIGIN = native_wire_origin()
+
+try:
+    _NATIVE_ROW = _native_row()
+except Exception:  # noqa: BLE001 - the module already skipped on a placeholder
+    _NATIVE_ROW = None
+_NATIVE_PROVIDER = NATIVE_PROVIDER_ID
+_NATIVE_PROVIDER_ROW = (
+    provider_row(_NATIVE_PROVIDER) if _NATIVE_PROVIDER in registry().get("providers", {})
+    else {}
+)
+_NATIVE_MODEL = (_NATIVE_ROW or {}).get("id")
+_NATIVE_UPSTREAM = (_NATIVE_ROW or {}).get("upstream_model")
+_NATIVE_PROVIDER_NAME = (_NATIVE_ROW or {}).get("provider_name")
+_NATIVE_HOSTS = tuple(_NATIVE_PROVIDER_ROW.get("allowed_hosts", ()))
+_NATIVE_BINDING = _NATIVE_PROVIDER_ROW.get("credential_binding_name")
 #: The retired identities, read from the same document the selector read.
 RETIRED = retired_model_ids()
 #: The native lane answers a method-style path, never the compatible suffix.
@@ -480,21 +527,22 @@ COMPAT_WIRE = "/".join(("chat", "completions"))
 
 
 def _native_wire(monkeypatch, handler, *, effort="high", thoughts=True):
+    """Install the subject row at the identity the native adapter serves."""
     transport = _wire(monkeypatch, handler)
     model = cat.CatalogModel(
         model_id=_NATIVE_MODEL, upstream_model=_NATIVE_UPSTREAM,
         display_name="Test", provider="Test", provider_type="platform",
         input_price_usd_per_1m=None, output_price_usd_per_1m=None,
-        platform_provider_id=_NATIVE_PROVIDER, capabilities=frozenset({"chat", "tools"}),
+        platform_provider_id=NATIVE_PROVIDER_ID, capabilities=frozenset({"chat", "tools"}),
         reasoning_supported=True, reasoning_default=effort,
         thought_summary_enabled=thoughts,
     )
     monkeypatch.setitem(cat.CATALOG_BY_ID, _NATIVE_MODEL, model)
 
     class NativeSpec:
-        provider_id = _NATIVE_PROVIDER
-        base_origin = _NATIVE_ORIGIN
-        allowed_hosts = _NATIVE_HOSTS
+        provider_id = NATIVE_PROVIDER_ID
+        base_origin = NATIVE_ORIGIN
+        allowed_hosts = (NATIVE_ORIGIN.split("//", 1)[1].split("/", 1)[0],)
         credential_binding_name = "TEST_CREDENTIAL_BINDING"
 
     monkeypatch.setattr(plat, "_require_spec", lambda _provider_id: NativeSpec())
@@ -504,7 +552,7 @@ def _native_wire(monkeypatch, handler, *, effort="high", thoughts=True):
 def _native_stream(transport, *, tools=None):
     return plat.stream_platform_chat_completions(
         model_id=_NATIVE_MODEL, upstream_model=_NATIVE_UPSTREAM,
-        provider="Test", platform_provider_id=_NATIVE_PROVIDER,
+        provider="Test", platform_provider_id=NATIVE_PROVIDER_ID,
         messages=[{"role": "user", "content": "hello"}],
         tools=tools, transport=transport,
     )
@@ -561,7 +609,7 @@ async def test_native_thought_fragments_reach_the_attempt_ledger(monkeypatch):
     ))
     ledger = _draft()
     candidate = {**_CANDIDATE, "model_id": _NATIVE_MODEL,
-                 "upstream_model": _NATIVE_UPSTREAM, "platform_provider_id": _NATIVE_PROVIDER}
+                 "upstream_model": _NATIVE_UPSTREAM, "platform_provider_id": NATIVE_PROVIDER_ID}
     frames = [frame async for frame in _stream_body(
         _native_stream(transport), [], request_id="req-thought", decision=_decision(),
         attempt_count=1, fallback_used=False, ledger=ledger, candidate=candidate,
@@ -620,7 +668,7 @@ def test_native_4xx_falls_back_once_without_thought_options(monkeypatch, caplog)
     assert NATIVE_PATH_MARK in requests[0][0]
     assert requests[1][0].endswith(COMPAT_SUFFIX)
     assert requests[1][1]["reasoning_effort"] == "high"
-    assert "extra_body" not in requests[1][1] and _NATIVE_PROVIDER not in requests[1][1]
+    assert "extra_body" not in requests[1][1] and NATIVE_PROVIDER_ID not in requests[1][1]
     assert "native_thought_rejected status=400 fallback=compatible" in caplog.text
     assert any(event.delta_content == "ok" for event in events)
     assert all(event.wire_protocol == COMPAT_WIRE for event in events)
@@ -636,7 +684,7 @@ def test_disabled_thought_policy_keeps_compatible_wire(monkeypatch):
     run(_collect(_native_stream(_native_wire(monkeypatch, handler, thoughts=False))))
     assert len(requests) == 1 and requests[0][0].endswith(COMPAT_SUFFIX)
     assert requests[0][1]["reasoning_effort"] == "high"
-    assert "extra_body" not in requests[0][1] and _NATIVE_PROVIDER not in requests[0][1]
+    assert "extra_body" not in requests[0][1] and NATIVE_PROVIDER_ID not in requests[0][1]
 
 
 def test_native_4xx_tool_fallback_preserves_fragmented_tool_calls(monkeypatch):

@@ -33,13 +33,16 @@ from app.pilot.errors import NoSafeRoute, PilotNotConfigured, UpstreamTimeout
 from app.pilot.b14_runtime_config import runtime_config as rcfg
 from _registry_values import (
     a_model_id,
+    credential_binding_slot,
     model_ids,
     model_rows,
     provider_row,
     registry,
     requires_owner_document,
 )
-from app.pilot.model_registry_file import installed_model_ids, retired_model_ids
+from app.pilot.model_registry_file import (
+    credential_binding_names, installed_model_ids, retired_model_ids,
+)
 from _pilot_lane_paths import chat_surface
 
 
@@ -52,6 +55,29 @@ def _route_values(model_id: str) -> tuple[str, str, str, str]:
 def _catalog_route_id() -> str:
     """One routable catalog id the effective registry serves."""
     return _route_values(a_model_id())[0]
+
+
+def _route_id_outside_the_free_default() -> str:
+    """A routable id that is not the free grade's owner-selected primary.
+
+    The resolver adds one preselected grade fallback for that primary, so a
+    test about the plain manual route has to name a different row.
+    """
+    from app.pilot.tier_fallback import effective_tier_default
+
+    default = effective_tier_default()
+    for row in model_rows():
+        if not row.get("enabled", True) or row["id"] == default:
+            continue
+        if get_catalog_by_id(row["id"]) is None:
+            continue
+        try:
+            decision = resolve_manual_route(row["id"])
+        except NoSafeRoute:
+            continue
+        if decision.reason_codes == ["manual_selection"]:
+            return row["id"]
+    pytest.skip("the effective registry serves no plain manual route")
 
 
 def _registry_hosts() -> set[str]:
@@ -355,7 +381,7 @@ class TestManualRoute:
         assert d.evidence_status == "resolved_not_called"
 
     def test_manual_route_no_fallback_by_default(self):
-        d = resolve_manual_route(_catalog_route_id())
+        d = resolve_manual_route(_route_id_outside_the_free_default())
         assert d.fallback_allowed is False
         assert d.eligible_fallback == []
         # B5: there is no external-fallback knob at all; a manual route only
@@ -1543,7 +1569,9 @@ class TestOwnerEnvWorkflow:
         openrouter_secret = "sk-or-v1-super-secret-abcdef1234567890"
         platform_secret = "sk-sensenova-super-secret-abcdef1234567890"
         _set_live(openrouter_secret)
-        monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", platform_secret)
+        # A platform-owned slot the document declares: the health surface must
+        # see the key without either value reaching a page.
+        monkeypatch.setenv(sorted(credential_binding_names())[0], platform_secret)
         resp = client.get("/api/pilot/admin/health")
         assert resp.status_code == 200
         assert resp.json()["business14"]["has_key"] is True
@@ -1873,11 +1901,11 @@ class TestActualRouteId:
 
         The surviving multi-candidate walk is the owner-pinned free-tier roster.
         """
-        from app.pilot.tier_fallback import TIER_DEFAULT_B14_MODEL, TIER_FALLBACK_B14_MODELS
+        from app.pilot.tier_fallback import effective_tier_default
         from app.pilot import router_core
         _set_live()
         rcfg.provider_mode = "live"
-        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_03", "sk-free-google-0123456789abcdef")
+        monkeypatch.setenv(credential_binding_slot(3), "sk-free-route-0123456789abcdef")
         monkeypatch.setattr(router_core, "_credential_status_for",
                             lambda cm: (True, "present", "platform_secret", cm.platform_provider_id))
         monkeypatch.setattr(router_core, "_platform_secret_present", lambda cm: True)
@@ -1903,7 +1931,7 @@ class TestActualRouteId:
             resp = client.post(
                 chat_surface(),
                 json={
-                    "model": TIER_DEFAULT_B14_MODEL,
+                    "model": effective_tier_default(),
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"product_tier": "free"},
                 },

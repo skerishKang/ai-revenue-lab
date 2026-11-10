@@ -1,13 +1,17 @@
 """Owner model-console writes on B14: overlay, probe gate, key file hygiene.
 
-The base registry stays the shipped catalog; the Owner writes an overlay next to
-it. These tests pin the four promises the screen depends on: the overlay is what
-the next read (and the next boot) sees, a model can only be registered after a
-probe receipt for that exact row, retirement removes the model from the effective
-catalog while remaining reversible, and a credential write touches only its own
-governed slot file while never returning, logging or auditing the value.
+The base registry is the host's own document; the Owner writes an overlay next
+to it. These tests pin the four promises the screen depends on: the overlay is
+what the next read (and the next boot) sees, a model can only be registered
+after a probe receipt for that exact row, retirement removes the model from the
+effective catalog while remaining reversible, and a credential write touches
+only its own governed slot file while never returning, logging or auditing the
+value.
 
-Every credential here is synthetic and lives in a temporary directory.
+#7241 3단계: the repository no longer carries a catalog, so the base document
+this suite edits is a minimal synthetic one built from placeholder identities
+(``example-a``/``example-b``) at test time. Every credential here is synthetic
+and lives in a temporary directory.
 """
 
 from __future__ import annotations
@@ -26,6 +30,8 @@ from app.pilot import model_admin_ops as ops
 from app.pilot.model_registry_file import read_overlay, read_registry, write_overlay
 from app.pilot.service_proof import PROOF_HEADER, PROOF_TIME_HEADER, compute_service_proof
 
+from _registry_values import credential_binding_slot, process_catalog_restored
+
 PREFIX = "/api/pilot"
 REGISTRY = PREFIX + ops.REGISTRY_PATH
 PROBE = PREFIX + ops.PROBE_PATH
@@ -39,12 +45,17 @@ PROOF_SECRET = "unit-test-model-admin-proof-secret-0123456789"
 SYNTHETIC_VALUE = "sk-synthetic-owner-value-0123456789-wxyz"
 EXISTING_LINE_VALUE = "sk-synthetic-previous-0123456789-abcd"
 
+SLOT_5 = credential_binding_slot(5)
+SLOT_6 = credential_binding_slot(6)
+SLOT_7 = credential_binding_slot(7)
+SLOT_14 = credential_binding_slot(14)
+
 PROVIDER = {
     "provider_id": "example",
     "base_origin": "https://api.example.com",
     "allowed_hosts": ["api.example.com"],
     "credential_source": "platform_secret",
-    "credential_binding_name": "PADIEM_B14_CREDENTIAL_07",
+    "credential_binding_name": SLOT_7,
     "enabled": True,
 }
 
@@ -64,16 +75,113 @@ MODEL = {
 }
 
 
+def _synthetic_session_keys() -> list[str]:
+    """Distinct governed slot NAMEs, read from the admin surface, not written."""
+    from app.pilot.credential_slots_admin import SLOT_BINDINGS
+
+    names = list(SLOT_BINDINGS)
+    assert len(names) >= 3, "the deployment governs too few credential slots"
+    return names
+
+
+def _synthetic_model_row(provider_id: str, upstream: str, **over) -> dict:
+    row = {
+        "id": f"{provider_id}/{upstream}",
+        "provider_id": provider_id,
+        "upstream_model": upstream,
+        "display_name": upstream.upper(),
+        "provider_name": provider_id.upper(),
+        "capabilities": ["chat"],
+        "context_window": 1000,
+        "input_price_usd_per_1m": 0.0,
+        "output_price_usd_per_1m": 0.0,
+        "source": "synthetic",
+        "source_checked_at": "2026-11-03",
+        "enabled": True,
+    }
+    row.update(over)
+    return row
+
+
+def _base_document() -> dict:
+    """The minimal catalog this host serves, in the private registry format.
+
+    #7241 3단계: the repository ships only a schema-shaped placeholder, and the
+    document the switch names is the single authority. This suite therefore
+    gives the host its own three-model document — built from placeholder
+    identities (``example-a``/``example-b``) — so the console's writes are
+    exercised against a catalog the host really serves. The shape is the private
+    format (``version``/``tiers``) because that is the only document the app's
+    reader accepts now.
+    """
+    first, second = _synthetic_session_keys()[:2]
+    return {
+        "version": "padiem.models.private.v1",
+        "comment": "Synthetic owner catalog for the model-console suite (#7241).",
+        "providers": {
+            "example-a": {
+                "base_origin": "https://example-a.example.invalid/v1",
+                "allowed_hosts": ["example-a.example.invalid"],
+                "credential_binding": first,
+            },
+            "example-b": {
+                "base_origin": "https://example-b.example.invalid/v1",
+                "allowed_hosts": ["example-b.example.invalid"],
+                "credential_binding": second,
+            },
+        },
+        "models": [
+            _synthetic_model_row("example-a", "m1"),
+            _synthetic_model_row("example-b", "m2"),
+            _synthetic_model_row("example-b", "m3"),
+        ],
+        "tiers": {
+            "free": {"primary": "example-a/m1", "fallback": ["example-b/m2"]},
+            "plus": {"primary": "example-a/m1", "fallback": ["example-b/m2"]},
+            "pro": {"primary": "example-b/m2", "fallback": ["example-b/m3"]},
+            "max": {"primary": "example-b/m3", "fallback": ["example-b/m2"]},
+        },
+    }
+
+
 @pytest.fixture
 def registry(tmp_path, monkeypatch):
+    """A host switched to its own synthetic catalog, with a writable overlay.
+
+    The switch lives in a ``monkeypatch.context()`` that exits *before* the
+    catalog is reinstalled (#7241 3b): restoring the environment afterwards
+    would leave the snapshot and the installed catalog pointing at this
+    temporary document, and every suite that ran later would read it too.
+    """
+    from app.pilot import model_registry_file
+
     base = tmp_path / "b14_models.json"
-    base.write_bytes(
-        (Path(ops.__file__).parent / "b14_models.json").read_bytes()
-    )
+    # The console edits one document — the B14 base file — and the process
+    # catalog is read from the switched document, so both name the same file.
+    # The private loader refuses a document other users can read, so the host's
+    # copy carries the deployment's owner-only mode (#7241 3b).
+    base.write_text(json.dumps(_base_document()), encoding="utf-8")
+    base.chmod(0o600)
     overlay = tmp_path / "b14_models.overrides.json"
-    monkeypatch.setenv("B14_REGISTRY_PATH", str(base))
-    monkeypatch.setenv("B14_REGISTRY_OVERLAY_PATH", str(overlay))
-    return base
+    with process_catalog_restored():
+        with monkeypatch.context() as switched:
+            switched.setenv("PADIEM_MODELS_REGISTRY", str(base))
+            # The private loader prefers OVERRIDE, and a process may already
+            # carry one; clear it so the switched document is this host's file.
+            switched.delenv("PADIEM_MODELS_REGISTRY_OVERRIDE", raising=False)
+            switched.setenv("B14_REGISTRY_PATH", str(base))
+            # Two readers see this host. The console's writer reads the base
+            # file the process was switched to, so that is where the overlay
+            # lands; the env override the suite pins is the same file, keeping
+            # the edit and the read on one document (#7241 3b).
+            switched.setenv("B14_REGISTRY_OVERLAY_PATH", str(overlay))
+            model_registry_file._PRIVATE_SNAPSHOT = None
+            model_registry_file.install_models()
+            yield base
+        # The switch is the process default again: rebuild from it, never from
+        # the temporary document the test had installed.
+        model_registry_file._PRIVATE_SNAPSHOT = None
+        model_registry_file.install_models()
 
 
 @pytest.fixture
@@ -81,12 +189,12 @@ def client(registry, monkeypatch, tmp_path):
     monkeypatch.setenv("PADIEM_B14_SERVICE_PROOF_SECRET", PROOF_SECRET)
     monkeypatch.delenv("B14_CREDENTIAL_ENV_FILE", raising=False)
     monkeypatch.delenv("B14_SECRET_DIR", raising=False)
-    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_07", raising=False)
+    monkeypatch.delenv(SLOT_7, raising=False)
     # A write also mirrors the value into os.environ for the running process.
     # Absent keys are recorded via setenv so teardown really removes them and
     # the next test (which asserts on slot truth) sees the real environment.
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "")
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_06", "")
+    monkeypatch.setenv(SLOT_5, "")
+    monkeypatch.setenv(SLOT_6, "")
     ops._RECEIPTS.clear()
     app = create_app()
     installed: list[dict] = []
@@ -202,13 +310,13 @@ def test_provider_apply_refuses_a_full_slot(client):
             "base_origin": f"https://filler{index}.example.com",
             "allowed_hosts": [f"filler{index}.example.com"],
             "credential_source": "platform_secret",
-            "credential_binding_name": "PADIEM_B14_CREDENTIAL_14",
+            "credential_binding_name": SLOT_14,
             "enabled": False,
         }
         for index in range(8)
     }
     write_overlay({"providers": filler})
-    payload = {"provider": {**PROVIDER, "credential_binding_name": "PADIEM_B14_CREDENTIAL_14"}}
+    payload = {"provider": {**PROVIDER, "credential_binding_name": SLOT_14}}
     response = post(client, PROVIDER_APPLY, payload)
     assert response.status_code == 409
     assert response.json()["error"]["code"] == "credential_slot_full"
@@ -384,7 +492,7 @@ def test_credential_write_refuses_a_placeholder_value(client, tmp_path, monkeypa
 def test_credential_write_refuses_when_the_store_manages_the_slot(client, tmp_path, monkeypatch):
     from app.pilot import worker_env
 
-    slot_binding = "PADIEM_B14_CREDENTIAL_05"
+    slot_binding = SLOT_5
     env_file = tmp_path / "b14.env"
     monkeypatch.setenv("B14_CREDENTIAL_ENV_FILE", str(env_file))
 
@@ -414,7 +522,7 @@ def test_env_file_write_preserves_other_lines_backs_up_and_never_echoes(
 ):
     env_file = tmp_path / "b14.env"
     env_file.write_text(
-        "OTHER_SETTING=keep-me\nPADIEM_B14_CREDENTIAL_05=" + EXISTING_LINE_VALUE + "\n",
+        f"OTHER_SETTING=keep-me\n{SLOT_5}=" + EXISTING_LINE_VALUE + "\n",
         encoding="utf-8",
     )
     monkeypatch.setenv("B14_CREDENTIAL_ENV_FILE", str(env_file))
@@ -422,7 +530,7 @@ def test_env_file_write_preserves_other_lines_backs_up_and_never_echoes(
     response = post(client, CREDENTIAL_WRITE, {"slot_number": 5, "value": SYNTHETIC_VALUE})
     assert response.status_code == 200, response.text
     body = response.json()
-    assert body["slot"] == "PADIEM_B14_CREDENTIAL_05"
+    assert body["slot"] == SLOT_5
     assert body["length"] == len(SYNTHETIC_VALUE)
     assert body["last4"] == SYNTHETIC_VALUE[-4:]
     assert body["target"] == "env_file"
@@ -431,9 +539,9 @@ def test_env_file_write_preserves_other_lines_backs_up_and_never_echoes(
 
     text = env_file.read_text(encoding="utf-8")
     assert "OTHER_SETTING=keep-me" in text
-    assert "PADIEM_B14_CREDENTIAL_05=" + SYNTHETIC_VALUE in text
+    assert SLOT_5 + "=" + SYNTHETIC_VALUE in text
     assert EXISTING_LINE_VALUE not in text
-    assert os.environ["PADIEM_B14_CREDENTIAL_05"] == SYNTHETIC_VALUE
+    assert os.environ[SLOT_5] == SYNTHETIC_VALUE
 
     backups = list(tmp_path.glob("b14.env.bak.*"))
     assert len(backups) == 1
@@ -451,10 +559,10 @@ def test_secret_file_write_targets_one_slot_file(client, tmp_path, monkeypatch):
     response = post(client, CREDENTIAL_WRITE, {"slot_number": 6, "value": SYNTHETIC_VALUE})
     assert response.status_code == 200, response.text
     assert response.json()["target"] == "secret_file"
-    written = secrets / "PADIEM_B14_CREDENTIAL_06"
+    written = secrets / SLOT_6
     assert written.read_text(encoding="utf-8").strip() == SYNTHETIC_VALUE
     assert [p.name for p in secrets.iterdir() if p.name.startswith("PADIEM_")] == [
-        "PADIEM_B14_CREDENTIAL_06"
+        SLOT_6
     ]
 
 

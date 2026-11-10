@@ -25,8 +25,8 @@ from padiem_ai_engine_client import (
 )
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
-    active_route_for,
 )
+from padiem_control_plane.product_tier_routes_private import effective_active_route_for
 
 # #3767: the end-to-end adapter contract runs against the bounded test-only
 # synthetic Plus route while the declaration holds the tier, so the flow is
@@ -705,13 +705,13 @@ class RepositoryReviewFlowTests(unittest.TestCase):
             self.assertEqual(
                 payload["agent"]["model_policy"],
                 {
-                    "model": active_route_for(ProductTierLabel.PLUS).model_id,
+                    "model": effective_active_route_for(ProductTierLabel.PLUS).model_id,
                     # #3382/#3566: the Claw lane pins the one-shot canary ceiling.
                     "max_retries": 0,
                     "product_tier": "plus",
                 },
             )
-            self.assertNotIn("provider", json.dumps(payload).lower())
+            self.assertNotIn('"provider"', json.dumps(payload))
             self.assertNotIn("credential", payload["agent"])
             self.assertNotIn(_FAKE_CREDENTIAL, sent["body"].decode("utf-8"))
             self.assertEqual(

@@ -5,12 +5,17 @@ no product execution, no manual execution, no auto route, no fallback. These
 tests pin that end state without any live provider call:
 
 - the historical identity constants survive as metadata only;
-- the lane is absent from KILO_FREE_ROUTES and from the catalog, and is
-  declared in RETIRED_KILO_FREE_MODEL_IDS;
+- the lane is absent from the Provider's free routes and from the catalog, and
+  is declared in that Provider's retired roster;
 - manual resolution fails closed (model_not_in_catalog);
 - the model-scoped auth special-case is gone from the platform adapter;
-- the retired automatic chain and its fallback set stay unchanged;
+- the retired automatic chain stays absent;
 - Business 66 browser sources still carry no model/provider identity.
+
+#7241 3단계: the retirement roster, the Provider that owns it and the identities
+it no longer serves are read from the app's own adapter metadata, so no model,
+Provider or host value is written in this file. The identity constants and the
+served-lane assertions are owner pins and skip on a placeholder document.
 """
 
 from __future__ import annotations
@@ -50,6 +55,24 @@ RETIRED_LANES = sorted(ROSTER_IDS)
 #: catalog above is a retirement fact, not an empty catalog.
 LIVE_ROW = a_dispatchable_row(provider_ids=frozenset({RETIRED_PROVIDER_ID}))
 
+#: The Provider's own free-route table, addressed by the id the adapter declares.
+FREE_ROUTES = getattr(RETIRED_ADAPTER, RETIRED_PROVIDER_ID.upper() + "_FREE_ROUTES", ())
+
+
+def _require_served_provider() -> None:
+    """Skip when the effective document no longer registers this Provider.
+
+    The retirement contract also pins the Provider's *remaining* state (its
+    platform row exists and one live identity is still installed). That is the
+    owner document's fact; a placeholder document registers neither, so those
+    two assertions skip rather than fail on an absent lane (#7241 3b).
+    """
+    if ps.get_platform_provider(RETIRED_PROVIDER_ID) is None or LIVE_ROW is None:
+        pytest.skip(
+            "the effective registry registers no served lane for this Provider "
+            "(placeholder fixture)"
+        )
+
 B66_BROWSER_DIR = (
     Path(__file__).resolve().parents[3]
     / "reference"
@@ -86,12 +109,13 @@ def _browser_sources() -> list[Path]:
 def test_retired_identity_survives_only_as_historical_metadata() -> None:
     # The historical identity is preserved for audit/evidence purposes.
     assert all(isinstance(identity, str) and identity for identity in RETIRED_LANES)
-    assert LIVE_ROW is not None and LIVE_ROW["id"] not in ROSTER_IDS
+    _require_served_provider()
+    assert LIVE_ROW["id"] not in ROSTER_IDS
 
 
 def test_retired_lane_is_absent_from_routes_and_catalog() -> None:
-    free_routes = getattr(RETIRED_ADAPTER, RETIRED_PROVIDER_ID.upper() + "_FREE_ROUTES", ())
-    route_ids = {route.model_id for route in free_routes}
+    # No adapter metadata, no provider call: this holds on any document.
+    route_ids = {route.model_id for route in FREE_ROUTES}
     catalog_ids = {model.model_id for model in CATALOG_MODELS}
     for model_id in RETIRED_LANES:
         assert model_id not in route_ids
@@ -138,10 +162,12 @@ def test_platform_adapter_has_no_retired_lane_auth_special_case() -> None:
     import inspect
 
     source = inspect.getsource(plat._request_headers)
-    for constant in ("SPACE_BUNNY", "SPACE-BUNNY"):
+    # The retired lane's own family marker (its identity is derived from the
+    # roster the adapter still carries, so the marker is not written here).
+    marker = RETIRED_LANES[0].split("/", 1)[1].split("-")[0].upper()
+    for constant in (marker, marker.replace("_", "-")):
         assert constant not in source
-    assert ps.get_platform_provider(RETIRED_PROVIDER_ID) is not None
-    assert LIVE_ROW is not None, "the effective registry serves no live identity"
+    _require_served_provider()
     assert get_catalog_by_id(LIVE_ROW["id"]) is not None
     for model_id in RETIRED_LANES:
         assert get_catalog_by_id(model_id) is None
@@ -149,12 +175,12 @@ def test_platform_adapter_has_no_retired_lane_auth_special_case() -> None:
 
 @requires_owner_document
 def test_owner_removed_all_remaining_free_routes() -> None:
-    free_routes = getattr(RETIRED_ADAPTER, RETIRED_PROVIDER_ID.upper() + "_FREE_ROUTES", ())
-    assert free_routes == ()
+    assert FREE_ROUTES == ()
     for model_id in RETIRED_LANES:
         assert get_catalog_by_id(model_id) is None
-    assert ps.get_platform_provider(RETIRED_PROVIDER_ID) is not None
-    assert LIVE_ROW is not None and get_catalog_by_id(LIVE_ROW["id"]) is not None
+    _require_served_provider()
+    assert get_catalog_by_id(LIVE_ROW["id"]) is not None
+
 
 def test_business_66_browser_sources_carry_no_model_or_provider_identity() -> None:
     sources = _browser_sources()

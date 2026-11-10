@@ -24,7 +24,13 @@ from app.pilot.tool_channel import (
 )
 from padiem_ai_core.tool_channel import ToolDefinition
 
-from _registry_values import adapter_modules, model_rows, requires_owner_document
+from _registry_values import (
+    adapter_modules, model_rows, require_owner_document,
+)
+
+# The owner decided which of the native adapter's routes carry the tool
+# capability; that decision lives in the owner's registry document (#7241 3b).
+require_owner_document()
 
 
 def _owns_the_conversion(module) -> bool:
@@ -225,7 +231,6 @@ def _plain_row() -> dict:
     return min(rows, key=_capability_counts)
 
 
-@requires_owner_document
 def test_the_owner_decided_route_declares_tools_and_opens_the_gates() -> None:
     row = _declaring_row()
     model_id = row["id"]
@@ -240,7 +245,6 @@ def test_the_owner_decided_route_declares_tools_and_opens_the_gates() -> None:
     require_stream_tool_support(model_id, NATIVE_PROVIDER)
 
 
-@requires_owner_document
 def test_the_sibling_route_stays_outside_the_owner_decision() -> None:
     row = _plain_row()
     model_id = row["id"]

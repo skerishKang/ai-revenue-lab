@@ -42,7 +42,9 @@ OPTIONAL_TIER_NAMES = ("admin",)
 
 _CREDENTIAL_BINDING_PREFIX = "PADIEM_B14_CREDENTIAL_"
 _KNOWN_CAPABILITIES = frozenset({"chat", "coding", "free", "image", "long_context", "tools"})
-_ROOT_KEYS = frozenset({"version", "comment", "providers", "models", "tiers"})
+_ROOT_KEYS = frozenset(
+    {"version", "comment", "providers", "models", "tiers", "retired_models"})
+_MAX_RETIRED = 512
 _PROVIDER_KEYS = frozenset({"base_origin", "allowed_hosts", "credential_binding"})
 _MODEL_KEYS = frozenset({
     "id", "provider_id", "upstream_model", "capabilities", "enabled",
@@ -80,6 +82,9 @@ class PrivateRegistry:
     providers: dict = field(default_factory=dict)
     models: tuple = ()
     tiers: dict = field(default_factory=dict)
+    #: Identities the Owner retired. #7241 3단계: the private document is the
+    #: only authority B14 reads, so their retirement has to travel with it.
+    retired_models: tuple = ()
     source: str = "private"
 
     @property
@@ -110,7 +115,8 @@ class RegistryLoad:
 def empty_registry() -> PrivateRegistry:
     """The fail-closed answer: a valid registry with nothing to execute."""
     return PrivateRegistry(
-        version=FORMAT_VERSION, providers={}, models=(), tiers={}, source="empty")
+        version=FORMAT_VERSION, providers={}, models=(), tiers={},
+        retired_models=(), source="empty")
 
 
 def registry_source() -> str:
@@ -291,6 +297,29 @@ def _validated_tiers(raw: object, model_ids: frozenset) -> dict:
     return tiers
 
 
+def _validated_retired(raw: object, model_ids: frozenset) -> tuple:
+    """The retired identities, in document order, never a registered model.
+
+    Absent means "none retired", which is what a document written before
+    #7241 3단계 says. An identity that is also registered is refused: the two
+    halves of one document may not contradict each other.
+    """
+    if raw is None:
+        return ()
+    if not isinstance(raw, list) or len(raw) > _MAX_RETIRED:
+        raise _reject("registry_retired_models")
+    retired = []
+    seen = set()
+    for model_id in raw:
+        if not _safe_identifier(model_id) or model_id in seen:
+            raise _reject("registry_retired_model_id")
+        if model_id in model_ids:
+            raise _reject("registry_retired_model_registered")
+        seen.add(model_id)
+        retired.append(model_id)
+    return tuple(retired)
+
+
 def validate_document(document: object) -> PrivateRegistry:
     """Validate one complete private document, or refuse it with a code."""
     if not isinstance(document, dict):
@@ -303,11 +332,12 @@ def validate_document(document: object) -> PrivateRegistry:
         raise _reject("registry_comment")
     providers = _validated_providers(document.get("providers"))
     models = _validated_models(document.get("models"), providers)
-    tiers = _validated_tiers(
-        document.get("tiers"), frozenset(row["id"] for row in models))
+    model_ids = frozenset(row["id"] for row in models)
+    tiers = _validated_tiers(document.get("tiers"), model_ids)
+    retired_models = _validated_retired(document.get("retired_models"), model_ids)
     return PrivateRegistry(
         version=FORMAT_VERSION, providers=providers, models=models, tiers=tiers,
-        source="private")
+        retired_models=retired_models, source="private")
 
 
 def install_document(registry: PrivateRegistry) -> dict:
@@ -353,6 +383,9 @@ def install_document(registry: PrivateRegistry) -> dict:
         },
         "models": models,
         "groups": {"plus": [], "pro": [], "max": []},
+        # Carried through so the retired identities keep winning a dispatch
+        # decision on a host that reads only this document (#7241 3단계).
+        "retired_models": list(registry.retired_models),
     }
 
 
@@ -413,6 +446,7 @@ def load_private_registry(path: Path | None = None) -> PrivateRegistry:
     return PrivateRegistry(
         version=registry.version, providers=registry.providers,
         models=registry.models, tiers=registry.tiers,
+        retired_models=registry.retired_models,
         source="override" if source == "override" else "private")
 
 

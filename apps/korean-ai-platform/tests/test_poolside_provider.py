@@ -20,6 +20,10 @@ from app.pilot.tier_fallback import effective_tier_default, effective_tier_fallb
 
 from _registry_values import model_rows, provider_row
 
+from _registry_values import require_owner_document
+
+require_owner_document()
+
 
 # #7241 3단계: the route this suite covers is selected structurally rather than
 # spelled here. It is the one registered route that

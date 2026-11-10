@@ -12,7 +12,13 @@ from app.pilot.errors import MalformedUpstreamResponse
 from app.pilot.google_provider import _GoogleToolStream
 
 from _pilot_lane_paths import chat_surface
-from _registry_values import model_rows, provider_row
+from _registry_values import model_rows, provider_row, require_owner_document
+
+# Every case below is driven through one Provider's own native completion wire:
+# its decoder, its signature relay and its recovery walk. Only the owner's
+# registry document registers that Provider, so a placeholder document leaves
+# the module without its subject (#7241 3단계).
+require_owner_document()
 
 #: The gateway surface the recovery walk is driven through. Read from the
 #: assembled routes so no path value is written here (#7241).

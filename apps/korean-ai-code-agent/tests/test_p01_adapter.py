@@ -18,8 +18,8 @@ from padiem_control_plane import product_tier_routes as tier_routes
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     ProductTierRoutesError,
-    active_route_for,
 )
+from padiem_control_plane.product_tier_routes_private import effective_active_route_for
 
 from kagent.contracts import ClawRunStatus, ClawTaskIntent, ExecutionMode
 from kagent.p01_adapter import (
@@ -59,7 +59,7 @@ from model_route_fixture import (
 # against whatever the declaration says instead of restating a model id as their own truth.
 # An owner tier switch then exercises the derivation instead of silently passing or breaking
 # a literal nobody re-ran.
-_PLUS_ROUTE = active_route_for(ProductTierLabel.PLUS)
+_PLUS_ROUTE = effective_active_route_for(ProductTierLabel.PLUS)
 PLUS_ROUTE_MODEL = _PLUS_ROUTE.model_id if _PLUS_ROUTE is not None else None
 
 
@@ -313,7 +313,7 @@ class P01ModelHoldTests(unittest.TestCase):
 
     def test_every_tier_without_a_declared_route_fails_closed(self):
         for label in ProductTierLabel:
-            route = active_route_for(label)
+            route = effective_active_route_for(label)
             if route is not None and route.model_id:
                 continue
             with self.assertRaises(P01AdapterError) as caught:
@@ -687,12 +687,12 @@ class ClawP01ProfileContractTests(unittest.TestCase):
 
     def test_pro_tier_uses_shared_declared_route(self) -> None:
         profile = _agent_profile(ProductTierLabel.PRO)
-        self.assertEqual(profile.model_policy["model"], active_route_for(ProductTierLabel.PRO).model_id)
+        self.assertEqual(profile.model_policy["model"], effective_active_route_for(ProductTierLabel.PRO).model_id)
         self.assertEqual(profile.model_policy["product_tier"], "pro")
 
     def test_max_tier_uses_shared_declared_route(self) -> None:
         profile = _agent_profile(ProductTierLabel.MAX)
-        self.assertEqual(profile.model_policy["model"], active_route_for(ProductTierLabel.MAX).model_id)
+        self.assertEqual(profile.model_policy["model"], effective_active_route_for(ProductTierLabel.MAX).model_id)
         self.assertEqual(profile.model_policy["product_tier"], "max")
 
 
@@ -768,7 +768,7 @@ class SyntheticPlusRouteBoundaryTests(unittest.TestCase):
         with synthetic_plus_route_installed() as model_id:
             self.assertEqual(model_id, synthetic_model_id())
             self.assertEqual(
-                p01_adapter_module.active_route_for(ProductTierLabel.PLUS).model_id,
+                p01_adapter_module.effective_active_route_for(ProductTierLabel.PLUS).model_id,
                 model_id,
             )
             # The injected entry is a legal executable route for the canonical
@@ -806,8 +806,11 @@ class SyntheticPlusRouteBoundaryTests(unittest.TestCase):
 
 
 def test_explicit_free_choice_allows_only_free_registered_ids():
-    from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
-    for model_id in (FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID):
+    from padiem_control_plane.product_tier_routes_private import (
+        free_fallback_model_id,
+        free_primary_model_id,
+    )
+    for model_id in (free_primary_model_id(), free_fallback_model_id()):
         profile = _agent_profile(ProductTierLabel.FREE, selected_model_id=model_id)
         assert profile.model_policy["model"] == model_id
         assert profile.model_policy["product_tier"] == "free"
@@ -820,8 +823,10 @@ def test_explicit_free_choice_allows_only_free_registered_ids():
 
 
 def test_claw_dispatch_carries_the_claw_product_identity():
-    from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
-    profile = _agent_profile(ProductTierLabel.FREE, selected_model_id=FREE_PRIMARY_B14_MODEL_ID)
+    from padiem_control_plane.product_tier_routes_private import (
+        free_primary_model_id,
+    )
+    profile = _agent_profile(ProductTierLabel.FREE, selected_model_id=free_primary_model_id())
     assert "당신은 PADIEM CLAW의 PADIEM Free 모드입니다." in profile.system_instruction
     assert "기반 모델명" in profile.system_instruction
     assert "파디엠챗" not in profile.system_instruction

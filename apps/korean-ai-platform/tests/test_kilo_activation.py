@@ -7,19 +7,14 @@ from app.pilot.kilo_activation import (
     evaluate_kilo_activation,
 )
 
-from _registry_values import (
-    adapter_declaring_retired,
-    placeholder_registry_active,
-    requires_owner_document,
-)
+from _registry_values import adapter_declaring_retired
 
 
 #: The volatile free roster this contract evaluates: the first three identities
 #: the adapter keeps as its retirement metadata (the lanes it declares
-#: unregistered). Read from the app rather than written here (#7241 3a). An owner
-#: pin: the placeholder fixture carries no such roster, so B14 activation is not
-#: exercised there.
-@requires_owner_document
+#: unregistered). Read from the app rather than written here (#7241 3a). The
+#: roster lives on the adapter, not in the served document, so the contract runs
+#: on a host that reads the placeholder fixture too.
 def _free_roster() -> tuple[str, ...]:
     provider_id, module, _retained = adapter_declaring_retired()
     own = {
@@ -41,7 +36,7 @@ def _free_roster() -> tuple[str, ...]:
     return declared
 
 
-ALLOWLIST: tuple[str, ...] = () if placeholder_registry_active() else _free_roster()
+ALLOWLIST: tuple[str, ...] = _free_roster()
 #: The roster's three lanes, in the adapter's own order: the pair that proves
 #: live callability and the lane held at contract-verified state.
 LAGUNA, NEMOTRON, HY3 = (ALLOWLIST + ("", "", ""))[:3]

@@ -139,7 +139,7 @@ def test_a_verified_administrator_is_not_refused_and_dispatches_the_exact_model(
     import app.central_model_route_runtime as route_runtime
 
     monkeypatch.setattr(
-        route_runtime, "active_route_for", lambda label: None
+        route_runtime, "effective_active_route_for", lambda label: None
     )
     adapter = _RecordingAdapter()
     admin_store = _AdminStore()
@@ -162,7 +162,7 @@ def test_an_ordinary_member_that_forges_the_administrator_grade_dispatches_nothi
     import app.central_model_route_runtime as route_runtime
 
     monkeypatch.setattr(
-        route_runtime, "active_route_for", lambda label: None
+        route_runtime, "effective_active_route_for", lambda label: None
     )
     adapter = _RecordingAdapter()
     admin_store = _AdminStore()
@@ -183,7 +183,7 @@ def test_an_unauthenticated_caller_dispatches_nothing(
     import app.central_model_route_runtime as route_runtime
 
     monkeypatch.setattr(
-        route_runtime, "active_route_for", lambda label: None
+        route_runtime, "effective_active_route_for", lambda label: None
     )
     adapter = _RecordingAdapter()
     admin_store = _AdminStore()
@@ -204,7 +204,7 @@ def test_a_member_grade_keeps_its_own_route_model(
 
     monkeypatch.setattr(
         route_runtime,
-        "active_route_for",
+        "effective_active_route_for",
         lambda label: SimpleNamespace(model_id=PLUS_ROUTE_MODEL_ID),
     )
     adapter = _RecordingAdapter()
@@ -225,7 +225,7 @@ def test_an_unknown_grade_is_still_refused(
     import app.central_model_route_runtime as route_runtime
 
     monkeypatch.setattr(
-        route_runtime, "active_route_for", lambda label: None
+        route_runtime, "effective_active_route_for", lambda label: None
     )
     adapter = _RecordingAdapter()
     admin_store = _AdminStore()
@@ -249,7 +249,7 @@ def test_the_browser_cannot_grant_itself_a_model(
     import app.central_model_route_runtime as route_runtime
 
     monkeypatch.setattr(
-        route_runtime, "active_route_for", lambda label: None
+        route_runtime, "effective_active_route_for", lambda label: None
     )
     adapter = _RecordingAdapter()
     admin_store = _AdminStore()

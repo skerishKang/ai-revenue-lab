@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import os
+from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
@@ -46,6 +47,28 @@ def registry() -> dict:
     from app.pilot.model_registry_file import read_registry
 
     return read_registry()
+
+
+@contextmanager
+def process_catalog_restored():
+    """Put every process-wide registry global back after a suite switches.
+
+    A document switch changes two things: the cached snapshot plus installed
+    catalog, and the accumulated platform Provider table ``install_models``
+    fills by registration. Restoring only the environment leaves both answering
+    the test document, so a suite that runs later reads identities it never
+    declared (#7241 3b).
+    """
+    from app.pilot import model_registry_file, platform_secrets
+
+    providers = dict(platform_secrets._PLATFORM_PROVIDERS)
+    try:
+        yield
+    finally:
+        platform_secrets._PLATFORM_PROVIDERS.clear()
+        platform_secrets._PLATFORM_PROVIDERS.update(providers)
+        model_registry_file._PRIVATE_SNAPSHOT = None
+        model_registry_file.install_models()
 
 
 def model_rows() -> list[dict]:
@@ -308,6 +331,83 @@ def timeout_log_allowlist_excluding() -> list[str]:
     return keep
 
 
+def specialized_timeout_logger():
+    """The log entry point that carries this Provider's own timeout phase contract.
+
+    The module names its function after the Provider it filters — a deployment
+    identity — so the callable is selected structurally: the one ``log_*_timeout``
+    function whose name carries the allow-listed Provider (#7241 3b).
+    """
+    import importlib
+    import pkgutil
+
+    import app.pilot as pilot_package
+
+    provider = specialized_timeout_log_provider()
+    for info in pkgutil.iter_modules(pilot_package.__path__):
+        module = importlib.import_module(f"{pilot_package.__name__}.{info.name}")
+        for name, value in vars(module).items():
+            if (callable(value) and name.startswith("log_")
+                    and name.endswith("_timeout") and provider in name):
+                return value
+    raise AssertionError("no specialized timeout logger for the selected Provider")
+
+
+def _native_wire_adapter():
+    """The one adapter that declares a native wire family, selected structurally.
+
+    The adapter's own ``*_WIRE_FAMILY`` constant is what makes it the native
+    (method-style) wire; selecting on that constant keeps the module name and
+    the Provider id — both deployment identities — out of the test (#7241 3b).
+    """
+    found = []
+    for provider_id, module in adapter_modules().items():
+        if any(
+            name.endswith("WIRE_FAMILY") and isinstance(value, str) and value
+            for name, value in vars(module).items()
+        ):
+            found.append((provider_id, module))
+    assert len(found) == 1, (
+        "expected exactly one adapter to declare a native wire family"
+    )
+    return found[0]
+
+
+def native_wire_owner() -> str:
+    """The Provider id the native (method-style) wire adapter itself serves."""
+    provider_id, _module = _native_wire_adapter()
+    return provider_id
+
+
+def native_wire_origin() -> str:
+    """The origin the native wire adapter requires its route to be served from."""
+    _provider_id, module = _native_wire_adapter()
+    for name, value in vars(module).items():
+        if name.endswith("BASE_ORIGIN") and isinstance(value, str) and value:
+            return value
+    raise AssertionError("the native wire adapter declares no base origin")
+
+
+def adapter_constants(provider_id: str, *suffixes: str) -> dict[str, str]:
+    """The string constants a Provider's own adapter declares, by suffix.
+
+    A suite that drives one Provider's wire has to know that Provider's fixed
+    origin, host, binding NAME and identities, but every one of them is a
+    deployment value. The adapter module is the authority, so the suite reads
+    them off it instead of writing them (#7241 3b).
+    """
+    module = adapter_for(provider_id)
+    found: dict[str, str] = {}
+    for suffix in suffixes:
+        for name, value in vars(module).items():
+            if name.endswith(suffix) and isinstance(value, str) and value:
+                found[suffix] = value
+                break
+        else:
+            raise AssertionError(f"the selected adapter declares no {suffix} constant")
+    return found
+
+
 def provider_ids_excluding(markers: tuple[str, ...]) -> list[str]:
     """Registry Provider ids that carry none of ``markers`` in their identity."""
     out = [
@@ -321,3 +421,29 @@ def provider_ids_excluding(markers: tuple[str, ...]) -> list[str]:
 def provider_rows() -> list[dict]:
     """Every Provider row of the effective document."""
     return list(registry()["providers"].values())
+
+
+def owner_document_present() -> bool:
+    """Whether the effective registry document carries owner rows (#7241 3b).
+
+    The repository ships a schema-shaped placeholder now, so a test process that
+    names no owner document reads placeholder-only rows. Suites whose subject is
+    a served lane (a Provider that only the owner document registers) cannot run
+    there; they skip as a module instead of failing at import.
+    """
+    models = registry().get("models") or []
+    if not models:
+        return False
+    return not all(str(row.get("id", "")).startswith("example-") for row in models)
+
+
+def require_owner_document(*, reason: str = "") -> None:
+    """Skip the calling module when no owner registry document is in effect."""
+    import pytest
+
+    if owner_document_present():
+        return
+    pytest.skip(
+        reason or "no owner registry document is in effect (placeholder fixture)",
+        allow_module_level=True,
+    )

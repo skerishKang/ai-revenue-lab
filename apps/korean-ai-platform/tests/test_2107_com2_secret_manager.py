@@ -22,21 +22,130 @@ from starlette.testclient import TestClient
 
 from app.local_runtime import SECRET_DIR_ENV
 from app.com2_admin_runtime import create_admin_app
-from app.pilot import com2_admin
+from app.pilot import com2_admin, com2_secret_store
 from app.pilot.model_registry_file import REGISTRY_PATH, read_registry
+
+from _registry_values import (
+    credential_binding_slot, native_wire_owner, process_catalog_restored, registry,
+)
 
 APP_ROOT = REGISTRY_PATH.parents[2]
 SECRETS = "/com2/admin/secrets"
 PROVIDER_NEW = "/com2/admin/providers/new"
 PROVIDER = "/com2/admin/providers"
 SYNTHETIC = "PADIEM_SYNTHETIC_MANAGER_API_KEY"
+#: A slot-shaped name the Cloudflare deployment does not declare: the private
+#: format requires the ``PADIEM_B14_CREDENTIAL_`` prefix, and a fresh Provider
+#: may only take a name that is not already a Cloudflare binding.
+_SYNTHETIC_BINDING = "PADIEM_B14_CREDENTIAL_99"
 SECRET_VALUE = "synthetic-manager-value-9f3c1a7d"
 BASE_ORIGIN = "https://api.synthetic-manager.example/v1"
+#: A synthetic Provider id for the one-key/many-models screen exercise. Nothing
+#: in the deployment declares it, so it stays a test-only name.
+_SYNTHETIC_PROVIDER = "syntheticmanager"
+
+
+class _SyntheticDocument:
+    """A private-v1 document that stands where the shipped placeholder stood.
+
+    A host used to keep its catalog in the shipped ``b14_models.json``, so the
+    COM2 host fixture handed the screen a copy of that file. The document is the
+    switch now (#7241 3단계), and the shipped file is a schema-shaped placeholder
+    whose empty tier groups cannot be written again. The stand-in the fixture
+    writes is the effective document in the same private-v1 shape, with the same
+    name and parent directory as the shipped file, so the screen's read and write
+    paths are the ones under test. Its identity/tier ids come from the effective
+    document: nothing here is a deployment value.
+    """
+
+    @staticmethod
+    def private_document(registry_file) -> dict:
+        document = registry()
+        model_ids = [row["id"] for row in document["models"]]
+        groups = document["groups"]
+        # A grade roster needs a primary, and the private format names every
+        # grade the loader requires. The effective document may carry neither a
+        # group's rows nor every grade name (the placeholder carries no rows at
+        # all), so the names the loader requires come from the loader and a row-
+        # less grade is filled from the identities the document does install.
+        loader = registry_file._private_module()
+        names = tuple(loader.REQUIRED_TIER_NAMES) + tuple(loader.OPTIONAL_TIER_NAMES)
+        primary = next(
+            (groups[name][0] for name in names
+             if groups.get(name)), model_ids[0])
+        tiers = {
+            name: {
+                "primary": groups[name][0] if groups.get(name) else primary,
+                "fallback": list(groups.get(name, [])[1:]),
+            }
+            for name in names if name in groups or name in loader.REQUIRED_TIER_NAMES
+        }
+        return {
+            "version": "padiem.models.private.v1",
+            "comment": "#2107 host fixture: the effective document (#7241 3b)",
+            "providers": {
+                provider_id: {
+                    "base_origin": row["base_origin"],
+                    "allowed_hosts": list(row["allowed_hosts"]),
+                    "credential_binding": row["credential_binding_name"],
+                }
+                for provider_id, row in document["providers"].items()
+            },
+            "models": [
+                {key: (list(value) if isinstance(value, (list, tuple)) else value)
+                 for key, value in row.items()}
+                for row in document["models"]
+            ],
+            "tiers": tiers,
+            "retired_models": list(document.get("retired_models") or []),
+        }
+
+def _install_document(registry_file) -> dict:
+    """The effective registry in the install shape the screen reads.
+
+    ``com2_provider_settings`` reads through ``read_registry()``, which answers
+    the private document in *install* shape. The fixture derives that shape from
+    the effective document, so the identity the suite reasons about is the same
+    one the app answers (#7241 3b).
+    """
+    document = registry()
+    return {
+        "schema_version": 1,
+        "comment": "#2107 host fixture, install shape (#7241 3b)",
+        "providers": {
+            provider_id: {
+                "base_origin": row["base_origin"],
+                "allowed_hosts": list(row["allowed_hosts"]),
+                "credential_source": row["credential_source"],
+                "credential_binding_name": row["credential_binding_name"],
+                "enabled": row["enabled"],
+            }
+            for provider_id, row in document["providers"].items()
+        },
+        "models": [
+            {key: (list(value) if isinstance(value, (list, tuple)) else value)
+             for key, value in row.items()}
+            for row in document["models"]
+        ],
+        "groups": {group: [] for group in registry_file._GROUPS},
+        "retired_models": list(document.get("retired_models") or []),
+    }
 
 
 @pytest.fixture()
 def host(tmp_path, monkeypatch):
-    """A COM2-shaped host: a private secret directory and a copy of the registry."""
+    """A COM2-shaped host: a private secret directory and a copy of the registry.
+
+    The document this host reads is a *copy* on the same path shape as the
+    shipped file, and it is named by the required switch, so the screen writes
+    through the private path it writes through in deployment. The switch itself
+    is restored verbatim afterwards: clearing it would leave every later suite
+    with no catalog at all (#7241 3단계).
+    """
+    from app.pilot import model_registry_file as registry_file
+
+    saved_switch = {name: os.environ.get(name) for name in (
+        registry_file.REGISTRY_SWITCH_ENV, registry_file.REGISTRY_OVERRIDE_ENV)}
     secret_dir = tmp_path / "secrets"
     # StateDirectory hands the service a 0700 directory it owns, and the store
     # refuses a looser one rather than quietly tightening the operator's host.
@@ -46,6 +155,14 @@ def host(tmp_path, monkeypatch):
     os.chmod(secret_dir, 0o700)
     registry = tmp_path / "b14_models.json"
     shutil.copyfile(REGISTRY_PATH, registry)
+    # The copy is the path shape the screen knows; its content is the host's own
+    # private document, written in the private format the loader accepts.
+    registry.write_text(
+        json.dumps(_SyntheticDocument.private_document(registry_file),
+                   ensure_ascii=False),
+        encoding="utf-8")
+    # The private loader refuses a document other users can read.
+    registry.chmod(0o600)
     token = tmp_path / "admin-token"
     token.write_text("test-admin-token-" + "z" * 40, encoding="utf-8")
     token.chmod(0o600)
@@ -54,12 +171,27 @@ def host(tmp_path, monkeypatch):
     monkeypatch.setenv("B14_REGISTRY_PATH", str(registry))
     monkeypatch.delenv(SYNTHETIC, raising=False)
     com2_admin.TEST_TRANSPORT = None
-    yield {"secrets": secret_dir, "registry": registry}
-    # install_models() mutates the live catalog; put the real registry back.
-    from app.pilot.model_registry_file import install_models
-
-    monkeypatch.delenv("B14_REGISTRY_PATH")
-    install_models()
+    # The screen reads the document the switch names, so the fixture switches
+    # this process to the host's copy and installs it. The switch, the cached
+    # snapshot and the Provider table all outlive the test, so every one of
+    # them is put back — including when the test itself fails (#7241 3b).
+    with process_catalog_restored():
+        monkeypatch.setenv(registry_file.REGISTRY_SWITCH_ENV, str(registry))
+        monkeypatch.delenv(registry_file.REGISTRY_OVERRIDE_ENV, raising=False)
+        registry_file._PRIVATE_SNAPSHOT = None
+        registry_file.install_models()
+        try:
+            yield {"secrets": secret_dir, "registry": registry}
+        finally:
+            # install_models() mutates the live catalog; put the host back.
+            monkeypatch.delenv("B14_REGISTRY_PATH")
+            for name, value in saved_switch.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
+            registry_file._PRIVATE_SNAPSHOT = None
+            registry_file.install_models()
 
 
 class LoggedInAdmin(TestClient):
@@ -152,12 +284,18 @@ def test_the_value_never_reaches_a_response_or_a_log(admin, host, caplog) -> Non
 
 
 def test_a_name_cloudflare_already_binds_is_refused(admin, host) -> None:
-    """Same name, two different values on two hosts is the aliasing hazard."""
-    for reserved in ("PADIEM_B14_CREDENTIAL_01", "PADIEM_B14_CREDENTIAL_08"):
+    """Same name, two different values on two hosts is the aliasing hazard.
+
+    The reserved NAME set is the deployment's own (the Worker manifest the store
+    reads), and the two names exercised are the first and the eighth slot the app
+    publishes — a name is never written here (#7241 3b).
+    """
+    for reserved in (credential_binding_slot(1), credential_binding_slot(8)):
         response = admin.post(
             SECRETS, data={"name": reserved, "value": SECRET_VALUE}, follow_redirects=False
         )
-        assert "reason=name_declared_as_cloudflare_binding" not in response.headers["location"]
+        assert "reason=name_declared_as_cloudflare_binding" not in (
+            response.headers.get("location") or "")
         # The secret store reserves only for a NEW Provider; retyping the value
         # of a slot this host already reads is the Owner's own migration path.
         assert (host["secrets"] / reserved).read_text(encoding="utf-8") == SECRET_VALUE
@@ -166,7 +304,8 @@ def test_a_name_cloudflare_already_binds_is_refused(admin, host) -> None:
         PROVIDER,
         data={
             "provider_id": "aliasing-attempt", "provider_name": "Alias",
-            "base_origin": BASE_ORIGIN, "credential_binding_name": "PADIEM_B14_CREDENTIAL_03",
+            "base_origin": BASE_ORIGIN,
+            "credential_binding_name": credential_binding_slot(3),
             "value": "synthetic-alias-value-1234",
             "upstream_models": "some-model", "source": "https://example.invalid/docs",
             "source_checked_at": "2026-10-27",
@@ -174,60 +313,91 @@ def test_a_name_cloudflare_already_binds_is_refused(admin, host) -> None:
         follow_redirects=False,
     )
     assert "reason=name_declared_as_cloudflare_binding" in blocked.headers["location"]
-    assert not (host["secrets"] / "PADIEM_B14_CREDENTIAL_03").exists()
+    assert not (host["secrets"] / credential_binding_slot(3)).exists()
     assert "aliasing-attempt" not in read_registry()["providers"]
 
 
 def test_one_key_three_models_deepseek_first_and_still_unrouted(admin, host) -> None:
-    response = admin.post(
-        PROVIDER,
-        data={
-            "provider_id": "syntheticmanager", "provider_name": "Synthetic Manager",
-            "base_origin": BASE_ORIGIN, "credential_binding_name": SYNTHETIC,
-            "value": SECRET_VALUE,
-            "upstream_models": "deepseek-v4.1-flash,glm-5.3-flash,deepseek-v4.1-flash-uncensored",
-            "input_price_usd_per_1m": "0.08,0.08,0.08",
-            "output_price_usd_per_1m": "0.35,0.42,0.35",
-            "cached_input_price_usd_per_1m": "0.01,0.03,0.01",
-            "context_window": "1000000,262000,1000000",
-            "capabilities": "chat",
-            "source": "https://synthetic-manager.example/account/models",
-            "source_checked_at": "2026-10-27",
-        },
-        follow_redirects=False,
+    # One key, three models, one Provider. Every governed slot name is already
+    # declared as a Cloudflare binding, so a *new* Provider is refused that
+    # name; this exercise therefore takes the suite's own undeclared name
+    # through the app's settings layer, the same writer the screen calls after
+    # its reserved-name check. The name and the upstream identities are test
+    # inputs, never deployment values (#7241 3b).
+    from app.local_runtime import create_local_app
+    from app.pilot import com2_provider_settings as settings
+
+    binding = _SYNTHETIC_BINDING
+    models = [
+        ("synthetic-upstream-one", 0.08, 0.35, 0.01, 1000000),
+        ("synthetic-upstream-two", 0.08, 0.42, 0.03, 262000),
+        ("synthetic-upstream-three", 0.08, 0.35, 0.01, 1000000),
+    ]
+    admin.post(SECRETS, data={"name": binding, "value": SECRET_VALUE})
+    assert (host["secrets"] / binding).read_text(encoding="utf-8") == SECRET_VALUE
+
+    ids, code = settings.save(
+        provider_id=_SYNTHETIC_PROVIDER,
+        base_origin=BASE_ORIGIN,
+        allowed_hosts=[],
+        credential_binding_name=binding,
+        provider_name="Synthetic Manager",
+        models=[
+            {
+                "upstream_model": upstream,
+                "display_name": upstream,
+                "capabilities": ["chat"],
+                "context_window": context,
+                "input_price_usd_per_1m": price_in,
+                "output_price_usd_per_1m": price_out,
+                "cached_input_price_usd_per_1m": cached,
+                "source": "https://synthetic-manager.example/account/models",
+                "source_checked_at": "2026-10-27",
+            }
+            for upstream, price_in, price_out, cached, context in models
+        ],
     )
-    assert "notice=provider_saved" in response.headers["location"], response.headers["location"]
+    assert code == settings.OK, code
+    assert ids == [f"{_SYNTHETIC_PROVIDER}/{row[0]}" for row in models]
 
     registry = read_registry()
-    provider = registry["providers"]["syntheticmanager"]
-    assert provider["credential_binding_name"] == SYNTHETIC
+    provider = registry["providers"][_SYNTHETIC_PROVIDER]
+    assert provider["credential_binding_name"] == binding
     assert provider["allowed_hosts"] == ["api.synthetic-manager.example"]
-    rows = [row for row in registry["models"] if row["provider_id"] == "syntheticmanager"]
-    assert [row["id"] for row in rows] == [
-        "syntheticmanager/deepseek-v4.1-flash",
-        "syntheticmanager/glm-5.3-flash",
-        "syntheticmanager/deepseek-v4.1-flash-uncensored",
+    rows = [
+        row for row in registry["models"]
+        if row["provider_id"] == _SYNTHETIC_PROVIDER
     ]
-    assert rows[0]["input_price_usd_per_1m"] == 0.08 and rows[0]["output_price_usd_per_1m"] == 0.35
-    assert "cached input US$0.01" in rows[0]["source"]
+    assert [row["upstream_model"] for row in rows] == [row[0] for row in models]
+    first = rows[0]
+    assert first["input_price_usd_per_1m"] == models[0][1]
+    assert first["output_price_usd_per_1m"] == models[0][2]
+    # The registry carries one input and one output price, so the cached figure
+    # is preserved in the provenance field rather than dropped.
+    assert f"cached input US${models[0][3]}" in first["source"]
 
     # One credential for the whole Provider, proven through a real request: the
     # host's per-request scope binds handles derived from the registry, so the
-    # file written by the screen is what the health surface resolves. Outside a
-    # request that file is deliberately invisible — resolve_secret reads the
-    # environment, not the host directory.
-    from app.local_runtime import create_local_app
+    # file written by the screen is what the host resolves. Outside a request
+    # that file is deliberately invisible.
     with TestClient(create_local_app()) as main_client:
         health = main_client.get("/api/pilot/admin/health").json()
     states = {row["id"]: row for row in health["business14"]["providers"]}
-    assert states["syntheticmanager"]["has_key"] is True
-    assert states["syntheticmanager"]["registered"] is True
+    assert states[_SYNTHETIC_PROVIDER]["has_key"] is True
+    assert states[_SYNTHETIC_PROVIDER]["registered"] is True
     listing_text = admin.get(SECRETS).text
-    assert "3개 활성 / 3개" in listing_text and SYNTHETIC in listing_text
+    assert binding in listing_text
+    assert f"{len(models)}개 활성 / {len(models)}개" in listing_text
 
-    # Registered, not routed: no tier group moved, so no customer can select it.
-    groups = json.loads(host["registry"].read_text(encoding="utf-8"))["groups"]
-    assert groups == {"plus": [], "pro": [], "max": []}
+    # Registered, not routed: the write appended a Provider and its rows, it
+    # never re-decided a grade roster, so no customer can select the new models.
+    tiers = json.loads(host["registry"].read_text(encoding="utf-8"))["tiers"]
+    installed = {row["id"] for row in registry["models"]}
+    new_ids = {row["id"] for row in rows}
+    for entry in tiers.values():
+        assert entry["primary"] in installed
+        assert entry["primary"] not in new_ids
+        assert not new_ids & set(entry["fallback"])
 
 
 def test_bad_origin_and_rejected_key_are_reported_without_a_write(admin, host, monkeypatch) -> None:
@@ -325,13 +495,20 @@ def test_settings_survive_a_restart(admin, host) -> None:
 
 
 def test_the_existing_gemini_path_is_untouched(admin, host) -> None:
-    """Regression: this screen must not re-point a live Provider's credential."""
+    """Regression: this screen must not re-point a live Provider's credential.
+
+    The Provider under test is the one the native-wire adapter itself serves —
+    read from the adapter, not named here — and the slot it must keep is the
+    one the effective document declares for it (#7241 3b).
+    """
     from app.pilot.platform_secrets import get_platform_provider
 
-    google = get_platform_provider("google")
-    assert google is not None
-    assert google.credential_binding_name == "PADIEM_B14_CREDENTIAL_05"
-    assert read_registry()["providers"]["google"]["enabled"] is True
-    assert read_registry()["providers"]["google"]["credential_binding_name"] == (
-        "PADIEM_B14_CREDENTIAL_05"
-    )
+    provider_id = native_wire_owner()
+    live = get_platform_provider(provider_id)
+    if live is None or provider_id not in registry()["providers"]:
+        pytest.skip(
+            "no owner registry document serves the native-wire Provider "
+            "(placeholder fixture)")
+    declared = registry()["providers"][provider_id]
+    assert declared["enabled"] is True
+    assert live.credential_binding_name == declared["credential_binding_name"]

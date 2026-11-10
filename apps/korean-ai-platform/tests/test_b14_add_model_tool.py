@@ -14,7 +14,6 @@ import sys
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = APP_ROOT.parents[1]
-REGISTRY = APP_ROOT / "app" / "pilot" / "b14_models.json"
 
 _SPEC = importlib.util.spec_from_file_location("b14_add_model_tool", REPO_ROOT / "tools" / "b14" / "add_model.py")
 assert _SPEC is not None and _SPEC.loader is not None
@@ -22,12 +21,67 @@ tool = importlib.util.module_from_spec(_SPEC)
 sys.modules[_SPEC.name] = tool
 _SPEC.loader.exec_module(tool)
 
+import pytest  # noqa: E402
+
 from _registry_values import (  # noqa: E402
     adapter_modules,
     model_ids,
     registry,
+    require_owner_document,
     requires_owner_document,
 )
+
+# The tool's own subject is an augmented copy of the document this host reads:
+# the shipped file is a schema-shaped placeholder now, so a probe of an existing
+# Provider and the append against a copy are owner-document facts. A host that
+# reads no owner document skips the module (#7241 3b) rather than probing a
+# placeholder row as if it were a served lane. ``--create-provider`` needs no
+# existing row, but it is the same subject, so it rides the same guard.
+require_owner_document()
+
+
+@pytest.fixture(scope="module")
+def REGISTRY(tmp_path_factory):  # noqa: N802 - read as the registry file the tests reason about
+    """The document the tool reads: the effective one, in the tool's install shape.
+
+    ``add_model.py`` reads through ``read_registry()``, which on a switched host
+    answers the private document (+ overlay) rather than a repository file. The
+    file a test hands the tool is therefore that same effective document written
+    as an install document — path, provider rows and model rows all derived from
+    the authority, never written here (#7241 3b).
+    """
+    from app.pilot import model_registry_file as registry_file
+
+    document = registry()
+    install = {
+        "schema_version": 1,
+        "comment": "effective registry, install shape (#7241 3b)",
+        "providers": {
+            provider_id: {
+                "base_origin": row["base_origin"],
+                "allowed_hosts": list(row["allowed_hosts"]),
+                "credential_source": row["credential_source"],
+                "credential_binding_name": row["credential_binding_name"],
+                "enabled": row["enabled"],
+            }
+            for provider_id, row in document["providers"].items()
+        },
+        # The private document's rows are the same columns the install document
+        # carries, so the rows a test hands the tool are the rows it reads.
+        "models": [
+            {key: (list(value) if isinstance(value, (list, tuple)) else value)
+             for key, value in row.items()}
+            for row in document["models"]
+        ],
+        "groups": {group: [] for group in registry_file._GROUPS},
+        "retired_models": list(document.get("retired_models") or []),
+    }
+    # The tool refuses a document this validator refuses, so the fixture proves
+    # the precondition once instead of letting a probe fail on it later.
+    registry_file.validate_registry(install)
+    target = tmp_path_factory.mktemp("add-model") / Path(tool.REGISTRY).name
+    target.write_text(json.dumps(install, ensure_ascii=False), encoding="utf-8")
+    return target
 
 
 def _provider_with_a_model() -> str:
@@ -132,7 +186,7 @@ def _run(argv):
 
 
 @requires_owner_document
-def test_offline_probe_passes_and_emits_one_append_only_row(capsys):
+def test_offline_probe_passes_and_emits_one_append_only_row(capsys, REGISTRY):
     before = json.loads(REGISTRY.read_text(encoding="utf-8"))
     code = _run([*OFFLINE_ARGS, "--probe-only"])
     assert code == 0
@@ -156,7 +210,7 @@ def test_offline_probe_passes_and_emits_one_append_only_row(capsys):
 
 
 @requires_owner_document
-def test_offline_row_is_exactly_the_canonical_candidate(capsys):
+def test_offline_row_is_exactly_the_canonical_candidate(capsys, REGISTRY):
     before = json.loads(REGISTRY.read_text(encoding="utf-8"))
     code = _run(OFFLINE_ARGS)
     assert code == 0
@@ -172,7 +226,7 @@ def test_offline_row_is_exactly_the_canonical_candidate(capsys):
 
 
 @requires_owner_document
-def test_write_appends_one_row_to_a_copied_registry(monkeypatch, tmp_path, capsys):
+def test_write_appends_one_row_to_a_copied_registry(monkeypatch, tmp_path, capsys, REGISTRY):
     copied = tmp_path / "b14_models.json"
     copied.write_text(REGISTRY.read_text(encoding="utf-8"), encoding="utf-8")
     monkeypatch.setattr(tool, "REGISTRY", copied)
@@ -188,7 +242,8 @@ def test_write_appends_one_row_to_a_copied_registry(monkeypatch, tmp_path, capsy
 
 
 @requires_owner_document
-def test_offline_probe_needs_no_real_key_and_sends_bearer_shape(capsys, monkeypatch):
+def test_offline_probe_needs_no_real_key_and_sends_bearer_shape(
+        capsys, monkeypatch, REGISTRY):
     monkeypatch.delenv(EXISTING_BINDING, raising=False)
     code = _run([*OFFLINE_ARGS, "--probe-only"])
     assert code == 0
@@ -197,7 +252,7 @@ def test_offline_probe_needs_no_real_key_and_sends_bearer_shape(capsys, monkeypa
     assert "authorization" in report["request_headers"]
 
 
-def test_new_provider_probe_and_row_require_explicit_provider_metadata(capsys):
+def test_new_provider_probe_and_row_require_explicit_provider_metadata(capsys, REGISTRY):
     code = _run([*NEW_PROVIDER_ARGS, "--probe-only"])
     assert code == 0
     report = json.loads(capsys.readouterr().out)
@@ -210,7 +265,8 @@ def test_new_provider_probe_and_row_require_explicit_provider_metadata(capsys):
 
 
 @requires_owner_document
-def test_new_provider_row_with_extra_headers_is_registered_validated(monkeypatch, tmp_path, capsys):
+def test_new_provider_row_with_extra_headers_is_registered_validated(
+        monkeypatch, tmp_path, capsys, REGISTRY):
     copied = tmp_path / "b14_models.json"
     copied.write_text(REGISTRY.read_text(encoding="utf-8"), encoding="utf-8")
     monkeypatch.setattr(tool, "REGISTRY", copied)
@@ -274,7 +330,8 @@ def test_model_id_must_belong_to_the_provider(capsys):
 
 
 @requires_owner_document
-def test_duplicate_model_id_is_refused_and_registry_untouched(monkeypatch, tmp_path, capsys):
+def test_duplicate_model_id_is_refused_and_registry_untouched(
+        monkeypatch, tmp_path, capsys, REGISTRY):
     copied = tmp_path / "b14_models.json"
     copied.write_text(REGISTRY.read_text(encoding="utf-8"), encoding="utf-8")
     monkeypatch.setattr(tool, "REGISTRY", copied)

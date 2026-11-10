@@ -25,7 +25,14 @@ from app import b14_client
 from app.b14_client import B14Client
 from app.config import Settings
 from app.model_policy import DEFAULT_B14_MODEL_ID
-from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
+from padiem_control_plane.product_tier_routes_private import (
+    effective_active_route_for,
+    free_fallback_model_id,
+    free_lane_model_ids,
+    free_primary_model_id,
+    paid_primary_model_id,
+    tier_fallback_rosters,
+)
 
 USER_MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 
@@ -91,7 +98,7 @@ async def test_the_completed_chat_path_sends_the_free_grade_primary():
     await client.complete(USER_MESSAGES)
 
     _url, payload = service.calls[0]
-    assert payload["model"] == FREE_PRIMARY_B14_MODEL_ID
+    assert payload["model"] == free_primary_model_id()
     assert payload["model"] == DEFAULT_B14_MODEL_ID
 
 
@@ -172,7 +179,7 @@ async def test_every_chat_dispatch_surface_leaves_the_attempt_budget_to_b14(
         "_resolve_b62_policy",
         lambda messages, **kwargs: SimpleNamespace(
             profile="free",
-            model_id=FREE_PRIMARY_B14_MODEL_ID,
+            model_id=free_primary_model_id(),
             messages=messages,
         ),
     )
@@ -201,7 +208,7 @@ async def test_every_chat_dispatch_surface_leaves_the_attempt_budget_to_b14(
     preview_events = [
         event
         async for event in stream_client.stream_text_preview(
-            USER_MESSAGES, model=FREE_PRIMARY_B14_MODEL_ID
+            USER_MESSAGES, model=free_primary_model_id()
         )
     ]
 

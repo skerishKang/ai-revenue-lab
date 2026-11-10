@@ -8,7 +8,14 @@ import asyncio
 from types import SimpleNamespace
 import pytest
 from app import b14_client
-from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
+from padiem_control_plane.product_tier_routes_private import (
+    effective_active_route_for,
+    free_fallback_model_id,
+    free_lane_model_ids,
+    free_primary_model_id,
+    paid_primary_model_id,
+    tier_fallback_rosters,
+)
 
 TIERS = [("free","free"),("low","plus"),("medium","pro"),("high","max")]
 
@@ -20,7 +27,7 @@ def test_completed_chat_propagates_owner_tier(monkeypatch, profile, expected_tie
     monkeypatch.setattr(
         b14_client, "_resolve_b62_policy",
         lambda messages, **kwargs: SimpleNamespace(
-            profile=profile, model_id=FREE_PRIMARY_B14_MODEL_ID, messages=messages
+            profile=profile, model_id=free_primary_model_id(), messages=messages
         ),
     )
     seen=[]
@@ -32,7 +39,7 @@ def test_completed_chat_propagates_owner_tier(monkeypatch, profile, expected_tie
     assert out["answer"]=="ok"
     assert len(seen)==1
     assert seen[0]["product_tier"]==expected_tier
-    assert seen[0]["model"]==FREE_PRIMARY_B14_MODEL_ID
+    assert seen[0]["model"]==free_primary_model_id()
 
 @pytest.mark.parametrize("profile,expected_tier",TIERS)
 def test_streamed_chat_propagates_identical_owner_tier(monkeypatch,profile,expected_tier):
@@ -42,7 +49,7 @@ def test_streamed_chat_propagates_identical_owner_tier(monkeypatch,profile,expec
     monkeypatch.setattr(
         b14_client, "_resolve_b62_policy",
         lambda messages, **kwargs: SimpleNamespace(
-            profile=profile, model_id=FREE_PRIMARY_B14_MODEL_ID, messages=messages
+            profile=profile, model_id=free_primary_model_id(), messages=messages
         ),
     )
     seen=[]

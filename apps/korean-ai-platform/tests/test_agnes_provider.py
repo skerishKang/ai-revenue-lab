@@ -27,7 +27,13 @@ from app.pilot.errors import PilotNotConfigured
 from app.pilot.platform import call_platform_chat_completions, stream_platform_chat_completions
 from app.pilot.platform_secrets import get_platform_provider
 
-from _registry_values import chat_wire_tail
+from _registry_values import (
+    chat_wire_tail, credential_binding_slot, registry, require_owner_document,
+)
+
+# This Provider is a lane only the owner's registry document registers, so the
+# whole module's subject is absent under the placeholder fixture (#7241 3단계).
+require_owner_document()
 
 #: The wire the adapter's own URL table appends to this Provider's fixed origin.
 #: Reading it back keeps the address composed rather than written (#7241 3a).
@@ -50,7 +56,7 @@ def test_agnes_registration_is_exact_and_not_permanently_free():
     assert spec.base_origin == AGNES_BASE_ORIGIN
     assert spec.allowed_hosts == (AGNES_ALLOWED_HOST,)
     assert spec.credential_source.value == "platform_secret"
-    assert spec.credential_binding_name == AGNES_CREDENTIAL_BINDING == "PADIEM_B14_CREDENTIAL_01"
+    assert spec.credential_binding_name == AGNES_CREDENTIAL_BINDING == credential_binding_slot(1)
 
     model = get_catalog_by_id(AGNES_MODEL_ID)
     assert model is not None
@@ -125,7 +131,16 @@ async def test_agnes_missing_secret_fails_closed_with_zero_upstream_calls(monkey
 def test_agnes_credential_is_isolated_from_other_providers(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.delenv(AGNES_CREDENTIAL_BINDING, raising=False)
-    monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sensenova-only-1234567890abcdef0123")
+    # Another Provider's slot, read from the document: a key on a sibling lane
+    # must never make this one ready.
+    other_binding = next(
+        entry["credential_binding_name"]
+        for provider_id, entry in registry()["providers"].items()
+        if provider_id != AGNES_PROVIDER_ID
+        and entry["credential_source"] == "platform_secret"
+        and entry["credential_binding_name"]
+    )
+    monkeypatch.setenv(other_binding, "unrelated-provider-key-1234567890abcdef")
 
     with TestClient(create_app()) as client:
         response = client.get("/api/pilot/provider-readiness")
@@ -184,7 +199,9 @@ async def test_agnes_streaming_contract_via_generic_adapter(monkeypatch):
     monkeypatch.setenv(AGNES_CREDENTIAL_BINDING, secret)
 
     payload = (
-        b'data: {"id":"a1","model":"agnes-3.0-flash","choices":[{"delta":{"content":"ok"},"finish_reason":"stop"}]}\n\n'
+        b'data: {"id":"a1","model":"'
+        + AGNES_UPSTREAM_MODEL.encode("utf-8")
+        + b'","choices":[{"delta":{"content":"ok"},"finish_reason":"stop"}]}\n\n'
         b"data: [DONE]\n\n"
     )
 
