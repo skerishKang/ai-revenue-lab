@@ -77,6 +77,11 @@ from app.pilot.stream_types import (
     StreamUsage,
 )
 from app.pilot.platform import stream_platform_chat_completions
+from app.pilot.prestream_retry import (
+    PRESTREAM_RETRY_DELAY_SECONDS,
+    PRESTREAM_RETRY_LIMIT,
+    is_prestream_retryable,
+)
 from app.pilot.user_credential import has_credential
 from app.pilot import router_core as rcore
 from app.pilot.stream_error_contract import public_stream_error
@@ -445,6 +450,7 @@ async def _finalize_stream_ledger(
     thought_summary_count: int | None = None,
     thought_summary_chars: int | None = None,
     wire_protocol: str | None = None,
+    retry_index: int = 0,
 ) -> None:
     """Close one streamed attempt and append its ledger row.
 
@@ -466,7 +472,7 @@ async def _finalize_stream_ledger(
         upstream_model=candidate.get("upstream_model"), route_id=candidate.get("route_id"),
         outcome=outcome, error_code=error_code, elapsed_ms=elapsed, usage=usage,
         finish_reason=finish_reason, actual_response_model=response_model,
-        timeout_reason=timeout_reason, protocol=protocol,
+        timeout_reason=timeout_reason, protocol=protocol, retry_index=retry_index,
         # thought-summary stream: the ledger stores whether thinking summaries
         # arrived and their volume (fragment count, character length) — never
         # the thought text itself.
@@ -514,6 +520,7 @@ async def _stream_body(
     attempt_started: float | None = None,
     tools_declared: bool = False,
     chain_deadline: float | None = None,
+    retry_index: int = 0,
 ) -> AsyncIterator[bytes]:
     """Emit the primed events; after the first visible event, never switch routes."""
     # #5318: the stream lane is where TTFT is observable at all. First visible
@@ -629,6 +636,7 @@ async def _stream_body(
                     thought_summary_count=thought_summary_count or None,
                     thought_summary_chars=thought_summary_chars or None,
                     wire_protocol=wire_protocol,
+                    retry_index=retry_index,
                 )
             except Exception as ledger_exc:
                 skipped(request_id, ledger_exc)
@@ -875,6 +883,10 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
         # A declared tool decides which Google wire family serves the request,
         # so the ledger needs it before it knows who answered.
         tools_declared = bool(body.get("tools"))
+        # #6724: every physical dispatch, a same-route retry included. The
+        # streamed answer's metadata reports what actually ran, not the index
+        # of the candidate that happened to answer.
+        physical_attempts = 0
         # #5318: the streaming lane is the only place TTFT can be measured, and
         # it is also where a pre-token fallback can hide a failed provider. The
         # draft stays open across candidates so both survive into one record.
@@ -929,173 +941,206 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                 "route_id": attempt_decision.selected_route_id,
                 "platform_provider_id": platform_provider_id,
             }
-            dispatched = False
-            attempt_started = time.perf_counter()
-            remaining_chain = chain_deadline - time.monotonic()
-            if remaining_chain <= 0:
-                timeout_error = UpstreamTimeout(timeout_reason="chain_budget")
-                if ledger is not None:
-                    try:
-                        ledger.record_attempt(
-                            provider=provider, model_id=selected_model,
-                            upstream_model=upstream_model,
-                            route_id=attempt_candidate["route_id"],
-                            outcome=OUTCOME_ERROR, error_code=timeout_error.code,
-                            timeout_reason="chain_budget", dispatched=False,
-                            protocol=_protocol_for(platform_provider_id, upstream_model,
-                                                   tools_declared=tools_declared),
-                        )
-                    except Exception as ledger_exc:
-                        ledger = None
-                        skipped(request_id, ledger_exc)
-                raise timeout_error
-            attempt_timeout = min(timeout_policy.attempt_seconds, remaining_chain)
-            chain_limits_attempt = remaining_chain <= timeout_policy.attempt_seconds
+            # #6724: one retry inside this candidate when the attempt failed
+            # before a single answer byte was selected. Staying inside the
+            # candidate is what keeps the retry on the same model and route.
+            retry_index = 0
+            while True:
+                dispatched = False
+                attempt_started = time.perf_counter()
+                physical_attempts += 1
+                remaining_chain = chain_deadline - time.monotonic()
+                if remaining_chain <= 0:
+                    timeout_error = UpstreamTimeout(timeout_reason="chain_budget")
+                    if ledger is not None:
+                        try:
+                            ledger.record_attempt(
+                                provider=provider, model_id=selected_model,
+                                upstream_model=upstream_model,
+                                route_id=attempt_candidate["route_id"],
+                                outcome=OUTCOME_ERROR, error_code=timeout_error.code,
+                                timeout_reason="chain_budget", dispatched=False,
+                                retry_index=retry_index,
+                                protocol=_protocol_for(platform_provider_id, upstream_model,
+                                                       tools_declared=tools_declared),
+                            )
+                        except Exception as ledger_exc:
+                            ledger = None
+                            skipped(request_id, ledger_exc)
+                    raise timeout_error
+                attempt_timeout = min(timeout_policy.attempt_seconds, remaining_chain)
+                chain_limits_attempt = remaining_chain <= timeout_policy.attempt_seconds
 
-            if tools_declared:
-                # #4727: a fallback candidate is a different provider wire, so
-                # the adapter check runs again for the model that will answer.
-                # A candidate refused here never reached a provider, and the
-                # ledger keeps that distinction.
-                from .tool_channel import require_stream_tool_wire
+                if tools_declared:
+                    # #4727: a fallback candidate is a different provider wire, so
+                    # the adapter check runs again for the model that will answer.
+                    # A candidate refused here never reached a provider, and the
+                    # ledger keeps that distinction.
+                    from .tool_channel import require_stream_tool_wire
+                    try:
+                        require_stream_tool_wire(selected_model, platform_provider_id)
+                    except PilotError as exc:
+                        if ledger is not None:
+                            try:
+                                ledger.record_attempt(
+                                    provider=provider, model_id=selected_model,
+                                    upstream_model=upstream_model,
+                                    route_id=attempt_candidate["route_id"], outcome="error",
+                                    error_code=exc.code, dispatched=False,
+                                    protocol=_protocol_for(platform_provider_id,
+                                                           upstream_model,
+                                                           tools_declared=tools_declared),
+                                )
+                            except Exception as ledger_exc:
+                                ledger = None
+                                skipped(request_id, ledger_exc)
+                        raise
+
+                iterator = stream_platform_chat_completions(
+                    model_id=selected_model,
+                    upstream_model=upstream_model,
+                    provider=provider,
+                    platform_provider_id=platform_provider_id,
+                    messages=body["messages"],
+                    temperature=body.get("temperature"),
+                    max_tokens=body.get("max_tokens"),
+                    **({"model_parameters": body["model_parameters"]}
+                       if body.get("model_parameters") else {}),
+                    **({"tools": body["tools"], "tool_choice": body.get("tool_choice")}
+                       if body.get("tools") else {}),
+                    transport=transport,
+                )
+
+                initial_events: list[StreamEvent] = []
                 try:
-                    require_stream_tool_wire(selected_model, platform_provider_id)
+                    # Buffer only pre-visible events. A recoverable provider failure
+                    # before the first nonblank token may retry this same route once,
+                    # then try the next owner-tier candidate. Once a visible token is
+                    # selected, this route is final.
+                    dispatched = True
+                    try:
+                        async with _first_token_attempt_scope(
+                            attempt_timeout,
+                            final_completed=attempt_index == len(attempt_candidates) - 1,
+                        ):
+                            while True:
+                                try:
+                                    event = await anext(iterator)
+                                except StopAsyncIteration as exc:
+                                    raise MalformedUpstreamResponse() from exc
+                                initial_events.append(event)
+                                if event.done or event.tool_call is not None or (
+                                    isinstance(event.delta_content, str)
+                                    and bool(event.delta_content.strip())
+                                ):
+                                    break
+                                # thought-summary stream: a thinking-summary
+                                # fragment is a first byte. Waiting for answer
+                                # text here would let the 15-second first-byte
+                                # timeout fire while the model is still thinking.
+                                if (
+                                    isinstance(event.delta_thought, str)
+                                    and bool(event.delta_thought.strip())
+                                ):
+                                    break
+                    except TimeoutError as exc:
+                        timeout_reason = (
+                            "chain_budget" if chain_limits_attempt else "attempt_total"
+                        )
+                        raise UpstreamTimeout(timeout_reason=timeout_reason) from exc
                 except PilotError as exc:
+                    from .opencode_go_wire import log_go_vendor_error
+                    log_go_vendor_error(
+                        logger, exc, request_id=request_id,
+                        request_path=request.url.path, attempt=physical_attempts,
+                        fallback=attempt_index > 0,
+                    )
+                    # #5318: the attempt that just failed is the fact a fallback
+                    # would otherwise erase. It is written whether or not this
+                    # failure is retried on the next candidate.
                     if ledger is not None:
                         try:
                             ledger.record_attempt(
                                 provider=provider, model_id=selected_model,
                                 upstream_model=upstream_model,
                                 route_id=attempt_candidate["route_id"], outcome="error",
-                                error_code=exc.code, dispatched=False,
-                                protocol=_protocol_for(platform_provider_id,
-                                                       upstream_model,
-                                                       tools_declared=tools_declared),
+                                http_status=getattr(exc, "upstream_status", None),
+                                error_code=exc.code,
+                                retry_index=retry_index,
+                                timeout_reason=getattr(exc, "timeout_reason", None),
+                                elapsed_ms=int((time.perf_counter() - attempt_started) * 1000),
+                                usage=next((_usage_dict(event.usage)
+                                            for event in reversed(initial_events)
+                                            if event.usage is not None), None),
+                                finish_reason=next((event.finish_reason
+                                                    for event in reversed(initial_events)
+                                                    if event.finish_reason), None),
+                                dispatched=dispatched,
+                                protocol=getattr(exc, "wire_protocol", None) or _protocol_for(
+                                    platform_provider_id, upstream_model, tools_declared=tools_declared),
                             )
                         except Exception as ledger_exc:
                             ledger = None
                             skipped(request_id, ledger_exc)
+                    await _close_iterator(iterator)
+                    # #6724: no answer byte was selected yet, so a connect
+                    # failure, an upstream 5xx or an error-envelope first frame
+                    # may be dispatched once more on this same route. The chain
+                    # budget still has to cover the wait.
+                    if (
+                        retry_index < PRESTREAM_RETRY_LIMIT
+                        and is_prestream_retryable(exc)
+                        # #6724: retry only the attempt with no successor left.
+                        # A candidate that still has an owner-roster candidate
+                        # behind it keeps #4317's one-call-per-candidate walk.
+                        and attempt_index == len(attempt_candidates) - 1
+                        and chain_deadline - time.monotonic() > PRESTREAM_RETRY_DELAY_SECONDS
+                    ):
+                        retry_index += 1
+                        logger.warning(
+                            "stream_preview_pre_start_retry request_id=%s attempt=%d code=%s delay_s=%.1f",
+                            request_id,
+                            physical_attempts,
+                            exc.code,
+                            PRESTREAM_RETRY_DELAY_SECONDS,
+                        )
+                        await asyncio.sleep(PRESTREAM_RETRY_DELAY_SECONDS)
+                        continue
+                    if (
+                        attempt_index + 1 < len(attempt_candidates)
+                        and rcore.is_error_fallback_allowed(exc.code, reason=getattr(exc, "reason", None))
+                    ):
+                        logger.warning(
+                            "stream_preview_pre_start_fallback request_id=%s attempt=%d code=%s",
+                            request_id,
+                            attempt_index + 1,
+                            exc.code,
+                        )
+                        break
                     raise
 
-            iterator = stream_platform_chat_completions(
-                model_id=selected_model,
-                upstream_model=upstream_model,
-                provider=provider,
-                platform_provider_id=platform_provider_id,
-                messages=body["messages"],
-                temperature=body.get("temperature"),
-                max_tokens=body.get("max_tokens"),
-                **({"model_parameters": body["model_parameters"]}
-                   if body.get("model_parameters") else {}),
-                **({"tools": body["tools"], "tool_choice": body.get("tool_choice")}
-                   if body.get("tools") else {}),
-                transport=transport,
-            )
-
-            initial_events: list[StreamEvent] = []
-            try:
-                # Buffer only pre-visible events. A recoverable provider failure
-                # before the first nonblank token may try the next owner-tier
-                # candidate. Once a visible token is selected, this route is final.
-                dispatched = True
-                try:
-                    async with _first_token_attempt_scope(
-                        attempt_timeout,
-                        final_completed=attempt_index == len(attempt_candidates) - 1,
-                    ):
-                        while True:
-                            try:
-                                event = await anext(iterator)
-                            except StopAsyncIteration as exc:
-                                raise MalformedUpstreamResponse() from exc
-                            initial_events.append(event)
-                            if event.done or event.tool_call is not None or (
-                                isinstance(event.delta_content, str)
-                                and bool(event.delta_content.strip())
-                            ):
-                                break
-                            # thought-summary stream: a thinking-summary
-                            # fragment is a first byte. Waiting for answer
-                            # text here would let the 15-second first-byte
-                            # timeout fire while the model is still thinking.
-                            if (
-                                isinstance(event.delta_thought, str)
-                                and bool(event.delta_thought.strip())
-                            ):
-                                break
-                except TimeoutError as exc:
-                    timeout_reason = (
-                        "chain_budget" if chain_limits_attempt else "attempt_total"
-                    )
-                    raise UpstreamTimeout(timeout_reason=timeout_reason) from exc
-            except PilotError as exc:
-                from .opencode_go_wire import log_go_vendor_error
-                log_go_vendor_error(
-                    logger, exc, request_id=request_id,
-                    request_path=request.url.path, attempt=attempt_index + 1,
-                    fallback=attempt_index > 0,
+                return StreamingResponse(
+                    _stream_body(
+                        iterator,
+                        initial_events,
+                        request_id=request_id,
+                        decision=attempt_decision,
+                        attempt_count=physical_attempts,
+                        fallback_used=attempt_index > 0,
+                        ledger=ledger,
+                        candidate=attempt_candidate,
+                        attempt_started=attempt_started,
+                        tools_declared=tools_declared,
+                        chain_deadline=chain_deadline,
+                        retry_index=retry_index,
+                    ),
+                    status_code=200,
+                    media_type="text/event-stream",
+                    headers={
+                        "Cache-Control": "no-cache, no-store",
+                        "X-Accel-Buffering": "no",
+                    },
                 )
-                # #5318: the attempt that just failed is the fact a fallback
-                # would otherwise erase. It is written whether or not this
-                # failure is retried on the next candidate.
-                if ledger is not None:
-                    try:
-                        ledger.record_attempt(
-                            provider=provider, model_id=selected_model,
-                            upstream_model=upstream_model,
-                            route_id=attempt_candidate["route_id"], outcome="error",
-                            http_status=getattr(exc, "upstream_status", None),
-                            error_code=exc.code,
-                            timeout_reason=getattr(exc, "timeout_reason", None),
-                            elapsed_ms=int((time.perf_counter() - attempt_started) * 1000),
-                            usage=next((_usage_dict(event.usage)
-                                        for event in reversed(initial_events)
-                                        if event.usage is not None), None),
-                            finish_reason=next((event.finish_reason
-                                                for event in reversed(initial_events)
-                                                if event.finish_reason), None),
-                            dispatched=dispatched,
-                            protocol=getattr(exc, "wire_protocol", None) or _protocol_for(
-                                platform_provider_id, upstream_model, tools_declared=tools_declared),
-                        )
-                    except Exception as ledger_exc:
-                        ledger = None
-                        skipped(request_id, ledger_exc)
-                await _close_iterator(iterator)
-                if (
-                    attempt_index + 1 < len(attempt_candidates)
-                    and rcore.is_error_fallback_allowed(exc.code, reason=getattr(exc, "reason", None))
-                ):
-                    logger.warning(
-                        "stream_preview_pre_start_fallback request_id=%s attempt=%d code=%s",
-                        request_id,
-                        attempt_index + 1,
-                        exc.code,
-                    )
-                    continue
-                raise
-
-            return StreamingResponse(
-                _stream_body(
-                    iterator,
-                    initial_events,
-                    request_id=request_id,
-                    decision=attempt_decision,
-                    attempt_count=attempt_index + 1,
-                    fallback_used=attempt_index > 0,
-                    ledger=ledger,
-                    candidate=attempt_candidate,
-                    attempt_started=attempt_started,
-                    tools_declared=tools_declared,
-                    chain_deadline=chain_deadline,
-                ),
-                status_code=200,
-                media_type="text/event-stream",
-                headers={
-                    "Cache-Control": "no-cache, no-store",
-                    "X-Accel-Buffering": "no",
-                },
-            )
 
         raise MalformedUpstreamResponse()
 

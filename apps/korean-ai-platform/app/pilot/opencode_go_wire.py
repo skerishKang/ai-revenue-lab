@@ -18,6 +18,7 @@ from typing import Any, AsyncIterator
 
 import httpx
 
+from .provider_timeout_diagnostics import timeout_phase_of
 from .b14_timeout_policy import (
     ProviderAttemptTimeout,
     build_provider_http_timeout,
@@ -629,7 +630,9 @@ async def call_go_model(*, model_id: str, upstream_model: str,
     except ProviderAttemptTimeout as exc:
         raise UpstreamTimeout(timeout_reason=exc.reason) from exc
     except httpx.TimeoutException as e:
-        raise UpstreamTimeout(timeout_reason="first_byte") from e
+        raise UpstreamTimeout(
+            timeout_reason="first_byte", timeout_phase=timeout_phase_of(e),
+        ) from e
     except httpx.RequestError as e:
         raise UpstreamServerError() from e
 
@@ -996,7 +999,9 @@ async def stream_go_model(*, model_id: str, upstream_model: str,
     except ProviderAttemptTimeout as exc:
         raise UpstreamTimeout(timeout_reason=exc.reason) from exc
     except httpx.TimeoutException as e:
-        raise UpstreamTimeout(timeout_reason="first_byte") from e
+        raise UpstreamTimeout(
+            timeout_reason="first_byte", timeout_phase=timeout_phase_of(e),
+        ) from e
     except httpx.RequestError as e:
         raise UpstreamServerError() from e
     if not saw_end:
