@@ -51,6 +51,7 @@ from typing import Any, Awaitable, Callable, MutableMapping
 from starlette.responses import JSONResponse
 
 from .auth import SESSION_COOKIE, decode_session_claims, sidless_session_cutoff_passed
+from .config import session_user_row_check_enabled
 from .request_timing import measure
 
 # The request-state key that carries the resolved verdict.  ``request.state``
@@ -263,7 +264,8 @@ class SessionRevocationGuardMiddleware:
                         canonical_session_id=None,
                         reason="user_row_missing",
                     )
-            elif str(getattr(settings, "runtime_mode", "")).strip().lower() == "b14":
+            elif (str(getattr(settings, "runtime_mode", "")).strip().lower() == "b14"
+                    and session_user_row_check_enabled(settings)):
                 return SessionVerdict(
                     authenticated=False,
                     user_id=claims.user_id,

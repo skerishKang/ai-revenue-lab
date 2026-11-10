@@ -438,6 +438,7 @@ def test_production_mode_fails_the_start_when_the_store_does_not_declare():
         session_secret=SESSION_SECRET,
         session_max_age_seconds=3600,
         b14_base_url="http://127.0.0.1:8789",
+        session_user_row_check=True,
     )
     with pytest.raises(RuntimeError, match="user_row_exists"):
         create_app(settings, history_store=_CapabilitylessStore())
@@ -454,6 +455,7 @@ def test_production_mode_boots_with_the_real_store_shape():
         session_secret=SESSION_SECRET,
         session_max_age_seconds=3600,
         b14_base_url="http://127.0.0.1:8789",
+        session_user_row_check=True,
     )
     app = create_app(settings, history_store=D1HistoryStore(D1Sqlite(setup_database())))
     assert app.state.history_store is not None
@@ -481,6 +483,7 @@ async def test_production_mode_guard_refuses_compatibility_cookies_without_the_c
         session_secret=SESSION_SECRET,
         session_max_age_seconds=3600,
         b14_base_url="http://127.0.0.1:8789",
+        session_user_row_check=True,
     )
     app = SimpleNamespace(state=SimpleNamespace(
         settings=settings,

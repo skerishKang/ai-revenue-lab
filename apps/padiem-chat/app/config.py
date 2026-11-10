@@ -73,6 +73,34 @@ def _strict_bool(value: object, *, name: str) -> bool:
     raise ConfigError(f"{name} must be true or false")
 
 
+def session_user_row_check_enabled(settings: "Settings") -> bool:
+    """Whether the audit H2 compatibility-cookie enforcement is on.
+
+    ``None`` (the unset default) follows PADIEM_CHAT_SESSION_USER_ROW_CHECK,
+    whose absence keeps the enforcement on; an explicit ``False`` on the
+    settings object — the test suite's own switch — turns it off.
+    """
+
+    value = getattr(settings, "session_user_row_check", None)
+    if value is not None:
+        return bool(value)
+    return _env_session_user_row_check()
+
+
+def _env_session_user_row_check() -> bool:
+    """Unset keeps the audit H2 enforcement on; an explicit value wins.
+
+    The test suite turns the enforcement off with an explicit ``false`` in its
+    own conftest, so a partial store double is never read as an account
+    deletion.
+    """
+
+    raw = os.getenv("PADIEM_CHAT_SESSION_USER_ROW_CHECK")
+    if raw is None or not str(raw).strip():
+        return True
+    return _strict_bool(raw, name="PADIEM_CHAT_SESSION_USER_ROW_CHECK")
+
+
 def _optional_secret(value: object, *, name: str, minimum: int = 32) -> str | None:
     raw = "" if value is None else str(value).strip()
     if not raw:
@@ -176,6 +204,13 @@ class Settings:
     # calls Chat's internal /internal/password-verify. The internal RPC stays
     # available either way; nothing changes until a deployment opts in.
     email_login_via_shared: bool = False
+    # Internal audit H2 (2026-11-10): the request-time guard refuses a
+    # compatibility cookie (no canonical session id) whose user row no longer
+    # exists, and a production composition fails the start when its history
+    # store cannot answer that check. Unset defaults to enforced; test suites
+    # with partial store doubles turn it off explicitly
+    # (PADIEM_CHAT_SESSION_USER_ROW_CHECK=0).
+    session_user_row_check: bool | None = None
 
     @classmethod
     def from_values(
@@ -228,6 +263,7 @@ class Settings:
         voice_rpc_secret: object = None,
         # #7078 step 3: appended last; default OFF keeps today's behavior.
         email_login_via_shared: object = None,
+        session_user_row_check: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -504,6 +540,14 @@ class Settings:
                 if email_login_via_shared is not None
                 else False
             ),
+            session_user_row_check=(
+                _strict_bool(
+                    session_user_row_check,
+                    name="PADIEM_CHAT_SESSION_USER_ROW_CHECK",
+                )
+                if session_user_row_check is not None
+                else _env_session_user_row_check()
+            ),
         )
 
     @classmethod
@@ -562,6 +606,7 @@ class Settings:
             mcp_pc_shell_enabled=os.getenv("PADIEM_MCP_PC_SHELL_ENABLED"),
             mcp_pc_shell_user_mode_enabled=os.getenv("PADIEM_MCP_PC_SHELL_USER_MODE"),
             email_login_via_shared=os.getenv("PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED"),
+            session_user_row_check=os.getenv("PADIEM_CHAT_SESSION_USER_ROW_CHECK"),
             lovetree_account_delete_url=os.getenv("PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL"),
             account_delete_rpc_secret=os.getenv("PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET"),
             password_rpc_secret=os.getenv("PADIEM_CHAT_PASSWORD_RPC_SECRET"),
