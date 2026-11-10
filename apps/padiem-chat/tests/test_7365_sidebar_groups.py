@@ -66,6 +66,39 @@ def test_sidebar_groups_render_in_the_owner_decided_order() -> None:
     assert 'class="home-link"' in bottom
 
 
+def test_the_util_row_uses_a_pictograph_icon_like_its_peers() -> None:
+    html = _html()
+    # #7365 후속(CTO 261111): the util row reads like the other tool rows —
+    # a geometric pictograph, never a letter.
+    util_button = html.split('id="utilNavButton"', 1)[1].split("</button>", 1)[0]
+    assert ">▣<" in util_button
+    assert ">U<" not in util_button
+
+
+def test_settings_is_a_first_class_account_menu_entry_for_guests_too() -> None:
+    html = _html()
+    bottom = html.split('class="sidebar-bottom"', 1)[1].split("</div>", 1)[0]
+    # The settings entry carries no hidden attribute: guests and signed-in
+    # accounts both see it beside 앱 연결 · 사용 안내 · 약관.
+    settings_tag = bottom.split('id="settingsButton"', 1)[0].split("<button", 1)[-1]
+    assert " hidden" not in settings_tag
+
+
+def test_guests_see_the_materials_group_honestly_empty() -> None:
+    app = APP_PATH.read_text(encoding="utf-8")
+    auth = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
+    # A signed-out (guest) account keeps the projects section visible with its
+    # empty-state note instead of hiding the whole group.
+    clear_block = app.split("function clearProjectsUI()", 1)[1].split("renderProjectState();", 1)[0]
+    assert "projectsSection.hidden = false;" in clear_block
+    assert "projectsEmpty.hidden = false;" in clear_block
+    # The guest fallthrough shows the history section and its empty note
+    # without fetching (no failure rows for an empty account).
+    guest_block = auth.split('deps.accountName.textContent = deps.uiT("guest");', 1)[1]
+    assert "deps.historySection.hidden = false;" in guest_block
+    assert "deps.historyEmpty.hidden = false;" in guest_block
+
+
 def test_the_tools_group_names_itself_for_screen_readers() -> None:
     html = _html()
     assert 'data-locale-aria-label="tools-menu"' in html

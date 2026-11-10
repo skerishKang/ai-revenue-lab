@@ -178,6 +178,9 @@
         get fetchAuthStatusOnce() { return fetchAuthStatusOnce; },
         get googleLoginButton() { return googleLoginButton; },
         get hidePasswordResetViews() { return hidePasswordResetViews; },
+        get historyActionStatus() { return historyActionStatus; },
+        get historyEmpty() { return historyEmpty; },
+        get historyList() { return historyList; },
         get historySection() { return historySection; },
         get invalidateClawApprovalSession() { return invalidateClawApprovalSession; },
         get isAndroidWebView() { return isAndroidWebView; },
@@ -1160,8 +1163,12 @@
     activeProject = null;
     activeProjectFileCount = 0;
     projectsList.replaceChildren();
-    projectsSection.hidden = true;
-    projectsEmpty.hidden = true;
+    // #7365: the materials group (projects and recent conversations) stays
+    // visible even with nothing in it — the section heading and the
+    // empty-state note are the honest empty answer (a guest sees the same
+    // group a signed-in account sees).
+    projectsSection.hidden = false;
+    projectsEmpty.hidden = false;
     setProjectsListNote("");
     if (projectsNavButton) {
       projectsNavButton.disabled = true;

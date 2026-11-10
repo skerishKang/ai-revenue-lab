@@ -413,9 +413,10 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
   }
 }
 
-/* Owner first-screen cleanup: one visible account/settings row. Keep the
- * canonical settingsButton in DOM for existing auth/dialog actions. */
-.sidebar-bottom > #settingsButton { display: none !important; }
+/* Owner first-screen cleanup (#5560) hid the sidebar settings row and routed
+ * settings through the account profile panel. #7365 대표 결정(2026-11-10)
+ * makes 설정 a first-class entry of the bottom account menu again, so the
+ * hide rule is lifted (the profile panel keeps its own entry). */
 
 /* Excel source management remains in Claw. Its real file/P01 controls must
  * not appear as a tutorial or action panel on ordinary Chat home. */

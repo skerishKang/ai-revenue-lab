@@ -167,6 +167,15 @@
     deps.setLoginButtonCopy(deps.uiT("login"), deps.uiT("login-title"));
     deps.accountName.textContent = deps.uiT("guest");
     deps.accountName.hidden = false;
+    // #7365: a guest sees the same 내 자료 group, honestly empty — the
+    // section heading and the empty-state notes render without a fetch.
+    deps.historyList.replaceChildren();
+    deps.historySection.hidden = false;
+    deps.historyEmpty.hidden = false;
+    if (deps.historyActionStatus) {
+      deps.historyActionStatus.hidden = true;
+      deps.historyActionStatus.textContent = "";
+    }
   }
   function authMethodEnabled(name) {
     return Boolean(deps.authState && deps.authState.methods && deps.authState.methods[name] === true);
