@@ -40,8 +40,8 @@ def _settings(**overrides):
         runtime_mode="mock",
         auth_mode="password",
         public_base_url=BASE,
-        session_secret="7078-email-switch-session-secret-not-real",
-        password_rpc_secret="7078-email-switch-rpc-secret-not-real-0000",
+        session_secret="s" * 48,
+        password_rpc_secret="r" * 48,
         session_max_age_seconds=3600,
     )
     values.update(overrides)
