@@ -13,6 +13,7 @@ import secrets
 import time
 from urllib.parse import urlencode, urlsplit
 
+from .auth import SESSION_COOKIE
 from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
 from starlette.routing import Route
 
@@ -186,6 +187,20 @@ def clear_shared_cookies(response):
     response.delete_cookie(ACCESS_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
     response.delete_cookie(REFRESH_COOKIE, path=REFRESH_PATH, secure=True, httponly=True, samesite='lax')
     response.delete_cookie(MARKER_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
+    return response
+
+
+def clear_all_local_cookies(response):
+    """Logout-side local clearing across both credential families.
+
+    A local sign-out is owned by the browser even when a remote revocation
+    cannot be confirmed (design §7 (5)): cookies go, the response still
+    reports what happened.
+    """
+    clear_shared_cookies(response)
+    response.delete_cookie(STATE_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
+    response.delete_cookie(LOGIN_RETURN_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
+    response.delete_cookie(SESSION_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
     return response
 
 
@@ -440,6 +455,15 @@ class SharedLoginFlow(ComparisonFlow):
         headers = {'cache-control': 'no-store'}
         if request.headers.get('origin') != self.public_base_url:
             return JSONResponse({'error': 'invalid_origin'}, status_code=403, headers=headers)
+        # Best-effort: end a legacy canonical session this browser also holds.
+        # The shared flow owns no authority handle, so a failure here never
+        # blocks the local sign-out below (design §7 (5)).
+        try:
+            from .auth_routes import _revoke_canonical_session
+            await _revoke_canonical_session(request)
+        except Exception as exc:
+            print('shared_logout_result outcome=legacy_revoke_failed stage=logout code=%s' % (
+                _finish_failure_code(exc, 'logout'),), flush=True)
         old = request.cookies.get(REFRESH_COOKIE)
         if old:
             try:
@@ -458,7 +482,7 @@ class SharedLoginFlow(ComparisonFlow):
                 # the sign-out answers ok. The logged line is closed.
                 print('shared_logout_result outcome=revoke_failed stage=logout code=%s' % (
                     _finish_failure_code(exc, 'logout'),), flush=True)
-                return clear_shared_cookies(JSONResponse({'ok': True}, headers=headers))
+                return clear_all_local_cookies(JSONResponse({'ok': True}, headers=headers))
         auth = getattr(self, 'auth', None)
         try:
             invalidate = getattr(auth, 'invalidate_session', None)
@@ -474,7 +498,7 @@ class SharedLoginFlow(ComparisonFlow):
                     await cache.invalidate_all()
         except Exception:
             return JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
-        return clear_shared_cookies(JSONResponse({'ok': True}, headers=headers))
+        return clear_all_local_cookies(JSONResponse({'ok': True}, headers=headers))
 
     def login_routes(self):
         return [Route('/auth/shared/start', self.start_login, methods=['GET']),
