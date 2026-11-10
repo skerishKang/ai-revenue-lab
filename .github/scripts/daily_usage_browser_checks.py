@@ -625,6 +625,69 @@ def shared_logout_verdict(names) -> tuple[str, str, str]:
     return "PASS", "none", ""
 
 
+#: #7364: the three Google rows whose workspace truth must resolve on a
+#: shared-login session. A verified answer may be connected / not_connected /
+#: ambiguous; only "unverified" means the shadow-backed authority was not
+#: reached.
+SHARED_GOOGLE_ROWS = (
+    "connector:google:gmail@1",
+    "connector:google:drive@1",
+    "connector:google:calendar@1",
+)
+
+_SHARED_ENDPOINTS_JS = """
+async () => {
+  const out = { devices: 0, connectors: 0, rows: [] };
+  try {
+    const r = await fetch('/api/claw/local-access/devices',
+      { headers: { Accept: 'application/json' }, cache: 'no-store' });
+    out.devices = r.status;
+  } catch { out.devices = -1; }
+  try {
+    const r = await fetch('/api/connectors/status',
+      { headers: { Accept: 'application/json' }, cache: 'no-store' });
+    out.connectors = r.status;
+    if (r.status === 200) {
+      const d = await r.json();
+      const rows = Array.isArray(d && d.connectors) ? d.connectors : [];
+      out.rows = rows.map((x) => ({
+        connector_id: x && x.connector_id,
+        workspace_state: x && x.workspace_state,
+      }));
+    }
+  } catch { out.connectors = -1; }
+  return out;
+}
+"""
+
+
+def shared_endpoint_verdict(devices_status, rows) -> tuple[str, str, str]:
+    """(#7364) 공유 로그인 세션의 두 표면 판정. 값은 세지 않고 상태만 본다.
+
+    기대: devices 200, 그리고 Gmail·Drive·Calendar 세 행이 모두 존재하며
+    `workspace_state`가 `unverified`가 아님. 판정 문구에는 상태 코드·개수만
+    넣는다(세션·워크스페이스·계정 값 없음).
+    """
+    if devices_status != 200:
+        return "FAIL", "shared_devices_%s" % (devices_status,), "devices=%s" % (devices_status,)
+    by_id = {}
+    for row in rows if isinstance(rows, list) else ():
+        if isinstance(row, dict) and isinstance(row.get("connector_id"), str):
+            by_id[row["connector_id"]] = row.get("workspace_state")
+    missing = [cid for cid in SHARED_GOOGLE_ROWS if cid not in by_id]
+    unverified = [
+        cid for cid in SHARED_GOOGLE_ROWS
+        if cid in by_id and by_id[cid] == "unverified"
+    ]
+    head = "devices=200 rows=%d" % (len(by_id),)
+    if missing:
+        return "FAIL", "shared_connector_rows_missing", head
+    if unverified:
+        return "FAIL", "shared_connectors_unverified", head
+    return "PASS", "none", head
+
+
+
 # ------------------------------------------------------------------ 실행기
 _MASK_SCRIPT = """
 (username) => {
@@ -972,6 +1035,14 @@ def _run_shared_login_flow(browser, chat_url: str, out_path: Path,
         if verdict != "PASS":
             flow.fail(code)
             return
+        # #7364: the same shared-login session must resolve the PC device
+        # directory and the three workspace-backed connector rows. Recorded
+        # before the logout (the session is gone afterwards) and judged at the
+        # end so the logout stage is always exercised.
+        stage = "endpoints"
+        probe = page.evaluate(_SHARED_ENDPOINTS_JS) or {}
+        endpoint_verdict, endpoint_code, endpoint_head = shared_endpoint_verdict(
+            probe.get("devices"), probe.get("rows"))
         stage = "logout"
         _plant_legacy_session(context)
         page.evaluate(_LOGOUT_JS, SHARED_LOGOUT_PATH)
@@ -990,7 +1061,10 @@ def _run_shared_login_flow(browser, chat_url: str, out_path: Path,
             if recheck != "PASS":
                 flow.fail(recheck_code)
                 return
-            flow.head = "login=ok api=ok logout=not_deployed"
+            flow.head = "login=ok api=ok logout=not_deployed " + endpoint_head
+            if endpoint_verdict != "PASS":
+                flow.fail(endpoint_code)
+                return
             flow.skip(code)
             return
         stage = "recheck"
@@ -1000,7 +1074,10 @@ def _run_shared_login_flow(browser, chat_url: str, out_path: Path,
         if verdict != "PASS":
             flow.fail(code)
             return
-        flow.head = "login=ok api=ok logout=ok"
+        flow.head = "login=ok api=ok logout=ok " + endpoint_head
+        if endpoint_verdict != "PASS":
+            flow.fail(endpoint_code)
+            return
         flow.pass_(flow.head, "shared_login_ok")
     except Exception as exc:
         flow.fail(safe_code(f"shared_{stage}_{type(exc).__name__}"))

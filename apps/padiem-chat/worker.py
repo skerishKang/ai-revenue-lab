@@ -1208,15 +1208,13 @@ class Default(WorkerEntrypoint):
             except Exception:
                 # No provider exception, binding material or secret enters logs.
                 github_client_secret = None
-        github_store = None
-        github_provider = None
-        if (db_binding is not None and isinstance(github_client_secret, str)
-                and github_client_secret and settings.session_secret):
-            from app.github_oauth_store import D1GitHubOAuthStore
-            from app.github_oauth_provider import GitHubAppOAuthProvider
-            github_store = D1GitHubOAuthStore(db_binding, session_secret=settings.session_secret)
-            github_provider = GitHubAppOAuthProvider(client_secret=github_client_secret,
-                                                       transport=CloudflareExternalHttpTransport())
+        from app.github_oauth_composition import compose_github_oauth_ports
+        github_store, github_provider, _github_unbound_reason = compose_github_oauth_ports(
+            db=db_binding,
+            session_secret=settings.session_secret,
+            client_secret=github_client_secret,
+            provider_transport=CloudflareExternalHttpTransport(),
+        )
         # Grafana ingest remains OFF until a server-only credential
         # and validated Japan-region OTLP endpoint are provisioned.
         # No browser-controlled or prompt-controlled settings.

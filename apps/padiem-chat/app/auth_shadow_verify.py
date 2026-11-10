@@ -42,9 +42,11 @@ DENYLIST_TTL_SECONDS = 20 * 60
 EXPIRING_SOON_SECONDS = 60
 #: JWKS re-fetch cooldown on the background path (seconds).
 JWKS_REFRESH_COOLDOWN_SECONDS = 60
-#: Short HTTP timeout for background JWKS fetches (seconds). The request
-#: path itself never fetches (cached keys only, verified below).
-JWKS_FETCH_TIMEOUT_SECONDS = 3
+#: Off-path HTTP timeout for JWKS fetches (seconds). 3 s proved too tight on
+#: the COM2 host: every boot prewarm timed out (TimeoutError) and the cache
+#: stayed cold for minutes. The request path itself never fetches (cached keys
+#: only, verified below), so this bound only guards background threads.
+JWKS_FETCH_TIMEOUT_SECONDS = 10
 
 _LOCK = threading.Lock()
 _denylist: dict[str, float] = {}  # hash12(sid) or hash12(account_id) -> hold_until (epoch s)
@@ -57,6 +59,13 @@ _refresh_state: dict[str, float] = {"last_attempt": 0.0, "attempts": 0.0}
 # Background refresh threads are part of the production behaviour. Tests may
 # disable thread spawning to observe the cooldown logic deterministically.
 BACKGROUND_REFRESH_ENABLED = True
+
+#: Startup prewarm retries (off the request path). A boot-time JWKS timeout is
+#: transient (cold DNS/TLS on the host); retrying covers it without delaying
+#: the first request or touching the request path.
+PREWARM_RETRY_ATTEMPTS = 5
+PREWARM_RETRY_DELAY_SECONDS = 15
+PREWARM_RETRY_ENABLED = True
 
 
 def shadow_enabled() -> bool:
@@ -286,27 +295,64 @@ def _verify_cached_only(verifier: Any, token: Any) -> tuple[dict[str, Any] | Non
     return dict(verifier.verify(token)), ""
 
 
+def _prewarm_once() -> None:
+    verifier = _get_shadow_verifier()
+    _keys = getattr(verifier, "_keys", None)
+    if callable(_keys):
+        _keys(True)
+
+
+def _prewarm_retry_loop(attempts: int, delay: float) -> None:
+    """Retry the startup JWKS fetch off-path until it lands or the bound ends."""
+
+    for attempt in range(2, attempts + 1):
+        try:
+            time.sleep(delay)
+            _prewarm_once()
+            print("shadow_prewarm outcome=ok attempt=%d" % attempt, flush=True)
+            return
+        except Exception as exc:
+            try:
+                print(
+                    "shadow_prewarm outcome=fail attempt=%d code=%s"
+                    % (attempt, type(exc).__name__),
+                    flush=True,
+                )
+            except Exception:
+                return
+
+
 def prewarm_shadow_verifier() -> None:
     """Fetch JWKS once at startup so the first request does not pay it.
 
     Called from the host startup (off the request path) only when the
     shadow switch is ON. Any JWKS outage is swallowed and reported on one
-    journal line — the server always starts; the request path simply sees a
-    cold cache until the background refresh succeeds.
+    journal line — the server always starts. A transient boot-time timeout is
+    retried by a bounded background thread so the cache does not stay cold
+    for the whole first traffic window; the request path itself never fetches.
     """
+
     if not shadow_enabled():
         return
     try:
-        verifier = _get_shadow_verifier()
-        _keys = getattr(verifier, "_keys", None)
-        if callable(_keys):
-            _keys(True)
+        _prewarm_once()
+        print("shadow_prewarm outcome=ok attempt=1", flush=True)
     except Exception as exc:
         try:
-            print("shadow_prewarm outcome=fail code=%s" % type(exc).__name__, flush=True)
+            print(
+                "shadow_prewarm outcome=fail attempt=1 code=%s" % type(exc).__name__,
+                flush=True,
+            )
         except Exception:
             return
-        return
+        if PREWARM_RETRY_ENABLED and PREWARM_RETRY_ATTEMPTS > 1:
+            thread = threading.Thread(
+                target=_prewarm_retry_loop,
+                args=(PREWARM_RETRY_ATTEMPTS, PREWARM_RETRY_DELAY_SECONDS),
+                daemon=True,
+                name="shadow-jwks-prewarm-retry",
+            )
+            thread.start()
 
 
 # --- Shadow comparison -----------------------------------------------------

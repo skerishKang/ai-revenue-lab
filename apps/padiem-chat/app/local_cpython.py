@@ -330,21 +330,24 @@ def build_app(*, outbound_http_client: httpx.AsyncClient | None = None):
         )
         if voice_rpc_origin else None
     )
-    # The GitHub App connector ports mirror the Worker composition
-    # (worker.py): the store rides this runtime's own SQLite (the same
-    # claw_github_* tables migration 046 creates) and the provider needs only
-    # the single App client secret. Absent secret keeps today's fail-closed
-    # 503 on /api/connectors/github/* — an unconfigured lane is never a boot
-    # error, exactly like the optional pairs above.
+    # The GitHub App connector ports compose through the same shared helper
+    # the Worker uses (app/github_oauth_composition.py): one class pair and
+    # one reviewed fail-closed gate. Absent or insufficient material keeps
+    # the reviewed 503 on /api/connectors/github/* and never refuses the
+    # host at boot; no secret or length ever enters the log.
+    from .github_oauth_composition import compose_github_oauth_ports
     github_client_secret = os.getenv("PADIEM_GITHUB_APP_CLIENT_SECRET", "").strip()
-    github_oauth_store = None
-    github_oauth_provider = None
-    if github_client_secret:
-        from .github_oauth_store import D1GitHubOAuthStore
-        from .github_oauth_provider import GitHubAppOAuthProvider
-        github_oauth_store = D1GitHubOAuthStore(db, session_secret=settings.session_secret)
-        github_oauth_provider = GitHubAppOAuthProvider(client_secret=github_client_secret)
-    print("[local] github_oauth=" + ("bound" if github_oauth_store is not None else "unbound"))
+    github_oauth_store, github_oauth_provider, github_unbound_reason = (
+        compose_github_oauth_ports(
+            db=db,
+            session_secret=settings.session_secret,
+            client_secret=github_client_secret,
+        )
+    )
+    print("[local] github_oauth=" + (
+        "bound" if github_oauth_store is not None
+        else "unbound reason=" + str(github_unbound_reason)
+    ))
     identity_authority = (
         CloudflareControlPlaneIdentityAuthority(identity_binding)
         if identity_binding is not None else None

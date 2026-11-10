@@ -256,6 +256,17 @@ JWKS 재조회도 캐시 만료 시 요청 경로에서 하지 않고 기동 시
 - 확인: `/api/auth/password/login` 126회/주 → 0회, `/internal/password-verify` 유지,
   신규 이메일 로그인 성공률·잠금 정책 동일. `session_config` 수명 7일은 access 15분+refresh로 대체된다.
 
+### 단계 3 구현 메모 (2026-11-10, 기본 OFF)
+
+- 스위치: `PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED` (기본 false, `Settings.email_login_via_shared`).
+  ON이면 Chat의 `/api/auth/password/login`·`/api/auth/password/register`가 자격 확인 전에
+  409 `email_login_moved` + `login_url=/auth/shared/start`로 답한다(계정 존재 여부 비노출).
+  내측 `/internal/password-verify`·`/internal/password-register`는 그대로 열려 있다.
+- padiem-auth는 코드 변경 없이 기존 `password_login` 클라이언트 설정으로 b62 이메일 흐름을
+  받는다. 시험이 b62의 `password_login`·공유 콜백 등록을 핀으로 고정한다.
+- 켜는 순서: Chat(이 PR) 배포 → padiem-auth 재배포(`--keep-vars`) → `PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED=true`
+  → Chat 재배포. 끄는 순서: 스위치 false → Chat 재배포(직접 로그인 복귀).
+
 ## 5. 위험 목록
 
 | 위험 | 내용 | 대응 |
