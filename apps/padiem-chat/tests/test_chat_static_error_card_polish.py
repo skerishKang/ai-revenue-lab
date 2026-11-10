@@ -64,11 +64,25 @@ def test_the_error_card_retry_button_is_a_compact_secondary_control():
 
 
 def run_node(source: str) -> dict:
-    result = subprocess.run(
-        ["node", "-e", source], capture_output=True, text=True,
-        encoding="utf-8", timeout=20,
-        env={**os.environ, "TRANSPORT_MODULE": str(STATIC / "chat-transport.js")},
-    )
+    # Windows refuses a command line over ~32K characters (WinError 206), and
+    # this harness embeds the whole transport source. Write it to a temp file
+    # and let node execute the file instead of an inline -e script.
+    import tempfile
+    handle = tempfile.NamedTemporaryFile("w", suffix=".cjs", delete=False,
+                                         encoding="utf-8", newline="\n")
+    try:
+        handle.write(source)
+        handle.close()
+        result = subprocess.run(
+            ["node", handle.name], capture_output=True, text=True,
+            encoding="utf-8", timeout=20,
+            env={**os.environ, "TRANSPORT_MODULE": str(STATIC / "chat-transport.js")},
+        )
+    finally:
+        try:
+            os.unlink(handle.name)
+        except OSError:
+            pass
     assert result.returncode == 0, result.stdout + result.stderr
     return json.loads(result.stdout.strip().splitlines()[-1])
 

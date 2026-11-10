@@ -18,6 +18,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
+# R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_source
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 CAPABILITIES_JS = ROOT / "static/attachment-capabilities.js"
@@ -70,9 +73,10 @@ def test_scheduler_live_disclaimer_is_present_and_persistent() -> None:
 
 
 def test_quarantined_legacy_rule_is_rendered_as_not_runnable() -> None:
-    source = APP_JS.read_text(encoding="utf-8")
+    # R5 A1: 카탈로그 본문은 chat-automation-module.js로 이동했다.
+    source = (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
     block = source.split("--- #3237 read-only automation rule catalogue")[1]
-    block = block.split("if (clawAutomationRetry)")[0]
+    block = block.split("--- #3262 owner-gated enable/disable")[0]
     # A legacy row is marked, not silently rendered like a live rule.
     assert 'rule.background_eligible !== true' in block
     assert 'rule.authority_status !== "canonical"' in block
@@ -81,18 +85,22 @@ def test_quarantined_legacy_rule_is_rendered_as_not_runnable() -> None:
 
 
 def test_ui_reads_only_the_read_only_endpoint() -> None:
-    source = APP_JS.read_text(encoding="utf-8")
+    # R5 A1: 적재기 본문은 chat-automation-module.js로 이동했다.
+    source = (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
     assert f'fetch("{RULES_PATH}"' in source
     # The automation loader must never use a write verb.
-    loader = source.split("async function loadClawAutomationRules()")[1].split("\n  }")[0]
+    # R5 0단계(R-01): loadClawAutomationRules의 실제 정의 소스에서 잘라낸다.
+    loader_source = definition_source("loadClawAutomationRules")
+    loader = loader_source.split("async function loadClawAutomationRules()")[1].split("\n  }")[0]
     assert "method:" not in loader
     assert RULES_PATH in loader
 
 
 def test_no_rule_mutation_control_exists_in_the_ui() -> None:
-    source = APP_JS.read_text(encoding="utf-8")
+    # R5 A1: 카탈로그 본문은 chat-automation-module.js로 이동했다.
+    source = (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
     block = source.split("--- #3237 read-only automation rule catalogue")[1]
-    block = block.split("if (clawAutomationRetry)")[0]
+    block = block.split("--- #3262 owner-gated enable/disable")[0]
     # #3257 added the Create surface and #3262 the enable/disable toggle in
     # this file, after the read-only catalogue block. Their single POST/PATCH
     # verbs are governed by the dedicated create/toggle route tests and UI
@@ -306,9 +314,6 @@ sandbox.dispatchEvent = (event) => { (sessionWindowListeners[event.type] || []).
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
-// #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), sandbox, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 function collectText(root) {

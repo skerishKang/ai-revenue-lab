@@ -60,6 +60,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
+# R5 0단계(R-01): 함수 정의·본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import combined_source, definition_count, definition_source, function_body
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
@@ -116,9 +119,9 @@ def _locale_table() -> dict[str, dict[str, str]]:
 
 
 def _wait_block() -> str:
-    app = _app_source()
-    assert "── In-flight elapsed wait (#2763)" in app
-    return app.split("── In-flight elapsed wait (#2763)", 1)[1].split("function clearClawArtifact", 1)[0]
+    shipped = combined_source()
+    assert "── In-flight elapsed wait (#2763)" in shipped
+    return shipped.split("── In-flight elapsed wait (#2763)", 1)[1].split("function clearClawArtifact", 1)[0]
 
 
 # ── static structural contracts ────────────────────────────────────────────
@@ -167,10 +170,11 @@ def test_wait_is_local_elapsed_state_only() -> None:
 
 def test_exactly_one_explicit_dispatch_path_starts_the_wait() -> None:
     app = _app_source()
-    assert app.count("async function runClawExecution()") == 1
+    assert definition_count("runClawExecution") == 1
     assert app.count("beginClawWait();") == 1
-    assert app.count("function beginClawWait()") == 1
-    execute_body = app[app.index("async function runClawExecution()"):]
+    assert definition_count("beginClawWait") == 1
+    shipped = combined_source()
+    execute_body = shipped[shipped.index("async function runClawExecution()"):]
     execute_body = execute_body[: execute_body.index("if (clawExecuteButton) {")]
     # The timer starts only after the single-flight and cooldown guards, and only
     # for a payload the form actually accepted.
@@ -183,8 +187,7 @@ def test_exactly_one_explicit_dispatch_path_starts_the_wait() -> None:
     # pinning the old call-site literal.
     assert "const executePayload = clawVisibleExecutePayload();" in execute_body
     assert "const body = executePayload.content;" in execute_body
-    builder = app[app.index("function clawVisibleExecutePayload()"):]
-    builder = builder[: builder.index("\n  }")]
+    builder = function_body("clawVisibleExecutePayload")
     assert '(input.value || "").trim()' in builder
 
 
@@ -194,10 +197,13 @@ def test_wait_timer_lifecycle_is_closed() -> None:
     # finally, home reset, auth loss, and #3237 automation navigation. Every Claw
     # view switch must drop the timer so a late completion can never resurrect a
     # cleared wait.
-    assert app.count("function clearClawWait()") == 1
+    assert definition_count("clearClawWait") == 1
     session = (APP_JS.parent / "claw-session.js").read_text(encoding="utf-8")
     conv = (APP_JS.parent / "chat-conversation-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5a
-    assert app.count("clearClawWait();") + conv.count("clearClawWait();") + session.count("clearWait();") == 5
+    # R5 A1: openClawAutomation 본문(deps.clearClawWait();)이 자동화 모듈로 이동했다.
+    automation_module = (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
+    assert (app.count("clearClawWait();") + automation_module.count("clearClawWait();")
+            + conv.count("clearClawWait();") + session.count("clearWait();") == 5)
     assert app.count("clearWait: clearClawWait") == 1
     finally_block = app[app.index("    } finally {\n      // The owning request always tears its wait timer down"):]
     finally_block = finally_block[: finally_block.index("setClawButtonsBusy(false);")]
@@ -209,12 +215,14 @@ def test_wait_timer_lifecycle_is_closed() -> None:
     assert "clearWait();" in auth
     # #3237: the read-only automation view is a Claw view too, so leaving it
     # must also tear the wait timer down.
-    automation = app[app.index("function openClawAutomation()"):]
+    shipped = combined_source()
+    automation = shipped[shipped.index("function openClawAutomation()"):]
     automation = automation[: automation.index("if (automationNavButton)")]
     assert "clearClawWait();" in automation
     # Teardown only ever stops: it cannot start a timer, so a late completion
     # cannot resurrect a cleared wait.
-    teardown = app[app.index("function clearClawWait()"):]
+    clear_wait_source = definition_source("clearClawWait")
+    teardown = clear_wait_source[clear_wait_source.index("function clearClawWait()"):]
     teardown = teardown[: teardown.index("function ", 10)]
     assert "setInterval" not in teardown
     assert "beginClawWait" not in teardown
@@ -606,9 +614,6 @@ vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(pro
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
 // #7216 R5 step 5a: showConversation & friends live in the conversation module now;
-// load it ahead of app.js exactly like index.html does.
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), sandbox, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ type }));

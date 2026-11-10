@@ -91,9 +91,10 @@ def test_toggle_control_meets_touch_and_focus_contract() -> None:
 
 
 def test_patch_payload_is_exactly_the_enabled_boolean() -> None:
-    js = _app_source()
+    # R5 A1: 토글 본문은 chat-automation-module.js로 이동했다.
+    js = (ROOT / "static" / "chat-automation-module.js").read_text(encoding="utf-8")
     toggle_block = js.split("#3262 owner-gated enable/disable", 1)[1].split(
-        "#3257 Web Automation Create", 1
+        "function mountAutomationView", 1
     )[0]
     assert 'method: "PATCH"' in toggle_block
     assert "/enabled" in toggle_block
@@ -104,7 +105,10 @@ def test_patch_payload_is_exactly_the_enabled_boolean() -> None:
 
 
 def test_toggle_never_claims_live_execution() -> None:
-    js = _app_source()
+    # R5 A1: 부재 검사 대상에 이동된 두 모듈을 합쳐 같은 강도를 유지한다.
+    js = (_app_source()
+          + (ROOT / "static" / "chat-automation-module.js").read_text(encoding="utf-8")
+          + (ROOT / "static" / "chat-automation-form-module.js").read_text(encoding="utf-8"))
     html = _html_source()
     locale = LOCALE_JS.read_text(encoding="utf-8")
     for overclaim in (
@@ -122,9 +126,10 @@ def test_toggle_never_claims_live_execution() -> None:
 
 
 def test_toggle_button_only_for_canonical_rows() -> None:
-    js = _app_source()
+    # R5 A1: 토글 본문은 chat-automation-module.js로 이동했다.
+    js = (ROOT / "static" / "chat-automation-module.js").read_text(encoding="utf-8")
     toggle_block = js.split("#3262 owner-gated enable/disable", 1)[1].split(
-        "#3257 Web Automation Create", 1
+        "function mountAutomationView", 1
     )[0]
     assert "legacy_quarantined" not in toggle_block
     # The append itself lives in the canonical branch of the row renderer.
@@ -364,9 +369,6 @@ sandbox.dispatchEvent = sandbox.dispatchEvent || (() => true);
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
-// #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), sandbox, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 const tick = (ms) => new Promise((r) => setTimeout(r, ms || 0));

@@ -11,10 +11,16 @@ invent its own check.
 
 Contract
 --------
-* Scope: ``POST``/``PUT``/``PATCH``/``DELETE`` requests that carry the
-  ``padiem_session`` cookie. A request with no session cookie carries no
-  ambient browser authority, so it is not a CSRF subject here — it continues to
-  the route and keeps its existing auth error semantics (401 etc.).
+* Scope: ``POST``/``PUT``/``PATCH``/``DELETE`` requests that carry any
+  authentication cookie family — the legacy ``padiem_session`` cookie or the
+  common-login access/refresh/marker trio (see ``app.shared_login_flow``).
+  Every family grants the same ambient browser authority on the same routes
+  (``SharedSessionMiddleware`` authenticates common-login requests without a
+  ``padiem_session`` cookie), so a request holding only the common-login
+  cookies is equally a CSRF subject. A request with no authentication cookie
+  carries no ambient browser authority, so it is not a CSRF subject here — it
+  continues to the route and keeps its existing auth error semantics (401
+  etc.).
 * Expected origin derives **only** from reviewed server configuration
   (``Settings.public_base_url``); the request's own ``Host``/``Origin`` is
   never used to build the expectation.
@@ -82,8 +88,19 @@ from starlette.responses import JSONResponse
 from .auth import SESSION_COOKIE
 from .claw_local_task_result_routes import CLAW_LOCAL_TASK_RESULT_PATH
 from .config import LOCAL_DEV_LOOPBACK_HOSTS
+from .shared_login_flow import ACCESS_COOKIE, MARKER_COOKIE, REFRESH_COOKIE
 
 MUTATING_METHODS = frozenset({"POST", "PUT", "PATCH", "DELETE"})
+
+# Cookie families that carry ambient browser authority on this app's browser
+# routes. The legacy session cookie and the common-login access/refresh/marker
+# trio authenticate the same mutations (the shared session middleware resolves
+# the identity from the access cookie alone), so the guard keys on any of
+# them. Flow-only cookies (OAuth state, login-return) are deliberately absent:
+# they carry no authority.
+AUTHORITY_COOKIE_NAMES: frozenset[str] = frozenset(
+    {SESSION_COOKIE, ACCESS_COOKIE, REFRESH_COOKIE, MARKER_COOKIE}
+)
 
 # Public error vocabulary (bounded; contains no configuration or secret data).
 ORIGIN_REJECTED_CODE = "origin_rejected"
@@ -231,10 +248,10 @@ def _header(scope: MutableMapping[str, Any], name: bytes) -> str | None:
     return None
 
 
-def _carries_session_cookie(cookie_header: str) -> bool:
+def _carries_authority_cookie(cookie_header: str) -> bool:
     for part in cookie_header.split(";"):
-        name, _, _value = part.partition("=")
-        if name.strip() == SESSION_COOKIE:
+        name = part.partition("=")[0].strip()
+        if name in AUTHORITY_COOKIE_NAMES:
             return True
     return False
 
@@ -275,9 +292,10 @@ class SameOriginGuardMiddleware:
             # Classes C/D: explicit server-to-server / protocol exemptions.
             return None
         cookie_header = _header(scope, b"cookie")
-        if cookie_header is None or not _carries_session_cookie(cookie_header):
-            # Not cookie-authenticated: no ambient browser authority to abuse;
-            # the route keeps its existing auth error semantics untouched.
+        if cookie_header is None or not _carries_authority_cookie(cookie_header):
+            # No authentication cookie family: no ambient browser authority to
+            # abuse; the route keeps its existing auth error semantics
+            # untouched.
             return None
 
         app = scope.get("app")
@@ -388,6 +406,7 @@ class SameOriginGuardMiddleware:
 
 
 __all__ = [
+    "AUTHORITY_COOKIE_NAMES",
     "JSON_CONTENT_TYPE_REQUIRED_CODE",
     "MUTATING_METHODS",
     "ORIGIN_GUARD_UNAVAILABLE_CODE",

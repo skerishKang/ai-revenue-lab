@@ -166,3 +166,17 @@ def test_probe_carries_no_privileged_or_entitlement_material() -> None:
         "secret",
     ):
         assert forbidden not in payload, forbidden
+
+def test_the_smoke_accepts_only_the_reviewed_fail_closed_rejections() -> None:
+    """2026-11-11 Cloudflare B14 Worker retirement (Refs #7400): without the
+    B14_SERVICE binding the unscoped request is refused one step earlier, at
+    the B14 lane resolution. The smoke accepts exactly the two reviewed
+    fail-closed 503 rejections and still fails on everything else."""
+    source = SMOKE_PATH.read_text(encoding="utf-8")
+    assert 'accepted_rejections = ("entitlement_unavailable", "b14_service_unavailable")' in source
+    assert "status != 503 or code not in accepted_rejections" in source
+    # The rejection verdict itself is never weakened.
+    assert "FAIL_UNEXPECTED_VERDICT" in source
+    # The zero-dispatch and no-live-proof attestations stay on the PASS path.
+    assert "REAL_PROVIDER_CALLS=0" in source
+    assert "AUTHENTICATED_USER_LIVE_PROOF=NOT_CLAIMED" in source

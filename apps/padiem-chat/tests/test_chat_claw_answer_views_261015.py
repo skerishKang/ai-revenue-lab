@@ -9,6 +9,9 @@ dialog/panel logic, endpoints and auth gates.
 import re
 from pathlib import Path
 
+# R5 0단계(R-01): 함수 선언은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_source
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
 
 
@@ -109,9 +112,9 @@ def test_connectors_nav_opens_standalone_page_never_a_popup() -> None:
     # The grid moves once into the page; queries scope to the page first.
     assert "mountConnectorsView" in app
     assert 'getElementById("connectorsViewBody")' in app
-    assert "function connectorsScope()" in app
+    assert "function connectorsScope()" in definition_source("connectorsScope")
     # Existing projection, endpoints and auth behavior are reused unchanged.
-    assert 'fetch("/api/connectors/status"' in app
+    assert 'PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status"' in app
     assert "/api/connectors/google/ticket" in app
     # The dialog element stays for contract compatibility.
     assert 'id="connectorsDialog"' in html
@@ -122,7 +125,8 @@ def test_connectors_nav_opens_standalone_page_never_a_popup() -> None:
 
 def test_automation_nav_opens_standalone_page_reusing_panel() -> None:
     html = _read("index.html")
-    app = _read("app.js")
+    # R5 A1: 자동화 화면 열기 본문은 chat-automation-module.js로 이동했다.
+    app = _read("app.js") + _read("chat-automation-module.js")
     assert 'id="automationView"' in html
     assert 'id="automationViewBody"' in html
     assert 'shell.dataset.state = "automation"' in app
@@ -132,9 +136,9 @@ def test_automation_nav_opens_standalone_page_reusing_panel() -> None:
     # the signed-in gate moved from opening the page to reading the rules. The
     # visitor branch returns before the loader, and the loader still refuses an
     # unauthenticated call, so no rule request can leave the browser.
-    assert "if (!clawWorkspace || !clawAutomation) return;" in app
+    assert "if (!deps.clawWorkspace || !deps.clawAutomation) return;" in app
     assert 'if (signedOut) signedOut.hidden = false;\n      return;' in app
-    assert "if (!clawAutomation || !authState.authenticated) return;" in app
+    assert "if (!deps.clawAutomation || !deps.authState.authenticated) return;" in app
     assert 'id="automationViewSignedOut"' in html
     assert "clawAutomationSchedulerNote" in html
     # The scheduler note still refuses to claim the scheduler is running.

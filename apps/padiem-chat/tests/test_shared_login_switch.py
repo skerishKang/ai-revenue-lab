@@ -28,7 +28,13 @@ class Flow:
 
 
 def make_app(flow=None):
-    settings = Settings.from_values(runtime_mode='mock', auth_mode='off', session_secret='test-secret-for-session')
+    settings = Settings.from_values(
+        runtime_mode='mock', auth_mode='off', session_secret='test-secret-for-session',
+        # The refresh/logout mutations are cookie-authenticated browser POSTs,
+        # so the same-origin guard needs the reviewed origin the roundtrip test
+        # already sends as its Origin header.
+        public_base_url='https://chat.padiem.net',
+    )
     app = create_app(settings=settings, shared_login_flow=flow)
     app.routes.insert(0, Route('/identity-test', identity))
     return app, settings

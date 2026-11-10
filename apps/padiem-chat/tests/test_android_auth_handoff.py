@@ -219,17 +219,18 @@ async def test_full_handoff_never_gives_the_external_browser_a_session() -> None
 
 
 @pytest.mark.asyncio
-async def test_device_confirms_its_own_handoff_and_claims_the_session() -> None:
-    """The device that holds the one-time claim secret can finish the sign-in.
+async def test_claim_with_body_code_is_rejected_until_the_browser_confirms() -> None:
+    """A claim request carrying the confirmation code in its body never confirms.
 
-    The Android app creates the handoff and keeps the one-time secret, so it
-    can confirm the handoff itself and claim the session without the user
-    typing the code into the external browser. The browser code form stays the
-    fallback path, and the claim is still exactly once.
+    Only the external browser's form may confirm a handoff. The one-time claim
+    secret, even together with the code shown in the app, must not finish the
+    sign-in: an unconfirmed handoff stays pending, and a handoff that another
+    client has already finished can be claimed by its creator exactly as
+    before.
     """
     calls: list[str] = []
     handoff_store = InMemoryAndroidAuthHandoffStore()
-    app, store = _app(handoff_store=handoff_store, calls=calls)
+    app, _store = _app(handoff_store=handoff_store, calls=calls)
     async with _client(app) as webview, _client(app) as external:
         payload, state = await _create_handoff(webview)
         handoff_id = payload["handoff_id"]
@@ -252,7 +253,8 @@ async def test_device_confirms_its_own_handoff_and_claims_the_session() -> None:
         assert pending.json()["error"]["code"] == "android_handoff_pending"
         assert pending.headers.get_list("set-cookie") == []
 
-        # A wrong code never confirms and never consumes the handoff.
+        # A wrong code in the claim body never confirms and never consumes
+        # the handoff.
         wrong = await webview.post(
             f"/auth/android/handoff/{handoff_id}/claim",
             headers=_status_headers(payload["claim_secret"]),
@@ -260,16 +262,34 @@ async def test_device_confirms_its_own_handoff_and_claims_the_session() -> None:
         )
         assert wrong.status_code == 409
         assert wrong.json()["error"]["code"] == "android_handoff_pending"
+        assert wrong.headers.get_list("set-cookie") == []
         record = await handoff_store.get(handoff_id)
         assert record is not None
         assert record.status == HANDOFF_STATUS_AWAITING_CONFIRMATION
 
-        # The device that holds the one-time secret confirms with the code and
-        # claims the session in a single request.
-        claimed = await webview.post(
+        # The correct code in the claim body still never confirms: the creator
+        # cannot finish the sign-in of a handoff it generated itself.
+        self_confirmed = await webview.post(
             f"/auth/android/handoff/{handoff_id}/claim",
             headers=_status_headers(payload["claim_secret"]),
             json={"user_code": payload["user_code"]},
+        )
+        assert self_confirmed.status_code == 409
+        assert self_confirmed.json()["error"]["code"] == "android_handoff_pending"
+        assert self_confirmed.headers.get_list("set-cookie") == []
+        record = await handoff_store.get(handoff_id)
+        assert record is not None
+        assert record.status == HANDOFF_STATUS_AWAITING_CONFIRMATION
+
+        # The browser form confirms the handoff; the creator then claims it
+        # with the one-time secret, exactly once.
+        confirmed = await _confirm(external, state, payload["user_code"])
+        assert confirmed.status_code == 200, confirmed.text
+        assert "로그인이 확인되었습니다" in confirmed.text
+
+        claimed = await webview.post(
+            f"/auth/android/handoff/{handoff_id}/claim",
+            headers=_status_headers(payload["claim_secret"]),
         )
         assert claimed.status_code == 200, claimed.text
         assert claimed.json() == {"authenticated": True}
@@ -281,26 +301,20 @@ async def test_device_confirms_its_own_handoff_and_claims_the_session() -> None:
         assert "Secure" in session_cookie
         assert "SameSite=lax" in session_cookie
 
-        status = await webview.get("/api/auth/status")
-        assert status.json()["authenticated"] is True
-        assert status.json()["user"]["email"] == "android@example.test"
-
         # The claim is still exactly once.
         replay = await webview.post(
             f"/auth/android/handoff/{handoff_id}/claim",
-            headers=_status_headers(payload["claim_secret"]),
-            json={"user_code": payload["user_code"]},
+            headers={**_status_headers(payload["claim_secret"]), "Origin": BASE_URL},
         )
         assert replay.status_code == 409
         assert replay.json()["error"]["code"] == "android_handoff_claimed"
         record = await handoff_store.get(handoff_id)
         assert record is not None and record.status == HANDOFF_STATUS_CLAIMED
-        assert len(store.users) == 1
 
 
 @pytest.mark.asyncio
-async def test_device_self_confirmation_still_requires_the_claim_secret() -> None:
-    """The automatic path never weakens the one-time secret requirement."""
+async def test_claim_with_code_but_without_the_claim_secret_is_rejected() -> None:
+    """Presenting the code never works without the one-time claim secret."""
     calls: list[str] = []
     handoff_store = InMemoryAndroidAuthHandoffStore()
     app, _store = _app(handoff_store=handoff_store, calls=calls)

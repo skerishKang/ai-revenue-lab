@@ -133,7 +133,11 @@ def test_prepare_fails_closed_without_side_effect(failure):
     elif failure == "wrong_active_version":
         args[1]["result"]["deployments"][0]["versions"][0]["version_id"] = "foreign"
     elif failure == "wrong_binding_authority":
-        args[4]["result"]["bindings"][0]["service"] = "foreign"
+        # 2026-11-10: the served B14_SERVICE binding is retired; the trusted
+        # authority still enforced here is CONTROL_PLANE_IDENTITY.
+        for binding in args[4]["result"]["bindings"]:
+            if binding.get("name") == "CONTROL_PLANE_IDENTITY":
+                binding["service"] = "foreign"
     elif failure == "wrong_owner_inventory":
         args[0][fixture.mod.OWNER_NAME]["result"] = []
     elif failure == "unsafe_worker":
@@ -191,7 +195,11 @@ def test_post_failures_cannot_report_connected(change):
     elif change == "changed_annotations":
         post["result"]["annotations"]["workers/tag"] = "new"
     elif change == "wrong_settings":
-        settings["result"]["bindings"][0]["service"] = "changed"
+        # 2026-11-10: target the still-authoritative CONTROL_PLANE_IDENTITY
+        # binding (the B14_SERVICE binding is retired).
+        for binding in settings["result"]["bindings"]:
+            if binding.get("name") == "CONTROL_PLANE_IDENTITY":
+                binding["service"] = "changed"
     elif change == "wrong_owner_id":
         owner = fixture.ENGINE_DB
     with pytest.raises(TransactionError):

@@ -24,6 +24,9 @@ def _settings(bindings):
 
 
 def _base_bindings(*, runtime="mock", live="false"):
+    # 2026-11-10 Cloudflare B14 Worker retirement: the B14_SERVICE service
+    # binding no longer exists on the Worker, so it is absent here too. The
+    # COM2 B14 upstream stays declared through B14_UPSTREAM_* vars.
     return [
         {"name": "PADIEM_CHAT_RUNTIME_MODE", "type": "plain_text", "text": runtime},
         {"name": "PADIEM_CHAT_LIVE_ENABLED", "type": "plain_text", "text": live},
@@ -31,11 +34,6 @@ def _base_bindings(*, runtime="mock", live="false"):
             "name": "PADIEM_CHAT_B14_BASE_URL",
             "type": "plain_text",
             "text": "https://b14.example.test",
-        },
-        {
-            "name": "B14_SERVICE",
-            "type": "service",
-            "service": "ai-revenue-korean-ai-platform",
         },
         {
             "name": "PADIEM_CHAT_DB",
@@ -148,7 +146,8 @@ def test_binding_inventory_never_copies_secret_or_unknown_plaintext():
     types, safe_text = module.binding_inventory(payload)
 
     assert types["PADIEM_CHAT_QUOTA_SALT"] == "secret_text"
-    assert types["B14_SERVICE"] == "service"
+    # The retired B14_SERVICE binding is no longer part of any inventory.
+    assert "B14_SERVICE" not in types
     assert "PADIEM_CHAT_QUOTA_SALT" not in safe_text
     assert "PADIEM_CHAT_DB" not in safe_text
     assert "B14_SERVICE" not in safe_text
@@ -173,7 +172,6 @@ def test_current_mock_shape_is_safe_hold_even_when_all_prerequisites_exist():
     readiness = _ready_evaluate(module)
 
     assert readiness.prerequisites_ready is True
-    assert readiness.b14_service_bound is True
     assert readiness.public_live_armed is False
     assert readiness.public_live_active is False
     assert readiness.active_with_unverified_prerequisites is False
@@ -191,32 +189,30 @@ def test_live_armed_and_active_when_switches_are_on_and_prerequisites_ready():
     assert readiness.safe_hold is False
 
 
-def test_armed_worker_with_missing_service_is_active_but_unverified():
+def test_retired_b14_service_binding_absence_is_the_normal_state():
+    """2026-11-10 retirement: the B14_SERVICE binding no longer exists, and its
+    absence must not hold the readiness of an otherwise complete Worker."""
+
     module = _load_module()
-    bindings = [
-        item
-        for item in _base_bindings(runtime="b14", live="true")
-        if item.get("name") != "B14_SERVICE"
-    ]
+    readiness = _ready_evaluate(module, runtime="b14", live="true")
 
-    readiness = _ready_evaluate(module, bindings=bindings)
-
-    assert readiness.b14_service_bound is False
-    assert readiness.prerequisites_ready is False
+    assert readiness.prerequisites_ready is True
     assert readiness.public_live_armed is True
     assert readiness.public_live_active is True
-    assert readiness.active_with_unverified_prerequisites is True
+    assert readiness.active_with_unverified_prerequisites is False
     assert readiness.safe_hold is False
 
 
 def test_missing_b14_service_binding_keeps_readiness_on_hold():
+    # Rewritten by the 2026-11-10 retirement: the binding no longer exists and
+    # its absence is no longer a hold condition. The readiness stays ready with
+    # every remaining prerequisite satisfied.
     module = _load_module()
-    bindings = [item for item in _base_bindings() if item.get("name") != "B14_SERVICE"]
+    bindings = [item for item in _base_bindings() if item.get("name") != "PADIEM_CHAT_B14_BASE_URL"]
 
     readiness = _ready_evaluate(module, bindings=bindings)
 
-    assert readiness.b14_service_bound is False
-    assert readiness.prerequisites_ready is False
+    assert readiness.prerequisites_ready is False  # the upstream base is still required
     assert readiness.public_live_active is False
 
 
@@ -398,7 +394,9 @@ def test_database_identifier_and_secret_values_are_never_emitted(capsys):
     assert "READY_TO_ARM" in output
     assert "QUOTA_SCHEMA_READY=true" in output
     assert "D1_SCHEMA_AUDIT=ready" in output
-    assert "B14_SERVICE_BOUND=true" in output
+    # 2026-11-10: B14_SERVICE_BOUND is no longer emitted — the binding is
+    # retired with the Cloudflare B14 Worker.
+    assert "B14_SERVICE_BOUND" not in output
     assert "PUBLIC_LIVE_ARMED=false" in output
     assert "PUBLIC_LIVE_ACTIVE=false" in output
     assert "ACTIVE_WITH_UNVERIFIED_PREREQUISITES=false" in output

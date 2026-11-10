@@ -154,14 +154,18 @@ def test_a7_unscoped_smoke_script_never_claims_authenticated_user_or_provider_ex
     source = A7_UNSCOPED_SMOKE_SCRIPT.read_text(encoding="utf-8")
     for required in (
         "A7_UNSCOPED_ADMISSION_SMOKE=PASS",
+        # 2026-11-11 B14 retirement (Refs #7400): the rejection may land at the
+        # entitlement gate or one step earlier at the B14 lane resolution.
         "EXPECTED_AUTH_GATE=PASS",
+        "EXPECTED_AUTH_GATE=B14_LANE_REFUSED_FIRST",
+        'accepted_rejections = ("entitlement_unavailable", "b14_service_unavailable")',
         "SUBJECT_ID_SENT=0",
         "ACCOUNT_LEVEL_ALLOW_EXPECTED=NO",
         "REAL_PROVIDER_CALLS=0",
         "D1_USAGE_RESERVATION_WRITES=0",
         "AUTHENTICATED_USER_LIVE_PROOF=NOT_CLAIMED",
-        'code != "entitlement_unavailable"',
-        "status != 503",
+        "status != 503 or code not in accepted_rejections",
+        "FAIL_UNEXPECTED_VERDICT",
     ):
         assert required in source
     assert "subprocess" not in source

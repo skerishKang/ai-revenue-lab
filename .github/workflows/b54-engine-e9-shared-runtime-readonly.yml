@@ -141,7 +141,10 @@ jobs:
             --require-a6-activation-runtime-bindings)"
           printf '%s\n' "${verify_out}" | grep -Fx 'ENGINE_CONTINUATION_SERVED_BINDING=PRESENT:d1'
           printf '%s\n' "${verify_out}" | grep -Fx 'ENGINE_IMAGE_STORE_SERVED_BINDING=PRESENT:d1'
-          printf '%s\n' "${verify_out}" | grep -Fx 'B14_SERVICE_SERVED_BINDING=PRESENT:service'
+          # 2026-11-10 Cloudflare B14 Worker retirement: the served-binding
+          # requirement is gone from the guard, so the retired marker must not
+          # reappear in the verify output.
+          ! printf '%s\n' "${verify_out}" | grep -q '^B14_SERVICE_SERVED_BINDING='
           printf '%s\n' "${verify_out}" | grep -Fx 'CONTROL_PLANE_IDENTITY_SERVED_BINDING=PRESENT:service'
           printf '%s\n' "${verify_out}" | grep -Fx 'APPROVAL_RUNTIME_BINDINGS_VALIDATED=YES'
           printf '%s\n' "${verify_out}" | grep -Fx 'A6_ACTIVATION_RUNTIME_BINDINGS_VALIDATED=YES'

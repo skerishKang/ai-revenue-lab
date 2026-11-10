@@ -11,6 +11,9 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+# R5 0단계(R-01): 함수 선언은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import definition_source
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
 
 
@@ -30,7 +33,7 @@ def test_the_unused_base64_reader_helper_is_gone() -> None:
 
 def test_the_text_reader_is_still_the_one_the_composer_calls() -> None:
     app = read("app.js")
-    assert "function readAsText(file)" in app
+    assert "function readAsText(file)" in definition_source("readAsText")
     assert "const raw = await readAsText(file);" in app
 
 

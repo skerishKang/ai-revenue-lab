@@ -57,6 +57,7 @@ from starlette.responses import JSONResponse
 
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .claw_memory_routes import _require_owner, _resolve_memory_workspace
+from .claw_web_push_sender import push_endpoint_refusal
 from .workspace_storage import (
     WorkspaceStorageError,
     _row_to_dict,
@@ -320,12 +321,16 @@ class PushDeliveryOutcome:
     ``state`` is one of ``delivered`` / ``failed`` / ``not_configured`` /
     ``no_subscription``.  It never describes the inbox record: the record's own
     status is owned by the existing inbox authority and is not changed here.
+    ``skipped`` counts the account's own stored subscriptions whose endpoint
+    does not satisfy the reviewed push-endpoint contract; they are logged and
+    left in place, never attempted and never deleted.
     """
 
     state: str
     attempted: int = 0
     delivered: int = 0
     failed: int = 0
+    skipped: int = 0
 
     @property
     def inbox_state_changed(self) -> bool:
@@ -335,7 +340,13 @@ class PushDeliveryOutcome:
 
 
 def _record_delivery_outcome(
-    *, state: str, attempted: int = 0, delivered: int = 0, failed: int = 0, gone: int = 0
+    *,
+    state: str,
+    attempted: int = 0,
+    delivered: int = 0,
+    failed: int = 0,
+    gone: int = 0,
+    skipped: int = 0,
 ) -> None:
     """#5034: one bounded journal line per delivery attempt.
 
@@ -347,8 +358,8 @@ def _record_delivery_outcome(
     """
 
     print(
-        "claw_push_delivery state=%s attempted=%s delivered=%s failed=%s gone=%s"
-        % (state, attempted, delivered, failed, gone),
+        "claw_push_delivery state=%s attempted=%s delivered=%s failed=%s gone=%s skipped=%s"
+        % (state, attempted, delivered, failed, gone, skipped),
         flush=True,
     )
 
@@ -389,7 +400,16 @@ async def deliver_inbox_push(
     delivered = 0
     failed = 0
     gone = 0
+    skipped = 0
     for subscription in subscriptions:
+        # A subscription saved before (or outside) the reviewed endpoint
+        # contract must not become an outbound POST to an unreviewed
+        # destination. It is skipped and counted in the journal, and the row
+        # itself is left exactly as the browser's own opt-in record: the
+        # endpoint rule never deletes a stored subscription.
+        if push_endpoint_refusal(getattr(subscription, "endpoint", "")) is not None:
+            skipped += 1
+            continue
         attempted += 1
         try:
             result = sender.send(
@@ -423,16 +443,24 @@ async def deliver_inbox_push(
             failed += 1
     if delivered:
         _record_delivery_outcome(
-            state="delivered", attempted=attempted, delivered=delivered, failed=failed, gone=gone
+            state="delivered",
+            attempted=attempted,
+            delivered=delivered,
+            failed=failed,
+            gone=gone,
+            skipped=skipped,
         )
         return PushDeliveryOutcome(
-            state="delivered", attempted=attempted, delivered=delivered, failed=failed
+            state="delivered", attempted=attempted, delivered=delivered, failed=failed,
+            skipped=skipped,
         )
     _record_delivery_outcome(
-        state="failed", attempted=attempted, delivered=0, failed=failed, gone=gone
+        state="failed", attempted=attempted, delivered=0, failed=failed, gone=gone,
+        skipped=skipped,
     )
     return PushDeliveryOutcome(
-        state="failed", attempted=attempted, delivered=0, failed=failed
+        state="failed", attempted=attempted, delivered=0, failed=failed,
+        skipped=skipped,
     )
 
 
@@ -501,6 +529,12 @@ async def claw_push_subscription_register(request: Request) -> JSONResponse:
         return _error(503, "workspace_unavailable", "Workspace authority is unavailable.")
     try:
         endpoint = _bounded(payload["endpoint"], MAX_ENDPOINT_CHARS)
+        # The endpoint is an outbound destination the server POSTs to on every
+        # delivery, so it is validated here against the reviewed browser
+        # push-service contract (https, allow-listed host, no IP literal). The
+        # refusal reason carries no endpoint content.
+        if push_endpoint_refusal(endpoint) is not None:
+            return _error(400, "invalid_endpoint", "Push endpoint is not allowed.")
         p256dh = _bounded(payload["keys"]["p256dh"], MAX_KEY_CHARS)
         auth = _bounded(payload["keys"]["auth"], MAX_KEY_CHARS)
         scope = _bounded(payload["scope"], MAX_SCOPE_CHARS)

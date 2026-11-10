@@ -561,7 +561,36 @@ async def switch_account(request):
     path under the authorize endpoint may be returned to, so the link cannot
     aim the browser anywhere else, and the OAuth request values (client, PKCE,
     state, scope) travel with it untouched.
+
+    Revoking the session is a browser mutation, so this is a POST from the
+    consent screen carrying an exact reviewed-origin Origin — not a plain link
+    another page could trigger. Error vocabulary is the central same-origin
+    guard's.
     """
+    from .same_origin_guard import (
+        ORIGIN_GUARD_UNAVAILABLE_CODE,
+        ORIGIN_GUARD_UNAVAILABLE_MESSAGE,
+        ORIGIN_REJECTED_CODE,
+        ORIGIN_REJECTED_MESSAGE,
+        expected_browser_origins,
+    )
+
+    allowed = expected_browser_origins(getattr(request.app.state, "settings", None))
+    if not allowed:
+        return JSONResponse(
+            {"error": {"code": ORIGIN_GUARD_UNAVAILABLE_CODE,
+                       "message": ORIGIN_GUARD_UNAVAILABLE_MESSAGE}},
+            status_code=503,
+            headers=_NO_STORE,
+        )
+    origin = (request.headers.get("origin") or "").strip()
+    if origin not in allowed:
+        return JSONResponse(
+            {"error": {"code": ORIGIN_REJECTED_CODE,
+                       "message": ORIGIN_REJECTED_MESSAGE}},
+            status_code=403,
+            headers=_NO_STORE,
+        )
     target = request.query_params.get("next") or ""
     if (not isinstance(target, str) or not target.startswith(AUTHORIZE_PATH)
             or "\\" in target or target.startswith("//")):
@@ -767,7 +796,7 @@ def mcp_oauth_routes():
         Route(PROTECTED_RESOURCE_METADATA_PATH + "/api/mcp", metadata, methods=["GET", "OPTIONS"]),
         Route(AUTHORIZATION_SERVER_METADATA_PATH, server_metadata, methods=["GET", "OPTIONS"]),
         Route(AUTHORIZE_INFO_PATH, authorize_info, methods=["GET"]),
-        Route(SWITCH_ACCOUNT_PATH, switch_account, methods=["GET"]),
+        Route(SWITCH_ACCOUNT_PATH, switch_account, methods=["POST"]),
         Route(AUTHORIZE_PATH, authorize_get, methods=["GET"]),
         Route(AUTHORIZE_PATH, authorize_post, methods=["POST"]),
         Route(TOKEN_PATH, token_endpoint, methods=["POST", "OPTIONS"]),

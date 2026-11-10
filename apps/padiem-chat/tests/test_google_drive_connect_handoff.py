@@ -24,6 +24,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
+# R5 0단계(R-01): app.js와 분리 모듈을 같은 도우미로 본다.
+from _r5_function_source import combined_source
+
 ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parents[1]
 APP_JS = ROOT / "static/app.js"
@@ -42,9 +45,9 @@ BLOCK_END = 'if (clawNavButton) clawNavButton.addEventListener("click", openClaw
 
 def _app() -> str:
     # #7216 R5 step 4: reviewedGoogleAuthorizationUrl moved into
-    # chat-auth-module.js; the one-policy count spans both shipped sources.
-    return (APP_JS.read_text(encoding="utf-8")
-            + APP_JS.with_name("chat-auth-module.js").read_text(encoding="utf-8"))
+    # chat-auth-module.js. R5 0단계(R-01): 파일별 결합 대신 공용 도우미로
+    # index.html 로드 순서 전체를 본다 — 이후 단계의 모듈 이동도 자동으로 따라온다.
+    return combined_source()
 
 
 def _index() -> str:
@@ -258,7 +261,7 @@ def test_return_refreshes_canonical_truth_instead_of_assuming_success() -> None:
     assert "openConnectorsView();" in _function("openConnectorsDialog")
     assert "void loadConnectorStatus();" in _function("openConnectorsView")
     load = _function("loadConnectorStatus")
-    assert 'fetch("/api/connectors/status", {' in load
+    assert 'PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status", {' in load
     assert "renderConnectorStatus(data);" in load
     assert 'syncGoogleDriveConnectButton(rows.get("connector:google:drive@1") || null);' in _function("renderConnectorStatus")
 

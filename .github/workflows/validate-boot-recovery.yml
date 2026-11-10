@@ -3,7 +3,6 @@ on:
   pull_request:
     paths:
       - 'deploy/host-com2/boot-recovery/**'
-      - 'docs/operations/COM2_BOOT_RECOVERY_RUNBOOK.md'
       - '.github/workflows/validate-boot-recovery.yml'
   workflow_dispatch:
 permissions:

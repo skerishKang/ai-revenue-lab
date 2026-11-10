@@ -122,7 +122,9 @@ def test_binding_config_does_not_change_entrypoint_or_app_surface() -> None:
     source = _wrangler_text()
 
     assert 'main = "worker_identity.py"' in source
-    assert 'binding = "B14_SERVICE"' in source
+    # 2026-11-10 Cloudflare B14 Worker retirement: the B14_SERVICE binding is
+    # no longer declared in the Engine Worker config.
+    assert 'binding = "B14_SERVICE"' not in source
     assert source.count("[[d1_databases]]") == 7
     assert source.count('binding = "WEB_XLSX_PRIVATE_B62_D1"') == 1
     assert "experimental" not in source.lower()

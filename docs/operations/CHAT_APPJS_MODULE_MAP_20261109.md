@@ -257,7 +257,43 @@ app.js는 다수 모듈 뒤·일부 모듈 앞에 로드된다. 분리 시 전�
   동작·getter·setter / `test_r5_step5b_streaming_browser_7216` 5개 전달 직접 호출
   + getter·setter).
 
+## 13. R5 A1 자동화 구역 확정 (2026-11-11)
+
+`docs/operations/R5_app_js_분해_설계_261110.md`의 A1 단계를 5a/5b와 같은 방식
+("함수만 이동, 선언·리스너 등록은 app.js 유지")으로 수행했다.
+
+- **chat-automation-module.js(13개·295줄)**: `resetClawAutomationState`·
+  `setClawAutomationLoading`·`setClawAutomationError`·`setClawAutomationForbidden`·
+  `renderClawAutomationRules`·`loadClawAutomationRules`(규칙 목록·읽기 전용
+  카탈로그), `setClawAutomationToggleStatus`·`findRuleToggleButton`·
+  `focusRuleToggleAfterReload`·`toggleClawAutomationRule`(토글),
+  `mountAutomationView`·`openClawAutomation`·`setClawAutomationRetryVisible`(화면).
+- **chat-automation-form-module.js(15개·278줄)**: 편집 8개
+  (`setClawAutomationEditStatus`~`submitClawAutomationEdit`), 생성 7개
+  (`setClawAutomationCreateStatus`~`submitClawAutomationCreate`).
+- **deps**: 자동화 모듈 31(getter)/1(setter: `automationViewMounted`), 폼 모듈
+  47(getter)/3(setter: `clawAutomationEditInFlight`·`clawAutomationCreateInFlight`·
+  `clawAutomationEditingRuleId`). 모듈 간 경계는 A→B `openClawAutomationEdit`,
+  B→A `loadClawAutomationRules` 2개.
+- **전달 함수 27개**: deps를 거치는 모듈 내·모듈 간 호출(5b 관례)과 남은 app.js
+  참조(리스너·초기화)에 필요한 이름만. 미호출 `focusRuleEditAfterReload`는
+  전달 함수 없이 본문째 이동.
+- **app.js 줄 수**: 6,123 → 5,765(−358). 상한 시험 5,865(실측+100)로 갱신.
+- **선언·리스너는 app.js에 남는다**(R5 B1 동반분): 자동화 선언 블록과
+  편집·생성·내비게이션·재시도 리스너 등록, `#padiem-automation` 주소 복원.
+- **검증**: 이동 전후 지도 비교 — 사라진 것은 28개 본문뿐이고 남은 app.js에는
+  전달 함수 27개와 연결부(`automationModule`·`automationFormModule`·인스턴스
+  let 2개)가 새로 생겼다. 리스너 감소 2건(`toggle.click`·`edit.click`)과 DOM id
+  감소 4건(`automationView*`)은 이동 본문 안 것이며, 최상위 리스너 등록은 모두
+  app.js에 남는다. 부팅 장부(1440·390) 구조 해시·요청 주소가 이동 전과 동일
+  (창 이름은 새 모듈 공장 2개가 추가 — 등록 물건). 뮤테이션 확인: 본문을 app.js에
+  다시 볼러 넣으면 `test_moved_bodies_live_only_in_the_modules` 실패, 모듈에서
+  `deps.`를 지우면 vm 하네스 실패.
+
 ## 13. R5 다음 구역 후보 조사 (대기 중 기록 — Claw 제외)
+
+> 2026-11-11: 이 절은 `docs/operations/R5_app_js_분해_설계_261110.md`가 대체한다.
+> 다음 구역 계획·위험 목록·0단계(시험·CI 기반)는 그 문서를 기준으로 한다.
 
 Claw는 열린 PR #7197 정리 뒤로 제외. 공통 구역(77개 함수·1,388줄)은 허브라
 한 번에 옮기지 않고 씨(cluster)로 나누는 것이 후보. 씨 목록은 추출기

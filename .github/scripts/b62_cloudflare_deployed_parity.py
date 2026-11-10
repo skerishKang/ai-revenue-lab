@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Non-mutating deployed streaming-chain parity audit for Padiem Chat.
 
-Browser assets and the B14 POST-only streaming surface are checked with GET.
-The B62 stream route is framework-aware: a single empty/malformed POST must
-fail closed as ``422 invalid_request`` before quota, history, B14 or provider
-execution. No valid chat request is sent by this audit.
+Browser assets and the B62 POST-only streaming surface are checked with GET and
+one invalid POST. The B62 stream route is framework-aware: a single
+empty/malformed POST must fail closed as ``422 invalid_request`` before quota,
+history or provider execution. No valid chat request is sent by this audit. The
+retired Cloudflare B14 Worker is no longer probed (2026-11-10 retirement); COM2
+B14 health is watched by the readiness and preflight checks instead.
 """
 
 from __future__ import annotations
@@ -23,11 +25,23 @@ from urllib.request import Request, urlopen
 USER_AGENT = "b62-deployed-parity/1.2"
 MAX_PUBLIC_BODY_BYTES = 2_097_152
 B62_STREAM_PATH = "/api/chat/stream"
-B14_AUTO_STREAM_PATH = "/api/pilot/v1/chat/completions/auto-stream-preview"
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+# R5 0단계(0-2): app.js에서 분리된 chat-*-module.js도 같은 배포 일치 검사 대상이다.
+# 새 모듈은 index.html에 script 줄만 추가되면 여기에 자동으로 들어온다.
+_CHAT_MODULES = sorted((_REPO_ROOT / "apps/padiem-chat/static").glob("chat-*-module.js"))
+_MODULE_ASSETS = tuple(
+    (
+        f"CHAT_MODULE_{path.stem.replace('-', '_').upper()}",
+        f"/{path.name}",
+        Path("apps/padiem-chat/static") / path.name,
+    )
+    for path in _CHAT_MODULES
+)
 ASSETS = (
     ("APP_JS", "/app.js", Path("apps/padiem-chat/static/app.js")),
     ("SEARCH_SOURCES_JS", "/search-sources.js", Path("apps/padiem-chat/static/search-sources.js")),
     ("RICH_RESPONSE_JS", "/rich-response.js", Path("apps/padiem-chat/static/rich-response.js")),
+    *_MODULE_ASSETS,
 )
 
 
@@ -49,8 +63,6 @@ class ParityResult:
     stream_get_status: int
     stream_probe_status: int
     stream_probe_error_code: str | None
-    b14_auto_stream_route_present: bool
-    b14_auto_stream_get_status: int
 
     @property
     def b62_ready(self) -> bool:
@@ -58,7 +70,7 @@ class ParityResult:
 
     @property
     def ready(self) -> bool:
-        return self.b62_ready and self.b14_auto_stream_route_present
+        return self.b62_ready
 
 
 def normalized_base_url(value: str, env_name: str = "B62_BASE_URL") -> str:
@@ -182,24 +194,6 @@ def asset_matches(
     return _sha256(result.body) == _sha256(local)
 
 
-def _post_only_get_probe(
-    *,
-    base_url: str,
-    path: str,
-    label: str,
-    fetcher: Callable[[str], HTTPResult] = fetch_get,
-) -> tuple[bool, int]:
-    result = fetcher(base_url + path)
-    if result.status == 405:
-        allow = result.headers.get("allow", "")
-        if allow and "POST" not in {item.strip().upper() for item in allow.split(",")}:
-            raise AuditError(f"{label} returned 405 without POST in Allow header")
-        return True, result.status
-    if result.status == 404:
-        return False, result.status
-    raise AuditError(f"unexpected HTTP {result.status} while probing {label}")
-
-
 def _error_code(body: bytes) -> str | None:
     try:
         payload = json.loads(body.decode("utf-8"))
@@ -234,29 +228,14 @@ def stream_route_probe(
     raise AuditError(f"unexpected HTTP {result.status} while probing public B62 stream route")
 
 
-def b14_auto_stream_route_probe(
-    *,
-    base_url: str,
-    fetcher: Callable[[str], HTTPResult] = fetch_get,
-) -> tuple[bool, int]:
-    return _post_only_get_probe(
-        base_url=base_url,
-        path=B14_AUTO_STREAM_PATH,
-        label="public B14 auto-stream route",
-        fetcher=fetcher,
-    )
-
-
 def audit(
     *,
     base_url: str,
-    b14_base_url: str,
     repo_root: Path,
     fetcher: Callable[[str], HTTPResult] = fetch_get,
     poster: Callable[[str], HTTPResult] = fetch_invalid_post,
 ) -> ParityResult:
     origin = normalized_base_url(base_url, "B62_BASE_URL")
-    b14_origin = normalized_base_url(b14_base_url, "B14_BASE_URL")
     parity: dict[str, bool] = {}
     for name, public_path, relative_path in ASSETS:
         parity[name] = asset_matches(
@@ -278,18 +257,12 @@ def audit(
         base_url=origin,
         poster=poster,
     )
-    b14_stream_present, b14_stream_status = b14_auto_stream_route_probe(
-        base_url=b14_origin,
-        fetcher=fetcher,
-    )
     return ParityResult(
         parity,
         stream_present,
         stream_get.status,
         stream_probe_status,
         stream_probe_code,
-        b14_stream_present,
-        b14_stream_status,
     )
 
 
@@ -311,10 +284,6 @@ def emit(result: ParityResult) -> None:
     print(f"B62_STREAM_ROUTE_GET_HTTP={result.stream_get_status}")
     print(f"B62_STREAM_ROUTE_PROBE_HTTP={result.stream_probe_status}")
     print(
-        f"B14_AUTO_STREAM_ROUTE_PRESENT={_render_bool(result.b14_auto_stream_route_present)}"
-    )
-    print(f"B14_AUTO_STREAM_ROUTE_GET_HTTP={result.b14_auto_stream_get_status}")
-    print(
         f"DEPLOYED_PROGRESSIVE_SSE_SURFACE={'READY' if result.b62_ready else 'HOLD'}"
     )
     print(f"DEPLOYED_PROGRESSIVE_SSE_CHAIN={'READY' if result.ready else 'HOLD'}")
@@ -329,7 +298,7 @@ def emit(result: ParityResult) -> None:
     summary = os.getenv("GITHUB_STEP_SUMMARY")
     if summary:
         with open(summary, "a", encoding="utf-8") as handle:
-            handle.write("\n## B14 → B62 deployed progressive-SSE parity\n\n")
+            handle.write("\n## B62 deployed progressive-SSE parity\n\n")
             handle.write("| Check | Result |\n|---|---|\n")
             for name, value in result.asset_parity.items():
                 handle.write(f"| B62_{name}_PARITY | `{_render_bool(value)}` |\n")
@@ -345,13 +314,6 @@ def emit(result: ParityResult) -> None:
                 f"| B62_STREAM_ROUTE_PROBE_ERROR_CODE | `{result.stream_probe_error_code or 'none'}` |\n"
             )
             handle.write(
-                "| B14_AUTO_STREAM_ROUTE_PRESENT | "
-                f"`{_render_bool(result.b14_auto_stream_route_present)}` |\n"
-            )
-            handle.write(
-                f"| B14_AUTO_STREAM_ROUTE_GET_HTTP | `{result.b14_auto_stream_get_status}` |\n"
-            )
-            handle.write(
                 f"| DEPLOYED_PROGRESSIVE_SSE_SURFACE | `{'READY' if result.b62_ready else 'HOLD'}` |\n"
             )
             handle.write(
@@ -365,11 +327,9 @@ def emit(result: ParityResult) -> None:
 def main() -> int:
     try:
         base_url = normalized_base_url(os.getenv("B62_BASE_URL", ""), "B62_BASE_URL")
-        b14_base_url = normalized_base_url(os.getenv("B14_BASE_URL", ""), "B14_BASE_URL")
         repo_root = Path(__file__).resolve().parents[2]
         result = audit(
             base_url=base_url,
-            b14_base_url=b14_base_url,
             repo_root=repo_root,
         )
         emit(result)

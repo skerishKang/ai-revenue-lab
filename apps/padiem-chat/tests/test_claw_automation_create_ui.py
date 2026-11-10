@@ -143,8 +143,9 @@ def test_kind_aware_fields_are_declared_with_default_daypart_visible() -> None:
 
 
 def test_submit_posts_exactly_the_seven_product_keys() -> None:
-    js = _app_source()
-    create_block = js.split("#3257 Web Automation Create", 1)[1]
+    # R5 A1: 생성 함수 본문은 chat-automation-form-module.js로 이동했다.
+    js = (ROOT / "static" / "chat-automation-form-module.js").read_text(encoding="utf-8")
+    create_block = js.split("function setClawAutomationCreateStatus", 1)[1]
     payload_match = re.search(r"const payload = \{(.*?)\};", create_block, re.DOTALL)
     assert payload_match, "create payload block not found"
     keys = re.findall(r"(\w+):", payload_match.group(1))
@@ -424,9 +425,6 @@ sandbox.dispatchEvent = sandbox.dispatchEvent || (() => true);
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
-// #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), sandbox, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 const tick = (ms) => new Promise((r) => setTimeout(r, ms || 0));

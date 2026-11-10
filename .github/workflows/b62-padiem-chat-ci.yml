@@ -604,7 +604,10 @@ jobs:
       - name: Compile B62 and Core
         run: uv run --locked python -m compileall -q app worker.py ../../packages/padiem-ai-core/padiem_ai_core
       - name: JavaScript syntax
-        run: node --check static/app.js && node --check static/b66-quote-runtime.js && node --check static/claw-local-handoff.js && node --check static/claw-local-adapter.js
+        # R5 0단계(0-2): 문법 검사도 app.js뿐 아니라 분리 모듈 전체를 본다.
+        run: |
+          for module in static/chat-*-module.js; do node --check "$module"; done
+          node --check static/app.js && node --check static/b66-quote-runtime.js && node --check static/claw-local-handoff.js && node --check static/claw-local-adapter.js
       - name: B62 Chat and eligible Core tests (same-runner fail-closed overlap)
         # #4070: same two original pytest commands, distinct cwd/.venv, one
         # runner and one mandatory exit status. Only proven chat_only/static_only/

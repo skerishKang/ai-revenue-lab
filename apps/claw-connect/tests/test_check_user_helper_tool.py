@@ -1,7 +1,7 @@
 """check-user-helper.ps1 contracts: parse, secret hygiene, pipe-name rule.
 
 The tool is the one-shot read-only diagnosis the CTO runs around the
-helper EXE swap (docs/operations/PC_USER_HELPER_RELEASE_20261107.md
+helper EXE swap (비공개 운영 기록(거버넌스 폴더, 같은 상대 경로), PC_USER_HELPER_RELEASE_20261107.md
 step 6). CI verifies it parses, never reads the secret file's content,
 and derives the same pipe name as the Python implementation — fixed
 vector, computed here with hashlib exactly like

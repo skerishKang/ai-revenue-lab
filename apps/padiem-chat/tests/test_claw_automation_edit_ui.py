@@ -102,9 +102,10 @@ def test_edit_control_meets_touch_and_focus_contract() -> None:
 
 
 def test_edit_patch_payload_is_exactly_the_four_editable_fields() -> None:
-    js = _app_source()
+    # R5 A1: 편집 함수 본문은 chat-automation-form-module.js로 이동했다.
+    js = (ROOT / "static" / "chat-automation-form-module.js").read_text(encoding="utf-8")
     block = js.split("#3270 bounded edit (name + schedule only)", 1)[1].split(
-        "#3262 owner-gated enable/disable", 1
+        "function setClawAutomationCreateStatus", 1
     )[0]
     assert 'method: "PATCH"' in block
     keys = [k for k in ("name", "schedule_kind", "schedule_expression", "schedule_timezone") if f"{k}:" in block]
@@ -134,7 +135,8 @@ def test_edit_never_claims_live_execution() -> None:
 
 
 def test_edit_button_is_rendered_only_in_the_canonical_branch() -> None:
-    js = _app_source()
+    # R5 A1: 렌더러는 chat-automation-module.js로 이동했다.
+    js = (ROOT / "static" / "chat-automation-module.js").read_text(encoding="utf-8")
     render = js.split("function renderClawAutomationRules", 1)[1].split(
         "async function loadClawAutomationRules", 1
     )[0]
@@ -389,9 +391,6 @@ sandbox.dispatchEvent = sandbox.dispatchEvent || (() => true);
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "auth-session.js"), "utf8"), sandbox, { filename: "auth-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-session.js"), "utf8"), sandbox, { filename: "chat-session.js" });
 vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "claw-session.js"), "utf8"), sandbox, { filename: "claw-session.js" });
-// #7216 R5 step 5a: the conversation area moved into chat-conversation-module.js; load it ahead of app.js like index.html.
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-conversation-module.js"), "utf8"), sandbox, { filename: "chat-conversation-module.js" });
-vm.runInContext(fs.readFileSync(require("path").join(require("path").dirname(process.argv[2]), "chat-streaming-module.js"), "utf8"), sandbox, { filename: "chat-streaming-module.js" });
 vm.runInContext(APP, sandbox, { filename: "app.js" });
 
 const tick = (ms) => new Promise((r) => setTimeout(r, ms || 0));

@@ -118,12 +118,16 @@ def test_service_binding_target_is_fixed_in_repository_config():
     root = Path(__file__).resolve().parents[1]
     config = tomllib.loads((root / "wrangler.toml").read_text(encoding="utf-8"))
 
+    # 2026-11-10 Cloudflare B14 Worker retirement: the B14_SERVICE binding no
+    # longer exists in the repository config; the B14 lane goes over the
+    # COM2 HTTPS upstream, and the caller proof secret stays declared.
     assert B14_SERVICE_BINDING_NAME == "B14_SERVICE"
+    assert "B14_SERVICE" not in {item["binding"] for item in config["services"]}
+    assert "B14_UPSTREAM_MODE" in config["vars"] and "B14_UPSTREAM_URL" in config["vars"]
+    assert "PADIEM_B14_SERVICE_PROOF_SECRET" in {
+        item["binding"] for item in config.get("secrets_store_secrets", [])
+    }
     assert config["services"] == [
-        {
-            "binding": "B14_SERVICE",
-            "service": "ai-revenue-korean-ai-platform",
-        },
         {
             "binding": "IDENTITY_AUTHORITY_SERVICE",
             "service": "padiem-control-plane-identity",
