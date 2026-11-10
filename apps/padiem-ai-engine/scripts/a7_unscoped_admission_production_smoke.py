@@ -178,7 +178,14 @@ def main() -> int:
         else None
     )
 
-    if status != 503 or code != "entitlement_unavailable":
+    # 2026-11-11 Cloudflare B14 Worker retirement (Refs #7400): the Engine no
+    # longer binds B14_SERVICE, so the unscoped request can be refused one
+    # step earlier, at the B14 lane resolution, with b14_service_unavailable.
+    # Both verdicts are the same fail-closed gate: 503, a named error code,
+    # and rejection before any Core/provider dispatch. The rejection itself
+    # is never weakened — a 200, an allow, or any other code still fails.
+    accepted_rejections = ("entitlement_unavailable", "b14_service_unavailable")
+    if status != 503 or code not in accepted_rejections:
         print(
             "A7_UNSCOPED_ADMISSION_SMOKE=FAIL_UNEXPECTED_VERDICT",
             file=sys.stderr,
@@ -194,7 +201,11 @@ def main() -> int:
         return 1
 
     print("A7_UNSCOPED_ADMISSION_SMOKE=PASS")
-    print("EXPECTED_AUTH_GATE=PASS")
+    print(f"REJECTION_CODE={code}")
+    if code == "entitlement_unavailable":
+        print("EXPECTED_AUTH_GATE=PASS")
+    else:
+        print("EXPECTED_AUTH_GATE=B14_LANE_REFUSED_FIRST")
     print("SUBJECT_ID_SENT=0")
     print("ACCOUNT_LEVEL_ALLOW_EXPECTED=NO")
     print("REAL_PROVIDER_CALLS=0")
