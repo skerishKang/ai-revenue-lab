@@ -80,6 +80,7 @@ from .request_contract import (
     CustomModelSelection,
     _apply_b62_model_policy,
     _validate_payload_async,
+    declared_product_surface,
     declared_util_scope,
 )
 from .request_telemetry import emit_stage_event
@@ -518,7 +519,7 @@ async def _connector_tool_lane(
             saved_id = None
         if saved_id is not None:
             done_payload["conversation_id"] = saved_id
-        from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=answer)  # #7297 공통 실행 기록 투영
+        from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=answer, conversation_id=saved_id)  # #7297 공통 실행 기록 투영
     yield _public_sse("done", done_payload)
 
 
@@ -690,6 +691,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
     try:
         raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
+        request.state.chat_product_surface = declared_product_surface(raw, request)
         if custom is None:
             # No-tier browser clients resolve the Free product tier; an
             # explicit browser tier rides the request context.
@@ -869,6 +871,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                     custom_done["conversation_id"] = saved_id
                     if effective_project_id is not None:
                         custom_done["project_id"] = effective_project_id
+                from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=custom_user, answer=custom_answer, conversation_id=saved_id)
             yield _public_sse("done", custom_done)
 
         async def custom_timing_iterator():
@@ -1402,6 +1405,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                                             if project is not None
                                             else None
                                         )
+                                from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=answer, conversation_id=saved_id)
                             if project_files_used:
                                 done_payload["project_files_used"] = project_files_used
                             yield _public_sse("done", done_payload)
@@ -1467,6 +1471,7 @@ async def api_chat(request: Request) -> JSONResponse:
     try:
         raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
+        request.state.chat_product_surface = declared_product_surface(raw, request)
         if custom is None:
             # No-tier browser clients resolve the Free product tier; an
             # explicit browser tier rides the request context.
@@ -1600,7 +1605,7 @@ async def api_chat(request: Request) -> JSONResponse:
             return _custom_selection_unsupported(exc)
         except CustomProviderError as exc:
             return _custom_error_response(exc)
-        result = {"answer": custom_result["answer"]}
+        result, saved_id = {"answer": custom_result["answer"]}, None
         latest_user = next((m["content"] for m in reversed(messages) if m["role"] == "user"), None)
         if latest_user:
             try:
@@ -1623,7 +1628,7 @@ async def api_chat(request: Request) -> JSONResponse:
                 result["conversation_id"] = saved_id
                 if effective_project_id is not None:
                     result["project_id"] = effective_project_id
-        from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=result["answer"])  # #7297 공통 실행 기록 투영
+        from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=result["answer"], conversation_id=saved_id)  # #7297 공통 실행 기록 투영
         return JSONResponse(public_chat_result(result))
 
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
@@ -1813,5 +1818,5 @@ async def api_chat(request: Request) -> JSONResponse:
                 if effective_project_id is not None:
                     result["project_id"] = effective_project_id
                     result["project"] = {"id": project.id, "name": project.name} if project is not None else None
-                from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=result["answer"])  # #7297 공통 실행 기록 투영
+            from .claw_general_run_history import project_completed_chat_turn as _p7297; await _p7297(request, user_text=latest_user, answer=result["answer"], conversation_id=saved_id)  # #7297 공통 실행 기록 투영
     return JSONResponse(public_chat_result(result))
