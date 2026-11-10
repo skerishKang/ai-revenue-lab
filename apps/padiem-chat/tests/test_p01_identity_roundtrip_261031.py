@@ -160,6 +160,16 @@ async def _exercise(scenario):
         async def record_usage(self, payload):
             return {"ok": True, "receipt": {"accepted": True, "event_id": payload["usage_event"]["event_id"]}}
 
+        @record_fixture_errors
+        async def admit_usage(self, payload):
+            snap = await self.fetch_entitlement_snapshot(
+                {"product_id": payload["product_id"], "subject": payload["subject"]},
+            )
+            if not snap.get("ok"):
+                return snap
+            res = await self.reserve_usage({"reservation": payload["reservation"]})
+            return {"ok": True, "snapshot": snap["snapshot"], "reservation": res["reservation"]}
+
     class Replay:
         def __init__(self):
             self.seen = set()
@@ -182,7 +192,7 @@ async def _exercise(scenario):
 
     authorities = {
         "identity.example.invalid": (identity, identity_secret, Replay(), frozenset({"resolve_current_auth_session", "resolve_product_user_for_subject"})),
-        "admission.example.invalid": (Admission(), admission_secret, Replay(), frozenset({"fetch_entitlement_snapshot", "reserve_usage", "record_usage"})),
+        "admission.example.invalid": (Admission(), admission_secret, Replay(), frozenset({"fetch_entitlement_snapshot", "reserve_usage", "record_usage", "admit_usage"})),
     }
 
     @record_fixture_errors
