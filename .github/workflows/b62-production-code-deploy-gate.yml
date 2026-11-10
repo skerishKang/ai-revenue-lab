@@ -776,9 +776,9 @@ jobs:
             '[.result.bindings[] | select(.name == $name)] as $b |
              ($b | length) == 1 and $b[0].type == "service" and $b[0].service == $service' "${settings}" >/dev/null
           echo "IDENTITY_BINDING=PRESENT_EXPECTED"
-          jq -e --arg name "B14_SERVICE" --arg service "${B14_WORKER}" \
-            '[.result.bindings[] | select(.name == $name)] as $b |
-             ($b | length) == 1 and $b[0].service == $service' "${settings}" >/dev/null
+          # 2026-11-10 Cloudflare B14 Worker retirement: the B14_SERVICE service
+          # binding was removed from this Worker with the reviewed baseline
+          # update, so there is nothing left to assert here.
           jq -e '[.result.bindings[] | select(.type == "d1" and .name == "PADIEM_CHAT_DB")] | length == 1' "${settings}" >/dev/null
           jq -e '[.result.bindings[] | select(.type == "assets" and .name == "ASSETS")] | length == 1' "${settings}" >/dev/null
           jq -e --arg name "${IDENTITY_BINDING}" '[.result.bindings[] | .name] | length == (unique | length)' "${settings}" >/dev/null

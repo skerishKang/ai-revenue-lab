@@ -165,7 +165,15 @@ def findings() -> list[str]:
     if "X-Padiem-B14-Proof" not in proof or "HMAC-SHA256" not in proof:
         drift.append("B14_SERVICE_PROOF_AUTHORITY_DRIFT")
     wrangler = _read(WRANGLER)
-    if 'binding = "B14_SERVICE"' not in wrangler or "PADIEM_B14_SERVICE_PROOF_SECRET" not in wrangler:
+    # 2026-11-10 Cloudflare B14 Worker retirement: the B14 lane calls the COM2
+    # B14 over its public origin, so the contract requires the HTTPS upstream
+    # switch plus the retained caller proof secret, and refuses the removed
+    # Cloudflare-side service binding coming back.
+    if 'B14_UPSTREAM_MODE = "https"' not in wrangler or "https://b14.padiem.net" not in wrangler:
+        drift.append("B14_LANE_UPSTREAM_SWITCH_DRIFT")
+    if "PADIEM_B14_SERVICE_PROOF_SECRET" not in wrangler:
+        drift.append("B14_LANE_BINDING_DRIFT")
+    if 'binding = "B14_SERVICE"' in wrangler:
         drift.append("B14_LANE_BINDING_DRIFT")
 
     allowed = re.search(

@@ -19,7 +19,11 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
         if row['type'] == 'plain_text': row['text'] = '<synthetic-private-value>'
     live = parse_live_bindings({'success': True, 'result': {'bindings': rows}})
     repo_path = ROOT / 'apps/padiem-chat/wrangler.toml'
-    expected, values = production_plan(live, tomllib.loads(repo_path.read_text()))
+    # The reviewed removal (B14_SERVICE, 2026-11-10 Cloudflare B14 Worker
+    # retirement) is part of the expectation below, so the plan must allow it.
+    expected, values = production_plan(
+        live, tomllib.loads(repo_path.read_text()), allow_binding_removal=True,
+    )
     # Three reviewed entries are declared and not yet served, and the reviewed
     # inventory is what production is answering with today:
     #   - #5919 declares PC_AGENT_INSTALL_URL in [vars] with an empty value, which
@@ -59,8 +63,7 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
     assert binding_diff(index(rows), expected) == {
         # 2026-11-09 COM2-only B14 decision: the Chat Worker now calls the COM2
         # B14 over HTTPS (#5784 switch), so its two vars are declared in [vars]
-        # and reviewed here like every other pending addition. The Service
-        # Binding and the caller proof secret stay declared untouched.
+        # and reviewed here like every other pending addition.
         'added': [{'name': 'B14_UPSTREAM_MODE', 'type': 'plain_text'},
                   {'name': 'B14_UPSTREAM_URL', 'type': 'plain_text'},
                   {'name': 'PADIEM_CHAT_FILE_LANE_ORIGIN', 'type': 'plain_text'},
@@ -80,7 +83,10 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
                   {'name': 'PC_QUEUE_SERVICE_SECRET', 'type': 'secret_text'},
                   {'name': 'PC_USER_HELPER_INSTALL_URL', 'type': 'plain_text'},
                   {'name': 'PC_USER_HELPER_SHA256', 'type': 'plain_text'}],
-        'removed': [],
+        # 2026-11-10 Cloudflare B14 Worker retirement (CTO order): the reviewed
+        # removal of the B14_SERVICE service binding. The caller proof secret
+        # stays (the COM2 HTTPS lane signs with the same value).
+        'removed': [{'name': 'B14_SERVICE', 'type': 'service'}],
         # 2026-11-09 COM2-only B14 decision: PADIEM_CHAT_B14_BASE_URL stays a
         # live-only binding (the mock deploy guard forbids live values in the
         # repository [vars]), and the plan realigns it to the one repository

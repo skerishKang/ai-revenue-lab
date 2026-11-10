@@ -37,7 +37,6 @@ concurrency:
 env:
   CHAT_WORKER: padiem-chat
   ENGINE_WORKER: padiem-ai-engine
-  B14_WORKER: ai-revenue-korean-ai-platform
   CHAT_HEALTH_URL: https://chat.padiem.net/health
   FILES_HEALTH_URL: https://files.padiem.net/health
   READONLY_MARKER: GET_OPS_READONLY_STATUS
@@ -99,16 +98,17 @@ jobs:
           echo 'EXACT_MAIN=PASS'
           echo 'READONLY_MARKER_MATCH=PASS'
           echo 'SECRET_VALUES_PRINTED=0'
-      - name: GET the Chat, Engine and B14 deployment records
+      - name: GET the Chat and Engine deployment records
         shell: bash
         run: |
           set -euo pipefail
+          # 2026-11-10: the Cloudflare B14 Worker is retired — its deployment
+          # record readout is gone with it.
           declare -A workers=(
             [chat]="${CHAT_WORKER}"
             [engine]="${ENGINE_WORKER}"
-            [b14]="${B14_WORKER}"
           )
-          for lane in chat engine b14; do
+          for lane in chat engine; do
             worker="${workers[${lane}]}"
             payload="${RUNNER_TEMP}/${lane}-deployments.json"
             curl -fsS --retry 0 --connect-timeout 10 --max-time 25 \
@@ -122,7 +122,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 - chat engine b14 <<'PY'
+          python3 - chat engine <<'PY'
           import json
           import os
           import sys
@@ -133,8 +133,8 @@ jobs:
               ServedVersionResolutionError, resolve_served_version_id,
           )
 
-          WORKER_ENV = {"chat": "CHAT_WORKER", "engine": "ENGINE_WORKER", "b14": "B14_WORKER"}
-          MARKER = {"chat": "OPS_SERVED_CHAT", "engine": "OPS_SERVED_ENGINE", "b14": "OPS_SERVED_B14"}
+          WORKER_ENV = {"chat": "CHAT_WORKER", "engine": "ENGINE_WORKER"}
+          MARKER = {"chat": "OPS_SERVED_CHAT", "engine": "OPS_SERVED_ENGINE"}
           temp = Path(os.environ["RUNNER_TEMP"])
           summary = Path(os.environ["GITHUB_STEP_SUMMARY"])
           rows = []
@@ -159,7 +159,6 @@ jobs:
                   fh.write(f"| {lane} | `{worker}` | `{served}` | {deployed_at} |\n")
           print("CANONICAL_RESOLVER=PASS")
           print("OPS_CLOUDFLARE_CALLS=GET_ONLY")
-          print("B14_DEPLOY=0")
           print("D1_MUTATION=0")
           print("PRODUCTION_MUTATION=0")
           PY
