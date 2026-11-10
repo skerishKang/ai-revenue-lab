@@ -117,6 +117,29 @@ class ReleaseAccountAndLogStaticContract(unittest.TestCase):
         self.assertIn("$Script:LogDir = $env:HOME", block)
         self.assertIn("RELEASE_LOG_FAIL: no user profile directory", block)
 
+    def test_guard_counts_only_real_and_failed_logs(self):
+        """#7350 follow-up: the 10-minute guard must never see a dry-run log —
+        the standard “dry-run first, then the real deploy” flow would stop
+        every real run behind its own dry-run transcript and teach lanes to
+        pass -Force."""
+        guard = self.text.split("function Get-RecentReleaseLogs", 1)[1]
+        guard = guard.split("\nfunction ", 1)[0]
+        code_part = guard.split("$cutoff = (Get-Date)", 1)[1]
+        self.assertIn("'^release_\\d+(\\.failed)?\\.log$'", code_part)
+        self.assertNotIn(".dryrun", code_part)
+
+    def test_number_sequence_includes_dryrun_and_failed(self):
+        """The shared number sequence counts all three kinds, so a dry-run
+        transcript never collides with the next real release number."""
+        fn = self.text.split("function Get-ReleaseLogMaxNumber", 1)[1]
+        fn = fn.split("\nfunction ", 1)[0]
+        self.assertIn("(\\.dryrun|\\.failed)?", fn)
+
+    def test_dryrun_flag_flows_into_the_log_path(self):
+        """The start block tells Resolve-ReleaseLogPath whether this run is a
+        dry-run; only then does the transcript carry the .dryrun marker."""
+        self.assertIn("Resolve-ReleaseLogPath $LogPath $Script:LogDir -DryRun:$DryRun", self.text)
+
     def test_real_run_stops_on_a_recent_log_unless_forced(self):
         """(다) a release log written in the last 10 minutes stops a real run
         unless -Force; the dry-run branch only warns."""
@@ -201,6 +224,54 @@ class ReleaseLogNumberRuntime(unittest.TestCase):
             rc, combined = _run_driver(code)
             self.assertEqual(rc, 0, combined)
             self.assertIn("COUNTS=3,2", combined)
+
+    @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
+    def test_guard_counts_real_and_failed_but_not_dryrun(self):
+        """#7350 follow-up: a fresh dry-run log alone never trips the guard;
+        fresh real-run and failed logs still do."""
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            for name in ("release_80.dryrun.log", "release_81.log", "release_82.failed.log"):
+                (base / name).write_text("x", encoding="utf-8")
+            code = "Write-Output ('COUNTS=' + @(Get-RecentReleaseLogs '" + str(base) + "').Count)\n"
+            rc, combined = _run_driver(code)
+            self.assertEqual(rc, 0, combined)
+            self.assertIn("COUNTS=2", combined)
+
+    @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
+    def test_dryrun_number_follows_the_shared_sequence(self):
+        """65.dryrun + 64 → the next real release is 66.log and the next
+        dry-run transcript is 66.dryrun.log (one shared sequence)."""
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            for name in ("release_65.dryrun.log", "release_64.log"):
+                (base / name).write_text("x", encoding="utf-8")
+            code = (
+                "$real = Resolve-ReleaseLogPath '' '" + str(base) + "'\n"
+                "$dry = Resolve-ReleaseLogPath '' '" + str(base) + "' -DryRun\n"
+                "Write-Output ('REAL=' + $real)\n"
+                "Write-Output ('DRY=' + $dry)\n"
+            )
+            rc, combined = _run_driver(code)
+            self.assertEqual(rc, 0, combined)
+            self.assertIn("REAL=" + str(base / "release_66.log"), combined)
+            self.assertIn("DRY=" + str(base / "release_66.dryrun.log"), combined)
+
+    @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
+    def test_dryrun_candidate_skips_taken_numbers(self):
+        """A taken release_66.log and release_66.dryrun.log push the next
+        dry-run transcript to 67 — an existing file is never overwritten."""
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            for name in ("release_66.log", "release_66.dryrun.log"):
+                (base / name).write_text("x", encoding="utf-8")
+            code = (
+                "$out = Resolve-ReleaseLogPath '' '" + str(base) + "' -DryRun\n"
+                "Write-Output ('RES=' + $out)\n"
+            )
+            rc, combined = _run_driver(code)
+            self.assertEqual(rc, 0, combined)
+            self.assertIn("RES=" + str(base / "release_67.dryrun.log"), combined)
 
 
 if __name__ == "__main__":
