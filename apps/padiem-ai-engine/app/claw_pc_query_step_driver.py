@@ -115,52 +115,90 @@ PC_WRITE_REASONS = frozenset({"backup_failed", "target_exists", "path_invalid", 
 #: next_offset을 돌려주고 read_file_chunk로 이어진다. Chat 읽기 레인과
 #: 설치된 커넥터의 읽기 봉투가 같은 숫자를 쓴다.
 PC_FILES_READ_MAX_BYTES = 20_000_000
-#: 2026-11-04: the first answer waits this long for the PC and then hands the
-#: dispatch id back instead of holding one MCP request open. It bounds only the
-#: wait for an answer, never the PC command: the same tool reads the finished
-#: result when it is called again with the job id.
-#:
-#: #6919: the budget counts from the moment the handler is entered, so the
-#: context read and the dispatch itself spend it too. Two 30 s ceilings sit
-#: around it: the Chat gateway cuts its call to the Engine at 30 s
-#: (local_engine_transport), and the connector client cuts the whole
-#: /api/mcp request at 30 s.
-#:
-#: Re-measured on 2026-11-07 from com2 journals, p90 of the fixed costs
-#: around one first-round read. Chat /api/mcp identity 0.0 ms (160 POST
-#: lines over 24 h; the binding is cached). Engine admission 1.8 s — the
-#: warmer-era engine_timing lines on com2 run 1.39–1.47 s and the observed
-#: steady-state bound is 1.8 s — and receipt 0.7 s (recent engine_timing
-#: receipts 0.35–0.70 s; the loopback submit brought the pre-warmer 1.7 s
-#: down). Chat's own context+dispatch work around the call 0.6 s (12
-#: first-round reads: queue, sqlite, edge). The loop below still overshoots
-#: the budget by one status poll plus the result pickup, 2.0 s. The sum is
-#: 5.1 s, so 21 s keeps 21 + 5.1 = 26.1 s inside the 30 s − 3 s margin. A
-#: read the PC finishes later is handed back as running and answered by the
-#: next call; nothing is lost, only the first answer arrives sooner.
-PC_FILES_WAIT_SECONDS = 21
-PC_FILES_WAIT_ENV = "PADIEM_PC_FILES_WAIT_SECONDS"
-#: Per-sleep ceiling for the PC FILES command_status ladder (read/list and
-#: search). The PC read answers ~0.6 s after the claim (2026-11-09 automatic
-#: measurements, n=41: pc_read median 0.60 s, read_to_submit median 0.33 s),
-#: so a 5 s cap let the sleep overshoot an already-ready result by up to 2 s
-#: inside the response-assembly window (chat_assemble median 1.7 s, max 3.5 s).
-#: 1 s keeps the discovery gap at or below the measured result latency. The
-#: TOTAL wait budget above is unchanged, and the shell status poll keeps its
-#: own ladder (#7131) untouched.
-_PC_FILES_POLL_SECONDS_CAP = 1.0
-_PC_FILES_JOB_ID = re.compile(r"dsp_[0-9a-f]{32}\Z")
+#: #7447: the ASCII envelope the PC agent frames an image read in. The engine
+#: parses it, downscales toward the wire limits and projects one MCP image
+#: block; the plain text answer carries what the model lane needs instead.
+PC_IMAGE_ENVELOPE_PREFIX = "PADIEM_IMAGE_CONTENT:"
+PC_IMAGE_LONG_EDGE_MAX = 2000
+PC_IMAGE_BYTE_CAP = 300_000
+
+def _pc_image_projection(output: str) -> tuple[str, dict[str, str] | None]:
+    """Turn one image envelope into a bounded note + one MCP image block.
+
+    The envelope is the PC agent's own ASCII frame
+    (``PADIEM_IMAGE_CONTENT=<mime>:<base64>``); anything that does not parse
+    is returned untouched so an ordinary text read never changes shape.
+    Downscaling reuses Pillow (the receipt-verified 12.3.0 runtime) toward
+    the wire limits — long edge 2000, byte cap 300 KB — and says so in the
+    note; without Pillow, or for a frame Pillow refuses (multi-frame GIF),
+    the original bytes travel with no downscale claim.
+    """
+    if not output.startswith(PC_IMAGE_ENVELOPE_PREFIX):
+        return output, None
+    head, _, encoded = output[len(PC_IMAGE_ENVELOPE_PREFIX):].partition(":")
+    mime = head.strip()
+    if mime not in ("image/png", "image/jpeg", "image/webp", "image/gif") or not encoded:
+        return output, None
+    import base64
+    try:
+        raw = base64.b64decode(encoded, validate=True)
+    except Exception:
+        return output, None
+    note = (f"이미지 파일을 읽었습니다: {mime}, {len(raw):,}바이트. "
+            "(축소 없이 원본 그대로)")
+    try:
+        import io
+        from PIL import Image
+
+        image = Image.open(io.BytesIO(raw))
+        source_size = image.size
+        long_edge = max(image.size)
+        if long_edge > PC_IMAGE_LONG_EDGE_MAX:
+            ratio = PC_IMAGE_LONG_EDGE_MAX / long_edge
+            image = image.resize(
+                (max(1, round(image.size[0] * ratio)),
+                 max(1, round(image.size[1] * ratio))))
+            note_extra = f" 긴 변 {long_edge}px를 {PC_IMAGE_LONG_EDGE_MAX}px로 축소."
+        else:
+            note_extra = ""
+        fmt = "PNG" if mime == "image/png" else (
+            "JPEG" if mime == "image/jpeg" else "PNG")
+        buf = io.BytesIO()
+        image.save(buf, format=fmt)
+        if len(buf.getvalue()) > PC_IMAGE_BYTE_CAP:
+            # #7447: one pass is rarely enough for a noisy capture; at most
+            # three bounded steps (JPEG quality, then the long edge) walk the
+            # size down, and the note reports wherever this actually landed.
+            converted = image.convert("RGB")
+            for quality, edge in ((80, None), (50, 1280), (35, 800)):
+                buf = io.BytesIO()
+                step = converted
+                if edge and max(step.size) > edge:
+                    ratio = edge / max(step.size)
+                    step = step.resize((max(1, round(step.size[0] * ratio)),
+                                        max(1, round(step.size[1] * ratio))))
+                step.save(buf, format="JPEG", quality=quality)
+                fmt = "JPEG"
+                if len(buf.getvalue()) <= PC_IMAGE_BYTE_CAP:
+                    break
+            image = step
+            note_extra = f" 용량 상한에 맞춰 JPEG({quality})로 재부호화.{note_extra}"
+        out_mime = {"PNG": "image/png", "JPEG": "image/jpeg"}[fmt]
+        data = buf.getvalue()
+        note = (
+            f"이미지 파일을 읽었습니다: {mime}, "
+            f"{source_size[0]}x{source_size[1]} → {image.size[0]}x{image.size[1]}, "
+            f"{len(data):,}바이트.{note_extra}"
+        )
+    except Exception:
+        # Pillow missing or an undecodable frame: the projection still carries
+        # what the PC actually read, with no downscale claim.
+        return note, {"type": "image", "mimeType": mime,
+                      "data": base64.b64encode(raw).decode("ascii")}
+    return note, {"type": "image", "mimeType": out_mime,
+                  "data": base64.b64encode(data).decode("ascii")}
 
 
-def _pc_files_wait_seconds() -> float:
-    """The bounded first wait; a deployment may name its own, within limits."""
-    raw = (os.environ.get(PC_FILES_WAIT_ENV) or "").strip()
-    if raw:
-        try:
-            return float(min(max(int(raw), 1), 120))
-        except ValueError:
-            pass
-    return float(PC_FILES_WAIT_SECONDS)
 
 
 def _pc_files_resume_dispatch(arguments) -> str | None:
@@ -367,6 +405,10 @@ _PC_REFUSAL_HINTS = {
     "pc_file_too_large": (
         "파일이 한 번에 읽는 크기를 넘었습니다. 구간 읽기로 이어가야 합니다. "
         "실행 결과를 추정하거나 같은 작업을 재전송하지 마세요."
+    ),
+    "pc_file_binary_not_supported": (
+        "이미지가 아닌 이진 파일은 pc_read로 읽지 않습니다. "
+        "텍스트 파일이나 이미지 파일로 다시 시도하세요."
     ),
 }
 #: The PC ran, but the answer never came back to this lane.
@@ -1126,6 +1168,9 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                             "pc_files_output_missing",
                             "Verified PC outcome is incomplete",
                         )
+                image_block = None
+                if op == "read" and output.startswith(PC_IMAGE_ENVELOPE_PREFIX):
+                    output, image_block = _pc_image_projection(output)
                 common = {
                     "dispatch_id": dispatch_id,
                     "output": output,
@@ -1201,6 +1246,10 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                     return common
                 common["content"] = output
                 common["content_bytes"] = len(output.encode("utf-8"))
+                if image_block is not None:
+                    # #7447: the MCP layer pops this into one image block; the
+                    # model lane reads the note above, never the base64.
+                    common["_pc_image"] = image_block
                 emit_progress("result")
                 return common
             if row.get("state") not in ("pending", "received", "store_failed"):
