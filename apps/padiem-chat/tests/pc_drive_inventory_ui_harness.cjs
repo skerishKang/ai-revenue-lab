@@ -53,6 +53,15 @@ const window = Object.assign(new Events(), {
   setTimeout(callback, delay) { timers.set(++nextTimer, { callback, delay }); return nextTimer; },
   clearTimeout(id) { timers.delete(id); },
   PadiemAuthGate: { authenticated: () => authenticated },
+  // #7368 moved the status read behind the transport wrapper; this harness
+  // verifies the device manager's own behavior, so the wrapper delegates to
+  // the same mocked fetch with one attempt and no extra retry of its own.
+  PadiemChatTransport: {
+    // #7368 routes the status read through the transport wrapper. The stub
+    // runs in the Node realm, so it must call the Node-side mock directly;
+    // resolving bare `fetch` here would hit Node's own global fetch.
+    fetchStatusWithRetry: (url, options) => mockFetch(url, options),
+  },
 });
 const observers = [];
 class MutationObserver {
@@ -63,18 +72,19 @@ const input = JSON.parse(fs.readFileSync(0, "utf8"));
 let envelope = input.responses[0];
 let nextRead = null;
 const calls = [];
+const mockFetch = async (url, options) => {
+  calls.push({ url, method: options.method });
+  if (options.method === "GET" && nextRead) {
+    const read = nextRead; nextRead = null; return read();
+  }
+  const body = options.method === "POST"
+    ? { ok: true, selectedDeviceId: JSON.parse(options.body).device_id } : envelope;
+  return { ok: true, status: 200, text: async () => JSON.stringify(body), json: async () => body };
+};
 const context = vm.createContext({
   document, window, MutationObserver, AbortController, Intl, Date,
   CustomEvent: class { constructor(type, options = {}) { this.type = type; this.detail = options.detail; } },
-  fetch: async (url, options) => {
-    calls.push({ url, method: options.method });
-    if (options.method === "GET" && nextRead) {
-      const read = nextRead; nextRead = null; return read();
-    }
-    const body = options.method === "POST"
-      ? { ok: true, selectedDeviceId: JSON.parse(options.body).device_id } : envelope;
-    return { ok: true, status: 200, text: async () => JSON.stringify(body), json: async () => body };
-  },
+  fetch: mockFetch,
 });
 const staticDir = path.resolve(__dirname, "../static");
 for (const module of ["claw-local-handoff.js", "claw-device-manager.js"])
