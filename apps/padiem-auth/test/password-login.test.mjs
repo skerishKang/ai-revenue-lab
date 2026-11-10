@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHmac, randomUUID } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
+import { readFileSync } from 'node:fs';
 import { AuthState } from '../state.mjs';
 import { createApp, AuthStateObject } from '../worker.mjs';
 
@@ -148,6 +149,38 @@ test('password accounts disclose the login identifier without claiming a verifie
   assert.deepEqual(body.profile, { email: EMAIL, email_verified: false, name: '', picture: '' });
   assert.equal(body.profile.email_verified === true, false);
   assert.equal(JSON.stringify(body).includes(USER_ID), false);
+});
+
+test('the deployed lovetree client discloses the identifier at /token and the access token stays email-free', async () => {
+  // Pin the operator config: the deployed lovetree-4-0 client carries Chat's
+  // claim level, so the /token response carries the profile while the access
+  // token never does.
+  const configLine = readFileSync(new URL('../wrangler.toml', import.meta.url), 'utf8')
+    .split('\n').find(line => line.startsWith('PADIEM_AUTH_CLIENTS'));
+  const clients = JSON.parse(configLine.slice("PADIEM_AUTH_CLIENTS = '''".length, -"'''".length));
+  assert.deepEqual(clients['lovetree-4-0'].profile_claims, ['email', 'email_verified', 'name', 'picture']);
+
+  const f = await setup({ profile: true });
+  const begun = await f.begin();
+  const done = await f.postForm('/login/password', begun.formState, begun.cookie, { email: EMAIL, password: PASSWORD });
+  const target = new URL(done.headers.get('location'));
+  const body = await (await f.post({ grant_type: 'authorization_code', code: target.searchParams.get('code'), code_verifier: begun.verifier, redirect_uri: REDIRECT })).json();
+  assert.equal(typeof body.profile?.email, 'string');
+  assert.equal(body.profile.email_verified, false);
+  const accessClaims = JSON.parse(Buffer.from(body.access_token.split('.')[1], 'base64url'));
+  assert.equal(accessClaims.email, undefined);
+  assert.equal(JSON.stringify(body.access_token).includes(EMAIL), false);
+});
+
+test('a client without a claim allowlist gets no profile in the exchange', async () => {
+  const f = await setup();
+  const begun = await f.begin();
+  const done = await f.postForm('/login/password', begun.formState, begun.cookie, { email: EMAIL, password: PASSWORD });
+  const target = new URL(done.headers.get('location'));
+  const body = await (await f.post({ grant_type: 'authorization_code', code: target.searchParams.get('code'), code_verifier: begun.verifier, redirect_uri: REDIRECT })).json();
+  assert.equal(body.profile, undefined);
+  const accessClaims = JSON.parse(Buffer.from(body.access_token.split('.')[1], 'base64url'));
+  assert.equal(accessClaims.email, undefined);
 });
 
 test('a wrong password keeps the state alive for a corrected retry and never reaches the authority', async () => {
