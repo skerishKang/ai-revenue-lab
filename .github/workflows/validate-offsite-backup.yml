@@ -9,7 +9,6 @@ on:
       # instead of rotting until the next nightly run fails on COM2.
       - 'scripts/ops/com2_backup_schedule.py'
       - 'scripts/ops/refresh_d1.py'
-      - 'docs/operations/COM2_OFFSITE_BACKUP_RUNBOOK.md'
       - '.github/workflows/validate-offsite-backup.yml'
   workflow_dispatch:
 permissions:

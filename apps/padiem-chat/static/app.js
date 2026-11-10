@@ -4374,7 +4374,10 @@
     }
     setConnectorCardsLoading();
     try {
-      const response = await fetch("/api/connectors/status", {
+      // #7368: a front-edge loss (502/503/504) or a network error asks one
+      // more time after 0.8s. The checking state persists through the retry,
+      // and a second failure keeps the same unavailable answer as before.
+      const response = await window.PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status", {
         headers: { "Accept": "application/json" },
         cache: "no-store",
       });

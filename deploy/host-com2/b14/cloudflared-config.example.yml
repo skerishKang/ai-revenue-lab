@@ -20,7 +20,7 @@
 loglevel: error
 
 ingress:
-  # File lane (already proposed in docs/operations/COM2_TUNNEL_RUNBOOK.md, #5881/#5892).
+  # File lane (already proposed in the 비공개 운영 기록(거버넌스 폴더, 같은 상대 경로), COM2_TUNNEL_RUNBOOK.md, #5881/#5892).
   - hostname: files.padiem.net
     service: http://127.0.0.1:8788
     originRequest:

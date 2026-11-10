@@ -5,7 +5,7 @@
 # installs the systemd service+timer and enables the 30-minute schedule.
 # It never prints, creates or rewrites token values: the two token files and
 # paths.json must already exist under /opt/padiem/com2-secrets/pc-read-metrics
-# (see docs/operations/PC_READ_LATENCY_MONITOR_261109.md).
+# (see the 비공개 운영 기록(거버넌스 폴더, 같은 상대 경로), PC_READ_LATENCY_MONITOR_261109.md).
 set -euo pipefail
 
 here=$(cd "$(dirname "$0")" && pwd)

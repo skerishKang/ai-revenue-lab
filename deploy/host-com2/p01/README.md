@@ -32,7 +32,7 @@ The installer uses the current checkout as its default source and requires an ex
 ## 경계
 
 Chat canonical subject와 P01 identity HTTPS 연결 설정·머지 후 반영/복구 절차는
-[P01 identity/entitlement 수정 기록](../../../docs/operations/P01_IDENTITY_ENTITLEMENT_HOST_FIX_20261031.md)을 따른다.
+P01 identity/entitlement 수정 기록은 비공개 운영 기록(거버넌스 폴더, 같은 상대 경로)로 이동했다(2026-11-11, P01_IDENTITY_ENTITLEMENT_HOST_FIX_20261031.md).
 P01 identity 설정 추가만으로 Chat의 제품 내부 사용자 ID가 canonical subject로 바뀌지는 않는다.
 
 - Chat이 이 엔진을 부르는 주소는 Chat 호스트 설정이다:

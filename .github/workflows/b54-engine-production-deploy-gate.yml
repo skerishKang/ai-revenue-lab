@@ -503,7 +503,11 @@ jobs:
             exit 1
           fi
           grep -q '"status":"ok"' /tmp/health.json
-          grep -q '"b14_service_bound":true' /tmp/health.json
+          # 2026-11-10 Cloudflare B14 Worker retirement (Refs #7400): the
+          # Engine no longer binds B14_SERVICE — the reviewed served posture
+          # reports the lane unbound, riding the COM2 HTTPS origin instead.
+          # Asserting the bound state here would fail every future deploy.
+          grep -q '"b14_service_bound":false' /tmp/health.json
           grep -q 'orchestration_run' /tmp/health.json
           echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
 

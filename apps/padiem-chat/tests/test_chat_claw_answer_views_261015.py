@@ -114,7 +114,7 @@ def test_connectors_nav_opens_standalone_page_never_a_popup() -> None:
     assert 'getElementById("connectorsViewBody")' in app
     assert "function connectorsScope()" in definition_source("connectorsScope")
     # Existing projection, endpoints and auth behavior are reused unchanged.
-    assert 'fetch("/api/connectors/status"' in app
+    assert 'PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status"' in app
     assert "/api/connectors/google/ticket" in app
     # The dialog element stays for contract compatibility.
     assert 'id="connectorsDialog"' in html

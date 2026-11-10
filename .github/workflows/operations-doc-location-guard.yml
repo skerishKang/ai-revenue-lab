@@ -1,0 +1,39 @@
+name: Operations doc location guard (warn only)
+
+# #7404: 운영 기록 문서는 비공개 운영 기록 위치(거버넌스 폴더)에 쓴다.
+# 공개 경로에 새 운영 문서가 추가되면 경고만 남긴다 — 실패(실패 아님) 없이 안내한다.
+
+on:
+  pull_request:
+    paths:
+      - "docs/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: operations-doc-location-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  warn-new-operational-docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the PR head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: List newly added docs files
+        run: |
+          base="origin/${{ github.base_ref }}"
+          git fetch --no-tags origin "${{ github.base_ref }}"
+          added=$(git diff --name-only --diff-filter=A "$base...HEAD" -- docs/ | tr '\n' ' ' || true)
+          echo "ADDED_DOCS=$added" >> "$GITHUB_ENV"
+
+      - name: Warn about new operational records in public paths
+        if: env.ADDED_DOCS != ''
+        run: |
+          python .github/scripts/operations_doc_location_guard.py $ADDED_DOCS
+          echo "guard finished (warn-only, never fails)"

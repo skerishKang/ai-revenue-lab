@@ -530,7 +530,10 @@
       // Cover both HTTP dispatch and response body reads, not only fetch().
       const timer = window.setTimeout(() => controller.abort(), READ_TIMEOUT_MS);
       try {
-        const response = await fetch(ENDPOINT, {
+        // #7368: 앞단 손실(502/503/504)·네트워크 오류는 한 번만 다시 묻는다.
+        // 재시도 중에도 loading 상태가 유지되고, 호출자가 중단하면
+        // (패널 닫기·읽기 시간 초과) 재시도 없이 기존 상태로 끝난다.
+        const response = await window.PadiemChatTransport.fetchStatusWithRetry(ENDPOINT, {
           method: "GET",
           credentials: "same-origin",
           cache: "no-store",

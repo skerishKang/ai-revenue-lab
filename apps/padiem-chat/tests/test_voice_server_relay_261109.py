@@ -73,11 +73,22 @@ class FakeConnector:
         return self.link
 
 
+class FakeHeaders:
+    def __init__(self, values=None):
+        self._values = dict(values or {})
+
+    def get(self, name):
+        return self._values.get(name.lower())
+
+
 class FakeWS:
-    def __init__(self, messages=(), connector=None):
+    def __init__(self, messages=(), connector=None, origin="https://chat.example.test",
+                 public_base_url="https://chat.example.test"):
         self.app = SimpleNamespace(state=SimpleNamespace(
             voice_stt_transport=FakeTransport(),
-            voice_relay_connector=connector if connector is not None else FakeConnector()))
+            voice_relay_connector=connector if connector is not None else FakeConnector(),
+            settings=SimpleNamespace(public_base_url=public_base_url)))
+        self.headers = FakeHeaders({"origin": origin} if origin is not None else None)
         self._messages = list(messages)
         self.sent = []
         self.closed = None
@@ -110,7 +121,45 @@ async def test_relay_rejects_anonymous(monkeypatch):
     monkeypatch.setattr(voice_relay, "_active", 0)
     ws = FakeWS()
     await voice_relay.voice_relay_ws(ws, session_resolver=_resolver_none)
+    assert ws.accepted is True
     assert ws.closed == 4401
+
+
+@pytest.mark.asyncio
+async def test_relay_refuses_a_cross_origin_handshake_before_accept(monkeypatch):
+    """The HTTP guard never sees a websocket scope, so the relay checks the
+    handshake itself: another origin is refused before the accept."""
+    monkeypatch.setattr(voice_relay, "_active", 0)
+    ws = FakeWS(origin="https://evil.example")
+    await voice_relay.voice_relay_ws(ws, session_resolver=_resolver_ok)
+    assert ws.accepted is False
+    assert ws.closed == 1008
+
+
+@pytest.mark.asyncio
+async def test_relay_refuses_a_handshake_without_an_origin(monkeypatch):
+    monkeypatch.setattr(voice_relay, "_active", 0)
+    ws = FakeWS(origin=None)
+    await voice_relay.voice_relay_ws(ws, session_resolver=_resolver_ok)
+    assert ws.accepted is False
+    assert ws.closed == 1008
+
+
+@pytest.mark.asyncio
+async def test_relay_refuses_a_handshake_without_a_reviewed_origin_config(monkeypatch):
+    monkeypatch.setattr(voice_relay, "_active", 0)
+    ws = FakeWS(public_base_url=None)
+    await voice_relay.voice_relay_ws(ws, session_resolver=_resolver_ok)
+    assert ws.accepted is False
+    assert ws.closed == 1008
+
+
+@pytest.mark.asyncio
+async def test_relay_accepts_the_reviewed_origin(monkeypatch):
+    monkeypatch.setattr(voice_relay, "_active", 0)
+    ws = FakeWS(origin="https://chat.example.test")
+    await voice_relay.voice_relay_ws(ws, session_resolver=_resolver_ok)
+    assert ws.accepted is True
 
 
 @pytest.mark.asyncio

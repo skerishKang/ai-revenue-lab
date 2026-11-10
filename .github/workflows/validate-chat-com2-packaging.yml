@@ -11,7 +11,6 @@ on:
       - 'apps/padiem-chat/app/local_cpython.py'
       - 'apps/padiem-chat/app/local_cron.py'
       - 'apps/padiem-chat/app/local_service_bridge.py'
-      - 'docs/operations/CHAT_COM2_RUNBOOK.md'
       - 'docs/operations/CHAT_PADIEM_NET_REQUEST_TOPOLOGY_20261108.md'
       - '.github/workflows/validate-chat-com2-packaging.yml'
   workflow_dispatch:

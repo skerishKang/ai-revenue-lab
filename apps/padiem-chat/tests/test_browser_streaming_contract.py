@@ -135,7 +135,7 @@ def test_sse_reader_handles_fragmented_crlf_and_multiple_frames() -> None:
         ": heartbeat\n\nevent: done\r\ndata: {\"done\":true}\r\n\r\n",
     ]
     script = _transport_runtime() + r'''
-const chunks = JSON.parse(process.argv[1]);
+const chunks = JSON.parse(process.argv[2]);
 const encoder = new TextEncoder();
 let index = 0;
 let cancelled = false;
@@ -163,7 +163,7 @@ const events = [];
   console.log(JSON.stringify({ events, cancelled, released }));
 })().catch((error) => { console.error(error); process.exit(1); });
 '''
-    result = json.loads(_run_node(script, json.dumps(chunks, ensure_ascii=False)))
+    result = json.loads(_run_node_script(script, json.dumps(chunks, ensure_ascii=False)))
 
     assert result["events"] == [
         {"event": "delta", "data": '{"delta":"안"}'},
@@ -180,7 +180,7 @@ def test_sse_reader_cancels_when_consumer_stops_early() -> None:
         'event: done\ndata: {"done":true}\n\n',
     ]
     script = _transport_runtime() + r'''
-const chunks = JSON.parse(process.argv[1]);
+const chunks = JSON.parse(process.argv[2]);
 const encoder = new TextEncoder();
 let index = 0;
 let cancelled = false;
@@ -205,7 +205,7 @@ const response = {
   console.log(JSON.stringify({ seen, cancelled, released }));
 })().catch((error) => { console.error(error); process.exit(1); });
 '''
-    result = json.loads(_run_node(script, json.dumps(chunks, ensure_ascii=False)))
+    result = json.loads(_run_node_script(script, json.dumps(chunks, ensure_ascii=False)))
 
     assert result == {"seen": 1, "cancelled": True, "released": True}
 
