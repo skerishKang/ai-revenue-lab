@@ -96,7 +96,8 @@ def test_js_browser_probe_reuses_only_one_post_and_never_retries():
     transport=(ROOT/"static"/"chat-transport.js").read_text(encoding="utf-8")
     harness=r"""
 const vm=require('vm');
-const source=process.argv[1];
+const fs=require('fs');
+const source=fs.readFileSync(process.argv[2],'utf8');
 const results=[];
 function response(ok=true, status=200, type="text/event-stream") {
  return {ok,status,headers:{get:(k)=>k==="content-type"?type:null},json:async()=>({error:{code:"claw_live_stream_unavailable"}})};
@@ -127,7 +128,16 @@ async function scenario(capability, postStatus=200, controller=null) {
  console.log(JSON.stringify(results));
 })().catch(e=>{console.error(e);process.exit(1)});
 """
-    result=subprocess.run(["node","-e",harness,transport],capture_output=True,text=True,encoding="utf-8",check=True)
+    import tempfile
+    harness_file=tempfile.NamedTemporaryFile("w",suffix=".cjs",delete=False,encoding="utf-8",newline="\n")
+    harness_file.write(harness); harness_file.close()
+    transport_file=tempfile.NamedTemporaryFile("w",suffix=".js",delete=False,encoding="utf-8",newline="\n")
+    transport_file.write(transport); transport_file.close()
+    try:
+        result=subprocess.run(["node",harness_file.name,transport_file.name],capture_output=True,text=True,encoding="utf-8",check=True)
+    finally:
+        import os as _os
+        _os.unlink(harness_file.name); _os.unlink(transport_file.name)
     scenarios=json.loads(result.stdout)
     for record in scenarios:
         calls=record["calls"]

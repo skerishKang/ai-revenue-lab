@@ -112,6 +112,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | padiem_mcp_audit | 085 | FK CASCADE 선언, 명시 삭제 |
 | padiem_mcp_oauth_codes | 095 | FK 없음 → 명시 삭제 |
 | shared_session_revoke_pending | 106 | FK 없음 → 명시 삭제(계정이 사라진 뒤 의미 없는 재시도 표식) |
+| external_token_revoke_pending | 107 | FK 없음 → 명시 삭제(같은 형태의 재시도 표식, 계정이 사라지면 폐기할 토큰이 없다) |
 
 ### 2.2 다른 키로 지우는 표
 

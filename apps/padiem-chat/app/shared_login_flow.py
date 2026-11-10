@@ -15,9 +15,11 @@ import time
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urlencode, urlsplit
 
-from .auth import SESSION_COOKIE
+from .auth import SESSION_COOKIE, decode_session_claims
 from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
 from starlette.routing import Route
+
+from .session_revocation_guard import session_verdict
 
 from .shared_auth_compare_flow import AUTH, TOKEN_URL, ComparisonFlow, _await, _b64, _encoded, _un64
 
@@ -258,6 +260,38 @@ async def attach_chat_default_session(
         return canonical_session_id
     except Exception:
         return None
+
+
+def chat_session_reattach_needed(request) -> bool:
+    """Whether the browser no longer holds a working Chat default session.
+
+    The common login outlives the Chat default session: the shared refresh
+    credential lives 30 days while the Chat session cookie lives 7. The refresh
+    must re-establish the Chat session when the browser holds none — it expired,
+    was cleared, or its canonical session was revoked behind this request's
+    back (the request-time guard's own verdict) — so devices·connectors keep
+    resolving for the common login's whole life (#7381). A still-working Chat
+    session is left alone: the refresh never mints a second canonical session
+    for it.
+    """
+
+    raw = request.cookies.get(SESSION_COOKIE)
+    if not raw:
+        return True
+    settings = getattr(getattr(request, "app", None), "state", None)
+    settings = getattr(settings, "settings", None)
+    if settings is None:
+        # Without the app composition there is nothing to re-establish against.
+        return False
+    if decode_session_claims(settings, raw) is None:
+        # Expired or unparsable: the browser holds no working Chat session.
+        return True
+    verdict = session_verdict(request)
+    if verdict is not None and not verdict.authenticated:
+        # The request-time guard resolved this very request and refused the
+        # cookie's canonical session, so the cookie authenticates nothing.
+        return True
+    return False
 
 
 def safe_login_return(value):
@@ -524,7 +558,19 @@ class SharedLoginFlow(ComparisonFlow):
             except Exception:
                 pass
             stage = 'refresh_issue'
-            return issue_shared_cookies(JSONResponse({'ok': True}, headers=headers), access, refresh)
+            response = issue_shared_cookies(JSONResponse({'ok': True}, headers=headers), access, refresh)
+            # #7381: the renewed common login re-attaches the Chat default
+            # session when the browser no longer holds a working one, so a
+            # 30-day common login keeps devices·connectors healthy past the
+            # 7-day Chat session. Best-effort exactly like the callback's
+            # attachment: any failure leaves the refreshed cookies untouched.
+            if chat_session_reattach_needed(request):
+                verifier = getattr(getattr(self, 'auth', None), 'verifier', None)
+                if callable(getattr(verifier, 'verify', None)):
+                    await attach_chat_default_session(
+                        response, request, user_id=user, access=access, verifier=verifier,
+                    )
+            return response
         except Exception as exc:
             # #6679: a stale shared-session cookie must not wedge the browser.
             # When the authority itself rejects the refresh token (invalid_grant

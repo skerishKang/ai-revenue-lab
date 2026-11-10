@@ -386,6 +386,9 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     # Pending shared-session revocation retry marker (#7078): meaningless once
     # the account is gone, and it would name a deleted user forever.
     ("shared_session_revoke_pending", "user_id = ?"),
+    # Same shape and same fate for the external-token revocation retry marker:
+    # with the account gone, the retry has nothing left to revoke.
+    ("external_token_revoke_pending", "user_id = ?"),
 )
 
 #: Tables whose rows name the account only through the common-login subject.
