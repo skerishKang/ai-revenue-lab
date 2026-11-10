@@ -21,3 +21,5 @@ jobs:
         run: node --check apps/padiem-chat-front/worker.mjs
       - name: Proxy, streaming, fallback and CPU-shape tests
         run: node --test apps/padiem-chat-front/test/worker.test.mjs
+      - name: Security response header tests
+        run: node --test apps/padiem-chat-front/test/security-headers.test.mjs
