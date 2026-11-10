@@ -46,17 +46,6 @@ ALLOWLIST: dict[tuple[str, str], str] = {
         "padiem-chat. Adding the Chat path would trip that invariant, so the "
         "read stays nightly-only until the gate ownership is redesigned."
     ),
-    (
-        ".github/tests/test_b62_automation_scheduler_config.py",
-        "apps/padiem-chat/wrangler.toml",
-    ): (
-        "Adding the Chat binding file to this gate's paths exposes a "
-        "pre-existing stale contract on main: #6773 added [triggers] to "
-        "apps/padiem-chat/wrangler.toml while "
-        "test_repository_scheduler_source_stays_inert still asserts it is "
-        "inert. Repairing that contract is a separate decision; mapping it "
-        "here would turn an unrelated PR red."
-    ),
 }
 
 

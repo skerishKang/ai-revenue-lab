@@ -6,6 +6,8 @@ on:
       - ".github/workflows/b62-automation-scheduler-config-gate.yml"
       - ".github/scripts/b62_automation_scheduler_config.py"
       - ".github/tests/test_b62_automation_scheduler_config.py"
+      # #7355: the binding file is asserted by this gate, so change there must be checked here.
+      - "apps/padiem-chat/wrangler.toml"
   workflow_dispatch:
     inputs:
       mode:
