@@ -126,7 +126,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | auth_validation_cache | `product_user_id = ?` | 087 | FK 없음 → 명시 삭제 + 런타무 무효화 헬퍼 |
 | auth_account_link_cache | `product_user_id = ?` | 088 | FK 없음 → 명시 삭제 |
 | control_plane_identity_shadow | `product_user_id = ?` | 007 | FK CASCADE 선언, 명시 삭제 |
-| claw_rules | `canonical_subject_id = ?`(공통 로그인 subject) | 018(019 열 추가) | 명시 삭제 — 자동화 규칙은 워크스페이스 소유자만 만들 수 있어 subject가 곧 소유자다 |
+| claw_rules | `canonical_subject_id = ?`(공통 로그인 subject) | 018(019 열 추가) | 명시 삭제 — 자동화 규칙은 워크스페이스 소유자만 만들 수 있어 subject가 곧 소유자다. 019 이전 생성 행의 canonical_subject_id는 NULL이라 subject 근거가 없고 남는다(3장 잔여) |
 | claw_runs | `rule_id IN (SELECT rule_id FROM claw_rules WHERE canonical_subject_id = ?)` | 018 | 규칙 체인 명시 삭제(claw_rules보다 먼저) |
 | claw_occurrences | `run_id IN (SELECT run_id FROM claw_runs WHERE rule_id IN (…))` | 018 | 규칙 체인 명시 삭제(가장 먼저) |
 | claw_proposals | 규칙 체인 + `approved_by = ?` | 018 | 규칙 체인 명시 삭제 + 이 계정이 승인한 남의 워크스페이스 제안도 삭제 |
