@@ -143,8 +143,9 @@ def test_kind_aware_fields_are_declared_with_default_daypart_visible() -> None:
 
 
 def test_submit_posts_exactly_the_seven_product_keys() -> None:
-    js = _app_source()
-    create_block = js.split("#3257 Web Automation Create", 1)[1]
+    # R5 A1: 생성 함수 본문은 chat-automation-form-module.js로 이동했다.
+    js = (ROOT / "static" / "chat-automation-form-module.js").read_text(encoding="utf-8")
+    create_block = js.split("function setClawAutomationCreateStatus", 1)[1]
     payload_match = re.search(r"const payload = \{(.*?)\};", create_block, re.DOTALL)
     assert payload_match, "create payload block not found"
     keys = re.findall(r"(\w+):", payload_match.group(1))

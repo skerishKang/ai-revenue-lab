@@ -341,6 +341,7 @@ class HistoryStore(Protocol):
     async def record_password_failure(self, user_id: str, failed_attempts: int, locked_until: str | None) -> None: ...
     async def reset_password_failures(self, user_id: str) -> None: ...
     async def get_user(self, user_id: str) -> UserProfile | None: ...
+    async def user_row_exists(self, user_id: str) -> bool: ...
     async def list_conversations(self, user_id: str, *, product_scope: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
     async def search_conversations(self, user_id: str, query: str, *, product_scope: str, limit: int = MAX_CONVERSATION_SEARCH_RESULTS) -> list[dict[str, Any]]: ...
     async def get_conversation(self, user_id: str, conversation_id: str, *, product_scope: str) -> dict[str, Any] | None: ...
@@ -1423,6 +1424,20 @@ class D1HistoryStore:
             str(row.get("display_name", "")),
             str(row.get("picture_url", "")),
         )
+
+    async def user_row_exists(self, user_id: str) -> bool:
+        """Whether this product's own store still carries the user row.
+
+        Internal audit H2 (2026-11-10): the request-time session guard asks
+        this only for compatibility cookies without a canonical session id —
+        the one session shape account deletion cannot revoke server-side.
+        Stores that do not model user rows simply do not declare this
+        capability, and the guard then keeps the reviewed cookie-only
+        behaviour for those requests.
+        """
+
+        row = await self._first("SELECT id FROM users WHERE id=?", user_id)
+        return row is not None
 
     async def _all_with_pinned(self, sql: str, fallback: str, *values: Any) -> list[dict[str, Any]]:
         """#7175: the pinned projection with a pre-migration-104 fallback.

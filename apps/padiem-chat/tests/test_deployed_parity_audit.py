@@ -111,6 +111,9 @@ def test_exact_assets_b62_get_404_and_invalid_post_422_make_chain_ready(tmp_path
         "CHAT_MODULE_CHAT_AUTH_MODULE": True,
         "CHAT_MODULE_CHAT_CONVERSATION_MODULE": True,
         "CHAT_MODULE_CHAT_STREAMING_MODULE": True,
+        # R5 A1: the two automation modules are parity assets too.
+        "CHAT_MODULE_CHAT_AUTOMATION_MODULE": True,
+        "CHAT_MODULE_CHAT_AUTOMATION_FORM_MODULE": True,
     }
     assert result.stream_route_present is True
     assert result.stream_get_status == 404

@@ -39,14 +39,15 @@ Cloudflare D1 경로에서는 아래 PC 테이블이 Chat D1 안에 있다. COM2
 presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한 뒤 Chat batch를
 실행한다. 각 DB 안에서는 자식→부모 순서이며 users 행은 Chat batch의 마지막이다.
 
-## 2. 사용자 데이터 테이블 전수 조사 (migrations 001~093)
+## 2. 사용자 데이터 테이블 전수 조사 (migrations 001~106)
 
-총 106개 테이블 중 사용자 키를 가진 살아있는 테이블은 63개다. 그중 62개는 경로가 지우고, oracle_mesh_dispatch는 재생 방지에 필요한 행만 남기고 계정 식별 칸은 지운다(2.4절).
-조사 방법: 93개 마이그레이션 전체에서 `CREATE TABLE` 본문의 사용자 키 컬럼
-(`user_id`·`member_id`·`owner_id`·`product_user_id`)을 추출. `_next`·
+총 표 중 사용자 키(`user_id`·`member_id`·`owner_id`·`product_user_id`) 또는 subject 계열 열(`subject`·`canonical_subject_id`·`provider_subject`·`approved_by`)을 가진 살아있는 표는 71개다(2026-11-11 재조사). 그중 69개는 경로가 지우고, oracle_mesh_dispatch는 재생 방지에 필요한 행만 남기고 계정 식별 칸은 지운다(2.4절), users와 bookai_records는 각각 배치의 마지막 문과 subject 문으로 지운다.
+조사 방법: 106개 마이그레이션 전체에서 `CREATE TABLE` 본문과 `ALTER TABLE ADD COLUMN`의 사용자 키 컬럼을 추출. `_next`·
 `_rebuilt_*` 그림자 테이블은 각 마이그레이션이 끝나기 전에 rename/drop되므로
 살아있는 이름만 표에 넣었다(060·061·063·068·069·077·081·083 끝의
-`ALTER TABLE ... RENAME` 확인).
+`ALTER TABLE ... RENAME` 확인). 이 대조는 매 실행마다 다시 계산되는 가드 시험
+(`apps/padiem-chat/tests/test_account_deletion_survey_guard_261111.py`)로 강제된다.
+새 사용자 키 표가 생기면 삭제 목록에 넣거나 예외 목록에 이유를 적어야 시험이 통과한다.
 
 ### 2.1 user_id 조건으로 지우는 표 (55)
 
@@ -60,6 +61,7 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | orchestration_decisions | 006 | FK 없음 → 명시 삭제 |
 | password_credentials | 012 | FK CASCADE 선언, 명시 삭제 |
 | claw_run_history | 009 | FK 없음 → 명시 삭제 |
+| claw_document_metadata | 008(060 리빌드, 080 user_id 추가·080a 백필) | FK 없음 → `user_id = ?` 명시 삭제 |
 | claw_approved_memory | 011 | FK 없음 → 명시 삭제 |
 | claw_approval_handoff | 016 | FK 없음 → 명시 삭제 |
 | claw_local_task_correlation | 020 | FK 없음 → 명시 삭제 |
@@ -107,6 +109,9 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | padiem_mcp_tokens | 085 | FK CASCADE 선언, 명시 삭제 |
 | padiem_mcp_approvals | 085 | FK CASCADE 선언, 명시 삭제 |
 | padiem_mcp_audit | 085 | FK CASCADE 선언, 명시 삭제 |
+| padiem_mcp_oauth_codes | 095 | FK 없음 → 명시 삭제 |
+| shared_session_revoke_pending | 106 | FK 없음 → 명시 삭제(계정이 사라진 뒤 의미 없는 재시도 표식) |
+| external_token_revoke_pending | 107 | FK 없음 → 명시 삭제(같은 형태의 재시도 표식, 계정이 사라지면 폐기할 토큰이 없다) |
 
 ### 2.2 다른 키로 지우는 표
 
@@ -117,8 +122,14 @@ presence까지 Chat batch에서 처리하고, COM2는 큐 DB를 먼저 정리한
 | claw_push_subscription | `member_id = ?` | 065 | FK 없음 → 명시 삭제 |
 | padiem_calendar_work_log | `owner_id = ?` | 013 | FK 없음(owner_id="owner user id" 주석) → 명시 삭제 |
 | padiem_calendar_appointment | `owner_id = ?` | 013 | 같음 |
+| lovetree_login_handoffs | `pending_user_id = ?` | 076 | FK 선언(CASCADE 미강제) → 명시 삭제(일회용 로그인 근거가 계정보다 오래 남지 않는다) |
 | auth_validation_cache | `product_user_id = ?` | 087 | FK 없음 → 명시 삭제 + 런타무 무효화 헬퍼 |
 | auth_account_link_cache | `product_user_id = ?` | 088 | FK 없음 → 명시 삭제 |
+| control_plane_identity_shadow | `product_user_id = ?` | 007 | FK CASCADE 선언, 명시 삭제 |
+| claw_rules | `canonical_subject_id = ?`(공통 로그인 subject) | 018(019 열 추가) | 명시 삭제 — 자동화 규칙은 워크스페이스 소유자만 만들 수 있어 subject가 곧 소유자다 |
+| claw_runs | `rule_id IN (SELECT rule_id FROM claw_rules WHERE canonical_subject_id = ?)` | 018 | 규칙 체인 명시 삭제(claw_rules보다 먼저) |
+| claw_occurrences | `run_id IN (SELECT run_id FROM claw_runs WHERE rule_id IN (…))` | 018 | 규칙 체인 명시 삭제(가장 먼저) |
+| claw_proposals | 규칙 체인 + `approved_by = ?` | 018 | 규칙 체인 명시 삭제 + 이 계정이 승인한 남의 워크스페이스 제안도 삭제 |
 
 ### 2.3 마지막에 지우는 행과 남기는 행
 
