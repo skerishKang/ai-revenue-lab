@@ -77,24 +77,13 @@ def session_user_row_check_enabled(settings: "Settings") -> bool:
     """Whether the audit H2 compatibility-cookie enforcement is on.
 
     ``None`` (the unset default) follows PADIEM_CHAT_SESSION_USER_ROW_CHECK,
-    whose absence keeps the enforcement on; an explicit ``False`` on the
-    settings object — the test suite's own switch — turns it off.
+    whose absence keeps the enforcement on; an explicit ``False`` — the test
+    suite's own switch — turns it off.
     """
 
     value = getattr(settings, "session_user_row_check", None)
     if value is not None:
         return bool(value)
-    return _env_session_user_row_check()
-
-
-def _env_session_user_row_check() -> bool:
-    """Unset keeps the audit H2 enforcement on; an explicit value wins.
-
-    The test suite turns the enforcement off with an explicit ``false`` in its
-    own conftest, so a partial store double is never read as an account
-    deletion.
-    """
-
     raw = os.getenv("PADIEM_CHAT_SESSION_USER_ROW_CHECK")
     if raw is None or not str(raw).strip():
         return True
@@ -204,17 +193,17 @@ class Settings:
     # calls Chat's internal /internal/password-verify. The internal RPC stays
     # available either way; nothing changes until a deployment opts in.
     email_login_via_shared: bool = False
-    # Internal audit H2 (2026-11-10): the request-time guard refuses a
-    # compatibility cookie (no canonical session id) whose user row no longer
-    # exists, and a production composition fails the start when its history
-    # store cannot answer that check. Unset defaults to enforced; test suites
-    # with partial store doubles turn it off explicitly
-    # (PADIEM_CHAT_SESSION_USER_ROW_CHECK=0).
-    session_user_row_check: bool | None = None
     # External AI personal tokens live at most this many days. Newly minted
     # tokens carry expires_at; a pre-existing token without one is treated as
     # created_at + this many days instead of living forever.
     mcp_pat_ttl_days: int = 90
+    # Internal audit H2 (2026-11-10): the request-time guard refuses a
+    # compatibility cookie (no canonical session id) whose user row no longer
+    # exists, and a production composition fails the start when its history
+    # store cannot answer that check. Unset follows
+    # PADIEM_CHAT_SESSION_USER_ROW_CHECK (unset = enforced); the test suite
+    # turns it off explicitly in its own conftest.
+    session_user_row_check: bool | None = None
 
     @classmethod
     def from_values(
@@ -553,6 +542,7 @@ class Settings:
                 )
                 if session_user_row_check is not None
                 else None
+            ),
             mcp_pat_ttl_days=(
                 _bounded_int(mcp_pat_ttl_days, name="PADIEM_MCP_PAT_TTL_DAYS", minimum=1, maximum=3650)
                 if mcp_pat_ttl_days is not None
