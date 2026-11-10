@@ -1348,7 +1348,9 @@ def create_app(
     # database. Existing pairing, PC grants and P01 admission retain authority.
     app.state.mcp_gateway_store = (
         mcp_gateway_store if mcp_gateway_store is not None
-        else D1McpGatewayStore(d1_binding) if d1_binding is not None else None
+        else D1McpGatewayStore(
+            d1_binding, pat_ttl_days=resolved.mcp_pat_ttl_days
+        ) if d1_binding is not None else None
     )
     app.state.mcp_gateway_executor = mcp_gateway_executor or execute_mcp_pc_tool
     app.state.project_file_store = project_file_store
