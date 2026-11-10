@@ -40,8 +40,8 @@ def test_the_six_cards_live_in_the_util_app_module() -> None:
 
 
 def test_cards_are_whole_clickable_buttons_without_secondary_actions() -> None:
-    assert '<button type="button" class="util-card"' in UTIL_APP_JS
-    assert 'data-util-route="' in UTIL_APP_JS
+    assert 'element("button", "util-card")' in UTIL_APP_JS
+    assert 'setAttribute("data-util-route"' in UTIL_APP_JS
     for gone in ("util-tool-open", "이력 열기", "Claw에서 작성", "Claw에서 진행"):
         assert gone not in UTIL_APP_JS, gone
     # No Claw handoff: opening a card never clicks a claw nav or quote chip.

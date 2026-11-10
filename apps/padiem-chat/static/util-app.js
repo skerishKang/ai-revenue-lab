@@ -81,41 +81,64 @@
     }[ch]));
   }
 
+  function element(tagName, className, text) {
+    const node = document.createElement(tagName);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function buildCard(tool) {
+    const text = copy(tool);
+    const item = element("li", "util-card-item");
+    const button = element("button", "util-card");
+    button.type = "button";
+    button.setAttribute("data-util-route", toolHref(tool.id));
+    button.setAttribute("aria-label", text.title + " — " + text.desc);
+    const icon = element("span", "util-card-icon", tool.icon);
+    icon.setAttribute("aria-hidden", "true");
+    const cta = element("span", "util-card-cta", "→");
+    cta.setAttribute("aria-hidden", "true");
+    button.appendChild(icon);
+    button.appendChild(element("span", "util-card-title", text.title));
+    button.appendChild(element("span", "util-card-desc", text.desc));
+    button.appendChild(cta);
+    item.appendChild(button);
+    return item;
+  }
+
   function renderList() {
-    const cards = TOOLS.map((tool) => {
-      const text = copy(tool);
-      return (
-        '<li class="util-card-item"><button type="button" class="util-card"'
-        + ' data-util-route="' + toolHref(tool.id) + '"'
-        + ' aria-label="' + esc(text.title) + " — " + esc(text.desc) + '">'
-        + '<span class="util-card-icon" aria-hidden="true">' + esc(tool.icon) + "</span>"
-        + '<span class="util-card-title">' + esc(text.title) + "</span>"
-        + '<span class="util-card-desc">' + esc(text.desc) + "</span>"
-        + '<span class="util-card-cta" aria-hidden="true">→</span>'
-        + "</button></li>"
-      );
-    }).join("");
-    const label = lang() === "en" ? "Util tools" : "유틸 도구";
-    return '<ul class="util-card-grid" aria-label="' + label + '">' + cards + "</ul>";
+    const list = element("ul", "util-card-grid");
+    list.setAttribute("aria-label", lang() === "en" ? "Util tools" : "유틸 도구");
+    TOOLS.forEach((tool) => list.appendChild(buildCard(tool)));
+    return list;
   }
 
   function renderTool(id) {
     const tool = TOOL_BY_ID.get(id);
     if (!tool) return null;
     const text = copy(tool);
-    const back = lang() === "en" ? "Util" : "유틸";
+    const screen = element("div", "util-tool-screen");
+    screen.setAttribute("data-util-tool", tool.id);
+    const back = element("a", "util-tool-back");
+    back.setAttribute("href", listHref());
+    back.appendChild(document.createTextNode("← "));
+    back.appendChild(element("span", null, lang() === "en" ? "Util" : "유틸"));
+    const heading = element("h3", "util-tool-heading", text.title);
+    heading.id = "utilToolHeading";
+    heading.setAttribute("tabindex", "-1");
+    const body = element("div", "util-tool-body");
+    body.setAttribute("role", "region");
+    body.setAttribute("aria-labelledby", "utilToolHeading");
     const placeholder = lang() === "en"
       ? "This tool screen is being prepared. Input and results land here in the next step."
       : "도구 화면을 준비 중입니다. 다음 단계에서 이 화면에 입력과 결과가 추가됩니다.";
-    return (
-      '<div class="util-tool-screen" data-util-tool="' + tool.id + '">'
-      + '<a class="util-tool-back" href="' + listHref() + '">← <span>' + back + "</span></a>"
-      + '<h3 class="util-tool-heading" id="utilToolHeading" tabindex="-1">' + esc(text.title) + "</h3>"
-      + '<p class="util-tool-desc">' + esc(text.desc) + "</p>"
-      + '<div class="util-tool-body" role="region" aria-labelledby="utilToolHeading">'
-      + '<p class="util-tool-placeholder">' + placeholder + "</p>"
-      + "</div></div>"
-    );
+    body.appendChild(element("p", "util-tool-placeholder", placeholder));
+    screen.appendChild(back);
+    screen.appendChild(heading);
+    screen.appendChild(element("p", "util-tool-desc", text.desc));
+    screen.appendChild(body);
+    return screen;
   }
 
   const els = {};
@@ -213,13 +236,13 @@
       } catch (_) { /* a sandboxed history must not stop the list render */ }
       if (!els.root) return false;
       parkLegacyPdfPanel();
-      els.root.innerHTML = renderList();
+      els.root.replaceChildren(renderList());
       return true;
     }
     if (!els.root) return false;
     parkLegacyPdfPanel();
     if (parsed.screen === "list") {
-      els.root.innerHTML = renderList();
+      els.root.replaceChildren(renderList());
       if (opts.focus && els.utilTitle && typeof els.utilTitle.focus === "function") {
         els.utilTitle.setAttribute("tabindex", "-1");
         els.utilTitle.focus({ preventScroll: true });
@@ -228,7 +251,7 @@
     }
     const markup = renderTool(parsed.id);
     if (!markup) return false;
-    els.root.innerHTML = markup;
+    els.root.replaceChildren(markup);
     if (parsed.id === "pdfmd") mountLegacyPdfPanel();
     if (opts.focus) {
       const heading = document.getElementById("utilToolHeading");

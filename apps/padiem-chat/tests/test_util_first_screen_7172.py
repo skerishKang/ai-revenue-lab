@@ -46,7 +46,7 @@ def test_whole_card_button_wears_the_hairline_token_and_shared_focus() -> None:
     assert border.startswith("1px solid var(--line"), border
     assert [value for rule in cards for value in rule.declarations.values()
             if "input-border-strong" in value] == []
-    assert '<button type="button" class="util-card"' in UTIL_APP_JS
+    assert 'element("button", "util-card")' in UTIL_APP_JS
     for gone in ("util-tool-open", "이력 열기", "Claw에서"):
         assert gone not in UTIL_APP_JS, gone
 
