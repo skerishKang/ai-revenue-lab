@@ -111,9 +111,11 @@ function makeDom() {
     createElement: (tag) => new N(tag),
   };
   const assigned = [];
+  const navigated = [];
   const window = {
     location: { assign: (href) => { assigned.push(href); } },
     history: { replaceState() {} },
+    PadiemUtilApp: { navigate: (hash) => { navigated.push(hash); } },
   };
   const ctx = {
     document,
@@ -129,7 +131,7 @@ function makeDom() {
   const initialized = [];
   window.initPdfMdUtility = (panel) => initialized.push(panel && panel.id);
   vm.runInContext(fs.readFileSync(utilMenuPath, "utf8"), ctx, { filename: "util-menu.js" });
-  return { ctx, assigned, initialized, tabs, submenu, toolCards, pdfPanel, title, kicker, tagline };
+  return { ctx, assigned, initialized, navigated, tabs, submenu, toolCards, pdfPanel, title, kicker, tagline };
 }
 
 (async () => {
@@ -145,6 +147,7 @@ function makeDom() {
     const pdfmd = {
       assigned: dom.assigned.slice(afterCouncil.length),
       initialized: dom.initialized.slice(),
+      navigated: dom.navigated.slice(),
       panelHidden: dom.pdfPanel.hidden,
       title: dom.title.textContent,
     };
