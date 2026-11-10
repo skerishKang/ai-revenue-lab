@@ -568,6 +568,21 @@ SHARED_STATUS_PATH = "/api/auth/status"
 SHARED_AUTH_HOST = "auth.padiem.net"
 
 
+_SHARED_EMAIL_SHAPE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+
+
+def shared_credential_ok(value) -> bool:
+    """padiem-auth 이메일 로그인에 쓸 수 있는 자격 모양인가.
+
+    모양만 본다(값은 기록하지 않는다). padiem-auth의 이메일 칸은 type=email이고
+    인증 자격 RPC도 이메일 형태를 요구한다. 레거시 Chat 로그인은 username을
+    쓰므로, 같은 자격이 padiem-auth에서는 통과하지 못할 수 있다.
+    """
+    if not isinstance(value, str):
+        return False
+    return bool(_SHARED_EMAIL_SHAPE.fullmatch(value.strip()))
+
+
 def _name_set(names) -> set[str]:
     return {str(name) for name in (names or ()) if isinstance(name, str) and name}
 
@@ -906,6 +921,11 @@ def _run_shared_login_flow(browser, chat_url: str, out_path: Path,
     qa_password = os.environ.get("B66_CGI_ALPHA_PASSWORD", "")
     if not qa_username or not qa_password:
         flow.skip("qa_credential_missing")
+        return
+    if not shared_credential_ok(qa_username):
+        # #6720 계약: 이 흐름에 쓸 자격이 없는 것과 같다. 실제 흐름 실패가
+        # 아니므로 경보가 아니라 건너뜀으로 기록한다.
+        flow.skip("qa_credential_not_email")
         return
 
     started = time.monotonic()
