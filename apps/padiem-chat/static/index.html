@@ -1336,6 +1336,9 @@
   <!-- 1GB 통일 3단계 — 진행률·자동 이어 올리기·한국어 안내는 한 모듈이 맡는다. -->
   <script src="./tus-upload.js"></script>
   <script src="./project-file-upload.js"></script>
+  <!-- R5 B1: the shared app context (module registry + shared namespace) loads
+       before every chat module. -->
+  <script src="./chat-app-context.js"></script>
   <script src="./chat-settings-module.js"></script>
   <script src="./chat-sidebar-module.js"></script>
   <script src="./chat-calendar-module.js"></script>
@@ -1347,6 +1350,8 @@
        load before app.js like every other chat module. -->
   <script src="./chat-automation-module.js"></script>
   <script src="./chat-automation-form-module.js"></script>
+  <!-- R5 B1: the local PC handoff panel (isolated zone) moves to a module. -->
+  <script src="./chat-local-pc-panel-module.js"></script>
   <script src="./app.js"></script>
   <!-- #5805: the phone header collapse scroll mirror. No parameter, no
        routing, no network; the surface CSS is mobile-header-collapse.css. -->

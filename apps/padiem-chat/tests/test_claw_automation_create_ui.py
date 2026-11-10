@@ -36,6 +36,7 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+STATIC = ROOT / "static"  # R5 B1: 모듈 소스 읽기용
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
 LOCALE_JS = ROOT / "static/locale.js"
@@ -163,16 +164,21 @@ def test_submit_posts_exactly_the_seven_product_keys() -> None:
 
 
 def test_create_status_uses_text_sink_and_no_innerhtml() -> None:
-    js = _app_source()
+    # R5 B1: 생성 블록은 chat-automation-form-module.js로 이동했다.
+    js = _app_source() + (STATIC / "chat-automation-form-module.js").read_text(encoding="utf-8")
     create_block = js.split("#3257 Web Automation Create", 1)[1].split(
         "#3257 Web Automation Create END", 1
     )[0] if "#3257 Web Automation Create END" in js else js.split("#3257 Web Automation Create", 1)[1]
     assert "innerHTML" not in create_block
-    assert "textContent = uiT(" in create_block
+    assert "textContent = deps.uiT(" in create_block  # R5 B1: 모듈 본문은 deps.uiT로 쓴다
 
 
 def test_scheduler_live_overclaim_is_absent() -> None:
-    js = _app_source()
+    # R5 B1: 부재 검사 대상에 이동된 모듈 3개를 합쳐 같은 강도를 유지한다.
+    js = (_app_source()
+          + (STATIC / "chat-automation-module.js").read_text(encoding="utf-8")
+          + (STATIC / "chat-automation-form-module.js").read_text(encoding="utf-8")
+          + (STATIC / "chat-local-pc-panel-module.js").read_text(encoding="utf-8"))
     html = _html_source()
     # No copy anywhere in the slice may claim live automatic execution.
     for overclaim in ("자동 실행이 활성화되었습니다", "scheduler is now live", "runs automatically now"):

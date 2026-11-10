@@ -25,7 +25,8 @@ function modulesBeforeApp(staticDir) {
     const appPos = scripts.find((s) => s.name === "app.js");
     if (appPos) {
       names = scripts
-        .filter((s) => s.pos < appPos.pos && /^chat-[\w-]+-module\.js$/.test(s.name))
+        .filter((s) => s.pos < appPos.pos
+          && (/^chat-[\w-]+-module\.js$/.test(s.name) || s.name === "chat-app-context.js"))
         .map((s) => s.name);
     }
   } catch (_) {
