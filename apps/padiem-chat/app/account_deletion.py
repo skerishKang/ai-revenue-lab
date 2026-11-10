@@ -252,8 +252,11 @@ async def _account_link_subjects(db, user_id: str) -> list[str]:
 
 #: Tables deleted with ``WHERE <key> = ?`` bound to the account id, in
 #: child-before-parent order. Every entry was verified against the migration
-#: survey in ``docs/operations/ACCOUNT_DELETION_20261103.md``. ``bookai_records``
-#: is absent here because its key is not ``users.id``: it is keyed by the
+#: survey in ``docs/operations/ACCOUNT_DELETION_20261103.md``, and the survey
+#: guard test (``test_account_deletion_survey_guard_261111``) re-derives that
+#: survey from the migrations so a new user-keyed table cannot ship without
+#: joining this list or ``_DELETION_EXCEPTIONS`` below. ``bookai_records`` is
+#: absent here because its key is not ``users.id``: it is keyed by the
 #: common-login subject, and ``bookai_subjects`` below turns the account into
 #: that subject so the records are deleted with the account.
 _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
@@ -267,6 +270,10 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("orchestration_decisions", "user_id = ?"),
     ("claw_run_history", "user_id = ?"),
     ("claw_approved_memory", "user_id = ?"),
+    ("claw_document_metadata", "user_id = ?"),
+    # member_id = '' rows are workspace-wide alerts and stay; the account's own
+    # rows go (operations doc 2.2, migration 010).
+    ("claw_task_alert", "member_id = ?"),
     ("padiem_calendar_work_log", "owner_id = ?"),
     ("padiem_calendar_appointment", "owner_id = ?"),
     ("claw_approval_handoff", "user_id = ?"),
@@ -318,11 +325,47 @@ _USER_KEYED_TABLES: tuple[tuple[str, str], ...] = (
     ("padiem_mcp_audit", "user_id = ?"),
     ("padiem_mcp_oauth_codes", "user_id = ?"),
     ("claw_artifact_delivery_receipts", "user_id = ?"),
+    # One-time LoveTree login evidence binds the pending account by id; the
+    # rows expire on their own, but they must not outlive the account.
+    ("lovetree_login_handoffs", "pending_user_id = ?"),
     # Identity-result caches name the product user; clear every session's row.
     ("auth_validation_cache", "product_user_id = ?"),
     ("auth_account_link_cache", "product_user_id = ?"),
     ("control_plane_identity_shadow", "product_user_id = ?"),
+    # Pending shared-session revocation retry marker (#7078): meaningless once
+    # the account is gone, and it would name a deleted user forever.
+    ("shared_session_revoke_pending", "user_id = ?"),
 )
+
+#: Tables whose rows name the account only through the common-login subject.
+#: Every statement runs once per resolved subject (``bookai_subjects``), in the
+#: same batch, BEFORE the claw_rules removal that the child chains read. The
+#: rule chain is the ownership boundary: scheduled automation (018) is created
+#: only by workspace owners, so runs, occurrences and proposals of the
+#: account's rules all disappear with the rules.
+_SUBJECT_KEYED_TABLES: tuple[tuple[str, str], ...] = (
+    ("claw_occurrences",
+     "run_id IN (SELECT run_id FROM claw_runs WHERE rule_id IN "
+     "(SELECT rule_id FROM claw_rules WHERE canonical_subject_id = ?))"),
+    ("claw_runs",
+     "rule_id IN (SELECT rule_id FROM claw_rules WHERE canonical_subject_id = ?)"),
+    ("claw_proposals",
+     "rule_id IN (SELECT rule_id FROM claw_rules WHERE canonical_subject_id = ?)"),
+    ("claw_proposals", "approved_by = ?"),
+    ("claw_rules", "canonical_subject_id = ?"),
+)
+
+#: Live user-keyed tables the batch deliberately does not ``DELETE``, with the
+#: reason the survey guard requires. A new user-keyed table ships only by
+#: joining ``_USER_KEYED_TABLES`` (or ``_IDENTITY_SCRUBBED_USER_KEYED_TABLES``)
+#: or by adding a reasoned entry here.
+_DELETION_EXCEPTIONS: dict[str, str] = {
+    "users": "계정 행 자체 — 배치의 마지막 문에서 삭제한다.",
+    "bookai_records": (
+        "user_id 키가 아닌 공통 로그인 subject 키 — "
+        "_SUBJECT_KEYED_TABLES와 같은 방식으로 subjects마다 같은 배치에서 삭제한다."
+    ),
+}
 
 #: Replay-prevention history keeps its rows and loses the person: the batch
 #: overwrites every identifying column instead of deleting the dispatch, because
@@ -346,19 +389,28 @@ def _delete_batch(
     """Build the Chat DB batch; COM2 PC rows are deleted by the queue first.
 
     ``bookai_subjects`` carries the subjects resolved before the batch (see
-    ``bookai_subjects`` above). They are deleted here, in the same transaction as
-    the account, because BookAI rows reference the account only by subject.
+    ``bookai_subjects`` above). They drive both subject-keyed families deleted
+    here, in the same transaction as the account: the BookAI records and the
+    claw scheduled-automation chain reference the account only by subject.
     """
-    statements = [
-        db.prepare(f"DELETE FROM {table} WHERE {where}").bind(user_id)
-        for table, where in _USER_KEYED_TABLES
-        if include_pc_queue_data or table not in _PC_QUEUE_USER_TABLES
-    ]
-    # BookAI records: one statement per subject, before the account-link cache
-    # rows that name the mapping are removed later in this same batch.
+    statements: list = []
+    # Subject-keyed statements must run before the account-keyed rows remove
+    # the mapping tables, and the claw chain reads claw_rules, so it goes
+    # before the rules themselves.
+    for subject in bookai_subjects:
+        statements.extend(
+            db.prepare(f"DELETE FROM {table} WHERE {where}").bind(subject)
+            for table, where in _SUBJECT_KEYED_TABLES
+        )
+    # BookAI records: one statement per subject.
     statements.extend(
         db.prepare("DELETE FROM bookai_records WHERE subject = ?").bind(subject)
         for subject in bookai_subjects
+    )
+    statements.extend(
+        db.prepare(f"DELETE FROM {table} WHERE {where}").bind(user_id)
+        for table, where in _USER_KEYED_TABLES
+        if include_pc_queue_data or table not in _PC_QUEUE_USER_TABLES
     )
     # Presence and the dispatch rows live with the PC queue on COM2 and stay in
     # this batch on D1. Dispatch rows are not deleted: they are made anonymous,
