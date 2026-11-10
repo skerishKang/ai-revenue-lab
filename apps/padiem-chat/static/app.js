@@ -412,6 +412,109 @@
     }
     return streamingModuleInstance;
   }
+
+  // R5 A1: the automation modules own the rule list/read-only catalogue/toggle
+  // and the edit+create forms. The declaration block and the top-level listener
+  // registrations stay in app.js (R5 B1 moves them); the moved bodies read and
+  // write them only through the deps getters/setters below.
+  let automationModuleInstance = null;
+  function automationModule() {
+    if (!automationModuleInstance) {
+      automationModuleInstance = window.PadiemChatAutomationModule.create({
+        get authState() { return authState; },
+        get automationViewMounted() { return automationViewMounted; },
+        set automationViewMounted(value) { automationViewMounted = value; },
+        get clawAutomation() { return clawAutomation; },
+        get clawAutomationEmpty() { return clawAutomationEmpty; },
+        get clawAutomationError() { return clawAutomationError; },
+        get clawAutomationForbidden() { return clawAutomationForbidden; },
+        get clawAutomationInFlightRules() { return clawAutomationInFlightRules; },
+        get clawAutomationList() { return clawAutomationList; },
+        get clawAutomationLoading() { return clawAutomationLoading; },
+        get clawAutomationRetry() { return clawAutomationRetry; },
+        get clawAutomationToggleStatus() { return clawAutomationToggleStatus; },
+        get clawWorkspace() { return clawWorkspace; },
+        get clearClawWait() { return clearClawWait; },
+        get closeSidebar() { return closeSidebar; },
+        get findRuleToggleButton() { return findRuleToggleButton; },
+        get focusRuleToggleAfterReload() { return focusRuleToggleAfterReload; },
+        get loadClawAutomationRules() { return loadClawAutomationRules; },
+        get mountAutomationView() { return mountAutomationView; },
+        get openClawAutomationEdit() { return openClawAutomationEdit; },
+        get renderClawAutomationRules() { return renderClawAutomationRules; },
+        get resetClawAutomationState() { return resetClawAutomationState; },
+        get setClawAutomationError() { return setClawAutomationError; },
+        get setClawAutomationForbidden() { return setClawAutomationForbidden; },
+        get setClawAutomationLoading() { return setClawAutomationLoading; },
+        get setClawAutomationRetryVisible() { return setClawAutomationRetryVisible; },
+        get setClawAutomationToggleStatus() { return setClawAutomationToggleStatus; },
+        get setNavActive() { return setNavActive; },
+        get shell() { return shell; },
+        get syncClawRunHistoryVisibility() { return syncClawRunHistoryVisibility; },
+        get toggleClawAutomationRule() { return toggleClawAutomationRule; },
+        get uiT() { return uiT; },
+      });
+    }
+    return automationModuleInstance;
+  }
+  let automationFormModuleInstance = null;
+  function automationFormModule() {
+    if (!automationFormModuleInstance) {
+      automationFormModuleInstance = window.PadiemChatAutomationFormModule.create({
+        get clawAutomation() { return clawAutomation; },
+        get clawAutomationCreate() { return clawAutomationCreate; },
+        get clawAutomationCreateCron() { return clawAutomationCreateCron; },
+        get clawAutomationCreateCronField() { return clawAutomationCreateCronField; },
+        get clawAutomationCreateDaypart() { return clawAutomationCreateDaypart; },
+        get clawAutomationCreateDaypartField() { return clawAutomationCreateDaypartField; },
+        get clawAutomationCreateExpression() { return clawAutomationCreateExpression; },
+        get clawAutomationCreateForm() { return clawAutomationCreateForm; },
+        get clawAutomationCreateInFlight() { return clawAutomationCreateInFlight; },
+        set clawAutomationCreateInFlight(value) { clawAutomationCreateInFlight = value; },
+        get clawAutomationCreateInterval() { return clawAutomationCreateInterval; },
+        get clawAutomationCreateIntervalField() { return clawAutomationCreateIntervalField; },
+        get clawAutomationCreateKind() { return clawAutomationCreateKind; },
+        get clawAutomationCreateName() { return clawAutomationCreateName; },
+        get clawAutomationCreateOpen() { return clawAutomationCreateOpen; },
+        get clawAutomationCreateOutput() { return clawAutomationCreateOutput; },
+        get clawAutomationCreateStatus() { return clawAutomationCreateStatus; },
+        get clawAutomationCreateSubmit() { return clawAutomationCreateSubmit; },
+        get clawAutomationCreateTarget() { return clawAutomationCreateTarget; },
+        get clawAutomationCreateTask() { return clawAutomationCreateTask; },
+        get clawAutomationCreateTimezone() { return clawAutomationCreateTimezone; },
+        get clawAutomationCreateToggle() { return clawAutomationCreateToggle; },
+        get clawAutomationEditCron() { return clawAutomationEditCron; },
+        get clawAutomationEditCronField() { return clawAutomationEditCronField; },
+        get clawAutomationEditDaypart() { return clawAutomationEditDaypart; },
+        get clawAutomationEditDaypartField() { return clawAutomationEditDaypartField; },
+        get clawAutomationEditExpression() { return clawAutomationEditExpression; },
+        get clawAutomationEditForm() { return clawAutomationEditForm; },
+        get clawAutomationEditInFlight() { return clawAutomationEditInFlight; },
+        set clawAutomationEditInFlight(value) { clawAutomationEditInFlight = value; },
+        get clawAutomationEditInterval() { return clawAutomationEditInterval; },
+        get clawAutomationEditIntervalField() { return clawAutomationEditIntervalField; },
+        get clawAutomationEditKind() { return clawAutomationEditKind; },
+        get clawAutomationEditName() { return clawAutomationEditName; },
+        get clawAutomationEditStatus() { return clawAutomationEditStatus; },
+        get clawAutomationEditSubmit() { return clawAutomationEditSubmit; },
+        get clawAutomationEditTimezone() { return clawAutomationEditTimezone; },
+        get clawAutomationEditingRuleId() { return clawAutomationEditingRuleId; },
+        set clawAutomationEditingRuleId(value) { clawAutomationEditingRuleId = value; },
+        get clawAutomationList() { return clawAutomationList; },
+        get closeClawAutomationCreate() { return closeClawAutomationCreate; },
+        get closeClawAutomationEdit() { return closeClawAutomationEdit; },
+        get findRuleEditButton() { return findRuleEditButton; },
+        get loadClawAutomationRules() { return loadClawAutomationRules; },
+        get resetClawAutomationCreateForm() { return resetClawAutomationCreateForm; },
+        get setClawAutomationCreateStatus() { return setClawAutomationCreateStatus; },
+        get setClawAutomationEditStatus() { return setClawAutomationEditStatus; },
+        get syncClawAutomationCreateFields() { return syncClawAutomationCreateFields; },
+        get syncClawAutomationEditFields() { return syncClawAutomationEditFields; },
+        get uiT() { return uiT; },
+      });
+    }
+    return automationFormModuleInstance;
+  }
   const shell = document.querySelector(".app-shell");
   const emptyState = document.getElementById("emptyState");
   const messageList = document.getElementById("messageList");
@@ -3738,280 +3841,32 @@
     }
   }
 
-    // --- #3237 read-only automation rule catalogue -----------------------------
-  function resetClawAutomationState() {
-    if (clawAutomationLoading) clawAutomationLoading.hidden = true;
-    if (clawAutomationError) clawAutomationError.hidden = true;
-    if (clawAutomationForbidden) clawAutomationForbidden.hidden = true;
-    if (clawAutomationEmpty) clawAutomationEmpty.hidden = true;
-    // A retry belongs to a failed load. It is never a permanent control.
-    setClawAutomationRetryVisible(false);
-  }
+  function resetClawAutomationState(...a) { return automationModule().resetClawAutomationState(...a); }
 
-  function setClawAutomationLoading() {
-    resetClawAutomationState();
-    if (clawAutomationList) clawAutomationList.replaceChildren();
-    if (clawAutomationLoading) {
-      clawAutomationLoading.hidden = false;
-      clawAutomationLoading.textContent = uiT("claw-automation-loading");
-    }
-  }
+  function setClawAutomationLoading(...a) { return automationModule().setClawAutomationLoading(...a); }
 
-  function setClawAutomationError() {
-    resetClawAutomationState();
-    if (clawAutomationList) clawAutomationList.replaceChildren();
-    if (clawAutomationError) {
-      clawAutomationError.hidden = false;
-      clawAutomationError.textContent = uiT("claw-automation-error");
-    }
-    // The load failed, so the one action that can change the outcome is
-    // offered here and nowhere else.
-    setClawAutomationRetryVisible(true);
-  }
+  function setClawAutomationError(...a) { return automationModule().setClawAutomationError(...a); }
 
-  function setClawAutomationForbidden() {
-    // A permission refusal is not a transient failure. It says what it is
-    // instead of claiming the rules could not be loaded, and it offers no
-    // retry, because a retry would not change the answer.
-    resetClawAutomationState();
-    if (clawAutomationList) clawAutomationList.replaceChildren();
-    if (clawAutomationForbidden) {
-      clawAutomationForbidden.hidden = false;
-      clawAutomationForbidden.textContent = uiT("claw-automation-forbidden");
-    }
-  }
+  function setClawAutomationForbidden(...a) { return automationModule().setClawAutomationForbidden(...a); }
 
-  function renderClawAutomationRules(rules) {
-    if (!clawAutomationList) return;
-    clawAutomationList.replaceChildren();
-    if (!rules.length) {
-      if (clawAutomationEmpty) {
-        clawAutomationEmpty.hidden = false;
-        clawAutomationEmpty.textContent = uiT("claw-automation-empty");
-      }
-      return;
-    }
-    rules.forEach((rule) => {
-      const row = document.createElement("div");
-      row.className = "claw-inbox-card";
-      row.dataset.ruleId = rule.rule_id;
-      const title = document.createElement("strong");
-      // Server-projected metadata goes through a text sink only.
-      title.textContent = rule.name;
-      const meta = document.createElement("small");
-      const schedule = `${rule.schedule_expression} (${rule.schedule_timezone})`;
-      // "Rule setting" wording, never a bare on/off that could be read as
-      // "automatic execution is live" — #2833 is still HOLD for Production
-      // scheduler activation.
-      meta.textContent = [
-        `${uiT("automation-rule-setting")}: ${rule.enabled ? uiT("automation-rule-on") : uiT("automation-rule-off")}`,
-        schedule,
-        rule.target_source,
-        rule.output_type,
-      ].join(" · ");
-      row.append(title, meta);
-      // #3043: a legacy rule is quarantined — it can never run in the
-      // background — so the row must say so rather than look like a live rule.
-      if (rule.background_eligible !== true || rule.authority_status !== "canonical") {
-        row.dataset.ruleAuthority = "legacy_quarantined";
-        const notice = document.createElement("small");
-        notice.className = "claw-automation-quarantine";
-        notice.dataset.localeKey = "automation-rule-quarantined";
-        notice.textContent = uiT("automation-rule-quarantined");
-        row.appendChild(notice);
-      } else {
-        // #3262: only canonical, background-eligible rows carry the toggle.
-        // The action reflects the STORED setting only — turning a rule on is
-        // not automatic execution going live (#2833 scheduler HOLD).
-        const toggle = document.createElement("button");
-        toggle.type = "button";
-        toggle.className = "claw-automation-rule-toggle";
-        toggle.dataset.ruleToggleRuleId = rule.rule_id;
-        toggle.dataset.localeKey = rule.enabled === true ? "claw-automation-rule-turn-off" : "claw-automation-rule-turn-on";
-        toggle.textContent = uiT(toggle.dataset.localeKey);
-        toggle.addEventListener("click", () => {
-          void toggleClawAutomationRule(rule.rule_id, rule.enabled !== true, toggle);
-        });
-        row.appendChild(toggle);
-        // #3270: Edit is offered on the same eligible rows only, and edits
-        // name + schedule exclusively (never task/execution material).
-        const edit = document.createElement("button");
-        edit.type = "button";
-        edit.className = "claw-automation-rule-edit";
-        edit.dataset.ruleEditRuleId = rule.rule_id;
-        edit.dataset.localeKey = "claw-automation-edit-button";
-        edit.textContent = uiT("claw-automation-edit-button");
-        edit.addEventListener("click", () => {
-          openClawAutomationEdit(rule);
-        });
-        row.appendChild(edit);
-      }
-      clawAutomationList.appendChild(row);
-    });
-  }
+  function renderClawAutomationRules(...a) { return automationModule().renderClawAutomationRules(...a); }
 
-  async function loadClawAutomationRules() {
-    if (!clawAutomation || !authState.authenticated) return;
-    const signedOutNote = document.getElementById("automationViewSignedOut");
-    if (signedOutNote) signedOutNote.hidden = true;
-    setClawAutomationLoading();
-    try {
-      const response = await fetch("/api/claw/automation/rules", {
-        headers: { "Accept": "application/json" },
-        cache: "no-store",
-      });
-      const data = await response.json().catch(() => null);
-      const code = data && typeof data.code === "string" ? data.code : "";
-      if (response.status === 403 || code === "owner_role_required") {
-        setClawAutomationForbidden();
-        return;
-      }
-      if (!response.ok || !data || data.ok !== true || !Array.isArray(data.rules)) {
-        throw new Error("automation rules unavailable");
-      }
-      resetClawAutomationState();
-      renderClawAutomationRules(data.rules);
-    } catch (_) {
-      setClawAutomationError();
-    }
-  }
+  async function loadClawAutomationRules(...a) { return automationModule().loadClawAutomationRules(...a); }
 
-  // --- #3270 bounded edit (name + schedule only) -----------------------------
-  // The form is prefilled ONLY from the existing safe projection, so the
-  // browser never sees task/execution material. The PATCH carries exactly the
-  // four editable fields; nothing is changed locally before the server answers
-  // 200 and the canonical list is reloaded.
-  function setClawAutomationEditStatus(messageKey) {
-    if (!clawAutomationEditStatus) return;
-    if (!messageKey) {
-      clawAutomationEditStatus.hidden = true;
-      clawAutomationEditStatus.textContent = "";
-      return;
-    }
-    clawAutomationEditStatus.hidden = false;
-    clawAutomationEditStatus.textContent = uiT(messageKey);
-  }
+  function setClawAutomationEditStatus(...a) { return automationFormModule().setClawAutomationEditStatus(...a); }
 
-  function syncClawAutomationEditFields() {
-    const kind = clawAutomationEditKind ? clawAutomationEditKind.value : "daypart";
-    if (clawAutomationEditDaypartField) clawAutomationEditDaypartField.hidden = kind !== "daypart";
-    if (clawAutomationEditIntervalField) clawAutomationEditIntervalField.hidden = kind !== "interval";
-    if (clawAutomationEditCronField) clawAutomationEditCronField.hidden = kind !== "cron";
-  }
+  function syncClawAutomationEditFields(...a) { return automationFormModule().syncClawAutomationEditFields(...a); }
 
-  function clawAutomationEditExpression() {
-    const kind = clawAutomationEditKind ? clawAutomationEditKind.value : "daypart";
-    if (kind === "interval") return clawAutomationEditInterval ? clawAutomationEditInterval.value : "";
-    if (kind === "cron") return clawAutomationEditCron ? clawAutomationEditCron.value : "";
-    return clawAutomationEditDaypart ? clawAutomationEditDaypart.value : "";
-  }
+  function clawAutomationEditExpression(...a) { return automationFormModule().clawAutomationEditExpression(...a); }
 
-  function findRuleEditButton(ruleId) {
-    if (!clawAutomationList) return null;
-    for (const row of clawAutomationList.children) {
-      for (const node of row.children || []) {
-        if (node.dataset && node.dataset.ruleEditRuleId === ruleId) return node;
-      }
-    }
-    return null;
-  }
+  function findRuleEditButton(...a) { return automationFormModule().findRuleEditButton(...a); }
 
-  function focusRuleEditAfterReload(ruleId) {
-    const button = findRuleEditButton(ruleId);
-    if (button) {
-      button.focus();
-      return;
-    }
-    if (clawAutomation) clawAutomation.focus();
-  }
 
-  function openClawAutomationEdit(rule) {
-    if (!clawAutomationEditForm) return;
-    clawAutomationEditingRuleId = rule.rule_id;
-    if (clawAutomationEditName) clawAutomationEditName.value = rule.name || "";
-    if (clawAutomationEditKind) clawAutomationEditKind.value = rule.schedule_kind || "daypart";
-    if (clawAutomationEditTimezone) clawAutomationEditTimezone.value = rule.schedule_timezone || "";
-    // Prefill the kind-aware expression control from the projected schedule.
-    const expression = rule.schedule_expression || "";
-    if (rule.schedule_kind === "interval") {
-      if (clawAutomationEditInterval) clawAutomationEditInterval.value = expression;
-    } else if (rule.schedule_kind === "cron") {
-      if (clawAutomationEditCron) clawAutomationEditCron.value = expression;
-    } else if (clawAutomationEditDaypart) {
-      clawAutomationEditDaypart.value = expression;
-    }
-    syncClawAutomationEditFields();
-    setClawAutomationEditStatus(null);
-    clawAutomationEditForm.hidden = false;
-    if (clawAutomationEditName) clawAutomationEditName.focus();
-  }
+  function openClawAutomationEdit(...a) { return automationFormModule().openClawAutomationEdit(...a); }
 
-  function closeClawAutomationEdit() {
-    const ruleId = clawAutomationEditingRuleId;
-    clawAutomationEditingRuleId = null;
-    if (clawAutomationEditForm) clawAutomationEditForm.hidden = true;
-    if (ruleId) {
-      const button = findRuleEditButton(ruleId);
-      if (button) {
-        button.focus();
-        return;
-      }
-    }
-    if (clawAutomation) clawAutomation.focus();
-  }
+  function closeClawAutomationEdit(...a) { return automationFormModule().closeClawAutomationEdit(...a); }
 
-  async function submitClawAutomationEdit(event) {
-    event.preventDefault();
-    const ruleId = clawAutomationEditingRuleId;
-    if (!clawAutomationEditForm || clawAutomationEditInFlight || !ruleId) return;
-    // Exactly the four editable fields — no authority or immutable field.
-    const payload = {
-      name: clawAutomationEditName ? clawAutomationEditName.value : "",
-      schedule_kind: clawAutomationEditKind ? clawAutomationEditKind.value : "",
-      schedule_expression: clawAutomationEditExpression(),
-      schedule_timezone: clawAutomationEditTimezone ? clawAutomationEditTimezone.value : "",
-    };
-    clawAutomationEditInFlight = true;
-    if (clawAutomationEditSubmit) clawAutomationEditSubmit.disabled = true;
-    try {
-      const response = await fetch(
-        `/api/claw/automation/rules/${encodeURIComponent(ruleId)}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify(payload),
-        },
-      );
-      const data = await response.json().catch(() => null);
-      if (response.status === 200 && data && data.ok === true) {
-        setClawAutomationEditStatus("claw-automation-edit-saved");
-        await loadClawAutomationRules();
-        closeClawAutomationEdit();
-        return;
-      }
-      const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
-      if (response.status === 403 || code === "owner_role_required") {
-        setClawAutomationEditStatus("claw-automation-toggle-forbidden");
-      } else if (response.status === 404 || code === "automation_rule_not_found") {
-        setClawAutomationEditStatus("claw-automation-toggle-not-found");
-      } else if (code === "automation_rule_not_mutable") {
-        setClawAutomationEditStatus("claw-automation-toggle-not-mutable");
-      } else if (code === "automation_rule_not_execution_ready") {
-        setClawAutomationEditStatus("claw-automation-toggle-not-ready");
-      } else if (response.status === 400 || response.status === 413) {
-        setClawAutomationEditStatus("claw-automation-edit-invalid");
-      } else {
-        setClawAutomationEditStatus("claw-automation-edit-failed");
-      }
-      // Failure: the form stays open with the entered values untouched and the
-      // rendered rows unchanged — nothing is optimistically edited.
-    } catch (_) {
-      setClawAutomationEditStatus("claw-automation-edit-failed");
-    } finally {
-      clawAutomationEditInFlight = false;
-      if (clawAutomationEditSubmit) clawAutomationEditSubmit.disabled = false;
-    }
-  }
+  async function submitClawAutomationEdit(...a) { return automationFormModule().submitClawAutomationEdit(...a); }
 
   if (clawAutomationEditForm) {
     clawAutomationEditForm.addEventListener("submit", (event) => {
@@ -4025,199 +3880,32 @@
     clawAutomationEditCancel.addEventListener("click", () => closeClawAutomationEdit());
   }
 
-  // --- #3262 owner-gated enable/disable -------------------------------------
-  // The stored rule setting only: turning a rule on is NOT automatic execution
-  // going live. No optimistic flip — the row is never changed locally; the
-  // canonical list is reloaded after the server answers 200.
-  function setClawAutomationToggleStatus(messageKey) {
-    if (!clawAutomationToggleStatus) return;
-    if (!messageKey) {
-      clawAutomationToggleStatus.hidden = true;
-      clawAutomationToggleStatus.textContent = "";
-      return;
-    }
-    clawAutomationToggleStatus.hidden = false;
-    clawAutomationToggleStatus.textContent = uiT(messageKey);
-  }
+  function setClawAutomationToggleStatus(...a) { return automationModule().setClawAutomationToggleStatus(...a); }
 
-  function findRuleToggleButton(ruleId) {
-    if (!clawAutomationList) return null;
-    for (const row of clawAutomationList.children) {
-      for (const node of row.children || []) {
-        if (node.dataset && node.dataset.ruleToggleRuleId === ruleId) return node;
-      }
-    }
-    return null;
-  }
+  function findRuleToggleButton(...a) { return automationModule().findRuleToggleButton(...a); }
 
-  function focusRuleToggleAfterReload(ruleId) {
-    const button = findRuleToggleButton(ruleId);
-    if (button) {
-      button.focus();
-      return;
-    }
-    if (clawAutomation) clawAutomation.focus();
-  }
+  function focusRuleToggleAfterReload(...a) { return automationModule().focusRuleToggleAfterReload(...a); }
 
-  async function toggleClawAutomationRule(ruleId, nextEnabled, button) {
-    if (!ruleId || clawAutomationInFlightRules.has(ruleId)) return;
-    clawAutomationInFlightRules.add(ruleId);
-    if (button) button.disabled = true;
-    try {
-      const response = await fetch(
-        `/api/claw/automation/rules/${encodeURIComponent(ruleId)}/enabled`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json", Accept: "application/json" },
-          // The exact two-part payload: the boolean setting, nothing else.
-          body: JSON.stringify({ enabled: nextEnabled }),
-        },
-      );
-      const data = await response.json().catch(() => null);
-      if (response.status === 200 && data && data.ok === true) {
-        setClawAutomationToggleStatus("claw-automation-toggle-saved");
-        await loadClawAutomationRules();
-        focusRuleToggleAfterReload(ruleId);
-        return;
-      }
-      const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
-      if (response.status === 403 || code === "owner_role_required") {
-        setClawAutomationToggleStatus("claw-automation-toggle-forbidden");
-      } else if (response.status === 404 || code === "automation_rule_not_found") {
-        setClawAutomationToggleStatus("claw-automation-toggle-not-found");
-      } else if (code === "automation_rule_not_mutable") {
-        setClawAutomationToggleStatus("claw-automation-toggle-not-mutable");
-      } else if (code === "automation_rule_not_execution_ready") {
-        setClawAutomationToggleStatus("claw-automation-toggle-not-ready");
-      } else if (response.status === 400 || response.status === 413) {
-        setClawAutomationToggleStatus("claw-automation-toggle-invalid");
-      } else {
-        setClawAutomationToggleStatus("claw-automation-toggle-failed");
-      }
-    } catch (_) {
-      setClawAutomationToggleStatus("claw-automation-toggle-failed");
-    } finally {
-      clawAutomationInFlightRules.delete(ruleId);
-      if (button) button.disabled = false;
-    }
-  }
+  async function toggleClawAutomationRule(...a) { return automationModule().toggleClawAutomationRule(...a); }
 
   // --- #3257 Web Automation Create -------------------------------------------
   // Seven product fields only; the server rejects any authority field and owns
   // rule id, owner provenance, membership role and the execution target.
   let clawAutomationCreateInFlight = false;
 
-  function setClawAutomationCreateStatus(messageKey) {
-    if (!clawAutomationCreateStatus) return;
-    if (!messageKey) {
-      clawAutomationCreateStatus.hidden = true;
-      clawAutomationCreateStatus.textContent = "";
-      return;
-    }
-    clawAutomationCreateStatus.hidden = false;
-    clawAutomationCreateStatus.textContent = uiT(messageKey);
-  }
+  function setClawAutomationCreateStatus(...a) { return automationFormModule().setClawAutomationCreateStatus(...a); }
 
-  function syncClawAutomationCreateFields() {
-    const kind = clawAutomationCreateKind ? clawAutomationCreateKind.value : "daypart";
-    if (clawAutomationCreateDaypartField) clawAutomationCreateDaypartField.hidden = kind !== "daypart";
-    if (clawAutomationCreateIntervalField) clawAutomationCreateIntervalField.hidden = kind !== "interval";
-    if (clawAutomationCreateCronField) clawAutomationCreateCronField.hidden = kind !== "cron";
-  }
+  function syncClawAutomationCreateFields(...a) { return automationFormModule().syncClawAutomationCreateFields(...a); }
 
-  function clawAutomationCreateExpression() {
-    const kind = clawAutomationCreateKind ? clawAutomationCreateKind.value : "daypart";
-    if (kind === "interval") return clawAutomationCreateInterval ? clawAutomationCreateInterval.value : "";
-    if (kind === "cron") return clawAutomationCreateCron ? clawAutomationCreateCron.value : "";
-    return clawAutomationCreateDaypart ? clawAutomationCreateDaypart.value : "";
-  }
+  function clawAutomationCreateExpression(...a) { return automationFormModule().clawAutomationCreateExpression(...a); }
 
-  function resetClawAutomationCreateForm() {
-    if (clawAutomationCreateForm) clawAutomationCreateForm.reset();
-    syncClawAutomationCreateFields();
-    setClawAutomationCreateStatus(null);
-  }
+  function resetClawAutomationCreateForm(...a) { return automationFormModule().resetClawAutomationCreateForm(...a); }
 
-  function closeClawAutomationCreate() {
-    if (clawAutomationCreate && typeof clawAutomationCreate.open === "boolean") {
-      clawAutomationCreate.open = false;
-    }
-    // The visible control is the header button, so the focus goes there.
-    if (clawAutomationCreateOpen) clawAutomationCreateOpen.focus();
-    else if (clawAutomationCreateToggle) clawAutomationCreateToggle.focus();
-  }
+  function closeClawAutomationCreate(...a) { return automationFormModule().closeClawAutomationCreate(...a); }
 
-  function scrollClawAutomationCreateIntoView() {
-    // The narrow-window layout puts the rule list before the create form, so
-    // opening the form has to bring it into view. A form that is already
-    // visible stays where it is, and the wide-screen layout never moves.
-    if (!clawAutomationCreate) return;
-    const host = clawAutomation.closest(".automation-view");
-    if (!host) return;
-    const form = clawAutomationCreate.getBoundingClientRect();
-    const area = host.getBoundingClientRect();
-    // A form whose top is already on screen stays where it is: the view only
-    // moves when the form would otherwise open below the fold.
-    if (form.top >= area.top && form.top < area.bottom) return;
-    const target = Math.max(0, host.scrollTop + (form.top - area.top) - 8);
-    // The scroll is applied directly: the list re-renders behind the form, and
-    // an animated scroll would be cancelled by that reflow.
-    host.scrollTop = target;
-  }
+  function scrollClawAutomationCreateIntoView(...a) { return automationFormModule().scrollClawAutomationCreateIntoView(...a); }
 
-  async function submitClawAutomationCreate(event) {
-    event.preventDefault();
-    if (!clawAutomationCreateForm || clawAutomationCreateInFlight) return;
-    // The exact seven keys the server accepts — nothing else is ever sent, so
-    // an authority field cannot leak into the payload through the form.
-    const payload = {
-      name: clawAutomationCreateName ? clawAutomationCreateName.value : "",
-      task: clawAutomationCreateTask ? clawAutomationCreateTask.value : "",
-      schedule_kind: clawAutomationCreateKind ? clawAutomationCreateKind.value : "",
-      schedule_expression: clawAutomationCreateExpression(),
-      schedule_timezone: clawAutomationCreateTimezone ? clawAutomationCreateTimezone.value : "",
-      target_source: clawAutomationCreateTarget ? clawAutomationCreateTarget.value : "",
-      output_type: clawAutomationCreateOutput ? clawAutomationCreateOutput.value : "",
-    };
-    clawAutomationCreateInFlight = true;
-    if (clawAutomationCreateSubmit) clawAutomationCreateSubmit.disabled = true;
-    setClawAutomationCreateStatus("claw-automation-create-saving");
-    try {
-      const response = await fetch("/api/claw/automation/rules", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json().catch(() => null);
-      if (response.status === 201 && data && data.ok === true && data.rule) {
-        // Success is the reloaded canonical list; no optimistic fake row is
-        // ever inserted locally.
-        resetClawAutomationCreateForm();
-        await loadClawAutomationRules();
-        closeClawAutomationCreate();
-        return;
-      }
-      const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
-      if (response.status === 401) {
-        setClawAutomationCreateStatus("claw-automation-create-unauthorized");
-      } else if (response.status === 403 || code === "owner_role_required") {
-        // Bounded denial: never names or reveals another user's role/identity.
-        setClawAutomationCreateStatus("claw-automation-create-forbidden");
-      } else if (code === "automation_execution_target_unavailable") {
-        // Truthful: nothing was saved; creation is not runtime-ready yet.
-        setClawAutomationCreateStatus("claw-automation-create-runtime-unavailable");
-      } else if (response.status === 400 || response.status === 413) {
-        setClawAutomationCreateStatus("claw-automation-create-invalid");
-      } else {
-        setClawAutomationCreateStatus("claw-automation-create-failed");
-      }
-    } catch (_) {
-      setClawAutomationCreateStatus("claw-automation-create-failed");
-    } finally {
-      clawAutomationCreateInFlight = false;
-      if (clawAutomationCreateSubmit) clawAutomationCreateSubmit.disabled = false;
-    }
-  }
+  async function submitClawAutomationCreate(...a) { return automationFormModule().submitClawAutomationCreate(...a); }
 
   if (clawAutomationCreateForm) {
     clawAutomationCreateForm.addEventListener("submit", (event) => {
@@ -4272,61 +3960,15 @@
   // APIs and store. An enabled rule list never claims the scheduler itself
   // is running; the existing scheduler note stays verbatim.
   let automationViewMounted = false;
-  function mountAutomationView() {
-    if (automationViewMounted) return;
-    let body = null;
-    let panel = null;
-    try {
-      body = document.getElementById("automationViewBody");
-      panel = document.getElementById("clawAutomation");
-    } catch (_) {
-      return;
-    }
-    if (!body || !panel) return;
-    body.appendChild(panel);
-    // The page header owns the visible title on this surface, so the section
-    // takes its accessible name from there instead of from the heading the
-    // page already shows.
-    const pageTitle = document.getElementById("automationViewTitle");
-    if (pageTitle) panel.setAttribute("aria-labelledby", "automationViewTitle");
-    automationViewMounted = true;
-  }
+  function mountAutomationView(...a) { return automationModule().mountAutomationView(...a); }
 
-  function openClawAutomation() {
-    if (!clawWorkspace || !clawAutomation) return;
-    mountAutomationView();
-    const view = document.getElementById("automationView");
-    if (view) view.hidden = false;
-    shell.dataset.state = "automation";
-    clearClawWait();
-    // Leaving the Claw workspace hides the run panel, exactly as the inbox
-    // view switch used to; returning refetches through the sync below.
-    syncClawRunHistoryVisibility();
-    setNavActive();
-    closeSidebar();
-    // Owner decision: every screen stays browsable without a session. The page
-    // opens for a visitor, but the rule list is still never requested — the
-    // server owns the tenant, and the signed-out note replaces the rows.
-    const signedOut = document.getElementById("automationViewSignedOut");
-    if (!authState.authenticated) {
-      clawAutomation.hidden = true;
-      if (signedOut) signedOut.hidden = false;
-      return;
-    }
-    if (signedOut) signedOut.hidden = true;
-    clawAutomation.hidden = false;
-    loadClawAutomationRules();
-  }
+  function openClawAutomation(...a) { return automationModule().openClawAutomation(...a); }
 
   if (automationNavButton) automationNavButton.addEventListener("click", openClawAutomation);
   // #4462: automation-related run/completion/failure alerts stay reachable
   // from the automation view after the standalone sidebar Alerts entry is gone.
     if (clawAutomationRetry) clawAutomationRetry.addEventListener("click", () => void loadClawAutomationRules());
-  // The retry is a failure-only control. It lives here, next to the loader
-  // it retries, and it is never part of the permanent header.
-  function setClawAutomationRetryVisible(visible) {
-    if (clawAutomationRetry) clawAutomationRetry.hidden = !visible;
-  }
+  function setClawAutomationRetryVisible(...a) { return automationModule().setClawAutomationRetryVisible(...a); }
 
   function openClawWorkspace() {
     // #3531: Claw opens on the general conversation view. The document
