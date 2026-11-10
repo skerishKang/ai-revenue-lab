@@ -50,7 +50,7 @@ from typing import Any, Awaitable, Callable, MutableMapping
 
 from starlette.responses import JSONResponse
 
-from .auth import SESSION_COOKIE, decode_session_claims
+from .auth import SESSION_COOKIE, decode_session_claims, sidless_session_cutoff_passed
 from .request_timing import measure
 
 # The request-state key that carries the resolved verdict.  ``request.state``
@@ -216,6 +216,27 @@ class SessionRevocationGuardMiddleware:
             # No canonical authority bound: this deployment has no canonical
             # sessions, so there is nothing to revoke and nothing to refuse.
             return None
+        # Internal audit H2 (2026-11-10): on an authority-backed deployment the
+        # cookie's user must still be a row in this product's own store.
+        # Account deletion revokes canonical sessions server-side, but a
+        # compatibility cookie without a canonical session id has nothing to
+        # revoke, so the row is the last guard against reusing a deleted
+        # account's cookie. A store that cannot answer right now must not
+        # widen this check into an outage of its own, so only a clean "no such
+        # row" refuses.
+        get_user = getattr(getattr(state, "history_store", None), "get_user", None)
+        if callable(get_user):
+            try:
+                user_row = await get_user(claims.user_id)
+            except Exception:
+                user_row = object()
+            if user_row is None:
+                return SessionVerdict(
+                    authenticated=False,
+                    user_id=claims.user_id,
+                    canonical_session_id=claims.canonical_session_id,
+                    reason="user_row_missing",
+                )
         resolve = getattr(authority, "resolve_auth_session", None)
         if not callable(resolve):
             return None
@@ -223,11 +244,26 @@ class SessionRevocationGuardMiddleware:
         if not canonical_session_id:
             # The session was not bound to a canonical session, so there is no
             # canonical session that could be revoked for it. That is the
-            # pre-existing compatibility session (a deployment without the
-            # canonical identity authority, or a login the canonical authority
-            # could not confirm). It keeps its reviewed cookie-only behaviour:
-            # the guard refuses authority it cannot check, it never withholds
+            # pre-existing compatibility session (a login the canonical
+            # authority could not confirm, or one minted before the authority
+            # was bound). It keeps its reviewed cookie-only behaviour: the
+            # guard refuses authority it cannot check, it never withholds
             # a session the server itself issued.
+            #
+            # Internal audit H2 (2026-11-10): an authority-backed deployment
+            # now mints every session cookie with a canonical session id and
+            # refuses issuances it cannot bind. Compatibility cookies like
+            # this one keep working only through the fixed 7-day transition
+            # window (auth.sideless_session_cutoff_passed); afterwards the
+            # guard refuses them instead of extending an unrevocable session
+            # indefinitely.
+            if sidless_session_cutoff_passed():
+                return SessionVerdict(
+                    authenticated=False,
+                    user_id=claims.user_id,
+                    canonical_session_id=None,
+                    reason="revoked",
+                )
             return None
         cache = getattr(state, 'auth_validation_cache', None)
         return await self._resolve_canonical_session(

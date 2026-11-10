@@ -423,14 +423,19 @@ async def test_a_session_without_a_canonical_session_keeps_its_reviewed_behaviou
     #3240 established that a canonical authority or shadow failure must not
     break the B62 login. Such a session carries no canonical session id, so
     there is no canonical session that could be revoked for it. It keeps the
-    pre-existing cookie-only behaviour instead of being refused.
+    pre-existing cookie-only behaviour instead of being refused. Internal audit
+    H2 (2026-11-10) adds one bound: the cookie's user row must still exist, so
+    the compatibility session below belongs to a user the store knows.
     """
 
     store = MemoryStore()
     authority = CanonicalAuthority()
     app = build_app(store=store, authority=authority, shadow=ShadowStore())
     settings = password_settings()
-    unbound = create_session_token(settings, "usr_" + ("0" * 32))
+    profile = await store.register_password_user(
+        "compat.user", "compat.user@example.test", "Compat User", "unit-test-hash",
+    )
+    unbound = create_session_token(settings, profile.id)
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as client:
         protected = await client.get("/api/conversations", headers=_cookie_header(unbound))
@@ -443,7 +448,10 @@ async def test_a_deployment_without_the_canonical_authority_keeps_its_cookie_beh
     store = MemoryStore()
     app = build_app(store=store, authority=None)
     settings = password_settings()
-    plain = create_session_token(settings, "usr_" + ("0" * 32))
+    profile = await store.register_password_user(
+        "compat.user", "compat.user@example.test", "Compat User", "unit-test-hash",
+    )
+    plain = create_session_token(settings, profile.id)
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as client:
         protected = await client.get("/api/conversations", headers=_cookie_header(plain))
@@ -455,8 +463,12 @@ async def test_a_deployment_without_the_canonical_authority_keeps_its_cookie_beh
 
 
 @pytest.mark.asyncio
-async def test_a_canonical_authority_failure_does_not_break_the_compatibility_login():
-    """#3240: a canonical hiccup must not turn the sign-in into an error."""
+async def test_an_authority_backed_deployment_fails_closed_when_establishment_breaks():
+    """Internal audit H2 (2026-11-10): on an authority-backed deployment a
+    canonical hiccup no longer degrades the login into an unbound session
+    cookie — the issuance fails closed instead. #3240's "a canonical hiccup
+    must not turn the sign-in into an error" keeps applying to deployments
+    without the authority (see the compatibility test above)."""
 
     class BrokenAuthority(CanonicalAuthority):
         def establish_auth_session(self, **kwargs):
@@ -469,8 +481,12 @@ async def test_a_canonical_authority_failure_does_not_break_the_compatibility_lo
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as client:
         registered = await _register(client)
 
-    assert registered.status_code == 200
-    assert SESSION_COOKIE in registered.headers.get("set-cookie", "")
+    assert registered.status_code == 503
+    assert registered.json()["error"]["code"] == "auth_storage_error"
+    # No session cookie is minted for the failed establishment.
+    getter = getattr(registered.headers, "getlist", None)
+    payloads = getter("set-cookie") if callable(getter) else []
+    assert not any(payload.strip().startswith(SESSION_COOKIE + "=") for payload in payloads)
 
 
 def test_the_signed_cookie_carries_the_canonical_session_id():

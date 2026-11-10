@@ -8,6 +8,7 @@ import re
 import secrets
 import time
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import urlencode
 
@@ -166,6 +167,22 @@ def decode_session_claims(
 def decode_session_token(settings: Settings, token: str | None, now: int | None = None) -> str | None:
     claims = decode_session_claims(settings, token, now=now)
     return claims.user_id if claims is not None else None
+
+
+# Internal audit H2 (2026-11-10): on an authority-backed deployment every login
+# mints its session cookie with a canonical session id. A cookie without one is
+# a compatibility session minted before that rule, and it keeps authenticating
+# only through a 7-day transition window that ends at this fixed date; the
+# request-time session guard refuses such cookies afterwards. A deployment
+# without the canonical authority never applies the cutoff.
+SIDELESS_SESSION_ACCEPTED_UNTIL = datetime(2026, 11, 18, 23, 59, 59, tzinfo=timezone.utc)
+
+
+def sidless_session_cutoff_passed(now: int | None = None) -> bool:
+    """Whether the transition window for cookies without a canonical session id has ended."""
+
+    moment = int(time.time()) if now is None else int(now)
+    return moment >= int(SIDELESS_SESSION_ACCEPTED_UNTIL.timestamp())
 
 
 def oauth_return_target(value: object) -> str | None:
