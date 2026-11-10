@@ -423,19 +423,14 @@ async def test_a_session_without_a_canonical_session_keeps_its_reviewed_behaviou
     #3240 established that a canonical authority or shadow failure must not
     break the B62 login. Such a session carries no canonical session id, so
     there is no canonical session that could be revoked for it. It keeps the
-    pre-existing cookie-only behaviour instead of being refused. Internal audit
-    H2 (2026-11-10) adds one bound: the cookie's user row must still exist, so
-    the compatibility session below belongs to a user the store knows.
+    pre-existing cookie-only behaviour instead of being refused.
     """
 
     store = MemoryStore()
     authority = CanonicalAuthority()
     app = build_app(store=store, authority=authority, shadow=ShadowStore())
     settings = password_settings()
-    profile = await store.register_password_user(
-        "compat.user", "compat.user@example.test", "Compat User", "unit-test-hash",
-    )
-    unbound = create_session_token(settings, profile.id)
+    unbound = create_session_token(settings, "usr_" + ("0" * 32))
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as client:
         protected = await client.get("/api/conversations", headers=_cookie_header(unbound))
@@ -448,10 +443,7 @@ async def test_a_deployment_without_the_canonical_authority_keeps_its_cookie_beh
     store = MemoryStore()
     app = build_app(store=store, authority=None)
     settings = password_settings()
-    profile = await store.register_password_user(
-        "compat.user", "compat.user@example.test", "Compat User", "unit-test-hash",
-    )
-    plain = create_session_token(settings, profile.id)
+    plain = create_session_token(settings, "usr_" + ("0" * 32))
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as client:
         protected = await client.get("/api/conversations", headers=_cookie_header(plain))
@@ -483,7 +475,6 @@ async def test_an_authority_backed_deployment_fails_closed_when_establishment_br
 
     assert registered.status_code == 503
     assert registered.json()["error"]["code"] == "auth_storage_error"
-    # No session cookie is minted for the failed establishment.
     getter = getattr(registered.headers, "getlist", None)
     payloads = getter("set-cookie") if callable(getter) else []
     assert not any(payload.strip().startswith(SESSION_COOKIE + "=") for payload in payloads)

@@ -238,22 +238,38 @@ class SessionRevocationGuardMiddleware:
             # fixed 7-day transition window
             # (auth.sidless_session_cutoff_passed), after which the guard
             # refuses it instead of extending an unrevocable session
-            # indefinitely. A store that cannot answer right now must not
-            # widen the row check into an outage of its own, so only a clean
-            # "no such row" refuses.
-            get_user = getattr(getattr(state, "history_store", None), "get_user", None)
-            if callable(get_user):
+            # indefinitely.
+            #
+            # The row check runs when the bound store declares the
+            # ``user_row_exists`` capability — both production stores do, and
+            # a production composition whose bound store does not declare it
+            # fails the start (app_factory). A store that declares nothing
+            # refuses compatibility cookies in production mode ("declared
+            # nowhere" is the refusal side) and keeps the reviewed cookie-only
+            # behaviour elsewhere, so a partial store double in a test is
+            # never read as an account deletion. A store that cannot answer
+            # right now must not widen the row check into an outage of its
+            # own, so only a clean "no such row" refuses.
+            row_exists = getattr(getattr(state, "history_store", None), "user_row_exists", None)
+            if callable(row_exists):
                 try:
-                    user_row = await get_user(claims.user_id)
+                    known_user = await row_exists(claims.user_id)
                 except Exception:
-                    user_row = object()
-                if user_row is None:
+                    known_user = True
+                if known_user is False:
                     return SessionVerdict(
                         authenticated=False,
                         user_id=claims.user_id,
                         canonical_session_id=None,
                         reason="user_row_missing",
                     )
+            elif str(getattr(settings, "runtime_mode", "")).strip().lower() == "b14":
+                return SessionVerdict(
+                    authenticated=False,
+                    user_id=claims.user_id,
+                    canonical_session_id=None,
+                    reason="revoked",
+                )
             if sidless_session_cutoff_passed():
                 return SessionVerdict(
                     authenticated=False,

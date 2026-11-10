@@ -100,6 +100,11 @@ class MemoryStore:
     async def get_user(self, user_id):
         return self.users.get(user_id)
 
+    async def user_row_exists(self, user_id):
+        # 감사 H2 능력 선언: 행을 모델링하는 저장소만 선언한다. 선언한
+        # 저장소의 호환 쿠키 요청에만 사용자 행 확인이 적용된다.
+        return user_id in self.users
+
     async def list_conversations(self, user_id, *, product_scope, limit=30):
         return []
 
@@ -368,13 +373,132 @@ async def test_a_store_outage_does_not_refuse_a_valid_cookie():
     user_id = next(iter(store.users))
     cookie = create_session_token(password_settings(), user_id)  # no canonical id
 
-    async def broken_get_user(user_id):
+    async def broken_row_exists(user_id):
         raise RuntimeError("synthetic store outage")
 
-    store.get_user = broken_get_user
+    store.user_row_exists = broken_row_exists
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=BASE_URL) as client:
         response = await client.get(
             PROTECTED_PATH, headers={"Cookie": f"{SESSION_COOKIE}={cookie}"})
 
     assert response.status_code == 200, response.text
+
+
+def test_both_production_store_shapes_declare_the_row_check_capability():
+    """The COM2 host SQLite store and the Worker D1 store are D1HistoryStore;
+    the deleted-account refusal for compatibility cookies is fail-closed only
+    when both shapes declare the capability."""
+
+    from test_3929_claw_conversation_artifact_d1 import D1Sqlite, setup_database
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(D1Sqlite(setup_database()))
+    assert callable(getattr(store, "user_row_exists", None))
+
+    uid = "usr_" + "e" * 32
+    assert store.user_row_exists.__self__ is store
+    # Behaviour: a row the store knows answers True, an unknown one False.
+    import asyncio
+
+    async def probe():
+        await store.upsert_shared_user(uid, "sub_known_policy", "policy@example.invalid", "Policy", "")
+        assert await store.user_row_exists(uid) is True
+        assert await store.user_row_exists("usr_" + "f" * 32) is False
+
+    asyncio.run(probe())
+
+
+def test_the_queue_forwarding_wrapper_exposes_the_capability():
+    """The COM2 queue lane wraps the D1 store; the capability forwards."""
+
+    from test_3929_claw_conversation_artifact_d1 import D1Sqlite, setup_database
+    from app.history import D1HistoryStore
+    from app.queue_store_proxy import QueueForwardingHistoryStore
+
+    inner = D1HistoryStore(D1Sqlite(setup_database()))
+
+    class _NoopClient:
+        async def call(self, *args, **kwargs):
+            raise RuntimeError("not used here")
+
+    wrapped = QueueForwardingHistoryStore(inner, _NoopClient())
+    assert callable(getattr(wrapped, "user_row_exists", None))
+
+
+def test_production_mode_fails_the_start_when_the_store_does_not_declare():
+    class _CapabilitylessStore:
+        async def get_user(self, user_id):
+            return None
+
+    settings = Settings.from_values(
+        runtime_mode="b14",
+        auth_mode="password",
+        public_base_url=BASE_URL,
+        session_secret=SESSION_SECRET,
+        session_max_age_seconds=3600,
+        b14_base_url="http://127.0.0.1:8789",
+    )
+    with pytest.raises(RuntimeError, match="user_row_exists"):
+        create_app(settings, history_store=_CapabilitylessStore())
+
+
+def test_production_mode_boots_with_the_real_store_shape():
+    from test_3929_claw_conversation_artifact_d1 import D1Sqlite, setup_database
+    from app.history import D1HistoryStore
+
+    settings = Settings.from_values(
+        runtime_mode="b14",
+        auth_mode="password",
+        public_base_url=BASE_URL,
+        session_secret=SESSION_SECRET,
+        session_max_age_seconds=3600,
+        b14_base_url="http://127.0.0.1:8789",
+    )
+    app = create_app(settings, history_store=D1HistoryStore(D1Sqlite(setup_database())))
+    assert app.state.history_store is not None
+
+
+@pytest.mark.asyncio
+async def test_production_mode_guard_refuses_compatibility_cookies_without_the_capability():
+    """선언 없음 = 거절 쪽: in production mode a store that does not declare
+    the capability refuses compatibility cookies instead of skipping the
+    check. The boot gate (create_app) is the first line; this is the guard's
+    own belt for a store bound without the declaration."""
+
+    from types import SimpleNamespace
+
+    from app.session_revocation_guard import SessionRevocationGuardMiddleware
+
+    class _CapabilitylessStore:
+        async def get_user(self, user_id):
+            return None
+
+    settings = Settings.from_values(
+        runtime_mode="b14",
+        auth_mode="password",
+        public_base_url=BASE_URL,
+        session_secret=SESSION_SECRET,
+        session_max_age_seconds=3600,
+        b14_base_url="http://127.0.0.1:8789",
+    )
+    app = SimpleNamespace(state=SimpleNamespace(
+        settings=settings,
+        history_store=_CapabilitylessStore(),
+        control_plane_identity_authority=CanonicalAuthority(),
+        auth_validation_cache=None,
+    ))
+    guard = SessionRevocationGuardMiddleware(app=None)
+    user_id = "usr_" + "9" * 32
+    cookie = create_session_token(settings, user_id)  # no canonical id
+    scope = {
+        "type": "http", "method": "GET", "path": PROTECTED_PATH,
+        "headers": [(b"cookie", f"{SESSION_COOKIE}={cookie}".encode())],
+        "app": app,
+    }
+
+    verdict = await guard.resolve_verdict(scope)
+
+    assert verdict is not None
+    assert verdict.authenticated is False
+    assert verdict.reason == "revoked"
