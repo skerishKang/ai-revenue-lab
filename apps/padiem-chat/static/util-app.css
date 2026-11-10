@@ -195,7 +195,15 @@
 }
 
 @media (max-width: 720px) {
-  .app-switch { margin-left: 4px; }
+  /* The adopted phone header is 56px tall (6 + 44 + 6). Drop the switch's own
+     padding/border so the 44px targets fit that row instead of growing it. */
+  .app-switch {
+    margin-left: 4px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    gap: 6px;
+  }
   .app-switch-item { min-height: 44px; padding: 0 12px; }
   .util-card-grid { grid-template-columns: 1fr; }
   .util-card { padding: 16px; }
