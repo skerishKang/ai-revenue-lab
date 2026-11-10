@@ -400,8 +400,8 @@ class FakeStatement:
             return {"results": []}
         return {"results": []}
     async def first(self):
-        if self.sql.startswith("SELECT id FROM conversations WHERE id=? AND user_id=?"):
-            return {"id": self.values[0]}
+        if self.sql.startswith("SELECT id, deleted_at FROM conversations WHERE id=?"):
+            return {"id": self.values[0], "deleted_at": None}
         return None
 
 
@@ -425,8 +425,9 @@ async def test_d1_adapter_uses_prepared_bound_values_not_interpolation():
     assert await store.delete_conversation("usr_fake", cid, product_scope=PRODUCT_SCOPE_CHAT) is True
     assert any(
         sql.startswith(
-            "DELETE FROM conversations WHERE id=? AND user_id=? AND product_scope=?"
-        ) and values == (cid, "usr_fake", PRODUCT_SCOPE_CHAT)
+            "UPDATE conversations SET deleted_at=? WHERE id=? AND user_id=? "
+            "AND product_scope=? AND deleted_at IS NULL"
+        ) and values[1:] == (cid, "usr_fake", PRODUCT_SCOPE_CHAT)
         for sql, values in db.bound
     )
     assert db.prepared

@@ -1103,7 +1103,7 @@ class D1HistoryStore:
         scope = _require_product_scope(product_scope)
         conv = await self._first(
             "SELECT id, title, project_id, created_at, updated_at FROM conversations "
-            "WHERE id=? AND user_id=? AND product_scope=?",
+            "WHERE id=? AND user_id=? AND product_scope=? AND deleted_at IS NULL",
             conversation_id, user_id, scope,
         )
         if not conv:
@@ -1445,9 +1445,10 @@ class D1HistoryStore:
         bounded = max(1, min(int(limit), MAX_RECENT_CONVERSATIONS))
         rows = await self._all_with_pinned(
             "SELECT id, title, project_id, created_at, updated_at, pinned FROM conversations "
-            "WHERE user_id=? AND product_scope=? ORDER BY pinned DESC, updated_at DESC LIMIT ?",
+            "WHERE user_id=? AND product_scope=? AND deleted_at IS NULL "
+            "ORDER BY pinned DESC, updated_at DESC LIMIT ?",
             "SELECT id, title, project_id, created_at, updated_at FROM conversations "
-            "WHERE user_id=? AND product_scope=? ORDER BY updated_at DESC LIMIT ?",
+            "WHERE user_id=? AND product_scope=? AND deleted_at IS NULL ORDER BY updated_at DESC LIMIT ?",
             user_id, scope, bounded,
         )
         return [{
@@ -1487,7 +1488,7 @@ class D1HistoryStore:
             "(SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
             " AND instr(lower(m.content), lower(?)) > 0 ORDER BY m.sequence_number ASC LIMIT 1) AS hit "
             "FROM conversations c "
-            "WHERE c.user_id=? AND c.product_scope=? AND (instr(lower(c.title), lower(?)) > 0 OR EXISTS ("
+            "WHERE c.user_id=? AND c.product_scope=? AND c.deleted_at IS NULL AND (instr(lower(c.title), lower(?)) > 0 OR EXISTS ("
             "  SELECT 1 FROM (SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
             "  ORDER BY m.sequence_number DESC LIMIT ?) scan WHERE instr(lower(scan.content), lower(?)) > 0)) "
             "ORDER BY c.pinned DESC, c.updated_at DESC LIMIT ?",
@@ -1495,7 +1496,7 @@ class D1HistoryStore:
             "(SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
             " AND instr(lower(m.content), lower(?)) > 0 ORDER BY m.sequence_number ASC LIMIT 1) AS hit "
             "FROM conversations c "
-            "WHERE c.user_id=? AND c.product_scope=? AND (instr(lower(c.title), lower(?)) > 0 OR EXISTS ("
+            "WHERE c.user_id=? AND c.product_scope=? AND c.deleted_at IS NULL AND (instr(lower(c.title), lower(?)) > 0 OR EXISTS ("
             "  SELECT 1 FROM (SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
             "  ORDER BY m.sequence_number DESC LIMIT ?) scan WHERE instr(lower(scan.content), lower(?)) > 0)) "
             "ORDER BY c.updated_at DESC LIMIT ?",
@@ -1519,7 +1520,8 @@ class D1HistoryStore:
         bounded = max(1, min(int(limit), MAX_RECENT_CONVERSATIONS))
         rows = await self._all(
             "SELECT id, title, project_id, created_at, updated_at FROM conversations "
-            "WHERE user_id=? AND project_id=? AND product_scope=? ORDER BY updated_at DESC LIMIT ?",
+            "WHERE user_id=? AND project_id=? AND product_scope=? AND deleted_at IS NULL "
+            "ORDER BY updated_at DESC LIMIT ?",
             user_id, project_id, scope, bounded,
         )
         return [{
@@ -1533,7 +1535,7 @@ class D1HistoryStore:
         scope = _require_product_scope(product_scope)
         conv = await self._first(
             "SELECT id, title, project_id, created_at, updated_at FROM conversations "
-            "WHERE id=? AND user_id=? AND product_scope=?",
+            "WHERE id=? AND user_id=? AND product_scope=? AND deleted_at IS NULL",
             conversation_id, user_id, scope,
         )
         if not conv:
@@ -1581,7 +1583,7 @@ class D1HistoryStore:
             values.append(1 if pinned else 0)
         sql = (
             f"UPDATE conversations SET {', '.join(assignments)} "
-            "WHERE id=? AND user_id=? AND product_scope=?"
+            "WHERE id=? AND user_id=? AND product_scope=? AND deleted_at IS NULL"
         )
         try:
             result = await self._run(sql, *values, conversation_id, user_id, scope)
@@ -1594,7 +1596,7 @@ class D1HistoryStore:
         try:
             row = await self._first(
                 "SELECT id, title, project_id, created_at, updated_at, pinned FROM conversations "
-                "WHERE id=? AND user_id=? AND product_scope=?",
+                "WHERE id=? AND user_id=? AND product_scope=? AND deleted_at IS NULL",
                 conversation_id, user_id, scope,
             )
         except Exception as exc:
@@ -1602,7 +1604,7 @@ class D1HistoryStore:
                 raise
             row = await self._first(
                 "SELECT id, title, project_id, created_at, updated_at FROM conversations "
-                "WHERE id=? AND user_id=? AND product_scope=?",
+                "WHERE id=? AND user_id=? AND product_scope=? AND deleted_at IS NULL",
                 conversation_id, user_id, scope,
             )
         if row is None:
@@ -1619,25 +1621,35 @@ class D1HistoryStore:
     async def delete_conversation(
         self, user_id: str, conversation_id: str, *, product_scope: str,
     ) -> bool:
+        """#7388: deletion is a marker, not a row delete.
+
+        The conversation leaves every product surface immediately (list, search,
+        project, detail, pin, turn append, artifact access), while the row and
+        its messages stay for the retention window so an operator can restore it
+        server-side. `app.conversation_purge` deletes messages, the row and the
+        R2 originals together once the window has passed. No browser API exposes
+        a restore.
+
+        The marker is idempotent: deleting an already-marked conversation is
+        still `True`, and a retried request never moves the retention deadline.
+        """
+
         scope = _require_product_scope(product_scope)
         owned = await self._first(
-            "SELECT id FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
+            "SELECT id, deleted_at FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
             conversation_id, user_id, scope,
         )
         if not owned:
             return False
-        full_rows = await self._all(
-            "SELECT id, content FROM messages WHERE conversation_id=?", conversation_id,
-        )
-        await self._run(
-            "DELETE FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
-            conversation_id, user_id, scope,
-        )
-        await self._delete_full_keys([
-            self._context_key(conversation_id, row["id"])
-            for row in full_rows if len(str(row.get("content", ""))) == MAX_HISTORY_MESSAGE_CHARS
-            and str(row.get("content", "")).endswith(HISTORY_PREVIEW_SUFFIX)
-        ])
+        if owned.get("deleted_at") is None:
+            await self._run(
+                "UPDATE conversations SET deleted_at=? "
+                "WHERE id=? AND user_id=? AND product_scope=? AND deleted_at IS NULL",
+                _now_iso(), conversation_id, user_id, scope,
+            )
+        # The R2 originals deliberately outlive the marker: they are part of
+        # what the retention window keeps, and the purge pass deletes them with
+        # the rows. Every product read above is closed in the meantime.
         return True
 
     async def list_projects(self, user_id: str) -> list[ProjectProfile]:
@@ -1727,7 +1739,8 @@ class D1HistoryStore:
             cid = _chat_id()
         else:
             owned = await self._first(
-                "SELECT id, project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
+                "SELECT id, project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=? "
+                "AND deleted_at IS NULL",
                 cid, user_id, scope,
             )
             if not owned:
@@ -1793,6 +1806,13 @@ class D1HistoryStore:
                     # A first turn that never landed must not leave an empty
                     # conversation behind.
                     try:
+                        # #7388: this row never became a conversation the owner
+                        # could see, so it is removed rather than marked. The
+                        # messages are deleted explicitly: this connection does
+                        # not enforce ON DELETE CASCADE.
+                        await self._run(
+                            "DELETE FROM messages WHERE conversation_id=?", cid,
+                        )
                         await self._run(
                             "DELETE FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
                             cid, user_id, scope,
@@ -1822,7 +1842,8 @@ class D1HistoryStore:
             cid = _chat_id()
         else:
             owned = await self._first(
-                "SELECT id,project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
+                "SELECT id,project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=? "
+                "AND deleted_at IS NULL",
                 cid, user_id, PRODUCT_SCOPE_CHAT,
             )
             if not owned:
@@ -1997,7 +2018,8 @@ class D1HistoryStore:
             cid = _chat_id()
         else:
             owned = await self._first(
-                "SELECT id,project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
+                "SELECT id,project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=? "
+                "AND deleted_at IS NULL",
                 cid, user_id, PRODUCT_SCOPE_CHAT,
             )
             if not owned:
@@ -2186,7 +2208,7 @@ class D1HistoryStore:
         if cid is None or not isinstance(user_id, str) or not user_id:
             return False
         row = await self._first(
-            "SELECT id FROM conversations WHERE id=? AND user_id=?",
+            "SELECT id FROM conversations WHERE id=? AND user_id=? AND deleted_at IS NULL",
             cid, user_id,
         )
         return isinstance(row, dict) and row.get("id") == cid
@@ -2258,7 +2280,7 @@ class D1HistoryStore:
             "SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? "
             "FROM conversations c INNER JOIN claw_run_history r "
             "ON r.conversation_id=c.id AND r.user_id=c.user_id "
-            "WHERE c.id=? AND c.user_id=? AND r.run_id=? "
+            "WHERE c.id=? AND c.user_id=? AND c.deleted_at IS NULL AND r.run_id=? "
             "AND r.workspace_id=? AND r.status='completed'",
             artifact.artifact_id, *expected, _now_iso(),
             cid, user_id, artifact.run_ref, scope,
@@ -2421,7 +2443,7 @@ class D1HistoryStore:
             "SELECT ?,c.id,'assistant',?,?,COALESCE((SELECT MAX(sequence_number) "
             "FROM messages WHERE conversation_id=c.id),0)+1 FROM conversations c "
             "JOIN claw_run_history r ON r.conversation_id=c.id AND r.user_id=c.user_id "
-            "WHERE c.id=? AND r.user_id=? AND r.run_id=?",
+            "WHERE c.id=? AND r.user_id=? AND c.deleted_at IS NULL AND r.run_id=?",
             message_id, content, _now_iso(), cid, user_id, run_id,
         )
         if await self.get_pc_run_scope(user_id=user_id, run_id=run_id) != claim:
@@ -2726,7 +2748,7 @@ class D1HistoryStore:
                 "(SELECT COALESCE(MAX(sequence_number), -1) + 1 FROM messages WHERE conversation_id = c.id), "
                 "'assistant', ?, ? FROM conversations c "
                 "JOIN claw_run_history r ON r.id = ? "
-                "WHERE c.id = ? AND c.user_id = ?"
+                "WHERE c.id = ? AND c.user_id = ? AND c.deleted_at IS NULL"
             ).bind(message_id, body, now, str(owned.get("id")),
                    conversation_id, user_id),
             # The aggregate only moves when the command's own message actually
@@ -2827,7 +2849,7 @@ class D1HistoryStore:
                 "(SELECT COALESCE(MAX(sequence_number), -1) + 1 FROM messages WHERE conversation_id = c.id), "
                 "'assistant', ?, ? FROM conversations c "
                 "JOIN claw_run_history r ON r.id = ? "
-                "WHERE c.id = ? AND c.user_id = ?"
+                "WHERE c.id = ? AND c.user_id = ? AND c.deleted_at IS NULL"
             ).bind(message_id, body, now, str(owned.get("id")),
                    conversation_id, user_id))
         results = await self.db.batch(statements)
@@ -2939,7 +2961,7 @@ class D1HistoryStore:
                 "(SELECT COALESCE(MAX(sequence_number), -1) + 1 FROM messages WHERE conversation_id = c.id), "
                 "'assistant', ?, ? FROM conversations c "
                 "JOIN claw_run_history r ON r.id = ? "
-                "WHERE c.id = ? AND c.user_id = ? "
+                "WHERE c.id = ? AND c.user_id = ? AND c.deleted_at IS NULL "
                 "AND (r.result_summary IS NULL OR r.result_summary = ?)"
             ).bind(message_id, body, now, str(owned.get("id")), conversation_id, user_id, bounded_summary),
         ]
@@ -3003,7 +3025,7 @@ class D1HistoryStore:
                 "SELECT ?, c.id, "
                 "(SELECT COALESCE(MAX(sequence_number), -1) + 1 FROM messages WHERE conversation_id = c.id), "
                 "'assistant', ?, ? FROM conversations c "
-                "WHERE c.id = ? AND c.user_id = ?"
+                "WHERE c.id = ? AND c.user_id = ? AND c.deleted_at IS NULL"
             ).bind(message_id, body, now, conversation_id, user_id),
             self.db.prepare(
                 "UPDATE claw_run_history SET updated_at=? "
