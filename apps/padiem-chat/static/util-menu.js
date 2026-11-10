@@ -44,9 +44,9 @@
     const utilKickerEl = document.getElementById("utilKicker");
     const utilTaglineEl = document.getElementById("utilTagline");
     const tabs = document.querySelectorAll(".util-tab");
-    const panels = {
-      pdfmd: document.getElementById("utilPdfmdPanel"),
-    };
+    // #7173 PR3: the PDF panel is created by its own util screen
+    // (#util/pdfmd); the menu only navigates there.
+    const panels = {};
 
     const utilSubmenu = document.getElementById("utilSubmenu");
     const utilSubmenuItems = utilSubmenu
@@ -121,6 +121,12 @@
       showUtil();
       setUtilSubmenuOpen(true);
       markActiveUtilSubmenuItem(key);
+      if (key === "pdfmd" && window.PadiemUtilApp
+          && typeof window.PadiemUtilApp.navigate === "function") {
+        window.PadiemUtilApp.navigate("#util/pdfmd");
+        closeMobileSidebar();
+        return;
+      }
       const tab = Array.prototype.find.call(tabs, (t) => t.dataset.util === key);
       if (tab) activateUtilTab(tab);
       closeMobileSidebar();

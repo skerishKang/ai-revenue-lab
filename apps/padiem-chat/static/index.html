@@ -546,10 +546,6 @@
              list/tool markup is rendered by the util module; the main bundle
              holds none of it. -->
         <div class="util-app-root" id="utilAppRoot"></div>
-        <!-- The existing PDF → Markdown panel keeps its node parked here. The
-             PDF tool screen mounts it inside its own body (the util module); PR3
-             moves the panel's own markup into that screen. No second copy. -->
-        <div id="utilPdfmdHost" hidden><div class="util-panel" id="utilPdfmdPanel" hidden></div></div>
       </section>
       <section class="calendar-view" id="calendarView" aria-labelledby="calendarViewTitle" hidden>
         <header class="calendar-view-header">
@@ -1404,8 +1400,8 @@
   <script src="./util-tools-markdown.js" defer></script>
   <script src="./util-tools-contract.js" defer></script>
   <script src="./util-tools.js" defer></script>
+  <script src="./util-pdfmd.js" defer></script>
   <script src="./util-app.js" defer></script>
-<script src="./util-pdfmd.js" defer></script>
   <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
        presentation-only: never reads the directory endpoint or a raw payload. -->
   <script src="./claw-device-guidance.js"></script>
