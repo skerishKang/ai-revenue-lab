@@ -546,7 +546,7 @@ class Settings:
                     name="PADIEM_CHAT_SESSION_USER_ROW_CHECK",
                 )
                 if session_user_row_check is not None
-                else _env_session_user_row_check()
+                else None
             ),
         )
 
@@ -606,7 +606,6 @@ class Settings:
             mcp_pc_shell_enabled=os.getenv("PADIEM_MCP_PC_SHELL_ENABLED"),
             mcp_pc_shell_user_mode_enabled=os.getenv("PADIEM_MCP_PC_SHELL_USER_MODE"),
             email_login_via_shared=os.getenv("PADIEM_CHAT_EMAIL_LOGIN_VIA_SHARED"),
-            session_user_row_check=os.getenv("PADIEM_CHAT_SESSION_USER_ROW_CHECK"),
             lovetree_account_delete_url=os.getenv("PADIEM_CHAT_LOVETREE_ACCOUNT_DELETE_URL"),
             account_delete_rpc_secret=os.getenv("PADIEM_CHAT_ACCOUNT_DELETE_RPC_SECRET"),
             password_rpc_secret=os.getenv("PADIEM_CHAT_PASSWORD_RPC_SECRET"),
