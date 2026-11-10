@@ -205,3 +205,4 @@
 2026-11-10 mimo step 5b-3 (module): chat-streaming-module.js(704줄, 5함수) byte-identical 검증(deps. 제거 시 원본 일치, 누락 참조 0), app.js 미사용 주석 getter 5개(clawManualForm·form·shell·showConversation·submitPrompt) 제거해 deps 43 getter / 7 setter 확정, index.html 로드 순서 확인.
 2026-11-10 mimo step 5b-4 (merge): 줄바꿈·시험 정리본 커밋(5386b9d08) 후 origin/main(3a0a06b06, 10커밋)을 무충돌 merge 완료(rebase·force push 없음).
 2026-11-10 mimo step 5b-5 (verify): 신규 계약 시험 test_r5_step5b_streaming_module_7216(vm 5함수·getter·setter·strict deps) + test_r5_step5b_streaming_browser_7216(실제 Chromium 5전달 직접 호출·getter·setter) 추가, app.js 상한 6791 → 6172(6072+100) 갱신, 뮤테이션 2종(deps. 제거·본문 복제) 적발 확인, R5 스위트 138 passed 및 Chat 전체 스위트 검증(신규 실패 0).
+2026-11-10 mimo step 5b-6 (pr+packet): origin/refactor/r5-step5b-streaming 푸시 및 PR #7345 생성 완료, 아르곤 검토 패킷 E:\PADIEM\argon-inbox\r5-streaming-5b.md 작성 후 정지.
