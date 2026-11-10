@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import time
 import uuid
 
 from padiem_ai_core.document_normalization import DocumentNormalizationError
@@ -85,6 +86,31 @@ class Store:
         if not (directory / "meta.json").is_file():
             raise FileError("file_not_found", 404)
         return directory
+
+    def purge_user(self, user_id: str) -> int:
+        """Remove the owner's whole directory (account deletion sweep).
+
+        Every file the lane keeps for one account lives under the single
+        per-owner digest directory, so one removal is the whole user prefix:
+        originals, metadata and derived text caches. An in-flight upload may
+        still hold a Windows handle, so the removal retries briefly before it
+        reports failure; the ticket that authorized the purge names only this
+        owner, and a directory that does not exist is already gone (0).
+        """
+        owner = self.owner_directory(user_id)
+        if not owner.is_dir():
+            return 0
+        entries = len(list(owner.iterdir()))
+        last: OSError | None = None
+        for attempt in range(3):
+            try:
+                shutil.rmtree(owner)
+                return entries
+            except OSError as exc:
+                last = exc
+                if attempt < 2:
+                    time.sleep(0.2 * (attempt + 1))
+        raise FileError("purge_failed", 503) from last
 
     def meta(self, user_id, file_id):
         return json.loads((self.directory(user_id, file_id) / "meta.json").read_text(encoding="utf-8"))
