@@ -57,7 +57,11 @@ def test_observability_real_repository_settings_survive_production_generation():
     module = _load_module()
     repo = Path(__file__).resolve().parents[2] / "apps/padiem-chat/wrangler.toml"
     live = module.parse_live_bindings(_settings_payload(_production_bindings()))
-    generated = module.build_production_config(live, repo, PUBLIC_URL)
+    # The synthetic live payload still carries the retired B14_SERVICE service
+    # binding (2026-11-10 Cloudflare B14 Worker retirement, Refs #7400). The
+    # repository no longer declares it, so generation must carry the same
+    # reviewed removal authority the production deploy is approved with.
+    generated = module.build_production_config(live, repo, PUBLIC_URL, allow_binding_removal=True)
     assert tomllib.loads(generated)["observability"] == tomllib.loads(repo.read_text())["observability"]
     module.verify_mutation_zero(generated, live)
 
