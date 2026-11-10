@@ -187,9 +187,13 @@ class WorkerJwksVerifier:
                 or type(body.get('exp')) is not int or body['exp'] <= now or body['exp'] > body['iat'] + 900
                 or not isinstance(body.get('sub'), str) or not body['sub']
                 or not isinstance(body.get('account_id'), str) or not re.fullmatch(r'sub_[A-Za-z0-9_-]+', body['account_id'])
-                or not isinstance(body.get('sid'), str) or not body['sid']):
+                or not isinstance(body.get('sid'), str) or not body['sid']
+                or ('amr' in body and (not isinstance(body['amr'], list) or not body['amr'] or not all(isinstance(x, str) and x for x in body['amr'])))):
             raise ValueError('invalid_claims')
-        return dict(subject=body['sub'], accountId=body['account_id'], sessionId=body['sid'], expiresAt=body['exp'])
+        result = dict(subject=body['sub'], accountId=body['account_id'], sessionId=body['sid'], expiresAt=body['exp'])
+        if 'amr' in body:
+            result['amr'] = list(body['amr'])
+        return result
 
 
 class ComparisonFlow:

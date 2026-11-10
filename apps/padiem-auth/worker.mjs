@@ -440,12 +440,12 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const fields = profileClaimAllowlist(clients[pending.client]);
       let encryptedProfile;
       if (fields.length) {
-        // A password login proves the credential, not the mailbox: the profile
-        // NEVER claims a verified email. Operator allowlists key on the email,
-        // so a "verified" claim on an account registered with someone else's
-        // address would grant operator standing; Chat's shared-profile
-        // provision also rejects any password profile outright. profile_claims
-        // clients are expected to keep password_login off.
+        // A password login proves the credential against Chat's internal
+        // /internal/password-verify, not the mailbox: the profile NEVER claims
+        // a verified email. Operator allowlists key on a verified email, so
+        // email_verified stays false. Chat's shared-profile provision accepts
+        // email_verified:false when the verified access token carries amr:['pwd']
+        // (with the empty name/picture shape kept as transitional fallback).
         const claims = { email, email_verified: false, name: '', picture: '' };
         const profile = Object.fromEntries(fields.map(field => [field, claims[field]]));
         const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -453,7 +453,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: aad }, refreshKey, encoder.encode(JSON.stringify(profile)));
         encryptedProfile = `${b64(iv)}.${b64(new Uint8Array(cipher))}`;
       }
-      await diagnosed('code_issue_failed', async () => stateFor(state[0]).createCode({ digest: codeDigest, client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60, encryptedProfile }));
+      await diagnosed('code_issue_failed', async () => stateFor(state[0]).createCode({ digest: codeDigest, client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60, encryptedProfile, amr: 'pwd' }));
       const target = new URL(pending.redirect);
       target.searchParams.set('code', `${state[0]}.${codeSecret}`);
       target.searchParams.set('state', pending.service_state);
@@ -498,7 +498,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         const cipher = await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:aad}, refreshKey, encoder.encode(JSON.stringify(profile)));
         encryptedProfile = `${b64(iv)}.${b64(new Uint8Array(cipher))}`;
       }
-      await diagnosed('code_issue_failed', async () => stateFor(state[0]).createCode({ digest: codeDigest, client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60, encryptedProfile }));
+      await diagnosed('code_issue_failed', async () => stateFor(state[0]).createCode({ digest: codeDigest, client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60, encryptedProfile, amr: 'google' }));
       const target = new URL(pending.redirect); target.searchParams.set('code', `${state[0]}.${codeSecret}`); target.searchParams.set('state', pending.service_state);
       return redirect(target.href, { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' });
     }
@@ -511,7 +511,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const clientAuthStarted = performance.now();
       try { await verifyClient(params, client, current); } catch { return json(401, { error: 'invalid_client' }); }
       finally { if (tokenTiming) tokenTiming.clientAuthMs = performance.now() - clientAuthStarted; }
-      let subject, accountId, object, sessionId, profile, nextSecret = random();
+      let subject, accountId, object, sessionId, profile, amr = ['google'], nextSecret = random();
       if (url.pathname === '/token' && one(params, 'grant_type') === 'authorization_code') {
         const code = split(one(params, 'code')), verifier = one(params, 'code_verifier'), returnTo = one(params, 'redirect_uri');
         if (!code || !opaque.test(verifier) || !client.redirect_uris.includes(returnTo)) return json(400, { error: 'invalid_grant' });
@@ -522,6 +522,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         if (!result) return json(400, { error: 'invalid_grant' });
         subject = result.subject;
         accountId = result.accountId;
+        amr = result.amr === 'pwd' ? ['pwd'] : ['google'];
         const profileStarted = performance.now();
         try {
           const indexed = await stateFor('google-account-registry').indexAccountSession({
@@ -556,7 +557,8 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         if (!snapshot) return json(400, { error: 'invalid_grant' });
         const account = await stateFor('google-account-registry').accountById(snapshot.account_id);
         if (!account || account.state !== 'active') return json(400, { error: 'invalid_grant' });
-        const access = await issueAccessToken({ key: signingKey, kid: signingKid, issuer: ORIGIN, audience: id, subject: snapshot.subject, accountId: snapshot.account_id, sessionId, now: current });
+        const refreshAmr = snapshot.amr === 'pwd' ? ['pwd'] : ['google'];
+        const access = await issueAccessToken({ key: signingKey, kid: signingKid, issuer: ORIGIN, audience: id, subject: snapshot.subject, accountId: snapshot.account_id, sessionId, now: current, amr: refreshAmr });
         const response = { access_token: access, token_type: 'Bearer', expires_in: 900, refresh_token: `${object}.${sessionId}.${nextSecret}` };
         const iv = crypto.getRandomValues(new Uint8Array(12)), aad = encoder.encode(`${id}:${sessionId}`);
         const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: aad }, refreshKey, encoder.encode(JSON.stringify(response)));
@@ -569,7 +571,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         return json(200, JSON.parse(new TextDecoder().decode(plain)));
       }
       const tokenSignStarted = performance.now();
-      const access = await issueAccessToken({ key: signingKey, kid: signingKid, issuer: ORIGIN, audience: id, subject, accountId, sessionId, now: current });
+      const access = await issueAccessToken({ key: signingKey, kid: signingKid, issuer: ORIGIN, audience: id, subject, accountId, sessionId, now: current, amr });
       if (tokenTiming) tokenTiming.tokenSignMs = performance.now() - tokenSignStarted;
       const response = { access_token: access, token_type: 'Bearer', expires_in: 900, refresh_token: `${object}.${sessionId}.${nextSecret}` };
       if (profile) { response.account_id = accountId; response.profile = profile; }
