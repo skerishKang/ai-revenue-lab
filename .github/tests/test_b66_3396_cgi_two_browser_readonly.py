@@ -97,7 +97,7 @@ def test_only_exact_main_can_have_credential():
         'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"',
         "persist-credentials: false",
         "secrets.QA_MANUAL_PASSWORD",
-        "vars.QA_MANUAL_USERNAME",
+        "secrets.QA_MANUAL_USERNAME",
         "source-contract",
         "live-cgi-readonly",
         "--authorized-live-readonly",

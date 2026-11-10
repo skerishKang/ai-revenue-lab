@@ -81,7 +81,7 @@ jobs:
           # for this job, it is scoped to the job, and here it can only write a commit
           # status on the SHA the job already checked out.
           unexpected="$(grep -Eo 'secrets\.[A-Z0-9_]+' .github/workflows/pc-connector-canary.yml \
-            | grep -vx -e 'secrets.QA_MANUAL_PASSWORD' -e 'secrets.GITHUB_TOKEN' || true)"
+            | grep -vx -e 'secrets.QA_MANUAL_PASSWORD' -e 'secrets.QA_MANUAL_USERNAME' -e 'secrets.GITHUB_TOKEN' || true)"
           if [ -n "${unexpected}" ]; then
             echo 'PC_CONNECTOR_CANARY_SECRET_NAMES=UNEXPECTED' >&2
             printf '%s\n' "${unexpected}" >&2
