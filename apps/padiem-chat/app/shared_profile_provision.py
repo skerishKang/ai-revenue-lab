@@ -29,6 +29,28 @@ def _shape(value):
 PROFILE_FIELDS = frozenset({'email', 'email_verified', 'name', 'picture'})
 
 
+def _verified_email_ok(profile) -> bool:
+    """email_verified 요구를 만족하는가. 그 외 필드 검사와 무관하게 값만 본다.
+
+    Google 경로는 ID 토큰 검증 시점에만 email_verified=true를 발행하므로,
+    false는 Google 계정이 아니다. padiem-auth 비밀번호 경로는 Chat 자신의
+    내부 비밀번호 확인(/internal/password-verify)으로 계정을 증명한 뒤
+    `email_verified:false, name:'', picture:''`를 하드코딩으로 발행한다. 그
+    하드코딩 모양 그대로일 때만 면제한다 — Google 본문 모양(name/picture가
+    찬 경우)과 섞일 수 없고, 비밀번호 계정은 Chat이 증명했으므로 남의 메일을
+    자기 것처럼 연결할 수 없다.
+    """
+    if 'email_verified' not in profile:
+        return True
+    if profile['email_verified'] is True:
+        return True
+    return (
+        profile['email_verified'] is False
+        and profile.get('name') == ''
+        and profile.get('picture') == ''
+    )
+
+
 async def provision_shared_profile(request, user_id, access_token, tokens, *, verifier, store, legacy_user, notify):
     if not isinstance(tokens, dict) or not isinstance(user_id, str):
         raise ValueError('invalid_profile_response')
@@ -81,12 +103,15 @@ async def provision_shared_profile(request, user_id, access_token, tokens, *, ve
         raise ValueError('invalid_profile')
     email, name, picture = profile['email'], profile.get('name', ''), profile.get('picture', '')
     if (not isinstance(email, str) or not email.strip() or len(email) > 320
-            or 'email_verified' in profile and profile['email_verified'] is not True
+            or not _verified_email_ok(profile)
             or not isinstance(name, str) or len(name) > 160
             or not isinstance(picture, str) or len(picture) > 1000):
         # The verification flag is only required when the client asked for it: the
         # authority sets it once Google's ID token has been checked, and drops it
-        # with every other field the client does not list.
+        # with every other field the client does not list. Google profiles carry
+        # verified=true; a password profile is recognised by its issuer contract
+        # (see `_verified_email_ok`) — the credential was already proven against
+        # Chat's own password verify before padiem-auth issued this profile.
         logger.warning('shared_login_profile_rejected condition=values profile_field_count=%d', len(profile))
         raise ValueError('invalid_profile')
     store_started = time.perf_counter()
