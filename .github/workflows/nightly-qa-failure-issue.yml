@@ -89,15 +89,22 @@ jobs:
             # #6724: the check prints one bounded USAGE_FLOW line per flow on
             # pass and on fail. Read them the same way the grade smokes are
             # read; a run whose job never started gets one synthetic line.
+            # #7343: since the 2차 slowdown fields (entry_ms/answer_ms) the
+            # old 1차-shaped pattern matched nothing, so every failed run was
+            # recorded as a synthetic SKIPPED instead of its real verdicts.
+            # Accept both shapes.
             usage_real=$(gh run view --job "$(gh api \
               "repos/${GH_REPO}/actions/runs/${RUN_ID}/jobs?filter=all&per_page=100" \
               --jq '.jobs[] | select(.conclusion == "success" or .conclusion == "failure") | .id' | head -1)" \
-              --log 2>/dev/null | grep -o 'USAGE_FLOW name=[a-z_]* verdict=[A-Z]* elapsed_ms=[0-9]* code=[a-z_0-9]* head=[^ ]*' \
+              --log 2>/dev/null | grep -oE 'USAGE_FLOW name=[a-z_]+ verdict=[A-Z]+( elapsed_ms=[0-9]+)?( entry_ms=[0-9]+)?( answer_ms=[0-9]+)? code=[a-z_0-9]+( head=[^ ]*)?' \
               | sort -u || true)
             if [ -n "${usage_real}" ]; then
               grades="${usage_real}"
             else
-              grades="USAGE_FLOW name=none verdict=SKIPPED code=usage_log_missing"
+              # #7343: a failed run whose verdict lines cannot be read is a
+              # real observability failure, not a skip. Record FAIL with the
+              # cause code so the issue never shows a fake SKIP for a red run.
+              grades="USAGE_FLOW name=none verdict=FAIL code=usage_log_missing"
             fi
           fi
           if [ -z "${grades}" ]; then

@@ -25,6 +25,9 @@ from pathlib import Path
 
 import pytest
 
+# R5 0단계(R-01): 함수 경계는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import combined_source
+
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
@@ -47,9 +50,10 @@ def test_show_conversation_iterates_panel_id_array_not_comma_expression() -> Non
 
 def test_claw_custom_and_image_refusals_are_removed_from_ui_modules() -> None:
     # (a) Custom Claw refusal removed from submitPrompt and requestAnswer
-    submit_start = APP_JS.index("async function submitPrompt(")
-    submit_end = APP_JS.index("\n  function setSidebarCollapsed(", submit_start)
-    submit_body = APP_JS[submit_start:submit_end]
+    shipped = combined_source()
+    submit_start = shipped.index("async function submitPrompt(")
+    submit_end = shipped.index("\n  function setSidebarCollapsed(", submit_start)
+    submit_body = shipped[submit_start:submit_end]
     assert "custom-chat-only" not in submit_body
     assert "const customSelection = window.PadiemCustomSelection?.get?.();" in STREAM_JS
     assert "!clawGeneralRequest && window.PadiemCustomSelection" not in STREAM_JS

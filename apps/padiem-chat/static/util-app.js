@@ -130,10 +130,19 @@
     const body = element("div", "util-tool-body");
     body.setAttribute("role", "region");
     body.setAttribute("aria-labelledby", "utilToolHeading");
-    const placeholder = lang() === "en"
-      ? "This tool screen is being prepared. Input and results land here in the next step."
-      : "도구 화면을 준비 중입니다. 다음 단계에서 이 화면에 입력과 결과가 추가됩니다.";
-    body.appendChild(element("p", "util-tool-placeholder", placeholder));
+    // PR2: the three council-family tools mount their own screen from
+    // util-tools.js. The other three keep the placeholder until their PR.
+    const mounted = Boolean(
+      window.PadiemUtilTools
+      && typeof window.PadiemUtilTools.mount === "function"
+      && window.PadiemUtilTools.mount(tool.id, body)
+    );
+    if (!mounted) {
+      const placeholder = lang() === "en"
+        ? "This tool screen is being prepared. Input and results land here in the next step."
+        : "도구 화면을 준비 중입니다. 다음 단계에서 이 화면에 입력과 결과가 추가됩니다.";
+      body.appendChild(element("p", "util-tool-placeholder", placeholder));
+    }
     screen.appendChild(back);
     screen.appendChild(heading);
     screen.appendChild(element("p", "util-tool-desc", text.desc));

@@ -8,7 +8,7 @@
 # It does not enable, start, restart, or reload a running service
 # unless --reload is passed, and it refuses to overwrite a file it did not
 # place there. Setting B14_UPSTREAM_MODE and deploying Chat/Engine is a separate,
-# gated act recorded in docs/operations/B14_COM2_RUNBOOK.md, not something this
+# gated act recorded in the 비공개 운영 기록(거버넌스 폴더, 같은 상대 경로), not something this
 # script can do.
 #
 #   bash install.sh --dry-run     print decisions, write nothing

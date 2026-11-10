@@ -76,29 +76,114 @@ def block_kind(text):
     return "statement"
 
 
+def _strip_code(line, state=None):
+    """한 줄에서 주석(줄·블록)·문자열·템플릿 본문·정규식 리터럴을 걷어낸 코드를
+    돌려준다. 블록 주석과 여러 줄 템플릿 상태는 ``state`` 딕셔너리로 줄 사이에
+    유지된다. 정규식 리터럴(예: ``/^https:\\/\\//``) 안의 ``//``와 ``{}``는
+    깊이 계산을 어긋나게 하므로 함께 걷어낸다."""
+    if state is None:
+        state = {"comment": False, "template": False}
+    out = []
+    i, n = 0, len(line)
+    while i < n:
+        if state["comment"]:
+            end = line.find("*/", i)
+            if end == -1:
+                return "".join(out), state
+            i = end + 2
+            state["comment"] = False
+            continue
+        if state["template"]:
+            ch = line[i]
+            if ch == "\\":
+                i += 2
+                continue
+            if ch == "`":
+                state["template"] = False
+            i += 1
+            continue
+        ch = line[i]
+        if ch == "/" and line[i + 1: i + 2] == "/":
+            break
+        if ch == "/" and line[i + 1: i + 2] == "*":
+            state["comment"] = True
+            i += 2
+            continue
+        if ch in "'\"":
+            quote = ch
+            i += 1
+            while i < n:
+                if line[i] == "\\":
+                    i += 2
+                    continue
+                if line[i] == quote:
+                    i += 1
+                    break
+                i += 1
+            continue
+        if ch == "`":
+            state["template"] = True
+            i += 1
+            continue
+        if ch == "/":
+            # 정규식 리터럴 판정(관용적 규칙): 직전 유효 문자가 값의 끝이 아니면
+            # 나눗셈이 아니라 정규식이다.
+            prev = "".join(out).rstrip()
+            last = prev[-1] if prev else ""
+            if last == "" or last in "(,=:[!&|?{};" or prev.endswith("return") or prev.endswith("typeof"):
+                i += 1
+                in_class = False
+                while i < n:
+                    c = line[i]
+                    if c == "\\":
+                        i += 2
+                        continue
+                    if c == "[":
+                        in_class = True
+                    elif c == "]":
+                        in_class = False
+                    elif c == "/" and not in_class:
+                        i += 1
+                        while i < n and line[i].isalpha():
+                            i += 1
+                        break
+                    i += 1
+                continue
+        out.append(ch)
+        i += 1
+    return "".join(out), state
+
+
+def _depth_delta(code):
+    return (code.count("(") - code.count(")")
+            + code.count("{") - code.count("}")
+            + code.count("[") - code.count("]"))
+
+
 def find_close_top(lines, i):
-    j = i + 1
-    while j < len(lines) and lines[j] != "  }" and not re.match(r"^  }\s*;?\s*$", lines[j]):
-        j += 1
-    return j
+    """닫는 줄을 찾는다. R-18: (1) 한 줄 선언(한 줄 전달 함수 등)은 자기 줄에서
+    닫히고, (2) 닫는 중괄호의 들여쓰기가 어긋나 있어도(예: 6칸) 괄호 깊이가
+    0으로 돌아오는 첫 줄에서 함수가 끝난다."""
+    depth = 0
+    state = {"comment": False, "template": False}
+    for j in range(i, len(lines)):
+        code, state = _strip_code(lines[j], state)
+        depth += _depth_delta(code)
+        if depth <= 0:
+            return j
+    return i
 
 
 def variable_end(lines, i):
     """Multi-line initializers: consume until bracket depth returns to zero."""
     depth = 0
-    in_block_comment = False
+    state = {"comment": False, "template": False}
     for j in range(i, len(lines)):
-        line = lines[j]
-        if in_block_comment:
-            if "*/" in line:
-                in_block_comment = False
-            continue
-        if "/*" in line and "*/" not in line.split("/*", 1)[1]:
-            in_block_comment = True
-        code = re.sub(r"//.*$", "", line)
-        code = re.sub(r"'(?:[^'\\]|\\.)*'|\"(?:[^\"\\]|\\.)*\"|`(?:[^`\\]|\\.)*`", "", code)
-        depth += code.count("(") - code.count(")") + code.count("{") - code.count("}") + code.count("[") - code.count("]")
-        if j > i and depth <= 0:
+        code, state = _strip_code(lines[j], state)
+        depth += _depth_delta(code)
+        # 한 줄 선언은 그 줄에서 끝난다(세미콜론 확인). 여러 줄 초기화는
+        # 괄호 균형이 0으로 돌아오는 줄에서 끝난다.
+        if depth <= 0 and (j > i or code.rstrip().endswith(";")):
             return j
     return i
 
@@ -207,7 +292,7 @@ def main():
     dom_ids = sorted(set(re.findall(r"getElementById\(\s*[\"']([\w-]+)[\"']\s*\)", text))
                      | set(re.findall(r"querySelector\(\s*[\"']#([\w-]+)[\"']", text)))
     listeners = [{"target": t, "event": e} for t, e in
-                 re.findall(r"([A-Za-z_$][\w$]*)\.addEventListener\(\s*[\"'](\w+)[\"']", text)]
+                 re.findall(r"([A-Za-z_$][\w$]*)\??\.addEventListener\(\s*[\"']([\w:-]+)[\"']", text)]
 
     area_summary = {}
     for f in funcs:

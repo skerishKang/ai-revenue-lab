@@ -19,6 +19,9 @@ from app.history import (
 )
 from app.claw_routes import claw_pending_result
 
+# R5 0단계(R-01): 함수 경계는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import combined_source
+
 
 OWNER = "owner"
 CID = "chat_" + "a" * 24
@@ -318,12 +321,8 @@ def test_a_running_row_is_reconciled_exactly_like_a_pending_one(monkeypatch):
 
 
 def test_browser_never_presents_a_model_reply_as_a_verified_pc_result():
-    from pathlib import Path
-
-    app_js = (
-        Path(__file__).resolve().parents[1] / "static" / "app.js"
-    ).read_text(encoding="utf-8")
-    poll = app_js.split("async function waitForAcceptedPcRun(", 1)[1]
+    shipped = combined_source()
+    poll = shipped.split("async function waitForAcceptedPcRun(", 1)[1]
     poll = poll.split("async function requestStreamingAnswer(", 1)[0]
     assert 'result.answer_source !== "pc_command_result"' in poll
     # The model's own answer stays in place; only a verified PC command result
@@ -339,12 +338,8 @@ def test_browser_never_presents_a_model_reply_as_a_verified_pc_result():
 # running step must be settled by the run's real outcome.
 
 def _pc_poll_source() -> str:
-    from pathlib import Path
-
-    app_js = (
-        Path(__file__).resolve().parents[1] / "static" / "app.js"
-    ).read_text(encoding="utf-8")
-    poll = app_js.split("async function waitForAcceptedPcRun(", 1)[1]
+    shipped = combined_source()
+    poll = shipped.split("async function waitForAcceptedPcRun(", 1)[1]
     return poll.split("async function requestStreamingAnswer(", 1)[0]
 
 
@@ -383,21 +378,17 @@ def test_a_recovered_answer_releases_the_running_chip_it_was_shown():
     renderer therefore releases it explicitly, after the stored answer replaces
     the content and before the turn is settled.
     """
-    from pathlib import Path
-
-    app = (
-        Path(__file__).resolve().parents[1] / "static" / "app.js"
-    ).read_text(encoding="utf-8")
-    render = app.split("function renderStoredPcAnswer(", 1)[1].split("\n  }", 1)[0]
+    shipped = combined_source()
+    render = shipped.split("function renderStoredPcAnswer(", 1)[1].split("\n  }", 1)[0]
     assert "content.replaceChildren();" in render, render
     released = render.index('applyRuntimeLabel?.(article, "", "status")')
     assert render.index("content.replaceChildren();") < released, render
     assert released < render.index("MESSAGE_LIFECYCLE.COMPLETED"), render
     # One shared guard, declared before both readers of the run, so the same
     # recovered run can never be painted into the conversation twice.
-    declared = app.index("const resolvedPcRuns = new Set();")
-    assert declared < app.index("async function waitForAcceptedPcRun(")
-    assert declared < app.index("async function recoverStoredPcResult(")
+    declared = shipped.index("const resolvedPcRuns = new Set();")
+    assert declared < shipped.index("async function waitForAcceptedPcRun(")
+    assert declared < shipped.index("async function recoverStoredPcResult(")
 
 
 def test_the_observed_pc_step_is_carried_on_the_card_that_shows_it():

@@ -21,6 +21,9 @@ import pytest
 
 from app.claw_general_routes import _MODEL_HOLD_USER_MESSAGE
 
+# R5 0단계(R-01): 함수·상수 경계는 app.js든 분리 모듈이든 같은 도우미로 찾는다.
+from _r5_function_source import combined_source, function_body
+
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 STREAM = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
@@ -152,7 +155,8 @@ def test_hold_copy_is_selected_only_after_a_verified_terminal_outranks_it():
 
 
 def test_closed_map_holds_only_the_public_refusal_code():
-    region = APP[APP.index("  const CLAW_BOUNDED_REFUSAL_COPY"):]
+    shipped = combined_source()
+    region = shipped[shipped.index("  const CLAW_BOUNDED_REFUSAL_COPY"):]
     region = region[: region.index("\n  function buildRetryBox(")]
     assert 'tier_unavailable: Object.freeze({' in region
     for internal in ("tier_hold", "max_tier_hold", "engine_execution_failed", "upstream_timeout"):
@@ -162,8 +166,7 @@ def test_closed_map_holds_only_the_public_refusal_code():
 
 def test_ambiguous_run_classifier_is_unchanged_by_the_hold_copy():
     """A HOLD must not enter the 'may already have dispatched' classifier."""
-    classifier = APP[APP.index("function isAmbiguousClawFailure"):]
-    classifier = classifier[: classifier.index("\n  }")]
+    classifier = function_body("isAmbiguousClawFailure")
     assert 'return status === 502 || code === "engine_execution_failed";' in classifier
     assert "tier_unavailable" not in classifier
 

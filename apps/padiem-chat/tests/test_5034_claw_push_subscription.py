@@ -64,7 +64,10 @@ SIGNED_IN_USER_ID = "usr_" + "7" * 32
 OTHER_USER_ID = "usr_" + "f" * 32
 _OWN_TENANT = "tenant_own"
 
-_ENDPOINT = "https://push.example.test/device/abc123"
+_ENDPOINT = "https://fcm.googleapis.com/wp/device/abc123"
+# A subscription endpoint the reviewed push contract does not admit (an
+# arbitrary host outside the browser push services).
+_LEGACY_ENDPOINT = "https://push.example.test/device/abc123"
 _SCOPE = "https://chat.example.test"
 
 
@@ -353,6 +356,40 @@ def test_a_malformed_subscription_body_is_refused(body):
     assert _rows(db) == []
 
 
+@pytest.mark.parametrize(
+    "endpoint",
+    [
+        "http://fcm.googleapis.com/wp/device-1",  # not https
+        "https://127.0.0.1/wp/device-1",  # loopback IP literal
+        "https://10.1.2.3/wp/device-1",  # private IP literal
+        "https://169.254.169.254/latest",  # link-local IP literal
+        "https://[::1]/wp/device-1",  # IPv6 loopback literal
+        _LEGACY_ENDPOINT,  # an unreviewed https host
+        "https://fcm.googleapis.com.evil.test/wp/device-1",  # allowlist lookalike
+        "https://fcm.googleapis.com:8443/wp/device-1",  # non-default port
+    ],
+)
+def test_an_endpoint_outside_the_reviewed_push_contract_is_refused(endpoint):
+    """The endpoint is the server's own outbound destination: it is accepted
+    only as https on a reviewed browser push-service host, and the refusal
+    never stores the row nor echoes the endpoint back."""
+    db = _seed_db()
+    with _client(db) as client:
+        response = _post(client, SUBSCRIPTION_PATH, _payload(endpoint=endpoint))
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "invalid_endpoint"
+    assert _rows(db) == []
+    assert endpoint not in response.text
+
+
+def test_a_reviewed_push_service_endpoint_is_stored():
+    db = _seed_db()
+    with _client(db) as client:
+        response = _post(client, SUBSCRIPTION_PATH, _payload())
+    assert response.status_code == 200, response.text
+    assert len(_rows(db)) == 1
+
+
 # ── the delivery seam ──────────────────────────────────────────────────────
 
 
@@ -622,3 +659,80 @@ async def test_a_gone_device_delivery_is_recorded_with_its_drop(capsys):
     assert "failed=1" in lines[-1]
     assert "gone=1" in lines[-1]
     assert _ENDPOINT not in captured
+
+
+async def test_a_subscription_outside_the_endpoint_contract_is_skipped_and_kept(capsys):
+    """A stored subscription whose endpoint does not satisfy the reviewed
+    push-endpoint contract is never POSTed to and never deleted: delivery
+    skips it, the journal counts it, and the opt-in row stays in place."""
+    db = _seed_db()
+    store = D1ClawPushSubscriptionStore(db)
+    await store.register(
+        workspace_id=_OWN_TENANT,
+        member_id=SIGNED_IN_USER_ID,
+        endpoint=_LEGACY_ENDPOINT,
+        p256dh="k",
+        auth="a",
+        scope=_SCOPE,
+        now="2026-10-21T00:00:00Z",
+    )
+    sender = _Sender(ok=True)
+    outcome = await _outcome(
+        store=store, sender=sender, workspace_id=_OWN_TENANT,
+        member_id=SIGNED_IN_USER_ID,
+    )
+    assert outcome.state == "failed"
+    assert outcome.attempted == 0
+    assert outcome.delivered == 0
+    assert outcome.skipped == 1
+    assert sender.calls == []
+    # The row is the browser's own opt-in record: the endpoint rule never
+    # deletes it.
+    rows = _rows(db)
+    assert len(rows) == 1
+    assert rows[0]["endpoint"] == _LEGACY_ENDPOINT
+    captured = capsys.readouterr().out
+    lines = [ln for ln in captured.splitlines() if ln.startswith("claw_push_delivery")]
+    assert lines, captured
+    assert "state=failed" in lines[-1]
+    assert "attempted=0" in lines[-1]
+    assert "skipped=1" in lines[-1]
+    assert _LEGACY_ENDPOINT not in captured
+
+
+async def test_a_contract_violating_subscription_is_skipped_while_valid_ones_deliver(capsys):
+    """One non-conforming row among conforming rows never blocks delivery:
+    the valid device still receives the push, the violating one is skipped."""
+    db = _seed_db()
+    store = D1ClawPushSubscriptionStore(db)
+    await store.register(
+        workspace_id=_OWN_TENANT,
+        member_id=SIGNED_IN_USER_ID,
+        endpoint=_LEGACY_ENDPOINT,
+        p256dh="k",
+        auth="a",
+        scope=_SCOPE,
+        now="2026-10-21T00:00:00Z",
+    )
+    await store.register(
+        workspace_id=_OWN_TENANT,
+        member_id=SIGNED_IN_USER_ID,
+        endpoint=_ENDPOINT,
+        p256dh="k",
+        auth="a",
+        scope=_SCOPE,
+        now="2026-10-21T00:05:00Z",
+    )
+    sender = _Sender(ok=True)
+    outcome = await _outcome(
+        store=store, sender=sender, workspace_id=_OWN_TENANT,
+        member_id=SIGNED_IN_USER_ID,
+    )
+    assert outcome.state == "delivered"
+    assert outcome.attempted == 1
+    assert outcome.delivered == 1
+    assert outcome.skipped == 1
+    assert len(sender.calls) == 1
+    assert sender.calls[0]["subscription"].endpoint == _ENDPOINT
+    rows = _rows(db)
+    assert len(rows) == 2
