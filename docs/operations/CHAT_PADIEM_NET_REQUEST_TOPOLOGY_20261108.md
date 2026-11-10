@@ -45,6 +45,8 @@ chat.padiem.net은 Cloudflare Worker **padiem-chat-front**(`apps/padiem-chat-fro
 | `apps/padiem-ai-engine/**`(P01) | 컴2 P01 실행 레인(`deploy/host-com2/p01/install.sh --apply`) | `deploy/host-com2/p01/install.sh:89-97` |
 | `deploy/host-com2/**`(유닛·checker·installer) | 컴2 실행 레인(installer) | `deploy/host-com2/README.md` |
 
+감사 로그 번호는 스크립트가 정한다: release_chat.ps1이 사용자 프로필 폴더의 release_*.log 최대 번호 다음을 스스로 고르고 기존 파일은 절대 덮지 않는다(#7350).
+
 주의: 컴2 체크아웃의 `apps/padiem-chat/static/`은 어떤 공개 경로로도 서빙되지 않는다(front `[assets]`가 유일한 정적 출처). Python Worker의 `[assets]`(`.b66-worker-src/static`)는 Custom Domain이 `padiem-chat`으로 되돌아간 원복 상태에서만 공개 표면이 된다.
 
 ## 3. 양쪽(Worker·컴2)에 걸리는 비밀·콜백 (이름만, 값 금지)
