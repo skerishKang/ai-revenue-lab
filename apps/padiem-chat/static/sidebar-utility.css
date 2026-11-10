@@ -21,10 +21,12 @@
   padding-top: 20px;
   border-top: 1px solid var(--line);
 }
-/* #5560: the admin hub entry moved into Settings, so the sidebar bottom keeps
- * only the settings button, the account profile and the Padiem Home link. */
+/* #5560: the admin hub entry moved into Settings. #7365: the bottom area is
+ * the account menu — 설정 · 앱 연결 · 사용 안내 · 약관 · 계정 · Padiem Home —
+ * so the app-connect button and the help link join the same row treatment. */
 .sidebar-bottom .home-link,
-.sidebar-bottom .settings-button {
+.sidebar-bottom .settings-button,
+.sidebar-bottom .side-item {
   width: 100%;
   min-height: 44px;
   display: flex;
@@ -42,12 +44,20 @@
   text-decoration: none;
 }
 .sidebar-bottom .home-link:hover,
-.sidebar-bottom .settings-button:hover {
+.sidebar-bottom .settings-button:hover,
+.sidebar-bottom .side-item:hover {
   background: rgba(255,255,255,.82);
 }
 .sidebar-bottom .settings-button {
   cursor: pointer;
   margin-left: 0;
+}
+.sidebar-bottom .side-item {
+  font-size: 13px;
+  cursor: pointer;
+}
+.sidebar-bottom .side-item[aria-current="page"] {
+  border-color: var(--accent-strong);
 }
 .sidebar-account {
   display: flex;

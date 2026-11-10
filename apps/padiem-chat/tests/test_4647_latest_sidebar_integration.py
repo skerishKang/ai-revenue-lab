@@ -11,12 +11,21 @@ CAPTURE=(STATIC/"meeting-capture.js").read_text(encoding="utf-8")
 
 
 def test_owner_exact_menu_order_reuses_existing_chat_claw_search_buttons():
-    ids=("newChatButton", "sidebarSearchButton", "clawNavButton", "meetingNavButton",
-         "automationNavButton", "filesNavButton", "calendarNavButton", "connectorsNavButton")
+    """#7365 대표 결정(2026-11-10): 대화(새 채팅·Claw) → 도구·일정(유틸·캘린더·
+    자동화·라이브러리) → 내 자료(프로젝트·최근 대화) → 아래 계정(설정·앱 연결·
+    사용 안내·약관). The meeting row left the sidebar: its trigger lives in the
+    Util tab's meeting tool screen now."""
+    ids=("newChatButton", "sidebarSearchButton", "clawNavButton", "utilNavButton",
+         "calendarNavButton", "automationNavButton", "filesNavButton",
+         "connectorsNavButton", "helpNavLink")
     positions=[INDEX.index(f'id="{key}"') for key in ids]
     assert positions==sorted(positions)
     for id_ in ids:
         assert INDEX.count(f'id="{id_}"')==1
+    # The meeting row left the sidebar; its trigger is parked once in the Util
+    # view's capture host (same element, same behavior).
+    assert INDEX.count('id="meetingNavButton"')==1
+    assert INDEX.index('id="meetingNavButton"') > INDEX.index('id="utilAppRoot"')
     assert INDEX.count('class="sidebar-chat-claw-group"') == 1
     assert 'id="sidebarCollapseButton"' in INDEX
     assert 'id="historyToggleButton"' in INDEX

@@ -6092,15 +6092,18 @@
   // Calendar, Library and Meeting are reachable only through the menu, so a
   // shared link used to land on Chat with whatever fragment the previous screen
   // left behind. Each of the three now names itself, and the screen that owns
-  // the surface opens it: Meeting is driven here, Calendar and Library answer
-  // the published request from their own modules.
+  // the surface opens it: Calendar and Library answer the published request
+  // from their own modules. #7365: Meeting has no sidebar entry any more — the
+  // Util tab's meeting tool screen is the meeting home, so a stale bookmark of
+  // the capture screen continues there (the capture trigger stays mounted in
+  // that screen's body).
   const requestedRouteHash = String(window.location.hash || "");
   if (requestedRouteHash === CALENDAR_ROUTE_HASH
     || requestedRouteHash === LIBRARY_ROUTE_HASH
     || requestedRouteHash === MEETING_ROUTE_HASH) {
     const restoreShellRouteFromHash = () => {
       if (requestedRouteHash === MEETING_ROUTE_HASH) {
-        window.dispatchEvent(new CustomEvent("padiem:meeting-open"));
+        window.location.hash = "#util/meeting";
         return;
       }
       window.dispatchEvent(new CustomEvent("padiem:route-restore", {

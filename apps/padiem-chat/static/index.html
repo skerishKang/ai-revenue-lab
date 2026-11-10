@@ -120,12 +120,12 @@
           <button class="side-item" id="clawNavButton" type="button"><span class="side-icon" aria-hidden="true">◆</span><span data-locale-key="nav-claw">Claw</span></button>
         </nav>
       </div>
-      <!-- Owner order: Meeting / Automation / Library / Calendar. -->
-      <nav class="side-nav" id="workspaceNav" data-locale-aria-label="workspace-menu" aria-label="워크스페이스 메뉴">
-        <button class="side-item" id="meetingNavButton" type="button" aria-controls="meetingView" aria-current="false"><span class="side-icon" aria-hidden="true">▥</span><span data-locale-key="nav-meeting">회의록</span></button>
-        <button class="side-item" id="automationNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">◷</span><span data-locale-key="nav-automation">Automation</span></button>
-        <button class="side-item" id="filesNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="nav-files">라이브러리</span></button>
-        <button class="side-item" id="calendarNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▨</span><span data-locale-key="nav-calendar">캘린더</span></button>
+      <!-- #7365 대표 결정(2026-11-10): the sidebar groups into 대화 / 도구·일정 /
+           내 자료 / 아래 계정. Tools order: Util · Calendar · Automation ·
+           Library. The meeting entry lives in the Util tab's meeting tool
+           screen (the parked button below), and 앱 연결 · 사용 안내 moved into
+           the bottom account menu. -->
+      <nav class="side-nav" id="workspaceNav" data-locale-aria-label="tools-menu" aria-label="도구·일정">
         <div class="util-nav-group" id="utilNavGroup">
           <button class="side-item" id="utilNavButton" type="button" aria-current="false" aria-expanded="false" aria-controls="utilSubmenu"><span class="side-icon" aria-hidden="true">U</span><span data-locale-key="nav-util">유틸</span><span class="side-chevron" aria-hidden="true">›</span></button>
           <!-- #5608 follow-up: the util tools become one expandable sidebar entry.
@@ -138,10 +138,9 @@
             <button class="util-submenu-item" type="button" data-util="pdfmd" aria-current="false">PDF → Markdown</button>
           </div>
         </div>
-      </nav>
-      <nav class="side-nav" aria-label="도구 및 연결">
-        <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">앱 연결</span></button>
-        <a class="side-item" id="helpNavLink" href="./help.html"><span class="side-icon" aria-hidden="true">?</span><span data-locale-key="nav-help">사용 안내</span></a>
+        <button class="side-item" id="calendarNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▨</span><span data-locale-key="nav-calendar">캘린더</span></button>
+        <button class="side-item" id="automationNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">◷</span><span data-locale-key="nav-automation">Automation</span></button>
+        <button class="side-item" id="filesNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="nav-files">라이브러리</span></button>
       </nav>
       <section class="recent-section project-section" id="projectsSection" aria-labelledby="projectsTitle" hidden>
         <div class="section-heading-row">
@@ -164,7 +163,11 @@
       </section>
       <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span data-locale-key="footer">편하게 질문해 보세요</span> <a href="./third-party-licenses.html">오픈소스 고지</a></div>
       <div class="sidebar-bottom" data-locale-aria-label="account-settings" aria-label="서비스, 계정 및 설정">
+        <!-- #7365: 앱 연결 and 사용 안내 moved here from the removed tools nav —
+             same elements, same ids, same behavior. -->
         <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false" hidden><span aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
+        <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">앱 연결</span></button>
+        <a class="side-item" id="helpNavLink" href="./help.html"><span class="side-icon" aria-hidden="true">?</span><span data-locale-key="nav-help">사용 안내</span></a>
         <p class="sidebar-legal-links"><a href="./privacy.html" data-locale-key="legal-privacy">개인정보처리방침</a> · <a href="./terms.html" data-locale-key="legal-terms">이용약관</a></p>
         <div class="sidebar-account account-controls">
           <span class="account-avatar" id="accountAvatar" aria-hidden="true">?</span>
@@ -550,6 +553,12 @@
              PDF tool screen mounts it inside its own body (the util module); PR3
              moves the panel's own markup into that screen. No second copy. -->
         <div id="utilPdfmdHost" hidden><div class="util-panel" id="utilPdfmdPanel" hidden></div></div>
+        <!-- #7365: the meeting entry moved out of the sidebar (the Util tab's
+             회의정리·활동집 card is the meeting home now). The capture trigger
+             keeps its element and id here parked; the util module mounts it
+             into the meeting tool screen, and the capture screen itself works
+             exactly as before. -->
+        <div id="meetingCaptureHost" hidden><button class="util-meeting-capture-entry" id="meetingNavButton" type="button" aria-controls="meetingView" aria-current="false"><span class="side-icon" aria-hidden="true">▥</span><span data-locale-key="nav-meeting">회의록</span></button></div>
       </section>
       <section class="calendar-view" id="calendarView" aria-labelledby="calendarViewTitle" hidden>
         <header class="calendar-view-header">

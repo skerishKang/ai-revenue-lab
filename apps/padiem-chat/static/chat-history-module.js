@@ -124,13 +124,22 @@
       deps.clawConversationIds.clear();
       deps.historyList.replaceChildren();
       deps.historySection.hidden = false;
+      // #7365: connector (MCP) PC-command records ("외부 AI 도구 요청: pc_…")
+      // are tool traffic, not conversations a person typed. They move into one
+      // collapsed native <details> group at the end of the list so they stop
+      // pushing people's conversations down, while every row stays reachable.
+      const TOOL_REQUEST_PREFIX = "외부 AI 도구 요청:";
+      const toolRequestRows = [];
+      let normalConversationCount = 0;
       deps.historyEmpty.hidden = data.conversations.length !== 0;
       let pinnedGroupDrawn = false;
       data.conversations.forEach((conversation) => {
         if (!conversation || typeof conversation.id !== "string" || typeof conversation.title !== "string") return;
+        const isToolRequest = conversation.title.startsWith(TOOL_REQUEST_PREFIX);
+        if (!isToolRequest) normalConversationCount += 1;
         const pinned = conversation.pinned === true;
         // #7175: one explicit group, then the pinned rows in server order.
-        if (pinned && !pinnedGroupDrawn) {
+        if (pinned && !pinnedGroupDrawn && !isToolRequest) {
           pinnedGroupDrawn = true;
           const groupLabel = document.createElement("p");
           groupLabel.className = "history-group-label";
@@ -218,8 +227,26 @@
         menu.append(rename, pin, remove);
         actions.append(more, menu);
         row.append(button, actions);
+        // #7365: a connector-originated PC command record lists inside the
+        // collapsed tool-request group, not the person's conversation list.
+        if (isToolRequest) {
+          toolRequestRows.push(row);
+          return;
+        }
         deps.historyList.appendChild(row);
       });
+      if (toolRequestRows.length) {
+        const toolGroup = document.createElement("details");
+        toolGroup.className = "history-tool-requests";
+        const summary = document.createElement("summary");
+        summary.className = "history-group-label history-tool-requests-summary";
+        summary.textContent = deps.uiT("history-tool-request-group");
+        summary.setAttribute("aria-label",
+          `${deps.uiT("history-tool-request-group")} (${toolRequestRows.length})`);
+        toolGroup.append(summary, ...toolRequestRows);
+        deps.historyList.appendChild(toolGroup);
+      }
+      deps.historyEmpty.hidden = normalConversationCount !== 0;
       // Optional thread labels never hold the conversation list behind an
       // independent identity/Engine read. The list is already usable here.
       if (data.conversations.length) {
