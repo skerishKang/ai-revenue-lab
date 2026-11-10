@@ -70,6 +70,147 @@ def _error(code: str, message: str, status_code: int) -> Any:
                         status_code=status_code)
 
 
+CONFIRM_DECISION = "pc_command_confirm"
+CONFIRM_ANSWER_PREFIX = "PC 명령 확인: "
+
+
+def _confirm_response(*, conversation_id: str | None, answer: str) -> Any:
+    """The one-line confirmation card as a normal completed turn.
+
+    Nothing is dispatched here. The staged pending ``pc_command`` run row is
+    what a later bare affirmative turn confirms; the decision status is new,
+    so every existing UI branch keeps its current meaning.
+    """
+    from starlette.responses import JSONResponse
+
+    payload: dict[str, Any] = {
+        "answer": answer,
+        "orchestration": {"events": [], "approval_pause": None,
+                          "continuation_ref": None},
+        "decision_status": CONFIRM_DECISION,
+    }
+    if conversation_id is not None:
+        payload["conversation_id"] = conversation_id
+    return JSONResponse(payload)
+
+
+async def resolve_confirmed_pc_command(
+    store: Any, uid: str, user_text: str, conversation_id: str | None,
+) -> str | None:
+    """The staged command a bare affirmative turn confirms, or None.
+
+    The command is re-derived from the SERVER-staged turn (the pending
+    ``pc_command`` run row), never from a browser-provided card. A row outside
+    this conversation, older than the confirm window, or bound to a different
+    staged turn never confirms, and the row is consumed before any dispatch so
+    one card answers exactly one execution.
+    """
+    from datetime import datetime, timezone
+
+    from .pc_command_confirmation import (
+        binds_row_to_turn,
+        command_from_staged_turn,
+        is_affirmative_reply,
+        select_pending_command_row,
+    )
+
+    if not is_affirmative_reply(user_text):
+        return None
+    if not callable(getattr(store, "list_recent_claw_runs", None))             or not callable(getattr(store, "get_conversation_model_context", None)):
+        return None
+    row = select_pending_command_row(
+        await store.list_recent_claw_runs(uid, limit=10),
+        conversation_id=conversation_id,
+        now=datetime.now(timezone.utc),
+    )
+    if row is None:
+        return None
+    context = await store.get_conversation_model_context(
+        uid, conversation_id, product_scope="b62-chat",
+    )
+    messages = context.get("messages") if isinstance(context, dict) else None
+    if not isinstance(messages, list):
+        return None
+    staged_content = next(
+        (item.get("content") for item in reversed(messages)
+         if isinstance(item, dict) and item.get("role") == "user"
+         and isinstance(item.get("content"), str)),
+        None,
+    )
+    if not binds_row_to_turn(row, staged_content):
+        return None
+    command = command_from_staged_turn(_match_command, staged_content)
+    if command is None:
+        return None
+    consume = getattr(store, "update_claw_run_status", None)
+    if callable(consume):
+        try:
+            consumed = await consume(uid, str(row.get("run_id") or ""), "cancelled")
+        except Exception:
+            consumed = False
+        if consumed is not True:
+            return None  # an unconsumable card never dispatches
+    return command
+
+
+def _match_command(user_text: str) -> tuple[bool, str | None]:
+    """The lane matcher, resolved lazily to avoid an import cycle."""
+    from .claw_general_routes import _requested_local_command
+
+    return _requested_local_command(user_text)
+
+
+async def stage_pc_command_confirmation(
+    request: Any,
+    *,
+    uid: str,
+    user_text: str,
+    command: str,
+    pc_context: Mapping[str, Any],
+    conversation_id: str | None,
+    store: Any,
+) -> Any:
+    """Stage the turn and answer with the one-line confirmation card.
+
+    Nothing is dispatched here: the staged pending ``pc_command`` run row is
+    what a later bare affirmative turn confirms. A store that cannot stage the
+    turn fails closed instead of executing unconfirmed.
+    """
+    from .history import MAX_HISTORY_TITLE_CHARS
+    from .pc_command_confirmation import confirmation_card
+
+    begin = getattr(store, "begin_chat_stream_turn", None)
+    if not callable(begin):
+        return _error("history_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
+    from .chat_pc_drive import _new_lane_run_id
+
+    run_id = _new_lane_run_id()
+    workspace_id = pc_context.get("workspace_id") if isinstance(pc_context, Mapping) else None
+    if not isinstance(workspace_id, str) or not workspace_id:
+        return _error("chat_pc_workspace_unavailable", "PC 작업 범위를 확인할 수 없습니다.", 503)
+    try:
+        saved_id = await begin(
+            user_id=uid, run_id=run_id, workspace_id=workspace_id,
+            user_text=user_text, conversation_id=conversation_id,
+        )
+    except Exception:
+        return _error("chat_pc_store_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
+    record_run = getattr(store, "record_claw_run", None)
+    if callable(record_run):
+        title = ("Chat: " + user_text.strip())[:MAX_HISTORY_TITLE_CHARS]
+        try:
+            await record_run(
+                user_id=uid, run_id=run_id, channel="web", action="pc_command",
+                title=title, status="pending", conversation_id=saved_id,
+                workspace_id=workspace_id,
+            )
+        except Exception:
+            # A card whose run row failed to land can never be confirmed; the
+            # staged turn alone does not authorize anything.
+            return _error("chat_pc_store_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
+    return _confirm_response(conversation_id=saved_id, answer=confirmation_card(command))
+
+
 def _pending_response(*, run_id: str, conversation_id: str | None) -> Any:
     from starlette.responses import JSONResponse
 

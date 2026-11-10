@@ -501,15 +501,34 @@ async def _answer_orchestration(request: Request, timing: OrchestrationTiming) -
     # a remote AI cannot reach the computer, and nothing model-written can
     # authorize one: the model has no shell tool here.
     if pc_context is not None and isinstance(raw, Mapping):
-        from .chat_pc_command import chat_pc_command_for_turn, dispatch_chat_pc_command
+        from .chat_pc_command import (
+            chat_pc_command_for_turn,
+            dispatch_chat_pc_command,
+            resolve_confirmed_pc_command,
+            stage_pc_command_confirmation,
+        )
 
+        store = request.app.state.history_store
+        if store is None:
+            return _error("history_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
+        # 2026-11-11: a bare affirmative turn confirms the staged PC command
+        # card; the command is re-derived from the server-staged turn.
+        confirmed = await resolve_confirmed_pc_command(store, uid, user_text, conversation_id)
+        if confirmed is not None:
+            return await dispatch_chat_pc_command(
+                request, uid=uid, raw=raw, user_text=user_text, command=confirmed,
+                pc_context=pc_context, conversation_id=conversation_id, store=store,
+            )
         command = chat_pc_command_for_turn(user_text)
         if command is not None:
-            store = request.app.state.history_store
-            if store is None:
-                return _error("history_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
-            return await dispatch_chat_pc_command(
-                request, uid=uid, raw=raw, user_text=user_text, command=command,
+            from .pc_command_confirmation import direct_command_eligible
+            if direct_command_eligible(user_text, command):
+                return await dispatch_chat_pc_command(
+                    request, uid=uid, raw=raw, user_text=user_text, command=command,
+                    pc_context=pc_context, conversation_id=conversation_id, store=store,
+                )
+            return await stage_pc_command_confirmation(
+                request, uid=uid, user_text=user_text, command=command,
                 pc_context=pc_context, conversation_id=conversation_id, store=store,
             )
     # #4469: in production the PADIEM Chat composer is answered by THIS lane

@@ -131,9 +131,11 @@ def test_delegated_action_executes_once_and_still_verifies_actual_result(monkeyp
 
 @pytest.mark.parametrize("route", ROUTES)
 @pytest.mark.parametrize("settings", [None, {"version": 1, "rules": []}], ids=["missing", "empty"])
-def test_unconfigured_owner_preserves_first_stage_explicit_request_behavior(monkeypatch, tmp_path, route, settings):
+def test_an_owner_without_a_stored_rule_is_asked_before_a_deletion(monkeypatch, tmp_path, route, settings):
     execution, pc, _ = run_turn(monkeypatch, tmp_path, route=route, settings=settings)
-    assert execution["answer"] == ANSWER and pc.ops == ["delete"]
+    assert "위임 범위 밖" in execution["answer"] and "?" in execution["answer"]
+    assert pc.dispatches == [] and pc.ops == []
+    assert (tmp_path / PATH).read_bytes() == b"original file"
 
 
 @pytest.mark.parametrize("route", ROUTES)
