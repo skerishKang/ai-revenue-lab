@@ -21,13 +21,15 @@ export class AuthState {
     )`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS codes (
       digest TEXT PRIMARY KEY, client TEXT NOT NULL, redirect TEXT NOT NULL,
-      challenge TEXT NOT NULL, subject TEXT NOT NULL, account_id TEXT NOT NULL, expires INTEGER NOT NULL, consumed INTEGER NOT NULL DEFAULT 0
+      challenge TEXT NOT NULL, subject TEXT NOT NULL, account_id TEXT NOT NULL, expires INTEGER NOT NULL, consumed INTEGER NOT NULL DEFAULT 0, amr TEXT
     )`);
     this.sql.exec('CREATE TABLE IF NOT EXISTS code_profiles (digest TEXT PRIMARY KEY, ciphertext TEXT NOT NULL, expires INTEGER NOT NULL)');
     this.sql.exec(`CREATE TABLE IF NOT EXISTS sessions (
       id TEXT PRIMARY KEY, client TEXT NOT NULL, subject TEXT NOT NULL, account_id TEXT NOT NULL,
-      expires INTEGER NOT NULL, revoked INTEGER NOT NULL DEFAULT 0
+      expires INTEGER NOT NULL, revoked INTEGER NOT NULL DEFAULT 0, amr TEXT
     )`);
+    try { this.sql.exec('ALTER TABLE codes ADD COLUMN amr TEXT'); } catch { /* column already exists */ }
+    try { this.sql.exec('ALTER TABLE sessions ADD COLUMN amr TEXT'); } catch { /* column already exists */ }
     this.sql.exec(`CREATE TABLE IF NOT EXISTS refresh_tokens (
       digest TEXT PRIMARY KEY, session_id TEXT NOT NULL, used INTEGER NOT NULL DEFAULT 0,
       grace_until INTEGER, grace_result TEXT, successor TEXT
@@ -168,9 +170,9 @@ export class AuthState {
     });
   }
 
-  createCode({ digest, client, redirect, challenge, subject, accountId, expires, encryptedProfile }) {
+  createCode({ digest, client, redirect, challenge, subject, accountId, expires, encryptedProfile, amr = null }) {
     return this.storage.transactionSync(() => {
-      this.sql.exec('INSERT INTO codes(digest,client,redirect,challenge,subject,account_id,expires) VALUES(?,?,?,?,?,?,?)', digest, client, redirect, challenge, subject, accountId, expires);
+      this.sql.exec('INSERT INTO codes(digest,client,redirect,challenge,subject,account_id,expires,amr) VALUES(?,?,?,?,?,?,?,?)', digest, client, redirect, challenge, subject, accountId, expires, amr);
       if (encryptedProfile) this.sql.exec('INSERT INTO code_profiles(digest,ciphertext,expires) VALUES(?,?,?)', digest, encryptedProfile, expires);
     });
   }
@@ -186,9 +188,9 @@ export class AuthState {
     });
   }
 
-  createSession({ id, client, subject, accountId, expires, digest }) {
+  createSession({ id, client, subject, accountId, expires, digest, amr = null }) {
     return this.storage.transactionSync(() => {
-      this.sql.exec('INSERT INTO sessions(id,client,subject,account_id,expires) VALUES(?,?,?,?,?)', id, client, subject, accountId, expires);
+      this.sql.exec('INSERT INTO sessions(id,client,subject,account_id,expires,amr) VALUES(?,?,?,?,?,?)', id, client, subject, accountId, expires, amr);
       this.sql.exec('INSERT INTO refresh_tokens(digest,session_id) VALUES(?,?)', digest, id);
     });
   }
@@ -198,20 +200,21 @@ export class AuthState {
   // verification happen before calling this method.
   exchangeCode({ codeDigest, client, redirect, challenge, now, id, expires, refreshDigest }) {
     return this.storage.transactionSync(() => {
-      const rows = this.sql.exec('UPDATE codes SET consumed=1 WHERE digest=? AND client=? AND redirect=? AND challenge=? AND consumed=0 AND expires>? RETURNING subject,account_id', codeDigest, client, redirect, challenge, now).toArray();
+      const rows = this.sql.exec('UPDATE codes SET consumed=1 WHERE digest=? AND client=? AND redirect=? AND challenge=? AND consumed=0 AND expires>? RETURNING subject,account_id,amr', codeDigest, client, redirect, challenge, now).toArray();
       if (rows.length !== 1) return false;
       const profile = this.sql.exec('DELETE FROM code_profiles WHERE digest=? AND expires>? RETURNING ciphertext', codeDigest, now).toArray()[0];
       this.sql.exec('DELETE FROM code_profiles WHERE digest=?', codeDigest);
-      this.sql.exec('INSERT INTO sessions(id,client,subject,account_id,expires) VALUES(?,?,?,?,?)', id, client, rows[0].subject, rows[0].account_id, expires);
+      this.sql.exec('INSERT INTO sessions(id,client,subject,account_id,expires,amr) VALUES(?,?,?,?,?,?)', id, client, rows[0].subject, rows[0].account_id, expires, rows[0].amr ?? null);
       this.sql.exec('INSERT INTO refresh_tokens(digest,session_id) VALUES(?,?)', refreshDigest, id);
       const result = { subject: rows[0].subject, accountId: rows[0].account_id };
+      if (rows[0].amr) result.amr = rows[0].amr;
       if (profile) result.encryptedProfile = profile.ciphertext;
       return result;
     });
   }
 
   inspectRefresh({ id, client, digest, now }) {
-    return this.sql.exec('SELECT s.subject,s.account_id,s.expires FROM sessions s JOIN refresh_tokens t ON t.session_id=s.id WHERE s.id=? AND s.client=? AND t.digest=? AND s.revoked=0 AND s.expires>?', id, client, digest, now).toArray()[0] || null;
+    return this.sql.exec('SELECT s.subject,s.account_id,s.expires,s.amr FROM sessions s JOIN refresh_tokens t ON t.session_id=s.id WHERE s.id=? AND s.client=? AND t.digest=? AND s.revoked=0 AND s.expires>?', id, client, digest, now).toArray()[0] || null;
   }
 
   rotate({ id, client, digest, replacement, encryptedResult, now }) {

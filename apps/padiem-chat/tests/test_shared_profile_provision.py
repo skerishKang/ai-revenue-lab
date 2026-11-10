@@ -22,7 +22,20 @@ class Database:
     def prepare(self, sql): return Statement(self.conn, sql)
 
 class Verifier:
-    async def verify(self, token): return {'accountId':'sub_known'}
+    def __init__(self, *, account_id='sub_known', amr=None, exc=None):
+        self.account_id = account_id
+        self.amr = amr
+        self.exc = exc
+        self.calls = 0
+
+    async def verify(self, token):
+        self.calls += 1
+        if self.exc is not None:
+            raise self.exc
+        result = {'accountId': self.account_id}
+        if self.amr is not None:
+            result['amr'] = self.amr
+        return result
 
 @pytest.mark.asyncio
 async def test_new_user_existing_update_and_legacy_rollback():
@@ -67,12 +80,12 @@ PROFILE_BODY = {'email': 'user@example.invalid', 'email_verified': True, 'name':
 USER = 'usr_' + 'a' * 32
 
 
-async def provide(store, notified, tokens, *, uid=USER, legacy=None):
+async def provide(store, notified, tokens, *, uid=USER, legacy=None, verifier=None, access_token='access'):
     async def notify(request, user):
         notified.append(user)
 
     await provision_shared_profile(
-        None, uid, 'access', tokens, verifier=Verifier(), store=store,
+        None, uid, access_token, tokens, verifier=verifier or Verifier(), store=store,
         legacy_user=lambda _: legacy, notify=notify)
 
 
@@ -174,6 +187,112 @@ async def test_google_verified_profile_is_provisioned():
     await provide(store, notified, {'profile': dict(PROFILE_BODY)})
     assert store.calls[0] == (USER, 'sub_known', 'user@example.invalid', 'Name', '')
     assert notified == [USER]
+
+
+@pytest.mark.asyncio
+async def test_amr_pwd_with_matching_subject_is_provisioned():
+    # amr=['pwd'] + 서명 검증 주체 일치 시 email_verified=False가 면제되며,
+    # 향후 name이 채워진 비밀번호 프로필이어도 허용된다.
+    store, notified = Recorded(), []
+    await provide(
+        store,
+        notified,
+        {'account_id': 'sub_known', 'profile': {'email': 'user@example.invalid', 'email_verified': False, 'name': 'User Name', 'picture': ''}},
+        verifier=Verifier(amr=['pwd']),
+    )
+    assert store.calls[0] == (USER, 'sub_known', 'user@example.invalid', 'User Name', '')
+    assert notified == [USER]
+    with pytest.raises(ValueError):
+        await provide(
+            Recorded(),
+            [],
+            {'account_id': 'sub_other', 'profile': dict(PASSWORD_BODY)},
+            verifier=Verifier(amr=['pwd']),
+        )
+
+
+@pytest.mark.asyncio
+async def test_amr_google_with_unverified_email_is_rejected_even_if_empty_shape():
+    # amr=['google']이면 모양이 빈 문자열(name='', picture='')이어도 email_verified=False는 거절한다.
+    with pytest.raises(ValueError):
+        await provide(Recorded(), [], {'profile': dict(GOOGLE_FALSE_BODY)}, verifier=Verifier(amr=['google']))
+    with pytest.raises(ValueError):
+        await provide(Recorded(), [], {'profile': dict(PASSWORD_BODY)}, verifier=Verifier(amr=['google']))
+
+
+@pytest.mark.asyncio
+async def test_amr_absent_falls_back_to_existing_shape_contract():
+    # amr이 없을 때만 기존 발행 모양(name='', picture='')으로 판별한다.
+    store, notified = Recorded(), []
+    await provide(store, notified, {'profile': dict(PASSWORD_BODY)}, verifier=Verifier(amr=None))
+    assert store.calls[0] == (USER, 'sub_known', 'user@example.invalid', '', '')
+    assert notified == [USER]
+    with pytest.raises(ValueError):
+        await provide(Recorded(), [], {'profile': dict(GOOGLE_FALSE_BODY)}, verifier=Verifier(amr=None))
+
+
+@pytest.mark.asyncio
+async def test_amr_is_read_only_after_signature_verification():
+    # 토큰 본문이나 응답 바디에 amr=['pwd']가 들어 있어도 서명 검증을 통과한 verifier 결과만 읽는다.
+    import base64
+    import json
+    from app.shared_auth_compare_flow import WorkerJwksVerifier
+    from shared_es256_test_crypto import TestES256
+
+    forged_header = base64.urlsafe_b64encode(b'{"alg":"ES256","typ":"JWT","kid":"k1"}').rstrip(b'=').decode()
+    forged_payload = base64.urlsafe_b64encode(
+        json.dumps({
+            'iss': 'https://auth.padiem.net', 'aud': 'b62', 'sub': 'sub_known',
+            'account_id': 'sub_known', 'sid': 'sid_1', 'amr': ['pwd'],
+            'iat': 1000, 'exp': 1900, 'token_use': 'access',
+        }).encode()
+    ).rstrip(b'=').decode()
+    forged_jwt = f'{forged_header}.{forged_payload}.' + base64.urlsafe_b64encode(b'x' * 64).rstrip(b'=').decode()
+
+    # 1) 서명 검증 실패 시 amr=['pwd'] 페이로드여도 즉시 거절되고 저장소 호출은 0회다.
+    failing_verifier = Verifier(exc=ValueError('invalid_signature'))
+    store = Recorded()
+    with pytest.raises(ValueError, match='invalid_signature'):
+        await provide(store, [], {'amr': ['pwd'], 'profile': dict(GOOGLE_FALSE_BODY)},
+                      verifier=failing_verifier, access_token=forged_jwt)
+    assert failing_verifier.calls == 1
+    assert store.calls == []
+
+    # 2) 토큰 본문/바디에 amr=['pwd']가 있어도 verifier가 검증한 결과가 amr=['google']이면 거절한다.
+    google_verifier = Verifier(amr=['google'])
+    with pytest.raises(ValueError, match='invalid_profile'):
+        await provide(store, [], {'amr': ['pwd'], 'profile': dict(PASSWORD_BODY)},
+                      verifier=google_verifier, access_token=forged_jwt)
+    assert google_verifier.calls == 1
+    assert store.calls == []
+
+    # 3) WorkerJwksVerifier 실제 ES256 서명 검증: amr 변조 시 invalid_signature로 거절된다.
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.asymmetric import ec
+    from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
+
+    priv = ec.generate_private_key(ec.SECP256R1())
+    nums = priv.public_key().public_numbers()
+    b64u = lambda b: base64.urlsafe_b64encode(b).rstrip(b'=').decode()
+    jwk = {
+        'kty': 'EC', 'crv': 'P-256', 'kid': 'k1', 'alg': 'ES256', 'use': 'sig',
+        'x': b64u(nums.x.to_bytes(32, 'big')), 'y': b64u(nums.y.to_bytes(32, 'big')),
+    }
+    real_verifier = WorkerJwksVerifier(crypto=TestES256(), clock=lambda: 1000)
+    real_verifier.keys, real_verifier.until = {'keys': [jwk]}, 1300
+    signed_input = f'{forged_header}.{forged_payload}'.encode('ascii')
+    r, s = decode_dss_signature(priv.sign(signed_input, ec.ECDSA(hashes.SHA256())))
+    valid_pwd_jwt = f'{forged_header}.{forged_payload}.' + b64u(r.to_bytes(32, 'big') + s.to_bytes(32, 'big'))
+
+    verified_claims = await real_verifier.verify(valid_pwd_jwt)
+    assert verified_claims['amr'] == ['pwd']
+
+    # 페이로드의 amr을 바꾼 뒤 원래 서명을 재사용하면 서명 검증에서 거절된다.
+    tampered_jwt = f'{forged_header}.{forged_payload}.' + b64u((r ^ 1).to_bytes(32, 'big') + s.to_bytes(32, 'big'))
+    with pytest.raises(ValueError, match='invalid_signature'):
+        await provide(store, [], {'profile': dict(PASSWORD_BODY)},
+                      verifier=real_verifier, access_token=tampered_jwt)
+    assert store.calls == []
 
 
 @pytest.mark.asyncio

@@ -89,8 +89,10 @@ test('synthetic Google login, code exchange, refresh, replay revocation and JWKS
   assert.equal(JSON.parse(Buffer.from(parts[1], 'base64url')).exp, 1900);
   assert.equal(JSON.parse(Buffer.from(parts[1], 'base64url')).account_id, 'sub_existing');
   assert.equal(JSON.parse(Buffer.from(parts[1], 'base64url')).sub, 'sub_existing');
+  assert.deepEqual(JSON.parse(Buffer.from(parts[1], 'base64url')).amr, ['google']);
   const refreshed = await f.post('/token', { grant_type: 'refresh_token', refresh_token: minted.refresh_token }); assert.equal(refreshed.status, 200);
   const firstResult = await refreshed.json();
+  assert.deepEqual(JSON.parse(Buffer.from(firstResult.access_token.split('.')[1], 'base64url')).amr, ['google']);
   const within = await f.post('/token', { grant_type: 'refresh_token', refresh_token: minted.refresh_token });
   assert.equal(within.status, 200);
   assert.deepEqual(await within.json(), firstResult);

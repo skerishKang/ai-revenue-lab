@@ -127,6 +127,9 @@ test('email login verifies through the signed Chat RPC and finishes the shared c
   assert.equal(done.headers.get('set-cookie').includes('Max-Age=0'), true);
   const minted = await (await f.post({ grant_type: 'authorization_code', code: target.searchParams.get('code'), code_verifier: begun.verifier, redirect_uri: REDIRECT })).json();
   assert.equal(minted.access_token.split('.').length, 3);
+  assert.deepEqual(JSON.parse(Buffer.from(minted.access_token.split('.')[1], 'base64url')).amr, ['pwd']);
+  const refreshed = await (await f.post({ grant_type: 'refresh_token', refresh_token: minted.refresh_token })).json();
+  assert.deepEqual(JSON.parse(Buffer.from(refreshed.access_token.split('.')[1], 'base64url')).amr, ['pwd']);
 });
 
 test('password accounts disclose the login identifier without claiming a verified mailbox', async () => {

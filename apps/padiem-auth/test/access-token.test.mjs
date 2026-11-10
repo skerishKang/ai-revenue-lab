@@ -8,14 +8,18 @@ test('access token carries bound claims and verifies with the public key', async
   const token = await issueAccessToken({ key: keys.privateKey, kid: 'test', issuer: 'https://auth.padiem.net', audience: 'lovetree', subject: 'synthetic', accountId: 'sub_test', sessionId: 'session', now: 1000 });
   const [h, p, s] = token.split('.');
   assert.deepEqual(JSON.parse(Buffer.from(h, 'base64url')), { alg: 'ES256', typ: 'JWT', kid: 'test' });
-  assert.deepEqual(JSON.parse(Buffer.from(p, 'base64url')), { iss: 'https://auth.padiem.net', aud: 'lovetree', sub: 'synthetic', account_id: 'sub_test', sid: 'session', iat: 1000, exp: 1900, token_use: 'access' });
+  assert.deepEqual(JSON.parse(Buffer.from(p, 'base64url')), { iss: 'https://auth.padiem.net', aud: 'lovetree', sub: 'synthetic', account_id: 'sub_test', sid: 'session', amr: ['google'], iat: 1000, exp: 1900, token_use: 'access' });
   assert.equal(await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, keys.publicKey, Buffer.from(s, 'base64url'), new TextEncoder().encode(`${h}.${p}`)), true);
   assert.equal(await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, keys.publicKey, Buffer.from(s, 'base64url'), new TextEncoder().encode(`${h}.${p}x`)), false);
+  const pwdToken = await issueAccessToken({ key: keys.privateKey, kid: 'test', issuer: 'https://auth.padiem.net', audience: 'b62', subject: 'synthetic', accountId: 'sub_test', sessionId: 'session', now: 1000, amr: ['pwd'] });
+  assert.deepEqual(JSON.parse(Buffer.from(pwdToken.split('.')[1], 'base64url')).amr, ['pwd']);
 });
 
 test('rejects public signing key and invalid input', async () => {
   const keys = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
   await assert.rejects(() => issueAccessToken({ key: keys.publicKey, kid: 'k', issuer: 'i', audience: 'a', subject: 's', accountId: 'sub_test', sessionId: 's', now: 0 }));
+  await assert.rejects(() => issueAccessToken({ key: keys.privateKey, kid: 'k', issuer: 'i', audience: 'a', subject: 's', accountId: 'sub_test', sessionId: 's', now: 0, amr: ['unknown'] }));
+  await assert.rejects(() => issueAccessToken({ key: keys.privateKey, kid: 'k', issuer: 'i', audience: 'a', subject: 's', accountId: 'sub_test', sessionId: 's', now: 0, amr: [] }));
 });
 
 test('bootstrap public JWKS works without Google or signing secrets and omits private fields', async () => {
