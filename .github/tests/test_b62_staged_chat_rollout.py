@@ -134,5 +134,5 @@ def test_the_staged_proofs_are_given_the_qa_identity_they_read() -> None:
 
     job = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))["jobs"]["deploy-production-code"]
     env = job["env"]
-    assert env["B66_CGI_ALPHA_USERNAME"] == "${{ vars.B66_CGI_ALPHA_USERNAME }}"
-    assert env["B66_CGI_ALPHA_PASSWORD"] == "${{ secrets.B66_CGI_ALPHA_PASSWORD }}"
+    assert env["QA_SMOKE_USERNAME"] == "${{ secrets.QA_SMOKE_USERNAME }}"
+    assert env["QA_SMOKE_PASSWORD"] == "${{ secrets.QA_SMOKE_PASSWORD }}"

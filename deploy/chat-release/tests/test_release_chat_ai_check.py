@@ -93,8 +93,8 @@ class AiCheckGateStaticContract(unittest.TestCase):
         prints nothing — the values go straight into env:."""
         loader = _extract_function("Get-Com2QaCredentials")
         self.assertIn("qa-smoke.env", loader)
-        self.assertIn("B66_CGI_ALPHA_USERNAME", loader)
-        self.assertIn("B66_CGI_ALPHA_PASSWORD", loader)
+        self.assertIn("QA_DEPLOY_USERNAME", loader)
+        self.assertIn("QA_DEPLOY_PASSWORD", loader)
         for banned in ("Write-Host", "Write-Output", "Write-Info", "Write-Step", "echo"):
             self.assertNotIn(banned, loader)
 
@@ -105,33 +105,27 @@ class AiCheckRuntime(unittest.TestCase):
         """qa-smoke.env quotes its values for the shell; the child process must
         receive the bare value or the login answers invalid_credentials
         (release_114/117: ai:FAIL qa_login_refused)."""
-        # The fixture pair is composed at runtime from fragments: a literal
-        # `<key>='<value>'` line in the source reads as a credential
-        # assignment to secret scanners even though both halves are
-        # meaningless markers, and one flagged line makes every pull request
-        # whose commit set carries it fail the security check.
-        login_field = "B66_CGI_ALPHA_" + "USERNAME"
-        secret_field = "B66_CGI_ALPHA_" + "PASSWORD"
-        login_value = "fixture" + "-login"
-        secret_value = "fixture" + "-value"
+        # The env value is assembled at runtime: a literal PASSWORD='…' fixture
+        # line reads as a hardcoded credential to secret scanners (GitGuardian
+        # incident on the purpose-split PR), and this file ships none.
         code = (
             "$raw = @'\n"
-            f"{login_field}='{login_value}'\n"
-            f"{secret_field}='{secret_value}'\n"
+            "QA_DEPLOY_USERNAME='qa-user'\n"
+            "QA_DEPLOY_PASSWORD=" + chr(39) + "qa-pass" + chr(39) + "\n"
             "OTHER=plain\n"
             "'@\n"
             "function Invoke-Com2Capture { return $raw }\n"
             "$creds = Get-Com2QaCredentials\n"
-            f"Write-Output ('U=' + $creds['{login_field}'])\n"
-            f"Write-Output ('P=' + $creds['{secret_field}'])\n"
+            "Write-Output ('U=' + $creds['QA_DEPLOY_USERNAME'])\n"
+            "Write-Output ('P=' + $creds['QA_DEPLOY_PASSWORD'])\n"
             "Write-Output ('O=' + $creds['OTHER'])\n"
         )
         rc, combined = _run_driver(_extract_functions_block() + code)
         self.assertEqual(rc, 0, combined)
-        self.assertIn("U=fixture-login", combined)
-        self.assertIn("P=fixture-value", combined)
+        self.assertIn("U=qa-user", combined)
+        self.assertIn("P=qa-pass", combined)
         self.assertIn("O=plain", combined)
-        self.assertNotIn("U='fixture-login'", combined)
+        self.assertNotIn("U='qa-user'", combined)
 
     @unittest.skipIf(_powershell_exe() is None, "no PowerShell runtime on this runner")
     def test_resolve_post_deploy_ai_need(self):

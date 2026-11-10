@@ -26,8 +26,8 @@ What is measured:
                 server still calls the run unfinished (code=pc_result_wait_ceiling)
     SKIP_NO_PC  the QA account has no active paired PC — not a failure
 
-Only the pre-existing QA identity is used (`B66_CGI_ALPHA_USERNAME` /
-`B66_CGI_ALPHA_PASSWORD` — the same names the post-deploy chat smoke signs in with),
+Only the pre-existing QA identity is used (`QA_MANUAL_USERNAME` /
+`QA_MANUAL_PASSWORD` — the same names the post-deploy chat smoke signs in with),
 the transport and its byte and line guards are the existing long-context canary's, and
 the QA conversation is deleted afterwards exactly as the smoke deletes it. No answer
 text, no device label, no cookie and no credential value is ever printed: counts,
@@ -68,8 +68,8 @@ ORCHESTRATION = "/api/orchestration"
 PAIRINGS = "/api/pc/pairings"
 DEVICES = "/api/claw/local-access/devices"
 PENDING_RESULT_PATH = "/api/claw/runs/{run_id}/pending-result"
-QA_USERNAME_ENV = "B66_CGI_ALPHA_USERNAME"
-QA_PASSWORD_ENV = "B66_CGI_ALPHA_PASSWORD"
+QA_USERNAME_ENV = "QA_MANUAL_USERNAME"
+QA_PASSWORD_ENV = "QA_MANUAL_PASSWORD"
 PC_RUN_ID = re.compile(r"\Achat_pcq_[0-9a-f]{32}\Z")
 _SAFE_CODE = re.compile(r"\A[a-z][a-z0-9_]{0,40}\Z")
 PROMPT = (

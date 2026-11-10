@@ -955,8 +955,8 @@ jobs:
       # only: the values stay in vars/secrets, and no step body interpolates them
       # into a command. Without these the signed-in proof can only ever answer
       # "cannot sign in" - which is a failure to read, not a result about Chat.
-      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
-      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+      QA_SMOKE_USERNAME: ${{ secrets.QA_SMOKE_USERNAME }}
+      QA_SMOKE_PASSWORD: ${{ secrets.QA_SMOKE_PASSWORD }}
     steps:
       - name: Require explicit production code deploy authorization
         shell: bash
@@ -1837,8 +1837,8 @@ jobs:
       - name: Post-deploy signed-in session check
         shell: bash
         env:
-          B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
-          B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+          QA_SMOKE_USERNAME: ${{ secrets.QA_SMOKE_USERNAME }}
+          QA_SMOKE_PASSWORD: ${{ secrets.QA_SMOKE_PASSWORD }}
         run: |
           set -euo pipefail
           python3 .github/scripts/post_deploy_signed_in_smoke.py

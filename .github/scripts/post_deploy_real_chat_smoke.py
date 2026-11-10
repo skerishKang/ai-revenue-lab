@@ -52,8 +52,13 @@ from b62_live_long_context_canary import (  # noqa: E402  (sibling script import
 from b62_live_long_context_canary import _ID as CONVERSATION_ID  # noqa: E402
 
 ORCHESTRATION = "/api/orchestration"
-QA_USERNAME_ENV = "B66_CGI_ALPHA_USERNAME"
-QA_PASSWORD_ENV = "B66_CGI_ALPHA_PASSWORD"
+# 2026-11-11 CTO decision: the QA accounts are split by purpose so no single
+# Free account burns its daily 100 on every check. This smoke is the deploy
+# smoke and signs in with the dedicated QA_SMOKE_* pair; the daily usage check
+# keeps the original account and the deploy AI check overrides these names to
+# QA_DEPLOY_* (see post_deploy_ai_answer_check.py).
+QA_USERNAME_ENV = "QA_SMOKE_USERNAME"
+QA_PASSWORD_ENV = "QA_SMOKE_PASSWORD"
 PROMPT = "정상 작동 확인입니다. 한 문장으로 답해 주세요."
 PROVIDER_LIMIT_STATUSES = frozenset({429, 503})
 GRADE = "free"
@@ -127,17 +132,19 @@ def sign_in(opener, *, base_url=None) -> None:
 
 def chat_lane(opener, *, base_url=None) -> tuple[int, Any]:
     sign_in(opener, base_url=base_url)
+    target = {"origin": base_url} if base_url else {}
     return _engine_call(
         opener, CHAT, stage="chat", method="POST", timeout=CHAT_TIMEOUT_SECONDS,
-        payload=turn_payload(),
+        payload=turn_payload(), **target,
     )
 
 
 def engine_lane(opener, *, base_url=None) -> tuple[int, Any]:
     sign_in(opener, base_url=base_url)
+    target = {"origin": base_url} if base_url else {}
     return _engine_call(
         opener, ORCHESTRATION, stage="orchestration", method="POST", timeout=CHAT_TIMEOUT_SECONDS,
-        payload=turn_payload(),
+        payload=turn_payload(), **target,
     )
 
 

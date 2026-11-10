@@ -120,8 +120,8 @@ jobs:
       TARGET_SHA: ${{ inputs.target_sha }}
       B66_CGI_SELECTED_MODEL_ID: ${{ inputs.selected_model_id }}
       B66_CGI_FLOW_MODE: ${{ inputs.mode == 'b66_partial_followup_one_shot' && 'partial_followup' || 'complete' }}
-      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
-      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+      QA_MANUAL_USERNAME: ${{ secrets.QA_MANUAL_USERNAME }}
+      QA_MANUAL_PASSWORD: ${{ secrets.QA_MANUAL_PASSWORD }}
     steps:
       - name: Checkout exact approved main
         uses: actions/checkout@v4
@@ -136,8 +136,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
           git fetch origin main
           test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
-          test -n "${B66_CGI_ALPHA_USERNAME}"
-          test -n "${B66_CGI_ALPHA_PASSWORD}"
+          test -n "${QA_MANUAL_USERNAME}"
+          test -n "${QA_MANUAL_PASSWORD}"
           echo 'PRECALL_EXACT_MAIN=PASS'
           echo 'CGI_CREDENTIAL_PRESENT=YES'
           echo 'SECRET_VALUE_OUTPUT=0'

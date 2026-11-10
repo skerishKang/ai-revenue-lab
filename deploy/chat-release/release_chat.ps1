@@ -347,9 +347,9 @@ function Get-Com2QaCredentials {
             $credentials[$Matches[1]] = $value
         }
     }
-    if (-not $credentials.ContainsKey("B66_CGI_ALPHA_USERNAME") -or
-        -not $credentials.ContainsKey("B66_CGI_ALPHA_PASSWORD")) {
-        throw "STEP2_FAIL: the COM2 qa-smoke env does not carry the AI-check credentials (B66_CGI_ALPHA_USERNAME/PASSWORD)"
+    if (-not $credentials.ContainsKey("QA_DEPLOY_USERNAME") -or
+        -not $credentials.ContainsKey("QA_DEPLOY_PASSWORD")) {
+        throw "STEP2_FAIL: the COM2 qa-smoke env does not carry the AI-check credentials (QA_DEPLOY_USERNAME/PASSWORD)"
     }
     return $credentials
 }
