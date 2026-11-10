@@ -73,9 +73,10 @@ def test_scheduler_live_disclaimer_is_present_and_persistent() -> None:
 
 
 def test_quarantined_legacy_rule_is_rendered_as_not_runnable() -> None:
-    source = APP_JS.read_text(encoding="utf-8")
+    # R5 A1: 카탈로그 본문은 chat-automation-module.js로 이동했다.
+    source = (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
     block = source.split("--- #3237 read-only automation rule catalogue")[1]
-    block = block.split("if (clawAutomationRetry)")[0]
+    block = block.split("--- #3262 owner-gated enable/disable")[0]
     # A legacy row is marked, not silently rendered like a live rule.
     assert 'rule.background_eligible !== true' in block
     assert 'rule.authority_status !== "canonical"' in block
@@ -84,7 +85,8 @@ def test_quarantined_legacy_rule_is_rendered_as_not_runnable() -> None:
 
 
 def test_ui_reads_only_the_read_only_endpoint() -> None:
-    source = APP_JS.read_text(encoding="utf-8")
+    # R5 A1: 적재기 본문은 chat-automation-module.js로 이동했다.
+    source = (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
     assert f'fetch("{RULES_PATH}"' in source
     # The automation loader must never use a write verb.
     # R5 0단계(R-01): loadClawAutomationRules의 실제 정의 소스에서 잘라낸다.
@@ -95,9 +97,10 @@ def test_ui_reads_only_the_read_only_endpoint() -> None:
 
 
 def test_no_rule_mutation_control_exists_in_the_ui() -> None:
-    source = APP_JS.read_text(encoding="utf-8")
+    # R5 A1: 카탈로그 본문은 chat-automation-module.js로 이동했다.
+    source = (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
     block = source.split("--- #3237 read-only automation rule catalogue")[1]
-    block = block.split("if (clawAutomationRetry)")[0]
+    block = block.split("--- #3262 owner-gated enable/disable")[0]
     # #3257 added the Create surface and #3262 the enable/disable toggle in
     # this file, after the read-only catalogue block. Their single POST/PATCH
     # verbs are governed by the dedicated create/toggle route tests and UI

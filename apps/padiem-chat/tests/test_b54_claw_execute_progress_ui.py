@@ -200,7 +200,10 @@ def test_wait_timer_lifecycle_is_closed() -> None:
     assert definition_count("clearClawWait") == 1
     session = (APP_JS.parent / "claw-session.js").read_text(encoding="utf-8")
     conv = (APP_JS.parent / "chat-conversation-module.js").read_text(encoding="utf-8")  # #7216 R5 step 5a
-    assert app.count("clearClawWait();") + conv.count("clearClawWait();") + session.count("clearWait();") == 5
+    # R5 A1: openClawAutomation 본문(deps.clearClawWait();)이 자동화 모듈로 이동했다.
+    automation_module = (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
+    assert (app.count("clearClawWait();") + automation_module.count("clearClawWait();")
+            + conv.count("clearClawWait();") + session.count("clearWait();") == 5)
     assert app.count("clearWait: clearClawWait") == 1
     finally_block = app[app.index("    } finally {\n      // The owning request always tears its wait timer down"):]
     finally_block = finally_block[: finally_block.index("setClawButtonsBusy(false);")]
