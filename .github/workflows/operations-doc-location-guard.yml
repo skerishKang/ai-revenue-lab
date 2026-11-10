@@ -29,8 +29,7 @@ jobs:
         run: |
           base="origin/${{ github.base_ref }}"
           git fetch --no-tags origin "${{ github.base_ref }}"
-          added=$(git diff --name-only --diff-filter=A "$base...HEAD" -- docs/ | tr '
-' ' ' || true)
+          added=$(git diff --name-only --diff-filter=A "$base...HEAD" -- docs/ | tr '\n' ' ' || true)
           echo "ADDED_DOCS=$added" >> "$GITHUB_ENV"
 
       - name: Warn about new operational records in public paths

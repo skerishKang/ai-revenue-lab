@@ -106,9 +106,9 @@ class Packaging(unittest.TestCase):
         self.assertIn("NoAutoRebootWithLoggedOnUsers", hours)
         boot = (HERE / "wsl" / "boot_recovery.py").read_text(encoding="utf-8")
         self.assertIn("padiem-chat-com2-backup.timer", boot)
-        offsite = (HERE.parents[1] / "offsite-backup" / "offsite.py").read_text(encoding="utf-8")
+        offsite = (HERE.parent / "offsite-backup" / "offsite.py").read_text(encoding="utf-8")
         self.assertIn('"/mnt/d/padiem/chat-com2/backups"', offsite)
-        restore = (HERE.parents[1] / "offsite-backup" / "run_live_chat_restore.sh").read_text(
+        restore = (HERE.parent / "offsite-backup" / "run_live_chat_restore.sh").read_text(
             encoding="utf-8")
         self.assertIn("offsite.py restore", restore)
 
