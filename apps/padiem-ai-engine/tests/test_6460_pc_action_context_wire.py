@@ -217,6 +217,12 @@ def test_native_write_scope_selects_specific_delete_before_action_guard(monkeypa
     payload.pop("tool_arguments")
     payload["messages"] = [{"role": "user", "content": f"{TARGET} 파일을 지워줘"}]
     payload["pc_tools"] = {"device_id": DEVICE_ID, "allowed_scopes": ["files_write"]}
+    # 2026-11-11: a stored allow rule keeps the evidence/intent assertions on
+    # the harness boundary while the delegation default now asks.
+    payload["pc_delegation"] = {"version": 1, "rules": [{
+        "id": "rule-notes", "device_id": DEVICE_ID, "folder": "notes.txt",
+        "actions": ["write", "move", "delete"], "mode": "allow", "enabled": True,
+    }]}
     if user_evidence:
         payload["pc_action_context"] = deepcopy(payload["messages"])
 
