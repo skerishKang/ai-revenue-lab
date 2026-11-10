@@ -261,7 +261,7 @@ def test_return_refreshes_canonical_truth_instead_of_assuming_success() -> None:
     assert "openConnectorsView();" in _function("openConnectorsDialog")
     assert "void loadConnectorStatus();" in _function("openConnectorsView")
     load = _function("loadConnectorStatus")
-    assert 'fetch("/api/connectors/status", {' in load
+    assert 'PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status", {' in load
     assert "renderConnectorStatus(data);" in load
     assert 'syncGoogleDriveConnectButton(rows.get("connector:google:drive@1") || null);' in _function("renderConnectorStatus")
 

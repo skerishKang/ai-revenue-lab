@@ -236,7 +236,7 @@ def test_reviewed_google_connector_connection_actions_are_calendar_drive_and_gma
     block = _connector_block()
     #7216 R5 step 4: this contract moved into chat-auth-module.js.
     auth_module = (ROOT / "static" / "chat-auth-module.js").read_text(encoding="utf-8")
-    assert block.count('fetch("/api/connectors/status"') == 1
+    assert block.count('PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status"') == 1
     assert 'GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket"' in block
     assert 'fetch(GOOGLE_CALENDAR_TICKET_ENDPOINT' in block
     assert 'connector_id: GOOGLE_CALENDAR_CONNECTOR, begin_oauth: true' in block
@@ -439,7 +439,7 @@ def test_status_styles_keep_support_and_workspace_visually_separate() -> None:
 
 def test_web_claw_connector_acceptance_markers() -> None:
     # Compact report-oriented pins for CENTRAL / CI logs.
-    assert 'fetch("/api/connectors/status"' in _connector_block()
+    assert 'PadiemChatTransport.fetchStatusWithRetry("/api/connectors/status"' in _connector_block()
     assert set(LIVE_CONNECTORS.values()) == {
         "connector:google:drive@1",
         "connector:google:gmail@1",
