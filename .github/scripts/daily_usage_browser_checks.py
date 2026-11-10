@@ -938,8 +938,8 @@ def _run_shared_login_flow(browser, chat_url: str, out_path: Path,
         page.goto(chat_url, wait_until="domcontentloaded", timeout=NAVIGATE_TIMEOUT_MS)
         _capture(page, out_path, flow, 1, "open", username)
         stage = "entry"
-        page.click("#loginButton")
-        page.click("#googleLoginButton")
+        page.goto(chat_url.rstrip("/") + "/auth/shared/start",
+                  wait_until="domcontentloaded", timeout=NAVIGATE_TIMEOUT_MS)
         page.wait_for_url(lambda url: url.startswith(f"https://{SHARED_AUTH_HOST}/"),
                           timeout=NAVIGATE_TIMEOUT_MS)
         flow.entry_ms = int((time.monotonic() - started) * 1000)

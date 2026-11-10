@@ -323,7 +323,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       if (passwordChoiceEnabled(client)) {
         const carry = new URLSearchParams({ client_id: id, redirect_uri: returnTo, state: serviceState, code_challenge: challenge, code_challenge_method: 'S256' });
         if (brand) carry.set('lt_theme', theme);
-        if (url.pathname === '/login') {
+        if (url.pathname === '/login' && one(url.searchParams, 'provider') !== 'google') {
           const formAction = `/login/password?state=${encodeURIComponent(`${object}.${stateSecret}`)}`;
           const body = brand
             ? brandLoginPage({ brand, theme, lang, googleHref: `/login/google?${carry}`, formAction, signupHref: `/signup?${carry}` })
