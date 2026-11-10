@@ -442,9 +442,20 @@ async def _write_identity_shadow_after_login(
     try:
         await shadow_store.save_projection(bridged)
     except Exception as exc:
-        # The canonical session exists but the local pointer does not: the same
-        # refusal applies. The canonical session cleanup for this branch is a
-        # separate reviewed change (#7394 item 3).
+        # #7394 item 3: the canonical session exists but the local pointer does
+        # not. Without the pointer no logout of this login can ever name the
+        # session, so it would survive unrevocable until its own expiry. The
+        # session is therefore ended best-effort before the issuance fails; a
+        # failed cleanup never masks the establishment failure raised below.
+        try:
+            revoke = getattr(authority, "revoke_auth_session", None)
+            if callable(revoke):
+                await revoke(
+                    product_id=bridged.auth_session.product_id,
+                    session_id=bridged.auth_session.session_id,
+                )
+        except Exception:
+            pass
         raise CanonicalSessionEstablishmentFailed(
             "canonical_session_establishment_failed",
         ) from exc
