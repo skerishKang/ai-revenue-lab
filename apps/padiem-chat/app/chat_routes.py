@@ -428,42 +428,12 @@ async def _connector_tool_lane(
         )
         return
     if tool.get("status") == "paused":
-        from .connector_tool_continuation import pause_connector_tool_turn
-
-        try:
-            public_pause = await pause_connector_tool_turn(
-                request,
-                uid=uid,
-                tool_name=tool_name,
-                tool=tool,
-                messages=messages,
-                skill=skill,
-                reference_context=reference_context,
-                conversation_id=conversation_id,
-                latest_user=latest_user,
-            )
-        except Exception:
-            timing.set_outcome("error")
-            emit_stage_event(
-                stage="chat.connector_tools.execute",
-                outcome="error",
-                duration_ms=(_time.perf_counter() - started) * 1000.0,
-                code="connector_tool_pause_unavailable",
-            )
-            yield _public_sse(
-                "error",
-                {"error": {"code": "connector_tool_unavailable", "message": "사용자 확인 요청을 준비하지 못했습니다. 다시 시도해 주세요."}},
-            )
-            return
-        emit_stage_event(
-            stage="chat.connector_tools.execute",
-            outcome="ok",
-            duration_ms=(_time.perf_counter() - started) * 1000.0,
-            code=f"{tool_name}:paused",
+        from .connector_tool_continuation import emit_paused_connector_tool_sse
+        yield await emit_paused_connector_tool_sse(
+            request, uid=uid, tool_name=tool_name, tool=tool, messages=messages,
+            skill=skill, reference_context=reference_context, conversation_id=conversation_id,
+            latest_user=latest_user, started_perf=started, timing=timing, public_sse=_public_sse,
         )
-        print(f"connector_tools paused tool={tool_name}", flush=True)
-        timing.set_outcome("ok")
-        yield _public_sse("orchestration_pause", {"orchestration": public_pause})
         return
     emit_stage_event(
         stage="chat.connector_tools.execute", outcome="ok",

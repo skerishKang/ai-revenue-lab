@@ -41,6 +41,8 @@ from .orchestration_bridge import (
     project_public_orchestration,
 )
 
+from .request_telemetry import emit_stage_event
+
 CONNECTOR_TOOL_PAUSE_LANE = "connector_tool"
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 _CONNECTOR_RESULT_CONTEXT_CHARS = 24_000
@@ -194,6 +196,65 @@ async def pause_connector_tool_turn(
         expires_at=str(pause["expires_at"]),
     )
     return public
+
+
+async def emit_paused_connector_tool_sse(
+    request: Request,
+    *,
+    uid: str | None,
+    tool_name: str,
+    tool: Mapping[str, Any],
+    messages: Sequence[Mapping[str, Any]],
+    skill: Any,
+    reference_context: str | None,
+    conversation_id: str | None,
+    latest_user: str | None,
+    started_perf: float,
+    timing: Any,
+    public_sse: Any,
+) -> bytes:
+    """Persist paused connector tool and return the single SSE frame to yield."""
+
+    import time as _time
+
+    try:
+        public_pause = await pause_connector_tool_turn(
+            request,
+            uid=uid,
+            tool_name=tool_name,
+            tool=tool,
+            messages=messages,
+            skill=skill,
+            reference_context=reference_context,
+            conversation_id=conversation_id,
+            latest_user=latest_user,
+        )
+    except Exception:
+        timing.set_outcome("error")
+        emit_stage_event(
+            stage="chat.connector_tools.execute",
+            outcome="error",
+            duration_ms=(_time.perf_counter() - started_perf) * 1000.0,
+            code="connector_tool_pause_unavailable",
+        )
+        return public_sse(
+            "error",
+            {
+                "error": {
+                    "code": "connector_tool_unavailable",
+                    "message": "사용자 확인 요청을 준비하지 못했습니다. 다시 시도해 주세요.",
+                }
+            },
+        )
+    emit_stage_event(
+        stage="chat.connector_tools.execute",
+        outcome="ok",
+        duration_ms=(_time.perf_counter() - started_perf) * 1000.0,
+        code=f"{tool_name}:paused",
+    )
+    print(f"connector_tools paused tool={tool_name}", flush=True)
+    timing.set_outcome("ok")
+    return public_sse("orchestration_pause", {"orchestration": public_pause})
 
 
 async def load_active_connector_tool_pause(
