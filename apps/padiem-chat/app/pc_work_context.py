@@ -669,11 +669,17 @@ async def resolve_pc_work_context(
     # #5573: a PC this account linked is its own machine, named by this account.
     # The directory answers before the deployment map, and only for an account
     # that has links - an account with none behaves exactly as it did before.
+    moment = datetime.now(timezone.utc)
     links = await linked_pc_targets(request, owner)
+    enriched_links: list[PcWorkDevice] | None = None
     if links:
+        enriched_links = await _link_devices_with_presence(
+            request, links, now=moment,
+        )
         known = {device.device_id for device in devices}
+        source_rows = enriched_links if enriched_links is not None else _link_devices(links)
         devices.extend(
-            device for device in _link_devices(links) if device.device_id not in known
+            device for device in source_rows if device.device_id not in known
         )
 
     selection_offline = False
@@ -683,7 +689,6 @@ async def resolve_pc_work_context(
             (device for device in devices if device.device_id == selected_device_id),
             None,
         )
-        moment = datetime.now(timezone.utc)
         presence_online = await _mesh_presence_online(
             request, device_id=selected_device_id, now=moment,
         )
@@ -702,8 +707,10 @@ async def resolve_pc_work_context(
             # Only Mesh-confirmed, owner-linked PCs can replace an offline target.
             linked_devices: list[PcWorkDevice] = []
             if links:
-                enriched = await _link_devices_with_presence(
-                    request, links, now=moment,
+                enriched = (
+                    enriched_links
+                    if enriched_links is not None
+                    else await _link_devices_with_presence(request, links, now=moment)
                 )
                 if enriched is not None:
                     linked_devices = enriched
@@ -785,7 +792,25 @@ async def resolve_pc_work_context(
             linked = _link_execution_target(links, selected_device_id)
             if linked is not None:
                 execution = linked
+    if (
+        broker_status == _UNCONFIGURED
+        and not devices
+        and execution.ready
+        and is_pc_device_id(execution.device_id)
+        and callable(getattr(getattr(state, "mesh_device_presence_store", None), "load", None))
+    ):
+        online = await _mesh_presence_online(
+            request, device_id=execution.device_id, now=moment,
+        )
+        devices.append(PcWorkDevice(
+            device_id=execution.device_id,
+            name=None,
+            state="CONNECTED" if online is True else "OFFLINE",
+            usable=online is True,
+        ))
     usable = [device for device in devices if device.usable]
+    if broker_status in (_UNCONFIGURED, _NO_DEVICE) and devices:
+        broker_status = _READY if usable else _OFFLINE
     # A paused owner has no execution target even though a PC is online.
     broker_target = (
         usable[0].device_id
