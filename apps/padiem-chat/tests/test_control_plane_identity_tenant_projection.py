@@ -62,6 +62,98 @@ async def test_tenant_aware_session_is_accepted_and_preserved() -> None:
     assert binding.payloads == [{"session_id": "authsession:b62:tenant-test"}]
 
 
+class _EnsureBinding:
+    def __init__(self, tenant_wire, membership_wire):
+        self.tenant_wire = tenant_wire
+        self.membership_wire = membership_wire
+        self.payloads = []
+
+    async def ensure_personal_tenant_membership(self, payload):
+        self.payloads.append(dict(payload))
+        return {
+            "ok": True,
+            "tenant": dict(self.tenant_wire),
+            "membership": dict(self.membership_wire),
+        }
+
+
+async def test_ensure_personal_tenant_membership_uses_one_atomic_rpc() -> None:
+    subject_id = "sub_0123456789abcdef0123456789abcdef"
+    binding = _EnsureBinding(
+        {"tenant_id": TENANT_ID, "state": "active", "created_at": NOW.isoformat()},
+        {
+            "tenant_id": TENANT_ID,
+            "canonical_subject_id": subject_id,
+            "state": "active",
+            "created_at": NOW.isoformat(),
+            "role": "owner",
+        },
+    )
+    authority = CloudflareControlPlaneIdentityAuthority(binding)
+
+    tenant_id, membership = await authority.ensure_personal_tenant_membership(
+        canonical_subject_id=subject_id,
+        role="owner",
+    )
+
+    assert tenant_id == TENANT_ID
+    assert membership.tenant_id == TENANT_ID
+    assert membership.canonical_subject_id == subject_id
+    assert membership.role.value == "owner"
+    assert binding.payloads == [{"canonical_subject_id": subject_id, "role": "owner"}]
+
+
+async def test_ensure_personal_tenant_membership_accepts_an_existing_non_owner_role() -> None:
+    subject_id = "sub_0123456789abcdef0123456789abcdef"
+    binding = _EnsureBinding(
+        {"tenant_id": TENANT_ID, "state": "active", "created_at": NOW.isoformat()},
+        {
+            "tenant_id": TENANT_ID,
+            "canonical_subject_id": subject_id,
+            "state": "active",
+            "created_at": NOW.isoformat(),
+            "role": "operator",
+        },
+    )
+    authority = CloudflareControlPlaneIdentityAuthority(binding)
+
+    tenant_id, membership = await authority.ensure_personal_tenant_membership(
+        canonical_subject_id=subject_id
+    )
+
+    assert tenant_id == TENANT_ID
+    assert membership.role.value == "operator"
+
+
+async def test_ensure_personal_tenant_membership_rejects_an_expanded_envelope() -> None:
+    subject_id = "sub_0123456789abcdef0123456789abcdef"
+    binding = _EnsureBinding(
+        {"tenant_id": TENANT_ID, "state": "active", "created_at": NOW.isoformat()},
+        {
+            "tenant_id": TENANT_ID,
+            "canonical_subject_id": subject_id,
+            "state": "active",
+            "created_at": NOW.isoformat(),
+            "role": "owner",
+        },
+    )
+    authority = CloudflareControlPlaneIdentityAuthority(binding)
+    original = binding.ensure_personal_tenant_membership
+
+    async def expanded(payload):
+        answer = await original(payload)
+        answer["workspace_id"] = "caller-invented"
+        return answer
+
+    binding.ensure_personal_tenant_membership = expanded
+
+    with pytest.raises(IdentityBridgeError) as raised:
+        await authority.ensure_personal_tenant_membership(canonical_subject_id=subject_id)
+
+    assert raised.value.status_code == 503
+    assert raised.value.code == "control_plane_rpc_invalid"
+
+
 async def test_sessionless_membership_projection_preserves_explicit_role() -> None:
     subject_id = "sub_0123456789abcdef0123456789abcdef"
     binding = _MembershipBinding(

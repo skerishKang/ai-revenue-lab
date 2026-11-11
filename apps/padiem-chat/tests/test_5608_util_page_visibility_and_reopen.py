@@ -104,8 +104,8 @@ def test_shell_state_sync_covers_the_util_state() -> None:
 
 def test_shipped_services_do_not_advertise_themselves_as_unavailable() -> None:
     html = _html()
-    js = (ROOT / "static/util-app.js").read_text(encoding="utf-8")
-    # 11-10 결정: the six tools are cards rendered by util-app.js.
+    js = (ROOT / "static/util-manifest.js").read_text(encoding="utf-8")
+    # 11-10 / #7460 결정: the six tools live in util-manifest.js and render cards/chips/menu.
     assert 'id: "sns"' in js and "SNS 홍보" in js
     assert 'id: "meeting"' in js and "회의정리·활동집" in js
     assert '<span class="util-soon">' not in html

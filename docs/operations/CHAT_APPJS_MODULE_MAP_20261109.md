@@ -342,7 +342,7 @@ B1 시범(`#7439`)에서 확정한 보강 4가지를 설계 문서 §3.4 A2 + §
   - app.js 소유 공유 항목(`emptyState`·`clawT`·`mappedUiError`·`approvedMemoryErrorMessage`·`safeLocalUiMessage`·`failureCodeNote`·`openSavedConversation`·`downloadClawArtifact`·`setClawRunHistoryStatus`·`clawRunHistoryPdfControllers`·`renderClawApprovalControls`·`loadClawRunHistory`·`clawRunHistoryInFlight` + getter/setter `clawRunHistoryLimit`)을 라이브 접근자로 마운트.
 - **보강 (라) 등록부(`app.provide`)**:
   - 한 줄 전달 함수 0개. `app.provide("memory", ...)`·`app.provide("runHistory", ...)`로 등록하고 `historyModule`·`authModule`·`streamingModule` 및 남은 app.js 호출부 6곳은 `app.*` 경로로 호출.
-- **app.js 줄 수 및 상한**: **5,439 → 4,841(−598)**. `test_r5_file_size_guard_7216.py` 상한 **5,865 → 4,941**(실측 4,841 + 100).
+- **app.js 줄 수 및 상한**: **5,441 → 4,843(−598)** (이동 시작점 `26c8a323a5` 기준 5,439 → 4,841, 최신 `main` `ea780fc850` 병합 +2줄 반영). `test_r5_file_size_guard_7216.py` 상한 **5,865 → 4,943**(실측 4,843 + 100).
 - **검증**: 지도 비교 — 사라진 함수 16개, 사라진 최상위 변수 16개, 신규 변수 2개(`memory`·`runHistory`), 신규 전달 함수 0개. 부팅 장부(1440·390): 요청 주소 해시·리스너 다중집합 해시 전후 동일, 창 이름 2개(`PadiemChatMemoryModule`·`PadiemChatRunHistoryModule`) 추가. 신규 계약 2종(`test_r5_a2_memory_run_history_module_7216`·`test_r5_a2_memory_run_history_browser_7216`) + 기존 문자열·슬라이스 시험 19파일 이전 + 뮤테이션 2종 적발 확인.
 
 ## 13. R5 다음 구역 후보 조사 (대기 중 기록 — Claw 제외)

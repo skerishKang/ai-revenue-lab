@@ -109,8 +109,18 @@
     return true;
   }
 
+  function resetForRetry(article) {
+    if (!article || !thoughtByArticle.has(article)) return false;
+    const details = article.querySelector(".orchestration-thought-summary");
+    if (details) details.open = false;
+    thoughtByArticle.set(article, { text: "", resetOnNext: true });
+    return true;
+  }
+
   function handleFrame(article, frame, options = {}) {
-    if (!frame || frame.event !== "thought") return false;
+    if (!frame) return false;
+    if (frame.event === "thought_reset") return resetForRetry(article);
+    if (frame.event !== "thought") return false;
     let payload;
     try {
       payload = JSON.parse(frame.data);
@@ -120,7 +130,10 @@
     const delta = payload && payload.text;
     if (typeof delta !== "string" || !delta) return true;
 
-    const state = thoughtByArticle.get(article) || { text: "" };
+    const current = thoughtByArticle.get(article);
+    const state = !current || current.resetOnNext
+      ? { text: "", resetOnNext: false }
+      : current;
     state.text += delta;
     thoughtByArticle.set(article, state);
 
@@ -157,6 +170,7 @@
     handleFrame,
     renderSummary,
     reorder,
+    resetForRetry,
     settle,
   });
 })();

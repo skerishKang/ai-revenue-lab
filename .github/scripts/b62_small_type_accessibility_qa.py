@@ -197,6 +197,20 @@ async def _audit_view(page: Page, *, theme: str, background_hex: str, mobile: bo
         await page.locator("#mobileClose").click()
 
     await _open_settings(page, mobile=mobile)
+    # #7476 2번 범위 1·12: the Done footer (.settings-done) was removed — one
+    # close control remains — so the practical-floor list audits the remaining
+    # dialog controls instead: the advanced-settings entry (the dialog's one
+    # primary action) and the one on/off alert switch. The alerts section ships
+    # hidden until push is configured, so it is revealed for this offline audit
+    # the same way the signed-in account summary above is modelled.
+    await page.evaluate(
+        """() => {
+          const section = document.getElementById('clawPushSetting');
+          if (section) section.hidden = false;
+          const toggle = document.getElementById('clawPushToggle');
+          if (toggle) toggle.disabled = false;
+        }"""
+    )
     dialog_helpers = await page.evaluate(
         """() => [...document.querySelectorAll('#settingsDialog .settings-label, #settingsDialog .theme-option, #settingsDialog .language-option')]
           .filter((el) => {
@@ -210,7 +224,7 @@ async def _audit_view(page: Page, *, theme: str, background_hex: str, mobile: bo
         raise AssertionError(f"settings helper/control text below 12px: {small_dialog}")
 
     setting_min = 44.0 if mobile else 40.0
-    for selector in ("#settingsCloseButton", ".theme-option", ".language-option", ".settings-done"):
+    for selector in ("#settingsCloseButton", ".theme-option", ".language-option", "#settingsAdvancedOpen", "#clawPushToggle"):
         targets.append(await _target_size(page, selector, minimum=setting_min))
 
     await _no_horizontal_overflow(page, f"{theme}-{'mobile' if mobile else 'desktop'}-settings")

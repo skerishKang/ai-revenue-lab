@@ -23,7 +23,10 @@ from .b14_client import (
     _chat_product_identity_instruction,
 )
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
-from .central_model_route_runtime import chat_request_tier_context
+from .central_model_route_runtime import (
+    chat_request_tier_context,
+    resolve_chat_fallback_model_id,
+)
 from .grounding import GroundingError, grounding_fallback_fields
 from .history import HistoryForbidden, HistoryStore
 from .history import PRODUCT_SCOPE_CHAT
@@ -31,6 +34,7 @@ from .member_grade_access import selected_admin_denial, selected_grade_denial
 from .model_policy import (
     ResolvedModelPolicy,
     ModelPolicyError,
+    request_tier_context,
     resolve_model_policy,
     resolve_request_model_policy,
 )
@@ -856,7 +860,7 @@ def _model_first_done_fields(
 def _model_first_error_response(exc: BaseException):
     from .chat_pc_drive import ChatPCDriveError
 
-    if isinstance(exc, (ChatRuntimeError, ChatPCDriveError)):
+    if isinstance(exc, (ChatRuntimeError, ChatPCDriveError, B62OrchestrationError)):
         code = exc.code if isinstance(exc.code, str) and re.fullmatch(r"[a-z][a-z0-9_]{0,63}", exc.code) else "model_first_failed"
         status = exc.status_code if isinstance(exc.status_code, int) else 502
         return _error(code, exc.user_message, status)
@@ -870,7 +874,7 @@ def _model_first_error_response(exc: BaseException):
 def _model_first_error_code(exc: BaseException) -> str:
     from .chat_pc_drive import ChatPCDriveError
 
-    if isinstance(exc, (ChatRuntimeError, ChatPCDriveError)):
+    if isinstance(exc, (ChatRuntimeError, ChatPCDriveError, B62OrchestrationError)):
         code = exc.code
         if isinstance(code, str) and re.fullmatch(r"[a-z][a-z0-9_]{0,63}", code):
             return code
@@ -927,6 +931,64 @@ async def _model_first_open_stream(
         )
     return client.stream_text_auto(
         messages, skill=skill, additional_system_context=context
+    )
+
+
+def _is_model_first_retryable(exc: BaseException) -> bool:
+    from .central_model_final_dispatch_guard import FinalDispatchDenied
+
+    if isinstance(exc, (FinalDispatchDenied, ModelPolicyError)):
+        return False
+    if isinstance(exc, ChatRuntimeError):
+        return (
+            exc.status_code == 429
+            or exc.status_code >= 500
+            or exc.code
+            in {
+                "provider_auth_error",
+                "provider_route_error",
+                "provider_server_error",
+                "upstream_execution_failed",
+                "upstream_error",
+            }
+        )
+    return isinstance(exc, Exception)
+
+
+async def _model_first_next_candidate(
+    request: Request,
+    *,
+    raw: dict[str, Any],
+    policy: ResolvedModelPolicy,
+    tools: tuple[Any, ...],
+) -> tuple[str, ResolvedModelPolicy, tuple[Any, ...]] | None:
+    tier_raw = raw.get("tier", "free")
+    if not isinstance(tier_raw, str):
+        return None
+    normalized_tier = tier_raw.strip().lower()
+    fallback_model_id = await resolve_chat_fallback_model_id(
+        request,
+        normalized_tier,
+        failed_model_id=policy.model_id,
+    )
+    if not fallback_model_id:
+        return None
+    fallback_tools = tools
+    if tools:
+        from .chat_pc_drive import chat_pc_route_declares_tools
+
+        if not model_supports_pc_tools(fallback_model_id) or not await chat_pc_route_declares_tools(
+            request, fallback_model_id
+        ):
+            fallback_tools = ()
+    return (
+        normalized_tier,
+        ResolvedModelPolicy(
+            model_id=fallback_model_id,
+            messages=policy.messages,
+            profile=policy.profile,
+        ),
+        fallback_tools,
     )
 
 
@@ -1018,46 +1080,81 @@ async def _model_first_json(
 ):
     tool_call = None
     parts: list[str] = []
+    first_token_marked = False
+
+    async def _consume_json_stream(active_policy: ResolvedModelPolicy, active_tools: tuple[Any, ...]) -> None:
+        nonlocal tool_call, first_token_marked
+        stream = await _model_first_open_stream(
+            request,
+            raw=raw,
+            messages=messages,
+            skill=skill,
+            policy=active_policy,
+            context=context,
+            tools=active_tools,
+        )
+        try:
+            first = await _first_model_first_event(stream)
+            if first is None or (
+                first.delta_content is None
+                and getattr(first, "delta_thought", None) is None
+                and first.tool_call is None
+            ):
+                return
+            if first.tool_call is not None:
+                tool_call = first.tool_call
+                return
+            if getattr(first, "delta_thought", None) and not first_token_marked:
+                # A thinking summary is the first visible byte; it is
+                # presentation-only and stays out of `parts`.
+                first_token_marked = True
+                timing.mark("first_token")
+            if first.delta_content is not None:
+                parts.append(first.delta_content)
+                if not first_token_marked:
+                    first_token_marked = True
+                    timing.mark("first_token")
+            async for event in stream:
+                candidate_tool_call = getattr(event, "tool_call", None)
+                if candidate_tool_call is not None:
+                    tool_call = candidate_tool_call
+                    break
+                if event.delta_content:
+                    parts.append(event.delta_content)
+                if event.done:
+                    break
+        finally:
+            await _close_model_first_stream(stream)
+
     try:
-        async with chat_request_tier_context(request, raw.get("tier", "free")):
-            stream = await _model_first_open_stream(
-                request,
-                raw=raw,
-                messages=messages,
-                skill=skill,
-                policy=policy,
-                context=context,
-                tools=tools,
+        needs_fallback = False
+        pending_exc: Exception | None = None
+        try:
+            async with chat_request_tier_context(request, raw.get("tier", "free")):
+                await _consume_json_stream(policy, tools)
+        except Exception as first_exc:
+            if parts or tool_call is not None or not _is_model_first_retryable(first_exc):
+                raise
+            needs_fallback = True
+            pending_exc = first_exc
+        else:
+            if tool_call is None and not "".join(parts).strip():
+                needs_fallback = True
+        if needs_fallback:
+            next_candidate = await _model_first_next_candidate(
+                request, raw=raw, policy=policy, tools=tools
             )
-            try:
-                first = await _first_model_first_event(stream)
-                if first is None or (
-                    first.delta_content is None
-                    and getattr(first, "delta_thought", None) is None
-                    and first.tool_call is None
-                ):
-                    return _error(
-                        "model_first_empty",
-                        "AI가 표시할 답변을 만들지 못했습니다.",
-                        502,
-                    )
-                if first.tool_call is not None:
-                    tool_call = first.tool_call
-                else:
-                    if getattr(first, "delta_thought", None):
-                        # A thinking summary is the first visible byte; it is
-                        # presentation-only and stays out of `parts`.
-                        timing.mark("first_token")
-                    if first.delta_content is not None:
-                        parts.append(first.delta_content)
-                        timing.mark("first_token")
-                    async for event in stream:
-                        if event.delta_content:
-                            parts.append(event.delta_content)
-                        if event.done:
-                            break
-            finally:
-                await _close_model_first_stream(stream)
+            if next_candidate is None:
+                if pending_exc is not None:
+                    raise pending_exc
+                return _error(
+                    "model_first_empty",
+                    "AI가 표시할 답변을 만들지 못했습니다.",
+                    502,
+                )
+            normalized_tier, policy, tools = next_candidate
+            with request_tier_context(normalized_tier, model_id=policy.model_id):
+                await _consume_json_stream(policy, tools)
     except Exception as exc:
         return _model_first_error_response(exc)
 
@@ -1070,6 +1167,8 @@ async def _model_first_json(
                 403,
             )
         timing.set_path(PATH_TOOL)
+        from .chat_pc_errors import ChatPCApprovalPause
+
         try:
             outcome = await execute_model_first_tool(
                 request,
@@ -1083,6 +1182,17 @@ async def _model_first_json(
                 store=store,
                 grounding_context=grounding_context,
             )
+        except ChatPCApprovalPause as paused:
+            timing.mark("engine")
+            paused_payload: dict[str, Any] = {
+                "orchestration": dict(paused.orchestration),
+                "answer": None,
+                "decision_status": None,
+            }
+            paused_payload.update(grounding_notice)
+            if paused.conversation_id is not None:
+                paused_payload["conversation_id"] = paused.conversation_id
+            return JSONResponse(paused_payload)
         except Exception as exc:
             return _model_first_error_response(exc)
         if outcome is None:
@@ -1140,56 +1250,99 @@ async def _model_first_ndjson(
 ):
     tool_call = None
     parts: list[str] = []
+    thought_emitted = False
+    first_token_marked = False
+
+    async def _iter_ndjson_attempt(active_policy: ResolvedModelPolicy, active_tools: tuple[Any, ...]):
+        nonlocal tool_call, thought_emitted, first_token_marked
+        stream = await _model_first_open_stream(
+            request,
+            raw=raw,
+            messages=messages,
+            skill=skill,
+            policy=active_policy,
+            context=context,
+            tools=active_tools,
+        )
+        try:
+            first = await _first_model_first_event(stream)
+            if first is None or (
+                first.delta_content is None
+                and getattr(first, "delta_thought", None) is None
+                and first.tool_call is None
+            ):
+                return
+            if first.tool_call is not None:
+                if getattr(first, "delta_thought", None):
+                    thought_emitted = True
+                    if not first_token_marked:
+                        first_token_marked = True
+                        timing.mark("first_token")
+                    yield line({"type": "thought", "text": getattr(first, "delta_thought", None)})
+                tool_call = first.tool_call
+                return
+            if getattr(first, "delta_thought", None):
+                thought_emitted = True
+                if not first_token_marked:
+                    first_token_marked = True
+                    timing.mark("first_token")
+                yield line({"type": "thought", "text": getattr(first, "delta_thought", None)})
+            if first.delta_content is not None:
+                if not first_token_marked:
+                    first_token_marked = True
+                    timing.mark("first_token")
+                parts.append(first.delta_content)
+                yield line({"type": "delta", "text": first.delta_content})
+            async for event in stream:
+                candidate_tool_call = getattr(event, "tool_call", None)
+                if candidate_tool_call is not None:
+                    if getattr(event, "delta_thought", None):
+                        thought_emitted = True
+                        yield line({"type": "thought", "text": getattr(event, "delta_thought", None)})
+                    tool_call = candidate_tool_call
+                    break
+                if getattr(event, "delta_thought", None):
+                    thought_emitted = True
+                    yield line({"type": "thought", "text": getattr(event, "delta_thought", None)})
+                if event.delta_content:
+                    parts.append(event.delta_content)
+                    yield line({"type": "delta", "text": event.delta_content})
+                if event.done:
+                    break
+        finally:
+            await _close_model_first_stream(stream)
+
     try:
         yield line({"type": "meta", "stream": True})
-        async with chat_request_tier_context(request, raw.get("tier", "free")):
-            stream = await _model_first_open_stream(
-                request,
-                raw=raw,
-                messages=messages,
-                skill=skill,
-                policy=policy,
-                context=context,
-                tools=tools,
+        needs_fallback = False
+        pending_exc: Exception | None = None
+        try:
+            async with chat_request_tier_context(request, raw.get("tier", "free")):
+                async for chunk in _iter_ndjson_attempt(policy, tools):
+                    yield chunk
+        except Exception as first_exc:
+            if parts or tool_call is not None or not _is_model_first_retryable(first_exc):
+                raise
+            needs_fallback = True
+            pending_exc = first_exc
+        else:
+            if tool_call is None and not "".join(parts).strip():
+                needs_fallback = True
+        if needs_fallback:
+            next_candidate = await _model_first_next_candidate(
+                request, raw=raw, policy=policy, tools=tools
             )
-            try:
-                first = await _first_model_first_event(stream)
-                if first is None or (
-                    first.delta_content is None
-                    and getattr(first, "delta_thought", None) is None
-                    and first.tool_call is None
-                ):
-                    yield line({"type": "error", "code": "model_first_empty"})
-                    return
-                if first.tool_call is not None:
-                    if getattr(first, "delta_thought", None):
-                        timing.mark("first_token")
-                        yield line({"type": "thought", "text": getattr(first, "delta_thought", None)})
-                    tool_call = first.tool_call
-                else:
-                    if getattr(first, "delta_thought", None):
-                        timing.mark("first_token")
-                        yield line({"type": "thought", "text": getattr(first, "delta_thought", None)})
-                    if first.delta_content is not None:
-                        timing.mark("first_token")
-                        parts.append(first.delta_content)
-                        yield line({"type": "delta", "text": first.delta_content})
-                    async for event in stream:
-                        candidate_tool_call = getattr(event, "tool_call", None)
-                        if candidate_tool_call is not None:
-                            if getattr(event, "delta_thought", None):
-                                yield line({"type": "thought", "text": getattr(event, "delta_thought", None)})
-                            tool_call = candidate_tool_call
-                            break
-                        if getattr(event, "delta_thought", None):
-                            yield line({"type": "thought", "text": getattr(event, "delta_thought", None)})
-                        if event.delta_content:
-                            parts.append(event.delta_content)
-                            yield line({"type": "delta", "text": event.delta_content})
-                        if event.done:
-                            break
-            finally:
-                await _close_model_first_stream(stream)
+            if next_candidate is None:
+                if pending_exc is not None:
+                    raise pending_exc
+                yield line({"type": "error", "code": "model_first_empty"})
+                return
+            if thought_emitted:
+                yield line({"type": "thought_reset"})
+            normalized_tier, policy, tools = next_candidate
+            with request_tier_context(normalized_tier, model_id=policy.model_id):
+                async for chunk in _iter_ndjson_attempt(policy, tools):
+                    yield chunk
 
         if tool_call is not None:
             if tool_call.name not in {tool.name for tool in tools}:
@@ -1198,6 +1351,8 @@ async def _model_first_ndjson(
                 )
                 return
             timing.set_path(PATH_TOOL)
+            from .chat_pc_errors import ChatPCApprovalPause
+
             progress = ProgressFrameBuilder()
             started = progress.frame("tool_started", tool_name=tool_call.name)
             if started is not None:
@@ -1215,6 +1370,16 @@ async def _model_first_ndjson(
                     store=store,
                     grounding_context=grounding_context,
                 )
+            except ChatPCApprovalPause as paused:
+                timing.mark("engine")
+                pause_frame: dict[str, Any] = {
+                    "type": "orchestration_pause",
+                    "orchestration": dict(paused.orchestration),
+                }
+                if paused.conversation_id is not None:
+                    pause_frame["conversation_id"] = paused.conversation_id
+                yield line(pause_frame)
+                return
             except Exception as exc:
                 failed = progress.frame("tool_failed", tool_name=tool_call.name)
                 if failed is not None:

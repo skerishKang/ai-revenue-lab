@@ -119,7 +119,7 @@ const state = {
 };
 for (const id of ["historySection", "historyList", "historyEmpty", "historyActionStatus",
   "accountAvatar", "accountName", "accountContainer",
-  "accountSettingsSection", "accountPasswordActions", "accountDeleteActions",
+  "accountSettingsSection", "settingsAccountEmail", "accountPasswordActions", "accountDeleteActions",
   "accountDeleteButton", "accountDeleteConfirm", "accountDeleteConfirmEmail",
   "accountDeleteError", "accountSharedDeleteButton", "accountSharedDeleteConfirm",
   "accountSharedDeleteConfirmEmail", "accountSharedDeleteError", "advancedAccountSection",

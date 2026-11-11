@@ -129,15 +129,9 @@
       <nav class="side-nav" id="workspaceNav" data-locale-aria-label="tools-menu" aria-label="도구·일정">
         <div class="util-nav-group" id="utilNavGroup">
           <button class="side-item" id="utilNavButton" type="button" aria-current="false" aria-expanded="false" aria-controls="utilSubmenu"><span class="side-icon" aria-hidden="true">▣</span><span data-locale-key="nav-util">유틸</span><span class="side-chevron" aria-hidden="true">›</span></button>
-          <!-- #5608 follow-up: the util tools become one expandable sidebar entry.
-               The four rows route to the existing panels; the in-page duplicate
-               tab row below is hidden (util-menu.css owns the rules). -->
-          <div class="util-submenu" id="utilSubmenu" hidden>
-            <button class="util-submenu-item" type="button" data-util="speech" aria-current="false">축사·인사말</button>
-            <button class="util-submenu-item" type="button" data-util="sns" aria-current="false">SNS 홍보</button>
-            <button class="util-submenu-item" type="button" data-util="meeting" aria-current="false">회의정리·활동집</button>
-            <button class="util-submenu-item" type="button" data-util="pdfmd" aria-current="false">PDF → Markdown</button>
-          </div>
+          <!-- #7460: the submenu rows are rendered from static/util-manifest.js
+               so cards, chips and the sidebar menu share one registry. -->
+          <div class="util-submenu" id="utilSubmenu" hidden></div>
         </div>
         <button class="side-item" id="calendarNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▨</span><span data-locale-key="nav-calendar">캘린더</span></button>
         <button class="side-item" id="automationNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">◷</span><span data-locale-key="nav-automation">Automation</span></button>
@@ -185,13 +179,6 @@
       <header class="topbar">
         <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="open-menu" aria-label="메뉴 열기">☰</button>
         <button class="sidebar-restore-button" id="sidebarRestoreButton" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="sidebar-expand" aria-label="사이드바 펼치기" data-locale-title="sidebar-expand" title="사이드바 펼치기"><span aria-hidden="true">☰</span></button>
-        <!-- #7173 대표 결정: 상단 앱 전환 Chat | Claw | 유틸. The Util app's own
-             shell and routing live in the util module (its own two static files). -->
-        <nav class="app-switch" id="appSwitch" aria-label="앱 전환" data-locale-aria-label="app-switch-label">
-          <button type="button" class="app-switch-item" data-app="chat" aria-current="page">Chat</button>
-          <button type="button" class="app-switch-item" data-app="claw" aria-current="false">Claw</button>
-          <button type="button" class="app-switch-item" data-app="util" aria-current="false"><span data-locale-key="nav-util">유틸</span></button>
-        </nav>
       </header>
       <dialog class="auth-dialog" id="authDialog" aria-labelledby="authDialogTitle">
         <div class="auth-panel">
@@ -282,42 +269,42 @@
             <button class="settings-close" id="settingsCloseButton" type="submit" value="cancel" data-locale-aria-label="settings-close" aria-label="설정 닫기">×</button>
           </div>
           <section class="settings-section" aria-labelledby="appearanceTitle">
-            <p class="settings-label" data-locale-key="appearance">화면</p>
-            <h3 id="appearanceTitle" data-locale-key="theme">테마</h3>
+            <h3 id="appearanceTitle" data-locale-key="appearance">화면</h3>
             <div class="theme-picker" role="group" data-locale-aria-label="theme-picker" aria-label="테마 선택" id="themePicker">
-              <button type="button" class="theme-option" data-theme-value="padiem-home" data-locale-key="home-theme" aria-pressed="false">Padiem Home</button>
-              <button type="button" class="theme-option" data-theme-value="light" data-locale-key="light" aria-pressed="false">Light</button>
-              <button type="button" class="theme-option" data-theme-value="dark" data-locale-key="dark" aria-pressed="false">Dark</button>
-              <button type="button" class="theme-option" data-theme-value="cinematic" data-locale-key="cinematic" aria-pressed="false">Cinematic</button>
+              <button type="button" class="settings-choice theme-option" data-theme-value="padiem-home" data-locale-key="home-theme" aria-pressed="false">Padiem Home</button>
+              <button type="button" class="settings-choice theme-option" data-theme-value="light" data-locale-key="light" aria-pressed="false">Light</button>
+              <button type="button" class="settings-choice theme-option" data-theme-value="dark" data-locale-key="dark" aria-pressed="false">Dark</button>
+              <button type="button" class="settings-choice theme-option" data-theme-value="cinematic" data-locale-key="cinematic" aria-pressed="false">Cinematic</button>
             </div>
           </section>
           <section class="settings-section" aria-labelledby="languageTitle">
             <h3 id="languageTitle" data-locale-key="language-choice">언어</h3>
             <div class="language-picker" role="group" data-locale-aria-label="language-picker" aria-label="언어 선택" id="languagePicker">
-              <button type="button" class="language-option" data-locale-value="ko" aria-pressed="true">KR</button>
-              <button type="button" class="language-option" data-locale-value="en" aria-pressed="false">EN</button>
+              <button type="button" class="settings-choice language-option" data-locale-value="ko" aria-pressed="true">KR</button>
+              <button type="button" class="settings-choice language-option" data-locale-value="en" aria-pressed="false">EN</button>
             </div>
           </section>
           <section class="settings-section" id="clawPushSetting" hidden aria-labelledby="clawPushTitle">
-            <p class="settings-label" data-locale-key="claw-push-setting-label">알림</p>
-            <h3 id="clawPushTitle" data-locale-key="claw-push-title">이 기기의 알림</h3>
-            <button class="settings-action" id="clawPushToggle" type="button" aria-pressed="false" data-locale-key="claw-push-enable">이 기기에서 알림 받기</button>
+            <div class="settings-section-head">
+              <h3 id="clawPushTitle" data-locale-key="claw-push-title">이 기기의 알림</h3>
+              <button class="settings-switch" id="clawPushToggle" type="button" role="switch" aria-checked="false" aria-labelledby="clawPushTitle"><span class="settings-switch-track" aria-hidden="true"></span></button>
+            </div>
             <p class="claw-push-status" id="clawPushStatus" aria-live="polite" aria-atomic="true"></p>
           </section>
-          <section class="settings-section" data-locale-aria-label="account-section" aria-label="계정" id="accountSettingsSection">
+          <section class="settings-section" id="accountSettingsSection" aria-labelledby="accountSettingsTitle" hidden>
+            <h3 id="accountSettingsTitle" data-locale-key="account-section">계정</h3>
+            <p class="settings-account-email" id="settingsAccountEmail" hidden></p>
             <div class="settings-actions">
-              <button class="settings-action" id="settingsLogoutButton" type="button" data-locale-key="logout">로그아웃</button>
+              <button class="settings-action settings-action-secondary" id="settingsLogoutButton" type="button" data-locale-key="logout">로그아웃</button>
             </div>
           </section>
           <section class="settings-section" aria-labelledby="adminSettingsTitle" id="adminSettingsSection" hidden>
-            <p class="settings-label" data-locale-key="admin-section">관리자</p>
             <h3 id="adminSettingsTitle" data-locale-key="admin-settings-title">관리자</h3>
-            <a class="settings-action settings-link" id="adminHubLink" href="./admin" data-locale-aria-label="admin-hub-aria" data-locale-title="admin-hub-aria" aria-label="총관리자 페이지" title="총관리자 페이지" hidden><span aria-hidden="true">◈</span><span data-locale-key="admin-hub">총관리자</span></a>
+            <a class="settings-action settings-action-secondary settings-link" id="adminHubLink" href="./admin" data-locale-aria-label="admin-hub-aria" data-locale-title="admin-hub-aria" aria-label="총관리자 페이지" title="총관리자 페이지" hidden><span aria-hidden="true">◈</span><span data-locale-key="admin-hub">총관리자</span></a>
           </section>
           <div class="settings-advanced-entry">
-            <button class="settings-action settings-link" id="settingsAdvancedOpen" type="button" data-locale-key="settings-advanced-open">고급 설정 →</button>
+            <button class="settings-action settings-action-primary settings-link" id="settingsAdvancedOpen" type="button" data-locale-key="settings-advanced-open">고급 설정 →</button>
           </div>
-          <div class="settings-footer"><button class="settings-done" type="submit" value="done" data-locale-key="done">완료</button></div>
           </form>
       </dialog>
       <dialog class="auth-dialog" id="passwordChangeDialog" aria-labelledby="passwordChangeDialogTitle">
@@ -1409,10 +1396,10 @@
        management panel; it adds no endpoint, no pairing and no polling loop. -->
   <script src="./claw-connection-state.js"></script>
   <script src="./claw-composer-connection-status.js"></script>
-  <script src="./util-menu.js" defer></script>
-  <!-- #7173 PR2: the tool modules load before util-app.js, whose boot renders
-       the initial route right away (defer scripts run at readyState
-       "interactive", so a later module would miss the first paint). -->
+  <!-- #7460: one Util manifest feeds the first-screen cards, the tool chips,
+       the left sidebar submenu and the tool forms. The tool modules load
+       before util-app.js so deep links render on the first paint. -->
+  <script src="./util-manifest.js" defer></script>
   <script src="./util-tools-markdown.js" defer></script>
   <script src="./util-tools-contract.js" defer></script>
   <script src="./util-tools.js" defer></script>
@@ -1421,6 +1408,7 @@
        util-app.js so a deep link paints its form on the first route render. -->
   <script src="./util-quote.js" defer></script>
   <script src="./util-app.js" defer></script>
+  <script src="./util-menu.js" defer></script>
   <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
        presentation-only: never reads the directory endpoint or a raw payload. -->
   <script src="./claw-device-guidance.js"></script>

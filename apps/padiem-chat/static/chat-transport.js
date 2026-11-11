@@ -597,6 +597,7 @@
       }
       throw error;
     }
+    orchestrationRequests.set(response, wire);
     return response;
   }
 
@@ -666,6 +667,7 @@
     // 플래그가 꺼져 있으면 서버는 지금과 같은 JSON을 준다: 호출자는 기존 경로를 쓴다.
     const contentType = (response.headers.get("content-type") || "").toLowerCase();
     if (response.ok && (contentType.includes("application/x-ndjson") || contentType.includes("application/ndjson"))) {
+      orchestrationRequests.set(response, payload);
       return response;
     }
     if (response.ok && contentType.startsWith("text/event-stream")) {

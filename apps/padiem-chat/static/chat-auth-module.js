@@ -65,6 +65,17 @@
     if (deps.accountSettingsSection) {
       deps.accountSettingsSection.hidden = !authenticated;
     }
+    // #7476 본문 2: the basic settings dialog shows the signed-in account email
+    // in full. The value is the session projection the client already owns
+    // (authState.user.email, the same one the delete confirm uses); no request
+    // is made here and no new API is introduced.
+    if (deps.settingsAccountEmail) {
+      const accountEmail = authenticated && deps.authState.user && typeof deps.authState.user.email === "string"
+        ? deps.authState.user.email.trim()
+        : "";
+      deps.settingsAccountEmail.textContent = accountEmail;
+      deps.settingsAccountEmail.hidden = !accountEmail;
+    }
     // The advanced settings page carries the same account entries; its data
     // export section stays outside this gate so guests can export too.
     if (deps.advancedAccountSection) {

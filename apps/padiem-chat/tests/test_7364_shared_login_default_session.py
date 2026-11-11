@@ -35,6 +35,7 @@ from app.auth import SESSION_COOKIE, decode_session_claims
 from app.config import Settings
 from app.connector_status_projection import WORKSPACE_STATE_UNVERIFIED
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
+from app.control_plane_identity import IdentityBridgeError
 from app.control_plane_identity_shadow import IdentityShadowRecord
 from app.main import create_app
 from app.shared_login_flow import attach_chat_default_session
@@ -68,6 +69,7 @@ class FakeAuthority:
         self.revoked: list[tuple[str, str]] = []
         self.memberships: tuple[str, ...] = ()
         self.establish_fail = False
+        self.establish_error = None
 
     async def resolve_active_memberships(self, *, canonical_subject_id):
         return self.memberships
@@ -87,6 +89,8 @@ class FakeAuthority:
         return None
 
     async def establish_auth_session(self, *, product_id, subject, authenticated_at, not_after):
+        if self.establish_error is not None:
+            raise self.establish_error
         if self.establish_fail:
             raise RuntimeError("synthetic authority failure")
         session = AuthSessionSnapshot(
@@ -295,6 +299,24 @@ async def test_logout_revokes_the_canonical_session_the_callback_established():
     assert authority.revoked == [("b62", canonical)]
     cleared = response.headers.get_list("set-cookie")
     assert any(value.startswith(SESSION_COOKIE + "=") and "Max-Age=0" in value for value in cleared)
+
+
+def test_a_link_missing_establishment_never_writes_a_shadow():
+    """A subject without the B62 link is refused by the authority contract."""
+
+    settings, app, authority, shadow = _app()
+    authority.establish_error = IdentityBridgeError(
+        401, "identity_authority_link_missing", "canonical link is missing"
+    )
+    response = RedirectResponse("/", status_code=302)
+    import asyncio
+
+    canonical = asyncio.run(attach_chat_default_session(
+        response, _request(app), user_id=USER_ID, access="synthetic-access",
+        verifier=FakeVerifier(),
+    ))
+    assert canonical is None
+    assert shadow.rows == {}
 
 
 def test_a_shadow_failure_never_fails_the_shared_login():

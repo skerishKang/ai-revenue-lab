@@ -284,6 +284,13 @@ class TrustedB54ControlPlaneIdentityAuthority(Protocol):
         role: str | None = None,
     ) -> TenantMembership: ...
 
+    def ensure_personal_tenant_membership(
+        self,
+        *,
+        canonical_subject_id: str,
+        role: str | None = None,
+    ) -> tuple[str, TenantMembership]: ...
+
     def resolve_active_memberships(
         self, *, canonical_subject_id: str
     ) -> tuple[str, ...]: ...
@@ -474,6 +481,44 @@ async def _resolve_canonical_tenant(
     policy refusal, not a licence to mint locally or continue without tenancy.
     """
 
+    ensure = getattr(authority, "ensure_personal_tenant_membership", None)
+    supports = getattr(authority, "supports_ensure_personal_tenant_membership", None)
+    if callable(ensure) and (not callable(supports) or supports()):
+        try:
+            tenant_id, membership = await _maybe_await(
+                ensure(
+                    canonical_subject_id=subject.subject_id,
+                    role=TenantMembershipRole.OWNER.value,
+                )
+            )
+        except IdentityBridgeError as exc:
+            if exc.code not in {
+                "control_plane_identity_unavailable",
+                "control_plane_rpc_invalid",
+            }:
+                raise
+            # An older authority/binding has no atomic RPC. Fall through to
+            # the reviewed three-step path until the authority is deployed.
+        except Exception as exc:
+            raise _bridge_error(
+                "b54_control_plane_tenant_unavailable",
+                "B54 canonical tenant provisioning is unavailable.",
+            ) from exc
+        else:
+            if not isinstance(tenant_id, str) or not tenant_id:
+                raise _bridge_error(
+                    "b54_control_plane_tenant_invalid",
+                    "Canonical tenant authority returned an invalid tenant.",
+                )
+            try:
+                _validate_existing_membership(membership, tenant_id, subject.subject_id)
+            except Exception as exc:
+                raise _bridge_error(
+                    "b54_control_plane_tenant_invalid",
+                    "Canonical tenant authority returned an invalid membership.",
+                ) from exc
+            return tenant_id
+
     try:
         memberships = await _maybe_await(
             authority.resolve_active_memberships(
@@ -571,6 +616,20 @@ async def _resolve_canonical_tenant(
             "B54 canonical tenant provisioning is unavailable.",
         ) from exc
     return tenant_id
+
+
+def _validate_existing_membership(
+    membership: Any, tenant_id: str, canonical_subject_id: str
+) -> None:
+    """An existing single membership keeps its role; it must still be active."""
+    if (
+        not isinstance(membership, TenantMembership)
+        or membership.tenant_id != tenant_id
+        or membership.canonical_subject_id != canonical_subject_id
+        or membership.state is not TenantMembershipState.ACTIVE
+        or membership.role is None
+    ):
+        raise ValueError("invalid canonical personal tenant membership")
 
 
 def _validate_owner_membership(

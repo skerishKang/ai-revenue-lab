@@ -289,15 +289,22 @@
     panel.replaceChildren();
     panel.classList.add("pdfmd-shell");
 
+    const inputCol = el("div", "util-pane-input pdfmd-input-col");
+    inputCol.setAttribute("data-util-pane", "input");
+    const resultCol = el("div", "util-pane-result pdfmd-result-col");
+    resultCol.setAttribute("data-util-pane", "result");
+    panel.appendChild(inputCol);
+    panel.appendChild(resultCol);
+
     const header = el("div", "pdfmd-header");
     header.appendChild(el("h3", null, "PDF → Markdown 변환"));
     header.appendChild(el("p", "pdfmd-desc", "PDF나 ZIP을 올려 변환하면 원본과 Markdown을 나란히 비교하고 내려받을 수 있습니다. OCR(정밀 변환)은 지원하지 않습니다."));
-    panel.appendChild(header);
+    inputCol.appendChild(header);
     if (PDFMD_NEW_WORK_DISABLED) {
       header.querySelector(".pdfmd-desc").textContent = "지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.";
       const notice = el("p", "pdfmd-status", "서비스 준비 중 · 신규 업로드 및 변환 일시 중단");
       notice.setAttribute("role", "status");
-      panel.appendChild(notice);
+      inputCol.appendChild(notice);
     } else if (PDFMD_LOGIN_REQUIRED) {
       header.querySelector(".pdfmd-desc").textContent = "로그인 후 PDF 변환을 이용할 수 있습니다.";
       const notice = el("div", "pdfmd-status");
@@ -308,11 +315,11 @@
       loginEntry.id = "pdfmdLoginEntry";
       loginEntry.addEventListener("click", openExistingLogin);
       notice.appendChild(loginEntry);
-      panel.appendChild(notice);
+      inputCol.appendChild(notice);
     } else if (PDFMD_CHECKING) {
       const notice = el("p", "pdfmd-status", "새 변환을 열 수 있는지 확인 중…");
       notice.setAttribute("role", "status");
-      panel.appendChild(notice);
+      inputCol.appendChild(notice);
     }
 
     // Mode + job controls
@@ -339,11 +346,11 @@
     const jobIdSpan = el("span", "pdfmd-jobid", "");
     jobIdSpan.hidden = true;
     controls.appendChild(jobIdSpan);
-    panel.appendChild(controls);
+    inputCol.appendChild(controls);
 
     const modeHelp = el("p", "pdfmd-mode-help");
     modeHelp.id = "pdfmdModeHelp";
-    panel.appendChild(modeHelp);
+    inputCol.appendChild(modeHelp);
     function updateModeHelp() {
       const [key, fallback] = MODE_HELP[modeSel.value] || MODE_HELP.fast;
       modeHelp.dataset.localeKey = key;
@@ -393,7 +400,7 @@
     fileInput.accept = ".pdf,.zip,application/pdf,application/zip";
     fileInput.hidden = true;
     fileInput.disabled = workBlocked;
-    panel.appendChild(fileInput);
+    inputCol.appendChild(fileInput);
 
     // #6012: the same documents, taken straight from the owner's own PC. The
     // shared part (#6620 import, #6607 save) is the only dialog; the pick sits
@@ -404,7 +411,7 @@
     const uploadRow = el("div", "pdfmd-upload-row");
     uploadRow.appendChild(drop);
     uploadRow.appendChild(pcPick);
-    panel.appendChild(uploadRow);
+    inputCol.appendChild(uploadRow);
 
     const pcNote = el("p", "pdfmd-status pdfmd-pc-note", "");
     pcNote.id = "pdfmdPcNote";
@@ -415,7 +422,7 @@
     pcConnect.addEventListener("click", openPcConnect);
     pcNote.appendChild(pcNoteText);
     pcNote.appendChild(pcConnect);
-    panel.appendChild(pcNote);
+    inputCol.appendChild(pcNote);
 
     // One place shows the no-computer guidance, so an import attempt and a save
     // attempt say the same thing the council app says.
@@ -434,20 +441,20 @@
     uploadStatus.id = "pdfmdStatus";
     uploadStatus.setAttribute("role", "status");
     uploadStatus.setAttribute("aria-live", "polite");
-    panel.appendChild(uploadStatus);
+    inputCol.appendChild(uploadStatus);
     const quotaNote = el("p", "pdfmd-quota");
     quotaNote.id = "pdfmdQuota";
     quotaNote.setAttribute("role", "status");
     quotaNote.setAttribute("aria-live", "polite");
-    panel.appendChild(quotaNote);
+    inputCol.appendChild(quotaNote);
     const uploadProgress = el("ol", "pdfmd-upload-progress");
     uploadProgress.hidden = true;
     uploadProgress.setAttribute("aria-label", "파일별 업로드 진행 상태");
-    panel.appendChild(uploadProgress);
+    inputCol.appendChild(uploadProgress);
 
     // Items
     const itemsWrap = el("div", "pdfmd-items");
-    panel.appendChild(itemsWrap);
+    resultCol.appendChild(itemsWrap);
 
     // Preview
     const previewWrap = el("div", "pdfmd-preview");
@@ -502,7 +509,7 @@
     previewGrid.appendChild(origPane);
     previewGrid.appendChild(mdPane);
     previewWrap.appendChild(previewGrid);
-    panel.appendChild(previewWrap);
+    resultCol.appendChild(previewWrap);
 
     // Archive
     const archiveControls = el("div", "pdfmd-archive-controls");
@@ -515,12 +522,12 @@
     selectedArchiveBtn.disabled = true;
     archiveControls.appendChild(archiveBtn);
     archiveControls.appendChild(selectedArchiveBtn);
-    panel.appendChild(archiveControls);
+    resultCol.appendChild(archiveControls);
 
     // History: client-side date grouping and filtering. The list API carries
     // no filenames, so names join the search index as jobs are opened.
     const histHeader = el("h4", "pdfmd-history-head", "작업 이력");
-    panel.appendChild(histHeader);
+    resultCol.appendChild(histHeader);
     const histTools = el("div", "pdfmd-history-tools");
     histTools.hidden = true;
     const histSearch = document.createElement("input");
@@ -533,9 +540,9 @@
     histSearch.placeholder = copy("pdfmd-history-search-placeholder", "날짜·파일명·상태로 검색");
     histSearch.setAttribute("aria-label", copy("pdfmd-history-search-label", "작업 이력 검색"));
     histTools.appendChild(histSearch);
-    panel.appendChild(histTools);
+    resultCol.appendChild(histTools);
     const histList = el("div", "pdfmd-history");
-    panel.appendChild(histList);
+    resultCol.appendChild(histList);
 
     let currentJobId = null;
     let currentItems = [];

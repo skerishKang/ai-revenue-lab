@@ -58,6 +58,7 @@ IDENTITY_RPC_INGRESS_METHODS: frozenset[str] = frozenset({
     "issue_google_connect_ticket",
     "create_tenant",
     "assign_tenant_membership",
+    "ensure_personal_tenant_membership",
     "resolve_active_memberships",
     "resolve_active_tenant_membership",
     "install_connector_enrollment_schema",
@@ -111,6 +112,8 @@ _TENANT_MEMBERSHIP_KEYS = frozenset({"tenant_id", "canonical_subject_id"})
 _TENANT_MEMBERSHIP_ROLE_KEYS = frozenset({"tenant_id", "canonical_subject_id", "role"})
 _TENANT_MEMBERSHIP_READ_KEYS = frozenset({"canonical_subject_id"})
 _TENANT_MEMBERSHIP_RESOLVE_KEYS = frozenset({"tenant_id", "canonical_subject_id", "now"})
+_TENANT_ENSURE_KEYS = frozenset({"canonical_subject_id"})
+_TENANT_ENSURE_ROLE_KEYS = frozenset({"canonical_subject_id", "role"})
 
 
 def _required_env(env: Any, name: str) -> str:
@@ -550,6 +553,34 @@ class CanonicalIdentityDurableObject(CanonicalIdentityEnrollmentConsentRPC, Dura
                 )
             )
 
+    async def ensure_personal_tenant_membership(self, payload: dict) -> dict:
+        try:
+            if set(payload) == _TENANT_ENSURE_ROLE_KEYS:
+                wire = _closed(payload, _TENANT_ENSURE_ROLE_KEYS, "personal-tenant ensure role RPC")
+                role = wire["role"]
+            else:
+                wire = _closed(payload, _TENANT_ENSURE_KEYS, "personal-tenant ensure RPC")
+                role = None
+            tenant, membership = self._store.ensure_personal_tenant_membership(
+                canonical_subject_id=wire["canonical_subject_id"],
+                now=datetime.now().astimezone(),
+                role=role,
+            )
+            return {
+                "ok": True,
+                "tenant": tenant.to_public_dict(),
+                "membership": membership.to_public_dict(),
+            }
+        except (ControlPlaneContractError, TypeError, ValueError) as exc:
+            if isinstance(exc, ControlPlaneContractError):
+                return _safe_error(exc)
+            return _safe_error(
+                ControlPlaneContractError(
+                    "invalid_identity_authority_rpc",
+                    "canonical identity request is invalid",
+                )
+            )
+
     async def revoke_tenant_membership(self, payload: dict) -> dict:
         try:
             wire = _closed(payload, _TENANT_MEMBERSHIP_KEYS, "tenant-membership RPC")
@@ -656,6 +687,9 @@ class Default(WorkerEntrypoint):
 
     async def assign_tenant_membership(self, payload: dict) -> dict:
         return await self._stub().assign_tenant_membership(payload)
+
+    async def ensure_personal_tenant_membership(self, payload: dict) -> dict:
+        return await self._stub().ensure_personal_tenant_membership(payload)
 
     async def revoke_tenant_membership(self, payload: dict) -> dict:
         return await self._stub().revoke_tenant_membership(payload)

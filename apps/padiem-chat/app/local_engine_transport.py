@@ -21,10 +21,11 @@ host stand-in for the existing one.
 from __future__ import annotations
 
 import asyncio
+import json
 from collections.abc import Mapping
 from urllib.parse import urlparse
 from time import perf_counter
-from .request_timing import timed_async, record_duration
+from .request_timing import record_duration
 
 import httpx
 
@@ -84,6 +85,10 @@ STREAM_PATHS = frozenset({ENGINE_ORCHESTRATE_STREAM_PATH, ENGINE_STREAM_PATH})
 
 class LocalEngineTransportError(ValueError):
     """A host Engine target or response that the transport refuses to carry."""
+
+    def __init__(self, message: str, *, timed_out: bool = False) -> None:
+        super().__init__(message)
+        self.timed_out = timed_out
 
 
 def local_engine_origin(value: object) -> str:
@@ -153,7 +158,6 @@ class LocalEngineHttpTransport:
     def origin(self) -> str:
         return self._origin
 
-    @timed_async('p01')
     async def request(
         self,
         *,
@@ -166,11 +170,51 @@ class LocalEngineHttpTransport:
             method=method, url=url, headers=headers, body=body
         )
         target = self._origin + path
+        request_timeout = self._request_timeout(path, body)
         if self._client is not None:
-            return await self._send(self._client, normalized_method, target, forwarded, body)
+            return await self._send(
+                self._client,
+                normalized_method,
+                target,
+                forwarded,
+                body,
+                timeout=request_timeout if request_timeout > self._timeout else None,
+            )
         return await self._send(
-            self._loop_client(), normalized_method, target, forwarded, body
+            self._loop_client(),
+            normalized_method,
+            target,
+            forwarded,
+            body,
+            timeout=request_timeout,
         )
+
+    def _request_timeout(self, path: str, body: bytes | None) -> float:
+        """#7459: PC tool turns carry timeout_seconds=None (#5573) and may exceed 30s."""
+        if path not in (ENGINE_ORCHESTRATE_PATH, ENGINE_ORCHESTRATE_RESUME_PATH) or not body:
+            return self._timeout
+        try:
+            parsed = json.loads(body)
+        except Exception:
+            return self._timeout
+        if not isinstance(parsed, Mapping):
+            return self._timeout
+        exec_ctx = parsed.get("execution_context")
+        if isinstance(exec_ctx, Mapping):
+            if (
+                "timeout_seconds" in exec_ctx
+                and exec_ctx.get("timeout_seconds") is None
+                and ("agent_plan" in parsed or "pc_tools" in parsed)
+            ):
+                return self._stream_timeout
+            raw_timeout = exec_ctx.get("timeout_seconds")
+            if (
+                isinstance(raw_timeout, (int, float))
+                and not isinstance(raw_timeout, bool)
+                and raw_timeout > self._timeout
+            ):
+                return min(float(raw_timeout) + 5.0, self._stream_timeout)
+        return self._timeout
 
     def _loop_client(self) -> httpx.AsyncClient:
         """The completed-lane client for the running loop, created on first use."""
@@ -346,12 +390,19 @@ class LocalEngineHttpTransport:
         target: str,
         headers: Mapping[str, str],
         body: bytes | None,
+        *,
+        timeout: float | None = None,
     ) -> EngineTransportResponse:
         started = perf_counter()
         received = bytearray()
+        stream_kwargs = (
+            {"timeout": timeout}
+            if timeout is not None
+            else {}
+        )
         try:
             async with client.stream(
-                method, target, headers=headers, content=body
+                method, target, headers=headers, content=body, **stream_kwargs
             ) as response:
                 async for chunk in response.aiter_bytes():
                     received.extend(chunk)
@@ -369,6 +420,11 @@ class LocalEngineHttpTransport:
                     body=bytes(received),
                     headers=response_headers,
                 )
+        except httpx.TimeoutException:
+            record_duration("p01", (perf_counter() - started) * 1000)
+            raise LocalEngineTransportError(
+                "local engine request timed out", timed_out=True
+            ) from None
         except httpx.HTTPError:
             # Connection, timeout and protocol failures carry a URL and a type
             # that must not travel into a public status line.

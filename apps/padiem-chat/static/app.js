@@ -175,6 +175,7 @@
         get accountName() { return accountName; },
         get accountPasswordActions() { return accountPasswordActions; },
         get accountSettingsSection() { return accountSettingsSection; },
+        get settingsAccountEmail() { return settingsAccountEmail; },
         get accountSharedDeleteButton() { return accountSharedDeleteButton; },
         get accountSharedDeleteConfirm() { return accountSharedDeleteConfirm; },
         get accountSharedDeleteConfirmEmail() { return accountSharedDeleteConfirmEmail; },
@@ -476,6 +477,7 @@
   const settingsDialog = document.getElementById("settingsDialog");
   const settingsCloseButton = document.getElementById("settingsCloseButton");
   const accountSettingsSection = document.getElementById("accountSettingsSection");
+  const settingsAccountEmail = document.getElementById("settingsAccountEmail");
   const advancedAccountSection = document.getElementById("advancedAccountSection");
   const accountPasswordActions = document.getElementById("accountPasswordActions");
   // #6659: account self-deletion. The server owns the authority and

@@ -202,7 +202,8 @@ def test_the_collapsed_group_has_its_own_styles() -> None:
 
 HARNESS = r'''
 const fs = require("fs"), vm = require("vm");
-const source = fs.readFileSync(process.argv[2], "utf8");
+const manifestSource = fs.readFileSync(process.argv[2], "utf8");
+const source = fs.readFileSync(process.argv[3], "utf8");
 const registry = [];
 
 function El(tag) {
@@ -221,7 +222,7 @@ function El(tag) {
   };
 }
 function matches(el, sel) {
-  if (sel.startsWith(".")) return el.className === sel.slice(1);
+  if (sel.startsWith(".")) return String(el.className || "").split(/\s+/).includes(sel.slice(1));
   if (sel.startsWith("#")) return el.id === sel.slice(1);
   return el.tagName === sel.toUpperCase();
 }
@@ -261,6 +262,7 @@ const windowObj = { location: loc, history,
 const sandbox = { document, window: windowObj, location: loc, history, console };
 sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
+vm.runInContext(manifestSource, sandbox, { filename: "util-manifest.js" });
 vm.runInContext(source, sandbox, { filename: "util-app.js" });
 const api = windowObj.PadiemUtilApp;
 const result = { ok: true, checks: {} };
@@ -299,7 +301,7 @@ def _run_node_script(script: str) -> dict:
         handle.write(script)
         handle.close()
         completed = subprocess.run(
-            ["node", handle.name, str(UTIL_APP_PATH)],
+            ["node", handle.name, str(STATIC / "util-manifest.js"), str(UTIL_APP_PATH)],
             check=True,
             capture_output=True,
             text=True, encoding="utf-8",

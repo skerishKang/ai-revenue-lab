@@ -44,8 +44,9 @@ def test_the_pause_still_says_what_is_and_is_not_possible() -> None:
     # enabled, so the pause sentence belongs to the panel's server answer.
     assert "새 업로드는 잠시 멈춤" not in INDEX
     assert "일시 중단" not in INDEX
-    # #7173: the card copy moved with the card into the util module.
-    assert "PDF·ZIP을 Markdown으로 변환·비교·다운로드" in UTIL_APP
+    # #7173 / #7460: the card copy lives in the unified util manifest.
+    manifest = (STATIC / "util-manifest.js").read_text(encoding="utf-8")
+    assert "PDF·ZIP을 Markdown으로 변환·비교·다운로드" in manifest
 
 
 def test_the_owner_pause_contract_is_untouched() -> None:

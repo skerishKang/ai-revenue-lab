@@ -492,9 +492,8 @@ class CloudflareCanonicalIdentityAuthorityStore:
                 "canonical tenant row is invalid",
             ) from exc
 
-    def create_tenant(self, *, now: datetime) -> CanonicalTenant:
-        """Mint one canonical tenant. Tenant truth has no other source."""
-        observed_at = _utc(now, "now")
+    def _create_tenant_row(self, observed_at: datetime) -> CanonicalTenant:
+        """Insert one tenant row inside the caller's transaction."""
         tenant_id = self._new_ref("tenant_", 16)
         tenant = CanonicalTenant(
             tenant_id=tenant_id,
@@ -508,6 +507,10 @@ class CloudflareCanonicalIdentityAuthorityStore:
             _iso(observed_at),
         )
         return tenant
+
+    def create_tenant(self, *, now: datetime) -> CanonicalTenant:
+        """Mint one canonical tenant. Tenant truth has no other source."""
+        return self._create_tenant_row(_utc(now, "now"))
 
     def get_tenant(self, *, tenant_id: str) -> CanonicalTenant:
         rows = _rows(
@@ -596,71 +599,148 @@ class CloudflareCanonicalIdentityAuthorityStore:
         except ControlPlaneTenantError as exc:
             raise ControlPlaneContractError(exc.code, exc.message) from exc
 
-        def operation() -> TenantMembership:
-            existing = _rows(
+        return self._storage.transactionSync(
+            lambda: self._assign_tenant_membership_in_transaction(relation, observed_at)
+        )
+
+    def _assign_tenant_membership_in_transaction(
+        self, relation: TenantMembership, observed_at: datetime
+    ) -> TenantMembership:
+        """Idempotent insert/reactivate used inside one storage transaction."""
+        existing = _rows(
+            self._sql.exec(
+                "SELECT state, role, created_at FROM canonical_tenant_membership "
+                "WHERE tenant_id=? AND canonical_subject_id=?",
+                relation.tenant_id,
+                relation.canonical_subject_id,
+            )
+        )
+        if len(existing) > 1:
+            raise ControlPlaneContractError(
+                "identity_authority_storage_error",
+                "canonical tenant membership is ambiguous",
+            )
+        if existing:
+            row = existing[0]
+            try:
+                existing_state = TenantMembershipState(str(row["state"]))
+                raw_role = row.get("role")
+                existing_role = (
+                    TenantMembershipRole(str(raw_role))
+                    if raw_role is not None
+                    else None
+                )
+                created_at = _parse_iso(row["created_at"], "created_at")
+            except (KeyError, TypeError, ValueError) as exc:
+                raise ControlPlaneContractError(
+                    "identity_authority_storage_error",
+                    "canonical tenant membership row is invalid",
+                ) from exc
+            effective_role = relation.role if relation.role is not None else existing_role
+            if existing_state is not TenantMembershipState.ACTIVE:
                 self._sql.exec(
-                    "SELECT state, role, created_at FROM canonical_tenant_membership "
+                    "UPDATE canonical_tenant_membership SET state=? "
                     "WHERE tenant_id=? AND canonical_subject_id=?",
+                    TenantMembershipState.ACTIVE.value,
                     relation.tenant_id,
                     relation.canonical_subject_id,
                 )
+            if effective_role != existing_role:
+                self._sql.exec(
+                    "UPDATE canonical_tenant_membership SET role=? "
+                    "WHERE tenant_id=? AND canonical_subject_id=?",
+                    effective_role.value if effective_role is not None else None,
+                    relation.tenant_id,
+                    relation.canonical_subject_id,
+                )
+            return TenantMembership(
+                tenant_id=relation.tenant_id,
+                canonical_subject_id=relation.canonical_subject_id,
+                state=TenantMembershipState.ACTIVE,
+                created_at=created_at,
+                role=effective_role,
             )
-            if len(existing) > 1:
+        self._sql.exec(
+            "INSERT INTO canonical_tenant_membership "
+            "(tenant_id, canonical_subject_id, state, created_at, role) "
+            "VALUES (?, ?, ?, ?, ?)",
+            relation.tenant_id,
+            relation.canonical_subject_id,
+            relation.state.value,
+            _iso(observed_at),
+            relation.role.value if relation.role is not None else None,
+        )
+        return relation
+
+    def ensure_personal_tenant_membership(
+        self,
+        *,
+        canonical_subject_id: str,
+        now: datetime,
+        role: TenantMembershipRole | str | None = TenantMembershipRole.OWNER,
+    ) -> tuple[CanonicalTenant, TenantMembership]:
+        """Resolve or create the subject's one personal tenant membership.
+
+        The whole decision runs in one storage transaction. A Durable Object
+        serializes calls, and the CPython host's ``transactionSync`` starts an
+        immediate transaction, so two concurrent first logins cannot both see
+        zero memberships and mint two personal tenants. Existing memberships
+        keep their tenant; a roleless membership is repaired to OWNER. More
+        than one active membership is ambiguous and fails closed.
+        """
+        observed_at = _utc(now, "now")
+        subject_ref = self._require_subject_id(canonical_subject_id)
+        coerced_role = self._coerce_role(role)
+
+        def operation() -> tuple[CanonicalTenant, TenantMembership]:
+            subject_rows = _rows(
+                self._sql.exec(
+                    "SELECT canonical_subject_id FROM canonical_identity_subject "
+                    "WHERE canonical_subject_id=?",
+                    subject_ref,
+                )
+            )
+            if not subject_rows:
                 raise ControlPlaneContractError(
-                    "identity_authority_storage_error",
-                    "canonical tenant membership is ambiguous",
+                    "canonical_subject_not_found",
+                    "membership requires an existing canonical subject",
                 )
-            if existing:
-                row = existing[0]
+            active_tenants = self._active_membership_tenant_ids(subject_ref)
+            if len(active_tenants) > 1:
+                raise ControlPlaneContractError(
+                    "canonical_tenant_membership_ambiguous",
+                    "canonical subject has an ambiguous tenant membership",
+                )
+            if active_tenants:
+                tenant = self.get_tenant(tenant_id=active_tenants[0])
                 try:
-                    existing_state = TenantMembershipState(str(row["state"]))
-                    raw_role = row.get("role")
-                    existing_role = (
-                        TenantMembershipRole(str(raw_role))
-                        if raw_role is not None
-                        else None
+                    existing = self.resolve_active_tenant_membership(
+                        tenant_id=tenant.tenant_id,
+                        canonical_subject_id=subject_ref,
+                        now=observed_at,
                     )
-                    created_at = _parse_iso(row["created_at"], "created_at")
-                except (KeyError, TypeError, ValueError) as exc:
-                    raise ControlPlaneContractError(
-                        "identity_authority_storage_error",
-                        "canonical tenant membership row is invalid",
-                    ) from exc
-                effective_role = relation.role if relation.role is not None else existing_role
-                if existing_state is not TenantMembershipState.ACTIVE:
-                    self._sql.exec(
-                        "UPDATE canonical_tenant_membership SET state=? "
-                        "WHERE tenant_id=? AND canonical_subject_id=?",
-                        TenantMembershipState.ACTIVE.value,
-                        relation.tenant_id,
-                        relation.canonical_subject_id,
-                    )
-                if effective_role != existing_role:
-                    self._sql.exec(
-                        "UPDATE canonical_tenant_membership SET role=? "
-                        "WHERE tenant_id=? AND canonical_subject_id=?",
-                        effective_role.value if effective_role is not None else None,
-                        relation.tenant_id,
-                        relation.canonical_subject_id,
-                    )
-                return TenantMembership(
-                    tenant_id=relation.tenant_id,
-                    canonical_subject_id=relation.canonical_subject_id,
+                except ControlPlaneContractError as exc:
+                    if exc.code != "canonical_tenant_membership_role_missing":
+                        raise
+                    existing = None
+                if existing is not None:
+                    return tenant, existing
+            else:
+                tenant = self._create_tenant_row(observed_at)
+            try:
+                relation = TenantMembership(
+                    tenant_id=tenant.tenant_id,
+                    canonical_subject_id=subject_ref,
                     state=TenantMembershipState.ACTIVE,
-                    created_at=created_at,
-                    role=effective_role,
+                    created_at=observed_at,
+                    role=coerced_role,
                 )
-            self._sql.exec(
-                "INSERT INTO canonical_tenant_membership "
-                "(tenant_id, canonical_subject_id, state, created_at, role) "
-                "VALUES (?, ?, ?, ?, ?)",
-                relation.tenant_id,
-                relation.canonical_subject_id,
-                relation.state.value,
-                _iso(observed_at),
-                relation.role.value if relation.role is not None else None,
+            except ControlPlaneTenantError as exc:
+                raise ControlPlaneContractError(exc.code, exc.message) from exc
+            membership = self._assign_tenant_membership_in_transaction(
+                relation, observed_at
             )
-            return relation
+            return tenant, membership
 
         return self._storage.transactionSync(operation)
 

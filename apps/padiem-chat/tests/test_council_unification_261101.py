@@ -1,10 +1,11 @@
-"""2026-11-01: the three 의원3종 tools have one home — /apps/council/.
+"""2026-11-01 unification + #7173/#7460 in-app Util menu contract.
 
-Chat keeps the util page shell and the PDF → Markdown menu. The council entries
-leave for the independent app with the tool in the fragment (same session
-cookie, no second login), and the retired councillor profile screen is a
-redirect. These tests execute the shipped util-menu.js on a fake DOM for the
-link behaviour and read the shipped route for the redirect.
+- The retired legacy councillor panels stay out of index.html / util-menu.css,
+  the /councillor/ redirect to /apps/council/ stays active, the prototype site
+  is untouched, and the #padiem-connectors deep link continues to work.
+- #7173 + #7460: the sidebar Util submenu renders all six tools from
+  static/util-manifest.js and opens each tool's dedicated in-app screen
+  (#util/<id>) with zero external redirects.
 """
 
 from __future__ import annotations
@@ -16,6 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
+UTIL_MANIFEST = STATIC / "util-manifest.js"
 UTIL_MENU = STATIC / "util-menu.js"
 INDEX_HTML = STATIC / "index.html"
 UTIL_CSS = STATIC / "util-menu.css"
@@ -27,7 +29,7 @@ def run_util_menu() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the util-menu harness"
     completed = subprocess.run(
-        [node, str(HARNESS), str(UTIL_MENU)],
+        [node, str(HARNESS), str(UTIL_MANIFEST), str(UTIL_MENU)],
         capture_output=True, text=True, encoding="utf-8", cwd=str(ROOT), check=False,
     )
     assert completed.stdout.strip(), completed.stdout + completed.stderr
@@ -36,28 +38,21 @@ def run_util_menu() -> dict:
     return result["observation"]
 
 
-def test_the_three_council_entries_leave_for_the_independent_app() -> None:
+def test_util_submenu_renders_six_tools_from_manifest_and_navigates_in_app() -> None:
     observed = run_util_menu()
-    assert observed["assigned"] == [
-        "/apps/council/#speech",
-        "/apps/council/#sns",
-        "/apps/council/#meeting",
-        "/apps/council/#sns",
-        "/apps/council/#meeting",
+    assert observed["assigned"] == []
+    assert observed["renderedIds"] == ["speech", "sns", "meeting", "pdfmd", "quote", "excel"]
+    assert observed["navigated"] == [
+        "#util/speech",
+        "#util/sns",
+        "#util/meeting",
+        "#util/pdfmd",
+        "#util/quote",
+        "#util/excel",
     ]
 
 
-def test_pdf_to_markdown_still_opens_inside_chat() -> None:
-    observed = run_util_menu()["pdfmd"]
-    assert observed["assigned"] == []
-    # #7173 PR3: the menu routes to the tool screen; the screen creates and
-    # initializes its own panel, so the menu no longer looks one up.
-    assert observed["navigated"] == ["#util/pdfmd"]
-    assert observed["initialized"] == []
-    assert observed["title"] == "유틸"
-
-
-def test_the_council_screens_and_their_code_left_the_chat_bundle() -> None:
+def test_legacy_councillor_panels_stay_out_of_index_and_menu_bundle() -> None:
     html = INDEX_HTML.read_text(encoding="utf-8")
     js = UTIL_MENU.read_text(encoding="utf-8")
     css = UTIL_CSS.read_text(encoding="utf-8")
@@ -65,27 +60,15 @@ def test_the_council_screens_and_their_code_left_the_chat_bundle() -> None:
                  "utilSpeechForm", "utilSpeechOutput", "councillor/util-entry-adapter.js"):
         assert gone not in html, gone
     for gone in ("utilSpeechForm", "utilSnsPanel", "buildSns", "buildMeeting",
-                 "apiChat(", "PC_REF_COPY", "saveProjectFile"):
+                 "apiChat(", "PC_REF_COPY", "saveProjectFile", "location.assign"):
         assert gone not in js, gone
     for gone in ("#utilSpeechPanel", ".util-photo", ".util-sns-tab", ".util-pc-ref",
                  ".util-save-choice"):
         assert gone not in css, gone
-    # The two utilities that still live in Chat keep their surface.
     util_app = (STATIC / "util-app.js").read_text(encoding="utf-8")
     assert 'panel.id = "utilPdfmdPanel"' in util_app
     assert "mountPdfmdPanel" in util_app
-    assert "initPdfMdUtility" in js
     assert ".pdfmd-shell" in css
-
-
-def test_the_council_links_are_the_only_destination_and_carry_no_authority() -> None:
-    js = UTIL_MENU.read_text(encoding="utf-8")
-    assert 'speech: "/apps/council/#speech"' in js
-    assert 'sns: "/apps/council/#sns"' in js
-    assert 'meeting: "/apps/council/#meeting"' in js
-    # Same-origin navigation only: no token, user id or query parameter.
-    assert "location.assign" in js
-    assert "?" not in js.split("COUNCIL_TOOL_HREF", 1)[1].split("}", 1)[0]
 
 
 def test_the_retired_councillor_screen_is_gone_and_the_alias_redirects() -> None:

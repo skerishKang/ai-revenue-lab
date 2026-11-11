@@ -13,10 +13,12 @@
 }
 
 .util-tool-form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  max-width: 720px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  width: 100%;
+  max-width: none;
 }
 
 .util-form {
@@ -217,6 +219,25 @@ textarea.util-input {
   outline-offset: 1px;
 }
 
+.util-result-output[data-empty="true"] {
+  display: flex;
+  align-items: center;
+  min-height: 140px;
+  color: var(--muted);
+}
+
+.util-result-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.util-result-button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
 /* Light markdown inside a result: headings, lists, bold. Nothing else. */
 .util-md-heading {
   margin: 14px 0 6px;
@@ -319,6 +340,13 @@ textarea.util-input {
 .util-gate-login:focus-visible {
   outline: 3px solid var(--primary-focus);
   outline-offset: 2px;
+}
+
+@media (max-width: 920px) {
+  .util-tool-form {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
 }
 
 @media (max-width: 720px) {
