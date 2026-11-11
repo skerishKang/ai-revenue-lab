@@ -5394,8 +5394,11 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             # A continuation projects the finished listing against the folder it
             # was asked about; the Engine sent this path and is the only reader.
             "file_path": dispatch.get("file_path"),
-            "content_sha256": digest,
-            "content_bytes": len(content),
+            # #7447: a projected image read answers with the note, so the
+            # content length/digest describe what output actually carries —
+            # the Engine validates both against the returned text.
+            "content_sha256": hashlib.sha256(output.encode("utf-8")).hexdigest(),
+            "content_bytes": len(output.encode("utf-8")),
             "output": output,
             **({"output_ref": output_ref} if output_ref else {}),
             "termination": termination,
