@@ -236,6 +236,26 @@ textarea.util-chat-input {
   line-height: 1.4;
 }
 
+.util-chat-pc-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.util-chat-pc-note[hidden] {
+  display: none;
+}
+
+.util-chat-pc-import:disabled {
+  opacity: .6;
+  cursor: progress;
+}
+
 .util-chat-send {
   margin-left: auto;
 }

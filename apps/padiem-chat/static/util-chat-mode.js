@@ -68,7 +68,7 @@
 
   function t(key, overrideCopy) {
     const code = lang();
-    const custom = overrideCopy && overrideCopy[code] && overrideCopy[code][key];
+    const custom = overrideCopy && overrideCopy[code] ? overrideCopy[code][key] : undefined;
     if (custom !== undefined) return custom;
     const table = COPY[code] || COPY.ko;
     return table[key] !== undefined ? table[key] : COPY.ko[key];
@@ -195,6 +195,7 @@
     if (!reg || !tool) return null;
     const customCopy = opts.copy || null;
     const tx = (key) => t(key, customCopy);
+    const pcImport = opts.pcImport && typeof opts.pcImport.run === "function" ? opts.pcImport : null;
 
     const root = el("div", "util-chat-intake");
     root.setAttribute("data-util-chat-intake", toolId);
@@ -249,6 +250,24 @@
     inputLabel.appendChild(textarea);
 
     const composerRow = el("div", "util-chat-composer-actions");
+    let pcButton = null;
+    let pcNote = null;
+    if (pcImport) {
+      pcButton = el("button", "util-chat-choice util-chat-pc-import", pcImport.label || "");
+      pcButton.type = "button";
+      pcButton.setAttribute("data-util-chat-pc-import", "");
+      composerRow.appendChild(pcButton);
+      pcNote = el("p", "util-chat-pc-note");
+      pcNote.hidden = true;
+      pcNote.appendChild(el("span", null, pcImport.note || ""));
+      const pcConnect = el("button", "util-chat-choice util-chat-pc-connect", pcImport.connect || "");
+      pcConnect.type = "button";
+      pcConnect.setAttribute("data-util-chat-pc-connect", "");
+      pcConnect.addEventListener("click", () => {
+        if (typeof pcImport.onConnect === "function") pcImport.onConnect();
+      });
+      pcNote.appendChild(pcConnect);
+    }
     const statusText = el("span", "util-chat-hint");
     statusText.hidden = true;
     const sendBtn = el("button", "util-generate util-chat-send", tx("send"));
@@ -266,6 +285,7 @@
     root.appendChild(fileBar);
     root.appendChild(readyActions);
     root.appendChild(composer);
+    if (pcNote) root.appendChild(pcNote);
 
     let values = {};
     let askedFieldKey = null;
@@ -535,6 +555,41 @@
       pushValuesToForm();
       if (typeof opts.onSwitchToForm === "function") opts.onSwitchToForm();
     });
+
+    if (pcButton) {
+      pcButton.addEventListener("click", async () => {
+        if (busy || pcButton.disabled) return;
+        pcButton.disabled = true;
+        pcNote.hidden = true;
+        setHint("");
+        try {
+          const outcome = await pcImport.run();
+          if (!outcome) return;
+          if (outcome.needPc) {
+            pcNote.hidden = false;
+            return;
+          }
+          if (!outcome.ok) {
+            setHint(outcome.message || pcImport.failed || "");
+            return;
+          }
+          const fieldKey = String(pcImport.fieldKey || "");
+          if (!fieldKey) return;
+          const current = String(values[fieldKey] || "");
+          if (current.trim()) {
+            const proceed = typeof window.confirm === "function"
+              ? window.confirm(pcImport.confirmReplace || "") : false;
+            if (!proceed) return;
+          }
+          values[fieldKey] = outcome.text;
+          pushValuesToForm();
+          appendBubble("user", String(outcome.name || pcImport.label || ""));
+          syncPromptState();
+        } finally {
+          pcButton.disabled = false;
+        }
+      });
+    }
 
     function enter(optionsOnEnter) {
       readExternalValues();

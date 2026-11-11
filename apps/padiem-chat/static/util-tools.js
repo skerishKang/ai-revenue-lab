@@ -40,6 +40,12 @@
       meetingGenerate: "요약 생성",
       meetingResult: "회의 요약",
       platformGroup: "게시할 곳",
+      pcImport: "내 PC에서 가져오기",
+      pcImportNote: "컴퓨터를 연결하면 내 PC의 문서를 가져올 수 있습니다.",
+      pcImportConnect: "컴퓨터 연결하기",
+      pcImportUnsupported: "텍스트로 읽을 수 있는 파일만 가져올 수 있습니다(.txt, .md, .docx, .hwpx).",
+      pcImportFailed: "PC에서 파일을 읽지 못했습니다. 잠시 후 다시 시도해 주세요.",
+      pcImportReplace: "이미 입력한 내용이 있습니다. PC에서 가져온 내용으로 바꿀까요?",
     }),
     en: Object.freeze({
       loginRequired: "Sign in to use this tool.",
@@ -64,6 +70,12 @@
       meetingGenerate: "Summarize the meeting",
       meetingResult: "Meeting summary",
       platformGroup: "Where it goes",
+      pcImport: "Import from my PC",
+      pcImportNote: "Connect your computer to bring a document from your PC.",
+      pcImportConnect: "Connect computer",
+      pcImportUnsupported: "Only text-readable files can be imported (.txt, .md, .docx, .hwpx).",
+      pcImportFailed: "We couldn’t read the file from your PC. Please try again in a moment.",
+      pcImportReplace: "This field already has content. Replace it with the text from your PC?",
     }),
   });
 
@@ -101,6 +113,134 @@
     saved: () => localeText("util-library-saved", t("savedLibrary")),
     failed: () => localeText("util-library-save-failed", t("saveFailed")),
   });
+
+  const PC_COPY = Object.freeze({
+    pick: () => localeText("util-pc-import", t("pcImport")),
+    note: () => localeText("util-pc-import-note", t("pcImportNote")),
+    connect: () => localeText("util-pc-import-connect", t("pcImportConnect")),
+    unsupported: () => localeText("util-pc-import-unsupported", t("pcImportUnsupported")),
+    failed: () => localeText("util-pc-import-failed", t("pcImportFailed")),
+    replace: () => localeText("util-pc-import-replace", t("pcImportReplace")),
+  });
+
+  const PC_EXCHANGE_SCRIPT = "./pc-file-exchange.js";
+  const PC_EXCHANGE_CSS = "./pc-file-exchange.css";
+  const PC_REFERENCE = "/api/pc/reference";
+  const PC_IMPORT_ACCEPT = Object.freeze([".txt", ".md", ".docx", ".hwpx"]);
+  let pcExchangeLoading = null;
+
+  function loadPcExchange() {
+    if (window.PadiemPcFileExchange) return Promise.resolve(window.PadiemPcFileExchange);
+    if (pcExchangeLoading) return pcExchangeLoading;
+    pcExchangeLoading = new Promise((resolve, reject) => {
+      const head = document.head || document.body;
+      if (head && !document.querySelector('link[href="./pc-file-exchange.css"]')) {
+        const css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = PC_EXCHANGE_CSS;
+        head.appendChild(css);
+      }
+      const script = document.createElement("script");
+      script.src = PC_EXCHANGE_SCRIPT;
+      script.addEventListener("load", () => {
+        if (window.PadiemPcFileExchange) resolve(window.PadiemPcFileExchange);
+        else reject(new Error("pc-exchange-unavailable"));
+      }, { once: true });
+      script.addEventListener("error", () => reject(new Error("pc-exchange-unavailable")), { once: true });
+      head.appendChild(script);
+    });
+    return pcExchangeLoading;
+  }
+
+  async function pcLinked() {
+    try {
+      if (window.PadiemAuthGate && typeof window.PadiemAuthGate.authenticated === "function"
+          && window.PadiemAuthGate.authenticated() === false) return null;
+    } catch (_) {}
+    try {
+      const res = await window.fetch("/api/pc/pairings", { credentials: "include", cache: "no-store" });
+      if (!res || !res.ok) return null;
+      const body = await res.json().catch(() => null);
+      const links = body && Array.isArray(body.links) ? body.links : [];
+      return links.some((link) => link && link.state === "active");
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function openPcConnect() {
+    const opener = document.getElementById("connectorsNavButton");
+    if (opener) opener.click();
+    const card = document.getElementById("connectorComputerCard");
+    if (!card) return;
+    if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
+    if (typeof card.focus === "function") card.focus({ preventScroll: true });
+    if (typeof card.scrollIntoView === "function") card.scrollIntoView({ block: "nearest" });
+  }
+
+  function pcSuffix(name) {
+    const value = String(name || "");
+    const dot = value.lastIndexOf(".");
+    return dot < 0 ? "" : value.slice(dot).toLowerCase();
+  }
+
+  function pcAccepted(name) {
+    return PC_IMPORT_ACCEPT.indexOf(pcSuffix(name)) >= 0;
+  }
+
+  async function readPcText(picked) {
+    let res;
+    try {
+      res = await window.fetch(PC_REFERENCE, {
+        method: "POST",
+        credentials: "include",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ file_id: picked.fileId }),
+      });
+    } catch (_) {
+      return { ok: false, message: PC_COPY.failed() };
+    }
+    const body = await res.json().catch(() => null);
+    if (!res.ok || !body || body.ok !== true || typeof body.text !== "string") {
+      const code = body && body.error && body.error.code;
+      return {
+        ok: false,
+        message: code === "legacy_hwp_unsupported" ? PC_COPY.unsupported() : PC_COPY.failed(),
+      };
+    }
+    return { ok: true, text: body.text, name: body.name || picked.name };
+  }
+
+  async function pickPcText() {
+    if (await pcLinked() !== true) return { needPc: true };
+    let component;
+    try {
+      component = await loadPcExchange();
+    } catch (_) {
+      component = null;
+    }
+    if (!component || typeof component.open !== "function") return { needPc: true };
+    return new Promise((resolve) => {
+      component.open({
+        mode: "import",
+        accept: PC_IMPORT_ACCEPT.slice(),
+        onSelect: (picked) => {
+          void (async () => {
+            if (!picked || typeof picked.fileId !== "string" || !picked.fileId) {
+              resolve({ ok: false, message: PC_COPY.failed() });
+              return;
+            }
+            if (!pcAccepted(picked.name)) {
+              resolve({ ok: false, message: PC_COPY.unsupported() });
+              return;
+            }
+            resolve(await readPcText(picked));
+          })();
+        },
+      });
+    });
+  }
 
   function toolName(toolId) {
     const reg = window.PadiemUtilManifest;
@@ -294,8 +434,22 @@
       return holder;
     }
 
-    const label = element("label", "util-field");
-    label.appendChild(element("span", "util-field-label", localized(spec.label)));
+    const field = element("div", "util-field");
+    const head = element("div", "util-field-head");
+    const labelText = element("label", "util-field-label", localized(spec.label));
+    head.appendChild(labelText);
+    if (state && state.importFieldKey === spec.key && typeof state.onImport === "function") {
+      const pcPick = element("button", "util-pc-import", state.importLabel || "");
+      pcPick.type = "button";
+      pcPick.setAttribute("data-util-pc-import", spec.key);
+      pcPick.addEventListener("click", (event) => {
+        if (event && typeof event.preventDefault === "function") event.preventDefault();
+        if (event && typeof event.stopPropagation === "function") event.stopPropagation();
+        state.onImport();
+      });
+      head.appendChild(pcPick);
+    }
+    field.appendChild(head);
     let input;
     if (spec.type === "textarea") {
       input = element("textarea", "util-input");
@@ -315,7 +469,7 @@
     }
     input.name = spec.key;
     input.id = "utilToolField-" + spec.key;
-    label.setAttribute("for", input.id);
+    labelText.setAttribute("for", input.id);
     if (spec.required) {
       input.required = true;
       input.setAttribute("aria-invalid", "false");
@@ -325,8 +479,8 @@
     }
     const ph = localized(spec.placeholder);
     if (ph) input.placeholder = ph;
-    label.appendChild(input);
-    return label;
+    field.appendChild(input);
+    return field;
   }
 
   function buildFormFields(toolId, form, state) {
@@ -380,7 +534,16 @@
   }
 
   function buildScreen(toolId, initialMode) {
-    const state = { platform: "blog", onPlatform: null };
+    const manifest = window.PadiemUtilManifest;
+    const importField = manifest && typeof manifest.pcImportField === "function"
+      ? manifest.pcImportField(toolId) : null;
+    const state = {
+      platform: "blog",
+      onPlatform: null,
+      importFieldKey: importField ? importField.key : "",
+      importLabel: PC_COPY.pick(),
+      onImport: () => { void importFromPc(); },
+    };
     const chatApi = window.PadiemUtilChatMode;
     const hasChatMode = Boolean(
       CHAT_MODE_TOOLS.indexOf(toolId) >= 0
@@ -406,6 +569,16 @@
     primary.id = "utilGenerate-" + toolId;
     actions.appendChild(primary);
     form.appendChild(actions);
+
+    const pcNote = element("p", "util-pc-note");
+    pcNote.hidden = true;
+    const pcNoteText = element("span", null, PC_COPY.note());
+    const pcConnect = element("button", "util-pc-connect", PC_COPY.connect());
+    pcConnect.type = "button";
+    pcConnect.addEventListener("click", () => { openPcConnect(); });
+    pcNote.appendChild(pcNoteText);
+    pcNote.appendChild(pcConnect);
+    if (importField) form.appendChild(pcNote);
 
     const status = element("p", "util-status");
     status.id = "utilStatus-" + toolId;
@@ -463,6 +636,42 @@
       status.textContent = text || "";
       status.hidden = !text;
       status.setAttribute("data-tone", tone || "info");
+    }
+
+    function showPcNote() {
+      pcNoteText.textContent = PC_COPY.note();
+      pcNote.hidden = false;
+      if (typeof pcNote.scrollIntoView === "function") {
+        try { pcNote.scrollIntoView({ block: "nearest" }); } catch (_) {}
+      }
+      if (typeof pcConnect.focus === "function") {
+        try { pcConnect.focus({ preventScroll: true }); } catch (_) {}
+      }
+    }
+
+    async function fillImportedText(input, outcome) {
+      const current = String(input.value || "");
+      if (current.trim() && current !== outcome.text) {
+        const proceed = typeof window.confirm === "function" ? window.confirm(PC_COPY.replace()) : false;
+        if (!proceed) return;
+      }
+      input.value = outcome.text;
+      input.setAttribute("aria-invalid", "false");
+      if (typeof input.dispatchEvent === "function" && typeof window.Event === "function") {
+        input.dispatchEvent(new window.Event("input", { bubbles: true }));
+      }
+      pcNote.hidden = true;
+      setStatus("", null);
+    }
+
+    async function importFromPc() {
+      if (!importField) return;
+      const input = form.querySelector("#utilToolField-" + importField.key);
+      if (!input) return;
+      const outcome = await pickPcText();
+      if (outcome.needPc) { showPcNote(); return; }
+      if (!outcome.ok) { setStatus(outcome.message, "error"); return; }
+      await fillImportedText(input, outcome);
     }
 
     let busy = false;
@@ -565,6 +774,16 @@
         hasDraft: () => Boolean(String(lastAnswer || "").trim()),
         onGenerate: (vals, note) => runGeneration(vals, note),
         onSwitchToForm: () => setMode("form", false),
+        pcImport: importField ? {
+          fieldKey: importField.key,
+          label: PC_COPY.pick(),
+          note: PC_COPY.note(),
+          connect: PC_COPY.connect(),
+          confirmReplace: PC_COPY.replace(),
+          failed: PC_COPY.failed(),
+          run: () => pickPcText(),
+          onConnect: () => { openPcConnect(); },
+        } : null,
       });
       if (chatIntake) {
         const startMode = initialMode === "chat" ? "chat" : "form";
