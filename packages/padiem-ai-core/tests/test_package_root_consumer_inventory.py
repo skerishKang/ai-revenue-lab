@@ -246,6 +246,9 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
             "BoundedAgentDefinition",
             "GMAIL_CANONICAL_TOOL_IDS",
             "GMAIL_CONNECTOR_ID",
+            "GMAIL_CREATE_DRAFT_TOOL_ID",
+            "GMAIL_DELETE_DRAFT_TOOL_ID",
+            "GMAIL_DRAFT_CANONICAL_TOOL_IDS",
             "GmailReadPort",
             "ToolAuthorizationContext",
             "ToolRegistrySnapshot",
@@ -254,6 +257,7 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
             "ToolRuntimeBinding",
             "TrustedAgentRuntimePolicy",
             "compile_agent_profile",
+            "gmail_draft_tool_specs",
             "gmail_read_tool_specs",
         }
     ),
