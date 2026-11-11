@@ -467,6 +467,7 @@ class Default(WorkerEntrypoint):
         "workspace_calendar_connector_state",
         "select_calendar_binding",
         "disconnect_calendar",
+        "disconnect_gmail",
     })
 
     def _authority_ref(self) -> str:
