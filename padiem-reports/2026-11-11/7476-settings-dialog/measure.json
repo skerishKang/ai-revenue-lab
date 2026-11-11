@@ -19,7 +19,7 @@
           "left": 330,
           "top": 16,
           "width": 620,
-          "height": 1059.5,
+          "height": 1025.5,
           "fontSize": "16px",
           "fontWeight": "400",
           "radius": "28px",
@@ -59,8 +59,8 @@
           },
           "push": {
             "left": 361,
-            "top": 624.75,
-            "width": 558,
+            "top": 633.75,
+            "width": 110.89,
             "height": 26,
             "fontSize": "20px",
             "fontWeight": "700",
@@ -72,7 +72,7 @@
           },
           "admin": {
             "left": 361,
-            "top": 875.5,
+            "top": 841.5,
             "width": 558,
             "height": 26,
             "fontSize": "20px",
@@ -167,7 +167,7 @@
         "buttons": {
           "danger": {
             "left": 466.94,
-            "top": 1004.5,
+            "top": 970.5,
             "width": 52.73,
             "height": 44,
             "fontSize": "13px",
@@ -180,7 +180,7 @@
           },
           "logout": {
             "left": 361,
-            "top": 782.5,
+            "top": 748.5,
             "width": 75.45,
             "height": 44,
             "fontSize": "13px",
@@ -193,7 +193,7 @@
           },
           "adminHub": {
             "left": 361,
-            "top": 917.5,
+            "top": 883.5,
             "width": 95.5,
             "height": 44,
             "fontSize": "13px",
@@ -206,7 +206,7 @@
           },
           "advancedEntry": {
             "left": 361,
-            "top": 1004.5,
+            "top": 970.5,
             "width": 102.44,
             "height": 44,
             "fontSize": "13px",
@@ -220,7 +220,7 @@
         },
         "advancedEntry": {
           "left": 361,
-          "top": 1004.5,
+          "top": 970.5,
           "width": 102.44,
           "height": 44,
           "fontSize": "13px",
@@ -233,7 +233,7 @@
         },
         "entryRow": {
           "left": 331,
-          "top": 985.5,
+          "top": 951.5,
           "width": 618,
           "height": 89,
           "fontSize": "16px",
@@ -259,7 +259,7 @@
         },
         "switch": {
           "left": 863,
-          "top": 693.5,
+          "top": 624.75,
           "width": 56,
           "height": 44,
           "fontSize": "16px",
@@ -270,18 +270,18 @@
           "color": "rgb(23, 33, 42)",
           "text": ""
         },
-        "switchRow": {
+        "switchHead": {
           "left": 361,
-          "top": 666.75,
+          "top": 624.75,
           "width": 558,
-          "height": 70.75,
+          "height": 44,
           "fontSize": "16px",
           "fontWeight": "400",
           "radius": "0px",
           "bg": "rgba(0, 0, 0, 0)",
           "border": "rgb(23, 33, 42)",
           "color": "rgb(23, 33, 42)",
-          "text": "브라우저에서 알림이 차단되었습니다. 사이트 설정에서 허용해 주세요."
+          "text": "이 기기의 알림"
         }
       },
       "advanced": {
@@ -410,7 +410,7 @@
           "left": 10,
           "top": 16,
           "width": 370,
-          "height": 1199.36,
+          "height": 1165.36,
           "fontSize": "16px",
           "fontWeight": "400",
           "radius": "22px",
@@ -450,8 +450,8 @@
           },
           "push": {
             "left": 31,
-            "top": 753.86,
-            "width": 328,
+            "top": 762.86,
+            "width": 110.89,
             "height": 26,
             "fontSize": "20px",
             "fontWeight": "700",
@@ -463,7 +463,7 @@
           },
           "admin": {
             "left": 31,
-            "top": 1023.36,
+            "top": 989.36,
             "width": 328,
             "height": 26,
             "fontSize": "20px",
@@ -558,7 +558,7 @@
         "buttons": {
           "danger": {
             "left": 136.94,
-            "top": 1150.36,
+            "top": 1116.36,
             "width": 52.73,
             "height": 44,
             "fontSize": "13px",
@@ -571,7 +571,7 @@
           },
           "logout": {
             "left": 31,
-            "top": 930.36,
+            "top": 896.36,
             "width": 78.95,
             "height": 44,
             "fontSize": "14px",
@@ -584,7 +584,7 @@
           },
           "adminHub": {
             "left": 31,
-            "top": 1065.36,
+            "top": 1031.36,
             "width": 95.5,
             "height": 44,
             "fontSize": "13px",
@@ -597,7 +597,7 @@
           },
           "advancedEntry": {
             "left": 31,
-            "top": 1150.36,
+            "top": 1116.36,
             "width": 102.44,
             "height": 44,
             "fontSize": "13px",
@@ -611,7 +611,7 @@
         },
         "advancedEntry": {
           "left": 31,
-          "top": 1150.36,
+          "top": 1116.36,
           "width": 102.44,
           "height": 44,
           "fontSize": "13px",
@@ -624,7 +624,7 @@
         },
         "entryRow": {
           "left": 11,
-          "top": 1133.36,
+          "top": 1099.36,
           "width": 368,
           "height": 81,
           "fontSize": "16px",
@@ -650,7 +650,7 @@
         },
         "switch": {
           "left": 303,
-          "top": 841.36,
+          "top": 753.86,
           "width": 56,
           "height": 44,
           "fontSize": "16px",
@@ -661,18 +661,18 @@
           "color": "rgb(23, 33, 42)",
           "text": ""
         },
-        "switchRow": {
+        "switchHead": {
           "left": 31,
-          "top": 795.86,
+          "top": 753.86,
           "width": 328,
-          "height": 89.5,
+          "height": 44,
           "fontSize": "16px",
           "fontWeight": "400",
           "radius": "0px",
           "bg": "rgba(0, 0, 0, 0)",
           "border": "rgb(23, 33, 42)",
           "color": "rgb(23, 33, 42)",
-          "text": "브라우저에서 알림이 차단되었습니다. 사이트 설정에서 허용해 주세요."
+          "text": "이 기기의 알림"
         }
       },
       "advanced": {
@@ -801,7 +801,7 @@
           "left": 330,
           "top": 16,
           "width": 620,
-          "height": 851.13,
+          "height": 817.13,
           "fontSize": "16px",
           "fontWeight": "400",
           "radius": "28px",
@@ -841,8 +841,8 @@
           },
           "push": {
             "left": 361,
-            "top": 416.38,
-            "width": 558,
+            "top": 425.38,
+            "width": 118.41,
             "height": 26,
             "fontSize": "20px",
             "fontWeight": "700",
@@ -854,7 +854,7 @@
           },
           "admin": {
             "left": 361,
-            "top": 667.13,
+            "top": 633.13,
             "width": 558,
             "height": 26,
             "fontSize": "20px",
@@ -949,7 +949,7 @@
         "buttons": {
           "danger": {
             "left": 471.42,
-            "top": 796.13,
+            "top": 762.13,
             "width": 53.92,
             "height": 44,
             "fontSize": "13px",
@@ -962,7 +962,7 @@
           },
           "logout": {
             "left": 361,
-            "top": 574.13,
+            "top": 540.13,
             "width": 77.84,
             "height": 44,
             "fontSize": "13px",
@@ -975,7 +975,7 @@
           },
           "adminHub": {
             "left": 361,
-            "top": 709.13,
+            "top": 675.13,
             "width": 97.89,
             "height": 44,
             "fontSize": "13px",
@@ -988,7 +988,7 @@
           },
           "advancedEntry": {
             "left": 361,
-            "top": 796.13,
+            "top": 762.13,
             "width": 106.13,
             "height": 44,
             "fontSize": "13px",
@@ -1002,7 +1002,7 @@
         },
         "advancedEntry": {
           "left": 361,
-          "top": 796.13,
+          "top": 762.13,
           "width": 106.13,
           "height": 44,
           "fontSize": "13px",
@@ -1015,7 +1015,7 @@
         },
         "entryRow": {
           "left": 331,
-          "top": 777.13,
+          "top": 743.13,
           "width": 618,
           "height": 89,
           "fontSize": "16px",
@@ -1041,7 +1041,7 @@
         },
         "switch": {
           "left": 863,
-          "top": 485.13,
+          "top": 416.38,
           "width": 56,
           "height": 44,
           "fontSize": "16px",
@@ -1052,18 +1052,18 @@
           "color": "rgb(25, 25, 29)",
           "text": ""
         },
-        "switchRow": {
+        "switchHead": {
           "left": 361,
-          "top": 458.38,
+          "top": 416.38,
           "width": 558,
-          "height": 70.75,
+          "height": 44,
           "fontSize": "16px",
           "fontWeight": "400",
           "radius": "0px",
           "bg": "rgba(0, 0, 0, 0)",
           "border": "rgb(25, 25, 29)",
           "color": "rgb(25, 25, 29)",
-          "text": "브라우저에서 알림이 차단되었습니다. 사이트 설정에서 허용해 주세요."
+          "text": "이 기기의 알림"
         }
       },
       "advanced": {
@@ -1192,7 +1192,7 @@
           "left": 10,
           "top": 16,
           "width": 370,
-          "height": 968.58,
+          "height": 934.58,
           "fontSize": "16px",
           "fontWeight": "400",
           "radius": "22px",
@@ -1232,8 +1232,8 @@
           },
           "push": {
             "left": 31,
-            "top": 523.08,
-            "width": 328,
+            "top": 532.08,
+            "width": 118.41,
             "height": 26,
             "fontSize": "20px",
             "fontWeight": "700",
@@ -1245,7 +1245,7 @@
           },
           "admin": {
             "left": 31,
-            "top": 792.58,
+            "top": 758.58,
             "width": 328,
             "height": 26,
             "fontSize": "20px",
@@ -1340,7 +1340,7 @@
         "buttons": {
           "danger": {
             "left": 141.42,
-            "top": 919.58,
+            "top": 885.58,
             "width": 53.92,
             "height": 44,
             "fontSize": "13px",
@@ -1353,7 +1353,7 @@
           },
           "logout": {
             "left": 31,
-            "top": 699.58,
+            "top": 665.58,
             "width": 81.53,
             "height": 44,
             "fontSize": "14px",
@@ -1366,7 +1366,7 @@
           },
           "adminHub": {
             "left": 31,
-            "top": 834.58,
+            "top": 800.58,
             "width": 97.89,
             "height": 44,
             "fontSize": "13px",
@@ -1379,7 +1379,7 @@
           },
           "advancedEntry": {
             "left": 31,
-            "top": 919.58,
+            "top": 885.58,
             "width": 106.13,
             "height": 44,
             "fontSize": "13px",
@@ -1393,7 +1393,7 @@
         },
         "advancedEntry": {
           "left": 31,
-          "top": 919.58,
+          "top": 885.58,
           "width": 106.13,
           "height": 44,
           "fontSize": "13px",
@@ -1406,7 +1406,7 @@
         },
         "entryRow": {
           "left": 11,
-          "top": 902.58,
+          "top": 868.58,
           "width": 368,
           "height": 81,
           "fontSize": "16px",
@@ -1432,7 +1432,7 @@
         },
         "switch": {
           "left": 303,
-          "top": 610.58,
+          "top": 523.08,
           "width": 56,
           "height": 44,
           "fontSize": "16px",
@@ -1443,18 +1443,18 @@
           "color": "rgb(25, 25, 29)",
           "text": ""
         },
-        "switchRow": {
+        "switchHead": {
           "left": 31,
-          "top": 565.08,
+          "top": 523.08,
           "width": 328,
-          "height": 89.5,
+          "height": 44,
           "fontSize": "16px",
           "fontWeight": "400",
           "radius": "0px",
           "bg": "rgba(0, 0, 0, 0)",
           "border": "rgb(25, 25, 29)",
           "color": "rgb(25, 25, 29)",
-          "text": "브라우저에서 알림이 차단되었습니다. 사이트 설정에서 허용해 주세요."
+          "text": "이 기기의 알림"
         }
       },
       "advanced": {
