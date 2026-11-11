@@ -68,8 +68,15 @@ permissions:
   contents: read
 
 concurrency:
-  group: b62-cloudflare-mock-deploy
-  cancel-in-progress: false
+  # CI queue incident 2026-11-12: this workflow runs as a PR check, but one
+  # fixed group made a single queued main-push run (observed: run 43094998096
+  # pending since 20:16 UTC) block every PR's mock deploy check (PR #7514 run
+  # 43095603147 sat queued behind it). PR runs now get their own per-PR group
+  # and a superseded PR commit cancels the previous run; main pushes and
+  # manual runs keep the one shared serial group so a mock deploy can never
+  # overlap itself. Same shape as b62-production-code-deploy-gate.
+  group: ${{ github.event_name == 'pull_request' && format('b62-cloudflare-mock-deploy-pr-{0}', github.event.pull_request.number) || 'b62-cloudflare-mock-deploy' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   preflight:
