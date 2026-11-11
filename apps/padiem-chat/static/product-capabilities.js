@@ -484,6 +484,17 @@
     return auth.statusReachable === false ? "unreachable" : "pending";
   }
 
+  function firstPaintSignedInHint() {
+    // #7459: the boolean hint comes from auth-session.js, which owns the only
+    // stored flag. This projection keeps no identity of its own.
+    try {
+      const store = window.PadiemAuthSession;
+      return Boolean(store && typeof store.lastKnownAuthenticated === "function" && store.lastKnownAuthenticated());
+    } catch (_) {
+      return false;
+    }
+  }
+
   function sessionPresentation(state) {
     // The same rule app.js applies, so the two projections cannot drift apart.
     const shared = typeof window.PadiemSessionPresentation === "function"
@@ -510,8 +521,10 @@
     const available = auth.loaded && auth.ready && state !== "unavailable";
     const shared = sessionPresentation(state);
     const pending = state === "pending";
+    const signedInHint = pending && firstPaintSignedInHint();
+    accountContainer.dataset.accountHint = signedInHint ? "signed_in" : "";
     const pendingLogin = document.getElementById("loginPending");
-    if (pendingLogin) pendingLogin.hidden = !pending;
+    if (pendingLogin) pendingLogin.hidden = !pending || signedInHint;
     accountContainer.dataset.accountState = state;
     accountContainer.hidden = shared.accountHidden;
     // #5560: the sign-out entry moved into Settings > Account. The sidebar
@@ -527,10 +540,10 @@
 
     if (!available) {
       if (accountName) {
-        accountName.hidden = shared.accountNameHidden;
+        accountName.hidden = signedInHint ? false : shared.accountNameHidden;
         setText(accountName, "");
       }
-      if (accountAvatar) accountAvatar.hidden = true;
+      if (accountAvatar) accountAvatar.hidden = !signedInHint;
       setText(loginButton, copy.login);
       loginButton.title = state === "unreachable"
         ? copy.unreachableTitle
