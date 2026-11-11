@@ -134,8 +134,15 @@
       mountPdfmdPanel(body);
     } else {
       // PR2: the three council-family tools mount their own screen from
-      // util-tools.js. The remaining tools keep the placeholder until their PR.
-      const mounted = Boolean(
+      // util-tools.js. PR4: the quote draft mounts its own screen from
+      // util-quote.js. The Excel tool keeps the placeholder until its backend.
+      const quoteMounted = tool.id === "quote"
+        && Boolean(
+          window.PadiemUtilQuote
+          && typeof window.PadiemUtilQuote.mount === "function"
+          && window.PadiemUtilQuote.mount(body)
+        );
+      const mounted = quoteMounted || Boolean(
         window.PadiemUtilTools
         && typeof window.PadiemUtilTools.mount === "function"
         && window.PadiemUtilTools.mount(tool.id, body)
