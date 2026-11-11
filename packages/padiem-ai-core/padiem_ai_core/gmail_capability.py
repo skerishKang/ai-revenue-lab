@@ -34,20 +34,25 @@ import re
 
 from .connectors import (
     GMAIL_CANONICAL_TOOL_IDS,
+    GMAIL_COMPOSE_AUTH_SCOPE,
+    GMAIL_COMPOSE_SCOPE,
+    GMAIL_CREATE_DRAFT_TOOL_ID,
+    GMAIL_DELETE_DRAFT_TOOL_ID,
+    GMAIL_DRAFT_CANONICAL_TOOL_IDS,
+    GMAIL_DRAFT_TOOL_IDS,
     GMAIL_GET_MESSAGE_TOOL_ID,
     GMAIL_GET_THREAD_TOOL_ID,
     GMAIL_SEARCH_MESSAGES_TOOL_ID,
     GMAIL_READONLY_AUTH_SCOPE,
     GMAIL_READONLY_SCOPE,
+    GMAIL_SEND_TOOLS_PRESENT,
     GmailContractError,
 )
 
 # Provider OAuth scopes (trusted port boundary only; never Core identifiers).
-GMAIL_COMPOSE_SCOPE = "https://www.googleapis.com/auth/gmail.compose"
 GMAIL_MODIFY_SCOPE = "https://www.googleapis.com/auth/gmail.modify"
 
 # Bounded Core auth-scope tokens (provider URLs cannot be ToolSpec scopes).
-GMAIL_COMPOSE_AUTH_SCOPE = "gmail.compose"
 GMAIL_MODIFY_AUTH_SCOPE = "gmail.modify"
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
@@ -64,6 +69,7 @@ class GmailCapability(str, Enum):
 
     READ = "read"
     CREATE_DRAFT = "create_draft"
+    DELETE_DRAFT = "delete_draft"
     SEND_EXISTING_APPROVED_DRAFT = "send_existing_approved_draft"
     LABEL_MUTATION = "label_mutation"
 
@@ -83,7 +89,7 @@ def provider_scopes_for_capability(capability: GmailCapability) -> tuple[str, ..
         raise GmailContractError("capability must be GmailCapability")
     if capability is GmailCapability.READ:
         return (GMAIL_READONLY_SCOPE,)
-    if capability is GmailCapability.CREATE_DRAFT:
+    if capability in (GmailCapability.CREATE_DRAFT, GmailCapability.DELETE_DRAFT):
         return (GMAIL_COMPOSE_SCOPE,)
     if capability is GmailCapability.SEND_EXISTING_APPROVED_DRAFT:
         # Gmail drafts.send accepts gmail.compose. Padiem still requires a
@@ -102,7 +108,7 @@ def core_auth_scopes_for_capability(capability: GmailCapability) -> tuple[str, .
         raise GmailContractError("capability must be GmailCapability")
     if capability is GmailCapability.READ:
         return (GMAIL_READONLY_AUTH_SCOPE,)
-    if capability is GmailCapability.CREATE_DRAFT:
+    if capability in (GmailCapability.CREATE_DRAFT, GmailCapability.DELETE_DRAFT):
         return (GMAIL_COMPOSE_AUTH_SCOPE,)
     if capability is GmailCapability.SEND_EXISTING_APPROVED_DRAFT:
         return (GMAIL_COMPOSE_AUTH_SCOPE,)
@@ -130,6 +136,28 @@ def classify_gmail_tool_id(tool_id: str) -> GmailCapabilityClassification:
     if "draft" in normalized.lower() or "send" in normalized.lower() or "label" in normalized.lower():
         return GmailCapabilityClassification.WRITE_OR_MATERIAL
     return GmailCapabilityClassification.UNKNOWN
+
+
+def is_promoted_gmail_draft_tool_id(tool_id: str) -> bool:
+    """True only for the two promoted draft tools (#7088); never True for send."""
+
+    if not isinstance(tool_id, str) or not tool_id.strip():
+        return False
+    normalized = tool_id.strip()
+    return normalized in GMAIL_DRAFT_TOOL_IDS or normalized in GMAIL_DRAFT_CANONICAL_TOOL_IDS
+
+
+def capability_requires_user_confirmation(capability: GmailCapability) -> bool:
+    """Draft creation/deletion and all material writes require user confirmation."""
+
+    if not isinstance(capability, GmailCapability):
+        raise GmailContractError("capability must be GmailCapability")
+    return capability in (
+        GmailCapability.CREATE_DRAFT,
+        GmailCapability.DELETE_DRAFT,
+        GmailCapability.SEND_EXISTING_APPROVED_DRAFT,
+        GmailCapability.LABEL_MUTATION,
+    )
 
 
 def capability_requires_p01_approval(capability: GmailCapability) -> bool:
@@ -210,8 +238,9 @@ GMAIL_PROVIDER_COMPOSE_SCOPE_INCLUDES_SEND = True
 GMAIL_PROVIDER_SCOPE_ALONE_GRANTS_PADIEM_SEND_AUTHORITY = False
 GMAIL_SEND_REQUIRES_P01_APPROVAL = True
 
-# No write/material tool is registered in Core in this slice.
-GMAIL_WRITE_TOOLS_PRESENT = False
+# Draft create/delete tools are registered under USER_CONFIRMATION (#7088);
+# SEND tools remain absent and unsupported.
+GMAIL_WRITE_TOOLS_PRESENT = True
 GMAIL_RAW_CREDENTIAL_IN_CORE = False
 
 
@@ -224,10 +253,17 @@ def gmail_capability_snapshot() -> dict[str, object]:
             "read": {
                 "core_auth_scopes": list(core_auth_scopes_for_capability(GmailCapability.READ)),
                 "requires_p01_approval": capability_requires_p01_approval(GmailCapability.READ),
+                "requires_user_confirmation": capability_requires_user_confirmation(GmailCapability.READ),
             },
             "create_draft": {
                 "core_auth_scopes": list(core_auth_scopes_for_capability(GmailCapability.CREATE_DRAFT)),
                 "requires_p01_approval": capability_requires_p01_approval(GmailCapability.CREATE_DRAFT),
+                "requires_user_confirmation": capability_requires_user_confirmation(GmailCapability.CREATE_DRAFT),
+            },
+            "delete_draft": {
+                "core_auth_scopes": list(core_auth_scopes_for_capability(GmailCapability.DELETE_DRAFT)),
+                "requires_p01_approval": capability_requires_p01_approval(GmailCapability.DELETE_DRAFT),
+                "requires_user_confirmation": capability_requires_user_confirmation(GmailCapability.DELETE_DRAFT),
             },
             "send_existing_approved_draft": {
                 "core_auth_scopes": list(
@@ -236,14 +272,19 @@ def gmail_capability_snapshot() -> dict[str, object]:
                 "requires_p01_approval": capability_requires_p01_approval(
                     GmailCapability.SEND_EXISTING_APPROVED_DRAFT
                 ),
+                "requires_user_confirmation": capability_requires_user_confirmation(
+                    GmailCapability.SEND_EXISTING_APPROVED_DRAFT
+                ),
             },
             "label_mutation": {
                 "core_auth_scopes": list(core_auth_scopes_for_capability(GmailCapability.LABEL_MUTATION)),
                 "requires_p01_approval": capability_requires_p01_approval(GmailCapability.LABEL_MUTATION),
+                "requires_user_confirmation": capability_requires_user_confirmation(GmailCapability.LABEL_MUTATION),
             },
         },
         "read_tool_ids": list(GMAIL_READ_TOOL_IDS),
-        "registered_write_tools": [],
+        "registered_write_tools": list(GMAIL_DRAFT_TOOL_IDS),
+        "send_tools_present": GMAIL_SEND_TOOLS_PRESENT,
         "draft_implies_send": False,
         "provider_scope_grants_padiem_authority": False,
         "mints_second_approval_authority": False,
@@ -259,12 +300,19 @@ __all__ = [
     "GMAIL_COMPOSE_AUTH_SCOPE",
     "GMAIL_MODIFY_AUTH_SCOPE",
     "GMAIL_READ_TOOL_IDS",
+    "GMAIL_DRAFT_TOOL_IDS",
+    "GMAIL_DRAFT_CANONICAL_TOOL_IDS",
+    "GMAIL_CREATE_DRAFT_TOOL_ID",
+    "GMAIL_DELETE_DRAFT_TOOL_ID",
+    "GMAIL_SEND_TOOLS_PRESENT",
     "GmailCapability",
     "GmailCapabilityClassification",
     "GmailCapabilityGrant",
     "provider_scopes_for_capability",
     "core_auth_scopes_for_capability",
     "classify_gmail_tool_id",
+    "is_promoted_gmail_draft_tool_id",
+    "capability_requires_user_confirmation",
     "capability_requires_p01_approval",
     "gmail_capability_snapshot",
     "GMAIL_MCP_SEND_TOOL_SUPPORTED",
