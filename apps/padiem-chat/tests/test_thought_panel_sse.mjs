@@ -382,3 +382,48 @@ test("the hidden-tool placeholder is declared in Korean and English", async () =
   assert.ok(locale.includes('"internal-tool-hidden": "[내부 도구]",'));
   assert.ok(locale.includes('"internal-tool-hidden": "[internal tool hidden]",'));
 });
+
+test("#7459: thought_reset folds an open thought panel and replaces aborted thought on retry", async () => {
+  const { window, document } = await makeHarness();
+  const { article } = makeArticle(document);
+
+  const ndjsonResponse = {
+    headers: { get: (name) => (String(name).toLowerCase() === "content-type" ? "application/x-ndjson" : null) },
+    body: fakeSseResponse(
+      [
+        JSON.stringify({ type: "meta", stream: true }),
+        JSON.stringify({ type: "thought", text: "1차 후보의 미완성 생각" }),
+        JSON.stringify({ type: "thought_reset" }),
+        JSON.stringify({ type: "thought", text: "2차 후보의 새 생각" }),
+        JSON.stringify({ type: "delta", text: "최종 답변" }),
+        JSON.stringify({ type: "done", done: true }),
+      ].join("\n") + "\n",
+    ).body,
+  };
+
+  const foldedSnapshots = [];
+  await window.PadiemChatTransport.readSseEvents(ndjsonResponse, async (frame) => {
+    if (frame.event === "thought" && !article.querySelector(".orchestration-thought-summary")) {
+      window.PadiemChatThoughtPanel.handleFrame(article, frame, labels);
+      // 사용자가 스트리밍 도중 생각 패널을 펼쳐 본 상태를 재현
+      article.querySelector(".orchestration-thought-summary").open = true;
+      return false;
+    }
+    if (window.PadiemChatThoughtPanel.handleFrame(article, frame, labels)) {
+      const details = article.querySelector(".orchestration-thought-summary");
+      foldedSnapshots.push({ event: frame.event, open: details.open, text: thoughtBody(details).textContent });
+      return false;
+    }
+    if (frame.event === "done") {
+      window.PadiemChatThoughtPanel.settle(article, labels.doneLabel);
+    }
+    return false;
+  });
+
+  assert.equal(foldedSnapshots[0].event, "thought_reset");
+  assert.equal(foldedSnapshots[0].open, false);
+  const details = article.querySelector(".orchestration-thought-summary");
+  assert.equal(details.open, false);
+  assert.equal(details.querySelector("summary").textContent, labels.doneLabel);
+  assert.equal(thoughtBody(details).textContent, "2차 후보의 새 생각");
+});
