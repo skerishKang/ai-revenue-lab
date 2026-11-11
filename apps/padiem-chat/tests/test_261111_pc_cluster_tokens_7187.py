@@ -14,7 +14,7 @@
   fallback으로 숨어 있었다. 이름 없는 fallback은 이름을 주면 다른 시트의
   같은 이름 fallback까지 함께 바뀌므로(def 2차의 --border 판정), 이 가족 전용
   이름(--pc-* / --claw-local-*)으로 옮겼다.
-* dark에서 컴포넌트 스코프가 실제로 덮어쓰던 값(─surface #202b3c,
+* dark에서 컴포넌트 스코프가 실제로 덮어쓰던 값(--surface #202b3c,
   --claw-local 표면 rgba(255,255,255,.06), --text-dim #b8c5d4/#d1d5db)만
   토큰 파일의 dark 블록이 소유한다. 그 결과 각 시트의 dark 블록에서
   --surface/--text-dim 정의가 사라지고, 실제로 다른 --text/--line/--muted만 남는다.
