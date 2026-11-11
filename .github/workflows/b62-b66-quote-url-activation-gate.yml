@@ -39,8 +39,13 @@ permissions:
   contents: read
 
 concurrency:
-  group: b62-b66-quote-url-activation-gate
-  cancel-in-progress: false
+  # PR runs are the read-only repository preflight; only the manual dispatch
+  # can touch Production. One fixed group let a queued dispatch or another
+  # PR's preflight hold every PR check (CI queue incident 2026-11-12). PR
+  # runs get their own per-PR group and a superseded commit cancels the
+  # previous run; dispatch runs keep the one shared serial activation group.
+  group: ${{ github.event_name == 'pull_request' && format('b62-b66-quote-url-activation-pr-{0}', github.event.pull_request.number) || 'b62-b66-quote-url-activation-gate' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   B62_WORKER: padiem-chat

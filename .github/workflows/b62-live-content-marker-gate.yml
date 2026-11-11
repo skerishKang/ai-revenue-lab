@@ -51,8 +51,13 @@ permissions:
   contents: read
 
 concurrency:
-  group: b62-live-content-marker-gate
-  cancel-in-progress: false
+  # This gate is GET-only on every mode (no mutation verbs). One fixed group
+  # still let a queued PR check or a queued dispatch hold every other PR's
+  # marker check (CI queue incident 2026-11-12). PR runs get their own
+  # per-PR group and a superseded commit cancels the previous run; dispatch
+  # runs keep the one shared serial read-only probe group.
+  group: ${{ github.event_name == 'pull_request' && format('b62-live-content-marker-pr-{0}', github.event.pull_request.number) || 'b62-live-content-marker-gate' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   B62_WORKER: padiem-chat
