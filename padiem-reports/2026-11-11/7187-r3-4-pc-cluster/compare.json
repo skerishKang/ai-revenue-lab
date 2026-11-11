@@ -1,5 +1,5 @@
 {
-  "method": "before-static(편집 전 static 사본) vs after(작업 트리)를 같은 정적 하네스로 렌더. index.html의 stylesheet 순서를 그대로 사용, 4테마 x 1280x800/390x844, reduced-motion, 외부 요청 차단. 모든 요소의 non-custom computed property와 전체 페이지 픽셀을 비교했다. before PNG는 after와 바이트 동일하여 저장소 크기 때문에 남기지 않았다(수치는 아래 pixel_diff=0).",
+  "method": "before = origin/main(4dfb5be96f)의 static에서 이 PR이 바꾼 8개 시트만 되돌린 사본. after = 이 브랜치의 static. 같은 정적 하네스에서 index.html의 stylesheet 순서 그대로 로드하고, 바뀐 PC 연결 클러스터의 실제 클래스 마크업을 넣어 4테마 x 1280x800/390x844로 렌더했다(prefers-reduced-motion, 외부 요청 차단, JS/API 없음). 모든 요소의 non-custom computed property 전부와 전체 페이지 픽셀을 비교했다. before PNG는 after와 픽셀 동일하여 저장소 크기 때문에 남기지 않았다(pixel_diff=0).",
   "variants": {
     "light-1280x800": {
       "elements": 211,
@@ -53,8 +53,9 @@
   "failures": [],
   "mutation_proof": {
     "mutation": "--pc-device-veil: rgba(255,255,255,.76) -> rgba(255,255,255,.60)",
-    "observed_toggle_bg": "rgba(255, 255, 255, 0.6)",
+    "base_toggle_bg": "rgba(255, 255, 255, 0.76)",
+    "mutated_toggle_bg": "rgba(255, 255, 255, 0.6)",
     "pixel_diff": 3443,
-    "meaning": "하네스가 실제 토큰 변경을 잡는다(차이 0이 우연이 아님)."
+    "meaning": "같은 PNG 인코딩으로 비교: 하네스가 실제 토큰 변경을 잡는다(차이 0이 우연이 아님)."
   }
 }
