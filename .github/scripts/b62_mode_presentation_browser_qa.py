@@ -172,38 +172,61 @@ async def _exercise(page: Page, *, name: str, custom_methods: list[str]) -> dict
     if not await custom_form.is_visible():
         raise AssertionError(f"PADIEM Custom key form hidden at {name}")
     # #5824: key-only registration is primary; manual provider/model inputs
-    # remain fully functional inside the initially closed advanced section.
+    # remain fully functional inside the initially closed advanced section,
+    # and the first open shows exactly one key input and one 등록 action with
+    # no status or error line before any user action.
     advanced = custom_form.locator("#modeCustomAdvanced")
     if await advanced.evaluate("el => el.open"):
         raise AssertionError(f"BYOK advanced entry must start collapsed at {name}")
-    if not await custom_form.locator("#modeAutoByokKey").is_visible():
+    key_input = custom_form.locator("#modeAutoByokKey")
+    if not await key_input.is_visible():
         raise AssertionError(f"BYOK paste-key input hidden at {name}")
+    visible_inputs = custom_form.locator("input:visible")
+    if await visible_inputs.count() != 1:
+        raise AssertionError(f"BYOK form must show exactly one key input at {name}")
+    if await key_input.get_attribute("type") != "password":
+        raise AssertionError(f"BYOK key input must be masked at {name}")
+    if await key_input.input_value() != "":
+        raise AssertionError(f"BYOK key input must stay empty at {name}")
+    visible_buttons = custom_form.locator("button:visible")
+    if await visible_buttons.count() != 1:
+        raise AssertionError(f"BYOK form must show exactly one action at {name}")
+    if (await visible_buttons.first.inner_text()).strip() != "등록":
+        raise AssertionError(f"BYOK register button missing at {name}")
+    if not await custom_form.locator(".mode-custom-status").is_hidden():
+        raise AssertionError(f"BYOK status line must stay hidden before any action at {name}")
+    if not await custom_form.locator(".mode-custom-message").is_hidden():
+        raise AssertionError(f"BYOK message line must stay hidden before any action at {name}")
     await advanced.locator("summary").click()
     if not await advanced.evaluate("el => el.open"):
         raise AssertionError(f"BYOK advanced entry did not open at {name}")
     provider_select = custom_form.locator("#modeCustomProvider")
-    if await provider_select.count() != 1 or await provider_select.locator("option").count() != 1:
+    if await provider_select.count() != 1 or await provider_select.locator("option").count() != 2:
         raise AssertionError(f"PADIEM Custom provider select mismatch at {name}")
+    first_option_value = await provider_select.locator("option").first.get_attribute("value")
+    if first_option_value != "":
+        raise AssertionError(f"PADIEM Custom provider default must be the empty placeholder at {name}")
+    if (await provider_select.input_value()) != "":
+        raise AssertionError(f"PADIEM Custom provider must not be pre-selected at {name}")
+    # #5824: the model select follows an explicit provider choice; with the
+    # placeholder showing, it stays hidden.
     model_select = custom_form.locator("#modeCustomModelSelect")
+    if await model_select.is_visible():
+        raise AssertionError(f"PADIEM Custom model select must stay hidden without a provider at {name}")
+    await provider_select.select_option("qa-custom-provider")
     if not await model_select.is_visible():
         raise AssertionError(f"PADIEM Custom registry model select hidden at {name}")
-    if await model_select.locator("option").count() != 1:
-        raise AssertionError(f"PADIEM Custom registry model missing at {name}")
+    if (await model_select.input_value()) != "":
+        raise AssertionError(f"PADIEM Custom model must not be pre-picked at {name}")
     if await custom_form.locator(".mode-custom-test").is_visible():
         raise AssertionError(f"PADIEM Custom connection test must stay hidden at {name}")
     endpoint = custom_form.locator("#modeCustomEndpoint")
     if not await endpoint.is_visible():
         raise AssertionError(f"PADIEM Custom endpoint input hidden at {name}")
-    if await endpoint.get_attribute("placeholder") != "https://qa-provider.example.test/v1":
-        raise AssertionError(f"PADIEM Custom default endpoint missing at {name}")
-    custom_input = custom_form.locator("#modeCustomApiKey")
-    if await custom_input.get_attribute("type") != "password":
-        raise AssertionError(f"PADIEM Custom key input must be masked at {name}")
-    if await custom_input.input_value() != "":
-        raise AssertionError(f"PADIEM Custom key input must stay empty at {name}")
-    custom_status = (await custom_form.locator(".mode-custom-status").inner_text()).strip()
-    if "등록된 키가 없습니다." not in custom_status:
-        raise AssertionError(f"PADIEM Custom credential truth missing at {name}: {custom_status!r}")
+    if await endpoint.get_attribute("placeholder") != "https://<your-endpoint>/v1":
+        raise AssertionError(f"PADIEM Custom endpoint placeholder must stay generic at {name}")
+    if (await endpoint.input_value()) != "":
+        raise AssertionError(f"PADIEM Custom endpoint must start empty at {name}")
     if await custom_form.locator(".mode-custom-delete").is_visible():
         raise AssertionError(f"PADIEM Custom delete must stay hidden without a key at {name}")
 
@@ -235,10 +258,12 @@ async def _exercise(page: Page, *, name: str, custom_methods: list[str]) -> dict
     await custom_option.click()
     if not await panel.is_visible():
         raise AssertionError(f"key-required PADIEM Custom must keep the panel open at {name}")
-    await page.wait_for_function("() => document.activeElement?.id === 'modeCustomApiKey'")
+    # #5824: without a registered key the lane is not taken yet — the simple
+    # key form takes over and the pill keeps the previous lane.
+    await page.wait_for_function("() => document.activeElement?.id === 'modeAutoByokKey'")
     pill_text = (await page.locator(".model-pill span:last-child").inner_text()).strip()
-    if pill_text != "Padiem Custom":
-        raise AssertionError(f"PADIEM Custom selection not reflected on the pill at {name}: {pill_text!r}")
+    if pill_text == "Padiem Custom":
+        raise AssertionError(f"unregistered PADIEM Custom must not take the lane at {name}")
 
     await plus.click()
     if not await panel.is_hidden():

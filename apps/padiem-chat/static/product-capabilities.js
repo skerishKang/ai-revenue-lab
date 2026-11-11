@@ -141,18 +141,17 @@
       stateExpired: "세션 만료",
       stateUnavailable: "사용 불가",
       stateLoading: "확인 중",
-      credential: "등록된 키: ••••",
-      noCredential: "등록된 키가 없습니다.",
       keyLabel: "API 키",
       keyPlaceholder: "API 키를 입력하세요 (16자 이상)",
       keyHint: "키 원문은 저장 후 다시 표시되지 않으며, Padiem 서버에 암호화되어 보관됩니다.",
-      save: "키 저장",
-      replace: "키 교체",
+      register: "등록",
+      registering: "등록 중…",
+      registered: "등록됨 · 사용 가능",
+      selectPlaceholder: "선택하세요",
+      advancedSummary: "고급 · 공급사·모델·주소 직접 입력",
+      detectFailed: "공급사를 자동으로 알아내지 못했습니다. 고급 영역에서 직접 선택해 주세요.",
       remove: "삭제",
-      saveBusy: "저장 중…",
       deleteBusy: "삭제 중…",
-      saved: "API 키를 저장했습니다.",
-      replaced: "API 키를 교체했습니다.",
       deleted: "API 키를 삭제했습니다.",
       deleteNoop: "삭제할 키가 없습니다.",
       deleteConfirm: "저장된 API 키를 삭제할까요? 삭제하면 Padiem Custom을 사용할 수 없습니다.",
@@ -165,7 +164,6 @@
       saveFailed: "API 키를 저장하지 못했습니다.",
       deleteFailed: "API 키를 삭제하지 못했습니다.",
       providerLabel: "공급사",
-      modelNotSet: "모델을 선택하세요",
       modelPlaceholder: "공급사 모델 ID를 입력하세요",
       modelRequired: "모델 ID를 먼저 선택하거나 입력해 주세요.",
       reasoningLabel: "추론 강도",
@@ -200,18 +198,17 @@
       stateExpired: "Session expired",
       stateUnavailable: "Unavailable",
       stateLoading: "Checking",
-      credential: "Registered key: ••••",
-      noCredential: "No key registered.",
       keyLabel: "API key",
       keyPlaceholder: "Enter your API key (16+ characters)",
       keyHint: "The raw key is shown once and never again; it is stored encrypted on the Padiem server.",
-      save: "Save key",
-      replace: "Replace key",
+      register: "Register",
+      registering: "Registering…",
+      registered: "Registered · ready to use",
+      selectPlaceholder: "Select",
+      advancedSummary: "Advanced · choose the provider, model and endpoint yourself",
+      detectFailed: "The provider could not be detected automatically. Choose it in the advanced section.",
       remove: "Delete",
-      saveBusy: "Saving…",
       deleteBusy: "Deleting…",
-      saved: "API key saved.",
-      replaced: "API key replaced.",
       deleted: "API key deleted.",
       deleteNoop: "There was no key to delete.",
       deleteConfirm: "Delete the stored API key? Padiem Custom will stop working until you register another key.",
@@ -224,7 +221,6 @@
       saveFailed: "Could not save the API key.",
       deleteFailed: "Could not delete the API key.",
       providerLabel: "Provider",
-      modelNotSet: "Choose a model",
       modelPlaceholder: "Enter the provider model ID",
       modelRequired: "Choose or enter a model ID first.",
       reasoningLabel: "Reasoning effort",
@@ -249,8 +245,8 @@
     }),
   });
 
-  let autoKeyInput = null, autoEndpointInput = null, autoCard = null;
-  let autoDetectButton = null, autoRegisterButton = null, customAdvanced = null;
+  let autoKeyInput = null;
+  let autoRegisterButton = null, customAdvanced = null;
   let autoDetection = null, autoSequence = 0;
   let customSelection = null;
   let customViaEngine = false;
@@ -265,6 +261,8 @@
   let customMessageText = "";
   let customMessageState = "info";
   let customProviderId = null;
+  // #5824: true only after the user picked a provider in the advanced section.
+  let customProviderChosen = false;
   let customProviderSignature = "";
   let customModelValue = "";
   let customModelOptions = [];
@@ -282,8 +280,6 @@
   let customPanel = null;
   let customStatusEl = null;
   let customGuestNote = null;
-  let customInput = null;
-  let customSaveButton = null;
   let customDeleteButton = null;
   let customMessageEl = null;
   let customRetryButton = null;
@@ -759,8 +755,28 @@
     return pending.then(() => undefined, () => undefined);
   }
 
+  // #5824: the screen wording ships in locale.js (ko+en). The frozen table
+  // stays as the offline fallback; locale.js keys win when present.
+  const CUSTOM_LOCALE_KEYS = Object.freeze({
+    register: "byok-register",
+    registering: "byok-registering",
+    registered: "byok-registered",
+    selectPlaceholder: "byok-select-placeholder",
+    advancedSummary: "byok-advanced-summary",
+    detectFailed: "byok-detect-failed",
+  });
+
   function customCopy() {
-    return CUSTOM_COPY[document.documentElement.lang === "en" ? "en" : "ko"];
+    const base = CUSTOM_COPY[document.documentElement.lang === "en" ? "en" : "ko"];
+    const locale = window.__padiemLocale;
+    if (!locale || typeof locale.text !== "function") return base;
+    const overlaid = { ...base };
+    Object.keys(CUSTOM_LOCALE_KEYS).forEach((field) => {
+      const key = CUSTOM_LOCALE_KEYS[field];
+      const value = locale.text(key);
+      if (typeof value === "string" && value && value !== key) overlaid[field] = value;
+    });
+    return overlaid;
   }
 
   function customProvider() {
@@ -770,8 +786,13 @@
 
   function customCredential() {
     const provider = customProvider();
-    if (!provider) return null;
-    return customCredentials.find((row) => row.provider === provider.provider) || null;
+    if (provider) {
+      const exact = customCredentials.find((row) => row.provider === provider.provider);
+      if (exact) return exact;
+    }
+    // #5824: with no explicit provider choice the saved credential row is the
+    // only registered state, so the status line still reads "registered".
+    return customCredentials.length ? customCredentials[0] : null;
   }
 
   function customModelId() {
@@ -815,8 +836,6 @@
     autoSequence += 1;
     autoDetection = null;
     if (autoKeyInput) autoKeyInput.value = "";
-    if (autoEndpointInput) { autoEndpointInput.value = ""; autoEndpointInput.hidden = true; }
-    if (autoCard) { autoCard.textContent = ""; autoCard.hidden = true; }
     if (autoRegisterButton) autoRegisterButton.disabled = true;
     customProviders = [];
     customCredentials = [];
@@ -841,6 +860,11 @@
     if (signature !== customProviderSignature) {
       customProviderSignature = signature;
       customProviderSelect.textContent = "";
+      // #5824: an empty placeholder is the only provider default.
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = customCopy().selectPlaceholder;
+      customProviderSelect.appendChild(placeholder);
       customProviders.forEach((row) => {
         const option = document.createElement("option");
         option.value = row.provider;
@@ -848,8 +872,11 @@
         customProviderSelect.appendChild(option);
       });
     }
-    const provider = customProvider();
-    if (provider) customProviderSelect.value = provider.provider;
+    const credential = customCredential();
+    const shown = customProviderChosen && customProviderId
+      ? customProviderId : credential ? credential.provider : "";
+    customProviderSelect.value = customProviders.some((row) => row.provider === shown)
+      ? shown : "";
   }
 
   function syncModelOptions(provider) {
@@ -864,6 +891,11 @@
       if (customModelSelect.dataset.signature !== signature) {
         customModelSelect.dataset.signature = signature;
         customModelSelect.textContent = "";
+        // #5824: an empty placeholder is the only default; a model is picked.
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = customCopy().selectPlaceholder;
+        customModelSelect.appendChild(placeholder);
         listed.forEach((model) => {
           const option = document.createElement("option");
           option.value = model;
@@ -872,8 +904,7 @@
         });
       }
       if (registry) {
-        if (!listed.length) customModelValue = "";
-        else if (!listed.includes(customModelValue)) customModelValue = listed[0];
+        if (!listed.includes(customModelValue)) customModelValue = "";
         customModelSelect.value = customModelValue;
       }
     }
@@ -907,12 +938,23 @@
     const state = customUsageState();
     const selectable = state === "ready" || state === "key";
     const credential = customCredential();
-    const provider = customProvider();
+    // #5824: advanced fields follow an explicit user choice only.
+    const provider = customProviderChosen ? customProvider() : null;
     const busy = customMutation !== null;
-    if (autoKeyInput) autoKeyInput.disabled = busy || !auth.authenticated;
-    if (autoEndpointInput) autoEndpointInput.disabled = busy || !auth.authenticated;
-    if (autoDetectButton) autoDetectButton.disabled = busy || !auth.authenticated;
-    if (autoRegisterButton) autoRegisterButton.disabled = busy || !autoDetection || !autoDetection.verified;
+    // #5824: registered state = one status line + 삭제; the key input and
+    const hasKey = Boolean(credential);
+    if (autoKeyInput) {
+      autoKeyInput.disabled = busy || !auth.authenticated;
+      autoKeyInput.hidden = hasKey;
+    }
+    if (customKeyLabelEl) customKeyLabelEl.hidden = hasKey;
+    if (customKeyHintEl) customKeyHintEl.hidden = hasKey;
+    // #5824: 등록은 자동 확인을 포함하므로 미리 검증된 결과를 요구하지 않는다.
+    if (autoRegisterButton) {
+      autoRegisterButton.textContent = copy.register;
+      autoRegisterButton.disabled = busy || !auth.authenticated;
+      autoRegisterButton.hidden = hasKey;
+    }
 
     syncProviderOptions();
     syncModelOptions(provider);
@@ -953,14 +995,14 @@
         : auth.sessionState === "expired" ? copy.authExpired : copy.loginNeeded;
     }
     if (customStatusEl) {
-      customStatusEl.textContent = state === "loading" ? copy.stateLoading
+      // #5824: before any action the screen shows no status line; a status
+      // line appears once a credential exists or the lane cannot be checked.
+      const statusText = state === "loading" ? copy.stateLoading
         : state === "expired" ? copy.authExpired
         : state === "unavailable" ? (customLoadError || copy.unavailable)
-        : credential
-          ? copy.credential + String(credential.key_last4 || "")
-            + (credential.endpoint_is_default === false && credential.endpoint
-              ? " · " + credential.endpoint : "")
-          : copy.noCredential;
+        : credential ? copy.registered : "";
+      customStatusEl.textContent = statusText;
+      customStatusEl.hidden = !statusText;
       customStatusEl.dataset.state = state;
     }
 
@@ -989,8 +1031,7 @@
     if (customEndpointInput) {
       customEndpointInput.hidden = !provider || !provider.supports_custom_endpoint;
       customEndpointInput.disabled = controlsDisabled || !provider;
-      customEndpointInput.placeholder = provider && provider.default_endpoint
-        ? provider.default_endpoint : copy.endpointPlaceholder;
+      customEndpointInput.placeholder = copy.endpointPlaceholder;
     }
     if (customEndpointHintEl) {
       customEndpointHintEl.hidden = !provider || !provider.supports_custom_endpoint;
@@ -1001,15 +1042,6 @@
         || customTestState === "testing";
       customTestButton.textContent = customTestState === "testing"
         ? copy.testing : copy.test;
-    }
-    if (customInput) {
-      customInput.disabled = controlsDisabled;
-      customInput.placeholder = copy.keyPlaceholder;
-    }
-    if (customSaveButton) {
-      customSaveButton.textContent = busy && customMutation === "save"
-        ? copy.saveBusy : credential ? copy.replace : copy.save;
-      customSaveButton.disabled = controlsDisabled || !provider;
     }
     if (customDeleteButton) {
       customDeleteButton.textContent = busy && customMutation === "delete" ? copy.deleteBusy : copy.remove;
@@ -1027,7 +1059,7 @@
     if (customFocusPending && !controlsDisabled && modePanel && !modePanel.hidden) {
       customFocusPending = false;
       const target = customAdvanced && !customAdvanced.open ? autoKeyInput
-        : customModelInput && !customModelInput.hidden && !model ? customModelInput : customInput;
+        : customModelInput && !customModelInput.hidden && !model ? customModelInput : autoKeyInput;
       window.setTimeout(() => {
         try { target.focus(); } catch (_) { /* focus is an enhancement */ }
       }, 0);
@@ -1041,14 +1073,25 @@
   }
 
   function selectCustom() {
-    const provider = customProvider();
-    if (!provider || !auth.authenticated) return false;
+    if (!auth.authenticated) return false;
     const state = customUsageState();
     if (state !== "ready" && state !== "key") return false;
+    // #5824: without a credential the lane choice IS the key form — open it
+    // and focus the key input; provider/model resolve from the registration.
+    if (!customCredential()) {
+      customMessageText = "";
+      customMessageState = "info";
+      customFocusPending = true;
+      syncCustomSection();
+      return true;
+    }
+    const provider = customProvider();
+    if (!provider) return false;
     const model = customModelId();
     if (!model) {
       // A typed-but-unknown model id is never accepted as a success.
       setCustomMessage(customCopy().modelRequired, "error");
+      if (customAdvanced) customAdvanced.open = true;
       focusCustomModel();
       return false;
     }
@@ -1072,11 +1115,28 @@
   }
 
   function selectCustomProvider(providerId) {
+    // #5824: the placeholder is a real state — no provider is chosen and the
+    // 모델 칸 stays empty until the user picks one.
+    if (!providerId) {
+      customProviderChosen = false;
+      customProviderId = null;
+      customModelValue = "";
+      customModelOptions = [];
+      customModelState = "idle";
+      customModelSeq += 1;
+      customTestState = "idle";
+      customMessageText = "";
+      customMessageState = "info";
+      if (customModelInput) customModelInput.value = "";
+      if (customEndpointInput) customEndpointInput.value = "";
+      syncModeCopy();
+      return;
+    }
     if (!customProviders.some((row) => row.provider === providerId)) return;
+    customProviderChosen = true;
     customProviderId = providerId;
     const provider = customProvider();
-    customModelValue = provider && !provider.manual_model && provider.models.length
-      ? provider.models[0] : "";
+    customModelValue = "";
     customModelOptions = provider && Array.isArray(provider.models)
       ? provider.models.slice() : [];
     customModelState = "idle";
@@ -1084,13 +1144,8 @@
     customTestState = "idle";
     customMessageText = "";
     customMessageState = "info";
-    if (customModelInput) customModelInput.value = customModelValue;
-    const credential = customCredential();
-    if (customEndpointInput) {
-      customEndpointInput.value = credential
-        && credential.endpoint_is_default === false && credential.endpoint
-        ? credential.endpoint : "";
-    }
+    if (customModelInput) customModelInput.value = "";
+    if (customEndpointInput) customEndpointInput.value = "";
     syncModeCopy();
   }
 
@@ -1275,7 +1330,10 @@
       customLoadState = customProviders.length ? "ready" : "unavailable";
       if (!customProviders.length) customLoadError = customCopy().unavailable;
       if (!customProviders.some((row) => row.provider === customProviderId)) {
-        customProviderId = customProviders.length ? customProviders[0].provider : null;
+        // #5824: no provider is selected by default. The advanced section
+        // starts empty and only the user's own choice fills it.
+        customProviderId = null;
+        customProviderChosen = false;
         customModelValue = "";
         customModelOptions = [];
         customModelState = "idle";
@@ -1283,13 +1341,6 @@
         customTestState = "idle";
         if (customModelInput) customModelInput.value = "";
         if (customEndpointInput) customEndpointInput.value = "";
-      }
-      const provider = customProvider();
-      if (provider) {
-        if (!provider.manual_model && !provider.models.includes(customModelValue)) {
-          customModelValue = provider.models[0] || "";
-        }
-        if (customModelInput) customModelInput.value = customModelValue;
       }
       if (customSelection) {
         const selectedProvider = customProviders.find(
@@ -1302,11 +1353,9 @@
           ? { provider: selectedProvider.provider, model: customSelection.model }
           : null;
       }
-      const credential = customCredential();
-      if (customEndpointInput && credential
-          && credential.endpoint_is_default === false && credential.endpoint) {
-        customEndpointInput.value = credential.endpoint;
-      }
+      // #5824: a status refresh never writes a stored endpoint into the
+      // field — the field starts empty and only the user's own input fills
+      // it (an explicit save may echo the endpoint it just stored).
       syncModeCopy();
     } catch (_) {
       if (ticket !== customRequestSeq) return;
@@ -1319,81 +1368,105 @@
     }
   }
 
-  async function autoByok(register = false) {
+  // #5824: one 등록 action includes the check. A key pasted into the single
+  // input is detected by the server (#5887) and registered in the same click
+  // (#5889). A provider+model the user chose in the advanced section takes
+  // the reviewed manual credential path instead (the top key is sent there
+  // too — the advanced section no longer owns a second key input).
+  async function registerFromKey() {
     if (customMutation || !auth.authenticated || !autoKeyInput) return;
+    const copy = customCopy();
     const key = autoKeyInput.value.trim();
     if (key.length < 16 || key.length > 512 || /[^\x21-\x7e]/.test(key)) {
-      setCustomMessage(customCopy().keyLength, "error");
+      setCustomMessage(copy.keyLength, "error");
+      autoKeyInput.focus();
       return;
     }
-    if (register && (!autoDetection || !autoDetection.verified)) return;
-    const payload = { key };
-    const endpoint = autoEndpointInput.value.trim();
-    if (endpoint) payload.base_url = endpoint;
-    if (register) {
-      payload.provider = autoDetection.provider;
-      payload.model = autoDetection.models[0];
+    const provider = customProviderChosen ? customProvider() : null;
+    const model = provider ? customModelId() : "";
+    if (provider && model) {
+      await saveCustomKey(key);
+      return;
     }
+    if (provider && !model) {
+      // An explicit provider choice always travels with an explicit model;
+      // silently re-detecting would discard the user's own pick.
+      setCustomMessage(copy.modelRequired, "error");
+      focusCustomModel();
+      return;
+    }
+    await detectAndRegister(key);
+  }
+
+  async function detectAndRegister(key) {
+    const copy = customCopy();
     const ticket = ++autoSequence;
-    customMutation = register ? "auto-register" : "detect";
-    setCustomMessage(register ? "등록 중…" : "공급자 확인 중…", "info");
+    customMutation = "auto-register";
+    setCustomMessage(copy.registering, "info");
     syncCustomSection();
     try {
-      const response = await nativeFetch(register ? "/api/byok/register" : "/api/byok/detect", {
+      const detectPayload = { key };
+      const detected = await nativeFetch("/api/byok/detect", {
         method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        credentials: "same-origin", cache: "no-store", body: JSON.stringify(payload),
+        credentials: "same-origin", cache: "no-store", body: JSON.stringify(detectPayload),
+      });
+      const probe = await detected.json().catch(() => null);
+      if (ticket !== autoSequence) return;
+      const verified = Boolean(detected.ok && probe && probe.verified === true
+        && typeof probe.provider === "string" && probe.provider
+        && Array.isArray(probe.models) && probe.models.length);
+      if (!verified) {
+        // The provider could not be recognised: only now the advanced section
+        // opens so the user can choose it by hand.
+        setCustomMessage((probe && probe.reason) || copy.detectFailed, "error");
+        if (customAdvanced) customAdvanced.open = true;
+        return;
+      }
+      const registerPayload = { key, provider: probe.provider, model: probe.models[0] };
+      const response = await nativeFetch("/api/byok/register", {
+        method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        credentials: "same-origin", cache: "no-store", body: JSON.stringify(registerPayload),
       });
       const data = await response.json().catch(() => null);
       if (ticket !== autoSequence) return;
-      if (!response.ok || !data) {
-        autoDetection = null;
-        autoCard.hidden = true;
-        setCustomMessage(data && data.reason || errorMessage(data) || "등록을 확인하지 못했습니다. 고급 입력을 이용해 주세요.", "error");
+      if (!response.ok || !data || data.ok !== true || !data.selection) {
+        setCustomMessage((data && data.reason) || errorMessage(data) || copy.detectFailed, "error");
+        if (customAdvanced) customAdvanced.open = true;
         return;
       }
-      if (register && data.ok === true && data.selection) {
-        autoKeyInput.value = "";
-        autoDetection = null;
-        customMutation = null;
-        await refreshCustomStatus();
-        if (ticket !== autoSequence) return;
-        customProviderId = data.selection.provider;
-        customModelValue = data.selection.model;
-        customModelOptions = Array.isArray(data.models) ? data.models : [];
-        if (customModelInput) customModelInput.value = customModelValue;
-        customSelection = { provider: customProviderId, model: customModelValue };
-        syncModeCopy();
-        setCustomMessage("등록했습니다. 이 모델로 바로 대화할 수 있습니다.", "ok");
-        return;
-      }
-      autoDetection = data.verified === true && Array.isArray(data.models) && data.models.length ? data : null;
-      autoCard.hidden = false;
-      // Only the server's public projection is rendered. Never the key or a
-      // vendor error body, and never HTML from an upstream response.
-      autoCard.textContent = [data.provider || "공급자 선택 필요", data.endpoint || "",
-        Array.isArray(data.models) ? data.models[0] || "" : "", data.verified ? "검증 ✓" : "미검증"].filter(Boolean).join(" · ");
-      autoEndpointInput.hidden = data.provider !== null;
-      setCustomMessage(data.reason || "고급 입력을 이용해 주세요.", data.verified ? "ok" : "error");
+      autoKeyInput.value = "";
+      // The registered selection is kept internally for the lane; the form
+      // never re-renders the detected provider or model names.
+      customProviderId = data.selection.provider;
+      customModelValue = data.selection.model;
+      customModelOptions = Array.isArray(data.models) ? data.models : [];
+      customSelection = { provider: customProviderId, model: customModelValue };
+      customMutation = null;
+      // #5824: the refreshed status line is the only success feedback.
+      customMessageText = "";
+      customMessageState = "info";
+      await refreshCustomStatus();
+      if (ticket !== autoSequence) return;
+      syncModeCopy();
+      // #5824: success is the one-line status plus 삭제 — no extra message.
     } catch (_) {
       if (ticket === autoSequence) {
-        autoDetection = null;
-        autoCard.hidden = true;
-        setCustomMessage("연결을 확인하지 못했습니다. 고급 입력을 이용해 주세요.", "error");
+        setCustomMessage(copy.detectFailed, "error");
+        if (customAdvanced) customAdvanced.open = true;
       }
     } finally {
       if (ticket === autoSequence) { customMutation = null; syncCustomSection(); }
     }
   }
 
-  async function saveCustomKey() {
-    if (customMutation || !customInput) return;
+  async function saveCustomKey(key) {
+    if (customMutation) return;
     const provider = customProvider();
     if (!provider || !auth.authenticated) return;
     const copy = customCopy();
-    const key = String(customInput.value || "").trim();
     if (key.length < 16 || key.length > 512 || /[^\x21-\x7e]/.test(key)) {
       setCustomMessage(copy.keyLength, "error");
-      customInput.focus();
+      if (autoKeyInput) autoKeyInput.focus();
       return;
     }
     const endpoint = customEndpointInput
@@ -1424,9 +1497,8 @@
         setCustomMessage(errorMessage(data) || copy.saveFailed, "error");
         return;
       }
-      const hadCredential = customCredential() !== null;
       // Never keep or re-render the raw key after the write succeeds.
-      customInput.value = "";
+      if (autoKeyInput) autoKeyInput.value = "";
       customMutation = null;
       await refreshCustomStatus();
       const stored = customCredential();
@@ -1435,7 +1507,7 @@
           && stored.endpoint_is_default === false && stored.endpoint
           ? stored.endpoint : "";
       }
-      setCustomMessage(hadCredential ? copy.replaced : copy.saved, "ok");
+      // #5824: success is the one-line status plus 삭제 — no extra message.
     } catch (_) {
       setCustomMessage(copy.saveFailed, "error");
     } finally {
@@ -1476,7 +1548,7 @@
         setCustomMessage(errorMessage(data) || copy.deleteFailed, "error");
         return;
       }
-      if (customInput) customInput.value = "";
+      if (autoKeyInput) autoKeyInput.value = "";
       if (customEndpointInput) customEndpointInput.value = "";
       customTestState = "idle";
       customMutation = null;
@@ -1617,34 +1689,10 @@
     customEndpointHintEl.id = "modeCustomEndpointHint";
     customEndpointHintEl.textContent = copy.endpointHint;
 
-    const label = document.createElement("label");
-    label.className = "mode-custom-key-label";
-    label.htmlFor = "modeCustomApiKey";
-    label.textContent = copy.keyLabel;
-    customKeyLabelEl = label;
-    customInput = document.createElement("input");
-    customInput.type = "password";
-    customInput.id = "modeCustomApiKey";
-    customInput.className = "mode-custom-key-input";
-    customInput.autocomplete = "new-password";
-    customInput.maxLength = 512;
-    customInput.placeholder = copy.keyPlaceholder;
-    customInput.setAttribute("autocapitalize", "off");
-    customInput.setAttribute("spellcheck", "false");
-    customInput.setAttribute("aria-describedby", "modeCustomKeyHint");
-    customInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        void saveCustomKey();
-      }
-    });
-
+    // #5824: the advanced section owns no key field; the single top input is
+    // sent with the manual choice too.
     const actions = document.createElement("div");
     actions.className = "mode-custom-actions";
-    customSaveButton = document.createElement("button");
-    customSaveButton.type = "button";
-    customSaveButton.className = "mode-custom-action mode-custom-save";
-    customSaveButton.addEventListener("click", () => void saveCustomKey());
     customDeleteButton = document.createElement("button");
     customDeleteButton.type = "button";
     customDeleteButton.className = "mode-custom-action mode-custom-delete";
@@ -1655,7 +1703,7 @@
     customTestButton.textContent = copy.test;
     customTestButton.hidden = true;
     customTestButton.addEventListener("click", () => void testCustomConnection());
-    actions.append(customSaveButton, customDeleteButton, customTestButton);
+    actions.append(customDeleteButton, customTestButton);
 
     const hint = document.createElement("small");
     hint.className = "mode-custom-hint";
@@ -1674,61 +1722,41 @@
     customRetryButton.textContent = copy.retry;
     customRetryButton.addEventListener("click", () => void refreshCustomStatus());
 
+    // #5824: one guide line, one key input, one 등록 button — the check runs
+    // inside the registration; no second key form, no result card.
     const autoLabel = document.createElement("label");
     autoLabel.htmlFor = "modeAutoByokKey";
     autoLabel.className = "mode-custom-key-label";
-    autoLabel.textContent = "키 붙여넣기";
+    autoLabel.textContent = copy.keyLabel;
+    customKeyLabelEl = autoLabel;
     autoKeyInput = document.createElement("input");
     autoKeyInput.id = "modeAutoByokKey";
     autoKeyInput.type = "password";
     autoKeyInput.className = "mode-custom-key-input";
     autoKeyInput.autocomplete = "new-password";
     autoKeyInput.maxLength = 512;
-    autoKeyInput.placeholder = "API 키만 붙여넣으세요";
+    autoKeyInput.placeholder = copy.keyPlaceholder;
     autoKeyInput.setAttribute("spellcheck", "false");
+    autoKeyInput.setAttribute("aria-describedby", "modeCustomKeyHint");
     const invalidate = () => {
       autoSequence += 1; autoDetection = null;
-      autoCard.textContent = ""; autoCard.hidden = true;
-      autoRegisterButton.disabled = true;
     };
     autoKeyInput.addEventListener("input", invalidate);
-    autoKeyInput.addEventListener("paste", () => {
-      window.setTimeout(() => void autoByok(), 0);
-    });
     autoKeyInput.addEventListener("keydown", event => {
-      if (event.key === "Enter") { event.preventDefault(); void autoByok(); }
+      if (event.key === "Enter") { event.preventDefault(); void registerFromKey(); }
     });
-    autoEndpointInput = document.createElement("input");
-    autoEndpointInput.type = "url";
-    autoEndpointInput.id = "modeAutoByokEndpoint";
-    autoEndpointInput.className = "mode-custom-key-input";
-    autoEndpointInput.placeholder = "공개 HTTPS API 기본 주소 (/v1 등 경로 포함)";
-    autoEndpointInput.setAttribute("aria-label", "API 주소");
-    autoEndpointInput.hidden = true;
-    autoEndpointInput.addEventListener("input", invalidate);
-    autoCard = document.createElement("p");
-    autoCard.id = "modeAutoByokResult";
-    autoCard.style.overflowWrap = "anywhere";
-    autoCard.setAttribute("role", "status");
-    autoCard.hidden = true;
     const autoActions = document.createElement("div");
     autoActions.className = "mode-custom-actions";
-    autoDetectButton = document.createElement("button");
-    autoDetectButton.type = "button"; autoDetectButton.textContent = "자동 확인";
-    autoDetectButton.className = "mode-custom-action";
-    autoDetectButton.id = "modeAutoByokDetect";
-    autoDetectButton.addEventListener("click", () => void autoByok());
     autoRegisterButton = document.createElement("button");
-    autoRegisterButton.type = "button"; autoRegisterButton.textContent = "등록";
+    autoRegisterButton.type = "button"; autoRegisterButton.textContent = copy.register;
     autoRegisterButton.className = "mode-custom-action";
     autoRegisterButton.id = "modeAutoByokRegister";
-    autoRegisterButton.disabled = true;
-    autoRegisterButton.addEventListener("click", () => void autoByok(true));
-    autoActions.append(autoDetectButton, autoRegisterButton);
+    autoRegisterButton.addEventListener("click", () => void registerFromKey());
+    autoActions.append(autoRegisterButton);
     customAdvanced = document.createElement("details");
     customAdvanced.id = "modeCustomAdvanced";
     const advancedTitle = document.createElement("summary");
-    advancedTitle.textContent = "고급 · 공급자/모델/주소 직접 입력";
+    advancedTitle.textContent = copy.advancedSummary;
     customAdvanced.append(advancedTitle);
     customAdvanced.append(
       customProviderLabelEl,
@@ -1744,13 +1772,9 @@
       customReasoningLabelEl,
       customReasoningSelect,
       customReasoningHintEl,
-      label,
-      customInput,
-      actions,
-      hint,
     );
-    form.append(status, autoLabel, autoKeyInput, autoEndpointInput, autoActions,
-      autoCard, customAdvanced, customMessageEl, customRetryButton);
+    form.append(status, autoLabel, autoKeyInput, hint, autoActions, actions,
+      customAdvanced, customMessageEl, customRetryButton);
 
     customGuestNote = document.createElement("p");
     customGuestNote.className = "mode-custom-guest-note";
