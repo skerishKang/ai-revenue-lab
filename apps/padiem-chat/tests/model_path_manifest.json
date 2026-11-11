@@ -34,6 +34,7 @@
     "test_5614_claw_pc_catalog_parallel.py": "MOCK",
     "test_5881_file_lane.py": "B14_MANAGED",
     "test_6812_history_bounds.py": "B14_MANAGED",
+    "test_7459_model_first_thought_fallback.py": "B14_MANAGED",
     "test_7459_pc_confirmation_and_timeout.py": "B14_MANAGED",
     "test_admin_model_select_261018.py": "B14_MANAGED",
     "test_attachments.py": "B14_MANAGED",
