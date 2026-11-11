@@ -251,6 +251,8 @@ def test_ui_mounts_an_incremental_thinking_panel_outside_the_answer():
     assert "window.PadiemChatThoughtPanel?.handleFrame?.(article, frame" in stream
     assert "window.PadiemChatThoughtPanel?.settle?.(" in stream
     assert "body.insertBefore(details, content)" in panel
+    assert 'WORK_STATUS_SELECTOR = ".capability-kit"' in panel
+    assert "window.PadiemChatThoughtPanel?.renderSummary?.(article, summaryText" in stream
     assert "details.open = true;" not in panel
     assert "details.open = false;" in panel
     assert 'return normalizeStreamFrame({ event: data.type, data: text });' in transport
@@ -269,9 +271,14 @@ def test_ui_mounts_an_incremental_thinking_panel_outside_the_answer():
 def test_thought_frames_are_redacted_and_bounded_like_the_legacy_summary():
     stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
     panel = (STATIC / "thought-panel.js").read_text(encoding="utf-8")
+    lifecycle = (STATIC / "message-lifecycle.js").read_text(encoding="utf-8")
 
     assert "sanitize: safeThoughtSummary" in stream
-    assert "paragraph.textContent = sanitize(state.text);" in panel
+    assert "renderSummary(article, sanitize(state.text)" in panel
+    assert "window.PadiemRichResponse" in panel
+    assert "container.textContent = text;" in panel
+    assert "claw|padiem|mcp|tool" in panel
+    assert "window.PadiemChatThoughtPanel?.reorder?.(article)" in lifecycle
     assert 'value.trim().slice(0, 2000)' in stream
     assert "[user prompt omitted]" in stream
     assert "[secret redacted]" in stream

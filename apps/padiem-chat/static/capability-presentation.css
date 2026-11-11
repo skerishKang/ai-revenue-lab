@@ -29,12 +29,32 @@
   font-weight: 700;
 }
 
-.orchestration-thought-summary > p {
+.orchestration-thought-summary > p,
+.orchestration-thought-summary > .orchestration-thought-body {
   margin: 8px 0 0;
-  white-space: pre-wrap;
   overflow-wrap: anywhere;
   max-height: 12rem;
   overflow-y: auto;
+}
+
+/* #7459: the thinking transcript reuses the answer markdown renderer, so it
+ * carries the same blocks. Keep them compact inside the disclosure. */
+.orchestration-thought-body {
+  display: grid;
+  gap: 6px;
+  white-space: normal;
+}
+
+.orchestration-thought-body > p,
+.orchestration-thought-body .rich-response-paragraph {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.orchestration-thought-body ul,
+.orchestration-thought-body ol {
+  margin: 0;
+  padding-left: 1.35rem;
 }
 
 /* #5221: the work card is a disclosure. The summary always names the real

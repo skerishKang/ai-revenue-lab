@@ -861,4 +861,16 @@ jobs:
           echo "${line}" >> "${GITHUB_STEP_SUMMARY}"
       - name: One real call through the declared grade route (COM2 B14)
         if: ${{ env.PADIEM_B14_SERVICE_PROOF_SECRET != '' }}
-        run: python3 .github/scripts/b14_real_model_call_smoke.py --tier "${{ matrix.tier }}" --base-url http://127.0.0.1:8789 --report
+        # #7450: 모델·프로바이더 값은 저장소에서 빠지고(#7238) 컴2 비공개 레지스트리에만 있다.
+        # 등급별 모델 이름을 그 파일에서 읽는다. 읽을 수 없으면 원인을 분명한 코드로 실패시킨다
+        # (조용한 통과·모호한 tier_route_unavailable 금지). 파일 내용은 출력하지 않는다.
+        run: |
+          registry="${PADIEM_MODELS_REGISTRY_HOST_PATH:-/etc/padiem/registry/models-private.json}"
+          if [ ! -r "${registry}" ]; then
+            line="GRADE_SMOKE tier=${{ matrix.tier }} status=0 error_code=registry_unreadable verdict=FAIL"
+            echo "${line}"
+            echo "${line}" >> "${GITHUB_STEP_SUMMARY}"
+            exit 1
+          fi
+          export PADIEM_MODELS_REGISTRY="${registry}"
+          python3 .github/scripts/b14_real_model_call_smoke.py --tier "${{ matrix.tier }}" --base-url http://127.0.0.1:8789 --report
