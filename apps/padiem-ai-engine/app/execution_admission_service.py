@@ -608,13 +608,6 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
 
     async def resume_payload(self, payload: Any):  # noqa: C901 - lifecycle gate must stay linear
         """Resume only with fresh non-widening trusted admission before claim."""
-        if not self._b14_service_bound:
-            return _service_error(
-                "b14_service_unavailable",
-                "Business 14 service binding is unavailable.",
-                status_code=503,
-                retryable=True,
-            )
         if not isinstance(payload, Mapping):
             return _service_error("invalid_request", "Request body must be an object.", status_code=400)
         try:
@@ -640,6 +633,14 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
                     "continuation_store_unavailable",
                     "Approval continuation storage returned an invalid identity-bound record.",
                     status_code=503,
+                )
+            # #7463: 저장소 조회(never-issued 409)가 B14 가드보다 먼저. 실제 모델 실행 경로만 503.
+            if not self._b14_service_bound:
+                return _service_error(
+                    "b14_service_unavailable",
+                    "Business 14 service binding is unavailable.",
+                    status_code=503,
+                    retryable=True,
                 )
             submission = _parse_approval_decision_submission(payload.get("decision"))
             if submission.pause_id != record.pause.pause_id:
