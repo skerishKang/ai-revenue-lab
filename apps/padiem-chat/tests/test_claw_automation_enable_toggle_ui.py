@@ -33,6 +33,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from css_rules import declaration, find_rules_with_selector, parse_rules
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
@@ -83,28 +85,45 @@ def test_locale_tables_carry_every_toggle_key_in_ko_and_en() -> None:
 
 
 def test_toggle_control_meets_touch_and_focus_contract() -> None:
-    css = WORKSPACE_CSS.read_text(encoding="utf-8")
-    block = css.split(".claw-automation-rule-toggle {", 1)[1].split("}", 1)[0]
-    assert "min-height: 44px" in block
-    assert "min-width: 44px" in block
-    assert ":focus-visible" in css
+    # R2(#7186): CSS 글자 일치 대신 규칙 블록과 선언 값으로 판정한다.
+    rules = parse_rules(WORKSPACE_CSS.read_text(encoding="utf-8"))
+    base = [
+        rule
+        for rule in find_rules_with_selector(rules, ".claw-automation-rule-toggle")
+        if not any(selector.endswith((":focus-visible", "[disabled]")) for selector in rule.selectors)
+    ]
+    assert base, ".claw-automation-rule-toggle base rule"
+    assert declaration(base[0], "min-height") == "44px"
+    assert declaration(base[0], "min-width") == "44px"
+    focus = find_rules_with_selector(rules, ".claw-automation-rule-toggle:focus-visible")
+    assert focus, "the toggle must show a keyboard focus ring"
 
 
 def test_patch_payload_is_exactly_the_enabled_boolean() -> None:
-    # R5 A1: 토글 본문은 chat-automation-module.js로 이동했다.
-    js = (ROOT / "static" / "chat-automation-module.js").read_text(encoding="utf-8")
-    toggle_block = js.split("#3262 owner-gated enable/disable", 1)[1].split(
-        "function mountAutomationView", 1
-    )[0]
-    assert 'method: "PATCH"' in toggle_block
-    assert "/enabled" in toggle_block
-    assert "JSON.stringify({ enabled: nextEnabled })" in toggle_block
-    # No authority field may ever travel in a toggle payload.
-    for forbidden in ("workspace_id", "canonical_subject_id", "owner_ref", "execution_intent", "revision"):
-        assert f"{forbidden}:" not in toggle_block
+    # R2(#7186): 소스에서 JSON.stringify 글자를 찾지 않고 실제 전송 본문을 읽는다.
+    payload = _run_harness()
+    assert payload.get("ok") is True, payload
+    checks = payload["checks"]
+    assert checks["PATCH_EXACT_PATH"] is True
+    assert checks["PATCH_EXACT_PAYLOAD"] is True
+    assert payload["toggleBody"] == {"enabled": False}
+    # 권한 필드는 어떤 경우에도 토글 본문에 실리지 않는다.
+    for forbidden in (
+        "workspace_id",
+        "canonical_subject_id",
+        "owner_ref",
+        "execution_intent",
+        "revision",
+    ):
+        assert forbidden not in payload["toggleBody"], forbidden
 
 
 def test_toggle_never_claims_live_execution() -> None:
+    """금지 계약(R2 규칙 3): #2833 HOLD 동안 토글이 실행 활성화를 주장하지 않는다.
+
+    성공 문구도 '자동 실행이 이미 활성화되었다는 뜻이 아니다' 단서를 유지해야 한다.
+    문구 자체가 금지 대상이라 소스·마크업·locale 부재 검사를 유지한다.
+    """
     # R5 A1: 부재 검사 대상에 이동된 두 모듈을 합쳐 같은 강도를 유지한다.
     js = (_app_source()
           + (ROOT / "static" / "chat-automation-module.js").read_text(encoding="utf-8")
@@ -126,20 +145,14 @@ def test_toggle_never_claims_live_execution() -> None:
 
 
 def test_toggle_button_only_for_canonical_rows() -> None:
-    # R5 A1: 토글 본문은 chat-automation-module.js로 이동했다.
-    js = (ROOT / "static" / "chat-automation-module.js").read_text(encoding="utf-8")
-    toggle_block = js.split("#3262 owner-gated enable/disable", 1)[1].split(
-        "function mountAutomationView", 1
-    )[0]
-    assert "legacy_quarantined" not in toggle_block
-    # The append itself lives in the canonical branch of the row renderer.
-    render = js.split("function renderClawAutomationRules", 1)[1].split(
-        "async function loadClawAutomationRules", 1
-    )[0]
-    assert "claw-automation-rule-toggle" in render
-    assert "background_eligible !== true" in render
-    # No local mutation of rendered rows before the server answers.
-    assert "row.dataset.ruleEnabled" not in js
+    # R2(#7186): 렌더 소스 대신 실제 행의 컨트롤 유무와 낙관적 변경 부재를 본다.
+    payload = _run_harness()
+    assert payload.get("ok") is True, payload
+    checks = payload["checks"]
+    assert checks["CANONICAL_ROW_TOGGLE_VISIBLE"] is True
+    assert checks["QUARANTINED_ROW_TOGGLE_VISIBLE_ABSENT"] is True
+    # 서버 응답 전 로컬 반전이 없다는 계약은 렌더 결과로 증명한다.
+    assert checks["NO_OPTIMISTIC_FLIP"] is True
 
 
 # ── behavioral proof via Node harness executing real app.js ─────────────────
@@ -411,6 +424,7 @@ const toggleFor = (ruleId) => {
   checks.BUTTON_DISABLED_IN_FLIGHT = !!toggleFor("rule_on") && toggleFor("rule_on").disabled === true;
   await tick(60);
   const patch = patches()[0];
+  const toggleBody = patch ? patch.body : null;
   checks.PATCH_EXACT_PATH = !!patch && patch.url === "/api/claw/automation/rules/rule_on/enabled";
   checks.PATCH_EXACT_PAYLOAD = !!patch && patch.method === "PATCH" && JSON.stringify(patch.body) === JSON.stringify({ enabled: false });
   checks.SUCCESS_RELOAD = listGets().length === 1;
@@ -461,7 +475,7 @@ const toggleFor = (ruleId) => {
     console.log(JSON.stringify({ ok: false, error: "failed checks", checks }));
     process.exit(0);
   }
-  console.log(JSON.stringify({ ok: true, checks }));
+  console.log(JSON.stringify({ ok: true, checks, toggleBody }));
   process.exit(0);
 })().catch((e) => { console.log(JSON.stringify({ ok: false, error: String((e && e.stack) || e) })); process.exit(0); });
 """
@@ -501,6 +515,7 @@ def test_behavioral_toggle_journey() -> None:
     for name in (
         "CANONICAL_ROW_TOGGLE_VISIBLE",
         "QUARANTINED_ROW_TOGGLE_VISIBLE_ABSENT",
+        "NO_OPTIMISTIC_FLIP",
         "ENABLED_ROW_ACTION_TURN_OFF",
         "DISABLED_ROW_ACTION_TURN_ON",
         "NO_OPTIMISTIC_FLIP",

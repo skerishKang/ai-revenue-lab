@@ -35,6 +35,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from css_rules import declaration, find_rules_with_selector, parse_rules
+
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"  # R5 B1: 모듈 소스 읽기용
 APP_JS = ROOT / "static/app.js"
@@ -144,13 +146,10 @@ def test_kind_aware_fields_are_declared_with_default_daypart_visible() -> None:
 
 
 def test_submit_posts_exactly_the_seven_product_keys() -> None:
-    # R5 A1: 생성 함수 본문은 chat-automation-form-module.js로 이동했다.
-    js = (ROOT / "static" / "chat-automation-form-module.js").read_text(encoding="utf-8")
-    create_block = js.split("function setClawAutomationCreateStatus", 1)[1]
-    payload_match = re.search(r"const payload = \{(.*?)\};", create_block, re.DOTALL)
-    assert payload_match, "create payload block not found"
-    keys = re.findall(r"(\w+):", payload_match.group(1))
-    assert sorted(keys) == sorted(
+    # R2(#7186): 소스에서 payload 글자를 찾지 않고, 실제 제출이 보낸 본문의 키를 읽는다.
+    payload = _run_harness()
+    assert payload.get("ok") is True, payload
+    assert payload["createBodyKeys"] == sorted(
         [
             "name",
             "task",
@@ -160,20 +159,28 @@ def test_submit_posts_exactly_the_seven_product_keys() -> None:
             "target_source",
             "output_type",
         ]
-    )
+    ), payload["createBodyKeys"]
+    # 서버가 발급하는 권한·id 필드는 본문에 없다.
+    assert payload["checks"]["NO_AUTHORITY_KEY_SENT"] is True
 
 
-def test_create_status_uses_text_sink_and_no_innerhtml() -> None:
-    # R5 B1: 생성 블록은 chat-automation-form-module.js로 이동했다.
+def test_create_status_never_uses_an_html_sink() -> None:
+    """금지 계약(R2 규칙 3): 서버·로케일 문자열을 HTML sink로 넣지 않는다.
+
+    상태 문구가 textContent로 실제 반영되는지는 이 파일의 behavior harness가
+    기록된 DOM 텍스트로 확인한다. sink 금지는 존재 자체가 금지 대상이라 유지한다.
+    """
     js = _app_source() + (STATIC / "chat-automation-form-module.js").read_text(encoding="utf-8")
-    create_block = js.split("#3257 Web Automation Create", 1)[1].split(
-        "#3257 Web Automation Create END", 1
-    )[0] if "#3257 Web Automation Create END" in js else js.split("#3257 Web Automation Create", 1)[1]
-    assert "innerHTML" not in create_block
-    assert "textContent = deps.uiT(" in create_block  # R5 B1: 모듈 본문은 deps.uiT로 쓴다
+    assert "innerHTML" not in js
+    assert "insertAdjacentHTML" not in js
 
 
 def test_scheduler_live_overclaim_is_absent() -> None:
+    """금지 계약(R2 규칙 3): #2833 HOLD 동안 '자동 실행 활성화' 주장 문구를 쓰지 않는다.
+
+    문구 자체가 금지 대상이라 소스·마크업 부재 검사를 유지한다. 대표 결정으로
+    해제되면 이 계약을 지우는 PR에서 이유도 함께 지운다.
+    """
     # R5 B1: 부재 검사 대상에 이동된 모듈 3개를 합쳐 같은 강도를 유지한다.
     js = (_app_source()
           + (STATIC / "chat-automation-module.js").read_text(encoding="utf-8")
@@ -201,11 +208,21 @@ def test_locale_tables_carry_every_create_key_in_ko_and_en() -> None:
 
 
 def test_create_styles_extend_the_existing_form_system() -> None:
-    css = WORKSPACE_CSS.read_text(encoding="utf-8")
-    assert ".claw-automation-create" in css
-    assert ".calendar-record-cancel" in css
-    assert "min-height: 44px" in css  # touch-target parity with the form system
-    assert "@media (max-width: 920px)" in css
+    # R2(#7186): CSS 글자 일치 대신 규칙 블록과 선언 값으로 판정한다.
+    rules = parse_rules(WORKSPACE_CSS.read_text(encoding="utf-8"))
+    assert find_rules_with_selector(rules, ".claw-automation-create"), "create panel style"
+    cancel = find_rules_with_selector(rules, ".calendar-record-cancel")
+    assert cancel, "cancel must reuse the form-system button"
+    # touch-target parity with the form system
+    assert declaration(cancel[0], "min-height") == "44px"
+    narrow = [
+        rule
+        for rule in find_rules_with_selector(
+            rules, ".claw-automation-create .calendar-record-actions"
+        )
+        if rule.media == "(max-width: 920px)"
+    ]
+    assert narrow, "the create actions must stack on the narrow layout"
 
 
 # ── behavioral proof via Node harness executing real app.js ─────────────────
@@ -466,6 +483,7 @@ function fillForm() {
   await tick(30);
   const post = createPosts()[0];
   if (!post) fail("no create POST recorded");
+  const createBodyKeys = post.body ? Object.keys(post.body).sort() : [];
   const expectedKeys = ["name","output_type","schedule_expression","schedule_kind","schedule_timezone","target_source","task"];
   checks.EXACT_PAYLOAD_KEYS = post.body && JSON.stringify(Object.keys(post.body).sort()) === JSON.stringify(expectedKeys);
   checks.NO_AUTHORITY_KEY_SENT = post.body && Object.keys(post.body).every((k) => expectedKeys.includes(k));
@@ -519,7 +537,7 @@ function fillForm() {
     console.log(JSON.stringify({ ok: false, error: "failed checks", checks }));
     process.exit(0);
   }
-  console.log(JSON.stringify({ ok: true, checks }));
+  console.log(JSON.stringify({ ok: true, checks, createBodyKeys }));
   process.exit(0);
 })().catch((e) => { console.log(JSON.stringify({ ok: false, error: String((e && e.stack) || e) })); process.exit(0); });
 """

@@ -73,56 +73,51 @@ def test_scheduler_live_disclaimer_is_present_and_persistent() -> None:
 
 
 def test_quarantined_legacy_rule_is_rendered_as_not_runnable() -> None:
-    # R5 A1: 카탈로그 본문은 chat-automation-module.js로 이동했다.
-    source = (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
-    block = source.split("--- #3237 read-only automation rule catalogue")[1]
-    block = block.split("--- #3262 owner-gated enable/disable")[0]
-    # A legacy row is marked, not silently rendered like a live rule.
-    assert 'rule.background_eligible !== true' in block
-    assert 'rule.authority_status !== "canonical"' in block
-    assert 'row.dataset.ruleAuthority = "legacy_quarantined";' in block
-    assert 'notice.dataset.localeKey = "automation-rule-quarantined";' in block
+    """#3043: 레거시 행은 실행 가능한 규칙처럼 보이지 않는다.
+
+    R2(#7186): 소스 블록을 자르는 대신 실제 행 렌더 결과에서 격리 표시와
+    로케일 키를 읽는다.
+    """
+    payload = _run("legacy_mixed", auth=_SIGNED_IN, rules=_LEGACY_RULES)
+    assert payload["rows"] == 3
+    assert payload["legacyNoticeKeys"] == [1], payload["legacyNoticeKeys"]
+    for request in payload["ruleRequests"]:
+        assert request["method"] == "GET", request
 
 
 def test_ui_reads_only_the_read_only_endpoint() -> None:
-    # R5 A1: 적재기 본문은 chat-automation-module.js로 이동했다.
-    source = (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
-    assert f'fetch("{RULES_PATH}"' in source
-    # The automation loader must never use a write verb.
-    # R5 0단계(R-01): loadClawAutomationRules의 실제 정의 소스에서 잘라낸다.
-    loader_source = definition_source("loadClawAutomationRules")
-    loader = loader_source.split("async function loadClawAutomationRules()")[1].split("\n  }")[0]
-    assert "method:" not in loader
-    assert RULES_PATH in loader
+    # R2(#7186): fetch 호출 글자 대신 실제 요청의 메서드·헤더·캐시 모드를 본다.
+    payload = _run("ready", auth=_SIGNED_IN, rules=_RULES)
+    requests = payload["ruleRequests"]
+    assert requests, "the catalogue must load through the rules endpoint"
+    for request in requests:
+        assert request["url"] == RULES_PATH, request
+        assert request["method"] == "GET", request
+        assert request["accept"] == "application/json", request
+        assert request["cache"] == "no-store", request
 
 
 def test_no_rule_mutation_control_exists_in_the_ui() -> None:
-    # R5 A1: 카탈로그 본문은 chat-automation-module.js로 이동했다.
+    """#3237: 읽기 전용 카탈로그에는 규칙 변경 도우미가 없다.
+
+    R2(#7186): 블록 슬라이스 대신 두 가지를 실제 실행으로 고정한다 — 렌더는
+    네트워크를 건드리지 않고, 모듈에는 규칙 변경 도우미/동사가 존재하지 않는다.
+    변경 동작 자체의 계약은 #3257·#3262·#3270 시험이 서버 왕복으로 검증한다.
+    """
+    payload = _run("ready", auth=_SIGNED_IN, rules=_RULES)
+    for request in payload["ruleRequests"]:
+        assert request["method"] == "GET", request
     source = (APP_JS.parent / "chat-automation-module.js").read_text(encoding="utf-8")
-    block = source.split("--- #3237 read-only automation rule catalogue")[1]
-    block = block.split("--- #3262 owner-gated enable/disable")[0]
-    # #3257 added the Create surface and #3262 the enable/disable toggle in
-    # this file, after the read-only catalogue block. Their single POST/PATCH
-    # verbs are governed by the dedicated create/toggle route tests and UI
-    # harnesses; the read-only catalogue block itself must still declare no
-    # mutation verb of any kind.
-    block = block.split("#3257 Web Automation Create")[0]
-    block = block.split("#3262 owner-gated enable/disable")[0]
-    block = block.split("#3270 bounded edit (name + schedule only)")[0]
     for forbidden in (
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "set_rule_enabled",
         "createRule",
         "updateRule",
         "deleteRule",
         "runNow",
+        "set_rule_enabled",
+        "PUT",
+        "DELETE",
     ):
-        assert forbidden not in block, forbidden
-    # The rendered row carries display text only — no interactive control.
-    assert "row.append(title, meta);" in block
+        assert forbidden not in source, forbidden
 
 
 def test_skill_surface_untouched_and_no_b66_import() -> None:
@@ -156,9 +151,16 @@ def test_locale_keys_exist_in_both_languages() -> None:
 
 
 def test_app_js_never_uses_inner_html() -> None:
-    source = APP_JS.read_text(encoding="utf-8")
-    assert "innerHTML" not in source
-    assert "insertAdjacentHTML" not in source
+    """금지 계약(R2 규칙 3): 서버 투영 문자열을 HTML sink로 넣지 않는다."""
+    for path in (
+        APP_JS,
+        APP_JS.parent / "chat-automation-module.js",
+        APP_JS.parent / "chat-automation-form-module.js",
+        APP_JS.parent / "chat-local-pc-panel-module.js",
+    ):
+        source = path.read_text(encoding="utf-8")
+        assert "innerHTML" not in source, path.name
+        assert "insertAdjacentHTML" not in source, path.name
 
 
 # ── behavioral proof via Node harness executing real app.js ────────────────
@@ -278,7 +280,7 @@ async function fetchImpl(url, opts) {
   opts = opts || {};
   const method = (opts.method || "GET").toUpperCase();
   const u = String(url);
-  requests.push({ url: u, method });
+  requests.push({ url: u, method, accept: (opts.headers || {}).Accept || null, cache: opts.cache || null });
   if (u.startsWith("/api/auth/status")) return jsonResponse(200, FIXTURE.auth);
   if (u === FIXTURE.rulesPath) {
     ruleCalls += 1;
@@ -391,6 +393,8 @@ function clickAutomationNav() {
         if (rule.background_eligible !== true || rule.authority_status !== "canonical") {
           if (row.dataset.ruleAuthority !== "legacy_quarantined") fail("LEGACY_NOT_MARKED:" + rule.rule_id);
           if (rowText.indexOf("automation-rule-quarantined") < 0) fail("LEGACY_NOTICE_MISSING:" + rule.rule_id);
+          const notice = (row.children || []).find((n) => n.dataset && n.dataset.localeKey === "automation-rule-quarantined");
+          if (!notice) fail("LEGACY_NOTICE_KEY_MISSING:" + rule.rule_id);
         } else if (row.dataset.ruleAuthority === "legacy_quarantined") {
           fail("CANONICAL_MARKED_LEGACY:" + rule.rule_id);
         }
@@ -407,11 +411,14 @@ function clickAutomationNav() {
 
   const ruleRequests = requests.filter((r) => r.url === FIXTURE.rulesPath);
   if (ruleRequests.some((r) => r.method !== "GET")) fail("NON_GET_RULE_REQUEST");
+  const legacyNoticeKeys = byId.clawAutomationList.children
+    .filter((row) => row.dataset && row.dataset.ruleAuthority === "legacy_quarantined")
+    .map((row) => (row.children || []).filter((n) => n.dataset && n.dataset.localeKey === "automation-rule-quarantined").length);
   const text = collectText(byId.clawAutomation);
   for (const leak of FIXTURE.forbidden || []) {
     if (text.includes(leak)) fail("LEAKED_IN_DOM:" + leak);
   }
-  console.log(JSON.stringify({ ok: true, rows: rowCount(), ruleCalls }));
+  console.log(JSON.stringify({ ok: true, rows: rowCount(), ruleCalls, ruleRequests, legacyNoticeKeys }));
   process.exit(0);
 })().catch((e) => { console.log(JSON.stringify({ ok: false, error: String((e && e.stack) || e) })); });
 """
