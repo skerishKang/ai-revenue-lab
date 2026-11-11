@@ -17,44 +17,8 @@
 /* ---- LIGHT — historical Phase 1 restrained light/violet (PR #714, 6c9f1a4) ---- */
 html[data-theme="light"] {
   color-scheme: light;
-  --bg: #f8f8fb;
-  --page-bg: #f8f8fb;
-  --panel: #ffffff;
-  --sidebar: #f1f1f5;
-  --sidebar-text: #19191d;
-  --text: #19191d;
-  --muted: #6f7079;
-  /* #7187 R3 3차: --accent*는 padiem-tokens.css가 소유한다(이 시트의
-     테마 수준 정의는 거기로 옮겼다). */
-  --gold: #b8923a;
-  --gold-soft: rgba(184,146,58,.10);
-  --blue: #6557e8;
-  --danger: #b3261e;
-  --success: #1a6b3a;
-  --success-surface: rgba(34, 158, 94, 0.08);
-  --success-border: rgba(34, 158, 94, 0.18);
-  --danger-surface: rgba(220, 62, 62, 0.07);
-  --danger-border: rgba(220, 62, 62, 0.16);
-  --shadow: 0 14px 36px rgba(30,28,54,.08);
-  --radius-md: 16px;
-  --font-body: Pretendard, "Noto Sans KR", Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-display: Pretendard, "Noto Sans KR", ui-sans-serif;
-  --font-label: Inter, Pretendard, system-ui, sans-serif;
-  --card-bg: #ffffff;
-  /* --card-border도 padiem-tokens.css 소유(#7187 R3 3차). */
-  --card-shadow: 0 3px 10px rgba(33,33,49,.04);
-  --composer-bg: #ffffff;
-  --composer-border: #e3e3e9;
-  --composer-shadow: 0 14px 36px rgba(30,28,54,.08);
-  --user-bubble-bg: #6557e8;
-  --user-bubble-text: #ffffff;
-  --user-bubble-border: transparent;
-  --assistant-surface-bg: #ffffff;
-  --assistant-surface-border: #e3e3e9;
-  --input-text: #19191d;
-  --placeholder: #9b9ca5;
-  --topbar-bg: rgba(248,248,251,.86);
-  --glass: rgba(255,255,255,.72);
+  /* #7187 R3 5차: 팔레트·타이포·반경 값은 padiem-tokens.css가 소유한다.
+     이 시트에는 테마의 표면·구성 요소 규칙만 남는다. */
 }
 
 html[data-theme="light"] body {
@@ -153,34 +117,8 @@ html[data-theme="light"] .output-card {
  * no glass blur, restrained shadows. Readability-first, chrome-last. */
 html[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #131417;
-  --page-bg: #131417;
-  --panel: #1a1b1f;
-  --sidebar: #101114;
-  --text: #e9eaec;
-  --muted: rgba(255,255,255,.56);
-  /* #7187 R3 3차: --accent*는 padiem-tokens.css가 소유한다. */
-  --gold: #c9b28a;
-  --gold-soft: rgba(201,178,138,.07);
-  --blue: #9fc0dd;
-  --danger: #ff9d9d;
-  --success: #8be9a8;
-  --success-surface: rgba(34, 158, 94, 0.08);
-  --success-border: rgba(34, 158, 94, 0.18);
-  --danger-surface: rgba(220, 62, 62, 0.07);
-  --danger-border: rgba(220, 62, 62, 0.16);
-  --shadow: 0 10px 28px rgba(0,0,0,.28);
-  --card-bg: #181a1e;
-  /* --card-border도 padiem-tokens.css 소유(#7187 R3 3차). */
-  --composer-bg: #17181c;
-  --composer-border: rgba(255,255,255,.12);
-  --user-bubble-bg: #1c1e22;
-  --user-bubble-text: #f2f3f4;
-  --assistant-surface-bg: #181a1e;
-  --topbar-bg: rgba(19,20,23,.92);
-  /* utility-only tokens — flat surface discipline, intentionally absent from CINEMATIC */
-  --utility-surface: #1a1b1f;
-  --utility-edge: rgba(255,255,255,.12);
+  /* #7187 R3 5차: 팔레트·타이포·반경 값은 padiem-tokens.css가 소유한다.
+     이 시트에는 테마의 표면·구성 요소 규칙만 남는다. */
 }
 
 html[data-theme="dark"] body {
@@ -266,37 +204,8 @@ html[data-theme="dark"] .composer textarea::placeholder { color: rgba(255,255,25
  * halo accents. Carries unique --film-* tokens that DARK never shares. */
 html[data-theme="cinematic"] {
   color-scheme: dark;
-  --bg: #04070d;
-  --page-bg: #04070d;
-  --panel: rgba(10,14,22,.72);
-  --sidebar: rgba(6,9,15,.88);
-  --text: #f7f8fa;
-  --muted: rgba(255,255,255,.68);
-  /* #7187 R3 3차: --accent*는 padiem-tokens.css가 소유한다. */
-  --gold: #efc984;
-  --gold-soft: rgba(239,201,132,.14);
-  --blue: #88c9ff;
-  --danger: #ff9d9d;
-  --success: #8be9a8;
-  --success-surface: rgba(34, 158, 94, 0.08);
-  --success-border: rgba(34, 158, 94, 0.18);
-  --danger-surface: rgba(220, 62, 62, 0.07);
-  --danger-border: rgba(220, 62, 62, 0.16);
-  --shadow: 0 24px 80px rgba(0,0,0,.42);
-  --card-bg: rgba(8,12,19,.52);
-  /* --card-border도 padiem-tokens.css 소유(#7187 R3 3차). */
-  --composer-bg: rgba(10,14,22,.68);
-  --composer-border: rgba(136,201,255,.22);
-  --user-bubble-bg: rgba(255,255,255,.085);
-  --user-bubble-text: rgba(255,255,255,.92);
-  --assistant-surface-bg: rgba(255,255,255,.045);
-  --topbar-bg: linear-gradient(180deg, rgba(7,11,19,.72), rgba(6,9,15,.14));
-  /* filmic-only tokens — intentionally absent from DARK */
-  --film-blue-glow: rgba(108,190,255,.16);
-  --film-gold-glow: rgba(239,201,132,.10);
-  --film-edge: rgba(136,201,255,.18);
-  --film-vignette: inset 0 0 280px 110px rgba(0,0,0,.72);
-  --film-grain: .22;
+  /* #7187 R3 5차: 팔레트·타이포·반경 값은 padiem-tokens.css가 소유한다.
+     이 시트에는 테마의 표면·구성 요소 규칙만 남는다. */
 }
 
 html[data-theme="cinematic"] body {
@@ -380,31 +289,8 @@ html[data-theme="cinematic"] .composer-note { color: rgba(255,255,255,.38) !impo
 /* ---- PADIEM HOME — homepage continuity (padiem.net: cool gray/blue-gray atmospheric) ---- */
 html[data-theme="padiem-home"] {
   color-scheme: light;
-  --bg: #e6e9ee;
-  --page-bg: #e6e9ee;
-  --panel: rgba(255,255,255,.72);
-  --sidebar: rgba(255,255,255,.62);
-  --text: #1a2230;
-  --muted: #5a6578;
-  /* #7187 R3 3차: --accent*는 padiem-tokens.css가 소유한다. */
-  --gold: #c9a85c;
-  --gold-soft: rgba(201,168,92,.12);
-  --blue: #5aa0e6;
-  --danger: #b3261e;
-  --success: #14532d;
-  --success-surface: rgba(34, 158, 94, 0.08);
-  --success-border: rgba(34, 158, 94, 0.18);
-  --danger-surface: rgba(220, 62, 62, 0.07);
-  --danger-border: rgba(220, 62, 62, 0.16);
-  --shadow: 0 18px 50px rgba(26,34,48,.10);
-  --card-bg: rgba(255,255,255,.68);
-  /* --card-border도 padiem-tokens.css 소유(#7187 R3 3차). */
-  --composer-bg: rgba(255,255,255,.82);
-  --composer-border: rgba(26,34,48,.13);
-  --user-bubble-bg: #1a2230;
-  --user-bubble-text: #ffffff;
-  --assistant-surface-bg: rgba(255,255,255,.62);
-  --topbar-bg: rgba(255,255,255,.55);
+  /* #7187 R3 5차: 팔레트·타이포·반경 값은 padiem-tokens.css가 소유한다.
+     이 시트에는 테마의 표면·구성 요소 규칙만 남는다. */
 }
 
 html[data-theme="padiem-home"] body {

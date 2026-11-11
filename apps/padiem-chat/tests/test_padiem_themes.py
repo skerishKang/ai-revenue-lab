@@ -77,14 +77,20 @@ def test_themes_css_extensibility_and_tokens():
     # each theme must define data-theme selector
     for t in VALID_THEMES:
         assert f'html[data-theme="{t}"]' in THEMES_CSS, f"missing CSS for {t}"
-    # shared tokens coverage per spec. #7187 R3 2차: --line (and the input
-    # border / focus-ring tokens) moved to padiem-tokens.css, so the theme
-    # sheet keeps the surface tokens only.
-    for token in ["--bg", "--text", "--muted", "--accent", "--panel", "--sidebar", "--gold"]:
-        assert token in THEMES_CSS
+    # #7187 R3 5차: the shared palette moved to padiem-tokens.css (one owner
+    # per theme). The theme sheet keeps the surface/component rules only.
     tokens_css = (ROOT / "static/padiem-tokens.css").read_text(encoding="utf-8")
+    for token in ["--bg", "--text", "--muted", "--accent", "--panel", "--sidebar", "--gold"]:
+        assert token in tokens_css, token
     for token in ("--line", "--input-border-strong", "--focus-ring"):
         assert token in tokens_css, token
+    # each theme block in the token sheet carries its own palette.
+    for t in VALID_THEMES:
+        start = tokens_css.index(f'html[data-theme="{t}"] {{')
+        end = tokens_css.index("\n}", start)
+        block = tokens_css[start:end]
+        for token in ("--bg:", "--text:", "--muted:", "--panel:", "--sidebar:"):
+            assert token in block, (t, token)
     # extensibility comment
     assert "NEW_THEME_ADDITION" in THEMES_CSS or "new theme" in THEMES_CSS.lower()
     # must not duplicate business logic, only tokens
@@ -108,22 +114,25 @@ def test_theme_switch_does_not_reset_conversation_state():
 def test_padiem_home_distinct_from_light():
     # Padiem Home must not equal Light's bg
     # Light uses #f8f8fb, Padiem Home uses #e6e9ee cool gray
-    assert "#f8f8fb" in THEMES_CSS
-    assert "#e6e9ee" in THEMES_CSS
-    assert THEMES_CSS.count("#f8f8fb") < THEMES_CSS.count("#e6e9ee") + 5  # both exist distinctly
+    tokens_css = (ROOT / "static/padiem-tokens.css").read_text(encoding="utf-8")
+    assert "#f8f8fb" in tokens_css
+    assert "#e6e9ee" in tokens_css
+    assert tokens_css.count("#f8f8fb") < tokens_css.count("#e6e9ee") + 5  # both exist distinctly
     # Padiem Home should mention atmospheric/cool gray cues
     assert "padiem-home" in THEMES_CSS
 
 def test_light_preserves_violet_and_cinematic_preserves_blue_gold():
     # Light must use violet #6557e8, Cinematic/Dark must use blue #88c9ff and gold #efc984
-    assert "#6557e8" in THEMES_CSS
-    assert "#88c9ff" in THEMES_CSS
-    assert "#efc984" in THEMES_CSS
+    # #7187 R3 5차: the palette values live in padiem-tokens.css.
+    tokens_css = (ROOT / "static/padiem-tokens.css").read_text(encoding="utf-8")
+    assert "#6557e8" in tokens_css
+    assert "#88c9ff" in tokens_css
+    assert "#efc984" in tokens_css
     # Light section contains violet
-    light_section = THEMES_CSS.split('html[data-theme="light"]')[1].split('html[data-theme="dark"]')[0]
+    light_section = tokens_css.split('html[data-theme="light"]')[1].split('html[data-theme="dark"]')[0]
     assert "#6557e8" in light_section
     # Cinematic section contains strong blue/gold
-    cin_section = THEMES_CSS.split('html[data-theme="cinematic"]')[1].split('html[data-theme="padiem-home"]')[0]
+    cin_section = tokens_css.split('html[data-theme="cinematic"]')[1].split('html[data-theme="padiem-home"]')[0]
     assert "#88c9ff" in cin_section
     assert "#efc984" in cin_section
 
