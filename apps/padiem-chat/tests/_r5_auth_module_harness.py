@@ -282,8 +282,12 @@ function surfaces() {
     methods: { password: true, google: false } };
   const pending = { ready: false, authenticated: false, user: null,
     methods: { password: true, google: false } };
+  // A stale "authenticated: true" that never became ready must not project a
+  // signed-in account: the derivation is `ready && authenticated`.
+  const staleSignedIn = { ready: false, authenticated: true, user: { name: "Kim" },
+    methods: { password: true, google: false } };
   for (const [label, value] of Object.entries({ signed_in: signedIn, guest, expired,
-      unavailable, unreachable, pending })) {
+      unavailable, unreachable, pending, stale_signed_in: staleSignedIn })) {
     api.applyAuthState(value);
     results.states[label] = surfaces();
   }
@@ -292,6 +296,8 @@ function surfaces() {
     results.states.null_fallback = surfaces();
     return { authenticated: live.authState.authenticated, ready: live.authState.ready };
   })();
+  // An unknown state falls back to the "unreachable" row of the shipped table.
+  results.presentationFallback = api.resolveSessionPresentation("unknown_state");
 
   // 3. The dialog opens on the enabled methods only, and closes the same node.
   api.applyAuthState({ ...guest, methods: { password: true, google: false } });
@@ -379,6 +385,26 @@ function surfaces() {
   await api.submitPasswordLogin({ preventDefault() {} });
   results.replay.loginAttempts = live.fetchCalls.length;
   results.replay.loginError = live.passwordLoginError.textContent;
+  live.passwordRegisterEmail.value = "synthetic-register@test.dev";
+  live.passwordRegisterName.value = "Synthetic";
+  live.passwordRegisterPassword.value = "synthetic-pass";
+  live.fetchCalls = [];
+  live.fetchImpl = answerless;
+  await api.submitPasswordRegister({ preventDefault() {} });
+  results.replay.registerAttempts = live.fetchCalls.length;
+  results.replay.registerBody = live.fetchCalls.length ? live.fetchCalls[0][1].body : null;
+  live.passwordResetEmail.value = "synthetic-register@test.dev";
+  live.fetchCalls = [];
+  live.fetchImpl = answerless;
+  await api.submitPasswordResetRequest({ preventDefault() {} });
+  results.replay.resetRequestAttempts = live.fetchCalls.length;
+  live.passwordChangeCurrent.value = "synthetic-pass";
+  live.passwordChangeNew.value = "synthetic-next";
+  live.passwordChangeConfirm.value = "synthetic-next";
+  live.fetchCalls = [];
+  live.fetchImpl = answerless;
+  await api.submitPasswordChange({ preventDefault() {} });
+  results.replay.changeAttempts = live.fetchCalls.length;
   live.fetchCalls = [];
   live.fetchImpl = async () => ({ ok: true, status: 200,
     json: async () => { throw new Error("no json envelope"); } });
