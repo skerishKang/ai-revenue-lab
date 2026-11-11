@@ -20,7 +20,9 @@ FRAME = _read("standalone-views.css")
 
 
 def test_work_view_titles_share_one_expression():
-    assert ".app-shell:is([data-state=\"meeting\"],[data-state=\"automation\"],[data-state=\"connectors\"],[data-state=\"util\"]) .standalone-view-title," in FRAME
+    # #7476 H1: the advanced-settings page joined the same title rule (settings
+    # was the last page missing from this list).
+    assert ".app-shell:is([data-state=\"meeting\"],[data-state=\"automation\"],[data-state=\"connectors\"],[data-state=\"util\"],[data-state=\"settings\"]) .standalone-view-title," in FRAME
     assert ".app-shell[data-state=\"calendar\"] .calendar-view-title," in FRAME
     assert ".app-shell[data-state=\"library\"] .library-view h2 {" in FRAME
     assert "font-size: clamp(26px, 4vw, 34px);" in FRAME
