@@ -853,6 +853,12 @@ class CloudflareControlPlaneIdentityAuthority:
             )
         return membership
 
+    def supports_ensure_personal_tenant_membership(self) -> bool:
+        """True when the bound authority exposes the atomic personal-tenant RPC."""
+        return callable(
+            getattr(self._binding, "ensure_personal_tenant_membership", None)
+        )
+
     async def ensure_personal_tenant_membership(
         self,
         *,
