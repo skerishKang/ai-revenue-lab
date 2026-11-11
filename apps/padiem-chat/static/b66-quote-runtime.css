@@ -4,7 +4,7 @@
   padding: 0;
   border: 1px solid var(--border, rgba(127, 127, 127, 0.28));
   border-radius: 18px;
-  background: var(--panel, #11151d);
+  background: var(--panel);
   /* The glass theme's --panel is 46% alpha for cards that sit on the app's
      own blurred backdrop. A modal dialog hovers the raw page instead, so it
      carries its own blur — the hero text must not read through the form. */
@@ -74,7 +74,7 @@
   border: 0;
   border-radius: 10px;
   background: currentColor;
-  color: var(--panel, #11151d);
+  color: var(--panel);
   font: inherit;
   cursor: pointer;
 }
@@ -97,7 +97,7 @@
   gap: 10px;
   margin: 0;
   font-size: 13px;
-  color: var(--muted, inherit);
+  color: var(--muted);
 }
 .b66-quote-signin-hint[hidden] {
   display: none !important;
@@ -186,7 +186,7 @@
 }
 .b66-quote-connect-item strong { overflow-wrap: anywhere; }
 .b66-quote-connect-state { font-size: .8rem; opacity: .8; }
-.b66-quote-connect-state[data-state="online"] { color: var(--success, #137969); opacity: 1; }
+.b66-quote-connect-state[data-state="online"] { color: var(--success); opacity: 1; }
 /* #4434 follow-up: minimal TXT read request for the verified PC. */
 .b66-quote-connect-txt {
   margin-top: 10px;
@@ -228,8 +228,8 @@
   margin: 0;
   overflow-wrap: anywhere;
 }
-.b66-quote-connect-run-status[data-state="ready"] { color: var(--success, #137969); }
-.b66-quote-connect-run-status[data-state="error"] { color: var(--danger, #b3261e); }
+.b66-quote-connect-run-status[data-state="ready"] { color: var(--success); }
+.b66-quote-connect-run-status[data-state="error"] { color: var(--danger); }
 .b66-quote-connect :focus-visible { outline: 3px solid var(--focus, #2a7db4); outline-offset: 2px; }
 @media (max-width: 640px) {
   .b66-quote-connect-item { align-items: flex-start; flex-direction: column; }
@@ -265,7 +265,7 @@
 .b66-quote-pcform-status {
   margin: 0;
   font-size: 0.86rem;
-  color: var(--muted, #5a7488);
+  color: var(--muted);
 }
 
 /* #3180: what the fill put where, before the owner saves the workbook. */
@@ -301,5 +301,5 @@
 }
 
 .b66-quote-pcform-review-note {
-  color: var(--muted, #5a7488);
+  color: var(--muted);
 }

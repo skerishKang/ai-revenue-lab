@@ -155,8 +155,8 @@ html[data-theme="padiem-glass"] .auth-dialog::backdrop {
   padding: 24px;
   border: 1px solid rgba(127, 127, 127, 0.24);
   border-radius: 18px;
-  background: var(--panel, #fff);
-  color: var(--text, #202124);
+  background: var(--panel);
+  color: var(--text);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
 }
 
@@ -531,8 +531,8 @@ html body .app-shell .sidebar .history-row.history-skeleton {
   padding: 6px 14px;
   border: 1px solid var(--input-border-strong);
   border-radius: 999px;
-  background: var(--panel, #ffffff);
-  color: var(--text, #17202a);
+  background: var(--panel);
+  color: var(--text);
   font: inherit;
   font-weight: 650;
   cursor: pointer;
@@ -549,7 +549,7 @@ html body .app-shell .sidebar .history-row.history-skeleton {
   font-size: 11px;
   font-weight: 750;
   letter-spacing: .01em;
-  color: var(--muted, #8a8f98);
+  color: var(--muted);
 }
 
 /* #7365: connector-originated PC command records ("외부 AI 도구 요청: …") sit
@@ -573,7 +573,7 @@ html body .app-shell .sidebar .history-row.history-skeleton {
 .history-tool-requests .history-tool-requests-summary::before {
   content: "›";
   font-weight: 800;
-  color: var(--muted, #8a8f98);
+  color: var(--muted);
   transition: transform .18s ease;
 }
 .history-tool-requests[open] .history-tool-requests-summary::before {

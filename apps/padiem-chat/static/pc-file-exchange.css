@@ -25,7 +25,7 @@
   border: 1px solid var(--line);
   background: var(--surface, rgba(255, 255, 255, 0.94));
   box-shadow: 0 12px 40px rgba(20, 51, 73, 0.16);
-  color: var(--text, #243f53);
+  color: var(--text);
 }
 
 .pc-exchange-dialog[hidden],
@@ -54,7 +54,7 @@
 .pc-exchange-selection {
   margin: 0;
   font-size: 0.84rem;
-  color: var(--muted, #5a7488);
+  color: var(--muted);
 }
 
 .pc-exchange-pcs {
@@ -157,7 +157,7 @@
   gap: 8px;
   align-items: center;
   font-size: 0.84rem;
-  color: var(--muted, #5a7488);
+  color: var(--muted);
 }
 
 /* A control the owner cannot use in this mode is taken off the screen, not left
@@ -209,25 +209,25 @@
 
 .pc-exchange-mark {
   flex: 0 0 auto;
-  color: var(--muted, #5a7488);
+  color: var(--muted);
 }
 
 .pc-exchange-size,
 .pc-exchange-folder {
   flex: 0 1 auto;
   font-size: 0.78rem;
-  color: var(--muted, #5a7488);
+  color: var(--muted);
   overflow-wrap: anywhere;
 }
 
 .pc-exchange-status {
   font-size: 0.84rem;
   font-weight: 650;
-  color: var(--muted, #4a6a80);
+  color: var(--muted);
 }
 
 .pc-exchange-status[data-state="error"] {
-  color: var(--danger, #a1303f);
+  color: var(--danger);
 }
 
 .pc-exchange-footer {

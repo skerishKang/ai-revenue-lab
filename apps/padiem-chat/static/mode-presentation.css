@@ -61,7 +61,7 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 18px;
-  background: var(--panel, rgba(255, 255, 255, .96));
+  background: var(--panel);
   color: var(--text);
   box-shadow: 0 20px 60px rgba(0, 0, 0, .18);
   backdrop-filter: blur(20px);
@@ -161,14 +161,14 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
 /* Upgrade: Google Drive OFF (neutral) family */
 .mode-option-state--upgrade {
   background: rgba(127, 127, 127, .12);
-  color: var(--muted, #5b6672);
+  color: var(--muted);
   font-weight: 600;
 }
 
 /* Unavailable: neutral gray, muted */
 .mode-option-state--unavailable {
   background: rgba(127, 127, 127, .08);
-  color: var(--muted, #8a8f98);
+  color: var(--muted);
   opacity: .7;
 }
 
