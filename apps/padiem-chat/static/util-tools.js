@@ -29,6 +29,10 @@
       copied: "복사됨",
       copyFailed: "복사하지 못했습니다.",
       regenerate: "다시 만들기",
+      saveLibrary: "라이브러리에 저장",
+      savingLibrary: "저장 중…",
+      savedLibrary: "라이브러리에 저장했습니다.",
+      saveFailed: "문서를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
       refineChat: "대화로 다듬기",
       more: "더 자세히 (날짜·장소·메시지·말투)",
       speechGenerate: "초안 생성",
@@ -49,6 +53,10 @@
       copied: "Copied",
       copyFailed: "Couldn’t copy.",
       regenerate: "Generate again",
+      saveLibrary: "Save to library",
+      savingLibrary: "Saving…",
+      savedLibrary: "Saved to your library.",
+      saveFailed: "We couldn’t save the document. Please try again in a moment.",
       refineChat: "Refine in chat",
       more: "More (date, place, message, tone)",
       speechGenerate: "Draft the address",
@@ -72,6 +80,124 @@
     if (!entry) return "";
     if (typeof entry === "string") return entry;
     return entry[lang()] || entry.ko || "";
+  }
+
+  // Live copy comes from the Chat locale table (KR/EN); this module's own table
+  // keeps the surface readable when locale.js is not loaded (tests, harness).
+  function localeText(key, fallback) {
+    try {
+      if (window.__padiemLocale && typeof window.__padiemLocale.text === "function") {
+        const value = window.__padiemLocale.text(key);
+        if (value && value !== key) return value;
+      }
+    } catch (_) { /* the table is optional for a standalone mount */ }
+    return fallback;
+  }
+
+  // Locale keys are the shipped table entries; the table below is the fallback.
+  const LIBRARY_COPY = Object.freeze({
+    save: () => localeText("util-library-save", t("saveLibrary")),
+    saving: () => localeText("util-library-saving", t("savingLibrary")),
+    saved: () => localeText("util-library-saved", t("savedLibrary")),
+    failed: () => localeText("util-library-save-failed", t("saveFailed")),
+  });
+
+  function toolName(toolId) {
+    const reg = window.PadiemUtilManifest;
+    const tool = reg && typeof reg.getTool === "function" ? reg.getTool(toolId) : null;
+    return localized(tool && tool.name) || String(toolId || "");
+  }
+
+  // ── 라이브러리에 저장 (#7501) ──────────────────────────────────────────
+  // No second store and no second API: the owner-scoped project-file path the
+  // Chat library already reads is the only sink — POST /api/projects/{pid}/files
+  // writes the row the Library lists through /api/project-files. These three
+  // tools keep ONE home: the same pinned project the council app saves them into
+  // (apps/padiem-council-apps/static/council-app.js, COUNCIL_PROJECT_NAME), so a
+  // speech/SNS/meeting draft saved from either surface sits together and the
+  // Library groups it by doc_kind. A failed project read is not "there are no
+  // projects", so no create follows it.
+  const LIBRARY_PROJECT_NAME = "의원3종";
+
+  const libraryProject = (() => {
+    let currentPid = null;
+    let pending = null;
+    async function resolve() {
+      let list;
+      try { list = await window.fetch("/api/projects", { credentials: "include" }); } catch (_) { return null; }
+      if (!list || !list.ok) return null;
+      const data = await list.json().catch(() => null);
+      const projects = data && Array.isArray(data.projects) ? data.projects : null;
+      if (projects === null) return null;
+      const pinned = projects.find((p) => p && p.name === LIBRARY_PROJECT_NAME);
+      if (pinned && pinned.id) return pinned.id;
+      let created;
+      try {
+        created = await window.fetch("/api/projects", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: LIBRARY_PROJECT_NAME }),
+        });
+      } catch (_) { return null; }
+      if (!created || !created.ok) return null;
+      const payload = await created.json().catch(() => null);
+      return payload && payload.project && payload.project.id ? payload.project.id : null;
+    }
+    return {
+      ensure() {
+        if (currentPid) return Promise.resolve(currentPid);
+        // One shared promise: opening two tool screens must not race two reads
+        // (or two creates) for the same project.
+        if (!pending) {
+          pending = resolve().then(
+            (pid) => { currentPid = pid || null; if (!pid) pending = null; return pid; },
+            () => { pending = null; return null; },
+          );
+        }
+        return pending;
+      },
+    };
+  })();
+
+  function pad2(value) { return String(value).padStart(2, "0"); }
+
+  // 제목 = 도구 이름 + 날짜. 확장자는 기존 저장 경로가 받는 .txt 그대로다.
+  function libraryTitle(toolId) {
+    const now = new Date();
+    const stamp = now.getFullYear() + "-" + pad2(now.getMonth() + 1) + "-" + pad2(now.getDate());
+    return toolName(toolId) + " " + stamp;
+  }
+
+  async function postLibraryFile(pid, name, text, docKind) {
+    let res;
+    try {
+      res = await window.fetch("/api/projects/" + encodeURIComponent(pid) + "/files", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name, media_type: "text/plain", text: text, doc_kind: docKind }),
+      });
+    } catch (_) {
+      return { failure: { status: 0 } };
+    }
+    if (res.status === 409) return { conflict: true };
+    if (!res.ok) return { failure: { status: res.status } };
+    const data = await res.json().catch(() => null);
+    return data && data.file ? { file: data.file } : { failure: { status: res.status } };
+  }
+
+  // 같은 날 같은 도구로 한 번 더 저장하면 이름이 겹친다. 기존 행을 덮어쓰지
+  // 않고 번호를 붙인 새 이름으로 저장한다(기존 저장 경로의 409 규칙 그대로).
+  async function saveToLibrary(toolId, text) {
+    const pid = await libraryProject.ensure();
+    if (!pid) return { failure: { status: 0 } };
+    const base = libraryTitle(toolId);
+    let outcome = await postLibraryFile(pid, base + ".txt", text, toolId);
+    for (let n = 2; outcome.conflict && n <= 9; n += 1) {
+      outcome = await postLibraryFile(pid, base + " (" + n + ").txt", text, toolId);
+    }
+    return outcome.conflict ? { failure: { status: 409 } } : outcome;
   }
 
   function contract() { return window.PadiemUtilContract || null; }
@@ -305,11 +431,16 @@
     copyBtn.type = "button";
     copyBtn.disabled = true;
     copyBtn.setAttribute("data-util-copy", "");
+    const saveBtn = element("button", "util-result-button", LIBRARY_COPY.save());
+    saveBtn.type = "button";
+    saveBtn.disabled = true;
+    saveBtn.setAttribute("data-util-save-library", "");
     const againBtn = element("button", "util-result-button util-result-generate", t("regenerate"));
     againBtn.type = "button";
     againBtn.disabled = true;
     againBtn.setAttribute("data-util-regenerate", "");
     resultActions.appendChild(copyBtn);
+    resultActions.appendChild(saveBtn);
     resultActions.appendChild(againBtn);
 
     let refineBtn = null;
@@ -334,6 +465,11 @@
 
     let busy = false;
     let lastAnswer = "";
+
+    // 결과가 비어 있으면 저장도 비활성(복사·다시 만들기와 같은 규칙).
+    function refreshSaveEnabled() {
+      saveBtn.disabled = busy || !String(lastAnswer || "").trim();
+    }
 
     async function runGeneration(overrideValues, refinementNote) {
       if (busy) return false;
@@ -360,6 +496,7 @@
       primary.disabled = true;
       copyBtn.disabled = true;
       againBtn.disabled = true;
+      refreshSaveEnabled();
       if (refineBtn) refineBtn.disabled = true;
       setStatus(t("generating"), "busy");
       result.hidden = false;
@@ -394,6 +531,7 @@
         const hasAnswer = Boolean(String(lastAnswer || "").trim());
         copyBtn.disabled = !hasAnswer;
         againBtn.disabled = !hasAnswer;
+        refreshSaveEnabled();
         if (refineBtn) refineBtn.disabled = !hasAnswer;
       }
     }
@@ -441,6 +579,8 @@
       inputPane.appendChild(status);
     }
 
+    refreshSaveEnabled();
+
     wrap.appendChild(inputPane);
     wrap.appendChild(resultPane);
 
@@ -452,6 +592,21 @@
     if (refineBtn) {
       refineBtn.addEventListener("click", () => { setMode("chat", true); });
     }
+    saveBtn.addEventListener("click", async () => {
+      const text = plainAnswer(lastAnswer).trim();
+      if (!text || saveBtn.disabled) return;
+      const originalLabel = LIBRARY_COPY.save();
+      saveBtn.disabled = true;
+      saveBtn.textContent = LIBRARY_COPY.saving();
+      const outcome = await saveToLibrary(toolId, text);
+      saveBtn.textContent = originalLabel;
+      refreshSaveEnabled();
+      if (outcome.file) {
+        setStatus(LIBRARY_COPY.saved(), "info");
+      } else {
+        setStatus(LIBRARY_COPY.failed(), "error");
+      }
+    });
     copyBtn.addEventListener("click", () => {
       const text = plainAnswer(lastAnswer).trim();
       if (!text) return;
