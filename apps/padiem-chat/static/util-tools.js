@@ -112,12 +112,13 @@
   // No second store and no second API: the owner-scoped project-file path the
   // Chat library already reads is the only sink — POST /api/projects/{pid}/files
   // writes the row the Library lists through /api/project-files. These three
-  // tools keep ONE home: the same pinned project the council app saves them into
+  // tools keep ONE home: the Chat util's own pinned project "유틸". The council
+  // app is a different site and pins its own project
   // (apps/padiem-council-apps/static/council-app.js, COUNCIL_PROJECT_NAME), so a
-  // speech/SNS/meeting draft saved from either surface sits together and the
-  // Library groups it by doc_kind. A failed project read is not "there are no
-  // projects", so no create follows it.
-  const LIBRARY_PROJECT_NAME = "의원3종";
+  // Chat util result must never surface as that project in a Chat user's
+  // project list (#7501 후속). The Library groups the rows by doc_kind. A
+  // failed project read is not "there are no projects", so no create follows it.
+  const LIBRARY_PROJECT_NAME = "유틸";
 
   const libraryProject = (() => {
     let currentPid = null;

@@ -215,7 +215,7 @@ function tick() { return new Promise((resolve) => setImmediate(resolve)); }
   check("library_project_read", projectReads.length === 1);
   check("library_project_read_credentials", projectReads.length === 1
     && projectReads[0].init && projectReads[0].init.credentials === "include");
-  if (scenario.projects && scenario.projects.some((p) => p && p.name === "의원3종")) {
+  if (scenario.projects && scenario.projects.some((p) => p && p.name === "유틸")) {
     check("reuses_the_pinned_project", projectCreates.length === 0
       && saves.length >= 1 && saves.every((r) => r.url === "/api/projects/proj_pinned/files"));
   } else if (scenario.projectsUnavailable || scenario.createFails) {
@@ -223,7 +223,7 @@ function tick() { return new Promise((resolve) => setImmediate(resolve)); }
     check("project_failure_is_reported", /저장하지 못했습니다\.|couldn’t save/.test(text(host)));
   } else {
     check("creates_the_pinned_project", projectCreates.length === 1
-      && projectCreates[0].body && projectCreates[0].body.name === "의원3종");
+      && projectCreates[0].body && projectCreates[0].body.name === "유틸");
     check("saves_into_the_created_project", saves.length === 1
       && saves[0].url === "/api/projects/proj_created/files");
   }

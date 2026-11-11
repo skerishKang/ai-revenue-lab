@@ -6,6 +6,9 @@ Pinned here:
   store, no second route, no new server module;
 - the button sits in the Util result panel (util-tools.js), disabled while the
   result is empty, and app.js gains nothing;
+- the save lands in the Chat util's own pinned project "유틸" — the council app
+  is a different site with its own project (#7501 후속), so a Chat util result
+  never surfaces as that project in a Chat user's project list;
 - the stored body is the result as it is shown, the stored title is
   "도구 이름 + 날짜", and the tool that made it is kept as doc_kind
   (speech / sns / meeting);
@@ -74,8 +77,15 @@ def test_the_library_the_owner_reopens_is_the_same_owner_scoped_list() -> None:
 
 
 def test_app_js_gains_no_save_logic() -> None:
-    for token in ("util-library-save", "data-util-save-library", "의원3종"):
+    for token in ("util-library-save", "data-util-save-library", "유틸"):
         assert token not in APP_JS, token
+
+
+def test_the_pinned_project_is_not_the_council_project() -> None:
+    # #7501 후속: 의원 3종은 Chat 유틸과 다른 사이트다. Chat 유틸 결과가 Chat
+    # 사용자의 프로젝트 목록에 '의원3종' 프로젝트로 생기지 않는다.
+    assert '"의원3종"' not in TOOLS_JS
+    assert 'const LIBRARY_PROJECT_NAME = "유틸";' in TOOLS_JS
 
 
 # ── copy: locale keys in KR and EN, no status token ────────────────────────
@@ -128,7 +138,7 @@ def _assert_checks(result: dict, names) -> None:
 
 @pytest.mark.parametrize("tool", TOOL_IDS)
 def test_behaviour_the_button_is_inert_until_there_is_a_result(tool: str) -> None:
-    result = _run_harness({"tool": tool, "projects": [{"id": "proj_pinned", "name": "의원3종"}]})
+    result = _run_harness({"tool": tool, "projects": [{"id": "proj_pinned", "name": "유틸"}]})
     _assert_checks(result, (
         "save_button_present", "save_label_is_locale_copy",
         "save_disabled_before_result", "save_before_result_makes_no_request",
@@ -138,7 +148,7 @@ def test_behaviour_the_button_is_inert_until_there_is_a_result(tool: str) -> Non
 
 @pytest.mark.parametrize("tool", TOOL_IDS)
 def test_behaviour_the_save_posts_the_result_to_the_existing_store(tool: str) -> None:
-    result = _run_harness({"tool": tool, "projects": [{"id": "proj_pinned", "name": "의원3종"}]})
+    result = _run_harness({"tool": tool, "projects": [{"id": "proj_pinned", "name": "유틸"}]})
     _assert_checks(result, (
         "library_project_read", "library_project_read_credentials", "reuses_the_pinned_project",
         "save_posts_with_credentials", "save_inline_is_json", "save_body_media_type",
@@ -155,7 +165,7 @@ def test_behaviour_a_first_save_creates_the_pinned_project_once() -> None:
     result = _run_harness({"tool": "speech", "projects": []})
     _assert_checks(result, ("creates_the_pinned_project", "saves_into_the_created_project", "saved_notice"))
     creates = [r for r in result["requests"] if r["url"] == "/api/projects" and r["method"] == "POST"]
-    assert len(creates) == 1 and creates[0]["body"] == {"name": "의원3종"}
+    assert len(creates) == 1 and creates[0]["body"] == {"name": "유틸"}
 
 
 def test_behaviour_a_failed_project_read_saves_nothing() -> None:
@@ -166,7 +176,7 @@ def test_behaviour_a_failed_project_read_saves_nothing() -> None:
 def test_behaviour_a_store_failure_uses_the_existing_korean_sentence() -> None:
     result = _run_harness({
         "tool": "meeting",
-        "projects": [{"id": "proj_pinned", "name": "의원3종"}],
+        "projects": [{"id": "proj_pinned", "name": "유틸"}],
         "saveResponses": [{"status": 503, "body": {"error": {"code": "unavailable"}}}],
         "expectFailure": True,
     })
@@ -179,7 +189,7 @@ def test_behaviour_a_store_failure_uses_the_existing_korean_sentence() -> None:
 def test_behaviour_english_copy_when_the_ui_is_english() -> None:
     result = _run_harness({
         "tool": "speech", "lang": "en",
-        "projects": [{"id": "proj_pinned", "name": "의원3종"}],
+        "projects": [{"id": "proj_pinned", "name": "유틸"}],
     })
     _assert_checks(result, ("save_label_is_locale_copy", "saved_notice"))
 
@@ -187,7 +197,7 @@ def test_behaviour_english_copy_when_the_ui_is_english() -> None:
 def test_behaviour_the_same_day_name_conflict_never_overwrites() -> None:
     result = _run_harness({
         "tool": "sns",
-        "projects": [{"id": "proj_pinned", "name": "의원3종"}],
+        "projects": [{"id": "proj_pinned", "name": "유틸"}],
         "saveResponses": [
             {"status": 409, "body": {"error": {"code": "name_conflict"}}},
             {"status": 201},
@@ -239,7 +249,7 @@ class _MemoryStore:
         from app.project_files import OwnerFileProjection
         return [
             OwnerFileProjection(
-                id=item.id, project_id=item.project_id, project_name="의원3종", name=item.name,
+                id=item.id, project_id=item.project_id, project_name="유틸", name=item.name,
                 media_type=item.media_type, content_chars=4,
                 created_at="2026-11-11T00:00:00.000Z", updated_at="2026-11-11T00:00:00.000Z",
             )
@@ -276,7 +286,7 @@ def test_server_side_the_saved_row_is_the_one_the_library_lists() -> None:
 
     class _History:
         async def get_project(self, uid, pid):
-            return SimpleNamespace(id=pid, name="의원3종")
+            return SimpleNamespace(id=pid, name="유틸")
 
     request.app.state.history_store = _History()
 
