@@ -3,8 +3,10 @@ from pathlib import Path
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
-#7216 R5 step 5a: showConversation moved into chat-conversation-module.js.
+#7216 R5 step 5a/A2: showConversation and runs-read/memory moved into modules.
 CONV = (STATIC / "chat-conversation-module.js").read_text(encoding="utf-8")
+RUN_HISTORY = (STATIC / "chat-run-history-module.js").read_text(encoding="utf-8")
+MEM = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
 CSS = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
 
 
@@ -30,9 +32,9 @@ def test_claw_disclosures_are_css_hidden_outside_claw_state():
 
 
 def test_claw_owner_scoped_history_contract_survives():
-    assert '/api/claw/runs?limit=' in APP
-    assert 'shell.dataset.state === "claw"' in APP
-    assert 'authState.authenticated === true' in APP
+    assert '/api/claw/runs?limit=' in RUN_HISTORY
+    assert 'deps.shell.dataset.state === "claw"' in MEM
+    assert 'deps.authState.authenticated === true' in MEM
 
 
 def test_7459_chat_state_never_reexposes_claw_panels():

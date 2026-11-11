@@ -159,7 +159,11 @@ def test_memory_surfaces_stay_secondary() -> None:
         line = next(l for l in INDEX.splitlines() if marker in l)
         assert "hidden" in line, marker
     # Memory proposals render from exactly one call site: preview success.
-    assert APP.count("renderMemoryProposalReview(") == 2
+    # R5 A2: 1 definition in chat-memory-module.js + 1 app.renderMemoryProposalReview call in app.js.
+    memory_module = (STATIC / "chat-memory-module.js").read_text(encoding="utf-8")
+    assert memory_module.count("function renderMemoryProposalReview(") == 1
+    assert APP.count("app.renderMemoryProposalReview(") == 1
+    assert (APP + memory_module).count("renderMemoryProposalReview(") == 2
 
 
 def test_sticky_bottom_reserve_intact() -> None:

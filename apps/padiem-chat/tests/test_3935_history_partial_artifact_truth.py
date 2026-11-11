@@ -13,15 +13,13 @@ from _r5_function_source import definition_source
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 APP = STATIC / "app.js"
+RUN_HISTORY = STATIC / "chat-run-history-module.js"
 LOCALE = STATIC / "locale.js"
 CSS = STATIC / "claw-workspace.css"
 
 NODE = r"""
 const fs = require("fs"), vm = require("vm"), assert = require("assert");
-const app = fs.readFileSync(process.argv[1], "utf8");
-const start = app.indexOf("  function renderClawRunCard(run) {");
-const end = app.indexOf("\n  function fetchClawRunHistory(", start);
-assert(start >= 0 && end > start, "actual run-card source is located");
+const mod = fs.readFileSync(process.argv[1], "utf8");
 function el(tag) {
   return {
     tag, className:"", textContent:"", dataset:{}, children:[], listeners:{},
@@ -37,17 +35,20 @@ const strings={
   "claw-runs-download":"Download document again",
   "claw-runs-artifact-unverified":"This run is not marked complete. A recorded document does not prove task success; access is checked when downloading.",
 };
-const renderCard=vm.runInNewContext("("+app.slice(start,end).trim()+")",{
-  document:{createElement:el},
-  window:{PadiemClawPdfPreview:null},
+const win={PadiemClawPdfPreview:null};
+vm.runInNewContext(mod,{
+  document:{createElement:el,getElementById:()=>null},
+  window:win,Date,Promise,Boolean,String,Number,Intl,Object,
+});
+const renderCard=win.PadiemChatRunHistoryModule.create({
+  uiT:(status)=>status,
   clawT:(key)=>strings[key] || key,
-  clawRunStatusLabel:(status)=>status,
   clawRunHistoryPdfControllers:new Set(),
   setClawRunHistoryStatus:()=>{},
   downloadClawArtifact:(id,name)=>downloads.push([id,name]),
   openSavedConversation:()=>{throw Error("unexpected session open")},
   renderClawApprovalControls:()=>{},
-});
+}).renderClawRunCard;
 const art={document_id:"doc_"+"a".repeat(32),filename:"output.docx",
    media_type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"};
 function nodes(root,predicate) {
@@ -90,7 +91,7 @@ console.log("HARK_3935_USER_FILENAME_TEXT_ONLY=PASS");
 
 def test_actual_run_card_failed_partial_artifact_truth():
     proc = subprocess.run(
-        ["node", "-e", NODE, str(APP)], encoding="utf-8",
+        ["node", "-e", NODE, str(RUN_HISTORY)], encoding="utf-8",
         text=True, capture_output=True, check=False, timeout=25,
     )
     assert proc.returncode == 0, proc.stdout + proc.stderr
@@ -104,19 +105,18 @@ def test_actual_run_card_failed_partial_artifact_truth():
 
 
 def test_two_locales_and_theme_preserve_warning_without_granting_authority():
-    app = APP.read_text(encoding="utf-8")
+    card_source = definition_source("renderClawRunCard")
     locale = LOCALE.read_text(encoding="utf-8")
     css = CSS.read_text(encoding="utf-8")
     key = '"claw-runs-artifact-unverified"'
-    assert app.count('clawT("claw-runs-artifact-unverified")') == 1
+    assert card_source.count('deps.clawT("claw-runs-artifact-unverified")') == 1
     assert locale.count(key) == 2
     ko, en = locale.split("en: {", 1)
     assert "전체 작업의 성공" in ko
     assert "does not prove task success" in en
     assert ".claw-run-card-partial-note" in css
     assert "var(--muted)" in css
-    # R5 0단계(R-01): renderClawRunCard의 실제 정의가 있는 소스에서 잘라낸다.
-    card_source = definition_source("renderClawRunCard")
-    block = card_source.split("function renderClawRunCard(run) {", 1)[1].split("\n  function fetchClawRunHistory(", 1)[0]
+    # R5 A2: renderClawRunCard lives in chat-run-history-module.js right before wireRunHistoryListeners.
+    block = card_source.split("function renderClawRunCard(run) {", 1)[1].split("function wireRunHistoryListeners(", 1)[0]
     for forbidden in ("fetch(", "POST", "localStorage", "sessionStorage", "approve(", "retry("):
         assert forbidden not in block
