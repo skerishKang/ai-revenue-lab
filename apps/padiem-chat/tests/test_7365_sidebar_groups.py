@@ -19,6 +19,8 @@ import json
 import subprocess
 from pathlib import Path
 
+from _r5_auth_module_harness import observations as auth_observations
+
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
 INDEX_PATH = STATIC / "index.html"
@@ -86,17 +88,19 @@ def test_settings_is_a_first_class_account_menu_entry_for_guests_too() -> None:
 
 def test_guests_see_the_materials_group_honestly_empty() -> None:
     app = APP_PATH.read_text(encoding="utf-8")
-    auth = (STATIC / "chat-auth-module.js").read_text(encoding="utf-8")
-    # A signed-out (guest) account keeps the projects section visible with its
-    # empty-state note instead of hiding the whole group.
+    # R2(#7186): the guest projection is observed by executing
+    # chat-auth-module.js with the shipped guest session — the history group and
+    # its empty note stay visible (no failure rows for an empty account).
+    guest = auth_observations()["states"]["guest"]
+    assert guest["historyHidden"] is False
+    assert guest["historyEmptyHidden"] is False
+    assert guest["settingsHidden"] is True
+    # Boundary kept as text: clearProjectsUI lives in app.js, which no module
+    # owns (R5 did not move it), so its markup assignment has no execution
+    # harness. This is the projects half of the same #7438 decision.
     clear_block = app.split("function clearProjectsUI()", 1)[1].split("renderProjectState();", 1)[0]
     assert "projectsSection.hidden = false;" in clear_block
     assert "projectsEmpty.hidden = false;" in clear_block
-    # The guest fallthrough shows the history section and its empty note
-    # without fetching (no failure rows for an empty account).
-    guest_block = auth.split('deps.accountName.textContent = deps.uiT("guest");', 1)[1]
-    assert "deps.historySection.hidden = false;" in guest_block
-    assert "deps.historyEmpty.hidden = false;" in guest_block
 
 
 def test_the_tools_group_names_itself_for_screen_readers() -> None:
