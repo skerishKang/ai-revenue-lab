@@ -70,3 +70,18 @@ class ChatPCDriveError(ValueError):
         if self.cause is not None:
             error["cause"] = self.cause
         return error
+
+
+class ChatPCApprovalPause(Exception):
+    """Non-error carrier when the Engine pauses a PC run for user confirmation."""
+
+    def __init__(
+        self,
+        orchestration: dict,
+        conversation_id: str | None = None,
+        run_id: str | None = None,
+    ) -> None:
+        super().__init__("approval_paused")
+        self.orchestration = dict(orchestration)
+        self.conversation_id = conversation_id
+        self.run_id = run_id

@@ -1070,6 +1070,8 @@ async def _model_first_json(
                 403,
             )
         timing.set_path(PATH_TOOL)
+        from .chat_pc_errors import ChatPCApprovalPause
+
         try:
             outcome = await execute_model_first_tool(
                 request,
@@ -1083,6 +1085,17 @@ async def _model_first_json(
                 store=store,
                 grounding_context=grounding_context,
             )
+        except ChatPCApprovalPause as paused:
+            timing.mark("engine")
+            paused_payload: dict[str, Any] = {
+                "orchestration": dict(paused.orchestration),
+                "answer": None,
+                "decision_status": None,
+            }
+            paused_payload.update(grounding_notice)
+            if paused.conversation_id is not None:
+                paused_payload["conversation_id"] = paused.conversation_id
+            return JSONResponse(paused_payload)
         except Exception as exc:
             return _model_first_error_response(exc)
         if outcome is None:
@@ -1198,6 +1211,8 @@ async def _model_first_ndjson(
                 )
                 return
             timing.set_path(PATH_TOOL)
+            from .chat_pc_errors import ChatPCApprovalPause
+
             progress = ProgressFrameBuilder()
             started = progress.frame("tool_started", tool_name=tool_call.name)
             if started is not None:
@@ -1215,6 +1230,16 @@ async def _model_first_ndjson(
                     store=store,
                     grounding_context=grounding_context,
                 )
+            except ChatPCApprovalPause as paused:
+                timing.mark("engine")
+                pause_frame: dict[str, Any] = {
+                    "type": "orchestration_pause",
+                    "orchestration": dict(paused.orchestration),
+                }
+                if paused.conversation_id is not None:
+                    pause_frame["conversation_id"] = paused.conversation_id
+                yield line(pause_frame)
+                return
             except Exception as exc:
                 failed = progress.frame("tool_failed", tool_name=tool_call.name)
                 if failed is not None:

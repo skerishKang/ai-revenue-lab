@@ -34,7 +34,7 @@ from padiem_ai_core.pc_device_identity import is_pc_device_id
 from padiem_ai_core.tool_channel import ToolDefinition
 
 from .auth_routes import auth_ready, current_user_id
-from .chat_pc_errors import ChatPCDriveError
+from .chat_pc_errors import ChatPCApprovalPause, ChatPCDriveError
 from .history import (
     HistoryForbidden,
     HistoryStore,
@@ -1197,6 +1197,16 @@ async def _execute_chat_pc_files_lane(
         raise ChatPCDriveError(
             "chat_pc_engine_unavailable", exc.user_message, exc.status_code, cause=exc.code,
         ) from exc
+    orchestration_payload = getattr(outcome, "orchestration", None)
+    if (
+        isinstance(orchestration_payload, Mapping)
+        and orchestration_payload.get("approval_pause") is not None
+    ):
+        raise ChatPCApprovalPause(
+            dict(orchestration_payload),
+            conversation_id=staged_conversation_id,
+            run_id=lane_run_id,
+        )
     answer = outcome.answer if isinstance(outcome.answer, str) else None
     if not answer or not answer.strip():
         await _append_lane_notice(
