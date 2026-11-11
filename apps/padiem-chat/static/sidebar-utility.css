@@ -113,6 +113,17 @@
   cursor: progress;
 }
 
+/* #7459: before the auth status answers, the account row keeps its space with
+ * a neutral placeholder. A previous signed-in visit reserves the profile shape
+ * instead of the sign-in shape, so the first paint does not shift. */
+.sidebar-account[data-account-state="pending"] #loginPending {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+}
+.sidebar-account[data-account-state="pending"][data-account-hint="signed_in"] #loginPending {
+  display: none !important;
+}
+
 @media (max-width: 640px) {
   .sidebar-account {
     min-height: 52px;
