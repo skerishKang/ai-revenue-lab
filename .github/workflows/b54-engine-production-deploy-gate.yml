@@ -442,7 +442,27 @@ jobs:
           echo "POST_DEPLOY_CONVERGENCE_READS=${convergence_reads}"
           echo 'POST_DEPLOY_SERVED_VERSION_CONVERGED=PASS'
           version_detail="${RUNNER_TEMP}/version-post.json"
-          curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
+          # Run 43074979472: the /deployments index named the new version on
+          # convergence read 1, but the version-detail read 240ms later 404'd
+          # (read-your-writes gap on the versions endpoint; run 42993536418
+          # read the same shape instantly). Bounded retry with a fixed count
+          # and interval; the guard still fails closed after the window and
+          # never skips the binding verification below.
+          detail_code='000'
+          detail_ok=''
+          for detail_attempt in 1 2 3 4 5; do
+            detail_code=$(curl -sS -o "${version_detail}" -w '%{http_code}' \
+              "${auth[@]}" "${base}/versions/${active_version}" || true)
+            if [ "${detail_code}" = "200" ]; then detail_ok=yes; break; fi
+            echo "POST_DEPLOY_VERSION_DETAIL_RETRY attempt=${detail_attempt} http=${detail_code}"
+            sleep 5
+          done
+          if [ -z "${detail_ok}" ]; then
+            echo 'POST_DEPLOY_VERSION_DETAIL_READ=FAIL' >&2
+            echo "REASON=version detail for ${active_version} unreadable after 5 attempts (last http ${detail_code})" >&2
+            exit 1
+          fi
+          echo "POST_DEPLOY_VERSION_DETAIL_READ=PASS attempts=${detail_attempt}"
           # #4194 exact source-commissioned addition: the 18 existing Engine
           # bindings must remain byte-for-byte identical. The only accepted
           # additions are the exact Hark WEB_XLSX_PRIVATE_B62_D1 id and
