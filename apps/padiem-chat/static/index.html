@@ -44,6 +44,7 @@
   <link rel="stylesheet" href="./util-tools.css" />
   <link rel="stylesheet" href="./util-chat-mode.css" />
   <link rel="stylesheet" href="./util-quote.css" />
+  <link rel="stylesheet" href="./util-excel.css" />
   <link rel="stylesheet" href="./claw-quote-compare.css" />
   <link rel="stylesheet" href="./b66-quote-runtime.css" />
   <link rel="stylesheet" href="./claw-local-handoff.css" />
@@ -1410,6 +1411,9 @@
   <!-- #7173 PR4: the quote draft screen mounts into #util/quote; it loads before
        util-app.js so a deep link paints its form on the first route render. -->
   <script src="./util-quote.js" defer></script>
+  <!-- #7500: the Excel open & review screen mounts into #util/excel; it loads
+       before util-app.js for the same first-paint deep-link reason. -->
+  <script src="./util-excel.js" defer></script>
   <script src="./util-app.js" defer></script>
   <script src="./util-menu.js" defer></script>
   <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
