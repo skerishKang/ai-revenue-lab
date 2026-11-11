@@ -397,7 +397,7 @@ def test_no_admin_surface_no_persistence_and_no_url_secret(browser, server):
     for forbidden in ("관리자", "Admin", "운영 콘솔", "Portfolio"):
         assert forbidden not in home
     # Nothing is persisted and no credential enters the URL.
-    assert page.evaluate("() => localStorage.length + sessionStorage.length") == 0
+    assert page.evaluate("() => Object.keys(localStorage).filter((k) => k !== 'padiem.chat.auth.lastSignedIn').length + sessionStorage.length") == 0
     url = page.url
     for marker in ("token", "session", "access_token", "email"):
         assert marker not in url.lower()

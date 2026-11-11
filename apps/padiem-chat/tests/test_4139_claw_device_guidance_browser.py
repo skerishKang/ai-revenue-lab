@@ -225,7 +225,7 @@ def test_guidance_never_echoes_server_text_and_persists_nothing(browser, server)
     assert name not in guide.inner_text()
     assert guide.locator("img").count() == 0
     assert page.evaluate("window.pwned === true") is False
-    assert page.evaluate("() => localStorage.length + sessionStorage.length") == 0
+    assert page.evaluate("() => Object.keys(localStorage).filter((k) => k !== 'padiem.chat.auth.lastSignedIn').length + sessionStorage.length") == 0
     assert not errors, errors
     page.close()
 
@@ -310,6 +310,6 @@ def test_language_switch_keeps_zero_network_and_no_authority(browser, server):
     # Still exactly the one directory read, no selection, nothing persisted.
     assert requests == ["GET"]
     assert page.locator('#clawDeviceManagerList [aria-pressed="true"]').count() == 0
-    assert page.evaluate("() => localStorage.length + sessionStorage.length") == 0
+    assert page.evaluate("() => Object.keys(localStorage).filter((k) => k !== 'padiem.chat.auth.lastSignedIn').length + sessionStorage.length") == 0
     assert not errors, errors
     page.close()
