@@ -31,6 +31,7 @@ from pathlib import Path
 
 # R5 0단계(R-01): 함수 본문은 app.js든 분리 모듈이든 같은 도우미로 찾는다.
 from _r5_function_source import definition_source
+from _r5_streaming_harness import run_streaming_scenario
 from types import SimpleNamespace
 
 from starlette.requests import Request
@@ -252,16 +253,25 @@ def test_the_lane_without_a_search_service_calls_no_provider(monkeypatch) -> Non
 
 
 def test_the_browser_forwards_the_grounded_evidence_into_the_stream() -> None:
-    """The evidence reaches the answer surface, so the sources are shown."""
+    """The evidence reaches the answer surface, so the sources are shown.
+
+    #7186 R2: the streaming half of this test used to pin two source strings in
+    `chat-streaming-module.js`. It now runs the real module with a `done` frame
+    that carries evidence and observes that the shared renderer was called and
+    the web_search stage was recorded. The transport half stays a source pin:
+    it is the transport's own field forwarding, and the module never sees it.
+    """
     transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
     assert "donePayload.evidence = data.evidence;" in transport
     assert "donePayload.tool = data.tool;" in transport
     assert "donePayload.answer_status = data.answer_status;" in transport
 
-    app = (STATIC / "app.js").read_text(encoding="utf-8")
-    stream = (STATIC / "chat-streaming-module.js").read_text(encoding="utf-8")
-    assert "window.PadiemSearchSources?.render?.(article, data.evidence);" in stream
-    assert 'window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search")' in stream
+    observed = run_streaming_scenario("done_with_grounded_evidence")
+    assert observed["ok"] is True
+    assert observed["evidence"]["rendered"] == [{"url": "https://example.test/a", "title": "A"}]
+    assert "web_search" in observed["article"]["events"]
+    assert "evidence" in observed["article"]["events"]
+    assert observed["evidence"]["taskEvidence"] == "true"
 
     sources = (STATIC / "search-sources.js").read_text(encoding="utf-8")
     assert "window.PadiemSearchSources = Object.freeze({" in sources
