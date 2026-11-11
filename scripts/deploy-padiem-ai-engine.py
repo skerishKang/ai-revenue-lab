@@ -37,12 +37,15 @@ PRODUCT_ADAPTER_SOURCE_DEPENDENCY = (
     '"korean-ai-code-agent @ file://${PROJECT_ROOT}/../korean-ai-code-agent"'
 )
 STAGED_WHEEL_DIR = ".deploy-wheels"
+# #7481: the B14_SERVICE service binding was retired in #7400. Keep this list
+# aligned with apps/padiem-ai-engine/wrangler.toml so a staged deploy cannot
+# require a binding the current config no longer declares. keep_vars is part of
+# the contract because operator-owned WEB_XLSX flags must survive a deploy.
 WRANGLER_REQUIRED_SNIPPETS = (
     'name = "padiem-ai-engine"',
     'main = "worker_identity.py"',
     "workers_dev = false",
-    'binding = "B14_SERVICE"',
-    'service = "ai-revenue-korean-ai-platform"',
+    "keep_vars = true",
 )
 COPY_IGNORE = shutil.ignore_patterns(
     ".venv",
@@ -235,6 +238,7 @@ def deploy_staged_engine(
             pywrangler_package,
             "pywrangler",
             "deploy",
+            "--keep-vars",
             "--config",
             "wrangler.toml",
         ],

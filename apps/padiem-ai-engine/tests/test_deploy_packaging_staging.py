@@ -20,7 +20,7 @@ def _canonical_pyproject() -> str:
 
 
 def _canonical_wrangler() -> str:
-    return """name = \"padiem-ai-engine\"\nmain = \"worker_identity.py\"\ncompatibility_date = \"2026-08-27\"\ncompatibility_flags = [\"python_workers\"]\nworkers_dev = false\n\n[[services]]\nbinding = \"B14_SERVICE\"\nservice = \"ai-revenue-korean-ai-platform\"\n"""
+    return """name = \"padiem-ai-engine\"\n# #4383: preserve operator-owned variables on deploy.\nkeep_vars = true\nmain = \"worker_identity.py\"\ncompatibility_date = \"2026-08-27\"\ncompatibility_flags = [\"python_workers\"]\nworkers_dev = false\n"""
 
 
 def test_rewrite_staged_pyproject_points_only_staged_copy_to_wheel(tmp_path: Path) -> None:
@@ -87,3 +87,48 @@ def test_prepare_staging_preserves_canonical_files_and_copies_wheel(tmp_path: Pa
     assert (stage / "wrangler.toml").read_bytes() == original_wrangler
     assert staged_wheel.read_bytes() == wheel.read_bytes()
     assert "../../packages/padiem-ai-core" not in (stage / "pyproject.toml").read_text(encoding="utf-8")
+
+
+def test_required_wrangler_snippets_match_the_current_engine_config() -> None:
+    engine_wrangler = Path(__file__).resolve().parents[1] / "wrangler.toml"
+    _MODULE.validate_wrangler_contract(engine_wrangler)
+
+    assert 'binding = "B14_SERVICE"' not in _MODULE.WRANGLER_REQUIRED_SNIPPETS
+    assert 'service = "ai-revenue-korean-ai-platform"' not in _MODULE.WRANGLER_REQUIRED_SNIPPETS
+    assert "keep_vars = true" in _MODULE.WRANGLER_REQUIRED_SNIPPETS
+
+
+def test_validate_wrangler_contract_requires_keep_vars(tmp_path: Path) -> None:
+    wrangler = tmp_path / "wrangler.toml"
+    wrangler.write_text(_canonical_wrangler().replace("keep_vars = true\n", ""), encoding="utf-8")
+
+    with pytest.raises(RuntimeError, match="keep_vars"):
+        _MODULE.validate_wrangler_contract(wrangler)
+
+
+def test_deploy_uses_the_production_gate_keep_vars_flag(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    gate = (
+        Path(__file__).resolve().parents[3]
+        / ".github"
+        / "workflows"
+        / "b54-engine-production-deploy-gate.yml"
+    ).read_text(encoding="utf-8")
+    assert "pywrangler deploy --keep-vars" in gate
+
+    wrangler = tmp_path / "wrangler.toml"
+    wrangler.write_text(_canonical_wrangler(), encoding="utf-8")
+    calls: list[tuple[list[str], Path]] = []
+
+    def fake_run(command: list[str], *, cwd: Path) -> None:
+        calls.append((list(command), Path(cwd)))
+
+    monkeypatch.setenv("CLOUDFLARE_ACCOUNT_ID", "test-account")
+    monkeypatch.setattr(_MODULE, "_run", fake_run)
+
+    _MODULE.deploy_staged_engine(tmp_path)
+
+    assert len(calls) == 1
+    command, cwd = calls[0]
+    assert cwd == tmp_path
+    assert "--keep-vars" in command
+    assert command[command.index("--config") + 1] == "wrangler.toml"

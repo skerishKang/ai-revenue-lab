@@ -19,6 +19,8 @@ import uuid
 from padiem_ai_engine_client import PadiemAiEngineClient, PadiemAiEngineClientError
 from padiem_ai_core.orchestration_events import OrchestrationEventKind
 
+from .local_engine_transport import LocalEngineTransportError
+
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 _CONTINUATION_RE = re.compile(r"^cont_[A-Za-z0-9_-]{8,123}$")
 _ALLOWED_EVENT_KINDS = frozenset(item.value for item in OrchestrationEventKind)
@@ -400,6 +402,20 @@ def _engine_error(exc: PadiemAiEngineClientError) -> B62OrchestrationError:
     )
 
 
+def _transport_error(exc: LocalEngineTransportError) -> B62OrchestrationError:
+    if getattr(exc, "timed_out", False):
+        return B62OrchestrationError(
+            "upstream_timeout",
+            ENGINE_TIMEOUT_MESSAGE,
+            status_code=504,
+        )
+    return B62OrchestrationError(
+        "upstream_unavailable",
+        _ENGINE_ERROR_MESSAGES["upstream_unavailable"],
+        status_code=502,
+    )
+
+
 class B62EngineOrchestrationBridge:
     def __init__(self, *, client: PadiemAiEngineClient, store: OrchestrationStateStore) -> None:
         if client is None or store is None:
@@ -613,6 +629,8 @@ class B62EngineOrchestrationBridge:
             raw = await self._client.orchestrate(wire)
         except PadiemAiEngineClientError as exc:
             raise _engine_error(exc) from exc
+        except LocalEngineTransportError as exc:
+            raise _transport_error(exc) from exc
         public = project_public_orchestration(raw)
         await self._persist_pause(
             public=public,
@@ -663,6 +681,8 @@ class B62EngineOrchestrationBridge:
                 )}
         except PadiemAiEngineClientError as exc:
             raise _engine_error(exc) from exc
+        except LocalEngineTransportError as exc:
+            raise _transport_error(exc) from exc
         finally:
             close = getattr(iterator, "aclose", None)
             if callable(close):
@@ -734,6 +754,9 @@ class B62EngineOrchestrationBridge:
                 )
             await self._store.set_state(user_id=user_id, continuation_ref=continuation_ref, state="active")
             raise _engine_error(exc) from exc
+        except LocalEngineTransportError as exc:
+            await self._store.set_state(user_id=user_id, continuation_ref=continuation_ref, state="active")
+            raise _transport_error(exc) from exc
 
         public = project_public_orchestration(raw)
         next_pause = public.get("approval_pause")
@@ -765,6 +788,8 @@ class B62EngineOrchestrationBridge:
             )
         except PadiemAiEngineClientError as exc:
             raise _engine_error(exc) from exc
+        except LocalEngineTransportError as exc:
+            raise _transport_error(exc) from exc
         public = project_cancel_result(raw)
         await self._store.set_state(user_id=user_id, continuation_ref=continuation_ref, state="cancelled")
         return B62OrchestrationResult(

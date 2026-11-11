@@ -1242,6 +1242,7 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                         # the owner, grant and target before it executes
                         # anything. The lane's frames ride this same response.
                         await _close_stream(stream)
+                        from .chat_pc_errors import ChatPCApprovalPause
                         from .chat_pc_drive import (
                             ChatPCDriveError,
                             chat_pc_plan_for_tool,
@@ -1316,6 +1317,13 @@ async def _api_chat_stream_body(request: Request, timing: ChatStreamTiming):
                                 selected_tool=selected_tool,
                                 declared_plan=declared_plan,
                             )
+                        except ChatPCApprovalPause as paused:
+                            timing.set_outcome("ok")
+                            yield _public_sse(
+                                "orchestration_pause",
+                                {"orchestration": dict(paused.orchestration)},
+                            )
+                            return
                         except ChatPCDriveError as exc:
                             timing.set_outcome("error")
                             yield _public_sse("error", {"error": exc.public_error()})

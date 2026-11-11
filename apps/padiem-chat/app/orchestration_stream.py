@@ -338,6 +338,19 @@ async def ndjson_answer(
                 result = await asyncio.wait_for(
                     bridge.start(**buffered_kwargs), timeout=remaining,
                 )
+        orchestration_data = getattr(result, "orchestration", None)
+        if (
+            isinstance(orchestration_data, dict)
+            and orchestration_data.get("approval_pause") is not None
+        ):
+            timing.mark("engine")
+            yield line(
+                {
+                    "type": "orchestration_pause",
+                    "orchestration": dict(orchestration_data),
+                }
+            )
+            return
         answer = getattr(result, "answer", None)
         if not isinstance(answer, str) or not answer:
             yield line({"type": "error", "code": "engine_execution_failed"})
