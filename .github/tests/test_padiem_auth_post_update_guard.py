@@ -13,9 +13,11 @@ def digest(value):
 
 
 class PostUpdate(unittest.TestCase):
-    def test_only_staging_addition_and_no_other_binding_changes(self):
-        before_clients = json.dumps({'b62': {'value': 'existing'}})
-        after_clients = json.dumps({'b62': {'value': 'existing'}, 'b62-staging': {'value': 'approved'}})
+    def test_reviewed_client_edit_updates_served_digest_and_nothing_else(self):
+        before_clients = json.dumps({'b62': {'value': 'existing'}, 'b62-staging': {'value': 'approved'},
+                                     'lovetree-4-0': {'value': 'pre'}})
+        after_clients = json.dumps({'b62': {'value': 'existing'}, 'b62-staging': {'value': 'approved'},
+                                    'lovetree-4-0': {'value': 'lovetree-with-email'}})
         bindings = [{'name': 'PADIEM_AUTH_CLIENTS', 'type': 'plain_text', 'sha256': digest(before_clients)}, {'name': 'KEY', 'type': 'secret_text'}]
         before = {'success': True, 'result': {'bindings': bindings}, 'client_fingerprints': fingerprints(before_clients)}
         after = {'success': True, 'result': {'bindings': [{**bindings[0], 'sha256': digest(after_clients)}, bindings[1]]}}
@@ -24,7 +26,8 @@ class PostUpdate(unittest.TestCase):
         for modified in ({'success': True, 'result': {'bindings': after['result']['bindings'][:-1]}}, {'success': False}, before):
             with self.subTest(case=modified), self.assertRaises(ValueError):
                 verify_after(before, modified, config, config)
-        bad = json.dumps({'b62': {'value': 'changed'}, 'b62-staging': {'value': 'approved'}})
+        bad = json.dumps({'b62': {'value': 'changed'}, 'b62-staging': {'value': 'approved'},
+                          'lovetree-4-0': {'value': 'lovetree-with-email'}})
         with self.assertRaises(ValueError):
             verify_after(before, after, {'vars': {'PADIEM_AUTH_CLIENTS': bad}}, config)
 
