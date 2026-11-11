@@ -1,15 +1,12 @@
 /*
- * #7173 PR4 · 견적서 초안 inside the Util app (#util/quote).
+ * #7460 / #7173 PR4 · 견적서 초안 inside the Util app (#util/quote).
  *
  * File boundary: this screen and its sheet (util-quote.css) live in the Util
- * app; app.js gains nothing (R5 #7216). The draft itself is the existing
- * deterministic manual-intake preview projection, reached through the Util
- * app's signed-in wrapper (/api/util/quote/preview) — no model call, no
- * execution lane, no second store.
+ * app; field definitions come from window.PadiemUtilManifest (util-manifest.js);
+ * app.js gains nothing (R5 #7216).
  *
- * The browser never leaves this screen to make the draft: input → preview →
- * copy/regenerate all happen here. "Claw에서 실행" stays a secondary action on
- * the result for the existing execute flow.
+ * Layout (#7460): PC (>= 921px) places Left Input (.util-pane-input) and Right
+ * Result (.util-pane-result) side by side; Phone (<= 920px) stacks them.
  */
 (() => {
   "use strict";
@@ -22,6 +19,7 @@
       required: "요청 원문을 입력해 주세요.",
       previewing: "초안을 만드는 중…",
       result: "초안 미리보기",
+      emptyResult: "왼쪽에 받은 요청 원문을 넣고 초안 만들기를 누르면 견적서·발주서·답장 초안이 표시됩니다.",
       copy: "복사",
       copied: "복사됨",
       copyFailed: "복사하지 못했습니다.",
@@ -48,6 +46,7 @@
       required: "Enter the request text.",
       previewing: "Drafting…",
       result: "Draft preview",
+      emptyResult: "Paste the received request on the left and build the draft to preview it here.",
       copy: "Copy",
       copied: "Copied",
       copyFailed: "Couldn’t copy.",
@@ -98,6 +97,21 @@
     return table[key] !== undefined ? table[key] : T.ko[key];
   }
 
+  function manifestField(key) {
+    const reg = window.PadiemUtilManifest;
+    const tool = reg && typeof reg.getTool === "function" ? reg.getTool("quote") : null;
+    if (!tool || !Array.isArray(tool.fields)) return null;
+    return tool.fields.find((f) => f.key === key) || null;
+  }
+
+  function optionEntries(fieldKey, fallbackEntries) {
+    const spec = manifestField(fieldKey);
+    if (spec && Array.isArray(spec.options) && spec.options.length) {
+      return spec.options.map((opt) => [opt.value, opt.label.ko, opt.label.en]);
+    }
+    return fallbackEntries;
+  }
+
   function optionLabel(entry) {
     return entry[lang() === "en" ? 2 : 1];
   }
@@ -115,12 +129,18 @@
   }
 
   function renderAnswer(host, value) {
+    host.removeAttribute("data-empty");
     const markdown = markdownModule();
     if (markdown) {
       markdown.render(host, value);
       return;
     }
     host.textContent = value;
+  }
+
+  function paintEmptyResult(host) {
+    host.setAttribute("data-empty", "true");
+    host.replaceChildren(element("p", "util-result-empty", t("emptyResult")));
   }
 
   function plainAnswer(value) {
@@ -225,8 +245,12 @@
   }
 
   function buildScreen() {
-    const wrap = element("div", "util-tool-form util-quote-form");
+    const wrap = element("div", "util-tool-form util-tool-workbench util-quote-form");
     wrap.setAttribute("data-util-form", "quote");
+
+    const inputPane = element("div", "util-pane-input");
+    inputPane.setAttribute("data-util-pane", "input");
+
     const form = element("form", "util-form");
     form.id = "utilToolForm-quote";
     form.noValidate = true;
@@ -236,13 +260,17 @@
     content.id = "utilQuoteField-content";
     content.rows = 6;
     content.required = true;
+    content.setAttribute("aria-invalid", "false");
+    content.addEventListener("input", () => {
+      if (String(content.value || "").trim()) content.setAttribute("aria-invalid", "false");
+    });
     content.maxLength = MAX_REQUEST_CHARS;
     content.placeholder = t("requestPlaceholder");
     form.appendChild(labelledField(t("requestLabel"), content));
 
     const row = element("div", "util-field-row");
-    row.appendChild(buildSelect("channel", t("channelLabel"), CHANNELS, "other"));
-    row.appendChild(buildSelect("action", t("actionLabel"), ACTIONS, "quote"));
+    row.appendChild(buildSelect("channel", t("channelLabel"), optionEntries("channel", CHANNELS), "other"));
+    row.appendChild(buildSelect("action", t("actionLabel"), optionEntries("action", ACTIONS), "quote"));
     form.appendChild(row);
 
     const sender = element("input", "util-input");
@@ -266,21 +294,31 @@
     status.setAttribute("aria-live", "polite");
     status.hidden = true;
 
+    inputPane.appendChild(form);
+    inputPane.appendChild(status);
+
+    const resultPane = element("div", "util-pane-result");
+    resultPane.setAttribute("data-util-pane", "result");
+
     const result = element("section", "util-result");
     result.id = "utilQuoteResult";
-    result.hidden = true;
+    result.hidden = false;
     const resultTitle = element("h4", "util-result-title", t("result"));
     const output = element("div", "util-result-output");
     output.id = "utilQuoteOutput";
     output.setAttribute("role", "region");
     output.setAttribute("aria-label", t("result"));
     output.setAttribute("tabindex", "0");
+    paintEmptyResult(output);
+
     const resultActions = element("div", "util-result-actions");
     const copyBtn = element("button", "util-result-button", t("copy"));
     copyBtn.type = "button";
+    copyBtn.disabled = true;
     copyBtn.setAttribute("data-util-copy", "");
     const againBtn = element("button", "util-result-button util-result-generate", t("regenerate"));
     againBtn.type = "button";
+    againBtn.disabled = true;
     againBtn.setAttribute("data-util-regenerate", "");
     const clawBtn = element("button", "util-result-button util-quote-claw", t("clawExecute"));
     clawBtn.type = "button";
@@ -293,10 +331,10 @@
     result.appendChild(output);
     result.appendChild(resultActions);
     result.appendChild(clawNote);
+    resultPane.appendChild(result);
 
-    wrap.appendChild(form);
-    wrap.appendChild(status);
-    wrap.appendChild(result);
+    wrap.appendChild(inputPane);
+    wrap.appendChild(resultPane);
 
     function setStatus(text, tone) {
       status.textContent = text || "";
@@ -320,6 +358,7 @@
       if (busy) return;
       const values = readValues();
       if (!values.content) {
+        content.setAttribute("aria-invalid", "true");
         setStatus(t("required"), "error");
         if (typeof content.focus === "function") content.focus();
         return;
@@ -332,6 +371,7 @@
       setStatus(t("previewing"), "busy");
       result.hidden = false;
       lastPreview = null;
+      output.removeAttribute("data-empty");
       output.replaceChildren();
       try {
         const preview = await requestPreview(values);
@@ -342,12 +382,13 @@
         setStatus("", null);
       } catch (err) {
         setStatus(errorMessage(err), "error");
-        if (!lastPreview) result.hidden = true;
+        if (!lastPreview) paintEmptyResult(output);
       } finally {
         busy = false;
         primary.disabled = false;
-        copyBtn.disabled = false;
-        againBtn.disabled = false;
+        const hasPreview = Boolean(lastPreview && lastPreview.result_text);
+        copyBtn.disabled = !hasPreview;
+        againBtn.disabled = !hasPreview;
         clawBtn.disabled = false;
       }
     }

@@ -1,61 +1,41 @@
 /*
- * #7173 · Util app styling. Tokens only (padiem-tokens.css); no new colours.
+ * #7460 · Util app styling (tokens only from padiem-tokens.css).
  *
- * - The top app switch (Chat | Claw | Util) is a segmented nav that uses the
- *   shared primary tokens for the current app.
- * - A util card is one native button: the pointer, Tab + Enter/Space and a
- *   screen reader all get the same whole-card target. Focus-visible ring and
- *   hover lift are separate so a keyboard user sees the same affordance.
- * - Card height follows content (no stretched empty panel), per the
- *   representative decision on 2026-11-10.
+ * - Top app switch (#appSwitch) is retired; navigation lives in the left menu.
+ * - Big "Padiem Util / 유틸" header (.util-header) renders ONLY on the first
+ *   screen (card list) and hides on every dedicated tool screen.
+ * - Tool screen top: small "‹ 유틸" back link + standalone-views.css shared
+ *   big title + 1-line description + tool chip row (current tool highlighted).
+ * - Layout: PC (>= 921px) places Left Input and Right Result side by side;
+ *   Phone (<= 920px) stacks Input above Result.
  */
 
-/* ── top app switch ─────────────────────────────────────────────────────── */
-.app-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px;
-  margin-left: 8px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--glass-card-surface, var(--panel, #fff));
+/* ── first screen vs tool screen header gating ──────────────────────────── */
+/* #7173 (2026-11-10): relax the fixed six-panel height on #utilView so the
+   frosted plate shrinks to fit the card list / tool content while keeping the
+   viewport scroll ceiling (mirrors #7366/#7476 without touching shared CSS). */
+@media (min-width: 921px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="util"] #utilView.util-view {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: var(--padiem-six-panel-height) !important;
+  }
 }
 
-.app-switch-item {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 36px;
-  padding: 0 14px;
-  border: none;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--text, #19191d);
-  font: inherit;
-  font-size: 13px;
-  font-weight: 650;
-  cursor: pointer;
+.util-header[hidden],
+.util-view[data-util-screen="tool"] > .util-header {
+  display: none !important;
 }
 
-.app-switch-item:hover:not([aria-current="page"]) {
-  background: var(--brand-soft, rgba(52, 104, 214, .10));
+.util-app-root {
+  margin-top: 6px;
 }
 
-.app-switch-item[aria-current="page"] {
-  background: var(--primary-bg);
-  border-color: var(--primary-border);
-  color: #fff;
-}
-
-.app-switch-item:focus-visible {
-  outline: 3px solid var(--primary-focus);
-  outline-offset: 2px;
+.util-view[data-util-screen="tool"] > .util-app-root {
+  margin-top: 0;
 }
 
 /* ── util first screen: whole-card buttons ──────────────────────────────── */
-.util-app-root { margin-top: 6px; }
-
 .util-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -66,7 +46,10 @@
   list-style: none;
 }
 
-.util-card-item { margin: 0; padding: 0; }
+.util-card-item {
+  margin: 0;
+  padding: 0;
+}
 
 .util-card {
   display: grid;
@@ -81,8 +64,8 @@
   padding: 16px 14px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md, 16px);
-  background: var(--glass-card-surface, var(--panel, #ffffff));
-  color: var(--text, #19191d);
+  background: var(--glass-card-surface, var(--panel));
+  color: var(--text);
   text-align: left;
   font: inherit;
   cursor: pointer;
@@ -110,14 +93,14 @@
 
 .util-card-desc {
   grid-area: desc;
-  color: var(--muted, #5a6578);
+  color: var(--muted);
   font-size: 13px;
   line-height: 1.45;
 }
 
 .util-card-cta {
   grid-area: cta;
-  color: var(--muted, #5a6578);
+  color: var(--muted);
   font-size: 16px;
   transition: transform .12s ease;
 }
@@ -128,7 +111,9 @@
   box-shadow: 0 10px 22px var(--focus-ring);
 }
 
-.util-card:hover .util-card-cta { transform: translateX(2px); }
+.util-card:hover .util-card-cta {
+  transform: translateX(2px);
+}
 
 .util-card:focus-visible {
   outline: 3px solid var(--primary-focus);
@@ -136,59 +121,165 @@
   border-color: var(--primary-focus);
 }
 
-.util-card:active { transform: none; }
+.util-card:active {
+  transform: none;
+}
 
-/* ── a tool's own screen inside the Util app ────────────────────────────── */
-.util-tool-screen { max-width: 760px; }
+/* ── dedicated tool screen: header + chip row + workbench ───────────────── */
+.util-tool-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: none;
+}
+
+.util-tool-header-group {
+  gap: 2px;
+}
 
 .util-tool-back {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  min-height: 44px;
-  margin-bottom: 4px;
-  color: var(--muted, #5a6578);
+  gap: 4px;
+  min-height: 32px;
+  padding: 2px 0;
+  margin-bottom: 2px;
+  color: var(--muted);
   font-size: 13px;
   font-weight: 650;
+  line-height: 1.3;
   text-decoration: none;
 }
 
-.util-tool-back:hover { color: var(--text, #19191d); }
-.util-tool-back:focus-visible { outline: 3px solid var(--primary-focus); outline-offset: 2px; }
+.util-tool-back-mark {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.util-tool-back:hover {
+  color: var(--text);
+}
+
+.util-tool-back:focus-visible {
+  outline: 3px solid var(--primary-focus);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
 
 .util-tool-heading {
-  margin: 0 0 4px;
-  font-size: 22px;
-  line-height: 1.3;
+  margin: 0;
 }
 
 .util-tool-desc {
-  margin: 0 0 16px;
-  color: var(--muted, #5a6578);
-  font-size: 14px;
-  line-height: 1.5;
+  margin: 2px 0 0;
 }
 
+/* ── tool chip bar ──────────────────────────────────────────────────────── */
+.util-tool-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+}
+
+.util-tool-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--glass-card-surface, var(--panel));
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.util-tool-chip:hover:not([aria-current="page"]) {
+  border-color: var(--primary-focus);
+  background: var(--brand-soft, rgba(52, 104, 214, .10));
+}
+
+.util-tool-chip[aria-current="page"] {
+  background: var(--primary-bg);
+  border-color: var(--primary-border);
+  color: #fff;
+}
+
+.util-tool-chip:focus-visible {
+  outline: 3px solid var(--primary-focus);
+  outline-offset: 2px;
+}
+
+/* ── tool body & PC left-input / right-result, Phone top / bottom ───────── */
 .util-tool-body {
+  width: 100%;
+  box-sizing: border-box;
   padding: 18px;
   border: 1px dashed var(--line);
   border-radius: var(--radius-md, 16px);
-  background: var(--glass-card-surface, var(--panel, #ffffff));
+  background: var(--glass-card-surface, var(--panel));
+}
+
+.util-tool-body[data-util-mounted="pdfmd"] {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.util-tool-screen .pdfmd-header h3 {
+  display: none;
+}
+
+.util-tool-workbench,
+.util-tool-screen #utilPdfmdPanel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+.util-pane-input,
+.util-pane-result {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pdfmd-input-col,
+.pdfmd-result-col {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md, 16px);
+  background: var(--glass-card-surface, var(--panel));
+  box-sizing: border-box;
+}
+
+.pdfmd-result-col .pdfmd-history-head:first-child,
+.pdfmd-result-col .pdfmd-items:empty + .pdfmd-preview[hidden] + .pdfmd-archive-controls + .pdfmd-history-head {
+  margin-top: 0;
 }
 
 .util-tool-placeholder {
   margin: 0;
-  color: var(--muted, #5a6578);
-  font-size: 14px;
+  color: var(--muted);
+  font-size: 13px;
   line-height: 1.55;
 }
 
-/* ── #7365 대표 결정(2026-11-10): 유틸은 도구·일정 묶음의 첫 항목으로 사이드바에
-   다시 표시된다(앱 전환의 유틸 탭과 같은 곳으로 간다). 하위 4행은 기존
-   #5608 동작을 유지한다. ─────────────────────────────────────────────── */
-
-/* #7365: the meeting entry lives in the Util tab's meeting tool screen; the
-   parked button mounts into that screen's body (see util-app.js). */
+/* #7365: the meeting entry lives in the Util meeting tool screen; the parked
+   button mounts into that screen's body (see util-app.js). */
 .util-meeting-capture-entry {
   width: 100%;
   min-height: 44px;
@@ -205,52 +296,51 @@
   font-size: 14px;
   cursor: pointer;
   text-align: left;
+  box-sizing: border-box;
 }
+
 .util-meeting-capture-entry:hover {
   background: rgba(255, 255, 255, 0.82);
 }
+
 .util-meeting-capture-entry[aria-current="page"] {
   border-color: var(--accent-strong);
 }
 
-/* ── phone: clear the absolutely positioned hamburger, one column ───────── */
+/* ── narrow / phone: stacked top input, bottom result ───────────────────── */
 @media (max-width: 920px) {
-  /* mobile-header-collapse.css takes #mobileMenu out of the row (absolute,
-   * left:10px) so the row can shrink to zero while a primary surface scrolls.
-   * The app switch follows the same rule, anchored next to the circle, and it
-   * hides while the header is collapsed — the row must keep the 56px expanded
-   * height and the 0px collapsed height the adopted phone header pins. */
-  .app-shell .main-panel > .topbar .app-switch {
-    position: absolute;
-    top: calc(env(safe-area-inset-top, 0px) + 6px);
-    left: 62px;
-    margin-left: 0;
-    transition: opacity .22s ease;
-  }
-  .app-shell[data-header-collapsed] .app-switch {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+  .util-tool-workbench,
+  .util-tool-screen #utilPdfmdPanel {
+    grid-template-columns: 1fr;
+    gap: 14px;
   }
 }
 
 @media (max-width: 720px) {
-  /* The adopted phone header is 56px tall (6 + 44 + 6). Drop the switch's own
-     padding/border so the 44px targets fit that row instead of growing it. */
-  .app-switch {
-    margin-left: 4px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    gap: 6px;
+  .util-card-grid {
+    grid-template-columns: 1fr;
   }
-  .app-switch-item { min-height: 44px; padding: 0 12px; }
-  .util-card-grid { grid-template-columns: 1fr; }
-  .util-card { padding: 16px; }
+  .util-card {
+    padding: 16px;
+  }
+  .util-tool-back {
+    min-height: 44px;
+  }
+  .util-tool-chip {
+    min-height: 40px;
+    padding: 0 12px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .util-card, .util-card-cta { transition: none; }
-  .util-card:hover { transform: none; }
-  .util-card:hover .util-card-cta { transform: none; }
+  .util-card,
+  .util-card-cta {
+    transition: none;
+  }
+  .util-card:hover {
+    transform: none;
+  }
+  .util-card:hover .util-card-cta {
+    transform: none;
+  }
 }
