@@ -35,7 +35,7 @@
     if(!picker || picker.querySelector('[data-theme-value="padiem-glass"]')) return;
     var button=document.createElement("button");
     button.type="button";
-    button.className="theme-option";
+    button.className="settings-choice theme-option";
     button.setAttribute("data-theme-value","padiem-glass");
     button.setAttribute("aria-pressed","false");
     button.textContent="Padiem Glass";
@@ -56,7 +56,7 @@
     return getUrlGlassVariant()||"female";
   }
 
-  /* Shell mask + motion speed are URL-authoritative like the glass variant:
+  /* Edge blur + motion speed are URL-authoritative like the glass variant:
    * ?mask=auto|on|off and ?speed=20..300 (percent). No browser storage. */
   function isGlassMaskMode(v){return GLASS_MASK_MODES.indexOf(v)!==-1;}
 
@@ -181,18 +181,18 @@
 
     var label=document.createElement("p");
     label.className="glass-variant-label";
-    label.textContent="Padiem Glass background";
+    label.textContent=(window.__padiemLocale&&window.__padiemLocale.text("glass-background"))||"Padiem Glass 배경";
     control.appendChild(label);
 
     var group=document.createElement("div");
     group.className="glass-variant-picker";
     group.setAttribute("role","group");
-    group.setAttribute("aria-label","Padiem Glass background selection");
+    group.setAttribute("aria-label",(window.__padiemLocale&&window.__padiemLocale.text("glass-background-selection"))||"Padiem Glass 배경 선택");
 
     [["female","Female"],["male","Male"]].forEach(function(item){
       var button=document.createElement("button");
       button.type="button";
-      button.className="glass-variant-option";
+      button.className="settings-choice glass-variant-option";
       button.setAttribute("data-glass-variant-value",item[0]);
       button.setAttribute("aria-pressed","false");
       button.textContent=item[1];
@@ -211,7 +211,7 @@
     ensureGlassShellControl(control);
   }
 
-  /* Shell mask mode (Auto/On/Off) + motion speed bar, next to the variant picker. */
+  /* Edge-blur mode (Auto/On/Off) + motion speed bar, next to the variant picker. */
   function ensureGlassShellControl(anchor){
     if(!anchor || !anchor.parentNode || document.querySelector(".glass-shell-control")) return;
     var control=document.createElement("div");
@@ -220,18 +220,18 @@
 
     var label=document.createElement("p");
     label.className="glass-variant-label";
-    label.textContent=(window.__padiemLocale&&window.__padiemLocale.text("glass-mask-mode"))||"외투 마스크 모드";
+    label.textContent=(window.__padiemLocale&&window.__padiemLocale.text("glass-mask-mode"))||"가장자리 흐림 효과";
     control.appendChild(label);
 
     var group=document.createElement("div");
     group.className="glass-variant-picker glass-mask-picker";
     group.setAttribute("role","group");
-    group.setAttribute("aria-label",(window.__padiemLocale&&window.__padiemLocale.text("glass-mask-mode"))||"외투 마스크 모드");
+    group.setAttribute("aria-label",(window.__padiemLocale&&window.__padiemLocale.text("glass-mask-mode"))||"가장자리 흐림 효과");
 
     [["auto","glass-mask-auto","자동"],["on","glass-mask-on","켜기"],["off","glass-mask-off","끄기"]].forEach(function(item){
       var button=document.createElement("button");
       button.type="button";
-      button.className="glass-variant-option";
+      button.className="settings-choice glass-variant-option";
       button.setAttribute("data-glass-mask-value",item[0]);
       button.setAttribute("aria-pressed","false");
       button.textContent=(window.__padiemLocale&&window.__padiemLocale.text(item[1]))||item[2];
