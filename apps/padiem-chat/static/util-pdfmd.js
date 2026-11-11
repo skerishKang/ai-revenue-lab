@@ -323,6 +323,8 @@
     }
 
     // Mode + job controls
+    const formWrap = el("div", "util-form pdfmd-form-body");
+    formWrap.id = "utilToolForm-pdfmd";
     const controls = el("div", "pdfmd-controls");
     const modeField = el("label", null, "변환 방식 ");
     const modeSel = document.createElement("select");
@@ -346,11 +348,11 @@
     const jobIdSpan = el("span", "pdfmd-jobid", "");
     jobIdSpan.hidden = true;
     controls.appendChild(jobIdSpan);
-    inputCol.appendChild(controls);
+    formWrap.appendChild(controls);
 
     const modeHelp = el("p", "pdfmd-mode-help");
     modeHelp.id = "pdfmdModeHelp";
-    inputCol.appendChild(modeHelp);
+    formWrap.appendChild(modeHelp);
     function updateModeHelp() {
       const [key, fallback] = MODE_HELP[modeSel.value] || MODE_HELP.fast;
       modeHelp.dataset.localeKey = key;
@@ -400,7 +402,7 @@
     fileInput.accept = ".pdf,.zip,application/pdf,application/zip";
     fileInput.hidden = true;
     fileInput.disabled = workBlocked;
-    inputCol.appendChild(fileInput);
+    formWrap.appendChild(fileInput);
 
     // #6012: the same documents, taken straight from the owner's own PC. The
     // shared part (#6620 import, #6607 save) is the only dialog; the pick sits
@@ -411,7 +413,7 @@
     const uploadRow = el("div", "pdfmd-upload-row");
     uploadRow.appendChild(drop);
     uploadRow.appendChild(pcPick);
-    inputCol.appendChild(uploadRow);
+    formWrap.appendChild(uploadRow);
 
     const pcNote = el("p", "pdfmd-status pdfmd-pc-note", "");
     pcNote.id = "pdfmdPcNote";
@@ -422,7 +424,7 @@
     pcConnect.addEventListener("click", openPcConnect);
     pcNote.appendChild(pcNoteText);
     pcNote.appendChild(pcConnect);
-    inputCol.appendChild(pcNote);
+    formWrap.appendChild(pcNote);
 
     // One place shows the no-computer guidance, so an import attempt and a save
     // attempt say the same thing the council app says.
@@ -441,6 +443,9 @@
     uploadStatus.id = "pdfmdStatus";
     uploadStatus.setAttribute("role", "status");
     uploadStatus.setAttribute("aria-live", "polite");
+    if (!window.PadiemUtilChatMode || typeof window.PadiemUtilChatMode.bindPdfmd !== "function") {
+      inputCol.appendChild(formWrap);
+    }
     inputCol.appendChild(uploadStatus);
     const quotaNote = el("p", "pdfmd-quota");
     quotaNote.id = "pdfmdQuota";
@@ -836,9 +841,11 @@
       }
     }
 
+    let chatBridge = { recordFiles() {}, sync() {} };
     async function uploadFiles(files) {
       if (workBlocked) return;
       if (!files.length) return;
+      chatBridge.recordFiles(files);
       uploadProgress.replaceChildren();
       uploadProgress.hidden = false;
       const rows = files.map((file) => {
@@ -924,6 +931,7 @@
       });
       selectedArchiveBtn.hidden = !currentJobId || available.length === 0;
       selectedArchiveBtn.disabled = selectedResultIds.size === 0;
+      chatBridge.sync();
     }
 
     function renderItems() {
@@ -1309,6 +1317,14 @@
         histList.replaceChildren();
         histList.appendChild(emptyBlock("작업 이력을 불러오지 못했습니다.", describeError(e), null));
       }
+    }
+
+    if (window.PadiemUtilChatMode && typeof window.PadiemUtilChatMode.bindPdfmd === "function") {
+      chatBridge = window.PadiemUtilChatMode.bindPdfmd({
+        panel, inputCol, formWrap, uploadStatus, archiveControls, modeSel, dropTitle,
+        workBlocked, loginRequired: PDFMD_LOGIN_REQUIRED, copy, updateModeHelp, startNewJob, uploadFiles,
+        getState: () => ({ currentJobId, currentItems, lastUploadError }),
+      });
     }
 
     renderItems();

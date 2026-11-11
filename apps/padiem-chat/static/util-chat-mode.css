@@ -156,10 +156,18 @@
   color: #fff;
 }
 
-.util-chat-choices {
+.util-chat-choices,
+.util-chat-file-bar {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+}
+
+.util-chat-file-pick {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .util-chat-choice {
@@ -241,6 +249,9 @@ textarea.util-chat-input {
   }
   .util-chat-open-form {
     min-height: 38px;
+  }
+  .util-chat-file-pick {
+    min-height: 44px;
   }
 }
 

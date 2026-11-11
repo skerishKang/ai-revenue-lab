@@ -24,6 +24,7 @@
       copied: "복사됨",
       copyFailed: "복사하지 못했습니다.",
       regenerate: "다시 만들기",
+      refineChat: "대화로 다듬기",
       clawExecute: "Claw에서 실행",
       clawNote: "결과 화면의 보조 동작입니다. 실행은 기존 Claw 흐름에서 이어집니다.",
       requestLabel: "요청 원문",
@@ -51,6 +52,7 @@
       copied: "Copied",
       copyFailed: "Couldn’t copy.",
       regenerate: "Draft again",
+      refineChat: "Refine in chat",
       clawExecute: "Run in Claw",
       clawNote: "A secondary action on the result. Execution continues in the existing Claw flow.",
       requestLabel: "Request",
@@ -87,6 +89,23 @@
 
   const MAX_REQUEST_CHARS = 12000;
   const MAX_SENDER_CHARS = 120;
+
+  const QUOTE_CHAT_COPY = Object.freeze({
+    ko: Object.freeze({
+      refinePlaceholder: "추가할 품목·수량이나 조건을 적어 주세요 (예: A4 용지 5박스 추가)",
+      allReadyIdle: "요청 원문이 준비되었습니다. 바로 초안을 만들거나 품목·조건을 덧붙여 주세요.",
+      allReadyWithDraft: "현재 견적 초안과 입력값을 유지하고 있습니다. 품목·수량·조건을 덧붙이면 같은 계산 경로로 다시 만듭니다.",
+      generatingTurn: "모은 항목으로 견적 초안을 계산하고 있습니다…",
+      generatedTurn: "오른쪽에 계산된 초안을 표시했습니다. 항목을 덧붙이거나 '폼으로 열기'로 칸을 수정할 수 있습니다.",
+    }),
+    en: Object.freeze({
+      refinePlaceholder: "Add items, quantities or terms (e.g. add 5 boxes of A4 paper)",
+      allReadyIdle: "Request text is ready. Generate now or add items and terms below.",
+      allReadyWithDraft: "Keeping your draft and inputs. Add items or terms to rebuild via the same calculation path.",
+      generatingTurn: "Building the quote draft from the collected items…",
+      generatedTurn: "Your calculated draft is in the result pane. Reply to add items, or choose 'Open in form'.",
+    }),
+  });
 
   function lang() {
     return document.documentElement && document.documentElement.lang === "en" ? "en" : "ko";
@@ -244,7 +263,13 @@
     if (card && typeof card.click === "function") card.click();
   }
 
-  function buildScreen() {
+  function buildScreen(initialMode) {
+    const chatApi = window.PadiemUtilChatMode;
+    const hasChatMode = Boolean(
+      chatApi
+      && typeof chatApi.create === "function"
+      && typeof chatApi.buildModeSwitch === "function"
+    );
     const wrap = element("div", "util-tool-form util-tool-workbench util-quote-form");
     wrap.setAttribute("data-util-form", "quote");
 
@@ -294,9 +319,6 @@
     status.setAttribute("aria-live", "polite");
     status.hidden = true;
 
-    inputPane.appendChild(form);
-    inputPane.appendChild(status);
-
     const resultPane = element("div", "util-pane-result");
     resultPane.setAttribute("data-util-pane", "result");
 
@@ -325,6 +347,14 @@
     clawBtn.setAttribute("data-util-claw", "");
     resultActions.appendChild(copyBtn);
     resultActions.appendChild(againBtn);
+    let refineBtn = null;
+    if (hasChatMode) {
+      refineBtn = element("button", "util-result-button", t("refineChat"));
+      refineBtn.type = "button";
+      refineBtn.disabled = true;
+      refineBtn.setAttribute("data-util-refine-chat", "");
+      resultActions.appendChild(refineBtn);
+    }
     resultActions.appendChild(clawBtn);
     const clawNote = element("p", "util-quote-note", t("clawNote"));
     result.appendChild(resultTitle);
@@ -332,9 +362,6 @@
     result.appendChild(resultActions);
     result.appendChild(clawNote);
     resultPane.appendChild(result);
-
-    wrap.appendChild(inputPane);
-    wrap.appendChild(resultPane);
 
     function setStatus(text, tone) {
       status.textContent = text || "";
@@ -354,22 +381,51 @@
       };
     }
 
-    async function runPreview() {
-      if (busy) return;
+    function writeValues(incoming) {
+      if (!incoming || typeof incoming !== "object") return;
+      if (Object.prototype.hasOwnProperty.call(incoming, "content")) {
+        content.value = String(incoming.content == null ? "" : incoming.content).slice(0, MAX_REQUEST_CHARS);
+        if (String(content.value || "").trim()) content.setAttribute("aria-invalid", "false");
+      }
+      if (Object.prototype.hasOwnProperty.call(incoming, "sender_hint")) {
+        sender.value = String(incoming.sender_hint == null ? "" : incoming.sender_hint).slice(0, MAX_SENDER_CHARS);
+      }
+      ["channel", "action"].forEach((fieldKey) => {
+        if (!Object.prototype.hasOwnProperty.call(incoming, fieldKey)) return;
+        const sel = form.querySelector("#utilQuoteField-" + fieldKey);
+        if (!sel) return;
+        const nextVal = String(incoming[fieldKey] == null ? "" : incoming[fieldKey]);
+        sel.value = nextVal;
+        if (Array.isArray(sel.children)) {
+          sel.children.forEach((opt) => { opt.selected = opt.value === nextVal; });
+        }
+      });
+    }
+
+    async function runPreview(overrideValues, refinementNote) {
+      if (busy) return false;
+      if (overrideValues) writeValues(overrideValues);
+      if (refinementNote) {
+        const currentText = String(content.value || "").trim();
+        const combined = currentText ? currentText + "\n" + String(refinementNote).trim() : String(refinementNote).trim();
+        content.value = combined.slice(0, MAX_REQUEST_CHARS);
+      }
       const values = readValues();
       if (!values.content) {
         content.setAttribute("aria-invalid", "true");
         setStatus(t("required"), "error");
         if (typeof content.focus === "function") content.focus();
-        return;
+        return false;
       }
       busy = true;
       primary.disabled = true;
       copyBtn.disabled = true;
       againBtn.disabled = true;
+      if (refineBtn) refineBtn.disabled = true;
       clawBtn.disabled = true;
       setStatus(t("previewing"), "busy");
       result.hidden = false;
+      const previousPreview = lastPreview;
       lastPreview = null;
       output.setAttribute("data-empty", "false");
       output.replaceChildren();
@@ -380,24 +436,82 @@
         renderAnswer(output, preview.result_text);
         result.hidden = false;
         setStatus("", null);
+        return true;
       } catch (err) {
         setStatus(errorMessage(err), "error");
-        if (!lastPreview) paintEmptyResult(output);
+        if (previousPreview && previousPreview.result_text) {
+          lastPreview = previousPreview;
+          renderAnswer(output, previousPreview.result_text);
+        } else {
+          paintEmptyResult(output);
+        }
+        return false;
       } finally {
         busy = false;
         primary.disabled = false;
         const hasPreview = Boolean(lastPreview && lastPreview.result_text);
         copyBtn.disabled = !hasPreview;
         againBtn.disabled = !hasPreview;
+        if (refineBtn) refineBtn.disabled = !hasPreview;
         clawBtn.disabled = false;
       }
     }
 
+    let modeSwitch = null;
+    let chatIntake = null;
+    function setMode(nextMode, focusChat) {
+      if (!chatIntake || !modeSwitch) return;
+      const toChat = nextMode === "chat";
+      wrap.setAttribute("data-active-mode", toChat ? "chat" : "form");
+      modeSwitch.setActive(toChat ? "chat" : "form");
+      if (toChat) {
+        setStatus("", null);
+        form.hidden = true;
+        chatIntake.root.hidden = false;
+        chatIntake.enter({ focusInput: Boolean(focusChat) });
+      } else {
+        writeValues(chatIntake.getValues());
+        chatIntake.root.hidden = true;
+        form.hidden = false;
+      }
+    }
+
+    if (hasChatMode) {
+      chatIntake = chatApi.create({
+        toolId: "quote",
+        copy: QUOTE_CHAT_COPY,
+        getValues: () => readValues(),
+        setValues: (vals) => writeValues(vals),
+        hasDraft: () => Boolean(lastPreview && lastPreview.result_text),
+        onGenerate: (vals, note) => runPreview(vals, note),
+        onSwitchToForm: () => setMode("form", false),
+      });
+      if (chatIntake) {
+        const startMode = initialMode === "chat" ? "chat" : "form";
+        modeSwitch = chatApi.buildModeSwitch(startMode, (picked) => setMode(picked, picked === "chat"));
+        inputPane.appendChild(modeSwitch.root);
+        inputPane.appendChild(form);
+        inputPane.appendChild(chatIntake.root);
+        inputPane.appendChild(status);
+        setMode(startMode, false);
+      }
+    }
+    if (!chatIntake) {
+      inputPane.appendChild(form);
+      inputPane.appendChild(status);
+    }
+
+    wrap.appendChild(inputPane);
+    wrap.appendChild(resultPane);
+
     form.addEventListener("submit", (event) => {
       if (event && typeof event.preventDefault === "function") event.preventDefault();
-      void runPreview();
+      void runPreview(null, "");
     });
-    againBtn.addEventListener("click", () => { void runPreview(); });
+    againBtn.addEventListener("click", () => { void runPreview(null, ""); });
+    if (refineBtn) {
+      refineBtn.addEventListener("click", () => { setMode("chat", true); });
+    }
     clawBtn.addEventListener("click", () => { openClawQuote(); });
     copyBtn.addEventListener("click", () => {
       const text = plainAnswer(lastPreview && lastPreview.result_text).trim();
@@ -436,7 +550,8 @@
       current = { host: host };
       return true;
     }
-    host.appendChild(buildScreen());
+    const initMode = host.getAttribute && host.getAttribute("data-util-initial-mode") === "chat" ? "chat" : "form";
+    host.appendChild(buildScreen(initMode));
     current = { host: host };
     return true;
   }
